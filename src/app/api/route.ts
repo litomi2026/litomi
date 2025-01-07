@@ -2,13 +2,21 @@ import http2 from 'http2';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-  const imageBuffer = await fetchImageUsingHttp2();
+  try {
+    const imageBuffer = await fetchImageUsingHttp2();
 
-  return new NextResponse(Buffer.from(imageBuffer), {
-    headers: {
-      'Content-Type': 'image/webp',
-    },
-  });
+    return new NextResponse(imageBuffer, {
+      headers: {
+        'Content-Type': 'image/webp',
+      },
+    });
+  } catch (error) {
+    console.error('Failed to fetch image via HTTP/2:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch image' },
+      { status: 500 },
+    );
+  }
 }
 
 async function fetchImageUsingHttp2() {
@@ -18,7 +26,8 @@ async function fetchImageUsingHttp2() {
     const req = client.request({
       ':method': 'GET',
       ':path': '/3185634/18.webp',
-      'User-Agent': 'curl/8.4.0',
+      'User-Agent':
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
       Accept: '*/*',
     });
 
