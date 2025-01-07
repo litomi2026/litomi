@@ -55,7 +55,7 @@ export default function ImageViewer({ id }: Props) {
 
     (async () => {
       try {
-        const res = await fetch(`$/${id}/${'1'.padStart(padLength, '0')}`);
+        const res = await fetch(`/$/${id}/${'1'.padStart(padLength, '0')}`);
         if (res.ok) {
           setIsSuccess(true);
           return;
@@ -82,7 +82,7 @@ export default function ImageViewer({ id }: Props) {
                   className="h-svh object-contain aria-hidden:h-1 aria-hidden:w-1 aria-hidden:absolute aria-hidden:-top-1 aria-hidden:-left-1"
                   fetchPriority="high"
                   referrerPolicy="no-referrer"
-                  src={`$/${id}/${String(index + offset).padStart(
+                  src={`/$/${id}/${String(index + offset).padStart(
                     padLength,
                     '0',
                   )}`}
