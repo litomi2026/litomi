@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 
-import { HASHA_CDN_DOMAIN } from '@/common/constant';
+import useRegisterServiceWorker from '@/hook/useRegisterServiceWorker';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -14,10 +14,11 @@ type Props = {
 export default function ImageViewer({ id }: Props) {
   const [index, setIndex] = useState(1);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [padLength, setPadLength] = useState(1);
+  const [padLength, setPadLength] = useState(2);
   const errorCount = useRef(0);
   const router = useRouter();
   const [maxImageCount, setMaxImageCount] = useState(Infinity);
+  const isSWRegistered = useRegisterServiceWorker('/sw.js');
 
   function setPrevIndex() {
     setIndex((prev) => Math.max(1, prev - 1));
@@ -49,17 +50,26 @@ export default function ImageViewer({ id }: Props) {
     };
   }, [router, setNextIndex]);
 
+  useEffect(() => {
+    if (!isSWRegistered) return;
+
+    (async () => {
+      try {
+        const res = await fetch(`$/${id}/${'1'.padStart(padLength, '0')}`);
+        if (res.ok) {
+          setIsSuccess(true);
+          return;
+        } else {
+          handleError();
+        }
+      } catch {
+        handleError();
+      }
+    })();
+  }, [id, isSWRegistered, padLength, router]);
+
   return (
     <ul className="relative">
-      <img
-        alt="manga-image"
-        className="h-1 w-1 absolute -top-1 -left-1"
-        fetchPriority="high"
-        referrerPolicy="no-referrer"
-        src={`${HASHA_CDN_DOMAIN}/${id}/${'1'.padStart(padLength, '0')}.webp`}
-        onLoad={() => setIsSuccess(true)}
-        onError={handleError}
-      />
       {isSuccess &&
         [-2, -1, 0, 1, 2].map(
           (offset) =>
@@ -72,9 +82,10 @@ export default function ImageViewer({ id }: Props) {
                   className="h-svh object-contain aria-hidden:h-1 aria-hidden:w-1 aria-hidden:absolute aria-hidden:-top-1 aria-hidden:-left-1"
                   fetchPriority="high"
                   referrerPolicy="no-referrer"
-                  src={`${HASHA_CDN_DOMAIN}/${id}/${String(
-                    index + offset,
-                  ).padStart(padLength, '0')}.webp`}
+                  src={`$/${id}/${String(index + offset).padStart(
+                    padLength,
+                    '0',
+                  )}`}
                   onError={() => setMaxImageCount(index + offset - 1)}
                 />
               </li>
