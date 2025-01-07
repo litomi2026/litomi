@@ -33,8 +33,8 @@ const a = [
 
 export default function Home() {
   return (
-    <main className="p-4">
-      <ul className="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-4">
+    <main className="p-2">
+      <ul className="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-2">
         {a.map((id) => (
           <li key={id}>
             <Link href={`/${id}`}>
