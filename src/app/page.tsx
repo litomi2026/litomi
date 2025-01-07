@@ -33,21 +33,23 @@ const a = [
 
 export default function Home() {
   return (
-    <ul className="grid grid-cols-[] gap-4">
-      {a.map((id) => (
-        <li key={id}>
-          <Link href={`/${id}`}>
-            <img
-              alt="manga-image"
-              height={1536}
-              referrerPolicy="no-referrer"
-              src={`https://cdn-nl-01.hasha.in/${id}/01.webp`}
-              width={1536}
-            />
-          </Link>
-        </li>
-      ))}
-      <Nozomi />
-    </ul>
+    <main className="p-4">
+      <ul className="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-4">
+        {a.map((id) => (
+          <li key={id}>
+            <Link href={`/${id}`}>
+              <img
+                alt="manga-image"
+                height={1536}
+                referrerPolicy="no-referrer"
+                src={`/$/${id}/01`}
+                width={1536}
+              />
+            </Link>
+          </li>
+        ))}
+        <Nozomi />
+      </ul>
+    </main>
   );
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export default function useRegisterServiceWorker(path: string) {
+export default function useServiceWorker(path: string) {
   const [isSWRegistered, setIsSWRegistered] = useState(false);
 
   useEffect(() => {
