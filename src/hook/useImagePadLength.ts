@@ -14,7 +14,6 @@ export default function useImagePadLength({ id, enabled }: Params) {
 
   function handleError() {
     if (errorCount.current >= MAX_ERROR_COUNT) return;
-
     setPadLength((prev) => prev + 1);
     errorCount.current++;
   }

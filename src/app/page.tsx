@@ -1,6 +1,4 @@
-/* eslint-disable @next/next/no-img-element */
-import { Nozomi } from '@/components/Nozomi';
-
+import CoverImageViewer from '@/components/CoverImageViewer';
 import Link from 'next/link';
 
 const a = [
@@ -38,17 +36,10 @@ export default function Home() {
         {a.map((id) => (
           <li key={id}>
             <Link href={`/${id}`}>
-              <img
-                alt="manga-image"
-                height={1536}
-                referrerPolicy="no-referrer"
-                src={`/$/${id}/01`}
-                width={1536}
-              />
+              <CoverImageViewer id={id} />
             </Link>
           </li>
         ))}
-        <Nozomi />
       </ul>
     </main>
   );
