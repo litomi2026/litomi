@@ -1,7 +1,7 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { HASHA_CDN_DOMAIN } from '@/common/constant';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -51,7 +51,7 @@ export default function ImageViewer({ id }: Props) {
 
   return (
     <ul className="relative">
-      <Image
+      <img
         alt="manga-image"
         className="h-1 w-1 absolute -top-1 -left-1"
         fetchPriority="high"
@@ -68,7 +68,7 @@ export default function ImageViewer({ id }: Props) {
             index + offset > 0 &&
             index + offset <= maxImageCount && (
               <li key={offset}>
-                <Image
+                <img
                   alt={`manga-image-${index + offset}`}
                   aria-hidden={offset !== 0}
                   className="h-svh object-contain aria-hidden:h-1 aria-hidden:w-1 aria-hidden:absolute aria-hidden:-top-1 aria-hidden:-left-1"
