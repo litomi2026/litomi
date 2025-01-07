@@ -1,12 +1,40 @@
-import fetchNozomi from '@/service/fetchNozomi';
-import { type NextRequest } from 'next/server';
+import http2 from 'http2';
+import { NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
-  const start = searchParams.get('start') ?? '0';
-  const end = searchParams.get('end') ?? '99';
+export async function GET() {
+  const imageBuffer = await fetchImageUsingHttp2();
 
-  const a = await fetchNozomi({ startByte: start, endByte: end });
+  return new NextResponse(Buffer.from(imageBuffer), {
+    headers: {
+      'Content-Type': 'image/webp',
+    },
+  });
+}
 
-  return Response.json(a);
+async function fetchImageUsingHttp2() {
+  const client = http2.connect('https://cdn-nl-01.hasha.in');
+
+  return new Promise<Buffer<ArrayBuffer>>((resolve, reject) => {
+    const req = client.request({
+      ':method': 'GET',
+      ':path': '/3185634/18.webp',
+      'User-Agent': 'curl/8.4.0',
+      Accept: '*/*',
+    });
+
+    const chunks: Buffer[] = [];
+    req.on('data', (chunk) => chunks.push(chunk));
+    req.on('end', () => {
+      const data = Buffer.concat(chunks);
+      client.close();
+      resolve(data);
+    });
+
+    req.on('error', (err) => {
+      client.close();
+      reject(err);
+    });
+
+    req.end();
+  });
 }

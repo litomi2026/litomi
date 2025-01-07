@@ -1,14 +1,13 @@
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-  const imageUrl = 'https://cdn-nl-01.hasha.in/3185634/18.webp';
-
   try {
-    const response = await fetch(imageUrl, {
+    const response = await fetch('https://cdn-nl-01.hasha.in/3185634/18.webp', {
       headers: {
         Referer: '', // no-referrer 동작
       },
     });
+    console.log('👀 - response:', response);
 
     if (!response.ok) {
       throw new Error(`Failed to fetch the image: ${response.statusText}`);
