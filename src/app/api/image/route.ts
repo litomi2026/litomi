@@ -4,7 +4,11 @@ export async function GET() {
   const imageUrl = 'https://cdn-nl-01.hasha.in/3185634/18.webp';
 
   try {
-    const response = await fetch(imageUrl);
+    const response = await fetch(imageUrl, {
+      headers: {
+        Referer: '', // no-referrer 동작
+      },
+    });
 
     if (!response.ok) {
       throw new Error(`Failed to fetch the image: ${response.statusText}`);
