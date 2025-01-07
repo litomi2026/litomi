@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 export async function GET() {
   try {
     const imageBuffer = await fetchImageUsingHttp2();
+    console.log('👀 - imageBuffer:', imageBuffer);
 
     return new NextResponse(imageBuffer, {
       headers: {
@@ -30,6 +31,8 @@ async function fetchImageUsingHttp2() {
         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
       Accept: '*/*',
     });
+
+    console.log('👀 - req:', req);
 
     const chunks: Buffer[] = [];
     req.on('data', (chunk) => chunks.push(chunk));
