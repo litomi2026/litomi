@@ -55,10 +55,8 @@ export default function ImageViewer({ id }: Props) {
         alt="manga-image"
         className="h-1 w-1 absolute -top-1 -left-1"
         fetchPriority="high"
-        height={1536}
         referrerPolicy="no-referrer"
         src={`${HASHA_CDN_DOMAIN}/${id}/${'1'.padStart(padLength, '0')}.webp`}
-        width={1536}
         onLoad={() => setIsSuccess(true)}
         onError={handleError}
       />
@@ -73,12 +71,10 @@ export default function ImageViewer({ id }: Props) {
                   aria-hidden={offset !== 0}
                   className="h-svh object-contain aria-hidden:h-1 aria-hidden:w-1 aria-hidden:absolute aria-hidden:-top-1 aria-hidden:-left-1"
                   fetchPriority="high"
-                  height={1536}
                   referrerPolicy="no-referrer"
                   src={`${HASHA_CDN_DOMAIN}/${id}/${String(
                     index + offset,
                   ).padStart(padLength, '0')}.webp`}
-                  width={1536}
                   onError={() => setMaxImageCount(index + offset - 1)}
                 />
               </li>

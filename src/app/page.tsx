@@ -1,6 +1,8 @@
+/* eslint-disable @next/next/no-img-element */
 import { Nozomi } from '@/components/Nozomi';
-import Image from 'next/image';
+
 import Link from 'next/link';
+
 const a = [
   '3185634',
   '3185561',
@@ -31,13 +33,14 @@ const a = [
 
 export default function Home() {
   return (
-    <ul className="grid grid-cols-3 gap-4">
+    <ul className="grid grid-cols-[] gap-4">
       {a.map((id) => (
         <li key={id}>
           <Link href={`/${id}`}>
-            <Image
+            <img
               alt="manga-image"
               height={1536}
+              referrerPolicy="no-referrer"
               src={`https://cdn-nl-01.hasha.in/${id}/01.webp`}
               width={1536}
             />
