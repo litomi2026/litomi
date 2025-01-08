@@ -13,18 +13,18 @@ export default function CoverImageViewer({ id }: Props) {
   const imagePadLength = useImagePadLength({ id, enabled: isSWRegistered });
   const { isSuccess, padLength } = imagePadLength;
   const imageId = '1'.padStart(padLength, '0');
-  const imageURL = isSuccess
-    ? `/$/${id}/${imageId}`
-    : 'https://via.placeholder.com/100';
+  const imageURL = isSuccess ? `/$/${id}/${imageId}` : '';
 
-  return (
+  return imageURL ? (
     <img
       alt="manga-image"
       width={1536}
       height={1536}
-      className="object-contain"
+      className="object-contain aspect-[3/4]"
       referrerPolicy="no-referrer"
       src={imageURL}
     />
+  ) : (
+    <div className="bg-slate-500 aspect-[3/4] w-full" />
   );
 }
