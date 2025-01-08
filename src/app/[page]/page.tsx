@@ -70,41 +70,43 @@ export default async function Page(props: BasePageProps) {
           </li>
         ))}
       </ul>
-      <ol className="flex justify-center font-bol p-4 text-2xl [&_a]:p-4">
-        <li>
-          <Link href="/1">1</Link>
-        </li>
-        <li>
-          <Link href="/2">2</Link>
-        </li>
-        <li>
-          <Link href="/3">3</Link>
-        </li>
-        <li>
-          <Link href="/4">4</Link>
-        </li>
-        <li>
-          <Link href="/5">5</Link>
-        </li>
-        <li>
-          <Link href="/6">6</Link>
-        </li>
-        <li>
-          <Link href="/7">7</Link>
-        </li>
-        <li>
-          <Link href="/8">8</Link>
-        </li>
-        <li>
-          <Link href="/9">9</Link>
-        </li>
-        <li>
-          <Link href="/10">10</Link>
-        </li>
-      </ol>
+      <nav className="flex justify-center overflow-x-auto">
+        <ol className="flex min-w-0 font-bold py-4 text-2xl [&_a]:p-4">
+          <li>
+            <Link href="/1">1</Link>
+          </li>
+          <li>
+            <Link href="/2">2</Link>
+          </li>
+          <li>
+            <Link href="/3">3</Link>
+          </li>
+          <li>
+            <Link href="/4">4</Link>
+          </li>
+          <li>
+            <Link href="/5">5</Link>
+          </li>
+          <li>
+            <Link href="/6">6</Link>
+          </li>
+          <li>
+            <Link href="/7">7</Link>
+          </li>
+          <li>
+            <Link href="/8">8</Link>
+          </li>
+          <li>
+            <Link href="/9">9</Link>
+          </li>
+          <li>
+            <Link href="/10">10</Link>
+          </li>
+        </ol>
+      </nav>
 
       <footer className="text-center">
-        <p>© 2021-2022</p>
+        <p>© 2025 ~</p>
       </footer>
     </main>
   );
