@@ -16,7 +16,7 @@ async function fetchMangaId({ page, sort, order }) {
 
 const id = {};
 
-[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].forEach((page) => {
+[4, 8].forEach((page) => {
   fetchMangaId({ page, sort: 'date', order: -1 })
     .then((mangaIds) => {
       id[page] = mangaIds;
@@ -25,3 +25,5 @@ const id = {};
       console.log(`Failed to fetch page ${page}`);
     });
 });
+
+console.log('👀 - id:', JSON.stringify(id));
