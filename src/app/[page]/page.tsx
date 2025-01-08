@@ -81,6 +81,9 @@ export default async function Page(props: BasePageProps) {
           <Link href="/3">3</Link>
         </li>
         <li>
+          <Link href="/4">4</Link>
+        </li>
+        <li>
           <Link href="/5">5</Link>
         </li>
         <li>
@@ -88,6 +91,9 @@ export default async function Page(props: BasePageProps) {
         </li>
         <li>
           <Link href="/7">7</Link>
+        </li>
+        <li>
+          <Link href="/8">8</Link>
         </li>
         <li>
           <Link href="/9">9</Link>
