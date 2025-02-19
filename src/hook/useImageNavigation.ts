@@ -2,20 +2,20 @@ import { useRouter } from 'next/navigation';
 import { useState, useCallback, useEffect } from 'react';
 
 type Params = {
-  maxImageCount: number;
+  maxImageIndex: number;
 };
 
-export default function useImageNavigation({ maxImageCount }: Params) {
+export default function useImageNavigation({ maxImageIndex }: Params) {
   const router = useRouter();
-  const [index, setIndex] = useState(1);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   function setPrevIndex() {
-    setIndex((prev) => Math.max(1, prev - 1));
+    setCurrentIndex((prev) => Math.max(0, prev - 1));
   }
 
   const setNextIndex = useCallback(() => {
-    setIndex((prev) => Math.min(prev + 1, maxImageCount));
-  }, [maxImageCount]);
+    setCurrentIndex((prev) => Math.min(prev + 1, maxImageIndex));
+  }, [maxImageIndex]);
 
   useEffect(() => {
     function handleKeyDown({ code }: KeyboardEvent) {
@@ -32,5 +32,5 @@ export default function useImageNavigation({ maxImageCount }: Params) {
     };
   }, [router, setNextIndex]);
 
-  return { index, setPrevIndex, setNextIndex };
+  return { currentIndex, setPrevIndex, setNextIndex };
 }

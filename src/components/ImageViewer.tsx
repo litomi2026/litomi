@@ -2,42 +2,37 @@
 'use client';
 
 import useImageNavigation from '@/hook/useImageNavigation';
-import useImagePadLength from '@/hook/useImagePadLength';
 import useServiceWorker from '@/hook/useServiceWorker';
-import { useState } from 'react';
+import { type Manga } from '@/types/manga';
 
 type Props = {
-  id: string;
+  manga: Manga;
 };
 
-export default function ImageViewer({ id }: Props) {
-  const [maxImageCount, setMaxImageCount] = useState(Infinity);
-  const imageNavigation = useImageNavigation({ maxImageCount });
-  const { index, setPrevIndex, setNextIndex } = imageNavigation;
+export default function ImageViewer({ manga }: Props) {
+  const { id, images } = manga;
+  const maxImageIndex = images.length - 1;
+  const { currentIndex, setPrevIndex, setNextIndex } = useImageNavigation({
+    maxImageIndex,
+  });
   const isSWRegistered = useServiceWorker('/sw.js');
-  const imagePadLength = useImagePadLength({ id, enabled: isSWRegistered });
-  const { isSuccess, padLength } = imagePadLength;
 
   return (
     <ul className="relative">
-      {isSuccess &&
+      {isSWRegistered &&
         [-2, -1, 0, 1, 2].map((offset) => {
-          const imageId = index + offset;
-          if (imageId < 1 || imageId > maxImageCount) return;
+          const imageIndex = currentIndex + offset;
+          if (imageIndex < 0 || imageIndex > maxImageIndex) return;
 
           return (
             <li key={offset}>
               <img
-                alt={`manga-image-${index + offset}`}
+                alt={`manga-image-${currentIndex + offset}`}
                 aria-hidden={offset !== 0}
                 className="h-svh mx-auto object-contain aria-hidden:h-1 aria-hidden:w-1 aria-hidden:absolute aria-hidden:-top-1 aria-hidden:-left-1"
                 fetchPriority="high"
                 referrerPolicy="no-referrer"
-                src={`/$/${id}/${String(index + offset).padStart(
-                  padLength,
-                  '0',
-                )}`}
-                onError={() => setMaxImageCount(index + offset - 1)}
+                src={`/$/${id}/${images[imageIndex].name}`}
               />
             </li>
           );
@@ -45,7 +40,7 @@ export default function ImageViewer({ id }: Props) {
       <div
         className="absolute left-0 top-0 h-full w-1/3 cursor-pointer focus:outline-none"
         onClick={() => setPrevIndex()}
-      />{' '}
+      />
       <div
         className="absolute right-0 top-0 h-full w-1/3 cursor-pointer focus:outline-none"
         onClick={() => setNextIndex()}
