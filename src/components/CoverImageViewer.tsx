@@ -1,16 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
-'use client';
-
-import useServiceWorker from '@/hook/useServiceWorker';
+'use client'
 
 type Props = {
-  src: string;
-};
+  src: string
+}
 
 export default function CoverImageViewer({ src }: Props) {
-  const isSWRegistered = useServiceWorker('/sw.js');
-
-  return isSWRegistered ? (
+  return (
     <img
       alt="manga-image"
       width={1536}
@@ -19,7 +15,5 @@ export default function CoverImageViewer({ src }: Props) {
       referrerPolicy="no-referrer"
       src={src}
     />
-  ) : (
-    <div className="bg-slate-500 aspect-[3/4] w-full" />
-  );
+  )
 }

@@ -1,33 +1,33 @@
-'use client';
+'use client'
 
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 type Props = {
-  i: number;
-};
+  i: number
+}
 
 export default function ArrowKeyNavigation({ i }: Props) {
-  const router = useRouter();
+  const router = useRouter()
 
   useEffect(() => {
     function handleKeyDown({ code }: KeyboardEvent) {
-      const newSearchParams = new URLSearchParams();
+      const newSearchParams = new URLSearchParams()
 
       if (code === 'ArrowLeft') {
-        newSearchParams.set('i', String(Math.max(1, i - 1)));
-        router.replace(`?${newSearchParams}`);
+        newSearchParams.set('i', String(Math.max(1, i - 1)))
+        router.replace(`?${newSearchParams}`)
       } else if (code === 'ArrowRight') {
-        newSearchParams.set('i', String(i + 1));
-        router.replace(`?${newSearchParams}`);
+        newSearchParams.set('i', String(i + 1))
+        router.replace(`?${newSearchParams}`)
       }
     }
 
-    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keydown', handleKeyDown)
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [i, router]);
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [i, router])
 
-  return null;
+  return null
 }
