@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import toast from 'react-hot-toast'
 
 export default function useServiceWorker(path: string) {
   const [isSWRegistered, setIsSWRegistered] = useState(false)
@@ -9,7 +10,8 @@ export default function useServiceWorker(path: string) {
         .register(path)
         .then(() => setIsSWRegistered(true))
         .catch((error) => {
-          console.error('Service Worker registration failed:', error)
+          toast.error('서비스 워커 등록에 실패했습니다.')
+          console.error(error)
         })
     }
   }, [path])

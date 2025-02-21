@@ -26,18 +26,21 @@ export default async function Page(props: BasePageProps) {
 
   return (
     <main className="p-2 max-w-screen-xl mx-auto">
-      <ul className="grid lg:grid-cols-2 xl:grid-cols-3 gap-2">
+      <ul className="grid md:grid-cols-2 gap-2">
         {currentPage.map((id) => {
           const { artists, characters, date, group, related, series, tags, title, type, images } =
             mangas[id]
           return (
-            <li key={id} className="grid grid-cols-2 border border-gray-200 dark:border-gray-700">
-              <Link href={`/${page}/${id}`} target="_blank">
+            <li key={id} className="grid grid-cols-2 border border-gray-700">
+              <Link href={`/${page}/${id}`} target="_blank" className="relative">
                 <CoverImageViewer src={`${BASE_URL}/${id}/${images[0].name}`} />
+                <div className="absolute bottom-1 min-w-7 text-center  left-1/2 -translate-x-1/2 px-1 bg-black rounded">
+                  {images.length}
+                </div>
               </Link>
-              <div className="flex flex-col justify-between p-1 gap-1">
+              <div className="flex flex-col border-l border-gray-700 justify-between p-1 gap-1">
                 <div className="flex flex-col gap-2">
-                  <h4 className="line-clamp-3 sm:line-clamp-none lg:line-clamp-4 xl:line-clamp-3 leading-5 min-w-0">
+                  <h4 className="line-clamp-3 sm:line-clamp-6 md:line-clamp-1 lg:line-clamp-3 xl:line-clamp-6 leading-5 min-w-0">
                     {title}
                   </h4>
                   <div className="text-sm">종류 {type}</div>
@@ -56,7 +59,7 @@ export default async function Page(props: BasePageProps) {
                   {related.length > 0 && (
                     <div className="text-sm flex gap-2 whitespace-nowrap">
                       연관
-                      <ul className="flex sm:flex-wrap lg:flex-nowrap overflow-auto gap-1">
+                      <ul className="flex xl:flex-wrap overflow-auto gap-1">
                         {related.map((id) => (
                           <li key={id} className="rounded px-1 text-white bg-stone-500">
                             <Link href={`/${page}/${id}`}>{id}</Link>
@@ -68,7 +71,7 @@ export default async function Page(props: BasePageProps) {
                   {tags.length > 0 && (
                     <div className="text-sm flex gap-2 whitespace-nowrap">
                       태그
-                      <ul className="flex sm:flex-wrap lg:flex-nowrap overflow-auto gap-1">
+                      <ul className="flex xl:flex-wrap overflow-auto gap-1">
                         {tags.map((tag) => {
                           const a = tag.split(':')
                           const backgroundColor =
@@ -91,7 +94,7 @@ export default async function Page(props: BasePageProps) {
                     href={`/${page}/${id}`}
                     className="text-gray-500 focus:underline hover:underline"
                   >
-                    {id} {images.length}장
+                    {id}
                   </Link>
                   <div className="text-right text-gray-500"></div>
                   <div className="text-right text-gray-500">
