@@ -47,7 +47,7 @@ export default async function Page({ searchParams }: BasePageProps) {
         ))}
       </ul>
       <nav className="flex justify-center overflow-x-auto">
-        <ol className="flex py-2 whitespace-nowrap items-center min-w-0 font-bold text-2xl [&_a]:px-4 [&_a]:py-2 ">
+        <ol className="flex gap-1 py-2 whitespace-nowrap items-center min-w-0 font-bold text-2xl [&_a]:px-3 [&_a]:py-2 ">
           <li>
             <Link
               aria-disabled={currentPageNumber <= 1}
@@ -57,6 +57,13 @@ export default async function Page({ searchParams }: BasePageProps) {
               처음
             </Link>
           </li>
+          {startPage > 1 && (
+            <li>
+              <Link href={`/manga?page=${Math.max(currentPageNumber - VISIBLE_PAGES, 1)}`}>
+                {'<<'}
+              </Link>
+            </li>
+          )}
           <li>
             <Link
               aria-disabled={currentPageNumber <= 1}
@@ -66,13 +73,6 @@ export default async function Page({ searchParams }: BasePageProps) {
               {'<'}
             </Link>
           </li>
-          {startPage > 1 && (
-            <li>
-              <Link href={`/manga?page=${Math.max(currentPageNumber - VISIBLE_PAGES, 1)}`}>
-                {'<<'}
-              </Link>
-            </li>
-          )}
           {/* 현재 페이지 주변의 번호들 */}
           {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map((page) => (
             <li key={page}>
@@ -85,13 +85,6 @@ export default async function Page({ searchParams }: BasePageProps) {
               </Link>
             </li>
           ))}
-          {endPage < totalPages && (
-            <li>
-              <Link href={`/manga?page=${Math.min(currentPageNumber + VISIBLE_PAGES, totalPages)}`}>
-                {'>>'}
-              </Link>
-            </li>
-          )}
           <li>
             <Link
               aria-disabled={currentPageNumber >= totalPages}
@@ -101,6 +94,13 @@ export default async function Page({ searchParams }: BasePageProps) {
               {'>'}
             </Link>
           </li>
+          {endPage < totalPages && (
+            <li>
+              <Link href={`/manga?page=${Math.min(currentPageNumber + VISIBLE_PAGES, totalPages)}`}>
+                {'>>'}
+              </Link>
+            </li>
+          )}
           <li>
             <Link
               aria-disabled={currentPageNumber >= totalPages}
