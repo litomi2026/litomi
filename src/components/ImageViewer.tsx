@@ -4,7 +4,7 @@
 import { BASE_URL } from '@/common/constant'
 import useImageNavigation from '@/hook/useImageNavigation'
 import { type Manga } from '@/types/manga'
-import { use, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 type Props = {
   manga: Manga

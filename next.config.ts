@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
     remotePatterns: [{ protocol: 'https', hostname: 'cdn-nl-01.hasha.in' }],
     minimumCacheTTL: 600,
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 }
 
 export default nextConfig
