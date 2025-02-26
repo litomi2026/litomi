@@ -19,9 +19,9 @@ type Manga = {
   artists: string[]
   characters: string[]
   date: string
-  mangaId: number
+  mangaId?: number
   group: string[]
-  related: string[]
+  related: number[]
   series: string[]
   tags: string[]
   title: string
