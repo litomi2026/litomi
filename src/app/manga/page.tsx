@@ -52,9 +52,9 @@ export default async function Page({ searchParams }: BasePageProps) {
             <Link
               aria-disabled={currentPageNumber <= 1}
               href={`/manga?page=${1}`}
-              className="aria-disabled:text-gray-400 aria-disabled:pointer-events-none"
+              className="aria-disabled:text-gray-600 aria-disabled:pointer-events-none"
             >
-              처음
+              {'|<'}
             </Link>
           </li>
           {startPage > 1 && (
@@ -68,7 +68,7 @@ export default async function Page({ searchParams }: BasePageProps) {
             <Link
               aria-disabled={currentPageNumber <= 1}
               href={`/manga?page=${currentPageNumber - 1}`}
-              className="aria-disabled:text-gray-400 aria-disabled:pointer-events-none"
+              className="aria-disabled:text-gray-600 aria-disabled:pointer-events-none"
             >
               {'<'}
             </Link>
@@ -89,7 +89,7 @@ export default async function Page({ searchParams }: BasePageProps) {
             <Link
               aria-disabled={currentPageNumber >= totalPages}
               href={`/manga?page=${currentPageNumber + 1}`}
-              className="aria-disabled:text-gray-400 aria-disabled:pointer-events-none"
+              className="aria-disabled:text-gray-600 aria-disabled:pointer-events-none"
             >
               {'>'}
             </Link>
@@ -105,9 +105,9 @@ export default async function Page({ searchParams }: BasePageProps) {
             <Link
               aria-disabled={currentPageNumber >= totalPages}
               href={`/manga?page=${totalPages}`}
-              className="aria-disabled:text-gray-400 aria-disabled:pointer-events-none"
+              className="aria-disabled:text-gray-600 aria-disabled:pointer-events-none"
             >
-              끝
+              {'>|'}
             </Link>
           </li>
         </ol>

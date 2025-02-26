@@ -4,7 +4,7 @@
 import { BASE_URL } from '@/common/constant'
 import useImageNavigation from '@/hook/useImageNavigation'
 import { type Manga } from '@/types/manga'
-import { useState } from 'react'
+import { use, useEffect, useState } from 'react'
 
 type Props = {
   manga: Manga
@@ -17,6 +17,13 @@ export default function ImageViewer({ manga }: Props) {
     maxImageIndex,
   })
   const [showInfo, setShowInfo] = useState(false)
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = 'auto'
+    }
+  }, [])
 
   return (
     <ul className="relative">
