@@ -20,9 +20,9 @@ type Manga = {
   characters: string[]
   date: string
   mangaId: number
-  group: string
+  group: string[]
   related: string[]
-  series: string
+  series: string[]
   tags: string[]
   title: string
   type: string
