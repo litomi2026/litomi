@@ -2,6 +2,8 @@ import './globals.css'
 
 import type { Metadata } from 'next'
 
+import { GA_TRACKING_ID } from '@/constants/env'
+import { GoogleAnalytics } from '@next/third-parties/google'
 import localFont from 'next/font/local'
 import { ReactNode } from 'react'
 import { Toaster } from 'react-hot-toast'
@@ -43,6 +45,7 @@ export default function RootLayout({ children }: Readonly<Props>) {
         <Toaster />
         {children}
       </body>
+      {GA_TRACKING_ID && <GoogleAnalytics gaId={GA_TRACKING_ID} />}
     </html>
   )
 }
