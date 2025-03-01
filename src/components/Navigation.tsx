@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-import { IconFirstPage, IconJumpNext, IconJumpPrev, IconLastPage, IconNextPage, IconPrevPage } from './icons/IconArrow'
+import { IconFirstPage, IconJumpNext, IconJumpPrev, IconLastPage, IconNextPage, IconPrevPage } from './icons/IconArrows'
 
 const VISIBLE_PAGES = 9
 
@@ -58,21 +58,35 @@ export default function Navigation({ currentPage, totalPages }: Props) {
         </Link>
       )}
 
-      <form action="/manga" className="flex items-center gap-1 relative sm:hidden" method="get">
+      <form action="/manga" className="flex gap-2 relative sm:hidden" method="get">
         <label className="sr-only" htmlFor="page-input">
           이동할 페이지 번호
         </label>
         <input
-          className="w-16 p-1 border border-gray-300 rounded"
+          className="w-14 p-1 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-gray-300"
           id="page-input"
           max={totalPages}
           min="1"
           name="page"
           placeholder={`${currentPage}`}
+          required
           type="number"
         />
-        <button className="px-2 py-1 whitespace-nowrap bg-blue-500 text-white rounded" type="submit">
-          이동
+        <button
+          className="whitespace-nowrap bg-gray-800 text-white rounded hover:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-300"
+          type="submit"
+        >
+          <svg
+            fill="none"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <path d="M5 12h14" />
+            <path d="m12 5 7 7-7 7" />
+          </svg>
         </button>
       </form>
     </nav>
