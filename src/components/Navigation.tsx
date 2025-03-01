@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 import { IconFirstPage, IconJumpNext, IconJumpPrev, IconLastPage, IconNextPage, IconPrevPage } from './icons/IconArrow'
 
-const VISIBLE_PAGES = 10
+const VISIBLE_PAGES = 9
 
 type Props = {
   currentPage: number
@@ -20,12 +20,13 @@ export default function Navigation({ currentPage, totalPages }: Props) {
 
   return (
     <nav
-      className="flex gap-2 py-2 whitespace-nowrap items-stretch min-w-0 font-bold text-2xl transition tabular-nums
-      [&_a]:aria-selected:bg-blue-500 [&_a]:aria-selected:!text-white [&_a]:aria-disabled:text-gray-600 [&_a]:aria-disabled:pointer-events-none [&_a]:h-full [&_a]:hover:bg-gray-700 [&_a]:active:bg-gray-800 [&_a]:rounded-full 
-      [&_svg]:w-8 [&_svg]:m-1"
+      className="flex gap-2 py-2 items-stretch min-w-0 font-bold tabular-nums [&_a]:items-center [&_a]:text-center [&_span]:px-2 [&_a]:aria-selected:bg-blue-500 [&_a]:aria-selected:pointer-events-none [&_a]:aria-selected:text-white [&_a]:aria-disabled:text-gray-600 [&_a]:aria-disabled:pointer-events-none [&_a]:hover:bg-gray-700 [&_a]:active:bg-gray-800 [&_a]:rounded-full
+      text-lg [&_span]:min-w-10 [&_svg]:w-6 [&_svg]:m-2
+      md:text-xl [&_span]:md:min-w-11 [&_svg]:md:w-7
+      "
     >
       {currentPage > 1 && (
-        <Link href={`/manga?page=${1}`}>
+        <Link className="hidden sm:block" href={`/manga?page=${1}`}>
           <IconFirstPage />
         </Link>
       )}
@@ -39,14 +40,8 @@ export default function Navigation({ currentPage, totalPages }: Props) {
       </Link>
       {/* 현재 페이지 주변의 번호들 */}
       {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map((page) => (
-        <Link
-          aria-disabled={page === currentPage}
-          aria-selected={page === currentPage}
-          className="px-3 py-1"
-          href={`/manga?page=${page}`}
-          key={page}
-        >
-          {page}
+        <Link aria-selected={page === currentPage} className="flex" href={`/manga?page=${page}`} key={page}>
+          <span>{page}</span>
         </Link>
       ))}
       <Link aria-disabled={currentPage >= totalPages} href={`/manga?page=${currentPage + 1}`}>
@@ -58,7 +53,7 @@ export default function Navigation({ currentPage, totalPages }: Props) {
         </Link>
       )}
       {currentPage < totalPages && (
-        <Link aria-disabled={currentPage >= totalPages} href={`/manga?page=${totalPages}`}>
+        <Link aria-disabled={currentPage >= totalPages} className="hidden sm:block" href={`/manga?page=${totalPages}`}>
           <IconLastPage />
         </Link>
       )}

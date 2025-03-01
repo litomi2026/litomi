@@ -34,11 +34,11 @@ export default async function Page({ searchParams }: BasePageProps) {
           <MangaCard key={id} manga={mangas[id]} />
         ))}
       </ul>
-      <div className="flex justify-center overflow-x-auto">
+      <div className="flex justify-center overflow-x-auto scrollbar-hidden">
         <Navigation currentPage={currentPageNumber} totalPages={mangaByPage.length} />
       </div>
       <footer className="text-center">
-        <p>© 2025 ~</p>
+        <p>ⓒ 2025. Litomi All rights reserved.</p>
       </footer>
     </main>
   )
