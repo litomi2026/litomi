@@ -19,25 +19,30 @@ export default function Navigation({ currentPage, totalPages }: Props) {
   }
 
   return (
-    <nav className="flex gap-1 py-2 whitespace-nowrap items-center min-w-0 font-bold text-2xl [&_a]:aria-disabled:text-gray-600 [&_a]:aria-disabled:pointer-events-none [&_a]:px-3 [&_a]:py-1 [&_a]:h-full [&_svg]:h-full">
+    <nav
+      className="flex gap-2 py-2 whitespace-nowrap items-stretch min-w-0 font-bold text-2xl transition tabular-nums
+      [&_a]:aria-selected:bg-blue-500 [&_a]:aria-selected:!text-white [&_a]:aria-disabled:text-gray-600 [&_a]:aria-disabled:pointer-events-none [&_a]:h-full [&_a]:hover:bg-gray-700 [&_a]:active:bg-gray-800 [&_a]:rounded-full 
+      [&_svg]:w-8 [&_svg]:m-1"
+    >
       {currentPage > 1 && (
         <Link href={`/manga?page=${1}`}>
-          <IconFirstPage className="w-6" />
+          <IconFirstPage />
         </Link>
       )}
       {startPage > 1 && (
         <Link href={`/manga?page=${Math.max(currentPage - VISIBLE_PAGES, 1)}`}>
-          <IconJumpPrev className="w-6" />
+          <IconJumpPrev />
         </Link>
       )}
       <Link aria-disabled={currentPage <= 1} href={`/manga?page=${currentPage - 1}`}>
-        <IconPrevPage className="w-6" />
+        <IconPrevPage />
       </Link>
       {/* 현재 페이지 주변의 번호들 */}
       {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map((page) => (
         <Link
+          aria-disabled={page === currentPage}
           aria-selected={page === currentPage}
-          className="rounded-full hover: aria-selected:bg-blue-500 aria-selected:text-white"
+          className="px-3 py-1"
           href={`/manga?page=${page}`}
           key={page}
         >
@@ -45,16 +50,16 @@ export default function Navigation({ currentPage, totalPages }: Props) {
         </Link>
       ))}
       <Link aria-disabled={currentPage >= totalPages} href={`/manga?page=${currentPage + 1}`}>
-        <IconNextPage className="w-6" />
+        <IconNextPage />
       </Link>
       {endPage < totalPages && (
         <Link href={`/manga?page=${Math.min(currentPage + VISIBLE_PAGES, totalPages)}`}>
-          <IconJumpNext className="w-6" />
+          <IconJumpNext />
         </Link>
       )}
       {currentPage < totalPages && (
         <Link aria-disabled={currentPage >= totalPages} href={`/manga?page=${totalPages}`}>
-          <IconLastPage className="w-6" />
+          <IconLastPage />
         </Link>
       )}
     </nav>
