@@ -41,6 +41,9 @@ type Props = {
 export default function RootLayout({ children }: Readonly<Props>) {
   return (
     <html lang="ko">
+      <head>
+        <meta content="Litomi" name="apple-mobile-web-app-title" />
+      </head>
       <body className={`${PretendardVariable.className} antialiased`}>
         <Toaster />
         {children}
