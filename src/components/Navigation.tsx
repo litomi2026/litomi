@@ -57,6 +57,24 @@ export default function Navigation({ currentPage, totalPages }: Props) {
           <IconLastPage />
         </Link>
       )}
+
+      <form action="/manga" className="flex items-center gap-1 relative sm:hidden" method="get">
+        <label className="sr-only" htmlFor="page-input">
+          이동할 페이지 번호
+        </label>
+        <input
+          className="w-16 p-1 border border-gray-300 rounded"
+          id="page-input"
+          max={totalPages}
+          min="1"
+          name="page"
+          placeholder={`${currentPage}`}
+          type="number"
+        />
+        <button className="px-2 py-1 whitespace-nowrap bg-blue-500 text-white rounded" type="submit">
+          이동
+        </button>
+      </form>
     </nav>
   )
 }
