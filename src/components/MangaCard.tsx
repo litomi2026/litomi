@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 
+import { BASE_URL } from '@/constants/url'
 import dayjs from 'dayjs'
 import Link from 'next/link'
 
@@ -18,7 +19,7 @@ export default function MangaCard({ manga }: Props) {
           className="object-contain bg-stone-900 aspect-[3/4]"
           height={1536}
           referrerPolicy="no-referrer"
-          src={`/$/${id}/${images[0].name}`}
+          src={`${BASE_URL}/${id}/${images[0].name}`}
           width={1536}
         />
         <div className="absolute bottom-1 min-w-7 text-center  left-1/2 -translate-x-1/2 px-1 bg-black rounded">

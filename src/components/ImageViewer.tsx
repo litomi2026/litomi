@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
 
+import { BASE_URL } from '@/constants/url'
 import useImageNavigation from '@/hook/useImageNavigation'
 import { type Manga } from '@/types/manga'
 import { useEffect, useState } from 'react'
@@ -43,7 +44,7 @@ export default function ImageViewer({ manga }: Props) {
             key={offset}
             onClick={() => setShowInfo((prev) => !prev)}
             referrerPolicy="no-referrer"
-            src={`/$/${id}/${images[imageIndex].name}`}
+            src={`${BASE_URL}/${id}/${images[imageIndex].name}`}
           />
         )
       })}
