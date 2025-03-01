@@ -1,5 +1,6 @@
 import Link from 'next/link'
 
+import IconArrow from './icons/IconArrow'
 import { IconFirstPage, IconJumpNext, IconJumpPrev, IconLastPage, IconNextPage, IconPrevPage } from './icons/IconArrows'
 
 const VISIBLE_PAGES = 9
@@ -17,6 +18,8 @@ export default function Navigation({ currentPage, totalPages }: Props) {
     endPage = totalPages
     startPage = Math.max(1, endPage - VISIBLE_PAGES + 1)
   }
+
+  const visiblePageNumbers = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i)
 
   return (
     <nav
@@ -39,7 +42,7 @@ export default function Navigation({ currentPage, totalPages }: Props) {
         <IconPrevPage />
       </Link>
       {/* 현재 페이지 주변의 번호들 */}
-      {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map((page) => (
+      {visiblePageNumbers.map((page) => (
         <Link aria-selected={page === currentPage} className="flex" href={`/manga?page=${page}`} key={page}>
           <span>{page}</span>
         </Link>
@@ -57,7 +60,6 @@ export default function Navigation({ currentPage, totalPages }: Props) {
           <IconLastPage />
         </Link>
       )}
-
       <form action="/manga" className="flex gap-2 relative sm:hidden" method="get">
         <label className="sr-only" htmlFor="page-input">
           이동할 페이지 번호
@@ -76,17 +78,7 @@ export default function Navigation({ currentPage, totalPages }: Props) {
           className="whitespace-nowrap bg-gray-800 text-white rounded hover:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-300"
           type="submit"
         >
-          <svg
-            fill="none"
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            <path d="M5 12h14" />
-            <path d="m12 5 7 7-7 7" />
-          </svg>
+          <IconArrow />
         </button>
       </form>
     </nav>
