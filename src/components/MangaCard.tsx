@@ -1,4 +1,3 @@
-import page from '@/app/page'
 import { BASE_URL } from '@/constants/url'
 import dayjs from 'dayjs'
 import Link from 'next/link'
@@ -36,7 +35,7 @@ export default function MangaCard({ manga }: Props) {
               <ul className="flex xl:flex-wrap overflow-auto gap-1">
                 {related.map((id) => (
                   <li className="rounded px-1 text-white bg-stone-500" key={id}>
-                    <Link href={`/${page}/${id}`}>{id}</Link>
+                    <Link href={`/manga/${id}`}>{id}</Link>
                   </li>
                 ))}
               </ul>
@@ -64,7 +63,7 @@ export default function MangaCard({ manga }: Props) {
           )}
         </div>
         <div className="flex text-xs justify-between  items-center">
-          <Link className="text-gray-500 focus:underline hover:underline" href={`/${page}/${id}`}>
+          <Link className="text-gray-500 focus:underline hover:underline" href={`/manga/${id}`}>
             {id}
           </Link>
           <div className="text-right text-gray-500"></div>
