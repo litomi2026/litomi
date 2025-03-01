@@ -4,6 +4,10 @@ self.addEventListener('fetch', (event) => {
 
   if (url.startsWith(prefix)) {
     const modifiedUrl = url.replace(prefix, 'https://cdn-nl-01.hasha.in/')
-    event.respondWith(fetch(`${modifiedUrl}`))
+    const newRequest = new Request(modifiedUrl, {
+      referrer: '',
+      referrerPolicy: 'no-referrer',
+    })
+    event.respondWith(fetch(newRequest))
   }
 })

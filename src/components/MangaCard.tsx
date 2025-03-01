@@ -1,8 +1,7 @@
-import { BASE_URL } from '@/constants/url'
+/* eslint-disable @next/next/no-img-element */
+
 import dayjs from 'dayjs'
 import Link from 'next/link'
-
-import CoverImageViewer from './CoverImageViewer'
 
 type Props = {
   manga: Manga
@@ -12,14 +11,23 @@ export default function MangaCard({ manga }: Props) {
   const { id, artists, characters, date, group, related, series, tags, title, type, images } = manga
 
   return (
-    <li className="grid grid-cols-2 border border-gray-700" key={id}>
+    <li className="grid grid-cols-2 border border-stone-700" key={id}>
       <Link className="relative" href={`/manga/${id}`} target="_blank">
-        <CoverImageViewer src={`${BASE_URL}/${id}/${images[0].name}`} />
+        <img
+          alt="manga-image"
+          className="object-contain bg-stone-900 aspect-[3/4]"
+          crossOrigin="anonymous"
+          fetchPriority="high"
+          height={1536}
+          referrerPolicy="no-referrer"
+          src={`/$/${id}/${images[0].name}`}
+          width={1536}
+        />
         <div className="absolute bottom-1 min-w-7 text-center  left-1/2 -translate-x-1/2 px-1 bg-black rounded">
           {images.length}
         </div>
       </Link>
-      <div className="flex flex-col border-l border-gray-700 justify-between p-1 gap-1">
+      <div className="flex flex-col border-l border-stone-700 justify-between p-1 gap-1">
         <div className="flex flex-col gap-2">
           <h4 className="line-clamp-3 sm:line-clamp-6 md:line-clamp-1 lg:line-clamp-3 xl:line-clamp-6 leading-5 min-w-0">
             {title}

@@ -2,6 +2,7 @@ import './globals.css'
 
 import type { Metadata } from 'next'
 
+import ServiceWorker from '@/components/ServiceWorker'
 import { GA_ID, GTM_ID } from '@/constants/env'
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 import localFont from 'next/font/local'
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: Readonly<Props>) {
       </head>
       <body className={`${PretendardVariable.className} antialiased`}>
         <Toaster />
+        <ServiceWorker path="/sw.js" />
         {children}
       </body>
       {GTM_ID && <GoogleTagManager gtmId={GTM_ID} />}

@@ -1,11 +1,11 @@
-import { create } from 'zustand';
+import { create } from 'zustand'
 
-type FireworkStore = {
-  dependencyCount: number;
-  increaseDependencyCount: () => void;
-};
+type Store = {
+  isServiceWorkerRegistered: boolean
+  setIsServiceWorkerRegistered: (isServiceWorkerRegistered: boolean) => void
+}
 
-export const useFireworkStore = create<FireworkStore>()((set) => ({
-  dependencyCount: 0,
-  increaseDependencyCount: () => set((state) => ({ dependencyCount: state.dependencyCount + 1 })),
-}));
+export const useServiceWorkerStore = create<Store>()((set) => ({
+  isServiceWorkerRegistered: false,
+  setIsServiceWorkerRegistered: (isServiceWorkerRegistered) => set({ isServiceWorkerRegistered }),
+}))
