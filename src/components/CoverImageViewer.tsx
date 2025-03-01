@@ -9,11 +9,11 @@ export default function CoverImageViewer({ src }: Props) {
   return (
     <img
       alt="manga-image"
-      width={1536}
-      height={1536}
       className="object-contain aspect-[3/4]"
+      height={1536}
       referrerPolicy="no-referrer"
       src={src}
+      width={1536}
     />
   )
 }

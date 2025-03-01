@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
 
-import { BASE_URL } from '@/common/constant'
+import { BASE_URL } from '@/constants/url'
 import useImageNavigation from '@/hook/useImageNavigation'
 import { type Manga } from '@/types/manga'
 import { useEffect, useState } from 'react'
@@ -38,12 +38,12 @@ export default function ImageViewer({ manga }: Props) {
 
         return (
           <img
-            key={offset}
-            onClick={() => setShowInfo((prev) => !prev)}
             alt={`manga-image-${currentIndex + offset}`}
             aria-hidden={offset !== 0}
             className="h-dvh mx-auto object-contain aria-hidden:h-1 aria-hidden:w-1 aria-hidden:absolute aria-hidden:-top-1 aria-hidden:-left-1"
             fetchPriority="high"
+            key={offset}
+            onClick={() => setShowInfo((prev) => !prev)}
             referrerPolicy="no-referrer"
             src={`${BASE_URL}/${id}/${images[imageIndex].name}`}
           />

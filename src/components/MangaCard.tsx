@@ -1,7 +1,8 @@
 import page from '@/app/page'
-import { BASE_URL } from '@/common/constant'
+import { BASE_URL } from '@/constants/url'
 import dayjs from 'dayjs'
 import Link from 'next/link'
+
 import CoverImageViewer from './CoverImageViewer'
 
 type Props = {
@@ -12,8 +13,8 @@ export default function MangaCard({ manga }: Props) {
   const { id, artists, characters, date, group, related, series, tags, title, type, images } = manga
 
   return (
-    <li key={id} className="grid grid-cols-2 border border-gray-700">
-      <Link href={`/manga/${id}`} target="_blank" className="relative">
+    <li className="grid grid-cols-2 border border-gray-700" key={id}>
+      <Link className="relative" href={`/manga/${id}`} target="_blank">
         <CoverImageViewer src={`${BASE_URL}/${id}/${images[0].name}`} />
         <div className="absolute bottom-1 min-w-7 text-center  left-1/2 -translate-x-1/2 px-1 bg-black rounded">
           {images.length}
@@ -25,22 +26,16 @@ export default function MangaCard({ manga }: Props) {
             {title}
           </h4>
           <div className="text-sm">종류 {type}</div>
-          {artists.length > 0 && (
-            <div className="text-sm line-clamp-1">작가 {artists.join(', ')}</div>
-          )}
+          {artists.length > 0 && <div className="text-sm line-clamp-1">작가 {artists.join(', ')}</div>}
           {group.length > 0 && <div className="text-sm line-clamp-1">그룹 {group.join(', ')}</div>}
-          {series.length > 0 && (
-            <div className="text-sm line-clamp-1">시리즈 {series.join(', ')}</div>
-          )}
-          {characters.length > 0 && (
-            <div className="text-sm line-clamp-1">캐릭터 {characters.join(', ')}</div>
-          )}
+          {series.length > 0 && <div className="text-sm line-clamp-1">시리즈 {series.join(', ')}</div>}
+          {characters.length > 0 && <div className="text-sm line-clamp-1">캐릭터 {characters.join(', ')}</div>}
           {related.length > 0 && (
             <div className="text-sm flex gap-2 whitespace-nowrap">
               연관
               <ul className="flex xl:flex-wrap overflow-auto gap-1">
                 {related.map((id) => (
-                  <li key={id} className="rounded px-1 text-white bg-stone-500">
+                  <li className="rounded px-1 text-white bg-stone-500" key={id}>
                     <Link href={`/${page}/${id}`}>{id}</Link>
                   </li>
                 ))}
@@ -59,7 +54,7 @@ export default function MangaCard({ manga }: Props) {
                       female: 'bg-red-500',
                     }[a[0]] ?? 'bg-gray-500'
                   return (
-                    <li key={tag} className={`rounded px-1 text-white ${backgroundColor}`}>
+                    <li className={`rounded px-1 text-white ${backgroundColor}`} key={tag}>
                       {a[a.length - 1]}
                     </li>
                   )
@@ -69,7 +64,7 @@ export default function MangaCard({ manga }: Props) {
           )}
         </div>
         <div className="flex text-xs justify-between  items-center">
-          <Link href={`/${page}/${id}`} className="text-gray-500 focus:underline hover:underline">
+          <Link className="text-gray-500 focus:underline hover:underline" href={`/${page}/${id}`}>
             {id}
           </Link>
           <div className="text-right text-gray-500"></div>

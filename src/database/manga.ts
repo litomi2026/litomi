@@ -1,0 +1,4 @@
+import mangasJSON from '@/database/manga.json'
+
+export const mangas = mangasJSON
+export const mangaIds = Object.keys(mangasJSON).sort((a, b) => +b - +a) as (keyof typeof mangas)[]

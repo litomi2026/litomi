@@ -1,17 +1,30 @@
 import './globals.css'
+
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+
+import localFont from 'next/font/local'
 import { ReactNode } from 'react'
 import { Toaster } from 'react-hot-toast'
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-})
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
+const PretendardVariable = localFont({
+  src: '../fonts/PretendardVariable.woff2',
+  display: 'swap',
+  weight: '45 920',
+  fallback: [
+    '-apple-system',
+    'BlinkMacSystemFont',
+    'system-ui',
+    'Roboto',
+    'Helvetica Neue',
+    'Segoe UI',
+    'Apple SD Gothic Neo',
+    'Noto Sans KR',
+    'Malgun Gothic',
+    'Apple Color Emoji',
+    'Segoe UI Emoji',
+    'Segoe UI Symbol',
+    'sans-serif',
+  ],
 })
 
 export const metadata: Metadata = {
@@ -26,7 +39,7 @@ type Props = {
 export default function RootLayout({ children }: Readonly<Props>) {
   return (
     <html lang="ko">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${PretendardVariable.className} antialiased`}>
         <Toaster />
         {children}
       </body>

@@ -1,11 +1,7 @@
-import { BasePageProps } from '@/common/type'
 import ImageViewer from '@/components/ImageViewer'
 import mangas from '@/database/manga.json'
+import { BasePageProps } from '@/types/nextjs'
 import { notFound } from 'next/navigation'
-
-function isMangaKey(key: string): key is keyof typeof mangas {
-  return key in mangas
-}
 
 export default async function Page(props: BasePageProps) {
   const params = await props.params
@@ -22,4 +18,8 @@ export default async function Page(props: BasePageProps) {
       <ImageViewer manga={manga} />
     </div>
   )
+}
+
+function isMangaKey(key: string): key is keyof typeof mangas {
+  return key in mangas
 }

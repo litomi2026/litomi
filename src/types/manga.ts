@@ -1,7 +1,3 @@
-type MangaImage = {
-  name: string
-}
-
 export type Manga = {
   id: number
   artists: string[]
@@ -14,4 +10,8 @@ export type Manga = {
   title: string
   type: string
   images: MangaImage[]
+}
+
+type MangaImage = {
+  name: string
 }

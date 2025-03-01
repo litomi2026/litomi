@@ -1,15 +1,5 @@
 // https://transform.tools/typescript-to-javascript
 
-function sleep(ms: number) {
-  return new Promise((r) => setTimeout(r, ms))
-}
-
-type Params = {
-  page: string
-  sort: string
-  order: number
-}
-
 type Img = {
   name: string
 }
@@ -27,6 +17,12 @@ type Manga = {
   title: string
   type: string
   images: Img[]
+}
+
+type Params = {
+  page: string
+  sort: string
+  order: number
 }
 
 async function fetchMangas({ page, sort, order }: Params) {
@@ -58,6 +54,10 @@ async function fetchMangas({ page, sort, order }: Params) {
     console.log('👀 - error:', error)
     return []
   }
+}
+
+function sleep(ms: number) {
+  return new Promise((r) => setTimeout(r, ms))
 }
 
 const mangaById: Record<number, Manga> = {}
