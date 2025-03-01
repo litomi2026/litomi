@@ -16,8 +16,6 @@ export default function MangaCard({ manga }: Props) {
         <img
           alt="manga-image"
           className="object-contain bg-stone-900 aspect-[3/4]"
-          crossOrigin="anonymous"
-          fetchPriority="high"
           height={1536}
           referrerPolicy="no-referrer"
           src={`/$/${id}/${images[0].name}`}

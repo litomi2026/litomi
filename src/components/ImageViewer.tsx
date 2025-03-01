@@ -40,7 +40,6 @@ export default function ImageViewer({ manga }: Props) {
             alt={`manga-image-${currentIndex + 1 + offset}`}
             aria-hidden={offset !== 0}
             className="h-dvh mx-auto object-contain aria-hidden:h-1 aria-hidden:w-1 aria-hidden:absolute aria-hidden:-top-1 aria-hidden:-left-1"
-            fetchPriority="high"
             key={offset}
             onClick={() => setShowInfo((prev) => !prev)}
             referrerPolicy="no-referrer"

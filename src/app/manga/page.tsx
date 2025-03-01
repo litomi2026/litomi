@@ -11,11 +11,10 @@ const mangaByPage = Array.from({
 }).map((_, i) => mangaIds.slice(i * MANGA_PER_PAGE, (i + 1) * MANGA_PER_PAGE))
 
 export default async function Page({ searchParams }: BasePageProps) {
-  const { page } = await searchParams
+  const { page = '1' } = await searchParams
   const currentPageNumber = Number(page)
 
   if (
-    !page ||
     Array.isArray(page) ||
     isNaN(currentPageNumber) ||
     !isFinite(currentPageNumber) ||
