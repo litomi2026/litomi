@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useTouchOrientationStore } from '@/store/controller/touchOrientation'
 
 type Props = {
   onPrev: () => void
@@ -6,9 +6,9 @@ type Props = {
 }
 
 export default function useNavigationTouchArea({ onNext, onPrev }: Props) {
-  const [touchOrientation, setTouchOrientation] = useState<'horizontal' | 'vertical'>('horizontal')
+  const { touchOrientation, setTouchOrientation } = useTouchOrientationStore()
 
-  const renderNavigationTouchArea = () => {
+  const NavigationTouchArea = () => {
     if (touchOrientation === 'horizontal') {
       return (
         <>
@@ -29,6 +29,6 @@ export default function useNavigationTouchArea({ onNext, onPrev }: Props) {
   return {
     touchOrientation,
     setTouchOrientation,
-    renderNavigationTouchArea,
+    NavigationTouchArea,
   }
 }

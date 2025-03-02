@@ -1,6 +1,6 @@
 'use client'
 
-import { useServiceWorkerStore } from '@/store/firework'
+import { useServiceWorkerStore } from '@/store/serviceWorker'
 import { useEffect } from 'react'
 import toast from 'react-hot-toast'
 

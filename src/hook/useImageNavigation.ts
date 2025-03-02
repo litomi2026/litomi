@@ -1,39 +1,38 @@
-import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
 type Params = {
-  maxImageIndex: number
+  maxIndex: number
+  offset: number
 }
 
-export default function useImageNavigation({ maxImageIndex }: Params) {
-  const router = useRouter()
+export default function useImageNavigation({ maxIndex, offset }: Params) {
   const [currentIndex, setCurrentIndex] = useState(0)
 
-  const setPrevIndex = useCallback(() => {
+  const prevPage = useCallback(() => {
     if (currentIndex === 0) {
-      toast.error('첫번째 이미지입니다.')
+      toast('첫번째 이미지입니다.', { icon: '⚠️' })
       return
     }
 
-    setCurrentIndex((prev) => prev - 1)
-  }, [currentIndex])
+    setCurrentIndex((prev) => prev - offset)
+  }, [currentIndex, offset])
 
-  const setNextIndex = useCallback(() => {
-    if (currentIndex === maxImageIndex) {
-      toast.error('마지막 이미지입니다.')
+  const nextPage = useCallback(() => {
+    if (currentIndex === maxIndex) {
+      toast('마지막 이미지입니다.', { icon: '⚠️' })
       return
     }
 
-    setCurrentIndex((prev) => prev + 1)
-  }, [currentIndex, maxImageIndex])
+    setCurrentIndex((prev) => prev + offset)
+  }, [currentIndex, maxIndex, offset])
 
   useEffect(() => {
     function handleKeyDown({ code }: KeyboardEvent) {
       if (code === 'ArrowLeft') {
-        setPrevIndex()
+        prevPage()
       } else if (code === 'ArrowRight') {
-        setNextIndex()
+        nextPage()
       }
     }
 
@@ -41,7 +40,7 @@ export default function useImageNavigation({ maxImageIndex }: Params) {
     return () => {
       document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [router, setNextIndex, setPrevIndex])
+  }, [nextPage, prevPage])
 
-  return { currentIndex, setPrevIndex, setNextIndex }
+  return { currentIndex, prevPage, nextPage }
 }
