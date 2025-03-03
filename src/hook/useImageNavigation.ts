@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import toast from 'react-hot-toast'
+import { toast } from 'sonner'
 
 type Params = {
   maxIndex: number
@@ -11,7 +11,7 @@ export default function useImageNavigation({ maxIndex, offset }: Params) {
 
   const prevPage = useCallback(() => {
     if (currentIndex <= 0) {
-      toast('첫번째 이미지입니다.', { icon: '⚠️' })
+      toast.warning('첫번째 이미지입니다.')
       return
     }
 
@@ -20,7 +20,7 @@ export default function useImageNavigation({ maxIndex, offset }: Params) {
 
   const nextPage = useCallback(() => {
     if (currentIndex + offset > maxIndex) {
-      toast('마지막 이미지입니다.', { icon: '⚠️' })
+      toast.warning('마지막 이미지입니다.')
       return
     }
 

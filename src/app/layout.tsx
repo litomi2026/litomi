@@ -6,7 +6,7 @@ import { GA_ID, GTM_ID } from '@/constants/env'
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 import localFont from 'next/font/local'
 import { ReactNode } from 'react'
-import { Toaster } from 'react-hot-toast'
+import { Toaster } from 'sonner'
 
 const PretendardVariable = localFont({
   src: '../fonts/PretendardVariable.woff2',
@@ -45,7 +45,7 @@ export default function RootLayout({ children }: Readonly<Props>) {
         <meta content="Litomi" name="apple-mobile-web-app-title" />
       </head>
       <body className={`${PretendardVariable.className} antialiased`}>
-        <Toaster />
+        <Toaster position="top-center" richColors />
         {children}
       </body>
       {GTM_ID && <GoogleTagManager gtmId={GTM_ID} />}
