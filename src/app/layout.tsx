@@ -4,6 +4,8 @@ import type { Metadata } from 'next'
 
 import { GA_ID, GTM_ID } from '@/constants/env'
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
+import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import localFont from 'next/font/local'
 import { ReactNode } from 'react'
 import { Toaster } from 'sonner'
@@ -45,8 +47,10 @@ export default function RootLayout({ children }: Readonly<Props>) {
         <meta content="Litomi" name="apple-mobile-web-app-title" />
       </head>
       <body className={`${PretendardVariable.className} antialiased`}>
-        <Toaster duration={3000} position="top-center" richColors theme="dark" />
         {children}
+        <Toaster duration={3000} position="top-center" richColors theme="dark" />
+        <SpeedInsights />
+        <Analytics />
       </body>
       {GTM_ID && <GoogleTagManager gtmId={GTM_ID} />}
       {GA_ID && <GoogleAnalytics gaId={GA_ID} />}
