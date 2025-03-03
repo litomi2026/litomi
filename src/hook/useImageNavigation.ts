@@ -10,7 +10,7 @@ export default function useImageNavigation({ maxIndex, offset }: Params) {
   const [currentIndex, setCurrentIndex] = useState(0)
 
   const prevPage = useCallback(() => {
-    if (currentIndex === 0) {
+    if (currentIndex <= 0) {
       toast('첫번째 이미지입니다.', { icon: '⚠️' })
       return
     }
@@ -19,7 +19,7 @@ export default function useImageNavigation({ maxIndex, offset }: Params) {
   }, [currentIndex, offset])
 
   const nextPage = useCallback(() => {
-    if (currentIndex === maxIndex) {
+    if (currentIndex + offset > maxIndex) {
       toast('마지막 이미지입니다.', { icon: '⚠️' })
       return
     }

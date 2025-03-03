@@ -18,7 +18,7 @@ export default function MangaCard({ manga }: Props) {
           alt="manga-image"
           className="object-contain bg-stone-900 aspect-[3/4]"
           height={1536}
-          referrerPolicy="no-referrer"
+          referrerPolicy="same-origin"
           src={`${BASE_URL}/${id}/${images[0].name}`}
           width={1536}
         />
