@@ -45,7 +45,7 @@ export default function RootLayout({ children }: Readonly<Props>) {
         <meta content="Litomi" name="apple-mobile-web-app-title" />
       </head>
       <body className={`${PretendardVariable.className} antialiased`}>
-        <Toaster position="top-center" richColors />
+        <Toaster duration={3000} position="top-center" richColors theme="dark" />
         {children}
       </body>
       {GTM_ID && <GoogleTagManager gtmId={GTM_ID} />}

@@ -42,5 +42,5 @@ export default function useImageNavigation({ maxIndex, offset }: Params) {
     }
   }, [nextPage, prevPage])
 
-  return { currentIndex, prevPage, nextPage }
+  return { currentIndex, setCurrentIndex, prevPage, nextPage }
 }

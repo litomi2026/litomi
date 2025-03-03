@@ -6,7 +6,7 @@ import useImageNavigation from '@/hook/useImageNavigation'
 import { type Manga } from '@/types/manga'
 import { useState } from 'react'
 
-import useNavigationTouchArea from './useNavigationTouchArea'
+import useNavigationTouchArea from '../hook/useNavigationTouchArea'
 
 type Props = {
   manga: Manga
