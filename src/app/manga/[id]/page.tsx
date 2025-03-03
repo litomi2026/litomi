@@ -14,7 +14,7 @@ export default async function Page({ params }: BasePageProps) {
   const manga = mangas[id]
 
   return (
-    <main className="relative mx-auto max-w-screen-2xl">
+    <main className="mx-auto max-w-screen-2xl">
       <ImageViewer manga={manga} />
     </main>
   )

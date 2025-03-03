@@ -48,12 +48,11 @@ export default function ImageViewer({ manga }: Props) {
   return (
     <ul className="[&_li]:flex [&_li]:justify-center [&_li]:gap-1 [&_img]:h-dvh [&_img]:min-w-0 [&_img]:select-none [&_img]:object-contain [&_img]:aria-hidden:sr-only">
       {showController && (
-        <div className="fixed top-1 left-1/2 z-10 -translate-x-1/2">
+        <div className="fixed w-max top-1 left-1/2 z-10 -translate-x-1/2">
           <div className="grid gap-1 grid-cols-2 p-1 border backdrop-blur rounded [&_button]:px-2 [&_button]:py-1 [&_button]:opacity-50 [&_button]:rounded [&_button]:border [&_button]:bg-gray-300 [&_button]:text-gray-500 [&_button]:border-gray-500 [&_button]:aria-pressed:opacity-100 [&_button]:aria-pressed:bg-gray-800 [&_button]:aria-pressed:text-white">
             <div className="bg-black col-span-2 rounded px-2 mx-auto">
               {startPage === endPage ? startPage : `${startPage}-${endPage}`} / {maxImageIndex + 1}
             </div>
-
             <button aria-pressed={pageView === 'single'} onClick={() => setPageView('single')}>
               한 쪽 보기
             </button>
@@ -63,7 +62,7 @@ export default function ImageViewer({ manga }: Props) {
             <button aria-pressed={navMode === 'touch'} onClick={() => setNavMode('touch')}>
               터치 모드
             </button>
-            <button aria-pressed={navMode === 'scroll'} onClick={() => setNavMode('scroll')}>
+            <button aria-pressed={navMode === 'scroll'} disabled onClick={() => setNavMode('scroll')}>
               스크롤 모드
             </button>
             {navMode === 'touch' && (
@@ -86,13 +85,12 @@ export default function ImageViewer({ manga }: Props) {
         const imageIndex = currentIndex + offset
 
         return (
-          <li key={offset}>
+          <li key={offset} onClick={() => setShowController((prev) => !prev)}>
             {0 <= imageIndex && imageIndex <= maxImageIndex && (
               <img
                 alt={`manga-image-${imageIndex + 1}`}
                 aria-hidden={offset !== 0}
                 fetchPriority={offset === 0 ? 'high' : 'auto'}
-                onClick={() => setShowController((prev) => !prev)}
                 referrerPolicy="same-origin"
                 src={`${BASE_URL}/${id}/${images[imageIndex].name}`}
               />
@@ -101,7 +99,6 @@ export default function ImageViewer({ manga }: Props) {
               <img
                 alt={`manga-image-${imageIndex + 2}`}
                 fetchPriority={offset === 0 ? 'high' : undefined}
-                onClick={() => setShowController((prev) => !prev)}
                 referrerPolicy="same-origin"
                 src={`${BASE_URL}/${id}/${images[imageIndex + 1].name}`}
               />
