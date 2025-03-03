@@ -1,6 +1,6 @@
 import './globals.css'
 
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 
 import { GA_ID, GTM_ID } from '@/constants/env'
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
@@ -34,6 +34,12 @@ const PretendardVariable = localFont({
 export const metadata: Metadata = {
   title: 'Litomi',
   description: 'Litomi is a Hitomi.la mirror.',
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
 }
 
 type Props = {

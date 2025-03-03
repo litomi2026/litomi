@@ -87,8 +87,8 @@ export default function ImageViewer({ manga }: Props) {
       {isTouchMode && <NavigationTouchArea />}
       {showController && (
         <div className="fixed border-t select-none bg-black bottom-0 left-0 right-0 px-safe pb-safe">
-          <div className="p-3 md:p-4 grid gap-1">
-            <div className="grid gap-2 grid-cols-[1fr_auto]">
+          <div className="p-2 md:p-3 grid gap-1">
+            <div className="grid gap-2 ml-2 grid-cols-[1fr_auto]">
               <Slider
                 max={maxImageIndex}
                 onValueCommit={(value) => setCurrentIndex(value)}
@@ -102,9 +102,9 @@ export default function ImageViewer({ manga }: Props) {
             <div className="rounded text-center text-xs mx-auto">
               {startPage === endPage ? startPage : `${startPage}-${endPage}`} / {maxImageIndex + 1}
             </div>
-            <div className="font-medium text-sm flex gap-2 text-black">
+            <div className="font-medium whitespace-nowrap flex-wrap justify-center text-sm flex gap-2 text-black">
               <button
-                className="rounded-full bg-white  px-2 py-1"
+                className="rounded-full bg-white px-2 py-1"
                 onClick={() => setPageView(isSinglePage ? 'double' : 'single')}
               >
                 {isSinglePage ? '한 쪽' : '두 쪽'} 보기
