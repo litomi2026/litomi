@@ -51,7 +51,7 @@ export default function ImageViewer({ manga }: Props) {
   }, [isTouchMode])
 
   return (
-    <ul className="relative select-none [&_li]:flex [&_li]:justify-center [&_li]:gap-1 [&_img]:h-dvh [&_img]:min-w-0 [&_img]:object-contain [&_img]:select-none [&_img]:border [&_img]:border-gray-800 [&_img]:aria-hidden:sr-only">
+    <ul className="relative select-none [&_li]:flex [&_li]:justify-center [&_li]:gap-1 [&_img]:h-dvh [&_img]:min-w-0 [&_img]:object-contain [&_img]:select-none [&_img]:aria-hidden:sr-only">
       {showController && (
         <div className="fixed top-0 border-gray-500 left-0 right-0 bg-black border-b px-safe z-10">
           <div className="p-2">
@@ -102,7 +102,7 @@ export default function ImageViewer({ manga }: Props) {
             <div className="rounded text-center text-xs mx-auto">
               {startPage === endPage ? startPage : `${startPage}-${endPage}`} / {maxImageIndex + 1}
             </div>
-            <div className="font-medium whitespace-nowrap flex-wrap justify-center text-sm flex gap-2 text-black [&_button]:rounded-full [&_button]:bg-white [&_button]:px-2 [&_button]:py-1 [&_button]:hover:bg-gray-100 [&_button]:active:bg-gray-400">
+            <div className="font-medium whitespace-nowrap flex-wrap justify-center text-sm flex gap-2 text-black [&_button]:rounded-full [&_button]:bg-gray-100 [&_button]:px-2 [&_button]:py-1 [&_button]:hover:bg-white [&_button]:active:bg-gray-400">
               <button onClick={() => setPageView(isSinglePage ? 'double' : 'single')}>
                 {isSinglePage ? '한 쪽' : '두 쪽'} 보기
               </button>
