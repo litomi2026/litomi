@@ -1,4 +1,5 @@
 // https://transform.tools/typescript-to-javascript
+// https://jsonformatter.org/8f087a
 
 type Img = {
   name: string
