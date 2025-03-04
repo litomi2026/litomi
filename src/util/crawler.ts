@@ -63,7 +63,7 @@ function sleep(ms: number) {
 const mangaById: Record<number, Manga> = {}
 
 async function main() {
-  for (let page = 6; page < 10; page++) {
+  for (let page = 1; page < 6; page++) {
     console.log('👀 ~ page:', page)
     const mangas = await fetchMangas({
       page: String(page),
