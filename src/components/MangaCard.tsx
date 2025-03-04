@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 
-import { BASE_URL } from '@/constants/url'
+import { getImageSrc } from '@/constants/url'
+import { Manga } from '@/types/manga'
 import dayjs from 'dayjs'
 import Link from 'next/link'
 
@@ -9,7 +10,7 @@ type Props = {
 }
 
 export default function MangaCard({ manga }: Props) {
-  const { id, artists, characters, date, group, related, series, tags, title, type, images } = manga
+  const { id, artists, characters, date, group, related, series, tags, title, type, images, cdn } = manga
 
   return (
     <li className="grid grid-cols-2 border border-stone-700" key={id}>
@@ -17,10 +18,10 @@ export default function MangaCard({ manga }: Props) {
         <img
           alt="manga-image"
           className="object-contain bg-stone-900 aspect-[3/4]"
-          height={1536}
+          height={images[0].height ?? 1536}
           referrerPolicy="same-origin"
-          src={`${BASE_URL}/${id}/${images[0].name}`}
-          width={1536}
+          src={getImageSrc({ cdn, id, name: images[0].name })}
+          width={images[0].width ?? 1536}
         />
         <div className="absolute bottom-1 min-w-7 text-center  left-1/2 -translate-x-1/2 px-1 bg-black rounded">
           {images.length}
@@ -32,11 +33,13 @@ export default function MangaCard({ manga }: Props) {
             {title}
           </h4>
           <div className="text-sm">종류 {type}</div>
-          {artists.length > 0 && <div className="text-sm line-clamp-1">작가 {artists.join(', ')}</div>}
-          {group.length > 0 && <div className="text-sm line-clamp-1">그룹 {group.join(', ')}</div>}
-          {series.length > 0 && <div className="text-sm line-clamp-1">시리즈 {series.join(', ')}</div>}
-          {characters.length > 0 && <div className="text-sm line-clamp-1">캐릭터 {characters.join(', ')}</div>}
-          {related.length > 0 && (
+          {artists && artists.length > 0 && <div className="text-sm line-clamp-1">작가 {artists.join(', ')}</div>}
+          {group && group.length > 0 && <div className="text-sm line-clamp-1">그룹 {group.join(', ')}</div>}
+          {series && series.length > 0 && <div className="text-sm line-clamp-1">시리즈 {series.join(', ')}</div>}
+          {characters && characters.length > 0 && (
+            <div className="text-sm line-clamp-1">캐릭터 {characters.join(', ')}</div>
+          )}
+          {related && related.length > 0 && (
             <div className="text-sm flex gap-2 whitespace-nowrap">
               연관
               <ul className="flex xl:flex-wrap overflow-auto gap-1">

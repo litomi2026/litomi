@@ -1,11 +1,9 @@
 // https://transform.tools/typescript-to-javascript
 // https://jsonformatter.org/8f087a
 
-type Img = {
-  name: string
-}
+import { Manga } from '@/types/manga'
 
-type Manga = {
+type HashaManga = {
   id: number
   artists: string[]
   characters: string[]
@@ -18,6 +16,12 @@ type Manga = {
   title: string
   type: string
   images: Img[]
+}
+
+type Img = {
+  name: string
+  height?: number
+  width?: number
 }
 
 type Params = {
@@ -34,7 +38,7 @@ async function fetchMangas({ page, sort, order }: Params) {
       body: JSON.stringify({ page, sort, order }),
     })
     const result = await response.json()
-    const mangas: Manga[] = result.data.map((manga: Manga) => ({
+    const mangas: Manga[] = result.data.map((manga: HashaManga) => ({
       id: manga.mangaId,
       artists: manga.artists,
       characters: manga.characters,
@@ -47,6 +51,8 @@ async function fetchMangas({ page, sort, order }: Params) {
       type: manga.type,
       images: manga.images.map((img: Img) => ({
         name: img.name,
+        height: img.height,
+        width: img.width,
       })),
     }))
     return mangas
@@ -61,9 +67,9 @@ function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms))
 }
 
-const mangaById: Record<number, Manga> = {}
+const mangaById: Record<string, Manga> = {}
 
-async function main() {
+export async function main() {
   for (let page = 1; page < 6; page++) {
     console.log('👀 ~ page:', page)
     const mangas = await fetchMangas({
