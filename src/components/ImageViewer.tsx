@@ -61,6 +61,7 @@ export default function ImageViewer({ manga }: Props) {
       )}
       {Array.from({ length: 10 }).map((_, offset) => {
         const imageIndex = currentIndex + offset
+        const nextImageIndex = imageIndex + 1
 
         return (
           <li key={offset} onClick={() => setShowController((prev) => !prev)}>
@@ -68,17 +69,17 @@ export default function ImageViewer({ manga }: Props) {
               <img
                 alt={`manga-image-${imageIndex + 1}`}
                 aria-hidden={offset !== 0}
-                fetchPriority={offset === 0 ? 'high' : 'auto'}
+                fetchPriority={imageIndex < 5 ? 'high' : undefined}
                 referrerPolicy="same-origin"
                 src={getImageSrc({ cdn, id, name: images[imageIndex].name })}
               />
             )}
-            {isDoublePage && offset === 0 && 0 <= imageIndex + 1 && imageIndex + 1 <= maxImageIndex && (
+            {isDoublePage && offset === 0 && 0 <= nextImageIndex && nextImageIndex <= maxImageIndex && (
               <img
-                alt={`manga-image-${imageIndex + 2}`}
-                fetchPriority={offset === 0 ? 'high' : undefined}
+                alt={`manga-image-${nextImageIndex + 1}`}
+                fetchPriority={nextImageIndex < 5 ? 'high' : undefined}
                 referrerPolicy="same-origin"
-                src={getImageSrc({ cdn, id, name: images[imageIndex + 1].name })}
+                src={getImageSrc({ cdn, id, name: images[nextImageIndex].name })}
               />
             )}
           </li>

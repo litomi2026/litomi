@@ -1,9 +1,11 @@
 import type { MetadataRoute } from 'next'
 
+import { SHORT_NAME } from '@/constants'
+
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'Litomi - Hitomi.la',
-    short_name: 'litomi',
+    short_name: SHORT_NAME,
     description: 'Litomi is a Hitomi.la mirror.',
     start_url: '/',
     display: 'standalone',

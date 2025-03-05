@@ -2,7 +2,9 @@ import './globals.css'
 
 import type { Metadata, Viewport } from 'next'
 
+import { SHORT_NAME } from '@/constants'
 import { GA_ID, GTM_ID } from '@/constants/env'
+import { CANONICAL_URL } from '@/constants/url'
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
@@ -34,6 +36,13 @@ const PretendardVariable = localFont({
 export const metadata: Metadata = {
   title: 'Litomi',
   description: 'Litomi is a Hitomi.la mirror.',
+  applicationName: SHORT_NAME,
+  robots: 'index, follow',
+  alternates: {
+    canonical: CANONICAL_URL,
+    languages: { ko: CANONICAL_URL },
+  },
+  other: { RATING: 'RTA-5042-1996-1400-1577-RTA' },
 }
 
 export const viewport: Viewport = {
@@ -50,7 +59,7 @@ export default function RootLayout({ children }: Readonly<Props>) {
   return (
     <html lang="ko">
       <head>
-        <meta content="Litomi" name="apple-mobile-web-app-title" />
+        <meta content={SHORT_NAME} name="apple-mobile-web-app-title" />
       </head>
       <body className={`${PretendardVariable.className} antialiased`}>
         {children}
