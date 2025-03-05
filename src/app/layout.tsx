@@ -42,6 +42,10 @@ export const metadata: Metadata = {
     canonical: CANONICAL_URL,
     languages: { ko: CANONICAL_URL },
   },
+  openGraph: {
+    title: 'Litomi',
+    description: 'Hitomi.la mirror',
+  },
   other: { RATING: 'RTA-5042-1996-1400-1577-RTA' },
 }
 
