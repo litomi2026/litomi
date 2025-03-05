@@ -7,9 +7,10 @@ import Link from 'next/link'
 
 type Props = {
   manga: Manga
+  index?: number
 }
 
-export default function MangaCard({ manga }: Props) {
+export default function MangaCard({ manga, index }: Props) {
   const { id, artists, characters, date, group, related, series, tags, title, type, images, cdn } = manga
 
   return (
@@ -18,6 +19,7 @@ export default function MangaCard({ manga }: Props) {
         <img
           alt="manga-image"
           className="object-contain bg-stone-900 aspect-[3/4]"
+          fetchPriority={index && index < 3 ? 'high' : undefined}
           height={images[0].height ?? 1536}
           referrerPolicy="same-origin"
           src={getImageSrc({ cdn, id, name: images[0].name })}
