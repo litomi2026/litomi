@@ -5,10 +5,10 @@ type Props = {
   onNext: () => void
 }
 
-export default function useNavigationTouchArea({ onNext, onPrev }: Props) {
+export default function useTouchNavigator({ onNext, onPrev }: Props) {
   const { touchOrientation, setTouchOrientation } = useTouchOrientationStore()
 
-  const NavigationTouchArea = () => {
+  const TouchNavigator = () => {
     if (touchOrientation === 'horizontal') {
       return (
         <>
@@ -29,6 +29,6 @@ export default function useNavigationTouchArea({ onNext, onPrev }: Props) {
   return {
     touchOrientation,
     setTouchOrientation,
-    NavigationTouchArea,
+    TouchNavigator,
   }
 }

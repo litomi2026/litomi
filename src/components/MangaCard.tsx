@@ -1,5 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
-
 import { getImageSrc } from '@/constants/url'
 import { Manga } from '@/types/manga'
 import dayjs from 'dayjs'

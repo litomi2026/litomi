@@ -1,4 +1,4 @@
-import ImageViewer from '@/components/ImageViewer'
+import ImageViewer from '@/components/ImageViewer/ImageViewer'
 import { isMangaKey } from '@/database/manga'
 import mangas from '@/database/manga.json'
 import { BasePageProps } from '@/types/nextjs'

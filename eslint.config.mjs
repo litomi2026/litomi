@@ -23,6 +23,7 @@ export default tseslint.config(
   { ignores: ['.next'] },
   {
     rules: {
+      '@next/next/no-img-element': 'off',
       '@typescript-eslint/no-unused-vars': [
         'warn',
         {
