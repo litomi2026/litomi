@@ -76,7 +76,7 @@ export default function Slider({
       onPointerDown={handlePointerDown}
     >
       {/* 트랙 */}
-      <div className="relative h-2 border-1 w-full grow overflow-hidden rounded-full bg-gray-300">
+      <div className="relative h-2 border-1 w-full grow overflow-hidden rounded-full bg-gray-400">
         {/* 현재 값 비율에 따른 Range */}
         <div className="absolute h-full bg-brand-gradient" style={{ width: `${ratio * 100}%` }} />
       </div>
