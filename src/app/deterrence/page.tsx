@@ -3,7 +3,7 @@ import Image from 'next/image'
 
 export default async function Page() {
   return (
-    <main className="flex justify-center items-center h-dvh">
+    <main className="flex justify-center items-center h-dvh p-4">
       <div className="grid gap-3 text-center max-w-prose">
         <div className="flex justify-center items-center gap-2">
           <Image alt="로고" height={24} src="/logo.svg" width={24} />
