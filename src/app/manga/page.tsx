@@ -56,7 +56,7 @@ export default async function Page({ searchParams }: BasePageProps) {
             @litomi_official
           </a>
         </div>
-        <Link className="hover:underline text-xs" href="/deterrence" target="_blank">
+        <Link className="hover:underline text-xs" href="/deterrence">
           사용자 연령 제한 규정
         </Link>
       </footer>
