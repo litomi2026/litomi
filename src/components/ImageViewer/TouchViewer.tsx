@@ -12,7 +12,7 @@ export default function TouchViewer({ manga, isDoublePage, currentIndex, onImage
   const { images, cdn, id } = manga
 
   return (
-    <ul className="select-none h-dvh [&_li]:h-full [&_li]:flex [&_li]:justify-center [&_li]:items-center [&_img]:min-w-0 [&_img]:object-contain [&_img]:select-none [&_img]:border [&_img]:border-gray-800 [&_img]:aria-hidden:sr-only">
+    <ul className="select-none h-dvh [&_li]:h-full [&_li]:flex [&_li]:justify-center [&_li]:items-center [&_img]:min-w-0 [&_img]:h-full [&_img]:object-contain [&_img]:select-none [&_img]:border [&_img]:border-gray-800 [&_img]:aria-hidden:sr-only">
       {Array.from({ length: 10 }).map((_, offset) => {
         const imageIndex = currentIndex + offset
         const nextImageIndex = imageIndex + 1
