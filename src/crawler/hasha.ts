@@ -1,7 +1,20 @@
 // https://transform.tools/typescript-to-javascript
 // https://jsonformatter.org/8f087a
+// https://hasha.in
 
 import { Manga } from '@/types/manga'
+
+type FetchHashaMangasParams = {
+  page: string
+  sort: string
+  order: number
+}
+
+type HashaImage = {
+  name: string
+  height?: number
+  width?: number
+}
 
 type HashaManga = {
   id: number
@@ -15,22 +28,10 @@ type HashaManga = {
   tags: string[]
   title: string
   type: string
-  images: Img[]
+  images: HashaImage[]
 }
 
-type Img = {
-  name: string
-  height?: number
-  width?: number
-}
-
-type Params = {
-  page: string
-  sort: string
-  order: number
-}
-
-async function fetchMangas({ page, sort, order }: Params) {
+async function fetchMangas({ page, sort, order }: FetchHashaMangasParams) {
   try {
     const response = await fetch('/api/manga', {
       method: 'POST',
@@ -49,7 +50,7 @@ async function fetchMangas({ page, sort, order }: Params) {
       tags: manga.tags,
       title: manga.title,
       type: manga.type,
-      images: manga.images.map((img: Img) => ({
+      images: manga.images.map((img: HashaImage) => ({
         name: img.name,
         height: img.height,
         width: img.width,
@@ -69,7 +70,7 @@ function sleep(ms: number) {
 
 const mangaById: Record<string, Manga> = {}
 
-export async function main() {
+async function main() {
   for (let page = 1; page < 6; page++) {
     console.log('👀 ~ page:', page)
     const mangas = await fetchMangas({

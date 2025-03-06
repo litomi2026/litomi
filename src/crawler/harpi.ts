@@ -1,7 +1,12 @@
 // https://transform.tools/typescript-to-javascript
 // https://jsonformatter.org/8f087a
+// https://pk3.harpi.in/
 
 import { Manga } from '@/types/manga'
+
+type FetchHarpiMangasParams = {
+  page: number
+}
 
 type HarpiManga = {
   // id: string
@@ -25,25 +30,7 @@ type HarpiManga = {
   // updatedAt: string
 }
 
-type Params = {
-  page: number
-}
-
-export async function main() {
-  const mangaById: Record<number, Manga> = {}
-
-  for (let page = 1; page < 6; page++) {
-    console.log('👀 ~ page:', page)
-    const mangas = await fetchMangas({ page })
-    mangas?.forEach((manga) => {
-      mangaById[manga.id] = manga
-    })
-    await sleep(4000)
-  }
-  console.log('👀 - id:', JSON.stringify(mangaById))
-}
-
-async function fetchMangas({ page }: Params) {
+async function fetchMangas({ page }: FetchHarpiMangasParams) {
   try {
     const response = await fetch(`/animation/list?page=${page}&pageLimit=10`)
     const result = await response.json()
@@ -57,7 +44,7 @@ async function fetchMangas({ page }: Params) {
       tags: manga.tagsIds,
       title: manga.title,
       type: manga.type,
-      images: manga.imageUrl.map((url) => ({
+      images: sortImageURLs(manga.imageUrl).map((url) => ({
         name: url,
       })),
       cdn: 'HARPI',
@@ -70,8 +57,33 @@ async function fetchMangas({ page }: Params) {
   }
 }
 
+async function main() {
+  const mangaById: Record<number, Manga> = {}
+
+  for (let page = 1; page < 6; page++) {
+    console.log('👀 ~ page:', page)
+    const mangas = await fetchMangas({ page })
+    mangas?.forEach((manga) => {
+      mangaById[manga.id] = manga
+    })
+    await sleep(4000)
+  }
+  console.log('👀 - id:', JSON.stringify(mangaById))
+}
+
 function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms))
+}
+
+function sortImageURLs(items: string[]) {
+  return items.sort((a, b) => {
+    const regex = /_(\d+)\.(\w+)$/
+    const matchA = a.match(regex)
+    const matchB = b.match(regex)
+    const numA = matchA ? parseInt(matchA[1], 10) : 0
+    const numB = matchB ? parseInt(matchB[1], 10) : 0
+    return numA - numB
+  })
 }
 
 main()
