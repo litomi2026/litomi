@@ -51,7 +51,7 @@ export default function MangaCard({ manga, index }: Props) {
               </ul>
             </div>
           )}
-          {tags.length > 0 && (
+          {tags && tags.length > 0 && (
             <div className="text-sm flex gap-2 whitespace-nowrap">
               태그
               <ul className="flex xl:flex-wrap overflow-auto gap-1">

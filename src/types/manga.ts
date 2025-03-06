@@ -6,7 +6,7 @@ export type Manga = {
   group?: string[]
   related?: number[]
   series?: string[]
-  tags: string[]
+  tags?: string[]
   title: string
   type: string
   images: MangaImage[]

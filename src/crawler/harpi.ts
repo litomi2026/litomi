@@ -68,7 +68,8 @@ async function main() {
     })
     await sleep(4000)
   }
-  console.log('👀 - id:', JSON.stringify(mangaById))
+
+  console.log(JSON.stringify(mangaById))
 }
 
 function sleep(ms: number) {

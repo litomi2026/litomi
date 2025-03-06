@@ -64,13 +64,9 @@ async function fetchMangas({ page, sort, order }: FetchHashaMangasParams) {
   }
 }
 
-function sleep(ms: number) {
-  return new Promise((r) => setTimeout(r, ms))
-}
-
-const mangaById: Record<string, Manga> = {}
-
 async function main() {
+  const mangaById: Record<string, Manga> = {}
+
   for (let page = 1; page < 6; page++) {
     console.log('👀 ~ page:', page)
     const mangas = await fetchMangas({
@@ -83,7 +79,12 @@ async function main() {
     })
     await sleep(4000)
   }
-  console.log('👀 - id:', JSON.stringify(mangaById))
+
+  console.log(JSON.stringify(mangaById))
+}
+
+function sleep(ms: number) {
+  return new Promise((r) => setTimeout(r, ms))
 }
 
 main()
