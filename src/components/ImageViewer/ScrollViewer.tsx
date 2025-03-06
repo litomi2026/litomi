@@ -2,7 +2,7 @@
 
 import { getImageSrc } from '@/constants/url'
 import { type Manga } from '@/types/manga'
-import { useVirtualizer, VirtualItem } from '@tanstack/react-virtual'
+import { useVirtualizer } from '@tanstack/react-virtual'
 import { useRef } from 'react'
 
 const INITIAL_DISPLAYED_IMAGE = 5
@@ -15,7 +15,6 @@ type Props = {
 
 export default function ScrollViewer({ manga, isDoublePage, onImageClick }: Props) {
   const { images, cdn, id } = manga
-
   const parentRef = useRef<HTMLDivElement>(null)
   const rowCount = isDoublePage ? Math.ceil(images.length / 2) : images.length
 
@@ -26,7 +25,7 @@ export default function ScrollViewer({ manga, isDoublePage, onImageClick }: Prop
     overscan: 5,
   })
 
-  const renderRow = ({ index }: VirtualItem) => {
+  function VirtualRow({ index }: { index: number }) {
     if (isDoublePage) {
       const firstIndex = index * 2
       const secondIndex = firstIndex + 1
@@ -60,18 +59,19 @@ export default function ScrollViewer({ manga, isDoublePage, onImageClick }: Prop
     }
   }
 
-  const items = rowVirtualizer.getVirtualItems()
+  const virtualItems = rowVirtualizer.getVirtualItems()
+  const translateY = virtualItems[0]?.start ?? 0
 
   return (
     <div className="overflow-y-auto contain-strict h-dvh" onClick={onImageClick} ref={parentRef}>
       <div className="w-full relative" style={{ height: rowVirtualizer.getTotalSize() }}>
         <ul
           className="absolute top-0 left-0 w-full [&_li]:flex [&_li]:justify-center [&_img]:min-w-0 [&_img]:select-none [&_img]:border [&_img]:border-gray-800"
-          style={{ transform: `translateY(${items[0]?.start ?? 0}px)` }}
+          style={{ transform: `translateY(${translateY}px)` }}
         >
-          {items.map((virtualRow) => (
-            <li data-index={virtualRow.index} key={virtualRow.key} ref={rowVirtualizer.measureElement}>
-              {renderRow(virtualRow)}
+          {virtualItems.map(({ index, key }) => (
+            <li data-index={index} key={key} ref={rowVirtualizer.measureElement}>
+              <VirtualRow index={index} />
             </li>
           ))}
         </ul>
