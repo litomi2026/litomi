@@ -1,10 +1,7 @@
-import type { BasePageProps } from '@/types/nextjs'
-
 import { SHORT_NAME } from '@/constants'
 import Image from 'next/image'
-import Link from 'next/link'
 
-export default async function Page({ params, searchParams }: BasePageProps) {
+export default async function Page() {
   return (
     <main className="flex justify-center items-center h-dvh">
       <div className="grid gap-2">

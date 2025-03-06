@@ -3,6 +3,7 @@ import Navigation from '@/components/Navigation'
 import { SHORT_NAME } from '@/constants'
 import { mangaIds, mangas } from '@/database/manga'
 import { BasePageProps } from '@/types/nextjs'
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
 const MANGA_PER_PAGE = 18
@@ -55,6 +56,9 @@ export default async function Page({ searchParams }: BasePageProps) {
             @litomi_official
           </a>
         </div>
+        <Link className="hover:underline text-xs" href="/deterrence" target="_blank">
+          사용자 연령 제한 규정
+        </Link>
       </footer>
     </main>
   )
