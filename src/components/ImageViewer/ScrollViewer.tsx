@@ -1,7 +1,11 @@
+'use client'
+
 import { getImageSrc } from '@/constants/url'
 import { type Manga } from '@/types/manga'
 import { useVirtualizer, VirtualItem } from '@tanstack/react-virtual'
 import { useRef } from 'react'
+
+const INITIAL_DISPLAYED_IMAGE = 5
 
 type Props = {
   manga: Manga
@@ -18,58 +22,60 @@ export default function ScrollViewer({ manga, isDoublePage, onImageClick }: Prop
   const rowVirtualizer = useVirtualizer({
     count: rowCount,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 300, // 각 row의 높이를 추정 (필요에 따라 조절)
+    estimateSize: () => window.innerHeight,
     overscan: 5,
   })
 
-  const renderRow = ({ index, start, size }: VirtualItem) => {
-    const style: React.CSSProperties = {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: size,
-      transform: `translateY(${start}px)`,
-    }
+  const renderRow = ({ index }: VirtualItem) => {
     if (isDoublePage) {
       const firstIndex = index * 2
       const secondIndex = firstIndex + 1
       return (
-        <li key={index} onClick={onImageClick} ref={rowVirtualizer.measureElement} style={style}>
-          <div className="flex justify-center gap-1">
+        <>
+          <img
+            alt={`manga-image-${firstIndex + 1}`}
+            fetchPriority={index < INITIAL_DISPLAYED_IMAGE ? 'high' : undefined}
+            referrerPolicy="same-origin"
+            src={getImageSrc({ cdn, id, name: images[firstIndex].name })}
+          />
+          {images[secondIndex] && (
             <img
-              alt={`manga-image-${firstIndex + 1}`}
-              loading="lazy"
-              src={getImageSrc({ cdn, id, name: images[firstIndex].name })}
+              alt={`manga-image-${secondIndex + 1}`}
+              fetchPriority={index < INITIAL_DISPLAYED_IMAGE ? 'high' : undefined}
+              referrerPolicy="same-origin"
+              src={getImageSrc({ cdn, id, name: images[secondIndex].name })}
             />
-            {images[secondIndex] && (
-              <img
-                alt={`manga-image-${secondIndex + 1}`}
-                loading="lazy"
-                src={getImageSrc({ cdn, id, name: images[secondIndex].name })}
-              />
-            )}
-          </div>
-        </li>
+          )}
+        </>
       )
     } else {
       return (
-        <li key={index} onClick={onImageClick} ref={rowVirtualizer.measureElement} style={style}>
-          <img
-            alt={`manga-image-${index + 1}`}
-            loading="lazy"
-            src={getImageSrc({ cdn, id, name: images[index].name })}
-          />
-        </li>
+        <img
+          alt={`manga-image-${index + 1}`}
+          fetchPriority={index < INITIAL_DISPLAYED_IMAGE ? 'high' : undefined}
+          referrerPolicy="same-origin"
+          src={getImageSrc({ cdn, id, name: images[index].name })}
+        />
       )
     }
   }
 
+  const items = rowVirtualizer.getVirtualItems()
+
   return (
-    <div className="overflow-y-auto h-screen relative" ref={parentRef}>
-      <ul style={{ height: rowVirtualizer.getTotalSize(), width: '100%', position: 'relative' }}>
-        {rowVirtualizer.getVirtualItems().map((virtualRow) => renderRow(virtualRow))}
-      </ul>
+    <div className="overflow-y-auto contain-strict h-dvh" onClick={onImageClick} ref={parentRef}>
+      <div className="w-full relative" style={{ height: rowVirtualizer.getTotalSize() }}>
+        <ul
+          className="absolute top-0 left-0 w-full [&_li]:flex [&_li]:justify-center [&_img]:min-w-0 [&_img]:select-none [&_img]:border [&_img]:border-gray-800"
+          style={{ transform: `translateY(${items[0]?.start ?? 0}px)` }}
+        >
+          {items.map((virtualRow) => (
+            <li data-index={virtualRow.index} key={virtualRow.key} ref={rowVirtualizer.measureElement}>
+              {renderRow(virtualRow)}
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   )
 }

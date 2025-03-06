@@ -12,28 +12,30 @@ export default function TouchViewer({ manga, isDoublePage, currentIndex, onImage
   const { images, cdn, id } = manga
 
   return (
-    <ul className="select-none [&_li]:flex [&_li]:justify-center [&_li]:gap-1 [&_img]:h-dvh [&_img]:min-w-0 [&_img]:object-contain [&_img]:select-none [&_img]:aria-hidden:sr-only">
+    <ul className="select-none h-dvh [&_li]:h-full [&_li]:flex [&_li]:justify-center [&_li]:items-center [&_img]:min-w-0 [&_img]:object-contain [&_img]:select-none [&_img]:border [&_img]:border-gray-800 [&_img]:aria-hidden:sr-only">
       {Array.from({ length: 10 }).map((_, offset) => {
         const imageIndex = currentIndex + offset
         const nextImageIndex = imageIndex + 1
+        const image = images[imageIndex]
+        const nextImage = images[nextImageIndex]
 
         return (
           <li key={offset} onClick={onImageClick}>
-            {0 <= imageIndex && imageIndex < images.length && (
+            {image && (
               <img
                 alt={`manga-image-${imageIndex + 1}`}
                 aria-hidden={offset !== 0}
                 fetchPriority={imageIndex < 5 ? 'high' : undefined}
                 referrerPolicy="same-origin"
-                src={getImageSrc({ cdn, id, name: images[imageIndex].name })}
+                src={getImageSrc({ cdn, id, name: image.name })}
               />
             )}
-            {isDoublePage && offset === 0 && 0 <= nextImageIndex && nextImageIndex < images.length && (
+            {isDoublePage && offset === 0 && nextImage && (
               <img
                 alt={`manga-image-${nextImageIndex + 1}`}
                 fetchPriority={nextImageIndex < 5 ? 'high' : undefined}
                 referrerPolicy="same-origin"
-                src={getImageSrc({ cdn, id, name: images[nextImageIndex].name })}
+                src={getImageSrc({ cdn, id, name: nextImage.name })}
               />
             )}
           </li>

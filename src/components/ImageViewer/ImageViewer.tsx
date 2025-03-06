@@ -77,7 +77,7 @@ export default function ImageViewer({ manga }: Props) {
 
       {showController && (
         <div className="fixed border-t border-gray-500 select-none bg-black/70 backdrop-blur bottom-0 left-0 right-0 px-safe pb-safe">
-          <div className="p-3 md:p-4 grid gap-1">
+          <div className="p-4 grid gap-2">
             {isTouchMode && (
               <>
                 <div className="grid gap-2 ml-2 mr-1 grid-cols-[1fr_auto]">
@@ -93,7 +93,7 @@ export default function ImageViewer({ manga }: Props) {
                 </div>
               </>
             )}
-            <div className="font-medium whitespace-nowrap flex-wrap justify-center text-sm flex gap-2 text-black [&_button]:rounded-full [&_button]:bg-gray-100 [&_button]:px-2 [&_button]:py-1 [&_button]:hover:bg-white [&_button]:active:bg-gray-400 [&_button]:disabled:bg-gray-400 [&_button]:disabled:text-gray-500">
+            <div className="font-medium whitespace-nowrap flex-wrap justify-center text-sm flex gap-2 text-black [&_button]:rounded-full [&_button]:bg-gray-100 [&_button]:px-2 [&_button]:py-1 [&_button]:hover:bg-white [&_button]:active:bg-gray-400 [&_button]:disabled:bg-gray-400 [&_button]:disabled:text-gray-500 [&_button]:min-w-20">
               <button onClick={() => setPageView(isDoublePage ? 'single' : 'double')}>
                 {isDoublePage ? '두 쪽' : '한 쪽'} 보기
               </button>
