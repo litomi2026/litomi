@@ -29,8 +29,8 @@ export default async function Page({ searchParams }: BasePageProps) {
   const currentPage = mangaByPage[currentPageNumber - 1]
 
   return (
-    <main className="p-2 min-h-dvh flex flex-col max-w-screen-xl mx-auto">
-      <ul className="grid md:grid-cols-2 gap-2 grow pb-safe">
+    <main className="p-2 pb-safe mb-2 min-h-dvh flex flex-col gap-2 max-w-screen-xl mx-auto">
+      <ul className="grid md:grid-cols-2 gap-2 grow">
         {currentPage.map((id, i) => (
           <MangaCard index={i} key={id} manga={mangas[id]} />
         ))}
