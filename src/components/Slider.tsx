@@ -77,15 +77,16 @@ export default function Slider({
       onPointerDown={handlePointerDown}
     >
       {/* 트랙 */}
-      <div className="relative h-1/3 border-1 w-full grow overflow-hidden rounded-full bg-gray-400">
-        {/* 현재 값 비율에 따른 Range */}
-        <div className="absolute h-full bg-brand-gradient" style={{ width: `${ratioPercentage}%` }} />
+      <div className="relative h-1/3 border w-full grow overflow-hidden rounded-full bg-gray-300">
+        <div
+          className="absolute w-full origin-left h-full bg-brand-gradient"
+          style={{ transform: `scaleX(${ratio.toFixed(3)})` }}
+        />
       </div>
       {/* Thumb */}
-      <div
-        className="block -translate-x-1/2 absolute h-full aspect-square rounded-full border-2 border-gray-500 bg-white transition focus:outline-none"
-        style={{ left: `${ratioPercentage}%` }}
-      />
+      <div className="absolute aspect-square h-full -translate-x-1/2" style={{ left: `${ratioPercentage}%` }}>
+        <div className="w-full h-full border-2 rounded-full border-gray-400 bg-white" />
+      </div>
     </div>
   )
 }
