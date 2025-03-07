@@ -3,6 +3,7 @@
 import useImageNavigation from '@/hook/useImageNavigation'
 import { useNavigationModeStore } from '@/store/controller/navigationMode'
 import { usePageViewStore } from '@/store/controller/pageView'
+import { useScreenFitStore } from '@/store/controller/screenFit'
 import { type Manga } from '@/types/manga'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -24,9 +25,10 @@ export default function ImageViewer({ manga }: Props) {
   const [showController, setShowController] = useState(false)
   const { navMode, setNavMode } = useNavigationModeStore()
   const { pageView, setPageView } = usePageViewStore()
+  const { screenFit, setScreenFit } = useScreenFitStore()
   const isDoublePage = pageView === 'double'
   const isTouchMode = navMode === 'touch'
-  const isScrollMode = navMode === 'scroll'
+  const isWidthFit = screenFit === 'width'
   const router = useRouter()
 
   const { currentIndex, setCurrentIndex, prevPage, nextPage } = useImageNavigation({
@@ -111,18 +113,13 @@ export default function ImageViewer({ manga }: Props) {
         <>
           <TouchViewer
             currentIndex={currentIndex}
-            isDoublePage={isDoublePage}
             manga={manga}
             onImageClick={() => setShowController((prev) => !prev)}
           />
           <TouchNavigator />
         </>
       ) : (
-        <ScrollViewer
-          isDoublePage={isDoublePage}
-          manga={manga}
-          onImageClick={() => setShowController((prev) => !prev)}
-        />
+        <ScrollViewer manga={manga} onImageClick={() => setShowController((prev) => !prev)} />
       )}
 
       {showController && (
@@ -150,15 +147,18 @@ export default function ImageViewer({ manga }: Props) {
               <button onClick={() => setPageView(isDoublePage ? 'single' : 'double')}>
                 {isDoublePage ? '두 쪽' : '한 쪽'} 보기
               </button>
-              <button
-                disabled={isScrollMode}
-                onClick={() => setTouchOrientation(isHorizontalTouch ? 'vertical' : 'horizontal')}
-              >
-                {isHorizontalTouch ? '좌우' : '상하'} 넘기기
+              <button onClick={() => setScreenFit(screenFit === 'all' ? 'width' : isWidthFit ? 'height' : 'all')}>
+                {screenFit === 'all' ? '화면' : isWidthFit ? '가로' : '세로'} 맞춤
               </button>
-              <button disabled onClick={() => setPageView(isDoublePage ? 'single' : 'double')}>
-                {isTouchMode ? '세로' : '가로'} 맞춤
-              </button>
+              {isTouchMode ? (
+                <button onClick={() => setTouchOrientation(isHorizontalTouch ? 'vertical' : 'horizontal')}>
+                  {isHorizontalTouch ? '좌우' : '상하'} 넘기기
+                </button>
+              ) : (
+                <button disabled onClick={() => setTouchOrientation(isHorizontalTouch ? 'vertical' : 'horizontal')}>
+                  - 너비 100% +
+                </button>
+              )}
             </div>
           </div>
         </div>

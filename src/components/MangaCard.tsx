@@ -30,7 +30,11 @@ export default function MangaCard({ manga, index }: Props) {
         </div>
         {tags && tags.some((tag) => BLIND_TAGS.includes(tag.split(':')[tag.split(':').length - 1])) && (
           <div className="absolute inset-0 bg-black/50 backdrop-blur flex items-center justify-center text-center p-4">
-            <div className="text-white font-semibold">수간/고어/게이 작품 검열</div>
+            <div className="text-white text-center font-semibold">
+              수간/고어/게이
+              <br />
+              작품 검열
+            </div>
           </div>
         )}
       </Link>

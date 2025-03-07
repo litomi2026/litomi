@@ -1,6 +1,8 @@
 'use client'
 
 import { getImageSrc } from '@/constants/url'
+import { usePageViewStore } from '@/store/controller/pageView'
+import { useScreenFitStore } from '@/store/controller/screenFit'
 import { type Manga } from '@/types/manga'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useRef } from 'react'
@@ -9,14 +11,15 @@ const INITIAL_DISPLAYED_IMAGE = 5
 
 type Props = {
   manga: Manga
-  isDoublePage: boolean
   onImageClick: () => void
 }
 
-export default function ScrollViewer({ manga, isDoublePage, onImageClick }: Props) {
-  const { images, cdn, id } = manga
+export default function ScrollViewer({ manga, onImageClick }: Props) {
+  const { images } = manga
   const parentRef = useRef<HTMLDivElement>(null)
-  const rowCount = isDoublePage ? Math.ceil(images.length / 2) : images.length
+  const pageView = usePageViewStore((state) => state.pageView)
+  const screenFit = useScreenFitStore((state) => state.screenFit)
+  const rowCount = pageView === 'double' ? Math.ceil(images.length / 2) : images.length
 
   const rowVirtualizer = useVirtualizer({
     count: rowCount,
@@ -25,45 +28,11 @@ export default function ScrollViewer({ manga, isDoublePage, onImageClick }: Prop
     overscan: 5,
   })
 
-  function VirtualRow({ index }: { index: number }) {
-    if (isDoublePage) {
-      const firstIndex = index * 2
-      const secondIndex = firstIndex + 1
-      return (
-        <>
-          <img
-            alt={`manga-image-${firstIndex + 1}`}
-            fetchPriority={index < INITIAL_DISPLAYED_IMAGE ? 'high' : undefined}
-            height={images[firstIndex].height ?? 1536}
-            referrerPolicy="same-origin"
-            src={getImageSrc({ cdn, id, name: images[firstIndex].name })}
-            width={images[firstIndex].width ?? 1536}
-          />
-          {images[secondIndex] && (
-            <img
-              alt={`manga-image-${secondIndex + 1}`}
-              fetchPriority={index < INITIAL_DISPLAYED_IMAGE ? 'high' : undefined}
-              height={images[secondIndex].height ?? 1536}
-              referrerPolicy="same-origin"
-              src={getImageSrc({ cdn, id, name: images[secondIndex].name })}
-              width={images[secondIndex].width ?? 1536}
-            />
-          )}
-        </>
-      )
-    } else {
-      return (
-        <img
-          alt={`manga-image-${index + 1}`}
-          fetchPriority={index < INITIAL_DISPLAYED_IMAGE ? 'high' : undefined}
-          height={images[index].height ?? 1536}
-          referrerPolicy="same-origin"
-          src={getImageSrc({ cdn, id, name: images[index].name })}
-          width={images[index].width ?? 1536}
-        />
-      )
-    }
-  }
+  const screenFitStyle = {
+    width: '[&_li]:justify-center [&_img]:min-w-0',
+    height: '[&_li]:w-fit [&_li]:mx-auto [&_img]:min-w-fit [&_img]:max-w-fit [&_img]:h-dvh',
+    all: '[&_li]:justify-center [&_img]:min-w-0 [&_img]:w-fit [&_img]:max-h-dvh',
+  }[screenFit]
 
   const virtualItems = rowVirtualizer.getVirtualItems()
   const translateY = virtualItems[0]?.start ?? 0
@@ -72,16 +41,64 @@ export default function ScrollViewer({ manga, isDoublePage, onImageClick }: Prop
     <div className="overflow-y-auto contain-strict h-dvh" onClick={onImageClick} ref={parentRef}>
       <div className="w-full relative" style={{ height: rowVirtualizer.getTotalSize() }}>
         <ul
-          className="absolute top-0 left-0 w-full [&_li]:flex [&_li]:justify-center [&_img]:min-w-0 [&_img]:select-none [&_img]:border [&_img]:border-gray-800"
+          className={`absolute top-0 left-0 w-full [&_li]:flex [&_img]:select-none [&_img]:border [&_img]:border-gray-800 ${screenFitStyle}`}
           style={{ transform: `translateY(${translateY}px)` }}
         >
           {virtualItems.map(({ index, key }) => (
             <li data-index={index} key={key} ref={rowVirtualizer.measureElement}>
-              <VirtualRow index={index} />
+              <VirtualRow index={index} manga={manga} />
             </li>
           ))}
         </ul>
       </div>
     </div>
   )
+}
+
+function VirtualRow({ index, manga }: { index: number; manga: Manga }) {
+  const { images, cdn, id } = manga
+  const pageView = usePageViewStore((state) => state.pageView)
+
+  if (pageView === 'double') {
+    const firstIndex = index * 2
+    const secondIndex = firstIndex + 1
+    const firstImage = images[firstIndex]
+    const secondImage = images[secondIndex]
+    return (
+      <>
+        <img
+          alt={`manga-image-${firstIndex + 1}`}
+          draggable={false}
+          fetchPriority={index < INITIAL_DISPLAYED_IMAGE ? 'high' : 'low'}
+          height={firstImage.height ?? 1536}
+          referrerPolicy="same-origin"
+          src={getImageSrc({ cdn, id, name: firstImage.name })}
+          width={firstImage.width ?? 1536}
+        />
+        {secondImage && (
+          <img
+            alt={`manga-image-${secondIndex + 1}`}
+            draggable={false}
+            fetchPriority={index < INITIAL_DISPLAYED_IMAGE ? 'high' : 'low'}
+            height={secondImage.height ?? 1536}
+            referrerPolicy="same-origin"
+            src={getImageSrc({ cdn, id, name: secondImage.name })}
+            width={secondImage.width ?? 1536}
+          />
+        )}
+      </>
+    )
+  } else {
+    return (
+      <img
+        alt={`manga-image-${index + 1}`}
+        draggable={false}
+        fetchPriority={index < INITIAL_DISPLAYED_IMAGE ? 'high' : 'low'}
+        height={images[index].height ?? 1536}
+        referrerPolicy="same-origin"
+        src={getImageSrc({ cdn, id, name: images[index].name })}
+        width={images[index].width ?? 1536}
+      />
+    )
+  }
 }
