@@ -18,13 +18,13 @@ export default function TouchViewer({ manga, currentIndex, onImageClick }: Props
 
   const screenFitStyle = {
     width: 'h-dvh overflow-y-auto flex [&_img]:min-w-0 ',
-    height: 'overflow-x-auto [&_li]:w-fit [&_img]:min-w-fit [&_img]:max-w-fit [&_img]:h-dvh',
+    height: 'overflow-x-auto [&_li]:w-fit [&_img]:min-w-vw [&_img]:max-w-fit [&_img]:h-dvh',
     all: 'h-dvh [&_li]:w-fit [&_li]:h-full [&_li]:items-center [&_img]:min-w-0 [&_img]:w-fit [&_img]:max-h-dvh',
   }[screenFit]
 
   return (
     <ul
-      className={`select-none pb-safe [&_li]:flex [&_li]:m-auto [&_img]:select-none [&_img]:border [&_img]:border-gray-800 [&_img]:aria-hidden:sr-only ${screenFitStyle}`}
+      className={`select-none overscroll-none [&_li]:flex [&_li]:m-auto [&_img]:select-none [&_img]:border [&_img]:border-gray-800 [&_img]:aria-hidden:sr-only ${screenFitStyle}`}
       onClick={onImageClick}
     >
       {Array.from({ length: 10 }).map((_, offset) => {

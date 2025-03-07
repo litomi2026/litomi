@@ -38,10 +38,10 @@ export default function ScrollViewer({ manga, onImageClick }: Props) {
   const translateY = virtualItems[0]?.start ?? 0
 
   return (
-    <div className="overflow-y-auto contain-strict h-dvh" onClick={onImageClick} ref={parentRef}>
+    <div className="overflow-y-auto overscroll-none contain-strict h-dvh" onClick={onImageClick} ref={parentRef}>
       <div className="w-full relative" style={{ height: rowVirtualizer.getTotalSize() }}>
         <ul
-          className={`absolute top-0 left-0 w-full [&_li]:flex [&_img]:select-none [&_img]:border [&_img]:border-gray-800 ${screenFitStyle}`}
+          className={`absolute top-0 left-0 w-full pb-safe [&_li]:flex [&_img]:select-none [&_img]:border [&_img]:border-gray-800 ${screenFitStyle}`}
           style={{ transform: `translateY(${translateY}px)` }}
         >
           {virtualItems.map(({ index, key }) => (
