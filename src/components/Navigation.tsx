@@ -71,7 +71,7 @@ export default function Navigation({ currentPage, totalPages }: Props) {
           min="1"
           name="page"
           pattern="[0-9]+"
-          placeholder={`${currentPage}`}
+          placeholder={`${totalPages}`}
           required
           type="number"
         />

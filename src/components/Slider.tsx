@@ -76,14 +76,14 @@ export default function Slider({
       onPointerDown={handlePointerDown}
     >
       {/* 트랙 */}
-      <div className="relative h-2 border-1 w-full grow overflow-hidden rounded-full bg-gray-400">
+      <div className="relative h-2/5 border-1 w-full grow overflow-hidden rounded-full bg-gray-400">
         {/* 현재 값 비율에 따른 Range */}
         <div className="absolute h-full bg-brand-gradient" style={{ width: `${ratio * 100}%` }} />
       </div>
       {/* Thumb */}
       <div
-        className="block cursor-grab h-5 w-5 rounded-full border-2 border-gray-500 bg-white transition focus:outline-none"
-        style={{ position: 'absolute', left: `calc(${ratio * 100}% - 8px)` }}
+        className="block -translate-x-1/2 absolute cursor-grab h-full aspect-square rounded-full border-2 border-gray-500 bg-white transition focus:outline-none"
+        style={{ left: `${ratio * 100}%` }}
       />
     </div>
   )
