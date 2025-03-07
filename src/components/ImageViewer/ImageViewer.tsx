@@ -106,7 +106,7 @@ export default function ImageViewer({ manga }: Props) {
         aria-hidden={!showController}
         className="fixed bottom-0 left-0 right-0 z-10 bg-black/70 backdrop-blur border-t border-gray-500 px-safe pb-safe transition aria-hidden:opacity-0 aria-hidden:pointer-events-none"
       >
-        <div className="p-4 grid gap-2">
+        <div className="p-3 grid gap-1.5">
           {isTouchMode && (
             <>
               <div className="px-3">
@@ -114,7 +114,6 @@ export default function ImageViewer({ manga }: Props) {
                   className="h-6"
                   max={maxImageIndex}
                   onValueCommit={(value) => setCurrentIndex(value)}
-                  step={1}
                   value={currentIndex}
                 />
               </div>
@@ -123,7 +122,7 @@ export default function ImageViewer({ manga }: Props) {
               </div>
             </>
           )}
-          <div className="font-medium whitespace-nowrap flex-wrap justify-center text-sm flex gap-2 text-black [&_button]:rounded-full [&_button]:bg-gray-100 [&_button]:px-2 [&_button]:py-1 [&_button]:hover:bg-white [&_button]:active:bg-gray-400 [&_button]:disabled:bg-gray-400 [&_button]:disabled:text-gray-500 [&_button]:min-w-20">
+          <div className="font-medium whitespace-nowrap flex-wrap justify-center text-sm flex gap-2 text-black [&_button]:rounded-full [&_button]:bg-gray-100 [&_button]:px-2 [&_button]:py-1 [&_button]:hover:bg-white [&_button]:active:bg-gray-400 [&_button]:disabled:bg-gray-400 [&_button]:disabled:text-gray-500 [&_button]:min-w-20 [&_button]:transition">
             <button onClick={() => setNavMode(isTouchMode ? 'scroll' : 'touch')}>
               {isTouchMode ? '터치' : '스크롤'} 모드
             </button>
@@ -139,7 +138,7 @@ export default function ImageViewer({ manga }: Props) {
               </button>
             ) : (
               <button disabled onClick={() => setTouchOrientation(isHorizontalTouch ? 'vertical' : 'horizontal')}>
-                - 너비 100% +
+                너비 100%
               </button>
             )}
           </div>

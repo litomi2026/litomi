@@ -1,6 +1,6 @@
 import { HTMLAttributes, useEffect, useRef, useState } from 'react'
 
-type SliderProps = HTMLAttributes<HTMLDivElement> & {
+type Props = HTMLAttributes<HTMLDivElement> & {
   className?: string
   max?: number
   min?: number
@@ -19,7 +19,7 @@ export default function Slider({
   step = 1,
   className = '',
   ...rest
-}: SliderProps) {
+}: Props) {
   const [value, setValue] = useState<number>(controlledValue !== undefined ? controlledValue : min)
   const sliderRef = useRef<HTMLDivElement>(null)
 
@@ -31,6 +31,7 @@ export default function Slider({
 
   // 현재 값의 비율 계산 (0 ~ 1)
   const ratio = (value - min) / (max - min)
+  const ratioPercentage = (ratio * 100).toFixed(2)
 
   // clientX 좌표를 기반으로 새로운 값을 계산 및 업데이트
   const updateValueFromEvent = (clientX: number): number => {
@@ -70,20 +71,20 @@ export default function Slider({
 
   return (
     <div
-      className={`relative flex w-full touch-none select-none items-center ${className}`}
+      className={`relative flex w-full cursor-grab touch-none select-none items-center ${className}`}
       ref={sliderRef}
       {...rest}
       onPointerDown={handlePointerDown}
     >
       {/* 트랙 */}
-      <div className="relative h-2/5 border-1 w-full grow overflow-hidden rounded-full bg-gray-400">
+      <div className="relative h-1/3 border-1 w-full grow overflow-hidden rounded-full bg-gray-400">
         {/* 현재 값 비율에 따른 Range */}
-        <div className="absolute h-full bg-brand-gradient" style={{ width: `${ratio * 100}%` }} />
+        <div className="absolute h-full bg-brand-gradient" style={{ width: `${ratioPercentage}%` }} />
       </div>
       {/* Thumb */}
       <div
-        className="block -translate-x-1/2 absolute cursor-grab h-full aspect-square rounded-full border-2 border-gray-500 bg-white transition focus:outline-none"
-        style={{ left: `${ratio * 100}%` }}
+        className="block -translate-x-1/2 absolute h-full aspect-square rounded-full border-2 border-gray-500 bg-white transition focus:outline-none"
+        style={{ left: `${ratioPercentage}%` }}
       />
     </div>
   )
