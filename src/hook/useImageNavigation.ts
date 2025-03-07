@@ -4,30 +4,37 @@ import { toast } from 'sonner'
 type Params = {
   maxIndex: number
   offset: number
+  enabled: boolean
 }
 
-export default function useImageNavigation({ maxIndex, offset }: Params) {
+export default function useImageNavigation({ maxIndex, offset, enabled }: Params) {
   const [currentIndex, setCurrentIndex] = useState(0)
 
   const prevPage = useCallback(() => {
+    if (!enabled) return
+
     if (currentIndex <= 0) {
       toast.warning('첫번째 이미지입니다.')
       return
     }
 
     setCurrentIndex((prev) => prev - offset)
-  }, [currentIndex, offset])
+  }, [currentIndex, enabled, offset])
 
   const nextPage = useCallback(() => {
+    if (!enabled) return
+
     if (currentIndex + offset > maxIndex) {
       toast.warning('마지막 이미지입니다.')
       return
     }
 
     setCurrentIndex((prev) => prev + offset)
-  }, [currentIndex, maxIndex, offset])
+  }, [currentIndex, enabled, maxIndex, offset])
 
   useEffect(() => {
+    if (!enabled) return
+
     function handleKeyDown({ code }: KeyboardEvent) {
       if (code === 'ArrowLeft') {
         prevPage()
@@ -40,7 +47,7 @@ export default function useImageNavigation({ maxIndex, offset }: Params) {
     return () => {
       document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [nextPage, prevPage])
+  }, [enabled, nextPage, prevPage])
 
   return { currentIndex, setCurrentIndex, prevPage, nextPage }
 }

@@ -30,6 +30,7 @@ export default function ImageViewer({ manga }: Props) {
   const router = useRouter()
 
   const { currentIndex, setCurrentIndex, prevPage, nextPage } = useImageNavigation({
+    enabled: isTouchMode,
     maxIndex: maxImageIndex,
     offset: isDoublePage ? 2 : 1,
   })

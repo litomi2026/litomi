@@ -34,15 +34,19 @@ export default function ScrollViewer({ manga, isDoublePage, onImageClick }: Prop
           <img
             alt={`manga-image-${firstIndex + 1}`}
             fetchPriority={index < INITIAL_DISPLAYED_IMAGE ? 'high' : undefined}
+            height={images[firstIndex].height ?? 1536}
             referrerPolicy="same-origin"
             src={getImageSrc({ cdn, id, name: images[firstIndex].name })}
+            width={images[firstIndex].width ?? 1536}
           />
           {images[secondIndex] && (
             <img
               alt={`manga-image-${secondIndex + 1}`}
               fetchPriority={index < INITIAL_DISPLAYED_IMAGE ? 'high' : undefined}
+              height={images[secondIndex].height ?? 1536}
               referrerPolicy="same-origin"
               src={getImageSrc({ cdn, id, name: images[secondIndex].name })}
+              width={images[secondIndex].width ?? 1536}
             />
           )}
         </>
@@ -52,8 +56,10 @@ export default function ScrollViewer({ manga, isDoublePage, onImageClick }: Prop
         <img
           alt={`manga-image-${index + 1}`}
           fetchPriority={index < INITIAL_DISPLAYED_IMAGE ? 'high' : undefined}
+          height={images[index].height ?? 1536}
           referrerPolicy="same-origin"
           src={getImageSrc({ cdn, id, name: images[index].name })}
+          width={images[index].width ?? 1536}
         />
       )
     }

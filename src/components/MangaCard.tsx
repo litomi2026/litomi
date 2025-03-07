@@ -3,6 +3,8 @@ import { Manga } from '@/types/manga'
 import dayjs from 'dayjs'
 import Link from 'next/link'
 
+const BLIND_TAGS = ['bestiality', 'guro', 'snuff', 'yaoi']
+
 type Props = {
   manga: Manga
   index?: number
@@ -26,6 +28,11 @@ export default function MangaCard({ manga, index }: Props) {
         <div className="absolute bottom-1 min-w-7 text-center  left-1/2 -translate-x-1/2 px-1 bg-black rounded">
           {images.length}
         </div>
+        {tags && tags.some((tag) => BLIND_TAGS.includes(tag.split(':')[tag.split(':').length - 1])) && (
+          <div className="absolute inset-0 bg-black/50 backdrop-blur flex items-center justify-center text-center p-4">
+            <div className="text-white font-semibold">수간/고어/게이 작품 검열</div>
+          </div>
+        )}
       </Link>
       <div className="flex flex-col border-l border-stone-700 justify-between p-1 gap-1">
         <div className="flex flex-col gap-2">
