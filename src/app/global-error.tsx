@@ -1,14 +1,14 @@
-'use client';
+'use client'
 
-import type { ErrorProps } from '@/types/nextjs';
+import type { ErrorProps } from '@/types/nextjs'
 
-import NextError from 'next/error';
+import NextError from 'next/error'
 
 export default function GlobalError({ error, reset }: ErrorProps) {
   return (
     <html>
-      <body>
-        <h2 className="my-8 flex items-center justify-center gap-2 text-2xl">문제가 발생했어요</h2>
+      <body className="flex items-center justify-center">
+        <h2 className="my-8 gap-2 text-2xl">문제가 발생했어요</h2>
         <span className="text-sm">{error.digest}</span>
         <p className="my-2 text-red-600">{error.message}</p>
         <p className="my-2 break-keep text-sm text-gray-500">문제가 계속되면 ...</p>
@@ -26,5 +26,5 @@ export default function GlobalError({ error, reset }: ErrorProps) {
         <NextError statusCode={0} />
       </body>
     </html>
-  );
+  )
 }

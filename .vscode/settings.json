@@ -10,7 +10,6 @@
     "**/.git": true,
     "**/out": true
   },
-  "turboConsoleLog.includeFileNameAndLineNum": false,
   "turboConsoleLog.logMessagePrefix": "👀",
   "[dockerfile]": { "editor.defaultFormatter": "foxundermoon.shell-format" },
   "[dotenv]": { "editor.defaultFormatter": "foxundermoon.shell-format" },

@@ -1,6 +1,17 @@
+## Requirements (Recommanded)
+
+- macOS 15.3
+- Bun 1.2
+
 ## Getting Started
 
-First, run the development server:
+First, install the project dependencies:
+
+```bash
+bun i
+```
+
+Run the development server:
 
 ```bash
 bun dev

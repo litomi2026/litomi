@@ -20,7 +20,6 @@ export default function useImagePadLength({ id, enabled }: Params) {
 
   useEffect(() => {
     if (!enabled) return
-
     ;(async () => {
       try {
         const res = await fetch(`/$/${id}/${'1'.padStart(padLength, '0')}`)
