@@ -20,10 +20,8 @@ export default function MangaCard({ manga, index }: Props) {
           alt="manga-image"
           className="object-contain bg-stone-900 aspect-[3/4]"
           fetchPriority={index && index < 3 ? 'high' : undefined}
-          height={images[0].height ?? 1536}
           referrerPolicy="same-origin"
           src={getImageSrc({ cdn, id, name: images[0].name })}
-          width={images[0].width ?? 1536}
         />
         <div className="absolute bottom-1 min-w-7 text-center  left-1/2 -translate-x-1/2 px-1 bg-black rounded">
           {images.length}
