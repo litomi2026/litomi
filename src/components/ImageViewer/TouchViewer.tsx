@@ -23,6 +23,7 @@ export default function TouchViewer({ manga, currentIndex, onNavigate, onClick }
   const screenFit = useScreenFitStore((state) => state.screenFit)
   const touchOrientation = useTouchOrientationStore((state) => state.touchOrientation)
   const pointerStartRef = useRef<null | { x: number; y: number }>(null)
+  const swipeDetectedRef = useRef(false)
 
   const screenFitStyle = {
     width: `overflow-y-auto overscroll-none [&_li]:mx-auto [&_li]:w-fit [&_li]:max-w-full [&_li]:first:h-full [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:h-auto`,
@@ -31,12 +32,13 @@ export default function TouchViewer({ manga, currentIndex, onNavigate, onClick }
     all: '[&_li]:items-center [&_li]:mx-auto [&_img]:min-w-0 [&_li]:w-fit [&_li]:h-full [&_img]:max-h-dvh',
   }[screenFit]
 
-  // 포인터 시작 시 좌표 기록
+  // 포인터 시작 시 좌표 기록 및 스와이프 플래그 초기화
   const handlePointerDown = (e: React.PointerEvent) => {
     pointerStartRef.current = { x: e.clientX, y: e.clientY }
+    swipeDetectedRef.current = false
   }
 
-  // 포인터 종료 시, touchOrientation에 따라 스와이프 방향 결정
+  // 포인터 종료 시, 스와이프가 발생했으면 네비게이션 처리 및 플래그 설정
   const handlePointerUp = (e: React.PointerEvent) => {
     if (!pointerStartRef.current) return
 
@@ -45,6 +47,7 @@ export default function TouchViewer({ manga, currentIndex, onNavigate, onClick }
 
     if (touchOrientation === 'horizontal') {
       if (Math.abs(diffX) > SWIPE_THRESHOLD) {
+        swipeDetectedRef.current = true
         if (diffX > 0) {
           onNavigate('prev') // 오른쪽 스와이프
         } else {
@@ -53,6 +56,7 @@ export default function TouchViewer({ manga, currentIndex, onNavigate, onClick }
       }
     } else if (touchOrientation === 'vertical') {
       if (Math.abs(diffY) > SWIPE_THRESHOLD) {
+        swipeDetectedRef.current = true
         if (diffY > 0) {
           onNavigate('prev') // 아래쪽 스와이프
         } else {
@@ -66,6 +70,12 @@ export default function TouchViewer({ manga, currentIndex, onNavigate, onClick }
 
   // 클릭 이벤트: 화면을 3등분하여 영역에 따라 이동/클릭 처리
   const handleClick = (e: React.MouseEvent) => {
+    // 스와이프가 발생한 경우 클릭 이벤트 실행 방지
+    if (swipeDetectedRef.current) {
+      swipeDetectedRef.current = false
+      return
+    }
+
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
 
     if (touchOrientation === 'horizontal') {
