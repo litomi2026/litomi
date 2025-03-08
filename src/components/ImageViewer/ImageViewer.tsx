@@ -132,7 +132,12 @@ export default function ImageViewer({ manga }: Props) {
             <button onClick={() => setNavMode(isTouchMode ? 'scroll' : 'touch')}>
               {isTouchMode ? '터치' : '스크롤'} 모드
             </button>
-            <button onClick={() => setPageView(isDoublePage ? 'single' : 'double')}>
+            <button
+              onClick={() => {
+                setCurrentIndex(Math.max(0, currentIndex))
+                setPageView(isDoublePage ? 'single' : 'double')
+              }}
+            >
               {isDoublePage ? '두 쪽' : '한 쪽'} 보기
             </button>
             <button onClick={() => setScreenFit(screenFit === 'all' ? 'width' : isWidthFit ? 'height' : 'all')}>

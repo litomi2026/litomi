@@ -16,13 +16,8 @@ export default function TouchViewer({ manga, currentIndex, onImageClick }: Props
   const pageView = usePageViewStore((state) => state.pageView)
   const screenFit = useScreenFitStore((state) => state.screenFit)
 
-  const widthPageViewStyle = {
-    double: '[&_img]:w-1/2',
-    single: '[&_img]:w-full',
-  }[pageView]
-
   const screenFitStyle = {
-    width: `overflow-y-auto overscroll-none [&_li]:mx-auto [&_li]:w-fit [&_li]:max-w-full [&_li]:first:h-full [&_img]:my-auto [&_img]:max-w-fit [&_img]:h-auto ${widthPageViewStyle}`,
+    width: `overflow-y-auto overscroll-none [&_li]:mx-auto [&_li]:w-fit [&_li]:max-w-full [&_li]:first:h-full [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:h-auto`,
     height:
       'overflow-x-auto overscroll-none [&_li]:items-center [&_li]:mx-auto [&_li]:w-fit [&_li]:first:h-full [&_img]:max-w-fit [&_img]:h-auto [&_img]:max-h-dvh',
     all: '[&_li]:items-center [&_li]:mx-auto [&_img]:min-w-0 [&_li]:w-fit [&_li]:h-full [&_img]:max-h-dvh',
