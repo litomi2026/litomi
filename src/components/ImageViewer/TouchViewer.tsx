@@ -16,15 +16,21 @@ export default function TouchViewer({ manga, currentIndex, onImageClick }: Props
   const pageView = usePageViewStore((state) => state.pageView)
   const screenFit = useScreenFitStore((state) => state.screenFit)
 
+  const widthPageViewStyle = {
+    double: '[&_img]:w-1/2',
+    single: '[&_img]:w-full',
+  }[pageView]
+
   const screenFitStyle = {
-    width: 'h-dvh overflow-y-auto flex [&_img]:min-w-0 [&_img]:min-h-0',
-    height: 'overflow-x-auto [&_li]:w-fit [&_img]:min-w-vw [&_img]:max-w-fit [&_img]:h-dvh [&_img]:min-h-dvh',
-    all: 'h-dvh [&_li]:w-fit [&_li]:h-full [&_li]:items-center [&_img]:min-w-0 [&_img]:max-h-dvh',
+    width: `overflow-y-auto overscroll-none [&_li]:mx-auto [&_li]:w-fit [&_li]:max-w-full [&_li]:first:h-full [&_img]:my-auto [&_img]:max-w-fit [&_img]:h-auto ${widthPageViewStyle}`,
+    height:
+      'overflow-x-auto overscroll-none [&_li]:items-center [&_li]:mx-auto [&_li]:w-fit [&_li]:first:h-full [&_img]:max-w-fit [&_img]:h-auto [&_img]:max-h-dvh',
+    all: '[&_li]:items-center [&_li]:mx-auto [&_img]:min-w-0 [&_li]:w-fit [&_li]:h-full [&_img]:max-h-dvh',
   }[screenFit]
 
   return (
     <ul
-      className={`select-none overscroll-none [&_li]:flex [&_li]:m-auto [&_img]:select-none [&_img]:border [&_img]:border-gray-800 [&_img]:aria-hidden:sr-only ${screenFitStyle}`}
+      className={`h-dvh select-none [&_li]:flex [&_img]:border [&_img]:border-gray-800 [&_img]:aria-hidden:sr-only ${screenFitStyle}`}
       onClick={onImageClick}
     >
       {Array.from({ length: 10 }).map((_, offset) => {
