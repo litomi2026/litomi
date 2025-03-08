@@ -1,6 +1,6 @@
 // https://transform.tools/typescript-to-javascript
-// https://jsonformatter.org/8f087a
 // https://pk3.harpi.in/
+// https://jsonformatter.org/8f087a
 
 import { Manga } from '@/types/manga'
 
@@ -32,7 +32,7 @@ type HarpiManga = {
 
 async function fetchMangas({ page }: FetchHarpiMangasParams) {
   try {
-    const response = await fetch(`/animation/list?page=${page}&pageLimit=10`)
+    const response = await fetch(`/animation/list?page=${page}&pageLimit=10&sort=date_desc`)
     const result = await response.json()
     const mangas: Manga[] = result.data.map((manga: HarpiManga) => ({
       id: +manga.parseKey,
