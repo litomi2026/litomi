@@ -4,12 +4,12 @@ import useImageNavigation from '@/hook/useImageNavigation'
 import { useNavigationModeStore } from '@/store/controller/navigationMode'
 import { usePageViewStore } from '@/store/controller/pageView'
 import { useScreenFitStore } from '@/store/controller/screenFit'
+import { useTouchOrientationStore } from '@/store/controller/touchOrientation'
 import { type Manga } from '@/types/manga'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
-import useTouchNavigator from '../../hook/useNavigationTouchArea'
 import { IconChevronLeft, IconClose, IconMaximize, IconReload } from '../icons/IconImageViewer'
 import Slider from '../Slider'
 import ScrollViewer from './ScrollViewer'
@@ -27,9 +27,11 @@ export default function ImageViewer({ manga }: Props) {
   const { navMode, setNavMode } = useNavigationModeStore()
   const { pageView, setPageView } = usePageViewStore()
   const { screenFit, setScreenFit } = useScreenFitStore()
-  const isDoublePage = pageView === 'double'
+  const { touchOrientation, setTouchOrientation } = useTouchOrientationStore()
   const isTouchMode = navMode === 'touch'
+  const isDoublePage = pageView === 'double'
   const isWidthFit = screenFit === 'width'
+  const isHorizontalTouch = touchOrientation === 'horizontal'
   const router = useRouter()
 
   const { currentIndex, setCurrentIndex, prevPage, nextPage } = useImageNavigation({
@@ -38,12 +40,6 @@ export default function ImageViewer({ manga }: Props) {
     offset: isDoublePage ? 2 : 1,
   })
 
-  const { touchOrientation, setTouchOrientation, TouchNavigator } = useTouchNavigator({
-    onNext: nextPage,
-    onPrev: prevPage,
-  })
-
-  const isHorizontalTouch = touchOrientation === 'horizontal'
   const startPage = Math.max(1, currentIndex + 1)
   const endPage = isDoublePage ? Math.min(currentIndex + 2, imageCount) : startPage
 
@@ -96,14 +92,12 @@ export default function ImageViewer({ manga }: Props) {
       </div>
 
       {isTouchMode ? (
-        <>
-          <TouchViewer
-            currentIndex={currentIndex}
-            manga={manga}
-            onImageClick={() => setShowController((prev) => !prev)}
-          />
-          <TouchNavigator />
-        </>
+        <TouchViewer
+          currentIndex={currentIndex}
+          manga={manga}
+          onClick={() => setShowController((prev) => !prev)}
+          onNavigate={(direction) => (direction === 'prev' ? prevPage() : nextPage())}
+        />
       ) : (
         <ScrollViewer manga={manga} onImageClick={() => setShowController((prev) => !prev)} />
       )}

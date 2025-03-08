@@ -33,7 +33,7 @@ export default function ScrollViewer({ manga, onImageClick }: Props) {
 
     // TODO: Fix this
     height:
-      '[&_li]:overflow-x-auto [&_li]:overscroll-none [&_li]:justify-center [&_img]:w-auto [&_img]:max-w-fit [&_img]:h-dvh [&_img]:max-h-fit',
+      '[&_li]:overflow-x-auto [&_li]:overscroll-none [&_li]:justify-center [&_li]:w-full [&_img]:w-auto [&_img]:max-w-fit [&_img]:h-dvh [&_img]:max-h-fit',
     // TODO: Fix this
     all: '[&_li]:justify-center [&_li]:mx-auto [&_img]:min-w-0 [&_img]:w-auto [&_img]:max-w-fit [&_img]:max-h-dvh',
   }[screenFit]
@@ -78,20 +78,16 @@ function VirtualRow({ index, manga }: { index: number; manga: Manga }) {
           alt={`manga-image-${firstIndex + 1}`}
           draggable={false}
           fetchPriority={index < INITIAL_DISPLAYED_IMAGE ? 'high' : 'low'}
-          height={firstImage.height ?? 1536}
           referrerPolicy="same-origin"
           src={getImageSrc({ cdn, id, name: firstImage.name })}
-          width={firstImage.width ?? 1536}
         />
         {secondImage && (
           <img
             alt={`manga-image-${secondIndex + 1}`}
             draggable={false}
             fetchPriority={index < INITIAL_DISPLAYED_IMAGE ? 'high' : 'low'}
-            height={secondImage.height ?? 1536}
             referrerPolicy="same-origin"
             src={getImageSrc({ cdn, id, name: secondImage.name })}
-            width={secondImage.width ?? 1536}
           />
         )}
       </>
