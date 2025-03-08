@@ -1,7 +1,6 @@
+import { LocalStorageKey } from '@/constants/localStorage'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-
-import { LocalStorageKeys } from '..'
 
 export type PageView = 'double' | 'single'
 
@@ -16,6 +15,6 @@ export const usePageViewStore = create<Store>()(
       pageView: 'single',
       setPageView: (pageView: PageView) => set({ pageView }),
     }),
-    { name: LocalStorageKeys.CONTROLLER_PAGE_VIEW },
+    { name: LocalStorageKey.CONTROLLER_PAGE_VIEW },
   ),
 )

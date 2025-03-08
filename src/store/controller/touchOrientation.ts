@@ -1,7 +1,6 @@
+import { LocalStorageKey } from '@/constants/localStorage'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-
-import { LocalStorageKeys } from '..'
 
 export type TouchOrientation = 'horizontal' | 'vertical'
 
@@ -16,6 +15,6 @@ export const useTouchOrientationStore = create<Store>()(
       touchOrientation: 'horizontal',
       setTouchOrientation: (orientation: TouchOrientation) => set({ touchOrientation: orientation }),
     }),
-    { name: LocalStorageKeys.CONTROLLER_TOUCH_ORIENTATION },
+    { name: LocalStorageKey.CONTROLLER_TOUCH_ORIENTATION },
   ),
 )

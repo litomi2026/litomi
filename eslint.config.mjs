@@ -39,6 +39,7 @@ export default tseslint.config(
       'perfectionist/sort-enums': 'off',
       'perfectionist/sort-object-types': 'off',
       'perfectionist/sort-objects': 'off',
+      'perfectionist/sort-union-types': ['error', { groups: ['keyword', 'nullish'] }],
     },
   },
   eslintConfigPrettier,

@@ -1,7 +1,6 @@
+import { LocalStorageKey } from '@/constants/localStorage'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-
-import { LocalStorageKeys } from '..'
 
 export type ScreenFit = 'all' | 'height' | 'width'
 
@@ -16,6 +15,6 @@ export const useScreenFitStore = create<Store>()(
       screenFit: 'all',
       setScreenFit: (screenFit: ScreenFit) => set({ screenFit }),
     }),
-    { name: LocalStorageKeys.CONTROLLER_SCREEN_FIT },
+    { name: LocalStorageKey.CONTROLLER_SCREEN_FIT },
   ),
 )

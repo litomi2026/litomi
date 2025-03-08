@@ -1,7 +1,6 @@
+import { LocalStorageKey } from '@/constants/localStorage'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-
-import { LocalStorageKeys } from '..'
 
 export type NavigationMode = 'scroll' | 'touch'
 
@@ -16,6 +15,6 @@ export const useNavigationModeStore = create<Store>()(
       navMode: 'touch',
       setNavMode: (navMode: NavigationMode) => set({ navMode }),
     }),
-    { name: LocalStorageKeys.CONTROLLER_NAVIGATION_MODE },
+    { name: LocalStorageKey.CONTROLLER_NAVIGATION_MODE },
   ),
 )
