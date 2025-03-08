@@ -56,9 +56,15 @@ export default function ImageViewer({ manga }: Props) {
 
   function toggleFullScreen() {
     if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(() => toast.error('전체화면 전환 실패'))
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen()
+      } else {
+        toast.error('이 브라우저는 전체화면 기능을 지원하지 않습니다.')
+      }
     } else {
-      document.exitFullscreen().catch(() => toast.error('전체화면 해제 실패'))
+      if (document.exitFullscreen) {
+        document.exitFullscreen()
+      }
     }
   }
 

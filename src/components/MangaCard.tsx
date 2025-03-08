@@ -14,11 +14,11 @@ export default function MangaCard({ manga, index }: Props) {
   const { id, artists, characters, date, group, related, series, tags, title, type, images, cdn } = manga
 
   return (
-    <li className="grid grid-cols-2 border border-stone-700" key={id}>
+    <li className="grid grid-cols-2 border rounded-lg overflow-hidden border-gray-700" key={id}>
       <Link className="relative" href={`/manga/${id}`} target="_blank">
         <img
           alt="manga-image"
-          className="object-contain bg-stone-900 aspect-[3/4]"
+          className="object-contain bg-gray-900 aspect-[3/4]"
           fetchPriority={index && index < 3 ? 'high' : undefined}
           referrerPolicy="same-origin"
           src={getImageSrc({ cdn, id, name: images[0].name })}
@@ -36,7 +36,7 @@ export default function MangaCard({ manga, index }: Props) {
           </div>
         )}
       </Link>
-      <div className="flex flex-col border-l border-stone-700 justify-between p-1 gap-1">
+      <div className="flex flex-col border-l border-gray-700 justify-between p-2 gap-1">
         <div className="flex flex-col gap-2">
           <h4 className="line-clamp-3 sm:line-clamp-6 md:line-clamp-1 lg:line-clamp-3 xl:line-clamp-6 leading-5 min-w-0">
             {title}
@@ -53,7 +53,7 @@ export default function MangaCard({ manga, index }: Props) {
               연관
               <ul className="flex xl:flex-wrap overflow-auto gap-1">
                 {related.map((id) => (
-                  <li className="rounded px-1 text-white bg-stone-500" key={id}>
+                  <li className="rounded px-1 text-white bg-gray-500" key={id}>
                     <Link href={`/manga/${id}`}>{id}</Link>
                   </li>
                 ))}
