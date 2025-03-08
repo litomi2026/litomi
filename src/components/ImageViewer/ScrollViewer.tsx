@@ -29,19 +29,27 @@ export default function ScrollViewer({ manga, onImageClick }: Props) {
   })
 
   const screenFitStyle = {
-    width: '[&_li]:justify-center [&_img]:min-w-0',
-    height: '[&_li]:w-fit [&_li]:mx-auto [&_img]:min-w-fit [&_img]:max-w-fit [&_img]:h-dvh',
-    all: '[&_li]:justify-center [&_img]:min-w-0 [&_img]:w-fit [&_img]:max-h-dvh',
+    width: '[&_li]:justify-center [&_img]:min-w-0 [&_img]:box-content [&_img]:max-w-fit [&_img]:max-h-fit',
+
+    // TODO: Fix this
+    height:
+      '[&_li]:overflow-x-auto [&_li]:overscroll-none [&_li]:justify-center [&_img]:w-auto [&_img]:max-w-fit [&_img]:h-dvh [&_img]:max-h-fit',
+    // TODO: Fix this
+    all: '[&_li]:justify-center [&_li]:mx-auto [&_img]:min-w-0 [&_img]:w-auto [&_img]:max-w-fit [&_img]:max-h-dvh',
   }[screenFit]
 
   const virtualItems = rowVirtualizer.getVirtualItems()
   const translateY = virtualItems[0]?.start ?? 0
 
   return (
-    <div className="overflow-y-auto overscroll-none contain-strict h-dvh" onClick={onImageClick} ref={parentRef}>
+    <div
+      className="overflow-y-auto overscroll-none contain-strict h-dvh select-none"
+      onClick={onImageClick}
+      ref={parentRef}
+    >
       <div className="w-full relative" style={{ height: rowVirtualizer.getTotalSize() }}>
         <ul
-          className={`absolute top-0 left-0 w-full pb-safe [&_li]:flex [&_img]:select-none [&_img]:border [&_img]:border-gray-800 ${screenFitStyle}`}
+          className={`absolute top-0 left-0 w-full pb-safe [&_li]:flex [&_img]:border [&_img]:border-gray-800 ${screenFitStyle}`}
           style={{ transform: `translateY(${translateY}px)` }}
         >
           {virtualItems.map(({ index, key }) => (
