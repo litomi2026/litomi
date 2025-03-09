@@ -23,12 +23,12 @@ export default function MangaCard({ manga, index }: Props) {
           imageIndex={0}
           manga={manga}
         />
-        <div className="absolute bottom-1 min-w-7 text-center  left-1/2 -translate-x-1/2 px-1 bg-black rounded">
+        <div className="absolute bottom-1 min-w-7 text-center  left-1/2 -translate-x-1/2 px-1 bg-background rounded">
           {images.length}
         </div>
         {tags && tags.some((tag) => BLIND_TAGS.includes(tag.split(':')[tag.split(':').length - 1])) && (
-          <div className="absolute inset-0 bg-black/50 backdrop-blur flex items-center justify-center text-center p-4">
-            <div className="text-white text-center font-semibold">
+          <div className="absolute inset-0 bg-background/50 backdrop-blur flex items-center justify-center text-center p-4">
+            <div className="text-foreground text-center font-semibold">
               수간/고어/게이
               <br />
               작품 검열
@@ -53,7 +53,7 @@ export default function MangaCard({ manga, index }: Props) {
               연관
               <ul className="flex xl:flex-wrap overflow-auto gap-1">
                 {related.map((id) => (
-                  <li className="rounded px-1 text-white bg-gray-500" key={id}>
+                  <li className="rounded px-1 text-foreground bg-gray-500" key={id}>
                     <Link href={`/manga/${id}`}>{id}</Link>
                   </li>
                 ))}
@@ -72,7 +72,7 @@ export default function MangaCard({ manga, index }: Props) {
                       female: 'bg-red-500',
                     }[a[0]] ?? 'bg-gray-500'
                   return (
-                    <li className={`rounded px-1 text-white ${backgroundColor}`} key={tag}>
+                    <li className={`rounded px-1 text-foreground ${backgroundColor}`} key={tag}>
                       {a[a.length - 1]}
                     </li>
                   )

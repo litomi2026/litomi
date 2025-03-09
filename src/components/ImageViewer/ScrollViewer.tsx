@@ -28,12 +28,10 @@ export default function ScrollViewer({ manga, onImageClick }: Props) {
   const screenFit = useScreenFitStore((state) => state.screenFit)
   const rowCount = pageView === 'double' ? Math.ceil(images.length / 2) : images.length
   const sizeMapRef = useRef(new Map())
-  console.log('👀 - sizeMapRef:', sizeMapRef)
 
   const virtualizer = useVirtualizer({
     count: rowCount,
     getScrollElement: () => parentRef.current,
-    // 해당 인덱스의 측정값이 있으면 사용, 없으면 기본값(예: window.innerHeight)
     estimateSize: useCallback((index) => {
       return sizeMapRef.current.get(index) ?? window.innerHeight
     }, []),

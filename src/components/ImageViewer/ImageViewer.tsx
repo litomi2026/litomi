@@ -68,7 +68,7 @@ export default function ImageViewer({ manga }: Props) {
     <div className="relative">
       <div
         aria-hidden={!showController}
-        className="fixed top-0 left-0 right-0 z-10 bg-black/70 backdrop-blur border-b border-gray-500 px-safe transition aria-hidden:opacity-0 aria-hidden:pointer-events-none"
+        className="fixed top-0 left-0 right-0 z-10 bg-background/70 backdrop-blur border-b border-gray-500 px-safe transition aria-hidden:opacity-0 aria-hidden:pointer-events-none"
       >
         <div className="flex gap-2 items-center justify-between p-3 [&_button]:rounded-full [&_button]:active:text-gray-500 [&_button]:hover:bg-gray-800 [&_button]:transition [&_button]:focus:outline outline-gray-500">
           <div className="flex gap-1">
@@ -79,7 +79,7 @@ export default function ImageViewer({ manga }: Props) {
               <IconClose className="w-6" />
             </button>
           </div>
-          <h1 className="flex-1 text-center line-clamp-2 font-bold text-white">{title}</h1>
+          <h1 className="flex-1 text-center line-clamp-2 font-bold text-foreground">{title}</h1>
           <div className="flex gap-1">
             <button aria-label="전체화면" className="p-2" onClick={toggleFullScreen}>
               <IconMaximize className="w-6" />
@@ -104,7 +104,7 @@ export default function ImageViewer({ manga }: Props) {
 
       <div
         aria-hidden={!showController}
-        className="fixed bottom-0 left-0 right-0 z-10 bg-black/70 backdrop-blur border-t border-gray-500 px-safe pb-safe transition aria-hidden:opacity-0 aria-hidden:pointer-events-none"
+        className="fixed bottom-0 left-0 right-0 z-10 bg-background/70 backdrop-blur border-t border-gray-500 px-safe pb-safe transition aria-hidden:opacity-0 aria-hidden:pointer-events-none"
       >
         <div className="p-3 grid gap-1.5">
           {isTouchMode && (
@@ -122,7 +122,7 @@ export default function ImageViewer({ manga }: Props) {
               </div>
             </>
           )}
-          <div className="font-medium whitespace-nowrap flex-wrap justify-center text-sm flex gap-2 text-black [&_button]:rounded-full [&_button]:bg-gray-100 [&_button]:px-2 [&_button]:py-1 [&_button]:hover:bg-white [&_button]:active:bg-gray-400 [&_button]:disabled:bg-gray-400 [&_button]:disabled:text-gray-500 [&_button]:min-w-20 [&_button]:transition">
+          <div className="font-semibold whitespace-nowrap flex-wrap justify-center text-sm flex gap-2 text-background [&_button]:rounded-full [&_button]:bg-gray-100 [&_button]:px-2 [&_button]:py-1 [&_button]:hover:bg-foreground [&_button]:active:bg-gray-400 [&_button]:disabled:bg-gray-400 [&_button]:disabled:text-gray-500 [&_button]:min-w-20 [&_button]:transition">
             <button onClick={() => setNavMode(isTouchMode ? 'scroll' : 'touch')}>
               {isTouchMode ? '터치' : '스크롤'} 모드
             </button>

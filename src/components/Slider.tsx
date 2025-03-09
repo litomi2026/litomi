@@ -85,7 +85,7 @@ export default function Slider({
       </div>
       {/* Thumb */}
       <div className="absolute aspect-square h-full -translate-x-1/2" style={{ left: `${ratioPercentage}%` }}>
-        <div className="w-full h-full border-2 rounded-full border-gray-400 bg-white" />
+        <div className="w-full h-full border-2 rounded-full border-gray-400 bg-foreground" />
       </div>
     </div>
   )

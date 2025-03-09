@@ -25,13 +25,6 @@ export default function TouchViewer({ manga, currentIndex, onNavigate, onClick }
   const pointerStartRef = useRef<null | { x: number; y: number }>(null)
   const swipeDetectedRef = useRef(false)
 
-  const screenFitStyle = {
-    width: `overflow-y-auto overscroll-none [&_li]:mx-auto [&_li]:w-fit [&_li]:max-w-full [&_li]:first:h-full [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:h-auto`,
-    height:
-      'overflow-x-auto overscroll-none [&_li]:items-center [&_li]:mx-auto [&_li]:w-fit [&_li]:first:h-full [&_img]:max-w-fit [&_img]:h-auto [&_img]:max-h-dvh',
-    all: '[&_li]:items-center [&_li]:mx-auto [&_img]:min-w-0 [&_li]:w-fit [&_li]:h-full [&_img]:max-h-dvh',
-  }[screenFit]
-
   // 포인터 시작 시 좌표 기록 및 스와이프 플래그 초기화
   const handlePointerDown = (e: React.PointerEvent) => {
     pointerStartRef.current = { x: e.clientX, y: e.clientY }
@@ -99,9 +92,16 @@ export default function TouchViewer({ manga, currentIndex, onNavigate, onClick }
     }
   }
 
+  const screenFitStyle = {
+    width: `overflow-y-auto overscroll-none [&_li]:mx-auto [&_li]:w-fit [&_li]:max-w-full [&_li]:first:h-full [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:h-auto`,
+    height:
+      'overflow-x-auto overscroll-none [&_li]:items-center [&_li]:mx-auto [&_li]:w-fit [&_li]:first:h-full [&_img]:max-w-fit [&_img]:h-auto [&_img]:max-h-dvh',
+    all: '[&_li]:items-center [&_li]:mx-auto [&_img]:min-w-0 [&_li]:w-fit [&_li]:h-full [&_img]:max-h-dvh',
+  }[screenFit]
+
   return (
     <ul
-      className={`h-dvh select-none [&_li]:flex [&_img]:border [&_img]:border-gray-800 [&_img]:aria-hidden:sr-only ${screenFitStyle}`}
+      className={`h-dvh select-none [&_li]:flex [&_img]:pb-safe [&_img]:border [&_img]:border-background [&_img]:aria-hidden:sr-only ${screenFitStyle}`}
       onClick={handleClick}
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
