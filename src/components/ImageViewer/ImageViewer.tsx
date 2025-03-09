@@ -99,7 +99,7 @@ export default function ImageViewer({ manga }: Props) {
           onNavigate={(direction) => (direction === 'prev' ? prevPage() : nextPage())}
         />
       ) : (
-        <ScrollViewer manga={manga} onImageClick={() => setShowController((prev) => !prev)} />
+        <ScrollViewer manga={manga} onClick={() => setShowController((prev) => !prev)} />
       )}
 
       <div

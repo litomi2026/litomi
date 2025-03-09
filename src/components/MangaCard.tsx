@@ -2,7 +2,7 @@ import { Manga } from '@/types/manga'
 import dayjs from 'dayjs'
 import Link from 'next/link'
 
-import MangaImage from './ImageViewer/MangaImage'
+import MangaImage from './MangaImage'
 
 const BLIND_TAGS = ['bestiality', 'guro', 'snuff', 'yaoi']
 

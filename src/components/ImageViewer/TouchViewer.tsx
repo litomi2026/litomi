@@ -6,7 +6,7 @@ import { useTouchOrientationStore } from '@/store/controller/touchOrientation'
 import { Manga } from '@/types/manga'
 import { useRef } from 'react'
 
-import MangaImage from './MangaImage'
+import MangaImage from '../MangaImage'
 
 const SWIPE_THRESHOLD = 50 // 스와이프 감지 임계값 (px)
 const EDGE_CLICK_THRESHOLD = 1 / 3 // 1 / 3 -> 3등분 중 1칸. 0.5 이하여야 함

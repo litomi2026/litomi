@@ -6,12 +6,12 @@ import { type Manga } from '@/types/manga'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { memo, RefObject, useCallback, useRef } from 'react'
 
+import MangaImage from '../MangaImage'
 import ResizeObserverWrapper from '../ResizeObserverWrapper'
-import MangaImage from './MangaImage'
 
 type Props = {
   manga: Manga
-  onImageClick: () => void
+  onClick: () => void
 }
 
 type VirtualItemProps = {
@@ -21,7 +21,7 @@ type VirtualItemProps = {
   sizeMapRef: RefObject<Map<number, number>>
 }
 
-export default function ScrollViewer({ manga, onImageClick }: Props) {
+export default function ScrollViewer({ manga, onClick }: Props) {
   const { images } = manga
   const parentRef = useRef<HTMLDivElement>(null)
   const pageView = usePageViewStore((state) => state.pageView)
@@ -41,25 +41,19 @@ export default function ScrollViewer({ manga, onImageClick }: Props) {
   const virtualItems = virtualizer.getVirtualItems()
   const translateY = virtualItems[0]?.start ?? 0
 
+  // TODO: Fix this
   const screenFitStyle = {
     width: '[&_li]:justify-center [&_img]:min-w-0 [&_img]:box-content [&_img]:max-w-fit [&_img]:max-h-fit',
-
-    // TODO: Fix this
     height:
       '[&_li]:overflow-x-auto [&_li]:overscroll-none [&_li]:justify-center [&_li]:w-full [&_img]:w-auto [&_img]:max-w-fit [&_img]:h-dvh [&_img]:max-h-fit',
-    // TODO: Fix this
     all: '[&_li]:justify-center [&_li]:mx-auto [&_img]:min-w-0 [&_img]:w-auto [&_img]:max-w-fit [&_img]:max-h-dvh',
   }[screenFit]
 
   return (
-    <div
-      className="overflow-y-auto overscroll-none contain-strict h-dvh select-none"
-      onClick={onImageClick}
-      ref={parentRef}
-    >
+    <div className="overflow-y-auto overscroll-none contain-strict h-dvh select-none" onClick={onClick} ref={parentRef}>
       <div className="w-full relative" style={{ height: virtualizer.getTotalSize() }}>
         <ul
-          className={`absolute top-0 left-0 w-full pb-safe [&_li]:flex [&_img]:border [&_img]:border-gray-800 ${screenFitStyle}`}
+          className={`absolute top-0 left-0 w-full pb-safe [&_li]:flex [&_img]:border [&_img]:border-background ${screenFitStyle}`}
           style={{ transform: `translateY(${translateY}px)` }}
         >
           {virtualItems.map(({ index, key }) => (
