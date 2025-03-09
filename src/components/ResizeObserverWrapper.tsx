@@ -1,13 +1,12 @@
-import { ComponentRef, useEffect, useRef } from 'react'
+import { ComponentPropsWithoutRef, ComponentRef, ElementType, ReactNode, RefObject, useEffect, useRef } from 'react'
 
-// 기본 DOM 요소의 props에서 onResize를 제거하여 충돌을 방지합니다.
-type ResizeObserverWrapperProps<C extends React.ElementType> = Omit<React.ComponentPropsWithoutRef<C>, 'onResize'> & {
+type ResizeObserverWrapperProps<C extends ElementType> = Omit<ComponentPropsWithoutRef<C>, 'onResize'> & {
   onResize: (element: ComponentRef<C>) => void
-  children: React.ReactNode
+  children: ReactNode
   as?: C
 }
 
-export default function ResizeObserverWrapper<C extends React.ElementType = 'div'>({
+export default function ResizeObserverWrapper<C extends ElementType = 'div'>({
   onResize,
   children,
   as,
@@ -23,12 +22,12 @@ export default function ResizeObserverWrapper<C extends React.ElementType = 'div
     const observer = new ResizeObserver(() => {
       if (element) onResize(element)
     })
-    observer.observe(element)
+    observer.observe(element as unknown as Element)
     return () => observer.disconnect()
   }, [onResize])
 
   return (
-    <Component ref={internalRef} {...rest}>
+    <Component ref={internalRef as RefObject<HTMLDivElement>} {...rest}>
       {children}
     </Component>
   )
