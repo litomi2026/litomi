@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 import MangaImage from './MangaImage'
 
-const BLIND_TAGS = ['bestiality', 'guro', 'snuff', 'yaoi']
+const BLIND_TAGS = ['bestiality', 'guro', 'snuff', 'yaoi', 'scat']
 
 type Props = {
   manga: Manga
@@ -29,7 +29,7 @@ export default function MangaCard({ manga, index }: Props) {
         {tags && tags.some((tag) => BLIND_TAGS.includes(tag.split(':')[tag.split(':').length - 1])) && (
           <div className="absolute inset-0 bg-background/50 backdrop-blur flex items-center justify-center text-center p-4">
             <div className="text-foreground text-center font-semibold">
-              수간/고어/게이
+              수간/고어/게이/스캇
               <br />
               작품 검열
             </div>

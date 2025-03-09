@@ -31,7 +31,6 @@ export default function ScrollViewer({ manga, onClick }: Props) {
   const isDoublePage = pageView === 'double'
   const rowCount = isDoublePage ? Math.ceil(images.length / 2) : images.length
   const [imageErrors, setImageErrors] = useState({ errors: [] as boolean[] })
-  console.log('👀 - imageErrors:', imageErrors)
 
   const virtualizer = useVirtualizer({
     count: rowCount,
@@ -44,8 +43,8 @@ export default function ScrollViewer({ manga, onClick }: Props) {
   const translateY = virtualItems[0]?.start ?? 0
 
   const screenFitStyle = {
-    width: '[&_li]:justify-center [&_img]:min-w-0 [&_img]:w-fit [&_img]:max-w-dvw [&_img]:max-h-fit',
-    all: '[&_li]:justify-center [&_li]:mx-auto [&_img]:min-w-0 [&_img]:w-auto [&_img]:max-w-fit [&_img]:h-fit [&_img]:max-h-dvh',
+    width: '[&_li]:justify-center [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:max-h-fit',
+    all: '[&_li]:justify-center [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:max-h-dvh',
 
     // TODO: Fix this
     height:
@@ -56,7 +55,7 @@ export default function ScrollViewer({ manga, onClick }: Props) {
     <div className="overflow-y-auto overscroll-none contain-strict h-dvh select-none" onClick={onClick} ref={parentRef}>
       <div className="w-full relative" style={{ height: virtualizer.getTotalSize() }}>
         <ul
-          className={`absolute top-0 left-0 w-full pb-safe [&_li]:flex [&_img]:border [&_img]:border-background [&_img]:aria-hidden:w-60 [&_img]:aria-hidden:grayscale [&_img]:aria-hidden:shrink-100 [&_img]:aria-hidden:text-foreground ${screenFitStyle}`}
+          className={`absolute top-0 left-0 w-full pb-safe [&_li]:flex [&_img]:border [&_img]:border-background [&_img]:aria-hidden:w-40 [&_img]:aria-hidden:text-foreground ${screenFitStyle}`}
           style={{ transform: `translateY(${translateY}px)` }}
         >
           {virtualItems.map(({ index, key }) => (

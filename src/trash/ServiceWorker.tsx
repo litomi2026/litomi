@@ -1,8 +1,9 @@
 'use client'
 
-import { useServiceWorkerStore } from '@/store/serviceWorker'
 import { useEffect } from 'react'
 import { toast } from 'sonner'
+
+import { useServiceWorkerStore } from './serviceWorker'
 
 type Props = {
   path: string

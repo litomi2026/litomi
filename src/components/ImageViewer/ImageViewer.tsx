@@ -70,22 +70,22 @@ export default function ImageViewer({ manga }: Props) {
         aria-hidden={!showController}
         className="fixed top-0 left-0 right-0 z-10 bg-background/70 backdrop-blur border-b border-gray-500 px-safe transition aria-hidden:opacity-0 aria-hidden:pointer-events-none"
       >
-        <div className="flex gap-2 items-center justify-between p-3 [&_button]:rounded-full [&_button]:active:text-gray-500 [&_button]:hover:bg-gray-800 [&_button]:transition [&_button]:focus:outline outline-gray-500">
+        <div className="flex gap-2 items-center justify-between p-3 [&_button]:rounded-full [&_button]:active:text-gray-500 [&_button]:hover:bg-gray-800 [&_button]:transition [&_button]:p-2 [&_button]:focus:outline outline-gray-500">
           <div className="flex gap-1">
-            <button aria-label="뒤로가기" className="p-2" onClick={() => router.back()}>
+            <button aria-label="뒤로가기" onClick={() => router.back()}>
               <IconChevronLeft className="w-6" />
             </button>
-            <button aria-label="창 닫기" className="p-2" onClick={() => window.close()}>
+            <button aria-label="창 닫기" onClick={() => window.close()}>
               <IconClose className="w-6" />
             </button>
           </div>
           <h1 className="flex-1 text-center line-clamp-2 font-bold text-foreground">{title}</h1>
           <div className="flex gap-1">
-            <button aria-label="전체화면" className="p-2" onClick={toggleFullScreen}>
-              <IconMaximize className="w-6" />
-            </button>
-            <button aria-label="새로고침" className="p-2" onClick={() => router.refresh()}>
+            <button aria-label="새로고침" onClick={() => window.location.reload()}>
               <IconReload className="w-6" />
+            </button>
+            <button aria-label="전체화면" onClick={toggleFullScreen}>
+              <IconMaximize className="w-6" />
             </button>
           </div>
         </div>
