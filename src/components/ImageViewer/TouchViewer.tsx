@@ -8,7 +8,7 @@ import { Manga } from '@/types/manga'
 import { useRef } from 'react'
 
 const SWIPE_THRESHOLD = 50 // 스와이프 감지 임계값 (px)
-const EDGE_CLICK_THRESHOLD = 1 / 3
+const EDGE_CLICK_THRESHOLD = 1 / 3 // 1 / 3 -> 3등분 중 1칸. 0.5 이하여야 함
 
 type Props = {
   manga: Manga

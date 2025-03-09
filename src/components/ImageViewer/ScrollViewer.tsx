@@ -5,7 +5,7 @@ import { usePageViewStore } from '@/store/controller/pageView'
 import { useScreenFitStore } from '@/store/controller/screenFit'
 import { type Manga } from '@/types/manga'
 import { useVirtualizer } from '@tanstack/react-virtual'
-import { useRef } from 'react'
+import { useCallback, useRef } from 'react'
 
 const INITIAL_DISPLAYED_IMAGE = 5
 
@@ -24,7 +24,7 @@ export default function ScrollViewer({ manga, onImageClick }: Props) {
   const rowVirtualizer = useVirtualizer({
     count: rowCount,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => window.innerHeight,
+    estimateSize: useCallback(() => window.innerHeight, []),
     overscan: 5,
   })
 
