@@ -1,17 +1,24 @@
 'use client'
 
-import { getImageSrc } from '@/constants/url'
 import { usePageViewStore } from '@/store/controller/pageView'
 import { useScreenFitStore } from '@/store/controller/screenFit'
 import { type Manga } from '@/types/manga'
 import { useVirtualizer } from '@tanstack/react-virtual'
-import { useCallback, useRef } from 'react'
+import { memo, RefObject, useCallback, useRef } from 'react'
 
-const INITIAL_DISPLAYED_IMAGE = 5
+import ResizeObserverWrapper from '../ResizeObserverWrapper'
+import MangaImage from './MangaImage'
 
 type Props = {
   manga: Manga
   onImageClick: () => void
+}
+
+type VirtualItemProps = {
+  index: number
+  manga: Manga
+  virtualizer: ReturnType<typeof useVirtualizer<HTMLDivElement, Element>>
+  sizeMapRef: RefObject<Map<number, number>>
 }
 
 export default function ScrollViewer({ manga, onImageClick }: Props) {
@@ -20,13 +27,21 @@ export default function ScrollViewer({ manga, onImageClick }: Props) {
   const pageView = usePageViewStore((state) => state.pageView)
   const screenFit = useScreenFitStore((state) => state.screenFit)
   const rowCount = pageView === 'double' ? Math.ceil(images.length / 2) : images.length
+  const sizeMapRef = useRef(new Map())
+  console.log('👀 - sizeMapRef:', sizeMapRef)
 
-  const rowVirtualizer = useVirtualizer({
+  const virtualizer = useVirtualizer({
     count: rowCount,
     getScrollElement: () => parentRef.current,
-    estimateSize: useCallback(() => window.innerHeight, []),
+    // 해당 인덱스의 측정값이 있으면 사용, 없으면 기본값(예: window.innerHeight)
+    estimateSize: useCallback((index) => {
+      return sizeMapRef.current.get(index) ?? window.innerHeight
+    }, []),
     overscan: 5,
   })
+
+  const virtualItems = virtualizer.getVirtualItems()
+  const translateY = virtualItems[0]?.start ?? 0
 
   const screenFitStyle = {
     width: '[&_li]:justify-center [&_img]:min-w-0 [&_img]:box-content [&_img]:max-w-fit [&_img]:max-h-fit',
@@ -38,24 +53,19 @@ export default function ScrollViewer({ manga, onImageClick }: Props) {
     all: '[&_li]:justify-center [&_li]:mx-auto [&_img]:min-w-0 [&_img]:w-auto [&_img]:max-w-fit [&_img]:max-h-dvh',
   }[screenFit]
 
-  const virtualItems = rowVirtualizer.getVirtualItems()
-  const translateY = virtualItems[0]?.start ?? 0
-
   return (
     <div
       className="overflow-y-auto overscroll-none contain-strict h-dvh select-none"
       onClick={onImageClick}
       ref={parentRef}
     >
-      <div className="w-full relative" style={{ height: rowVirtualizer.getTotalSize() }}>
+      <div className="w-full relative" style={{ height: virtualizer.getTotalSize() }}>
         <ul
           className={`absolute top-0 left-0 w-full pb-safe [&_li]:flex [&_img]:border [&_img]:border-gray-800 ${screenFitStyle}`}
           style={{ transform: `translateY(${translateY}px)` }}
         >
           {virtualItems.map(({ index, key }) => (
-            <li data-index={index} key={key} ref={rowVirtualizer.measureElement}>
-              <VirtualRow index={index} manga={manga} />
-            </li>
+            <VirtualItemMemo index={index} key={key} manga={manga} sizeMapRef={sizeMapRef} virtualizer={virtualizer} />
           ))}
         </ul>
       </div>
@@ -63,46 +73,29 @@ export default function ScrollViewer({ manga, onImageClick }: Props) {
   )
 }
 
-function VirtualRow({ index, manga }: { index: number; manga: Manga }) {
-  const { images, cdn, id } = manga
-  const pageView = usePageViewStore((state) => state.pageView)
+const VirtualItemMemo = memo(VirtualItem)
 
-  if (pageView === 'double') {
-    const firstIndex = index * 2
-    const secondIndex = firstIndex + 1
-    const firstImage = images[firstIndex]
-    const secondImage = images[secondIndex]
-    return (
-      <>
-        <img
-          alt={`manga-image-${firstIndex + 1}`}
-          draggable={false}
-          fetchPriority={index < INITIAL_DISPLAYED_IMAGE ? 'high' : 'low'}
-          referrerPolicy="same-origin"
-          src={getImageSrc({ cdn, id, name: firstImage.name })}
-        />
-        {secondImage && (
-          <img
-            alt={`manga-image-${secondIndex + 1}`}
-            draggable={false}
-            fetchPriority={index < INITIAL_DISPLAYED_IMAGE ? 'high' : 'low'}
-            referrerPolicy="same-origin"
-            src={getImageSrc({ cdn, id, name: secondImage.name })}
-          />
-        )}
-      </>
-    )
-  } else {
-    return (
-      <img
-        alt={`manga-image-${index + 1}`}
-        draggable={false}
-        fetchPriority={index < INITIAL_DISPLAYED_IMAGE ? 'high' : 'low'}
-        height={images[index].height ?? 1536}
-        referrerPolicy="same-origin"
-        src={getImageSrc({ cdn, id, name: images[index].name })}
-        width={images[index].width ?? 1536}
-      />
-    )
-  }
+function VirtualItem({ index, manga, virtualizer, sizeMapRef }: VirtualItemProps) {
+  const pageView = usePageViewStore((state) => state.pageView)
+  const isDoublePage = pageView === 'double'
+  const imageIndex = isDoublePage ? index * 2 : index
+
+  return (
+    <li data-index={index}>
+      <ResizeObserverWrapper
+        onResize={(el) => {
+          const rect = el.getBoundingClientRect()
+          if (rect.height < 10) return
+
+          console.log('👀 - rect:', rect.height)
+          // 캐싱: 각 아이템의 실제 높이를 저장
+          sizeMapRef.current.set(index, rect.height)
+          virtualizer.measureElement(el)
+        }}
+      >
+        <MangaImage imageIndex={imageIndex} manga={manga} />
+        {isDoublePage && <MangaImage imageIndex={imageIndex + 1} manga={manga} />}
+      </ResizeObserverWrapper>
+    </li>
+  )
 }
