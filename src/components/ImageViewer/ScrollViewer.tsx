@@ -4,7 +4,8 @@ import { usePageViewStore } from '@/store/controller/pageView'
 import { useScreenFitStore } from '@/store/controller/screenFit'
 import { type Manga } from '@/types/manga'
 import { useVirtualizer } from '@tanstack/react-virtual'
-import { memo, RefObject, useCallback, useRef } from 'react'
+import { memo, RefObject, useCallback, useRef, useState } from 'react'
+import { toast } from 'sonner'
 
 import MangaImage from '../MangaImage'
 import ResizeObserverWrapper from '../ResizeObserverWrapper'
@@ -18,7 +19,7 @@ type VirtualItemProps = {
   index: number
   manga: Manga
   virtualizer: ReturnType<typeof useVirtualizer<HTMLDivElement, Element>>
-  sizeMapRef: RefObject<Map<number, number>>
+  errorMapRef: RefObject<Map<number, boolean>>
 }
 
 export default function ScrollViewer({ manga, onClick }: Props) {
@@ -27,25 +28,25 @@ export default function ScrollViewer({ manga, onClick }: Props) {
   const pageView = usePageViewStore((state) => state.pageView)
   const screenFit = useScreenFitStore((state) => state.screenFit)
   const rowCount = pageView === 'double' ? Math.ceil(images.length / 2) : images.length
-  const sizeMapRef = useRef(new Map())
+  const [imageErrors, setImageErrors] = useState({ errors: [] as number[] })
 
   const virtualizer = useVirtualizer({
     count: rowCount,
     getScrollElement: () => parentRef.current,
-    estimateSize: useCallback((index) => {
-      return sizeMapRef.current.get(index) ?? window.innerHeight
-    }, []),
+    estimateSize: useCallback(() => window.innerHeight, []),
     overscan: 5,
   })
 
   const virtualItems = virtualizer.getVirtualItems()
   const translateY = virtualItems[0]?.start ?? 0
 
-  // TODO: Fix this
   const screenFitStyle = {
-    width: '[&_li]:justify-center [&_img]:min-w-0 [&_img]:box-content [&_img]:max-w-fit [&_img]:max-h-fit',
+    width: '[&_li]:justify-center [&_img]:min-w-0 [&_img]:w-fit [&_img]:max-w-dvw [&_img]:max-h-fit',
+
+    // TODO: Fix this
     height:
       '[&_li]:overflow-x-auto [&_li]:overscroll-none [&_li]:justify-center [&_li]:w-full [&_img]:w-auto [&_img]:max-w-fit [&_img]:h-dvh [&_img]:max-h-fit',
+    // TODO: Fix this
     all: '[&_li]:justify-center [&_li]:mx-auto [&_img]:min-w-0 [&_img]:w-auto [&_img]:max-w-fit [&_img]:max-h-dvh',
   }[screenFit]
 
@@ -57,7 +58,14 @@ export default function ScrollViewer({ manga, onClick }: Props) {
           style={{ transform: `translateY(${translateY}px)` }}
         >
           {virtualItems.map(({ index, key }) => (
-            <VirtualItemMemo index={index} key={key} manga={manga} sizeMapRef={sizeMapRef} virtualizer={virtualizer} />
+            <VirtualItemMemo
+              index={index}
+              isError={imageErrors.errors[index]}
+              key={key}
+              manga={manga}
+              setImageErrors={setImageErrors}
+              virtualizer={virtualizer}
+            />
           ))}
         </ul>
       </div>
@@ -67,27 +75,34 @@ export default function ScrollViewer({ manga, onClick }: Props) {
 
 const VirtualItemMemo = memo(VirtualItem)
 
-function VirtualItem({ index, manga, virtualizer, sizeMapRef }: VirtualItemProps) {
+function VirtualItem({ index, manga, virtualizer, isError, setImageErrors }: VirtualItemProps) {
   const pageView = usePageViewStore((state) => state.pageView)
   const isDoublePage = pageView === 'double'
   const imageIndex = isDoublePage ? index * 2 : index
+  const nextImageIndex = imageIndex + 1
 
   return (
-    <li data-index={index}>
-      <ResizeObserverWrapper
-        onResize={(el) => {
-          const rect = el.getBoundingClientRect()
-          if (rect.height < 10) return
-
-          console.log('👀 - rect:', rect.height)
-          // 캐싱: 각 아이템의 실제 높이를 저장
-          sizeMapRef.current.set(index, rect.height)
-          virtualizer.measureElement(el)
-        }}
-      >
-        <MangaImage imageIndex={imageIndex} manga={manga} />
-        {isDoublePage && <MangaImage imageIndex={imageIndex + 1} manga={manga} />}
-      </ResizeObserverWrapper>
-    </li>
+    <ResizeObserverWrapper as="li" data-index={index} onResize={(el) => virtualizer.measureElement(el)}>
+      <MangaImage
+        imageIndex={imageIndex}
+        manga={manga}
+        onError={() =>
+          setImageErrors((prev) => {
+            prev.errors[imageIndex] = true
+            return { errors: prev.errors }
+          })
+        }
+        {...(isError && { src: '/logo.svg' })}
+      />
+      {isDoublePage && (
+        <MangaImage
+          // aria-hidden={isError2}
+          className="aria-hidden:hidden"
+          imageIndex={nextImageIndex}
+          manga={manga}
+          // onError={() => setIsError2(true)}
+        />
+      )}
+    </ResizeObserverWrapper>
   )
 }

@@ -1,22 +1,35 @@
-import { useEffect, useRef } from 'react'
+import { ComponentRef, useEffect, useRef } from 'react'
 
-type Props = {
-  onResize: (element: HTMLElement) => void
+// 기본 DOM 요소의 props에서 onResize를 제거하여 충돌을 방지합니다.
+type ResizeObserverWrapperProps<C extends React.ElementType> = Omit<React.ComponentPropsWithoutRef<C>, 'onResize'> & {
+  onResize: (element: ComponentRef<C>) => void
   children: React.ReactNode
+  as?: C
 }
 
-// ResizeObserverWrapper 컴포넌트: 자식 요소의 크기가 변경되면 onResize 콜백 호출
-export default function ResizeObserverWrapper({ onResize, children }: Props) {
-  const ref = useRef<HTMLDivElement>(null)
+export default function ResizeObserverWrapper<C extends React.ElementType = 'div'>({
+  onResize,
+  children,
+  as,
+  ...rest
+}: ResizeObserverWrapperProps<C>) {
+  const Component = as || 'div'
+  const internalRef = useRef<ComponentRef<C>>(null)
 
   useEffect(() => {
-    if (!ref.current) return
+    const element = internalRef.current
+    if (!element) return
+
     const observer = new ResizeObserver(() => {
-      if (ref.current) onResize(ref.current)
+      if (element) onResize(element)
     })
-    observer.observe(ref.current)
+    observer.observe(element)
     return () => observer.disconnect()
   }, [onResize])
 
-  return <div ref={ref}>{children}</div>
+  return (
+    <Component ref={internalRef} {...rest}>
+      {children}
+    </Component>
+  )
 }
