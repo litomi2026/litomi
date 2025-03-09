@@ -1,11 +1,12 @@
 'use client'
 
-import { getImageSrc } from '@/constants/url'
 import { usePageViewStore } from '@/store/controller/pageView'
 import { useScreenFitStore } from '@/store/controller/screenFit'
 import { useTouchOrientationStore } from '@/store/controller/touchOrientation'
 import { Manga } from '@/types/manga'
 import { useRef } from 'react'
+
+import MangaImage from './MangaImage'
 
 const SWIPE_THRESHOLD = 50 // 스와이프 감지 임계값 (px)
 const EDGE_CLICK_THRESHOLD = 1 / 3 // 1 / 3 -> 3등분 중 1칸. 0.5 이하여야 함
@@ -18,7 +19,6 @@ type Props = {
 }
 
 export default function TouchViewer({ manga, currentIndex, onNavigate, onClick }: Props) {
-  const { images, cdn, id } = manga
   const pageView = usePageViewStore((state) => state.pageView)
   const screenFit = useScreenFitStore((state) => state.screenFit)
   const touchOrientation = useTouchOrientationStore((state) => state.touchOrientation)
@@ -108,31 +108,11 @@ export default function TouchViewer({ manga, currentIndex, onNavigate, onClick }
     >
       {Array.from({ length: 10 }).map((_, offset) => {
         const imageIndex = currentIndex + offset
-        const nextImageIndex = imageIndex + 1
-        const image = images[imageIndex]
-        const nextImage = images[nextImageIndex]
 
         return (
           <li key={offset}>
-            {image && (
-              <img
-                alt={`manga-image-${imageIndex + 1}`}
-                aria-hidden={offset !== 0}
-                draggable={false}
-                fetchPriority={imageIndex < 5 ? 'high' : 'low'}
-                referrerPolicy="same-origin"
-                src={getImageSrc({ cdn, id, name: image.name })}
-              />
-            )}
-            {pageView === 'double' && offset === 0 && nextImage && (
-              <img
-                alt={`manga-image-${nextImageIndex + 1}`}
-                draggable={false}
-                fetchPriority={nextImageIndex < 5 ? 'high' : 'low'}
-                referrerPolicy="same-origin"
-                src={getImageSrc({ cdn, id, name: nextImage.name })}
-              />
-            )}
+            <MangaImage aria-hidden={offset !== 0} imageIndex={imageIndex} manga={manga} />
+            {pageView === 'double' && offset === 0 && <MangaImage imageIndex={imageIndex + 1} manga={manga} />}
           </li>
         )
       })}

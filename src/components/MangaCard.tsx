@@ -1,7 +1,8 @@
-import { getImageSrc } from '@/constants/url'
 import { Manga } from '@/types/manga'
 import dayjs from 'dayjs'
 import Link from 'next/link'
+
+import MangaImage from './ImageViewer/MangaImage'
 
 const BLIND_TAGS = ['bestiality', 'guro', 'snuff', 'yaoi']
 
@@ -11,17 +12,16 @@ type Props = {
 }
 
 export default function MangaCard({ manga, index }: Props) {
-  const { id, artists, characters, date, group, related, series, tags, title, type, images, cdn } = manga
+  const { id, artists, characters, date, group, related, series, tags, title, type, images } = manga
 
   return (
     <li className="grid grid-cols-2 border rounded-lg overflow-hidden border-gray-700" key={id}>
       <Link className="relative" href={`/manga/${id}`} target="_blank">
-        <img
-          alt="manga-image"
+        <MangaImage
           className="object-contain bg-gray-900 aspect-[3/4]"
-          fetchPriority={index && index < 3 ? 'high' : undefined}
-          referrerPolicy="same-origin"
-          src={getImageSrc({ cdn, id, name: images[0].name })}
+          fetchPriority={index && index < 3 ? 'high' : 'low'}
+          imageIndex={0}
+          manga={manga}
         />
         <div className="absolute bottom-1 min-w-7 text-center  left-1/2 -translate-x-1/2 px-1 bg-black rounded">
           {images.length}
