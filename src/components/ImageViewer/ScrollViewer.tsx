@@ -43,6 +43,7 @@ function ScrollViewer({ manga, onClick }: Props) {
     getScrollElement: () => parentRef.current,
     estimateSize: useCallback(() => window.innerHeight, []),
     overscan: 5,
+    useAnimationFrameWithResizeObserver: true,
   })
 
   const virtualItems = virtualizer.getVirtualItems()
@@ -92,18 +93,21 @@ const VirtualItemMemo = memo(VirtualItem)
 
 function VirtualItem({ index, manga, virtualizer, isError, isError2, setImageErrors }: VirtualItemProps) {
   const pageView = usePageViewStore((state) => state.pageView)
-  const setScrollIndex = useImageIndexStore((state) => state.setImageIndex)
+  const setImageIndex = useImageIndexStore((state) => state.setImageIndex)
   const isDoublePage = pageView === 'double'
   const imageIndex = isDoublePage ? index * 2 : index
   const nextImageIndex = imageIndex + 1
 
-  const { ref, inView } = useInView({ threshold: 0, rootMargin: '-50% 0% -50% 0%' })
+  const { ref, inView } = useInView({
+    threshold: 0,
+    rootMargin: '-50% 0% -50% 0%',
+  })
 
   useEffect(() => {
     if (inView) {
-      setScrollIndex(imageIndex)
+      setImageIndex(imageIndex)
     }
-  }, [imageIndex, inView, setScrollIndex])
+  }, [imageIndex, inView, setImageIndex])
 
   return (
     <ResizeObserverWrapper as="li" data-index={index} onResize={(el) => virtualizer.measureElement(el)}>
