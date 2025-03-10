@@ -1,4 +1,4 @@
-import { HTMLAttributes, useEffect, useRef, useState } from 'react'
+import { HTMLAttributes, memo, useEffect, useRef, useState } from 'react'
 
 type Props = HTMLAttributes<HTMLDivElement> & {
   className?: string
@@ -10,7 +10,9 @@ type Props = HTMLAttributes<HTMLDivElement> & {
   value?: number
 }
 
-export default function Slider({
+export default memo(Slider)
+
+function Slider({
   value: controlledValue,
   onChange,
   onValueCommit,

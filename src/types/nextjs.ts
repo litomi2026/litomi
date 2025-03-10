@@ -7,7 +7,7 @@ export type BaseLayoutProps<Param extends Readonly<Record<string, unknown>> = Re
 
 export type BasePageProps<T extends Readonly<Record<string, unknown>> = Readonly<Record<string, string>>> = {
   params: Promise<T>
-  searchParams: Promise<Record<string, string | undefined | string[]>>
+  searchParams: Promise<Record<string, string | string[] | undefined>>
 }
 
 export type ErrorProps = {

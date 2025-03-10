@@ -1,13 +1,16 @@
 'use client'
 
-import { usePageViewStore } from '@/store/controller/pageView'
-import { useScreenFitStore } from '@/store/controller/screenFit'
+import { usePageViewStore } from '@/components/ImageViewer/store/pageView'
+import { useScreenFitStore } from '@/components/ImageViewer/store/screenFit'
 import { type Manga } from '@/types/manga'
 import { useVirtualizer } from '@tanstack/react-virtual'
-import { Dispatch, memo, SetStateAction, useCallback, useRef, useState } from 'react'
+import { Dispatch, memo, SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
+import { useInView } from 'react-intersection-observer'
 
 import MangaImage from '../MangaImage'
 import ResizeObserverWrapper from '../ResizeObserverWrapper'
+import { useImageIndexStore } from './store/imageIndex'
+import { useVirtualizerStore } from './store/virtualizer'
 
 type Props = {
   manga: Manga
@@ -23,11 +26,14 @@ type VirtualItemProps = {
   setImageErrors: Dispatch<SetStateAction<{ errors: boolean[] }>>
 }
 
-export default function ScrollViewer({ manga, onClick }: Props) {
+export default memo(ScrollViewer)
+
+function ScrollViewer({ manga, onClick }: Props) {
   const { images } = manga
   const parentRef = useRef<HTMLDivElement>(null)
   const pageView = usePageViewStore((state) => state.pageView)
   const screenFit = useScreenFitStore((state) => state.screenFit)
+  const setVirtualizer = useVirtualizerStore((state) => state.setVirtualizer)
   const isDoublePage = pageView === 'double'
   const rowCount = isDoublePage ? Math.ceil(images.length / 2) : images.length
   const [imageErrors, setImageErrors] = useState({ errors: [] as boolean[] })
@@ -42,13 +48,20 @@ export default function ScrollViewer({ manga, onClick }: Props) {
   const virtualItems = virtualizer.getVirtualItems()
   const translateY = virtualItems[0]?.start ?? 0
 
+  useEffect(() => {
+    setVirtualizer(virtualizer)
+    return () => {
+      setVirtualizer(null)
+    }
+  }, [setVirtualizer, virtualizer])
+
   const screenFitStyle = {
     width: '[&_li]:justify-center [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:max-h-fit',
     all: '[&_li]:justify-center [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:max-h-dvh',
 
     // TODO: Fix this
     height:
-      '[&_li]:overflow-x-auto [&_li]:overscroll-none [&_li]:w-full [&_img]:w-auto [&_img]:max-w-fit [&_img]:h-dvh [&_img]:max-h-fit',
+      '[&_li]:overflow-x-auto [&_li]:overscroll-none [&_li]:mx-auto [&_li]:w-fit [&_li]:max-w-full [&_img]:w-auto [&_img]:max-w-fit [&_img]:h-dvh [&_img]:max-h-fit',
   }[screenFit]
 
   return (
@@ -79,15 +92,25 @@ const VirtualItemMemo = memo(VirtualItem)
 
 function VirtualItem({ index, manga, virtualizer, isError, isError2, setImageErrors }: VirtualItemProps) {
   const pageView = usePageViewStore((state) => state.pageView)
+  const setScrollIndex = useImageIndexStore((state) => state.setImageIndex)
   const isDoublePage = pageView === 'double'
   const imageIndex = isDoublePage ? index * 2 : index
   const nextImageIndex = imageIndex + 1
+
+  const { ref, inView } = useInView({ threshold: 0, rootMargin: '-50% 0% -50% 0%' })
+
+  useEffect(() => {
+    if (inView) {
+      setScrollIndex(imageIndex)
+    }
+  }, [imageIndex, inView, setScrollIndex])
 
   return (
     <ResizeObserverWrapper as="li" data-index={index} onResize={(el) => virtualizer.measureElement(el)}>
       <MangaImage
         aria-hidden={isError}
         imageIndex={imageIndex}
+        imageRef={ref}
         manga={manga}
         onError={() =>
           setImageErrors((prev) => {

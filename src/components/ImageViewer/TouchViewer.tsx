@@ -1,29 +1,36 @@
 'use client'
 
-import { usePageViewStore } from '@/store/controller/pageView'
-import { useScreenFitStore } from '@/store/controller/screenFit'
-import { useTouchOrientationStore } from '@/store/controller/touchOrientation'
+import { usePageViewStore } from '@/components/ImageViewer/store/pageView'
+import { useScreenFitStore } from '@/components/ImageViewer/store/screenFit'
+import { useTouchOrientationStore } from '@/components/ImageViewer/store/touchOrientation'
+import useImageNavigation from '@/hook/useImageNavigation'
 import { Manga } from '@/types/manga'
 import { useRef } from 'react'
 
 import MangaImage from '../MangaImage'
+import { useImageIndexStore } from './store/imageIndex'
 
 const SWIPE_THRESHOLD = 50 // 스와이프 감지 임계값 (px)
 const EDGE_CLICK_THRESHOLD = 1 / 3 // 1 / 3 -> 3등분 중 1칸. 0.5 이하여야 함
 
 type Props = {
   manga: Manga
-  currentIndex: number
-  onNavigate: (direction: 'next' | 'prev') => void
   onClick: () => void
 }
 
-export default function TouchViewer({ manga, currentIndex, onNavigate, onClick }: Props) {
+export default function TouchViewer({ manga, onClick }: Props) {
+  const { images } = manga
   const pageView = usePageViewStore((state) => state.pageView)
+  const currentIndex = useImageIndexStore((state) => state.imageIndex)
   const screenFit = useScreenFitStore((state) => state.screenFit)
   const touchOrientation = useTouchOrientationStore((state) => state.touchOrientation)
-  const pointerStartRef = useRef<null | { x: number; y: number }>(null)
+  const pointerStartRef = useRef<{ x: number; y: number } | null>(null)
   const swipeDetectedRef = useRef(false)
+
+  const { prevPage, nextPage } = useImageNavigation({
+    maxIndex: images.length - 1,
+    offset: pageView === 'double' ? 2 : 1,
+  })
 
   // 포인터 시작 시 좌표 기록 및 스와이프 플래그 초기화
   const handlePointerDown = (e: React.PointerEvent) => {
@@ -42,18 +49,18 @@ export default function TouchViewer({ manga, currentIndex, onNavigate, onClick }
       if (Math.abs(diffX) > SWIPE_THRESHOLD) {
         swipeDetectedRef.current = true
         if (diffX > 0) {
-          onNavigate('prev') // 오른쪽 스와이프
+          prevPage() // 오른쪽 스와이프
         } else {
-          onNavigate('next') // 왼쪽 스와이프
+          nextPage() // 왼쪽 스와이프
         }
       }
     } else if (touchOrientation === 'vertical') {
       if (Math.abs(diffY) > SWIPE_THRESHOLD) {
         swipeDetectedRef.current = true
         if (diffY > 0) {
-          onNavigate('prev') // 아래쪽 스와이프
+          prevPage() // 아래쪽 스와이프
         } else {
-          onNavigate('next') // 위쪽 스와이프
+          nextPage() // 위쪽 스와이프
         }
       }
     }
@@ -74,18 +81,18 @@ export default function TouchViewer({ manga, currentIndex, onNavigate, onClick }
     if (touchOrientation === 'horizontal') {
       const clickX = e.clientX - rect.left
       if (clickX < rect.width * EDGE_CLICK_THRESHOLD) {
-        onNavigate('prev')
+        prevPage()
       } else if (clickX > rect.width * (1 - EDGE_CLICK_THRESHOLD)) {
-        onNavigate('next')
+        nextPage()
       } else {
         onClick()
       }
     } else if (touchOrientation === 'vertical') {
       const clickY = e.clientY - rect.top
       if (clickY < rect.height * EDGE_CLICK_THRESHOLD) {
-        onNavigate('prev')
+        prevPage()
       } else if (clickY > rect.height * (1 - EDGE_CLICK_THRESHOLD)) {
-        onNavigate('next')
+        nextPage()
       } else {
         onClick()
       }

@@ -1,17 +1,16 @@
 'use client'
 
-import useImageNavigation from '@/hook/useImageNavigation'
-import { useNavigationModeStore } from '@/store/controller/navigationMode'
-import { usePageViewStore } from '@/store/controller/pageView'
-import { useScreenFitStore } from '@/store/controller/screenFit'
-import { useTouchOrientationStore } from '@/store/controller/touchOrientation'
+import { useNavigationModeStore } from '@/components/ImageViewer/store/navigationMode'
+import { useScreenFitStore } from '@/components/ImageViewer/store/screenFit'
+import { useTouchOrientationStore } from '@/components/ImageViewer/store/touchOrientation'
 import { type Manga } from '@/types/manga'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 import { IconChevronLeft, IconClose, IconMaximize, IconReload } from '../icons/IconImageViewer'
-import Slider from '../Slider'
+import ImageSlider from './ImageSlider'
+import PageViewButton from './PageViewButton'
 import ScrollViewer from './ScrollViewer'
 import TouchViewer from './TouchViewer'
 
@@ -25,23 +24,12 @@ export default function ImageViewer({ manga }: Props) {
   const maxImageIndex = imageCount - 1
   const [showController, setShowController] = useState(false)
   const { navMode, setNavMode } = useNavigationModeStore()
-  const { pageView, setPageView } = usePageViewStore()
   const { screenFit, setScreenFit } = useScreenFitStore()
   const { touchOrientation, setTouchOrientation } = useTouchOrientationStore()
   const isTouchMode = navMode === 'touch'
-  const isDoublePage = pageView === 'double'
   const isWidthFit = screenFit === 'width'
   const isHorizontalTouch = touchOrientation === 'horizontal'
   const router = useRouter()
-
-  const { currentIndex, setCurrentIndex, prevPage, nextPage } = useImageNavigation({
-    enabled: isTouchMode,
-    maxIndex: maxImageIndex,
-    offset: isDoublePage ? 2 : 1,
-  })
-
-  const startPage = Math.max(1, currentIndex + 1)
-  const endPage = isDoublePage ? Math.min(currentIndex + 2, imageCount) : startPage
 
   useEffect(() => {
     document.body.style.overflow = isTouchMode ? 'hidden' : 'auto'
@@ -63,6 +51,8 @@ export default function ImageViewer({ manga }: Props) {
       }
     }
   }
+
+  const toggleController = useCallback(() => setShowController((prev) => !prev), [])
 
   return (
     <div className="relative">
@@ -92,14 +82,9 @@ export default function ImageViewer({ manga }: Props) {
       </div>
 
       {isTouchMode ? (
-        <TouchViewer
-          currentIndex={currentIndex}
-          manga={manga}
-          onClick={() => setShowController((prev) => !prev)}
-          onNavigate={(direction) => (direction === 'prev' ? prevPage() : nextPage())}
-        />
+        <TouchViewer manga={manga} onClick={toggleController} />
       ) : (
-        <ScrollViewer manga={manga} onClick={() => setShowController((prev) => !prev)} />
+        <ScrollViewer manga={manga} onClick={toggleController} />
       )}
 
       <div
@@ -107,33 +92,12 @@ export default function ImageViewer({ manga }: Props) {
         className="fixed bottom-0 left-0 right-0 z-10 bg-background/70 backdrop-blur border-t border-gray-500 px-safe pb-safe transition aria-hidden:opacity-0 aria-hidden:pointer-events-none"
       >
         <div className="p-3 grid gap-1.5">
-          {isTouchMode && (
-            <>
-              <div className="px-3">
-                <Slider
-                  className="h-6"
-                  max={maxImageIndex}
-                  onValueCommit={(value) => setCurrentIndex(value)}
-                  value={currentIndex}
-                />
-              </div>
-              <div className="mx-auto rounded text-center text-xs">
-                {startPage === endPage ? startPage : `${startPage}-${endPage}`} / {imageCount}
-              </div>
-            </>
-          )}
+          <ImageSlider maxImageIndex={maxImageIndex} />
           <div className="font-semibold whitespace-nowrap flex-wrap justify-center text-sm flex gap-2 text-background [&_button]:rounded-full [&_button]:bg-gray-100 [&_button]:px-2 [&_button]:py-1 [&_button]:hover:bg-foreground [&_button]:active:bg-gray-400 [&_button]:disabled:bg-gray-400 [&_button]:disabled:text-gray-500 [&_button]:min-w-20 [&_button]:transition">
             <button onClick={() => setNavMode(isTouchMode ? 'scroll' : 'touch')}>
               {isTouchMode ? '터치' : '스크롤'} 모드
             </button>
-            <button
-              onClick={() => {
-                setCurrentIndex(Math.max(0, currentIndex))
-                setPageView(isDoublePage ? 'single' : 'double')
-              }}
-            >
-              {isDoublePage ? '두 쪽' : '한 쪽'} 보기
-            </button>
+            <PageViewButton />
             <button onClick={() => setScreenFit(screenFit === 'all' ? 'width' : isWidthFit ? 'height' : 'all')}>
               {screenFit === 'all' ? '화면' : isWidthFit ? '가로' : '세로'} 맞춤
             </button>
