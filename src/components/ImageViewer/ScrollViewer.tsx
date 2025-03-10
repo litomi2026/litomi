@@ -97,6 +97,7 @@ function VirtualItem({ index, manga, virtualizer, isError, isError2, setImageErr
   const isDoublePage = pageView === 'double'
   const imageIndex = isDoublePage ? index * 2 : index
   const nextImageIndex = imageIndex + 1
+  const isScrolling = virtualizer.isScrolling
 
   const { ref, inView } = useInView({
     threshold: 0,
@@ -104,10 +105,10 @@ function VirtualItem({ index, manga, virtualizer, isError, isError2, setImageErr
   })
 
   useEffect(() => {
-    if (inView) {
+    if (inView && isScrolling) {
       setImageIndex(imageIndex)
     }
-  }, [imageIndex, inView, setImageIndex])
+  }, [imageIndex, inView, setImageIndex, isScrolling])
 
   return (
     <ResizeObserverWrapper as="li" data-index={index} onResize={(el) => virtualizer.measureElement(el)}>
