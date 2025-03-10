@@ -4,7 +4,15 @@ import Link from 'next/link'
 
 import MangaImage from './MangaImage'
 
-const BLIND_TAGS = ['bestiality', 'guro', 'snuff', 'yaoi', 'scat']
+const BLIND_TAG_LABELS = {
+  bestiality: '수간',
+  guro: '고어',
+  snuff: '스너프',
+  yaoi: '게이',
+  scat: '스캇',
+} as const
+
+const BLIND_TAGS = Object.keys(BLIND_TAG_LABELS)
 
 type Props = {
   manga: Manga
@@ -13,6 +21,16 @@ type Props = {
 
 export default function MangaCard({ manga, index }: Props) {
   const { id, artists, characters, date, group, related, series, tags, title, type, images } = manga
+
+  const censoredTags = tags
+    ?.filter((tag) => {
+      const tagName = tag.split(':').pop() ?? ''
+      return BLIND_TAGS.includes(tagName)
+    })
+    .map((tag) => {
+      const tagName = tag.split(':').pop()
+      return BLIND_TAG_LABELS[tagName as keyof typeof BLIND_TAG_LABELS]
+    })
 
   return (
     <li className="grid grid-cols-2 border rounded-lg overflow-hidden border-gray-700" key={id}>
@@ -26,12 +44,11 @@ export default function MangaCard({ manga, index }: Props) {
         <div className="absolute bottom-1 min-w-7 text-center  left-1/2 -translate-x-1/2 px-1 bg-background rounded">
           {images.length}
         </div>
-        {tags && tags.some((tag) => BLIND_TAGS.includes(tag.split(':')[tag.split(':').length - 1])) && (
+        {censoredTags && censoredTags.length > 0 && (
           <div className="absolute inset-0 bg-background/50 backdrop-blur flex items-center justify-center text-center p-4">
-            <div className="text-foreground text-center font-semibold">
-              수간/고어/게이/스캇
-              <br />
-              작품 검열
+            <div className="text-foreground text-center font-semibold flex flex-wrap gap-1 justify-center">
+              <span>{censoredTags.join('/')}</span>
+              <span>작품 검열</span>
             </div>
           </div>
         )}
