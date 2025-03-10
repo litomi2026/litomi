@@ -3,12 +3,12 @@
 import { usePageViewStore } from '@/components/ImageViewer/store/pageView'
 import { useScreenFitStore } from '@/components/ImageViewer/store/screenFit'
 import { type Manga } from '@/types/manga'
+import { getSafeAreaBottom } from '@/utils'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { Dispatch, memo, SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 
 import MangaImage from '../MangaImage'
-import ResizeObserverWrapper from '../ResizeObserverWrapper'
 import { useImageIndexStore } from './store/imageIndex'
 import { useVirtualizerStore } from './store/virtualizer'
 
@@ -44,6 +44,7 @@ function ScrollViewer({ manga, onClick }: Props) {
     estimateSize: useCallback(() => window.innerHeight, []),
     overscan: 5,
     useAnimationFrameWithResizeObserver: true,
+    paddingEnd: getSafeAreaBottom(),
   })
 
   const virtualItems = virtualizer.getVirtualItems()
@@ -69,7 +70,7 @@ function ScrollViewer({ manga, onClick }: Props) {
     <div className="overflow-y-auto overscroll-none contain-strict h-dvh select-none" onClick={onClick} ref={parentRef}>
       <div className="w-full relative" style={{ height: virtualizer.getTotalSize() }}>
         <ul
-          className={`absolute top-0 left-0 w-full pb-safe [&_li]:flex [&_img]:border [&_img]:border-background [&_img]:aria-hidden:w-40 [&_img]:aria-hidden:text-foreground ${screenFitStyle}`}
+          className={`absolute top-0 left-0 w-full [&_li]:flex [&_img]:border [&_img]:border-background [&_img]:aria-hidden:w-40 [&_img]:aria-hidden:text-foreground ${screenFitStyle}`}
           style={{ transform: `translateY(${translateY}px)` }}
         >
           {virtualItems.map(({ index, key }) => (
@@ -97,7 +98,6 @@ function VirtualItem({ index, manga, virtualizer, isError, isError2, setImageErr
   const isDoublePage = pageView === 'double'
   const imageIndex = isDoublePage ? index * 2 : index
   const nextImageIndex = imageIndex + 1
-  const isScrolling = virtualizer.isScrolling
 
   const { ref, inView } = useInView({
     threshold: 0,
@@ -105,13 +105,13 @@ function VirtualItem({ index, manga, virtualizer, isError, isError2, setImageErr
   })
 
   useEffect(() => {
-    if (inView && isScrolling) {
+    if (inView) {
       setImageIndex(imageIndex)
     }
-  }, [imageIndex, inView, setImageIndex, isScrolling])
+  }, [imageIndex, inView, setImageIndex])
 
   return (
-    <ResizeObserverWrapper as="li" data-index={index} onResize={(el) => virtualizer.measureElement(el)}>
+    <li data-index={index} ref={virtualizer.measureElement}>
       <MangaImage
         aria-hidden={isError}
         imageIndex={imageIndex}
@@ -139,6 +139,6 @@ function VirtualItem({ index, manga, virtualizer, isError, isError2, setImageErr
           {...(isError2 && { src: '/images/fallback.svg' })}
         />
       )}
-    </ResizeObserverWrapper>
+    </li>
   )
 }

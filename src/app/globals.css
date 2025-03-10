@@ -3,6 +3,9 @@
 :root {
   --background: #0a0a0a;
   --foreground: #ededed;
+  --safe-area-bottom: env(safe-area-inset-bottom);
+  --safe-area-left: env(safe-area-inset-left);
+  --safe-area-right: env(safe-area-inset-right);
 }
 
 @theme {
@@ -21,16 +24,16 @@
 }
 
 @utility pb-safe {
-  padding-bottom: env(safe-area-inset-bottom);
+  padding-bottom: var(--safe-area-bottom);
 }
 
 @utility mb-safe {
-  margin-bottom: env(safe-area-inset-bottom);
+  margin-bottom: var(--safe-area-bottom);
 }
 
 @utility px-safe {
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
+  padding-left: var(--safe-area-left);
+  padding-right: var(--safe-area-right);
 }
 
 @utility bg-brand-gradient {
