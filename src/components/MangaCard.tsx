@@ -1,3 +1,4 @@
+import { harpiTagMap } from '@/database/harpi-tag'
 import { Manga } from '@/types/manga'
 import dayjs from 'dayjs'
 import Link from 'next/link'
@@ -22,7 +23,10 @@ type Props = {
 export default function MangaCard({ manga, index }: Props) {
   const { id, artists, characters, date, group, related, series, tags, title, type, images } = manga
 
-  const censoredTags = tags
+  const englishTags = tags?.map((tag) => harpiTagMap[tag].engStr ?? tag)
+  const koreanTags = tags?.map((tag) => harpiTagMap[tag].korStr ?? tag)
+
+  const censoredTags = englishTags
     ?.filter((tag) => {
       const tagName = tag.split(':').pop() ?? ''
       return BLIND_TAGS.includes(tagName)
@@ -77,16 +81,18 @@ export default function MangaCard({ manga, index }: Props) {
               </ul>
             </div>
           )}
-          {tags && tags.length > 0 && (
+          {koreanTags && koreanTags.length > 0 && (
             <div className="text-sm flex gap-2 whitespace-nowrap">
               태그
               <ul className="flex xl:flex-wrap overflow-auto gap-1">
-                {tags.map((tag) => {
+                {koreanTags.map((tag) => {
                   const a = tag.split(':')
                   const backgroundColor =
                     {
                       male: 'bg-blue-500',
                       female: 'bg-red-500',
+                      남: 'bg-blue-500',
+                      여: 'bg-red-500',
                     }[a[0]] ?? 'bg-gray-500'
                   return (
                     <li className={`rounded px-1 text-foreground ${backgroundColor}`} key={tag}>
