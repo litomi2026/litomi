@@ -43,7 +43,7 @@ export default async function Page({ searchParams }: BasePageProps) {
         <div className="flex justify-center text-sm py-1">
           <a
             className="flex items-center gap-2 hover:underline"
-            href="https://t.me/+Eipy6SJdrx80ODk1"
+            href="https://t.me/litomi_official"
             rel="noopener noreferrer"
             target="_blank"
           >
