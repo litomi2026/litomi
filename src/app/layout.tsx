@@ -34,6 +34,7 @@ const PretendardVariable = localFont({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(CANONICAL_URL),
   title: SHORT_NAME,
   description: 'Manga mirror site',
   applicationName: SHORT_NAME,
