@@ -35,7 +35,7 @@ const PretendardVariable = localFont({
 
 export const metadata: Metadata = {
   title: 'Litomi',
-  description: 'Litomi is a Hitomi.la mirror.',
+  description: 'Manga mirror site',
   applicationName: SHORT_NAME,
   robots: 'index, follow',
   alternates: {
@@ -44,7 +44,8 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: 'Litomi',
-    description: 'Hitomi.la mirror',
+    description: 'Manga mirror site',
+    images: [{ url: '/og-image.png' }],
   },
   other: { RATING: 'RTA-5042-1996-1400-1577-RTA' },
 }
