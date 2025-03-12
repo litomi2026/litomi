@@ -1,14 +1,8 @@
-import { CDN } from '@/constants/url'
 import { Manga } from '@/types/manga'
+import { getImageSrc } from '@/utils/manga'
 import { ImgHTMLAttributes } from 'react'
 
 const INITIAL_DISPLAYED_IMAGE = 5
-
-type Params = {
-  cdn?: string
-  id: number
-  name: string
-}
 
 type Props = ImgHTMLAttributes<HTMLImageElement> & {
   manga: Manga
@@ -33,14 +27,4 @@ export default function MangaImage({ manga, imageIndex, imageRef, ...props }: Pr
       />
     )
   )
-}
-
-function getImageSrc({ cdn, id, name }: Params) {
-  switch (cdn) {
-    case 'HARPI':
-      return `${CDN.HARPI}/${name}`
-    case 'HASHA':
-    default:
-      return `${CDN.HASHA}/${id}/${name}`
-  }
 }

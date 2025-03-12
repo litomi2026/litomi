@@ -2,7 +2,7 @@ import './globals.css'
 
 import type { Metadata, Viewport } from 'next'
 
-import { SHORT_NAME } from '@/constants'
+import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { GA_ID, GTM_ID } from '@/constants/env'
 import { CANONICAL_URL } from '@/constants/url'
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
@@ -34,7 +34,7 @@ const PretendardVariable = localFont({
 })
 
 export const metadata: Metadata = {
-  title: 'Litomi',
+  title: SHORT_NAME,
   description: 'Manga mirror site',
   applicationName: SHORT_NAME,
   robots: 'index, follow',
@@ -42,11 +42,7 @@ export const metadata: Metadata = {
     canonical: CANONICAL_URL,
     languages: { ko: CANONICAL_URL },
   },
-  openGraph: {
-    title: 'Litomi',
-    description: 'Manga mirror site',
-    images: [{ url: '/og-image.png' }],
-  },
+  openGraph: defaultOpenGraph,
   other: { RATING: 'RTA-5042-1996-1400-1577-RTA' },
 }
 
