@@ -23,8 +23,9 @@ type Props = {
 export default function MangaCard({ manga, index }: Props) {
   const { id, artists, characters, date, group, related, series, tags, title, type, images } = manga
 
-  const englishTags = tags?.map((tag) => harpiTagMap[tag].engStr ?? tag)
-  const koreanTags = tags?.map((tag) => harpiTagMap[tag].korStr ?? tag)
+  const decodedTags = tags?.map((tag) => harpiTagMap[tag] || tag)
+  const englishTags = decodedTags?.map((tag) => (typeof tag === 'string' ? tag : tag.engStr))
+  const koreanTags = decodedTags?.map((tag) => (typeof tag === 'string' ? tag : tag.korStr || tag.engStr))
 
   const censoredTags = englishTags
     ?.filter((tag) => {
