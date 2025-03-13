@@ -38,13 +38,17 @@ export const metadata: Metadata = {
   title: SHORT_NAME,
   description: 'Manga mirror site',
   applicationName: SHORT_NAME,
+  keywords: 'litomi, manga, webtoon, comic, manhwa, manhua, 만화, 웹툰',
   robots: 'index, follow',
   alternates: {
     canonical: CANONICAL_URL,
     languages: { ko: CANONICAL_URL },
   },
   openGraph: defaultOpenGraph,
-  other: { RATING: 'RTA-5042-1996-1400-1577-RTA' },
+  other: {
+    RATING: 'RTA-5042-1996-1400-1577-RTA',
+    rating: 'adult',
+  },
 }
 
 export const viewport: Viewport = {
