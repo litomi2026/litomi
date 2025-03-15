@@ -1,6 +1,6 @@
 import { memo, useCallback } from 'react'
 
-import Slider from '../Slider'
+import Slider from '../ui/Slider'
 import { useImageIndexStore } from './store/imageIndex'
 import { usePageViewStore } from './store/pageView'
 import { useVirtualizerStore } from './store/virtualizer'

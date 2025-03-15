@@ -3,8 +3,8 @@
 import { memo, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-import ToggleButton from '../A'
-import Modal from '../Modal'
+import Modal from '../ui/Modal'
+import ToggleButton from '../ui/ToggleButton'
 import { useImageIndexStore } from './store/imageIndex'
 import { useNavigationModeStore } from './store/navigationMode'
 import { useVirtualizerStore } from './store/virtualizer'
@@ -28,6 +28,7 @@ function Slideshow({ maxImageIndex, offset, onIntervalChange }: Props) {
   const intervalIdRef = useRef<number | null>(null)
   const [isOpened, setIsOpened] = useState(false)
   const inputRef = useRef<HTMLInputElement | null>(null)
+  const [isRepeating, setIsRepeating] = useState(false)
 
   useEffect(() => {
     if (isOpened) {
@@ -71,9 +72,13 @@ function Slideshow({ maxImageIndex, offset, onIntervalChange }: Props) {
         슬라이드쇼
       </button>
       <Modal onClose={() => setIsOpened(false)} open={isOpened} showCloseButton showDragButton>
-        <form className="bg-gray-950 w-xs rounded-xl p-4 pt-8 shadow-xl border border-gray-800" onSubmit={handleSubmit}>
-          <div className="grid grid-cols-[auto_1fr] items-center gap-4 whitespace-nowrap">
-            <h4 className="font-semibold">주기</h4>
+        <form
+          className="bg-gray-950 w-screen max-w-xs rounded-xl p-4 pt-8 shadow-xl border border-gray-800"
+          onSubmit={handleSubmit}
+        >
+          <h3 className="font-bold text-xl text-center">슬라이드쇼</h3>
+          <div className="grid grid-cols-[auto_1fr] items-center gap-4 mt-4 whitespace-nowrap [&_h4]:font-semibold">
+            <h4>주기</h4>
             <div className="flex items-center gap-2">
               <input
                 className="border w-16 text-foreground rounded-lg px-2 py-0.5"
@@ -89,10 +94,14 @@ function Slideshow({ maxImageIndex, offset, onIntervalChange }: Props) {
               />
               <span>초</span>
             </div>
-            <h4 className="font-semibold">반복</h4>
-            <ToggleButton className="w-60 aria-pressed:bg-brand-gradient" />
+            <h4>반복</h4>
+            <ToggleButton
+              className="w-14 aria-pressed:bg-brand-gradient"
+              enabled={isRepeating}
+              onToggle={setIsRepeating}
+            />
           </div>
-          <div className="grid gap-3 pt-6 [&_button]:hover:bg-gray-800 [&_button]:active:bg-gray-900 [&_button]:rounded-full [&_button]:transition">
+          <div className="grid gap-3 pt-6 text-sm [&_button]:hover:bg-gray-800 [&_button]:active:bg-gray-900 [&_button]:rounded-full [&_button]:transition">
             <button
               className="bg-midnight-500 border rounded-full p-2 font-bold text-white transition hover:brightness-110"
               type="submit"
