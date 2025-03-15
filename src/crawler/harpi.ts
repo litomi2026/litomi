@@ -44,9 +44,7 @@ async function fetchMangas({ page }: FetchHarpiMangasParams) {
       tags: manga.tagsIds,
       title: manga.title,
       type: manga.type,
-      images: sortImageURLs(manga.imageUrl).map((url) => ({
-        name: url,
-      })),
+      images: sortImageURLs(manga.imageUrl),
       cdn: 'HARPI',
     }))
     return mangas

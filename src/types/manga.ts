@@ -9,12 +9,6 @@ export type Manga = {
   tags?: string[]
   title: string
   type: string
-  images: MangaImage[]
+  images: string[]
   cdn?: string
-}
-
-type MangaImage = {
-  name: string
-  width?: number
-  height?: number
 }

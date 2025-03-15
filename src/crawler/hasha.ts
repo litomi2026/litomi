@@ -50,11 +50,7 @@ async function fetchMangas({ page, sort, order }: FetchHashaMangasParams) {
       tags: manga.tags,
       title: manga.title,
       type: manga.type,
-      images: manga.images.map((img: HashaImage) => ({
-        name: img.name,
-        height: img.height,
-        width: img.width,
-      })),
+      images: manga.images.map((img: HashaImage) => img.name),
     }))
     return mangas
   } catch (error) {

@@ -12,17 +12,17 @@ type Props = ImgHTMLAttributes<HTMLImageElement> & {
 
 export default function MangaImage({ manga, imageIndex, imageRef, ...props }: Props) {
   const { images, cdn, id } = manga
-  const image = images[imageIndex]
+  const imagePath = images[imageIndex]
 
   return (
-    image && (
+    imagePath && (
       <img
         alt={`manga-image-${imageIndex + 1}`}
         draggable={false}
         fetchPriority={imageIndex < INITIAL_DISPLAYED_IMAGE ? 'high' : 'low'}
         ref={imageRef}
         referrerPolicy="same-origin"
-        src={getImageSrc({ cdn, id, name: image.name })}
+        src={getImageSrc({ cdn, id, path: imagePath })}
         {...props}
       />
     )
