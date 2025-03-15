@@ -8,7 +8,7 @@ export default function ToggleButton({ className = '', enabled, onToggle }: Prop
   return (
     <button
       aria-pressed={enabled}
-      className={`relative aspect-[7/4] bg-gray-300 flex items-center rounded-full focus:outline-none ${className}`}
+      className={`relative aspect-[7/4] bg-gray-400 flex items-center rounded-full focus:outline-none ${className}`}
       onClick={() => onToggle?.(!enabled)}
       type="button"
     >

@@ -25,16 +25,22 @@ export default memo(SlideshowWrapper)
 function Slideshow({ maxImageIndex, offset, onIntervalChange }: Props) {
   const imageIndex = useImageIndexStore((state) => state.imageIndex)
   const [slideshowInterval, setSlideshowInterval] = useState(0)
-  const intervalIdRef = useRef<number | null>(null)
   const [isOpened, setIsOpened] = useState(false)
-  const inputRef = useRef<HTMLInputElement | null>(null)
   const [isRepeating, setIsRepeating] = useState(false)
+  const [isChecked, setIsChecked] = useState(false)
+  const intervalIdRef = useRef<number | null>(null)
+  const inputRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
+    if (!inputRef.current) return
+
     if (isOpened) {
-      inputRef.current?.focus()
+      inputRef.current?.select()
+    } else {
+      inputRef.current.value = String(slideshowInterval)
+      setIsChecked(isRepeating)
     }
-  }, [isOpened])
+  }, [isOpened, isRepeating, slideshowInterval])
 
   useEffect(() => {
     if (!slideshowInterval) return
@@ -42,6 +48,8 @@ function Slideshow({ maxImageIndex, offset, onIntervalChange }: Props) {
     intervalIdRef.current = window.setInterval(() => {
       if (imageIndex + offset <= maxImageIndex) {
         onIntervalChange?.(imageIndex + offset)
+      } else if (isRepeating) {
+        onIntervalChange?.(0)
       } else {
         toast.info('마지막 이미지입니다.')
         setSlideshowInterval(0)
@@ -58,12 +66,13 @@ function Slideshow({ maxImageIndex, offset, onIntervalChange }: Props) {
         intervalIdRef.current = null
       }
     }
-  }, [imageIndex, maxImageIndex, offset, onIntervalChange, slideshowInterval])
+  }, [imageIndex, isRepeating, maxImageIndex, offset, onIntervalChange, slideshowInterval])
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setSlideshowInterval((e.target as HTMLFormElement).interval.valueAsNumber)
     setIsOpened(false)
+    setIsRepeating(isChecked)
   }
 
   return (
@@ -77,14 +86,14 @@ function Slideshow({ maxImageIndex, offset, onIntervalChange }: Props) {
           onSubmit={handleSubmit}
         >
           <h3 className="font-bold text-xl text-center">슬라이드쇼</h3>
-          <div className="grid grid-cols-[auto_1fr] items-center gap-4 mt-4 whitespace-nowrap [&_h4]:font-semibold">
+          <div className="grid grid-cols-[auto_1fr] items-center gap-4 mt-6 whitespace-nowrap [&_h4]:font-semibold">
             <h4>주기</h4>
             <div className="flex items-center gap-2">
               <input
-                className="border w-16 text-foreground rounded-lg px-2 py-0.5"
+                className="border-2 w-16 text-foreground rounded-lg px-2 py-0.5 border-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
                 defaultValue={5}
                 max={999}
-                min={0}
+                min={1}
                 name="interval"
                 onKeyDown={(e) => e.stopPropagation()}
                 pattern="\d*"
@@ -95,20 +104,25 @@ function Slideshow({ maxImageIndex, offset, onIntervalChange }: Props) {
               <span>초</span>
             </div>
             <h4>반복</h4>
-            <ToggleButton
-              className="w-14 aria-pressed:bg-brand-gradient"
-              enabled={isRepeating}
-              onToggle={setIsRepeating}
-            />
+            <ToggleButton className="w-14 aria-pressed:bg-brand-gradient" enabled={isChecked} onToggle={setIsChecked} />
           </div>
-          <div className="grid gap-3 pt-6 text-sm [&_button]:hover:bg-gray-800 [&_button]:active:bg-gray-900 [&_button]:rounded-full [&_button]:transition">
-            <button
-              className="bg-midnight-500 border rounded-full p-2 font-bold text-white transition hover:brightness-110"
-              type="submit"
-            >
-              시작
+          <div className="grid gap-2 pt-6 text-sm [&_button]:hover:bg-gray-800 [&_button]:active:bg-gray-900 [&_button]:rounded-full [&_button]:transition">
+            <button className="border-2 p-2 font-bold text-white transition border-gray-700" type="submit">
+              {slideshowInterval ? '변경' : '시작'}
             </button>
-            <button className="p-2 text-gray-500 rounded-full" onClick={() => setIsOpened(false)} type="button">
+            {slideshowInterval ? (
+              <button
+                className="p-2 text-red-500 font-bold"
+                onClick={() => {
+                  setSlideshowInterval(0)
+                  setIsOpened(false)
+                }}
+                type="button"
+              >
+                중지
+              </button>
+            ) : null}
+            <button className="p-2 text-gray-500" onClick={() => setIsOpened(false)} type="button">
               취소
             </button>
           </div>
