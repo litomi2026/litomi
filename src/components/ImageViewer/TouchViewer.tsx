@@ -1,7 +1,7 @@
 'use client'
 
 import { usePageViewStore } from '@/components/ImageViewer/store/pageView'
-import { useScreenFitStore } from '@/components/ImageViewer/store/screenFit'
+import { ScreenFit } from '@/components/ImageViewer/store/screenFit'
 import { useTouchOrientationStore } from '@/components/ImageViewer/store/touchOrientation'
 import useImageNavigation from '@/hook/useImageNavigation'
 import { Manga } from '@/types/manga'
@@ -16,13 +16,13 @@ const EDGE_CLICK_THRESHOLD = 1 / 3 // 1 / 3 -> 3등분 중 1칸. 0.5 이하여�
 type Props = {
   manga: Manga
   onClick: () => void
+  screenFit: ScreenFit
 }
 
-export default function TouchViewer({ manga, onClick }: Props) {
+export default function TouchViewer({ manga, onClick, screenFit }: Props) {
   const { images } = manga
   const pageView = usePageViewStore((state) => state.pageView)
   const currentIndex = useImageIndexStore((state) => state.imageIndex)
-  const screenFit = useScreenFitStore((state) => state.screenFit)
   const touchOrientation = useTouchOrientationStore((state) => state.touchOrientation)
   const pointerStartRef = useRef<{ x: number; y: number } | null>(null)
   const swipeDetectedRef = useRef(false)

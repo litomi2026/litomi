@@ -8,7 +8,7 @@ import { notFound } from 'next/navigation'
 
 type MangaForMetadata = {
   title: string
-  images: { name: string }[]
+  images: string[]
   cdn?: string
 }
 
@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: BasePageProps, parent: Resolv
     title: `${title} - ${SHORT_NAME}`,
     openGraph: {
       ...defaultOpenGraph,
-      images: images.slice(0, 3).map(({ name }) => getImageSrc({ path: name, cdn, id: +id })),
+      images: images.slice(0, 3).map((path) => getImageSrc({ path, cdn, id: +id })),
     },
   }
 }

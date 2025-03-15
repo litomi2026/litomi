@@ -86,9 +86,9 @@ export default function ImageViewer({ manga }: Props) {
       </div>
 
       {isTouchMode ? (
-        <TouchViewer manga={manga} onClick={toggleController} />
+        <TouchViewer manga={manga} onClick={toggleController} screenFit={screenFit} />
       ) : (
-        <ScrollViewer manga={manga} onClick={toggleController} />
+        <ScrollViewer manga={manga} onClick={toggleController} screenFit={screenFit} />
       )}
 
       <div
