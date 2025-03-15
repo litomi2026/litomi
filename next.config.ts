@@ -3,10 +3,6 @@ import type { NextConfig } from 'next'
 import { withSentryConfig } from '@sentry/nextjs'
 
 const nextConfig: NextConfig = {
-  images: {
-    remotePatterns: [{ protocol: 'https', hostname: 'cdn-nl-01.hasha.in' }],
-    minimumCacheTTL: 600,
-  },
   eslint: {
     ignoreDuringBuilds: true,
   },
