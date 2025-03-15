@@ -39,16 +39,23 @@ export default function MangaCard({ manga, index }: Props) {
 
   return (
     <li className="grid grid-cols-2 border rounded-lg overflow-hidden border-gray-700" key={id}>
-      <Link className="relative" href={`/manga/${id}`} target="_blank">
-        <MangaImage
-          className="object-contain bg-gray-900 aspect-[3/4]"
-          fetchPriority={index && index < 3 ? 'high' : 'low'}
-          imageIndex={0}
-          manga={manga}
-        />
-        <div className="absolute bottom-1 min-w-7 text-center  left-1/2 -translate-x-1/2 px-1 bg-background rounded">
-          {images.length}
-        </div>
+      <div className="relative">
+        <Link
+          className="flex overflow-x-auto snap-x snap-mandatory relative"
+          draggable={false}
+          href={`/manga/${manga.id}`}
+          target="_blank"
+        >
+          {Array.from({ length: 4 }).map((_, i) => (
+            <MangaImage
+              className="object-contain snap-start bg-gray-900 aspect-[3/4]"
+              fetchPriority={index && index < 3 ? 'high' : 'low'}
+              imageIndex={i}
+              key={i}
+              manga={manga}
+            />
+          ))}
+        </Link>
         {censoredTags && censoredTags.length > 0 && (
           <div className="absolute inset-0 bg-background/50 backdrop-blur flex items-center justify-center text-center p-4">
             <div className="text-foreground text-center font-semibold flex flex-wrap gap-1 justify-center">
@@ -57,7 +64,10 @@ export default function MangaCard({ manga, index }: Props) {
             </div>
           </div>
         )}
-      </Link>
+        <div className="absolute bottom-1 min-w-7 text-center left-1/2 -translate-x-1/2 px-1 bg-background rounded">
+          {images.length}
+        </div>
+      </div>
       <div className="flex flex-col border-l border-gray-700 justify-between p-2 gap-1">
         <div className="flex flex-col gap-2">
           <h4 className="line-clamp-3 sm:line-clamp-6 md:line-clamp-1 lg:line-clamp-3 xl:line-clamp-6 leading-5 min-w-0">

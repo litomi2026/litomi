@@ -10,8 +10,9 @@ import { toast } from 'sonner'
 
 import { IconChevronLeft, IconClose, IconMaximize, IconReload } from '../icons/IconImageViewer'
 import ImageSlider from './ImageSlider'
-import PageViewButton from './PageViewButton'
 import ScrollViewer from './ScrollViewer'
+import { useImageIndexStore } from './store/imageIndex'
+import { usePageViewStore } from './store/pageView'
 import TouchViewer from './TouchViewer'
 
 type Props = {
@@ -26,6 +27,9 @@ export default function ImageViewer({ manga }: Props) {
   const { navMode, setNavMode } = useNavigationModeStore()
   const { screenFit, setScreenFit } = useScreenFitStore()
   const { touchOrientation, setTouchOrientation } = useTouchOrientationStore()
+  const { pageView, setPageView } = usePageViewStore()
+  const correctImageIndex = useImageIndexStore((state) => state.correctImageIndex)
+  const isDoublePage = pageView === 'double'
   const isTouchMode = navMode === 'touch'
   const isWidthFit = screenFit === 'width'
   const isHorizontalTouch = touchOrientation === 'horizontal'
@@ -97,7 +101,14 @@ export default function ImageViewer({ manga }: Props) {
             <button onClick={() => setNavMode(isTouchMode ? 'scroll' : 'touch')}>
               {isTouchMode ? '터치' : '스크롤'} 모드
             </button>
-            <PageViewButton />
+            <button
+              onClick={() => {
+                correctImageIndex()
+                setPageView(isDoublePage ? 'single' : 'double')
+              }}
+            >
+              {isDoublePage ? '두 쪽' : '한 쪽'} 보기
+            </button>
             <button onClick={() => setScreenFit(screenFit === 'all' ? 'width' : isWidthFit ? 'height' : 'all')}>
               {screenFit === 'all' ? '화면' : isWidthFit ? '가로' : '세로'} 맞춤
             </button>
