@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
+import ToggleButton from '../A'
 import Modal from '../Modal'
 import { useImageIndexStore } from './store/imageIndex'
 import { useNavigationModeStore } from './store/navigationMode'
@@ -11,17 +12,28 @@ import { useVirtualizerStore } from './store/virtualizer'
 type Props = {
   offset: number
   maxImageIndex: number
+  onIntervalChange?: (index: number) => void
 }
 
-export default function Slideshow({ maxImageIndex, offset }: Props) {
-  const { imageIndex, setImageIndex } = useImageIndexStore()
+type SlideshowProps = {
+  offset: number
+  maxImageIndex: number
+}
+
+export default memo(SlideshowWrapper)
+
+function Slideshow({ maxImageIndex, offset, onIntervalChange }: Props) {
+  const imageIndex = useImageIndexStore((state) => state.imageIndex)
   const [slideshowInterval, setSlideshowInterval] = useState(0)
   const intervalIdRef = useRef<number | null>(null)
-  const virtualizer = useVirtualizerStore((state) => state.virtualizer)
-  const navMode = useNavigationModeStore((state) => state.navMode)
-  const isTouchMode = navMode === 'touch'
-  const onIntervalChange = isTouchMode ? setImageIndex : virtualizer?.scrollToIndex
   const [isOpened, setIsOpened] = useState(false)
+  const inputRef = useRef<HTMLInputElement | null>(null)
+
+  useEffect(() => {
+    if (isOpened) {
+      inputRef.current?.focus()
+    }
+  }, [isOpened])
 
   useEffect(() => {
     if (!slideshowInterval) return
@@ -71,11 +83,14 @@ export default function Slideshow({ maxImageIndex, offset }: Props) {
                 name="interval"
                 onKeyDown={(e) => e.stopPropagation()}
                 pattern="\d*"
+                ref={inputRef}
                 required
                 type="number"
               />
               <span>초</span>
             </div>
+            <h4 className="font-semibold">반복</h4>
+            <ToggleButton className="w-60 aria-pressed:bg-brand-gradient" />
           </div>
           <div className="grid gap-3 pt-6 [&_button]:hover:bg-gray-800 [&_button]:active:bg-gray-900 [&_button]:rounded-full [&_button]:transition">
             <button
@@ -92,4 +107,14 @@ export default function Slideshow({ maxImageIndex, offset }: Props) {
       </Modal>
     </>
   )
+}
+
+function SlideshowWrapper(props: SlideshowProps) {
+  const navMode = useNavigationModeStore((state) => state.navMode)
+  const isTouchMode = navMode === 'touch'
+  const setImageIndex = useImageIndexStore((state) => state.setImageIndex)
+  const virtualizer = useVirtualizerStore((state) => state.virtualizer)
+  const onIntervalChange = isTouchMode ? setImageIndex : virtualizer?.scrollToIndex
+
+  return <Slideshow {...props} onIntervalChange={onIntervalChange} />
 }
