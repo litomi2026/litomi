@@ -37,9 +37,9 @@ export default function ImageViewer({ manga }: Props) {
   const router = useRouter()
 
   useEffect(() => {
-    document.body.style.overflow = isTouchMode ? 'hidden' : 'auto'
+    document.body.style.overscrollBehavior = 'none'
     return () => {
-      document.body.style.overflow = 'auto'
+      document.body.style.overscrollBehavior = ''
     }
   }, [isTouchMode])
 

@@ -63,7 +63,7 @@ function ScrollViewer({ manga, onClick, screenFit }: Props) {
   const translateY = virtualItems[0]?.start ?? 0
 
   return (
-    <div className="overflow-y-auto overscroll-none contain-strict h-dvh select-none" onClick={onClick} ref={parentRef}>
+    <div className="overflow-y-auto contain-strict h-dvh select-none" onClick={onClick} ref={parentRef}>
       <div className="w-full relative" style={{ height: virtualizer.getTotalSize() }}>
         <ul
           className={`absolute top-0 left-0 w-full [&_li]:flex [&_img]:border [&_img]:border-background [&_img]:aria-hidden:w-40 [&_img]:aria-hidden:text-foreground ${screenFitClasses[screenFit]}`}

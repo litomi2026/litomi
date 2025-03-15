@@ -13,6 +13,13 @@ import { useImageIndexStore } from './store/imageIndex'
 const SWIPE_THRESHOLD = 50 // 스와이프 감지 임계값 (px)
 const EDGE_CLICK_THRESHOLD = 1 / 3 // 1 / 3 -> 3등분 중 1칸. 0.5 이하여야 함
 
+const screenFitStyle = {
+  width: `overflow-y-auto [&_li]:mx-auto [&_li]:w-fit [&_li]:max-w-full [&_li]:first:h-full [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:h-auto`,
+  height:
+    'overflow-x-auto [&_li]:items-center [&_li]:mx-auto [&_li]:w-fit [&_li]:first:h-full [&_img]:max-w-fit [&_img]:h-auto [&_img]:max-h-dvh',
+  all: '[&_li]:items-center [&_li]:mx-auto [&_img]:min-w-0 [&_li]:w-fit [&_li]:h-full [&_img]:max-h-dvh',
+}
+
 type Props = {
   manga: Manga
   onClick: () => void
@@ -99,16 +106,9 @@ export default function TouchViewer({ manga, onClick, screenFit }: Props) {
     }
   }
 
-  const screenFitStyle = {
-    width: `overflow-y-auto overscroll-none [&_li]:mx-auto [&_li]:w-fit [&_li]:max-w-full [&_li]:first:h-full [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:h-auto`,
-    height:
-      'overflow-x-auto overscroll-none [&_li]:items-center [&_li]:mx-auto [&_li]:w-fit [&_li]:first:h-full [&_img]:max-w-fit [&_img]:h-auto [&_img]:max-h-dvh',
-    all: '[&_li]:items-center [&_li]:mx-auto [&_img]:min-w-0 [&_li]:w-fit [&_li]:h-full [&_img]:max-h-dvh',
-  }[screenFit]
-
   return (
     <ul
-      className={`h-dvh select-none [&_li]:flex [&_img]:pb-safe [&_img]:border [&_img]:border-background [&_img]:aria-hidden:sr-only ${screenFitStyle}`}
+      className={`h-dvh select-none [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:pb-safe [&_img]:border [&_img]:border-background ${screenFitStyle[screenFit]}`}
       onClick={handleClick}
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
@@ -117,8 +117,8 @@ export default function TouchViewer({ manga, onClick, screenFit }: Props) {
         const imageIndex = currentIndex + offset
 
         return (
-          <li key={offset}>
-            <MangaImage aria-hidden={offset !== 0} imageIndex={imageIndex} manga={manga} />
+          <li aria-hidden={offset !== 0} key={offset}>
+            <MangaImage imageIndex={imageIndex} manga={manga} />
             {pageView === 'double' && offset === 0 && <MangaImage imageIndex={imageIndex + 1} manga={manga} />}
           </li>
         )
