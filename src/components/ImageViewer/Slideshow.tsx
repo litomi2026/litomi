@@ -110,7 +110,7 @@ function Slideshow({ maxImageIndex, offset, onIntervalChange }: Props) {
             <button className="border-2 p-2 font-bold text-white transition border-gray-700" type="submit">
               {slideshowInterval ? '변경' : '시작'}
             </button>
-            {slideshowInterval ? (
+            {slideshowInterval > 0 && (
               <button
                 className="p-2 text-red-500 font-bold"
                 onClick={() => {
@@ -121,7 +121,7 @@ function Slideshow({ maxImageIndex, offset, onIntervalChange }: Props) {
               >
                 중지
               </button>
-            ) : null}
+            )}
             <button className="p-2 text-gray-500" onClick={() => setIsOpened(false)} type="button">
               취소
             </button>

@@ -13,6 +13,13 @@ const BLIND_TAG_LABELS = {
   scat: '스캇',
 } as const
 
+const tagStyles = {
+  male: 'bg-blue-500',
+  female: 'bg-red-500',
+  남: 'bg-blue-500',
+  여: 'bg-red-500',
+}
+
 const BLIND_TAGS = Object.keys(BLIND_TAG_LABELS)
 
 type Props = {
@@ -64,9 +71,7 @@ export default function MangaCard({ manga, index }: Props) {
             </div>
           </div>
         )}
-        <div className="absolute bottom-1 min-w-7 text-center left-1/2 -translate-x-1/2 px-1 bg-background rounded">
-          {images.length}
-        </div>
+        <div className="absolute bottom-1 left-1/2 -translate-x-1/2 px-1.5 bg-background rounded">{images.length}</div>
       </div>
       <div className="flex flex-col border-l border-gray-700 justify-between p-2 gap-1">
         <div className="flex flex-col gap-2">
@@ -97,17 +102,11 @@ export default function MangaCard({ manga, index }: Props) {
               태그
               <ul className="flex xl:flex-wrap overflow-auto gap-1">
                 {koreanTags.map((tag) => {
-                  const a = tag.split(':')
-                  const backgroundColor =
-                    {
-                      male: 'bg-blue-500',
-                      female: 'bg-red-500',
-                      남: 'bg-blue-500',
-                      여: 'bg-red-500',
-                    }[a[0]] ?? 'bg-gray-500'
+                  const [category, label] = tag.split(':')
+                  const tagStyle = tagStyles[category as keyof typeof tagStyles] ?? 'bg-gray-500'
                   return (
-                    <li className={`rounded px-1 text-foreground ${backgroundColor}`} key={tag}>
-                      {a[a.length - 1]}
+                    <li className={`rounded px-1 text-foreground ${tagStyle}`} key={tag}>
+                      {label}
                     </li>
                   )
                 })}
@@ -115,7 +114,7 @@ export default function MangaCard({ manga, index }: Props) {
             </div>
           )}
         </div>
-        <div className="flex text-xs justify-between  items-center">
+        <div className="flex text-xs justify-between items-center">
           <Link className="text-gray-500 focus:underline hover:underline" href={`/manga/${id}`}>
             {id}
           </Link>
