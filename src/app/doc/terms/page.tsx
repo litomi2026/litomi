@@ -13,7 +13,7 @@ export default async function Page() {
         <h2 className="mb-3">제 2 조 (용어의 정의)</h2>
         <ul className="mb-4">
           <li>"이용자"라 함은 본 약관에 따라 본 서비스를 이용하는 개인 또는 단체를 말합니다.</li>
-          <li>"서비스"라 함은 회사가 제공하는 온라인 상의 모든 서비스 및 부가 기능을 말합니다.</li>
+          <li>"서비스"라 함은 Litomi 사이트에서 제공하는 온라인 상의 모든 서비스 및 부가 기능을 말합니다.</li>
         </ul>
         <h2 className="mb-2">제 3 조 (서비스 목적)</h2>
         <p className="mb-4">
