@@ -6,8 +6,6 @@ import { toast } from 'sonner'
 import Modal from '../ui/Modal'
 import ToggleButton from '../ui/ToggleButton'
 import { useImageIndexStore } from './store/imageIndex'
-import { useNavigationModeStore } from './store/navigationMode'
-import { useVirtualizerStore } from './store/virtualizer'
 
 type Props = {
   offset: number
@@ -15,12 +13,7 @@ type Props = {
   onIntervalChange?: (index: number) => void
 }
 
-type SlideshowProps = {
-  offset: number
-  maxImageIndex: number
-}
-
-export default memo(SlideshowWrapper)
+export default memo(Slideshow)
 
 function Slideshow({ maxImageIndex, offset, onIntervalChange }: Props) {
   const imageIndex = useImageIndexStore((state) => state.imageIndex)
@@ -121,14 +114,4 @@ function Slideshow({ maxImageIndex, offset, onIntervalChange }: Props) {
       </Modal>
     </>
   )
-}
-
-function SlideshowWrapper(props: SlideshowProps) {
-  const navMode = useNavigationModeStore((state) => state.navMode)
-  const isTouchMode = navMode === 'touch'
-  const setImageIndex = useImageIndexStore((state) => state.setImageIndex)
-  const virtualizer = useVirtualizerStore((state) => state.virtualizer)
-  const onIntervalChange = isTouchMode ? setImageIndex : virtualizer?.scrollToIndex
-
-  return <Slideshow {...props} onIntervalChange={onIntervalChange} />
 }

@@ -30,6 +30,7 @@ export default function ImageViewer({ manga }: Props) {
   const { touchOrientation, setTouchOrientation } = useTouchOrientationStore()
   const { pageView, setPageView } = usePageViewStore()
   const correctImageIndex = useImageIndexStore((state) => state.correctImageIndex)
+  const setImageIndex = useImageIndexStore((state) => state.setImageIndex)
   const isDoublePage = pageView === 'double'
   const isTouchMode = navMode === 'touch'
   const isWidthFit = screenFit === 'width'
@@ -113,16 +114,23 @@ export default function ImageViewer({ manga }: Props) {
             <button onClick={() => setScreenFit(screenFit === 'all' ? 'width' : isWidthFit ? 'height' : 'all')}>
               {screenFit === 'all' ? '화면' : isWidthFit ? '가로' : '세로'} 맞춤
             </button>
-            {isTouchMode ? (
-              <button onClick={() => setTouchOrientation(isHorizontalTouch ? 'vertical' : 'horizontal')}>
-                {isHorizontalTouch ? '좌우' : '상하'} 넘기기
-              </button>
-            ) : (
+            {isTouchMode && (
+              <>
+                <button onClick={() => setTouchOrientation(isHorizontalTouch ? 'vertical' : 'horizontal')}>
+                  {isHorizontalTouch ? '좌우' : '상하'} 넘기기
+                </button>
+                <Slideshow
+                  maxImageIndex={maxImageIndex}
+                  offset={isDoublePage ? 2 : 1}
+                  onIntervalChange={setImageIndex}
+                />
+              </>
+            )}
+            {!isTouchMode && (
               <button disabled onClick={() => setTouchOrientation(isHorizontalTouch ? 'vertical' : 'horizontal')}>
                 너비 100%
               </button>
             )}
-            {isTouchMode && <Slideshow maxImageIndex={maxImageIndex} offset={isDoublePage ? 2 : 1} />}
           </div>
         </div>
       </div>
