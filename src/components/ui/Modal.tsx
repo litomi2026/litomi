@@ -115,7 +115,7 @@ export default function Modal({ className = '', children, open, onClose, showClo
                 onMouseDown={dragModalMouse}
                 onTouchStart={dragModalTouch}
               >
-                <div className="h-1 w-8 rounded-full bg-slate-400 dark:bg-slate-600" />
+                <div className="h-1 w-8 rounded-full bg-gray-600" />
               </div>
             )}
             {children}
