@@ -77,12 +77,15 @@ function Slideshow({ maxImageIndex, offset, onIntervalChange }: Props) {
 
   return (
     <>
-      <button className="bg-blue-500 px-4 py-2 rounded" onClick={() => setIsOpened(true)}>
-        슬라이드쇼
+      <button
+        className="px-4 py-2 rounded"
+        onClick={() => (slideshowInterval > 0 ? setSlideshowInterval(0) : setIsOpened(true))}
+      >
+        {slideshowInterval > 0 ? '중지' : '슬라이드쇼'}
       </button>
       <Modal onClose={() => setIsOpened(false)} open={isOpened} showCloseButton showDragButton>
         <form
-          className="bg-gray-950 w-screen max-w-xs rounded-xl p-4 pt-8 shadow-xl border border-gray-800"
+          className="bg-zinc-900 w-screen max-w-xs rounded-xl p-4 pt-8 shadow-xl border border-zinc-800"
           onSubmit={handleSubmit}
         >
           <h3 className="font-bold text-xl text-center">슬라이드쇼</h3>
@@ -90,7 +93,7 @@ function Slideshow({ maxImageIndex, offset, onIntervalChange }: Props) {
             <h4>주기</h4>
             <div className="flex items-center gap-2">
               <input
-                className="border-2 w-16 text-foreground rounded-lg px-2 py-0.5 border-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                className="border-2 w-16 text-foreground rounded-lg px-2 py-0.5 border-zinc-700 focus:outline-none focus:ring-2 focus:ring-zinc-500"
                 defaultValue={5}
                 max={999}
                 min={1}
@@ -106,23 +109,11 @@ function Slideshow({ maxImageIndex, offset, onIntervalChange }: Props) {
             <h4>반복</h4>
             <ToggleButton className="w-14 aria-pressed:bg-brand-gradient" enabled={isChecked} onToggle={setIsChecked} />
           </div>
-          <div className="grid gap-2 pt-6 text-sm [&_button]:hover:bg-gray-800 [&_button]:active:bg-gray-900 [&_button]:rounded-full [&_button]:transition">
-            <button className="border-2 p-2 font-bold text-white transition border-gray-700" type="submit">
-              {slideshowInterval ? '변경' : '시작'}
+          <div className="grid gap-2 pt-6 text-sm [&_button]:hover:bg-zinc-800 [&_button]:active:bg-zinc-900 [&_button]:rounded-full [&_button]:transition">
+            <button className="border-2 p-2 font-bold text-white transition border-zinc-700" type="submit">
+              시작
             </button>
-            {slideshowInterval > 0 && (
-              <button
-                className="p-2 text-red-500 font-bold"
-                onClick={() => {
-                  setSlideshowInterval(0)
-                  setIsOpened(false)
-                }}
-                type="button"
-              >
-                중지
-              </button>
-            )}
-            <button className="p-2 text-gray-500" onClick={() => setIsOpened(false)} type="button">
+            <button className="p-2 text-zinc-500" onClick={() => setIsOpened(false)} type="button">
               취소
             </button>
           </div>

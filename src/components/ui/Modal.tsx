@@ -6,6 +6,8 @@ import { createPortal } from 'react-dom'
 
 import IconX from '../icons/IconX'
 
+const MARGIN = 8
+
 type Props = {
   children: ReactNode
   className?: string
@@ -56,9 +58,11 @@ export default function Modal({ className = '', children, open, onClose, showClo
     const shiftX = event.clientX - modalRect.left
     const shiftY = event.clientY - modalRect.top
 
-    function moveModal(event: globalThis.MouseEvent) {
-      modalStyle.left = Math.max(8, event.clientX - shiftX) + 'px'
-      modalStyle.top = Math.max(8, event.clientY - shiftY) + 'px'
+    function moveModal({ clientX, clientY }: globalThis.MouseEvent) {
+      modalStyle.left =
+        Math.min(Math.max(MARGIN, clientX - shiftX), window.innerWidth - modalRect.width - MARGIN) + 'px'
+      modalStyle.top =
+        Math.min(Math.max(MARGIN, clientY - shiftY), window.innerHeight - modalRect.height - MARGIN) + 'px'
     }
 
     document.addEventListener('mousemove', moveModal)
@@ -75,19 +79,18 @@ export default function Modal({ className = '', children, open, onClose, showClo
     const shiftX = event.touches[0].clientX - modalRect.left
     const shiftY = event.touches[0].clientY - modalRect.top
 
-    function moveModal(event: globalThis.TouchEvent) {
-      modalStyle.left = Math.max(8, event.touches[0].clientX - shiftX) + 'px'
-      modalStyle.top = Math.max(8, event.touches[0].clientY - shiftY) + 'px'
+    function moveModal({ touches }: globalThis.TouchEvent) {
+      const { clientX, clientY } = touches[0]
+      modalStyle.left =
+        Math.min(Math.max(MARGIN, clientX - shiftX), window.innerWidth - modalRect.width - MARGIN) + 'px'
+      modalStyle.top =
+        Math.min(Math.max(MARGIN, clientY - shiftY), window.innerHeight - modalRect.height - MARGIN) + 'px'
     }
 
     document.addEventListener('touchmove', moveModal)
     document.addEventListener('touchend', () => document.removeEventListener('touchmove', moveModal), { once: true })
     document.addEventListener('touchcancel', () => document.removeEventListener('touchmove', moveModal), { once: true })
   }
-
-  const modalBackground = `fixed inset-0 z-50 flex items-center justify-center bg-black/20 dark:bg-black/80 transition duration-300 ${
-    open ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
-  }`
 
   // --
   const isMounted = useIsMounted()
@@ -97,14 +100,19 @@ export default function Modal({ className = '', children, open, onClose, showClo
   return (
     <>
       {createPortal(
-        <div className={modalBackground} onClick={closeModal}>
+        <div
+          aria-hidden={!open}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 dark:bg-black/80 transition duration-300 pointer-events-auto opacity-100 aria-hidden:pointer-events-none aria-hidden:opacity-0"
+          onClick={closeModal}
+        >
           {showCloseButton && (
             <button onClick={closeModal}>
-              <IconX className="absolute right-2 top-2 z-50 w-8 cursor-pointer rounded-full bg-gray-500/30 p-1" />
+              <IconX className="absolute right-2 top-2 z-50 w-8 cursor-pointer rounded-full bg-zinc-500/30 p-1" />
             </button>
           )}
           <div
-            className={`absolute z-50 transition duration-300 ${open ? 'scale-100' : 'scale-90'} ${className}`}
+            aria-hidden={!open}
+            className={`absolute z-50 transition duration-300 aria-hidden:scale-90 ${className}`}
             onClick={(e) => e.stopPropagation()}
             ref={showDragButton ? modalRef : null}
           >
@@ -115,7 +123,7 @@ export default function Modal({ className = '', children, open, onClose, showClo
                 onMouseDown={dragModalMouse}
                 onTouchStart={dragModalTouch}
               >
-                <div className="h-1 w-8 rounded-full bg-gray-600" />
+                <div className="h-1 w-8 rounded-full bg-zinc-600" />
               </div>
             )}
             {children}
