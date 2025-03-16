@@ -8,7 +8,7 @@ export default function ToggleButton({ className = '', enabled, onToggle }: Prop
   return (
     <button
       aria-pressed={enabled}
-      className={`relative aspect-[7/4] bg-gray-400 flex items-center rounded-full focus:outline-none ${className}`}
+      className={`relative aspect-[7/4] bg-zinc-400 flex items-center rounded-full focus:outline-none ${className}`}
       onClick={() => onToggle?.(!enabled)}
       type="button"
     >
@@ -16,7 +16,7 @@ export default function ToggleButton({ className = '', enabled, onToggle }: Prop
       <div className="p-[7%] pr-0 w-1/2">
         <div
           aria-checked={enabled}
-          className="aria-checked:translate-x-full border border-gray-300 w-full aspect-square transform rounded-full bg-white transition duration-300"
+          className="aria-checked:translate-x-full border border-zinc-300 w-full aspect-square transform rounded-full bg-white transition duration-300"
         />
       </div>
     </button>

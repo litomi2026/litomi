@@ -79,7 +79,7 @@ function Slider({
       onPointerDown={handlePointerDown}
     >
       {/* 트랙 */}
-      <div className="relative h-1/3 border w-full grow overflow-hidden rounded-full bg-gray-300">
+      <div className="relative h-1/3 border w-full grow overflow-hidden rounded-full bg-zinc-300">
         <div
           className="absolute w-full origin-left h-full bg-brand-gradient"
           style={{ transform: `scaleX(${ratio.toFixed(3)})` }}
@@ -87,7 +87,7 @@ function Slider({
       </div>
       {/* Thumb */}
       <div className="absolute aspect-square h-full -translate-x-1/2" style={{ left: `${ratioPercentage}%` }}>
-        <div className="w-full h-full border-2 rounded-full border-gray-400 bg-foreground" />
+        <div className="w-full h-full border-2 rounded-full border-zinc-400 bg-foreground" />
       </div>
     </div>
   )

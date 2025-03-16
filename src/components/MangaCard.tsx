@@ -45,7 +45,7 @@ export default function MangaCard({ manga, index }: Props) {
     })
 
   return (
-    <li className="grid grid-cols-2 border-2 rounded-lg overflow-hidden bg-gray-950 border-gray-800" key={id}>
+    <li className="grid grid-cols-2 border-2 rounded-lg overflow-hidden bg-zinc-900 border-zinc-800" key={id}>
       <div className="relative">
         <MangaCardCoverImage manga={manga} mangaIndex={index} />
         {censoredTags && censoredTags.length > 0 && (
@@ -58,7 +58,7 @@ export default function MangaCard({ manga, index }: Props) {
         )}
         <div className="absolute bottom-1 right-1 px-1 font-medium text-sm bg-background rounded">{images.length}p</div>
       </div>
-      <div className="flex flex-col border-l border-gray-700 justify-between p-2 gap-1">
+      <div className="flex flex-col border-l border-zinc-700 justify-between p-2 gap-1">
         <div className="flex flex-col gap-2">
           <h4 className="line-clamp-3 font-bold sm:line-clamp-6 md:line-clamp-1 lg:line-clamp-3 xl:line-clamp-6 leading-5 min-w-0">
             {title}
@@ -75,7 +75,7 @@ export default function MangaCard({ manga, index }: Props) {
               연관
               <ul className="flex xl:flex-wrap overflow-auto gap-1">
                 {related.map((id) => (
-                  <li className="rounded px-1 text-foreground bg-gray-500" key={id}>
+                  <li className="rounded px-1 text-foreground bg-zinc-500" key={id}>
                     <Link href={`/manga/${id}`}>{id}</Link>
                   </li>
                 ))}
@@ -88,7 +88,7 @@ export default function MangaCard({ manga, index }: Props) {
               <ul className="flex xl:flex-wrap overflow-auto gap-1">
                 {koreanTags.map((tag) => {
                   const [category, label] = tag.split(':')
-                  const tagStyle = tagStyles[category as keyof typeof tagStyles] ?? 'bg-gray-500'
+                  const tagStyle = tagStyles[category as keyof typeof tagStyles] ?? 'bg-zinc-500'
                   return (
                     <li className={`rounded px-1 text-foreground ${tagStyle}`} key={tag}>
                       {label}
@@ -100,11 +100,11 @@ export default function MangaCard({ manga, index }: Props) {
           )}
         </div>
         <div className="flex text-xs justify-between items-center">
-          <Link className="text-gray-500 focus:underline hover:underline" href={`/manga/${id}`}>
+          <Link className="text-zinc-500 focus:underline hover:underline" href={`/manga/${id}`}>
             {id}
           </Link>
-          <div className="text-right text-gray-500"></div>
-          <div className="text-right text-gray-500">{dayjs(date).format('YYYY-MM-DD HH:mm')}</div>
+          <div className="text-right text-zinc-500"></div>
+          <div className="text-right text-zinc-500">{dayjs(date).format('YYYY-MM-DD HH:mm')}</div>
         </div>
       </div>
     </li>

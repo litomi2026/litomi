@@ -23,7 +23,7 @@ export default function Navigation({ currentPage, totalPages }: Props) {
 
   return (
     <nav
-      className="flex gap-2 py-2 items-stretch min-w-0 font-bold tabular-nums [&_a]:items-center [&_a]:text-center [&_span]:px-2 [&_a]:aria-selected:bg-blue-500 [&_a]:aria-selected:pointer-events-none [&_a]:aria-selected:text-foreground [&_a]:aria-disabled:text-gray-600 [&_a]:aria-disabled:pointer-events-none [&_a]:hover:bg-gray-700 [&_a]:active:bg-gray-800 [&_a]:rounded-full
+      className="flex gap-2 py-2 items-stretch min-w-0 font-bold tabular-nums [&_a]:items-center [&_a]:text-center [&_span]:px-2 [&_a]:aria-selected:bg-brand-gradient [&_a]:aria-selected:pointer-events-none [&_a]:aria-selected:text-background [&_a]:aria-disabled:text-zinc-600 [&_a]:aria-disabled:pointer-events-none [&_a]:hover:bg-zinc-700 [&_a]:active:bg-zinc-800 [&_a]:rounded-full
       text-lg [&_span]:min-w-10 [&_svg]:w-6 [&_svg]:m-2
       md:text-xl [&_span]:md:min-w-11 [&_svg]:md:w-7
       "
@@ -65,7 +65,7 @@ export default function Navigation({ currentPage, totalPages }: Props) {
           이동할 페이지 번호
         </label>
         <input
-          className="w-14 p-1 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-gray-300"
+          className="w-14 p-1 border border-zinc-200 rounded focus:outline-none focus:ring-1 focus:ring-zinc-300"
           id="page-input"
           max={totalPages}
           min="1"
@@ -76,7 +76,7 @@ export default function Navigation({ currentPage, totalPages }: Props) {
           type="number"
         />
         <button
-          className="whitespace-nowrap bg-gray-800 text-foreground rounded hover:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-300"
+          className="whitespace-nowrap bg-zinc-800 text-foreground rounded hover:bg-zinc-700 focus:outline-none focus:ring-1 focus:ring-zinc-300"
           type="submit"
         >
           <IconArrow />
