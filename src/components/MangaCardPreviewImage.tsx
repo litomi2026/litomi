@@ -14,7 +14,7 @@ type Props = {
   mangaIndex?: number
 }
 
-export default function MangaCardCoverImage({ manga, mangaIndex }: Props) {
+export default function MangaCardPreviewImage({ manga, mangaIndex = 0 }: Props) {
   const { id, images } = manga
   const sliderRef = useRef<HTMLAnchorElement>(null)
   const [activeIndex, setActiveIndex] = useState(0)
@@ -61,7 +61,7 @@ export default function MangaCardCoverImage({ manga, mangaIndex }: Props) {
         {Array.from({ length: totalSlides }).map((_, i) => (
           <MangaImage
             className="snap-start flex-shrink-0 w-full object-contain aspect-[3/4]"
-            fetchPriority={mangaIndex && mangaIndex < 4 && i < 2 ? 'high' : 'low'}
+            fetchPriority={mangaIndex < 4 && i < 2 ? 'high' : 'low'}
             imageIndex={i}
             key={i}
             manga={manga}

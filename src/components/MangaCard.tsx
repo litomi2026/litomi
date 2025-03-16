@@ -3,7 +3,7 @@ import { Manga } from '@/types/manga'
 import dayjs from 'dayjs'
 import Link from 'next/link'
 
-import MangaCardCoverImage from './MangaCardCoverImage'
+import MangaCardPreviewImage from './MangaCardPreviewImage'
 
 const BLIND_TAG_LABELS = {
   bestiality: '수간',
@@ -27,7 +27,7 @@ type Props = {
   index?: number
 }
 
-export default function MangaCard({ manga, index }: Props) {
+export default function MangaCard({ manga, index = 0 }: Props) {
   const { id, artists, characters, date, group, related, series, tags, title, type, images } = manga
 
   const decodedTags = tags?.map((tag) => harpiTagMap[tag] || tag)
@@ -47,7 +47,7 @@ export default function MangaCard({ manga, index }: Props) {
   return (
     <li className="grid grid-cols-2 border-2 rounded-lg overflow-hidden bg-zinc-900 border-zinc-800" key={id}>
       <div className="relative">
-        <MangaCardCoverImage manga={manga} mangaIndex={index} />
+        <MangaCardPreviewImage manga={manga} mangaIndex={index} />
         {censoredTags && censoredTags.length > 0 && (
           <div className="absolute inset-0 bg-background/50 backdrop-blur flex items-center justify-center text-center p-4">
             <div className="text-foreground text-center font-semibold flex flex-wrap gap-1 justify-center">
