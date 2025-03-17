@@ -2,7 +2,7 @@
 
 import { Manga } from '@/types/manga'
 import Link from 'next/link'
-import { useEffect, useRef, useState } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
 
 import { IconNextPage, IconPrevPage } from './icons/IconArrows'
 import MangaImage from './MangaImage'
@@ -14,7 +14,9 @@ type Props = {
   mangaIndex?: number
 }
 
-export default function MangaCardPreviewImage({ manga, mangaIndex = 0 }: Props) {
+export default memo(MangaCardPreviewImage)
+
+function MangaCardPreviewImage({ manga, mangaIndex = 0 }: Props) {
   const { id, images } = manga
   const sliderRef = useRef<HTMLAnchorElement>(null)
   const [activeIndex, setActiveIndex] = useState(0)

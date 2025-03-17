@@ -1,6 +1,6 @@
 import { Manga } from '@/types/manga'
 import { getImageSrc } from '@/utils/manga'
-import { ImgHTMLAttributes } from 'react'
+import { ImgHTMLAttributes, memo } from 'react'
 
 const INITIAL_DISPLAYED_IMAGE = 5
 
@@ -10,7 +10,9 @@ type Props = ImgHTMLAttributes<HTMLImageElement> & {
   imageRef?: (node?: Element | null) => void
 }
 
-export default function MangaImage({ manga, imageIndex, imageRef, ...props }: Props) {
+export default memo(MangaImage)
+
+function MangaImage({ manga, imageIndex, imageRef, ...props }: Props) {
   const { images, cdn, id } = manga
   const imagePath = images[imageIndex]
 

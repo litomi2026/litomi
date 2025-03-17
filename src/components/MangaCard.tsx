@@ -2,6 +2,7 @@ import { harpiTagMap } from '@/database/harpi-tag'
 import { Manga } from '@/types/manga'
 import dayjs from 'dayjs'
 import Link from 'next/link'
+import { memo } from 'react'
 
 import MangaCardPreviewImage from './MangaCardPreviewImage'
 
@@ -27,7 +28,9 @@ type Props = {
   index?: number
 }
 
-export default function MangaCard({ manga, index = 0 }: Props) {
+export default memo(MangaCard)
+
+function MangaCard({ manga, index = 0 }: Props) {
   const { id, artists, characters, date, group, related, series, tags, title, type, images } = manga
 
   const decodedTags = tags?.map((tag) => harpiTagMap[tag] || tag)

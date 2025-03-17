@@ -1,6 +1,6 @@
 'use client'
 
-import { usePageViewStore } from '@/components/ImageViewer/store/pageView'
+import { PageView, usePageViewStore } from '@/components/ImageViewer/store/pageView'
 import { ScreenFit } from '@/components/ImageViewer/store/screenFit'
 import { type Manga } from '@/types/manga'
 import { getSafeAreaBottom } from '@/utils'
@@ -12,7 +12,7 @@ import MangaImage from '../MangaImage'
 import { useImageIndexStore } from './store/imageIndex'
 import { useVirtualizerStore } from './store/virtualizer'
 
-const screenFitClasses = {
+const screenFitStyle = {
   width: '[&_li]:justify-center [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:max-h-fit',
   all: '[&_li]:justify-center [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:max-h-dvh',
 
@@ -31,6 +31,7 @@ type VirtualItemProps = {
   index: number
   manga: Manga
   virtualizer: ReturnType<typeof useVirtualizer<HTMLDivElement, Element>>
+  pageView: PageView
 }
 
 export default memo(ScrollViewer)
@@ -66,11 +67,11 @@ function ScrollViewer({ manga, onClick, screenFit }: Props) {
     <div className="overflow-y-auto overscroll-none contain-strict h-dvh select-none" onClick={onClick} ref={parentRef}>
       <div className="w-full relative" style={{ height: virtualizer.getTotalSize() }}>
         <ul
-          className={`absolute top-0 left-0 w-full [&_li]:flex [&_img]:border [&_img]:border-background [&_img]:aria-hidden:w-40 [&_img]:aria-hidden:text-foreground ${screenFitClasses[screenFit]}`}
+          className={`absolute top-0 left-0 w-full [&_li]:flex [&_img]:border [&_img]:border-background [&_img]:aria-hidden:w-40 [&_img]:aria-hidden:text-foreground ${screenFitStyle[screenFit]}`}
           style={{ transform: `translateY(${translateY}px)` }}
         >
           {virtualItems.map(({ index, key }) => (
-            <VirtualItemMemo index={index} key={key} manga={manga} virtualizer={virtualizer} />
+            <VirtualItemMemo index={index} key={key} manga={manga} pageView={pageView} virtualizer={virtualizer} />
           ))}
         </ul>
       </div>
@@ -80,13 +81,12 @@ function ScrollViewer({ manga, onClick, screenFit }: Props) {
 
 const VirtualItemMemo = memo(VirtualItem)
 
-function VirtualItem({ index, manga, virtualizer }: VirtualItemProps) {
-  const pageView = usePageViewStore((state) => state.pageView)
+function VirtualItem({ index, manga, virtualizer, pageView }: VirtualItemProps) {
   const setImageIndex = useImageIndexStore((state) => state.setImageIndex)
   const isDoublePage = pageView === 'double'
-  const imageIndex = isDoublePage ? index * 2 : index
-  const nextImageIndex = imageIndex + 1
-  const [[imageError, image2Error], setImageErrors] = useState([false, false])
+  const firstImageIndex = isDoublePage ? index * 2 : index
+  const secondImageIndex = firstImageIndex + 1
+  const [[firstImageError, secondImageError], setImageErrors] = useState([false, false])
 
   const { ref, inView } = useInView({
     threshold: 0,
@@ -95,27 +95,30 @@ function VirtualItem({ index, manga, virtualizer }: VirtualItemProps) {
 
   useEffect(() => {
     if (inView) {
-      setImageIndex(imageIndex)
+      setImageIndex(firstImageIndex)
     }
-  }, [imageIndex, inView, setImageIndex])
+  }, [firstImageIndex, inView, setImageIndex])
+
+  const handleImageError = useCallback(() => setImageErrors((prev) => [true, prev[1]]), [])
+  const handleImage2Error = useCallback(() => setImageErrors((prev) => [prev[0], true]), [])
 
   return (
     <li data-index={index} ref={virtualizer.measureElement}>
       <MangaImage
-        aria-hidden={imageError}
-        imageIndex={imageIndex}
+        aria-hidden={firstImageError}
+        imageIndex={firstImageIndex}
         imageRef={ref}
         manga={manga}
-        onError={() => setImageErrors((prev) => [true, prev[1]])}
-        {...(imageError && { src: '/images/fallback.svg' })}
+        onError={handleImageError}
+        {...(firstImageError && { src: '/images/fallback.svg' })}
       />
       {isDoublePage && (
         <MangaImage
-          aria-hidden={image2Error}
-          imageIndex={nextImageIndex}
+          aria-hidden={secondImageError}
+          imageIndex={secondImageIndex}
           manga={manga}
-          onError={() => setImageErrors((prev) => [prev[0], true])}
-          {...(image2Error && { src: '/images/fallback.svg' })}
+          onError={handleImage2Error}
+          {...(secondImageError && { src: '/images/fallback.svg' })}
         />
       )}
     </li>

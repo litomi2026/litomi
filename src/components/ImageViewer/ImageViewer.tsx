@@ -44,6 +44,12 @@ export default function ImageViewer({ manga }: Props) {
     }
   }, [isTouchMode])
 
+  useEffect(() => {
+    return () => {
+      setImageIndex(0)
+    }
+  }, [setImageIndex])
+
   function toggleFullScreen() {
     if (!document.fullscreenElement) {
       if (document.documentElement.requestFullscreen) {
