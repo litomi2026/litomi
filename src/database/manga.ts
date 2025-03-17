@@ -9,7 +9,7 @@ export const pages = Array.from({ length: Math.ceil(mangaIds.length / MANGA_PER_
 export const mangaIdsByPage = {
   asc: pages.map((_, page) => mangaIds.slice(page * MANGA_PER_PAGE, (page + 1) * MANGA_PER_PAGE)),
   desc: pages.map((_, page) => mangaIdsDesc.slice(page * MANGA_PER_PAGE, (page + 1) * MANGA_PER_PAGE)),
-}
+} as const
 
 export function isMangaKey(key: string): key is keyof typeof mangas {
   return key in mangas

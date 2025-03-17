@@ -9,6 +9,7 @@
     "lint": "next lint",
     "prettier": "prettier --write .",
     "type": "tsc --noEmit",
+    "generate-manga-index": "bun ",
     "prepare": "husky"
   },
   "dependencies": {

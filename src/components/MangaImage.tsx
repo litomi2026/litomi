@@ -21,7 +21,7 @@ function MangaImage({ manga, imageIndex, imageRef, ...props }: Props) {
       <img
         alt={`manga-image-${imageIndex + 1}`}
         draggable={false}
-        fetchPriority={imageIndex < INITIAL_DISPLAYED_IMAGE ? 'high' : 'low'}
+        fetchPriority={imageIndex < INITIAL_DISPLAYED_IMAGE ? 'high' : undefined}
         ref={imageRef}
         referrerPolicy="same-origin"
         src={getImageSrc({ cdn, id, path: imagePath })}
