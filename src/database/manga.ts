@@ -1,7 +1,15 @@
+import { MANGA_PER_PAGE } from '@/constants'
 import mangasJSON from '@/database/manga.json'
 
 export const mangas = mangasJSON
-export const mangaIds = Object.keys(mangasJSON).reverse() as (keyof typeof mangas)[]
+export const mangaIds = Object.keys(mangas) as (keyof typeof mangas)[]
+export const mangaIdsDesc = mangaIds.toReversed()
+export const pages = Array.from({ length: Math.ceil(mangaIds.length / MANGA_PER_PAGE) })
+
+export const mangaIdsByPage = {
+  asc: pages.map((_, page) => mangaIds.slice(page * MANGA_PER_PAGE, (page + 1) * MANGA_PER_PAGE)),
+  desc: pages.map((_, page) => mangaIdsDesc.slice(page * MANGA_PER_PAGE, (page + 1) * MANGA_PER_PAGE)),
+}
 
 export function isMangaKey(key: string): key is keyof typeof mangas {
   return key in mangas

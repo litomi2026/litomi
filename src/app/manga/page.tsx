@@ -1,42 +1,33 @@
 import MangaCard from '@/components/MangaCard'
 import Navigation from '@/components/Navigation'
 import { SHORT_NAME } from '@/constants'
-import { mangaIds, mangas } from '@/database/manga'
+import { mangaIdsByPage, mangas, pages } from '@/database/manga'
 import { BasePageProps } from '@/types/nextjs'
+import { validateOrder, validatePage } from '@/utils/pagination'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
-const MANGA_PER_PAGE = 18
-
-const mangaByPage = Array.from({
-  length: Math.ceil(mangaIds.length / MANGA_PER_PAGE),
-}).map((_, i) => mangaIds.slice(i * MANGA_PER_PAGE, (i + 1) * MANGA_PER_PAGE))
-
 export default async function Page({ searchParams }: BasePageProps) {
-  const { page = '1' } = await searchParams
-  const currentPageNumber = Number(page)
+  const { page = '1', order = 'desc' } = await searchParams
+  const pageNumber = validatePage(page)
+  const orderString = validateOrder(order)
+  const totalPages = pages.length
 
-  if (
-    Array.isArray(page) ||
-    isNaN(currentPageNumber) ||
-    !isFinite(currentPageNumber) ||
-    currentPageNumber < 1 ||
-    currentPageNumber > mangaByPage.length
-  ) {
+  if (!pageNumber || pageNumber > totalPages || !orderString) {
     notFound()
   }
 
-  const currentPage = mangaByPage[currentPageNumber - 1]
+  const currentMangaIds = mangaIdsByPage[orderString][pageNumber - 1]
 
   return (
     <main className="p-2 pb-safe mb-2 min-h-dvh flex flex-col gap-2 max-w-screen-xl mx-auto">
       <ul className="grid md:grid-cols-2 gap-2 grow">
-        {currentPage.map((id, i) => (
+        {currentMangaIds.map((id, i) => (
           <MangaCard index={i} key={id} manga={mangas[id]} />
         ))}
       </ul>
       <div className="flex justify-center overflow-x-auto scrollbar-hidden">
-        <Navigation currentPage={currentPageNumber} totalPages={mangaByPage.length} />
+        <Navigation currentPage={pageNumber} totalPages={totalPages} />
       </div>
       <footer className="text-center">
         <p>ⓒ 2025. {SHORT_NAME}. All rights reserved.</p>

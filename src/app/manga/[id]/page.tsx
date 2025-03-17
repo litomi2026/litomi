@@ -37,11 +37,9 @@ export default async function Page({ params }: BasePageProps) {
     notFound()
   }
 
-  const manga = mangas[id]
-
   return (
     <main>
-      <ImageViewer manga={manga} />
+      <ImageViewer manga={mangas[id]} />
     </main>
   )
 }

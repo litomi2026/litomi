@@ -10,3 +10,5 @@ export const defaultOpenGraph = {
   images: [{ url: '/og-image.png' }],
   type: 'website',
 }
+
+export const MANGA_PER_PAGE = 18
