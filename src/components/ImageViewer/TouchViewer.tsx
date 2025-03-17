@@ -1,6 +1,6 @@
 'use client'
 
-import { usePageViewStore } from '@/components/ImageViewer/store/pageView'
+import { PageView } from '@/components/ImageViewer/store/pageView'
 import { ScreenFit } from '@/components/ImageViewer/store/screenFit'
 import { useTouchOrientationStore } from '@/components/ImageViewer/store/touchOrientation'
 import useImageNavigation from '@/hook/useImageNavigation'
@@ -23,12 +23,12 @@ const screenFitStyle = {
 type Props = {
   manga: Manga
   onClick: () => void
+  pageView: PageView
   screenFit: ScreenFit
 }
 
-export default function TouchViewer({ manga, onClick, screenFit }: Props) {
+export default function TouchViewer({ manga, onClick, screenFit, pageView }: Props) {
   const { images } = manga
-  const pageView = usePageViewStore((state) => state.pageView)
   const currentIndex = useImageIndexStore((state) => state.imageIndex)
   const touchOrientation = useTouchOrientationStore((state) => state.touchOrientation)
   const pointerStartRef = useRef<{ x: number; y: number } | null>(null)

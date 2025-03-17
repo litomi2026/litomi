@@ -1,6 +1,6 @@
 'use client'
 
-import { PageView, usePageViewStore } from '@/components/ImageViewer/store/pageView'
+import { PageView } from '@/components/ImageViewer/store/pageView'
 import { ScreenFit } from '@/components/ImageViewer/store/screenFit'
 import { type Manga } from '@/types/manga'
 import { getSafeAreaBottom } from '@/utils'
@@ -24,6 +24,7 @@ const screenFitStyle = {
 type Props = {
   manga: Manga
   onClick: () => void
+  pageView: PageView
   screenFit: ScreenFit
 }
 
@@ -36,10 +37,9 @@ type VirtualItemProps = {
 
 export default memo(ScrollViewer)
 
-function ScrollViewer({ manga, onClick, screenFit }: Props) {
+function ScrollViewer({ manga, onClick, screenFit, pageView }: Props) {
   const { images } = manga
   const parentRef = useRef<HTMLDivElement>(null)
-  const pageView = usePageViewStore((state) => state.pageView)
   const setVirtualizer = useVirtualizerStore((state) => state.setVirtualizer)
   const isDoublePage = pageView === 'double'
   const rowCount = isDoublePage ? Math.ceil(images.length / 2) : images.length

@@ -69,8 +69,8 @@ export default function ImageViewer({ manga }: Props) {
   return (
     <div className="relative">
       <div
-        aria-hidden={!showController}
-        className="fixed top-0 left-0 right-0 z-10 bg-background/70 backdrop-blur border-b border-zinc-500 px-safe transition aria-hidden:opacity-0 aria-hidden:pointer-events-none"
+        aria-expanded={showController}
+        className="fixed top-0 left-0 right-0 z-10 bg-background/70 backdrop-blur border-b border-zinc-500 px-safe transition opacity-0 pointer-events-none aria-expanded:opacity-100 aria-expanded:pointer-events-auto"
       >
         <div className="flex gap-2 items-center justify-between p-3 [&_button]:rounded-full [&_button]:active:text-zinc-500 [&_button]:hover:bg-zinc-800 [&_button]:transition [&_button]:p-2 [&_button]:focus:outline outline-zinc-500">
           <div className="flex gap-1">
@@ -94,14 +94,14 @@ export default function ImageViewer({ manga }: Props) {
       </div>
 
       {isTouchMode ? (
-        <TouchViewer manga={manga} onClick={toggleController} screenFit={screenFit} />
+        <TouchViewer manga={manga} onClick={toggleController} pageView={pageView} screenFit={screenFit} />
       ) : (
-        <ScrollViewer manga={manga} onClick={toggleController} screenFit={screenFit} />
+        <ScrollViewer manga={manga} onClick={toggleController} pageView={pageView} screenFit={screenFit} />
       )}
 
       <div
-        aria-hidden={!showController}
-        className="fixed bottom-0 left-0 right-0 z-10 bg-background/70 backdrop-blur border-t border-zinc-500 px-safe pb-safe transition aria-hidden:opacity-0 aria-hidden:pointer-events-none"
+        aria-expanded={showController}
+        className="fixed bottom-0 left-0 right-0 z-10 bg-background/70 backdrop-blur border-t border-zinc-500 px-safe pb-safe transition opacity-0 pointer-events-none aria-expanded:opacity-100 aria-expanded:pointer-events-auto"
       >
         <div className="p-3 grid gap-1.5">
           <ImageSlider maxImageIndex={maxImageIndex} />
@@ -133,7 +133,7 @@ export default function ImageViewer({ manga }: Props) {
               </>
             )}
             {!isTouchMode && (
-              <button disabled onClick={() => setTouchOrientation(isHorizontalTouch ? 'vertical' : 'horizontal')}>
+              <button disabled onClick={() => {}}>
                 너비 100%
               </button>
             )}
