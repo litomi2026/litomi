@@ -13,9 +13,9 @@ type Props = {
   onIntervalChange?: (index: number) => void
 }
 
-export default memo(Slideshow)
+export default memo(SlideshowButton)
 
-function Slideshow({ maxImageIndex, offset, onIntervalChange }: Props) {
+function SlideshowButton({ maxImageIndex, offset, onIntervalChange }: Props) {
   const imageIndex = useImageIndexStore((state) => state.imageIndex)
   const [slideshowInterval, setSlideshowInterval] = useState(0)
   const [isOpened, setIsOpened] = useState(false)

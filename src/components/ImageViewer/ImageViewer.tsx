@@ -11,7 +11,7 @@ import { toast } from 'sonner'
 import { IconChevronLeft, IconClose, IconMaximize, IconReload } from '../icons/IconImageViewer'
 import ImageSlider from './ImageSlider'
 import ScrollViewer from './ScrollViewer'
-import Slideshow from './Slideshow'
+import SlideshowButton from './SlideshowButton'
 import { useImageIndexStore } from './store/imageIndex'
 import { usePageViewStore } from './store/pageView'
 import TouchViewer from './TouchViewer'
@@ -125,7 +125,7 @@ export default function ImageViewer({ manga }: Props) {
                 <button onClick={() => setTouchOrientation(isHorizontalTouch ? 'vertical' : 'horizontal')}>
                   {isHorizontalTouch ? '좌우' : '상하'} 넘기기
                 </button>
-                <Slideshow
+                <SlideshowButton
                   maxImageIndex={maxImageIndex}
                   offset={isDoublePage ? 2 : 1}
                   onIntervalChange={setImageIndex}
