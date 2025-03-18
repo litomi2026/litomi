@@ -7,7 +7,7 @@ export const defaultOpenGraph = {
   description: 'Manga mirror site',
   url: CANONICAL_URL,
   siteName: SHORT_NAME,
-  images: [{ url: '/og-image.png' }],
+  images: [{ url: '/image/og-image.png' }],
   type: 'website',
 }
 

@@ -110,7 +110,7 @@ function VirtualItem({ index, manga, virtualizer, pageView }: VirtualItemProps) 
         imageRef={ref}
         manga={manga}
         onError={handleImageError}
-        {...(firstImageError && { src: '/images/fallback.svg' })}
+        {...(firstImageError && { src: '/image/fallback.svg' })}
       />
       {isDoublePage && (
         <MangaImage
@@ -118,7 +118,7 @@ function VirtualItem({ index, manga, virtualizer, pageView }: VirtualItemProps) 
           imageIndex={secondImageIndex}
           manga={manga}
           onError={handleImage2Error}
-          {...(secondImageError && { src: '/images/fallback.svg' })}
+          {...(secondImageError && { src: '/image/fallback.svg' })}
         />
       )}
     </li>
