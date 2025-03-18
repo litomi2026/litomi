@@ -189,7 +189,7 @@ function TouchViewerItem({ offset, manga, pageView }: TouchViewerItemProps) {
   const brightness = useBrightnessStore((state) => state.brightness)
 
   return (
-    <li aria-hidden={offset !== 0} key={offset} style={{ filter: `brightness(${brightness}%)` }}>
+    <li aria-hidden={offset !== 0} style={{ filter: `brightness(${brightness}%)` }}>
       <MangaImage imageIndex={imageIndex} manga={manga} />
       {pageView === 'double' && offset === 0 && <MangaImage imageIndex={imageIndex + 1} manga={manga} />}
     </li>

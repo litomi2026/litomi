@@ -5,7 +5,7 @@ import { useScreenFitStore } from '@/components/ImageViewer/store/screenFit'
 import { useTouchOrientationStore } from '@/components/ImageViewer/store/touchOrientation'
 import { type Manga } from '@/types/manga'
 import { useRouter } from 'next/navigation'
-import { useCallback, useEffect, useState } from 'react'
+import { memo, useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 import { IconChevronLeft, IconClose, IconMaximize, IconReload } from '../icons/IconImageViewer'
@@ -21,9 +21,6 @@ type Props = {
 }
 
 export default function ImageViewer({ manga }: Props) {
-  const { images, title } = manga
-  const imageCount = images.length
-  const maxImageIndex = imageCount - 1
   const [showController, setShowController] = useState(false)
   const { navMode, setNavMode } = useNavigationModeStore()
   const { screenFit, setScreenFit } = useScreenFitStore()
@@ -31,40 +28,28 @@ export default function ImageViewer({ manga }: Props) {
   const { pageView, setPageView } = usePageViewStore()
   const correctImageIndex = useImageIndexStore((state) => state.correctImageIndex)
   const setImageIndex = useImageIndexStore((state) => state.setImageIndex)
+  const toggleController = useCallback(() => setShowController((prev) => !prev), [])
+  const router = useRouter()
+  const { images, title } = manga
+  const imageCount = images.length
+  const maxImageIndex = imageCount - 1
   const isDoublePage = pageView === 'double'
   const isTouchMode = navMode === 'touch'
   const isWidthFit = screenFit === 'width'
   const isHorizontalTouch = touchOrientation === 'horizontal'
-  const router = useRouter()
 
   useEffect(() => {
     document.documentElement.style.overscrollBehavior = 'none'
     return () => {
       document.documentElement.style.overscrollBehavior = ''
     }
-  }, [isTouchMode])
+  }, [])
 
   useEffect(() => {
     return () => {
       setImageIndex(0)
     }
   }, [setImageIndex])
-
-  function toggleFullScreen() {
-    if (!document.fullscreenElement) {
-      if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen()
-      } else {
-        toast.error('이 브라우저는 전체화면 기능을 지원하지 않습니다.')
-      }
-    } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen()
-      }
-    }
-  }
-
-  const toggleController = useCallback(() => setShowController((prev) => !prev), [])
 
   return (
     <div className="relative">
@@ -86,9 +71,7 @@ export default function ImageViewer({ manga }: Props) {
             <button aria-label="새로고침" onClick={() => window.location.reload()}>
               <IconReload className="w-6" />
             </button>
-            <button aria-label="전체화면" onClick={toggleFullScreen}>
-              <IconMaximize className="w-6" />
-            </button>
+            <FullscreenButtonMemo />
           </div>
         </div>
       </div>
@@ -141,5 +124,29 @@ export default function ImageViewer({ manga }: Props) {
         </div>
       </div>
     </div>
+  )
+}
+
+const FullscreenButtonMemo = memo(FullscreenButton)
+
+function FullscreenButton() {
+  function toggleFullScreen() {
+    if (!document.fullscreenElement) {
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen()
+      } else {
+        toast.error('이 브라우저는 전체화면 기능을 지원하지 않습니다.')
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen()
+      }
+    }
+  }
+
+  return (
+    <button aria-label="전체화면" onClick={toggleFullScreen}>
+      <IconMaximize className="w-6" />
+    </button>
   )
 }
