@@ -61,7 +61,7 @@ function MangaCardPreviewImage({ manga, mangaIndex = 0 }: Props) {
       >
         {Array.from({ length: totalSlides }).map((_, i) => (
           <MangaImage
-            className="snap-start flex-shrink-0 w-full object-contain aspect-[3/4]"
+            className="snap-start flex-shrink-0 w-full object-contain aspect-[4/3] sm:aspect-[3/4] md:aspect-[4/3] lg:aspect-[3/4]"
             fetchPriority={mangaIndex < 4 && i < 2 ? 'high' : undefined}
             imageIndex={i}
             key={i}

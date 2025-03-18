@@ -49,7 +49,10 @@ function MangaCard({ manga, index = 0 }: Props) {
     })
 
   return (
-    <li className="grid grid-cols-2 border-2 rounded-lg overflow-hidden bg-zinc-900 border-zinc-800" key={id}>
+    <li
+      className="grid sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 border-2 rounded-lg overflow-hidden bg-zinc-900 border-zinc-800"
+      key={id}
+    >
       <div className="relative">
         <MangaCardPreviewImage manga={manga} mangaIndex={index} />
         {censoredTags && censoredTags.length > 0 && (
@@ -62,11 +65,9 @@ function MangaCard({ manga, index = 0 }: Props) {
         )}
         <div className="absolute bottom-1 right-1 px-1 font-medium text-sm bg-background rounded">{images.length}p</div>
       </div>
-      <div className="flex flex-col border-l border-zinc-700 justify-between p-2 gap-1">
+      <div className="flex flex-col border-t sm:border-t-0 sm:border-l border-zinc-800 justify-between p-2 gap-1">
         <div className="flex flex-col gap-2">
-          <h4 className="line-clamp-3 font-bold sm:line-clamp-6 md:line-clamp-1 lg:line-clamp-3 xl:line-clamp-6 leading-5 min-w-0">
-            {title}
-          </h4>
+          <h4 className="line-clamp-3 font-bold lg:line-clamp-6 leading-5 min-w-0">{title}</h4>
           <div className="text-sm">종류 {type}</div>
           {artists && artists.length > 0 && <div className="text-sm line-clamp-1">작가 {artists.join(', ')}</div>}
           {group && group.length > 0 && <div className="text-sm line-clamp-1">그룹 {group.join(', ')}</div>}
@@ -77,7 +78,7 @@ function MangaCard({ manga, index = 0 }: Props) {
           {related && related.length > 0 && (
             <div className="text-sm flex gap-2 whitespace-nowrap">
               연관
-              <ul className="flex xl:flex-wrap overflow-auto gap-1">
+              <ul className="flex flex-wrap overflow-auto gap-1">
                 {related.map((id) => (
                   <li className="rounded px-1 text-foreground bg-zinc-500" key={id}>
                     <Link href={`/manga/${id}`}>{id}</Link>
@@ -89,7 +90,7 @@ function MangaCard({ manga, index = 0 }: Props) {
           {koreanTags && koreanTags.length > 0 && (
             <div className="text-sm flex gap-2 whitespace-nowrap">
               태그
-              <ul className="flex xl:flex-wrap overflow-auto gap-1">
+              <ul className="flex flex-wrap overflow-auto gap-1">
                 {koreanTags.map((tag) => {
                   const [category, label] = tag.split(':')
                   const tagStyle = tagStyles[category as keyof typeof tagStyles] ?? 'bg-zinc-500'
