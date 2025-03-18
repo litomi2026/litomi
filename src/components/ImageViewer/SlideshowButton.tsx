@@ -16,7 +16,7 @@ type Props = {
 export default memo(SlideshowButton)
 
 function SlideshowButton({ maxImageIndex, offset, onIntervalChange }: Props) {
-  const imageIndex = useImageIndexStore((state) => state.imageIndex)
+  const getImageIndex = useImageIndexStore((state) => state.getImageIndex)
   const [slideshowInterval, setSlideshowInterval] = useState(0)
   const [isOpened, setIsOpened] = useState(false)
   const [isRepeating, setIsRepeating] = useState(false)
@@ -39,6 +39,8 @@ function SlideshowButton({ maxImageIndex, offset, onIntervalChange }: Props) {
     if (!slideshowInterval) return
 
     intervalIdRef.current = window.setInterval(() => {
+      const imageIndex = getImageIndex()
+
       if (imageIndex + offset <= maxImageIndex) {
         onIntervalChange?.(imageIndex + offset)
       } else if (isRepeating) {
@@ -59,7 +61,7 @@ function SlideshowButton({ maxImageIndex, offset, onIntervalChange }: Props) {
         intervalIdRef.current = null
       }
     }
-  }, [imageIndex, isRepeating, maxImageIndex, offset, onIntervalChange, slideshowInterval])
+  }, [getImageIndex, isRepeating, maxImageIndex, offset, onIntervalChange, slideshowInterval])
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
