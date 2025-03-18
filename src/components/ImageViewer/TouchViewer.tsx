@@ -12,7 +12,7 @@ import { useBrightnessStore } from './store/brightness'
 import { useImageIndexStore } from './store/imageIndex'
 
 const HORIZONTAL_SWIPE_THRESHOLD = 50 // 가로 스와이프 감지 임계값 (px)
-const VERTICAL_SWIPE_THRESHOLD = 25 // 세로 스와이프 감지 임계값 (px)
+const VERTICAL_SWIPE_THRESHOLD = 10 // 세로 스와이프 감지 임계값 (px)
 const EDGE_CLICK_THRESHOLD = 1 / 3 // 화면 3등분 시의 경계값
 
 const screenFitStyle = {
