@@ -55,7 +55,7 @@ function MangaCardPreviewImage({ manga, mangaIndex = 0 }: Props) {
     <>
       {/* 슬라이드 컨테이너 */}
       <Link
-        className="flex overflow-x-auto h-full snap-x snap-mandatory select-none scrollbar-hidden"
+        className="flex overflow-x-auto h-fit snap-x snap-mandatory select-none scrollbar-hidden"
         href={`/manga/${id}`}
         ref={sliderRef}
       >

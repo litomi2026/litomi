@@ -6,6 +6,7 @@ import { memo } from 'react'
 
 import IconExternalLink from './icons/IconExternalLink'
 import MangaCardPreviewImage from './MangaCardPreviewImage'
+import TagList from './TagList'
 
 const BLIND_TAG_LABELS = {
   bestiality: '수간',
@@ -14,13 +15,6 @@ const BLIND_TAG_LABELS = {
   yaoi: '게이',
   scat: '스캇',
 } as const
-
-const tagStyles = {
-  male: 'bg-blue-500',
-  female: 'bg-red-500',
-  남: 'bg-blue-500',
-  여: 'bg-red-500',
-}
 
 const BLIND_TAGS = Object.keys(BLIND_TAG_LABELS)
 
@@ -33,27 +27,26 @@ export default memo(MangaCard)
 
 function MangaCard({ manga, index = 0 }: Props) {
   const { id, artists, characters, date, group, related, series, tags, title, type, images } = manga
+  const mappedTags = tags?.map((tag) => harpiTagMap[tag] || tag)
+  const translatedTags = mappedTags?.map((tag) => (typeof tag === 'string' ? tag : tag.korStr || tag.engStr))
 
-  const decodedTags = tags?.map((tag) => harpiTagMap[tag] || tag)
-  const englishTags = decodedTags?.map((tag) => (typeof tag === 'string' ? tag : tag.engStr))
-  const koreanTags = decodedTags?.map((tag) => (typeof tag === 'string' ? tag : tag.korStr || tag.engStr))
-
-  const censoredTags = englishTags
-    ?.filter((tag) => {
-      const tagName = tag.split(':').pop() ?? ''
+  const censoredTags = mappedTags
+    ?.map((decodedTag) => (typeof decodedTag === 'string' ? decodedTag : decodedTag.engStr))
+    ?.filter((englishTag) => {
+      const tagName = englishTag.split(':').pop() ?? ''
       return BLIND_TAGS.includes(tagName)
     })
-    .map((tag) => {
-      const tagName = tag.split(':').pop()
+    .map((blindedTag) => {
+      const tagName = blindedTag.split(':').pop()
       return BLIND_TAG_LABELS[tagName as keyof typeof BLIND_TAG_LABELS]
     })
 
   return (
     <li
-      className="grid sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 border-2 rounded-lg overflow-hidden bg-zinc-900 border-zinc-800"
+      className="flex flex-col grid-cols-2 sm:grid md:flex lg:grid border-2 rounded-lg overflow-hidden bg-zinc-900 border-zinc-800"
       key={id}
     >
-      <div className="relative">
+      <div className="relative h-fit my-auto">
         <MangaCardPreviewImage manga={manga} mangaIndex={index} />
         {censoredTags && censoredTags.length > 0 && (
           <div className="absolute inset-0 bg-background/50 backdrop-blur flex items-center justify-center text-center p-4">
@@ -65,18 +58,16 @@ function MangaCard({ manga, index = 0 }: Props) {
         )}
         <div className="absolute bottom-1 right-1 px-1 font-medium text-sm bg-background rounded">{images.length}p</div>
       </div>
-      <div className="flex flex-col border-t sm:border-t-0 sm:border-l border-zinc-800 justify-between p-2 gap-1">
-        <div className="flex flex-col gap-2">
-          <h4 className="line-clamp-3 font-bold lg:line-clamp-6 leading-5 min-w-0">{title}</h4>
-          <div className="text-sm">종류 {type}</div>
-          {artists && artists.length > 0 && <div className="text-sm line-clamp-1">작가 {artists.join(', ')}</div>}
-          {group && group.length > 0 && <div className="text-sm line-clamp-1">그룹 {group.join(', ')}</div>}
-          {series && series.length > 0 && <div className="text-sm line-clamp-1">시리즈 {series.join(', ')}</div>}
-          {characters && characters.length > 0 && (
-            <div className="text-sm line-clamp-1">캐릭터 {characters.join(', ')}</div>
-          )}
+      <div className="flex grow flex-col border-t-2 sm:border-t-0 sm:border-l-2 md:border-l-0 md:border-t-2 lg:border-t-0 lg:border-l-2 border-zinc-800 justify-between p-2 gap-2">
+        <div className="flex flex-col gap-2 text-sm">
+          <h4 className="line-clamp-3 font-bold text-base lg:line-clamp-6 leading-5 min-w-0">{title}</h4>
+          <div>종류 {type}</div>
+          {artists && artists.length > 0 && <div className="line-clamp-1">작가 {artists.join(', ')}</div>}
+          {group && group.length > 0 && <div className="line-clamp-1">그룹 {group.join(', ')}</div>}
+          {series && series.length > 0 && <div className="line-clamp-1">시리즈 {series.join(', ')}</div>}
+          {characters && characters.length > 0 && <div className="line-clamp-1">캐릭터 {characters.join(', ')}</div>}
           {related && related.length > 0 && (
-            <div className="text-sm flex gap-2 whitespace-nowrap">
+            <div className="flex gap-2 whitespace-nowrap">
               연관
               <ul className="flex flex-wrap overflow-auto gap-1">
                 {related.map((id) => (
@@ -87,20 +78,13 @@ function MangaCard({ manga, index = 0 }: Props) {
               </ul>
             </div>
           )}
-          {koreanTags && koreanTags.length > 0 && (
-            <div className="text-sm flex gap-2 whitespace-nowrap">
+          {translatedTags && translatedTags.length > 0 && (
+            <div className="flex gap-2 whitespace-nowrap">
               태그
-              <ul className="flex flex-wrap overflow-auto gap-1">
-                {koreanTags.map((tag) => {
-                  const [category, label] = tag.split(':')
-                  const tagStyle = tagStyles[category as keyof typeof tagStyles] ?? 'bg-zinc-500'
-                  return (
-                    <li className={`rounded px-1 text-foreground ${tagStyle}`} key={tag}>
-                      {label}
-                    </li>
-                  )
-                })}
-              </ul>
+              <TagList
+                className="flex flex-wrap gap-1 font-semibold [&_li]:rounded [&_li]:px-1 [&_li]:text-foreground"
+                tags={translatedTags}
+              />
             </div>
           )}
         </div>

@@ -45,22 +45,6 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Props) {
   const pointerStartRef = useRef<{ x: number; y: number } | null>(null)
   const initialBrightnessRef = useRef(100)
   const swipeDetectedRef = useRef(false)
-  const frameId = useRef<number | null>(null)
-  const pendingBrightness = useRef(getBrightness())
-
-  // 밝기 업데이트 함수: requestAnimationFrame을 통해 한 프레임에 한 번만 업데이트
-  const updateBrightness = useCallback(
-    (newBrightness: number) => {
-      pendingBrightness.current = newBrightness
-      if (frameId.current === null) {
-        frameId.current = requestAnimationFrame(() => {
-          setBrightness(pendingBrightness.current)
-          frameId.current = null
-        })
-      }
-    },
-    [setBrightness],
-  )
 
   const { prevPage, nextPage } = useImageNavigation({
     maxIndex: images.length - 1,
@@ -98,9 +82,9 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Props) {
 
       if (newBrightness < 10 || newBrightness > 100) return
 
-      updateBrightness(newBrightness)
+      setBrightness(newBrightness)
     },
-    [screenFit, updateBrightness],
+    [screenFit, setBrightness],
   )
 
   // 포인터 종료 시: 가로 스와이프와 세로 스와이프 구분

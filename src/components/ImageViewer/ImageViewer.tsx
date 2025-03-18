@@ -3,12 +3,14 @@
 import { useNavigationModeStore } from '@/components/ImageViewer/store/navigationMode'
 import { useScreenFitStore } from '@/components/ImageViewer/store/screenFit'
 import { useTouchOrientationStore } from '@/components/ImageViewer/store/touchOrientation'
+import { harpiTagMap } from '@/database/harpi-tag'
 import { type Manga } from '@/types/manga'
 import { useRouter } from 'next/navigation'
 import { memo, useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 import { IconChevronLeft, IconClose, IconMaximize, IconReload } from '../icons/IconImageViewer'
+import TagList from '../TagList'
 import Modal from '../ui/Modal'
 import ImageSlider from './ImageSlider'
 import ScrollViewer from './ScrollViewer'
@@ -41,8 +43,10 @@ export default function ImageViewer({ manga }: Props) {
 
   useEffect(() => {
     document.documentElement.style.overscrollBehavior = 'none'
+    document.body.style.overscrollBehavior = 'none'
     return () => {
       document.documentElement.style.overscrollBehavior = ''
+      document.body.style.overscrollBehavior = ''
     }
   }, [])
 
@@ -155,8 +159,12 @@ function FullscreenButton() {
 const MangaDetailModalButtonMemo = memo(MangaDetailModalButton)
 
 function MangaDetailModalButton({ manga }: { manga: Manga }) {
-  const { title, artists, group, series, characters, type } = manga
+  const { title, artists, group, series, characters, type, tags } = manga
   const [isOpened, setIsOpened] = useState(false)
+
+  const translatedTags = tags
+    ?.map((tag) => harpiTagMap[tag] || tag)
+    ?.map((tag) => (typeof tag === 'string' ? tag : tag.korStr || tag.engStr))
 
   return (
     <>
@@ -191,6 +199,15 @@ function MangaDetailModalButton({ manga }: { manga: Manga }) {
               <>
                 <strong>캐릭터</strong>
                 <div>{characters.join(', ')}</div>
+              </>
+            )}
+            {translatedTags && translatedTags.length > 0 && (
+              <>
+                <strong>태그</strong>
+                <TagList
+                  className="flex flex-wrap gap-1 font-medium [&_li]:rounded [&_li]:px-1 [&_li]:text-foreground"
+                  tags={translatedTags}
+                />
               </>
             )}
           </div>
