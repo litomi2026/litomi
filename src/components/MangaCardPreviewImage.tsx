@@ -58,7 +58,6 @@ function MangaCardPreviewImage({ manga, mangaIndex = 0 }: Props) {
         className="flex overflow-x-auto h-full snap-x snap-mandatory select-none scrollbar-hidden"
         href={`/manga/${id}`}
         ref={sliderRef}
-        target="_blank"
       >
         {Array.from({ length: totalSlides }).map((_, i) => (
           <MangaImage

@@ -4,6 +4,7 @@ import dayjs from 'dayjs'
 import Link from 'next/link'
 import { memo } from 'react'
 
+import IconExternalLink from './icons/IconExternalLink'
 import MangaCardPreviewImage from './MangaCardPreviewImage'
 
 const BLIND_TAG_LABELS = {
@@ -102,10 +103,15 @@ function MangaCard({ manga, index = 0 }: Props) {
             </div>
           )}
         </div>
-        <div className="flex text-xs justify-between items-center">
-          <Link className="text-zinc-500 focus:underline hover:underline" href={`/manga/${id}`}>
+        <div className="flex text-xs justify-between items-center gap-1">
+          <a
+            className="text-zinc-500 focus:underline flex items-center gap-1 hover:underline"
+            href={`/manga/${id}`}
+            target="_blank"
+          >
             {id}
-          </Link>
+            <IconExternalLink className="w-3" />
+          </a>
           <div className="text-right text-zinc-500"></div>
           <div className="text-right text-zinc-500">{dayjs(date).format('YYYY-MM-DD HH:mm')}</div>
         </div>

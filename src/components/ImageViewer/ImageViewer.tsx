@@ -9,6 +9,7 @@ import { memo, useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 import { IconChevronLeft, IconClose, IconMaximize, IconReload } from '../icons/IconImageViewer'
+import Modal from '../ui/Modal'
 import ImageSlider from './ImageSlider'
 import ScrollViewer from './ScrollViewer'
 import SlideshowButton from './SlideshowButton'
@@ -30,7 +31,7 @@ export default function ImageViewer({ manga }: Props) {
   const setImageIndex = useImageIndexStore((state) => state.setImageIndex)
   const toggleController = useCallback(() => setShowController((prev) => !prev), [])
   const router = useRouter()
-  const { images, title } = manga
+  const { images } = manga
   const imageCount = images.length
   const maxImageIndex = imageCount - 1
   const isDoublePage = pageView === 'double'
@@ -66,7 +67,7 @@ export default function ImageViewer({ manga }: Props) {
               <IconClose className="w-6" />
             </button>
           </div>
-          <h1 className="flex-1 text-center line-clamp-2 font-bold text-foreground">{title}</h1>
+          <MangaDetailModalButtonMemo manga={manga} />
           <div className="flex gap-1">
             <button aria-label="새로고침" onClick={() => window.location.reload()}>
               <IconReload className="w-6" />
@@ -148,5 +149,53 @@ function FullscreenButton() {
     <button aria-label="전체화면" onClick={toggleFullScreen}>
       <IconMaximize className="w-6" />
     </button>
+  )
+}
+
+const MangaDetailModalButtonMemo = memo(MangaDetailModalButton)
+
+function MangaDetailModalButton({ manga }: { manga: Manga }) {
+  const { title, artists, group, series, characters, type } = manga
+  const [isOpened, setIsOpened] = useState(false)
+
+  return (
+    <>
+      <button className="hover:underline" onClick={() => setIsOpened(true)} type="button">
+        <h1 className="flex-1 text-center line-clamp-2 font-bold text-foreground">{title}</h1>
+      </button>
+      <Modal onClose={() => setIsOpened(false)} open={isOpened} showCloseButton showDragButton>
+        <div className="bg-zinc-900 w-screen max-w-xs rounded-xl p-4 pt-8 shadow-xl border border-zinc-800 grid gap-4 text-sm">
+          <h4 className="font-bold leading-5 min-w-0 text-base">{title}</h4>
+          <div className="grid grid-cols-[auto_1fr] gap-2">
+            <strong>종류</strong>
+            <div>{type}</div>
+            {artists && artists.length > 0 && (
+              <>
+                <strong>작가</strong>
+                <div>{artists.join(', ')}</div>
+              </>
+            )}
+            {group && group.length > 0 && (
+              <>
+                <strong>그룹</strong>
+                <div>{group.join(', ')}</div>
+              </>
+            )}
+            {series && series.length > 0 && (
+              <>
+                <strong>시리즈</strong>
+                <div>{series.join(', ')}</div>
+              </>
+            )}
+            {characters && characters.length > 0 && (
+              <>
+                <strong>캐릭터</strong>
+                <div>{characters.join(', ')}</div>
+              </>
+            )}
+          </div>
+        </div>
+      </Modal>
+    </>
   )
 }
