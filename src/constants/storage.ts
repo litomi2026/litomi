@@ -7,3 +7,7 @@ export enum LocalStorageKey {
   CONTROLLER_TOUCH_ORIENTATION = 'controller/touch-orientation',
   CONTROLLER_PAGE_VIEW = 'controller/page-view',
 }
+
+export enum SessionStorageKey {
+  CONTROLLER_BRIGHTNESS = 'controller/brightness',
+}

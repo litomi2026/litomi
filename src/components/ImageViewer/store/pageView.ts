@@ -1,4 +1,4 @@
-import { LocalStorageKey } from '@/constants/localStorage'
+import { LocalStorageKey } from '@/constants/storage'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 

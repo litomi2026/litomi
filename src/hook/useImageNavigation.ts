@@ -8,25 +8,29 @@ type Params = {
 }
 
 export default function useImageNavigation({ maxIndex, offset }: Params) {
-  const { imageIndex, setImageIndex } = useImageIndexStore()
+  const { getImageIndex, setImageIndex } = useImageIndexStore()
 
   const prevPage = useCallback(() => {
-    if (imageIndex <= 0) {
+    const currentImageIndex = getImageIndex()
+
+    if (currentImageIndex <= 0) {
       toast.warning('첫번째 이미지입니다.')
       return
     }
 
-    setImageIndex(imageIndex - offset)
-  }, [imageIndex, offset, setImageIndex])
+    setImageIndex(currentImageIndex - offset)
+  }, [getImageIndex, offset, setImageIndex])
 
   const nextPage = useCallback(() => {
-    if (imageIndex + offset > maxIndex) {
+    const currentImageIndex = getImageIndex()
+
+    if (currentImageIndex + offset > maxIndex) {
       toast.warning('마지막 이미지입니다.')
       return
     }
 
-    setImageIndex(imageIndex + offset)
-  }, [imageIndex, maxIndex, offset, setImageIndex])
+    setImageIndex(currentImageIndex + offset)
+  }, [getImageIndex, maxIndex, offset, setImageIndex])
 
   useEffect(() => {
     function handleKeyDown({ code }: KeyboardEvent) {

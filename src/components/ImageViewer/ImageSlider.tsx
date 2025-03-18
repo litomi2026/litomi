@@ -14,7 +14,7 @@ export default memo(ImageSlider)
 function ImageSlider({ maxImageIndex }: Props) {
   const { imageIndex, setImageIndex } = useImageIndexStore()
   const pageView = usePageViewStore((state) => state.pageView)
-  const virtualizer = useVirtualizerStore((state) => state.virtualizer)
+  const getVirtualizer = useVirtualizerStore((state) => state.getVirtualizer)
   const isDoublePage = pageView === 'double'
   const currentPage = imageIndex + 1
   const maxPage = maxImageIndex + 1
@@ -24,12 +24,9 @@ function ImageSlider({ maxImageIndex }: Props) {
   const handleValueCommit = useCallback(
     (value: number) => {
       setImageIndex(value)
-
-      if (virtualizer) {
-        virtualizer.scrollToIndex(isDoublePage ? Math.floor(value / 2) : value)
-      }
+      getVirtualizer()?.scrollToIndex(isDoublePage ? Math.floor(value / 2) : value)
     },
-    [isDoublePage, setImageIndex, virtualizer],
+    [getVirtualizer, isDoublePage, setImageIndex],
   )
 
   return (
