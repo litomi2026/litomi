@@ -85,8 +85,8 @@ function VirtualItem({ index, manga, virtualizer, pageView }: VirtualItemProps) 
   const setImageIndex = useImageIndexStore((state) => state.setImageIndex)
   const isDoublePage = pageView === 'double'
   const firstImageIndex = isDoublePage ? index * 2 : index
-  const secondImageIndex = firstImageIndex + 1
-  const [[firstImageError, secondImageError], setImageErrors] = useState([false, false])
+  const nextImageIndex = firstImageIndex + 1
+  const [[firstImageError, nextImageError], setImageErrors] = useState([false, false])
 
   const { ref, inView } = useInView({
     threshold: 0,
@@ -114,11 +114,11 @@ function VirtualItem({ index, manga, virtualizer, pageView }: VirtualItemProps) 
       />
       {isDoublePage && (
         <MangaImage
-          aria-hidden={secondImageError}
-          imageIndex={secondImageIndex}
+          aria-hidden={nextImageError}
+          imageIndex={nextImageIndex}
           manga={manga}
           onError={handleImage2Error}
-          {...(secondImageError && { src: '/image/fallback.svg' })}
+          {...(nextImageError && { src: '/image/fallback.svg' })}
         />
       )}
     </li>
