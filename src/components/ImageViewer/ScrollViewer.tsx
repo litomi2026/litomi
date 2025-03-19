@@ -46,8 +46,8 @@ function ScrollViewer({ manga, onClick, screenFit, pageView }: Props) {
 
   const virtualizer = useVirtualizer({
     count: rowCount,
-    getScrollElement: () => parentRef.current,
     estimateSize: useCallback(() => window.innerHeight, []),
+    getScrollElement: useCallback(() => parentRef.current, []),
     overscan: 5,
     useAnimationFrameWithResizeObserver: true,
     paddingEnd: getSafeAreaBottom(),
