@@ -6,8 +6,6 @@ import { createPortal } from 'react-dom'
 
 import IconX from '../icons/IconX'
 
-const MARGIN = 8
-
 type Props = {
   children: ReactNode
   className?: string
@@ -59,10 +57,8 @@ export default function Modal({ className = '', children, open, onClose, showClo
     const shiftY = event.clientY - modalRect.top
 
     function moveModal({ clientX, clientY }: globalThis.MouseEvent) {
-      modalStyle.left =
-        Math.min(Math.max(MARGIN, clientX - shiftX), window.innerWidth - modalRect.width - MARGIN) + 'px'
-      modalStyle.top =
-        Math.min(Math.max(MARGIN, clientY - shiftY), window.innerHeight - modalRect.height - MARGIN) + 'px'
+      modalStyle.left = Math.min(Math.max(0, clientX - shiftX), window.innerWidth - modalRect.width) + 'px'
+      modalStyle.top = Math.min(Math.max(0, clientY - shiftY), window.innerHeight - modalRect.height) + 'px'
     }
 
     document.addEventListener('mousemove', moveModal)
@@ -81,10 +77,8 @@ export default function Modal({ className = '', children, open, onClose, showClo
 
     function moveModal({ touches }: globalThis.TouchEvent) {
       const { clientX, clientY } = touches[0]
-      modalStyle.left =
-        Math.min(Math.max(MARGIN, clientX - shiftX), window.innerWidth - modalRect.width - MARGIN) + 'px'
-      modalStyle.top =
-        Math.min(Math.max(MARGIN, clientY - shiftY), window.innerHeight - modalRect.height - MARGIN) + 'px'
+      modalStyle.left = Math.min(Math.max(0, clientX - shiftX), window.innerWidth - modalRect.width) + 'px'
+      modalStyle.top = Math.min(Math.max(0, clientY - shiftY), window.innerHeight - modalRect.height) + 'px'
     }
 
     document.addEventListener('touchmove', moveModal)
@@ -118,7 +112,7 @@ export default function Modal({ className = '', children, open, onClose, showClo
           >
             {showDragButton && (
               <div
-                className="absolute left-0 right-0 top-0 z-50 flex h-4 cursor-move justify-center p-2 pb-6"
+                className="absolute left-0 right-0 top-0 z-50 flex h-4 cursor-move select-none justify-center p-2 pb-6"
                 onDragStart={(e) => e.preventDefault()}
                 onMouseDown={dragModalMouse}
                 onTouchStart={dragModalTouch}

@@ -169,11 +169,11 @@ function MangaDetailModalButton({ manga }: { manga: Manga }) {
   return (
     <>
       <button className="hover:underline" onClick={() => setIsOpened(true)} type="button">
-        <h1 className="flex-1 text-center line-clamp-2 font-bold text-foreground">{title}</h1>
+        <h1 className="flex-1 text-center line-clamp-2 font-bold text-foreground md:text-lg">{title}</h1>
       </button>
       <Modal onClose={() => setIsOpened(false)} open={isOpened} showCloseButton showDragButton>
-        <div className="bg-zinc-900 min-w-3xs max-w-md rounded-xl p-4 pt-8 shadow-xl border border-zinc-800 grid gap-4 text-sm">
-          <h4 className="font-bold leading-5 min-w-0 text-base">{title}</h4>
+        <div className="bg-zinc-900 min-w-3xs w-screen max-w-sm md:max-w-lg rounded-xl p-4 pt-8 shadow-xl border border-zinc-800 grid gap-3 text-sm md:text-base">
+          <h4 className="font-bold text-lg md:text-xl">{title}</h4>
           <div className="grid grid-cols-[auto_1fr] gap-2">
             <strong>종류</strong>
             <div>{type}</div>

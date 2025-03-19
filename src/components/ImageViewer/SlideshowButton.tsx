@@ -80,7 +80,7 @@ function SlideshowButton({ maxImageIndex, offset, onIntervalChange }: Props) {
       </button>
       <Modal onClose={() => setIsOpened(false)} open={isOpened} showCloseButton showDragButton>
         <form
-          className="bg-zinc-900 min-w-3xs max-w-xs rounded-xl p-4 pt-8 shadow-xl border border-zinc-800"
+          className="bg-zinc-900 min-w-3xs w-screen max-w-xs rounded-xl p-4 pt-8 shadow-xl border border-zinc-800"
           onSubmit={handleSubmit}
         >
           <h3 className="font-bold text-xl text-center">슬라이드쇼</h3>
