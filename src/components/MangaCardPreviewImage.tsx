@@ -71,7 +71,7 @@ function MangaCardPreviewImage({ manga, mangaIndex = 0 }: Props) {
       </Link>
 
       {/* 좌우 이동 버튼 (JavaScript로 동적으로 업데이트) */}
-      <div className="[&_button]:[@media(pointer:coarse)]:hidden [&_button]:absolute [&_button]:top-1/2 [&_button]:-translate-y-1/2 [&_button]:rounded-full [&_button]:bg-zinc-700/50 [&_button]:text-white [&_button]:p-2 [&_button]:ring-zinc-400 [&_button]:active:ring-2">
+      <div className="[&_button]:[@media(pointer:coarse)]:hidden [&_button]:absolute [&_button]:top-1/2 [&_button]:-translate-y-1/2 [&_button]:z-10 [&_button]:rounded-full [&_button]:bg-zinc-700/50 [&_button]:text-white [&_button]:p-2 [&_button]:ring-zinc-400 [&_button]:active:ring-2">
         <button className="left-1" onClick={() => scrollToSlide(prevIndex)}>
           <IconPrevPage className="w-4" />
         </button>
@@ -81,7 +81,7 @@ function MangaCardPreviewImage({ manga, mangaIndex = 0 }: Props) {
       </div>
 
       {/* 슬라이드 인디케이터 */}
-      <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex gap-2 [&_button]:w-3 [&_button]:h-3 [&_button]:rounded-full [&_button]:bg-zinc-300 [&_button]:border [&_button]:border-zinc-500 [&_button]:aria-pressed:bg-brand-gradient">
+      <div className="absolute z-10 bottom-1 left-1/2 -translate-x-1/2 flex gap-2 [&_button]:w-3 [&_button]:h-3 [&_button]:rounded-full [&_button]:bg-zinc-300 [&_button]:border [&_button]:border-zinc-500 [&_button]:aria-pressed:bg-brand-gradient">
         {Array.from({ length: totalSlides }).map((_, i) => (
           <button
             aria-label={`Go to slide ${i + 1}`}

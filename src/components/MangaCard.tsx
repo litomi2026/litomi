@@ -49,7 +49,7 @@ function MangaCard({ manga, index = 0 }: Props) {
       <div className="relative h-fit my-auto">
         <MangaCardPreviewImage manga={manga} mangaIndex={index} />
         {censoredTags && censoredTags.length > 0 && (
-          <div className="absolute inset-0 bg-background/50 backdrop-blur flex items-center justify-center text-center p-4">
+          <div className="absolute inset-0 bg-background/50 backdrop-blur flex items-center justify-center text-center p-4 pointer-events-none">
             <div className="text-foreground text-center font-semibold flex flex-wrap gap-1 justify-center">
               <span>{censoredTags.join('/')}</span>
               <span>작품 검열</span>
