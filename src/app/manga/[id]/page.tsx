@@ -6,6 +6,8 @@ import { getImageSrc } from '@/utils/manga'
 import { Metadata, ResolvingMetadata } from 'next'
 import { notFound } from 'next/navigation'
 
+export const dynamic = 'error'
+
 type MangaForMetadata = {
   title: string
   images: string[]
