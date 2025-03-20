@@ -18,7 +18,7 @@ const screenFitStyle = {
 
   // TODO: Fix this
   height:
-    '[&_li]:overflow-x-auto [&_li]:overscroll-none [&_li]:mx-auto [&_li]:w-fit [&_li]:max-w-full [&_img]:w-auto [&_img]:max-w-fit [&_img]:h-dvh [&_img]:max-h-fit',
+    '[&_li]:overflow-x-auto [&_li]:overscroll-x-none [&_li]:mx-auto [&_li]:w-fit [&_li]:max-w-full [&_img]:w-auto [&_img]:max-w-fit [&_img]:h-dvh [&_img]:max-h-fit',
 }
 
 type Props = {
