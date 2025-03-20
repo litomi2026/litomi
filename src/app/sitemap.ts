@@ -5,7 +5,7 @@ import { CANONICAL_URL } from '@/constants/url'
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
-      url: `${CANONICAL_URL}/manga`,
+      url: `${CANONICAL_URL}/mangas/id/desc/1`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 1,

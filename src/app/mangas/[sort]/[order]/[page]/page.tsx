@@ -3,17 +3,20 @@ import Navigation from '@/components/Navigation'
 import { SHORT_NAME } from '@/constants'
 import { mangaIdsByPage, mangas, pages } from '@/database/manga'
 import { BasePageProps } from '@/types/nextjs'
-import { validateOrder, validatePage } from '@/utils/pagination'
+import { validateOrder, validatePage, validateSort } from '@/utils/pagination'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
-export default async function Page({ searchParams }: BasePageProps) {
-  const { page = '1', order = 'desc' } = await searchParams
-  const pageNumber = validatePage(page)
+export const dynamic = 'error'
+
+export default async function Page({ params }: BasePageProps) {
+  const { sort, order, page } = await params
+  const sortString = validateSort(sort)
   const orderString = validateOrder(order)
+  const pageNumber = validatePage(page)
   const totalPages = pages.length
 
-  if (!pageNumber || pageNumber > totalPages || !orderString) {
+  if (!sortString || !orderString || !pageNumber || pageNumber > totalPages) {
     notFound()
   }
 

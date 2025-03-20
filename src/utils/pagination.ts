@@ -1,8 +1,4 @@
-export function validateOrder(order: string | string[]) {
-  if (Array.isArray(order)) {
-    return ''
-  }
-
+export function validateOrder(order: string) {
   switch (order) {
     case 'asc':
       return 'asc'
@@ -13,11 +9,7 @@ export function validateOrder(order: string | string[]) {
   }
 }
 
-export function validatePage(page: string | string[]) {
-  if (Array.isArray(page)) {
-    return 0
-  }
-
+export function validatePage(page: string) {
   const pageNumber = parseInt(page, 10)
 
   if (isNaN(pageNumber) || !isFinite(pageNumber) || pageNumber < 1) {
@@ -25,4 +17,13 @@ export function validatePage(page: string | string[]) {
   }
 
   return pageNumber
+}
+
+export function validateSort(order: string) {
+  switch (order) {
+    case 'id':
+      return 'id'
+    default:
+      return ''
+  }
 }

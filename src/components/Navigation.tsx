@@ -1,7 +1,7 @@
 import Link from 'next/link'
 
-import IconArrow from './icons/IconArrow'
 import { IconFirstPage, IconJumpNext, IconJumpPrev, IconLastPage, IconNextPage, IconPrevPage } from './icons/IconArrows'
+import NavigationJump from './NavigationJump'
 
 const VISIBLE_PAGES = 9
 
@@ -29,59 +29,38 @@ export default function Navigation({ currentPage, totalPages }: Props) {
       "
     >
       {currentPage > 1 && (
-        <Link className="hidden sm:block" href={`/manga?page=${1}`}>
+        <Link className="hidden sm:block" href={`${1}`}>
           <IconFirstPage />
         </Link>
       )}
       {startPage > 1 && (
-        <Link href={`/manga?page=${Math.max(currentPage - VISIBLE_PAGES, 1)}`}>
+        <Link href={`${Math.max(currentPage - VISIBLE_PAGES, 1)}`}>
           <IconJumpPrev />
         </Link>
       )}
-      <Link aria-disabled={currentPage <= 1} href={`/manga?page=${currentPage - 1}`}>
+      <Link aria-disabled={currentPage <= 1} href={`${currentPage - 1}`}>
         <IconPrevPage />
       </Link>
       {/* 현재 페이지 주변의 번호들 */}
       {visiblePageNumbers.map((page) => (
-        <Link aria-selected={page === currentPage} className="flex" href={`/manga?page=${page}`} key={page}>
+        <Link aria-selected={page === currentPage} className="flex" href={`${page}`} key={page}>
           <span>{page}</span>
         </Link>
       ))}
-      <Link aria-disabled={currentPage >= totalPages} href={`/manga?page=${currentPage + 1}`}>
+      <Link aria-disabled={currentPage >= totalPages} href={`${currentPage + 1}`}>
         <IconNextPage />
       </Link>
       {endPage < totalPages && (
-        <Link href={`/manga?page=${Math.min(currentPage + VISIBLE_PAGES, totalPages)}`}>
+        <Link href={`${Math.min(currentPage + VISIBLE_PAGES, totalPages)}`}>
           <IconJumpNext />
         </Link>
       )}
       {currentPage < totalPages && (
-        <Link aria-disabled={currentPage >= totalPages} className="hidden sm:block" href={`/manga?page=${totalPages}`}>
+        <Link aria-disabled={currentPage >= totalPages} className="hidden sm:block" href={`${totalPages}`}>
           <IconLastPage />
         </Link>
       )}
-      <form action="/manga" className="flex gap-2 relative sm:hidden" method="get">
-        <label className="sr-only" htmlFor="page-input">
-          이동할 페이지 번호
-        </label>
-        <input
-          className="w-14 p-1 border border-zinc-200 rounded focus:outline-none focus:ring-1 focus:ring-zinc-300"
-          id="page-input"
-          max={totalPages}
-          min="1"
-          name="page"
-          pattern="\d*"
-          placeholder={`${totalPages}`}
-          required
-          type="number"
-        />
-        <button
-          className="whitespace-nowrap bg-zinc-800 text-foreground rounded hover:bg-zinc-700 focus:outline-none focus:ring-1 focus:ring-zinc-300"
-          type="submit"
-        >
-          <IconArrow />
-        </button>
-      </form>
+      <NavigationJump totalPages={totalPages} />
     </nav>
   )
 }
