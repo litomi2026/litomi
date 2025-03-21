@@ -62,7 +62,7 @@ async function fetchMangas({ page, sort, order }: FetchHashaMangasParams) {
     console.log('👀 - error:', error)
     console.log(JSON.stringify(mangaById))
     mangaById = {}
-    await sleep(30_000)
+    await sleep(60_000)
     return []
   }
 }
