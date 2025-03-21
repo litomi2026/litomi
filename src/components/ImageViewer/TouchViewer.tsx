@@ -45,36 +45,36 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Props) {
   const pointerStartRef = useRef<{ x: number; y: number } | null>(null)
   const initialBrightnessRef = useRef(100)
   const swipeDetectedRef = useRef(false)
+  const activePointers = useRef(new Set<number>())
 
   const { prevPage, nextPage } = useImageNavigation({
     maxIndex: images.length - 1,
     offset: pageView === 'double' ? 2 : 1,
   })
 
-  // 포인터 시작 시 좌표와 현재 밝기 기록
+  // 포인터 시작 시 좌표, 현재 밝기 기록 및 포인터 ID 등록
   const handlePointerDown = useCallback(
     (e: React.PointerEvent) => {
       pointerStartRef.current = { x: e.clientX, y: e.clientY }
       initialBrightnessRef.current = getBrightness()
       swipeDetectedRef.current = false
+      activePointers.current.add(e.pointerId)
     },
     [getBrightness],
   )
 
-  // 포인터 이동 시: 세로 스와이프 감지 시 밝기 업데이트 (throttled)
+  // 포인터 이동 시: 세로 스와이프 감지 시 밝기 업데이트, 핀치 줌(멀티 터치) 중이면 밝기 조절 방지
   const handlePointerMove = useCallback(
     (e: React.PointerEvent) => {
-      // 가로 맞춤일 땐 세로 스크롤이 발생할 수 있기 때문에 세로 스와이프 방지
+      if (activePointers.current.size > 1) return // 핀치 줌 중에는 밝기 조절하지 않음
       if (screenFit === 'width') return
       if (!pointerStartRef.current) return
 
       const diffX = e.clientX - pointerStartRef.current.x
       const diffY = e.clientY - pointerStartRef.current.y
       const isVerticalSwipe = Math.abs(diffY) > VERTICAL_SWIPE_THRESHOLD && Math.abs(diffY) > Math.abs(diffX)
-
       if (!isVerticalSwipe) return
 
-      // 세로 스와이프일 때 위로 스와이프(diffY 음수) 시 밝기 증가, 아래로 스와이프 시 밝기 감소
       swipeDetectedRef.current = true
       const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
       const deltaBrightness = (diffY / (rect.height / 2)) * 90
@@ -87,18 +87,18 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Props) {
     [screenFit, setBrightness],
   )
 
-  // 포인터 종료 시: 가로 스와이프와 세로 스와이프 구분
+  // 포인터 종료 시: 포인터 ID 제거 및 스와이프/페이지 전환 처리
   const handlePointerUp = useCallback(
     (e: React.PointerEvent) => {
-      // 세로 맞춤일 땐 가로 스크롤이 발생할 수 있기 때문에 가로 스와이프 방지
+      activePointers.current.delete(e.pointerId)
       if (screenFit === 'height') return
       if (!pointerStartRef.current) return
 
       const diffX = e.clientX - pointerStartRef.current.x
       const diffY = e.clientY - pointerStartRef.current.y
-      const isVerticalSwipe = Math.abs(diffY) > VERTICAL_SWIPE_THRESHOLD && Math.abs(diffY) > Math.abs(diffX)
 
       // 세로 스와이프가 감지되었으면 페이지 전환 없이 종료
+      const isVerticalSwipe = Math.abs(diffY) > VERTICAL_SWIPE_THRESHOLD && Math.abs(diffY) > Math.abs(diffX)
       if (isVerticalSwipe) {
         pointerStartRef.current = null
         return
@@ -118,7 +118,12 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Props) {
     [nextPage, prevPage, screenFit],
   )
 
-  // 클릭 이벤트: 스와이프가 발생하지 않았을 때 화면 터치 처리
+  // 포인터 캔슬 시 포인터 ID 제거
+  const handlePointerCancel = useCallback((e: React.PointerEvent) => {
+    activePointers.current.delete(e.pointerId)
+  }, [])
+
+  // 클릭 이벤트: 스와이프 미발생 시 처리
   const handleClick = useCallback(
     (e: React.MouseEvent) => {
       if (swipeDetectedRef.current) {
@@ -156,6 +161,7 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Props) {
     <ul
       className={`h-dvh select-none overscroll-none [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:pb-safe [&_img]:border [&_img]:border-background ${screenFitStyle[screenFit]}`}
       onClick={handleClick}
+      onPointerCancel={handlePointerCancel}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
