@@ -1,5 +1,6 @@
 import MangaCard from '@/components/MangaCard'
 import Navigation from '@/components/Navigation'
+import ScrollButtons from '@/components/ScrollButtons'
 import { SHORT_NAME } from '@/constants'
 import { mangaIdsByPage, mangas, pages } from '@/database/manga'
 import { BasePageProps } from '@/types/nextjs'
@@ -62,6 +63,7 @@ export default async function Page({ params }: BasePageProps) {
           </Link>
         </div>
       </footer>
+      <ScrollButtons />
     </main>
   )
 }

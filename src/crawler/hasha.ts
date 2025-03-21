@@ -60,16 +60,14 @@ async function fetchMangas({ page, sort, order }: FetchHashaMangasParams) {
   } catch (error) {
     console.log(`Failed to fetch page ${page}`)
     console.log('👀 - error:', error)
-    console.log(JSON.stringify(mangaById))
-    mangaById = {}
     await sleep(60_000)
     return []
   }
 }
 
-let mangaById: Record<string, Manga> = {}
-
 async function main() {
+  const mangaById: Record<string, Manga> = {}
+
   for (let page = 1; page <= 5; page++) {
     console.log('👀 ~ page:', page)
     const mangas = await fetchMangas({
@@ -77,9 +75,13 @@ async function main() {
       sort: HashaSort.DATE,
       order: -1,
     })
-    mangas.forEach((manga) => {
-      mangaById[manga.id] = manga
-    })
+    if (mangas.length > 0) {
+      mangas.forEach((manga) => {
+        mangaById[manga.id] = manga
+      })
+    } else {
+      page--
+    }
     await sleep(1000)
   }
 
