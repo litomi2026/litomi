@@ -1,4 +1,5 @@
 import { harpiTagMap } from '@/database/harpi-tag'
+import { isMangaKey } from '@/database/manga'
 import { Manga } from '@/types/manga'
 import dayjs from 'dayjs'
 import Link from 'next/link'
@@ -41,6 +42,8 @@ function MangaCard({ manga, index = 0 }: Props) {
       return BLIND_TAG_LABELS[tagName as keyof typeof BLIND_TAG_LABELS]
     })
 
+  const existedRelatedIds = related?.filter((id) => isMangaKey(String(id)))
+
   return (
     <li
       className="grid grid-rows-[auto_1fr] sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 lg:grid-rows-1 border-2 rounded-lg overflow-hidden bg-zinc-900 border-zinc-800"
@@ -66,11 +69,11 @@ function MangaCard({ manga, index = 0 }: Props) {
           {group && group.length > 0 && <div className="line-clamp-1">그룹 {group.join(', ')}</div>}
           {series && series.length > 0 && <div className="line-clamp-1">시리즈 {series.join(', ')}</div>}
           {characters && characters.length > 0 && <div className="line-clamp-1">캐릭터 {characters.join(', ')}</div>}
-          {related && related.length > 0 && (
+          {existedRelatedIds && existedRelatedIds.length > 0 && (
             <div className="flex gap-2 whitespace-nowrap">
               연관
               <ul className="flex flex-wrap overflow-auto gap-1">
-                {related.map((id) => (
+                {existedRelatedIds.map((id) => (
                   <li className="rounded px-1 text-foreground bg-zinc-500" key={id}>
                     <Link href={`/manga/${id}`}>{id}</Link>
                   </li>
