@@ -1,8 +1,12 @@
 // https://transform.tools/typescript-to-javascript
 // https://hasha.in
-// https://jsonformatter.org/8f087a
 
 import { Manga } from '@/types/manga'
+
+enum HashaSort {
+  DATE = 'date',
+  BOOKMARKED_COUNT = 'bookmarkedCount',
+}
 
 type FetchHashaMangasParams = {
   page: string
@@ -56,24 +60,27 @@ async function fetchMangas({ page, sort, order }: FetchHashaMangasParams) {
   } catch (error) {
     console.log(`Failed to fetch page ${page}`)
     console.log('👀 - error:', error)
+    console.log(JSON.stringify(mangaById))
+    mangaById = {}
+    await sleep(30_000)
     return []
   }
 }
 
-async function main() {
-  const mangaById: Record<string, Manga> = {}
+let mangaById: Record<string, Manga> = {}
 
-  for (let page = 1; page < 6; page++) {
+async function main() {
+  for (let page = 1; page <= 5; page++) {
     console.log('👀 ~ page:', page)
     const mangas = await fetchMangas({
       page: String(page),
-      sort: 'date',
+      sort: HashaSort.DATE,
       order: -1,
     })
     mangas.forEach((manga) => {
       mangaById[manga.id] = manga
     })
-    await sleep(4000)
+    await sleep(1000)
   }
 
   console.log(JSON.stringify(mangaById))

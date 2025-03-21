@@ -1,9 +1,7 @@
 import { Manga } from '@/types/manga'
-import fs from 'fs'
-import path from 'path'
-import prettier from 'prettier'
 
-import mangas from '../database/manga.json' // 기존 데이터: Record<number, Manga>
+import mangas from '../database/manga.json'
+import { prettifyJSON } from './utils'
 
 type FetchHarpiMangasParams = {
   page: number
@@ -71,20 +69,8 @@ async function main() {
     await sleep(4000)
   }
 
-  // 기존 JSON 데이터와 새로 가져온 데이터를 병합합니다.
-  // 스프레드 연산자를 사용하면 동일한 키가 있는 경우 후자의 값으로 덮어씁니다.
   const mergedMangas: Record<number, Manga> = { ...mangas, ...fetchedMangaById }
-
-  // Prettier를 사용해 JSON 문자열로 포맷팅한 후 파일에 덮어씁니다.
-  const filePath = path.resolve(__dirname, '../database/manga.json')
-  const prettierConfig = await prettier.resolveConfig(filePath)
-
-  const formattedJson = await prettier.format(JSON.stringify(mergedMangas), {
-    parser: 'json',
-    ...prettierConfig,
-  })
-
-  fs.writeFileSync(filePath, formattedJson, 'utf-8')
+  prettifyJSON({ pathname: '../database/manga.json', json: mergedMangas })
   console.log('Manga database updated successfully.')
 }
 

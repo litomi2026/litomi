@@ -11,6 +11,7 @@
     "type": "tsc --noEmit",
     "generate-manga-index": "bun ",
     "crawl:harpi": "bun src/crawler/harpi.ts",
+    "prettify:json": "bun src/crawler/prettifyJSON.ts",
     "prepare": "husky"
   },
   "dependencies": {
