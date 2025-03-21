@@ -20,7 +20,7 @@ export default async function Page({ params }: BasePageProps) {
     notFound()
   }
 
-  const currentMangaIds = mangaIdsByPage[orderString][pageNumber - 1]
+  const currentMangaIds = mangaIdsByPage[sortString][orderString][pageNumber - 1]
 
   return (
     <main className="p-2 pb-safe mb-2 min-h-dvh flex flex-col gap-2 max-w-screen-xl mx-auto">
