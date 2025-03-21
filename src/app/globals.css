@@ -1,16 +1,16 @@
 @import 'tailwindcss';
 
 :root {
-  --background: #0a0a0a;
-  --foreground: #ededed;
   --safe-area-bottom: env(safe-area-inset-bottom);
   --safe-area-left: env(safe-area-inset-left);
   --safe-area-right: env(safe-area-inset-right);
 }
 
 @theme {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: #0a0a0a;
+  --color-foreground: #ededed;
+  --color-brand-start: #46cdfc;
+  --color-brand-end: #f5bcff;
 }
 
 @utility scrollbar-hidden {
@@ -37,12 +37,16 @@
 }
 
 @utility bg-brand-gradient {
-  background-image: linear-gradient(90deg, #46cdfc 0%, #f5bcff 100%);
+  background-image: linear-gradient(90deg, var(--color-brand-start), var(--color-brand-end));
+}
+
+@utility bg-clip-content-border {
+  background-clip: content-box, border-box;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
+  color: var(--color-foreground);
+  background: var(--color-background);
 }
 
 button {

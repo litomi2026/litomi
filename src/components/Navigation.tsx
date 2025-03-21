@@ -34,11 +34,11 @@ export default function Navigation({ currentPage, totalPages }: Props) {
         </Link>
       )}
       {startPage > 1 && (
-        <Link href={`${Math.max(currentPage - VISIBLE_PAGES, 1)}`}>
+        <Link href={`${Math.max(1, currentPage - VISIBLE_PAGES)}`}>
           <IconJumpPrev />
         </Link>
       )}
-      <Link aria-disabled={currentPage <= 1} href={`${currentPage - 1}`}>
+      <Link aria-disabled={currentPage <= 1} href={`${Math.max(1, currentPage - 1)}`}>
         <IconPrevPage />
       </Link>
       {/* 현재 페이지 주변의 번호들 */}
@@ -47,7 +47,7 @@ export default function Navigation({ currentPage, totalPages }: Props) {
           <span>{page}</span>
         </Link>
       ))}
-      <Link aria-disabled={currentPage >= totalPages} href={`${currentPage + 1}`}>
+      <Link aria-disabled={currentPage >= totalPages} href={`${Math.min(currentPage + 1, totalPages)}`}>
         <IconNextPage />
       </Link>
       {endPage < totalPages && (
