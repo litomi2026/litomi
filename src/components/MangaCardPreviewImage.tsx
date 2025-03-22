@@ -64,7 +64,7 @@ function MangaCardPreviewImage({ manga, mangaIndex = 0 }: Props) {
             fetchPriority={mangaIndex < 4 && i < 1 ? 'high' : undefined}
             imageIndex={i}
             key={i}
-            loading={mangaIndex < 8 && i < 1 ? undefined : 'lazy'}
+            loading={i >= 1 ? 'lazy' : undefined}
             manga={manga}
           />
         ))}
