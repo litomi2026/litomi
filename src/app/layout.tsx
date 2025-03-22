@@ -14,7 +14,7 @@ import { Toaster } from 'sonner'
 
 const PretendardVariable = localFont({
   // TODO: 400~700 만 지원화도록 폰트 파일 크기 최적화하기
-  src: '../fonts/PretendardVariable.woff2',
+  src: '../fonts/PretendardVariable.400-700.subset.woff2',
   display: 'swap',
   weight: '400 700',
   fallback: [
