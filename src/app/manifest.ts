@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next'
 
 import { APPLICATION_NAME, DESCRIPTION, SHORT_NAME } from '@/constants'
+import { CANONICAL_URL } from '@/constants/url'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
@@ -28,6 +29,12 @@ export default function manifest(): MetadataRoute.Manifest {
         sizes: '512x512',
         type: 'image/png',
         purpose: 'maskable',
+      },
+    ],
+    related_applications: [
+      {
+        platform: 'webapp',
+        url: `${CANONICAL_URL}/manifest.webmanifest`,
       },
     ],
   }

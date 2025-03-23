@@ -29,10 +29,12 @@ export default function InstallPrompt() {
       setIsStandalone(isStandalone || isLegacyStandalone)
     }
 
-    document.addEventListener('visibilitychange', tabChangeHandler)
+    tabChangeHandler()
+
+    window.addEventListener('focus', tabChangeHandler)
 
     return () => {
-      document.removeEventListener('visibilitychange', tabChangeHandler)
+      window.removeEventListener('focus', tabChangeHandler)
     }
   }, [])
 
