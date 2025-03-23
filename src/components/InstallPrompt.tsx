@@ -22,7 +22,7 @@ export default function InstallPrompt() {
 
   // iOS 판별
   useEffect(() => {
-    setIsIOS(/iPad|iPhone|iPod/.test(navigator.userAgent) && !('MSStream' in window))
+    setIsIOS(/iPad|iPhone|iPod|Safari/.test(navigator.userAgent) && !('MSStream' in window))
   }, [])
 
   // PWA 환경(standalone) 판별
@@ -82,7 +82,7 @@ export default function InstallPrompt() {
   if (isIOS) {
     return (
       <p className="flex flex-wrap justify-center items-center gap-2 w-fit mx-auto p-4 text-sm">
-        홈 화면에 추가하려면 Safari에서&nbsp;
+        홈 화면에 추가하려면 Safari에서
         <span className="flex items-center gap-1">
           공유 버튼
           <svg
@@ -98,44 +98,44 @@ export default function InstallPrompt() {
             <polyline points="16 6 12 2 8 6"></polyline>
             <line x1="12" x2="12" y1="2" y2="15"></line>
           </svg>
+          을
         </span>
-        을 눌러 {'"'}홈 화면에 추가{'"'}를 선택하세요.
+        눌러 {'"'}홈 화면에 추가{'"'}를 선택하세요.
       </p>
     )
   }
 
-  // "홈 화면에 추가" 프롬프트 처리
-  const handleAddToHomeScreen = async () => {
-    if (deferredPrompt) {
-      await deferredPrompt.prompt()
-      const { outcome } = await deferredPrompt.userChoice
-      console.log(`사용자 응답: ${outcome}`)
-      setDeferredPrompt(null)
-    }
+  // 앱이 설치되지 않은 상태: "홈 화면에 추가" 버튼 표시
+  if (deferredPrompt) {
+    return (
+      <button
+        className="mx-auto text-white rounded-lg border-2 border-brand-gradient hover:brightness-125 active:brightness-75 transition"
+        onClick={async () => {
+          await deferredPrompt.prompt()
+          const { outcome } = await deferredPrompt.userChoice
+          console.log(`사용자 응답: ${outcome}`)
+          setDeferredPrompt(null)
+        }}
+      >
+        <div className="flex items-center gap-2 px-4 py-2">
+          <svg
+            className="w-6"
+            fill="none"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" x2="12" y1="15" y2="3"></line>
+          </svg>
+          <span>홈 화면에 추가</span>
+        </div>
+      </button>
+    )
   }
 
-  // 앱이 설치되지 않은 상태: "홈 화면에 추가" 버튼
-  return (
-    <button
-      className="mx-auto text-white rounded-lg border-2 border-brand-gradient hover:brightness-125 active:brightness-75 transition"
-      onClick={handleAddToHomeScreen}
-    >
-      <div className="flex items-center gap-2 px-4 py-2">
-        <svg
-          className="w-6"
-          fill="none"
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-        >
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-          <polyline points="7 10 12 15 17 10"></polyline>
-          <line x1="12" x2="12" y1="15" y2="3"></line>
-        </svg>
-        <span>홈 화면에 추가</span>
-      </div>
-    </button>
-  )
+  return null
 }
