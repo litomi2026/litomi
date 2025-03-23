@@ -20,17 +20,28 @@ export default function InstallPrompt() {
 
   useEffect(() => {
     setIsIOS(/iPad|iPhone|iPod/.test(navigator.userAgent) && !('MSStream' in window))
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches
-    const isLegacyStandalone = 'standalone' in window.navigator && window.navigator.standalone === true
-    setIsStandalone(isStandalone || isLegacyStandalone)
   }, [])
 
   useEffect(() => {
-    // beforeinstallprompt 이벤트 리스너 등록 (안드로이드, 데스크탑 등)
+    const tabChangeHandler = () => {
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+      const isLegacyStandalone = 'standalone' in window.navigator && window.navigator.standalone === true
+      setIsStandalone(isStandalone || isLegacyStandalone)
+    }
+
+    document.addEventListener('visibilitychange', tabChangeHandler)
+
+    return () => {
+      document.removeEventListener('visibilitychange', tabChangeHandler)
+    }
+  }, [])
+
+  useEffect(() => {
     const handler = (e: Event) => {
       e.preventDefault()
       setDeferredPrompt(e as BeforeInstallPromptEvent)
     }
+
     window.addEventListener('beforeinstallprompt', handler)
 
     return () => {
@@ -60,7 +71,7 @@ export default function InstallPrompt() {
           <span className="flex items-center gap-1">
             공유 버튼
             <svg
-              className="text-foreground w-6"
+              className="text-foreground w-5"
               fill="none"
               stroke="currentColor"
               strokeLinecap="round"
@@ -78,7 +89,7 @@ export default function InstallPrompt() {
           <span className="flex items-center gap-1">
             홈 화면에 추가
             <svg
-              className="text-foreground w-6"
+              className="text-foreground w-5"
               fill="none"
               stroke="currentColor"
               strokeLinecap="round"
