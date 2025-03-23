@@ -1,10 +1,10 @@
 import type { MetadataRoute } from 'next'
 
-import { DESCRIPTION, SHORT_NAME } from '@/constants'
+import { APPLICATION_NAME, DESCRIPTION, SHORT_NAME } from '@/constants'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Litomi - Manga mirror site',
+    name: APPLICATION_NAME,
     short_name: SHORT_NAME,
     description: DESCRIPTION,
     start_url: '/',
