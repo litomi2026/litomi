@@ -1,5 +1,6 @@
 import type { BaseLayoutProps } from '@/types/nextjs'
 
+import InstallPrompt from '@/components/InstallPrompt'
 import ScrollButtons from '@/components/ScrollButtons'
 import { SHORT_NAME } from '@/constants'
 import Link from 'next/link'
@@ -8,9 +9,10 @@ export default function Layout({ children }: BaseLayoutProps) {
   return (
     <div className="p-2 pb-safe min-h-dvh max-w-screen-xl mx-auto">
       {children}
-      <footer className="text-center pb-10">
+      <footer className="text-center pb-10 grid gap-2">
+        <InstallPrompt />
         <p>ⓒ 2025. {SHORT_NAME}. All rights reserved.</p>
-        <div className="flex justify-center text-sm py-1">
+        <div className="flex justify-center text-sm">
           <a
             className="flex items-center gap-2 hover:underline"
             href="https://t.me/litomi_official"

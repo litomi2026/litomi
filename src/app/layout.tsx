@@ -2,7 +2,7 @@ import './globals.css'
 
 import type { Metadata, Viewport } from 'next'
 
-import { defaultOpenGraph, SHORT_NAME } from '@/constants'
+import { defaultOpenGraph, DESCRIPTION, SHORT_NAME } from '@/constants'
 import { GA_ID, GTM_ID } from '@/constants/env'
 import { CANONICAL_URL } from '@/constants/url'
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
@@ -36,7 +36,7 @@ const PretendardVariable = localFont({
 export const metadata: Metadata = {
   metadataBase: new URL(CANONICAL_URL),
   title: SHORT_NAME,
-  description: 'Manga mirror site',
+  description: DESCRIPTION,
   applicationName: SHORT_NAME,
   keywords: 'litomi, manga, webtoon, comic, manhwa, manhua, 만화, 웹툰',
   robots: 'index, follow',

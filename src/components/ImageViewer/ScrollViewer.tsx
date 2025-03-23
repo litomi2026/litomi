@@ -3,7 +3,7 @@
 import { PageView } from '@/components/ImageViewer/store/pageView'
 import { ScreenFit } from '@/components/ImageViewer/store/screenFit'
 import { type Manga } from '@/types/manga'
-import { getSafeAreaBottom } from '@/utils'
+import { getSafeAreaBottom } from '@/utils/browser'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { useInView } from 'react-intersection-observer'

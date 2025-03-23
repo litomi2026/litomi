@@ -1,12 +1,12 @@
 import type { MetadataRoute } from 'next'
 
-import { SHORT_NAME } from '@/constants'
+import { DESCRIPTION, SHORT_NAME } from '@/constants'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Litomi - Hitomi.la',
+    name: 'Litomi - Manga mirror site',
     short_name: SHORT_NAME,
-    description: 'Litomi is a Hitomi.la mirror.',
+    description: DESCRIPTION,
     start_url: '/',
     display: 'standalone',
     background_color: '#ffffff',
