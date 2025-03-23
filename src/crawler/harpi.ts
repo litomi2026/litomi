@@ -66,7 +66,7 @@ async function main() {
         fetchedMangaById[manga.id] = manga
       })
     }
-    await sleep(4000)
+    await sleep(1000)
   }
 
   const mergedMangas: Record<number, Manga> = { ...mangas, ...fetchedMangaById }

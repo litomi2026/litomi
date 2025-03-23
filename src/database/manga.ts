@@ -1,7 +1,8 @@
 import { MANGA_PER_PAGE } from '@/constants'
 import mangasJSON from '@/database/manga.json'
+import { Manga } from '@/types/manga'
 
-export const mangas = mangasJSON
+export const mangas = mangasJSON as Record<string, Manga>
 export const mangaIds = Object.keys(mangas) as (keyof typeof mangas)[]
 export const mangaIdsDesc = mangaIds.toReversed()
 export const pages = Array.from({ length: Math.ceil(mangaIds.length / MANGA_PER_PAGE) })

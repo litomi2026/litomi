@@ -8,12 +8,6 @@ import { notFound } from 'next/navigation'
 
 export const dynamic = 'error'
 
-type MangaForMetadata = {
-  title: string
-  images: string[]
-  cdn?: string
-}
-
 export async function generateMetadata({ params }: BasePageProps, parent: ResolvingMetadata): Promise<Metadata> {
   const { id } = await params
 
@@ -21,7 +15,7 @@ export async function generateMetadata({ params }: BasePageProps, parent: Resolv
     return parent as Metadata
   }
 
-  const { title, images, cdn } = mangas[id] as MangaForMetadata
+  const { title, images, cdn } = mangas[id]
 
   return {
     title: `${title} - ${SHORT_NAME}`,
