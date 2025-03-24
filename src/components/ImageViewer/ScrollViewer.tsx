@@ -12,11 +12,9 @@ import MangaImage from '../MangaImage'
 import { useImageIndexStore } from './store/imageIndex'
 import { useVirtualizerStore } from './store/virtualizer'
 
-const screenFitStyle = {
+const screenFitStyle: Record<ScreenFit, string> = {
   width: '[&_li]:justify-center [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:max-h-fit',
   all: '[&_li]:justify-center [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:max-h-dvh',
-
-  // TODO: Fix this
   height:
     '[&_li]:overflow-x-auto [&_li]:overscroll-x-none [&_li]:mx-auto [&_li]:w-fit [&_li]:max-w-full [&_img]:w-auto [&_img]:max-w-fit [&_img]:h-dvh [&_img]:max-h-fit',
 }
@@ -48,16 +46,14 @@ function ScrollViewer({ manga, onClick, screenFit, pageView }: Props) {
     count: rowCount,
     estimateSize: useCallback(() => window.innerHeight, []),
     getScrollElement: useCallback(() => parentRef.current, []),
-    overscan: 5,
+    overscan: 1,
     useAnimationFrameWithResizeObserver: true,
     paddingEnd: getSafeAreaBottom(),
   })
 
   useEffect(() => {
     setVirtualizer(virtualizer)
-    return () => {
-      setVirtualizer(null)
-    }
+    return () => setVirtualizer(null)
   }, [setVirtualizer, virtualizer])
 
   const virtualItems = virtualizer.getVirtualItems()
@@ -86,6 +82,7 @@ function VirtualItem({ index, manga, virtualizer, pageView }: VirtualItemProps) 
   const isDoublePage = pageView === 'double'
   const firstImageIndex = isDoublePage ? index * 2 : index
   const nextImageIndex = firstImageIndex + 1
+  const [[firstImageLoaded, nextImageLoaded], setImageLoaded] = useState([false, false])
   const [[firstImageError, nextImageError], setImageErrors] = useState([false, false])
 
   const { ref, inView } = useInView({
@@ -99,25 +96,40 @@ function VirtualItem({ index, manga, virtualizer, pageView }: VirtualItemProps) 
     }
   }, [firstImageIndex, inView, setImageIndex])
 
-  const handleImageError = useCallback(() => setImageErrors((prev) => [true, prev[1]]), [])
-  const handleImage2Error = useCallback(() => setImageErrors((prev) => [prev[0], true]), [])
+  const handleFirstImageLoaded = useCallback(() => setImageLoaded((prev) => [true, prev[1]]), [])
+  const handleNextImageLoaded = useCallback(() => setImageLoaded((prev) => [prev[0], true]), [])
+  const handleFirstImageError = useCallback(() => setImageErrors((prev) => [true, prev[1]]), [])
+  const handleNextImageError = useCallback(() => setImageErrors((prev) => [prev[0], true]), [])
+
+  const registerRef = useCallback(
+    (element: HTMLLIElement) => {
+      if (firstImageLoaded && (!isDoublePage || nextImageLoaded)) {
+        virtualizer.measureElement(element)
+      }
+    },
+    [firstImageLoaded, isDoublePage, nextImageLoaded, virtualizer],
+  )
 
   return (
-    <li data-index={index} ref={virtualizer.measureElement}>
+    <li data-index={index} ref={registerRef}>
       <MangaImage
         aria-hidden={firstImageError}
+        fetchPriority="high"
         imageIndex={firstImageIndex}
         imageRef={ref}
         manga={manga}
-        onError={handleImageError}
+        onError={handleFirstImageError}
+        onLoad={handleFirstImageLoaded}
         {...(firstImageError && { src: '/image/fallback.svg' })}
       />
       {isDoublePage && (
         <MangaImage
           aria-hidden={nextImageError}
+          fetchPriority="high"
           imageIndex={nextImageIndex}
           manga={manga}
-          onError={handleImage2Error}
+          onError={handleNextImageError}
+          onLoad={handleNextImageLoaded}
           {...(nextImageError && { src: '/image/fallback.svg' })}
         />
       )}
