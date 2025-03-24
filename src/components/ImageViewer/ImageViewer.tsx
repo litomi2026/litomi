@@ -4,6 +4,7 @@ import { useNavigationModeStore } from '@/components/ImageViewer/store/navigatio
 import { useScreenFitStore } from '@/components/ImageViewer/store/screenFit'
 import { useTouchOrientationStore } from '@/components/ImageViewer/store/touchOrientation'
 import { type Manga } from '@/types/manga'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
 import { memo, useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
@@ -11,11 +12,12 @@ import { toast } from 'sonner'
 import { IconChevronLeft, IconClose, IconMaximize, IconReload } from '../icons/IconImageViewer'
 import ImageSlider from './ImageSlider'
 import MangaDetailButton from './MangaDetailButton'
-import ScrollViewer from './ScrollViewer'
 import SlideshowButton from './SlideshowButton'
 import { useImageIndexStore } from './store/imageIndex'
 import { usePageViewStore } from './store/pageView'
-import TouchViewer from './TouchViewer'
+
+const TouchViewer = dynamic(() => import('@/components/ImageViewer/TouchViewer'))
+const ScrollViewer = dynamic(() => import('@/components/ImageViewer/ScrollViewer'))
 
 type Props = {
   manga: Manga
