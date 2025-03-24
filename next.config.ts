@@ -1,6 +1,5 @@
 import type { NextConfig } from 'next'
 
-import { CDN } from '@/constants/url'
 import { withSentryConfig } from '@sentry/nextjs'
 
 const nextConfig: NextConfig = {
@@ -26,18 +25,6 @@ const nextConfig: NextConfig = {
     },
   ],
   poweredByHeader: false,
-  rewrites: async () => {
-    return [
-      {
-        source: '/hsh/:path*',
-        destination: `${CDN.HASHA}/:path*`,
-      },
-      {
-        source: '/hrp/:path*',
-        destination: `${CDN.HASHA}/:path*`,
-      },
-    ]
-  },
 }
 
 export default withSentryConfig(nextConfig, {

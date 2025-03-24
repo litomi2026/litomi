@@ -28,7 +28,7 @@ type Props = {
 export default memo(MangaCard)
 
 function MangaCard({ manga, index = 0 }: Props) {
-  const { id, artists, characters, date, group, related, series, tags, title, type, images } = manga
+  const { id, artists, characters, date, group, related, series, tags, title, type, images, cdn } = manga
   const mappedTags = tags?.map((tag) => harpiTagMap[tag] || tag)
   const translatedTags = mappedTags?.map((tag) => (typeof tag === 'string' ? tag : tag.korStr || tag.engStr))
 
@@ -104,7 +104,7 @@ function MangaCard({ manga, index = 0 }: Props) {
             </a>
             <div className="text-right text-zinc-400">{dayjs(date).format('YYYY-MM-DD HH:mm')}</div>
           </div>
-          <ImageDownloadButton manga={manga} />
+          {cdn !== 'HARPI' && <ImageDownloadButton manga={manga} />}
         </div>
       </div>
     </li>

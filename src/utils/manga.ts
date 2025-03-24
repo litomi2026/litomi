@@ -1,3 +1,5 @@
+import { CDN } from '@/constants/url'
+
 type Params = {
   cdn?: string
   id: number
@@ -7,9 +9,9 @@ type Params = {
 export function getImageSrc({ cdn, id, path }: Params) {
   switch (cdn) {
     case 'HARPI':
-      return `/hrp/${path}`
+      return `${CDN.HARPI}/${path}`
     case 'HASHA':
     default:
-      return `/hsh/${id}/${path}`
+      return `${CDN.HASHA}/${id}/${path}`
   }
 }
