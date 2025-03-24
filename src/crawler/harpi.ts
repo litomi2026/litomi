@@ -69,7 +69,7 @@ async function main() {
     await sleep(1000)
   }
 
-  const mergedMangas: Record<number, Manga> = { ...mangas, ...fetchedMangaById }
+  const mergedMangas: Record<number, Manga> = { ...fetchedMangaById, ...mangas }
   prettifyJSON({ pathname: '../database/manga.json', json: mergedMangas })
   console.log('Manga database updated successfully.')
 }
