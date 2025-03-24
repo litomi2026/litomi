@@ -3,16 +3,14 @@
 import { useNavigationModeStore } from '@/components/ImageViewer/store/navigationMode'
 import { useScreenFitStore } from '@/components/ImageViewer/store/screenFit'
 import { useTouchOrientationStore } from '@/components/ImageViewer/store/touchOrientation'
-import { harpiTagMap } from '@/database/harpi-tag'
 import { type Manga } from '@/types/manga'
 import { useRouter } from 'next/navigation'
 import { memo, useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 import { IconChevronLeft, IconClose, IconMaximize, IconReload } from '../icons/IconImageViewer'
-import TagList from '../TagList'
-import Modal from '../ui/Modal'
 import ImageSlider from './ImageSlider'
+import MangaDetailButton from './MangaDetailButton'
 import ScrollViewer from './ScrollViewer'
 import SlideshowButton from './SlideshowButton'
 import { useImageIndexStore } from './store/imageIndex'
@@ -59,8 +57,8 @@ export default function ImageViewer({ manga }: Props) {
   return (
     <div className="relative">
       <div
-        aria-expanded={showController}
-        className="fixed top-0 left-0 right-0 z-10 bg-background/70 backdrop-blur border-b border-zinc-500 px-safe transition opacity-0 pointer-events-none aria-expanded:opacity-100 aria-expanded:pointer-events-auto"
+        aria-current={showController}
+        className="fixed top-0 left-0 right-0 z-10 bg-background/70 backdrop-blur border-b border-zinc-500 px-safe transition opacity-0 pointer-events-none aria-current:opacity-100 aria-current:pointer-events-auto"
       >
         <div className="flex gap-2 items-center justify-between p-3 [&_button]:rounded-full [&_button]:active:text-zinc-500 [&_button]:hover:bg-zinc-800 [&_button]:transition [&_button]:p-2 [&_button]:focus:outline outline-zinc-500">
           <div className="flex gap-1">
@@ -71,7 +69,7 @@ export default function ImageViewer({ manga }: Props) {
               <IconClose className="w-6" />
             </button>
           </div>
-          <MangaDetailModalButtonMemo manga={manga} />
+          <MangaDetailButton manga={manga} />
           <div className="flex gap-1">
             <button aria-label="새로고침" onClick={() => window.location.reload()}>
               <IconReload className="w-6" />
@@ -88,8 +86,8 @@ export default function ImageViewer({ manga }: Props) {
       )}
 
       <div
-        aria-expanded={showController}
-        className="fixed bottom-0 left-0 right-0 z-10 bg-background/70 backdrop-blur border-t border-zinc-500 px-safe pb-safe transition opacity-0 pointer-events-none aria-expanded:opacity-100 aria-expanded:pointer-events-auto"
+        aria-current={showController}
+        className="fixed bottom-0 left-0 right-0 z-10 bg-background/70 backdrop-blur border-t border-zinc-500 px-safe pb-safe transition opacity-0 pointer-events-none aria-current:opacity-100 aria-current:pointer-events-auto"
       >
         <div className="p-3 grid gap-1.5">
           <ImageSlider maxImageIndex={maxImageIndex} />
@@ -153,66 +151,5 @@ function FullscreenButton() {
     <button aria-label="전체화면" onClick={toggleFullScreen}>
       <IconMaximize className="w-6" />
     </button>
-  )
-}
-
-const MangaDetailModalButtonMemo = memo(MangaDetailModalButton)
-
-function MangaDetailModalButton({ manga }: { manga: Manga }) {
-  const { title, artists, group, series, characters, type, tags } = manga
-  const [isOpened, setIsOpened] = useState(false)
-
-  const translatedTags = tags
-    ?.map((tag) => harpiTagMap[tag] || tag)
-    ?.map((tag) => (typeof tag === 'string' ? tag : tag.korStr || tag.engStr))
-
-  return (
-    <>
-      <button className="hover:underline" onClick={() => setIsOpened(true)} type="button">
-        <h1 className="flex-1 text-center line-clamp-2 font-bold text-foreground md:text-lg">{title}</h1>
-      </button>
-      <Modal onClose={() => setIsOpened(false)} open={isOpened} showCloseButton showDragButton>
-        <div className="bg-zinc-900 min-w-3xs w-screen max-w-sm md:max-w-lg rounded-xl p-4 pt-8 shadow-xl border border-zinc-800 grid gap-3 text-sm md:text-base">
-          <h4 className="font-bold text-lg md:text-xl">{title}</h4>
-          <div className="grid grid-cols-[auto_1fr] gap-2">
-            <strong>종류</strong>
-            <div>{type}</div>
-            {artists && artists.length > 0 && (
-              <>
-                <strong>작가</strong>
-                <div>{artists.join(', ')}</div>
-              </>
-            )}
-            {group && group.length > 0 && (
-              <>
-                <strong>그룹</strong>
-                <div>{group.join(', ')}</div>
-              </>
-            )}
-            {series && series.length > 0 && (
-              <>
-                <strong>시리즈</strong>
-                <div>{series.join(', ')}</div>
-              </>
-            )}
-            {characters && characters.length > 0 && (
-              <>
-                <strong>캐릭터</strong>
-                <div>{characters.join(', ')}</div>
-              </>
-            )}
-            {translatedTags && translatedTags.length > 0 && (
-              <>
-                <strong>태그</strong>
-                <TagList
-                  className="flex flex-wrap gap-1 font-medium [&_li]:rounded [&_li]:px-1 [&_li]:text-foreground"
-                  tags={translatedTags}
-                />
-              </>
-            )}
-          </div>
-        </div>
-      </Modal>
-    </>
   )
 }

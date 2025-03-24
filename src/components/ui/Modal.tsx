@@ -95,18 +95,18 @@ export default function Modal({ className = '', children, open, onClose, showClo
     <>
       {createPortal(
         <div
-          aria-hidden={!open}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 dark:bg-black/80 transition duration-300 pointer-events-auto opacity-100 aria-hidden:pointer-events-none aria-hidden:opacity-0"
+          aria-current={open}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 dark:bg-black/80 transition duration-300 pointer-events-none opacity-0 aria-current:pointer-events-auto aria-current:opacity-100"
           onClick={closeModal}
         >
           {showCloseButton && (
-            <button onClick={closeModal}>
+            <button aria-label="닫기" onClick={closeModal}>
               <IconX className="absolute right-2 top-2 z-50 w-8 cursor-pointer rounded-full bg-zinc-500/30 p-1" />
             </button>
           )}
           <div
-            aria-hidden={!open}
-            className={`absolute z-50 transition duration-300 aria-hidden:scale-90 ${className}`}
+            aria-current={open}
+            className={`absolute z-50 transition duration-300 scale-90 aria-current:scale-100 ${className}`}
             onClick={(e) => e.stopPropagation()}
             ref={showDragButton ? modalRef : null}
           >

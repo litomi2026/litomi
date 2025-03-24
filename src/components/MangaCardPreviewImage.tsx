@@ -81,9 +81,9 @@ function MangaCardPreviewImage({ manga, mangaIndex = 0 }: Props) {
       </div>
 
       {/* 슬라이드 인디케이터 */}
-      <div className="absolute z-10 bottom-1 left-1/2 -translate-x-1/2 flex gap-2 [&_div]:w-3 [&_div]:h-3 [&_div]:rounded-full [&_div]:bg-zinc-300 [&_div]:border [&_div]:border-zinc-500 [&_div]:aria-selected:bg-brand-gradient">
+      <div className="absolute z-10 bottom-1 left-1/2 -translate-x-1/2 flex gap-2 [&_div]:w-3 [&_div]:h-3 [&_div]:rounded-full [&_div]:bg-zinc-300 [&_div]:border [&_div]:border-zinc-500 [&_div]:aria-current:bg-brand-gradient">
         {Array.from({ length: totalSlides }).map((_, i) => (
-          <div aria-selected={i === activeIndex} key={i} />
+          <div aria-current={i === activeIndex} key={i} />
         ))}
       </div>
     </>

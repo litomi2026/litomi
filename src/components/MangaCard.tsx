@@ -93,15 +93,14 @@ function MangaCard({ manga, index = 0 }: Props) {
         </div>
         <div className="flex text-xs justify-between items-center gap-1">
           <a
-            className="text-zinc-500 focus:underline flex items-center gap-1 hover:underline"
+            className="text-zinc-400 focus:underline flex items-center gap-1 hover:underline"
             href={`/manga/${id}`}
             target="_blank"
           >
             {id}
             <IconExternalLink className="w-3" />
           </a>
-          <div className="text-right text-zinc-500"></div>
-          <div className="text-right text-zinc-500">{dayjs(date).format('YYYY-MM-DD HH:mm')}</div>
+          <div className="text-right text-zinc-400">{dayjs(date).format('YYYY-MM-DD HH:mm')}</div>
         </div>
       </div>
     </li>

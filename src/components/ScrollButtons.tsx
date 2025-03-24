@@ -22,10 +22,10 @@ export default function ScrollButtons() {
       className="fixed bottom-5 right-5 pb-safe flex flex-col gap-2 z-50 xl:hidden text-white 
         [&_button]:border-2 [&_button]:border-brand-gradient [&_button]:transition [&_button]:hover:brightness-125 [&_button]:active:brightness-75 [&_button]:rounded-full"
     >
-      <button onClick={scrollToTop}>
+      <button aria-label="맨 위로 가기" onClick={scrollToTop}>
         <IconArrowLeft className="p-2 w-9 sm:w-10 rotate-90" />
       </button>
-      <button onClick={scrollToBottom}>
+      <button aria-label="맨 아래로 가기" onClick={scrollToBottom}>
         <IconArrowLeft className="p-2 w-9 sm:w-10 rotate-270" />
       </button>
     </div>

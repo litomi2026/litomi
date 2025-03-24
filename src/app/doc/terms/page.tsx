@@ -31,7 +31,7 @@ export default async function Page() {
           가능성을 확보하기 위한 대안으로 Litomi 소스 코드를 공개할 예정입니다. 이 경우, 이용자께서는 Vercel 클라우드 등
           선호하는 플랫폼을 활용하여 자체적으로 호스팅할 수 있습니다.
         </p>
-        <h4 className="mt-6 text-center">시행일 2025-03-15</h4>
+        <h3 className="mt-6 text-center">시행일 2025-03-15</h3>
       </div>
     </div>
   )

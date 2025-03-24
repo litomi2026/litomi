@@ -57,7 +57,7 @@ export default async function Page() {
         </p>
         <h2 className="mb-3">7. 개인정보 처리방침 변경</h2>
         <p className="mb-6">본 개인정보 처리방침은 관련 법령, 정책 및 내부 운영 방침에 따라 변경될 수 있습니다.</p>
-        <h4 className="mb-1 text-center">시행일 2025-03-15</h4>
+        <h3 className="mb-1 text-center">시행일 2025-03-15</h3>
       </div>
     </div>
   )

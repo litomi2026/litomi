@@ -38,6 +38,7 @@ export default function NavigationJump({ totalPages }: Props) {
         type="number"
       />
       <button
+        aria-label="특정 페이지로 이동"
         className="whitespace-nowrap bg-zinc-800 text-foreground rounded hover:bg-zinc-700 focus:outline-none focus:ring-1 focus:ring-zinc-300"
         type="submit"
       >

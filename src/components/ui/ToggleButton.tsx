@@ -1,23 +1,21 @@
-type Props = {
-  className?: string
+import { ComponentProps } from 'react'
+
+interface Props extends Omit<ComponentProps<'button'>, 'onToggle'> {
   enabled?: boolean
   onToggle?: (enabled: boolean) => void
 }
 
-export default function ToggleButton({ className = '', enabled, onToggle }: Props) {
+export default function ToggleButton({ className = '', enabled, onToggle, ...props }: Props) {
   return (
     <button
+      {...props}
       aria-pressed={enabled}
-      className={`relative aspect-[7/4] bg-zinc-400 flex items-center rounded-full focus:outline-none ${className}`}
+      className={`relative aspect-[7/4] bg-zinc-400 flex items-center rounded-full focus:outline-none group ${className}`}
       onClick={() => onToggle?.(!enabled)}
       type="button"
     >
-      <span className="sr-only">Toggle setting</span>
       <div className="p-[7%] pr-0 w-1/2">
-        <div
-          aria-checked={enabled}
-          className="aria-checked:translate-x-full border border-zinc-300 w-full aspect-square transform rounded-full bg-white transition duration-300"
-        />
+        <div className="group-[&[aria-pressed='true']]:translate-x-full border border-zinc-300 w-full aspect-square transform rounded-full bg-white transition duration-300" />
       </div>
     </button>
   )
