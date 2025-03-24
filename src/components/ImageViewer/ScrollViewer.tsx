@@ -101,13 +101,17 @@ function VirtualItem({ index, manga, virtualizer, pageView }: VirtualItemProps) 
   const handleFirstImageError = useCallback(() => setImageErrors((prev) => [true, prev[1]]), [])
   const handleNextImageError = useCallback(() => setImageErrors((prev) => [prev[0], true]), [])
 
-  return (
-    <li
-      data-index={index}
-      ref={(element) =>
-        firstImageLoaded && (!isDoublePage || nextImageLoaded) ? virtualizer.measureElement(element) : undefined
+  const registerRef = useCallback(
+    (element: HTMLLIElement) => {
+      if (firstImageLoaded && (!isDoublePage || nextImageLoaded)) {
+        virtualizer.measureElement(element)
       }
-    >
+    },
+    [firstImageLoaded, isDoublePage, nextImageLoaded, virtualizer],
+  )
+
+  return (
+    <li data-index={index} ref={registerRef}>
       <MangaImage
         aria-hidden={firstImageError}
         fetchPriority="high"
