@@ -1,12 +1,21 @@
 import MangaCard from '@/components/MangaCard'
 import Navigation from '@/components/Navigation'
 import OrderToggleLink from '@/components/OrderToggleLink'
-import { mangaIdsByPage, mangas, pages } from '@/database/manga'
+import { CANONICAL_URL } from '@/constants/url'
+import { mangas, pages, paginatedMangaIds } from '@/database/manga'
 import { BasePageProps } from '@/types/nextjs'
 import { validateOrder, validatePage, validateSort } from '@/utils/pagination'
+import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 export const dynamic = 'error'
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: `${CANONICAL_URL}/mangas/id/desc/1`,
+    languages: { ko: `${CANONICAL_URL}/mangas/id/desc/1` },
+  },
+}
 
 export async function generateStaticParams() {
   const orders = ['asc', 'desc'] as const
@@ -25,7 +34,7 @@ export default async function Page({ params }: BasePageProps) {
     notFound()
   }
 
-  const currentMangaIds = mangaIdsByPage[sortString][orderString][pageNumber - 1]
+  const currentMangaIds = paginatedMangaIds[sortString][orderString][pageNumber - 1]
 
   return (
     <main className="grid gap-2">

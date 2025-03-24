@@ -2,16 +2,21 @@
 
 import { CANONICAL_URL } from '@/constants/url'
 import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 
 declare global {
-  interface BeforeInstallPromptEvent extends Event {
-    readonly platforms: string[]
-    prompt(): Promise<void>
-    readonly userChoice: Promise<{
-      outcome: 'accepted' | 'dismissed'
-      platform: string
-    }>
+  export interface WindowEventMap {
+    beforeinstallprompt: BeforeInstallPromptEvent
   }
+}
+
+interface BeforeInstallPromptEvent extends Event {
+  readonly platforms: string[]
+  prompt(): Promise<void>
+  readonly userChoice: Promise<{
+    outcome: 'accepted' | 'dismissed'
+    platform: string
+  }>
 }
 
 export default function InstallPrompt() {
@@ -20,9 +25,15 @@ export default function InstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
   const [isInstalledApp, setIsInstalledApp] = useState(false)
 
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => toast.error('서비스 워커 등록에 실패했습니다.'))
+    }
+  }, [])
+
   // iOS 판별
   useEffect(() => {
-    setIsIOS(/iPad|iPhone|iPod|Safari/.test(navigator.userAgent) && !('MSStream' in window))
+    setIsIOS(/iPad|iPhone|iPod/.test(navigator.userAgent) && !('MSStream' in window))
   }, [])
 
   // PWA 환경(standalone) 판별
@@ -39,9 +50,9 @@ export default function InstallPrompt() {
 
   // beforeinstallprompt 이벤트 리스너
   useEffect(() => {
-    const handler = (e: Event) => {
+    const handler = (e: BeforeInstallPromptEvent) => {
       e.preventDefault()
-      setDeferredPrompt(e as BeforeInstallPromptEvent)
+      setDeferredPrompt(e)
     }
     window.addEventListener('beforeinstallprompt', handler)
     return () => window.removeEventListener('beforeinstallprompt', handler)
