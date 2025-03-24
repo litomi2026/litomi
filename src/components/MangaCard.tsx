@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { memo } from 'react'
 
 import IconExternalLink from './icons/IconExternalLink'
+import ImageDownloadButton from './ImageDownloadButton'
 import MangaCardPreviewImage from './MangaCardPreviewImage'
 import TagList from './TagList'
 
@@ -27,7 +28,7 @@ type Props = {
 export default memo(MangaCard)
 
 function MangaCard({ manga, index = 0 }: Props) {
-  const { id, artists, characters, date, group, related, series, tags, title, type, images } = manga
+  const { id, artists, characters, date, group, related, series, tags, title, type, images, cdn } = manga
   const mappedTags = tags?.map((tag) => harpiTagMap[tag] || tag)
   const translatedTags = mappedTags?.map((tag) => (typeof tag === 'string' ? tag : tag.korStr || tag.engStr))
 
@@ -42,7 +43,7 @@ function MangaCard({ manga, index = 0 }: Props) {
       return BLIND_TAG_LABELS[tagName as keyof typeof BLIND_TAG_LABELS]
     })
 
-  const existedRelatedIds = related?.filter((id) => isMangaKey(String(id)))
+  const existedRelatedIds = related?.filter((rid) => isMangaKey(String(rid)))
 
   return (
     <li
@@ -73,9 +74,9 @@ function MangaCard({ manga, index = 0 }: Props) {
             <div className="flex gap-2 whitespace-nowrap">
               연관
               <ul className="flex flex-wrap overflow-auto gap-1">
-                {existedRelatedIds.map((id) => (
-                  <li className="rounded px-1 text-foreground bg-zinc-500" key={id}>
-                    <Link href={`/manga/${id}`}>{id}</Link>
+                {existedRelatedIds.map((rid) => (
+                  <li className="rounded px-1 text-foreground bg-zinc-500" key={rid}>
+                    <Link href={`/manga/${rid}`}>{rid}</Link>
                   </li>
                 ))}
               </ul>
@@ -91,16 +92,19 @@ function MangaCard({ manga, index = 0 }: Props) {
             </div>
           )}
         </div>
-        <div className="flex text-xs justify-between items-center gap-1">
-          <a
-            className="text-zinc-400 focus:underline flex items-center gap-1 hover:underline"
-            href={`/manga/${id}`}
-            target="_blank"
-          >
-            {id}
-            <IconExternalLink className="w-3" />
-          </a>
-          <div className="text-right text-zinc-400">{dayjs(date).format('YYYY-MM-DD HH:mm')}</div>
+        <div className="grid gap-2">
+          <div className="flex text-xs justify-between items-center gap-1">
+            <a
+              className="text-zinc-400 focus:underline flex items-center gap-1 hover:underline"
+              href={`/manga/${id}`}
+              target="_blank"
+            >
+              {id}
+              <IconExternalLink className="w-3" />
+            </a>
+            <div className="text-right text-zinc-400">{dayjs(date).format('YYYY-MM-DD HH:mm')}</div>
+          </div>
+          {cdn !== 'HARPI' && <ImageDownloadButton manga={manga} />}
         </div>
       </div>
     </li>

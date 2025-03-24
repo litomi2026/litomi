@@ -5,13 +5,15 @@ import IconArrowLeft from './icons/IconArrowLeft'
 const PADDING = 30
 
 export default function ScrollButtons() {
-  function scrollToTop() {
+  function scrollToTop(event: React.MouseEvent<HTMLButtonElement>) {
+    event.stopPropagation()
     if (window.scrollY > PADDING) {
       window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   }
 
-  function scrollToBottom() {
+  function scrollToBottom(event: React.MouseEvent<HTMLButtonElement>) {
+    event.stopPropagation()
     if (window.innerHeight + window.scrollY < document.body.scrollHeight - PADDING) {
       window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
     }
