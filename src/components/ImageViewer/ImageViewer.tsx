@@ -15,8 +15,8 @@ import MangaDetailButton from './MangaDetailButton'
 import SlideshowButton from './SlideshowButton'
 import { useImageIndexStore } from './store/imageIndex'
 import { usePageViewStore } from './store/pageView'
+import TouchViewer from './TouchViewer'
 
-const TouchViewer = dynamic(() => import('@/components/ImageViewer/TouchViewer'))
 const ScrollViewer = dynamic(() => import('@/components/ImageViewer/ScrollViewer'))
 
 type Props = {

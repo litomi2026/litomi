@@ -19,17 +19,29 @@ const updateProgressToast = (message: string) => {
   })
 }
 
+const saveAs = (blob: Blob, filename: string) => {
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  a.style.display = 'none'
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
+
 export default function ImageDownloadButton({ manga }: Props) {
   const handleDownload = useCallback(async () => {
     const { id, images, cdn, title } = manga
     const { default: JSZip } = await import('jszip')
-    const { default: FileSaver } = await import('file-saver')
 
     const totalImages = images.length
     let downloadedCount = 0
     let failedCount = 0
     const validImages: { idx: number; blob: Blob; size: number; imgName: string }[] = []
 
+    // 이미지 다운로드
     for (let i = 0; i < totalImages; i++) {
       const imgName = images[i]
       const progress = ((downloadedCount / totalImages) * 100).toFixed(0)
@@ -53,6 +65,7 @@ export default function ImageDownloadButton({ manga }: Props) {
     let zipCount = 1
     const zipFiles: { blob: Blob; count: number }[] = []
 
+    // 이미지들을 zip에 추가하고, 크기가 MAX_ZIP_SIZE를 초과하면 분할
     for (const { idx, blob, size, imgName } of validImages) {
       if (currentZipSize + size > MAX_ZIP_SIZE && currentZipSize > 0) {
         const zipBlob = await currentZip.generateAsync({ type: 'blob' })
@@ -72,8 +85,10 @@ export default function ImageDownloadButton({ manga }: Props) {
       zipFiles.push({ blob: zipBlob, count: zipCount })
     }
 
+    // 각 zip 파일 저장
     zipFiles.forEach(({ blob, count }) => {
-      FileSaver.saveAs(blob, `${title || id}_${count}.zip`)
+      const countText = zipFiles.length > 1 ? ` - ${count}` : ''
+      saveAs(blob, `${title || id}${countText}.zip`)
     })
 
     updateProgressToast('✅ 이미지 다운로드 및 압축 완료')

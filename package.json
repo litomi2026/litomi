@@ -22,7 +22,6 @@
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.2.0",
     "dayjs": "^1.11.13",
-    "file-saver": "^2.0.5",
     "jszip": "^3.10.1",
     "next": "15.2.3",
     "react": "^19.0.0",
