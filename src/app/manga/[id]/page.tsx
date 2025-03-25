@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: BasePageProps, parent: Resolv
 }
 
 export async function generateStaticParams() {
-  const firstPageMangaIds = paginatedMangaIds.id.desc[0]
+  const firstPageMangaIds = paginatedMangaIds.id.desc.slice(0, 2).flat()
   return firstPageMangaIds.map((id) => ({ id }))
 }
 
