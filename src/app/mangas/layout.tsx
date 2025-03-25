@@ -9,7 +9,7 @@ export default function Layout({ children }: BaseLayoutProps) {
   return (
     <div className="p-2 pb-safe min-h-dvh max-w-screen-xl mx-auto">
       {children}
-      <footer className="text-center pb-10 grid gap-2">
+      <footer className="text-center py-4 grid gap-2">
         <InstallPrompt />
         <p>ⓒ 2025. {SHORT_NAME}. All rights reserved.</p>
         <div className="flex justify-center text-sm">
