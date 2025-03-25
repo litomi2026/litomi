@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 // https://transform.tools/typescript-to-javascript
 // https://hentaipaw.com/
 // https://jsonformatter.org/8f087a
@@ -7,7 +6,6 @@ function extractArticleId(listHTML: string) {
   // 정규식 패턴 생성
   // a 태그 내부에 fi-kr 클래스를 가진 span이 있는 패턴을 찾음
   const pattern =
-    // @ts-expect-error
     /<a[^>]*href=["']([^"']+)["'][^>]*>(?:(?!<\/a>).)*?<span[^>]*class=["'][^"']*fi-kr[^"']*["'][^>]*>(?:(?!<\/a>).)*?<\/a>/gs
 
   // href 값을 추출하기 위한 정규식

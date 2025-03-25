@@ -1,8 +1,9 @@
 'use client'
 
-import { CANONICAL_URL } from '@/constants/url'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
+
+import { IconDownload } from './icons/IconDownload'
 
 declare global {
   export interface WindowEventMap {
@@ -23,7 +24,6 @@ export default function InstallPrompt() {
   const [isIOS, setIsIOS] = useState(false)
   const [isStandalone, setIsStandalone] = useState(false)
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
-  const [isInstalledApp, setIsInstalledApp] = useState(false)
 
   useEffect(() => {
     if ('serviceWorker' in navigator) {
@@ -58,36 +58,8 @@ export default function InstallPrompt() {
     return () => window.removeEventListener('beforeinstallprompt', handler)
   }, [])
 
-  // getInstalledRelatedApps API를 사용해 PWA 설치 여부 확인 (Chrome 등 최신 브라우저 전용)
-  useEffect(() => {
-    if (
-      'getInstalledRelatedApps' in window.navigator &&
-      typeof window.navigator.getInstalledRelatedApps === 'function'
-    ) {
-      window.navigator.getInstalledRelatedApps().then((apps: unknown[]) => {
-        if (apps && apps.length > 0) {
-          setIsInstalledApp(true)
-        }
-      })
-    }
-  }, [])
-
   // PWA 환경(standalone)에서는 버튼 표시하지 않음
   if (isStandalone) return null
-
-  // 앱이 설치된 상태라면 "앱에서 보기" 버튼 표시
-  if (isInstalledApp) {
-    return (
-      <button
-        className="mx-auto text-white rounded-lg border-2 border-brand-gradient hover:brightness-125 active:brightness-75 transition"
-        onClick={() => (window.location.href = CANONICAL_URL)}
-      >
-        <div className="flex items-center gap-2 px-4 py-2">
-          <span>앱에서 보기</span>
-        </div>
-      </button>
-    )
-  }
 
   // 앱이 설치되지 않은 상태 (iOS): 설치 인스트럭션
   if (isIOS) {
@@ -128,20 +100,8 @@ export default function InstallPrompt() {
           setDeferredPrompt(null)
         }}
       >
-        <div className="flex items-center gap-2 px-4 py-2">
-          <svg
-            className="w-6"
-            fill="none"
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="7 10 12 15 17 10"></polyline>
-            <line x1="12" x2="12" y1="15" y2="3"></line>
-          </svg>
+        <div className="flex items-center gap-2 px-3 py-2 text-sm font-semibold">
+          <IconDownload className="w-5" />
           <span>홈 화면에 추가</span>
         </div>
       </button>
