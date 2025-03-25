@@ -17,6 +17,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.5,
     },
     {
+      url: `${CANONICAL_URL}/login`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly',
+      priority: 0.1,
+    },
+    {
+      url: `${CANONICAL_URL}/signup`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly',
+      priority: 0.1,
+    },
+    {
       url: `${CANONICAL_URL}/deterrence`,
       lastModified: new Date(),
       changeFrequency: 'yearly',
