@@ -1,9 +1,12 @@
 'use client'
 
-import IconInfo from '@/components/icons/IconInfo'
-import { useState } from 'react'
+import { ReactNode, useState } from 'react'
 
-export default function PasswordTooltip() {
+type Props = {
+  children: ReactNode[]
+}
+
+export default function Tooltip({ children }: Props) {
   const [isActive, setIsActive] = useState(false)
 
   return (
@@ -12,21 +15,17 @@ export default function PasswordTooltip() {
       onBlur={() => setIsActive(false)}
       onClick={() => setIsActive((prev) => !prev)}
       onFocus={() => setIsActive(true)}
+      tabIndex={-1}
       type="button"
     >
-      <IconInfo className="w-4 md:w-5" />
+      {children[0]}
       <div
         aria-current={isActive}
         className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 -translate-y-full z-50 p-2
           transition duration-300 opacity-0 aria-current:opacity-100 aria-current:pointer-events-auto group-hover:opacity-100"
         role="tooltip"
       >
-        <div className="rounded-xl border-2 border-zinc-700 bg-background p-2 whitespace-nowrap text-sm">
-          <p>
-            영문, 숫자를 포함한 8자 이상의 <br />
-            비밀번호를 입력해주세요.
-          </p>
-        </div>
+        {children[1]}
       </div>
     </button>
   )
