@@ -10,4 +10,6 @@ export enum LocalStorageKey {
 
 export enum SessionStorageKey {
   CONTROLLER_BRIGHTNESS = 'controller/brightness',
+
+  LOGIN_REDIRECTION = 'login-redirection',
 }

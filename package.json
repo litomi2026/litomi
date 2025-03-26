@@ -15,6 +15,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.0.0",
     "@next/third-parties": "^15.2.3",
     "@radix-ui/react-slider": "^1.2.3",
     "@sentry/nextjs": "^9.8.0",
@@ -22,8 +23,10 @@
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.2.0",
     "dayjs": "^1.11.13",
+    "drizzle-orm": "^0.41.0",
     "jszip": "^3.10.1",
     "next": "15.2.3",
+    "postgres": "^3.4.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-intersection-observer": "^9.16.0",
@@ -31,6 +34,7 @@
     "react-window": "^1.8.11",
     "sonner": "^2.0.1",
     "web-push": "^3.6.7",
+    "zod": "^3.24.2",
     "zustand": "^5.0.3"
   },
   "devDependencies": {
@@ -43,6 +47,8 @@
     "@types/react-dom": "^19.0.4",
     "@types/react-window": "^1.8.8",
     "@types/web-push": "^3.6.4",
+    "dotenv": "^16.4.7",
+    "drizzle-kit": "^0.30.5",
     "eslint": "^9.23.0",
     "eslint-config-next": "15.2.3",
     "eslint-config-prettier": "^10.1.1",

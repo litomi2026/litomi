@@ -46,6 +46,7 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Props) {
   const initialBrightnessRef = useRef(100)
   const swipeDetectedRef = useRef(false)
   const activePointers = useRef(new Set<number>())
+  const ulRef = useRef<HTMLUListElement>(null)
 
   const { prevPage, nextPage } = useImageNavigation({
     maxIndex: images.length - 1,
@@ -66,9 +67,13 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Props) {
   // 포인터 이동 시: 세로 스와이프 감지 시 밝기 업데이트, 핀치 줌(멀티 터치) 중이면 밝기 조절 방지
   const handlePointerMove = useCallback(
     (e: React.PointerEvent) => {
-      if (activePointers.current.size > 1) return // 핀치 줌 중에는 밝기 조절하지 않음
-      if (screenFit === 'width') return
       if (!pointerStartRef.current) return
+
+      const isPinchZooming = activePointers.current.size > 1
+      if (isPinchZooming) return
+
+      const isVerticalScrollable = ulRef.current && ulRef.current.scrollHeight > ulRef.current.clientHeight
+      if (isVerticalScrollable) return
 
       const diffX = e.clientX - pointerStartRef.current.x
       const diffY = e.clientY - pointerStartRef.current.y
@@ -79,25 +84,26 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Props) {
       const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
       const deltaBrightness = (diffY / (rect.height / 2)) * 90
       const newBrightness = initialBrightnessRef.current - deltaBrightness
-
       if (newBrightness < 10 || newBrightness > 100) return
 
       setBrightness(newBrightness)
     },
-    [screenFit, setBrightness],
+    [setBrightness],
   )
 
   // 포인터 종료 시: 포인터 ID 제거 및 스와이프/페이지 전환 처리
   const handlePointerUp = useCallback(
     (e: React.PointerEvent) => {
       activePointers.current.delete(e.pointerId)
-      if (screenFit === 'height') return
+
       if (!pointerStartRef.current) return
 
-      const diffX = e.clientX - pointerStartRef.current.x
-      const diffY = e.clientY - pointerStartRef.current.y
+      const isHorizontalScrollable = ulRef.current && ulRef.current.scrollHeight < ulRef.current.clientHeight
+      if (isHorizontalScrollable) return
 
       // 세로 스와이프가 감지되었으면 페이지 전환 없이 종료
+      const diffX = e.clientX - pointerStartRef.current.x
+      const diffY = e.clientY - pointerStartRef.current.y
       const isVerticalSwipe = Math.abs(diffY) > VERTICAL_SWIPE_THRESHOLD && Math.abs(diffY) > Math.abs(diffX)
       if (isVerticalSwipe) {
         pointerStartRef.current = null
@@ -115,7 +121,7 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Props) {
 
       pointerStartRef.current = null
     },
-    [nextPage, prevPage, screenFit],
+    [nextPage, prevPage],
   )
 
   // 포인터 캔슬 시 포인터 ID 제거
@@ -165,6 +171,7 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Props) {
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
+      ref={ulRef}
     >
       {Array.from({ length: 10 }).map((_, offset) => (
         <TouchViewerItem key={offset} manga={manga} offset={offset} pageView={pageView} />
