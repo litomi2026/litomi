@@ -11,13 +11,11 @@ import { toast } from 'sonner'
 import signup from './action'
 
 const initialState = {
-  data: {
-    user: { id: 0 },
-  },
+  success: false,
 }
 
 export default function SignupForm() {
-  const [{ error, data, formData }, formAction, pending] = useActionState(signup, initialState)
+  const [{ error, success, formData }, formAction, pending] = useActionState(signup, initialState)
   const router = useRouter()
 
   useEffect(() => {
@@ -27,13 +25,13 @@ export default function SignupForm() {
   }, [error])
 
   useEffect(() => {
-    if (!data?.user.id) return
+    if (!success) return
 
     toast.success('회원가입이 완료됐습니다.')
     const loginRedirection = sessionStorage.getItem(SessionStorageKey.LOGIN_REDIRECTION) ?? '/'
     sessionStorage.removeItem(SessionStorageKey.LOGIN_REDIRECTION)
     router.replace(loginRedirection)
-  }, [data, router])
+  }, [router, success])
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     const formElement = e.target as HTMLFormElement

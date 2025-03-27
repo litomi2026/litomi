@@ -77,5 +77,5 @@ export default async function signup(_prevState: unknown, formData: FormData) {
   setAccessTokenCookie(cookieStore, userId)
   setRefreshTokenCookie(cookieStore, userId)
 
-  return { data: { user: { id: userId } } }
+  return { success: true }
 }

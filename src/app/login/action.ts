@@ -40,7 +40,6 @@ export default async function login(_prevState: unknown, formData: FormData) {
     .select({
       id: userTable.id,
       passwordHash: userTable.passwordHash,
-      nickname: userTable.nickname,
     })
     .from(userTable)
     .where(sql`${userTable.loginId} = ${loginId}`)
@@ -52,7 +51,7 @@ export default async function login(_prevState: unknown, formData: FormData) {
     }
   }
 
-  const { id: userId, passwordHash, nickname } = result
+  const { id: userId, passwordHash } = result
   const isCorrectPassword = await compare(password, passwordHash)
 
   if (!isCorrectPassword) {
@@ -70,12 +69,5 @@ export default async function login(_prevState: unknown, formData: FormData) {
   setAccessTokenCookie(cookieStore, userId)
   setRefreshTokenCookie(cookieStore, userId)
 
-  return {
-    data: {
-      user: {
-        id: userId,
-        nickname,
-      },
-    },
-  }
+  return { success: true }
 }

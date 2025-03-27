@@ -9,16 +9,11 @@ import { toast } from 'sonner'
 import login from './action'
 
 const initialState = {
-  data: {
-    user: {
-      id: 0,
-      nickname: '',
-    },
-  },
+  success: false,
 }
 
 export default function LoginForm() {
-  const [{ error, data, formData }, formAction, pending] = useActionState(login, initialState)
+  const [{ error, success, formData }, formAction, pending] = useActionState(login, initialState)
   const router = useRouter()
 
   useEffect(() => {
@@ -28,13 +23,13 @@ export default function LoginForm() {
   }, [error])
 
   useEffect(() => {
-    if (!data?.user.id) return
+    if (!success) return
 
     toast.success('로그인됐습니다.')
     const loginRedirection = sessionStorage.getItem(SessionStorageKey.LOGIN_REDIRECTION) ?? '/'
     sessionStorage.removeItem(SessionStorageKey.LOGIN_REDIRECTION)
     router.replace(loginRedirection)
-  }, [data, router])
+  }, [router, success])
 
   return (
     <form
