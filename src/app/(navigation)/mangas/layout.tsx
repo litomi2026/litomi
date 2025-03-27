@@ -1,13 +1,12 @@
 import type { BaseLayoutProps } from '@/types/nextjs'
 
 import InstallPrompt from '@/components/InstallPrompt'
-import ScrollButtons from '@/components/ScrollButtons'
 import { SHORT_NAME } from '@/constants'
 import Link from 'next/link'
 
 export default function Layout({ children }: BaseLayoutProps) {
   return (
-    <div className="px-safe pb-safe min-h-dvh max-w-screen-xl mx-auto">
+    <div className="min-h-dvh max-w-screen-xl">
       <div className="p-2">
         {children}
         <footer className="text-center py-4 grid gap-2">
@@ -42,7 +41,6 @@ export default function Layout({ children }: BaseLayoutProps) {
           </div>
         </footer>
       </div>
-      <ScrollButtons />
     </div>
   )
 }
