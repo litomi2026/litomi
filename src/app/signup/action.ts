@@ -3,9 +3,10 @@
 import { SALT_ROUNDS } from '@/constants'
 import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
-import { signJWT, TokenType } from '@/utils/jwt'
+import { setAccessTokenCookie, setRefreshTokenCookie } from '@/utils/cookie'
 import { generateRandomNickname } from '@/utils/nickname'
 import { hash } from 'bcrypt'
+import { cookies } from 'next/headers'
 import { z } from 'zod'
 
 const schema = z
@@ -24,8 +25,7 @@ const schema = z
     nickname: z
       .string()
       .min(2, { message: '닉네임은 최소 2자 이상이어야 합니다.' })
-      .max(32, { message: '닉네임은 최대 32자까지 입력할 수 있습니다.' })
-      .optional(),
+      .max(32, { message: '닉네임은 최대 32자까지 입력할 수 있습니다.' }),
   })
   .superRefine((data, ctx) => {
     if (data.password !== data['password-confirm']) {
@@ -37,12 +37,12 @@ const schema = z
     }
   })
 
-export default async function createUser(_prevState: unknown, formData: FormData) {
+export default async function signup(_prevState: unknown, formData: FormData) {
   const validatedFields = schema.safeParse({
     id: formData.get('id'),
     password: formData.get('password'),
     'password-confirm': formData.get('password-confirm'),
-    nickname: formData.get('nickname'),
+    nickname: formData.get('nickname') || generateRandomNickname(),
   })
 
   if (!validatedFields.success) {
@@ -60,7 +60,7 @@ export default async function createUser(_prevState: unknown, formData: FormData
     .values({
       loginId,
       passwordHash,
-      nickname: nickname ?? generateRandomNickname(),
+      nickname,
     })
     .onConflictDoNothing()
     .returning({ id: userTable.id })
@@ -73,12 +73,9 @@ export default async function createUser(_prevState: unknown, formData: FormData
   }
 
   const { id: userId } = result
+  const cookieStore = await cookies()
+  setAccessTokenCookie(cookieStore, userId)
+  setRefreshTokenCookie(cookieStore, userId)
 
-  return {
-    data: {
-      accessToken: await signJWT({ sub: String(userId) }, TokenType.ACCESS),
-      refreshToken: await signJWT({ sub: String(userId) }, TokenType.REFRESH),
-      user: { id: userId },
-    },
-  }
+  return { data: { user: { id: userId } } }
 }

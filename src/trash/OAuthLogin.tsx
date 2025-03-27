@@ -40,7 +40,7 @@ export default function Login() {
           }
 
           const result = await response.json()
-          localStorage.setItem(LocalStorageKey.REFRESH_TOKEN, result.refreshToken)
+          // localStorage.setItem(LocalStorageKey.REFRESH_TOKEN, result.refreshToken)
           setAccessToken(result.accessToken)
           resolve('')
 

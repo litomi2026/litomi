@@ -1,5 +1,6 @@
 import type { JWTPayload } from 'jose'
 
+import { ONE_HOUR, THIRTY_DAYS } from '@/constants'
 import { JWT_SECRET_ACCESS_TOKEN, JWT_SECRET_REFRESH_TOKEN } from '@/constants/env'
 import { CANONICAL_URL } from '@/constants/url'
 import { jwtVerify, SignJWT } from 'jose'
@@ -13,10 +14,7 @@ export enum TokenType {
 
 export async function signJWT(payload: JWTPayload, type: TokenType): Promise<string> {
   // NOTE: https://developer.amazon.com/docs/login-with-amazon/access-token.html
-  const duration =
-    type === TokenType.ACCESS
-      ? 3600 // 1시간
-      : 2592000 // 30일
+  const duration = type === TokenType.ACCESS ? ONE_HOUR : THIRTY_DAYS
   const secretKey = type === TokenType.ACCESS ? JWT_SECRET_ACCESS_TOKEN : JWT_SECRET_REFRESH_TOKEN
 
   return await new SignJWT(payload)

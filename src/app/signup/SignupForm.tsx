@@ -3,25 +3,21 @@
 import IconInfo from '@/components/icons/IconInfo'
 import Tooltip from '@/components/ui/Tooltip'
 import { loginIdPattern, passwordPattern } from '@/constants/pattern'
-import { LocalStorageKey, SessionStorageKey } from '@/constants/storage'
-import { useAuthStore } from '@/store/auth'
+import { SessionStorageKey } from '@/constants/storage'
 import { useRouter } from 'next/navigation'
 import { useActionState, useEffect } from 'react'
 import { toast } from 'sonner'
 
-import createUser from './action'
+import signup from './action'
 
 const initialState = {
   data: {
-    accessToken: '',
-    refreshToken: '',
     user: { id: 0 },
   },
 }
 
 export default function SignupForm() {
-  const [{ error, data, formData }, formAction, pending] = useActionState(createUser, initialState)
-  const setAccessToken = useAuthStore((state) => state.setAccessToken)
+  const [{ error, data, formData }, formAction, pending] = useActionState(signup, initialState)
   const router = useRouter()
 
   useEffect(() => {
@@ -31,18 +27,13 @@ export default function SignupForm() {
   }, [error])
 
   useEffect(() => {
-    if (!data) return
-
-    const { accessToken, refreshToken } = data
-    if (!accessToken || !refreshToken) return
+    if (!data?.user.id) return
 
     toast.success('회원가입이 완료됐습니다.')
-    localStorage.setItem(LocalStorageKey.REFRESH_TOKEN, refreshToken)
-    setAccessToken(accessToken)
     const loginRedirection = sessionStorage.getItem(SessionStorageKey.LOGIN_REDIRECTION) ?? '/'
     sessionStorage.removeItem(SessionStorageKey.LOGIN_REDIRECTION)
     router.replace(loginRedirection)
-  }, [data, router, setAccessToken])
+  }, [data, router])
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     const formElement = e.target as HTMLFormElement
