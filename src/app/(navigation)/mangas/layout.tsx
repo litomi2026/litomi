@@ -1,6 +1,7 @@
 import type { BaseLayoutProps } from '@/types/nextjs'
 
 import InstallPrompt from '@/components/InstallPrompt'
+import ScrollButtons from '@/components/ScrollButtons'
 import { SHORT_NAME } from '@/constants'
 import Link from 'next/link'
 
@@ -41,6 +42,7 @@ export default function Layout({ children }: BaseLayoutProps) {
           </div>
         </footer>
       </div>
+      <ScrollButtons />
     </div>
   )
 }

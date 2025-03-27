@@ -1,12 +1,8 @@
 import type { BaseLayoutProps } from '@/types/nextjs'
 
 import IconLogo from '@/components/icons/IconLogo'
-import ScrollButtons from '@/components/ScrollButtons'
-import logoImage from '@/images/logo.webp'
-import Image from 'next/image'
 // import BellIcon from '@/svg/BellIcon'
 // import BookmarkIcon from '@/svg/BookmarkIcon'
-// import Dolphin from '@/svg/Dolphin'
 // import HomeIcon from '@/svg/HomeIcon'
 // import PostIcon from '@/svg/PostIcon'
 // import SearchIcon from '@/svg/SearchIcon'
@@ -50,7 +46,6 @@ export default async function Layout({ children }: BaseLayoutProps) {
       <div className="w-0 shrink-0 sm:w-20 2xl:w-3xs" />
       {children}
       <div className="h-16 sm:hidden" />
-      <ScrollButtons />
     </div>
   )
 }
