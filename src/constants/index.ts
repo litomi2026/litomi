@@ -16,3 +16,5 @@ export const defaultOpenGraph = {
 }
 
 export const MANGA_PER_PAGE = 18
+
+export const SALT_ROUNDS = 12

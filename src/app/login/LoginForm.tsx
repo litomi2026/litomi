@@ -1,5 +1,6 @@
 'use client'
 
+import { loginIdPattern, passwordPattern } from '@/constants/pattern'
 import { LocalStorageKey, SessionStorageKey } from '@/constants/storage'
 import { useAuthStore } from '@/store/auth'
 import { useRouter } from 'next/navigation'
@@ -12,6 +13,10 @@ const initialState = {
   data: {
     accessToken: '',
     refreshToken: '',
+    user: {
+      id: 0,
+      nickname: '',
+    },
   },
 }
 
@@ -32,7 +37,7 @@ export default function LoginForm() {
     const { accessToken, refreshToken } = data
     if (!accessToken || !refreshToken) return
 
-    toast.success('로그인되었습니다.')
+    toast.success('로그인됐습니다.')
     localStorage.setItem(LocalStorageKey.REFRESH_TOKEN, refreshToken)
     setAccessToken(accessToken)
     const loginRedirection = sessionStorage.getItem(SessionStorageKey.LOGIN_REDIRECTION) ?? '/'
@@ -53,13 +58,14 @@ export default function LoginForm() {
         <div>
           <label htmlFor="id">아이디</label>
           <input
+            autoFocus
             defaultValue={String(formData?.get('id') ?? '')}
             disabled={pending}
             id="id"
             maxLength={32}
             minLength={2}
             name="id"
-            pattern="^[a-zA-Z][a-zA-Z0-9-._~]+$"
+            pattern={loginIdPattern}
             placeholder="아이디를 입력하세요"
             required
           />
@@ -73,7 +79,7 @@ export default function LoginForm() {
             maxLength={64}
             minLength={8}
             name="password"
-            pattern="^(?=.*[A-Za-z])(?=.*\d).+$"
+            pattern={passwordPattern}
             placeholder="비밀번호를 입력하세요"
             required
             type="password"

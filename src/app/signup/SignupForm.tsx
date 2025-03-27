@@ -2,10 +2,11 @@
 
 import IconInfo from '@/components/icons/IconInfo'
 import Tooltip from '@/components/ui/Tooltip'
+import { loginIdPattern, passwordPattern } from '@/constants/pattern'
 import { LocalStorageKey, SessionStorageKey } from '@/constants/storage'
 import { useAuthStore } from '@/store/auth'
 import { useRouter } from 'next/navigation'
-import { useActionState, useEffect, useRef } from 'react'
+import { useActionState, useEffect } from 'react'
 import { toast } from 'sonner'
 
 import createUser from './action'
@@ -14,6 +15,7 @@ const initialState = {
   data: {
     accessToken: '',
     refreshToken: '',
+    user: { id: 0 },
   },
 }
 
@@ -34,7 +36,7 @@ export default function SignupForm() {
     const { accessToken, refreshToken } = data
     if (!accessToken || !refreshToken) return
 
-    toast.success('회원가입이 완료되었습니다.')
+    toast.success('회원가입이 완료됐습니다.')
     localStorage.setItem(LocalStorageKey.REFRESH_TOKEN, refreshToken)
     setAccessToken(accessToken)
     const loginRedirection = sessionStorage.getItem(SessionStorageKey.LOGIN_REDIRECTION) ?? '/'
@@ -42,16 +44,10 @@ export default function SignupForm() {
     router.replace(loginRedirection)
   }, [data, router, setAccessToken])
 
-  const passwordRef = useRef<HTMLInputElement>(null)
-  const passwordConfirmRef = useRef<HTMLInputElement>(null)
-
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    if (!passwordRef.current || !passwordConfirmRef.current) return
+    const formElement = e.target as HTMLFormElement
 
-    const password = passwordRef.current.value
-    const passwordConfirm = passwordConfirmRef.current.value
-
-    if (password !== passwordConfirm) {
+    if (formElement.password.value !== formElement['password-confirm'].value) {
       e.preventDefault()
       toast.warning('비밀번호가 일치하지 않습니다.')
     }
@@ -69,17 +65,29 @@ export default function SignupForm() {
     >
       <div className="grid gap-4">
         <div>
-          <label htmlFor="id">
-            아이디 <span className="text-red-500">*</span>
-          </label>
+          <div className="flex items-center gap-1">
+            <label htmlFor="id">
+              아이디 <span className="text-red-500">*</span>
+            </label>
+            <Tooltip position="right">
+              <IconInfo className="w-4 md:w-5" />
+              <div className="rounded-xl border-2 border-zinc-700 bg-background p-3 whitespace-nowrap text-sm">
+                <p>
+                  알파벳, 숫자 - . _ ~ 만 사용하여 <br />
+                  2자 이상의 아이디를 입력해주세요.
+                </p>
+              </div>
+            </Tooltip>
+          </div>
           <input
+            autoFocus
             defaultValue={String(formData?.get('id') ?? '')}
             disabled={pending}
             id="id"
             maxLength={32}
             minLength={2}
             name="id"
-            pattern="^[a-zA-Z][a-zA-Z0-9-._~]+$"
+            pattern={loginIdPattern}
             placeholder="아이디를 입력하세요"
             required
           />
@@ -89,11 +97,11 @@ export default function SignupForm() {
             <label htmlFor="password">
               비밀번호 <span className="text-red-500">*</span>
             </label>
-            <Tooltip>
+            <Tooltip position="right">
               <IconInfo className="w-4 md:w-5" />
               <div className="rounded-xl border-2 border-zinc-700 bg-background p-3 whitespace-nowrap text-sm">
                 <p>
-                  영문, 숫자를 포함한 8자 이상의 <br />
+                  알파벳, 숫자를 포함하여 8자 이상의 <br />
                   비밀번호를 입력해주세요.
                 </p>
               </div>
@@ -106,9 +114,8 @@ export default function SignupForm() {
             maxLength={64}
             minLength={8}
             name="password"
-            pattern="^(?=.*[A-Za-z])(?=.*\d).+$"
+            pattern={passwordPattern}
             placeholder="비밀번호를 입력하세요"
-            ref={passwordRef}
             required
             type="password"
           />
@@ -123,13 +130,20 @@ export default function SignupForm() {
             id="password-confirm"
             name="password-confirm"
             placeholder="비밀번호를 다시 입력하세요"
-            ref={passwordConfirmRef}
             required
             type="password"
           />
         </div>
         <div>
-          <label htmlFor="nickname">닉네임</label>
+          <div className="flex items-center gap-1">
+            <label htmlFor="nickname">닉네임</label>
+            <Tooltip position="right">
+              <IconInfo className="w-4 md:w-5" />
+              <div className="rounded-xl border-2 border-zinc-700 bg-background p-3 whitespace-nowrap text-sm">
+                <p>2자 이상 32자 이하로 입력해주세요.</p>
+              </div>
+            </Tooltip>
+          </div>
           <input
             defaultValue={String(formData?.get('nickname') ?? '')}
             disabled={pending}
@@ -146,7 +160,7 @@ export default function SignupForm() {
         disabled={pending}
         type="submit"
       >
-        <div className="p-2 bg-zinc-900 rounded-xl hover:bg-zinc-800 transition active:bg-zinc-900 group-disabled:bg-zinc-800 group-disabled:cursor-not-allowed">
+        <div className="p-2 bg-zinc-900 cursor-pointer rounded-xl hover:bg-zinc-800 transition active:bg-zinc-900 group-disabled:bg-zinc-800 group-disabled:cursor-not-allowed">
           회원가입
         </div>
       </button>
