@@ -10,12 +10,18 @@ export default function GuestOnly() {
   const router = useRouter()
 
   useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout>
+
     if (getAccessToken()) {
       toast.warning('이미 로그인되어 있습니다. 이전 페이지로 이동합니다.')
 
-      setTimeout(() => {
+      timeoutId = setTimeout(() => {
         router.back()
       }, 3000)
+    }
+
+    return () => {
+      clearTimeout(timeoutId)
     }
   }, [getAccessToken, router])
 
