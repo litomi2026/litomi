@@ -18,13 +18,13 @@ export default function SelectableLink({ className, iconClassName, Icon, childre
   return (
     <Link
       aria-selected={isSelected}
-      className={`callout-none group flex p-1 focus:outline-none aria-selected:font-bold aria-selected:pointer-events-none sm:block sm:p-0 ${className}`}
+      className={`callout-none group flex p-1 aria-selected:font-bold aria-selected:pointer-events-none sm:block sm:p-0 ${className}`}
       href={href}
       onClick={onClick}
     >
       <div
         className="flex items-center gap-5 w-fit mx-auto p-3 rounded-full transition 2xl:m-0
-        group-hover:bg-zinc-800 group-active:scale-90 group-focus-visible:outline group-focus-visible:outline-zinc-500 group-focus:outline-zinc-500"
+        group-hover:bg-zinc-800 group-active:scale-90"
       >
         <Icon className={`w-6 transition-transform group-hover:scale-110 ${iconClassName}`} selected={isSelected} />
         <span className="hidden min-w-0 2xl:block">{children}</span>

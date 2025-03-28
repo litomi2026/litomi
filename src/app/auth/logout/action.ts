@@ -5,7 +5,7 @@ import { TokenType, verifyJWT } from '@/utils/jwt'
 import { sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 
-export async function POST() {
+export async function logout() {
   const cookieStore = await cookies()
 
   const accessToken = cookieStore.get(CookieKey.ACCESS_TOKEN)?.value ?? ''
