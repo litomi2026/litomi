@@ -1,14 +1,16 @@
-import { integer, pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core'
+import { bigint, integer, pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core'
 
-export const user = pgTable('user', {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+export const userTable = pgTable('user', {
+  id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
   createdAt: timestamp('created_at').defaultNow(),
+  loginAt: timestamp('login_at').defaultNow(),
+  logoutAt: timestamp('logout_at').defaultNow(),
   loginId: varchar('login_id', { length: 32 }).notNull().unique(),
-  password: text().notNull(),
-  name: varchar({ length: 32 }).notNull(),
+  passwordHash: text().notNull(),
+  nickname: varchar({ length: 32 }).notNull(),
 })
 
-export const bookmark = pgTable('bookmark', {
-  userId: integer('user_id').references(() => user.id),
+export const bookmarkTable = pgTable('bookmark', {
+  userId: integer('user_id').references(() => userTable.id),
   mangaId: integer('manga_id').notNull(),
 })

@@ -1,6 +1,9 @@
-export enum LocalStorageKey {
+export enum CookieKey {
+  ACCESS_TOKEN = 'at',
   REFRESH_TOKEN = 'rt',
+}
 
+export enum LocalStorageKey {
   // zustand
   CONTROLLER_SCREEN_FIT = 'controller/screen-fit',
   CONTROLLER_NAVIGATION_MODE = 'controller/navigation-mode',
@@ -9,6 +12,7 @@ export enum LocalStorageKey {
 }
 
 export enum SessionStorageKey {
+  // zustand
   CONTROLLER_BRIGHTNESS = 'controller/brightness',
 
   LOGIN_REDIRECTION = 'login-redirection',

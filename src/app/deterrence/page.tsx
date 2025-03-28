@@ -1,14 +1,15 @@
+import IconLogo from '@/components/icons/IconLogo'
 import { SHORT_NAME } from '@/constants'
-import Image from 'next/image'
+import Link from 'next/link'
 
 export default async function Page() {
   return (
     <main className="flex justify-center items-center h-dvh p-4">
       <div className="grid gap-3 text-center ">
-        <div className="flex justify-center items-center gap-2">
-          <Image alt="로고" height={24} src="/logo.svg" width={24} />
+        <Link className="flex items-center gap-2 w-fit mx-auto" href="/">
+          <IconLogo className="w-6" priority />
           <h1 className="font-bold text-2xl">{SHORT_NAME}</h1>
-        </div>
+        </Link>
         <h2 className="font-medium text-xl">본 웹사이트는 19세 이상의 성인 사용자만을 대상으로 합니다.</h2>
         <p className="font-medium max-w-prose">
           19세 미만의 사용자는 본 웹사이트를 이용할 수 없습니다. 모든 사용자는 본 웹사이트를 이용하실 때에는 이용자

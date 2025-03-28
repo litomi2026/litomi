@@ -11,8 +11,12 @@ export const defaultOpenGraph = {
   description: DESCRIPTION,
   url: CANONICAL_URL,
   siteName: SHORT_NAME,
-  images: [{ url: '/image/og-image.png' }],
+  images: [{ url: '/og-image.png' }],
   type: 'website',
 }
 
 export const MANGA_PER_PAGE = 18
+
+export const SALT_ROUNDS = 12
+export const ONE_HOUR = 3600
+export const THIRTY_DAYS = 2592000
