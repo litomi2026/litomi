@@ -1,34 +1,33 @@
 'use client'
 
-import type { ReactNode } from 'react'
+import type { ComponentProps, ReactNode } from 'react'
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-type Props = {
+type Props = ComponentProps<typeof Link> & {
   className?: string
   iconClassName?: string
-  href: string
-  children: ReactNode
   Icon: (props: { className: string; selected: boolean }) => ReactNode
-  onClick?: () => void
 }
 
-export default function SelectableLink({ className = '', iconClassName = '', href, children, Icon, onClick }: Props) {
+export default function SelectableLink({ className, iconClassName, Icon, children, href, onClick }: Props) {
   const pathname = usePathname()
-  const isSelected = pathname.includes(href)
+  const isSelected = pathname.includes(href.toString())
 
   return (
     <Link
-      className={`callout-none group flex p-1 focus:outline-none sm:block sm:p-0 ${className}`}
+      aria-selected={isSelected}
+      className={`callout-none group flex p-1 focus:outline-none aria-selected:font-bold aria-selected:pointer-events-none sm:block sm:p-0 ${className}`}
       href={href}
       onClick={onClick}
     >
-      <div className="group-hover:bg-midnight-500/20 group-hover:dark:bg-midnight-500/50 group-focus-visible:outline-midnight-500 group-focus:dark:outline-midnight-200 mx-auto flex w-fit items-center gap-5 rounded-full p-3 transition group-focus-visible:outline group-active:scale-90 xl:m-0">
+      <div
+        className="flex items-center gap-5 w-fit mx-auto p-3 rounded-full transition 2xl:m-0
+        group-hover:bg-zinc-800 group-active:scale-90 group-focus-visible:outline group-focus-visible:outline-zinc-500 group-focus:outline-zinc-500"
+      >
         <Icon className={`w-6 transition-transform group-hover:scale-110 ${iconClassName}`} selected={isSelected} />
-        <span aria-selected={isSelected} className="hidden min-w-0 aria-selected:font-bold xl:block">
-          {children}
-        </span>
+        <span className="hidden min-w-0 2xl:block">{children}</span>
       </div>
     </Link>
   )

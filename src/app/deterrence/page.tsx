@@ -8,7 +8,7 @@ export default async function Page() {
     <main className="flex justify-center items-center h-dvh p-4">
       <div className="grid gap-3 text-center ">
         <Link className="flex items-center gap-2 w-fit mx-auto" href="/">
-          <Image alt="로고" src={logoImage} width={24} />
+          <Image alt="로고" priority src={logoImage} width={24} />
           <h1 className="font-bold text-2xl">{SHORT_NAME}</h1>
         </Link>
         <h2 className="font-medium text-xl">본 웹사이트는 19세 이상의 성인 사용자만을 대상으로 합니다.</h2>

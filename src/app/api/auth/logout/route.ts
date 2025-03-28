@@ -1,5 +1,3 @@
-'use server'
-
 import { CookieKey } from '@/constants/storage'
 import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
