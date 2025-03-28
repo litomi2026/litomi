@@ -10,7 +10,7 @@ export default async function Page({ params }: BasePageProps) {
     <div className="p-2">
       <h1 className="text-lg font-bold">준비 중입니다</h1>
       <ul className="grid gap-2 sm:grid-cols-2">
-        {mangaIdsDesc.slice(0, 10).map((id) => (
+        {mangaIdsDesc.slice(0, 2).map((id) => (
           <MangaCard key={id} manga={mangas[id]} />
         ))}
       </ul>
