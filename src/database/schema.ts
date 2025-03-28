@@ -1,7 +1,7 @@
-import { integer, pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core'
+import { bigint, integer, pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core'
 
 export const userTable = pgTable('user', {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
   createdAt: timestamp('created_at').defaultNow(),
   loginAt: timestamp('login_at').defaultNow(),
   logoutAt: timestamp('logout_at').defaultNow(),
