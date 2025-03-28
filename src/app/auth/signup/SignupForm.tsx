@@ -27,7 +27,7 @@ export default function SignupForm() {
   useEffect(() => {
     if (!success) return
 
-    toast.success('회원가입이 완료됐습니다.')
+    toast.success('회원가입이 완료됐습니다. (준비 중)')
     const loginRedirection = sessionStorage.getItem(SessionStorageKey.LOGIN_REDIRECTION) ?? '/'
     sessionStorage.removeItem(SessionStorageKey.LOGIN_REDIRECTION)
     router.replace(loginRedirection)
