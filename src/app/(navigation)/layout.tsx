@@ -11,6 +11,8 @@ import SelectableLink from '@/components/SelectableLink'
 import Link from 'next/link'
 import { Suspense } from 'react'
 
+import Profile from './Profile'
+
 export default async function Layout({ children }: BaseLayoutProps) {
   return (
     <div className="mx-auto px-safe pb-safe grid max-w-screen-2xl w-fit sm:flex">
@@ -20,8 +22,8 @@ export default async function Layout({ children }: BaseLayoutProps) {
           2xl:w-3xs"
       >
         <nav className="grid grid-cols-4 whitespace-nowrap sm:grid-cols-none sm:gap-2 xl:text-xl xl:leading-6">
-          <Link className="p-2 w-fit mx-auto hidden sm:block 2xl:m-0" href="/mangas/id/desc/1">
-            <IconLogo className="w-8" />
+          <Link className="p-2 w-fit mx-auto hidden sm:block 2xl:m-0" href="/">
+            <IconLogo className="w-8" priority />
           </Link>
           <SelectableLink href="/mangas/id/desc/1" Icon={IconHome}>
             홈
@@ -43,7 +45,7 @@ export default async function Layout({ children }: BaseLayoutProps) {
           </Suspense>
         </nav>
         <Suspense fallback={<div className="w-8 aspect-square bg-zinc-500 rounded-full" />}>
-          {/* <ProfileLink /> */}
+          <Profile />
         </Suspense>
       </header>
       <div className="w-0 shrink-0 sm:w-20 2xl:w-3xs" />

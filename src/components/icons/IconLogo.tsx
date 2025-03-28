@@ -3,8 +3,9 @@ import Image from 'next/image'
 
 type Props = {
   className?: string
+  priority?: boolean
 }
 
-export default function IconLogo({ className }: Props) {
-  return <Image alt="로고" className={className} src={logoImage} />
+export default function IconLogo({ className, priority }: Props) {
+  return <Image alt="로고" className={className} priority={priority} src={logoImage} />
 }
