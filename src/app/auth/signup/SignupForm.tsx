@@ -1,6 +1,7 @@
 'use client'
 
 import IconInfo from '@/components/icons/IconInfo'
+import Loading from '@/components/ui/Loading'
 import Tooltip from '@/components/ui/Tooltip'
 import { loginIdPattern, passwordPattern } from '@/constants/pattern'
 import { SessionStorageKey } from '@/constants/storage'
@@ -149,8 +150,8 @@ export default function SignupForm() {
         disabled={pending}
         type="submit"
       >
-        <div className="p-2 bg-zinc-900 cursor-pointer rounded-xl hover:bg-zinc-800 transition active:bg-zinc-900 group-disabled:bg-zinc-800 group-disabled:cursor-not-allowed">
-          회원가입
+        <div className="p-2 flex justify-center bg-zinc-900 cursor-pointer rounded-xl hover:bg-zinc-800 transition active:bg-zinc-900 group-disabled:bg-zinc-800 group-disabled:cursor-not-allowed">
+          {pending ? <Loading className="text-zinc-500" /> : '회원가입'}
         </div>
       </button>
     </form>

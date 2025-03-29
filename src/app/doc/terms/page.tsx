@@ -31,6 +31,19 @@ export default async function Page() {
           가능성을 확보하기 위한 대안으로 Litomi 소스 코드를 공개할 예정입니다. 이 경우, 이용자께서는 Vercel 클라우드 등
           선호하는 플랫폼을 활용하여 자체적으로 호스팅할 수 있습니다.
         </p>
+        <h2 className="mb-2">제 6 조 (지원하는 브라우저)</h2>
+        <p className="mb-4">
+          본 서비스는 최신 버전의 웹 브라우저에서 최적화되어 있으며, 구형 브라우저에서는 일부 기능이 제한될 수 있습니다.
+          <br />본 서비스는 다음의 브라우저에서 지원됩니다.
+        </p>
+        <ul className="mb-4">
+          <li>Chrome 80</li>
+          <li>Edge 80</li>
+          <li>Safari 14, iOS Safari 14.4</li>
+          <li>Firefox 74</li>
+          <li>Opera 67</li>
+          <li>Samsung Internet 13.0</li>
+        </ul>
         <h3 className="mt-6 text-center">시행일 2025-03-15</h3>
       </div>
     </div>

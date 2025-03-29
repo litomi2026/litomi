@@ -3,8 +3,6 @@ import type { BasePageProps } from '@/types/nextjs'
 import MangaCard from '@/components/MangaCard'
 import { mangaIdsDesc, mangas } from '@/database/manga'
 
-export const dynamic = 'error'
-
 export default async function Page({ params }: BasePageProps) {
   return (
     <div className="p-2">
