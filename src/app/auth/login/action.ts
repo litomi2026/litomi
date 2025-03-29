@@ -9,7 +9,7 @@ import { cookies } from 'next/headers'
 import { z } from 'zod'
 
 const schema = z.object({
-  id: z
+  loginId: z
     .string()
     .min(2, { message: '아이디는 최소 2자 이상이어야 합니다.' })
     .max(32, { message: '아이디는 최대 32자까지 입력할 수 있습니다.' })
@@ -23,7 +23,7 @@ const schema = z.object({
 
 export default async function login(_prevState: unknown, formData: FormData) {
   const validatedFields = schema.safeParse({
-    id: formData.get('id'),
+    loginId: formData.get('loginId'),
     password: formData.get('password'),
   })
 
@@ -34,7 +34,7 @@ export default async function login(_prevState: unknown, formData: FormData) {
     }
   }
 
-  const { id: loginId, password } = validatedFields.data
+  const { loginId, password } = validatedFields.data
 
   const [result] = await db
     .select({
@@ -46,7 +46,7 @@ export default async function login(_prevState: unknown, formData: FormData) {
 
   if (!result) {
     return {
-      error: { id: ['아이디 또는 비밀번호가 일치하지 않습니다.'] },
+      error: { loginId: ['아이디 또는 비밀번호가 일치하지 않습니다.'] },
       formData,
     }
   }
@@ -56,17 +56,21 @@ export default async function login(_prevState: unknown, formData: FormData) {
 
   if (!isCorrectPassword) {
     return {
-      error: { id: ['아이디 또는 비밀번호가 일치하지 않습니다.'] },
+      error: { loginId: ['아이디 또는 비밀번호가 일치하지 않습니다.'] },
       formData,
     }
   }
 
-  db.update(userTable)
-    .set({ loginAt: new Date() })
-    .where(sql`${userTable.id} = ${userId}`)
-
   const cookieStore = await cookies()
-  await Promise.all([setAccessTokenCookie(cookieStore, userId), setRefreshTokenCookie(cookieStore, userId)])
+
+  await Promise.all([
+    setAccessTokenCookie(cookieStore, userId),
+    setRefreshTokenCookie(cookieStore, userId),
+    db
+      .update(userTable)
+      .set({ loginAt: new Date() })
+      .where(sql`${userTable.id} = ${userId}`),
+  ])
 
   return { success: true }
 }
