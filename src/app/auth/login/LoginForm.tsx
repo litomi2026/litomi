@@ -1,5 +1,6 @@
 'use client'
 
+import Loading from '@/components/ui/Loading'
 import { loginIdPattern, passwordPattern } from '@/constants/pattern'
 import { SessionStorageKey } from '@/constants/storage'
 import { useRouter } from 'next/navigation'
@@ -77,8 +78,11 @@ export default function LoginForm() {
         disabled={pending}
         type="submit"
       >
-        <div className="p-2 bg-zinc-900 rounded-xl hover:bg-zinc-800 transition active:bg-zinc-900 group-disabled:bg-zinc-800 group-disabled:cursor-not-allowed">
-          로그인
+        <div
+          className="p-2 flex justify-center bg-zinc-900 rounded-xl hover:bg-zinc-800 transition active:bg-zinc-900 
+          group-disabled:bg-zinc-800 group-disabled:cursor-not-allowed"
+        >
+          {pending ? <Loading className="text-zinc-500" /> : '로그인'}
         </div>
       </button>
     </form>

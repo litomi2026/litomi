@@ -66,8 +66,7 @@ export default async function login(_prevState: unknown, formData: FormData) {
     .where(sql`${userTable.id} = ${userId}`)
 
   const cookieStore = await cookies()
-  setAccessTokenCookie(cookieStore, userId)
-  setRefreshTokenCookie(cookieStore, userId)
+  await Promise.all([setAccessTokenCookie(cookieStore, userId), setRefreshTokenCookie(cookieStore, userId)])
 
   return { success: true }
 }

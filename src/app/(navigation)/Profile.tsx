@@ -1,5 +1,6 @@
 'use client'
 
+import Loading from '@/components/ui/Loading'
 import { SessionStorageKey } from '@/constants/storage'
 import { locale } from 'dayjs'
 import Link from 'next/link'
@@ -55,12 +56,7 @@ export default function Profile() {
               disabled={pending}
             >
               {pending ? (
-                <div className="flex translate-y-0.5 gap-2 p-2 dark:invert">
-                  <span className="sr-only">Loading...</span>
-                  <div className="h-2 w-2 animate-bounce rounded-full bg-black [animation-delay:-0.3s]"></div>
-                  <div className="h-2 w-2 animate-bounce rounded-full bg-black [animation-delay:-0.15s]"></div>
-                  <div className="h-2 w-2 animate-bounce rounded-full bg-black"></div>
-                </div>
+                <Loading />
               ) : (
                 <>
                   <IconLogout className="w-6 transition-transform group-hover:scale-110 group-disabled:scale-100" />
