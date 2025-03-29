@@ -1,9 +1,8 @@
 'use client'
 
-import type { ComponentProps, ReactNode } from 'react'
-
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { ComponentProps, memo, ReactNode } from 'react'
 
 type Props = ComponentProps<typeof Link> & {
   className?: string
@@ -11,7 +10,9 @@ type Props = ComponentProps<typeof Link> & {
   Icon: (props: { className: string; selected: boolean }) => ReactNode
 }
 
-export default function SelectableLink({ className, iconClassName, Icon, children, href, onClick }: Props) {
+export default memo(SelectableLink)
+
+function SelectableLink({ className, iconClassName, Icon, children, href, onClick }: Props) {
   const pathname = usePathname()
   const isSelected = pathname.includes(href.toString())
 

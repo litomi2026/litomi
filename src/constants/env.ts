@@ -1,5 +1,3 @@
-import * as fs from 'fs'
-
 export const GA_ID = process.env.GA_ID
 export const GTM_ID = process.env.GTM_ID
 export const NEXT_PUBLIC_VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
@@ -8,7 +6,9 @@ export const POSTGRES_URL = process.env.POSTGRES_URL ?? ''
 export const JWT_SECRET_ACCESS_TOKEN = process.env.JWT_SECRET_ACCESS_TOKEN ?? ''
 export const JWT_SECRET_REFRESH_TOKEN = process.env.JWT_SECRET_REFRESH_TOKEN ?? ''
 
-function checkRequiredEnvVars(templatePath: string = './.env.template') {
+async function checkRequiredEnvVars(templatePath: string = './.env.template') {
+  const fs = await import('fs')
+
   if (!fs.existsSync(templatePath)) {
     console.error(`.env.template 파일을 찾을 수 없습니다: ${templatePath}`)
     process.exit(1)
@@ -41,4 +41,6 @@ function checkRequiredEnvVars(templatePath: string = './.env.template') {
   }
 }
 
-checkRequiredEnvVars()
+if (process.env.NODE_ENV !== 'production') {
+  checkRequiredEnvVars()
+}
