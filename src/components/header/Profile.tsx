@@ -32,7 +32,7 @@ export default function Profile() {
       >
         <input className="peer" hidden type="checkbox" />
         <div
-          className="absolute -top-6 left-0 2xl:right-0 z-10 -translate-y-full pointer-events-none opacity-0 rounded-2xl border-2 border-zinc-700 p-4 transition 
+          className="absolute -top-4 left-0 2xl:right-0 z-10 -translate-y-full pointer-events-none opacity-0 rounded-2xl border-2 border-zinc-700 p-4 transition 
             peer-checked:pointer-events-auto peer-checked:opacity-100 bg-zinc-900"
         >
           <LogoutButton />

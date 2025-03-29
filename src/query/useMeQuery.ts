@@ -7,6 +7,7 @@ export default function useMeQuery() {
     queryFn: fetchMe,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
+    refetchOnMount: false,
     staleTime: Infinity,
     gcTime: 0,
   })

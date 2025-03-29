@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 import { IconDownload } from './icons/IconDownload'
@@ -20,7 +20,9 @@ interface BeforeInstallPromptEvent extends Event {
   }>
 }
 
-export default function InstallPrompt() {
+export default memo(InstallPrompt)
+
+function InstallPrompt() {
   const [isIOS, setIsIOS] = useState(false)
   const [isStandalone, setIsStandalone] = useState(false)
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
