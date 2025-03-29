@@ -9,7 +9,7 @@ export default function LoginLink() {
 
   return (
     <SelectableLink
-      className="sm:py-4"
+      className="sm:py-1"
       href="/auth/login"
       Icon={IconLogin}
       onClick={() => sessionStorage.setItem(SessionStorageKey.LOGIN_REDIRECTION, pathname)}

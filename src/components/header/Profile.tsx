@@ -10,7 +10,7 @@ import LogoutButton from './LogoutButton'
 
 export default function Profile() {
   const { data: user } = useMeQuery()
-  const { loginId, imageURL, nickname } = user
+  const { loginId, imageURL = 'https://i.imgur.com/i0A7nbA_d.webp?maxwidth=760&fidelity=grand', nickname } = user
 
   return loginId ? (
     <Link
