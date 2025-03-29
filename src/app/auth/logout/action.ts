@@ -11,7 +11,11 @@ export default async function logout() {
   const cookieStore = await cookies()
 
   const accessToken = cookieStore.get(CookieKey.ACCESS_TOKEN)?.value ?? ''
-  const { sub: userId } = await verifyJWT(accessToken, TokenType.ACCESS)
+  const { sub: userId } = await verifyJWT(accessToken, TokenType.ACCESS).catch(() => ({ sub: null }))
+
+  if (!userId) {
+    return { error: '로그인 후 시도해주세요' }
+  }
 
   db.update(userTable)
     .set({ logoutAt: new Date() })
