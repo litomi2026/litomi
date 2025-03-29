@@ -12,6 +12,8 @@ import localFont from 'next/font/local'
 import { ReactNode } from 'react'
 import { Toaster } from 'sonner'
 
+import QueryProvider from '../components/QueryProvider'
+
 const PretendardVariable = localFont({
   src: '../fonts/PretendardVariable.400-700.3713.woff2',
   display: 'swap',
@@ -38,7 +40,7 @@ export const metadata: Metadata = {
   title: SHORT_NAME,
   description: DESCRIPTION,
   applicationName: SHORT_NAME,
-  keywords: 'litomi, manga, webtoon, comic, manhwa, manhua, 만화, 웹툰',
+  keywords: 'litomi, manga, comic, webtoon, manhwa, manhua, 리토미, 망가, 만화, 웹툰',
   robots: 'index, follow',
   alternates: {
     canonical: CANONICAL_URL,
@@ -68,7 +70,7 @@ export default function RootLayout({ children }: Readonly<Props>) {
         <meta content={SHORT_NAME} name="apple-mobile-web-app-title" />
       </head>
       <body className={`${PretendardVariable.className} antialiased`}>
-        {children}
+        <QueryProvider>{children}</QueryProvider>
         <Toaster duration={3000} position="top-center" richColors theme="dark" />
         <SpeedInsights />
         <Analytics />

@@ -2,12 +2,13 @@ import { bigint, integer, pgTable, text, timestamp, varchar } from 'drizzle-orm/
 
 export const userTable = pgTable('user', {
   id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
-  createdAt: timestamp('created_at').defaultNow(),
-  loginAt: timestamp('login_at').defaultNow(),
-  logoutAt: timestamp('logout_at').defaultNow(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  loginAt: timestamp('login_at').defaultNow().notNull(),
+  logoutAt: timestamp('logout_at').defaultNow().notNull(),
   loginId: varchar('login_id', { length: 32 }).notNull().unique(),
-  passwordHash: text().notNull(),
+  passwordHash: text('password_hash').notNull(),
   nickname: varchar({ length: 32 }).notNull(),
+  imageURL: text('image_url'),
 })
 
 export const bookmarkTable = pgTable('bookmark', {

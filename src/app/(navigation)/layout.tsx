@@ -1,23 +1,23 @@
 import type { BaseLayoutProps } from '@/types/nextjs'
 
-import BookmarkLink from '@/components/BookmarkLink'
+import BookmarkLink, { BookmarkLinkSkeleton } from '@/components/header/BookmarkLink'
+import PublishButton from '@/components/header/PublishButton'
 import IconBell from '@/components/icons/IconBell'
 import IconHome from '@/components/icons/IconHome'
 import IconLogo from '@/components/icons/IconLogo'
 import IconPost from '@/components/icons/IconPost'
 import IconSearch from '@/components/icons/IconSearch'
-import PublishButton from '@/components/PublishButton'
 import SelectableLink from '@/components/SelectableLink'
+import { Suspense } from '@suspensive/react'
 import Link from 'next/link'
-import { Suspense } from 'react'
 
-import Profile from './Profile'
+import Profile, { ProfileSkeleton } from '../../components/header/Profile'
 
 export default async function Layout({ children }: BaseLayoutProps) {
   return (
     <div className="mx-auto px-safe pb-safe grid max-w-screen-2xl w-fit sm:flex">
       <header
-        className="fixed bottom-0 left-0 right-0 z-50 px-safe pb-safe grid grid-cols-[4fr_1fr] overflow-y-auto scrollbar-hidden border-t-2 border-zinc-800 bg-background/70 backdrop-blur
+        className="fixed bottom-0 left-0 right-0 z-50 m-auto px-safe pb-safe grid grid-cols-[4fr_1fr] border-t-2 border-zinc-800 bg-background/70 backdrop-blur
           sm:inset-auto sm:flex sm:h-full sm:w-20 sm:flex-col sm:justify-between sm:gap-8 sm:border-r-2 sm:border-t-0 sm:p-2
           2xl:w-3xs"
       >
@@ -37,14 +37,12 @@ export default async function Layout({ children }: BaseLayoutProps) {
           <SelectableLink href="/notification" Icon={IconBell}>
             알림
           </SelectableLink>
-          <Suspense fallback={<div className="w-8 aspect-square bg-zinc-500 rounded-full" />}>
+          <Suspense clientOnly fallback={<BookmarkLinkSkeleton />}>
             <BookmarkLink />
           </Suspense>
-          <Suspense fallback={<div className="w-8 aspect-square bg-zinc-500 rounded-full" />}>
-            <PublishButton />
-          </Suspense>
+          <PublishButton />
         </nav>
-        <Suspense fallback={<div className="w-8 aspect-square bg-zinc-500 rounded-full" />}>
+        <Suspense clientOnly fallback={<ProfileSkeleton />}>
           <Profile />
         </Suspense>
       </header>

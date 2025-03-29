@@ -3,7 +3,9 @@
 import IconX from '@/components/icons/IconX'
 import Loading from '@/components/ui/Loading'
 import { loginIdPattern, passwordPattern } from '@/constants/pattern'
+import { QueryKeys } from '@/constants/query'
 import { SessionStorageKey } from '@/constants/storage'
+import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useActionState, useEffect, useRef } from 'react'
 import { toast } from 'sonner'
@@ -18,6 +20,7 @@ export default function LoginForm() {
   const [{ error, success, formData }, formAction, pending] = useActionState(login, initialState)
   const router = useRouter()
   const formRef = useRef<HTMLFormElement>(null)
+  const queryClient = useQueryClient()
 
   function resetId() {
     const loginIdInput = formRef.current?.loginId as HTMLInputElement
@@ -42,8 +45,9 @@ export default function LoginForm() {
     toast.success('로그인 성공')
     const loginRedirection = sessionStorage.getItem(SessionStorageKey.LOGIN_REDIRECTION) ?? '/'
     sessionStorage.removeItem(SessionStorageKey.LOGIN_REDIRECTION)
+    queryClient.invalidateQueries({ queryKey: QueryKeys.me })
     router.replace(loginRedirection)
-  }, [router, success])
+  }, [queryClient, router, success])
 
   return (
     <form
@@ -74,7 +78,7 @@ export default function LoginForm() {
               placeholder="아이디를 입력하세요"
               required
             />
-            <button onClick={resetId} type="button">
+            <button onClick={resetId} tabIndex={-1} type="button">
               <IconX className="w-3.5" />
             </button>
           </div>
@@ -94,7 +98,7 @@ export default function LoginForm() {
               required
               type="password"
             />
-            <button onClick={resetPassword} type="button">
+            <button onClick={resetPassword} tabIndex={-1} type="button">
               <IconX className="w-3.5" />
             </button>
           </div>

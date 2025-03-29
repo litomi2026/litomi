@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 
-import IconPen from './icons/IconPen'
-import Modal from './ui/Modal'
+import IconPen from '../icons/IconPen'
+import Modal from '../ui/Modal'
 
 export default function PublishButton() {
   const [isOpened, setIsOpened] = useState(false)
@@ -25,7 +25,7 @@ export default function PublishButton() {
       <Modal onClose={() => setIsOpened(false)} open={isOpened} showCloseButton showDragButton>
         <form className="bg-zinc-900 rounded-2xl px-4 pb-4 pt-5 border-2 border-zinc-800">
           <button disabled>게시하기</button>
-          무슨 일이 일어나고 있나요?
+          <p>무슨 일이 일어나고 있나요? (준비 중)</p>
         </form>
       </Modal>
     </>

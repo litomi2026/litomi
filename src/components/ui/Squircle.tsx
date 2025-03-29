@@ -2,21 +2,21 @@ import styles from './Squircle.module.css'
 
 type Props = {
   children?: string
-  className?: string
+  textClassName?: string
   fill?: string
   src?: string
-  wrapperClassName: string
+  className: string
 }
 
 export default function Squircle({
-  src,
+  src = 'https://i.imgur.com/i0A7nbA_d.webp?maxwidth=760&fidelity=grand',
   fill,
   children,
-  wrapperClassName = '',
   className = '',
+  textClassName = '',
 }: Props) {
   return (
-    <div className={`${styles.userImg} ${wrapperClassName}`}>
+    <div className={`${styles.userImg} ${className}`}>
       <svg className="overflow-hidden rounded-[40%]" viewBox="0 0 88 88">
         <path
           d="M44,0 C76.0948147,0 88,11.9051853 88,44 C88,76.0948147 76.0948147,88 44,88 C11.9051853,88 0,76.0948147 0,44 C0,11.9051853 11.9051853,0 44,0 Z"
@@ -37,13 +37,7 @@ export default function Squircle({
         ) : (
           <>
             <rect clipPath="url(#clipSquircle)" x="0" y="0" />
-            <text
-              className={`text-[2rem] ${className}`}
-              dy="10"
-              textAnchor="middle"
-              x="50%"
-              y="50%"
-            >
+            <text className={`text-[2rem] ${textClassName}`} dy="10" textAnchor="middle" x="50%" y="50%">
               {children}
             </text>
           </>
