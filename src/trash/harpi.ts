@@ -1,7 +1,7 @@
+import { prettifyJSON } from '@/crawler/utils'
 import { Manga } from '@/types/manga'
 
 import mangas from '../database/manga.json'
-import { prettifyJSON } from './utils'
 
 type FetchHarpiMangasParams = {
   page: number
