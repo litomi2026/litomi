@@ -6,7 +6,7 @@ import { getImageSrc } from '@/utils/manga'
 import { useCallback } from 'react'
 import { toast } from 'sonner'
 
-import { IconDownload } from './icons/IconDownload'
+import { IconDownload } from '../icons/IconDownload'
 
 const MAX_ZIP_SIZE = 50_000_000 // 50MB
 
@@ -102,7 +102,7 @@ export default function ImageDownloadButton({ manga }: Props) {
 
   return (
     <button
-      className="text-foreground flex justify-center items-center gap-2 rounded border-2 border-zinc-700 hover:bg-zinc-800 active:bg-zinc-950 transition p-1 text-sm"
+      className="text-foreground flex justify-center items-center gap-2 rounded-lg border-2 border-zinc-800 hover:bg-zinc-800 active:bg-zinc-900 transition p-1 text-sm"
       onClick={handleDownload}
     >
       <IconDownload className="w-4" />

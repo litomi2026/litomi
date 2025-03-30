@@ -5,10 +5,11 @@ import dayjs from 'dayjs'
 import Link from 'next/link'
 import { memo } from 'react'
 
-import IconExternalLink from './icons/IconExternalLink'
+import IconExternalLink from '../icons/IconExternalLink'
+import TagList from '../TagList'
+import BookmarkButton from './BookmarkButton'
 import ImageDownloadButton from './ImageDownloadButton'
 import MangaCardPreviewImage from './MangaCardPreviewImage'
-import TagList from './TagList'
 
 const BLIND_TAG_LABELS = {
   bestiality: '수간',
@@ -28,7 +29,7 @@ type Props = {
 export default memo(MangaCard)
 
 function MangaCard({ manga, index = 0 }: Props) {
-  const { id, artists, characters, date, group, related, series, tags, title, type, images, cdn } = manga
+  const { id, artists, characters, date, group, related, series, tags, title, type, images } = manga
   const mappedTags = tags?.map((tag) => harpiTagMap[tag] || tag)
   const translatedTags = mappedTags?.map((tag) => (typeof tag === 'string' ? tag : tag.korStr || tag.engStr))
 
@@ -64,7 +65,9 @@ function MangaCard({ manga, index = 0 }: Props) {
       </div>
       <div className="flex grow flex-col border-t-2 sm:border-t-0 sm:border-l-2 md:border-l-0 md:border-t-2 lg:border-t-0 lg:border-l-2 border-zinc-800 justify-between p-2 gap-2">
         <div className="flex flex-col gap-2 text-sm">
-          <h4 className="line-clamp-3 font-bold text-base lg:line-clamp-6 leading-5 min-w-0">{title}</h4>
+          <Link href={`/manga/${id}`}>
+            <h4 className="line-clamp-3 font-bold text-base lg:line-clamp-6 leading-5 min-w-0">{title}</h4>
+          </Link>
           <div>종류 {type}</div>
           {artists && artists.length > 0 && <div className="line-clamp-1">작가 {artists.join(', ')}</div>}
           {group && group.length > 0 && <div className="line-clamp-1">그룹 {group.join(', ')}</div>}
@@ -104,7 +107,10 @@ function MangaCard({ manga, index = 0 }: Props) {
             </a>
             <div className="text-right text-zinc-400">{dayjs(date).format('YYYY-MM-DD HH:mm')}</div>
           </div>
-          {cdn !== 'HARPI' && <ImageDownloadButton manga={manga} />}
+          <ImageDownloadButton manga={manga} />
+          <div className="flex gap-2 justify-between">
+            <BookmarkButton manga={manga} />
+          </div>
         </div>
       </div>
     </li>

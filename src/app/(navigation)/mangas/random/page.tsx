@@ -1,4 +1,4 @@
-import MangaCard from '@/components/MangaCard'
+import MangaCard from '@/components/card/MangaCard'
 import { CANONICAL_URL } from '@/constants/url'
 import { mangaIds, mangas } from '@/database/manga'
 import { Metadata } from 'next'

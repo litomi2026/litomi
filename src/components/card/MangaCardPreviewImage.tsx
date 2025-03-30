@@ -4,8 +4,8 @@ import { Manga } from '@/types/manga'
 import Link from 'next/link'
 import { memo, useEffect, useRef, useState } from 'react'
 
-import { IconNextPage, IconPrevPage } from './icons/IconArrows'
-import MangaImage from './MangaImage'
+import { IconNextPage, IconPrevPage } from '../icons/IconArrows'
+import MangaImage from '../MangaImage'
 
 const MAX_DISPLAYED_IMAGES = 4
 

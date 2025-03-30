@@ -1,4 +1,4 @@
-import MangaCard from '@/components/MangaCard'
+import MangaCard from '@/components/card/MangaCard'
 import Navigation from '@/components/Navigation'
 import OrderToggleLink from '@/components/OrderToggleLink'
 import ShuffleButton from '@/components/ShuffleButton'
