@@ -1,8 +1,6 @@
-'use client'
-
 type Props = {
   className?: string
-  selected: boolean
+  selected?: boolean
 }
 
 export default function IconSearch({ className, selected }: Props) {
