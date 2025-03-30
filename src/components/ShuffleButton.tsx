@@ -4,6 +4,8 @@ import IconShuffle from '@/components/icons/IconShuffle'
 import { useRouter } from 'next/navigation'
 import { ComponentProps, useCallback, useEffect, useState } from 'react'
 
+const DEFAULT_COOLDOWN = 60
+
 interface Props extends ComponentProps<'button'> {
   action: 'random' | 'refresh'
   iconClassName?: string
@@ -11,17 +13,16 @@ interface Props extends ComponentProps<'button'> {
 
 export default function ShuffleButton({ iconClassName, className = '', action, ...props }: Props) {
   const router = useRouter()
-  const [cooldown, setCooldown] = useState(0)
+  const [cooldown, setCooldown] = useState(DEFAULT_COOLDOWN)
 
   const handleClick = useCallback(() => {
     if (action === 'refresh') {
-      if (cooldown > 0) return // 이미 대기 중이면 무시
       router.refresh()
-      setCooldown(60)
     } else {
       router.push('/mangas/random')
     }
-  }, [action, cooldown, router])
+    setCooldown(DEFAULT_COOLDOWN)
+  }, [action, router])
 
   useEffect(() => {
     if (cooldown === 0) return
@@ -46,7 +47,7 @@ export default function ShuffleButton({ iconClassName, className = '', action, .
       onClick={handleClick}
       {...props}
     >
-      <span className="min-w-10">{action === 'refresh' && cooldown > 0 ? `${cooldown}초` : '랜덤'}</span>
+      <div className="min-w-10 shrink-0">{action === 'refresh' && cooldown > 0 ? `${cooldown}초` : '랜덤'}</div>
       <IconShuffle className={iconClassName} />
     </button>
   )
