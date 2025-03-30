@@ -1,6 +1,7 @@
 import MangaCard from '@/components/MangaCard'
 import Navigation from '@/components/Navigation'
 import OrderToggleLink from '@/components/OrderToggleLink'
+import ShuffleButton from '@/components/ShuffleButton'
 import { CANONICAL_URL } from '@/constants/url'
 import { mangas, pages, paginatedMangaIds } from '@/database/manga'
 import { BasePageProps } from '@/types/nextjs'
@@ -37,8 +38,9 @@ export default async function Page({ params }: BasePageProps) {
 
   return (
     <main className="grid gap-2">
-      <div className="flex justify-end">
+      <div className="flex justify-end gap-2">
         <OrderToggleLink currentOrder={orderString} page={pageNumber} />
+        <ShuffleButton action="random" className="w-fit " iconClassName="w-5" />
       </div>
       <ul className="grid md:grid-cols-2 gap-2">
         {currentMangaIds.map((id, i) => (

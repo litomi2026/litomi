@@ -7,10 +7,9 @@ import SelectableLink from '../SelectableLink'
 
 export default function BookmarkLink() {
   const { data: user } = useMeQuery()
-  const { loginId } = user
 
-  return loginId ? (
-    <SelectableLink className="hidden sm:block" href={`/${loginId}/bookmark`} Icon={IconBookmark}>
+  return user ? (
+    <SelectableLink className="hidden sm:block" href={`/${user.loginId}/bookmark`} Icon={<IconBookmark />}>
       북마크
     </SelectableLink>
   ) : (
@@ -20,7 +19,7 @@ export default function BookmarkLink() {
 
 export function BookmarkLinkSkeleton() {
   return (
-    <SelectableLink className="hidden pointer-events-none text-zinc-700 sm:block" href="" Icon={IconBookmark}>
+    <SelectableLink className="hidden pointer-events-none text-zinc-700 sm:block" href="" Icon={<IconBookmark />}>
       북마크
     </SelectableLink>
   )

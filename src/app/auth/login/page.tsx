@@ -1,4 +1,6 @@
+import GuestOnly from '@/components/GuestOnly'
 import IconLogo from '@/components/icons/IconLogo'
+import { ErrorBoundary, Suspense } from '@suspensive/react'
 import Link from 'next/link'
 
 import LoginForm from './LoginForm'
@@ -19,6 +21,11 @@ export default function Page() {
           </Link>
         </p>
       </div>
+      <ErrorBoundary fallback={null}>
+        <Suspense clientOnly>
+          <GuestOnly />
+        </Suspense>
+      </ErrorBoundary>
     </main>
   )
 }

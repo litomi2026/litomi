@@ -11,7 +11,7 @@ export default function LoginLink() {
     <SelectableLink
       className="sm:py-1"
       href="/auth/login"
-      Icon={IconLogin}
+      Icon={<IconLogin />}
       onClick={() => sessionStorage.setItem(SessionStorageKey.LOGIN_REDIRECTION, pathname)}
     >
       로그인

@@ -2,12 +2,12 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ComponentProps, memo, ReactNode } from 'react'
+import { cloneElement, ComponentProps, memo, ReactElement } from 'react'
 
 type Props = ComponentProps<typeof Link> & {
   className?: string
   iconClassName?: string
-  Icon: (props: { className: string; selected: boolean }) => ReactNode
+  Icon: ReactElement<ComponentProps<'svg'> & { selected: boolean }>
 }
 
 export default memo(SelectableLink)
@@ -27,7 +27,10 @@ function SelectableLink({ className, iconClassName, Icon, children, href, onClic
         className="flex items-center gap-5 w-fit mx-auto p-3 rounded-full transition 2xl:m-0
         group-hover:bg-zinc-800 group-active:scale-90"
       >
-        <Icon className={`w-6 transition-transform ${iconClassName}`} selected={isSelected} />
+        {cloneElement(Icon, {
+          className: `w-6 transition-transform ${iconClassName ?? ''}`,
+          selected: isSelected,
+        })}
         <span className="hidden min-w-0 2xl:block">{children}</span>
       </div>
     </Link>

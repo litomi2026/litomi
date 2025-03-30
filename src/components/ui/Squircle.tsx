@@ -4,7 +4,7 @@ type Props = {
   children?: string
   textClassName?: string
   fill?: string
-  src?: string
+  src?: string | null
   className: string
 }
 

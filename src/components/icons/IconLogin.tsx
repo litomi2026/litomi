@@ -1,6 +1,6 @@
 type Props = {
   className?: string
-  selected: boolean
+  selected?: boolean
 }
 
 export default function IconLogin({ className, selected }: Props) {

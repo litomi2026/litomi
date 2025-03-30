@@ -5,6 +5,13 @@ import { TokenType, verifyJWT } from '@/utils/jwt'
 import { sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 
+export type ResponseApiMe = {
+  id: number
+  loginId: string
+  nickname: string
+  imageURL: string | null
+}
+
 export async function GET() {
   const cookieStore = await cookies()
   const accessToken = cookieStore.get(CookieKey.ACCESS_TOKEN)?.value ?? ''
@@ -19,6 +26,7 @@ export async function GET() {
       id: userTable.id,
       loginId: userTable.loginId,
       nickname: userTable.nickname,
+      imageURL: userTable.imageURL,
     })
     .from(userTable)
     .where(sql`${userTable.id} = ${userId}`)
@@ -27,5 +35,5 @@ export async function GET() {
     return new Response(null, { status: 404 })
   }
 
-  return Response.json(user)
+  return Response.json(user satisfies ResponseApiMe)
 }

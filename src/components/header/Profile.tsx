@@ -1,6 +1,7 @@
 'use client'
 
 import useMeQuery from '@/query/useMeQuery'
+import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import Link from 'next/link'
 
 import IconMore from '../icons/IconMore'
@@ -10,16 +11,24 @@ import LogoutButton from './LogoutButton'
 
 export default function Profile() {
   const { data: user } = useMeQuery()
-  const { loginId, imageURL = 'https://i.imgur.com/i0A7nbA_d.webp?maxwidth=760&fidelity=grand', nickname } = user
 
-  return loginId ? (
+  if (!user) {
+    return <LoginLink />
+  }
+
+  const { loginId, imageURL, nickname } = user
+
+  return (
     <Link
       className="relative flex items-center justify-center w-fit m-auto p-2 rounded-full transition hover:bg-zinc-800 active:bg-zinc-900
         sm:my-0 sm:pointer-events-none
         2xl:w-full 2xl:pl-3 2xl:py-2"
       href={`/@${loginId}`}
     >
-      <Squircle className="w-8 flex-shrink-0 sm:w-10 fill-zinc-600" src={imageURL}>
+      <Squircle
+        className="w-8 flex-shrink-0 sm:w-10 fill-zinc-600"
+        src={imageURL ?? 'https://i.imgur.com/i0A7nbA_d.webp?maxwidth=760&fidelity=grand'}
+      >
         {nickname.slice(0, 2)}
       </Squircle>
       <div className="ml-3 hidden w-full min-w-0 gap-1 py-0.5 2xl:grid">
@@ -40,8 +49,19 @@ export default function Profile() {
       </label>
       <IconMore className="shrink-0 pointer-events-none hidden w-11 p-3 2xl:block" />
     </Link>
-  ) : (
-    <LoginLink />
+  )
+}
+
+export function ProfileError({ reset, error }: ErrorBoundaryFallbackProps) {
+  return (
+    <button className="flex items-center p-2 rounded-full sm:my-0 2xl:pl-3 2xl:py-2" onClick={reset}>
+      <Squircle className="w-8 flex-shrink-0 sm:w-10 fill-red-700" textClassName="fill-foreground">
+        오류
+      </Squircle>
+      <p className="ml-3 hidden py-0.5 text-red-600 2xl:block 2xl:line-clamp-2">
+        {error?.message || '오류가 발생했어요'}
+      </p>
+    </button>
   )
 }
 
