@@ -33,10 +33,10 @@ export default function useImageNavigation({ maxIndex, offset }: Params) {
   }, [getImageIndex, maxIndex, offset, setImageIndex])
 
   useEffect(() => {
-    function handleKeyDown({ code }: KeyboardEvent) {
-      if (code === 'ArrowLeft') {
+    function handleKeyDown({ code, metaKey }: KeyboardEvent) {
+      if (code === 'ArrowLeft' && !metaKey) {
         prevPage()
-      } else if (code === 'ArrowRight') {
+      } else if (code === 'ArrowRight' && !metaKey) {
         nextPage()
       }
     }
