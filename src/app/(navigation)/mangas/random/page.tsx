@@ -31,6 +31,13 @@ export default async function Page() {
           <MangaCard index={i} key={id} manga={mangas[id]} />
         ))}
       </ul>
+      <div className="flex justify-center items-center">
+        <ShuffleButton
+          action="refresh"
+          className="flex gap-2 items-center w-fit border-2 px-3 py-2 rounded-xl transition border-zinc-800 hover:bg-zinc-800 active:bg-zinc-900"
+          iconClassName="w-5"
+        />
+      </div>
     </main>
   )
 }
