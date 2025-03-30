@@ -1,5 +1,5 @@
-import { harpiTagMap } from '@/database/harpi-tag'
 import { isMangaKey } from '@/database/manga'
+import { harpiTagMap } from '@/trash/harpi-tag'
 import { Manga } from '@/types/manga'
 import dayjs from 'dayjs'
 import Link from 'next/link'
