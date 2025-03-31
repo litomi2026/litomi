@@ -29,16 +29,19 @@ export default function Layout({ children }: BaseLayoutProps) {
               @litomi_official
             </a>
           </div>
-          <div className="flex justify-center gap-2 flex-wrap">
-            <Link className="hover:underline text-xs" href="/doc/terms">
+          <div className="flex justify-center gap-2 flex-wrap text-xs">
+            <Link className="hover:underline" href="/doc/terms">
               이용약관
             </Link>
-            <Link className="hover:underline text-xs" href="/doc/privacy">
+            <Link className="hover:underline" href="/doc/privacy">
               개인정보처리방침
             </Link>
-            <Link className="hover:underline text-xs" href="/deterrence">
+            <Link className="hover:underline" href="/deterrence">
               사용자 연령 제한 규정
             </Link>
+            <a className="hover:underline" href="https://github.com/gwak2837/litomi/issues" target="_blank">
+              이슈 제보
+            </a>
           </div>
         </footer>
       </div>
