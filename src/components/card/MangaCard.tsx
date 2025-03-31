@@ -24,12 +24,17 @@ const BLIND_TAGS = Object.keys(BLIND_TAG_LABELS)
 
 type Props = {
   manga: Manga
+  source?: string
   index?: number
 }
 
 export default memo(MangaCard)
 
-function MangaCard({ manga, index = 0 }: Props) {
+function getViewerLink(id: number, source: string) {
+  return `/manga/${id}/${source}`
+}
+
+function MangaCard({ manga, index = 0, source = '' }: Props) {
   const { id, artists, characters, date, group, related, series, tags, title, type, images } = manga
   const mappedTags = tags?.map((tag) => harpiTagMap[tag] || tag)
   const translatedTags = mappedTags?.map((tag) => (typeof tag === 'string' ? tag : tag.korStr || tag.engStr))
@@ -53,13 +58,13 @@ function MangaCard({ manga, index = 0 }: Props) {
       key={id}
     >
       <div className="relative h-fit my-auto">
-        {/* NOTE(gwak, 2025-04-01): 썸네일 이미지만 있는 경우 대응 */}
+        {/* NOTE(gwak, 2025-04-01): 썸네일 이미지만 있는 경우 대응하기 위해 images[1] 검사 */}
         {images[1] ? (
-          <MangaCardPreviewImage manga={manga} mangaIndex={index} />
+          <MangaCardPreviewImage href={getViewerLink(id, source)} manga={manga} mangaIndex={index} />
         ) : (
           <Link
             className="flex overflow-x-auto h-fit snap-x snap-mandatory select-none scrollbar-hidden [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-contain [&_img]:aspect-[4/3] [&_img]:sm:aspect-[3/4] [&_img]:md:aspect-[4/3] [&_img]:xl:aspect-[3/4]"
-            href={`/manga/${id}`}
+            href={getViewerLink(id, source)}
           >
             <MangaImage imageIndex={0} manga={manga} />
           </Link>
@@ -76,7 +81,7 @@ function MangaCard({ manga, index = 0 }: Props) {
       </div>
       <div className="flex grow flex-col border-t-2 sm:border-t-0 sm:border-l-2 md:border-l-0 md:border-t-2 xl:border-t-0 xl:border-l-2 border-zinc-800 justify-between p-2 gap-2">
         <div className="flex flex-col gap-2 text-sm">
-          <Link href={`/manga/${id}`}>
+          <Link href={getViewerLink(id, source)}>
             <h4 className="line-clamp-3 font-bold text-base xl:line-clamp-6 leading-5 min-w-0">{title}</h4>
           </Link>
           <div>종류 {type}</div>
@@ -90,7 +95,7 @@ function MangaCard({ manga, index = 0 }: Props) {
               <ul className="flex flex-wrap overflow-auto gap-1">
                 {existedRelatedIds.map((rid) => (
                   <li className="rounded px-1 text-foreground bg-zinc-500" key={rid}>
-                    <Link href={`/manga/${rid}`}>{rid}</Link>
+                    <Link href={getViewerLink(rid, source)}>{rid}</Link>
                   </li>
                 ))}
               </ul>

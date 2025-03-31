@@ -6,7 +6,7 @@ import SourceToggleLink from '@/components/SourceToggleLink'
 import { CANONICAL_URL } from '@/constants/url'
 import { mangas, pages, paginatedMangaIds } from '@/database/manga'
 import { BasePageProps } from '@/types/nextjs'
-import { validateOrder, validatePage, validateSort } from '@/utils/pagination'
+import { validateOrder, validatePage, validateSort } from '@/utils/param'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
@@ -42,11 +42,11 @@ export default async function Page({ params }: BasePageProps) {
       <div className="flex justify-end gap-2">
         <OrderToggleLink currentOrder={orderString} page={pageNumber} />
         <SourceToggleLink currentSource="ha" />
-        <ShuffleButton action="random" className="w-fit " iconClassName="w-5" />
+        <ShuffleButton action="random" className="w-fit" iconClassName="w-5" />
       </div>
       <ul className="grid md:grid-cols-2 gap-2">
         {currentMangaIds.map((id, i) => (
-          <MangaCard index={i} key={id} manga={mangas[id]} />
+          <MangaCard index={i} key={id} manga={mangas[id]} source="ha" />
         ))}
       </ul>
       <div className="flex justify-center overflow-x-auto scrollbar-hidden">

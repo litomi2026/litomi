@@ -1,5 +1,5 @@
 import { BasePageProps } from '@/types/nextjs'
-import { validateSort } from '@/utils/pagination'
+import { validateSort } from '@/utils/param'
 import { notFound, redirect } from 'next/navigation'
 
 export const dynamic = 'error'

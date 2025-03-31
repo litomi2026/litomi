@@ -27,3 +27,14 @@ export function validateSort(order: string) {
       return ''
   }
 }
+
+export function validateSource(src: string) {
+  switch (src) {
+    case 'ha':
+      return 'ha'
+    case 'hi':
+      return 'hi'
+    default:
+      return ''
+  }
+}

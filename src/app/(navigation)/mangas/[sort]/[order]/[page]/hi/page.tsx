@@ -1,18 +1,17 @@
 import MangaCard from '@/components/card/MangaCard'
 import Navigation from '@/components/Navigation'
-import OrderToggleLink from '@/components/OrderToggleLink'
 import ShuffleButton from '@/components/ShuffleButton'
 import SourceToggleLink from '@/components/SourceToggleLink'
 import { CANONICAL_URL } from '@/constants/url'
-import { fetchMangasFromHiyobi } from '@/database/hiyobi'
+import { fetchMangasFromHiyobi } from '@/crawler/hiyobi'
 import { pages } from '@/database/manga'
 import { BasePageProps } from '@/types/nextjs'
-import { validateOrder, validatePage, validateSort } from '@/utils/pagination'
+import { validateOrder, validatePage, validateSort } from '@/utils/param'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
-export const revalidate = 86400 // 1 day
 export const dynamic = 'error'
+export const revalidate = 86400 // 1 day
 
 export const metadata: Metadata = {
   alternates: {
@@ -47,7 +46,7 @@ export default async function Page({ params }: BasePageProps) {
       </div>
       <ul className="grid md:grid-cols-2 gap-2">
         {mangas.map((manga, i) => (
-          <MangaCard index={i} key={manga.id} manga={manga} />
+          <MangaCard index={i} key={manga.id} manga={manga} source="hi" />
         ))}
       </ul>
       <div className="flex justify-center overflow-x-auto scrollbar-hidden">

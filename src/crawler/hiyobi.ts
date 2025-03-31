@@ -24,6 +24,17 @@ export interface LabelValue {
   value: string
 }
 
+export async function fetchMangaImagesFromHiyobi({ id }: { id: number }) {
+  const res = await fetch(`https://api-kh.hiyobi.org/hiyobi/list?id=${id}`, { referrerPolicy: 'no-referrer' })
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch mangas from 1')
+  }
+
+  const mangas = (await res.json()).list as HyobiListPage[]
+  return mangas.map((manga) => convertHiyobiToManga(manga))
+}
+
 export async function fetchMangasFromHiyobi({ page }: { page: number }) {
   const res = await fetch(`https://api.hiyobi.org/list/${page}`, { referrerPolicy: 'no-referrer' })
 
