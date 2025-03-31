@@ -13,7 +13,7 @@ interface Props extends ComponentProps<'button'> {
 
 export default function ShuffleButton({ iconClassName, className = '', action, ...props }: Props) {
   const router = useRouter()
-  const [cooldown, setCooldown] = useState(DEFAULT_COOLDOWN)
+  const [cooldown, setCooldown] = useState(0)
 
   const handleClick = useCallback(() => {
     if (action === 'refresh') {

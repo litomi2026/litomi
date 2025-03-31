@@ -1,3 +1,5 @@
+'use client'
+
 type Props = {
   className?: string
   selected?: boolean

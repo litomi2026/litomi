@@ -1,6 +1,6 @@
 import type { BasePageProps } from '@/types/nextjs'
 
-import MangaCard from '@/components/MangaCard'
+import MangaCard from '@/components/card/MangaCard'
 import { mangaIdsDesc, mangas } from '@/database/manga'
 
 export const dynamic = 'error'
