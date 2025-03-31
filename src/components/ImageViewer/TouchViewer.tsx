@@ -14,6 +14,8 @@ import { useImageIndexStore } from './store/imageIndex'
 const HORIZONTAL_SWIPE_THRESHOLD = 50 // 가로 스와이프 감지 임계값 (px)
 const VERTICAL_SWIPE_THRESHOLD = 10 // 세로 스와이프 감지 임계값 (px)
 const EDGE_CLICK_THRESHOLD = 1 / 3 // 화면 3등분 시의 경계값
+const IMAGE_PREFETCH_AMOUNT = 10
+const IMAGE_FETCH_PRIORITY_THRESHOLD = 3
 
 const screenFitStyle = {
   width: `overflow-y-auto [&_li]:mx-auto [&_li]:w-fit [&_li]:max-w-full [&_li]:first:h-full [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:h-auto`,
@@ -173,7 +175,7 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Props) {
       onPointerUp={handlePointerUp}
       ref={ulRef}
     >
-      {Array.from({ length: 10 }).map((_, offset) => (
+      {Array.from({ length: IMAGE_PREFETCH_AMOUNT }).map((_, offset) => (
         <TouchViewerItem key={offset} manga={manga} offset={offset} pageView={pageView} />
       ))}
     </ul>
@@ -187,8 +189,18 @@ function TouchViewerItem({ offset, manga, pageView }: TouchViewerItemProps) {
 
   return (
     <li aria-hidden={offset !== 0} style={{ filter: `brightness(${brightness}%)` }}>
-      <MangaImage imageIndex={imageIndex} manga={manga} />
-      {pageView === 'double' && offset === 0 && <MangaImage imageIndex={imageIndex + 1} manga={manga} />}
+      <MangaImage
+        fetchPriority={offset < IMAGE_FETCH_PRIORITY_THRESHOLD ? 'high' : 'low'}
+        imageIndex={imageIndex}
+        manga={manga}
+      />
+      {pageView === 'double' && offset === 0 && (
+        <MangaImage
+          fetchPriority={offset < IMAGE_FETCH_PRIORITY_THRESHOLD ? 'high' : 'low'}
+          imageIndex={imageIndex + 1}
+          manga={manga}
+        />
+      )}
     </li>
   )
 }

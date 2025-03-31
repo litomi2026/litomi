@@ -15,12 +15,19 @@ export const revalidate = 86400 // 1 day
 
 export async function generateMetadata({ params }: BasePageProps, parent: ResolvingMetadata): Promise<Metadata> {
   const { id } = await params
+  const idNumber = validateId(id)
 
-  if (!isMangaKey(id)) {
+  if (!idNumber) {
     return parent as Metadata
   }
 
-  const { title, images, cdn } = mangas[id]
+  const manga = await fetchMangaFromHiyobi({ id: idNumber })
+
+  if (!manga) {
+    return parent as Metadata
+  }
+
+  const { title, images } = manga
 
   return {
     alternates: {
@@ -30,7 +37,7 @@ export async function generateMetadata({ params }: BasePageProps, parent: Resolv
     title: `${title} - ${SHORT_NAME}`,
     openGraph: {
       ...defaultOpenGraph,
-      images: images.slice(0, 3).map((path) => getImageSrc({ path, cdn, id: +id })),
+      images: images.slice(0, 3).map((path) => getImageSrc({ path, cdn: 'k-hentai', id: +id })),
     },
   }
 }
@@ -38,6 +45,10 @@ export async function generateMetadata({ params }: BasePageProps, parent: Resolv
 export default async function Page({ params }: BasePageProps) {
   const { id } = await params
   const idNumber = validateId(id)
+
+  if (!idNumber) {
+    notFound()
+  }
 
   const [imagesResult, mangaFromHiyobi] = await Promise.all([
     fetchMangaImagesFromHiyobi({ id: idNumber }),
