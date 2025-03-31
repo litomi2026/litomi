@@ -8,9 +8,11 @@ const VISIBLE_PAGES = 9
 type Props = {
   currentPage: number
   totalPages: number
+  hrefPrefix?: string
+  hrefSuffix?: string
 }
 
-export default function Navigation({ currentPage, totalPages }: Props) {
+export default function Navigation({ currentPage, totalPages, hrefPrefix = '', hrefSuffix = '' }: Props) {
   let startPage = Math.max(1, currentPage - Math.floor(VISIBLE_PAGES / 2))
   let endPage = startPage + VISIBLE_PAGES - 1
 
@@ -29,35 +31,42 @@ export default function Navigation({ currentPage, totalPages }: Props) {
       "
     >
       {currentPage > 1 && (
-        <Link aria-label="첫 페이지" className="hidden sm:block" href={`${1}`}>
+        <Link aria-label="첫 페이지" className="hidden sm:block" href={`${hrefPrefix}${1}${hrefSuffix}`}>
           <IconFirstPage />
         </Link>
       )}
       {startPage > 1 && (
-        <Link aria-label={`이전 ${VISIBLE_PAGES} 페이지`} href={`${Math.max(1, currentPage - VISIBLE_PAGES)}`}>
+        <Link
+          aria-label={`이전 ${VISIBLE_PAGES} 페이지`}
+          href={`${hrefPrefix}${Math.max(1, currentPage - VISIBLE_PAGES)}${hrefSuffix}`}
+        >
           <IconJumpPrev />
         </Link>
       )}
-      <Link aria-disabled={currentPage <= 1} aria-label="이전 페이지" href={`${Math.max(1, currentPage - 1)}`}>
+      <Link
+        aria-disabled={currentPage <= 1}
+        aria-label="이전 페이지"
+        href={`${Math.max(1, currentPage - 1)}${hrefSuffix}`}
+      >
         <IconPrevPage />
       </Link>
       {/* 현재 페이지 주변의 번호들 */}
       {visiblePageNumbers.map((page) => (
-        <a aria-current={page === currentPage} className="flex" href={`${page}`} key={page}>
+        <a aria-current={page === currentPage} className="flex" href={`${hrefPrefix}${page}${hrefSuffix}`} key={page}>
           <span>{page}</span>
         </a>
       ))}
       <Link
         aria-disabled={currentPage >= totalPages}
         aria-label="다음 페이지"
-        href={`${Math.min(currentPage + 1, totalPages)}`}
+        href={`${hrefPrefix}${Math.min(currentPage + 1, totalPages)}${hrefSuffix}`}
       >
         <IconNextPage />
       </Link>
       {endPage < totalPages && (
         <Link
           aria-label={`다음 ${VISIBLE_PAGES} 페이지 `}
-          href={`${Math.min(currentPage + VISIBLE_PAGES, totalPages)}`}
+          href={`${hrefPrefix}${Math.min(currentPage + VISIBLE_PAGES, totalPages)}${hrefSuffix}`}
         >
           <IconJumpNext />
         </Link>
@@ -67,7 +76,7 @@ export default function Navigation({ currentPage, totalPages }: Props) {
           aria-disabled={currentPage >= totalPages}
           aria-label="마지막 페이지"
           className="hidden sm:block"
-          href={`${totalPages}`}
+          href={`${hrefPrefix}${totalPages}${hrefSuffix}`}
         >
           <IconLastPage />
         </Link>

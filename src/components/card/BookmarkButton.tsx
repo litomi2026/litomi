@@ -11,11 +11,12 @@ type Props = {
 export default function BookmarkButton({ manga }: Props) {
   return (
     <button
-      className="border-2 w-fit border-zinc-800 rounded-lg p-1 bg-zinc-900 hover:bg-zinc-800 active:bg-zinc-900 transition
+      className="flex items-center gap-1 border-2 w-fit border-zinc-800 rounded-lg p-1 px-2 bg-zinc-900 hover:bg-zinc-800 active:bg-zinc-900 transition
         disabled:bg-zinc-800 disabled:pointer-events-none disabled:text-zinc-500"
       disabled
     >
-      <IconBookmark className="w-6" />
+      <IconBookmark className="w-5" />
+      <span className="hidden md:block">북마크</span>
     </button>
   )
 }
