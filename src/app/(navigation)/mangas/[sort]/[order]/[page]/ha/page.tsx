@@ -4,20 +4,18 @@ import OrderToggleLink from '@/components/OrderToggleLink'
 import ShuffleButton from '@/components/ShuffleButton'
 import SourceToggleLink from '@/components/SourceToggleLink'
 import { CANONICAL_URL } from '@/constants/url'
-import { fetchMangasFromHiyobi } from '@/database/hiyobi'
-import { pages } from '@/database/manga'
+import { mangas, pages, paginatedMangaIds } from '@/database/manga'
 import { BasePageProps } from '@/types/nextjs'
 import { validateOrder, validatePage, validateSort } from '@/utils/pagination'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
-export const revalidate = 86400 // 1 day
 export const dynamic = 'error'
 
 export const metadata: Metadata = {
   alternates: {
-    canonical: `${CANONICAL_URL}/mangas/id/desc/1/hi`,
-    languages: { ko: `${CANONICAL_URL}/mangas/id/desc/1/hi` },
+    canonical: `${CANONICAL_URL}/mangas/id/desc/1`,
+    languages: { ko: `${CANONICAL_URL}/mangas/id/desc/1` },
   },
 }
 
@@ -37,21 +35,22 @@ export default async function Page({ params }: BasePageProps) {
     notFound()
   }
 
-  const mangas = await fetchMangasFromHiyobi({ page: pageNumber })
+  const currentMangaIds = paginatedMangaIds[sortString][orderString][pageNumber - 1]
 
   return (
     <main className="grid gap-2">
       <div className="flex justify-end gap-2">
-        <SourceToggleLink currentSource="hi" />
+        <OrderToggleLink currentOrder={orderString} page={pageNumber} />
+        <SourceToggleLink currentSource="ha" />
         <ShuffleButton action="random" className="w-fit " iconClassName="w-5" />
       </div>
       <ul className="grid md:grid-cols-2 gap-2">
-        {mangas.map((manga, i) => (
-          <MangaCard index={i} key={manga.id} manga={manga} />
+        {currentMangaIds.map((id, i) => (
+          <MangaCard index={i} key={id} manga={mangas[id]} />
         ))}
       </ul>
       <div className="flex justify-center overflow-x-auto scrollbar-hidden">
-        <Navigation currentPage={pageNumber} hrefPrefix="../" hrefSuffix="/hi" totalPages={totalPages} />
+        <Navigation currentPage={pageNumber} totalPages={totalPages} />
       </div>
     </main>
   )

@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { memo } from 'react'
 
 import IconExternalLink from '../icons/IconExternalLink'
+import MangaImage from '../MangaImage'
 import TagList from '../TagList'
 import BookmarkButton from './BookmarkButton'
 import ImageDownloadButton from './ImageDownloadButton'
@@ -52,7 +53,17 @@ function MangaCard({ manga, index = 0 }: Props) {
       key={id}
     >
       <div className="relative h-fit my-auto">
-        <MangaCardPreviewImage manga={manga} mangaIndex={index} />
+        {/* NOTE(gwak, 2025-04-01): 썸네일 이미지만 있는 경우 대응 */}
+        {images[1] ? (
+          <MangaCardPreviewImage manga={manga} mangaIndex={index} />
+        ) : (
+          <Link
+            className="flex overflow-x-auto h-fit snap-x snap-mandatory select-none scrollbar-hidden [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-contain [&_img]:aspect-[4/3] [&_img]:sm:aspect-[3/4] [&_img]:md:aspect-[4/3] [&_img]:xl:aspect-[3/4]"
+            href={`/manga/${id}`}
+          >
+            <MangaImage imageIndex={0} manga={manga} />
+          </Link>
+        )}
         {censoredTags && censoredTags.length > 0 && (
           <div className="absolute inset-0 bg-background/50 backdrop-blur flex items-center justify-center text-center p-4 pointer-events-none">
             <div className="text-foreground text-center font-semibold flex flex-wrap gap-1 justify-center">
