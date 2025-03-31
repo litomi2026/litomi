@@ -40,7 +40,7 @@ export default async function Page({ params }: BasePageProps) {
   return (
     <main className="grid gap-2">
       <div className="flex justify-end gap-2">
-        <OrderToggleLink currentOrder={orderString} page={pageNumber} />
+        <OrderToggleLink currentOrder={orderString} hrefPrefix="../../" hrefSuffix={`/${pageNumber}/ha`} />
         <SourceToggleLink currentSource="ha" />
         <ShuffleButton action="random" className="w-fit" iconClassName="w-5" />
       </div>
