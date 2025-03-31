@@ -11,7 +11,9 @@ export function getImageSrc({ cdn, id, path }: Params) {
     case 'HARPI':
       return `${CDN.HARPI}/${path}`
     case 'k-hentai':
-      return `${CDN.K_HENTAI}/${path}`
+      return path
+    case 'thumb.k-hentai':
+      return `${CDN.K_HENTAI_THUMB}/${path}`
     case 'HASHA':
     default:
       return `${CDN.HASHA}/${id}/${path}`

@@ -1,3 +1,13 @@
+export function validateId(id: string) {
+  const idNumber = parseInt(id, 10)
+
+  if (isNaN(idNumber) || !isFinite(idNumber) || idNumber < 1) {
+    return 0
+  }
+
+  return idNumber
+}
+
 export function validateOrder(order: string) {
   switch (order) {
     case 'asc':

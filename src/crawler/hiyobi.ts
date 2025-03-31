@@ -1,17 +1,29 @@
-export interface HyobiListPage {
-  artists: LabelValue[]
+type HiyobiImage = {
+  height: number
+  name: string
+  url: string
+  width: number
+}
+
+type HiyobiLabelValue = {
+  display: string
+  value: string
+}
+
+type HiyobiManga = {
+  artists: HiyobiLabelValue[]
   category: number
-  characters: LabelValue[]
+  characters: HiyobiLabelValue[]
   comments: number
   count: number
   filecount: number
-  groups: LabelValue[]
+  groups: HiyobiLabelValue[]
   id: number
   language: string
   like: number
   like_anonymous: number
-  parodys: LabelValue[]
-  tags: LabelValue[]
+  parodys: HiyobiLabelValue[]
+  tags: HiyobiLabelValue[]
   title: string
   type: number
   uid: number
@@ -19,30 +31,53 @@ export interface HyobiListPage {
   uploadername: string
 }
 
-export interface LabelValue {
-  display: string
-  value: string
+export async function fetchMangaFromHiyobi({ id }: { id: number }) {
+  const res = await fetch(`https://api.hiyobi.org/gallery/${id}`, { referrerPolicy: 'no-referrer' })
+
+  if (res.status === 404) {
+    return null
+  } else if (!res.ok) {
+    throw new Error('Failed to fetch manga from hi')
+  }
+
+  const manga = (await res.json()) as HiyobiManga
+  return convertHiyobiToManga(manga)
 }
 
 export async function fetchMangaImagesFromHiyobi({ id }: { id: number }) {
   const res = await fetch(`https://api-kh.hiyobi.org/hiyobi/list?id=${id}`, { referrerPolicy: 'no-referrer' })
 
-  if (!res.ok) {
-    throw new Error('Failed to fetch mangas from 1')
+  if (res.status === 404) {
+    return null
+  } else if (!res.ok) {
+    throw new Error('Failed to fetch manga images from hi')
   }
 
-  const mangas = (await res.json()).list as HyobiListPage[]
-  return mangas.map((manga) => convertHiyobiToManga(manga))
+  const hiyobiImages = (await res.json()) as HiyobiImage[]
+  return hiyobiImages.map((image) => image.url)
+}
+
+export async function fetchMangaImagesFromKHentai({ id }: { id: number }) {
+  const res = await fetch(`https://k-hentai.org/hiyobi/list?id=${id}`, { referrerPolicy: 'no-referrer' })
+
+  if (res.status === 404) {
+    return null
+  } else if (!res.ok) {
+    throw new Error('Failed to fetch manga images from k')
+  }
+
+  const hiyobiImages = (await res.json()) as HiyobiImage[]
+  return hiyobiImages.map((image) => image.url)
 }
 
 export async function fetchMangasFromHiyobi({ page }: { page: number }) {
   const res = await fetch(`https://api.hiyobi.org/list/${page}`, { referrerPolicy: 'no-referrer' })
 
   if (!res.ok) {
-    throw new Error('Failed to fetch mangas from 1')
+    throw new Error('Failed to fetch mangas from hi')
   }
 
-  const mangas = (await res.json()).list as HyobiListPage[]
+  const mangas = (await res.json()).list as HiyobiManga[]
   return mangas.map((manga) => convertHiyobiToManga(manga))
 }
 
@@ -59,7 +94,7 @@ function convertHiyobiToManga({
   count,
   like,
   like_anonymous,
-}: HyobiListPage) {
+}: HiyobiManga) {
   const images = [getThumbnailURL(id)]
   images.length = filecount
   return {
@@ -73,7 +108,7 @@ function convertHiyobiToManga({
     title,
     type: hiyobiTypeMap[type as keyof typeof hiyobiTypeMap] ?? '?',
     images,
-    cdn: 'k-hentai',
+    cdn: 'thumb.k-hentai',
     count,
     like,
     like_anonymous,
