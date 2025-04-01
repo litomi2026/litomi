@@ -9,7 +9,7 @@ import { unstable_cache } from 'next/cache'
 import { notFound } from 'next/navigation'
 
 export const dynamic = 'error'
-export const revalidate = 60
+export const revalidate = 15
 
 export const metadata: Metadata = {
   alternates: {
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 const tags = ['mangas', 'random', 'hi']
 
 const getMangas = unstable_cache(fetchRandomMangasFromHiyobi, tags, {
-  revalidate: 20,
+  revalidate,
   tags,
 })
 

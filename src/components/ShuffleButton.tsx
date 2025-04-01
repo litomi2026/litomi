@@ -1,8 +1,9 @@
 'use client'
 
 import IconShuffle from '@/components/icons/IconShuffle'
+import { useShffleStore } from '@/store/shuffle'
 import { useRouter } from 'next/navigation'
-import { ComponentProps, useCallback, useEffect, useState } from 'react'
+import { ComponentProps, memo, useCallback, useEffect } from 'react'
 
 interface Props extends ComponentProps<'button'> {
   action: 'random' | 'refresh'
@@ -11,16 +12,11 @@ interface Props extends ComponentProps<'button'> {
   iconClassName?: string
 }
 
-export default function ShuffleButton({
-  iconClassName,
-  className = '',
-  action,
-  href,
-  defaultCooldown = 60,
-  ...props
-}: Props) {
+export default memo(ShuffleButton)
+
+function ShuffleButton({ iconClassName, className = '', action, href, defaultCooldown = 20, ...props }: Props) {
   const router = useRouter()
-  const [cooldown, setCooldown] = useState(3)
+  const { cooldown, setCooldown } = useShffleStore()
 
   const handleClick = useCallback(() => {
     if (action === 'refresh') {
@@ -29,23 +25,21 @@ export default function ShuffleButton({
       router.push(href)
     }
     setCooldown(defaultCooldown)
-  }, [action, defaultCooldown, href, router])
+  }, [action, defaultCooldown, href, router, setCooldown])
 
   useEffect(() => {
     if (cooldown === 0) return
 
     const timer = setInterval(() => {
-      setCooldown((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer)
-          return 0
-        }
-        return prev - 1
-      })
+      if (cooldown <= 1) {
+        clearInterval(timer)
+        return setCooldown(0)
+      }
+      return setCooldown(cooldown - 1)
     }, 1000)
 
     return () => clearInterval(timer)
-  }, [cooldown])
+  }, [cooldown, setCooldown])
 
   return (
     <button

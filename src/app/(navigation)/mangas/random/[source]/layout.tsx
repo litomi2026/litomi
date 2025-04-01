@@ -12,7 +12,6 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
     notFound()
   }
 
-  const defaultCooldown = sourceString === 'hi' ? 20 : 60
   const href = `/mangas/random/${sourceString}`
 
   return (
@@ -21,7 +20,6 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
         <ShuffleButton
           action="refresh"
           className="flex gap-2 items-center w-fit border-2 px-3 py-2 rounded-xl transition border-zinc-800 hover:bg-zinc-800 active:bg-zinc-900"
-          defaultCooldown={defaultCooldown}
           href={href}
           iconClassName="w-5"
         />
@@ -31,7 +29,6 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
         <ShuffleButton
           action="refresh"
           className="flex gap-2 items-center w-fit border-2 px-3 py-2 rounded-xl transition border-zinc-800 hover:bg-zinc-800 active:bg-zinc-900"
-          defaultCooldown={defaultCooldown}
           href={href}
           iconClassName="w-5"
         />
