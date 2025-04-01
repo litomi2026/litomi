@@ -43,7 +43,7 @@ function ShuffleButton({ iconClassName, className = '', action, href, defaultCoo
 
   return (
     <button
-      className={`flex gap-2 items-center text-sm md:text-base border-2 px-3 py-2 rounded-xl transition border-zinc-800 hover:bg-zinc-800 active:bg-zinc-900 disabled:text-zinc-500 disabled:bg-zinc-800 disabled:pointer-events-none ${className}`}
+      className={`flex gap-2 items-center border-2 px-3 py-2 rounded-xl transition border-zinc-800 hover:bg-zinc-800 active:bg-zinc-900 disabled:text-zinc-500 disabled:bg-zinc-800 disabled:pointer-events-none ${className}`}
       disabled={action === 'refresh' && cooldown > 0}
       onClick={handleClick}
       {...props}

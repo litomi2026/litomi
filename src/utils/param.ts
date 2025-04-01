@@ -44,6 +44,8 @@ export function validateSource(src: string) {
       return 'ha'
     case 'hi':
       return 'hi'
+    case 'hp':
+      return 'hp'
     default:
       return ''
   }

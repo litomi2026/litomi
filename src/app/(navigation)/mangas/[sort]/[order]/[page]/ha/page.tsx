@@ -40,10 +40,12 @@ export default async function Page({ params }: BasePageProps) {
 
   return (
     <main className="grid gap-2">
-      <div className="flex justify-end gap-2 flex-wrap whitespace-nowrap">
+      <div className="flex justify-center flex-wrap text-xs sm:justify-end sm:flex-nowrap sm:text-sm md:text-base gap-2 whitespace-nowrap">
         <OrderToggleLink currentOrder={orderString} hrefPrefix="../../" hrefSuffix={`/${pageNumber}/${source}`} />
-        <SourceSliderLink currentSource={source} />
-        <ShuffleButton action="random" className="w-fit" href={`/mangas/random/${source}`} iconClassName="w-5" />
+        <div className="flex gap-2">
+          <SourceSliderLink currentSource={source} />
+          <ShuffleButton action="random" className="w-fit" href={`/mangas/random/${source}`} iconClassName="w-5" />
+        </div>
       </div>
       <ul className="grid md:grid-cols-2 gap-2">
         {currentMangaIds.map((id, i) => (

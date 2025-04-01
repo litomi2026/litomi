@@ -11,8 +11,8 @@ export default function OrderToggleLink({ currentOrder, hrefPrefix = '', hrefSuf
 
   return (
     <div
-      className="relative grid grid-cols-2 bg-zinc-900 border-2 border-zinc-800 p-1 rounded-xl text-zinc-400 text-sm md:text-base
-        [&_a]:relative [&_a]:rounded [&_a]:px-3 [&_a]:py-1 [&_a]:aria-current:font-bold [&_a]:aria-current:text-background [&_a]:aria-current:pointer-events-none"
+      className="relative grid grid-cols-2 bg-zinc-900 border-2 border-zinc-800 p-1 rounded-xl text-zinc-400
+        [&_a]:relative [&_a]:rounded [&_a]:flex [&_a]:items-center [&_a]:px-3 [&_a]:py-1 [&_a]:aria-current:font-bold [&_a]:aria-current:text-background [&_a]:aria-current:pointer-events-none"
     >
       <Link aria-current={currentOrder === 'desc'} href={`${hrefPrefix}desc${hrefSuffix}`}>
         <div
