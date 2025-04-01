@@ -40,7 +40,7 @@ export default async function Page({ params }: BasePageProps) {
 
   return (
     <main className="grid gap-2">
-      <div className="flex justify-end gap-2">
+      <div className="flex justify-end gap-2 flex-wrap whitespace-nowrap">
         <OrderToggleLink currentOrder={orderString} hrefPrefix="../../" hrefSuffix={`/${pageNumber}/${source}`} />
         <SourceSliderLink currentSource={source} />
         <ShuffleButton action="random" className="w-fit" href={`/mangas/random/${source}`} iconClassName="w-5" />

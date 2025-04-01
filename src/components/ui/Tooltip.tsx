@@ -5,10 +5,11 @@ import { ReactNode, useState } from 'react'
 const positionStyle = {
   right: 'right-0 top-1/2 translate-x-full -translate-y-1/2',
   top: 'top-0 left-1/2 -translate-x-1/2 -translate-y-full',
+  'bottom-right': 'top-full left-0',
 }
 
 type Props = {
-  position: 'right' | 'top'
+  position: keyof typeof positionStyle
   children: ReactNode[]
 }
 
