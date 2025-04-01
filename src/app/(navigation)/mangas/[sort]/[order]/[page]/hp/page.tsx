@@ -1,22 +1,22 @@
 import MangaCard from '@/components/card/MangaCard'
 import Navigation from '@/components/Navigation'
+import OrderToggleLink from '@/components/OrderToggleLink'
 import ShuffleButton from '@/components/ShuffleButton'
 import SourceSliderLink from '@/components/SourceToggleLink'
 import { CANONICAL_URL } from '@/constants/url'
-import { fetchMangasFromHiyobi } from '@/crawler/hiyobi'
-import { hashaMangaPages } from '@/database/hasha'
+import { harpiMangaIdsByPage } from '@/database/harpi'
+import { harpiMangaPages, harpiMangas } from '@/database/harpi'
 import { BasePageProps } from '@/types/nextjs'
 import { validateOrder, validatePage, validateSort } from '@/utils/param'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 export const dynamic = 'error'
-export const revalidate = 86400 // 1 day
 
 export const metadata: Metadata = {
   alternates: {
-    canonical: `${CANONICAL_URL}/mangas/id/desc/1/hi`,
-    languages: { ko: `${CANONICAL_URL}/mangas/id/desc/1/hi` },
+    canonical: `${CANONICAL_URL}/mangas/id/desc/1/hp`,
+    languages: { ko: `${CANONICAL_URL}/mangas/id/desc/1/hp` },
   },
 }
 
@@ -30,28 +30,29 @@ export default async function Page({ params }: BasePageProps) {
   const sortString = validateSort(sort)
   const orderString = validateOrder(order)
   const pageNumber = validatePage(page)
-  const totalPages = hashaMangaPages.length
+  const totalPages = harpiMangaPages.length
 
   if (!sortString || !orderString || !pageNumber || pageNumber > totalPages) {
     notFound()
   }
 
-  const mangas = await fetchMangasFromHiyobi({ page: pageNumber })
-  const source = 'hi'
+  const currentMangaIds = harpiMangaIdsByPage[sortString][orderString][pageNumber - 1]
+  const source = 'hp'
 
   return (
     <main className="grid gap-2">
       <div className="flex justify-end gap-2">
+        <OrderToggleLink currentOrder={orderString} hrefPrefix="../../" hrefSuffix={`/${pageNumber}/${source}`} />
         <SourceSliderLink currentSource={source} />
-        <ShuffleButton action="random" className="w-fit" href={`/mangas/random/${source}`} iconClassName="w-5" />
+        <ShuffleButton action="random" className="w-fit" href="/mangas/random/ha" iconClassName="w-5" />
       </div>
       <ul className="grid md:grid-cols-2 gap-2">
-        {mangas.map((manga, i) => (
-          <MangaCard index={i} key={manga.id} manga={manga} source={source} />
+        {currentMangaIds.map((id, i) => (
+          <MangaCard index={i} key={id} manga={harpiMangas[id]} source={source} />
         ))}
       </ul>
       <div className="flex justify-center overflow-x-auto scrollbar-hidden">
-        <Navigation currentPage={pageNumber} hrefPrefix="../" hrefSuffix={source} totalPages={totalPages} />
+        <Navigation currentPage={pageNumber} totalPages={totalPages} />
       </div>
     </main>
   )

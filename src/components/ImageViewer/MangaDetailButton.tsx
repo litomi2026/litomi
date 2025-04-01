@@ -1,4 +1,4 @@
-import { harpiTagMap } from '@/trash/harpi-tag'
+import { harpiTagMap } from '@/database/harpi-tag'
 import { Manga } from '@/types/manga'
 import { memo, useState } from 'react'
 

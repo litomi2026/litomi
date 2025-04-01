@@ -2,9 +2,9 @@ import MangaCard from '@/components/card/MangaCard'
 import Navigation from '@/components/Navigation'
 import OrderToggleLink from '@/components/OrderToggleLink'
 import ShuffleButton from '@/components/ShuffleButton'
-import SourceToggleLink from '@/components/SourceToggleLink'
+import SourceSliderLink from '@/components/SourceToggleLink'
 import { CANONICAL_URL } from '@/constants/url'
-import { mangas, pages, paginatedMangaIds } from '@/database/manga'
+import { hashaMangaIdsByPage, hashaMangaPages, hashaMangas } from '@/database/hasha'
 import { BasePageProps } from '@/types/nextjs'
 import { validateOrder, validatePage, validateSort } from '@/utils/param'
 import { Metadata } from 'next'
@@ -14,8 +14,8 @@ export const dynamic = 'error'
 
 export const metadata: Metadata = {
   alternates: {
-    canonical: `${CANONICAL_URL}/mangas/id/desc/1`,
-    languages: { ko: `${CANONICAL_URL}/mangas/id/desc/1` },
+    canonical: `${CANONICAL_URL}/mangas/id/desc/1/ha`,
+    languages: { ko: `${CANONICAL_URL}/mangas/id/desc/1/ha` },
   },
 }
 
@@ -29,24 +29,25 @@ export default async function Page({ params }: BasePageProps) {
   const sortString = validateSort(sort)
   const orderString = validateOrder(order)
   const pageNumber = validatePage(page)
-  const totalPages = pages.length
+  const totalPages = hashaMangaPages.length
 
   if (!sortString || !orderString || !pageNumber || pageNumber > totalPages) {
     notFound()
   }
 
-  const currentMangaIds = paginatedMangaIds[sortString][orderString][pageNumber - 1]
+  const currentMangaIds = hashaMangaIdsByPage[sortString][orderString][pageNumber - 1]
+  const source = 'ha'
 
   return (
     <main className="grid gap-2">
       <div className="flex justify-end gap-2">
-        <OrderToggleLink currentOrder={orderString} hrefPrefix="../../" hrefSuffix={`/${pageNumber}/ha`} />
-        <SourceToggleLink currentSource="ha" />
-        <ShuffleButton action="random" className="w-fit" href="/mangas/random/ha" iconClassName="w-5" />
+        <OrderToggleLink currentOrder={orderString} hrefPrefix="../../" hrefSuffix={`/${pageNumber}/${source}`} />
+        <SourceSliderLink currentSource={source} />
+        <ShuffleButton action="random" className="w-fit" href={`/mangas/random/${source}`} iconClassName="w-5" />
       </div>
       <ul className="grid md:grid-cols-2 gap-2">
         {currentMangaIds.map((id, i) => (
-          <MangaCard index={i} key={id} manga={mangas[id]} source="ha" />
+          <MangaCard index={i} key={id} manga={hashaMangas[id]} source={source} />
         ))}
       </ul>
       <div className="flex justify-center overflow-x-auto scrollbar-hidden">
