@@ -6,14 +6,15 @@ const positionStyle = {
   right: 'right-0 top-1/2 translate-x-full -translate-y-1/2',
   top: 'top-0 left-1/2 -translate-x-1/2 -translate-y-full',
   'bottom-right': 'top-full left-0',
+  bottom: 'top-full left-1/2 -translate-x-1/2',
 }
 
-type Props = {
+export type TooltipProps = {
   position: keyof typeof positionStyle
   children: ReactNode[]
 }
 
-export default function Tooltip({ children, position }: Props) {
+export default function Tooltip({ children, position }: TooltipProps) {
   const [isActive, setIsActive] = useState(false)
 
   return (
@@ -28,8 +29,11 @@ export default function Tooltip({ children, position }: Props) {
       {children[0]}
       <div
         aria-current={isActive}
-        className={`pointer-events-none absolute ${positionStyle[position]} z-50 p-2
-          transition duration-300 opacity-0 aria-current:opacity-100 aria-current:pointer-events-auto group-hover:opacity-100`}
+        className={
+          'pointer-events-none absolute z-50 p-2 transition duration-300 opacity-0 ' +
+          'aria-current:opacity-100 aria-current:pointer-events-auto group-hover:opacity-100 ' +
+          positionStyle[position]
+        }
         role="tooltip"
       >
         {children[1]}

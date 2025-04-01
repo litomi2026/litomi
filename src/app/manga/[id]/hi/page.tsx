@@ -10,7 +10,6 @@ import { Metadata, ResolvingMetadata } from 'next'
 import { notFound } from 'next/navigation'
 
 export const dynamic = 'error'
-export const revalidate = 86400 // 1 day
 
 export async function generateMetadata({ params }: BasePageProps, parent: ResolvingMetadata): Promise<Metadata> {
   const { id } = await params

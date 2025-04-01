@@ -6,11 +6,10 @@ import { hashaMangaIds, hashaMangas } from '@/database/hasha'
 import { BasePageProps } from '@/types/nextjs'
 import { validateSource } from '@/utils/param'
 import { Metadata } from 'next'
-import { unstable_cache } from 'next/cache'
 import { notFound } from 'next/navigation'
 
 export const dynamic = 'error'
-export const revalidate = 15
+export const revalidate = 20
 
 export const metadata: Metadata = {
   alternates: {
@@ -18,13 +17,6 @@ export const metadata: Metadata = {
     languages: { ko: `${CANONICAL_URL}/mangas/random` },
   },
 }
-
-const tags = ['mangas', 'random', 'hi']
-
-const getMangas = unstable_cache(fetchRandomMangasFromHiyobi, tags, {
-  revalidate,
-  tags,
-})
 
 export default async function Page({ params }: BasePageProps) {
   const { source } = await params
@@ -35,7 +27,7 @@ export default async function Page({ params }: BasePageProps) {
   }
 
   if (sourceString === 'hi') {
-    const randomMangas = await getMangas()
+    const randomMangas = await fetchRandomMangasFromHiyobi()
 
     if (!randomMangas) {
       notFound()

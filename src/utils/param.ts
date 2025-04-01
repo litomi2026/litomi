@@ -29,6 +29,18 @@ export function validatePage(page: string) {
   return pageNumber
 }
 
+export function validatePositiveNumber(str?: string | null) {
+  if (!str) return 0
+
+  const num = parseInt(str, 10)
+
+  if (isNaN(num) || !isFinite(num) || num < 1 || num > Number.MAX_SAFE_INTEGER) {
+    return 0
+  }
+
+  return num
+}
+
 export function validateSort(order: string) {
   switch (order) {
     case 'id':
@@ -44,6 +56,8 @@ export function validateSource(src: string) {
       return 'ha'
     case 'hi':
       return 'hi'
+    case 'hp':
+      return 'hp'
     default:
       return ''
   }

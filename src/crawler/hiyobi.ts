@@ -32,7 +32,10 @@ type HiyobiManga = {
 }
 
 export async function fetchMangaFromHiyobi({ id }: { id: number }) {
-  const res = await fetch(`https://api.hiyobi.org/gallery/${id}`, { referrerPolicy: 'no-referrer' })
+  const res = await fetch(`https://api.hiyobi.org/gallery/${id}`, {
+    referrerPolicy: 'no-referrer',
+    next: { revalidate: 604800 }, // 1 week
+  })
 
   if (res.status === 404) {
     return null
@@ -45,7 +48,10 @@ export async function fetchMangaFromHiyobi({ id }: { id: number }) {
 }
 
 export async function fetchMangaImagesFromHiyobi({ id }: { id: number }) {
-  const res = await fetch(`https://api-kh.hiyobi.org/hiyobi/list?id=${id}`, { referrerPolicy: 'no-referrer' })
+  const res = await fetch(`https://api-kh.hiyobi.org/hiyobi/list?id=${id}`, {
+    referrerPolicy: 'no-referrer',
+    next: { revalidate: 86400 }, // 1 day
+  })
 
   if (res.status === 404) {
     return null
@@ -58,7 +64,10 @@ export async function fetchMangaImagesFromHiyobi({ id }: { id: number }) {
 }
 
 export async function fetchMangaImagesFromKHentai({ id }: { id: number }) {
-  const res = await fetch(`https://k-hentai.org/hiyobi/list?id=${id}`, { referrerPolicy: 'no-referrer' })
+  const res = await fetch(`https://k-hentai.org/hiyobi/list?id=${id}`, {
+    referrerPolicy: 'no-referrer',
+    next: { revalidate: 86400 }, // 1 day
+  })
 
   if (res.status === 404) {
     return null
@@ -71,7 +80,10 @@ export async function fetchMangaImagesFromKHentai({ id }: { id: number }) {
 }
 
 export async function fetchMangasFromHiyobi({ page }: { page: number }) {
-  const res = await fetch(`https://api.hiyobi.org/list/${page}`, { referrerPolicy: 'no-referrer' })
+  const res = await fetch(`https://api.hiyobi.org/list/${page}`, {
+    referrerPolicy: 'no-referrer',
+    next: { revalidate: 10800 }, // 3 hours
+  })
 
   if (!res.ok) {
     throw new Error('Failed to fetch mangas from hi')
@@ -85,6 +97,7 @@ export async function fetchRandomMangasFromHiyobi() {
   const res = await fetch('https://api.hiyobi.org/random', {
     method: 'POST',
     referrerPolicy: 'no-referrer',
+    next: { revalidate: 20 },
   })
 
   if (res.status === 404) {

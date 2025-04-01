@@ -103,6 +103,7 @@ export default function ImageDownloadButton({ manga }: Props) {
   return (
     <button
       className="text-foreground px-2 flex justify-center items-center gap-2 rounded-lg border-2 border-zinc-800 hover:bg-zinc-800 active:bg-zinc-900 transition p-1"
+      disabled
       onClick={handleDownload}
     >
       <IconDownload className="w-5" />
