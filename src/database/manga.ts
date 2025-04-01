@@ -1,5 +1,5 @@
 import { MANGA_PER_PAGE } from '@/constants'
-import mangasJSON from '@/database/manga.json'
+import mangasJSON from '@/database/hasha.json'
 import { Manga } from '@/types/manga'
 
 export const mangas = mangasJSON as Record<string, Manga>
