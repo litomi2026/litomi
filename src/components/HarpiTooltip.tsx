@@ -27,8 +27,8 @@ export default function HarpiTooltip({ position }: Props) {
         </p>
         <hr className="text-zinc-500 my-3" />
         <p>
-          (Mobile) <code>referer: https://pk3.harpi.in</code> 헤더를 추가할 수 있는 브라우저를 사용해주세요. 저도 방법을
-          찾고 싶어요..
+          (Mobile) <code>referer: https://pk3.harpi.in</code> 헤더를 추가할 수 있는 브라우저를 사용해주세요. (저도
+          방법을 찾고 싶어요..)
         </p>
       </div>
     </Tooltip>

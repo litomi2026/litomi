@@ -31,7 +31,6 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
         <SourceSliderLink currentSource={sourceString} />
         <ShuffleButton action="random" className="w-fit" href={`/mangas/random/${sourceString}`} iconClassName="w-5" />
       </div>
-      <div className="flex justify-end gap-2 flex-wrap whitespace-nowrap"></div>
       {sourceString === 'hp' && (
         <div className="flex justify-center whitespace-nowrap">
           <HarpiTooltip position="bottom" />

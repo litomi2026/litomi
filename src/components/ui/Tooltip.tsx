@@ -29,8 +29,11 @@ export default function Tooltip({ children, position }: TooltipProps) {
       {children[0]}
       <div
         aria-current={isActive}
-        className={`pointer-events-none absolute ${positionStyle[position]} z-50 p-2
-          transition duration-300 opacity-0 aria-current:opacity-100 aria-current:pointer-events-auto group-hover:opacity-100`}
+        className={
+          'pointer-events-none absolute z-50 p-2 transition duration-300 opacity-0 ' +
+          'aria-current:opacity-100 aria-current:pointer-events-auto group-hover:opacity-100 ' +
+          positionStyle[position]
+        }
         role="tooltip"
       >
         {children[1]}

@@ -19,7 +19,14 @@ export const metadata: Metadata = {
 
 export async function generateStaticParams() {
   const pageIndexes = Array.from({ length: 10 }, (_, i) => String(i + 1))
-  return pageIndexes.map((page) => ({ sort: 'id', order: 'desc', page }))
+  return pageIndexes.flatMap((page) =>
+    ['ha', 'hp', 'hi'].map((source) => ({
+      sort: 'id',
+      order: 'desc',
+      page,
+      source,
+    })),
+  )
 }
 
 export default async function Page({ params }: BasePageProps) {
