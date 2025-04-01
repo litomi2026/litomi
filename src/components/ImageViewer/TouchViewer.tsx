@@ -14,7 +14,7 @@ import { useImageIndexStore } from './store/imageIndex'
 const HORIZONTAL_SWIPE_THRESHOLD = 50 // 가로 스와이프 감지 임계값 (px)
 const VERTICAL_SWIPE_THRESHOLD = 10 // 세로 스와이프 감지 임계값 (px)
 const EDGE_CLICK_THRESHOLD = 1 / 3 // 화면 3등분 시의 경계값
-const IMAGE_PREFETCH_AMOUNT = 10
+const IMAGE_PREFETCH_AMOUNT = 6
 const IMAGE_FETCH_PRIORITY_THRESHOLD = 3
 
 const screenFitStyle = {
