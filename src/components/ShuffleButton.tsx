@@ -14,7 +14,7 @@ interface Props extends ComponentProps<'button'> {
 
 export default memo(ShuffleButton)
 
-function ShuffleButton({ iconClassName, className = '', action, href, defaultCooldown = 20, ...props }: Props) {
+function ShuffleButton({ iconClassName, className = '', action, href, defaultCooldown = 30, ...props }: Props) {
   const router = useRouter()
   const { cooldown, setCooldown } = useShffleStore()
 

@@ -70,7 +70,7 @@ export default async function Page({ params }: BasePageProps) {
         </Tooltip>
         <OrderToggleLink currentOrder={orderString} hrefPrefix="../../" hrefSuffix={`/${pageNumber}/${source}`} />
         <SourceSliderLink currentSource={source} />
-        <ShuffleButton action="random" className="w-fit" href="/mangas/random/ha" iconClassName="w-5" />
+        <ShuffleButton action="random" className="w-fit" href={`/mangas/random/${source}`} iconClassName="w-5" />
       </div>
       <ul className="grid md:grid-cols-2 gap-2">
         {currentMangaIds.map((id, i) => (
