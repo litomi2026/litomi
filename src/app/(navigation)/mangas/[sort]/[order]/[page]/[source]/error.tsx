@@ -1,8 +1,5 @@
 'use client'
 
-import ShuffleButton from '@/components/ShuffleButton'
-import SourceSliderLink from '@/components/SourceToggleLink'
-
 type Props = {
   error: Error & { digest?: string }
   reset: () => void
@@ -10,11 +7,7 @@ type Props = {
 
 export default function Error({ error, reset }: Props) {
   return (
-    <main className="grid gap-2">
-      <div className="flex justify-end gap-2">
-        <SourceSliderLink currentSource="hi" />
-        <ShuffleButton action="random" className="w-fit" href="/mangas/random/hi" iconClassName="w-5" />
-      </div>
+    <main className="grid gap-2 text-center py-10">
       <h1>오류가 발생했어요</h1>
       <p>{error.message}</p>
       <button className="" onClick={() => reset()}>
