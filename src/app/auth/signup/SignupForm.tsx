@@ -50,7 +50,8 @@ export default function SignupForm() {
         [&_label]:block [&_label]:text-sm [&_label]:md:text-base [&_label]:font-medium [&_label]:text-zinc-300
         [&_input]:mt-1.5 [&_input]:w-full [&_input]:rounded-md [&_input]:bg-zinc-800 [&_input]:border [&_input]:border-zinc-600 
         [&_input]:px-3 [&_input]:py-2 [&_input]:placeholder-zinc-500 [&_input]:focus:outline-none [&_input]:focus:ring-2 [&_input]:focus:ring-zinc-500 
-        [&_input]:focus:border-transparent [&_input]:disabled:bg-zinc-700 [&_input]:disabled:border-zinc-500 [&_input]:disabled:cursor-not-allowed"
+        [&_input]:focus:border-transparent [&_input]:disabled:bg-zinc-700 [&_input]:disabled:border-zinc-500 [&_input]:disabled:cursor-not-allowed
+        [&_input]:aria-invalid:border-red-700 [&_input]:aria-invalid:focus:ring-red-700 [&_input]:aria-invalid:placeholder-red-700"
       onSubmit={handleSubmit}
     >
       <div className="grid gap-4">
@@ -70,6 +71,7 @@ export default function SignupForm() {
             </Tooltip>
           </div>
           <input
+            aria-invalid={(error?.id?.length ?? 0) > 0}
             autoFocus
             defaultValue={String(formData?.get('id') ?? '')}
             disabled={pending}
@@ -98,6 +100,7 @@ export default function SignupForm() {
             </Tooltip>
           </div>
           <input
+            aria-invalid={(error?.password?.length ?? 0) > 0}
             defaultValue={String(formData?.get('password') ?? '')}
             disabled={pending}
             id="password"
@@ -115,6 +118,7 @@ export default function SignupForm() {
             비밀번호 확인 <span className="text-red-500">*</span>
           </label>
           <input
+            aria-invalid={(error?.['password-confirm']?.length ?? 0) > 0}
             defaultValue={String(formData?.get('password-confirm') ?? '')}
             disabled={pending}
             id="password-confirm"
@@ -135,6 +139,7 @@ export default function SignupForm() {
             </Tooltip>
           </div>
           <input
+            aria-invalid={(error?.nickname?.length ?? 0) > 0}
             defaultValue={String(formData?.get('nickname') ?? '')}
             disabled={pending}
             id="nickname"

@@ -81,6 +81,22 @@ export async function fetchMangasFromHiyobi({ page }: { page: number }) {
   return mangas.map((manga) => convertHiyobiToManga(manga))
 }
 
+export async function fetchRandomMangasFromHiyobi() {
+  const res = await fetch('https://api.hiyobi.org/random', {
+    method: 'POST',
+    referrerPolicy: 'no-referrer',
+  })
+
+  if (res.status === 404) {
+    return null
+  } else if (!res.ok) {
+    throw new Error('Failed to fetch mangas from hi')
+  }
+
+  const mangas = (await res.json()) as HiyobiManga[]
+  return mangas.map((manga) => convertHiyobiToManga(manga))
+}
+
 function convertHiyobiToManga({
   id,
   artists,
