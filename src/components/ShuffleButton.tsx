@@ -4,25 +4,32 @@ import IconShuffle from '@/components/icons/IconShuffle'
 import { useRouter } from 'next/navigation'
 import { ComponentProps, useCallback, useEffect, useState } from 'react'
 
-const DEFAULT_COOLDOWN = 60
-
 interface Props extends ComponentProps<'button'> {
   action: 'random' | 'refresh'
+  defaultCooldown?: number
+  href: string
   iconClassName?: string
 }
 
-export default function ShuffleButton({ iconClassName, className = '', action, ...props }: Props) {
+export default function ShuffleButton({
+  iconClassName,
+  className = '',
+  action,
+  href,
+  defaultCooldown = 60,
+  ...props
+}: Props) {
   const router = useRouter()
-  const [cooldown, setCooldown] = useState(0)
+  const [cooldown, setCooldown] = useState(3)
 
   const handleClick = useCallback(() => {
     if (action === 'refresh') {
       router.refresh()
     } else {
-      router.push('/mangas/random')
+      router.push(href)
     }
-    setCooldown(DEFAULT_COOLDOWN)
-  }, [action, router])
+    setCooldown(defaultCooldown)
+  }, [action, defaultCooldown, href, router])
 
   useEffect(() => {
     if (cooldown === 0) return
