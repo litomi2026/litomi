@@ -1,5 +1,5 @@
-import { isMangaKey } from '@/database/manga'
-import { harpiTagMap } from '@/trash/harpi-tag'
+import { harpiTagMap } from '@/database/harpi-tag'
+import { isHashaMangaKey } from '@/database/hasha'
 import { Manga } from '@/types/manga'
 import dayjs from 'dayjs'
 import Link from 'next/link'
@@ -50,7 +50,7 @@ function MangaCard({ manga, index = 0, source = '' }: Props) {
       return BLIND_TAG_LABELS[tagName as keyof typeof BLIND_TAG_LABELS]
     })
 
-  const existedRelatedIds = related?.filter((rid) => isMangaKey(String(rid)))
+  const existedRelatedIds = related?.filter((rid) => isHashaMangaKey(String(rid)))
 
   return (
     <li

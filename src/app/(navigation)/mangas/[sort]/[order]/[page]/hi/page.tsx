@@ -1,10 +1,10 @@
 import MangaCard from '@/components/card/MangaCard'
 import Navigation from '@/components/Navigation'
 import ShuffleButton from '@/components/ShuffleButton'
-import SourceToggleLink from '@/components/SourceToggleLink'
+import SourceSliderLink from '@/components/SourceToggleLink'
 import { CANONICAL_URL } from '@/constants/url'
 import { fetchMangasFromHiyobi } from '@/crawler/hiyobi'
-import { pages } from '@/database/manga'
+import { hashaMangaPages } from '@/database/hasha'
 import { BasePageProps } from '@/types/nextjs'
 import { validateOrder, validatePage, validateSort } from '@/utils/param'
 import { Metadata } from 'next'
@@ -30,27 +30,28 @@ export default async function Page({ params }: BasePageProps) {
   const sortString = validateSort(sort)
   const orderString = validateOrder(order)
   const pageNumber = validatePage(page)
-  const totalPages = pages.length
+  const totalPages = hashaMangaPages.length
 
   if (!sortString || !orderString || !pageNumber || pageNumber > totalPages) {
     notFound()
   }
 
   const mangas = await fetchMangasFromHiyobi({ page: pageNumber })
+  const source = 'hi'
 
   return (
     <main className="grid gap-2">
-      <div className="flex justify-end gap-2">
-        <SourceToggleLink currentSource="hi" />
-        <ShuffleButton action="random" className="w-fit" href="/mangas/random/hi" iconClassName="w-5" />
+      <div className="flex justify-end gap-2 flex-wrap whitespace-nowrap">
+        <SourceSliderLink currentSource={source} />
+        <ShuffleButton action="random" className="w-fit" href={`/mangas/random/${source}`} iconClassName="w-5" />
       </div>
       <ul className="grid md:grid-cols-2 gap-2">
         {mangas.map((manga, i) => (
-          <MangaCard index={i} key={manga.id} manga={manga} source="hi" />
+          <MangaCard index={i} key={manga.id} manga={manga} source={source} />
         ))}
       </ul>
       <div className="flex justify-center overflow-x-auto scrollbar-hidden">
-        <Navigation currentPage={pageNumber} hrefPrefix="../" hrefSuffix="/hi" totalPages={totalPages} />
+        <Navigation currentPage={pageNumber} hrefPrefix="../" hrefSuffix={source} totalPages={totalPages} />
       </div>
     </main>
   )

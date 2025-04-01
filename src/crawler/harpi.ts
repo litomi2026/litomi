@@ -1,7 +1,7 @@
 import { prettifyJSON } from '@/crawler/utils'
 import { Manga } from '@/types/manga'
 
-import mangas from '../database/manga.json'
+import mangas from '../database/harpi.json'
 
 type FetchHarpiMangasParams = {
   page: number
@@ -70,8 +70,8 @@ async function main() {
   }
 
   const mergedMangas: Record<number, Manga> = { ...fetchedMangaById, ...mangas }
-  prettifyJSON({ pathname: '../database/manga.json', json: mergedMangas })
-  console.log('Manga database updated successfully.')
+  prettifyJSON({ pathname: '../database/harpi.json', json: mergedMangas })
+  console.log('Harpi manga updated successfully.')
 }
 
 function sleep(ms: number) {

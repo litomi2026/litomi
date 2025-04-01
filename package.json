@@ -9,6 +9,7 @@
     "lint": "next lint",
     "prettier": "prettier --write .",
     "type": "tsc --noEmit",
+    "crawl:harpi": "bun src/crawler/harpi.ts",
     "prepare": "husky"
   },
   "dependencies": {
