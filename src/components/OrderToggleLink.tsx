@@ -16,7 +16,7 @@ export default function OrderToggleLink({ currentOrder, hrefPrefix = '', hrefSuf
     >
       <Link aria-current={currentOrder === 'desc'} href={`${hrefPrefix}desc${hrefSuffix}`}>
         <div
-          className="absolute inset-0 bg-brand-gradient rounded-lg pointer-events-none
+          className="absolute inset-0 bg-brand-gradient rounded-lg pointer-events-none transition
             before:absolute before:inset-0 before:rounded-lg before:border-2 before:border-white/40"
           style={{ transform: `translateX(${100 * selectedOrderIndex}%)` }}
         />

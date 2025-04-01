@@ -28,20 +28,15 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
           sm:justify-end sm:flex-nowrap md:text-base"
       >
         <OrderToggleLink currentOrder={orderString} hrefPrefix="../../" hrefSuffix={`/${pageNumber}/${sourceString}`} />
-        <div className="flex gap-2">
-          <SourceSliderLink currentSource={sourceString} />
-          <ShuffleButton
-            action="random"
-            className="w-fit"
-            href={`/mangas/random/${sourceString}`}
-            iconClassName="w-5"
-          />
-        </div>
+        <SourceSliderLink currentSource={sourceString} />
+        <ShuffleButton action="random" className="w-fit" href={`/mangas/random/${sourceString}`} iconClassName="w-5" />
       </div>
       <div className="flex justify-end gap-2 flex-wrap whitespace-nowrap"></div>
-      <div className="flex justify-center whitespace-nowrap">
-        <HarpiTooltip position="bottom" />
-      </div>
+      {sourceString === 'hp' && (
+        <div className="flex justify-center whitespace-nowrap">
+          <HarpiTooltip position="bottom" />
+        </div>
+      )}
       {children}
       <div className="flex justify-center overflow-x-auto scrollbar-hidden">
         <Navigation currentPage={pageNumber} totalPages={totalPages} />
