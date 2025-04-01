@@ -64,3 +64,24 @@ export default function BookmarkButton({ manga }: Props) {
     </form>
   )
 }
+
+export function BookmarkButtonError() {
+  return (
+    <button className="flex items-center gap-1 border-2 w-fit border-red-800 rounded-lg p-1 px-2 transition" disabled>
+      <IconBookmark className="w-5 text-red-700" />
+      <span className="hidden md:block text-red-700">오류</span>
+    </button>
+  )
+}
+
+export function BookmarkButtonSkeleton() {
+  return (
+    <button
+      className="flex items-center gap-1 border-2 w-fit border-zinc-800 rounded-lg p-1 px-2 bg-zinc-900 transition"
+      disabled
+    >
+      <IconBookmark className="w-5" />
+      <span className="hidden md:block">북마크</span>
+    </button>
+  )
+}

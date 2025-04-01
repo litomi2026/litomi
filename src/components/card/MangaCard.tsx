@@ -1,6 +1,7 @@
 import { harpiTagMap } from '@/database/harpi-tag'
 import { isHashaMangaKey } from '@/database/hasha'
 import { Manga } from '@/types/manga'
+import { ErrorBoundary, Suspense } from '@suspensive/react'
 import dayjs from 'dayjs'
 import Link from 'next/link'
 import { memo } from 'react'
@@ -8,7 +9,7 @@ import { memo } from 'react'
 import IconExternalLink from '../icons/IconExternalLink'
 import MangaImage from '../MangaImage'
 import TagList from '../TagList'
-import BookmarkButton from './BookmarkButton'
+import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from './BookmarkButton'
 import ImageDownloadButton from './ImageDownloadButton'
 import MangaCardPreviewImage from './MangaCardPreviewImage'
 
@@ -125,7 +126,11 @@ function MangaCard({ manga, index = 0, source = '' }: Props) {
           </div>
           <div className="flex gap-2 text-sm [&_button]:disabled:bg-zinc-800 [&_button]:disabled:pointer-events-none [&_button]:disabled:text-zinc-500">
             <ImageDownloadButton manga={manga} />
-            <BookmarkButton manga={manga} />
+            <ErrorBoundary fallback={BookmarkButtonError}>
+              <Suspense clientOnly fallback={<BookmarkButtonSkeleton />}>
+                <BookmarkButton manga={manga} />
+              </Suspense>
+            </ErrorBoundary>
           </div>
         </div>
       </div>
