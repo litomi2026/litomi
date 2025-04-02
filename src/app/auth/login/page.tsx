@@ -1,10 +1,9 @@
 import GuestOnly from '@/components/GuestOnly'
 import IconLogo from '@/components/icons/IconLogo'
-import { createSentryExceptionReporter } from '@/utils/sentry'
 import { ErrorBoundary, Suspense } from '@suspensive/react'
 import Link from 'next/link'
 
-import LoginForm from './LoginForm'
+import LoginForm, { LoginFormSkeleton } from './LoginForm'
 
 export default function Page() {
   return (
@@ -14,9 +13,11 @@ export default function Page() {
         <Link className="w-fit mx-auto" href="/">
           <IconLogo className="w-9" priority />
         </Link>
-        <LoginForm />
-        <p className="text-center text-xs text-zinc-400">
-          계정이 없으신가요?{' '}
+        <Suspense fallback={<LoginFormSkeleton />}>
+          <LoginForm />
+        </Suspense>
+        <p className="text-center flex flex-wrap gap-1 justify-center text-xs text-zinc-400">
+          계정이 없으신가요?
           <Link className="underline" href="/auth/signup">
             회원가입
           </Link>

@@ -1,10 +1,9 @@
 import GuestOnly from '@/components/GuestOnly'
 import IconLogo from '@/components/icons/IconLogo'
-import { createSentryExceptionReporter } from '@/utils/sentry'
 import { ErrorBoundary, Suspense } from '@suspensive/react'
 import Link from 'next/link'
 
-import SignupForm from './SignupForm'
+import SignupForm, { SignupFormSkeleton } from './SignupForm'
 
 export default function Page() {
   return (
@@ -28,8 +27,8 @@ export default function Page() {
             에 <br />
             동의하는 것으로 간주합니다.
           </p>
-          <p>
-            이미 계정이 있으신가요?{' '}
+          <p className="flex gap-1 justify-center flex-wrap">
+            이미 계정이 있으신가요?
             <Link className="underline" href="/auth/login">
               로그인
             </Link>

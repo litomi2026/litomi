@@ -2,7 +2,13 @@ import { ONE_HOUR, THIRTY_DAYS } from '@/constants'
 import { CookieKey } from '@/constants/storage'
 import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies'
 
-import { signJWT, TokenType } from './jwt'
+import { signJWT, TokenType, verifyJWT } from './jwt'
+
+export async function getUserIdFromAccessToken(cookieStore: ReadonlyRequestCookies) {
+  const accessToken = cookieStore.get(CookieKey.ACCESS_TOKEN)?.value ?? ''
+  const { sub: userId } = await verifyJWT(accessToken, TokenType.ACCESS).catch(() => ({ sub: null }))
+  return userId
+}
 
 export async function setAccessTokenCookie(cookieStore: ReadonlyRequestCookies, userId: number | string) {
   cookieStore.set(CookieKey.ACCESS_TOKEN, await signJWT({ sub: String(userId) }, TokenType.ACCESS), {
