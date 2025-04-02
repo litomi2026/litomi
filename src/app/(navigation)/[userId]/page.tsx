@@ -8,7 +8,6 @@ export default async function Page() {
         <Suspense clientOnly fallback={<BookmarkLinkSkeleton />}>
           <BookmarkLink />
         </Suspense>
-        <div></div>
       </div>
     </div>
   )

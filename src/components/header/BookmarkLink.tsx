@@ -5,11 +5,15 @@ import useMeQuery from '@/query/useMeQuery'
 import IconBookmark from '../icons/IconBookmark'
 import SelectableLink from '../SelectableLink'
 
-export default function BookmarkLink() {
+type Props = {
+  className?: string
+}
+
+export default function BookmarkLink({ className }: Props) {
   const { data: user } = useMeQuery()
 
   return user ? (
-    <SelectableLink className="hidden sm:block" href={`/${user.loginId}/bookmark`} Icon={<IconBookmark />}>
+    <SelectableLink className={className} href={`/${user.loginId}/bookmark`} Icon={<IconBookmark />}>
       북마크
     </SelectableLink>
   ) : (
