@@ -3,6 +3,7 @@
 import bookmarkManga from '@/app/(navigation)/[userId]/bookmark/action'
 import useMeQuery from '@/query/useMeQuery'
 import { Manga } from '@/types/manga'
+import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import Link from 'next/link'
 import { useActionState, useEffect } from 'react'
 import { toast } from 'sonner'
@@ -65,9 +66,12 @@ export default function BookmarkButton({ manga }: Props) {
   )
 }
 
-export function BookmarkButtonError() {
+export function BookmarkButtonError({ reset }: ErrorBoundaryFallbackProps) {
   return (
-    <button className="flex items-center gap-1 border-2 w-fit border-red-800 rounded-lg p-1 px-2 transition" disabled>
+    <button
+      className="flex items-center gap-1 border-2 w-fit border-red-800 rounded-lg p-1 px-2 transition"
+      onClick={reset}
+    >
       <IconBookmark className="w-5 text-red-700" />
       <span className="hidden md:block text-red-700">오류</span>
     </button>

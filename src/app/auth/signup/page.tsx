@@ -1,5 +1,6 @@
 import GuestOnly from '@/components/GuestOnly'
 import IconLogo from '@/components/icons/IconLogo'
+import { createSentryExceptionReporter } from '@/utils/sentry'
 import { ErrorBoundary, Suspense } from '@suspensive/react'
 import Link from 'next/link'
 
@@ -35,7 +36,7 @@ export default function Page() {
           </p>
         </div>
       </div>
-      <ErrorBoundary fallback={null}>
+      <ErrorBoundary fallback={null} onError={createSentryExceptionReporter('GuestOnly')}>
         <Suspense clientOnly>
           <GuestOnly />
         </Suspense>
