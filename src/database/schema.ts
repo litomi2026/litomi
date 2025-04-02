@@ -1,4 +1,4 @@
-import { bigint, integer, pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core'
+import { bigint, integer, pgTable, primaryKey, text, timestamp, varchar } from 'drizzle-orm/pg-core'
 
 export const userTable = pgTable('user', {
   id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
@@ -11,7 +11,11 @@ export const userTable = pgTable('user', {
   imageURL: text('image_url'),
 })
 
-export const bookmarkTable = pgTable('bookmark', {
-  userId: integer('user_id').references(() => userTable.id),
-  mangaId: integer('manga_id').notNull(),
-})
+export const bookmarkTable = pgTable(
+  'bookmark',
+  {
+    userId: integer('user_id').references(() => userTable.id),
+    mangaId: integer('manga_id').notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.userId, table.mangaId] })],
+)
