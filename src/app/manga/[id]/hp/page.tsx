@@ -1,7 +1,7 @@
 import ImageViewer from '@/components/ImageViewer/ImageViewer'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { CANONICAL_URL } from '@/constants/url'
-import { harpiMangaIdsByPage, harpiMangas, isHarpiMangaKey } from '@/database/harpi'
+import { harpiMangaIdsByPage, harpiMangas } from '@/database/harpi'
 import { BasePageProps } from '@/types/nextjs'
 import { getImageSrc } from '@/utils/manga'
 import { Metadata, ResolvingMetadata } from 'next'
@@ -11,12 +11,13 @@ export const dynamic = 'error'
 
 export async function generateMetadata({ params }: BasePageProps, parent: ResolvingMetadata): Promise<Metadata> {
   const { id } = await params
+  const manga = harpiMangas[id]
 
-  if (!isHarpiMangaKey(id)) {
+  if (!manga) {
     return parent as Metadata
   }
 
-  const { title, images, cdn } = harpiMangas[id]
+  const { title, images, cdn } = manga
 
   return {
     alternates: {
@@ -38,14 +39,15 @@ export async function generateStaticParams() {
 
 export default async function Page({ params }: BasePageProps) {
   const { id } = await params
+  const manga = harpiMangas[id]
 
-  if (!isHarpiMangaKey(id)) {
+  if (!manga) {
     notFound()
   }
 
   return (
     <main>
-      <ImageViewer manga={harpiMangas[id]} />
+      <ImageViewer manga={manga} />
     </main>
   )
 }

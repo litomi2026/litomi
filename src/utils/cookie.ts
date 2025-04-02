@@ -1,5 +1,6 @@
 import { ONE_HOUR, THIRTY_DAYS } from '@/constants'
 import { CookieKey } from '@/constants/storage'
+import { ResponseCookies } from 'next/dist/compiled/@edge-runtime/cookies'
 import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies'
 
 import { signJWT, TokenType, verifyJWT } from './jwt'
@@ -10,7 +11,10 @@ export async function getUserIdFromAccessToken(cookieStore: ReadonlyRequestCooki
   return userId
 }
 
-export async function setAccessTokenCookie(cookieStore: ReadonlyRequestCookies, userId: number | string) {
+export async function setAccessTokenCookie(
+  cookieStore: ReadonlyRequestCookies | ResponseCookies,
+  userId: number | string,
+) {
   cookieStore.set(CookieKey.ACCESS_TOKEN, await signJWT({ sub: String(userId) }, TokenType.ACCESS), {
     httpOnly: true,
     secure: true,
@@ -25,6 +29,5 @@ export async function setRefreshTokenCookie(cookieStore: ReadonlyRequestCookies,
     secure: true,
     sameSite: 'lax',
     maxAge: THIRTY_DAYS,
-    path: '/api/auth/refresh',
   })
 }

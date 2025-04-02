@@ -20,7 +20,7 @@ export default async function Page() {
         <h1 className="text-lg font-bold text-center">북마크 (예시)</h1>
         <h2 className="font-bold text-center">로그인이 필요해요</h2>
         <ul className="grid gap-2 md:grid-cols-2">
-          <MangaCard manga={hashaMangas['3023700']} />
+          <MangaCard manga={hashaMangas['3023700']} source="ha" />
         </ul>
       </main>
     )
@@ -31,17 +31,29 @@ export default async function Page() {
   })
 
   const bookmarkRows = await getBookmarkRows()
+  const sources: (string | null)[] = []
 
+  // NOTE: beta 버전 - 최대 20개
+  // 1) hashaMangas[mangaId]가 있다면 그대로 반환
+  // 2) harpiMangas[mangaId]가 있다면 그대로 반환
+  // 3) 둘 다 없다면 fetchMangaFromHiyobi 로 비동기 호출
+  // 4) 모든 소스가 실패하면 null을 반환
   const bookmarkedMangas = await Promise.all(
-    // NOTE: beta 버전 - 최대 20개
     bookmarkRows.slice(0, 20).map(({ mangaId }) => {
-      // 1) hashaMangas[mangaId]가 있다면 그대로 반환
-      // 2) harpiMangas[mangaId]가 있다면 그대로 반환
-      // 3) 둘 다 없다면 fetchMangaFromHiyobi 로 비동기 호출
-      // 4) 모든 소스가 실패하면 null을 반환
+      if (hashaMangas[mangaId]) {
+        sources.push('ha')
+        return hashaMangas[mangaId]
+      }
+      if (harpiMangas[mangaId]) {
+        sources.push('hp')
+        return harpiMangas[mangaId]
+      }
       try {
-        return hashaMangas[mangaId] ?? harpiMangas[mangaId] ?? fetchMangaFromHiyobi({ id: mangaId })
+        const manga = fetchMangaFromHiyobi({ id: mangaId })
+        sources.push('hi')
+        return manga
       } catch {
+        sources.push(null)
         return null
       }
     }),
@@ -56,9 +68,9 @@ export default async function Page() {
         <BookmarkTooltip />
       </div>
       <ul className="grid gap-2 md:grid-cols-2">
-        {!hasBookmarks && <MangaCard manga={hashaMangas['3023700']} />}
-        {bookmarkedMangas.filter(checkDefined).map((manga) => (
-          <MangaCard key={manga.id} manga={manga} />
+        {!hasBookmarks && <MangaCard manga={hashaMangas['3023700']} source="ha" />}
+        {bookmarkedMangas.filter(checkDefined).map((manga, i) => (
+          <MangaCard key={manga.id} manga={manga} source={sources[i]!} />
         ))}
       </ul>
     </main>
@@ -75,7 +87,7 @@ function BookmarkTooltip() {
       <div className="rounded-xl border-2 border-zinc-700 bg-background min-w-3xs p-3 text-sm">
         <p>
           클라우드 비용 절감을 위해 서버 트래픽을 제한하고 있어서 실시간 반영이 어려워요. 변경 사항이 실제로 반영될
-          때까지 최대 5분 정도 걸릴 수 있어요
+          때까지 최대 <span className="whitespace-nowrap">1분</span> 정도 걸릴 수 있어요
         </p>
       </div>
     </Tooltip>

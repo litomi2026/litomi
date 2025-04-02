@@ -13,7 +13,7 @@ export default function BookmarkLink({ className }: Props) {
   const { data: user } = useMeQuery()
 
   return user ? (
-    <SelectableLink className={className} href={`/${user.loginId}/bookmark`} Icon={<IconBookmark />}>
+    <SelectableLink className={className} href={`/@${user.loginId}/bookmark`} Icon={<IconBookmark />}>
       북마크
     </SelectableLink>
   ) : (

@@ -1,7 +1,7 @@
 import ImageViewer from '@/components/ImageViewer/ImageViewer'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { CANONICAL_URL } from '@/constants/url'
-import { hashaMangaIdsByPage, hashaMangas, isHashaMangaKey } from '@/database/hasha'
+import { hashaMangaIdsByPage, hashaMangas } from '@/database/hasha'
 import { BasePageProps } from '@/types/nextjs'
 import { getImageSrc } from '@/utils/manga'
 import { Metadata, ResolvingMetadata } from 'next'
@@ -11,12 +11,13 @@ export const dynamic = 'error'
 
 export async function generateMetadata({ params }: BasePageProps, parent: ResolvingMetadata): Promise<Metadata> {
   const { id } = await params
+  const manga = hashaMangas[id]
 
-  if (!isHashaMangaKey(id)) {
+  if (!manga) {
     return parent as Metadata
   }
 
-  const { title, images, cdn } = hashaMangas[id]
+  const { title, images, cdn } = manga
 
   return {
     alternates: {
@@ -38,8 +39,9 @@ export async function generateStaticParams() {
 
 export default async function Page({ params }: BasePageProps) {
   const { id } = await params
+  const manga = hashaMangas[id]
 
-  if (!isHashaMangaKey(id)) {
+  if (!manga) {
     notFound()
   }
 
