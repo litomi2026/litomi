@@ -22,7 +22,7 @@ export default function Page() {
           </Link>
         </p>
       </div>
-      <ErrorBoundary fallback={null} onError={createSentryExceptionReporter('GuestOnly')}>
+      <ErrorBoundary fallback={null}>
         <Suspense clientOnly>
           <GuestOnly />
         </Suspense>

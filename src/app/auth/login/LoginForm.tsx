@@ -4,9 +4,9 @@ import IconX from '@/components/icons/IconX'
 import Loading from '@/components/ui/Loading'
 import { loginIdPattern, passwordPattern } from '@/constants/pattern'
 import { QueryKeys } from '@/constants/query'
-import { SessionStorageKey } from '@/constants/storage'
+import { SearchParamKey } from '@/constants/storage'
 import { useQueryClient } from '@tanstack/react-query'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useActionState, useEffect, useRef } from 'react'
 import { toast } from 'sonner'
 
@@ -21,6 +21,7 @@ export default function LoginForm() {
   const router = useRouter()
   const formRef = useRef<HTMLFormElement>(null)
   const queryClient = useQueryClient()
+  const searchParams = useSearchParams()
 
   function resetId() {
     const loginIdInput = formRef.current?.loginId as HTMLInputElement
@@ -43,11 +44,9 @@ export default function LoginForm() {
     if (!success) return
 
     toast.success('로그인 성공')
-    const loginRedirection = sessionStorage.getItem(SessionStorageKey.LOGIN_REDIRECTION) ?? '/'
-    sessionStorage.removeItem(SessionStorageKey.LOGIN_REDIRECTION)
     queryClient.invalidateQueries({ queryKey: QueryKeys.me })
-    router.replace(loginRedirection)
-  }, [queryClient, router, success])
+    router.replace(searchParams.get(SearchParamKey.REDIRECT_URL) ?? '/')
+  }, [queryClient, router, searchParams, success])
 
   return (
     <form

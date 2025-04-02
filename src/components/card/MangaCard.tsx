@@ -127,7 +127,7 @@ function MangaCard({ manga, index = 0, source = '' }: Props) {
           </div>
           <div className="flex gap-2 text-sm [&_button]:disabled:bg-zinc-800 [&_button]:disabled:pointer-events-none [&_button]:disabled:text-zinc-500">
             <ImageDownloadButton manga={manga} />
-            <ErrorBoundary fallback={BookmarkButtonError} onError={createSentryExceptionReporter('BookmarkButton')}>
+            <ErrorBoundary fallback={BookmarkButtonError}>
               <Suspense clientOnly fallback={<BookmarkButtonSkeleton />}>
                 <BookmarkButton manga={manga} />
               </Suspense>

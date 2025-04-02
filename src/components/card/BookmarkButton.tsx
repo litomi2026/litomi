@@ -1,19 +1,17 @@
 'use client'
 
 import bookmarkManga from '@/app/(navigation)/[userId]/bookmark/action'
+import useBookmarksQuery from '@/query/useBookmarksQuery'
 import useMeQuery from '@/query/useMeQuery'
 import { Manga } from '@/types/manga'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
-import Link from 'next/link'
 import { useActionState, useEffect } from 'react'
 import { toast } from 'sonner'
 
 import IconBookmark from '../icons/IconBookmark'
+import LoginLink from '../LoginLink'
 
-const initialState = {
-  success: false,
-  isBookmarked: false,
-}
+const initialState = {} as Awaited<ReturnType<typeof bookmarkManga>>
 
 type Props = {
   manga: Manga
@@ -21,7 +19,9 @@ type Props = {
 
 export default function BookmarkButton({ manga }: Props) {
   const { data: me } = useMeQuery()
+  const { data: bookmarks } = useBookmarksQuery()
   const [{ error, success, isBookmarked }, formAction, isPending] = useActionState(bookmarkManga, initialState)
+  const isIconSelected = isBookmarked ?? bookmarks?.has(manga.id)
 
   useEffect(() => {
     if (error) {
@@ -41,9 +41,7 @@ export default function BookmarkButton({ manga }: Props) {
       toast.warning(
         <div className="flex gap-2 items-center">
           <div>먼저 로그인 해주세요.</div>
-          <Link className="font-bold text-xs" href="/auth/login">
-            로그인하기
-          </Link>
+          <LoginLink>로그인하기</LoginLink>
         </div>,
       )
     }
@@ -59,7 +57,7 @@ export default function BookmarkButton({ manga }: Props) {
         onClick={handleClick}
         type="submit"
       >
-        <IconBookmark className="w-5" selected={isBookmarked} />
+        <IconBookmark className="w-5" selected={isIconSelected} />
         <span className="hidden md:block">북마크</span>
       </button>
     </form>

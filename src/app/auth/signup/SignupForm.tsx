@@ -4,8 +4,10 @@ import IconInfo from '@/components/icons/IconInfo'
 import Loading from '@/components/ui/Loading'
 import Tooltip from '@/components/ui/Tooltip'
 import { loginIdPattern, passwordPattern } from '@/constants/pattern'
-import { SessionStorageKey } from '@/constants/storage'
-import { useRouter } from 'next/navigation'
+import { QueryKeys } from '@/constants/query'
+import { SearchParamKey } from '@/constants/storage'
+import { useQueryClient } from '@tanstack/react-query'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useActionState, useEffect } from 'react'
 import { toast } from 'sonner'
 
@@ -18,6 +20,8 @@ const initialState = {
 export default function SignupForm() {
   const [{ error, success, formData }, formAction, pending] = useActionState(signup, initialState)
   const router = useRouter()
+  const queryClient = useQueryClient()
+  const searchParams = useSearchParams()
 
   useEffect(() => {
     if (error) {
@@ -29,10 +33,9 @@ export default function SignupForm() {
     if (!success) return
 
     toast.success('회원가입이 완료됐습니다.')
-    const loginRedirection = sessionStorage.getItem(SessionStorageKey.LOGIN_REDIRECTION) ?? '/'
-    sessionStorage.removeItem(SessionStorageKey.LOGIN_REDIRECTION)
-    router.replace(loginRedirection)
-  }, [router, success])
+    queryClient.invalidateQueries({ queryKey: QueryKeys.me })
+    router.replace(searchParams.get(SearchParamKey.REDIRECT_URL) ?? '/')
+  }, [queryClient, router, searchParams, success])
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     const formElement = e.target as HTMLFormElement

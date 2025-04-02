@@ -8,7 +8,6 @@ import IconLogo from '@/components/icons/IconLogo'
 import IconPost from '@/components/icons/IconPost'
 import IconSearch from '@/components/icons/IconSearch'
 import SelectableLink from '@/components/SelectableLink'
-import { createSentryExceptionReporter } from '@/utils/sentry'
 import { ErrorBoundary, Suspense } from '@suspensive/react'
 import Link from 'next/link'
 
@@ -43,7 +42,7 @@ export default async function Layout({ children }: BaseLayoutProps) {
           </Suspense>
           <PublishButton />
         </nav>
-        <ErrorBoundary fallback={ProfileError} onError={createSentryExceptionReporter('Profile')}>
+        <ErrorBoundary fallback={ProfileError}>
           <Suspense clientOnly fallback={<ProfileSkeleton />}>
             <Profile />
           </Suspense>

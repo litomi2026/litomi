@@ -36,7 +36,7 @@ export default function Page() {
           </p>
         </div>
       </div>
-      <ErrorBoundary fallback={null} onError={createSentryExceptionReporter('GuestOnly')}>
+      <ErrorBoundary fallback={null}>
         <Suspense clientOnly>
           <GuestOnly />
         </Suspense>
