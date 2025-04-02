@@ -1,10 +1,12 @@
 'use client'
 
 import bookmarkManga from '@/app/(navigation)/[userId]/bookmark/action'
+import { QueryKeys } from '@/constants/query'
 import useBookmarksQuery from '@/query/useBookmarksQuery'
 import useMeQuery from '@/query/useMeQuery'
 import { Manga } from '@/types/manga'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
+import { useQueryClient } from '@tanstack/react-query'
 import { useActionState, useEffect } from 'react'
 import { toast } from 'sonner'
 
@@ -18,10 +20,12 @@ type Props = {
 }
 
 export default function BookmarkButton({ manga }: Props) {
+  const { id: mangaId } = manga
   const { data: me } = useMeQuery()
   const { data: bookmarks } = useBookmarksQuery()
   const [{ error, success, isBookmarked }, formAction, isPending] = useActionState(bookmarkManga, initialState)
-  const isIconSelected = isBookmarked ?? bookmarks?.has(manga.id)
+  const isIconSelected = isBookmarked ?? bookmarks?.has(mangaId)
+  const queryClient = useQueryClient()
 
   useEffect(() => {
     if (error) {
@@ -32,8 +36,19 @@ export default function BookmarkButton({ manga }: Props) {
   useEffect(() => {
     if (success) {
       toast.success(isBookmarked ? '북마크를 추가했어요' : '북마크를 삭제했어요')
+
+      queryClient.setQueryData<Set<number>>(QueryKeys.bookmarks, (oldBookmarks) => {
+        if (!oldBookmarks) {
+          return new Set([mangaId])
+        } else if (isBookmarked) {
+          oldBookmarks.add(mangaId)
+        } else {
+          oldBookmarks.delete(mangaId)
+        }
+        return new Set(oldBookmarks)
+      })
     }
-  }, [success, isBookmarked])
+  }, [success, isBookmarked, queryClient, mangaId])
 
   function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
     if (!me) {
@@ -49,7 +64,7 @@ export default function BookmarkButton({ manga }: Props) {
 
   return (
     <form action={formAction}>
-      <input name="mangaId" type="hidden" value={manga.id} />
+      <input name="mangaId" type="hidden" value={mangaId} />
       <button
         aria-disabled={!me}
         className="flex items-center gap-1 border-2 w-fit border-zinc-800 rounded-lg p-1 px-2 bg-zinc-900 hover:bg-zinc-800 active:bg-zinc-900 transition"

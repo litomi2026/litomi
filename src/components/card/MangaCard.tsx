@@ -1,7 +1,6 @@
 import { harpiTagMap } from '@/database/harpi-tag'
 import { isHashaMangaKey } from '@/database/hasha'
 import { Manga } from '@/types/manga'
-import { createSentryExceptionReporter } from '@/utils/sentry'
 import { ErrorBoundary, Suspense } from '@suspensive/react'
 import dayjs from 'dayjs'
 import Link from 'next/link'

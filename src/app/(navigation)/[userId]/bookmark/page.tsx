@@ -1,5 +1,7 @@
 import MangaCard from '@/components/card/MangaCard'
-import { hashaMangaIdsDesc, hashaMangas } from '@/database/hasha'
+import { fetchMangaFromHiyobi } from '@/crawler/hiyobi'
+import { harpiMangas } from '@/database/harpi'
+import { hashaMangas } from '@/database/hasha'
 import selectBookmarks from '@/sql/selectBookmarks'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
 import { unstable_cache } from 'next/cache'
@@ -17,21 +19,32 @@ export default async function Page() {
     )
   }
 
-  const getBookmarks = unstable_cache(() => selectBookmarks({ userId }), [userId, 'bookmarks'], {
+  const getBookmarkRows = unstable_cache(() => selectBookmarks({ userId }), [userId, 'bookmarks'], {
     tags: ['bookmarks'],
     revalidate: 3600,
   })
 
-  const bookmarkIds = await getBookmarks()
+  const bookmarkRows = await getBookmarkRows()
+
+  // NOTE: beta 버전 - 최대 20개
+  const bookmarkedMangas = await Promise.all(
+    bookmarkRows.slice(0, 20).map(({ mangaId }) => {
+      // 1) hashaMangas[mangaId]가 있다면 그대로 반환
+      // 2) harpiMangas[mangaId]가 있다면 그대로 반환
+      // 3) 둘 다 없다면 fetchMangaFromHiyobi 로 비동기 호출
+      // → 위 셋 중 하나가 resolve되어 최종 만화 데이터를 반환
+      return hashaMangas[mangaId] ?? harpiMangas[mangaId] ?? fetchMangaFromHiyobi({ id: mangaId })
+    }),
+  )
 
   return (
-    <div className="p-2">
-      <h1 className="text-lg font-bold">준비 중입니다</h1>
+    <main className="grid gap-2 p-2">
+      <h1 className="text-lg font-bold text-center">북마크</h1>
       <ul className="grid gap-2 md:grid-cols-2">
-        {hashaMangaIdsDesc.slice(0, 1).map((id) => (
-          <MangaCard key={id} manga={hashaMangas[id]} />
+        {bookmarkedMangas.map((manga) => (
+          <MangaCard key={manga.id} manga={manga} />
         ))}
       </ul>
-    </div>
+    </main>
   )
 }
