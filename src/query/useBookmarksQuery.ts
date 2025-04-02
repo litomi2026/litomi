@@ -21,6 +21,7 @@ async function fetchBookmarks(): Promise<Set<number> | null> {
   const response = await fetch('/api/bookmarks')
   if (!response.ok) {
     if (response.status === 401) return null
+    if (response.status === 404) return null
     throw new Error('/api/bookmarks 요청을 실패했어요.')
   }
   return new Set(((await response.json()) as ResponseApiBookmark).mangaIds)

@@ -4,6 +4,7 @@ import { harpiMangas } from '@/database/harpi'
 import { hashaMangas } from '@/database/hasha'
 import selectBookmarks from '@/sql/selectBookmarks'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
+import { checkDefined } from '@/utils/type'
 import { unstable_cache } from 'next/cache'
 import { cookies } from 'next/headers'
 
@@ -13,9 +14,13 @@ export default async function Page() {
 
   if (!userId) {
     return (
-      <div className="p-2">
-        <h1 className="text-lg font-bold">로그인이 필요해요</h1>
-      </div>
+      <main className="grid gap-2 p-2">
+        <h1 className="text-lg font-bold text-center">북마크 (예시)</h1>
+        <h2 className="font-bold text-center">로그인이 필요해요</h2>
+        <ul className="grid gap-2 md:grid-cols-2">
+          <MangaCard manga={hashaMangas['3023700']} />
+        </ul>
+      </main>
     )
   }
 
@@ -26,22 +31,29 @@ export default async function Page() {
 
   const bookmarkRows = await getBookmarkRows()
 
-  // NOTE: beta 버전 - 최대 20개
   const bookmarkedMangas = await Promise.all(
+    // NOTE: beta 버전 - 최대 20개
     bookmarkRows.slice(0, 20).map(({ mangaId }) => {
       // 1) hashaMangas[mangaId]가 있다면 그대로 반환
       // 2) harpiMangas[mangaId]가 있다면 그대로 반환
       // 3) 둘 다 없다면 fetchMangaFromHiyobi 로 비동기 호출
-      // → 위 셋 중 하나가 resolve되어 최종 만화 데이터를 반환
-      return hashaMangas[mangaId] ?? harpiMangas[mangaId] ?? fetchMangaFromHiyobi({ id: mangaId })
+      // 4) 모든 소스가 실패하면 null을 반환
+      try {
+        return hashaMangas[mangaId] ?? harpiMangas[mangaId] ?? fetchMangaFromHiyobi({ id: mangaId })
+      } catch {
+        return null
+      }
     }),
   )
 
+  const hasBookmarks = bookmarkedMangas.length > 0
+
   return (
     <main className="grid gap-2 p-2">
-      <h1 className="text-lg font-bold text-center">북마크</h1>
+      <h1 className="text-lg font-bold text-center">북마크 {!hasBookmarks && '(예시)'}</h1>
       <ul className="grid gap-2 md:grid-cols-2">
-        {bookmarkedMangas.map((manga) => (
+        {!hasBookmarks && <MangaCard manga={hashaMangas['3023700']} />}
+        {bookmarkedMangas.filter(checkDefined).map((manga) => (
           <MangaCard key={manga.id} manga={manga} />
         ))}
       </ul>

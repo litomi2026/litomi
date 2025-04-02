@@ -1,12 +1,15 @@
-import type { BasePageProps } from '@/types/nextjs'
+import BookmarkLink, { BookmarkLinkSkeleton } from '@/components/header/BookmarkLink'
+import { Suspense } from '@suspensive/react'
 
-import Image from 'next/image'
-import Link from 'next/link'
-
-export default async function Page({ params }: BasePageProps) {
+export default async function Page() {
   return (
     <div className="p-4">
-      <pre className="overflow-x-scroll">{JSON.stringify({ params }, null, 2)}</pre>
+      <div>
+        <Suspense clientOnly fallback={<BookmarkLinkSkeleton />}>
+          <BookmarkLink />
+        </Suspense>
+        <div></div>
+      </div>
     </div>
   )
 }
