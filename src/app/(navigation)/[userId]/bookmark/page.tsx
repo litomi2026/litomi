@@ -27,8 +27,7 @@ export default async function Page() {
   }
 
   const getBookmarkRows = unstable_cache(() => selectBookmarks({ userId }), [userId, 'bookmarks'], {
-    tags: ['bookmarks'],
-    revalidate: 3600,
+    tags: [`${userId}-bookmarks`],
   })
 
   const bookmarkRows = await getBookmarkRows()
@@ -76,7 +75,7 @@ function BookmarkTooltip() {
       <div className="rounded-xl border-2 border-zinc-700 bg-background min-w-3xs p-3 text-sm">
         <p>
           클라우드 비용 절감을 위해 서버 트래픽을 제한하고 있어서 실시간 반영이 어려워요. 변경 사항이 실제로 반영될
-          때까지 최대 1시간 정도 걸릴 수 있어요
+          때까지 최대 5분 정도 걸릴 수 있어요
         </p>
       </div>
     </Tooltip>

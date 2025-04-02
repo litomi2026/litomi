@@ -5,6 +5,7 @@ import { db } from '@/database/drizzle'
 import { TokenType, verifyJWT } from '@/utils/jwt'
 import { validatePositiveNumber } from '@/utils/param'
 import { sql } from 'drizzle-orm'
+import { revalidateTag } from 'next/cache'
 import { cookies } from 'next/headers'
 import { z } from 'zod'
 
@@ -42,6 +43,8 @@ export default async function bookmarkManga(_prevState: unknown, formData: FormD
     )
     RETURNING manga_id
   `)
+
+  revalidateTag(`${userId}-bookmarks`)
 
   return { success: true, isBookmarked: Boolean(result) }
 }
