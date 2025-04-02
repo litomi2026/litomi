@@ -25,6 +25,7 @@ function ShuffleButton({ iconClassName, className = '', action, href, defaultCoo
       router.push(href)
     }
     setCooldown(defaultCooldown)
+    window.scrollTo({ top: 0 })
   }, [action, defaultCooldown, href, router, setCooldown])
 
   useEffect(() => {

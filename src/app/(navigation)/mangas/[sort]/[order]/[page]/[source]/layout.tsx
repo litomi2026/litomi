@@ -38,7 +38,7 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
       )}
       {children}
       <div className="flex justify-center overflow-x-auto scrollbar-hidden">
-        <Navigation currentPage={pageNumber} totalPages={totalPages} />
+        <Navigation currentPage={pageNumber} hrefPrefix="../" hrefSuffix={`/${sourceString}`} totalPages={totalPages} />
       </div>
     </main>
   )
