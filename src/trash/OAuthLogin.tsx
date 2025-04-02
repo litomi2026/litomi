@@ -1,7 +1,6 @@
 'use client'
 
 import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
-import { LocalStorageKey, SessionStorageKey } from '@/constants/storage'
 import { useAuthStore } from '@/store/auth'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -44,9 +43,9 @@ export default function Login() {
           setAccessToken(result.accessToken)
           resolve('')
 
-          const loginRedirection = sessionStorage.getItem(SessionStorageKey.LOGIN_REDIRECTION) ?? '/'
-          sessionStorage.removeItem(SessionStorageKey.LOGIN_REDIRECTION)
-          router.replace(`${loginRedirection}?${new URLSearchParams(searchParams)}`)
+          // const loginRedirection = sessionStorage.getItem(SessionStorageKey.LOGIN_REDIRECTION) ?? '/'
+          // sessionStorage.removeItem(SessionStorageKey.LOGIN_REDIRECTION)
+          // router.replace(`${loginRedirection}?${new URLSearchParams(searchParams)}`)
         } catch (error) {
           reject(error)
         }

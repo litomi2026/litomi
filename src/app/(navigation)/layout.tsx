@@ -38,7 +38,7 @@ export default async function Layout({ children }: BaseLayoutProps) {
             알림
           </SelectableLink>
           <Suspense clientOnly fallback={<BookmarkLinkSkeleton />}>
-            <BookmarkLink />
+            <BookmarkLink className="hidden sm:block" />
           </Suspense>
           <PublishButton />
         </nav>

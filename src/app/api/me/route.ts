@@ -1,7 +1,6 @@
-import { CookieKey } from '@/constants/storage'
 import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
-import { TokenType, verifyJWT } from '@/utils/jwt'
+import { getUserIdFromAccessToken } from '@/utils/cookie'
 import { sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 
@@ -14,8 +13,7 @@ export type ResponseApiMe = {
 
 export async function GET() {
   const cookieStore = await cookies()
-  const accessToken = cookieStore.get(CookieKey.ACCESS_TOKEN)?.value ?? ''
-  const { sub: userId } = await verifyJWT(accessToken, TokenType.ACCESS).catch(() => ({ sub: null }))
+  const userId = await getUserIdFromAccessToken(cookieStore)
 
   if (!userId) {
     return new Response(null, { status: 401 })

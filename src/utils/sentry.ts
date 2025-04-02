@@ -1,16 +1,8 @@
 import * as Sentry from '@sentry/nextjs'
+import { ErrorInfo } from 'react'
 
-export async function sendError() {
-  await Sentry.startSpan(
-    {
-      name: 'Example Frontend Span',
-      op: 'test',
-    },
-    async () => {
-      const res = await fetch('/api/sentry-example-api')
-      if (!res.ok) {
-        throw new Error('Sentry Example Frontend Error')
-      }
-    },
-  )
+export function createSentryExceptionReporter(name: string) {
+  return (error: Error, info: ErrorInfo) => {
+    Sentry.captureException(error, { extra: { info, name } })
+  }
 }

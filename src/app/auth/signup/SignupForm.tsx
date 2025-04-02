@@ -4,8 +4,10 @@ import IconInfo from '@/components/icons/IconInfo'
 import Loading from '@/components/ui/Loading'
 import Tooltip from '@/components/ui/Tooltip'
 import { loginIdPattern, passwordPattern } from '@/constants/pattern'
-import { SessionStorageKey } from '@/constants/storage'
-import { useRouter } from 'next/navigation'
+import { QueryKeys } from '@/constants/query'
+import { SearchParamKey } from '@/constants/storage'
+import { useQueryClient } from '@tanstack/react-query'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useActionState, useEffect } from 'react'
 import { toast } from 'sonner'
 
@@ -18,6 +20,8 @@ const initialState = {
 export default function SignupForm() {
   const [{ error, success, formData }, formAction, pending] = useActionState(signup, initialState)
   const router = useRouter()
+  const queryClient = useQueryClient()
+  const searchParams = useSearchParams()
 
   useEffect(() => {
     if (error) {
@@ -29,10 +33,9 @@ export default function SignupForm() {
     if (!success) return
 
     toast.success('회원가입이 완료됐습니다.')
-    const loginRedirection = sessionStorage.getItem(SessionStorageKey.LOGIN_REDIRECTION) ?? '/'
-    sessionStorage.removeItem(SessionStorageKey.LOGIN_REDIRECTION)
-    router.replace(loginRedirection)
-  }, [router, success])
+    queryClient.invalidateQueries({ queryKey: QueryKeys.me })
+    router.replace(searchParams.get(SearchParamKey.REDIRECT_URL) ?? '/')
+  }, [queryClient, router, searchParams, success])
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     const formElement = e.target as HTMLFormElement
@@ -157,6 +160,83 @@ export default function SignupForm() {
       >
         <div className="p-2 flex justify-center bg-zinc-900 cursor-pointer rounded-xl hover:bg-zinc-800 transition active:bg-zinc-900 group-disabled:bg-zinc-800 group-disabled:cursor-not-allowed">
           {pending ? <Loading className="text-zinc-500" /> : '회원가입'}
+        </div>
+      </button>
+    </form>
+  )
+}
+
+export function SignupFormSkeleton() {
+  return (
+    <form
+      className="grid gap-6 
+        [&_label]:block [&_label]:text-sm [&_label]:md:text-base [&_label]:font-medium [&_label]:text-zinc-300
+        [&_input]:mt-1.5 [&_input]:w-full [&_input]:rounded-md [&_input]:bg-zinc-800 [&_input]:border [&_input]:border-zinc-600 
+        [&_input]:px-3 [&_input]:py-2 [&_input]:placeholder-zinc-500 [&_input]:focus:outline-none [&_input]:focus:ring-2 [&_input]:focus:ring-zinc-500 
+        [&_input]:focus:border-transparent"
+    >
+      <div className="grid gap-4">
+        <div>
+          <div className="flex items-center gap-1">
+            <label htmlFor="id">
+              아이디 <span className="text-red-500">*</span>
+            </label>
+            <IconInfo className="w-4 md:w-5" />
+          </div>
+          <input
+            id="id"
+            maxLength={32}
+            minLength={2}
+            name="id"
+            pattern={loginIdPattern}
+            placeholder="아이디를 입력하세요"
+            required
+          />
+        </div>
+        <div>
+          <div className="flex items-center gap-1">
+            <label htmlFor="password">
+              비밀번호 <span className="text-red-500">*</span>
+            </label>
+            <IconInfo className="w-4 md:w-5" />
+          </div>
+          <input
+            id="password"
+            maxLength={64}
+            minLength={8}
+            name="password"
+            pattern={passwordPattern}
+            placeholder="비밀번호를 입력하세요"
+            required
+            type="password"
+          />
+        </div>
+        <div>
+          <label htmlFor="password-confirm">
+            비밀번호 확인 <span className="text-red-500">*</span>
+          </label>
+          <input
+            id="password-confirm"
+            name="password-confirm"
+            placeholder="비밀번호를 다시 입력하세요"
+            required
+            type="password"
+          />
+        </div>
+        <div>
+          <div className="flex items-center gap-1">
+            <label htmlFor="nickname">닉네임</label>
+            <IconInfo className="w-4 md:w-5" />
+          </div>
+          <input id="nickname" maxLength={32} minLength={2} name="nickname" placeholder="닉네임을 입력하세요" />
+        </div>
+      </div>
+      <button
+        className="group border-2 border-brand-gradient font-medium rounded-xl focus:outline-none focus:ring-3 focus:ring-zinc-500"
+        type="submit"
+      >
+        <div className="p-2 flex justify-center bg-zinc-900 cursor-pointer rounded-xl hover:bg-zinc-800 transition active:bg-zinc-900">
+          회원가입
         </div>
       </button>
     </form>

@@ -1,4 +1,4 @@
-import { SessionStorageKey } from '@/constants/storage'
+import { SearchParamKey } from '@/constants/storage'
 import { usePathname } from 'next/navigation'
 
 import IconLogin from '../icons/IconLogin'
@@ -10,9 +10,8 @@ export default function LoginLink() {
   return (
     <SelectableLink
       className="sm:py-1"
-      href="/auth/login"
+      href={`/auth/login?${SearchParamKey.REDIRECT_URL}=${encodeURIComponent(pathname)}`}
       Icon={<IconLogin />}
-      onClick={() => sessionStorage.setItem(SessionStorageKey.LOGIN_REDIRECTION, pathname)}
     >
       로그인
     </SelectableLink>

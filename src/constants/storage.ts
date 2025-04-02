@@ -11,9 +11,11 @@ export enum LocalStorageKey {
   CONTROLLER_PAGE_VIEW = 'controller/page-view',
 }
 
+export enum SearchParamKey {
+  REDIRECT_URL = 'redirect-url',
+}
+
 export enum SessionStorageKey {
   // zustand
   CONTROLLER_BRIGHTNESS = 'controller/brightness',
-
-  LOGIN_REDIRECTION = 'login-redirection',
 }

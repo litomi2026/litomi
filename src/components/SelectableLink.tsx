@@ -12,7 +12,7 @@ type Props = ComponentProps<typeof Link> & {
 
 export default memo(SelectableLink)
 
-function SelectableLink({ className, iconClassName, Icon, children, href, onClick }: Props) {
+function SelectableLink({ className, iconClassName, Icon, children, href }: Props) {
   const pathname = usePathname()
   const isSelected = pathname.includes(href.toString())
 
@@ -21,7 +21,6 @@ function SelectableLink({ className, iconClassName, Icon, children, href, onClic
       aria-selected={isSelected}
       className={`callout-none group flex p-1 aria-selected:font-bold aria-selected:pointer-events-none sm:block sm:p-0 ${className}`}
       href={href}
-      onClick={onClick}
     >
       <div
         className="flex items-center gap-5 w-fit mx-auto p-3 rounded-full transition 2xl:m-0
