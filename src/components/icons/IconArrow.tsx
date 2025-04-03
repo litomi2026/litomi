@@ -1,11 +1,9 @@
-type Props = {
-  className?: string
-}
+import { ComponentProps } from 'react'
 
-export default function IconArrow({ className }: Props) {
+export default function IconArrow(props: ComponentProps<'svg'>) {
   return (
     <svg
-      className={className}
+      {...props}
       fill="none"
       stroke="currentColor"
       strokeLinecap="round"

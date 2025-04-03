@@ -1,12 +1,10 @@
-type Props = {
-  className?: string
-}
+import { ComponentProps } from 'react'
 
-export default function IconPen({ className }: Props) {
+export default function IconPen(props: ComponentProps<'svg'>) {
   return (
     <svg
+      {...props}
       aria-label="글쓰기"
-      className={className}
       fill="none"
       stroke="currentColor"
       strokeLinecap="round"
