@@ -9,7 +9,7 @@ export default function Page() {
   return (
     <main className="flex h-dvh items-center justify-center p-4">
       <h1 className="sr-only">로그인</h1>
-      <div className="w-full max-w-lg grid gap-6 sm:gap-8 bg-zinc-900 border-2 border-zinc-800 p-4 sm:p-8 rounded-xl">
+      <div className="w-full max-w-lg grid gap-6 sm:gap-8 bg-zinc-900 border-2 p-4 sm:p-8 rounded-xl">
         <Link className="w-fit mx-auto" href="/">
           <IconLogo className="w-9" priority />
         </Link>

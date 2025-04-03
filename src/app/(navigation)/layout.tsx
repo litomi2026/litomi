@@ -17,7 +17,7 @@ export default async function Layout({ children }: BaseLayoutProps) {
   return (
     <div className="mx-auto px-safe pb-safe grid max-w-screen-2xl w-fit sm:flex">
       <header
-        className="fixed bottom-0 left-0 right-0 z-50 m-auto px-safe pb-safe grid grid-cols-[4fr_1fr] border-t-2 border-zinc-800 bg-background/70 backdrop-blur
+        className="fixed bottom-0 left-0 right-0 z-50 m-auto px-safe pb-safe grid grid-cols-[4fr_1fr] border-t-2 bg-background/70 backdrop-blur
           sm:inset-auto sm:flex sm:h-full sm:w-20 sm:flex-col sm:justify-between sm:gap-8 sm:border-r-2 sm:border-t-0 sm:p-2
           2xl:w-3xs"
       >

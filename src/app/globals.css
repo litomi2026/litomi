@@ -6,6 +6,16 @@
   --safe-area-right: env(safe-area-inset-right);
 }
 
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-zinc-800, currentColor);
+  }
+}
+
 @theme {
   --color-background: #0a0a0a;
   --color-foreground: #ededed;

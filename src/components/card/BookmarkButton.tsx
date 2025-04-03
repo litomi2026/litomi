@@ -72,7 +72,7 @@ export default function BookmarkButton({ manga }: Props) {
       <input name="mangaId" type="hidden" value={mangaId} />
       <button
         aria-disabled={!me}
-        className="flex items-center gap-1 border-2 w-fit border-zinc-800 rounded-lg p-1 px-2 bg-zinc-900 hover:bg-zinc-800 active:bg-zinc-900 transition"
+        className="flex items-center gap-1 border-2 w-fit rounded-lg p-1 px-2 bg-zinc-900 hover:bg-zinc-800 active:bg-zinc-900 transition"
         disabled={isPending}
         onClick={handleClick}
         type="submit"
@@ -98,10 +98,7 @@ export function BookmarkButtonError({ reset }: ErrorBoundaryFallbackProps) {
 
 export function BookmarkButtonSkeleton() {
   return (
-    <button
-      className="flex items-center gap-1 border-2 w-fit border-zinc-800 rounded-lg p-1 px-2 bg-zinc-900 transition"
-      disabled
-    >
+    <button className="flex items-center gap-1 border-2 w-fit rounded-lg p-1 px-2 bg-zinc-900 transition" disabled>
       <IconBookmark className="w-5" />
       <span className="hidden md:block">북마크</span>
     </button>

@@ -55,7 +55,7 @@ function MangaCard({ manga, index = 0, source = '' }: Props) {
 
   return (
     <li
-      className="grid grid-rows-[auto_1fr] sm:grid-cols-2 md:grid-cols-1 xl:grid-cols-2 xl:grid-rows-1 border-2 rounded-lg overflow-hidden bg-zinc-900 border-zinc-800"
+      className="grid grid-rows-[auto_1fr] sm:grid-cols-2 md:grid-cols-1 xl:grid-cols-2 xl:grid-rows-1 border-2 rounded-lg overflow-hidden bg-zinc-900"
       key={id}
     >
       <div className="relative h-fit my-auto">
@@ -80,7 +80,7 @@ function MangaCard({ manga, index = 0, source = '' }: Props) {
         )}
         <div className="absolute bottom-1 right-1 px-1 font-medium text-sm bg-background rounded">{images.length}p</div>
       </div>
-      <div className="flex grow flex-col border-t-2 sm:border-t-0 sm:border-l-2 md:border-l-0 md:border-t-2 xl:border-t-0 xl:border-l-2 border-zinc-800 justify-between p-2 gap-2">
+      <div className="flex grow flex-col border-t-2 sm:border-t-0 sm:border-l-2 md:border-l-0 md:border-t-2 xl:border-t-0 xl:border-l-2 justify-between p-2 gap-2">
         <div className="flex flex-col gap-2 text-sm">
           <Link href={getViewerLink(id, source)}>
             <h4 className="line-clamp-3 font-bold text-base xl:line-clamp-6 leading-5 min-w-0">{title}</h4>

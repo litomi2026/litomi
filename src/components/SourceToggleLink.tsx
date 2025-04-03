@@ -15,7 +15,7 @@ type OrderToggleProps = {
 export default function SourceSliderLink({ currentSource }: OrderToggleProps) {
   return (
     <div
-      className="relative grid grid-cols-3 bg-zinc-900 border-2 border-zinc-800 p-1 rounded-xl text-zinc-400
+      className="relative grid grid-cols-3 bg-zinc-900 border-2 p-1 rounded-xl text-zinc-400
         [&_a]:flex [&_a]:items-center [&_a]:relative [&_a]:rounded [&_a]:px-3 [&_a]:py-1 [&_a]:aria-current:font-bold [&_a]:aria-current:text-foreground [&_a]:aria-current:pointer-events-none"
     >
       {sources.map((source, i) => (
