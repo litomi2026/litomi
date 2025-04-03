@@ -11,7 +11,7 @@ import { z } from 'zod'
 
 const schema = z.object({
   mangaId: z.number().min(1, '최소 1 이상이어야 합니다.'),
-  userId: z.number().min(1, '최소 1 이상이어야 합니다.').max(Number.MAX_SAFE_INTEGER, '최대값을 초과했습니다.'),
+  userId: z.number().min(1, '로그인 후 시도해주세요').max(Number.MAX_SAFE_INTEGER, '최대값을 초과했습니다.'),
 })
 
 export default async function bookmarkManga(_prevState: unknown, formData: FormData) {
@@ -44,7 +44,7 @@ export default async function bookmarkManga(_prevState: unknown, formData: FormD
     RETURNING manga_id
   `)
 
-  revalidateTag(`${userId}-bookmarks`)
+  revalidateTag(`${userId}-bookmarks`) // <- 얘 때문에 관련 페이지 전체가 다시 렌더링됨
 
   return { success: true, isBookmarked: Boolean(result) }
 }

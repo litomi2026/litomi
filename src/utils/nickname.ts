@@ -1,6 +1,4 @@
-function getRandomElement<T>(arr: T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)]
-}
+import { getElementBySecureFisherYates } from './random'
 
 const adjectives = [
   '지배적인',
@@ -72,8 +70,8 @@ const descriptions = [
 ]
 
 export function generateRandomNickname() {
-  const adjective = getRandomElement(adjectives)
-  const noun = getRandomElement(nouns)
-  const description = getRandomElement(descriptions)
+  const adjective = getElementBySecureFisherYates(adjectives)
+  const noun = getElementBySecureFisherYates(nouns)
+  const description = getElementBySecureFisherYates(descriptions)
   return `${adjective} ${noun}${description}`
 }

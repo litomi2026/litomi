@@ -6,6 +6,6 @@ type Store = {
 }
 
 export const useShffleStore = create<Store>()((set) => ({
-  cooldown: 3,
+  cooldown: 5,
   setCooldown: (cooldown) => set({ cooldown }),
 }))

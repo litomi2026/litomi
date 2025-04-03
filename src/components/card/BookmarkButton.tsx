@@ -5,6 +5,7 @@ import { QueryKeys } from '@/constants/query'
 import useBookmarksQuery from '@/query/useBookmarksQuery'
 import useMeQuery from '@/query/useMeQuery'
 import { Manga } from '@/types/manga'
+import { handleUnauthorizedError } from '@/utils/error'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useActionState, useEffect } from 'react'
@@ -29,9 +30,13 @@ export default function BookmarkButton({ manga }: Props) {
 
   useEffect(() => {
     if (error) {
-      toast.error(error.mangaId?.[0] ?? error.userId?.[0])
+      if (error.mangaId) {
+        toast.error(error.mangaId[0])
+      } else if (error.userId) {
+        handleUnauthorizedError({ queryClient, message: error.userId[0] })
+      }
     }
-  }, [error])
+  }, [error, queryClient])
 
   useEffect(() => {
     if (success) {
@@ -55,7 +60,7 @@ export default function BookmarkButton({ manga }: Props) {
       event.preventDefault()
       toast.warning(
         <div className="flex gap-2 items-center">
-          <div>먼저 로그인 해주세요.</div>
+          <div>로그인 해주세요.</div>
           <LoginLink>로그인하기</LoginLink>
         </div>,
       )
