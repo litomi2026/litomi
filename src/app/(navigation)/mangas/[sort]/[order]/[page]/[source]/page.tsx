@@ -42,16 +42,16 @@ export default async function Page({ params }: BasePageProps) {
 
   switch (sourceString) {
     case 'ha': {
-      if (pageNumber > harpiMangaPages.length) {
+      if (pageNumber > hashaMangaPages.length) {
         notFound()
       }
 
-      const harpiMangaIds = harpiMangaIdsByPage[sortString][orderString][pageNumber - 1]
+      const hashaMangaIds = hashaMangaIdsByPage[sortString][orderString][pageNumber - 1]
 
       return (
         <ul className="grid md:grid-cols-2 gap-2">
-          {harpiMangaIds.map((id, i) => (
-            <MangaCard index={i} key={id} manga={harpiMangas[id]} source={source} />
+          {hashaMangaIds.map((id, i) => (
+            <MangaCard index={i} key={id} manga={hashaMangas[id]} source={source} />
           ))}
         </ul>
       )
@@ -70,16 +70,16 @@ export default async function Page({ params }: BasePageProps) {
     }
 
     case 'hp': {
-      if (pageNumber > hashaMangaPages.length) {
+      if (pageNumber > harpiMangaPages.length) {
         notFound()
       }
 
-      const hashaMangaIds = hashaMangaIdsByPage[sortString][orderString][pageNumber - 1]
+      const harpiMangaIds = harpiMangaIdsByPage[sortString][orderString][pageNumber - 1]
 
       return (
         <ul className="grid md:grid-cols-2 gap-2">
-          {hashaMangaIds.map((id, i) => (
-            <MangaCard index={i} key={id} manga={hashaMangas[id]} source={source} />
+          {harpiMangaIds.map((id, i) => (
+            <MangaCard index={i} key={id} manga={harpiMangas[id]} source={source} />
           ))}
         </ul>
       )
