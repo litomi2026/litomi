@@ -43,7 +43,7 @@ export default async function Page({ params }: BasePageProps) {
   }
 
   if (sourceString === 'ha') {
-    const randomMangaIds = hashaMangaIds.sort(() => Math.random() - 0.5).slice(0, 20)
+    const randomMangaIds = hashaMangaIds.toSorted(() => Math.random() - 0.5).slice(0, 20)
 
     return (
       <ul className="grid md:grid-cols-2 gap-2">
@@ -54,7 +54,7 @@ export default async function Page({ params }: BasePageProps) {
     )
   }
 
-  const randomMangaIds = harpiMangaIds.sort(() => Math.random() - 0.5).slice(0, 20)
+  const randomMangaIds = harpiMangaIds.toSorted(() => Math.random() - 0.5).slice(0, 20)
 
   return (
     <ul className="grid md:grid-cols-2 gap-2">

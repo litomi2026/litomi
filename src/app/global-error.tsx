@@ -11,7 +11,7 @@ export default function GlobalError({ error, reset }: ErrorProps) {
   }, [error])
 
   return (
-    <html>
+    <html lang="ko">
       <body className="flex items-center justify-center p-2 h-dvh bg-background">
         <main className="max-w-prose text-center text-foreground">
           <h2 className="my-8 gap-2 text-2xl">문제가 발생했어요</h2>

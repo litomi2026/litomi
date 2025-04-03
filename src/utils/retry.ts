@@ -22,7 +22,15 @@ export const exponentialBackoff = <T>(
         setTimeout(retry, delay)
         delay = Math.min((delay + Math.random() * random) * multiplier, maxDelay + Math.random() * maxDelayRandom)
       } catch (err) {
-        reject(err)
+        if (err instanceof Error) {
+          reject(err.message)
+        } else if (typeof err === 'object' && err !== null && 'message' in err) {
+          reject(err.message)
+        } else if (typeof err === 'string') {
+          reject(err)
+        } else {
+          reject('Unknown error')
+        }
       }
     }
 

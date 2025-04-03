@@ -142,10 +142,8 @@ function FullscreenButton() {
       } else {
         toast.error('이 브라우저는 전체화면 기능을 지원하지 않습니다.')
       }
-    } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen()
-      }
+    } else if (document.exitFullscreen) {
+      document.exitFullscreen()
     }
   }
 
