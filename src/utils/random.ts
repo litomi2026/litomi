@@ -6,6 +6,11 @@ export function getElementBySecureFisherYates<T>(arr: T[]): T {
   return arr[randomIndex]
 }
 
+export function getRandomDecimal() {
+  const [random] = webcrypto.getRandomValues(new Uint32Array(1))
+  return random / (0xffffffff + 1)
+}
+
 /**
  * Fisher–Yates 알고리즘을 사용해 배열에서 보안 난수를 이용하여 n개의 무작위 요소를 선택하는 함수
  * @param {Array} arr - 샘플링 대상 배열
