@@ -31,7 +31,7 @@ export default async function Layout({ children }: BaseLayoutProps) {
           <SelectableLink href="/search" Icon={<IconSearch />}>
             검색
           </SelectableLink>
-          <SelectableLink href="/posts" Icon={<IconPost />}>
+          <SelectableLink href="/posts/recommand" hrefMatch="/post" Icon={<IconPost />}>
             글
           </SelectableLink>
           <SelectableLink href="/notification" Icon={<IconBell />}>

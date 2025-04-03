@@ -10,6 +10,7 @@ import MangaImage from '../MangaImage'
 const MAX_DISPLAYED_IMAGES = 4
 
 type Props = {
+  className?: string
   manga: Manga
   mangaIndex?: number
   href: string
@@ -17,7 +18,7 @@ type Props = {
 
 export default memo(MangaCardPreviewImage)
 
-function MangaCardPreviewImage({ manga, mangaIndex = 0, href }: Props) {
+function MangaCardPreviewImage({ className, manga, mangaIndex = 0, href }: Props) {
   const { images } = manga
   const sliderRef = useRef<HTMLAnchorElement>(null)
   const [activeIndex, setActiveIndex] = useState(0)
@@ -55,11 +56,7 @@ function MangaCardPreviewImage({ manga, mangaIndex = 0, href }: Props) {
   return (
     <>
       {/* 슬라이드 컨테이너 */}
-      <Link
-        className="flex overflow-x-auto h-fit snap-x snap-mandatory select-none scrollbar-hidden [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-contain [&_img]:aspect-[4/3] [&_img]:sm:aspect-[3/4] [&_img]:md:aspect-[4/3] [&_img]:xl:aspect-[3/4]"
-        href={href}
-        ref={sliderRef}
-      >
+      <Link className={className} href={href} ref={sliderRef}>
         {Array.from({ length: totalSlides }).map((_, i) => (
           <MangaImage
             fetchPriority={mangaIndex < 4 && i < 1 ? 'high' : undefined}

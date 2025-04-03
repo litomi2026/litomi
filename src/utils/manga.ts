@@ -2,7 +2,7 @@ import { CDN } from '@/constants/url'
 
 type Params = {
   cdn?: string
-  id: number
+  id?: number | string
   path: string
 }
 

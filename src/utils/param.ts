@@ -41,6 +41,17 @@ export function validatePositiveNumber(str?: string | null) {
   return num
 }
 
+export function validatePostFilter(str: string) {
+  switch (str) {
+    case 'following':
+      return 'following'
+    case 'recommand':
+      return 'recommand'
+    default:
+      return ''
+  }
+}
+
 export function validateSort(order: string) {
   switch (order) {
     case 'id':

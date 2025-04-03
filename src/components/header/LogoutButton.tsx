@@ -29,7 +29,7 @@ export default function LogoutButton() {
     <form action={formAction} className="relative whitespace-nowrap">
       <button
         className="group m-0 flex w-fit items-center gap-5 rounded-full p-3 text-red-500 transition-colors 
-          hover:bg-red-500/20 active:scale-90 disabled:text-zinc-500 disabled:hover:bg-inherit disabled:active:scale-100  disabled:dark:text-zinc-400"
+          hover:bg-red-500/20 active:scale-90 disabled:hover:bg-inherit disabled:active:scale-100  disabled:text-zinc-400"
         disabled={pending}
       >
         {pending ? (

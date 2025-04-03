@@ -8,13 +8,14 @@ type Props = ComponentProps<typeof Link> & {
   className?: string
   iconClassName?: string
   Icon: ReactElement<ComponentProps<'svg'> & { selected: boolean }>
+  hrefMatch?: string
 }
 
 export default memo(SelectableLink)
 
-function SelectableLink({ className, iconClassName, Icon, children, href }: Props) {
+function SelectableLink({ className, iconClassName, Icon, children, href, hrefMatch }: Props) {
   const pathname = usePathname()
-  const isSelected = pathname.includes(href.toString())
+  const isSelected = pathname.includes(hrefMatch ?? href.toString())
 
   return (
     <Link
