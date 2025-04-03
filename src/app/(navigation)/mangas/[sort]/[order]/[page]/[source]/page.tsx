@@ -40,49 +40,52 @@ export default async function Page({ params }: BasePageProps) {
     notFound()
   }
 
-  if (sourceString === 'hi') {
-    const mangas = await fetchMangasFromHiyobi({ page: pageNumber })
+  switch (sourceString) {
+    case 'ha': {
+      if (pageNumber > hashaMangaPages.length) {
+        notFound()
+      }
 
-    return (
-      <ul className="grid md:grid-cols-2 gap-2">
-        {mangas.map((manga, i) => (
-          <MangaCard index={i} key={manga.id} manga={manga} source={source} />
-        ))}
-      </ul>
-    )
-  }
+      const hashaMangaIds = hashaMangaIdsByPage[sortString][orderString][pageNumber - 1]
 
-  if (sourceString === 'hp') {
-    const totalPages = harpiMangaPages.length
-
-    if (pageNumber > totalPages) {
-      notFound()
+      return (
+        <ul className="grid md:grid-cols-2 gap-2">
+          {hashaMangaIds.map((id, i) => (
+            <MangaCard index={i} key={id} manga={hashaMangas[id]} source={source} />
+          ))}
+        </ul>
+      )
     }
 
-    const harpiMangaIds = harpiMangaIdsByPage[sortString][orderString][pageNumber - 1]
+    case 'hi': {
+      const mangas = await fetchMangasFromHiyobi({ page: pageNumber })
 
-    return (
-      <ul className="grid md:grid-cols-2 gap-2">
-        {harpiMangaIds.map((id, i) => (
-          <MangaCard index={i} key={id} manga={harpiMangas[id]} source={source} />
-        ))}
-      </ul>
-    )
+      return (
+        <ul className="grid md:grid-cols-2 gap-2">
+          {mangas.map((manga, i) => (
+            <MangaCard index={i} key={manga.id} manga={manga} source={source} />
+          ))}
+        </ul>
+      )
+    }
+
+    case 'hp': {
+      if (pageNumber > harpiMangaPages.length) {
+        notFound()
+      }
+
+      const harpiMangaIds = harpiMangaIdsByPage[sortString][orderString][pageNumber - 1]
+
+      return (
+        <ul className="grid md:grid-cols-2 gap-2">
+          {harpiMangaIds.map((id, i) => (
+            <MangaCard index={i} key={id} manga={harpiMangas[id]} source={source} />
+          ))}
+        </ul>
+      )
+    }
+
+    default:
+      notFound()
   }
-
-  const totalPages = hashaMangaPages.length
-
-  if (pageNumber > totalPages) {
-    notFound()
-  }
-
-  const hashaMangaIds = hashaMangaIdsByPage[sortString][orderString][pageNumber - 1]
-
-  return (
-    <ul className="grid md:grid-cols-2 gap-2">
-      {hashaMangaIds.map((id, i) => (
-        <MangaCard index={i} key={id} manga={hashaMangas[id]} source={source} />
-      ))}
-    </ul>
-  )
 }

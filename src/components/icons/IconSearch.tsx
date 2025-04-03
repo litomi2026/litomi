@@ -7,7 +7,7 @@ type Props = {
 
 export default function IconSearch({ className, selected }: Props) {
   return (
-    <svg className={className} fill="currentColor" role="img" viewBox="0 0 24 24">
+    <svg className={className} fill="currentColor" viewBox="0 0 24 24">
       <title>검색</title>
       {selected ? (
         <>

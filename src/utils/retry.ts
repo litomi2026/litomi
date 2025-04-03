@@ -1,3 +1,5 @@
+import { getRandomDecimal } from './random'
+
 export const exponentialBackoff = <T>(
   onRun: () => [false, null] | [true, T],
   { maxRetry = -1, initialDelay = 5, multiplier = 4, random = 1, maxDelay = 200, maxDelayRandom = 10 } = {},
@@ -20,9 +22,20 @@ export const exponentialBackoff = <T>(
         }
 
         setTimeout(retry, delay)
-        delay = Math.min((delay + Math.random() * random) * multiplier, maxDelay + Math.random() * maxDelayRandom)
+        delay = Math.min(
+          (delay + getRandomDecimal() * random) * multiplier,
+          maxDelay + getRandomDecimal() * maxDelayRandom,
+        )
       } catch (err) {
-        reject(err)
+        if (err instanceof Error) {
+          reject(err.message)
+        } else if (typeof err === 'object' && err !== null && 'message' in err) {
+          reject(err.message)
+        } else if (typeof err === 'string') {
+          reject(err)
+        } else {
+          reject('Unknown error')
+        }
       }
     }
 

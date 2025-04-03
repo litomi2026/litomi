@@ -55,16 +55,25 @@ function MangaCard({ manga, index = 0, source = '' }: Props) {
 
   return (
     <li
-      className="grid grid-rows-[auto_1fr] sm:grid-cols-2 md:grid-cols-1 xl:grid-cols-2 xl:grid-rows-1 border-2 rounded-lg overflow-hidden bg-zinc-900 border-zinc-800"
+      className="grid grid-rows-[auto_1fr] xl:grid-cols-2 xl:grid-rows-1 border-2 rounded-lg overflow-hidden bg-zinc-900"
       key={id}
     >
       <div className="relative h-fit my-auto">
         {/* NOTE(gwak, 2025-04-01): 썸네일 이미지만 있는 경우 대응하기 위해 images[1] 검사 */}
         {images[1] ? (
-          <MangaCardPreviewImage href={getViewerLink(id, source)} manga={manga} mangaIndex={index} />
+          <MangaCardPreviewImage
+            className="flex overflow-x-auto h-fit snap-x snap-mandatory select-none scrollbar-hidden 
+              [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-contain [&_img]:aspect-[4/3] 
+              sm:[&_img]:aspect-[3/4] md:[&_img]:aspect-[4/3] xl:[&_img]:aspect-[3/4]"
+            href={getViewerLink(id, source)}
+            manga={manga}
+            mangaIndex={index}
+          />
         ) : (
           <Link
-            className="flex overflow-x-auto h-fit snap-x snap-mandatory select-none scrollbar-hidden [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-contain [&_img]:aspect-[4/3] [&_img]:sm:aspect-[3/4] [&_img]:md:aspect-[4/3] [&_img]:xl:aspect-[3/4]"
+            className="flex overflow-x-auto h-fit snap-x snap-mandatory select-none scrollbar-hidden 
+              [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-contain [&_img]:aspect-[4/3] 
+              sm:[&_img]:aspect-[3/4] md:[&_img]:aspect-[4/3] xl:[&_img]:aspect-[3/4]"
             href={getViewerLink(id, source)}
           >
             <MangaImage imageIndex={0} manga={manga} />
@@ -80,7 +89,7 @@ function MangaCard({ manga, index = 0, source = '' }: Props) {
         )}
         <div className="absolute bottom-1 right-1 px-1 font-medium text-sm bg-background rounded">{images.length}p</div>
       </div>
-      <div className="flex grow flex-col border-t-2 sm:border-t-0 sm:border-l-2 md:border-l-0 md:border-t-2 xl:border-t-0 xl:border-l-2 border-zinc-800 justify-between p-2 gap-2">
+      <div className="flex grow flex-col border-t-2 sm:border-t-0 sm:border-l-2 md:border-l-0 md:border-t-2 xl:border-t-0 xl:border-l-2 justify-between p-2 gap-2">
         <div className="flex flex-col gap-2 text-sm">
           <Link href={getViewerLink(id, source)}>
             <h4 className="line-clamp-3 font-bold text-base xl:line-clamp-6 leading-5 min-w-0">{title}</h4>

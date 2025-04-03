@@ -19,12 +19,14 @@ const schema = z.object({
     .min(8, { message: '비밀번호는 최소 8자 이상이어야 합니다.' })
     .max(64, { message: '비밀번호는 최대 64자까지 입력할 수 있습니다.' })
     .regex(/^(?=.*[A-Za-z])(?=.*\d).+$/, { message: '비밀번호는 알파벳과 숫자를 하나 이상 포함해야 합니다.' }),
+  remember: z.literal('on').nullable(),
 })
 
 export default async function login(_prevState: unknown, formData: FormData) {
   const validatedFields = schema.safeParse({
     loginId: formData.get('loginId'),
     password: formData.get('password'),
+    remember: formData.get('remember'),
   })
 
   if (!validatedFields.success) {
@@ -34,7 +36,7 @@ export default async function login(_prevState: unknown, formData: FormData) {
     }
   }
 
-  const { loginId, password } = validatedFields.data
+  const { loginId, password, remember } = validatedFields.data
 
   const [result] = await db
     .select({
@@ -65,7 +67,7 @@ export default async function login(_prevState: unknown, formData: FormData) {
 
   await Promise.all([
     setAccessTokenCookie(cookieStore, userId),
-    setRefreshTokenCookie(cookieStore, userId),
+    remember && setRefreshTokenCookie(cookieStore, userId),
     db
       .update(userTable)
       .set({ loginAt: new Date() })

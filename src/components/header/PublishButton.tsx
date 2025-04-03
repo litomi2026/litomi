@@ -23,7 +23,7 @@ export default function PublishButton() {
         </button>
       </div>
       <Modal onClose={() => setIsOpened(false)} open={isOpened} showCloseButton showDragButton>
-        <form className="bg-zinc-900 rounded-2xl px-4 pb-4 pt-5 border-2 border-zinc-800">
+        <form className="bg-zinc-900 rounded-2xl px-4 pb-4 pt-5 border-2">
           <button disabled>게시하기</button>
           <p>무슨 일이 일어나고 있나요? (준비 중)</p>
         </form>

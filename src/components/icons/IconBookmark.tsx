@@ -1,14 +1,15 @@
 'use client'
 
-type Props = {
-  className?: string
+import { ComponentProps } from 'react'
+
+interface Props extends ComponentProps<'svg'> {
   selected?: boolean
 }
 
-export default function IconBookmark({ className, selected }: Props) {
+export default function IconBookmark({ selected, ...props }: Props) {
   return (
     <svg
-      className={className}
+      {...props}
       fill={selected ? 'currentColor' : 'none'}
       stroke="currentColor"
       strokeLinejoin="round"

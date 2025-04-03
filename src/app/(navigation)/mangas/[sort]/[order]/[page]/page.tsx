@@ -13,5 +13,5 @@ export default async function Page({ params }: BasePageProps) {
     notFound()
   }
 
-  return redirect(`/mangas/${sortString}/${orderString}/1/hi`)
+  redirect(`/mangas/${sortString}/${orderString}/1/hi`)
 }
