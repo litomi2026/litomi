@@ -2,15 +2,13 @@
 
 import IconArrow from '@/components/icons/IconArrow'
 import { useRouter } from 'next/navigation'
+import { ComponentProps } from 'react'
 
-export default function BackButton() {
+export default function BackButton(props: ComponentProps<'button'>) {
   const router = useRouter()
 
   return (
-    <button
-      className="hover:bg-zinc-500/20 hover:dark:bg-zinc-500/50 focus-visible:outline-zinc-500 focus:dark:outline-zinc-200 rounded-full p-2 transition"
-      onClick={() => router.back()}
-    >
+    <button {...props} onClick={() => router.back()} type="button">
       <IconArrow className="w-6 rotate-180" />
     </button>
   )

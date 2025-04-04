@@ -67,5 +67,5 @@ export default function PostCreationForm({ className = '', placeholder, buttonTe
 }
 
 export function PostCreationFormSkeleton() {
-  return <div className="h-25 animate-fade-in duration-1000 bg-zinc-700 border-b-2" />
+  return <div className="h-25 animate-fade-in duration-1000 rounded-xl bg-zinc-700 border-b-2" />
 }

@@ -72,6 +72,11 @@
   border-color: transparent;
 }
 
+html,
+body {
+  height: 100%;
+}
+
 body {
   color: var(--color-foreground);
   background: var(--color-background);

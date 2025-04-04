@@ -100,7 +100,7 @@ function HashaTooltip() {
   return (
     <div className="rounded-xl border-2 border-zinc-700 bg-background whitespace-pre-line p-3 text-sm min-w-3xs max-w-xs">
       <p>
-        ha 모드에서 간헐적으로 이미지 서버에서 HTTP 523 Origin Is Unreachable (원본에 도달할 수 없음) 오류 응답을
+        ha 모드에서 이미지 서버에서 HTTP 523 Origin Is Unreachable (원본에 도달할 수 없음) 오류 응답을 간헐적으로
         내려주는 경우가 있어요. 현재 확인 중이에요.
       </p>
     </div>
@@ -110,7 +110,7 @@ function HashaTooltip() {
 function HiyobiTooltip() {
   return (
     <div className="rounded-xl border-2 border-zinc-700 bg-background whitespace-pre-line p-3 text-sm min-w-3xs max-w-xs">
-      <p>hi 모드에서 간헐적으로 와이파이 네트워크일 때만 이미지가 보이지 않는 이슈가 있어요. 현재 확인 중이에요.</p>
+      <p>hi 모드에서 와이파이 네트워크로 접속하면 간헐적으로 이미지가 보이지 않는 이슈가 있어요. 현재 확인 중이에요.</p>
     </div>
   )
 }

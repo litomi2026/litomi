@@ -19,7 +19,7 @@ type Props = {
   isThread?: boolean
 }
 
-export default function PostItem({ post, isThread }: Props) {
+export default function PostCard({ post, isThread }: Props) {
   const imageURLs = post.imageURLs
   const author = post.author
   const referredPost = post.referredPost

@@ -1,4 +1,4 @@
-import PostItem from '@/components/post/PostItem'
+import PostCard from '@/components/post/PostCard'
 import { mockedPosts } from '@/mock/post'
 import { notFound } from 'next/navigation'
 
@@ -12,7 +12,7 @@ export default async function Page() {
   return (
     <ul>
       <h2 className="text-center font-bold text-xl text-yellow-300 py-4">준비 중입니다</h2>
-      {mockedPosts?.map((post) => <PostItem key={post.id} post={post} />)}
+      {mockedPosts?.map((post) => <PostCard key={post.id} post={post} />)}
       <div className="h-20" />
     </ul>
   )

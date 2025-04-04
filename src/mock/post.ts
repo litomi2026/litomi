@@ -5,7 +5,32 @@ import { getElementBySecureFisherYates } from '@/utils/random'
 export type TAuthor = (typeof mockedPosts)[number]['author']
 export type TPost = TPost2 & { parentPosts?: TPost2[] }
 export type TPost2 = (typeof mockedPosts)[number]
+export type TPost3 = (typeof mockedPosts)[number]
 export type TReferedPost = NonNullable<TPost['referredPost']>
+
+export const samplePosts = [
+  {
+    id: '1',
+    createdAt: '2024-07-07T12:46:59.455Z',
+    publishAt: '2024-07-07T12:46:59.455Z',
+    status: 0,
+    content: 'asdfasdf',
+  },
+  {
+    id: '2',
+    createdAt: '2024-07-07T12:46:59.455Z',
+    publishAt: '2024-07-07T12:46:59.455Z',
+    status: 0,
+    content: 'ㅁㄴㅇㄹ',
+  },
+  {
+    id: '3',
+    createdAt: '2024-07-07T12:46:59.455Z',
+    publishAt: '2024-07-07T12:46:59.455Z',
+    status: 0,
+    content: '1234124214',
+  },
+]
 
 export const mockedPosts = [
   {
@@ -21,6 +46,7 @@ export const mockedPosts = [
       nickname: '열정적인 유혹자의 질서',
       profileImageURLs: ['https://pbs.twimg.com/media/GPI3mRXa8AAHuYs?format=jpg'],
     },
+    parentPosts: samplePosts,
   },
   {
     id: '14',

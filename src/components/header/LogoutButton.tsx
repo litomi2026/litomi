@@ -1,3 +1,5 @@
+'use client'
+
 import logout from '@/app/auth/logout/action'
 import { QueryKeys } from '@/constants/query'
 import { useQueryClient } from '@tanstack/react-query'
