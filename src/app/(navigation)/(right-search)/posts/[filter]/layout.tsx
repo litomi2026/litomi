@@ -16,7 +16,7 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
   }
 
   const barClassName =
-    'absolute bottom-0 left-1/2 -translate-x-1/2 h-1 rounded w-14 aria-selected:bg-midnight-500 aria-selected:bg-zinc-300'
+    'absolute bottom-0 left-1/2 -translate-x-1/2 h-1 rounded w-14 aria-selected:bg-zinc-500 aria-selected:bg-zinc-300'
 
   const isRecommand = filter === 'recommand'
   const isFollowing = filter === 'following'
