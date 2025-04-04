@@ -29,8 +29,8 @@ export async function generateMetadata({ params }: BasePageProps, parent: Resolv
 
   return {
     alternates: {
-      canonical: `${CANONICAL_URL}/manga/${id}/hi`,
-      languages: { ko: `${CANONICAL_URL}/manga/${id}/hi` },
+      canonical: `${CANONICAL_URL}/manga/${id}`,
+      languages: { ko: `${CANONICAL_URL}/manga/${id}` },
     },
     title: `${title} - ${SHORT_NAME}`,
     openGraph: {
