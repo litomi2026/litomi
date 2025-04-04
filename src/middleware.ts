@@ -5,9 +5,6 @@ import { setAccessTokenCookie } from './utils/cookie'
 import { TokenType, verifyJWT } from './utils/jwt'
 
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
-  if (pathname.startsWith('/_next')) return NextResponse.next()
-
   const { cookies } = request
   const accessToken = cookies.get(CookieKey.ACCESS_TOKEN)
   if (accessToken) return NextResponse.next()
@@ -33,7 +30,6 @@ export const config = {
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
-     * - api (API routes)
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico, sitemap.xml, robots.txt (metadata files)
