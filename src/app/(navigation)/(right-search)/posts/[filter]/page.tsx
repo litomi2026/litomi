@@ -11,7 +11,6 @@ export default async function Page() {
 
   return (
     <ul>
-      <h2 className="text-center font-bold text-xl text-yellow-300 py-4">준비 중입니다</h2>
       {mockedPosts?.map((post) => <PostCard key={post.id} post={post} />)}
       <div className="h-20" />
     </ul>

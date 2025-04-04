@@ -26,7 +26,7 @@ export default function PostCard({ post, isThread }: Props) {
 
   return (
     <div
-      className={`[&:has(.child:hover)]:bg-zinc-900 grid min-w-0 grid-cols-[auto_1fr] gap-2 px-4 pb-2 pt-3 transition ${isThread ? '' : 'border-b-2'}`}
+      className={`[&:has(.child:hover)]:bg-zinc-900 grid min-w-0 grid-cols-[auto_1fr] gap-2 px-4 pb-2 pt-3 transition ${isThread ? '' : 'border-t-2'}`}
     >
       <div className="relative flex flex-col items-center gap-1">
         <Squircle className="w-10" src={author?.profileImageURLs?.[0]} textClassName="text-white">

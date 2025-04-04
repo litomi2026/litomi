@@ -38,10 +38,11 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
           </Link>
         </div>
       </TopNavigation>
+      <h2 className="text-center font-bold text-xl text-yellow-300 py-4">준비 중입니다</h2>
       <Suspense clientOnly fallback={<PostCreationFormSkeleton />}>
         <PostCreationForm
           buttonText="게시하기"
-          className="hidden border-b-2 p-4 sm:block"
+          className="hidden p-4 sm:block"
           placeholder="무슨 일이 일어나고 있나요?"
         />
       </Suspense>
