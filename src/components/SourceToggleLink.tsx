@@ -1,4 +1,3 @@
-import { getTotalPages } from '@/utils/param'
 import Link from 'next/link'
 
 const sourceIndexMap = {
@@ -11,16 +10,17 @@ const sources = Object.keys(sourceIndexMap) as (keyof typeof sourceIndexMap)[]
 
 type OrderToggleProps = {
   currentSource: keyof typeof sourceIndexMap
+  hrefPrefixes?: (source: keyof typeof sourceIndexMap) => string
 }
 
-export default function SourceSliderLink({ currentSource }: OrderToggleProps) {
+export default function SourceSliderLink({ currentSource, hrefPrefixes }: OrderToggleProps) {
   return (
     <div
       className="relative grid grid-cols-3 bg-zinc-900 border-2 p-1 rounded-xl text-zinc-400
         [&_a]:flex [&_a]:items-center [&_a]:relative [&_a]:rounded [&_a]:px-3 [&_a]:py-1 [&_a]:aria-current:font-bold [&_a]:aria-current:text-foreground [&_a]:aria-current:pointer-events-none"
     >
       {sources.map((source, i) => (
-        <Link aria-current={currentSource === source} href={`../${getTotalPages(source)}/${source}`} key={source}>
+        <Link aria-current={currentSource === source} href={`${hrefPrefixes?.(source) ?? ''}${source}`} key={source}>
           {i === 0 && (
             <div
               className="absolute inset-0 bg-zinc-800 rounded-lg border-2 border-zinc-700 transition pointer-events-none"

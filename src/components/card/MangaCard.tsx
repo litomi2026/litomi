@@ -31,6 +31,10 @@ type Props = {
 
 export default memo(MangaCard)
 
+export function MangaCardSkeleton() {
+  return <li className="animate-fade-in duration-1000 rounded-xl bg-zinc-800 aspect-[6/7] w-full xl:aspect-[3/2]" />
+}
+
 function getViewerLink(id: number, source: string) {
   return `/manga/${id}/${source}`
 }
@@ -64,8 +68,7 @@ function MangaCard({ manga, index = 0, source = '' }: Props) {
         {images[1] ? (
           <MangaCardPreviewImage
             className="flex overflow-x-auto h-fit snap-x snap-mandatory select-none scrollbar-hidden 
-              [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-contain [&_img]:aspect-[4/3] 
-              sm:[&_img]:aspect-[3/4] md:[&_img]:aspect-[4/3] xl:[&_img]:aspect-[3/4]"
+              [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-contain [&_img]:aspect-[4/3] xl:[&_img]:aspect-[3/4]"
             href={viewerLink}
             manga={manga}
             mangaIndex={index}
@@ -73,8 +76,7 @@ function MangaCard({ manga, index = 0, source = '' }: Props) {
         ) : (
           <Link
             className="flex overflow-x-auto h-fit snap-x snap-mandatory select-none scrollbar-hidden 
-              [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-contain [&_img]:aspect-[4/3] 
-              sm:[&_img]:aspect-[3/4] md:[&_img]:aspect-[4/3] xl:[&_img]:aspect-[3/4]"
+              [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-contain [&_img]:aspect-[4/3] xl:[&_img]:aspect-[3/4]"
             href={viewerLink}
           >
             <MangaImage imageIndex={0} manga={manga} />

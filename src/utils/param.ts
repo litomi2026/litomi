@@ -1,19 +1,3 @@
-import { harpiMangaPages } from '@/database/harpi'
-import { hashaMangaPages } from '@/database/hasha'
-
-export function getTotalPages(source: string) {
-  switch (source) {
-    case 'ha':
-      return hashaMangaPages.length
-    case 'hi':
-      return 7200
-    case 'hp':
-      return harpiMangaPages.length
-    default:
-      return 0
-  }
-}
-
 export function getUserId(userId: string) {
   return decodeURIComponent(userId).slice(1)
 }
