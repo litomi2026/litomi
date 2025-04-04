@@ -48,7 +48,7 @@ export default function Post({ post }: Props) {
             <Icon3Dots className="w-5 text-zinc-500" />
           </div>
         </div>
-        <p className="min-w-0 whitespace-pre-wrap text-lg">{post.content}</p>
+        <p className="min-w-0 whitespace-pre-wrap break-all text-lg">{post.content}</p>
         {post.imageURLs && (
           <PostImages className="w-full overflow-hidden border" initialPost={post} urls={post.imageURLs} />
         )}

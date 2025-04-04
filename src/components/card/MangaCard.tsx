@@ -32,7 +32,9 @@ type Props = {
 export default memo(MangaCard)
 
 export function MangaCardSkeleton() {
-  return <li className="animate-fade-in duration-1000 rounded-xl bg-zinc-800 aspect-[6/7] w-full xl:aspect-[3/2]" />
+  return (
+    <li className="animate-fade-in duration-1000 rounded-xl bg-zinc-900 border-2 aspect-[6/7] w-full h-full xl:aspect-[3/2]" />
+  )
 }
 
 function getViewerLink(id: number, source: string) {

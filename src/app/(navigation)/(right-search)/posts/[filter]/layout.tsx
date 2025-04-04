@@ -22,7 +22,7 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
   const isFollowing = filter === 'following'
 
   return (
-    <div className="relative contain-layout">
+    <div className="relative">
       <TopNavigation className="sticky top-0 left-0 right-0 z-10 border-b-2 sm:backdrop-blur bg-black sm:bg-black/75">
         <div
           className="grid grid-cols-2 items-center text-center text-zinc-400 [&_a]:p-4 [&_a]:transition [&_a]:relative [&_a]:aria-selected:font-bold [&_a]:aria-selected:text-foreground

@@ -12,7 +12,7 @@ export default async function Page({ params }: BasePageProps) {
   }
 
   return (
-    <div className="h-screen">
+    <div className="min-h-screen">
       {samplePosts.map((post) => (
         <PostCard key={post.id} post={post} />
       ))}
