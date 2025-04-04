@@ -21,9 +21,7 @@ export default function Tooltip({ children, position }: TooltipProps) {
     <button
       className="group relative focus:outline-none"
       onBlur={() => setIsActive(false)}
-      onClick={() => setIsActive((prev) => !prev)}
       onFocus={() => setIsActive(true)}
-      tabIndex={-1}
       type="button"
     >
       {children[0]}

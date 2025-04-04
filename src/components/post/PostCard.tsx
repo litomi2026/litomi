@@ -11,7 +11,7 @@ import IconLogout from '../icons/IconLogout'
 import IconRepeat from '../icons/IconRepeat'
 import Squircle from '../ui/Squircle'
 import PostImages from './PostImages'
-import ReferredPost from './ReferredPost'
+import ReferredPostCard from './ReferredPostCard'
 
 type Props = {
   post: TPost
@@ -74,7 +74,7 @@ export default function PostCard({ post, isThread }: Props) {
               urls={imageURLs}
             />
           )}
-          {referredPost && <ReferredPost referredPost={referredPost} />}
+          {referredPost && <ReferredPostCard referredPost={referredPost} />}
         </div>
         <div className="flex flex-wrap gap-2 text-zinc-400">
           <div className="grid grow grid-cols-4 gap-1 text-sm">

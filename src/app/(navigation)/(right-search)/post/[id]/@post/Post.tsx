@@ -6,7 +6,7 @@ import IconHeart from '@/components/icons/IconHeart'
 import IconRepeat from '@/components/icons/IconRepeat'
 import PostCreationForm, { PostCreationFormSkeleton } from '@/components/post/PostCreationForm'
 import PostImages from '@/components/post/PostImages'
-import ReferredPost from '@/components/post/ReferredPost'
+import ReferredPostCard from '@/components/post/ReferredPostCard'
 import Squircle from '@/components/ui/Squircle'
 import { type TPost } from '@/mock/post'
 import { Suspense } from '@suspensive/react'
@@ -52,7 +52,7 @@ export default function Post({ post }: Props) {
         {post.imageURLs && (
           <PostImages className="w-full overflow-hidden border" initialPost={post} urls={post.imageURLs} />
         )}
-        {referredPost && <ReferredPost referredPost={referredPost} />}
+        {referredPost && <ReferredPostCard referredPost={referredPost} />}
         <div className="flex items-center gap-1 text-zinc-500">
           <span>{dayjs(post.createdAt).format('YYYY-MM-DD HH:mm')}</span>
           <span>·</span>

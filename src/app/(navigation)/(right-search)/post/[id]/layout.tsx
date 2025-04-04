@@ -11,7 +11,7 @@ type LayoutProps = BaseLayoutProps & {
 export default function Layout({ post, comment }: LayoutProps) {
   return (
     <>
-      <div className="sticky top-0 left-0 right-0 z-10 flex items-center justify-between gap-2 p-2 backdrop-blur whitespace-nowrap bg-background/70">
+      <div className="sticky top-0 left-0 right-0 z-10 flex items-center justify-between gap-2 p-2 backdrop-blur whitespace-nowrap bg-background/70 border-background border-b">
         <div className="flex items-center gap-8">
           <BackButton className="hover:bg-zinc-500/20 hover:dark:bg-zinc-500/50 focus-visible:outline-zinc-500 focus:dark:outline-zinc-200 rounded-full p-2 transition" />
           <h2 className="text-xl font-bold">게시물</h2>
