@@ -4,7 +4,7 @@ import { SALT_ROUNDS } from '@/constants'
 import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
 import { setAccessTokenCookie, setRefreshTokenCookie } from '@/utils/cookie'
-import { generateRandomNickname } from '@/utils/nickname'
+import { generateRandomNickname, generateRandomProfileImage } from '@/utils/nickname'
 import { hash } from 'bcrypt'
 import { cookies } from 'next/headers'
 import { z } from 'zod'
@@ -61,6 +61,7 @@ export default async function signup(_prevState: unknown, formData: FormData) {
       loginId,
       passwordHash,
       nickname,
+      imageURL: generateRandomProfileImage(),
     })
     .onConflictDoNothing()
     .returning({ id: userTable.id })

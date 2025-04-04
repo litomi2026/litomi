@@ -75,3 +75,16 @@ export function generateRandomNickname() {
   const description = getElementBySecureFisherYates(descriptions)
   return `${adjective} ${noun}${description}`
 }
+
+const profileImages = [
+  'https://i.imgur.com/i0A7nbA_d.webp?maxwidth=760&fidelity=grand',
+  'https://blog.kakaocdn.net/dn/b0lZwd/btrWKoqu9yV/IwOySShKSWOKuandJQ6P11/img.gif',
+  'https://i2.ruliweb.com/img/18/01/18/16109bfd96744ab5f.jpg',
+  'https://i1.ruliweb.com/img/18/01/18/16109c0141644ab5f.png',
+  'https://i2.ruliweb.com/img/16/11/13/1585c87c9c83f55f7.png',
+  'https://i2.ruliweb.com/img/16/11/13/1585c87d0733f55f7.png',
+]
+
+export function generateRandomProfileImage() {
+  return getElementBySecureFisherYates(profileImages)
+}

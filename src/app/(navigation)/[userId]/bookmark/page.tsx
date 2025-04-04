@@ -32,7 +32,7 @@ export default async function Page() {
   })
 
   const bookmarkRows = await getBookmarkRows()
-  const sources: (string | null)[] = []
+  const sources: string[] = []
 
   if (bookmarkRows.length === 0) {
     notFound()
@@ -58,7 +58,6 @@ export default async function Page() {
         sources.push('hi')
         return manga
       } catch {
-        sources.push(null)
         return null
       }
     }),
@@ -67,7 +66,7 @@ export default async function Page() {
   return (
     <ul className="grid gap-2 md:grid-cols-2">
       {bookmarkedMangas.filter(checkDefined).map((manga, i) => (
-        <MangaCard key={manga.id} manga={manga} source={sources[i]!} />
+        <MangaCard key={manga.id} manga={manga} source={sources[i]} />
       ))}
     </ul>
   )

@@ -3,14 +3,14 @@
 import { Manga } from '@/types/manga'
 import { fetchImageWithRetry } from '@/utils/browser'
 import { getImageSrc } from '@/utils/manga'
-import { useCallback } from 'react'
+import { ComponentProps, useCallback } from 'react'
 import { toast } from 'sonner'
 
 import { IconDownload } from '../icons/IconDownload'
 
 const MAX_ZIP_SIZE = 50_000_000 // 50MB
 
-type Props = {
+type Props = ComponentProps<'button'> & {
   manga: Manga
 }
 
@@ -33,7 +33,7 @@ const saveAs = (blob: Blob, filename: string) => {
   URL.revokeObjectURL(url)
 }
 
-export default function ImageDownloadButton({ manga }: Props) {
+export default function ImageDownloadButton({ manga, className = '', ...props }: Props) {
   const handleDownload = useCallback(async () => {
     const { id, images, cdn, title } = manga
     const { default: JSZip } = await import('jszip')
@@ -102,8 +102,8 @@ export default function ImageDownloadButton({ manga }: Props) {
 
   return (
     <button
-      className="text-foreground px-2 flex justify-center items-center gap-2 rounded-lg border-2 hover:bg-zinc-800 active:bg-zinc-900 transition p-1"
-      disabled
+      {...props}
+      className={`text-foreground px-2 flex justify-center items-center gap-2 rounded-lg border-2 hover:bg-zinc-800 active:bg-zinc-900 transition p-1 ${className}`}
       onClick={handleDownload}
     >
       <IconDownload className="w-5" />
