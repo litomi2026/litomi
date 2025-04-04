@@ -46,7 +46,7 @@ export default function Navigation({ currentPage, totalPages, hrefPrefix = '', h
       <Link
         aria-disabled={currentPage <= 1}
         aria-label="이전 페이지"
-        href={`${Math.max(1, currentPage - 1)}${hrefSuffix}`}
+        href={`${hrefPrefix}${Math.max(1, currentPage - 1)}${hrefSuffix}`}
       >
         <IconPrevPage />
       </Link>

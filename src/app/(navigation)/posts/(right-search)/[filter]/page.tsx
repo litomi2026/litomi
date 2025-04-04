@@ -11,7 +11,7 @@ export default async function Page() {
 
   return (
     <ul>
-      <h2 className="text-center font-bold text-xl py-4">준비중입니다</h2>
+      <h2 className="text-center font-bold text-xl text-yellow-300 py-4">준비 중입니다</h2>
       {mockedPosts?.map((post) => <PostItem key={post.id} post={post} />)}
       <div className="h-20" />
     </ul>

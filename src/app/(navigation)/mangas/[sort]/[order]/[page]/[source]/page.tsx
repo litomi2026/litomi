@@ -60,6 +60,10 @@ export default async function Page({ params }: BasePageProps) {
     case 'hi': {
       const mangas = await fetchMangasFromHiyobi({ page: pageNumber })
 
+      if (mangas.length === 0) {
+        notFound()
+      }
+
       return (
         <ul className="grid md:grid-cols-2 gap-2">
           {mangas.map((manga, i) => (

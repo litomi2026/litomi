@@ -6,6 +6,7 @@ import OrderToggleLink from '@/components/OrderToggleLink'
 import ShuffleButton from '@/components/ShuffleButton'
 import SourceSliderLink from '@/components/SourceToggleLink'
 import { harpiMangaPages } from '@/database/harpi'
+import { hashaMangaPages } from '@/database/hasha'
 import { validateOrder, validatePage, validateSort, validateSource } from '@/utils/param'
 import { notFound } from 'next/navigation'
 
@@ -15,7 +16,7 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
   const orderString = validateOrder(order)
   const pageNumber = validatePage(page)
   const sourceString = validateSource(source)
-  const totalPages = harpiMangaPages.length
+  const totalPages = getTotalPages(sourceString)
 
   if (!sortString || !orderString || !pageNumber || pageNumber > totalPages || !sourceString) {
     notFound()
@@ -47,4 +48,17 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
       </div>
     </main>
   )
+}
+
+function getTotalPages(source: string) {
+  switch (source) {
+    case 'ha':
+      return hashaMangaPages.length
+    case 'hi':
+      return 7200
+    case 'hp':
+      return harpiMangaPages.length
+    default:
+      return 0
+  }
 }
