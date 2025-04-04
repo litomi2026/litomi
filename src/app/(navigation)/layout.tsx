@@ -49,7 +49,14 @@ export default async function Layout({ children }: BaseLayoutProps) {
         </ErrorBoundary>
       </header>
       <div className="w-0 shrink-0 sm:w-20 2xl:w-3xs" />
-      {children}
+      <div>
+        {children}
+        <p className="h-0 overflow-hidden tracking-widest invisible">
+          litomi, manga, comic, webtoon, manhwa, manhua, cartoon, hitomi, illustration, episode, series, japan manga,
+          web viewer, reader app, 리토미, 망가, 만화, 웹툰, 일러스트, 일러스트레이션, 에피소드, 단행본, 컬러웹툰, 카툰,
+          짧은만화, 히토미, 일본만화, 만화 웹 뷰어
+        </p>
+      </div>
       <div className="h-16 sm:hidden" />
     </div>
   )

@@ -52,6 +52,7 @@ function MangaCard({ manga, index = 0, source = '' }: Props) {
     })
 
   const existedRelatedIds = related?.filter((rid) => isHashaMangaKey(String(rid)))
+  const viewerLink = getViewerLink(id, source)
 
   return (
     <li
@@ -65,7 +66,7 @@ function MangaCard({ manga, index = 0, source = '' }: Props) {
             className="flex overflow-x-auto h-fit snap-x snap-mandatory select-none scrollbar-hidden 
               [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-contain [&_img]:aspect-[4/3] 
               sm:[&_img]:aspect-[3/4] md:[&_img]:aspect-[4/3] xl:[&_img]:aspect-[3/4]"
-            href={getViewerLink(id, source)}
+            href={viewerLink}
             manga={manga}
             mangaIndex={index}
           />
@@ -74,7 +75,7 @@ function MangaCard({ manga, index = 0, source = '' }: Props) {
             className="flex overflow-x-auto h-fit snap-x snap-mandatory select-none scrollbar-hidden 
               [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-contain [&_img]:aspect-[4/3] 
               sm:[&_img]:aspect-[3/4] md:[&_img]:aspect-[4/3] xl:[&_img]:aspect-[3/4]"
-            href={getViewerLink(id, source)}
+            href={viewerLink}
           >
             <MangaImage imageIndex={0} manga={manga} />
           </Link>
@@ -91,7 +92,7 @@ function MangaCard({ manga, index = 0, source = '' }: Props) {
       </div>
       <div className="flex grow flex-col border-t-2 sm:border-t-0 sm:border-l-2 md:border-l-0 md:border-t-2 xl:border-t-0 xl:border-l-2 justify-between p-2 gap-2">
         <div className="flex flex-col gap-2 text-sm">
-          <Link href={getViewerLink(id, source)}>
+          <Link href={viewerLink}>
             <h4 className="line-clamp-3 font-bold text-base xl:line-clamp-6 leading-5 min-w-0">{title}</h4>
           </Link>
           <div>종류 {type}</div>
@@ -105,7 +106,7 @@ function MangaCard({ manga, index = 0, source = '' }: Props) {
               <ul className="flex flex-wrap overflow-auto gap-1">
                 {existedRelatedIds.map((rid) => (
                   <li className="rounded px-1 text-foreground bg-zinc-500" key={rid}>
-                    <Link href={getViewerLink(rid, source)}>{rid}</Link>
+                    <Link href={viewerLink}>{rid}</Link>
                   </li>
                 ))}
               </ul>
@@ -125,7 +126,7 @@ function MangaCard({ manga, index = 0, source = '' }: Props) {
           <div className="flex text-xs justify-between items-center gap-1">
             <a
               className="text-zinc-400 focus:underline flex items-center gap-1 hover:underline"
-              href={`/manga/${id}`}
+              href={viewerLink}
               target="_blank"
             >
               {id}
