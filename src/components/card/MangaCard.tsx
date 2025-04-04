@@ -110,7 +110,7 @@ function MangaCard({ manga, index = 0, source = '' }: Props) {
               <ul className="flex flex-wrap overflow-auto gap-1">
                 {existedRelatedIds.map((rid) => (
                   <li className="rounded px-1 text-foreground bg-zinc-500" key={rid}>
-                    <Link href={viewerLink}>{rid}</Link>
+                    <Link href={getViewerLink(rid, source)}>{rid}</Link>
                   </li>
                 ))}
               </ul>
