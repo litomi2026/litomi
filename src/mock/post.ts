@@ -215,6 +215,36 @@ export const mockedPosts = [
     commentCount: '3',
   },
   {
+    id: '77',
+    createdAt: '2024-07-27T06:30:56.578Z',
+    publishAt: '2024-07-27T06:30:56.578Z',
+    status: 0,
+    content: 'sadf',
+    referredPostId: '13',
+    author: {
+      id: '35',
+      name: '22895fe0-011e-4517-a5fa-c10c0fde4162',
+      nickname: '열정적인 유혹자의 질서',
+      profileImageURLs: ['https://pbs.twimg.com/media/GPI3mRXa8AAHuYs?format=jpg'],
+    },
+    referredPost: {
+      id: '13',
+      createdAt: '2024-07-29T16:10:14.754Z',
+      updatedAt: '2024-07-25T15:53:37.803Z',
+      publishAt: '2024-07-28T16:10:14.754Z',
+      category: 0,
+      status: 0,
+      content: 'asds',
+      imageURLs: (() => {
+        const randomMangaId = getElementBySecureFisherYates(hashaMangaIds)
+        return hashaMangas[randomMangaId].images
+          .slice(0, 4)
+          .map((path) => getImageSrc({ cdn: 'HASHA', id: randomMangaId, path }))
+      })(),
+    },
+    commentCount: '3',
+  },
+  {
     id: '6',
     createdAt: '2024-07-27T06:30:45.203Z',
     publishAt: '2024-07-27T06:30:45.203Z',

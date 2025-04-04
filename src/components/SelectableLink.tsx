@@ -16,11 +16,13 @@ export default memo(SelectableLink)
 function SelectableLink({ className, iconClassName, Icon, children, href, hrefMatch }: Props) {
   const pathname = usePathname()
   const isSelected = pathname.includes(hrefMatch ?? href.toString())
+  const isActive = pathname === href.toString()
 
   return (
     <Link
+      aria-current={isActive ? 'page' : undefined}
       aria-selected={isSelected}
-      className={`callout-none group flex p-1 aria-selected:font-bold aria-selected:pointer-events-none sm:block sm:p-0 ${className}`}
+      className={`callout-none group flex p-1 aria-selected:font-bold aria-[current=page]:pointer-events-none sm:block sm:p-0 ${className}`}
       href={href}
     >
       <div

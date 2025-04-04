@@ -7,9 +7,11 @@ import IconArrow from './icons/IconArrow'
 
 type Props = {
   totalPages: number
+  hrefPrefix?: string
+  hrefSuffix?: string
 }
 
-export default function NavigationJump({ totalPages }: Props) {
+export default function NavigationJump({ totalPages, hrefPrefix, hrefSuffix }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
@@ -17,7 +19,7 @@ export default function NavigationJump({ totalPages }: Props) {
     event.preventDefault()
     const page = inputRef.current?.value
     if (!page) return
-    router.push(`${page}`)
+    router.push(`${hrefPrefix}${page}${hrefSuffix}`)
   }
 
   return (
