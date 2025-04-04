@@ -60,7 +60,7 @@ export default function Post({ post }: Props) {
             <span className="font-bold text-black dark:text-white">{101}</span> 조회수
           </span>
         </div>
-        <div className="flex justify-between gap-1 border-b border-t px-2 py-1 text-sm">
+        <div className="flex justify-between gap-1 border-y-2 px-2 py-1 text-sm">
           {[
             {
               Icon: IconChat,
@@ -98,7 +98,7 @@ export default function Post({ post }: Props) {
           ))}
         </div>
         <Suspense clientOnly fallback={<PostCreationFormSkeleton />}>
-          <PostCreationForm buttonText="답글" placeholder="답글 게시하기" />
+          <PostCreationForm buttonText="답글" className="flex" isReply placeholder="답글 게시하기" />
         </Suspense>
       </div>
     </section>
