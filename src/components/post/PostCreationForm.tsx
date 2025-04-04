@@ -11,21 +11,22 @@ type Props = {
   className?: string
   placeholder?: string
   buttonText?: string
+  isReply?: boolean
 }
 
-export default function PostCreationForm({ className = '', placeholder, buttonText = '게시하기' }: Props) {
+export default function PostCreationForm({ className = '', placeholder, isReply, buttonText = '게시하기' }: Props) {
   const [content, setContent] = useState('')
   const [hasFocusedBefore, setHasFocusedBefore] = useState(false)
 
   const { data: me } = useMeQuery()
 
   return (
-    <form className={`grid grid-cols-[auto_1fr] gap-2 ${className}`} onSubmit={(e) => e.preventDefault()}>
+    <form className={`gap-2 ${className}`} onSubmit={(e) => e.preventDefault()}>
       <Squircle className="w-10 flex-shrink-0" src={me?.imageURL} textClassName="text-white">
         {me?.nickname.slice(0, 2)}
       </Squircle>
-      <div className="grid items-center gap-3">
-        {hasFocusedBefore && me && (
+      <div className="grid items-center gap-3 grow py-1.5">
+        {isReply && me && hasFocusedBefore && (
           <button className="text-left">
             <span className="font-semibold text-white">@{me.loginId} </span>
             에게 보내는 답글
@@ -37,9 +38,6 @@ export default function PostCreationForm({ className = '', placeholder, buttonTe
           maxRows={25}
           onChange={(e) => setContent(e.target.value)}
           onFocus={() => setHasFocusedBefore(true)}
-          onKeyDown={(e) => {
-            console.log(e.key)
-          }}
           placeholder={placeholder}
           required
           value={content}
@@ -66,6 +64,6 @@ export default function PostCreationForm({ className = '', placeholder, buttonTe
   )
 }
 
-export function PostCreationFormSkeleton() {
-  return <div className="h-25 animate-fade-in duration-1000 bg-zinc-700 border-b-2" />
+export function PostCreationFormSkeleton({ className = '' }: { className?: string }) {
+  return <div className={`h-10 rounded-xl animate-fade-in duration-1000 bg-zinc-800 border-b-2 ${className}`} />
 }

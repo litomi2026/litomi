@@ -11,7 +11,7 @@ import IconLogout from '../icons/IconLogout'
 import IconRepeat from '../icons/IconRepeat'
 import Squircle from '../ui/Squircle'
 import PostImages from './PostImages'
-import ReferredPost from './ReferredPost'
+import ReferredPostCard from './ReferredPostCard'
 
 type Props = {
   post: TPost
@@ -19,14 +19,14 @@ type Props = {
   isThread?: boolean
 }
 
-export default function PostItem({ post, isThread }: Props) {
+export default function PostCard({ post, isThread }: Props) {
   const imageURLs = post.imageURLs
   const author = post.author
   const referredPost = post.referredPost
 
   return (
     <div
-      className={`[&:has(.child:hover)]:bg-zinc-900 grid min-w-0 grid-cols-[auto_1fr] gap-2 px-4 pb-2 pt-3 transition ${isThread ? '' : 'border-b-2'}`}
+      className={`[&:has(.child:hover)]:bg-zinc-900 grid min-w-0 grid-cols-[auto_1fr] gap-2 px-4 pb-2 pt-3 transition ${isThread ? '' : 'border-t-2'}`}
     >
       <div className="relative flex flex-col items-center gap-1">
         <Squircle className="w-10" src={author?.profileImageURLs?.[0]} textClassName="text-white">
@@ -64,7 +64,7 @@ export default function PostItem({ post, isThread }: Props) {
             </div>
             <Icon3Dots className="w-5 text-zinc-600" />
           </div>
-          <Link className="child" href="/post/id">
+          <Link className="child" href={`/post/${post.id}`} prefetch={false}>
             <p className="min-w-0 whitespace-pre-wrap break-all">{post.content}</p>
           </Link>
           {imageURLs && (
@@ -74,7 +74,7 @@ export default function PostItem({ post, isThread }: Props) {
               urls={imageURLs}
             />
           )}
-          {referredPost && <ReferredPost referredPost={referredPost} />}
+          {referredPost && <ReferredPostCard referredPost={referredPost} />}
         </div>
         <div className="flex flex-wrap gap-2 text-zinc-400">
           <div className="grid grow grid-cols-4 gap-1 text-sm">

@@ -81,7 +81,7 @@ export default function Navigation({ currentPage, totalPages, hrefPrefix = '', h
           <IconLastPage />
         </Link>
       )}
-      <NavigationJump totalPages={totalPages} />
+      <NavigationJump hrefPrefix={hrefPrefix} hrefSuffix={hrefSuffix} totalPages={totalPages} />
     </nav>
   )
 }

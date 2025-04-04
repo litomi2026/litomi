@@ -22,8 +22,7 @@ export default function Tooltip({ children, position }: TooltipProps) {
       className="group relative focus:outline-none"
       onBlur={() => setIsActive(false)}
       onClick={() => setIsActive((prev) => !prev)}
-      onFocus={() => setIsActive(true)}
-      tabIndex={-1}
+      tabIndex={0}
       type="button"
     >
       {children[0]}
@@ -31,7 +30,8 @@ export default function Tooltip({ children, position }: TooltipProps) {
         aria-current={isActive}
         className={
           'pointer-events-none absolute z-50 p-2 transition duration-300 opacity-0 ' +
-          'aria-current:opacity-100 aria-current:pointer-events-auto group-hover:opacity-100 ' +
+          'group-hover:opacity-100 group-hover:pointer-events-auto ' +
+          'aria-current:opacity-100 aria-current:pointer-events-auto ' +
           positionStyle[position]
         }
         role="tooltip"

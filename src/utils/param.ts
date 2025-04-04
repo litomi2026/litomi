@@ -1,3 +1,7 @@
+export function getUserId(userId: string) {
+  return decodeURIComponent(userId).slice(1)
+}
+
 export function validateId(id: string) {
   const idNumber = parseInt(id, 10)
 

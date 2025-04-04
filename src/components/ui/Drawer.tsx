@@ -61,13 +61,11 @@ export default function Drawer({ className = '', children }: Props) {
       <label className={`peer relative ${className}`}>
         <input
           checked={isOpened}
-          className="hover:bg-midnight-500/10 hover:dark:bg-midnight-500/40 peer absolute inset-0 appearance-none overflow-hidden rounded-full transition"
+          className="hover:bg-zinc-500/10 hover:dark:bg-zinc-500/40 peer absolute inset-0 appearance-none overflow-hidden rounded-full transition"
           onChange={handleChange}
           type="checkbox"
         />
-        <div className="transition peer-checked:translate-x-0 peer-checked:opacity-0">
-          {children[0]}
-        </div>
+        <div className="transition peer-checked:translate-x-0 peer-checked:opacity-0">{children[0]}</div>
       </label>
       <div
         className="pointer-events-none fixed inset-0 z-50 bg-black/25 opacity-0 transition-all duration-300 peer-has-[:checked]:pointer-events-auto peer-has-[:checked]:ml-[80%] peer-has-[:checked]:opacity-100 dark:bg-black/50"
