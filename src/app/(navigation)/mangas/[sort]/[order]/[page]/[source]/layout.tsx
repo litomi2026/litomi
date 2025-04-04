@@ -6,9 +6,7 @@ import OrderToggleLink from '@/components/OrderToggleLink'
 import ShuffleButton from '@/components/ShuffleButton'
 import SourceSliderLink from '@/components/SourceToggleLink'
 import Tooltip from '@/components/ui/Tooltip'
-import { harpiMangaPages } from '@/database/harpi'
-import { hashaMangaPages } from '@/database/hasha'
-import { validateOrder, validatePage, validateSort, validateSource } from '@/utils/param'
+import { getTotalPages, validateOrder, validatePage, validateSort, validateSource } from '@/utils/param'
 import { notFound } from 'next/navigation'
 
 export default async function Layout({ params, children }: BaseLayoutProps) {
@@ -57,19 +55,6 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
       </div>
     </main>
   )
-}
-
-function getTotalPages(source: string) {
-  switch (source) {
-    case 'ha':
-      return hashaMangaPages.length
-    case 'hi':
-      return 7200
-    case 'hp':
-      return harpiMangaPages.length
-    default:
-      return 0
-  }
 }
 
 function HarpiTooltip() {
