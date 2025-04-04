@@ -1,6 +1,4 @@
 import MangaCard from '@/components/card/MangaCard'
-import IconInfo from '@/components/icons/IconInfo'
-import Tooltip from '@/components/ui/Tooltip'
 import { fetchMangaFromHiyobi } from '@/crawler/hiyobi'
 import { harpiMangas } from '@/database/harpi'
 import { hashaMangas } from '@/database/hasha'
@@ -9,6 +7,7 @@ import { getUserIdFromAccessToken } from '@/utils/cookie'
 import { checkDefined } from '@/utils/type'
 import { unstable_cache } from 'next/cache'
 import { cookies } from 'next/headers'
+import { notFound } from 'next/navigation'
 
 export default async function Page() {
   const cookieStore = await cookies()
@@ -16,22 +15,28 @@ export default async function Page() {
 
   if (!userId) {
     return (
-      <main className="grid gap-2 p-2">
-        <h1 className="text-lg font-bold text-center">북마크 (예시)</h1>
-        <h2 className="font-bold text-center">로그인이 필요해요</h2>
+      <>
+        <h2 className="text-center font-bold text-xl text-yellow-300 py-4">
+          예시 화면이에요. 로그인 후 이용해주세요 🔖
+        </h2>
         <ul className="grid gap-2 md:grid-cols-2">
           <MangaCard manga={hashaMangas['3023700']} source="ha" />
         </ul>
-      </main>
+      </>
     )
   }
 
   const getBookmarkRows = unstable_cache(() => selectBookmarks({ userId }), [userId, 'bookmarks'], {
     tags: [`${userId}-bookmarks`],
+    revalidate: 60,
   })
 
   const bookmarkRows = await getBookmarkRows()
   const sources: (string | null)[] = []
+
+  if (bookmarkRows.length === 0) {
+    notFound()
+  }
 
   // NOTE: beta 버전 - 최대 20개
   // 1) hashaMangas[mangaId]가 있다면 그대로 반환
@@ -59,37 +64,11 @@ export default async function Page() {
     }),
   )
 
-  const hasBookmarks = bookmarkedMangas.length > 0
-
   return (
-    <main className="grid gap-2 p-2">
-      <h1 className="text-lg font-bold text-center">북마크 {!hasBookmarks && '(예시)'}</h1>
-      <div className="flex items-center justify-center">
-        <BookmarkTooltip />
-      </div>
-      <ul className="grid gap-2 md:grid-cols-2">
-        {!hasBookmarks && <MangaCard manga={hashaMangas['3023700']} source="ha" />}
-        {bookmarkedMangas.filter(checkDefined).map((manga, i) => (
-          <MangaCard key={manga.id} manga={manga} source={sources[i]!} />
-        ))}
-      </ul>
-    </main>
-  )
-}
-
-function BookmarkTooltip() {
-  return (
-    <Tooltip position="bottom">
-      <div className="flex items-center gap-1">
-        <p className="text-xs md:text-sm">북마크 반영이 안 돼요!</p>
-        <IconInfo className="w-3 md:w-4" />
-      </div>
-      <div className="rounded-xl border-2 border-zinc-700 bg-background min-w-3xs p-3 text-sm">
-        <p>
-          클라우드 비용 절감을 위해 서버 트래픽을 제한하고 있어서 실시간 반영이 어려워요. 변경 사항이 실제로 반영될
-          때까지 최대 <span className="whitespace-nowrap">1분</span> 정도 걸릴 수 있어요
-        </p>
-      </div>
-    </Tooltip>
+    <ul className="grid gap-2 md:grid-cols-2">
+      {bookmarkedMangas.filter(checkDefined).map((manga, i) => (
+        <MangaCard key={manga.id} manga={manga} source={sources[i]!} />
+      ))}
+    </ul>
   )
 }

@@ -62,7 +62,7 @@ function MangaCard({ manga, index = 0, source = '' }: Props) {
 
   return (
     <li
-      className="grid grid-rows-[auto_1fr] xl:grid-cols-2 xl:grid-rows-1 border-2 rounded-lg overflow-hidden bg-zinc-900"
+      className="grid grid-rows-[auto_1fr] xl:grid-cols-2 xl:grid-rows-1 border-2 rounded-xl overflow-hidden bg-zinc-900"
       key={id}
     >
       <div className="relative h-fit my-auto">
