@@ -12,8 +12,8 @@ export const dynamic = 'error'
 
 export const metadata: Metadata = {
   alternates: {
-    canonical: `${CANONICAL_URL}/mangas/id/desc/1`,
-    languages: { ko: `${CANONICAL_URL}/mangas/id/desc/1` },
+    canonical: `${CANONICAL_URL}/mangas`,
+    languages: { ko: `${CANONICAL_URL}/mangas` },
   },
 }
 
