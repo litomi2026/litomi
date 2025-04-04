@@ -18,9 +18,10 @@ const initialState = {} as Awaited<ReturnType<typeof bookmarkManga>>
 
 type Props = {
   manga: Manga
+  className?: string
 }
 
-export default function BookmarkButton({ manga }: Props) {
+export default function BookmarkButton({ manga, className }: Props) {
   const { id: mangaId } = manga
   const { data: me } = useMeQuery()
   const { data: bookmarks } = useBookmarksQuery()
@@ -68,11 +69,11 @@ export default function BookmarkButton({ manga }: Props) {
   }
 
   return (
-    <form action={formAction}>
+    <form action={formAction} className={className}>
       <input name="mangaId" type="hidden" value={mangaId} />
       <button
         aria-disabled={!me}
-        className="flex items-center gap-1 border-2 w-fit rounded-lg p-1 px-2 bg-zinc-900 hover:bg-zinc-800 active:bg-zinc-900 transition"
+        className="flex justify-center items-center gap-1 border-2 w-full rounded-lg p-1 px-2 bg-zinc-900 hover:bg-zinc-800 active:bg-zinc-900 transition"
         disabled={isPending}
         onClick={handleClick}
         type="submit"

@@ -138,11 +138,11 @@ function MangaCard({ manga, index = 0, source = '' }: Props) {
             </a>
             {date && <div className="text-right text-zinc-400">{dayjs(date).format('YYYY-MM-DD HH:mm')}</div>}
           </div>
-          <div className="flex gap-2 text-sm [&_button]:disabled:bg-zinc-800 [&_button]:disabled:pointer-events-none [&_button]:disabled:text-zinc-500">
-            <ImageDownloadButton manga={manga} />
+          <div className="flex flex-wrap justify-around gap-2 text-sm [&_button]:disabled:bg-zinc-800 [&_button]:disabled:pointer-events-none [&_button]:disabled:text-zinc-500">
+            <ImageDownloadButton className="grow" disabled={source === 'hi'} manga={manga} />
             <ErrorBoundary fallback={BookmarkButtonError}>
               <Suspense clientOnly fallback={<BookmarkButtonSkeleton />}>
-                <BookmarkButton manga={manga} />
+                <BookmarkButton className="grow" manga={manga} />
               </Suspense>
             </ErrorBoundary>
           </div>

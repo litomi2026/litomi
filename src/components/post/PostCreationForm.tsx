@@ -3,7 +3,9 @@
 import useMeQuery from '@/query/useMeQuery'
 import { useState } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
+import { toast } from 'sonner'
 
+import LoginLink from '../LoginLink'
 import Squircle from '../ui/Squircle'
 import PostGeolocationButton from './button/PostGeolocationButton'
 
@@ -20,8 +22,20 @@ export default function PostCreationForm({ className = '', placeholder, isReply,
 
   const { data: me } = useMeQuery()
 
+  const handleClick = () => {
+    if (!me) {
+      toast.warning(
+        <div className="flex gap-2 items-center">
+          <div>로그인이 필요해요.</div>
+          <LoginLink>로그인하기</LoginLink>
+        </div>,
+      )
+      return
+    }
+  }
+
   return (
-    <form className={`gap-2 ${className}`} onSubmit={(e) => e.preventDefault()}>
+    <form className={`gap-2 ${className}`} onClick={handleClick} onSubmit={(e) => e.preventDefault()}>
       <Squircle className="w-10 flex-shrink-0" src={me?.imageURL} textClassName="text-white">
         {me?.nickname.slice(0, 2)}
       </Squircle>
@@ -33,8 +47,8 @@ export default function PostCreationForm({ className = '', placeholder, isReply,
           </button>
         )}
         <TextareaAutosize
-          className="h-7 max-h-screen w-full max-w-prose resize-none text-xl focus:outline-none"
-          disabled={!me}
+          aria-disabled={!me}
+          className="h-7 max-h-screen w-full max-w-prose resize-none text-xl focus:outline-none aria-disabled:pointer-events-none"
           maxRows={25}
           onChange={(e) => setContent(e.target.value)}
           onFocus={() => setHasFocusedBefore(true)}
