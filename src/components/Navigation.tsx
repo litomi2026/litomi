@@ -1,6 +1,7 @@
-import Link from 'next/link'
+import { memo } from 'react'
 
 import { IconFirstPage, IconJumpNext, IconJumpPrev, IconLastPage, IconNextPage, IconPrevPage } from './icons/IconArrows'
+import LinkScrollToTop from './LinkScrollToTop'
 import NavigationJump from './NavigationJump'
 
 const VISIBLE_PAGES = 9
@@ -13,13 +14,9 @@ type Props = {
   hrefSuffix?: string
 }
 
-export default function Navigation({
-  className = '',
-  currentPage,
-  totalPages,
-  hrefPrefix = '',
-  hrefSuffix = '',
-}: Props) {
+export default memo(Navigation)
+
+function Navigation({ className = '', currentPage, totalPages, hrefPrefix = '', hrefSuffix = '' }: Props) {
   let startPage = Math.max(1, currentPage - Math.floor(VISIBLE_PAGES / 2))
   let endPage = startPage + VISIBLE_PAGES - 1
 
@@ -39,57 +36,60 @@ export default function Navigation({
         md:text-xl md:[&_svg]:w-7 ${className}`}
     >
       {currentPage > 1 && (
-        <Link aria-label="첫 페이지" className="hidden sm:flex" href={`${hrefPrefix}${1}${hrefSuffix}`}>
+        <LinkScrollToTop aria-label="첫 페이지" className="hidden sm:flex" href={`${hrefPrefix}${1}${hrefSuffix}`}>
           <IconFirstPage />
-        </Link>
+        </LinkScrollToTop>
       )}
       {startPage > 1 && (
-        <Link
+        <LinkScrollToTop
           aria-label={`이전 ${VISIBLE_PAGES} 페이지`}
+          className="flex"
           href={`${hrefPrefix}${Math.max(1, currentPage - VISIBLE_PAGES)}${hrefSuffix}`}
         >
           <IconJumpPrev />
-        </Link>
+        </LinkScrollToTop>
       )}
-      <Link
+      <LinkScrollToTop
         aria-disabled={currentPage <= 1}
         aria-label="이전 페이지"
+        className="flex"
         href={`${hrefPrefix}${Math.max(1, currentPage - 1)}${hrefSuffix}`}
       >
         <IconPrevPage />
-      </Link>
-
+      </LinkScrollToTop>
       {/* 현재 페이지 주변의 번호들 */}
       {visiblePageNumbers.map((page) => (
-        <a aria-current={page === currentPage} href={`${hrefPrefix}${page}${hrefSuffix}`} key={page}>
-          <span>{page}</span>
-        </a>
+        <LinkScrollToTop aria-current={page === currentPage} href={`${hrefPrefix}${page}${hrefSuffix}`} key={page}>
+          {page}
+        </LinkScrollToTop>
       ))}
       <div className="flex gap-2">
-        <Link
+        <LinkScrollToTop
           aria-disabled={currentPage >= totalPages}
           aria-label="다음 페이지"
+          className="flex"
           href={`${hrefPrefix}${Math.min(currentPage + 1, totalPages)}${hrefSuffix}`}
         >
           <IconNextPage />
-        </Link>
+        </LinkScrollToTop>
         {endPage < totalPages && (
-          <Link
+          <LinkScrollToTop
             aria-label={`다음 ${VISIBLE_PAGES} 페이지 `}
+            className="flex"
             href={`${hrefPrefix}${Math.min(currentPage + VISIBLE_PAGES, totalPages)}${hrefSuffix}`}
           >
             <IconJumpNext />
-          </Link>
+          </LinkScrollToTop>
         )}
         {currentPage < totalPages && (
-          <Link
+          <LinkScrollToTop
             aria-disabled={currentPage >= totalPages}
             aria-label="마지막 페이지"
             className="hidden sm:flex"
             href={`${hrefPrefix}${totalPages}${hrefSuffix}`}
           >
             <IconLastPage />
-          </Link>
+          </LinkScrollToTop>
         )}
         <NavigationJump hrefPrefix={hrefPrefix} hrefSuffix={hrefSuffix} totalPages={totalPages} />
       </div>
