@@ -10,6 +10,7 @@
     "prettier": "prettier --write .",
     "type": "tsc --noEmit",
     "crawl:harpi": "bun src/crawler/harpi.ts",
+    "crawl:hasha": "bun src/crawler/hasha.ts",
     "prepare": "husky"
   },
   "dependencies": {
