@@ -49,14 +49,12 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
         </Tooltip>
       </div>
       {children}
-      <div className="flex min-w-0 justify-center overflow-x-auto scrollbar-hidden">
-        <Navigation
-          currentPage={pageNumber}
-          hrefPrefix="../"
-          hrefSuffix={`/${sourceString || SourceParam.HIYOBI}`}
-          totalPages={totalPages}
-        />
-      </div>
+      <Navigation
+        currentPage={pageNumber}
+        hrefPrefix="../"
+        hrefSuffix={`/${sourceString || SourceParam.HIYOBI}`}
+        totalPages={totalPages}
+      />
     </main>
   )
 }

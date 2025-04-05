@@ -65,11 +65,11 @@ type Props = {
 
 export default function RootLayout({ children }: Readonly<Props>) {
   return (
-    <html lang="ko">
+    <html className="h-full" lang="ko">
       <head>
         <meta content={SHORT_NAME} name="apple-mobile-web-app-title" />
       </head>
-      <body className={`${PretendardVariable.className} antialiased`}>
+      <body className={`${PretendardVariable.className} antialiased h-full`}>
         <QueryProvider>{children}</QueryProvider>
         <Toaster duration={3000} position="top-center" richColors theme="dark" />
         <SpeedInsights />
