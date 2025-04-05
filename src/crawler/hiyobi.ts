@@ -90,7 +90,7 @@ export async function fetchMangaImagesFromKHentai({ id }: { id: number }) {
 export async function fetchMangasFromHiyobi({ page }: { page: number }) {
   const res = await fetch(`https://api.hiyobi.org/list/${page}`, {
     referrerPolicy: 'no-referrer',
-    next: { revalidate: 10800 }, // 3 hours
+    next: { revalidate: 86400 }, // 1 day
   })
 
   if (!res.ok) {

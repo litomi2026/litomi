@@ -3,11 +3,11 @@ import type { BasePageProps } from '@/types/nextjs'
 import ImageViewer from '@/components/ImageViewer/ImageViewer'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { CANONICAL_URL } from '@/constants/url'
-import { fetchMangaFromHiyobi, fetchMangaImagesFromHiyobi, fetchMangasFromHiyobi } from '@/crawler/hiyobi'
+import { fetchMangaFromHiyobi, fetchMangaImagesFromHiyobi } from '@/crawler/hiyobi'
 import { harpiMangaIdsDesc, harpiMangas } from '@/database/harpi'
 import { hashaMangaIdsDesc, hashaMangas } from '@/database/hasha'
 import { getImageSrc } from '@/utils/manga'
-import { validateId, validateSource } from '@/utils/param'
+import { SourceParam, validateId, validateSource } from '@/utils/param'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
@@ -47,10 +47,9 @@ export async function generateStaticParams() {
   const params: Record<string, unknown>[] = []
   const idMap: Record<string, string[]> = {
     ha: hashaMangaIdsDesc.slice(0, 20),
-    hi: (await fetchMangasFromHiyobi({ page: 1 })).map((manga) => String(manga.id)),
     hp: harpiMangaIdsDesc.slice(0, 20),
   }
-  for (const source of ['hi', 'ha', 'hp']) {
+  for (const source of [SourceParam.HASHA, SourceParam.HARPI]) {
     for (const id of idMap[source]) {
       params.push({ id, source })
     }
@@ -80,33 +79,26 @@ export default async function Page({ params }: BasePageProps) {
   )
 }
 
-async function getManga({ source, id }: { source: string; id: number }) {
-  switch (source) {
-    case 'ha':
-      return hashaMangas[id]
+async function getManga({ source, id }: { source: SourceParam; id: number }) {
+  if (source === SourceParam.HIYOBI) {
+    const [mangaFromHiyobi, mangaImages] = await Promise.all([
+      fetchMangaFromHiyobi({ id }).catch(() => ({ id, title: '오류가 발생했어요', images: [] })),
+      fetchMangaImagesFromHiyobi({ id }),
+    ])
 
-    case 'hi': {
-      const [mangaFromHiyobi, mangaImages] = await Promise.all([
-        fetchMangaFromHiyobi({ id }).catch(() => ({ id, title: '오류가 발생했어요', images: [] })),
-        fetchMangaImagesFromHiyobi({ id }),
-      ])
-
-      if (!mangaImages) {
-        return null
-      }
-
-      return {
-        ...(mangaFromHiyobi ?? { id, title: '만화 정보가 없어요', images: [] }),
-        id,
-        images: mangaImages,
-        cdn: 'k-hentai',
-      }
+    if (!mangaImages) {
+      return null
     }
 
-    case 'hp':
-      return harpiMangas[id]
-
-    default:
-      return null
+    return {
+      ...(mangaFromHiyobi ?? { id, title: '만화 정보가 없어요', images: [] }),
+      id,
+      images: mangaImages,
+      cdn: 'k-hentai',
+    }
+  } else if (source === SourceParam.HASHA) {
+    return hashaMangas[id]
+  } else if (source === SourceParam.HARPI) {
+    return harpiMangas[id]
   }
 }

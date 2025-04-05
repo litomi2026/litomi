@@ -1,3 +1,9 @@
+export enum SourceParam {
+  HIYOBI = 'hi',
+  HASHA = 'ha',
+  HARPI = 'hp',
+}
+
 export function getUserId(userId: string) {
   return decodeURIComponent(userId).slice(1)
 }
@@ -67,12 +73,12 @@ export function validateSort(order: string) {
 
 export function validateSource(src: string) {
   switch (src) {
-    case 'ha':
-      return 'ha'
-    case 'hi':
-      return 'hi'
-    case 'hp':
-      return 'hp'
+    case SourceParam.HARPI:
+      return SourceParam.HARPI
+    case SourceParam.HASHA:
+      return SourceParam.HASHA
+    case SourceParam.HIYOBI:
+      return SourceParam.HIYOBI
     default:
       return ''
   }
