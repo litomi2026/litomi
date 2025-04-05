@@ -3,6 +3,9 @@
 
 import { Manga } from '@/types/manga'
 
+import mangas from '../database/hasha.json'
+import { prettifyJSON } from './utils'
+
 enum HashaSort {
   DATE = 'date',
   BOOKMARKED_COUNT = 'bookmarkedCount',
@@ -37,9 +40,14 @@ type HashaManga = {
 
 async function fetchMangas({ page, sort, order }: FetchHashaMangasParams) {
   try {
-    const response = await fetch('/api/manga', {
+    const randomNumber = (Math.random() * 30).toFixed(0).padStart(2, '0')
+    const response = await fetch('https://hasha.in/api/manga', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        Referer: 'https://hasha.in',
+        'User-Agent': `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/1${randomNumber}.0.0.0 Safari/537.36`,
+      },
       body: JSON.stringify({ page, sort, order }),
     })
     const result = await response.json()
@@ -58,15 +66,14 @@ async function fetchMangas({ page, sort, order }: FetchHashaMangasParams) {
     }))
     return mangas
   } catch (error) {
-    console.log(`Failed to fetch page ${page}`)
-    console.log('👀 - error:', error)
+    console.log(`Failed to fetch page ${page}`, error)
     await sleep(60_000)
     return []
   }
 }
 
 async function main() {
-  const mangaById: Record<string, Manga> = {}
+  const fetchedMangaById: Record<string, Manga> = {}
 
   for (let page = 1; page <= 5; page++) {
     console.log('👀 ~ page:', page)
@@ -77,7 +84,7 @@ async function main() {
     })
     if (mangas.length > 0) {
       mangas.forEach((manga) => {
-        mangaById[manga.id] = manga
+        fetchedMangaById[manga.id] = manga
       })
     } else {
       page--
@@ -85,7 +92,9 @@ async function main() {
     await sleep(1000)
   }
 
-  console.log(JSON.stringify(mangaById))
+  const mergedMangas: Record<number, Manga> = { ...fetchedMangaById, ...mangas }
+  prettifyJSON({ pathname: '../database/hasha.json', json: mergedMangas })
+  console.log('Hasha manga updated successfully.')
 }
 
 function sleep(ms: number) {

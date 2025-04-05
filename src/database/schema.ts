@@ -2,9 +2,9 @@ import { bigint, integer, pgTable, primaryKey, text, timestamp, varchar } from '
 
 export const userTable = pgTable('user', {
   id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  loginAt: timestamp('login_at').defaultNow().notNull(),
-  logoutAt: timestamp('logout_at').defaultNow().notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  loginAt: timestamp('login_at', { withTimezone: true }).defaultNow().notNull(),
+  logoutAt: timestamp('logout_at', { withTimezone: true }).defaultNow().notNull(),
   loginId: varchar('login_id', { length: 32 }).notNull().unique(),
   passwordHash: text('password_hash').notNull(),
   nickname: varchar({ length: 32 }).notNull(),
@@ -16,6 +16,7 @@ export const bookmarkTable = pgTable(
   {
     userId: integer('user_id').references(() => userTable.id),
     mangaId: integer('manga_id').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [primaryKey({ columns: [table.userId, table.mangaId] })],
 )

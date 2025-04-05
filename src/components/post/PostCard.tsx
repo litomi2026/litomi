@@ -64,7 +64,7 @@ export default function PostCard({ post, isThread }: Props) {
             </div>
             <Icon3Dots className="w-5 text-zinc-600" />
           </div>
-          <Link className="child" href={`/post/${post.id}`} prefetch={false}>
+          <Link className="child" href={`/post/${post.id}`}>
             <p className="min-w-0 whitespace-pre-wrap break-all">{post.content}</p>
           </Link>
           {imageURLs && (

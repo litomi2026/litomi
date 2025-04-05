@@ -1,14 +1,18 @@
 import { harpiTagMap } from '@/database/harpi-tag'
 import { Manga } from '@/types/manga'
+import { ErrorBoundary, Suspense } from '@suspensive/react'
+import dayjs from 'dayjs'
 import { memo, useState } from 'react'
 
+import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from '../card/BookmarkButton'
+import ImageDownloadButton from '../card/ImageDownloadButton'
 import TagList from '../TagList'
 import Modal from '../ui/Modal'
 
 export default memo(MangaDetailButton)
 
 function MangaDetailButton({ manga }: { manga: Manga }) {
-  const { title, artists, group, series, characters, type, tags } = manga
+  const { title, artists, group, series, characters, type, tags, date } = manga
   const [isOpened, setIsOpened] = useState(false)
 
   const translatedTags = tags
@@ -24,8 +28,12 @@ function MangaDetailButton({ manga }: { manga: Manga }) {
         <div className="bg-zinc-900 min-w-3xs w-screen max-w-sm md:max-w-lg rounded-xl p-4 pt-8 shadow-xl border grid gap-3 text-sm md:text-base">
           <h2 className="font-bold text-lg md:text-xl">{title}</h2>
           <div className="grid grid-cols-[auto_1fr] gap-2">
-            <strong>종류</strong>
-            <div>{type}</div>
+            {type && (
+              <>
+                <strong>종류</strong>
+                <div>{type}</div>
+              </>
+            )}
             {artists && artists.length > 0 && (
               <>
                 <strong>작가</strong>
@@ -59,6 +67,20 @@ function MangaDetailButton({ manga }: { manga: Manga }) {
                 />
               </>
             )}
+            {date && (
+              <>
+                <strong>날짜</strong>
+                <div>{dayjs(date).format('YYYY-MM-DD HH:mm')}</div>
+              </>
+            )}
+          </div>
+          <div className="flex flex-wrap justify-around gap-2 text-sm [&_button]:disabled:bg-zinc-800 [&_button]:disabled:pointer-events-none [&_button]:disabled:text-zinc-500">
+            <ImageDownloadButton className="grow" manga={manga} />
+            <ErrorBoundary fallback={BookmarkButtonError}>
+              <Suspense clientOnly fallback={<BookmarkButtonSkeleton className="grow" />}>
+                <BookmarkButton className="grow" manga={manga} />
+              </Suspense>
+            </ErrorBoundary>
           </div>
         </div>
       </Modal>
