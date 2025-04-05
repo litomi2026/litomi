@@ -15,7 +15,7 @@ import Profile, { ProfileError, ProfileSkeleton } from '../../components/header/
 
 export default async function Layout({ children }: BaseLayoutProps) {
   return (
-    <div className="mx-auto px-safe pb-safe grid max-w-screen-2xl w-fit h-full sm:flex">
+    <div className="flex flex-col min-h-full mx-auto px-safe pb-safe max-w-screen-2xl sm:flex-row">
       <header
         className="fixed bottom-0 left-0 right-0 z-50 m-auto px-safe pb-safe grid grid-cols-[4fr_1fr] border-t-2 bg-background/70 backdrop-blur
           sm:inset-auto sm:flex sm:h-full sm:w-20 sm:flex-col sm:justify-between sm:gap-8 sm:border-r-2 sm:border-t-0 sm:p-2
@@ -49,7 +49,7 @@ export default async function Layout({ children }: BaseLayoutProps) {
         </ErrorBoundary>
       </header>
       <div className="hidden shrink-0 sm:block sm:w-20 2xl:w-3xs" />
-      <div className="h-full">
+      <div className="grow">
         {children}
         <p className="h-0 overflow-hidden tracking-widest invisible">
           litomi, manga, comic, webtoon, manhwa, manhua, cartoon, hitomi, illustration, episode, series, japan manga,
@@ -57,7 +57,7 @@ export default async function Layout({ children }: BaseLayoutProps) {
           짧은만화, 히토미, 일본만화, 만화 웹 뷰어
         </p>
       </div>
-      <div className="h-16 sm:hidden" />
+      <div className="w-full h-16 shrink-0 sm:hidden" />
     </div>
   )
 }

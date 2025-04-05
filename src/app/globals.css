@@ -25,6 +25,7 @@
 
 @theme {
   --animate-fade-in: fade-in 0.5s ease-out;
+  --animate-loading-bar: loading-bar 5s cubic-bezier(0.3, 0.7, 0.5, 1);
 
   @keyframes fade-in {
     0% {
@@ -32,6 +33,15 @@
     }
     100% {
       opacity: 1;
+    }
+  }
+
+  @keyframes loading-bar {
+    0% {
+      width: 0%;
+    }
+    100% {
+      width: 100%;
     }
   }
 }
@@ -70,11 +80,6 @@
   background-origin: border-box;
   background-clip: content-box, border-box;
   border-color: transparent;
-}
-
-html,
-body {
-  min-height: 100%;
 }
 
 body {

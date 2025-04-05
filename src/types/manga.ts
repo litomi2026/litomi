@@ -8,7 +8,7 @@ export type Manga = {
   series?: string[]
   tags?: string[]
   title: string
-  type: string
+  type?: string
   images: string[]
   cdn?: string
   count?: number

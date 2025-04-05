@@ -1,7 +1,8 @@
+import { OrderParam } from '@/utils/param'
 import Link from 'next/link'
 
 type OrderToggleProps = {
-  currentOrder: 'asc' | 'desc'
+  currentOrder: string
   hrefPrefix?: string
   hrefSuffix?: string
   disabled?: boolean
@@ -13,7 +14,7 @@ export default function OrderToggleLink({
   hrefPrefix = '',
   hrefSuffix = '',
 }: OrderToggleProps) {
-  const selectedOrderIndex = currentOrder === 'desc' ? 0 : 1
+  const selectedOrderIndex = currentOrder === OrderParam.DESC ? 0 : 1
 
   return (
     <div
@@ -22,13 +23,14 @@ export default function OrderToggleLink({
         [&_a]:aria-disabled:pointer-events-none [&_a]:aria-disabled:text-zinc-500"
     >
       <Link
-        aria-current={currentOrder === 'desc'}
+        aria-current={currentOrder === OrderParam.DESC}
         aria-disabled={disabled}
         className="aria-disabled:[&>div]:bg-none aria-disabled:[&>div]:before:border-zinc-700"
         href={`${hrefPrefix}desc${hrefSuffix}`}
       >
         <div
-          className="absolute inset-0 bg-zinc-700 bg-brand-gradient rounded-lg pointer-events-none transition
+          aria-hidden={!currentOrder}
+          className="absolute inset-0 bg-zinc-700 bg-brand-gradient rounded-lg pointer-events-none transition aria-hidden:opacity-0
             before:absolute before:inset-0 before:rounded-lg before:border-2 before:border-white/40"
           style={{ transform: `translateX(${100 * selectedOrderIndex}%)` }}
         />

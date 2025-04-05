@@ -8,7 +8,7 @@ import Link from 'next/link'
 export default function Layout({ children }: BaseLayoutProps) {
   return (
     <div className="h-full max-w-screen-2xl">
-      <div className="p-2">
+      <div className="flex flex-col p-2 h-full">
         {children}
         <footer className="text-center py-4 grid gap-2">
           <InstallPrompt />

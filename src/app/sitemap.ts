@@ -5,21 +5,27 @@ import { CANONICAL_URL } from '@/constants/url'
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
+      url: CANONICAL_URL,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 1,
+    },
+    {
       url: `${CANONICAL_URL}/mangas/id/desc/1/hi`,
       lastModified: new Date(),
       changeFrequency: 'daily',
-      priority: 1,
+      priority: 0.9,
     },
     {
       url: `${CANONICAL_URL}/mangas/id/desc/1/ha`,
       lastModified: new Date(),
-      changeFrequency: 'weekly',
+      changeFrequency: 'daily',
       priority: 0.9,
     },
     {
-      url: CANONICAL_URL,
+      url: `${CANONICAL_URL}/posts/recommand`,
       lastModified: new Date(),
-      changeFrequency: 'monthly',
+      changeFrequency: 'weekly',
       priority: 0.5,
     },
     {

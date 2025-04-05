@@ -1,3 +1,21 @@
+export enum OrderParam {
+  ASC = 'asc',
+  DESC = 'desc',
+}
+
+export enum SortParam {
+  ID = 'id',
+  // BOOKMARK = 'bookmark',
+  // DATE = 'date',
+  // LIKE = 'like',
+}
+
+export enum SourceParam {
+  HIYOBI = 'hi',
+  HASHA = 'ha',
+  HARPI = 'hp',
+}
+
 export function getUserId(userId: string) {
   return decodeURIComponent(userId).slice(1)
 }
@@ -14,10 +32,10 @@ export function validateId(id: string) {
 
 export function validateOrder(order: string) {
   switch (order) {
-    case 'asc':
-      return 'asc'
-    case 'desc':
-      return 'desc'
+    case OrderParam.ASC:
+      return OrderParam.ASC
+    case OrderParam.DESC:
+      return OrderParam.DESC
     default:
       return ''
   }
@@ -58,8 +76,8 @@ export function validatePostFilter(str: string) {
 
 export function validateSort(order: string) {
   switch (order) {
-    case 'id':
-      return 'id'
+    case SortParam.ID:
+      return SortParam.ID
     default:
       return ''
   }
@@ -67,12 +85,12 @@ export function validateSort(order: string) {
 
 export function validateSource(src: string) {
   switch (src) {
-    case 'ha':
-      return 'ha'
-    case 'hi':
-      return 'hi'
-    case 'hp':
-      return 'hp'
+    case SourceParam.HARPI:
+      return SourceParam.HARPI
+    case SourceParam.HASHA:
+      return SourceParam.HASHA
+    case SourceParam.HIYOBI:
+      return SourceParam.HIYOBI
     default:
       return ''
   }

@@ -65,7 +65,7 @@ function MangaCard({ manga, index = 0, source = '' }: Props) {
       className="grid grid-rows-[auto_1fr] xl:grid-cols-2 xl:grid-rows-1 border-2 rounded-xl overflow-hidden bg-zinc-900"
       key={id}
     >
-      <div className="relative h-fit my-auto">
+      <div className="relative h-fit my-auto aspect-[4/3] xl:aspect-[3/4]">
         {/* NOTE(gwak, 2025-04-01): 썸네일 이미지만 있는 경우 대응하기 위해 images[1] 검사 */}
         {images[1] ? (
           <MangaCardPreviewImage
@@ -99,7 +99,7 @@ function MangaCard({ manga, index = 0, source = '' }: Props) {
           <Link href={viewerLink}>
             <h4 className="line-clamp-3 font-bold text-base xl:line-clamp-6 leading-5 min-w-0">{title}</h4>
           </Link>
-          <div>종류 {type}</div>
+          {type && <div>종류 {type}</div>}
           {artists && artists.length > 0 && <div className="line-clamp-1">작가 {artists.join(', ')}</div>}
           {group && group.length > 0 && <div className="line-clamp-1">그룹 {group.join(', ')}</div>}
           {series && series.length > 0 && <div className="line-clamp-1">시리즈 {series.join(', ')}</div>}
@@ -141,7 +141,7 @@ function MangaCard({ manga, index = 0, source = '' }: Props) {
           <div className="flex flex-wrap justify-around gap-2 text-sm [&_button]:disabled:bg-zinc-800 [&_button]:disabled:pointer-events-none [&_button]:disabled:text-zinc-500">
             <ImageDownloadButton className="grow" disabled={source === 'hi'} manga={manga} />
             <ErrorBoundary fallback={BookmarkButtonError}>
-              <Suspense clientOnly fallback={<BookmarkButtonSkeleton />}>
+              <Suspense clientOnly fallback={<BookmarkButtonSkeleton className="grow" />}>
                 <BookmarkButton className="grow" manga={manga} />
               </Suspense>
             </ErrorBoundary>

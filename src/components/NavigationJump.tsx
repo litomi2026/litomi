@@ -41,7 +41,7 @@ export default function NavigationJump({ totalPages, hrefPrefix = '', hrefSuffix
       />
       <button
         aria-label="특정 페이지로 이동"
-        className="whitespace-nowrap bg-zinc-800 text-foreground rounded hover:bg-zinc-700 focus:outline-none focus:ring-1 focus:ring-zinc-300"
+        className="whitespace-nowrap p-2 bg-zinc-800 text-foreground rounded hover:bg-zinc-700 focus:outline-none focus:ring-1 focus:ring-zinc-300"
         type="submit"
       >
         <IconArrow />

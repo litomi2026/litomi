@@ -23,7 +23,7 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
 
   return (
     <div className="relative">
-      <TopNavigation className="sticky top-0 left-0 right-0 z-10 border-b-2 sm:backdrop-blur bg-black sm:bg-black/75">
+      <TopNavigation className="fixed sm:sticky top-0 left-0 right-0 z-10 border-b-2 sm:backdrop-blur bg-black sm:bg-black/75">
         <div
           className="grid grid-cols-2 items-center text-center text-zinc-400 [&_a]:p-4 [&_a]:transition [&_a]:relative [&_a]:aria-selected:font-bold [&_a]:aria-selected:text-foreground
            sm:[&_a]:bg-black/50 sm:[&_a]:hover:bg-white/10"
@@ -38,6 +38,7 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
           </Link>
         </div>
       </TopNavigation>
+      <div className="h-26 sm:hidden" />
       <h2 className="text-center font-bold text-xl text-yellow-300 py-4">준비 중입니다</h2>
       <Suspense clientOnly fallback={<PostCreationFormSkeleton className="m-4" />}>
         <PostCreationForm
