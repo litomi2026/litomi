@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 export default function NotFound() {
   return (
-    <div className="flex flex-col grow items-center justify-center h-[50dvh]">
+    <div className="flex flex-col grow items-center justify-center">
       <h1 className="mb-4 text-6xl font-bold">404</h1>
       <p className="mb-8 text-2xl">만화가 없어요</p>
       <div className="grid gap-2">

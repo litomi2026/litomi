@@ -63,7 +63,7 @@ export default async function Page({ params }: BasePageProps) {
   }
 
   return (
-    <ul className="grid md:grid-cols-2 gap-2">
+    <ul className="grid md:grid-cols-2 gap-2 grow">
       {mangas.map((manga, i) => (
         <MangaCard index={i} key={manga.id} manga={manga} source={source} />
       ))}
@@ -72,7 +72,7 @@ export default async function Page({ params }: BasePageProps) {
 }
 
 async function getMangas({ source, sort, order, page }: Params) {
-  let mangas: Manga[] = []
+  let mangas: Manga[] | null = null
 
   if (source === SourceParam.HARPI) {
     mangas = harpiMangaIdsByPage[sort][order][page - 1]?.map((id) => harpiMangas[id])

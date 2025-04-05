@@ -12,7 +12,7 @@ export default async function Page() {
   return (
     <ul>
       {mockedPosts?.map((post) => <PostCard key={post.id} post={post} />)}
-      <div className="h-20" />
+      <div className="h-10" />
     </ul>
   )
 }

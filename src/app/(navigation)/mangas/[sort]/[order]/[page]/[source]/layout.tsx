@@ -33,7 +33,12 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
           currentSource={sourceString}
           hrefPrefixes={(source) => `../${Math.min(pageNumber || 1, getTotalPages(source))}/`}
         />
-        <ShuffleButton action="random" className="w-fit" href={`/mangas/random/${sourceString}`} iconClassName="w-5" />
+        <ShuffleButton
+          action="random"
+          className="w-fit"
+          href={`/mangas/random/${sourceString || SourceParam.HIYOBI}`}
+          iconClassName="w-5"
+        />
       </div>
       <div className="flex justify-center whitespace-nowrap">
         <Tooltip position="bottom">

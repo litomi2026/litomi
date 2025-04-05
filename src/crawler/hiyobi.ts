@@ -93,8 +93,12 @@ export async function fetchMangasFromHiyobi({ page }: { page: number }) {
     next: { revalidate: 86400 }, // 1 day
   })
 
-  if (!res.ok) {
-    throw new Error('Failed to fetch mangas from hi')
+  if (res.status === 404) {
+    return null
+  } else if (!res.ok) {
+    const body = await res.text()
+    captureException('api.hiyobi.org 서버 오류', { extra: { res, body } })
+    throw new Error('hi 서버에서 만화 목록을 불러오는데 실패했어요.')
   }
 
   const mangas = (await res.json()).list as HiyobiManga[]
@@ -111,7 +115,9 @@ export async function fetchRandomMangasFromHiyobi() {
   if (res.status === 404) {
     return null
   } else if (!res.ok) {
-    throw new Error('Failed to fetch mangas from hi')
+    const body = await res.text()
+    captureException('api.hiyobi.org 서버 오류', { extra: { res, body } })
+    throw new Error('hi 서버에서 랜덤 만화 목록을 불러오는데 실패했어요.')
   }
 
   const mangas = (await res.json()) as HiyobiManga[]

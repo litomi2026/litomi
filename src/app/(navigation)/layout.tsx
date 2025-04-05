@@ -49,7 +49,7 @@ export default async function Layout({ children }: BaseLayoutProps) {
         </ErrorBoundary>
       </header>
       <div className="hidden shrink-0 sm:block sm:w-20 2xl:w-3xs" />
-      <div className="grow">
+      <div className="flex flex-col grow">
         {children}
         <p className="h-0 overflow-hidden tracking-widest invisible">
           litomi, manga, comic, webtoon, manhwa, manhua, cartoon, hitomi, illustration, episode, series, japan manga,

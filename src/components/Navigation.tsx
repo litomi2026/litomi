@@ -32,11 +32,11 @@ export default function Navigation({
 
   return (
     <nav
-      className={`flex flex-wrap justify-center items-center gap-2 w-fit mx-auto py-2 font-bold tabular-nums text-lg 
-        [&_a]:flex [&_a]:justify-center [&_a]:items-center [&_a]:rounded-full [&_a]:aspect-square [&_a]:w-10 [&_svg]:w-6
+      className={`flex flex-wrap justify-center items-center gap-2 w-fit mx-auto py-2 font-bold tabular-nums text-lg [&_svg]:w-6 
+        [&_a]:flex [&_a]:justify-center [&_a]:items-center [&_a]:rounded-full [&_a]:px-2 [&_a]:min-w-10 [&_a]:h-10
         [&_a]:aria-current:bg-brand-gradient [&_a]:aria-current:pointer-events-none [&_a]:aria-current:text-background 
-        [&_a]:aria-disabled:pointer-events-none  [&_a]:aria-disabled:text-zinc-600 [&_a]:hover:bg-zinc-700 [&_a]:active:bg-zinc-800 
-        md:text-xl md:[&_a]:w-11 md:[&_svg]:w-7 ${className}`}
+        [&_a]:aria-disabled:pointer-events-none [&_a]:aria-disabled:text-zinc-600 [&_a]:hover:bg-zinc-700 [&_a]:active:bg-zinc-800 
+        md:text-xl md:[&_svg]:w-7 ${className}`}
     >
       {currentPage > 1 && (
         <Link aria-label="첫 페이지" className="hidden sm:flex" href={`${hrefPrefix}${1}${hrefSuffix}`}>
