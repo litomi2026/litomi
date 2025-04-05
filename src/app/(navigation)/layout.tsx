@@ -15,7 +15,7 @@ import Profile, { ProfileError, ProfileSkeleton } from '../../components/header/
 
 export default async function Layout({ children }: BaseLayoutProps) {
   return (
-    <div className="flex flex-col h-full mx-auto px-safe pb-safe max-w-screen-2xl sm:flex-row">
+    <div className="flex flex-col min-h-full mx-auto px-safe pb-safe max-w-screen-2xl sm:flex-row">
       <header
         className="fixed bottom-0 left-0 right-0 z-50 m-auto px-safe pb-safe grid grid-cols-[4fr_1fr] border-t-2 bg-background/70 backdrop-blur
           sm:inset-auto sm:flex sm:h-full sm:w-20 sm:flex-col sm:justify-between sm:gap-8 sm:border-r-2 sm:border-t-0 sm:p-2
