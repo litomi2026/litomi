@@ -1,3 +1,15 @@
+export enum OrderParam {
+  ASC = 'asc',
+  DESC = 'desc',
+}
+
+export enum SortParam {
+  ID = 'id',
+  // BOOKMARK = 'bookmark',
+  // DATE = 'date',
+  // LIKE = 'like',
+}
+
 export enum SourceParam {
   HIYOBI = 'hi',
   HASHA = 'ha',
@@ -20,10 +32,10 @@ export function validateId(id: string) {
 
 export function validateOrder(order: string) {
   switch (order) {
-    case 'asc':
-      return 'asc'
-    case 'desc':
-      return 'desc'
+    case OrderParam.ASC:
+      return OrderParam.ASC
+    case OrderParam.DESC:
+      return OrderParam.DESC
     default:
       return ''
   }
@@ -64,8 +76,8 @@ export function validatePostFilter(str: string) {
 
 export function validateSort(order: string) {
   switch (order) {
-    case 'id':
-      return 'id'
+    case SortParam.ID:
+      return SortParam.ID
     default:
       return ''
   }

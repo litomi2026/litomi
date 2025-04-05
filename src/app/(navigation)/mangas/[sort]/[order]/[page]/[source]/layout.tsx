@@ -8,23 +8,17 @@ import SourceSliderLink from '@/components/SourceToggleLink'
 import Tooltip from '@/components/ui/Tooltip'
 import { harpiMangaPages } from '@/database/harpi'
 import { hashaMangaPages } from '@/database/hasha'
-import { validateOrder, validatePage, validateSort, validateSource } from '@/utils/param'
-import { notFound } from 'next/navigation'
+import { SourceParam, validateOrder, validatePage, validateSource } from '@/utils/param'
 
 export default async function Layout({ params, children }: BaseLayoutProps) {
-  const { sort, order, page, source } = await params
-  const sortString = validateSort(sort)
+  const { order, page, source } = await params
   const orderString = validateOrder(order)
   const pageNumber = validatePage(page)
   const sourceString = validateSource(source)
   const totalPages = getTotalPages(sourceString)
 
-  if (!sortString || !orderString || !pageNumber || pageNumber > totalPages || !sourceString) {
-    notFound()
-  }
-
   return (
-    <main className="grid gap-2">
+    <main className="flex flex-col gap-2 grow">
       <div
         className="flex justify-center flex-wrap gap-2 whitespace-nowrap text-sm 
           sm:justify-end sm:flex-nowrap md:text-base"
@@ -33,11 +27,11 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
           currentOrder={orderString}
           disabled={sourceString === 'hi'}
           hrefPrefix="../../"
-          hrefSuffix={`/${pageNumber}/${sourceString}`}
+          hrefSuffix={`/${pageNumber || 1}/${sourceString || SourceParam.HIYOBI}`}
         />
         <SourceSliderLink
           currentSource={sourceString}
-          hrefPrefixes={(source) => `../${Math.min(pageNumber, getTotalPages(source))}/`}
+          hrefPrefixes={(source) => `../${Math.min(pageNumber || 1, getTotalPages(source))}/`}
         />
         <ShuffleButton action="random" className="w-fit" href={`/mangas/random/${sourceString}`} iconClassName="w-5" />
       </div>
@@ -55,8 +49,13 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
         </Tooltip>
       </div>
       {children}
-      <div className="flex justify-center overflow-x-auto scrollbar-hidden">
-        <Navigation currentPage={pageNumber} hrefPrefix="../" hrefSuffix={`/${sourceString}`} totalPages={totalPages} />
+      <div className="flex min-w-0 justify-center overflow-x-auto scrollbar-hidden">
+        <Navigation
+          currentPage={pageNumber}
+          hrefPrefix="../"
+          hrefSuffix={`/${sourceString || SourceParam.HIYOBI}`}
+          totalPages={totalPages}
+        />
       </div>
     </main>
   )
@@ -64,14 +63,14 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
 
 function getTotalPages(source: string) {
   switch (source) {
-    case 'ha':
-      return hashaMangaPages.length
-    case 'hi':
-      return 7200
-    case 'hp':
+    case SourceParam.HARPI:
       return harpiMangaPages.length
+    case SourceParam.HASHA:
+      return hashaMangaPages.length
+    case SourceParam.HIYOBI:
+      return 7200
     default:
-      return 0
+      return 10
   }
 }
 

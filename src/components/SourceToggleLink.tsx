@@ -1,16 +1,17 @@
+import { SourceParam } from '@/utils/param'
 import Link from 'next/link'
 
-const sourceIndexMap = {
-  hi: 0,
-  hp: 1,
-  ha: 2,
-} as const
+const sourceIndexMap: Record<string, number> = {
+  [SourceParam.HIYOBI]: 0,
+  [SourceParam.HARPI]: 1,
+  [SourceParam.HASHA]: 2,
+}
 
-const sources = Object.keys(sourceIndexMap) as (keyof typeof sourceIndexMap)[]
+const sources = Object.keys(sourceIndexMap) as SourceParam.HIYOBI[]
 
 type OrderToggleProps = {
-  currentSource: keyof typeof sourceIndexMap
-  hrefPrefixes?: (source: keyof typeof sourceIndexMap) => string
+  currentSource: string
+  hrefPrefixes?: (source: SourceParam) => string
 }
 
 export default function SourceSliderLink({ currentSource, hrefPrefixes }: OrderToggleProps) {
@@ -21,7 +22,7 @@ export default function SourceSliderLink({ currentSource, hrefPrefixes }: OrderT
     >
       {sources.map((source, i) => (
         <Link aria-current={currentSource === source} href={`${hrefPrefixes?.(source) ?? ''}${source}`} key={source}>
-          {i === 0 && (
+          {i === 0 && currentSource && (
             <div
               className="absolute inset-0 bg-zinc-800 rounded-lg border-2 border-zinc-700 transition pointer-events-none"
               style={{ transform: `translateX(${100 * sourceIndexMap[currentSource]}%)` }}
