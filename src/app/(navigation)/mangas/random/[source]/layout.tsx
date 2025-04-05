@@ -2,6 +2,7 @@ import type { BaseLayoutProps } from '@/types/nextjs'
 
 import ShuffleButton from '@/components/ShuffleButton'
 import SourceSliderLink from '@/components/SourceToggleLink'
+import SourceTooltip from '@/components/tooltip/SourceTooltip'
 import { SourceParam, validateSource } from '@/utils/param'
 
 export default async function Layout({ params, children }: BaseLayoutProps) {
@@ -18,6 +19,11 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
           iconClassName="w-5"
         />
       </div>
+      {sourceString && (
+        <div className="flex justify-center whitespace-nowrap">
+          <SourceTooltip source={sourceString} />
+        </div>
+      )}
       {children}
     </main>
   )
