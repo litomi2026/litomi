@@ -11,4 +11,5 @@ export default async function selectBookmarks({ userId }: Params) {
     .select({ mangaId: bookmarkTable.mangaId })
     .from(bookmarkTable)
     .where(sql`${bookmarkTable.userId} = ${userId}`)
+    .orderBy(sql`${bookmarkTable.createdAt} DESC`)
 }
