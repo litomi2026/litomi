@@ -3,9 +3,9 @@ import type { BasePageProps } from '@/types/nextjs'
 import ImageViewer from '@/components/ImageViewer/ImageViewer'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { CANONICAL_URL } from '@/constants/url'
-import { fetchMangaFromHiyobi, fetchMangaImagesFromHiyobi } from '@/crawler/hiyobi'
-import { harpiMangas } from '@/database/harpi'
-import { hashaMangas } from '@/database/hasha'
+import { fetchMangaFromHiyobi, fetchMangaImagesFromHiyobi, fetchMangasFromHiyobi } from '@/crawler/hiyobi'
+import { harpiMangaIdsDesc, harpiMangas } from '@/database/harpi'
+import { hashaMangaIdsDesc, hashaMangas } from '@/database/hasha'
 import { getImageSrc } from '@/utils/manga'
 import { validateId, validateSource } from '@/utils/param'
 import { Metadata } from 'next'
@@ -41,6 +41,21 @@ export async function generateMetadata({ params }: BasePageProps): Promise<Metad
       images: images.slice(0, 3).map((path) => getImageSrc({ path, cdn, id: +id })),
     },
   }
+}
+
+export async function generateStaticParams() {
+  const params: Record<string, unknown>[] = []
+  const idMap: Record<string, string[]> = {
+    ha: hashaMangaIdsDesc.slice(0, 20),
+    hi: (await fetchMangasFromHiyobi({ page: 1 })).map((manga) => String(manga.id)),
+    hp: harpiMangaIdsDesc.slice(0, 20),
+  }
+  for (const source of ['hi', 'ha', 'hp']) {
+    for (const id of idMap[source]) {
+      params.push({ id, source })
+    }
+  }
+  return params
 }
 
 export default async function Page({ params }: BasePageProps) {
