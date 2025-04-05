@@ -1,10 +1,11 @@
+import { captureException } from '@sentry/nextjs'
+
 type HiyobiImage = {
   height: number
   name: string
   url: string
   width: number
 }
-
 type HiyobiLabelValue = {
   display: string
   value: string
@@ -40,7 +41,9 @@ export async function fetchMangaFromHiyobi({ id }: { id: number }) {
   if (res.status === 404) {
     return null
   } else if (!res.ok) {
-    throw new Error('Failed to fetch manga from hi')
+    const body = await res.text()
+    captureException('api.hiyobi.org 서버 오류', { extra: { res, body } })
+    throw new Error('hi 서버에서 망가 이미지를 불러오는데 실패했어요.')
   }
 
   const manga = (await res.json()) as HiyobiManga
@@ -56,13 +59,16 @@ export async function fetchMangaImagesFromHiyobi({ id }: { id: number }) {
   if (res.status === 404) {
     return null
   } else if (!res.ok) {
-    throw new Error('Failed to fetch manga images from hi')
+    const body = await res.text()
+    captureException('api-kh.hiyobi.org 서버 오류', { extra: { res, body } })
+    throw new Error('hi 서버에서 망가 이미지를 불러오는데 실패했어요.')
   }
 
   const hiyobiImages = (await res.json()) as HiyobiImage[]
   return hiyobiImages.map((image) => image.url)
 }
 
+/** @deprecated */
 export async function fetchMangaImagesFromKHentai({ id }: { id: number }) {
   const res = await fetch(`https://k-hentai.org/hiyobi/list?id=${id}`, {
     referrerPolicy: 'no-referrer',
@@ -72,7 +78,9 @@ export async function fetchMangaImagesFromKHentai({ id }: { id: number }) {
   if (res.status === 404) {
     return null
   } else if (!res.ok) {
-    throw new Error('Failed to fetch manga images from k')
+    const body = await res.text()
+    captureException('k-hentai.org 서버 오류', { extra: { res, body } })
+    throw new Error('k 서버에서 망가 이미지를 불러오는데 실패했어요.')
   }
 
   const hiyobiImages = (await res.json()) as HiyobiImage[]
@@ -124,7 +132,7 @@ function convertHiyobiToManga({
   like,
   like_anonymous,
 }: HiyobiManga) {
-  const images = [getThumbnailURL(id)]
+  const images = [getKHentaiThumbnailURL(id)]
   images.length = filecount
   return {
     id,
@@ -157,7 +165,7 @@ const hiyobiTypeMap = {
   10: '기타',
 } as const
 
-function getThumbnailURL(id: number) {
+function getKHentaiThumbnailURL(id: number) {
   const millions = Math.floor(id / 1_000_000)
   const thousands = Math.floor((id % 1_000_000) / 1_000)
   const remainder = id % 1_000

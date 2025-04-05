@@ -97,9 +97,12 @@ export function BookmarkButtonError({ reset }: ErrorBoundaryFallbackProps) {
   )
 }
 
-export function BookmarkButtonSkeleton() {
+export function BookmarkButtonSkeleton({ className = '' }: { className?: string }) {
   return (
-    <button className="flex items-center gap-1 border-2 w-fit rounded-lg p-1 px-2 bg-zinc-900 transition" disabled>
+    <button
+      className={`flex justify-center items-center gap-1 border-2 w-fit rounded-lg p-1 px-2 bg-zinc-900 transition ${className}`}
+      disabled
+    >
       <IconBookmark className="w-5" />
       <span className="hidden md:block">북마크</span>
     </button>
