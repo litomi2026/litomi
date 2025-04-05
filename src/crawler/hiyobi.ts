@@ -43,7 +43,7 @@ export async function fetchMangaFromHiyobi({ id }: { id: number }) {
   } else if (!res.ok) {
     const body = await res.text()
     captureException('api.hiyobi.org 서버 오류', { extra: { res, body } })
-    throw new Error('hi 서버에서 망가 이미지를 불러오는데 실패했어요.')
+    throw new Error('hi 서버에서 망가를 불러오는데 실패했어요.')
   }
 
   const manga = (await res.json()) as HiyobiManga
