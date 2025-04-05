@@ -12,7 +12,7 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 export const dynamic = 'error'
-export const revalidate = 20
+export const revalidate = 15
 
 export const metadata: Metadata = {
   alternates: {

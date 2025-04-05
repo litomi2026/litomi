@@ -109,7 +109,7 @@ export async function fetchRandomMangasFromHiyobi() {
   const res = await fetch('https://api.hiyobi.org/random', {
     method: 'POST',
     referrerPolicy: 'no-referrer',
-    next: { revalidate: 20 },
+    next: { revalidate: 15 },
   })
 
   if (res.status === 404) {
