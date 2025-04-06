@@ -1,3 +1,4 @@
+import { CookieKey } from '@/constants/storage'
 import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
@@ -16,6 +17,8 @@ export async function GET() {
   const userId = await getUserIdFromAccessToken(cookieStore)
 
   if (!userId) {
+    cookieStore.delete(CookieKey.ACCESS_TOKEN)
+    cookieStore.delete(CookieKey.REFRESH_TOKEN)
     return new Response(null, { status: 401 })
   }
 

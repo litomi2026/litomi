@@ -5,17 +5,19 @@ import { ScreenFit } from '@/components/ImageViewer/store/screenFit'
 import { useTouchOrientationStore } from '@/components/ImageViewer/store/touchOrientation'
 import useImageNavigation from '@/hook/useImageNavigation'
 import { Manga } from '@/types/manga'
-import { memo, useCallback, useRef } from 'react'
+import { memo, useCallback, useEffect, useRef } from 'react'
 
 import MangaImage from '../MangaImage'
 import { useBrightnessStore } from './store/brightness'
 import { useImageIndexStore } from './store/imageIndex'
 
-const HORIZONTAL_SWIPE_THRESHOLD = 50 // 가로 스와이프 감지 임계값 (px)
-const VERTICAL_SWIPE_THRESHOLD = 10 // 세로 스와이프 감지 임계값 (px)
+const HORIZONTAL_SWIPE_THRESHOLD = 50 // 가로 스와이프 임계값 (px)
+const VERTICAL_SWIPE_THRESHOLD = 10 // 세로 스와이프 임계값 (px)
 const EDGE_CLICK_THRESHOLD = 1 / 3 // 화면 3등분 시의 경계값
 const IMAGE_PREFETCH_AMOUNT = 6
 const IMAGE_FETCH_PRIORITY_THRESHOLD = 3
+const SCROLL_THRESHOLD = 1
+const SCROLL_THROTTLE = 500
 
 const screenFitStyle = {
   width: `overflow-y-auto [&_li]:mx-auto [&_li]:w-fit [&_li]:max-w-full [&_li]:first:h-full [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:h-auto`,
@@ -49,6 +51,7 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Props) {
   const swipeDetectedRef = useRef(false)
   const activePointers = useRef(new Set<number>())
   const ulRef = useRef<HTMLUListElement>(null)
+  const throttleRef = useRef(false)
 
   const { prevPage, nextPage } = useImageNavigation({
     maxIndex: images.length - 1,
@@ -164,6 +167,34 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Props) {
     },
     [getTouchOrientation, nextPage, onClick, prevPage],
   )
+
+  // Wheel 이벤트: 데스크탑/터치패드용
+  useEffect(() => {
+    const handleWheel = ({ deltaX, deltaY }: WheelEvent) => {
+      if (throttleRef.current) return
+
+      throttleRef.current = true
+      setTimeout(() => {
+        throttleRef.current = false
+      }, SCROLL_THROTTLE)
+
+      if (Math.abs(deltaY) >= Math.abs(deltaX)) {
+        if (deltaY > SCROLL_THRESHOLD) {
+          nextPage()
+        } else if (deltaY < -SCROLL_THRESHOLD) {
+          prevPage()
+        }
+      } else {
+        if (deltaX > SCROLL_THRESHOLD) {
+          nextPage()
+        } else if (deltaX < -SCROLL_THRESHOLD) {
+          prevPage()
+        }
+      }
+    }
+    window.addEventListener('wheel', handleWheel, { passive: true })
+    return () => window.removeEventListener('wheel', handleWheel)
+  }, [nextPage, prevPage])
 
   return (
     <ul

@@ -1,3 +1,4 @@
+import BookmarkImportButton from '@/components/BookmarkImportButton'
 import MangaCard from '@/components/card/MangaCard'
 import { fetchMangaFromHiyobi } from '@/crawler/hiyobi'
 import { harpiMangas } from '@/database/harpi'
@@ -63,10 +64,13 @@ export default async function Page() {
   )
 
   return (
-    <ul className="grid gap-2 md:grid-cols-2">
-      {bookmarkedMangas.filter(checkDefined).map((manga, i) => (
-        <MangaCard key={manga.id} manga={manga} source={sources[i]} />
-      ))}
-    </ul>
+    <>
+      <BookmarkImportButton />
+      <ul className="grid gap-2 md:grid-cols-2">
+        {bookmarkedMangas.filter(checkDefined).map((manga, i) => (
+          <MangaCard key={manga.id} manga={manga} source={sources[i]} />
+        ))}
+      </ul>
+    </>
   )
 }
