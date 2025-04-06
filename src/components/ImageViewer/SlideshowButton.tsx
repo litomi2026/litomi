@@ -96,9 +96,9 @@ function SlideshowButton({ maxImageIndex, offset, onIntervalChange }: Props) {
             <label htmlFor={intervalInputId}>주기</label>
             <div className="flex items-center gap-2">
               <input
-                autoFocus={false}
                 className="border-2 w-16 text-foreground rounded-lg px-2 py-0.5 border-zinc-700 focus:outline-none focus:ring-2 focus:ring-zinc-500"
                 defaultValue={5}
+                disabled={!isOpened}
                 id={intervalInputId}
                 max={999}
                 min={1}
