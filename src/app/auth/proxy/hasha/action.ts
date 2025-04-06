@@ -1,23 +1,14 @@
 'use server'
 
 import { db } from '@/database/drizzle'
-import { userTable } from '@/database/schema'
-import { setAccessTokenCookie, setRefreshTokenCookie } from '@/utils/cookie'
-import { compare } from 'bcrypt'
-import { sql } from 'drizzle-orm'
+import { bookmarkTable } from '@/database/schema'
+import { getUserIdFromAccessToken } from '@/utils/cookie'
 import { cookies } from 'next/headers'
 import { z } from 'zod'
 
 const schema = z.object({
-  username: z
-    .string()
-    .min(2, { message: '아이디는 최소 2자 이상이어야 합니다.' })
-    .max(32, { message: '아이디는 최대 32자까지 입력할 수 있습니다.' })
-    .regex(/^[a-zA-Z][a-zA-Z0-9-._~]+$/, { message: '아이디는 알파벳, 숫자 - . _ ~ 로만 구성해야 합니다.' }),
-  pwd: z
-    .string()
-    .min(8, { message: '비밀번호는 최소 8자 이상이어야 합니다.' })
-    .max(64, { message: '비밀번호는 최대 64자까지 입력할 수 있습니다.' }),
+  username: z.string(),
+  pwd: z.string(),
 })
 
 export interface Bookmark {
@@ -71,7 +62,6 @@ export default async function hashaLogin(_prevState: unknown, formData: FormData
   const validatedFields = schema.safeParse({
     username: formData.get('username'),
     pwd: formData.get('pwd'),
-    remember: formData.get('remember'),
   })
 
   if (!validatedFields.success) {
@@ -81,11 +71,19 @@ export default async function hashaLogin(_prevState: unknown, formData: FormData
     }
   }
 
+  const cookieStore = await cookies()
+  const userId = await getUserIdFromAccessToken(cookieStore)
+
+  if (!userId) {
+    return { error: '로그인 후 시도해주세요.', formData }
+  }
+
   try {
     const headers = {
       'Content-Type': 'application/json',
       referer: 'https://hasha.in',
       'User-Agent':
+        // TODO: 랜덤화하기
         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
     }
 
@@ -95,9 +93,9 @@ export default async function hashaLogin(_prevState: unknown, formData: FormData
       body: JSON.stringify(validatedFields.data),
     })
 
-    // 외부 API의 응답 텍스트를 가져옵니다.
     const loginResult = (await loginResponse.json()) as ResponseHashaLogin
 
+    // TODO: 모든 페이지 가져오기, 실패 시 exponential backoff 적용하기
     const bookmarkResponse = await fetch('https://hasha.in/api/manga', {
       method: 'POST',
       headers: {
@@ -112,11 +110,21 @@ export default async function hashaLogin(_prevState: unknown, formData: FormData
       }),
     })
 
-    // 외부 API의 응답 텍스트를 가져옵니다.
     const bookmarkResult = (await bookmarkResponse.json()) as ResponseHashaBookmark
+    const userIdNumber = +userId
+    const bookmarkedMangaIds = bookmarkResult.data.map(({ mangaId }) => ({ userId: +userIdNumber, mangaId }))
+    await db.insert(bookmarkTable).values(bookmarkedMangaIds).onConflictDoNothing()
 
-    return { success: true, bookmarkResult }
+    return { success: true }
   } catch (error) {
-    return { error, formData }
+    if (error instanceof Error) {
+      return { error: error.message, formData }
+    } else if (typeof error === 'object' && error && 'message' in error && typeof error.message === 'string') {
+      return { error: error.message, formData }
+    } else if (typeof error === 'string') {
+      return { error, formData }
+    } else {
+      return { error: '북마크를 불러오는 도중 오류가 발생했어요.', formData }
+    }
   }
 }
