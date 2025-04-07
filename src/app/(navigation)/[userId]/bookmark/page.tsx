@@ -1,4 +1,4 @@
-import BookmarkImportButton from '@/components/BookmarkImportButton'
+import BookmarkImportButton, { BookmarkImportButtonSkeleton } from '@/components/BookmarkImportButton'
 import MangaCard from '@/components/card/MangaCard'
 import { fetchMangaFromHiyobi } from '@/crawler/hiyobi'
 import { harpiMangas } from '@/database/harpi'
@@ -6,6 +6,7 @@ import { hashaMangas } from '@/database/hasha'
 import selectBookmarks from '@/sql/selectBookmarks'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
 import { checkDefined } from '@/utils/type'
+import { ErrorBoundary, Suspense } from '@suspensive/react'
 import { unstable_cache } from 'next/cache'
 import { cookies } from 'next/headers'
 import { notFound } from 'next/navigation'
@@ -63,7 +64,11 @@ export default async function Page() {
 
   return (
     <>
-      <BookmarkImportButton />
+      <ErrorBoundary fallback={BookmarkImportButtonSkeleton}>
+        <Suspense clientOnly fallback={<BookmarkImportButtonSkeleton />}>
+          <BookmarkImportButton />
+        </Suspense>
+      </ErrorBoundary>
       <ul className="grid gap-2 md:grid-cols-2">
         {bookmarkedMangas.filter(checkDefined).map((manga, i) => (
           <MangaCard key={manga.id} manga={manga} source={sources[i]} />

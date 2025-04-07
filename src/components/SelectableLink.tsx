@@ -15,7 +15,7 @@ export default memo(SelectableLink)
 
 function SelectableLink({ className, iconClassName, Icon, children, href, hrefMatch }: Props) {
   const pathname = usePathname()
-  const isSelected = pathname.includes(hrefMatch ?? href.toString())
+  const isSelected = hrefMatch ? pathname.includes(hrefMatch) : pathname === href.toString()
   const isActive = pathname === href.toString()
 
   return (
@@ -30,7 +30,7 @@ function SelectableLink({ className, iconClassName, Icon, children, href, hrefMa
         group-hover:bg-zinc-800 group-active:scale-90"
       >
         {cloneElement(Icon, {
-          className: `w-6 transition-transform ${iconClassName ?? ''}`,
+          className: `w-6 transition ${iconClassName ?? ''}`,
           selected: isSelected,
         })}
         <span className="hidden min-w-0 2xl:block">{children}</span>
