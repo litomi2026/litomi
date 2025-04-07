@@ -1,10 +1,12 @@
 'use client'
 
 import hashaLogin from '@/app/auth/proxy/hasha/action'
+import useMeQuery from '@/query/useMeQuery'
 import { useActionState, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 import IconBookmark from './icons/IconBookmark'
+import LoginLink from './LoginLink'
 import Modal from './ui/Modal'
 
 const initialState = {} as Awaited<ReturnType<typeof hashaLogin>>
@@ -12,6 +14,20 @@ const initialState = {} as Awaited<ReturnType<typeof hashaLogin>>
 export default function BookmarkImportButton() {
   const [isOpened, setIsOpened] = useState(false)
   const [{ success, error, formData }, formAction, pending] = useActionState(hashaLogin, initialState)
+  const { data: me } = useMeQuery()
+
+  function handleButtonClick() {
+    if (me) {
+      setIsOpened(true)
+    } else {
+      toast.warning(
+        <div className="flex gap-2 items-center">
+          <div>로그인 해주세요.</div>
+          <LoginLink>로그인하기</LoginLink>
+        </div>,
+      )
+    }
+  }
 
   useEffect(() => {
     if (error) {
@@ -33,8 +49,9 @@ export default function BookmarkImportButton() {
   return (
     <>
       <button
-        className="text-sm flex items-center gap-2 font-semibold border-2 rounded-xl w-fit px-2 py-1 mx-auto"
-        onClick={() => setIsOpened(true)}
+        className="flex items-center gap-2 text-sm font-semibold border-2 rounded-xl w-fit px-2 py-1 mx-auto"
+        disabled={pending}
+        onClick={handleButtonClick}
       >
         <IconBookmark className="w-5" />
         북마크 불러오기
@@ -74,7 +91,7 @@ export default function BookmarkImportButton() {
               <input
                 className="p-2 rounded border border-zinc-600 bg-zinc-800 text-white"
                 defaultValue={String(formData?.get('username') ?? '')}
-                disabled={pending}
+                disabled={pending || !isOpened}
                 id="username"
                 name="username"
                 placeholder="아이디"
@@ -86,7 +103,7 @@ export default function BookmarkImportButton() {
               <input
                 className="p-2 rounded border border-zinc-600 bg-zinc-800 text-white"
                 defaultValue={String(formData?.get('pwd') ?? '')}
-                disabled={pending}
+                disabled={pending || !isOpened}
                 id="pwd"
                 name="pwd"
                 placeholder="비밀번호"
@@ -97,6 +114,7 @@ export default function BookmarkImportButton() {
             <button
               className="text-sm relative font-semibold bg-brand-gradient hover:brightness-110 active:brightness-100 text-background rounded-lg px-4 py-2 transition
                 before:absolute before:inset-0 before:rounded-lg before:border-2 before:border-white/40"
+              disabled={pending}
               type="submit"
             >
               hasha.in 로그인
@@ -105,5 +123,14 @@ export default function BookmarkImportButton() {
         </form>
       </Modal>
     </>
+  )
+}
+
+export function BookmarkImportButtonSkeleton() {
+  return (
+    <button className="flex items-center gap-2 text-sm font-semibold border-2 rounded-xl w-fit px-2 py-1 mx-auto">
+      <IconBookmark className="w-5" />
+      북마크 불러오기
+    </button>
   )
 }

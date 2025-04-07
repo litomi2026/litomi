@@ -3,6 +3,8 @@
 import { db } from '@/database/drizzle'
 import { bookmarkTable } from '@/database/schema'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
+import { retryWithExponentialBackoff } from '@/utils/retry'
+import { captureException } from '@sentry/nextjs'
 import { cookies } from 'next/headers'
 import { z } from 'zod'
 
@@ -45,18 +47,22 @@ export interface Image {
   width: number
 }
 
-export interface ResponseHashaBookmark {
-  data: Bookmark[]
-  entireMangaCount: number
-  maxPage: number
-  msg: string
-  nowPage: string
-}
+export type ResponseHashaBookmark =
+  | { code: number; msg: string }
+  | {
+      data: Bookmark[]
+      entireMangaCount: number
+      maxPage: number
+      msg: string
+      nowPage: string
+    }
 
-type ResponseHashaLogin = {
-  msg: string
-  token: string
-}
+type ResponseHashaLogin =
+  | { code: number; msg: string }
+  | {
+      msg: string
+      token: string
+    }
 
 export default async function hashaLogin(_prevState: unknown, formData: FormData) {
   const validatedFields = schema.safeParse({
@@ -73,50 +79,52 @@ export default async function hashaLogin(_prevState: unknown, formData: FormData
 
   const cookieStore = await cookies()
   const userId = await getUserIdFromAccessToken(cookieStore)
-
-  if (!userId) {
-    return { error: '로그인 후 시도해주세요.', formData }
-  }
+  if (!userId) return { error: '로그인 후 시도해주세요.', formData }
 
   try {
+    const randomNumber = (Math.random() * 30).toFixed(0).padStart(2, '0')
     const headers = {
       'Content-Type': 'application/json',
       referer: 'https://hasha.in',
-      'User-Agent':
-        // TODO: 랜덤화하기
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+      'User-Agent': `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/1${randomNumber}.0.0.0 Safari/537.36`,
     }
 
-    const loginResponse = await fetch('https://hasha.in/api/auth/login', {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(validatedFields.data),
-    })
+    const loginResponse = await retryWithExponentialBackoff(() =>
+      fetch('https://hasha.in/api/auth/login', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(validatedFields.data),
+      }),
+    )
 
     const loginResult = (await loginResponse.json()) as ResponseHashaLogin
+    if (!('token' in loginResult)) return { error: loginResult.msg, formData }
 
-    // TODO: 모든 페이지 가져오기, 실패 시 exponential backoff 적용하기
-    const bookmarkResponse = await fetch('https://hasha.in/api/manga', {
-      method: 'POST',
-      headers: {
-        ...headers,
-        Authorization: `Bearer ${loginResult.token}`,
-      },
-      body: JSON.stringify({
-        loadBookmarked: true,
-        page: '1',
-        sort: 'date',
-        order: -1,
-      }),
-    })
+    const bookmarkHeaders = { ...headers, Authorization: `Bearer ${loginResult.token}` }
+    const bookmarkResponse = await retryWithExponentialBackoff(
+      () =>
+        fetch('https://hasha.in/api/manga', {
+          method: 'POST',
+          headers: bookmarkHeaders,
+          body: JSON.stringify({ loadBookmarked: true, page: 1 }),
+        }),
+      { maxRetries: 8 },
+    )
 
     const bookmarkResult = (await bookmarkResponse.json()) as ResponseHashaBookmark
+    if (!('data' in bookmarkResult)) return { error: bookmarkResult.msg, formData }
+
+    const bookmarkIds = bookmarkResult.data.map(({ mangaId }) => mangaId)
+    // TODO: 모든 북마크를 가져오기 위해 maxPage를 사용하여 반복문 돌리기
+    // const maxPage = bookmarkResult.maxPage
     const userIdNumber = +userId
-    const bookmarkedMangaIds = bookmarkResult.data.map(({ mangaId }) => ({ userId: +userIdNumber, mangaId }))
+    const bookmarkedMangaIds = bookmarkIds.map((mangaId) => ({ userId: userIdNumber, mangaId }))
     await db.insert(bookmarkTable).values(bookmarkedMangaIds).onConflictDoNothing()
 
-    return { success: true }
+    return { success: true, message: '북마크를 불러왔어요.' }
   } catch (error) {
+    captureException(error, { extra: { name: 'hasha.in 로그인' } })
+
     if (error instanceof Error) {
       return { error: error.message, formData }
     } else if (typeof error === 'object' && error && 'message' in error && typeof error.message === 'string') {
