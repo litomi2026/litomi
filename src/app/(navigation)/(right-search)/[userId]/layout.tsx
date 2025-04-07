@@ -1,7 +1,8 @@
-import LogoutButton from '@/components/header/LogoutButton'
+import LogoutButton, { LogoutButtonSkeleton } from '@/components/header/LogoutButton'
 import IconCalendar from '@/components/icons/IconCalendar'
 import { BaseLayoutProps } from '@/types/nextjs'
 import { getUserId } from '@/utils/param'
+import { ErrorBoundary, Suspense } from '@suspensive/react'
 import dayjs from 'dayjs'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -48,7 +49,11 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
               <p className="text-zinc-500 font-mono break-all">@{user.username}</p>
             </div>
           </div>
-          <LogoutButton />
+          <ErrorBoundary fallback={() => null}>
+            <Suspense clientOnly fallback={<LogoutButtonSkeleton />}>
+              <LogoutButton />
+            </Suspense>
+          </ErrorBoundary>
         </div>
         {/* 상세 정보 */}
         <div>
@@ -69,13 +74,11 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
         {/* 네비게이션 탭 */}
       </div>
       <nav
-        className="sticky top-0 z-20 border-b-2 flex gap-6 mt-2 bg-background/70 backdrop-blur
+        className="sticky top-0 z-20 border-b-2 flex gap-6 mt-2 bg-background/80 backdrop-blur
           [&_a]:block [&_a]:mx-3 [&_a]:transition [&_a]:min-w-4 [&_a]:p-2.5 [&_a]:text-center [&_a]:text-zinc-600 [&_a]:border-b-4 [&_a]:border-transparent 
           [&_a]:hover:border-zinc-500 [&_a]:hover:font-bold [&_a]:hover:text-foreground [&_a]:aria-current:border-zinc-500 [&_a]:aria-current:font-bold [&_a]:aria-current:text-foreground"
       >
-        <Link aria-current href={`/@${user.username}`}>
-          게시글
-        </Link>
+        <Link href={`/@${user.username}`}>게시글</Link>
         <Link href={`/@${user.username}/reply`}>답글</Link>
         <Link href={`/@${user.username}/bookmark`}>북마크</Link>
       </nav>
