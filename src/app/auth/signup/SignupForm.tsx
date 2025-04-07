@@ -25,7 +25,7 @@ export default function SignupForm() {
 
   useEffect(() => {
     if (error) {
-      toast.error(error.id?.[0] ?? error.password?.[0] ?? error['password-confirm']?.[0] ?? error.nickname?.[0])
+      toast.error(error.loginId?.[0] ?? error.password?.[0] ?? error['password-confirm']?.[0] ?? error.nickname?.[0])
     }
   }, [error])
 
@@ -43,6 +43,9 @@ export default function SignupForm() {
     if (formElement.password.value !== formElement['password-confirm'].value) {
       e.preventDefault()
       toast.warning('비밀번호가 일치하지 않습니다.')
+    } else if (formElement.loginId.value === formElement.password.value) {
+      e.preventDefault()
+      toast.warning('아이디와 비밀번호를 다르게 입력해주세요.')
     }
   }
 
@@ -74,14 +77,14 @@ export default function SignupForm() {
             </Tooltip>
           </div>
           <input
-            aria-invalid={(error?.id?.length ?? 0) > 0}
+            aria-invalid={(error?.loginId?.length ?? 0) > 0}
             autoFocus
-            defaultValue={String(formData?.get('id') ?? '')}
+            defaultValue={String(formData?.get('loginId') ?? '')}
             disabled={pending}
-            id="id"
+            id="loginId"
             maxLength={32}
             minLength={2}
-            name="id"
+            name="loginId"
             pattern={loginIdPattern}
             placeholder="아이디를 입력하세요"
             required
