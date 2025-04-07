@@ -1,3 +1,4 @@
+import LogoutButton from '@/components/header/LogoutButton'
 import IconCalendar from '@/components/icons/IconCalendar'
 import { BaseLayoutProps } from '@/types/nextjs'
 import { getUserId } from '@/utils/param'
@@ -28,7 +29,7 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
   return (
     <div className="flex flex-col grow">
       {/* Cover Image */}
-      <div className="relative h-48 w-full">
+      <div className="relative h-48 w-full shrink-0">
         <Image
           alt="Cover Image"
           className="object-cover"
@@ -39,15 +40,18 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
       </div>
       {/* 프로필 정보 영역 */}
       <div className="grid gap-4 px-4">
-        <div className="relative -mt-16 flex items-end">
+        <div className="relative -mt-16 flex justify-between items-end">
           {/* Profile Image */}
-          <div className="w-32 aspect-square shrink-0 border-4 rounded-full overflow-hidden">
-            <Image alt="Profile Image" className="object-cover" height={128} src={user.profileImageUrl} width={128} />
+          <div className="flex items-end">
+            <div className="w-32 aspect-square shrink-0 border-4 rounded-full overflow-hidden">
+              <Image alt="Profile Image" className="object-cover" height={128} src={user.profileImageUrl} width={128} />
+            </div>
+            <div className="ml-4">
+              <h1 className="text-2xl font-bold line-clamp-1">{user.displayName}</h1>
+              <p className="text-zinc-500 font-mono break-all">@{user.username}</p>
+            </div>
           </div>
-          <div className="ml-4">
-            <h1 className="text-2xl font-bold line-clamp-1">{user.displayName}</h1>
-            <p className="text-zinc-500 font-mono break-all">@{user.username}</p>
-          </div>
+          <LogoutButton />
         </div>
         {/* 상세 정보 */}
         <div>
