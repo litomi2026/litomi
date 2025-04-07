@@ -69,7 +69,7 @@ function MangaCardPreviewImage({ className, manga, mangaIndex = 0, href }: Props
       </Link>
 
       {/* 좌우 이동 버튼 (JavaScript로 동적으로 업데이트) */}
-      <div className="[&_button]:[@media(pointer:coarse)]:hidden [&_button]:absolute [&_button]:top-1/2 [&_button]:-translate-y-1/2 [&_button]:z-10 [&_button]:rounded-full [&_button]:bg-zinc-700/50 [&_button]:text-white [&_button]:p-2 [&_button]:ring-zinc-400 [&_button]:active:ring-2">
+      <div className="[&_button]:[@media(pointer:coarse)]:hidden [&_button]:absolute [&_button]:top-1/2 [&_button]:-translate-y-1/2 [&_button]:z-10 [&_button]:rounded-full [&_button]:bg-zinc-700/50 [&_button]:text-foreground [&_button]:p-2 [&_button]:ring-zinc-400 [&_button]:active:ring-2">
         <button aria-label="이전 이미지" className="left-1" onClick={() => scrollToSlide(prevIndex)}>
           <IconPrevPage className="w-4" />
         </button>

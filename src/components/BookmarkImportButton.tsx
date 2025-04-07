@@ -89,7 +89,7 @@ export default function BookmarkImportButton() {
             <div>
               <label htmlFor="username">아이디</label>
               <input
-                className="p-2 rounded border border-zinc-600 bg-zinc-800 text-white"
+                className="p-2 rounded border border-zinc-600 bg-zinc-800 text-foreground"
                 defaultValue={String(formData?.get('username') ?? '')}
                 disabled={pending || !isOpened}
                 id="username"
@@ -101,7 +101,7 @@ export default function BookmarkImportButton() {
             <div>
               <label htmlFor="pwd">비밀번호</label>
               <input
-                className="p-2 rounded border border-zinc-600 bg-zinc-800 text-white"
+                className="p-2 rounded border border-zinc-600 bg-zinc-800 text-foreground"
                 defaultValue={String(formData?.get('pwd') ?? '')}
                 disabled={pending || !isOpened}
                 id="pwd"
@@ -113,7 +113,7 @@ export default function BookmarkImportButton() {
             </div>
             <button
               className="text-sm relative font-semibold bg-brand-gradient hover:brightness-110 active:brightness-100 text-background rounded-lg px-4 py-2 transition
-                before:absolute before:inset-0 before:rounded-lg before:border-2 before:border-white/40"
+                before:absolute before:inset-0 before:rounded-lg before:border-2 before:border-foreground/40"
               disabled={pending}
               type="submit"
             >

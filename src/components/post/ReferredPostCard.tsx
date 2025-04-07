@@ -22,7 +22,7 @@ export default function ReferredPostCard({ referredPost }: Props) {
       <div className="grid gap-1 p-3">
         <div className="flex min-w-0 justify-between gap-1">
           <div className="flex min-w-0 gap-1 whitespace-nowrap">
-            <Squircle className="w-6 flex-shrink-0" src={author?.profileImageURLs?.[0]} textClassName="text-white">
+            <Squircle className="w-6 flex-shrink-0" src={author?.profileImageURLs?.[0]} textClassName="text-foreground">
               {author?.nickname.slice(0, 2) ?? '탈퇴'}
             </Squircle>
             <div aria-disabled={!author} className="min-w-0 max-w-40 overflow-hidden font-semibold">

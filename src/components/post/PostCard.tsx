@@ -29,7 +29,7 @@ export default function PostCard({ post, isThread }: Props) {
       className={`[&:has(.child:hover)]:bg-zinc-900 grid min-w-0 grid-cols-[auto_1fr] gap-2 px-4 pb-2 pt-3 transition ${isThread ? '' : 'border-t-2'}`}
     >
       <div className="relative flex flex-col items-center gap-1">
-        <Squircle className="w-10" src={author?.profileImageURLs?.[0]} textClassName="text-white">
+        <Squircle className="w-10" src={author?.profileImageURLs?.[0]} textClassName="text-foreground">
           {author?.nickname.slice(0, 2) ?? '탈퇴'}
         </Squircle>
         {isThread && (

@@ -120,7 +120,7 @@ function SlideshowButton({ maxImageIndex, offset, onIntervalChange }: Props) {
             />
           </div>
           <div className="grid gap-2 pt-6 text-sm [&_button]:hover:bg-zinc-800 [&_button]:active:bg-zinc-900 [&_button]:rounded-full [&_button]:transition">
-            <button className="border-2 p-2 font-bold text-white transition border-zinc-700" type="submit">
+            <button className="border-2 p-2 font-bold text-foreground transition border-zinc-700" type="submit">
               시작
             </button>
             <button className="p-2 text-zinc-500" onClick={() => setIsOpened(false)} type="button">

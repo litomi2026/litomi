@@ -16,7 +16,7 @@ export default function PublishButton() {
         [&_button]:rounded-full [&_button]:disabled:opacity-50 [&_button]:transition [&_button]:border-2 [&_button]:border-zinc-600"
       >
         <button className="p-3 2xl:hidden" onClick={() => setIsOpened(true)}>
-          <IconPen className="w-6 text-white" />
+          <IconPen className="w-6 text-foreground" />
         </button>
         <button className="w-11/12 p-4 hidden 2xl:block" onClick={() => setIsOpened(true)}>
           게시하기

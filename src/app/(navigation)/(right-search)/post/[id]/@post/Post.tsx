@@ -57,7 +57,7 @@ export default function Post({ post }: Props) {
           <span>{dayjs(post.createdAt).format('YYYY-MM-DD HH:mm')}</span>
           <span>·</span>
           <span className="text-sm">
-            <span className="font-bold text-black dark:text-white">{101}</span> 조회수
+            <span className="font-bold">{101}</span> 조회수
           </span>
         </div>
         <div className="flex justify-between gap-1 border-y-2 px-2 py-1 text-sm">
