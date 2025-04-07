@@ -31,7 +31,7 @@ export default function OrderToggleLink({
         <div
           aria-hidden={!currentOrder}
           className="absolute inset-0 bg-zinc-700 bg-brand-gradient rounded-lg pointer-events-none transition aria-hidden:opacity-0
-            before:absolute before:inset-0 before:rounded-lg before:border-2 before:border-white/40"
+            before:absolute before:inset-0 before:rounded-lg before:border-2 before:border-foreground/40"
           style={{ transform: `translateX(${100 * selectedOrderIndex}%)` }}
         />
         <span className="relative">내림차순</span>

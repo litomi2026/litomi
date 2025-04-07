@@ -25,7 +25,7 @@ export default function SignupForm() {
 
   useEffect(() => {
     if (error) {
-      toast.error(error.id?.[0] ?? error.password?.[0] ?? error['password-confirm']?.[0] ?? error.nickname?.[0])
+      toast.error(error.loginId?.[0] ?? error.password?.[0] ?? error['password-confirm']?.[0] ?? error.nickname?.[0])
     }
   }, [error])
 
@@ -43,6 +43,9 @@ export default function SignupForm() {
     if (formElement.password.value !== formElement['password-confirm'].value) {
       e.preventDefault()
       toast.warning('비밀번호가 일치하지 않습니다.')
+    } else if (formElement.loginId.value === formElement.password.value) {
+      e.preventDefault()
+      toast.warning('아이디와 비밀번호를 다르게 입력해주세요.')
     }
   }
 
@@ -74,14 +77,14 @@ export default function SignupForm() {
             </Tooltip>
           </div>
           <input
-            aria-invalid={(error?.id?.length ?? 0) > 0}
+            aria-invalid={(error?.loginId?.length ?? 0) > 0}
             autoFocus
-            defaultValue={String(formData?.get('id') ?? '')}
+            defaultValue={String(formData?.get('loginId') ?? '')}
             disabled={pending}
-            id="id"
+            id="loginId"
             maxLength={32}
             minLength={2}
-            name="id"
+            name="loginId"
             pattern={loginIdPattern}
             placeholder="아이디를 입력하세요"
             required
@@ -167,78 +170,5 @@ export default function SignupForm() {
 }
 
 export function SignupFormSkeleton() {
-  return (
-    <form
-      className="grid gap-6 
-        [&_label]:block [&_label]:text-sm [&_label]:md:text-base [&_label]:font-medium [&_label]:text-zinc-300
-        [&_input]:mt-1.5 [&_input]:w-full [&_input]:rounded-md [&_input]:bg-zinc-800 [&_input]:border [&_input]:border-zinc-600 
-        [&_input]:px-3 [&_input]:py-2 [&_input]:placeholder-zinc-500 [&_input]:focus:outline-none [&_input]:focus:ring-2 [&_input]:focus:ring-zinc-500 
-        [&_input]:focus:border-transparent"
-    >
-      <div className="grid gap-4">
-        <div>
-          <div className="flex items-center gap-1">
-            <label htmlFor="id">
-              아이디 <span className="text-red-500">*</span>
-            </label>
-            <IconInfo className="w-4 md:w-5" />
-          </div>
-          <input
-            id="id"
-            maxLength={32}
-            minLength={2}
-            name="id"
-            pattern={loginIdPattern}
-            placeholder="아이디를 입력하세요"
-            required
-          />
-        </div>
-        <div>
-          <div className="flex items-center gap-1">
-            <label htmlFor="password">
-              비밀번호 <span className="text-red-500">*</span>
-            </label>
-            <IconInfo className="w-4 md:w-5" />
-          </div>
-          <input
-            id="password"
-            maxLength={64}
-            minLength={8}
-            name="password"
-            pattern={passwordPattern}
-            placeholder="비밀번호를 입력하세요"
-            required
-            type="password"
-          />
-        </div>
-        <div>
-          <label htmlFor="password-confirm">
-            비밀번호 확인 <span className="text-red-500">*</span>
-          </label>
-          <input
-            id="password-confirm"
-            name="password-confirm"
-            placeholder="비밀번호를 다시 입력하세요"
-            required
-            type="password"
-          />
-        </div>
-        <div>
-          <div className="flex items-center gap-1">
-            <label htmlFor="nickname">닉네임</label>
-            <IconInfo className="w-4 md:w-5" />
-          </div>
-          <input id="nickname" maxLength={32} minLength={2} name="nickname" placeholder="닉네임을 입력하세요" />
-        </div>
-      </div>
-      <button
-        className="group border-2 border-brand-gradient font-medium rounded-xl focus:outline-none focus:ring-3 focus:ring-zinc-500"
-        type="submit"
-      >
-        <div className="p-2 flex justify-center bg-zinc-900 cursor-pointer rounded-xl hover:bg-zinc-800 transition active:bg-zinc-900">
-          회원가입
-        </div>
-      </button>
-    </form>
-  )
+  return <div className="h-[412px] rounded-xl bg-zinc-700 animate-fade-in duration-1000" />
 }

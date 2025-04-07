@@ -1,4 +1,3 @@
-import { CookieKey } from '@/constants/storage'
 import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
 import { getUserIdFromAccessToken } from '@/utils/cookie'

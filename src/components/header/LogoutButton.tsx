@@ -13,7 +13,11 @@ const initialState = {
   success: false,
 }
 
-export default function LogoutButton() {
+type Props = {
+  className?: string
+}
+
+export default function LogoutButton({ className = '' }: Props) {
   const [logoutState, formAction, pending] = useActionState(logout, initialState)
   const queryClient = useQueryClient()
 
@@ -28,7 +32,7 @@ export default function LogoutButton() {
   }, [logoutState, queryClient])
 
   return (
-    <form action={formAction} className="relative whitespace-nowrap">
+    <form action={formAction} className={`relative whitespace-nowrap ${className}`}>
       <button
         className="group m-0 flex w-fit items-center gap-5 rounded-full p-3 text-red-500 transition-colors 
           hover:bg-red-500/20 active:scale-90 disabled:hover:bg-inherit disabled:active:scale-100  disabled:text-zinc-400"
@@ -39,7 +43,7 @@ export default function LogoutButton() {
         ) : (
           <>
             <IconLogout className="w-6 transition-transform group-disabled:scale-100" />
-            <span className="min-w-0">로그아웃</span>
+            <span className="min-w-0 hidden md:block">로그아웃</span>
           </>
         )}
       </button>

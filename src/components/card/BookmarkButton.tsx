@@ -1,6 +1,6 @@
 'use client'
 
-import bookmarkManga from '@/app/(navigation)/[userId]/bookmark/action'
+import bookmarkManga from '@/app/(navigation)/(right-search)/[userId]/bookmark/action'
 import { QueryKeys } from '@/constants/query'
 import useBookmarksQuery from '@/query/useBookmarksQuery'
 import useMeQuery from '@/query/useMeQuery'

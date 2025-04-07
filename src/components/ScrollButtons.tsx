@@ -21,7 +21,7 @@ export default function ScrollButtons() {
 
   return (
     <div
-      className="fixed bottom-20 sm:bottom-10 right-5 pb-safe px-safe flex flex-col gap-2 z-50 xl:hidden text-white 
+      className="fixed bottom-20 sm:bottom-10 right-5 pb-safe px-safe flex flex-col gap-2 z-50 xl:hidden text-foreground 
         [&_button]:border-2 [&_button]:border-brand-gradient [&_button]:transition [&_button]:hover:brightness-125 [&_button]:active:brightness-75 [&_button]:rounded-full"
     >
       <button aria-label="맨 위로 가기" onClick={scrollToTop}>

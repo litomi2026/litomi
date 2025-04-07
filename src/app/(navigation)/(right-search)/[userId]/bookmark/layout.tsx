@@ -1,13 +1,19 @@
 import type { BaseLayoutProps } from '@/types/nextjs'
 
+import BookmarkImportButton, { BookmarkImportButtonSkeleton } from '@/components/BookmarkImportButton'
 import IconInfo from '@/components/icons/IconInfo'
 import Tooltip from '@/components/ui/Tooltip'
+import { ErrorBoundary, Suspense } from '@suspensive/react'
 
 export default async function Layout({ children }: BaseLayoutProps) {
   return (
     <main className="flex flex-col gap-2 p-2 h-full">
-      <h1 className="text-lg font-bold text-center">북마크</h1>
-      <div className="flex items-center justify-center">
+      <div className="flex justify-center items-center gap-4">
+        <ErrorBoundary fallback={BookmarkImportButtonSkeleton}>
+          <Suspense clientOnly fallback={<BookmarkImportButtonSkeleton />}>
+            <BookmarkImportButton />
+          </Suspense>
+        </ErrorBoundary>
         <BookmarkTooltip />
       </div>
       {children}

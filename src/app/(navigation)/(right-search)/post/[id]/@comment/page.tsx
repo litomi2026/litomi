@@ -14,10 +14,10 @@ export default async function Page({ params }: BasePageProps) {
   return (
     <div className="min-h-screen">
       {samplePosts.map((post) => (
-        <PostCard key={post.id} post={post} />
+        <PostCard className="border-t-2" key={post.id} post={post} />
       ))}
       {mockedPosts.slice(0, 3).map((post) => (
-        <PostCard key={post.id} post={post} />
+        <PostCard className="border-t-2" key={post.id} post={post} />
       ))}
     </div>
   )

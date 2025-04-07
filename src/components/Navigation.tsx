@@ -30,7 +30,7 @@ function Navigation({ className = '', currentPage, totalPages, hrefPrefix = '', 
   return (
     <nav
       className={`flex flex-wrap justify-center items-center gap-2 w-fit mx-auto py-2 font-bold tabular-nums text-lg [&_svg]:w-6 
-        [&_a]:flex [&_a]:justify-center [&_a]:items-center [&_a]:rounded-full [&_a]:px-2 [&_a]:min-w-10 [&_a]:h-10
+        [&_a]:justify-center [&_a]:items-center [&_a]:rounded-full [&_a]:px-2 [&_a]:min-w-10 [&_a]:h-10
         [&_a]:aria-current:bg-brand-gradient [&_a]:aria-current:pointer-events-none [&_a]:aria-current:text-background 
         [&_a]:aria-disabled:pointer-events-none [&_a]:aria-disabled:text-zinc-600 [&_a]:hover:bg-zinc-700 [&_a]:active:bg-zinc-800 
         md:text-xl md:[&_svg]:w-7 ${className}`}
@@ -59,7 +59,12 @@ function Navigation({ className = '', currentPage, totalPages, hrefPrefix = '', 
       </LinkScrollToTop>
       {/* 현재 페이지 주변의 번호들 */}
       {visiblePageNumbers.map((page) => (
-        <LinkScrollToTop aria-current={page === currentPage} href={`${hrefPrefix}${page}${hrefSuffix}`} key={page}>
+        <LinkScrollToTop
+          aria-current={page === currentPage}
+          className="flex"
+          href={`${hrefPrefix}${page}${hrefSuffix}`}
+          key={page}
+        >
           {page}
         </LinkScrollToTop>
       ))}

@@ -15,18 +15,17 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
     notFound()
   }
 
-  const barClassName =
-    'absolute bottom-0 left-1/2 -translate-x-1/2 h-1 rounded w-14 aria-selected:bg-zinc-500 aria-selected:bg-zinc-300'
+  const barClassName = 'absolute bottom-0 left-1/2 -translate-x-1/2 h-1 rounded w-14 aria-selected:bg-zinc-300'
 
   const isRecommand = filter === 'recommand'
   const isFollowing = filter === 'following'
 
   return (
     <div className="relative">
-      <TopNavigation className="fixed sm:sticky top-0 left-0 right-0 z-10 border-b-2 sm:backdrop-blur bg-black sm:bg-black/75">
+      <TopNavigation className="fixed sm:sticky top-0 left-0 right-0 z-10 border-b-2 sm:backdrop-blur bg-background sm:bg-background/75">
         <div
           className="grid grid-cols-2 items-center text-center text-zinc-400 [&_a]:p-4 [&_a]:transition [&_a]:relative [&_a]:aria-selected:font-bold [&_a]:aria-selected:text-foreground
-           sm:[&_a]:bg-black/50 sm:[&_a]:hover:bg-white/10"
+           sm:[&_a]:bg-background/50 sm:[&_a]:hover:bg-foreground/10"
         >
           <Link aria-selected={isRecommand} href="recommand">
             추천

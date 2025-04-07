@@ -10,7 +10,7 @@ type Params = {
 
 export function handleUnauthorizedError({ message, queryClient }: Params) {
   queryClient.invalidateQueries({ queryKey: QueryKeys.me })
-  toast.error(
+  toast.warning(
     <div className="flex gap-2 items-center">
       <div>{message}</div>
       <LoginLink>로그인하기</LoginLink>

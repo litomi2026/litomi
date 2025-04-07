@@ -1,6 +1,7 @@
 import type { BaseLayoutProps } from '@/types/nextjs'
 
 import BookmarkLink, { BookmarkLinkSkeleton } from '@/components/header/BookmarkLink'
+import ProfileLink, { ProfileLinkSkeleton } from '@/components/header/ProfileLink'
 import PublishButton from '@/components/header/PublishButton'
 import IconBell from '@/components/icons/IconBell'
 import IconHome from '@/components/icons/IconHome'
@@ -42,7 +43,12 @@ export default async function Layout({ children }: BaseLayoutProps) {
               <BookmarkLink className="hidden sm:block" />
             </Suspense>
           </ErrorBoundary>
-          <PublishButton />
+          <ErrorBoundary fallback={ProfileLinkSkeleton}>
+            <Suspense clientOnly fallback={<ProfileLinkSkeleton />}>
+              <ProfileLink className="hidden sm:block" />
+            </Suspense>
+          </ErrorBoundary>
+          <PublishButton className="hidden mx-auto my-4 sm:block xl:mx-0" />
         </nav>
         <ErrorBoundary fallback={ProfileError}>
           <Suspense clientOnly fallback={<ProfileSkeleton />}>

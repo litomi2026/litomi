@@ -36,13 +36,13 @@ export default function PostCreationForm({ className = '', placeholder, isReply,
 
   return (
     <form className={`gap-2 ${className}`} onClick={handleClick} onSubmit={(e) => e.preventDefault()}>
-      <Squircle className="w-10 flex-shrink-0" src={me?.imageURL} textClassName="text-white">
+      <Squircle className="w-10 flex-shrink-0" src={me?.imageURL} textClassName="text-foreground">
         {me?.nickname.slice(0, 2)}
       </Squircle>
       <div className="grid items-center gap-3 grow py-1.5">
         {isReply && me && hasFocusedBefore && (
           <button className="text-left">
-            <span className="font-semibold text-white">@{me.loginId} </span>
+            <span className="font-semibold text-foreground">@{me.loginId} </span>
             에게 보내는 답글
           </button>
         )}
@@ -58,13 +58,13 @@ export default function PostCreationForm({ className = '', placeholder, isReply,
         />
         {hasFocusedBefore && (
           <div className="flex justify-between gap-2">
-            <div className="flex -translate-x-2 items-center text-white">
+            <div className="flex -translate-x-2 items-center text-foreground">
               <PostGeolocationButton disabled={!me} onLocationChange={(geolocation) => console.log(geolocation)} />
             </div>
             <div className="flex items-center gap-3">
               <div>{content.length}</div>
               <button
-                className="whitespace-nowrap bg-zinc-600 rounded-full px-4 py-2 text-white disabled:text-zinc-500 disabled:bg-zinc-800"
+                className="whitespace-nowrap bg-zinc-600 rounded-full px-4 py-2 text-foreground disabled:text-zinc-500 disabled:bg-zinc-800"
                 disabled={!me}
                 type="submit"
               >
