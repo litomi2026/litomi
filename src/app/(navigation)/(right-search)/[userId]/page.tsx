@@ -4,7 +4,7 @@ import { sampleBySecureFisherYates } from '@/utils/random'
 
 export default async function Page() {
   return (
-    <ul>
+    <ul className="flex flex-col grow">
       {sampleBySecureFisherYates(mockedPosts, 5)?.map((post) => (
         <PostCard className="border-t-2 first-of-type:border-none" key={post.id} post={post} />
       ))}

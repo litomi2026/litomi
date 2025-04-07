@@ -49,9 +49,10 @@ export default function BookmarkImportButton() {
   return (
     <>
       <button
-        className="flex items-center gap-2 text-sm font-semibold border-2 rounded-xl w-fit px-2 py-1"
+        className="flex items-center gap-2 text-sm font-semibold border-2 rounded-lg w-fit px-2 py-1 transition hover:bg-zinc-800 active:bg-zinc-900 disabled:text-zinc-500 disabled:bg-zinc-800 disabled:pointer-events-none"
         disabled={pending}
         onClick={handleButtonClick}
+        type="button"
       >
         <IconBookmark className="w-5" />
         북마크 불러오기
@@ -128,7 +129,7 @@ export default function BookmarkImportButton() {
 
 export function BookmarkImportButtonSkeleton() {
   return (
-    <button className="flex items-center gap-2 text-sm font-semibold border-2 rounded-xl w-fit px-2 py-1 mx-auto">
+    <button className="flex items-center gap-2 text-sm font-semibold border-2 rounded-xl w-fit px-2 py-1">
       <IconBookmark className="w-5" />
       북마크 불러오기
     </button>

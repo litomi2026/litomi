@@ -26,7 +26,7 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
   const user = await getUserData(getUserId(userId))
 
   return (
-    <div className="shadow">
+    <div className="flex flex-col grow">
       {/* Cover Image */}
       <div className="relative h-48 w-full">
         <Image
