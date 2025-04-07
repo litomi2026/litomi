@@ -57,6 +57,19 @@ export default function LogoutButton({ className = '' }: Props) {
   )
 }
 
+export function LogoutButtonError({ reset }: { reset: () => void }) {
+  return (
+    <button
+      className="flex items-center gap-3 rounded-full p-3 text-red-500 transition hover:bg-red-500/20 active:scale-95"
+      onClick={reset}
+      type="reset"
+    >
+      <IconLogout className="w-6 transition group-disabled:scale-100" />
+      <span className="min-w-0 hidden md:block">오류 (재시도)</span>
+    </button>
+  )
+}
+
 export function LogoutButtonSkeleton() {
   return <div className="w-10 h-10 m-1 animate-fade-in duration-1000 bg-zinc-800 rounded-full md:w-30" />
 }

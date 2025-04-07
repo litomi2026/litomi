@@ -1,4 +1,4 @@
-import LogoutButton, { LogoutButtonSkeleton } from '@/components/header/LogoutButton'
+import LogoutButton, { LogoutButtonError, LogoutButtonSkeleton } from '@/components/header/LogoutButton'
 import IconCalendar from '@/components/icons/IconCalendar'
 import { BaseLayoutProps } from '@/types/nextjs'
 import { getUserId } from '@/utils/param'
@@ -39,7 +39,6 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
       {/* 프로필 정보 영역 */}
       <div className="grid gap-4 px-4 relative">
         <div className="relative -mt-16 flex justify-between items-end">
-          {/* Profile Image */}
           <div className="flex items-end">
             <div className="w-32 aspect-square shrink-0 border-4 rounded-full overflow-hidden">
               <Image alt="Profile Image" className="object-cover" height={128} src={user.profileImageUrl} width={128} />
@@ -49,13 +48,12 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
               <p className="text-zinc-500 font-mono break-all">@{user.username}</p>
             </div>
           </div>
-          <ErrorBoundary fallback={() => null}>
+          <ErrorBoundary fallback={LogoutButtonError}>
             <Suspense clientOnly fallback={<LogoutButtonSkeleton />}>
               <LogoutButton />
             </Suspense>
           </ErrorBoundary>
         </div>
-        {/* 상세 정보 */}
         <div>
           <div className="mt-2 flex items-center gap-1 text-zinc-500 text-sm">
             <IconCalendar className="w-4" /> 가입일: {dayjs(user.joinDate).format('YYYY년 M월')}
@@ -71,8 +69,8 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
             </div>
           </div>
         </div>
-        {/* 네비게이션 탭 */}
       </div>
+      {/* 네비게이션 탭 */}
       <nav
         className="sticky top-0 z-20 border-b-2 flex gap-6 mt-2 bg-background/80 backdrop-blur
           [&_a]:block [&_a]:mx-3 [&_a]:transition [&_a]:min-w-4 [&_a]:p-2.5 [&_a]:text-center [&_a]:text-zinc-600 [&_a]:border-b-4 [&_a]:border-transparent 
