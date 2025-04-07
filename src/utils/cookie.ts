@@ -6,8 +6,17 @@ import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adap
 import { signJWT, TokenType, verifyJWT } from './jwt'
 
 export async function getUserIdFromAccessToken(cookieStore: ReadonlyRequestCookies) {
-  const accessToken = cookieStore.get(CookieKey.ACCESS_TOKEN)?.value ?? ''
+  const accessToken = cookieStore.get(CookieKey.ACCESS_TOKEN)?.value
+  if (!accessToken) return null
+
   const { sub: userId } = await verifyJWT(accessToken, TokenType.ACCESS).catch(() => ({ sub: null }))
+
+  if (!userId) {
+    cookieStore.delete(CookieKey.ACCESS_TOKEN)
+    cookieStore.delete(CookieKey.REFRESH_TOKEN)
+    return null
+  }
+
   return userId
 }
 

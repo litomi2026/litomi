@@ -4,12 +4,17 @@ import { sql } from 'drizzle-orm'
 
 type Params = {
   userId: number | string
+  count?: number
 }
 
-export default async function selectBookmarks({ userId }: Params) {
-  return db
+export default async function selectBookmarks({ userId, count }: Params) {
+  const query = db
     .select({ mangaId: bookmarkTable.mangaId })
     .from(bookmarkTable)
     .where(sql`${bookmarkTable.userId} = ${userId}`)
     .orderBy(sql`${bookmarkTable.createdAt} DESC`)
+
+  if (count) query.limit(count)
+
+  return query
 }

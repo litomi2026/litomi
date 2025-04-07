@@ -27,5 +27,5 @@ export async function middleware(request: NextRequest) {
 
 // https://nextjs.org/docs/app/building-your-application/routing/middleware#matcher
 export const config = {
-  matcher: ['/api/:path*', '/notification/:path*', '/post/:path*', '/posts/:path*', '/@:path*'],
+  matcher: ['/api/:path*', '/notification/:path*', '/post/:path*', '/posts/:path*', '/@(.*)'],
 }

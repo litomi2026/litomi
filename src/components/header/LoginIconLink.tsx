@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation'
 import IconLogin from '../icons/IconLogin'
 import SelectableLink from '../SelectableLink'
 
-export default function LoginLink() {
+export default function LoginIconLink() {
   const pathname = usePathname()
 
   return (

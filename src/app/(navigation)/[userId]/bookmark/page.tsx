@@ -54,11 +54,9 @@ export default async function Page() {
         sources.push('hp')
         return harpiMangas[mangaId]
       }
+      sources.push('hi')
       return fetchMangaFromHiyobi({ id: mangaId })
-        .then((manga) => {
-          sources.push('hi')
-          return manga ?? { id: mangaId, title: '만화 정보가 없어요', images: [] }
-        })
+        .then((manga) => manga ?? { id: mangaId, title: '만화 정보가 없어요', images: [] })
         .catch(() => ({ id: mangaId, title: '오류가 발생했어요', images: [] }))
     }),
   )

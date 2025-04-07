@@ -3,7 +3,7 @@ import type { BasePageProps } from '@/types/nextjs'
 import BookmarkLink, { BookmarkLinkSkeleton } from '@/components/header/BookmarkLink'
 import LogoutButton from '@/components/header/LogoutButton'
 import { getUserId } from '@/utils/param'
-import { Suspense } from '@suspensive/react'
+import { ErrorBoundary, Suspense } from '@suspensive/react'
 
 export default async function Page({ params }: BasePageProps) {
   const { userId } = await params
@@ -12,9 +12,11 @@ export default async function Page({ params }: BasePageProps) {
     <div className="p-4 ">
       <LogoutButton />
       <pre>{getUserId(userId)}</pre>
-      <Suspense clientOnly fallback={<BookmarkLinkSkeleton />}>
-        <BookmarkLink />
-      </Suspense>
+      <ErrorBoundary fallback={BookmarkLinkSkeleton}>
+        <Suspense clientOnly fallback={<BookmarkLinkSkeleton />}>
+          <BookmarkLink />
+        </Suspense>
+      </ErrorBoundary>
     </div>
   )
 }

@@ -1,44 +1,19 @@
-import { getRandomDecimal } from './random'
-
-export const exponentialBackoff = <T>(
-  onRun: () => [false, null] | [true, T],
-  { maxRetry = -1, initialDelay = 5, multiplier = 4, random = 1, maxDelay = 200, maxDelayRandom = 10 } = {},
-) => {
+export async function retryWithExponentialBackoff<T>(
+  fn: () => Promise<T>,
+  { maxRetries = 3, initialDelay = 1000 } = {},
+): Promise<T> {
+  let attempt = 0
   let delay = initialDelay
-  let count = 0
-  return new Promise<T | null>((resolve, reject) => {
-    const retry = () => {
-      try {
-        const result = onRun()
-        if (result[0]) {
-          resolve(result[1])
-          return
-        }
-
-        count += 1
-        if (maxRetry > 0 && count >= maxRetry) {
-          resolve(null)
-          return
-        }
-
-        setTimeout(retry, delay)
-        delay = Math.min(
-          (delay + getRandomDecimal() * random) * multiplier,
-          maxDelay + getRandomDecimal() * maxDelayRandom,
-        )
-      } catch (err) {
-        if (err instanceof Error) {
-          reject(err.message)
-        } else if (typeof err === 'object' && err !== null && 'message' in err) {
-          reject(err.message)
-        } else if (typeof err === 'string') {
-          reject(err)
-        } else {
-          reject('Unknown error')
-        }
-      }
+  while (attempt < maxRetries) {
+    try {
+      return await fn()
+    } catch (error) {
+      attempt++
+      if (attempt >= maxRetries) throw error
+      await new Promise((resolve) => setTimeout(resolve, delay))
+      delay *= 2
     }
-
-    retry()
-  })
+  }
+  // 실제로 여기까지 도달하는 경우는 없음
+  throw new Error('알 수 없는 오류가 발생했습니다.')
 }

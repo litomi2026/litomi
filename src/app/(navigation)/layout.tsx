@@ -37,9 +37,11 @@ export default async function Layout({ children }: BaseLayoutProps) {
           <SelectableLink href="/notification" Icon={<IconBell />}>
             알림
           </SelectableLink>
-          <Suspense clientOnly fallback={<BookmarkLinkSkeleton />}>
-            <BookmarkLink className="hidden sm:block" />
-          </Suspense>
+          <ErrorBoundary fallback={BookmarkLinkSkeleton}>
+            <Suspense clientOnly fallback={<BookmarkLinkSkeleton />}>
+              <BookmarkLink className="hidden sm:block" />
+            </Suspense>
+          </ErrorBoundary>
           <PublishButton />
         </nav>
         <ErrorBoundary fallback={ProfileError}>

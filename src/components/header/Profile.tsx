@@ -6,14 +6,14 @@ import Link from 'next/link'
 
 import IconMore from '../icons/IconMore'
 import Squircle from '../ui/Squircle'
-import LoginLink from './LoginLink'
+import LoginIconLink from './LoginIconLink'
 import LogoutButton from './LogoutButton'
 
 export default function Profile() {
   const { data: user } = useMeQuery()
 
   if (!user) {
-    return <LoginLink />
+    return <LoginIconLink />
   }
 
   const { loginId, imageURL, nickname } = user
