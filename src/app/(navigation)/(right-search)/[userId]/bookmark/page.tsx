@@ -63,17 +63,10 @@ export default async function Page() {
   )
 
   return (
-    <>
-      <ErrorBoundary fallback={BookmarkImportButtonSkeleton}>
-        <Suspense clientOnly fallback={<BookmarkImportButtonSkeleton />}>
-          <BookmarkImportButton />
-        </Suspense>
-      </ErrorBoundary>
-      <ul className="grid gap-2 md:grid-cols-2">
-        {bookmarkedMangas.filter(checkDefined).map((manga, i) => (
-          <MangaCard key={manga.id} manga={manga} source={sources[i]} />
-        ))}
-      </ul>
-    </>
+    <ul className="grid gap-2 md:grid-cols-2">
+      {bookmarkedMangas.filter(checkDefined).map((manga, i) => (
+        <MangaCard key={manga.id} manga={manga} source={sources[i]} />
+      ))}
+    </ul>
   )
 }
