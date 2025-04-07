@@ -20,7 +20,7 @@ function ShuffleButton({ iconClassName, className = '', action, href, defaultCoo
 
   const handleClick = useCallback(() => {
     if (action === 'refresh') {
-      window.location.reload()
+      router.refresh()
     } else {
       router.push(href)
     }
