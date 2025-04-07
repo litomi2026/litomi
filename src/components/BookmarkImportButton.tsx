@@ -75,10 +75,8 @@ export default function BookmarkImportButton() {
           <h2 className="text-xl text-center font-bold my-2">북마크 불러오기</h2>
           <h2 className="text-center font-bold text-xl text-yellow-300">준비 중입니다</h2>
           <div className="grid gap-4">
-            <p className="text-sm text-center text-zinc-400">
-              북마크를 불러오기 위해서는 타사 사이트의 아이디와 비밀번호가 필요해요.
-              <br />
-              타사 사이트의 아이디와 비밀번호는{' '}
+            <p className="text-sm text-center text-zinc-400 max-w-prose">
+              북마크를 불러오기 위해서는 타사 사이트의 아이디와 비밀번호가 필요해요. 타사 사이트의 아이디와 비밀번호는{' '}
               <a
                 className="underline"
                 href="https://github.com/gwak2837/litomi/blob/main/src/app/auth/proxy/hasha/action.ts"
