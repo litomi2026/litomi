@@ -76,7 +76,7 @@ async function main() {
   const fetchedMangaById: Record<string, Manga> = {}
 
   for (let page = 1; page <= 5; page++) {
-    console.log('👀 ~ page:', page)
+    console.log('👀 Fetching hasha page:', page)
     const mangas = await fetchMangas({
       page: String(page),
       sort: HashaSort.DATE,
