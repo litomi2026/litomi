@@ -7,35 +7,49 @@ import { TokenType, verifyJWT } from './utils/jwt'
 
 export async function middleware(request: NextRequest) {
   const { cookies } = request
-  const accessToken = cookies.get(CookieKey.ACCESS_TOKEN)
-  if (accessToken) return NextResponse.next()
+  const accessToken = cookies.get(CookieKey.ACCESS_TOKEN)?.value
+  const refreshToken = cookies.get(CookieKey.REFRESH_TOKEN)?.value
 
-  const refreshToken = cookies.get(CookieKey.REFRESH_TOKEN)
-  if (!refreshToken) return NextResponse.next()
+  // 비로그인 상태 -> 통과
+  if (!accessToken && !refreshToken) return NextResponse.next()
 
-  const { sub: userId } = await verifyJWT(refreshToken.value, TokenType.REFRESH).catch(() => ({ sub: null }))
+  const validAT = await verifyJWT(accessToken ?? '', TokenType.ACCESS).catch(() => null)
 
-  if (!userId) {
+  // 로그인 상태 -> 통과
+  if (validAT) return NextResponse.next()
+
+  // at만 있는데 at가 만료된 경우 -> 쿠키 삭제
+  if (!refreshToken) {
     const response = NextResponse.next()
+    response.cookies.delete(CookieKey.ACCESS_TOKEN)
+    return response
+  }
+
+  const validRT = await verifyJWT(refreshToken, TokenType.REFRESH).catch(() => null)
+
+  // at가 만료됐는데 rt도 만료된 경우 -> 쿠키 삭제
+  if (!validRT || !validRT.sub) {
+    const response = NextResponse.next()
+    response.cookies.delete(CookieKey.ACCESS_TOKEN)
     response.cookies.delete(CookieKey.REFRESH_TOKEN)
     return response
   }
 
+  // at가 만료됐는데 rt는 유효한 경우 -> at 재발급
   const response = NextResponse.next()
-  await setAccessTokenCookie(response.cookies, userId)
-  applySetCookieToOriginalRequest(request, response)
+  await setAccessTokenCookie(response.cookies, validRT.sub)
+  setCookieToRequest(request, response)
   return response
 }
 
 // https://github.com/vercel/next.js/discussions/50374
-function applySetCookieToOriginalRequest(req: NextRequest, res: NextResponse) {
+function setCookieToRequest(req: NextRequest, res: NextResponse) {
   const setCookies = new ResponseCookies(res.headers)
   const newReqHeaders = new Headers(req.headers)
   const newReqCookies = new RequestCookies(newReqHeaders)
   setCookies.getAll().forEach((cookie) => newReqCookies.set(cookie))
-  const dummyRes = NextResponse.next({ request: { headers: newReqHeaders } })
 
-  dummyRes.headers.forEach((value, key) => {
+  NextResponse.next({ request: { headers: newReqHeaders } }).headers.forEach((value, key) => {
     if (key === 'x-middleware-override-headers' || key.startsWith('x-middleware-request-')) {
       res.headers.set(key, value)
     }
