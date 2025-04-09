@@ -16,8 +16,8 @@ export enum SourceParam {
   HARPI = 'hp',
 }
 
-export function getUserId(userId: string) {
-  return decodeURIComponent(userId).slice(1)
+export function getLoginId(loginId: string) {
+  return decodeURIComponent(loginId).slice(1)
 }
 
 export function validateId(id: string) {

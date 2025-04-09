@@ -24,9 +24,6 @@ const nextConfig: NextConfig = {
       ],
     },
   ],
-  images: {
-    remotePatterns: [{ protocol: 'https', hostname: 'pbs.twimg.com' }],
-  },
   poweredByHeader: false,
 }
 

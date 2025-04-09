@@ -1,5 +1,6 @@
 'use client'
 
+import { captureException } from '@sentry/nextjs'
 import { useEffect, useState } from 'react'
 
 type Props = {
@@ -9,6 +10,10 @@ type Props = {
 
 export default function ErrorPage({ error, reset }: Props) {
   const [cooldown, setCooldown] = useState(5000)
+
+  useEffect(() => {
+    captureException(error, { extra: { name: '/mangas/[sort]/[order]/[page]/[source]' } })
+  }, [error])
 
   useEffect(() => {
     const interval = setInterval(() => {
