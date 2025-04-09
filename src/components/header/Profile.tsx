@@ -1,8 +1,10 @@
 'use client'
 
 import useMeQuery from '@/query/useMeQuery'
+import { captureException } from '@sentry/nextjs'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import Link from 'next/link'
+import { useEffect } from 'react'
 
 import IconMore from '../icons/IconMore'
 import Squircle from '../ui/Squircle'
@@ -52,7 +54,11 @@ export default function Profile() {
   )
 }
 
-export function ProfileError({ reset }: ErrorBoundaryFallbackProps) {
+export function ProfileError({ error, reset }: ErrorBoundaryFallbackProps) {
+  useEffect(() => {
+    captureException(error, { extra: { name: 'ProfileError' } })
+  }, [error])
+
   return (
     <button className="flex items-center p-2 rounded-full sm:my-0 2xl:pl-3 2xl:py-2" onClick={reset}>
       <Squircle className="w-8 flex-shrink-0 sm:w-10 fill-red-700" textClassName="fill-foreground">

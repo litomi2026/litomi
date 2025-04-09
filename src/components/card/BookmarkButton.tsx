@@ -6,6 +6,7 @@ import useBookmarksQuery from '@/query/useBookmarksQuery'
 import useMeQuery from '@/query/useMeQuery'
 import { Manga } from '@/types/manga'
 import { handleUnauthorizedError } from '@/utils/error'
+import { captureException } from '@sentry/nextjs'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useActionState, useEffect } from 'react'
@@ -85,7 +86,11 @@ export default function BookmarkButton({ manga, className }: Props) {
   )
 }
 
-export function BookmarkButtonError({ reset }: ErrorBoundaryFallbackProps) {
+export function BookmarkButtonError({ error, reset }: ErrorBoundaryFallbackProps) {
+  useEffect(() => {
+    captureException(error, { extra: { name: 'BookmarkButtonError' } })
+  }, [error])
+
   return (
     <button
       className="flex items-center gap-1 border-2 w-fit border-red-800 rounded-lg p-1 px-2 transition"
