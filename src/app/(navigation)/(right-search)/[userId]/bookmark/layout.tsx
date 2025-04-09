@@ -23,7 +23,7 @@ export default async function Layout({ children }: BaseLayoutProps) {
 
 function BookmarkTooltip() {
   return (
-    <Tooltip position="bottom">
+    <Tooltip position="bottom-left">
       <div className="flex items-center gap-1">
         <p className="text-xs md:text-sm">북마크 반영이 안 돼요!</p>
         <IconInfo className="w-3 md:w-4" />

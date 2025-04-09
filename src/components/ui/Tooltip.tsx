@@ -7,6 +7,7 @@ const positionStyle = {
   top: 'top-0 left-1/2 -translate-x-1/2 -translate-y-full',
   'bottom-right': 'top-full left-0',
   bottom: 'top-full left-1/2 -translate-x-1/2',
+  'bottom-left': 'top-full right-0',
 }
 
 export type TooltipProps = {
