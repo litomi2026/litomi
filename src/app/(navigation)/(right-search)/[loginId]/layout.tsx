@@ -1,28 +1,28 @@
 import LogoutButton, { LogoutButtonError, LogoutButtonSkeleton } from '@/components/header/LogoutButton'
 import IconCalendar from '@/components/icons/IconCalendar'
+import { db } from '@/database/drizzle'
 import { BaseLayoutProps } from '@/types/nextjs'
-import { getUserId } from '@/utils/param'
+import { getLoginId } from '@/utils/param'
+import { captureException } from '@sentry/nextjs'
 import { ErrorBoundary, Suspense } from '@suspensive/react'
 import dayjs from 'dayjs'
+import { unstable_cache } from 'next/cache'
 import Image from 'next/image'
 import Link from 'next/link'
-
-// 예시 데이터를 사용합니다. 실제 서비스에서는 API 호출 등을 통해 데이터를 가져오세요.
-const getUserData = async (username: string) => {
-  return {
-    username,
-    displayName: 'John Doe',
-    joinDate: new Date(),
-    followingCount: 123,
-    followersCount: 456,
-    coverImageUrl: '/og-image.png',
-    profileImageUrl: '/web-app-manifest-192x192.png',
-  }
-}
+import { notFound } from 'next/navigation'
 
 export default async function Layout({ params, children }: BaseLayoutProps) {
-  const { userId } = await params
-  const user = await getUserData(getUserId(userId))
+  const { loginId } = await params
+  const decodedLoginId = getLoginId(loginId)
+
+  if (!decodedLoginId) {
+    notFound()
+  }
+
+  const getBookmarkRows = unstable_cache(() => selectUser({ loginId }), [loginId], {
+    tags: [loginId],
+    revalidate: 60,
+  })
 
   return (
     <main className="flex flex-col grow">
@@ -33,7 +33,7 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
           className="object-cover"
           fill
           sizes="100vw, (min-width: 1024px) 1024px"
-          src={user.coverImageUrl}
+          src="/og-image.png"
         />
       </div>
       {/* 프로필 정보 영역 */}
@@ -41,11 +41,11 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
         <div className="relative -mt-16 flex justify-between items-end">
           <div className="flex items-end">
             <div className="w-32 aspect-square shrink-0 border-4 rounded-full overflow-hidden">
-              <Image alt="Profile Image" className="object-cover" height={128} src={user.profileImageUrl} width={128} />
+              <Image alt="Profile Image" className="object-cover" height={128} src={user.imageURL} width={128} />
             </div>
             <div className="ml-4">
-              <h1 className="text-2xl font-bold line-clamp-1">{user.displayName}</h1>
-              <p className="text-zinc-500 font-mono break-all">@{user.username}</p>
+              <h1 className="text-2xl font-bold line-clamp-1">{user.nickname}</h1>
+              <p className="text-zinc-500 font-mono break-all">@{loginId}</p>
             </div>
           </div>
           <ErrorBoundary fallback={LogoutButtonError}>
@@ -56,15 +56,15 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
         </div>
         <div>
           <div className="mt-2 flex items-center gap-1 text-zinc-500 text-sm">
-            <IconCalendar className="w-4" /> 가입일: {dayjs(user.joinDate).format('YYYY년 M월')}
+            <IconCalendar className="w-4" /> 가입일: {dayjs(user.createdAt).format('YYYY년 M월')}
           </div>
           <div className="mt-4 flex gap-6">
             <div className="flex gap-2">
-              <span className="font-bold">{user.followingCount}</span>
+              <span className="font-bold">{123}</span>
               <span className="text-zinc-500">팔로우 중</span>
             </div>
             <div className="flex gap-2">
-              <span className="font-bold">{user.followersCount}</span>
+              <span className="font-bold">{456}</span>
               <span className="text-zinc-500">팔로워</span>
             </div>
           </div>
@@ -76,9 +76,9 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
           [&_a]:block [&_a]:mx-3 [&_a]:transition [&_a]:min-w-4 [&_a]:p-2.5 [&_a]:text-center [&_a]:text-zinc-600 [&_a]:border-b-4 [&_a]:border-transparent 
           [&_a]:hover:border-zinc-500 [&_a]:hover:font-bold [&_a]:hover:text-foreground [&_a]:aria-current:border-zinc-500 [&_a]:aria-current:font-bold [&_a]:aria-current:text-foreground"
       >
-        <Link href={`/@${user.username}`}>게시글</Link>
-        <Link href={`/@${user.username}/reply`}>답글</Link>
-        <Link href={`/@${user.username}/bookmark`}>북마크</Link>
+        <Link href={`/@${loginId}`}>게시글</Link>
+        <Link href={`/@${loginId}/reply`}>답글</Link>
+        <Link href={`/@${loginId}/bookmark`}>북마크</Link>
       </nav>
       {children}
     </main>
