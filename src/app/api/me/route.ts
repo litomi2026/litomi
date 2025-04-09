@@ -1,3 +1,4 @@
+import { CookieKey } from '@/constants/storage'
 import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
@@ -16,7 +17,7 @@ export async function GET() {
   const userId = await getUserIdFromAccessToken(cookieStore)
 
   if (!userId) {
-    return new Response(null, { status: 401 })
+    return new Response('로그인 정보가 없거나 만료됐습니다.', { status: 401 })
   }
 
   const [user] = await db
@@ -30,7 +31,8 @@ export async function GET() {
     .where(sql`${userTable.id} = ${userId}`)
 
   if (!user) {
-    return new Response(null, { status: 404 })
+    cookieStore.delete(CookieKey.ACCESS_TOKEN)
+    return new Response('사용자 정보를 찾을 수 없습니다.', { status: 404 })
   }
 
   return Response.json(user satisfies ResponseApiMe)
