@@ -7,8 +7,9 @@ import { ErrorBoundary, Suspense } from '@suspensive/react'
 import dayjs from 'dayjs'
 import { unstable_cache } from 'next/cache'
 import Image from 'next/image'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
+
+import MyPageNavigation from './MyPageNavigation'
 
 export default async function Layout({ params, children }: BaseLayoutProps) {
   const { loginId } = await params
@@ -40,7 +41,7 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
               <img alt="Profile Image" className="object-cover aspect-square w-32" src={user.imageURL ?? ''} />
             </div>
             <div className="ml-4">
-              <h1 className="text-2xl font-bold line-clamp-1">{user.nickname}</h1>
+              <h1 className="text-2xl font-bold line-clamp-1 break-all">{user.nickname}</h1>
               <p className="text-zinc-500 font-mono break-all">@{decodedLoginId}</p>
             </div>
           </div>
@@ -67,15 +68,7 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
         </div>
       </div>
       {/* 네비게이션 탭 */}
-      <nav
-        className="sticky top-0 z-20 border-b-2 flex gap-6 mt-2 bg-background/80 backdrop-blur
-          [&_a]:block [&_a]:mx-3 [&_a]:transition [&_a]:min-w-4 [&_a]:p-2.5 [&_a]:text-center [&_a]:text-zinc-600 [&_a]:border-b-4 [&_a]:border-transparent 
-          [&_a]:hover:border-zinc-500 [&_a]:hover:font-bold [&_a]:hover:text-foreground [&_a]:aria-current:border-zinc-500 [&_a]:aria-current:font-bold [&_a]:aria-current:text-foreground"
-      >
-        <Link href={`/@${decodedLoginId}`}>게시글</Link>
-        <Link href={`/@${decodedLoginId}/reply`}>답글</Link>
-        <Link href={`/@${decodedLoginId}/bookmark`}>북마크</Link>
-      </nav>
+      <MyPageNavigation loginId={decodedLoginId} />
       {children}
     </main>
   )
