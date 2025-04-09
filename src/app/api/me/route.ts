@@ -1,3 +1,4 @@
+import { CookieKey } from '@/constants/storage'
 import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
@@ -30,6 +31,7 @@ export async function GET() {
     .where(sql`${userTable.id} = ${userId}`)
 
   if (!user) {
+    cookieStore.delete(CookieKey.ACCESS_TOKEN)
     return new Response(null, { status: 404 })
   }
 
