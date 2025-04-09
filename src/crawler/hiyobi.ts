@@ -71,7 +71,7 @@ export async function fetchMangaImagesFromHiyobi({ id }: { id: number }) {
 export async function fetchMangasFromHiyobi({ page }: { page: number }) {
   const res = await fetch(`https://api.hiyobi.org/list/${page}`, {
     referrerPolicy: 'no-referrer',
-    next: { revalidate: 86400 }, // 1 day
+    next: { revalidate: 43200 }, // 12 hours
   })
 
   if (res.status === 404) {

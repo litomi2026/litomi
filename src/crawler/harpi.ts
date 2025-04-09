@@ -59,7 +59,7 @@ async function main() {
 
   // 1~5 페이지를 순차적으로 fetch (rate limit을 고려해 각 페이지 후 4초 지연)
   for (let page = 1; page < 6; page++) {
-    console.log('👀 Fetching page:', page)
+    console.log('👀 Fetching harpi page:', page)
     const fetchedMangas = await fetchMangas({ page })
     if (fetchedMangas) {
       fetchedMangas.forEach((manga) => {
