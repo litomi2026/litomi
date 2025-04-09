@@ -10,6 +10,7 @@ export default function useMeQuery() {
     refetchOnReconnect: false,
     refetchOnMount: false,
     staleTime: Infinity,
+    gcTime: 0,
   })
 }
 

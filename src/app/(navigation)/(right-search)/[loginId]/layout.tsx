@@ -1,9 +1,8 @@
 import LogoutButton, { LogoutButtonError, LogoutButtonSkeleton } from '@/components/header/LogoutButton'
 import IconCalendar from '@/components/icons/IconCalendar'
-import { db } from '@/database/drizzle'
+import selectUser from '@/sql/selectUser'
 import { BaseLayoutProps } from '@/types/nextjs'
 import { getLoginId } from '@/utils/param'
-import { captureException } from '@sentry/nextjs'
 import { ErrorBoundary, Suspense } from '@suspensive/react'
 import dayjs from 'dayjs'
 import { unstable_cache } from 'next/cache'
@@ -19,10 +18,7 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
     notFound()
   }
 
-  const getBookmarkRows = unstable_cache(() => selectUser({ loginId }), [loginId], {
-    tags: [loginId],
-    revalidate: 60,
-  })
+  const [user] = await getUser(decodedLoginId)()
 
   return (
     <main className="flex flex-col grow">
@@ -41,11 +37,11 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
         <div className="relative -mt-16 flex justify-between items-end">
           <div className="flex items-end">
             <div className="w-32 aspect-square shrink-0 border-4 rounded-full overflow-hidden">
-              <Image alt="Profile Image" className="object-cover" height={128} src={user.imageURL} width={128} />
+              <img alt="Profile Image" className="object-cover aspect-square w-32" src={user.imageURL ?? ''} />
             </div>
             <div className="ml-4">
               <h1 className="text-2xl font-bold line-clamp-1">{user.nickname}</h1>
-              <p className="text-zinc-500 font-mono break-all">@{loginId}</p>
+              <p className="text-zinc-500 font-mono break-all">@{decodedLoginId}</p>
             </div>
           </div>
           <ErrorBoundary fallback={LogoutButtonError}>
@@ -76,11 +72,18 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
           [&_a]:block [&_a]:mx-3 [&_a]:transition [&_a]:min-w-4 [&_a]:p-2.5 [&_a]:text-center [&_a]:text-zinc-600 [&_a]:border-b-4 [&_a]:border-transparent 
           [&_a]:hover:border-zinc-500 [&_a]:hover:font-bold [&_a]:hover:text-foreground [&_a]:aria-current:border-zinc-500 [&_a]:aria-current:font-bold [&_a]:aria-current:text-foreground"
       >
-        <Link href={`/@${loginId}`}>게시글</Link>
-        <Link href={`/@${loginId}/reply`}>답글</Link>
-        <Link href={`/@${loginId}/bookmark`}>북마크</Link>
+        <Link href={`/@${decodedLoginId}`}>게시글</Link>
+        <Link href={`/@${decodedLoginId}/reply`}>답글</Link>
+        <Link href={`/@${decodedLoginId}/bookmark`}>북마크</Link>
       </nav>
       {children}
     </main>
   )
+}
+
+function getUser(loginId: string) {
+  return unstable_cache(() => selectUser({ loginId }), [loginId], {
+    tags: [loginId],
+    revalidate: 300,
+  })
 }

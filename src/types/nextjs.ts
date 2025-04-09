@@ -18,5 +18,5 @@ export type ErrorProps = {
 }
 
 export type RouteProps = {
-  params: Record<string, string>
+  params: Promise<Record<string, string>>
 }

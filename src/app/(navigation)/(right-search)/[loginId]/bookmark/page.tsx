@@ -26,7 +26,7 @@ export default async function Page() {
     )
   }
 
-  const bookmarkRows = await getBookmarkRows(userId)
+  const bookmarkRows = await getBookmarkRows(userId)()
   const sources: string[] = []
 
   if (bookmarkRows.length === 0) {
@@ -64,7 +64,7 @@ export default async function Page() {
   )
 }
 
-async function getBookmarkRows(userId: string) {
+function getBookmarkRows(userId: string) {
   return unstable_cache(() => selectBookmarks({ userId }), [userId, 'bookmarks'], {
     tags: [`${userId}-bookmarks`],
     revalidate: 60,
