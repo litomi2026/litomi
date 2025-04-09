@@ -28,7 +28,7 @@ export default function LogoutButton({ className = '' }: Props) {
     if (error) {
       toast.error(error)
     } else if (success) {
-      queryClient.invalidateQueries({ queryKey: QueryKeys.me })
+      queryClient.setQueriesData({ queryKey: QueryKeys.me }, () => null)
       toast.success('로그아웃 성공')
     }
   }, [logoutState, queryClient])
@@ -40,17 +40,19 @@ export default function LogoutButton({ className = '' }: Props) {
       className={`relative whitespace-nowrap aria-hidden:hidden ${className}`}
     >
       <button
-        className="group m-0 flex w-fit items-center gap-5 rounded-full p-3 text-red-500 transition-colors 
-          hover:bg-red-500/20 active:scale-90 disabled:hover:bg-inherit disabled:active:scale-100  disabled:text-zinc-400"
+        className="group rounded-full p-3 text-red-500 transition hover:bg-red-500/20 active:scale-95 
+          disabled:hover:bg-inherit disabled:active:scale-100  disabled:text-zinc-400"
         disabled={pending}
       >
         {pending ? (
-          <Loading />
+          <div className="h-6">
+            <Loading className="w-6 -translate-x-1 translate-y-2.5" />
+          </div>
         ) : (
-          <>
+          <div className="flex items-center gap-5 ">
             <IconLogout className="w-6 transition group-disabled:scale-100" />
             <span className="min-w-0 hidden md:block">로그아웃</span>
-          </>
+          </div>
         )}
       </button>
     </form>

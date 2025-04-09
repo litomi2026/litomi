@@ -162,7 +162,7 @@ export default function SignupForm() {
         type="submit"
       >
         <div className="p-2 flex justify-center bg-zinc-900 cursor-pointer rounded-xl hover:bg-zinc-800 transition active:bg-zinc-900 group-disabled:bg-zinc-800 group-disabled:cursor-not-allowed">
-          {pending ? <Loading className="text-zinc-500" /> : '회원가입'}
+          {pending ? <Loading className="text-zinc-500 w-12 p-2" /> : '회원가입'}
         </div>
       </button>
     </form>

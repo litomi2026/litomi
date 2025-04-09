@@ -27,6 +27,7 @@ type Props = {
   manga: Manga
   source?: string
   index?: number
+  className?: string
 }
 
 export default memo(MangaCard)
@@ -41,7 +42,7 @@ function getViewerLink(id: number, source: string) {
   return `/manga/${id}/${source}`
 }
 
-function MangaCard({ manga, index = 0, source = '' }: Props) {
+function MangaCard({ manga, index = 0, source = '', className = '' }: Props) {
   const { id, artists, characters, date, group, related, series, tags, title, type, images } = manga
   const mappedTags = tags?.map((tag) => harpiTagMap[tag] || tag)
   const translatedTags = mappedTags?.map((tag) => (typeof tag === 'string' ? tag : tag.korStr || tag.engStr))
@@ -62,23 +63,21 @@ function MangaCard({ manga, index = 0, source = '' }: Props) {
 
   return (
     <li
-      className="grid grid-rows-[auto_1fr] xl:grid-cols-2 xl:grid-rows-1 border-2 rounded-xl overflow-hidden bg-zinc-900"
+      className={`grid grid-rows-[auto_1fr] xl:grid-cols-2 xl:grid-rows-1 border-2 rounded-xl overflow-hidden bg-zinc-900 ${className}`}
       key={id}
     >
-      <div className="relative h-fit my-auto aspect-[4/3] xl:aspect-[3/4]">
+      <div className="relative h-fit my-auto aspect-[4/3] xl:aspect-[3/4] [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-contain [&_img]:aspect-[4/3] xl:[&_img]:aspect-[3/4]">
         {/* NOTE(gwak, 2025-04-01): 썸네일 이미지만 있는 경우 대응하기 위해 images[1] 검사 */}
         {images[1] ? (
           <MangaCardPreviewImage
-            className="flex overflow-x-auto h-fit snap-x snap-mandatory select-none scrollbar-hidden 
-              [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-contain [&_img]:aspect-[4/3] xl:[&_img]:aspect-[3/4]"
+            className="flex overflow-x-auto h-fit snap-x snap-mandatory select-none scrollbar-hidden"
             href={viewerLink}
             manga={manga}
             mangaIndex={index}
           />
         ) : (
           <Link
-            className="flex overflow-x-auto h-fit snap-x snap-mandatory select-none scrollbar-hidden 
-              [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-contain [&_img]:aspect-[4/3] xl:[&_img]:aspect-[3/4]"
+            className="flex overflow-x-auto h-fit snap-x snap-mandatory select-none scrollbar-hidden"
             href={viewerLink}
           >
             <MangaImage imageIndex={0} manga={manga} />
