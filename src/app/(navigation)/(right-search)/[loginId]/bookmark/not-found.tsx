@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 export default function NotFound() {
   return (
-    <div className="flex flex-col justify-center items-center min-h-[50vh] grow border-2 rounded-xl">
+    <div className="flex flex-col justify-center items-center grow border-2 rounded-xl">
       <h2 className="mb-8 text-xl md:text-2xl">북마크가 없어요 👀</h2>
       <div className="grid gap-2">
         <Link
