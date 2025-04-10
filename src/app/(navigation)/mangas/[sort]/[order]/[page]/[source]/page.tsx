@@ -17,7 +17,7 @@ import {
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
-export const revalidate = 86400 // 1 day
+export const revalidate = 2592000 // 30 days
 
 export const metadata: Metadata = {
   alternates: {
