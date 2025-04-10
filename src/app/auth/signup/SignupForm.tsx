@@ -2,7 +2,7 @@
 
 import IconInfo from '@/components/icons/IconInfo'
 import Loading from '@/components/ui/Loading'
-import Tooltip from '@/components/ui/Tooltip'
+import TooltipPopover from '@/components/ui/TooltipPopover'
 import { loginIdPattern, passwordPattern } from '@/constants/pattern'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
@@ -66,7 +66,7 @@ export default function SignupForm() {
             <label htmlFor="id">
               아이디 <span className="text-red-500">*</span>
             </label>
-            <Tooltip position="right">
+            <TooltipPopover position="right" type="tooltip">
               <IconInfo className="p-1.5 w-7 md:w-8 md:p-2" />
               <div className="rounded-xl border-2 border-zinc-700 bg-background p-3 whitespace-nowrap text-sm">
                 <p>
@@ -74,7 +74,7 @@ export default function SignupForm() {
                   2자 이상의 아이디를 입력해주세요.
                 </p>
               </div>
-            </Tooltip>
+            </TooltipPopover>
           </div>
           <input
             aria-invalid={(error?.loginId?.length ?? 0) > 0}
@@ -95,7 +95,7 @@ export default function SignupForm() {
             <label htmlFor="password">
               비밀번호 <span className="text-red-500">*</span>
             </label>
-            <Tooltip position="right">
+            <TooltipPopover position="right" type="tooltip">
               <IconInfo className="p-1.5 w-7 md:w-8 md:p-2" />
               <div className="rounded-xl border-2 border-zinc-700 bg-background p-3 whitespace-nowrap text-sm">
                 <p>
@@ -103,7 +103,7 @@ export default function SignupForm() {
                   비밀번호를 입력해주세요.
                 </p>
               </div>
-            </Tooltip>
+            </TooltipPopover>
           </div>
           <input
             aria-invalid={(error?.password?.length ?? 0) > 0}
@@ -137,12 +137,12 @@ export default function SignupForm() {
         <div>
           <div className="flex items-center gap-1">
             <label htmlFor="nickname">닉네임</label>
-            <Tooltip position="right">
+            <TooltipPopover position="right" type="tooltip">
               <IconInfo className="p-1.5 w-7 md:w-8 md:p-2" />
               <div className="rounded-xl border-2 border-zinc-700 bg-background p-3 whitespace-nowrap text-sm">
                 <p>2자 이상 32자 이하로 입력해주세요.</p>
               </div>
-            </Tooltip>
+            </TooltipPopover>
           </div>
           <input
             aria-invalid={(error?.nickname?.length ?? 0) > 0}
@@ -170,5 +170,5 @@ export default function SignupForm() {
 }
 
 export function SignupFormSkeleton() {
-  return <div className="h-[412px] rounded-xl bg-zinc-700 animate-fade-in duration-1000" />
+  return <div className="h-[412px] rounded-xl bg-zinc-700 animate-fade-in" />
 }

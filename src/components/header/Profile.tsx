@@ -8,6 +8,7 @@ import { useEffect } from 'react'
 
 import IconMore from '../icons/IconMore'
 import Squircle from '../ui/Squircle'
+import TooltipPopover from '../ui/TooltipPopover'
 import LoginIconLink from './LoginIconLink'
 import LogoutButton from './LogoutButton'
 
@@ -21,36 +22,30 @@ export default function Profile() {
   const { loginId, imageURL, nickname } = user
 
   return (
-    <Link
-      className="relative flex items-center justify-center w-fit m-auto p-2 rounded-full transition hover:bg-zinc-800 active:bg-zinc-900
-        sm:my-0 sm:pointer-events-none
-        2xl:w-full 2xl:pl-3 2xl:py-2"
-      href={`/@${loginId}`}
+    <TooltipPopover
+      buttonClassName="w-full pointer-events-none rounded-full transition sm:hover:bg-zinc-800 sm:active:bg-zinc-900 sm:pointer-events-auto"
+      className="flex justify-center"
+      position="top-right"
+      type="popover"
     >
-      <Squircle
-        className="w-8 flex-shrink-0 sm:w-10 fill-zinc-600"
-        src={imageURL ?? 'https://i.imgur.com/i0A7nbA_d.webp?maxwidth=760&fidelity=grand'}
-      >
-        {nickname.slice(0, 2)}
-      </Squircle>
-      <div className="ml-3 hidden w-full min-w-0 gap-1 py-0.5 2xl:grid">
-        <div className="overflow-hidden whitespace-nowrap leading-5">{nickname}</div>
-        <div className="text-zinc-400 line-clamp-1 leading-5">@{loginId}</div>
-      </div>
-      <label
-        className="absolute inset-0 cursor-pointer rounded-full select-none pointer-events-none sm:pointer-events-auto"
+      <Link
+        className="flex justify-center items-center gap-3 p-2 group rounded-full pointer-events-auto sm:pointer-events-none 2xl:pl-3"
+        href={`/@${loginId}`}
         onClick={(e) => e.stopPropagation()}
       >
-        <input className="peer" hidden type="checkbox" />
-        <div
-          className="absolute -top-4 left-0 2xl:right-0 z-10 -translate-y-full pointer-events-none opacity-0 rounded-2xl border-2 border-zinc-700 p-4 transition 
-            peer-checked:pointer-events-auto peer-checked:opacity-100 bg-zinc-900"
-        >
-          <LogoutButton />
+        <Squircle className="w-8 flex-shrink-0 sm:w-10 fill-zinc-600" src={imageURL}>
+          {nickname.slice(0, 2)}
+        </Squircle>
+        <div className="hidden text-left grow min-w-0 gap-1 py-0.5 2xl:grid">
+          <div className="leading-5 break-all line-clamp-1">{nickname}</div>
+          <div className="overflow-hidden text-zinc-400 leading-5">@{loginId}</div>
         </div>
-      </label>
-      <IconMore className="shrink-0 pointer-events-none hidden w-11 p-3 2xl:block" />
-    </Link>
+        <IconMore className="shrink-0 hidden w-11 p-3 2xl:block" />
+      </Link>
+      <div className="p-4 -ml-2 min-w-40 mb-2 rounded-2xl border-2 border-zinc-700 transition bg-zinc-900">
+        <LogoutButton />
+      </div>
+    </TooltipPopover>
   )
 }
 

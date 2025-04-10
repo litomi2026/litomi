@@ -106,5 +106,5 @@ export default function PostCard({ post, isThread, className = '' }: Props) {
 }
 
 export function PostSkeleton() {
-  return <div className="animate-fade-in duration-1000 bg-zinc-700 h-80 m-2 rounded-xl" />
+  return <div className="animate-fade-in bg-zinc-700 h-80 m-2 rounded-xl" />
 }

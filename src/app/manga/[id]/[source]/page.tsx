@@ -49,8 +49,8 @@ export async function generateStaticParams() {
     .catch(() => [] as string[])
   const params: Record<string, unknown>[] = []
   const idMap: Record<string, string[]> = {
-    [SourceParam.HASHA]: hashaMangaIdsDesc.slice(0, 20),
-    [SourceParam.HARPI]: harpiMangaIdsDesc.slice(0, 20),
+    [SourceParam.HASHA]: hashaMangaIdsDesc.slice(0, 200),
+    [SourceParam.HARPI]: harpiMangaIdsDesc.slice(0, 50),
     [SourceParam.HIYOBI]: hiyobiIds?.slice(0, 5),
   }
   for (const source of Object.keys(idMap)) {

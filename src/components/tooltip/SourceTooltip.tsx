@@ -1,7 +1,7 @@
 import { SourceParam } from '@/utils/param'
 
 import IconInfo from '../icons/IconInfo'
-import Tooltip from '../ui/Tooltip'
+import TooltipPopover from '../ui/TooltipPopover'
 
 type Props = {
   source: SourceParam
@@ -9,7 +9,7 @@ type Props = {
 
 export default function SourceTooltip({ source }: Props) {
   return (
-    <Tooltip position="bottom">
+    <TooltipPopover position="bottom" type="tooltip">
       <div className="flex items-center gap-1">
         <p className="text-xs md:text-sm">이미지가 안 보여요!</p>
         <IconInfo className="w-3 md:w-4" />
@@ -19,7 +19,7 @@ export default function SourceTooltip({ source }: Props) {
         {source === SourceParam.HASHA && <HashaTooltip />}
         {source === SourceParam.HIYOBI && <HiyobiTooltip />}
       </>
-    </Tooltip>
+    </TooltipPopover>
   )
 }
 
