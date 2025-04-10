@@ -35,10 +35,10 @@ type Params = {
 
 export async function generateStaticParams() {
   const params = []
+  const pages = Array.from({ length: 10 }, (_, i) => String(i + 1))
   const sources = [SourceParam.HASHA, SourceParam.HARPI, SourceParam.HIYOBI]
-  const pages = Array.from({ length: 1 }, (_, i) => String(i + 1))
-  for (const source of sources) {
-    for (const page of pages) {
+  for (const page of pages) {
+    for (const source of sources) {
       params.push({ sort: 'id', order: 'desc', page, source })
     }
   }
