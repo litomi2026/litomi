@@ -79,5 +79,5 @@ export default function PostCreationForm({ className = '', placeholder, isReply,
 }
 
 export function PostCreationFormSkeleton({ className = '' }: { className?: string }) {
-  return <div className={`h-10 rounded-xl animate-fade-in duration-1000 bg-zinc-800 border-b-2 ${className}`} />
+  return <div className={`h-10 rounded-xl animate-fade-in bg-zinc-800 border-b-2 ${className}`} />
 }

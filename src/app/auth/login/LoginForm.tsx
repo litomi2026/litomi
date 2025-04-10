@@ -138,5 +138,5 @@ export default function LoginForm() {
 }
 
 export function LoginFormSkeleton() {
-  return <div className="h-[278px] rounded-xl bg-zinc-700 animate-fade-in duration-1000" />
+  return <div className="h-[278px] rounded-xl bg-zinc-700 animate-fade-in" />
 }

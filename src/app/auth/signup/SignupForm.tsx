@@ -170,5 +170,5 @@ export default function SignupForm() {
 }
 
 export function SignupFormSkeleton() {
-  return <div className="h-[412px] rounded-xl bg-zinc-700 animate-fade-in duration-1000" />
+  return <div className="h-[412px] rounded-xl bg-zinc-700 animate-fade-in" />
 }
