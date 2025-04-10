@@ -11,7 +11,7 @@ import { SourceParam, validateId, validateSource } from '@/utils/param'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
-export const revalidate = 43200 // 12 hours
+export const revalidate = 2592000 // 30 days
 
 export async function generateMetadata({ params }: BasePageProps): Promise<Metadata> {
   const { id, source } = await params
@@ -44,10 +44,14 @@ export async function generateMetadata({ params }: BasePageProps): Promise<Metad
 }
 
 export async function generateStaticParams() {
+  const hiyobiIds = await fetchMangasFromHiyobi({ page: 1 })
+    .then((mangas) => mangas?.map((manga) => String(manga.id)) ?? [])
+    .catch(() => [] as string[])
   const params: Record<string, unknown>[] = []
   const idMap: Record<string, string[]> = {
     [SourceParam.HASHA]: hashaMangaIdsDesc.slice(0, 20),
     [SourceParam.HARPI]: harpiMangaIdsDesc.slice(0, 20),
+    [SourceParam.HIYOBI]: hiyobiIds?.slice(0, 5),
   }
   for (const source of Object.keys(idMap)) {
     for (const id of idMap[source]) {
@@ -91,7 +95,7 @@ async function getManga({ source, id }: { source: SourceParam; id: number }) {
     }
 
     return {
-      ...(mangaFromHiyobi ?? { id, title: '만화 정보가 없어요', images: [] }),
+      ...(mangaFromHiyobi ?? { id, title: '만화 정보가 없어요' }),
       id,
       images: mangaImages,
       cdn: 'k-hentai',

@@ -34,15 +34,15 @@ type Params = {
 }
 
 export async function generateStaticParams() {
-  const pageIndexes = Array.from({ length: 10 }, (_, i) => String(i + 1))
-  return pageIndexes.flatMap((page) =>
-    ['ha', 'hp', 'hi'].map((source) => ({
-      sort: 'id',
-      order: 'desc',
-      page,
-      source,
-    })),
-  )
+  const params = []
+  const sources = [SourceParam.HASHA, SourceParam.HARPI, SourceParam.HIYOBI]
+  const pages = Array.from({ length: 1 }, (_, i) => String(i + 1))
+  for (const source of sources) {
+    for (const page of pages) {
+      params.push({ sort: 'id', order: 'desc', page, source })
+    }
+  }
+  return params
 }
 
 export default async function Page({ params }: BasePageProps) {
@@ -56,7 +56,12 @@ export default async function Page({ params }: BasePageProps) {
     notFound()
   }
 
-  const mangas = await getMangas({ source: sourceString, sort: sortString, order: orderString, page: pageNumber })
+  const mangas = await getMangas({
+    source: sourceString,
+    sort: sortString,
+    order: orderString,
+    page: pageNumber,
+  })
 
   if (!mangas || mangas.length === 0) {
     notFound()
