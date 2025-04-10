@@ -2,7 +2,7 @@ import type { BaseLayoutProps } from '@/types/nextjs'
 
 import BookmarkImportButton, { BookmarkImportButtonSkeleton } from '@/components/BookmarkImportButton'
 import IconInfo from '@/components/icons/IconInfo'
-import Tooltip from '@/components/ui/Tooltip'
+import TooltipPopover from '@/components/ui/TooltipPopover'
 import { ErrorBoundary, Suspense } from '@suspensive/react'
 
 export default async function Layout({ children }: BaseLayoutProps) {
@@ -23,7 +23,7 @@ export default async function Layout({ children }: BaseLayoutProps) {
 
 function BookmarkTooltip() {
   return (
-    <Tooltip position="bottom-left">
+    <TooltipPopover position="bottom-left" type="tooltip">
       <div className="flex items-center gap-1">
         <p className="text-xs md:text-sm">북마크 반영이 안 돼요!</p>
         <IconInfo className="w-3 md:w-4" />
@@ -34,6 +34,6 @@ function BookmarkTooltip() {
           때까지 최대 <span className="whitespace-nowrap">1분</span> 정도 걸릴 수 있어요
         </p>
       </div>
-    </Tooltip>
+    </TooltipPopover>
   )
 }
