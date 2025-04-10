@@ -13,25 +13,22 @@ const positionStyle = {
 export type TooltipProps = {
   position: keyof typeof positionStyle
   children: ReactNode[]
+  className?: string
 }
 
-export default function Tooltip({ children, position }: TooltipProps) {
+export default function Tooltip({ children, position, className = '' }: TooltipProps) {
   const [isActive, setIsActive] = useState(false)
 
   return (
-    <button
-      className="group relative focus:outline-none"
-      onBlur={() => setIsActive(false)}
-      onClick={() => setIsActive((prev) => !prev)}
-      tabIndex={0}
-      type="button"
-    >
-      {children[0]}
+    <div className={`relative flex items-center ${className}`}>
+      <button className="peer" onClick={() => setIsActive((prev) => !prev)} tabIndex={0} type="button">
+        {children[0]}
+      </button>
       <div
         aria-current={isActive}
         className={
           'pointer-events-none absolute z-50 p-2 transition duration-300 opacity-0 ' +
-          'group-hover:opacity-100 group-hover:pointer-events-auto ' +
+          'peer-hover:opacity-100 peer-hover:pointer-events-auto ' +
           'aria-current:opacity-100 aria-current:pointer-events-auto ' +
           positionStyle[position]
         }
@@ -39,6 +36,6 @@ export default function Tooltip({ children, position }: TooltipProps) {
       >
         {children[1]}
       </div>
-    </button>
+    </div>
   )
 }
