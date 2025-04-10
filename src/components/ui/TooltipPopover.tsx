@@ -21,9 +21,16 @@ type Props = {
   children: [ReactNode, ReactNode] // [trigger, tooltipContent]
   type: 'popover' | 'tooltip'
   className?: string
+  buttonClassName?: string
 }
 
-export default function TooltipPopover({ children, position, type, className = '' }: Props) {
+export default function TooltipPopover({
+  children,
+  position,
+  type,
+  className = '',
+  buttonClassName = '',
+}: Readonly<Props>) {
   const [isActive, setIsActive] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -38,8 +45,8 @@ export default function TooltipPopover({ children, position, type, className = '
   }, [])
 
   return (
-    <div className={`relative flex items-center pointer-events-none ${className}`} ref={containerRef}>
-      <button className="peer pointer-events-auto" onClick={() => setIsActive((prev) => !prev)} type="button">
+    <div className={`relative ${className}`} ref={containerRef}>
+      <button className={`peer ${buttonClassName}`} onClick={() => setIsActive((prev) => !prev)} type="button">
         {children[0]}
       </button>
       <div
