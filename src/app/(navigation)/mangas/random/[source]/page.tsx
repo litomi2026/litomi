@@ -11,7 +11,6 @@ import { sampleBySecureFisherYates } from '@/utils/random'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
-export const dynamic = 'error'
 export const revalidate = 15
 
 export const metadata: Metadata = {
@@ -23,6 +22,10 @@ export const metadata: Metadata = {
 
 type Params = {
   source: string
+}
+
+export async function generateStaticParams() {
+  return ['ha', 'hp', 'hi'].map((source) => ({ source }))
 }
 
 export default async function Page({ params }: BasePageProps) {
