@@ -1,6 +1,7 @@
 'use client'
 
 import hashaLogin from '@/app/auth/proxy/hasha/action'
+import useActionErrorEffect from '@/hook/useActionErrorEffect'
 import useMeQuery from '@/query/useMeQuery'
 import { useActionState, useEffect, useState } from 'react'
 import { toast } from 'sonner'
@@ -13,7 +14,7 @@ const initialState = {} as Awaited<ReturnType<typeof hashaLogin>>
 
 export default function BookmarkImportButton() {
   const [isOpened, setIsOpened] = useState(false)
-  const [{ success, error, formData }, formAction, pending] = useActionState(hashaLogin, initialState)
+  const [{ success, error, status, formData }, formAction, pending] = useActionState(hashaLogin, initialState)
   const { data: me } = useMeQuery()
 
   function handleButtonClick() {
@@ -29,15 +30,17 @@ export default function BookmarkImportButton() {
     }
   }
 
-  useEffect(() => {
-    if (error) {
+  useActionErrorEffect({
+    status,
+    error,
+    onError: (error) => {
       if (typeof error === 'string') {
         toast.error(error)
       } else {
         toast.error(error.username?.[0] ?? error.pwd?.[0])
       }
-    }
-  }, [error])
+    },
+  })
 
   useEffect(() => {
     if (success) {

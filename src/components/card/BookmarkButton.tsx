@@ -2,10 +2,10 @@
 
 import bookmarkManga from '@/app/(navigation)/(right-search)/[loginId]/bookmark/action'
 import { QueryKeys } from '@/constants/query'
+import useActionErrorEffect from '@/hook/useActionErrorEffect'
 import useBookmarksQuery from '@/query/useBookmarksQuery'
 import useMeQuery from '@/query/useMeQuery'
 import { Manga } from '@/types/manga'
-import { handleUnauthorizedError } from '@/utils/error'
 import { captureException } from '@sentry/nextjs'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import { useQueryClient } from '@tanstack/react-query'
@@ -26,19 +26,21 @@ export default function BookmarkButton({ manga, className }: Props) {
   const { id: mangaId } = manga
   const { data: me } = useMeQuery()
   const { data: bookmarks } = useBookmarksQuery()
-  const [{ error, success, isBookmarked }, formAction, isPending] = useActionState(bookmarkManga, initialState)
+  const [{ error, success, isBookmarked, status }, formAction, isPending] = useActionState(bookmarkManga, initialState)
   const isIconSelected = isBookmarked ?? bookmarks?.has(mangaId)
   const queryClient = useQueryClient()
 
-  useEffect(() => {
-    if (error) {
-      if (error.mangaId) {
-        toast.error(error.mangaId[0])
-      } else if (error.userId) {
-        handleUnauthorizedError({ queryClient, message: error.userId[0] })
+  useActionErrorEffect({
+    status,
+    error,
+    onError: (error) => {
+      if (typeof error === 'string') {
+        toast.error(error)
+      } else {
+        toast.error(error.mangaId?.[0] ?? error.source?.[0])
       }
-    }
-  }, [error, queryClient])
+    },
+  })
 
   useEffect(() => {
     if (success) {

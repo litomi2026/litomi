@@ -79,7 +79,7 @@ export default async function hashaLogin(_prevState: unknown, formData: FormData
 
   const cookieStore = await cookies()
   const userId = await getUserIdFromAccessToken(cookieStore)
-  if (!userId) return { error: '로그인 후 시도해주세요.', formData }
+  if (!userId) return { status: 401, error: '로그인 정보가 없거나 만료됐어요.', formData }
 
   try {
     const randomNumber = (Math.random() * 30).toFixed(0).padStart(2, '0')

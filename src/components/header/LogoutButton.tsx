@@ -2,6 +2,7 @@
 
 import logout from '@/app/auth/logout/action'
 import { QueryKeys } from '@/constants/query'
+import useActionErrorEffect from '@/hook/useActionErrorEffect'
 import useMeQuery from '@/query/useMeQuery'
 import { captureException } from '@sentry/nextjs'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
@@ -21,19 +22,22 @@ type Props = {
 }
 
 export default function LogoutButton({ className = '' }: Props) {
-  const [logoutState, formAction, pending] = useActionState(logout, initialState)
+  const [{ error, success, status }, formAction, pending] = useActionState(logout, initialState)
   const queryClient = useQueryClient()
   const { data: me } = useMeQuery()
 
   useEffect(() => {
-    const { error, success } = logoutState
-    if (error) {
-      toast.error(error)
-    } else if (success) {
+    if (success) {
       queryClient.setQueriesData({ queryKey: QueryKeys.me }, () => null)
       toast.success('로그아웃 성공')
     }
-  }, [logoutState, queryClient])
+  }, [queryClient, success])
+
+  useActionErrorEffect({
+    status,
+    error,
+    onError: (error) => toast.error(error),
+  })
 
   return (
     <form
