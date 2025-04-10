@@ -21,6 +21,10 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
 
   const [user] = await getUser(decodedLoginId)()
 
+  if (!user) {
+    notFound()
+  }
+
   return (
     <main className="flex flex-col grow">
       {/* Cover Image */}

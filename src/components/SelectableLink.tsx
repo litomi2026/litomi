@@ -27,7 +27,7 @@ function SelectableLink({ className, iconClassName, Icon, children, href, hrefMa
     >
       <div
         className="flex items-center gap-5 w-fit mx-auto p-3 rounded-full transition 2xl:m-0
-        group-hover:bg-zinc-800 group-active:scale-90"
+        group-hover:bg-zinc-800 group-active:scale-90 md:group-active:scale-95"
       >
         {cloneElement(Icon, {
           className: `w-6 transition ${iconClassName ?? ''}`,
