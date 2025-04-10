@@ -25,7 +25,7 @@ type Params = {
 }
 
 export async function generateStaticParams() {
-  return ['ha', 'hp', 'hi'].map((source) => ({ source }))
+  return [SourceParam.HASHA, SourceParam.HARPI, SourceParam.HIYOBI].map((source) => ({ source }))
 }
 
 export default async function Page({ params }: BasePageProps) {
