@@ -1,6 +1,6 @@
 'use client'
 
-import { ReactNode, useState } from 'react'
+import { ReactNode, useEffect, useRef, useState } from 'react'
 
 const positionStyle = {
   right: 'right-0 top-1/2 translate-x-full -translate-y-1/2',
@@ -12,16 +12,32 @@ const positionStyle = {
 
 export type TooltipProps = {
   position: keyof typeof positionStyle
-  children: ReactNode[]
+  children: [ReactNode, ReactNode] // [trigger, tooltipContent]
   className?: string
 }
 
 export default function Tooltip({ children, position, className = '' }: TooltipProps) {
   const [isActive, setIsActive] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setIsActive(false)
+      }
+    }
+    document.addEventListener('click', handleClickOutside)
+    return () => document.removeEventListener('click', handleClickOutside)
+  }, [])
 
   return (
-    <div className={`relative flex items-center ${className}`}>
-      <button className="peer" onClick={() => setIsActive((prev) => !prev)} tabIndex={0} type="button">
+    <div className={`relative flex items-center pointer-events-none ${className}`} ref={containerRef}>
+      <button
+        className="peer pointer-events-auto"
+        onClick={() => setIsActive((prev) => !prev)}
+        tabIndex={0}
+        type="button"
+      >
         {children[0]}
       </button>
       <div
