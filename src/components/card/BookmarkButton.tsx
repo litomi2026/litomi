@@ -29,7 +29,7 @@ export default function BookmarkButton({ manga, source, className }: Props) {
   const { data: me } = useMeQuery()
   const { data: bookmarks } = useBookmarksQuery()
   const [{ error, success, isBookmarked, status }, formAction, isPending] = useActionState(bookmarkManga, initialState)
-  const isIconSelected = isBookmarked ?? bookmarks?.has(mangaId)
+  const isIconSelected = bookmarks?.has(mangaId)
   const queryClient = useQueryClient()
 
   useActionErrorEffect({

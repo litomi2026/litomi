@@ -14,6 +14,7 @@ export default function useBookmarksQuery() {
     refetchOnReconnect: false,
     refetchOnMount: false,
     staleTime: Infinity,
+    gcTime: 0,
   })
 }
 
