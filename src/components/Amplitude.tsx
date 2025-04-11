@@ -1,3 +1,5 @@
+'use client'
+
 import * as amplitude from '@amplitude/analytics-browser'
 import { useEffect } from 'react'
 
