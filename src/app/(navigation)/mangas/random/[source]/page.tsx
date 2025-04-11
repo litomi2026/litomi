@@ -31,17 +31,16 @@ export async function generateStaticParams() {
 export default async function Page({ params }: BasePageProps) {
   const { source } = await params
   const sourceString = validateSource(source)
-  const mangas = await getMangas({ source: sourceString })
+  if (!sourceString) notFound()
 
-  if (!mangas || mangas.length === 0) {
-    notFound()
-  }
+  const mangas = await getMangas({ source: sourceString })
+  if (!mangas || mangas.length === 0) notFound()
 
   return (
     <>
       <ul className="grid md:grid-cols-2 gap-2 grow">
         {mangas.map((manga, i) => (
-          <MangaCard index={i} key={manga.id} manga={manga} source={source} />
+          <MangaCard index={i} key={manga.id} manga={manga} source={sourceString} />
         ))}
       </ul>
       <div className="flex justify-center items-center">

@@ -2,8 +2,10 @@ import MangaCard from '@/components/card/MangaCard'
 import { fetchMangaFromHiyobi } from '@/crawler/hiyobi'
 import { harpiMangas } from '@/database/harpi'
 import { hashaMangas } from '@/database/hasha'
+import { BookmarkSource } from '@/database/schema'
 import selectBookmarks from '@/sql/selectBookmarks'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
+import { SourceParam } from '@/utils/param'
 import { checkDefined } from '@/utils/type'
 import { unstable_cache } from 'next/cache'
 import { cookies } from 'next/headers'
@@ -20,45 +22,60 @@ export default async function Page() {
           예시 화면이에요. 로그인 후 이용해주세요 🔖
         </h2>
         <ul className="grid gap-2 md:grid-cols-2">
-          <MangaCard manga={hashaMangas['3023700']} source="ha" />
+          <MangaCard manga={hashaMangas['3023700']} source={SourceParam.HASHA} />
         </ul>
       </>
     )
   }
 
   const bookmarkRows = await getBookmarkRows(userId)()
-  const sources: string[] = []
-
-  if (bookmarkRows.length === 0) {
-    notFound()
-  }
+  if (bookmarkRows.length === 0) notFound()
 
   // NOTE: beta 버전 - 최대 20개
   // 1) hashaMangas[mangaId]가 있다면 그대로 반환
   // 2) harpiMangas[mangaId]가 있다면 그대로 반환
   // 3) 둘 다 없다면 fetchMangaFromHiyobi 로 비동기 호출
   // 4) 모든 소스가 실패하면 null을 반환
-  const bookmarkedMangas = await Promise.all(
-    bookmarkRows.slice(0, 20).map(({ mangaId }) => {
+  const bookmarkedMangas = bookmarkRows
+    .map(({ mangaId, source }) => {
+      if (source === BookmarkSource.HASHA) {
+        return { manga: hashaMangas[mangaId], source: SourceParam.HASHA }
+      }
+      if (source === BookmarkSource.HARPI) {
+        return { manga: harpiMangas[mangaId], source: SourceParam.HARPI }
+      }
+      if (source === BookmarkSource.HIYOBI) {
+        return {
+          manga: fetchMangaFromHiyobi({ id: mangaId })
+            .then((manga) => manga ?? { id: mangaId, title: '만화 정보가 없어요', images: [] })
+            .catch(() => ({ id: mangaId, title: '오류가 발생했어요', images: [] })),
+          source: SourceParam.HIYOBI,
+        }
+      }
+
+      /** @deprecated */
       if (hashaMangas[mangaId]) {
-        sources.push('ha')
-        return hashaMangas[mangaId]
+        return { manga: hashaMangas[mangaId], source: SourceParam.HASHA }
       }
       if (harpiMangas[mangaId]) {
-        sources.push('hp')
-        return harpiMangas[mangaId]
+        return { manga: harpiMangas[mangaId], source: SourceParam.HARPI }
       }
-      sources.push('hi')
-      return fetchMangaFromHiyobi({ id: mangaId })
-        .then((manga) => manga ?? { id: mangaId, title: '만화 정보가 없어요', images: [] })
-        .catch(() => ({ id: mangaId, title: '오류가 발생했어요', images: [] }))
-    }),
-  )
+      return {
+        manga: fetchMangaFromHiyobi({ id: mangaId })
+          .then((manga) => manga ?? { id: mangaId, title: '만화 정보가 없어요', images: [] })
+          .catch(() => ({ id: mangaId, title: '오류가 발생했어요', images: [] })),
+        source: SourceParam.HIYOBI,
+      }
+      /** --------- */
+    })
+    .filter(checkDefined)
+
+  const a = await Promise.all(bookmarkedMangas.map(({ manga }) => manga))
 
   return (
     <ul className="grid gap-2 md:grid-cols-2">
-      {bookmarkedMangas.filter(checkDefined).map((manga, i) => (
-        <MangaCard key={manga.id} manga={manga} source={sources[i]} />
+      {a.map((manga, i) => (
+        <MangaCard key={manga.id} manga={manga} source={bookmarkedMangas[i].source} />
       ))}
     </ul>
   )

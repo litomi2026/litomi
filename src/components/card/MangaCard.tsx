@@ -1,6 +1,7 @@
 import { harpiTagMap } from '@/database/harpi-tag'
 import { isHashaMangaKey } from '@/database/hasha'
 import { Manga } from '@/types/manga'
+import { SourceParam } from '@/utils/param'
 import { ErrorBoundary, Suspense } from '@suspensive/react'
 import dayjs from 'dayjs'
 import Link from 'next/link'
@@ -25,7 +26,7 @@ const BLIND_TAGS = Object.keys(BLIND_TAG_LABELS)
 
 type Props = {
   manga: Manga
-  source?: string
+  source: SourceParam
   index?: number
   className?: string
 }
@@ -36,11 +37,11 @@ export function MangaCardSkeleton() {
   return <li className="animate-fade-in rounded-xl bg-zinc-900 border-2 aspect-[6/7] w-full h-full xl:aspect-[3/2]" />
 }
 
-function getViewerLink(id: number, source: string) {
+function getViewerLink(id: number, source: SourceParam) {
   return `/manga/${id}/${source}`
 }
 
-function MangaCard({ manga, index = 0, source = '', className = '' }: Props) {
+function MangaCard({ manga, index = 0, source, className = '' }: Props) {
   const { id, artists, characters, date, group, related, series, tags, title, type, images } = manga
   const mappedTags = tags?.map((tag) => harpiTagMap[tag] || tag)
   const translatedTags = mappedTags?.map((tag) => (typeof tag === 'string' ? tag : tag.korStr || tag.engStr))
@@ -139,7 +140,7 @@ function MangaCard({ manga, index = 0, source = '', className = '' }: Props) {
             <ImageDownloadButton className="grow" disabled={source === 'hi'} manga={manga} />
             <ErrorBoundary fallback={BookmarkButtonError}>
               <Suspense clientOnly fallback={<BookmarkButtonSkeleton className="grow" />}>
-                <BookmarkButton className="grow" manga={manga} />
+                <BookmarkButton className="grow" manga={manga} source={source} />
               </Suspense>
             </ErrorBoundary>
           </div>

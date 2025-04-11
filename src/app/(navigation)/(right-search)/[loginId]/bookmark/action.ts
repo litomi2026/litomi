@@ -14,12 +14,12 @@ const schema = z.object({
 
 export default async function bookmarkManga(_prevState: unknown, formData: FormData) {
   const cookieStore = await cookies()
-  const userId = getUserIdFromAccessToken(cookieStore)
+  const userId = await getUserIdFromAccessToken(cookieStore)
   if (!userId) return { status: 401, error: '로그인 정보가 없거나 만료됐어요.' }
 
   const validatedFields = schema.safeParse({
-    mangaId: formData.get('mangaId'),
-    source: formData.get('source'),
+    mangaId: +(formData.get('mangaId')?.toString() ?? ''),
+    source: +(formData.get('source')?.toString() ?? ''),
   })
 
   if (!validatedFields.success) {
@@ -35,7 +35,7 @@ export default async function bookmarkManga(_prevState: unknown, formData: FormD
       RETURNING manga_id
     )
     INSERT INTO bookmark (manga_id, user_id, source)
-    SELECT ${mangaId}, ${userId}, ${BookmarkSource[source]}
+    SELECT ${mangaId}, ${userId}, ${source}
     WHERE NOT EXISTS (
       SELECT 1 FROM deleted
     )

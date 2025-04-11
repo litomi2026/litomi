@@ -1,3 +1,5 @@
+import { BookmarkSource } from '@/database/schema'
+
 export enum OrderParam {
   ASC = 'asc',
   DESC = 'desc',
@@ -18,6 +20,19 @@ export enum SourceParam {
 
 export function getLoginId(loginId: string) {
   return decodeURIComponent(loginId).slice(1)
+}
+
+export function mapSourceParamToBookmarkSource(order: SourceParam) {
+  switch (order) {
+    case SourceParam.HARPI:
+      return BookmarkSource.HARPI
+    case SourceParam.HASHA:
+      return BookmarkSource.HASHA
+    case SourceParam.HIYOBI:
+      return BookmarkSource.HIYOBI
+    default:
+      return
+  }
 }
 
 export function validateId(id: string) {

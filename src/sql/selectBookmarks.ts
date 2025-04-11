@@ -9,7 +9,10 @@ type Params = {
 
 export default async function selectBookmarks({ userId, count }: Params) {
   const query = db
-    .select({ mangaId: bookmarkTable.mangaId })
+    .select({
+      mangaId: bookmarkTable.mangaId,
+      source: bookmarkTable.source,
+    })
     .from(bookmarkTable)
     .where(sql`${bookmarkTable.userId} = ${userId}`)
     .orderBy(sql`${bookmarkTable.createdAt} DESC`)

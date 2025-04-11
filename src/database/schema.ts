@@ -17,7 +17,7 @@ export const bookmarkTable = pgTable(
     userId: integer('user_id').references(() => userTable.id),
     mangaId: integer('manga_id').notNull(),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-    source: integer('source').notNull(),
+    source: integer('source'), //.notNull(),
   },
   (table) => [primaryKey({ columns: [table.userId, table.mangaId] })],
 )
