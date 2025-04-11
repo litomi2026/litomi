@@ -4,6 +4,7 @@ import { useNavigationModeStore } from '@/components/ImageViewer/store/navigatio
 import { useScreenFitStore } from '@/components/ImageViewer/store/screenFit'
 import { useTouchOrientationStore } from '@/components/ImageViewer/store/touchOrientation'
 import { type Manga } from '@/types/manga'
+import { SourceParam } from '@/utils/param'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
 import { memo, useCallback, useEffect, useState } from 'react'
@@ -21,9 +22,10 @@ const ScrollViewer = dynamic(() => import('@/components/ImageViewer/ScrollViewer
 
 type Props = {
   manga: Manga
+  source: SourceParam
 }
 
-export default function ImageViewer({ manga }: Props) {
+export default function ImageViewer({ manga, source }: Props) {
   const [showController, setShowController] = useState(false)
   const { navMode, setNavMode } = useNavigationModeStore()
   const { screenFit, setScreenFit } = useScreenFitStore()
@@ -71,7 +73,7 @@ export default function ImageViewer({ manga }: Props) {
               <IconClose className="w-6" />
             </button>
           </div>
-          <MangaDetailButton manga={manga} />
+          <MangaDetailButton manga={manga} source={source} />
           <div className="flex gap-1">
             <button aria-label="새로고침" onClick={() => window.location.reload()}>
               <IconReload className="w-6" />

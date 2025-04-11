@@ -1,5 +1,6 @@
 import { harpiTagMap } from '@/database/harpi-tag'
 import { Manga } from '@/types/manga'
+import { SourceParam } from '@/utils/param'
 import { ErrorBoundary, Suspense } from '@suspensive/react'
 import dayjs from 'dayjs'
 import { memo, useState } from 'react'
@@ -9,9 +10,14 @@ import ImageDownloadButton from '../card/ImageDownloadButton'
 import TagList from '../TagList'
 import Modal from '../ui/Modal'
 
+type Props = {
+  manga: Manga
+  source: SourceParam
+}
+
 export default memo(MangaDetailButton)
 
-function MangaDetailButton({ manga }: { manga: Manga }) {
+function MangaDetailButton({ manga, source }: Props) {
   const { title, artists, group, series, characters, type, tags, date } = manga
   const [isOpened, setIsOpened] = useState(false)
 
@@ -78,7 +84,7 @@ function MangaDetailButton({ manga }: { manga: Manga }) {
             <ImageDownloadButton className="grow" manga={manga} />
             <ErrorBoundary fallback={BookmarkButtonError}>
               <Suspense clientOnly fallback={<BookmarkButtonSkeleton className="grow" />}>
-                <BookmarkButton className="grow" manga={manga} />
+                <BookmarkButton className="grow" manga={manga} source={source} />
               </Suspense>
             </ErrorBoundary>
           </div>

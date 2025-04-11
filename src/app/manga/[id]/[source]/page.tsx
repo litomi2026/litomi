@@ -78,7 +78,7 @@ export default async function Page({ params }: BasePageProps) {
 
   return (
     <main>
-      <ImageViewer manga={manga} />
+      <ImageViewer manga={manga} source={sourceString} />
     </main>
   )
 }
