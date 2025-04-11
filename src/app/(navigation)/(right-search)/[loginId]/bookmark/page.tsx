@@ -52,21 +52,6 @@ export default async function Page() {
           source: SourceParam.HIYOBI,
         }
       }
-
-      /** @deprecated */
-      if (hashaMangas[mangaId]) {
-        return { manga: hashaMangas[mangaId], source: SourceParam.HASHA }
-      }
-      if (harpiMangas[mangaId]) {
-        return { manga: harpiMangas[mangaId], source: SourceParam.HARPI }
-      }
-      return {
-        manga: fetchMangaFromHiyobi({ id: mangaId })
-          .then((manga) => manga ?? { id: mangaId, title: '만화 정보가 없어요', images: [] })
-          .catch(() => ({ id: mangaId, title: '오류가 발생했어요', images: [] })),
-        source: SourceParam.HIYOBI,
-      }
-      /** --------- */
     })
     .filter(checkDefined)
 
@@ -74,9 +59,11 @@ export default async function Page() {
 
   return (
     <ul className="grid gap-2 md:grid-cols-2">
-      {a.map((manga, i) => (
-        <MangaCard key={manga.id} manga={manga} source={bookmarkedMangas[i].source} />
-      ))}
+      {a
+        .filter((manga) => manga)
+        .map((manga, i) => (
+          <MangaCard key={manga.id} manga={manga} source={bookmarkedMangas[i].source} />
+        ))}
     </ul>
   )
 }
