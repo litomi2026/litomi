@@ -30,11 +30,12 @@ export default function SignupForm() {
   }, [error])
 
   useEffect(() => {
-    if (!success) return
-
-    toast.success('회원가입이 완료됐습니다.')
-    queryClient.invalidateQueries({ queryKey: QueryKeys.me })
-    router.replace(searchParams.get(SearchParamKey.REDIRECT_URL) ?? '/')
+    if (success) {
+      toast.success('회원가입이 완료됐어요.')
+      queryClient
+        .invalidateQueries({ queryKey: QueryKeys.me, refetchType: 'all' })
+        .then(() => router.replace(searchParams.get(SearchParamKey.REDIRECT_URL) ?? '/'))
+    }
   }, [queryClient, router, searchParams, success])
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
