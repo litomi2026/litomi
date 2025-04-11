@@ -2,8 +2,9 @@ import './globals.css'
 
 import type { Metadata, Viewport } from 'next'
 
+import Amplitude from '@/components/Amplitude'
 import { defaultOpenGraph, DESCRIPTION, SHORT_NAME } from '@/constants'
-import { GA_ID, GTM_ID } from '@/constants/env'
+import { AMPLITUDE_API_KEY, GA_ID, GTM_ID } from '@/constants/env'
 import { CANONICAL_URL } from '@/constants/url'
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 import { Analytics } from '@vercel/analytics/react'
@@ -75,6 +76,7 @@ export default function RootLayout({ children }: Readonly<Props>) {
         <SpeedInsights />
         <Analytics />
       </body>
+      {AMPLITUDE_API_KEY && <Amplitude key={AMPLITUDE_API_KEY} />}
       {GTM_ID && <GoogleTagManager gtmId={GTM_ID} />}
       {GA_ID && <GoogleAnalytics gaId={GA_ID} />}
     </html>
