@@ -14,6 +14,8 @@ export default function useBookmarksQuery() {
     refetchOnReconnect: false,
     refetchOnMount: false,
     staleTime: Infinity,
+
+    // 로그인 후 queryClient.invalidateQueries({ queryKey: QueryKeys.me }) 로직이 효과가 있으려면?
     gcTime: 0,
   })
 }

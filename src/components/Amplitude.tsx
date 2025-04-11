@@ -4,13 +4,15 @@ import * as amplitude from '@amplitude/analytics-browser'
 import { useEffect } from 'react'
 
 type Props = {
-  key: string
+  apiKey: string
 }
 
-export default function Amplitude({ key }: Props) {
+export default function Amplitude({ apiKey }: Props) {
   useEffect(() => {
-    amplitude.init(key, { autocapture: { elementInteractions: true } })
-  }, [key])
+    if (apiKey) {
+      amplitude.init(apiKey, { autocapture: { elementInteractions: true } })
+    }
+  }, [apiKey])
 
   return null
 }
