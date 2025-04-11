@@ -17,7 +17,7 @@ import {
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
-export const revalidate = 2592000 // 30 days
+export const revalidate = 86400 // 1 day
 
 export const metadata: Metadata = {
   alternates: {
@@ -51,10 +51,7 @@ export default async function Page({ params }: BasePageProps) {
   const orderString = validateOrder(order)
   const pageNumber = validatePage(page)
   const sourceString = validateSource(source)
-
-  if (!sortString || !orderString || !pageNumber || !sourceString) {
-    notFound()
-  }
+  if (!sortString || !orderString || !pageNumber || !sourceString) notFound()
 
   const mangas = await getMangas({
     source: sourceString,
@@ -63,14 +60,12 @@ export default async function Page({ params }: BasePageProps) {
     page: pageNumber,
   })
 
-  if (!mangas || mangas.length === 0) {
-    notFound()
-  }
+  if (!mangas || mangas.length === 0) notFound()
 
   return (
     <ul className="grid md:grid-cols-2 gap-2 grow">
       {mangas.map((manga, i) => (
-        <MangaCard index={i} key={manga.id} manga={manga} source={source} />
+        <MangaCard index={i} key={manga.id} manga={manga} source={sourceString} />
       ))}
     </ul>
   )

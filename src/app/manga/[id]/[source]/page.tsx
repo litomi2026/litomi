@@ -11,7 +11,7 @@ import { SourceParam, validateId, validateSource } from '@/utils/param'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
-export const revalidate = 2592000 // 30 days
+export const revalidate = 43200 // 12 hours
 
 export async function generateMetadata({ params }: BasePageProps): Promise<Metadata> {
   const { id, source } = await params
@@ -78,7 +78,7 @@ export default async function Page({ params }: BasePageProps) {
 
   return (
     <main>
-      <ImageViewer manga={manga} />
+      <ImageViewer manga={manga} source={sourceString} />
     </main>
   )
 }

@@ -13,7 +13,6 @@ export async function getUserIdFromAccessToken(cookieStore: ReadonlyRequestCooki
 
   if (!userId) {
     cookieStore.delete(CookieKey.ACCESS_TOKEN)
-    cookieStore.delete(CookieKey.REFRESH_TOKEN)
     return null
   }
 

@@ -15,6 +15,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@amplitude/analytics-browser": "^2.13.3",
     "@neondatabase/serverless": "^1.0.0",
     "@next/third-parties": "^15.2.3",
     "@sentry/nextjs": "^9.8.0",

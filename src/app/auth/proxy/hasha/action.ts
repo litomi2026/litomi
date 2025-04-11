@@ -1,7 +1,7 @@
 'use server'
 
 import { db } from '@/database/drizzle'
-import { bookmarkTable } from '@/database/schema'
+import { BookmarkSource, bookmarkTable } from '@/database/schema'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
 import { retryWithExponentialBackoff } from '@/utils/retry'
 import { captureException } from '@sentry/nextjs'
@@ -79,7 +79,7 @@ export default async function hashaLogin(_prevState: unknown, formData: FormData
 
   const cookieStore = await cookies()
   const userId = await getUserIdFromAccessToken(cookieStore)
-  if (!userId) return { error: '로그인 후 시도해주세요.', formData }
+  if (!userId) return { status: 401, error: '로그인 정보가 없거나 만료됐어요.', formData }
 
   try {
     const randomNumber = (Math.random() * 30).toFixed(0).padStart(2, '0')
@@ -117,8 +117,11 @@ export default async function hashaLogin(_prevState: unknown, formData: FormData
     const bookmarkIds = bookmarkResult.data.map(({ mangaId }) => mangaId)
     // TODO: 모든 북마크를 가져오기 위해 maxPage를 사용하여 반복문 돌리기
     // const maxPage = bookmarkResult.maxPage
-    const userIdNumber = +userId
-    const bookmarkedMangaIds = bookmarkIds.map((mangaId) => ({ userId: userIdNumber, mangaId }))
+    const bookmarkedMangaIds = bookmarkIds.map((mangaId) => ({
+      userId: +userId,
+      mangaId,
+      source: BookmarkSource.HASHA,
+    }))
     await db.insert(bookmarkTable).values(bookmarkedMangaIds).onConflictDoNothing()
 
     return { success: true, message: '북마크를 불러왔어요.' }

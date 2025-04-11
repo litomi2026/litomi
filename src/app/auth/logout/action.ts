@@ -3,21 +3,17 @@
 import { CookieKey } from '@/constants/storage'
 import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
-import { TokenType, verifyJWT } from '@/utils/jwt'
+import { getUserIdFromAccessToken } from '@/utils/cookie'
 import { sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 
 export default async function logout() {
   const cookieStore = await cookies()
+  const userId = await getUserIdFromAccessToken(cookieStore)
+  if (!userId) return { status: 401, error: '로그인 정보가 없거나 만료됐어요.' }
 
-  const accessToken = cookieStore.get(CookieKey.ACCESS_TOKEN)?.value ?? ''
-  const { sub: userId } = await verifyJWT(accessToken, TokenType.ACCESS).catch(() => ({ sub: null }))
-
-  if (!userId) {
-    return { error: '로그인 후 시도해주세요' }
-  }
-
-  db.update(userTable)
+  await db
+    .update(userTable)
     .set({ logoutAt: new Date() })
     .where(sql`${userTable.id} = ${userId}`)
 

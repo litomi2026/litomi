@@ -15,10 +15,7 @@ export type ResponseApiMe = {
 export async function GET() {
   const cookieStore = await cookies()
   const userId = await getUserIdFromAccessToken(cookieStore)
-
-  if (!userId) {
-    return new Response('로그인 정보가 없거나 만료됐습니다.', { status: 401 })
-  }
+  if (!userId) return new Response('로그인 정보가 없거나 만료됐어요.', { status: 401 })
 
   const [user] = await db
     .select({
@@ -32,7 +29,7 @@ export async function GET() {
 
   if (!user) {
     cookieStore.delete(CookieKey.ACCESS_TOKEN)
-    return new Response('사용자 정보를 찾을 수 없습니다.', { status: 404 })
+    return new Response('사용자 정보를 찾을 수 없어요.', { status: 404 })
   }
 
   return Response.json(user satisfies ResponseApiMe)

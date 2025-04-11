@@ -2,10 +2,11 @@
 
 import bookmarkManga from '@/app/(navigation)/(right-search)/[loginId]/bookmark/action'
 import { QueryKeys } from '@/constants/query'
+import useActionErrorEffect from '@/hook/useActionErrorEffect'
 import useBookmarksQuery from '@/query/useBookmarksQuery'
 import useMeQuery from '@/query/useMeQuery'
 import { Manga } from '@/types/manga'
-import { handleUnauthorizedError } from '@/utils/error'
+import { mapSourceParamToBookmarkSource, SourceParam } from '@/utils/param'
 import { captureException } from '@sentry/nextjs'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import { useQueryClient } from '@tanstack/react-query'
@@ -19,26 +20,29 @@ const initialState = {} as Awaited<ReturnType<typeof bookmarkManga>>
 
 type Props = {
   manga: Manga
+  source: SourceParam
   className?: string
 }
 
-export default function BookmarkButton({ manga, className }: Props) {
+export default function BookmarkButton({ manga, source, className }: Props) {
   const { id: mangaId } = manga
   const { data: me } = useMeQuery()
   const { data: bookmarks } = useBookmarksQuery()
-  const [{ error, success, isBookmarked }, formAction, isPending] = useActionState(bookmarkManga, initialState)
-  const isIconSelected = isBookmarked ?? bookmarks?.has(mangaId)
+  const [{ error, success, isBookmarked, status }, formAction, isPending] = useActionState(bookmarkManga, initialState)
+  const isIconSelected = bookmarks?.has(mangaId)
   const queryClient = useQueryClient()
 
-  useEffect(() => {
-    if (error) {
-      if (error.mangaId) {
-        toast.error(error.mangaId[0])
-      } else if (error.userId) {
-        handleUnauthorizedError({ queryClient, message: error.userId[0] })
+  useActionErrorEffect({
+    status,
+    error,
+    onError: (error) => {
+      if (typeof error === 'string') {
+        toast.error(error)
+      } else {
+        toast.error(error.mangaId?.[0] ?? error.source?.[0])
       }
-    }
-  }, [error, queryClient])
+    },
+  })
 
   useEffect(() => {
     if (success) {
@@ -72,6 +76,7 @@ export default function BookmarkButton({ manga, className }: Props) {
   return (
     <form action={formAction} className={className}>
       <input name="mangaId" type="hidden" value={mangaId} />
+      <input name="source" type="hidden" value={mapSourceParamToBookmarkSource(source)} />
       <button
         aria-disabled={!me}
         className="flex justify-center items-center gap-1 border-2 w-full rounded-lg p-1 px-2 bg-zinc-900 hover:bg-zinc-800 active:bg-zinc-900 transition"
@@ -93,7 +98,7 @@ export function BookmarkButtonError({ error, reset }: ErrorBoundaryFallbackProps
 
   return (
     <button
-      className="flex items-center gap-1 border-2 w-fit border-red-800 rounded-lg p-1 px-2 transition"
+      className="flex items-center gap-1 border-2 w-fit border-red-800 rounded-lg p-1 px-2 transition grow"
       onClick={reset}
     >
       <IconBookmark className="w-5 text-red-700" />
