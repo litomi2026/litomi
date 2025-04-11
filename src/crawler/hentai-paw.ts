@@ -6,7 +6,7 @@ function extractArticleId(listHTML: string) {
   // 정규식 패턴 생성
   // a 태그 내부에 fi-kr 클래스를 가진 span이 있는 패턴을 찾음
   const pattern =
-    /<a[^>]*href=["']([^"']+)["'][^>]*>(?:(?!<\/a>).)*?<span[^>]*class=["'][^"']*fi-kr[^"']*["'][^>]*>(?:(?!<\/a>).)*?<\/a>/gs
+    /<a[^>]*href=["']([^"']+)["'][^>]*>(?:(?!<\/a>).)*?<span[^>]*class=["'][^"']*fi-kr[^"']*["'][^>]*>(?:(?!<\/a>).)*?<\/a>/g
 
   // href 값을 추출하기 위한 정규식
   const hrefPattern = /<a[^>]*href=["']([^"']+)["'][^>]*>/
