@@ -5,6 +5,7 @@ import Loading from '@/components/ui/Loading'
 import { loginIdPattern, passwordPattern } from '@/constants/pattern'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
+import * as amplitude from '@amplitude/analytics-browser'
 import { useQueryClient } from '@tanstack/react-query'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useActionState, useEffect, useRef } from 'react'
@@ -12,16 +13,15 @@ import { toast } from 'sonner'
 
 import login from './action'
 
-const initialState = {
-  success: false,
-}
+const initialState = {} as Awaited<ReturnType<typeof login>>
 
 export default function LoginForm() {
-  const [{ error, success, formData }, formAction, pending] = useActionState(login, initialState)
+  const [{ error, success, formData, data }, formAction, pending] = useActionState(login, initialState)
   const router = useRouter()
   const formRef = useRef<HTMLFormElement>(null)
   const queryClient = useQueryClient()
   const searchParams = useSearchParams()
+  const userId = data?.userId
 
   function resetId() {
     const loginIdInput = formRef.current?.loginId as HTMLInputElement
@@ -43,11 +43,17 @@ export default function LoginForm() {
   useEffect(() => {
     if (success) {
       toast.success('로그인 성공')
+
+      if (userId) {
+        amplitude.setUserId(String(userId))
+        amplitude.track('login', { userId })
+      }
+
       queryClient
         .invalidateQueries({ queryKey: QueryKeys.me, refetchType: 'all' })
         .then(() => router.replace(searchParams.get(SearchParamKey.REDIRECT_URL) ?? '/'))
     }
-  }, [queryClient, router, searchParams, success])
+  }, [queryClient, router, searchParams, success, userId])
 
   return (
     <form

@@ -58,7 +58,7 @@ export default async function Page() {
   const bookmarkedMangas = await Promise.all(bookmarkInfo.map(({ manga }) => manga))
 
   return (
-    <ul className="grid gap-2 md:grid-cols-2">
+    <ul className="grid gap-2 md:grid-cols-2 grow">
       {bookmarkedMangas.map((manga, i) => (
         <MangaCard key={manga.id} manga={manga} source={bookmarkInfo[i].source} />
       ))}
