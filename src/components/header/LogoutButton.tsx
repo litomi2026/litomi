@@ -4,6 +4,7 @@ import logout from '@/app/auth/logout/action'
 import { QueryKeys } from '@/constants/query'
 import useActionErrorEffect from '@/hook/useActionErrorEffect'
 import useMeQuery from '@/query/useMeQuery'
+import * as amplitude from '@amplitude/analytics-browser'
 import { captureException } from '@sentry/nextjs'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import { useQueryClient } from '@tanstack/react-query'
@@ -25,13 +26,16 @@ export default function LogoutButton({ className = '' }: Props) {
   const [{ error, success, status }, formAction, pending] = useActionState(logout, initialState)
   const queryClient = useQueryClient()
   const { data: me } = useMeQuery()
+  const myId = me?.id
 
   useEffect(() => {
     if (success) {
-      queryClient.setQueriesData({ queryKey: QueryKeys.me }, () => null)
       toast.success('로그아웃 성공')
+      if (myId) amplitude.track('logout', { userId: myId })
+      amplitude.reset()
+      queryClient.setQueriesData({ queryKey: QueryKeys.me }, () => null)
     }
-  }, [queryClient, success])
+  }, [myId, queryClient, success])
 
   useActionErrorEffect({
     status,
