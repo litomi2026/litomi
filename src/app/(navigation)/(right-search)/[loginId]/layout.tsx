@@ -33,6 +33,7 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
           alt="Cover Image"
           className="object-cover"
           fill
+          priority
           sizes="100vw, (min-width: 1024px) 1024px"
           src="/og-image.png"
         />
@@ -42,7 +43,11 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
         <div className="relative -mt-16 flex justify-between items-end">
           <div className="flex items-end">
             <div className="w-32 aspect-square shrink-0 border-4 rounded-full overflow-hidden">
-              <img alt="Profile Image" className="object-cover aspect-square w-32" src={user.imageURL ?? ''} />
+              <img
+                alt="Profile Image"
+                className="object-cover bg-zinc-900 aspect-square w-32"
+                src={user.imageURL ?? ''}
+              />
             </div>
             <div className="ml-4">
               <h1 className="text-2xl font-bold line-clamp-1 break-all">{user.nickname}</h1>

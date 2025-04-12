@@ -36,7 +36,7 @@ export default async function Page() {
   // 2) harpiMangas[mangaId]가 있다면 그대로 반환
   // 3) 둘 다 없다면 fetchMangaFromHiyobi 로 비동기 호출
   // 4) 모든 소스가 실패하면 null을 반환
-  const bookmarkedMangas = bookmarkRows
+  const bookmarkInfo = bookmarkRows
     .map(({ mangaId, source }) => {
       if (source === BookmarkSource.HASHA) {
         return { manga: hashaMangas[mangaId], source: SourceParam.HASHA }
@@ -55,15 +55,13 @@ export default async function Page() {
     })
     .filter(checkDefined)
 
-  const a = await Promise.all(bookmarkedMangas.map(({ manga }) => manga))
+  const bookmarkedMangas = await Promise.all(bookmarkInfo.map(({ manga }) => manga))
 
   return (
     <ul className="grid gap-2 md:grid-cols-2">
-      {a
-        .filter((manga) => manga)
-        .map((manga, i) => (
-          <MangaCard key={manga.id} manga={manga} source={bookmarkedMangas[i].source} />
-        ))}
+      {bookmarkedMangas.map((manga, i) => (
+        <MangaCard key={manga.id} manga={manga} source={bookmarkInfo[i].source} />
+      ))}
     </ul>
   )
 }

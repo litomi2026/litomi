@@ -7,12 +7,13 @@ import { type Manga } from '@/types/manga'
 import { SourceParam } from '@/utils/param'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
-import { memo, useCallback, useEffect, useState } from 'react'
-import { toast } from 'sonner'
+import { useCallback, useEffect, useState } from 'react'
 
-import { IconChevronLeft, IconClose, IconMaximize, IconReload } from '../icons/IconImageViewer'
+import { IconChevronLeft, IconReload } from '../icons/IconImageViewer'
+import FullscreenButton from './FullscreenButton'
 import ImageSlider from './ImageSlider'
 import MangaDetailButton from './MangaDetailButton'
+import ShareButton from './ShareButton'
 import SlideshowButton from './SlideshowButton'
 import { useImageIndexStore } from './store/imageIndex'
 import { usePageViewStore } from './store/pageView'
@@ -64,21 +65,19 @@ export default function ImageViewer({ manga, source }: Props) {
         aria-current={showController}
         className="fixed top-0 left-0 right-0 z-10 bg-background/70 backdrop-blur border-b border-zinc-500 px-safe transition opacity-0 pointer-events-none aria-current:opacity-100 aria-current:pointer-events-auto"
       >
-        <div className="flex gap-2 items-center justify-between p-3 [&_button]:rounded-full [&_button]:active:text-zinc-500 [&_button]:hover:bg-zinc-800 [&_button]:transition [&_button]:p-2 [&_button]:focus:outline outline-zinc-500">
+        <div className="flex gap-2 items-center justify-between p-3 [&_button]:rounded-full [&_button]:active:text-zinc-500 [&_button]:hover:bg-zinc-800 [&_button]:transition [&_button]:p-2">
           <div className="flex gap-1">
             <button aria-label="뒤로가기" onClick={() => router.back()}>
               <IconChevronLeft className="w-6" />
             </button>
-            <button aria-label="창 닫기" onClick={() => window.close()}>
-              <IconClose className="w-6" />
+            <button aria-label="새로고침" onClick={() => window.location.reload()}>
+              <IconReload className="w-6" />
             </button>
           </div>
           <MangaDetailButton manga={manga} source={source} />
           <div className="flex gap-1">
-            <button aria-label="새로고침" onClick={() => window.location.reload()}>
-              <IconReload className="w-6" />
-            </button>
-            <FullscreenButtonMemo />
+            <ShareButton />
+            <FullscreenButton />
           </div>
         </div>
       </div>
@@ -131,27 +130,5 @@ export default function ImageViewer({ manga, source }: Props) {
         </div>
       </div>
     </div>
-  )
-}
-
-const FullscreenButtonMemo = memo(FullscreenButton)
-
-function FullscreenButton() {
-  function toggleFullScreen() {
-    if (!document.fullscreenElement) {
-      if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen()
-      } else {
-        toast.warning('이 브라우저는 전체화면 기능을 지원하지 않습니다.')
-      }
-    } else if (document.exitFullscreen) {
-      document.exitFullscreen()
-    }
-  }
-
-  return (
-    <button aria-label="전체화면" onClick={toggleFullScreen}>
-      <IconMaximize className="w-6" />
-    </button>
   )
 }

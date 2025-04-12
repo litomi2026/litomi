@@ -1,0 +1,31 @@
+'use client'
+
+import { useState } from 'react'
+
+import IconLogout from '../icons/IconLogout'
+import Modal from '../ui/Modal'
+
+export default function ShareButton() {
+  const [isOpened, setIsOpened] = useState(false)
+
+  return (
+    <>
+      <button aria-label="공유하기" onClick={() => setIsOpened(true)}>
+        <IconLogout className="w-6 rotate-270" />
+      </button>
+      <Modal onClose={() => setIsOpened(false)} open={isOpened} showCloseButton showDragButton>
+        <div className="flex flex-col gap-2 p-4 border-2 bg-zinc-900 rounded-xl min-w-3xs max-w-prose">
+          <h2 className="text-xl text-center py-2 font-semibold">공유하기</h2>
+          <p className="text-sm text-zinc-400">아직 준비중입니다.</p>
+          <button
+            className="flex justify-center items-center gap-2 text-sm font-semibold rounded-full p-3 w-full transition border-2 hover:bg-zinc-800 actove:bg-zinc-900 active:scale-95"
+            type="button"
+          >
+            <IconLogout className="w-5 rotate-270" />
+            링크 복사하기
+          </button>
+        </div>
+      </Modal>
+    </>
+  )
+}
