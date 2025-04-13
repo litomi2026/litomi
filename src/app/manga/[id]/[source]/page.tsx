@@ -12,7 +12,7 @@ import { SourceParam, validateId, validateSource } from '@/utils/param'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
-export const revalidate = 43200 // 12 hours
+export const revalidate = 28800 // 8 hours
 
 export async function generateMetadata({ params }: BasePageProps): Promise<Metadata> {
   const { id, source } = await params

@@ -53,7 +53,7 @@ export async function fetchMangaFromHiyobi({ id }: { id: number }) {
 export async function fetchMangaImagesFromHiyobi({ id }: { id: number }) {
   const res = await fetch(`https://api-kh.hiyobi.org/hiyobi/list?id=${id}`, {
     referrerPolicy: 'no-referrer',
-    next: { revalidate: 43200 }, // 12 hours
+    next: { revalidate: 28800 }, // 8 hours
   })
 
   if (res.status === 404) {
@@ -71,7 +71,7 @@ export async function fetchMangaImagesFromHiyobi({ id }: { id: number }) {
 export async function fetchMangasFromHiyobi({ page }: { page: number }) {
   const res = await fetch(`https://api.hiyobi.org/list/${page}`, {
     referrerPolicy: 'no-referrer',
-    next: { revalidate: 86400 }, // 1 day
+    next: { revalidate: 28800 }, // 8 hours
   })
 
   if (res.status === 404) {
