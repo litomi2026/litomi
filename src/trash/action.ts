@@ -1,6 +1,5 @@
 'use server'
 
-import { NEXT_PUBLIC_VAPID_PUBLIC_KEY } from '@/constants/env'
 import webpush, { PushSubscription } from 'web-push'
 
 const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY

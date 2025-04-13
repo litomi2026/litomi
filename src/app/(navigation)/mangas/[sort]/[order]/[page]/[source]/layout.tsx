@@ -4,8 +4,6 @@ import OrderToggleLink from '@/components/OrderToggleLink'
 import ShuffleButton from '@/components/ShuffleButton'
 import SourceSliderLink from '@/components/SourceToggleLink'
 import SourceTooltip from '@/components/tooltip/SourceTooltip'
-import { harpiMangaPages } from '@/database/harpi'
-import { hashaMangaPages } from '@/database/hasha'
 import { getTotalPages, SourceParam, validateOrder, validatePage, validateSource } from '@/utils/param'
 
 export default async function Layout({ params, children }: BaseLayoutProps) {
