@@ -10,6 +10,7 @@ import Image from 'next/image'
 import { notFound } from 'next/navigation'
 
 import MyPageNavigation from './MyPageNavigation'
+import ProfileEditButton, { ProfileEditButtonError, ProfileEditButtonSkeleton } from './ProfileEditButton'
 
 export default async function Layout({ params, children }: BaseLayoutProps) {
   const { loginId } = await params
@@ -54,11 +55,18 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
               <p className="text-zinc-500 font-mono break-all">@{decodedLoginId}</p>
             </div>
           </div>
-          <ErrorBoundary fallback={LogoutButtonError}>
-            <Suspense clientOnly fallback={<LogoutButtonSkeleton />}>
-              <LogoutButton />
-            </Suspense>
-          </ErrorBoundary>
+          <div className="flex items-center gap-2">
+            <ErrorBoundary fallback={ProfileEditButtonError}>
+              <Suspense clientOnly fallback={<ProfileEditButtonSkeleton />}>
+                <ProfileEditButton />
+              </Suspense>
+            </ErrorBoundary>
+            <ErrorBoundary fallback={LogoutButtonError}>
+              <Suspense clientOnly fallback={<LogoutButtonSkeleton />}>
+                <LogoutButton />
+              </Suspense>
+            </ErrorBoundary>
+          </div>
         </div>
         <div>
           <div className="mt-2 flex items-center gap-1 text-zinc-500 text-sm">
@@ -86,6 +94,6 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
 function getUser(loginId: string) {
   return unstable_cache(() => selectUser({ loginId }), [loginId], {
     tags: [loginId],
-    revalidate: 300,
+    revalidate: 60,
   })
 }

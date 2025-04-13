@@ -57,7 +57,7 @@ export default function SignupForm() {
         [&_label]:block [&_label]:text-sm [&_label]:md:text-base [&_label]:font-medium [&_label]:text-zinc-300 [&_label]:leading-7
         [&_input]:mt-1 [&_input]:w-full [&_input]:rounded-md [&_input]:bg-zinc-800 [&_input]:border [&_input]:border-zinc-600 
         [&_input]:px-3 [&_input]:py-2 [&_input]:placeholder-zinc-500 [&_input]:focus:outline-none [&_input]:focus:ring-2 [&_input]:focus:ring-zinc-500 
-        [&_input]:focus:border-transparent [&_input]:disabled:bg-zinc-700 [&_input]:disabled:border-zinc-500 [&_input]:disabled:cursor-not-allowed
+        [&_input]:focus:border-transparent [&_input]:disabled:bg-zinc-700 [&_input]:disabled:text-zinc-400 [&_input]:disabled:border-zinc-500 [&_input]:disabled:cursor-not-allowed
         [&_input]:aria-invalid:border-red-700 [&_input]:aria-invalid:focus:ring-red-700 [&_input]:aria-invalid:placeholder-red-700"
       onSubmit={handleSubmit}
     >
@@ -67,7 +67,7 @@ export default function SignupForm() {
             <label htmlFor="id">
               아이디 <span className="text-red-500">*</span>
             </label>
-            <TooltipPopover position="right" type="tooltip">
+            <TooltipPopover className="flex" position="right" type="tooltip">
               <IconInfo className="p-1.5 w-7 md:w-8 md:p-2" />
               <div className="rounded-xl border-2 border-zinc-700 bg-background p-3 whitespace-nowrap text-sm">
                 <p>
@@ -96,7 +96,7 @@ export default function SignupForm() {
             <label htmlFor="password">
               비밀번호 <span className="text-red-500">*</span>
             </label>
-            <TooltipPopover position="right" type="tooltip">
+            <TooltipPopover className="flex" position="right" type="tooltip">
               <IconInfo className="p-1.5 w-7 md:w-8 md:p-2" />
               <div className="rounded-xl border-2 border-zinc-700 bg-background p-3 whitespace-nowrap text-sm">
                 <p>
@@ -138,7 +138,7 @@ export default function SignupForm() {
         <div>
           <div className="flex items-center gap-1">
             <label htmlFor="nickname">닉네임</label>
-            <TooltipPopover position="right" type="tooltip">
+            <TooltipPopover className="flex" position="right" type="tooltip">
               <IconInfo className="p-1.5 w-7 md:w-8 md:p-2" />
               <div className="rounded-xl border-2 border-zinc-700 bg-background p-3 whitespace-nowrap text-sm">
                 <p>2자 이상 32자 이하로 입력해주세요.</p>

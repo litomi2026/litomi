@@ -9,13 +9,22 @@ import IconX from '../icons/IconX'
 type Props = {
   children: ReactNode
   className?: string
+  dragButtonClassName?: string
   onClose?: () => void
   open: boolean
   showCloseButton?: boolean
   showDragButton?: boolean
 }
 
-export default function Modal({ className = '', children, open, onClose, showCloseButton, showDragButton }: Props) {
+export default function Modal({
+  className = '',
+  dragButtonClassName = '',
+  children,
+  open,
+  onClose,
+  showCloseButton,
+  showDragButton,
+}: Props) {
   function closeModal(e: MouseEvent) {
     e.stopPropagation()
     onClose?.()
@@ -101,7 +110,7 @@ export default function Modal({ className = '', children, open, onClose, showClo
         >
           {showCloseButton && (
             <button aria-label="닫기" onClick={closeModal}>
-              <IconX className="absolute right-2 top-2 z-50 w-8 cursor-pointer rounded-full bg-zinc-500/30 p-1" />
+              <IconX className="absolute right-2 top-2 z-50 w-8 cursor-pointer rounded-full bg-zinc-700/50 p-1" />
             </button>
           )}
           <div
@@ -112,7 +121,7 @@ export default function Modal({ className = '', children, open, onClose, showClo
           >
             {showDragButton && (
               <div
-                className="absolute left-0 right-0 top-0 z-50 flex h-4 cursor-move select-none justify-center p-2 pb-6"
+                className={`absolute left-0 right-0 top-0 z-50 flex h-4 cursor-move select-none justify-center p-2 pb-6 ${dragButtonClassName}`}
                 onDragStart={(e) => e.preventDefault()}
                 onMouseDown={dragModalMouse}
                 onTouchStart={dragModalTouch}

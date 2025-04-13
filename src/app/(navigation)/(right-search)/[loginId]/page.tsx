@@ -2,6 +2,8 @@ import PostCard from '@/components/post/PostCard'
 import { mockedPosts } from '@/mock/post'
 import { sampleBySecureFisherYates } from '@/utils/random'
 
+export const dynamic = 'error'
+
 export default async function Page() {
   return (
     <ul className="flex flex-col grow">
