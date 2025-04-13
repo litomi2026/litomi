@@ -25,7 +25,7 @@ export default function SourceTooltip({ source }: Props) {
 
 function HarpiTooltip() {
   return (
-    <div className="rounded-xl border-2 border-zinc-700 bg-background whitespace-pre-line p-3 text-sm max-w-xs">
+    <div className="rounded-xl text-center border-2 border-zinc-700 bg-background whitespace-pre-line p-3 text-sm max-w-xs">
       <p>
         hp 모드에선 브러우저 요청에 <code>referer</code> 헤더를 추가해야 이미지를 볼 수 있어요. 현재 더 편한 방법을 찾고
         있어요.
@@ -34,7 +34,7 @@ function HarpiTooltip() {
       <p>
         (Desktop Chrome)
         <br />
-        <a className="text-blue-500" href="https://modheader.com/" rel="noopener noreferrer" target="_blank">
+        <a className="text-blue-500" href="https://modheader.com" rel="noopener noreferrer" target="_blank">
           ModHeader
         </a>{' '}
         확장 프로그램을 사용해서 <code>referer: https://pk3.harpi.in</code> 헤더를 추가해주세요.
@@ -61,7 +61,13 @@ function HashaTooltip() {
 function HiyobiTooltip() {
   return (
     <div className="rounded-xl border-2 border-zinc-700 bg-background whitespace-pre-line p-3 text-sm min-w-3xs max-w-xs">
-      <p>hi 모드에서 와이파이 네트워크로 접속하면 간헐적으로 이미지가 보이지 않는 이슈가 있어요. 현재 확인 중이에요.</p>
+      <p>
+        특정 네트워크로 처음으로 접속 시 hi 모드에서 이미지가 보이지 않는 이슈가 있어요(<code>ERR_TIMED_OUT</code>).{' '}
+        <a className="text-blue-500" href="https://hiyobi.org" rel="noopener noreferrer" target="_blank">
+          hiyobi.org
+        </a>{' '}
+        사이트에 한 번 방문하고 돌아오면 고쳐지는 거 같아요.
+      </p>
     </div>
   )
 }

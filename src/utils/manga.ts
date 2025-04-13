@@ -8,6 +8,8 @@ type Params = {
 
 export function getImageSrc({ cdn, id, path }: Params) {
   switch (cdn) {
+    case 'ehgt.org':
+      return path
     case 'HARPI':
       return `${CDN.HARPI}/${path}`
     case 'k-hentai':

@@ -1,11 +1,14 @@
 import MangaCard from '@/components/card/MangaCard'
+import Navigation from '@/components/Navigation'
 import { CANONICAL_URL } from '@/constants/url'
 import { fetchMangasFromHiyobi } from '@/crawler/hiyobi'
+import { fetchMangasFromKHentai } from '@/crawler/k-hentai'
 import { harpiMangaIdsByPage, harpiMangas } from '@/database/harpi'
 import { hashaMangaIdsByPage, hashaMangas } from '@/database/hasha'
 import { Manga } from '@/types/manga'
 import { BasePageProps } from '@/types/nextjs'
 import {
+  getTotalPages,
   OrderParam,
   SortParam,
   SourceParam,
@@ -36,7 +39,7 @@ type Params = {
 export async function generateStaticParams() {
   const params = []
   const pages = Array.from({ length: 10 }, (_, i) => String(i + 1))
-  const sources = [SourceParam.HASHA, SourceParam.HARPI, SourceParam.HIYOBI]
+  const sources = Object.values(SourceParam)
   for (const page of pages) {
     for (const source of sources) {
       params.push({ sort: 'id', order: 'desc', page, source })
@@ -59,15 +62,24 @@ export default async function Page({ params }: BasePageProps) {
     order: orderString,
     page: pageNumber,
   })
-
   if (!mangas || mangas.length === 0) notFound()
 
   return (
-    <ul className="grid md:grid-cols-2 gap-2 grow">
-      {mangas.map((manga, i) => (
-        <MangaCard index={i} key={manga.id} manga={manga} source={sourceString} />
-      ))}
-    </ul>
+    <>
+      <ul className="grid md:grid-cols-2 gap-2 grow">
+        {mangas.map((manga, i) => (
+          <MangaCard index={i} key={manga.id} manga={manga} source={sourceString} />
+        ))}
+      </ul>
+      {sourceString !== SourceParam.K_HENTAI && (
+        <Navigation
+          currentPage={pageNumber}
+          hrefPrefix="../"
+          hrefSuffix={`/${sourceString || SourceParam.HIYOBI}`}
+          totalPages={getTotalPages(sourceString)}
+        />
+      )}
+    </>
   )
 }
 
@@ -80,6 +92,8 @@ async function getMangas({ source, sort, order, page }: Params) {
     mangas = hashaMangaIdsByPage[sort][order][page - 1]?.map((id) => hashaMangas[id])
   } else if (source === SourceParam.HIYOBI) {
     mangas = await fetchMangasFromHiyobi({ page })
+  } else if (source === SourceParam.K_HENTAI) {
+    mangas = await fetchMangasFromKHentai()
   }
 
   return mangas

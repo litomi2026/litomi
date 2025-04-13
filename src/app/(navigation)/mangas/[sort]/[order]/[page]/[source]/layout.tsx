@@ -1,20 +1,18 @@
 import type { BaseLayoutProps } from '@/types/nextjs'
 
-import Navigation from '@/components/Navigation'
 import OrderToggleLink from '@/components/OrderToggleLink'
 import ShuffleButton from '@/components/ShuffleButton'
 import SourceSliderLink from '@/components/SourceToggleLink'
 import SourceTooltip from '@/components/tooltip/SourceTooltip'
 import { harpiMangaPages } from '@/database/harpi'
 import { hashaMangaPages } from '@/database/hasha'
-import { SourceParam, validateOrder, validatePage, validateSource } from '@/utils/param'
+import { getTotalPages, SourceParam, validateOrder, validatePage, validateSource } from '@/utils/param'
 
 export default async function Layout({ params, children }: BaseLayoutProps) {
   const { order, page, source } = await params
   const orderString = validateOrder(order)
   const pageNumber = validatePage(page)
   const sourceString = validateSource(source)
-  const totalPages = getTotalPages(sourceString)
 
   return (
     <main className="flex flex-col gap-2 grow">
@@ -24,7 +22,7 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
       >
         <OrderToggleLink
           currentOrder={orderString}
-          disabled={sourceString === 'hi'}
+          disabled={sourceString === SourceParam.HIYOBI || sourceString === SourceParam.K_HENTAI}
           hrefPrefix="../../"
           hrefSuffix={`/${pageNumber || 1}/${sourceString || SourceParam.HIYOBI}`}
         />
@@ -45,25 +43,6 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
         </div>
       )}
       {children}
-      <Navigation
-        currentPage={pageNumber}
-        hrefPrefix="../"
-        hrefSuffix={`/${sourceString || SourceParam.HIYOBI}`}
-        totalPages={totalPages}
-      />
     </main>
   )
-}
-
-function getTotalPages(source: string) {
-  switch (source) {
-    case SourceParam.HARPI:
-      return harpiMangaPages.length
-    case SourceParam.HASHA:
-      return hashaMangaPages.length
-    case SourceParam.HIYOBI:
-      return 7200
-    default:
-      return 10
-  }
 }

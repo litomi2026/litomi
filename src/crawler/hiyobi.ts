@@ -119,23 +119,21 @@ function convertHiyobiToManga({
   like,
   like_anonymous,
 }: HiyobiManga) {
-  const images = [getKHentaiThumbnailURL(id)]
-  images.length = filecount
   return {
     id,
     artists: artists.map((artist) => artist.display),
     characters: characters.map((character) => character.display),
-    // date: date,
     group: groups.map((group) => group.display),
     series: parodys.map((series) => series.display),
     tags: tags.map((tag) => tag.display),
     title,
     type: hiyobiTypeMap[type as keyof typeof hiyobiTypeMap] ?? '?',
-    images,
+    images: [getKHentaiThumbnailURL(id)],
     cdn: 'thumb.k-hentai',
-    count,
+    count: filecount,
     like,
-    like_anonymous,
+    viewCount: count,
+    likeAnonymous: like_anonymous,
   }
 }
 

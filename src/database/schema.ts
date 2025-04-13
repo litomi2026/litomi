@@ -26,4 +26,7 @@ export enum BookmarkSource {
   HASHA = 0,
   HARPI = 1,
   HIYOBI = 2,
+  K_HENTAI = 3,
+  // E_HENTAI = 4,
+  // EX_HENTAI = 5,
 }

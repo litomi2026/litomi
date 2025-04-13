@@ -42,7 +42,7 @@ function getViewerLink(id: number, source: SourceParam) {
 }
 
 function MangaCard({ manga, index = 0, source, className = '' }: Props) {
-  const { id, artists, characters, date, group, related, series, tags, title, type, images } = manga
+  const { id, artists, characters, date, group, related, series, count, tags, title, type, images } = manga
   const mappedTags = tags?.map((tag) => harpiTagMap[tag] || tag)
   const translatedTags = mappedTags?.map((tag) => (typeof tag === 'string' ? tag : tag.korStr || tag.engStr))
 
@@ -67,7 +67,7 @@ function MangaCard({ manga, index = 0, source, className = '' }: Props) {
     >
       <div className="relative h-fit my-auto aspect-[4/3] xl:aspect-[3/4] [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-contain [&_img]:aspect-[4/3] xl:[&_img]:aspect-[3/4]">
         {/* NOTE(gwak, 2025-04-01): 썸네일 이미지만 있는 경우 대응하기 위해 images[1] 검사 */}
-        {images[1] ? (
+        {images.length > 1 ? (
           <MangaCardPreviewImage
             className="flex overflow-x-auto h-fit snap-x snap-mandatory select-none scrollbar-hidden"
             href={viewerLink}
@@ -90,7 +90,9 @@ function MangaCard({ manga, index = 0, source, className = '' }: Props) {
             </div>
           </div>
         )}
-        <div className="absolute bottom-1 right-1 px-1 font-medium text-sm bg-background rounded">{images.length}p</div>
+        <div className="absolute bottom-1 right-1 px-1 font-medium text-sm bg-background rounded">
+          {count ?? images.length}p
+        </div>
       </div>
       <div className="flex grow flex-col border-t-2 sm:border-t-0 sm:border-l-2 md:border-l-0 md:border-t-2 xl:border-t-0 xl:border-l-2 justify-between p-2 gap-2">
         <div className="flex flex-col gap-2 text-sm">
@@ -137,7 +139,11 @@ function MangaCard({ manga, index = 0, source, className = '' }: Props) {
             {date && <div className="text-right text-zinc-400">{dayjs(date).format('YYYY-MM-DD HH:mm')}</div>}
           </div>
           <div className="flex flex-wrap justify-around gap-2 text-sm [&_button]:disabled:bg-zinc-800 [&_button]:disabled:pointer-events-none [&_button]:disabled:text-zinc-500">
-            <ImageDownloadButton className="grow" disabled={source === 'hi'} manga={manga} />
+            <ImageDownloadButton
+              className="grow"
+              disabled={source === SourceParam.HIYOBI || source === SourceParam.K_HENTAI}
+              manga={manga}
+            />
             <ErrorBoundary fallback={BookmarkButtonError}>
               <Suspense clientOnly fallback={<BookmarkButtonSkeleton className="grow" />}>
                 <BookmarkButton className="grow" manga={manga} source={source} />
