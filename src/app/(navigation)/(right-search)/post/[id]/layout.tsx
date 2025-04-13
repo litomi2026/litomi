@@ -3,6 +3,8 @@ import type { ReactNode } from 'react'
 
 import BackButton from '@/components/BackButton'
 
+export const dynamic = 'error'
+
 type LayoutProps = BaseLayoutProps & {
   comment: ReactNode
   post: ReactNode
