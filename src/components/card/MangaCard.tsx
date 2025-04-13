@@ -16,13 +16,19 @@ import MangaCardPreviewImage from './MangaCardPreviewImage'
 
 const BLIND_TAG_LABELS = {
   bestiality: '수간',
+  수간: '수간',
   guro: '고어',
+  고어: '고어',
   snuff: '스너프',
+  스너프: '스너프',
   yaoi: '게이',
+  야오이: '게이',
+  남성만: '게이',
   scat: '스캇',
+  스캇: '스캇',
 } as const
 
-const BLIND_TAGS = Object.keys(BLIND_TAG_LABELS)
+const BLIND_TAGS = Object.entries(BLIND_TAG_LABELS).flat()
 
 type Props = {
   manga: Manga
@@ -56,6 +62,7 @@ function MangaCard({ manga, index = 0, source, className = '' }: Props) {
       const tagName = blindedTag.split(':').pop()
       return BLIND_TAG_LABELS[tagName as keyof typeof BLIND_TAG_LABELS]
     })
+    .reduce((acc, cur) => acc.add(cur), new Set<string>())
 
   const existedRelatedIds = related?.filter((rid) => isHashaMangaKey(String(rid)))
   const viewerLink = getViewerLink(id, source)
@@ -66,7 +73,7 @@ function MangaCard({ manga, index = 0, source, className = '' }: Props) {
       key={id}
     >
       <div className="relative h-fit my-auto aspect-[4/3] xl:aspect-[3/4] [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-contain [&_img]:aspect-[4/3] xl:[&_img]:aspect-[3/4]">
-        {/* NOTE(gwak, 2025-04-01): 썸네일 이미지만 있는 경우 대응하기 위해 images[1] 검사 */}
+        {/* NOTE(gwak, 2025-04-01): 썸네일 이미지만 있는 경우 대응하기 위해 이미지 배열 길이 검사 */}
         {images.length > 1 ? (
           <MangaCardPreviewImage
             className="flex overflow-x-auto h-fit snap-x snap-mandatory select-none scrollbar-hidden"
@@ -82,10 +89,10 @@ function MangaCard({ manga, index = 0, source, className = '' }: Props) {
             <MangaImage imageIndex={0} manga={manga} />
           </Link>
         )}
-        {censoredTags && censoredTags.length > 0 && (
+        {censoredTags && censoredTags.size > 0 && (
           <div className="absolute inset-0 bg-background/50 backdrop-blur flex items-center justify-center text-center p-4 pointer-events-none">
             <div className="text-foreground text-center font-semibold flex flex-wrap gap-1 justify-center">
-              <span>{censoredTags.join('/')}</span>
+              <span>{Array.from(censoredTags).join('/')}</span>
               <span>작품 검열</span>
             </div>
           </div>

@@ -102,7 +102,7 @@ const kHentaiTypeMap = {
 export async function fetchMangaFromKHentai({ id }: { id: number }) {
   const res = await fetch(`https://k-hentai.org/r/${id}`, {
     referrerPolicy: 'no-referrer',
-    next: { revalidate: 43200 }, // 12 hours
+    next: { revalidate: 28800 }, // 8 hours
   })
 
   if (res.status === 404) {
