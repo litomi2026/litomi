@@ -1,9 +1,11 @@
 import { ResponseApiMe } from '@/app/api/me/route'
 import { QueryKeys } from '@/constants/query'
+import * as amplitude from '@amplitude/analytics-browser'
 import { useSuspenseQuery } from '@tanstack/react-query'
+import { useEffect } from 'react'
 
 export default function useMeQuery() {
-  return useSuspenseQuery({
+  const result = useSuspenseQuery({
     queryKey: QueryKeys.me,
     queryFn: fetchMe,
     refetchOnWindowFocus: false,
@@ -11,6 +13,16 @@ export default function useMeQuery() {
     refetchOnMount: false,
     staleTime: Infinity,
   })
+
+  const userId = result.data?.id
+
+  useEffect(() => {
+    if (userId) {
+      amplitude.setUserId(String(userId))
+    }
+  }, [userId])
+
+  return result
 }
 
 async function fetchMe(): Promise<ResponseApiMe | null> {
