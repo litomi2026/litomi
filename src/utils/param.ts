@@ -1,3 +1,5 @@
+import { harpiMangaPages } from '@/database/harpi'
+import { hashaMangaPages } from '@/database/hasha'
 import { BookmarkSource } from '@/database/schema'
 
 export enum OrderParam {
@@ -16,10 +18,26 @@ export enum SourceParam {
   HIYOBI = 'hi',
   HASHA = 'ha',
   HARPI = 'hp',
+  K_HENTAI = 'k',
+  // E_HENTAI = 'e',
+  // EX_HENTAI = 'ex',
 }
 
 export function getLoginId(loginId: string) {
   return decodeURIComponent(loginId).slice(1)
+}
+
+export function getTotalPages(source: string) {
+  switch (source) {
+    case SourceParam.HARPI:
+      return harpiMangaPages.length
+    case SourceParam.HASHA:
+      return hashaMangaPages.length
+    case SourceParam.HIYOBI:
+      return 7200
+    default:
+      return 10
+  }
 }
 
 export function mapSourceParamToBookmarkSource(order: SourceParam) {
@@ -30,6 +48,8 @@ export function mapSourceParamToBookmarkSource(order: SourceParam) {
       return BookmarkSource.HASHA
     case SourceParam.HIYOBI:
       return BookmarkSource.HIYOBI
+    case SourceParam.K_HENTAI:
+      return BookmarkSource.K_HENTAI
     default:
       return
   }
@@ -106,6 +126,8 @@ export function validateSource(src: string) {
       return SourceParam.HASHA
     case SourceParam.HIYOBI:
       return SourceParam.HIYOBI
+    case SourceParam.K_HENTAI:
+      return SourceParam.K_HENTAI
     default:
       return ''
   }

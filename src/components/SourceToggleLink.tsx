@@ -5,6 +5,7 @@ const sourceIndexMap: Record<string, number> = {
   [SourceParam.HIYOBI]: 0,
   [SourceParam.HARPI]: 1,
   [SourceParam.HASHA]: 2,
+  [SourceParam.K_HENTAI]: 3,
 }
 
 const sources = Object.keys(sourceIndexMap) as SourceParam.HIYOBI[]
@@ -17,7 +18,7 @@ type OrderToggleProps = {
 export default function SourceSliderLink({ currentSource, hrefPrefixes }: OrderToggleProps) {
   return (
     <div
-      className="relative grid grid-cols-3 bg-zinc-900 border-2 p-1 rounded-xl text-zinc-400
+      className="relative flex bg-zinc-900 border-2 p-1 rounded-xl text-zinc-400
         [&_a]:flex [&_a]:items-center [&_a]:relative [&_a]:rounded [&_a]:px-3 [&_a]:py-1 [&_a]:aria-current:font-bold [&_a]:aria-current:text-foreground [&_a]:aria-current:pointer-events-none"
     >
       {sources.map((source, i) => (

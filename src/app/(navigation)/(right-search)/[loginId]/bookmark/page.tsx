@@ -1,5 +1,6 @@
 import MangaCard from '@/components/card/MangaCard'
 import { fetchMangaFromHiyobi } from '@/crawler/hiyobi'
+import { fetchMangaFromKHentai } from '@/crawler/k-hentai'
 import { harpiMangas } from '@/database/harpi'
 import { hashaMangas } from '@/database/hasha'
 import { BookmarkSource } from '@/database/schema'
@@ -31,11 +32,6 @@ export default async function Page() {
   const bookmarkRows = await getBookmarkRows(userId)()
   if (bookmarkRows.length === 0) notFound()
 
-  // NOTE: beta 버전 - 최대 20개
-  // 1) hashaMangas[mangaId]가 있다면 그대로 반환
-  // 2) harpiMangas[mangaId]가 있다면 그대로 반환
-  // 3) 둘 다 없다면 fetchMangaFromHiyobi 로 비동기 호출
-  // 4) 모든 소스가 실패하면 null을 반환
   const bookmarkInfo = bookmarkRows
     .map(({ mangaId, source }) => {
       if (source === BookmarkSource.HASHA) {
@@ -52,6 +48,15 @@ export default async function Page() {
           source: SourceParam.HIYOBI,
         }
       }
+      if (source === BookmarkSource.K_HENTAI) {
+        return {
+          manga: fetchMangaFromKHentai({ id: mangaId })
+            .then((manga) => manga ?? { id: mangaId, title: '만화 정보가 없어요', images: [] })
+            .catch(() => ({ id: mangaId, title: '오류가 발생했어요', images: [] })),
+          source: SourceParam.K_HENTAI,
+        }
+      }
+      return null
     })
     .filter(checkDefined)
 

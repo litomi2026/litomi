@@ -13,5 +13,7 @@ export type Manga = {
   cdn?: string
   count?: number
   like?: number
-  like_anonymous?: number
+  likeAnonymous?: number
+  viewCount?: number
+  rating?: number
 }

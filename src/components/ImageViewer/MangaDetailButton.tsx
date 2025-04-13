@@ -81,7 +81,11 @@ function MangaDetailButton({ manga, source }: Props) {
             )}
           </div>
           <div className="flex flex-wrap justify-around gap-2 text-sm [&_button]:disabled:bg-zinc-800 [&_button]:disabled:pointer-events-none [&_button]:disabled:text-zinc-500">
-            <ImageDownloadButton className="grow" manga={manga} />
+            <ImageDownloadButton
+              className="grow"
+              disabled={source === SourceParam.HIYOBI || source === SourceParam.K_HENTAI}
+              manga={manga}
+            />
             <ErrorBoundary fallback={BookmarkButtonError}>
               <Suspense clientOnly fallback={<BookmarkButtonSkeleton className="grow" />}>
                 <BookmarkButton className="grow" manga={manga} source={source} />

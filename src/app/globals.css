@@ -94,4 +94,6 @@ button {
 code {
   font-family: 'Courier New', Courier, monospace;
   white-space: nowrap;
+  font-weight: 700;
+  font-size: 0.9em;
 }

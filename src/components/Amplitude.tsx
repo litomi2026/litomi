@@ -10,7 +10,7 @@ type Props = {
 export default function Amplitude({ apiKey }: Props) {
   useEffect(() => {
     if (apiKey) {
-      amplitude.init(apiKey, { autocapture: { elementInteractions: true } })
+      amplitude.init(apiKey, { minIdLength: 1, autocapture: { elementInteractions: true } })
     }
   }, [apiKey])
 
