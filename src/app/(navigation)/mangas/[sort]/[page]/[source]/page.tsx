@@ -29,11 +29,15 @@ type Params = {
 export async function generateStaticParams() {
   const params = []
   const pages = Array.from({ length: 10 }, (_, i) => String(i + 1))
-  const sources = Object.values(SourceParam)
+  const sources = [SourceParam.HARPI, SourceParam.HASHA, SourceParam.HIYOBI]
   for (const page of pages) {
     for (const source of sources) {
       params.push({ sort: SortParam.LATEST, page, source })
     }
+  }
+  const sorts = [SortParam.LATEST, SortParam.POPULAR]
+  for (const sort of sorts) {
+    params.push({ sort, page: '1', source: SourceParam.K_HENTAI })
   }
   return params
 }

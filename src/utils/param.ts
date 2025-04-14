@@ -2,6 +2,11 @@ import { harpiMangaPages } from '@/database/harpi'
 import { hashaMangaPages } from '@/database/hasha'
 import { BookmarkSource } from '@/database/schema'
 
+export enum LayoutParam {
+  IMAGE = 'image',
+  CARD = 'card',
+}
+
 export enum SortParam {
   // BOOKMARK = 'bookmark',
   LATEST = 'latest',

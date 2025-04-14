@@ -16,9 +16,9 @@ type Props = {
   href: string
 }
 
-export default memo(MangaCardPreviewImage)
+export default memo(MangaCardPreviewImages)
 
-function MangaCardPreviewImage({ className, manga, mangaIndex = 0, href }: Props) {
+function MangaCardPreviewImages({ className, manga, mangaIndex = 0, href }: Props) {
   const { images } = manga
   const sliderRef = useRef<HTMLAnchorElement>(null)
   const [activeIndex, setActiveIndex] = useState(0)

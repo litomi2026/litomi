@@ -1,6 +1,7 @@
 import { harpiTagMap } from '@/database/harpi-tag'
 import { isHashaMangaKey } from '@/database/hasha'
 import { Manga } from '@/types/manga'
+import { getViewerLink } from '@/utils/manga'
 import { SourceParam } from '@/utils/param'
 import { ErrorBoundary, Suspense } from '@suspensive/react'
 import dayjs from 'dayjs'
@@ -12,7 +13,8 @@ import MangaImage from '../MangaImage'
 import TagList from '../TagList'
 import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from './BookmarkButton'
 import ImageDownloadButton from './ImageDownloadButton'
-import MangaCardPreviewImage from './MangaCardPreviewImage'
+import MangaCardImage from './MangaCardImage'
+import MangaCardPreviewImages from './MangaCardPreviewImages'
 
 const BLIND_TAG_LABELS = {
   bestiality: '수간',
@@ -43,10 +45,6 @@ export function MangaCardSkeleton() {
   return <li className="animate-fade-in rounded-xl bg-zinc-900 border-2 aspect-[6/7] w-full h-full xl:aspect-[3/2]" />
 }
 
-function getViewerLink(id: number, source: SourceParam) {
-  return `/manga/${id}/${source}`
-}
-
 function MangaCard({ manga, index = 0, source, className = '' }: Props) {
   const { id, artists, characters, date, group, related, series, count, tags, title, type, images } = manga
   const mappedTags = tags?.map((tag) => harpiTagMap[tag] || tag)
@@ -72,35 +70,12 @@ function MangaCard({ manga, index = 0, source, className = '' }: Props) {
       className={`grid grid-rows-[auto_1fr] xl:grid-cols-2 xl:grid-rows-1 border-2 rounded-xl overflow-hidden bg-zinc-900 ${className}`}
       key={id}
     >
-      <div className="relative h-fit my-auto aspect-[4/3] xl:aspect-[3/4] [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-contain [&_img]:aspect-[4/3] xl:[&_img]:aspect-[3/4]">
-        {/* NOTE(gwak, 2025-04-01): 썸네일 이미지만 있는 경우 대응하기 위해 이미지 배열 길이 검사 */}
-        {images.length > 1 ? (
-          <MangaCardPreviewImage
-            className="flex overflow-x-auto h-fit snap-x snap-mandatory select-none scrollbar-hidden"
-            href={viewerLink}
-            manga={manga}
-            mangaIndex={index}
-          />
-        ) : (
-          <Link
-            className="flex overflow-x-auto h-fit snap-x snap-mandatory select-none scrollbar-hidden"
-            href={viewerLink}
-          >
-            <MangaImage imageIndex={0} manga={manga} />
-          </Link>
-        )}
-        {censoredTags && censoredTags.size > 0 && (
-          <div className="absolute inset-0 bg-background/50 backdrop-blur flex items-center justify-center text-center p-4 pointer-events-none">
-            <div className="text-foreground text-center font-semibold flex flex-wrap gap-1 justify-center">
-              <span>{Array.from(censoredTags).join('/')}</span>
-              <span>작품 검열</span>
-            </div>
-          </div>
-        )}
-        <div className="absolute bottom-1 right-1 px-1 font-medium text-sm bg-background rounded">
-          {count ?? images.length}p
-        </div>
-      </div>
+      <MangaCardImage
+        className="relative h-fit my-auto aspect-[4/3] xl:aspect-[3/4] [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-contain [&_img]:aspect-[4/3] xl:[&_img]:aspect-[3/4]"
+        href={viewerLink}
+        index={index}
+        manga={manga}
+      />
       <div className="flex grow flex-col justify-between gap-2 p-2 border-t-2 sm:border-t-0 sm:border-l-2 md:border-l-0 md:border-t-2 xl:border-t-0 xl:border-l-2">
         <div className="flex flex-col gap-2 text-sm">
           <Link href={viewerLink}>
