@@ -3,7 +3,7 @@ import { hashaMangaPages } from '@/database/hasha'
 import { BookmarkSource } from '@/database/schema'
 
 export enum LayoutParam {
-  IMAGE = 'image',
+  IMAGE = 'img',
   CARD = 'card',
 }
 
@@ -24,8 +24,6 @@ export enum SourceParam {
   // E_HENTAI = 'e',
   // EX_HENTAI = 'ex',
 }
-
-export const sourceParamValues = Object.values(SourceParam)
 
 export function getLoginId(loginId: string) {
   return decodeURIComponent(loginId).slice(1)
@@ -67,6 +65,17 @@ export function validateId(id: string) {
   }
 
   return idNumber
+}
+
+export function validateLayout(layout: string) {
+  switch (layout) {
+    case LayoutParam.CARD:
+      return LayoutParam.CARD
+    case LayoutParam.IMAGE:
+      return LayoutParam.IMAGE
+    default:
+      return ''
+  }
 }
 
 export function validatePage(page: string) {

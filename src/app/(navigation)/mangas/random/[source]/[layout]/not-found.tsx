@@ -8,7 +8,7 @@ export default function NotFound() {
       <div className="grid gap-2">
         <Link
           className="bg-zinc-700 hover:bg-zinc-600 font-semibold active:bg-zinc-700 rounded-full px-4 py-2 transition duration-300 ease-in-out"
-          href="/mangas/latest/1/hi"
+          href="/mangas/latest/1/hi/card"
         >
           홈으로
         </Link>

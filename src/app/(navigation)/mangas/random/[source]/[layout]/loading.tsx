@@ -1,8 +1,9 @@
 import { MangaCardSkeleton } from '@/components/card/MangaCard'
+import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 export default function Loading() {
   return (
-    <ul className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(350px,1fr))] gap-2 grow">
+    <ul className={`grid ${MANGA_LIST_GRID_COLUMNS.card} gap-2 grow`}>
       <MangaCardSkeleton />
       <MangaCardSkeleton />
       <MangaCardSkeleton />

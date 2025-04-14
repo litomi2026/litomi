@@ -7,40 +7,30 @@ import { ComponentProps, memo, useCallback, useEffect } from 'react'
 
 interface Props extends ComponentProps<'button'> {
   action: 'random' | 'refresh'
-  defaultCooldown?: number
-  href: string
+  href?: string
   iconClassName?: string
+  retryInterval?: number
 }
 
 export default memo(ShuffleButton)
 
-function ShuffleButton({ iconClassName, className = '', action, href, defaultCooldown = 20, ...props }: Props) {
+function ShuffleButton({ iconClassName, className = '', action, href, retryInterval = 20, ...props }: Props) {
   const router = useRouter()
-  const { cooldown, setCooldown } = useShffleStore()
+  const { cooldown, startTimer } = useShffleStore()
 
   const handleClick = useCallback(() => {
     if (action === 'refresh') {
       router.refresh()
-    } else {
+    } else if (href) {
       router.push(href)
     }
-    setCooldown(defaultCooldown)
+    startTimer(retryInterval)
     window.scrollTo({ top: 0 })
-  }, [action, defaultCooldown, href, router, setCooldown])
+  }, [action, retryInterval, href, router, startTimer])
 
   useEffect(() => {
-    if (cooldown === 0) return
-
-    const timer = setInterval(() => {
-      if (cooldown <= 1) {
-        clearInterval(timer)
-        return setCooldown(0)
-      }
-      return setCooldown(cooldown - 1)
-    }, 1000)
-
-    return () => clearInterval(timer)
-  }, [cooldown, setCooldown])
+    startTimer()
+  }, [startTimer])
 
   return (
     <button

@@ -28,7 +28,7 @@ type Props = {
   className?: string
 }
 
-export default function MangaCardImage({ manga, href, index, className }: Props) {
+export default function MangaCardImage({ manga, href, index, className = '' }: Props) {
   const { count, tags, images } = manga
   const mappedTags = tags?.map((tag) => harpiTagMap[tag] || tag)
 
@@ -45,7 +45,7 @@ export default function MangaCardImage({ manga, href, index, className }: Props)
     .reduce((acc, cur) => acc.add(cur), new Set<string>())
 
   return (
-    <div className={className}>
+    <div className={`overflow-hidden ${className}`}>
       {/* NOTE(gwak, 2025-04-01): 썸네일 이미지만 있는 경우 대응하기 위해 이미지 배열 길이 검사 */}
       {images.length > 1 ? (
         <MangaCardPreviewImages

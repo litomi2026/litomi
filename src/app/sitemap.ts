@@ -11,7 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
-      url: `${CANONICAL_URL}/mangas/latest/1/hi`,
+      url: `${CANONICAL_URL}/mangas/latest/1/hi/card`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.9,

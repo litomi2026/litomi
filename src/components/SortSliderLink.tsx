@@ -16,7 +16,7 @@ type OrderToggleProps = {
   disabled?: boolean
 }
 
-export default function SortToggleLink({ disabled, currentSort, hrefPrefix = '', hrefSuffix = '' }: OrderToggleProps) {
+export default function SortSliderLink({ disabled, currentSort, hrefPrefix = '', hrefSuffix = '' }: OrderToggleProps) {
   return (
     <div
       className="relative flex bg-zinc-900 border-2 p-1 rounded-xl text-zinc-400
