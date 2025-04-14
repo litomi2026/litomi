@@ -5,12 +5,13 @@ import TooltipPopover from '../ui/TooltipPopover'
 
 type Props = {
   source: SourceParam
+  disabled?: boolean
 }
 
-export default function SourceTooltip({ source }: Props) {
+export default function SourceTooltip({ source, disabled }: Props) {
   return (
-    <TooltipPopover position="bottom" type="tooltip">
-      <div className="flex items-center gap-1">
+    <TooltipPopover disabled={disabled} position="bottom" type="tooltip">
+      <div aria-disabled={disabled} className="flex items-center gap-1 aria-disabled:text-zinc-600">
         <p className="text-xs md:text-sm">이미지가 안 보여요!</p>
         <IconInfo className="w-3 md:w-4" />
       </div>

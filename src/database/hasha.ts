@@ -10,6 +10,7 @@ export const hashaMangaPages = Array.from({ length: Math.ceil(hashaMangaIds.leng
 export const hashaMangaIdsByPage = {
   oldest: hashaMangaPages.map((_, page) => hashaMangaIds.slice(page * MANGA_PER_PAGE, (page + 1) * MANGA_PER_PAGE)),
   latest: hashaMangaPages.map((_, page) => hashaMangaIdsDesc.slice(page * MANGA_PER_PAGE, (page + 1) * MANGA_PER_PAGE)),
+  popular: [],
 } as const
 
 export function isHashaMangaKey(key: string): key is keyof typeof hashaMangas {

@@ -81,8 +81,21 @@ async function getMangas({ source, sort, page }: Params) {
   } else if (source === SourceParam.HIYOBI) {
     mangas = await fetchMangasFromHiyobi({ page })
   } else if (source === SourceParam.K_HENTAI) {
-    mangas = await fetchMangasFromKHentai()
+    mangas = await fetchMangasFromKHentai({ sort: toKHentaiSort(sort) })
   }
 
   return mangas
+}
+
+function toKHentaiSort(sort: SortParam) {
+  switch (sort) {
+    case SortParam.LATEST:
+      return ''
+    case SortParam.OLDEST:
+      return 'id_asc'
+    case SortParam.POPULAR:
+      return 'popular'
+    default:
+      return ''
+  }
 }

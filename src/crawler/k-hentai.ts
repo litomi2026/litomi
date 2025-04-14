@@ -57,7 +57,7 @@ interface KHentaiMangaCommon {
 
 type Params = {
   nextId?: string
-  sort?: 'date_asc' | 'popular' | 'random'
+  sort?: '' | 'id_asc' | 'popular' | 'random'
   offset?: string
 }
 

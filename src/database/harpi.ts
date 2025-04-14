@@ -10,6 +10,7 @@ export const harpiMangaPages = Array.from({ length: Math.ceil(harpiMangaIds.leng
 export const harpiMangaIdsByPage = {
   latest: harpiMangaPages.map((_, page) => harpiMangaIdsDesc.slice(page * MANGA_PER_PAGE, (page + 1) * MANGA_PER_PAGE)),
   oldest: harpiMangaPages.map((_, page) => harpiMangaIds.slice(page * MANGA_PER_PAGE, (page + 1) * MANGA_PER_PAGE)),
+  popular: [],
 } as const
 
 export function isHarpiMangaKey(key: string): key is keyof typeof harpiMangas {

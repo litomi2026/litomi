@@ -6,6 +6,7 @@ export enum SortParam {
   // BOOKMARK = 'bookmark',
   LATEST = 'latest',
   OLDEST = 'oldest',
+  POPULAR = 'popular',
   // LIKE = 'like',
 }
 
@@ -102,6 +103,8 @@ export function validateSort(order: string) {
       return SortParam.LATEST
     case SortParam.OLDEST:
       return SortParam.OLDEST
+    case SortParam.POPULAR:
+      return SortParam.POPULAR
     default:
       return ''
   }

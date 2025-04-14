@@ -4,6 +4,7 @@ import Link from 'next/link'
 const sortIndexMap = {
   [SortParam.LATEST]: { index: 0, label: '최신순' },
   [SortParam.OLDEST]: { index: 1, label: '과거순' },
+  [SortParam.POPULAR]: { index: 2, label: '인기순' },
 }
 
 const sorts = Object.entries(sortIndexMap)
@@ -18,7 +19,7 @@ type OrderToggleProps = {
 export default function SortToggleLink({ disabled, currentSort, hrefPrefix = '', hrefSuffix = '' }: OrderToggleProps) {
   return (
     <div
-      className="relative grid grid-cols-2 bg-zinc-900 border-2 p-1 rounded-xl text-zinc-400
+      className="relative flex bg-zinc-900 border-2 p-1 rounded-xl text-zinc-400
         [&_a]:relative [&_a]:rounded [&_a]:flex [&_a]:items-center [&_a]:px-3 [&_a]:py-1 [&_a]:aria-current:font-bold [&_a]:aria-current:text-background [&_a]:aria-current:pointer-events-none
         [&_a]:aria-disabled:pointer-events-none [&_a]:aria-disabled:text-zinc-500 [&_a]:aria-disabled:[&>div]:bg-none [&_a]:aria-disabled:[&>div]:before:border-zinc-700"
     >
