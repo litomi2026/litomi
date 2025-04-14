@@ -39,7 +39,7 @@ export default async function Page({ params }: BasePageProps) {
 
   return (
     <>
-      <ul className="grid md:grid-cols-2 gap-2 grow">
+      <ul className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(350px,1fr))] gap-2 grow">
         {mangas.map((manga, i) => (
           <MangaCard index={i} key={manga.id} manga={manga} source={sourceString} />
         ))}

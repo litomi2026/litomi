@@ -14,10 +14,8 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
 
   return (
     <main className="flex flex-col gap-2 grow">
-      <div
-        className="flex justify-center flex-wrap gap-2 whitespace-nowrap text-sm 
-          sm:justify-end sm:flex-nowrap md:text-base"
-      >
+      <h1 className="sr-only">만화 목록</h1>
+      <div className="flex justify-center flex-wrap gap-2 whitespace-nowrap text-sm sm:justify-end sm:flex-nowrap md:text-base">
         <SortToggleLink
           currentSort={sortString}
           disabled={sourceString === SourceParam.HIYOBI}

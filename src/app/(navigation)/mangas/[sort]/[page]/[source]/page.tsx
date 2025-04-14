@@ -1,4 +1,5 @@
 import MangaCard from '@/components/card/MangaCard'
+import MangaCardImage from '@/components/card/MangaCardImage'
 import Navigation from '@/components/Navigation'
 import { CANONICAL_URL } from '@/constants/url'
 import { fetchMangasFromHiyobi } from '@/crawler/hiyobi'
@@ -7,6 +8,7 @@ import { harpiMangaIdsByPage, harpiMangas } from '@/database/harpi'
 import { hashaMangaIdsByPage, hashaMangas } from '@/database/hasha'
 import { Manga } from '@/types/manga'
 import { BasePageProps } from '@/types/nextjs'
+import { getViewerLink } from '@/utils/manga'
 import { getTotalPages, SortParam, SourceParam, validatePage, validateSort, validateSource } from '@/utils/param'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
@@ -58,7 +60,7 @@ export default async function Page({ params }: BasePageProps) {
 
   return (
     <>
-      <ul className="grid md:grid-cols-2 gap-2 grow">
+      <ul className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(350px,1fr))] gap-2 grow">
         {mangas.map((manga, i) => (
           <MangaCard index={i} key={manga.id} manga={manga} source={sourceString} />
         ))}
