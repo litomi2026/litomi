@@ -101,7 +101,7 @@ function MangaCard({ manga, index = 0, source, className = '' }: Props) {
           {count ?? images.length}p
         </div>
       </div>
-      <div className="flex grow flex-col border-t-2 sm:border-t-0 sm:border-l-2 md:border-l-0 md:border-t-2 xl:border-t-0 xl:border-l-2 justify-between p-2 gap-2">
+      <div className="flex grow flex-col justify-between gap-2 p-2 border-t-2 sm:border-t-0 sm:border-l-2 md:border-l-0 md:border-t-2 xl:border-t-0 xl:border-l-2">
         <div className="flex flex-col gap-2 text-sm">
           <Link href={viewerLink}>
             <h4 className="line-clamp-3 font-bold text-base xl:line-clamp-6 leading-5 min-w-0">{title}</h4>

@@ -1,3 +1,4 @@
+import { MANGA_PER_PAGE } from '@/constants'
 import { Manga } from '@/types/manga'
 import { captureException } from '@sentry/nextjs'
 
@@ -151,8 +152,10 @@ export async function fetchMangasFromKHentai({ nextId, sort, offset }: Params = 
     throw new Error('k 서버에서 만화 목록을 불러오는데 실패했어요.')
   }
 
-  const mangas = (await res.json()) as KHentaiManga[]
-  return mangas.filter((manga) => manga.archived === 1).map((manga) => convertKHentaiMangaToManga(manga))
+  return ((await res.json()) as KHentaiManga[])
+    .filter((manga) => manga.archived === 1)
+    .slice(0, MANGA_PER_PAGE)
+    .map((manga) => convertKHentaiMangaToManga(manga))
 }
 
 export async function fetchRandomMangasFromKHentai() {
