@@ -141,7 +141,7 @@ export default function SignupForm() {
             <TooltipPopover className="flex" position="right" type="tooltip">
               <IconInfo className="p-1.5 w-7 md:w-8 md:p-2" />
               <div className="rounded-xl border-2 border-zinc-700 bg-background p-3 whitespace-nowrap text-sm">
-                <p>2자 이상 32자 이하로 입력해주세요.</p>
+                <p>2자 이상 32자 이하로 입력해주세요. 나중에 변경할 수 있어요.</p>
               </div>
             </TooltipPopover>
           </div>

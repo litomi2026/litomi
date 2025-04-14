@@ -8,10 +8,9 @@ export const harpiMangaIdsDesc = harpiMangaIds.toReversed()
 export const harpiMangaPages = Array.from({ length: Math.ceil(harpiMangaIds.length / MANGA_PER_PAGE) })
 
 export const harpiMangaIdsByPage = {
-  id: {
-    asc: harpiMangaPages.map((_, page) => harpiMangaIds.slice(page * MANGA_PER_PAGE, (page + 1) * MANGA_PER_PAGE)),
-    desc: harpiMangaPages.map((_, page) => harpiMangaIdsDesc.slice(page * MANGA_PER_PAGE, (page + 1) * MANGA_PER_PAGE)),
-  },
+  latest: harpiMangaPages.map((_, page) => harpiMangaIdsDesc.slice(page * MANGA_PER_PAGE, (page + 1) * MANGA_PER_PAGE)),
+  oldest: harpiMangaPages.map((_, page) => harpiMangaIds.slice(page * MANGA_PER_PAGE, (page + 1) * MANGA_PER_PAGE)),
+  popular: [],
 } as const
 
 export function isHarpiMangaKey(key: string): key is keyof typeof harpiMangas {

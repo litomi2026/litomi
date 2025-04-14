@@ -5,12 +5,13 @@ import TooltipPopover from '../ui/TooltipPopover'
 
 type Props = {
   source: SourceParam
+  disabled?: boolean
 }
 
-export default function SourceTooltip({ source }: Props) {
+export default function SourceTooltip({ source, disabled }: Props) {
   return (
-    <TooltipPopover position="bottom" type="tooltip">
-      <div className="flex items-center gap-1">
+    <TooltipPopover disabled={disabled} position="bottom" type="tooltip">
+      <div aria-disabled={disabled} className="flex items-center gap-1 aria-disabled:text-zinc-600">
         <p className="text-xs md:text-sm">이미지가 안 보여요!</p>
         <IconInfo className="w-3 md:w-4" />
       </div>
@@ -37,11 +38,11 @@ function HarpiTooltip() {
         <a className="text-blue-500" href="https://modheader.com" rel="noopener noreferrer" target="_blank">
           ModHeader
         </a>{' '}
-        확장 프로그램을 사용해서 <code>referer: https://pk3.harpi.in</code> 헤더를 추가해주세요.
+        를 사용해서 <code>referer: https://harpi.in</code> 헤더를 추가해주세요.
       </p>
       <hr className="text-zinc-500 my-3" />
       <p>
-        (Mobile) <code>referer: https://pk3.harpi.in</code> 헤더를 추가할 수 있는 브라우저를 사용해주세요.
+        (Mobile) <code>referer: https://harpi.in</code> 헤더를 추가할 수 있는 브라우저를 사용해주세요.
       </p>
     </div>
   )

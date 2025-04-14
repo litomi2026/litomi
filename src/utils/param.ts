@@ -2,15 +2,16 @@ import { harpiMangaPages } from '@/database/harpi'
 import { hashaMangaPages } from '@/database/hasha'
 import { BookmarkSource } from '@/database/schema'
 
-export enum OrderParam {
-  ASC = 'asc',
-  DESC = 'desc',
+export enum LayoutParam {
+  IMAGE = 'img',
+  CARD = 'card',
 }
 
 export enum SortParam {
-  ID = 'id',
   // BOOKMARK = 'bookmark',
-  // DATE = 'date',
+  LATEST = 'latest',
+  OLDEST = 'oldest',
+  POPULAR = 'popular',
   // LIKE = 'like',
 }
 
@@ -19,6 +20,7 @@ export enum SourceParam {
   HASHA = 'ha',
   HARPI = 'hp',
   K_HENTAI = 'k',
+  HITOMI = 'h',
   // E_HENTAI = 'e',
   // EX_HENTAI = 'ex',
 }
@@ -34,7 +36,7 @@ export function getTotalPages(source: string) {
     case SourceParam.HASHA:
       return hashaMangaPages.length
     case SourceParam.HIYOBI:
-      return 7200
+      return 7300
     default:
       return 10
   }
@@ -65,12 +67,12 @@ export function validateId(id: string) {
   return idNumber
 }
 
-export function validateOrder(order: string) {
-  switch (order) {
-    case OrderParam.ASC:
-      return OrderParam.ASC
-    case OrderParam.DESC:
-      return OrderParam.DESC
+export function validateLayout(layout: string) {
+  switch (layout) {
+    case LayoutParam.CARD:
+      return LayoutParam.CARD
+    case LayoutParam.IMAGE:
+      return LayoutParam.IMAGE
     default:
       return ''
   }
@@ -111,8 +113,12 @@ export function validatePostFilter(str: string) {
 
 export function validateSort(order: string) {
   switch (order) {
-    case SortParam.ID:
-      return SortParam.ID
+    case SortParam.LATEST:
+      return SortParam.LATEST
+    case SortParam.OLDEST:
+      return SortParam.OLDEST
+    case SortParam.POPULAR:
+      return SortParam.POPULAR
     default:
       return ''
   }
@@ -124,6 +130,8 @@ export function validateSource(src: string) {
       return SourceParam.HARPI
     case SourceParam.HASHA:
       return SourceParam.HASHA
+    case SourceParam.HITOMI:
+      return SourceParam.HITOMI
     case SourceParam.HIYOBI:
       return SourceParam.HIYOBI
     case SourceParam.K_HENTAI:

@@ -12,7 +12,7 @@ export default function ErrorPage({ error, reset }: Props) {
   const [cooldown, setCooldown] = useState(5000)
 
   useEffect(() => {
-    captureException(error, { extra: { name: '/mangas/[sort]/[order]/[page]/[source]' } })
+    captureException(error, { extra: { name: '/mangas' } })
   }, [error])
 
   useEffect(() => {

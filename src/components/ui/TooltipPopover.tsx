@@ -22,6 +22,7 @@ type Props = {
   type: 'popover' | 'tooltip'
   className?: string
   buttonClassName?: string
+  disabled?: boolean
 }
 
 export default function TooltipPopover({
@@ -29,6 +30,7 @@ export default function TooltipPopover({
   position,
   type,
   className = '',
+  disabled,
   buttonClassName = '',
 }: Readonly<Props>) {
   const [isActive, setIsActive] = useState(false)
@@ -46,7 +48,12 @@ export default function TooltipPopover({
 
   return (
     <div className={`relative ${className}`} ref={containerRef}>
-      <button className={`peer ${buttonClassName}`} onClick={() => setIsActive((prev) => !prev)} type="button">
+      <button
+        className={`peer disabled:pointer-events-none ${buttonClassName}`}
+        disabled={disabled}
+        onClick={() => setIsActive((prev) => !prev)}
+        type="button"
+      >
         {children[0]}
       </button>
       <div
