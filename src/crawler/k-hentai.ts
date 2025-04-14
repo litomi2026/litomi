@@ -57,7 +57,7 @@ interface KHentaiMangaCommon {
 
 type Params = {
   nextId?: string
-  sort?: '' | 'id_asc' | 'popular' | 'random'
+  sort?: '' | 'id_asc' | 'popular'
   offset?: string
 }
 
@@ -109,15 +109,15 @@ export async function fetchMangaFromKHentai({ id }: { id: number }) {
     return null
   } else if (!res.ok) {
     const body = await res.text()
-    captureException('k-hentai.org 서버 오류', { extra: { res, body } })
-    throw new Error('k 서버에서 만화 이미지를 불러오는데 실패했어요.')
+    captureException('k-hentai.org 서버 오류 - 만화', { extra: { res, body } })
+    throw new Error('k 서버에서 만화를 불러오는데 실패했어요.')
   }
 
   const html = await res.text()
   const match = html.match(/const\s+gallery\s*=\s*(\{[\s\S]*?\});/s)
 
   if (!match) {
-    captureException('k-hentai.org gallery 변수 못 찾음', { extra: { res } })
+    captureException('k-hentai.org `gallery` 변수 못 찾음', { extra: { res } })
     return null
   }
 
@@ -147,12 +147,35 @@ export async function fetchMangasFromKHentai({ nextId, sort, offset }: Params = 
     return null
   } else if (!res.ok) {
     const body = await res.text()
-    captureException('k-hentai.org 서버 오류', { extra: { res, body } })
+    captureException('k-hentai.org 서버 오류 - 만화 목록', { extra: { res, body } })
     throw new Error('k 서버에서 만화 목록을 불러오는데 실패했어요.')
   }
 
   const mangas = (await res.json()) as KHentaiManga[]
-  return mangas.map((manga) => convertKHentaiMangaToManga(manga))
+  return mangas.filter((manga) => manga.archived === 1).map((manga) => convertKHentaiMangaToManga(manga))
+}
+
+export async function fetchRandomMangasFromKHentai() {
+  const searchParams = new URLSearchParams({
+    search: 'language:korean',
+    sort: 'random',
+  })
+
+  const res = await fetch(`https://k-hentai.org/ajax/search?${searchParams}`, {
+    referrerPolicy: 'no-referrer',
+    next: { revalidate: 15 },
+  })
+
+  if (res.status === 404) {
+    return null
+  } else if (!res.ok) {
+    const body = await res.text()
+    captureException('k-hentai.org 서버 오류 - 랜덤 만화 목록', { extra: { res, body } })
+    throw new Error('k 서버에서 랜덤 만화 목록을 불러오는데 실패했어요.')
+  }
+
+  const mangas = (await res.json()) as KHentaiManga[]
+  return mangas.filter((manga) => manga.archived === 1).map((manga) => convertKHentaiMangaToManga(manga))
 }
 
 function convertKHentaiCommonToManga(manga: KHentaiMangaCommon) {
@@ -169,7 +192,7 @@ function convertKHentaiCommonToManga(manga: KHentaiMangaCommon) {
     type: kHentaiTypeMap[manga.category as keyof typeof kHentaiTypeMap] ?? '?',
     cdn: 'ehgt.org',
     count: manga.filecount,
-    rating: manga.rating,
+    rating: manga.rating / 100,
     viewCount: manga.views,
   }
 }

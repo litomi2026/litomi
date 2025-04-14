@@ -2,7 +2,7 @@ import MangaCard from '@/components/card/MangaCard'
 import ShuffleButton from '@/components/ShuffleButton'
 import { CANONICAL_URL } from '@/constants/url'
 import { fetchRandomMangasFromHiyobi } from '@/crawler/hiyobi'
-import { fetchMangasFromKHentai } from '@/crawler/k-hentai'
+import { fetchRandomMangasFromKHentai } from '@/crawler/k-hentai'
 import { harpiMangaIds, harpiMangas } from '@/database/harpi'
 import { hashaMangaIds, hashaMangas } from '@/database/hasha'
 import { Manga } from '@/types/manga'
@@ -61,7 +61,7 @@ async function getMangas({ source }: Params) {
   } else if (source === SourceParam.HIYOBI) {
     mangas = await fetchRandomMangasFromHiyobi()
   } else if (source === SourceParam.K_HENTAI) {
-    mangas = await fetchMangasFromKHentai({ sort: 'random' })
+    mangas = await fetchRandomMangasFromKHentai()
   }
 
   return mangas
