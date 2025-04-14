@@ -1,14 +1,14 @@
 import type { BaseLayoutProps } from '@/types/nextjs'
 
-import OrderToggleLink from '@/components/OrderToggleLink'
 import ShuffleButton from '@/components/ShuffleButton'
+import SortToggleLink from '@/components/SortToggleLink'
 import SourceSliderLink from '@/components/SourceToggleLink'
 import SourceTooltip from '@/components/tooltip/SourceTooltip'
-import { getTotalPages, SourceParam, validateOrder, validatePage, validateSource } from '@/utils/param'
+import { getTotalPages, SourceParam, validatePage, validateSort, validateSource } from '@/utils/param'
 
 export default async function Layout({ params, children }: BaseLayoutProps) {
-  const { order, page, source } = await params
-  const orderString = validateOrder(order)
+  const { sort, page, source } = await params
+  const sortString = validateSort(sort)
   const pageNumber = validatePage(page)
   const sourceString = validateSource(source)
 
@@ -18,9 +18,8 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
         className="flex justify-center flex-wrap gap-2 whitespace-nowrap text-sm 
           sm:justify-end sm:flex-nowrap md:text-base"
       >
-        <OrderToggleLink
-          currentOrder={orderString}
-          disabled={sourceString === SourceParam.HIYOBI || sourceString === SourceParam.K_HENTAI}
+        <SortToggleLink
+          currentSort={sortString}
           hrefPrefix="../../"
           hrefSuffix={`/${pageNumber || 1}/${sourceString || SourceParam.HIYOBI}`}
         />

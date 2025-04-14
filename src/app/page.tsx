@@ -30,7 +30,7 @@ export default function Home() {
       <div className="grid gap-2 [&_a]:border-2 [&_a]:rounded-lg [&_a]:w-60 [&_a]:py-2 [&_a]:font-semibold ">
         <Link
           className="bg-brand-gradient relative text-background before:absolute before:inset-0 before:rounded-lg before:border-2 before:border-foreground/40"
-          href="/mangas/id/desc/1/hi"
+          href="/mangas/latest/1/hi"
         >
           19세 이상 성인입니다
         </Link>

@@ -11,16 +11,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
-      url: `${CANONICAL_URL}/mangas/id/desc/1/hi`,
+      url: `${CANONICAL_URL}/mangas/latest/1/hi`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.9,
     },
     {
-      url: `${CANONICAL_URL}/mangas/id/desc/1/ha`,
+      url: `${CANONICAL_URL}/mangas/latest/1/k`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.9,
+    },
+    {
+      url: `${CANONICAL_URL}/mangas/latest/1/ha`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
     },
     {
       url: `${CANONICAL_URL}/posts/recommand`,

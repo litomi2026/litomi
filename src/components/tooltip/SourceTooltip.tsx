@@ -37,11 +37,11 @@ function HarpiTooltip() {
         <a className="text-blue-500" href="https://modheader.com" rel="noopener noreferrer" target="_blank">
           ModHeader
         </a>{' '}
-        확장 프로그램을 사용해서 <code>referer: https://pk3.harpi.in</code> 헤더를 추가해주세요.
+        를 사용해서 <code>referer: https://harpi.in</code> 헤더를 추가해주세요.
       </p>
       <hr className="text-zinc-500 my-3" />
       <p>
-        (Mobile) <code>referer: https://pk3.harpi.in</code> 헤더를 추가할 수 있는 브라우저를 사용해주세요.
+        (Mobile) <code>referer: https://harpi.in</code> 헤더를 추가할 수 있는 브라우저를 사용해주세요.
       </p>
     </div>
   )

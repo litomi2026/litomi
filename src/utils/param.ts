@@ -2,15 +2,10 @@ import { harpiMangaPages } from '@/database/harpi'
 import { hashaMangaPages } from '@/database/hasha'
 import { BookmarkSource } from '@/database/schema'
 
-export enum OrderParam {
-  ASC = 'asc',
-  DESC = 'desc',
-}
-
 export enum SortParam {
-  ID = 'id',
   // BOOKMARK = 'bookmark',
-  // DATE = 'date',
+  LATEST = 'latest',
+  OLDEST = 'oldest',
   // LIKE = 'like',
 }
 
@@ -19,9 +14,12 @@ export enum SourceParam {
   HASHA = 'ha',
   HARPI = 'hp',
   K_HENTAI = 'k',
+  HITOMI = 'h',
   // E_HENTAI = 'e',
   // EX_HENTAI = 'ex',
 }
+
+export const sourceParamValues = Object.values(SourceParam)
 
 export function getLoginId(loginId: string) {
   return decodeURIComponent(loginId).slice(1)
@@ -34,7 +32,7 @@ export function getTotalPages(source: string) {
     case SourceParam.HASHA:
       return hashaMangaPages.length
     case SourceParam.HIYOBI:
-      return 7200
+      return 7300
     default:
       return 10
   }
@@ -63,17 +61,6 @@ export function validateId(id: string) {
   }
 
   return idNumber
-}
-
-export function validateOrder(order: string) {
-  switch (order) {
-    case OrderParam.ASC:
-      return OrderParam.ASC
-    case OrderParam.DESC:
-      return OrderParam.DESC
-    default:
-      return ''
-  }
 }
 
 export function validatePage(page: string) {
@@ -111,8 +98,10 @@ export function validatePostFilter(str: string) {
 
 export function validateSort(order: string) {
   switch (order) {
-    case SortParam.ID:
-      return SortParam.ID
+    case SortParam.LATEST:
+      return SortParam.LATEST
+    case SortParam.OLDEST:
+      return SortParam.OLDEST
     default:
       return ''
   }
@@ -124,6 +113,8 @@ export function validateSource(src: string) {
       return SourceParam.HARPI
     case SourceParam.HASHA:
       return SourceParam.HASHA
+    case SourceParam.HITOMI:
+      return SourceParam.HITOMI
     case SourceParam.HIYOBI:
       return SourceParam.HIYOBI
     case SourceParam.K_HENTAI:

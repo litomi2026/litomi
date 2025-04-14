@@ -8,7 +8,7 @@ const sourceIndexMap: Record<string, number> = {
   [SourceParam.K_HENTAI]: 3,
 }
 
-const sources = Object.keys(sourceIndexMap) as SourceParam.HIYOBI[]
+const sources = Object.keys(sourceIndexMap) as SourceParam[]
 
 type OrderToggleProps = {
   currentSource: string

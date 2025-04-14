@@ -5,5 +5,5 @@ export const dynamic = 'error'
 
 export default async function Page({ params }: BasePageProps) {
   const { sort } = await params
-  redirect(`/mangas/${sort}/desc/1/hi`)
+  redirect(`/mangas/${sort}/1/hi`)
 }

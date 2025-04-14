@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
 
 export default async function Page() {
-  return redirect('/mangas/id/desc/1')
+  return redirect('/mangas/latest/1')
 }

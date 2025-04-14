@@ -7,16 +7,7 @@ import { harpiMangaIdsByPage, harpiMangas } from '@/database/harpi'
 import { hashaMangaIdsByPage, hashaMangas } from '@/database/hasha'
 import { Manga } from '@/types/manga'
 import { BasePageProps } from '@/types/nextjs'
-import {
-  getTotalPages,
-  OrderParam,
-  SortParam,
-  SourceParam,
-  validateOrder,
-  validatePage,
-  validateSort,
-  validateSource,
-} from '@/utils/param'
+import { getTotalPages, SortParam, SourceParam, validatePage, validateSort, validateSource } from '@/utils/param'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
@@ -32,7 +23,6 @@ export const metadata: Metadata = {
 type Params = {
   source: SourceParam
   sort: SortParam
-  order: OrderParam
   page: number
 }
 
@@ -42,24 +32,22 @@ export async function generateStaticParams() {
   const sources = Object.values(SourceParam)
   for (const page of pages) {
     for (const source of sources) {
-      params.push({ sort: 'id', order: 'desc', page, source })
+      params.push({ sort: SortParam.LATEST, page, source })
     }
   }
   return params
 }
 
 export default async function Page({ params }: BasePageProps) {
-  const { sort, order, page, source } = await params
+  const { sort, page, source } = await params
   const sortString = validateSort(sort)
-  const orderString = validateOrder(order)
   const pageNumber = validatePage(page)
   const sourceString = validateSource(source)
-  if (!sortString || !orderString || !pageNumber || !sourceString) notFound()
+  if (!sortString || !pageNumber || !sourceString) notFound()
 
   const mangas = await getMangas({
     source: sourceString,
     sort: sortString,
-    order: orderString,
     page: pageNumber,
   })
   if (!mangas || mangas.length === 0) notFound()
@@ -83,13 +71,13 @@ export default async function Page({ params }: BasePageProps) {
   )
 }
 
-async function getMangas({ source, sort, order, page }: Params) {
+async function getMangas({ source, sort, page }: Params) {
   let mangas: Manga[] | null = null
 
   if (source === SourceParam.HARPI) {
-    mangas = harpiMangaIdsByPage[sort][order][page - 1]?.map((id) => harpiMangas[id])
+    mangas = harpiMangaIdsByPage[sort][page - 1]?.map((id) => harpiMangas[id])
   } else if (source === SourceParam.HASHA) {
-    mangas = hashaMangaIdsByPage[sort][order][page - 1]?.map((id) => hashaMangas[id])
+    mangas = hashaMangaIdsByPage[sort][page - 1]?.map((id) => hashaMangas[id])
   } else if (source === SourceParam.HIYOBI) {
     mangas = await fetchMangasFromHiyobi({ page })
   } else if (source === SourceParam.K_HENTAI) {
