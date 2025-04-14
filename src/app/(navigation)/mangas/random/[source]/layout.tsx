@@ -21,7 +21,7 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
       </div>
       {sourceString && (
         <div className="flex justify-center whitespace-nowrap">
-          <SourceTooltip source={sourceString} />
+          <SourceTooltip disabled={sourceString === SourceParam.K_HENTAI} source={sourceString} />
         </div>
       )}
       {children}
