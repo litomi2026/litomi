@@ -97,8 +97,8 @@ export default async function Page({ params }: BasePageProps) {
       {sourceString !== SourceParam.K_HENTAI && (
         <Navigation
           currentPage={pageNumber}
-          hrefPrefix="../"
-          hrefSuffix={`/${sourceString || SourceParam.HIYOBI}`}
+          hrefPrefix="../../"
+          hrefSuffix={`/${sourceString || SourceParam.HIYOBI}/${layoutString}`}
           totalPages={getTotalPages(sourceString)}
         />
       )}

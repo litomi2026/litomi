@@ -1,5 +1,6 @@
 import type { BaseLayoutProps } from '@/types/nextjs'
 
+import LayoutSliderLink from '@/components/LayoutSliderLink'
 import ShuffleButton from '@/components/ShuffleButton'
 import SourceSliderLink from '@/components/SourceSliderLink'
 import SourceTooltip from '@/components/tooltip/SourceTooltip'
@@ -13,7 +14,8 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
   return (
     <main className="flex flex-col grow gap-2">
       <div className="flex justify-end gap-2 text-sm sm:text-base">
-        <SourceSliderLink current={sourceString} hrefSuffix={`/${layoutString}`} />
+        <LayoutSliderLink current={layoutString} />
+        <SourceSliderLink current={sourceString} hrefPrefixes={() => '../'} hrefSuffix={`/${layoutString}`} />
         <ShuffleButton action="refresh" iconClassName="w-5" />
       </div>
       {sourceString && (

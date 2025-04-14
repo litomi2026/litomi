@@ -28,7 +28,15 @@ type Params = {
 }
 
 export async function generateStaticParams() {
-  return [SourceParam.HASHA, SourceParam.HARPI, SourceParam.HIYOBI].map((source) => ({ source }))
+  const params = []
+  const sources = [SourceParam.HASHA, SourceParam.HIYOBI]
+  const layouts = [LayoutParam.CARD, LayoutParam.IMAGE]
+  for (const source of sources) {
+    for (const layout of layouts) {
+      params.push({ source, layout })
+    }
+  }
+  return params
 }
 
 export default async function Page({ params }: BasePageProps) {
@@ -45,7 +53,7 @@ export default async function Page({ params }: BasePageProps) {
       {mangas.map((manga, i) =>
         layoutString === LayoutParam.IMAGE ? (
           <MangaCardImage
-            className="bg-zinc-900 rounded-xl border-2 relative [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-cover [&_img]:aspect-[3/4]"
+            className="bg-zinc-900 rounded-xl border-2 relative h-fit [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-cover [&_img]:aspect-[3/4]"
             href={getViewerLink(manga.id, sourceString)}
             index={i}
             key={manga.id}

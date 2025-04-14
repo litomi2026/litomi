@@ -154,7 +154,6 @@ export async function fetchMangasFromKHentai({ nextId, sort, offset }: Params = 
 
   return ((await res.json()) as KHentaiManga[])
     .filter((manga) => manga.archived === 1)
-    .slice(0, MANGA_PER_PAGE)
     .map((manga) => convertKHentaiMangaToManga(manga))
 }
 
@@ -177,8 +176,9 @@ export async function fetchRandomMangasFromKHentai() {
     throw new Error('k 서버에서 랜덤 만화 목록을 불러오는데 실패했어요.')
   }
 
-  const mangas = (await res.json()) as KHentaiManga[]
-  return mangas.filter((manga) => manga.archived === 1).map((manga) => convertKHentaiMangaToManga(manga))
+  return ((await res.json()) as KHentaiManga[])
+    .filter((manga) => manga.archived === 1)
+    .map((manga) => convertKHentaiMangaToManga(manga))
 }
 
 function convertKHentaiCommonToManga(manga: KHentaiMangaCommon) {
