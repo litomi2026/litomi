@@ -1,25 +1,21 @@
 // @ts-check
 
 import { FlatCompat } from '@eslint/eslintrc'
-import eslint from '@eslint/js'
+import js from '@eslint/js'
 import eslintConfigPrettier from 'eslint-config-prettier'
 import perfectionist from 'eslint-plugin-perfectionist'
-import { dirname } from 'path'
-import tseslint from 'typescript-eslint'
-import { fileURLToPath } from 'url'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
+import { defineConfig } from 'eslint/config'
+import globals from 'globals'
 
 const compat = new FlatCompat({
-  baseDirectory: __dirname,
+  baseDirectory: import.meta.dirname,
 })
 
-export default tseslint.config(
-  eslint.configs.recommended,
-  tseslint.configs.recommended,
+export default defineConfig([
+  { files: ['**/*.{js,mjs,ts,tsx}'], plugins: { js }, extends: ['js/recommended'] },
+  { files: ['**/*.{js,mjs,ts,tsx}'], languageOptions: { globals: { ...globals.browser, ...globals.node } } },
   perfectionist.configs['recommended-natural'],
-  ...compat.extends('next/core-web-vitals', 'next/typescript'),
+  ...compat.config({ extends: ['next/core-web-vitals', 'next/typescript'] }),
   { ignores: ['.next'] },
   {
     rules: {
@@ -43,4 +39,4 @@ export default tseslint.config(
     },
   },
   eslintConfigPrettier,
-)
+])
