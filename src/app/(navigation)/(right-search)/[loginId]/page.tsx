@@ -2,6 +2,7 @@ import PostCard from '@/components/post/PostCard'
 import { mockedPosts } from '@/mock/post'
 import { sampleBySecureFisherYates } from '@/utils/random'
 
+// TEMP
 export const dynamic = 'error'
 
 export default async function Page() {

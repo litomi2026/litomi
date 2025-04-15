@@ -44,15 +44,15 @@ export async function generateStaticParams() {
   const pages = Array.from({ length: 10 }, (_, i) => String(i + 1))
   const sources = [SourceParam.HASHA, SourceParam.HIYOBI]
   const layouts = [LayoutParam.CARD, LayoutParam.IMAGE]
-  for (const page of pages) {
-    for (const source of sources) {
-      for (const layout of layouts) {
+  for (const layout of layouts) {
+    for (const page of pages) {
+      for (const source of sources) {
         params.push({ sort: SortParam.LATEST, page, source, layout })
       }
     }
   }
-  for (const sort of sorts) {
-    for (const layout of layouts) {
+  for (const layout of layouts) {
+    for (const sort of sorts) {
       params.push({ sort, page: '1', source: SourceParam.K_HENTAI, layout })
     }
   }

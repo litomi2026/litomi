@@ -1,4 +1,3 @@
-import { MANGA_PER_PAGE } from '@/constants'
 import { Manga } from '@/types/manga'
 import { captureException } from '@sentry/nextjs'
 
