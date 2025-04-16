@@ -74,6 +74,6 @@ export default async function Page() {
 function getBookmarkRows(userId: string) {
   return unstable_cache(() => selectBookmarks({ userId }), [userId, 'bookmarks'], {
     tags: [`${userId}-bookmarks`],
-    revalidate: 60,
+    revalidate: 15,
   })
 }
