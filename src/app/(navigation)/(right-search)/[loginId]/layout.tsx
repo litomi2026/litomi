@@ -94,6 +94,6 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
 function getUser(loginId: string) {
   return unstable_cache(() => selectUser({ loginId }), [loginId], {
     tags: [loginId],
-    revalidate: 60,
+    revalidate: 15,
   })
 }
