@@ -1,20 +1,20 @@
-import { LayoutParam } from '@/utils/param'
+import { ViewParam } from '@/utils/param'
 import Link from 'next/link'
 
 const layoutMap = {
-  [LayoutParam.CARD]: { index: 0, label: '카드' },
-  [LayoutParam.IMAGE]: { index: 1, label: '그림' },
+  [ViewParam.CARD]: { index: 0, label: '카드' },
+  [ViewParam.IMAGE]: { index: 1, label: '그림' },
 }
 
 const layouts = Object.entries(layoutMap)
 
 type OrderToggleProps = {
-  current: '' | LayoutParam
+  current: '' | ViewParam
   hrefPrefix?: string
   hrefSuffix?: string
 }
 
-export default function LayoutSliderLink({ current, hrefPrefix = '', hrefSuffix = '' }: OrderToggleProps) {
+export default function ViewSliderLink({ current, hrefPrefix = '', hrefSuffix = '' }: OrderToggleProps) {
   return (
     <div
       className="flex bg-zinc-900 border-2 p-1 rounded-xl text-zinc-400

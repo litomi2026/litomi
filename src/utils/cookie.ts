@@ -5,6 +5,15 @@ import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adap
 
 import { signJWT, TokenType, verifyJWT } from './jwt'
 
+export function getJSONCookie(cookieStore: ReadonlyRequestCookies, keys: string[]) {
+  const result: Record<string, string | undefined> = {}
+
+  for (const key of keys) {
+    result[key] = cookieStore.get(key)?.value
+  }
+  return result
+}
+
 export async function getUserIdFromAccessToken(cookieStore: ReadonlyRequestCookies) {
   const accessToken = cookieStore.get(CookieKey.ACCESS_TOKEN)?.value
   if (!accessToken) return null
