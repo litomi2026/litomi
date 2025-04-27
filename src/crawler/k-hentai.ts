@@ -99,6 +99,20 @@ const kHentaiTypeMap = {
   11: '비공개',
 } as const
 
+type Params3 = {
+  search: string
+  minViews?: number
+  maxViews?: number
+  minPages?: number
+  maxPages?: number
+  startDate?: number
+  endDate?: number
+  sort?: 'id_asc' | 'popular' | 'random'
+  nextId?: string
+  offset?: number
+  categories?: string
+}
+
 export async function fetchMangaFromKHentai({ id }: { id: number }) {
   const res = await fetch(`https://k-hentai.org/r/${id}`, {
     referrerPolicy: 'no-referrer',
@@ -173,6 +187,52 @@ export async function fetchRandomMangasFromKHentai() {
     const body = await res.text()
     captureException('k-hentai.org 서버 오류 - 랜덤 만화 목록', { extra: { res, body } })
     throw new Error('k 서버에서 랜덤 만화 목록을 불러오는데 실패했어요.')
+  }
+
+  return ((await res.json()) as KHentaiManga[])
+    .filter((manga) => manga.archived === 1)
+    .map((manga) => convertKHentaiMangaToManga(manga))
+}
+
+export async function searchMangasFromKHentai({
+  search,
+  minViews,
+  maxViews,
+  minPages,
+  maxPages,
+  startDate,
+  endDate,
+  sort,
+  nextId,
+  offset,
+  categories,
+}: Params3) {
+  const searchParams = new URLSearchParams({
+    search: `language:korean ${search}`,
+    ...(nextId && { 'next-id': nextId }),
+    ...(sort && { sort }),
+    ...(offset && { offset: String(offset) }),
+    ...(categories && { categories }),
+    ...(search && { search }),
+    ...(minViews && { 'min-views': String(minViews) }),
+    ...(maxViews && { 'max-views': String(maxViews) }),
+    ...(minPages && { 'min-pages': String(minPages) }),
+    ...(maxPages && { 'max-pages': String(maxPages) }),
+    ...(startDate && { 'start-date': String(startDate) }),
+    ...(endDate && { 'end-date': String(endDate) }),
+  })
+
+  const res = await fetch(`https://k-hentai.org/ajax/search?${searchParams}`, {
+    referrerPolicy: 'no-referrer',
+    next: { revalidate: 86400 }, // 1 day
+  })
+
+  if (res.status === 404) {
+    return null
+  } else if (!res.ok) {
+    const body = await res.text()
+    captureException('k-hentai.org 서버 오류 - 만화 검색', { extra: { res, body } })
+    throw new Error('k 서버에서 만화 검색을 실패했어요.')
   }
 
   return ((await res.json()) as KHentaiManga[])

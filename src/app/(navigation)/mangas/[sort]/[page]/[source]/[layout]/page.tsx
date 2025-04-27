@@ -11,13 +11,13 @@ import { BasePageProps } from '@/types/nextjs'
 import { getViewerLink } from '@/utils/manga'
 import {
   getTotalPages,
-  LayoutParam,
   SortParam,
   SourceParam,
-  validateLayout,
   validatePage,
   validateSort,
   validateSource,
+  validateView,
+  ViewCookie,
 } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 import { Metadata } from 'next'
@@ -43,21 +43,21 @@ export async function generateStaticParams() {
   const sorts = [SortParam.LATEST, SortParam.POPULAR]
   const pages = Array.from({ length: 10 }, (_, i) => String(i + 1))
   const sources = [SourceParam.HASHA, SourceParam.HIYOBI]
-  const layouts = [LayoutParam.CARD, LayoutParam.IMAGE]
-  for (const layout of layouts) {
+  const views = [ViewCookie.CARD, ViewCookie.IMAGE]
+  for (const view of views) {
     for (const page of pages) {
       for (const source of sources) {
-        params.push({ sort: SortParam.LATEST, page, source, layout })
+        params.push({ sort: SortParam.LATEST, page, source, layout: view })
       }
     }
   }
-  for (const layout of layouts) {
+  for (const view of views) {
     for (const sort of sorts) {
-      params.push({ sort, page: '1', source: SourceParam.K_HENTAI, layout })
+      params.push({ sort, page: '1', source: SourceParam.K_HENTAI, layout: view })
     }
   }
-  for (const layout of layouts) {
-    params.push({ sort: SortParam.LATEST, page: '1', source: SourceParam.HARPI, layout })
+  for (const view of views) {
+    params.push({ sort: SortParam.LATEST, page: '1', source: SourceParam.HARPI, layout: view })
   }
   return params
 }
@@ -67,7 +67,7 @@ export default async function Page({ params }: BasePageProps) {
   const sortString = validateSort(sort)
   const pageNumber = validatePage(page)
   const sourceString = validateSource(source)
-  const layoutString = validateLayout(layout)
+  const layoutString = validateView(layout)
   if (!sortString || !pageNumber || !sourceString || !layoutString) notFound()
 
   const mangas = await getMangas({
@@ -81,7 +81,7 @@ export default async function Page({ params }: BasePageProps) {
     <>
       <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[layoutString]} gap-2 grow`}>
         {mangas.map((manga, i) =>
-          layoutString === LayoutParam.IMAGE ? (
+          layoutString === ViewCookie.IMAGE ? (
             <MangaCardImage
               className="bg-zinc-900 rounded-xl border-2 relative [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-cover [&_img]:aspect-[3/4]"
               href={getViewerLink(manga.id, sourceString)}

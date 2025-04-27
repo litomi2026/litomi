@@ -2,11 +2,6 @@ import { harpiMangaPages } from '@/database/harpi'
 import { hashaMangaPages } from '@/database/hasha'
 import { BookmarkSource } from '@/database/schema'
 
-export enum LayoutParam {
-  IMAGE = 'img',
-  CARD = 'card',
-}
-
 export enum SortParam {
   // BOOKMARK = 'bookmark',
   LATEST = 'latest',
@@ -23,6 +18,11 @@ export enum SourceParam {
   HITOMI = 'h',
   // E_HENTAI = 'e',
   // EX_HENTAI = 'ex',
+}
+
+export enum ViewCookie {
+  IMAGE = 'img',
+  CARD = 'card',
 }
 
 export function getLoginId(loginId: string) {
@@ -65,17 +65,6 @@ export function validateId(id: string) {
   }
 
   return idNumber
-}
-
-export function validateLayout(layout: string) {
-  switch (layout) {
-    case LayoutParam.CARD:
-      return LayoutParam.CARD
-    case LayoutParam.IMAGE:
-      return LayoutParam.IMAGE
-    default:
-      return ''
-  }
 }
 
 export function validatePage(page: string) {
@@ -136,6 +125,17 @@ export function validateSource(src: string) {
       return SourceParam.HIYOBI
     case SourceParam.K_HENTAI:
       return SourceParam.K_HENTAI
+    default:
+      return ''
+  }
+}
+
+export function validateView(layout: string) {
+  switch (layout) {
+    case ViewCookie.CARD:
+      return ViewCookie.CARD
+    case ViewCookie.IMAGE:
+      return ViewCookie.IMAGE
     default:
       return ''
   }

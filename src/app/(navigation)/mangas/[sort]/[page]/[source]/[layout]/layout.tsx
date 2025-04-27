@@ -1,19 +1,19 @@
 import type { BaseLayoutProps } from '@/types/nextjs'
 
-import LayoutSliderLink from '@/components/LayoutSliderLink'
 import ShuffleButton from '@/components/ShuffleButton'
 import SortSliderLink from '@/components/SortSliderLink'
 import SourceSliderLink from '@/components/SourceSliderLink'
 import SourceTooltip from '@/components/tooltip/SourceTooltip'
+import ViewSliderLink from '@/components/ViewSliderLink'
 import {
   getTotalPages,
-  LayoutParam,
   SortParam,
   SourceParam,
-  validateLayout,
   validatePage,
   validateSort,
   validateSource,
+  validateView,
+  ViewCookie,
 } from '@/utils/param'
 
 export default async function Layout({ params, children }: BaseLayoutProps) {
@@ -21,7 +21,7 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
   const sortString = validateSort(sort)
   const pageNumber = validatePage(page) || 1
   const sourceString = validateSource(source)
-  const layoutString = validateLayout(layout) || LayoutParam.CARD
+  const viewString = validateView(layout) || ViewCookie.CARD
   const defaultSource = sourceString || SourceParam.HIYOBI
 
   return (
@@ -32,9 +32,9 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
           currentSort={sortString}
           disabled={sourceString === SourceParam.HIYOBI}
           hrefPrefix="../../../"
-          hrefSuffix={`/${pageNumber}/${defaultSource}/${layoutString}`}
+          hrefSuffix={`/${pageNumber}/${defaultSource}/${viewString}`}
         />
-        <LayoutSliderLink current={layoutString} />
+        <ViewSliderLink current={viewString} />
         <SourceSliderLink
           current={sourceString}
           hrefPrefixes={(source) => {
@@ -44,12 +44,12 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
               return `../../${Math.min(pageNumber, getTotalPages(source))}/`
             }
           }}
-          hrefSuffix={`/${layoutString}`}
+          hrefSuffix={`/${viewString}`}
         />
         <ShuffleButton
           action="random"
           className="w-fit"
-          href={`/mangas/random/${defaultSource}/${layoutString}`}
+          href={`/mangas/random/${defaultSource}/${viewString}`}
           iconClassName="w-5"
         />
       </div>
