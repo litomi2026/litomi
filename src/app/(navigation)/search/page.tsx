@@ -63,7 +63,7 @@ export default async function Page({ searchParams }: BasePageProps) {
   }
 
   return (
-    <div className="p-2">
+    <>
       <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2 grow`}>
         {mangas.map((manga, i) =>
           view === ViewParam.IMAGE ? (
@@ -79,6 +79,6 @@ export default async function Page({ searchParams }: BasePageProps) {
           ),
         )}
       </ul>
-    </div>
+    </>
   )
 }
