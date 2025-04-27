@@ -1,15 +1,15 @@
-import { ViewParam } from '@/utils/param'
+import { ViewCookie } from '@/utils/param'
 import Link from 'next/link'
 
 const layoutMap = {
-  [ViewParam.CARD]: { index: 0, label: '카드' },
-  [ViewParam.IMAGE]: { index: 1, label: '그림' },
+  [ViewCookie.CARD]: { index: 0, label: '카드' },
+  [ViewCookie.IMAGE]: { index: 1, label: '그림' },
 }
 
 const layouts = Object.entries(layoutMap)
 
 type OrderToggleProps = {
-  current: '' | ViewParam
+  current: '' | ViewCookie
   hrefPrefix?: string
   hrefSuffix?: string
 }

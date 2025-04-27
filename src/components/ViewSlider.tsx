@@ -1,30 +1,30 @@
 'use client'
 
-import { ViewParam } from '@/utils/param'
+import { ViewCookie } from '@/utils/param'
 import Cookies from 'js-cookie'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
-const VIEWS: [ViewParam, string][] = [
-  [ViewParam.CARD, '카드'],
-  [ViewParam.IMAGE, '그림'],
-]
+const VIEWS = [
+  [ViewCookie.CARD, '카드'],
+  [ViewCookie.IMAGE, '그림'],
+] as const
 
 type Props = {
-  initialView?: ViewParam
+  initialView?: ViewCookie
 }
 
 export default function ViewToggle({ initialView }: Props) {
   const router = useRouter()
-  const [currentView, setCurrentView] = useState<ViewParam>(initialView ?? ViewParam.CARD)
+  const [currentView, setCurrentView] = useState<ViewCookie>(initialView ?? ViewCookie.CARD)
 
   useEffect(() => {
     if (!initialView) {
-      setCurrentView((Cookies.get('view') as ViewParam) ?? ViewParam.CARD)
+      setCurrentView((Cookies.get('view') as ViewCookie) ?? ViewCookie.CARD)
     }
   }, [initialView])
 
-  const select = (v: ViewParam) => {
+  const select = (v: ViewCookie) => {
     if (v === currentView) return
     Cookies.set('view', v, { expires: 365, path: '/', sameSite: 'lax' })
     setCurrentView(v)

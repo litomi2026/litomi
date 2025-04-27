@@ -13,7 +13,7 @@ import {
   validateSort,
   validateSource,
   validateView,
-  ViewParam,
+  ViewCookie,
 } from '@/utils/param'
 
 export default async function Layout({ params, children }: BaseLayoutProps) {
@@ -21,7 +21,7 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
   const sortString = validateSort(sort)
   const pageNumber = validatePage(page) || 1
   const sourceString = validateSource(source)
-  const viewString = validateView(layout) || ViewParam.CARD
+  const viewString = validateView(layout) || ViewCookie.CARD
   const defaultSource = sourceString || SourceParam.HIYOBI
 
   return (

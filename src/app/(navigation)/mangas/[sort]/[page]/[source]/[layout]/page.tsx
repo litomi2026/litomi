@@ -17,7 +17,7 @@ import {
   validateSort,
   validateSource,
   validateView,
-  ViewParam,
+  ViewCookie,
 } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 import { Metadata } from 'next'
@@ -43,7 +43,7 @@ export async function generateStaticParams() {
   const sorts = [SortParam.LATEST, SortParam.POPULAR]
   const pages = Array.from({ length: 10 }, (_, i) => String(i + 1))
   const sources = [SourceParam.HASHA, SourceParam.HIYOBI]
-  const views = [ViewParam.CARD, ViewParam.IMAGE]
+  const views = [ViewCookie.CARD, ViewCookie.IMAGE]
   for (const view of views) {
     for (const page of pages) {
       for (const source of sources) {
@@ -81,7 +81,7 @@ export default async function Page({ params }: BasePageProps) {
     <>
       <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[layoutString]} gap-2 grow`}>
         {mangas.map((manga, i) =>
-          layoutString === ViewParam.IMAGE ? (
+          layoutString === ViewCookie.IMAGE ? (
             <MangaCardImage
               className="bg-zinc-900 rounded-xl border-2 relative [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-cover [&_img]:aspect-[3/4]"
               href={getViewerLink(manga.id, sourceString)}

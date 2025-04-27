@@ -4,7 +4,7 @@ import { searchMangasFromKHentai } from '@/crawler/k-hentai'
 import { BasePageProps } from '@/types/nextjs'
 import { getJSONCookie } from '@/utils/cookie'
 import { getViewerLink } from '@/utils/manga'
-import { SourceParam, ViewParam } from '@/utils/param'
+import { SourceParam, ViewCookie } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 import { cookies } from 'next/headers'
 import { notFound } from 'next/navigation'
@@ -66,7 +66,7 @@ export default async function Page({ searchParams }: BasePageProps) {
     <>
       <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2 grow`}>
         {mangas.map((manga, i) =>
-          view === ViewParam.IMAGE ? (
+          view === ViewCookie.IMAGE ? (
             <MangaCardImage
               className="bg-zinc-900 rounded-xl border-2 relative [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-cover [&_img]:aspect-[3/4]"
               href={getViewerLink(manga.id, SourceParam.K_HENTAI)}

@@ -8,7 +8,7 @@ import { hashaMangaIds, hashaMangas } from '@/database/hasha'
 import { Manga } from '@/types/manga'
 import { BasePageProps } from '@/types/nextjs'
 import { getViewerLink } from '@/utils/manga'
-import { SourceParam, validateSource, validateView, ViewParam } from '@/utils/param'
+import { SourceParam, validateSource, validateView, ViewCookie } from '@/utils/param'
 import { sampleBySecureFisherYates } from '@/utils/random'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 import { Metadata } from 'next'
@@ -30,7 +30,7 @@ type Params = {
 export async function generateStaticParams() {
   const params = []
   const sources = [SourceParam.HASHA, SourceParam.HIYOBI]
-  const layouts = [ViewParam.CARD, ViewParam.IMAGE]
+  const layouts = [ViewCookie.CARD, ViewCookie.IMAGE]
   for (const source of sources) {
     for (const layout of layouts) {
       params.push({ source, layout })
@@ -51,7 +51,7 @@ export default async function Page({ params }: BasePageProps) {
   return (
     <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[layoutString]} gap-2 grow`}>
       {mangas.map((manga, i) =>
-        layoutString === ViewParam.IMAGE ? (
+        layoutString === ViewCookie.IMAGE ? (
           <MangaCardImage
             className="bg-zinc-900 rounded-xl border-2 relative h-fit [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-cover [&_img]:aspect-[3/4]"
             href={getViewerLink(manga.id, sourceString)}

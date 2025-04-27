@@ -4,12 +4,12 @@ import ShuffleButton from '@/components/ShuffleButton'
 import SourceSliderLink from '@/components/SourceSliderLink'
 import SourceTooltip from '@/components/tooltip/SourceTooltip'
 import ViewSliderLink from '@/components/ViewSliderLink'
-import { SourceParam, validateSource, validateView, ViewParam } from '@/utils/param'
+import { SourceParam, validateSource, validateView, ViewCookie } from '@/utils/param'
 
 export default async function Layout({ params, children }: BaseLayoutProps) {
   const { source, layout } = await params
   const sourceString = validateSource(source)
-  const layoutString = validateView(layout) || ViewParam.CARD
+  const layoutString = validateView(layout) || ViewCookie.CARD
 
   return (
     <main className="flex flex-col grow gap-2">

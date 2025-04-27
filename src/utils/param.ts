@@ -20,7 +20,7 @@ export enum SourceParam {
   // EX_HENTAI = 'ex',
 }
 
-export enum ViewParam {
+export enum ViewCookie {
   IMAGE = 'img',
   CARD = 'card',
 }
@@ -132,10 +132,10 @@ export function validateSource(src: string) {
 
 export function validateView(layout: string) {
   switch (layout) {
-    case ViewParam.CARD:
-      return ViewParam.CARD
-    case ViewParam.IMAGE:
-      return ViewParam.IMAGE
+    case ViewCookie.CARD:
+      return ViewCookie.CARD
+    case ViewCookie.IMAGE:
+      return ViewCookie.IMAGE
     default:
       return ''
   }
