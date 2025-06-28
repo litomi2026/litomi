@@ -4,7 +4,6 @@ import { CANONICAL_URL } from '@/constants/url'
 import { fetchRandomMangasFromHiyobi } from '@/crawler/hiyobi'
 import { fetchRandomMangasFromKHentai } from '@/crawler/k-hentai'
 import { harpiMangaIds, harpiMangas } from '@/database/harpi'
-import { hashaMangaIds, hashaMangas } from '@/database/hasha'
 import { Manga } from '@/types/manga'
 import { BasePageProps } from '@/types/nextjs'
 import { getViewerLink } from '@/utils/manga'
@@ -29,7 +28,7 @@ type Params = {
 
 export async function generateStaticParams() {
   const params = []
-  const sources = [SourceParam.HASHA, SourceParam.HIYOBI]
+  const sources = [SourceParam.HIYOBI]
   const layouts = [ViewCookie.CARD, ViewCookie.IMAGE]
   for (const source of sources) {
     for (const layout of layouts) {
@@ -72,8 +71,6 @@ async function getMangas({ source }: Params) {
 
   if (source === SourceParam.HARPI) {
     mangas = sampleBySecureFisherYates(harpiMangaIds, 20).map((id) => harpiMangas[id])
-  } else if (source === SourceParam.HASHA) {
-    mangas = sampleBySecureFisherYates(hashaMangaIds, 20).map((id) => hashaMangas[id])
   } else if (source === SourceParam.HIYOBI) {
     mangas = await fetchRandomMangasFromHiyobi()
   } else if (source === SourceParam.K_HENTAI) {

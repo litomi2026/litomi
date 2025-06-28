@@ -2,7 +2,6 @@ import MangaCard from '@/components/card/MangaCard'
 import { fetchMangaFromHiyobi } from '@/crawler/hiyobi'
 import { fetchMangaFromKHentai } from '@/crawler/k-hentai'
 import { harpiMangas } from '@/database/harpi'
-import { hashaMangas } from '@/database/hasha'
 import { BookmarkSource } from '@/database/schema'
 import selectBookmarks from '@/sql/selectBookmarks'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
@@ -23,7 +22,7 @@ export default async function Page() {
           예시 화면이에요. 로그인 후 이용해주세요 🔖
         </h2>
         <ul className="grid gap-2 md:grid-cols-2">
-          <MangaCard manga={hashaMangas['3023700']} source={SourceParam.HASHA} />
+          <MangaCard manga={harpiMangas[Object.keys(harpiMangas)[0]]} source={SourceParam.HARPI} />
         </ul>
       </>
     )
@@ -34,9 +33,6 @@ export default async function Page() {
 
   const bookmarkInfo = bookmarkRows
     .map(({ mangaId, source }) => {
-      if (source === BookmarkSource.HASHA) {
-        return { manga: hashaMangas[mangaId], source: SourceParam.HASHA }
-      }
       if (source === BookmarkSource.HARPI) {
         return { manga: harpiMangas[mangaId], source: SourceParam.HARPI }
       }

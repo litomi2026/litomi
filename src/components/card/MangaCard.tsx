@@ -1,5 +1,4 @@
 import { harpiTagMap } from '@/database/harpi-tag'
-import { isHashaMangaKey } from '@/database/hasha'
 import { Manga } from '@/types/manga'
 import { getViewerLink } from '@/utils/manga'
 import { SourceParam } from '@/utils/param'
@@ -28,10 +27,9 @@ export function MangaCardSkeleton() {
 }
 
 function MangaCard({ manga, index = 0, source, className = '' }: Props) {
-  const { id, artists, characters, date, group, related, series, tags, title, type } = manga
+  const { id, artists, characters, date, group, series, tags, title, type } = manga
   const mappedTags = tags?.map((tag) => harpiTagMap[tag] || tag)
   const translatedTags = mappedTags?.map((tag) => (typeof tag === 'string' ? tag : tag.korStr || tag.engStr))
-  const existedRelatedIds = related?.filter((rid) => isHashaMangaKey(String(rid)))
   const viewerLink = getViewerLink(id, source)
 
   return (
@@ -52,18 +50,6 @@ function MangaCard({ manga, index = 0, source, className = '' }: Props) {
           {group && group.length > 0 && <div className="line-clamp-1">그룹 {group.join(', ')}</div>}
           {series && series.length > 0 && <div className="line-clamp-1">시리즈 {series.join(', ')}</div>}
           {characters && characters.length > 0 && <div className="line-clamp-1">캐릭터 {characters.join(', ')}</div>}
-          {existedRelatedIds && existedRelatedIds.length > 0 && (
-            <div className="flex gap-2 whitespace-nowrap">
-              연관
-              <ul className="flex flex-wrap overflow-auto gap-1">
-                {existedRelatedIds.map((rid) => (
-                  <li className="rounded px-1 text-foreground bg-zinc-500" key={rid}>
-                    <Link href={getViewerLink(rid, source)}>{rid}</Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
           {translatedTags && translatedTags.length > 0 && (
             <div className="flex gap-2 whitespace-nowrap">
               태그

@@ -23,7 +23,6 @@ export const bookmarkTable = pgTable(
 )
 
 export enum BookmarkSource {
-  HASHA = 0,
   HARPI = 1,
   HIYOBI = 2,
   K_HENTAI = 3,

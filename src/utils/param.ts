@@ -1,5 +1,4 @@
 import { harpiMangaPages } from '@/database/harpi'
-import { hashaMangaPages } from '@/database/hasha'
 import { BookmarkSource } from '@/database/schema'
 
 export enum SortParam {
@@ -12,7 +11,6 @@ export enum SortParam {
 
 export enum SourceParam {
   HIYOBI = 'hi',
-  HASHA = 'ha',
   HARPI = 'hp',
   K_HENTAI = 'k',
   HITOMI = 'h',
@@ -33,8 +31,6 @@ export function getTotalPages(source: string) {
   switch (source) {
     case SourceParam.HARPI:
       return harpiMangaPages.length
-    case SourceParam.HASHA:
-      return hashaMangaPages.length
     case SourceParam.HIYOBI:
       return 7300
     default:
@@ -46,8 +42,6 @@ export function mapSourceParamToBookmarkSource(order: SourceParam) {
   switch (order) {
     case SourceParam.HARPI:
       return BookmarkSource.HARPI
-    case SourceParam.HASHA:
-      return BookmarkSource.HASHA
     case SourceParam.HIYOBI:
       return BookmarkSource.HIYOBI
     case SourceParam.K_HENTAI:
@@ -117,8 +111,6 @@ export function validateSource(src: string) {
   switch (src) {
     case SourceParam.HARPI:
       return SourceParam.HARPI
-    case SourceParam.HASHA:
-      return SourceParam.HASHA
     case SourceParam.HITOMI:
       return SourceParam.HITOMI
     case SourceParam.HIYOBI:

@@ -17,7 +17,6 @@ export default function SourceTooltip({ source, disabled }: Props) {
       </div>
       <>
         {source === SourceParam.HARPI && <HarpiTooltip />}
-        {source === SourceParam.HASHA && <HashaTooltip />}
         {source === SourceParam.HIYOBI && <HiyobiTooltip />}
       </>
     </TooltipPopover>
@@ -43,17 +42,6 @@ function HarpiTooltip() {
       <hr className="text-zinc-500 my-3" />
       <p>
         (Mobile) <code>referer: https://harpi.in</code> 헤더를 추가할 수 있는 브라우저를 사용해주세요.
-      </p>
-    </div>
-  )
-}
-
-function HashaTooltip() {
-  return (
-    <div className="rounded-xl border-2 border-zinc-700 bg-background whitespace-pre-line p-3 text-sm min-w-3xs max-w-xs">
-      <p>
-        ha 모드에서 이미지 서버에서 HTTP 523 Origin Is Unreachable (원본에 도달할 수 없음) 오류 응답을 간헐적으로
-        내려주는 경우가 있어요. 현재 확인 중이에요.
       </p>
     </div>
   )

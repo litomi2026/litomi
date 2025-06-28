@@ -18,9 +18,8 @@ export function getImageSrc({ cdn, id, path }: Params) {
       return path
     case 'thumb.k-hentai':
       return `${CDN.K_HENTAI_THUMB}/${path}`
-    case 'HASHA':
     default:
-      return `${CDN.HASHA}/${id}/${path}`
+      return path
   }
 }
 

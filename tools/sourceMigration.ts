@@ -2,9 +2,7 @@ import { BookmarkSource } from '@/database/schema'
 import { Manga } from '@/types/manga'
 
 import harpiJSON from '../src/database/harpi.json'
-import hashaJSON from '../src/database/hasha.json'
 
-const hashaMangas = hashaJSON as Record<string, Manga>
 const harpiMangas = harpiJSON as Record<string, Manga>
 
 const noSourceMangaIds = [
@@ -20,15 +18,11 @@ const noSourceMangaIds = [
 
 const mangaIdsWithSource = noSourceMangaIds
   .map((id) => {
-    if (id in hashaMangas) {
-      return `(${id}, ${BookmarkSource.HASHA})`
+    if (id in harpiMangas) {
+      return `(${id}, ${BookmarkSource.HARPI})`
     }
-    if (!(id in harpiMangas)) {
-      return `(${id}, ${BookmarkSource.HIYOBI})`
-    }
-    return undefined
+    return `(${id}, ${BookmarkSource.HIYOBI})`
   })
-  .filter((source) => source !== undefined)
   .join(', ')
 
 console.log('👀 - mangaIdsWithSource:', mangaIdsWithSource)

@@ -7,7 +7,6 @@ const spawnOptions: SpawnOptions.OptionsObject = {
 }
 
 const run = async () => {
-  Bun.spawn(['bun', 'run', 'crawl:hasha'], spawnOptions)
   Bun.spawn(['bun', 'run', 'crawl:harpi'], spawnOptions)
 }
 
