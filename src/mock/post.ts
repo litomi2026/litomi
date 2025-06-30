@@ -1,4 +1,4 @@
-import { hashaMangaIds, hashaMangas } from '@/database/hasha'
+import { harpiMangaIds, harpiMangas } from '@/database/harpi'
 import { getImageSrc } from '@/utils/manga'
 import { getElementBySecureFisherYates } from '@/utils/random'
 
@@ -57,10 +57,10 @@ export const mockedPosts = [
     content:
       'asdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdf',
     imageURLs: (() => {
-      const randomMangaId = getElementBySecureFisherYates(hashaMangaIds)
-      return hashaMangas[randomMangaId].images
+      const randomMangaId = getElementBySecureFisherYates(harpiMangaIds)
+      return harpiMangas[randomMangaId].images
         .slice(0, 4)
-        .map((path) => getImageSrc({ cdn: 'HASHA', id: randomMangaId, path }))
+        .map((path) => getImageSrc({ cdn: 'HARPI', id: randomMangaId, path }))
     })(),
     referredPostId: '13',
     author: {
@@ -78,10 +78,10 @@ export const mockedPosts = [
       status: 0,
       content: 'asds',
       imageURLs: (() => {
-        const randomMangaId = getElementBySecureFisherYates(hashaMangaIds)
-        return hashaMangas[randomMangaId].images
+        const randomMangaId = getElementBySecureFisherYates(harpiMangaIds)
+        return harpiMangas[randomMangaId].images
           .slice(0, 4)
-          .map((path) => getImageSrc({ cdn: 'HASHA', id: randomMangaId, path }))
+          .map((path) => getImageSrc({ cdn: 'HARPI', id: randomMangaId, path }))
       })(),
       author: {
         id: '42',
@@ -100,10 +100,10 @@ export const mockedPosts = [
     status: 0,
     content: 'asds',
     imageURLs: (() => {
-      const randomMangaId = getElementBySecureFisherYates(hashaMangaIds)
-      return hashaMangas[randomMangaId].images
+      const randomMangaId = getElementBySecureFisherYates(harpiMangaIds)
+      return harpiMangas[randomMangaId].images
         .slice(0, 3)
-        .map((path) => getImageSrc({ cdn: 'HASHA', id: randomMangaId, path }))
+        .map((path) => getImageSrc({ cdn: 'HARPI', id: randomMangaId, path }))
     })(),
     author: {
       id: '42',
@@ -119,10 +119,10 @@ export const mockedPosts = [
       status: 0,
       content: 'asds',
       imageURLs: (() => {
-        const randomMangaId = getElementBySecureFisherYates(hashaMangaIds)
-        return hashaMangas[randomMangaId].images
+        const randomMangaId = getElementBySecureFisherYates(harpiMangaIds)
+        return harpiMangas[randomMangaId].images
           .slice(0, 3)
-          .map((path) => getImageSrc({ cdn: 'HASHA', id: randomMangaId, path }))
+          .map((path) => getImageSrc({ cdn: 'HARPI', id: randomMangaId, path }))
       })(),
       author: {
         id: '42',
@@ -139,10 +139,10 @@ export const mockedPosts = [
     status: 0,
     content: 'sdfasdf',
     imageURLs: (() => {
-      const randomMangaId = getElementBySecureFisherYates(hashaMangaIds)
-      return hashaMangas[randomMangaId].images
+      const randomMangaId = getElementBySecureFisherYates(harpiMangaIds)
+      return harpiMangas[randomMangaId].images
         .slice(0, 2)
-        .map((path) => getImageSrc({ cdn: 'HASHA', id: randomMangaId, path }))
+        .map((path) => getImageSrc({ cdn: 'HARPI', id: randomMangaId, path }))
     })(),
     author: {
       id: '35',
@@ -161,10 +161,10 @@ export const mockedPosts = [
       status: 0,
       content: 'asds',
       imageURLs: (() => {
-        const randomMangaId = getElementBySecureFisherYates(hashaMangaIds)
-        return hashaMangas[randomMangaId].images
+        const randomMangaId = getElementBySecureFisherYates(harpiMangaIds)
+        return harpiMangas[randomMangaId].images
           .slice(0, 2)
-          .map((path) => getImageSrc({ cdn: 'HASHA', id: randomMangaId, path }))
+          .map((path) => getImageSrc({ cdn: 'HARPI', id: randomMangaId, path }))
       })(),
       author: {
         id: '42',
@@ -180,10 +180,10 @@ export const mockedPosts = [
     status: 0,
     content: 'asfasdf',
     imageURLs: (() => {
-      const randomMangaId = getElementBySecureFisherYates(hashaMangaIds)
-      return hashaMangas[randomMangaId].images
+      const randomMangaId = getElementBySecureFisherYates(harpiMangaIds)
+      return harpiMangas[randomMangaId].images
         .slice(0, 1)
-        .map((path) => getImageSrc({ cdn: 'HASHA', id: randomMangaId, path }))
+        .map((path) => getImageSrc({ cdn: 'HARPI', id: randomMangaId, path }))
     })(),
     author: {
       id: '35',
@@ -200,10 +200,10 @@ export const mockedPosts = [
       status: 0,
       content: 'asds',
       imageURLs: (() => {
-        const randomMangaId = getElementBySecureFisherYates(hashaMangaIds)
-        return hashaMangas[randomMangaId].images
+        const randomMangaId = getElementBySecureFisherYates(harpiMangaIds)
+        return harpiMangas[randomMangaId].images
           .slice(0, 1)
-          .map((path) => getImageSrc({ cdn: 'HASHA', id: randomMangaId, path }))
+          .map((path) => getImageSrc({ cdn: 'HARPI', id: randomMangaId, path }))
       })(),
       author: {
         id: '42',
@@ -219,10 +219,10 @@ export const mockedPosts = [
     status: 0,
     content: 'sadf',
     imageURLs: (() => {
-      const randomMangaId = getElementBySecureFisherYates(hashaMangaIds)
-      return hashaMangas[randomMangaId].images
+      const randomMangaId = getElementBySecureFisherYates(harpiMangaIds)
+      return harpiMangas[randomMangaId].images
         .slice(0, 4)
-        .map((path) => getImageSrc({ cdn: 'HASHA', id: randomMangaId, path }))
+        .map((path) => getImageSrc({ cdn: 'HARPI', id: randomMangaId, path }))
     })(),
     referredPostId: '13',
     author: {
@@ -264,10 +264,10 @@ export const mockedPosts = [
       status: 0,
       content: 'asds',
       imageURLs: (() => {
-        const randomMangaId = getElementBySecureFisherYates(hashaMangaIds)
-        return hashaMangas[randomMangaId].images
+        const randomMangaId = getElementBySecureFisherYates(harpiMangaIds)
+        return harpiMangas[randomMangaId].images
           .slice(0, 4)
-          .map((path) => getImageSrc({ cdn: 'HASHA', id: randomMangaId, path }))
+          .map((path) => getImageSrc({ cdn: 'HARPI', id: randomMangaId, path }))
       })(),
     },
     commentCount: '3',

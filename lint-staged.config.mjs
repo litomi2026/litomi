@@ -1,5 +1,5 @@
 const config = {
-  '*.{ts,tsx}': 'eslint . --fix',
+  '*.{js,mjs,ts,tsx}': ['eslint'],
 }
 
 export default config

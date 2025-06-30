@@ -6,7 +6,6 @@ import { CANONICAL_URL } from '@/constants/url'
 import { fetchMangaFromHiyobi, fetchMangaImagesFromHiyobi, fetchMangasFromHiyobi } from '@/crawler/hiyobi'
 import { fetchMangaFromKHentai } from '@/crawler/k-hentai'
 import { harpiMangaIdsDesc, harpiMangas } from '@/database/harpi'
-import { hashaMangaIdsDesc, hashaMangas } from '@/database/hasha'
 import { getImageSrc } from '@/utils/manga'
 import { SourceParam, validateId, validateSource } from '@/utils/param'
 import { Metadata } from 'next'
@@ -50,7 +49,6 @@ export async function generateStaticParams() {
     .catch(() => [] as string[])
   const params: Record<string, unknown>[] = []
   const idMap: Record<string, string[]> = {
-    [SourceParam.HASHA]: hashaMangaIdsDesc.slice(0, 200),
     [SourceParam.HARPI]: harpiMangaIdsDesc.slice(0, 50),
     [SourceParam.HIYOBI]: hiyobiIds?.slice(0, 5),
   }
@@ -103,8 +101,6 @@ async function getManga({ source, id }: { source: SourceParam; id: number }) {
     }
   } else if (source === SourceParam.K_HENTAI) {
     return await fetchMangaFromKHentai({ id })
-  } else if (source === SourceParam.HASHA) {
-    return hashaMangas[id]
   } else if (source === SourceParam.HARPI) {
     return harpiMangas[id]
   }

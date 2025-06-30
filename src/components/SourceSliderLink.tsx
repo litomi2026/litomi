@@ -4,8 +4,7 @@ import Link from 'next/link'
 const sourceIndexMap: Record<string, number> = {
   [SourceParam.HIYOBI]: 0,
   [SourceParam.HARPI]: 1,
-  [SourceParam.HASHA]: 2,
-  [SourceParam.K_HENTAI]: 3,
+  [SourceParam.K_HENTAI]: 2,
 }
 
 const sources = Object.keys(sourceIndexMap) as SourceParam[]
