@@ -170,7 +170,7 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Props) {
     [getTouchOrientation, nextPage, onClick, prevPage],
   )
 
-  // NOTE: 마우스/터치패드 환경에서 스크롤 시 페이지 전환 처리
+  // NOTE: 마우스/터치패드 환경에서 스크롤 시 페이지를 전환함
   useEffect(() => {
     const handleWheel = ({ deltaX, deltaY }: WheelEvent) => {
       if (throttleRef.current) return
@@ -216,7 +216,7 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Props) {
     return () => window.removeEventListener('wheel', handleWheel)
   }, [nextPage, prevPage])
 
-  // NOTE: 이미지 스크롤 가능할 때 페이지 변경 시 스크롤 위치를 자연스럽게 설정
+  // NOTE: 이미지 스크롤 가능할 때 페이지 변경 시 스크롤 위치를 자연스럽게 설정함
   useEffect(() => {
     const ul = ulRef.current
     if (!ul) return
@@ -239,6 +239,18 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Props) {
       ul.scrollTo({ top: 0, left: 0, behavior: 'instant' })
     }
   }, [currentIndex, getTouchOrientation])
+
+  // NOTE: 페이지 전환 시 스크롤 관성을 방지함
+  useEffect(() => {
+    const ul = ulRef.current
+    if (!ul) return
+
+    ul.style.overflow = 'hidden'
+
+    setTimeout(() => {
+      ul.style.overflow = 'auto'
+    }, 500)
+  }, [currentIndex])
 
   return (
     <ul
