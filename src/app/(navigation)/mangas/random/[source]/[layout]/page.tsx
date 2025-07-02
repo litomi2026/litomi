@@ -1,3 +1,6 @@
+import { Metadata } from 'next'
+import { notFound } from 'next/navigation'
+
 import MangaCard from '@/components/card/MangaCard'
 import MangaCardImage from '@/components/card/MangaCardImage'
 import { CANONICAL_URL } from '@/constants/url'
@@ -10,8 +13,6 @@ import { getViewerLink } from '@/utils/manga'
 import { SourceParam, validateSource, validateView, ViewCookie } from '@/utils/param'
 import { sampleBySecureFisherYates } from '@/utils/random'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
-import { Metadata } from 'next'
-import { notFound } from 'next/navigation'
 
 export const revalidate = 15
 

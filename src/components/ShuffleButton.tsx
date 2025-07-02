@@ -1,9 +1,10 @@
 'use client'
 
-import IconShuffle from '@/components/icons/IconShuffle'
-import { useShffleStore } from '@/store/shuffle'
 import { useRouter } from 'next/navigation'
 import { ComponentProps, memo, useCallback, useEffect } from 'react'
+
+import IconShuffle from '@/components/icons/IconShuffle'
+import { useShffleStore } from '@/store/shuffle'
 
 interface Props extends ComponentProps<'button'> {
   action: 'random' | 'refresh'

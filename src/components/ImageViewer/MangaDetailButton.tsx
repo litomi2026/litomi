@@ -1,9 +1,10 @@
-import { harpiTagMap } from '@/database/harpi-tag'
-import { Manga } from '@/types/manga'
-import { SourceParam } from '@/utils/param'
 import { ErrorBoundary, Suspense } from '@suspensive/react'
 import dayjs from 'dayjs'
 import { memo, useState } from 'react'
+
+import { harpiTagMap } from '@/database/harpi-tag'
+import { Manga } from '@/types/manga'
+import { SourceParam } from '@/utils/param'
 
 import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from '../card/BookmarkButton'
 import ImageDownloadButton from '../card/ImageDownloadButton'

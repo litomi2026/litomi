@@ -1,5 +1,6 @@
-import { ViewCookie } from '@/utils/param'
 import Link from 'next/link'
+
+import { ViewCookie } from '@/utils/param'
 
 const layoutMap = {
   [ViewCookie.CARD]: { index: 0, label: '카드' },

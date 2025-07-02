@@ -1,6 +1,7 @@
+import { notFound } from 'next/navigation'
+
 import PostCard from '@/components/post/PostCard'
 import { mockedPosts } from '@/mock/post'
-import { notFound } from 'next/navigation'
 
 export const dynamic = 'error'
 

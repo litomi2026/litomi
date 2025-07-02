@@ -1,6 +1,7 @@
+import { useSuspenseQuery } from '@tanstack/react-query'
+
 import { ResponseApiBookmark } from '@/app/api/bookmarks/route'
 import { QueryKeys } from '@/constants/query'
-import { useSuspenseQuery } from '@tanstack/react-query'
 
 import useMeQuery from './useMeQuery'
 

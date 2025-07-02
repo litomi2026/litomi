@@ -1,8 +1,6 @@
-import type { BasePageProps } from '@/types/nextjs'
-
-import Image from 'next/image'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
+
+import type { BasePageProps } from '@/types/nextjs'
 
 // TEMP
 export const dynamic = 'error'

@@ -1,7 +1,8 @@
-import { ONE_HOUR, THIRTY_DAYS } from '@/constants'
-import { CookieKey } from '@/constants/storage'
 import { ResponseCookies } from 'next/dist/compiled/@edge-runtime/cookies'
 import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies'
+
+import { ONE_HOUR, THIRTY_DAYS } from '@/constants'
+import { CookieKey } from '@/constants/storage'
 
 import { signJWT, TokenType, verifyJWT } from './jwt'
 

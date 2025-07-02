@@ -1,9 +1,10 @@
 'use client'
 
-import useMeQuery from '@/query/useMeQuery'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { toast } from 'sonner'
+
+import useMeQuery from '@/query/useMeQuery'
 
 export default function MemberOnly() {
   const { data: me } = useMeQuery()

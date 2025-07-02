@@ -1,15 +1,16 @@
 'use client'
 
-import IconX from '@/components/icons/IconX'
-import Loading from '@/components/ui/Loading'
-import { loginIdPattern, passwordPattern } from '@/constants/pattern'
-import { QueryKeys } from '@/constants/query'
-import { SearchParamKey } from '@/constants/storage'
 import * as amplitude from '@amplitude/analytics-browser'
 import { useQueryClient } from '@tanstack/react-query'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useActionState, useEffect, useRef } from 'react'
 import { toast } from 'sonner'
+
+import IconX from '@/components/icons/IconX'
+import Loading from '@/components/ui/Loading'
+import { loginIdPattern, passwordPattern } from '@/constants/pattern'
+import { QueryKeys } from '@/constants/query'
+import { SearchParamKey } from '@/constants/storage'
 
 import login from './action'
 

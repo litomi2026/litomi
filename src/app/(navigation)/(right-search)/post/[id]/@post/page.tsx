@@ -1,7 +1,8 @@
+import { notFound } from 'next/navigation'
+
 import type { BasePageProps } from '@/types/nextjs'
 
 import { mockedPosts } from '@/mock/post'
-import { notFound } from 'next/navigation'
 
 import Post from './Post'
 

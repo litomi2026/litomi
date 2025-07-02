@@ -1,10 +1,11 @@
 'use client'
 
-import useMeQuery from '@/query/useMeQuery'
 import { captureException } from '@sentry/nextjs'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import Link from 'next/link'
 import { useEffect } from 'react'
+
+import useMeQuery from '@/query/useMeQuery'
 
 import IconMore from '../icons/IconMore'
 import Squircle from '../ui/Squircle'

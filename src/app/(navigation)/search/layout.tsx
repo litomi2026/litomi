@@ -1,8 +1,9 @@
+import { cookies } from 'next/headers'
+
 import type { BaseLayoutProps } from '@/types/nextjs'
 
 import ViewToggle from '@/components/ViewSlider'
 import { ViewCookie } from '@/utils/param'
-import { cookies } from 'next/headers'
 
 import SearchBar from './SearchBar'
 

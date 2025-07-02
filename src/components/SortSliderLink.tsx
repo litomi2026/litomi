@@ -1,5 +1,6 @@
-import { SortParam } from '@/utils/param'
 import Link from 'next/link'
+
+import { SortParam } from '@/utils/param'
 
 const sortIndexMap = {
   [SortParam.LATEST]: { index: 0, label: '최신순' },

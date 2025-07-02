@@ -1,6 +1,7 @@
+import { sql } from 'drizzle-orm'
+
 import { db } from '@/database/drizzle'
 import { bookmarkTable } from '@/database/schema'
-import { sql } from 'drizzle-orm'
 
 type Params = {
   userId: number | string

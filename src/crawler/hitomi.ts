@@ -1,5 +1,6 @@
-import { Manga } from '@/types/manga'
 import { captureException } from '@sentry/nextjs'
+
+import { Manga } from '@/types/manga'
 
 export interface Artist {
   artist: string

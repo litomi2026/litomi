@@ -1,13 +1,14 @@
 'use client'
 
+import dynamic from 'next/dynamic'
+import { useRouter } from 'next/navigation'
+import { useCallback, useEffect, useState } from 'react'
+
 import { useNavigationModeStore } from '@/components/ImageViewer/store/navigationMode'
 import { useScreenFitStore } from '@/components/ImageViewer/store/screenFit'
 import { useTouchOrientationStore } from '@/components/ImageViewer/store/touchOrientation'
 import { type Manga } from '@/types/manga'
 import { SourceParam } from '@/utils/param'
-import dynamic from 'next/dynamic'
-import { useRouter } from 'next/navigation'
-import { useCallback, useEffect, useState } from 'react'
 
 import { IconChevronLeft, IconReload } from '../icons/IconImageViewer'
 import FullscreenButton from './FullscreenButton'

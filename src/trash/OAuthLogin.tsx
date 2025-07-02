@@ -1,10 +1,11 @@
 'use client'
 
-import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
-import { useAuthStore } from '@/store/auth'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
+
+import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
+import { useAuthStore } from '@/store/auth'
 
 export enum LoginSearchParams {
   CODE = 'code',

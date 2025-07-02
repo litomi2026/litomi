@@ -1,6 +1,7 @@
+import Link from 'next/link'
+
 import { harpiTagMap } from '@/database/harpi-tag'
 import { Manga } from '@/types/manga'
-import Link from 'next/link'
 
 import MangaImage from '../MangaImage'
 import MangaCardPreviewImages from './MangaCardPreviewImages'

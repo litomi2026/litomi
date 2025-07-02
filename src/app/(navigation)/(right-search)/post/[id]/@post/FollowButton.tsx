@@ -1,9 +1,10 @@
 'use client'
 
-import Modal from '@/components/ui/Modal'
-import useMeQuery from '@/query/useMeQuery'
 import { useState } from 'react'
 import { toast } from 'sonner'
+
+import Modal from '@/components/ui/Modal'
+import useMeQuery from '@/query/useMeQuery'
 
 type Props = {
   leader: {

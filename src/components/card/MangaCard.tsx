@@ -1,11 +1,12 @@
-import { harpiTagMap } from '@/database/harpi-tag'
-import { Manga } from '@/types/manga'
-import { getViewerLink } from '@/utils/manga'
-import { SourceParam } from '@/utils/param'
 import { ErrorBoundary, Suspense } from '@suspensive/react'
 import dayjs from 'dayjs'
 import Link from 'next/link'
 import { memo } from 'react'
+
+import { harpiTagMap } from '@/database/harpi-tag'
+import { Manga } from '@/types/manga'
+import { getViewerLink } from '@/utils/manga'
+import { SourceParam } from '@/utils/param'
 
 import IconExternalLink from '../icons/IconExternalLink'
 import TagList from '../TagList'

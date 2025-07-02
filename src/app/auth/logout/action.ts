@@ -1,11 +1,12 @@
 'use server'
 
+import { sql } from 'drizzle-orm'
+import { cookies } from 'next/headers'
+
 import { CookieKey } from '@/constants/storage'
 import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
-import { sql } from 'drizzle-orm'
-import { cookies } from 'next/headers'
 
 export default async function logout() {
   const cookieStore = await cookies()

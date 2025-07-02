@@ -1,6 +1,7 @@
+import { ImgHTMLAttributes, memo } from 'react'
+
 import { Manga } from '@/types/manga'
 import { getImageSrc } from '@/utils/manga'
-import { ImgHTMLAttributes, memo } from 'react'
 
 const INITIAL_DISPLAYED_IMAGE = 5
 

@@ -1,3 +1,6 @@
+import { ErrorBoundary, Suspense } from '@suspensive/react'
+import Link from 'next/link'
+
 import type { BaseLayoutProps } from '@/types/nextjs'
 
 import BookmarkLink, { BookmarkLinkSkeleton } from '@/components/header/BookmarkLink'
@@ -9,8 +12,6 @@ import IconLogo from '@/components/icons/IconLogo'
 import IconPost from '@/components/icons/IconPost'
 import IconSearch from '@/components/icons/IconSearch'
 import SelectableLink from '@/components/SelectableLink'
-import { ErrorBoundary, Suspense } from '@suspensive/react'
-import Link from 'next/link'
 
 import Profile, { ProfileError, ProfileSkeleton } from '../../components/header/Profile'
 

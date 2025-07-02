@@ -1,9 +1,10 @@
 'use client'
 
-import { SearchParamKey } from '@/constants/storage'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ComponentProps } from 'react'
+
+import { SearchParamKey } from '@/constants/storage'
 
 type Props = Omit<ComponentProps<typeof Link>, 'href'>
 

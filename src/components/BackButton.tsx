@@ -1,8 +1,9 @@
 'use client'
 
-import IconArrow from '@/components/icons/IconArrow'
 import { useRouter } from 'next/navigation'
 import { ComponentProps } from 'react'
+
+import IconArrow from '@/components/icons/IconArrow'
 
 export default function BackButton(props: ComponentProps<'button'>) {
   const router = useRouter()

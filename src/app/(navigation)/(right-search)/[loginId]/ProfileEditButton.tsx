@@ -1,5 +1,11 @@
 'use client'
 
+import { captureException } from '@sentry/nextjs'
+import { ErrorBoundaryFallbackProps } from '@suspensive/react'
+import { useQueryClient } from '@tanstack/react-query'
+import { useActionState, useEffect, useState } from 'react'
+import { toast } from 'sonner'
+
 import IconEdit from '@/components/icons/IconEdit'
 import IconInfo from '@/components/icons/IconInfo'
 import IconX from '@/components/icons/IconX'
@@ -8,11 +14,6 @@ import TooltipPopover from '@/components/ui/TooltipPopover'
 import { QueryKeys } from '@/constants/query'
 import useActionErrorEffect from '@/hook/useActionErrorEffect'
 import useMeQuery from '@/query/useMeQuery'
-import { captureException } from '@sentry/nextjs'
-import { ErrorBoundaryFallbackProps } from '@suspensive/react'
-import { useQueryClient } from '@tanstack/react-query'
-import { useActionState, useEffect, useState } from 'react'
-import { toast } from 'sonner'
 
 import editProfile from './action'
 

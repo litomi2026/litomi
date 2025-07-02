@@ -1,5 +1,6 @@
-import type { BaseLayoutProps } from '@/types/nextjs'
 import type { ReactNode } from 'react'
+
+import type { BaseLayoutProps } from '@/types/nextjs'
 
 import BackButton from '@/components/BackButton'
 

@@ -8,7 +8,7 @@ type Params = {
   path: string
 }
 
-export function getImageSrc({ cdn, id, path }: Params) {
+export function getImageSrc({ cdn, path }: Params) {
   switch (cdn) {
     case 'ehgt.org':
       return path

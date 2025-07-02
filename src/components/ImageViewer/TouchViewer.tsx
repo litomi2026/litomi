@@ -1,11 +1,12 @@
 'use client'
 
+import { memo, useCallback, useEffect, useRef } from 'react'
+
 import { PageView } from '@/components/ImageViewer/store/pageView'
 import { ScreenFit } from '@/components/ImageViewer/store/screenFit'
 import { useTouchOrientationStore } from '@/components/ImageViewer/store/touchOrientation'
 import useImageNavigation from '@/hook/useImageNavigation'
 import { Manga } from '@/types/manga'
-import { memo, useCallback, useEffect, useRef } from 'react'
 
 import MangaImage from '../MangaImage'
 import { useBrightnessStore } from './store/brightness'
