@@ -18,6 +18,7 @@ const IMAGE_PREFETCH_AMOUNT = 6
 const IMAGE_FETCH_PRIORITY_THRESHOLD = 3
 const SCROLL_THRESHOLD = 1
 const SCROLL_THROTTLE = 500
+const SCREEN_EDGE_THRESHOLD = 20 // 브라우저 제스처 감지를 위한 화면 가장자리 임계값 (px)
 
 const screenFitStyle = {
   width: `overflow-y-auto [&_li]:mx-auto [&_li]:w-fit [&_li]:max-w-full [&_li]:first:h-full [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:h-auto`,
@@ -63,10 +64,14 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Props) {
   // 포인터 시작 시 좌표, 현재 밝기 기록 및 포인터 ID 등록
   const handlePointerDown = useCallback(
     (e: React.PointerEvent) => {
-      pointerStartRef.current = { x: e.clientX, y: e.clientY }
       initialBrightnessRef.current = getBrightness()
       swipeDetectedRef.current = false
       activePointers.current.add(e.pointerId)
+
+      const isEdgeSwipe = e.clientX < SCREEN_EDGE_THRESHOLD || e.clientX > window.innerWidth - SCREEN_EDGE_THRESHOLD
+      if (!isEdgeSwipe) {
+        pointerStartRef.current = { x: e.clientX, y: e.clientY }
+      }
     },
     [getBrightness],
   )
