@@ -178,13 +178,31 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Props) {
         throttleRef.current = false
       }, SCROLL_THROTTLE)
 
+      const ul = ulRef.current
+      if (!ul) return
+
+      const isVerticallyScrollable = ul.scrollHeight > ul.clientHeight
+      const isHorizontallyScrollable = ul.scrollWidth > ul.clientWidth
+      const atTop = ul.scrollTop <= 0
+      const atBottom = ul.scrollTop + ul.clientHeight >= ul.scrollHeight - 1
+      const atLeft = ul.scrollLeft <= 0
+      const atRight = ul.scrollLeft + ul.clientWidth >= ul.scrollWidth - 1
+
       if (Math.abs(deltaY) >= Math.abs(deltaX)) {
+        if (isVerticallyScrollable && !((deltaY > 0 && atBottom) || (deltaY < 0 && atTop))) {
+          return
+        }
+
         if (deltaY > SCROLL_THRESHOLD) {
           nextPage()
         } else if (deltaY < -SCROLL_THRESHOLD) {
           prevPage()
         }
       } else {
+        if (isHorizontallyScrollable && !((deltaX > 0 && atRight) || (deltaX < 0 && atLeft))) {
+          return
+        }
+
         if (deltaX > SCROLL_THRESHOLD) {
           nextPage()
         } else if (deltaX < -SCROLL_THRESHOLD) {
