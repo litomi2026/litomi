@@ -46,12 +46,14 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Props) {
   const getTouchOrientation = useTouchOrientationStore((state) => state.getTouchOrientation)
   const getBrightness = useBrightnessStore((state) => state.getBrightness)
   const setBrightness = useBrightnessStore((state) => state.setBrightness)
+  const currentIndex = useImageIndexStore((state) => state.imageIndex)
   const pointerStartRef = useRef<{ x: number; y: number } | null>(null)
   const initialBrightnessRef = useRef(100)
   const swipeDetectedRef = useRef(false)
   const activePointers = useRef(new Set<number>())
   const ulRef = useRef<HTMLUListElement>(null)
   const throttleRef = useRef(false)
+  const previousIndexRef = useRef(currentIndex)
 
   const { prevPage, nextPage } = useImageNavigation({
     maxIndex: images.length - 1,
@@ -168,7 +170,7 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Props) {
     [getTouchOrientation, nextPage, onClick, prevPage],
   )
 
-  // Wheel 이벤트: 데스크탑/터치패드용
+  // NOTE: 마우스/터치패드 환경에서 스크롤 시 페이지 전환 처리
   useEffect(() => {
     const handleWheel = ({ deltaX, deltaY }: WheelEvent) => {
       if (throttleRef.current) return
@@ -213,6 +215,30 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Props) {
     window.addEventListener('wheel', handleWheel, { passive: true })
     return () => window.removeEventListener('wheel', handleWheel)
   }, [nextPage, prevPage])
+
+  // NOTE: 이미지 스크롤 가능할 때 페이지 변경 시 스크롤 위치를 자연스럽게 설정
+  useEffect(() => {
+    const ul = ulRef.current
+    if (!ul) return
+
+    const isVerticallyScrollable = ul.scrollHeight > ul.clientHeight
+    const isHorizontallyScrollable = ul.scrollWidth > ul.clientWidth
+    if (!isVerticallyScrollable && !isHorizontallyScrollable) return
+
+    const isNavigatingBackward = currentIndex < previousIndexRef.current
+    const touchOrientation = getTouchOrientation()
+    previousIndexRef.current = currentIndex
+
+    if (isNavigatingBackward) {
+      if (touchOrientation === 'vertical') {
+        ul.scrollTo({ top: ul.scrollHeight - ul.clientHeight, left: 0, behavior: 'instant' })
+      } else {
+        ul.scrollTo({ top: 0, left: ul.scrollWidth - ul.clientWidth, behavior: 'instant' })
+      }
+    } else {
+      ul.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+    }
+  }, [currentIndex, getTouchOrientation])
 
   return (
     <ul
