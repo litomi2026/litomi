@@ -18,6 +18,7 @@ const IMAGE_PREFETCH_AMOUNT = 6
 const IMAGE_FETCH_PRIORITY_THRESHOLD = 3
 const SCROLL_THRESHOLD = 1
 const SCROLL_THROTTLE = 500
+const SCREEN_EDGE_THRESHOLD = 20 // 브라우저 제스처 감지를 위한 화면 가장자리 임계값 (px)
 
 const screenFitStyle = {
   width: `overflow-y-auto [&_li]:mx-auto [&_li]:w-fit [&_li]:max-w-full [&_li]:first:h-full [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:h-auto`,
@@ -46,12 +47,14 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Props) {
   const getTouchOrientation = useTouchOrientationStore((state) => state.getTouchOrientation)
   const getBrightness = useBrightnessStore((state) => state.getBrightness)
   const setBrightness = useBrightnessStore((state) => state.setBrightness)
+  const currentIndex = useImageIndexStore((state) => state.imageIndex)
   const pointerStartRef = useRef<{ x: number; y: number } | null>(null)
   const initialBrightnessRef = useRef(100)
   const swipeDetectedRef = useRef(false)
   const activePointers = useRef(new Set<number>())
   const ulRef = useRef<HTMLUListElement>(null)
   const throttleRef = useRef(false)
+  const previousIndexRef = useRef(currentIndex)
 
   const { prevPage, nextPage } = useImageNavigation({
     maxIndex: images.length - 1,
@@ -61,10 +64,14 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Props) {
   // 포인터 시작 시 좌표, 현재 밝기 기록 및 포인터 ID 등록
   const handlePointerDown = useCallback(
     (e: React.PointerEvent) => {
-      pointerStartRef.current = { x: e.clientX, y: e.clientY }
       initialBrightnessRef.current = getBrightness()
       swipeDetectedRef.current = false
       activePointers.current.add(e.pointerId)
+
+      const isEdgeSwipe = e.clientX < SCREEN_EDGE_THRESHOLD || e.clientX > window.innerWidth - SCREEN_EDGE_THRESHOLD
+      if (!isEdgeSwipe) {
+        pointerStartRef.current = { x: e.clientX, y: e.clientY }
+      }
     },
     [getBrightness],
   )
@@ -168,7 +175,7 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Props) {
     [getTouchOrientation, nextPage, onClick, prevPage],
   )
 
-  // Wheel 이벤트: 데스크탑/터치패드용
+  // NOTE: 마우스/터치패드 환경에서 스크롤 시 페이지를 전환함
   useEffect(() => {
     const handleWheel = ({ deltaX, deltaY }: WheelEvent) => {
       if (throttleRef.current) return
@@ -178,13 +185,31 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Props) {
         throttleRef.current = false
       }, SCROLL_THROTTLE)
 
+      const ul = ulRef.current
+      if (!ul) return
+
+      const isVerticallyScrollable = ul.scrollHeight > ul.clientHeight
+      const isHorizontallyScrollable = ul.scrollWidth > ul.clientWidth
+      const atTop = ul.scrollTop <= 0
+      const atBottom = ul.scrollTop + ul.clientHeight >= ul.scrollHeight - 1
+      const atLeft = ul.scrollLeft <= 0
+      const atRight = ul.scrollLeft + ul.clientWidth >= ul.scrollWidth - 1
+
       if (Math.abs(deltaY) >= Math.abs(deltaX)) {
+        if (isVerticallyScrollable && !((deltaY > 0 && atBottom) || (deltaY < 0 && atTop))) {
+          return
+        }
+
         if (deltaY > SCROLL_THRESHOLD) {
           nextPage()
         } else if (deltaY < -SCROLL_THRESHOLD) {
           prevPage()
         }
       } else {
+        if (isHorizontallyScrollable && !((deltaX > 0 && atRight) || (deltaX < 0 && atLeft))) {
+          return
+        }
+
         if (deltaX > SCROLL_THRESHOLD) {
           nextPage()
         } else if (deltaX < -SCROLL_THRESHOLD) {
@@ -195,6 +220,42 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Props) {
     window.addEventListener('wheel', handleWheel, { passive: true })
     return () => window.removeEventListener('wheel', handleWheel)
   }, [nextPage, prevPage])
+
+  // NOTE: 이미지 스크롤 가능할 때 페이지 변경 시 스크롤 위치를 자연스럽게 설정함
+  useEffect(() => {
+    const ul = ulRef.current
+    if (!ul) return
+
+    const isVerticallyScrollable = ul.scrollHeight > ul.clientHeight
+    const isHorizontallyScrollable = ul.scrollWidth > ul.clientWidth
+    if (!isVerticallyScrollable && !isHorizontallyScrollable) return
+
+    const isNavigatingBackward = currentIndex < previousIndexRef.current
+    const touchOrientation = getTouchOrientation()
+    previousIndexRef.current = currentIndex
+
+    if (isNavigatingBackward) {
+      if (touchOrientation === 'vertical') {
+        ul.scrollTo({ top: ul.scrollHeight - ul.clientHeight, left: 0, behavior: 'instant' })
+      } else {
+        ul.scrollTo({ top: 0, left: ul.scrollWidth - ul.clientWidth, behavior: 'instant' })
+      }
+    } else {
+      ul.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+    }
+  }, [currentIndex, getTouchOrientation])
+
+  // NOTE: 페이지 전환 시 스크롤 관성을 방지함
+  useEffect(() => {
+    const ul = ulRef.current
+    if (!ul) return
+
+    ul.style.overflow = 'hidden'
+
+    setTimeout(() => {
+      ul.style.overflow = 'auto'
+    }, 500)
+  }, [currentIndex])
 
   return (
     <ul
