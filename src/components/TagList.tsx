@@ -28,7 +28,7 @@ function TagList({ className, tags, clickable = false }: Props) {
       {tags.map((tag) => {
         const [category, label] = tag.split(':')
         const tagStyle = label ? (tagStyles[category as keyof typeof tagStyles] ?? 'bg-zinc-900') : 'bg-zinc-700'
-        const content = label || category
+        const content = (label || category).replaceAll('_', ' ')
 
         if (clickable) {
           return (
