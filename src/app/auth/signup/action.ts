@@ -1,13 +1,14 @@
 'use server'
 
+import { hash } from 'bcrypt'
+import { cookies } from 'next/headers'
+import { z } from 'zod'
+
 import { SALT_ROUNDS } from '@/constants'
 import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
 import { setAccessTokenCookie, setRefreshTokenCookie } from '@/utils/cookie'
 import { generateRandomNickname, generateRandomProfileImage } from '@/utils/nickname'
-import { hash } from 'bcrypt'
-import { cookies } from 'next/headers'
-import { z } from 'zod'
 
 const schema = z
   .object({

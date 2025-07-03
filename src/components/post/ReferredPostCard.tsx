@@ -1,7 +1,7 @@
-import type { TPost, TReferedPost } from '@/mock/post'
-
 import dayjs from 'dayjs'
 import Link from 'next/link'
+
+import type { TPost, TReferedPost } from '@/mock/post'
 
 import Icon3Dots from '../icons/Icon3Dots'
 import Squircle from '../ui/Squircle'

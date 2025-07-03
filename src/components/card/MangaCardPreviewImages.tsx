@@ -1,8 +1,9 @@
 'use client'
 
-import { Manga } from '@/types/manga'
 import Link from 'next/link'
 import { memo, useEffect, useRef, useState } from 'react'
+
+import { Manga } from '@/types/manga'
 
 import { IconNextPage, IconPrevPage } from '../icons/IconArrows'
 import MangaImage from '../MangaImage'

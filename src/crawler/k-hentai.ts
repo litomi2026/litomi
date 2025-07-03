@@ -1,5 +1,7 @@
-import { Manga } from '@/types/manga'
 import { captureException } from '@sentry/nextjs'
+
+import { translateSearchQuery } from '@/app/(navigation)/search/searchUtils'
+import { Manga } from '@/types/manga'
 
 interface File {
   id: string
@@ -88,10 +90,10 @@ interface Torrent {
 const kHentaiTypeMap = {
   1: '동인지',
   2: '망가',
-  3: '아티스트 CG',
-  4: '게임 CG',
+  3: '아티스트CG',
+  4: '게임CG',
   5: '서양',
-  6: '이미지 모음',
+  6: '이미지모음',
   7: '건전',
   8: '코스프레',
   9: '아시안',
@@ -207,13 +209,14 @@ export async function searchMangasFromKHentai({
   offset,
   categories,
 }: Params3) {
+  const { cleanedSearch, extractedCategories } = parseSearchAndCategories({ categories, search })
+
   const searchParams = new URLSearchParams({
-    search: `language:korean ${search}`,
+    ...(cleanedSearch && { search: translateSearchQuery(cleanedSearch) }),
     ...(nextId && { 'next-id': nextId }),
     ...(sort && { sort }),
     ...(offset && { offset: String(offset) }),
-    ...(categories && { categories }),
-    ...(search && { search }),
+    ...(extractedCategories && { categories: extractedCategories }),
     ...(minViews && { 'min-views': String(minViews) }),
     ...(maxViews && { 'max-views': String(maxViews) }),
     ...(minPages && { 'min-pages': String(minPages) }),
@@ -270,5 +273,41 @@ function convertKHentaiMangaToManga(manga: KHentaiManga): Manga {
   return {
     ...convertKHentaiCommonToManga(manga),
     images: [manga.thumb],
+  }
+}
+
+function extractTypeFilter(searchQuery: string) {
+  const TYPE_PATTERN = /\btype:(\S+)/i
+  const typeMatch = searchQuery.match(TYPE_PATTERN)
+
+  if (!typeMatch) {
+    return {
+      categories: null,
+      cleanedSearch: searchQuery,
+    }
+  }
+
+  const categoriesValue = typeMatch[1] // e.g., "1,2,3"
+  const searchWithoutType = searchQuery.replace(/\btype:\S+/gi, '').trim()
+
+  return {
+    categories: categoriesValue,
+    cleanedSearch: searchWithoutType,
+  }
+}
+
+function parseSearchAndCategories({ categories, search }: { categories?: string; search?: string }) {
+  if (categories || !search) {
+    return {
+      cleanedSearch: search,
+      extractedCategories: categories,
+    }
+  }
+
+  const { categories: extractedCategories, cleanedSearch } = extractTypeFilter(search)
+
+  return {
+    cleanedSearch: extractedCategories ? cleanedSearch : search,
+    extractedCategories: extractedCategories || categories,
   }
 }

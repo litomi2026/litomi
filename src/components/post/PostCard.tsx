@@ -1,6 +1,7 @@
-import { TPost } from '@/mock/post'
 import dayjs from 'dayjs'
 import Link from 'next/link'
+
+import { TPost } from '@/mock/post'
 
 import Icon3Dots from '../icons/Icon3Dots'
 import IconBookmark from '../icons/IconBookmark'

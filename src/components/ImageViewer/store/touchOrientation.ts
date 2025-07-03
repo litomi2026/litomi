@@ -1,6 +1,7 @@
-import { LocalStorageKey } from '@/constants/storage'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+
+import { LocalStorageKey } from '@/constants/storage'
 
 export type TouchOrientation = 'horizontal' | 'vertical'
 

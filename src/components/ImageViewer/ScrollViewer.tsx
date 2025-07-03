@@ -1,13 +1,14 @@
 'use client'
 
+import { useVirtualizer } from '@tanstack/react-virtual'
+import { memo, RefObject, useCallback, useEffect, useRef } from 'react'
+import { useInView } from 'react-intersection-observer'
+
 import { PageView } from '@/components/ImageViewer/store/pageView'
 import { ScreenFit } from '@/components/ImageViewer/store/screenFit'
 import { useImageStatus } from '@/hook/useImageStatus'
 import { type Manga } from '@/types/manga'
 import { getSafeAreaBottom } from '@/utils/browser'
-import { useVirtualizer } from '@tanstack/react-virtual'
-import { memo, RefObject, useCallback, useEffect, useRef } from 'react'
-import { useInView } from 'react-intersection-observer'
 
 import MangaImage from '../MangaImage'
 import { useImageIndexStore } from './store/imageIndex'

@@ -1,9 +1,10 @@
 'use client'
 
+import { useEffect, useState } from 'react'
+
 import { NEXT_PUBLIC_VAPID_PUBLIC_KEY } from '@/constants/env'
 import { sendNotification, subscribeUser, unsubscribeUser } from '@/temp/action'
 import { urlBase64ToUint8Array } from '@/utils/browser'
-import { useEffect, useState } from 'react'
 
 export default function PushNotificationManager() {
   const [isSupported, setIsSupported] = useState(false)

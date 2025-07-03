@@ -1,10 +1,11 @@
 'use client'
 
+import { ComponentProps, useCallback } from 'react'
+import { toast } from 'sonner'
+
 import { Manga } from '@/types/manga'
 import { fetchImageWithRetry } from '@/utils/browser'
 import { getImageSrc } from '@/utils/manga'
-import { ComponentProps, useCallback } from 'react'
-import { toast } from 'sonner'
 
 import { IconDownload } from '../icons/IconDownload'
 

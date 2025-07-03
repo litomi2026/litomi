@@ -1,7 +1,8 @@
+import { ErrorBoundary, Suspense } from '@suspensive/react'
+
 import type { BaseLayoutProps } from '@/types/nextjs'
 
 import BookmarkImportButton, { BookmarkImportButtonSkeleton } from '@/components/BookmarkImportButton'
-import { ErrorBoundary, Suspense } from '@suspensive/react'
 
 import BookmarkTooltip from './BookmarkTooltip'
 import RefreshButton from './RefreshButton'

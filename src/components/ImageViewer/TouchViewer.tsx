@@ -1,11 +1,12 @@
 'use client'
 
+import { memo, useCallback, useEffect, useRef } from 'react'
+
 import { PageView } from '@/components/ImageViewer/store/pageView'
 import { ScreenFit } from '@/components/ImageViewer/store/screenFit'
 import { useTouchOrientationStore } from '@/components/ImageViewer/store/touchOrientation'
 import useImageNavigation from '@/hook/useImageNavigation'
 import { Manga } from '@/types/manga'
-import { memo, useCallback, useEffect, useRef } from 'react'
 
 import MangaImage from '../MangaImage'
 import { useBrightnessStore } from './store/brightness'
@@ -18,7 +19,7 @@ const IMAGE_PREFETCH_AMOUNT = 6
 const IMAGE_FETCH_PRIORITY_THRESHOLD = 3
 const SCROLL_THRESHOLD = 1
 const SCROLL_THROTTLE = 500
-const SCREEN_EDGE_THRESHOLD = 20 // 브라우저 제스처 감지를 위한 화면 가장자리 임계값 (px)
+const SCREEN_EDGE_THRESHOLD = 40 // 브라우저 제스처 감지를 위한 화면 가장자리 임계값 (px)
 
 const screenFitStyle = {
   width: `overflow-y-auto [&_li]:mx-auto [&_li]:w-fit [&_li]:max-w-full [&_li]:first:h-full [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:h-auto`,

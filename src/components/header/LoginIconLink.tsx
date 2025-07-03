@@ -1,5 +1,6 @@
-import { SearchParamKey } from '@/constants/storage'
 import { usePathname } from 'next/navigation'
+
+import { SearchParamKey } from '@/constants/storage'
 
 import IconLogin from '../icons/IconLogin'
 import SelectableLink from '../SelectableLink'

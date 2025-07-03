@@ -1,15 +1,16 @@
 'use client'
 
-import logout from '@/app/auth/logout/action'
-import { QueryKeys } from '@/constants/query'
-import useActionErrorEffect from '@/hook/useActionErrorEffect'
-import useMeQuery from '@/query/useMeQuery'
 import * as amplitude from '@amplitude/analytics-browser'
 import { captureException } from '@sentry/nextjs'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useActionState, useEffect } from 'react'
 import { toast } from 'sonner'
+
+import logout from '@/app/auth/logout/action'
+import { QueryKeys } from '@/constants/query'
+import useActionErrorEffect from '@/hook/useActionErrorEffect'
+import useMeQuery from '@/query/useMeQuery'
 
 import IconLogout from '../icons/IconLogout'
 import Loading from '../ui/Loading'

@@ -1,11 +1,12 @@
 'use server'
 
-import { db } from '@/database/drizzle'
-import { BookmarkSource } from '@/database/schema'
-import { getUserIdFromAccessToken } from '@/utils/cookie'
 import { sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 import { z } from 'zod'
+
+import { db } from '@/database/drizzle'
+import { BookmarkSource } from '@/database/schema'
+import { getUserIdFromAccessToken } from '@/utils/cookie'
 
 const schema = z.object({
   mangaId: z.number(),

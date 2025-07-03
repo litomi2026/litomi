@@ -1,3 +1,6 @@
+import { Metadata } from 'next'
+import { notFound } from 'next/navigation'
+
 import type { BasePageProps } from '@/types/nextjs'
 
 import ImageViewer from '@/components/ImageViewer/ImageViewer'
@@ -8,8 +11,6 @@ import { fetchMangaFromKHentai } from '@/crawler/k-hentai'
 import { harpiMangaIdsDesc, harpiMangas } from '@/database/harpi'
 import { getImageSrc } from '@/utils/manga'
 import { SourceParam, validateId, validateSource } from '@/utils/param'
-import { Metadata } from 'next'
-import { notFound } from 'next/navigation'
 
 export const revalidate = 28800 // 8 hours
 

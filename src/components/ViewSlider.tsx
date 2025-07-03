@@ -1,9 +1,10 @@
 'use client'
 
-import { ViewCookie } from '@/utils/param'
 import Cookies from 'js-cookie'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+
+import { ViewCookie } from '@/utils/param'
 
 const VIEWS = [
   [ViewCookie.CARD, '카드'],

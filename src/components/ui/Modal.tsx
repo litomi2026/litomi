@@ -1,8 +1,9 @@
 'use client'
 
-import useIsMounted from '@/hook/useIsMounted'
 import { type MouseEvent, type ReactNode, type TouchEvent, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
+
+import useIsMounted from '@/hook/useIsMounted'
 
 import IconX from '../icons/IconX'
 

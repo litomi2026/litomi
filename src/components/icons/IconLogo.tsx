@@ -1,5 +1,6 @@
-import logoImage from '@/images/logo.webp'
 import Image from 'next/image'
+
+import logoImage from '@/images/logo.webp'
 
 type Props = {
   className?: string

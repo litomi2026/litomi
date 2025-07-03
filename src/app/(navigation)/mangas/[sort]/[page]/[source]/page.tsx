@@ -1,5 +1,6 @@
-import { BasePageProps } from '@/types/nextjs'
 import { redirect } from 'next/navigation'
+
+import { BasePageProps } from '@/types/nextjs'
 
 export const dynamic = 'error'
 

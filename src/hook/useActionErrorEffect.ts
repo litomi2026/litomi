@@ -1,7 +1,8 @@
-import { QueryKeys } from '@/constants/query'
 import * as amplitude from '@amplitude/analytics-browser'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
+
+import { QueryKeys } from '@/constants/query'
 
 type Props<ErrorType> = {
   status?: number

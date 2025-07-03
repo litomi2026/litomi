@@ -1,6 +1,7 @@
+import { cookies } from 'next/headers'
+
 import selectBookmarks from '@/sql/selectBookmarks'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
-import { cookies } from 'next/headers'
 
 export type ResponseApiBookmark = {
   mangaIds: number[]

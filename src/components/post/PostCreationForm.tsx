@@ -1,9 +1,10 @@
 'use client'
 
-import useMeQuery from '@/query/useMeQuery'
 import { useState } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
 import { toast } from 'sonner'
+
+import useMeQuery from '@/query/useMeQuery'
 
 import LoginLink from '../LoginLink'
 import Squircle from '../ui/Squircle'

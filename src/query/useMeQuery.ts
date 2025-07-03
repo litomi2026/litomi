@@ -1,8 +1,9 @@
-import { ResponseApiMe } from '@/app/api/me/route'
-import { QueryKeys } from '@/constants/query'
 import * as amplitude from '@amplitude/analytics-browser'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { useEffect } from 'react'
+
+import { ResponseApiMe } from '@/app/api/me/route'
+import { QueryKeys } from '@/constants/query'
 
 export default function useMeQuery() {
   const result = useSuspenseQuery({

@@ -1,6 +1,7 @@
-import { useImageIndexStore } from '@/components/ImageViewer/store/imageIndex'
 import { useCallback, useEffect } from 'react'
 import { toast } from 'sonner'
+
+import { useImageIndexStore } from '@/components/ImageViewer/store/imageIndex'
 
 type Params = {
   maxIndex: number

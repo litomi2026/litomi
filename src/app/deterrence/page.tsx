@@ -1,6 +1,7 @@
+import Link from 'next/link'
+
 import IconLogo from '@/components/icons/IconLogo'
 import { SHORT_NAME } from '@/constants'
-import Link from 'next/link'
 
 export default async function Page() {
   return (

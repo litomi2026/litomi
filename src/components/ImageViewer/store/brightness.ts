@@ -1,6 +1,7 @@
-import { SessionStorageKey } from '@/constants/storage'
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
+
+import { SessionStorageKey } from '@/constants/storage'
 
 type Store = {
   brightness: number

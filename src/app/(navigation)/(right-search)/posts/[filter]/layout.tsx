@@ -1,11 +1,12 @@
+import { Suspense } from '@suspensive/react'
+import Link from 'next/link'
+import { notFound } from 'next/navigation'
+
 import type { BaseLayoutProps } from '@/types/nextjs'
 
 import PostCreationForm, { PostCreationFormSkeleton } from '@/components/post/PostCreationForm'
 import TopNavigation from '@/components/TopNavigation'
 import { validatePostFilter } from '@/utils/param'
-import { Suspense } from '@suspensive/react'
-import Link from 'next/link'
-import { notFound } from 'next/navigation'
 
 export default async function Layout({ params, children }: BaseLayoutProps) {
   const { filter } = await params

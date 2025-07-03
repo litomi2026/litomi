@@ -1,7 +1,8 @@
-import GuestOnly from '@/components/GuestOnly'
-import IconLogo from '@/components/icons/IconLogo'
 import { ErrorBoundary, Suspense } from '@suspensive/react'
 import Link from 'next/link'
+
+import GuestOnly from '@/components/GuestOnly'
+import IconLogo from '@/components/icons/IconLogo'
 
 import LoginForm, { LoginFormSkeleton } from './LoginForm'
 

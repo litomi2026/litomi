@@ -1,3 +1,6 @@
+import { Suspense } from '@suspensive/react'
+import dayjs from 'dayjs'
+
 import Icon3Dots from '@/components/icons/Icon3Dots'
 import IconBookmark from '@/components/icons/IconBookmark'
 import IconChart from '@/components/icons/IconChart'
@@ -9,8 +12,6 @@ import PostImages from '@/components/post/PostImages'
 import ReferredPostCard from '@/components/post/ReferredPostCard'
 import Squircle from '@/components/ui/Squircle'
 import { type TPost } from '@/mock/post'
-import { Suspense } from '@suspensive/react'
-import dayjs from 'dayjs'
 
 import FollowButton from './FollowButton'
 
