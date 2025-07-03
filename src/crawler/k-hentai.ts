@@ -135,6 +135,8 @@ const koreanToEnglishMap: Record<string, string> = {
   여: 'female',
   남성: 'male',
   남: 'male',
+  기타: 'other',
+  혼합: 'mixed',
   작가: 'artist',
   그룹: 'group',
   캐릭터: 'character',

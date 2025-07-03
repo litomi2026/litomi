@@ -8,6 +8,10 @@ const tagStyles = {
   female: 'bg-red-700',
   남: 'bg-blue-700',
   여: 'bg-red-700',
+  mixed: 'bg-purple-700',
+  혼합: 'bg-purple-700',
+  other: 'bg-zinc-700',
+  기타: 'bg-zinc-700',
 }
 
 type Props = {
@@ -23,7 +27,7 @@ function TagList({ className, tags, clickable = false }: Props) {
     <ul className={className}>
       {tags.map((tag) => {
         const [category, label] = tag.split(':')
-        const tagStyle = tagStyles[category as keyof typeof tagStyles] ?? 'bg-zinc-700'
+        const tagStyle = tagStyles[category as keyof typeof tagStyles] ?? 'bg-zinc-900'
         const content = label || category
 
         if (clickable) {
