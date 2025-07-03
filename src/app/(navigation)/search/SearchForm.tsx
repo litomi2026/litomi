@@ -136,53 +136,39 @@ export default function SearchForm({ className = '' }: Props) {
           hover:border-zinc-500 focus-within:border-zinc-400 focus-within:shadow-lg focus-within:shadow-zinc-400/30"
         onSubmit={onSubmit}
       >
-        <div className="relative flex-1 flex items-center">
-          <svg
-            className="absolute left-3 w-5 h-5 text-zinc-400 pointer-events-none"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-            />
-          </svg>
-          <input
-            aria-autocomplete="list"
-            aria-controls="search-suggestions"
-            aria-label="검색어 입력"
-            className="
-            flex-1 bg-transparent pl-10 pr-3 py-2 text-foreground
+        <input
+          aria-autocomplete="list"
+          aria-controls="search-suggestions"
+          aria-label="검색어 입력"
+          className="
+            flex-1 bg-transparent px-3 py-2 text-foreground
             placeholder-zinc-500
             focus:outline-none
           "
-            onChange={handleInputChange}
-            onFocus={handleFocus}
-            onKeyDown={handleKeyDown}
-            placeholder="검색어를 입력하세요"
-            ref={inputRef}
-            type="search"
-            value={keyword}
-          />
-        </div>
+          onChange={handleInputChange}
+          onFocus={handleFocus}
+          onKeyDown={handleKeyDown}
+          placeholder="검색어를 입력하세요"
+          ref={inputRef}
+          type="search"
+          value={keyword}
+        />
         <button
           aria-label="검색 실행"
           className="
-          px-4 py-2 shrink-0 font-medium
-          rounded-l-none transition-all duration-200
-          bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-800
-          text-zinc-200 hover:text-white
-          aria-disabled:opacity-60
-          focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-inset
-        "
+            px-4 py-2 shrink-0 font-medium
+            rounded-l-none transition-all duration-200
+            bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-800
+            text-zinc-200 hover:text-white
+            aria-disabled:opacity-60
+            focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-inset
+            min-w-16 flex items-center justify-center
+          "
           disabled={isPending}
           type="submit"
         >
           {isPending ? (
-            <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+            <svg className="animate-spin w-5" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" fill="none" r="10" stroke="currentColor" strokeWidth="4" />
               <path
                 className="opacity-75"
@@ -191,7 +177,7 @@ export default function SearchForm({ className = '' }: Props) {
               />
             </svg>
           ) : (
-            '검색'
+            <span className="block">검색</span>
           )}
         </button>
       </form>
