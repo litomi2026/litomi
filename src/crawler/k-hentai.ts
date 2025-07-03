@@ -209,7 +209,7 @@ export async function searchMangasFromKHentai({
   categories,
 }: Params3) {
   const searchParams = new URLSearchParams({
-    search: `language:korean ${search}`,
+    ...(search && { search }),
     ...(nextId && { 'next-id': nextId }),
     ...(sort && { sort }),
     ...(offset && { offset: String(offset) }),
