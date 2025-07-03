@@ -12,7 +12,7 @@ import { SourceParam, ViewCookie } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 const SearchSchema = z.object({
-  query: z.string().trim().default(''),
+  query: z.string().trim().optional(),
   'min-view': z.coerce.number().int().positive().optional(),
   'max-view': z.coerce.number().int().positive().optional(),
   'min-page': z.coerce.number().int().positive().optional(),
@@ -38,7 +38,6 @@ export default async function Page({ searchParams }: BasePageProps) {
     'min-page': minPage,
     'max-page': maxPage,
     skip,
-    category,
     view = 'card',
   } = SearchSchema.parse({
     ...getJSONCookie(await cookies(), ['view']),
@@ -46,7 +45,7 @@ export default async function Page({ searchParams }: BasePageProps) {
   })
 
   const mangas = await searchMangasFromKHentai({
-    search: query,
+    query,
     minViews: minView,
     maxViews: maxView,
     minPages: minPage,
@@ -56,7 +55,6 @@ export default async function Page({ searchParams }: BasePageProps) {
     sort: sort,
     nextId: afterId,
     offset: skip,
-    categories: category,
   })
 
   if (!mangas) {

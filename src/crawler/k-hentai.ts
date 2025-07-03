@@ -1,6 +1,6 @@
 import { captureException } from '@sentry/nextjs'
 
-import { translateSearchQuery } from '@/app/(navigation)/search/searchUtils'
+import { convertQueryKey } from '@/app/(navigation)/search/searchUtils'
 import { Manga } from '@/types/manga'
 
 interface File {
@@ -90,10 +90,10 @@ interface Torrent {
 const kHentaiTypeMap = {
   1: '동인지',
   2: '망가',
-  3: '아티스트CG',
-  4: '게임CG',
+  3: '아티스트 CG',
+  4: '게임 CG',
   5: '서양',
-  6: '이미지모음',
+  6: '이미지 모음',
   7: '건전',
   8: '코스프레',
   9: '아시안',
@@ -101,8 +101,49 @@ const kHentaiTypeMap = {
   11: '비공개',
 } as const
 
+const typeNameToNumber: Record<string, string> = {
+  동인지: '1',
+  doujinshi: '1',
+  망가: '2',
+  manga: '2',
+  아티스트cg: '3',
+  artistcg: '3',
+  'artist cg': '3',
+  게임cg: '4',
+  gamecg: '4',
+  'game cg': '4',
+  서양: '5',
+  western: '5',
+  이미지모음: '6',
+  imageset: '6',
+  'image set': '6',
+  건전: '7',
+  'non-h': '7',
+  코스프레: '8',
+  cosplay: '8',
+  아시안: '9',
+  asian: '9',
+  기타: '10',
+  misc: '10',
+  비공개: '11',
+  private: '11',
+}
+
+const koreanToEnglishMap: Record<string, string> = {
+  언어: 'language',
+  여성: 'female',
+  여: 'female',
+  남성: 'male',
+  남: 'male',
+  작가: 'artist',
+  그룹: 'group',
+  캐릭터: 'character',
+  시리즈: 'series',
+  종류: 'type',
+}
+
 type Params3 = {
-  search: string
+  query?: string
   minViews?: number
   maxViews?: number
   minPages?: number
@@ -112,7 +153,6 @@ type Params3 = {
   sort?: 'id_asc' | 'popular' | 'random'
   nextId?: string
   offset?: number
-  categories?: string
 }
 
 export async function fetchMangaFromKHentai({ id }: { id: number }) {
@@ -197,7 +237,7 @@ export async function fetchRandomMangasFromKHentai() {
 }
 
 export async function searchMangasFromKHentai({
-  search,
+  query,
   minViews,
   maxViews,
   minPages,
@@ -207,16 +247,17 @@ export async function searchMangasFromKHentai({
   sort,
   nextId,
   offset,
-  categories,
 }: Params3) {
-  const { cleanedSearch, extractedCategories } = parseSearchAndCategories({ categories, search })
+  const lowerEnglishQuery = convertQueryKey(translateQuery(query?.toLowerCase()))
+  const categories = getCategories(lowerEnglishQuery)
+  const search = lowerEnglishQuery?.replace(/\btype:\S+/gi, '').trim()
 
   const searchParams = new URLSearchParams({
-    ...(cleanedSearch && { search: translateSearchQuery(cleanedSearch) }),
+    ...(search && { search }),
     ...(nextId && { 'next-id': nextId }),
     ...(sort && { sort }),
     ...(offset && { offset: String(offset) }),
-    ...(extractedCategories && { categories: extractedCategories }),
+    ...(categories && { categories }),
     ...(minViews && { 'min-views': String(minViews) }),
     ...(maxViews && { 'max-views': String(maxViews) }),
     ...(minPages && { 'min-pages': String(minPages) }),
@@ -276,43 +317,32 @@ function convertKHentaiMangaToManga(manga: KHentaiManga): Manga {
   }
 }
 
-function extractCategoryFromSearch(searchQuery: string) {
-  const TYPE_PATTERN = /\btype:(\S+)/i
-  const typeMatch = searchQuery.match(TYPE_PATTERN)
+function getCategories(query?: string) {
+  const typeMatch = query?.match(/\btype:(\S+)/i)
+  if (!typeMatch) return
 
-  if (!typeMatch) {
-    return {
-      categories: null,
-      cleanedSearch: searchQuery,
-    }
-  }
-
-  const categoriesValue = typeMatch[1] // e.g., "1,2,3"
-  const searchWithoutType = searchQuery.replace(/\btype:\S+/gi, '').trim()
-
-  return {
-    categories: convertedCategories || null,
-    cleanedSearch: searchWithoutType,
-  }
+  return typeMatch[1]
+    .split(',')
+    .map((value) => {
+      const normalized = value.trim().toLowerCase().replace(/\s+/g, '')
+      if (/^\d+$/.test(normalized)) {
+        return normalized
+      }
+      return typeNameToNumber[normalized] || value
+    })
+    .filter(Boolean)
+    .join(',')
 }
 
-function parseSearchAndCategories({ categories, search }: { categories?: string; search?: string }) {
-  const lowerSearch = search?.toLowerCase()
-  const lowerCategories = categories?.toLowerCase()
+function translateQuery(query?: string) {
+  if (!query) return
 
-  if (lowerCategories || !lowerSearch) {
-    return {
-      cleanedSearch: lowerSearch ? translateKoreanToEnglish(lowerSearch) : lowerSearch,
-      extractedCategories: lowerCategories,
-    }
-  }
+  let translatedQuery = query
 
-  const { categories: extractedCategories, cleanedSearch } = extractCategoryFromSearch(lowerSearch)
+  Object.entries(koreanToEnglishMap).forEach(([korean, english]) => {
+    const regex = new RegExp(`${korean}(?=:|\\s|$)`, 'gi')
+    translatedQuery = translatedQuery.replace(regex, english)
+  })
 
-  return {
-    cleanedSearch: extractedCategories
-      ? translateKoreanToEnglish(cleanedSearch)
-      : translateKoreanToEnglish(lowerSearch),
-    extractedCategories: extractedCategories || lowerCategories,
-  }
+  return translatedQuery
 }

@@ -4,7 +4,9 @@ import { SEARCH_FILTERS } from './searchConstants'
  * Translates user-friendly search labels to API values
  * Example: "series:naruto" -> "parody:naruto"
  */
-export function translateSearchQuery(query: string): string {
+export function convertQueryKey(query?: string) {
+  if (!query) return
+
   let translatedQuery = query
 
   const labelToValueMap = SEARCH_FILTERS.reduce(
