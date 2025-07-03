@@ -25,7 +25,7 @@ function MangaMetadataList({ label, items, filterType, className = '' }: Props) 
             href={getSearchLink(filterType, item)}
             key={item}
           >
-            <>{item}</>
+            {item.replaceAll('_', ' ')}
             {idx < items.length - 1 && ','}
           </Link>
         ))}
