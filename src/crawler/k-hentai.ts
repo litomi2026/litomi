@@ -214,7 +214,6 @@ export async function searchMangasFromKHentai({
     ...(sort && { sort }),
     ...(offset && { offset: String(offset) }),
     ...(categories && { categories }),
-    ...(search && { search }),
     ...(minViews && { 'min-views': String(minViews) }),
     ...(maxViews && { 'max-views': String(maxViews) }),
     ...(minPages && { 'min-pages': String(minPages) }),
