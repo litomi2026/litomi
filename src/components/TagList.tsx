@@ -33,7 +33,7 @@ function TagList({ className, tags, clickable = false }: Props) {
         if (clickable) {
           return (
             <li className={`${tagStyle} hover:opacity-80 focus:opacity-80 transition-opacity`} key={tag}>
-              <Link className="block" href={getSearchLink(label ? category : 'other', content.replaceAll(' ', '_'))}>
+              <Link className="block" href={getSearchLink(label ? category : 'other', content)}>
                 {content}
               </Link>
             </li>
