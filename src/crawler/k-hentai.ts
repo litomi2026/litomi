@@ -276,7 +276,7 @@ function convertKHentaiMangaToManga(manga: KHentaiManga): Manga {
   }
 }
 
-function extractTypeFilter(searchQuery: string) {
+function extractCategoryFromSearch(searchQuery: string) {
   const TYPE_PATTERN = /\btype:(\S+)/i
   const typeMatch = searchQuery.match(TYPE_PATTERN)
 
@@ -291,23 +291,28 @@ function extractTypeFilter(searchQuery: string) {
   const searchWithoutType = searchQuery.replace(/\btype:\S+/gi, '').trim()
 
   return {
-    categories: categoriesValue,
+    categories: convertedCategories || null,
     cleanedSearch: searchWithoutType,
   }
 }
 
 function parseSearchAndCategories({ categories, search }: { categories?: string; search?: string }) {
-  if (categories || !search) {
+  const lowerSearch = search?.toLowerCase()
+  const lowerCategories = categories?.toLowerCase()
+
+  if (lowerCategories || !lowerSearch) {
     return {
-      cleanedSearch: search,
-      extractedCategories: categories,
+      cleanedSearch: lowerSearch ? translateKoreanToEnglish(lowerSearch) : lowerSearch,
+      extractedCategories: lowerCategories,
     }
   }
 
-  const { categories: extractedCategories, cleanedSearch } = extractTypeFilter(search)
+  const { categories: extractedCategories, cleanedSearch } = extractCategoryFromSearch(lowerSearch)
 
   return {
-    cleanedSearch: extractedCategories ? cleanedSearch : search,
-    extractedCategories: extractedCategories || categories,
+    cleanedSearch: extractedCategories
+      ? translateKoreanToEnglish(cleanedSearch)
+      : translateKoreanToEnglish(lowerSearch),
+    extractedCategories: extractedCategories || lowerCategories,
   }
 }
