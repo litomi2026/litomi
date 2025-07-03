@@ -12,6 +12,6 @@ export const SEARCH_FILTERS: SearchFilter[] = [
   { label: 'artist:', description: '작가' },
   { label: 'group:', description: '그룹' },
   { label: 'character:', description: '캐릭터' },
-  { label: 'series:', value: 'parody', description: '시리즈' },
-  { label: 'type:', value: 'categories', description: '종류' },
+  { label: 'series:', value: 'parody:', description: '시리즈' },
+  { label: 'type:', description: '종류' },
 ]

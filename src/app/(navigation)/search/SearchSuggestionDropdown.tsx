@@ -6,7 +6,7 @@ type Props = {
   suggestions: SearchFilter[]
   selectedIndex: number
   showHeader: boolean
-  onSelect: (label: string) => void
+  onSelect: (filter: SearchFilter) => void
   onMouseEnter: (index: number) => void
 }
 
@@ -32,7 +32,7 @@ function SearchSuggestionDropdown({ suggestions, selectedIndex, showHeader, onSe
                     : 'text-zinc-300 hover:bg-zinc-800 hover:text-white'
                 }
               `}
-              onClick={() => onSelect(suggestion.label)}
+              onClick={() => onSelect(suggestion)}
               onMouseEnter={() => onMouseEnter(index)}
               type="button"
             >

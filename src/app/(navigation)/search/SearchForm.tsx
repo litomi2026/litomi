@@ -3,7 +3,7 @@
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { FormEvent, lazy, Suspense, useCallback, useEffect, useRef, useState, useTransition } from 'react'
 
-import { SEARCH_FILTERS } from './searchConstants'
+import { SEARCH_FILTERS, type SearchFilter } from './searchConstants'
 import useSearchSuggestions from './useSearchSuggestions'
 
 // NOTE: 초기 bundle 크기를 줄이기 위해 lazy import 사용
@@ -35,9 +35,9 @@ export default function SearchForm({ className = '' }: Props) {
   } = useSearchSuggestions(keyword)
 
   const selectSuggestion = useCallback(
-    (filter: string) => {
+    (filter: SearchFilter) => {
       const words = keyword.split(' ')
-      words[words.length - 1] = filter
+      words[words.length - 1] = filter.label
       const newKeyword = words.join(' ')
       setKeyword(newKeyword)
       setShowSuggestions(false)
@@ -68,7 +68,7 @@ export default function SearchForm({ className = '' }: Props) {
       case 'Enter':
         if (selectedIndex >= 0) {
           e.preventDefault()
-          selectSuggestion(filteredSuggestions[selectedIndex].label)
+          selectSuggestion(filteredSuggestions[selectedIndex])
         }
         break
       case 'Escape':

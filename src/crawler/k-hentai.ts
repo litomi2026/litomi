@@ -1,5 +1,6 @@
 import { captureException } from '@sentry/nextjs'
 
+import { translateSearchQuery } from '@/app/(navigation)/search/searchUtils'
 import { Manga } from '@/types/manga'
 
 interface File {
@@ -208,12 +209,24 @@ export async function searchMangasFromKHentai({
   offset,
   categories,
 }: Params3) {
+  let processedSearch = search
+  let finalCategories = categories
+
+  if (search && !categories) {
+    const { categories: extractedCategories, cleanedSearch } = extractTypeFilter(search)
+
+    if (extractedCategories) {
+      finalCategories = extractedCategories
+      processedSearch = cleanedSearch
+    }
+  }
+
   const searchParams = new URLSearchParams({
-    ...(search && { search }),
+    ...(processedSearch && { search: translateSearchQuery(processedSearch) }),
     ...(nextId && { 'next-id': nextId }),
     ...(sort && { sort }),
     ...(offset && { offset: String(offset) }),
-    ...(categories && { categories }),
+    ...(finalCategories && { categories: finalCategories }),
     ...(minViews && { 'min-views': String(minViews) }),
     ...(maxViews && { 'max-views': String(maxViews) }),
     ...(minPages && { 'min-pages': String(minPages) }),
@@ -270,5 +283,26 @@ function convertKHentaiMangaToManga(manga: KHentaiManga): Manga {
   return {
     ...convertKHentaiCommonToManga(manga),
     images: [manga.thumb],
+  }
+}
+
+// NOTE: `type:xxx` 파싱
+function extractTypeFilter(searchQuery: string) {
+  const TYPE_PATTERN = /\btype:(\S+)/i
+  const typeMatch = searchQuery.match(TYPE_PATTERN)
+
+  if (!typeMatch) {
+    return {
+      categories: null,
+      cleanedSearch: searchQuery,
+    }
+  }
+
+  const categoriesValue = typeMatch[1] // e.g., "1,2,3"
+  const searchWithoutType = searchQuery.replace(/\btype:\S+/gi, '').trim()
+
+  return {
+    categories: categoriesValue,
+    cleanedSearch: searchWithoutType,
   }
 }
