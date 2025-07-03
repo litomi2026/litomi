@@ -17,7 +17,8 @@ export default function SearchForm({ className = '' }: Props) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const [keyword, setKeyword] = useState(() => searchParams.get('query') ?? '')
+  const query = searchParams.get('query') ?? ''
+  const [keyword, setKeyword] = useState(() => query)
   const [isPending, startTransition] = useTransition()
 
   const inputRef = useRef<HTMLInputElement>(null)
@@ -128,11 +129,16 @@ export default function SearchForm({ className = '' }: Props) {
     return () => document.removeEventListener('mousedown', handleOutsideClick)
   }, [setShowSuggestions])
 
+  // NOTE: URL의 query 값이 변경되면 검색어도 업데이트함
+  useEffect(() => {
+    setKeyword(query)
+  }, [query])
+
   return (
     <div className={`relative ${className}`}>
       <form
         className="flex bg-zinc-900 border-2 border-zinc-700 rounded-xl text-zinc-400 text-base
-          overflow-hidden transition-all duration-200
+          overflow-hidden transition duration-200
           hover:border-zinc-500 focus-within:border-zinc-400 focus-within:shadow-lg focus-within:shadow-zinc-400/30"
         onSubmit={onSubmit}
       >
@@ -145,6 +151,7 @@ export default function SearchForm({ className = '' }: Props) {
             placeholder-zinc-500
             focus:outline-none
           "
+          name="query"
           onChange={handleInputChange}
           onFocus={handleFocus}
           onKeyDown={handleKeyDown}
@@ -181,7 +188,6 @@ export default function SearchForm({ className = '' }: Props) {
           )}
         </button>
       </form>
-
       {showSuggestions && filteredSuggestions.length > 0 && (
         <Suspense fallback={null}>
           <div ref={suggestionsRef}>

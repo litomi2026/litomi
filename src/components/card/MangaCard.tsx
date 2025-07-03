@@ -13,6 +13,8 @@ import TagList from '../TagList'
 import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from './BookmarkButton'
 import ImageDownloadButton from './ImageDownloadButton'
 import MangaCardImage from './MangaCardImage'
+import MangaMetadataItem from './MangaMetadataItem'
+import MangaMetadataList from './MangaMetadataList'
 
 type Props = {
   manga: Manga
@@ -46,16 +48,17 @@ function MangaCard({ manga, index = 0, source, className = '' }: Props) {
           <Link href={viewerLink}>
             <h4 className="line-clamp-3 font-bold text-base leading-5 min-w-0">{title}</h4>
           </Link>
-          {type && <div>종류 {type}</div>}
-          {artists && artists.length > 0 && <div className="line-clamp-1">작가 {artists.join(', ')}</div>}
-          {group && group.length > 0 && <div className="line-clamp-1">그룹 {group.join(', ')}</div>}
-          {series && series.length > 0 && <div className="line-clamp-1">시리즈 {series.join(', ')}</div>}
-          {characters && characters.length > 0 && <div className="line-clamp-1">캐릭터 {characters.join(', ')}</div>}
+          <MangaMetadataItem filterType="type" label="종류" value={type} />
+          <MangaMetadataList filterType="artist" items={artists} label="작가" />
+          <MangaMetadataList filterType="group" items={group} label="그룹" />
+          <MangaMetadataList filterType="series" items={series} label="시리즈" />
+          <MangaMetadataList filterType="character" items={characters} label="캐릭터" />
           {translatedTags && translatedTags.length > 0 && (
-            <div className="flex gap-2 whitespace-nowrap">
-              태그
+            <div className="flex gap-2">
+              <span className="whitespace-nowrap">태그</span>
               <TagList
                 className="flex flex-wrap gap-1 font-semibold [&_li]:rounded [&_li]:px-1 [&_li]:text-foreground"
+                clickable
                 tags={translatedTags}
               />
             </div>
