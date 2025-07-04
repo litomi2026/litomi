@@ -129,7 +129,7 @@ export default function AdvancedFilters() {
       })
 
       startTransition(() => {
-        router.replace(`${pathname}?${params}`, { scroll: false })
+        router.replace(`${pathname}?${params}`)
         setShowFilters(false)
       })
     },
@@ -143,7 +143,7 @@ export default function AdvancedFilters() {
     FILTER_KEYS.forEach((key) => params.delete(key))
 
     startTransition(() => {
-      router.replace(`${pathname}?${params}`, { scroll: false })
+      router.replace(`${pathname}?${params}`)
     })
   }, [pathname, router, searchParams])
 
