@@ -1,15 +1,11 @@
 import { cookies } from 'next/headers'
-import { notFound } from 'next/navigation'
 import { z } from 'zod'
 
-import MangaCard from '@/components/card/MangaCard'
-import MangaCardImage from '@/components/card/MangaCardImage'
-import { searchMangasFromKHentai } from '@/crawler/k-hentai'
 import { BasePageProps } from '@/types/nextjs'
 import { getJSONCookie } from '@/utils/cookie'
-import { getViewerLink } from '@/utils/manga'
-import { SourceParam, ViewCookie } from '@/utils/param'
-import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
+import { ViewCookie } from '@/utils/param'
+
+import SearchResults from './SearchResults'
 
 const SearchSchema = z.object({
   query: z.string().trim().optional(),
@@ -22,13 +18,13 @@ const SearchSchema = z.object({
   sort: z.enum(['random', 'id_asc', 'popular']).optional(),
   'after-id': z.string().optional(),
   skip: z.coerce.number().int().nonnegative().optional(),
-  category: z.string().optional(),
-  view: z.enum(['card', 'img']).optional(),
+  view: z.enum(['img', 'card']).default('card'),
 })
 
 export default async function Page({ searchParams }: BasePageProps) {
+  const cookieStore = await cookies()
+
   const {
-    query,
     from,
     until,
     sort,
@@ -38,30 +34,13 @@ export default async function Page({ searchParams }: BasePageProps) {
     'min-page': minPage,
     'max-page': maxPage,
     skip,
-    view = 'card',
+    view,
   } = SearchSchema.parse({
-    ...getJSONCookie(await cookies(), ['view']),
+    ...getJSONCookie(cookieStore, ['view']),
     ...(await searchParams),
   })
 
-  const mangas = await searchMangasFromKHentai({
-    query,
-    minViews: minView,
-    maxViews: maxView,
-    minPages: minPage,
-    maxPages: maxPage,
-    startDate: from,
-    endDate: until,
-    sort: sort,
-    nextId: afterId,
-    offset: skip,
-  })
-
-  if (!mangas) {
-    notFound()
-  }
-
-  const hasActiveFilters = !!(from ?? until ?? sort ?? afterId ?? minView ?? maxView ?? minPage ?? maxPage ?? skip)
+  const hasActiveFilters = Boolean(from ?? until ?? sort ?? afterId ?? minView ?? maxView ?? minPage ?? maxPage ?? skip)
 
   return (
     <>
@@ -95,22 +74,7 @@ export default async function Page({ searchParams }: BasePageProps) {
           </p>
         </div>
       )}
-
-      <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2 grow`}>
-        {mangas.map((manga, i) =>
-          view === ViewCookie.IMAGE ? (
-            <MangaCardImage
-              className="bg-zinc-900 rounded-xl border-2 relative [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-cover [&_img]:aspect-[3/4]"
-              href={getViewerLink(manga.id, SourceParam.K_HENTAI)}
-              index={i}
-              key={manga.id}
-              manga={manga}
-            />
-          ) : (
-            <MangaCard index={i} key={manga.id} manga={manga} source={SourceParam.K_HENTAI} />
-          ),
-        )}
-      </ul>
+      <SearchResults view={view as ViewCookie} />
     </>
   )
 }
