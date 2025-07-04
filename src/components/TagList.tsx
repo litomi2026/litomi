@@ -6,15 +6,20 @@ import { memo } from 'react'
 
 import { toggleSearchFilter } from './card/utils'
 
+const blue = 'bg-blue-800'
+const red = 'bg-red-800'
+const purple = 'bg-purple-800'
+const zinc = 'bg-zinc-700'
+
 const tagStyles = {
-  male: 'bg-blue-700',
-  female: 'bg-red-700',
-  남: 'bg-blue-700',
-  여: 'bg-red-700',
-  mixed: 'bg-purple-700',
-  혼합: 'bg-purple-700',
-  other: 'bg-zinc-700',
-  기타: 'bg-zinc-700',
+  male: blue,
+  female: red,
+  남: blue,
+  여: red,
+  mixed: purple,
+  혼합: purple,
+  other: zinc,
+  기타: zinc,
 }
 
 type Props = {
@@ -48,7 +53,7 @@ function TagList({ className, tags, clickable = false }: Props) {
 
           return (
             <li
-              className={`${tagStyle} hover:opacity-80 focus:opacity-80 transition-opacity ${isActive ? 'ring-2 ring-brand-end' : ''}`}
+              className={`${tagStyle} hover:underline active:opacity-80 transition ${isActive ? 'ring-2 ring-brand-end' : ''}`}
               key={tag}
             >
               <Link className="block" href={`/search?query=${encodeURIComponent(newQuery)}`}>
