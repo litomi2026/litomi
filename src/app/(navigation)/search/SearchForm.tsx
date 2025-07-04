@@ -8,7 +8,7 @@ import IconSpinner from '@/components/icons/IconSpinner'
 import { SEARCH_FILTERS, type SearchFilter } from './searchConstants'
 import useSearchSuggestions from './useSearchSuggestions'
 
-// NOTE: 초기 bundle 크기를 줄이기 위해 lazy import 사용
+// NOTE: 드롭다운은 사용자가 검색어를 입력할 때만 표시되므로 초기 bundle 크기를 줄이기 위해 lazy import 사용
 const SearchSuggestionDropdown = lazy(() => import('./SearchSuggestionDropdown'))
 
 type Props = {

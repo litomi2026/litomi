@@ -18,3 +18,57 @@ export const SEARCH_FILTERS: SearchFilter[] = [
   { label: 'type:', description: '종류' },
   { label: 'id:', value: 'gid:', description: 'ID' },
 ]
+
+export const FILTER_CONFIG = {
+  sort: {
+    type: 'select' as const,
+    label: '정렬',
+    options: [
+      { value: '', label: '기본' },
+      { value: 'random', label: '랜덤' },
+      { value: 'id_asc', label: '오래된 순' },
+      { value: 'popular', label: '인기순' },
+    ],
+  },
+  'min-view': {
+    type: 'number' as const,
+    label: '조회수 범위',
+    min: 0,
+    max: Number.MAX_SAFE_INTEGER,
+  },
+  'max-view': {
+    type: 'number' as const,
+    label: '조회수 범위',
+    min: 0,
+    max: Number.MAX_SAFE_INTEGER,
+  },
+  'min-page': {
+    type: 'number' as const,
+    label: '페이지 수 범위',
+    min: 1,
+    max: 10000,
+  },
+  'max-page': {
+    type: 'number' as const,
+    label: '페이지 수 범위',
+    min: 1,
+    max: 10000,
+  },
+  from: {
+    type: 'date' as const,
+    label: '날짜 범위',
+    placeholder: '시작일',
+  },
+  to: {
+    type: 'date' as const,
+    label: '날짜 범위',
+    placeholder: '종료일',
+  },
+} as const
+
+export const FILTER_KEYS = ['sort', 'min-view', 'max-view', 'min-page', 'max-page', 'from', 'to'] as const
+
+export type FilterKey = (typeof FILTER_KEYS)[number]
+export type FilterState = Partial<Record<FilterKey, string>>
+
+export const isDateFilter = (key: FilterKey) => FILTER_CONFIG[key].type === 'date'

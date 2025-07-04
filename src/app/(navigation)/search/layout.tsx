@@ -5,7 +5,7 @@ import type { BaseLayoutProps } from '@/types/nextjs'
 import ViewToggle from '@/components/ViewSlider'
 import { ViewCookie } from '@/utils/param'
 
-import AdvancedFilters from './AdvancedFilters'
+import FilterButton from './FilterButton'
 import ScrollReset from './ScrollReset'
 import SearchForm from './SearchForm'
 
@@ -22,7 +22,7 @@ export default async function Layout({ children }: BaseLayoutProps) {
           <div className="flex justify-center flex-wrap gap-2 whitespace-nowrap text-sm sm:justify-end md:text-base">
             <SearchForm className="grow" />
             <ViewToggle initialView={view} />
-            <AdvancedFilters />
+            <FilterButton />
           </div>
         </div>
       </div>
