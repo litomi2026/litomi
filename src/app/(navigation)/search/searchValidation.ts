@@ -45,7 +45,7 @@ export const MangaSearchSchema = z
     'min-page': z.coerce.number().int().min(1).max(10000).optional(),
     'max-page': z.coerce.number().int().min(1).max(10000).optional(),
     from: z.coerce.number().int().min(0).optional(),
-    until: z.coerce.number().int().min(0).optional(),
+    to: z.coerce.number().int().min(0).optional(),
     'next-id': z.string().regex(/^\d+$/).optional(),
     skip: z.coerce.number().int().min(0).max(10000).optional(),
   })
@@ -57,7 +57,7 @@ export const MangaSearchSchema = z
       if (data['min-page'] && data['max-page'] && data['min-page'] > data['max-page']) {
         return false
       }
-      if (data.from && data.until && data.from > data.until) {
+      if (data.from && data.to && data.from > data.to) {
         return false
       }
       return true
