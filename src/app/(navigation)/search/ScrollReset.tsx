@@ -8,7 +8,6 @@ export default function ScrollReset() {
   const query = searchParams.get('query')
 
   useEffect(() => {
-    // Scroll to top when query changes
     window.scrollTo(0, 0)
   }, [query])
 
