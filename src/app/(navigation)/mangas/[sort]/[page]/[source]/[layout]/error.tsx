@@ -17,7 +17,10 @@ export default function ErrorPage({ error, reset }: Props) {
   const searchParams = useSearchParams()
 
   useEffect(() => {
-    captureException(error, { extra: { pathname, searchParams } })
+    captureException(error, {
+      tags: { error_boundary: pathname },
+      extra: { searchParams: Object.fromEntries(searchParams) },
+    })
   }, [error, pathname, searchParams])
 
   return (

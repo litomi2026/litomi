@@ -3,6 +3,12 @@ import { captureException } from '@sentry/nextjs'
 import { convertQueryKey } from '@/app/(navigation)/search/searchUtils'
 import { Manga } from '@/types/manga'
 
+import { NotFoundError } from './common'
+
+export interface KHentaiManga extends KHentaiMangaCommon {
+  torrents: Torrent[]
+}
+
 interface File {
   id: string
   image: Image
@@ -23,10 +29,6 @@ interface Image {
 
 interface KHentaiGallery extends KHentaiMangaCommon {
   files: File[]
-}
-
-interface KHentaiManga extends KHentaiMangaCommon {
-  torrents: Torrent[]
 }
 
 interface KHentaiMangaCommon {
@@ -148,16 +150,26 @@ const koreanToEnglishMap: Record<string, string> = {
 }
 
 type Params3 = {
-  query?: string
-  minViews?: number
-  maxViews?: number
-  minPages?: number
-  maxPages?: number
-  startDate?: number
-  endDate?: number
-  sort?: 'id_asc' | 'popular' | 'random'
-  nextId?: string
-  offset?: number
+  url: string
+  searchParams: {
+    query?: string
+    minViews?: number
+    maxViews?: number
+    minPages?: number
+    maxPages?: number
+    startDate?: number
+    endDate?: number
+    sort?: 'id_asc' | 'popular' | 'random'
+    nextId?: string
+    skip?: number
+  }
+}
+
+export function convertKHentaiMangaToManga(manga: KHentaiManga): Manga {
+  return {
+    ...convertKHentaiCommonToManga(manga),
+    images: [manga.thumb],
+  }
 }
 
 export async function fetchMangaFromKHentai({ id }: { id: number }) {
@@ -241,27 +253,34 @@ export async function fetchRandomMangasFromKHentai() {
     .map((manga) => convertKHentaiMangaToManga(manga))
 }
 
-export async function searchMangasFromKHentai({
-  query,
-  minViews,
-  maxViews,
-  minPages,
-  maxPages,
-  startDate,
-  endDate,
-  sort,
-  nextId,
-  offset,
-}: Params3) {
+export function getCategories(query?: string) {
+  const typeMatch = query?.match(/\btype:(\S+)/i)
+  if (!typeMatch) return
+
+  return typeMatch[1]
+    .split(',')
+    .map((value) => {
+      const normalized = value.trim().toLowerCase().replace(/\s+/g, '')
+      if (/^\d+$/.test(normalized)) {
+        return normalized
+      }
+      return typeNameToNumber[normalized] || value
+    })
+    .filter(Boolean)
+    .join(',')
+}
+
+export async function searchMangasFromKHentai({ url, searchParams }: Params3) {
+  const { query, minViews, maxViews, minPages, maxPages, startDate, endDate, sort, nextId, skip } = searchParams
   const lowerEnglishQuery = convertQueryKey(translateQuery(query?.toLowerCase()))
   const categories = getCategories(lowerEnglishQuery)
   const search = lowerEnglishQuery?.replace(/\btype:\S+/gi, '').trim()
 
-  const searchParams = new URLSearchParams({
+  const searchParams2 = new URLSearchParams({
     ...(search && { search }),
     ...(nextId && { 'next-id': nextId }),
     ...(sort && { sort }),
-    ...(offset && { offset: String(offset) }),
+    ...(skip && { offset: String(skip) }),
     ...(categories && { categories }),
     ...(minViews && { 'min-views': String(minViews) }),
     ...(maxViews && { 'max-views': String(maxViews) }),
@@ -271,22 +290,42 @@ export async function searchMangasFromKHentai({
     ...(endDate && { 'end-date': String(endDate) }),
   })
 
-  const res = await fetch(`https://k-hentai.org/ajax/search?${searchParams}`, {
+  const response = await fetch(`${url}?${searchParams2}`, {
     referrerPolicy: 'no-referrer',
     next: { revalidate: 86400 }, // 1 day
   })
 
-  if (res.status === 404) {
-    return null
-  } else if (!res.ok) {
-    const body = await res.text()
-    captureException('k-hentai.org 서버 오류 - 만화 검색', { extra: { res, body } })
+  if (response.status === 404) {
+    throw new NotFoundError('검색 결과를 찾을 수 없습니다.')
+  }
+
+  if (!response.ok) {
+    const body = await response.text()
+    captureException('k-hentai.org 서버 오류 - 만화 검색', { extra: { response, body } })
     throw new Error('k 서버에서 만화 검색을 실패했어요.')
   }
 
-  return ((await res.json()) as KHentaiManga[])
-    .filter((manga) => manga.archived === 1)
-    .map((manga) => convertKHentaiMangaToManga(manga))
+  const data = (await response.json()) as KHentaiManga[]
+  const mangas = data.filter((manga) => manga.archived === 1)
+
+  if (mangas.length === 0) {
+    throw new NotFoundError('검색 결과를 찾을 수 없습니다.')
+  }
+
+  return mangas.map((manga) => convertKHentaiMangaToManga(manga))
+}
+
+export function translateQuery(query?: string) {
+  if (!query) return
+
+  let translatedQuery = query
+
+  Object.entries(koreanToEnglishMap).forEach(([korean, english]) => {
+    const regex = new RegExp(`${korean}(?=:|\\s|$)`, 'gi')
+    translatedQuery = translatedQuery.replace(regex, english)
+  })
+
+  return translatedQuery
 }
 
 function convertKHentaiCommonToManga(manga: KHentaiMangaCommon) {
@@ -313,41 +352,4 @@ function convertKHentaiGalleryToManga(manga: KHentaiGallery): Manga {
     ...convertKHentaiCommonToManga(manga),
     images: manga.files.map((file) => file.image.url),
   }
-}
-
-function convertKHentaiMangaToManga(manga: KHentaiManga): Manga {
-  return {
-    ...convertKHentaiCommonToManga(manga),
-    images: [manga.thumb],
-  }
-}
-
-function getCategories(query?: string) {
-  const typeMatch = query?.match(/\btype:(\S+)/i)
-  if (!typeMatch) return
-
-  return typeMatch[1]
-    .split(',')
-    .map((value) => {
-      const normalized = value.trim().toLowerCase().replace(/\s+/g, '')
-      if (/^\d+$/.test(normalized)) {
-        return normalized
-      }
-      return typeNameToNumber[normalized] || value
-    })
-    .filter(Boolean)
-    .join(',')
-}
-
-function translateQuery(query?: string) {
-  if (!query) return
-
-  let translatedQuery = query
-
-  Object.entries(koreanToEnglishMap).forEach(([korean, english]) => {
-    const regex = new RegExp(`${korean}(?=:|\\s|$)`, 'gi')
-    translatedQuery = translatedQuery.replace(regex, english)
-  })
-
-  return translatedQuery
 }
