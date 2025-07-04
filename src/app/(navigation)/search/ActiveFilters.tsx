@@ -8,6 +8,8 @@ import IconX from '@/components/icons/IconX'
 
 import type { MangaSearch } from './searchValidation'
 
+import { FILTER_KEYS } from './AdvancedFilters'
+
 type Props = {
   filters: MangaSearch
 }
@@ -70,13 +72,11 @@ export default function ActiveFilters({ filters }: Props) {
 
   const clearAllFilters = () => {
     const params = new URLSearchParams(searchParams.toString())
-    const query = params.get('query')
 
-    // Keep only the query parameter
-    params.forEach((_, key) => {
-      if (key !== 'query') {
-        params.delete(key)
-      }
+    const filterKeys = [...FILTER_KEYS, 'next-id', 'skip']
+
+    filterKeys.forEach((key) => {
+      params.delete(key)
     })
 
     startTransition(() => {
