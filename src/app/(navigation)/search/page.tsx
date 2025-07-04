@@ -61,26 +61,14 @@ export default async function Page({ searchParams }: BasePageProps) {
     notFound()
   }
 
-  const hasActiveFilters = !!(
-    query ||
-    from ||
-    until ||
-    sort ||
-    afterId ||
-    minView ||
-    maxView ||
-    minPage ||
-    maxPage ||
-    skip
-  )
+  const hasActiveFilters = !!(from || until || sort || afterId || minView || maxView || minPage || maxPage || skip)
 
   return (
     <>
       {hasActiveFilters && (
         <div className="mb-2 p-2 bg-zinc-900 border border-zinc-700 rounded-lg">
           <p className="text-sm text-zinc-400 break-words">
-            <span className="whitespace-nowrap">검색 결과</span>
-            {query && <span className="ml-2 text-zinc-200">&ldquo;{query}&rdquo;</span>}
+            <span className="whitespace-nowrap">적용된 필터</span>
             {sort && (
               <span className="ml-2 text-zinc-300">
                 (정렬: {sort === 'popular' ? '인기순' : sort === 'id_asc' ? '오래된 순' : '랜덤'})

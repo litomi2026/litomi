@@ -3,6 +3,7 @@
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { FormEvent, useCallback, useEffect, useState, useTransition } from 'react'
 
+import IconSpinner from '@/components/icons/IconSpinner'
 import IconX from '@/components/icons/IconX'
 
 import RangeInput from './RangeInput'
@@ -94,15 +95,15 @@ export default function AdvancedFilters() {
 
   // NOTE: 모바일 환경에서 필터 활성화 시 body 스크롤을 방지함
   useEffect(() => {
-    if (showFilters) {
-      // Check if mobile
-      const isMobile = window.matchMedia('(max-width: 640px)').matches
-      if (isMobile) {
-        document.body.style.overflow = 'hidden'
-        return () => {
-          document.body.style.overflow = ''
-        }
-      }
+    if (!showFilters) return
+
+    const isMobile = window.matchMedia('(max-width: 640px)').matches
+    if (!isMobile) return
+
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.body.style.overflow = ''
     }
   }, [showFilters])
 
@@ -218,34 +219,13 @@ export default function AdvancedFilters() {
                   초기화
                 </button>
                 <button
-                  className="flex-1 px-3 py-3 sm:py-2 bg-zinc-700 hover:bg-zinc-600 text-zinc-100 font-medium rounded-lg
+                  className="flex items-center justify-center flex-1 px-3 py-3 sm:py-2 bg-zinc-700 hover:bg-zinc-600 text-zinc-100 font-medium rounded-lg
                     transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-400
                     disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={isPending}
                   type="submit"
                 >
-                  {isPending ? (
-                    <span className="flex items-center justify-center">
-                      <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24">
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          fill="none"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        />
-                        <path
-                          className="opacity-75"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          fill="currentColor"
-                        />
-                      </svg>
-                    </span>
-                  ) : (
-                    '적용'
-                  )}
+                  {isPending ? <IconSpinner className="w-5" /> : '적용'}
                 </button>
               </div>
             </form>
