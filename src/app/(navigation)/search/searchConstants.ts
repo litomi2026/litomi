@@ -5,7 +5,7 @@ export type SearchFilter = {
 }
 
 export const SEARCH_FILTERS: SearchFilter[] = [
-  { label: 'language:korean', description: '한국어' },
+  { label: 'language:korean ', value: 'language:korean', description: '한국어' },
   { label: 'language:', description: '언어' },
   { label: 'female:', description: '여성 태그' },
   { label: 'male:', description: '남성 태그' },
@@ -16,4 +16,5 @@ export const SEARCH_FILTERS: SearchFilter[] = [
   { label: 'character:', description: '캐릭터' },
   { label: 'series:', value: 'parody:', description: '시리즈' },
   { label: 'type:', description: '종류' },
+  { label: 'id:', value: 'gid:', description: 'ID' },
 ]
