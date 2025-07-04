@@ -46,7 +46,7 @@ function MangaCard({ manga, index = 0, source, className = '' }: Props) {
       <div className="flex grow flex-col justify-between gap-2 p-2 border-t-2 sm:border-t-0 sm:border-l-2 md:border-l-0 md:border-t-2">
         <div className="flex flex-col gap-2 text-sm">
           <Link href={viewerLink}>
-            <h4 className="line-clamp-3 font-bold text-base leading-5 min-w-0">{title}</h4>
+            <h4 className="line-clamp-3 font-bold text-base leading-5 min-w-0 wrap-anywhere">{title}</h4>
           </Link>
           <MangaMetadataItem filterType="type" label="종류" value={type} />
           <MangaMetadataList filterType="artist" items={artists} label="작가" />
