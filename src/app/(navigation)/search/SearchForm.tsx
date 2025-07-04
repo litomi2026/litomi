@@ -166,7 +166,7 @@ export default function SearchForm({ className = '' }: Props) {
           aria-label="검색 실행"
           className="
             px-4 py-2 shrink-0 font-medium
-            rounded-l-none transition-all duration-200
+            rounded-l-none transition duration-200
             bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-800
             text-zinc-200 hover:text-white
             aria-disabled:opacity-60

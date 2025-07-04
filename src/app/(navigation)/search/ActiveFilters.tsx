@@ -103,7 +103,7 @@ export default function ActiveFilters({ filters }: Props) {
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-medium text-zinc-400">활성 필터</h3>
         <button
-          className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors disabled:opacity-50"
+          className="text-xs text-zinc-500 hover:text-zinc-300 transition disabled:opacity-50"
           disabled={isPending}
           onClick={clearAllFilters}
           type="button"
@@ -123,7 +123,7 @@ export default function ActiveFilters({ filters }: Props) {
             </span>
             <button
               aria-label={`${FILTER_DISPLAY.sort.label} 필터 제거`}
-              className="ml-1 p-0.5 rounded-full hover:bg-zinc-700 transition-colors disabled:opacity-50"
+              className="ml-1 p-0.5 rounded-full hover:bg-zinc-700 transition disabled:opacity-50"
               disabled={isPending}
               onClick={() => removeFilter('sort')}
               type="button"
@@ -145,7 +145,7 @@ export default function ActiveFilters({ filters }: Props) {
             </span>
             <button
               aria-label={`${FILTER_DISPLAY.view.label} 필터 제거`}
-              className="ml-1 p-0.5 rounded-full hover:bg-zinc-700 transition-colors disabled:opacity-50"
+              className="ml-1 p-0.5 rounded-full hover:bg-zinc-700 transition disabled:opacity-50"
               disabled={isPending}
               onClick={() => removeRangeFilter('min-view', 'max-view')}
               type="button"
@@ -167,7 +167,7 @@ export default function ActiveFilters({ filters }: Props) {
             </span>
             <button
               aria-label={`${FILTER_DISPLAY.page.label} 필터 제거`}
-              className="ml-1 p-0.5 rounded-full hover:bg-zinc-700 transition-colors disabled:opacity-50"
+              className="ml-1 p-0.5 rounded-full hover:bg-zinc-700 transition disabled:opacity-50"
               disabled={isPending}
               onClick={() => removeRangeFilter('min-page', 'max-page')}
               type="button"
@@ -189,7 +189,7 @@ export default function ActiveFilters({ filters }: Props) {
             </span>
             <button
               aria-label={`${FILTER_DISPLAY.date.label} 필터 제거`}
-              className="ml-1 p-0.5 rounded-full hover:bg-zinc-700 transition-colors disabled:opacity-50"
+              className="ml-1 p-0.5 rounded-full hover:bg-zinc-700 transition disabled:opacity-50"
               disabled={isPending}
               onClick={() => removeRangeFilter('from', 'to')}
               type="button"
@@ -208,7 +208,7 @@ export default function ActiveFilters({ filters }: Props) {
             </span>
             <button
               aria-label={`${FILTER_DISPLAY.skip.label} 필터 제거`}
-              className="ml-1 p-0.5 rounded-full hover:bg-zinc-700 transition-colors disabled:opacity-50"
+              className="ml-1 p-0.5 rounded-full hover:bg-zinc-700 transition disabled:opacity-50"
               disabled={isPending}
               onClick={() => removeFilter('skip')}
               type="button"
@@ -227,7 +227,7 @@ export default function ActiveFilters({ filters }: Props) {
             </span>
             <button
               aria-label={`${FILTER_DISPLAY['next-id'].label} 필터 제거`}
-              className="ml-1 p-0.5 rounded-full hover:bg-zinc-700 transition-colors disabled:opacity-50"
+              className="ml-1 p-0.5 rounded-full hover:bg-zinc-700 transition disabled:opacity-50"
               disabled={isPending}
               onClick={() => removeFilter('next-id')}
               type="button"

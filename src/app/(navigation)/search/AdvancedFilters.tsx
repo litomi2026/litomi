@@ -6,7 +6,7 @@ import { createPortal } from 'react-dom'
 
 import IconSpinner from '@/components/icons/IconSpinner'
 import IconX from '@/components/icons/IconX'
-import { useMounted } from '@/hook/useMounted'
+import useMounted from '@/hook/useMounted'
 
 import RangeInput from './RangeInput'
 
@@ -173,7 +173,7 @@ export default function AdvancedFilters() {
 
   // NOTE: 화면 크기가 변경될 때 필터 레이아웃을 변경함
   useEffect(() => {
-    if (!showFilters || !buttonRef.current) return
+    if (!buttonRef.current) return
 
     let timeoutId: NodeJS.Timeout
     const handleDebouncedResize = () => {
@@ -193,19 +193,16 @@ export default function AdvancedFilters() {
       window.removeEventListener('resize', handleDebouncedResize)
       clearTimeout(timeoutId)
     }
-  }, [showFilters])
+  }, [])
 
   return (
     <div className="relative">
       <button
-        className={`px-3 py-2 h-full text-sm font-medium rounded-xl border-2 transition-all
-          ${
-            hasActiveFilters
-              ? 'bg-zinc-800 border-zinc-600 text-zinc-100'
-              : 'bg-zinc-900 border-zinc-700 text-zinc-400 hover:border-zinc-500'
-          }
-          focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-offset-2 focus:ring-offset-zinc-900
-        `}
+        aria-pressed={hasActiveFilters}
+        className="px-3 py-2 h-full text-sm font-medium rounded-xl border-2 transition
+          bg-zinc-900 border-zinc-700 text-zinc-400 hover:border-zinc-500
+          aria-pressed:bg-zinc-800 aria-pressed:border-zinc-600 aria-pressed:text-zinc-100
+          focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-offset-2 focus:ring-offset-zinc-900"
         onClick={() => setShowFilters(!showFilters)}
         ref={buttonRef}
         type="button"
@@ -214,22 +211,28 @@ export default function AdvancedFilters() {
       </button>
 
       {mounted &&
-        showFilters &&
         createPortal(
           <>
-            {/* Backdrop - only visible on desktop */}
-            <div className="hidden sm:block fixed inset-0 z-50 bg-black/20" onClick={() => setShowFilters(false)} />
+            {/* Backdrop */}
+            <div
+              aria-hidden={!showFilters}
+              className="fixed inset-0 z-[60] bg-black/20 transition duration-300 hidden opacity-100 sm:block aria-hidden:opacity-0 aria-hidden:pointer-events-none"
+              onClick={() => setShowFilters(false)}
+            />
 
             {/* Filter panel */}
             <div
-              className="fixed inset-0 z-50 sm:inset-auto sm:w-96 sm:max-w-[calc(100vw-2rem)] sm:max-h-[calc(100vh-8rem)] 
-                overflow-y-auto bg-zinc-900 sm:border-2 sm:border-zinc-700 sm:rounded-xl sm:shadow-xl"
+              aria-hidden={!showFilters}
+              className="fixed inset-0 z-[70] sm:inset-auto sm:w-96 sm:max-w-[calc(100vw-2rem)] sm:max-h-[calc(100vh-8rem)] 
+                overflow-y-auto bg-zinc-900 sm:border-2 sm:border-zinc-700 sm:rounded-xl sm:shadow-xl
+                transition-all duration-300 opacity-100 scale-100
+                aria-hidden:opacity-0 aria-hidden:scale-95 aria-hidden:pointer-events-none"
               style={filterPanelStyle}
             >
               <div className="sticky top-0 flex items-center justify-between p-4 bg-zinc-900 border-b border-zinc-800 sm:border-b-0 sm:pb-0">
                 <h3 className="text-xl font-bold text-zinc-100 sm:text-lg">상세 필터</h3>
                 <button
-                  className="p-2 -mr-2 rounded-lg hover:bg-zinc-800 transition-colors sm:p-1 sm:mr-0"
+                  className="p-2 -mr-2 rounded-lg hover:bg-zinc-800 transition sm:p-1 sm:mr-0"
                   onClick={() => setShowFilters(false)}
                   type="button"
                 >
@@ -304,7 +307,7 @@ export default function AdvancedFilters() {
                 <div className="fixed bottom-0 mb-safe left-0 right-0 flex gap-2 bg-zinc-900 px-4 py-4 border-t border-zinc-800 sm:static sm:bg-transparent sm:border-t-0 sm:p-0">
                   <button
                     className="flex-1 px-3 py-3 sm:py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-medium rounded-lg
-                      transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-400"
+                    transition focus:outline-none focus:ring-2 focus:ring-zinc-400"
                     onClick={clearFilters}
                     type="button"
                   >
@@ -312,7 +315,7 @@ export default function AdvancedFilters() {
                   </button>
                   <button
                     className="flex items-center justify-center flex-1 px-3 py-3 sm:py-2 bg-zinc-700 hover:bg-zinc-600 text-zinc-100 font-medium rounded-lg
-                      transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-400
+                      transition focus:outline-none focus:ring-2 focus:ring-zinc-400
                       disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={isPending}
                     type="submit"
