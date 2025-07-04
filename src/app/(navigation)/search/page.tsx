@@ -28,13 +28,13 @@ export default async function Page({ searchParams }: BasePageProps) {
     'min-page': minPage,
     'max-page': maxPage,
     from,
-    until,
+    to,
     'next-id': nextId,
     skip,
   } = validationResult.data
 
   const viewType = view === 'img' ? ViewCookie.IMAGE : ViewCookie.CARD
-  const hasActiveFilters = Boolean(from ?? until ?? sort ?? nextId ?? minView ?? maxView ?? minPage ?? maxPage ?? skip)
+  const hasActiveFilters = Boolean(from ?? to ?? sort ?? nextId ?? minView ?? maxView ?? minPage ?? maxPage ?? skip)
 
   return (
     <>
@@ -57,10 +57,10 @@ export default async function Page({ searchParams }: BasePageProps) {
                 (페이지: {minPage ?? '0'} ~ {maxPage ?? '∞'})
               </span>
             )}
-            {(from || until) && (
+            {(from || to) && (
               <span className="ml-2 text-zinc-300">
-                (날짜: {from ? new Date(from).toLocaleDateString('ko-KR') : '처음'} ~{' '}
-                {until ? new Date(until).toLocaleDateString('ko-KR') : '끝'})
+                (날짜: {from ? new Date(Number(from) * 1000).toLocaleDateString('ko-KR') : '처음'} ~{' '}
+                {to ? new Date(Number(to) * 1000).toLocaleDateString('ko-KR') : '끝'})
               </span>
             )}
             {nextId && <span className="ml-2 text-zinc-300">(ID 이후: {nextId})</span>}

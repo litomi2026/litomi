@@ -11,14 +11,16 @@ import { useMounted } from '@/hook/useMounted'
 import RangeInput from './RangeInput'
 
 type FilterState = {
+  sort?: string
   'min-view'?: string
   'max-view'?: string
   'min-page'?: string
   'max-page'?: string
   from?: string
-  until?: string
-  sort?: string
+  to?: string
 }
+
+const FILTER_KEYS = ['sort', 'min-view', 'max-view', 'min-page', 'max-page', 'from', 'to'] as const
 
 export default function AdvancedFilters() {
   const router = useRouter()
@@ -32,15 +34,15 @@ export default function AdvancedFilters() {
 
   const [filters, setFilters] = useState<FilterState>(() => {
     const fromParam = searchParams.get('from')
-    const untilParam = searchParams.get('until')
+    const toParam = searchParams.get('to')
 
     return {
       'min-view': searchParams.get('min-view') ?? '',
       'max-view': searchParams.get('max-view') ?? '',
       'min-page': searchParams.get('min-page') ?? '',
       'max-page': searchParams.get('max-page') ?? '',
-      from: fromParam ? new Date(Number(fromParam)).toISOString().split('T')[0] : '',
-      until: untilParam ? new Date(Number(untilParam)).toISOString().split('T')[0] : '',
+      from: fromParam ? new Date(Number(fromParam) * 1000).toISOString().split('T')[0] : '',
+      to: toParam ? new Date(Number(toParam) * 1000).toISOString().split('T')[0] : '',
       sort: searchParams.get('sort') ?? '',
     }
   })
@@ -57,8 +59,18 @@ export default function AdvancedFilters() {
 
       Object.entries(filters).forEach(([key, value]) => {
         if (value) {
-          if (key === 'from' || key === 'until') {
-            const timestamp = new Date(value).getTime()
+          if (key === 'from' || key === 'to') {
+            const date = new Date(value)
+
+            if (key === 'to') {
+              date.setHours(23, 59, 59, 999)
+              const now = new Date()
+              if (date > now) {
+                date.setTime(now.getTime())
+              }
+            }
+
+            const timestamp = Math.floor(date.getTime() / 1000)
             params.set(key, timestamp.toString())
           } else {
             params.set(key, value)
@@ -83,13 +95,12 @@ export default function AdvancedFilters() {
       'min-page': '',
       'max-page': '',
       from: '',
-      until: '',
+      to: '',
       sort: '',
     })
 
     const params = new URLSearchParams(searchParams.toString())
-    const filterKeys = ['min-view', 'max-view', 'min-page', 'max-page', 'from', 'until', 'sort']
-    filterKeys.forEach((key) => params.delete(key))
+    FILTER_KEYS.forEach((key) => params.delete(key))
 
     startTransition(() => {
       router.replace(`${pathname}?${params}`, { scroll: false })
@@ -237,13 +248,13 @@ export default function AdvancedFilters() {
                 {/* Date range */}
                 <RangeInput
                   label="날짜 범위"
-                  maxId="until-date"
+                  maxId="to-date"
                   maxPlaceholder="종료일"
-                  maxValue={filters.until ?? ''}
+                  maxValue={filters.to ?? ''}
                   minId="from-date"
                   minPlaceholder="시작일"
                   minValue={filters.from ?? ''}
-                  onMaxChange={(value) => handleFilterChange('until', value)}
+                  onMaxChange={(value) => handleFilterChange('to', value)}
                   onMinChange={(value) => handleFilterChange('from', value)}
                   type="date"
                 />

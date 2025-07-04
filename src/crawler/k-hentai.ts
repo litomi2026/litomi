@@ -154,13 +154,13 @@ type Params3 = {
   url: string
   searchParams: {
     query?: string
-    minViews?: number
-    maxViews?: number
-    minPages?: number
-    maxPages?: number
-    startDate?: number
-    endDate?: number
     sort?: 'id_asc' | 'popular' | 'random'
+    'min-view'?: number
+    'max-view'?: number
+    'min-page'?: number
+    'max-page'?: number
+    from?: number
+    to?: number
     nextId?: string
     skip?: number
   }
@@ -272,7 +272,18 @@ export function getCategories(query?: string) {
 }
 
 export async function searchMangasFromKHentai({ url, searchParams }: Params3) {
-  const { query, minViews, maxViews, minPages, maxPages, startDate, endDate, sort, nextId, skip } = searchParams
+  const {
+    query,
+    sort,
+    'min-view': minView,
+    'max-view': maxView,
+    'min-page': minPage,
+    'max-page': maxPage,
+    from,
+    to,
+    nextId,
+    skip,
+  } = searchParams
   const lowerEnglishQuery = convertQueryKey(translateQuery(query?.toLowerCase()))
   const categories = getCategories(lowerEnglishQuery)
   const search = lowerEnglishQuery?.replace(/\btype:\S+/gi, '').trim()
@@ -283,14 +294,15 @@ export async function searchMangasFromKHentai({ url, searchParams }: Params3) {
     ...(sort && { sort }),
     ...(skip && { offset: String(skip) }),
     ...(categories && { categories }),
-    ...(minViews && { 'min-views': String(minViews) }),
-    ...(maxViews && { 'max-views': String(maxViews) }),
-    ...(minPages && { 'min-pages': String(minPages) }),
-    ...(maxPages && { 'max-pages': String(maxPages) }),
-    ...(startDate && { 'start-date': String(startDate) }),
-    ...(endDate && { 'end-date': String(endDate) }),
+    ...(minView && { 'min-views': String(minView) }),
+    ...(maxView && { 'max-views': String(maxView) }),
+    ...(minPage && { 'min-pages': String(minPage) }),
+    ...(maxPage && { 'max-pages': String(maxPage) }),
+    ...(from && { 'start-date': String(from) }),
+    ...(to && { 'end-date': String(to) }),
   })
 
+  console.log('👀 - searchMangasFromKHentai - searchParams2:', searchParams2.toString())
   const response = await fetch(`${url}?${searchParams2}`, {
     referrerPolicy: 'no-referrer',
     next: { revalidate: 86400 }, // 1 day
