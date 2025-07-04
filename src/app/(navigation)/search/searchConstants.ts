@@ -16,4 +16,5 @@ export const SEARCH_FILTERS: SearchFilter[] = [
   { label: 'character:', description: '캐릭터' },
   { label: 'series:', value: 'parody:', description: '시리즈' },
   { label: 'type:', description: '종류' },
+  { label: 'id:', value: 'gid:', description: 'ID' },
 ]
