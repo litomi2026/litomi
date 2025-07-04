@@ -1,14 +1,18 @@
 'use client'
 
 import * as Sentry from '@sentry/nextjs'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 
 import type { ErrorProps } from '@/types/nextjs'
 
 export default function GlobalError({ error, reset }: ErrorProps) {
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
   useEffect(() => {
-    Sentry.captureException(error)
-  }, [error])
+    Sentry.captureException(error, { extra: { pathname, searchParams } })
+  }, [error, pathname, searchParams])
 
   return (
     <html lang="ko">
