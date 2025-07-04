@@ -129,12 +129,13 @@ const typeNameToNumber: Record<string, string> = {
   아시안: '9',
   asian: '9',
   기타: '10',
+  other: '10',
   misc: '10',
   비공개: '11',
   private: '11',
 }
 
-const koreanToEnglishMap: Record<string, string> = {
+const queryKeyKoreanToEnglish: Record<string, string> = {
   언어: 'language',
   여성: 'female',
   여: 'female',
@@ -320,8 +321,8 @@ export function translateQuery(query?: string) {
 
   let translatedQuery = query
 
-  Object.entries(koreanToEnglishMap).forEach(([korean, english]) => {
-    const regex = new RegExp(`${korean}(?=:|\\s|$)`, 'gi')
+  Object.entries(queryKeyKoreanToEnglish).forEach(([korean, english]) => {
+    const regex = new RegExp(`\\b${korean}(?=:)`, 'gi')
     translatedQuery = translatedQuery.replace(regex, english)
   })
 

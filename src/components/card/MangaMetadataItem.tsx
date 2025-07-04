@@ -1,7 +1,10 @@
+'use client'
+
 import Link from 'next/link'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { memo } from 'react'
 
-import { getKoreanSearchLink } from './utils'
+import { toggleSearchFilter } from './utils'
 
 type Props = {
   label: string
@@ -13,12 +16,26 @@ type Props = {
 export default memo(MangaMetadataItem)
 
 function MangaMetadataItem({ label, value, filterType, className = '' }: Props) {
+  const searchParams = useSearchParams()
+  const pathname = usePathname()
+
   if (!value) return null
+
+  const currentQuery = searchParams.get('query') || ''
+  const isSearchPage = pathname === '/search'
+  const newQuery = toggleSearchFilter(currentQuery, filterType, value, !isSearchPage)
+  const normalizedValue = value.replaceAll(' ', '_')
+  const filterPattern = `${filterType}:${normalizedValue}`
+  const escapedPattern = filterPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const isActive = new RegExp(`(^|\\s)${escapedPattern}(?=\\s|$)`, 'i').test(currentQuery)
 
   return (
     <div className={`flex gap-1 ${className}`}>
       <span>{label}</span>
-      <Link className="hover:underline focus:underline" href={getKoreanSearchLink(filterType, value)}>
+      <Link
+        className={`hover:underline focus:underline ${isActive ? 'text-brand-end font-semibold' : ''}`}
+        href={`/search?query=${encodeURIComponent(newQuery)}`}
+      >
         {value}
       </Link>
     </div>
