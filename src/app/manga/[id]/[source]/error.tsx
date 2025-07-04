@@ -1,6 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { captureException } from '@sentry/nextjs'
+import { usePathname, useSearchParams } from 'next/navigation'
+import { useEffect } from 'react'
+
+import useCooldown from '@/hook/useCooldown'
 
 type Props = {
   error: Error & { digest?: string }
@@ -8,20 +12,16 @@ type Props = {
 }
 
 export default function ErrorPage({ error, reset }: Props) {
-  const [cooldown, setCooldown] = useState(5000)
+  const cooldown = useCooldown()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCooldown((prev) => {
-        if (prev <= 0) {
-          clearInterval(interval)
-          return 0
-        }
-        return prev - 1000
-      })
-    }, 1000)
-    return () => clearInterval(interval)
-  }, [])
+    captureException(error, {
+      tags: { error_boundary: pathname },
+      extra: { searchParams: Object.fromEntries(searchParams) },
+    })
+  }, [error, pathname, searchParams])
 
   return (
     <main className="flex flex-col justify-center items-center gap-6 text-center h-dvh">

@@ -2,13 +2,14 @@
 
 import { useSearchParams } from 'next/navigation'
 
-import MangaCard from '@/components/card/MangaCard'
+import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import MangaCardImage from '@/components/card/MangaCardImage'
-import Loading from '@/components/ui/Loading'
 import { useSearchQuery } from '@/query/useSearchQuery'
 import { getViewerLink } from '@/utils/manga'
 import { SourceParam, ViewCookie } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
+
+import ErrorPage from './error'
 
 type Props = {
   view: ViewCookie
@@ -16,32 +17,28 @@ type Props = {
 
 export default function SearchResults({ view }: Props) {
   const searchParams = useSearchParams()
-  const params = Object.fromEntries(searchParams.entries())
-  const { data: mangas, isLoading, error } = useSearchQuery(params)
+  const { data: mangas, isLoading, error } = useSearchQuery(Object.fromEntries(searchParams))
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Loading />
-      </div>
+      <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2 grow`}>
+        {Array.from({ length: view === ViewCookie.IMAGE ? 12 : 6 }).map((_, i) => (
+          <MangaCardSkeleton key={i} />
+        ))}
+      </ul>
     )
   }
 
   if (!mangas || mangas.length === 0) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
+      <div className="flex flex-col grow justify-center items-center">
         <p className="text-zinc-500">검색 결과가 없습니다.</p>
       </div>
     )
   }
 
   if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
-        <p className="text-red-400 mb-2">검색 중 오류가 발생했습니다.</p>
-        <p className="text-zinc-500 text-sm">{error.message}</p>
-      </div>
-    )
+    return <ErrorPage error={error} reset={() => window.location.reload()} />
   }
 
   return (

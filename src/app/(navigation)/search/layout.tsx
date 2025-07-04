@@ -26,7 +26,7 @@ export default async function Layout({ children }: BaseLayoutProps) {
           </div>
         </div>
       </div>
-      <div className="flex-1 p-2">{children}</div>
+      <div className="flex flex-col p-2 grow">{children}</div>
     </main>
   )
 }

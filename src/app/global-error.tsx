@@ -11,7 +11,10 @@ export default function GlobalError({ error, reset }: ErrorProps) {
   const searchParams = useSearchParams()
 
   useEffect(() => {
-    Sentry.captureException(error, { extra: { pathname, searchParams } })
+    Sentry.captureException(error, {
+      tags: { error_boundary: pathname },
+      extra: { searchParams: Object.fromEntries(searchParams) },
+    })
   }, [error, pathname, searchParams])
 
   return (

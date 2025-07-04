@@ -1,46 +1,40 @@
 import { cookies } from 'next/headers'
-import { z } from 'zod'
+import { notFound } from 'next/navigation'
 
 import { BasePageProps } from '@/types/nextjs'
 import { getJSONCookie } from '@/utils/cookie'
 import { ViewCookie } from '@/utils/param'
 
 import SearchResults from './SearchResults'
-
-const SearchSchema = z.object({
-  query: z.string().trim().optional(),
-  'min-view': z.coerce.number().int().positive().optional(),
-  'max-view': z.coerce.number().int().positive().optional(),
-  'min-page': z.coerce.number().int().positive().optional(),
-  'max-page': z.coerce.number().int().positive().optional(),
-  from: z.coerce.number().optional(),
-  until: z.coerce.number().optional(),
-  sort: z.enum(['random', 'id_asc', 'popular']).optional(),
-  'after-id': z.string().optional(),
-  skip: z.coerce.number().int().nonnegative().optional(),
-  view: z.enum(['img', 'card']).default('card'),
-})
+import { MangaSearchSchema } from './searchValidation'
 
 export default async function Page({ searchParams }: BasePageProps) {
   const cookieStore = await cookies()
 
-  const {
-    from,
-    until,
-    sort,
-    'after-id': afterId,
-    'min-view': minView,
-    'max-view': maxView,
-    'min-page': minPage,
-    'max-page': maxPage,
-    skip,
-    view,
-  } = SearchSchema.parse({
+  const validationResult = MangaSearchSchema.safeParse({
     ...getJSONCookie(cookieStore, ['view']),
     ...(await searchParams),
   })
 
-  const hasActiveFilters = Boolean(from ?? until ?? sort ?? afterId ?? minView ?? maxView ?? minPage ?? maxPage ?? skip)
+  if (!validationResult.success) {
+    notFound()
+  }
+
+  const {
+    view,
+    sort,
+    'min-view': minView,
+    'max-view': maxView,
+    'min-page': minPage,
+    'max-page': maxPage,
+    from,
+    until,
+    'next-id': nextId,
+    skip,
+  } = validationResult.data
+
+  const viewType = view === 'img' ? ViewCookie.IMAGE : ViewCookie.CARD
+  const hasActiveFilters = Boolean(from ?? until ?? sort ?? nextId ?? minView ?? maxView ?? minPage ?? maxPage ?? skip)
 
   return (
     <>
@@ -69,12 +63,12 @@ export default async function Page({ searchParams }: BasePageProps) {
                 {until ? new Date(until).toLocaleDateString('ko-KR') : '끝'})
               </span>
             )}
+            {nextId && <span className="ml-2 text-zinc-300">(ID 이후: {nextId})</span>}
             {skip && Number(skip) > 0 && <span className="ml-2 text-zinc-300">(건너뛰기: {skip}개)</span>}
-            {afterId && <span className="ml-2 text-zinc-300">(ID 이후: {afterId})</span>}
           </p>
         </div>
       )}
-      <SearchResults view={view as ViewCookie} />
+      <SearchResults view={viewType} />
     </>
   )
 }

@@ -150,16 +150,19 @@ const koreanToEnglishMap: Record<string, string> = {
 }
 
 type Params3 = {
-  query?: string
-  minViews?: number
-  maxViews?: number
-  minPages?: number
-  maxPages?: number
-  startDate?: number
-  endDate?: number
-  sort?: 'id_asc' | 'popular' | 'random'
-  nextId?: string
-  skip?: number
+  url: string
+  searchParams: {
+    query?: string
+    minViews?: number
+    maxViews?: number
+    minPages?: number
+    maxPages?: number
+    startDate?: number
+    endDate?: number
+    sort?: 'id_asc' | 'popular' | 'random'
+    nextId?: string
+    skip?: number
+  }
 }
 
 export function convertKHentaiMangaToManga(manga: KHentaiManga): Manga {
@@ -267,23 +270,13 @@ export function getCategories(query?: string) {
     .join(',')
 }
 
-export async function searchMangasFromKHentai({
-  query,
-  minViews,
-  maxViews,
-  minPages,
-  maxPages,
-  startDate,
-  endDate,
-  sort,
-  nextId,
-  skip: skip,
-}: Params3) {
+export async function searchMangasFromKHentai({ url, searchParams }: Params3) {
+  const { query, minViews, maxViews, minPages, maxPages, startDate, endDate, sort, nextId, skip } = searchParams
   const lowerEnglishQuery = convertQueryKey(translateQuery(query?.toLowerCase()))
   const categories = getCategories(lowerEnglishQuery)
   const search = lowerEnglishQuery?.replace(/\btype:\S+/gi, '').trim()
 
-  const searchParams = new URLSearchParams({
+  const searchParams2 = new URLSearchParams({
     ...(search && { search }),
     ...(nextId && { 'next-id': nextId }),
     ...(sort && { sort }),
@@ -297,7 +290,7 @@ export async function searchMangasFromKHentai({
     ...(endDate && { 'end-date': String(endDate) }),
   })
 
-  const response = await fetch(`https://k-hentai.org/ajax/search?${searchParams}`, {
+  const response = await fetch(`${url}?${searchParams2}`, {
     referrerPolicy: 'no-referrer',
     next: { revalidate: 86400 }, // 1 day
   })

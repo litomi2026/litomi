@@ -17,12 +17,16 @@ type SearchParams = {
   skip?: number
 }
 
+export function getSearchQueryKey(searchParams: SearchParams) {
+  return ['search', searchParams]
+}
+
 export function useSearchQuery(searchParams: SearchParams) {
   return useQuery<Manga[], Error>({
-    queryKey: ['search', searchParams],
-    queryFn: () => searchMangasFromKHentai(searchParams),
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
+    queryKey: getSearchQueryKey(searchParams),
+    queryFn: () => searchMangasFromKHentai({ url: '/api/proxy/k', searchParams }),
+    staleTime: 300_000, // 5 minutes
+    gcTime: 600_000, // 10 minutes
     retry: (failureCount, error) => (error instanceof NotFoundError ? false : failureCount < 2),
   })
 }
