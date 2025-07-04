@@ -127,7 +127,7 @@ export default function ProfileEditButton() {
                 />
               </div>
               <div>
-                <span>아이디</span>
+                <label htmlFor="">아이디</label>
                 <input defaultValue={me?.loginId ?? ''} disabled type="text" />
               </div>
               <div>
