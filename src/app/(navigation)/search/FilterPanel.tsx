@@ -130,6 +130,23 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
     }
   }, [buttonRef])
 
+  // NOTE: ESC 키를 눌렀을 때 필터 패널을 닫음
+  useEffect(() => {
+    if (!show) return
+
+    const handleEscKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose()
+      }
+    }
+
+    window.addEventListener('keydown', handleEscKey)
+
+    return () => {
+      window.removeEventListener('keydown', handleEscKey)
+    }
+  }, [show, onClose])
+
   return createPortal(
     <>
       {/* Backdrop */}
