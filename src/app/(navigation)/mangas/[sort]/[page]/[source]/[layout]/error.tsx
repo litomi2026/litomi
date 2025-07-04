@@ -1,6 +1,7 @@
 'use client'
 
 import { captureException } from '@sentry/nextjs'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 type Props = {
@@ -10,10 +11,12 @@ type Props = {
 
 export default function ErrorPage({ error, reset }: Props) {
   const [cooldown, setCooldown] = useState(5000)
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
 
   useEffect(() => {
-    captureException(error, { extra: { name: '/mangas' } })
-  }, [error])
+    captureException(error, { extra: { pathname, searchParams } })
+  }, [error, pathname, searchParams])
 
   useEffect(() => {
     const interval = setInterval(() => {
