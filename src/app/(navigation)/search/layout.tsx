@@ -21,8 +21,8 @@ export default async function Layout({ children }: BaseLayoutProps) {
         <div className="px-2 py-2">
           <div className="flex justify-center flex-wrap gap-2 whitespace-nowrap text-sm sm:justify-end md:text-base">
             <SearchForm className="grow" />
-            <AdvancedFilters />
             <ViewToggle initialView={view} />
+            <AdvancedFilters />
           </div>
         </div>
       </div>

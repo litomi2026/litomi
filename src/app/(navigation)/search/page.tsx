@@ -61,7 +61,6 @@ export default async function Page({ searchParams }: BasePageProps) {
     notFound()
   }
 
-  // Check if any filters are active
   const hasActiveFilters = !!(
     query ||
     from ||
