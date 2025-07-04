@@ -3,7 +3,7 @@
 import { type MouseEvent, type ReactNode, type TouchEvent, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 
-import useIsMounted from '@/hook/useIsMounted'
+import useMounted from '@/hook/useMounted'
 
 import IconX from '../icons/IconX'
 
@@ -97,7 +97,7 @@ export default function Modal({
   }
 
   // --
-  const isMounted = useIsMounted()
+  const isMounted = useMounted()
 
   if (!isMounted) return null
 

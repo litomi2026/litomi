@@ -8,7 +8,7 @@ import IconSpinner from '@/components/icons/IconSpinner'
 import { SEARCH_FILTERS, type SearchFilter } from './searchConstants'
 import useSearchSuggestions from './useSearchSuggestions'
 
-// NOTE: 초기 bundle 크기를 줄이기 위해 lazy import 사용
+// NOTE: 드롭다운은 사용자가 검색어를 입력할 때만 표시되므로 초기 bundle 크기를 줄이기 위해 lazy import 사용
 const SearchSuggestionDropdown = lazy(() => import('./SearchSuggestionDropdown'))
 
 type Props = {
@@ -166,7 +166,7 @@ export default function SearchForm({ className = '' }: Props) {
           aria-label="검색 실행"
           className="
             px-4 py-2 shrink-0 font-medium
-            rounded-l-none transition-all duration-200
+            rounded-l-none transition duration-200
             bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-800
             text-zinc-200 hover:text-white
             aria-disabled:opacity-60

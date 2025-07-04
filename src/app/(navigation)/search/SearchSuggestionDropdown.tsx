@@ -69,7 +69,7 @@ function SearchSuggestionDropdown({ suggestions, selectedIndex, showHeader, onSe
             <button
               className={`
                 w-full px-3 py-2 text-left flex items-center justify-between gap-2
-                transition-colors text-sm sm:text-base sm:px-4
+                transition text-sm sm:text-base sm:px-4
                 ${
                   index === selectedIndex
                     ? 'bg-zinc-800 text-white'
