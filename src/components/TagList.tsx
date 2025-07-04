@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { memo } from 'react'
 
-import { getSearchLink } from './card/utils'
+import { getKoreanSearchLink } from './card/utils'
 
 const tagStyles = {
   male: 'bg-blue-700',
@@ -33,7 +33,7 @@ function TagList({ className, tags, clickable = false }: Props) {
         if (clickable) {
           return (
             <li className={`${tagStyle} hover:opacity-80 focus:opacity-80 transition-opacity`} key={tag}>
-              <Link className="block" href={getSearchLink(label ? category : 'other', content)}>
+              <Link className="block" href={getKoreanSearchLink(label ? category : 'other', content)}>
                 {content}
               </Link>
             </li>

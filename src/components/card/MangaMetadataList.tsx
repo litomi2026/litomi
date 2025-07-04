@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { memo } from 'react'
 
-import { getSearchLink } from './utils'
+import { getKoreanSearchLink } from './utils'
 
 type Props = {
   label: string
@@ -22,7 +22,7 @@ function MangaMetadataList({ label, items, filterType, className = '' }: Props) 
         {items.map((item, idx) => (
           <Link
             className="px-0.5 first:pl-0 last:pr-0 hover:underline focus:underline"
-            href={getSearchLink(filterType, item)}
+            href={getKoreanSearchLink(filterType, item)}
             key={item}
           >
             {item.replaceAll('_', ' ')}
