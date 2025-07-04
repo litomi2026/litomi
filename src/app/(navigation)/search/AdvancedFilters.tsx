@@ -10,7 +10,7 @@ import { useMounted } from '@/hook/useMounted'
 
 import RangeInput from './RangeInput'
 
-const FILTER_KEYS = ['sort', 'min-view', 'max-view', 'min-page', 'max-page', 'from', 'to'] as const
+export const FILTER_KEYS = ['sort', 'min-view', 'max-view', 'min-page', 'max-page', 'from', 'to'] as const
 
 const FILTER_CONFIG = {
   sort: {
