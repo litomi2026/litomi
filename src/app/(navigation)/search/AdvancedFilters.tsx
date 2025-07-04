@@ -30,13 +30,13 @@ export default function AdvancedFilters() {
     const untilParam = searchParams.get('until')
 
     return {
-      'min-view': searchParams.get('min-view') || '',
-      'max-view': searchParams.get('max-view') || '',
-      'min-page': searchParams.get('min-page') || '',
-      'max-page': searchParams.get('max-page') || '',
+      'min-view': searchParams.get('min-view') ?? '',
+      'max-view': searchParams.get('max-view') ?? '',
+      'min-page': searchParams.get('min-page') ?? '',
+      'max-page': searchParams.get('max-page') ?? '',
       from: fromParam ? new Date(Number(fromParam)).toISOString().split('T')[0] : '',
       until: untilParam ? new Date(Number(untilParam)).toISOString().split('T')[0] : '',
-      sort: searchParams.get('sort') || '',
+      sort: searchParams.get('sort') ?? '',
     }
   })
 
@@ -171,10 +171,10 @@ export default function AdvancedFilters() {
                 label="조회수 범위"
                 max={Number.MAX_SAFE_INTEGER}
                 maxId="max-view"
-                maxValue={filters['max-view'] || ''}
+                maxValue={filters['max-view'] ?? ''}
                 min={0}
                 minId="min-view"
-                minValue={filters['min-view'] || ''}
+                minValue={filters['min-view'] ?? ''}
                 onMaxChange={(value) => handleFilterChange('max-view', value)}
                 onMinChange={(value) => handleFilterChange('min-view', value)}
                 type="number"
@@ -185,10 +185,10 @@ export default function AdvancedFilters() {
                 label="페이지 수 범위"
                 max={10000}
                 maxId="max-page"
-                maxValue={filters['max-page'] || ''}
+                maxValue={filters['max-page'] ?? ''}
                 min={1}
                 minId="min-page"
-                minValue={filters['min-page'] || ''}
+                minValue={filters['min-page'] ?? ''}
                 onMaxChange={(value) => handleFilterChange('max-page', value)}
                 onMinChange={(value) => handleFilterChange('min-page', value)}
                 type="number"
@@ -199,10 +199,10 @@ export default function AdvancedFilters() {
                 label="날짜 범위"
                 maxId="until-date"
                 maxPlaceholder="종료일"
-                maxValue={filters.until || ''}
+                maxValue={filters.until ?? ''}
                 minId="from-date"
                 minPlaceholder="시작일"
-                minValue={filters.from || ''}
+                minValue={filters.from ?? ''}
                 onMaxChange={(value) => handleFilterChange('until', value)}
                 onMinChange={(value) => handleFilterChange('from', value)}
                 type="date"

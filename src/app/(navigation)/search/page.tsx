@@ -61,7 +61,7 @@ export default async function Page({ searchParams }: BasePageProps) {
     notFound()
   }
 
-  const hasActiveFilters = !!(from || until || sort || afterId || minView || maxView || minPage || maxPage || skip)
+  const hasActiveFilters = !!(from ?? until ?? sort ?? afterId ?? minView ?? maxView ?? minPage ?? maxPage ?? skip)
 
   return (
     <>
@@ -76,12 +76,12 @@ export default async function Page({ searchParams }: BasePageProps) {
             )}
             {(minView || maxView) && (
               <span className="ml-2 text-zinc-300">
-                (조회수: {minView || '0'} ~ {maxView || '∞'})
+                (조회수: {minView ?? '0'} ~ {maxView ?? '∞'})
               </span>
             )}
             {(minPage || maxPage) && (
               <span className="ml-2 text-zinc-300">
-                (페이지: {minPage || '0'} ~ {maxPage || '∞'})
+                (페이지: {minPage ?? '0'} ~ {maxPage ?? '∞'})
               </span>
             )}
             {(from || until) && (
