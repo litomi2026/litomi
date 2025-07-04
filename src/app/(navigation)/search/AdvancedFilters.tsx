@@ -10,17 +10,59 @@ import { useMounted } from '@/hook/useMounted'
 
 import RangeInput from './RangeInput'
 
-type FilterState = {
-  sort?: string
-  'min-view'?: string
-  'max-view'?: string
-  'min-page'?: string
-  'max-page'?: string
-  from?: string
-  to?: string
-}
-
 const FILTER_KEYS = ['sort', 'min-view', 'max-view', 'min-page', 'max-page', 'from', 'to'] as const
+
+const FILTER_CONFIG = {
+  sort: {
+    type: 'select' as const,
+    label: '정렬',
+    options: [
+      { value: '', label: '기본' },
+      { value: 'random', label: '랜덤' },
+      { value: 'id_asc', label: '오래된 순' },
+      { value: 'popular', label: '인기순' },
+    ],
+  },
+  'min-view': {
+    type: 'number' as const,
+    label: '조회수 범위',
+    min: 0,
+    max: Number.MAX_SAFE_INTEGER,
+  },
+  'max-view': {
+    type: 'number' as const,
+    label: '조회수 범위',
+    min: 0,
+    max: Number.MAX_SAFE_INTEGER,
+  },
+  'min-page': {
+    type: 'number' as const,
+    label: '페이지 수 범위',
+    min: 1,
+    max: 10000,
+  },
+  'max-page': {
+    type: 'number' as const,
+    label: '페이지 수 범위',
+    min: 1,
+    max: 10000,
+  },
+  from: {
+    type: 'date' as const,
+    label: '날짜 범위',
+    placeholder: '시작일',
+  },
+  to: {
+    type: 'date' as const,
+    label: '날짜 범위',
+    placeholder: '종료일',
+  },
+} as const
+
+type FilterKey = (typeof FILTER_KEYS)[number]
+type FilterState = Partial<Record<FilterKey, string>>
+
+const isDateFilter = (key: FilterKey) => FILTER_CONFIG[key].type === 'date'
 
 export default function AdvancedFilters() {
   const router = useRouter()
@@ -33,21 +75,23 @@ export default function AdvancedFilters() {
   const [buttonRect, setButtonRect] = useState<DOMRect | null>(null)
 
   const [filters, setFilters] = useState<FilterState>(() => {
-    const fromParam = searchParams.get('from')
-    const toParam = searchParams.get('to')
+    const initialState: FilterState = {}
 
-    return {
-      'min-view': searchParams.get('min-view') ?? '',
-      'max-view': searchParams.get('max-view') ?? '',
-      'min-page': searchParams.get('min-page') ?? '',
-      'max-page': searchParams.get('max-page') ?? '',
-      from: fromParam ? new Date(Number(fromParam) * 1000).toISOString().split('T')[0] : '',
-      to: toParam ? new Date(Number(toParam) * 1000).toISOString().split('T')[0] : '',
-      sort: searchParams.get('sort') ?? '',
-    }
+    FILTER_KEYS.forEach((key) => {
+      const value = searchParams.get(key)
+      if (!value) return
+
+      if (isDateFilter(key)) {
+        initialState[key] = new Date(Number(value) * 1000).toISOString().split('T')[0]
+      } else {
+        initialState[key] = value
+      }
+    })
+
+    return initialState
   })
 
-  const handleFilterChange = useCallback((key: keyof FilterState, value: string) => {
+  const handleFilterChange = useCallback((key: FilterKey, value: string) => {
     setFilters((prev) => ({ ...prev, [key]: value }))
   }, [])
 
@@ -57,27 +101,31 @@ export default function AdvancedFilters() {
 
       const params = new URLSearchParams(searchParams.toString())
 
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value) {
-          if (key === 'from' || key === 'to') {
-            const date = new Date(value)
+      FILTER_KEYS.forEach((key) => {
+        const value = filters[key]
 
-            if (key === 'to') {
-              date.setHours(23, 59, 59, 999)
-              const now = new Date()
-              if (date > now) {
-                date.setTime(now.getTime())
-              }
-            }
-
-            const timestamp = Math.floor(date.getTime() / 1000)
-            params.set(key, timestamp.toString())
-          } else {
-            params.set(key, value)
-          }
-        } else {
+        if (!value) {
           params.delete(key)
+          return
         }
+
+        if (!isDateFilter(key)) {
+          params.set(key, value)
+          return
+        }
+
+        const date = new Date(value)
+
+        if (key === 'to') {
+          date.setHours(23, 59, 59, 999)
+          const now = new Date()
+          if (date > now) {
+            date.setTime(now.getTime())
+          }
+        }
+
+        const timestamp = Math.floor(date.getTime() / 1000)
+        params.set(key, timestamp.toString())
       })
 
       startTransition(() => {
@@ -89,15 +137,7 @@ export default function AdvancedFilters() {
   )
 
   const clearFilters = useCallback(() => {
-    setFilters({
-      'min-view': '',
-      'max-view': '',
-      'min-page': '',
-      'max-page': '',
-      from: '',
-      to: '',
-      sort: '',
-    })
+    setFilters({})
 
     const params = new URLSearchParams(searchParams.toString())
     FILTER_KEYS.forEach((key) => params.delete(key))
@@ -107,7 +147,7 @@ export default function AdvancedFilters() {
     })
   }, [pathname, router, searchParams])
 
-  const hasActiveFilters = Object.values(filters).some((value) => value)
+  const hasActiveFilters = FILTER_KEYS.some((key) => Boolean(filters[key]))
 
   const filterPanelStyle =
     buttonRect && window.innerWidth >= 640
@@ -201,29 +241,30 @@ export default function AdvancedFilters() {
                 {/* Sort */}
                 <div>
                   <label className="block text-sm font-medium text-zinc-300 mb-1" htmlFor="sort">
-                    정렬
+                    {FILTER_CONFIG.sort.label}
                   </label>
                   <select
                     className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100
                   focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:border-transparent appearance-none"
                     id="sort"
                     onChange={(e) => handleFilterChange('sort', e.target.value)}
-                    value={filters.sort}
+                    value={filters.sort ?? ''}
                   >
-                    <option value="">기본</option>
-                    <option value="random">랜덤</option>
-                    <option value="id_asc">오래된 순</option>
-                    <option value="popular">인기순</option>
+                    {FILTER_CONFIG.sort.options.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
                 {/* View count range */}
                 <RangeInput
-                  label="조회수 범위"
-                  max={Number.MAX_SAFE_INTEGER}
+                  label={FILTER_CONFIG['min-view'].label}
+                  max={FILTER_CONFIG['max-view'].max}
                   maxId="max-view"
                   maxValue={filters['max-view'] ?? ''}
-                  min={0}
+                  min={FILTER_CONFIG['min-view'].min}
                   minId="min-view"
                   minValue={filters['min-view'] ?? ''}
                   onMaxChange={(value) => handleFilterChange('max-view', value)}
@@ -233,11 +274,11 @@ export default function AdvancedFilters() {
 
                 {/* Page count range */}
                 <RangeInput
-                  label="페이지 수 범위"
-                  max={10000}
+                  label={FILTER_CONFIG['min-page'].label}
+                  max={FILTER_CONFIG['max-page'].max}
                   maxId="max-page"
                   maxValue={filters['max-page'] ?? ''}
-                  min={1}
+                  min={FILTER_CONFIG['min-page'].min}
                   minId="min-page"
                   minValue={filters['min-page'] ?? ''}
                   onMaxChange={(value) => handleFilterChange('max-page', value)}
@@ -247,12 +288,12 @@ export default function AdvancedFilters() {
 
                 {/* Date range */}
                 <RangeInput
-                  label="날짜 범위"
+                  label={FILTER_CONFIG.from.label}
                   maxId="to-date"
-                  maxPlaceholder="종료일"
+                  maxPlaceholder={FILTER_CONFIG.to.placeholder}
                   maxValue={filters.to ?? ''}
                   minId="from-date"
-                  minPlaceholder="시작일"
+                  minPlaceholder={FILTER_CONFIG.from.placeholder}
                   minValue={filters.from ?? ''}
                   onMaxChange={(value) => handleFilterChange('to', value)}
                   onMinChange={(value) => handleFilterChange('from', value)}
