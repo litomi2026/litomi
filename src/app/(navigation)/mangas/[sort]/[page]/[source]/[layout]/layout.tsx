@@ -1,7 +1,6 @@
 import type { BaseLayoutProps } from '@/types/nextjs'
 
 import ShuffleButton from '@/components/ShuffleButton'
-import SortSliderLink from '@/components/SortSliderLink'
 import SourceSliderLink from '@/components/SourceSliderLink'
 import SourceTooltip from '@/components/tooltip/SourceTooltip'
 import ViewSliderLink from '@/components/ViewSliderLink'
@@ -10,15 +9,13 @@ import {
   SortParam,
   SourceParam,
   validatePage,
-  validateSort,
   validateSource,
   validateView,
   ViewCookie,
 } from '@/utils/param'
 
 export default async function Layout({ params, children }: BaseLayoutProps) {
-  const { sort, page, source, layout } = await params
-  const sortString = validateSort(sort)
+  const { page, source, layout } = await params
   const pageNumber = validatePage(page) || 1
   const sourceString = validateSource(source)
   const viewString = validateView(layout) || ViewCookie.CARD
@@ -28,12 +25,6 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
     <main className="flex flex-col gap-2 grow">
       <h1 className="sr-only">만화 목록</h1>
       <div className="flex justify-center flex-wrap gap-2 whitespace-nowrap text-sm sm:justify-end md:text-base">
-        <SortSliderLink
-          currentSort={sortString}
-          disabled={sourceString === SourceParam.HIYOBI}
-          hrefPrefix="../../../"
-          hrefSuffix={`/${pageNumber}/${defaultSource}/${viewString}`}
-        />
         <ViewSliderLink current={viewString} />
         <SourceSliderLink
           current={sourceString}
