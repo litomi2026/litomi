@@ -2,7 +2,9 @@
 
 import { captureException } from '@sentry/nextjs'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
+
+import useCooldown from '@/hook/useCooldown'
 
 type Props = {
   error: Error & { digest?: string }
@@ -10,26 +12,13 @@ type Props = {
 }
 
 export default function ErrorPage({ error, reset }: Props) {
-  const [cooldown, setCooldown] = useState(5000)
+  const cooldown = useCooldown()
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
   useEffect(() => {
     captureException(error, { extra: { pathname, searchParams } })
   }, [error, pathname, searchParams])
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCooldown((prev) => {
-        if (prev <= 0) {
-          clearInterval(interval)
-          return 0
-        }
-        return prev - 1000
-      })
-    }, 1000)
-    return () => clearInterval(interval)
-  }, [])
 
   return (
     <main className="flex flex-col grow justify-center items-center gap-6 text-center">
