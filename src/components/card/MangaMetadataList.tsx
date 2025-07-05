@@ -25,7 +25,9 @@ function MangaMetadataList({ label, items, filterType, className = '' }: Props) 
   const isSearchPage = pathname === '/search'
 
   return (
-    <div className={`flex gap-1 ${className}`}>
+    <div
+      className={`flex gap-1 [&_a]:px-0.5 [&_a]:first:pl-0 [&_a]:last:pr-0 [&_a]:hover:underline [&_a]:focus:underline [&_a]:aria-pressed:text-brand-end [&_a]:aria-pressed:font-semibold ${className}`}
+    >
       <span className="whitespace-nowrap">{label}</span>
       <div className="break-all">
         {items.map((item, idx) => {
@@ -36,11 +38,7 @@ function MangaMetadataList({ label, items, filterType, className = '' }: Props) 
           const isActive = new RegExp(`(^|\\s)${escapedPattern}(?=\\s|$)`, 'i').test(currentQuery)
 
           return (
-            <Link
-              className={`px-0.5 first:pl-0 last:pr-0 hover:underline focus:underline ${isActive ? 'text-brand-end font-semibold' : ''}`}
-              href={`/search?${searchParams}`}
-              key={item}
-            >
+            <Link aria-pressed={isActive} href={`/search?${searchParams}`} key={item}>
               {item.replaceAll('_', ' ')}
               {idx < items.length - 1 && ','}
             </Link>

@@ -58,11 +58,7 @@ function MangaCard({ manga, index = 0, source, className = '' }: Props) {
           {translatedTags && translatedTags.length > 0 && (
             <div className="flex gap-2">
               <span className="whitespace-nowrap">태그</span>
-              <TagList
-                className="flex flex-wrap gap-1 font-semibold [&_li]:rounded [&_li]:px-1 [&_li]:text-foreground"
-                clickable
-                tags={translatedTags}
-              />
+              <TagList className="flex flex-wrap gap-1 font-semibold" clickable tags={translatedTags} />
             </div>
           )}
         </div>

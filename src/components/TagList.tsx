@@ -37,10 +37,12 @@ function TagList({ className, tags, clickable = false }: Props) {
   const isSearchPage = pathname === '/search'
 
   return (
-    <ul className={className}>
+    <ul
+      className={`[&_a]:rounded [&_a]:px-1 [&_a]:text-foreground [&_a]:hover:underline [&_a]:active:opacity-80 [&_a]:transition [&_a]:block [&_a]:aria-pressed:ring-2 [&_a]:aria-pressed:ring-brand-end ${className}`}
+    >
       {tags.map((tag) => {
         const [category, label] = tag.split(':')
-        const tagStyle = label ? (tagStyles[category as keyof typeof tagStyles] ?? 'bg-zinc-900') : 'bg-zinc-700'
+        const tagColor = label ? (tagStyles[category as keyof typeof tagStyles] ?? 'bg-zinc-900') : 'bg-zinc-700'
         const content = (label || category).replaceAll('_', ' ')
         const filterType = label ? category : 'other'
 
@@ -52,11 +54,8 @@ function TagList({ className, tags, clickable = false }: Props) {
           const isActive = new RegExp(`(^|\\s)${escapedPattern}(?=\\s|$)`, 'i').test(currentQuery)
 
           return (
-            <li
-              className={`${tagStyle} hover:underline active:opacity-80 transition ${isActive ? 'ring-2 ring-brand-end' : ''}`}
-              key={tag}
-            >
-              <Link className="block" href={`/search?${newSearchParams}`}>
+            <li key={tag}>
+              <Link aria-pressed={isActive} className={tagColor} href={`/search?${newSearchParams}`}>
                 {content}
               </Link>
             </li>
@@ -64,7 +63,7 @@ function TagList({ className, tags, clickable = false }: Props) {
         }
 
         return (
-          <li className={tagStyle} key={tag}>
+          <li className={tagColor} key={tag}>
             {content}
           </li>
         )

@@ -33,7 +33,8 @@ function MangaMetadataItem({ label, value, filterType, className = '' }: Props) 
     <div className={`flex gap-1 ${className}`}>
       <span>{label}</span>
       <Link
-        className={`hover:underline focus:underline ${isActive ? 'text-brand-end font-semibold' : ''}`}
+        aria-pressed={isActive}
+        className="hover:underline focus:underline aria-pressed:text-brand-end aria-pressed:font-semibold"
         href={`/search?${newSearchParams}`}
       >
         {value}
