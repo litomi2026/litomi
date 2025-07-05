@@ -8,7 +8,7 @@ import IconX from '@/components/icons/IconX'
 
 import type { MangaSearch } from './searchValidation'
 
-import { FILTER_KEYS } from './searchConstants'
+import { FILTER_KEYS } from './constants'
 
 type Props = {
   filters: MangaSearch

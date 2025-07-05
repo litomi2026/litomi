@@ -1,6 +1,6 @@
 import { memo, useEffect, useRef, useState } from 'react'
 
-import type { SearchFilter } from './searchConstants'
+import type { SearchFilter } from './constants'
 
 type Props = {
   suggestions: SearchFilter[]

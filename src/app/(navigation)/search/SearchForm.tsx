@@ -5,8 +5,9 @@ import { FormEvent, lazy, Suspense, useCallback, useEffect, useRef, useState, us
 
 import IconSpinner from '@/components/icons/IconSpinner'
 
-import { SEARCH_FILTERS, type SearchFilter } from './searchConstants'
+import { SEARCH_FILTERS, type SearchFilter } from './constants'
 import useSearchSuggestions from './useSearchSuggestions'
+import { translateKoreanToEnglish } from './utils'
 
 // NOTE: 드롭다운은 사용자가 검색어를 입력할 때만 표시되므로 초기 bundle 크기를 줄이기 위해 lazy import 사용
 const SearchSuggestionDropdown = lazy(() => import('./SearchSuggestionDropdown'))
@@ -105,7 +106,8 @@ export default function SearchForm({ className = '' }: Props) {
     const params = new URLSearchParams(searchParams.toString())
 
     if (keyword.trim()) {
-      params.set('query', keyword.trim())
+      const translatedKeyword = translateKoreanToEnglish(keyword.trim())
+      params.set('query', translatedKeyword || keyword.trim())
     } else {
       params.delete('query')
     }

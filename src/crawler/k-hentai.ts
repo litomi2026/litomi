@@ -1,6 +1,6 @@
 import { captureException } from '@sentry/nextjs'
 
-import { convertQueryKey } from '@/app/(navigation)/search/searchUtils'
+import { convertQueryKey } from '@/app/(navigation)/search/utils'
 import { Manga } from '@/types/manga'
 
 import { NotFoundError } from './common'
@@ -133,21 +133,6 @@ const typeNameToNumber: Record<string, string> = {
   misc: '10',
   비공개: '11',
   private: '11',
-}
-
-const queryKeyKoreanToEnglish: Record<string, string> = {
-  언어: 'language',
-  여성: 'female',
-  여: 'female',
-  남성: 'male',
-  남: 'male',
-  기타: 'other',
-  혼합: 'mixed',
-  작가: 'artist',
-  그룹: 'group',
-  캐릭터: 'character',
-  시리즈: 'series',
-  종류: 'type',
 }
 
 type Params3 = {
@@ -284,9 +269,9 @@ export async function searchMangasFromKHentai({ url, searchParams }: Params3) {
     nextId,
     skip,
   } = searchParams
-  const lowerEnglishQuery = convertQueryKey(translateQuery(query?.toLowerCase()))
-  const categories = getCategories(lowerEnglishQuery)
-  const search = lowerEnglishQuery?.replace(/\btype:\S+/gi, '').trim()
+  const lowerQuery = convertQueryKey(query?.toLowerCase())
+  const categories = getCategories(lowerQuery)
+  const search = lowerQuery?.replace(/\btype:\S+/gi, '').trim()
 
   const searchParams2 = new URLSearchParams({
     ...(search && { search }),
@@ -302,7 +287,6 @@ export async function searchMangasFromKHentai({ url, searchParams }: Params3) {
     ...(to && { 'end-date': String(to) }),
   })
 
-  console.log('👀 - searchMangasFromKHentai - searchParams2:', searchParams2.toString())
   const response = await fetch(`${url}?${searchParams2}`, {
     referrerPolicy: 'no-referrer',
     next: { revalidate: 86400 }, // 1 day
@@ -326,19 +310,6 @@ export async function searchMangasFromKHentai({ url, searchParams }: Params3) {
   }
 
   return mangas.map((manga) => convertKHentaiMangaToManga(manga))
-}
-
-export function translateQuery(query?: string) {
-  if (!query) return
-
-  let translatedQuery = query
-
-  Object.entries(queryKeyKoreanToEnglish).forEach(([korean, english]) => {
-    const regex = new RegExp(`\\b${korean}(?=:)`, 'gi')
-    translatedQuery = translatedQuery.replace(regex, english)
-  })
-
-  return translatedQuery
 }
 
 function convertKHentaiCommonToManga(manga: KHentaiMangaCommon) {
