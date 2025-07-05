@@ -7,10 +7,10 @@ import { createPortal } from 'react-dom'
 import IconSpinner from '@/components/icons/IconSpinner'
 import IconX from '@/components/icons/IconX'
 
-import type { FilterKey, FilterState } from './searchConstants'
+import type { FilterKey, FilterState } from './constants'
 
+import { FILTER_CONFIG, FILTER_KEYS, isDateFilter } from './constants'
 import RangeInput from './RangeInput'
-import { FILTER_CONFIG, FILTER_KEYS, isDateFilter } from './searchConstants'
 
 interface FilterPanelProps {
   buttonRef: RefObject<HTMLButtonElement | null>
@@ -129,6 +129,23 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
       clearTimeout(timeoutId)
     }
   }, [buttonRef])
+
+  // NOTE: ESC 키를 눌렀을 때 필터 패널을 닫음
+  useEffect(() => {
+    if (!show) return
+
+    const handleEscKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose()
+      }
+    }
+
+    window.addEventListener('keydown', handleEscKey)
+
+    return () => {
+      window.removeEventListener('keydown', handleEscKey)
+    }
+  }, [show, onClose])
 
   return createPortal(
     <>

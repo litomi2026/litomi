@@ -4,8 +4,7 @@ import { SourceParam } from '@/utils/param'
 
 const sourceIndexMap: Record<string, number> = {
   [SourceParam.HIYOBI]: 0,
-  [SourceParam.HARPI]: 1,
-  [SourceParam.K_HENTAI]: 2,
+  [SourceParam.K_HENTAI]: 1,
 }
 
 const sources = Object.keys(sourceIndexMap) as SourceParam[]

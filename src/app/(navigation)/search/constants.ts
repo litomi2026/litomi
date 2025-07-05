@@ -19,6 +19,16 @@ export const SEARCH_FILTERS: SearchFilter[] = [
   { label: 'id:', value: 'gid:', description: 'ID' },
 ]
 
+export const SEARCH_LABEL_TO_VALUE_MAP = SEARCH_FILTERS.reduce(
+  (map, filter) => {
+    if (filter.value) {
+      map[filter.label] = filter.value
+    }
+    return map
+  },
+  {} as Record<string, string>,
+)
+
 export const FILTER_CONFIG = {
   sort: {
     type: 'select' as const,
@@ -72,3 +82,20 @@ export type FilterKey = (typeof FILTER_KEYS)[number]
 export type FilterState = Partial<Record<FilterKey, string>>
 
 export const isDateFilter = (key: FilterKey) => FILTER_CONFIG[key].type === 'date'
+
+export const KOREAN_TO_ENGLISH_QUERY_KEYS: Record<string, string> = {
+  언어: 'language',
+  여성: 'female',
+  여자: 'female',
+  여: 'female',
+  남성: 'male',
+  남자: 'male',
+  남: 'male',
+  기타: 'other',
+  혼합: 'mixed',
+  작가: 'artist',
+  그룹: 'group',
+  캐릭터: 'character',
+  시리즈: 'series',
+  종류: 'type',
+}

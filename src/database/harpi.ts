@@ -2,7 +2,7 @@ import { MANGA_PER_PAGE } from '@/constants'
 import harpiJSON from '@/database/harpi.json'
 import { Manga } from '@/types/manga'
 
-export const harpiMangas = harpiJSON as Record<string, Manga>
+export const harpiMangas = harpiJSON as unknown as Record<string, Manga>
 export const harpiMangaIds = Object.keys(harpiMangas) as (keyof typeof harpiMangas)[]
 export const harpiMangaIdsDesc = harpiMangaIds.toReversed()
 export const harpiMangaPages = Array.from({ length: Math.ceil(harpiMangaIds.length / MANGA_PER_PAGE) })

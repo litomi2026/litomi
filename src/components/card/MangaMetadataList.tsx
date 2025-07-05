@@ -8,45 +8,42 @@ import { toggleSearchFilter } from './utils'
 
 type Props = {
   label: string
-  items?: string[]
+  values: string[]
   filterType: string
   className?: string
 }
 
 export default memo(MangaMetadataList)
 
-function MangaMetadataList({ label, items, filterType, className = '' }: Props) {
+function MangaMetadataList({ label, values, filterType, className = '' }: Props) {
   const searchParams = useSearchParams()
   const pathname = usePathname()
-
-  if (!items || items.length === 0) return null
-
-  const currentQuery = searchParams.get('query') || ''
+  const currentQuery = searchParams.get('query') ?? ''
   const isSearchPage = pathname === '/search'
 
   return (
-    <div className={`flex gap-1 ${className}`}>
+    <div
+      className={`flex gap-1 [&_a]:px-0.5 [&_a]:first:pl-0 [&_a]:last:pr-0 [&_a]:hover:underline [&_a]:focus:underline [&_a]:aria-pressed:text-brand-end [&_a]:aria-pressed:font-semibold ${className}`}
+    >
       <span className="whitespace-nowrap">{label}</span>
-      <div className="break-all">
-        {items.map((item, idx) => {
-          const newQuery = toggleSearchFilter(currentQuery, filterType, item, !isSearchPage)
-          const normalizedValue = item.replaceAll(' ', '_')
-          const filterPattern = `${filterType}:${normalizedValue}`
+      <ul className="break-all">
+        {values.map((value, idx) => {
+          const newQuery = toggleSearchFilter(currentQuery, filterType, value, !isSearchPage)
+          const searchParams = new URLSearchParams({ query: newQuery })
+          const filterPattern = `${filterType}:${value.replaceAll(' ', '_')}`
           const escapedPattern = filterPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-          const isActive = new RegExp(`(^|\\s)${escapedPattern}(?=\\s|$)`, 'i').test(currentQuery)
+          const isActive = currentQuery
+            ? new RegExp(`(^|\\s)${escapedPattern}(?=\\s|$)`, 'i').test(currentQuery)
+            : false
 
           return (
-            <Link
-              className={`px-0.5 first:pl-0 last:pr-0 hover:underline focus:underline ${isActive ? 'text-brand-end font-semibold' : ''}`}
-              href={`/search?query=${encodeURIComponent(newQuery)}`}
-              key={item}
-            >
-              {item.replaceAll('_', ' ')}
-              {idx < items.length - 1 && ','}
+            <Link aria-pressed={isActive} href={`/search?${searchParams}`} key={value}>
+              {value.replaceAll('_', ' ')}
+              {idx < values.length - 1 && ','}
             </Link>
           )
         })}
-      </div>
+      </ul>
     </div>
   )
 }

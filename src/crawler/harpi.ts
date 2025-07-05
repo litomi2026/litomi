@@ -1,7 +1,24 @@
 import { prettifyJSON } from '@/crawler/utils'
-import { Manga } from '@/types/manga'
+import { harpiTagMap } from '@/database/harpi-tag'
+import { Multilingual, normalizeTagValue, translateTagValue } from '@/database/tag-translations'
+import { Manga, Tag } from '@/types/manga'
 
 import mangas from '../database/harpi.json'
+
+// Type for existing manga data in harpi.json
+type ExistingMangaData = {
+  id: number
+  artists?: string[]
+  characters?: string[]
+  date: string
+  group?: string[]
+  series?: string[]
+  tags?: string[]
+  title: string
+  type?: string
+  images: string[]
+  cdn?: string
+}
 
 type FetchHarpiMangasParams = {
   page: number
@@ -29,6 +46,45 @@ type HarpiManga = {
   // updatedAt: string
 }
 
+function convertHarpiTagIdsToTags(tagIds: string[]): Tag[] {
+  const currentLanguage = 'ko' // TODO: Get from user preferences or context
+  const tags: Tag[] = []
+
+  for (const tagId of tagIds) {
+    const harpiTag = harpiTagMap[tagId]
+    if (!harpiTag) continue
+
+    const [categoryStr, valueStr] = harpiTag.engStr.split(':')
+    if (!valueStr) continue
+
+    // Map harpi gender to our category
+    let category: Tag['category']
+    switch (harpiTag.gender) {
+      case 'E':
+        category = 'other'
+        break
+      case 'F':
+        category = 'female'
+        break
+      case 'M':
+        category = 'male'
+        break
+      default:
+        continue
+    }
+
+    const normalizedValue = normalizeTagValue(valueStr)
+
+    tags.push({
+      category,
+      value: normalizedValue,
+      label: translateTagValue(normalizedValue, currentLanguage as keyof Multilingual),
+    })
+  }
+
+  return tags
+}
+
 async function fetchMangas({ page }: FetchHarpiMangasParams): Promise<Manga[] | null> {
   try {
     const response = await fetch(`https://pk3.harpi.in/animation/list?page=${page}&pageLimit=10&sort=date_desc`)
@@ -40,7 +96,7 @@ async function fetchMangas({ page }: FetchHarpiMangasParams): Promise<Manga[] | 
       date: manga.date,
       group: manga.groups,
       series: manga.series,
-      tags: manga.tagsIds,
+      tags: convertHarpiTagIdsToTags(manga.tagsIds),
       title: manga.title,
       type: manga.type,
       images: sortImageURLs(manga.imageUrl),
@@ -69,7 +125,21 @@ async function main() {
     await sleep(1000)
   }
 
-  const mergedMangas: Record<number, Manga> = { ...fetchedMangaById, ...mangas }
+  // Convert existing manga data to new format
+  const convertedExistingMangas: Record<number, Manga> = {}
+  const existingMangas = mangas as unknown as Record<string, ExistingMangaData>
+
+  for (const [id, manga] of Object.entries(existingMangas)) {
+    convertedExistingMangas[+id] = {
+      ...manga,
+      tags:
+        manga.tags && Array.isArray(manga.tags) && typeof manga.tags[0] === 'string'
+          ? convertHarpiTagIdsToTags(manga.tags)
+          : [],
+    }
+  }
+
+  const mergedMangas: Record<number, Manga> = { ...convertedExistingMangas, ...fetchedMangaById }
   prettifyJSON({ pathname: '../database/harpi.json', json: mergedMangas })
   console.log('Harpi manga updated successfully.')
 }

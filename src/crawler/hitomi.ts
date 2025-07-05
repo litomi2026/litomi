@@ -96,7 +96,11 @@ function convertHitomiGalleryToManga(gallery: HitomiGallery): Manga {
     title: gallery.title,
     artists: gallery.artists.map((artist) => artist.artist),
     series: gallery.parodys.map((parody) => parody.parody),
-    tags: gallery.tags.map((tag) => tag.tag),
+    tags: gallery.tags.map((tag) => ({
+      category: 'other',
+      value: tag.tag,
+      label: tag.tag,
+    })),
     images: gallery.files.map((file) => `https://ltn.gold-usergeneratedcontent.net/1/111/${file.hash}`),
   }
 }

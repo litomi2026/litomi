@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 
-import { SEARCH_FILTERS } from './searchConstants'
+import { SEARCH_FILTERS } from './constants'
 
 export default function useSearchSuggestions(keyword: string) {
   const [showSuggestions, setShowSuggestions] = useState(false)

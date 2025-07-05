@@ -3,7 +3,7 @@ import { Manga } from '@/types/manga'
 
 import harpiJSON from '../src/database/harpi.json'
 
-const harpiMangas = harpiJSON as Record<string, Manga>
+const harpiMangas = harpiJSON as unknown as Record<string, Manga>
 
 const noSourceMangaIds = [
   3304029, 3304032, 3303425, 3303096, 3080981, 3109437, 3204490, 3066323, 3026323, 3181671, 3181668, 3179054, 3178158,

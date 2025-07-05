@@ -3,7 +3,6 @@ import dayjs from 'dayjs'
 import Link from 'next/link'
 import { memo } from 'react'
 
-import { harpiTagMap } from '@/database/harpi-tag'
 import { Manga } from '@/types/manga'
 import { getViewerLink } from '@/utils/manga'
 import { SourceParam } from '@/utils/param'
@@ -31,8 +30,6 @@ export function MangaCardSkeleton() {
 
 function MangaCard({ manga, index = 0, source, className = '' }: Props) {
   const { id, artists, characters, date, group, series, tags, title, type } = manga
-  const mappedTags = tags?.map((tag) => harpiTagMap[tag] || tag)
-  const translatedTags = mappedTags?.map((tag) => (typeof tag === 'string' ? tag : tag.korStr || tag.engStr))
   const viewerLink = getViewerLink(id, source)
 
   return (
@@ -50,19 +47,17 @@ function MangaCard({ manga, index = 0, source, className = '' }: Props) {
               {title}
             </h4>
           </Link>
-          <MangaMetadataItem filterType="type" label="종류" value={type} />
-          <MangaMetadataList filterType="artist" items={artists} label="작가" />
-          <MangaMetadataList filterType="group" items={group} label="그룹" />
-          <MangaMetadataList filterType="series" items={series} label="시리즈" />
-          <MangaMetadataList filterType="character" items={characters} label="캐릭터" />
-          {translatedTags && translatedTags.length > 0 && (
+          {type && <MangaMetadataItem filterType="type" label="종류" value={type} />}
+          {artists && artists.length > 0 && <MangaMetadataList filterType="artist" label="작가" values={artists} />}
+          {group && group.length > 0 && <MangaMetadataList filterType="group" label="그룹" values={group} />}
+          {series && series.length > 0 && <MangaMetadataList filterType="series" label="시리즈" values={series} />}
+          {characters && characters.length > 0 && (
+            <MangaMetadataList filterType="character" label="캐릭터" values={characters} />
+          )}
+          {tags && tags.length > 0 && (
             <div className="flex gap-2">
               <span className="whitespace-nowrap">태그</span>
-              <TagList
-                className="flex flex-wrap gap-1 font-semibold [&_li]:rounded [&_li]:px-1 [&_li]:text-foreground"
-                clickable
-                tags={translatedTags}
-              />
+              <TagList className="flex flex-wrap gap-1 font-semibold" clickable tags={tags} />
             </div>
           )}
         </div>
