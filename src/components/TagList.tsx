@@ -46,8 +46,8 @@ function TagList({ className, tags, clickable = false }: Props) {
 
         if (clickable) {
           const newQuery = toggleSearchFilter(currentQuery, filterType, content, !isSearchPage)
-          const normalizedValue = content.replaceAll(' ', '_')
-          const filterPattern = `${filterType}:${normalizedValue}`
+          const newSearchParams = new URLSearchParams({ query: newQuery })
+          const filterPattern = `${filterType}:${content.replaceAll(' ', '_')}`
           const escapedPattern = filterPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
           const isActive = new RegExp(`(^|\\s)${escapedPattern}(?=\\s|$)`, 'i').test(currentQuery)
 
@@ -56,7 +56,7 @@ function TagList({ className, tags, clickable = false }: Props) {
               className={`${tagStyle} hover:underline active:opacity-80 transition ${isActive ? 'ring-2 ring-brand-end' : ''}`}
               key={tag}
             >
-              <Link className="block" href={`/search?query=${encodeURIComponent(newQuery)}`}>
+              <Link className="block" href={`/search?${newSearchParams}`}>
                 {content}
               </Link>
             </li>

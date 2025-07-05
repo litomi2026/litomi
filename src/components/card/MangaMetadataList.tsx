@@ -30,15 +30,15 @@ function MangaMetadataList({ label, items, filterType, className = '' }: Props) 
       <div className="break-all">
         {items.map((item, idx) => {
           const newQuery = toggleSearchFilter(currentQuery, filterType, item, !isSearchPage)
-          const normalizedValue = item.replaceAll(' ', '_')
-          const filterPattern = `${filterType}:${normalizedValue}`
+          const searchParams = new URLSearchParams({ query: newQuery })
+          const filterPattern = `${filterType}:${item.replaceAll(' ', '_')}`
           const escapedPattern = filterPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
           const isActive = new RegExp(`(^|\\s)${escapedPattern}(?=\\s|$)`, 'i').test(currentQuery)
 
           return (
             <Link
               className={`px-0.5 first:pl-0 last:pr-0 hover:underline focus:underline ${isActive ? 'text-brand-end font-semibold' : ''}`}
-              href={`/search?query=${encodeURIComponent(newQuery)}`}
+              href={`/search?${searchParams}`}
               key={item}
             >
               {item.replaceAll('_', ' ')}
