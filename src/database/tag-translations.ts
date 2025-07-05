@@ -172,7 +172,7 @@ const TAG_TRANSLATION: Record<string, Multilingual> = {
   conjoined: { en: 'conjoined', ko: '두 개 이상의 머리가 몸을 공유', ja: '結合双生児', 'zh-CN': '连体' },
   coprophagia: { en: 'coprophagia', ko: '배변섭취', ja: '食糞', 'zh-CN': '食粪' },
   corpse: { en: 'corpse', ko: '시체', ja: '死体', 'zh-CN': '尸体' },
-  corruption: { en: 'corruption', ko: '부패', ja: '堕落', 'zh-CN': '堕落' },
+  corruption: { en: 'corruption', ko: '타락', ja: '堕落', 'zh-CN': '堕落' },
   corset: { en: 'corset', ko: '코르셋' },
   cosplay: { en: 'cosplay', ko: '코스프레', ja: 'コスプレ', 'zh-CN': '角色扮演' },
   cosplaying: { en: 'cosplaying', ko: '코스프레' },
