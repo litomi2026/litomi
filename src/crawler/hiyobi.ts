@@ -1,5 +1,10 @@
 import { captureException } from '@sentry/nextjs'
 
+import { normalizeTagValue, translateTagCategory, translateTagValue } from '@/database/tag-translations'
+import { Manga, Tag } from '@/types/manga'
+
+import { isValidKHentaiTagCategory } from './k-hentai'
+
 type HiyobiImage = {
   height: number
   name: string
@@ -105,6 +110,28 @@ export async function fetchRandomMangasFromHiyobi() {
   return mangas.map((manga) => convertHiyobiToManga(manga))
 }
 
+function convertHiyobiTagsToTags(hiyobiTags: HiyobiLabelValue[]): Tag[] {
+  const locale = 'ko' // TODO: Get from user preferences or context
+
+  return hiyobiTags.map((hTag) => {
+    const [category, value] = hTag.value.split(':')
+
+    if (!value) {
+      return {
+        category: 'other',
+        value: category,
+        label: `${translateTagCategory('other', locale)}:${translateTagValue(category, locale)}`,
+      }
+    }
+
+    return {
+      category: isValidKHentaiTagCategory(category) ? category : '',
+      value: normalizeTagValue(value),
+      label: `${translateTagCategory(category, locale)}:${translateTagValue(value, locale)}`,
+    }
+  })
+}
+
 function convertHiyobiToManga({
   id,
   artists,
@@ -118,14 +145,14 @@ function convertHiyobiToManga({
   count,
   like,
   like_anonymous,
-}: HiyobiManga) {
+}: HiyobiManga): Manga {
   return {
     id,
     artists: artists.map((artist) => artist.display),
     characters: characters.map((character) => character.display),
     group: groups.map((group) => group.display),
     series: parodys.map((series) => series.display),
-    tags: tags.map((tag) => tag.display),
+    tags: convertHiyobiTagsToTags(tags),
     title,
     type: hiyobiTypeMap[type as keyof typeof hiyobiTypeMap] ?? '?',
     images: [getKHentaiThumbnailURL(id)],

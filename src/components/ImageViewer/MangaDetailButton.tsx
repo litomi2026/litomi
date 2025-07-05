@@ -2,7 +2,6 @@ import { ErrorBoundary, Suspense } from '@suspensive/react'
 import dayjs from 'dayjs'
 import { memo, useState } from 'react'
 
-import { harpiTagMap } from '@/database/harpi-tag'
 import { Manga } from '@/types/manga'
 import { SourceParam } from '@/utils/param'
 
@@ -21,10 +20,6 @@ export default memo(MangaDetailButton)
 function MangaDetailButton({ manga, source }: Props) {
   const { title, artists, group, series, characters, type, tags, date } = manga
   const [isOpened, setIsOpened] = useState(false)
-
-  const translatedTags = tags
-    ?.map((tag) => harpiTagMap[tag] || tag)
-    ?.map((tag) => (typeof tag === 'string' ? tag : tag.korStr || tag.engStr))
 
   return (
     <>
@@ -65,12 +60,12 @@ function MangaDetailButton({ manga, source }: Props) {
                 <div>{characters.join(', ')}</div>
               </>
             )}
-            {translatedTags && translatedTags.length > 0 && (
+            {tags && tags.length > 0 && (
               <>
                 <strong>태그</strong>
                 <TagList
                   className="flex flex-wrap gap-1 font-medium [&_li]:rounded [&_li]:px-1 [&_li]:text-foreground"
-                  tags={translatedTags}
+                  tags={tags}
                 />
               </>
             )}

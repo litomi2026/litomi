@@ -6,7 +6,7 @@ export type Manga = {
   group?: string[]
   related?: number[]
   series?: string[]
-  tags?: string[]
+  tags?: Tag[]
   title: string
   type?: string
   images: string[]
@@ -16,4 +16,10 @@ export type Manga = {
   likeAnonymous?: number
   viewCount?: number
   rating?: number
+}
+
+export type Tag = {
+  category: '' | 'female' | 'male' | 'mixed' | 'other'
+  value: string // "big_breasts"
+  label: string // "큰 가슴"
 }

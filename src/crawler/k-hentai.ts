@@ -1,9 +1,58 @@
 import { captureException } from '@sentry/nextjs'
 
 import { convertQueryKey } from '@/app/(navigation)/search/utils'
+import { normalizeTagValue, translateTagCategory, translateTagValue } from '@/database/tag-translations'
 import { Manga } from '@/types/manga'
 
 import { NotFoundError } from './common'
+
+const kHentaiTypeNumberToName: Record<number, string> = {
+  1: '동인지',
+  2: '망가',
+  3: '아티스트 CG',
+  4: '게임 CG',
+  5: '서양',
+  6: '이미지 모음',
+  7: '건전',
+  8: '코스프레',
+  9: '아시안',
+  10: '기타',
+  11: '비공개',
+}
+
+const typeNameToNumber: Record<string, number> = {
+  동인지: 1,
+  doujinshi: 1,
+  망가: 2,
+  manga: 2,
+  아티스트cg: 3,
+  아티스트_cg: 3,
+  artistcg: 3,
+  artist_cg: 3,
+  게임cg: 4,
+  게임_cg: 4,
+  game_cg: 4,
+  gamecg: 4,
+  서양: 5,
+  western: 5,
+  이미지모음: 6,
+  이미지_모음: 6,
+  imageset: 6,
+  image_set: 6,
+  건전: 7,
+  'non-h': 7,
+  코스프레: 8,
+  cosplay: 8,
+  아시안: 9,
+  asian: 9,
+  기타: 10,
+  other: 10,
+  misc: 10,
+  비공개: 11,
+  private: 11,
+}
+
+const VALID_TAG_CATEGORIES = ['female', 'male', 'mixed', 'other'] as const
 
 export interface KHentaiManga extends KHentaiMangaCommon {
   torrents: Torrent[]
@@ -47,7 +96,7 @@ interface KHentaiMangaCommon {
   parent_key: string
   posted: number
   rating: number
-  tags: Tag[]
+  tags: KHentaiTag[]
   thumb: string
   thumb_extension: string
   title: string
@@ -59,16 +108,34 @@ interface KHentaiMangaCommon {
   views: number
 }
 
+interface KHentaiTag {
+  id: number
+  tag: [string, string] // [category, value] e.g. ['female', 'big_breasts']
+}
+
 type Params = {
   nextId?: string
   sort?: '' | 'id_asc' | 'popular'
   offset?: string
 }
 
-interface Tag {
-  id: number
-  tag: string[]
+type Params3 = {
+  url: string
+  searchParams: {
+    query?: string
+    sort?: 'id_asc' | 'popular' | 'random'
+    'min-view'?: number
+    'max-view'?: number
+    'min-page'?: number
+    'max-page'?: number
+    from?: number
+    to?: number
+    nextId?: string
+    skip?: number
+  }
 }
+
+type TagCategory = (typeof VALID_TAG_CATEGORIES)[number]
 
 interface Thumbnail {
   extension: string
@@ -87,68 +154,6 @@ interface Torrent {
   hash: string
   name: string
   tsize: number
-}
-
-const kHentaiTypeMap = {
-  1: '동인지',
-  2: '망가',
-  3: '아티스트 CG',
-  4: '게임 CG',
-  5: '서양',
-  6: '이미지 모음',
-  7: '건전',
-  8: '코스프레',
-  9: '아시안',
-  10: '기타',
-  11: '비공개',
-} as const
-
-const typeNameToNumber: Record<string, string> = {
-  동인지: '1',
-  doujinshi: '1',
-  망가: '2',
-  manga: '2',
-  아티스트cg: '3',
-  아티스트_cg: '3',
-  artistcg: '3',
-  artist_cg: '3',
-  게임cg: '4',
-  게임_cg: '4',
-  game_cg: '4',
-  gamecg: '4',
-  서양: '5',
-  western: '5',
-  이미지모음: '6',
-  이미지_모음: '6',
-  imageset: '6',
-  image_set: '6',
-  건전: '7',
-  'non-h': '7',
-  코스프레: '8',
-  cosplay: '8',
-  아시안: '9',
-  asian: '9',
-  기타: '10',
-  other: '10',
-  misc: '10',
-  비공개: '11',
-  private: '11',
-}
-
-type Params3 = {
-  url: string
-  searchParams: {
-    query?: string
-    sort?: 'id_asc' | 'popular' | 'random'
-    'min-view'?: number
-    'max-view'?: number
-    'min-page'?: number
-    'max-page'?: number
-    from?: number
-    to?: number
-    nextId?: string
-    skip?: number
-  }
 }
 
 export function convertKHentaiMangaToManga(manga: KHentaiManga): Manga {
@@ -247,13 +252,14 @@ export function getCategories(query?: string) {
     .split(',')
     .map((value) => {
       const normalized = value.trim().toLowerCase().replace(/\s+/g, '')
-      if (/^\d+$/.test(normalized)) {
-        return normalized
-      }
-      return typeNameToNumber[normalized] || value
+      return /^\d+$/.test(normalized) ? normalized : (typeNameToNumber[normalized] ?? value)
     })
     .filter(Boolean)
     .join(',')
+}
+
+export function isValidKHentaiTagCategory(category: string): category is TagCategory {
+  return VALID_TAG_CATEGORIES.includes(category as TagCategory)
 }
 
 export async function searchMangasFromKHentai({ url, searchParams }: Params3) {
@@ -313,17 +319,20 @@ export async function searchMangasFromKHentai({ url, searchParams }: Params3) {
 }
 
 function convertKHentaiCommonToManga(manga: KHentaiMangaCommon) {
+  const locale = 'ko'
   return {
     id: manga.id,
     artists: manga.tags.filter(({ tag }) => tag[0] === 'artist').map(({ tag }) => tag[1]),
     date: new Date(manga.posted * 1000).toString(),
     group: manga.tags.filter(({ tag }) => tag[0] === 'group').map(({ tag }) => tag[1]),
     series: manga.tags.filter(({ tag }) => tag[0] === 'parody').map(({ tag }) => tag[1]),
-    tags: manga.tags
-      .filter(({ tag }) => ['female', 'male', 'mixed', 'other'].includes(tag[0]))
-      .map(({ tag }) => tag.join(':')),
+    tags: manga.tags.filter(isValidKHentaiTag).map(({ tag: [category, value] }) => ({
+      category,
+      value: normalizeTagValue(value),
+      label: `${translateTagCategory(category, locale)}:${translateTagValue(value, locale)}`,
+    })),
     title: manga.title,
-    type: kHentaiTypeMap[manga.category as keyof typeof kHentaiTypeMap] ?? '?',
+    type: kHentaiTypeNumberToName[manga.category] ?? '?',
     cdn: 'ehgt.org',
     count: manga.filecount,
     rating: manga.rating / 100,
@@ -336,4 +345,8 @@ function convertKHentaiGalleryToManga(manga: KHentaiGallery): Manga {
     ...convertKHentaiCommonToManga(manga),
     images: manga.files.map((file) => file.image.url),
   }
+}
+
+function isValidKHentaiTag(tag: KHentaiTag): tag is { id: number; tag: [TagCategory, string] } {
+  return isValidKHentaiTagCategory(tag.tag[0])
 }
