@@ -145,14 +145,14 @@ const hiyobiTypeMap = {
   5: '서양',
   6: '이미지 모음',
   7: '건전',
-  8: '?코스프레',
-  9: '?아시안',
+  8: '코스프레',
+  9: '아시안',
   10: '기타',
 } as const
 
 function getKHentaiThumbnailURL(id: number) {
   const millions = Math.floor(id / 1_000_000)
   const thousands = Math.floor((id % 1_000_000) / 1_000)
-  const remainder = id % 1_000
+  const remainder = id % 1000
   return `${millions}/${thousands}/${remainder}`
 }
