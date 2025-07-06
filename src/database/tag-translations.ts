@@ -606,6 +606,7 @@ const TAG_VALUE_TRANSLATION: Record<string, Multilingual> = {
   race_queen: { en: 'race queen', ko: '레이스퀸' },
   randoseru: { en: 'randoseru', ko: '란도셀', ja: 'ランドセル', 'zh-CN': '书包', 'zh-TW': '書包' },
   rape: { en: 'rape', ko: '강간', ja: 'レイプ', 'zh-CN': '强奸' },
+  real_doll: { en: 'real doll', ko: '리얼돌', ja: 'リアルドール', 'zh-CN': '真人娃娃' },
   red_hair: { en: 'red hair', ko: '빨간 머리', ja: '赤髪', 'zh-CN': '红发', 'zh-TW': '紅髮' },
   redraw: { en: 'redraw', ko: '리드로우', ja: 'リドロー', 'zh-CN': '重绘' },
   replaced: { en: 'replaced', ko: '교체됨' },

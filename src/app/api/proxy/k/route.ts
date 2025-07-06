@@ -1,7 +1,9 @@
 import { captureException } from '@sentry/nextjs'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 
-import { SearchParamsSchema } from '@/app/(navigation)/search/searchValidation'
+import { MangaSearchSchema } from '@/app/(navigation)/search/searchValidation'
+import { convertQueryKey } from '@/app/(navigation)/search/utils'
+import { getCategories } from '@/crawler/k-hentai'
 
 export const runtime = 'edge'
 export const revalidate = 300
@@ -9,22 +11,52 @@ export const revalidate = 300
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
-    const params = Object.fromEntries(searchParams.entries())
-    const validationResult = SearchParamsSchema.safeParse(params)
+    const params = Object.fromEntries(searchParams)
+    const validationResult = MangaSearchSchema.safeParse(params)
 
     if (!validationResult.success) {
       return new Response('400 Bad Request', { status: 400 })
     }
 
-    const kHentaiUrl = new URL('https://k-hentai.org/ajax/search')
+    const kHentaiURL = new URL('https://k-hentai.org/ajax/search')
+    const {
+      query,
+      sort,
+      'min-view': minView,
+      'max-view': maxView,
+      'min-page': minPage,
+      'max-page': maxPage,
+      from,
+      to,
+      'next-id': nextId,
+      skip,
+    } = validationResult.data
 
-    Object.entries(validationResult.data).forEach(([key, value]) => {
+    const lowerQuery = convertQueryKey(query?.toLowerCase())
+    const categories = getCategories(lowerQuery)
+    const search = lowerQuery?.replace(/\btype:\S+/gi, '').trim()
+
+    const kHentaiParams: Record<string, string> = {
+      ...(search && { search }),
+      ...(nextId && { 'next-id': nextId }),
+      ...(sort && { sort }),
+      ...(skip && { offset: String(skip) }),
+      ...(categories && { categories }),
+      ...(minView && { 'min-views': String(minView) }),
+      ...(maxView && { 'max-views': String(maxView) }),
+      ...(minPage && { 'min-pages': String(minPage) }),
+      ...(maxPage && { 'max-pages': String(maxPage) }),
+      ...(from && { 'start-date': String(from) }),
+      ...(to && { 'end-date': String(to) }),
+    }
+
+    Object.entries(kHentaiParams).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
-        kHentaiUrl.searchParams.append(key, String(value))
+        kHentaiURL.searchParams.append(key, String(value))
       }
     })
 
-    const response = await fetch(kHentaiUrl.toString(), {
+    const response = await fetch(kHentaiURL.toString(), {
       headers: {
         'User-Agent':
           'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
@@ -43,20 +75,15 @@ export async function GET(request: NextRequest) {
         },
         extra: {
           searchParams: validationResult.data,
-          url: kHentaiUrl.toString(),
+          url: kHentaiURL.toString(),
           statusText: response.statusText,
         },
       })
 
-      return NextResponse.json(
-        { error: `k-hentai.org returned status ${response.status}` },
-        { status: response.status },
-      )
+      return new Response(`${response.status} ${response.statusText}`, { status: response.status })
     }
 
-    const data = await response.json()
-
-    return NextResponse.json(data, {
+    return new Response(response.body, {
       headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600' },
     })
   } catch (error) {
@@ -72,9 +99,9 @@ export async function GET(request: NextRequest) {
     })
 
     if (error instanceof Error && error.message.includes('fetch')) {
-      return NextResponse.json({ error: 'Network error accessing k-hentai.org' }, { status: 503 })
+      return Response.json({ error: 'Network error accessing k-hentai.org' }, { status: 503 })
     }
 
-    return NextResponse.json({ error: 'Failed to fetch from k-hentai.org' }, { status: 500 })
+    return Response.json({ error: 'Failed to fetch from k-hentai.org' }, { status: 500 })
   }
 }
