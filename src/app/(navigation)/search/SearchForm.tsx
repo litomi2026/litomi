@@ -103,14 +103,10 @@ function SearchForm({ className = '' }: Props) {
   }
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    // Add a small delay to allow click events on suggestions to fire first
-    setTimeout(() => {
-      // Check if the new focused element is within the suggestions dropdown
-      if (!suggestionsRef.current?.contains(e.relatedTarget as Node)) {
-        setShowSuggestions(false)
-        resetSelection()
-      }
-    }, 200)
+    if (!suggestionsRef.current?.contains(e.relatedTarget as Node)) {
+      setShowSuggestions(false)
+      resetSelection()
+    }
   }
 
   const handleClear = () => {
