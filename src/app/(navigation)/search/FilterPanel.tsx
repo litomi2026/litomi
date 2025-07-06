@@ -55,10 +55,6 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
 
         if (key === 'to') {
           date.setHours(23, 59, 59, 999)
-          const now = new Date()
-          if (date > now) {
-            date.setTime(now.getTime())
-          }
         }
 
         const timestamp = Math.floor(date.getTime() / 1000)
