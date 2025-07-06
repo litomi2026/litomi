@@ -23,7 +23,7 @@ export default function BookmarkLink({ className }: Props) {
 
 export function BookmarkLinkSkeleton() {
   return (
-    <SelectableLink className="hidden pointer-events-none text-zinc-700 sm:block" href="" Icon={<IconBookmark />}>
+    <SelectableLink className="pointer-events-none text-zinc-700" href="" Icon={<IconBookmark />}>
       북마크
     </SelectableLink>
   )

@@ -36,14 +36,14 @@ export default async function Layout({ children }: BaseLayoutProps) {
           <SelectableLink href="/posts/recommand" hrefMatch="/post" Icon={<IconPost />}>
             글
           </SelectableLink>
-          <SelectableLink href="/notification" Icon={<IconBell />}>
-            알림
-          </SelectableLink>
           <ErrorBoundary fallback={BookmarkLinkSkeleton}>
             <Suspense clientOnly fallback={<BookmarkLinkSkeleton />}>
-              <BookmarkLink className="hidden sm:block" />
+              <BookmarkLink />
             </Suspense>
           </ErrorBoundary>
+          <SelectableLink className="hidden sm:block" href="/notification" Icon={<IconBell />}>
+            알림
+          </SelectableLink>
           <ErrorBoundary fallback={ProfileLinkSkeleton}>
             <Suspense clientOnly fallback={<ProfileLinkSkeleton />}>
               <ProfileLink className="hidden sm:block" />
