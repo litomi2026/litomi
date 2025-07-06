@@ -54,7 +54,7 @@ function convertHarpiTagIdsToTags(tagIds: string[]): Tag[] {
     const harpiTag = harpiTagMap[tagId]
     if (!harpiTag) continue
 
-    const [categoryStr, valueStr] = harpiTag.engStr.split(':')
+    const [, valueStr] = harpiTag.engStr.split(':')
     if (!valueStr) continue
 
     // Map harpi gender to our category

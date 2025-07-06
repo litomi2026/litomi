@@ -149,7 +149,7 @@ export default function SearchForm({ className = '' }: Props) {
   return (
     <div className={`relative ${className}`}>
       <form
-        className="flex bg-zinc-900 border-2 border-zinc-700 rounded-xl text-zinc-400 text-base
+        className="flex bg-zinc-900 border-2 border-zinc-700 rounded-xl text-zinc-400
           overflow-hidden transition duration-200
           hover:border-zinc-500 focus-within:border-zinc-400 focus-within:shadow-lg focus-within:shadow-zinc-400/30"
         onSubmit={onSubmit}
@@ -159,7 +159,7 @@ export default function SearchForm({ className = '' }: Props) {
           aria-controls="search-suggestions"
           aria-label="검색어 입력"
           className="
-            flex-1 bg-transparent px-3 py-2 text-foreground w-48 placeholder-zinc-500
+            flex-1 bg-transparent px-3 py-2 text-foreground w-48 placeholder-zinc-500 text-base
             focus:outline-none
             [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-cancel-button]:appearance-none
             [&::-ms-clear]:hidden [&::-ms-clear]:w-0 [&::-ms-clear]:h-0

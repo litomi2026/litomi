@@ -1,7 +1,7 @@
 import { captureException } from '@sentry/nextjs'
 
 import { convertQueryKey } from '@/app/(navigation)/search/utils'
-import { normalizeTagValue, translateTag, translateTagCategory, translateTagValue } from '@/database/tag-translations'
+import { normalizeTagValue, translateTag } from '@/database/tag-translations'
 import { Manga } from '@/types/manga'
 
 import { NotFoundError } from './common'
