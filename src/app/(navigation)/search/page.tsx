@@ -1,24 +1,26 @@
+import { Suspense } from '@suspensive/react'
 import { cookies } from 'next/headers'
-import { notFound } from 'next/navigation'
 
 import { BasePageProps } from '@/types/nextjs'
-import { getJSONCookie } from '@/utils/cookie'
+import { getCookieJSON } from '@/utils/cookie'
 import { ViewCookie } from '@/utils/param'
 
 import ActiveFilters from './ActiveFilters'
+import Error400 from './Error400'
+import Loading from './loading'
 import SearchResults from './SearchResults'
 import { MangaSearchSchema } from './searchValidation'
 
 export default async function Page({ searchParams }: BasePageProps) {
-  const cookieStore = await cookies()
+  const [cookieStore, searchParamsJSON] = await Promise.all([cookies(), searchParams])
 
   const validationResult = MangaSearchSchema.safeParse({
-    ...getJSONCookie(cookieStore, ['view']),
-    ...(await searchParams),
+    ...getCookieJSON(cookieStore, ['view']),
+    ...searchParamsJSON,
   })
 
   if (!validationResult.success) {
-    notFound()
+    return <Error400 />
   }
 
   const {
@@ -40,7 +42,9 @@ export default async function Page({ searchParams }: BasePageProps) {
   return (
     <>
       {hasActiveFilters && <ActiveFilters filters={validationResult.data} />}
-      <SearchResults view={viewType} />
+      <Suspense clientOnly fallback={<Loading />}>
+        <SearchResults view={viewType} />
+      </Suspense>
     </>
   )
 }

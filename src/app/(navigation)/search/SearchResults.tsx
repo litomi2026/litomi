@@ -1,33 +1,18 @@
 'use client'
 
-import { useSearchParams } from 'next/navigation'
-
-import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
+import { useSearchQuery } from '@/app/(navigation)/search/useSearchQuery'
+import MangaCard from '@/components/card/MangaCard'
 import MangaCardImage from '@/components/card/MangaCardImage'
-import { useSearchQuery } from '@/query/useSearchQuery'
 import { getViewerLink } from '@/utils/manga'
 import { SourceParam, ViewCookie } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
-
-import ErrorPage from './error'
 
 type Props = {
   view: ViewCookie
 }
 
 export default function SearchResults({ view }: Props) {
-  const searchParams = useSearchParams()
-  const { data: mangas, isLoading, error } = useSearchQuery(Object.fromEntries(searchParams))
-
-  if (isLoading) {
-    return (
-      <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2 grow`}>
-        {Array.from({ length: view === ViewCookie.IMAGE ? 12 : 6 }).map((_, i) => (
-          <MangaCardSkeleton key={i} />
-        ))}
-      </ul>
-    )
-  }
+  const { data: mangas } = useSearchQuery()
 
   if (!mangas || mangas.length === 0) {
     return (
@@ -35,10 +20,6 @@ export default function SearchResults({ view }: Props) {
         <p className="text-zinc-500">검색 결과가 없습니다.</p>
       </div>
     )
-  }
-
-  if (error) {
-    return <ErrorPage error={error} reset={() => window.location.reload()} />
   }
 
   return (

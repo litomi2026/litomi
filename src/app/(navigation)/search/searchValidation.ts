@@ -1,39 +1,4 @@
-import { z } from 'zod'
-
-export const SearchParamsSchema = z
-  .object({
-    categories: z
-      .string()
-      .regex(/^[\d,]+$/)
-      .optional(),
-    search: z.string().trim().max(200).optional(),
-    sort: z.enum(['random', 'id_asc', 'popular']).optional(),
-    'min-views': z.coerce.number().int().min(0).optional(),
-    'max-views': z.coerce.number().int().min(0).optional(),
-    'min-pages': z.coerce.number().int().min(1).max(10000).optional(),
-    'max-pages': z.coerce.number().int().min(1).max(10000).optional(),
-    'start-date': z.coerce.number().int().min(0).optional(),
-    'end-date': z.coerce.number().int().min(0).optional(),
-    'next-id': z.string().regex(/^\d+$/).optional(),
-    offset: z.coerce.number().int().min(0).max(10000).optional(),
-  })
-  .refine(
-    (data) => {
-      if (data['min-views'] && data['max-views'] && data['min-views'] > data['max-views']) {
-        return false
-      }
-      if (data['min-pages'] && data['max-pages'] && data['min-pages'] > data['max-pages']) {
-        return false
-      }
-      if (data['start-date'] && data['end-date'] && data['start-date'] > data['end-date']) {
-        return false
-      }
-      return true
-    },
-    { message: '최소값은 최대값보다 클 수 없습니다.' },
-  )
-
-export type ValidatedSearchParams = z.infer<typeof SearchParamsSchema>
+import { z } from 'zod/v4'
 
 export const MangaSearchSchema = z
   .object({
@@ -42,8 +7,8 @@ export const MangaSearchSchema = z
     sort: z.enum(['random', 'id_asc', 'popular']).optional(),
     'min-view': z.coerce.number().int().min(0).optional(),
     'max-view': z.coerce.number().int().min(0).optional(),
-    'min-page': z.coerce.number().int().min(1).max(10000).optional(),
-    'max-page': z.coerce.number().int().min(1).max(10000).optional(),
+    'min-page': z.coerce.number().int().positive().max(10000).optional(),
+    'max-page': z.coerce.number().int().positive().max(10000).optional(),
     from: z.coerce.number().int().min(0).optional(),
     to: z.coerce.number().int().min(0).optional(),
     'next-id': z.string().regex(/^\d+$/).optional(),
@@ -62,7 +27,7 @@ export const MangaSearchSchema = z
       }
       return true
     },
-    { message: '최소값은 최대값보다 클 수 없습니다.' },
+    { error: '최소값은 최대값보다 클 수 없습니다.' },
   )
 
 export type MangaSearch = z.infer<typeof MangaSearchSchema>

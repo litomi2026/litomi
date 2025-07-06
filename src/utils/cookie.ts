@@ -6,7 +6,7 @@ import { CookieKey } from '@/constants/storage'
 
 import { signJWT, TokenType, verifyJWT } from './jwt'
 
-export function getJSONCookie(cookieStore: ReadonlyRequestCookies, keys: string[]) {
+export function getCookieJSON(cookieStore: ReadonlyRequestCookies, keys: string[]) {
   const result: Record<string, string | undefined> = {}
 
   for (const key of keys) {

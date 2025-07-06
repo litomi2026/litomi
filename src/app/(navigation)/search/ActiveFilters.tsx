@@ -8,7 +8,7 @@ import IconX from '@/components/icons/IconX'
 
 import type { MangaSearch } from './searchValidation'
 
-import { FILTER_KEYS } from './constants'
+import { ALL_FILTER_KEYS } from './constants'
 import { formatDate, formatNumber } from './utils'
 
 type ActiveFilterProps = {
@@ -22,8 +22,6 @@ type ActiveFilterProps = {
 type Props = {
   filters: MangaSearch
 }
-
-const ALL_FILTER_KEYS = [...FILTER_KEYS, 'next-id', 'skip'] as const
 
 export default function ActiveFilters({ filters }: Props) {
   const router = useRouter()

@@ -3,7 +3,7 @@
 import { captureException } from '@sentry/nextjs'
 import { sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'
-import { z } from 'zod'
+import { z } from 'zod/v4'
 
 import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
@@ -12,12 +12,11 @@ import { getUserIdFromAccessToken } from '@/utils/cookie'
 const schema = z.object({
   nickname: z
     .string()
-    .min(2, { message: '닉네임은 최소 2자 이상이어야 합니다.' })
-    .max(32, { message: '닉네임은 최대 32자까지 입력할 수 있습니다.' }),
+    .min(2, { error: '닉네임은 최소 2자 이상이어야 합니다.' })
+    .max(32, { error: '닉네임은 최대 32자까지 입력할 수 있습니다.' }),
   imageURL: z
-    .string()
-    .url({ message: '프로필 이미지 주소가 URL 형식이 아니에요.' })
-    .max(256, { message: '프로필 이미지 URL은 최대 256자까지 입력할 수 있어요.' }),
+    .url({ error: '프로필 이미지 주소가 URL 형식이 아니에요.' })
+    .max(256, { error: '프로필 이미지 URL은 최대 256자까지 입력할 수 있어요.' }),
 })
 
 export default async function editProfile(_prevState: unknown, formData: FormData) {

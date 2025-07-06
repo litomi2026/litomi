@@ -36,7 +36,7 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
     (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault()
 
-      const params = new URLSearchParams(searchParams.toString())
+      const params = new URLSearchParams(searchParams)
 
       FILTER_KEYS.forEach((key) => {
         const value = filters[key]
@@ -286,13 +286,5 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
       </div>
     </>,
     document.body,
-  )
-}
-
-export function FilterPanelSkeleton() {
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
-      <IconSpinner className="w-8 h-8 text-zinc-400" />
-    </div>
   )
 }

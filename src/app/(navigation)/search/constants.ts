@@ -77,6 +77,8 @@ export const FILTER_CONFIG = {
 } as const
 
 export const FILTER_KEYS = ['sort', 'min-view', 'max-view', 'min-page', 'max-page', 'from', 'to'] as const
+export const ALL_FILTER_KEYS = [...FILTER_KEYS, 'next-id', 'skip'] as const
+export const SEARCH_PARAMS_WHITELIST = [...ALL_FILTER_KEYS, 'query'] as const
 
 export type FilterKey = (typeof FILTER_KEYS)[number]
 export type FilterState = Partial<Record<FilterKey, string>>

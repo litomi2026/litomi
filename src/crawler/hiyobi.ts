@@ -1,6 +1,6 @@
 import { captureException } from '@sentry/nextjs'
 
-import { normalizeTagValue, translateTag, translateTagCategory, translateTagValue } from '@/database/tag-translations'
+import { normalizeTagValue, translateTag } from '@/database/tag-translations'
 import { Manga, Tag } from '@/types/manga'
 
 import { isValidKHentaiTagCategory } from './k-hentai'
@@ -120,7 +120,7 @@ function convertHiyobiTagsToTags(hiyobiTags: HiyobiLabelValue[]): Tag[] {
       return {
         category: 'other',
         value: category,
-        label: `${translateTagCategory('other', locale)}:${translateTagValue(category, locale)}`,
+        label: translateTag('other', category, locale),
       }
     }
 

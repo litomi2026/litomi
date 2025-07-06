@@ -1,7 +1,7 @@
 'use client'
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { FormEvent, lazy, Suspense, useCallback, useEffect, useRef, useState, useTransition } from 'react'
+import { FormEvent, lazy, memo, Suspense, useCallback, useEffect, useRef, useState, useTransition } from 'react'
 
 import IconSpinner from '@/components/icons/IconSpinner'
 import IconX from '@/components/icons/IconX'
@@ -17,7 +17,9 @@ type Props = {
   className?: string
 }
 
-export default function SearchForm({ className = '' }: Props) {
+export default memo(SearchForm)
+
+function SearchForm({ className = '' }: Props) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -98,6 +100,13 @@ export default function SearchForm({ className = '' }: Props) {
   const handleFocus = () => {
     setShowSuggestions(true)
     resetSelection()
+  }
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (!suggestionsRef.current?.contains(e.relatedTarget as Node)) {
+      setShowSuggestions(false)
+      resetSelection()
+    }
   }
 
   const handleClear = () => {
@@ -187,6 +196,7 @@ export default function SearchForm({ className = '' }: Props) {
             [&::-ms-clear]:hidden [&::-ms-clear]:w-0 [&::-ms-clear]:h-0
           "
           name="query"
+          onBlur={handleBlur}
           onChange={handleInputChange}
           onFocus={handleFocus}
           onKeyDown={handleKeyDown}

@@ -1,10 +1,7 @@
 import { captureException } from '@sentry/nextjs'
 
-import { convertQueryKey } from '@/app/(navigation)/search/utils'
 import { normalizeTagValue, translateTag } from '@/database/tag-translations'
 import { Manga } from '@/types/manga'
-
-import { NotFoundError } from './common'
 
 const kHentaiTypeNumberToName: Record<number, string> = {
   1: '동인지',
@@ -117,22 +114,6 @@ type Params = {
   nextId?: string
   sort?: '' | 'id_asc' | 'popular'
   offset?: string
-}
-
-type Params3 = {
-  url: string
-  searchParams: {
-    query?: string
-    sort?: 'id_asc' | 'popular' | 'random'
-    'min-view'?: number
-    'max-view'?: number
-    'min-page'?: number
-    'max-page'?: number
-    from?: number
-    to?: number
-    nextId?: string
-    skip?: number
-  }
 }
 
 type TagCategory = (typeof VALID_TAG_CATEGORIES)[number]
@@ -260,62 +241,6 @@ export function getCategories(query?: string) {
 
 export function isValidKHentaiTagCategory(category: string): category is TagCategory {
   return VALID_TAG_CATEGORIES.includes(category as TagCategory)
-}
-
-export async function searchMangasFromKHentai({ url, searchParams }: Params3) {
-  const {
-    query,
-    sort,
-    'min-view': minView,
-    'max-view': maxView,
-    'min-page': minPage,
-    'max-page': maxPage,
-    from,
-    to,
-    nextId,
-    skip,
-  } = searchParams
-  const lowerQuery = convertQueryKey(query?.toLowerCase())
-  const categories = getCategories(lowerQuery)
-  const search = lowerQuery?.replace(/\btype:\S+/gi, '').trim()
-
-  const searchParams2 = new URLSearchParams({
-    ...(search && { search }),
-    ...(nextId && { 'next-id': nextId }),
-    ...(sort && { sort }),
-    ...(skip && { offset: String(skip) }),
-    ...(categories && { categories }),
-    ...(minView && { 'min-views': String(minView) }),
-    ...(maxView && { 'max-views': String(maxView) }),
-    ...(minPage && { 'min-pages': String(minPage) }),
-    ...(maxPage && { 'max-pages': String(maxPage) }),
-    ...(from && { 'start-date': String(from) }),
-    ...(to && { 'end-date': String(to) }),
-  })
-
-  const response = await fetch(`${url}?${searchParams2}`, {
-    referrerPolicy: 'no-referrer',
-    next: { revalidate: 86400 }, // 1 day
-  })
-
-  if (response.status === 404) {
-    throw new NotFoundError('검색 결과를 찾을 수 없습니다.')
-  }
-
-  if (!response.ok) {
-    const body = await response.text()
-    captureException('k-hentai.org 서버 오류 - 만화 검색', { extra: { response, body } })
-    throw new Error('k 서버에서 만화 검색을 실패했어요.')
-  }
-
-  const data = (await response.json()) as KHentaiManga[]
-  const mangas = data.filter((manga) => manga.archived === 1)
-
-  if (mangas.length === 0) {
-    throw new NotFoundError('검색 결과를 찾을 수 없습니다.')
-  }
-
-  return mangas.map((manga) => convertKHentaiMangaToManga(manga))
 }
 
 function convertKHentaiCommonToManga(manga: KHentaiMangaCommon) {
