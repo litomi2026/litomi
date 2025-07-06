@@ -2,7 +2,7 @@
 
 import { sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'
-import { z } from 'zod'
+import { z } from 'zod/v4'
 
 import { db } from '@/database/drizzle'
 import { BookmarkSource } from '@/database/schema'
@@ -10,7 +10,7 @@ import { getUserIdFromAccessToken } from '@/utils/cookie'
 
 const schema = z.object({
   mangaId: z.number(),
-  source: z.nativeEnum(BookmarkSource),
+  source: z.enum(BookmarkSource),
 })
 
 export default async function bookmarkManga(_prevState: unknown, formData: FormData) {

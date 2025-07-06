@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     const validationResult = SearchParamsSchema.safeParse(params)
 
     if (!validationResult.success) {
-      return new NextResponse('400 Bad Request', { status: 400 })
+      return new Response('400 Bad Request', { status: 400 })
     }
 
     const kHentaiUrl = new URL('https://k-hentai.org/ajax/search')

@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from 'zod/v4'
 
 export const SearchParamsSchema = z
   .object({
@@ -10,8 +10,8 @@ export const SearchParamsSchema = z
     sort: z.enum(['random', 'id_asc', 'popular']).optional(),
     'min-views': z.coerce.number().int().min(0).optional(),
     'max-views': z.coerce.number().int().min(0).optional(),
-    'min-pages': z.coerce.number().int().min(1).max(10000).optional(),
-    'max-pages': z.coerce.number().int().min(1).max(10000).optional(),
+    'min-pages': z.coerce.number().int().positive().max(10000).optional(),
+    'max-pages': z.coerce.number().int().positive().max(10000).optional(),
     'start-date': z.coerce.number().int().min(0).optional(),
     'end-date': z.coerce.number().int().min(0).optional(),
     'next-id': z.string().regex(/^\d+$/).optional(),
@@ -30,7 +30,7 @@ export const SearchParamsSchema = z
       }
       return true
     },
-    { message: '최소값은 최대값보다 클 수 없습니다.' },
+    { error: '최소값은 최대값보다 클 수 없습니다.' },
   )
 
 export type ValidatedSearchParams = z.infer<typeof SearchParamsSchema>
@@ -42,8 +42,8 @@ export const MangaSearchSchema = z
     sort: z.enum(['random', 'id_asc', 'popular']).optional(),
     'min-view': z.coerce.number().int().min(0).optional(),
     'max-view': z.coerce.number().int().min(0).optional(),
-    'min-page': z.coerce.number().int().min(1).max(10000).optional(),
-    'max-page': z.coerce.number().int().min(1).max(10000).optional(),
+    'min-page': z.coerce.number().int().positive().max(10000).optional(),
+    'max-page': z.coerce.number().int().positive().max(10000).optional(),
     from: z.coerce.number().int().min(0).optional(),
     to: z.coerce.number().int().min(0).optional(),
     'next-id': z.string().regex(/^\d+$/).optional(),
@@ -62,7 +62,7 @@ export const MangaSearchSchema = z
       }
       return true
     },
-    { message: '최소값은 최대값보다 클 수 없습니다.' },
+    { error: '최소값은 최대값보다 클 수 없습니다.' },
   )
 
 export type MangaSearch = z.infer<typeof MangaSearchSchema>

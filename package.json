@@ -37,7 +37,7 @@
     "react-textarea-autosize": "^8.5.9",
     "sonner": "^2.0.5",
     "web-push": "^3.6.7",
-    "zod": "^3.25.67",
+    "zod": "^3.25.74",
     "zustand": "^5.0.6"
   },
   "devDependencies": {

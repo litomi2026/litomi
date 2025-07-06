@@ -10,11 +10,11 @@ import SearchResults from './SearchResults'
 import { MangaSearchSchema } from './searchValidation'
 
 export default async function Page({ searchParams }: BasePageProps) {
-  const cookieStore = await cookies()
+  const [cookieStore, searchParamsJSON] = await Promise.all([cookies(), searchParams])
 
   const validationResult = MangaSearchSchema.safeParse({
     ...getJSONCookie(cookieStore, ['view']),
-    ...(await searchParams),
+    ...searchParamsJSON,
   })
 
   if (!validationResult.success) {
