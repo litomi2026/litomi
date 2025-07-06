@@ -27,7 +27,7 @@ export function getSearchQueryKey(searchParams: SearchParams) {
 }
 
 export async function searchMangas(searchParams: URLSearchParams) {
-  const myDomain = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'
+  const myDomain = process.env.VERCEL_URL ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` : 'http://localhost:3000'
   const response = await fetch(`${myDomain}/api/proxy/k?${searchParams}`)
   if (response.status === 404) return
 
