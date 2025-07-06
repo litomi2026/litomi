@@ -581,7 +581,7 @@ const TAG_VALUE_TRANSLATION: Record<string, Multilingual> = {
   pillory: { en: 'pillory', ko: '머리/팔 구속기' },
   pirate: { en: 'pirate', ko: '해적', ja: '海賊', 'zh-CN': '海盗', 'zh-TW': '海盜' },
   piss_drinking: { en: 'piss drinking', ko: '오줌 마시기' },
-  pixie_cut: { en: 'pixie cut', ko: '픽시 컷' },
+  pixie_cut: { en: 'pixie cut', ko: '픽시컷(숏컷)' },
   plant_girl: { en: 'plant girl', ko: '식물 소녀' },
   pole_dancing: { en: 'pole dancing', ko: '봉춤' },
   policeman: { en: 'policeman', ko: '남경', ja: '警官', 'zh-CN': '男警', 'zh-TW': '男警' },
@@ -621,7 +621,7 @@ const TAG_VALUE_TRANSLATION: Record<string, Multilingual> = {
   sad: { en: 'sad', ko: '슬픈', ja: '悲しい', 'zh-CN': '悲伤' },
   saliva: { en: 'saliva', ko: '침' },
   sample: { en: 'sample', ko: '샘플' },
-  scar: { en: 'scar', ko: '상처' },
+  scar: { en: 'scar', ko: '흉터' },
   scat: { en: 'scat', ko: '배변', ja: 'スカトロ', 'zh-CN': '排便' },
   school: { en: 'school', ko: '학교', ja: '学校', 'zh-CN': '学校' },
   school_gym_uniform: {

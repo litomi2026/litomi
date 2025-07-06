@@ -29,7 +29,12 @@ function MangaMetadataList({ label, values, filterType, className = '' }: Props)
       <ul className="break-all">
         {values.map((value, idx) => {
           const newQuery = toggleSearchFilter(currentQuery, filterType, value, !isSearchPage)
-          const searchParams = new URLSearchParams({ query: newQuery })
+          const newSearchParams = new URLSearchParams(searchParams)
+          if (newQuery) {
+            newSearchParams.set('query', newQuery)
+          } else {
+            newSearchParams.delete('query')
+          }
           const filterPattern = `${filterType}:${value.replaceAll(' ', '_')}`
           const escapedPattern = filterPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
           const isActive = currentQuery
@@ -37,7 +42,7 @@ function MangaMetadataList({ label, values, filterType, className = '' }: Props)
             : false
 
           return (
-            <Link aria-pressed={isActive} href={`/search?${searchParams}`} key={value}>
+            <Link aria-pressed={isActive} href={`/search?${newSearchParams}`} key={value}>
               {value.replaceAll('_', ' ')}
               {idx < values.length - 1 && ','}
             </Link>

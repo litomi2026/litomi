@@ -21,7 +21,12 @@ function MangaMetadataItem({ label, value, filterType, className = '' }: Props) 
   const currentQuery = searchParams.get('query') ?? ''
   const isSearchPage = pathname === '/search'
   const newQuery = toggleSearchFilter(currentQuery, filterType, value, !isSearchPage)
-  const newSearchParams = new URLSearchParams({ query: newQuery })
+  const newSearchParams = new URLSearchParams(searchParams)
+  if (newQuery) {
+    newSearchParams.set('query', newQuery)
+  } else {
+    newSearchParams.delete('query')
+  }
   const filterPattern = `${filterType}:${value.replaceAll(' ', '_')}`
   const escapedPattern = filterPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   const isActive = currentQuery ? new RegExp(`(^|\\s)${escapedPattern}(?=\\s|$)`, 'i').test(currentQuery) : false

@@ -38,7 +38,12 @@ function TagList({ className, tags, clickable = false }: Props) {
         const tagColor = tagStyles[category]
 
         const newQuery = toggleSearchFilter(currentQuery, category, value, !isSearchPage)
-        const newSearchParams = new URLSearchParams({ query: newQuery })
+        const newSearchParams = new URLSearchParams(searchParams)
+        if (newQuery) {
+          newSearchParams.set('query', newQuery)
+        } else {
+          newSearchParams.delete('query')
+        }
         const filterPattern = `${category}:${value}`
         const escapedPattern = filterPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
         const isActive = currentQuery ? new RegExp(`(^|\\s)${escapedPattern}(?=\\s|$)`, 'i').test(currentQuery) : false

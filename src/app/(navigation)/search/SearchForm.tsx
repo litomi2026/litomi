@@ -4,6 +4,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { FormEvent, lazy, Suspense, useCallback, useEffect, useRef, useState, useTransition } from 'react'
 
 import IconSpinner from '@/components/icons/IconSpinner'
+import IconX from '@/components/icons/IconX'
 
 import { SEARCH_FILTERS, type SearchFilter } from './constants'
 import useSearchSuggestions from './useSearchSuggestions'
@@ -99,6 +100,13 @@ export default function SearchForm({ className = '' }: Props) {
     resetSelection()
   }
 
+  const handleClear = () => {
+    setKeyword('')
+    setShowSuggestions(false)
+    resetSelection()
+    inputRef.current?.focus()
+  }
+
   const onSubmit = (e: FormEvent) => {
     e.preventDefault()
     setShowSuggestions(false)
@@ -151,9 +159,10 @@ export default function SearchForm({ className = '' }: Props) {
           aria-controls="search-suggestions"
           aria-label="검색어 입력"
           className="
-            flex-1 bg-transparent px-3 py-2 text-foreground
-            placeholder-zinc-500
+            flex-1 bg-transparent px-3 py-2 text-foreground w-48 placeholder-zinc-500
             focus:outline-none
+            [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-cancel-button]:appearance-none
+            [&::-ms-clear]:hidden [&::-ms-clear]:w-0 [&::-ms-clear]:h-0
           "
           name="query"
           onChange={handleInputChange}
@@ -164,8 +173,23 @@ export default function SearchForm({ className = '' }: Props) {
           type="search"
           value={keyword}
         />
+        {keyword && (
+          <button
+            aria-label="검색어 지우기"
+            className="
+              px-3 py-2 shrink-0
+              text-zinc-500 hover:text-zinc-300
+              transition duration-200
+              focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-inset
+            "
+            onClick={handleClear}
+            type="button"
+          >
+            <IconX className="w-5 h-5" />
+          </button>
+        )}
         <button
-          aria-label="검색 실행"
+          aria-label="검색하기"
           className="
             px-4 py-2 shrink-0 font-medium
             rounded-l-none transition duration-200
