@@ -3,7 +3,7 @@ import { NextRequest } from 'next/server'
 
 import { MangaSearchSchema } from '@/app/(navigation)/search/searchValidation'
 import { convertQueryKey } from '@/app/(navigation)/search/utils'
-import { getCategories } from '@/crawler/k-hentai'
+import { convertKHentaiMangaToManga, getCategories, KHentaiManga } from '@/crawler/k-hentai'
 
 export const runtime = 'edge'
 export const revalidate = 300
@@ -18,7 +18,6 @@ export async function GET(request: NextRequest) {
       return new Response('400 Bad Request', { status: 400 })
     }
 
-    const kHentaiURL = new URL('https://k-hentai.org/ajax/search')
     const {
       query,
       sort,
@@ -36,7 +35,7 @@ export async function GET(request: NextRequest) {
     const categories = getCategories(lowerQuery)
     const search = lowerQuery?.replace(/\btype:\S+/gi, '').trim()
 
-    const kHentaiParams: Record<string, string> = {
+    const kHentaiParams = {
       ...(search && { search }),
       ...(nextId && { 'next-id': nextId }),
       ...(sort && { sort }),
@@ -50,40 +49,36 @@ export async function GET(request: NextRequest) {
       ...(to && { 'end-date': String(to) }),
     }
 
-    Object.entries(kHentaiParams).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== '') {
-        kHentaiURL.searchParams.append(key, String(value))
-      }
-    })
-
-    const response = await fetch(kHentaiURL.toString(), {
+    const response = await fetch(`https://k-hentai.org/ajax/search?${new URLSearchParams(kHentaiParams)}`, {
       headers: {
         'User-Agent':
           'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
         Accept: 'application/json',
         'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
-        Referer: 'https://k-hentai.org/',
+        Referer: 'https://k-hentai.org',
       },
       redirect: 'manual',
     })
 
     if (!response.ok) {
-      captureException(new Error(`K-Hentai API returned ${response.status}`), {
+      captureException(new Error(`K-Hentai API returned ${response.status} ${response.statusText}`), {
         tags: {
           api: 'k-hentai',
           status: response.status,
         },
         extra: {
-          searchParams: validationResult.data,
-          url: kHentaiURL.toString(),
-          statusText: response.statusText,
+          searchParams: kHentaiParams,
+          response,
         },
       })
 
       return new Response(`${response.status} ${response.statusText}`, { status: response.status })
     }
 
-    return new Response(response.body, {
+    const data = (await response.json()) as KHentaiManga[]
+    const mangas = data.filter((manga) => manga.archived === 1).map((manga) => convertKHentaiMangaToManga(manga))
+
+    return Response.json(mangas, {
       headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600' },
     })
   } catch (error) {

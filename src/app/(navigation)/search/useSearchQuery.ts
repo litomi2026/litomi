@@ -3,7 +3,6 @@ import { useSuspenseQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'next/navigation'
 
 import { NotFoundError } from '@/crawler/common'
-import { convertKHentaiMangaToManga, KHentaiManga } from '@/crawler/k-hentai'
 import { Manga } from '@/types/manga'
 import { whitelistSearchParams } from '@/utils/param'
 
@@ -27,18 +26,23 @@ export function getSearchQueryKey(searchParams: SearchParams) {
 }
 
 export async function searchMangas(searchParams: URLSearchParams) {
-  const response = await fetch(`/api/proxy/k?${searchParams}`)
+  const path = '/api/proxy/k'
+  const response = await fetch(`${path}?${searchParams}`)
   if (response.status === 404) return
 
   if (!response.ok) {
     const body = await response.text()
-    captureException('/api/proxy/k API 오류: 클라이언트 -> Next.js 서버', { extra: { response, body } })
+    captureException(`${path} API returned ${response.status} ${response.statusText}`, {
+      tags: {
+        api: path,
+        status: response.status,
+      },
+      extra: { body, response },
+    })
     throw new Error('만화 검색을 실패했어요. 잠시 후 다시 시도해주세요.')
   }
 
-  const data = (await response.json()) as KHentaiManga[]
-  const mangas = data.filter((manga) => manga.archived === 1)
-  return mangas.map((manga) => convertKHentaiMangaToManga(manga))
+  return (await response.json()) as Manga[]
 }
 
 export function useSearchQuery() {
