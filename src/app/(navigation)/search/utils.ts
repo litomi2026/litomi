@@ -17,6 +17,19 @@ export function convertQueryKey(query?: string) {
   return translatedQuery
 }
 
+export function formatDate(timestamp: number | string) {
+  return new Date(Number(timestamp) * 1000).toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })
+}
+
+export function formatNumber(num: number | string | undefined, defaultValue: string) {
+  if (!num) return defaultValue
+  return Number(num).toLocaleString('ko-KR')
+}
+
 /**
  * Translates Korean query keys to English
  * Example: "여성:tag" -> "female:tag"

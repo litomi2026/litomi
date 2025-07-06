@@ -4,6 +4,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { FormEvent, lazy, Suspense, useCallback, useEffect, useRef, useState, useTransition } from 'react'
 
 import IconSpinner from '@/components/icons/IconSpinner'
+import IconX from '@/components/icons/IconX'
 
 import { SEARCH_FILTERS, type SearchFilter } from './constants'
 import useSearchSuggestions from './useSearchSuggestions'
@@ -99,6 +100,13 @@ export default function SearchForm({ className = '' }: Props) {
     resetSelection()
   }
 
+  const handleClear = () => {
+    setKeyword('')
+    setShowSuggestions(false)
+    resetSelection()
+    inputRef.current?.focus()
+  }
+
   const onSubmit = (e: FormEvent) => {
     e.preventDefault()
     setShowSuggestions(false)
@@ -116,6 +124,28 @@ export default function SearchForm({ className = '' }: Props) {
       router.replace(`${pathname}?${params}`, { scroll: false })
     })
   }
+
+  // NOTE: "/" 키보드 단축키로 검색 입력창에 포커스
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement ||
+        e.metaKey ||
+        e.ctrlKey ||
+        e.altKey
+      )
+        return
+
+      if (e.key === '/') {
+        e.preventDefault()
+        inputRef.current?.focus()
+      }
+    }
+
+    document.addEventListener('keydown', handleGlobalKeyDown)
+    return () => document.removeEventListener('keydown', handleGlobalKeyDown)
+  }, [])
 
   // NOTE: 외부 영역 클릭 시 검색어 제안 창 닫기
   useEffect(() => {
@@ -141,7 +171,7 @@ export default function SearchForm({ className = '' }: Props) {
   return (
     <div className={`relative ${className}`}>
       <form
-        className="flex bg-zinc-900 border-2 border-zinc-700 rounded-xl text-zinc-400 text-base
+        className="flex bg-zinc-900 border-2 border-zinc-700 rounded-xl text-zinc-400
           overflow-hidden transition duration-200
           hover:border-zinc-500 focus-within:border-zinc-400 focus-within:shadow-lg focus-within:shadow-zinc-400/30"
         onSubmit={onSubmit}
@@ -151,9 +181,10 @@ export default function SearchForm({ className = '' }: Props) {
           aria-controls="search-suggestions"
           aria-label="검색어 입력"
           className="
-            flex-1 bg-transparent px-3 py-2 text-foreground
-            placeholder-zinc-500
+            flex-1 bg-transparent px-3 py-2 text-foreground w-48 placeholder-zinc-500 text-base
             focus:outline-none
+            [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-cancel-button]:appearance-none
+            [&::-ms-clear]:hidden [&::-ms-clear]:w-0 [&::-ms-clear]:h-0
           "
           name="query"
           onChange={handleInputChange}
@@ -164,21 +195,33 @@ export default function SearchForm({ className = '' }: Props) {
           type="search"
           value={keyword}
         />
+        {keyword && (
+          <button
+            aria-label="검색어 지우기"
+            className="
+              px-3 py-2 shrink-0
+              text-zinc-500 hover:text-zinc-300
+              transition duration-200
+              focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-inset
+            "
+            onClick={handleClear}
+            type="button"
+          >
+            <IconX className="w-5 h-5" />
+          </button>
+        )}
         <button
-          aria-label="검색 실행"
+          aria-label="검색하기"
           className="
-            px-4 py-2 shrink-0 font-medium
-            rounded-l-none transition duration-200
-            bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-800
-            text-zinc-200 hover:text-white
-            aria-disabled:opacity-60
+            flex items-center justify-center p-2 px-4 shrink-0 font-medium rounded-l-none transition duration-200
+            aria-disabled:opacity-60 bg-zinc-800 text-zinc-200 
+            active:bg-zinc-800 hover:bg-zinc-700 hover:text-white
             focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-inset
-            min-w-16 flex items-center justify-center
           "
           disabled={isPending}
           type="submit"
         >
-          {isPending ? <IconSpinner className="w-5" /> : <span className="block">검색</span>}
+          {isPending ? <IconSpinner className="w-5 mx-1" /> : <span className="block min-w-7">검색</span>}
         </button>
       </form>
       {showSuggestions && filteredSuggestions.length > 0 && (

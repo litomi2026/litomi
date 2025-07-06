@@ -55,10 +55,6 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
 
         if (key === 'to') {
           date.setHours(23, 59, 59, 999)
-          const now = new Date()
-          if (date > now) {
-            date.setTime(now.getTime())
-          }
         }
 
         const timestamp = Math.floor(date.getTime() / 1000)
@@ -81,8 +77,9 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
 
     startTransition(() => {
       router.replace(`${pathname}?${params}`)
+      onClose()
     })
-  }, [pathname, router, searchParams, setFilters])
+  }, [pathname, router, searchParams, setFilters, onClose])
 
   const filterPanelStyle =
     buttonRect && window.innerWidth >= 640
@@ -91,6 +88,32 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
           right: `${window.innerWidth - buttonRect.right}px`,
         }
       : undefined
+
+  // NOTE: URL 파라미터가 변경될 때 필터 상태를 동기화함
+  useEffect(() => {
+    const newFilters: FilterState = {}
+
+    FILTER_KEYS.forEach((key) => {
+      const value = searchParams.get(key)
+      if (!value) return
+
+      if (!isDateFilter(key)) {
+        newFilters[key] = value
+        return
+      }
+
+      const timestamp = parseInt(value, 10)
+      if (isNaN(timestamp)) return
+
+      const date = new Date(timestamp * 1000)
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      newFilters[key] = `${year}-${month}-${day}`
+    })
+
+    setFilters(newFilters)
+  }, [searchParams, setFilters])
 
   // NOTE: 모바일 환경에서 필터 활성화 시 body 스크롤을 방지함
   useEffect(() => {
@@ -161,8 +184,8 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
         aria-hidden={!show}
         className="fixed inset-0 z-[70] sm:inset-auto sm:w-96 sm:max-w-[calc(100vw-2rem)] sm:max-h-[calc(100vh-8rem)] 
           overflow-y-auto bg-zinc-900 sm:border-2 sm:border-zinc-700 sm:rounded-xl sm:shadow-xl
-          transition-all duration-300 opacity-100 scale-100
-          aria-hidden:opacity-0 aria-hidden:scale-95 aria-hidden:pointer-events-none"
+          transition-all duration-300 opacity-100
+          aria-hidden:opacity-0 aria-hidden:pointer-events-none"
         style={filterPanelStyle}
       >
         <div className="sticky top-0 flex items-center justify-between p-4 bg-zinc-900 border-b border-zinc-800 sm:border-b-0 sm:pb-0">

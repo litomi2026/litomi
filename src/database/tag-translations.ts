@@ -6,7 +6,7 @@ export type Multilingual = {
   'zh-TW'?: string
 }
 
-const TAG_TRANSLATION: Record<string, Multilingual> = {
+const TAG_VALUE_TRANSLATION: Record<string, Multilingual> = {
   '3d': { en: '3D' },
   '3d_imageset': { en: '3D imageset', ko: '3D 이미지모음' },
   abortion: { en: 'abortion', ko: '낙태' },
@@ -36,7 +36,7 @@ const TAG_TRANSLATION: Record<string, Multilingual> = {
   angry: { en: 'angry', ko: '화난', ja: '怒り', 'zh-CN': '愤怒' },
   animal_on_animal: { en: 'animal on animal', ko: '동물끼리', ja: '動物同士', 'zh-CN': '动物之间' },
   animal_on_furry: { en: 'animal on furry', ko: '동물이 퍼리를' },
-  animated: { en: 'animated', ko: '애니메이션', ja: 'アニメーション', 'zh-CN': '动画' },
+  animated: { en: 'animated', ko: '애니', ja: 'アニメーション', 'zh-CN': '动画' },
   animegao: { en: 'animegao', ko: '애니 얼굴' },
   anorexic: { en: 'anorexic', ko: '거식증' },
   anthology: { en: 'anthology', ko: '작품집', ja: 'アンソロジー', 'zh-CN': '选集', 'zh-TW': '選集' },
@@ -151,7 +151,7 @@ const TAG_TRANSLATION: Record<string, Multilingual> = {
   closed_eyes: { en: 'closed eyes', ko: '눈 감음', ja: '目を閉じる', 'zh-CN': '闭眼' },
   clothed_female_nude_male: {
     en: 'clothed female nude male',
-    ko: '옷 입은 여성/누드 남성',
+    ko: '옷 입은 여성 나체 남성',
     ja: '服を着た女性/裸の男性',
     'zh-CN': '穿衣女性/裸体男性',
   },
@@ -180,7 +180,6 @@ const TAG_TRANSLATION: Record<string, Multilingual> = {
   cow: { en: 'cow', ko: '소', ja: '牛', 'zh-CN': '奶牛' },
   cowgirl: { en: 'cowgirl', ko: '여성상위', ja: '騎乗位', 'zh-CN': '女上位' },
   cowman: { en: 'cowman', ko: '카우맨' },
-  crossdressing: { en: 'crossdressing', ko: '여장/남장', ja: '女装', 'zh-CN': '女装', 'zh-TW': '女裝' },
   crotch_tattoo: { en: 'crotch tattoo', ko: '자궁문신' },
   crown: { en: 'crown', ko: '왕관' },
   crying: { en: 'crying', ko: '울음', ja: '泣き', 'zh-CN': '哭泣' },
@@ -190,7 +189,7 @@ const TAG_TRANSLATION: Record<string, Multilingual> = {
   cum_swallowing: { en: 'cum swallowing', ko: '정액 삼키기', ja: '精液飲み', 'zh-CN': '吞精' },
   cum_swap: { en: 'cum swap', ko: '정액 교환' },
   cumflation: { en: 'cumflation', ko: '정액으로 부품', ja: '精液膨張', 'zh-CN': '精液膨胀', 'zh-TW': '精液膨脹' },
-  cunnilingus: { en: 'cunnilingus', ko: '커닐링구스', ja: 'クンニリングス', 'zh-CN': '舔阴' },
+  cunnilingus: { en: 'cunnilingus', ko: '보빨', ja: 'クンニリングス', 'zh-CN': '舔阴' },
   cuntboy: { en: 'cuntboy', ko: '보지 달린 소년' },
   cuntbusting: { en: 'cuntbusting', ko: '보지 때리기' },
   dakimakura: { en: 'dakimakura', ko: '다키마쿠라' },
@@ -305,7 +304,7 @@ const TAG_TRANSLATION: Record<string, Multilingual> = {
   futaket: { en: 'futanari convention', ko: '후타켓(행사)', ja: 'ふたけっと', 'zh-CN': '扶她展', 'zh-TW': '扶她展' },
   futanari: { en: 'futanari', ko: '후타나리' },
   futanarization: { en: 'futanarization', ko: '후타나리화' },
-  gag: { en: 'gag', ko: '볼개그' },
+  gag: { en: 'gag', ko: '재갈' },
   game_sprite: { en: 'game sprite', ko: '게임 스프라이트' },
   gang_rape: { en: 'gang rape', ko: '윤간', ja: '輪姦', 'zh-CN': '轮奸', 'zh-TW': '輪姦' },
   gangbang: { en: 'gangbang', ko: '갱뱅(여1남N)', ja: '輪姦', 'zh-CN': '轮奸' },
@@ -393,7 +392,7 @@ const TAG_TRANSLATION: Record<string, Multilingual> = {
   internal_urination: { en: 'internal urination', ko: '내부 배뇨' },
   inverted_nipples: { en: 'inverted nipples', ko: '뒤집힌 젖꼭지', ja: '陥没乳首', 'zh-CN': '内陷乳头' },
   invisible: { en: 'invisible', ko: '투명', ja: '透明', 'zh-CN': '透明', 'zh-TW': '透明' },
-  josou_seme: { en: 'crossdressing top', ko: '여장(공)', ja: '女装攻め', 'zh-CN': '女装攻' },
+  josou_seme: { en: 'crossdressing top', ko: '여장공', ja: '女装攻め', 'zh-CN': '女装攻' },
   kappa: { en: 'kappa', ko: '카파', ja: '河童', 'zh-CN': '河童' },
   kemoket: { en: 'furry convention', ko: '케모켓(행사)', ja: 'ケモケット', 'zh-CN': '兽展', 'zh-TW': '獸展' },
   kemonomimi: { en: 'kemonomimi', ko: '동물귀' },
@@ -500,13 +499,13 @@ const TAG_TRANSLATION: Record<string, Multilingual> = {
     'zh-CN': '多面板序列',
   },
   multiple_arms: { en: 'multiple arms', ko: '팔이 많음', ja: '複数の腕', 'zh-CN': '多重手臂' },
-  multiple_breasts: { en: 'multiple breasts', ko: '여러 개의 가슴' },
+  multiple_breasts: { en: 'multiple breasts', ko: '가슴 여러 개' },
   multiple_handjob: { en: 'multiple handjob', ko: '동시 대딸' },
-  multiple_orgasms: { en: 'multiple orgasms', ko: '다중 오르가즘' },
+  multiple_orgasms: { en: 'multiple orgasms', ko: '연속 절정' },
   multiple_paizuri: { en: 'multiple paizuri', ko: '동시 파이즈리' },
-  multiple_penises: { en: 'multiple penises', ko: '다중 자지', ja: '複数ペニス', 'zh-CN': '多重阴茎' },
+  multiple_penises: { en: 'multiple penises', ko: '자지 여러 개', ja: '複数ペニス', 'zh-CN': '多重阴茎' },
   multiple_straddling: { en: 'multiple straddling', ko: '동시 올라타기' },
-  multiple_tails: { en: 'multiple tails', ko: '여러 개의 꼬리' },
+  multiple_tails: { en: 'multiple tails', ko: '꼬리 여러 개' },
   muscle: { en: 'muscle', ko: '근육', ja: '筋肉', 'zh-CN': '肌肉', 'zh-TW': '肌肉' },
   muscle_growth: { en: 'muscle growth', ko: '근육 성장', ja: '筋肉成長', 'zh-CN': '肌肉生长' },
   mute: { en: 'mute', ko: '말을 못 함', ja: '無言', 'zh-CN': '哑巴' },
@@ -546,18 +545,17 @@ const TAG_TRANSLATION: Record<string, Multilingual> = {
   oil: { en: 'oil', ko: '오일' },
   old_lady: { en: 'old lady', ko: '늙은 여자' },
   old_man: { en: 'old man', ko: '늙은 남자' },
-  omorashi: { en: 'omorashi', ko: '오모라시' },
+  omorashi: { en: 'omorashi', ko: '오줌싸개' },
   onahole: { en: 'onahole', ko: '오나홀' },
   oni: { en: 'demon', ko: '도깨비', ja: '鬼', 'zh-CN': '鬼', 'zh-TW': '鬼' },
   onsen: { en: 'hot spring', ko: '온천' },
   oppai_loli: { en: 'oppai loli', ko: '거유 로리' },
   orc: { en: 'orc', ko: '오크' },
   orgasm: { en: 'orgasm', ko: '절정', ja: 'オーガズム', 'zh-CN': '高潮' },
-  orgasm_denial: { en: 'orgasm denial', ko: '오르가즘 거부' },
+  orgasm_denial: { en: 'orgasm denial', ko: '절정 거부' },
   otokofutanari: { en: 'otokofutanari', ko: '후타나리 소년' },
   out_of_order: { en: 'out of order', ko: '망가진' },
   outdoor: { en: 'outdoor', ko: '야외', ja: '野外', 'zh-CN': '户外' },
-  oyakodon: { en: 'oyakodon', ko: '부자/모녀' },
   painted_nails: { en: 'painted nails', ko: '매니큐어', ja: 'ネイルアート', 'zh-CN': '美甲' },
   paizuri: { en: 'breast job', ko: '가슴으로 자극', ja: 'パイズリ', 'zh-CN': '乳交', 'zh-TW': '乳交' },
   panda_boy: { en: 'panda boy', ko: '판다 소년' },
@@ -583,7 +581,7 @@ const TAG_TRANSLATION: Record<string, Multilingual> = {
   pillory: { en: 'pillory', ko: '머리/팔 구속기' },
   pirate: { en: 'pirate', ko: '해적', ja: '海賊', 'zh-CN': '海盗', 'zh-TW': '海盜' },
   piss_drinking: { en: 'piss drinking', ko: '오줌 마시기' },
-  pixie_cut: { en: 'pixie cut', ko: '픽시 컷' },
+  pixie_cut: { en: 'pixie cut', ko: '픽시컷(숏컷)' },
   plant_girl: { en: 'plant girl', ko: '식물 소녀' },
   pole_dancing: { en: 'pole dancing', ko: '봉춤' },
   policeman: { en: 'policeman', ko: '남경', ja: '警官', 'zh-CN': '男警', 'zh-TW': '男警' },
@@ -623,7 +621,7 @@ const TAG_TRANSLATION: Record<string, Multilingual> = {
   sad: { en: 'sad', ko: '슬픈', ja: '悲しい', 'zh-CN': '悲伤' },
   saliva: { en: 'saliva', ko: '침' },
   sample: { en: 'sample', ko: '샘플' },
-  scar: { en: 'scar', ko: '상처' },
+  scar: { en: 'scar', ko: '흉터' },
   scat: { en: 'scat', ko: '배변', ja: 'スカトロ', 'zh-CN': '排便' },
   school: { en: 'school', ko: '학교', ja: '学校', 'zh-CN': '学校' },
   school_gym_uniform: {
@@ -639,7 +637,7 @@ const TAG_TRANSLATION: Record<string, Multilingual> = {
   schoolgirl: { en: 'schoolgirl', ko: '여학생', ja: '女子高生', 'zh-CN': '女学生', 'zh-TW': '女學生' },
   schoolgirl_uniform: { en: 'schoolgirl uniform', ko: '여학생 교복' },
   scrotal_lingerie: { en: 'scrotal lingerie', ko: '음낭 속옷' },
-  selfcest: { en: 'selfcest', ko: '자기 복제' },
+  selfcest: { en: 'selfcest', ko: '스스로 섹스' },
   sex_toys: { en: 'sex toys', ko: '성인용품' },
   shark_girl: { en: 'shark girl', ko: '상어 소녀' },
   shemale: { en: 'shemale', ko: '쉬메일' },
@@ -664,6 +662,7 @@ const TAG_TRANSLATION: Record<string, Multilingual> = {
   sole_female: { en: 'sole female', ko: '단독 여성' },
   sole_male: { en: 'sole male', ko: '단독 남성', ja: '男性のみ', 'zh-CN': '仅男性' },
   solo: { en: 'solo', ko: '혼자', ja: 'ソロ', 'zh-CN': '单人', 'zh-TW': '單人' },
+  spider_girl: { en: 'spider girl', ko: '거미 소녀', ja: 'ソロ', 'zh-CN': '单人', 'zh-TW': '單人' },
   squirting: { en: 'squirting', ko: '분수', ja: '潮吹き', 'zh-CN': '喷水' },
   standing_sex: { en: 'standing sex', ko: '입위', ja: '立位', 'zh-CN': '站立式' },
   stockings: { en: 'stockings', ko: '스타킹', ja: 'ストッキング', 'zh-CN': '丝袜', 'zh-TW': '絲襪' },
@@ -706,8 +705,8 @@ const TAG_TRANSLATION: Record<string, Multilingual> = {
   time_stop: { en: 'time stop', ko: '시간정지', ja: '時間停止', 'zh-CN': '时间停止', 'zh-TW': '時間停止' },
   titfuck: { en: 'titfuck', ko: '파이즈리', ja: 'パイズリ', 'zh-CN': '乳交' },
   toddlercon: { en: 'toddlercon', ko: '토들러콘', ja: 'トドラーコン', 'zh-CN': '幼童控' },
-  tomboy: { en: 'tomboy', ko: '톰보이' },
-  tomgirl: { en: 'tomgirl', ko: '톰걸' },
+  tomboy: { en: 'tomboy', ko: '사내스러운' },
+  tomgirl: { en: 'tomgirl', ko: '계집스러운' },
   tooth_brushing: { en: 'tooth brushing', ko: '양치질' },
   torture: { en: 'torture', ko: '고문' },
   tracksuit: { en: 'tracksuit', ko: '트랙수트', ja: 'ジャージ', 'zh-CN': '运动服', 'zh-TW': '運動服' },
@@ -798,8 +797,22 @@ const TAG_CATEGORY_TRANSLATION: Record<string, Multilingual> = {
   other: { en: 'other', ko: '기타', ja: 'その他', 'zh-CN': '其他', 'zh-TW': '其他' },
 }
 
+const TAG_TRANSLATION: Record<string, Multilingual> = {
+  'female:crossdressing': { en: 'crossdressing', ko: '남장', ja: '男装', 'zh-CN': '男装', 'zh-TW': '男裝' },
+  'male:crossdressing': { en: 'crossdressing', ko: '여장', ja: '女装', 'zh-CN': '女装', 'zh-TW': '女裝' },
+  'female:oyakodon': { en: 'oyakodon', ko: '남장' },
+  'male:oyakodon': { en: 'oyakodon', ko: '여장' },
+}
+
 export function normalizeTagValue(value: string): string {
   return value.toLowerCase().replace(/\s+/g, '_').trim()
+}
+
+export function translateTag(category: string, value: string, locale: keyof Multilingual) {
+  const tag = `${category}:${value}`
+  const translatedCategory = translateTagCategory(category, locale)
+  const translatedValue = TAG_TRANSLATION[tag]?.[locale] || TAG_TRANSLATION[tag]?.en || translateTagValue(value, locale)
+  return `${translatedCategory}:${translatedValue}`
 }
 
 export function translateTagCategory(category: string, locale: keyof Multilingual): string {
@@ -808,6 +821,6 @@ export function translateTagCategory(category: string, locale: keyof Multilingua
 }
 
 export function translateTagValue(value: string, locale: keyof Multilingual): string {
-  const translation = TAG_TRANSLATION[normalizeTagValue(value)]
+  const translation = TAG_VALUE_TRANSLATION[normalizeTagValue(value)]
   return translation?.[locale] || translation?.en || value.replace(/_/g, ' ')
 }
