@@ -8,7 +8,6 @@ import useMounted from '@/hook/useMounted'
 import type { FilterState } from './constants'
 
 import { FILTER_KEYS, isDateFilter } from './constants'
-import { FilterPanelSkeleton } from './FilterPanel'
 
 // NOTE: 필터 패널은 사용자가 필터를 클릭할 때만 표시되므로 초기 bundle 크기를 줄이기 위해 lazy import 사용
 const FilterPanel = lazy(() => import('./FilterPanel'))
@@ -64,7 +63,7 @@ export default function FilterButton() {
       </button>
 
       {mounted && (
-        <Suspense fallback={<FilterPanelSkeleton />}>
+        <Suspense fallback={null}>
           <FilterPanel
             buttonRef={buttonRef}
             filters={filters}
