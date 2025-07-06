@@ -1,6 +1,6 @@
 import { captureException } from '@sentry/nextjs'
 
-import { normalizeTagValue, translateTagCategory, translateTagValue } from '@/database/tag-translations'
+import { normalizeTagValue, translateTag, translateTagCategory, translateTagValue } from '@/database/tag-translations'
 import { Manga, Tag } from '@/types/manga'
 
 import { isValidKHentaiTagCategory } from './k-hentai'
@@ -127,7 +127,7 @@ function convertHiyobiTagsToTags(hiyobiTags: HiyobiLabelValue[]): Tag[] {
     return {
       category: isValidKHentaiTagCategory(category) ? category : '',
       value: normalizeTagValue(value),
-      label: `${translateTagCategory(category, locale)}:${translateTagValue(value, locale)}`,
+      label: translateTag(category, value, locale),
     }
   })
 }

@@ -1,7 +1,7 @@
 import { captureException } from '@sentry/nextjs'
 
 import { convertQueryKey } from '@/app/(navigation)/search/utils'
-import { normalizeTagValue, translateTagCategory, translateTagValue } from '@/database/tag-translations'
+import { normalizeTagValue, translateTag, translateTagCategory, translateTagValue } from '@/database/tag-translations'
 import { Manga } from '@/types/manga'
 
 import { NotFoundError } from './common'
@@ -329,7 +329,7 @@ function convertKHentaiCommonToManga(manga: KHentaiMangaCommon) {
     tags: manga.tags.filter(isValidKHentaiTag).map(({ tag: [category, value] }) => ({
       category,
       value: normalizeTagValue(value),
-      label: `${translateTagCategory(category, locale)}:${translateTagValue(value, locale)}`,
+      label: translateTag(category, value, locale),
     })),
     title: manga.title,
     type: kHentaiTypeNumberToName[manga.category] ?? '?',
