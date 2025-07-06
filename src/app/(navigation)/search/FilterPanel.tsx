@@ -81,8 +81,9 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
 
     startTransition(() => {
       router.replace(`${pathname}?${params}`)
+      onClose()
     })
-  }, [pathname, router, searchParams, setFilters])
+  }, [pathname, router, searchParams, setFilters, onClose])
 
   const filterPanelStyle =
     buttonRect && window.innerWidth >= 640
@@ -187,8 +188,8 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
         aria-hidden={!show}
         className="fixed inset-0 z-[70] sm:inset-auto sm:w-96 sm:max-w-[calc(100vw-2rem)] sm:max-h-[calc(100vh-8rem)] 
           overflow-y-auto bg-zinc-900 sm:border-2 sm:border-zinc-700 sm:rounded-xl sm:shadow-xl
-          transition-all duration-300 opacity-100 scale-100
-          aria-hidden:opacity-0 aria-hidden:scale-95 aria-hidden:pointer-events-none"
+          transition-all duration-300 opacity-100
+          aria-hidden:opacity-0 aria-hidden:pointer-events-none"
         style={filterPanelStyle}
       >
         <div className="sticky top-0 flex items-center justify-between p-4 bg-zinc-900 border-b border-zinc-800 sm:border-b-0 sm:pb-0">
