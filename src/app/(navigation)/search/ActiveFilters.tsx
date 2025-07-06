@@ -116,26 +116,26 @@ export default function ActiveFilters({ filters }: Props) {
       <div className="flex flex-wrap gap-2">
         {/* Sort filter */}
         {filters.sort && (
-          <div className="group flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-full text-sm">
+          <div className="group flex items-center gap-1.5 pl-4 bg-zinc-800 border border-zinc-700 rounded-full text-sm">
             <span className="text-zinc-500">{FILTER_DISPLAY.sort.icon}</span>
             <span className="text-zinc-300">
               {FILTER_DISPLAY.sort.label}: <strong>{FILTER_DISPLAY.sort.values[filters.sort]}</strong>
             </span>
             <button
               aria-label={`${FILTER_DISPLAY.sort.label} 필터 제거`}
-              className="ml-1 p-0.5 rounded-full hover:bg-zinc-700 transition disabled:opacity-50"
+              className="p-3 rounded-full hover:bg-zinc-700 transition disabled:opacity-50"
               disabled={isPending}
               onClick={() => removeFilter('sort')}
               type="button"
             >
-              <IconX className="w-3 h-3" />
+              <IconX className="w-3" />
             </button>
           </div>
         )}
 
         {/* View count range */}
         {(filters['min-view'] || filters['max-view']) && (
-          <div className="group flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-full text-sm">
+          <div className="group flex items-center gap-1.5 pl-4 bg-zinc-800 border border-zinc-700 rounded-full text-sm">
             <span className="text-zinc-500">{FILTER_DISPLAY.view.icon}</span>
             <span className="text-zinc-300">
               {FILTER_DISPLAY.view.label}:{' '}
@@ -145,19 +145,19 @@ export default function ActiveFilters({ filters }: Props) {
             </span>
             <button
               aria-label={`${FILTER_DISPLAY.view.label} 필터 제거`}
-              className="ml-1 p-0.5 rounded-full hover:bg-zinc-700 transition disabled:opacity-50"
+              className="p-3 rounded-full hover:bg-zinc-700 transition disabled:opacity-50"
               disabled={isPending}
               onClick={() => removeRangeFilter('min-view', 'max-view')}
               type="button"
             >
-              <IconX className="w-3 h-3" />
+              <IconX className="w-3" />
             </button>
           </div>
         )}
 
         {/* Page count range */}
         {(filters['min-page'] || filters['max-page']) && (
-          <div className="group flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-full text-sm">
+          <div className="group flex items-center gap-1.5 pl-4 bg-zinc-800 border border-zinc-700 rounded-full text-sm">
             <span className="text-zinc-500">{FILTER_DISPLAY.page.icon}</span>
             <span className="text-zinc-300">
               {FILTER_DISPLAY.page.label}:{' '}
@@ -167,19 +167,19 @@ export default function ActiveFilters({ filters }: Props) {
             </span>
             <button
               aria-label={`${FILTER_DISPLAY.page.label} 필터 제거`}
-              className="ml-1 p-0.5 rounded-full hover:bg-zinc-700 transition disabled:opacity-50"
+              className="p-3 rounded-full hover:bg-zinc-700 transition disabled:opacity-50"
               disabled={isPending}
               onClick={() => removeRangeFilter('min-page', 'max-page')}
               type="button"
             >
-              <IconX className="w-3 h-3" />
+              <IconX className="w-3" />
             </button>
           </div>
         )}
 
         {/* Date range */}
         {(filters.from || filters.to) && (
-          <div className="group flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-full text-sm">
+          <div className="group flex items-center gap-1.5 pl-4 bg-zinc-800 border border-zinc-700 rounded-full text-sm">
             <span className="text-zinc-500">{FILTER_DISPLAY.date.icon}</span>
             <span className="text-zinc-300">
               {FILTER_DISPLAY.date.label}:{' '}
@@ -189,50 +189,50 @@ export default function ActiveFilters({ filters }: Props) {
             </span>
             <button
               aria-label={`${FILTER_DISPLAY.date.label} 필터 제거`}
-              className="ml-1 p-0.5 rounded-full hover:bg-zinc-700 transition disabled:opacity-50"
+              className="p-3 rounded-full hover:bg-zinc-700 transition disabled:opacity-50"
               disabled={isPending}
               onClick={() => removeRangeFilter('from', 'to')}
               type="button"
             >
-              <IconX className="w-3 h-3" />
+              <IconX className="w-3" />
             </button>
           </div>
         )}
 
         {/* Skip filter */}
         {filters.skip && Number(filters.skip) > 0 && (
-          <div className="group flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-full text-sm">
+          <div className="group flex items-center gap-1.5 pl-4 bg-zinc-800 border border-zinc-700 rounded-full text-sm">
             <span className="text-zinc-500">{FILTER_DISPLAY.skip.icon}</span>
             <span className="text-zinc-300">
               {FILTER_DISPLAY.skip.label}: <strong>{formatNumber(filters.skip, '0')}개</strong>
             </span>
             <button
               aria-label={`${FILTER_DISPLAY.skip.label} 필터 제거`}
-              className="ml-1 p-0.5 rounded-full hover:bg-zinc-700 transition disabled:opacity-50"
+              className="p-3 rounded-full hover:bg-zinc-700 transition disabled:opacity-50"
               disabled={isPending}
               onClick={() => removeFilter('skip')}
               type="button"
             >
-              <IconX className="w-3 h-3" />
+              <IconX className="w-3" />
             </button>
           </div>
         )}
 
         {/* Next ID filter */}
         {filters['next-id'] && (
-          <div className="group flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-full text-sm">
+          <div className="group flex items-center gap-1.5 pl-4 bg-zinc-800 border border-zinc-700 rounded-full text-sm">
             <span className="text-zinc-500">{FILTER_DISPLAY['next-id'].icon}</span>
             <span className="text-zinc-300">
               {FILTER_DISPLAY['next-id'].label}: <strong>{filters['next-id']}</strong>
             </span>
             <button
               aria-label={`${FILTER_DISPLAY['next-id'].label} 필터 제거`}
-              className="ml-1 p-0.5 rounded-full hover:bg-zinc-700 transition disabled:opacity-50"
+              className="p-3 rounded-full hover:bg-zinc-700 transition disabled:opacity-50"
               disabled={isPending}
               onClick={() => removeFilter('next-id')}
               type="button"
             >
-              <IconX className="w-3 h-3" />
+              <IconX className="w-3" />
             </button>
           </div>
         )}

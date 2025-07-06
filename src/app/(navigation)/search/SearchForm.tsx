@@ -125,6 +125,28 @@ export default function SearchForm({ className = '' }: Props) {
     })
   }
 
+  // NOTE: "/" 키보드 단축키로 검색 입력창에 포커스
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement ||
+        e.metaKey ||
+        e.ctrlKey ||
+        e.altKey
+      )
+        return
+
+      if (e.key === '/') {
+        e.preventDefault()
+        inputRef.current?.focus()
+      }
+    }
+
+    document.addEventListener('keydown', handleGlobalKeyDown)
+    return () => document.removeEventListener('keydown', handleGlobalKeyDown)
+  }, [])
+
   // NOTE: 외부 영역 클릭 시 검색어 제안 창 닫기
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
@@ -191,18 +213,15 @@ export default function SearchForm({ className = '' }: Props) {
         <button
           aria-label="검색하기"
           className="
-            px-4 py-2 shrink-0 font-medium
-            rounded-l-none transition duration-200
-            bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-800
-            text-zinc-200 hover:text-white
-            aria-disabled:opacity-60
+            flex items-center justify-center p-2 px-4 shrink-0 font-medium rounded-l-none transition duration-200
+            aria-disabled:opacity-60 bg-zinc-800 text-zinc-200 
+            active:bg-zinc-800 hover:bg-zinc-700 hover:text-white
             focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-inset
-            min-w-16 flex items-center justify-center
           "
           disabled={isPending}
           type="submit"
         >
-          {isPending ? <IconSpinner className="w-5" /> : <span className="block">검색</span>}
+          {isPending ? <IconSpinner className="w-5 mx-1" /> : <span className="block min-w-7">검색</span>}
         </button>
       </form>
       {showSuggestions && filteredSuggestions.length > 0 && (
