@@ -36,10 +36,6 @@ export async function searchMangas(searchParams: URLSearchParams) {
     throw new Error('만화 검색을 실패했어요. 잠시 후 다시 시도해주세요.')
   }
 
-  if (Math.random() < 0.5) {
-    throw new Error('만화 검색을 실패했어요. 잠시 후 다시 시도해주세요.')
-  }
-
   const data = (await response.json()) as KHentaiManga[]
   const mangas = data.filter((manga) => manga.archived === 1)
   return mangas.map((manga) => convertKHentaiMangaToManga(manga))

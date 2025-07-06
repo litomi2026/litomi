@@ -1,4 +1,4 @@
-import { ErrorBoundary, Suspense } from '@suspensive/react'
+import { Suspense } from '@suspensive/react'
 import { cookies } from 'next/headers'
 
 import { BasePageProps } from '@/types/nextjs'
@@ -6,7 +6,6 @@ import { getCookieJSON } from '@/utils/cookie'
 import { ViewCookie } from '@/utils/param'
 
 import ActiveFilters from './ActiveFilters'
-import ErrorPage from './error'
 import Error400 from './Error400'
 import Loading from './loading'
 import SearchResults from './SearchResults'
@@ -43,11 +42,9 @@ export default async function Page({ searchParams }: BasePageProps) {
   return (
     <>
       {hasActiveFilters && <ActiveFilters filters={validationResult.data} />}
-      <ErrorBoundary fallback={ErrorPage}>
-        <Suspense clientOnly fallback={<Loading />}>
-          <SearchResults view={viewType} />
-        </Suspense>
-      </ErrorBoundary>
+      <Suspense clientOnly fallback={<Loading />}>
+        <SearchResults view={viewType} />
+      </Suspense>
     </>
   )
 }
