@@ -9,10 +9,10 @@ import localFont from 'next/font/local'
 import { ReactNode } from 'react'
 import { Toaster } from 'sonner'
 
-import Amplitude from '@/components/Amplitude'
 import { defaultOpenGraph, DESCRIPTION, SHORT_NAME } from '@/constants'
 import { AMPLITUDE_API_KEY, GA_ID, GTM_ID } from '@/constants/env'
 import { CANONICAL_URL } from '@/constants/url'
+import AmplitudeLazy from '@/lib/amplitude/AmplitudeLazy'
 
 import QueryProvider from '../components/QueryProvider'
 
@@ -76,10 +76,10 @@ export default function RootLayout({ children }: Readonly<Props>) {
         <Toaster duration={3000} position="top-center" richColors theme="dark" />
         <SpeedInsights />
         <Analytics />
+        {AMPLITUDE_API_KEY && <AmplitudeLazy apiKey={AMPLITUDE_API_KEY} />}
+        {GTM_ID && <GoogleTagManager gtmId={GTM_ID} />}
+        {GA_ID && <GoogleAnalytics gaId={GA_ID} />}
       </body>
-      {AMPLITUDE_API_KEY && <Amplitude apiKey={AMPLITUDE_API_KEY} />}
-      {GTM_ID && <GoogleTagManager gtmId={GTM_ID} />}
-      {GA_ID && <GoogleAnalytics gaId={GA_ID} />}
     </html>
   )
 }

@@ -1,6 +1,5 @@
 'use client'
 
-import * as amplitude from '@amplitude/analytics-browser'
 import { useQueryClient } from '@tanstack/react-query'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useActionState, useEffect, useRef } from 'react'
@@ -11,6 +10,7 @@ import Loading from '@/components/ui/Loading'
 import { loginIdPattern, passwordPattern } from '@/constants/pattern'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
+import amplitude from '@/lib/amplitude/lazy'
 
 import login from './action'
 
@@ -46,7 +46,7 @@ export default function LoginForm() {
       toast.success('로그인 성공')
 
       if (userId) {
-        amplitude.setUserId(String(userId))
+        amplitude.setUserId(userId)
         amplitude.track('login', { userId })
       }
 

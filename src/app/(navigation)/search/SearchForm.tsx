@@ -25,7 +25,8 @@ function SearchForm({ className = '' }: Props) {
   const searchParams = useSearchParams()
   const query = searchParams.get('query') ?? ''
   const [keyword, setKeyword] = useState(() => query)
-  const [isPending, startTransition] = useTransition()
+  const [isSearching, startSearching] = useTransition()
+  const [_, startClosing] = useTransition()
 
   const inputRef = useRef<HTMLInputElement>(null)
   const suggestionsRef = useRef<HTMLDivElement>(null)
@@ -104,8 +105,10 @@ function SearchForm({ className = '' }: Props) {
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     if (!suggestionsRef.current?.contains(e.relatedTarget as Node)) {
-      setShowSuggestions(false)
-      resetSelection()
+      startClosing(() => {
+        setShowSuggestions(false)
+        resetSelection()
+      })
     }
   }
 
@@ -129,7 +132,7 @@ function SearchForm({ className = '' }: Props) {
       params.delete('query')
     }
 
-    startTransition(() => {
+    startSearching(() => {
       router.replace(`${pathname}?${params}`, { scroll: false })
     })
   }
@@ -228,10 +231,10 @@ function SearchForm({ className = '' }: Props) {
             active:bg-zinc-800 hover:bg-zinc-700 hover:text-white
             focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-inset
           "
-          disabled={isPending}
+          disabled={isSearching}
           type="submit"
         >
-          {isPending ? <IconSpinner className="w-5 mx-1" /> : <span className="block min-w-7">검색</span>}
+          {isSearching ? <IconSpinner className="w-5 mx-1" /> : <span className="block min-w-7">검색</span>}
         </button>
       </form>
       {showSuggestions && filteredSuggestions.length > 0 && (
