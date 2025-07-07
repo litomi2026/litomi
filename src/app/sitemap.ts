@@ -17,15 +17,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
-      url: `${CANONICAL_URL}/mangas/latest/1/k`,
+      url: `${CANONICAL_URL}/mangas/latest/1/k/card`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.9,
     },
     {
-      url: `${CANONICAL_URL}/mangas/latest/1/ha`,
+      url: `${CANONICAL_URL}/search`,
       lastModified: new Date(),
-      changeFrequency: 'weekly',
+      changeFrequency: 'daily',
       priority: 0.8,
     },
     {
