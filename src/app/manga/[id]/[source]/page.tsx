@@ -7,7 +7,7 @@ import ImageViewer from '@/components/ImageViewer/ImageViewer'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { CANONICAL_URL } from '@/constants/url'
 import { fetchMangaFromHiyobi, fetchMangaImagesFromHiyobi, fetchMangasFromHiyobi } from '@/crawler/hiyobi'
-import { fetchMangaFromKHentai } from '@/crawler/k-hentai'
+import { KHentaiClient } from '@/crawler/k-hentai'
 import { harpiMangaIdsDesc, harpiMangas } from '@/database/harpi'
 import { getImageSrc } from '@/utils/manga'
 import { SourceParam, validateId, validateSource } from '@/utils/param'
@@ -101,7 +101,7 @@ async function getManga({ source, id }: { source: SourceParam; id: number }) {
       cdn: 'k-hentai',
     }
   } else if (source === SourceParam.K_HENTAI) {
-    return await fetchMangaFromKHentai({ id })
+    return await KHentaiClient.getInstance().fetchManga(id)
   } else if (source === SourceParam.HARPI) {
     return harpiMangas[id]
   }

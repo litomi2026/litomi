@@ -23,6 +23,10 @@ export enum ViewCookie {
   CARD = 'card',
 }
 
+export function convertCamelCaseToKebabCase(str: string) {
+  return str.replace(/([A-Z])/g, '-$1').toLowerCase()
+}
+
 export function getLoginId(loginId: string) {
   return decodeURIComponent(loginId).slice(1)
 }

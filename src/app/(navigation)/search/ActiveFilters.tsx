@@ -6,7 +6,7 @@ import { useTransition } from 'react'
 import IconSpinner from '@/components/icons/IconSpinner'
 import IconX from '@/components/icons/IconX'
 
-import type { MangaSearch } from './searchValidation'
+import type { MangaSearch } from './schema'
 
 import { ALL_FILTER_KEYS } from './constants'
 import { formatDate, formatNumber } from './utils'

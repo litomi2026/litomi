@@ -8,8 +8,8 @@ import { ViewCookie } from '@/utils/param'
 import ActiveFilters from './ActiveFilters'
 import Error400 from './Error400'
 import Loading from './loading'
+import { MangaSearchSchema } from './schema'
 import SearchResults from './SearchResults'
-import { MangaSearchSchema } from './searchValidation'
 
 export default async function Page({ searchParams }: BasePageProps) {
   const [cookieStore, searchParamsJSON] = await Promise.all([cookies(), searchParams])

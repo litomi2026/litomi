@@ -1,7 +1,9 @@
-import { captureException } from '@sentry/nextjs'
-
 import { normalizeTagValue, translateTag } from '@/database/tag-translations'
 import { Manga } from '@/types/manga'
+import { convertCamelCaseToKebabCase } from '@/utils/param'
+
+import { ParseError } from './errors'
+import { ProxyClient, ProxyClientConfig } from './proxy'
 
 const kHentaiTypeNumberToName: Record<number, string> = {
   1: '동인지',
@@ -51,18 +53,14 @@ const typeNameToNumber: Record<string, number> = {
 
 const VALID_TAG_CATEGORIES = ['female', 'male', 'mixed', 'other'] as const
 
-export interface KHentaiManga extends KHentaiMangaCommon {
-  torrents: Torrent[]
-}
-
-interface File {
+export interface File {
   id: string
   image: Image
   name: string
   thumbnail: Thumbnail
 }
 
-interface Image {
+export interface Image {
   extension: string
   height: number
   id: string
@@ -73,8 +71,23 @@ interface Image {
   width: number
 }
 
-interface KHentaiGallery extends KHentaiMangaCommon {
+export interface KHentaiGallery extends KHentaiMangaCommon {
   files: File[]
+}
+
+export interface KHentaiManga extends KHentaiMangaCommon {
+  torrents: Torrent[]
+}
+
+export interface Thumbnail {
+  extension: string
+  height: number
+  id: string
+  orientation: string
+  server: number
+  size: number
+  url: string
+  width: number
 }
 
 interface KHentaiMangaCommon {
@@ -107,27 +120,10 @@ interface KHentaiMangaCommon {
 
 interface KHentaiTag {
   id: number
-  tag: [string, string] // [category, value] e.g. ['female', 'big_breasts']
-}
-
-type Params = {
-  nextId?: string
-  sort?: '' | 'id_asc' | 'popular'
-  offset?: string
+  tag: [string, string] // e.g. ['female', 'big_breasts']
 }
 
 type TagCategory = (typeof VALID_TAG_CATEGORIES)[number]
-
-interface Thumbnail {
-  extension: string
-  height: number
-  id: string
-  orientation: string
-  server: number
-  size: number
-  url: string
-  width: number
-}
 
 interface Torrent {
   added: number
@@ -137,92 +133,166 @@ interface Torrent {
   tsize: number
 }
 
-export function convertKHentaiMangaToManga(manga: KHentaiManga): Manga {
-  return {
-    ...convertKHentaiCommonToManga(manga),
-    images: [manga.thumb],
-  }
+const K_HENTAI_CONFIG: ProxyClientConfig = {
+  baseUrl: 'https://k-hentai.org',
+  circuitBreaker: {
+    failureThreshold: 5,
+    successThreshold: 2,
+    timeout: 60000, // 1 minute
+    halfOpenRequests: 3,
+  },
+  retry: {
+    maxRetries: 3,
+    initialDelay: 1000,
+    maxDelay: 10000,
+    backoffMultiplier: 2,
+    jitter: true,
+  },
+  defaultHeaders: {
+    Referer: 'https://k-hentai.org',
+  },
 }
 
-export async function fetchMangaFromKHentai({ id }: { id: number }) {
-  const res = await fetch(`https://k-hentai.org/r/${id}`, {
-    referrerPolicy: 'no-referrer',
-    next: { revalidate: 28800 }, // 8 hours
-  })
+export class KHentaiClient {
+  private static instance: KHentaiClient
+  private readonly client: ProxyClient
 
-  if (res.status === 404) {
-    return null
-  } else if (!res.ok) {
-    const body = await res.text()
-    captureException('k-hentai.org 서버 오류 - 만화', { extra: { res, body } })
-    throw new Error('k 서버에서 만화를 불러오는데 실패했어요.')
+  // Singleton instance
+  private constructor() {
+    this.client = new ProxyClient(K_HENTAI_CONFIG)
   }
 
-  const html = await res.text()
-  const match = html.match(/const\s+gallery\s*=\s*(\{[\s\S]*?\});/s)
-
-  if (!match) {
-    captureException('k-hentai.org `gallery` 변수 못 찾음', { extra: { res } })
-    return null
+  static getInstance(): KHentaiClient {
+    if (!KHentaiClient.instance) {
+      KHentaiClient.instance = new KHentaiClient()
+    }
+    return KHentaiClient.instance
   }
 
-  try {
-    const gallery = JSON.parse(match[1]) as KHentaiGallery
-    return convertKHentaiGalleryToManga(gallery)
-  } catch (error) {
-    captureException(error, { extra: { name: 'k-hentai.org gallery 변수 파싱 오류', res } })
-    return null
-  }
-}
+  async fetchManga(id: number, revalidate = 43200): Promise<Manga | null> {
+    const gallery = await this.fetchGallery(id, revalidate)
+    if (!gallery) return null
 
-export async function fetchMangasFromKHentai({ nextId, sort, offset }: Params = {}) {
-  const searchParams = new URLSearchParams({
-    search: 'language:korean',
-    ...(nextId && { 'next-id': nextId }),
-    ...(sort && { sort }),
-    ...(offset && { offset }),
-  })
-
-  const res = await fetch(`https://k-hentai.org/ajax/search?${searchParams}`, {
-    referrerPolicy: 'no-referrer',
-    next: { revalidate: 28800 }, // 8 hours
-  })
-
-  if (res.status === 404) {
-    return null
-  } else if (!res.ok) {
-    const body = await res.text()
-    captureException('k-hentai.org 서버 오류 - 만화 목록', { extra: { res, body } })
-    throw new Error('k 서버에서 만화 목록을 불러오는데 실패했어요.')
+    return {
+      ...this.convertKHentaiCommonToManga(gallery),
+      images: gallery.files.map((file) => file.image.url),
+    }
   }
 
-  return ((await res.json()) as KHentaiManga[])
-    .filter((manga) => manga.archived === 1)
-    .map((manga) => convertKHentaiMangaToManga(manga))
-}
-
-export async function fetchRandomMangasFromKHentai() {
-  const searchParams = new URLSearchParams({
-    search: 'language:korean',
-    sort: 'random',
-  })
-
-  const res = await fetch(`https://k-hentai.org/ajax/search?${searchParams}`, {
-    referrerPolicy: 'no-referrer',
-    next: { revalidate: 15 },
-  })
-
-  if (res.status === 404) {
-    return null
-  } else if (!res.ok) {
-    const body = await res.text()
-    captureException('k-hentai.org 서버 오류 - 랜덤 만화 목록', { extra: { res, body } })
-    throw new Error('k 서버에서 랜덤 만화 목록을 불러오는데 실패했어요.')
+  async fetchMangaImages(id: number): Promise<string[]> {
+    const gallery = await this.fetchGallery(id)
+    return gallery.files.map((file) => file.image.url)
   }
 
-  return ((await res.json()) as KHentaiManga[])
-    .filter((manga) => manga.archived === 1)
-    .map((manga) => convertKHentaiMangaToManga(manga))
+  async fetchRandomKoreanMangas(): Promise<Manga[]> {
+    return this.searchMangas({ search: 'language:korean', sort: 'random' }, 15)
+  }
+
+  async healthCheck(): Promise<boolean> {
+    try {
+      const manga = await this.searchMangas({ search: 'awvwefaieojfaosdfas' })
+      return Array.isArray(manga)
+    } catch {
+      return false
+    }
+  }
+
+  async searchKoreanMangas(
+    params?: {
+      nextId?: string
+      sort?: string
+      offset?: string
+    },
+    revalidate = 21600, // 6 hours
+  ): Promise<Manga[]> {
+    return this.searchMangas({ search: 'language:korean', ...params }, revalidate)
+  }
+
+  async searchMangas(
+    params: {
+      search?: string
+      nextId?: string
+      sort?: string
+      offset?: string
+      categories?: string
+      minViews?: string
+      maxViews?: string
+      minPages?: string
+      maxPages?: string
+      startDate?: string
+      endDate?: string
+    },
+    revalidate = 21600, // 6 hours
+  ): Promise<Manga[]> {
+    const kebabCaseParams = Object.entries(params).map(([key, value]) => [convertCamelCaseToKebabCase(key), value])
+    const searchParams = new URLSearchParams(kebabCaseParams)
+
+    const data = await this.client.fetch<KHentaiManga[]>(`/ajax/search?${searchParams}`, { next: { revalidate } })
+
+    return data
+      .filter((manga) => manga.archived === 1)
+      .map((manga) => ({
+        ...this.convertKHentaiCommonToManga(manga),
+        images: [manga.thumb],
+      }))
+  }
+
+  private convertKHentaiCommonToManga(manga: KHentaiMangaCommon) {
+    const locale = 'ko'
+    return {
+      id: manga.id,
+      artists: manga.tags.filter(({ tag }) => tag[0] === 'artist').map(({ tag }) => tag[1]),
+      date: new Date(manga.posted * 1000).toString(),
+      group: manga.tags.filter(({ tag }) => tag[0] === 'group').map(({ tag }) => tag[1]),
+      series: manga.tags.filter(({ tag }) => tag[0] === 'parody').map(({ tag }) => tag[1]),
+      tags: manga.tags.filter(this.isValidKHentaiTag).map(({ tag: [category, value] }) => ({
+        category,
+        value: normalizeTagValue(value),
+        label: translateTag(category, value, locale),
+      })),
+      title: manga.title,
+      type: kHentaiTypeNumberToName[manga.category] ?? '?',
+      cdn: 'ehgt.org',
+      count: manga.filecount,
+      rating: manga.rating / 100,
+      viewCount: manga.views,
+    }
+  }
+
+  private async fetchGallery(id: number, revalidate = 43200): Promise<KHentaiGallery> {
+    const html = await this.client.fetch<string>(
+      `/r/${id}`,
+      {
+        next: { revalidate },
+        headers: { Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' },
+      },
+      true,
+    )
+
+    return this.parseGalleryFromHTML(html, id)
+  }
+
+  // NOTE: k-hentai에서 언어, 그룹, 패러디 등의 값도 태그로 내려줘서 진짜 태그만 추출하기 위한 함수
+  private isValidKHentaiTag(tag: KHentaiTag): tag is { id: number; tag: [TagCategory, string] } {
+    return isValidKHentaiTagCategory(tag.tag[0])
+  }
+
+  private parseGalleryFromHTML(html: string, id: number): KHentaiGallery {
+    const match = html.match(/const\s+gallery\s*=\s*(\{[\s\S]*?\});/s)
+
+    if (!match) {
+      throw new ParseError('k-hentai: `gallery` 변수를 찾을 수 없어요.', { mangaId: id })
+    }
+
+    try {
+      return JSON.parse(match[1]) as KHentaiGallery
+    } catch (error) {
+      throw new ParseError('k-hentai: `gallery` 변수를 읽을 수 없어요.', {
+        mangaId: id,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      })
+    }
+  }
 }
 
 export function getCategories(query?: string) {
@@ -241,37 +311,4 @@ export function getCategories(query?: string) {
 
 export function isValidKHentaiTagCategory(category: string): category is TagCategory {
   return VALID_TAG_CATEGORIES.includes(category as TagCategory)
-}
-
-function convertKHentaiCommonToManga(manga: KHentaiMangaCommon) {
-  const locale = 'ko'
-  return {
-    id: manga.id,
-    artists: manga.tags.filter(({ tag }) => tag[0] === 'artist').map(({ tag }) => tag[1]),
-    date: new Date(manga.posted * 1000).toString(),
-    group: manga.tags.filter(({ tag }) => tag[0] === 'group').map(({ tag }) => tag[1]),
-    series: manga.tags.filter(({ tag }) => tag[0] === 'parody').map(({ tag }) => tag[1]),
-    tags: manga.tags.filter(isValidKHentaiTag).map(({ tag: [category, value] }) => ({
-      category,
-      value: normalizeTagValue(value),
-      label: translateTag(category, value, locale),
-    })),
-    title: manga.title,
-    type: kHentaiTypeNumberToName[manga.category] ?? '?',
-    cdn: 'ehgt.org',
-    count: manga.filecount,
-    rating: manga.rating / 100,
-    viewCount: manga.views,
-  }
-}
-
-function convertKHentaiGalleryToManga(manga: KHentaiGallery): Manga {
-  return {
-    ...convertKHentaiCommonToManga(manga),
-    images: manga.files.map((file) => file.image.url),
-  }
-}
-
-function isValidKHentaiTag(tag: KHentaiTag): tag is { id: number; tag: [TagCategory, string] } {
-  return isValidKHentaiTagCategory(tag.tag[0])
 }

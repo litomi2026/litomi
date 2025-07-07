@@ -6,7 +6,7 @@ import MangaCardImage from '@/components/card/MangaCardImage'
 import Navigation from '@/components/Navigation'
 import { CANONICAL_URL } from '@/constants/url'
 import { fetchMangasFromHiyobi } from '@/crawler/hiyobi'
-import { fetchMangasFromKHentai } from '@/crawler/k-hentai'
+import { KHentaiClient } from '@/crawler/k-hentai'
 import { harpiMangaIdsByPage, harpiMangas } from '@/database/harpi'
 import { Manga } from '@/types/manga'
 import { BasePageProps } from '@/types/nextjs'
@@ -114,7 +114,7 @@ async function getMangas({ source, sort, page }: Params) {
   } else if (source === SourceParam.HIYOBI) {
     mangas = await fetchMangasFromHiyobi({ page })
   } else if (source === SourceParam.K_HENTAI) {
-    mangas = await fetchMangasFromKHentai({ sort: toKHentaiSort(sort) })
+    mangas = await KHentaiClient.getInstance().searchKoreanMangas({ sort: toKHentaiSort(sort) })
   }
 
   return mangas
