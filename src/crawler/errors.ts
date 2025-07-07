@@ -25,7 +25,7 @@ export abstract class ProxyError extends Error {
 export class CircuitBreakerError extends ProxyError {
   readonly errorCode = 'CIRCUIT_BREAKER_OPEN'
   readonly isRetryable = false
-  readonly message = '서버 점검 중입니다. 잠시 후 다시 시도해주세요.'
+  readonly message = '현재 외부 API 서비스에 접속할 수 없어요.'
   readonly statusCode = 503
 }
 
@@ -36,7 +36,6 @@ export class InternalError extends ProxyError {
   readonly statusCode = 500
 }
 
-// Network-related errors (retryable)
 export class NetworkError extends ProxyError {
   readonly errorCode = 'NETWORK_ERROR'
   readonly isRetryable = true
@@ -44,7 +43,6 @@ export class NetworkError extends ProxyError {
   readonly statusCode = 503
 }
 
-// Not found errors
 export class NotFoundError extends ProxyError {
   readonly errorCode = 'NOT_FOUND'
   readonly isRetryable = false
@@ -52,7 +50,6 @@ export class NotFoundError extends ProxyError {
   readonly statusCode = 404
 }
 
-// Parsing errors
 export class ParseError extends ProxyError {
   readonly errorCode = 'PARSE_ERROR'
   readonly isRetryable = false
@@ -60,7 +57,6 @@ export class ParseError extends ProxyError {
   readonly statusCode = 502
 }
 
-// Upstream server errors
 export class UpstreamServerError extends ProxyError {
   readonly errorCode = 'UPSTREAM_ERROR'
   readonly isRetryable: boolean
@@ -104,8 +100,7 @@ export function isRetryableError(error: unknown): boolean {
   return false
 }
 
-// Convert unknown errors to ProxyError
-export function normalizeError(error: unknown, defaultMessage = 'An unexpected error occurred'): ProxyError {
+export function normalizeError(error: unknown, defaultMessage = '알 수 없는 오류가 발생했어요.'): ProxyError {
   if (error instanceof ProxyError) {
     return error
   }

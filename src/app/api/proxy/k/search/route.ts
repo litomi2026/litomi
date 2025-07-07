@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
   try {
     const mangas = await client.searchMangas({
       search,
-      nextId,
+      nextId: nextId ? String(nextId) : undefined,
       sort,
       offset: skip ? String(skip) : undefined,
       categories,

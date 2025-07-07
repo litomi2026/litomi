@@ -14,7 +14,7 @@ import { formatDate, formatNumber } from './utils'
 type ActiveFilterProps = {
   icon: string
   label: string
-  value?: string
+  value?: number | string
   onRemove: () => void
   isPending: boolean
 }
@@ -64,43 +64,42 @@ export default function ActiveFilters({ filters }: Props) {
       condition: filters.sort,
       icon: '↕️',
       label: '정렬',
-      getValue: () => filters.sort && { random: '랜덤', id_asc: '오래된 순', popular: '인기순' }[filters.sort],
+      value: filters.sort && { random: '랜덤', id_asc: '오래된 순', popular: '인기순' }[filters.sort],
       onRemove: () => removeFilter('sort'),
     },
     {
       condition: filters['min-view'] || filters['max-view'],
       icon: '👁',
       label: '조회수',
-      getValue: () => `${formatNumber(filters['min-view'], '0')} ~ ${formatNumber(filters['max-view'], '∞')}`,
+      value: `${formatNumber(filters['min-view'], '0')} ~ ${formatNumber(filters['max-view'], '∞')}`,
       onRemove: () => removeRangeFilter('min-view', 'max-view'),
     },
     {
       condition: filters['min-page'] || filters['max-page'],
       icon: '📄',
       label: '페이지',
-      getValue: () => `${formatNumber(filters['min-page'], '1')} ~ ${formatNumber(filters['max-page'], '∞')}`,
+      value: `${formatNumber(filters['min-page'], '1')} ~ ${formatNumber(filters['max-page'], '∞')}`,
       onRemove: () => removeRangeFilter('min-page', 'max-page'),
     },
     {
       condition: filters.from || filters.to,
       icon: '📅',
       label: '날짜',
-      getValue: () =>
-        `${filters.from ? formatDate(filters.from) : '처음'} ~ ${filters.to ? formatDate(filters.to) : '오늘'}`,
+      value: `${filters.from ? formatDate(filters.from) : '처음'} ~ ${filters.to ? formatDate(filters.to) : '오늘'}`,
       onRemove: () => removeRangeFilter('from', 'to'),
     },
     {
       condition: filters.skip && Number(filters.skip) > 0,
       icon: '⏭',
       label: '건너뛰기',
-      getValue: () => `${formatNumber(filters.skip!, '0')}개`,
+      value: `${formatNumber(filters.skip, '0')}개`,
       onRemove: () => removeFilter('skip'),
     },
     {
       condition: filters['next-id'],
       icon: '🔢',
       label: 'ID 이후',
-      getValue: () => filters['next-id']!,
+      value: filters['next-id'],
       onRemove: () => removeFilter('next-id'),
     },
   ]
@@ -131,7 +130,7 @@ export default function ActiveFilters({ filters }: Props) {
               key={config.label}
               label={config.label}
               onRemove={config.onRemove}
-              value={config.getValue()}
+              value={config.value}
             />
           ))}
       </div>

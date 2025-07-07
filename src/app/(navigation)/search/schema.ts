@@ -11,7 +11,7 @@ export const MangaSearchSchema = z
     'max-page': z.coerce.number().int().positive().max(10000).optional(),
     from: z.coerce.number().int().min(0).optional(),
     to: z.coerce.number().int().min(0).optional(),
-    'next-id': z.string().regex(/^\d+$/).optional(),
+    'next-id': z.coerce.number().int().positive().optional(),
     skip: z.coerce.number().int().min(0).max(10000).optional(),
   })
   .refine(

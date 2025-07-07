@@ -137,9 +137,8 @@ const K_HENTAI_CONFIG: ProxyClientConfig = {
   baseURL: 'https://k-hentai.org',
   circuitBreaker: {
     failureThreshold: 5,
-    successThreshold: 2,
+    successThreshold: 3,
     timeout: 60000, // 1 minute
-    halfOpenRequests: 3,
   },
   retry: {
     maxRetries: 3,
@@ -224,7 +223,10 @@ export class KHentaiClient {
     },
     revalidate = 21600, // 6 hours
   ): Promise<Manga[]> {
-    const kebabCaseParams = Object.entries(params).map(([key, value]) => [convertCamelCaseToKebabCase(key), value])
+    const kebabCaseParams = Object.entries(params)
+      .filter(([, value]) => value !== undefined)
+      .map(([key, value]) => [convertCamelCaseToKebabCase(key), value])
+
     const searchParams = new URLSearchParams(kebabCaseParams)
 
     const data = await this.client.fetch<KHentaiManga[]>(`/ajax/search?${searchParams}`, { next: { revalidate } })
@@ -272,7 +274,7 @@ export class KHentaiClient {
     return this.parseGalleryFromHTML(html, id)
   }
 
-  // NOTE: k-hentai에서 언어, 그룹, 패러디 등의 값도 태그로 내려줘서 진짜 태그만 추출하기 위한 함수
+  // NOTE: k-hentai에서 언어, 그룹, 패러디 등의 값도 태그로 내려줘서, 진짜 태그만 추출하기 위한 함수
   private isValidKHentaiTag(tag: KHentaiTag): tag is { id: number; tag: [TagCategory, string] } {
     return isValidKHentaiTagCategory(tag.tag[0])
   }
