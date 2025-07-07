@@ -1,4 +1,3 @@
-import { harpiMangaPages } from '@/database/harpi'
 import { BookmarkSource } from '@/database/schema'
 
 export enum SortParam {
@@ -23,14 +22,16 @@ export enum ViewCookie {
   CARD = 'card',
 }
 
+export function convertCamelCaseToKebabCase(str: string) {
+  return str.replace(/([A-Z])/g, '-$1').toLowerCase()
+}
+
 export function getLoginId(loginId: string) {
   return decodeURIComponent(loginId).slice(1)
 }
 
 export function getTotalPages(source: string) {
   switch (source) {
-    case SourceParam.HARPI:
-      return harpiMangaPages.length
     case SourceParam.HIYOBI:
       return 7300
     default:

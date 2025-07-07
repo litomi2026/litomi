@@ -22,6 +22,8 @@ type Props = {
   className?: string
 }
 
+const PREFETCH_INDEX = 10
+
 export default memo(MangaCard)
 
 export function MangaCardSkeleton() {
@@ -42,7 +44,7 @@ function MangaCard({ manga, index = 0, source, className = '' }: Props) {
       />
       <div className="flex grow flex-col justify-between gap-2 p-2 border-t-2 sm:border-t-0 sm:border-l-2 md:border-l-0 md:border-t-2">
         <div className="flex flex-col gap-2 text-sm">
-          <Link href={viewerLink}>
+          <Link href={viewerLink} prefetch={index < PREFETCH_INDEX}>
             <h4 className="line-clamp-3 font-bold text-base leading-5 min-w-0 wrap-anywhere hover:underline">
               {title}
             </h4>

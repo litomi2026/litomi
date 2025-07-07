@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation'
 
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import { fetchMangaFromHiyobi } from '@/crawler/hiyobi'
-import { fetchMangaFromKHentai } from '@/crawler/k-hentai'
+import { KHentaiClient } from '@/crawler/k-hentai'
 import { harpiMangas } from '@/database/harpi'
 import { BookmarkSource } from '@/database/schema'
 import selectBookmarks from '@/sql/selectBookmarks'
@@ -46,7 +46,8 @@ export default async function Page() {
     }
     if (source === BookmarkSource.K_HENTAI) {
       return {
-        manga: fetchMangaFromKHentai({ id: mangaId })
+        manga: KHentaiClient.getInstance()
+          .fetchManga(mangaId)
           .then((manga) => manga ?? { id: mangaId, title: '만화 정보가 없어요', images: [] })
           .catch(() => ({ id: mangaId, title: '오류가 발생했어요', images: [] })),
         source: SourceParam.K_HENTAI,

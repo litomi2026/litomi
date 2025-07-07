@@ -17,10 +17,12 @@ const BLIND_TAG_VALUE_TO_LABEL: Record<string, string> = {
 
 const BLIND_TAG_VALUES = Object.keys(BLIND_TAG_VALUE_TO_LABEL)
 
+const PREFETCH_INDEX = 10
+
 type Props = {
   href: string
   manga: Manga
-  index?: number
+  index: number
   className?: string
 }
 
@@ -44,7 +46,11 @@ export default function MangaCardImage({ manga, href, index, className = '' }: P
           mangaIndex={index}
         />
       ) : (
-        <Link className="flex overflow-x-auto h-fit snap-x snap-mandatory select-none scrollbar-hidden" href={href}>
+        <Link
+          className="flex overflow-x-auto h-fit snap-x snap-mandatory select-none scrollbar-hidden"
+          href={href}
+          prefetch={index < PREFETCH_INDEX}
+        >
           <MangaImage imageIndex={0} manga={manga} />
         </Link>
       )}
