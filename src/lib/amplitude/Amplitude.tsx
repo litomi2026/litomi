@@ -1,7 +1,8 @@
 'use client'
 
-import * as amplitude from '@amplitude/analytics-browser'
 import { useEffect } from 'react'
+
+import amplitude from '@/lib/amplitude/lazy'
 
 type Props = {
   apiKey: string

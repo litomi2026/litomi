@@ -1,9 +1,9 @@
-import * as amplitude from '@amplitude/analytics-browser'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { useEffect } from 'react'
 
 import { ResponseApiMe } from '@/app/api/me/route'
 import { QueryKeys } from '@/constants/query'
+import amplitude from '@/lib/amplitude/lazy'
 
 export default function useMeQuery() {
   const result = useSuspenseQuery({
@@ -19,7 +19,7 @@ export default function useMeQuery() {
 
   useEffect(() => {
     if (userId) {
-      amplitude.setUserId(String(userId))
+      amplitude.setUserId(userId)
     }
   }, [userId])
 

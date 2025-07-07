@@ -1,6 +1,5 @@
 'use client'
 
-import * as amplitude from '@amplitude/analytics-browser'
 import { captureException } from '@sentry/nextjs'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import { useQueryClient } from '@tanstack/react-query'
@@ -10,6 +9,7 @@ import { toast } from 'sonner'
 import logout from '@/app/auth/logout/action'
 import { QueryKeys } from '@/constants/query'
 import useActionErrorEffect from '@/hook/useActionErrorEffect'
+import amplitude from '@/lib/amplitude/lazy'
 import useMeQuery from '@/query/useMeQuery'
 
 import IconLogout from '../icons/IconLogout'
