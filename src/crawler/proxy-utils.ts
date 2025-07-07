@@ -38,6 +38,35 @@ export function createCacheControl(options: {
   return parts.join(', ')
 }
 
+export async function createHealthCheckHandler(serviceName: string, checks?: Record<string, () => Promise<boolean>>) {
+  const healthChecks: Record<string, { status: 'healthy' | 'unhealthy'; error?: string }> = {}
+
+  if (checks) {
+    await Promise.all(
+      Object.entries(checks).map(async ([name, check]) => {
+        try {
+          const isHealthy = await check()
+          healthChecks[name] = { status: isHealthy ? 'healthy' : 'unhealthy' }
+        } catch (error) {
+          healthChecks[name] = {
+            status: 'unhealthy',
+            error: error instanceof Error ? error.message : 'Unknown error',
+          }
+        }
+      }),
+    )
+  }
+
+  const allHealthy = Object.values(healthChecks).every((check) => check.status === 'healthy')
+
+  return Response.json({
+    service: serviceName,
+    status: allHealthy ? 'healthy' : 'unhealthy',
+    timestamp: new Date().toISOString(),
+    checks: healthChecks,
+  })
+}
+
 export function handleError(error: unknown, request: NextRequest) {
   const normalizedError = normalizeError(error)
 

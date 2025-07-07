@@ -168,9 +168,8 @@ export class KHentaiClient {
     return KHentaiClient.instance
   }
 
-  async fetchManga(id: number, revalidate = 43200): Promise<Manga | null> {
+  async fetchManga(id: number, revalidate = 43200): Promise<Manga> {
     const gallery = await this.fetchGallery(id, revalidate)
-    if (!gallery) return null
 
     return {
       ...this.convertKHentaiCommonToManga(gallery),
