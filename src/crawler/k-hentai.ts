@@ -134,7 +134,7 @@ interface Torrent {
 }
 
 const K_HENTAI_CONFIG: ProxyClientConfig = {
-  baseUrl: 'https://k-hentai.org',
+  baseURL: 'https://k-hentai.org',
   circuitBreaker: {
     failureThreshold: 5,
     successThreshold: 2,

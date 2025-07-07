@@ -30,8 +30,8 @@ export async function GET() {
 
   if (!user) {
     cookieStore.delete(CookieKey.ACCESS_TOKEN)
-    return new Response('사용자 정보를 찾을 수 없어요.', { status: 404 })
+    return new Response('404 Not Found', { status: 404 })
   }
 
-  return Response.json(user satisfies ResponseApiMe)
+  return Response.json(user)
 }
