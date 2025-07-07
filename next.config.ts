@@ -1,5 +1,6 @@
 import type { NextConfig } from 'next'
 
+import withBundleAnalyzer from '@next/bundle-analyzer'
 import { withSentryConfig } from '@sentry/nextjs'
 
 const nextConfig: NextConfig = {
@@ -25,7 +26,11 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
 }
 
-export default withSentryConfig(nextConfig, {
+const withAnalyzer = withBundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+})(nextConfig)
+
+export default withSentryConfig(withAnalyzer, {
   // For all available options, see:
   // https://www.npmjs.com/package/@sentry/webpack-plugin#options
 

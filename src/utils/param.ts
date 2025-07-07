@@ -1,4 +1,3 @@
-import { harpiMangaPages } from '@/database/harpi'
 import { BookmarkSource } from '@/database/schema'
 
 export enum SortParam {
@@ -33,8 +32,6 @@ export function getLoginId(loginId: string) {
 
 export function getTotalPages(source: string) {
   switch (source) {
-    case SourceParam.HARPI:
-      return harpiMangaPages.length
     case SourceParam.HIYOBI:
       return 7300
     default:

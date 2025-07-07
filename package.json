@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "analyze": "ANALYZE=true next build",
     "prettier": "prettier --write .",
     "type": "tsc --noEmit",
     "crawl": "bun tools/crawlMangas.ts",
@@ -43,6 +44,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.30.1",
+    "@next/bundle-analyzer": "^15.3.5",
     "@tailwindcss/postcss": "^4.1.11",
     "@types/bcrypt": "^5.0.2",
     "@types/bun": "^1.2.17",
