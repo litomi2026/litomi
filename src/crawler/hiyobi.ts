@@ -1,4 +1,4 @@
-import { normalizeTagValue, translateTag } from '@/database/tag-translations'
+import { normalizeTagValue, sortTagValue, translateTag } from '@/database/tag-translations'
 import { Manga, Tag } from '@/types/manga'
 
 import { isValidKHentaiTagCategory } from './k-hentai'
@@ -152,10 +152,11 @@ export class HiyobiClient {
       const [category, value] = hTag.value.split(':')
 
       if (!value) {
+        const sortedCategory = sortTagValue(category)
         return {
-          category: 'other',
+          category: sortedCategory,
           value: category,
-          label: translateTag('other', category, locale),
+          label: translateTag(sortedCategory, category, locale),
         }
       }
 
