@@ -7,6 +7,7 @@ import { memo } from 'react'
 import { Tag } from '@/types/manga'
 
 import { toggleSearchFilter } from './card/utils'
+import TagLabel from './TagLabel'
 
 const tagStyles = {
   male: 'bg-blue-800',
@@ -56,7 +57,7 @@ function TagList({ className, tags, clickable = false }: Props) {
             href={clickable ? `/search?${newSearchParams}` : ''}
             key={`${category}:${value}`}
           >
-            {label}
+            <TagLabel className="p-0.5 w-5">{label}</TagLabel>
           </Link>
         )
       })}
