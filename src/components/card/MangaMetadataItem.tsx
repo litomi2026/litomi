@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { memo } from 'react'
 
-import TagLabel from '../TagLabel'
+import MangaMetadataLabel from './MangaMetadataLabel'
 import { toggleSearchFilter } from './utils'
 
 type Props = {
@@ -40,7 +40,7 @@ function MangaMetadataItem({ label, value, filterType, className = '' }: Props) 
         className="hover:underline focus:underline aria-pressed:text-brand-end aria-pressed:font-semibold"
         href={`/search?${newSearchParams}`}
       >
-        <TagLabel className="p-0.5 w-5">{value}</TagLabel>
+        <MangaMetadataLabel>{value}</MangaMetadataLabel>
       </Link>
     </div>
   )
