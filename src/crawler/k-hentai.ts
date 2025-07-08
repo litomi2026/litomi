@@ -4,6 +4,7 @@ import { convertCamelCaseToKebabCase } from '@/utils/param'
 
 import { ParseError } from './errors'
 import { ProxyClient, ProxyClientConfig } from './proxy'
+import { isUpstreamServer5XXError } from './proxy-utils'
 
 const kHentaiTypeNumberToName: Record<number, string> = {
   1: '동인지',
@@ -139,6 +140,7 @@ const K_HENTAI_CONFIG: ProxyClientConfig = {
     failureThreshold: 5,
     successThreshold: 3,
     timeout: 60000, // 1 minute
+    shouldCountAsFailure: isUpstreamServer5XXError,
   },
   retry: {
     maxRetries: 3,
