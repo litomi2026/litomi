@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation'
 import MangaCard from '@/components/card/MangaCard'
 import MangaCardImage from '@/components/card/MangaCardImage'
 import { CANONICAL_URL } from '@/constants/url'
-import { fetchRandomMangasFromHiyobi } from '@/crawler/hiyobi'
+import { HiyobiClient } from '@/crawler/hiyobi'
 import { KHentaiClient } from '@/crawler/k-hentai'
 import { harpiMangaIds, harpiMangas } from '@/database/harpi'
 import { Manga } from '@/types/manga'
@@ -73,7 +73,7 @@ async function getMangas({ source }: Params) {
   if (source === SourceParam.HARPI) {
     mangas = sampleBySecureFisherYates(harpiMangaIds, 20).map((id) => harpiMangas[id])
   } else if (source === SourceParam.HIYOBI) {
-    mangas = await fetchRandomMangasFromHiyobi()
+    mangas = await HiyobiClient.getInstance().fetchRandomMangas()
   } else if (source === SourceParam.K_HENTAI) {
     mangas = await KHentaiClient.getInstance().fetchRandomKoreanMangas()
   }

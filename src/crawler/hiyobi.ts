@@ -208,12 +208,3 @@ export class HiyobiClient {
     return `${millions}/${thousands}/${remainder}`
   }
 }
-
-// Export convenience functions for backward compatibility
-export async function fetchMangasFromHiyobi({ page }: { page: number }) {
-  return HiyobiClient.getInstance().fetchMangas(page)
-}
-
-export async function fetchRandomMangasFromHiyobi() {
-  return HiyobiClient.getInstance().fetchRandomMangas()
-}

@@ -90,7 +90,7 @@ export default function LanguageBadge({ language, className = '' }: Props) {
     <Link
       aria-label={`Filter by ${language}`}
       aria-pressed={isActive}
-      className={`group relative px-1.5 py-0.5 text-xs font-medium rounded-md bg-zinc-700 transition aria-pressed:ring-2 aria-pressed:ring-brand-start aria-pressed:bg-zinc-700 ${className}`}
+      className={`group relative px-1.5 py-0.5 text-xs font-medium rounded-md bg-zinc-700 transition aria-pressed:ring-2 aria-pressed:ring-brand-end aria-pressed:bg-zinc-700 ${className}`}
       href={`/search?${newSearchParams}`}
       title={`${language} 작품 보기`}
     >

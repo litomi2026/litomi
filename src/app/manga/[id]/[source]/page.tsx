@@ -6,9 +6,9 @@ import type { BasePageProps } from '@/types/nextjs'
 import ImageViewer from '@/components/ImageViewer/ImageViewer'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { CANONICAL_URL } from '@/constants/url'
-import { fetchMangasFromHiyobi, HiyobiClient } from '@/crawler/hiyobi'
+import { HiyobiClient } from '@/crawler/hiyobi'
 import { KHentaiClient } from '@/crawler/k-hentai'
-import { harpiMangaIdsDesc, harpiMangas } from '@/database/harpi'
+import { harpiMangas } from '@/database/harpi'
 import { getImageSrc } from '@/utils/manga'
 import { SourceParam, validateId, validateSource } from '@/utils/param'
 
@@ -45,12 +45,12 @@ export async function generateMetadata({ params }: BasePageProps): Promise<Metad
 }
 
 export async function generateStaticParams() {
-  const hiyobiIds = await fetchMangasFromHiyobi({ page: 1 })
+  const hiyobiIds = await HiyobiClient.getInstance()
+    .fetchMangas(1)
     .then((mangas) => mangas?.map((manga) => String(manga.id)) ?? [])
     .catch(() => [] as string[])
   const params: Record<string, unknown>[] = []
   const idMap: Record<string, string[]> = {
-    [SourceParam.HARPI]: harpiMangaIdsDesc.slice(0, 50),
     [SourceParam.HIYOBI]: hiyobiIds?.slice(0, 5),
   }
   for (const source of Object.keys(idMap)) {
