@@ -35,7 +35,7 @@ export default defineConfig([
       'perfectionist/sort-enums': 'off',
       'perfectionist/sort-object-types': 'off',
       'perfectionist/sort-objects': 'off',
-      'perfectionist/sort-union-types': ['error', { groups: ['keyword', 'literal', 'named'] }],
+      'perfectionist/sort-union-types': ['error', { groups: ['keyword', 'literal', 'named', 'operator'] }],
     },
   },
   eslintConfigPrettier,

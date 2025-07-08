@@ -1,4 +1,4 @@
-let amplitudeInstance: null | typeof import('@amplitude/analytics-browser') = null
+let amplitudeInstance: typeof import('@amplitude/analytics-browser') | null = null
 let isInitialized = false
 let isInitializing = false
 const actionQueue: Array<() => void> = []
