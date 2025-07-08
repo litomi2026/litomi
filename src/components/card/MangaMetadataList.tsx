@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { memo } from 'react'
 
+import TagLabel from '../TagLabel'
 import { toggleSearchFilter } from './utils'
 
 type Props = {
@@ -43,8 +44,10 @@ function MangaMetadataList({ label, values, filterType, className = '' }: Props)
 
           return (
             <Link aria-pressed={isActive} href={`/search?${newSearchParams}`} key={value}>
-              {value.replaceAll('_', ' ')}
-              {idx < values.length - 1 && ','}
+              <TagLabel className="p-0.5 w-5">
+                {value.replaceAll('_', ' ')}
+                {idx < values.length - 1 && ','}
+              </TagLabel>
             </Link>
           )
         })}
