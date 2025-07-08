@@ -4,7 +4,7 @@ import { cookies } from 'next/headers'
 import { notFound } from 'next/navigation'
 
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
-import { fetchMangaFromHiyobi } from '@/crawler/hiyobi'
+import { HiyobiClient } from '@/crawler/hiyobi'
 import { KHentaiClient } from '@/crawler/k-hentai'
 import { harpiMangas } from '@/database/harpi'
 import { BookmarkSource } from '@/database/schema'
@@ -38,7 +38,8 @@ export default async function Page() {
     }
     if (source === BookmarkSource.HIYOBI) {
       return {
-        manga: fetchMangaFromHiyobi({ id: mangaId })
+        manga: HiyobiClient.getInstance()
+          .fetchManga(mangaId)
           .then((manga) => manga ?? { id: mangaId, title: '만화 정보가 없어요', images: [] })
           .catch(() => ({ id: mangaId, title: '오류가 발생했어요', images: [] })),
         source: SourceParam.HIYOBI,

@@ -1,9 +1,9 @@
-import { captureException } from '@sentry/nextjs'
-
 import { normalizeTagValue, translateTag } from '@/database/tag-translations'
 import { Manga, Tag } from '@/types/manga'
 
 import { isValidKHentaiTagCategory } from './k-hentai'
+import { ProxyClient, ProxyClientConfig } from './proxy'
+import { isUpstreamServer5XXError } from './proxy-utils'
 
 type HiyobiImage = {
   height: number
@@ -11,25 +11,21 @@ type HiyobiImage = {
   url: string
   width: number
 }
-type HiyobiLabelValue = {
-  display: string
-  value: string
-}
 
 type HiyobiManga = {
-  artists: HiyobiLabelValue[]
+  artists: HiyobiTag[]
   category: number
-  characters: HiyobiLabelValue[]
+  characters: HiyobiTag[]
   comments: number
   count: number
   filecount: number
-  groups: HiyobiLabelValue[]
+  groups: HiyobiTag[]
   id: number
   language: string
   like: number
   like_anonymous: number
-  parodys: HiyobiLabelValue[]
-  tags: HiyobiLabelValue[]
+  parodys: HiyobiTag[]
+  tags: HiyobiTag[]
   title: string
   type: number
   uid: number
@@ -37,134 +33,12 @@ type HiyobiManga = {
   uploadername: string
 }
 
-export async function fetchMangaFromHiyobi({ id }: { id: number }) {
-  const res = await fetch(`https://api.hiyobi.org/gallery/${id}`, {
-    referrerPolicy: 'no-referrer',
-    next: { revalidate: 604800 }, // 1 week
-  })
-
-  if (res.status === 404) {
-    return null
-  } else if (!res.ok) {
-    const body = await res.text()
-    captureException('api.hiyobi.org 서버 오류', { extra: { res, body } })
-    throw new Error('hi 서버에서 만화를 불러오는데 실패했어요.')
-  }
-
-  const manga = (await res.json()) as HiyobiManga
-  return convertHiyobiToManga(manga)
+type HiyobiTag = {
+  display: string
+  value: string
 }
 
-export async function fetchMangaImagesFromHiyobi({ id }: { id: number }) {
-  const res = await fetch(`https://api-kh.hiyobi.org/hiyobi/list?id=${id}`, {
-    referrerPolicy: 'no-referrer',
-    next: { revalidate: 28800 }, // 8 hours
-  })
-
-  if (res.status === 404) {
-    return null
-  } else if (!res.ok) {
-    const body = await res.text()
-    captureException('api-kh.hiyobi.org 서버 오류', { extra: { res, body } })
-    throw new Error('hi 서버에서 만화 이미지를 불러오는데 실패했어요.')
-  }
-
-  const hiyobiImages = (await res.json()) as HiyobiImage[]
-  return hiyobiImages.map((image) => image.url)
-}
-
-export async function fetchMangasFromHiyobi({ page }: { page: number }) {
-  const res = await fetch(`https://api.hiyobi.org/list/${page}`, {
-    referrerPolicy: 'no-referrer',
-    next: { revalidate: 28800 }, // 8 hours
-  })
-
-  if (res.status === 404) {
-    return null
-  } else if (!res.ok) {
-    const body = await res.text()
-    captureException('api.hiyobi.org 서버 오류', { extra: { res, body } })
-    throw new Error('hi 서버에서 만화 목록을 불러오는데 실패했어요.')
-  }
-
-  const mangas = (await res.json()).list as HiyobiManga[]
-  return mangas.map((manga) => convertHiyobiToManga(manga))
-}
-
-export async function fetchRandomMangasFromHiyobi() {
-  const res = await fetch('https://api.hiyobi.org/random', {
-    method: 'POST',
-    referrerPolicy: 'no-referrer',
-    next: { revalidate: 15 },
-  })
-
-  if (res.status === 404) {
-    return null
-  } else if (!res.ok) {
-    const body = await res.text()
-    captureException('api.hiyobi.org 서버 오류', { extra: { res, body } })
-    throw new Error('hi 서버에서 랜덤 만화 목록을 불러오는데 실패했어요.')
-  }
-
-  const mangas = (await res.json()) as HiyobiManga[]
-  return mangas.map((manga) => convertHiyobiToManga(manga))
-}
-
-function convertHiyobiTagsToTags(hiyobiTags: HiyobiLabelValue[]): Tag[] {
-  const locale = 'ko' // TODO: Get from user preferences or context
-
-  return hiyobiTags.map((hTag) => {
-    const [category, value] = hTag.value.split(':')
-
-    if (!value) {
-      return {
-        category: 'other',
-        value: category,
-        label: translateTag('other', category, locale),
-      }
-    }
-
-    return {
-      category: isValidKHentaiTagCategory(category) ? category : '',
-      value: normalizeTagValue(value),
-      label: translateTag(category, value, locale),
-    }
-  })
-}
-
-function convertHiyobiToManga({
-  id,
-  artists,
-  characters,
-  groups,
-  parodys,
-  tags,
-  title,
-  type,
-  filecount,
-  count,
-  like,
-  like_anonymous,
-}: HiyobiManga): Manga {
-  return {
-    id,
-    artists: artists.map((artist) => artist.display),
-    characters: characters.map((character) => character.display),
-    group: groups.map((group) => group.display),
-    series: parodys.map((series) => series.display),
-    tags: convertHiyobiTagsToTags(tags),
-    title,
-    type: hiyobiTypeMap[type as keyof typeof hiyobiTypeMap] ?? '?',
-    images: [getKHentaiThumbnailURL(id)],
-    cdn: 'thumb.k-hentai',
-    count: filecount,
-    like,
-    viewCount: count,
-    likeAnonymous: like_anonymous,
-  }
-}
-
-const hiyobiTypeMap = {
+const hiyobiTypeNumberToName: Record<number, string> = {
   1: '동인지',
   2: '망가',
   3: '아티스트 CG',
@@ -175,11 +49,169 @@ const hiyobiTypeMap = {
   8: '코스프레',
   9: '아시안',
   10: '기타',
-} as const
+}
 
-function getKHentaiThumbnailURL(id: number) {
-  const millions = Math.floor(id / 1_000_000)
-  const thousands = Math.floor((id % 1_000_000) / 1_000)
-  const remainder = id % 1000
-  return `${millions}/${thousands}/${remainder}`
+const HIYOBI_CONFIG: ProxyClientConfig = {
+  baseURL: 'https://api.hiyobi.org',
+  circuitBreaker: {
+    failureThreshold: 5,
+    successThreshold: 3,
+    timeout: 60000, // 1 minute
+    shouldCountAsFailure: isUpstreamServer5XXError,
+  },
+  retry: {
+    maxRetries: 3,
+    initialDelay: 1000,
+    maxDelay: 10000,
+    backoffMultiplier: 2,
+    jitter: true,
+  },
+  defaultHeaders: {
+    Referer: 'https://hiyobi.org',
+  },
+}
+
+const HIYOBI_IMAGE_CONFIG: ProxyClientConfig = {
+  baseURL: 'https://api-kh.hiyobi.org',
+  circuitBreaker: {
+    failureThreshold: 5,
+    successThreshold: 3,
+    timeout: 60000, // 1 minute
+    shouldCountAsFailure: isUpstreamServer5XXError,
+  },
+  retry: {
+    maxRetries: 3,
+    initialDelay: 1000,
+    maxDelay: 10000,
+    backoffMultiplier: 2,
+    jitter: true,
+  },
+  defaultHeaders: {
+    Referer: 'https://hiyobi.org',
+  },
+}
+
+export class HiyobiClient {
+  private static instance: HiyobiClient
+  private readonly client: ProxyClient
+  private readonly imageClient: ProxyClient
+
+  // Singleton instance
+  private constructor() {
+    this.client = new ProxyClient(HIYOBI_CONFIG)
+    this.imageClient = new ProxyClient(HIYOBI_IMAGE_CONFIG)
+  }
+
+  static getInstance(): HiyobiClient {
+    if (!HiyobiClient.instance) {
+      HiyobiClient.instance = new HiyobiClient()
+    }
+    return HiyobiClient.instance
+  }
+
+  async fetchManga(
+    id: number,
+    revalidate = 604800, // 1 week
+  ): Promise<Manga> {
+    const manga = await this.client.fetch<HiyobiManga>(`/gallery/${id}`, { next: { revalidate } })
+
+    return this.convertHiyobiToManga(manga)
+  }
+
+  async fetchMangaImages(
+    id: number,
+    revalidate = 21600, // 6 hours
+  ): Promise<string[]> {
+    const hiyobiImages = await this.imageClient.fetch<HiyobiImage[]>(`/hiyobi/list?id=${id}`, { next: { revalidate } })
+
+    return hiyobiImages.map((image) => image.url)
+  }
+
+  async fetchMangas(
+    page: number,
+    revalidate = 21600, // 6 hours
+  ): Promise<Manga[]> {
+    const response = await this.client.fetch<{ list: HiyobiManga[] }>(`/list/${page}`, { next: { revalidate } })
+
+    return response.list.map((manga) => this.convertHiyobiToManga(manga))
+  }
+
+  async fetchRandomMangas(): Promise<Manga[] | null> {
+    const mangas = await this.client.fetch<HiyobiManga[]>('/random', {
+      method: 'POST',
+      next: { revalidate: 15 },
+    })
+
+    return mangas.map((manga) => this.convertHiyobiToManga(manga))
+  }
+
+  private convertHiyobiTagsToTags(hiyobiTags: HiyobiTag[]): Tag[] {
+    const locale = 'ko' // TODO: Get from user preferences or context
+
+    return hiyobiTags.map((hTag) => {
+      const [category, value] = hTag.value.split(':')
+
+      if (!value) {
+        return {
+          category: 'other',
+          value: category,
+          label: translateTag('other', category, locale),
+        }
+      }
+
+      return {
+        category: isValidKHentaiTagCategory(category) ? category : '',
+        value: normalizeTagValue(value),
+        label: translateTag(category, value, locale),
+      }
+    })
+  }
+
+  private convertHiyobiToManga({
+    id,
+    artists,
+    characters,
+    groups,
+    parodys,
+    tags,
+    title,
+    type,
+    filecount,
+    count,
+    like,
+    like_anonymous,
+  }: HiyobiManga): Manga {
+    return {
+      id,
+      artists: artists.map((artist) => artist.display),
+      characters: characters.map((character) => character.display),
+      group: groups.map((group) => group.display),
+      series: parodys.map((series) => series.display),
+      tags: this.convertHiyobiTagsToTags(tags),
+      title,
+      type: hiyobiTypeNumberToName[type] ?? `${type}?`,
+      images: [this.getKHentaiThumbnailURL(id)],
+      cdn: 'thumb.k-hentai',
+      count: filecount,
+      like,
+      viewCount: count,
+      likeAnonymous: like_anonymous,
+    }
+  }
+
+  private getKHentaiThumbnailURL(id: number): string {
+    const millions = Math.floor(id / 1_000_000)
+    const thousands = Math.floor((id % 1_000_000) / 1_000)
+    const remainder = id % 1000
+    return `${millions}/${thousands}/${remainder}`
+  }
+}
+
+// Export convenience functions for backward compatibility
+export async function fetchMangasFromHiyobi({ page }: { page: number }) {
+  return HiyobiClient.getInstance().fetchMangas(page)
+}
+
+export async function fetchRandomMangasFromHiyobi() {
+  return HiyobiClient.getInstance().fetchRandomMangas()
 }
