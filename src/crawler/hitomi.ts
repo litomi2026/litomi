@@ -101,6 +101,7 @@ function convertHitomiGalleryToManga(gallery: HitomiGallery): Manga {
       value: tag.tag,
       label: tag.tag,
     })),
+    language: gallery.language,
     images: gallery.files.map((file) => `https://ltn.gold-usergeneratedcontent.net/1/111/${file.hash}`),
   }
 }

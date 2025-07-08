@@ -33,7 +33,7 @@ function TagList({ className, tags, clickable = false }: Props) {
 
   return (
     <ul
-      className={`[&_a]:rounded [&_a]:px-1 [&_a]:text-foreground [&_a]:hover:underline [&_a]:active:opacity-80 [&_a]:transition [&_a]:block [&_a]:aria-pressed:ring-2 [&_a]:aria-pressed:ring-brand-end [&_a]:aria-disabled:pointer-events-none ${className}`}
+      className={`[&_a]:rounded [&_a]:px-1 [&_a]:text-foreground [&_a]:hover:underline [&_a]:focus:underline [&_a]:active:opacity-80 [&_a]:transition [&_a]:block [&_a]:aria-pressed:ring-2 [&_a]:aria-pressed:ring-brand-end [&_a]:aria-disabled:pointer-events-none ${className}`}
     >
       {tags.map(({ category, value, label }) => {
         const tagColor = tagStyles[category]

@@ -6,9 +6,11 @@ export type Multilingual = {
   'zh-TW'?: string
 }
 
+export type TagCategory = 'female' | 'male' | 'mixed' | 'other'
+
 const TAG_VALUE_TRANSLATION: Record<string, Multilingual> = {
   '3d': { en: '3D' },
-  '3d_imageset': { en: '3D imageset', ko: '3D 이미지모음' },
+  '3d_imageset': { en: '3D imageset', ko: '3D 이미지' },
   abortion: { en: 'abortion', ko: '낙태' },
   absorption: { en: 'absorption', ko: '흡수', ja: '吸収', 'zh-CN': '吸收' },
   additional_eyes: { en: 'additional eyes', ko: '눈이 많음', ja: '追加の目', 'zh-CN': '额外眼睛' },
@@ -808,8 +810,22 @@ const TAG_TRANSLATION: Record<string, Multilingual> = {
   'male:prostitution': { en: 'prostitution', ko: '남창', ja: '売春', 'zh-CN': '卖淫', 'zh-TW': '賣淫' },
 }
 
+const TAG_VALUE_TO_CATEGORY: Record<string, TagCategory> = {
+  group: 'mixed',
+  incest: 'mixed',
+  inseki: 'mixed',
+}
+
 export function normalizeTagValue(value: string): string {
   return value.toLowerCase().replace(/\s+/g, '_').trim()
+}
+
+export function sortTagValue(value: string): TagCategory {
+  const normalizedValue = normalizeTagValue(value)
+  const match = normalizedValue.match(/^(\w+)_threesome$/)
+  if (match) return 'mixed'
+
+  return TAG_VALUE_TO_CATEGORY[normalizedValue] || 'other'
 }
 
 export function translateTag(category: string, value: string, locale: keyof Multilingual) {

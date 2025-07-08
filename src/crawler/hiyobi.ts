@@ -1,4 +1,4 @@
-import { normalizeTagValue, translateTag } from '@/database/tag-translations'
+import { normalizeTagValue, sortTagValue, translateTag } from '@/database/tag-translations'
 import { Manga, Tag } from '@/types/manga'
 
 import { isValidKHentaiTagCategory } from './k-hentai'
@@ -152,10 +152,11 @@ export class HiyobiClient {
       const [category, value] = hTag.value.split(':')
 
       if (!value) {
+        const sortedCategory = sortTagValue(category)
         return {
-          category: 'other',
+          category: sortedCategory,
           value: category,
-          label: translateTag('other', category, locale),
+          label: translateTag(sortedCategory, category, locale),
         }
       }
 
@@ -180,6 +181,7 @@ export class HiyobiClient {
     count,
     like,
     like_anonymous,
+    language,
   }: HiyobiManga): Manga {
     return {
       id,
@@ -190,6 +192,7 @@ export class HiyobiClient {
       tags: this.convertHiyobiTagsToTags(tags),
       title,
       type: hiyobiTypeNumberToName[type] ?? `${type}?`,
+      language,
       images: [this.getKHentaiThumbnailURL(id)],
       cdn: 'thumb.k-hentai',
       count: filecount,
@@ -205,13 +208,4 @@ export class HiyobiClient {
     const remainder = id % 1000
     return `${millions}/${thousands}/${remainder}`
   }
-}
-
-// Export convenience functions for backward compatibility
-export async function fetchMangasFromHiyobi({ page }: { page: number }) {
-  return HiyobiClient.getInstance().fetchMangas(page)
-}
-
-export async function fetchRandomMangasFromHiyobi() {
-  return HiyobiClient.getInstance().fetchRandomMangas()
 }
