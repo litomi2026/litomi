@@ -8,7 +8,7 @@ export type Multilingual = {
 
 const TAG_VALUE_TRANSLATION: Record<string, Multilingual> = {
   '3d': { en: '3D' },
-  '3d_imageset': { en: '3D imageset', ko: '3D 이미지모음' },
+  '3d_imageset': { en: '3D imageset', ko: '3D 이미지' },
   abortion: { en: 'abortion', ko: '낙태' },
   absorption: { en: 'absorption', ko: '흡수', ja: '吸収', 'zh-CN': '吸收' },
   additional_eyes: { en: 'additional eyes', ko: '눈이 많음', ja: '追加の目', 'zh-CN': '额外眼睛' },
