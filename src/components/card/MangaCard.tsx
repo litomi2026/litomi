@@ -11,6 +11,7 @@ import IconExternalLink from '../icons/IconExternalLink'
 import TagList from '../TagList'
 import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from './BookmarkButton'
 import ImageDownloadButton from './ImageDownloadButton'
+import LanguageBadge from './LanguageBadge'
 import MangaCardImage from './MangaCardImage'
 import MangaMetadataItem from './MangaMetadataItem'
 import MangaMetadataList from './MangaMetadataList'
@@ -31,7 +32,7 @@ export function MangaCardSkeleton() {
 }
 
 function MangaCard({ manga, index = 0, source, className = '' }: Props) {
-  const { id, artists, characters, date, group, series, tags, title, type } = manga
+  const { id, artists, characters, date, group, series, tags, title, type, language } = manga
   const viewerLink = getViewerLink(id, source)
 
   return (
@@ -44,11 +45,14 @@ function MangaCard({ manga, index = 0, source, className = '' }: Props) {
       />
       <div className="flex grow flex-col justify-between gap-2 p-2 border-t-2 sm:border-t-0 sm:border-l-2 md:border-l-0 md:border-t-2">
         <div className="flex flex-col gap-2 text-sm">
-          <Link href={viewerLink} prefetch={index < PREFETCH_INDEX}>
-            <h4 className="line-clamp-3 font-bold text-base leading-5 min-w-0 wrap-anywhere hover:underline">
-              {title}
-            </h4>
-          </Link>
+          <div className="flex items-start gap-1.5">
+            <Link className="flex-1" href={viewerLink} prefetch={index < PREFETCH_INDEX}>
+              <h4 className="line-clamp-3 font-bold text-base leading-5 min-w-0 break-words break-all hover:underline">
+                {title}
+              </h4>
+            </Link>
+            {language && <LanguageBadge language={language} />}
+          </div>
           {type && <MangaMetadataItem filterType="type" label="종류" value={type} />}
           {artists && artists.length > 0 && <MangaMetadataList filterType="artist" label="작가" values={artists} />}
           {group && group.length > 0 && <MangaMetadataList filterType="group" label="그룹" values={group} />}

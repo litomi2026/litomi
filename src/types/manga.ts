@@ -1,5 +1,6 @@
 export type Manga = {
   id: number
+  images: string[]
   artists?: string[]
   characters?: string[]
   date?: string
@@ -9,7 +10,7 @@ export type Manga = {
   tags?: Tag[]
   title: string
   type?: string
-  images: string[]
+  language?: string
   cdn?: string
   count?: number
   like?: number

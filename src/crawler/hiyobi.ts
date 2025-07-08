@@ -180,6 +180,7 @@ export class HiyobiClient {
     count,
     like,
     like_anonymous,
+    language,
   }: HiyobiManga): Manga {
     return {
       id,
@@ -190,6 +191,7 @@ export class HiyobiClient {
       tags: this.convertHiyobiTagsToTags(tags),
       title,
       type: hiyobiTypeNumberToName[type] ?? `${type}?`,
+      language,
       images: [this.getKHentaiThumbnailURL(id)],
       cdn: 'thumb.k-hentai',
       count: filecount,

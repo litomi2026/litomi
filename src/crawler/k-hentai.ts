@@ -236,6 +236,7 @@ export class KHentaiClient {
 
   private convertKHentaiCommonToManga(manga: KHentaiMangaCommon) {
     const locale = 'ko' // TODO: Get from user preferences or context
+
     return {
       id: manga.id,
       artists: manga.tags.filter(({ tag }) => tag[0] === 'artist').map(({ tag }) => tag[1]),
@@ -249,6 +250,7 @@ export class KHentaiClient {
       })),
       title: manga.title,
       type: kHentaiTypeNumberToName[manga.category] ?? '?',
+      language: manga.tags.find(({ tag }) => tag[0] === 'language')?.tag[1],
       cdn: 'ehgt.org',
       count: manga.filecount,
       rating: manga.rating / 100,
