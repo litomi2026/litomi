@@ -112,7 +112,7 @@ function LanguageBadgeContent({ language }: { language: string }) {
       />
       <span aria-hidden={pending} className="flex items-center gap-0.5 aria-hidden:opacity-0 transition">
         <span className="text-base leading-none">{flag}</span>
-        <span className="text-xs uppercase group-hover:underline">{code}</span>
+        <span className="text-xs uppercase group-hover:underline group-focus:underline">{code}</span>
       </span>
     </>
   )

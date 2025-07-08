@@ -46,10 +46,12 @@ function MangaCard({ manga, index = 0, source, className = '' }: Props) {
       <div className="flex grow flex-col justify-between gap-2 p-2 border-t-2 sm:border-t-0 sm:border-l-2 md:border-l-0 md:border-t-2">
         <div className="flex flex-col gap-2 text-sm">
           <div className="flex items-start gap-1.5">
-            <Link className="flex-1" href={viewerLink} prefetch={index < PREFETCH_INDEX}>
-              <h4 className="line-clamp-3 font-bold text-base leading-5 min-w-0 break-words break-all hover:underline">
-                {title}
-              </h4>
+            <Link
+              className="flex-1 hover:underline focus:underline"
+              href={viewerLink}
+              prefetch={index < PREFETCH_INDEX}
+            >
+              <h4 className="line-clamp-3 font-bold text-base leading-5 min-w-0 break-words break-all">{title}</h4>
             </Link>
             {language && <LanguageBadge language={language} />}
           </div>
