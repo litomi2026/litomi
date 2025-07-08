@@ -6,7 +6,7 @@ import type { BasePageProps } from '@/types/nextjs'
 import ImageViewer from '@/components/ImageViewer/ImageViewer'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { CANONICAL_URL } from '@/constants/url'
-import { fetchMangaFromHiyobi, fetchMangaImagesFromHiyobi, fetchMangasFromHiyobi } from '@/crawler/hiyobi'
+import { fetchMangasFromHiyobi, HiyobiClient } from '@/crawler/hiyobi'
 import { KHentaiClient } from '@/crawler/k-hentai'
 import { harpiMangaIdsDesc, harpiMangas } from '@/database/harpi'
 import { getImageSrc } from '@/utils/manga'
@@ -85,14 +85,12 @@ export default async function Page({ params }: BasePageProps) {
 
 async function getManga({ source, id }: { source: SourceParam; id: number }) {
   if (source === SourceParam.HIYOBI) {
-    const [mangaFromHiyobi, mangaImages] = await Promise.all([
-      fetchMangaFromHiyobi({ id }).catch(() => ({ id, title: '오류가 발생했어요', images: [] })),
-      fetchMangaImagesFromHiyobi({ id }),
-    ])
+    const hiyobiClient = HiyobiClient.getInstance()
 
-    if (!mangaImages) {
-      return null
-    }
+    const [mangaFromHiyobi, mangaImages] = await Promise.all([
+      hiyobiClient.fetchManga(id).catch(() => ({ id, title: '오류가 발생했어요', images: [] })),
+      hiyobiClient.fetchMangaImages(id),
+    ])
 
     return {
       ...(mangaFromHiyobi ?? { id, title: '만화 정보가 없어요' }),

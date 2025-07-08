@@ -170,7 +170,10 @@ export class KHentaiClient {
     return KHentaiClient.instance
   }
 
-  async fetchManga(id: number, revalidate = 43200): Promise<Manga> {
+  async fetchManga(
+    id: number,
+    revalidate = 43200, // 12 hours
+  ): Promise<Manga> {
     const gallery = await this.fetchGallery(id, revalidate)
 
     return {
@@ -186,15 +189,6 @@ export class KHentaiClient {
 
   async fetchRandomKoreanMangas(): Promise<Manga[]> {
     return this.searchMangas({ search: 'language:korean', sort: 'random' }, 15)
-  }
-
-  async healthCheck(): Promise<boolean> {
-    try {
-      const manga = await this.searchMangas({ search: 'awvwefaieojfaosdfas' })
-      return Array.isArray(manga)
-    } catch {
-      return false
-    }
   }
 
   async searchKoreanMangas(
@@ -241,7 +235,7 @@ export class KHentaiClient {
   }
 
   private convertKHentaiCommonToManga(manga: KHentaiMangaCommon) {
-    const locale = 'ko'
+    const locale = 'ko' // TODO: Get from user preferences or context
     return {
       id: manga.id,
       artists: manga.tags.filter(({ tag }) => tag[0] === 'artist').map(({ tag }) => tag[1]),
