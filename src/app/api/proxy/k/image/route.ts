@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server'
 import { z } from 'zod'
 
 import { KHentaiClient } from '@/crawler/k-hentai'
-import { createCacheControl, handleError } from '@/crawler/proxy-utils'
+import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 
 export const runtime = 'edge'
 export const revalidate = 43200 // 12 hours
@@ -36,6 +36,6 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    return handleError(error, request)
+    return handleRouteError(error, request)
   }
 }

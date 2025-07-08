@@ -1,7 +1,7 @@
 import { captureException } from '@sentry/nextjs'
 import { NextRequest } from 'next/server'
 
-import { normalizeError } from './errors'
+import { normalizeError, UpstreamServerError } from './errors'
 
 export type ApiResponse<T = unknown> = T & {
   error?: {
@@ -11,7 +11,6 @@ export type ApiResponse<T = unknown> = T & {
   }
 }
 
-// Cache control helpers
 export function createCacheControl(options: {
   public?: boolean
   private?: boolean
@@ -67,21 +66,23 @@ export async function createHealthCheckHandler(serviceName: string, checks?: Rec
   })
 }
 
-export function handleError(error: unknown, request: NextRequest) {
+export function handleRouteError(error: unknown, request: NextRequest) {
   const normalizedError = normalizeError(error)
 
-  captureException(normalizedError, {
-    tags: {
-      errorCode: normalizedError.errorCode,
-      statusCode: normalizedError.statusCode,
-    },
-    extra: {
-      url: request.url,
-      method: request.method,
-      headers: Object.fromEntries(request.headers.entries()),
-      ...normalizedError.context,
-    },
-  })
+  if (!isUpstreamServer4XXError(normalizedError)) {
+    captureException(normalizedError, {
+      tags: {
+        errorCode: normalizedError.errorCode,
+        statusCode: normalizedError.statusCode,
+      },
+      extra: {
+        url: request.url,
+        method: request.method,
+        headers: Object.fromEntries(request.headers.entries()),
+        ...normalizedError.context,
+      },
+    })
+  }
 
   const response: ApiResponse = {
     error: {
@@ -97,4 +98,20 @@ export function handleError(error: unknown, request: NextRequest) {
   })
 
   return Response.json(response, { status: normalizedError.statusCode, headers })
+}
+
+export function isUpstreamServer4XXError(error: unknown): boolean {
+  if (error instanceof UpstreamServerError) {
+    return error.statusCode >= 400 && error.statusCode < 500
+  }
+
+  return false
+}
+
+export function isUpstreamServer5XXError(error: unknown): boolean {
+  if (error instanceof UpstreamServerError) {
+    return error.statusCode >= 500
+  }
+
+  return false
 }

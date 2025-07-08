@@ -3,7 +3,7 @@ import { NextRequest } from 'next/server'
 import { MangaSearchSchema } from '@/app/(navigation)/search/schema'
 import { convertQueryKey } from '@/app/(navigation)/search/utils'
 import { getCategories, KHentaiClient } from '@/crawler/k-hentai'
-import { createCacheControl, handleError } from '@/crawler/proxy-utils'
+import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 
 export const runtime = 'edge'
 export const revalidate = 300
@@ -60,6 +60,6 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    return handleError(error, request)
+    return handleRouteError(error, request)
   }
 }

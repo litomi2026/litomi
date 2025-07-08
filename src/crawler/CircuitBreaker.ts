@@ -5,6 +5,7 @@ import { CircuitBreakerError } from './errors'
 // Circuit breaker configuration
 export interface CircuitBreakerConfig {
   failureThreshold: number // CLOSED -> OPEN
+  shouldCountAsFailure?: (error: unknown) => boolean
   successThreshold: number // HALF_OPEN -> CLOSED
   timeout: number // OPEN -> HALF_OPEN
 }
@@ -70,7 +71,9 @@ export class CircuitBreaker {
       this.onSuccess()
       return result
     } catch (error) {
-      this.onFailure()
+      if (!this.config.shouldCountAsFailure || this.config.shouldCountAsFailure(error)) {
+        this.onFailure()
+      }
       throw error
     }
   }
