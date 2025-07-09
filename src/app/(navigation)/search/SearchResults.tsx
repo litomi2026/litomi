@@ -3,7 +3,7 @@
 import { useSearchQuery } from '@/app/(navigation)/search/useSearchQuery'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import MangaCardImage from '@/components/card/MangaCardImage'
-import { useInfiniteScroll } from '@/hook/useInfiniteScroll'
+import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import { getViewerLink } from '@/utils/manga'
 import { SourceParam, ViewCookie } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
@@ -14,9 +14,9 @@ type Props = {
 
 export default function SearchResults({ view }: Props) {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useSearchQuery()
-  const mangas = data?.pages.flatMap((page) => page.mangas) ?? []
+  const mangas = data.pages.flatMap((page) => page.mangas)
 
-  const loadMoreRef = useInfiniteScroll({
+  const loadMoreRef = useInfiniteScrollObserver({
     hasNextPage,
     isFetchingNextPage,
     fetchNextPage,

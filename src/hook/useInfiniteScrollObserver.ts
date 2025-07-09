@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-interface UseInfiniteScrollOptions {
+interface Params {
   fetchNextPage: () => void
   hasNextPage?: boolean
   isFetchingNextPage?: boolean
@@ -8,13 +8,13 @@ interface UseInfiniteScrollOptions {
   threshold?: number
 }
 
-export function useInfiniteScroll({
+export default function useInfiniteScrollObserver({
   hasNextPage,
   isFetchingNextPage,
   fetchNextPage,
   threshold = 0.1,
   rootMargin = '100px',
-}: UseInfiniteScrollOptions) {
+}: Params) {
   const loadMoreRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
