@@ -4,9 +4,16 @@ import { MangaSearchSchema } from '@/app/(navigation)/search/schema'
 import { convertQueryKey } from '@/app/(navigation)/search/utils'
 import { getCategories, KHentaiClient } from '@/crawler/k-hentai'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
+import { Manga } from '@/types/manga'
 
 export const runtime = 'edge'
 export const revalidate = 300
+
+export type GETProxyKSearchResponse = {
+  mangas: Manga[]
+  nextCursor: string | null
+  hasNextPage: boolean
+}
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
@@ -50,15 +57,22 @@ export async function GET(request: NextRequest) {
       endDate: to ? String(to) : undefined,
     })
 
-    return Response.json(mangas, {
-      headers: {
-        'Cache-Control': createCacheControl({
-          public: true,
-          sMaxAge: revalidate,
-          staleWhileRevalidate: 2 * revalidate,
-        }),
+    return Response.json(
+      {
+        mangas,
+        nextCursor: mangas.length > 0 ? String(mangas[mangas.length - 1].id) : null,
+        hasNextPage: mangas.length > 0,
+      } satisfies GETProxyKSearchResponse,
+      {
+        headers: {
+          'Cache-Control': createCacheControl({
+            public: true,
+            sMaxAge: revalidate,
+            staleWhileRevalidate: 2 * revalidate,
+          }),
+        },
       },
-    })
+    )
   } catch (error) {
     return handleRouteError(error, request)
   }
