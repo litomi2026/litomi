@@ -1,7 +1,8 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { FormEvent, lazy, memo, Suspense, useCallback, useEffect, useRef, useState, useTransition } from 'react'
+import { FormEvent, memo, useCallback, useEffect, useRef, useState, useTransition } from 'react'
 
 import IconSpinner from '@/components/icons/IconSpinner'
 import IconX from '@/components/icons/IconX'
@@ -10,8 +11,8 @@ import { SEARCH_FILTERS, type SearchFilter } from './constants'
 import useSearchSuggestions from './useSearchSuggestions'
 import { translateKoreanToEnglish } from './utils'
 
-// NOTE: 드롭다운은 사용자가 검색어를 입력할 때만 표시되므로 초기 bundle 크기를 줄이기 위해 lazy import 사용
-const SearchSuggestionDropdown = lazy(() => import('./SearchSuggestionDropdown'))
+// NOTE: 드롭다운은 사용자가 검색어를 입력할 때만 표시되므로 초기 bundle 크기를 줄이기 위해 dynamic import 사용
+const SearchSuggestionDropdown = dynamic(() => import('./SearchSuggestionDropdown'))
 
 type Props = {
   className?: string
@@ -238,17 +239,15 @@ function SearchForm({ className = '' }: Props) {
         </button>
       </form>
       {showSuggestions && filteredSuggestions.length > 0 && (
-        <Suspense fallback={null}>
-          <div ref={suggestionsRef}>
-            <SearchSuggestionDropdown
-              onMouseEnter={setSelectedIndex}
-              onSelect={selectSuggestion}
-              selectedIndex={selectedIndex}
-              showHeader={showHeader}
-              suggestions={filteredSuggestions}
-            />
-          </div>
-        </Suspense>
+        <div ref={suggestionsRef}>
+          <SearchSuggestionDropdown
+            onMouseEnter={setSelectedIndex}
+            onSelect={selectSuggestion}
+            selectedIndex={selectedIndex}
+            showHeader={showHeader}
+            suggestions={filteredSuggestions}
+          />
+        </div>
       )}
     </div>
   )

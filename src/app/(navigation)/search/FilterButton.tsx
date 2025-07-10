@@ -1,7 +1,8 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { useSearchParams } from 'next/navigation'
-import { lazy, Suspense, useCallback, useRef, useState } from 'react'
+import { Suspense, useCallback, useRef, useState } from 'react'
 
 import useMounted from '@/hook/useMounted'
 
@@ -9,8 +10,8 @@ import type { FilterState } from './constants'
 
 import { FILTER_KEYS, isDateFilter } from './constants'
 
-// NOTE: 필터 패널은 사용자가 필터를 클릭할 때만 표시되므로 초기 bundle 크기를 줄이기 위해 lazy import 사용
-const FilterPanel = lazy(() => import('./FilterPanel'))
+// NOTE: 필터 패널은 사용자가 필터를 클릭할 때만 표시되므로 초기 bundle 크기를 줄이기 위해 dynamic import 사용
+const FilterPanel = dynamic(() => import('./FilterPanel'))
 
 export default function FilterButton() {
   const searchParams = useSearchParams()
@@ -63,7 +64,7 @@ export default function FilterButton() {
       </button>
 
       {mounted && (
-        <Suspense fallback={null}>
+        <Suspense>
           <FilterPanel
             buttonRef={buttonRef}
             filters={filters}
