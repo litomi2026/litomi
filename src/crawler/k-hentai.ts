@@ -219,19 +219,23 @@ export class KHentaiClient {
     revalidate = 21600, // 6 hours
   ): Promise<Manga[]> {
     const kebabCaseParams = Object.entries(params)
-      .filter(([, value]) => value !== undefined)
+      .filter(([key, value]) => key !== 'offset' && value !== undefined)
       .map(([key, value]) => [convertCamelCaseToKebabCase(key), value])
 
     const searchParams = new URLSearchParams(kebabCaseParams)
 
-    const data = await this.client.fetch<KHentaiManga[]>(`/ajax/search?${searchParams}`, { next: { revalidate } })
+    const kHentaiMangas = await this.client.fetch<KHentaiManga[]>(`/ajax/search?${searchParams}`, {
+      next: { revalidate },
+    })
 
-    return data
+    const mangas = kHentaiMangas
       .filter((manga) => manga.archived === 1)
       .map((manga) => ({
         ...this.convertKHentaiCommonToManga(manga),
         images: [manga.thumb],
       }))
+
+    return params.offset ? mangas.slice(Number(params.offset)) : mangas
   }
 
   private convertKHentaiCommonToManga(manga: KHentaiMangaCommon) {

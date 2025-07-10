@@ -199,15 +199,21 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
           </button>
         </div>
 
-        <form className="p-4 space-y-4 pb-32 sm:pb-4" onSubmit={handleSubmit}>
+        <form
+          className="p-4 space-y-4 pb-32 sm:pb-4 
+            [&_label]:block [&_label]:text-sm [&_label]:font-medium [&_label]:text-zinc-300 [&_label]:mb-1
+            [&_input]:text-base [&_input]:px-3 [&_input]:py-2 [&_input]:rounded-lg
+            [&_input]:bg-zinc-800 [&_input]:border [&_input]:border-zinc-700 [&_input]:placeholder-zinc-500 
+            [&_input]:focus:outline-none [&_input]:focus:ring-2 [&_input]:focus:ring-zinc-400 [&_input]:focus:border-transparent [&_input]:invalid:ring-2 [&_input]:invalid:ring-red-500 
+            [&_input]:[appearance:textfield] [&_input]:[&::-webkit-outer-spin-button]:appearance-none [&_input]:[&::-webkit-inner-spin-button]:appearance-none"
+          onSubmit={handleSubmit}
+        >
           {/* Sort */}
           <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-1" htmlFor="sort">
-              {FILTER_CONFIG.sort.label}
-            </label>
+            <label htmlFor="sort">{FILTER_CONFIG.sort.label}</label>
             <select
               className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100
-            focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:border-transparent appearance-none"
+                focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:border-transparent appearance-none"
               id="sort"
               onChange={(e) => handleFilterChange('sort', e.target.value)}
               value={filters.sort ?? ''}
@@ -261,6 +267,39 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
             onMinChange={(value) => handleFilterChange('from', value)}
             type="date"
           />
+
+          {/* Next ID */}
+          <div>
+            <label htmlFor="next-id">{FILTER_CONFIG['next-id'].label}</label>
+            <input
+              className="w-full"
+              id="next-id"
+              min={FILTER_CONFIG['next-id'].min}
+              onChange={(e) => handleFilterChange('next-id', e.target.value)}
+              pattern="[0-9]*"
+              placeholder={FILTER_CONFIG['next-id'].placeholder}
+              type={FILTER_CONFIG['next-id'].type}
+              value={filters['next-id'] ?? ''}
+            />
+            <p className="mt-1 text-xs text-zinc-500">지정한 ID 이후의 결과만 표시합니다</p>
+          </div>
+
+          {/* Skip */}
+          <div>
+            <label htmlFor="skip">{FILTER_CONFIG['skip'].label}</label>
+            <input
+              className="w-full"
+              id="skip"
+              min={FILTER_CONFIG['skip'].min}
+              onChange={(e) => handleFilterChange('skip', e.target.value)}
+              pattern="[0-9]*"
+              placeholder={FILTER_CONFIG['skip'].placeholder}
+              title="건너뛰기 필터는 현재 지원하지 않습니다"
+              type={FILTER_CONFIG['skip'].type}
+              value={filters['skip'] ?? ''}
+            />
+            <p className="mt-1 text-xs text-zinc-500">처음 N개의 결과를 건너뜁니다</p>
+          </div>
 
           {/* Action buttons */}
           <div className="fixed bottom-0 mb-safe left-0 right-0 flex gap-2 bg-zinc-900 px-4 py-4 border-t border-zinc-800 sm:static sm:bg-transparent sm:border-t-0 sm:p-0">

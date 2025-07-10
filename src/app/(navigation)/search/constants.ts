@@ -42,48 +42,71 @@ export const FILTER_CONFIG = {
   },
   'min-view': {
     type: 'number' as const,
-    label: '조회수 범위',
+    label: '조회수',
     min: 0,
     max: Number.MAX_SAFE_INTEGER,
   },
   'max-view': {
     type: 'number' as const,
-    label: '조회수 범위',
+    label: '조회수',
     min: 0,
     max: Number.MAX_SAFE_INTEGER,
   },
   'min-page': {
     type: 'number' as const,
-    label: '페이지 수 범위',
+    label: '페이지 수',
     min: 1,
     max: 10000,
   },
   'max-page': {
     type: 'number' as const,
-    label: '페이지 수 범위',
+    label: '페이지 수',
     min: 1,
     max: 10000,
   },
   from: {
     type: 'date' as const,
-    label: '날짜 범위',
+    label: '업로드 날짜',
     placeholder: '시작일',
   },
   to: {
     type: 'date' as const,
-    label: '날짜 범위',
+    label: '업로드 날짜',
     placeholder: '종료일',
+  },
+  'next-id': {
+    type: 'number' as const,
+    label: '시작 ID',
+    min: 1,
+    max: Number.MAX_SAFE_INTEGER,
+    placeholder: '특정 ID부터 검색',
+  },
+  skip: {
+    type: 'number' as const,
+    label: '건너뛰기',
+    min: 0,
+    max: 10000,
+    placeholder: '처음 N개 건너뛰기',
   },
 } as const
 
-export const FILTER_KEYS = ['sort', 'min-view', 'max-view', 'min-page', 'max-page', 'from', 'to'] as const
-export const ALL_FILTER_KEYS = [...FILTER_KEYS, 'next-id', 'skip'] as const
-export const SEARCH_PARAMS_WHITELIST = [...ALL_FILTER_KEYS, 'query'] as const
+export const FILTER_KEYS = [
+  'sort',
+  'min-view',
+  'max-view',
+  'min-page',
+  'max-page',
+  'from',
+  'to',
+  'next-id',
+  'skip',
+] as const
+export const SEARCH_PARAMS_WHITELIST = [...FILTER_KEYS, 'query'] as const
 
 export type FilterKey = (typeof FILTER_KEYS)[number]
 export type FilterState = Partial<Record<FilterKey, string>>
 
-export const isDateFilter = (key: FilterKey) => FILTER_CONFIG[key].type === 'date'
+export const isDateFilter = (key: FilterKey) => FILTER_CONFIG[key]?.type === 'date'
 
 export const KOREAN_TO_ENGLISH_QUERY_KEYS: Record<string, string> = {
   언어: 'language',

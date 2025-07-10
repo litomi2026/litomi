@@ -28,6 +28,7 @@ export function useSearchQuery() {
       const searchParamsWithCursor = new URLSearchParams(whitelisted)
       if (pageParam) {
         searchParamsWithCursor.set('next-id', String(pageParam))
+        searchParamsWithCursor.delete('skip')
       }
       return searchMangas(searchParamsWithCursor)
     },
