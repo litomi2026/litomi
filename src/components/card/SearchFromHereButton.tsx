@@ -38,7 +38,7 @@ export default function SearchFromHereButton({ mangaId, className = '' }: Props)
       {isLoading ? <IconSpinner className="w-4" /> : <IconSearch className="w-4 flex-shrink-0" />}
       <span className="text-sm font-medium whitespace-nowrap">
         <span className="hidden sm:inline">여기부터 재검색</span>
-        <span className="sm:hidden">재검색</span>
+        <span className="sm:hidden">여기부터</span>
       </span>
     </button>
   )

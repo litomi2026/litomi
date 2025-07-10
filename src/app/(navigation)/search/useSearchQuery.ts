@@ -5,7 +5,7 @@ import { GETProxyKSearchResponse } from '@/app/api/proxy/k/search/route'
 import { whitelistSearchParams } from '@/utils/param'
 import { handleResponseError, shouldRetryError } from '@/utils/react-query-error'
 
-import { SEARCH_PARAMS_WHITELIST } from './constants'
+import { SEARCH_PAGE_SEARCH_PARAMS } from './constants'
 
 export function getSearchQueryKey(searchParams: URLSearchParams) {
   return ['search', Object.fromEntries(searchParams)]
@@ -18,7 +18,7 @@ export async function searchMangas(searchParams: URLSearchParams) {
 
 export function useSearchQuery() {
   const searchParams = useSearchParams()
-  const whitelisted = whitelistSearchParams(searchParams, SEARCH_PARAMS_WHITELIST)
+  const whitelisted = whitelistSearchParams(searchParams, SEARCH_PAGE_SEARCH_PARAMS)
 
   return useSuspenseInfiniteQuery<GETProxyKSearchResponse, Error>({
     queryKey: getSearchQueryKey(whitelisted),

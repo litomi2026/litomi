@@ -101,7 +101,7 @@ export const FILTER_KEYS = [
   'next-id',
   'skip',
 ] as const
-export const SEARCH_PARAMS_WHITELIST = [...FILTER_KEYS, 'query'] as const
+export const SEARCH_PAGE_SEARCH_PARAMS = [...FILTER_KEYS, 'query'] as const
 
 export type FilterKey = (typeof FILTER_KEYS)[number]
 export type FilterState = Partial<Record<FilterKey, string>>
