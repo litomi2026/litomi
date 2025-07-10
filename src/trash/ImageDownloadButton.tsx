@@ -7,7 +7,7 @@ import { Manga } from '@/types/manga'
 import { fetchImageWithRetry } from '@/utils/browser'
 import { getImageSrc } from '@/utils/manga'
 
-import { IconDownload } from '../icons/IconDownload'
+import { IconDownload } from '../components/icons/IconDownload'
 
 const MAX_ZIP_SIZE = 50_000_000 // 50MB
 

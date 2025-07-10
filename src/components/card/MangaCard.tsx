@@ -10,7 +10,6 @@ import { SourceParam } from '@/utils/param'
 import IconExternalLink from '../icons/IconExternalLink'
 import TagList from '../TagList'
 import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from './BookmarkButton'
-import ImageDownloadButton from './ImageDownloadButton'
 import LanguageBadge from './LanguageBadge'
 import MangaCardImage from './MangaCardImage'
 import MangaMetadataItem from './MangaMetadataItem'
@@ -82,11 +81,6 @@ function MangaCard({ manga, index = 0, source, className = '' }: Props) {
             {date && <div className="text-right text-zinc-400">{dayjs(date).format('YYYY-MM-DD HH:mm')}</div>}
           </div>
           <div className="flex flex-wrap justify-around gap-2 text-sm [&_button]:disabled:bg-zinc-800 [&_button]:disabled:pointer-events-none [&_button]:disabled:text-zinc-500">
-            <ImageDownloadButton
-              className="grow"
-              disabled={source === SourceParam.HIYOBI || source === SourceParam.K_HENTAI}
-              manga={manga}
-            />
             <ErrorBoundary fallback={BookmarkButtonError}>
               <Suspense clientOnly fallback={<BookmarkButtonSkeleton className="grow" />}>
                 <BookmarkButton className="grow" manga={manga} source={source} />
