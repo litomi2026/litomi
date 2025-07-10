@@ -1,3 +1,5 @@
+import { Suspense } from '@suspensive/react'
+
 import type { BaseLayoutProps } from '@/types/nextjs'
 
 import ViewToggle from '@/components/ViewSlider'
@@ -9,14 +11,18 @@ import SearchForm from './SearchForm'
 export default async function Layout({ children }: BaseLayoutProps) {
   return (
     <main className="flex flex-col grow">
-      <ScrollReset />
+      <Suspense clientOnly>
+        <ScrollReset />
+      </Suspense>
       <h1 className="sr-only">만화 검색</h1>
       <div className="sticky top-0 z-10 bg-background border-b-2 border-zinc-800 shadow-sm">
         <div className="px-2 py-2">
           <div className="flex justify-center flex-wrap gap-2 whitespace-nowrap text-sm sm:justify-end md:text-base">
-            <SearchForm className="grow" />
-            <ViewToggle />
-            <FilterButton />
+            <Suspense>
+              <SearchForm className="grow" />
+              <ViewToggle />
+              <FilterButton />
+            </Suspense>
           </div>
         </div>
       </div>
