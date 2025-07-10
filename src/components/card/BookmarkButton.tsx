@@ -15,6 +15,7 @@ import { Manga } from '@/types/manga'
 import { mapSourceParamToBookmarkSource, SourceParam } from '@/utils/param'
 
 import IconBookmark from '../icons/IconBookmark'
+import IconSpinner from '../icons/IconSpinner'
 import LoginLink from '../LoginLink'
 
 const initialState = {} as Awaited<ReturnType<typeof bookmarkManga>>
@@ -80,13 +81,13 @@ export default function BookmarkButton({ manga, source, className }: Props) {
       <input name="source" type="hidden" value={mapSourceParamToBookmarkSource(source)} />
       <button
         aria-disabled={!me}
-        className="flex justify-center items-center gap-1 border-2 w-full rounded-lg p-1 px-2 bg-zinc-900 hover:bg-zinc-800 active:bg-zinc-900 transition"
+        className="flex justify-center items-center gap-1 w-full h-full"
         disabled={isPending}
         onClick={handleClick}
         type="submit"
       >
-        <IconBookmark className="w-5" selected={isIconSelected} />
-        <span className="hidden md:block">북마크</span>
+        {isPending ? <IconSpinner className="w-4" /> : <IconBookmark className="w-4" selected={isIconSelected} />}
+        <span>북마크</span>
       </button>
     </form>
   )
@@ -102,7 +103,7 @@ export function BookmarkButtonError({ error, reset }: ErrorBoundaryFallbackProps
       className="flex items-center gap-1 border-2 w-fit border-red-800 rounded-lg p-1 px-2 transition grow"
       onClick={reset}
     >
-      <IconBookmark className="w-5 text-red-700" />
+      <IconBookmark className="w-4 text-red-700" />
       <span className="hidden md:block text-red-700">오류</span>
     </button>
   )
@@ -114,7 +115,7 @@ export function BookmarkButtonSkeleton({ className = '' }: { className?: string 
       className={`flex justify-center items-center gap-1 border-2 w-fit rounded-lg p-1 px-2 bg-zinc-900 transition ${className}`}
       disabled
     >
-      <IconBookmark className="w-5" />
+      <IconBookmark className="w-4" />
       <span className="hidden md:block">북마크</span>
     </button>
   )

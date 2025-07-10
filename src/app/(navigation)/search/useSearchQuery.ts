@@ -8,9 +8,7 @@ import { handleResponseError, shouldRetryError } from '@/utils/react-query-error
 import { SEARCH_PARAMS_WHITELIST } from './constants'
 
 export function getSearchQueryKey(searchParams: URLSearchParams) {
-  const params = Object.fromEntries(searchParams)
-  delete params['next-id']
-  return ['search', params]
+  return ['search', Object.fromEntries(searchParams)]
 }
 
 export async function searchMangas(searchParams: URLSearchParams) {

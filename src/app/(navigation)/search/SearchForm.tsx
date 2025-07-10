@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { FormEvent, memo, useCallback, useEffect, useRef, useState, useTransition } from 'react'
+import { FormEvent, memo, Suspense, useCallback, useEffect, useRef, useState, useTransition } from 'react'
 
 import IconSpinner from '@/components/icons/IconSpinner'
 import IconX from '@/components/icons/IconX'
@@ -124,7 +124,7 @@ function SearchForm({ className = '' }: Props) {
     e.preventDefault()
     setShowSuggestions(false)
 
-    const params = new URLSearchParams(searchParams.toString())
+    const params = new URLSearchParams(searchParams)
 
     if (keyword.trim()) {
       const translatedKeyword = translateKoreanToEnglish(keyword.trim())
@@ -134,7 +134,7 @@ function SearchForm({ className = '' }: Props) {
     }
 
     startSearching(() => {
-      router.replace(`${pathname}?${params}`, { scroll: false })
+      router.replace(`${pathname}?${params}`)
     })
   }
 
@@ -189,49 +189,43 @@ function SearchForm({ className = '' }: Props) {
           hover:border-zinc-500 focus-within:border-zinc-400 focus-within:shadow-lg focus-within:shadow-zinc-400/30"
         onSubmit={onSubmit}
       >
-        <input
-          aria-autocomplete="list"
-          aria-controls="search-suggestions"
-          aria-label="검색어 입력"
-          className="
-            flex-1 bg-transparent px-3 py-2 text-foreground w-48 placeholder-zinc-500 text-base
+        <div className="relative flex-1">
+          <input
+            aria-autocomplete="list"
+            aria-controls="search-suggestions"
+            aria-label="검색어 입력"
+            className="bg-transparent px-3 py-2 pr-8 text-foreground min-w-48 w-full placeholder-zinc-500 text-base
             focus:outline-none
             [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-cancel-button]:appearance-none
-            [&::-ms-clear]:hidden [&::-ms-clear]:w-0 [&::-ms-clear]:h-0
-          "
-          name="query"
-          onBlur={handleBlur}
-          onChange={handleInputChange}
-          onFocus={handleFocus}
-          onKeyDown={handleKeyDown}
-          placeholder="검색어를 입력하세요"
-          ref={inputRef}
-          type="search"
-          value={keyword}
-        />
-        {keyword && (
-          <button
-            aria-label="검색어 지우기"
-            className="
-              px-3 py-2 shrink-0
-              text-zinc-500 hover:text-zinc-300
-              transition duration-200
-              focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-inset
-            "
-            onClick={handleClear}
-            type="button"
-          >
-            <IconX className="w-5 h-5" />
-          </button>
-        )}
+            [&::-ms-clear]:hidden [&::-ms-clear]:w-0 [&::-ms-clear]:h-0"
+            name="query"
+            onBlur={handleBlur}
+            onChange={handleInputChange}
+            onFocus={handleFocus}
+            onKeyDown={handleKeyDown}
+            placeholder="검색어를 입력하세요"
+            ref={inputRef}
+            type="search"
+            value={keyword}
+          />
+          {keyword && (
+            <button
+              aria-label="검색어 지우기"
+              className="absolute right-0 top-0 bottom-0 p-2 shrink-0 transition duration-200 text-zinc-500 
+              hover:text-zinc-300 active:text-zinc-400"
+              onClick={handleClear}
+              type="button"
+            >
+              <IconX className="w-5" />
+            </button>
+          )}
+        </div>
         <button
           aria-label="검색하기"
-          className="
-            flex items-center justify-center p-2 px-4 shrink-0 font-medium rounded-l-none transition duration-200
-            aria-disabled:opacity-60 bg-zinc-800 text-zinc-200 
-            active:bg-zinc-800 hover:bg-zinc-700 hover:text-white
-            focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-inset
-          "
+          className="flex items-center justify-center p-2 px-4 shrink-0 font-medium rounded-l-none transition duration-200
+          aria-disabled:opacity-60 bg-zinc-800 text-zinc-200 
+          active:bg-zinc-800 hover:bg-zinc-700 hover:text-white
+          focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-inset"
           disabled={isSearching}
           type="submit"
         >
@@ -239,15 +233,17 @@ function SearchForm({ className = '' }: Props) {
         </button>
       </form>
       {showSuggestions && filteredSuggestions.length > 0 && (
-        <div ref={suggestionsRef}>
-          <SearchSuggestionDropdown
-            onMouseEnter={setSelectedIndex}
-            onSelect={selectSuggestion}
-            selectedIndex={selectedIndex}
-            showHeader={showHeader}
-            suggestions={filteredSuggestions}
-          />
-        </div>
+        <Suspense>
+          <div ref={suggestionsRef}>
+            <SearchSuggestionDropdown
+              onMouseEnter={setSelectedIndex}
+              onSelect={selectSuggestion}
+              selectedIndex={selectedIndex}
+              showHeader={showHeader}
+              suggestions={filteredSuggestions}
+            />
+          </div>
+        </Suspense>
       )}
     </div>
   )
