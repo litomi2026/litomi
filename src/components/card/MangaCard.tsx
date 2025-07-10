@@ -21,6 +21,7 @@ type Props = {
   source: SourceParam
   index?: number
   className?: string
+  showSearchFromHereButton?: boolean
 }
 
 const PREFETCH_INDEX = 10
@@ -31,7 +32,7 @@ export function MangaCardSkeleton() {
   return <li className="animate-fade-in rounded-xl bg-zinc-900 border-2 aspect-[3/4] w-full h-full" />
 }
 
-function MangaCard({ manga, index = 0, source, className = '' }: Props) {
+function MangaCard({ manga, index = 0, source, className = '', showSearchFromHereButton }: Props) {
   const { id, artists, characters, date, group, series, tags, title, type, language } = manga
   const viewerLink = getViewerLink(id, source)
 
@@ -92,9 +93,11 @@ function MangaCard({ manga, index = 0, source, className = '' }: Props) {
                 <BookmarkButton className="flex-1" manga={manga} source={source} />
               </Suspense>
             </ErrorBoundary>
-            <Suspense>
-              <SearchFromHereButton className="flex-1" mangaId={id} />
-            </Suspense>
+            {showSearchFromHereButton && (
+              <Suspense>
+                <SearchFromHereButton className="flex-1" mangaId={id} />
+              </Suspense>
+            )}
           </div>
         </div>
       </div>

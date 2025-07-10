@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
   const client = KHentaiClient.getInstance()
 
   try {
-    const mangas = await client.searchMangas({
+    const params = {
       search,
       nextId: nextId?.toString(),
       sort,
@@ -55,7 +55,9 @@ export async function GET(request: NextRequest) {
       maxPages: maxPage?.toString(),
       startDate: from?.toString(),
       endDate: to?.toString(),
-    })
+    }
+
+    const mangas = await client.searchMangas(params, revalidate)
 
     return Response.json(
       {
