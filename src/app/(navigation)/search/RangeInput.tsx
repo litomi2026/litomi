@@ -37,11 +37,7 @@ export default function RangeInput({
   className,
   ...props
 }: RangeInputProps) {
-  const inputClassName = `flex-1 text-base w-full h-10 px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100
-    placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:border-transparent
-    invalid:ring-2 invalid:ring-red-500
-    ${type === 'number' ? '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none' : ''}
-    ${type === 'date' ? 'min-w-40' : 'min-w-0'}`
+  const inputClassName = `flex-1 w-full h-10 ${type === 'date' ? 'min-w-40' : 'min-w-0'}`
 
   const getMinMaxProps = () => {
     if (type === 'number' && 'min' in props && 'max' in props) {
@@ -74,7 +70,7 @@ export default function RangeInput({
 
   return (
     <fieldset className={className}>
-      <legend className="block text-sm font-medium text-zinc-300 mb-1">{label}</legend>
+      <label htmlFor={minId}>{label}</label>
       <div className={`flex gap-2 items-center ${type === 'date' ? 'flex-wrap' : ''}`}>
         <input
           className={inputClassName}

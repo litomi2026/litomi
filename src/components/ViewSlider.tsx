@@ -11,19 +11,13 @@ const VIEWS = [
   [ViewCookie.IMAGE, '그림'],
 ] as const
 
-type Props = {
-  initialView?: ViewCookie
-}
-
-export default function ViewToggle({ initialView }: Props) {
+export default function ViewToggle() {
   const router = useRouter()
-  const [currentView, setCurrentView] = useState<ViewCookie>(initialView ?? ViewCookie.CARD)
+  const [currentView, setCurrentView] = useState<ViewCookie>()
 
   useEffect(() => {
-    if (!initialView) {
-      setCurrentView((Cookies.get('view') as ViewCookie) ?? ViewCookie.CARD)
-    }
-  }, [initialView])
+    setCurrentView((Cookies.get('view') as ViewCookie) ?? ViewCookie.CARD)
+  }, [])
 
   const select = (v: ViewCookie) => {
     if (v === currentView) return
@@ -34,15 +28,17 @@ export default function ViewToggle({ initialView }: Props) {
 
   return (
     <div className="relative flex bg-zinc-900 border-2 p-1 rounded-xl text-zinc-400">
-      <div
-        className="absolute inset-1 right-1/2 bg-zinc-800 rounded-lg border-2 border-zinc-700 transition pointer-events-none"
-        style={{ transform: `translateX(${VIEWS.findIndex(([view]) => view === currentView) * 100}%)` }}
-      />
+      {currentView && (
+        <div
+          className="absolute inset-1 right-1/2 bg-zinc-800 rounded-lg border-2 border-zinc-700 transition pointer-events-none"
+          style={{ transform: `translateX(${VIEWS.findIndex(([view]) => view === currentView) * 100}%)` }}
+        />
+      )}
       {VIEWS.map(([view, label]) => (
         <button
           aria-current={currentView === view}
-          className="relative z-10 flex-1 px-3 py-1 rounded
-                     aria-current:font-bold aria-current:text-foreground"
+          className="relative z-10 flex-1 px-3 py-1 rounded aria-current:font-bold aria-current:text-foreground"
+          disabled={!currentView}
           key={view}
           onClick={() => select(view)}
           type="button"

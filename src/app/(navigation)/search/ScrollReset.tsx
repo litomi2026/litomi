@@ -3,13 +3,15 @@
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 
+import { SEARCH_PAGE_SEARCH_PARAMS } from './constants'
+
 export default function ScrollReset() {
   const searchParams = useSearchParams()
-  const query = searchParams.get('query')
+  const trackedValues = SEARCH_PAGE_SEARCH_PARAMS.map((key) => searchParams.get(key)).join(',')
 
   useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [query])
+    window.scrollTo({ top: 0 })
+  }, [trackedValues])
 
   return null
 }

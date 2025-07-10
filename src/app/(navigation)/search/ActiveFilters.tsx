@@ -8,7 +8,7 @@ import IconX from '@/components/icons/IconX'
 
 import type { MangaSearch } from './schema'
 
-import { ALL_FILTER_KEYS } from './constants'
+import { FILTER_KEYS } from './constants'
 import { formatDate, formatNumber } from './utils'
 
 type ActiveFilterProps = {
@@ -50,7 +50,7 @@ export default function ActiveFilters({ filters }: Props) {
   const clearAllFilters = () => {
     const params = new URLSearchParams(searchParams.toString())
 
-    ALL_FILTER_KEYS.forEach((key) => {
+    FILTER_KEYS.forEach((key) => {
       params.delete(key)
     })
 
@@ -98,7 +98,7 @@ export default function ActiveFilters({ filters }: Props) {
     {
       condition: filters['next-id'],
       icon: '🔢',
-      label: 'ID 이후',
+      label: '시작 ID',
       value: filters['next-id'],
       onRemove: () => removeFilter('next-id'),
     },
@@ -141,9 +141,9 @@ export default function ActiveFilters({ filters }: Props) {
 function ActiveFilter({ icon, label, value, onRemove, isPending }: ActiveFilterProps) {
   return (
     <div className="group flex items-center gap-1.5 pl-4 bg-zinc-800 border border-zinc-700 rounded-full text-sm">
-      <span className="text-zinc-500">{icon}</span>
+      <span>{icon}</span>
       <span className="text-zinc-300">
-        {label}: <strong>{value}</strong>
+        <span className="text-zinc-400">{label}:</span> <strong>{value}</strong>
       </span>
       <button
         aria-label={`${label} 필터 제거`}

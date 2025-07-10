@@ -6,7 +6,6 @@ import { Manga } from '@/types/manga'
 import { SourceParam } from '@/utils/param'
 
 import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from '../card/BookmarkButton'
-import ImageDownloadButton from '../card/ImageDownloadButton'
 import TagList from '../TagList'
 import Modal from '../ui/Modal'
 
@@ -18,7 +17,7 @@ type Props = {
 export default memo(MangaDetailButton)
 
 function MangaDetailButton({ manga, source }: Props) {
-  const { title, artists, group, series, characters, type, tags, date } = manga
+  const { title, artists, group, series, characters, type, tags, date, language } = manga
   const [isOpened, setIsOpened] = useState(false)
 
   return (
@@ -30,6 +29,12 @@ function MangaDetailButton({ manga, source }: Props) {
         <div className="bg-zinc-900 min-w-3xs w-screen max-w-sm md:max-w-lg rounded-xl p-4 pt-8 shadow-xl border grid gap-3 text-sm md:text-base">
           <h2 className="font-bold text-lg md:text-xl">{title}</h2>
           <div className="grid grid-cols-[auto_1fr] gap-2">
+            {language && (
+              <>
+                <strong>언어</strong>
+                <div>{language}</div>
+              </>
+            )}
             {type && (
               <>
                 <strong>종류</strong>
@@ -76,12 +81,11 @@ function MangaDetailButton({ manga, source }: Props) {
               </>
             )}
           </div>
-          <div className="flex flex-wrap justify-around gap-2 text-sm [&_button]:disabled:bg-zinc-800 [&_button]:disabled:pointer-events-none [&_button]:disabled:text-zinc-500">
-            <ImageDownloadButton
-              className="grow"
-              disabled={source === SourceParam.HIYOBI || source === SourceParam.K_HENTAI}
-              manga={manga}
-            />
+          <div
+            className="flex flex-wrap justify-around gap-2 text-sm [&_button]:transition [&_button]:bg-zinc-900 [&_button]:rounded-lg [&_button]:p-1 [&_button]:px-2 [&_button]:border-2 [&_button]:h-full [&_button]:w-full
+            [&_button]:disabled:bg-zinc-800 [&_button]:disabled:pointer-events-none [&_button]:disabled:text-zinc-500 [&_button]:disabled:cursor-not-allowed 
+            [&_button]:hover:bg-zinc-800 [&_button]:active:bg-zinc-900 [&_button]:active:border-zinc-700"
+          >
             <ErrorBoundary fallback={BookmarkButtonError}>
               <Suspense clientOnly fallback={<BookmarkButtonSkeleton className="grow" />}>
                 <BookmarkButton className="grow" manga={manga} source={source} />

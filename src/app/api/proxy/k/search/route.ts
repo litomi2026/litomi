@@ -45,22 +45,22 @@ export async function GET(request: NextRequest) {
   try {
     const mangas = await client.searchMangas({
       search,
-      nextId: nextId ? String(nextId) : undefined,
+      nextId: nextId?.toString(),
       sort,
-      offset: skip ? String(skip) : undefined,
+      offset: skip?.toString(),
       categories,
-      minViews: minView ? String(minView) : undefined,
-      maxViews: maxView ? String(maxView) : undefined,
-      minPages: minPage ? String(minPage) : undefined,
-      maxPages: maxPage ? String(maxPage) : undefined,
-      startDate: from ? String(from) : undefined,
-      endDate: to ? String(to) : undefined,
+      minViews: minView?.toString(),
+      maxViews: maxView?.toString(),
+      minPages: minPage?.toString(),
+      maxPages: maxPage?.toString(),
+      startDate: from?.toString(),
+      endDate: to?.toString(),
     })
 
     return Response.json(
       {
         mangas,
-        nextCursor: mangas.length > 0 ? String(mangas[mangas.length - 1].id) : null,
+        nextCursor: mangas.length > 0 ? mangas[mangas.length - 1].id.toString() : null,
         hasNextPage: mangas.length > 0,
       } satisfies GETProxyKSearchResponse,
       {
