@@ -23,7 +23,7 @@ export default function SearchFromHereButton({ mangaId, className = '' }: Props)
     params.set('next-id', mangaId.toString())
 
     startTransition(() => {
-      router.push(`/search?${params.toString()}`)
+      router.push(`/search?${params}`)
     })
   }, [mangaId, router, searchParams])
 

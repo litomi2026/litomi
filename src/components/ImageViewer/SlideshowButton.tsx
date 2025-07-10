@@ -30,7 +30,7 @@ function SlideshowButton({ maxImageIndex, offset, onIntervalChange }: Props) {
     if (isOpened) {
       inputRef.current?.select()
     } else {
-      inputRef.current.value = String(slideshowInterval)
+      inputRef.current.value = slideshowInterval.toString()
       setIsChecked(isRepeating)
     }
   }, [isOpened, isRepeating, slideshowInterval])

@@ -34,7 +34,7 @@ export function reset(): void {
 export function setUserId(userId: number | string): void {
   const action = () => {
     if (amplitudeInstance && isInitialized) {
-      amplitudeInstance.setUserId(String(userId))
+      amplitudeInstance.setUserId(userId.toString())
     }
   }
 

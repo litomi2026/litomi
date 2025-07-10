@@ -25,7 +25,7 @@ export function useSearchQuery() {
     queryFn: ({ pageParam }) => {
       const searchParamsWithCursor = new URLSearchParams(whitelisted)
       if (pageParam) {
-        searchParamsWithCursor.set('next-id', String(pageParam))
+        searchParamsWithCursor.set('next-id', pageParam.toString())
         searchParamsWithCursor.delete('skip')
       }
       return searchMangas(searchParamsWithCursor)

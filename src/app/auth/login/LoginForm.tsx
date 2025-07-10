@@ -75,7 +75,7 @@ export default function LoginForm() {
           <div className="relative">
             <input
               autoFocus
-              defaultValue={String(formData?.get('loginId') ?? '')}
+              defaultValue={formData?.get('loginId')?.toString() ?? ''}
               disabled={pending}
               id="loginId"
               maxLength={32}
@@ -94,7 +94,7 @@ export default function LoginForm() {
           <label htmlFor="password">비밀번호</label>
           <div className="relative">
             <input
-              defaultValue={String(formData?.get('password') ?? '')}
+              defaultValue={formData?.get('password')?.toString() ?? ''}
               disabled={pending}
               id="password"
               maxLength={64}
