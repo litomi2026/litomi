@@ -13,6 +13,7 @@ export const harpiMangaIdsByPage = {
   popular: [],
 } as const
 
+/** @deprecated */
 export function isHarpiMangaKey(key: string): key is keyof typeof harpiMangas {
   return key in harpiMangas
 }

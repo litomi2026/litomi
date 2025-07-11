@@ -27,7 +27,7 @@ type HarpiManga = {
   type: string
   authors: string[]
   series: string[]
-  tagsIds: string[]
+  tagsIds?: string[]
   characters: string[]
   views: number
   bookmarks: number
@@ -119,7 +119,7 @@ export class HarpiClient {
   }
 
   private buildImageUrls(imageUrls: string[]): string[] {
-    return imageUrls.map((url) => `https://soujpa.in/start/${url}`)
+    return this.sortImageUrls(imageUrls).map((url) => `https://soujpa.in/start/${url}`)
   }
 
   private buildSearchParams(params: GETHarpiSearchRequest): URLSearchParams {
@@ -227,7 +227,7 @@ export class HarpiClient {
       artists: harpiManga.authors,
       characters: harpiManga.characters,
       series: harpiManga.series,
-      tags: this.convertHarpiTagIdsToTags(harpiManga.tagsIds, locale),
+      tags: harpiManga.tagsIds ? this.convertHarpiTagIdsToTags(harpiManga.tagsIds, locale) : [],
       type: harpiManga.type,
       language: 'korean',
       images: this.buildImageUrls(harpiManga.imageUrl),
@@ -237,5 +237,56 @@ export class HarpiClient {
       viewCount: harpiManga.views,
       rating: harpiManga.meanRating,
     }
+  }
+
+  /**
+   * Sorts image URLs by extracting numeric parts from filenames
+   * Supports multiple patterns like:
+   * - image_123.jpg
+   * - image-123.png
+   * - 123.webp
+   * - image123.gif
+   * - image_001_final.jpg
+   */
+  private sortImageUrls(urls: string[]): string[] {
+    return urls.slice().sort((a, b) => {
+      const patterns = [
+        // Matches: _123.ext, -123.ext, .123.ext
+        /[_\-.](\d+)\.(\w+)$/,
+        // Matches: _123_something.ext, -123-something.ext
+        /[_\-.](\d+)[_\-.].*\.(\w+)$/,
+        // Matches: 123.ext at the beginning
+        /^(\d+)\.(\w+)$/,
+        // Matches: something123.ext (number right before extension)
+        /(\d+)\.(\w+)$/,
+        // Matches: any sequence of digits in the filename
+        /(\d+)/,
+      ]
+
+      let numA = 0
+      let numB = 0
+
+      for (const pattern of patterns) {
+        const matchA = a.match(pattern)
+        const matchB = b.match(pattern)
+
+        if (matchA && matchB) {
+          numA = parseInt(matchA[1], 10)
+          numB = parseInt(matchB[1], 10)
+          break
+        } else if (matchA && !matchB) {
+          return -1
+        } else if (!matchA && matchB) {
+          return 1
+        }
+      }
+
+      if (numA !== 0 || numB !== 0) {
+        return numA - numB
+      }
+
+      // Fallback to string comparison if no numbers found
+      return a.localeCompare(b, undefined, { numeric: true })
+    })
   }
 }

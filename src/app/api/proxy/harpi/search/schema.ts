@@ -37,7 +37,7 @@ export const HarpiSearchSchema = z
     listMode: z.enum(HarpiListMode).default(HarpiListMode.SORT),
     randomMode: z.enum(HarpiRandomMode).default(HarpiRandomMode.SEARCH),
     page: z.coerce.number().int().min(0).default(0),
-    pageLimit: z.coerce.number().int().positive().max(100).default(10),
+    pageLimit: z.coerce.number().int().positive().max(1000).default(10),
     sort: z.enum(HarpiSort).default(HarpiSort.DATE_DESC),
     // Optional
     searchText: z.string().trim().max(200).optional(),
