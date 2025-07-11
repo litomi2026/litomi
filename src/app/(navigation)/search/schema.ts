@@ -1,9 +1,11 @@
 import { z } from 'zod/v4'
 
+import { ViewCookie } from '@/utils/param'
+
 export const MangaSearchSchema = z
   .object({
     query: z.string().trim().max(200).optional(),
-    view: z.enum(['img', 'card']).default('card'),
+    view: z.enum(ViewCookie).default(ViewCookie.CARD),
     sort: z.enum(['random', 'id_asc', 'popular']).optional(),
     'min-view': z.coerce.number().int().min(0).optional(),
     'max-view': z.coerce.number().int().min(0).optional(),

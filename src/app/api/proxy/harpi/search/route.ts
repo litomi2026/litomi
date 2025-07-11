@@ -1,0 +1,69 @@
+import { NextRequest } from 'next/server'
+
+import { HarpiClient } from '@/crawler/harpi'
+import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
+import { Manga } from '@/types/manga'
+
+import { HarpiSearchSchema } from './schema'
+
+export const runtime = 'edge'
+export const revalidate = 300
+
+const commaJoinedParams = ['authors', 'groups', 'series', 'characters', 'tags', 'tagsExclude', 'ids']
+const spaceConcatenatedParams = ['searchText', 'lineText']
+
+export type GETProxyHarpiSearchResponse = {
+  mangas: Manga[]
+}
+
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams
+  const params: Record<string, string | string[]> = {}
+
+  for (const [key, value] of searchParams) {
+    if (commaJoinedParams.includes(key)) {
+      if (params[key]) {
+        if (Array.isArray(params[key])) {
+          params[key].push(value)
+        } else {
+          params[key] = [params[key], value]
+        }
+      } else {
+        params[key] = value
+      }
+    } else if (spaceConcatenatedParams.includes(key)) {
+      if (params[key]) {
+        params[key] = `${params[key]} ${value}`
+      } else {
+        params[key] = value
+      }
+    } else {
+      params[key] = value
+    }
+  }
+
+  const validation = HarpiSearchSchema.safeParse(params)
+
+  if (!validation.success) {
+    return new Response('400 Bad Request', { status: 400 })
+  }
+
+  const validatedParams = validation.data
+  const client = HarpiClient.getInstance()
+
+  try {
+    const mangas = await client.fetchMangas(validatedParams, revalidate)
+
+    return Response.json({ mangas } satisfies GETProxyHarpiSearchResponse, {
+      headers: {
+        'Cache-Control': createCacheControl({
+          public: true,
+          sMaxAge: revalidate,
+          staleWhileRevalidate: 2 * revalidate,
+        }),
+      },
+    })
+  } catch (error) {
+    return handleRouteError(error, request)
+  }
+}

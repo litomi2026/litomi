@@ -1,162 +1,241 @@
-import { prettifyJSON } from '@/crawler/utils'
-import { harpiTagMap } from '@/database/harpi-tag'
-import { Multilingual, normalizeTagValue, translateTagValue } from '@/database/tag-translations'
+import {
+  GETHarpiSearchRequest,
+  HarpiComicKind,
+  HarpiListMode,
+  HarpiRandomMode,
+  HarpiSort,
+} from '@/app/api/proxy/harpi/search/schema'
+import { HARPI_TAG_MAP } from '@/database/harpi-tag'
+import { Multilingual, translateTag } from '@/database/tag-translations'
 import { Manga, Tag } from '@/types/manga'
 
-import mangas from '../database/harpi.json'
+import { ProxyClient, ProxyClientConfig } from './proxy'
+import { isUpstreamServer5XXError } from './proxy-utils'
 
-// Type for existing manga data in harpi.json
-type ExistingMangaData = {
-  id: number
-  artists?: string[]
-  characters?: string[]
-  date: string
-  group?: string[]
-  series?: string[]
-  tags?: string[]
-  title: string
-  type?: string
-  images: string[]
-  cdn?: string
-}
-
-type FetchHarpiMangasParams = {
-  page: number
+type HarpiListResponse = {
+  alert: string
+  data: HarpiManga[]
+  totalCount: number
 }
 
 type HarpiManga = {
-  // id: string
+  id: string
   parseKey: string
   title: string
-  // engTitle: string
-  // korTitle: string
+  engTitle: string
+  korTitle: string
   type: string
   authors: string[]
-  groups?: string[]
   series: string[]
-  // tagsEngStr: string[]
-  // tagsKorStr: string[]
   tagsIds: string[]
-  characters?: string[]
+  characters: string[]
+  views: number
+  bookmarks: number
+  sumRating: number
+  meanRating: number
+  countRating: number
   date: string
   imageUrl: string[]
-  // isUserDirectUpload: boolean
-  // uploader: string
-  // createdAt: string
-  // updatedAt: string
+  isUserDirectUpload: boolean
+  uploader: string
+  authorsLikesId: string[]
+  textSummary: string
+  memorableQuote: string[]
 }
 
-function convertHarpiTagIdsToTags(tagIds: string[]): Tag[] {
-  const currentLanguage = 'ko' // TODO: Get from user preferences or context
-  const tags: Tag[] = []
+const HARPI_CONFIG: ProxyClientConfig = {
+  baseURL: 'https://harpi.in',
+  circuitBreaker: {
+    failureThreshold: 5,
+    successThreshold: 3,
+    timeout: 60000, // 1 minute
+    shouldCountAsFailure: isUpstreamServer5XXError,
+  },
+  retry: {
+    maxRetries: 3,
+    initialDelay: 1000,
+    maxDelay: 10000,
+    backoffMultiplier: 2,
+    jitter: true,
+  },
+  defaultHeaders: {
+    Accept: 'application/json',
+    'Accept-Language': 'ko-KR,ko;q=0.9,zh-CN;q=0.8,zh;q=0.7,ja;q=0.6,sm;q=0.5,en;q=0.4',
+    Origin: 'https://harpi.in/',
+    Referer: 'https://harpi.in/',
+    'User-Agent':
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
+  },
+}
 
-  for (const tagId of tagIds) {
-    const harpiTag = harpiTagMap[tagId]
-    if (!harpiTag) continue
+export class HarpiClient {
+  private static instance: HarpiClient
+  private readonly client: ProxyClient
 
-    const [, valueStr] = harpiTag.engStr.split(':')
-    if (!valueStr) continue
+  // Singleton instance
+  private constructor() {
+    this.client = new ProxyClient(HARPI_CONFIG)
+  }
 
-    // Map harpi gender to our category
-    let category: Tag['category']
-    switch (harpiTag.gender) {
-      case 'E':
-        category = 'other'
-        break
-      case 'F':
-        category = 'female'
-        break
-      case 'M':
-        category = 'male'
-        break
-      default:
-        continue
+  static getInstance(): HarpiClient {
+    if (!HarpiClient.instance) {
+      HarpiClient.instance = new HarpiClient()
     }
+    return HarpiClient.instance
+  }
 
-    const normalizedValue = normalizeTagValue(valueStr)
-
-    tags.push({
-      category,
-      value: normalizedValue,
-      label: translateTagValue(normalizedValue, currentLanguage as keyof Multilingual),
+  async fetchMangaByHarpiId(
+    harpiId: string,
+    revalidate = 86400, // 24 hours
+  ): Promise<Manga> {
+    const response = await this.client.fetch<{ data: HarpiManga }>(`/animation/${harpiId}`, {
+      next: { revalidate },
     })
+
+    return this.convertHarpiToManga(response.data)
   }
 
-  return tags
-}
+  async fetchMangas(
+    params: GETHarpiSearchRequest = {
+      comicKind: HarpiComicKind.EMPTY,
+      isIncludeTagsAnd: true,
+      minImageCount: 0,
+      maxImageCount: 0,
+      listMode: HarpiListMode.SORT,
+      randomMode: HarpiRandomMode.SEARCH,
+      page: 0,
+      pageLimit: 10,
+      sort: HarpiSort.DATE_DESC,
+    },
+    revalidate = 300, // 5 minutes
+  ): Promise<Manga[]> {
+    const searchParams = this.buildSearchParams(params)
 
-async function fetchMangas({ page }: FetchHarpiMangasParams): Promise<Manga[] | null> {
-  try {
-    const response = await fetch(`https://pk3.harpi.in/animation/list?page=${page}&pageLimit=10&sort=date_desc`)
-    const result = await response.json()
-    const fetchedMangas: Manga[] = result.data.map((manga: HarpiManga) => ({
-      id: +manga.parseKey,
-      artists: manga.authors,
-      characters: manga.characters,
-      date: manga.date,
-      group: manga.groups,
-      series: manga.series,
-      tags: convertHarpiTagIdsToTags(manga.tagsIds),
-      title: manga.title,
-      type: manga.type,
-      images: sortImageURLs(manga.imageUrl),
-      cdn: 'HARPI',
-    }))
-    return fetchedMangas
-  } catch (error) {
-    console.error(`Failed to fetch page ${page}`, error)
-    return null
+    const response = await this.client.fetch<HarpiListResponse>(`/animation/list?${searchParams}`, {
+      next: { revalidate },
+    })
+
+    return response.data.map((manga) => this.convertHarpiToManga(manga))
   }
-}
 
-async function main() {
-  // 새로 가져온 데이터를 id를 key로 하는 객체에 누적합니다.
-  const fetchedMangaById: Record<number, Manga> = {}
+  private buildImageUrls(imageUrls: string[]): string[] {
+    return imageUrls.map((url) => `https://soujpa.in/start/${url}`)
+  }
 
-  // 1~5 페이지를 순차적으로 fetch (rate limit을 고려해 각 페이지 후 4초 지연)
-  for (let page = 1; page < 6; page++) {
-    console.log('👀 Fetching harpi page:', page)
-    const fetchedMangas = await fetchMangas({ page })
-    if (fetchedMangas) {
-      fetchedMangas.forEach((manga) => {
-        fetchedMangaById[manga.id] = manga
+  private buildSearchParams(params: GETHarpiSearchRequest): URLSearchParams {
+    const searchParams = new URLSearchParams()
+
+    const appendMultipleValues = (key: string, value: number | string | number[] | string[]) => {
+      const values = Array.isArray(value)
+        ? value
+        : value
+            .toString()
+            .split(',')
+            .map((v) => v.trim())
+      values.forEach((v) => searchParams.append(key, v.toString()))
+    }
+
+    if (params.searchText) {
+      const searchTerms = params.searchText.split(' ').filter((term) => term.trim())
+      searchTerms.forEach((term) => searchParams.append('searchText', term))
+    }
+
+    if (params.lineText) {
+      const lineTexts = params.lineText.split(' ').filter((text) => text.trim())
+      lineTexts.forEach((text) => searchParams.append('lineText', text))
+    }
+
+    if (params.authors) appendMultipleValues('selectedAuthors', params.authors)
+    if (params.groups) appendMultipleValues('selectedGroups', params.groups)
+    if (params.series) appendMultipleValues('selectedSeries', params.series)
+    if (params.characters) appendMultipleValues('selectedCharacters', params.characters)
+    if (params.tags) appendMultipleValues('includeTags', params.tags)
+    if (params.tagsExclude) appendMultipleValues('excludeTags', params.tagsExclude)
+    if (params.ids) appendMultipleValues('parseKeys', params.ids)
+
+    searchParams.append('comicKind', params.comicKind ?? 'EMPTY')
+    searchParams.append('isIncludeTagsAnd', params.isIncludeTagsAnd?.toString() ?? 'false')
+    searchParams.append('minImageCount', params.minImageCount?.toString() ?? '0')
+    searchParams.append('maxImageCount', params.maxImageCount?.toString() ?? '0')
+    searchParams.append('listMode', params.listMode ?? 'sort')
+    searchParams.append('randomMode', params.randomMode ?? 'search')
+    searchParams.append('page', params.page?.toString() ?? '0')
+    searchParams.append('pageLimit', params.pageLimit?.toString() ?? '10')
+    searchParams.append('sort', params.sort ?? 'date_desc')
+
+    return searchParams
+  }
+
+  private convertHarpiTagIdsToTags(tagIds: string[], locale: keyof Multilingual): Tag[] {
+    return tagIds
+      .map((tagId) => {
+        const tagInfo = HARPI_TAG_MAP[tagId]
+
+        if (!tagInfo) {
+          return {
+            category: '',
+            value: tagId,
+            label: tagId,
+          }
+        }
+
+        const enTag = tagInfo.en
+        const colonIndex = enTag.indexOf(':')
+
+        if (colonIndex === -1) {
+          return {
+            category: 'other',
+            value: enTag,
+            label: translateTag('other', enTag, locale),
+          }
+        }
+
+        const categoryStr = enTag.substring(0, colonIndex)
+        const value = enTag.substring(colonIndex + 1)
+
+        let category: Tag['category']
+        switch (categoryStr) {
+          case 'etc':
+            category = 'other'
+            break
+          case 'female':
+          case 'male':
+          case 'mixed':
+          case 'other':
+            category = categoryStr
+            break
+          default:
+            category = ''
+        }
+
+        return {
+          category,
+          value,
+          label: translateTag(category, value, locale),
+        }
       })
-    }
-    await sleep(1000)
+      .filter((tag): tag is Tag => Boolean(tag))
   }
 
-  // Convert existing manga data to new format
-  const convertedExistingMangas: Record<number, Manga> = {}
-  const existingMangas = mangas as unknown as Record<string, ExistingMangaData>
+  private convertHarpiToManga(harpiManga: HarpiManga): Manga {
+    const locale: keyof Multilingual = 'ko' // TODO: Get from user preferences or context
 
-  for (const [id, manga] of Object.entries(existingMangas)) {
-    convertedExistingMangas[+id] = {
-      ...manga,
-      tags:
-        manga.tags && Array.isArray(manga.tags) && typeof manga.tags[0] === 'string'
-          ? convertHarpiTagIdsToTags(manga.tags)
-          : [],
+    return {
+      id: parseInt(harpiManga.parseKey, 10) || 0,
+      harpiId: harpiManga.id,
+      title: harpiManga.korTitle || harpiManga.engTitle || harpiManga.title,
+      artists: harpiManga.authors,
+      characters: harpiManga.characters,
+      series: harpiManga.series,
+      tags: this.convertHarpiTagIdsToTags(harpiManga.tagsIds, locale),
+      type: harpiManga.type,
+      language: 'korean',
+      images: this.buildImageUrls(harpiManga.imageUrl),
+      cdn: 'harpi',
+      count: harpiManga.imageUrl.length,
+      date: harpiManga.date,
+      viewCount: harpiManga.views,
+      rating: harpiManga.meanRating,
     }
   }
-
-  const mergedMangas: Record<number, Manga> = { ...convertedExistingMangas, ...fetchedMangaById }
-  prettifyJSON({ pathname: '../database/harpi.json', json: mergedMangas })
-  console.log('Harpi manga updated successfully.')
 }
-
-function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
-
-function sortImageURLs(items: string[]): string[] {
-  return items.sort((a, b) => {
-    const regex = /_(\d+)\.(\w+)$/
-    const matchA = a.match(regex)
-    const matchB = b.match(regex)
-    const numA = matchA ? parseInt(matchA[1], 10) : 0
-    const numB = matchB ? parseInt(matchB[1], 10) : 0
-    return numA - numB
-  })
-}
-
-main()
