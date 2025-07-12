@@ -6,7 +6,7 @@ import selectBookmarks from '@/sql/selectBookmarks'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
 
 import BookmarkListClient from './BookmarkListClient'
-import { BOOKMARK_COUNT_PER_PAGE } from './constants'
+import { BOOKMARKS_PER_PAGE } from './constants'
 import { GuestView } from './GuestView'
 import Loading from './loading'
 
@@ -18,7 +18,7 @@ export default async function BookmarkPage() {
     return <GuestView />
   }
 
-  const bookmarkRows = await selectBookmarks({ userId, limit: BOOKMARK_COUNT_PER_PAGE })
+  const bookmarkRows = await selectBookmarks({ userId, limit: BOOKMARKS_PER_PAGE })
 
   if (bookmarkRows.length === 0) {
     notFound()

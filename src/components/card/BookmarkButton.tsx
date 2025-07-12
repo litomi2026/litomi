@@ -6,7 +6,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useActionState, useEffect } from 'react'
 import { toast } from 'sonner'
 
-import bookmarkManga from '@/app/(navigation)/(right-search)/[loginId]/bookmark/action'
+import toggleBookmark from '@/app/(navigation)/(right-search)/[loginId]/bookmark/action'
 import { QueryKeys } from '@/constants/query'
 import useActionErrorEffect from '@/hook/useActionErrorEffect'
 import useBookmarksQuery from '@/query/useBookmarksQuery'
@@ -18,7 +18,7 @@ import IconBookmark from '../icons/IconBookmark'
 import IconSpinner from '../icons/IconSpinner'
 import LoginLink from '../LoginLink'
 
-const initialState = {} as Awaited<ReturnType<typeof bookmarkManga>>
+const initialState = {} as Awaited<ReturnType<typeof toggleBookmark>>
 
 type Props = {
   manga: Manga
@@ -30,7 +30,7 @@ export default function BookmarkButton({ manga, source, className }: Props) {
   const { id: mangaId } = manga
   const { data: me } = useMeQuery()
   const { data: bookmarks } = useBookmarksQuery()
-  const [{ error, success, isBookmarked, status }, formAction, isPending] = useActionState(bookmarkManga, initialState)
+  const [{ error, success, isBookmarked, status }, formAction, isPending] = useActionState(toggleBookmark, initialState)
   const isIconSelected = bookmarks?.has(mangaId)
   const queryClient = useQueryClient()
 

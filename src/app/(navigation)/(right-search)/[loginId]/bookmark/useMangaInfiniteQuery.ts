@@ -6,15 +6,27 @@ import { QueryKeys } from '@/constants/query'
 import { BookmarkSource } from '@/database/schema'
 import { Manga } from '@/types/manga'
 
-import { MANGA_FETCH_BATCH_SIZE } from './constants'
+import { MANGA_DETAILS_BATCH_SIZE } from './constants'
 
-export type MangaWithMeta = {
+export type MangaDetails = {
   manga?: Manga
   source: BookmarkSource
   mangaId: number
   loading?: boolean
   error?: string
 }
+
+const API_ENDPOINTS: Partial<Record<BookmarkSource, (id: number) => string>> = {
+  [BookmarkSource.HIYOBI]: (id: number) => `/api/proxy/hiyobi/${id}`,
+  [BookmarkSource.K_HENTAI]: (id: number) => `/api/proxy/k/${id}`,
+}
+
+const ERROR_MESSAGES = {
+  UNKNOWN_SOURCE: '알 수 없는 소스',
+  NO_RESPONSE: '응답이 없어요',
+  REQUEST_FAILED: '오류가 발생했어요',
+  HARPI_SEARCH_FAILED: 'Harpi search failed',
+} as const
 
 export default function useMangaInfiniteQuery(bookmarks: BookmarkWithSource[]) {
   const fetchedItemsRef = useRef(new Set<string>())
@@ -23,21 +35,18 @@ export default function useMangaInfiniteQuery(bookmarks: BookmarkWithSource[]) {
     queryKey: QueryKeys.infiniteManga,
     queryFn: async () => {
       const unfetchedItems = bookmarks.filter((item) => {
-        const key = `${item.source}:${item.mangaId}`
+        const key = generateBookmarkKey(item.source, item.mangaId)
         return !fetchedItemsRef.current.has(key)
       })
 
-      // If no new items to fetch, return empty
       if (unfetchedItems.length === 0) {
         return []
       }
 
-      // Take the next batch of unfetched items
-      const batch = unfetchedItems.slice(0, MANGA_FETCH_BATCH_SIZE)
+      const batch = unfetchedItems.slice(0, MANGA_DETAILS_BATCH_SIZE)
 
-      // Mark these items as being fetched
       batch.forEach((item) => {
-        fetchedItemsRef.current.add(`${item.source}:${item.mangaId}`)
+        fetchedItemsRef.current.add(generateBookmarkKey(item.source, item.mangaId))
       })
 
       return fetchMangaBatch(batch)
@@ -48,15 +57,14 @@ export default function useMangaInfiniteQuery(bookmarks: BookmarkWithSource[]) {
 
   const { data } = infiniteQuery
 
-  const mangaData = useMemo(() => {
-    const map = new Map<string, MangaWithMeta>()
+  const mangaDetailsMap = useMemo(() => {
+    const map = new Map<string, MangaDetails>()
 
-    // Provide default empty pages array if data is undefined
-    const pages = data?.pages ?? []
+    if (!data?.pages) return map
 
-    pages.forEach((page) => {
+    data.pages.forEach((page) => {
       page.forEach((item) => {
-        map.set(`${item.source}:${item.mangaId}`, item)
+        map.set(generateBookmarkKey(item.source, item.mangaId), item)
       })
     })
 
@@ -65,99 +73,81 @@ export default function useMangaInfiniteQuery(bookmarks: BookmarkWithSource[]) {
 
   return {
     ...infiniteQuery,
-    data: mangaData,
+    data: mangaDetailsMap,
   }
 }
 
-async function fetchFromOriginalSource(mangaId: number, source: BookmarkSource): Promise<Manga | undefined> {
-  try {
-    let response: Response
-
-    switch (source) {
-      case BookmarkSource.HIYOBI:
-        response = await fetch(`/api/proxy/hiyobi/${mangaId}`)
-        break
-      case BookmarkSource.K_HENTAI:
-        response = await fetch(`/api/proxy/k/${mangaId}`)
-        break
-      default:
-        return { id: mangaId, title: '알 수 없는 소스', images: [] }
-    }
-
-    if (!response) {
-      return { id: mangaId, title: '응답이 없어요', images: [] }
-    }
-
-    if (!response.ok) {
-      return { id: mangaId, title: `${response.status}: ${response.statusText}`, images: [] }
-    }
-
-    return response.json()
-  } catch (error) {
-    return { id: mangaId, title: error instanceof Error ? error.message : '오류가 발생했어요', images: [] }
+function createMangaWithError(id: number, message: string): Manga {
+  return {
+    id,
+    title: message,
+    images: [],
   }
 }
 
-async function fetchMangaBatch(items: BookmarkWithSource[]): Promise<MangaWithMeta[]> {
-  const mangaIds = items.map((item) => item.mangaId)
-
-  if (mangaIds.length === 0) {
+async function fetchMangaBatch(items: BookmarkWithSource[]): Promise<MangaDetails[]> {
+  if (items.length === 0) {
     return []
   }
 
-  try {
-    const searchParams = new URLSearchParams()
+  const mangaIds = items.map((item) => item.mangaId)
 
-    for (const id of mangaIds) {
-      searchParams.append('ids', id.toString())
+  try {
+    const { mangas } = await fetchMangasFromHarpi(mangaIds)
+
+    return Promise.all(items.map((item) => processMangaItem(item, mangas)))
+  } catch {
+    return Promise.all(
+      items.map(async (item) => ({
+        ...item,
+        manga: await fetchMangaFromOriginalSource(item.mangaId, item.source),
+      })),
+    )
+  }
+}
+
+async function fetchMangaFromOriginalSource(mangaId: number, source: BookmarkSource): Promise<Manga> {
+  try {
+    const endpoint = API_ENDPOINTS[source]
+
+    if (!endpoint) {
+      return createMangaWithError(mangaId, ERROR_MESSAGES.UNKNOWN_SOURCE)
     }
 
-    searchParams.append('pageLimit', mangaIds.length.toString())
-
-    const response = await fetch(`/api/proxy/harpi/search?${searchParams}`)
+    const response = await fetch(endpoint(mangaId))
 
     if (!response.ok) {
-      throw new Error('Harpi search failed')
+      return createMangaWithError(mangaId, `${response.status}: ${response.statusText}`)
     }
 
-    const { mangas } = await response.json()
-    const results: MangaWithMeta[] = []
-
-    // Process all items, using harpi results or fallback
-    for (const item of items) {
-      const manga = mangas.find((m: Manga) => m.id === item.mangaId)
-
-      if (manga) {
-        results.push({
-          mangaId: item.mangaId,
-          source: item.source,
-          manga,
-        })
-      } else {
-        // Fallback to original source
-        const fallbackManga = await fetchFromOriginalSource(item.mangaId, item.source)
-        results.push({
-          mangaId: item.mangaId,
-          source: item.source,
-          manga: fallbackManga,
-        })
-      }
-    }
-
-    return results
-  } catch {
-    // On harpi failure, try original sources for all items
-    const results: MangaWithMeta[] = []
-
-    for (const item of items) {
-      const fallbackManga = await fetchFromOriginalSource(item.mangaId, item.source)
-      results.push({
-        mangaId: item.mangaId,
-        source: item.source,
-        manga: fallbackManga,
-      })
-    }
-
-    return results
+    return await response.json()
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : ERROR_MESSAGES.REQUEST_FAILED
+    return createMangaWithError(mangaId, errorMessage)
   }
+}
+
+async function fetchMangasFromHarpi(mangaIds: number[]): Promise<{ mangas: Manga[] }> {
+  const searchParams = new URLSearchParams()
+  mangaIds.forEach((id) => searchParams.append('ids', id.toString()))
+  searchParams.append('pageLimit', mangaIds.length.toString())
+
+  const response = await fetch(`/api/proxy/harpi/search?${searchParams}`)
+
+  if (!response.ok) {
+    throw new Error(ERROR_MESSAGES.HARPI_SEARCH_FAILED)
+  }
+
+  return response.json()
+}
+
+function generateBookmarkKey(source: BookmarkSource, mangaId: number): string {
+  return `${source}:${mangaId}`
+}
+
+async function processMangaItem(item: BookmarkWithSource, harpiMangas: Manga[]): Promise<MangaDetails> {
+  const manga =
+    harpiMangas.find((m) => m.id === item.mangaId) || (await fetchMangaFromOriginalSource(item.mangaId, item.source))
+
+  return { ...item, manga }
 }

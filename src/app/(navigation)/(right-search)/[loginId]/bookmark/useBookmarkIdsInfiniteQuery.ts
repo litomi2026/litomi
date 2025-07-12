@@ -4,11 +4,11 @@ import { BookmarkWithSource, GETBookmarksResponse } from '@/app/api/bookmarks/ro
 import { QueryKeys } from '@/constants/query'
 import { handleResponseError } from '@/utils/react-query-error'
 
-import { BOOKMARK_COUNT_PER_PAGE } from './constants'
+import { BOOKMARKS_PER_PAGE } from './constants'
 
-export async function fetchBookmarksPage(
+export async function fetchBookmarksPaginated(
   cursor: { mangaId: number; createdAt: number } | null,
-  limit: number = BOOKMARK_COUNT_PER_PAGE,
+  limit: number = BOOKMARKS_PER_PAGE,
 ) {
   const searchParams = new URLSearchParams()
   searchParams.append('limit', limit.toString())
@@ -25,7 +25,7 @@ export async function fetchBookmarksPage(
 export default function useBookmarkIdsInfiniteQuery(initialBookmarks: BookmarkWithSource[]) {
   return useSuspenseInfiniteQuery<GETBookmarksResponse, Error>({
     queryKey: QueryKeys.infiniteBookmarks,
-    queryFn: ({ pageParam }) => fetchBookmarksPage(pageParam as { mangaId: number; createdAt: number } | null),
+    queryFn: ({ pageParam }) => fetchBookmarksPaginated(pageParam as { mangaId: number; createdAt: number } | null),
     initialPageParam: null,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialData: {
@@ -36,7 +36,7 @@ export default function useBookmarkIdsInfiniteQuery(initialBookmarks: BookmarkWi
 }
 
 function getNextCursor(bookmarks: BookmarkWithSource[]) {
-  if (bookmarks.length !== BOOKMARK_COUNT_PER_PAGE) {
+  if (bookmarks.length !== BOOKMARKS_PER_PAGE) {
     return null
   }
 

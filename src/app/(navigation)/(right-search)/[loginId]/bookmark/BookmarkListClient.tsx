@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef } from 'react'
+import { useMemo } from 'react'
 import { useInView } from 'react-intersection-observer'
 
 import useBookmarkIdsInfiniteQuery from '@/app/(navigation)/(right-search)/[loginId]/bookmark/useBookmarkIdsInfiniteQuery'
@@ -9,87 +9,112 @@ import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import { mapBookmarkSourceToSourceParam } from '@/utils/param'
 
-import useMangaInfiniteQuery from './useMangaInfiniteQuery'
+import useMangaInfiniteQuery, { MangaDetails } from './useMangaInfiniteQuery'
 
-interface BookmarkListClientProps {
+interface BookmarkListItemProps {
+  index: number
+  mangaDetails: MangaDetails | undefined
+  onInView?: () => void
+}
+
+interface Props {
   initialBookmarks: BookmarkWithSource[]
 }
 
-export default function BookmarkListClient({ initialBookmarks }: BookmarkListClientProps) {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useBookmarkIdsInfiniteQuery(initialBookmarks)
-  const bookmarkIds = useMemo(() => data.pages.flatMap((page) => page.bookmarks), [data.pages])
+export default function BookmarkListClient({ initialBookmarks }: Props) {
+  const {
+    data: bookmarksData,
+    fetchNextPage: fetchMoreBookmarks,
+    hasNextPage: hasMoreBookmarksToLoad,
+    isFetchingNextPage: isLoadingMoreBookmarks,
+  } = useBookmarkIdsInfiniteQuery(initialBookmarks)
+
+  const bookmarkIds = useMemo(() => bookmarksData.pages.flatMap((page) => page.bookmarks), [bookmarksData.pages])
 
   const {
-    data: mangaData,
-    fetchNextPage: fetchNextManga,
-    hasNextPage: hasMangaNextPage,
-    isFetchingNextPage: isFetchingMangaNextPage,
+    data: mangaDetailsMap,
+    fetchNextPage: fetchMoreMangaDetails,
+    isFetchingNextPage: isLoadingMoreManga,
   } = useMangaInfiniteQuery(bookmarkIds)
 
-  const { inView, ref } = useInView({
-    rootMargin: '100px',
-    threshold: 0.1,
+  const infiniteScrollTriggerRef = useInfiniteScrollObserver({
+    hasNextPage: hasMoreBookmarksToLoad,
+    isFetchingNextPage: isLoadingMoreBookmarks,
+    fetchNextPage: fetchMoreBookmarks,
   })
 
-  const loadMoreRef = useInfiniteScrollObserver({
-    hasNextPage,
-    isFetchingNextPage,
-    fetchNextPage,
-  })
-
-  const fetchInitiatedRef = useRef(false)
-
-  useEffect(() => {
-    if (inView && hasMangaNextPage && !isFetchingMangaNextPage) {
-      if (!fetchInitiatedRef.current) {
-        fetchInitiatedRef.current = true
-        fetchNextManga()
-      }
-    } else if (!inView) {
-      fetchInitiatedRef.current = false
+  const onMangaVisible = () => {
+    if (!isLoadingMoreManga) {
+      fetchMoreMangaDetails()
     }
-  }, [inView, hasMangaNextPage, isFetchingMangaNextPage, fetchNextManga])
-
-  if (bookmarkIds.length === 0 && !isFetchingNextPage) {
-    return (
-      <div className="flex flex-col grow justify-center items-center">
-        <p className="text-zinc-500">북마크가 없습니다.</p>
-      </div>
-    )
   }
 
-  let hasAddedRefToSkeleton = false
+  if (bookmarkIds.length === 0 && !isLoadingMoreBookmarks) {
+    return <EmptyBookmarks />
+  }
+
+  const firstUnfetchedMangaIndex = bookmarkIds.findIndex((bookmark) => {
+    const key = generateBookmarkKey(bookmark)
+    return !mangaDetailsMap.has(key)
+  })
 
   return (
     <>
       <ul className="grid gap-2 md:grid-cols-2 grow">
         {bookmarkIds.map((bookmark, index) => {
-          const key = `${bookmark.source}:${bookmark.mangaId}`
-          const mangaInfo = mangaData.get(key)
+          const key = generateBookmarkKey(bookmark)
+          const shouldFetchMangaDetails = index === firstUnfetchedMangaIndex
 
-          if (mangaInfo?.manga) {
-            return (
-              <MangaCard
-                index={index}
-                key={key}
-                manga={mangaInfo.manga}
-                source={mapBookmarkSourceToSourceParam(mangaInfo.source)}
-              />
-            )
-          } else {
-            const shouldAddRef = !hasAddedRefToSkeleton
-            if (shouldAddRef) hasAddedRefToSkeleton = true
-
-            return (
-              <div key={key} ref={shouldAddRef ? ref : undefined}>
-                <MangaCardSkeleton />
-              </div>
-            )
-          }
+          return (
+            <BookmarkListItem
+              index={index}
+              key={key}
+              mangaDetails={mangaDetailsMap.get(key)}
+              onInView={shouldFetchMangaDetails ? onMangaVisible : undefined}
+            />
+          )
         })}
-        {isFetchingNextPage && <MangaCardSkeleton />}
+
+        {isLoadingMoreBookmarks && <MangaCardSkeleton />}
       </ul>
-      <div className="w-full py-4 flex justify-center" ref={loadMoreRef} />
+
+      <div className="w-full py-4 flex justify-center" ref={infiniteScrollTriggerRef} />
     </>
   )
+}
+
+function BookmarkListItem({ mangaDetails, index, onInView }: BookmarkListItemProps) {
+  const { ref } = useInView({
+    rootMargin: '100px',
+    threshold: 0.1,
+    onChange: (inView) => inView && onInView?.(),
+  })
+
+  if (mangaDetails?.manga) {
+    return (
+      <MangaCard
+        index={index}
+        manga={mangaDetails.manga}
+        source={mapBookmarkSourceToSourceParam(mangaDetails.source)}
+      />
+    )
+  }
+
+  return (
+    <div ref={ref}>
+      <MangaCardSkeleton />
+    </div>
+  )
+}
+
+function EmptyBookmarks() {
+  return (
+    <div className="flex flex-col grow justify-center items-center">
+      <p className="text-zinc-500">북마크가 없습니다.</p>
+    </div>
+  )
+}
+
+function generateBookmarkKey(bookmark: BookmarkWithSource): string {
+  return `${bookmark.source}:${bookmark.mangaId}`
 }
