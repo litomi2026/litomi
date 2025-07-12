@@ -47,20 +47,24 @@ export default function BookmarkButton({ manga, source, className }: Props) {
   })
 
   useEffect(() => {
-    if (success) {
-      toast.success(isBookmarked ? '북마크를 추가했어요' : '북마크를 삭제했어요')
-
-      queryClient.setQueryData<Set<number>>(QueryKeys.bookmarks, (oldBookmarks) => {
-        if (!oldBookmarks) {
-          return new Set([mangaId])
-        } else if (isBookmarked) {
-          oldBookmarks.add(mangaId)
-        } else {
-          oldBookmarks.delete(mangaId)
-        }
-        return new Set(oldBookmarks)
-      })
+    if (!success) {
+      return
     }
+
+    toast.success(isBookmarked ? '북마크를 추가했어요' : '북마크를 삭제했어요')
+
+    queryClient.setQueryData<Set<number>>(QueryKeys.bookmarks, (oldBookmarks) => {
+      if (!oldBookmarks) {
+        return new Set([mangaId])
+      } else if (isBookmarked) {
+        oldBookmarks.add(mangaId)
+      } else {
+        oldBookmarks.delete(mangaId)
+      }
+      return new Set(oldBookmarks)
+    })
+
+    queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteBookmarks })
   }, [success, isBookmarked, queryClient, mangaId])
 
   function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
