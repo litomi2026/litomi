@@ -28,8 +28,8 @@ const PREFETCH_INDEX = 10
 
 export default memo(MangaCard)
 
-export function MangaCardSkeleton() {
-  return <li className="animate-fade-in rounded-xl bg-zinc-900 border-2 aspect-[3/4] w-full h-full" />
+export function MangaCardSkeleton({ reff }: { reff?: (node?: Element | null) => void }) {
+  return <li className="animate-fade-in rounded-xl bg-zinc-900 border-2 aspect-[3/4] w-full h-full" ref={reff} />
 }
 
 function MangaCard({ manga, index = 0, source, className = '', showSearchFromHereButton }: Props) {

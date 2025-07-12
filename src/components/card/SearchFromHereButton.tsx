@@ -32,13 +32,13 @@ export default function SearchFromHereButton({ mangaId, className = '' }: Props)
       className={`flex justify-center items-center gap-1 ${className}`}
       disabled={isLoading}
       onClick={handleSearchFromHere}
-      title="이 작품 ID부터 검색 결과를 다시 불러옵니다"
+      title="이 다음 작품부터 검색 결과를 다시 불러옵니다"
       type="button"
     >
       {isLoading ? <IconSpinner className="w-4" /> : <IconSearch className="w-4 flex-shrink-0" />}
       <span className="text-sm font-medium whitespace-nowrap">
-        <span className="hidden sm:inline">여기부터 재검색</span>
-        <span className="sm:hidden">여기부터</span>
+        <span>이 다음부터</span>
+        <span className="hidden sm:inline"> 재검색</span>
       </span>
     </button>
   )

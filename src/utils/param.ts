@@ -39,6 +39,19 @@ export function getTotalPages(source: string) {
   }
 }
 
+export function mapBookmarkSourceToSourceParam(source: BookmarkSource) {
+  switch (source) {
+    case BookmarkSource.HARPI:
+      return SourceParam.HARPI
+    case BookmarkSource.HIYOBI:
+      return SourceParam.HIYOBI
+    case BookmarkSource.K_HENTAI:
+      return SourceParam.K_HENTAI
+    default:
+      return SourceParam.K_HENTAI
+  }
+}
+
 export function mapSourceParamToBookmarkSource(order: SourceParam) {
   switch (order) {
     case SourceParam.HARPI:
