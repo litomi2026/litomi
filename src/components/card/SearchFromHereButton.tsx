@@ -15,7 +15,7 @@ export default function SearchFromHereButton({ mangaId, className = '' }: Readon
   const router = useRouter()
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
-  const isDefaultSort = searchParams.get('sort') === undefined || searchParams.get('sort') === ''
+  const isDefaultSort = !searchParams.get('sort')
   const isDisabled = !isDefaultSort || isPending
 
   const handleSearchFromHere = useCallback(() => {
