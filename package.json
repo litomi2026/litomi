@@ -12,7 +12,12 @@
     "type": "tsc --noEmit",
     "crawl": "bun tools/crawlMangas.ts",
     "crawl:harpi": "bun src/crawler/harpi.ts",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test": "bun test",
+    "test:watch": "bun test --watch",
+    "test:coverage": "bun test --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^2.18.0",
@@ -44,7 +49,11 @@
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.30.1",
     "@next/bundle-analyzer": "^15.3.5",
+    "@playwright/test": "^1.49.0",
     "@tailwindcss/postcss": "^4.1.11",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.5.2",
     "@types/bcrypt": "^5.0.2",
     "@types/bun": "^1.2.17",
     "@types/js-cookie": "^3.0.6",
@@ -61,6 +70,7 @@
     "eslint-plugin-perfectionist": "^4.15.0",
     "eslint-plugin-react": "^7.37.5",
     "globals": "^16.3.0",
+    "happy-dom": "^16.5.4",
     "husky": "^9.1.7",
     "lint-staged": "^15.5.2",
     "prettier": "3.5.3",
