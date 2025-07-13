@@ -38,7 +38,7 @@ export default function LoginForm() {
 
   useEffect(() => {
     if (error) {
-      toast.error(error.loginId?.[0] ?? error.password?.[0])
+      toast.error(Object.values(error).flatMap((value) => value.errors)[0])
     }
   }, [error])
 
@@ -66,7 +66,8 @@ export default function LoginForm() {
         [&_label]:block [&_label]:mb-1.5 [&_label]:text-sm [&_label]:font-medium [&_label]:text-zinc-300 [&_label]:leading-7
         [&_input]:w-full [&_input]:rounded-md [&_input]:bg-zinc-800 [&_input]:border [&_input]:border-zinc-600 
         [&_input]:px-3 [&_input]:py-2 [&_input]:placeholder-zinc-500 [&_input]:focus:outline-none [&_input]:focus:ring-2 [&_input]:focus:ring-zinc-500 
-        [&_input]:focus:border-transparent [&_input]:disabled:bg-zinc-700 [&_input]:disabled:text-zinc-400 [&_input]:disabled:border-zinc-500 [&_input]:disabled:cursor-not-allowed"
+        [&_input]:focus:border-transparent [&_input]:disabled:bg-zinc-700 [&_input]:disabled:text-zinc-400 [&_input]:disabled:border-zinc-500 [&_input]:disabled:cursor-not-allowed
+        [&_input]:aria-invalid:border-red-700 [&_input]:aria-invalid:focus:ring-red-700 [&_input]:aria-invalid:placeholder-red-700"
       ref={formRef}
     >
       <div
@@ -77,6 +78,7 @@ export default function LoginForm() {
           <label htmlFor="loginId">아이디</label>
           <div className="relative">
             <input
+              aria-invalid={(error?.loginId?.errors?.length ?? 0) > 0}
               autoFocus
               defaultValue={formData?.get('loginId')?.toString() ?? ''}
               disabled={pending}
@@ -97,6 +99,7 @@ export default function LoginForm() {
           <label htmlFor="password">비밀번호</label>
           <div className="relative">
             <input
+              aria-invalid={(error?.password?.errors?.length ?? 0) > 0}
               defaultValue={formData?.get('password')?.toString() ?? ''}
               disabled={pending}
               id="password"

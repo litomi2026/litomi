@@ -24,20 +24,20 @@ const schema = z.object({
 })
 
 export default async function login(_prevState: unknown, formData: FormData) {
-  const validatedFields = schema.safeParse({
+  const validation = schema.safeParse({
     loginId: formData.get('loginId'),
     password: formData.get('password'),
     remember: formData.get('remember'),
   })
 
-  if (!validatedFields.success) {
+  if (!validation.success) {
     return {
-      error: validatedFields.error.flatten().fieldErrors,
+      error: z.treeifyError(validation.error).properties,
       formData,
     }
   }
 
-  const { loginId, password, remember } = validatedFields.data
+  const { loginId, password, remember } = validation.data
 
   const [result] = await db
     .select({
@@ -49,7 +49,10 @@ export default async function login(_prevState: unknown, formData: FormData) {
 
   if (!result) {
     return {
-      error: { loginId: ['아이디 또는 비밀번호가 일치하지 않습니다.'] },
+      error: {
+        loginId: { errors: ['아이디 또는 비밀번호가 일치하지 않습니다.'] },
+        password: { errors: ['아이디 또는 비밀번호가 일치하지 않습니다.'] },
+      },
       formData,
     }
   }
@@ -59,7 +62,10 @@ export default async function login(_prevState: unknown, formData: FormData) {
 
   if (!isCorrectPassword) {
     return {
-      error: { loginId: ['아이디 또는 비밀번호가 일치하지 않습니다.'] },
+      error: {
+        loginId: { errors: ['아이디 또는 비밀번호가 일치하지 않습니다.'] },
+        password: { errors: ['아이디 또는 비밀번호가 일치하지 않습니다.'] },
+      },
       formData,
     }
   }
