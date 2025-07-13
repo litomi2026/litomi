@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation'
 import selectBookmarks from '@/sql/selectBookmarks'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
 
-import BookmarkListClient from './BookmarkListClient'
+import BookmarkList from './BookmarkListClient'
 import { BOOKMARKS_PER_PAGE } from './constants'
 import { GuestView } from './GuestView'
 import Loading from './loading'
@@ -31,7 +31,7 @@ export default async function BookmarkPage() {
 
   return (
     <Suspense clientOnly fallback={<Loading />}>
-      <BookmarkListClient initialBookmarks={bookmarks} />
+      <BookmarkList initialBookmarks={bookmarks} />
     </Suspense>
   )
 }

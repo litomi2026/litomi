@@ -10,8 +10,9 @@ import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import { mapBookmarkSourceToSourceParam } from '@/utils/param'
 
 import useMangaInfiniteQuery, { MangaDetails } from './useMangaInfiniteQuery'
+import { generateBookmarkKey } from './utils'
 
-interface BookmarkListItemProps {
+interface BookmarkItemProps {
   index: number
   mangaDetails: MangaDetails | undefined
   onInView?: () => void
@@ -21,7 +22,7 @@ interface Props {
   initialBookmarks: BookmarkWithSource[]
 }
 
-export default function BookmarkListClient({ initialBookmarks }: Props) {
+export default function BookmarkList({ initialBookmarks }: Props) {
   const {
     data: bookmarksData,
     fetchNextPage: fetchMoreBookmarks,
@@ -31,17 +32,33 @@ export default function BookmarkListClient({ initialBookmarks }: Props) {
 
   const bookmarkIds = useMemo(() => bookmarksData.pages.flatMap((page) => page.bookmarks), [bookmarksData.pages])
 
-  const {
-    data: mangaDetailsMap,
-    fetchNextPage: fetchMoreMangaDetails,
-    isFetchingNextPage: isLoadingMoreManga,
-  } = useMangaInfiniteQuery(bookmarkIds)
-
   const infiniteScrollTriggerRef = useInfiniteScrollObserver({
     hasNextPage: hasMoreBookmarksToLoad,
     isFetchingNextPage: isLoadingMoreBookmarks,
     fetchNextPage: fetchMoreBookmarks,
   })
+
+  const {
+    data: mangaDetails,
+    fetchNextPage: fetchMoreMangaDetails,
+    isFetchingNextPage: isLoadingMoreManga,
+  } = useMangaInfiniteQuery(bookmarkIds)
+
+  const mangaDetailsMap = useMemo(() => {
+    const map = new Map<string, MangaDetails>()
+
+    if (!mangaDetails?.pages) {
+      return map
+    }
+
+    mangaDetails.pages.forEach((page) => {
+      page.forEach((item) => {
+        map.set(generateBookmarkKey(item), item)
+      })
+    })
+
+    return map
+  }, [mangaDetails])
 
   const onMangaVisible = () => {
     if (!isLoadingMoreManga) {
@@ -49,14 +66,13 @@ export default function BookmarkListClient({ initialBookmarks }: Props) {
     }
   }
 
+  const firstUnfetchedMangaIndex = useMemo(() => {
+    return bookmarkIds.findIndex((bookmark) => !mangaDetailsMap.has(generateBookmarkKey(bookmark)))
+  }, [bookmarkIds, mangaDetailsMap])
+
   if (bookmarkIds.length === 0 && !isLoadingMoreBookmarks) {
     return <EmptyBookmarks />
   }
-
-  const firstUnfetchedMangaIndex = bookmarkIds.findIndex((bookmark) => {
-    const key = generateBookmarkKey(bookmark)
-    return !mangaDetailsMap.has(key)
-  })
 
   return (
     <>
@@ -66,7 +82,7 @@ export default function BookmarkListClient({ initialBookmarks }: Props) {
           const shouldFetchMangaDetails = index === firstUnfetchedMangaIndex
 
           return (
-            <BookmarkListItem
+            <BookmarkItem
               index={index}
               key={key}
               mangaDetails={mangaDetailsMap.get(key)}
@@ -74,36 +90,31 @@ export default function BookmarkListClient({ initialBookmarks }: Props) {
             />
           )
         })}
-
         {isLoadingMoreBookmarks && <MangaCardSkeleton />}
       </ul>
 
-      <div className="w-full py-4 flex justify-center" ref={infiniteScrollTriggerRef} />
+      <div className="w-full p-2" ref={infiniteScrollTriggerRef} />
     </>
   )
 }
 
-function BookmarkListItem({ mangaDetails, index, onInView }: BookmarkListItemProps) {
+function BookmarkItem({ mangaDetails, index, onInView }: BookmarkItemProps) {
   const { ref } = useInView({
     rootMargin: '100px',
     threshold: 0.1,
     onChange: (inView) => inView && onInView?.(),
   })
 
-  if (mangaDetails?.manga) {
+  if (!mangaDetails?.manga) {
     return (
-      <MangaCard
-        index={index}
-        manga={mangaDetails.manga}
-        source={mapBookmarkSourceToSourceParam(mangaDetails.source)}
-      />
+      <div ref={ref}>
+        <MangaCardSkeleton />
+      </div>
     )
   }
 
   return (
-    <div ref={ref}>
-      <MangaCardSkeleton />
-    </div>
+    <MangaCard index={index} manga={mangaDetails.manga} source={mapBookmarkSourceToSourceParam(mangaDetails.source)} />
   )
 }
 
@@ -113,8 +124,4 @@ function EmptyBookmarks() {
       <p className="text-zinc-500">북마크가 없습니다.</p>
     </div>
   )
-}
-
-function generateBookmarkKey(bookmark: BookmarkWithSource): string {
-  return `${bookmark.source}:${bookmark.mangaId}`
 }

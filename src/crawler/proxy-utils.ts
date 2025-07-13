@@ -37,7 +37,11 @@ export function createCacheControl(options: {
   return parts.join(', ')
 }
 
-export async function createHealthCheckHandler(serviceName: string, checks?: Record<string, () => Promise<boolean>>) {
+export async function createHealthCheckHandler(
+  serviceName: string,
+  checks?: Record<string, () => Promise<boolean>>,
+  init?: ResponseInit,
+) {
   const healthChecks: Record<string, { status: 'healthy' | 'unhealthy'; error?: string }> = {}
 
   if (checks) {
@@ -58,12 +62,15 @@ export async function createHealthCheckHandler(serviceName: string, checks?: Rec
 
   const allHealthy = Object.values(healthChecks).every((check) => check.status === 'healthy')
 
-  return Response.json({
-    service: serviceName,
-    status: allHealthy ? 'healthy' : 'unhealthy',
-    timestamp: new Date().toISOString(),
-    checks: healthChecks,
-  })
+  return Response.json(
+    {
+      service: serviceName,
+      status: allHealthy ? 'healthy' : 'unhealthy',
+      timestamp: new Date().toISOString(),
+      checks: healthChecks,
+    },
+    init,
+  )
 }
 
 export function handleRouteError(error: unknown, request: NextRequest) {

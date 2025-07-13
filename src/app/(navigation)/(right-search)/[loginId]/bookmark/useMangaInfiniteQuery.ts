@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
-import { useMemo, useRef } from 'react'
+import { useRef } from 'react'
 
 import { BookmarkWithSource } from '@/app/api/bookmarks/route'
 import { QueryKeys } from '@/constants/query'
@@ -7,6 +7,7 @@ import { BookmarkSource } from '@/database/schema'
 import { Manga } from '@/types/manga'
 
 import { MANGA_DETAILS_BATCH_SIZE } from './constants'
+import { generateBookmarkKey } from './utils'
 
 export type MangaDetails = {
   manga?: Manga
@@ -31,11 +32,11 @@ const ERROR_MESSAGES = {
 export default function useMangaInfiniteQuery(bookmarks: BookmarkWithSource[]) {
   const fetchedItemsRef = useRef(new Set<string>())
 
-  const infiniteQuery = useInfiniteQuery({
+  return useInfiniteQuery({
     queryKey: QueryKeys.infiniteManga,
     queryFn: async () => {
       const unfetchedItems = bookmarks.filter((item) => {
-        const key = generateBookmarkKey(item.source, item.mangaId)
+        const key = generateBookmarkKey(item)
         return !fetchedItemsRef.current.has(key)
       })
 
@@ -46,7 +47,7 @@ export default function useMangaInfiniteQuery(bookmarks: BookmarkWithSource[]) {
       const batch = unfetchedItems.slice(0, MANGA_DETAILS_BATCH_SIZE)
 
       batch.forEach((item) => {
-        fetchedItemsRef.current.add(generateBookmarkKey(item.source, item.mangaId))
+        fetchedItemsRef.current.add(generateBookmarkKey(item))
       })
 
       return fetchMangaBatch(batch)
@@ -54,27 +55,6 @@ export default function useMangaInfiniteQuery(bookmarks: BookmarkWithSource[]) {
     initialPageParam: 0,
     getNextPageParam: (_lastPage, allPages) => allPages.length,
   })
-
-  const { data } = infiniteQuery
-
-  const mangaDetailsMap = useMemo(() => {
-    const map = new Map<string, MangaDetails>()
-
-    if (!data?.pages) return map
-
-    data.pages.forEach((page) => {
-      page.forEach((item) => {
-        map.set(generateBookmarkKey(item.source, item.mangaId), item)
-      })
-    })
-
-    return map
-  }, [data])
-
-  return {
-    ...infiniteQuery,
-    data: mangaDetailsMap,
-  }
 }
 
 function createMangaWithError(id: number, message: string): Manga {
@@ -139,10 +119,6 @@ async function fetchMangasFromHarpi(mangaIds: number[]): Promise<{ mangas: Manga
   }
 
   return response.json()
-}
-
-function generateBookmarkKey(source: BookmarkSource, mangaId: number): string {
-  return `${source}:${mangaId}`
 }
 
 async function processMangaItem(item: BookmarkWithSource, harpiMangas: Manga[]): Promise<MangaDetails> {

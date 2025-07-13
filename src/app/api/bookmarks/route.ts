@@ -1,11 +1,14 @@
 import { cookies } from 'next/headers'
 import { NextRequest } from 'next/server'
 
+import { createCacheControl } from '@/crawler/proxy-utils'
 import { BookmarkSource } from '@/database/schema'
 import selectBookmarks from '@/sql/selectBookmarks'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
 
 import { BookmarksQuerySchema } from './schema'
+
+export const revalidate = 10
 
 export type BookmarkWithSource = {
   mangaId: number
@@ -56,8 +59,19 @@ export async function GET(request: NextRequest) {
       }
     : null
 
-  return Response.json({
-    bookmarks: bookmarks.map((bookmark) => ({ ...bookmark, createdAt: bookmark.createdAt.getTime() })),
-    nextCursor,
-  } satisfies GETBookmarksResponse)
+  return Response.json(
+    {
+      bookmarks: bookmarks.map((bookmark) => ({ ...bookmark, createdAt: bookmark.createdAt.getTime() })),
+      nextCursor,
+    } satisfies GETBookmarksResponse,
+    {
+      headers: {
+        'Cache-Control': createCacheControl({
+          public: true,
+          sMaxAge: revalidate,
+          staleWhileRevalidate: revalidate,
+        }),
+      },
+    },
+  )
 }

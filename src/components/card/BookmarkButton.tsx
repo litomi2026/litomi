@@ -64,7 +64,9 @@ export default function BookmarkButton({ manga, source, className }: Props) {
       return new Set(oldBookmarks)
     })
 
-    queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteBookmarks })
+    if (isBookmarked) {
+      queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteBookmarks })
+    }
   }, [success, isBookmarked, queryClient, mangaId])
 
   function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
@@ -104,7 +106,7 @@ export function BookmarkButtonError({ error, reset }: ErrorBoundaryFallbackProps
 
   return (
     <button
-      className="flex items-center gap-1 border-2 w-fit border-red-800 rounded-lg p-1 px-2 transition grow"
+      className="flex justify-center items-center gap-1 border-2 w-fit border-red-800 rounded-lg p-1 px-2 transition grow"
       onClick={reset}
     >
       <IconBookmark className="w-4 text-red-700" />
