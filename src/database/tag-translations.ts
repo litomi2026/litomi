@@ -819,9 +819,9 @@ interface TagPattern {
 
 const TAG_PATTERNS: TagPattern[] = [
   { pattern: /^(\w+)_threesome$/, category: 'mixed' },
-  { pattern: /^(\w+)_group$/, category: 'mixed' },
-  { pattern: /^(\w+)_incest$/, category: 'mixed' },
-  { pattern: /^(\w+)_inseki$/, category: 'mixed' },
+  { pattern: /^(\w*)group$/, category: 'mixed' },
+  { pattern: /^(\w*)incest$/, category: 'mixed' },
+  { pattern: /^(\w*)inseki$/, category: 'mixed' },
 ]
 
 export function normalizeTagValue(value: string): string {
