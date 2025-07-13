@@ -9,10 +9,11 @@ import MangaCardPreviewImages from './MangaCardPreviewImages'
 const BLIND_TAG_VALUE_TO_LABEL: Record<string, string> = {
   bestiality: '수간',
   guro: '고어',
-  snuff: '스너프',
+  snuff: '고어',
   yaoi: '게이',
   males_only: '게이',
   scat: '스캇',
+  coprophagia: '스캇',
 }
 
 const BLIND_TAG_VALUES = Object.keys(BLIND_TAG_VALUE_TO_LABEL)

@@ -47,7 +47,7 @@ export default function LoginForm() {
       return
     }
 
-    toast.success(`${loginId} 계정으로 로그인됐어요`)
+    toast.success(`${loginId} 계정으로 로그인했어요`)
 
     if (userId) {
       amplitude.setUserId(userId)
