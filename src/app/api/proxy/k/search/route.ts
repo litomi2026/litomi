@@ -69,8 +69,9 @@ export async function GET(request: NextRequest) {
         headers: {
           'Cache-Control': createCacheControl({
             public: true,
+            maxAge: revalidate,
             sMaxAge: revalidate,
-            staleWhileRevalidate: 2 * revalidate,
+            staleWhileRevalidate: revalidate,
           }),
         },
       },
