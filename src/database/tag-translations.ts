@@ -525,7 +525,7 @@ const TAG_VALUE_TRANSLATION: Record<string, Multilingual> = {
   nipple_piercing: { en: 'nipple piercing', ko: '젖꼭지 피어싱', ja: '乳首ピアス', 'zh-CN': '乳头穿孔' },
   nipple_stimulation: { en: 'nipple stimulation', ko: '젖꼭지 자극', ja: '乳首刺激', 'zh-CN': '乳头刺激' },
   no_balls: { en: 'no balls', ko: '불알 없음', ja: '睾丸なし', 'zh-CN': '无睾丸' },
-  no_penetration: { en: 'no penetration', ko: '관통 없음' },
+  no_penetration: { en: 'no penetration', ko: '삽입 없음' },
   'non-h_imageset': { en: 'non-h imageset', ko: '건전 이미지셋', ja: '非Hイメージセット', 'zh-CN': '非H图集' },
   nose_fuck: { en: 'nose fuck', ko: '코 섹스', ja: '鼻姦', 'zh-CN': '鼻交' },
   nose_hook: { en: 'nose hook', ko: '코뚜레' },
