@@ -26,9 +26,20 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
   const [buttonRect, setButtonRect] = useState<DOMRect | null>(null)
+  const isDefaultSort = filters.sort === undefined || filters.sort === ''
 
   const handleFilterChange = useCallback(
-    (key: FilterKey, value: string) => setFilters((prev) => ({ ...prev, [key]: value })),
+    (key: FilterKey, value: string) => {
+      setFilters((prev) => {
+        const newFilters = { ...prev, [key]: value }
+
+        if (key === 'sort' && value !== '' && prev['next-id']) {
+          delete newFilters['next-id']
+        }
+
+        return newFilters
+      })
+    },
     [setFilters],
   )
 
@@ -270,18 +281,24 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
 
           {/* Next ID */}
           <div>
-            <label htmlFor="next-id">{FILTER_CONFIG['next-id'].label}</label>
+            <label aria-disabled={!isDefaultSort} className="aria-disabled:opacity-50" htmlFor="next-id">
+              {FILTER_CONFIG['next-id'].label}
+            </label>
             <input
-              className="w-full"
+              className="w-full disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={!isDefaultSort}
               id="next-id"
               min={FILTER_CONFIG['next-id'].min}
               onChange={(e) => handleFilterChange('next-id', e.target.value)}
               pattern="[0-9]*"
               placeholder={FILTER_CONFIG['next-id'].placeholder}
+              title={isDefaultSort ? '' : '기본순 정렬일 때만 사용할 수 있어요.'}
               type={FILTER_CONFIG['next-id'].type}
               value={filters['next-id'] ?? ''}
             />
-            <p className="mt-1 text-xs text-zinc-500">지정한 ID 이후의 결과만 표시합니다</p>
+            <p aria-disabled={!isDefaultSort} className="mt-1 text-xs text-zinc-500">
+              {isDefaultSort ? '지정한 ID 이후의 결과만 표시해요.' : '기본순 정렬일 때만 사용할 수 있어요.'}
+            </p>
           </div>
 
           {/* Skip */}
@@ -294,11 +311,11 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
               onChange={(e) => handleFilterChange('skip', e.target.value)}
               pattern="[0-9]*"
               placeholder={FILTER_CONFIG['skip'].placeholder}
-              title="건너뛰기 필터는 현재 지원하지 않습니다"
+              title="처음 N개의 결과를 건너뛰어요."
               type={FILTER_CONFIG['skip'].type}
               value={filters['skip'] ?? ''}
             />
-            <p className="mt-1 text-xs text-zinc-500">처음 N개의 결과를 건너뜁니다</p>
+            <p className="mt-1 text-xs text-zinc-500">처음 N개의 결과를 건너뛰어요.</p>
           </div>
 
           {/* Action buttons */}

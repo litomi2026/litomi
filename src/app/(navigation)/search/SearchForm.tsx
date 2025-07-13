@@ -194,6 +194,7 @@ function SearchForm({ className = '' }: Props) {
             aria-autocomplete="list"
             aria-controls="search-suggestions"
             aria-label="검색어 입력"
+            autoComplete="off"
             className="bg-transparent px-3 py-2 pr-8 text-foreground min-w-0 w-full placeholder-zinc-500 text-base
             focus:outline-none
             [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-cancel-button]:appearance-none
