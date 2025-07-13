@@ -30,4 +30,12 @@ test.describe('/', () => {
     const searchLink = page.getByRole('link', { name: /검색/i })
     await expect(searchLink).toHaveAttribute('href', '/search')
   })
+
+  test('연령 확인에 실패하면 제한 페이지로 이동한다', async ({ page }) => {
+    await page.getByRole('link', { name: '19세 미만 나가기' }).click()
+    await expect(page).toHaveURL(/\/deterrence/i)
+
+    const deterrenceText = page.locator('text=/본 웹사이트는 19세 이상의 성인 사용자만을 대상으로 합니다./i')
+    await expect(deterrenceText).toBeVisible()
+  })
 })
