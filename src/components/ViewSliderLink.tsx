@@ -9,13 +9,13 @@ const layoutMap = {
 
 const layouts = Object.entries(layoutMap)
 
-type OrderToggleProps = {
+type Props = {
   current: '' | ViewCookie
   hrefPrefix?: string
   hrefSuffix?: string
 }
 
-export default function ViewSliderLink({ current, hrefPrefix = '', hrefSuffix = '' }: OrderToggleProps) {
+export default function ViewSliderLink({ current, hrefPrefix = '', hrefSuffix = '' }: Readonly<Props>) {
   return (
     <div
       className="flex bg-zinc-900 border-2 p-1 rounded-xl text-zinc-400
