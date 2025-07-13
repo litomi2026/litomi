@@ -254,11 +254,13 @@ export class HarpiClient {
         // Matches: _123.ext, -123.ext, .123.ext
         /[_\-.](\d+)\.(\w+)$/,
         // Matches: _123_something.ext, -123-something.ext
-        /[_\-.](\d+)[_\-.].*\.(\w+)$/,
+        // Using [^.]* instead of .* to prevent backtracking past the extension
+        /[_\-.](\d+)[_\-.]([^.]*)\.(\w+)$/,
         // Matches: 123.ext at the beginning
         /^(\d+)\.(\w+)$/,
         // Matches: something123.ext (number right before extension)
-        /(\d+)\.(\w+)$/,
+        // Safe pattern: captures last sequence of digits before extension
+        /(\d+)(?=\.\w+$)/,
         // Matches: any sequence of digits in the filename
         /(\d+)/,
       ]

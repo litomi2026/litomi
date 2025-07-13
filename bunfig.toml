@@ -1,0 +1,11 @@
+[test]
+# Preload the test setup file before running tests
+preload = ["./src/test/setup.ts"]
+
+# Test configuration
+root = "./src"
+
+# Coverage settings
+coverage = true
+coverageReporter = ["text", "lcov"]
+coverageDirectory = "coverage" 
