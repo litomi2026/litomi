@@ -20,6 +20,10 @@ import LoginLink from '../LoginLink'
 
 const initialState = {} as Awaited<ReturnType<typeof toggleBookmark>>
 
+type BookmarkButtonSkeletonProps = {
+  className?: string
+}
+
 type Props = {
   manga: Manga
   source: SourceParam
@@ -115,7 +119,7 @@ export function BookmarkButtonError({ error, reset }: ErrorBoundaryFallbackProps
   )
 }
 
-export function BookmarkButtonSkeleton({ className = '' }: { className?: string }) {
+export function BookmarkButtonSkeleton({ className = '' }: Readonly<BookmarkButtonSkeletonProps>) {
   return (
     <button
       className={`flex justify-center items-center gap-1 border-2 w-fit rounded-lg p-1 px-2 bg-zinc-900 transition ${className}`}

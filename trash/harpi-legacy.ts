@@ -3,7 +3,7 @@ import { harpiTagMap } from '@/database/harpi-tag'
 import { Multilingual, normalizeTagValue, translateTagValue } from '@/database/tag-translations'
 import { Manga, Tag } from '@/types/manga'
 
-import mangas from '../database/harpi.json'
+import mangas from '../src/database/harpi.json'
 
 // Type for existing manga data in harpi.json
 type ExistingMangaData = {
