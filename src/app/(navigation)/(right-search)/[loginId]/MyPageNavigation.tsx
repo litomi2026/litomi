@@ -7,7 +7,7 @@ type Props = {
   loginId: string
 }
 
-export default function MyPageNavigation({ loginId }: Props) {
+export default function MyPageNavigation({ loginId }: Readonly<Props>) {
   const pathname = usePathname()
   const links = [
     { href: `/@${loginId}`, label: '게시글' },

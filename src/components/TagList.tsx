@@ -25,7 +25,7 @@ type Props = {
 
 export default memo(TagList)
 
-function TagList({ className, tags, clickable = false }: Props) {
+function TagList({ className, tags, clickable = false }: Readonly<Props>) {
   const searchParams = useSearchParams()
   const pathname = usePathname()
   const currentQuery = searchParams.get('query') ?? ''

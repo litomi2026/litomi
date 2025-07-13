@@ -32,7 +32,7 @@ export function MangaCardSkeleton({ reff }: { reff?: (node?: Element | null) => 
   return <li className="animate-fade-in rounded-xl bg-zinc-900 border-2 aspect-[3/4] w-full h-full" ref={reff} />
 }
 
-function MangaCard({ manga, index = 0, source, className = '', showSearchFromNextButton }: Props) {
+function MangaCard({ manga, index = 0, source, className = '', showSearchFromNextButton }: Readonly<Props>) {
   const { id, artists, characters, date, group, series, tags, title, type, language } = manga
   const viewerLink = getViewerLink(id, source)
 

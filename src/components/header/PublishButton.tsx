@@ -9,7 +9,7 @@ type Props = {
   className?: string
 }
 
-export default function PublishButton({ className = '' }: Props) {
+export default function PublishButton({ className = '' }: Readonly<Props>) {
   const [isOpened, setIsOpened] = useState(false)
 
   return (

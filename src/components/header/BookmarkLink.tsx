@@ -11,7 +11,7 @@ type Props = {
   className?: string
 }
 
-export default function BookmarkLink({ className }: Props) {
+export default function BookmarkLink({ className }: Readonly<Props>) {
   const { data: me } = useMeQuery()
   const loginId = me?.loginId
   const redirectURL = `/api/my?tab=${MyTab.Bookmark}`

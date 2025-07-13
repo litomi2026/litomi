@@ -7,7 +7,7 @@ type Props = {
   onLocationChange: (geolocation: { lat: number; lon: number }) => void
 }
 
-export default function PostGeolocationButton({ disabled, onLocationChange }: Props) {
+export default function PostGeolocationButton({ disabled, onLocationChange }: Readonly<Props>) {
   return (
     <PostBaseButton
       disabled={disabled}

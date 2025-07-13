@@ -12,7 +12,7 @@ type Props = {
   view: ViewCookie
 }
 
-export default function SearchResults({ view }: Props) {
+export default function SearchResults({ view }: Readonly<Props>) {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useSearchQuery()
   const mangas = data.pages.flatMap((page) => page.mangas)
 

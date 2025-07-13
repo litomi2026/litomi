@@ -23,7 +23,7 @@ type Props = {
   filters: GETProxyKSearchRequest
 }
 
-export default function ActiveFilters({ filters }: Props) {
+export default function ActiveFilters({ filters }: Readonly<Props>) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()

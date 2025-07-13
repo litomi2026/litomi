@@ -8,7 +8,7 @@ type Props = {
   className: string
 }
 
-export default function Squircle({ src, fill, children, className = '', textClassName = '' }: Props) {
+export default function Squircle({ src, fill, children, className = '', textClassName = '' }: Readonly<Props>) {
   return (
     <div className={`${styles.userImg} ${className}`}>
       <svg className="overflow-hidden rounded-[40%] fill-zinc-700" viewBox="0 0 88 88">

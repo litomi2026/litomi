@@ -12,7 +12,7 @@ type Props = {
 
 export default memo(SearchSuggestionDropdown)
 
-function SearchSuggestionDropdown({ suggestions, selectedIndex, showHeader, onSelect, onMouseEnter }: Props) {
+function SearchSuggestionDropdown({ suggestions, selectedIndex, showHeader, onSelect, onMouseEnter }: Readonly<Props>) {
   const dropdownRef = useRef<HTMLDivElement>(null)
   const [dropUp, setDropUp] = useState(false)
 

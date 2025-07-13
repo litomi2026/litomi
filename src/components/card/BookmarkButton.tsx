@@ -26,7 +26,7 @@ type Props = {
   className?: string
 }
 
-export default function BookmarkButton({ manga, source, className }: Props) {
+export default function BookmarkButton({ manga, source, className }: Readonly<Props>) {
   const { id: mangaId } = manga
   const { data: me } = useMeQuery()
   const { data: bookmarks } = useBookmarksQuery()

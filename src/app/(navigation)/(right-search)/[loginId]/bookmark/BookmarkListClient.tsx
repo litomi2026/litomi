@@ -22,7 +22,7 @@ interface Props {
   initialBookmarks: BookmarkWithSource[]
 }
 
-export default function BookmarkList({ initialBookmarks }: Props) {
+export default function BookmarkList({ initialBookmarks }: Readonly<Props>) {
   const {
     data: bookmarksData,
     fetchNextPage: fetchMoreBookmarks,

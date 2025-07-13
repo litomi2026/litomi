@@ -23,7 +23,7 @@ type Props = {
   className?: string
 }
 
-export default function LogoutButton({ className = '' }: Props) {
+export default function LogoutButton({ className = '' }: Readonly<Props>) {
   const [{ error, success, status }, formAction, pending] = useActionState(logout, initialState)
   const queryClient = useQueryClient()
   const { data: me } = useMeQuery()

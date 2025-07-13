@@ -7,7 +7,7 @@ type Props = PropsWithChildren & {
   className?: string
 }
 
-export default function TagLabel({ children, className = '' }: Props) {
+export default function TagLabel({ children, className = '' }: Readonly<Props>) {
   const { pending } = useLinkStatus()
 
   return (

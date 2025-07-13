@@ -15,7 +15,7 @@ type Props = {
 
 export default memo(SlideshowButton)
 
-function SlideshowButton({ maxImageIndex, offset, onIntervalChange }: Props) {
+function SlideshowButton({ maxImageIndex, offset, onIntervalChange }: Readonly<Props>) {
   const getImageIndex = useImageIndexStore((state) => state.getImageIndex)
   const [slideshowInterval, setSlideshowInterval] = useState(0)
   const [isOpened, setIsOpened] = useState(false)

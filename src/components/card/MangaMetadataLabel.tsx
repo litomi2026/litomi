@@ -3,7 +3,7 @@ import { PropsWithChildren } from 'react'
 
 type Props = PropsWithChildren
 
-export default function MangaMetadataLabel({ children }: Props) {
+export default function MangaMetadataLabel({ children }: Readonly<Props>) {
   const { pending } = useLinkStatus()
 
   return (

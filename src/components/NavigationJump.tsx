@@ -11,7 +11,7 @@ type Props = {
   hrefSuffix?: string
 }
 
-export default function NavigationJump({ totalPages, hrefPrefix = '', hrefSuffix = '' }: Props) {
+export default function NavigationJump({ totalPages, hrefPrefix = '', hrefSuffix = '' }: Readonly<Props>) {
   const inputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 

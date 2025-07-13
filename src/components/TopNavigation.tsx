@@ -10,7 +10,7 @@ type Props = {
   className?: string
 }
 
-export default function TopNavigation({ children, className }: Props) {
+export default function TopNavigation({ children, className }: Readonly<Props>) {
   return (
     <nav className={className} role="navigation">
       <div className="flex items-center justify-between gap-2 px-2 sm:hidden">

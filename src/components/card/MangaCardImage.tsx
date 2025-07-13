@@ -26,7 +26,7 @@ type Props = {
   className?: string
 }
 
-export default function MangaCardImage({ manga, href, index, className = '' }: Props) {
+export default function MangaCardImage({ manga, href, index, className = '' }: Readonly<Props>) {
   const { count, tags, images } = manga
 
   const censoredTags = useMemo(

@@ -16,7 +16,7 @@ type Props = {
 
 export default memo(Navigation)
 
-function Navigation({ className = '', currentPage, totalPages, hrefPrefix = '', hrefSuffix = '' }: Props) {
+function Navigation({ className = '', currentPage, totalPages, hrefPrefix = '', hrefSuffix = '' }: Readonly<Props>) {
   let startPage = Math.max(1, currentPage - Math.floor(VISIBLE_PAGES / 2))
   let endPage = startPage + VISIBLE_PAGES - 1
 

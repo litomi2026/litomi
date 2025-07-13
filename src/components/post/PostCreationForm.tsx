@@ -17,7 +17,12 @@ type Props = {
   isReply?: boolean
 }
 
-export default function PostCreationForm({ className = '', placeholder, isReply, buttonText = '게시하기' }: Props) {
+export default function PostCreationForm({
+  className = '',
+  placeholder,
+  isReply,
+  buttonText = '게시하기',
+}: Readonly<Props>) {
   const [content, setContent] = useState('')
   const [hasFocusedBefore, setHasFocusedBefore] = useState(false)
 

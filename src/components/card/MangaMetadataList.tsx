@@ -16,7 +16,7 @@ type Props = {
 
 export default memo(MangaMetadataList)
 
-function MangaMetadataList({ label, values, filterType, className = '' }: Props) {
+function MangaMetadataList({ label, values, filterType, className = '' }: Readonly<Props>) {
   const searchParams = useSearchParams()
   const pathname = usePathname()
   const currentQuery = searchParams.get('query') ?? ''

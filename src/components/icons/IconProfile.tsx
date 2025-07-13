@@ -6,7 +6,7 @@ interface Props extends ComponentProps<'svg'> {
   selected?: boolean
 }
 
-export default function IconProfile({ selected, ...props }: Props) {
+export default function IconProfile({ selected, ...props }: Readonly<Props>) {
   return (
     <svg {...props} fill="currentColor" viewBox="0 0 24 24">
       {selected ? (

@@ -11,7 +11,7 @@ type Props = {
   className?: string
 }
 
-export default function SearchFromHereButton({ mangaId, className = '' }: Props) {
+export default function SearchFromHereButton({ mangaId, className = '' }: Readonly<Props>) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()

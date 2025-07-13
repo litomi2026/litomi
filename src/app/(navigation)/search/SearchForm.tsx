@@ -20,7 +20,7 @@ type Props = {
 
 export default memo(SearchForm)
 
-function SearchForm({ className = '' }: Props) {
+function SearchForm({ className = '' }: Readonly<Props>) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()

@@ -3,7 +3,7 @@ type Props = {
   selected?: boolean
 }
 
-export default function IconLogin({ className, selected }: Props) {
+export default function IconLogin({ className, selected }: Readonly<Props>) {
   return (
     <svg
       className={className}

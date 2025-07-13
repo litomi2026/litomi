@@ -8,7 +8,7 @@ import { SearchParamKey } from '@/constants/storage'
 
 type Props = Omit<ComponentProps<typeof Link>, 'href'>
 
-export default function LoginLink({ className = '', children, ...props }: Props) {
+export default function LoginLink({ className = '', children, ...props }: Readonly<Props>) {
   const pathname = usePathname()
 
   return (

@@ -11,7 +11,7 @@ type Props = {
   referredPost: TReferedPost
 }
 
-export default function ReferredPostCard({ referredPost }: Props) {
+export default function ReferredPostCard({ referredPost }: Readonly<Props>) {
   const { createdAt, updatedAt, imageURLs, author, content, id } = referredPost
 
   return (

@@ -27,7 +27,7 @@ type Props = {
   source: SourceParam
 }
 
-export default function ImageViewer({ manga, source }: Props) {
+export default function ImageViewer({ manga, source }: Readonly<Props>) {
   const [showController, setShowController] = useState(false)
   const { navMode, setNavMode } = useNavigationModeStore()
   const { screenFit, setScreenFit } = useScreenFitStore()

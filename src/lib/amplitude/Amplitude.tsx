@@ -8,7 +8,7 @@ type Props = {
   apiKey: string
 }
 
-export default function Amplitude({ apiKey }: Props) {
+export default function Amplitude({ apiKey }: Readonly<Props>) {
   useEffect(() => {
     if (apiKey) {
       amplitude.init(apiKey, { minIdLength: 1, autocapture: { elementInteractions: true } })

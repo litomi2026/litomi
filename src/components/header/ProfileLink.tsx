@@ -10,7 +10,7 @@ type Props = {
   className?: string
 }
 
-export default function ProfileLink({ className }: Props) {
+export default function ProfileLink({ className }: Readonly<Props>) {
   const { data: me } = useMeQuery()
   const loginId = me?.loginId
   const redirectURL = '/api/my'

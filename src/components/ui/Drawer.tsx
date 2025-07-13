@@ -7,7 +7,7 @@ type Props = {
   className?: string
 }
 
-export default function Drawer({ className = '', children }: Props) {
+export default function Drawer({ className = '', children }: Readonly<Props>) {
   const [isOpened, setIsOpened] = useState(false)
 
   function openDrawer() {

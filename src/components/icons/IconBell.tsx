@@ -5,7 +5,7 @@ type Props = {
   selected?: boolean
 }
 
-export default function IconBell({ className, selected }: Props) {
+export default function IconBell({ className, selected }: Readonly<Props>) {
   return (
     <svg aria-selected={selected} className={className} fill="currentColor" viewBox="0 0 24 24">
       {selected ? (

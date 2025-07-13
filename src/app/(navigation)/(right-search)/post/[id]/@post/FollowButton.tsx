@@ -13,7 +13,7 @@ type Props = {
   }
 }
 
-export default function FollowButton({ leader }: Props) {
+export default function FollowButton({ leader }: Readonly<Props>) {
   const isFollowing = false // Replace with actual logic to check if the user is following the leader
   const { data: me } = useMeQuery()
 

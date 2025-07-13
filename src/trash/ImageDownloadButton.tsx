@@ -34,7 +34,7 @@ const saveAs = (blob: Blob, filename: string) => {
   URL.revokeObjectURL(url)
 }
 
-export default function ImageDownloadButton({ manga, className = '', ...props }: Props) {
+export default function ImageDownloadButton({ manga, className = '', ...props }: Readonly<Props>) {
   const handleDownload = useCallback(async () => {
     const { id, images, cdn, title } = manga
     const { default: JSZip } = await import('jszip')

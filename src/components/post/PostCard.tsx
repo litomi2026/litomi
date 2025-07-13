@@ -20,7 +20,7 @@ type Props = {
   className?: string
 }
 
-export default function PostCard({ post, isThread, className = '' }: Props) {
+export default function PostCard({ post, isThread, className = '' }: Readonly<Props>) {
   const imageURLs = post.imageURLs
   const author = post.author
   const referredPost = post.referredPost

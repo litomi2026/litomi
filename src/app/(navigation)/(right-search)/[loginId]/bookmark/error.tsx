@@ -11,7 +11,7 @@ type Props = {
   reset: () => void
 }
 
-export default function ErrorPage({ error, reset }: Props) {
+export default function ErrorPage({ error, reset }: Readonly<Props>) {
   const cooldown = useCooldown()
   const pathname = usePathname()
   const searchParams = useSearchParams()
