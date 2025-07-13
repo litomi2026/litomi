@@ -15,7 +15,6 @@ import { Manga } from '@/types/manga'
 import { mapSourceParamToBookmarkSource, SourceParam } from '@/utils/param'
 
 import IconBookmark from '../icons/IconBookmark'
-import IconSpinner from '../icons/IconSpinner'
 import LoginLink from '../LoginLink'
 
 const initialState = {} as Awaited<ReturnType<typeof toggleBookmark>>
@@ -90,13 +89,12 @@ export default function BookmarkButton({ manga, source, className }: Readonly<Pr
       <input name="mangaId" type="hidden" value={mangaId} />
       <input name="source" type="hidden" value={mapSourceParamToBookmarkSource(source)} />
       <button
-        aria-disabled={!me}
-        className="flex justify-center items-center gap-1 w-full h-full"
+        className="flex justify-center items-center gap-1 w-full h-full transition disabled:bg-zinc-900 disabled:cursor-not-allowed"
         disabled={isPending}
         onClick={handleClick}
         type="submit"
       >
-        {isPending ? <IconSpinner className="w-4" /> : <IconBookmark className="w-4" selected={isIconSelected} />}
+        <IconBookmark className="w-4" selected={isIconSelected} />
         <span>북마크</span>
       </button>
     </form>
@@ -126,7 +124,7 @@ export function BookmarkButtonSkeleton({ className = '' }: Readonly<BookmarkButt
       disabled
     >
       <IconBookmark className="w-4" />
-      <span className="hidden md:block">북마크</span>
+      <span>북마크</span>
     </button>
   )
 }
