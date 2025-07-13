@@ -275,7 +275,7 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Readonly<Props>) {
   )
 }
 
-function TouchViewerItem({ offset, manga, pageView }: TouchViewerItemProps) {
+function TouchViewerItem({ offset, manga, pageView }: Readonly<TouchViewerItemProps>) {
   const currentIndex = useImageIndexStore((state) => state.imageIndex)
   const imageIndex = currentIndex + offset
   const brightness = useBrightnessStore((state) => state.brightness)
