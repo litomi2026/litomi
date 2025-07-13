@@ -1,4 +1,4 @@
-import { and, desc, or, sql } from 'drizzle-orm'
+import { and, desc, or, SQL, sql } from 'drizzle-orm'
 
 import { db } from '@/database/drizzle'
 import { bookmarkTable } from '@/database/schema'
@@ -17,14 +17,14 @@ type Params = {
 }
 
 export default async function selectBookmarks({ userId, limit, cursorId, cursorTime }: Params): Promise<BookmarkRow[]> {
-  const conditions = [sql`${bookmarkTable.userId} = ${userId}`]
+  const conditions: (SQL | undefined)[] = [sql`${bookmarkTable.userId} = ${userId}`]
 
   if (cursorId && cursorTime) {
     conditions.push(
       or(
         sql`${bookmarkTable.createdAt} < ${cursorTime}`,
         and(sql`${bookmarkTable.createdAt} = ${cursorTime}`, sql`${bookmarkTable.mangaId} < ${cursorId}`),
-      )!,
+      ),
     )
   } else if (cursorTime) {
     conditions.push(sql`${bookmarkTable.createdAt} < ${cursorTime}`)
