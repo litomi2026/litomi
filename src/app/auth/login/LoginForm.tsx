@@ -23,6 +23,7 @@ export default function LoginForm() {
   const queryClient = useQueryClient()
   const searchParams = useSearchParams()
   const userId = data?.userId
+  const loginId = data?.loginId
 
   function resetId() {
     const loginIdInput = formRef.current?.loginId as HTMLInputElement
@@ -42,19 +43,21 @@ export default function LoginForm() {
   }, [error])
 
   useEffect(() => {
-    if (success) {
-      toast.success('로그인 성공')
-
-      if (userId) {
-        amplitude.setUserId(userId)
-        amplitude.track('login', { userId })
-      }
-
-      queryClient
-        .invalidateQueries({ queryKey: QueryKeys.me, refetchType: 'all' })
-        .then(() => router.replace(searchParams.get(SearchParamKey.REDIRECT_URL) ?? '/'))
+    if (!success) {
+      return
     }
-  }, [queryClient, router, searchParams, success, userId])
+
+    toast.success(`${loginId} 계정으로 로그인됐어요`)
+
+    if (userId) {
+      amplitude.setUserId(userId)
+      amplitude.track('login', { userId })
+    }
+
+    queryClient
+      .invalidateQueries({ queryKey: QueryKeys.me, refetchType: 'all' })
+      .then(() => router.replace(searchParams.get(SearchParamKey.REDIRECT_URL) ?? '/'))
+  }, [queryClient, router, searchParams, success, userId, loginId])
 
   return (
     <form

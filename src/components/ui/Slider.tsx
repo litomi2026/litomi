@@ -21,7 +21,7 @@ function Slider({
   step = 1,
   className = '',
   ...rest
-}: Props) {
+}: Readonly<Props>) {
   const [value, setValue] = useState<number>(controlledValue !== undefined ? controlledValue : min)
   const sliderRef = useRef<HTMLDivElement>(null)
 

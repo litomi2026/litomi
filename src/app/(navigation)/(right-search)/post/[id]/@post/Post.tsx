@@ -19,7 +19,7 @@ type Props = {
   post: TPost
 }
 
-export default function Post({ post }: Props) {
+export default function Post({ post }: Readonly<Props>) {
   const author = post.author
   const referredPost = post.referredPost
   const isMyPost = false // userId === author?.id

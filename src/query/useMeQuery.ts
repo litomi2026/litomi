@@ -1,7 +1,7 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { useEffect } from 'react'
 
-import { ResponseApiMe } from '@/app/api/me/route'
+import { GETMeResponse } from '@/app/api/me/route'
 import { QueryKeys } from '@/constants/query'
 import amplitude from '@/lib/amplitude/lazy'
 
@@ -26,12 +26,16 @@ export default function useMeQuery() {
   return result
 }
 
-async function fetchMe(): Promise<ResponseApiMe | null> {
+async function fetchMe(): Promise<GETMeResponse | null> {
   const response = await fetch('/api/me')
+
+  if ([401, 404].includes(response.status)) {
+    return null
+  }
+
   if (!response.ok) {
-    if (response.status === 401) return null
-    if (response.status === 404) return null
     throw new Error('GET /api/me 요청이 실패했어요.')
   }
+
   return response.json()
 }

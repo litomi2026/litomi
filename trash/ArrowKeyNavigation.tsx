@@ -7,7 +7,7 @@ type Props = {
   i: number
 }
 
-export default function ArrowKeyNavigation({ i }: Props) {
+export default function ArrowKeyNavigation({ i }: Readonly<Props>) {
   const router = useRouter()
 
   useEffect(() => {

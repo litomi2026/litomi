@@ -17,6 +17,9 @@ export type Manga = {
   likeAnonymous?: number
   viewCount?: number
   rating?: number
+
+  // Harpi
+  harpiId?: string
 }
 
 export type Tag = {

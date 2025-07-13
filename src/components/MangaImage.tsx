@@ -13,7 +13,7 @@ type Props = ImgHTMLAttributes<HTMLImageElement> & {
 
 export default memo(MangaImage)
 
-function MangaImage({ manga, imageIndex, imageRef, ...props }: Props) {
+function MangaImage({ manga, imageIndex, imageRef, ...props }: Readonly<Props>) {
   const { images, cdn, id } = manga
   const imagePath = images[imageIndex]
 

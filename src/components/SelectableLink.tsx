@@ -13,7 +13,7 @@ type Props = ComponentProps<typeof Link> & {
 
 export default memo(SelectableLink)
 
-function SelectableLink({ className, iconClassName, Icon, children, href, hrefMatch }: Props) {
+function SelectableLink({ className, iconClassName, Icon, children, href, hrefMatch }: Readonly<Props>) {
   const pathname = usePathname()
   const isSelected = hrefMatch ? pathname.includes(hrefMatch) : pathname === href.toString()
 

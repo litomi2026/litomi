@@ -13,7 +13,7 @@ const schema = z.object({
   source: z.enum(BookmarkSource),
 })
 
-export default async function bookmarkManga(_prevState: unknown, formData: FormData) {
+export default async function toggleBookmark(_prevState: unknown, formData: FormData) {
   const cookieStore = await cookies()
   const userId = await getUserIdFromAccessToken(cookieStore)
   if (!userId) return { status: 401, error: '로그인 정보가 없거나 만료됐어요.' }

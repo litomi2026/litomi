@@ -5,7 +5,7 @@ interface Props extends Omit<ComponentProps<'button'>, 'onToggle'> {
   onToggle?: (enabled: boolean) => void
 }
 
-export default function ToggleButton({ className = '', enabled, onToggle, ...props }: Props) {
+export default function ToggleButton({ className = '', enabled, onToggle, ...props }: Readonly<Props>) {
   return (
     <button
       {...props}

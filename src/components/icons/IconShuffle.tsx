@@ -2,7 +2,7 @@ import { ComponentProps } from 'react'
 
 type Props = ComponentProps<'svg'>
 
-export default function IconShuffle(props: Props) {
+export default function IconShuffle(props: Readonly<Props>) {
   return (
     <svg
       fill="none"

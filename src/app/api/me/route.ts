@@ -6,7 +6,7 @@ import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
 
-export type ResponseApiMe = {
+export type GETMeResponse = {
   id: number
   loginId: string
   nickname: string

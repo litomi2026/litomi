@@ -11,7 +11,7 @@ type Props = {
   apiKey: string
 }
 
-export default function AmplitudeLazy({ apiKey }: Props) {
+export default function AmplitudeLazy({ apiKey }: Readonly<Props>) {
   const mounted = useMounted()
 
   if (!mounted) {

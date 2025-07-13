@@ -38,7 +38,7 @@ type VirtualItemProps = {
 
 export default memo(ScrollViewer)
 
-function ScrollViewer({ manga, onClick, screenFit, pageView }: Props) {
+function ScrollViewer({ manga, onClick, screenFit, pageView }: Readonly<Props>) {
   const { images } = manga
   const parentRef = useRef<HTMLDivElement>(null)
   const setVirtualizer = useVirtualizerStore((state) => state.setVirtualizer)

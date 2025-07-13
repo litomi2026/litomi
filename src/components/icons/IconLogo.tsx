@@ -7,6 +7,6 @@ type Props = {
   priority?: boolean
 }
 
-export default function IconLogo({ className, priority }: Props) {
+export default function IconLogo({ className, priority }: Readonly<Props>) {
   return <Image alt="로고" className={className} priority={priority} src={logoImage} />
 }

@@ -9,7 +9,7 @@ type Props = {
   onKeyDown?: () => void
 }
 
-export default function KeybordShortcut({ withAltKey, children, keyCode, onKeyDown }: Props) {
+export default function KeybordShortcut({ withAltKey, children, keyCode, onKeyDown }: Readonly<Props>) {
   useEffect(() => {
     function downHandler({ code, altKey }: KeyboardEvent) {
       if ((!withAltKey || altKey) && keyCode === code) {

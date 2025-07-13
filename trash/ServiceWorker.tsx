@@ -9,7 +9,7 @@ type Props = {
   path: string
 }
 
-export default function ServiceWorker({ path }: Props) {
+export default function ServiceWorker({ path }: Readonly<Props>) {
   const setIsServiceWorkerRegistered = useServiceWorkerStore((store) => store.setIsServiceWorkerRegistered)
 
   useEffect(() => {

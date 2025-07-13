@@ -7,7 +7,7 @@ import { Manga } from '@/types/manga'
 import { fetchImageWithRetry } from '@/utils/browser'
 import { getImageSrc } from '@/utils/manga'
 
-import { IconDownload } from '../components/icons/IconDownload'
+import { IconDownload } from '../src/components/icons/IconDownload'
 
 const MAX_ZIP_SIZE = 50_000_000 // 50MB
 
@@ -34,7 +34,7 @@ const saveAs = (blob: Blob, filename: string) => {
   URL.revokeObjectURL(url)
 }
 
-export default function ImageDownloadButton({ manga, className = '', ...props }: Props) {
+export default function ImageDownloadButton({ manga, className = '', ...props }: Readonly<Props>) {
   const handleDownload = useCallback(async () => {
     const { id, images, cdn, title } = manga
     const { default: JSZip } = await import('jszip')

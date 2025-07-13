@@ -8,7 +8,7 @@ type Props = {
   disabled?: boolean
 }
 
-export default function SourceTooltip({ source, disabled }: Props) {
+export default function SourceTooltip({ source, disabled }: Readonly<Props>) {
   return (
     <TooltipPopover disabled={disabled} position="bottom" type="tooltip">
       <div aria-disabled={disabled} className="flex items-center gap-1 aria-disabled:text-zinc-600">

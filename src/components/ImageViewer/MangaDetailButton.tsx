@@ -16,7 +16,7 @@ type Props = {
 
 export default memo(MangaDetailButton)
 
-function MangaDetailButton({ manga, source }: Props) {
+function MangaDetailButton({ manga, source }: Readonly<Props>) {
   const { title, artists, group, series, characters, type, tags, date, language } = manga
   const [isOpened, setIsOpened] = useState(false)
 

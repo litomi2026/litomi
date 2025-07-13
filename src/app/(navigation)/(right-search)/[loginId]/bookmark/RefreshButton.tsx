@@ -6,7 +6,7 @@ type Props = {
   className?: string
 }
 
-export default function RefreshButton({ className }: Props) {
+export default function RefreshButton({ className }: Readonly<Props>) {
   return (
     <button aria-label="새로고침" onClick={() => window.location.reload()}>
       <IconReload className={className} />

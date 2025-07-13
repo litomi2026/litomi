@@ -6,7 +6,7 @@ interface Props extends ComponentProps<'svg'> {
   selected?: boolean
 }
 
-export default function IconBookmark({ selected, ...props }: Props) {
+export default function IconBookmark({ selected, ...props }: Readonly<Props>) {
   return (
     <svg
       {...props}

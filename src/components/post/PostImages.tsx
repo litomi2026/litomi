@@ -24,7 +24,7 @@ type Props = {
   initialPost: TPost
 }
 
-export default function PostImages({ className = '', urls }: Props) {
+export default function PostImages({ className = '', urls }: Readonly<Props>) {
   const postImageURLs = urls.slice(0, 4)
   const length = postImageURLs.length
 

@@ -25,7 +25,7 @@ export default function Modal({
   onClose,
   showCloseButton,
   showDragButton,
-}: Props) {
+}: Readonly<Props>) {
   function closeModal(e: MouseEvent) {
     e.stopPropagation()
     onClose?.()

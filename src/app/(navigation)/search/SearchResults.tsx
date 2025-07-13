@@ -12,7 +12,7 @@ type Props = {
   view: ViewCookie
 }
 
-export default function SearchResults({ view }: Props) {
+export default function SearchResults({ view }: Readonly<Props>) {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useSearchQuery()
   const mangas = data.pages.flatMap((page) => page.mangas)
 
@@ -43,7 +43,7 @@ export default function SearchResults({ view }: Props) {
               manga={manga}
             />
           ) : (
-            <MangaCard index={i} key={manga.id} manga={manga} showSearchFromHereButton source={SourceParam.K_HENTAI} />
+            <MangaCard index={i} key={manga.id} manga={manga} showSearchFromNextButton source={SourceParam.K_HENTAI} />
           ),
         )}
         {isFetchingNextPage && <MangaCardSkeleton />}

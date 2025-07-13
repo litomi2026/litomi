@@ -1,0 +1,2 @@
+export const BOOKMARKS_PER_PAGE = 20
+export const MANGA_DETAILS_BATCH_SIZE = 10

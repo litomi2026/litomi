@@ -11,7 +11,7 @@ type Props = {
 
 export default memo(ImageSlider)
 
-function ImageSlider({ maxImageIndex }: Props) {
+function ImageSlider({ maxImageIndex }: Readonly<Props>) {
   const { imageIndex, setImageIndex } = useImageIndexStore()
   const pageView = usePageViewStore((state) => state.pageView)
   const getVirtualizer = useVirtualizerStore((state) => state.getVirtualizer)

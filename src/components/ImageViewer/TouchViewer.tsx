@@ -43,7 +43,7 @@ type TouchViewerItemProps = {
 
 export default memo(TouchViewer)
 
-function TouchViewer({ manga, onClick, screenFit, pageView }: Props) {
+function TouchViewer({ manga, onClick, screenFit, pageView }: Readonly<Props>) {
   const { images } = manga
   const getTouchOrientation = useTouchOrientationStore((state) => state.getTouchOrientation)
   const getBrightness = useBrightnessStore((state) => state.getBrightness)

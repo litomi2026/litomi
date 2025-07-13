@@ -14,6 +14,14 @@ export class ResponseError extends Error {
 }
 
 export async function handleResponseError<T>(response: Response) {
+  if (!response.ok) {
+    throw new ResponseError(
+      (await response.text()) || '오류가 발생했어요.',
+      response.statusText || 'UNKNOWN_ERROR',
+      response.status,
+    )
+  }
+
   const data = (await response.json()) as ApiResponse<T>
 
   if (data.error) {

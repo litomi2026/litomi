@@ -7,7 +7,7 @@ interface Props extends ComponentProps<typeof Link> {
   children?: React.ReactNode
 }
 
-export default function LinkScrollToTop({ children, ...props }: Props) {
+export default function LinkScrollToTop({ children, ...props }: Readonly<Props>) {
   return (
     <Link {...props} onClick={() => window.scrollTo({ top: 0 })}>
       {children}

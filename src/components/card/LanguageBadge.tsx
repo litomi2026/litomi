@@ -51,7 +51,7 @@ const LANGUAGE_CODES: Record<string, string> = {
   rewrite: 'R',
 }
 
-export default function LanguageBadge({ language, className = '' }: Props) {
+export default function LanguageBadge({ language, className = '' }: Readonly<Props>) {
   const searchParams = useSearchParams()
   const currentQuery = searchParams.get('query') ?? ''
 

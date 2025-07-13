@@ -1,9 +1,11 @@
 import { z } from 'zod/v4'
 
-export const MangaSearchSchema = z
+import { ViewCookie } from '@/utils/param'
+
+export const GETProxyKSearchSchema = z
   .object({
     query: z.string().trim().max(200).optional(),
-    view: z.enum(['img', 'card']).default('card'),
+    view: z.enum(ViewCookie).default(ViewCookie.CARD),
     sort: z.enum(['random', 'id_asc', 'popular']).optional(),
     'min-view': z.coerce.number().int().min(0).optional(),
     'max-view': z.coerce.number().int().min(0).optional(),
@@ -30,4 +32,4 @@ export const MangaSearchSchema = z
     { error: '최소값은 최대값보다 클 수 없습니다.' },
   )
 
-export type MangaSearch = z.infer<typeof MangaSearchSchema>
+export type GETProxyKSearchRequest = z.infer<typeof GETProxyKSearchSchema>

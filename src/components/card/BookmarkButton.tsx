@@ -6,7 +6,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useActionState, useEffect } from 'react'
 import { toast } from 'sonner'
 
-import bookmarkManga from '@/app/(navigation)/(right-search)/[loginId]/bookmark/action'
+import toggleBookmark from '@/app/(navigation)/(right-search)/[loginId]/bookmark/action'
 import { QueryKeys } from '@/constants/query'
 import useActionErrorEffect from '@/hook/useActionErrorEffect'
 import useBookmarksQuery from '@/query/useBookmarksQuery'
@@ -18,7 +18,11 @@ import IconBookmark from '../icons/IconBookmark'
 import IconSpinner from '../icons/IconSpinner'
 import LoginLink from '../LoginLink'
 
-const initialState = {} as Awaited<ReturnType<typeof bookmarkManga>>
+const initialState = {} as Awaited<ReturnType<typeof toggleBookmark>>
+
+type BookmarkButtonSkeletonProps = {
+  className?: string
+}
 
 type Props = {
   manga: Manga
@@ -26,11 +30,11 @@ type Props = {
   className?: string
 }
 
-export default function BookmarkButton({ manga, source, className }: Props) {
+export default function BookmarkButton({ manga, source, className }: Readonly<Props>) {
   const { id: mangaId } = manga
   const { data: me } = useMeQuery()
   const { data: bookmarks } = useBookmarksQuery()
-  const [{ error, success, isBookmarked, status }, formAction, isPending] = useActionState(bookmarkManga, initialState)
+  const [{ error, success, isBookmarked, status }, formAction, isPending] = useActionState(toggleBookmark, initialState)
   const isIconSelected = bookmarks?.has(mangaId)
   const queryClient = useQueryClient()
 
@@ -47,19 +51,25 @@ export default function BookmarkButton({ manga, source, className }: Props) {
   })
 
   useEffect(() => {
-    if (success) {
-      toast.success(isBookmarked ? '북마크를 추가했어요' : '북마크를 삭제했어요')
+    if (!success) {
+      return
+    }
 
-      queryClient.setQueryData<Set<number>>(QueryKeys.bookmarks, (oldBookmarks) => {
-        if (!oldBookmarks) {
-          return new Set([mangaId])
-        } else if (isBookmarked) {
-          oldBookmarks.add(mangaId)
-        } else {
-          oldBookmarks.delete(mangaId)
-        }
-        return new Set(oldBookmarks)
-      })
+    toast.success(isBookmarked ? '북마크를 추가했어요' : '북마크를 삭제했어요')
+
+    queryClient.setQueryData<Set<number>>(QueryKeys.bookmarks, (oldBookmarks) => {
+      if (!oldBookmarks) {
+        return new Set([mangaId])
+      } else if (isBookmarked) {
+        oldBookmarks.add(mangaId)
+      } else {
+        oldBookmarks.delete(mangaId)
+      }
+      return new Set(oldBookmarks)
+    })
+
+    if (isBookmarked) {
+      queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteBookmarks })
     }
   }, [success, isBookmarked, queryClient, mangaId])
 
@@ -100,7 +110,7 @@ export function BookmarkButtonError({ error, reset }: ErrorBoundaryFallbackProps
 
   return (
     <button
-      className="flex items-center gap-1 border-2 w-fit border-red-800 rounded-lg p-1 px-2 transition grow"
+      className="flex justify-center items-center gap-1 border-2 w-fit border-red-800 rounded-lg p-1 px-2 transition grow"
       onClick={reset}
     >
       <IconBookmark className="w-4 text-red-700" />
@@ -109,7 +119,7 @@ export function BookmarkButtonError({ error, reset }: ErrorBoundaryFallbackProps
   )
 }
 
-export function BookmarkButtonSkeleton({ className = '' }: { className?: string }) {
+export function BookmarkButtonSkeleton({ className = '' }: Readonly<BookmarkButtonSkeletonProps>) {
   return (
     <button
       className={`flex justify-center items-center gap-1 border-2 w-fit rounded-lg p-1 px-2 bg-zinc-900 transition ${className}`}
