@@ -5,16 +5,16 @@ import { BasePageProps } from '@/types/nextjs'
 import { getCookieJSON } from '@/utils/cookie'
 import { ViewCookie } from '@/utils/param'
 
+import { GETProxyKSearchSchema } from '../../api/proxy/k/search/schema'
 import ActiveFilters from './ActiveFilters'
 import Error400 from './Error400'
 import Loading from './loading'
-import { MangaSearchSchema } from './schema'
 import SearchResults from './SearchResults'
 
 export default async function Page({ searchParams }: BasePageProps) {
   const [cookieStore, searchParamsJSON] = await Promise.all([cookies(), searchParams])
 
-  const validationResult = MangaSearchSchema.safeParse({
+  const validationResult = GETProxyKSearchSchema.safeParse({
     ...getCookieJSON(cookieStore, ['view']),
     ...searchParamsJSON,
   })

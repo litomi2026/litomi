@@ -6,7 +6,7 @@ import { BookmarkSource } from '@/database/schema'
 import selectBookmarks from '@/sql/selectBookmarks'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
 
-import { BookmarksQuerySchema } from './schema'
+import { GETBookmarksSchema } from './schema'
 
 export const revalidate = 10
 
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
   }
 
   const params = Object.fromEntries(request.nextUrl.searchParams)
-  const validation = BookmarksQuerySchema.safeParse(params)
+  const validation = GETBookmarksSchema.safeParse(params)
 
   if (!validation.success) {
     return new Response('400 Bad Request', { status: 400 })

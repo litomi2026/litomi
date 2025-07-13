@@ -6,7 +6,7 @@ import { useTransition } from 'react'
 import IconSpinner from '@/components/icons/IconSpinner'
 import IconX from '@/components/icons/IconX'
 
-import type { MangaSearch } from './schema'
+import type { GETProxyKSearchRequest } from '../../api/proxy/k/search/schema'
 
 import { FILTER_KEYS } from './constants'
 import { formatDate, formatNumber } from './utils'
@@ -20,7 +20,7 @@ type ActiveFilterProps = {
 }
 
 type Props = {
-  filters: MangaSearch
+  filters: GETProxyKSearchRequest
 }
 
 export default function ActiveFilters({ filters }: Props) {
