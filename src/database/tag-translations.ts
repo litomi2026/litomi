@@ -588,7 +588,7 @@ const TAG_VALUE_TRANSLATION: Record<string, Multilingual> = {
   ponygirl: { en: 'ponygirl', ko: '포니걸' },
   ponytail: { en: 'ponytail', ko: '포니테일', ja: 'ポニーテール', 'zh-CN': '马尾辫' },
   pool: { en: 'pool', ko: '수영장', ja: 'プール', 'zh-CN': '游泳池' },
-  possession: { en: 'possession', ko: '신체 제어권 박탈' },
+  possession: { en: 'possession', ko: '신체 제어권 상실' },
   pregnant: { en: 'pregnant', ko: '임신', ja: '妊娠', 'zh-CN': '怀孕' },
   prehensile_hair: { en: 'prehensile hair', ko: '잡는 머리' },
   priest: { en: 'priest', ko: '사제' },

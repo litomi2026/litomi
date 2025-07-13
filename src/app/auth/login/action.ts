@@ -75,5 +75,5 @@ export default async function login(_prevState: unknown, formData: FormData) {
       .where(sql`${userTable.id} = ${userId}`),
   ])
 
-  return { success: true, data: { userId } }
+  return { success: true, data: { userId, loginId } }
 }

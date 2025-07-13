@@ -2,7 +2,6 @@ import { ErrorBoundary, Suspense } from '@suspensive/react'
 import dayjs from 'dayjs'
 import { unstable_cache } from 'next/cache'
 import Image from 'next/image'
-import { notFound } from 'next/navigation'
 
 import LogoutButton, { LogoutButtonError, LogoutButtonSkeleton } from '@/components/header/LogoutButton'
 import IconCalendar from '@/components/icons/IconCalendar'
@@ -12,19 +11,21 @@ import { getLoginId } from '@/utils/param'
 
 import MyPageNavigation from './MyPageNavigation'
 import ProfileEditButton, { ProfileEditButtonError, ProfileEditButtonSkeleton } from './ProfileEditButton'
+import UserBadRequest from './UserBadRequest'
+import UserNotFound from './UserNotFound'
 
 export default async function Layout({ params, children }: BaseLayoutProps) {
   const { loginId } = await params
   const decodedLoginId = getLoginId(loginId)
 
   if (!decodedLoginId) {
-    notFound()
+    return <UserBadRequest />
   }
 
   const [user] = await getUser(decodedLoginId)()
 
   if (!user) {
-    notFound()
+    return <UserNotFound />
   }
 
   return (

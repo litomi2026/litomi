@@ -1,5 +1,6 @@
 'use client'
 
+import { SearchParamKey } from '@/constants/storage'
 import useMeQuery from '@/query/useMeQuery'
 
 import IconProfile from '../icons/IconProfile'
@@ -11,13 +12,17 @@ type Props = {
 
 export default function ProfileLink({ className }: Props) {
   const { data: me } = useMeQuery()
+  const loginId = me?.loginId
+  const redirectURL = '/api/my'
 
-  return me ? (
-    <SelectableLink className={className} href={`/@${me.loginId}`} Icon={<IconProfile />}>
+  const href = loginId
+    ? `/@${loginId}`
+    : `/auth/login?${SearchParamKey.REDIRECT_URL}=${encodeURIComponent(redirectURL)}`
+
+  return (
+    <SelectableLink className={className} href={href} Icon={<IconProfile />}>
       프로필
     </SelectableLink>
-  ) : (
-    <ProfileLinkSkeleton />
   )
 }
 
