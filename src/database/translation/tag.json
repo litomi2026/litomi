@@ -24,5 +24,9 @@
     "ja": "巨乳ロリ",
     "zh-CN": "巨乳萝莉",
     "zh-TW": "巨乳蘿莉"
-  }
+  },
+  "male:lion": { "en": "lion", "ko": "사자", "ja": "ライオン", "zh-CN": "狮子", "zh-TW": "獅子" },
+  "female:lioness": { "en": "lioness", "ko": "암사자", "ja": "女王ライオン", "zh-CN": "女王狮子", "zh-TW": "女王獅子" },
+  "female:milf": { "en": "milf", "ko": "따먹고픈 애엄마", "ja": "熟女", "zh-CN": "熟女", "zh-TW": "熟女" },
+  "male:dilf": { "en": "dilf", "ko": "따먹고픈 애아빠", "ja": "デルフ", "zh-CN": "德尔菲", "zh-TW": "德爾菲" }
 }
