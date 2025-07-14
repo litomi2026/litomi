@@ -7,7 +7,6 @@ import Navigation from '@/components/Navigation'
 import { CANONICAL_URL } from '@/constants/url'
 import { HiyobiClient } from '@/crawler/hiyobi'
 import { KHentaiClient } from '@/crawler/k-hentai'
-import { harpiMangaIdsByPage, harpiMangas } from '@/database/harpi'
 import { Manga } from '@/types/manga'
 import { BasePageProps } from '@/types/nextjs'
 import { getViewerLink } from '@/utils/manga'
@@ -34,7 +33,6 @@ export const metadata: Metadata = {
 
 type Params = {
   source: SourceParam
-  sort: SortParam
   page: number
 }
 
@@ -68,14 +66,19 @@ export default async function Page({ params }: BasePageProps) {
   const pageNumber = validatePage(page)
   const sourceString = validateSource(source)
   const layoutString = validateView(layout)
-  if (!sortString || !pageNumber || !sourceString || !layoutString) notFound()
+
+  if (!sortString || !pageNumber || !sourceString || !layoutString) {
+    notFound()
+  }
 
   const mangas = await getMangas({
     source: sourceString,
-    sort: sortString,
     page: pageNumber,
   })
-  if (!mangas || mangas.length === 0) notFound()
+
+  if (!mangas || mangas.length === 0) {
+    notFound()
+  }
 
   return (
     <>
@@ -106,29 +109,14 @@ export default async function Page({ params }: BasePageProps) {
   )
 }
 
-async function getMangas({ source, sort, page }: Params) {
+async function getMangas({ source, page }: Params) {
   let mangas: Manga[] | null = null
 
-  if (source === SourceParam.HARPI) {
-    mangas = harpiMangaIdsByPage[sort][page - 1]?.map((id) => harpiMangas[id])
-  } else if (source === SourceParam.HIYOBI) {
+  if (source === SourceParam.HIYOBI) {
     mangas = await HiyobiClient.getInstance().fetchMangas(page)
   } else if (source === SourceParam.K_HENTAI) {
-    mangas = await KHentaiClient.getInstance().searchKoreanMangas({ sort: toKHentaiSort(sort) })
+    mangas = await KHentaiClient.getInstance().searchKoreanMangas()
   }
 
   return mangas
-}
-
-function toKHentaiSort(sort: SortParam) {
-  switch (sort) {
-    case SortParam.LATEST:
-      return ''
-    case SortParam.OLDEST:
-      return 'id_asc'
-    case SortParam.POPULAR:
-      return 'popular'
-    default:
-      return ''
-  }
 }
