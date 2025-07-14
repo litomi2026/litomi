@@ -6,7 +6,7 @@ export type Multilingual = {
   'zh-TW'?: string
 }
 
-const TAG_VALUE_TRANSLATION: Record<string, Multilingual> = {
+export const TAG_VALUE_TRANSLATION: Record<string, Multilingual> = {
   '3d': { en: '3D' },
   '3d_imageset': { en: '3D imageset', ko: '3D 이미지' },
   abortion: { en: 'abortion', ko: '낙태' },
@@ -113,7 +113,6 @@ const TAG_VALUE_TRANSLATION: Record<string, Multilingual> = {
   breast_feeding: { en: 'breast feeding', ko: '젖 먹이기' },
   breast_reduction: { en: 'breast reduction', ko: '젖가슴 축소' },
   bride: { en: 'bride', ko: '신부', ja: '花嫁', 'zh-CN': '新娘', 'zh-TW': '新娘' },
-  brother: { en: 'brother', ko: '남동생/오빠/형' },
   brown_hair: { en: 'brown hair', ko: '갈색 머리', ja: '茶髪', 'zh-CN': '棕发', 'zh-TW': '棕髮' },
   bukkake: { en: 'bukkake', ko: '정액 뿌리기', ja: 'ぶっかけ', 'zh-CN': '颜射' },
   bull: { en: 'bull', ko: '황소' },
@@ -424,8 +423,6 @@ const TAG_VALUE_TRANSLATION: Record<string, Multilingual> = {
   living_clothes: { en: 'living clothes', ko: '생활복' },
   lizard_girl: { en: 'lizard girl', ko: '도마뱀 소녀' },
   lizard_guy: { en: 'lizard guy', ko: '도마뱀 남자' },
-  loli: { en: 'young girl', ko: '로리', ja: 'ロリ', 'zh-CN': '萝莉', 'zh-TW': '蘿莉' },
-  lolicon: { en: 'young girl', ko: '로리', ja: 'ロリ', 'zh-CN': '萝莉', 'zh-TW': '蘿莉' },
   long_hair: { en: 'long hair', ko: '긴 머리', ja: '長髪', 'zh-CN': '长发', 'zh-TW': '長髮' },
   long_tongue: { en: 'long tongue', ko: '긴 혀' },
   low_bestiality: { en: 'low bestiality', ko: '약한 수간성애' },
@@ -644,9 +641,6 @@ const TAG_VALUE_TRANSLATION: Record<string, Multilingual> = {
   shimaidon: { en: 'shimaidon', ko: '자매덮밥' },
   shimapan: { en: 'striped panties', ko: '줄무늬 팬티', ja: 'しまぱん', 'zh-CN': '条纹内裤', 'zh-TW': '條紋內褲' },
   short_hair: { en: 'short hair', ko: '짧은 머리', ja: '短髪', 'zh-CN': '短发', 'zh-TW': '短髮' },
-  shota: { en: 'young boy', ko: '쇼타', ja: 'ショタ', 'zh-CN': '正太', 'zh-TW': '正太' },
-  shotacon: { en: 'young boy', ko: '쇼타', ja: 'ショタ', 'zh-CN': '正太', 'zh-TW': '正太' },
-  sister: { en: 'sister', ko: '여동생/누나/언니' },
   'sixty-nine': { en: 'sixty-nine', ko: '69자세', ja: '69', 'zh-CN': '69' },
   slave: { en: 'slave', ko: '노예', ja: '奴隷', 'zh-CN': '奴隶', 'zh-TW': '奴隸' },
   sleeping: { en: 'sleeping', ko: '수면간', ja: '睡眠姦', 'zh-CN': '睡眠玩弄' },
@@ -789,14 +783,14 @@ const TAG_VALUE_TRANSLATION: Record<string, Multilingual> = {
   zombie: { en: 'zombie', ko: '좀비' },
 }
 
-const TAG_CATEGORY_TRANSLATION: Record<string, Multilingual> = {
+export const TAG_CATEGORY_TRANSLATION: Record<string, Multilingual> = {
   female: { en: 'female', ko: '여', ja: '女', 'zh-CN': '女', 'zh-TW': '女' },
   male: { en: 'male', ko: '남', ja: '男', 'zh-CN': '男', 'zh-TW': '男' },
   mixed: { en: 'mixed', ko: '혼합', ja: '混合', 'zh-CN': '混合', 'zh-TW': '混合' },
   other: { en: 'other', ko: '기타', ja: 'その他', 'zh-CN': '其他', 'zh-TW': '其他' },
 }
 
-const TAG_TRANSLATION: Record<string, Multilingual> = {
+export const TAG_TRANSLATION: Record<string, Multilingual> = {
   'female:crossdressing': { en: 'crossdressing', ko: '남장', ja: '男装', 'zh-CN': '男装', 'zh-TW': '男裝' },
   'male:crossdressing': { en: 'crossdressing', ko: '여장', ja: '女装', 'zh-CN': '女装', 'zh-TW': '女裝' },
   'female:oyakodon': { en: 'oyakodon', ko: '모녀덮밥' },
@@ -808,6 +802,10 @@ const TAG_TRANSLATION: Record<string, Multilingual> = {
   'male:prostitution': { en: 'prostitution', ko: '남창', ja: '売春', 'zh-CN': '卖淫', 'zh-TW': '賣淫' },
   'female:miko': { en: 'shrine maiden', ko: '무녀', ja: '巫女', 'zh-CN': '巫女' },
   'male:miko': { en: 'shrine maiden', ko: '남자 무당', ja: '巫男', 'zh-CN': '巫男', 'zh-TW': '巫男' },
+  'female:lolicon': { en: 'young girl', ko: '로리', ja: 'ロリ', 'zh-CN': '萝莉', 'zh-TW': '蘿莉' },
+  'male:shotacon': { en: 'young boy', ko: '쇼타', ja: 'ショタ', 'zh-CN': '正太', 'zh-TW': '正太' },
+  'female:sister': { en: 'sister', ko: '여동생/누나/언니', ja: '妹', 'zh-CN': '妹妹', 'zh-TW': '妹妹' },
+  'male:brother': { en: 'brother', ko: '남동생/오빠/형', ja: '弟', 'zh-CN': '弟弟', 'zh-TW': '弟弟' },
 }
 
 export type TagCategory = 'female' | 'male' | 'mixed' | 'other'
