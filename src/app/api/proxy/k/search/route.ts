@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
       endDate: to?.toString(),
     }
 
-    const mangas = await client.searchMangas(params, revalidate)
+    const mangas = await client.searchMangas(params)
 
     return Response.json(
       {

@@ -26,7 +26,7 @@ export default function SignupForm() {
 
   useEffect(() => {
     if (error) {
-      toast.error(error.loginId?.[0] ?? error.password?.[0] ?? error['password-confirm']?.[0] ?? error.nickname?.[0])
+      toast.error(Object.values(error).flatMap((value) => value.errors)[0])
     }
   }, [error])
 
@@ -79,7 +79,7 @@ export default function SignupForm() {
             </TooltipPopover>
           </div>
           <input
-            aria-invalid={(error?.loginId?.length ?? 0) > 0}
+            aria-invalid={(error?.loginId?.errors?.length ?? 0) > 0}
             autoFocus
             defaultValue={String(formData?.get('loginId') ?? '')}
             disabled={pending}
@@ -108,7 +108,7 @@ export default function SignupForm() {
             </TooltipPopover>
           </div>
           <input
-            aria-invalid={(error?.password?.length ?? 0) > 0}
+            aria-invalid={(error?.password?.errors?.length ?? 0) > 0}
             defaultValue={String(formData?.get('password') ?? '')}
             disabled={pending}
             id="password"
@@ -126,7 +126,7 @@ export default function SignupForm() {
             비밀번호 확인 <span className="text-red-500">*</span>
           </label>
           <input
-            aria-invalid={(error?.['password-confirm']?.length ?? 0) > 0}
+            aria-invalid={(error?.['password-confirm']?.errors?.length ?? 0) > 0}
             defaultValue={String(formData?.get('password-confirm') ?? '')}
             disabled={pending}
             id="password-confirm"
@@ -147,7 +147,7 @@ export default function SignupForm() {
             </TooltipPopover>
           </div>
           <input
-            aria-invalid={(error?.nickname?.length ?? 0) > 0}
+            aria-invalid={(error?.nickname?.errors?.length ?? 0) > 0}
             defaultValue={String(formData?.get('nickname') ?? '')}
             disabled={pending}
             id="nickname"

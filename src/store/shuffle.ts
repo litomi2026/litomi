@@ -3,7 +3,7 @@ import { create } from 'zustand'
 const DEFAULT_COOLDOWN = 3
 
 type Store = {
-  timerId: NodeJS.Timer | null
+  timerId: NodeJS.Timeout | null
   cooldown: number
   startTimer: (initialCooldown?: number) => void
 }

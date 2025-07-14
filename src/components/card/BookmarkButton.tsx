@@ -40,13 +40,7 @@ export default function BookmarkButton({ manga, source, className }: Readonly<Pr
   useActionErrorEffect({
     status,
     error,
-    onError: (error) => {
-      if (typeof error === 'string') {
-        toast.error(error)
-      } else {
-        toast.error(error.mangaId?.[0] ?? error.source?.[0])
-      }
-    },
+    onError: (error) => toast.error(error),
   })
 
   useEffect(() => {

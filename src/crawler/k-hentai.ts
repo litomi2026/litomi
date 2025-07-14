@@ -216,7 +216,7 @@ export class KHentaiClient {
       startDate?: string
       endDate?: string
     },
-    revalidate = 300, // 5 minutes
+    revalidate = 0,
   ): Promise<Manga[]> {
     const kebabCaseParams = Object.entries(params)
       .filter(([key, value]) => key !== 'offset' && value !== undefined)
@@ -225,6 +225,7 @@ export class KHentaiClient {
     const searchParams = new URLSearchParams(kebabCaseParams)
 
     const kHentaiMangas = await this.client.fetch<KHentaiManga[]>(`/ajax/search?${searchParams}`, {
+      cache: revalidate > 0 ? 'force-cache' : 'no-store',
       next: { revalidate },
     })
 

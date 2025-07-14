@@ -42,13 +42,7 @@ export default function ProfileEditButton() {
   useActionErrorEffect({
     status,
     error,
-    onError: (error) => {
-      if (typeof error === 'string') {
-        toast.error(error)
-      } else {
-        toast.error(error.nickname?.[0] ?? error.imageURL?.[0])
-      }
-    },
+    onError: (error) => toast.error(error),
   })
 
   return (

@@ -16,18 +16,21 @@ const schema = z.object({
 export default async function toggleBookmark(_prevState: unknown, formData: FormData) {
   const cookieStore = await cookies()
   const userId = await getUserIdFromAccessToken(cookieStore)
-  if (!userId) return { status: 401, error: '로그인 정보가 없거나 만료됐어요.' }
 
-  const validatedFields = schema.safeParse({
+  if (!userId) {
+    return { status: 401, error: '로그인 정보가 없거나 만료됐어요.' }
+  }
+
+  const validation = schema.safeParse({
     mangaId: +(formData.get('mangaId')?.toString() ?? ''),
     source: +(formData.get('source')?.toString() ?? ''),
   })
 
-  if (!validatedFields.success) {
-    return { error: validatedFields.error.flatten().fieldErrors }
+  if (!validation.success) {
+    return { error: validation.error.issues[0].message }
   }
 
-  const { mangaId, source } = validatedFields.data
+  const { mangaId, source } = validation.data
 
   const [result] = await db.execute(sql`
     WITH deleted AS (

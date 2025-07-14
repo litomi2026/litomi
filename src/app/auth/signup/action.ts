@@ -38,21 +38,21 @@ const schema = z
   })
 
 export default async function signup(_prevState: unknown, formData: FormData) {
-  const validatedFields = schema.safeParse({
+  const validation = schema.safeParse({
     loginId: formData.get('loginId'),
     password: formData.get('password'),
     'password-confirm': formData.get('password-confirm'),
     nickname: formData.get('nickname') || generateRandomNickname(),
   })
 
-  if (!validatedFields.success) {
+  if (!validation.success) {
     return {
-      error: validatedFields.error.flatten().fieldErrors,
+      error: z.treeifyError(validation.error).properties,
       formData,
     }
   }
 
-  const { loginId, password, nickname } = validatedFields.data
+  const { loginId, password, nickname } = validation.data
   const passwordHash = await hash(password, SALT_ROUNDS)
 
   const [result] = await db
@@ -68,7 +68,7 @@ export default async function signup(_prevState: unknown, formData: FormData) {
 
   if (!result) {
     return {
-      error: { loginId: ['이미 사용 중인 아이디입니다.'] },
+      error: { loginId: { errors: ['이미 사용 중인 아이디입니다.'] } },
       formData,
     }
   }

@@ -25,6 +25,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       headers: {
         'Cache-Control': createCacheControl({
           public: true,
+          maxAge: revalidate,
           sMaxAge: revalidate,
           staleWhileRevalidate: 2 * revalidate,
         }),

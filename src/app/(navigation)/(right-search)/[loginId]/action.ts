@@ -22,18 +22,21 @@ const schema = z.object({
 export default async function editProfile(_prevState: unknown, formData: FormData) {
   const cookieStore = await cookies()
   const userId = await getUserIdFromAccessToken(cookieStore)
-  if (!userId) return { status: 401, error: '로그인 정보가 없거나 만료됐어요.' }
 
-  const validatedFields = schema.safeParse({
+  if (!userId) {
+    return { status: 401, error: '로그인 정보가 없거나 만료됐어요.' }
+  }
+
+  const validation = schema.safeParse({
     imageURL: formData.get('imageURL'),
     nickname: formData.get('nickname'),
   })
 
-  if (!validatedFields.success) {
-    return { error: validatedFields.error.flatten().fieldErrors }
+  if (!validation.success) {
+    return { error: validation.error.issues[0].message }
   }
 
-  const { nickname, imageURL } = validatedFields.data
+  const { nickname, imageURL } = validation.data
 
   try {
     await db
