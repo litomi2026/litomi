@@ -84,10 +84,10 @@ export class HarpiClient {
     return HarpiClient.instance
   }
 
-  async fetchMangaByHarpiId(harpiId: string, revalidate = 43200): Promise<Manga> {
+  async fetchMangaByHarpiId(harpiId: string): Promise<Manga> {
     const response = await this.client.fetch<{ data: HarpiManga }>(`/animation/${harpiId}`, {
-      cache: revalidate > 0 ? 'force-cache' : 'no-store',
-      next: { revalidate },
+      cache: 'force-cache',
+      next: { revalidate: 43200 }, // 12 hours
     })
 
     return this.convertHarpiToManga(response.data)

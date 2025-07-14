@@ -265,7 +265,7 @@ export class KHentaiClient {
       `/r/${id}`,
       {
         cache: 'force-cache',
-        next: { revalidate: 43200 },
+        next: { revalidate: 43200 }, // 12 hours
         headers: { Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' },
       },
       true,
