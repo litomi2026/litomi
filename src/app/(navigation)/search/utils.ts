@@ -1,21 +1,4 @@
-import { KOREAN_TO_ENGLISH_QUERY_KEYS, SEARCH_LABEL_TO_VALUE_MAP } from './constants'
-
-/**
- * Translates user-friendly search labels to API values
- * Example: "series:naruto" -> "parody:naruto"
- */
-export function convertQueryKey(query?: string) {
-  if (!query) return
-
-  let translatedQuery = query
-
-  Object.entries(SEARCH_LABEL_TO_VALUE_MAP).forEach(([label, value]) => {
-    const regex = new RegExp(`\\b${label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'gi')
-    translatedQuery = translatedQuery.replace(regex, value)
-  })
-
-  return translatedQuery
-}
+import { KOREAN_TO_ENGLISH_QUERY_KEYS } from './constants'
 
 export function formatDate(timestamp: number | string) {
   return new Date(Number(timestamp) * 1000).toLocaleDateString('ko-KR', {
