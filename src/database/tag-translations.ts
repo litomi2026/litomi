@@ -1,5 +1,7 @@
 import tagCategoryJSON from '@/database/translation/tag-category.json'
-import tagValueJSON from '@/database/translation/tag-value.json'
+import tagMaleFemaleJSON from '@/database/translation/tag-male-female.json'
+import tagMixedJSON from '@/database/translation/tag-mixed.json'
+import tagOtherJSON from '@/database/translation/tag-other.json'
 import tagTranslationJSON from '@/database/translation/tag.json'
 
 export type Multilingual = {
@@ -10,7 +12,9 @@ export type Multilingual = {
   'zh-TW'?: string
 }
 
-const TAG_VALUE_TRANSLATION: Record<string, Multilingual> = tagValueJSON
+const TAG_MALE_FEMALE_TRANSLATION: Record<string, Multilingual> = tagMaleFemaleJSON
+const TAG_OTHER_TRANSLATION: Record<string, Multilingual> = tagOtherJSON
+const TAG_MIXED_TRANSLATION: Record<string, Multilingual> = tagMixedJSON
 const TAG_CATEGORY_TRANSLATION: Record<string, Multilingual> = tagCategoryJSON
 const TAG_TRANSLATION: Record<string, Multilingual> = tagTranslationJSON
 
@@ -57,6 +61,12 @@ export function translateTagCategory(category: string, locale: keyof Multilingua
 }
 
 export function translateTagValue(value: string, locale: keyof Multilingual): string {
-  const translation = TAG_VALUE_TRANSLATION[normalizeTagValue(value)]
+  const normalizedValue = normalizeTagValue(value)
+
+  const translation =
+    TAG_MALE_FEMALE_TRANSLATION[normalizedValue] ||
+    TAG_MIXED_TRANSLATION[normalizedValue] ||
+    TAG_OTHER_TRANSLATION[normalizedValue]
+
   return translation?.[locale] || translation?.en || value.replace(/_/g, ' ')
 }

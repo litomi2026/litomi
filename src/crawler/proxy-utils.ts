@@ -1,5 +1,4 @@
 import { captureException } from '@sentry/nextjs'
-import { NextRequest } from 'next/server'
 
 import { normalizeError, UpstreamServerError } from './errors'
 
@@ -73,7 +72,7 @@ export async function createHealthCheckHandler(
   )
 }
 
-export function handleRouteError(error: unknown, request: NextRequest) {
+export function handleRouteError(error: unknown, request: Request) {
   const normalizedError = normalizeError(error)
 
   if (!isUpstreamServer4XXError(normalizedError)) {
