@@ -2,7 +2,7 @@ import { HarpiClient } from '@/crawler/harpi'
 import { createCacheControl, createHealthCheckHandler } from '@/crawler/proxy-utils'
 
 export const runtime = 'edge'
-export const revalidate = 5
+const maxAge = 5
 
 export async function GET() {
   return createHealthCheckHandler(
@@ -15,9 +15,9 @@ export async function GET() {
       headers: {
         'Cache-Control': createCacheControl({
           public: true,
-          maxAge: revalidate,
-          sMaxAge: revalidate,
-          staleWhileRevalidate: revalidate,
+          maxAge,
+          sMaxAge: maxAge,
+          staleWhileRevalidate: maxAge,
         }),
       },
     },

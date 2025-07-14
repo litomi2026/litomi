@@ -4,13 +4,14 @@ import { KHentaiClient } from '@/crawler/k-hentai'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 
 export const runtime = 'edge'
-export const revalidate = 43200 // 12 hours
+const staleWhileRevalidate = 300
+const maxAge = 43200 - staleWhileRevalidate
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   const id = parseInt(params.id)
 
   if (isNaN(id) || id <= 0) {
-    return new Response('Invalid manga ID', { status: 400 })
+    return new Response('400 Bad Request', { status: 400 })
   }
 
   try {
@@ -18,16 +19,16 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const manga = await client.fetchManga(id)
 
     if (!manga) {
-      return new Response('Manga not found', { status: 404 })
+      return new Response('404 Not Found', { status: 404 })
     }
 
     return Response.json(manga, {
       headers: {
         'Cache-Control': createCacheControl({
           public: true,
-          maxAge: revalidate,
-          sMaxAge: revalidate,
-          staleWhileRevalidate: revalidate,
+          maxAge,
+          sMaxAge: maxAge,
+          staleWhileRevalidate,
         }),
       },
     })

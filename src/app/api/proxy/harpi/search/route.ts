@@ -7,7 +7,7 @@ import { Manga } from '@/types/manga'
 import { HarpiSearchSchema } from './schema'
 
 export const runtime = 'edge'
-export const revalidate = 300
+const maxAge = 300
 
 const commaJoinedParams = ['authors', 'groups', 'series', 'characters', 'tags', 'tagsExclude', 'ids']
 const spaceConcatenatedParams = ['searchText', 'lineText']
@@ -58,9 +58,9 @@ export async function GET(request: NextRequest) {
       headers: {
         'Cache-Control': createCacheControl({
           public: true,
-          maxAge: revalidate,
-          sMaxAge: revalidate,
-          staleWhileRevalidate: revalidate,
+          maxAge,
+          sMaxAge: maxAge,
+          staleWhileRevalidate: maxAge,
         }),
       },
     })
