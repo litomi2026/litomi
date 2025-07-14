@@ -6,4 +6,5 @@ export const QueryKeys = {
   bookmarks: ['me', 'bookmarks'],
   infiniteBookmarks: ['me', 'infinite', 'bookmarks'],
   bookmark: (mangaId: number) => ['me', 'bookmark', mangaId],
+  searchSuggestions: (query: string, locale: string) => ['search', 'suggestions', locale, query],
 }

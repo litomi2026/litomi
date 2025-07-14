@@ -1,33 +1,20 @@
-export type SearchFilter = {
-  label: string
-  value?: string
-  description: string
-}
-
-export const SEARCH_FILTERS: SearchFilter[] = [
-  { label: 'language:korean', description: '한국어' },
-  { label: 'language:', description: '언어' },
-  { label: 'female:', description: '여성 태그' },
-  { label: 'male:', description: '남성 태그' },
-  { label: 'mixed:', description: '혼합 태그' },
-  { label: 'other:', description: '기타 태그' },
-  { label: 'artist:', description: '작가' },
-  { label: 'group:', description: '그룹' },
-  { label: 'character:', description: '캐릭터' },
-  { label: 'series:', value: 'parody:', description: '시리즈' },
-  { label: 'type:', description: '종류' },
-  { label: 'id:', value: 'gid:', description: '망가 ID' },
+// value: 소문자여야 함
+export const SEARCH_SUGGESTIONS = [
+  { value: 'language:korean', label: '한국어' },
+  { value: 'language:', label: '언어' },
+  { value: 'female:', label: '여성 태그' },
+  { value: 'male:', label: '남성 태그' },
+  { value: 'mixed:', label: '혼합 태그' },
+  { value: 'other:', label: '기타 태그' },
+  { value: 'artist:', label: '작가' },
+  { value: 'group:', label: '그룹' },
+  { value: 'character:', label: '캐릭터' },
+  { value: 'series:', label: '시리즈' },
+  { value: 'type:', label: '종류' },
+  { value: 'id:', label: '망가 ID' },
 ]
 
-export const SEARCH_LABEL_TO_VALUE_MAP = SEARCH_FILTERS.reduce(
-  (map, filter) => {
-    if (filter.value) {
-      map[filter.label] = filter.value
-    }
-    return map
-  },
-  {} as Record<string, string>,
-)
+export type SearchSuggestion = (typeof SEARCH_SUGGESTIONS)[number]
 
 export const FILTER_CONFIG = {
   sort: {
@@ -101,6 +88,7 @@ export const FILTER_KEYS = [
   'next-id',
   'skip',
 ] as const
+
 export const SEARCH_PAGE_SEARCH_PARAMS = [...FILTER_KEYS, 'query'] as const
 
 export type FilterKey = (typeof FILTER_KEYS)[number]
@@ -124,3 +112,5 @@ export const KOREAN_TO_ENGLISH_QUERY_KEYS: Record<string, string> = {
   시리즈: 'series',
   종류: 'type',
 }
+
+export const MIN_SUGGESTION_QUERY_LENGTH = 2

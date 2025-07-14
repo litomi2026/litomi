@@ -298,14 +298,12 @@ export class KHentaiClient {
 }
 
 export function getCategories(query?: string) {
-  const typeMatch = query?.match(/\btype:(\S+)/i)
-  if (!typeMatch) return
-
-  return typeMatch[1]
+  return query
+    ?.match(/\btype:(\S+)/i)?.[1]
     .split(',')
-    .map((value) => {
-      const normalized = value.trim().toLowerCase().replace(/\s+/g, '')
-      return /^\d+$/.test(normalized) ? normalized : (typeNameToNumber[normalized] ?? value)
+    .map((categoryName) => {
+      const normalized = categoryName.trim().toLowerCase().replace(/\s+/g, '')
+      return /^\d+$/.test(normalized) ? normalized : (typeNameToNumber[normalized] ?? categoryName)
     })
     .filter(Boolean)
     .join(',')

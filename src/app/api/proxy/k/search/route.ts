@@ -1,6 +1,5 @@
 import { NextRequest } from 'next/server'
 
-import { convertQueryKey } from '@/app/(navigation)/search/utils'
 import { GETProxyKSearchSchema } from '@/app/api/proxy/k/search/schema'
 import { getCategories, KHentaiClient } from '@/crawler/k-hentai'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
@@ -79,4 +78,13 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     return handleRouteError(error, request)
   }
+}
+
+/**
+ * Example: "series:naruto" -> "parody:naruto"
+ *
+ * Example: "id:12345" -> "gid:12345"
+ */
+function convertQueryKey(query?: string) {
+  return query?.replace(/\bid:/gi, 'gid:').replace(/\bseries:/gi, 'parody:')
 }

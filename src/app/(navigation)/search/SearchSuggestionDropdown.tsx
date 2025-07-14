@@ -1,12 +1,12 @@
 import { memo, useEffect, useRef, useState } from 'react'
 
-import type { SearchFilter } from './constants'
+import type { SearchSuggestion } from './constants'
 
 type Props = {
-  suggestions: SearchFilter[]
+  suggestions: SearchSuggestion[]
   selectedIndex: number
   showHeader: boolean
-  onSelect: (filter: SearchFilter) => void
+  onSelect: (suggestion: SearchSuggestion) => void
   onMouseEnter: (index: number) => void
 }
 
@@ -80,8 +80,8 @@ function SearchSuggestionDropdown({ suggestions, selectedIndex, showHeader, onSe
               onMouseEnter={() => onMouseEnter(index)}
               type="button"
             >
-              <span className="font-mono flex-shrink-0">{suggestion.label}</span>
-              <span className="text-xs text-zinc-500 truncate sm:text-sm">{suggestion.description}</span>
+              <span className="font-mono flex-shrink-0">{suggestion.value}</span>
+              <span className="text-xs text-zinc-500 truncate sm:text-sm">{suggestion.label}</span>
             </button>
           </li>
         ))}
