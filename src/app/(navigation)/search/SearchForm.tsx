@@ -2,14 +2,14 @@
 
 import dynamic from 'next/dynamic'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { FormEvent, memo, Suspense, useCallback, useEffect, useRef, useState, useTransition } from 'react'
+import { FormEvent, memo, Suspense, useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react'
 
 import IconSpinner from '@/components/icons/IconSpinner'
 import IconX from '@/components/icons/IconX'
 
-import { SEARCH_FILTERS, type SearchFilter } from './constants'
+import { type SearchSuggestion } from './constants'
 import useSearchSuggestions from './useSearchSuggestions'
-import { translateKoreanToEnglish } from './utils'
+import { getWordAtCursor, translateKoreanToEnglish } from './utils'
 
 // NOTE: 드롭다운은 사용자가 검색어를 입력할 때만 표시되므로 초기 bundle 크기를 줄이기 위해 dynamic import 사용
 const SearchSuggestionDropdown = dynamic(() => import('./SearchSuggestionDropdown'))
@@ -26,44 +26,42 @@ function SearchForm({ className = '' }: Readonly<Props>) {
   const searchParams = useSearchParams()
   const query = searchParams.get('query') ?? ''
   const [keyword, setKeyword] = useState(() => query)
+  const [cursorPosition, setCursorPosition] = useState(query.length)
   const [isSearching, startSearching] = useTransition()
   const [_, startClosing] = useTransition()
-
+  const [showSuggestions, setShowSuggestions] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const suggestionsRef = useRef<HTMLDivElement>(null)
 
-  const {
-    showSuggestions,
-    setShowSuggestions,
-    selectedIndex,
-    setSelectedIndex,
-    filteredSuggestions,
-    showHeader,
-    resetSelection,
-    navigateSelection,
-  } = useSearchSuggestions(keyword)
+  const currentWordInfo = useMemo(() => getWordAtCursor(keyword, cursorPosition), [keyword, cursorPosition])
+
+  const { selectedIndex, setSelectedIndex, searchSuggestions, showHeader, resetSelection, navigateSelection } =
+    useSearchSuggestions(currentWordInfo.word)
 
   const selectSuggestion = useCallback(
-    (filter: SearchFilter) => {
-      const words = keyword.split(' ')
-      words[words.length - 1] = filter.value
-      const newKeyword = words.join(' ')
+    (suggestion: SearchSuggestion) => {
+      const before = keyword.slice(0, currentWordInfo.start)
+      const after = keyword.slice(currentWordInfo.end)
+      const newKeyword = before + suggestion.value + after
+      const newCursorPosition = currentWordInfo.start + suggestion.value.length
+
       setKeyword(newKeyword)
+      setCursorPosition(newCursorPosition)
       setShowSuggestions(false)
       resetSelection()
       inputRef.current?.focus()
 
       setTimeout(() => {
         if (inputRef.current) {
-          inputRef.current.selectionStart = inputRef.current.selectionEnd = newKeyword.length
+          inputRef.current.selectionStart = inputRef.current.selectionEnd = newCursorPosition
         }
       }, 0)
     },
-    [keyword, setShowSuggestions, resetSelection],
+    [keyword, currentWordInfo, setShowSuggestions, resetSelection],
   )
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!showSuggestions || filteredSuggestions.length === 0) return
+    if (!showSuggestions || searchSuggestions.length === 0) return
 
     switch (e.key) {
       case 'ArrowDown':
@@ -77,7 +75,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
       case 'Enter':
         if (selectedIndex >= 0) {
           e.preventDefault()
-          selectSuggestion(filteredSuggestions[selectedIndex])
+          selectSuggestion(searchSuggestions[selectedIndex])
         }
         break
       case 'Escape':
@@ -89,16 +87,26 @@ function SearchForm({ className = '' }: Readonly<Props>) {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
-    setKeyword(value)
+    const position = e.target.selectionStart || 0
 
-    const lastWord = value.split(' ').pop()?.toLowerCase() || ''
-    setShowSuggestions(lastWord.length >= 0)
+    setKeyword(value)
+    setCursorPosition(position)
+    setShowSuggestions(currentWordInfo.word.length >= 0)
     resetSelection()
+  }
+
+  const handleSelect = (e: React.SyntheticEvent<HTMLInputElement>) => {
+    const target = e.target as HTMLInputElement
+    setCursorPosition(target.selectionStart || 0)
   }
 
   const handleFocus = () => {
     setShowSuggestions(true)
     resetSelection()
+
+    if (inputRef.current) {
+      setCursorPosition(inputRef.current.selectionStart || 0)
+    }
   }
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -112,6 +120,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
 
   const handleClear = () => {
     setKeyword('')
+    setCursorPosition(0)
     setShowSuggestions(false)
     resetSelection()
     inputRef.current?.focus()
@@ -177,6 +186,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
   // NOTE: URL의 query 값이 변경되면 검색어도 업데이트함
   useEffect(() => {
     setKeyword(query)
+    setCursorPosition(query.length)
   }, [query])
 
   return (
@@ -202,6 +212,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
             onChange={handleInputChange}
             onFocus={handleFocus}
             onKeyDown={handleKeyDown}
+            onSelect={handleSelect}
             placeholder="검색어를 입력하세요"
             ref={inputRef}
             type="search"
@@ -231,7 +242,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
           {isSearching ? <IconSpinner className="w-5 mx-1" /> : <span className="block min-w-7">검색</span>}
         </button>
       </form>
-      {showSuggestions && filteredSuggestions.length > 0 && (
+      {showSuggestions && searchSuggestions.length > 0 && (
         <Suspense>
           <div ref={suggestionsRef}>
             <SearchSuggestionDropdown
@@ -239,7 +250,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
               onSelect={selectSuggestion}
               selectedIndex={selectedIndex}
               showHeader={showHeader}
-              suggestions={filteredSuggestions}
+              suggestions={searchSuggestions}
             />
           </div>
         </Suspense>

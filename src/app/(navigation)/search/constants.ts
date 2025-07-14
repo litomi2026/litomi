@@ -1,9 +1,5 @@
-export type SearchFilter = {
-  value: string
-  label: string
-}
-
-export const SEARCH_FILTERS: SearchFilter[] = [
+// value: 소문자여야 함
+export const SEARCH_SUGGESTIONS = [
   { value: 'language:korean', label: '한국어' },
   { value: 'language:', label: '언어' },
   { value: 'female:', label: '여성 태그' },
@@ -17,6 +13,8 @@ export const SEARCH_FILTERS: SearchFilter[] = [
   { value: 'type:', label: '종류' },
   { value: 'id:', label: '망가 ID' },
 ]
+
+export type SearchSuggestion = (typeof SEARCH_SUGGESTIONS)[number]
 
 export const FILTER_CONFIG = {
   sort: {
@@ -90,6 +88,7 @@ export const FILTER_KEYS = [
   'next-id',
   'skip',
 ] as const
+
 export const SEARCH_PAGE_SEARCH_PARAMS = [...FILTER_KEYS, 'query'] as const
 
 export type FilterKey = (typeof FILTER_KEYS)[number]
@@ -113,3 +112,5 @@ export const KOREAN_TO_ENGLISH_QUERY_KEYS: Record<string, string> = {
   시리즈: 'series',
   종류: 'type',
 }
+
+export const MIN_SUGGESTION_QUERY_LENGTH = 2

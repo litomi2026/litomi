@@ -1,12 +1,12 @@
 import { memo, useEffect, useRef, useState } from 'react'
 
-import type { SearchFilter } from './constants'
+import type { SearchSuggestion } from './constants'
 
 type Props = {
-  suggestions: SearchFilter[]
+  suggestions: SearchSuggestion[]
   selectedIndex: number
   showHeader: boolean
-  onSelect: (filter: SearchFilter) => void
+  onSelect: (suggestion: SearchSuggestion) => void
   onMouseEnter: (index: number) => void
 }
 
