@@ -5,8 +5,7 @@ import { KHentaiClient } from '@/crawler/k-hentai'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 
 export const runtime = 'edge'
-const staleWhileRevalidate = 300
-const maxAge = 43200 - staleWhileRevalidate
+const maxAge = 43200 // 12 hours
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
@@ -27,9 +26,9 @@ export async function GET(request: NextRequest) {
       headers: {
         'Cache-Control': createCacheControl({
           public: true,
-          maxAge,
-          sMaxAge: maxAge,
-          staleWhileRevalidate,
+          maxAge: maxAge - 300,
+          sMaxAge: maxAge - 300,
+          staleWhileRevalidate: 300,
         }),
       },
     })

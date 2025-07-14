@@ -17,7 +17,6 @@ export async function GET() {
           public: true,
           maxAge,
           sMaxAge: maxAge,
-          staleWhileRevalidate: maxAge,
         }),
       },
     },
