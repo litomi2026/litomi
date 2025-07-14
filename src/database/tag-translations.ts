@@ -748,7 +748,6 @@ export const TAG_VALUE_TRANSLATION: Record<string, Multilingual> = {
     'zh-CN': '超长发',
     'zh-TW': '超長髮',
   },
-  virginity: { en: 'virginity', ko: '처녀성', ja: '処女', 'zh-CN': '处女' },
   vomit: { en: 'vomit', ko: '구토' },
   vore: { en: 'vore', ko: '삼킴' },
   voyeurism: { en: 'voyeurism', ko: '관음증', ja: '覗き', 'zh-CN': '偷窥' },
@@ -806,6 +805,8 @@ export const TAG_TRANSLATION: Record<string, Multilingual> = {
   'male:shotacon': { en: 'young boy', ko: '쇼타', ja: 'ショタ', 'zh-CN': '正太', 'zh-TW': '正太' },
   'female:sister': { en: 'sister', ko: '여동생/누나/언니', ja: '妹', 'zh-CN': '妹妹', 'zh-TW': '妹妹' },
   'male:brother': { en: 'brother', ko: '남동생/오빠/형', ja: '弟', 'zh-CN': '弟弟', 'zh-TW': '弟弟' },
+  'female:virginity': { en: 'virginity', ko: '처녀성', ja: '処女', 'zh-CN': '处女' },
+  'male:virginity': { en: 'virginity', ko: '동정', ja: '処男', 'zh-CN': '处男' },
 }
 
 export type TagCategory = 'female' | 'male' | 'mixed' | 'other'
