@@ -15,5 +15,14 @@
   "female:sister": { "en": "sister", "ko": "여동생/누나/언니", "ja": "妹", "zh-CN": "妹妹", "zh-TW": "妹妹" },
   "male:brother": { "en": "brother", "ko": "남동생/오빠/형", "ja": "弟", "zh-CN": "弟弟", "zh-TW": "弟弟" },
   "female:virginity": { "en": "virginity", "ko": "처녀성", "ja": "処女", "zh-CN": "处女" },
-  "male:virginity": { "en": "virginity", "ko": "동정", "ja": "処男", "zh-CN": "处男" }
+  "male:virginity": { "en": "virginity", "ko": "동정", "ja": "処男", "zh-CN": "处男" },
+  "male:bbm": { "en": "bbm", "ko": "뚱뚱남", "ja": "デブ", "zh-CN": "胖子", "zh-TW": "胖子" },
+  "female:bbw": { "en": "bbw", "ko": "뚱뚱녀", "ja": "ぽっちゃり", "zh-CN": "丰满", "zh-TW": "豐滿" },
+  "female:oppai_loli": {
+    "en": "oppai loli",
+    "ko": "거유 로리",
+    "ja": "巨乳ロリ",
+    "zh-CN": "巨乳萝莉",
+    "zh-TW": "巨乳蘿莉"
+  }
 }

@@ -153,7 +153,7 @@ describe('GET /api/search/suggestions', () => {
         expect(response.status).toBe(200)
         expect(data.length).toBeGreaterThan(0)
         expect(data.every((item) => item.value.startsWith('female:big_'))).toBe(true)
-        expect(data.some((item) => item.value === 'female:big_breasts')).toBe(true)
+        expect(data.some((item) => item.value === 'female:big_ass')).toBe(true)
       })
 
       test('"female:big_breasts" 값을 검색했을 때 값을 반환하지 않는다', async () => {
