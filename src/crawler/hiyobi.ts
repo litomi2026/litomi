@@ -113,16 +113,19 @@ export class HiyobiClient {
     id: number,
     revalidate = 604800, // 1 week
   ): Promise<Manga> {
-    const manga = await this.client.fetch<HiyobiManga>(`/gallery/${id}`, { next: { revalidate } })
+    const manga = await this.client.fetch<HiyobiManga>(`/gallery/${id}`, {
+      cache: revalidate > 0 ? 'force-cache' : 'no-store',
+      next: { revalidate },
+    })
 
     return this.convertHiyobiToManga(manga)
   }
 
-  async fetchMangaImages(
-    id: number,
-    revalidate = 21600, // 6 hours
-  ): Promise<string[]> {
-    const hiyobiImages = await this.imageClient.fetch<HiyobiImage[]>(`/hiyobi/list?id=${id}`, { next: { revalidate } })
+  async fetchMangaImages(id: number): Promise<string[]> {
+    const hiyobiImages = await this.imageClient.fetch<HiyobiImage[]>(`/hiyobi/list?id=${id}`, {
+      cache: 'force-cache',
+      next: { revalidate: 43200 }, // 12 hours
+    })
 
     return hiyobiImages.map((image) => image.url)
   }

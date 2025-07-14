@@ -8,7 +8,7 @@ import { getUserIdFromAccessToken } from '@/utils/cookie'
 
 import { GETBookmarksSchema } from './schema'
 
-export const revalidate = 10
+const maxAge = 10
 
 export type BookmarkWithSource = {
   mangaId: number
@@ -68,9 +68,9 @@ export async function GET(request: NextRequest) {
       headers: {
         'Cache-Control': createCacheControl({
           public: true,
-          maxAge: revalidate,
-          sMaxAge: revalidate,
-          staleWhileRevalidate: revalidate,
+          maxAge,
+          sMaxAge: maxAge,
+          staleWhileRevalidate: maxAge,
         }),
       },
     },

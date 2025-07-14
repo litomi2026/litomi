@@ -7,7 +7,7 @@ import { Manga } from '@/types/manga'
 import { HarpiSearchSchema } from './schema'
 
 export const runtime = 'edge'
-export const revalidate = 300
+const maxAge = 300
 
 const commaJoinedParams = ['authors', 'groups', 'series', 'characters', 'tags', 'tagsExclude', 'ids']
 const spaceConcatenatedParams = ['searchText', 'lineText']
@@ -52,15 +52,15 @@ export async function GET(request: NextRequest) {
   const client = HarpiClient.getInstance()
 
   try {
-    const mangas = await client.fetchMangas(validatedParams, revalidate)
+    const mangas = await client.fetchMangas(validatedParams)
 
     return Response.json({ mangas } satisfies GETProxyHarpiSearchResponse, {
       headers: {
         'Cache-Control': createCacheControl({
           public: true,
-          maxAge: revalidate,
-          sMaxAge: revalidate,
-          staleWhileRevalidate: 2 * revalidate,
+          maxAge,
+          sMaxAge: maxAge,
+          staleWhileRevalidate: maxAge,
         }),
       },
     })

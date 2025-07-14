@@ -170,11 +170,8 @@ export class KHentaiClient {
     return KHentaiClient.instance
   }
 
-  async fetchManga(
-    id: number,
-    revalidate = 43200, // 12 hours
-  ): Promise<Manga> {
-    const gallery = await this.fetchGallery(id, revalidate)
+  async fetchManga(id: number): Promise<Manga> {
+    const gallery = await this.fetchGallery(id)
 
     return {
       ...this.convertKHentaiCommonToManga(gallery),
@@ -263,11 +260,12 @@ export class KHentaiClient {
     }
   }
 
-  private async fetchGallery(id: number, revalidate = 43200): Promise<KHentaiGallery> {
+  private async fetchGallery(id: number): Promise<KHentaiGallery> {
     const html = await this.client.fetch<string>(
       `/r/${id}`,
       {
-        next: { revalidate },
+        cache: 'force-cache',
+        next: { revalidate: 43200 }, // 12 hours
         headers: { Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' },
       },
       true,

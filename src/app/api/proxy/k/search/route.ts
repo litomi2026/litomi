@@ -7,7 +7,7 @@ import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { Manga } from '@/types/manga'
 
 export const runtime = 'edge'
-export const revalidate = 300
+const maxAge = 300
 
 export type GETProxyKSearchResponse = {
   mangas: Manga[]
@@ -69,9 +69,9 @@ export async function GET(request: NextRequest) {
         headers: {
           'Cache-Control': createCacheControl({
             public: true,
-            maxAge: revalidate,
-            sMaxAge: revalidate,
-            staleWhileRevalidate: revalidate,
+            maxAge,
+            sMaxAge: maxAge,
+            staleWhileRevalidate: maxAge,
           }),
         },
       },
