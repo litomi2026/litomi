@@ -15,7 +15,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
   try {
     const client = HiyobiClient.getInstance()
-    const manga = await client.fetchManga(id, maxAge)
+    const manga = await client.fetchManga(id)
 
     if (!manga) {
       return new Response('404 Not Found', { status: 404 })
