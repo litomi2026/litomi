@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { GETSearchSuggestionsResponse } from '@/app/api/search/suggestions/schema'
+import { GETSearchSuggestionsResponse, queryBlacklist } from '@/app/api/search/suggestions/schema'
 import { QueryKeys } from '@/constants/query'
 import useLocaleFromCookie from '@/hook/useLocaleFromCookie'
 
@@ -21,7 +21,7 @@ export default function useSearchSuggestionsQuery({ query }: Readonly<Props>) {
   return useQuery<GETSearchSuggestionsResponse>({
     queryKey: QueryKeys.searchSuggestions(query, locale),
     queryFn: () => fetchSearchSuggestions(query, locale),
-    enabled: query.length >= MIN_SUGGESTION_QUERY_LENGTH,
+    enabled: query.length >= MIN_SUGGESTION_QUERY_LENGTH && !queryBlacklist.some((regex) => regex.test(query)),
     placeholderData: (previousData) => previousData,
   })
 }

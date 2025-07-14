@@ -31,17 +31,9 @@ export default function useSearchSuggestions(keyword: string) {
       return matchedFilters
     }
 
-    const suggestionMap = new Map<string, SearchSuggestion>()
-
-    for (const filter of matchedFilters) {
-      suggestionMap.set(filter.label, filter)
-    }
-
-    for (const suggestion of suggestions) {
-      if (!suggestionMap.has(suggestion.label)) {
-        suggestionMap.set(suggestion.label, suggestion)
-      }
-    }
+    const a = suggestions.length > 0 ? suggestions : matchedFilters
+    const b = a.map((suggestion) => [suggestion.label, suggestion] as const)
+    const suggestionMap = new Map<string, SearchSuggestion>(b)
 
     return Array.from(suggestionMap.values()).slice(0, MAX_SUGGESTIONS)
   }, [keyword, suggestions])

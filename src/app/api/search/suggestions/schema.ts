@@ -11,3 +11,5 @@ export type GETSearchSuggestionsResponse = {
   label: string
   value: string
 }[]
+
+export const queryBlacklist = [/^id:/]
