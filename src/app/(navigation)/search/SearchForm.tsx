@@ -46,7 +46,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
   const selectSuggestion = useCallback(
     (filter: SearchFilter) => {
       const words = keyword.split(' ')
-      words[words.length - 1] = filter.label
+      words[words.length - 1] = filter.value
       const newKeyword = words.join(' ')
       setKeyword(newKeyword)
       setShowSuggestions(false)
@@ -92,10 +92,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
     setKeyword(value)
 
     const lastWord = value.split(' ').pop()?.toLowerCase() || ''
-    const shouldShow =
-      lastWord === '' ||
-      SEARCH_FILTERS.some((filter) => filter.label.toLowerCase().startsWith(lastWord) && lastWord !== filter.label)
-    setShowSuggestions(shouldShow)
+    setShowSuggestions(lastWord.length >= 0)
     resetSelection()
   }
 
@@ -127,14 +124,15 @@ function SearchForm({ className = '' }: Readonly<Props>) {
     const params = new URLSearchParams(searchParams)
 
     if (keyword.trim()) {
-      const translatedKeyword = translateKoreanToEnglish(keyword.trim())
-      params.set('query', translatedKeyword || keyword.trim())
+      const convertedQuery = keyword.trim()
+      const translatedKeyword = translateKoreanToEnglish(convertedQuery)
+      params.set('query', translatedKeyword || convertedQuery)
     } else {
       params.delete('query')
     }
 
     startSearching(() => {
-      router.replace(`${pathname}?${params}`)
+      router.push(`${pathname}?${params}`)
     })
   }
 

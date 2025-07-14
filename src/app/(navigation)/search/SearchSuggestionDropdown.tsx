@@ -80,8 +80,8 @@ function SearchSuggestionDropdown({ suggestions, selectedIndex, showHeader, onSe
               onMouseEnter={() => onMouseEnter(index)}
               type="button"
             >
-              <span className="font-mono flex-shrink-0">{suggestion.label}</span>
-              <span className="text-xs text-zinc-500 truncate sm:text-sm">{suggestion.description}</span>
+              <span className="font-mono flex-shrink-0">{suggestion.value}</span>
+              <span className="text-xs text-zinc-500 truncate sm:text-sm">{suggestion.label}</span>
             </button>
           </li>
         ))}
