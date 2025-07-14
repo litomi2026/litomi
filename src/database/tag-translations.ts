@@ -10,9 +10,9 @@ export type Multilingual = {
   'zh-TW'?: string
 }
 
-export const TAG_VALUE_TRANSLATION: Record<string, Multilingual> = tagValueJSON
-export const TAG_CATEGORY_TRANSLATION: Record<string, Multilingual> = tagCategoryJSON
-export const TAG_TRANSLATION: Record<string, Multilingual> = tagTranslationJSON
+const TAG_VALUE_TRANSLATION: Record<string, Multilingual> = tagValueJSON
+const TAG_CATEGORY_TRANSLATION: Record<string, Multilingual> = tagCategoryJSON
+const TAG_TRANSLATION: Record<string, Multilingual> = tagTranslationJSON
 
 export type TagCategory = 'female' | 'male' | 'mixed' | 'other'
 
