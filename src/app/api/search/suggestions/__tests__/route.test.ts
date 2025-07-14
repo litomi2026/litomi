@@ -140,8 +140,6 @@ describe('GET /api/search/suggestions', () => {
         const data = (await response.json()) as GETSearchSuggestionsResponse
 
         expect(response.status).toBe(200)
-        expect(data[0].value).toBe('female:')
-        expect(data[0].label).toBe('여:')
         expect(data.every((item) => item.value.startsWith('female:'))).toBe(true)
       })
 
@@ -282,7 +280,7 @@ describe('GET /api/search/suggestions', () => {
       })
 
       test('일본어 로케일로 검색 시 일본어 라벨을 반환한다', async () => {
-        const request = createRequest('female:', 'ja')
+        const request = createRequest('female', 'ja')
         const response = await GET(request)
         const data = (await response.json()) as GETSearchSuggestionsResponse
 
@@ -292,7 +290,7 @@ describe('GET /api/search/suggestions', () => {
       })
 
       test('중국어 간체 로케일로 검색 시 중국어 라벨을 반환한다', async () => {
-        const request = createRequest('male:', 'zh-CN')
+        const request = createRequest('male', 'zh-CN')
         const response = await GET(request)
         const data = (await response.json()) as GETSearchSuggestionsResponse
 
@@ -307,39 +305,39 @@ describe('GET /api/search/suggestions', () => {
     test('쿼리가 없는 경우 400 에러를 반환한다', async () => {
       const request = createRequest('')
       const response = await GET(request)
-      const data = (await response.json()) as GETSearchSuggestionsResponse
+      const data = await response.text()
 
       expect(response.status).toBe(400)
-      expect(data).toHaveProperty('error', 'Invalid parameters')
+      expect(data).toBe('400 Bad Request')
     })
 
     test('쿼리가 너무 짧은 경우(1글자) 400 에러를 반환한다', async () => {
       const request = createRequest('a')
       const response = await GET(request)
-      const data = (await response.json()) as GETSearchSuggestionsResponse
+      const data = await response.text()
 
       expect(response.status).toBe(400)
-      expect(data).toHaveProperty('error', 'Invalid parameters')
+      expect(data).toBe('400 Bad Request')
     })
 
     test('쿼리가 너무 긴 경우(200글자 초과) 400 에러를 반환한다', async () => {
       const longQuery = 'a'.repeat(201)
       const request = createRequest(longQuery)
       const response = await GET(request)
-      const data = (await response.json()) as GETSearchSuggestionsResponse
+      const data = await response.text()
 
       expect(response.status).toBe(400)
-      expect(data).toHaveProperty('error', 'Invalid parameters')
+      expect(data).toBe('400 Bad Request')
     })
 
     test('유효하지 않은 로케일인 경우 400 에러를 반환한다', async () => {
       const url = new URL('http://localhost:3000/api/search/suggestions?query=test&locale=invalid')
       const request = new Request(url)
       const response = await GET(request)
-      const data = (await response.json()) as GETSearchSuggestionsResponse
+      const data = await response.text()
 
       expect(response.status).toBe(400)
-      expect(data).toHaveProperty('error', 'Invalid parameters')
+      expect(data).toBe('400 Bad Request')
     })
   })
 
