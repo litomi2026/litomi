@@ -15,7 +15,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
   try {
     const client = KHentaiClient.getInstance()
-    const manga = await client.fetchManga(id, revalidate)
+    const manga = await client.fetchManga(id)
 
     if (!manga) {
       return new Response('Manga not found', { status: 404 })
