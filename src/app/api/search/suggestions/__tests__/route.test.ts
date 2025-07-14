@@ -102,14 +102,13 @@ describe('GET /api/search/suggestions', () => {
         expect(data.length).toBe(0)
       })
 
-      test('"ma" 값을 검색했을 때 manga와 male 카테고리를 포함한다', async () => {
-        const request = createRequest('ma')
+      test('"mang" 값을 검색했을 때 "type:manga" 값만 반환한다', async () => {
+        const request = createRequest('mang')
         const response = await GET(request)
         const data = (await response.json()) as GETSearchSuggestionsResponse
 
         expect(response.status).toBe(200)
-        expect(data.some((item) => item.value === 'male:')).toBe(true)
-        expect(data.some((item) => item.value === 'manga')).toBe(true)
+        expect(data.some((item) => item.value === 'type:manga' && item.label === '종류:망가')).toBe(true)
       })
 
       test('"manga" 값을 검색했을 때 "type:manga" 값만 반환한다', async () => {
@@ -232,7 +231,7 @@ describe('GET /api/search/suggestions', () => {
         expect(data.length).toBe(0)
       })
 
-      test('"_threesome" 값을 검색했을 때 전체 카테고리와 함께 "mixed:ffm_threesome" 값 등을 반환한다', async () => {
+      test('"_threesome" 값을 검색했을 때 mixed 카테고리와 관련 태그를 반환한다', async () => {
         const request = createRequest('threesome')
         const response = await GET(request)
         const data = (await response.json()) as GETSearchSuggestionsResponse
