@@ -27,7 +27,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
           public: true,
           maxAge: revalidate,
           sMaxAge: revalidate,
-          staleWhileRevalidate: 2 * revalidate,
+          staleWhileRevalidate: revalidate,
         }),
       },
     })

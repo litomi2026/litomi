@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
   const client = HarpiClient.getInstance()
 
   try {
-    const mangas = await client.fetchMangas(validatedParams, revalidate)
+    const mangas = await client.fetchMangas(validatedParams)
 
     return Response.json({ mangas } satisfies GETProxyHarpiSearchResponse, {
       headers: {
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
           public: true,
           maxAge: revalidate,
           sMaxAge: revalidate,
-          staleWhileRevalidate: 2 * revalidate,
+          staleWhileRevalidate: revalidate,
         }),
       },
     })
