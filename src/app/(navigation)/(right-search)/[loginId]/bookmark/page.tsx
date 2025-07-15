@@ -4,7 +4,9 @@ import { notFound } from 'next/navigation'
 
 import BookmarkImportButton, { BookmarkImportButtonSkeleton } from '@/components/BookmarkImportButton'
 import selectBookmarks from '@/sql/selectBookmarks'
-import { getUserIdFromAccessToken } from '@/utils/cookie'
+import { BasePageProps } from '@/types/nextjs'
+import { getUserDataFromAccessToken } from '@/utils/cookie'
+import { getLoginIdFromParam } from '@/utils/param'
 
 import BookmarkList from './BookmarkListClient'
 import BookmarkTooltip from './BookmarkTooltip'
@@ -13,13 +15,28 @@ import { GuestView } from './GuestView'
 import Loading from './loading'
 import RefreshButton from './RefreshButton'
 
-export default async function BookmarkPage() {
+export default async function BookmarkPage({ params }: BasePageProps) {
+  const { loginId } = await params
+  const loginIdFromParam = getLoginIdFromParam(loginId)
+
+  if (!loginIdFromParam) {
+    notFound()
+  }
+
   const cookieStore = await cookies()
-  const userId = await getUserIdFromAccessToken(cookieStore)
+  const { userId, loginId: loginIdFromToken } = (await getUserDataFromAccessToken(cookieStore, false)) ?? {}
 
   if (!userId) {
     return <GuestView />
   }
+
+  // TODO(2025-07-16): 30일 후 주석 해제하기
+  // if (!loginIdFromToken) {
+  //   return <GuestView />
+  // }
+  // if (loginIdFromToken !== loginIdFromParam) {
+  //   return <PrivateBookmarksView attemptedLoginId={loginIdFromParam} currentUserLoginId={loginIdFromToken} />
+  // }
 
   const bookmarkRows = await selectBookmarks({ userId, limit: BOOKMARKS_PER_PAGE })
 

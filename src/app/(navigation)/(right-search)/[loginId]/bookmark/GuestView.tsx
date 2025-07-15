@@ -48,7 +48,10 @@ export function GuestView() {
         </Link>
         <p className="mt-4 text-sm text-zinc-500">
           계정이 없으신가요?{' '}
-          <Link className="text-zinc-300 underline hover:text-white transition-colors" href="/auth/signup">
+          <Link
+            className="text-zinc-300 underline hover:text-white transition-colors"
+            href={`/auth/signup?${SearchParamKey.REDIRECT_URL}=${encodeURIComponent('/api/my?tab=bookmark')}`}
+          >
             회원가입
           </Link>
         </p>

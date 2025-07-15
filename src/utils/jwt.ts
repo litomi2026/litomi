@@ -6,6 +6,8 @@ import { ONE_HOUR, THIRTY_DAYS } from '@/constants'
 import { JWT_SECRET_ACCESS_TOKEN, JWT_SECRET_REFRESH_TOKEN } from '@/constants/env'
 import { CANONICAL_URL } from '@/constants/url'
 
+import { Optional } from './type'
+
 const url = new URL(CANONICAL_URL)
 
 export enum TokenType {
@@ -13,7 +15,11 @@ export enum TokenType {
   REFRESH,
 }
 
-export async function signJWT(payload: JWTPayload, type: TokenType): Promise<string> {
+interface CustomPayload extends JWTPayload {
+  loginId: string
+}
+
+export async function signJWT(payload: CustomPayload, type: TokenType): Promise<string> {
   // NOTE: https://developer.amazon.com/docs/login-with-amazon/access-token.html
   const duration = type === TokenType.ACCESS ? ONE_HOUR : THIRTY_DAYS
   const secretKey = type === TokenType.ACCESS ? JWT_SECRET_ACCESS_TOKEN : JWT_SECRET_REFRESH_TOKEN
@@ -31,8 +37,15 @@ const options = {
   issuer: url.hostname,
 }
 
-export async function verifyJWT(token: string, type: TokenType): Promise<JWTPayload> {
+export async function verifyJWT(token: string, type: TokenType) {
   const secretKey = type === TokenType.ACCESS ? JWT_SECRET_ACCESS_TOKEN : JWT_SECRET_REFRESH_TOKEN
-  const { payload } = await jwtVerify(token, new TextEncoder().encode(secretKey), options)
+
+  // TODO(2025-07-16): 30일 후 Optional 삭제하기
+  const { payload } = await jwtVerify<Optional<CustomPayload, 'loginId'>>(
+    token,
+    new TextEncoder().encode(secretKey),
+    options,
+  )
+
   return payload
 }

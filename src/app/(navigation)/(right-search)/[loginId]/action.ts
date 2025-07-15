@@ -7,7 +7,7 @@ import { z } from 'zod/v4'
 
 import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
-import { getUserIdFromAccessToken } from '@/utils/cookie'
+import { getUserDataFromAccessToken } from '@/utils/cookie'
 
 const schema = z.object({
   nickname: z
@@ -21,7 +21,8 @@ const schema = z.object({
 
 export default async function editProfile(_prevState: unknown, formData: FormData) {
   const cookieStore = await cookies()
-  const userId = await getUserIdFromAccessToken(cookieStore)
+  const userData = await getUserDataFromAccessToken(cookieStore)
+  const userId = userData?.userId
 
   if (!userId) {
     return { status: 401, error: '로그인 정보가 없거나 만료됐어요.' }
