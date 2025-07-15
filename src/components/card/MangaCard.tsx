@@ -10,6 +10,7 @@ import { SourceParam } from '@/utils/param'
 import IconExternalLink from '../icons/IconExternalLink'
 import TagList from '../TagList'
 import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from './BookmarkButton'
+import DownloadButton, { DownloadButtonError, DownloadButtonSkeleton } from './DownloadButton'
 import LanguageBadge from './LanguageBadge'
 import MangaCardImage from './MangaCardImage'
 import MangaMetadataItem from './MangaMetadataItem'
@@ -33,8 +34,9 @@ export function MangaCardSkeleton() {
 }
 
 function MangaCard({ manga, index = 0, source, className = '', showSearchFromNextButton }: Readonly<Props>) {
-  const { id, artists, characters, date, group, series, tags, title, type, language } = manga
+  const { id, artists, characters, date, group, series, tags, title, type, language, images } = manga
   const viewerLink = getViewerLink(id, source)
+  const isAllDownloadable = images.every((image) => image.startsWith('https://soujpa.in/'))
 
   return (
     <li className={`grid grid-rows-[auto_1fr] border-2 rounded-xl overflow-hidden bg-zinc-900 ${className}`} key={id}>
@@ -93,11 +95,17 @@ function MangaCard({ manga, index = 0, source, className = '', showSearchFromNex
                 <BookmarkButton className="flex-1" manga={manga} source={source} />
               </Suspense>
             </ErrorBoundary>
-            {showSearchFromNextButton && (
+            {showSearchFromNextButton ? (
               <Suspense>
                 <SearchFromHereButton className="flex-1" mangaId={id} />
               </Suspense>
-            )}
+            ) : isAllDownloadable ? (
+              <ErrorBoundary fallback={DownloadButtonError}>
+                <Suspense fallback={<DownloadButtonSkeleton className="flex-1" />}>
+                  <DownloadButton className="flex-1" manga={manga} />
+                </Suspense>
+              </ErrorBoundary>
+            ) : null}
           </div>
         </div>
       </div>
