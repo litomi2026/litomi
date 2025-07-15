@@ -11,7 +11,7 @@ function FullscreenButton() {
       if (document.documentElement.requestFullscreen) {
         document.documentElement.requestFullscreen()
       } else {
-        toast.warning('이 브라우저는 전체화면 기능을 지원하지 않습니다.')
+        toast.warning('이 브라우저는 전체화면 기능을 지원하지 않아요')
       }
     } else if (document.exitFullscreen) {
       document.exitFullscreen()
