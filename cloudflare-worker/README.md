@@ -1,127 +1,74 @@
-# Cloudflare Worker CORS Image Proxy
+# Cloudflare worker
 
-This Cloudflare Worker acts as a CORS proxy for images from external sources, allowing your web application to download images without CORS errors.
+Since already have the worker created at `image.gwak2837.workers.dev`, follow these steps:
 
-## Features
+## Deploy TypeScript CORS Proxy to image.gwak2837.workers.dev
 
-- ✅ Handles CORS headers automatically
-- ✅ Validates allowed domains for security
-- ✅ Caches images using Cloudflare's edge network
-- ✅ Supports all common image formats
-- ✅ Adds appropriate referer headers for each source
-- ✅ TypeScript support
+### 1. Set up the project structure
 
-## Deployment Steps
-
-### 1. Install Wrangler CLI
+Create a new directory for your worker project:
 
 ```bash
-npm install -g wrangler
-# or
-pnpm add -g wrangler
+cd cloudflare-worker
 ```
 
-### 2. Login to Cloudflare
+### 2. Install dependencies (if not already installed)
 
 ```bash
-wrangler login
+bun i
 ```
 
-### 3. Create a new Worker
+### 3. Login to Cloudflare (if not already logged in)
 
 ```bash
-wrangler init cors-image-proxy
-cd cors-image-proxy
+bunx wrangler login
 ```
 
-### 4. Copy the Worker Code
-
-Copy either `cors-proxy.js` or `cors-proxy.ts` to your worker directory as `src/index.js` or `src/index.ts`.
-
-### 5. Configure wrangler.toml
-
-Create or update `wrangler.toml`:
-
-```toml
-name = "cors-image-proxy"
-main = "src/index.js" # or "src/index.ts" for TypeScript
-compatibility_date = "2024-01-01"
-
-[env.production]
-route = "https://your-domain.com/cors-proxy/*"
-```
-
-### 6. Deploy
+### 4. Deploy to your existing worker
 
 ```bash
-wrangler deploy
+bun run deploy
 ```
 
-## Usage
+This will deploy to `image.gwak2837.workers.dev`.
 
-Once deployed, you can use the proxy by passing the image URL as a query parameter:
+### 5. Update your environment variables
 
-```
-https://your-worker.workers.dev/?url=https://cdn.harpi.in/image.jpg
-```
+In your main application, update the environment variable:
 
-## Integration with Your App
-
-Update your `fetchImageWithRetry` function in `src/utils/browser.ts`:
-
-```typescript
-// Add your Cloudflare Worker URL
-const CORS_PROXY_URL = 'https://your-worker.workers.dev'
-
-export async function fetchImageWithRetry(url: string, attempt = 1): Promise<Blob> {
-  try {
-    // Use CORS proxy for external images
-    const proxyUrl = `${CORS_PROXY_URL}?url=${encodeURIComponent(url)}`
-    const res = await fetch(proxyUrl)
-    if (!res.ok) throw new Error(`HTTP error ${res.status}`)
-    return await res.blob()
-  } catch (error) {
-    if (attempt < 3) {
-      const delay = 1000 * Math.pow(2, attempt - 1)
-      await new Promise((resolve) => setTimeout(resolve, delay))
-      return fetchImageWithRetry(url, attempt + 1)
-    }
-    throw error
-  }
-}
+```env
+NEXT_PUBLIC_CORS_PROXY_URL=https://image.gwak2837.workers.dev
 ```
 
-## Security Considerations
+## Testing
 
-1. **Domain Whitelist**: Only allowed domains can be proxied (configured in `ALLOWED_DOMAINS`)
-2. **HTTPS Only**: Only HTTPS URLs are allowed
-3. **Image Validation**: Content-Type is validated to ensure only images are proxied
-4. **Rate Limiting**: Consider adding rate limiting in Cloudflare dashboard
+Test the deployment by visiting:
 
-## Adding New Domains
-
-To add support for new image sources, update the `ALLOWED_DOMAINS` array in the worker code:
-
-```javascript
-const ALLOWED_DOMAINS = [
-  'cdn.harpi.in',
-  'thumb.k-hentai.org',
-  'k-hentai.org',
-  'api-kh.hiyobi.org',
-  'ehgt.org',
-  'new-domain.com', // Add new domain here
-]
+```
+https://image.gwak2837.workers.dev/?url=https://cdn.harpi.in/test-image.jpg
 ```
 
-## Monitoring
+You should see CORS headers in the response.
 
-Monitor your worker's performance and usage in the Cloudflare dashboard:
+## Development
 
-- Workers > Analytics
-- Check for errors, requests, and bandwidth usage
+To run locally for testing:
 
-## Cost Optimization
+```bash
+bun dev
+```
 
-- Cloudflare Workers free tier includes 100,000 requests/day
-- Enable caching to reduce origin requests
-- Monitor bandwidth usage to stay within limits
+This will start a local server at http://localhost:8787
+
+## Troubleshooting
+
+If you get TypeScript errors:
+
+1. Make sure the `Env` interface has at least one property (you already added `a: string`)
+2. The eslint-disable comments are already in place
+
+If deployment fails:
+
+1. Check that you're logged in: `bunx wrangler whoami`
+2. Verify the worker name in wrangler.toml matches your worker: `name = "image"`
+3. Make sure you're in the correct directory with wrangler.toml

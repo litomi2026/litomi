@@ -186,3 +186,6 @@ certificates
 
 # Bun
 bun.lockb
+
+# Cloudflare
+.wrangler

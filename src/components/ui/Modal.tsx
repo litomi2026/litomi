@@ -116,7 +116,7 @@ export default function Modal({
           )}
           <div
             aria-current={open}
-            className={`absolute z-50 transition duration-300 scale-90 aria-current:scale-100 ${className}`}
+            className={`absolute z-50 transition duration-300 sm:scale-95 aria-current:scale-100 ${className}`}
             onClick={(e) => e.stopPropagation()}
             ref={showDragButton ? modalRef : null}
           >
