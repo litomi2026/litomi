@@ -4,14 +4,15 @@ on:
   push:
     branches: [main]
     paths:
+      - '.github/workflows/cloudflare.yml'
       - 'cloudflare-worker/**'
   pull_request:
     branches: [main]
     types: [opened, synchronize, reopened]
 
 jobs:
-  cloudflare:
-    name: Cloudflare
+  workers:
+    name: Workers
     runs-on: ubuntu-latest
 
     steps:
