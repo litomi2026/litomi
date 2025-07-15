@@ -7,7 +7,7 @@ import LogoutButton, { LogoutButtonError, LogoutButtonSkeleton } from '@/compone
 import IconCalendar from '@/components/icons/IconCalendar'
 import selectUser from '@/sql/selectUser'
 import { BaseLayoutProps } from '@/types/nextjs'
-import { getLoginId } from '@/utils/param'
+import { getLoginIdFromParam } from '@/utils/param'
 
 import MyPageNavigation from './MyPageNavigation'
 import ProfileEditButton, { ProfileEditButtonError, ProfileEditButtonSkeleton } from './ProfileEditButton'
@@ -16,7 +16,7 @@ import UserNotFound from './UserNotFound'
 
 export default async function Layout({ params, children }: BaseLayoutProps) {
   const { loginId } = await params
-  const decodedLoginId = getLoginId(loginId)
+  const decodedLoginId = getLoginIdFromParam(loginId)
 
   if (!decodedLoginId) {
     return <UserBadRequest />
