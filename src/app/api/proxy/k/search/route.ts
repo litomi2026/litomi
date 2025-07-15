@@ -3,6 +3,8 @@ import { getCategories, KHentaiClient } from '@/crawler/k-hentai'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { Manga } from '@/types/manga'
 
+import { convertQueryKey, filterMangasByExcludedTags, parseExclusionFilters } from './utils'
+
 export const runtime = 'edge'
 const maxAge = 300
 
@@ -54,7 +56,9 @@ export async function GET(request: Request) {
       endDate: to?.toString(),
     }
 
-    const mangas = await client.searchMangas(params)
+    const searchedMangas = await client.searchMangas(params)
+    const excludedTags = parseExclusionFilters(query)
+    const mangas = filterMangasByExcludedTags(searchedMangas, excludedTags)
 
     return Response.json(
       {
@@ -76,13 +80,4 @@ export async function GET(request: Request) {
   } catch (error) {
     return handleRouteError(error, request)
   }
-}
-
-/**
- * Example: "series:naruto" -> "parody:naruto"
- *
- * Example: "id:12345" -> "gid:12345"
- */
-function convertQueryKey(query?: string) {
-  return query?.replace(/\bid:/gi, 'gid:').replace(/\bseries:/gi, 'parody:')
 }
