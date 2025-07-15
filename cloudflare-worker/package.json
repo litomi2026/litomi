@@ -1,0 +1,14 @@
+{
+  "name": "image-cors-proxy",
+  "version": "1.0.0",
+  "description": "CORS proxy for images using Cloudflare Workers",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250715.0",
+    "typescript": "^5.8.3",
+    "wrangler": "^3.22.4"
+  }
+}
