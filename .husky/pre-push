@@ -1,1 +1,1 @@
-npx tsc
+bun type && bun test
