@@ -29,17 +29,7 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
   const isDefaultSort = filters.sort === undefined || filters.sort === ''
 
   const handleFilterChange = useCallback(
-    (key: FilterKey, value: string) => {
-      setFilters((prev) => {
-        const newFilters = { ...prev, [key]: value }
-
-        if (key === 'sort' && value !== '' && prev['next-id']) {
-          delete newFilters['next-id']
-        }
-
-        return newFilters
-      })
-    },
+    (key: FilterKey, value: string) => setFilters((prev) => ({ ...prev, [key]: value })),
     [setFilters],
   )
 
@@ -71,6 +61,10 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
         const timestamp = Math.floor(date.getTime() / 1000)
         params.set(key, timestamp.toString())
       })
+
+      if (filters.sort !== '' && filters['next-id']) {
+        params.delete('next-id')
+      }
 
       startTransition(() => {
         router.replace(`${pathname}?${params}`)

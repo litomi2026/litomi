@@ -6,3 +6,4 @@ export const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL
 export const POSTGRES_URL = process.env.POSTGRES_URL ?? ''
 export const JWT_SECRET_ACCESS_TOKEN = process.env.JWT_SECRET_ACCESS_TOKEN ?? ''
 export const JWT_SECRET_REFRESH_TOKEN = process.env.JWT_SECRET_REFRESH_TOKEN ?? ''
+export const NEXT_PUBLIC_CORS_PROXY_URL = process.env.NEXT_PUBLIC_CORS_PROXY_URL || ''

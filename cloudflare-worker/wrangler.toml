@@ -1,0 +1,8 @@
+name = "image"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+# Optional: Add custom domain routes
+# [[routes]]
+# pattern = "cors.your-domain.com/*"
+# zone_name = "your-domain.com"
