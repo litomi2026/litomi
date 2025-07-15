@@ -1,9 +1,9 @@
-import { NextRequest } from 'next/server'
-
 import { GETProxyKSearchSchema } from '@/app/api/proxy/k/search/schema'
 import { getCategories, KHentaiClient } from '@/crawler/k-hentai'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { Manga } from '@/types/manga'
+
+import { convertQueryKey, filterMangasByExcludedTags, parseExclusionFilters } from './utils'
 
 export const runtime = 'edge'
 const maxAge = 300
@@ -14,9 +14,9 @@ export type GETProxyKSearchResponse = {
   hasNextPage: boolean
 }
 
-export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams
-  const params = Object.fromEntries(searchParams)
+export async function GET(request: Request) {
+  const url = new URL(request.url)
+  const params = Object.fromEntries(url.searchParams)
   const validation = GETProxyKSearchSchema.safeParse(params)
 
   if (!validation.success) {
@@ -56,7 +56,9 @@ export async function GET(request: NextRequest) {
       endDate: to?.toString(),
     }
 
-    const mangas = await client.searchMangas(params)
+    const searchedMangas = await client.searchMangas(params)
+    const excludedTags = parseExclusionFilters(query)
+    const mangas = filterMangasByExcludedTags(searchedMangas, excludedTags)
 
     return Response.json(
       {
@@ -78,13 +80,4 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     return handleRouteError(error, request)
   }
-}
-
-/**
- * Example: "series:naruto" -> "parody:naruto"
- *
- * Example: "id:12345" -> "gid:12345"
- */
-function convertQueryKey(query?: string) {
-  return query?.replace(/\bid:/gi, 'gid:').replace(/\bseries:/gi, 'parody:')
 }

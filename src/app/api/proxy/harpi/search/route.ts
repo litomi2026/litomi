@@ -1,5 +1,3 @@
-import { NextRequest } from 'next/server'
-
 import { HarpiClient } from '@/crawler/harpi'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { Manga } from '@/types/manga'
@@ -16,8 +14,9 @@ export type GETProxyHarpiSearchResponse = {
   mangas: Manga[]
 }
 
-export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams
+export async function GET(request: Request) {
+  const url = new URL(request.url)
+  const searchParams = url.searchParams
   const params: Record<string, string | string[]> = {}
 
   for (const [key, value] of searchParams) {
