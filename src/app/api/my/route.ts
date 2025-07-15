@@ -1,7 +1,6 @@
 import { sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { NextRequest } from 'next/server'
 
 import { SearchParamKey } from '@/constants/storage'
 import { db } from '@/database/drizzle'
@@ -10,8 +9,9 @@ import { getUserIdFromAccessToken } from '@/utils/cookie'
 
 import { GETMyRequestSchema } from './schema'
 
-export async function GET(request: NextRequest) {
-  const params = Object.fromEntries(request.nextUrl.searchParams)
+export async function GET(request: Request) {
+  const url = new URL(request.url)
+  const params = Object.fromEntries(url.searchParams)
   const validation = GETMyRequestSchema.safeParse(params)
 
   if (!validation.success) {
