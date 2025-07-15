@@ -25,18 +25,17 @@ function SearchForm({ className = '' }: Readonly<Props>) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const query = searchParams.get('query') ?? ''
-  const [keyword, setKeyword] = useState(() => query)
+  const [keyword, setKeyword] = useState(query)
   const [cursorPosition, setCursorPosition] = useState(query.length)
   const [isSearching, startSearching] = useTransition()
   const [_, startClosing] = useTransition()
   const [showSuggestions, setShowSuggestions] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const suggestionsRef = useRef<HTMLDivElement>(null)
-
   const currentWordInfo = useMemo(() => getWordAtCursor(keyword, cursorPosition), [keyword, cursorPosition])
 
   const { selectedIndex, setSelectedIndex, searchSuggestions, showHeader, resetSelection, navigateSelection } =
-    useSearchSuggestions(currentWordInfo.word)
+    useSearchSuggestions(currentWordInfo.word.replace(/^-/g, ''))
 
   const selectSuggestion = useCallback(
     (suggestion: SearchSuggestion) => {
