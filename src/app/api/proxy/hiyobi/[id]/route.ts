@@ -1,12 +1,10 @@
-import { NextRequest } from 'next/server'
-
 import { HiyobiClient } from '@/crawler/hiyobi'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 
 export const runtime = 'edge'
 const maxAge = 604800 // 1 week
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: Request, { params }: { params: { id: string } }) {
   const id = parseInt(params.id)
 
   if (isNaN(id) || id <= 0) {

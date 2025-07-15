@@ -1,5 +1,3 @@
-import { NextRequest } from 'next/server'
-
 import { GETProxyKSearchSchema } from '@/app/api/proxy/k/search/schema'
 import { getCategories, KHentaiClient } from '@/crawler/k-hentai'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
@@ -14,9 +12,9 @@ export type GETProxyKSearchResponse = {
   hasNextPage: boolean
 }
 
-export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams
-  const params = Object.fromEntries(searchParams)
+export async function GET(request: Request) {
+  const url = new URL(request.url)
+  const params = Object.fromEntries(url.searchParams)
   const validation = GETProxyKSearchSchema.safeParse(params)
 
   if (!validation.success) {

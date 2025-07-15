@@ -1,5 +1,3 @@
-import { NextRequest } from 'next/server'
-
 import { GETProxyKImageSchema } from '@/app/api/proxy/k/image/schema'
 import { KHentaiClient } from '@/crawler/k-hentai'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
@@ -7,9 +5,9 @@ import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 export const runtime = 'edge'
 const maxAge = 43200 // 12 hours
 
-export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams
-  const params = Object.fromEntries(searchParams)
+export async function GET(request: Request) {
+  const url = new URL(request.url)
+  const params = Object.fromEntries(url.searchParams)
   const validation = GETProxyKImageSchema.safeParse(params)
 
   if (!validation.success) {

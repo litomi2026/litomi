@@ -1,5 +1,3 @@
-import { NextRequest } from 'next/server'
-
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 
 import { type GETSearchSuggestionsResponse, GETSearchSuggestionsSchema, queryBlacklist } from './schema'
@@ -8,7 +6,7 @@ import { suggestionTrie } from './suggestion-trie'
 export const runtime = 'edge'
 const maxAge = 86400 // 1 day
 
-export async function GET(request: NextRequest | Request) {
+export async function GET(request: Request) {
   const url = new URL(request.url)
   const params = Object.fromEntries(url.searchParams)
   const validation = GETSearchSuggestionsSchema.safeParse(params)
