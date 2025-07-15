@@ -3,6 +3,13 @@ name: SonarQube
 on:
   push:
     branches: [main]
+    paths:
+      - 'src/**'
+      - 'bun.lock'
+      - 'bunfig.toml'
+      - 'package.json'
+      - 'sonar-project.properties'
+      - 'tsconfig.json'
   pull_request:
     branches: [main]
     types: [opened, synchronize, reopened]

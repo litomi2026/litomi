@@ -17,11 +17,11 @@ cp ../litomi/cloudflare-worker/cors-proxy.ts src/index.ts
 
 # Install dependencies
 echo "📦 Installing dependencies..."
-npm install
+bun install
 
 # Deploy
 echo "🌐 Deploying to image.gwak2837.workers.dev..."
-npm run deploy
+bun run deploy
 
 echo "✅ Deployment complete!"
 echo "🔗 Your CORS proxy is available at: https://image.gwak2837.workers.dev"
