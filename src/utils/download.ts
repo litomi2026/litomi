@@ -11,7 +11,7 @@ export async function downloadImage(imageUrl: string, filename: string): Promise
     const response = await fetch(url)
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch: ${response.status}`)
+      throw new Error(`${response.status} ${response.statusText}`)
     }
 
     const blob = await response.blob()
@@ -30,8 +30,7 @@ export async function downloadImage(imageUrl: string, filename: string): Promise
     document.body.removeChild(link)
     URL.revokeObjectURL(blobUrl)
   } catch (error) {
-    console.error('Download failed:', error)
-    throw new Error('다운로드에 실패했습니다.')
+    throw new Error(error instanceof Error ? error.message : '다운로드에 실패했어요')
   }
 }
 
@@ -60,6 +59,11 @@ export async function downloadMultipleImages({
             : url
 
         const response = await fetch(corsUrl)
+
+        if (!response.ok) {
+          throw new Error(`${response.status} ${response.statusText}`)
+        }
+
         const blob = await response.blob()
         zip.file(filename, blob)
 
