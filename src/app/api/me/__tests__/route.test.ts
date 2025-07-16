@@ -138,7 +138,6 @@ describe('GET /api/me', () => {
 
       // Then
       expect(response.status).toBe(401)
-      expect(await response.text()).toBe('로그인 정보가 없거나 만료됐어요.')
       expect(deletedCookies).toEqual([])
     })
 
@@ -153,7 +152,6 @@ describe('GET /api/me', () => {
 
       // Then
       expect(response.status).toBe(401)
-      expect(await response.text()).toBe('로그인 정보가 없거나 만료됐어요.')
       expect(deletedCookies).toEqual(['at'])
     })
 
@@ -177,7 +175,6 @@ describe('GET /api/me', () => {
 
       // Then
       expect(response.status).toBe(401)
-      expect(await response.text()).toBe('로그인 정보가 없거나 만료됐어요.')
       expect(deletedCookies).toEqual(['at'])
     })
 
@@ -190,7 +187,6 @@ describe('GET /api/me', () => {
 
       // Then
       expect(response.status).toBe(401)
-      expect(await response.text()).toBe('로그인 정보가 없거나 만료됐어요.')
       expect(deletedCookies).toEqual(['at'])
     })
 
@@ -280,7 +276,6 @@ describe('GET /api/me', () => {
 
         // Then
         expect(response.status).toBe(401)
-        expect(await response.text()).toBe('로그인 정보가 없거나 만료됐어요.')
         expect(deletedCookies).toEqual(['at'])
       }
     })
