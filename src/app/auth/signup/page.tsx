@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { Suspense } from 'react'
 
-import GuestOnly from '@/components/GuestOnly'
 import IconLogo from '@/components/icons/IconLogo'
 
 import SignupForm, { SignupFormSkeleton } from './SignupForm'
@@ -40,7 +39,6 @@ export default function Page() {
           </p>
         </div>
       </div>
-      <GuestOnly />
     </main>
   )
 }
