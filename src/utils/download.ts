@@ -41,14 +41,13 @@ export async function downloadMultipleImages({
 }: {
   filename: string
   images: { url: string; filename: string }[]
-  onProgress?: (progress: number) => void
+  onProgress?: (completed: number) => void
 }): Promise<void> {
   const JSZip = (await import('jszip')).default
   const zip = new JSZip()
 
   let completed = 0
   let successCount = 0
-  const total = images.length
 
   await Promise.all(
     images.map(async ({ url, filename }) => {
@@ -69,11 +68,11 @@ export async function downloadMultipleImages({
 
         successCount++
         completed++
-        onProgress?.(Math.round((completed / total) * 100))
+        onProgress?.(completed)
       } catch (error) {
         console.error(`Failed to download ${filename}:`, error)
         completed++
-        onProgress?.(Math.round((completed / total) * 100))
+        onProgress?.(completed)
       }
     }),
   )

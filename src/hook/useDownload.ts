@@ -7,7 +7,7 @@ import { getImageSrc } from '@/utils/manga'
 
 export function useDownload(manga: Manga) {
   const [isDownloading, setIsDownloading] = useState(false)
-  const [downloadProgress, setDownloadProgress] = useState(0)
+  const [downloadedCount, setDownloadedCount] = useState(0)
 
   const downloadSingleImage = useCallback(
     async (imageIndex: number) => {
@@ -35,7 +35,7 @@ export function useDownload(manga: Manga) {
     if (isDownloading) return
 
     setIsDownloading(true)
-    setDownloadProgress(0)
+    setDownloadedCount(0)
 
     try {
       const { id, title, images, cdn } = manga
@@ -48,7 +48,7 @@ export function useDownload(manga: Manga) {
       await downloadMultipleImages({
         filename: title,
         images: imageList,
-        onProgress: setDownloadProgress,
+        onProgress: (completed) => setDownloadedCount(completed),
       })
 
       toast.success('다운로드가 완료됐어요')
@@ -56,13 +56,13 @@ export function useDownload(manga: Manga) {
       toast.error(error instanceof Error ? error.message : '다운로드에 실패했어요')
     } finally {
       setIsDownloading(false)
-      setDownloadProgress(0)
+      setDownloadedCount(0)
     }
   }, [manga, isDownloading])
 
   return {
     isDownloading,
-    downloadProgress,
+    downloadedCount,
     downloadSingleImage,
     downloadAllImages,
   }
