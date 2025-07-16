@@ -5,7 +5,7 @@ import { RouteProps } from '@/types/nextjs'
 import { GETProxyHiyobiIdSchema } from './schema'
 
 export const runtime = 'edge'
-const maxAge = 604800 // 1 week
+const maxAge = 43200 // 12 hours
 
 type Params = {
   id: string
