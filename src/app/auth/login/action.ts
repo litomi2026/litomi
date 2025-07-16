@@ -7,6 +7,7 @@ import { z } from 'zod/v4'
 
 import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
+import { trackAmplitudeEvent } from '@/lib/amplitude/server'
 import { setAccessTokenCookie, setRefreshTokenCookie } from '@/utils/cookie'
 
 const schema = z.object({
@@ -43,6 +44,8 @@ export default async function login(_prevState: unknown, formData: FormData) {
     .select({
       id: userTable.id,
       passwordHash: userTable.passwordHash,
+      lastLoginAt: userTable.loginAt,
+      lastLogoutAt: userTable.logoutAt,
     })
     .from(userTable)
     .where(sql`${userTable.loginId} = ${loginId}`)
@@ -57,7 +60,7 @@ export default async function login(_prevState: unknown, formData: FormData) {
     }
   }
 
-  const { id: userId, passwordHash } = result
+  const { id: userId, passwordHash, lastLoginAt, lastLogoutAt } = result
   const isCorrectPassword = await compare(password, passwordHash)
 
   if (!isCorrectPassword) {
@@ -80,6 +83,16 @@ export default async function login(_prevState: unknown, formData: FormData) {
       .set({ loginAt: new Date() })
       .where(sql`${userTable.id} = ${userId}`),
   ])
+
+  trackAmplitudeEvent({
+    userId,
+    event: 'login',
+    userProperties: {
+      loginId,
+      lastLoginAt,
+      lastLogoutAt,
+    },
+  })
 
   return { success: true, data: { userId, loginId } }
 }
