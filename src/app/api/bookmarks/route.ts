@@ -66,6 +66,7 @@ export async function GET(request: Request) {
     } satisfies GETBookmarksResponse,
     {
       headers: {
+        // NOTE: 로그인 후 다른 계정으로 로그인 시 이전 계정의 북마크 목록이 캐시되어 보여지는 이슈가 있음
         'Cache-Control': createCacheControl({
           private: true,
           maxAge,
