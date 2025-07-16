@@ -31,7 +31,7 @@ jobs:
       - name: Deploy to Cloudflare Workers
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         working-directory: ./cloudflare-worker
-        run: bun run deploy
+        run: bunx wrangler deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
