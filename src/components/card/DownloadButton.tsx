@@ -1,35 +1,23 @@
 'use client'
 
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
-import { useEffect } from 'react'
+import { memo, useEffect } from 'react'
 import { toast } from 'sonner'
 
 import { IconDownload } from '@/components/icons/IconDownload'
 import { useDownload } from '@/hook/useDownload'
+import { useThrottleValue } from '@/hook/useThrottleValue'
 import { Manga } from '@/types/manga'
 
 const commonButtonStyle = 'flex justify-center items-center gap-1'
+const THROTTLE_DELAY = 300
 
 type Props = {
   manga: Manga
   className?: string
 }
 
-export default function DownloadButton({ manga, className = '' }: Readonly<Props>) {
-  const { isDownloading, downloadProgress, downloadAllImages } = useDownload(manga)
-
-  return (
-    <button
-      className={`${commonButtonStyle} ${className}`}
-      disabled={isDownloading}
-      onClick={downloadAllImages}
-      type="button"
-    >
-      <IconDownload aria-busy={isDownloading} className="w-4 aria-busy:animate-pulse" />
-      {isDownloading ? `${downloadProgress}% 완료` : '다운로드'}
-    </button>
-  )
-}
+export default memo(DownloadButton)
 
 export function DownloadButtonError({ error, reset }: ErrorBoundaryFallbackProps) {
   useEffect(() => {
@@ -53,6 +41,48 @@ export function DownloadButtonSkeleton({ className = '' }: { className?: string 
     <button className={`${commonButtonStyle} disabled:opacity-50 disabled:cursor-not-allowed ${className}`} disabled>
       <IconDownload className="w-4" />
       다운로드
+    </button>
+  )
+}
+
+function DownloadButton({ manga, className = '' }: Readonly<Props>) {
+  const { isDownloading, downloadedCount, downloadAllImages } = useDownload(manga)
+  const throttledCount = useThrottleValue(downloadedCount, THROTTLE_DELAY)
+  const progress = Math.round((throttledCount / manga.images.length) * 100)
+  const totalCount = manga.images.length
+
+  const getProgressText = () => {
+    if (!isDownloading) return '다운로드'
+
+    if (progress === 0) return '준비 중'
+    if (progress === 100) return '압축 중'
+
+    if (totalCount > 20) {
+      return `${throttledCount}/${totalCount} (${progress}%)`
+    } else {
+      return `${progress}%`
+    }
+  }
+
+  return (
+    <button
+      className={`${commonButtonStyle} ${className} relative overflow-hidden`}
+      disabled={isDownloading}
+      onClick={downloadAllImages}
+      type="button"
+    >
+      {/* Progress bar */}
+      {isDownloading && (
+        <div
+          className="absolute inset-0 bg-background opacity-50 transition-transform duration-300 ease-out"
+          style={{ transform: `translateX(-${100 - progress}%)` }}
+        />
+      )}
+      {/* Content */}
+      <IconDownload aria-busy={isDownloading} className="w-4 text-foreground aria-busy:animate-pulse relative z-10" />
+      <span aria-busy={isDownloading} className="relative z-10 text-foreground aria-busy:font-mono aria-busy:text-xs">
+        {getProgressText()}
+      </span>
     </button>
   )
 }

@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation'
 import { SearchParamKey } from '@/constants/storage'
 import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
-import { getUserIdFromAccessToken } from '@/utils/cookie'
+import { getUserDataFromAccessToken } from '@/utils/cookie'
 
 import { GETMyRequestSchema } from './schema'
 
@@ -20,7 +20,8 @@ export async function GET(request: Request) {
 
   const { tab } = validation.data
   const cookieStore = await cookies()
-  const userId = await getUserIdFromAccessToken(cookieStore)
+  const userData = await getUserDataFromAccessToken(cookieStore)
+  const userId = userData?.userId
 
   if (!userId) {
     const redirectURL = tab ? `/api/my?tab=${tab}` : '/api/my'

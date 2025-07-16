@@ -75,7 +75,11 @@ export default async function signup(_prevState: unknown, formData: FormData) {
 
   const { id: userId } = result
   const cookieStore = await cookies()
-  await Promise.all([setAccessTokenCookie(cookieStore, userId), setRefreshTokenCookie(cookieStore, userId)])
 
-  return { success: true }
+  await Promise.all([
+    setAccessTokenCookie(cookieStore, userId, loginId),
+    setRefreshTokenCookie(cookieStore, userId, loginId),
+  ])
+
+  return { success: true, data: { userId, loginId } }
 }

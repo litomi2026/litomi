@@ -4,7 +4,7 @@ import { cookies } from 'next/headers'
 import { CookieKey } from '@/constants/storage'
 import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
-import { getUserIdFromAccessToken } from '@/utils/cookie'
+import { getUserDataFromAccessToken } from '@/utils/cookie'
 
 export type GETMeResponse = {
   id: number
@@ -15,7 +15,8 @@ export type GETMeResponse = {
 
 export async function GET() {
   const cookieStore = await cookies()
-  const userId = await getUserIdFromAccessToken(cookieStore)
+  const userData = await getUserDataFromAccessToken(cookieStore)
+  const userId = userData?.userId
 
   if (!userId) {
     return new Response('로그인 정보가 없거나 만료됐어요.', { status: 401 })

@@ -27,16 +27,17 @@ export default function LogoutButton({ className = '' }: Readonly<Props>) {
   const [{ error, success, status }, formAction, pending] = useActionState(logout, initialState)
   const queryClient = useQueryClient()
   const { data: me } = useMeQuery()
-  const myId = me?.id
 
   useEffect(() => {
-    if (success) {
-      toast.success('로그아웃 성공')
-      if (myId) amplitude.track('logout', { userId: myId })
-      amplitude.reset()
-      queryClient.setQueriesData({ queryKey: QueryKeys.me }, () => null)
+    if (!success) {
+      return
     }
-  }, [myId, queryClient, success])
+
+    toast.success('로그아웃 성공')
+    amplitude.track('logout')
+    amplitude.reset()
+    queryClient.setQueriesData({ queryKey: QueryKeys.me }, () => null)
+  }, [queryClient, success])
 
   useActionErrorEffect({
     status,

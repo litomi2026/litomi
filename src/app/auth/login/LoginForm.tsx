@@ -22,8 +22,8 @@ export default function LoginForm() {
   const formRef = useRef<HTMLFormElement>(null)
   const queryClient = useQueryClient()
   const searchParams = useSearchParams()
-  const userId = data?.userId
   const loginId = data?.loginId
+  const userId = data?.userId
 
   function resetId() {
     const loginIdInput = formRef.current?.loginId as HTMLInputElement
@@ -51,13 +51,13 @@ export default function LoginForm() {
 
     if (userId) {
       amplitude.setUserId(userId)
-      amplitude.track('login', { userId })
+      amplitude.track('login')
     }
 
     queryClient
       .invalidateQueries({ queryKey: QueryKeys.me, refetchType: 'all' })
       .then(() => router.replace(searchParams.get(SearchParamKey.REDIRECT_URL) ?? '/'))
-  }, [queryClient, router, searchParams, success, userId, loginId])
+  }, [loginId, queryClient, router, searchParams, success, userId])
 
   return (
     <form
@@ -80,7 +80,7 @@ export default function LoginForm() {
             <input
               aria-invalid={(error?.loginId?.errors?.length ?? 0) > 0}
               autoFocus
-              defaultValue={formData?.get('loginId')?.toString() ?? ''}
+              defaultValue={loginId}
               disabled={pending}
               id="loginId"
               maxLength={32}

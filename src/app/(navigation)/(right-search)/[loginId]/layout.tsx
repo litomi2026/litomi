@@ -16,13 +16,13 @@ import UserNotFound from './UserNotFound'
 
 export default async function Layout({ params, children }: BaseLayoutProps) {
   const { loginId } = await params
-  const decodedLoginId = getLoginIdFromParam(loginId)
+  const loginIdFromParam = getLoginIdFromParam(loginId)
 
-  if (!decodedLoginId) {
+  if (!loginIdFromParam) {
     return <UserBadRequest />
   }
 
-  const [user] = await getUser(decodedLoginId)()
+  const [user] = await getUser(loginIdFromParam)()
 
   if (!user) {
     return <UserNotFound />
@@ -54,7 +54,7 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
             </div>
             <div className="ml-4">
               <h1 className="text-2xl font-bold line-clamp-1 break-all">{user.nickname}</h1>
-              <p className="text-zinc-500 font-mono break-all">@{decodedLoginId}</p>
+              <p className="text-zinc-500 font-mono break-all">@{loginIdFromParam}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -87,7 +87,7 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
         </div>
       </div>
       {/* 네비게이션 탭 */}
-      <MyPageNavigation loginId={decodedLoginId} />
+      <MyPageNavigation loginId={loginIdFromParam} />
       {children}
     </main>
   )
@@ -96,6 +96,6 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
 function getUser(loginId: string) {
   return unstable_cache(() => selectUser({ loginId }), [loginId], {
     tags: [loginId],
-    revalidate: 15,
+    revalidate: 30,
   })
 }

@@ -73,8 +73,8 @@ export default async function login(_prevState: unknown, formData: FormData) {
   const cookieStore = await cookies()
 
   await Promise.all([
-    setAccessTokenCookie(cookieStore, userId),
-    remember && setRefreshTokenCookie(cookieStore, userId),
+    setAccessTokenCookie(cookieStore, userId, loginId),
+    remember && setRefreshTokenCookie(cookieStore, userId, loginId),
     db
       .update(userTable)
       .set({ loginAt: new Date() })

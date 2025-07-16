@@ -11,18 +11,19 @@ import TooltipPopover from '@/components/ui/TooltipPopover'
 import { loginIdPattern, passwordPattern } from '@/constants/pattern'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
+import amplitude from '@/lib/amplitude/lazy'
 
 import signup from './action'
 
-const initialState = {
-  success: false,
-}
+const initialState = {} as Awaited<ReturnType<typeof signup>>
 
 export default function SignupForm() {
-  const [{ error, success, formData }, formAction, pending] = useActionState(signup, initialState)
+  const [{ error, success, formData, data }, formAction, pending] = useActionState(signup, initialState)
   const router = useRouter()
   const queryClient = useQueryClient()
   const searchParams = useSearchParams()
+  const loginId = data?.loginId
+  const userId = data?.userId
 
   useEffect(() => {
     if (error) {
@@ -31,13 +32,21 @@ export default function SignupForm() {
   }, [error])
 
   useEffect(() => {
-    if (success) {
-      toast.success('회원가입이 완료됐어요.')
-      queryClient
-        .invalidateQueries({ queryKey: QueryKeys.me, refetchType: 'all' })
-        .then(() => router.replace(searchParams.get(SearchParamKey.REDIRECT_URL) ?? '/'))
+    if (!success) {
+      return
     }
-  }, [queryClient, router, searchParams, success])
+
+    toast.success(`${loginId} 계정으로 가입했어요`)
+
+    if (userId) {
+      amplitude.setUserId(userId)
+      amplitude.track('signup')
+    }
+
+    queryClient
+      .invalidateQueries({ queryKey: QueryKeys.me, refetchType: 'all' })
+      .then(() => router.replace(searchParams.get(SearchParamKey.REDIRECT_URL) ?? '/'))
+  }, [loginId, queryClient, router, searchParams, success, userId])
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     const formElement = e.target as HTMLFormElement

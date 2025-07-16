@@ -3,7 +3,7 @@ import { cookies } from 'next/headers'
 import { createCacheControl } from '@/crawler/proxy-utils'
 import { BookmarkSource } from '@/database/schema'
 import selectBookmarks from '@/sql/selectBookmarks'
-import { getUserIdFromAccessToken } from '@/utils/cookie'
+import { getUserDataFromAccessToken } from '@/utils/cookie'
 
 import { GETBookmarksSchema } from './schema'
 
@@ -22,7 +22,8 @@ export type GETBookmarksResponse = {
 
 export async function GET(request: Request) {
   const cookieStore = await cookies()
-  const userId = await getUserIdFromAccessToken(cookieStore)
+  const userData = await getUserDataFromAccessToken(cookieStore)
+  const userId = userData?.userId
 
   if (!userId) {
     return new Response('로그인 정보가 없거나 만료됐어요.', { status: 401 })

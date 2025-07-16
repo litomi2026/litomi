@@ -15,25 +15,39 @@ export function getCookieJSON(cookieStore: ReadonlyRequestCookies, keys: string[
   return result
 }
 
-export async function getUserIdFromAccessToken(cookieStore: ReadonlyRequestCookies) {
+export async function getUserDataFromAccessToken(cookieStore: ReadonlyRequestCookies, reset: boolean = true) {
   const accessToken = cookieStore.get(CookieKey.ACCESS_TOKEN)?.value
-  if (!accessToken) return null
 
-  const { sub: userId } = await verifyJWT(accessToken, TokenType.ACCESS).catch(() => ({ sub: null }))
-
-  if (!userId) {
-    cookieStore.delete(CookieKey.ACCESS_TOKEN)
+  if (!accessToken) {
     return null
   }
 
-  return userId
+  const payload = await verifyJWT(accessToken, TokenType.ACCESS).catch(() => null)
+
+  if (!payload || !payload.sub || !payload.loginId) {
+    if (reset) {
+      cookieStore.delete(CookieKey.ACCESS_TOKEN)
+    }
+    return null
+  }
+
+  return {
+    userId: payload.sub,
+    loginId: payload.loginId,
+  }
 }
 
 export async function setAccessTokenCookie(
   cookieStore: ReadonlyRequestCookies | ResponseCookies,
   userId: number | string,
+  loginId: string,
 ) {
-  cookieStore.set(CookieKey.ACCESS_TOKEN, await signJWT({ sub: String(userId) }, TokenType.ACCESS), {
+  const payload = {
+    sub: String(userId),
+    loginId,
+  }
+
+  cookieStore.set(CookieKey.ACCESS_TOKEN, await signJWT(payload, TokenType.ACCESS), {
     httpOnly: true,
     secure: true,
     sameSite: 'lax',
@@ -41,8 +55,17 @@ export async function setAccessTokenCookie(
   })
 }
 
-export async function setRefreshTokenCookie(cookieStore: ReadonlyRequestCookies, userId: number | string) {
-  cookieStore.set(CookieKey.REFRESH_TOKEN, await signJWT({ sub: String(userId) }, TokenType.REFRESH), {
+export async function setRefreshTokenCookie(
+  cookieStore: ReadonlyRequestCookies,
+  userId: number | string,
+  loginId: string,
+) {
+  const payload = {
+    sub: String(userId),
+    loginId,
+  }
+
+  cookieStore.set(CookieKey.REFRESH_TOKEN, await signJWT(payload, TokenType.REFRESH), {
     httpOnly: true,
     secure: true,
     sameSite: 'lax',

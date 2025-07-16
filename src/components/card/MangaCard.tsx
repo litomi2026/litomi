@@ -36,7 +36,7 @@ export function MangaCardSkeleton() {
 function MangaCard({ manga, index = 0, source, className = '', showSearchFromNextButton }: Readonly<Props>) {
   const { id, artists, characters, date, group, series, tags, title, type, language, images } = manga
   const viewerLink = getViewerLink(id, source)
-  const isAllDownloadable = images.every((image) => image.startsWith('https://soujpa.in/'))
+  const isAllDownloadable = images.every((image) => image.startsWith('https://soujpa.in/')) // TODO: 다운로드 가능 여부 확인
 
   return (
     <li className={`grid grid-rows-[auto_1fr] border-2 rounded-xl overflow-hidden bg-zinc-900 ${className}`} key={id}>
