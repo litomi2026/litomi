@@ -8,7 +8,7 @@ import { HiyobiClient } from '@/crawler/hiyobi'
 import { KHentaiClient } from '@/crawler/k-hentai'
 import { harpiMangaIds, harpiMangas } from '@/database/harpi'
 import { Manga } from '@/types/manga'
-import { BasePageProps } from '@/types/nextjs'
+import { PageProps } from '@/types/nextjs'
 import { getViewerLink } from '@/utils/manga'
 import { SourceParam, validateSource, validateView, ViewCookie } from '@/utils/param'
 import { sampleBySecureFisherYates } from '@/utils/random'
@@ -39,7 +39,7 @@ export async function generateStaticParams() {
   return params
 }
 
-export default async function Page({ params }: BasePageProps) {
+export default async function Page({ params }: PageProps) {
   const { source, layout } = await params
   const sourceString = validateSource(source)
   const layoutString = validateView(layout)

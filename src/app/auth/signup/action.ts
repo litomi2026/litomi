@@ -27,6 +27,7 @@ const schema = z
       .string()
       .min(2, { error: '닉네임은 최소 2자 이상이어야 합니다.' })
       .max(32, { error: '닉네임은 최대 32자까지 입력할 수 있습니다.' }),
+    run: z.literal('dry'),
   })
   .refine((data) => data.password === data['password-confirm'], {
     error: '비밀번호와 비밀번호 확인 값이 일치하지 않습니다.',
@@ -43,6 +44,7 @@ export default async function signup(_prevState: unknown, formData: FormData) {
     password: formData.get('password'),
     'password-confirm': formData.get('password-confirm'),
     nickname: formData.get('nickname') || generateRandomNickname(),
+    run: formData.get('run'),
   })
 
   if (!validation.success) {
@@ -52,8 +54,16 @@ export default async function signup(_prevState: unknown, formData: FormData) {
     }
   }
 
-  const { loginId, password, nickname } = validation.data
+  const { loginId, password, nickname, run } = validation.data
   const passwordHash = await hash(password, SALT_ROUNDS)
+
+  // NOTE: E2E 테스트 환경에서 사용하기 위해
+  if (run === 'dry') {
+    return {
+      success: true,
+      data: { userId: 0, loginId, nickname },
+    }
+  }
 
   const [result] = await db
     .insert(userTable)
@@ -81,5 +91,8 @@ export default async function signup(_prevState: unknown, formData: FormData) {
     setRefreshTokenCookie(cookieStore, userId, loginId),
   ])
 
-  return { success: true, data: { userId, loginId } }
+  return {
+    success: true,
+    data: { userId, loginId, nickname },
+  }
 }

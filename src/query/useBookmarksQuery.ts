@@ -1,30 +1,28 @@
-import { useSuspenseQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 
 import { GETBookmarksResponse } from '@/app/api/bookmarks/route'
 import { QueryKeys } from '@/constants/query'
-import { handleResponseError, shouldRetryError } from '@/utils/react-query-error'
+import { handleResponseError } from '@/utils/react-query-error'
 
 import useMeQuery from './useMeQuery'
 
+export async function fetchBookmarkIds() {
+  const response = await fetch('/api/bookmarks')
+  const data = await handleResponseError<GETBookmarksResponse>(response)
+  return new Set(data.bookmarks.map((bookmark) => bookmark.mangaId))
+}
+
 export default function useBookmarksQuery() {
   const { data: me } = useMeQuery()
+  const userId = me?.id
 
-  return useSuspenseQuery({
+  return useQuery({
     queryKey: QueryKeys.bookmarks,
-    queryFn: me ? fetchBookmarkIds : () => null,
+    queryFn: fetchBookmarkIds,
+    enabled: Boolean(userId),
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchOnMount: false,
     staleTime: Infinity,
-    retry: (failureCount, error) => shouldRetryError(error, failureCount),
-
-    // 로그인 후 queryClient.invalidateQueries({ queryKey: QueryKeys.me }) 로직이 효과가 있으려면?
-    gcTime: 0,
   })
-}
-
-async function fetchBookmarkIds(): Promise<Set<number> | null> {
-  const response = await fetch('/api/bookmarks')
-  const data = await handleResponseError<GETBookmarksResponse>(response)
-  return new Set(data.bookmarks.map((bookmark) => bookmark.mangaId))
 }

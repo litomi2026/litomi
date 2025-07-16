@@ -16,8 +16,8 @@ export type GETProxyKSearchResponse = {
 
 export async function GET(request: Request) {
   const url = new URL(request.url)
-  const params = Object.fromEntries(url.searchParams)
-  const validation = GETProxyKSearchSchema.safeParse(params)
+  const searchParams = Object.fromEntries(url.searchParams)
+  const validation = GETProxyKSearchSchema.safeParse(searchParams)
 
   if (!validation.success) {
     return new Response('400 Bad Request', { status: 400 })
@@ -42,7 +42,7 @@ export async function GET(request: Request) {
   const client = KHentaiClient.getInstance()
 
   try {
-    const params = {
+    const searchedMangas = await client.searchMangas({
       search,
       nextId: nextId?.toString(),
       sort,
@@ -54,9 +54,8 @@ export async function GET(request: Request) {
       maxPages: maxPage?.toString(),
       startDate: from?.toString(),
       endDate: to?.toString(),
-    }
+    })
 
-    const searchedMangas = await client.searchMangas(params)
     const excludedTags = parseExclusionFilters(query)
     const mangas = filterMangasByExcludedTags(searchedMangas, excludedTags)
 

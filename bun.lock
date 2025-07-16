@@ -5,13 +5,14 @@
       "name": "litomi",
       "dependencies": {
         "@amplitude/analytics-browser": "^2.18.2",
+        "@amplitude/analytics-node": "^1.4.0",
         "@neondatabase/serverless": "^1.0.1",
         "@next/third-parties": "^15.3.5",
         "@sentry/nextjs": "^9.38.0",
         "@suspensive/react": "^2.18.13",
         "@tanstack/react-query": "^5.83.0",
+        "@tanstack/react-query-devtools": "^5.83.0",
         "@tanstack/react-virtual": "^3.13.12",
-        "@types/jszip": "^3.4.1",
         "@vercel/analytics": "^1.5.0",
         "@vercel/speed-insights": "^1.2.0",
         "bcrypt": "^5.1.1",
@@ -43,6 +44,7 @@
         "@types/bcrypt": "^5.0.2",
         "@types/bun": "^1.2.18",
         "@types/js-cookie": "^3.0.6",
+        "@types/jszip": "^3.4.1",
         "@types/node": "^22.16.3",
         "@types/react": "^19.1.8",
         "@types/react-dom": "^19.1.6",
@@ -76,6 +78,8 @@
     "@amplitude/analytics-connector": ["@amplitude/analytics-connector@1.6.4", "", {}, "sha512-SpIv0IQMNIq6SH3UqFGiaZyGSc7PBZwRdq7lvP0pBxW8i4Ny+8zwI0pV+VMfMHQwWY3wdIbWw5WQphNjpdq1/Q=="],
 
     "@amplitude/analytics-core": ["@amplitude/analytics-core@2.16.0", "", { "dependencies": { "@amplitude/analytics-connector": "^1.6.4", "tslib": "^2.4.1" } }, "sha512-0gi8CA2SGC8CBILV3s01AP8sqzOtaYKvoAyijz9cn05qb0PvV2wBe5+nvN/rwnylria5gV7/G2+Ny+7suSNQsA=="],
+
+    "@amplitude/analytics-node": ["@amplitude/analytics-node@1.4.0", "", { "dependencies": { "@amplitude/analytics-core": "^2.17.0", "tslib": "^2.4.1" } }, "sha512-oJxzPeeJzdzAZGKm1KrtA+qnUmzw4zCkJxdy+sl+EgevEnJE27c6VamtEKREVqb6FKdwFXsAqwbVqh8PMjVZeQ=="],
 
     "@amplitude/analytics-remote-config": ["@amplitude/analytics-remote-config@0.4.1", "", { "dependencies": { "@amplitude/analytics-client-common": ">=1 <3", "@amplitude/analytics-core": ">=1 <3", "@amplitude/analytics-types": ">=1 <3", "tslib": "^2.4.1" } }, "sha512-BYl6kQ9qjztrCACsugpxO+foLaQIC0aSEzoXEAb/gwOzInmqkyyI+Ub+aWTBih4xgB/lhWlOcidWHAmNiTJTNw=="],
 
@@ -527,7 +531,11 @@
 
     "@tanstack/query-core": ["@tanstack/query-core@5.83.0", "", {}, "sha512-0M8dA+amXUkyz5cVUm/B+zSk3xkQAcuXuz5/Q/LveT4ots2rBpPTZOzd7yJa2Utsf8D2Upl5KyjhHRY+9lB/XA=="],
 
+    "@tanstack/query-devtools": ["@tanstack/query-devtools@5.81.2", "", {}, "sha512-jCeJcDCwKfoyyBXjXe9+Lo8aTkavygHHsUHAlxQKKaDeyT0qyQNLKl7+UyqYH2dDF6UN/14873IPBHchcsU+Zg=="],
+
     "@tanstack/react-query": ["@tanstack/react-query@5.83.0", "", { "dependencies": { "@tanstack/query-core": "5.83.0" }, "peerDependencies": { "react": "^18 || ^19" } }, "sha512-/XGYhZ3foc5H0VM2jLSD/NyBRIOK4q9kfeml4+0x2DlL6xVuAcVEW+hTlTapAmejObg0i3eNqhkr2dT+eciwoQ=="],
+
+    "@tanstack/react-query-devtools": ["@tanstack/react-query-devtools@5.83.0", "", { "dependencies": { "@tanstack/query-devtools": "5.81.2" }, "peerDependencies": { "@tanstack/react-query": "^5.83.0", "react": "^18 || ^19" } }, "sha512-yfp8Uqd3I1jgx8gl0lxbSSESu5y4MO2ThOPBnGNTYs0P+ZFu+E9g5IdOngyUGuo6Uz6Qa7p9TLdZEX3ntik2fQ=="],
 
     "@tanstack/react-virtual": ["@tanstack/react-virtual@3.13.12", "", { "dependencies": { "@tanstack/virtual-core": "3.13.12" }, "peerDependencies": { "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0" } }, "sha512-Gd13QdxPSukP8ZrkbgS2RwoZseTTbQPLnQEn7HY/rqtM+8Zt95f7xKC7N0EsKs7aoz0WzZ+fditZux+F8EzYxA=="],
 
@@ -1632,6 +1640,8 @@
     "zod": ["zod@3.25.76", "", {}, "sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ=="],
 
     "zustand": ["zustand@5.0.6", "", { "peerDependencies": { "@types/react": ">=18.0.0", "immer": ">=9.0.6", "react": ">=18.0.0", "use-sync-external-store": ">=1.2.0" }, "optionalPeers": ["@types/react", "immer", "react", "use-sync-external-store"] }, "sha512-ihAqNeUVhe0MAD+X8M5UzqyZ9k3FFZLBTtqo6JLPwV53cbRB/mJwBI0PxcIgqhBBHlEs8G45OTDTMq3gNcLq3A=="],
+
+    "@amplitude/analytics-node/@amplitude/analytics-core": ["@amplitude/analytics-core@2.17.0", "", { "dependencies": { "@amplitude/analytics-connector": "^1.6.4", "tslib": "^2.4.1" } }, "sha512-h5ITcO8p1bBPKwjZbnzfE3SDOiUj08JKqeAg69eisKi4AVp+QAgr7KZNKC+116vt4s4VlEdgEohgzPxkhgWPfg=="],
 
     "@babel/core/json5": ["json5@2.2.3", "", { "bin": { "json5": "lib/cli.js" } }, "sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg=="],
 

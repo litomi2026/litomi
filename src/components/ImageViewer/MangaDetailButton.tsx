@@ -1,6 +1,6 @@
-import { ErrorBoundary, Suspense } from '@suspensive/react'
+import { ErrorBoundary } from '@suspensive/react'
 import dayjs from 'dayjs'
-import { memo, useState } from 'react'
+import { memo, Suspense, useState } from 'react'
 
 import { Manga } from '@/types/manga'
 import { SourceParam } from '@/utils/param'
@@ -87,7 +87,7 @@ function MangaDetailButton({ manga, source }: Readonly<Props>) {
             [&_button]:hover:bg-zinc-800 [&_button]:active:bg-zinc-900 [&_button]:active:border-zinc-700"
           >
             <ErrorBoundary fallback={BookmarkButtonError}>
-              <Suspense clientOnly fallback={<BookmarkButtonSkeleton className="grow" />}>
+              <Suspense fallback={<BookmarkButtonSkeleton className="grow" />}>
                 <BookmarkButton className="grow" manga={manga} source={source} />
               </Suspense>
             </ErrorBoundary>

@@ -1,18 +1,28 @@
 import { KHentaiClient } from '@/crawler/k-hentai'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
+import { RouteProps } from '@/types/nextjs'
+
+import { GETProxyKIdSchema } from './schema'
 
 export const runtime = 'edge'
 const maxAge = 43200 // 12 hours
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
-  const id = parseInt(params.id)
+type Params = {
+  id: string
+}
 
-  if (isNaN(id) || id <= 0) {
+export async function GET(request: Request, props: RouteProps<Params>) {
+  const params = await props.params
+  const validation = GETProxyKIdSchema.safeParse(params)
+
+  if (!validation.success) {
     return new Response('400 Bad Request', { status: 400 })
   }
 
+  const { id } = validation.data
+  const client = KHentaiClient.getInstance()
+
   try {
-    const client = KHentaiClient.getInstance()
     const manga = await client.fetchManga(id)
 
     if (!manga) {

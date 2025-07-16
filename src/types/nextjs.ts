@@ -1,16 +1,5 @@
 import { type ReactNode } from 'react'
 
-export type BaseLayoutProps<Param extends Readonly<Record<string, unknown>> = Readonly<Record<string, string>>> =
-  Readonly<{
-    children: Readonly<ReactNode>
-    params: Readonly<Promise<Param>>
-  }>
-
-export type BasePageProps<T extends Readonly<Record<string, unknown>> = Readonly<Record<string, string>>> = Readonly<{
-  params: Readonly<Promise<T>>
-  searchParams: Promise<Record<string, string | string[] | undefined>>
-}>
-
 export type ErrorProps = Readonly<{
   error: Error & {
     digest?: string
@@ -18,6 +7,16 @@ export type ErrorProps = Readonly<{
   reset: () => void
 }>
 
-export type RouteProps = Readonly<{
-  params: Promise<Record<string, string>>
+export type LayoutProps<Param extends Readonly<Record<string, unknown>> = Readonly<Record<string, string>>> = Readonly<{
+  children: Readonly<ReactNode>
+  params: Readonly<Promise<Param>>
+}>
+
+export type PageProps<T extends Readonly<Record<string, unknown>> = Readonly<Record<string, string>>> = Readonly<{
+  params: Readonly<Promise<T>>
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}>
+
+export type RouteProps<T extends Readonly<Record<string, unknown>> = Readonly<Record<string, string>>> = Readonly<{
+  params: Readonly<Promise<T>>
 }>

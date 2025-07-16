@@ -1,12 +1,13 @@
-import { ErrorBoundary, Suspense } from '@suspensive/react'
+import { ErrorBoundary } from '@suspensive/react'
 import dayjs from 'dayjs'
 import { unstable_cache } from 'next/cache'
 import Image from 'next/image'
+import { Suspense } from 'react'
 
 import LogoutButton, { LogoutButtonError, LogoutButtonSkeleton } from '@/components/header/LogoutButton'
 import IconCalendar from '@/components/icons/IconCalendar'
 import selectUser from '@/sql/selectUser'
-import { BaseLayoutProps } from '@/types/nextjs'
+import { LayoutProps } from '@/types/nextjs'
 import { getLoginIdFromParam } from '@/utils/param'
 
 import MyPageNavigation from './MyPageNavigation'
@@ -14,7 +15,7 @@ import ProfileEditButton, { ProfileEditButtonError, ProfileEditButtonSkeleton } 
 import UserBadRequest from './UserBadRequest'
 import UserNotFound from './UserNotFound'
 
-export default async function Layout({ params, children }: BaseLayoutProps) {
+export default async function Layout({ params, children }: LayoutProps) {
   const { loginId } = await params
   const loginIdFromParam = getLoginIdFromParam(loginId)
 
@@ -59,12 +60,12 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
           </div>
           <div className="flex items-center gap-2">
             <ErrorBoundary fallback={ProfileEditButtonError}>
-              <Suspense clientOnly fallback={<ProfileEditButtonSkeleton />}>
+              <Suspense fallback={<ProfileEditButtonSkeleton />}>
                 <ProfileEditButton />
               </Suspense>
             </ErrorBoundary>
             <ErrorBoundary fallback={LogoutButtonError}>
-              <Suspense clientOnly fallback={<LogoutButtonSkeleton />}>
+              <Suspense fallback={<LogoutButtonSkeleton />}>
                 <LogoutButton />
               </Suspense>
             </ErrorBoundary>

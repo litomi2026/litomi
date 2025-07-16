@@ -12,6 +12,8 @@ import { loginIdPattern, passwordPattern } from '@/constants/pattern'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
 import amplitude from '@/lib/amplitude/lazy'
+import { resetMeQuery } from '@/query/useMeQuery'
+import { sanitizeRedirect } from '@/utils'
 
 import signup from './action'
 
@@ -22,8 +24,7 @@ export default function SignupForm() {
   const router = useRouter()
   const queryClient = useQueryClient()
   const searchParams = useSearchParams()
-  const loginId = data?.loginId
-  const userId = data?.userId
+  const { loginId, userId, nickname } = data ?? {}
 
   useEffect(() => {
     if (error) {
@@ -40,13 +41,17 @@ export default function SignupForm() {
 
     if (userId) {
       amplitude.setUserId(userId)
-      amplitude.track('signup')
+      amplitude.track('signup', { loginId, nickname })
     }
 
-    queryClient
-      .invalidateQueries({ queryKey: QueryKeys.me, refetchType: 'all' })
-      .then(() => router.replace(searchParams.get(SearchParamKey.REDIRECT_URL) ?? '/'))
-  }, [loginId, queryClient, router, searchParams, success, userId])
+    ;(async () => {
+      resetMeQuery()
+      await queryClient.invalidateQueries({ queryKey: QueryKeys.me, type: 'all' })
+      const redirect = searchParams.get(SearchParamKey.REDIRECT)
+      const sanitizedURL = sanitizeRedirect(redirect) || '/'
+      router.replace(sanitizedURL.replace(/^\/@\//, `/@${loginId}/`))
+    })()
+  }, [loginId, queryClient, router, searchParams, success, userId, nickname])
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     const formElement = e.target as HTMLFormElement

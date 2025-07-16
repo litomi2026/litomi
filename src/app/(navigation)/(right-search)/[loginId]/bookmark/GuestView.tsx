@@ -41,7 +41,7 @@ export function GuestView() {
           className="inline-flex items-center gap-2 px-4 py-3 bg-brand-gradient text-background font-semibold rounded-xl 
           hover:opacity-90 active:opacity-100 transition relative
           before:absolute before:inset-0 before:rounded-xl before:border-3 before:border-foreground/40"
-          href={`/auth/login?${SearchParamKey.REDIRECT_URL}=${encodeURIComponent('/api/my?tab=bookmark')}`}
+          href={`/auth/login?${SearchParamKey.REDIRECT}=${encodeURIComponent('/@/bookmark')}`}
         >
           <IconLogin className="w-5 h-5" />
           로그인하고 시작하기
@@ -50,7 +50,7 @@ export function GuestView() {
           계정이 없으신가요?{' '}
           <Link
             className="text-zinc-300 underline hover:text-white transition-colors"
-            href={`/auth/signup?${SearchParamKey.REDIRECT_URL}=${encodeURIComponent('/api/my?tab=bookmark')}`}
+            href={`/auth/signup?${SearchParamKey.REDIRECT}=${encodeURIComponent('/@/bookmark')}`}
           >
             회원가입
           </Link>

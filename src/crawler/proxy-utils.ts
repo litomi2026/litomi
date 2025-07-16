@@ -22,13 +22,27 @@ export function createCacheControl(options: {
 }): string {
   const parts: string[] = []
 
-  if (options.public) parts.push('public')
-  if (options.private) parts.push('private')
-  if (options.noCache) parts.push('no-cache')
-  if (options.noStore) parts.push('no-store')
-  if (options.mustRevalidate) parts.push('must-revalidate')
-  if (options.maxAge !== undefined) parts.push(`max-age=${options.maxAge}`)
-  if (options.sMaxAge !== undefined) parts.push(`s-maxage=${options.sMaxAge}`)
+  if (options.public && !options.private) {
+    parts.push('public')
+  }
+  if (options.private && !options.public) {
+    parts.push('private')
+  }
+  if (options.noCache) {
+    parts.push('no-cache')
+  }
+  if (options.noStore) {
+    parts.push('no-store')
+  }
+  if (options.mustRevalidate) {
+    parts.push('must-revalidate')
+  }
+  if (options.maxAge !== undefined) {
+    parts.push(`max-age=${options.maxAge}`)
+  }
+  if (options.sMaxAge !== undefined && !options.private) {
+    parts.push(`s-maxage=${options.sMaxAge}`)
+  }
   if (options.staleWhileRevalidate !== undefined) {
     parts.push(`stale-while-revalidate=${options.staleWhileRevalidate}`)
   }

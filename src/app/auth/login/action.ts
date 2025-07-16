@@ -43,6 +43,8 @@ export default async function login(_prevState: unknown, formData: FormData) {
     .select({
       id: userTable.id,
       passwordHash: userTable.passwordHash,
+      lastLoginAt: userTable.loginAt,
+      lastLogoutAt: userTable.logoutAt,
     })
     .from(userTable)
     .where(sql`${userTable.loginId} = ${loginId}`)
@@ -57,7 +59,7 @@ export default async function login(_prevState: unknown, formData: FormData) {
     }
   }
 
-  const { id: userId, passwordHash } = result
+  const { id: userId, passwordHash, lastLoginAt, lastLogoutAt } = result
   const isCorrectPassword = await compare(password, passwordHash)
 
   if (!isCorrectPassword) {
@@ -81,5 +83,5 @@ export default async function login(_prevState: unknown, formData: FormData) {
       .where(sql`${userTable.id} = ${userId}`),
   ])
 
-  return { success: true, data: { userId, loginId } }
+  return { success: true, data: { userId, loginId, lastLoginAt, lastLogoutAt } }
 }

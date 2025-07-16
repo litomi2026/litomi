@@ -1,10 +1,11 @@
-import { ErrorBoundary, Suspense } from '@suspensive/react'
+import { ErrorBoundary } from '@suspensive/react'
 import { cookies } from 'next/headers'
 import { notFound } from 'next/navigation'
+import { Suspense } from 'react'
 
 import BookmarkImportButton, { BookmarkImportButtonSkeleton } from '@/components/BookmarkImportButton'
 import selectBookmarks from '@/sql/selectBookmarks'
-import { BasePageProps } from '@/types/nextjs'
+import { PageProps } from '@/types/nextjs'
 import { getUserDataFromAccessToken } from '@/utils/cookie'
 import { getLoginIdFromParam } from '@/utils/param'
 
@@ -15,7 +16,7 @@ import { GuestView } from './GuestView'
 import Loading from './loading'
 import RefreshButton from './RefreshButton'
 
-export default async function BookmarkPage({ params }: BasePageProps) {
+export default async function BookmarkPage({ params }: PageProps) {
   const { loginId } = await params
   const loginIdFromParam = getLoginIdFromParam(loginId)
 
@@ -53,14 +54,14 @@ export default async function BookmarkPage({ params }: BasePageProps) {
     <>
       <div className="flex justify-center items-center gap-x-4 flex-wrap">
         <ErrorBoundary fallback={BookmarkImportButtonSkeleton}>
-          <Suspense clientOnly fallback={<BookmarkImportButtonSkeleton />}>
+          <Suspense fallback={<BookmarkImportButtonSkeleton />}>
             <BookmarkImportButton />
           </Suspense>
         </ErrorBoundary>
         <BookmarkTooltip />
         <RefreshButton className="w-9 p-2 rounded-full transition hover:bg-zinc-800 active:bg-zinc-900" />
       </div>
-      <Suspense clientOnly fallback={<Loading />}>
+      <Suspense fallback={<Loading />}>
         <BookmarkList initialBookmarks={bookmarks} />
       </Suspense>
     </>

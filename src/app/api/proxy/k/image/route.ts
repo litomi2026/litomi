@@ -7,8 +7,8 @@ const maxAge = 43200 // 12 hours
 
 export async function GET(request: Request) {
   const url = new URL(request.url)
-  const params = Object.fromEntries(url.searchParams)
-  const validation = GETProxyKImageSchema.safeParse(params)
+  const searchParams = Object.fromEntries(url.searchParams)
+  const validation = GETProxyKImageSchema.safeParse(searchParams)
 
   if (!validation.success) {
     return new Response('400 Bad Request', { status: 400 })

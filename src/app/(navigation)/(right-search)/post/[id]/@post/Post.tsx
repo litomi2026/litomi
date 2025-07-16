@@ -98,7 +98,7 @@ export default function Post({ post }: Readonly<Props>) {
             </div>
           ))}
         </div>
-        <Suspense clientOnly fallback={<PostCreationFormSkeleton />}>
+        <Suspense fallback={<PostCreationFormSkeleton />}>
           <PostCreationForm buttonText="답글" className="flex" isReply placeholder="답글 게시하기" />
         </Suspense>
       </div>

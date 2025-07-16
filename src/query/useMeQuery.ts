@@ -1,14 +1,27 @@
-import { useSuspenseQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { useEffect } from 'react'
 
 import { GETMeResponse } from '@/app/api/me/route'
 import { QueryKeys } from '@/constants/query'
 import amplitude from '@/lib/amplitude/lazy'
+import { handleResponseError } from '@/utils/react-query-error'
+
+export async function fetchMe() {
+  const response = await fetch('/api/me')
+  return handleResponseError<GETMeResponse>(response)
+}
+
+let hasMeQueryFetched = false
+
+export function resetMeQuery() {
+  hasMeQueryFetched = false
+}
 
 export default function useMeQuery() {
-  const result = useSuspenseQuery({
+  const result = useQuery({
     queryKey: QueryKeys.me,
     queryFn: fetchMe,
+    enabled: !hasMeQueryFetched,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchOnMount: false,
@@ -16,26 +29,20 @@ export default function useMeQuery() {
   })
 
   const userId = result.data?.id
+  const isFetched = result.isFetched
 
   useEffect(() => {
     if (userId) {
       amplitude.setUserId(userId)
+      hasMeQueryFetched = true
     }
   }, [userId])
 
+  useEffect(() => {
+    if (isFetched) {
+      hasMeQueryFetched = true
+    }
+  }, [isFetched])
+
   return result
-}
-
-async function fetchMe(): Promise<GETMeResponse | null> {
-  const response = await fetch('/api/me')
-
-  if ([401, 404].includes(response.status)) {
-    return null
-  }
-
-  if (!response.ok) {
-    throw new Error('GET /api/me 요청이 실패했어요.')
-  }
-
-  return response.json()
 }

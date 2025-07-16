@@ -2,13 +2,13 @@ import { Suspense } from '@suspensive/react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
-import type { BaseLayoutProps } from '@/types/nextjs'
+import type { LayoutProps } from '@/types/nextjs'
 
 import PostCreationForm, { PostCreationFormSkeleton } from '@/components/post/PostCreationForm'
 import TopNavigation from '@/components/TopNavigation'
 import { validatePostFilter } from '@/utils/param'
 
-export default async function Layout({ params, children }: BaseLayoutProps) {
+export default async function Layout({ params, children }: LayoutProps) {
   const { filter } = await params
   const postFilter = validatePostFilter(filter)
 
@@ -40,7 +40,7 @@ export default async function Layout({ params, children }: BaseLayoutProps) {
       </TopNavigation>
       <div className="h-26 sm:hidden" />
       <h2 className="text-center font-bold text-xl text-yellow-300 py-4">준비 중입니다</h2>
-      <Suspense clientOnly fallback={<PostCreationFormSkeleton className="m-4" />}>
+      <Suspense fallback={<PostCreationFormSkeleton className="m-4" />}>
         <PostCreationForm
           buttonText="게시하기"
           className="hidden p-4 sm:flex"

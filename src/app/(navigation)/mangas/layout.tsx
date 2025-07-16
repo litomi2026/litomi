@@ -1,12 +1,12 @@
 import Link from 'next/link'
 
-import type { BaseLayoutProps } from '@/types/nextjs'
+import type { LayoutProps } from '@/types/nextjs'
 
 import InstallPrompt from '@/components/InstallPrompt'
 import ScrollButtons from '@/components/ScrollButtons'
 import { SHORT_NAME } from '@/constants'
 
-export default function Layout({ children }: BaseLayoutProps) {
+export default function Layout({ children }: LayoutProps) {
   return (
     <div className="flex flex-col grow max-w-screen-2xl">
       <div className="flex flex-col grow p-2">

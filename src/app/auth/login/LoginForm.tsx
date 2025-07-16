@@ -11,6 +11,8 @@ import { loginIdPattern, passwordPattern } from '@/constants/pattern'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
 import amplitude from '@/lib/amplitude/lazy'
+import { resetMeQuery } from '@/query/useMeQuery'
+import { sanitizeRedirect } from '@/utils'
 
 import login from './action'
 
@@ -22,8 +24,7 @@ export default function LoginForm() {
   const formRef = useRef<HTMLFormElement>(null)
   const queryClient = useQueryClient()
   const searchParams = useSearchParams()
-  const loginId = data?.loginId
-  const userId = data?.userId
+  const { loginId, userId, lastLoginAt, lastLogoutAt } = data ?? {}
 
   function resetId() {
     const loginIdInput = formRef.current?.loginId as HTMLInputElement
@@ -51,13 +52,17 @@ export default function LoginForm() {
 
     if (userId) {
       amplitude.setUserId(userId)
-      amplitude.track('login')
+      amplitude.track('login', { loginId, lastLoginAt, lastLogoutAt })
     }
 
-    queryClient
-      .invalidateQueries({ queryKey: QueryKeys.me, refetchType: 'all' })
-      .then(() => router.replace(searchParams.get(SearchParamKey.REDIRECT_URL) ?? '/'))
-  }, [loginId, queryClient, router, searchParams, success, userId])
+    ;(async () => {
+      resetMeQuery()
+      await queryClient.invalidateQueries({ queryKey: QueryKeys.me, type: 'all' })
+      const redirect = searchParams.get(SearchParamKey.REDIRECT)
+      const sanitizedURL = sanitizeRedirect(redirect) || '/'
+      router.replace(sanitizedURL.replace(/^\/@\//, `/@${loginId}/`))
+    })()
+  }, [loginId, queryClient, router, searchParams, success, userId, lastLoginAt, lastLogoutAt])
 
   return (
     <form

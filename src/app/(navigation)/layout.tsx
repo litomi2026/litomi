@@ -1,7 +1,8 @@
-import { ErrorBoundary, Suspense } from '@suspensive/react'
+import { ErrorBoundary } from '@suspensive/react'
 import Link from 'next/link'
+import { Suspense } from 'react'
 
-import type { BaseLayoutProps } from '@/types/nextjs'
+import type { LayoutProps } from '@/types/nextjs'
 
 import BookmarkLink, { BookmarkLinkSkeleton } from '@/components/header/BookmarkLink'
 import ProfileLink, { ProfileLinkSkeleton } from '@/components/header/ProfileLink'
@@ -15,7 +16,7 @@ import SelectableLink from '@/components/SelectableLink'
 
 import Profile, { ProfileError, ProfileSkeleton } from '../../components/header/Profile'
 
-export default async function Layout({ children }: BaseLayoutProps) {
+export default async function Layout({ children }: LayoutProps) {
   return (
     <div className="flex flex-col min-h-full mx-auto px-safe pb-safe max-w-screen-2xl sm:flex-row">
       <header
@@ -37,7 +38,7 @@ export default async function Layout({ children }: BaseLayoutProps) {
             글
           </SelectableLink>
           <ErrorBoundary fallback={BookmarkLinkSkeleton}>
-            <Suspense clientOnly fallback={<BookmarkLinkSkeleton />}>
+            <Suspense fallback={<BookmarkLinkSkeleton />}>
               <BookmarkLink />
             </Suspense>
           </ErrorBoundary>
@@ -45,14 +46,14 @@ export default async function Layout({ children }: BaseLayoutProps) {
             알림
           </SelectableLink>
           <ErrorBoundary fallback={ProfileLinkSkeleton}>
-            <Suspense clientOnly fallback={<ProfileLinkSkeleton />}>
+            <Suspense fallback={<ProfileLinkSkeleton />}>
               <ProfileLink className="hidden sm:block" />
             </Suspense>
           </ErrorBoundary>
           <PublishButton className="hidden mx-auto my-4 sm:block xl:mx-0" />
         </nav>
         <ErrorBoundary fallback={ProfileError}>
-          <Suspense clientOnly fallback={<ProfileSkeleton />}>
+          <Suspense fallback={<ProfileSkeleton />}>
             <Profile />
           </Suspense>
         </ErrorBoundary>
