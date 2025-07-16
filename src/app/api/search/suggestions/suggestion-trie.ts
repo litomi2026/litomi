@@ -1,4 +1,6 @@
 import { KOREAN_TO_ENGLISH_QUERY_KEYS } from '@/app/(navigation)/search/constants'
+import { getAllCharactersWithLabels } from '@/database/character-translations'
+import { getAllSeriesWithLabels } from '@/database/series-translations'
 import tagCategoryTranslations from '@/database/translation/tag-category.json'
 import tagMaleFemaleTranslations from '@/database/translation/tag-male-female.json'
 import tagMixedTranslations from '@/database/translation/tag-mixed.json'
@@ -241,5 +243,115 @@ function getLabels(
         }
       })
     }
+  })
+
+  // Add series suggestions
+  // First add the series category
+  suggestionTrie.insert('series', {
+    value: 'series:',
+    labels: {
+      ko: '시리즈:',
+      en: 'series:',
+      ja: 'シリーズ:',
+      'zh-CN': '系列:',
+      'zh-TW': '系列:',
+    },
+  })
+  suggestionTrie.insert('series:', {
+    value: 'series:',
+    labels: {
+      ko: '시리즈:',
+      en: 'series:',
+      ja: 'シリーズ:',
+      'zh-CN': '系列:',
+      'zh-TW': '系列:',
+    },
+  })
+  suggestionTrie.insert('시리즈', {
+    value: 'series:',
+    labels: {
+      ko: '시리즈:',
+      en: 'series:',
+      ja: 'シリーズ:',
+      'zh-CN': '系列:',
+      'zh-TW': '系列:',
+    },
+  })
+
+  // Add all series with their translations
+  const allSeries = getAllSeriesWithLabels()
+  allSeries.forEach((seriesItem) => {
+    // Insert for the full value (e.g., "series:touhou_project")
+    suggestionTrie.insert(seriesItem.value, seriesItem)
+
+    // Extract the series key from "series:key"
+    const seriesKey = seriesItem.value.replace(/^series:/, '')
+    suggestionTrie.insert(seriesKey, seriesItem)
+
+    // Insert for each translation
+    Object.entries(seriesItem.labels).forEach(([locale, label]) => {
+      if (label) {
+        // Extract just the series name from the label (e.g., "시리즈:동방 프로젝트" -> "동방 프로젝트")
+        const seriesName = label.split(':')[1]
+        if (seriesName) {
+          suggestionTrie.insert(seriesName.toLowerCase(), seriesItem)
+        }
+      }
+    })
+  })
+
+  // Add character suggestions
+  // First add the character category
+  suggestionTrie.insert('character', {
+    value: 'character:',
+    labels: {
+      ko: '캐릭터:',
+      en: 'character:',
+      ja: 'キャラクター:',
+      'zh-CN': '角色:',
+      'zh-TW': '角色:',
+    },
+  })
+  suggestionTrie.insert('character:', {
+    value: 'character:',
+    labels: {
+      ko: '캐릭터:',
+      en: 'character:',
+      ja: 'キャラクター:',
+      'zh-CN': '角色:',
+      'zh-TW': '角色:',
+    },
+  })
+  suggestionTrie.insert('캐릭터', {
+    value: 'character:',
+    labels: {
+      ko: '캐릭터:',
+      en: 'character:',
+      ja: 'キャラクター:',
+      'zh-CN': '角色:',
+      'zh-TW': '角色:',
+    },
+  })
+
+  // Add all characters with their translations
+  const allCharacters = getAllCharactersWithLabels()
+  allCharacters.forEach((characterItem) => {
+    // Insert for the full value (e.g., "character:akira_kiyosumi")
+    suggestionTrie.insert(characterItem.value, characterItem)
+
+    // Extract the character key from "character:key"
+    const characterKey = characterItem.value.replace('character:', '')
+    suggestionTrie.insert(characterKey, characterItem)
+
+    // Insert for each translation
+    Object.entries(characterItem.labels).forEach(([locale, label]) => {
+      if (label) {
+        // Extract just the character name from the label (e.g., "캐릭터:키요스미 아키라" -> "키요스미 아키라")
+        const characterName = label.split(':')[1]
+        if (characterName) {
+          suggestionTrie.insert(characterName.toLowerCase(), characterItem)
+        }
+      }
+    })
   })
 })()

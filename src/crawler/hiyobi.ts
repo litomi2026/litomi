@@ -1,7 +1,8 @@
-import { Multilingual } from '@/database/common'
+import { translateCharacterList } from '@/database/character-translations'
+import { Multilingual, normalizeName } from '@/database/common'
 import { translateSeriesList } from '@/database/series-translations'
-import { normalizeTagValue, sortTagValue, translateTag } from '@/database/tag-translations'
-import { Manga, Tag } from '@/types/manga'
+import { sortTagValue, translateTag } from '@/database/tag-translations'
+import { Manga, MangaTag } from '@/types/manga'
 
 import { isValidKHentaiTagCategory } from './k-hentai'
 import { ProxyClient, ProxyClientConfig } from './proxy'
@@ -150,7 +151,7 @@ export class HiyobiClient {
     return mangas.map((manga) => this.convertHiyobiToManga(manga))
   }
 
-  private convertHiyobiTagsToTags(hiyobiTags: HiyobiTag[], locale: keyof Multilingual): Tag[] {
+  private convertHiyobiTagsToTags(hiyobiTags: HiyobiTag[], locale: keyof Multilingual): MangaTag[] {
     return hiyobiTags.map((hTag) => {
       const [category, value] = hTag.value.split(':')
 
@@ -165,7 +166,7 @@ export class HiyobiClient {
 
       return {
         category: isValidKHentaiTagCategory(category) ? category : '',
-        value: normalizeTagValue(value),
+        value: normalizeName(value),
         label: translateTag(category, value, locale),
       }
     })
@@ -188,12 +189,15 @@ export class HiyobiClient {
   }: HiyobiManga): Manga {
     const locale = 'ko' // TODO: Get from user preferences or context
     const seriesValues = parodys.map((series) => series.value)
+    const artistValues = artists.map((artist) => artist.display)
+    const characterValues = characters.map((character) => character.display)
+    const groupValues = groups.map((group) => group.display)
 
     return {
       id,
-      artists: artists.map((artist) => artist.display),
-      characters: characters.map((character) => character.display),
-      group: groups.map((group) => group.display),
+      artists: artistValues.map((value) => ({ value, label: value })),
+      characters: translateCharacterList(characterValues, locale),
+      group: groupValues.map((value) => ({ value, label: value })),
       series: translateSeriesList(seriesValues, locale),
       tags: this.convertHiyobiTagsToTags(tags, locale),
       title,

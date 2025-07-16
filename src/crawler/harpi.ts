@@ -1,3 +1,5 @@
+import type { Multilingual } from '@/database/common'
+
 import {
   GETHarpiSearchRequest,
   HarpiComicKind,
@@ -5,11 +7,10 @@ import {
   HarpiRandomMode,
   HarpiSort,
 } from '@/app/api/proxy/harpi/search/schema'
-import { Multilingual } from '@/database/common'
 import { HARPI_TAG_MAP } from '@/database/harpi-tag'
 import { translateSeriesList } from '@/database/series-translations'
 import { translateTag } from '@/database/tag-translations'
-import { Manga, Tag } from '@/types/manga'
+import { Manga, MangaTag } from '@/types/manga'
 
 import { ProxyClient, ProxyClientConfig } from './proxy'
 import { isUpstreamServer5XXError } from './proxy-utils'
@@ -27,10 +28,10 @@ type HarpiManga = {
   engTitle: string
   korTitle: string
   type: string
-  authors: string[]
-  series: string[]
+  authors?: string[]
+  series?: string[]
   tagsIds?: string[]
-  characters: string[]
+  characters?: string[]
   views: number
   bookmarks: number
   sumRating: number
@@ -167,7 +168,7 @@ export class HarpiClient {
     return searchParams
   }
 
-  private convertHarpiTagIdsToTags(tagIds: string[], locale: keyof Multilingual): Tag[] {
+  private convertHarpiTagIdsToTags(tagIds: string[], locale: keyof Multilingual): MangaTag[] {
     return tagIds
       .map((tagId) => {
         const tagInfo = HARPI_TAG_MAP[tagId]
@@ -194,7 +195,7 @@ export class HarpiClient {
         const categoryStr = enTag.substring(0, colonIndex)
         const value = enTag.substring(colonIndex + 1)
 
-        let category: Tag['category']
+        let category: MangaTag['category']
         switch (categoryStr) {
           case 'etc':
             category = 'other'
@@ -215,27 +216,28 @@ export class HarpiClient {
           label: translateTag(category, value, locale),
         }
       })
-      .filter((tag): tag is Tag => Boolean(tag))
+      .filter((tag): tag is MangaTag => Boolean(tag))
   }
 
   private convertHarpiToManga(harpiManga: HarpiManga): Manga {
+    console.log('👀 - HarpiClient - convertHarpiToManga - harpiManga:', harpiManga)
     const locale: keyof Multilingual = 'ko' // TODO: Get from user preferences or context
 
     return {
       id: parseInt(harpiManga.parseKey, 10) || 0,
       harpiId: harpiManga.id,
       title: harpiManga.korTitle || harpiManga.engTitle || harpiManga.title,
-      artists: harpiManga.authors,
-      characters: harpiManga.characters,
+      artists: harpiManga.authors?.map((author) => ({ value: author, label: author })),
+      characters: harpiManga.characters?.map((character) => ({ value: character, label: character })),
       series: translateSeriesList(harpiManga.series, locale),
       tags: harpiManga.tagsIds ? this.convertHarpiTagIdsToTags(harpiManga.tagsIds, locale) : [],
       type: harpiManga.type,
       language: 'korean',
+      date: new Date(harpiManga.date).toISOString(),
       images: this.buildImageUrls(harpiManga.imageUrl),
-      cdn: 'harpi',
-      count: harpiManga.imageUrl.length,
-      date: harpiManga.date,
+      cdn: 'soujpa.in',
       viewCount: harpiManga.views,
+      count: harpiManga.imageUrl.length,
       rating: harpiManga.meanRating,
     }
   }

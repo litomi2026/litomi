@@ -11,6 +11,7 @@ type Params = {
 export function getImageSrc({ cdn, path }: Params) {
   switch (cdn) {
     case 'ehgt.org':
+    case 'soujpa.in':
       return path
     case 'HARPI':
       return `${CDN.HARPI}/${path}`

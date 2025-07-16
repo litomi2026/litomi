@@ -1,7 +1,9 @@
 import type { Manga } from '@/types/manga'
 
+import { translateCharacterList } from '@/database/character-translations'
+import { normalizeName } from '@/database/common'
 import { translateSeriesList } from '@/database/series-translations'
-import { normalizeTagValue, translateTag } from '@/database/tag-translations'
+import { translateTag } from '@/database/tag-translations'
 import { convertCamelCaseToKebabCase } from '@/utils/param'
 
 import { ParseError } from './errors'
@@ -241,17 +243,20 @@ export class KHentaiClient {
   private convertKHentaiCommonToManga(manga: KHentaiMangaCommon) {
     const locale = 'ko' // TODO: Get from user preferences or context
     const seriesValues = manga.tags.filter(({ tag }) => tag[0] === 'parody').map(({ tag }) => tag[1])
+    const characterValues = manga.tags.filter(({ tag }) => tag[0] === 'character').map(({ tag }) => tag[1])
+    const groupValues = manga.tags.filter(({ tag }) => tag[0] === 'group').map(({ tag }) => tag[1])
+    const artistValues = manga.tags.filter(({ tag }) => tag[0] === 'artist').map(({ tag }) => tag[1])
 
     return {
       id: manga.id,
-      artists: manga.tags.filter(({ tag }) => tag[0] === 'artist').map(({ tag }) => tag[1]),
+      artists: artistValues.map((value) => ({ value, label: value })),
+      characters: translateCharacterList(characterValues, locale),
+      group: groupValues.map((value) => ({ value, label: value })),
       date: new Date(manga.posted * 1000).toISOString(),
-      characters: manga.tags.filter(({ tag }) => tag[0] === 'character').map(({ tag }) => tag[1]),
-      group: manga.tags.filter(({ tag }) => tag[0] === 'group').map(({ tag }) => tag[1]),
       series: translateSeriesList(seriesValues, locale),
       tags: manga.tags.filter(this.isValidKHentaiTag).map(({ tag: [category, value] }) => ({
         category,
-        value: normalizeTagValue(value),
+        value: normalizeName(value),
         label: translateTag(category, value, locale),
       })),
       title: manga.title,

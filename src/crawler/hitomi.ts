@@ -94,11 +94,12 @@ export async function fetchMangaFromHitomi({ id }: { id: number }) {
 function convertHitomiGalleryToManga(gallery: HitomiGallery): Manga {
   const locale = 'ko' // TODO: Get from user preferences or context
   const seriesValues = gallery.parodys.map((parody) => parody.parody)
+  const artistValues = gallery.artists.map((artist) => artist.artist)
 
   return {
     id: Number(gallery.id),
     title: gallery.title,
-    artists: gallery.artists.map((artist) => artist.artist),
+    artists: artistValues.map((value) => ({ value, label: value })),
     series: translateSeriesList(seriesValues, locale),
     tags: gallery.tags.map((tag) => ({
       category: 'other',

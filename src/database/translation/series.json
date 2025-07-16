@@ -723,5 +723,45 @@
   },
   "shirobako": { "en": "Shirobako", "ko": "시로바코", "ja": "SHIROBAKO" },
   "final_fantasy_x-2": { "en": "Final Fantasy X-2", "ko": "파이널 판타지 X-2", "ja": "ファイナルファンタジーX-2" },
-  "os-tan": { "en": "OS-tans", "ko": "OS땅", "ja": "OSたん" }
+  "os-tan": { "en": "OS-tans", "ko": "OS땅", "ja": "OSたん" },
+  "black_survival": {
+    "en": "Black Survival",
+    "ko": "블랙서바이벌",
+    "jp": "ブラックサバイバル"
+  },
+  "goddess_of_victory_nikke": {
+    "en": "Goddess of Victory: Nikke",
+    "ko": "승리의 여신: 니케",
+    "jp": "勝利の女神：NIKKE"
+  },
+  "helltaker": {
+    "en": "Helltaker",
+    "ko": "헬테이커",
+    "jp": "ヘルテイカー"
+  },
+  "honkai_star_rail": {
+    "en": "Honkai: Star Rail",
+    "ko": "붕괴: 스타레일",
+    "jp": "崩壊：スターレイル"
+  },
+  "tokidoki_bosotto_russia-go_de_dereru_tonari_no_alya-san": {
+    "en": "Alya Sometimes Hides Her Feelings in Russian",
+    "ko": "가끔씩 툭하고 러시아어로 부끄러워하는 옆자리의 아랴 양",
+    "jp": "時々ボソッとロシア語でデレる隣のアーリャさん"
+  },
+  "tsujou_kougeki_ga_zentai_kougeki_de_2-kai_kougeki_no_okaasan_wa_suki_desu_ka": {
+    "en": "Do You Love Your Mom and Her Two-Hit Multi-Target Attacks?",
+    "ko": "일반공격이 전체공격에 2회 공격인 엄마는 좋아하세요?",
+    "jp": "通常攻撃が全体攻撃で二回攻撃のお母さんは好きですか？"
+  },
+  "wuthering_waves": {
+    "en": "Wuthering Waves",
+    "ko": "명조: 워더링 웨이브",
+    "jp": "鳴潮"
+  },
+  "zenless_zone_zero": {
+    "en": "Zenless Zone Zero",
+    "ko": "젠레스 존 제로",
+    "jp": "ゼンレスゾーンゼロ"
+  }
 }
