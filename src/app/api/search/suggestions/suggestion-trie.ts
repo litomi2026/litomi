@@ -289,7 +289,7 @@ function getLabels(
     suggestionTrie.insert(seriesKey, seriesItem)
 
     // Insert for each translation
-    Object.entries(seriesItem.labels).forEach(([locale, label]) => {
+    Object.entries(seriesItem.labels).forEach(([_locale, label]) => {
       if (label) {
         // Extract just the series name from the label (e.g., "시리즈:동방 프로젝트" -> "동방 프로젝트")
         const seriesName = label.split(':')[1]
@@ -344,7 +344,7 @@ function getLabels(
     suggestionTrie.insert(characterKey, characterItem)
 
     // Insert for each translation
-    Object.entries(characterItem.labels).forEach(([locale, label]) => {
+    Object.entries(characterItem.labels).forEach(([_locale, label]) => {
       if (label) {
         // Extract just the character name from the label (e.g., "캐릭터:키요스미 아키라" -> "키요스미 아키라")
         const characterName = label.split(':')[1]

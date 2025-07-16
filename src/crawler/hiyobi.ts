@@ -1,5 +1,5 @@
 import { translateCharacterList } from '@/database/character-translations'
-import { Multilingual, normalizeName } from '@/database/common'
+import { Multilingual, normalizeValue } from '@/database/common'
 import { translateSeriesList } from '@/database/series-translations'
 import { sortTagValue, translateTag } from '@/database/tag-translations'
 import { Manga, MangaTag } from '@/types/manga'
@@ -166,7 +166,7 @@ export class HiyobiClient {
 
       return {
         category: isValidKHentaiTagCategory(category) ? category : '',
-        value: normalizeName(value),
+        value: normalizeValue(value),
         label: translateTag(category, value, locale),
       }
     })

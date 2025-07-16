@@ -1,6 +1,6 @@
 import characterTranslationJSON from '@/database/translation/character.json'
 
-import { Multilingual, normalizeName } from './common'
+import { Multilingual, normalizeValue } from './common'
 
 const CHARACTER_TRANSLATION: Record<string, Multilingual> = characterTranslationJSON
 
@@ -25,7 +25,7 @@ export function getAllCharactersWithLabels() {
  * Falls back to English if translation not found, then to original name
  */
 export function translateCharacter(characterName: string, locale: keyof Multilingual): string {
-  const normalizedName = normalizeName(characterName)
+  const normalizedName = normalizeValue(characterName)
   const translation = CHARACTER_TRANSLATION[normalizedName]
 
   if (!translation) {

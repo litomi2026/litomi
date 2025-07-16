@@ -1,6 +1,6 @@
 import seriesTranslationJSON from '@/database/translation/series.json'
 
-import { Multilingual, normalizeName } from './common'
+import { Multilingual, normalizeValue } from './common'
 
 const SERIES_TRANSLATION: Record<string, Multilingual> = seriesTranslationJSON
 
@@ -25,7 +25,7 @@ export function getAllSeriesWithLabels() {
  * Falls back to English if translation not found, then to original name
  */
 export function translateSeries(seriesName: string, locale: keyof Multilingual): string {
-  const normalizedName = normalizeName(seriesName)
+  const normalizedName = normalizeValue(seriesName)
   const translation = SERIES_TRANSLATION[normalizedName]
 
   if (!translation) {

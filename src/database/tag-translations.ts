@@ -5,13 +5,13 @@ import tagOtherJSON from '@/database/translation/tag-other.json'
 import tagTranslationJSON from '@/database/translation/tag.json'
 import { MangaTagCategory } from '@/types/manga'
 
-import { Multilingual, normalizeName } from './common'
+import { Multilingual, normalizeValue } from './common'
 
-const TAG_MALE_FEMALE_TRANSLATION: Record<string, Multilingual> = tagMaleFemaleJSON
-const TAG_OTHER_TRANSLATION: Record<string, Multilingual> = tagOtherJSON
-const TAG_MIXED_TRANSLATION: Record<string, Multilingual> = tagMixedJSON
-const TAG_CATEGORY_TRANSLATION: Record<string, Multilingual> = tagCategoryJSON
-const TAG_TRANSLATION: Record<string, Multilingual> = tagTranslationJSON
+const TAG_MALE_FEMALE_TRANSLATION: Record<string, Multilingual | undefined> = tagMaleFemaleJSON
+const TAG_OTHER_TRANSLATION: Record<string, Multilingual | undefined> = tagOtherJSON
+const TAG_MIXED_TRANSLATION: Record<string, Multilingual | undefined> = tagMixedJSON
+const TAG_CATEGORY_TRANSLATION: Record<string, Multilingual | undefined> = tagCategoryJSON
+const TAG_TRANSLATION: Record<string, Multilingual | undefined> = tagTranslationJSON
 
 interface TagPattern {
   category: MangaTagCategory
@@ -26,7 +26,7 @@ const TAG_PATTERNS: TagPattern[] = [
 ]
 
 export function sortTagValue(value: string): MangaTagCategory {
-  const normalizedValue = normalizeName(value)
+  const normalizedValue = normalizeValue(value)
 
   for (const { pattern, category } of TAG_PATTERNS) {
     if (pattern.test(normalizedValue)) {
@@ -38,7 +38,7 @@ export function sortTagValue(value: string): MangaTagCategory {
 }
 
 export function translateTag(category: string, value: string, locale: keyof Multilingual) {
-  const tag = `${category}:${value}`
+  const tag = `${category}:${normalizeValue(value)}`
   const translatedCategory = translateTagCategory(category, locale)
   const translatedValue = TAG_TRANSLATION[tag]?.[locale] || TAG_TRANSLATION[tag]?.en || translateTagValue(value, locale)
   return `${translatedCategory}:${translatedValue}`
@@ -50,7 +50,7 @@ export function translateTagCategory(category: string, locale: keyof Multilingua
 }
 
 export function translateTagValue(value: string, locale: keyof Multilingual): string {
-  const normalizedValue = normalizeName(value)
+  const normalizedValue = normalizeValue(value)
 
   const translation =
     TAG_MALE_FEMALE_TRANSLATION[normalizedValue] ||

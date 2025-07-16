@@ -1,7 +1,7 @@
 import type { Manga } from '@/types/manga'
 
 import { translateCharacterList } from '@/database/character-translations'
-import { normalizeName } from '@/database/common'
+import { normalizeValue } from '@/database/common'
 import { translateSeriesList } from '@/database/series-translations'
 import { translateTag } from '@/database/tag-translations'
 import { convertCamelCaseToKebabCase } from '@/utils/param'
@@ -256,7 +256,7 @@ export class KHentaiClient {
       series: translateSeriesList(seriesValues, locale),
       tags: manga.tags.filter(this.isValidKHentaiTag).map(({ tag: [category, value] }) => ({
         category,
-        value: normalizeName(value),
+        value: normalizeValue(value),
         label: translateTag(category, value, locale),
       })),
       title: manga.title,
