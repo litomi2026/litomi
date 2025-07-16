@@ -1,6 +1,7 @@
-import { ErrorBoundary, Suspense } from '@suspensive/react'
+import { ErrorBoundary } from '@suspensive/react'
 import { cookies } from 'next/headers'
 import { notFound } from 'next/navigation'
+import { Suspense } from 'react'
 
 import BookmarkImportButton, { BookmarkImportButtonSkeleton } from '@/components/BookmarkImportButton'
 import selectBookmarks from '@/sql/selectBookmarks'
@@ -53,14 +54,14 @@ export default async function BookmarkPage({ params }: PageProps) {
     <>
       <div className="flex justify-center items-center gap-x-4 flex-wrap">
         <ErrorBoundary fallback={BookmarkImportButtonSkeleton}>
-          <Suspense clientOnly fallback={<BookmarkImportButtonSkeleton />}>
+          <Suspense fallback={<BookmarkImportButtonSkeleton />}>
             <BookmarkImportButton />
           </Suspense>
         </ErrorBoundary>
         <BookmarkTooltip />
         <RefreshButton className="w-9 p-2 rounded-full transition hover:bg-zinc-800 active:bg-zinc-900" />
       </div>
-      <Suspense clientOnly fallback={<Loading />}>
+      <Suspense fallback={<Loading />}>
         <BookmarkList initialBookmarks={bookmarks} />
       </Suspense>
     </>

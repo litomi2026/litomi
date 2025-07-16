@@ -40,7 +40,7 @@ export default async function Layout({ params, children }: LayoutProps) {
       </TopNavigation>
       <div className="h-26 sm:hidden" />
       <h2 className="text-center font-bold text-xl text-yellow-300 py-4">준비 중입니다</h2>
-      <Suspense clientOnly fallback={<PostCreationFormSkeleton className="m-4" />}>
+      <Suspense fallback={<PostCreationFormSkeleton className="m-4" />}>
         <PostCreationForm
           buttonText="게시하기"
           className="hidden p-4 sm:flex"

@@ -1,7 +1,7 @@
-import { ErrorBoundary, Suspense } from '@suspensive/react'
+import { ErrorBoundary } from '@suspensive/react'
 import dayjs from 'dayjs'
 import Link from 'next/link'
-import { memo } from 'react'
+import { memo, Suspense } from 'react'
 
 import { Manga } from '@/types/manga'
 import { getViewerLink } from '@/utils/manga'
@@ -91,7 +91,7 @@ function MangaCard({ manga, index = 0, source, className = '', showSearchFromNex
             [&_button]:hover:bg-zinc-800 [&_button]:active:bg-zinc-900 [&_button]:active:border-zinc-700"
           >
             <ErrorBoundary fallback={BookmarkButtonError}>
-              <Suspense clientOnly fallback={<BookmarkButtonSkeleton className="flex-1" />}>
+              <Suspense fallback={<BookmarkButtonSkeleton className="flex-1" />}>
                 <BookmarkButton className="flex-1" manga={manga} source={source} />
               </Suspense>
             </ErrorBoundary>

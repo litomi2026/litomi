@@ -101,7 +101,11 @@ export default function ProfileEditButton() {
             </div>
             {/* 프로필 이미지 */}
             <div className="w-32 aspect-square mx-4 relative rounded-full border-4 -mt-16 overflow-hidden bg-zinc-700">
-              <img alt="프로필 이미지" className="w-full h-full object-cover" src={profileImageURL} />
+              <img
+                alt="프로필 이미지"
+                className="w-full h-full object-cover"
+                src={(profileImageURL || me?.imageURL) ?? undefined}
+              />
               <div className="sr-only">프로필 이미지</div>
             </div>
             {/* 내용 입력 폼 */}

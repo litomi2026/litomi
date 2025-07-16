@@ -1,7 +1,8 @@
-import { ErrorBoundary, Suspense } from '@suspensive/react'
+import { ErrorBoundary } from '@suspensive/react'
 import dayjs from 'dayjs'
 import { unstable_cache } from 'next/cache'
 import Image from 'next/image'
+import { Suspense } from 'react'
 
 import LogoutButton, { LogoutButtonError, LogoutButtonSkeleton } from '@/components/header/LogoutButton'
 import IconCalendar from '@/components/icons/IconCalendar'
@@ -59,12 +60,12 @@ export default async function Layout({ params, children }: LayoutProps) {
           </div>
           <div className="flex items-center gap-2">
             <ErrorBoundary fallback={ProfileEditButtonError}>
-              <Suspense clientOnly fallback={<ProfileEditButtonSkeleton />}>
+              <Suspense fallback={<ProfileEditButtonSkeleton />}>
                 <ProfileEditButton />
               </Suspense>
             </ErrorBoundary>
             <ErrorBoundary fallback={LogoutButtonError}>
-              <Suspense clientOnly fallback={<LogoutButtonSkeleton />}>
+              <Suspense fallback={<LogoutButtonSkeleton />}>
                 <LogoutButton />
               </Suspense>
             </ErrorBoundary>
