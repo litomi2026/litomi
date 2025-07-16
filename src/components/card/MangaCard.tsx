@@ -59,11 +59,11 @@ function MangaCard({ manga, index = 0, source, className = '', showSearchFromNex
             {language && <LanguageBadge language={language} />}
           </div>
           {type && <MangaMetadataItem filterType="type" label="종류" value={type} />}
-          {artists && artists.length > 0 && <MangaMetadataList filterType="artist" label="작가" values={artists} />}
-          {group && group.length > 0 && <MangaMetadataList filterType="group" label="그룹" values={group} />}
-          {series && series.length > 0 && <MangaMetadataList filterType="series" label="시리즈" values={series} />}
+          {artists && artists.length > 0 && <MangaMetadataList details={artists} filterType="artist" term="작가" />}
+          {group && group.length > 0 && <MangaMetadataList details={group} filterType="group" term="그룹" />}
+          {series && series.length > 0 && <MangaMetadataList details={series} filterType="series" term="시리즈" />}
           {characters && characters.length > 0 && (
-            <MangaMetadataList filterType="character" label="캐릭터" values={characters} />
+            <MangaMetadataList details={characters} filterType="character" term="캐릭터" />
           )}
           {tags && tags.length > 0 && (
             <div className="flex gap-2">

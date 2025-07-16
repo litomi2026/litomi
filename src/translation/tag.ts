@@ -1,27 +1,20 @@
-import tagCategoryJSON from '@/database/translation/tag-category.json'
-import tagMaleFemaleJSON from '@/database/translation/tag-male-female.json'
-import tagMixedJSON from '@/database/translation/tag-mixed.json'
-import tagOtherJSON from '@/database/translation/tag-other.json'
-import tagTranslationJSON from '@/database/translation/tag.json'
+import tagCategoryJSON from '@/translation/tag-category.json'
+import tagMaleFemaleJSON from '@/translation/tag-male-female.json'
+import tagMixedJSON from '@/translation/tag-mixed.json'
+import tagOtherJSON from '@/translation/tag-other.json'
+import tagTranslationJSON from '@/translation/tag.json'
+import { MangaTagCategory } from '@/types/manga'
 
-export type Multilingual = {
-  en: string
-  ko?: string
-  ja?: string
-  'zh-CN'?: string
-  'zh-TW'?: string
-}
+import { Multilingual, normalizeValue } from './common'
 
-const TAG_MALE_FEMALE_TRANSLATION: Record<string, Multilingual> = tagMaleFemaleJSON
-const TAG_OTHER_TRANSLATION: Record<string, Multilingual> = tagOtherJSON
-const TAG_MIXED_TRANSLATION: Record<string, Multilingual> = tagMixedJSON
-const TAG_CATEGORY_TRANSLATION: Record<string, Multilingual> = tagCategoryJSON
-const TAG_TRANSLATION: Record<string, Multilingual> = tagTranslationJSON
-
-export type TagCategory = 'female' | 'male' | 'mixed' | 'other'
+const TAG_MALE_FEMALE_TRANSLATION: Record<string, Multilingual | undefined> = tagMaleFemaleJSON
+const TAG_OTHER_TRANSLATION: Record<string, Multilingual | undefined> = tagOtherJSON
+const TAG_MIXED_TRANSLATION: Record<string, Multilingual | undefined> = tagMixedJSON
+const TAG_CATEGORY_TRANSLATION: Record<string, Multilingual | undefined> = tagCategoryJSON
+const TAG_TRANSLATION: Record<string, Multilingual | undefined> = tagTranslationJSON
 
 interface TagPattern {
-  category: TagCategory
+  category: MangaTagCategory
   pattern: RegExp
 }
 
@@ -32,12 +25,8 @@ const TAG_PATTERNS: TagPattern[] = [
   { pattern: /^(\w*)inseki$/, category: 'mixed' },
 ]
 
-export function normalizeTagValue(value: string): string {
-  return value.toLowerCase().replace(/\s+/g, '_').trim()
-}
-
-export function sortTagValue(value: string): TagCategory {
-  const normalizedValue = normalizeTagValue(value)
+export function sortTagValue(value: string): MangaTagCategory {
+  const normalizedValue = normalizeValue(value)
 
   for (const { pattern, category } of TAG_PATTERNS) {
     if (pattern.test(normalizedValue)) {
@@ -49,7 +38,7 @@ export function sortTagValue(value: string): TagCategory {
 }
 
 export function translateTag(category: string, value: string, locale: keyof Multilingual) {
-  const tag = `${category}:${value}`
+  const tag = `${category}:${normalizeValue(value)}`
   const translatedCategory = translateTagCategory(category, locale)
   const translatedValue = TAG_TRANSLATION[tag]?.[locale] || TAG_TRANSLATION[tag]?.en || translateTagValue(value, locale)
   return `${translatedCategory}:${translatedValue}`
@@ -61,7 +50,7 @@ export function translateTagCategory(category: string, locale: keyof Multilingua
 }
 
 export function translateTagValue(value: string, locale: keyof Multilingual): string {
-  const normalizedValue = normalizeTagValue(value)
+  const normalizedValue = normalizeValue(value)
 
   const translation =
     TAG_MALE_FEMALE_TRANSLATION[normalizedValue] ||

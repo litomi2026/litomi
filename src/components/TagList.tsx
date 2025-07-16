@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { memo } from 'react'
 
-import { Tag } from '@/types/manga'
+import { MangaTag } from '@/types/manga'
 
 import { toggleSearchFilter } from './card/utils'
 import TagLabel from './TagLabel'
@@ -19,7 +19,7 @@ const tagStyles = {
 
 type Props = {
   className: string
-  tags: Tag[]
+  tags: MangaTag[]
   clickable?: boolean
 }
 

@@ -1,5 +1,9 @@
-import { normalizeTagValue, translateTag } from '@/database/tag-translations'
-import { Manga } from '@/types/manga'
+import type { Manga } from '@/types/manga'
+
+import { translateCharacterList } from '@/translation/character'
+import { normalizeValue } from '@/translation/common'
+import { translateSeriesList } from '@/translation/series'
+import { translateTag } from '@/translation/tag'
 import { convertCamelCaseToKebabCase } from '@/utils/param'
 
 import { ParseError } from './errors'
@@ -238,16 +242,21 @@ export class KHentaiClient {
 
   private convertKHentaiCommonToManga(manga: KHentaiMangaCommon) {
     const locale = 'ko' // TODO: Get from user preferences or context
+    const seriesValues = manga.tags.filter(({ tag }) => tag[0] === 'parody').map(({ tag }) => tag[1])
+    const characterValues = manga.tags.filter(({ tag }) => tag[0] === 'character').map(({ tag }) => tag[1])
+    const groupValues = manga.tags.filter(({ tag }) => tag[0] === 'group').map(({ tag }) => tag[1])
+    const artistValues = manga.tags.filter(({ tag }) => tag[0] === 'artist').map(({ tag }) => tag[1])
 
     return {
       id: manga.id,
-      artists: manga.tags.filter(({ tag }) => tag[0] === 'artist').map(({ tag }) => tag[1]),
-      date: new Date(manga.posted * 1000).toString(),
-      group: manga.tags.filter(({ tag }) => tag[0] === 'group').map(({ tag }) => tag[1]),
-      series: manga.tags.filter(({ tag }) => tag[0] === 'parody').map(({ tag }) => tag[1]),
+      artists: artistValues.map((value) => ({ value, label: value })),
+      characters: translateCharacterList(characterValues, locale),
+      group: groupValues.map((value) => ({ value, label: value })),
+      date: new Date(manga.posted * 1000).toISOString(),
+      series: translateSeriesList(seriesValues, locale),
       tags: manga.tags.filter(this.isValidKHentaiTag).map(({ tag: [category, value] }) => ({
         category,
-        value: normalizeTagValue(value),
+        value: normalizeValue(value),
         label: translateTag(category, value, locale),
       })),
       title: manga.title,

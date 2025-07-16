@@ -6,10 +6,10 @@ export const MANGA_DETAILS_BATCH_SIZE = 10
 export const EXAMPLE_BOOKMARKED_MANGAS: Manga[] = [
   {
     id: 3291051,
-    artists: ['fence_14'],
+    artists: [{ value: 'fence_14', label: 'fence_14' }],
     date: 'Thu Mar 27 2025 17:06:26 GMT+0000 (Coordinated Universal Time)',
     group: [],
-    series: ['original'],
+    series: [{ value: 'original', label: '오리지널' }],
     tags: [
       {
         category: 'male',
@@ -63,7 +63,7 @@ export const EXAMPLE_BOOKMARKED_MANGAS: Manga[] = [
   },
   {
     id: 3059184,
-    artists: ['k-vam'],
+    artists: [{ value: 'k-vam', label: 'k-vam' }],
     date: 'Sun Sep 15 2024 18:28:00 GMT+0000 (Coordinated Universal Time)',
     group: [],
     series: [],

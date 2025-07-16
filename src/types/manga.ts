@@ -1,13 +1,18 @@
+export type LabeledValue = {
+  label: string
+  value: string
+}
+
 export type Manga = {
   id: number
   images: string[]
-  artists?: string[]
-  characters?: string[]
+  artists?: LabeledValue[]
+  characters?: LabeledValue[]
   date?: string
-  group?: string[]
+  group?: LabeledValue[]
   related?: number[]
-  series?: string[]
-  tags?: Tag[]
+  series?: LabeledValue[]
+  tags?: MangaTag[]
   title: string
   type?: string
   language?: string
@@ -22,8 +27,8 @@ export type Manga = {
   harpiId?: string
 }
 
-export type Tag = {
-  category: '' | 'female' | 'male' | 'mixed' | 'other'
-  value: string // "big_breasts"
-  label: string // "큰 가슴"
+export type MangaTag = LabeledValue & {
+  category: MangaTagCategory
 }
+
+export type MangaTagCategory = '' | 'female' | 'male' | 'mixed' | 'other'

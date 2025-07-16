@@ -1,0 +1,199 @@
+{
+  "akira_kiyosumi": { "en": "Akira Kiyosumi", "ko": "키요스미 아키라" },
+  "windows_nt": { "en": "Windows NT", "ko": "Windows NT" },
+  "abigail_williams": { "en": "Abigail Williams", "ko": "아비게일 윌리엄스", "jp": "アビゲイル・ウィリアムズ" },
+  "alice_margatroid": { "en": "Alice Margatroid", "ko": "앨리스 마가트로이드", "jp": "アリス・マーガトロイド" },
+  "anna_yanami": { "en": "Anna Yanami", "ko": "야나미 안나", "jp": "八奈見 杏菜" },
+  "ao_sorakado": { "en": "Ao Sorakado", "ko": "소라카도 아오", "jp": "空門 蒼" },
+  "chika_komari": { "en": "Chika Komari", "ko": "코마리 치카", "jp": "小鞠 知花" },
+  "flandre_scarlet": { "en": "Flandre Scarlet", "ko": "플랑드르 스칼렛", "jp": "フランドール・スカーレット" },
+  "focalors": { "en": "Focalors", "ko": "포칼로스", "jp": "フォカロル" },
+  "goldenglow": { "en": "Goldenglow", "ko": "골든글로", "jp": "ゴールデングロー" },
+  "haruka_hanabishi": { "en": "Haruka Hanabishi", "ko": "하나비시 하루카", "jp": "花菱 春香" },
+  "hina_sorasaki": { "en": "Hina Sorasaki", "ko": "소라사키 히나", "jp": "空崎 ヒナ" },
+  "hoshino_takanashi": { "en": "Hoshino Takanashi", "ko": "타카나시 호시노", "jp": "小鳥遊 ホシノ" },
+  "jinx": { "en": "Jinx", "ko": "징크스", "jp": "ジンクス" },
+  "megumin": { "en": "Megumin", "ko": "메구밍", "jp": "めぐみん" },
+  "mostima": { "en": "Mostima", "ko": "모스티마", "jp": "モスティマ" },
+  "mutsumi_wakaba": { "en": "Mutsumi Wakaba", "ko": "와카바 무츠미", "jp": "若葉 睦" },
+  "reimu_hakurei": { "en": "Reimu Hakurei", "ko": "하쿠레이 레이무", "jp": "博麗 霊夢" },
+  "rosmontis": { "en": "Rosmontis", "ko": "로스몬티스", "jp": "ロスモンティス" },
+  "sakiko_togawa": { "en": "Sakiko Togawa", "ko": "토가와 사키코", "jp": "豊川 祥子" },
+  "taiga_aisaka": { "en": "Taiga Aisaka", "ko": "아이사카 타이가", "jp": "逢坂 大河" },
+  "tashkent": { "en": "Tashkent", "ko": "타슈켄트", "jp": "タシュケント" },
+  "alisa_mikhailovna_kujou": {
+    "en": "Alisa Mikhailovna Kujou",
+    "ko": "알리사 미하일로브나 쿠조",
+    "jp": "アリサ・ミハイロヴナ・九条"
+  },
+  "amatsukaze": {
+    "en": "Amatsukaze",
+    "ko": "아마츠카제",
+    "jp": "天津風"
+  },
+  "amiya": {
+    "en": "Amiya",
+    "ko": "아미야",
+    "jp": "アーミヤ"
+  },
+  "aru_rikuhachima": {
+    "en": "Aru Rikuhachima",
+    "ko": "리쿠하치마 아루",
+    "jp": "陸八魔 アル"
+  },
+  "atago": {
+    "en": "Atago",
+    "ko": "아타고",
+    "jp": "愛宕"
+  },
+  "camellya": {
+    "en": "Camellya",
+    "ko": "카멜리아",
+    "jp": "カメリア"
+  },
+  "dsr-50": {
+    "en": "DSR-50",
+    "ko": "DSR-50",
+    "jp": "DSR-50"
+  },
+  "exusiai": {
+    "en": "Exusiai",
+    "ko": "엑시아(명일방주)",
+    "jp": "エクシア"
+  },
+  "firefly": {
+    "en": "Firefly",
+    "ko": "파이어플라이",
+    "jp": "ファイアフライ"
+  },
+  "haruna": {
+    "en": "Haruna",
+    "ko": "하루나",
+    "jp": "榛名"
+  },
+  "himiko_toga": {
+    "en": "Himiko Toga",
+    "ko": "토가 히미코",
+    "jp": "トガ ヒミコ"
+  },
+  "hk416": {
+    "en": "HK416",
+    "ko": "HK416",
+    "jp": "HK416"
+  },
+  "iono": {
+    "en": "Iono",
+    "ko": "나리오",
+    "jp": "ナンジャモ"
+  },
+  "julianne_stingray": {
+    "en": "Julianne Stingray",
+    "ko": "줄리안 스팅레이",
+    "jp": "ジュリアン・スティングレイ"
+  },
+  "kisaki_ryuuge": {
+    "en": "Kisaki Ryuuge",
+    "ko": "키사키 류우게",
+    "jp": "鬼崎 竜牙"
+  },
+  "koharu_shimoe": {
+    "en": "Koharu Shimoe",
+    "ko": "시모에 코하루",
+    "jp": "下江 コハル"
+  },
+  "loid_forger": {
+    "en": "Loid Forger",
+    "ko": "로이드 포저",
+    "jp": "ロイド・フォージャー"
+  },
+  "lumine": {
+    "en": "Lumine",
+    "ko": "루미네",
+    "jp": "蛍"
+  },
+  "mamako_oosuki": {
+    "en": "Mamako Oosuki",
+    "ko": "오오스키 마마코",
+    "jp": "大好 真々子"
+  },
+  "miku_hatsune": {
+    "en": "Hatsune Miku",
+    "ko": "하츠네 미쿠",
+    "jp": "初音 ミク"
+  },
+  "modeus": {
+    "en": "Modeus",
+    "ko": "모데우스",
+    "jp": "モデウス"
+  },
+  "mona_megistus": {
+    "en": "Mona Megistus",
+    "ko": "모나(원신)",
+    "jp": "モナ・メギストス"
+  },
+  "paimon": {
+    "en": "Paimon",
+    "ko": "페이몬(원신)",
+    "jp": "パイモン"
+  },
+  "raiden_shogun": {
+    "en": "Raiden Shogun",
+    "ko": "라이덴 쇼군",
+    "jp": "雷電将軍"
+  },
+  "riamu_yumemi": {
+    "en": "Riamu Yumemi",
+    "ko": "유메미 리아무",
+    "jp": "夢見 りあむ"
+  },
+  "suomi": {
+    "en": "Suomi",
+    "ko": "수오미",
+    "jp": "スオミ"
+  },
+  "suzuya": {
+    "en": "Suzuya",
+    "ko": "스즈야",
+    "jp": "鈴谷"
+  },
+  "ump45": {
+    "en": "UMP45",
+    "ko": "UMP45",
+    "jp": "UMP45"
+  },
+  "ump9": {
+    "en": "UMP9",
+    "ko": "UMP9",
+    "jp": "UMP9"
+  },
+  "uzuki_shimamura": {
+    "en": "Uzuki Shimamura",
+    "ko": "시마무라 우즈키",
+    "jp": "島村 卯月"
+  },
+  "vivian": {
+    "en": "Vivian",
+    "ko": "비비안",
+    "jp": "ヴィヴィアン"
+  },
+  "wa2000": {
+    "en": "WA2000",
+    "ko": "WA2000",
+    "jp": "WA2000"
+  },
+  "yor_forger": {
+    "en": "Yor Forger",
+    "ko": "요르 포저",
+    "jp": "ヨル・フォージャー"
+  },
+  "yukari_yuzuki": {
+    "en": "Yukari Yuzuki",
+    "ko": "유즈키 유카리",
+    "jp": "結月 ゆかり"
+  },
+  "z3": {
+    "en": "Z3",
+    "ko": "Z3",
+    "jp": "Z3"
+  }
+}
