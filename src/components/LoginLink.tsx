@@ -15,7 +15,7 @@ export default function LoginLink({ className = '', children, ...props }: Readon
     <Link
       {...props}
       className={`font-bold text-xs ${className}`}
-      href={`/auth/login?${SearchParamKey.REDIRECT_URL}=${encodeURIComponent(pathname)}`}
+      href={`/auth/login?${SearchParamKey.REDIRECT}=${encodeURIComponent(pathname)}`}
     >
       {children}
     </Link>

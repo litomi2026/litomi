@@ -12,7 +12,7 @@ export enum LocalStorageKey {
 }
 
 export enum SearchParamKey {
-  REDIRECT_URL = 'redirect-url',
+  REDIRECT = 'redirect',
 }
 
 export enum SessionStorageKey {

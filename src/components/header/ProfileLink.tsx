@@ -13,11 +13,8 @@ type Props = {
 export default function ProfileLink({ className }: Readonly<Props>) {
   const { data: me } = useMeQuery()
   const loginId = me?.loginId
-  const redirectURL = '/api/my'
 
-  const href = loginId
-    ? `/@${loginId}`
-    : `/auth/login?${SearchParamKey.REDIRECT_URL}=${encodeURIComponent(redirectURL)}`
+  const href = loginId ? `/@${loginId}` : `/auth/login?${SearchParamKey.REDIRECT}=${encodeURIComponent('/@')}`
 
   return (
     <SelectableLink className={className} href={href} Icon={<IconProfile />}>

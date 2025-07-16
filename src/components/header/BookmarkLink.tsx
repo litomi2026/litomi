@@ -1,6 +1,5 @@
 'use client'
 
-import { MyTab } from '@/app/api/my/schema'
 import { SearchParamKey } from '@/constants/storage'
 import useMeQuery from '@/query/useMeQuery'
 
@@ -14,11 +13,10 @@ type Props = {
 export default function BookmarkLink({ className }: Readonly<Props>) {
   const { data: me } = useMeQuery()
   const loginId = me?.loginId
-  const redirectURL = `/api/my?tab=${MyTab.Bookmark}`
 
   const href = loginId
     ? `/@${loginId}/bookmark`
-    : `/auth/login?${SearchParamKey.REDIRECT_URL}=${encodeURIComponent(redirectURL)}`
+    : `/auth/login?${SearchParamKey.REDIRECT}=${encodeURIComponent('/@/bookmark')}`
 
   return (
     <SelectableLink className={className} href={href} Icon={<IconBookmark />}>
