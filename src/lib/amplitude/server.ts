@@ -7,15 +7,15 @@ let isInitialized = false
 let isInitializing = false
 
 type AmplitudeEventProperties = {
+  eventInput: string
   userId: number | string
-  event: string
   userProperties?: Record<string, unknown>
   eventProperties?: Record<string, unknown>
 }
 
 export async function trackAmplitudeEvent({
   userId,
-  event,
+  eventInput,
   userProperties,
   eventProperties,
 }: AmplitudeEventProperties): Promise<boolean> {
@@ -28,7 +28,7 @@ export async function trackAmplitudeEvent({
     ensureInitialized()
 
     // Track the event with user properties
-    const result = await amplitude.track(event, eventProperties, {
+    const result = await amplitude.track(eventInput, eventProperties, {
       user_id: userId.toString(),
     }).promise
 
@@ -46,9 +46,6 @@ export async function trackAmplitudeEvent({
       await amplitude.identify(identifyObj, { user_id: userId.toString() }).promise
     }
 
-    // Flush to ensure events are sent immediately
-    await amplitude.flush().promise
-
     return result?.code === 200
   } catch (error) {
     console.error('Error tracking Amplitude event:', error)
@@ -59,7 +56,7 @@ export async function trackAmplitudeEvent({
 function ensureInitialized() {
   if (!isInitialized && !isInitializing && AMPLITUDE_API_KEY) {
     isInitializing = true
-    amplitude.init(AMPLITUDE_API_KEY)
+    amplitude.init(AMPLITUDE_API_KEY, { minIdLength: 1 })
     isInitialized = true
     isInitializing = false
   }

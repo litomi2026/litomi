@@ -7,7 +7,6 @@ import { z } from 'zod/v4'
 import { SALT_ROUNDS } from '@/constants'
 import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
-import { trackAmplitudeEvent } from '@/lib/amplitude/server'
 import { setAccessTokenCookie, setRefreshTokenCookie } from '@/utils/cookie'
 import { generateRandomNickname, generateRandomProfileImage } from '@/utils/nickname'
 
@@ -82,14 +81,5 @@ export default async function signup(_prevState: unknown, formData: FormData) {
     setRefreshTokenCookie(cookieStore, userId, loginId),
   ])
 
-  trackAmplitudeEvent({
-    userId,
-    event: 'signup',
-    userProperties: {
-      loginId,
-      nickname,
-    },
-  })
-
-  return { success: true, data: { userId, loginId } }
+  return { success: true, data: { userId, loginId, nickname } }
 }

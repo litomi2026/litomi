@@ -7,7 +7,6 @@ import { z } from 'zod/v4'
 
 import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
-import { trackAmplitudeEvent } from '@/lib/amplitude/server'
 import { setAccessTokenCookie, setRefreshTokenCookie } from '@/utils/cookie'
 
 const schema = z.object({
@@ -84,15 +83,5 @@ export default async function login(_prevState: unknown, formData: FormData) {
       .where(sql`${userTable.id} = ${userId}`),
   ])
 
-  trackAmplitudeEvent({
-    userId,
-    event: 'login',
-    userProperties: {
-      loginId,
-      lastLoginAt,
-      lastLogoutAt,
-    },
-  })
-
-  return { success: true, data: { userId, loginId } }
+  return { success: true, data: { userId, loginId, lastLoginAt, lastLogoutAt } }
 }
