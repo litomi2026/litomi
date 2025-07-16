@@ -220,7 +220,6 @@ export class HarpiClient {
   }
 
   private convertHarpiToManga(harpiManga: HarpiManga): Manga {
-    console.log('👀 - HarpiClient - convertHarpiToManga - harpiManga:', harpiManga)
     const locale: keyof Multilingual = 'ko' // TODO: Get from user preferences or context
 
     return {
