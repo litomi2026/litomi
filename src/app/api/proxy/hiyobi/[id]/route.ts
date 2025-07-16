@@ -1,18 +1,28 @@
 import { HiyobiClient } from '@/crawler/hiyobi'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
+import { RouteProps } from '@/types/nextjs'
+
+import { GETProxyHiyobiIdSchema } from './schema'
 
 export const runtime = 'edge'
 const maxAge = 604800 // 1 week
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
-  const id = parseInt(params.id)
+type Params = {
+  id: string
+}
 
-  if (isNaN(id) || id <= 0) {
+export async function GET(request: Request, props: RouteProps<Params>) {
+  const params = await props.params
+  const validation = GETProxyHiyobiIdSchema.safeParse(params)
+
+  if (!validation.success) {
     return new Response('400 Bad Request', { status: 400 })
   }
 
+  const { id } = validation.data
+  const client = HiyobiClient.getInstance()
+
   try {
-    const client = HiyobiClient.getInstance()
     const manga = await client.fetchManga(id)
 
     if (!manga) {
