@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation'
 
 import BookmarkImportButton, { BookmarkImportButtonSkeleton } from '@/components/BookmarkImportButton'
 import selectBookmarks from '@/sql/selectBookmarks'
-import { BasePageProps } from '@/types/nextjs'
+import { PageProps } from '@/types/nextjs'
 import { getUserDataFromAccessToken } from '@/utils/cookie'
 import { getLoginIdFromParam } from '@/utils/param'
 
@@ -15,7 +15,7 @@ import { GuestView } from './GuestView'
 import Loading from './loading'
 import RefreshButton from './RefreshButton'
 
-export default async function BookmarkPage({ params }: BasePageProps) {
+export default async function BookmarkPage({ params }: PageProps) {
   const { loginId } = await params
   const loginIdFromParam = getLoginIdFromParam(loginId)
 

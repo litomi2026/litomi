@@ -11,8 +11,8 @@ import { GETMyRequestSchema } from './schema'
 
 export async function GET(request: Request) {
   const url = new URL(request.url)
-  const params = Object.fromEntries(url.searchParams)
-  const validation = GETMyRequestSchema.safeParse(params)
+  const searchParams = Object.fromEntries(url.searchParams)
+  const validation = GETMyRequestSchema.safeParse(searchParams)
 
   if (!validation.success) {
     return new Response('400 Bad Request', { status: 400 })
@@ -20,8 +20,7 @@ export async function GET(request: Request) {
 
   const { tab } = validation.data
   const cookieStore = await cookies()
-  const userData = await getUserDataFromAccessToken(cookieStore)
-  const userId = userData?.userId
+  const { userId } = (await getUserDataFromAccessToken(cookieStore)) ?? {}
 
   if (!userId) {
     const redirectURL = tab ? `/api/my?tab=${tab}` : '/api/my'

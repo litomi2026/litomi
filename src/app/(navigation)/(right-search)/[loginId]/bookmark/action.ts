@@ -15,8 +15,7 @@ const schema = z.object({
 
 export default async function toggleBookmark(_prevState: unknown, formData: FormData) {
   const cookieStore = await cookies()
-  const userData = await getUserDataFromAccessToken(cookieStore)
-  const userId = userData?.userId
+  const { userId } = (await getUserDataFromAccessToken(cookieStore)) ?? {}
 
   if (!userId) {
     return { status: 401, error: '로그인 정보가 없거나 만료됐어요.' }

@@ -6,7 +6,7 @@ import Image from 'next/image'
 import LogoutButton, { LogoutButtonError, LogoutButtonSkeleton } from '@/components/header/LogoutButton'
 import IconCalendar from '@/components/icons/IconCalendar'
 import selectUser from '@/sql/selectUser'
-import { BaseLayoutProps } from '@/types/nextjs'
+import { LayoutProps } from '@/types/nextjs'
 import { getLoginIdFromParam } from '@/utils/param'
 
 import MyPageNavigation from './MyPageNavigation'
@@ -14,7 +14,7 @@ import ProfileEditButton, { ProfileEditButtonError, ProfileEditButtonSkeleton } 
 import UserBadRequest from './UserBadRequest'
 import UserNotFound from './UserNotFound'
 
-export default async function Layout({ params, children }: BaseLayoutProps) {
+export default async function Layout({ params, children }: LayoutProps) {
   const { loginId } = await params
   const loginIdFromParam = getLoginIdFromParam(loginId)
 

@@ -1,4 +1,4 @@
-import type { BaseLayoutProps } from '@/types/nextjs'
+import type { LayoutProps } from '@/types/nextjs'
 
 import ShuffleButton from '@/components/ShuffleButton'
 import SourceSliderLink from '@/components/SourceSliderLink'
@@ -14,7 +14,7 @@ import {
   ViewCookie,
 } from '@/utils/param'
 
-export default async function Layout({ params, children }: BaseLayoutProps) {
+export default async function Layout({ params, children }: LayoutProps) {
   const { page, source, layout } = await params
   const pageNumber = validatePage(page) || 1
   const sourceString = validateSource(source)

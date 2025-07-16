@@ -1,7 +1,7 @@
 import { Suspense } from '@suspensive/react'
 import { cookies } from 'next/headers'
 
-import { BasePageProps } from '@/types/nextjs'
+import { PageProps } from '@/types/nextjs'
 import { getCookieJSON } from '@/utils/cookie'
 import { ViewCookie } from '@/utils/param'
 
@@ -11,7 +11,7 @@ import Error400 from './Error400'
 import Loading from './loading'
 import SearchResults from './SearchResults'
 
-export default async function Page({ searchParams }: BasePageProps) {
+export default async function Page({ searchParams }: PageProps) {
   const [cookieStore, searchParamsJSON] = await Promise.all([cookies(), searchParams])
 
   const validationResult = GETProxyKSearchSchema.safeParse({

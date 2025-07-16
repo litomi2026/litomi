@@ -8,7 +8,7 @@ import { CANONICAL_URL } from '@/constants/url'
 import { HiyobiClient } from '@/crawler/hiyobi'
 import { KHentaiClient } from '@/crawler/k-hentai'
 import { Manga } from '@/types/manga'
-import { BasePageProps } from '@/types/nextjs'
+import { PageProps } from '@/types/nextjs'
 import { getViewerLink } from '@/utils/manga'
 import {
   getTotalPages,
@@ -60,7 +60,7 @@ export async function generateStaticParams() {
   return params
 }
 
-export default async function Page({ params }: BasePageProps) {
+export default async function Page({ params }: PageProps) {
   const { sort, page, source, layout } = await params
   const sortString = validateSort(sort)
   const pageNumber = validatePage(page)

@@ -1,4 +1,4 @@
-import type { BaseLayoutProps } from '@/types/nextjs'
+import type { LayoutProps } from '@/types/nextjs'
 
 import ShuffleButton from '@/components/ShuffleButton'
 import SourceSliderLink from '@/components/SourceSliderLink'
@@ -6,7 +6,7 @@ import SourceTooltip from '@/components/tooltip/SourceTooltip'
 import ViewSliderLink from '@/components/ViewSliderLink'
 import { SourceParam, validateSource, validateView, ViewCookie } from '@/utils/param'
 
-export default async function Layout({ params, children }: BaseLayoutProps) {
+export default async function Layout({ params, children }: LayoutProps) {
   const { source, layout } = await params
   const sourceString = validateSource(source)
   const layoutString = validateView(layout) || ViewCookie.CARD

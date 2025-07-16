@@ -1,7 +1,7 @@
 import { ErrorBoundary, Suspense } from '@suspensive/react'
 import Link from 'next/link'
 
-import type { BaseLayoutProps } from '@/types/nextjs'
+import type { LayoutProps } from '@/types/nextjs'
 
 import BookmarkLink, { BookmarkLinkSkeleton } from '@/components/header/BookmarkLink'
 import ProfileLink, { ProfileLinkSkeleton } from '@/components/header/ProfileLink'
@@ -15,7 +15,7 @@ import SelectableLink from '@/components/SelectableLink'
 
 import Profile, { ProfileError, ProfileSkeleton } from '../../components/header/Profile'
 
-export default async function Layout({ children }: BaseLayoutProps) {
+export default async function Layout({ children }: LayoutProps) {
   return (
     <div className="flex flex-col min-h-full mx-auto px-safe pb-safe max-w-screen-2xl sm:flex-row">
       <header

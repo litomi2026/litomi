@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 
-import type { BaseLayoutProps } from '@/types/nextjs'
+import type { LayoutProps } from '@/types/nextjs'
 
 import ViewToggle from '@/components/ViewSlider'
 
@@ -8,7 +8,7 @@ import FilterButton from './FilterButton'
 import ScrollReset from './ScrollReset'
 import SearchForm from './SearchForm'
 
-export default async function Layout({ children }: BaseLayoutProps) {
+export default async function Layout({ children }: LayoutProps) {
   return (
     <main className="flex flex-col grow">
       <Suspense>

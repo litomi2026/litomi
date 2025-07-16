@@ -15,8 +15,7 @@ export type GETMeResponse = {
 
 export async function GET() {
   const cookieStore = await cookies()
-  const userData = await getUserDataFromAccessToken(cookieStore)
-  const userId = userData?.userId
+  const { userId } = (await getUserDataFromAccessToken(cookieStore)) ?? {}
 
   if (!userId) {
     return new Response('로그인 정보가 없거나 만료됐어요.', { status: 401 })

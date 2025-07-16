@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
-import type { BasePageProps } from '@/types/nextjs'
+import type { PageProps } from '@/types/nextjs'
 
 import ImageViewer from '@/components/ImageViewer/ImageViewer'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
@@ -14,7 +14,7 @@ import { SourceParam, validateId, validateSource } from '@/utils/param'
 
 export const revalidate = 28800 // 8 hours
 
-export async function generateMetadata({ params }: BasePageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id, source } = await params
   const idNumber = validateId(id)
   const sourceString = validateSource(source)
@@ -61,7 +61,7 @@ export async function generateStaticParams() {
   return params
 }
 
-export default async function Page({ params }: BasePageProps) {
+export default async function Page({ params }: PageProps) {
   const { id, source } = await params
   const idNumber = validateId(id)
   const sourceString = validateSource(source)
