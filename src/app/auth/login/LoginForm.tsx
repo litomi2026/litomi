@@ -10,6 +10,7 @@ import Loading from '@/components/ui/Loading'
 import { loginIdPattern, passwordPattern } from '@/constants/pattern'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
+import { resetMeQuery } from '@/query/useMeQuery'
 import { sanitizeRedirect } from '@/utils'
 
 import login from './action'
@@ -48,6 +49,7 @@ export default function LoginForm() {
 
     ;(async () => {
       toast.success(`${loginId} 계정으로 로그인했어요`)
+      resetMeQuery()
       await queryClient.invalidateQueries({ queryKey: QueryKeys.me, type: 'all' })
       const redirect = searchParams.get(SearchParamKey.REDIRECT)
       const sanitizedURL = sanitizeRedirect(redirect) || '/'

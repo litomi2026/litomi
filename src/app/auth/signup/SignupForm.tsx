@@ -11,6 +11,7 @@ import TooltipPopover from '@/components/ui/TooltipPopover'
 import { loginIdPattern, passwordPattern } from '@/constants/pattern'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
+import { resetMeQuery } from '@/query/useMeQuery'
 import { sanitizeRedirect } from '@/utils'
 
 import signup from './action'
@@ -37,6 +38,7 @@ export default function SignupForm() {
 
     ;(async () => {
       toast.success(`${loginId} 계정으로 가입했어요`)
+      resetMeQuery()
       await queryClient.invalidateQueries({ queryKey: QueryKeys.me, type: 'all' })
       const redirect = searchParams.get(SearchParamKey.REDIRECT)
       const sanitizedURL = sanitizeRedirect(redirect) || '/'

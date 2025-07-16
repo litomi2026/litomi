@@ -11,10 +11,17 @@ export async function fetchMe() {
   return handleResponseError<GETMeResponse>(response)
 }
 
+let hasMeQueryFetched = false
+
+export function resetMeQuery() {
+  hasMeQueryFetched = false
+}
+
 export default function useMeQuery() {
   const result = useQuery({
     queryKey: QueryKeys.me,
     queryFn: fetchMe,
+    enabled: !hasMeQueryFetched,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchOnMount: false,
@@ -22,12 +29,20 @@ export default function useMeQuery() {
   })
 
   const userId = result.data?.id
+  const isFetched = result.isFetched
 
   useEffect(() => {
     if (userId) {
       amplitude.setUserId(userId)
+      hasMeQueryFetched = true
     }
   }, [userId])
+
+  useEffect(() => {
+    if (isFetched) {
+      hasMeQueryFetched = true
+    }
+  }, [isFetched])
 
   return result
 }
