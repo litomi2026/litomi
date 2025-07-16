@@ -11,7 +11,7 @@ import TooltipPopover from '@/components/ui/TooltipPopover'
 import { loginIdPattern, passwordPattern } from '@/constants/pattern'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
-import amplitude from '@/lib/amplitude/lazy'
+import { sanitizeRedirect } from '@/utils'
 
 import signup from './action'
 
@@ -23,7 +23,6 @@ export default function SignupForm() {
   const queryClient = useQueryClient()
   const searchParams = useSearchParams()
   const loginId = data?.loginId
-  const userId = data?.userId
 
   useEffect(() => {
     if (error) {
@@ -36,17 +35,14 @@ export default function SignupForm() {
       return
     }
 
-    toast.success(`${loginId} 계정으로 가입했어요`)
-
-    if (userId) {
-      amplitude.setUserId(userId)
-      amplitude.track('signup')
-    }
-
-    queryClient
-      .invalidateQueries({ queryKey: QueryKeys.me, refetchType: 'all' })
-      .then(() => router.replace(searchParams.get(SearchParamKey.REDIRECT_URL) ?? '/'))
-  }, [loginId, queryClient, router, searchParams, success, userId])
+    ;(async () => {
+      toast.success(`${loginId} 계정으로 가입했어요`)
+      await queryClient.invalidateQueries({ queryKey: QueryKeys.me, type: 'all' })
+      const redirect = searchParams.get(SearchParamKey.REDIRECT)
+      const sanitizedURL = sanitizeRedirect(redirect) || '/'
+      router.replace(sanitizedURL.replace(/^\/@\//, `/@${loginId}/`))
+    })()
+  }, [loginId, queryClient, router, searchParams, success])
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     const formElement = e.target as HTMLFormElement

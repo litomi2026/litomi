@@ -10,7 +10,7 @@ import Loading from '@/components/ui/Loading'
 import { loginIdPattern, passwordPattern } from '@/constants/pattern'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
-import amplitude from '@/lib/amplitude/lazy'
+import { sanitizeRedirect } from '@/utils'
 
 import login from './action'
 
@@ -23,7 +23,6 @@ export default function LoginForm() {
   const queryClient = useQueryClient()
   const searchParams = useSearchParams()
   const loginId = data?.loginId
-  const userId = data?.userId
 
   function resetId() {
     const loginIdInput = formRef.current?.loginId as HTMLInputElement
@@ -47,17 +46,14 @@ export default function LoginForm() {
       return
     }
 
-    toast.success(`${loginId} 계정으로 로그인했어요`)
-
-    if (userId) {
-      amplitude.setUserId(userId)
-      amplitude.track('login')
-    }
-
-    queryClient
-      .invalidateQueries({ queryKey: QueryKeys.me, refetchType: 'all' })
-      .then(() => router.replace(searchParams.get(SearchParamKey.REDIRECT_URL) ?? '/'))
-  }, [loginId, queryClient, router, searchParams, success, userId])
+    ;(async () => {
+      toast.success(`${loginId} 계정으로 로그인했어요`)
+      await queryClient.invalidateQueries({ queryKey: QueryKeys.me, type: 'all' })
+      const redirect = searchParams.get(SearchParamKey.REDIRECT)
+      const sanitizedURL = sanitizeRedirect(redirect) || '/'
+      router.replace(sanitizedURL.replace(/^\/@\//, `/@${loginId}/`))
+    })()
+  }, [loginId, queryClient, router, searchParams, success])
 
   return (
     <form
