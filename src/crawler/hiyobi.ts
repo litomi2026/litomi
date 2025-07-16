@@ -1,7 +1,7 @@
-import { translateCharacterList } from '@/database/character-translations'
-import { Multilingual, normalizeValue } from '@/database/common'
-import { translateSeriesList } from '@/database/series-translations'
-import { sortTagValue, translateTag } from '@/database/tag-translations'
+import { translateCharacterList } from '@/translation/character'
+import { Multilingual, normalizeValue } from '@/translation/common'
+import { translateSeriesList } from '@/translation/series'
+import { sortTagValue, translateTag } from '@/translation/tag'
 import { Manga, MangaTag } from '@/types/manga'
 
 import { isValidKHentaiTagCategory } from './k-hentai'

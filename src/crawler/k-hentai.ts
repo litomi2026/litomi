@@ -1,9 +1,9 @@
 import type { Manga } from '@/types/manga'
 
-import { translateCharacterList } from '@/database/character-translations'
-import { normalizeValue } from '@/database/common'
-import { translateSeriesList } from '@/database/series-translations'
-import { translateTag } from '@/database/tag-translations'
+import { translateCharacterList } from '@/translation/character'
+import { normalizeValue } from '@/translation/common'
+import { translateSeriesList } from '@/translation/series'
+import { translateTag } from '@/translation/tag'
 import { convertCamelCaseToKebabCase } from '@/utils/param'
 
 import { ParseError } from './errors'

@@ -1,4 +1,4 @@
-import characterTranslationJSON from '@/database/translation/character.json'
+import characterTranslationJSON from '@/translation/character.json'
 
 import { Multilingual, normalizeValue } from './common'
 

@@ -1,4 +1,4 @@
-import seriesTranslationJSON from '@/database/translation/series.json'
+import seriesTranslationJSON from '@/translation/series.json'
 
 import { Multilingual, normalizeValue } from './common'
 

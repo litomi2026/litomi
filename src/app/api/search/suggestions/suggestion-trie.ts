@@ -1,11 +1,11 @@
 import { KOREAN_TO_ENGLISH_QUERY_KEYS } from '@/app/(navigation)/search/constants'
-import { getAllCharactersWithLabels } from '@/database/character-translations'
-import { getAllSeriesWithLabels } from '@/database/series-translations'
-import tagCategoryTranslations from '@/database/translation/tag-category.json'
-import tagMaleFemaleTranslations from '@/database/translation/tag-male-female.json'
-import tagMixedTranslations from '@/database/translation/tag-mixed.json'
-import tagOtherTranslations from '@/database/translation/tag-other.json'
-import tagTranslations from '@/database/translation/tag.json'
+import { getAllCharactersWithLabels } from '@/translation/character'
+import { getAllSeriesWithLabels } from '@/translation/series'
+import tagCategoryTranslations from '@/translation/tag-category.json'
+import tagMaleFemaleTranslations from '@/translation/tag-male-female.json'
+import tagMixedTranslations from '@/translation/tag-mixed.json'
+import tagOtherTranslations from '@/translation/tag-other.json'
+import tagTranslations from '@/translation/tag.json'
 
 import SuggestionTrie, { SuggestionItem } from './trie'
 

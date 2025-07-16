@@ -1,6 +1,6 @@
 import { captureException } from '@sentry/nextjs'
 
-import { translateSeriesList } from '@/database/series-translations'
+import { translateSeriesList } from '@/translation/series'
 import { Manga } from '@/types/manga'
 
 export interface Artist {

@@ -1,8 +1,8 @@
-import tagCategoryJSON from '@/database/translation/tag-category.json'
-import tagMaleFemaleJSON from '@/database/translation/tag-male-female.json'
-import tagMixedJSON from '@/database/translation/tag-mixed.json'
-import tagOtherJSON from '@/database/translation/tag-other.json'
-import tagTranslationJSON from '@/database/translation/tag.json'
+import tagCategoryJSON from '@/translation/tag-category.json'
+import tagMaleFemaleJSON from '@/translation/tag-male-female.json'
+import tagMixedJSON from '@/translation/tag-mixed.json'
+import tagOtherJSON from '@/translation/tag-other.json'
+import tagTranslationJSON from '@/translation/tag.json'
 import { MangaTagCategory } from '@/types/manga'
 
 import { Multilingual, normalizeValue } from './common'
