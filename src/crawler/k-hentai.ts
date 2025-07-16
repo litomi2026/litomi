@@ -1,5 +1,7 @@
+import type { Manga } from '@/types/manga'
+
+import { translateSeriesList } from '@/database/series-translations'
 import { normalizeTagValue, translateTag } from '@/database/tag-translations'
-import { Manga } from '@/types/manga'
 import { convertCamelCaseToKebabCase } from '@/utils/param'
 
 import { ParseError } from './errors'
@@ -238,13 +240,15 @@ export class KHentaiClient {
 
   private convertKHentaiCommonToManga(manga: KHentaiMangaCommon) {
     const locale = 'ko' // TODO: Get from user preferences or context
+    const seriesValues = manga.tags.filter(({ tag }) => tag[0] === 'parody').map(({ tag }) => tag[1])
 
     return {
       id: manga.id,
       artists: manga.tags.filter(({ tag }) => tag[0] === 'artist').map(({ tag }) => tag[1]),
-      date: new Date(manga.posted * 1000).toString(),
+      date: new Date(manga.posted * 1000).toISOString(),
+      characters: manga.tags.filter(({ tag }) => tag[0] === 'character').map(({ tag }) => tag[1]),
       group: manga.tags.filter(({ tag }) => tag[0] === 'group').map(({ tag }) => tag[1]),
-      series: manga.tags.filter(({ tag }) => tag[0] === 'parody').map(({ tag }) => tag[1]),
+      series: translateSeriesList(seriesValues, locale),
       tags: manga.tags.filter(this.isValidKHentaiTag).map(({ tag: [category, value] }) => ({
         category,
         value: normalizeTagValue(value),

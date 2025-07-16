@@ -5,8 +5,10 @@ import {
   HarpiRandomMode,
   HarpiSort,
 } from '@/app/api/proxy/harpi/search/schema'
+import { Multilingual } from '@/database/common'
 import { HARPI_TAG_MAP } from '@/database/harpi-tag'
-import { Multilingual, translateTag } from '@/database/tag-translations'
+import { translateSeriesList } from '@/database/series-translations'
+import { translateTag } from '@/database/tag-translations'
 import { Manga, Tag } from '@/types/manga'
 
 import { ProxyClient, ProxyClientConfig } from './proxy'
@@ -225,7 +227,7 @@ export class HarpiClient {
       title: harpiManga.korTitle || harpiManga.engTitle || harpiManga.title,
       artists: harpiManga.authors,
       characters: harpiManga.characters,
-      series: harpiManga.series,
+      series: translateSeriesList(harpiManga.series, locale),
       tags: harpiManga.tagsIds ? this.convertHarpiTagIdsToTags(harpiManga.tagsIds, locale) : [],
       type: harpiManga.type,
       language: 'korean',

@@ -1,5 +1,6 @@
 import { captureException } from '@sentry/nextjs'
 
+import { translateSeriesList } from '@/database/series-translations'
 import { Manga } from '@/types/manga'
 
 export interface Artist {
@@ -91,11 +92,14 @@ export async function fetchMangaFromHitomi({ id }: { id: number }) {
 }
 
 function convertHitomiGalleryToManga(gallery: HitomiGallery): Manga {
+  const locale = 'ko' // TODO: Get from user preferences or context
+  const seriesValues = gallery.parodys.map((parody) => parody.parody)
+
   return {
     id: Number(gallery.id),
     title: gallery.title,
     artists: gallery.artists.map((artist) => artist.artist),
-    series: gallery.parodys.map((parody) => parody.parody),
+    series: translateSeriesList(seriesValues, locale),
     tags: gallery.tags.map((tag) => ({
       category: 'other',
       value: tag.tag,

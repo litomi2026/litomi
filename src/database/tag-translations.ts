@@ -4,13 +4,7 @@ import tagMixedJSON from '@/database/translation/tag-mixed.json'
 import tagOtherJSON from '@/database/translation/tag-other.json'
 import tagTranslationJSON from '@/database/translation/tag.json'
 
-export type Multilingual = {
-  en: string
-  ko?: string
-  ja?: string
-  'zh-CN'?: string
-  'zh-TW'?: string
-}
+import { Multilingual } from './common'
 
 const TAG_MALE_FEMALE_TRANSLATION: Record<string, Multilingual> = tagMaleFemaleJSON
 const TAG_OTHER_TRANSLATION: Record<string, Multilingual> = tagOtherJSON

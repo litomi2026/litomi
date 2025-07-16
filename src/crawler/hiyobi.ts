@@ -1,3 +1,5 @@
+import { Multilingual } from '@/database/common'
+import { translateSeriesList } from '@/database/series-translations'
 import { normalizeTagValue, sortTagValue, translateTag } from '@/database/tag-translations'
 import { Manga, Tag } from '@/types/manga'
 
@@ -148,9 +150,7 @@ export class HiyobiClient {
     return mangas.map((manga) => this.convertHiyobiToManga(manga))
   }
 
-  private convertHiyobiTagsToTags(hiyobiTags: HiyobiTag[]): Tag[] {
-    const locale = 'ko' // TODO: Get from user preferences or context
-
+  private convertHiyobiTagsToTags(hiyobiTags: HiyobiTag[], locale: keyof Multilingual): Tag[] {
     return hiyobiTags.map((hTag) => {
       const [category, value] = hTag.value.split(':')
 
@@ -186,13 +186,16 @@ export class HiyobiClient {
     like_anonymous,
     language,
   }: HiyobiManga): Manga {
+    const locale = 'ko' // TODO: Get from user preferences or context
+    const seriesValues = parodys.map((series) => series.value)
+
     return {
       id,
       artists: artists.map((artist) => artist.display),
       characters: characters.map((character) => character.display),
       group: groups.map((group) => group.display),
-      series: parodys.map((series) => series.display),
-      tags: this.convertHiyobiTagsToTags(tags),
+      series: translateSeriesList(seriesValues, locale),
+      tags: this.convertHiyobiTagsToTags(tags, locale),
       title,
       type: hiyobiTypeNumberToName[type] ?? `${type}?`,
       language,
