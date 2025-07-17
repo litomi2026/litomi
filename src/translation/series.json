@@ -37,7 +37,7 @@
     "ko": "아케비의 세일러복",
     "ja": "明日ちゃんのセーラー服"
   },
-  "akebi_no_mi": { "en": "Akebi No Mi", "ko": "", "ja": "" },
+  "akebi_no_mi": { "en": "Akebi No Mi", "ko": "아케비의 열매", "ja": "アケビの実" },
   "albatross_koukairoku": { "en": "Albatross Koukairoku", "ko": "신천옹 항해록", "ja": "信天翁航海録" },
   "aldnoah.zero": { "en": "Aldnoah.Zero", "ko": "알드노아. 제로", "ja": "アルドノア・ゼロ" },
   "alice_gear_aegis": { "en": "Alice Gear Aegis", "ko": "앨리스 기어 아이기스", "ja": "アリス・ギア・アイギス" },
@@ -51,7 +51,7 @@
     "ja": "甘城ブリリアントパーク"
   },
   "amairo_islenauts": { "en": "Amairo Islenauts", "ko": "하늘색 * 아일 노츠", "ja": "天色＊アイルノーツ" },
-  "amakano": { "en": "Amakano", "ko": "", "ja": "アマカノ" },
+  "amakano": { "en": "Amakano", "ko": "아마카노", "ja": "アマカノ" },
   "amano_megumi_ha_sukidarake": {
     "en": "Amano Megumi Ha Sukidarake",
     "ko": "아마노 메구미는 빈틈투성이!",
@@ -211,7 +211,7 @@
   "beet_the_vandel_buster": { "en": "Beet The Vandel Buster", "ko": "모험왕 비트", "ja": "冒険王ビィト" },
   "ben-to": { "en": "Ben-To", "ko": "도시락 전쟁", "ja": "ベン・トー" },
   "ben_10": { "en": "Ben 10", "ko": "벤 10", "ja": "ベン10" },
-  "berlin_wa_kane": { "en": "Berlin Wa Kane", "ko": "", "ja": "ベルリンは鐘" },
+  "berlin_wa_kane": { "en": "Berlin Wa Kane", "ko": "베를린은 종", "ja": "ベルリンは鐘" },
   "berserk": { "en": "Berserk", "ko": "베르세르크", "ja": "ベルセルク" },
   "beyblade": { "en": "Beyblade", "ko": "베이블레이드", "ja": "ベイブレード" },
   "bible_black": { "en": "Bible Black", "ko": "바이블 블랙", "ja": "Bible Black" },
@@ -285,7 +285,7 @@
     "ja": "カードファイト!! ヴァンガード"
   },
   "castlevania": { "en": "Castlevania", "ko": "캐슬바니아", "ja": "悪魔城ドラキュラ" },
-  "cat_busters": { "en": "Cat Busters", "ko": "", "ja": "キャットバスターズ" },
+  "cat_busters": { "en": "Cat Busters", "ko": "캣버스터즈", "ja": "キャットバスターズ" },
   "cats_eye": { "en": "Cats Eye", "ko": "캣츠 아이", "ja": "キャッツ・アイ" },
   "cevio": { "en": "Cevio", "ko": "CeVIO", "ja": "CeVIO" },
   "chainsaw_man": { "en": "Chainsaw Man", "ko": "체인소 맨", "ja": "チェンソーマン" },
@@ -325,7 +325,7 @@
   "clannad": { "en": "Clannad", "ko": "클라나드", "ja": "CLANNAD" },
   "claymore": { "en": "Claymore", "ko": "클레이모어", "ja": "CLAYMORE" },
   "closers": { "en": "Closers", "ko": "클로저스", "ja": "クローザーズ" },
-  "clover_point": { "en": "Clover Point", "ko": "", "ja": "クローバーポイント" },
+  "clover_point": { "en": "Clover Point", "ko": "클로버 포인트", "ja": "クローバーポイント" },
   "code_geass": {
     "en": "Code Geass: Lelouch of the Rebellion",
     "ko": "코드 기아스: 반역의 를르슈",
@@ -334,7 +334,7 @@
   "combattler_v": { "en": "Combattler V", "ko": "초전자 로보 컴배틀러 V", "ja": "超電磁ロボ コン・バトラーV" },
   "comic_party": { "en": "Comic Party", "ko": "코믹 파티", "ja": "こみっくパーティー" },
   "compass": { "en": "Compass", "ko": "#컴퍼스 전투섭리분석시스템", "ja": "#コンパス 【戦闘摂理解析システム】" },
-  "concon-collector": { "en": "Concon-Collector", "ko": "", "ja": "" },
+  "concon-collector": { "en": "Concon-Collector", "ko": "콘콘 콜렉터", "ja": "コンコンコレクター" },
   "cookie_run": { "en": "Cookie Run", "ko": "쿠키런", "ja": "クッキーラン" },
   "cooking_idol_ai_mai_main": {
     "en": "Cooking Idol Ai Mai Main",
@@ -375,14 +375,18 @@
     "ja": "D.C.III 〜ダ・カーポIII〜",
     "ko": "다카포 III"
   },
-  "daa_daa_daa": { "en": "Daa Daa Daa", "ko": "", "ja": "" },
+  "daa_daa_daa": { "en": "Daa Daa Daa", "ko": "다다다", "ja": "だぁ!だぁ!だぁ!" },
   "dagashi_kashi": { "en": "Dagashi Kashi", "ko": "다가시카시", "ja": "だがしかし" },
-  "daikaijuu_monogatari": { "en": "Daikaijuu Monogatari", "ko": "", "ja": "" },
-  "dainihon_samurai_girl": { "en": "Dainihon Samurai Girl", "ko": "", "ja": "" },
+  "daikaijuu_monogatari": { "en": "Daikaijuu Monogatari", "ko": "대괴수 이야기", "ja": "大貝獣物語" },
+  "dainihon_samurai_girl": { "en": "Dainihon Samurai Girl", "ko": "대 일본 사무라이걸", "ja": "大日本サムライガール" },
   "daiya_no_ace": { "en": "Ace of Diamond", "ko": "다이아몬드 A", "ja": "ダイヤのA" },
-  "dakara_boku_wa_h_ga_dekinai": { "en": "Dakara Boku Wa H Ga Dekinai", "ko": "", "ja": "" },
-  "danball_senki": { "en": "Danball Senki", "ko": "", "ja": "" },
-  "dandadan": { "en": "Dandadan", "ko": "", "ja": "" },
+  "dakara_boku_wa_h_ga_dekinai": {
+    "en": "Dakara Boku Wa H Ga Dekinai",
+    "ko": "그래서 나는 H를 할 수 없다",
+    "ja": "だから僕は、Hができない。"
+  },
+  "danball_senki": { "en": "Danball Senki", "ko": "골판지 전사", "ja": "ダンボール戦機" },
+  "dandadan": { "en": "Dandadan", "ko": "단다단", "ja": "ダンダダン" },
   "danganronpa": { "en": "Danganronpa", "ko": "단간론파", "ja": "ダンガンロンパ" },
   "dankira": { "en": "Dankira", "ko": "", "ja": "" },
   "danshi_koukousei_no_nichijou": { "en": "Danshi Koukousei No Nichijou", "ko": "", "ja": "" },
@@ -408,12 +412,16 @@
   "deadpool": { "en": "Deadpool", "ko": "", "ja": "" },
   "death_march_kara_hajimaru_isekai_kyousoukyoku": {
     "en": "Death March Kara Hajimaru Isekai Kyousoukyoku",
-    "ko": "",
-    "ja": ""
+    "ko": "데스마치에서 시작되는 이세계 광상곡",
+    "ja": "デスマーチからはじまる異世界狂想曲"
   },
-  "death_note": { "en": "Death Note", "ko": "", "ja": "" },
-  "deathsmiles": { "en": "Deathsmiles", "ko": "", "ja": "" },
-  "debby_the_corsifa_wa_makezugirai": { "en": "Debby The Corsifa Wa Makezugirai", "ko": "", "ja": "" },
+  "death_note": { "en": "Death Note", "ko": "데스노트", "ja": "DEATH NOTE" },
+  "deathsmiles": { "en": "Deathsmiles", "ko": "데스스마일즈", "ja": "デススマイルズ" },
+  "debby_the_corsifa_wa_makezugirai": {
+    "en": "Debby The Corsifa Wa Makezugirai",
+    "ko": "데비 더 코르시파는 지지 않으려 해",
+    "ja": "デビィ・ザ・コルシファは負けず嫌い"
+  },
   "delicious_party_precure": { "en": "Delicious Party Precure", "ko": "", "ja": "" },
   "deltarune": { "en": "Deltarune", "ko": "", "ja": "" },
   "demi-chan_wa_kataritai": { "en": "Demi-Chan Wa Kataritai", "ko": "", "ja": "" },
