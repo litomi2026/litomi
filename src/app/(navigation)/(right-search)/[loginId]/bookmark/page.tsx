@@ -6,7 +6,7 @@ import BookmarkDownloadButton from '@/components/BookmarkDownloadButton'
 import BookmarkUploadButton from '@/components/BookmarkUploadButton'
 import selectBookmarks from '@/sql/selectBookmarks'
 import { PageProps } from '@/types/nextjs'
-import { getUserDataFromAccessToken } from '@/utils/cookie'
+import { getUserIdFromAccessToken } from '@/utils/cookie'
 import { getLoginIdFromParam } from '@/utils/param'
 
 import BookmarkList from './BookmarkListClient'
@@ -25,7 +25,7 @@ export default async function BookmarkPage({ params }: PageProps) {
   }
 
   const cookieStore = await cookies()
-  const { userId, loginId: _loginIdFromToken } = (await getUserDataFromAccessToken(cookieStore, false)) ?? {}
+  const userId = await getUserIdFromAccessToken(cookieStore, false)
 
   if (!userId) {
     return <GuestView />

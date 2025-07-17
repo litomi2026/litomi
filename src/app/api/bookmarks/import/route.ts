@@ -5,7 +5,7 @@ import { z } from 'zod/v4'
 import { handleRouteError } from '@/crawler/proxy-utils'
 import { db } from '@/database/drizzle'
 import { BookmarkSource, bookmarkTable } from '@/database/schema'
-import { getUserDataFromAccessToken } from '@/utils/cookie'
+import { getUserIdFromAccessToken } from '@/utils/cookie'
 
 // Schema for validating imported bookmark data
 const importedBookmarkSchema = z.object({
@@ -34,7 +34,7 @@ const BATCH_SIZE = 100
 
 export async function POST(request: Request) {
   const cookieStore = await cookies()
-  const { userId } = (await getUserDataFromAccessToken(cookieStore)) ?? {}
+  const userId = await getUserIdFromAccessToken(cookieStore)
 
   if (!userId) {
     return new Response('401 Unauthorized', { status: 401 })

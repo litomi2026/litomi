@@ -37,8 +37,7 @@ export async function middleware(request: NextRequest) {
 
   // at가 만료됐는데 rt는 유효한 경우 -> at 재발급
   const response = NextResponse.next()
-  // TODO(2025-07-16): 30일 후 Optional chaining 삭제하기
-  await setAccessTokenCookie(response.cookies, validRT.sub, validRT.loginId ?? '')
+  await setAccessTokenCookie(response.cookies, validRT.sub)
   setCookieToRequest(request, response)
   return response
 }
