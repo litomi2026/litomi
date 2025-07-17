@@ -1,9 +1,9 @@
 {
-  "86": { "en": "86", "ko": "86 에이티식스", "ja": "86―エイティシックス―" },
+  "86": { "en": "86", "ko": "86 -에이티식스-", "ja": "86―エイティシックス―" },
   "2.5-jigen_no_yuuwaku": { "en": "2.5-Jigen No Yuuwaku", "ko": "2.5차원의 유혹", "ja": "2.5次元の誘惑" },
   "7th_dragon": { "en": "7th Dragon", "ko": "세븐스 드래곤", "ja": "セブンスドラゴン" },
   "16bit_sensation": { "en": "16bit Sensation", "ko": "16비트 센세이션", "ja": "16bitセンセーション" },
-  "...": { "en": "...", "ko": "...", "ja": "..." },
+  "...": { "en": "..." },
   ".hacklegend_of_the_twilight": {
     "en": ".Hacklegend Of The Twilight",
     "ko": ".hack//황혼의 팔찌 전설",
@@ -388,9 +388,13 @@
   "danball_senki": { "en": "Danball Senki", "ko": "골판지 전사", "ja": "ダンボール戦機" },
   "dandadan": { "en": "Dandadan", "ko": "단다단", "ja": "ダンダダン" },
   "danganronpa": { "en": "Danganronpa", "ko": "단간론파", "ja": "ダンガンロンパ" },
-  "dankira": { "en": "Dankira", "ko": "", "ja": "" },
-  "danshi_koukousei_no_nichijou": { "en": "Danshi Koukousei No Nichijou", "ko": "", "ja": "" },
-  "dark_gathering": { "en": "Dark Gathering", "ko": "", "ja": "" },
+  "dankira": { "en": "Dankira", "ko": "단키라", "ja": "ダンキラ" },
+  "danshi_koukousei_no_nichijou": {
+    "en": "Danshi Koukousei No Nichijou",
+    "ko": "남고생의 일상",
+    "ja": "男子高校生の日常"
+  },
+  "dark_gathering": { "en": "Dark Gathering", "ko": "다크 개더링", "ja": "ダークギャザリング" },
   "darker_than_black": {
     "en": "Darker than Black",
     "ko": "DARKER THAN BLACK -흑의 계약자-",
@@ -403,12 +407,12 @@
     "ko": "달링 인 더 프랑키스",
     "ja": "ダーリン・イン・ザ・フランキス"
   },
-  "dasei_67_percent": { "en": "Dasei 67 Percent", "ko": "", "ja": "" },
+  "dasei_67_percent": { "en": "Dasei 67 Percent", "ko": "다세이 67 퍼센트", "ja": "だせい67パーセント" },
   "date_a_live": { "en": "Date A Live", "ko": "데이트 어 라이브", "ja": "デート・ア・ライブ" },
-  "days": { "en": "Days", "ko": "", "ja": "" },
-  "dead_by_daylight": { "en": "Dead By Daylight", "ko": "", "ja": "" },
+  "days": { "en": "Days", "ko": "데이즈", "ja": "DAYS" },
+  "dead_by_daylight": { "en": "Dead By Daylight", "ko": "데드 바이 데이라이트", "ja": "Dead by Daylight" },
   "dead_or_alive": { "en": "Dead or Alive", "ko": "데드 오어 얼라이브", "ja": "デッド オア アライブ" },
-  "deadman_wonderland": { "en": "Deadman Wonderland", "ko": "", "ja": "" },
+  "deadman_wonderland": { "en": "Deadman Wonderland", "ko": "데드맨 원더랜드", "ja": "デッドマン・ワンダーランド" },
   "deadpool": { "en": "Deadpool", "ko": "", "ja": "" },
   "death_march_kara_hajimaru_isekai_kyousoukyoku": {
     "en": "Death March Kara Hajimaru Isekai Kyousoukyoku",
