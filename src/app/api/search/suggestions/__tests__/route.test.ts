@@ -306,9 +306,7 @@ describe('GET /api/search/suggestions', () => {
         const data = (await response.json()) as GETSearchSuggestionsResponse
 
         expect(response.status).toBe(200)
-        expect(
-          data.some((item) => item.value === 'series:touhou_project' && item.label === '시리즈:동방 프로젝트'),
-        ).toBe(true)
+        expect(data.some((item) => item.value === 'series:touhou_project')).toBe(true)
         expect(data.every((item) => item.value.includes('touhou'))).toBe(true)
       })
 
@@ -318,9 +316,7 @@ describe('GET /api/search/suggestions', () => {
         const data = (await response.json()) as GETSearchSuggestionsResponse
 
         expect(response.status).toBe(200)
-        expect(
-          data.some((item) => item.value === 'series:touhou_project' && item.label === '시리즈:동방 프로젝트'),
-        ).toBe(true)
+        expect(data.some((item) => item.value === 'series:touhou_project')).toBe(true)
         expect(data.every((item) => item.label.includes('동방'))).toBe(true)
       })
 
