@@ -1,6 +1,6 @@
 import { prettifyJSON } from '@/crawler/utils'
 import { harpiTagMap } from '@/database/harpi-tag'
-import { Multilingual, normalizeTagValue, translateTagValue } from '@/database/tag-translations'
+import { normalizeTagValue, translateTagValue } from '@/database/tag-translations'
 import { Manga, Tag } from '@/types/manga'
 
 import mangas from '../src/database/harpi.json'
@@ -47,7 +47,7 @@ type HarpiManga = {
 }
 
 function convertHarpiTagIdsToTags(tagIds: string[]): Tag[] {
-  const currentLanguage = 'ko' // TODO: Get from user preferences or context
+  const locale = 'ko'
   const tags: Tag[] = []
 
   for (const tagId of tagIds) {
@@ -78,7 +78,7 @@ function convertHarpiTagIdsToTags(tagIds: string[]): Tag[] {
     tags.push({
       category,
       value: normalizedValue,
-      label: translateTagValue(normalizedValue, currentLanguage as keyof Multilingual),
+      label: translateTagValue(normalizedValue, locale),
     })
   }
 
