@@ -6,11 +6,10 @@ import { toast } from 'sonner'
 
 import { BookmarkExportData } from '@/app/(navigation)/(right-search)/[loginId]/bookmark/constants'
 import { ImportMode, ImportResult } from '@/app/api/bookmarks/import/route'
+import IconBookmark from '@/components/icons/IconBookmark'
+import { IconUpload } from '@/components/icons/IconUpload'
+import Modal from '@/components/ui/Modal'
 import { QueryKeys } from '@/constants/query'
-
-import IconBookmark from './icons/IconBookmark'
-import { IconUpload } from './icons/IconUpload'
-import Modal from './ui/Modal'
 
 type ImportState = 'complete' | 'idle' | 'importing' | 'preview'
 
