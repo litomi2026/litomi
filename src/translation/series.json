@@ -170,7 +170,7 @@
   "axis_powers_hetalia": { "en": "Hetalia: Axis Powers", "ko": "헤타리아 Axis Powers", "ja": "ヘタリア Axis Powers" },
   "ayakashi_triangle": { "en": "Ayakashi Triangle", "ko": "아야카시 트라이앵글", "ja": "あやかしトライアングル" },
   "azumanga_daioh": { "en": "Azumanga Daioh", "ko": "아즈망가 대왕", "ja": "あずまんが大王" },
-  "azur_lane": { "en": "Azur Lane", "ko": "아주르 레인(벽람항로)", "ja": "アズールレーン" },
+  "azur_lane": { "en": "Azur Lane", "ko": "벽람항로", "ja": "アズールレーン" },
   "azure_striker_gunvolt": { "en": "Azure Striker Gunvolt", "ko": "푸른 뇌정 건볼트", "ja": "蒼き雷霆 ガンヴォル" },
   "bagi_the_monster_of_mighty_nature": {
     "en": "Bagi The Monster Of Mighty Nature",
@@ -227,7 +227,7 @@
   "black_desert_online": { "en": "Black Desert Online", "ko": "검은사막", "ja": "黒い砂漠" },
   "black_lagoon": { "en": "Black Lagoon", "ko": "블랙 라군", "ja": "ブラック・ラグーン" },
   "black_rock_shooter": { "en": "Black Rock Shooter", "ko": "블랙 록 슈터", "ja": "ブラック★ロックシューター" },
-  "black_survival": { "en": "Black Survival", "ko": "블랙서바이벌", "jp": "ブラックサバイバル" },
+  "black_survival": { "en": "Black Survival", "ko": "블랙서바이벌", "ja": "ブラックサバイバル" },
   "blade_and_soul": { "en": "Blade And Soul", "ko": "블레이드 앤 소울", "ja": "ブレイドアンドソウル" },
   "bladedance_of_elementalers": { "en": "Bladedance Of Elementalers", "ko": "정령사의 검무", "ja": "精霊使いの剣舞" },
   "blazblue": { "en": "BlazBlue", "ko": "블레이블루", "ja": "ブレイブルー" },
@@ -360,9 +360,21 @@
   "cyborg_009": { "en": "Cyborg 009", "ko": "사이보그 009", "ja": "サイボーグ009" },
   "cyphers_online": { "en": "Cyphers Online", "ko": "사이퍼즈", "ja": "サイパーズ" },
   "d-frag": { "en": "D-Frag", "ko": "디-프래그!", "ja": "ディーふらぐ!" },
-  "da_capo": { "en": "Da Capo", "ko": "", "ja": "" },
-  "da_capo_ii": { "en": "Da Capo Ii", "ko": "", "ja": "" },
-  "da_capo_iii": { "en": "Da Capo Iii", "ko": "", "ja": "" },
+  "da_capo": {
+    "en": "Da Capo",
+    "ja": "D.C. 〜ダ・カーポ〜",
+    "ko": "다카포"
+  },
+  "da_capo_ii": {
+    "en": "Da Capo II",
+    "ja": "D.C.II 〜ダ・カーポII〜",
+    "ko": "다카포 II"
+  },
+  "da_capo_iii": {
+    "en": "Da Capo III",
+    "ja": "D.C.III 〜ダ・カーポIII〜",
+    "ko": "다카포 III"
+  },
   "daa_daa_daa": { "en": "Daa Daa Daa", "ko": "", "ja": "" },
   "dagashi_kashi": { "en": "Dagashi Kashi", "ko": "다가시카시", "ja": "だがしかし" },
   "daikaijuu_monogatari": { "en": "Daikaijuu Monogatari", "ko": "", "ja": "" },
@@ -1375,8 +1387,8 @@
   "overlord": { "en": "Overlord", "ko": "오버로드", "ja": "オーバーロード" },
   "overman_king_gainer": { "en": "Overman King Gainer", "ko": "", "ja": "" },
   "overwatch": { "en": "Overwatch", "ko": "오버워치", "ja": "オーバーウォッチ" },
-  "owari_no_seraph": { "en": "Owari No Seraph", "ko": "", "ja": "" },
-  "palette_parade": { "en": "Palette Parade", "ko": "", "ja": "" },
+  "owari_no_seraph": { "en": "Owari No Seraph", "ko": "", "ja": "終わりのセラフ" },
+  "palette_parade": { "en": "Palette Parade", "ko": "", "ja": "パレットパレード" },
   "palworld": { "en": "Palworld", "ko": "", "ja": "" },
   "pandemonium_majutsushi_no_mura": { "en": "Pandemonium Majutsushi No Mura", "ko": "", "ja": "" },
   "pandora_hearts": { "en": "Pandora Hearts", "ko": "", "ja": "" },
@@ -1499,7 +1511,7 @@
   "rurouni_kenshin": { "en": "Rurouni Kenshin", "ko": "", "ja": "" },
   "rwby": { "en": "Rwby", "ko": "", "ja": "" },
   "ryuuou_no_oshigoto": {
-    "en": "The Ryuo’s Work Is Never Done!",
+    "en": "The Ryuo's Work Is Never Done!",
     "ko": "용왕이 하는 일!",
     "ja": "りゅうおうのおしごと！"
   },
@@ -2006,7 +2018,7 @@
     "ko": "",
     "ja": ""
   },
-  "zombie_high_school": { "en": "Zombie High School", "ko": "", "ja": "" },
+  "zombie_high_school": { "en": "Zombie High School", "ko": "좀비 고등학교", "ja": "ゾンビハイスクール" },
   "zombie_land_saga": { "en": "Zombie Land Saga", "ko": "좀비 랜드 사가", "ja": "ゾンビランドサガ" },
   "zootopia": { "en": "Zootopia", "ko": "주토피아", "ja": "ズートピア" }
 }
