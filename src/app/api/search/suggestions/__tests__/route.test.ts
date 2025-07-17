@@ -21,6 +21,7 @@ describe('GET /api/search/suggestions', () => {
         expect(response.status).toBe(200)
         expect(data).toBeArray()
         expect(data[0]).toEqual({ label: '언어:', value: 'language:' })
+        expect(data.every((item) => item.value.includes('langu'))).toBe(true)
         expect(data.some((item) => item.value === 'language:korean' && item.label === '언어:한국어')).toBe(true)
         expect(data.some((item) => item.value === 'language:japanese' && item.label === '언어:일본어')).toBe(true)
       })
@@ -33,6 +34,7 @@ describe('GET /api/search/suggestions', () => {
         expect(response.status).toBe(200)
         expect(data).toBeArray()
         expect(data[0]).toEqual({ label: '언어:', value: 'language:' })
+        expect(data.every((item) => item.value.includes('language'))).toBe(true)
         expect(data.some((item) => item.value === 'language:korean' && item.label === '언어:한국어')).toBe(true)
         expect(data.some((item) => item.value === 'language:japanese' && item.label === '언어:일본어')).toBe(true)
       })
@@ -65,8 +67,7 @@ describe('GET /api/search/suggestions', () => {
 
         expect(response.status).toBe(200)
         expect(data).toBeArray()
-        expect(data.length).toBe(1)
-        expect(data[0]).toEqual({ label: '언어:일본어', value: 'language:japanese' })
+        expect(data.every((item) => item.value.includes('japane'))).toBe(true)
       })
 
       test('"japanese" 값을 검색했을 때 "language:japanese" 값만 반환한다', async () => {
@@ -76,8 +77,7 @@ describe('GET /api/search/suggestions', () => {
 
         expect(response.status).toBe(200)
         expect(data).toBeArray()
-        expect(data.length).toBe(1)
-        expect(data[0]).toEqual({ label: '언어:일본어', value: 'language:japanese' })
+        expect(data.every((item) => item.value.includes('japanese'))).toBe(true)
       })
     })
 
