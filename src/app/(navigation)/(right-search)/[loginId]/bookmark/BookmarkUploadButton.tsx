@@ -424,7 +424,7 @@ export default function BookmarkUploadButton() {
           </div>
 
           {/* Footer with actions */}
-          <div className="p-6 border-t border-zinc-800/50 bg-zinc-900/50 backdrop-blur-sm font-semibold text-sm">
+          <div className="p-6 border-t border-zinc-800/50 bg-zinc-900 font-semibold text-sm">
             {importState === 'idle' && (
               <button
                 className="w-full px-6 py-3 bg-zinc-800/50 border-2 border-zinc-700/50 rounded-xl transition hover:bg-zinc-700/50 hover:border-zinc-600/50"

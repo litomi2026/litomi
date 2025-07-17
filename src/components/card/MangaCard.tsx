@@ -47,7 +47,7 @@ function MangaCard({ manga, index = 0, source, className = '', showSearchFromNex
         manga={manga}
       />
       <div className="flex grow flex-col justify-between gap-2 p-2 border-t-2 sm:border-t-0 sm:border-l-2 md:border-l-0 md:border-t-2">
-        <div className="flex flex-col gap-2 text-sm">
+        <dl className="flex flex-col gap-2 text-sm [&_dt]:whitespace-nowrap">
           <div className="flex items-start gap-1.5">
             <Link
               className="flex-1 hover:underline focus:underline"
@@ -60,36 +60,36 @@ function MangaCard({ manga, index = 0, source, className = '', showSearchFromNex
           </div>
           {type && (
             <div className="flex gap-1">
-              <span>종류</span>
+              <dt>종류</dt>
               <MangaMetadataItem filterType="type" value={type} />
             </div>
           )}
           {artists && artists.length > 0 && (
             <div className="flex gap-1">
-              <span>작가</span>
+              <dt>작가</dt>
               <MangaMetadataList details={artists} filterType="artist" />
             </div>
           )}
           {group && group.length > 0 && (
             <div className="flex gap-1">
-              <span>그룹</span>
+              <dt>그룹</dt>
               <MangaMetadataList details={group} filterType="group" />
             </div>
           )}
           {series && series.length > 0 && (
             <div className="flex gap-1">
-              <span>시리즈</span>
+              <dt>시리즈</dt>
               <MangaMetadataList details={series} filterType="series" />
             </div>
           )}
           {characters && characters.length > 0 && (
             <div className="flex gap-1">
-              <span>캐릭터</span>
+              <dt>캐릭터</dt>
               <MangaMetadataList details={characters} filterType="character" />
             </div>
           )}
           {tags && tags.length > 0 && <TagList className="flex flex-wrap gap-1 font-semibold" tags={tags} />}
-        </div>
+        </dl>
         <div className="grid gap-2">
           <div className="flex text-xs justify-between items-center gap-1">
             <a

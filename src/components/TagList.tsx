@@ -52,7 +52,7 @@ function TagList({ className, tags }: Readonly<Props>) {
           <Link
             aria-pressed={isActive}
             className={tagColor}
-            href="/search?${newSearchParams}"
+            href={`/search?${newSearchParams}`}
             key={`${category}:${value}`}
           >
             <TagLabel className="p-0.5 w-5">{label}</TagLabel>
