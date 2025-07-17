@@ -30,7 +30,7 @@ function MangaDetailButton({ manga, source }: Readonly<Props>) {
       <Modal onClose={() => setIsOpened(false)} open={isOpened} showCloseButton showDragButton>
         <div className="bg-zinc-900 min-w-3xs w-screen max-w-sm md:max-w-lg rounded-xl p-4 pt-8 shadow-xl border grid gap-3 text-sm overflow-auto max-h-svh md:text-base">
           <h2 className="font-bold text-lg md:text-xl">{title}</h2>
-          <div className="grid gap-2">
+          <div className="grid gap-2 [&_strong]:whitespace-nowrap">
             {language && (
               <div className="flex gap-2">
                 <strong>언어</strong>

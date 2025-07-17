@@ -7,7 +7,6 @@ import { db } from '@/database/drizzle'
 import { BookmarkSource, bookmarkTable } from '@/database/schema'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
 
-// Schema for validating imported bookmark data
 const importedBookmarkSchema = z.object({
   mangaId: z.number().int().positive(),
   source: z.enum(BookmarkSource),
@@ -56,7 +55,6 @@ export async function POST(request: Request) {
     const mode = (url.searchParams.get('mode') || 'merge') as ImportMode
 
     const validation = bookmarkImportSchema.safeParse(body)
-    console.log('👀 - POST - validation:', validation)
 
     if (!validation.success) {
       return new Response('400 Bad Request', { status: 400 })
@@ -67,6 +65,7 @@ export async function POST(request: Request) {
     let imported = 0
     let skipped = 0
 
+    // TODO: AI 코드 분석하기
     await db.transaction(async (tx) => {
       // If replace mode, delete all existing bookmarks first
       if (mode === 'replace') {
