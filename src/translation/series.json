@@ -27,7 +27,7 @@
   "ai_yori_aoshi": { "en": "Ai Yori Aoshi", "ko": "쪽빛보다 푸르게", "ja": "藍より青し" },
   "aikatsu": { "en": "Aikatsu!", "ko": "아이카츠!", "ja": "アイカツ！" },
   "aikatsu_friends": { "en": "Aikatsu Friends", "ko": "아이카츠 프렌즈!", "ja": "アイカツフレンズ！" },
-  "aisai_nikki": { "en": "Aisai Nikki", "ko": "", "ja": "" },
+  "aisai_nikki": { "en": "Aisai Nikki", "ko": "애처일기", "ja": "愛妻日記" },
   "aiura": { "en": "Aiura", "ko": "아이우라", "ja": "あいうら" },
   "akame_ga_kill": { "en": "Akame Ga Kill", "ko": "아카메가 벤다!", "ja": "アカメが斬る！" },
   "akatsuki_blitzkampf": { "en": "Akatsuki Blitzkampf", "ko": "아카츠키 전광전기", "ja": "アカツキ電光戦記" },
@@ -38,7 +38,7 @@
     "ja": "明日ちゃんのセーラー服"
   },
   "akebi_no_mi": { "en": "Akebi No Mi", "ko": "", "ja": "" },
-  "albatross_koukairoku": { "en": "Albatross Koukairoku", "ko": "", "ja": "" },
+  "albatross_koukairoku": { "en": "Albatross Koukairoku", "ko": "신천옹 항해록", "ja": "信天翁航海録" },
   "aldnoah.zero": { "en": "Aldnoah.Zero", "ko": "알드노아. 제로", "ja": "アルドノア・ゼロ" },
   "alice_gear_aegis": { "en": "Alice Gear Aegis", "ko": "앨리스 기어 아이기스", "ja": "アリス・ギア・アイギス" },
   "alice_in_wonderland": { "en": "Alice in Wonderland", "ko": "이상한 나라의 앨리스", "ja": "ふしぎの国のアリス" },
@@ -50,17 +50,21 @@
     "ko": "아마기 브릴리언트 파크",
     "ja": "甘城ブリリアントパーク"
   },
-  "amairo_islenauts": { "en": "Amairo Islenauts", "ko": "", "ja": "" },
-  "amakano": { "en": "Amakano", "ko": "", "ja": "" },
-  "amano_megumi_ha_sukidarake": { "en": "Amano Megumi Ha Sukidarake", "ko": "", "ja": "" },
+  "amairo_islenauts": { "en": "Amairo Islenauts", "ko": "하늘색 * 아일 노츠", "ja": "天色＊アイルノーツ" },
+  "amakano": { "en": "Amakano", "ko": "", "ja": "アマカノ" },
+  "amano_megumi_ha_sukidarake": {
+    "en": "Amano Megumi Ha Sukidarake",
+    "ko": "아마노 메구미는 빈틈투성이!",
+    "ja": "天野めぐみはスキだらけ!"
+  },
   "among_us": { "en": "Among Us", "ko": "어몽 어스", "ja": "アマング・アス" },
   "anarchy_reigns": { "en": "Anarchy Reigns", "ko": "맥스 아나키", "ja": "マックス アナーキー" },
-  "ane_doki": { "en": "Ane Doki", "ko": "", "ja": "" },
-  "ane_naru_mono": { "en": "Ane Naru Mono", "ko": "", "ja": "" },
-  "angel_beats": { "en": "Angel Beats!", "ko": "엔젤 비츠!", "ja": "Angel Beats!" },
-  "angel_blade": { "en": "Angel Blade", "ko": "", "ja": "" },
+  "ane_doki": { "en": "Ane Doki", "ko": "아네도킷", "ja": "あねどきっ" },
+  "ane_naru_mono": { "en": "Ane Naru Mono", "ko": "누이 되는자", "ja": "姉なるもの" },
+  "angel_beats": { "en": "Angel Beats!", "ko": "엔젤 비트!", "ja": "Angel Beats!" },
+  "angel_blade": { "en": "Angel Blade", "ko": "엔젤 블레이드", "ja": "エンジェルブレイド" },
   "animal_crossing": { "en": "Animal Crossing", "ko": "동물의 숲", "ja": "どうぶつの森" },
-  "anna_millers": { "en": "Anna Millers", "ko": "", "ja": "" },
+  "anna_millers": { "en": "Anna Millers", "ko": "안나 미셀러스", "ja": "アンナ・ミラース" },
   "ano_hi_mita_hana_no_namae_wo_bokutachi_wa_mada_shiranai": {
     "en": "Anohana: The Flower We Saw That Day",
     "ko": "그날 본 꽃의 이름을 우리는 아직 모른다",
@@ -144,19 +148,35 @@
     "ja": "シャリーのアトリエ"
   },
   "atelier_sophie": { "en": "Atelier Sophie", "ko": "소피의 아틀리에", "ja": "ソフィーのアトリエ" },
-  "atelier_tanaka": { "en": "Atelier Tanaka", "ko": "다나카 ~나이=여친 없는 역사인 마법사~", "ja": "田中のアトリエ ~年齢イコール彼女いない歴の錬金術師~" },
+  "atelier_tanaka": {
+    "en": "Atelier Tanaka",
+    "ko": "다나카 ~나이=여친 없는 역사인 마법사~",
+    "ja": "田中のアトリエ ~年齢イコール彼女いない歴の錬金術師~"
+  },
   "atelier_totori": { "en": "Atelier Totori", "ko": "토토리의 아틀리에", "ja": "トトリのアトリエ" },
   "athena": { "en": "Athena", "ko": "아사미야 아테나", "ja": "麻宮アテナ" },
-  "atsumare_fushigi_kenkyuubu": { "en": "Atsumare Fushigi Kenkyuubu", "ko": "어서 와! 오컬트 연구부", "ja": "あつまれ！ふしぎ研究部" },
+  "atsumare_fushigi_kenkyuubu": {
+    "en": "Atsumare Fushigi Kenkyuubu",
+    "ko": "어서 와! 오컬트 연구부",
+    "ja": "あつまれ！ふしぎ研究部"
+  },
   "avatar": { "en": "Avatar", "ko": "아바타", "ja": "アバター" },
-  "avatar_the_last_airbender": { "en": "Avatar The Last Airbender", "ko": "아바타: 아앙의 전설", "ja": "アバター 伝説の少年アバター" },
+  "avatar_the_last_airbender": {
+    "en": "Avatar The Last Airbender",
+    "ko": "아바타: 아앙의 전설",
+    "ja": "アバター 伝説の少年アバター"
+  },
   "avengers": { "en": "Avengers", "ko": "어벤져스", "ja": "アベンジャーズ" },
   "axis_powers_hetalia": { "en": "Hetalia: Axis Powers", "ko": "헤타리아 Axis Powers", "ja": "ヘタリア Axis Powers" },
   "ayakashi_triangle": { "en": "Ayakashi Triangle", "ko": "아야카시 트라이앵글", "ja": "あやかしトライアングル" },
   "azumanga_daioh": { "en": "Azumanga Daioh", "ko": "아즈망가 대왕", "ja": "あずまんが大王" },
   "azur_lane": { "en": "Azur Lane", "ko": "아주르 레인(벽람항로)", "ja": "アズールレーン" },
   "azure_striker_gunvolt": { "en": "Azure Striker Gunvolt", "ko": "푸른 뇌정 건볼트", "ja": "蒼き雷霆 ガンヴォル" },
-  "bagi_the_monster_of_mighty_nature": { "en": "Bagi The Monster Of Mighty Nature", "ko": "대자연의 마수 바기", "ja": "大自然の魔獣バギ" },
+  "bagi_the_monster_of_mighty_nature": {
+    "en": "Bagi The Monster Of Mighty Nature",
+    "ko": "대자연의 마수 바기",
+    "ja": "大自然の魔獣バギ"
+  },
   "baka_to_test_to_shoukanjuu": {
     "en": "Baka and Test: Summon the Beasts",
     "ko": "바보와 시험과 소환수",
@@ -196,7 +216,11 @@
   "beyblade": { "en": "Beyblade", "ko": "베이블레이드", "ja": "ベイブレード" },
   "bible_black": { "en": "Bible Black", "ko": "바이블 블랙", "ja": "Bible Black" },
   "big_hero_6": { "en": "Big Hero 6", "ko": "빅 히어로 6", "ja": "ベイマックス" },
-  "bijin_onna_joushi_takizawa-san": { "en": "Bijin Onna Joushi Takizawa-San", "ko": "미인 여상사 타키자와 씨", "ja": "美人女上司滝沢さん" },
+  "bijin_onna_joushi_takizawa-san": {
+    "en": "Bijin Onna Joushi Takizawa-San",
+    "ko": "미인 여상사 타키자와 씨",
+    "ja": "美人女上司滝沢さん"
+  },
   "bikini_warriors": { "en": "Bikini Warriors", "ko": "비키니 워리어즈", "ja": "ビキニ・ウォリアーズ" },
   "bishoujo_mangekyou": { "en": "Bishoujo Mangekyou", "ko": "미소녀 만화경", "ja": "美少女万華鏡" },
   "black_bullet": { "en": "Black Bullet", "ko": "블랙 불릿", "ja": "ブラック・ブレット" },
@@ -217,7 +241,11 @@
   "bocchi_the_rock": { "en": "Bocchi the Rock!", "ko": "보치 더 록!", "ja": "ぼっち・ざ・ろっく！" },
   "boku_dake_ga_inai_machi": { "en": "Boku Dake Ga Inai Machi", "ko": "나만이 없는 거리", "ja": "僕だけがいない街" },
   "boku_girl": { "en": "Boku Girl", "ko": "보쿠걸", "ja": "ボクガール" },
-  "boku_no_kokoro_no_yabai_yatsu": { "en": "Boku No Kokoro No Yabai Yatsu", "ko": "내 마음의 위험한 녀석", "ja": "僕の心のヤバイやつ" },
+  "boku_no_kokoro_no_yabai_yatsu": {
+    "en": "Boku No Kokoro No Yabai Yatsu",
+    "ko": "내 마음의 위험한 녀석",
+    "ja": "僕の心のヤバイやつ"
+  },
   "boku_to_roboko": { "en": "Boku To Roboko", "ko": "나와 로보코", "ja": "僕とロボコ" },
   "boku_wa_tomodachi_ga_sukunai": {
     "en": "Haganai: I Don't Have Many Friends",
@@ -240,37 +268,49 @@
   "busou_renkin": { "en": "Busou Renkin", "ko": "무장연금", "ja": "武装錬金" },
   "busou_shinki": { "en": "Busou Shinki", "ko": "무장신희", "ja": "武装神姫" },
   "c_cube": { "en": "C Cube", "ko": "C³ -시큐브-", "ja": "C³ -シーキューブ-" },
-  "cafe_stella_to_shinigami_no_chou": { "en": "Cafe Stella To Shinigami No Chou", "ko": "카페 스텔라와 죽음의 나비", "ja": "喫茶ステラと死神の蝶" },
+  "cafe_stella_to_shinigami_no_chou": {
+    "en": "Cafe Stella To Shinigami No Chou",
+    "ko": "카페 스텔라와 죽음의 나비",
+    "ja": "喫茶ステラと死神の蝶"
+  },
   "cage_of_eden": { "en": "Cage Of Eden", "ko": "에덴의 우리", "ja": "エデンの檻" },
   "call_of_duty": { "en": "Call Of Duty", "ko": "콜 오브 듀티", "ja": "コール オブ デューティ" },
-  "capeta": { "en": "Capeta", "ko": "", "ja": "" },
-  "captain_commando": { "en": "Captain Commando", "ko": "", "ja": "" },
-  "captain_earth": { "en": "Captain Earth", "ko": "", "ja": "" },
+  "capeta": { "en": "Capeta", "ko": "카페타", "ja": "capeta" },
+  "captain_commando": { "en": "Captain Commando", "ko": "캡틴 코만도", "ja": "キャプテンコマンドー" },
+  "captain_earth": { "en": "Captain Earth", "ko": "캡틴 어스", "ja": "キャプテン・アース" },
   "cardcaptor_sakura": { "en": "Cardcaptor Sakura", "ko": "카드캡터 사쿠라", "ja": "カードキャプターさくら" },
   "cardfight_vanguard": {
     "en": "Cardfight!! Vanguard",
     "ko": "카드파이트!! 뱅가드",
     "ja": "カードファイト!! ヴァンガード"
   },
-  "castlevania": { "en": "Castlevania", "ko": "", "ja": "" },
-  "cat_busters": { "en": "Cat Busters", "ko": "", "ja": "" },
-  "cats_eye": { "en": "Cats Eye", "ko": "", "ja": "" },
-  "cevio": { "en": "Cevio", "ko": "", "ja": "" },
+  "castlevania": { "en": "Castlevania", "ko": "캐슬바니아", "ja": "悪魔城ドラキュラ" },
+  "cat_busters": { "en": "Cat Busters", "ko": "", "ja": "キャットバスターズ" },
+  "cats_eye": { "en": "Cats Eye", "ko": "캣츠 아이", "ja": "キャッツ・アイ" },
+  "cevio": { "en": "Cevio", "ko": "CeVIO", "ja": "CeVIO" },
   "chainsaw_man": { "en": "Chainsaw Man", "ko": "체인소 맨", "ja": "チェンソーマン" },
-  "changed": { "en": "Changed", "ko": "", "ja": "" },
-  "chaos_breaker": { "en": "Chaos Breaker", "ko": "", "ja": "" },
-  "cheetahmen": { "en": "Cheetahmen", "ko": "", "ja": "" },
-  "chichi_chichi": { "en": "Chichi Chichi", "ko": "", "ja": "" },
-  "chihayafuru": { "en": "Chihayafuru", "ko": "", "ja": "" },
-  "chiikawa": { "en": "Chiikawa", "ko": "", "ja": "" },
-  "chizuru-chan_kaihatsu_nikki": { "en": "Chizuru-Chan Kaihatsu Nikki", "ko": "", "ja": "" },
+  "changed": { "en": "Changed", "ko": "Changed", "ja": "Changed" },
+  "chaos_breaker": { "en": "Chaos Breaker", "ko": "카오스 브레이커", "ja": "カオスブレイカー" },
+  "cheetahmen": { "en": "Cheetahmen", "ko": "치타맨", "ja": "チーターマン" },
+  "chichi_chichi": { "en": "Chichi Chichi", "ko": "치치치치", "ja": "ちちちち" },
+  "chihayafuru": { "en": "Chihayafuru", "ko": "치하야후루", "ja": "ちはやふる" },
+  "chiikawa": { "en": "Chiikawa", "ko": "치이카와", "ja": "ちいかわ" },
+  "chizuru-chan_kaihatsu_nikki": {
+    "en": "Chizuru-Chan Kaihatsu Nikki",
+    "ko": "치즈루 개발 일기",
+    "ja": "ちづるちゃん開発日記"
+  },
   "chobits": { "en": "Chobits", "ko": "쵸비츠", "ja": "ちょびっツ" },
   "choujin_koukousei-tachi_wa_isekai_demo_yoyuu_de_ikinuku_you_desu": {
     "en": "Choujin Koukousei-Tachi Wa Isekai Demo Yoyuu De Ikinuku You Desu",
-    "ko": "",
-    "ja": ""
+    "ko": "초인 고교생들은 이세계에서도 여유롭게 살아가나 봅니다!",
+    "ja": "超人高校生たちは異世界でも余裕で生き抜くようです！"
   },
-  "choukou_tenshi_escalayer": { "en": "Choukou Tenshi Escalayer", "ko": "", "ja": "" },
+  "choukou_tenshi_escalayer": {
+    "en": "Choukou Tenshi Escalayer",
+    "ko": "초앙천사 에스카레이어",
+    "ja": "超昂天使エスカレイヤー"
+  },
   "chousoku_henkei_gyrozetter": {
     "en": "Chousoku Henkei Gyrozetter",
     "ko": "초속변형 자이로제타",
@@ -281,37 +321,45 @@
     "ko": "중2병이라도 사랑이 하고 싶어!",
     "ja": "中二病でも恋がしたい！"
   },
-  "city_hunter": { "en": "City Hunter", "ko": "", "ja": "" },
+  "city_hunter": { "en": "City Hunter", "ko": "시티 헌터", "ja": "シティーハンター" },
   "clannad": { "en": "Clannad", "ko": "클라나드", "ja": "CLANNAD" },
-  "claymore": { "en": "Claymore", "ko": "", "ja": "" },
-  "closers": { "en": "Closers", "ko": "", "ja": "" },
-  "clover_point": { "en": "Clover Point", "ko": "", "ja": "" },
+  "claymore": { "en": "Claymore", "ko": "클레이모어", "ja": "CLAYMORE" },
+  "closers": { "en": "Closers", "ko": "클로저스", "ja": "クローザーズ" },
+  "clover_point": { "en": "Clover Point", "ko": "", "ja": "クローバーポイント" },
   "code_geass": {
     "en": "Code Geass: Lelouch of the Rebellion",
     "ko": "코드 기아스: 반역의 를르슈",
     "ja": "コードギアス 反逆のルルーシュ"
   },
-  "combattler_v": { "en": "Combattler V", "ko": "", "ja": "" },
+  "combattler_v": { "en": "Combattler V", "ko": "초전자 로보 컴배틀러 V", "ja": "超電磁ロボ コン・バトラーV" },
   "comic_party": { "en": "Comic Party", "ko": "코믹 파티", "ja": "こみっくパーティー" },
-  "compass": { "en": "Compass", "ko": "", "ja": "" },
+  "compass": { "en": "Compass", "ko": "#컴퍼스 전투섭리분석시스템", "ja": "#コンパス 【戦闘摂理解析システム】" },
   "concon-collector": { "en": "Concon-Collector", "ko": "", "ja": "" },
-  "cookie_run": { "en": "Cookie Run", "ko": "", "ja": "" },
-  "cooking_idol_ai_mai_main": { "en": "Cooking Idol Ai Mai Main", "ko": "", "ja": "" },
-  "coraline": { "en": "Coraline", "ko": "", "ja": "" },
-  "counter_side": { "en": "Counter Side", "ko": "", "ja": "" },
-  "cowboy_bebop": { "en": "Cowboy Bebop", "ko": "", "ja": "" },
-  "coyote_ragtime_show": { "en": "Coyote Ragtime Show", "ko": "", "ja": "" },
-  "crayon_shin-chan": { "en": "Crayon Shin-Chan", "ko": "", "ja": "" },
-  "creamy_mami": { "en": "Creamy Mami", "ko": "", "ja": "" },
-  "cross_ange": { "en": "Cross Ange", "ko": "", "ja": "" },
-  "crusaders_quest": { "en": "Crusaders Quest", "ko": "", "ja": "" },
-  "cult_of_the_lamb": { "en": "Cult Of The Lamb", "ko": "", "ja": "" },
-  "cuphead": { "en": "Cuphead", "ko": "", "ja": "" },
+  "cookie_run": { "en": "Cookie Run", "ko": "쿠키런", "ja": "クッキーラン" },
+  "cooking_idol_ai_mai_main": {
+    "en": "Cooking Idol Ai Mai Main",
+    "ko": "쿠킹 아이돌 아이! 마이! 마인!",
+    "ja": "クッキンアイドル アイ!マイ!まいん!"
+  },
+  "coraline": { "en": "Coraline", "ko": "코렐라인", "ja": "コララインとボタンの魔女" },
+  "counter_side": { "en": "Counter Side", "ko": "카운터사이드", "ja": "カウンターサイド" },
+  "cowboy_bebop": { "en": "Cowboy Bebop", "ko": "카우보이 비밥", "ja": "カウボーイビバップ" },
+  "coyote_ragtime_show": { "en": "Coyote Ragtime Show", "ko": "코요테 래그타임 쇼", "ja": "コヨーテ ラグタイムショー" },
+  "crayon_shin-chan": { "en": "Crayon Shin-Chan", "ko": "짱구는 못말려", "ja": "クレヨンしんちゃん" },
+  "creamy_mami": { "en": "Creamy Mami", "ko": "천사소녀 새롬이", "ja": "魔法の天使クリィミーマミ" },
+  "cross_ange": { "en": "Cross Ange", "ko": "크로스 앙쥬 천사와 용의 윤무", "ja": "クロスアンジュ 天使と竜の輪舞" },
+  "crusaders_quest": { "en": "Crusaders Quest", "ko": "크루세이더 퀘스트", "ja": "クルセイダークエスト" },
+  "cult_of_the_lamb": { "en": "Cult Of The Lamb", "ko": "컬트 오브 더 램", "ja": "カルト・オブ・ザ・ラム" },
+  "cuphead": { "en": "Cuphead", "ko": "컵헤드", "ja": "カップヘッド" },
   "cutey_honey": { "en": "Cutie Honey", "ko": "큐티 하니", "ja": "キューティーハニー" },
-  "cyberpunk": { "en": "Cyberpunk", "ko": "", "ja": "" },
-  "cyborg_009": { "en": "Cyborg 009", "ko": "", "ja": "" },
-  "cyphers_online": { "en": "Cyphers Online", "ko": "", "ja": "" },
-  "d-frag": { "en": "D-Frag", "ko": "", "ja": "" },
+  "cyberpunk": {
+    "en": "Cyberpunk: Edgerunners",
+    "ko": "사이버펑크: 엣지러너",
+    "ja": "サイバーパンク エッジランナーズ"
+  },
+  "cyborg_009": { "en": "Cyborg 009", "ko": "사이보그 009", "ja": "サイボーグ009" },
+  "cyphers_online": { "en": "Cyphers Online", "ko": "사이퍼즈", "ja": "サイパーズ" },
+  "d-frag": { "en": "D-Frag", "ko": "디-프래그!", "ja": "ディーふらぐ!" },
   "da_capo": { "en": "Da Capo", "ko": "", "ja": "" },
   "da_capo_ii": { "en": "Da Capo Ii", "ko": "", "ja": "" },
   "da_capo_iii": { "en": "Da Capo Iii", "ko": "", "ja": "" },
@@ -1176,7 +1224,11 @@
   "momotarou_densetsu": { "en": "Momotarou Densetsu", "ko": "", "ja": "" },
   "monster_girl_quest": { "en": "Monster Girl Quest", "ko": "", "ja": "" },
   "monster_hunter": { "en": "Monster Hunter", "ko": "몬스터 헌터", "ja": "モンスターハンター" },
-  "monster_musume_no_iru_nichijou": { "en": "Monster Musume No Iru Nichijou", "ko": "", "ja": "" },
+  "monster_musume_no_iru_nichijou": {
+    "en": "Monster Musume No Iru Nichijou",
+    "ko": "몬스터 아가씨가 있는 일상",
+    "ja": "モンスター娘のいる日常"
+  },
   "monster_strike": { "en": "Monster Strike", "ko": "", "ja": "" },
   "montowers": { "en": "Montowers", "ko": "", "ja": "" },
   "moomintroll": { "en": "Moomintroll", "ko": "", "ja": "" },
@@ -1956,5 +2008,5 @@
   },
   "zombie_high_school": { "en": "Zombie High School", "ko": "", "ja": "" },
   "zombie_land_saga": { "en": "Zombie Land Saga", "ko": "좀비 랜드 사가", "ja": "ゾンビランドサガ" },
-  "zootopia": { "en": "Zootopia", "ko": "", "ja": "" }
+  "zootopia": { "en": "Zootopia", "ko": "주토피아", "ja": "ズートピア" }
 }
