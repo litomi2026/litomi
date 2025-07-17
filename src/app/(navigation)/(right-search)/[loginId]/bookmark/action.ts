@@ -9,7 +9,7 @@ import { BookmarkSource } from '@/database/schema'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
 
 const schema = z.object({
-  mangaId: z.number(),
+  mangaId: z.coerce.number().int().positive(),
   source: z.enum(BookmarkSource),
 })
 
@@ -22,8 +22,8 @@ export default async function toggleBookmark(_prevState: unknown, formData: Form
   }
 
   const validation = schema.safeParse({
-    mangaId: +(formData.get('mangaId')?.toString() ?? ''),
-    source: +(formData.get('source')?.toString() ?? ''),
+    mangaId: formData.get('mangaId'),
+    source: +(formData.get('source') ?? ''),
   })
 
   if (!validation.success) {

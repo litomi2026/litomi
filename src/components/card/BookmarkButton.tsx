@@ -7,7 +7,9 @@ import { useActionState, useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
 
 import toggleBookmark from '@/app/(navigation)/(right-search)/[loginId]/bookmark/action'
+import { GETBookmarksResponse } from '@/app/api/bookmarks/route'
 import { QueryKeys } from '@/constants/query'
+import { BookmarkSource } from '@/database/schema'
 import useActionErrorEffect from '@/hook/useActionErrorEffect'
 import useBookmarksQuery from '@/query/useBookmarksQuery'
 import useMeQuery from '@/query/useMeQuery'
@@ -51,21 +53,34 @@ export default function BookmarkButton({ manga, source, className }: Readonly<Pr
 
     toast.success(isBookmarked ? '북마크를 추가했어요' : '북마크를 삭제했어요')
 
-    queryClient.setQueryData<Set<number>>(QueryKeys.bookmarks, (oldBookmarks) => {
-      if (!oldBookmarks) {
-        return new Set([mangaId])
-      } else if (isBookmarked) {
-        oldBookmarks.add(mangaId)
-      } else {
-        oldBookmarks.delete(mangaId)
+    queryClient.setQueryData<GETBookmarksResponse>(QueryKeys.bookmarks, (oldBookmarks) => {
+      const newBookmark = {
+        mangaId,
+        source: mapSourceParamToBookmarkSource(source) ?? BookmarkSource.K_HENTAI,
       }
-      return new Set(oldBookmarks)
+
+      if (!oldBookmarks) {
+        return {
+          bookmarks: [newBookmark],
+          nextCursor: null,
+        }
+      } else if (isBookmarked) {
+        return {
+          bookmarks: [newBookmark, ...oldBookmarks.bookmarks],
+          nextCursor: null,
+        }
+      } else {
+        return {
+          bookmarks: oldBookmarks.bookmarks.filter((bookmark) => bookmark.mangaId !== mangaId),
+          nextCursor: null,
+        }
+      }
     })
 
     if (isBookmarked) {
       queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteBookmarks })
     }
-  }, [success, isBookmarked, queryClient, mangaId])
+  }, [success, isBookmarked, queryClient, mangaId, source])
 
   function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
     if (!me) {
@@ -107,7 +122,7 @@ export function BookmarkButtonError({ error, reset }: ErrorBoundaryFallbackProps
       onClick={reset}
     >
       <IconBookmark className="w-4 text-red-700" />
-      <span className="hidden md:block text-red-700">오류</span>
+      <span className="text-red-700">오류</span>
     </button>
   )
 }

@@ -53,7 +53,6 @@ export async function POST(request: Request) {
     const body = await request.json()
     const url = new URL(request.url)
     const mode = (url.searchParams.get('mode') || 'merge') as ImportMode
-
     const validation = bookmarkImportSchema.safeParse(body)
 
     if (!validation.success) {
