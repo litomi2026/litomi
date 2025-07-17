@@ -5,7 +5,7 @@ import { toast } from 'sonner'
 import useBookmarksQuery from '@/query/useBookmarksQuery'
 import { downloadBlob } from '@/utils/download'
 
-import { IconDownload } from './icons/IconDownload'
+import { IconDownload } from '../../../../../components/icons/IconDownload'
 
 export default function BookmarkDownloadButton() {
   const { data, isLoading } = useBookmarksQuery()

@@ -58,19 +58,37 @@ function MangaCard({ manga, index = 0, source, className = '', showSearchFromNex
             </Link>
             {language && <LanguageBadge language={language} />}
           </div>
-          {type && <MangaMetadataItem filterType="type" label="종류" value={type} />}
-          {artists && artists.length > 0 && <MangaMetadataList details={artists} filterType="artist" term="작가" />}
-          {group && group.length > 0 && <MangaMetadataList details={group} filterType="group" term="그룹" />}
-          {series && series.length > 0 && <MangaMetadataList details={series} filterType="series" term="시리즈" />}
-          {characters && characters.length > 0 && (
-            <MangaMetadataList details={characters} filterType="character" term="캐릭터" />
-          )}
-          {tags && tags.length > 0 && (
-            <div className="flex gap-2">
-              <span className="whitespace-nowrap">태그</span>
-              <TagList className="flex flex-wrap gap-1 font-semibold" clickable tags={tags} />
+          {type && (
+            <div className="flex gap-1">
+              <span>종류</span>
+              <MangaMetadataItem filterType="type" value={type} />
             </div>
           )}
+          {artists && artists.length > 0 && (
+            <div className="flex gap-1">
+              <span>작가</span>
+              <MangaMetadataList details={artists} filterType="artist" />
+            </div>
+          )}
+          {group && group.length > 0 && (
+            <div className="flex gap-1">
+              <span>그룹</span>
+              <MangaMetadataList details={group} filterType="group" />
+            </div>
+          )}
+          {series && series.length > 0 && (
+            <div className="flex gap-1">
+              <span>시리즈</span>
+              <MangaMetadataList details={series} filterType="series" />
+            </div>
+          )}
+          {characters && characters.length > 0 && (
+            <div className="flex gap-1">
+              <span>캐릭터</span>
+              <MangaMetadataList details={characters} filterType="character" />
+            </div>
+          )}
+          {tags && tags.length > 0 && <TagList className="flex flex-wrap gap-1 font-semibold" tags={tags} />}
         </div>
         <div className="grid gap-2">
           <div className="flex text-xs justify-between items-center gap-1">
