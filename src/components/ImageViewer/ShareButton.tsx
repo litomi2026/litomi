@@ -33,11 +33,11 @@ export default function ShareButton() {
           <h2 className="text-xl text-center py-2 font-semibold">공유하기</h2>
           <div className="text-sm text-center pb-2">
             {copyStatus === 'success' ? (
-              <p className="text-green-400">링크가 복사되었습니다!</p>
+              <p className="text-green-400">링크가 복사되었어요</p>
             ) : copyStatus === 'error' ? (
-              <p className="text-red-400">복사에 실패했습니다!</p>
+              <p className="text-red-400">복사에 실패했어요</p>
             ) : (
-              <p className="text-zinc-400">버튼을 눌러 복사해 보세요.</p>
+              <p className="text-zinc-400">버튼을 눌러 복사해 보세요</p>
             )}
           </div>
           <button
