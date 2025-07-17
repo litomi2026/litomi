@@ -33,7 +33,7 @@ export function getLoginIdFromParam(loginId: string) {
 export function getTotalPages(source: string) {
   switch (source) {
     case SourceParam.HIYOBI:
-      return 7300
+      return 7500
     default:
       return 10
   }

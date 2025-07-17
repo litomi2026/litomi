@@ -6,10 +6,9 @@ import { handleResponseError } from '@/utils/react-query-error'
 
 import useMeQuery from './useMeQuery'
 
-export async function fetchBookmarkIds() {
+export async function fetchBookmarks() {
   const response = await fetch('/api/bookmarks')
-  const data = await handleResponseError<GETBookmarksResponse>(response)
-  return new Set(data.bookmarks.map((bookmark) => bookmark.mangaId))
+  return handleResponseError<GETBookmarksResponse>(response)
 }
 
 export default function useBookmarksQuery() {
@@ -18,7 +17,7 @@ export default function useBookmarksQuery() {
 
   return useQuery({
     queryKey: QueryKeys.bookmarks,
-    queryFn: fetchBookmarkIds,
+    queryFn: fetchBookmarks,
     enabled: Boolean(userId),
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,

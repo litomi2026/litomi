@@ -15,7 +15,7 @@ export function getCookieJSON(cookieStore: ReadonlyRequestCookies, keys: string[
   return result
 }
 
-export async function getUserDataFromAccessToken(cookieStore: ReadonlyRequestCookies, reset: boolean = true) {
+export async function getUserIdFromAccessToken(cookieStore: ReadonlyRequestCookies, reset: boolean = true) {
   const accessToken = cookieStore.get(CookieKey.ACCESS_TOKEN)?.value
 
   if (!accessToken) {
@@ -24,30 +24,23 @@ export async function getUserDataFromAccessToken(cookieStore: ReadonlyRequestCoo
 
   const payload = await verifyJWT(accessToken, TokenType.ACCESS).catch(() => null)
 
-  if (!payload || !payload.sub || !payload.loginId) {
+  if (!payload || !payload.sub) {
     if (reset) {
       cookieStore.delete(CookieKey.ACCESS_TOKEN)
     }
     return null
   }
 
-  return {
-    userId: payload.sub,
-    loginId: payload.loginId,
-  }
+  return payload.sub
 }
 
 export async function setAccessTokenCookie(
   cookieStore: ReadonlyRequestCookies | ResponseCookies,
   userId: number | string,
-  loginId: string,
 ) {
-  const payload = {
-    sub: String(userId),
-    loginId,
-  }
+  const cookieValue = await signJWT({ sub: String(userId) }, TokenType.ACCESS)
 
-  cookieStore.set(CookieKey.ACCESS_TOKEN, await signJWT(payload, TokenType.ACCESS), {
+  cookieStore.set(CookieKey.ACCESS_TOKEN, cookieValue, {
     httpOnly: true,
     secure: true,
     sameSite: 'lax',
@@ -55,17 +48,10 @@ export async function setAccessTokenCookie(
   })
 }
 
-export async function setRefreshTokenCookie(
-  cookieStore: ReadonlyRequestCookies,
-  userId: number | string,
-  loginId: string,
-) {
-  const payload = {
-    sub: String(userId),
-    loginId,
-  }
+export async function setRefreshTokenCookie(cookieStore: ReadonlyRequestCookies, userId: number | string) {
+  const cookieValue = await signJWT({ sub: String(userId) }, TokenType.REFRESH)
 
-  cookieStore.set(CookieKey.REFRESH_TOKEN, await signJWT(payload, TokenType.REFRESH), {
+  cookieStore.set(CookieKey.REFRESH_TOKEN, cookieValue, {
     httpOnly: true,
     secure: true,
     sameSite: 'lax',

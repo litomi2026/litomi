@@ -4,7 +4,7 @@ import { cookies } from 'next/headers'
 import { CookieKey } from '@/constants/storage'
 import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
-import { getUserDataFromAccessToken } from '@/utils/cookie'
+import { getUserIdFromAccessToken } from '@/utils/cookie'
 
 export type GETMeResponse = {
   id: number
@@ -15,7 +15,7 @@ export type GETMeResponse = {
 
 export async function GET() {
   const cookieStore = await cookies()
-  const { userId } = (await getUserDataFromAccessToken(cookieStore)) ?? {}
+  const userId = await getUserIdFromAccessToken(cookieStore)
 
   if (!userId) {
     return new Response('401 Unauthorized', { status: 401 })

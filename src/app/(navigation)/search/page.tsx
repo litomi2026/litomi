@@ -46,7 +46,7 @@ export default async function Page({ searchParams }: PageProps) {
           <ActiveFilters filters={validationResult.data} />
         </Suspense>
       )}
-      <Suspense fallback={<Loading />}>
+      <Suspense clientOnly fallback={<Loading />}>
         <SearchResults view={viewType} />
       </Suspense>
     </>

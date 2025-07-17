@@ -15,11 +15,7 @@ export enum TokenType {
   REFRESH,
 }
 
-interface CustomPayload extends JWTPayload {
-  loginId: string
-}
-
-export async function signJWT(payload: CustomPayload, type: TokenType): Promise<string> {
+export async function signJWT(payload: JWTPayload, type: TokenType): Promise<string> {
   // NOTE: https://developer.amazon.com/docs/login-with-amazon/access-token.html
   const duration = type === TokenType.ACCESS ? ONE_HOUR : THIRTY_DAYS
   const secretKey = type === TokenType.ACCESS ? JWT_SECRET_ACCESS_TOKEN : JWT_SECRET_REFRESH_TOKEN
@@ -41,7 +37,7 @@ export async function verifyJWT(token: string, type: TokenType) {
   const secretKey = type === TokenType.ACCESS ? JWT_SECRET_ACCESS_TOKEN : JWT_SECRET_REFRESH_TOKEN
 
   // TODO(2025-07-16): 30일 후 Optional 삭제하기
-  const { payload } = await jwtVerify<Optional<CustomPayload, 'loginId'>>(
+  const { payload } = await jwtVerify<Optional<JWTPayload, 'loginId'>>(
     token,
     new TextEncoder().encode(secretKey),
     options,
