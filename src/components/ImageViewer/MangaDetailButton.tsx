@@ -6,6 +6,8 @@ import { Manga } from '@/types/manga'
 import { SourceParam } from '@/utils/param'
 
 import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from '../card/BookmarkButton'
+import MangaMetadataItem from '../card/MangaMetadataItem'
+import MangaMetadataList from '../card/MangaMetadataList'
 import TagList from '../TagList'
 import Modal from '../ui/Modal'
 
@@ -26,59 +28,56 @@ function MangaDetailButton({ manga, source }: Readonly<Props>) {
         <h1 className="flex-1 text-center line-clamp-1 font-bold text-foreground md:text-lg">{title}</h1>
       </button>
       <Modal onClose={() => setIsOpened(false)} open={isOpened} showCloseButton showDragButton>
-        <div className="bg-zinc-900 min-w-3xs w-screen max-w-sm md:max-w-lg rounded-xl p-4 pt-8 shadow-xl border grid gap-3 text-sm md:text-base">
+        <div className="bg-zinc-900 min-w-3xs w-screen max-w-sm md:max-w-lg rounded-xl p-4 pt-8 shadow-xl border grid gap-3 text-sm overflow-auto max-h-svh md:text-base">
           <h2 className="font-bold text-lg md:text-xl">{title}</h2>
-          <div className="grid grid-cols-[auto_1fr] gap-2">
+          <div className="grid gap-2">
             {language && (
-              <>
+              <div className="flex gap-2">
                 <strong>언어</strong>
-                <div>{language}</div>
-              </>
+                <MangaMetadataItem filterType="language" value={language} />
+              </div>
             )}
             {type && (
-              <>
+              <div className="flex gap-2">
                 <strong>종류</strong>
-                <div>{type}</div>
-              </>
+                <MangaMetadataItem filterType="type" value={type} />
+              </div>
             )}
             {artists && artists.length > 0 && (
-              <>
+              <div className="flex gap-2">
                 <strong>작가</strong>
-                <div>{artists.join(', ')}</div>
-              </>
+                <MangaMetadataList details={artists} filterType="artist" />
+              </div>
             )}
             {group && group.length > 0 && (
-              <>
+              <div className="flex gap-2">
                 <strong>그룹</strong>
-                <div>{group.join(', ')}</div>
-              </>
+                <MangaMetadataList details={group} filterType="group" />
+              </div>
             )}
             {series && series.length > 0 && (
-              <>
+              <div className="flex gap-2">
                 <strong>시리즈</strong>
-                <div>{series.join(', ')}</div>
-              </>
+                <MangaMetadataList details={series} filterType="series" />
+              </div>
             )}
             {characters && characters.length > 0 && (
-              <>
+              <div className="flex gap-2">
                 <strong>캐릭터</strong>
-                <div>{characters.join(', ')}</div>
-              </>
-            )}
-            {tags && tags.length > 0 && (
-              <>
-                <strong>태그</strong>
-                <TagList
-                  className="flex flex-wrap gap-1 font-medium [&_li]:rounded [&_li]:px-1 [&_li]:text-foreground"
-                  tags={tags}
-                />
-              </>
+                <MangaMetadataList details={characters} filterType="character" />
+              </div>
             )}
             {date && (
-              <>
+              <div className="flex gap-2">
                 <strong>날짜</strong>
-                <div>{dayjs(date).format('YYYY-MM-DD HH:mm')}</div>
-              </>
+                <span>{dayjs(date).format('YYYY-MM-DD HH:mm')}</span>
+              </div>
+            )}
+            {tags && tags.length > 0 && (
+              <TagList
+                className="flex flex-wrap gap-1 font-medium [&_li]:rounded [&_li]:px-1 [&_li]:text-foreground"
+                tags={tags}
+              />
             )}
           </div>
           <div

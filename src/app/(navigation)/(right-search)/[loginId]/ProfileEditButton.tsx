@@ -66,7 +66,7 @@ export default function ProfileEditButton() {
         >
           <form
             action={formAction}
-            className="w-full h-full bg-background overflow-auto md:bg-zinc-900 md:border-2 md:rounded-xl
+            className="w-full h-full max-h-dvh bg-background overflow-auto md:bg-zinc-900 md:border-2 md:rounded-xl
             [&_label]:block [&_label]:text-sm [&_label]:font-medium [&_label]:text-zinc-300 [&_label]:leading-7
             [&_input]:mt-1 [&_input]:w-full [&_input]:rounded-md [&_input]:bg-zinc-800 [&_input]:border [&_input]:border-zinc-600 
             [&_input]:px-3 [&_input]:py-2 [&_input]:placeholder-zinc-500 [&_input]:focus:outline-none [&_input]:focus:ring-2 [&_input]:focus:ring-zinc-500 

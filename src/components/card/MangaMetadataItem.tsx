@@ -8,15 +8,13 @@ import MangaMetadataLabel from './MangaMetadataLabel'
 import { toggleSearchFilter } from './utils'
 
 type Props = {
-  label: string
   value: string
   filterType: string
-  className?: string
 }
 
 export default memo(MangaMetadataItem)
 
-function MangaMetadataItem({ label, value, filterType, className = '' }: Readonly<Props>) {
+function MangaMetadataItem({ value, filterType }: Readonly<Props>) {
   const searchParams = useSearchParams()
   const pathname = usePathname()
   const currentQuery = searchParams.get('query') ?? ''
@@ -33,15 +31,12 @@ function MangaMetadataItem({ label, value, filterType, className = '' }: Readonl
   const isActive = currentQuery ? new RegExp(`(^|\\s)${escapedPattern}(?=\\s|$)`, 'i').test(currentQuery) : false
 
   return (
-    <div className={`flex gap-1 ${className}`}>
-      <span>{label}</span>
-      <Link
-        aria-pressed={isActive}
-        className="hover:underline focus:underline aria-pressed:text-brand-end aria-pressed:font-semibold"
-        href={`/search?${newSearchParams}`}
-      >
-        <MangaMetadataLabel>{value}</MangaMetadataLabel>
-      </Link>
-    </div>
+    <Link
+      aria-pressed={isActive}
+      className="hover:underline focus:underline aria-pressed:text-brand-end aria-pressed:font-semibold"
+      href={`/search?${newSearchParams}`}
+    >
+      <MangaMetadataLabel>{value}</MangaMetadataLabel>
+    </Link>
   )
 }

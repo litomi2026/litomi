@@ -20,12 +20,11 @@ const tagStyles = {
 type Props = {
   className: string
   tags: MangaTag[]
-  clickable?: boolean
 }
 
 export default memo(TagList)
 
-function TagList({ className, tags, clickable = false }: Readonly<Props>) {
+function TagList({ className, tags }: Readonly<Props>) {
   const searchParams = useSearchParams()
   const pathname = usePathname()
   const currentQuery = searchParams.get('query') ?? ''
@@ -51,10 +50,9 @@ function TagList({ className, tags, clickable = false }: Readonly<Props>) {
 
         return (
           <Link
-            aria-disabled={!clickable}
             aria-pressed={isActive}
             className={tagColor}
-            href={clickable ? `/search?${newSearchParams}` : ''}
+            href="/search?${newSearchParams}"
             key={`${category}:${value}`}
           >
             <TagLabel className="p-0.5 w-5">{label}</TagLabel>
