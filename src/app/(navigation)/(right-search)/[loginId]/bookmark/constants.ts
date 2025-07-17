@@ -1,3 +1,4 @@
+import { BookmarkSource } from '@/database/schema'
 import { Manga } from '@/types/manga'
 
 export const BOOKMARKS_PER_PAGE = 20
@@ -119,3 +120,15 @@ export const EXAMPLE_BOOKMARKED_MANGAS: Manga[] = [
     images: ['https://ehgt.org/w/01/538/47924-nrgupfye.webp'],
   },
 ]
+
+export type BookmarkExportData = {
+  exportedAt: string
+  totalCount: number
+  bookmarks: ExportedBookmark[]
+}
+
+export type ExportedBookmark = {
+  mangaId: number
+  source: BookmarkSource
+  createdAt: string
+}
