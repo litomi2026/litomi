@@ -3,7 +3,7 @@
 import { captureException } from '@sentry/nextjs'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import { useQueryClient } from '@tanstack/react-query'
-import { useActionState, useEffect } from 'react'
+import { useActionState, useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
 
 import toggleBookmark from '@/app/(navigation)/(right-search)/[loginId]/bookmark/action'
@@ -34,7 +34,8 @@ export default function BookmarkButton({ manga, source, className }: Readonly<Pr
   const { data: me } = useMeQuery()
   const { data: bookmarks } = useBookmarksQuery()
   const [{ error, success, isBookmarked, status }, formAction, isPending] = useActionState(toggleBookmark, initialState)
-  const isIconSelected = bookmarks?.has(mangaId)
+  const bookmarkIds = useMemo(() => new Set(bookmarks?.bookmarks.map((bookmark) => bookmark.mangaId)), [bookmarks])
+  const isIconSelected = bookmarkIds.has(mangaId)
   const queryClient = useQueryClient()
 
   useActionErrorEffect({

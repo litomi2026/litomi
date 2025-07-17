@@ -1,5 +1,14 @@
 import { NEXT_PUBLIC_CORS_PROXY_URL } from '@/constants/env'
 
+export function downloadBlob(blob: Blob, filename: string) {
+  const blobURL = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = blobURL
+  link.download = filename
+  link.click()
+  URL.revokeObjectURL(blobURL)
+}
+
 export async function downloadImage(imageUrl: string, filename: string): Promise<void> {
   try {
     const url =
@@ -94,13 +103,4 @@ export async function downloadMultipleImages({
 
   const zipFile = await zip.generateAsync({ type: 'blob' })
   downloadBlob(zipFile, `${filename}.zip`)
-}
-
-function downloadBlob(blob: Blob, filename: string) {
-  const blobURL = URL.createObjectURL(blob)
-  const link = document.createElement('a')
-  link.href = blobURL
-  link.download = filename
-  link.click()
-  URL.revokeObjectURL(blobURL)
 }
