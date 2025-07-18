@@ -20,7 +20,7 @@ export default async function Page({ searchParams }: PageProps) {
   })
 
   if (!validationResult.success) {
-    return <Error400 />
+    return <Error400 message={validationResult.error.issues[0].message} />
   }
 
   const {
