@@ -180,7 +180,7 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
       {/* Backdrop */}
       <div
         aria-hidden={!show}
-        className="fixed inset-0 z-[60] bg-black/20 transition duration-300 hidden opacity-100 sm:block aria-hidden:opacity-0 aria-hidden:pointer-events-none"
+        className="fixed inset-0 z-[60] bg-black/20 transition hidden opacity-100 sm:block aria-hidden:opacity-0 aria-hidden:pointer-events-none"
         onClick={onClose}
       />
 
@@ -189,7 +189,7 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
         aria-hidden={!show}
         className="fixed inset-0 z-[70] sm:inset-auto sm:w-96 sm:max-w-[calc(100vw-2rem)] sm:max-h-[calc(100vh-8rem)] 
           overflow-y-auto bg-zinc-900 sm:border-2 sm:border-zinc-700 sm:rounded-xl sm:shadow-xl
-          transition-all duration-300 opacity-100
+          transition-all opacity-100
           aria-hidden:opacity-0 aria-hidden:pointer-events-none"
         style={filterPanelStyle}
       >

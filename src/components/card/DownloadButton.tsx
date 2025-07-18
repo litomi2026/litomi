@@ -74,7 +74,7 @@ function DownloadButton({ manga, className = '' }: Readonly<Props>) {
       {/* Progress bar */}
       {isDownloading && (
         <div
-          className="absolute inset-0 bg-background opacity-50 transition-transform duration-300 ease-out"
+          className="absolute inset-0 bg-background opacity-50 transition ease-out"
           style={{ transform: `translateX(-${100 - progress}%)` }}
         />
       )}

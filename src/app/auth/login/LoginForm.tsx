@@ -133,9 +133,9 @@ export default function LoginForm() {
           <span className="text-sm text-zinc-400 select-none transition peer-checked:text-foreground">
             로그인 상태 유지
           </span>
-          <div className="relative transition duration-300 peer-checked:[&>span]:translate-x-full peer-checked:[&>div]:bg-brand-gradient peer-active:[&>div]:ring-2">
-            <div className="w-10 h-6 bg-zinc-600 ring-zinc-500 rounded-full transition duration-300" />
-            <span className="absolute left-1 top-1 w-4 h-4 bg-foreground border border-zinc-300 rounded-full transform transition duration-300" />
+          <div className="relative transition peer-checked:[&>span]:translate-x-full peer-checked:[&>div]:bg-brand-gradient peer-active:[&>div]:ring-2">
+            <div className="w-10 h-6 bg-zinc-600 ring-zinc-500 rounded-full transition" />
+            <span className="absolute left-1 top-1 w-4 h-4 bg-foreground border border-zinc-300 rounded-full transform transition" />
           </div>
         </label>
       </div>

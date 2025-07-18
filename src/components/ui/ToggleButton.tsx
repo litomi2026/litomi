@@ -15,7 +15,7 @@ export default function ToggleButton({ className = '', enabled, onToggle, ...pro
       type="button"
     >
       <div className="p-[7%] pr-0 w-1/2">
-        <div className="group-[&[aria-pressed='true']]:translate-x-full border border-zinc-300 w-full aspect-square transform rounded-full bg-foreground transition duration-300" />
+        <div className="group-[&[aria-pressed='true']]:translate-x-full border border-zinc-300 w-full aspect-square transform rounded-full bg-foreground transition" />
       </div>
     </button>
   )

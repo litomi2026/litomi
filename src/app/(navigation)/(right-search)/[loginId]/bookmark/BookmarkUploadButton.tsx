@@ -222,7 +222,7 @@ export default function BookmarkUploadButton() {
                     type="file"
                   />
                   <div className="w-full max-w-sm mx-auto border-2 border-dashed border-zinc-700/50 rounded-2xl p-8 text-center transition group-hover:border-violet-500/50 group-hover:bg-violet-500/5 group-hover:shadow-lg group-hover:shadow-violet-500/10">
-                    <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-violet-500/10 to-purple-500/10 flex items-center justify-center transition duration-300">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-violet-500/10 to-purple-500/10 flex items-center justify-center transition">
                       <IconBookmark className="w-8 h-8 text-violet-400" />
                     </div>
                     <p className="font-semibold text-zinc-200 mb-2 text-lg">파일을 선택하세요</p>
@@ -291,7 +291,7 @@ export default function BookmarkUploadButton() {
                       </label>
                       <label
                         aria-current={importMode === 'replace'}
-                        className="relative flex items-start gap-4 p-5 rounded-2xl border-2 cursor-pointer transition duration-300
+                        className="relative flex items-start gap-4 p-5 rounded-2xl border-2 cursor-pointer transition
                           aria-current:border-red-500/50 aria-current:bg-red-500/10 aria-current:shadow-lg aria-current:shadow-red-500/10
                           border-zinc-800 hover:border-zinc-700 hover:bg-zinc-800/30"
                       >
@@ -396,7 +396,7 @@ export default function BookmarkUploadButton() {
                           <div className="flex items-center gap-3">
                             <span className="font-bold text-red-400 text-lg">{importResult.errors.length}개</span>
                             <svg
-                              className="w-5 h-5 text-red-400 group-open:rotate-180 transition duration-300"
+                              className="w-5 h-5 text-red-400 group-open:rotate-180 transition"
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"

@@ -58,7 +58,7 @@ export default function TooltipPopover({
       </button>
       <div
         aria-current={isActive}
-        className={`pointer-events-none absolute z-50 p-2 transition duration-300 opacity-0 aria-current:opacity-100 aria-current:pointer-events-auto ${typeStyle[type]} ${positionStyle[position]}`}
+        className={`pointer-events-none absolute z-50 p-2 transition opacity-0 aria-current:opacity-100 aria-current:pointer-events-auto ${typeStyle[type]} ${positionStyle[position]}`}
         role="tooltip"
       >
         {children[1]}
