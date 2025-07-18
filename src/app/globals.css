@@ -1,5 +1,14 @@
 @import 'tailwindcss';
 
+@theme {
+  --color-background: #0a0a0a;
+  --color-foreground: #ededed;
+  --color-brand-start: #46cdfc;
+  --color-brand-end: #f5bcff;
+  --animate-fade-in: fade-in 1s ease-out;
+  --animate-loading-bar: loading-bar 10s cubic-bezier(0.3, 0.7, 0.5, 1);
+}
+
 @layer base {
   *,
   ::after,
@@ -10,63 +19,62 @@
   }
 }
 
-@layer utilities {
-  .transition {
-    transition-duration: var(--default-transition-duration);
-  }
+@utility scrollbar-hidden {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 
-  .transition-all {
-    transition-duration: var(--default-transition-duration);
-  }
-
-  .scrollbar-hidden {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
-  }
-  .scrollbar-hidden::-webkit-scrollbar {
+  &::-webkit-scrollbar {
     display: none; /* Chrome, Safari and Opera */
   }
+}
 
-  .pb-safe {
-    padding-bottom: var(--safe-area-bottom);
-  }
+@utility pb-safe {
+  padding-bottom: var(--safe-area-bottom);
+}
 
-  .mb-safe {
-    margin-bottom: var(--safe-area-bottom);
-  }
+@utility mb-safe {
+  margin-bottom: var(--safe-area-bottom);
+}
 
-  .px-safe {
-    padding-left: var(--safe-area-left);
-    padding-right: var(--safe-area-right);
-  }
+@utility px-safe {
+  padding-left: var(--safe-area-left);
+  padding-right: var(--safe-area-right);
+}
 
-  .bg-brand-gradient {
-    background-image: linear-gradient(to right, var(--color-brand-start), var(--color-brand-end));
-  }
+@utility bg-brand-gradient {
+  background-image: linear-gradient(to right, var(--color-brand-start), var(--color-brand-end));
+}
 
-  .border-brand-gradient {
-    background-image:
-      linear-gradient(var(--color-background), var(--color-background)),
-      linear-gradient(to right, var(--color-brand-start), var(--color-brand-end));
-    background-origin: border-box;
-    background-clip: content-box, border-box;
-    border-color: transparent;
-  }
+@utility border-brand-gradient {
+  background-image:
+    linear-gradient(var(--color-background), var(--color-background)),
+    linear-gradient(to right, var(--color-brand-start), var(--color-brand-end));
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  border-color: transparent;
 }
 
 :root {
   --safe-area-bottom: env(safe-area-inset-bottom);
   --safe-area-left: env(safe-area-inset-left);
   --safe-area-right: env(safe-area-inset-right);
-
-  --color-background: #0a0a0a;
-  --color-foreground: #ededed;
-  --color-brand-start: #46cdfc;
-  --color-brand-end: #f5bcff;
-
   --default-transition-duration: 300ms;
-  --animate-fade-in: fade-in 0.5s ease-out;
-  --animate-loading-bar: loading-bar 10s cubic-bezier(0.3, 0.7, 0.5, 1);
+}
+
+body {
+  color: var(--color-foreground);
+  background: var(--color-background);
+}
+
+button {
+  cursor: pointer;
+}
+
+code {
+  font-family: 'Courier New', Courier, monospace;
+  white-space: nowrap;
+  font-weight: 700;
+  font-size: 0.9em;
 }
 
 @keyframes fade-in {
@@ -85,20 +93,4 @@
   100% {
     width: 100%;
   }
-}
-
-body {
-  color: var(--color-foreground);
-  background: var(--color-background);
-}
-
-button {
-  cursor: pointer;
-}
-
-code {
-  font-family: 'Courier New', Courier, monospace;
-  white-space: nowrap;
-  font-weight: 700;
-  font-size: 0.9em;
 }
