@@ -9,8 +9,7 @@ export function convertQueryKey(query?: string) {
   return query?.replace(/\bid:/gi, 'gid:').replace(/\bseries:/gi, 'parody:')
 }
 
-// TODO: tags 뿐만 아니라 series, artist, group, language 등도 필터링 해야 함
-export function filterMangasByExcludedTags(
+export function filterMangasByExcludedFilters(
   mangas: Manga[],
   excludedTags: Array<{ category: string; value: string }>,
 ): Manga[] {
