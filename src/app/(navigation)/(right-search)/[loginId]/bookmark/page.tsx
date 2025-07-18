@@ -9,7 +9,7 @@ import { PageProps } from '@/types/nextjs'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
 import { getLoginIdFromParam } from '@/utils/param'
 
-import BookmarkList from './BookmarkListClient'
+import BookmarkList from './BookmarkList'
 import BookmarkTooltip from './BookmarkTooltip'
 import { BOOKMARKS_PER_PAGE } from './constants'
 import { GuestView } from './GuestView'
