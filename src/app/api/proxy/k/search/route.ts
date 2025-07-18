@@ -3,7 +3,7 @@ import { getCategories, KHentaiClient } from '@/crawler/k-hentai'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { Manga } from '@/types/manga'
 
-import { convertQueryKey, filterMangasByExcludedFilters, parseExclusionFilters } from './utils'
+import { convertQueryKey, filterMangasByMinusPrefix } from './utils'
 
 export const runtime = 'edge'
 const maxAge = 300
@@ -56,8 +56,7 @@ export async function GET(request: Request) {
       endDate: to?.toString(),
     })
 
-    const excludedTags = parseExclusionFilters(query)
-    const mangas = filterMangasByExcludedFilters(searchedMangas, excludedTags)
+    const mangas = filterMangasByMinusPrefix(searchedMangas, query)
 
     return Response.json(
       {

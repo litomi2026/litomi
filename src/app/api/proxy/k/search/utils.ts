@@ -1,81 +1,179 @@
+import { normalizeValue } from '@/translation/common'
 import { Manga } from '@/types/manga'
 
-/**
- * Example: "series:naruto" -> "parody:naruto"
- *
- * Example: "id:12345" -> "gid:12345"
- */
+class NormalizedValueMap {
+  private valueToNormalizedValueMap = new Map<string, string>()
+
+  get(value: string): string {
+    const cached = this.valueToNormalizedValueMap.get(value)
+    if (cached !== undefined) {
+      return cached
+    }
+
+    const normalized = normalizeValue(value)
+    this.valueToNormalizedValueMap.set(value, normalized)
+    return normalized
+  }
+}
+
 export function convertQueryKey(query?: string) {
   return query?.replace(/\bid:/gi, 'gid:').replace(/\bseries:/gi, 'parody:')
 }
 
-export function filterMangasByExcludedFilters(
-  mangas: Manga[],
-  excludedTags: Array<{ category: string; value: string }>,
-): Manga[] {
-  if (excludedTags.length === 0) {
+export function filterMangasByMinusPrefix(mangas: Manga[], query?: string) {
+  if (!query) {
     return mangas
   }
 
+  const filters = parseMinusPrefixFilters(query)
+
+  if (filters.length === 0) {
+    return mangas
+  }
+
+  const filterLookup = createFilterLookup(filters)
+
+  if (isFilterLookupEmpty(filterLookup)) {
+    return mangas
+  }
+
+  const normalizedValueMap = new NormalizedValueMap()
+
   return mangas.filter((manga) => {
-    // Check if manga has any of the excluded tags
-    const hasExcludedTag = excludedTags.some((excludedTag) => {
-      return manga.tags?.some((tag) => {
-        const normalizedTagValue = tag.value.toLowerCase().replace(/_/g, ' ')
-        const normalizedTagCategory = tag.category.toLowerCase()
+    if (filterLookup.hasTags && manga.tags?.length) {
+      for (const tag of manga.tags) {
+        const category = tag.category
+        const normalizedValue = normalizedValueMap.get(tag.value)
 
-        // Match both category and value, or just value if category is empty
-        if (excludedTag.category && excludedTag.category !== '') {
-          return normalizedTagCategory === excludedTag.category && normalizedTagValue === excludedTag.value
+        if (!category) {
+          continue
         }
-        return normalizedTagValue === excludedTag.value
-      })
-    })
 
-    // Keep manga if it doesn't have any excluded tags
-    return !hasExcludedTag
+        if (filterLookup.tags[category]?.has(normalizedValue)) {
+          return false
+        }
+      }
+    }
+
+    if (filterLookup.series.size > 0 && manga.series?.length) {
+      for (const series of manga.series) {
+        if (filterLookup.series.has(normalizedValueMap.get(series.value))) {
+          return false
+        }
+      }
+    }
+
+    if (filterLookup.artists.size > 0 && manga.artists?.length) {
+      for (const artist of manga.artists) {
+        if (filterLookup.artists.has(normalizedValueMap.get(artist.value))) {
+          return false
+        }
+      }
+    }
+
+    if (filterLookup.groups.size > 0 && manga.group?.length) {
+      for (const group of manga.group) {
+        if (filterLookup.groups.has(normalizedValueMap.get(group.value))) {
+          return false
+        }
+      }
+    }
+
+    if (filterLookup.languages.size > 0 && manga.language) {
+      if (filterLookup.languages.has(normalizedValueMap.get(manga.language))) {
+        return false
+      }
+    }
+
+    return true
   })
 }
 
-/**
- * Example:
- *
- * 1. "-other:ai_generated -female:big_breasts" ->
- *
- * [{ category: 'other', value: 'ai_generated' }, { category: 'female', value: 'big_breasts' }]
- *
- * 2. "-ai_generated" ->
- *
- * [{ category: '', value: 'ai_generated' }]
- */
-export function parseExclusionFilters(query?: string): Array<{ category: string; value: string }> {
-  if (!query) {
-    return []
-  }
+const EXCLUDABLE_CATEGORIES = [
+  'language',
+  'artist',
+  'group',
+  'series',
+  'character',
+  'female',
+  'male',
+  'mixed',
+  'other',
+] as const
 
-  // Match both "-category:value" and "-value" patterns
+type ExcludableCategory = (typeof EXCLUDABLE_CATEGORIES)[number]
+
+export function parseMinusPrefixFilters(query: string) {
   const excludePatternWithCategory = /-(\w+):(\S+)/g
-  const excludePatternSimple = /-(?![\w]+:)(\S+)/g
-  const filters: Array<{ category: string; value: string }> = []
+  const filters: { category: ExcludableCategory; value: string }[] = []
 
-  // First, extract filters with category
   let match
   while ((match = excludePatternWithCategory.exec(query)) !== null) {
-    filters.push({
-      category: match[1].toLowerCase(),
-      value: match[2].toLowerCase().replace(/_/g, ' '),
-    })
-  }
+    const category = normalizeValue(match[1]) as ExcludableCategory
 
-  // Then, extract simple filters without category
-  // Create a new query string without the already matched category filters
-  const queryWithoutCategoryFilters = query.replace(excludePatternWithCategory, '')
-  while ((match = excludePatternSimple.exec(queryWithoutCategoryFilters)) !== null) {
-    filters.push({
-      category: '',
-      value: match[1].toLowerCase().replace(/_/g, ' '),
-    })
+    if (EXCLUDABLE_CATEGORIES.includes(category)) {
+      filters.push({ category, value: normalizeValue(match[2]) })
+    }
   }
 
   return filters
+}
+
+/**
+ * Pre-process filters into efficient lookup structures
+ * This reduces repeated string operations and enables O(1) lookups
+ */
+function createFilterLookup(filters: { category: ExcludableCategory; value: string }[]) {
+  const lookup = {
+    tags: {
+      female: new Set<string>(),
+      male: new Set<string>(),
+      mixed: new Set<string>(),
+      other: new Set<string>(),
+    },
+    series: new Set<string>(),
+    artists: new Set<string>(),
+    groups: new Set<string>(),
+    languages: new Set<string>(),
+    hasTags: false,
+  }
+
+  for (const filter of filters) {
+    const normalizedValue = normalizeValue(filter.value)
+    const normalizedCategory = filter.category
+
+    switch (normalizedCategory) {
+      case 'artist':
+        lookup.artists.add(normalizedValue)
+        break
+      case 'female':
+      case 'male':
+      case 'mixed':
+      case 'other':
+        lookup.tags[normalizedCategory].add(normalizedValue)
+        lookup.hasTags = true
+        break
+      case 'group':
+        lookup.groups.add(normalizedValue)
+        break
+      case 'language':
+        lookup.languages.add(normalizedValue)
+        break
+      case 'series':
+        lookup.series.add(normalizedValue)
+        break
+    }
+  }
+
+  return lookup
+}
+
+function isFilterLookupEmpty(lookup: ReturnType<typeof createFilterLookup>): boolean {
+  return (
+    !lookup.hasTags &&
+    lookup.series.size === 0 &&
+    lookup.artists.size === 0 &&
+    lookup.groups.size === 0 &&
+    lookup.languages.size === 0
+  )
 }

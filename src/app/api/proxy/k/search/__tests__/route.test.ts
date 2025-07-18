@@ -74,29 +74,6 @@ describe('GET /api/proxy/k/search', () => {
       expect(data.mangas.find((m: Manga) => m.id === 3)).toBeUndefined()
     })
 
-    test('여러 개의 제외 태그를 필터링해야 한다', async () => {
-      const searchParams = new URLSearchParams({
-        query: '-other:ai_generated -female:big_breasts',
-      })
-
-      const request = new Request(`${baseUrl}?${searchParams}`)
-      const response = await GET(request)
-      const data = await response.json()
-
-      expect(response.status).toBe(200)
-      expect(data.mangas).toHaveLength(3)
-      expect(data.mangas.find((m: Manga) => m.id === 1)).toBeUndefined()
-    })
-
-    test('빈 쿼리를 처리해야 한다', async () => {
-      const request = new Request(baseUrl)
-      const response = await GET(request)
-      const data = await response.json()
-
-      expect(response.status).toBe(200)
-      expect(data.mangas).toHaveLength(5)
-    })
-
     test('태그 값을 정규화하여 비교해야 한다', async () => {
       const searchParams = new URLSearchParams({
         query: '-other:ai_generated',
@@ -110,36 +87,6 @@ describe('GET /api/proxy/k/search', () => {
       expect(data.mangas).toHaveLength(3)
       expect(data.mangas.find((m: Manga) => m.id === 1)).toBeUndefined()
       expect(data.mangas.find((m: Manga) => m.id === 3)).toBeUndefined()
-    })
-
-    test('카테고리 지정 없이 태그를 필터링해야 한다', async () => {
-      const searchParams = new URLSearchParams({
-        query: '-ai_generated',
-      })
-
-      const request = new Request(`${baseUrl}?${searchParams}`)
-      const response = await GET(request)
-      const data = await response.json()
-
-      expect(response.status).toBe(200)
-      expect(data.mangas).toHaveLength(3)
-      expect(data.mangas.find((m: Manga) => m.id === 1)).toBeUndefined()
-      expect(data.mangas.find((m: Manga) => m.id === 3)).toBeUndefined()
-    })
-
-    test('카테고리가 있는 것과 없는 것을 혼합하여 제외 필터를 처리해야 한다', async () => {
-      const searchParams = new URLSearchParams({
-        query: '-other:ai_generated -muscle',
-      })
-
-      const request = new Request(`${baseUrl}?${searchParams}`)
-      const response = await GET(request)
-      const data = await response.json()
-
-      // "other:ai_generated"와 모든 "muscle" 태그를 가진 만화를 필터링
-      expect(response.status).toBe(200)
-      expect(data.mangas).toHaveLength(1) // ID 4만 남음
-      expect(data.mangas[0].id).toBe(4)
     })
 
     test('정렬 파라미터를 처리해야 한다', async () => {
@@ -184,9 +131,8 @@ describe('GET /api/proxy/k/search', () => {
       const data = await response.json()
 
       expect(response.status).toBe(200)
-      expect(data.mangas).toHaveLength(1)
-      expect(data.mangas[0].id).toBe(4)
-      expect(data.nextCursor).toBe('4')
+      expect(data.mangas).toHaveLength(5)
+      expect(data.nextCursor).toBe('5')
       expect(data.hasNextPage).toBe(true)
     })
 
@@ -232,8 +178,8 @@ describe('GET /api/proxy/k/search', () => {
       const data = await response.json()
 
       expect(response.status).toBe(200)
-      expect(data.mangas).toHaveLength(1)
-      expect(data.mangas[0].id).toBe(4)
+      expect(data.mangas).toHaveLength(3)
+      expect(data.mangas[0].id).toBe(2)
     })
 
     test('대소문자를 구분하지 않고 태그를 필터링해야 한다', async () => {
@@ -262,6 +208,56 @@ describe('GET /api/proxy/k/search', () => {
 
       expect(response.status).toBe(200)
       expect(data.mangas).toHaveLength(2)
+    })
+
+    test('여러 개의 제외 태그를 필터링해야 한다', async () => {
+      const searchParams = new URLSearchParams({
+        query: '-other:ai_generated -female:big_breasts',
+      })
+
+      const request = new Request(`${baseUrl}?${searchParams}`)
+      const response = await GET(request)
+      const data = await response.json()
+
+      expect(response.status).toBe(200)
+      expect(data.mangas).toHaveLength(3)
+      expect(data.mangas.find((m: Manga) => m.id === 1)).toBeUndefined()
+    })
+
+    test('빈 쿼리를 처리해야 한다', async () => {
+      const request = new Request(baseUrl)
+      const response = await GET(request)
+      const data = await response.json()
+
+      expect(response.status).toBe(200)
+      expect(data.mangas).toHaveLength(5)
+    })
+
+    test('카테고리가 없으면 필터링하지 않는다', async () => {
+      const searchParams = new URLSearchParams({
+        query: '-ai_generated',
+      })
+
+      const request = new Request(`${baseUrl}?${searchParams}`)
+      const response = await GET(request)
+      const data = await response.json()
+
+      expect(response.status).toBe(200)
+      expect(data.mangas).toHaveLength(5)
+    })
+
+    test('카테고리가 있는 것과 없는 것이 혼합되어 있어도 제대로 필터링한다', async () => {
+      const searchParams = new URLSearchParams({
+        query: '-other:ai_generated -muscle',
+      })
+
+      const request = new Request(`${baseUrl}?${searchParams}`)
+      const response = await GET(request)
+      const data = await response.json()
+
+      expect(response.status).toBe(200)
+      expect(data.mangas).toHaveLength(3)
+      expect(data.mangas[0].id).toBe(2)
     })
   })
 
