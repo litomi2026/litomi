@@ -435,7 +435,7 @@ describe('GET /api/search/suggestions', () => {
     })
   })
 
-  describe('엣지 케이스', () => {
+  describe('예외', () => {
     test('특수 문자가 포함된 검색어를 처리한다', async () => {
       const specialQueries = ['female:big_breasts', 'type:', 'male:cross-dressing']
 
