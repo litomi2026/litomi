@@ -106,7 +106,7 @@ export default function Modal({
       {createPortal(
         <div
           aria-current={open}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 transition duration-300 pointer-events-none opacity-0 aria-current:pointer-events-auto aria-current:opacity-100"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 transition pointer-events-none opacity-0 aria-current:pointer-events-auto aria-current:opacity-100"
           onClick={closeModal}
         >
           {showCloseButton && (
@@ -116,7 +116,7 @@ export default function Modal({
           )}
           <div
             aria-current={open}
-            className={`absolute z-50 transition duration-300 sm:scale-95 aria-current:scale-100 ${className}`}
+            className={`absolute z-50 transition sm:scale-95 aria-current:scale-100 ${className}`}
             onClick={(e) => e.stopPropagation()}
             ref={showDragButton ? modalRef : null}
           >
