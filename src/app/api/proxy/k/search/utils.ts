@@ -40,26 +40,15 @@ export function filterMangasByMinusPrefix(mangas: Manga[], query?: string) {
   const normalizedValueMap = new NormalizedValueMap()
 
   return mangas.filter((manga) => {
-    if (filterLookup.hasTags && manga.tags?.length) {
-      for (const tag of manga.tags) {
-        const category = tag.category
-        const normalizedValue = normalizedValueMap.get(tag.value)
-
-        if (!category) {
-          continue
-        }
-
-        if (filterLookup.tags[category]?.has(normalizedValue)) {
-          return false
-        }
+    if (filterLookup.languages.size > 0 && manga.language) {
+      if (filterLookup.languages.has(normalizedValueMap.get(manga.language))) {
+        return false
       }
     }
 
-    if (filterLookup.series.size > 0 && manga.series?.length) {
-      for (const series of manga.series) {
-        if (filterLookup.series.has(normalizedValueMap.get(series.value))) {
-          return false
-        }
+    if (filterLookup.types.size > 0 && manga.type) {
+      if (filterLookup.types.has(normalizedValueMap.get(manga.type))) {
+        return false
       }
     }
 
@@ -79,9 +68,26 @@ export function filterMangasByMinusPrefix(mangas: Manga[], query?: string) {
       }
     }
 
-    if (filterLookup.languages.size > 0 && manga.language) {
-      if (filterLookup.languages.has(normalizedValueMap.get(manga.language))) {
-        return false
+    if (filterLookup.series.size > 0 && manga.series?.length) {
+      for (const series of manga.series) {
+        if (filterLookup.series.has(normalizedValueMap.get(series.value))) {
+          return false
+        }
+      }
+    }
+
+    if (filterLookup.hasTags && manga.tags?.length) {
+      for (const tag of manga.tags) {
+        const category = tag.category
+        const normalizedValue = normalizedValueMap.get(tag.value)
+
+        if (!category) {
+          continue
+        }
+
+        if (filterLookup.tags[category]?.has(normalizedValue)) {
+          return false
+        }
       }
     }
 
@@ -91,6 +97,7 @@ export function filterMangasByMinusPrefix(mangas: Manga[], query?: string) {
 
 const EXCLUDABLE_CATEGORIES = [
   'language',
+  'type',
   'artist',
   'group',
   'series',
@@ -135,6 +142,7 @@ function createFilterLookup(filters: { category: ExcludableCategory; value: stri
     artists: new Set<string>(),
     groups: new Set<string>(),
     languages: new Set<string>(),
+    types: new Set<string>(),
     hasTags: false,
   }
 
@@ -162,6 +170,9 @@ function createFilterLookup(filters: { category: ExcludableCategory; value: stri
       case 'series':
         lookup.series.add(normalizedValue)
         break
+      case 'type':
+        lookup.types.add(normalizedValue)
+        break
     }
   }
 
@@ -174,6 +185,7 @@ function isFilterLookupEmpty(lookup: ReturnType<typeof createFilterLookup>): boo
     lookup.series.size === 0 &&
     lookup.artists.size === 0 &&
     lookup.groups.size === 0 &&
-    lookup.languages.size === 0
+    lookup.languages.size === 0 &&
+    lookup.types.size === 0
   )
 }
