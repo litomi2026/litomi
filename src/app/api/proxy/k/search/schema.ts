@@ -2,11 +2,19 @@ import { z } from 'zod/v4'
 
 import { ViewCookie } from '@/utils/param'
 
+export const MAX_QUERY_LENGTH = 255
+
+export enum Sort {
+  RANDOM = 'random',
+  ID_ASC = 'id_asc',
+  POPULAR = 'popular',
+}
+
 export const GETProxyKSearchSchema = z
   .object({
-    query: z.string().trim().max(200).optional(),
+    query: z.string().trim().max(MAX_QUERY_LENGTH).optional(),
     view: z.enum(ViewCookie).default(ViewCookie.CARD),
-    sort: z.enum(['random', 'id_asc', 'popular']).optional(),
+    sort: z.enum(Sort).optional(),
     'min-view': z.coerce.number().int().min(0).optional(),
     'max-view': z.coerce.number().int().min(0).optional(),
     'min-page': z.coerce.number().int().positive().max(10000).optional(),
@@ -29,7 +37,7 @@ export const GETProxyKSearchSchema = z
       }
       return true
     },
-    { error: '최소값은 최대값보다 클 수 없습니다.' },
+    { error: '최소값은 최대값보다 클 수 없어요' },
   )
 
 export type GETProxyKSearchRequest = z.infer<typeof GETProxyKSearchSchema>

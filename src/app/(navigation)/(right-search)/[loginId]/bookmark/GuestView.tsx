@@ -49,7 +49,7 @@ export function GuestView() {
         <p className="mt-4 text-sm text-zinc-500">
           계정이 없으신가요?{' '}
           <Link
-            className="text-zinc-300 underline hover:text-white transition-colors"
+            className="text-zinc-300 underline hover:text-white transition"
             href={`/auth/signup?${SearchParamKey.REDIRECT}=${encodeURIComponent('/@/bookmark')}`}
           >
             회원가입

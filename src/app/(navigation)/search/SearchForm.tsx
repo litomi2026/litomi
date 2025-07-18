@@ -206,6 +206,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
             focus:outline-none
             [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-cancel-button]:appearance-none
             [&::-ms-clear]:hidden [&::-ms-clear]:w-0 [&::-ms-clear]:h-0"
+            maxLength={255}
             name="query"
             onBlur={handleBlur}
             onChange={handleInputChange}
