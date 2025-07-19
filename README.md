@@ -30,7 +30,7 @@ bun dev
 - Render: https://litomi.onrender.com
 - Netlify: https://litomi.netlify.app
 - sherpa.io: https://litomi.sherpa.software
-- Fly.io: https://litomi.fly.dev (로그인 안 됨)
+- Fly.io: https://litomi.fly.dev
 - Deno: https://litomi.deno.dev (로그인 안 됨)
 
 ## 목적
