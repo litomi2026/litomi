@@ -2,7 +2,7 @@
 
 ![Vercel Deploy](https://deploy-badge.vercel.app/vercel/litomi) [![Netlify Status](https://api.netlify.com/api/v1/badges/4efb3532-1a78-4c0e-a848-e2c7d29c8e39/deploy-status)](https://app.netlify.com/projects/litomi/deploys)
 
-## 개발 환경 (권장)
+## 개발 환경
 
 - macOS 15.3
 - Bun 1.2
@@ -30,8 +30,8 @@ bun dev
 - Render: https://litomi.onrender.com
 - Netlify: https://litomi.netlify.app
 - sherpa.io: https://litomi.sherpa.software
-- Fly.io: https://litomi.fly.dev
-- Deno: https://litomi.deno.dev
+- Fly.io: https://litomi.fly.dev (로그인 안 됨)
+- Deno: https://litomi.deno.dev (로그인 안 됨)
 
 ## 목적
 

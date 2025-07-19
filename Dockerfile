@@ -14,7 +14,7 @@ COPY . .
 RUN BUILD_OUTPUT=standalone bun run build
 
 # Stage 3: Production server
-FROM oven/bun:alpine AS runner
+FROM node:lts-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=builder /app/.next/standalone ./
@@ -22,4 +22,4 @@ COPY --from=builder /app/.next/static ./.next/static
 RUN if [ -d "/app/public" ]; then cp -r /app/public ./public; fi # Copy public folder if it exists
 
 EXPOSE 3000
-CMD ["bun", "server.js"]
+CMD ["node", "server.js"]
