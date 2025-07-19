@@ -174,9 +174,10 @@ dist
 
 # End of https://www.toptal.com/developers/gitignore/api/nextjs,node
 
-# Sentry Config File
-.env.sentry-build-plugin
+# Environment variables
+.env.*
 
+# Certificates
 certificates
 
 # Playwright

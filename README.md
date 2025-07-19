@@ -1,3 +1,7 @@
+# litomi
+
+[![Netlify Status](https://api.netlify.com/api/v1/badges/4efb3532-1a78-4c0e-a848-e2c7d29c8e39/deploy-status)](https://app.netlify.com/projects/litomi/deploys)
+
 ## 개발 환경 (권장)
 
 - macOS 15.3
@@ -18,6 +22,15 @@ bun dev
 ```
 
 브라우저에서 [http://localhost:3000](http://localhost:3000) 주소 열어서 결과 보기
+
+## 도메인
+
+- 유료: https://litomi.in
+- Vercel: https://litomi.vercel.app
+- Netlify: https://litomi.netlify.app
+- sherpa.io: https://litomi.sherpa.software
+- Fly.io: https://litomi.fly.dev
+- Deno: https://litomi.deno.dev
 
 ## 목적
 
