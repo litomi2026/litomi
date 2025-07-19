@@ -28,21 +28,17 @@ jobs:
         with:
           node-version: lts/*
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
+      - name: Install step
+        run: "npm install"
 
-      - name: Install dependencies
-        run: 'bun install'
-
-      - name: Build
-        run: 'bun run build'
+      - name: Build step
+        run: "npm run build"
 
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1
         with:
-          project: 'litomi-3'
-          entrypoint: 'jsr:@deno/nextjs-start/v15'
-          root: '.'
+          project: "litomi"
+          entrypoint: "jsr:@deno/nextjs-start/v15"
+          root: "."
           include: .next, public
+          
