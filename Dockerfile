@@ -1,0 +1,25 @@
+FROM oven/bun:latest AS base
+
+# Stage 1: Install dependencies
+FROM base AS deps
+WORKDIR /app
+COPY package.json bun.lock ./
+RUN bun install --frozen-lockfile
+
+# Stage 2: Build the application
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN BUILD_OUTPUT=standalone bun run build
+
+# Stage 3: Production server
+FROM oven/bun:alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+RUN if [ -d "/app/public" ]; then cp -r /app/public ./public; fi # Copy public folder if it exists
+
+EXPOSE 3000
+CMD ["bun", "server.js"]

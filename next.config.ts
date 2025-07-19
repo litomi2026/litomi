@@ -24,6 +24,7 @@ const nextConfig: NextConfig = {
     },
   ],
   poweredByHeader: false,
+  ...(process.env.BUILD_OUTPUT === 'standalone' && { output: 'standalone' }),
 }
 
 const withAnalyzer = withBundleAnalyzer({

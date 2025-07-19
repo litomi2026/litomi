@@ -1,0 +1,42 @@
+# Exported from Render on 2025-07-19T05:49:52Z
+services:
+- type: web
+  name: litomi
+  runtime: node
+  repo: https://github.com/gwak2837/litomi
+  plan: free
+  envVars:
+  - key: SENTRY_PROJECT
+    fromService:
+      name: litomi
+      type: web
+      property: host
+  - key: SENTRY_ORG
+    sync: false
+  - key: SENTRY_AUTH_TOKEN
+    sync: false
+  - key: POSTGRES_URL_NON_POOLING
+    sync: false
+  - key: POSTGRES_URL
+    sync: false
+  - key: NEXT_PUBLIC_SENTRY_DSN
+    sync: false
+  - key: NEXT_PUBLIC_CORS_PROXY_URL
+    sync: false
+  - key: JWT_SECRET_REFRESH_TOKEN
+    sync: false
+  - key: JWT_SECRET_ACCESS_TOKEN
+    sync: false
+  - key: GTM_ID
+    sync: false
+  - key: GA_ID
+    sync: false
+  - key: AMPLITUDE_API_KEY
+    sync: false
+  - key: PORT
+    sync: false
+  region: singapore
+  buildCommand: bun install; bun run build
+  startCommand: bun run start
+  autoDeployTrigger: commit
+version: "1"
