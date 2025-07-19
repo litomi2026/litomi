@@ -1,4 +1,4 @@
-name: Deno
+name: Deploy
 on:
   push:
     branches: main
@@ -18,21 +18,27 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v4
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - name: Install Deno
+        uses: denoland/setup-deno@v2
         with:
-          bun-version: latest
+          deno-version: v2.x
 
-      - name: Install dependencies
-        run: bun install
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Install step
+        run: "bun install"
 
       - name: Build step
-        run: bun run build
+        run: "bun run build"
 
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1
         with:
-          project: 'litomi'
-          entrypoint: 'jsr:@deno/nextjs-start/v15'
-          root: '.'
-          include: .next, public
+          project: "litomi"
+          entrypoint: "jsr:@deno/nextjs-start/v15"
+          root: "."
+          
+          
