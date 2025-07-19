@@ -31,7 +31,7 @@ bun dev
 - Netlify: https://litomi.netlify.app
 - sherpa.io: https://litomi.sherpa.software
 - Fly.io: https://litomi.fly.dev (로그인 안 됨)
-- Deno: https://litomi.deno.dev (로그인 안 됨)
+- Deno: https://litomi.deno.dev (오류 많음)
 
 ## 목적
 

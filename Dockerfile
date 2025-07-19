@@ -1,20 +1,20 @@
-FROM oven/bun:latest AS base
+FROM node:lts-alpine AS base
 
 # Stage 1: Install dependencies
 FROM base AS deps
 WORKDIR /app
-COPY package.json bun.lock ./
-RUN bun install --frozen-lockfile
+COPY package.json ./
+RUN npm install
 
 # Stage 2: Build the application
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN BUILD_OUTPUT=standalone bun run build
+RUN BUILD_OUTPUT=standalone npm run build
 
 # Stage 3: Production server
-FROM node:lts-alpine AS runner
+FROM base AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=builder /app/.next/standalone ./
