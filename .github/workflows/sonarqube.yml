@@ -2,7 +2,7 @@ name: SonarQube
 
 on:
   push:
-    branches: [main]
+    branches: main
     paths:
       - '.github/workflows/sonarqube.yml'
       - 'src/**'
@@ -12,7 +12,7 @@ on:
       - 'sonar-project.properties'
       - 'tsconfig.json'
   pull_request:
-    branches: [main]
+    branches: main
     types: [opened, synchronize, reopened]
 
 jobs:
