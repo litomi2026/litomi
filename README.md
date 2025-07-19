@@ -1,6 +1,6 @@
 # litomi
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/4efb3532-1a78-4c0e-a848-e2c7d29c8e39/deploy-status)](https://app.netlify.com/projects/litomi/deploys)
+![Vercel Deploy](https://deploy-badge.vercel.app/vercel/litomi) [![Netlify Status](https://api.netlify.com/api/v1/badges/4efb3532-1a78-4c0e-a848-e2c7d29c8e39/deploy-status)](https://app.netlify.com/projects/litomi/deploys)
 
 ## 개발 환경 (권장)
 
@@ -27,6 +27,7 @@ bun dev
 
 - 유료: https://litomi.in
 - Vercel: https://litomi.vercel.app
+- Render: https://litomi.onrender.com
 - Netlify: https://litomi.netlify.app
 - sherpa.io: https://litomi.sherpa.software
 - Fly.io: https://litomi.fly.dev
