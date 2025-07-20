@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers'
 
 import { createCacheControl } from '@/crawler/proxy-utils'
-import { BookmarkSource } from '@/database/schema'
+import { BookmarkSource } from '@/database/enum'
 import selectBookmarks from '@/sql/selectBookmarks'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
 

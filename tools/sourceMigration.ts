@@ -1,4 +1,4 @@
-import { BookmarkSource } from '@/database/schema'
+import { BookmarkSource } from '@/database/enum'
 import { Manga } from '@/types/manga'
 
 import harpiJSON from '../src/database/harpi.json'

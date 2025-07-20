@@ -4,7 +4,8 @@ import { z } from 'zod/v4'
 
 import { handleRouteError } from '@/crawler/proxy-utils'
 import { db } from '@/database/drizzle'
-import { BookmarkSource, bookmarkTable } from '@/database/schema'
+import { BookmarkSource } from '@/database/enum'
+import { bookmarkTable } from '@/database/schema'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
 
 const importedBookmarkSchema = z.object({
