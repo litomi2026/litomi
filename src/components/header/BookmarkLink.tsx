@@ -1,6 +1,5 @@
 'use client'
 
-import { SearchParamKey } from '@/constants/storage'
 import useMeQuery from '@/query/useMeQuery'
 
 import IconBookmark from '../icons/IconBookmark'
@@ -14,12 +13,8 @@ export default function BookmarkLink({ className }: Readonly<Props>) {
   const { data: me } = useMeQuery()
   const loginId = me?.loginId
 
-  const href = loginId
-    ? `/@${loginId}/bookmark`
-    : `/auth/login?${SearchParamKey.REDIRECT}=${encodeURIComponent('/@/bookmark')}`
-
   return (
-    <SelectableLink className={className} href={href} Icon={<IconBookmark />}>
+    <SelectableLink className={className} href={`/@${loginId ?? ''}/bookmark`} Icon={<IconBookmark />}>
       북마크
     </SelectableLink>
   )

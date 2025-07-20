@@ -5,9 +5,7 @@ import { Suspense } from 'react'
 import BookmarkDownloadButton from '@/app/(navigation)/(right-search)/[loginId]/bookmark/BookmarkDownloadButton'
 import BookmarkUploadButton from '@/app/(navigation)/(right-search)/[loginId]/bookmark/BookmarkUploadButton'
 import selectBookmarks from '@/sql/selectBookmarks'
-import { PageProps } from '@/types/nextjs'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
-import { getLoginIdFromParam } from '@/utils/param'
 
 import BookmarkList from './BookmarkList'
 import BookmarkTooltip from './BookmarkTooltip'
@@ -16,14 +14,7 @@ import { GuestView } from './GuestView'
 import Loading from './loading'
 import RefreshButton from './RefreshButton'
 
-export default async function BookmarkPage({ params }: PageProps) {
-  const { loginId } = await params
-  const loginIdFromParam = getLoginIdFromParam(loginId)
-
-  if (!loginIdFromParam) {
-    notFound()
-  }
-
+export default async function BookmarkPage() {
   const cookieStore = await cookies()
   const userId = await getUserIdFromAccessToken(cookieStore, false)
 
@@ -31,7 +22,7 @@ export default async function BookmarkPage({ params }: PageProps) {
     return <GuestView />
   }
 
-  // TODO(2025-07-16): 30일 후 주석 해제하기
+  // TODO(2025-07-16): 해당 사용자의 북마크 공개/비공개 판단하기
   // if (!loginIdFromToken) {
   //   return <GuestView />
   // }

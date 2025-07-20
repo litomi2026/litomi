@@ -25,17 +25,24 @@ bun dev
 
 ## 도메인
 
-- 유료: https://litomi.in
+- 인도: https://litomi.in
 - Vercel: https://litomi.vercel.app
 - Render: https://litomi.onrender.com
 - Netlify: https://litomi.netlify.app
 - sherpa.io: https://litomi.sherpa.software
-- Fly.io: https://litomi.fly.dev (로그인 안 됨)
-- Deno: https://litomi.deno.dev (오류 많음)
+- Fly.io: https://litomi.fly.dev
 
 ## 목적
 
 본 프로젝트로 여타 만화 사이트가 이용자에게 해를 끼치는 불법 도박, 피싱, 스캠, 성인 광고로 수익을 창출하는 것을 방지하려고 해요. 그래서 해당 사이트의 만화 작품을 수집하여 다수의 사용자에게 즐거움을 제공하기 위해 코드를 항상 공개하여 오픈 소스로 운영할 거에요. 본 프로젝트는 앞으로도 불법 광고를 통해 수익을 창출하지 않을 거에요.
+
+## 데이터베이스
+
+변경 사항 적용하기
+
+```
+bun drizzle-kit push
+```
 
 ## 메모
 

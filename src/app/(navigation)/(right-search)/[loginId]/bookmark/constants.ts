@@ -1,4 +1,4 @@
-import { BookmarkSource } from '@/database/schema'
+import { BookmarkSource } from '@/database/enum'
 import { Manga } from '@/types/manga'
 
 export const BOOKMARKS_PER_PAGE = 20

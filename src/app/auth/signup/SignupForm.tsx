@@ -94,6 +94,7 @@ export default function SignupForm() {
           </div>
           <input
             aria-invalid={(error?.loginId?.errors?.length ?? 0) > 0}
+            autoCapitalize="off"
             autoFocus
             defaultValue={String(formData?.get('loginId') ?? '')}
             disabled={pending}
@@ -162,6 +163,7 @@ export default function SignupForm() {
           </div>
           <input
             aria-invalid={(error?.nickname?.errors?.length ?? 0) > 0}
+            autoCapitalize="off"
             defaultValue={String(formData?.get('nickname') ?? '')}
             disabled={pending}
             id="nickname"

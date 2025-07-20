@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 import MangaCard from '@/components/card/MangaCard'
 import IconBookmark from '@/components/icons/IconBookmark'
-import IconLogin from '@/components/icons/IconLogin'
+import LoginButton from '@/components/LoginButton'
 import { SearchParamKey } from '@/constants/storage'
 import { SourceParam } from '@/utils/param'
 
@@ -10,7 +10,7 @@ import { EXAMPLE_BOOKMARKED_MANGAS } from './constants'
 
 export function GuestView() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-200px)] px-4 py-8">
+    <div className="flex flex-col items-center min-h-[calc(100vh-200px)] px-4 py-8">
       <div className="text-center max-w-2xl mx-auto mb-10">
         <IconBookmark className="mb-6 w-16 h-16 mx-auto text-zinc-600" />
         <h2 className="text-zinc-400 text-base md:text-lg mb-8 leading-relaxed">
@@ -37,15 +37,7 @@ export function GuestView() {
             <span className="text-zinc-300">읽은 작품 히스토리 관리</span>
           </li>
         </ul>
-        <Link
-          className="inline-flex items-center gap-2 px-4 py-3 bg-brand-gradient text-background font-semibold rounded-xl 
-          hover:opacity-90 active:opacity-100 transition relative
-          before:absolute before:inset-0 before:rounded-xl before:border-3 before:border-foreground/40"
-          href={`/auth/login?${SearchParamKey.REDIRECT}=${encodeURIComponent('/@/bookmark')}`}
-        >
-          <IconLogin className="w-5 h-5" />
-          로그인하고 시작하기
-        </Link>
+        <LoginButton redirect="/@/bookmark">로그인하고 시작하기</LoginButton>
         <p className="mt-4 text-sm text-zinc-500">
           계정이 없으신가요?{' '}
           <Link

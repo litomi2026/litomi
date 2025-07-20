@@ -84,6 +84,7 @@ export default function LoginForm() {
           <div className="relative">
             <input
               aria-invalid={(error?.loginId?.errors?.length ?? 0) > 0}
+              autoCapitalize="off"
               autoFocus
               defaultValue={loginId}
               disabled={pending}

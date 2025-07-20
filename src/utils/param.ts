@@ -1,4 +1,4 @@
-import { BookmarkSource } from '@/database/schema'
+import { BookmarkSource } from '@/database/enum'
 
 export enum SortParam {
   // BOOKMARK = 'bookmark',

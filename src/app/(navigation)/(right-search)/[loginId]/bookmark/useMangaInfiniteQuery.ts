@@ -3,7 +3,7 @@ import { useRef } from 'react'
 
 import { BookmarkWithSource } from '@/app/api/bookmarks/route'
 import { QueryKeys } from '@/constants/query'
-import { BookmarkSource } from '@/database/schema'
+import { BookmarkSource } from '@/database/enum'
 import { Manga } from '@/types/manga'
 
 import { MANGA_DETAILS_BATCH_SIZE } from './constants'
