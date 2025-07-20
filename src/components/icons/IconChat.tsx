@@ -1,9 +1,11 @@
-import { ComponentProps } from 'react'
+type Props = {
+  className?: string
+}
 
-export default function IconChat(props: ComponentProps<'svg'>) {
+export default function IconChat({ className = '' }: Readonly<Props>) {
   return (
     <svg
-      {...props}
+      className={className}
       fill="none"
       stroke="currentColor"
       strokeLinecap="round"

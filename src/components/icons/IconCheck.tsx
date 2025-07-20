@@ -2,7 +2,7 @@ type Props = {
   className?: string
 }
 
-export default function IconArrow({ className = '' }: Readonly<Props>) {
+export default function IconCheck({ className = '' }: Readonly<Props>) {
   return (
     <svg
       className={className}
@@ -13,8 +13,7 @@ export default function IconArrow({ className = '' }: Readonly<Props>) {
       strokeWidth="2"
       viewBox="0 0 24 24"
     >
-      <path d="M5 12h14" />
-      <path d="m12 5 7 7-7 7" />
+      <polyline points="20 6 9 17 4 12" />
     </svg>
   )
 }
