@@ -10,7 +10,7 @@ import { EXAMPLE_BOOKMARKED_MANGAS } from './constants'
 
 export function GuestView() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-200px)] px-4 py-8">
+    <div className="flex flex-col items-center min-h-[calc(100vh-200px)] px-4 py-8">
       <div className="text-center max-w-2xl mx-auto mb-10">
         <IconBookmark className="mb-6 w-16 h-16 mx-auto text-zinc-600" />
         <h2 className="text-zinc-400 text-base md:text-lg mb-8 leading-relaxed">
