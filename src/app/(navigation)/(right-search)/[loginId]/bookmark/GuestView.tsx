@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-import MangaCard from '@/components/card'
+import MangaCard from '@/components/card/MangaCard'
 import IconBookmark from '@/components/icons/IconBookmark'
 import LoginButton from '@/components/LoginButton'
 import { SearchParamKey } from '@/constants/storage'
