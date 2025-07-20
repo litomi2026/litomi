@@ -67,7 +67,7 @@
     "@types/web-push": "^3.6.4",
     "bun": "^1.2.18",
     "dotenv": "^16.6.1",
-    "drizzle-kit": "^0.30.6",
+    "drizzle-kit": "^0.31.4",
     "eslint": "^9.31.0",
     "eslint-config-next": "15.3.0",
     "eslint-config-prettier": "^10.1.5",
