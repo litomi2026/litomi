@@ -43,10 +43,16 @@ export default async function Page({ params }: PageProps) {
   const { source, layout } = await params
   const sourceString = validateSource(source)
   const layoutString = validateView(layout)
-  if (!sourceString || !layoutString) notFound()
+
+  if (!sourceString || !layoutString) {
+    notFound()
+  }
 
   const mangas = await getMangas({ source: sourceString })
-  if (!mangas || mangas.length === 0) notFound()
+
+  if (!mangas || mangas.length === 0) {
+    notFound()
+  }
 
   return (
     <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[layoutString]} gap-2 grow`}>

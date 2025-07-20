@@ -6,7 +6,7 @@ import LoginButton from '@/components/LoginButton'
 import { SearchParamKey } from '@/constants/storage'
 import { SourceParam } from '@/utils/param'
 
-import { EXAMPLE_BOOKMARKED_MANGAS } from './constants'
+import { EXAMPLE_MANGAS } from './constants'
 
 export function GuestView() {
   return (
@@ -56,7 +56,7 @@ export function GuestView() {
           </span>
         </div>
         <ul className="grid gap-2 md:grid-cols-2 opacity-60 hover:opacity-80 transition" role="list">
-          {EXAMPLE_BOOKMARKED_MANGAS.map((manga) => (
+          {EXAMPLE_MANGAS.map((manga) => (
             <MangaCard key={manga.id} manga={manga} source={SourceParam.K_HENTAI} />
           ))}
         </ul>
