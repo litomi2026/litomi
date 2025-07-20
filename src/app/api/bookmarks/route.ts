@@ -7,6 +7,7 @@ import { getUserIdFromAccessToken } from '@/utils/cookie'
 
 import { GETBookmarksSchema } from './schema'
 
+// NOTE: 로그인 후 다른 계정으로 로그인 시 이전 계정의 북마크 목록이 캐시되어 보여지는 이슈가 있음
 const maxAge = 10
 
 export type BookmarkWithSource = {
@@ -45,8 +46,17 @@ export async function GET(request: Request) {
     cursorTime: cursorTime ? new Date(cursorTime).toISOString() : undefined,
   })
 
+  const cacheControl = createCacheControl({
+    private: true,
+    maxAge,
+    staleWhileRevalidate: maxAge,
+  })
+
   if (bookmarkRows.length === 0) {
-    return new Response('404 Not Found', { status: 404 })
+    return new Response('404 Not Found', {
+      status: 404,
+      headers: { 'Cache-Control': cacheControl },
+    })
   }
 
   const hasNextPage = limit ? bookmarkRows.length > limit : false
@@ -64,15 +74,6 @@ export async function GET(request: Request) {
       bookmarks: bookmarks.map((bookmark) => ({ ...bookmark, createdAt: bookmark.createdAt.getTime() })),
       nextCursor,
     } satisfies GETBookmarksResponse,
-    {
-      headers: {
-        // NOTE: 로그인 후 다른 계정으로 로그인 시 이전 계정의 북마크 목록이 캐시되어 보여지는 이슈가 있음
-        'Cache-Control': createCacheControl({
-          private: true,
-          maxAge,
-          staleWhileRevalidate: maxAge,
-        }),
-      },
-    },
+    { headers: { 'Cache-Control': cacheControl } },
   )
 }
