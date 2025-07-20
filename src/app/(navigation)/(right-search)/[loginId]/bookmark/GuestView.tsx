@@ -1,8 +1,8 @@
 import Link from 'next/link'
 
-import MangaCard from '@/components/card/MangaCard'
+import MangaCard from '@/components/card'
 import IconBookmark from '@/components/icons/IconBookmark'
-import IconLogin from '@/components/icons/IconLogin'
+import LoginButton from '@/components/LoginButton'
 import { SearchParamKey } from '@/constants/storage'
 import { SourceParam } from '@/utils/param'
 
@@ -37,15 +37,7 @@ export function GuestView() {
             <span className="text-zinc-300">읽은 작품 히스토리 관리</span>
           </li>
         </ul>
-        <Link
-          className="inline-flex items-center gap-2 px-4 py-3 bg-brand-gradient text-background font-semibold rounded-xl 
-          hover:opacity-90 active:opacity-100 transition relative
-          before:absolute before:inset-0 before:rounded-xl before:border-3 before:border-foreground/40"
-          href={`/auth/login?${SearchParamKey.REDIRECT}=${encodeURIComponent('/@/bookmark')}`}
-        >
-          <IconLogin className="w-5 h-5" />
-          로그인하고 시작하기
-        </Link>
+        <LoginButton redirect="/@/bookmark">로그인하고 시작하기</LoginButton>
         <p className="mt-4 text-sm text-zinc-500">
           계정이 없으신가요?{' '}
           <Link

@@ -1,18 +1,25 @@
 import { z } from 'zod/v4'
 
-import { BlurLevel, FilterType } from '@/database/enum'
+import { CensorshipKey, CensorshipLevel } from '@/database/enum'
 
 export const addFilterSchema = z.object({
-  filterType: z.enum(FilterType),
-  filterValue: z.string().min(1).max(256),
-  blurLevel: z.enum(BlurLevel),
+  censorships: z.array(
+    z.object({
+      key: z.enum(CensorshipKey),
+      values: z.array(z.string().min(1).max(256)),
+      levels: z.array(z.enum(CensorshipLevel)),
+    }),
+  ),
+  userId: z.coerce.number().int().positive(),
 })
 
 export const updateFilterSchema = z.object({
   id: z.coerce.number().int().positive(),
-  blurLevel: z.enum(BlurLevel),
+  level: z.enum(CensorshipLevel),
+  userId: z.coerce.number().int().positive(),
 })
 
 export const deleteFilterSchema = z.object({
   id: z.coerce.number().int().positive(),
+  userId: z.coerce.number().int().positive(),
 })

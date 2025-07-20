@@ -1,8 +1,3 @@
-export enum BlurLevel {
-  LIGHT = 0,
-  HEAVY = 1,
-}
-
 export enum BookmarkSource {
   HASHA = 0,
   HARPI = 1,
@@ -12,10 +7,15 @@ export enum BookmarkSource {
   // EX_HENTAI = 5,
 }
 
-export enum FilterType {
+export enum CensorshipKey {
   TAG = 0,
   ARTIST = 1,
   CHARACTER = 2,
   GROUP = 3,
   SERIES = 4,
+}
+
+export enum CensorshipLevel {
+  LIGHT = 0,
+  HEAVY = 1,
 }
