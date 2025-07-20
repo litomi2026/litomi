@@ -25,7 +25,7 @@ bun dev
 
 ## 도메인
 
-- 유료: https://litomi.in
+- 인도: https://litomi.in
 - Vercel: https://litomi.vercel.app
 - Render: https://litomi.onrender.com
 - Netlify: https://litomi.netlify.app

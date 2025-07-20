@@ -14,19 +14,23 @@ export const userTable = pgTable('user', {
 export const bookmarkTable = pgTable(
   'bookmark',
   {
-    userId: integer('user_id').references(() => userTable.id),
+    userId: bigint('user_id', { mode: 'number' })
+      .references(() => userTable.id)
+      .notNull(),
     mangaId: integer('manga_id').notNull(),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-    source: integer('source').notNull(),
+    source: integer().notNull(),
   },
   (table) => [primaryKey({ columns: [table.userId, table.mangaId] })],
 )
 
-export enum BookmarkSource {
-  HASHA = 0,
-  HARPI = 1,
-  HIYOBI = 2,
-  K_HENTAI = 3,
-  // E_HENTAI = 4,
-  // EX_HENTAI = 5,
-}
+export const userCensorshipTable = pgTable('user_censorship', {
+  id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  userId: bigint('user_id', { mode: 'number' })
+    .references(() => userTable.id)
+    .notNull(),
+  key: integer().notNull(),
+  value: varchar({ length: 256 }).notNull(),
+  level: integer().notNull(),
+})
