@@ -14,7 +14,7 @@ export async function addCensorships(_prevState: unknown, formData: FormData) {
   const userIdFromToken = await getUserIdFromAccessToken(cookieStore)
 
   if (!userIdFromToken) {
-    return { status: 401, message: 'Unauthorized' }
+    return { status: 401, message: '로그인 정보가 없거나 만료됐어요' }
   }
 
   const validation = addCensorshipsSchema.safeParse({
@@ -45,7 +45,7 @@ export async function addCensorships(_prevState: unknown, formData: FormData) {
       .returning({ id: userCensorshipTable.id })
 
     if (results.length === 0) {
-      return { status: 204, message: 'No Content' }
+      return { status: 204 }
     }
 
     return {
@@ -55,10 +55,10 @@ export async function addCensorships(_prevState: unknown, formData: FormData) {
   } catch (error) {
     if (error instanceof Error) {
       if (['foreign key', 'value too long', 'duplicate key'].some((message) => error.message.includes(message))) {
-        return { status: 400, message: 'Bad Request' }
+        return { status: 400, message: '입력을 확인해주세요' }
       }
     }
-    return { status: 500, message: 'Internal Server Error' }
+    return { status: 500, message: '오류가 발생했어요' }
   }
 }
 
@@ -67,7 +67,7 @@ export async function deleteCensorships(_prevState: unknown, formData: FormData)
   const userIdFromToken = await getUserIdFromAccessToken(cookieStore)
 
   if (!userIdFromToken) {
-    return { status: 401, message: 'Unauthorized' }
+    return { status: 401, message: '로그인 정보가 없거나 만료됐어요' }
   }
 
   const validation = deleteCensorshipsSchema.safeParse({
@@ -86,7 +86,7 @@ export async function deleteCensorships(_prevState: unknown, formData: FormData)
       .returning({ deletedIds: userCensorshipTable.id })
 
     if (result.length === 0) {
-      return { status: 204, message: 'No Content' }
+      return { status: 204 }
     }
 
     return {
@@ -96,10 +96,10 @@ export async function deleteCensorships(_prevState: unknown, formData: FormData)
   } catch (error) {
     if (error instanceof Error) {
       if (['foreign key', 'constraint'].some((message) => error.message.includes(message))) {
-        return { status: 400, message: 'Bad Request' }
+        return { status: 400, message: '입력을 확인해주세요' }
       }
     }
-    return { status: 500, message: 'Internal Server Error' }
+    return { status: 500, message: '오류가 발생했어요' }
   }
 }
 
@@ -108,7 +108,7 @@ export async function updateCensorships(_prevState: unknown, formData: FormData)
   const userIdFromToken = await getUserIdFromAccessToken(cookieStore)
 
   if (!userIdFromToken) {
-    return { status: 401, message: 'Unauthorized' }
+    return { status: 401, message: '로그인 정보가 없거나 만료됐어요' }
   }
 
   const validation = updateCensorshipsSchema.safeParse({
@@ -164,7 +164,7 @@ export async function updateCensorships(_prevState: unknown, formData: FormData)
       .returning({ id: userCensorshipTable.id })
 
     if (result.length === 0) {
-      return { status: 204, message: 'No Content' }
+      return { status: 204 }
     }
 
     return {
@@ -174,9 +174,9 @@ export async function updateCensorships(_prevState: unknown, formData: FormData)
   } catch (error) {
     if (error instanceof Error) {
       if (['foreign key', 'constraint', 'invalid input'].some((message) => error.message.includes(message))) {
-        return { status: 400, message: 'Bad Request' }
+        return { status: 400, message: '입력을 확인해주세요' }
       }
     }
-    return { status: 500, message: 'Internal Server Error' }
+    return { status: 500, message: '오류가 발생했어요' }
   }
 }

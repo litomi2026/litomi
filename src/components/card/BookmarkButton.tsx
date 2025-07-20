@@ -35,28 +35,30 @@ export default function BookmarkButton({ manga, source, className }: Readonly<Pr
   const { id: mangaId } = manga
   const { data: me } = useMeQuery()
   const { data: bookmarks } = useBookmarksQuery()
-  const [{ error, success, isBookmarked, status }, formAction, isPending] = useActionState(toggleBookmark, initialState)
+  const [{ status, data, message }, formAction, isPending] = useActionState(toggleBookmark, initialState)
   const bookmarkIds = useMemo(() => new Set(bookmarks?.bookmarks.map((bookmark) => bookmark.mangaId)), [bookmarks])
   const isIconSelected = bookmarkIds.has(mangaId)
   const queryClient = useQueryClient()
+  const createdAt = data?.createdAt.getTime()
 
   useActionErrorEffect({
     status,
-    error,
+    error: message,
     onError: (error) => toast.error(error),
   })
 
   useEffect(() => {
-    if (!success) {
+    if (!createdAt) {
       return
     }
 
-    toast.success(isBookmarked ? '북마크를 추가했어요' : '북마크를 삭제했어요')
+    toast.success(createdAt ? '북마크를 추가했어요' : '북마크를 삭제했어요')
 
     queryClient.setQueryData<GETBookmarksResponse>(QueryKeys.bookmarks, (oldBookmarks) => {
       const newBookmark = {
         mangaId,
         source: mapSourceParamToBookmarkSource(source) ?? BookmarkSource.K_HENTAI,
+        createdAt,
       }
 
       if (!oldBookmarks) {
@@ -64,7 +66,7 @@ export default function BookmarkButton({ manga, source, className }: Readonly<Pr
           bookmarks: [newBookmark],
           nextCursor: null,
         }
-      } else if (isBookmarked) {
+      } else if (createdAt) {
         return {
           bookmarks: [newBookmark, ...oldBookmarks.bookmarks],
           nextCursor: null,
@@ -77,10 +79,10 @@ export default function BookmarkButton({ manga, source, className }: Readonly<Pr
       }
     })
 
-    if (isBookmarked) {
+    if (createdAt) {
       queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteBookmarks })
     }
-  }, [success, isBookmarked, queryClient, mangaId, source])
+  }, [createdAt, queryClient, mangaId, source])
 
   function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
     if (!me) {

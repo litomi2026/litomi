@@ -1,24 +1,25 @@
 import { cookies } from 'next/headers'
 
 import { createCacheControl } from '@/crawler/proxy-utils'
-import { BookmarkSource } from '@/database/enum'
-import selectBookmarks from '@/sql/selectBookmarks'
+import { CensorshipKey, CensorshipLevel } from '@/database/enum'
+import selectCensorships from '@/sql/selectCensorships'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
 
-import { GETBookmarksSchema } from './schema'
+import { GETCensorshipsSchema } from './schema'
 
-// NOTE: 로그인 후 다른 계정으로 로그인 시 이전 계정의 북마크 목록이 캐시되어 보여지는 이슈가 있음
 const maxAge = 10
 
-export type BookmarkWithSource = {
-  mangaId: number
-  source: BookmarkSource
+export type CensorshipItem = {
+  id: number
+  key: CensorshipKey
+  value: string
+  level: CensorshipLevel
   createdAt: number
 }
 
-export type GETBookmarksResponse = {
-  bookmarks: BookmarkWithSource[]
-  nextCursor: { mangaId: number; createdAt: number } | null
+export type GETCensorshipsResponse = {
+  censorships: CensorshipItem[]
+  nextCursor: { id: number; createdAt: number } | null
 }
 
 export async function GET(request: Request) {
@@ -31,7 +32,7 @@ export async function GET(request: Request) {
 
   const url = new URL(request.url)
   const params = Object.fromEntries(url.searchParams)
-  const validation = GETBookmarksSchema.safeParse(params)
+  const validation = GETCensorshipsSchema.safeParse(params)
 
   if (!validation.success) {
     return new Response('400 Bad Request', { status: 400 })
@@ -39,7 +40,7 @@ export async function GET(request: Request) {
 
   const { cursorId, cursorTime, limit } = validation.data
 
-  const bookmarkRows = await selectBookmarks({
+  const censorshipRows = await selectCensorships({
     userId,
     limit: limit ? limit + 1 : undefined,
     cursorId: cursorId?.toString(),
@@ -52,31 +53,31 @@ export async function GET(request: Request) {
     staleWhileRevalidate: maxAge,
   })
 
-  if (bookmarkRows.length === 0) {
+  if (censorshipRows.length === 0) {
     return new Response('404 Not Found', {
       status: 404,
       headers: { 'Cache-Control': cacheControl },
     })
   }
 
-  const hasNextPage = limit ? bookmarkRows.length > limit : false
-  const bookmarks = hasNextPage ? bookmarkRows.slice(0, limit) : bookmarkRows
-  const lastBookmark = bookmarks[bookmarks.length - 1]
+  const hasNextPage = limit ? censorshipRows.length > limit : false
+  const censorships = hasNextPage ? censorshipRows.slice(0, limit) : censorshipRows
+  const lastCensorship = censorships[censorships.length - 1]
   const nextCursor = hasNextPage
     ? {
-        mangaId: lastBookmark.mangaId,
-        createdAt: lastBookmark.createdAt.getTime(),
+        id: lastCensorship.id,
+        createdAt: lastCensorship.createdAt.getTime(),
       }
     : null
 
   return Response.json(
     {
-      bookmarks: bookmarks.map((bookmark) => ({
-        ...bookmark,
-        createdAt: bookmark.createdAt.getTime(),
+      censorships: censorships.map((censorship) => ({
+        ...censorship,
+        createdAt: censorship.createdAt.getTime(),
       })),
       nextCursor,
-    } satisfies GETBookmarksResponse,
+    } satisfies GETCensorshipsResponse,
     { headers: { 'Cache-Control': cacheControl } },
   )
 }

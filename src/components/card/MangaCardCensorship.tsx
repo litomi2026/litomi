@@ -29,7 +29,7 @@ export default function MangaCardCensorship({ manga, level }: Readonly<Props>) {
     [tags],
   )
 
-  if (!censoredTags || censoredTags.length === 0 || level === CensorshipLevel.HEAVY) {
+  if (!censoredTags || censoredTags.length === 0) {
     return null
   }
 
