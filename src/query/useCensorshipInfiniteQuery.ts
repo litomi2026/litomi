@@ -24,7 +24,7 @@ export default function useCensorshipsInfiniteQuery() {
   const userId = me?.id
 
   return useInfiniteQuery({
-    queryKey: QueryKeys.censorships,
+    queryKey: QueryKeys.infiniteCensorships,
     queryFn: fetchPaginatedCensorships,
     enabled: Boolean(userId),
     getNextPageParam: (lastPage) => lastPage.nextCursor,
