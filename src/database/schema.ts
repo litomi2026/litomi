@@ -1,4 +1,4 @@
-import { bigint, integer, pgTable, primaryKey, text, timestamp, varchar } from 'drizzle-orm/pg-core'
+import { bigint, integer, pgTable, primaryKey, smallint, text, timestamp, varchar } from 'drizzle-orm/pg-core'
 
 export const userTable = pgTable('user', {
   id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
@@ -19,7 +19,7 @@ export const bookmarkTable = pgTable(
       .notNull(),
     mangaId: integer('manga_id').notNull(),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-    source: integer().notNull(),
+    source: smallint().notNull(),
   },
   (table) => [primaryKey({ columns: [table.userId, table.mangaId] })],
 )
@@ -30,7 +30,7 @@ export const userCensorshipTable = pgTable('user_censorship', {
   userId: bigint('user_id', { mode: 'number' })
     .references(() => userTable.id)
     .notNull(),
-  key: integer().notNull(),
+  key: smallint().notNull(),
   value: varchar({ length: 256 }).notNull(),
-  level: integer().notNull(),
+  level: smallint().notNull(),
 })

@@ -1,19 +1,12 @@
-import { useMemo } from 'react'
+'use client'
+
+import Link from 'next/link'
 
 import { CensorshipLevel } from '@/database/enum'
+import useMatchedCensorships from '@/hook/useCensorshipCheck'
+import useCensorshipsMapQuery from '@/query/useCensorshipsMapQuery'
+import useMeQuery from '@/query/useMeQuery'
 import { Manga } from '@/types/manga'
-
-const BLIND_TAG_VALUE_TO_LABEL: Record<string, string> = {
-  bestiality: '수간',
-  guro: '고어',
-  snuff: '고어',
-  yaoi: '게이',
-  males_only: '게이',
-  scat: '스캇',
-  coprophagia: '스캇',
-}
-
-const BLIND_TAG_VALUES = Object.keys(BLIND_TAG_VALUE_TO_LABEL)
 
 type Props = {
   manga: Manga
@@ -21,29 +14,41 @@ type Props = {
 }
 
 export default function MangaCardCensorship({ manga, level }: Readonly<Props>) {
-  const { tags } = manga
+  const { data: me } = useMeQuery()
+  const loginId = me?.loginId ?? ''
+  const { data: censorshipsMap } = useCensorshipsMapQuery()
+  const { censoringReasons, highestCensorshipLevel } = useMatchedCensorships({ manga, censorshipsMap })
 
-  const censoredTags = useMemo(
-    () =>
-      tags?.filter(({ value }) => BLIND_TAG_VALUES.includes(value)).map(({ value }) => BLIND_TAG_VALUE_TO_LABEL[value]),
-    [tags],
-  )
-
-  if (!censoredTags || censoredTags.length === 0) {
+  if (level !== highestCensorshipLevel) {
     return null
   }
 
-  if (level === CensorshipLevel.HEAVY) {
-    // TODO: 중증 검열 표시
+  if (!censoringReasons || censoringReasons.length === 0) {
     return null
+  }
+
+  if (highestCensorshipLevel === CensorshipLevel.HEAVY) {
+    return (
+      <div className="absolute inset-0 animate-fade-in-fast bg-zinc-900 flex items-center justify-center p-4 text-zinc-400 text-center">
+        <div>
+          <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-zinc-800 flex items-center justify-center">
+            <span className="text-xl">🚫</span>
+          </div>
+          <div className="font-semibold mb-1">검열된 콘텐츠</div>
+          <span>{censoringReasons.join(', ')}</span>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div className="absolute inset-0 bg-background/50 backdrop-blur flex items-center justify-center text-center p-4 pointer-events-none">
-      <div className="text-foreground text-center font-semibold flex flex-wrap gap-1 justify-center">
-        <span>{Array.from(new Set(censoredTags)).join(', ')}</span>
-        <span>작품 검열</span>
-      </div>
+    <div className="absolute inset-0 animate-fade-in-fast bg-background/80 backdrop-blur flex items-center justify-center text-center p-4 pointer-events-none">
+      <Link
+        className="text-foreground text-center font-semibold flex flex-wrap gap-1 justify-center pointer-events-auto hover:underline"
+        href={`/@${loginId}/censor`}
+      >
+        {censoringReasons.join(', ')} 작품 검열
+      </Link>
     </div>
   )
 }
