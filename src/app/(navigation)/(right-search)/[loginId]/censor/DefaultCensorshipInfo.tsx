@@ -4,18 +4,8 @@ import { useState } from 'react'
 
 import IconInfo from '@/components/icons/IconInfo'
 import IconX from '@/components/icons/IconX'
-import { BLIND_TAG_VALUE_TO_LABEL, BLIND_TAG_VALUES } from '@/constants/json'
 
-const LABEL_TO_VALUES = BLIND_TAG_VALUES.reduce<Record<string, string[]>>((acc, tag) => {
-  const label = BLIND_TAG_VALUE_TO_LABEL[tag]
-  if (!acc[label]) acc[label] = []
-  acc[label].push(tag)
-  return acc
-}, {})
-
-const DEFAULT_CENSORED_TAGS = Object.entries(LABEL_TO_VALUES).map(([label, values]) => {
-  return `${label} (${values.join(', ')})`
-})
+import { DEFAULT_CENSORED_TAGS } from './constants'
 
 export default function DefaultCensorshipInfo() {
   const [isExpanded, setIsExpanded] = useState(false)

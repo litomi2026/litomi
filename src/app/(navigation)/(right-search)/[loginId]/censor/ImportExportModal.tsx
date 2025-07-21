@@ -8,14 +8,10 @@ import { IconDownload } from '@/components/icons/IconDownload'
 import { IconUpload } from '@/components/icons/IconUpload'
 import IconX from '@/components/icons/IconX'
 import Modal from '@/components/ui/Modal'
-import { CensorshipKey, CensorshipLevel } from '@/database/enum'
+import { CensorshipKey } from '@/database/enum'
 import { downloadBlob } from '@/utils/download'
 
-const CENSORSHIP_LEVEL_LABELS: Record<CensorshipLevel, string> = {
-  [CensorshipLevel.LIGHT]: '흐리게',
-  [CensorshipLevel.HEAVY]: '숨기기',
-  [CensorshipLevel.NONE]: '해제',
-}
+import { CENSORSHIP_LEVEL_LABELS } from './constants'
 
 const PLACEHOLDER_JSON = `[
   {
@@ -55,14 +51,14 @@ export default function ImportExportModal({ open, onClose, censorships, onImport
           keyLabel: keyLabels[c.key],
           value: c.value,
           level: c.level,
-          levelLabel: CENSORSHIP_LEVEL_LABELS[c.level],
+          levelLabel: CENSORSHIP_LEVEL_LABELS[c.level].label,
         }))
         content = JSON.stringify(exportData, null, 2)
         filename = 'censorship-rules.json'
         mimeType = 'application/json'
       } else {
         const headers = ['유형', '값', '수준']
-        const rows = censorships.map((c) => [keyLabels[c.key], c.value, CENSORSHIP_LEVEL_LABELS[c.level]])
+        const rows = censorships.map((c) => [keyLabels[c.key], c.value, CENSORSHIP_LEVEL_LABELS[c.level].label])
         const csvContent = [headers.join(','), ...rows.map((row) => row.map((cell) => `"${cell}"`).join(','))].join(
           '\n',
         )
@@ -103,7 +99,7 @@ export default function ImportExportModal({ open, onClose, censorships, onImport
         // Find level by label or use direct level
         let level = item.level
         if (typeof level === 'string') {
-          const levelEntry = Object.entries(CENSORSHIP_LEVEL_LABELS).find(([_, label]) => label === level)
+          const levelEntry = Object.entries(CENSORSHIP_LEVEL_LABELS).find(([_, { label }]) => label === level)
           if (levelEntry) {
             level = Number(levelEntry[0])
           }
