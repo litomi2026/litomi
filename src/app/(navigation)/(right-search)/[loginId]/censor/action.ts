@@ -18,9 +18,9 @@ export async function addCensorships(_prevState: unknown, formData: FormData) {
   }
 
   const validation = addCensorshipsSchema.safeParse({
-    keys: formData.getAll('key'),
+    keys: formData.getAll('key').map((key) => Number(key)),
     values: formData.getAll('value'),
-    levels: formData.getAll('level'),
+    levels: formData.getAll('level').map((level) => Number(level)),
     userId: userIdFromToken,
   })
 
@@ -113,9 +113,9 @@ export async function updateCensorships(_prevState: unknown, formData: FormData)
 
   const validation = updateCensorshipsSchema.safeParse({
     ids: formData.getAll('id'),
-    keys: formData.getAll('key'),
+    keys: formData.getAll('key').map((key) => Number(key)),
     values: formData.getAll('value'),
-    levels: formData.getAll('level'),
+    levels: formData.getAll('level').map((level) => Number(level)),
     userId: userIdFromToken,
   })
 
