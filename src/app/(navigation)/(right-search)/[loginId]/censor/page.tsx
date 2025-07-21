@@ -13,5 +13,5 @@ export default async function CensorPage() {
     return <GuestView />
   }
 
-  return <Censorships userId={userId} />
+  return <Censorships />
 }

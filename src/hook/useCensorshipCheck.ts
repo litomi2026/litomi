@@ -1,19 +1,9 @@
 import { useMemo } from 'react'
 
 import { CensorshipItem } from '@/app/api/censorships/route'
+import { BLIND_TAG_VALUE_TO_LABEL, BLIND_TAG_VALUES } from '@/constants/json'
 import { CensorshipKey, CensorshipLevel } from '@/database/enum'
 import { Manga, MangaTagCategory } from '@/types/manga'
-
-const BLIND_TAG_VALUE_TO_LABEL: Record<string, string> = {
-  bestiality: '수간',
-  guro: '고어',
-  yaoi: 'BL',
-  males_only: 'BL',
-  scat: '스캇',
-  coprophagia: '스캇',
-}
-
-const BLIND_TAG_VALUES = Object.keys(BLIND_TAG_VALUE_TO_LABEL)
 
 type Params = {
   manga: Manga
