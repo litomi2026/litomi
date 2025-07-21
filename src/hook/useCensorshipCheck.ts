@@ -27,19 +27,21 @@ export default function useMatchedCensorships({ manga, censorshipsMap }: Readonl
     let highest = CensorshipLevel.LIGHT
     const matchedLabels: string[] = []
 
-    // 기본 검열 태그
     for (const tag of tags ?? []) {
-      if (BLIND_TAG_VALUES.includes(tag.value)) {
-        const tagKey = `${CensorshipKey.TAG}:${tag.value}`
-        const tagMatches = censorshipsMap?.get(tagKey)
+      const tagKey = `${CensorshipKey.TAG}:${tag.value}`
+      const tagMatches = censorshipsMap?.get(tagKey)
 
-        if (tagMatches) {
-          if (tagMatches.level !== CensorshipLevel.NONE) {
-            matchedLabels.push(BLIND_TAG_VALUE_TO_LABEL[tag.value])
-            highest = Math.max(highest, tagMatches.level)
-          }
-        } else {
+      if (BLIND_TAG_VALUES.includes(tag.value)) {
+        // 기본 검열 태그
+        if (!tagMatches || tagMatches.level !== CensorshipLevel.NONE) {
           matchedLabels.push(BLIND_TAG_VALUE_TO_LABEL[tag.value])
+          highest = Math.max(highest, tagMatches?.level ?? CensorshipLevel.LIGHT)
+        }
+      } else {
+        // 사용자 지정 검열 태그
+        if (tagMatches && tagMatches.level !== CensorshipLevel.NONE) {
+          matchedLabels.push(tag.label.split(':')[1])
+          highest = Math.max(highest, tagMatches.level)
         }
       }
     }
@@ -51,23 +53,12 @@ export default function useMatchedCensorships({ manga, censorshipsMap }: Readonl
       }
     }
 
-    // 전체 태그
-    for (const tag of tags ?? []) {
-      const tagKey = `${CensorshipKey.TAG}:${tag.value}`
-      const tagMatches = censorshipsMap.get(tagKey)
-
-      if (tagMatches) {
-        matchedLabels.push(tag.label.split(':')[1])
-        highest = Math.max(highest, tagMatches.level)
-      }
-    }
-
     // 개별 태그: male, female, mixed, other
     for (const tag of tags ?? []) {
       const tagKey = mapTagCategoryToCensorshipKey(tag.category)
       const tagMatches = censorshipsMap.get(`${tagKey}:${tag.value}`)
 
-      if (tagMatches) {
+      if (tagMatches && tagMatches.level !== CensorshipLevel.NONE) {
         matchedLabels.push(tag.label)
         highest = Math.max(highest, tagMatches.level)
       }
@@ -77,7 +68,7 @@ export default function useMatchedCensorships({ manga, censorshipsMap }: Readonl
       const artistKey = `${CensorshipKey.ARTIST}:${artist.value}`
       const artistMatches = censorshipsMap.get(artistKey)
 
-      if (artistMatches) {
+      if (artistMatches && artistMatches.level !== CensorshipLevel.NONE) {
         matchedLabels.push(artist.label.split(':')[1])
         highest = Math.max(highest, artistMatches.level)
       }
@@ -87,7 +78,7 @@ export default function useMatchedCensorships({ manga, censorshipsMap }: Readonl
       const characterKey = `${CensorshipKey.CHARACTER}:${character.value}`
       const characterMatches = censorshipsMap.get(characterKey)
 
-      if (characterMatches) {
+      if (characterMatches && characterMatches.level !== CensorshipLevel.NONE) {
         matchedLabels.push(character.label.split(':')[1])
         highest = Math.max(highest, characterMatches.level)
       }
@@ -97,7 +88,7 @@ export default function useMatchedCensorships({ manga, censorshipsMap }: Readonl
       const groupKey = `${CensorshipKey.GROUP}:${g.value}`
       const groupMatches = censorshipsMap.get(groupKey)
 
-      if (groupMatches) {
+      if (groupMatches && groupMatches.level !== CensorshipLevel.NONE) {
         matchedLabels.push(g.label.split(':')[1])
         highest = Math.max(highest, groupMatches.level)
       }
@@ -107,7 +98,7 @@ export default function useMatchedCensorships({ manga, censorshipsMap }: Readonl
       const seriesKey = `${CensorshipKey.SERIES}:${s.value}`
       const seriesMatches = censorshipsMap.get(seriesKey)
 
-      if (seriesMatches) {
+      if (seriesMatches && seriesMatches.level !== CensorshipLevel.NONE) {
         matchedLabels.push(s.label.split(':')[1])
         highest = Math.max(highest, seriesMatches.level)
       }
