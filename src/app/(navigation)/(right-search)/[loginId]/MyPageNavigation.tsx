@@ -21,7 +21,12 @@ export default function MyPageNavigation({ loginId }: Readonly<Props>) {
     <nav className="sticky top-0 z-20 min-h-12.5 text-center border-b-2 bg-background/80 backdrop-blur overflow-x-auto scrollbar-hidden font-semibold">
       <div className="flex gap-4 px-3">
         {links.map(({ href, label }) => (
-          <Link className="group relative flex-shrink-0 p-3 text-zinc-600" href={href} key={href}>
+          <Link
+            aria-current={pathname === href}
+            className="group relative flex-shrink-0 p-3 text-zinc-600 aria-current:font-bold aria-current:text-foreground transition"
+            href={href}
+            key={href}
+          >
             {label}
             <span
               aria-current={pathname === href}
