@@ -39,7 +39,6 @@ export default function BookmarkButton({ manga, source, className }: Readonly<Pr
   const bookmarkIds = useMemo(() => new Set(bookmarks?.bookmarks.map((bookmark) => bookmark.mangaId)), [bookmarks])
   const isIconSelected = bookmarkIds.has(mangaId)
   const queryClient = useQueryClient()
-  const createdAt = data?.createdAt.getTime()
 
   useActionErrorEffect({
     status,
@@ -48,11 +47,13 @@ export default function BookmarkButton({ manga, source, className }: Readonly<Pr
   })
 
   useEffect(() => {
-    if (!createdAt) {
+    if (!data) {
       return
     }
 
-    toast.success(createdAt ? '북마크를 추가했어요' : '북마크를 삭제했어요')
+    // NOTE: isBookmarked=true 일 때 createdAt 항상 있음
+    const { isBookmarked, createdAt = 0 } = data
+    toast.success(data.isBookmarked ? '북마크를 추가했어요' : '북마크를 삭제했어요')
 
     queryClient.setQueryData<GETBookmarksResponse>(QueryKeys.bookmarks, (oldBookmarks) => {
       const newBookmark = {
@@ -66,7 +67,7 @@ export default function BookmarkButton({ manga, source, className }: Readonly<Pr
           bookmarks: [newBookmark],
           nextCursor: null,
         }
-      } else if (createdAt) {
+      } else if (isBookmarked) {
         return {
           bookmarks: [newBookmark, ...oldBookmarks.bookmarks],
           nextCursor: null,
@@ -79,10 +80,10 @@ export default function BookmarkButton({ manga, source, className }: Readonly<Pr
       }
     })
 
-    if (createdAt) {
+    if (isBookmarked) {
       queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteBookmarks })
     }
-  }, [createdAt, queryClient, mangaId, source])
+  }, [data, queryClient, mangaId, source])
 
   function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
     if (!me) {

@@ -37,7 +37,7 @@ export default async function toggleBookmark(_prevState: unknown, formData: Form
 
   const { mangaId, source } = validation.data
 
-  const [result] = await db.execute<BookmarkResult>(sql`
+  const results = await db.execute<BookmarkResult>(sql`
     WITH deleted AS (
       DELETE FROM bookmark
       WHERE manga_id = ${mangaId} AND user_id = ${userId}
@@ -48,8 +48,16 @@ export default async function toggleBookmark(_prevState: unknown, formData: Form
     WHERE NOT EXISTS (
       SELECT 1 FROM deleted
     )
-    RETURNING manga_id as mangaId, created_at as createdAt
+    RETURNING manga_id as "mangaId", created_at as "createdAt"
   `)
 
-  return { status: 200, data: result }
+  const createdAt = results[0]?.createdAt
+
+  return {
+    status: 200,
+    data: {
+      isBookmarked: results.length > 0,
+      createdAt: createdAt ? new Date(createdAt).getTime() : undefined,
+    },
+  }
 }
