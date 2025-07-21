@@ -13,9 +13,14 @@ export enum CensorshipKey {
   CHARACTER = 2,
   GROUP = 3,
   SERIES = 4,
+  TAG_CATEGORY_FEMALE = 5,
+  TAG_CATEGORY_MALE = 6,
+  TAG_CATEGORY_MIXED = 7,
+  TAG_CATEGORY_OTHER = 8,
 }
 
 export enum CensorshipLevel {
-  LIGHT = 0,
-  HEAVY = 1,
+  NONE = 0,
+  LIGHT = 1,
+  HEAVY = 2,
 }
