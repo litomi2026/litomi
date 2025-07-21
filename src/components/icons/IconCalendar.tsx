@@ -1,9 +1,11 @@
-import { ComponentProps } from 'react'
+type Props = {
+  className?: string
+}
 
-export default function IconCalendar(props: ComponentProps<'svg'>) {
+export default function IconCalendar({ className = '' }: Readonly<Props>) {
   return (
     <svg
-      {...props}
+      className={className}
       fill="none"
       stroke="currentColor"
       strokeLinecap="round"

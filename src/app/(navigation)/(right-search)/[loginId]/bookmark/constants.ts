@@ -4,7 +4,7 @@ import { Manga } from '@/types/manga'
 export const BOOKMARKS_PER_PAGE = 20
 export const MANGA_DETAILS_BATCH_SIZE = 10
 
-export const EXAMPLE_BOOKMARKED_MANGAS: Manga[] = [
+export const EXAMPLE_MANGAS: Manga[] = [
   {
     id: 3291051,
     artists: [{ value: 'fence_14', label: 'fence_14' }],

@@ -35,28 +35,31 @@ export default function BookmarkButton({ manga, source, className }: Readonly<Pr
   const { id: mangaId } = manga
   const { data: me } = useMeQuery()
   const { data: bookmarks } = useBookmarksQuery()
-  const [{ error, success, isBookmarked, status }, formAction, isPending] = useActionState(toggleBookmark, initialState)
+  const [{ status, data, message }, formAction, isPending] = useActionState(toggleBookmark, initialState)
   const bookmarkIds = useMemo(() => new Set(bookmarks?.bookmarks.map((bookmark) => bookmark.mangaId)), [bookmarks])
   const isIconSelected = bookmarkIds.has(mangaId)
   const queryClient = useQueryClient()
 
   useActionErrorEffect({
     status,
-    error,
+    error: message,
     onError: (error) => toast.error(error),
   })
 
   useEffect(() => {
-    if (!success) {
+    if (!data) {
       return
     }
 
-    toast.success(isBookmarked ? '북마크를 추가했어요' : '북마크를 삭제했어요')
+    // NOTE: isBookmarked=true 일 때 createdAt 항상 있음
+    const { isBookmarked, createdAt = 0 } = data
+    toast.success(data.isBookmarked ? '북마크를 추가했어요' : '북마크를 삭제했어요')
 
     queryClient.setQueryData<GETBookmarksResponse>(QueryKeys.bookmarks, (oldBookmarks) => {
       const newBookmark = {
         mangaId,
         source: mapSourceParamToBookmarkSource(source) ?? BookmarkSource.K_HENTAI,
+        createdAt,
       }
 
       if (!oldBookmarks) {
@@ -80,7 +83,7 @@ export default function BookmarkButton({ manga, source, className }: Readonly<Pr
     if (isBookmarked) {
       queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteBookmarks })
     }
-  }, [success, isBookmarked, queryClient, mangaId, source])
+  }, [data, queryClient, mangaId, source])
 
   function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
     if (!me) {

@@ -3,6 +3,7 @@ import dayjs from 'dayjs'
 import Link from 'next/link'
 import { memo, Suspense } from 'react'
 
+import { CensorshipLevel } from '@/database/enum'
 import { Manga } from '@/types/manga'
 import { getViewerLink } from '@/utils/manga'
 import { SourceParam } from '@/utils/param'
@@ -12,6 +13,7 @@ import TagList from '../TagList'
 import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from './BookmarkButton'
 import DownloadButton, { DownloadButtonError, DownloadButtonSkeleton } from './DownloadButton'
 import LanguageBadge from './LanguageBadge'
+import MangaCardCensorship from './MangaCardCensorship'
 import MangaCardImage from './MangaCardImage'
 import MangaMetadataItem from './MangaMetadataItem'
 import MangaMetadataList from './MangaMetadataList'
@@ -39,9 +41,9 @@ function MangaCard({ manga, index = 0, source, className = '', showSearchFromNex
   const isAllDownloadable = images.every((image) => image.startsWith('https://soujpa.in/')) // TODO: 다운로드 가능 여부 확인
 
   return (
-    <li className={`grid grid-rows-[auto_1fr] border-2 rounded-xl overflow-hidden bg-zinc-900 ${className}`} key={id}>
+    <li className={`flex flex-col border-2 rounded-xl overflow-hidden bg-zinc-900 relative ${className}`} key={id}>
       <MangaCardImage
-        className="relative h-fit my-auto aspect-[4/3] [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-contain [&_img]:aspect-[4/3]"
+        className="h-fit my-auto aspect-[4/3] [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-contain [&_img]:aspect-[4/3]"
         href={viewerLink}
         index={index}
         manga={manga}
@@ -127,6 +129,7 @@ function MangaCard({ manga, index = 0, source, className = '', showSearchFromNex
           </div>
         </div>
       </div>
+      <MangaCardCensorship level={CensorshipLevel.HEAVY} manga={manga} />
     </li>
   )
 }
