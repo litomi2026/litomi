@@ -1,13 +1,21 @@
 'use client'
 
-import { startTransition, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { startTransition, useActionState, useCallback, useEffect, useState } from 'react'
+import { toast } from 'sonner'
 
 import { CensorshipItem } from '@/app/api/censorships/route'
 import IconCheck from '@/components/icons/IconCheck'
 import IconEdit from '@/components/icons/IconEdit'
+import { QueryKeys } from '@/constants/query'
 import { CensorshipKey, CensorshipLevel } from '@/database/enum'
+import useActionErrorEffect from '@/hook/useActionErrorEffect'
+import useActionSuccessEffect from '@/hook/useActionSuccessEffect'
 
+import { updateCensorships } from './action'
 import { CENSORSHIP_LEVEL_LABELS } from './constants'
+
+const initialUpdateState = {} as Awaited<ReturnType<typeof updateCensorships>>
 
 type Props = {
   censorship: CensorshipItem
@@ -16,7 +24,6 @@ type Props = {
   onToggleSelect: () => void
   onEdit: () => void
   onCancelEdit: () => void
-  onUpdate: (formData: FormData) => void
   keyLabels: Record<CensorshipKey, string>
 }
 
@@ -27,15 +34,45 @@ export default function CensorshipCard({
   onToggleSelect,
   onEdit,
   onCancelEdit,
-  onUpdate,
   keyLabels,
 }: Readonly<Props>) {
+  const queryClient = useQueryClient()
+  const [updateState, updateAction, isUpdatePending] = useActionState(updateCensorships, initialUpdateState)
   const [editValue, setEditValue] = useState(censorship.value)
   const [editLevel, setEditLevel] = useState(censorship.level)
+
+  // Reset edit values when censorship prop changes or when editing state changes
+  useEffect(() => {
+    setEditValue(censorship.value)
+    setEditLevel(censorship.level)
+  }, [censorship.value, censorship.level, isEditing])
+
+  const handleUpdateSuccess = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: QueryKeys.censorships })
+    toast.success('검열 규칙이 수정되었어요')
+    onCancelEdit()
+  }, [queryClient, onCancelEdit])
+
+  useActionErrorEffect({
+    status: updateState.status,
+    error: updateState.message,
+    onError: (message) => toast.error(message),
+  })
+
+  useActionSuccessEffect({
+    status: updateState.status,
+    data: updateState.data,
+    onSuccess: handleUpdateSuccess,
+  })
 
   const handleSaveEdit = () => {
     if (!editValue.trim() || (editValue === censorship.value && editLevel === censorship.level)) {
       onCancelEdit()
+      return
+    }
+
+    // Prevent double submission
+    if (isUpdatePending) {
       return
     }
 
@@ -46,8 +83,14 @@ export default function CensorshipCard({
     formData.append('level', String(editLevel))
 
     startTransition(() => {
-      onUpdate(formData)
+      updateAction(formData)
     })
+  }
+
+  const handleCancelEdit = () => {
+    setEditValue(censorship.value)
+    setEditLevel(censorship.level)
+    onCancelEdit()
   }
 
   const createdDate = new Date(censorship.createdAt)
@@ -92,16 +135,24 @@ export default function CensorshipCard({
           <div className="flex gap-2">
             <button
               className="flex-1 px-3 py-2 bg-zinc-700 hover:bg-zinc-600 rounded transition"
-              onClick={onCancelEdit}
+              disabled={isUpdatePending}
+              onClick={handleCancelEdit}
             >
               취소
             </button>
             <button
-              className="flex-1 px-3 py-2 font-semibold bg-brand-end/80 text-background hover:bg-brand-end/90 rounded transition flex items-center justify-center gap-1"
+              className="flex-1 px-3 py-2 font-semibold bg-brand-end/80 text-background hover:bg-brand-end/90 rounded transition flex items-center justify-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isUpdatePending}
               onClick={handleSaveEdit}
             >
-              <IconCheck className="w-4" />
-              <span>저장</span>
+              {isUpdatePending ? (
+                <span>저장 중...</span>
+              ) : (
+                <>
+                  <IconCheck className="w-4" />
+                  <span>저장</span>
+                </>
+              )}
             </button>
           </div>
         </div>

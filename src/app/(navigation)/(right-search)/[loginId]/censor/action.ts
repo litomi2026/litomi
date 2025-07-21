@@ -1,6 +1,6 @@
 'use server'
 
-import { inArray, sql } from 'drizzle-orm'
+import { and, inArray, sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 
 import { db } from '@/database/drizzle'
@@ -160,7 +160,7 @@ export async function updateCensorships(_prevState: unknown, formData: FormData)
         value: valueCase,
         level: levelCase,
       })
-      .where(sql`${userCensorshipTable.id} = ANY(${ids}) AND ${userCensorshipTable.userId} = ${userId}`)
+      .where(and(inArray(userCensorshipTable.id, ids), sql`${userCensorshipTable.userId} = ${userId}`))
       .returning({ id: userCensorshipTable.id })
 
     if (result.length === 0) {

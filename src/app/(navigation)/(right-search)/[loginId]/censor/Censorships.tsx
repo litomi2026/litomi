@@ -16,7 +16,7 @@ import useActionSuccessEffect from '@/hook/useActionSuccessEffect'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useCensorshipsInfiniteQuery from '@/query/useCensorshipInfiniteQuery'
 
-import { addCensorships, deleteCensorships, updateCensorships } from './action'
+import { addCensorships, deleteCensorships } from './action'
 import AddCensorshipModal from './AddCensorshipModal'
 import CensorshipCard from './CensorshipCard'
 import CensorshipStats from './CensorshipStats'
@@ -26,13 +26,11 @@ import ImportExportModal from './ImportExportModal'
 
 const initialState = {} as Awaited<ReturnType<typeof addCensorships>>
 const initialDeleteState = {} as Awaited<ReturnType<typeof deleteCensorships>>
-const initialUpdateState = {} as Awaited<ReturnType<typeof updateCensorships>>
 
 export default function Censorships() {
   const queryClient = useQueryClient()
   const [addState, addAction] = useActionState(addCensorships, initialState)
   const [deleteState, deleteAction] = useActionState(deleteCensorships, initialDeleteState)
-  const [updateState, updateAction] = useActionState(updateCensorships, initialUpdateState)
   const [showAddModal, setShowAddModal] = useState(false)
   const [showImportExportModal, setShowImportExportModal] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -69,15 +67,9 @@ export default function Censorships() {
     setSelectedIds(new Set())
   }, [queryClient])
 
-  const handleUpdateSuccess = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: QueryKeys.censorships })
-    toast.success('검열 규칙이 수정되었습니다')
-    setEditingId(null)
-  }, [queryClient])
-
   useActionErrorEffect({
-    status: addState.status || deleteState.status || updateState.status,
-    error: addState.message || deleteState.message || updateState.message,
+    status: addState.status || deleteState.status,
+    error: addState.message || deleteState.message,
     onError: (message) => toast.error(message),
   })
 
@@ -91,12 +83,6 @@ export default function Censorships() {
     status: deleteState.status,
     data: deleteState.data,
     onSuccess: handleDeleteSuccess,
-  })
-
-  useActionSuccessEffect({
-    status: updateState.status,
-    data: updateState.data,
-    onSuccess: handleUpdateSuccess,
   })
 
   const handleToggleSelect = (id: number) => {
@@ -232,7 +218,6 @@ export default function Censorships() {
                 onCancelEdit={() => setEditingId(null)}
                 onEdit={() => setEditingId(censorship.id)}
                 onToggleSelect={() => handleToggleSelect(censorship.id)}
-                onUpdate={updateAction}
               />
             ))}
             {hasNextPage && (
