@@ -49,7 +49,7 @@ export default async function Layout({ params, children }: LayoutProps) {
         />
       </div>
       {/* 프로필 정보 영역 */}
-      <div className="grid gap-4 px-4">
+      <div className="grid gap-4 px-4 pb-2">
         <div className="relative -mt-16 flex justify-between items-end">
           <div className="flex items-end">
             <div className="w-32 aspect-square shrink-0 border-4 rounded-full overflow-hidden">
