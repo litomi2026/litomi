@@ -60,6 +60,7 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Read
             값
           </label>
           <input
+            autoCapitalize="off"
             autoFocus
             className="w-full px-3 py-2 bg-zinc-700 rounded border-2 focus:border-zinc-500 outline-none transition"
             id={`value-${id}`}
