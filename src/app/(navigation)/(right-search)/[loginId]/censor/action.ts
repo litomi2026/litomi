@@ -1,6 +1,6 @@
 'use server'
 
-import { and, inArray, sql } from 'drizzle-orm'
+import { inArray, sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 
 import { db } from '@/database/drizzle'
@@ -145,42 +145,27 @@ export async function updateCensorships(_prevState: unknown, formData: FormData)
 
   const { ids, keys, values, levels, userId } = validation.data
 
+  const updateData = ids.map((id, index) => ({
+    id,
+    key: keys[index],
+    value: values[index],
+    level: levels[index],
+    userId,
+  }))
+
   try {
-    const keyCase = sql.join(
-      [
-        sql`CASE`,
-        ...ids.map((id, index) => sql`WHEN ${userCensorshipTable.id} = ${id} THEN ${keys[index]}`),
-        sql`ELSE ${userCensorshipTable.key} END`,
-      ],
-      sql.raw(' '),
-    )
-
-    const valueCase = sql.join(
-      [
-        sql`CASE`,
-        ...ids.map((id, index) => sql`WHEN ${userCensorshipTable.id} = ${id} THEN ${values[index]}`),
-        sql`ELSE ${userCensorshipTable.value} END`,
-      ],
-      sql.raw(' '),
-    )
-
-    const levelCase = sql.join(
-      [
-        sql`CASE`,
-        ...ids.map((id, index) => sql`WHEN ${userCensorshipTable.id} = ${id} THEN ${levels[index]}`),
-        sql`ELSE ${userCensorshipTable.level} END`,
-      ],
-      sql.raw(' '),
-    )
-
     const result = await db
-      .update(userCensorshipTable)
-      .set({
-        key: keyCase,
-        value: valueCase,
-        level: levelCase,
+      .insert(userCensorshipTable)
+      .values(updateData)
+      .onConflictDoUpdate({
+        target: userCensorshipTable.id,
+        set: {
+          key: sql.raw(`excluded.${userCensorshipTable.key.name}`),
+          value: sql.raw(`excluded.${userCensorshipTable.value.name}`),
+          level: sql.raw(`excluded.${userCensorshipTable.level.name}`),
+        },
+        setWhere: sql`${userCensorshipTable.userId} = ${userId}`,
       })
-      .where(and(inArray(userCensorshipTable.id, ids), sql`${userCensorshipTable.userId} = ${userId}`))
       .returning({ id: userCensorshipTable.id })
 
     if (result.length === 0) {
