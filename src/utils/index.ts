@@ -26,6 +26,7 @@ const ALLOWED_HOSTNAME_REGEX = [
   /^localhost$/i,
   new RegExp(privateIP, 'i'),
   /^litomi(?:-(?:git-[a-z0-9-]{1,10}|[a-z0-9]{1,10}))?-team2837\.vercel\.app$/i,
+  /^litomi\.in$/i,
 ]
 
 export function sanitizeRedirect(url: string | null | undefined) {

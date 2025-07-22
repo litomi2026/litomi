@@ -1,4 +1,4 @@
-export const CANONICAL_URL = 'https://litomi.vercel.app'
+export const CANONICAL_URL = 'https://litomi.in'
 
 export const CDN = {
   HARPI: 'https://cdn.harpi.in',
