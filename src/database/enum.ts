@@ -8,15 +8,15 @@ export enum BookmarkSource {
 }
 
 export enum CensorshipKey {
-  TAG = 0,
   ARTIST = 1,
-  CHARACTER = 2,
-  GROUP = 3,
-  SERIES = 4,
-  TAG_CATEGORY_FEMALE = 5,
-  TAG_CATEGORY_MALE = 6,
-  TAG_CATEGORY_MIXED = 7,
-  TAG_CATEGORY_OTHER = 8,
+  GROUP = 2,
+  SERIES = 3,
+  CHARACTER = 4,
+  TAG = 5,
+  TAG_CATEGORY_FEMALE = 6,
+  TAG_CATEGORY_MALE = 7,
+  TAG_CATEGORY_MIXED = 8,
+  TAG_CATEGORY_OTHER = 9,
 }
 
 export enum CensorshipLevel {
