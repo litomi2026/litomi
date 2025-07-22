@@ -53,6 +53,7 @@ export const metadata: Metadata = {
     RATING: 'RTA-5042-1996-1400-1577-RTA',
     rating: 'adult',
   },
+  themeColor: '#0a0a0a',
 }
 
 export const viewport: Viewport = {
@@ -74,7 +75,7 @@ export default function RootLayout({ children }: Readonly<Props>) {
       <body className={`${PretendardVariable.className} antialiased h-full`}>
         <QueryProvider>{children}</QueryProvider>
         <Toaster duration={3000} position="top-center" richColors theme="dark" />
-        <SpeedInsights />
+        {process.env.VERCEL === '1' && <SpeedInsights />}
         <Analytics />
         {AMPLITUDE_API_KEY && <AmplitudeLazy apiKey={AMPLITUDE_API_KEY} />}
         {GTM_ID && <GoogleTagManager gtmId={GTM_ID} />}

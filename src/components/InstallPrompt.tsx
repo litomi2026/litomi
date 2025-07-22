@@ -29,7 +29,7 @@ function InstallPrompt() {
 
   useEffect(() => {
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(() => toast.error('서비스 워커 등록에 실패했습니다.'))
+      navigator.serviceWorker.register('/sw.js').catch(() => toast.error('서비스 워커 등록에 실패했어요'))
     }
   }, [])
 
