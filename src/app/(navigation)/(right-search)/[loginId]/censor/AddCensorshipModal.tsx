@@ -40,37 +40,21 @@ export default function AddCensorshipModal({ open, onClose, onSubmit }: Readonly
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
-    // For tag categories, we don't need a value
-    const isTagCategory = [
-      CensorshipKey.TAG_CATEGORY_FEMALE,
-      CensorshipKey.TAG_CATEGORY_MALE,
-      CensorshipKey.TAG_CATEGORY_MIXED,
-      CensorshipKey.TAG_CATEGORY_OTHER,
-    ].includes(key)
-
-    if (!isTagCategory && !value.trim()) return
+    if (!value.trim()) {
+      return
+    }
 
     const formData = new FormData()
     formData.append('key', key.toString())
-    formData.append('value', isTagCategory ? 'category' : value.trim())
+    formData.append('value', value.trim())
     formData.append('level', level.toString())
 
     startTransition(() => {
       onSubmit(formData)
+      setValue('')
+      setLevel(CensorshipLevel.LIGHT)
     })
-
-    // Reset form
-    setValue('')
-    setLevel(CensorshipLevel.LIGHT)
   }
-
-  // Check if the selected key is a tag category
-  const isTagCategory = [
-    CensorshipKey.TAG_CATEGORY_FEMALE,
-    CensorshipKey.TAG_CATEGORY_MALE,
-    CensorshipKey.TAG_CATEGORY_MIXED,
-    CensorshipKey.TAG_CATEGORY_OTHER,
-  ].includes(key)
 
   return (
     <Modal
@@ -116,41 +100,32 @@ export default function AddCensorshipModal({ open, onClose, onSubmit }: Readonly
           </div>
 
           {/* Value Input */}
-          {!isTagCategory && (
-            <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">{CENSORSHIP_KEY_LABELS[key]} 이름</label>
-              <input
-                autoFocus
-                className="w-full px-4 py-2 bg-zinc-800 rounded-lg border-2 border-zinc-700 focus:border-zinc-600 outline-none transition text-zinc-100 placeholder-zinc-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={isPending}
-                onChange={(e) => setValue(e.target.value)}
-                placeholder={`검열할 ${CENSORSHIP_KEY_LABELS[key]}를 입력하세요`}
-                type="text"
-                value={value}
-              />
-              {suggestions.length > 0 && (
-                <div className="mt-2 max-h-32 overflow-y-auto bg-zinc-800 rounded-lg border-2 border-zinc-700">
-                  {suggestions.map((suggestion) => (
-                    <button
-                      className="w-full px-4 py-2 text-left text-zinc-300 hover:bg-zinc-700 hover:text-zinc-100 transition"
-                      key={suggestion}
-                      onClick={() => setValue(suggestion)}
-                      type="button"
-                    >
-                      {suggestion}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Info for tag categories */}
-          {isTagCategory && (
-            <div className="p-4 bg-zinc-800 rounded-lg border-2 border-zinc-700">
-              <p className="text-sm text-zinc-300">{CENSORSHIP_KEY_LABELS[key]}의 모든 항목이 검열됩니다.</p>
-            </div>
-          )}
+          <div>
+            <label className="block text-sm font-medium text-zinc-300 mb-2">{CENSORSHIP_KEY_LABELS[key]} 이름</label>
+            <input
+              autoFocus
+              className="w-full px-4 py-2 bg-zinc-800 rounded-lg border-2 border-zinc-700 focus:border-zinc-600 outline-none transition text-zinc-100 placeholder-zinc-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isPending}
+              onChange={(e) => setValue(e.target.value)}
+              placeholder={`검열할 ${CENSORSHIP_KEY_LABELS[key]}를 입력하세요`}
+              type="text"
+              value={value}
+            />
+            {suggestions.length > 0 && (
+              <div className="mt-2 max-h-32 overflow-y-auto bg-zinc-800 rounded-lg border-2 border-zinc-700">
+                {suggestions.map((suggestion) => (
+                  <button
+                    className="w-full px-4 py-2 text-left text-zinc-300 hover:bg-zinc-700 hover:text-zinc-100 transition"
+                    key={suggestion}
+                    onClick={() => setValue(suggestion)}
+                    type="button"
+                  >
+                    {suggestion}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
           {/* Level Selection */}
           <div>
@@ -185,7 +160,7 @@ export default function AddCensorshipModal({ open, onClose, onSubmit }: Readonly
           </button>
           <button
             className="flex-1 px-4 py-3 text-zinc-900 font-semibold bg-brand-end hover:bg-brand-end/90 disabled:bg-zinc-700 disabled:text-zinc-500 disabled:cursor-not-allowed rounded-lg transition flex items-center justify-center gap-2"
-            disabled={(!isTagCategory && !value.trim()) || isPending}
+            disabled={!value.trim() || isPending}
             type="submit"
           >
             {isPending ? (
