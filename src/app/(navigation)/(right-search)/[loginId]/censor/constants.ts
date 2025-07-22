@@ -2,11 +2,11 @@ import { BLIND_TAG_VALUE_TO_LABEL, BLIND_TAG_VALUES } from '@/constants/json'
 import { CensorshipKey, CensorshipLevel } from '@/database/enum'
 
 export const CENSORSHIP_KEY_LABELS: Record<CensorshipKey, string> = {
-  [CensorshipKey.TAG]: '태그',
   [CensorshipKey.ARTIST]: '작가',
-  [CensorshipKey.CHARACTER]: '캐릭터',
   [CensorshipKey.GROUP]: '그룹',
   [CensorshipKey.SERIES]: '시리즈',
+  [CensorshipKey.CHARACTER]: '캐릭터',
+  [CensorshipKey.TAG]: '태그',
   [CensorshipKey.TAG_CATEGORY_FEMALE]: '여성 태그',
   [CensorshipKey.TAG_CATEGORY_MALE]: '남성 태그',
   [CensorshipKey.TAG_CATEGORY_MIXED]: '혼합 태그',

@@ -1,6 +1,8 @@
+import { useRouter } from 'next/navigation'
 import { useCallback, useEffect } from 'react'
 import { toast } from 'sonner'
 
+import { MangaIdSourceSearchParam } from '@/app/manga/[id]/[source]/constants'
 import { useImageIndexStore } from '@/components/ImageViewer/store/imageIndex'
 
 type Params = {
@@ -10,28 +12,33 @@ type Params = {
 
 export default function useImageNavigation({ maxIndex, offset }: Params) {
   const { getImageIndex, setImageIndex } = useImageIndexStore()
+  const router = useRouter()
 
   const prevPage = useCallback(() => {
     const currentImageIndex = getImageIndex()
 
     if (currentImageIndex <= 0) {
-      toast.warning('첫번째 이미지입니다.')
+      toast.warning('첫번째 이미지에요')
       return
     }
 
-    setImageIndex(currentImageIndex - offset)
-  }, [getImageIndex, offset, setImageIndex])
+    const newImageIndex = currentImageIndex - offset
+    setImageIndex(newImageIndex)
+    router.replace(`?${MangaIdSourceSearchParam.PAGE}=${newImageIndex + 1}`)
+  }, [getImageIndex, offset, router, setImageIndex])
 
   const nextPage = useCallback(() => {
     const currentImageIndex = getImageIndex()
 
     if (currentImageIndex + offset > maxIndex) {
-      toast.warning('마지막 이미지입니다.')
+      toast.warning('마지막 이미지에요')
       return
     }
 
-    setImageIndex(currentImageIndex + offset)
-  }, [getImageIndex, maxIndex, offset, setImageIndex])
+    const newImageIndex = currentImageIndex + offset
+    setImageIndex(newImageIndex)
+    router.replace(`?${MangaIdSourceSearchParam.PAGE}=${newImageIndex + 1}`)
+  }, [getImageIndex, maxIndex, offset, router, setImageIndex])
 
   useEffect(() => {
     function handleKeyDown({ code, metaKey }: KeyboardEvent) {

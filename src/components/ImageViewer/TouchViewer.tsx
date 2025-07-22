@@ -1,7 +1,9 @@
 'use client'
 
+import { useSearchParams } from 'next/navigation'
 import { memo, useCallback, useEffect, useRef } from 'react'
 
+import { MangaIdSourceSearchParam } from '@/app/manga/[id]/[source]/constants'
 import { PageView } from '@/components/ImageViewer/store/pageView'
 import { ScreenFit } from '@/components/ImageViewer/store/screenFit'
 import { useTouchOrientationStore } from '@/components/ImageViewer/store/touchOrientation'
@@ -48,6 +50,7 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Readonly<Props>) {
   const getTouchOrientation = useTouchOrientationStore((state) => state.getTouchOrientation)
   const getBrightness = useBrightnessStore((state) => state.getBrightness)
   const setBrightness = useBrightnessStore((state) => state.setBrightness)
+  const setImageIndex = useImageIndexStore((state) => state.setImageIndex)
   const currentIndex = useImageIndexStore((state) => state.imageIndex)
   const pointerStartRef = useRef<{ x: number; y: number } | null>(null)
   const initialBrightnessRef = useRef(100)
@@ -56,6 +59,7 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Readonly<Props>) {
   const ulRef = useRef<HTMLUListElement>(null)
   const throttleRef = useRef(false)
   const previousIndexRef = useRef(currentIndex)
+  const searchParams = useSearchParams()
 
   const { prevPage, nextPage } = useImageNavigation({
     maxIndex: images.length - 1,
@@ -257,6 +261,18 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Readonly<Props>) {
       ul.style.overflow = 'auto'
     }, 500)
   }, [currentIndex])
+
+  // NOTE: URL의 page 값이 변경되면 이미지 인덱스를 업데이트함
+  useEffect(() => {
+    const pageStr = searchParams.get(MangaIdSourceSearchParam.PAGE) ?? ''
+    const parsedPage = parseInt(pageStr, 10)
+
+    if (isNaN(parsedPage) || parsedPage < 1 || parsedPage > images.length) {
+      return
+    }
+
+    setImageIndex(parsedPage - 1)
+  }, [images.length, searchParams, setImageIndex])
 
   return (
     <ul
