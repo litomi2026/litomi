@@ -116,10 +116,9 @@ function ImportExportModal({ open, onClose, censorships, onImport, keyLabels }: 
 
       startTransition(() => {
         onImport(formData)
+        setImportText('')
+        onClose()
       })
-
-      setImportText('')
-      onClose()
     } catch {
       toast.error('올바른 JSON 형식이 아니에요')
     }
@@ -136,13 +135,14 @@ function ImportExportModal({ open, onClose, censorships, onImport, keyLabels }: 
       <div className="flex flex-col h-full min-h-0">
         {/* Header */}
         <div className="flex items-center justify-between p-4 bg-zinc-900 border-b-2 border-zinc-800 flex-shrink-0">
-          <h2 className="text-xl font-bold text-zinc-100">검열 규칙 가져오기/내보내기</h2>
+          <h2 className="text-xl font-bold text-zinc-100">규칙 가져오기/내보내기</h2>
           <button
-            className="p-2 -mr-2 rounded-lg hover:bg-zinc-800 transition sm:p-1.5 sm:-mr-1.5"
+            className="p-2 hover:bg-zinc-800 rounded-lg transition disabled:opacity-50"
+            disabled={isPending}
             onClick={onClose}
             type="button"
           >
-            <IconX className="w-6 h-6 sm:w-5 sm:h-5" />
+            <IconX className="w-5 text-zinc-400" />
           </button>
         </div>
 
@@ -176,7 +176,7 @@ function ImportExportModal({ open, onClose, censorships, onImport, keyLabels }: 
                     현재 {censorships.length}개의 검열 규칙을 파일로 내보낼 수 있어요
                   </p>
                   <label className="block text-sm font-medium text-zinc-300 mb-2">파일 형식</label>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid sm:grid-cols-2 gap-2">
                     <button
                       aria-pressed={exportFormat === 'json'}
                       className="p-3 rounded-lg border-2 transition aria-pressed:bg-zinc-700 aria-pressed:border-brand-end aria-pressed:text-zinc-100 aria-pressed:hover:bg-zinc-700 aria-pressed:hover:text-zinc-300"

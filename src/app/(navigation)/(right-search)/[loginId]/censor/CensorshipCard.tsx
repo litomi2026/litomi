@@ -206,3 +206,26 @@ export default function CensorshipCard({
     </div>
   )
 }
+
+export function CensorshipCardSkeleton() {
+  return (
+    <div className="p-4 bg-zinc-800 rounded-lg border-2 animate-fade-in">
+      <div className="flex items-start gap-3">
+        <div className="w-5 h-5 rounded border-2 mt-0.5 bg-zinc-700" />
+        <div className="flex-1">
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <div className="h-5 w-32 bg-zinc-700 rounded my-0.5" />
+                <div className="h-4 w-16 bg-zinc-700 rounded" />
+                <div className="h-4 w-12 bg-zinc-700 rounded" />
+              </div>
+              <div className="h-3 w-24 bg-zinc-700 rounded mt-2" />
+            </div>
+            <div className="w-6 h-6 bg-zinc-700 rounded" />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

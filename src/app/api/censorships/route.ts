@@ -1,13 +1,10 @@
 import { cookies } from 'next/headers'
 
-import { createCacheControl } from '@/crawler/proxy-utils'
 import { CensorshipKey, CensorshipLevel } from '@/database/enum'
 import selectCensorships from '@/sql/selectCensorships'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
 
 import { GETCensorshipsSchema } from './schema'
-
-const maxAge = 10
 
 export type CensorshipItem = {
   id: number
@@ -47,17 +44,8 @@ export async function GET(request: Request) {
     cursorTime: cursorTime ? new Date(cursorTime).toISOString() : undefined,
   })
 
-  const cacheControl = createCacheControl({
-    private: true,
-    maxAge,
-    staleWhileRevalidate: maxAge,
-  })
-
   if (censorshipRows.length === 0) {
-    return new Response('404 Not Found', {
-      status: 404,
-      headers: { 'Cache-Control': cacheControl },
-    })
+    return new Response('404 Not Found', { status: 404 })
   }
 
   const hasNextPage = limit ? censorshipRows.length > limit : false
@@ -70,14 +58,11 @@ export async function GET(request: Request) {
       }
     : null
 
-  return Response.json(
-    {
-      censorships: censorships.map((censorship) => ({
-        ...censorship,
-        createdAt: censorship.createdAt.getTime(),
-      })),
-      nextCursor,
-    } satisfies GETCensorshipsResponse,
-    { headers: { 'Cache-Control': cacheControl } },
-  )
+  return Response.json({
+    censorships: censorships.map((censorship) => ({
+      ...censorship,
+      createdAt: censorship.createdAt.getTime(),
+    })),
+    nextCursor,
+  } satisfies GETCensorshipsResponse)
 }
