@@ -1,6 +1,7 @@
 'use client'
 
 import { useQueryClient } from '@tanstack/react-query'
+import dynamic from 'next/dynamic'
 import { startTransition, useActionState, useCallback, useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -17,12 +18,13 @@ import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useCensorshipsInfiniteQuery from '@/query/useCensorshipInfiniteQuery'
 
 import { addCensorships, deleteCensorships } from './action'
-import AddCensorshipModal from './AddCensorshipModal'
 import CensorshipCard, { CensorshipCardSkeleton } from './CensorshipCard'
 import CensorshipStats from './CensorshipStats'
 import { CENSORSHIP_KEY_LABELS } from './constants'
 import DefaultCensorshipInfo from './DefaultCensorshipInfo'
-import ImportExportModal from './ImportExportModal'
+
+const AddCensorshipModal = dynamic(() => import('./AddCensorshipModal'))
+const ImportExportModal = dynamic(() => import('./ImportExportModal'))
 
 const initialState = {} as Awaited<ReturnType<typeof addCensorships>>
 const initialDeleteState = {} as Awaited<ReturnType<typeof deleteCensorships>>

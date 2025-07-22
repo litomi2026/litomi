@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState, useTransition } from 'react'
+import { memo, useEffect, useRef, useState, useTransition } from 'react'
 
 import type { SearchSuggestion } from '@/app/(navigation)/search/constants'
 
@@ -47,7 +47,9 @@ const prefixMap: Record<CensorshipKey, string> = {
   [CensorshipKey.TAG]: '',
 }
 
-export default function AddCensorshipModal({ open, onClose, onSubmit }: Readonly<Props>) {
+export default memo(AddCensorshipModal)
+
+function AddCensorshipModal({ open, onClose, onSubmit }: Readonly<Props>) {
   const [key, setKey] = useState<CensorshipKey>(CensorshipKey.TAG)
   const [value, setValue] = useState('')
   const [level, setLevel] = useState<CensorshipLevel>(CensorshipLevel.LIGHT)
