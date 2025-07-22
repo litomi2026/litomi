@@ -1,3 +1,12 @@
+// NOTE: https://stackoverflow.com/questions/41009167/what-is-the-use-of-self-clients-claim
+self.addEventListener('install', (event) => {
+  event.waitUntil(self.skipWaiting())
+})
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(self.clients.claim())
+})
+
 self.addEventListener('push', function (event) {
   if (event.data) {
     const data = event.data.json()
