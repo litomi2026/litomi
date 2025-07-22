@@ -1,7 +1,6 @@
 'use client'
 
 import { memo, useEffect, useState } from 'react'
-import { toast } from 'sonner'
 
 import { IconDownload } from './icons/IconDownload'
 
@@ -26,12 +25,6 @@ function InstallPrompt() {
   const [isIOS, setIsIOS] = useState(false)
   const [isStandalone, setIsStandalone] = useState(false)
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
-
-  useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(() => toast.error('서비스 워커 등록에 실패했어요'))
-    }
-  }, [])
 
   // iOS 판별
   useEffect(() => {
