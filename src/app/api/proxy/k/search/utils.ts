@@ -40,9 +40,11 @@ export function filterMangasByMinusPrefix(mangas: Manga[], query?: string) {
   const normalizedValueMap = new NormalizedValueMap()
 
   return mangas.filter((manga) => {
-    if (filterLookup.languages.size > 0 && manga.language) {
-      if (filterLookup.languages.has(normalizedValueMap.get(manga.language))) {
-        return false
+    if (filterLookup.languages.size > 0 && manga.languages?.length) {
+      for (const language of manga.languages) {
+        if (filterLookup.languages.has(normalizedValueMap.get(language.value))) {
+          return false
+        }
       }
     }
 

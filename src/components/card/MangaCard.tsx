@@ -36,7 +36,7 @@ export function MangaCardSkeleton() {
 }
 
 function MangaCard({ manga, index = 0, source, className = '', showSearchFromNextButton }: Readonly<Props>) {
-  const { id, artists, characters, date, group, series, tags, title, type, language, images } = manga
+  const { id, artists, characters, date, group, series, tags, title, type, languages, images } = manga
   const viewerLink = getViewerLink(id, source)
   const isAllDownloadable = images.every((image) => image.startsWith('https://soujpa.in/')) // TODO: 다운로드 가능 여부 확인
 
@@ -58,7 +58,9 @@ function MangaCard({ manga, index = 0, source, className = '', showSearchFromNex
             >
               <h4 className="line-clamp-3 font-bold text-base leading-5 min-w-0 break-words break-all">{title}</h4>
             </Link>
-            {language && <LanguageBadge language={language} />}
+            {languages && languages.length > 0 && (
+              <LanguageBadge key={languages[0].value} language={languages[0].value} />
+            )}
           </div>
           {type && (
             <div className="flex gap-1">

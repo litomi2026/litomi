@@ -1,5 +1,6 @@
 import { KOREAN_TO_ENGLISH_QUERY_KEYS } from '@/app/(navigation)/search/constants'
 import { getAllCharactersWithLabels } from '@/translation/character'
+import { getAllLanguagesWithLabels, translateLanguage } from '@/translation/language'
 import { getAllSeriesWithLabels } from '@/translation/series'
 import tagCategoryTranslations from '@/translation/tag-category.json'
 import tagMaleFemaleTranslations from '@/translation/tag-male-female.json'
@@ -10,7 +11,6 @@ import tagTranslations from '@/translation/tag.json'
 import SuggestionTrie, { SuggestionItem } from './trie'
 
 // Language and type options
-const LANGUAGE_OPTIONS = ['korean', 'english', 'japanese', 'chinese', 'n/a']
 const TYPE_OPTIONS = ['manga', 'doujinshi', 'artist cg', 'game cg', 'western', 'image set', 'cosplay', 'asian porn']
 
 // Initialize the Trie with all suggestions
@@ -94,52 +94,33 @@ function getLabels(
     value: 'language:',
     labels: { ko: '언어:', en: 'language:' },
   })
-  suggestionTrie.insert('language:', {
-    value: 'language:',
-    labels: { ko: '언어:', en: 'language:' },
-  })
   suggestionTrie.insert('언어', {
     value: 'language:',
     labels: { ko: '언어:', en: 'language:' },
   })
 
-  LANGUAGE_OPTIONS.forEach((lang) => {
-    const value = `language:${lang}`
-    const koLabel =
-      lang === 'korean'
-        ? '한국어'
-        : lang === 'japanese'
-          ? '일본어'
-          : lang === 'english'
-            ? '영어'
-            : lang === 'chinese'
-              ? '중국어'
-              : lang
-
+  getAllLanguagesWithLabels('ko').forEach(({ value, label: koLabel }) => {
+    const enLabel = translateLanguage(value, 'en')
     const suggestion: SuggestionItem = {
-      value,
+      value: `language:${value}`,
       labels: {
         ko: `언어:${koLabel}`,
-        en: value,
+        en: `language:${enLabel}`,
       },
     }
 
-    // Insert for full value
+    suggestionTrie.insert(`language:${value}`, suggestion)
     suggestionTrie.insert(value, suggestion)
-    // Insert for language name
-    suggestionTrie.insert(lang, suggestion)
-    // Insert for Korean name
-    if (koLabel !== lang) {
+    if (koLabel !== value) {
       suggestionTrie.insert(koLabel, suggestion)
+    }
+    if (enLabel !== value && enLabel !== koLabel) {
+      suggestionTrie.insert(enLabel, suggestion)
     }
   })
 
   // Add type suggestions
   suggestionTrie.insert('type', {
-    value: 'type:',
-    labels: { ko: '종류:', en: 'type:' },
-  })
-  suggestionTrie.insert('type:', {
     value: 'type:',
     labels: { ko: '종류:', en: 'type:' },
   })
@@ -257,16 +238,6 @@ function getLabels(
       'zh-TW': '系列:',
     },
   })
-  suggestionTrie.insert('series:', {
-    value: 'series:',
-    labels: {
-      ko: '시리즈:',
-      en: 'series:',
-      ja: 'シリーズ:',
-      'zh-CN': '系列:',
-      'zh-TW': '系列:',
-    },
-  })
   suggestionTrie.insert('시리즈', {
     value: 'series:',
     labels: {
@@ -303,16 +274,6 @@ function getLabels(
   // Add character suggestions
   // First add the character category
   suggestionTrie.insert('character', {
-    value: 'character:',
-    labels: {
-      ko: '캐릭터:',
-      en: 'character:',
-      ja: 'キャラクター:',
-      'zh-CN': '角色:',
-      'zh-TW': '角色:',
-    },
-  })
-  suggestionTrie.insert('character:', {
     value: 'character:',
     labels: {
       ko: '캐릭터:',

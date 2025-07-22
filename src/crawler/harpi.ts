@@ -8,6 +8,7 @@ import {
   HarpiSort,
 } from '@/app/api/proxy/harpi/search/schema'
 import { HARPI_TAG_MAP } from '@/database/harpi-tag'
+import { translateLanguageList } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
 import { translateTag } from '@/translation/tag'
 import { Manga, MangaTag } from '@/types/manga'
@@ -226,12 +227,18 @@ export class HarpiClient {
       id: parseInt(harpiManga.parseKey, 10) || 0,
       harpiId: harpiManga.id,
       title: harpiManga.korTitle || harpiManga.engTitle || harpiManga.title,
-      artists: harpiManga.authors?.map((author) => ({ value: author, label: author })),
-      characters: harpiManga.characters?.map((character) => ({ value: character, label: character })),
+      artists: harpiManga.authors?.map((author) => ({
+        value: author,
+        label: author.replaceAll('_', ' '),
+      })),
+      characters: harpiManga.characters?.map((character) => ({
+        value: character,
+        label: character.replaceAll('_', ' '),
+      })),
       series: translateSeriesList(harpiManga.series, locale),
       tags: harpiManga.tagsIds ? this.convertHarpiTagIdsToTags(harpiManga.tagsIds, locale) : [],
       type: harpiManga.type,
-      language: 'korean',
+      languages: translateLanguageList(['korean'], locale),
       date: new Date(harpiManga.date).toISOString(),
       images: this.buildImageUrls(harpiManga.imageUrl),
       cdn: 'soujpa.in',

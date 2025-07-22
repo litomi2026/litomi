@@ -9,6 +9,7 @@ import localFont from 'next/font/local'
 import { ReactNode } from 'react'
 import { Toaster } from 'sonner'
 
+import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar'
 import { defaultOpenGraph, DESCRIPTION, SHORT_NAME } from '@/constants'
 import { AMPLITUDE_API_KEY, GA_ID, GTM_ID } from '@/constants/env'
 import { CANONICAL_URL } from '@/constants/url'
@@ -59,6 +60,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
+  themeColor: '#0a0a0a',
 }
 
 type Props = {
@@ -73,8 +75,9 @@ export default function RootLayout({ children }: Readonly<Props>) {
       </head>
       <body className={`${PretendardVariable.className} antialiased h-full`}>
         <QueryProvider>{children}</QueryProvider>
+        <ServiceWorkerRegistrar />
         <Toaster duration={3000} position="top-center" richColors theme="dark" />
-        <SpeedInsights />
+        {process.env.VERCEL === '1' && <SpeedInsights />}
         <Analytics />
         {AMPLITUDE_API_KEY && <AmplitudeLazy apiKey={AMPLITUDE_API_KEY} />}
         {GTM_ID && <GoogleTagManager gtmId={GTM_ID} />}

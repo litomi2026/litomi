@@ -15,7 +15,7 @@ export type Manga = {
   tags?: MangaTag[]
   title: string
   type?: string
-  language?: string
+  languages?: LabeledValue[]
   cdn?: string
   count?: number
   like?: number

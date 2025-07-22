@@ -1,6 +1,6 @@
 'use server'
 
-import { and, inArray, sql } from 'drizzle-orm'
+import { inArray, sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 
 import { db } from '@/database/drizzle'
@@ -38,19 +38,39 @@ export async function addCensorships(_prevState: unknown, formData: FormData) {
   }))
 
   try {
-    const results = await db
-      .insert(userCensorshipTable)
-      .values(censorships)
-      .onConflictDoNothing()
-      .returning({ id: userCensorshipTable.id })
+    const { insertResults, exceeded, message, status } = await db.transaction(async (tx) => {
+      const [{ count }] = await tx
+        .select({ count: sql<number>`COUNT(*)` })
+        .from(userCensorshipTable)
+        .where(sql`${userCensorshipTable.userId} = ${userId}`)
 
-    if (results.length === 0) {
+      if (count + censorships.length > 100) {
+        return {
+          status: 400,
+          message: `검열 규칙은 최대 100개까지만 추가할 수 있어요. (현재 ${count}개)`,
+          exceeded: true,
+        }
+      }
+
+      const insertResults = await tx
+        .insert(userCensorshipTable)
+        .values(censorships)
+        .returning({ id: userCensorshipTable.id })
+
+      return { insertResults }
+    })
+
+    if (exceeded) {
+      return { status, message }
+    }
+
+    if (!insertResults || insertResults.length === 0) {
       return { status: 204 }
     }
 
     return {
       status: 200,
-      data: { ids: results.map((r) => r.id) },
+      data: { ids: insertResults.map((r) => r.id) },
     }
   } catch (error) {
     if (error instanceof Error) {
@@ -125,42 +145,27 @@ export async function updateCensorships(_prevState: unknown, formData: FormData)
 
   const { ids, keys, values, levels, userId } = validation.data
 
+  const updateData = ids.map((id, index) => ({
+    id,
+    key: keys[index],
+    value: values[index],
+    level: levels[index],
+    userId,
+  }))
+
   try {
-    const keyCase = sql.join(
-      [
-        sql`CASE`,
-        ...ids.map((id, index) => sql`WHEN ${userCensorshipTable.id} = ${id} THEN ${keys[index]}`),
-        sql`ELSE ${userCensorshipTable.key} END`,
-      ],
-      sql.raw(' '),
-    )
-
-    const valueCase = sql.join(
-      [
-        sql`CASE`,
-        ...ids.map((id, index) => sql`WHEN ${userCensorshipTable.id} = ${id} THEN ${values[index]}`),
-        sql`ELSE ${userCensorshipTable.value} END`,
-      ],
-      sql.raw(' '),
-    )
-
-    const levelCase = sql.join(
-      [
-        sql`CASE`,
-        ...ids.map((id, index) => sql`WHEN ${userCensorshipTable.id} = ${id} THEN ${levels[index]}`),
-        sql`ELSE ${userCensorshipTable.level} END`,
-      ],
-      sql.raw(' '),
-    )
-
     const result = await db
-      .update(userCensorshipTable)
-      .set({
-        key: keyCase,
-        value: valueCase,
-        level: levelCase,
+      .insert(userCensorshipTable)
+      .values(updateData)
+      .onConflictDoUpdate({
+        target: userCensorshipTable.id,
+        set: {
+          key: sql.raw(`excluded.${userCensorshipTable.key.name}`),
+          value: sql.raw(`excluded.${userCensorshipTable.value.name}`),
+          level: sql.raw(`excluded.${userCensorshipTable.level.name}`),
+        },
+        setWhere: sql`${userCensorshipTable.userId} = ${userId}`,
       })
-      .where(and(inArray(userCensorshipTable.id, ids), sql`${userCensorshipTable.userId} = ${userId}`))
       .returning({ id: userCensorshipTable.id })
 
     if (result.length === 0) {

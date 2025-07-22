@@ -19,7 +19,7 @@ type Props = {
 export default memo(MangaDetailButton)
 
 function MangaDetailButton({ manga, source }: Readonly<Props>) {
-  const { title, artists, group, series, characters, type, tags, date, language } = manga
+  const { title, artists, group, series, characters, type, tags, date, languages } = manga
   const [isOpened, setIsOpened] = useState(false)
 
   return (
@@ -31,10 +31,10 @@ function MangaDetailButton({ manga, source }: Readonly<Props>) {
         <div className="bg-zinc-900 min-w-3xs w-screen max-w-sm md:max-w-lg rounded-xl p-4 pt-8 shadow-xl border grid gap-3 text-sm overflow-auto max-h-svh md:text-base">
           <h2 className="font-bold text-lg md:text-xl">{title}</h2>
           <div className="grid gap-2 [&_strong]:whitespace-nowrap">
-            {language && (
+            {languages && languages.length > 0 && (
               <div className="flex gap-2">
                 <strong>언어</strong>
-                <MangaMetadataItem filterType="language" value={language} />
+                <MangaMetadataList details={languages} filterType="language" />
               </div>
             )}
             {type && (

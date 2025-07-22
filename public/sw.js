@@ -1,3 +1,12 @@
+// NOTE: https://stackoverflow.com/questions/41009167/what-is-the-use-of-self-clients-claim
+self.addEventListener('install', (event) => {
+  event.waitUntil(self.skipWaiting())
+})
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(self.clients.claim())
+})
+
 self.addEventListener('push', function (event) {
   if (event.data) {
     const data = event.data.json()
@@ -18,5 +27,5 @@ self.addEventListener('push', function (event) {
 self.addEventListener('notificationclick', function (event) {
   console.log('Notification click received.')
   event.notification.close()
-  event.waitUntil(self.clients.openWindow('<https://your-website.com>'))
+  event.waitUntil(self.clients.openWindow('https://litomi.in'))
 })

@@ -98,7 +98,7 @@ describe('filterMangasByMinusPrefix', () => {
     series: [{ label: 'Naruto', value: 'naruto' }],
     artists: [{ label: 'Test Artist', value: 'test_artist' }],
     group: [{ label: 'Test Group', value: 'test_group' }],
-    language: 'english',
+    languages: [{ label: 'English', value: 'english' }],
   }
 
   test('언어 필터와 일치하는 망가를 제외한다', () => {
