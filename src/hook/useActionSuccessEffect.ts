@@ -12,6 +12,4 @@ export default function useActionSuccessEffect<T>({ status, data, onSuccess }: P
       onSuccess?.(data)
     }
   }, [status, data, onSuccess])
-
-  return null
 }

@@ -35,7 +35,6 @@ export default function Censorships() {
   const [searchQuery, setSearchQuery] = useState('')
   const [filterKey, setFilterKey] = useState<CensorshipKey | null>(null)
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
-  const [editingId, setEditingId] = useState<number | null>(null)
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } = useCensorshipsInfiniteQuery()
 
   const loadMoreRef = useInfiniteScrollObserver({
@@ -214,12 +213,8 @@ export default function Censorships() {
             {filteredCensorships.map((censorship) => (
               <CensorshipCard
                 censorship={censorship}
-                isEditing={editingId === censorship.id}
                 isSelected={selectedIds.has(censorship.id)}
                 key={censorship.id}
-                keyLabels={CENSORSHIP_KEY_LABELS}
-                onCancelEdit={() => setEditingId(null)}
-                onEdit={() => setEditingId(censorship.id)}
                 onToggleSelect={() => handleToggleSelect(censorship.id)}
               />
             ))}
