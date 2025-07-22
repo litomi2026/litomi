@@ -23,7 +23,7 @@ describe('GET /api/search/suggestions', () => {
         expect(data[0]).toEqual({ label: '언어:', value: 'language:' })
         expect(data.every((item) => item.value.includes('langu'))).toBe(true)
         expect(data.some((item) => item.value === 'language:korean' && item.label === '언어:한국어')).toBe(true)
-        expect(data.some((item) => item.value === 'language:japanese' && item.label === '언어:일본어')).toBe(true)
+        expect(data.some((item) => item.value === 'language:english' && item.label === '언어:영어')).toBe(true)
       })
 
       test('"language" 값을 검색했을 때 언어 카테고리와 언어 옵션들을 반환한다', async () => {
@@ -36,7 +36,7 @@ describe('GET /api/search/suggestions', () => {
         expect(data[0]).toEqual({ label: '언어:', value: 'language:' })
         expect(data.every((item) => item.value.includes('language'))).toBe(true)
         expect(data.some((item) => item.value === 'language:korean' && item.label === '언어:한국어')).toBe(true)
-        expect(data.some((item) => item.value === 'language:japanese' && item.label === '언어:일본어')).toBe(true)
+        expect(data.some((item) => item.value === 'language:english' && item.label === '언어:영어')).toBe(true)
       })
 
       test('"language:japa" 값을 검색했을 때 "language:japanese" 값만 반환한다', async () => {
@@ -342,7 +342,7 @@ describe('GET /api/search/suggestions', () => {
     })
 
     describe('다국어 지원', () => {
-      test('영어 로케일로 검색 시 영어 라벨을 반환한다', async () => {
+      test('영어 로케일로 "language" 검색 시 영어 라벨을 반환한다', async () => {
         const request = createRequest('language', 'en')
         const response = await GET(request)
         const data = (await response.json()) as GETSearchSuggestionsResponse
@@ -350,10 +350,10 @@ describe('GET /api/search/suggestions', () => {
         expect(response.status).toBe(200)
         expect(data).toBeArray()
         expect(data[0]).toEqual({ label: 'language:', value: 'language:' })
-        expect(data.some((item) => item.value === 'language:korean' && item.label === 'language:korean')).toBe(true)
+        expect(data.some((item) => item.value === 'language:korean' && item.label === 'language:Korean')).toBe(true)
       })
 
-      test('영어 로케일로 검색 시 영어 라벨을 반환한다', async () => {
+      test('영어 로케일로 "touhou" 검색 시 영어 라벨을 반환한다', async () => {
         const request = createRequest('touhou', 'en')
         const response = await GET(request)
         const data = (await response.json()) as GETSearchSuggestionsResponse

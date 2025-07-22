@@ -1,5 +1,6 @@
 import { translateCharacterList } from '@/translation/character'
 import { Multilingual, normalizeValue } from '@/translation/common'
+import { translateLanguageList } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
 import { sortTagValue, translateTag } from '@/translation/tag'
 import { Manga, MangaTag } from '@/types/manga'
@@ -202,7 +203,7 @@ export class HiyobiClient {
       tags: this.convertHiyobiTagsToTags(tags, locale),
       title,
       type: hiyobiTypeNumberToName[type] ?? `${type}?`,
-      language,
+      languages: translateLanguageList([language], locale),
       images: [this.getKHentaiThumbnailURL(id)],
       cdn: 'thumb.k-hentai',
       count: filecount,

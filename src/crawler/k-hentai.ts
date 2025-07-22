@@ -2,6 +2,7 @@ import type { Manga } from '@/types/manga'
 
 import { translateCharacterList } from '@/translation/character'
 import { normalizeValue } from '@/translation/common'
+import { translateLanguageList } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
 import { translateTag } from '@/translation/tag'
 import { convertCamelCaseToKebabCase } from '@/utils/param'
@@ -246,6 +247,7 @@ export class KHentaiClient {
     const characterValues = manga.tags.filter(({ tag }) => tag[0] === 'character').map(({ tag }) => tag[1])
     const groupValues = manga.tags.filter(({ tag }) => tag[0] === 'group').map(({ tag }) => tag[1])
     const artistValues = manga.tags.filter(({ tag }) => tag[0] === 'artist').map(({ tag }) => tag[1])
+    const languageValues = manga.tags.filter(({ tag }) => tag[0] === 'language').map(({ tag }) => tag[1])
 
     return {
       id: manga.id,
@@ -261,7 +263,7 @@ export class KHentaiClient {
       })),
       title: manga.title,
       type: kHentaiTypeNumberToName[manga.category] ?? '?',
-      language: manga.tags.find(({ tag }) => tag[0] === 'language')?.tag[1],
+      languages: translateLanguageList(languageValues, locale),
       cdn: 'ehgt.org',
       count: manga.filecount,
       rating: manga.rating / 100,

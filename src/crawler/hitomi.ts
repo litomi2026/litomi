@@ -1,5 +1,6 @@
 import { captureException } from '@sentry/nextjs'
 
+import { translateLanguageList } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
 import { Manga } from '@/types/manga'
 
@@ -93,8 +94,9 @@ export async function fetchMangaFromHitomi({ id }: { id: number }) {
 
 function convertHitomiGalleryToManga(gallery: HitomiGallery): Manga {
   const locale = 'ko' // TODO: Get from user preferences or context
-  const seriesValues = gallery.parodys.map((parody) => parody.parody)
-  const artistValues = gallery.artists.map((artist) => artist.artist)
+  const seriesValues = gallery.parodys.map(({ parody }) => parody)
+  const artistValues = gallery.artists.map(({ artist }) => artist)
+  const languageValues = gallery.languages.map(({ name }) => name)
 
   return {
     id: Number(gallery.id),
@@ -106,7 +108,7 @@ function convertHitomiGalleryToManga(gallery: HitomiGallery): Manga {
       value: tag.tag,
       label: tag.tag,
     })),
-    language: gallery.language,
+    languages: translateLanguageList(languageValues, locale),
     images: gallery.files.map((file) => `https://ltn.gold-usergeneratedcontent.net/1/111/${file.hash}`),
   }
 }
