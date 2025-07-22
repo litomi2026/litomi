@@ -195,9 +195,9 @@ export class HiyobiClient {
 
     return {
       id,
-      artists: artistValues.map((value) => ({ value, label: value })),
+      artists: artistValues.map((value) => ({ value, label: value.replaceAll('_', ' ') })),
       characters: translateCharacterList(characterValues, locale),
-      group: groupValues.map((value) => ({ value, label: value })),
+      group: groupValues.map((value) => ({ value, label: value.replaceAll('_', ' ') })),
       series: translateSeriesList(seriesValues, locale),
       tags: this.convertHiyobiTagsToTags(tags, locale),
       title,

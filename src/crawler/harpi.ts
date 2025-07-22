@@ -226,8 +226,14 @@ export class HarpiClient {
       id: parseInt(harpiManga.parseKey, 10) || 0,
       harpiId: harpiManga.id,
       title: harpiManga.korTitle || harpiManga.engTitle || harpiManga.title,
-      artists: harpiManga.authors?.map((author) => ({ value: author, label: author })),
-      characters: harpiManga.characters?.map((character) => ({ value: character, label: character })),
+      artists: harpiManga.authors?.map((author) => ({
+        value: author,
+        label: author.replaceAll('_', ' '),
+      })),
+      characters: harpiManga.characters?.map((character) => ({
+        value: character,
+        label: character.replaceAll('_', ' '),
+      })),
       series: translateSeriesList(harpiManga.series, locale),
       tags: harpiManga.tagsIds ? this.convertHarpiTagIdsToTags(harpiManga.tagsIds, locale) : [],
       type: harpiManga.type,

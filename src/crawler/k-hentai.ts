@@ -249,9 +249,9 @@ export class KHentaiClient {
 
     return {
       id: manga.id,
-      artists: artistValues.map((value) => ({ value, label: value })),
+      artists: artistValues.map((value) => ({ value, label: value.replaceAll('_', ' ') })),
       characters: translateCharacterList(characterValues, locale),
-      group: groupValues.map((value) => ({ value, label: value })),
+      group: groupValues.map((value) => ({ value, label: value.replaceAll('_', ' ') })),
       date: new Date(manga.posted * 1000).toISOString(),
       series: translateSeriesList(seriesValues, locale),
       tags: manga.tags.filter(this.isValidKHentaiTag).map(({ tag: [category, value] }) => ({
