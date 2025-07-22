@@ -53,13 +53,13 @@ export const metadata: Metadata = {
     RATING: 'RTA-5042-1996-1400-1577-RTA',
     rating: 'adult',
   },
-  themeColor: '#0a0a0a',
 }
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
+  themeColor: '#0a0a0a',
 }
 
 type Props = {
