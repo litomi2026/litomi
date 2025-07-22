@@ -18,7 +18,7 @@ export default function useImageNavigation({ maxIndex, offset }: Params) {
     const currentImageIndex = getImageIndex()
 
     if (currentImageIndex <= 0) {
-      toast.warning('첫 이미지에요')
+      toast.warning('첫번째 이미지에요')
       return
     }
 
