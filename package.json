@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "bun tools/checkEnvVars.ts && next dev --turbopack",
-    "build": "next build --turbo",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "analyze": "ANALYZE=true next build",
