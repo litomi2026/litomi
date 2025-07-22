@@ -35,7 +35,9 @@ export default function MangaCardCensorship({ manga, level }: Readonly<Props>) {
             <span className="text-xl">🚫</span>
           </div>
           <div className="font-semibold mb-1">검열된 콘텐츠</div>
-          <span>{censoringReasons.join(', ')}</span>
+          <Link className="hover:underline" href={`/@${loginId}/censor`}>
+            {censoringReasons.join(', ')}
+          </Link>
         </div>
       </div>
     )
