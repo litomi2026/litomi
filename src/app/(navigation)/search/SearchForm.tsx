@@ -35,7 +35,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
   const currentWordInfo = useMemo(() => getWordAtCursor(keyword, cursorPosition), [keyword, cursorPosition])
 
   const { selectedIndex, setSelectedIndex, searchSuggestions, showHeader, resetSelection, navigateSelection } =
-    useSearchSuggestions(currentWordInfo.word.replace(/^-/g, ''))
+    useSearchSuggestions({ keyword: currentWordInfo.word.replace(/^-/g, '') })
 
   const selectSuggestion = useCallback(
     (suggestion: SearchSuggestion) => {
@@ -60,7 +60,9 @@ function SearchForm({ className = '' }: Readonly<Props>) {
   )
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!showSuggestions || searchSuggestions.length === 0) return
+    if (!showSuggestions || searchSuggestions.length === 0) {
+      return
+    }
 
     switch (e.key) {
       case 'ArrowDown':
@@ -109,7 +111,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
   }
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    if (!suggestionsRef.current?.contains(e.relatedTarget as Node)) {
+    if (!suggestionsRef.current?.contains(e.relatedTarget)) {
       startClosing(() => {
         setShowSuggestions(false)
         resetSelection()
@@ -247,6 +249,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
         <Suspense>
           <div ref={suggestionsRef}>
             <SearchSuggestionDropdown
+              className="max-w-full sm:right-auto"
               onMouseEnter={setSelectedIndex}
               onSelect={selectSuggestion}
               selectedIndex={selectedIndex}

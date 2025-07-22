@@ -3,6 +3,7 @@ import { memo, useEffect, useRef, useState } from 'react'
 import type { SearchSuggestion } from './constants'
 
 type Props = {
+  className?: string
   suggestions: SearchSuggestion[]
   selectedIndex: number
   showHeader: boolean
@@ -12,7 +13,14 @@ type Props = {
 
 export default memo(SearchSuggestionDropdown)
 
-function SearchSuggestionDropdown({ suggestions, selectedIndex, showHeader, onSelect, onMouseEnter }: Readonly<Props>) {
+function SearchSuggestionDropdown({
+  className,
+  suggestions,
+  selectedIndex,
+  showHeader,
+  onSelect,
+  onMouseEnter,
+}: Readonly<Props>) {
   const dropdownRef = useRef<HTMLDivElement>(null)
   const [dropUp, setDropUp] = useState(false)
 
@@ -51,10 +59,7 @@ function SearchSuggestionDropdown({ suggestions, selectedIndex, showHeader, onSe
 
   return (
     <div
-      className={`absolute left-0 right-0 overflow-hidden 
-        bg-zinc-900 border-2 border-zinc-700 rounded-lg shadow-xl z-20
-        sm:max-w-2xl sm:right-auto
-        ${dropUp ? 'bottom-full mb-1' : 'top-full mt-1'}`}
+      className={`absolute left-0 right-0 animate-fade-in-fast overflow-hidden bg-zinc-900 border-2 border-zinc-700 rounded-lg shadow-xl z-20 ${className} ${dropUp ? 'bottom-full mb-1' : 'top-full mt-1'}`}
       id="search-suggestions"
       ref={dropdownRef}
     >
