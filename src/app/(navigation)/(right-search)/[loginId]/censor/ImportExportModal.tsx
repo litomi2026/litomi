@@ -8,10 +8,9 @@ import { IconDownload } from '@/components/icons/IconDownload'
 import { IconUpload } from '@/components/icons/IconUpload'
 import IconX from '@/components/icons/IconX'
 import Modal from '@/components/ui/Modal'
-import { CensorshipKey } from '@/database/enum'
 import { downloadBlob } from '@/utils/download'
 
-import { CENSORSHIP_LEVEL_LABELS } from './constants'
+import { CENSORSHIP_KEY_LABELS, CENSORSHIP_LEVEL_LABELS } from './constants'
 
 const PLACEHOLDER_JSON = `[
   {
@@ -28,14 +27,13 @@ type Props = {
   onClose: () => void
   censorships: CensorshipItem[]
   onImport: (formData: FormData) => void
-  keyLabels: Record<CensorshipKey, string>
 }
 
 type Tab = 'export' | 'import'
 
 export default memo(ImportExportModal)
 
-function ImportExportModal({ open, onClose, censorships, onImport, keyLabels }: Readonly<Props>) {
+function ImportExportModal({ open, onClose, censorships, onImport }: Readonly<Props>) {
   const [activeTab, setActiveTab] = useState<Tab>('export')
   const [exportFormat, setExportFormat] = useState<ExportFormat>('json')
   const [importText, setImportText] = useState('')
@@ -50,7 +48,7 @@ function ImportExportModal({ open, onClose, censorships, onImport, keyLabels }: 
       if (exportFormat === 'json') {
         const exportData = censorships.map((c) => ({
           key: c.key,
-          keyLabel: keyLabels[c.key],
+          keyLabel: CENSORSHIP_KEY_LABELS[c.key],
           value: c.value,
           level: c.level,
           levelLabel: CENSORSHIP_LEVEL_LABELS[c.level].label,
@@ -60,7 +58,11 @@ function ImportExportModal({ open, onClose, censorships, onImport, keyLabels }: 
         mimeType = 'application/json'
       } else {
         const headers = ['유형', '값', '수준']
-        const rows = censorships.map((c) => [keyLabels[c.key], c.value, CENSORSHIP_LEVEL_LABELS[c.level].label])
+        const rows = censorships.map((c) => [
+          CENSORSHIP_KEY_LABELS[c.key],
+          c.value,
+          CENSORSHIP_LEVEL_LABELS[c.level].label,
+        ])
         const csvContent = [headers.join(','), ...rows.map((row) => row.map((cell) => `"${cell}"`).join(','))].join(
           '\n',
         )
@@ -92,7 +94,7 @@ function ImportExportModal({ open, onClose, censorships, onImport, keyLabels }: 
         // Find key by label or use direct key
         let key = item.key
         if (typeof key === 'string') {
-          const keyEntry = Object.entries(keyLabels).find(([_, label]) => label === key)
+          const keyEntry = Object.entries(CENSORSHIP_KEY_LABELS).find(([_, label]) => label === key)
           if (keyEntry) {
             key = Number(keyEntry[0])
           }

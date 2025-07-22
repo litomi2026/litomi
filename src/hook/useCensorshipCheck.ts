@@ -59,7 +59,7 @@ export default function useMatchedCensorships({ manga, censorshipsMap }: Readonl
       const artistMatches = censorshipsMap.get(artistKey)
 
       if (artistMatches && artistMatches.level !== CensorshipLevel.NONE) {
-        matchedLabels.push(artist.label.split(':')[1])
+        matchedLabels.push(`작가:${artist.label}`)
         highest = Math.max(highest, artistMatches.level)
       }
     }
@@ -69,7 +69,7 @@ export default function useMatchedCensorships({ manga, censorshipsMap }: Readonl
       const characterMatches = censorshipsMap.get(characterKey)
 
       if (characterMatches && characterMatches.level !== CensorshipLevel.NONE) {
-        matchedLabels.push(character.label.split(':')[1])
+        matchedLabels.push(`캐릭터:${character.label}`)
         highest = Math.max(highest, characterMatches.level)
       }
     }
@@ -79,7 +79,7 @@ export default function useMatchedCensorships({ manga, censorshipsMap }: Readonl
       const groupMatches = censorshipsMap.get(groupKey)
 
       if (groupMatches && groupMatches.level !== CensorshipLevel.NONE) {
-        matchedLabels.push(g.label.split(':')[1])
+        matchedLabels.push(`그룹:${g.label}`)
         highest = Math.max(highest, groupMatches.level)
       }
     }
@@ -89,7 +89,7 @@ export default function useMatchedCensorships({ manga, censorshipsMap }: Readonl
       const seriesMatches = censorshipsMap.get(seriesKey)
 
       if (seriesMatches && seriesMatches.level !== CensorshipLevel.NONE) {
-        matchedLabels.push(s.label.split(':')[1])
+        matchedLabels.push(`시리즈:${s.label}`)
         highest = Math.max(highest, seriesMatches.level)
       }
     }

@@ -12,17 +12,28 @@ import { CENSORSHIP_KEY_LABELS, CENSORSHIP_LEVEL_LABELS } from './constants'
 type Props = {
   censorship: CensorshipItem
   isSelected: boolean
+  isDeleting?: boolean
   onToggleSelect: () => void
 }
 
-export default function CensorshipCard({ censorship, isSelected, onToggleSelect }: Readonly<Props>) {
+export default function CensorshipCard({
+  censorship,
+  isSelected,
+  isDeleting = false,
+  onToggleSelect,
+}: Readonly<Props>) {
   const { key, value, level, createdAt } = censorship
   const [isEditing, setIsEditing] = useState(false)
 
-  const handleEdit = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation()
-    setIsEditing(true)
-  }, [])
+  const handleEdit = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation()
+      if (!isDeleting) {
+        setIsEditing(true)
+      }
+    },
+    [isDeleting],
+  )
 
   const handleEditCompleted = useCallback(() => {
     setIsEditing(false)
@@ -41,9 +52,18 @@ export default function CensorshipCard({ censorship, isSelected, onToggleSelect 
   return (
     <div
       aria-selected={isSelected}
-      className="p-4 bg-zinc-800 rounded-lg border-2 transition cursor-pointer hover:bg-zinc-700 aria-selected:border-brand-end aria-selected:bg-zinc-700"
-      onClick={onToggleSelect}
+      className={`p-4 bg-zinc-800 rounded-lg border-2 transition relative ${
+        isDeleting ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-zinc-700'
+      } aria-selected:border-brand-end aria-selected:bg-zinc-700`}
+      onClick={isDeleting ? undefined : onToggleSelect}
     >
+      {/* Deleting overlay with spinner */}
+      {isDeleting && (
+        <div className="absolute inset-0 bg-zinc-900/50 rounded-lg flex items-center justify-center">
+          <div className="w-5 h-5 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
+        </div>
+      )}
+
       <div className="flex items-start gap-3">
         <div
           aria-checked={isSelected}
@@ -66,7 +86,8 @@ export default function CensorshipCard({ censorship, isSelected, onToggleSelect 
             </div>
             <button
               aria-label="검열 규칙 수정"
-              className="p-1 hover:bg-zinc-600 rounded transition"
+              className={`p-1 rounded transition ${isDeleting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-zinc-600'}`}
+              disabled={isDeleting}
               onClick={handleEdit}
               type="button"
             >
