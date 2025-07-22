@@ -72,15 +72,10 @@ function SearchSuggestionDropdown({
         {suggestions.map((suggestion, index) => (
           <li key={suggestion.label}>
             <button
-              className={`
-                w-full px-3 py-2 text-left flex items-center justify-between gap-2
-                transition text-sm sm:text-base sm:px-4
-                ${
-                  index === selectedIndex
-                    ? 'bg-zinc-800 text-white'
-                    : 'text-zinc-300 hover:bg-zinc-800 hover:text-white'
-                }
-              `}
+              aria-current={index === selectedIndex}
+              className="w-full px-3 py-2 text-left flex items-center justify-between gap-2 transition text-sm
+              sm:text-base sm:px-4 text-zinc-300 hover:bg-zinc-800 hover:text-white
+              aria-current:bg-zinc-800 aria-current:text-white"
               onClick={() => onSelect(suggestion)}
               onMouseEnter={() => onMouseEnter(index)}
               type="button"
