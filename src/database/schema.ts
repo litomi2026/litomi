@@ -1,4 +1,4 @@
-import { bigint, integer, pgTable, primaryKey, smallint, text, timestamp, varchar } from 'drizzle-orm/pg-core'
+import { bigint, index, integer, pgTable, primaryKey, smallint, text, timestamp, varchar } from 'drizzle-orm/pg-core'
 
 export const userTable = pgTable('user', {
   id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
@@ -21,16 +21,20 @@ export const bookmarkTable = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     source: smallint().notNull(),
   },
-  (table) => [primaryKey({ columns: [table.userId, table.mangaId] })],
+  (table) => [primaryKey({ columns: [table.userId, table.mangaId] }), index('idx_bookmark_user_id').on(table.userId)],
 )
 
-export const userCensorshipTable = pgTable('user_censorship', {
-  id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
-  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-  userId: bigint('user_id', { mode: 'number' })
-    .references(() => userTable.id)
-    .notNull(),
-  key: smallint().notNull(),
-  value: varchar({ length: 256 }).notNull(),
-  level: smallint().notNull(),
-})
+export const userCensorshipTable = pgTable(
+  'user_censorship',
+  {
+    id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+    userId: bigint('user_id', { mode: 'number' })
+      .references(() => userTable.id)
+      .notNull(),
+    key: smallint().notNull(),
+    value: varchar({ length: 256 }).notNull(),
+    level: smallint().notNull(),
+  },
+  (table) => [index('idx_user_censorship_user_id').on(table.userId)],
+)
