@@ -27,7 +27,7 @@ export const bookmarkTable = pgTable(
 export const userCensorshipTable = pgTable(
   'user_censorship',
   {
-    id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     userId: bigint('user_id', { mode: 'number' })
       .references(() => userTable.id)
