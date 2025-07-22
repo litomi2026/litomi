@@ -7,11 +7,12 @@ import IconX from '@/components/icons/IconX'
 import Modal from '@/components/ui/Modal'
 import { CensorshipKey, CensorshipLevel } from '@/database/enum'
 
+import { CENSORSHIP_KEY_LABELS } from './constants'
+
 type Props = {
   open: boolean
   onClose: () => void
   onSubmit: (formData: FormData) => void
-  keyLabels: Record<CensorshipKey, string>
 }
 
 const CENSORSHIP_LEVEL_LABELS: Record<CensorshipLevel, { label: string; description: string }> = {
@@ -29,7 +30,7 @@ const CENSORSHIP_LEVEL_LABELS: Record<CensorshipLevel, { label: string; descript
   },
 }
 
-export default function AddCensorshipModal({ open, onClose, onSubmit, keyLabels }: Readonly<Props>) {
+export default function AddCensorshipModal({ open, onClose, onSubmit }: Readonly<Props>) {
   const [key, setKey] = useState<CensorshipKey>(CensorshipKey.TAG)
   const [value, setValue] = useState('')
   const [level, setLevel] = useState<CensorshipLevel>(CensorshipLevel.LIGHT)
@@ -98,7 +99,7 @@ export default function AddCensorshipModal({ open, onClose, onSubmit, keyLabels 
           <div>
             <label className="block text-sm font-medium text-zinc-300 mb-2">유형</label>
             <div className="grid grid-cols-2 gap-2">
-              {Object.entries(keyLabels).map(([k, label]) => (
+              {Object.entries(CENSORSHIP_KEY_LABELS).map(([k, label]) => (
                 <button
                   aria-pressed={key === Number(k)}
                   className="p-3 rounded-lg border-2 transition aria-pressed:bg-zinc-700 aria-pressed:border-brand-end aria-pressed:text-zinc-100 aria-pressed:hover:bg-zinc-700 aria-pressed:hover:text-zinc-300
@@ -117,13 +118,13 @@ export default function AddCensorshipModal({ open, onClose, onSubmit, keyLabels 
           {/* Value Input */}
           {!isTagCategory && (
             <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">{keyLabels[key]} 이름</label>
+              <label className="block text-sm font-medium text-zinc-300 mb-2">{CENSORSHIP_KEY_LABELS[key]} 이름</label>
               <input
                 autoFocus
                 className="w-full px-4 py-2 bg-zinc-800 rounded-lg border-2 border-zinc-700 focus:border-zinc-600 outline-none transition text-zinc-100 placeholder-zinc-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={isPending}
                 onChange={(e) => setValue(e.target.value)}
-                placeholder={`검열할 ${keyLabels[key]}를 입력하세요`}
+                placeholder={`검열할 ${CENSORSHIP_KEY_LABELS[key]}를 입력하세요`}
                 type="text"
                 value={value}
               />
@@ -147,7 +148,7 @@ export default function AddCensorshipModal({ open, onClose, onSubmit, keyLabels 
           {/* Info for tag categories */}
           {isTagCategory && (
             <div className="p-4 bg-zinc-800 rounded-lg border-2 border-zinc-700">
-              <p className="text-sm text-zinc-300">{keyLabels[key]}의 모든 항목이 검열됩니다.</p>
+              <p className="text-sm text-zinc-300">{CENSORSHIP_KEY_LABELS[key]}의 모든 항목이 검열됩니다.</p>
             </div>
           )}
 

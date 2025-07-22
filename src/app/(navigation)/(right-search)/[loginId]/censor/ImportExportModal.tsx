@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { memo, useState, useTransition } from 'react'
 import { toast } from 'sonner'
 
 import { CensorshipItem } from '@/app/api/censorships/route'
@@ -8,10 +8,9 @@ import { IconDownload } from '@/components/icons/IconDownload'
 import { IconUpload } from '@/components/icons/IconUpload'
 import IconX from '@/components/icons/IconX'
 import Modal from '@/components/ui/Modal'
-import { CensorshipKey } from '@/database/enum'
 import { downloadBlob } from '@/utils/download'
 
-import { CENSORSHIP_LEVEL_LABELS } from './constants'
+import { CENSORSHIP_KEY_LABELS, CENSORSHIP_LEVEL_LABELS } from './constants'
 
 const PLACEHOLDER_JSON = `[
   {
@@ -28,12 +27,13 @@ type Props = {
   onClose: () => void
   censorships: CensorshipItem[]
   onImport: (formData: FormData) => void
-  keyLabels: Record<CensorshipKey, string>
 }
 
 type Tab = 'export' | 'import'
 
-export default function ImportExportModal({ open, onClose, censorships, onImport, keyLabels }: Readonly<Props>) {
+export default memo(ImportExportModal)
+
+function ImportExportModal({ open, onClose, censorships, onImport }: Readonly<Props>) {
   const [activeTab, setActiveTab] = useState<Tab>('export')
   const [exportFormat, setExportFormat] = useState<ExportFormat>('json')
   const [importText, setImportText] = useState('')
@@ -48,7 +48,7 @@ export default function ImportExportModal({ open, onClose, censorships, onImport
       if (exportFormat === 'json') {
         const exportData = censorships.map((c) => ({
           key: c.key,
-          keyLabel: keyLabels[c.key],
+          keyLabel: CENSORSHIP_KEY_LABELS[c.key],
           value: c.value,
           level: c.level,
           levelLabel: CENSORSHIP_LEVEL_LABELS[c.level].label,
@@ -58,7 +58,11 @@ export default function ImportExportModal({ open, onClose, censorships, onImport
         mimeType = 'application/json'
       } else {
         const headers = ['유형', '값', '수준']
-        const rows = censorships.map((c) => [keyLabels[c.key], c.value, CENSORSHIP_LEVEL_LABELS[c.level].label])
+        const rows = censorships.map((c) => [
+          CENSORSHIP_KEY_LABELS[c.key],
+          c.value,
+          CENSORSHIP_LEVEL_LABELS[c.level].label,
+        ])
         const csvContent = [headers.join(','), ...rows.map((row) => row.map((cell) => `"${cell}"`).join(','))].join(
           '\n',
         )
@@ -90,7 +94,7 @@ export default function ImportExportModal({ open, onClose, censorships, onImport
         // Find key by label or use direct key
         let key = item.key
         if (typeof key === 'string') {
-          const keyEntry = Object.entries(keyLabels).find(([_, label]) => label === key)
+          const keyEntry = Object.entries(CENSORSHIP_KEY_LABELS).find(([_, label]) => label === key)
           if (keyEntry) {
             key = Number(keyEntry[0])
           }
@@ -114,10 +118,9 @@ export default function ImportExportModal({ open, onClose, censorships, onImport
 
       startTransition(() => {
         onImport(formData)
+        setImportText('')
+        onClose()
       })
-
-      setImportText('')
-      onClose()
     } catch {
       toast.error('올바른 JSON 형식이 아니에요')
     }
@@ -134,13 +137,14 @@ export default function ImportExportModal({ open, onClose, censorships, onImport
       <div className="flex flex-col h-full min-h-0">
         {/* Header */}
         <div className="flex items-center justify-between p-4 bg-zinc-900 border-b-2 border-zinc-800 flex-shrink-0">
-          <h2 className="text-xl font-bold text-zinc-100">검열 규칙 가져오기/내보내기</h2>
+          <h2 className="text-xl font-bold text-zinc-100">규칙 가져오기/내보내기</h2>
           <button
-            className="p-2 -mr-2 rounded-lg hover:bg-zinc-800 transition sm:p-1.5 sm:-mr-1.5"
+            className="p-2 hover:bg-zinc-800 rounded-lg transition disabled:opacity-50"
+            disabled={isPending}
             onClick={onClose}
             type="button"
           >
-            <IconX className="w-6 h-6 sm:w-5 sm:h-5" />
+            <IconX className="w-5 text-zinc-400" />
           </button>
         </div>
 
@@ -148,7 +152,7 @@ export default function ImportExportModal({ open, onClose, censorships, onImport
         <div className="flex border-b-2 border-zinc-800 flex-shrink-0">
           <button
             aria-pressed={activeTab === 'export'}
-            className="flex-1 px-4 py-3 font-medium transition hover:bg-zinc-800 text-zinc-300 aria-pressed:bg-zinc-800 aria-pressed:border-b-2 aria-pressed:border-brand-end aria-pressed:text-zinc-100"
+            className="flex-1 px-4 py-3 font-medium transition border-b-2 border-transparent hover:bg-zinc-800 text-zinc-300 aria-pressed:bg-zinc-800 aria-pressed:border-brand-end aria-pressed:text-zinc-100"
             onClick={() => setActiveTab('export')}
             type="button"
           >
@@ -156,7 +160,7 @@ export default function ImportExportModal({ open, onClose, censorships, onImport
           </button>
           <button
             aria-pressed={activeTab === 'import'}
-            className="flex-1 px-4 py-3 font-medium transition hover:bg-zinc-800 text-zinc-300 aria-pressed:bg-zinc-800 aria-pressed:border-b-2 aria-pressed:border-brand-end aria-pressed:text-zinc-100"
+            className="flex-1 px-4 py-3 font-medium transition border-b-2 border-transparent hover:bg-zinc-800 text-zinc-300 aria-pressed:bg-zinc-800 aria-pressed:border-brand-end aria-pressed:text-zinc-100"
             onClick={() => setActiveTab('import')}
             type="button"
           >
@@ -174,7 +178,7 @@ export default function ImportExportModal({ open, onClose, censorships, onImport
                     현재 {censorships.length}개의 검열 규칙을 파일로 내보낼 수 있어요
                   </p>
                   <label className="block text-sm font-medium text-zinc-300 mb-2">파일 형식</label>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid sm:grid-cols-2 gap-2">
                     <button
                       aria-pressed={exportFormat === 'json'}
                       className="p-3 rounded-lg border-2 transition aria-pressed:bg-zinc-700 aria-pressed:border-brand-end aria-pressed:text-zinc-100 aria-pressed:hover:bg-zinc-700 aria-pressed:hover:text-zinc-300"

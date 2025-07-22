@@ -23,6 +23,4 @@ export default function useActionErrorEffect<T>({ status, error, onError }: Prop
       }
     }
   }, [error, onError, queryClient, status])
-
-  return null
 }

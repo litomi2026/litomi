@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { memo, useMemo } from 'react'
 
 import { CensorshipItem } from '@/app/api/censorships/route'
 import { CensorshipKey, CensorshipLevel } from '@/database/enum'
@@ -9,7 +9,9 @@ type Props = {
   censorships: CensorshipItem[]
 }
 
-export default function CensorshipStats({ censorships }: Readonly<Props>) {
+export default memo(CensorshipStats)
+
+function CensorshipStats({ censorships }: Readonly<Props>) {
   const { total, levelCount } = useMemo(() => {
     const keyCount: Record<CensorshipKey, number> = {
       [CensorshipKey.TAG]: 0,
@@ -46,15 +48,15 @@ export default function CensorshipStats({ censorships }: Readonly<Props>) {
         </div>
         <div className="border-l-2 border-zinc-700" />
         <div className="flex items-center gap-1">
-          <span className="font-medium text-yellow-500">{levelCount[CensorshipLevel.LIGHT]}</span>
+          <span className="font-medium font-mono text-sm text-yellow-500">{levelCount[CensorshipLevel.LIGHT]}</span>
           <span>흐리게</span>
         </div>
         <div className="flex items-center gap-1">
-          <span className="font-medium text-red-500">{levelCount[CensorshipLevel.HEAVY]}</span>
+          <span className="font-medium font-mono text-sm text-red-500">{levelCount[CensorshipLevel.HEAVY]}</span>
           <span>숨기기</span>
         </div>
         <div className="flex items-center gap-1">
-          <span className="font-medium text-green-500">{levelCount[CensorshipLevel.NONE]}</span>
+          <span className="font-medium font-mono text-sm text-green-500">{levelCount[CensorshipLevel.NONE]}</span>
           <span>해제</span>
         </div>
       </div>
