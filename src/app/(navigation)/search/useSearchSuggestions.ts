@@ -7,41 +7,45 @@ import useSearchSuggestionsQuery from './useSearchSuggestionsQuery'
 
 const DEBOUNCE_MS = 500
 const MAX_SUGGESTIONS = 15
+const INITIAL_SELECTED_INDEX = -1
 
-export default function useSearchSuggestions(keyword: string) {
-  const [selectedIndex, setSelectedIndex] = useState(-1)
+type Props = {
+  keyword: string
+  limit?: number
+}
 
-  const debouncedQuery = useDebouncedValue({
+export default function useSearchSuggestions({ keyword, limit = MAX_SUGGESTIONS }: Readonly<Props>) {
+  const [selectedIndex, setSelectedIndex] = useState(INITIAL_SELECTED_INDEX)
+
+  const debouncedKeyword = useDebouncedValue({
     value: keyword.length >= MIN_SUGGESTION_QUERY_LENGTH ? keyword : '',
     delay: DEBOUNCE_MS,
   })
 
-  const { data: suggestions = [] } = useSearchSuggestionsQuery({ query: debouncedQuery })
+  const { data: suggestions = [] } = useSearchSuggestionsQuery({ query: debouncedKeyword })
 
   const searchSuggestions = useMemo(() => {
-    if (keyword === '') {
-      return SEARCH_SUGGESTIONS
+    if (debouncedKeyword === '') {
+      return SEARCH_SUGGESTIONS.slice(0, limit)
     }
 
     const matchedFilters = SEARCH_SUGGESTIONS.filter(
-      (filter) => filter.value.startsWith(keyword) && filter.value !== keyword,
+      (filter) => filter.value.startsWith(debouncedKeyword) && filter.value !== debouncedKeyword,
     )
 
-    if (keyword.length < MIN_SUGGESTION_QUERY_LENGTH) {
-      return matchedFilters
+    if (debouncedKeyword.length < MIN_SUGGESTION_QUERY_LENGTH) {
+      return matchedFilters.slice(0, limit)
     }
 
     const a = suggestions.length > 0 ? suggestions : matchedFilters
     const b = a.map((suggestion) => [suggestion.label, suggestion] as const)
     const suggestionMap = new Map<string, SearchSuggestion>(b)
 
-    return Array.from(suggestionMap.values()).slice(0, MAX_SUGGESTIONS)
-  }, [keyword, suggestions])
-
-  const showHeader = keyword === ''
+    return Array.from(suggestionMap.values()).slice(0, limit)
+  }, [debouncedKeyword, suggestions, limit])
 
   const resetSelection = () => {
-    setSelectedIndex(-1)
+    setSelectedIndex(INITIAL_SELECTED_INDEX)
   }
 
   const navigateSelection = (direction: 'down' | 'up') => {
@@ -56,7 +60,7 @@ export default function useSearchSuggestions(keyword: string) {
     selectedIndex,
     setSelectedIndex,
     searchSuggestions,
-    showHeader,
+    showHeader: debouncedKeyword === '',
     resetSelection,
     navigateSelection,
   }

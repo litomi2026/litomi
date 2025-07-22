@@ -113,6 +113,7 @@ export default function ProfileEditButton() {
               <div>
                 <label htmlFor={formId.imageURL}>프로필 이미지 주소</label>
                 <input
+                  autoCapitalize="off"
                   defaultValue={defaultProfileImageURL}
                   id={formId.imageURL}
                   maxLength={256}
@@ -126,7 +127,7 @@ export default function ProfileEditButton() {
               </div>
               <div>
                 <label htmlFor="">아이디</label>
-                <input defaultValue={me?.loginId ?? ''} disabled type="text" />
+                <input autoCapitalize="off" defaultValue={me?.loginId ?? ''} disabled type="text" />
               </div>
               <div>
                 <div className="flex items-center gap-1">
@@ -139,6 +140,7 @@ export default function ProfileEditButton() {
                   </TooltipPopover>
                 </div>
                 <input
+                  autoCapitalize="off"
                   defaultValue={me?.nickname ?? ''}
                   id={formId.nickname}
                   maxLength={32}
