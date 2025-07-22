@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { memo, useMemo } from 'react'
 
 import { CensorshipItem } from '@/app/api/censorships/route'
 import { CensorshipKey, CensorshipLevel } from '@/database/enum'
@@ -9,7 +9,9 @@ type Props = {
   censorships: CensorshipItem[]
 }
 
-export default function CensorshipStats({ censorships }: Readonly<Props>) {
+export default memo(CensorshipStats)
+
+function CensorshipStats({ censorships }: Readonly<Props>) {
   const { total, levelCount } = useMemo(() => {
     const keyCount: Record<CensorshipKey, number> = {
       [CensorshipKey.TAG]: 0,

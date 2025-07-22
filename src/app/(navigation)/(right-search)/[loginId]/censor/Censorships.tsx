@@ -145,7 +145,7 @@ export default function Censorships() {
             </div>
             <div className="bg-zinc-800 rounded-lg border-2 flex items-center">
               <select
-                className="pl-4 mr-4 py-2 focus:border-zinc-600 transition"
+                className="pl-4 mr-2 py-2 focus:border-zinc-600 transition"
                 onChange={(e) => setFilterKey(e.target.value === '' ? null : Number(e.target.value))}
                 value={filterKey ?? ''}
               >
@@ -232,7 +232,7 @@ export default function Censorships() {
       {/* Add Modal */}
       <AddCensorshipModal
         keyLabels={CENSORSHIP_KEY_LABELS}
-        onClose={() => setShowAddModal(false)}
+        onClose={useCallback(() => setShowAddModal(false), [])}
         onSubmit={addAction}
         open={showAddModal}
       />
@@ -241,7 +241,7 @@ export default function Censorships() {
       <ImportExportModal
         censorships={allCensorships}
         keyLabels={CENSORSHIP_KEY_LABELS}
-        onClose={() => setShowImportExportModal(false)}
+        onClose={useCallback(() => setShowImportExportModal(false), [])}
         onImport={addAction}
         open={showImportExportModal}
       />

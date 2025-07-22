@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { memo, useState, useTransition } from 'react'
 import { toast } from 'sonner'
 
 import { CensorshipItem } from '@/app/api/censorships/route'
@@ -33,7 +33,9 @@ type Props = {
 
 type Tab = 'export' | 'import'
 
-export default function ImportExportModal({ open, onClose, censorships, onImport, keyLabels }: Readonly<Props>) {
+export default memo(ImportExportModal)
+
+function ImportExportModal({ open, onClose, censorships, onImport, keyLabels }: Readonly<Props>) {
   const [activeTab, setActiveTab] = useState<Tab>('export')
   const [exportFormat, setExportFormat] = useState<ExportFormat>('json')
   const [importText, setImportText] = useState('')
@@ -148,7 +150,7 @@ export default function ImportExportModal({ open, onClose, censorships, onImport
         <div className="flex border-b-2 border-zinc-800 flex-shrink-0">
           <button
             aria-pressed={activeTab === 'export'}
-            className="flex-1 px-4 py-3 font-medium transition hover:bg-zinc-800 text-zinc-300 aria-pressed:bg-zinc-800 aria-pressed:border-b-2 aria-pressed:border-brand-end aria-pressed:text-zinc-100"
+            className="flex-1 px-4 py-3 font-medium transition border-b-2 border-transparent hover:bg-zinc-800 text-zinc-300 aria-pressed:bg-zinc-800 aria-pressed:border-brand-end aria-pressed:text-zinc-100"
             onClick={() => setActiveTab('export')}
             type="button"
           >
@@ -156,7 +158,7 @@ export default function ImportExportModal({ open, onClose, censorships, onImport
           </button>
           <button
             aria-pressed={activeTab === 'import'}
-            className="flex-1 px-4 py-3 font-medium transition hover:bg-zinc-800 text-zinc-300 aria-pressed:bg-zinc-800 aria-pressed:border-b-2 aria-pressed:border-brand-end aria-pressed:text-zinc-100"
+            className="flex-1 px-4 py-3 font-medium transition border-b-2 border-transparent hover:bg-zinc-800 text-zinc-300 aria-pressed:bg-zinc-800 aria-pressed:border-brand-end aria-pressed:text-zinc-100"
             onClick={() => setActiveTab('import')}
             type="button"
           >
