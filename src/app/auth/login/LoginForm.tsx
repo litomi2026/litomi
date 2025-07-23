@@ -122,7 +122,7 @@ export default function LoginForm() {
             </button>
           </div>
         </div>
-        <label className="!flex w-fit ml-auto items-center gap-2 cursor-pointer">
+        <label className="!flex w-fit ml-auto items-center gap-2 cursor-pointer" htmlFor="remember">
           <input
             className="hidden peer"
             defaultChecked={Boolean(formData?.get('remember'))}
