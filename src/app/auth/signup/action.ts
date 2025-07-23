@@ -27,7 +27,7 @@ const schema = z
       .string()
       .min(2, { error: '닉네임은 최소 2자 이상이어야 합니다.' })
       .max(32, { error: '닉네임은 최대 32자까지 입력할 수 있습니다.' }),
-    run: z.literal('dry'),
+    run: z.literal('dry').nullable(),
   })
   .refine((data) => data.password === data['password-confirm'], {
     error: '비밀번호와 비밀번호 확인 값이 일치하지 않습니다.',

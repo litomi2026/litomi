@@ -9,7 +9,7 @@ export const userTable = pgTable('user', {
   passwordHash: text('password_hash').notNull(),
   nickname: varchar({ length: 32 }).notNull(),
   imageURL: varchar('image_url', { length: 256 }),
-})
+}).enableRLS()
 
 export const bookmarkTable = pgTable(
   'bookmark',
@@ -22,7 +22,7 @@ export const bookmarkTable = pgTable(
     source: smallint().notNull(),
   },
   (table) => [primaryKey({ columns: [table.userId, table.mangaId] }), index('idx_bookmark_user_id').on(table.userId)],
-)
+).enableRLS()
 
 export const userCensorshipTable = pgTable(
   'user_censorship',
@@ -37,4 +37,4 @@ export const userCensorshipTable = pgTable(
     level: smallint().notNull(),
   },
   (table) => [index('idx_user_censorship_user_id').on(table.userId)],
-)
+).enableRLS()

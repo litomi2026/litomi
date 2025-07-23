@@ -11,7 +11,7 @@ import { Toaster } from 'sonner'
 
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar'
 import { defaultOpenGraph, DESCRIPTION, SHORT_NAME } from '@/constants'
-import { AMPLITUDE_API_KEY, GA_ID, GTM_ID } from '@/constants/env'
+import { AMPLITUDE_API_KEY, GA_ID, GTM_ID, VERCEL_SPEED_INSIGHTS } from '@/constants/env'
 import { CANONICAL_URL } from '@/constants/url'
 import AmplitudeLazy from '@/lib/amplitude/AmplitudeLazy'
 
@@ -77,7 +77,7 @@ export default function RootLayout({ children }: Readonly<Props>) {
         <QueryProvider>{children}</QueryProvider>
         <ServiceWorkerRegistrar />
         <Toaster duration={3000} position="top-center" richColors theme="dark" />
-        {process.env.VERCEL === '1' && <SpeedInsights />}
+        {VERCEL_SPEED_INSIGHTS && <SpeedInsights />}
         <Analytics />
         {AMPLITUDE_API_KEY && <AmplitudeLazy apiKey={AMPLITUDE_API_KEY} />}
         {GTM_ID && <GoogleTagManager gtmId={GTM_ID} />}
