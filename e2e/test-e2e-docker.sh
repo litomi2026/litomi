@@ -57,7 +57,7 @@ while [ $RETRY_COUNT -lt $RETRIES ]; do
     RETRY_COUNT=$((RETRY_COUNT + 1))
     if [ $RETRY_COUNT -eq $RETRIES ]; then
         print_error "PostgreSQL failed to start after $RETRIES attempts"
-        docker compose -f ./e2e/docker-compose.test.yml down
+        docker compose -f ./e2e/docker-compose.test.yml down -v
         exit 1
     fi
     echo -ne "  ${YELLOW}Attempt $RETRY_COUNT/$RETRIES${NC} - Waiting...\r"
@@ -91,7 +91,7 @@ if bunx drizzle-kit push; then
     print_success "Database schema initialized successfully"
 else
     print_error "Failed to initialize database schema"
-    docker compose -f ./e2e/docker-compose.test.yml down
+    docker compose -f ./e2e/docker-compose.test.yml down -v
     exit 1
 fi
 
@@ -124,7 +124,7 @@ fi
 
 # Always clean up Docker containers
 print_step "Cleaning up..."
-if docker compose -f ./e2e/docker-compose.test.yml down; then
+if docker compose -f ./e2e/docker-compose.test.yml down -v; then
     print_success "PostgreSQL container stopped and removed"
 else
     print_warning "Failed to stop PostgreSQL container cleanly"

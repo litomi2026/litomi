@@ -16,11 +16,7 @@
     "test:watch": "test --watch",
     "test:coverage": "test --coverage",
     "test:e2e": "playwright test",
-    "test:e2e:docker": "./e2e/test-e2e-docker.sh",
-    "db:push": "drizzle-kit push",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "test:e2e:docker": "./e2e/test-e2e-docker.sh"
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^2.20.1",
