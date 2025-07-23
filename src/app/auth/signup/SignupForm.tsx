@@ -79,7 +79,7 @@ export default function SignupForm() {
       <div className="grid gap-4">
         <div>
           <div className="flex items-center gap-1">
-            <label htmlFor="id">
+            <label htmlFor="loginId">
               아이디 <span className="text-red-500">*</span>
             </label>
             <TooltipPopover className="flex" position="right" type="tooltip">

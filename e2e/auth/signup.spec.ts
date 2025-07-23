@@ -47,7 +47,7 @@ test.describe('/auth/signup', () => {
   })
 
   test.describe('회원가입 실패', () => {
-    test('아이디 요구사항을 검증한다 (HTML5)', async ({ page }) => {
+    test('아이디 유효성을 검증한다 (HTML5)', async ({ page }) => {
       const loginIdInput = page.locator('input[name="loginId"]')
       await loginIdInput.fill('a')
       await page.fill('input[name="password"]', 'ValidPass123')
@@ -58,7 +58,7 @@ test.describe('/auth/signup', () => {
       expect(validationMessage).toBeTruthy()
     })
 
-    test('아이디 요구사항을 검증한다 (서버)', async ({ page }) => {
+    test('아이디 유효성을 검증한다 (서버)', async ({ page }) => {
       const loginIdInput = page.locator('input[name="loginId"]')
       await loginIdInput.fill('a')
       await page.fill('input[name="password"]', 'ValidPass123')
@@ -87,7 +87,7 @@ test.describe('/auth/signup', () => {
       await expect(page.locator('text=/비밀번호가 일치하지 않습니다/i')).toBeVisible()
     })
 
-    test('비밀번호 요구사항을 검증한다 (HTML5)', async ({ page }) => {
+    test('비밀번호 유효성을 검증한다 (HTML5)', async ({ page }) => {
       const user = generateTestUser()
       const passwordInput = page.locator('input[name="password"]')
       await page.fill('input[name="loginId"]', user.loginId)
@@ -99,7 +99,7 @@ test.describe('/auth/signup', () => {
       expect(validationMessage).toBeTruthy()
     })
 
-    test('비밀번호 요구사항을 검증한다 (서버)', async ({ page }) => {
+    test('비밀번호 유효성을 검증한다 (서버)', async ({ page }) => {
       const user = generateTestUser()
       const passwordInput = page.locator('input[name="password"]')
       await page.fill('input[name="loginId"]', user.loginId)
