@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-import { generateTestUser } from '../utils/user'
+import { generateTestUser } from '../../utils/user'
 
 test.describe('/auth/signup', () => {
   test.beforeEach(async ({ page }) => {

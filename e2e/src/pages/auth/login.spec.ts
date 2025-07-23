@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 
-import { isSafariLocalhost } from '../utils/safari'
-import { generateTestUser } from '../utils/user'
+import { isSafariLocalhost } from '../../utils/safari'
+import { generateTestUser } from '../../utils/user'
 
 test.describe('/auth/login', () => {
   const user = generateTestUser()

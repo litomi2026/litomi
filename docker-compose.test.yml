@@ -1,17 +1,19 @@
+version: '3.8'
+
 services:
-  litomi:
-    image: postgres:17-alpine
-    container_name: postgres-e2e
+  postgres-test:
+    image: postgres:16-alpine
+    container_name: litomi-test-db
     environment:
-      POSTGRES_USER: e2e_test_user
-      POSTGRES_PASSWORD: e2e_test_password
-      POSTGRES_DB: e2e_test_db
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: testpass
+      POSTGRES_DB: litomi_e2e_test
     ports:
-      - '5433:5432' # Different port to avoid conflicts with local PostgreSQL
+      - '5433:5432'
     volumes:
       - test-db-data:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U e2e_test_user -d e2e_test_db']
+      test: ['CMD-SHELL', 'pg_isready -U testuser -d litomi_e2e_test']
       interval: 5s
       timeout: 5s
       retries: 5

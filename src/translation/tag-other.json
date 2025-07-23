@@ -2,5 +2,6 @@
   "3d": { "en": "3D" },
   "3d_imageset": { "en": "3D imageset", "ko": "3D 이미지" },
   "ai_generated": { "en": "ai generated", "ko": "AI 생성", "ja": "AI生成", "zh-CN": "AI生成", "zh-TW": "AI生成" },
-  "already_uploaded": { "en": "already uploaded", "ko": "이미 업로드됨" }
+  "already_uploaded": { "en": "already uploaded", "ko": "이미 업로드됨" },
+  "forbidden_content": { "en": "forbidden content", "ko": "금지된 작품", "ja": "禁制コンテンツ", "zh-CN": "禁制内容" }
 }
