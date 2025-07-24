@@ -20,9 +20,6 @@ export function getAllArtistsWithLabels() {
   }))
 }
 
-/**
- * Batch translate multiple artist names
- */
 export function translateArtistList(artistList: string[] | undefined, locale: keyof Multilingual) {
   return artistList?.map((artist) => ({
     value: artist,

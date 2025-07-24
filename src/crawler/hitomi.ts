@@ -1,5 +1,6 @@
 import { captureException } from '@sentry/nextjs'
 
+import { translateArtistList } from '@/translation/artist'
 import { translateLanguageList } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
 import { Manga } from '@/types/manga'
@@ -101,7 +102,7 @@ function convertHitomiGalleryToManga(gallery: HitomiGallery): Manga {
   return {
     id: Number(gallery.id),
     title: gallery.title,
-    artists: artistValues.map((value) => ({ value, label: value })),
+    artists: translateArtistList(artistValues, locale),
     series: translateSeriesList(seriesValues, locale),
     tags: gallery.tags.map((tag) => ({
       category: 'other',

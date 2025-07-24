@@ -20,11 +20,6 @@ export function getAllSeriesWithLabels() {
   }))
 }
 
-/**
- * Batch translate multiple series names and return as LabeledValue array
- * This is similar to how tags are handled, with value being the original name
- * and label being the translated name
- */
 export function translateSeriesList(seriesList: string[] | undefined, locale: keyof Multilingual) {
   return seriesList?.map((series) => ({
     value: series,

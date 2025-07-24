@@ -20,9 +20,6 @@ export function getAllGroupsWithLabels() {
   }))
 }
 
-/**
- * Batch translate multiple group names
- */
 export function translateGroupList(groupList: string[] | undefined, locale: keyof Multilingual) {
   return groupList?.map((group) => ({
     value: group,

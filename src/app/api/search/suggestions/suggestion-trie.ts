@@ -1,5 +1,7 @@
 import { KOREAN_TO_ENGLISH_QUERY_KEYS } from '@/app/(navigation)/search/constants'
+import { getAllArtistsWithLabels } from '@/translation/artist'
 import { getAllCharactersWithLabels } from '@/translation/character'
+import { getAllGroupsWithLabels } from '@/translation/group'
 import { getAllLanguagesWithLabels, translateLanguage } from '@/translation/language'
 import { getAllSeriesWithLabels } from '@/translation/series'
 import tagCategoryTranslations from '@/translation/tag-category.json'
@@ -311,6 +313,96 @@ function getLabels(
         const characterName = label.split(':')[1]
         if (characterName) {
           suggestionTrie.insert(characterName.toLowerCase(), characterItem)
+        }
+      }
+    })
+  })
+
+  // Add artist suggestions
+  // First add the artist category
+  suggestionTrie.insert('artist', {
+    value: 'artist:',
+    labels: {
+      ko: '작가:',
+      en: 'artist:',
+      ja: 'アーティスト:',
+      'zh-CN': '艺术家:',
+      'zh-TW': '藝術家:',
+    },
+  })
+  suggestionTrie.insert('작가', {
+    value: 'artist:',
+    labels: {
+      ko: '작가:',
+      en: 'artist:',
+      ja: 'アーティスト:',
+      'zh-CN': '艺术家:',
+      'zh-TW': '藝術家:',
+    },
+  })
+
+  // Add all artists with their translations
+  const allArtists = getAllArtistsWithLabels()
+  allArtists.forEach((artistItem) => {
+    // Insert for the full value (e.g., "artist:artist_name")
+    suggestionTrie.insert(artistItem.value, artistItem)
+
+    // Extract the artist key from "artist:key"
+    const artistKey = artistItem.value.replace('artist:', '')
+    suggestionTrie.insert(artistKey, artistItem)
+
+    // Insert for each translation
+    Object.entries(artistItem.labels).forEach(([_locale, label]) => {
+      if (label) {
+        // Extract just the artist name from the label (e.g., "작가:아티스트명" -> "아티스트명")
+        const artistName = label.split(':')[1]
+        if (artistName) {
+          suggestionTrie.insert(artistName.toLowerCase(), artistItem)
+        }
+      }
+    })
+  })
+
+  // Add group suggestions
+  // First add the group category
+  suggestionTrie.insert('group', {
+    value: 'group:',
+    labels: {
+      ko: '그룹:',
+      en: 'group:',
+      ja: 'グループ:',
+      'zh-CN': '团体:',
+      'zh-TW': '團體:',
+    },
+  })
+  suggestionTrie.insert('그룹', {
+    value: 'group:',
+    labels: {
+      ko: '그룹:',
+      en: 'group:',
+      ja: 'グループ:',
+      'zh-CN': '团体:',
+      'zh-TW': '團體:',
+    },
+  })
+
+  // Add all groups with their translations
+  const allGroups = getAllGroupsWithLabels()
+  allGroups.forEach((groupItem) => {
+    // Insert for the full value (e.g., "group:group_name")
+    suggestionTrie.insert(groupItem.value, groupItem)
+
+    // Extract the group key from "group:key"
+    const groupKey = groupItem.value.replace('group:', '')
+    suggestionTrie.insert(groupKey, groupItem)
+
+    // Insert for each translation
+    Object.entries(groupItem.labels).forEach(([_locale, label]) => {
+      if (label) {
+        // Extract just the group name from the label (e.g., "그룹:그룹명" -> "그룹명")
+        const groupName = label.split(':')[1]
+        if (groupName) {
+          suggestionTrie.insert(groupName.toLowerCase(), groupItem)
         }
       }
     })

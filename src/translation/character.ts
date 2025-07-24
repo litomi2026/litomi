@@ -20,9 +20,6 @@ export function getAllCharactersWithLabels() {
   }))
 }
 
-/**
- * Batch translate multiple character names
- */
 export function translateCharacterList(characterList: string[] | undefined, locale: keyof Multilingual) {
   return characterList?.map((character) => ({
     value: character,
