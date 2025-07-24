@@ -1,5 +1,7 @@
+import { translateArtistList } from '@/translation/artist'
 import { translateCharacterList } from '@/translation/character'
 import { Multilingual, normalizeValue } from '@/translation/common'
+import { translateGroupList } from '@/translation/group'
 import { translateLanguageList } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
 import { sortTagValue, translateTag } from '@/translation/tag'
@@ -196,9 +198,9 @@ export class HiyobiClient {
 
     return {
       id,
-      artists: artistValues.map((value) => ({ value, label: value.replaceAll('_', ' ') })),
+      artists: translateArtistList(artistValues, locale),
       characters: translateCharacterList(characterValues, locale),
-      group: groupValues.map((value) => ({ value, label: value.replaceAll('_', ' ') })),
+      group: translateGroupList(groupValues, locale),
       series: translateSeriesList(seriesValues, locale),
       tags: this.convertHiyobiTagsToTags(tags, locale),
       title,

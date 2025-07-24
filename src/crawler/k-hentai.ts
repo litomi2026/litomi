@@ -1,7 +1,9 @@
 import type { Manga } from '@/types/manga'
 
+import { translateArtistList } from '@/translation/artist'
 import { translateCharacterList } from '@/translation/character'
 import { normalizeValue } from '@/translation/common'
+import { translateGroupList } from '@/translation/group'
 import { translateLanguageList } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
 import { translateTag } from '@/translation/tag'
@@ -251,9 +253,9 @@ export class KHentaiClient {
 
     return {
       id: manga.id,
-      artists: artistValues.map((value) => ({ value, label: value.replaceAll('_', ' ') })),
+      artists: translateArtistList(artistValues, locale),
       characters: translateCharacterList(characterValues, locale),
-      group: groupValues.map((value) => ({ value, label: value.replaceAll('_', ' ') })),
+      group: translateGroupList(groupValues, locale),
       date: new Date(manga.posted * 1000).toISOString(),
       series: translateSeriesList(seriesValues, locale),
       tags: manga.tags.filter(this.isValidKHentaiTag).map(({ tag: [category, value] }) => ({

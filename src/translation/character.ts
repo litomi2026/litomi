@@ -1,6 +1,6 @@
 import characterTranslationJSON from '@/translation/character.json'
 
-import { Multilingual, normalizeValue } from './common'
+import { Multilingual, translateValue } from './common'
 
 const CHARACTER_TRANSLATION: Record<string, Multilingual> = characterTranslationJSON
 
@@ -20,27 +20,9 @@ export function getAllCharactersWithLabels() {
   }))
 }
 
-/**
- * Translates a character name to the specified locale
- * Falls back to English if translation not found, then to original name
- */
-export function translateCharacter(characterName: string, locale: keyof Multilingual): string {
-  const normalizedName = normalizeValue(characterName)
-  const translation = CHARACTER_TRANSLATION[normalizedName]
-
-  if (!translation) {
-    return characterName.replace(/_/g, ' ')
-  }
-
-  return translation[locale] || translation.en || characterName.replace(/_/g, ' ')
-}
-
-/**
- * Batch translate multiple character names
- */
 export function translateCharacterList(characterList: string[] | undefined, locale: keyof Multilingual) {
   return characterList?.map((character) => ({
     value: character,
-    label: translateCharacter(character, locale),
+    label: translateValue(CHARACTER_TRANSLATION, character, locale),
   }))
 }

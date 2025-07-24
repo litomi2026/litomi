@@ -8,6 +8,8 @@ import {
   HarpiSort,
 } from '@/app/api/proxy/harpi/search/schema'
 import { HARPI_TAG_MAP } from '@/database/harpi-tag'
+import { translateArtistList } from '@/translation/artist'
+import { translateCharacterList } from '@/translation/character'
 import { translateLanguageList } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
 import { translateTag } from '@/translation/tag'
@@ -227,14 +229,8 @@ export class HarpiClient {
       id: parseInt(harpiManga.parseKey, 10) || 0,
       harpiId: harpiManga.id,
       title: harpiManga.korTitle || harpiManga.engTitle || harpiManga.title,
-      artists: harpiManga.authors?.map((author) => ({
-        value: author,
-        label: author.replaceAll('_', ' '),
-      })),
-      characters: harpiManga.characters?.map((character) => ({
-        value: character,
-        label: character.replaceAll('_', ' '),
-      })),
+      artists: translateArtistList(harpiManga.authors, locale),
+      characters: translateCharacterList(harpiManga.characters, locale),
       series: translateSeriesList(harpiManga.series, locale),
       tags: harpiManga.tagsIds ? this.convertHarpiTagIdsToTags(harpiManga.tagsIds, locale) : [],
       type: harpiManga.type,

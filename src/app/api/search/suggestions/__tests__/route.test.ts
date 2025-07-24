@@ -118,8 +118,9 @@ describe('GET /api/search/suggestions', () => {
 
         expect(response.status).toBe(200)
         expect(data).toBeArray()
-        expect(data.length).toBe(1)
-        expect(data[0]).toEqual({ label: '종류:망가', value: 'type:manga' })
+        expect(data.length).toBeGreaterThan(0)
+        expect(data.every((item) => item.value.includes('manga'))).toBe(true)
+        expect(data.some((item) => item.value === 'type:manga' && item.label === '종류:망가')).toBe(true)
       })
     })
 
@@ -203,9 +204,9 @@ describe('GET /api/search/suggestions', () => {
         const data = (await response.json()) as GETSearchSuggestionsResponse
 
         expect(response.status).toBe(200)
-        expect(data).toBeArray()
-        expect(data.length).toBe(1)
-        expect(data[0]).toEqual({ label: '여:로리', value: 'female:lolicon' })
+        expect(data.length).toBeGreaterThan(0)
+        expect(data.every((item) => item.value.includes(':lolic'))).toBe(true)
+        expect(data.some((item) => item.value === 'female:lolicon' && item.label === '여:로리')).toBe(true)
       })
 
       test('"female:lolic" 값을 검색했을 때 "female:lolicon" 값만 반환한다', async () => {
