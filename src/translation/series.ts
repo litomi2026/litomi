@@ -1,6 +1,6 @@
 import seriesTranslationJSON from '@/translation/series.json'
 
-import { Multilingual, normalizeValue } from './common'
+import { Multilingual, translateValue } from './common'
 
 const SERIES_TRANSLATION: Record<string, Multilingual> = seriesTranslationJSON
 
@@ -21,21 +21,6 @@ export function getAllSeriesWithLabels() {
 }
 
 /**
- * Translates a series name to the specified locale
- * Falls back to English if translation not found, then to original name
- */
-export function translateSeries(seriesName: string, locale: keyof Multilingual): string {
-  const normalizedName = normalizeValue(seriesName)
-  const translation = SERIES_TRANSLATION[normalizedName]
-
-  if (!translation) {
-    return seriesName.replace(/_/g, ' ')
-  }
-
-  return translation[locale] || translation.en || seriesName.replace(/_/g, ' ')
-}
-
-/**
  * Batch translate multiple series names and return as LabeledValue array
  * This is similar to how tags are handled, with value being the original name
  * and label being the translated name
@@ -43,6 +28,6 @@ export function translateSeries(seriesName: string, locale: keyof Multilingual):
 export function translateSeriesList(seriesList: string[] | undefined, locale: keyof Multilingual) {
   return seriesList?.map((series) => ({
     value: series,
-    label: translateSeries(series, locale),
+    label: translateValue(SERIES_TRANSLATION, series, locale),
   }))
 }
