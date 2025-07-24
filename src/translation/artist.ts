@@ -1,3 +1,5 @@
+import 'server-only'
+
 import artistTranslationJSON from '@/translation/artist.json'
 
 import { Multilingual, translateValue } from './common'

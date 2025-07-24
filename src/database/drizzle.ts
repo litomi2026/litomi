@@ -1,4 +1,5 @@
 import { drizzle } from 'drizzle-orm/postgres-js'
+import 'server-only'
 
 import { POSTGRES_URL } from '@/constants/env'
 

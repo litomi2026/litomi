@@ -1,4 +1,5 @@
 import { bigint, index, integer, pgTable, primaryKey, smallint, text, timestamp, varchar } from 'drizzle-orm/pg-core'
+import 'server-only'
 
 export const userTable = pgTable('user', {
   id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),

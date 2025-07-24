@@ -1,3 +1,5 @@
+import 'server-only'
+
 import characterTranslationJSON from '@/translation/character.json'
 
 import { Multilingual, translateValue } from './common'

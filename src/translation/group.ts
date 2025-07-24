@@ -1,3 +1,5 @@
+import 'server-only'
+
 import groupTranslationJSON from '@/translation/group.json'
 
 import { Multilingual, translateValue } from './common'
