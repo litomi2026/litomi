@@ -1,3 +1,5 @@
+import 'server-only'
+
 import seriesTranslationJSON from '@/translation/series.json'
 
 import { Multilingual, translateValue } from './common'

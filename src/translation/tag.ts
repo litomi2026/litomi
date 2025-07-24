@@ -1,3 +1,5 @@
+import 'server-only'
+
 import tagCategoryJSON from '@/translation/tag-category.json'
 import tagMaleFemaleJSON from '@/translation/tag-male-female.json'
 import tagMixedJSON from '@/translation/tag-mixed.json'

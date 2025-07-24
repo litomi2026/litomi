@@ -1,3 +1,5 @@
+import 'server-only'
+
 import type { Multilingual } from './common'
 
 import { normalizeValue } from './common'

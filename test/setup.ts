@@ -2,8 +2,14 @@
 // This file is automatically loaded before running tests
 
 import { afterEach, beforeAll } from 'bun:test'
+// Mock 'server-only' package to prevent errors in test environment
+import { mock } from 'bun:test'
 // Setup DOM environment using happy-dom
 import { Window } from 'happy-dom'
+
+mock.module('server-only', () => ({
+  // Empty module - this prevents the error from being thrown
+}))
 
 // Create a new window instance
 const window = new Window({
