@@ -114,13 +114,7 @@ print_step "Running e2e tests..."
 bun test:e2e "$@"
 TEST_EXIT_CODE=$?
 
-echo -e "${PURPLE}────────────────────────────────────────────${NC}\n"
-
-if [ $TEST_EXIT_CODE -eq 0 ]; then
-    print_success "All tests passed! 🎉"
-else
-    print_error "Some tests failed 😞"
-fi
+echo -e "${PURPLE}────────────────────────────────────────────${NC}"
 
 # Always clean up Docker containers
 print_step "Cleaning up..."
