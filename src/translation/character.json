@@ -282,15 +282,31 @@
   "ana": { "en": "Ana", "ko": "아나", "ja": "アナ" },
   "ana_coppola": { "en": "Ana Coppola", "ko": "아나 코폴라", "ja": "穴・コッポラ" },
   "ana_spelunky": { "en": "Ana Spelunky", "ko": "아나 스펄렁키", "ja": "アナ・スペランキー" },
-  "ananas_dragon_cookie": { "en": "Ananas Dragon Cookie", "ko": "아나나스 드래곤 쿠키", "ja": "アナナスドラゴンクッキー" },
+  "ananas_dragon_cookie": {
+    "en": "Ananas Dragon Cookie",
+    "ko": "아나나스 드래곤 쿠키",
+    "ja": "アナナスドラゴンクッキー"
+  },
   "anastasia": { "en": "Anastasia", "ko": "아나스타시아", "ja": "アナスタシア" },
   "anastasia_nasuhara": { "en": "Anastasia Nasuhara", "ko": "아나스타시아 나스하라", "ja": "アナスタシア・ナスハラ" },
-  "anastasia_nikolaevna_romanova": { "en": "Anastasia Nikolaevna Romanova", "ko": "아나스타시아 니콜라예브나 로마노바", "ja": "アナスタシア・ニコラエヴナ・ロマノヴァ" },
-  "anastasia_rune_valeria": { "en": "Anastasia Rune Valeria", "ko": "아나스타시아 룬 발레리아", "ja": "アナスタシア・ルーン・ヴァレリア" },
+  "anastasia_nikolaevna_romanova": {
+    "en": "Anastasia Nikolaevna Romanova",
+    "ko": "아나스타시아 니콜라예브나 로마노바",
+    "ja": "アナスタシア・ニコラエヴナ・ロマノヴァ"
+  },
+  "anastasia_rune_valeria": {
+    "en": "Anastasia Rune Valeria",
+    "ko": "아나스타시아 룬 발레리아",
+    "ja": "アナスタシア・ルーン・ヴァレリア"
+  },
   "anby_demara": { "en": "Anby Demara", "ko": "안비 데마라", "ja": "アンビー・デマラ" },
   "anchorage": { "en": "Anchorage", "ko": "앵커리지", "ja": "アンカレッジ" },
   "andira": { "en": "Andira", "ko": "안디라", "ja": "アンディラ" },
-  "andrew_gilbert_mills": { "en": "Andrew Gilbert Mills", "ko": "앤드류 길버트 밀스", "ja": "アンドリュー・ギルバート・ミルズ" },
+  "andrew_gilbert_mills": {
+    "en": "Andrew Gilbert Mills",
+    "ko": "앤드류 길버트 밀스",
+    "ja": "アンドリュー・ギルバート・ミルズ"
+  },
   "andrew_graves": { "en": "Andrew Graves", "ko": "앤드류 그레이브스", "ja": "アンドリュー・グレイブス" },
   "android_16": { "en": "Android 16", "ko": "인조인간 16호", "ja": "人造人間16号" },
   "android_18": { "en": "Android 18", "ko": "인조인간 18호", "ja": "人造人間18号" },
@@ -309,7 +325,11 @@
   "angelene": { "en": "Angelene", "ko": "안젤렌", "ja": "アンジェレン" },
   "angelic_buster": { "en": "Angelic Buster", "ko": "엔젤릭버스터", "ja": "エンジェリックバスター" },
   "angelina_ajimu": { "en": "Angelina Ajimu", "ko": "안젤리나 아지무", "ja": "安心院なじみ" },
-  "angelise_ikaruga_misurugi": { "en": "Angelise Ikaruga Misurugi", "ko": "안젤리제 이카루가 미스루기", "ja": "アンジェリーズ・斑鳩・ミスルギ" },
+  "angelise_ikaruga_misurugi": {
+    "en": "Angelise Ikaruga Misurugi",
+    "ko": "안젤리제 이카루가 미스루기",
+    "ja": "アンジェリーズ・斑鳩・ミスルギ"
+  },
   "angelise_reiter": { "en": "Angelise Reiter", "ko": "안젤리제 라이터", "ja": "アンジェリーズ・ライター" },
   "angewomon": { "en": "Angewomon", "ko": "엔젤우몬", "ja": "エンジェウーモン" },
   "angol_moa": { "en": "Angol Moa", "ko": "앙골 모아", "ja": "アンゴル・モア" },
@@ -324,7 +344,11 @@
   "anna_kouzuki": { "en": "Anna Kouzuki", "ko": "코즈키 안나", "ja": "上月アンナ" },
   "anna_mochizuki": { "en": "Anna Mochizuki", "ko": "모치즈키 안나", "ja": "望月杏奈" },
   "anna_nishikinomiya": { "en": "Anna Nishikinomiya", "ko": "니시키노미야 안나", "ja": "錦ノ宮アンナ" },
-  "anna_viktorovna_tsoi": { "en": "Anna Viktorovna Tsoi", "ko": "안나 빅토로브나 초이", "ja": "アンナ・ヴィクトロヴナ・ツォイ" },
+  "anna_viktorovna_tsoi": {
+    "en": "Anna Viktorovna Tsoi",
+    "ko": "안나 빅토로브나 초이",
+    "ja": "アンナ・ヴィクトロヴナ・ツォイ"
+  },
   "anna_williams": { "en": "Anna Williams", "ko": "안나 윌리엄스", "ja": "アンナ・ウィリアムズ" },
   "anna_yamada": { "en": "Anna Yamada", "ko": "야마다 안나", "ja": "山田杏奈" },
   "anna_yanami": { "en": "Anna Yanami", "ko": "야나미 안나", "ja": "八奈見 杏菜" },
@@ -393,10 +417,18 @@
   "archbishop": { "en": "Archbishop", "ko": "대주교", "ja": "大司教" },
   "archer": { "en": "Archer", "ko": "아처", "ja": "アーチャー" },
   "architect": { "en": "Architect", "ko": "아키텍트", "ja": "アーキテクト" },
-  "arcueid_brunestud": { "en": "Arcueid Brunestud", "ko": "알퀘이드 브륜스터드", "ja": "アルクェイド・ブリュンスタッド" },
+  "arcueid_brunestud": {
+    "en": "Arcueid Brunestud",
+    "ko": "알퀘이드 브륜스터드",
+    "ja": "アルクェイド・ブリュンスタッド"
+  },
   "arezu": { "en": "Arezu", "ko": "페리", "ja": "ペリ" },
   "aria_blaze": { "en": "Aria Blaze", "ko": "아리아 블레이즈", "ja": "アリア・ブレイズ" },
-  "aria_von_reiji_asuna": { "en": "Aria Von Reiji Asuna", "ko": "아리아 본 레이지 아수나", "ja": "アリア・フォン・レイジ・アスナ" },
+  "aria_von_reiji_asuna": {
+    "en": "Aria Von Reiji Asuna",
+    "ko": "아리아 본 레이지 아수나",
+    "ja": "アリア・フォン・レイジ・アスナ"
+  },
   "arianna_caledonia": { "en": "Arianna Caledonia", "ko": "아리안나 칼레도니아", "ja": "アリアンナ・カレドニア" },
   "ariel": { "en": "Ariel", "ko": "에리얼", "ja": "アリエル" },
   "arisa_ayase": { "en": "Arisa Ayase", "ko": "아야세 아리사", "ja": "綾瀬亜里沙" },
@@ -421,8 +453,16 @@
   "arthur": { "en": "Arthur", "ko": "아서", "ja": "アーサー" },
   "artoria_caster": { "en": "Artoria Caster", "ko": "아르토리아 캐스터", "ja": "アルトリア・キャスター" },
   "artoria_pendragon": { "en": "Artoria Pendragon", "ko": "아르토리아 펜드래곤", "ja": "アルトリア・ペンドラゴン" },
-  "artoria_pendragon_alter": { "en": "Artoria Pendragon Alter", "ko": "아르토리아 펜드래곤 얼터", "ja": "アルトリア・ペンドラゴン〔オルタ〕" },
-  "artoria_pendragon_rider_alter": { "en": "Artoria Pendragon Rider Alter", "ko": "아르토리아 펜드래곤 라이더 얼터", "ja": "アルトリア・ペンドラゴン〔ライダーオルタ〕" },
+  "artoria_pendragon_alter": {
+    "en": "Artoria Pendragon Alter",
+    "ko": "아르토리아 펜드래곤 얼터",
+    "ja": "アルトリア・ペンドラゴン〔オルタ〕"
+  },
+  "artoria_pendragon_rider_alter": {
+    "en": "Artoria Pendragon Rider Alter",
+    "ko": "아르토리아 펜드래곤 라이더 얼터",
+    "ja": "アルトリア・ペンドラゴン〔ライダーオルタ〕"
+  },
   "aru_rikuhachima": { "en": "Aru Rikuhachima", "ko": "리쿠하치마 아루", "ja": "陸八魔 アル" },
   "arulumaya": { "en": "Arulumaya", "ko": "아루루메야", "ja": "アルルメーヤ" },
   "asa_mitaka": { "en": "Asa Mitaka", "ko": "미타카 아사", "ja": "三鷹アサ" },
@@ -448,7 +488,11 @@
   "ash_ketchum": { "en": "Ash Ketchum", "ko": "한지우", "ja": "サトシ" },
   "asha": { "en": "Asha", "ko": "아샤", "ja": "アシャ" },
   "ashe": { "en": "Ashe", "ko": "애쉬", "ja": "アッシュ" },
-  "ashelia_bnargin_dalmasca": { "en": "Ashelia Bnargin Dalmasca", "ko": "아셀리아 브나르긴 달마스카", "ja": "アーシェ・バナルガン・ダルマスカ" },
+  "ashelia_bnargin_dalmasca": {
+    "en": "Ashelia Bnargin Dalmasca",
+    "ko": "아셀리아 브나르긴 달마스카",
+    "ja": "アーシェ・バナルガン・ダルマスカ"
+  },
   "ashigara": { "en": "Ashigara", "ko": "아시가라", "ja": "足柄" },
   "ashley": { "en": "Ashley", "ko": "애슐리", "ja": "アシュリー" },
   "ashley_graham": { "en": "Ashley Graham", "ko": "애슐리 그레이엄", "ja": "アシュリー・グラハム" },
@@ -472,7 +516,11 @@
   "asuka_katou": { "en": "Asuka Katou", "ko": "카토 아스카", "ja": "加藤飛鳥" },
   "asuka_kazama": { "en": "Asuka Kazama", "ko": "카자마 아스카", "ja": "風間飛鳥" },
   "asuka_koukawa": { "en": "Asuka Koukawa", "ko": "코우카와 아스카", "ja": "紅河飛鳥" },
-  "asuka_langley_soryu": { "en": "Asuka Langley Soryu", "ko": "소류 아스카 랑그레이", "ja": "惣流・アスカ・ラングレー" },
+  "asuka_langley_soryu": {
+    "en": "Asuka Langley Soryu",
+    "ko": "소류 아스카 랑그레이",
+    "ja": "惣流・アスカ・ラングレー"
+  },
   "asuka_ninomiya": { "en": "Asuka Ninomiya", "ko": "니노미야 아스카", "ja": "二宮飛鳥" },
   "asuka_sakino": { "en": "Asuka Sakino", "ko": "사키노 아스카", "ja": "咲野明日華" },
   "asuka_tanaka": { "en": "Asuka Tanaka", "ko": "타나카 아스카", "ja": "田中あすか" },
@@ -500,7 +548,11 @@
   "aty": { "en": "Aty", "ko": "아티", "ja": "アティ" },
   "audie": { "en": "Audie", "ko": "모니카", "ja": "モニカ" },
   "audino": { "en": "Audino", "ko": "다부니", "ja": "タブンネ" },
-  "august_von_parseval": { "en": "August Von Parseval", "ko": "아우구스트 폰 파르제발", "ja": "アウグスト・フォン・パルセヴァル" },
+  "august_von_parseval": {
+    "en": "August Von Parseval",
+    "ko": "아우구스트 폰 파르제발",
+    "ja": "アウグスト・フォン・パルセヴァル"
+  },
   "augusta": { "en": "Augusta", "ko": "아우구스타", "ja": "アウグスタ" },
   "aunn_komano": { "en": "Aunn Komano", "ko": "코마노 아운", "ja": "高麗野あうん" },
   "aura_bella_fiora": { "en": "Aura Bella Fiora", "ko": "아우라 벨라 피오라", "ja": "アウラ・ベラ・フィオーラ" },
@@ -508,7 +560,11 @@
   "aurelia_le_guin": { "en": "Aurelia Le Guin", "ko": "아우렐리아 르 귄", "ja": "オーレリア・ルグィン" },
   "aurochs": { "en": "Aurochs", "ko": "오록스", "ja": "オーロックス" },
   "aurora": { "en": "Aurora", "ko": "오로라", "ja": "オーロラ" },
-  "aurora_suya_rhys_kaymin": { "en": "Aurora Suya Rhys Kaymin", "ko": "오로라 수야 리스 카이민", "ja": "オーロラ・スヤ・リス・カイミン" },
+  "aurora_suya_rhys_kaymin": {
+    "en": "Aurora Suya Rhys Kaymin",
+    "ko": "오로라 수야 리스 카이민",
+    "ja": "オーロラ・スヤ・リス・カイミン"
+  },
   "avenger": { "en": "Avenger", "ko": "어벤저", "ja": "アヴェンジャー" },
   "avril_vent_fleur": { "en": "Avril Vent Fleur", "ko": "아브릴 벤트 플뢰르", "ja": "アヴリル・ヴァン・フルール" },
   "avrora": { "en": "Avrora", "ko": "아브로라", "ja": "アヴローラ" },
@@ -579,7 +635,11 @@
   "ballista": { "en": "Ballista", "ko": "발리스타", "ja": "バリスタ" },
   "balrog": { "en": "Balrog", "ko": "발록", "ja": "バルログ" },
   "baltimore": { "en": "Baltimore", "ko": "볼티모어", "ja": "ボルチモア" },
-  "bambietta_basterbine": { "en": "Bambietta Basterbine", "ko": "밤비에타 바스터바인", "ja": "バンビエッタ・バスターバイン" },
+  "bambietta_basterbine": {
+    "en": "Bambietta Basterbine",
+    "ko": "밤비에타 바스터바인",
+    "ja": "バンビエッタ・バスターバイン"
+  },
   "bangoo": { "en": "Bangoo", "ko": "뱅구", "ja": "バングー" },
   "banri_watanuki": { "en": "Banri Watanuki", "ko": "와타누키 반리", "ja": "綿貫万里" },
   "bao": { "en": "Bao", "ko": "바오", "ja": "バオ" },
@@ -603,12 +663,20 @@
   "battleship-symbiotic_hime": { "en": "Battleship-Symbiotic Hime", "ko": "전함-공생 히메", "ja": "戦艦・共生姫" },
   "bayleef": { "en": "Bayleef", "ko": "베이리프", "ja": "ベイリーフ" },
   "bayonetta": { "en": "Bayonetta", "ko": "베요네타", "ja": "ベヨネッタ" },
-  "bazett_fraga_mcremitz": { "en": "Bazett Fraga Mcremitz", "ko": "바제트 프라가 맥레미츠", "ja": "バゼット・フラガ・マクレミッツ" },
+  "bazett_fraga_mcremitz": {
+    "en": "Bazett Fraga Mcremitz",
+    "ko": "바제트 프라가 맥레미츠",
+    "ja": "バゼット・フラガ・マクレミッツ"
+  },
   "bb": { "en": "Bb", "ko": "BB", "ja": "BB" },
   "bea": { "en": "Bea", "ko": "채두", "ja": "サイトウ" },
   "beagle": { "en": "Beagle", "ko": "비글", "ja": "ビーグル" },
   "beanstalk": { "en": "Beanstalk", "ko": "빈스톡", "ja": "ビーンストーク" },
-  "beat_valkyrie_ixseal": { "en": "Beat Valkyrie Ixseal", "ko": "비트 발키리 익실", "ja": "ビートヴァルキリー・イクシル" },
+  "beat_valkyrie_ixseal": {
+    "en": "Beat Valkyrie Ixseal",
+    "ko": "비트 발키리 익실",
+    "ja": "ビートヴァルキリー・イクシル"
+  },
   "beatrice": { "en": "Beatrice", "ko": "베아트리체", "ja": "ベアトリーチェ" },
   "beatrix": { "en": "Beatrix", "ko": "베아트릭스", "ja": "ベアトリクス" },
   "becky_blackbell": { "en": "Becky Blackbell", "ko": "베키 블랙벨", "ja": "ベッキー・ブラックベル" },
@@ -628,7 +696,11 @@
   "belle": { "en": "Belle", "ko": "벨", "ja": "ベル" },
   "bellona": { "en": "Bellona", "ko": "벨로나", "ja": "ベルロナ" },
   "bellows": { "en": "Bellows", "ko": "벨로스", "ja": "ベローズ" },
-  "belzerg_stylish_sword_iris": { "en": "Belzerg Stylish Sword Iris", "ko": "벨제르그 스타일리시 소드 아이리스", "ja": "ベルゼルグスタイリッシュソードアイリス" },
+  "belzerg_stylish_sword_iris": {
+    "en": "Belzerg Stylish Sword Iris",
+    "ko": "벨제르그 스타일리시 소드 아이리스",
+    "ja": "ベルゼルグスタイリッシュソードアイリス"
+  },
   "bemstar": { "en": "Bemstar", "ko": "벰스타", "ja": "ベムスター" },
   "ben_bigger": { "en": "Ben Bigger", "ko": "벤 비거", "ja": "ベン・ビガー" },
   "ben_tennyson": { "en": "Ben Tennyson", "ko": "벤 테니슨", "ja": "ベン・テニソン" },
@@ -638,7 +710,11 @@
   "bennett": { "en": "Bennett", "ko": "베넷", "ja": "ベネット" },
   "benten": { "en": "Benten", "ko": "벤텐", "ja": "弁天" },
   "beowulf": { "en": "Beowulf", "ko": "베오울프", "ja": "ベオウルフ" },
-  "bernadetta_von_varley": { "en": "Bernadetta Von Varley", "ko": "베르나데타 폰 바를리", "ja": "ベルナデッタ＝フォン＝ヴァーリ" },
+  "bernadetta_von_varley": {
+    "en": "Bernadetta Von Varley",
+    "ko": "베르나데타 폰 바를리",
+    "ja": "ベルナデッタ＝フォン＝ヴァーリ"
+  },
   "bernheim": { "en": "Bernheim", "ko": "베른하임", "ja": "ベルンハイム" },
   "berserker": { "en": "Berserker", "ko": "버서커", "ja": "バーサーカー" },
   "bertille_althusser": { "en": "Bertille Althusser", "ko": "베르틸 알튀세르", "ja": "ベルティーユ・アルチュセール" },
@@ -728,7 +804,11 @@
   "caeda": { "en": "Caeda", "ko": "시다", "ja": "シーダ" },
   "caelus": { "en": "Caelus", "ko": "케일루스", "ja": "ケイルス" },
   "caenis": { "en": "Caenis", "ko": "카에니스", "ja": "カイニス" },
-  "caesar_anthonio_zeppeli": { "en": "Caesar Anthonio Zeppeli", "ko": "시저 안토니오 체펠리", "ja": "シーザー・アントニオ・ツェペリ" },
+  "caesar_anthonio_zeppeli": {
+    "en": "Caesar Anthonio Zeppeli",
+    "ko": "시저 안토니오 체펠리",
+    "ja": "シーザー・アントニオ・ツェペリ"
+  },
   "caesar_king": { "en": "Caesar King", "ko": "시저 킹", "ja": "シーザー・キング" },
   "cagalli_yula_athha": { "en": "Cagalli Yula Athha", "ko": "카가리 유라 아스하", "ja": "カガリ・ユラ・アスハ" },
   "cagliostro": { "en": "Cagliostro", "ko": "카글리오스트로", "ja": "カリオストロ" },
@@ -757,19 +837,39 @@
   "cardinal": { "en": "Cardinal", "ko": "카디널", "ja": "カーディナル" },
   "caren_ortensia": { "en": "Caren Ortensia", "ko": "카렌 오르텐시아", "ja": "カレン・オルテンシア" },
   "carisa_contzen": { "en": "Carisa Contzen", "ko": "카리사 콘첸", "ja": "カリサ・コンテン" },
-  "carmelita_montoya_fox": { "en": "Carmelita Montoya Fox", "ko": "카르멜리타 몬토야 폭스", "ja": "カルメリータ・モントーヤ・フォックス" },
+  "carmelita_montoya_fox": {
+    "en": "Carmelita Montoya Fox",
+    "ko": "카르멜리타 몬토야 폭스",
+    "ja": "カルメリータ・モントーヤ・フォックス"
+  },
   "carmilla": { "en": "Carmilla", "ko": "카르미야", "ja": "カーミラ" },
   "carmine": { "en": "Carmine", "ko": "카르민", "ja": "カーマイン" },
   "carnelian": { "en": "Carnelian", "ko": "카넬리안", "ja": "カーネリアン" },
   "caro_ru_lushe": { "en": "Caro Ru Lushe", "ko": "카로 루 루시", "ja": "キャロ・ル・ルシエ" },
-  "carol_malus_dienheim": { "en": "Carol Malus Dienheim", "ko": "캐롤 말루스 디엔하임", "ja": "キャロル・マールス・ディーンハイム" },
+  "carol_malus_dienheim": {
+    "en": "Carol Malus Dienheim",
+    "ko": "캐롤 말루스 디엔하임",
+    "ja": "キャロル・マールス・ディーンハイム"
+  },
   "caroline": { "en": "Caroline", "ko": "캐롤라인", "ja": "キャロライン" },
   "carpaccio": { "en": "Carpaccio", "ko": "카르파치오", "ja": "カルパッチョ" },
   "carren_estapera": { "en": "Carren Estapera", "ko": "카렌 에스타페라", "ja": "カレン・エスタペラ" },
   "carrot": { "en": "Carrot", "ko": "캐롯", "ja": "キャロット" },
-  "cassandra_alexandra": { "en": "Cassandra Alexandra", "ko": "카산드라 알렉산드라", "ja": "カサンドラ・アレクサンドル" },
-  "cassandra_rubens_charon": { "en": "Cassandra Rubens Charon", "ko": "카산드라 루벤스 카론", "ja": "カサンドラ・ルーベンス・カロン" },
-  "cassiopeia_du_couteau": { "en": "Cassiopeia Du Couteau", "ko": "카시오페아 뒤 쿠토", "ja": "カシオペア・デュ・クートー" },
+  "cassandra_alexandra": {
+    "en": "Cassandra Alexandra",
+    "ko": "카산드라 알렉산드라",
+    "ja": "カサンドラ・アレクサンドル"
+  },
+  "cassandra_rubens_charon": {
+    "en": "Cassandra Rubens Charon",
+    "ko": "카산드라 루벤스 카론",
+    "ja": "カサンドラ・ルーベンス・カロン"
+  },
+  "cassiopeia_du_couteau": {
+    "en": "Cassiopeia Du Couteau",
+    "ko": "카시오페아 뒤 쿠토",
+    "ja": "カシオペア・デュ・クートー"
+  },
   "caster": { "en": "Caster", "ko": "캐스터", "ja": "キャスター" },
   "castorice": { "en": "Castorice", "ko": "캐스토리스", "ja": "カストリス" },
   "catherine": { "en": "Catherine", "ko": "캐서린", "ja": "キャサリン" },
@@ -790,8 +890,16 @@
   "cecilia_helmold": { "en": "Cecilia Helmold", "ko": "세실리아 헬몰드", "ja": "セシリア・ヘルモルト" },
   "celes_chere": { "en": "Celes Chere", "ko": "세레스 셰어", "ja": "セリス・シェール" },
   "celesteela": { "en": "Celesteela", "ko": "철화구야", "ja": "テッカグヤ" },
-  "celestia_ludenberg": { "en": "Celestia Ludenberg", "ko": "세레스티아 루덴베르크", "ja": "セレスティア・ルーデンベルク" },
-  "celia_cumani_aintree": { "en": "Celia Cumani Aintree", "ko": "셀리아 쿠마니 에인트리", "ja": "セリア・クマーニ・エイントリー" },
+  "celestia_ludenberg": {
+    "en": "Celestia Ludenberg",
+    "ko": "세레스티아 루덴베르크",
+    "ja": "セレスティア・ルーデンベルク"
+  },
+  "celia_cumani_aintree": {
+    "en": "Celia Cumani Aintree",
+    "ko": "셀리아 쿠마니 에인트리",
+    "ja": "セリア・クマーニ・エイントリー"
+  },
   "celica": { "en": "Celica", "ko": "세리카", "ja": "セリカ" },
   "celica_a._mercury": { "en": "Celica A. Mercury", "ko": "세리카 A. 머큐리", "ja": "セリカ＝A＝マーキュリー" },
   "cell": { "en": "Cell", "ko": "셀", "ja": "セル" },
@@ -922,7 +1030,11 @@
   "chizuru_shiina": { "en": "Chizuru Shiina", "ko": "시이나 치즈루", "ja": "椎名千鶴" },
   "chloe": { "en": "Chloe", "ko": "클로에", "ja": "クロエ" },
   "chloe_valens": { "en": "Chloe Valens", "ko": "클로에 발렌스", "ja": "クロエ・ヴァレンス" },
-  "chloe_von_einzbern": { "en": "Chloe Von Einzbern", "ko": "클로에 폰 아인츠베른", "ja": "クロエ・フォン・アインツベルン" },
+  "chloe_von_einzbern": {
+    "en": "Chloe Von Einzbern",
+    "ko": "클로에 폰 아인츠베른",
+    "ja": "クロエ・フォン・アインツベルン"
+  },
   "chocola": { "en": "Chocola", "ko": "쇼콜라", "ja": "ショコラ" },
   "choi_mochimazzi": { "en": "Choi Mochimazzi", "ko": "최 모치맛치", "ja": "チョイ・モチマッツィ" },
   "chongyun": { "en": "Chongyun", "ko": "중운", "ja": "重雲" },
@@ -990,7 +1102,11 @@
   "coral": { "en": "Coral", "ko": "코랄", "ja": "コーラル" },
   "corazon": { "en": "Corazon", "ko": "코라손", "ja": "コラソン" },
   "cordelia_glauca": { "en": "Cordelia Glauca", "ko": "코델리아 글라우카", "ja": "コーデリア・グラウカ" },
-  "cornelia_li_britannia": { "en": "Cornelia Li Britannia", "ko": "코넬리아 리 브리타니아", "ja": "コーネリア・リ・ブリタニア" },
+  "cornelia_li_britannia": {
+    "en": "Cornelia Li Britannia",
+    "ko": "코넬리아 리 브리타니아",
+    "ja": "コーネリア・リ・ブリタニア"
+  },
   "cornelius": { "en": "Cornelius", "ko": "코르넬리우스", "ja": "コルネリウス" },
   "cornelius_alba": { "en": "Cornelius Alba", "ko": "코르넬리우스 알바", "ja": "コルネリウス・アルバ" },
   "courtney": { "en": "Courtney", "ko": "호연", "ja": "カガリ" },
@@ -1117,13 +1233,17 @@
   "dani_rojas": { "en": "Dani Rojas", "ko": "다니 로하스", "ja": "ダニ・ロハス" },
   "daniela_dimitrescu": { "en": "Daniela Dimitrescu", "ko": "다니엘라 디미트레스쿠", "ja": "ダニエラ・ディミトレスク" },
   "dante": { "en": "Dante", "ko": "단테", "ja": "ダンテ" },
-  "dantoudai_no_aura": { "en": "Dantoudai No Aura", "ko": "단토다이 노 아우라", "ja": "断頭台のアウラ" },
+  "dantoudai_no_aura": { "en": "Dantoudai No Aura", "ko": "단두대의 아우라", "ja": "断頭台のアウラ" },
   "danua": { "en": "Danua", "ko": "다누아", "ja": "ダヌア" },
   "danzou_katou": { "en": "Danzou Katou", "ko": "단조 카토", "ja": "加藤段蔵" },
   "darius": { "en": "Darius", "ko": "다리우스", "ja": "ダリウス" },
   "darjeeling": { "en": "Darjeeling", "ko": "다즐링", "ja": "ダージリン" },
   "dark_dream": { "en": "Dark Dream", "ko": "다크 드림", "ja": "ダークドリーム" },
-  "dark_elven_forest_ranger": { "en": "Dark Elven Forest Ranger", "ko": "다크 엘븐 포레스트 레인저", "ja": "ダークエルヴン・フォレストレンジャー" },
+  "dark_elven_forest_ranger": {
+    "en": "Dark Elven Forest Ranger",
+    "ko": "다크 엘븐 포레스트 레인저",
+    "ja": "ダークエルヴン・フォレストレンジャー"
+  },
   "dark_hunter": { "en": "Dark Hunter", "ko": "다크 헌터", "ja": "ダークハンター" },
   "dark_magician_girl": { "en": "Dark Magician Girl", "ko": "블랙 매지션 걸", "ja": "ブラック・マジシャン・ガール" },
   "dark_schneider": { "en": "Dark Schneider", "ko": "다크 슈나이더", "ja": "ダーク・シュナイダー" },
@@ -1142,7 +1262,11 @@
   "debora_briscoletti": { "en": "Debora Briscoletti", "ko": "데보라 브리스콜레티", "ja": "デボラ" },
   "decidueye": { "en": "Decidueye", "ko": "모크나이퍼", "ja": "ジュナイパー" },
   "deedlit": { "en": "Deedlit", "ko": "디드리트", "ja": "ディードリット" },
-  "deep_web_underground": { "en": "Deep Web Underground", "ko": "딥 웹 언더그라운드", "ja": "ディープウェブ・アンダーグラウンド" },
+  "deep_web_underground": {
+    "en": "Deep Web Underground",
+    "ko": "딥 웹 언더그라운드",
+    "ja": "ディープウェブ・アンダーグラウンド"
+  },
   "degenbrecher": { "en": "Degenbrecher", "ko": "데겐브레허", "ja": "デーゲンブレヒャー" },
   "dehya": { "en": "Dehya", "ko": "데히야", "ja": "ディシア" },
   "delga": { "en": "Delga", "ko": "델가", "ja": "デルガ" },
@@ -1170,14 +1294,22 @@
   "diancie": { "en": "Diancie", "ko": "디안시", "ja": "ディアンシー" },
   "diane": { "en": "Diane", "ko": "디안", "ja": "ディアンヌ" },
   "diao_chan": { "en": "Diao Chan", "ko": "초선", "ja": "貂蝉" },
-  "diarmuid_ua_duibhne": { "en": "Diarmuid Ua Duibhne", "ko": "디어무이드 우어 두이브네", "ja": "ディルムッド・オディナ" },
+  "diarmuid_ua_duibhne": {
+    "en": "Diarmuid Ua Duibhne",
+    "ko": "디어무이드 우어 두이브네",
+    "ja": "ディルムッド・オディナ"
+  },
   "dice_arisugawa": { "en": "Dice Arisugawa", "ko": "다이스 아리스가와", "ja": "有栖川ダイス" },
   "dick_grayson": { "en": "Dick Grayson", "ko": "딕 그레이슨", "ja": "ディック・グレイソン" },
   "dido": { "en": "Dido", "ko": "디도", "ja": "ダイドー" },
   "diego_castillo": { "en": "Diego Castillo", "ko": "디에고 카스티요", "ja": "ディエゴ・カスティーヨ" },
   "diluc_ragnvindr": { "en": "Diluc Ragnvindr", "ko": "다이루크 라겐펜더", "ja": "ディルック・ラグンヴィンド" },
   "dima": { "en": "Dima", "ko": "디마", "ja": "ディマ" },
-  "dimitri_alexandre_blaiddyd": { "en": "Dimitri Alexandre Blaiddyd", "ko": "디미트리 알렉산드르 블레이다드", "ja": "ディミトリ＝アレクサンドル＝ブレーダッド" },
+  "dimitri_alexandre_blaiddyd": {
+    "en": "Dimitri Alexandre Blaiddyd",
+    "ko": "디미트리 알렉산드르 블레이다드",
+    "ja": "ディミトリ＝アレクサンドル＝ブレーダッド"
+  },
   "diona": { "en": "Diona", "ko": "디오나", "ja": "ディオナ" },
   "dipper_pines": { "en": "Dipper Pines", "ko": "디퍼 파인스", "ja": "ディッパー・パインズ" },
   "ditto": { "en": "Ditto", "ko": "메타몽", "ja": "メタモン" },
@@ -1220,7 +1352,11 @@
   "drowzee": { "en": "Drowzee", "ko": "슬리프", "ja": "スリープ" },
   "dsr-50": { "en": "DSR-50", "ko": "DSR-50", "jp": "DSR-50" },
   "dunkerque": { "en": "Dunkerque", "ko": "덩케르크", "ja": "ダンケルク" },
-  "dunyarzad_homayani": { "en": "Dunyarzad Homayani", "ko": "두냐르자드 호마야니", "ja": "ドゥニャルザード・ホマヤーニ" },
+  "dunyarzad_homayani": {
+    "en": "Dunyarzad Homayani",
+    "ko": "두냐르자드 호마야니",
+    "ja": "ドゥニャルザード・ホマヤーニ"
+  },
   "durandal": { "en": "Durandal", "ko": "뒤랑달", "ja": "デュランダル" },
   "durin": { "en": "Durin", "ko": "두린", "ja": "ドゥリン" },
   "dusk": { "en": "Dusk", "ko": "두스크", "ja": "ダスク" },
@@ -1229,11 +1365,19 @@
   "earthquake": { "en": "Earthquake", "ko": "어스퀘이크", "ja": "アースクエイク" },
   "eas": { "en": "Eas", "ko": "이즈", "ja": "イース" },
   "eblana_dublinn": { "en": "Eblana Dublinn", "ko": "에블라나 더블린", "ja": "エブラナ・ダブリン" },
-  "ecarlate_juptris_st._piria": { "en": "Ecarlate Juptris St. Piria", "ko": "에칼라트 주트리스 세인트 피리아", "ja": "エカルラート・ジュプトリス・セント・ピリア" },
+  "ecarlate_juptris_st._piria": {
+    "en": "Ecarlate Juptris St. Piria",
+    "ko": "에칼라트 주트리스 세인트 피리아",
+    "ja": "エカルラート・ジュプトリス・セント・ピリア"
+  },
   "echidna": { "en": "Echidna", "ko": "에키드나", "ja": "エキドナ" },
   "echo_turbine": { "en": "Echo Turbine", "ko": "에코 터빈", "ja": "エコー・タービン" },
   "eclair_martinozzi": { "en": "Eclair Martinozzi", "ko": "에클레르 마르티노치", "ja": "エクレール・マルティノッジ" },
-  "edelgard_von_hresvelg": { "en": "Edelgard Von Hresvelg", "ko": "에델가르트 폰 흐레스벨그", "ja": "エーデルガルト＝フォン＝フレスベルグ" },
+  "edelgard_von_hresvelg": {
+    "en": "Edelgard Von Hresvelg",
+    "ko": "에델가르트 폰 흐레스벨그",
+    "ja": "エーデルガルト＝フォン＝フレスベルグ"
+  },
   "edmond_honda": { "en": "Edmond Honda", "ko": "에드몬드 혼다", "ja": "エドモンド本田" },
   "edward_elric": { "en": "Edward Elric", "ko": "에드워드 엘릭", "ja": "エドワード・エルリック" },
   "edward_newgate": { "en": "Edward Newgate", "ko": "에드워드 뉴게이트", "ja": "エドワード・ニューゲート" },
@@ -1246,7 +1390,11 @@
   "eijun_sawamura": { "en": "Eijun Sawamura", "ko": "사와무라 에이준", "ja": "沢村栄純" },
   "eiki_shiki": { "en": "Eiki Shiki", "ko": "시키 에이키", "ja": "四季映姫" },
   "eiko_tsukimi": { "en": "Eiko Tsukimi", "ko": "츠키미 에이코", "ja": "月見英子" },
-  "eila_ilmatar_juutilainen": { "en": "Eila Ilmatar Juutilainen", "ko": "에이라 일마타르 유틸라이넨", "ja": "エイラ・イルマタル・ユーティライネン" },
+  "eila_ilmatar_juutilainen": {
+    "en": "Eila Ilmatar Juutilainen",
+    "ko": "에이라 일마타르 유틸라이넨",
+    "ja": "エイラ・イルマタル・ユーティライネン"
+  },
   "eimi_izumimoto": { "en": "Eimi Izumimoto", "ko": "이즈미모토 에이미", "ja": "泉本詠美" },
   "ein": { "en": "Ein", "ko": "아인", "ja": "アイン" },
   "eina_tulle": { "en": "Eina Tulle", "ko": "에이나 튤레", "ja": "エイナ・チュール" },
@@ -1276,7 +1424,11 @@
   "elf": { "en": "Elf", "ko": "엘프", "ja": "エルフ" },
   "elf_yamada": { "en": "Elf Yamada", "ko": "엘프 야마다", "ja": "エルフ山田" },
   "elfnein": { "en": "Elfnein", "ko": "엘프나인", "ja": "エルフナイン" },
-  "elfreda_mirjasdottir": { "en": "Elfreda Mirjasdottir", "ko": "엘프레다 미르야스도티르", "ja": "エルフレダ・ミルヤスドッティル" },
+  "elfreda_mirjasdottir": {
+    "en": "Elfreda Mirjasdottir",
+    "ko": "엘프레다 미르야스도티르",
+    "ja": "エルフレダ・ミルヤスドッティル"
+  },
   "elfuda": { "en": "Elfuda", "ko": "엘푸다", "ja": "エルフーダ" },
   "eli_ayase": { "en": "Eli Ayase", "ko": "아야세 에리", "ja": "絢瀬絵里" },
   "elie_macdowell": { "en": "Elie Macdowell", "ko": "엘리 맥도웰", "ja": "エリー・マクダウェル" },
@@ -1299,8 +1451,16 @@
   "elsa_granhiert": { "en": "Elsa Granhiert", "ko": "엘사 그란히르트", "ja": "エルザ・グランヒルテ" },
   "elsam": { "en": "Elsam", "ko": "엘삼", "ja": "エルサム" },
   "elu": { "en": "Elu", "ko": "엘루", "ja": "エル" },
-  "elucia_de_lute_ima": { "en": "Elucia De Lute Ima", "ko": "엘루시아 드 루트 이마", "ja": "エルシア＝デ＝ルート＝イーマ" },
-  "elven_forest_maker": { "en": "Elven Forest Maker", "ko": "엘븐 포레스트 메이커", "ja": "エルヴンフォレストメーカー" },
+  "elucia_de_lute_ima": {
+    "en": "Elucia De Lute Ima",
+    "ko": "엘루시아 드 루트 이마",
+    "ja": "エルシア＝デ＝ルート＝イーマ"
+  },
+  "elven_forest_maker": {
+    "en": "Elven Forest Maker",
+    "ko": "엘븐 포레스트 메이커",
+    "ja": "エルヴンフォレストメーカー"
+  },
   "elysia": { "en": "Elysia", "ko": "엘리시아", "ja": "エリシア" },
   "elza": { "en": "Elza", "ko": "엘자", "ja": "エルザ" },
   "ema_yasuhara": { "en": "Ema Yasuhara", "ko": "야스하라 에마", "ja": "保原エマ" },
@@ -1370,11 +1530,23 @@
   "erinn": { "en": "Erinn", "ko": "에린", "ja": "エリン" },
   "erio_mondial": { "en": "Erio Mondial", "ko": "에리오 몬디알", "ja": "エリオ・モンディアル" },
   "erio_touwa": { "en": "Erio Touwa", "ko": "토와 에리오", "ja": "藤和エリオ" },
-  "eriri_spencer_sawamura": { "en": "Eriri Spencer Sawamura", "ko": "스펜서 사와무라 에리리", "ja": "澤村・スペンサー・英梨々" },
+  "eriri_spencer_sawamura": {
+    "en": "Eriri Spencer Sawamura",
+    "ko": "스펜서 사와무라 에리리",
+    "ja": "澤村・スペンサー・英梨々"
+  },
   "eris": { "en": "Eris", "ko": "에리스", "ja": "エリス" },
-  "eris_boreas_greyrat": { "en": "Eris Boreas Greyrat", "ko": "에리스 보레아스 그레이랫", "ja": "エリス・ボレアス・グレイラット" },
+  "eris_boreas_greyrat": {
+    "en": "Eris Boreas Greyrat",
+    "ko": "에리스 보레아스 그레이랫",
+    "ja": "エリス・ボレアス・グレイラット"
+  },
   "eris_williamette": { "en": "Eris Williamette", "ko": "에리스 윌리어메트", "ja": "エリス・ウィリアメット" },
-  "ernesti_echevalier": { "en": "Ernesti Echevalier", "ko": "에르네스티 에슈바리에", "ja": "エルネスティ・エチェバリア" },
+  "ernesti_echevalier": {
+    "en": "Ernesti Echevalier",
+    "ko": "에르네스티 에슈바리에",
+    "ja": "エルネスティ・エチェバリア"
+  },
   "eru_chitanda": { "en": "Eru Chitanda", "ko": "치탄다 에루", "ja": "千反田える" },
   "erwin_smith": { "en": "Erwin Smith", "ko": "엘빈 스미스", "ja": "エルヴィン・スミス" },
   "erza_scarlet": { "en": "Erza Scarlet", "ko": "엘자 스칼렛", "ja": "エルザ・スカーレット" },
@@ -1386,7 +1558,11 @@
   "est": { "en": "Est", "ko": "에스트", "ja": "エスト" },
   "estelle": { "en": "Estelle", "ko": "에스텔", "ja": "エステル" },
   "estelle_bright": { "en": "Estelle Bright", "ko": "에스텔 브라이트", "ja": "エステル・ブライト" },
-  "estellise_sidos_heurassein": { "en": "Estellise Sidos Heurassein", "ko": "에스텔리제 시도스 휴라세인", "ja": "エステルリゼ・シデス・ヒュラッセイン" },
+  "estellise_sidos_heurassein": {
+    "en": "Estellise Sidos Heurassein",
+    "ko": "에스텔리제 시도스 휴라세인",
+    "ja": "エステルリゼ・シデス・ヒュラッセイン"
+  },
   "eternity_larva": { "en": "Eternity Larva", "ko": "이터니티 라바", "ja": "エタニティラルバ" },
   "ethan": { "en": "Ethan", "ko": "민진", "ja": "ヒビキ" },
   "etna": { "en": "Etna", "ko": "에트나", "ja": "エトナ" },
@@ -1395,7 +1571,11 @@
   "eugen": { "en": "Eugen", "ko": "오이겐", "ja": "オイゲン" },
   "eugeo": { "en": "Eugeo", "ko": "유지오", "ja": "ユージオ" },
   "eula_lawrence": { "en": "Eula Lawrence", "ko": "유라 로렌스", "ja": "ユーラ・ローレンス" },
-  "euphemia_li_britannia": { "en": "Euphemia Li Britannia", "ko": "유페미아 리 브리타니아", "ja": "ユーフェミア・リ・ブリタニア" },
+  "euphemia_li_britannia": {
+    "en": "Euphemia Li Britannia",
+    "ko": "유페미아 리 브리타니아",
+    "ja": "ユーフェミア・リ・ブリタニア"
+  },
   "eurasian_eagle-owl": { "en": "Eurasian Eagle-Owl", "ko": "유라시아 수리부엉이", "ja": "ユーラシアワシミミズク" },
   "eureka": { "en": "Eureka", "ko": "유레카", "ja": "ユーレカ" },
   "europa": { "en": "Europa", "ko": "유로파", "ja": "エウローパ" },
@@ -1439,7 +1619,11 @@
   "feena": { "en": "Feena", "ko": "피나", "ja": "フィーナ" },
   "feixiao": { "en": "Feixiao", "ko": "페이샤오", "ja": "フェイシャオ" },
   "felicia": { "en": "Felicia", "ko": "펠리시아", "ja": "フェリシア" },
-  "felix_hugo_fraldarius": { "en": "Felix Hugo Fraldarius", "ko": "펠릭스 휴고 프랄다리우스", "ja": "フェリクス＝ユーゴ＝フラルダリウス" },
+  "felix_hugo_fraldarius": {
+    "en": "Felix Hugo Fraldarius",
+    "ko": "펠릭스 휴고 프랄다리우스",
+    "ja": "フェリクス＝ユーゴ＝フラルダリウス"
+  },
   "felsi_rollo": { "en": "Felsi Rollo", "ko": "펠시 롤로", "ja": "フェルシ・ロロ" },
   "female_protagonist": { "en": "Female Protagonist", "ko": "여성 주인공", "ja": "女性主人公" },
   "feng_min": { "en": "Feng Min", "ko": "펑 민", "ja": "フェン・ミン" },
@@ -1459,7 +1643,11 @@
   "fighter": { "en": "Fighter", "ko": "파이터", "ja": "ファイター" },
   "filia": { "en": "Filia", "ko": "필리아", "ja": "フィリア" },
   "filo": { "en": "Filo", "ko": "필로", "ja": "フィーロ" },
-  "fin_e_ld_si_laffinty": { "en": "Fin E Ld Si Laffinty", "ko": "핀 E Ld Si 라핀티", "ja": "フィン・E・Ld・シ・ラフィンティ" },
+  "fin_e_ld_si_laffinty": {
+    "en": "Fin E Ld Si Laffinty",
+    "ko": "핀 E Ld Si 라핀티",
+    "ja": "フィン・E・Ld・シ・ラフィンティ"
+  },
   "fina": { "en": "Fina", "ko": "피나", "ja": "フィーナ" },
   "finn": { "en": "Finn", "ko": "핀", "ja": "フィン" },
   "finn_the_human": { "en": "Finn The Human", "ko": "핀 더 휴먼", "ja": "フィン・ザ・ヒューマン" },
@@ -1568,7 +1756,11 @@
   "g41": { "en": "G41", "ko": "G41", "ja": "G41" },
   "gabite": { "en": "Gabite", "ko": "가byte", "ja": "ガバイト" },
   "gabriel": { "en": "Gabriel", "ko": "가브리엘", "ja": "ガブリエル" },
-  "gabriel_tenma_white": { "en": "Gabriel Tenma White", "ko": "가브리엘 텐마 화이트", "ja": "ガブリエル・天真・ホワイト" },
+  "gabriel_tenma_white": {
+    "en": "Gabriel Tenma White",
+    "ko": "가브리엘 텐마 화이트",
+    "ja": "ガブリエル・天真・ホワイト"
+  },
   "gainer_sanga": { "en": "Gainer Sanga", "ko": "가이너 상가", "ja": "ゲイナー・サンガ" },
   "gaius": { "en": "Gaius", "ko": "가이우스", "ja": "ガイウス" },
   "gaku_yashiro": { "en": "Gaku Yashiro", "ko": "야시로 가쿠", "ja": "屋代 岳" },
@@ -1591,11 +1783,19 @@
   "garl_vinland": { "en": "Garl Vinland", "ko": "가를 빈란드", "ja": "ガール・ヴィンランド" },
   "garland": { "en": "Garland", "ko": "가랜드", "ja": "ガーランド" },
   "garnet_maclaine": { "en": "Garnet Maclaine", "ko": "가넷 맥레인", "ja": "ガーネット・マクレーン" },
-  "garnet_til_alexandros_xvii": { "en": "Garnet Til Alexandros Xvii", "ko": "가넷 틸 알렉산드로스 17세", "ja": "ガーネット・ティル・アレクサンドロス17世" },
+  "garnet_til_alexandros_xvii": {
+    "en": "Garnet Til Alexandros Xvii",
+    "ko": "가넷 틸 알렉산드로스 17세",
+    "ja": "ガーネット・ティル・アレクサンドロス17世"
+  },
   "garou": { "en": "Garou", "ko": "가로우", "ja": "ガロウ" },
   "gasper_vladi": { "en": "Gasper Vladi", "ko": "가스퍼 블라디", "ja": "ギャスパー・ヴラディ" },
   "gatomon": { "en": "Gatomon", "ko": "가트몬", "ja": "テイルモン" },
-  "gaul_galette_des_rois": { "en": "Gaul Galette Des Rois", "ko": "골 갈레트 데 루아", "ja": "ガウル・ガレット・デ・ロワ" },
+  "gaul_galette_des_rois": {
+    "en": "Gaul Galette Des Rois",
+    "ko": "골 갈레트 데 루아",
+    "ja": "ガウル・ガレット・デ・ロワ"
+  },
   "gavial": { "en": "Gavial", "ko": "가비알", "ja": "ガヴィアル" },
   "gawain": { "en": "Gawain", "ko": "가웨인", "ja": "ガウェイン" },
   "gawr_gura": { "en": "Gawr Gura", "ko": "가울 구라", "ja": "がうる・ぐら" },
@@ -1618,14 +1818,26 @@
   "gerda": { "en": "Gerda", "ko": "게르다", "ja": "ゲルダ" },
   "gertrud_barkhorn": { "en": "Gertrud Barkhorn", "ko": "게르트루트 바르크호른", "ja": "ゲルトルート・バルクホルン" },
   "ghislaine_dedoldia": { "en": "Ghislaine Dedoldia", "ko": "기슬렌 데돌디아", "ja": "ギレーヌ・デドルディア" },
-  "ghost_ogre_and_snow_rabbit": { "en": "Ghost Ogre And Snow Rabbit", "ko": "유령 오우거와 눈 토끼", "ja": "幽鬼うさぎ" },
+  "ghost_ogre_and_snow_rabbit": {
+    "en": "Ghost Ogre And Snow Rabbit",
+    "ko": "유령 오우거와 눈 토끼",
+    "ja": "幽鬼うさぎ"
+  },
   "gideon_grey": { "en": "Gideon Grey", "ko": "기디언 그레이", "ja": "ギデオン・グレイ" },
-  "gilbert_g.p._guilford": { "en": "Gilbert G.P. Guilford", "ko": "길버트 G.P. 길포드", "ja": "ギルバート・G・P・ギルフォード" },
+  "gilbert_g.p._guilford": {
+    "en": "Gilbert G.P. Guilford",
+    "ko": "길버트 G.P. 길포드",
+    "ja": "ギルバート・G・P・ギルフォード"
+  },
   "gilgamesh": { "en": "Gilgamesh", "ko": "길가메쉬", "ja": "ギルガメッシュ" },
   "gilles_de_rais": { "en": "Gilles De Rais", "ko": "질 드 레", "ja": "ジル・ド・レ" },
   "gin_ichimaru": { "en": "Gin Ichimaru", "ko": "이치마루 긴", "ja": "市丸ギン" },
   "gin_tachibana": { "en": "Gin Tachibana", "ko": "타치바나 긴", "ja": "立花銀" },
-  "ginbei_haruomi_sawatari": { "en": "Ginbei Haruomi Sawatari", "ko": "사와타리 긴페이 하루오미", "ja": "沢渡銀兵衛春臣" },
+  "ginbei_haruomi_sawatari": {
+    "en": "Ginbei Haruomi Sawatari",
+    "ko": "사와타리 긴페이 하루오미",
+    "ja": "沢渡銀兵衛春臣"
+  },
   "ginko": { "en": "Ginko", "ko": "긴코", "ja": "ギンコ" },
   "ginko_momose": { "en": "Ginko Momose", "ko": "모모세 긴코", "ja": "桃瀬銀子" },
   "ginko_sora": { "en": "Ginko Sora", "ko": "소라 긴코", "ja": "空銀子" },
@@ -1641,7 +1853,11 @@
   "giyuu_tomioka": { "en": "Giyuu Tomioka", "ko": "토미오카 기유", "ja": "冨岡義勇" },
   "glaceon": { "en": "Glaceon", "ko": "글레이시아", "ja": "グレイシア" },
   "gladiator": { "en": "Gladiator", "ko": "글래디에이터", "ja": "グラディエーター" },
-  "gladiolus_amicitia": { "en": "Gladiolus Amicitia", "ko": "글라디올러스 아미시티아", "ja": "グラディオラス・アミキティア" },
+  "gladiolus_amicitia": {
+    "en": "Gladiolus Amicitia",
+    "ko": "글라디올러스 아미시티아",
+    "ja": "グラディオラス・アミキティア"
+  },
   "gladion": { "en": "Gladion", "ko": "글라디오", "ja": "グラジオ" },
   "glamrock_freddy": { "en": "Glamrock Freddy", "ko": "글램록 프레디", "ja": "グラムロックフレディ" },
   "glemy_toto": { "en": "Glemy Toto", "ko": "글레미 토토", "ja": "グレミー・トト" },
@@ -1781,7 +1997,11 @@
   "hanna_fondant": { "en": "Hanna Fondant", "ko": "한나 폰당", "ja": "ハンナ・フォンダン" },
   "hanyuu": { "en": "Hanyuu", "ko": "하뉴", "ja": "羽入" },
   "happy": { "en": "Happy", "ko": "해피", "ja": "ハッピー" },
-  "haqua_du_lot_herminium": { "en": "Haqua Du Lot Herminium", "ko": "하쿠아 두 로트 헬미니움", "ja": "ハクア・ド・ロット・ヘルミニウム" },
+  "haqua_du_lot_herminium": {
+    "en": "Haqua Du Lot Herminium",
+    "ko": "하쿠아 두 로트 헬미니움",
+    "ja": "ハクア・ド・ロット・ヘルミニウム"
+  },
   "hare": { "en": "Hare", "ko": "하레", "ja": "ハレ" },
   "hare_menjou": { "en": "Hare Menjou", "ko": "멘죠 하레", "ja": "門丈 晴" },
   "hare_omagari": { "en": "Hare Omagari", "ko": "오마가리 하레", "ja": "大曲 晴" },
@@ -1867,7 +2087,11 @@
   "hazuki_nanakusa": { "en": "Hazuki Nanakusa", "ko": "나나쿠사 하즈키", "ja": "七草 葉月" },
   "hazumu_osaragi": { "en": "Hazumu Osaragi", "ko": "오사라기 하즈무", "ja": "大仏 はずむ" },
   "heart_aino": { "en": "Heart Aino", "ko": "아이노 하트", "ja": "愛乃 はぁと" },
-  "hecatia_lapislazuli": { "en": "Hecatia Lapislazuli", "ko": "헤카티아 라피스라줄리", "ja": "ヘカーティア・ラピスラズリ" },
+  "hecatia_lapislazuli": {
+    "en": "Hecatia Lapislazuli",
+    "ko": "헤카티아 라피스라줄리",
+    "ja": "ヘカーティア・ラピスラズリ"
+  },
   "hector": { "en": "Hector", "ko": "헥토르", "ja": "ヘクトル" },
   "hei": { "en": "Hei", "ko": "헤이", "ja": "黒" },
   "heihachi_mishima": { "en": "Heihachi Mishima", "ko": "미시마 헤이하치", "ja": "三島 平八" },
@@ -1880,10 +2104,18 @@
   "helm": { "en": "Helm", "ko": "헬름", "ja": "ヘルム" },
   "hemo_midori": { "en": "Hemo Midori", "ko": "헤모 미도리", "ja": "ヘモ みどり" },
   "hendrik": { "en": "Hendrik", "ko": "헨드릭", "ja": "ヘンドリック" },
-  "henrietta_de_tristain": { "en": "Henrietta De Tristain", "ko": "헨리에타 드 트리스테인", "ja": "アンリエッタ・ド・トリステイン" },
+  "henrietta_de_tristain": {
+    "en": "Henrietta De Tristain",
+    "ko": "헨리에타 드 트리스테인",
+    "ja": "アンリエッタ・ド・トリステイン"
+  },
   "hera": { "en": "Hera", "ko": "헤라", "ja": "ヘラ" },
   "hera-ur": { "en": "Hera-Ur", "ko": "헤라 우르", "ja": "ヘラ・ウル" },
-  "hercule_elly_burton": { "en": "Hercule Elly Burton", "ko": "헤르클레 엘리 버튼", "ja": "ヘルクレ・エリー・バートン" },
+  "hercule_elly_burton": {
+    "en": "Hercule Elly Burton",
+    "ko": "헤르클레 엘리 버튼",
+    "ja": "ヘルクレ・エリー・バートン"
+  },
   "herman_carter": { "en": "Herman Carter", "ko": "허먼 카터", "ja": "ハーマン・カーター" },
   "hermione_granger": { "en": "Hermione Granger", "ko": "헤르미온느 그레인저", "ja": "ハーマイオニー・グレンジャー" },
   "hero": { "en": "Hero", "ko": "히어로", "ja": "勇者" },
@@ -1932,7 +2164,11 @@
   "hikayu_hoshikawa": { "en": "Hikayu Hoshikawa", "ko": "호시카와 히카유", "ja": "星河 ひかゆ" },
   "hikoujouki": { "en": "Hikoujouki", "ko": "히코죠키", "ja": "飛行場姫" },
   "hilda": { "en": "Hilda", "ko": "힐다", "ja": "ヒルダ" },
-  "hilda_valentine_goneril": { "en": "Hilda Valentine Goneril", "ko": "힐다 발렌타인 고네릴", "ja": "ヒルダ＝ヴァレンティン＝ゴネリル" },
+  "hilda_valentine_goneril": {
+    "en": "Hilda Valentine Goneril",
+    "ko": "힐다 발렌타인 고네릴",
+    "ja": "ヒルダ＝ヴァレンティン＝ゴネリル"
+  },
   "hildas_mom": { "en": "Hildas Mom", "ko": "힐다 엄마", "ja": "ヒルダのママ" },
   "hilichurl": { "en": "Hilichurl", "ko": "츄츄족", "ja": "ヒルチャール" },
   "himari_akeboshi": { "en": "Himari Akeboshi", "ko": "아케보시 히마리", "ja": "明星 ひまり" },
@@ -2130,7 +2366,11 @@
   "ikuyo_hoshizora": { "en": "Ikuyo Hoshizora", "ko": "호시조라 이쿠요", "ja": "星空育代" },
   "ikuyo_kita": { "en": "Ikuyo Kita", "ko": "키타 이쿠요", "ja": "喜多郁代" },
   "illustrious": { "en": "Illustrious", "ko": "일러스트리어스", "ja": "イラストリアス" },
-  "illyasviel_von_einzbern": { "en": "Illyasviel Von Einzbern", "ko": "일리야스필 폰 아인츠베른", "ja": "イリヤスフィール・フォン・アインツベルン" },
+  "illyasviel_von_einzbern": {
+    "en": "Illyasviel Von Einzbern",
+    "ko": "일리야스필 폰 아인츠베른",
+    "ja": "イリヤスフィール・フォン・アインツベルン"
+  },
   "ilsa": { "en": "Ilsa", "ko": "일사", "ja": "イルザ" },
   "ilulu": { "en": "Ilulu", "ko": "이루루", "ja": "イルル" },
   "ilya_ornstein": { "en": "Ilya Ornstein", "ko": "일리야 오른슈타인", "ja": "イリヤ・オルンシュタイン" },
@@ -2148,7 +2388,11 @@
   "indra": { "en": "Indra", "ko": "인드라", "ja": "インドラ" },
   "ine": { "en": "Ine", "ko": "이네", "ja": "イネ" },
   "ingrid": { "en": "Ingrid", "ko": "잉그리드", "ja": "イングリッド" },
-  "ingrid_brandl_galatea": { "en": "Ingrid Brandl Galatea", "ko": "잉그리드 브란들 갈라테아", "ja": "イングリット＝ブランドル＝ガラテア" },
+  "ingrid_brandl_galatea": {
+    "en": "Ingrid Brandl Galatea",
+    "ko": "잉그리드 브란들 갈라테아",
+    "ja": "イングリット＝ブランドル＝ガラテア"
+  },
   "inkling": { "en": "Inkling", "ko": "잉클링", "ja": "インクリング" },
   "inko_midoriya": { "en": "Inko Midoriya", "ko": "미도리야 잉코", "ja": "緑谷引子" },
   "ino_sakura": { "en": "Ino Sakura", "ko": "사쿠라 이노", "ja": "佐倉イノ" },
@@ -2180,7 +2424,11 @@
   "irina_shidou": { "en": "Irina Shidou", "ko": "시도 이라나", "ja": "紫藤イリーナ" },
   "iris": { "en": "Iris", "ko": "아이리스", "ja": "アイリス" },
   "iris_heart": { "en": "Iris Heart", "ko": "아이리스 하트", "ja": "アイリス・ハート" },
-  "irisviel_von_einzbern": { "en": "Irisviel Von Einzbern", "ko": "이리스필 폰 아인츠베른", "ja": "イリスフィール・フォン・アインツベルン" },
+  "irisviel_von_einzbern": {
+    "en": "Irisviel Von Einzbern",
+    "ko": "이리스필 폰 아인츠베른",
+    "ja": "イリスフィール・フォン・アインツベルン"
+  },
   "irma": { "en": "Irma", "ko": "이르마", "ja": "イルマ" },
   "iroha": { "en": "Iroha", "ko": "이로하", "ja": "いろは" },
   "iroha_isshiki": { "en": "Iroha Isshiki", "ko": "잇시키 이로하", "ja": "一色いろは" },
@@ -2191,7 +2439,11 @@
   "isaac_foster": { "en": "Isaac Foster", "ko": "아이작 포스터", "ja": "アイザック・フォスター" },
   "isabelle": { "en": "Isabelle", "ko": "여울", "ja": "しずえ" },
   "isabelle_vouthon": { "en": "Isabelle Vouthon", "ko": "이자벨 부통", "ja": "イザベル・ブートン" },
-  "isadora_finnsdottir": { "en": "Isadora Finnsdottir", "ko": "이사도라 핀스도티르", "ja": "イサドラ・フィンスドッティル" },
+  "isadora_finnsdottir": {
+    "en": "Isadora Finnsdottir",
+    "ko": "이사도라 핀스도티르",
+    "ja": "イサドラ・フィンスドッティル"
+  },
   "isaki_magari": { "en": "Isaki Magari", "ko": "마가리 이사키", "ja": "曲イサキ" },
   "ishizu_ishtar": { "en": "Ishizu Ishtar", "ko": "이시즈 이슈타르", "ja": "イシズ・イシュタール" },
   "ishmael": { "en": "Ishmael", "ko": "이슈메일", "ja": "イシュメイル" },
@@ -2265,7 +2517,11 @@
   "jean_gunnhildr": { "en": "Jean Gunnhildr", "ko": "진 군힐드", "ja": "ジン・グンヒルド" },
   "jean_roque_raltique": { "en": "Jean Roque Raltique", "ko": "진 로크 랄티크", "ja": "ジン・ロック・ラルティーク" },
   "jeanne_alter": { "en": "Jeanne Alter", "ko": "잔 다르크 얼터", "ja": "ジャンヌ・ダルク・オルタ" },
-  "jeanne_alter_lily": { "en": "Jeanne Alter Lily", "ko": "잔 다르크 얼터 릴리", "ja": "ジャンヌ・ダルク・オルタ・リリィ" },
+  "jeanne_alter_lily": {
+    "en": "Jeanne Alter Lily",
+    "ko": "잔 다르크 얼터 릴리",
+    "ja": "ジャンヌ・ダルク・オルタ・リリィ"
+  },
   "jeanne_darc": { "en": "Jeanne Darc", "ko": "잔 다르크", "ja": "ジャンヌ・ダルク" },
   "jellal_fernandes": { "en": "Jellal Fernandes", "ko": "제랄 페르난데스", "ja": "ジェラール・フェルナンデス" },
   "jellymon": { "en": "Jellymon", "ko": "젤리몬", "ja": "ジェリーモン" },
@@ -2607,7 +2863,11 @@
   "kenma_kozume": { "en": "Kenma Kozume", "ko": "코즈메 켄마", "ja": "孤爪研磨" },
   "kennen": { "en": "Kennen", "ko": "케넨", "ja": "ケネン" },
   "kenneth_chase": { "en": "Kenneth Chase", "ko": "케네스 체이스", "ja": "ケネス・チェイス" },
-  "kennosuke_tokisada_ouma": { "en": "Kennosuke Tokisada Ouma", "ko": "오우마 토키사다 켄노스케", "ja": "逢魔時定ケンノスケ" },
+  "kennosuke_tokisada_ouma": {
+    "en": "Kennosuke Tokisada Ouma",
+    "ko": "오우마 토키사다 켄노스케",
+    "ja": "逢魔時定ケンノスケ"
+  },
   "kenshi_masaki": { "en": "Kenshi Masaki", "ko": "마사키 켄시", "ja": "柾木剣士" },
   "kenshin_uesugi": { "en": "Kenshin Uesugi", "ko": "우에스기 켄신", "ja": "上杉謙信" },
   "kensou_sie": { "en": "Kensou Sie", "ko": "시이 켄수", "ja": "椎拳崇" },
@@ -2657,10 +2917,10 @@
   "kirara_yozakura": { "en": "Kirara Yozakura", "ko": "요자쿠라 키라라", "ja": "夜桜キララ" },
   "kirari_momobami": { "en": "Kirari Momobami", "ko": "모모바미 키라리", "ja": "桃喰綺羅莉" },
   "kirari_moroboshi": { "en": "Kirari Moroboshi", "ko": "모로보시 키라리", "ja": "諸星きらり" },
-  "kirche_augusta_frederica_von_anhalt_zerbst": { 
-    "en": "Kirche Augusta Frederica Von Anhalt Zerbst", 
-    "ko": "키르케 아우구스타 프레데리카 폰 안할트 체르프스트", 
-    "ja": "キュルケ・アウグスタ・フレデリカ・フォン・アンハルト・ツェルプストー" 
+  "kirche_augusta_frederica_von_anhalt_zerbst": {
+    "en": "Kirche Augusta Frederica Von Anhalt Zerbst",
+    "ko": "키르케 아우구스타 프레데리카 폰 안할트 체르프스트",
+    "ja": "キュルケ・アウグスタ・フレデリカ・フォン・アンハルト・ツェルプストー"
   },
   "kirei_kotomine": { "en": "Kirei Kotomine", "ko": "코토미네 키레이", "ja": "言峰綺礼" },
   "kiri_komori": { "en": "Kiri Komori", "ko": "코모리 키리", "ja": "小森霧" },
@@ -2688,10 +2948,10 @@
   "kise": { "en": "Kise", "ko": "키세", "ja": "黄瀬" },
   "kishinami": { "en": "Kishinami", "ko": "키시나미", "ja": "岸波" },
   "kiso": { "en": "Kiso", "ko": "키소", "ja": "木曾" },
-  "kiss-shot_acerola-orion_heart-under-blade": { 
-    "en": "Kiss-Shot Acerola-Orion Heart-Under-Blade", 
-    "ko": "키스샷 아세로라오리온 하트언더블레이드", 
-    "ja": "キスショット・アセロラオリオン・ハートアンダーブレード" 
+  "kiss-shot_acerola-orion_heart-under-blade": {
+    "en": "Kiss-Shot Acerola-Orion Heart-Under-Blade",
+    "ko": "키스샷 아세로라오리온 하트언더블레이드",
+    "ja": "キスショット・アセロラオリオン・ハートアンダーブレード"
   },
   "kisuke_urahara": { "en": "Kisuke Urahara", "ko": "우라하라 키스케", "ja": "浦原喜助" },
   "kisume": { "en": "Kisume", "ko": "키스메", "ja": "キスメ" },
@@ -2860,7 +3120,11 @@
   "ksvk": { "en": "Ksvk", "ko": "KSVK", "ja": "KSVK" },
   "kubira": { "en": "Kubira", "ko": "쿠비라", "ja": "クビラ" },
   "kuchiku_seiki": { "en": "Kuchiku Seiki", "ko": "쿠치쿠 세이키", "ja": "駆逐セイキ" },
-  "kudelia_aina_bernstein": { "en": "Kudelia Aina Bernstein", "ko": "쿠델리아 아이나 번스타인", "ja": "クーデリア・藍那・バーンスタイン" },
+  "kudelia_aina_bernstein": {
+    "en": "Kudelia Aina Bernstein",
+    "ko": "쿠델리아 아이나 번스타인",
+    "ja": "クーデリア・藍那・バーンスタイン"
+  },
   "kukaku_shiba": { "en": "Kukaku Shiba", "ko": "쿠카쿠 시바", "ja": "志波 空鶴" },
   "kukulkan": { "en": "Kukulkan", "ko": "쿠쿨칸", "ja": "ククルカン" },
   "kukuri": { "en": "Kukuri", "ko": "쿠쿠리", "ja": "ククリ" },
@@ -2955,7 +3219,11 @@
   "lacey": { "en": "Lacey", "ko": "레이시", "ja": "レイシー" },
   "lacus_clyne": { "en": "Lacus Clyne", "ko": "라크스 클라인", "ja": "ラクス・クライン" },
   "lady": { "en": "Lady", "ko": "레이디", "ja": "レディ" },
-  "lady_labrynth_of_the_silver_castle": { "en": "Lady Labrynth Of The Silver Castle", "ko": "실버 캐슬의 레이디 라브린스", "ja": "白銀の城のラビュリンス" },
+  "lady_labrynth_of_the_silver_castle": {
+    "en": "Lady Labrynth Of The Silver Castle",
+    "ko": "실버 캐슬의 레이디 라브린스",
+    "ja": "白銀の城のラビュリンス"
+  },
   "lady_nagant": { "en": "Lady Nagant", "ko": "레이디 나간트", "ja": "レディ・ナガン" },
   "ladydevimon": { "en": "Ladydevimon", "ko": "레이디데비몬", "ja": "レディーデビモン" },
   "laffey": { "en": "Laffey", "ko": "라피", "ja": "ラフィー" },
@@ -2965,7 +3233,11 @@
   "lain_paterson": { "en": "Lain Paterson", "ko": "레인 패터슨", "ja": "レイン・パターソン" },
   "laios_thorden": { "en": "Laios Thorden", "ko": "라이오스 토덴", "ja": "ライオス・トーデン" },
   "lakshmibai": { "en": "Lakshmibai", "ko": "락슈미바이", "ja": "ラクシュミー・バーイー" },
-  "lala_satalin_deviluke": { "en": "Lala Satalin Deviluke", "ko": "라라 사타린 데빌루크", "ja": "ララ・サタリン・デビルーク" },
+  "lala_satalin_deviluke": {
+    "en": "Lala Satalin Deviluke",
+    "ko": "라라 사타린 데빌루크",
+    "ja": "ララ・サタリン・デビルーク"
+  },
   "lambda-11": { "en": "Lambda-11", "ko": "람다-11", "ja": "Λ-11" },
   "lambdadelta": { "en": "Lambdadelta", "ko": "람다델타", "ja": "ラムダデルタ" },
   "lamretta": { "en": "Lamretta", "ko": "람레타", "ja": "ラムレッダ" },
@@ -2987,7 +3259,11 @@
   "lapras": { "en": "Lapras", "ko": "라프라스", "ja": "ラプラス" },
   "larcei": { "en": "Larcei", "ko": "라르세이", "ja": "ラーケイ" },
   "largo_potter": { "en": "Largo Potter", "ko": "라르고 포터", "ja": "ラルゴ・ポッター" },
-  "larsa_ferrinas_solidor": { "en": "Larsa Ferrinas Solidor", "ko": "라르사 페리나스 솔리도르", "ja": "ラーサー・ファルナス・ソリドール" },
+  "larsa_ferrinas_solidor": {
+    "en": "Larsa Ferrinas Solidor",
+    "ko": "라르사 페리나스 솔리도르",
+    "ja": "ラーサー・ファルナス・ソリドール"
+  },
   "lashara_earth": { "en": "Lashara Earth", "ko": "라샤라 어스", "ja": "ラシャラ・アース" },
   "last_order": { "en": "Last Order", "ko": "라스트 오더", "ja": "ラストオーダー" },
   "latias": { "en": "Latias", "ko": "라티아스", "ja": "ラティアス" },
@@ -3025,7 +3301,11 @@
   "leia_rolando": { "en": "Leia Rolando", "ko": "레아 롤란도", "ja": "レイア・ロランド" },
   "leila_malkal": { "en": "Leila Malkal", "ko": "레이라 말칼", "ja": "レイラ・マルカル" },
   "leina_vance": { "en": "Leina Vance", "ko": "레이나 밴스", "ja": "レイナ・バンス" },
-  "lelouch_vi_britannia": { "en": "Lelouch Vi Britannia", "ko": "를르슈 비 브리타니아", "ja": "ルルーシュ・ヴィ・ブリタニア" },
+  "lelouch_vi_britannia": {
+    "en": "Lelouch Vi Britannia",
+    "ko": "를르슈 비 브리타니아",
+    "ja": "ルルーシュ・ヴィ・ブリタニア"
+  },
   "lemonade_alpha": { "en": "Lemonade Alpha", "ko": "레모네이드 알파", "ja": "レモネードアルファ" },
   "len_kagamine": { "en": "Len Kagamine", "ko": "렌 카가미네", "ja": "鏡音 レン" },
   "leo": { "en": "Leo", "ko": "레오", "ja": "レオ" },
@@ -3042,13 +3322,25 @@
   "leonardo_watch": { "en": "Leonardo Watch", "ko": "레오나르도 워치", "ja": "レオナルド・ウォッチ" },
   "leone": { "en": "Leone", "ko": "레오네", "ja": "レオーネ" },
   "leonie_pinelli": { "en": "Leonie Pinelli", "ko": "레오니 피넬리", "ja": "レオニー・ピネッリ" },
-  "leonmitchelli_galette_des_rois": { "en": "Leonmitchelli Galette Des Rois", "ko": "레온미첼리 갈레트 데 루아", "ja": "レオンミッチェリ・ガレット・デ・ロワ" },
+  "leonmitchelli_galette_des_rois": {
+    "en": "Leonmitchelli Galette Des Rois",
+    "ko": "레온미첼리 갈레트 데 루아",
+    "ja": "レオンミッチェリ・ガレット・デ・ロワ"
+  },
   "leopard_doronjo": { "en": "Leopard Doronjo", "ko": "레오파드 도론조", "ja": "レオパルド・ドロンジョ" },
-  "leorio_paladiknight": { "en": "Leorio Paladiknight", "ko": "레오리오 파라디나이트", "ja": "レオリオ＝パラディナイト" },
+  "leorio_paladiknight": {
+    "en": "Leorio Paladiknight",
+    "ko": "레오리오 파라디나이트",
+    "ja": "レオリオ＝パラディナイト"
+  },
   "lethor": { "en": "Lethor", "ko": "레토르", "ja": "レソル" },
   "letty_whiterock": { "en": "Letty Whiterock", "ko": "레티 화이트록", "ja": "レティ・ホワイトロック" },
   "lev_haiba": { "en": "Lev Haiba", "ko": "하이바 레프", "ja": "灰羽 リエーフ" },
-  "lev_lainur_flauros": { "en": "Lev Lainur Flauros", "ko": "레프 라이누르 플라우로스", "ja": "レフ・ライノール・フラウロス" },
+  "lev_lainur_flauros": {
+    "en": "Lev Lainur Flauros",
+    "ko": "레프 라이누르 플라우로스",
+    "ja": "レフ・ライノール・フラウロス"
+  },
   "levi_ackerman": { "en": "Levi Ackerman", "ko": "리바이 아커만", "ja": "リヴァイ・アッカーマン" },
   "levi_elipha": { "en": "Levi Elipha", "ko": "레비 엘리파", "ja": "レビ・エリファ" },
   "levia": { "en": "Levia", "ko": "레비아", "ja": "レビア" },
@@ -3065,7 +3357,11 @@
   "lili_rochefort": { "en": "Lili Rochefort", "ko": "릴리 로슈포르", "ja": "リリ・ロシュフォール" },
   "lilia": { "en": "Lilia", "ko": "릴리아", "ja": "リリア" },
   "lilia_greyrat": { "en": "Lilia Greyrat", "ko": "릴리아 그레이랫", "ja": "リーリャ・グレイラット" },
-  "lilique_kadoka_lipati": { "en": "Lilique Kadoka Lipati", "ko": "릴리크 카도카 리파티", "ja": "リリク・カドカ・リパティ" },
+  "lilique_kadoka_lipati": {
+    "en": "Lilique Kadoka Lipati",
+    "ko": "릴리크 카도카 리파티",
+    "ja": "リリク・カドカ・リパティ"
+  },
   "liliruca_arde": { "en": "Liliruca Arde", "ko": "릴리루카 아데", "ja": "リリルカ・アーデ" },
   "lilith": { "en": "Lilith", "ko": "릴리스", "ja": "リリス" },
   "lilith_aensland": { "en": "Lilith Aensland", "ko": "릴리스 앤슬랜드", "ja": "リリス・アーンスランド" },
@@ -3104,7 +3400,11 @@
   "litten": { "en": "Litten", "ko": "냐오히트", "ja": "ニャビー" },
   "little_mac": { "en": "Little Mac", "ko": "리틀 맥", "ja": "リトル・マック" },
   "little_red_riding_hood": { "en": "Little Red Riding Hood", "ko": "빨간 망토", "ja": "赤ずきん" },
-  "little_red_riding_hoods_grandmother": { "en": "Little Red Riding Hoods Grandmother", "ko": "빨간 망토의 할머니", "ja": "赤ずきんのおばあさん" },
+  "little_red_riding_hoods_grandmother": {
+    "en": "Little Red Riding Hoods Grandmother",
+    "ko": "빨간 망토의 할머니",
+    "ja": "赤ずきんのおばあさん"
+  },
   "littorio": { "en": "Littorio", "ko": "리토리오", "ja": "リットリオ" },
   "live_twin_ki-sikil": { "en": "Live Twin Ki-Sikil", "ko": "라이브 트윈 키-시킬", "ja": "ライブツイン キスキル" },
   "live_twin_lil-la": { "en": "Live Twin Lil-La", "ko": "라이브 트윈 릴라", "ja": "ライブツイン リィラ" },
@@ -3128,7 +3428,11 @@
   "lotte": { "en": "Lotte", "ko": "롯테", "ja": "ロッテ" },
   "lotte_yanson": { "en": "Lotte Yanson", "ko": "롯테 얀손", "ja": "ロッテ・ヤンソン" },
   "lotus": { "en": "Lotus", "ko": "로터스", "ja": "ロータス" },
-  "louise_francoise_le_blanc_de_la_valliere": { "en": "Louise Francoise Le Blanc De La Valliere", "ko": "루이즈 프랑소와즈 르 블랑 드 라 발리에르", "ja": "ルイズ・フランソワーズ・ル・ブラン・ド・ラ・ヴァリエール" },
+  "louise_francoise_le_blanc_de_la_valliere": {
+    "en": "Louise Francoise Le Blanc De La Valliere",
+    "ko": "루이즈 프랑소와즈 르 블랑 드 라 발리에르",
+    "ja": "ルイズ・フランソワーズ・ル・ブラン・ド・ラ・ヴァリエール"
+  },
   "louise_halevy": { "en": "Louise Halevy", "ko": "루이즈 할레비", "ja": "ルイス・ハレヴィ" },
   "lu_bu": { "en": "Lu Bu", "ko": "여포", "ja": "呂布" },
   "lu_xun": { "en": "Lu Xun", "ko": "육손", "ja": "陸遜" },
@@ -3137,9 +3441,17 @@
   "lucario": { "en": "Lucario", "ko": "루카리오", "ja": "ルカリオ" },
   "lucas": { "en": "Lucas", "ko": "루카스", "ja": "リュカ" },
   "lucia": { "en": "Lucia", "ko": "루시아", "ja": "ルシア" },
-  "luciana_auxesis_theodoro_de_montefio": { "en": "Luciana Auxesis Theodoro De Montefio", "ko": "루치아나 아욱세시스 테오도로 데 몬테피오", "ja": "ルチアーナ・アウクセシス・テオドーロ・デ・モンテフィオ" },
+  "luciana_auxesis_theodoro_de_montefio": {
+    "en": "Luciana Auxesis Theodoro De Montefio",
+    "ko": "루치아나 아욱세시스 테오도로 데 몬테피오",
+    "ja": "ルチアーナ・アウクセシス・テオドーロ・デ・モンテフィオ"
+  },
   "lucid": { "en": "Lucid", "ko": "루시드", "ja": "ルシッド" },
-  "luciela_r._sourcream": { "en": "Luciela R. Sourcream", "ko": "루시엘라 R. 사워크림", "ja": "ルシエラ・R・サワークリーム" },
+  "luciela_r._sourcream": {
+    "en": "Luciela R. Sourcream",
+    "ko": "루시엘라 R. 사워크림",
+    "ja": "ルシエラ・R・サワークリーム"
+  },
   "lucifer": { "en": "Lucifer", "ko": "루시퍼", "ja": "ルシファー" },
   "lucky_chloe": { "en": "Lucky Chloe", "ko": "럭키 클로에", "ja": "ラッキークロエ" },
   "lucrecia_crescent": { "en": "Lucrecia Crescent", "ko": "루크레시아 크레센트", "ja": "ルクレシア・クレセント" },
@@ -3147,7 +3459,11 @@
   "lucy_ashley": { "en": "Lucy Ashley", "ko": "루시 애슐리", "ja": "ルーシー・アシュレイ" },
   "lucy_heartfilia": { "en": "Lucy Heartfilia", "ko": "루시 하트필리아", "ja": "ルーシィ・ハートフィリア" },
   "lucyna_kushinada": { "en": "Lucyna Kushinada", "ko": "루시나 쿠시나다", "ja": "ルーシィナ・クシナダ" },
-  "ludger_will_kresnik": { "en": "Ludger Will Kresnik", "ko": "루드거 윌 크레스니크", "ja": "ルドガー・ウィル・クルスニク" },
+  "ludger_will_kresnik": {
+    "en": "Ludger Will Kresnik",
+    "ko": "루드거 윌 크레스니크",
+    "ja": "ルドガー・ウィル・クルスニク"
+  },
   "ludmilla": { "en": "Ludmilla", "ko": "루드밀라", "ja": "ルドミラ" },
   "lugia": { "en": "Lugia", "ko": "루기아", "ja": "ルギア" },
   "luis_cammy": { "en": "Luis Cammy", "ko": "루이스 캐미", "ja": "ルイス・キャミー" },
@@ -3170,7 +3486,11 @@
   "lupusregina_beta": { "en": "Lupusregina Beta", "ko": "루푸스레기나 베타", "ja": "ルプスレギナ・ベータ" },
   "lusamine": { "en": "Lusamine", "ko": "루자미네", "ja": "ルザミーネ" },
   "luu_asuka": { "en": "Luu Asuka", "ko": "루 아스카", "ja": "ルゥ・アスカ" },
-  "luviagelita_edelfelt": { "en": "Luviagelita Edelfelt", "ko": "루비아젤리타 에델펠트", "ja": "ルヴィアゼリッタ・エーデルフェルト" },
+  "luviagelita_edelfelt": {
+    "en": "Luviagelita Edelfelt",
+    "ko": "루비아젤리타 에델펠트",
+    "ja": "ルヴィアゼリッタ・エーデルフェルト"
+  },
   "lux": { "en": "Lux", "ko": "럭스", "ja": "ラックス" },
   "lux_arcadia": { "en": "Lux Arcadia", "ko": "럭스 아르카디아", "ja": "ルクス・アーカディア" },
   "luxio": { "en": "Luxio", "ko": "럭시오", "ja": "ルクシオ" },
@@ -3185,7 +3505,11 @@
   "lyra": { "en": "Lyra", "ko": "금선", "ja": "コト" },
   "lyria": { "en": "Lyria", "ko": "리리아", "ja": "リリア" },
   "lyrica_prismriver": { "en": "Lyrica Prismriver", "ko": "리리카 프리즘리버", "ja": "リリカ・プリズムリバー" },
-  "lysithea_von_cordelia": { "en": "Lysithea Von Cordelia", "ko": "리시테아 폰 코델리아", "ja": "リシテア＝フォン＝コーデリア" },
+  "lysithea_von_cordelia": {
+    "en": "Lysithea Von Cordelia",
+    "ko": "리시테아 폰 코델리아",
+    "ja": "リシテア＝フォン＝コーデリア"
+  },
   "m2hb": { "en": "M2hb", "ko": "M2HB", "ja": "M2HB" },
   "m4_sopmod_ii": { "en": "M4 Sopmod Ii", "ko": "M4 SOPMOD II", "ja": "M4 SOPMOD II" },
   "m4a1": { "en": "M4a1", "ko": "M4A1", "ja": "M4A1" },
@@ -3220,7 +3544,11 @@
   "magallan": { "en": "Magallan", "ko": "마갈란", "ja": "マゼラン" },
   "magical_ruruie": { "en": "Magical Ruruie", "ko": "마법의 루루이에", "ja": "マジカル・ルルイエ" },
   "magician": { "en": "Magician", "ko": "마법사", "ja": "魔術師" },
-  "magillanica_lou_mayvin": { "en": "Magillanica Lou Mayvin", "ko": "마길라니카 루 메이빈", "ja": "マギラニカ・ルゥ・マユヴィン" },
+  "magillanica_lou_mayvin": {
+    "en": "Magillanica Lou Mayvin",
+    "ko": "마길라니카 루 메이빈",
+    "ja": "マギラニカ・ルゥ・マユヴィン"
+  },
   "magisa": { "en": "Magisa", "ko": "마기사", "ja": "マギサ" },
   "mahira": { "en": "Mahira", "ko": "마히라", "ja": "マヒラ" },
   "mahiro_oyama": { "en": "Mahiro Oyama", "ko": "오야마 마히로", "ja": "緒山 真尋" },
@@ -3335,9 +3663,17 @@
   "maou": { "en": "Maou", "ko": "마왕", "ja": "魔王" },
   "maple": { "en": "Maple", "ko": "메이플", "ja": "メイプル" },
   "mar": { "en": "Mar", "ko": "마르", "ja": "マル" },
-  "mara_jade_skywalker": { "en": "Mara Jade Skywalker", "ko": "마라 제이드 스카이워커", "ja": "マラ・ジェイド・スカイウォーカー" },
+  "mara_jade_skywalker": {
+    "en": "Mara Jade Skywalker",
+    "ko": "마라 제이드 스카이워커",
+    "ja": "マラ・ジェイド・スカイウォーカー"
+  },
   "marble": { "en": "Marble", "ko": "마블", "ja": "マーブル" },
-  "marceline_the_vampire_queen": { "en": "Marceline The Vampire Queen", "ko": "뱀파이어 여왕 마르셀린", "ja": "マーセリン・ザ・ヴァンパイア・クイーン" },
+  "marceline_the_vampire_queen": {
+    "en": "Marceline The Vampire Queen",
+    "ko": "뱀파이어 여왕 마르셀린",
+    "ja": "マーセリン・ザ・ヴァンパイア・クイーン"
+  },
   "march_7th": { "en": "March 7th", "ko": "3월 7일", "ja": "三月七" },
   "marciana": { "en": "Marciana", "ko": "마르시아나", "ja": "マルシアナ" },
   "marcille_donato": { "en": "Marcille Donato", "ko": "마르실 도나토", "ja": "マルシル・ドナトー" },
@@ -3346,8 +3682,16 @@
   "margie": { "en": "Margie", "ko": "마지", "ja": "マージ" },
   "marguerite": { "en": "Marguerite", "ko": "마르가리트", "ja": "マルグリット" },
   "marguerite_fatima": { "en": "Marguerite Fatima", "ko": "마르가리트 파티마", "ja": "マルグリット・ファティマ" },
-  "margueritte_chateaubriand": { "en": "Margueritte Chateaubriand", "ko": "마르그리트 샤토브리앙", "ja": "マルグリット・シャトーブリアン" },
-  "mari_illustrious_makinami": { "en": "Mari Illustrious Makinami", "ko": "마키나미 마리 일러스트리어스", "ja": "真希波・マリ・イラストリアス" },
+  "margueritte_chateaubriand": {
+    "en": "Margueritte Chateaubriand",
+    "ko": "마르그리트 샤토브리앙",
+    "ja": "マルグリット・シャトーブリアン"
+  },
+  "mari_illustrious_makinami": {
+    "en": "Mari Illustrious Makinami",
+    "ko": "마키나미 마리 일러스트리어스",
+    "ja": "真希波・マリ・イラストリアス"
+  },
   "mari_iochi": { "en": "Mari Iochi", "ko": "이오치 마리", "ja": "五百知マリ" },
   "mari_kurihara": { "en": "Mari Kurihara", "ko": "쿠리하라 마리", "ja": "栗原万里" },
   "mari_nogami": { "en": "Mari Nogami", "ko": "노가미 마리", "ja": "野上マリ" },
@@ -3356,12 +3700,20 @@
   "mari_watanabe": { "en": "Mari Watanabe", "ko": "와타나베 마리", "ja": "渡辺マリ" },
   "maria": { "en": "Maria", "ko": "마리아", "ja": "マリア" },
   "maria_balthasar": { "en": "Maria Balthasar", "ko": "마리아 발타자르", "ja": "マリア・バルタザール" },
-  "maria_cadenzavna_eve": { "en": "Maria Cadenzavna Eve", "ko": "마리아 카덴차브나 이브", "ja": "マリア・カデンツァヴナ・イヴ" },
+  "maria_cadenzavna_eve": {
+    "en": "Maria Cadenzavna Eve",
+    "ko": "마리아 카덴차브나 이브",
+    "ja": "マリア・カデンツァヴナ・イヴ"
+  },
   "maria_campbell": { "en": "Maria Campbell", "ko": "마리아 캠벨", "ja": "マリア・キャンベル" },
   "maria_dacascos": { "en": "Maria Dacascos", "ko": "마리아 다카스코스", "ja": "マリア・ダカスコス" },
   "maria_himesato": { "en": "Maria Himesato", "ko": "히메사토 마리아", "ja": "姫里マリア" },
   "maria_kanamori": { "en": "Maria Kanamori", "ko": "카나모리 마리아", "ja": "金森マリア" },
-  "maria_marta_cunhel_guloso": { "en": "Maria Marta Cunhel Guloso", "ko": "마리아 마르타 쿤헬 굴로소", "ja": "マリア・マルタ・クンヘル・グロソ" },
+  "maria_marta_cunhel_guloso": {
+    "en": "Maria Marta Cunhel Guloso",
+    "ko": "마리아 마르타 쿤헬 굴로소",
+    "ja": "マリア・マルタ・クンヘル・グロソ"
+  },
   "maria_momoe": { "en": "Maria Momoe", "ko": "모모에 마리아", "ja": "百枝まりあ" },
   "maria_nanadan": { "en": "Maria Nanadan", "ko": "나나단 마리아", "ja": "七段マリア" },
   "maria_of_redemption": { "en": "Maria Of Redemption", "ko": "구원의 마리아", "ja": "贖いのマリア" },
@@ -3373,13 +3725,21 @@
   "marian": { "en": "Marian", "ko": "마리안", "ja": "マリアン" },
   "mariana_prinsilla": { "en": "Mariana Prinsilla", "ko": "마리아나 프린실라", "ja": "マリアナ・プリンシラ" },
   "mariandale": { "en": "Mariandale", "ko": "마리안데일", "ja": "マリアンデール" },
-  "marianne_von_edmund": { "en": "Marianne Von Edmund", "ko": "마리안 폰 에드먼드", "ja": "マリアンヌ・フォン・エドマンド" },
+  "marianne_von_edmund": {
+    "en": "Marianne Von Edmund",
+    "ko": "마리안 폰 에드먼드",
+    "ja": "マリアンヌ・フォン・エドマンド"
+  },
   "maribel": { "en": "Maribel", "ko": "마리벨", "ja": "マリベル" },
   "maribel_han": { "en": "Maribel Han", "ko": "메리벨 한", "ja": "メリーべル・ハーン" },
   "marida_cruz": { "en": "Marida Cruz", "ko": "마리다 크루즈", "ja": "マリーダ・クルス" },
   "marie": { "en": "Marie", "ko": "마리", "ja": "マリー" },
   "marie_antoinette": { "en": "Marie Antoinette", "ko": "마리 앙투아네트", "ja": "マリー・アントワネット" },
-  "marie_antoinette_alter": { "en": "Marie Antoinette Alter", "ko": "마리 앙투아네트 얼터", "ja": "マリー・アントワネット・オルタ" },
+  "marie_antoinette_alter": {
+    "en": "Marie Antoinette Alter",
+    "ko": "마리 앙투아네트 얼터",
+    "ja": "マリー・アントワネット・オルタ"
+  },
   "marie_rose": { "en": "Marie Rose", "ko": "마리 로즈", "ja": "マリー・ローズ" },
   "mariel": { "en": "Mariel", "ko": "마리엘", "ja": "マリエル" },
   "marika_kato": { "en": "Marika Kato", "ko": "카토 마리카", "ja": "加藤茉莉香" },
@@ -3527,7 +3887,11 @@
   "meowscarada": { "en": "Meowscarada", "ko": "마스카나", "ja": "マスカーニャ" },
   "meowstic": { "en": "Meowstic", "ko": "냐오닉스", "ja": "ニャオニクス" },
   "mercedes": { "en": "Mercedes", "ko": "메르세데스", "ja": "メルセデス" },
-  "mercedes_von_martritz": { "en": "Mercedes Von Martritz", "ko": "메르세데스 폰 마르트리츠", "ja": "メルセデス・フォン・マルトリッツ" },
+  "mercedes_von_martritz": {
+    "en": "Mercedes Von Martritz",
+    "ko": "메르세데스 폰 마르트리츠",
+    "ja": "メルセデス・フォン・マルトリッツ"
+  },
   "mercelida_ygvar": { "en": "Mercelida Ygvar", "ko": "메르셀리다 이그바르", "ja": "メルセリダ・イグヴァール" },
   "merchant": { "en": "Merchant", "ko": "상인", "ja": "商人" },
   "mercy": { "en": "Mercy", "ko": "메르시", "ja": "マーシー" },
@@ -3536,7 +3900,11 @@
   "mero": { "en": "Mero", "ko": "메로", "ja": "メロ" },
   "merry": { "en": "Merry", "ko": "메리", "ja": "メリー" },
   "meru_himeki": { "en": "Meru Himeki", "ko": "히메키 메루", "ja": "姫城める" },
-  "merurulince_rede_arls": { "en": "Merurulince Rede Arls", "ko": "메루루린스 레데 아를스", "ja": "メルルリンス・レデ・アールズ" },
+  "merurulince_rede_arls": {
+    "en": "Merurulince Rede Arls",
+    "ko": "메루루린스 레데 아를스",
+    "ja": "メルルリンス・レデ・アールズ"
+  },
   "meteora_osterreich": { "en": "Meteora Osterreich", "ko": "메테오라 외스터라이히", "ja": "メテオラ・オスターライヒ" },
   "metera": { "en": "Metera", "ko": "메테라", "ja": "メーテラ" },
   "mew": { "en": "Mew", "ko": "뮤", "ja": "ミュウ" },
@@ -3636,11 +4004,19 @@
   "mikuru_natsuki": { "en": "Mikuru Natsuki", "ko": "나츠키 미쿠루", "ja": "夏樹みくる" },
   "mikuru_nazume": { "en": "Mikuru Nazume", "ko": "나즈메 미쿠루", "ja": "名津目みくる" },
   "miles_edgeworth": { "en": "Miles Edgeworth", "ko": "미츠루기 레이지", "ja": "御剣怜侍" },
-  "miles_tails_prower": { "en": "Miles Tails Prower", "ko": "마일스 테일즈 프로워", "ja": "マイルス・テイルス・プロワー" },
+  "miles_tails_prower": {
+    "en": "Miles Tails Prower",
+    "ko": "마일스 테일즈 프로워",
+    "ja": "マイルス・テイルス・プロワー"
+  },
   "milk_cookie": { "en": "Milk Cookie", "ko": "밀크 쿠키", "ja": "ミルククッキー" },
   "milky_rose": { "en": "Milky Rose", "ko": "밀키 로즈", "ja": "ミルキィローズ" },
   "milla_maxwell": { "en": "Milla Maxwell", "ko": "밀라 맥스웰", "ja": "ミラ＝マクスウェル" },
-  "millhiore_firianno_biscotti": { "en": "Millhiore Firianno Biscotti", "ko": "밀피오레 F. 비스코티", "ja": "ミルヒオーレ・F・ビスコッティ" },
+  "millhiore_firianno_biscotti": {
+    "en": "Millhiore Firianno Biscotti",
+    "ko": "밀피오레 F. 비스코티",
+    "ja": "ミルヒオーレ・F・ビスコッティ"
+  },
   "millia_rage": { "en": "Millia Rage", "ko": "", "ja": "" },
   "milly_ashford": { "en": "Milly Ashford", "ko": "", "ja": "" },
   "mimi_akane": { "en": "Mimi Akane", "ko": "", "ja": "" },
