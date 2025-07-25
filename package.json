@@ -13,9 +13,8 @@
     "crawl": "bun tools/crawlMangas.ts",
     "crawl:harpi": "bun src/crawler/harpi.ts",
     "prepare": "husky",
-    "test": "bun test",
-    "test:watch": "test --watch",
-    "test:coverage": "test --coverage",
+    "test:watch": "bun test --watch",
+    "test:coverage": "bun test --coverage",
     "test:e2e": "playwright test",
     "test:e2e:docker": "./e2e/test-e2e-docker.sh"
   },
