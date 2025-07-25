@@ -13,6 +13,7 @@
     "crawl": "bun tools/crawlMangas.ts",
     "crawl:harpi": "bun src/crawler/harpi.ts",
     "prepare": "husky",
+    "test": "bun test",
     "test:watch": "test --watch",
     "test:coverage": "test --coverage",
     "test:e2e": "playwright test",
