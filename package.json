@@ -13,6 +13,7 @@
     "crawl": "bun tools/crawlMangas.ts",
     "crawl:harpi": "bun src/crawler/harpi.ts",
     "prepare": "husky",
+    "db:local": "docker compose up -d && bunx drizzle-kit push",
     "test:watch": "bun test --watch",
     "test:coverage": "bun test --coverage",
     "test:e2e": "playwright test",

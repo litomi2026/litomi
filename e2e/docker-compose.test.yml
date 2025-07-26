@@ -9,7 +9,7 @@ services:
     ports:
       - '5433:5432' # Different port to avoid conflicts with local PostgreSQL
     volumes:
-      - test-db-data:/var/lib/postgresql/data
+      - e2e-test-db-data:/var/lib/postgresql/data
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U e2e_test_user -d e2e_test_db']
       interval: 5s
@@ -17,4 +17,4 @@ services:
       retries: 5
 
 volumes:
-  test-db-data:
+  e2e-test-db-data:
