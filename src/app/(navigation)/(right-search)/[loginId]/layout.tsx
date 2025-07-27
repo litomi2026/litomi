@@ -52,13 +52,11 @@ export default async function Layout({ params, children }: LayoutProps) {
       <div className="grid gap-4 px-4 pb-2">
         <div className="relative -mt-16 flex justify-between items-end">
           <div className="flex items-end">
-            <div className="w-32 aspect-square shrink-0 border-4 rounded-full overflow-hidden">
+            <div className="w-32 aspect-square shrink-0 border-4 rounded-full overflow-hidden bg-zinc-900 flex items-center justify-center">
               {user.imageURL ? (
                 <img alt="Profile Image" className="object-cover bg-zinc-900 aspect-square w-32" src={user.imageURL} />
               ) : (
-                <div className="bg-zinc-900 w-full h-full flex items-center justify-center">
-                  <IconProfile className="w-2/3 text-zinc-700" />
-                </div>
+                <IconProfile className="w-2/3 text-zinc-700" />
               )}
             </div>
             <div className="ml-4">
@@ -81,27 +79,25 @@ export default async function Layout({ params, children }: LayoutProps) {
             </div>
           )}
         </div>
-        <div>
-          {isMember ? (
-            <>
-              <div className="mt-2 flex items-center gap-1 text-zinc-500 text-sm">
-                <IconCalendar className="w-4" /> 가입일: {dayjs(user.createdAt).format('YYYY년 M월')}
+        {isMember ? (
+          <>
+            <div className="mt-2 flex items-center gap-1 text-zinc-500 text-sm">
+              <IconCalendar className="w-4" /> 가입일: {dayjs(user.createdAt).format('YYYY년 M월')}
+            </div>
+            <div className="mt-4 flex gap-6">
+              <div className="flex gap-2">
+                <span className="font-bold">{123}</span>
+                <span className="text-zinc-500">팔로우 중</span>
               </div>
-              <div className="mt-4 flex gap-6">
-                <div className="flex gap-2">
-                  <span className="font-bold">{123}</span>
-                  <span className="text-zinc-500">팔로우 중</span>
-                </div>
-                <div className="flex gap-2">
-                  <span className="font-bold">{456}</span>
-                  <span className="text-zinc-500">팔로워</span>
-                </div>
+              <div className="flex gap-2">
+                <span className="font-bold">{456}</span>
+                <span className="text-zinc-500">팔로워</span>
               </div>
-            </>
-          ) : (
-            <div className="mt-2 text-zinc-500 text-sm">로그인하면 모든 기능을 이용할 수 있습니다</div>
-          )}
-        </div>
+            </div>
+          </>
+        ) : (
+          <div className="mt-2 text-zinc-500 text-sm">로그인하면 모든 기능을 이용할 수 있습니다</div>
+        )}
       </div>
       {/* 네비게이션 탭 */}
       <MyPageNavigation loginId={loginIdFromParam} />
