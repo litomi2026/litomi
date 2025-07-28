@@ -130,6 +130,24 @@ test.describe('/auth/login', () => {
       await expect(page.locator('text=/아이디 또는 비밀번호가 일치하지 않습니다/i')).toBeVisible()
     })
 
+    test('동일 아이디로 너무 많이 로그인을 시도하면 429 에러를 표시한다', async ({ page }) => {
+      const testLoginId = `ratelimit_${Date.now()}_${Math.random().toString(36).substring(7)}`
+      const testPassword = 'TestPass123!'
+
+      for (let i = 0; i < 6; i++) {
+        await page.fill('input[name="loginId"]', testLoginId)
+        await page.fill('input[name="password"]', testPassword)
+        await page.click('button[type="submit"]')
+
+        if (i === 5) {
+          await expect(page.locator('[data-sonner-toast]').first()).toBeVisible()
+          await expect(page.locator('text=/너무 많은 로그인 시도가 있었습니다/i')).toBeVisible()
+        } else {
+          await expect(page.locator('[data-sonner-toast]').first()).toBeVisible()
+        }
+      }
+    })
+
     test('아이디 유효성을 검사한다 (HTML5)', async ({ page }) => {
       const loginIdInput = page.locator('input[name="loginId"]')
 

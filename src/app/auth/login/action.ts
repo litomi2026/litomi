@@ -8,6 +8,7 @@ import { z } from 'zod/v4'
 import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
 import { setAccessTokenCookie, setRefreshTokenCookie } from '@/utils/cookie'
+import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
 
 const schema = z.object({
   loginId: z
@@ -22,6 +23,8 @@ const schema = z.object({
     .regex(/^(?=.*[A-Za-z])(?=.*\d).+$/, { error: '비밀번호는 알파벳과 숫자를 하나 이상 포함해야 합니다.' }),
   remember: z.literal('on').nullable(),
 })
+
+const loginLimiter = new RateLimiter(RateLimitPresets.strict())
 
 export default async function login(_prevState: unknown, formData: FormData) {
   const validation = schema.safeParse({
@@ -38,6 +41,17 @@ export default async function login(_prevState: unknown, formData: FormData) {
   }
 
   const { loginId, password, remember } = validation.data
+  const { allowed } = await loginLimiter.check(loginId)
+
+  if (!allowed) {
+    return {
+      error: {
+        loginId: { errors: ['너무 많은 로그인 시도가 있었습니다. 잠시 후 다시 시도해주세요.'] },
+        password: { errors: ['너무 많은 로그인 시도가 있었습니다. 잠시 후 다시 시도해주세요.'] },
+      },
+      formData,
+    }
+  }
 
   const [result] = await db
     .select({
