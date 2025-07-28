@@ -20,7 +20,7 @@ export default function Profile() {
     return <LoginIconLink />
   }
 
-  const { loginId, imageURL, nickname } = user
+  const { loginId, name, imageURL, nickname } = user
 
   return (
     <TooltipPopover
@@ -31,7 +31,7 @@ export default function Profile() {
     >
       <Link
         className="flex justify-center items-center gap-3 p-2 group rounded-full pointer-events-auto sm:pointer-events-none 2xl:pl-3"
-        href={`/@${loginId}`}
+        href={`/@${name}`}
         onClick={(e) => e.stopPropagation()}
       >
         <Squircle className="w-8 flex-shrink-0 sm:w-10 fill-zinc-600" src={imageURL}>
@@ -39,7 +39,7 @@ export default function Profile() {
         </Squircle>
         <div className="hidden text-left grow min-w-0 gap-1 py-0.5 2xl:grid">
           <div className="leading-5 break-all line-clamp-1">{nickname}</div>
-          <div className="overflow-hidden text-zinc-400 leading-5">@{loginId}</div>
+          <div className="overflow-hidden text-zinc-400 leading-5">@{name}</div>
         </div>
         <IconMore className="shrink-0 hidden w-11 p-3 2xl:block" />
       </Link>

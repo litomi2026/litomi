@@ -45,6 +45,7 @@ type SignupResult = {
   data?: {
     userId: number
     loginId: string
+    name: string
     nickname: string
   }
 }
@@ -72,6 +73,7 @@ export default async function signup(_prevState: unknown, formData: FormData): P
     .insert(userTable)
     .values({
       loginId,
+      name: loginId,
       passwordHash,
       nickname,
       imageURL: generateRandomProfileImage(),
@@ -96,6 +98,7 @@ export default async function signup(_prevState: unknown, formData: FormData): P
     data: {
       userId,
       loginId,
+      name: loginId,
       nickname,
     },
   }

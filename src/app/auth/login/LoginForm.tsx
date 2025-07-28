@@ -26,7 +26,7 @@ export default function LoginForm() {
   const formRef = useRef<HTMLFormElement>(null)
   const queryClient = useQueryClient()
   const searchParams = useSearchParams()
-  const { loginId, userId, lastLoginAt, lastLogoutAt } = data ?? {}
+  const { loginId, name, userId, lastLoginAt, lastLogoutAt } = data ?? {}
   const [currentLoginId, setCurrentLoginId] = useState('')
 
   function resetId() {
@@ -67,9 +67,9 @@ export default function LoginForm() {
       await queryClient.invalidateQueries({ queryKey: QueryKeys.me, type: 'all' })
       const redirect = searchParams.get(SearchParamKey.REDIRECT)
       const sanitizedURL = sanitizeRedirect(redirect) || '/'
-      router.replace(sanitizedURL.replace(/^\/@\//, `/@${loginId}/`))
+      router.replace(sanitizedURL.replace(/^\/@\//, `/@${name}/`))
     })()
-  }, [loginId, queryClient, router, searchParams, success, userId, lastLoginAt, lastLogoutAt])
+  }, [loginId, name, queryClient, router, searchParams, success, userId, lastLoginAt, lastLogoutAt])
 
   return (
     <form

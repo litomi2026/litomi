@@ -25,7 +25,7 @@ export default function SignupForm() {
   const router = useRouter()
   const queryClient = useQueryClient()
   const searchParams = useSearchParams()
-  const { loginId, userId, nickname } = data ?? {}
+  const { loginId, name, userId, nickname } = data ?? {}
 
   // NOTE: 폼 제출 후 오류 메시지를 표시함
   useEffect(() => {
@@ -53,9 +53,9 @@ export default function SignupForm() {
       await queryClient.invalidateQueries({ queryKey: QueryKeys.me, type: 'all' })
       const redirect = searchParams.get(SearchParamKey.REDIRECT)
       const sanitizedURL = sanitizeRedirect(redirect) || '/'
-      router.replace(sanitizedURL.replace(/^\/@\//, `/@${loginId}/`))
+      router.replace(sanitizedURL.replace(/^\/@\//, `/@${name}/`))
     })()
-  }, [loginId, queryClient, router, searchParams, success, userId, nickname])
+  }, [loginId, name, queryClient, router, searchParams, success, userId, nickname])
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     const formElement = e.target as HTMLFormElement

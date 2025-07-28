@@ -15,9 +15,9 @@ import ProfileEditButton, { ProfileEditButtonError, ProfileEditButtonSkeleton } 
 import UserNotFound from './UserNotFound'
 
 export default async function Layout({ params, children }: LayoutProps) {
-  const { loginId: loginIdFromParam } = await params
-  const loginId = getLoginIdFromParam(loginIdFromParam)
-  const user = await getUser(loginId)
+  const { loginId: nameFromParam } = await params
+  const name = getLoginIdFromParam(nameFromParam)
+  const user = await getUser(name)
 
   if (!user) {
     return <UserNotFound />
@@ -51,7 +51,7 @@ export default async function Layout({ params, children }: LayoutProps) {
             </div>
             <div className="ml-4">
               <h1 className="text-2xl font-bold line-clamp-1 break-all">{user.nickname}</h1>
-              <p className="text-zinc-500 font-mono break-all">@{loginId}</p>
+              <p className="text-zinc-500 font-mono break-all">@{name}</p>
             </div>
           </div>
           {isMember && (
@@ -90,14 +90,14 @@ export default async function Layout({ params, children }: LayoutProps) {
         )}
       </div>
       {/* 네비게이션 탭 */}
-      <MyPageNavigation loginId={loginId} />
+      <MyPageNavigation loginId={name} />
       {children}
     </main>
   )
 }
 
-async function getUser(loginId: string) {
-  if (!loginId) {
+async function getUser(name: string) {
+  if (!name) {
     return {
       id: null,
       nickname: '비회원',
@@ -106,7 +106,7 @@ async function getUser(loginId: string) {
     }
   }
 
-  const [dbUser] = await selectUser({ loginId })
+  const [dbUser] = await selectUser({ name })
 
   if (!dbUser) {
     return null

@@ -36,6 +36,7 @@ type LoginResult = {
   data?: {
     userId: string
     loginId: string
+    name: string
     lastLoginAt: Date | null
     lastLogoutAt: Date | null
   }
@@ -69,6 +70,7 @@ export default async function login(_prevState: unknown, formData: FormData): Pr
   const [result] = await db
     .select({
       id: userTable.id,
+      name: userTable.name,
       passwordHash: userTable.passwordHash,
       lastLoginAt: userTable.loginAt,
       lastLogoutAt: userTable.logoutAt,
@@ -83,7 +85,7 @@ export default async function login(_prevState: unknown, formData: FormData): Pr
     }
   }
 
-  const { id: userId, passwordHash, lastLoginAt, lastLogoutAt } = result
+  const { id: userId, name, passwordHash, lastLoginAt, lastLogoutAt } = result
   const isCorrectPassword = await compare(password, passwordHash)
 
   if (!isCorrectPassword) {
@@ -109,6 +111,7 @@ export default async function login(_prevState: unknown, formData: FormData): Pr
     data: {
       userId: String(userId),
       loginId,
+      name,
       lastLoginAt,
       lastLogoutAt,
     },

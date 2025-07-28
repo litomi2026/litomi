@@ -11,10 +11,10 @@ type Props = {
 
 export default function ProfileLink({ className }: Readonly<Props>) {
   const { data: me } = useMeQuery()
-  const loginId = me?.loginId
+  const name = me?.name
 
   return (
-    <SelectableLink className={className} href={`/@${loginId ?? ''}`} Icon={<IconProfile />}>
+    <SelectableLink className={className} href={`/@${name ?? ''}`} Icon={<IconProfile />}>
       프로필
     </SelectableLink>
   )

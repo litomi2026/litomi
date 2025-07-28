@@ -2,8 +2,8 @@ import { cookies } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 
-import BookmarkDownloadButton from '@/app/(navigation)/(right-search)/[loginId]/bookmark/BookmarkDownloadButton'
-import BookmarkUploadButton from '@/app/(navigation)/(right-search)/[loginId]/bookmark/BookmarkUploadButton'
+import BookmarkDownloadButton from '@/app/(navigation)/(right-search)/[name]/bookmark/BookmarkDownloadButton'
+import BookmarkUploadButton from '@/app/(navigation)/(right-search)/[name]/bookmark/BookmarkUploadButton'
 import selectBookmarks from '@/sql/selectBookmarks'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
 
