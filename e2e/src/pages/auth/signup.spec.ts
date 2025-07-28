@@ -16,15 +16,12 @@ test.describe('/auth/signup', () => {
       await page.fill('input[name="password"]', user.password)
       await page.fill('input[name="password-confirm"]', user.password)
       await page.fill('input[name="nickname"]', user.nickname)
-
-      await Promise.all([
-        page.waitForURL((url) => url.pathname === '/', { timeout: 10000 }),
-        page.click('button[type="submit"]'),
-      ])
+      await page.click('button[type="submit"]')
 
       await expect(page.locator('[data-sonner-toast]')).toBeVisible()
-      await expect(page.locator('text=/계정으로 가입했어요/i')).toBeVisible()
+      await expect(page.locator(`text=/${user.loginId} 계정으로 가입했어요/i`)).toBeVisible()
 
+      await page.waitForURL((url) => url.pathname === '/', { timeout: 10000 })
       const currentUrl = page.url()
       expect(currentUrl.endsWith('/')).toBeTruthy()
     })
@@ -35,12 +32,12 @@ test.describe('/auth/signup', () => {
       await page.fill('input[name="loginId"]', user.loginId)
       await page.fill('input[name="password"]', user.password)
       await page.fill('input[name="password-confirm"]', user.password)
+      await page.click('button[type="submit"]')
 
-      await Promise.all([
-        page.waitForURL((url) => url.pathname === '/', { timeout: 10000 }),
-        page.click('button[type="submit"]'),
-      ])
+      await expect(page.locator('[data-sonner-toast]')).toBeVisible()
+      await expect(page.locator(`text=/${user.loginId} 계정으로 가입했어요/i`)).toBeVisible()
 
+      await page.waitForURL((url) => url.pathname === '/', { timeout: 10000 })
       const currentUrl = page.url()
       expect(currentUrl.endsWith('/')).toBeTruthy()
     })
