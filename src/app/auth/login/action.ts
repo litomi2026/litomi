@@ -8,6 +8,7 @@ import { z } from 'zod/v4'
 import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
 import { setAccessTokenCookie, setRefreshTokenCookie } from '@/utils/cookie'
+import { createFormError, FormError, FormErrors, zodToFormError } from '@/utils/form-error'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
 
 const schema = z.object({
@@ -26,7 +27,21 @@ const schema = z.object({
 
 const loginLimiter = new RateLimiter(RateLimitPresets.strict())
 
-export default async function login(_prevState: unknown, formData: FormData) {
+const INVALID_CREDENTIALS = '아이디 또는 비밀번호가 일치하지 않아요'
+
+type LoginResult = {
+  success?: boolean
+  error?: FormError
+  formData?: FormData
+  data?: {
+    userId: string
+    loginId: string
+    lastLoginAt: Date | null
+    lastLogoutAt: Date | null
+  }
+}
+
+export default async function login(_prevState: unknown, formData: FormData): Promise<LoginResult> {
   const validation = schema.safeParse({
     loginId: formData.get('loginId'),
     password: formData.get('password'),
@@ -34,8 +49,9 @@ export default async function login(_prevState: unknown, formData: FormData) {
   })
 
   if (!validation.success) {
+    const zodErrors = z.treeifyError(validation.error).properties
     return {
-      error: z.treeifyError(validation.error).properties,
+      error: zodErrors ? zodToFormError(zodErrors) : createFormError(FormErrors.INVALID_INPUT),
       formData,
     }
   }
@@ -45,10 +61,7 @@ export default async function login(_prevState: unknown, formData: FormData) {
 
   if (!allowed) {
     return {
-      error: {
-        loginId: { errors: ['너무 많은 로그인 시도가 있었습니다. 잠시 후 다시 시도해주세요.'] },
-        password: { errors: ['너무 많은 로그인 시도가 있었습니다. 잠시 후 다시 시도해주세요.'] },
-      },
+      error: createFormError(FormErrors.RATE_LIMITED),
       formData,
     }
   }
@@ -65,10 +78,7 @@ export default async function login(_prevState: unknown, formData: FormData) {
 
   if (!result) {
     return {
-      error: {
-        loginId: { errors: ['아이디 또는 비밀번호가 일치하지 않습니다.'] },
-        password: { errors: ['아이디 또는 비밀번호가 일치하지 않습니다.'] },
-      },
+      error: createAuthError(INVALID_CREDENTIALS),
       formData,
     }
   }
@@ -78,10 +88,7 @@ export default async function login(_prevState: unknown, formData: FormData) {
 
   if (!isCorrectPassword) {
     return {
-      error: {
-        loginId: { errors: ['아이디 또는 비밀번호가 일치하지 않습니다.'] },
-        password: { errors: ['아이디 또는 비밀번호가 일치하지 않습니다.'] },
-      },
+      error: createAuthError(INVALID_CREDENTIALS),
       formData,
     }
   }
@@ -97,5 +104,17 @@ export default async function login(_prevState: unknown, formData: FormData) {
       .where(sql`${userTable.id} = ${userId}`),
   ])
 
-  return { success: true, data: { userId, loginId, lastLoginAt, lastLogoutAt } }
+  return {
+    success: true,
+    data: {
+      userId: String(userId),
+      loginId,
+      lastLoginAt,
+      lastLogoutAt,
+    },
+  }
+}
+
+function createAuthError(message: string) {
+  return createFormError(undefined, { loginId: message, password: message })
 }

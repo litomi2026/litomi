@@ -127,7 +127,7 @@ test.describe('/auth/login', () => {
       await page.click('button[type="submit"]')
 
       await expect(page.locator('[data-sonner-toast]')).toBeVisible()
-      await expect(page.locator('text=/아이디 또는 비밀번호가 일치하지 않습니다/i')).toBeVisible()
+      await expect(page.locator('text=/아이디 또는 비밀번호가 일치하지 않아요/i')).toBeVisible()
     })
 
     test('동일 아이디로 너무 많이 로그인을 시도하면 429 에러를 표시한다', async ({ page }) => {
@@ -141,7 +141,7 @@ test.describe('/auth/login', () => {
 
         if (i === 5) {
           await expect(page.locator('[data-sonner-toast]').first()).toBeVisible()
-          await expect(page.locator('text=/너무 많은 로그인 시도가 있었습니다/i')).toBeVisible()
+          await expect(page.locator('text=/너무 많은 시도가 있었어요/i')).toBeVisible()
         } else {
           await expect(page.locator('[data-sonner-toast]').first()).toBeVisible()
         }

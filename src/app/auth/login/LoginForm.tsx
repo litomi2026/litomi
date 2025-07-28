@@ -13,6 +13,7 @@ import { SearchParamKey } from '@/constants/storage'
 import amplitude from '@/lib/amplitude/lazy'
 import { resetMeQuery } from '@/query/useMeQuery'
 import { sanitizeRedirect } from '@/utils'
+import { getErrorMessage, hasFieldError } from '@/utils/form-error'
 
 import login from './action'
 
@@ -37,12 +38,16 @@ export default function LoginForm() {
     passwordInput.value = ''
   }
 
+  // NOTE: 폼 제출 후 오류 메시지를 표시함
   useEffect(() => {
-    if (error) {
-      toast.error(Object.values(error).flatMap((value) => value.errors)[0])
+    const errorMessage = getErrorMessage(error)
+
+    if (errorMessage) {
+      toast.error(errorMessage)
     }
   }, [error])
 
+  // NOTE: 로그인 성공 후 로직을 처리함
   useEffect(() => {
     if (!success) {
       return
@@ -83,10 +88,10 @@ export default function LoginForm() {
           <label htmlFor="loginId">아이디</label>
           <div className="relative">
             <input
-              aria-invalid={(error?.loginId?.errors?.length ?? 0) > 0}
+              aria-invalid={hasFieldError(error, 'loginId')}
               autoCapitalize="off"
               autoFocus
-              defaultValue={loginId}
+              defaultValue={formData?.get('loginId')?.toString()}
               disabled={pending}
               id="loginId"
               maxLength={32}
@@ -105,8 +110,8 @@ export default function LoginForm() {
           <label htmlFor="password">비밀번호</label>
           <div className="relative">
             <input
-              aria-invalid={(error?.password?.errors?.length ?? 0) > 0}
-              defaultValue={formData?.get('password')?.toString() ?? ''}
+              aria-invalid={hasFieldError(error, 'password')}
+              defaultValue={formData?.get('password')?.toString()}
               disabled={pending}
               id="password"
               maxLength={64}
