@@ -6,7 +6,7 @@ import { SearchParamKey } from '@/constants/storage'
 
 export default function GuestView() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center px-4 py-8">
+    <div className="flex flex-col flex-1 items-center px-4 py-8">
       <div className="text-center max-w-2xl mx-auto">
         <IconX className="mb-6 w-16 h-16 mx-auto text-zinc-600" />
         <h2 className="text-zinc-400 text-base md:text-lg mb-8 leading-relaxed">

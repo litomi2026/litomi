@@ -48,7 +48,7 @@ export default function PostCreationForm({
       <div className="grid items-center gap-3 grow py-1.5">
         {isReply && me && hasFocusedBefore && (
           <button className="text-left">
-            <span className="font-semibold text-foreground">@{me.loginId} </span>
+            <span className="font-semibold text-foreground">@{me.name} </span>
             에게 보내는 답글
           </button>
         )}

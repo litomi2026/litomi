@@ -26,9 +26,10 @@ export async function middleware(request: NextRequest) {
   }
 
   const validRT = await verifyJWT(refreshToken, TokenType.REFRESH).catch(() => null)
+  const userId = validRT?.sub
 
   // at가 만료됐는데 rt도 만료된 경우 -> 쿠키 삭제
-  if (!validRT || !validRT.sub) {
+  if (!userId) {
     const response = NextResponse.next()
     response.cookies.delete(CookieKey.ACCESS_TOKEN)
     response.cookies.delete(CookieKey.REFRESH_TOKEN)
@@ -37,7 +38,7 @@ export async function middleware(request: NextRequest) {
 
   // at가 만료됐는데 rt는 유효한 경우 -> at 재발급
   const response = NextResponse.next()
-  await setAccessTokenCookie(response.cookies, validRT.sub)
+  await setAccessTokenCookie(response.cookies, userId)
   setCookieToRequest(request, response)
   return response
 }

@@ -3,7 +3,7 @@
 import { useMemo } from 'react'
 import { useInView } from 'react-intersection-observer'
 
-import useBookmarkIdsInfiniteQuery from '@/app/(navigation)/(right-search)/[loginId]/bookmark/useBookmarkIdsInfiniteQuery'
+import useBookmarkIdsInfiniteQuery from '@/app/(navigation)/(right-search)/[name]/bookmark/useBookmarkIdsInfiniteQuery'
 import { BookmarkWithSource } from '@/app/api/bookmarks/route'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'

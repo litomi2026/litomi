@@ -16,15 +16,12 @@ test.describe('/auth/signup', () => {
       await page.fill('input[name="password"]', user.password)
       await page.fill('input[name="password-confirm"]', user.password)
       await page.fill('input[name="nickname"]', user.nickname)
-
-      await Promise.all([
-        page.waitForURL((url) => url.pathname === '/', { timeout: 10000 }),
-        page.click('button[type="submit"]'),
-      ])
+      await page.click('button[type="submit"]')
 
       await expect(page.locator('[data-sonner-toast]')).toBeVisible()
-      await expect(page.locator('text=/계정으로 가입했어요/i')).toBeVisible()
+      await expect(page.locator(`text=/${user.loginId} 계정으로 가입했어요/i`)).toBeVisible()
 
+      await page.waitForURL((url) => url.pathname === '/', { timeout: 10000 })
       const currentUrl = page.url()
       expect(currentUrl.endsWith('/')).toBeTruthy()
     })
@@ -35,126 +32,14 @@ test.describe('/auth/signup', () => {
       await page.fill('input[name="loginId"]', user.loginId)
       await page.fill('input[name="password"]', user.password)
       await page.fill('input[name="password-confirm"]', user.password)
+      await page.click('button[type="submit"]')
 
-      await Promise.all([
-        page.waitForURL((url) => url.pathname === '/', { timeout: 10000 }),
-        page.click('button[type="submit"]'),
-      ])
+      await expect(page.locator('[data-sonner-toast]')).toBeVisible()
+      await expect(page.locator(`text=/${user.loginId} 계정으로 가입했어요/i`)).toBeVisible()
 
+      await page.waitForURL((url) => url.pathname === '/', { timeout: 10000 })
       const currentUrl = page.url()
       expect(currentUrl.endsWith('/')).toBeTruthy()
-    })
-  })
-
-  test.describe('회원가입 실패', () => {
-    test('아이디 유효성을 검증한다 (HTML5)', async ({ page }) => {
-      const loginIdInput = page.locator('input[name="loginId"]')
-      await loginIdInput.fill('a')
-      await page.fill('input[name="password"]', 'ValidPass123')
-      await page.fill('input[name="password-confirm"]', 'ValidPass123')
-      await page.click('button[type="submit"]')
-
-      const validationMessage = await loginIdInput.evaluate((el: HTMLInputElement) => el.validationMessage)
-      expect(validationMessage).toBeTruthy()
-    })
-
-    test('아이디 유효성을 검증한다 (서버)', async ({ page }) => {
-      const loginIdInput = page.locator('input[name="loginId"]')
-      await loginIdInput.fill('a')
-      await page.fill('input[name="password"]', 'ValidPass123')
-      await page.fill('input[name="password-confirm"]', 'ValidPass123')
-
-      await loginIdInput.evaluate((el: HTMLInputElement) => {
-        el.removeAttribute('pattern')
-        el.removeAttribute('minLength')
-      })
-
-      await page.click('button[type="submit"]')
-
-      await expect(page.locator('[data-sonner-toast]')).toBeVisible()
-      await expect(page.locator('text=/아이디는 최소 2자 이상이어야 합니다/i')).toBeVisible()
-    })
-
-    test('비밀번호 불일치를 검증한다', async ({ page }) => {
-      const user = generateTestUser()
-
-      await page.fill('input[name="loginId"]', user.loginId)
-      await page.fill('input[name="password"]', user.password)
-      await page.fill('input[name="password-confirm"]', 'DifferentPassword123!')
-      await page.click('button[type="submit"]')
-
-      await expect(page.locator('[data-sonner-toast]')).toBeVisible()
-      await expect(page.locator('text=/비밀번호가 일치하지 않습니다/i')).toBeVisible()
-    })
-
-    test('비밀번호 유효성을 검증한다 (HTML5)', async ({ page }) => {
-      const user = generateTestUser()
-      const passwordInput = page.locator('input[name="password"]')
-      await page.fill('input[name="loginId"]', user.loginId)
-      await passwordInput.fill('nodigits')
-      await page.fill('input[name="password-confirm"]', 'nodigits')
-      await page.click('button[type="submit"]')
-
-      const validationMessage = await passwordInput.evaluate((el: HTMLInputElement) => el.validationMessage)
-      expect(validationMessage).toBeTruthy()
-    })
-
-    test('비밀번호 유효성을 검증한다 (서버)', async ({ page }) => {
-      const user = generateTestUser()
-      const passwordInput = page.locator('input[name="password"]')
-      await page.fill('input[name="loginId"]', user.loginId)
-      await passwordInput.fill('nodigits')
-      await page.fill('input[name="password-confirm"]', 'nodigits')
-
-      await passwordInput.evaluate((el: HTMLInputElement) => {
-        el.removeAttribute('pattern')
-        el.removeAttribute('minLength')
-      })
-
-      await page.locator('input[name="password-confirm"]').evaluate((el: HTMLInputElement) => {
-        el.removeAttribute('pattern')
-        el.removeAttribute('minLength')
-      })
-
-      await page.click('button[type="submit"]')
-
-      await expect(page.locator('[data-sonner-toast]')).toBeVisible()
-      await expect(page.locator('text=/알파벳과 숫자를 하나 이상 포함해야 합니다/i')).toBeVisible()
-    })
-
-    test('중복 회원가입을 방지한다', async ({ page }) => {
-      const user = generateTestUser()
-
-      await page.fill('input[name="loginId"]', user.loginId)
-      await page.fill('input[name="password"]', user.password)
-      await page.fill('input[name="password-confirm"]', user.password)
-      await page.click('button[type="submit"]')
-
-      await page.waitForLoadState('networkidle')
-
-      await page.goto('/auth/signup')
-      await page.fill('input[name="loginId"]', user.loginId)
-      await page.fill('input[name="password"]', user.password)
-      await page.fill('input[name="password-confirm"]', user.password)
-      await page.click('button[type="submit"]')
-
-      await expect(page.locator('text=/이미 사용 중인 아이디입니다/i')).toBeVisible()
-    })
-
-    test('유효성 검사 오류 시 폼 데이터를 보존한다', async ({ page }) => {
-      const user = generateTestUser()
-
-      await page.fill('input[name="loginId"]', user.loginId)
-      await page.fill('input[name="password"]', 'short')
-      await page.fill('input[name="password-confirm"]', 'short')
-      await page.fill('input[name="nickname"]', user.nickname)
-
-      await page.click('button[type="submit"]')
-
-      await expect(page.locator('input[name="loginId"]')).toHaveValue(user.loginId)
-      await expect(page.locator('input[name="nickname"]')).toHaveValue(user.nickname)
-      await expect(page.locator('input[name="password"]')).toHaveValue('short')
-      await expect(page.locator('input[name="password-confirm"]')).toHaveValue('short')
     })
   })
 

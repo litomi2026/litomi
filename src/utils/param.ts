@@ -26,10 +26,6 @@ export function convertCamelCaseToKebabCase(str: string) {
   return str.replace(/([A-Z])/g, '-$1').toLowerCase()
 }
 
-export function getLoginIdFromParam(loginId: string) {
-  return decodeURIComponent(loginId).slice(1)
-}
-
 export function getTotalPages(source: string) {
   switch (source) {
     case SourceParam.HIYOBI:
@@ -37,6 +33,10 @@ export function getTotalPages(source: string) {
     default:
       return 10
   }
+}
+
+export function getUsernameFromParam(username: string) {
+  return decodeURIComponent(username).slice(1)
 }
 
 export function mapBookmarkSourceToSourceParam(source: BookmarkSource) {

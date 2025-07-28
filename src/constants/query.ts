@@ -4,6 +4,7 @@ export const QueryKeys = {
   infiniteBookmarks: ['me', 'bookmarks', 'infinite'],
   infiniteCensorships: ['me', 'censorships', 'infinite'],
   censorships: ['me', 'censorships'],
+  passkeys: ['me', 'passkeys'],
 
   infiniteManga: ['infinite', 'manga'],
   search: (searchParams: URLSearchParams) => ['search', Object.fromEntries(searchParams)],

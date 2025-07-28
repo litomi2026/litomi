@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-import { BookmarkExportData } from '@/app/(navigation)/(right-search)/[loginId]/bookmark/constants'
+import { BookmarkExportData } from '@/app/(navigation)/(right-search)/[name]/bookmark/constants'
 import { ImportMode, ImportResult } from '@/app/api/bookmarks/import/route'
 import { QueryKeys } from '@/constants/query'
 

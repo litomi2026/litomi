@@ -2,10 +2,11 @@
 
 import { useQueryClient } from '@tanstack/react-query'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useActionState, useEffect, useRef } from 'react'
+import { useActionState, useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import IconX from '@/components/icons/IconX'
+import PasskeyLoginButton from '@/components/PasskeyLoginButton'
 import Loading from '@/components/ui/Loading'
 import { loginIdPattern, passwordPattern } from '@/constants/pattern'
 import { QueryKeys } from '@/constants/query'
@@ -13,6 +14,7 @@ import { SearchParamKey } from '@/constants/storage'
 import amplitude from '@/lib/amplitude/lazy'
 import { resetMeQuery } from '@/query/useMeQuery'
 import { sanitizeRedirect } from '@/utils'
+import { getErrorMessage, hasFieldError } from '@/utils/form-error'
 
 import login from './action'
 
@@ -24,7 +26,8 @@ export default function LoginForm() {
   const formRef = useRef<HTMLFormElement>(null)
   const queryClient = useQueryClient()
   const searchParams = useSearchParams()
-  const { loginId, userId, lastLoginAt, lastLogoutAt } = data ?? {}
+  const { loginId, name, userId, lastLoginAt, lastLogoutAt } = data ?? {}
+  const [currentLoginId, setCurrentLoginId] = useState('')
 
   function resetId() {
     const loginIdInput = formRef.current?.loginId as HTMLInputElement
@@ -37,17 +40,7 @@ export default function LoginForm() {
     passwordInput.value = ''
   }
 
-  useEffect(() => {
-    if (error) {
-      toast.error(Object.values(error).flatMap((value) => value.errors)[0])
-    }
-  }, [error])
-
-  useEffect(() => {
-    if (!success) {
-      return
-    }
-
+  const handleLoginSuccess = useCallback(async () => {
     toast.success(`${loginId} 계정으로 로그인했어요`)
 
     if (userId) {
@@ -55,14 +48,30 @@ export default function LoginForm() {
       amplitude.track('login', { loginId, lastLoginAt, lastLogoutAt })
     }
 
-    ;(async () => {
-      resetMeQuery()
-      await queryClient.invalidateQueries({ queryKey: QueryKeys.me, type: 'all' })
-      const redirect = searchParams.get(SearchParamKey.REDIRECT)
-      const sanitizedURL = sanitizeRedirect(redirect) || '/'
-      router.replace(sanitizedURL.replace(/^\/@\//, `/@${loginId}/`))
-    })()
-  }, [loginId, queryClient, router, searchParams, success, userId, lastLoginAt, lastLogoutAt])
+    resetMeQuery()
+    await queryClient.invalidateQueries({ queryKey: QueryKeys.me, type: 'all' })
+    const redirect = searchParams.get(SearchParamKey.REDIRECT)
+    const sanitizedURL = sanitizeRedirect(redirect) || '/'
+    router.replace(sanitizedURL.replace(/^\/@\//, `/@${name}/`))
+  }, [loginId, lastLoginAt, lastLogoutAt, name, queryClient, router, searchParams, userId])
+
+  // NOTE: 폼 제출 후 오류 메시지를 표시함
+  useEffect(() => {
+    const errorMessage = getErrorMessage(error)
+
+    if (errorMessage) {
+      toast.error(errorMessage)
+    }
+  }, [error])
+
+  // NOTE: 로그인 성공 후 로직을 처리함
+  useEffect(() => {
+    if (!success) {
+      return
+    }
+
+    handleLoginSuccess()
+  }, [handleLoginSuccess, success])
 
   return (
     <form
@@ -83,15 +92,16 @@ export default function LoginForm() {
           <label htmlFor="loginId">아이디</label>
           <div className="relative">
             <input
-              aria-invalid={(error?.loginId?.errors?.length ?? 0) > 0}
+              aria-invalid={hasFieldError(error, 'loginId')}
               autoCapitalize="off"
               autoFocus
-              defaultValue={loginId}
+              defaultValue={formData?.get('loginId')?.toString()}
               disabled={pending}
               id="loginId"
               maxLength={32}
               minLength={2}
               name="loginId"
+              onChange={(e) => setCurrentLoginId(e.target.value)}
               pattern={loginIdPattern}
               placeholder="아이디를 입력하세요"
               required
@@ -105,8 +115,8 @@ export default function LoginForm() {
           <label htmlFor="password">비밀번호</label>
           <div className="relative">
             <input
-              aria-invalid={(error?.password?.errors?.length ?? 0) > 0}
-              defaultValue={formData?.get('password')?.toString() ?? ''}
+              aria-invalid={hasFieldError(error, 'password')}
+              defaultValue={formData?.get('password')?.toString()}
               disabled={pending}
               id="password"
               maxLength={64}
@@ -153,6 +163,17 @@ export default function LoginForm() {
           {pending ? <Loading className="text-zinc-500 w-12 p-2" /> : '로그인'}
         </div>
       </button>
+
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-zinc-700" />
+        </div>
+        <div className="flex justify-center text-sm">
+          <span className="px-4 bg-zinc-900 text-zinc-500">또는</span>
+        </div>
+      </div>
+
+      <PasskeyLoginButton disabled={pending} loginId={currentLoginId} onSuccess={handleLoginSuccess} />
     </form>
   )
 }

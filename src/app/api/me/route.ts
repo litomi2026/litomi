@@ -9,6 +9,7 @@ import { getUserIdFromAccessToken } from '@/utils/cookie'
 export type GETMeResponse = {
   id: number
   loginId: string
+  name: string
   nickname: string
   imageURL: string | null
 }
@@ -25,6 +26,7 @@ export async function GET() {
     .select({
       id: userTable.id,
       loginId: userTable.loginId,
+      name: userTable.name,
       nickname: userTable.nickname,
       imageURL: userTable.imageURL,
     })
@@ -36,5 +38,5 @@ export async function GET() {
     return new Response('404 Not Found', { status: 404 })
   }
 
-  return Response.json(user)
+  return Response.json(user satisfies GETMeResponse)
 }

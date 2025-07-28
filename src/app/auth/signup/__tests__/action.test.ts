@@ -1,0 +1,76 @@
+import { beforeEach, describe, expect, mock, test } from 'bun:test'
+
+import signup from '../action'
+
+mock.module('@/database/drizzle', () => ({
+  db: {
+    insert: mock(() => ({
+      values: mock(() => ({
+        onConflictDoNothing: mock(() => ({
+          returning: mock(() => Promise.resolve([{ id: '123' }])),
+        })),
+      })),
+    })),
+  },
+}))
+
+describe('signup action', () => {
+  let formData: FormData
+
+  beforeEach(() => {
+    formData = new FormData()
+  })
+
+  test('should return validation error for invalid loginId', async () => {
+    formData.append('loginId', 'a')
+    formData.append('password', 'Password123')
+    formData.append('password-confirm', 'Password123')
+
+    const result = await signup({}, formData)
+
+    expect(result.success).toBeUndefined()
+    expect(result.error?.fields?.loginId).toBe('아이디는 최소 2자 이상이어야 해요')
+  })
+
+  test('should return validation error for invalid password', async () => {
+    formData.append('loginId', 'testuser')
+    formData.append('password', 'short')
+    formData.append('password-confirm', 'short')
+
+    const result = await signup({}, formData)
+
+    expect(result.success).toBeUndefined()
+    expect(result.error?.fields?.password).toContain('비밀번호는')
+  })
+
+  test('should return validation error for password mismatch', async () => {
+    formData.append('loginId', 'testuser')
+    formData.append('password', 'Password123')
+    formData.append('password-confirm', 'Password456')
+
+    const result = await signup({}, formData)
+
+    expect(result.success).toBeUndefined()
+    expect(result.error?.fields?.['password-confirm']).toBe('비밀번호와 비밀번호 확인 값이 일치하지 않아요')
+  })
+
+  test('should return validation error when loginId equals password', async () => {
+    formData.append('loginId', 'testuser123')
+    formData.append('password', 'testuser123')
+    formData.append('password-confirm', 'testuser123')
+
+    const result = await signup({}, formData)
+
+    expect(result.success).toBeUndefined()
+    expect(result.error?.fields?.password).toBe('아이디와 비밀번호는 같을 수 없어요')
+  })
+
+  test('should return FormErrors.INVALID_INPUT for empty form data', async () => {
+    const result = await signup({}, formData)
+
+    expect(result.success).toBeUndefined()
+    expect(result.error?.fields).toHaveProperty('loginId')
+    expect(result.error?.fields).toHaveProperty('password')
+    expect(result.error?.fields).toHaveProperty('password-confirm')
+  })
+})

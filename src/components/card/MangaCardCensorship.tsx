@@ -15,7 +15,7 @@ type Props = {
 
 export default function MangaCardCensorship({ manga, level }: Readonly<Props>) {
   const { data: me } = useMeQuery()
-  const loginId = me?.loginId ?? ''
+  const myName = me?.name ?? ''
   const { data: censorshipsMap } = useCensorshipsMapQuery()
   const { censoringReasons, highestCensorshipLevel } = useMatchedCensorships({ manga, censorshipsMap })
 
@@ -35,7 +35,7 @@ export default function MangaCardCensorship({ manga, level }: Readonly<Props>) {
             <span className="text-xl">🚫</span>
           </div>
           <div className="font-semibold mb-1">검열된 콘텐츠</div>
-          <Link className="hover:underline" href={`/@${loginId}/censor`}>
+          <Link className="hover:underline" href={`/@${myName}/censor`}>
             {censoringReasons.join(', ')}
           </Link>
         </div>
@@ -47,7 +47,7 @@ export default function MangaCardCensorship({ manga, level }: Readonly<Props>) {
     <div className="absolute inset-0 animate-fade-in-fast bg-background/80 backdrop-blur flex items-center justify-center text-center p-4 pointer-events-none">
       <Link
         className="text-foreground text-center font-semibold flex flex-wrap gap-1 justify-center pointer-events-auto hover:underline"
-        href={`/@${loginId}/censor`}
+        href={`/@${myName}/censor`}
       >
         {censoringReasons.join(', ')} 작품 검열
       </Link>

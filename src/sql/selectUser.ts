@@ -4,16 +4,34 @@ import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
 
 type Params = {
-  loginId: string
+  loginId?: string
+  name?: string
 }
 
-export default async function selectUser({ loginId }: Params) {
-  return db
-    .select({
-      createdAt: userTable.createdAt,
-      nickname: userTable.nickname,
-      imageURL: userTable.imageURL,
-    })
-    .from(userTable)
-    .where(sql`${userTable.loginId} = ${loginId}`)
+export default async function selectUser({ loginId, name }: Params) {
+  if (name) {
+    return db
+      .select({
+        id: userTable.id,
+        createdAt: userTable.createdAt,
+        nickname: userTable.nickname,
+        imageURL: userTable.imageURL,
+      })
+      .from(userTable)
+      .where(sql`${userTable.name} = ${name}`)
+  }
+
+  if (loginId) {
+    return db
+      .select({
+        id: userTable.id,
+        createdAt: userTable.createdAt,
+        nickname: userTable.nickname,
+        imageURL: userTable.imageURL,
+      })
+      .from(userTable)
+      .where(sql`${userTable.loginId} = ${loginId}`)
+  }
+
+  throw new Error('Either loginId or name must be provided')
 }

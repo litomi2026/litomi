@@ -6,7 +6,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useActionState, useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
 
-import toggleBookmark from '@/app/(navigation)/(right-search)/[loginId]/bookmark/action'
+import toggleBookmark from '@/app/(navigation)/(right-search)/[name]/bookmark/action'
 import { GETBookmarksResponse } from '@/app/api/bookmarks/route'
 import { QueryKeys } from '@/constants/query'
 import { BookmarkSource } from '@/database/enum'
