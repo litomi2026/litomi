@@ -98,7 +98,7 @@ export default function BookmarkList({ initialBookmarks }: Readonly<Props>) {
   )
 }
 
-function BookmarkItem({ mangaDetails, index, onInView }: BookmarkItemProps) {
+function BookmarkItem({ mangaDetails, index, onInView }: Readonly<BookmarkItemProps>) {
   const { ref } = useInView({
     rootMargin: '100px',
     threshold: 0.1,

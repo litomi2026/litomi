@@ -114,7 +114,7 @@ export default function BookmarkButton({ manga, source, className }: Readonly<Pr
   )
 }
 
-export function BookmarkButtonError({ error, reset }: ErrorBoundaryFallbackProps) {
+export function BookmarkButtonError({ error, reset }: Readonly<ErrorBoundaryFallbackProps>) {
   useEffect(() => {
     captureException(error, { extra: { name: 'BookmarkButtonError' } })
   }, [error])

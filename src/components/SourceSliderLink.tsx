@@ -15,7 +15,7 @@ type OrderToggleProps = {
   hrefSuffix?: string
 }
 
-export default function SourceSliderLink({ current, hrefPrefixes, hrefSuffix = '' }: OrderToggleProps) {
+export default function SourceSliderLink({ current, hrefPrefixes, hrefSuffix = '' }: Readonly<OrderToggleProps>) {
   return (
     <div
       className="flex bg-zinc-900 border-2 p-1 rounded-xl text-zinc-400

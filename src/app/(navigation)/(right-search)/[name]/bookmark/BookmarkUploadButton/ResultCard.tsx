@@ -25,7 +25,7 @@ type Props = {
   type: 'error' | 'success' | 'warning'
 }
 
-export function ResultCard({ children, count, label, type }: Props) {
+export function ResultCard({ children, count, label, type }: Readonly<Props>) {
   const colorClasses = colors[type]
 
   return (

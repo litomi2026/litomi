@@ -9,7 +9,7 @@ type Props = {
   redirect: string
 }
 
-export default function LoginButton({ children, redirect }: Props) {
+export default function LoginButton({ children, redirect }: Readonly<Props>) {
   return (
     <Link
       className="inline-flex items-center gap-2 px-4 py-3 bg-brand-gradient text-background font-semibold rounded-xl 

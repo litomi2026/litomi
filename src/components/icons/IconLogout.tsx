@@ -1,6 +1,6 @@
 import { ComponentProps } from 'react'
 
-export default function IconLogout(props: ComponentProps<'svg'>) {
+export default function IconLogout(props: Readonly<ComponentProps<'svg'>>) {
   return (
     <svg
       {...props}

@@ -92,7 +92,7 @@ function ScrollViewer({ manga, onClick, screenFit, pageView }: Readonly<Props>) 
 
 const VirtualItemMemo = memo(VirtualItem)
 
-function VirtualItem({ index, manga, virtualizer, pageView, itemHeightMap }: VirtualItemProps) {
+function VirtualItem({ index, manga, virtualizer, pageView, itemHeightMap }: Readonly<VirtualItemProps>) {
   const setImageIndex = useImageIndexStore((state) => state.setImageIndex)
   const isDoublePage = pageView === 'double'
   const firstImageIndex = isDoublePage ? index * 2 : index

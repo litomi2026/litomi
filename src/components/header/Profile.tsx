@@ -50,7 +50,7 @@ export default function Profile() {
   )
 }
 
-export function ProfileError({ error, reset }: ErrorBoundaryFallbackProps) {
+export function ProfileError({ error, reset }: Readonly<ErrorBoundaryFallbackProps>) {
   useEffect(() => {
     captureException(error, { extra: { name: 'ProfileError' } })
   }, [error])

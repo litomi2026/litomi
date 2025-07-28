@@ -1,6 +1,6 @@
 import { ComponentProps } from 'react'
 
-export default function IconEdit(props: ComponentProps<'svg'>) {
+export default function IconEdit(props: Readonly<ComponentProps<'svg'>>) {
   return (
     <svg
       {...props}

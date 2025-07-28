@@ -163,7 +163,7 @@ export default function ProfileEditButton() {
   )
 }
 
-export function ProfileEditButtonError({ error, reset }: ErrorBoundaryFallbackProps) {
+export function ProfileEditButtonError({ error, reset }: Readonly<ErrorBoundaryFallbackProps>) {
   useEffect(() => {
     captureException(error, { extra: { name: 'LogoutButtonError' } })
   }, [error])
