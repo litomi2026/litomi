@@ -187,7 +187,7 @@ export async function verifyAuthentication(body: unknown) {
   const validation = verifyAuthenticationSchema.safeParse(body)
 
   if (!validation.success) {
-    return { success: false, error: 'Bad Request' }
+    return { success: false, error: 'Bad Request' } as const
   }
 
   const validatedData = validation.data
@@ -212,7 +212,7 @@ export async function verifyAuthentication(body: unknown) {
     const { credential, challenge } = result ?? {}
 
     if (!challenge || !credential) {
-      return { success: false, error: 'Unauthorized' }
+      return { success: false, error: 'Unauthorized' } as const
     }
 
     const { verified, authenticationInfo } = await verifyAuthenticationResponse({
@@ -228,7 +228,7 @@ export async function verifyAuthentication(body: unknown) {
     })
 
     if (!verified || !authenticationInfo) {
-      return { success: false, error: 'Forbidden' }
+      return { success: false, error: 'Forbidden' } as const
     }
 
     const newCounter =
@@ -250,18 +250,19 @@ export async function verifyAuthentication(body: unknown) {
 
     const cookieStore = await cookies()
 
-    await Promise.all([
+    const [, [user]] = await Promise.all([
       setAccessTokenCookie(cookieStore, credential.userId),
       db
         .update(userTable)
         .set({ loginAt: new Date() })
-        .where(sql`${userTable.id} = ${credential.userId}`),
+        .where(sql`${userTable.id} = ${credential.userId}`)
+        .returning({ loginId: userTable.loginId }),
     ])
 
-    return { success: true }
+    return { success: true, user } as const
   } catch (error) {
     console.error('verifyAuthentication:', error)
-    return { success: false, error: 'Internal Server Error' }
+    return { success: false, error: 'Internal Server Error' } as const
   }
 }
 

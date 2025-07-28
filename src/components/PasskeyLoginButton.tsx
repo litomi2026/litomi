@@ -13,7 +13,7 @@ import IconFingerprint from '@/components/icons/IconFingerprint'
 interface PasskeyLoginButtonProps {
   disabled?: boolean
   loginId: string
-  onSuccess?: () => void
+  onSuccess?: (loginId: string) => void
 }
 
 export default memo(PasskeyLoginButton)
@@ -58,7 +58,7 @@ function PasskeyLoginButton({ loginId, disabled, onSuccess }: PasskeyLoginButton
         return
       }
 
-      onSuccess?.()
+      onSuccess?.(verifyResult.user.loginId)
     } catch (error) {
       console.error('Passkey login error:', error)
       if (error instanceof Error) {

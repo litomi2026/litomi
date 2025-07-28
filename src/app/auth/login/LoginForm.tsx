@@ -40,20 +40,23 @@ export default function LoginForm() {
     passwordInput.value = ''
   }
 
-  const handleLoginSuccess = useCallback(async () => {
-    toast.success(`${loginId} 계정으로 로그인했어요`)
+  const handleLoginSuccess = useCallback(
+    async (loginId: string) => {
+      toast.success(`${loginId} 계정으로 로그인했어요`)
 
-    if (userId) {
-      amplitude.setUserId(userId)
-      amplitude.track('login', { loginId, lastLoginAt, lastLogoutAt })
-    }
+      if (userId) {
+        amplitude.setUserId(userId)
+        amplitude.track('login', { loginId, lastLoginAt, lastLogoutAt })
+      }
 
-    resetMeQuery()
-    await queryClient.invalidateQueries({ queryKey: QueryKeys.me, type: 'all' })
-    const redirect = searchParams.get(SearchParamKey.REDIRECT)
-    const sanitizedURL = sanitizeRedirect(redirect) || '/'
-    router.replace(sanitizedURL.replace(/^\/@\//, `/@${name}/`))
-  }, [loginId, lastLoginAt, lastLogoutAt, name, queryClient, router, searchParams, userId])
+      resetMeQuery()
+      await queryClient.invalidateQueries({ queryKey: QueryKeys.me, type: 'all' })
+      const redirect = searchParams.get(SearchParamKey.REDIRECT)
+      const sanitizedURL = sanitizeRedirect(redirect) || '/'
+      router.replace(sanitizedURL.replace(/^\/@\//, `/@${name}/`))
+    },
+    [lastLoginAt, lastLogoutAt, name, queryClient, router, searchParams, userId],
+  )
 
   // NOTE: 폼 제출 후 오류 메시지를 표시함
   useEffect(() => {
@@ -66,12 +69,12 @@ export default function LoginForm() {
 
   // NOTE: 로그인 성공 후 로직을 처리함
   useEffect(() => {
-    if (!success) {
+    if (!success || !loginId) {
       return
     }
 
-    handleLoginSuccess()
-  }, [handleLoginSuccess, success])
+    handleLoginSuccess(loginId)
+  }, [handleLoginSuccess, loginId, success])
 
   return (
     <form
