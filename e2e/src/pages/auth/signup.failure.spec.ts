@@ -62,14 +62,11 @@ test.describe('/auth/signup', () => {
         const loginIdInput = page.locator('input[name="loginId"]')
         const timestamp = Date.now()
         const longId = `test${timestamp}${'x'.repeat(30)}`
-
         await loginIdInput.fill(longId)
-        await page.fill('input[name="password"]', 'ValidPass123')
-        await page.fill('input[name="password-confirm"]', 'ValidPass123')
-        await page.click('button[type="submit"]')
 
-        const validationMessage = await loginIdInput.evaluate((el: HTMLInputElement) => el.validationMessage)
-        expect(validationMessage).toBeTruthy()
+        const actualValue = await loginIdInput.inputValue()
+        expect(actualValue.length).toBe(32)
+        expect(actualValue).toBe(longId.substring(0, 32))
       })
 
       test('아이디 최대 길이를 검증한다 (서버)', async ({ page }) => {
@@ -236,15 +233,18 @@ test.describe('/auth/signup', () => {
       test('비밀번호 최대 길이를 검증한다 (HTML5)', async ({ page }) => {
         const user = generateTestUser()
         const passwordInput = page.locator('input[name="password"]')
+        const confirmInput = page.locator('input[name="password-confirm"]')
         const longPassword = 'Pass1' + 'a'.repeat(60)
-
         await page.fill('input[name="loginId"]', user.loginId)
         await passwordInput.fill(longPassword)
-        await page.fill('input[name="password-confirm"]', longPassword)
-        await page.click('button[type="submit"]')
+        await confirmInput.fill(longPassword)
 
-        const validationMessage = await passwordInput.evaluate((el: HTMLInputElement) => el.validationMessage)
-        expect(validationMessage).toBeTruthy()
+        const actualPassword = await passwordInput.inputValue()
+        const actualConfirm = await confirmInput.inputValue()
+        expect(actualPassword.length).toBe(64)
+        expect(actualConfirm.length).toBe(64)
+        expect(actualPassword).toBe(longPassword.substring(0, 64))
+        expect(actualConfirm).toBe(longPassword.substring(0, 64))
       })
 
       test('비밀번호 최대 길이를 검증한다 (서버)', async ({ page }) => {
@@ -388,10 +388,9 @@ test.describe('/auth/signup', () => {
         await page.fill('input[name="password-confirm"]', user.password)
         await nicknameInput.fill(longNickname)
 
-        await page.click('button[type="submit"]')
-
-        const validationMessage = await nicknameInput.evaluate((el: HTMLInputElement) => el.validationMessage)
-        expect(validationMessage).toBeTruthy()
+        const actualNickname = await nicknameInput.inputValue()
+        expect(actualNickname.length).toBe(32)
+        expect(actualNickname).toBe(longNickname.substring(0, 32))
       })
 
       test('닉네임 최대 길이를 검증한다 (서버)', async ({ page }) => {
