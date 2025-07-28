@@ -14,6 +14,7 @@ import { SearchParamKey } from '@/constants/storage'
 import amplitude from '@/lib/amplitude/lazy'
 import { resetMeQuery } from '@/query/useMeQuery'
 import { sanitizeRedirect } from '@/utils'
+import { getErrorMessage, hasFieldError } from '@/utils/form-error'
 
 import signup from './action'
 
@@ -26,12 +27,15 @@ export default function SignupForm() {
   const searchParams = useSearchParams()
   const { loginId, userId, nickname } = data ?? {}
 
+  // NOTE: 폼 제출 후 오류 메시지를 표시함
   useEffect(() => {
-    if (error) {
-      toast.error(Object.values(error).flatMap((value) => value.errors)[0])
+    const errorMessage = getErrorMessage(error)
+    if (errorMessage) {
+      toast.error(errorMessage)
     }
   }, [error])
 
+  // NOTE: 회원가입 성공 후 로직을 처리함
   useEffect(() => {
     if (!success) {
       return
@@ -58,10 +62,10 @@ export default function SignupForm() {
 
     if (formElement.password.value !== formElement['password-confirm'].value) {
       e.preventDefault()
-      toast.warning('비밀번호가 일치하지 않습니다.')
+      toast.warning('비밀번호가 일치하지 않아요')
     } else if (formElement.loginId.value === formElement.password.value) {
       e.preventDefault()
-      toast.warning('아이디와 비밀번호를 다르게 입력해주세요.')
+      toast.warning('아이디와 비밀번호를 다르게 입력해주세요')
     }
   }
 
@@ -87,16 +91,16 @@ export default function SignupForm() {
               <div className="rounded-xl border-2 border-zinc-700 bg-background p-3 whitespace-nowrap text-sm">
                 <p>
                   알파벳, 숫자 - . _ ~ 만 사용하여 <br />
-                  2자 이상의 아이디를 입력해주세요.
+                  2자 이상의 아이디를 입력해주세요
                 </p>
               </div>
             </TooltipPopover>
           </div>
           <input
-            aria-invalid={(error?.loginId?.errors?.length ?? 0) > 0}
+            aria-invalid={hasFieldError(error, 'loginId')}
             autoCapitalize="off"
             autoFocus
-            defaultValue={String(formData?.get('loginId') ?? '')}
+            defaultValue={formData?.get('loginId')?.toString()}
             disabled={pending}
             id="loginId"
             maxLength={32}
@@ -116,15 +120,16 @@ export default function SignupForm() {
               <IconInfo className="p-1.5 w-7 md:w-8 md:p-2" />
               <div className="rounded-xl border-2 border-zinc-700 bg-background p-3 whitespace-nowrap text-sm">
                 <p>
-                  알파벳, 숫자를 포함하여 8자 이상의 <br />
-                  비밀번호를 입력해주세요.
+                  알파벳, 숫자를 하나 이상 포함하여 <br />
+                  8자 이상의 비밀번호를 입력해주세요
                 </p>
               </div>
             </TooltipPopover>
           </div>
           <input
-            aria-invalid={(error?.password?.errors?.length ?? 0) > 0}
-            defaultValue={String(formData?.get('password') ?? '')}
+            aria-invalid={hasFieldError(error, 'password')}
+            autoCapitalize="off"
+            defaultValue={formData?.get('password')?.toString()}
             disabled={pending}
             id="password"
             maxLength={64}
@@ -141,10 +146,13 @@ export default function SignupForm() {
             비밀번호 확인 <span className="text-red-500">*</span>
           </label>
           <input
-            aria-invalid={(error?.['password-confirm']?.errors?.length ?? 0) > 0}
-            defaultValue={String(formData?.get('password-confirm') ?? '')}
+            aria-invalid={hasFieldError(error, 'password-confirm')}
+            autoCapitalize="off"
+            defaultValue={formData?.get('password-confirm')?.toString()}
             disabled={pending}
             id="password-confirm"
+            maxLength={64}
+            minLength={8}
             name="password-confirm"
             placeholder="비밀번호를 다시 입력하세요"
             required
@@ -162,9 +170,9 @@ export default function SignupForm() {
             </TooltipPopover>
           </div>
           <input
-            aria-invalid={(error?.nickname?.errors?.length ?? 0) > 0}
+            aria-invalid={hasFieldError(error, 'nickname')}
             autoCapitalize="off"
-            defaultValue={String(formData?.get('nickname') ?? '')}
+            defaultValue={formData?.get('nickname')?.toString()}
             disabled={pending}
             id="nickname"
             maxLength={32}
@@ -188,5 +196,5 @@ export default function SignupForm() {
 }
 
 export function SignupFormSkeleton() {
-  return <div className="h-[412px] rounded-xl bg-zinc-700 animate-fade-in" />
+  return <div className="h-[484px] rounded-xl bg-zinc-700 animate-fade-in" />
 }
