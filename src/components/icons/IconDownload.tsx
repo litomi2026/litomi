@@ -1,6 +1,6 @@
 import { ComponentProps } from 'react'
 
-export function IconDownload(props: ComponentProps<'svg'>) {
+export function IconDownload(props: Readonly<ComponentProps<'svg'>>) {
   return (
     <svg
       {...props}

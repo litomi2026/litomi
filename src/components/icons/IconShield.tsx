@@ -1,4 +1,4 @@
-export default function IconShield({ className = '' }: { className?: string }) {
+export default function IconShield({ className = '' }: Readonly<{ className?: string }>) {
   return (
     <svg
       className={className}
