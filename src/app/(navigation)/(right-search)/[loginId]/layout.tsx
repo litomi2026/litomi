@@ -15,24 +15,15 @@ import ProfileEditButton, { ProfileEditButtonError, ProfileEditButtonSkeleton } 
 import UserNotFound from './UserNotFound'
 
 export default async function Layout({ params, children }: LayoutProps) {
-  const { loginId } = await params
-  const loginIdFromParam = getLoginIdFromParam(loginId)
+  const { loginId: loginIdFromParam } = await params
+  const loginId = getLoginIdFromParam(loginIdFromParam)
+  const user = await getUser(loginId)
 
-  let user
-  let isMember = false
-
-  if (!loginIdFromParam) {
-    user = { nickname: '비회원' }
-  } else {
-    const [dbUser] = await selectUser({ loginId: loginIdFromParam })
-
-    if (!dbUser) {
-      return <UserNotFound />
-    }
-
-    isMember = true
-    user = dbUser
+  if (!user) {
+    return <UserNotFound />
   }
+
+  const isMember = user.id
 
   return (
     <main className="flex flex-col grow">
@@ -60,7 +51,7 @@ export default async function Layout({ params, children }: LayoutProps) {
             </div>
             <div className="ml-4">
               <h1 className="text-2xl font-bold line-clamp-1 break-all">{user.nickname}</h1>
-              <p className="text-zinc-500 font-mono break-all">@{loginIdFromParam}</p>
+              <p className="text-zinc-500 font-mono break-all">@{loginId}</p>
             </div>
           </div>
           {isMember && (
@@ -99,8 +90,27 @@ export default async function Layout({ params, children }: LayoutProps) {
         )}
       </div>
       {/* 네비게이션 탭 */}
-      <MyPageNavigation loginId={loginIdFromParam} />
+      <MyPageNavigation loginId={loginId} />
       {children}
     </main>
   )
+}
+
+async function getUser(loginId: string) {
+  if (!loginId) {
+    return {
+      id: null,
+      nickname: '비회원',
+      imageURL: null,
+      createdAt: null,
+    }
+  }
+
+  const [dbUser] = await selectUser({ loginId })
+
+  if (!dbUser) {
+    return null
+  }
+
+  return dbUser
 }

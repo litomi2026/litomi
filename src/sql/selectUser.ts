@@ -10,6 +10,7 @@ type Params = {
 export default async function selectUser({ loginId }: Params) {
   return db
     .select({
+      id: userTable.id,
       createdAt: userTable.createdAt,
       nickname: userTable.nickname,
       imageURL: userTable.imageURL,
