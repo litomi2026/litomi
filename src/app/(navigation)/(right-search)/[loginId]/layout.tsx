@@ -1,6 +1,5 @@
 import { ErrorBoundary } from '@suspensive/react'
 import dayjs from 'dayjs'
-import { unstable_cache } from 'next/cache'
 import Image from 'next/image'
 import { Suspense } from 'react'
 
@@ -25,7 +24,7 @@ export default async function Layout({ params, children }: LayoutProps) {
   if (!loginIdFromParam) {
     user = { nickname: '비회원' }
   } else {
-    const [dbUser] = await getUserFromDB(loginIdFromParam)()
+    const [dbUser] = await selectUser({ loginId: loginIdFromParam })
 
     if (!dbUser) {
       return <UserNotFound />
@@ -104,11 +103,4 @@ export default async function Layout({ params, children }: LayoutProps) {
       {children}
     </main>
   )
-}
-
-function getUserFromDB(loginId: string) {
-  return unstable_cache(() => selectUser({ loginId }), [loginId], {
-    tags: [loginId],
-    revalidate: 30,
-  })
 }

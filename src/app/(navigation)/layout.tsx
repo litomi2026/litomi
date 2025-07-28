@@ -1,11 +1,10 @@
-import { ErrorBoundary } from '@suspensive/react'
 import Link from 'next/link'
 import { Suspense } from 'react'
 
 import type { LayoutProps } from '@/types/nextjs'
 
-import BookmarkLink, { BookmarkLinkSkeleton } from '@/components/header/BookmarkLink'
-import ProfileLink, { ProfileLinkSkeleton } from '@/components/header/ProfileLink'
+import BookmarkLink from '@/components/header/BookmarkLink'
+import ProfileLink from '@/components/header/ProfileLink'
 import PublishButton from '@/components/header/PublishButton'
 import IconBell from '@/components/icons/IconBell'
 import IconHome from '@/components/icons/IconHome'
@@ -14,7 +13,7 @@ import IconPost from '@/components/icons/IconPost'
 import IconSearch from '@/components/icons/IconSearch'
 import SelectableLink from '@/components/SelectableLink'
 
-import Profile, { ProfileError, ProfileSkeleton } from '../../components/header/Profile'
+import Profile, { ProfileSkeleton } from '../../components/header/Profile'
 
 export default async function Layout({ children }: LayoutProps) {
   return (
@@ -37,26 +36,16 @@ export default async function Layout({ children }: LayoutProps) {
           <SelectableLink href="/posts/recommand" hrefMatch="/post" Icon={<IconPost />}>
             글
           </SelectableLink>
-          <ErrorBoundary fallback={BookmarkLinkSkeleton}>
-            <Suspense fallback={<BookmarkLinkSkeleton />}>
-              <BookmarkLink />
-            </Suspense>
-          </ErrorBoundary>
+          <BookmarkLink />
           <SelectableLink className="hidden sm:block" href="/notification" Icon={<IconBell />}>
             알림
           </SelectableLink>
-          <ErrorBoundary fallback={ProfileLinkSkeleton}>
-            <Suspense fallback={<ProfileLinkSkeleton />}>
-              <ProfileLink className="hidden sm:block" />
-            </Suspense>
-          </ErrorBoundary>
+          <ProfileLink className="hidden sm:block" />
           <PublishButton className="hidden mx-auto my-4 sm:block xl:mx-0" />
         </nav>
-        <ErrorBoundary fallback={ProfileError}>
-          <Suspense fallback={<ProfileSkeleton />}>
-            <Profile />
-          </Suspense>
-        </ErrorBoundary>
+        <Suspense fallback={<ProfileSkeleton />}>
+          <Profile />
+        </Suspense>
       </header>
       <div className="hidden shrink-0 sm:block sm:w-20 2xl:w-3xs" />
       <div className="flex flex-col grow">
