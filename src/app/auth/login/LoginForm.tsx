@@ -2,10 +2,11 @@
 
 import { useQueryClient } from '@tanstack/react-query'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useActionState, useEffect, useRef } from 'react'
+import { useActionState, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import IconX from '@/components/icons/IconX'
+import PasskeyLoginButton from '@/components/PasskeyLoginButton'
 import Loading from '@/components/ui/Loading'
 import { loginIdPattern, passwordPattern } from '@/constants/pattern'
 import { QueryKeys } from '@/constants/query'
@@ -26,6 +27,7 @@ export default function LoginForm() {
   const queryClient = useQueryClient()
   const searchParams = useSearchParams()
   const { loginId, userId, lastLoginAt, lastLogoutAt } = data ?? {}
+  const [currentLoginId, setCurrentLoginId] = useState('')
 
   function resetId() {
     const loginIdInput = formRef.current?.loginId as HTMLInputElement
@@ -97,6 +99,7 @@ export default function LoginForm() {
               maxLength={32}
               minLength={2}
               name="loginId"
+              onChange={(e) => setCurrentLoginId(e.target.value)}
               pattern={loginIdPattern}
               placeholder="아이디를 입력하세요"
               required
@@ -158,6 +161,27 @@ export default function LoginForm() {
           {pending ? <Loading className="text-zinc-500 w-12 p-2" /> : '로그인'}
         </div>
       </button>
+
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-zinc-700" />
+        </div>
+        <div className="flex justify-center text-sm">
+          <span className="px-4 bg-zinc-900 text-zinc-500">또는</span>
+        </div>
+      </div>
+
+      <PasskeyLoginButton
+        disabled={pending}
+        loginId={currentLoginId}
+        onSuccess={async () => {
+          resetMeQuery()
+          await queryClient.invalidateQueries({ queryKey: QueryKeys.me, type: 'all' })
+          const redirect = searchParams.get(SearchParamKey.REDIRECT)
+          const sanitizedURL = sanitizeRedirect(redirect) || '/'
+          router.replace(sanitizedURL)
+        }}
+      />
     </form>
   )
 }

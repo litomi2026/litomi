@@ -30,12 +30,44 @@ export const userCensorshipTable = pgTable(
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-    userId: bigint('user_id', { mode: 'number' })
-      .references(() => userTable.id)
-      .notNull(),
     key: smallint().notNull(),
     value: varchar({ length: 256 }).notNull(),
     level: smallint().notNull(),
+    userId: bigint('user_id', { mode: 'number' })
+      .references(() => userTable.id)
+      .notNull(),
   },
   (table) => [index('idx_user_censorship_user_id').on(table.userId)],
+).enableRLS()
+
+export const credentialTable = pgTable(
+  'credential',
+  {
+    id: varchar({ length: 256 }).primaryKey(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+    counter: bigint({ mode: 'number' }).notNull().default(0),
+    publicKey: text('public_key').notNull(),
+    deviceType: smallint('device_type').notNull(),
+    transports: text().array(),
+    userId: bigint('user_id', { mode: 'number' })
+      .references(() => userTable.id)
+      .notNull(),
+  },
+  (table) => [index('idx_credential_user_id').on(table.userId)],
+).enableRLS()
+
+export const challengeTable = pgTable(
+  'challenge',
+  {
+    userId: bigint('user_id', { mode: 'number' })
+      .references(() => userTable.id)
+      .notNull(),
+    type: smallint().notNull(),
+    challenge: varchar({ length: 256 }).notNull(),
+    expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.userId, table.type] }),
+    index('idx_challenge_expires_at').on(table.expiresAt),
+  ],
 ).enableRLS()
