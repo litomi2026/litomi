@@ -2,7 +2,7 @@
 
 import { useQueryClient } from '@tanstack/react-query'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useActionState, useEffect, useRef, useState } from 'react'
+import { useActionState, useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import IconX from '@/components/icons/IconX'
@@ -40,6 +40,21 @@ export default function LoginForm() {
     passwordInput.value = ''
   }
 
+  const handleLoginSuccess = useCallback(async () => {
+    toast.success(`${loginId} 계정으로 로그인했어요`)
+
+    if (userId) {
+      amplitude.setUserId(userId)
+      amplitude.track('login', { loginId, lastLoginAt, lastLogoutAt })
+    }
+
+    resetMeQuery()
+    await queryClient.invalidateQueries({ queryKey: QueryKeys.me, type: 'all' })
+    const redirect = searchParams.get(SearchParamKey.REDIRECT)
+    const sanitizedURL = sanitizeRedirect(redirect) || '/'
+    router.replace(sanitizedURL.replace(/^\/@\//, `/@${name}/`))
+  }, [loginId, lastLoginAt, lastLogoutAt, name, queryClient, router, searchParams, userId])
+
   // NOTE: 폼 제출 후 오류 메시지를 표시함
   useEffect(() => {
     const errorMessage = getErrorMessage(error)
@@ -55,21 +70,8 @@ export default function LoginForm() {
       return
     }
 
-    toast.success(`${loginId} 계정으로 로그인했어요`)
-
-    if (userId) {
-      amplitude.setUserId(userId)
-      amplitude.track('login', { loginId, lastLoginAt, lastLogoutAt })
-    }
-
-    ;(async () => {
-      resetMeQuery()
-      await queryClient.invalidateQueries({ queryKey: QueryKeys.me, type: 'all' })
-      const redirect = searchParams.get(SearchParamKey.REDIRECT)
-      const sanitizedURL = sanitizeRedirect(redirect) || '/'
-      router.replace(sanitizedURL.replace(/^\/@\//, `/@${name}/`))
-    })()
-  }, [loginId, name, queryClient, router, searchParams, success, userId, lastLoginAt, lastLogoutAt])
+    handleLoginSuccess()
+  }, [handleLoginSuccess, success])
 
   return (
     <form
@@ -171,17 +173,7 @@ export default function LoginForm() {
         </div>
       </div>
 
-      <PasskeyLoginButton
-        disabled={pending}
-        loginId={currentLoginId}
-        onSuccess={async () => {
-          resetMeQuery()
-          await queryClient.invalidateQueries({ queryKey: QueryKeys.me, type: 'all' })
-          const redirect = searchParams.get(SearchParamKey.REDIRECT)
-          const sanitizedURL = sanitizeRedirect(redirect) || '/'
-          router.replace(sanitizedURL)
-        }}
-      />
+      <PasskeyLoginButton disabled={pending} loginId={currentLoginId} onSuccess={handleLoginSuccess} />
     </form>
   )
 }

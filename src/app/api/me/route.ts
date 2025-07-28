@@ -38,5 +38,5 @@ export async function GET() {
     return new Response('404 Not Found', { status: 404 })
   }
 
-  return Response.json(user)
+  return Response.json(user satisfies GETMeResponse)
 }

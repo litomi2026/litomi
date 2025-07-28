@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 
 import IconX from '@/components/icons/IconX'
 import Modal from '@/components/ui/Modal'
+import useMeQuery from '@/query/useMeQuery'
 
 import { deleteCredential } from './actions'
 import { Passkey } from './common'
@@ -16,10 +17,12 @@ type Props = {
 export default function PasskeyDeleteButton({ passkey }: Readonly<Props>) {
   const [isPending, startTransition] = useTransition()
   const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const { data: me } = useMeQuery()
+  const myName = me?.name
 
   const handleDelete = () => {
     startTransition(async () => {
-      const result = await deleteCredential(passkey.id)
+      const result = await deleteCredential(passkey.id, myName)
 
       if (!result.success) {
         toast.error('패스키 삭제에 실패했어요')

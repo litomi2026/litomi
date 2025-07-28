@@ -1,7 +1,7 @@
 'use client'
 
 import { startAuthentication } from '@simplewebauthn/browser'
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import { toast } from 'sonner'
 
 import {
@@ -16,7 +16,9 @@ interface PasskeyLoginButtonProps {
   onSuccess?: () => void
 }
 
-export default function PasskeyLoginButton({ loginId, disabled, onSuccess }: PasskeyLoginButtonProps) {
+export default memo(PasskeyLoginButton)
+
+function PasskeyLoginButton({ loginId, disabled, onSuccess }: PasskeyLoginButtonProps) {
   const [loading, setLoading] = useState(false)
 
   async function handlePasskeyLogin() {
@@ -56,7 +58,6 @@ export default function PasskeyLoginButton({ loginId, disabled, onSuccess }: Pas
         return
       }
 
-      toast.success(`${verifyResult.loginId} 계정으로 로그인했어요`)
       onSuccess?.()
     } catch (error) {
       console.error('Passkey login error:', error)

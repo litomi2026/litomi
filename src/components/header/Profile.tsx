@@ -20,7 +20,7 @@ export default function Profile() {
     return <LoginIconLink />
   }
 
-  const { loginId, name, imageURL, nickname } = user
+  const { name, imageURL, nickname } = user
 
   return (
     <TooltipPopover

@@ -15,7 +15,7 @@ import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID, WEBAUTHN_RP_NAME } from '@/constants/e
 import { db } from '@/database/drizzle'
 import { ChallengeType, decodeDeviceType, encodeDeviceType } from '@/database/enum'
 import { challengeTable, credentialTable, userTable } from '@/database/schema'
-import { getUserIdFromAccessToken, setAccessTokenCookie, setRefreshTokenCookie } from '@/utils/cookie'
+import { getUserIdFromAccessToken, setAccessTokenCookie } from '@/utils/cookie'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
 
 import { getAuthenticationOptionsSchema, verifyAuthenticationSchema, verifyRegistrationSchema } from './schema'
@@ -23,11 +23,11 @@ import { generateFakeCredentials } from './utils'
 
 const THREE_MINUTES = 3 * 60 * 1000
 
-export async function deleteCredential(credentialId: string) {
+export async function deleteCredential(credentialId: string, username?: string) {
   const cookieStore = await cookies()
   const userId = await getUserIdFromAccessToken(cookieStore)
 
-  if (!userId) {
+  if (!userId || !username) {
     return { success: false, error: 'Unauthorized' } as const
   }
 
@@ -41,15 +41,7 @@ export async function deleteCredential(credentialId: string) {
       return { success: false, error: 'Not Found' } as const
     }
 
-    // Get the user's loginId for revalidation
-    const [user] = await db
-      .select({ loginId: userTable.loginId })
-      .from(userTable)
-      .where(sql`${userTable.id} = ${userId}`)
-
-    if (user) {
-      revalidatePath(`/${user.loginId}/passkey`)
-    }
+    revalidatePath(`/@${username}/passkey`)
 
     return { success: true }
   } catch (error) {
@@ -159,7 +151,7 @@ export async function getRegistrationOptions() {
       rpID: WEBAUTHN_RP_ID,
       userName: user.loginId,
       userID: new Uint8Array(Buffer.from(user.id.toString())),
-      userDisplayName: user.nickname || user.name || undefined,
+      userDisplayName: user.nickname || user.name,
       attestationType: 'direct',
       excludeCredentials: existingCredentials.map((c) => ({
         id: c.id,
@@ -191,7 +183,6 @@ export async function getRegistrationOptions() {
   }
 }
 
-// Verify authentication for login
 export async function verifyAuthentication(body: unknown) {
   const validation = verifyAuthenticationSchema.safeParse(body)
 
@@ -204,29 +195,29 @@ export async function verifyAuthentication(body: unknown) {
   try {
     const credentialId = validatedData.id
 
-    const [credential] = await db
-      .select()
+    const [result] = await db
+      .select({
+        credential: credentialTable,
+        challenge: challengeTable.challenge,
+      })
       .from(credentialTable)
+      .leftJoin(
+        challengeTable,
+        sql`${challengeTable.userId} = ${credentialTable.userId} 
+            AND ${challengeTable.type} = ${ChallengeType.AUTHENTICATION} 
+            AND ${challengeTable.expiresAt} > NOW()`,
+      )
       .where(sql`${credentialTable.id} = ${validatedData.id}`)
 
-    if (!credential) {
-      return { success: false, error: 'Not Found' }
-    }
+    const { credential, challenge } = result ?? {}
 
-    const [stored] = await db
-      .select({ challenge: challengeTable.challenge })
-      .from(challengeTable)
-      .where(
-        sql`${challengeTable.userId} = ${credential.userId} AND ${challengeTable.type} = ${ChallengeType.AUTHENTICATION} AND ${challengeTable.expiresAt} > NOW()`,
-      )
-
-    if (!stored) {
+    if (!challenge || !credential) {
       return { success: false, error: 'Unauthorized' }
     }
 
     const { verified, authenticationInfo } = await verifyAuthenticationResponse({
       response: validatedData,
-      expectedChallenge: stored.challenge,
+      expectedChallenge: challenge,
       expectedOrigin: WEBAUTHN_ORIGIN,
       expectedRPID: WEBAUTHN_RP_ID,
       credential: {
@@ -240,45 +231,41 @@ export async function verifyAuthentication(body: unknown) {
       return { success: false, error: 'Forbidden' }
     }
 
-    // Update counter
     const newCounter =
       authenticationInfo.credentialDeviceType === 'singleDevice' ? authenticationInfo.newCounter : credential.counter
 
-    await db
-      .update(credentialTable)
-      .set({ counter: newCounter })
-      .where(sql`${credentialTable.id} = ${credentialId}`)
+    await db.transaction((tx) =>
+      Promise.all([
+        tx
+          .update(credentialTable)
+          .set({ counter: newCounter })
+          .where(sql`${credentialTable.id} = ${credentialId}`),
+        tx
+          .delete(challengeTable)
+          .where(
+            sql`${challengeTable.userId} = ${credential.userId} AND ${challengeTable.type} = ${ChallengeType.AUTHENTICATION}`,
+          ),
+      ]),
+    )
 
-    // Clean up challenge
-    await db
-      .delete(challengeTable)
-      .where(
-        sql`${challengeTable.userId} = ${credential.userId} AND ${challengeTable.type} = ${ChallengeType.AUTHENTICATION}`,
-      )
-
-    // Get user info
-    const [user] = await db
-      .select({ loginId: userTable.loginId })
-      .from(userTable)
-      .where(sql`${userTable.id} = ${credential.userId}`)
-
-    if (!user) {
-      return { success: false, error: 'Not Found' }
-    }
-
-    // Set auth cookies
     const cookieStore = await cookies()
-    await setAccessTokenCookie(cookieStore, credential.userId)
-    await setRefreshTokenCookie(cookieStore, credential.userId)
 
-    return { success: true, loginId: user.loginId }
+    await Promise.all([
+      setAccessTokenCookie(cookieStore, credential.userId),
+      db
+        .update(userTable)
+        .set({ loginAt: new Date() })
+        .where(sql`${userTable.id} = ${credential.userId}`),
+    ])
+
+    return { success: true }
   } catch (error) {
     console.error('verifyAuthentication:', error)
     return { success: false, error: 'Internal Server Error' }
   }
 }
 
-export async function verifyRegistration(body: unknown) {
+export async function verifyRegistration(body: unknown, username?: string) {
   const validation = verifyRegistrationSchema.safeParse(body)
 
   if (!validation.success) {
@@ -289,7 +276,7 @@ export async function verifyRegistration(body: unknown) {
   const cookieStore = await cookies()
   const userId = await getUserIdFromAccessToken(cookieStore)
 
-  if (!userId) {
+  if (!userId || !username) {
     return { success: false, error: 'Unauthorized' } as const
   }
 
@@ -338,15 +325,7 @@ export async function verifyRegistration(body: unknown) {
       ]),
     )
 
-    // Get the user's loginId for revalidation
-    const [user] = await db
-      .select({ loginId: userTable.loginId })
-      .from(userTable)
-      .where(sql`${userTable.id} = ${userId}`)
-
-    if (user) {
-      revalidatePath(`/${user.loginId}/passkey`)
-    }
+    revalidatePath(`/@${username}/passkey`)
 
     return {
       success: true,

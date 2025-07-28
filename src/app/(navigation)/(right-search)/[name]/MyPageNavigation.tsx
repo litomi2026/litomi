@@ -4,18 +4,18 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 interface Props {
-  loginId: string
+  name: string
 }
 
-export default function MyPageNavigation({ loginId }: Readonly<Props>) {
+export default function MyPageNavigation({ name }: Readonly<Props>) {
   const pathname = usePathname()
 
   const links = [
-    { href: `/@${loginId}`, label: '게시글' },
-    { href: `/@${loginId}/reply`, label: '답글' },
-    { href: `/@${loginId}/bookmark`, label: '북마크' },
-    { href: `/@${loginId}/censor`, label: '검열' },
-    { href: `/@${loginId}/passkey`, label: '패스키' },
+    { href: `/@${name}`, label: '게시글' },
+    { href: `/@${name}/reply`, label: '답글' },
+    { href: `/@${name}/bookmark`, label: '북마크' },
+    { href: `/@${name}/censor`, label: '검열' },
+    { href: `/@${name}/passkey`, label: '패스키' },
   ]
 
   return (

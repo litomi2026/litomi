@@ -8,6 +8,7 @@ import { toast } from 'sonner'
 import IconFingerprint from '@/components/icons/IconFingerprint'
 import IconKey from '@/components/icons/IconKey'
 import Modal from '@/components/ui/Modal'
+import useMeQuery from '@/query/useMeQuery'
 
 import { getRegistrationOptions, verifyRegistration } from './actions'
 
@@ -15,6 +16,8 @@ export default function PasskeyRegisterButton() {
   const [loading, setLoading] = useState(false)
   const [showInfoModal, setShowInfoModal] = useState(false)
   const router = useRouter()
+  const { data: me } = useMeQuery()
+  const myName = me?.name
 
   async function handleRegisterPasskey() {
     setLoading(true)
@@ -34,7 +37,7 @@ export default function PasskeyRegisterButton() {
       })
 
       // 3. Verify registration with server
-      const verifyResult = await verifyRegistration(registrationResponse)
+      const verifyResult = await verifyRegistration(registrationResponse, myName)
 
       if (!verifyResult.success) {
         toast.error('패스키 등록에 실패했어요')

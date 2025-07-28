@@ -8,16 +8,16 @@ import IconCalendar from '@/components/icons/IconCalendar'
 import IconProfile from '@/components/icons/IconProfile'
 import selectUser from '@/sql/selectUser'
 import { LayoutProps } from '@/types/nextjs'
-import { getLoginIdFromParam } from '@/utils/param'
+import { getUsernameFromParam } from '@/utils/param'
 
 import MyPageNavigation from './MyPageNavigation'
 import ProfileEditButton, { ProfileEditButtonError, ProfileEditButtonSkeleton } from './ProfileEditButton'
 import UserNotFound from './UserNotFound'
 
 export default async function Layout({ params, children }: LayoutProps) {
-  const { loginId: nameFromParam } = await params
-  const name = getLoginIdFromParam(nameFromParam)
-  const user = await getUser(name)
+  const { name: usernameFromParam } = await params
+  const username = getUsernameFromParam(usernameFromParam)
+  const user = await getUser(username)
 
   if (!user) {
     return <UserNotFound />
@@ -51,7 +51,7 @@ export default async function Layout({ params, children }: LayoutProps) {
             </div>
             <div className="ml-4">
               <h1 className="text-2xl font-bold line-clamp-1 break-all">{user.nickname}</h1>
-              <p className="text-zinc-500 font-mono break-all">@{name}</p>
+              <p className="text-zinc-500 font-mono break-all">@{username}</p>
             </div>
           </div>
           {isMember && (
@@ -90,7 +90,7 @@ export default async function Layout({ params, children }: LayoutProps) {
         )}
       </div>
       {/* 네비게이션 탭 */}
-      <MyPageNavigation loginId={name} />
+      <MyPageNavigation name={username} />
       {children}
     </main>
   )
