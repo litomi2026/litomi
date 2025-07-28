@@ -1,6 +1,6 @@
 import { ComponentProps } from 'react'
 
-export default function IconMapPin(props: ComponentProps<'svg'>) {
+export default function IconMapPin(props: Readonly<ComponentProps<'svg'>>) {
   return (
     <svg
       {...props}

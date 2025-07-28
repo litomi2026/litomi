@@ -18,7 +18,7 @@ interface PasskeyLoginButtonProps {
 
 export default memo(PasskeyLoginButton)
 
-function PasskeyLoginButton({ loginId, disabled, onSuccess }: PasskeyLoginButtonProps) {
+function PasskeyLoginButton({ loginId, disabled, onSuccess }: Readonly<PasskeyLoginButtonProps>) {
   const [loading, setLoading] = useState(false)
 
   async function handlePasskeyLogin() {

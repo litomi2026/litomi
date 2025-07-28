@@ -1,6 +1,6 @@
 import { ComponentProps } from 'react'
 
-export default function IconUndo(props: ComponentProps<'svg'>) {
+export default function IconUndo(props: Readonly<ComponentProps<'svg'>>) {
   return (
     <svg
       {...props}

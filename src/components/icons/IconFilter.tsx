@@ -1,6 +1,6 @@
 import { ComponentProps } from 'react'
 
-export default function IconFilter(props: ComponentProps<'svg'>) {
+export default function IconFilter(props: Readonly<ComponentProps<'svg'>>) {
   return (
     <svg {...props} fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
       <path

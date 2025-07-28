@@ -71,7 +71,7 @@ export default function LogoutButton({ className = '' }: Readonly<Props>) {
   )
 }
 
-export function LogoutButtonError({ error, reset }: ErrorBoundaryFallbackProps) {
+export function LogoutButtonError({ error, reset }: Readonly<ErrorBoundaryFallbackProps>) {
   useEffect(() => {
     captureException(error, { extra: { name: 'LogoutButtonError' } })
   }, [error])

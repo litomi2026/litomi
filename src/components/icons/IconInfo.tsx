@@ -1,6 +1,6 @@
 import { ComponentProps } from 'react'
 
-export default function IconInfo(props: ComponentProps<'svg'>) {
+export default function IconInfo(props: Readonly<ComponentProps<'svg'>>) {
   return (
     <svg
       {...props}

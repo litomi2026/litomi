@@ -20,7 +20,7 @@ export function ImportModeOption({
   showBadge,
   showWarning,
   title,
-}: Props) {
+}: Readonly<Props>) {
   const isSelected = currentMode === mode
 
   const colors = {

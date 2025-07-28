@@ -1,6 +1,6 @@
 import { ComponentProps } from 'react'
 
-export function IconChevronLeft(props: ComponentProps<'svg'>) {
+export function IconChevronLeft(props: Readonly<ComponentProps<'svg'>>) {
   return (
     <svg {...props} fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path d="M15 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
@@ -8,7 +8,7 @@ export function IconChevronLeft(props: ComponentProps<'svg'>) {
   )
 }
 
-export function IconClose(props: ComponentProps<'svg'>) {
+export function IconClose(props: Readonly<ComponentProps<'svg'>>) {
   return (
     <svg {...props} fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path d="M6 18L18 6M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
@@ -16,7 +16,7 @@ export function IconClose(props: ComponentProps<'svg'>) {
   )
 }
 
-export function IconMaximize(props: ComponentProps<'svg'>) {
+export function IconMaximize(props: Readonly<ComponentProps<'svg'>>) {
   return (
     <svg {...props} fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path
@@ -29,7 +29,7 @@ export function IconMaximize(props: ComponentProps<'svg'>) {
   )
 }
 
-export function IconReload(props: ComponentProps<'svg'>) {
+export function IconReload(props: Readonly<ComponentProps<'svg'>>) {
   return (
     <svg
       {...props}

@@ -138,7 +138,7 @@ export default function ActiveFilters({ filters }: Readonly<Props>) {
   )
 }
 
-function ActiveFilter({ icon, label, value, onRemove, isPending }: ActiveFilterProps) {
+function ActiveFilter({ icon, label, value, onRemove, isPending }: Readonly<ActiveFilterProps>) {
   return (
     <div className="group flex items-center gap-1.5 pl-4 bg-zinc-800 border border-zinc-700 rounded-full text-sm">
       <span>{icon}</span>

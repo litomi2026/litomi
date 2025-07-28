@@ -6,7 +6,7 @@ type Props = {
   onFileSelect: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-export function FileSelectStep({ fileInputRef, isVisible, onFileSelect }: Props) {
+export function FileSelectStep({ fileInputRef, isVisible, onFileSelect }: Readonly<Props>) {
   return (
     <div
       aria-hidden={!isVisible}

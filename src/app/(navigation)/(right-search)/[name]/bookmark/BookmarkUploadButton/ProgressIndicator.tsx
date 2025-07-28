@@ -21,7 +21,7 @@ type Props = {
   currentStep: number
 }
 
-export function ProgressIndicator({ currentStep }: Props) {
+export function ProgressIndicator({ currentStep }: Readonly<Props>) {
   return (
     <div className="flex items-center justify-between relative px-4">
       <div className="absolute top-1/2 left-8 right-8 h-0.5 bg-zinc-800/60 -translate-y-1/2" />

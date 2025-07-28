@@ -1,6 +1,6 @@
 import { ComponentProps } from 'react'
 
-export default function IconMore(props: ComponentProps<'svg'>) {
+export default function IconMore(props: Readonly<ComponentProps<'svg'>>) {
   return (
     <svg {...props} stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
       <circle cx="12" cy="12" r="1" />

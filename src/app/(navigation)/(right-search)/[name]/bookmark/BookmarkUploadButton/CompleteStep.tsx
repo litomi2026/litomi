@@ -7,7 +7,7 @@ type Props = {
   isVisible: boolean
 }
 
-export function CompleteStep({ importResult, isVisible }: Props) {
+export function CompleteStep({ importResult, isVisible }: Readonly<Props>) {
   const hasErrors = importResult.errors.length > 0
 
   return (

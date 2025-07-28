@@ -1,6 +1,6 @@
 import { ComponentProps } from 'react'
 
-export default function IconSpinner({ className = '', ...props }: ComponentProps<'svg'>) {
+export default function IconSpinner({ className = '', ...props }: Readonly<ComponentProps<'svg'>>) {
   return (
     <svg {...props} className={`animate-spin ${className}`} viewBox="0 0 24 24">
       <circle className="opacity-25" cx="12" cy="12" fill="none" r="10" stroke="currentColor" strokeWidth="4" />

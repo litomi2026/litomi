@@ -19,7 +19,7 @@ type Props = {
 
 export default memo(DownloadButton)
 
-export function DownloadButtonError({ error, reset }: ErrorBoundaryFallbackProps) {
+export function DownloadButtonError({ error, reset }: Readonly<ErrorBoundaryFallbackProps>) {
   useEffect(() => {
     toast.error(error instanceof Error ? error.message : '다운로드에 실패했어요')
   }, [error])

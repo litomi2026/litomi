@@ -1,8 +1,8 @@
 interface IconFingerprintProps {
-  className?: string
+  readonly className?: string
 }
 
-export default function IconFingerprint({ className }: IconFingerprintProps) {
+export default function IconFingerprint({ className }: Readonly<IconFingerprintProps>) {
   return (
     <svg
       className={className}
