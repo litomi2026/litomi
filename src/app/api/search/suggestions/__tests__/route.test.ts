@@ -342,7 +342,7 @@ describe('GET /api/search/suggestions', () => {
       })
     })
 
-    describe('다국어 지원', () => {
+    describe('다국어', () => {
       test('영어 로케일로 "language" 검색 시 영어 라벨을 반환한다', async () => {
         const request = createRequest('language', 'en')
         const response = await GET(request)

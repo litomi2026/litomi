@@ -6,8 +6,6 @@ import { ONE_HOUR, THIRTY_DAYS } from '@/constants'
 import { JWT_SECRET_ACCESS_TOKEN, JWT_SECRET_REFRESH_TOKEN } from '@/constants/env'
 import { CANONICAL_URL } from '@/constants/url'
 
-import { Optional } from './type'
-
 const url = new URL(CANONICAL_URL)
 
 export enum TokenType {
@@ -36,12 +34,7 @@ const options = {
 export async function verifyJWT(token: string, type: TokenType) {
   const secretKey = type === TokenType.ACCESS ? JWT_SECRET_ACCESS_TOKEN : JWT_SECRET_REFRESH_TOKEN
 
-  // TODO(2025-07-16): 30일 후 Optional 삭제하기
-  const { payload } = await jwtVerify<Optional<JWTPayload, 'loginId'>>(
-    token,
-    new TextEncoder().encode(secretKey),
-    options,
-  )
+  const { payload } = await jwtVerify<JWTPayload>(token, new TextEncoder().encode(secretKey), options)
 
   return payload
 }

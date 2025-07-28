@@ -23,15 +23,16 @@ export async function getUserIdFromAccessToken(cookieStore: ReadonlyRequestCooki
   }
 
   const payload = await verifyJWT(accessToken, TokenType.ACCESS).catch(() => null)
+  const userId = payload?.sub
 
-  if (!payload || !payload.sub) {
+  if (!userId) {
     if (reset) {
       cookieStore.delete(CookieKey.ACCESS_TOKEN)
     }
     return null
   }
 
-  return payload.sub
+  return userId
 }
 
 export async function setAccessTokenCookie(
