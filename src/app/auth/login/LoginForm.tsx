@@ -20,13 +20,20 @@ import login from './action'
 
 const initialState = {} as Awaited<ReturnType<typeof login>>
 
+type User = {
+  id: number
+  loginId: string
+  name: string
+  lastLoginAt: Date
+  lastLogoutAt: Date
+}
+
 export default function LoginForm() {
-  const [{ error, success, formData, data }, formAction, pending] = useActionState(login, initialState)
+  const [{ error, success, formData, data: user }, formAction, pending] = useActionState(login, initialState)
   const router = useRouter()
   const formRef = useRef<HTMLFormElement>(null)
   const queryClient = useQueryClient()
   const searchParams = useSearchParams()
-  const { loginId, name, userId, lastLoginAt, lastLogoutAt } = data ?? {}
   const [currentLoginId, setCurrentLoginId] = useState('')
 
   function resetId() {
@@ -41,11 +48,11 @@ export default function LoginForm() {
   }
 
   const handleLoginSuccess = useCallback(
-    async (loginId: string) => {
+    async ({ loginId, name, id, lastLoginAt, lastLogoutAt }: User) => {
       toast.success(`${loginId} 계정으로 로그인했어요`)
 
-      if (userId) {
-        amplitude.setUserId(userId)
+      if (id) {
+        amplitude.setUserId(id)
         amplitude.track('login', { loginId, lastLoginAt, lastLogoutAt })
       }
 
@@ -55,7 +62,7 @@ export default function LoginForm() {
       const sanitizedURL = sanitizeRedirect(redirect) || '/'
       router.replace(sanitizedURL.replace(/^\/@\//, `/@${name}/`))
     },
-    [lastLoginAt, lastLogoutAt, name, queryClient, router, searchParams, userId],
+    [queryClient, router, searchParams],
   )
 
   // NOTE: 폼 제출 후 오류 메시지를 표시함
@@ -69,12 +76,12 @@ export default function LoginForm() {
 
   // NOTE: 로그인 성공 후 로직을 처리함
   useEffect(() => {
-    if (!success || !loginId) {
+    if (!success || !user) {
       return
     }
 
-    handleLoginSuccess(loginId)
-  }, [handleLoginSuccess, loginId, success])
+    handleLoginSuccess(user)
+  }, [handleLoginSuccess, user, success])
 
   return (
     <form
@@ -175,7 +182,6 @@ export default function LoginForm() {
           <span className="px-4 bg-zinc-900 text-zinc-500">또는</span>
         </div>
       </div>
-
       <PasskeyLoginButton disabled={pending} loginId={currentLoginId} onSuccess={handleLoginSuccess} />
     </form>
   )

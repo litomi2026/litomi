@@ -1,25 +1,38 @@
 import type { LayoutProps } from '@/types/nextjs'
 
-import IconShield from '@/components/icons/IconShield'
-
 import PasskeyRegisterButton from './PasskeyRegisterButton'
 
 export default async function Layout({ children }: LayoutProps) {
   return (
-    <main className="flex h-full flex-col">
-      <div className="border-b border-zinc-800 bg-gradient-to-r from-zinc-900 to-zinc-900/80 px-6 py-5">
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="flex items-center gap-3">
-              <IconShield className="h-8 w-8 text-blue-500" />
-              <h1 className="text-2xl font-bold">패스키 관리</h1>
+    <main className="flex h-full flex-col bg-background">
+      {/* Simplified header with brand gradient accent */}
+      <div className="relative overflow-hidden">
+        {/* Subtle brand gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-brand-end/5 via-transparent to-transparent" />
+
+        <div className="relative px-4 py-6 sm:px-6 sm:py-8">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            {/* Simplified title section */}
+            <div className="space-y-2">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-100">패스키</h1>
+              <p className="text-sm sm:text-base text-zinc-400">안전하고 빠른 로그인</p>
             </div>
-            <p className="mt-2 text-sm text-zinc-400">생체 인증으로 더 안전하고 빠르게 로그인하세요</p>
+
+            {/* Floating action button */}
+            <div className="self-end sm:self-auto">
+              <PasskeyRegisterButton />
+            </div>
           </div>
-          <PasskeyRegisterButton />
         </div>
+
+        {/* Subtle bottom border with brand accent */}
+        <div className="h-px bg-gradient-to-r from-transparent via-brand-end/20 to-transparent" />
       </div>
-      <div className="flex-1 overflow-y-auto p-6">{children}</div>
+
+      {/* Content area with better spacing */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="px-4 py-6 sm:px-6 sm:py-8">{children}</div>
+      </div>
     </main>
   )
 }

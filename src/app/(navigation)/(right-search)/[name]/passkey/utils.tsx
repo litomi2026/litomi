@@ -62,24 +62,21 @@ export function getDeviceInfo(deviceType: string) {
   switch (deviceType) {
     case 'cross-platform':
       return {
-        icon: <IconUSB className="h-6 w-6 text-purple-400" />,
+        icon: <IconUSB className="w-6 text-brand-end" />,
         label: '외부 기기',
-        bgColor: 'bg-purple-500/10',
-        description: '외부 하드웨어 또는 핸드폰 등에 저장되어 있어요',
+        bgColor: 'bg-brand-end/10',
       }
     case 'platform':
       return {
-        icon: <IconSmartphone className="h-6 w-6 text-blue-400" />,
+        icon: <IconSmartphone className="w-6 text-brand-end" />,
         label: '현재 기기',
-        bgColor: 'bg-blue-500/10',
-        description: '이 기기에 안전하게 저장되어 있어요',
+        bgColor: 'bg-brand-end/10',
       }
     default:
       return {
-        icon: <IconKey className="h-6 w-6 text-zinc-400" />,
+        icon: <IconKey className="w-6 text-zinc-400" />,
         label: '알 수 없는 기기',
-        bgColor: 'bg-zinc-500/10',
-        description: null,
+        bgColor: 'bg-zinc-800',
       }
   }
 }

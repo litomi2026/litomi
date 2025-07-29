@@ -10,27 +10,34 @@ import {
 } from '@/app/(navigation)/(right-search)/[name]/passkey/actions'
 import IconFingerprint from '@/components/icons/IconFingerprint'
 
-interface PasskeyLoginButtonProps {
+type Props = {
   disabled?: boolean
   loginId: string
-  onSuccess?: (loginId: string) => void
+  onSuccess?: (user: User) => void
+}
+
+type User = {
+  id: number
+  loginId: string
+  name: string
+  lastLoginAt: Date
+  lastLogoutAt: Date
 }
 
 export default memo(PasskeyLoginButton)
 
-function PasskeyLoginButton({ loginId, disabled, onSuccess }: Readonly<PasskeyLoginButtonProps>) {
+function PasskeyLoginButton({ loginId, disabled, onSuccess }: Readonly<Props>) {
   const [loading, setLoading] = useState(false)
 
   async function handlePasskeyLogin() {
     if (!loginId) {
-      toast.error('아이디를 먼저 입력해주세요')
+      toast.error('로그인 아이디를 입력해주세요')
       return
     }
 
     setLoading(true)
 
     try {
-      // 1. Get authentication options from server
       const optionsResult = await getAuthenticationOptions(loginId)
 
       if (!optionsResult.success) {
@@ -45,12 +52,7 @@ function PasskeyLoginButton({ loginId, disabled, onSuccess }: Readonly<PasskeyLo
         return
       }
 
-      // 2. Use browser WebAuthn API to authenticate
-      const authResponse = await startAuthentication({
-        optionsJSON: optionsResult.options!,
-      })
-
-      // 3. Verify authentication with server
+      const authResponse = await startAuthentication({ optionsJSON: optionsResult.options })
       const verifyResult = await verifyAuthentication(authResponse)
 
       if (!verifyResult.success) {
@@ -58,9 +60,8 @@ function PasskeyLoginButton({ loginId, disabled, onSuccess }: Readonly<PasskeyLo
         return
       }
 
-      onSuccess?.(verifyResult.user.loginId)
+      onSuccess?.(verifyResult.user)
     } catch (error) {
-      console.error('Passkey login error:', error)
       if (error instanceof Error) {
         if (error.name === 'NotAllowedError') {
           toast.error('패스키 인증이 취소되었어요')
@@ -83,7 +84,7 @@ function PasskeyLoginButton({ loginId, disabled, onSuccess }: Readonly<PasskeyLo
       title="패스키로 로그인"
       type="button"
     >
-      <IconFingerprint className="h-5 w-5" />
+      <IconFingerprint className="w-5" />
       <span className="font-medium">패스키로 로그인</span>
     </button>
   )
