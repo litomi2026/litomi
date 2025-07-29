@@ -256,7 +256,13 @@ export async function verifyAuthentication(body: unknown) {
         .update(userTable)
         .set({ loginAt: new Date() })
         .where(sql`${userTable.id} = ${credential.userId}`)
-        .returning({ loginId: userTable.loginId }),
+        .returning({
+          id: userTable.id,
+          loginId: userTable.loginId,
+          name: userTable.name,
+          lastLoginAt: userTable.loginAt,
+          lastLogoutAt: userTable.logoutAt,
+        }),
     ])
 
     return { success: true, user } as const
@@ -266,7 +272,7 @@ export async function verifyAuthentication(body: unknown) {
   }
 }
 
-export async function verifyRegistration(body: unknown, username?: string) {
+export async function verifyRegistration(body: unknown, username: string) {
   const validation = verifyRegistrationSchema.safeParse(body)
 
   if (!validation.success) {
@@ -277,7 +283,7 @@ export async function verifyRegistration(body: unknown, username?: string) {
   const cookieStore = await cookies()
   const userId = await getUserIdFromAccessToken(cookieStore)
 
-  if (!userId || !username) {
+  if (!userId) {
     return { success: false, error: 'Unauthorized' } as const
   }
 

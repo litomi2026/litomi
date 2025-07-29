@@ -1,68 +1,109 @@
 'use client'
-
-import { useState, useTransition } from 'react'
+import { useActionState, useState } from 'react'
 import { toast } from 'sonner'
 
-import IconX from '@/components/icons/IconX'
+import IconShield from '@/components/icons/IconShield'
+import IconTrash from '@/components/icons/IconTrash'
+import Loading from '@/components/ui/Loading'
 import Modal from '@/components/ui/Modal'
-import useMeQuery from '@/query/useMeQuery'
 
 import { deleteCredential } from './actions'
-import { Passkey } from './common'
 
 type Props = {
-  passkey: Passkey
+  credentialId: string
+  username: string
+  className?: string
+  onCancel?: () => void
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
-export default function PasskeyDeleteButton({ passkey }: Readonly<Props>) {
-  const [isPending, startTransition] = useTransition()
-  const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const { data: me } = useMeQuery()
-  const myName = me?.name
+export default function PasskeyDeleteButton({
+  credentialId,
+  username,
+  className,
+  onCancel,
+  open,
+  onOpenChange,
+}: Readonly<Props>) {
+  const [internalOpen, setInternalOpen] = useState(false)
 
-  const handleDelete = () => {
-    startTransition(async () => {
-      const result = await deleteCredential(passkey.id, myName)
+  const isControlled = open !== undefined
+  const isOpen = isControlled ? open : internalOpen
 
-      if (!result.success) {
-        toast.error('패스키 삭제에 실패했어요')
-        return
-      }
-
-      toast.success('패스키가 삭제되었어요')
-      setShowDeleteModal(false)
-    })
+  const setIsOpen = (value: boolean) => {
+    if (!isControlled) {
+      setInternalOpen(value)
+    }
+    onOpenChange?.(value)
   }
+
+  async function deleteWithToast(_: unknown, formData: FormData) {
+    const credentialId = formData.get('credentialId') as string
+    const result = await deleteCredential(credentialId, username)
+
+    if (!result.success) {
+      toast.error('패스키 삭제에 실패했어요')
+      return
+    }
+
+    toast.success('패스키가 삭제됐어요')
+    setIsOpen(false)
+  }
+
+  function handleCancel() {
+    setIsOpen(false)
+    onCancel?.()
+  }
+
+  const [_, formAction, isPending] = useActionState(deleteWithToast, null)
 
   return (
     <>
-      <button
-        aria-label="패스키 삭제"
-        className="rounded-lg p-2 text-zinc-500 opacity-0 transition-all hover:bg-zinc-700 hover:text-red-400 group-hover:opacity-100"
-        onClick={() => setShowDeleteModal(true)}
+      {!isControlled && (
+        <button aria-label="패스키 삭제" className={className} onClick={() => setIsOpen(true)} type="button">
+          <IconTrash className="w-5" />
+        </button>
+      )}
+      <Modal
+        className="w-[90vw] max-w-sm rounded-xl bg-zinc-900 border border-zinc-800"
+        onClose={handleCancel}
+        open={isOpen}
       >
-        <IconX className="h-5 w-5" />
-      </button>
-      <Modal onClose={() => setShowDeleteModal(false)} open={showDeleteModal} showCloseButton>
-        <div className="w-full max-w-sm rounded-lg bg-zinc-900 p-6">
-          <h3 className="text-lg font-semibold mb-2">패스키를 삭제하시겠어요?</h3>
-          <p className="text-sm text-zinc-400 mb-6">이 기기에서 패스키가 삭제되며, 다시 등록해야 사용할 수 있어요.</p>
-
+        <div className="p-5 relative">
+          {isPending && (
+            <div className="absolute inset-0 bg-zinc-900/90 rounded-xl flex items-center justify-center z-10">
+              <Loading className="w-5 text-zinc-400" />
+            </div>
+          )}
+          <div className="flex flex-col items-center text-center mb-5">
+            <div className="mb-3 h-12 w-12 rounded-xl bg-zinc-800 flex items-center justify-center">
+              <IconShield className="h-6 w-6 text-red-500" />
+            </div>
+            <h2 className="text-lg font-semibold text-zinc-100 mb-1">패스키 삭제</h2>
+            <p className="text-sm text-zinc-500">
+              이 패스키를 삭제하면 다시 등록해야 해요. 삭제된 패스키는 복구할 수 없어요.
+            </p>
+          </div>
           <div className="flex gap-3">
             <button
-              className="flex-1 rounded-lg bg-zinc-800 px-4 py-2 font-medium transition hover:bg-zinc-700"
+              className="flex-1 h-10 px-4 rounded-lg bg-zinc-800 text-zinc-300 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isPending}
-              onClick={() => setShowDeleteModal(false)}
+              onClick={handleCancel}
+              type="button"
             >
               취소
             </button>
-            <button
-              className="flex-1 rounded-lg bg-red-600 px-4 py-2 font-medium text-white transition hover:bg-red-700 disabled:opacity-50"
-              disabled={isPending}
-              onClick={handleDelete}
-            >
-              {isPending ? '삭제 중...' : '삭제'}
-            </button>
+            <form action={formAction} className="flex-1">
+              <input name="credentialId" type="hidden" value={credentialId} />
+              <button
+                className="w-full h-10 px-4 rounded-lg bg-red-600 text-white font-medium disabled:opacity-70 disabled:cursor-not-allowed relative"
+                disabled={isPending}
+                type="submit"
+              >
+                {isPending ? <Loading className="h-4 w-4 mx-auto" /> : '삭제'}
+              </button>
+            </form>
           </div>
         </div>
       </Modal>

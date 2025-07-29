@@ -4,6 +4,7 @@ import IconShield from '@/components/icons/IconShield'
 
 import { Passkey } from './common'
 import PasskeyDeleteButton from './PasskeyDeleteButton'
+import PasskeyMobileDeleteWrapper from './PasskeyMobileDeleteWrapper'
 import {
   getDeviceInfo,
   getRelativeTime,
@@ -15,79 +16,84 @@ import {
 
 type Props = {
   passkey: Passkey
+  username: string
+  enableMobileSwipe?: boolean
 }
 
-export default function PasskeyCard({ passkey }: Readonly<Props>) {
+export default function PasskeyCard({ passkey, username }: Readonly<Props>) {
   const { deviceType, createdAt, transports, id } = passkey
-  const { icon, label, bgColor, description } = getDeviceInfo(deviceType || '')
+  const { icon, label, bgColor } = getDeviceInfo(deviceType || '')
   const createdDate = createdAt ? new Date(createdAt) : null
   const relativeTime = createdDate ? getRelativeTime(createdDate) : null
   const truncatedId = getTruncatedId(id)
   const verificationMethod = getUserVerificationMethod(deviceType || '')
 
   return (
-    <div className="group relative rounded-lg border border-zinc-800 bg-zinc-900 p-4 transition-all hover:border-zinc-700 hover:bg-zinc-800/50">
-      <div className="flex items-start gap-4">
-        <div className={`rounded-lg p-3 ${bgColor}`}>{icon}</div>
-
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-medium">{label}</h3>
-            {deviceType === 'platform' && (
-              <span title="기기에 안전하게 저장됨">
-                <IconShield className="h-4 w-4 text-green-500" />
-              </span>
-            )}
+    <PasskeyMobileDeleteWrapper credentialId={passkey.id} username={username}>
+      <div className="relative bg-zinc-900 border border-zinc-800 rounded-xl p-4 sm:p-5">
+        <div className="flex gap-3">
+          <div className="shrink-0">
+            <div className={`h-10 w-10 rounded-lg ${bgColor} flex items-center justify-center`}>{icon}</div>
           </div>
 
-          {description && <p className="text-xs text-zinc-500 mb-1">{description}</p>}
+          {/* Streamlined content */}
+          <div className="flex-1 min-w-0">
+            {/* Header with integrated actions */}
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h3 className="font-medium text-base text-zinc-100 flex items-center gap-2">
+                  {label}
+                  {deviceType === 'platform' && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand-end/10 text-xs">
+                      <IconShield className="h-3 w-3 text-brand-end" />
+                      <span className="text-brand-end font-medium">보안</span>
+                    </span>
+                  )}
+                </h3>
+                {createdDate && (
+                  <p className="text-sm text-zinc-500 mt-0.5">
+                    {relativeTime ||
+                      createdDate.toLocaleDateString('ko-KR', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })}
+                  </p>
+                )}
+              </div>
+              <PasskeyDeleteButton
+                className="p-2 text-zinc-500 hover:text-red-500 rounded-xl hover:bg-red-900/20 transition"
+                credentialId={passkey.id}
+                username={username}
+              />
+            </div>
 
-          <p className="text-sm text-zinc-400">
-            {createdDate && (
-              <>
-                {createdDate.toLocaleDateString('ko-KR', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
-                {relativeTime && <span className="text-zinc-500"> · {relativeTime}</span>}
-              </>
-            )}
-          </p>
+            {/* Simplified metadata */}
+            <div className="flex items-center gap-3 text-xs text-zinc-500 mt-2">
+              {verificationMethod.requiresVerification && (
+                <span className="flex items-center gap-1">
+                  <IconFingerprint className="h-3.5 w-3.5" />
+                  {verificationMethod.verificationLabel}
+                </span>
+              )}
 
-          <div className="mt-2 flex flex-wrap items-center gap-2">
-            {verificationMethod.requiresVerification && (
-              <span
-                className="inline-flex items-center gap-1 rounded-full bg-zinc-800 px-2 py-1 text-xs text-zinc-400"
-                title={verificationMethod.verificationDescription}
-              >
-                <IconFingerprint className="h-3 w-3" />
-                {verificationMethod.verificationLabel}
+              {transports && transports.length > 0 && (
+                <span className="flex items-center gap-1">
+                  {getTransportIcon(transports[0])}
+                  {getTransportLabel(transports[0])}
+                  {transports.length > 1 && ` +${transports.length - 1}`}
+                </span>
+              )}
+
+              {/* ID shown only on desktop for power users */}
+              <span className="hidden md:flex items-center gap-1">
+                <IconKey className="h-3.5 w-3.5" />
+                {truncatedId}
               </span>
-            )}
-
-            {transports?.map((transport) => (
-              <span
-                className="inline-flex items-center gap-1 rounded-full bg-zinc-800 px-2 py-1 text-xs text-zinc-400"
-                key={transport}
-              >
-                {getTransportIcon(transport)}
-                {getTransportLabel(transport)}
-              </span>
-            ))}
-
-            <span
-              className="inline-flex items-center gap-1 rounded-full bg-zinc-800/50 px-2 py-1 text-xs text-zinc-500"
-              title={`전체 ID: ${passkey.id}`}
-            >
-              <IconKey className="h-3 w-3" />
-              {truncatedId}
-            </span>
+            </div>
           </div>
         </div>
-
-        <PasskeyDeleteButton passkey={passkey} />
       </div>
-    </div>
+    </PasskeyMobileDeleteWrapper>
   )
 }

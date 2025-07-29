@@ -34,11 +34,11 @@ type LoginResult = {
   error?: FormError
   formData?: FormData
   data?: {
-    userId: string
+    id: number
     loginId: string
     name: string
-    lastLoginAt: Date | null
-    lastLogoutAt: Date | null
+    lastLoginAt: Date
+    lastLogoutAt: Date
   }
 }
 
@@ -109,7 +109,7 @@ export default async function login(_prevState: unknown, formData: FormData): Pr
   return {
     success: true,
     data: {
-      userId: String(userId),
+      id: userId,
       loginId,
       name,
       lastLoginAt,

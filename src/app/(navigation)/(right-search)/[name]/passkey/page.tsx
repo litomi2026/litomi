@@ -2,6 +2,8 @@ import { AuthenticatorTransportFuture } from '@simplewebauthn/server'
 import { sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 
+import type { PageProps } from '@/types/nextjs'
+
 import { db } from '@/database/drizzle'
 import { decodeDeviceType } from '@/database/enum'
 import { credentialTable } from '@/database/schema'
@@ -10,7 +12,14 @@ import { getUserIdFromAccessToken } from '@/utils/cookie'
 import GuestView from './GuestView'
 import PasskeyList from './PasskeyList'
 
-export default async function PasskeyPage() {
+type Params = {
+  name: string
+}
+
+export default async function PasskeyPage({ params }: PageProps<Params>) {
+  const { name } = await params
+  const username = name.startsWith('@') ? name.slice(1) : name
+
   const cookieStore = await cookies()
   const userId = await getUserIdFromAccessToken(cookieStore, false)
 
@@ -36,5 +45,5 @@ export default async function PasskeyPage() {
     transports: c.transports as AuthenticatorTransportFuture[],
   }))
 
-  return <PasskeyList passkeys={passkeys} />
+  return <PasskeyList passkeys={passkeys} username={username} />
 }
