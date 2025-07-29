@@ -35,10 +35,7 @@ export default function PasskeyCard({ passkey, username }: Readonly<Props>) {
           <div className="shrink-0">
             <div className={`h-10 w-10 rounded-lg ${bgColor} flex items-center justify-center`}>{icon}</div>
           </div>
-
-          {/* Streamlined content */}
           <div className="flex-1 min-w-0">
-            {/* Header with integrated actions */}
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h3 className="font-medium text-base text-zinc-100 flex items-center gap-2">
@@ -67,8 +64,6 @@ export default function PasskeyCard({ passkey, username }: Readonly<Props>) {
                 username={username}
               />
             </div>
-
-            {/* Simplified metadata */}
             <div className="flex items-center gap-3 text-xs text-zinc-500 mt-2">
               {verificationMethod.requiresVerification && (
                 <span className="flex items-center gap-1">
@@ -76,7 +71,6 @@ export default function PasskeyCard({ passkey, username }: Readonly<Props>) {
                   {verificationMethod.verificationLabel}
                 </span>
               )}
-
               {transports && transports.length > 0 && (
                 <span className="flex items-center gap-1">
                   {getTransportIcon(transports[0])}
@@ -84,8 +78,6 @@ export default function PasskeyCard({ passkey, username }: Readonly<Props>) {
                   {transports.length > 1 && ` +${transports.length - 1}`}
                 </span>
               )}
-
-              {/* ID shown only on desktop for power users */}
               <span className="hidden md:flex items-center gap-1">
                 <IconKey className="h-3.5 w-3.5" />
                 {truncatedId}
@@ -95,5 +87,11 @@ export default function PasskeyCard({ passkey, username }: Readonly<Props>) {
         </div>
       </div>
     </PasskeyMobileDeleteWrapper>
+  )
+}
+
+export function PasskeyCardSkeleton() {
+  return (
+    <div className=" h-[104px] sm:h-[112px] rounded-xl bg-zinc-900 border border-zinc-800 p-4 sm:p-5 animate-fade-in" />
   )
 }

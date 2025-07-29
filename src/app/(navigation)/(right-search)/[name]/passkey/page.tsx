@@ -38,11 +38,10 @@ export default async function PasskeyPage({ params }: PageProps<Params>) {
     .where(sql`${credentialTable.userId} = ${userId}`)
     .orderBy(sql`${credentialTable.createdAt} DESC`)
 
-  const passkeys = credentials.map((c) => ({
-    id: c.id,
-    createdAt: c.createdAt,
-    deviceType: decodeDeviceType(c.deviceType),
-    transports: c.transports as AuthenticatorTransportFuture[],
+  const passkeys = credentials.map((credential) => ({
+    ...credential,
+    deviceType: decodeDeviceType(credential.deviceType),
+    transports: credential.transports as AuthenticatorTransportFuture[],
   }))
 
   return <PasskeyList passkeys={passkeys} username={username} />
