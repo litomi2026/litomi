@@ -97,3 +97,9 @@ export default function PasskeyCard({ passkey, username }: Readonly<Props>) {
     </PasskeyMobileDeleteWrapper>
   )
 }
+
+export function PasskeyCardSkeleton() {
+  return (
+    <div className=" h-[104px] sm:h-[112px] rounded-xl bg-zinc-900 border border-zinc-800 p-4 sm:p-5 animate-fade-in" />
+  )
+}
