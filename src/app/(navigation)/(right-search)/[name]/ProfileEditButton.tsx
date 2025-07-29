@@ -3,47 +3,96 @@
 import { captureException } from '@sentry/nextjs'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import { useQueryClient } from '@tanstack/react-query'
-import { useActionState, useEffect, useState } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 import IconEdit from '@/components/icons/IconEdit'
-import IconInfo from '@/components/icons/IconInfo'
 import IconX from '@/components/icons/IconX'
 import Modal from '@/components/ui/Modal'
-import TooltipPopover from '@/components/ui/TooltipPopover'
 import { QueryKeys } from '@/constants/query'
-import useActionErrorEffect from '@/hook/useActionErrorEffect'
+import { useActionResponse } from '@/hook/useActionResponse'
 import useMeQuery from '@/query/useMeQuery'
+import { ActionResponse } from '@/utils/action-response'
 
 import editProfile from './action'
 
-const initialState = {} as Awaited<ReturnType<typeof editProfile>>
+type ProfileUpdateResult = {
+  id: number
+  name: string
+  nickname: string | null
+  imageURL: string | null
+}
 
 const formId = {
+  name: 'name',
   nickname: 'nickname',
   imageURL: 'imageURL',
 }
 
 export default function ProfileEditButton() {
   const { data: me } = useMeQuery()
-  const defaultProfileImageURL = me?.imageURL ?? ''
-  const [{ error, success, status }, formAction, pending] = useActionState(editProfile, initialState)
-  const [profileImageURL, setProfileImageURL] = useState(defaultProfileImageURL)
   const [showModal, setShowModal] = useState(false)
   const queryClient = useQueryClient()
+  const router = useRouter()
+  const pathname = usePathname()
+
+  const [formValues, setFormValues] = useState({
+    name: me?.name ?? '',
+    nickname: me?.nickname ?? '',
+    imageURL: me?.imageURL ?? '',
+  })
 
   useEffect(() => {
-    if (!pending && success) {
-      toast.success('프로필 정보를 수정했어요.')
-      queryClient.invalidateQueries({ queryKey: QueryKeys.me, exact: true })
+    if (me) {
+      setFormValues({
+        name: me.name,
+        nickname: me.nickname ?? '',
+        imageURL: me.imageURL ?? '',
+      })
     }
-  }, [queryClient, success, pending])
+  }, [me])
 
-  useActionErrorEffect({
-    status,
-    error,
-    onError: (error) => toast.error(error),
+  const [{ error }, formAction, pending] = useActionResponse(editProfile, {} as ActionResponse<ProfileUpdateResult>, {
+    onSuccess: (data) => {
+      toast.success('프로필 정보를 수정했어요')
+      queryClient.invalidateQueries({ queryKey: QueryKeys.me, exact: true })
+      setShowModal(false)
+
+      if (data && me && data.name !== me.name) {
+        router.replace(pathname.replace(`/@${me.name}`, `/@${data.name}`))
+      }
+    },
+    onError: (error) => typeof error === 'string' && toast.error(error),
   })
+
+  const getFieldError = (field: string): string | undefined => {
+    if (typeof error === 'object') {
+      return error[field]
+    }
+  }
+
+  const handleInputChange = (field: keyof typeof formValues) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormValues((prev) => ({
+      ...prev,
+      [field]: e.target.value,
+    }))
+  }
+
+  const handleReset = () => {
+    if (me) {
+      setFormValues({
+        name: me.name,
+        nickname: me.nickname ?? '',
+        imageURL: me.imageURL ?? '',
+      })
+    }
+  }
+
+  const handleClose = () => {
+    setShowModal(false)
+    handleReset()
+  }
 
   return (
     <>
@@ -60,102 +109,160 @@ export default function ProfileEditButton() {
         <Modal
           className="w-full h-full md:w-auto md:h-auto"
           dragButtonClassName="hidden md:flex"
-          onClose={() => setShowModal(false)}
+          onClose={handleClose}
           open={showModal}
           showDragButton
         >
           <form
             action={formAction}
-            className="w-full h-full max-h-dvh bg-background overflow-auto md:bg-zinc-900 md:border-2 md:rounded-xl
-            [&_label]:block [&_label]:text-sm [&_label]:font-medium [&_label]:text-zinc-300 [&_label]:leading-7
-            [&_input]:mt-1 [&_input]:w-full [&_input]:rounded-md [&_input]:bg-zinc-800 [&_input]:border [&_input]:border-zinc-600 
-            [&_input]:px-3 [&_input]:py-2 [&_input]:placeholder-zinc-500 [&_input]:focus:outline-none [&_input]:focus:ring-2 [&_input]:focus:ring-zinc-500 
-            [&_input]:focus:border-transparent [&_input]:disabled:bg-zinc-700 [&_input]:disabled:text-zinc-400 [&_input]:disabled:border-zinc-500 [&_input]:disabled:cursor-not-allowed"
+            className="w-full h-full flex flex-col bg-background md:bg-zinc-900 md:border-2 md:rounded-xl md:max-w-2xl"
           >
-            {/* 상단바 */}
-            <div className="flex items-center justify-between px-4 py-3">
-              <div className="flex items-center gap-7">
+            <header className="flex items-center justify-between p-4 border-b border-zinc-800 shrink-0">
+              <div className="flex items-center gap-4">
                 <button
                   aria-label="닫기"
-                  className="p-2 transition rounded-full hover:bg-zinc-800 active:bg-zinc-900"
-                  onClick={() => setShowModal(false)}
+                  className="p-2 rounded-full hover:bg-zinc-800 active:bg-zinc-900"
+                  onClick={handleClose}
                   type="button"
                 >
-                  <IconX className="w-6" />
+                  <IconX className="w-5" />
                 </button>
-                <h2 className="text-lg font-bold line-clamp-1" id="modal-header">
-                  프로필 수정
-                </h2>
+                <h2 className="text-lg font-semibold">프로필 수정</h2>
               </div>
+            </header>
+            <div className="flex-1 overflow-y-auto">
+              <div className="relative">
+                <div className="h-32 bg-gradient-to-b from-zinc-800 to-zinc-900" />
+                <div className="absolute bottom-0 left-4 transform translate-y-1/2">
+                  <div className="w-24 h-24 rounded-full border-4 border-background overflow-hidden bg-zinc-800">
+                    <img
+                      alt="프로필 이미지"
+                      className="w-full h-full object-cover"
+                      src={formValues.imageURL || me.imageURL || undefined}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="px-4 pt-16 pb-4 space-y-6">
+                <div className="space-y-4">
+                  <h3 className="text-xs font-medium text-zinc-500 uppercase tracking-wider">계정 정보</h3>
+                  <div className="space-y-1">
+                    <label className="block text-sm font-medium text-zinc-400" htmlFor="loginId">
+                      아이디
+                    </label>
+                    <input
+                      className="w-full px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-zinc-500 cursor-not-allowed"
+                      defaultValue={me.loginId}
+                      disabled
+                      id="loginId"
+                      type="text"
+                    />
+                    <p className="text-xs text-zinc-600">변경할 수 없어요</p>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="block text-sm font-medium text-zinc-300" htmlFor={formId.name}>
+                      이름
+                    </label>
+                    <input
+                      aria-invalid={!!getFieldError('name')}
+                      autoCapitalize="off"
+                      className="w-full px-3 py-2 bg-zinc-800 border rounded-lg placeholder-zinc-500 focus:outline-none focus:ring-2 focus:border-transparent 
+                      aria-invalid:border-red-500 aria-invalid:focus:ring-red-500 border-zinc-700 focus:ring-zinc-600"
+                      id={formId.name}
+                      maxLength={32}
+                      minLength={2}
+                      name={formId.name}
+                      onChange={handleInputChange('name')}
+                      placeholder="실명을 입력하세요"
+                      type="text"
+                      value={formValues.name}
+                    />
+                    <p
+                      aria-invalid={!!getFieldError('name')}
+                      className="text-xs text-zinc-500 aria-invalid:text-red-400"
+                    >
+                      {getFieldError('name') || '다른 사용자에게 표시되는 공개 이름이에요'}
+                    </p>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <h3 className="text-xs font-medium text-zinc-500 uppercase tracking-wider">프로필 정보</h3>
+                  <div className="space-y-1">
+                    <label className="block text-sm font-medium text-zinc-300" htmlFor={formId.nickname}>
+                      닉네임
+                    </label>
+                    <input
+                      aria-invalid={!!getFieldError('nickname')}
+                      autoCapitalize="off"
+                      className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:border-transparent 
+                      aria-invalid:border-red-500 aria-invalid:focus:ring-red-500"
+                      id={formId.nickname}
+                      maxLength={32}
+                      minLength={2}
+                      name={formId.nickname}
+                      onChange={handleInputChange('nickname')}
+                      placeholder="사용할 닉네임을 입력하세요"
+                      type="text"
+                      value={formValues.nickname}
+                    />
+                    <p
+                      aria-invalid={!!getFieldError('nickname')}
+                      className="text-xs text-zinc-500 aria-invalid:text-red-400"
+                    >
+                      {getFieldError('nickname') || '커뮤니티에서 사용할 별명이에요 (2-32자)'}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="block text-sm font-medium text-zinc-300" htmlFor={formId.imageURL}>
+                      프로필 이미지 URL
+                    </label>
+                    <input
+                      aria-invalid={!!getFieldError('imageURL')}
+                      autoCapitalize="off"
+                      className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:border-transparent 
+                      aria-invalid:border-red-500 aria-invalid:focus:ring-red-500"
+                      id={formId.imageURL}
+                      maxLength={256}
+                      minLength={8}
+                      name={formId.imageURL}
+                      onChange={handleInputChange('imageURL')}
+                      pattern="https?://.+"
+                      placeholder="https://example.com/profile.jpg"
+                      type="url"
+                      value={formValues.imageURL}
+                    />
+                    <p
+                      aria-invalid={!!getFieldError('imageURL')}
+                      className="text-xs text-zinc-500 aria-invalid:text-red-400"
+                    >
+                      {getFieldError('imageURL') || '이미지는 정사각형 비율을 권장해요'}
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-8 p-3 bg-zinc-800/50 rounded-lg">
+                  <p className="text-xs text-zinc-400 leading-relaxed">
+                    클라우드 비용 절감을 위해 서버 트래픽을 제한하고 있어 변경 사항이 반영되는데 최대 1분이 소요될 수
+                    있어요
+                  </p>
+                </div>
+              </div>
+            </div>
+            <footer className="flex items-center justify-between p-4 border-t border-zinc-800 bg-zinc-900/50 shrink-0">
               <button
-                className="px-4 py-1.5 bg-foreground text-background font-bold text-sm transition rounded-full hover:bg-zinc-300 active:bg-zinc-400"
+                className="px-4 py-2 text-sm font-medium text-zinc-400 hover:text-zinc-300"
+                onClick={handleReset}
+                type="button"
+              >
+                초기화
+              </button>
+              <button
+                className="px-6 py-2 bg-white text-black font-medium text-sm rounded-lg hover:bg-zinc-200 active:bg-zinc-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={pending}
                 type="submit"
               >
                 저장
               </button>
-            </div>
-            {/* 배경 이미지 영역 */}
-            <div className="relative bg-zinc-900 md:bg-zinc-700 h-32">
-              <div className="sr-only">배경 이미지</div>
-            </div>
-            {/* 프로필 이미지 */}
-            <div className="w-32 aspect-square mx-4 relative rounded-full border-4 -mt-16 overflow-hidden bg-zinc-700">
-              <img
-                alt="프로필 이미지"
-                className="w-full h-full object-cover"
-                src={(profileImageURL || me?.imageURL) ?? undefined}
-              />
-              <div className="sr-only">프로필 이미지</div>
-            </div>
-            {/* 내용 입력 폼 */}
-            <div className="p-4 grid gap-4">
-              <div>
-                <label htmlFor={formId.imageURL}>프로필 이미지 주소</label>
-                <input
-                  autoCapitalize="off"
-                  defaultValue={defaultProfileImageURL}
-                  id={formId.imageURL}
-                  maxLength={256}
-                  minLength={8}
-                  name={formId.imageURL}
-                  onChange={(e) => setProfileImageURL(e.target.value)}
-                  pattern="https?://.+"
-                  placeholder="https://example.com/profile.jpg"
-                  type="url"
-                />
-              </div>
-              <div>
-                <label htmlFor="">아이디</label>
-                <input autoCapitalize="off" defaultValue={me?.loginId ?? ''} disabled type="text" />
-              </div>
-              <div>
-                <div className="flex items-center gap-1">
-                  <label htmlFor={formId.nickname}>닉네임</label>
-                  <TooltipPopover className="flex" position="right" type="tooltip">
-                    <IconInfo className="p-1.5 w-7 md:w-8 md:p-2" />
-                    <div className="rounded-xl border-2 border-zinc-700 bg-background p-3 whitespace-nowrap text-sm">
-                      <p>2자 이상 32자 이하로 입력해주세요.</p>
-                    </div>
-                  </TooltipPopover>
-                </div>
-                <input
-                  autoCapitalize="off"
-                  defaultValue={me?.nickname ?? ''}
-                  id={formId.nickname}
-                  maxLength={32}
-                  minLength={2}
-                  name={formId.nickname}
-                  placeholder="닉네임을 입력하세요"
-                  type="text"
-                />
-              </div>
-              <button type="reset">초기화</button>
-              <p className="text-sm text-zinc-500 text-center max-w-prose mx-auto">
-                클라우드 비용 절감을 위해 서버 트래픽을 제한하고 있어서 실시간 반영이 어려워요. 변경 사항이 실제로
-                반영될 때까지 최대 1분 정도 걸릴 수 있어요
-              </p>
-            </div>
+            </footer>
           </form>
         </Modal>
       )}
