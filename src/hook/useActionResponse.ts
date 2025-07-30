@@ -12,7 +12,7 @@ export function useActionResponse<T>(
   initialState: ActionResponse<T>,
   options?: UseActionResponseOptions<T>,
 ) {
-  const [response, formAction, pending] = useActionState(action, initialState)
+  const [response, dispatch, pending] = useActionState(action, initialState)
   const lastResponseRef = useRef<ActionResponse<T>>(response)
   const { onSuccess, onError } = options || {}
 
@@ -28,5 +28,5 @@ export function useActionResponse<T>(
     }
   }, [response, pending, onSuccess, onError])
 
-  return [response, formAction, pending] as const
+  return [response, dispatch, pending] as const
 }

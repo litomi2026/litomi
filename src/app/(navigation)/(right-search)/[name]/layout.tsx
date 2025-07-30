@@ -21,7 +21,7 @@ export default async function Layout({ params, children }: LayoutProps) {
 
   return (
     <main className="flex flex-col grow">
-      <Suspense fallback={<UserProfileView user={{ type: 'loading', nickname: '...' }} />}>
+      <Suspense fallback={<UserProfileView user={{ type: 'loading', name: username, nickname: '...' }} />}>
         <UserProfile username={username} />
       </Suspense>
       <nav

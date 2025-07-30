@@ -63,14 +63,14 @@ export default function LoginForm() {
     [queryClient, router],
   )
 
-  const [{ error }, formAction, pending] = useActionResponse(login, {} as ActionResponse<User>, {
+  const [response, formAction, pending] = useActionResponse(login, {} as ActionResponse<User>, {
     onSuccess: handleLoginSuccess,
     onError: (error) => typeof error === 'string' && toast.error(error),
   })
 
   const getFieldError = (field: string): string | undefined => {
-    if (typeof error === 'object') {
-      return error[field]
+    if (!response.ok && typeof response.error === 'object') {
+      return response.error[field]
     }
   }
 

@@ -59,15 +59,15 @@ export default function UserProfile({ user }: Readonly<Props>) {
 
 function UserProfileDescription({ user }: Readonly<Props>) {
   if (user.type === 'not-found') {
-    return <div className="mt-2 text-zinc-500 text-sm">존재하지 않는 사용자에요</div>
+    return <div className="mt-2 h-[4.75rem] text-zinc-500 text-sm">존재하지 않는 사용자에요</div>
   }
 
   if (user.type === 'guest') {
-    return <div className="mt-2 text-zinc-500 text-sm">로그인하면 모든 기능을 이용할 수 있습니다</div>
+    return <div className="mt-2 h-[4.75rem] text-zinc-500 text-sm">로그인하면 모든 기능을 이용할 수 있습니다</div>
   }
 
   if (user.type === 'loading') {
-    return <div className="mt-2 text-zinc-500 animate-fade-in bg-zinc-800 rounded-full text-sm">.</div>
+    return <div className="mt-2 h-[4.75rem] text-zinc-500 animate-fade-in bg-zinc-800 rounded-xl text-sm">.</div>
   }
 
   return (
