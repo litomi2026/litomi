@@ -172,7 +172,6 @@ export default function LoginForm() {
           {pending ? <Loading className="text-zinc-500 w-12 p-2" /> : '로그인'}
         </div>
       </button>
-
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-zinc-700" />

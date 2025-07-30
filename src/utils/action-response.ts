@@ -12,7 +12,7 @@ export type ErrorResponse<TError = string | Record<string, string>> = {
 export type SuccessResponse<TData = unknown> = {
   ok: true
   status: 200 | 201 | 204
-  data?: TData
+  data: TData
 }
 
 export function badRequest(error: string | Record<string, string>, formData?: FormData): ErrorResponse {
@@ -54,6 +54,7 @@ export function noContent(): SuccessResponse<undefined> {
   return {
     ok: true as const,
     status: 204,
+    data: undefined,
   }
 }
 
