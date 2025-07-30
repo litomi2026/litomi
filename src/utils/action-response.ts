@@ -18,11 +18,14 @@ export type ActionResponse<T = unknown> =
   | {
       ok: false
       status: 400
-      error: Record<string, string>
+      error: string | Record<string, string>
       formData?: FormData
     }
 
-export function badRequest<T = unknown>(error: Record<string, string>, formData?: FormData): ActionResponse<T> {
+export function badRequest<T = unknown>(
+  error: string | Record<string, string>,
+  formData?: FormData,
+): ActionResponse<T> {
   return {
     ok: false,
     status: 400,

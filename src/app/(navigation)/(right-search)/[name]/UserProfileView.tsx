@@ -47,7 +47,7 @@ export default function UserProfile({ user }: Readonly<Props>) {
               <p className="text-zinc-500 font-mono break-all">@{user.name}</p>
             </div>
           </div>
-          <Suspense fallback={<div>...</div>}>
+          <Suspense>
             <EditLogout />
           </Suspense>
         </div>
