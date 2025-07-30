@@ -5,7 +5,7 @@ import { Suspense } from 'react'
 import IconCalendar from '@/components/icons/IconCalendar'
 import IconProfile from '@/components/icons/IconProfile'
 
-import EditLogout from './EditLogout'
+import MyPageButtons from './MyPageButtons'
 
 type Props = {
   user: {
@@ -48,7 +48,7 @@ export default function UserProfile({ user }: Readonly<Props>) {
             </div>
           </div>
           <Suspense>
-            <EditLogout />
+            <MyPageButtons />
           </Suspense>
         </div>
         <UserProfileDescription user={user} />
