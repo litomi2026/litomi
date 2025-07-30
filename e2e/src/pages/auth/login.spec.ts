@@ -130,7 +130,7 @@ test.describe('/auth/login', () => {
 
         if (i === 5) {
           await expect(page.locator('[data-sonner-toast]').first()).toBeVisible()
-          await expect(page.locator('text=/너무 많은 시도가 있었어요/i')).toBeVisible()
+          await expect(page.locator('text=/너무 많은 로그인 시도가 있었어요/i')).toBeVisible()
         } else {
           await expect(page.locator('[data-sonner-toast]').first()).toBeVisible()
         }
@@ -161,7 +161,7 @@ test.describe('/auth/login', () => {
       await page.click('button[type="submit"]')
 
       await expect(page.locator('[data-sonner-toast]')).toBeVisible()
-      await expect(page.locator('text=/아이디는 최소 2자 이상이어야 합니다/i')).toBeVisible()
+      await expect(page.locator('text=/아이디는 최소 2자 이상이어야 해요/i')).toBeVisible()
     })
 
     test('비밀번호 유효성을 검사한다 (HTML5)', async ({ page }) => {
@@ -187,7 +187,7 @@ test.describe('/auth/login', () => {
       await page.click('button[type="submit"]')
 
       await expect(page.locator('[data-sonner-toast]')).toBeVisible()
-      await expect(page.locator('text=/알파벳과 숫자를 하나 이상 포함해야 합니다/i')).toBeVisible()
+      await expect(page.locator('text=/비밀번호는 알파벳과 숫자를 하나 이상 포함해야 해요/i')).toBeVisible()
     })
 
     test('빈 필드 제출을 방지한다', async ({ page }) => {
