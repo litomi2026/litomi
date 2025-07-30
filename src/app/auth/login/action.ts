@@ -7,67 +7,44 @@ import { z } from 'zod/v4'
 
 import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
+import { loginIdSchema, passwordSchema } from '@/database/zod'
+import { badRequest, ok, tooManyRequests, unauthorized } from '@/utils/action-response'
 import { setAccessTokenCookie, setRefreshTokenCookie } from '@/utils/cookie'
-import { createFormError, FormError, FormErrors, zodToFormError } from '@/utils/form-error'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
 
-const schema = z.object({
-  loginId: z
-    .string()
-    .min(2, { error: '아이디는 최소 2자 이상이어야 합니다.' })
-    .max(32, { error: '아이디는 최대 32자까지 입력할 수 있습니다.' })
-    .regex(/^[a-zA-Z][a-zA-Z0-9-._~]+$/, { error: '아이디는 알파벳, 숫자 - . _ ~ 로만 구성해야 합니다.' }),
-  password: z
-    .string()
-    .min(8, { error: '비밀번호는 최소 8자 이상이어야 합니다.' })
-    .max(64, { error: '비밀번호는 최대 64자까지 입력할 수 있습니다.' })
-    .regex(/^(?=.*[A-Za-z])(?=.*\d).+$/, { error: '비밀번호는 알파벳과 숫자를 하나 이상 포함해야 합니다.' }),
+const loginSchema = z.object({
+  loginId: loginIdSchema,
+  password: passwordSchema,
   remember: z.literal('on').nullable(),
 })
 
 const loginLimiter = new RateLimiter(RateLimitPresets.strict())
 
-const INVALID_CREDENTIALS = '아이디 또는 비밀번호가 일치하지 않아요'
-
-type LoginResult = {
-  success?: boolean
-  error?: FormError
-  formData?: FormData
-  data?: {
-    id: number
-    loginId: string
-    name: string
-    lastLoginAt: Date
-    lastLogoutAt: Date
-  }
-}
-
-export default async function login(_prevState: unknown, formData: FormData): Promise<LoginResult> {
-  const validation = schema.safeParse({
+export default async function login(_prevState: unknown, formData: FormData) {
+  const validation = loginSchema.safeParse({
     loginId: formData.get('loginId'),
     password: formData.get('password'),
     remember: formData.get('remember'),
   })
 
   if (!validation.success) {
-    const zodErrors = z.treeifyError(validation.error).properties
-    return {
-      error: zodErrors ? zodToFormError(zodErrors) : createFormError(FormErrors.INVALID_INPUT),
-      formData,
-    }
+    const fieldErrors: Record<string, string> = {}
+    validation.error.issues.forEach((issue) => {
+      const field = issue.path.join('.')
+      fieldErrors[field] = issue.message
+    })
+    return badRequest(fieldErrors)
   }
 
   const { loginId, password, remember } = validation.data
-  const { allowed } = await loginLimiter.check(loginId)
+  const { allowed, retryAfter } = await loginLimiter.check(loginId)
 
   if (!allowed) {
-    return {
-      error: createFormError(FormErrors.RATE_LIMITED),
-      formData,
-    }
+    const minutes = retryAfter ? Math.ceil(retryAfter / 60) : 1
+    return tooManyRequests(`너무 많은 로그인 시도가 있었어요. ${minutes}분 후에 다시 시도해주세요.`)
   }
 
-  const [result] = await db
+  const [user] = await db
     .select({
       id: userTable.id,
       name: userTable.name,
@@ -78,46 +55,35 @@ export default async function login(_prevState: unknown, formData: FormData): Pr
     .from(userTable)
     .where(sql`${userTable.loginId} = ${loginId}`)
 
-  if (!result) {
-    return {
-      error: createAuthError(INVALID_CREDENTIALS),
-      formData,
-    }
+  if (!user) {
+    return unauthorized('아이디 또는 비밀번호가 일치하지 않아요')
   }
 
-  const { id: userId, name, passwordHash, lastLoginAt, lastLogoutAt } = result
-  const isCorrectPassword = await compare(password, passwordHash)
+  const { id, name, lastLoginAt, lastLogoutAt, passwordHash } = user
+  const isValidPassword = await compare(password, passwordHash)
 
-  if (!isCorrectPassword) {
-    return {
-      error: createAuthError(INVALID_CREDENTIALS),
-      formData,
-    }
+  if (!isValidPassword) {
+    return unauthorized('아이디 또는 비밀번호가 일치하지 않아요')
   }
 
   const cookieStore = await cookies()
 
   await Promise.all([
-    setAccessTokenCookie(cookieStore, userId),
-    remember && setRefreshTokenCookie(cookieStore, userId),
+    setAccessTokenCookie(cookieStore, id),
+    remember && setRefreshTokenCookie(cookieStore, id),
     db
       .update(userTable)
       .set({ loginAt: new Date() })
-      .where(sql`${userTable.id} = ${userId}`),
+      .where(sql`${userTable.id} = ${id}`),
   ])
 
-  return {
-    success: true,
-    data: {
-      id: userId,
-      loginId,
-      name,
-      lastLoginAt,
-      lastLogoutAt,
-    },
-  }
-}
+  loginLimiter.reward(loginId)
 
-function createAuthError(message: string) {
-  return createFormError(undefined, { loginId: message, password: message })
+  return ok({
+    id,
+    loginId,
+    name,
+    lastLoginAt,
+    lastLogoutAt,
+  })
 }

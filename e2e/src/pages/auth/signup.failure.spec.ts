@@ -118,7 +118,7 @@ test.describe('/auth/signup', () => {
         await page.click('button[type="submit"]')
 
         await expect(page.locator('[data-sonner-toast]')).toBeVisible()
-        await expect(page.locator('text=/아이디는 알파벳, 숫자 - . _ ~ 로만 구성해야 해요/i')).toBeVisible()
+        await expect(page.locator('text=/아이디는 알파벳, 숫자, _ 로만 구성해야 해요/i')).toBeVisible()
       })
 
       test('허용되지 않은 문자가 포함된 아이디는 유효하지 않다 (서버)', async ({ page }) => {
@@ -137,7 +137,7 @@ test.describe('/auth/signup', () => {
         await page.click('button[type="submit"]')
 
         await expect(page.locator('[data-sonner-toast]')).toBeVisible()
-        await expect(page.locator('text=/아이디는 알파벳, 숫자 - . _ ~ 로만 구성해야 해요/i')).toBeVisible()
+        await expect(page.locator('text=/아이디는 알파벳, 숫자, _ 로만 구성해야 해요/i')).toBeVisible()
       })
     })
 

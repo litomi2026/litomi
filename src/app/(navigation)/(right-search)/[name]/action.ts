@@ -2,21 +2,21 @@
 
 import { captureException } from '@sentry/nextjs'
 import { sql } from 'drizzle-orm'
+import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { z } from 'zod/v4'
 
 import { db } from '@/database/drizzle'
+import { isPostgresError } from '@/database/error'
 import { userTable } from '@/database/schema'
+import { imageURLSchema, nameSchema, nicknameSchema } from '@/database/zod'
+import { badRequest, conflict, seeOther, serverError, unauthorized } from '@/utils/action-response'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
 
-const schema = z.object({
-  nickname: z
-    .string()
-    .min(2, { error: '닉네임은 최소 2자 이상이어야 합니다.' })
-    .max(32, { error: '닉네임은 최대 32자까지 입력할 수 있습니다.' }),
-  imageURL: z
-    .url({ error: '프로필 이미지 주소가 URL 형식이 아니에요.' })
-    .max(256, { error: '프로필 이미지 URL은 최대 256자까지 입력할 수 있어요.' }),
+const profileSchema = z.object({
+  name: nameSchema.nullable().transform((val) => val ?? undefined),
+  nickname: nicknameSchema.nullable().transform((val) => val ?? undefined),
+  imageURL: imageURLSchema.nullable().transform((val) => val ?? undefined),
 })
 
 export default async function editProfile(_prevState: unknown, formData: FormData) {
@@ -24,32 +24,47 @@ export default async function editProfile(_prevState: unknown, formData: FormDat
   const userId = await getUserIdFromAccessToken(cookieStore)
 
   if (!userId) {
-    return { status: 401, error: '로그인 정보가 없거나 만료됐어요.' }
+    return unauthorized('로그인 정보가 없거나 만료됐어요', formData)
   }
 
-  const validation = schema.safeParse({
-    imageURL: formData.get('imageURL'),
+  const validation = profileSchema.safeParse({
+    name: formData.get('name'),
     nickname: formData.get('nickname'),
+    imageURL: formData.get('imageURL'),
   })
 
   if (!validation.success) {
-    return { error: validation.error.issues[0].message }
+    const fieldErrors = validation.error.issues.reduce((acc, issue) => {
+      const field = issue.path.join('.')
+      return { ...acc, [field]: issue.message }
+    }, {})
+
+    return badRequest(fieldErrors, formData)
   }
 
-  const { nickname, imageURL } = validation.data
+  const { name, nickname, imageURL } = validation.data
+
+  if (!name && !nickname && !imageURL) {
+    return badRequest('수정할 정보를 입력해주세요', formData)
+  }
 
   try {
-    await db
+    const [{ name: updatedName }] = await db
       .update(userTable)
-      .set({
-        nickname,
-        imageURL,
-      })
+      .set({ name, nickname, imageURL })
       .where(sql`${userTable.id} = ${userId}`)
+      .returning({ name: userTable.name })
 
-    return { success: true }
+    revalidatePath(`/@${updatedName}`)
+    return seeOther(`/@${updatedName}`, '프로필을 수정했어요')
   } catch (error) {
-    captureException(error, { extra: { name: 'editProfile' } })
-    return { error: '프로필 수정 중 오류가 발생했어요.' }
+    if (isPostgresError(error)) {
+      if (error.cause.code === '23505' && error.cause.constraint_name === 'user_name_unique') {
+        return conflict('이미 사용 중인 이름이에요', formData)
+      }
+    }
+
+    captureException(error, { extra: { name: 'editProfile', userId } })
+    return serverError('프로필 수정 중 오류가 발생했어요', formData)
   }
 }

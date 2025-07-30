@@ -1,8 +1,8 @@
 'use client'
 
 import { useQueryClient } from '@tanstack/react-query'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useActionState, useCallback, useEffect, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useCallback, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import IconX from '@/components/icons/IconX'
@@ -11,14 +11,12 @@ import Loading from '@/components/ui/Loading'
 import { loginIdPattern, passwordPattern } from '@/constants/pattern'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
+import { useActionResponse } from '@/hook/useActionResponse'
 import amplitude from '@/lib/amplitude/lazy'
 import { resetMeQuery } from '@/query/useMeQuery'
 import { sanitizeRedirect } from '@/utils'
-import { getErrorMessage, hasFieldError } from '@/utils/form-error'
 
 import login from './action'
-
-const initialState = {} as Awaited<ReturnType<typeof login>>
 
 type User = {
   id: number
@@ -29,11 +27,9 @@ type User = {
 }
 
 export default function LoginForm() {
-  const [{ error, success, formData, data: user }, formAction, pending] = useActionState(login, initialState)
   const router = useRouter()
   const formRef = useRef<HTMLFormElement>(null)
   const queryClient = useQueryClient()
-  const searchParams = useSearchParams()
   const [currentLoginId, setCurrentLoginId] = useState('')
 
   function resetId() {
@@ -58,30 +54,32 @@ export default function LoginForm() {
 
       resetMeQuery()
       await queryClient.invalidateQueries({ queryKey: QueryKeys.me, type: 'all' })
-      const redirect = searchParams.get(SearchParamKey.REDIRECT)
+      const params = new URLSearchParams(window.location.search)
+      const redirect = params.get(SearchParamKey.REDIRECT)
       const sanitizedURL = sanitizeRedirect(redirect) || '/'
       router.replace(sanitizedURL.replace(/^\/@\//, `/@${name}/`))
     },
-    [queryClient, router, searchParams],
+    [queryClient, router],
   )
 
-  // NOTE: 폼 제출 후 오류 메시지를 표시함
-  useEffect(() => {
-    const errorMessage = getErrorMessage(error)
+  const [response, formAction, pending] = useActionResponse(
+    login,
+    {},
+    {
+      onSuccess: handleLoginSuccess,
+      onError: (error) => {
+        if (typeof error === 'string') {
+          toast.error(error)
+        }
+      },
+    },
+  )
 
-    if (errorMessage) {
-      toast.error(errorMessage)
+  const getFieldError = (field: string) => {
+    if (!response.ok && typeof response.error === 'object') {
+      return response.error[field]
     }
-  }, [error])
-
-  // NOTE: 로그인 성공 후 로직을 처리함
-  useEffect(() => {
-    if (!success || !user) {
-      return
-    }
-
-    handleLoginSuccess(user)
-  }, [handleLoginSuccess, user, success])
+  }
 
   return (
     <form
@@ -102,10 +100,10 @@ export default function LoginForm() {
           <label htmlFor="loginId">아이디</label>
           <div className="relative">
             <input
-              aria-invalid={hasFieldError(error, 'loginId')}
+              aria-invalid={!!getFieldError('loginId')}
               autoCapitalize="off"
               autoFocus
-              defaultValue={formData?.get('loginId')?.toString()}
+              defaultValue={currentLoginId}
               disabled={pending}
               id="loginId"
               maxLength={32}
@@ -120,13 +118,13 @@ export default function LoginForm() {
               <IconX className="w-3.5" />
             </button>
           </div>
+          {getFieldError('loginId') && <p className="mt-1 text-xs text-red-500">{getFieldError('loginId')}</p>}
         </div>
         <div>
           <label htmlFor="password">비밀번호</label>
           <div className="relative">
             <input
-              aria-invalid={hasFieldError(error, 'password')}
-              defaultValue={formData?.get('password')?.toString()}
+              aria-invalid={!!getFieldError('password')}
               disabled={pending}
               id="password"
               maxLength={64}
@@ -141,11 +139,12 @@ export default function LoginForm() {
               <IconX className="w-3.5" />
             </button>
           </div>
+          {getFieldError('password') && <p className="mt-1 text-xs text-red-500">{getFieldError('password')}</p>}
         </div>
         <label className="!flex w-fit ml-auto items-center gap-2 cursor-pointer" htmlFor="remember">
           <input
             className="hidden peer"
-            defaultChecked={Boolean(formData?.get('remember'))}
+            defaultChecked={false}
             disabled={pending}
             id="remember"
             name="remember"
@@ -173,7 +172,6 @@ export default function LoginForm() {
           {pending ? <Loading className="text-zinc-500 w-12 p-2" /> : '로그인'}
         </div>
       </button>
-
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-zinc-700" />
