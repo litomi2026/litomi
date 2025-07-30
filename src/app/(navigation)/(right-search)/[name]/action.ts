@@ -49,15 +49,14 @@ export default async function editProfile(_prevState: unknown, formData: FormDat
   }
 
   try {
-    const [updatedUser] = await db
+    const [{ name: updatedName }] = await db
       .update(userTable)
       .set({ name, nickname, imageURL })
       .where(sql`${userTable.id} = ${userId}`)
-      .returning({ id: userTable.id })
+      .returning({ name: userTable.name })
 
-    if (!updatedUser) {
-      return serverError('프로필을 수정하지 못했어요', formData)
-    }
+    revalidatePath(`/@${updatedName}`)
+    return seeOther(`/@${updatedName}`, '프로필을 수정했어요')
   } catch (error) {
     if (isPostgresError(error)) {
       if (error.cause.code === '23505' && error.cause.constraint_name === 'user_name_unique') {
@@ -68,7 +67,4 @@ export default async function editProfile(_prevState: unknown, formData: FormDat
     captureException(error, { extra: { name: 'editProfile', userId } })
     return serverError('프로필 수정 중 오류가 발생했어요', formData)
   }
-
-  revalidatePath(`/@${name}`)
-  return seeOther(`/@${name}`, '프로필을 수정했어요')
 }
