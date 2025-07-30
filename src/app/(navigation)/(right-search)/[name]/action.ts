@@ -4,14 +4,13 @@ import { captureException } from '@sentry/nextjs'
 import { sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
-import { redirect, RedirectType } from 'next/navigation'
 import { z } from 'zod/v4'
 
 import { db } from '@/database/drizzle'
 import { isPostgresError } from '@/database/error'
 import { userTable } from '@/database/schema'
 import { imageURLSchema, nameSchema, nicknameSchema } from '@/database/zod'
-import { badRequest, conflict, ok, serverError, unauthorized } from '@/utils/action-response'
+import { badRequest, conflict, seeOther, serverError, unauthorized } from '@/utils/action-response'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
 
 const profileSchema = z.object({
@@ -66,18 +65,10 @@ export default async function editProfile(_prevState: unknown, formData: FormDat
       }
     }
 
-    if (error instanceof Error) {
-      captureException(error, { extra: { name: 'editProfile', userId } })
-    }
-
+    captureException(error, { extra: { name: 'editProfile', userId } })
     return serverError('프로필 수정 중 오류가 발생했어요', formData)
   }
 
   revalidatePath(`/@${name}`)
-
-  if (name) {
-    redirect(`/@${name}`, RedirectType.replace)
-  }
-
-  return ok('프로필을 수정했어요')
+  return seeOther(`/@${name}`, '프로필을 수정했어요')
 }

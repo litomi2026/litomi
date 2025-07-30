@@ -11,7 +11,7 @@ export type ErrorResponse<TError = string | Record<string, string>> = {
 
 export type SuccessResponse<TData = unknown> = {
   ok: true
-  status: 200 | 201 | 204
+  status: 200 | 201 | 204 | 303
   data: TData
 }
 
@@ -72,6 +72,17 @@ export function ok<T>(data: T): SuccessResponse<T> {
     ok: true as const,
     status: 200,
     data,
+  }
+}
+
+export function seeOther(location: string, message: string): SuccessResponse<{ location: string; message: string }> {
+  return {
+    ok: true as const,
+    status: 303,
+    data: {
+      location,
+      message,
+    },
   }
 }
 
