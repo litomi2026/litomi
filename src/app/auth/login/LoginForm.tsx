@@ -57,7 +57,7 @@ export default function LoginForm() {
       const params = new URLSearchParams(window.location.search)
       const redirect = params.get(SearchParamKey.REDIRECT)
       const sanitizedURL = sanitizeRedirect(redirect) || '/'
-      const redirectURL = sanitizedURL.replace(/\/@(?=\/|$|\?)/, `/@${name}`)
+      const redirectURL = sanitizedURL.replace(/^\/@(?=\/|$|\?)/, `/@${name}`)
       router.replace(redirectURL)
     },
     [queryClient, router],
