@@ -1,110 +1,100 @@
-/**
- * Simple Action Response System
- *
- * HTTP-like response format for Next.js server actions
- */
-export type ActionResponse<T = unknown> =
-  | {
-      data?: T
-      ok: true
-      status: number
-    }
-  | {
-      error?: string
-      ok: false
-      status: number
-      formData?: FormData
-    }
-  | {
-      ok: false
-      status: 400
-      error: string | Record<string, string>
-      formData?: FormData
-    }
+export type ActionResponse<TData = unknown, TError = string | Record<string, string>> =
+  | ErrorResponse<TError>
+  | SuccessResponse<TData>
 
-export function badRequest<T = unknown>(
-  error: string | Record<string, string>,
-  formData?: FormData,
-): ActionResponse<T> {
+export type ErrorResponse<TError = string | Record<string, string>> = {
+  ok: false
+  status: 400 | 401 | 403 | 404 | 409 | 429 | 500
+  error: TError
+  formData?: FormData
+}
+
+export type SuccessResponse<TData = unknown> = {
+  ok: true
+  status: 200 | 201 | 204
+  data?: TData
+}
+
+export function badRequest(error: string | Record<string, string>, formData?: FormData): ErrorResponse {
   return {
-    ok: false,
+    ok: false as const,
     status: 400,
     error,
     formData,
   }
 }
 
-export function conflict<T = unknown>(message: string, formData?: FormData): ActionResponse<T> {
+export function conflict(message: string, formData?: FormData): ErrorResponse<string> {
   return {
-    ok: false,
+    ok: false as const,
     status: 409,
     error: message,
     formData,
   }
 }
 
-export function created<T>(data: T): ActionResponse<T> {
+export function created<T>(data: T): SuccessResponse<T> {
   return {
-    ok: true,
+    ok: true as const,
     status: 201,
     data,
   }
 }
 
-export function forbidden<T = unknown>(error = 'Forbidden', formData?: FormData): ActionResponse<T> {
+export function forbidden(error = 'Forbidden', formData?: FormData): ErrorResponse<string> {
   return {
-    ok: false,
+    ok: false as const,
     status: 403,
     error,
     formData,
   }
 }
 
-export function noContent<T = unknown>(): ActionResponse<T> {
+export function noContent(): SuccessResponse<undefined> {
   return {
-    ok: true,
+    ok: true as const,
     status: 204,
   }
 }
 
-export function notFound<T = unknown>(error = 'Not Found', formData?: FormData): ActionResponse<T> {
+export function notFound(error = 'Not Found', formData?: FormData): ErrorResponse<string> {
   return {
-    ok: false,
+    ok: false as const,
     status: 404,
     error,
     formData,
   }
 }
 
-export function ok<T>(data: T): ActionResponse<T> {
+export function ok<T>(data: T): SuccessResponse<T> {
   return {
-    ok: true,
+    ok: true as const,
     status: 200,
     data,
   }
 }
 
-export function serverError<T = unknown>(error = 'Internal Server Error', formData?: FormData): ActionResponse<T> {
+export function serverError(error = 'Internal Server Error', formData?: FormData): ErrorResponse<string> {
   return {
-    ok: false,
+    ok: false as const,
     status: 500,
     error,
     formData,
   }
 }
 
-export function tooManyRequests<T = unknown>(error = 'Too Many Requests', formData?: FormData): ActionResponse<T> {
+export function tooManyRequests(error = 'Too Many Requests', formData?: FormData): ErrorResponse<string> {
   return {
-    ok: false,
+    ok: false as const,
     status: 429,
     error,
     formData,
   }
 }
 
-export function unauthorized<T = unknown>(error = 'Unauthorized', formData?: FormData): ActionResponse<T> {
+export function unauthorized(error = 'Unauthorized', formData?: FormData): ErrorResponse<string> {
   return {
-    ok: false,
+    ok: false as const,
     status: 401,
     error,
     formData,

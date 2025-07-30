@@ -15,7 +15,6 @@ import { useActionResponse } from '@/hook/useActionResponse'
 import amplitude from '@/lib/amplitude/lazy'
 import { resetMeQuery } from '@/query/useMeQuery'
 import { sanitizeRedirect } from '@/utils'
-import { ActionResponse } from '@/utils/action-response'
 
 import login from './action'
 
@@ -63,12 +62,20 @@ export default function LoginForm() {
     [queryClient, router],
   )
 
-  const [response, formAction, pending] = useActionResponse(login, {} as ActionResponse<User>, {
-    onSuccess: handleLoginSuccess,
-    onError: (error) => typeof error === 'string' && toast.error(error),
-  })
+  const [response, formAction, pending] = useActionResponse(
+    login,
+    {},
+    {
+      onSuccess: handleLoginSuccess,
+      onError: (error) => {
+        if (typeof error === 'string') {
+          toast.error(error)
+        }
+      },
+    },
+  )
 
-  const getFieldError = (field: string): string | undefined => {
+  const getFieldError = (field: string) => {
     if (!response.ok && typeof response.error === 'object') {
       return response.error[field]
     }

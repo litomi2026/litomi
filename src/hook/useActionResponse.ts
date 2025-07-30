@@ -1,28 +1,31 @@
 import { useActionState, useEffect, useRef } from 'react'
 
-import { ActionResponse } from '@/utils/action-response'
+import type { ActionResponse } from '@/utils/action-response'
 
-interface UseActionResponseOptions<T> {
-  onError?: (error: string | Record<string, string>) => void
-  onSuccess?: (data: T) => Promise<void> | void
+type ServerAction<TResponse> = (prevState: unknown, formData: FormData) => Promise<TResponse>
+
+type UseActionResponseOptions<TData, TError> = {
+  onSuccess?: (data: TData) => Promise<void> | void
+  onError?: (error: TError) => Promise<void> | void
 }
 
-export function useActionResponse<T>(
-  action: (prevState: unknown, formData: FormData) => Promise<ActionResponse<T>>,
-  initialState: ActionResponse<T>,
-  options?: UseActionResponseOptions<T>,
+export function useActionResponse<TData = unknown, TError = string | Record<string, string>>(
+  action: ServerAction<ActionResponse<TData, TError>>,
+  initialState: Partial<ActionResponse<TData, TError>> = {},
+  options?: UseActionResponseOptions<TData, TError>,
 ) {
-  const [response, dispatch, pending] = useActionState(action, initialState)
-  const lastResponseRef = useRef<ActionResponse<T>>(response)
+  const [response, dispatch, pending] = useActionState(action, initialState as ActionResponse<TData, TError>)
+  const lastResponseRef = useRef(response)
   const { onSuccess, onError } = options || {}
 
   useEffect(() => {
-    if (!pending && response !== lastResponseRef.current && response.status !== 0) {
+    // Only process if not pending, response changed, and has a valid ok property
+    if (!pending && response !== lastResponseRef.current && typeof response === 'object' && 'ok' in response) {
       lastResponseRef.current = response
 
-      if (response.ok && response.data && onSuccess) {
-        onSuccess(response.data)
-      } else if (!response.ok && response.error && onError) {
+      if (response.ok && onSuccess) {
+        onSuccess(response.data as TData)
+      } else if (!response.ok && onError) {
         onError(response.error)
       }
     }

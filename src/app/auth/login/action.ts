@@ -8,7 +8,7 @@ import { z } from 'zod/v4'
 import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
 import { loginIdSchema, passwordSchema } from '@/database/zod'
-import { ActionResponse, badRequest, ok, tooManyRequests, unauthorized } from '@/utils/action-response'
+import { badRequest, ok, tooManyRequests, unauthorized } from '@/utils/action-response'
 import { setAccessTokenCookie, setRefreshTokenCookie } from '@/utils/cookie'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
 
@@ -18,17 +18,9 @@ const loginSchema = z.object({
   remember: z.literal('on').nullable(),
 })
 
-type LoginResult = {
-  id: number
-  loginId: string
-  name: string
-  lastLoginAt: Date
-  lastLogoutAt: Date
-}
-
 const loginLimiter = new RateLimiter(RateLimitPresets.strict())
 
-export default async function login(_prevState: unknown, formData: FormData): Promise<ActionResponse<LoginResult>> {
+export default async function login(_prevState: unknown, formData: FormData) {
   const validation = loginSchema.safeParse({
     loginId: formData.get('loginId'),
     password: formData.get('password'),

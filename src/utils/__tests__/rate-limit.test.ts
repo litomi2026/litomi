@@ -89,7 +89,6 @@ describe('RateLimiter', () => {
       const limiter = new RateLimiter({
         windowMs: 60000,
         maxAttempts: 3,
-        skipSuccessfulRequests: true,
       })
 
       await limiter.check('user1')
