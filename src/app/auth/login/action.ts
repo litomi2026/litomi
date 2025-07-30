@@ -85,6 +85,8 @@ export default async function login(_prevState: unknown, formData: FormData): Pr
       .where(sql`${userTable.id} = ${id}`),
   ])
 
+  loginLimiter.reward(loginId)
+
   return ok({
     id,
     loginId,

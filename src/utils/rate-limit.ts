@@ -1,12 +1,9 @@
-import { headers } from 'next/headers'
 import 'server-only'
 
 export interface RateLimitConfig {
-  identifier?: string | ((req?: Request) => Promise<string>)
+  identifier?: string
   keyPrefix?: string
   maxAttempts: number
-  skipFailedRequests?: boolean
-  skipSuccessfulRequests?: boolean
   windowMs: number
 }
 
@@ -100,9 +97,7 @@ export class RateLimiter {
     this.config = {
       windowMs: config.windowMs,
       maxAttempts: config.maxAttempts,
-      identifier: config.identifier || getDefaultIdentifier,
-      skipSuccessfulRequests: config.skipSuccessfulRequests ?? false,
-      skipFailedRequests: config.skipFailedRequests ?? false,
+      identifier: config.identifier ?? '',
       keyPrefix: config.keyPrefix ?? 'rl:',
     }
 
@@ -110,9 +105,7 @@ export class RateLimiter {
   }
 
   async check(customIdentifier?: string): Promise<RateLimitResult> {
-    const identifier =
-      customIdentifier ||
-      (typeof this.config.identifier === 'function' ? await this.config.identifier() : this.config.identifier)
+    const identifier = customIdentifier ?? this.config.identifier
 
     const key = `${this.config.keyPrefix}${identifier}`
     const record = await this.store.increment(key)
@@ -139,32 +132,21 @@ export class RateLimiter {
   }
 
   async reset(customIdentifier?: string): Promise<void> {
-    const identifier =
-      customIdentifier ||
-      (typeof this.config.identifier === 'function' ? await this.config.identifier() : this.config.identifier)
+    const identifier = customIdentifier ?? this.config.identifier
 
     const key = `${this.config.keyPrefix}${identifier}`
     await this.store.reset(key)
   }
 
   async reward(customIdentifier?: string, count: number = 1): Promise<void> {
-    if (this.config.skipSuccessfulRequests) {
-      const identifier =
-        customIdentifier ||
-        (typeof this.config.identifier === 'function' ? await this.config.identifier() : this.config.identifier)
+    const identifier = customIdentifier ?? this.config.identifier
 
-      const key = `${this.config.keyPrefix}${identifier}`
-      for (let i = 0; i < count; i++) {
-        await this.store.decrement(key)
-      }
+    const key = `${this.config.keyPrefix}${identifier}`
+
+    for (let i = 0; i < count; i++) {
+      await this.store.decrement(key)
     }
   }
-}
-
-// Default identifier extractor
-async function getDefaultIdentifier(): Promise<string> {
-  const headersList = await headers()
-  return headersList.get('x-forwarded-for')?.split(',')[0] || 'unknown'
 }
 
 export const RateLimitPresets = {
