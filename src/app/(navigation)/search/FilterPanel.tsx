@@ -37,7 +37,7 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
     (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault()
 
-      const params = new URLSearchParams(searchParams)
+      const params = new URLSearchParams(window.location.search)
 
       FILTER_KEYS.forEach((key) => {
         const value = filters[key]
@@ -71,20 +71,20 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
         onClose()
       })
     },
-    [filters, onClose, pathname, router, searchParams],
+    [filters, onClose, pathname, router],
   )
 
   const clearFilters = useCallback(() => {
     setFilters({})
 
-    const params = new URLSearchParams(searchParams.toString())
+    const params = new URLSearchParams(window.location.search)
     FILTER_KEYS.forEach((key) => params.delete(key))
 
     startTransition(() => {
       router.replace(`${pathname}?${params}`)
       onClose()
     })
-  }, [pathname, router, searchParams, setFilters, onClose])
+  }, [pathname, router, setFilters, onClose])
 
   const filterPanelStyle =
     buttonRect && window.innerWidth >= 640

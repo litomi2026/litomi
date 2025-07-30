@@ -131,7 +131,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
     e.preventDefault()
     setShowSuggestions(false)
 
-    const params = new URLSearchParams(searchParams)
+    const params = new URLSearchParams(window.location.search)
 
     if (keyword.trim()) {
       const convertedQuery = keyword.trim()

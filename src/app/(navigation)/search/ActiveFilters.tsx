@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useTransition } from 'react'
 
 import IconSpinner from '@/components/icons/IconSpinner'
@@ -25,11 +25,10 @@ type Props = {
 
 export default function ActiveFilters({ filters }: Readonly<Props>) {
   const router = useRouter()
-  const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
 
   const removeFilter = (key: string) => {
-    const params = new URLSearchParams(searchParams.toString())
+    const params = new URLSearchParams(window.location.search)
     params.delete(key)
 
     startTransition(() => {
@@ -38,7 +37,7 @@ export default function ActiveFilters({ filters }: Readonly<Props>) {
   }
 
   const removeRangeFilter = (minKey: string, maxKey: string) => {
-    const params = new URLSearchParams(searchParams.toString())
+    const params = new URLSearchParams(window.location.search)
     params.delete(minKey)
     params.delete(maxKey)
 
@@ -48,7 +47,7 @@ export default function ActiveFilters({ filters }: Readonly<Props>) {
   }
 
   const clearAllFilters = () => {
-    const params = new URLSearchParams(searchParams.toString())
+    const params = new URLSearchParams(window.location.search)
 
     FILTER_KEYS.forEach((key) => {
       params.delete(key)

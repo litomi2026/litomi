@@ -1,7 +1,7 @@
 'use client'
 
 import { useQueryClient } from '@tanstack/react-query'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useCallback, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -31,7 +31,6 @@ export default function LoginForm() {
   const router = useRouter()
   const formRef = useRef<HTMLFormElement>(null)
   const queryClient = useQueryClient()
-  const searchParams = useSearchParams()
   const [currentLoginId, setCurrentLoginId] = useState('')
 
   function resetId() {
@@ -56,11 +55,12 @@ export default function LoginForm() {
 
       resetMeQuery()
       await queryClient.invalidateQueries({ queryKey: QueryKeys.me, type: 'all' })
-      const redirect = searchParams.get(SearchParamKey.REDIRECT)
+      const params = new URLSearchParams(window.location.search)
+      const redirect = params.get(SearchParamKey.REDIRECT)
       const sanitizedURL = sanitizeRedirect(redirect) || '/'
       router.replace(sanitizedURL.replace(/^\/@\//, `/@${name}/`))
     },
-    [queryClient, router, searchParams],
+    [queryClient, router],
   )
 
   const [{ error }, formAction, pending] = useActionResponse(login, {} as ActionResponse<User>, {
