@@ -7,7 +7,7 @@ import { cookies } from 'next/headers'
 import { CookieKey } from '@/constants/storage'
 import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
-import { ok, serverError, unauthorized } from '@/utils/action-response'
+import { internalServerError, ok, unauthorized } from '@/utils/action-response'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
 
 export default async function logout() {
@@ -31,6 +31,6 @@ export default async function logout() {
     return ok(user)
   } catch (error) {
     captureException(error)
-    return serverError('로그아웃 중 오류가 발생했어요')
+    return internalServerError('로그아웃 중 오류가 발생했어요')
   }
 }

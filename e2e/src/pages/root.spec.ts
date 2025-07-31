@@ -6,7 +6,7 @@ test.describe('/', () => {
   })
 
   test('올바른 제목을 가지고 있다', async ({ page }) => {
-    await expect(page).toHaveTitle(/litomi/i)
+    await expect(page).toHaveTitle(/리토미/i)
   })
 
   test('연령 확인 페이지를 표시한다', async ({ page }) => {

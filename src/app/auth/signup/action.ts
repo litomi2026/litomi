@@ -41,7 +41,7 @@ export default async function signup(_prevState: unknown, formData: FormData) {
   })
 
   if (!validation.success) {
-    return badRequest(flattenZodFieldErrors(validation.error))
+    return badRequest(flattenZodFieldErrors(validation.error), formData)
   }
 
   const { loginId, password, nickname } = validation.data
@@ -49,7 +49,7 @@ export default async function signup(_prevState: unknown, formData: FormData) {
 
   if (!allowed) {
     const minutes = retryAfter ? Math.ceil(retryAfter / 60) : 1
-    return tooManyRequests(`너무 많은 회원가입 시도가 있었어요. ${minutes}분 후에 다시 시도해주세요.`)
+    return tooManyRequests(`너무 많은 회원가입 시도가 있었어요. ${minutes}분 후에 다시 시도해주세요.`, formData)
   }
 
   const passwordHash = await hash(password, SALT_ROUNDS)
@@ -67,7 +67,7 @@ export default async function signup(_prevState: unknown, formData: FormData) {
     .returning({ id: userTable.id })
 
   if (!result) {
-    return conflict('이미 사용 중인 아이디에요', formData)
+    return conflict({ loginId: '이미 사용 중인 아이디에요' }, formData)
   }
 
   const { id: userId } = result

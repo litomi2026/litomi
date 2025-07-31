@@ -40,27 +40,20 @@ function PasskeyLoginButton({ loginId, disabled, onSuccess }: Readonly<Props>) {
     try {
       const optionsResult = await getAuthenticationOptions(loginId)
 
-      if (!optionsResult.success) {
-        if (optionsResult.error === 'Too Many Requests') {
-          const retryAfterMsg = optionsResult.retryAfter
-            ? ` ${Math.ceil(optionsResult.retryAfter / 60)}분 후에 다시 시도해주세요.`
-            : ''
-          toast.error(`너무 많은 시도가 있었어요.${retryAfterMsg}`)
-        } else {
-          toast.error('패스키 인증을 시작할 수 없어요')
-        }
+      if (!optionsResult.ok) {
+        toast.error(optionsResult.error)
         return
       }
 
-      const authResponse = await startAuthentication({ optionsJSON: optionsResult.options })
+      const authResponse = await startAuthentication({ optionsJSON: optionsResult.data })
       const verifyResult = await verifyAuthentication(authResponse)
 
-      if (!verifyResult.success) {
-        toast.error('패스키 인증에 실패했어요')
+      if (!verifyResult.ok) {
+        toast.error(verifyResult.error)
         return
       }
 
-      onSuccess?.(verifyResult.user)
+      onSuccess?.(verifyResult.data)
     } catch (error) {
       if (error instanceof Error) {
         if (error.name === 'NotAllowedError') {

@@ -9,7 +9,7 @@ type Props = {
   username: string
 }
 
-export default async function MyPageNavigation({ username }: Readonly<Props>) {
+export default async function MyPagePrivateNavigation({ username }: Readonly<Props>) {
   const cookieStore = await cookies()
   const loginUserId = await getUserIdFromAccessToken(cookieStore, false)
 
@@ -24,6 +24,7 @@ export default async function MyPageNavigation({ username }: Readonly<Props>) {
   const privateLinks = [
     { href: `/@${username}/censor`, label: '검열' },
     { href: `/@${username}/passkey`, label: '패스키' },
+    { href: `/@${username}/password`, label: '비밀번호' },
   ]
 
   return (

@@ -1,35 +1,68 @@
-import { useActionState, useEffect, useRef } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { useState, useTransition } from 'react'
 
-import type { ActionResponse } from '@/utils/action-response'
+import { QueryKeys } from '@/constants/query'
+import amplitude from '@/lib/amplitude/lazy'
+import { ActionResponse, ErrorResponse, SuccessResponse } from '@/utils/action-response'
 
-type ServerAction<TResponse> = (prevState: unknown, formData: FormData) => Promise<TResponse>
-
-type UseActionResponseOptions<TData, TError> = {
-  onSuccess?: (data: TData) => Promise<void> | void
-  onError?: (error: TError) => Promise<void> | void
+type Props<T extends ActionResponse> = {
+  action: (prevState: unknown, formData: FormData) => Promise<T>
+  onSuccess?: (data: T extends SuccessResponse<infer D> ? D : never) => void
+  onError?: (error: T extends ErrorResponse<infer E> ? E : never) => void
+  onSettled?: (response: T) => void
+  shouldSetResponse?: boolean
 }
 
-export function useActionResponse<TData = unknown, TError = string | Record<string, string>>(
-  action: ServerAction<ActionResponse<TData, TError>>,
-  initialState: Partial<ActionResponse<TData, TError>> = {},
-  options?: UseActionResponseOptions<TData, TError>,
-) {
-  const [response, dispatch, pending] = useActionState(action, initialState as ActionResponse<TData, TError>)
-  const lastResponseRef = useRef(response)
-  const { onSuccess, onError } = options || {}
+export function getFieldError<T extends ActionResponse>(response: T | undefined, field: string) {
+  if (!response) {
+    return
+  }
 
-  useEffect(() => {
-    // Only process if not pending, response changed, and has a valid ok property
-    if (!pending && response !== lastResponseRef.current && typeof response === 'object' && 'ok' in response) {
-      lastResponseRef.current = response
+  if (!response.ok && typeof response.error === 'object' && response.error !== null) {
+    return (response.error as Record<string, string>)[field]
+  }
+}
 
-      if (response.ok && onSuccess) {
-        onSuccess(response.data as TData)
-      } else if (!response.ok && onError) {
-        onError(response.error)
+export function getFormField<T extends ActionResponse>(response: T | undefined, field: string) {
+  if (!response) {
+    return
+  }
+
+  if (!response.ok) {
+    return response.formData?.get(field)?.toString()
+  }
+}
+
+export default function useActionResponse<T extends ActionResponse>({
+  action,
+  onSuccess,
+  onError,
+  shouldSetResponse = true,
+}: Readonly<Props<T>>) {
+  const [response, setResponse] = useState<T>()
+  const [isPending, startTransition] = useTransition()
+  const queryClient = useQueryClient()
+
+  function dispatchAction(formData: FormData) {
+    startTransition(async () => {
+      const response = await action({}, formData)
+
+      if (shouldSetResponse) {
+        setResponse(response)
       }
-    }
-  }, [response, pending, onSuccess, onError])
 
-  return [response, dispatch, pending] as const
+      if (!response.ok) {
+        if (response.status === 401) {
+          queryClient.setQueriesData({ queryKey: QueryKeys.me }, () => null)
+          amplitude.reset()
+        }
+
+        onError?.(response.error as T extends ErrorResponse<infer E> ? E : never)
+      } else {
+        onSuccess?.(response.data as T extends SuccessResponse<infer D> ? D : never)
+      }
+    })
+  }
+
+  return [response, dispatchAction, isPending] as const
 }

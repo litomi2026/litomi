@@ -1,11 +1,14 @@
 'use server'
 
-import { inArray, sql } from 'drizzle-orm'
+import { captureException } from '@sentry/nextjs'
+import { count, inArray, sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 
 import { db } from '@/database/drizzle'
 import { userCensorshipTable } from '@/database/schema'
+import { badRequest, internalServerError, noContent, ok, unauthorized } from '@/utils/action-response'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
+import { flattenZodFieldErrors } from '@/utils/form-error'
 
 import { addCensorshipsSchema, deleteCensorshipsSchema, updateCensorshipsSchema } from './schema'
 
@@ -14,7 +17,7 @@ export async function addCensorships(_prevState: unknown, formData: FormData) {
   const userIdFromToken = await getUserIdFromAccessToken(cookieStore)
 
   if (!userIdFromToken) {
-    return { status: 401, message: '로그인 정보가 없거나 만료됐어요' }
+    return unauthorized('로그인 정보가 없거나 만료됐어요', formData)
   }
 
   const validation = addCensorshipsSchema.safeParse({
@@ -25,7 +28,7 @@ export async function addCensorships(_prevState: unknown, formData: FormData) {
   })
 
   if (!validation.success) {
-    return { status: 400, message: validation.error.issues[0].message }
+    return badRequest(flattenZodFieldErrors(validation.error), formData)
   }
 
   const { keys, values, levels, userId } = validation.data
@@ -38,18 +41,14 @@ export async function addCensorships(_prevState: unknown, formData: FormData) {
   }))
 
   try {
-    const { insertResults, exceeded, message, status } = await db.transaction(async (tx) => {
-      const [{ count }] = await tx
-        .select({ count: sql<number>`COUNT(*)` })
+    return await db.transaction(async (tx) => {
+      const [{ censorshipCount }] = await tx
+        .select({ censorshipCount: count() })
         .from(userCensorshipTable)
         .where(sql`${userCensorshipTable.userId} = ${userId}`)
 
-      if (count + censorships.length > 100) {
-        return {
-          status: 400,
-          message: `검열 규칙은 최대 100개까지만 추가할 수 있어요. (현재 ${count}개)`,
-          exceeded: true,
-        }
+      if (censorshipCount + censorships.length > 100) {
+        return badRequest(`검열 규칙은 최대 100개까지만 추가할 수 있어요. (현재 ${censorshipCount}개)`, formData)
       }
 
       const insertResults = await tx
@@ -57,28 +56,21 @@ export async function addCensorships(_prevState: unknown, formData: FormData) {
         .values(censorships)
         .returning({ id: userCensorshipTable.id })
 
-      return { insertResults }
+      if (insertResults.length === 0) {
+        return noContent()
+      }
+
+      return ok(insertResults.map((r) => r.id))
     })
-
-    if (exceeded) {
-      return { status, message }
-    }
-
-    if (!insertResults || insertResults.length === 0) {
-      return { status: 204 }
-    }
-
-    return {
-      status: 200,
-      data: { ids: insertResults.map((r) => r.id) },
-    }
   } catch (error) {
     if (error instanceof Error) {
       if (['foreign key', 'value too long', 'duplicate key'].some((message) => error.message.includes(message))) {
-        return { status: 400, message: '입력을 확인해주세요' }
+        return badRequest('입력을 확인해주세요', formData)
       }
     }
-    return { status: 500, message: '오류가 발생했어요' }
+
+    captureException(error, { extra: { name: 'addCensorships' } })
+    return internalServerError('오류가 발생했어요', formData)
   }
 }
 
@@ -87,7 +79,7 @@ export async function deleteCensorships(_prevState: unknown, formData: FormData)
   const userIdFromToken = await getUserIdFromAccessToken(cookieStore)
 
   if (!userIdFromToken) {
-    return { status: 401, message: '로그인 정보가 없거나 만료됐어요' }
+    return unauthorized('로그인 정보가 없거나 만료됐어요', formData)
   }
 
   const validation = deleteCensorshipsSchema.safeParse({
@@ -96,7 +88,7 @@ export async function deleteCensorships(_prevState: unknown, formData: FormData)
   })
 
   if (!validation.success) {
-    return { status: 400, message: validation.error.issues[0].message }
+    return badRequest(flattenZodFieldErrors(validation.error), formData)
   }
 
   try {
@@ -106,20 +98,19 @@ export async function deleteCensorships(_prevState: unknown, formData: FormData)
       .returning({ deletedIds: userCensorshipTable.id })
 
     if (result.length === 0) {
-      return { status: 204 }
+      return noContent()
     }
 
-    return {
-      status: 200,
-      data: { deletedIds: result.map((r) => r.deletedIds) },
-    }
+    return ok(result.map((r) => r.deletedIds))
   } catch (error) {
     if (error instanceof Error) {
       if (['foreign key', 'constraint'].some((message) => error.message.includes(message))) {
-        return { status: 400, message: '입력을 확인해주세요' }
+        return badRequest('입력을 확인해주세요', formData)
       }
     }
-    return { status: 500, message: '오류가 발생했어요' }
+
+    captureException(error, { extra: { name: 'deleteCensorships' } })
+    return internalServerError('오류가 발생했어요', formData)
   }
 }
 
@@ -128,7 +119,7 @@ export async function updateCensorships(_prevState: unknown, formData: FormData)
   const userIdFromToken = await getUserIdFromAccessToken(cookieStore)
 
   if (!userIdFromToken) {
-    return { status: 401, message: '로그인 정보가 없거나 만료됐어요' }
+    return unauthorized('로그인 정보가 없거나 만료됐어요', formData)
   }
 
   const validation = updateCensorshipsSchema.safeParse({
@@ -140,7 +131,7 @@ export async function updateCensorships(_prevState: unknown, formData: FormData)
   })
 
   if (!validation.success) {
-    return { status: 400, message: validation.error.issues[0].message }
+    return badRequest(flattenZodFieldErrors(validation.error), formData)
   }
 
   const { ids, keys, values, levels, userId } = validation.data
@@ -169,19 +160,18 @@ export async function updateCensorships(_prevState: unknown, formData: FormData)
       .returning({ id: userCensorshipTable.id })
 
     if (result.length === 0) {
-      return { status: 204 }
+      return noContent()
     }
 
-    return {
-      status: 200,
-      data: { updatedIds: result.map((r) => r.id) },
-    }
+    return ok(result.map((r) => r.id))
   } catch (error) {
     if (error instanceof Error) {
       if (['foreign key', 'constraint', 'invalid input'].some((message) => error.message.includes(message))) {
-        return { status: 400, message: '입력을 확인해주세요' }
+        return badRequest('입력을 확인해주세요', formData)
       }
     }
-    return { status: 500, message: '오류가 발생했어요' }
+
+    captureException(error, { extra: { name: 'updateCensorships', userId } })
+    return internalServerError('업데이트 도중 오류가 발생했어요', formData)
   }
 }

@@ -4,14 +4,14 @@ import { captureException } from '@sentry/nextjs'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
-import { use, useEffect, useState, useTransition } from 'react'
+import { FormEvent, use, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 import IconEdit from '@/components/icons/IconEdit'
 import IconX from '@/components/icons/IconX'
 import Modal from '@/components/ui/Modal'
 import { QueryKeys } from '@/constants/query'
-import { useActionResponse } from '@/hook/useActionResponse'
+import useActionResponse, { getFieldError } from '@/hook/useActionResponse'
 
 import editProfile from './action'
 
@@ -37,62 +37,40 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
   const router = useRouter()
   const defaultProfileImageURL = me.imageURL ?? ''
   const [profileImageURL, setProfileImageURL] = useState(defaultProfileImageURL)
-  const [_, startTransition] = useTransition()
 
-  const [response, dispatchNewProfile, pending] = useActionResponse(
-    editProfile,
-    {},
-    {
-      onSuccess: (data) => {
-        toast.success(data.message)
-        queryClient.invalidateQueries({ queryKey: QueryKeys.me, exact: true })
-        setShowModal(false)
-        router.replace(data.location)
-      },
-      onError: (error) => {
-        if (typeof error === 'string') {
-          toast.error(error)
-        }
-      },
+  const [response, dispatchAction, isPending] = useActionResponse({
+    action: editProfile,
+    onError: (error) => {
+      if (typeof error === 'string') {
+        toast.error(error)
+      }
     },
-  )
+    onSuccess: (data) => {
+      toast.success(data.message)
+      queryClient.invalidateQueries({ queryKey: QueryKeys.me, exact: true })
+      setShowModal(false)
+      router.replace(data.location)
+    },
+  })
 
-  const getFieldError = (field: string) => {
-    if (!response.ok && typeof response.error === 'object') {
-      return response.error[field]
-    }
-  }
+  const nameError = getFieldError(response, 'name')
+  const nicknameError = getFieldError(response, 'nickname')
+  const imageURLError = getFieldError(response, 'imageURL')
 
-  const handleClose = () => {
+  function handleClose() {
     setShowModal(false)
   }
 
-  const handleAction = (formData: FormData) => {
-    const changedData = new FormData()
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    const formData = new FormData(e.currentTarget)
     const name = formData.get('name')
     const nickname = formData.get('nickname')
     const imageURL = formData.get('imageURL')
 
-    if (name && name !== me.name) {
-      changedData.append('name', name)
-    }
-
-    if (nickname && nickname !== me.nickname) {
-      changedData.append('nickname', nickname)
-    }
-
-    if (imageURL && imageURL !== me.imageURL) {
-      changedData.append('imageURL', imageURL)
-    }
-
-    if (changedData.keys().next().done) {
+    if (name === me.name && nickname === me.nickname && imageURL === (me.imageURL ?? '')) {
+      e.preventDefault()
       toast.warning('수정할 정보를 입력해주세요')
-      return
     }
-
-    startTransition(() => {
-      dispatchNewProfile(changedData)
-    })
   }
 
   return (
@@ -113,8 +91,9 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
         showDragButton
       >
         <form
-          action={handleAction}
+          action={dispatchAction}
           className="w-full h-full flex flex-col bg-background md:bg-zinc-900 md:border-2 md:rounded-xl md:max-w-2xl"
+          onSubmit={handleSubmit}
         >
           <header className="flex items-center justify-between p-4 border-b border-zinc-800 shrink-0">
             <div className="flex items-center gap-4">
@@ -163,7 +142,7 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
                     이름
                   </label>
                   <input
-                    aria-invalid={!!getFieldError('name')}
+                    aria-invalid={!!nameError}
                     autoCapitalize="off"
                     className="w-full px-3 py-2 bg-zinc-800 border rounded-lg placeholder-zinc-500 focus:outline-none focus:ring-2 focus:border-transparent 
                       aria-invalid:border-red-500 aria-invalid:focus:ring-red-500 border-zinc-700 focus:ring-zinc-600"
@@ -175,8 +154,8 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
                     placeholder="고유한 이름을 입력하세요"
                     type="text"
                   />
-                  <p aria-invalid={!!getFieldError('name')} className="text-xs text-zinc-500 aria-invalid:text-red-400">
-                    {getFieldError('name') || '이름으로 찾을 수 있어요 (2-32자)'}
+                  <p aria-invalid={!!nameError} className="text-xs text-zinc-500 aria-invalid:text-red-400">
+                    {nameError || '이름으로 찾을 수 있어요 (2-32자)'}
                   </p>
                 </div>
               </div>
@@ -187,7 +166,7 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
                     닉네임
                   </label>
                   <input
-                    aria-invalid={!!getFieldError('nickname')}
+                    aria-invalid={!!nicknameError}
                     autoCapitalize="off"
                     className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:border-transparent 
                       aria-invalid:border-red-500 aria-invalid:focus:ring-red-500"
@@ -199,11 +178,8 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
                     placeholder="사용할 닉네임을 입력하세요"
                     type="text"
                   />
-                  <p
-                    aria-invalid={!!getFieldError('nickname')}
-                    className="text-xs text-zinc-500 aria-invalid:text-red-400"
-                  >
-                    {getFieldError('nickname') || '다른 사용자에게 표시되는 별명이에요 (2-32자)'}
+                  <p aria-invalid={!!nicknameError} className="text-xs text-zinc-500 aria-invalid:text-red-400">
+                    {nicknameError || '다른 사용자에게 표시되는 별명이에요 (2-32자)'}
                   </p>
                 </div>
                 <div className="space-y-1">
@@ -211,7 +187,7 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
                     프로필 이미지 URL
                   </label>
                   <input
-                    aria-invalid={!!getFieldError('imageURL')}
+                    aria-invalid={!!imageURLError}
                     autoCapitalize="off"
                     className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:border-transparent 
                       aria-invalid:border-red-500 aria-invalid:focus:ring-red-500"
@@ -225,11 +201,8 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
                     placeholder="https://example.com/profile.jpg"
                     type="url"
                   />
-                  <p
-                    aria-invalid={!!getFieldError('imageURL')}
-                    className="text-xs text-zinc-500 aria-invalid:text-red-400"
-                  >
-                    {getFieldError('imageURL') || '이미지는 정사각형 비율을 권장해요'}
+                  <p aria-invalid={!!imageURLError} className="text-xs text-zinc-500 aria-invalid:text-red-400">
+                    {imageURLError || '이미지는 정사각형 비율을 권장해요'}
                   </p>
                 </div>
               </div>
@@ -251,7 +224,7 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
             </button>
             <button
               className="px-6 py-2 bg-white text-black font-medium text-sm rounded-lg hover:bg-zinc-200 active:bg-zinc-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={pending}
+              disabled={isPending}
               type="submit"
             >
               저장

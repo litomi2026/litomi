@@ -2,7 +2,7 @@ export type ActionResponse<TData = unknown, TError = string | Record<string, str
   | ErrorResponse<TError>
   | SuccessResponse<TData>
 
-export type ErrorResponse<TError = string | Record<string, string>> = {
+export type ErrorResponse<TError> = {
   ok: false
   status: 400 | 401 | 403 | 404 | 409 | 429 | 500
   error: TError
@@ -15,7 +15,7 @@ export type SuccessResponse<TData = unknown> = {
   data: TData
 }
 
-export function badRequest(error: string | Record<string, string>, formData?: FormData): ErrorResponse {
+export function badRequest<TError>(error: TError, formData?: FormData): ErrorResponse<TError> {
   return {
     ok: false as const,
     status: 400,
@@ -24,16 +24,16 @@ export function badRequest(error: string | Record<string, string>, formData?: Fo
   }
 }
 
-export function conflict(message: string, formData?: FormData): ErrorResponse<string> {
+export function conflict<TError>(error: TError, formData?: FormData): ErrorResponse<TError> {
   return {
     ok: false as const,
     status: 409,
-    error: message,
+    error,
     formData,
   }
 }
 
-export function created<T>(data: T): SuccessResponse<T> {
+export function created<TData>(data: TData): SuccessResponse<TData> {
   return {
     ok: true as const,
     status: 201,
@@ -41,10 +41,19 @@ export function created<T>(data: T): SuccessResponse<T> {
   }
 }
 
-export function forbidden(error = 'Forbidden', formData?: FormData): ErrorResponse<string> {
+export function forbidden<TError>(error: TError, formData?: FormData): ErrorResponse<TError> {
   return {
     ok: false as const,
     status: 403,
+    error,
+    formData,
+  }
+}
+
+export function internalServerError<TError>(error: TError, formData?: FormData): ErrorResponse<TError> {
+  return {
+    ok: false as const,
+    status: 500,
     error,
     formData,
   }
@@ -58,7 +67,7 @@ export function noContent(): SuccessResponse<undefined> {
   }
 }
 
-export function notFound(error = 'Not Found', formData?: FormData): ErrorResponse<string> {
+export function notFound<TError>(error: TError, formData?: FormData): ErrorResponse<TError> {
   return {
     ok: false as const,
     status: 404,
@@ -67,7 +76,7 @@ export function notFound(error = 'Not Found', formData?: FormData): ErrorRespons
   }
 }
 
-export function ok<T>(data: T): SuccessResponse<T> {
+export function ok<TData>(data: TData): SuccessResponse<TData> {
   return {
     ok: true as const,
     status: 200,
@@ -83,15 +92,6 @@ export function seeOther(location: string, message: string): SuccessResponse<{ l
       location,
       message,
     },
-  }
-}
-
-export function serverError(error = 'Internal Server Error', formData?: FormData): ErrorResponse<string> {
-  return {
-    ok: false as const,
-    status: 500,
-    error,
-    formData,
   }
 }
 

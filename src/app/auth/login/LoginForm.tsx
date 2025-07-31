@@ -11,7 +11,7 @@ import Loading from '@/components/ui/Loading'
 import { loginIdPattern, passwordPattern } from '@/constants/pattern'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
-import { useActionResponse } from '@/hook/useActionResponse'
+import useActionResponse, { getFieldError, getFormField } from '@/hook/useActionResponse'
 import amplitude from '@/lib/amplitude/lazy'
 import { resetMeQuery } from '@/query/useMeQuery'
 import { sanitizeRedirect } from '@/utils'
@@ -63,28 +63,25 @@ export default function LoginForm() {
     [queryClient, router],
   )
 
-  const [response, formAction, pending] = useActionResponse(
-    login,
-    {},
-    {
-      onSuccess: handleLoginSuccess,
-      onError: (error) => {
-        if (typeof error === 'string') {
-          toast.error(error)
-        }
-      },
+  const [response, dispatchAction, isPending] = useActionResponse({
+    action: login,
+    onError: (error) => {
+      if (typeof error === 'string') {
+        toast.error(error)
+      }
     },
-  )
+    onSuccess: handleLoginSuccess,
+  })
 
-  const getFieldError = (field: string) => {
-    if (!response.ok && typeof response.error === 'object') {
-      return response.error[field]
-    }
-  }
+  const loginIdError = getFieldError(response, 'loginId')
+  const passwordError = getFieldError(response, 'password')
+  const defaultLoginId = getFormField(response, 'loginId')
+  const defaultPassword = getFormField(response, 'password')
+  const defaultRemember = getFormField(response, 'remember')
 
   return (
     <form
-      action={formAction}
+      action={dispatchAction}
       className="grid gap-5 
       [&_label]:block [&_label]:mb-1.5 [&_label]:text-sm [&_label]:font-medium [&_label]:text-zinc-300 [&_label]:leading-7
       [&_input]:w-full [&_input]:rounded-md [&_input]:bg-zinc-800 [&_input]:border [&_input]:border-zinc-600 
@@ -101,11 +98,11 @@ export default function LoginForm() {
           <label htmlFor="loginId">아이디</label>
           <div className="relative">
             <input
-              aria-invalid={!!getFieldError('loginId')}
+              aria-invalid={!!loginIdError}
               autoCapitalize="off"
               autoFocus
-              defaultValue={currentLoginId}
-              disabled={pending}
+              defaultValue={defaultLoginId}
+              disabled={isPending}
               id="loginId"
               maxLength={32}
               minLength={2}
@@ -119,14 +116,15 @@ export default function LoginForm() {
               <IconX className="w-3.5" />
             </button>
           </div>
-          {getFieldError('loginId') && <p className="mt-1 text-xs text-red-500">{getFieldError('loginId')}</p>}
+          {loginIdError && <p className="mt-1 text-xs text-red-500">{loginIdError}</p>}
         </div>
         <div>
           <label htmlFor="password">비밀번호</label>
           <div className="relative">
             <input
-              aria-invalid={!!getFieldError('password')}
-              disabled={pending}
+              aria-invalid={!!passwordError}
+              defaultValue={defaultPassword}
+              disabled={isPending}
               id="password"
               maxLength={64}
               minLength={8}
@@ -140,13 +138,13 @@ export default function LoginForm() {
               <IconX className="w-3.5" />
             </button>
           </div>
-          {getFieldError('password') && <p className="mt-1 text-xs text-red-500">{getFieldError('password')}</p>}
+          {passwordError && <p className="mt-1 text-xs text-red-500">{passwordError}</p>}
         </div>
         <label className="!flex w-fit ml-auto items-center gap-2 cursor-pointer" htmlFor="remember">
           <input
             className="hidden peer"
-            defaultChecked={false}
-            disabled={pending}
+            defaultChecked={defaultRemember === 'on'}
+            disabled={isPending}
             id="remember"
             name="remember"
             type="checkbox"
@@ -163,14 +161,14 @@ export default function LoginForm() {
       <button
         className="group border-2 border-brand-gradient font-medium rounded-xl focus:outline-none focus:ring-3 focus:ring-zinc-500
         disabled:border-zinc-500 disabled:pointer-events-none disabled:text-zinc-500"
-        disabled={pending}
+        disabled={isPending}
         type="submit"
       >
         <div
           className="p-2 flex justify-center bg-zinc-900 rounded-xl hover:bg-zinc-800 transition active:bg-zinc-900 
           group-disabled:bg-zinc-800 group-disabled:cursor-not-allowed"
         >
-          {pending ? <Loading className="text-zinc-500 w-12 p-2" /> : '로그인'}
+          {isPending ? <Loading className="text-zinc-500 w-12 p-2" /> : '로그인'}
         </div>
       </button>
       <div className="relative">
@@ -181,7 +179,7 @@ export default function LoginForm() {
           <span className="px-4 bg-zinc-900 text-zinc-500">또는</span>
         </div>
       </div>
-      <PasskeyLoginButton disabled={pending} loginId={currentLoginId} onSuccess={handleLoginSuccess} />
+      <PasskeyLoginButton disabled={isPending} loginId={currentLoginId} onSuccess={handleLoginSuccess} />
     </form>
   )
 }

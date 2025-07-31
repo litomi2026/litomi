@@ -29,7 +29,7 @@ export default async function login(_prevState: unknown, formData: FormData) {
   })
 
   if (!validation.success) {
-    return badRequest(flattenZodFieldErrors(validation.error))
+    return badRequest(flattenZodFieldErrors(validation.error), formData)
   }
 
   const { loginId, password, remember } = validation.data
@@ -52,14 +52,14 @@ export default async function login(_prevState: unknown, formData: FormData) {
     .where(sql`${userTable.loginId} = ${loginId}`)
 
   if (!user) {
-    return unauthorized('아이디 또는 비밀번호가 일치하지 않아요')
+    return unauthorized('아이디 또는 비밀번호가 일치하지 않아요', formData)
   }
 
   const { id, name, lastLoginAt, lastLogoutAt, passwordHash } = user
   const isValidPassword = await compare(password, passwordHash)
 
   if (!isValidPassword) {
-    return unauthorized('아이디 또는 비밀번호가 일치하지 않아요')
+    return unauthorized('아이디 또는 비밀번호가 일치하지 않아요', formData)
   }
 
   const cookieStore = await cookies()
