@@ -3,6 +3,7 @@ import { Suspense } from 'react'
 import { LayoutProps } from '@/types/nextjs'
 import { getUsernameFromParam } from '@/utils/param'
 
+import MyPageNavigation from './MyPageNavigation'
 import MyPageNavigationLink from './MyPageNavigationLink'
 import UserProfile from './UserProfile'
 import UserProfileView from './UserProfileView'
@@ -11,12 +12,10 @@ export default async function Layout({ params, children }: LayoutProps) {
   const { name } = await params
   const username = getUsernameFromParam(name)
 
-  const links = [
+  const publicLinks = [
     { href: `/@${username}`, label: '게시글' },
     { href: `/@${username}/reply`, label: '답글' },
     { href: `/@${username}/bookmark`, label: '북마크' },
-    { href: `/@${username}/censor`, label: '검열' },
-    { href: `/@${username}/passkey`, label: '패스키' },
   ]
 
   return (
@@ -31,9 +30,10 @@ export default async function Layout({ params, children }: LayoutProps) {
         <div className="relative h-full overflow-hidden">
           <div className="absolute inset-0 overflow-x-auto scrollbar-hidden">
             <div className="inline-flex gap-4 px-3 whitespace-nowrap text-zinc-600">
-              {links.map(({ href, label }) => (
+              {publicLinks.map(({ href, label }) => (
                 <MyPageNavigationLink href={href} key={href} label={label} />
               ))}
+              <MyPageNavigation username={username} />
             </div>
           </div>
         </div>

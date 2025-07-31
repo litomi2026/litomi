@@ -7,8 +7,6 @@ export default function Loading() {
       <MangaCardSkeleton />
       <MangaCardSkeleton />
       <MangaCardSkeleton />
-      <MangaCardSkeleton />
-      <MangaCardSkeleton />
     </ul>
   )
 }
