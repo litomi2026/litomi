@@ -26,14 +26,22 @@ export function getFieldError<TData, TError extends string | Record<string, stri
   return undefined
 }
 
+export function getFormField<TData, TError extends string | Record<string, string>>(
+  response: ActionResponse<TData, TError>,
+  field: string,
+) {
+  if (!response.ok) {
+    return response.formData?.get(field)?.toString()
+  }
+}
+
 export function useActionResponse<TData = unknown, TError = string | Record<string, string>>(
   action: ServerAction<TData, TError>,
-  initialState: Partial<ActionResponse<TData, TError>> = {},
   options?: UseActionResponseOptions<TData, TError>,
 ) {
   const [response, dispatch, pending] = useActionState(
     action as (prevState: unknown, formData: FormData) => Promise<ActionResponse<TData, TError>>,
-    initialState as ActionResponse<TData, TError>,
+    {} as ActionResponse<TData, TError>,
   )
   const lastResponseRef = useRef(response)
   const { onSuccess, onError } = options || {}

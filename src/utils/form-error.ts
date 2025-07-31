@@ -1,8 +1,8 @@
 import z from 'zod/v4'
 
-export function flattenZodFieldErrors<T>(fieldErrors: z.ZodError<T>): Record<string, string> {
+export function flattenZodFieldErrors<T>(fieldErrors: z.ZodError<T>) {
   const flattenedErrors = z.flattenError(fieldErrors).fieldErrors
-  const errors: Record<string, string> = {}
+  const errors: { [P in keyof T]?: string | undefined } = {}
 
   for (const key in flattenedErrors) {
     const value = flattenedErrors[key as keyof typeof flattenedErrors]

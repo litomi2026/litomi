@@ -9,7 +9,7 @@ import Loading from '@/components/ui/Loading'
 import { loginIdPattern, passwordPattern } from '@/constants/pattern'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
-import { getFieldError, useActionResponse } from '@/hook/useActionResponse'
+import { getFieldError, getFormField, useActionResponse } from '@/hook/useActionResponse'
 import amplitude from '@/lib/amplitude/lazy'
 import { resetMeQuery } from '@/query/useMeQuery'
 import { sanitizeRedirect } from '@/utils'
@@ -47,29 +47,23 @@ export default function SignupForm() {
     [queryClient, router],
   )
 
-  const [response, formAction, pending] = useActionResponse(
-    signup,
-    {},
-    {
-      onSuccess: handleSignupSuccess,
-      onError: (error) => {
-        if (typeof error === 'string') {
-          toast.error(error)
-        }
-      },
+  const [response, formAction, pending] = useActionResponse(signup, {
+    onSuccess: handleSignupSuccess,
+    onError: (error) => {
+      if (typeof error === 'string') {
+        toast.error(error)
+      }
     },
-  )
+  })
 
   const loginIdError = getFieldError(response, 'loginId')
   const passwordError = getFieldError(response, 'password')
   const passwordConfirmError = getFieldError(response, 'password-confirm')
   const nicknameError = getFieldError(response, 'nickname')
-
-  function getDefaultValue(fieldName: string) {
-    if (!response.ok) {
-      return response.formData?.get(fieldName)?.toString()
-    }
-  }
+  const defaultLoginId = getFormField(response, 'loginId')
+  const defaultPassword = getFormField(response, 'password')
+  const defaultPasswordConfirm = getFormField(response, 'password-confirm')
+  const defaultNickname = getFormField(response, 'nickname')
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     const formElement = e.target as HTMLFormElement
@@ -103,7 +97,7 @@ export default function SignupForm() {
             aria-invalid={!!loginIdError}
             autoCapitalize="off"
             autoFocus
-            defaultValue={getDefaultValue('loginId')}
+            defaultValue={defaultLoginId}
             disabled={pending}
             id="loginId"
             maxLength={32}
@@ -128,7 +122,7 @@ export default function SignupForm() {
           <input
             aria-invalid={!!passwordError}
             autoCapitalize="off"
-            defaultValue={getDefaultValue('password')}
+            defaultValue={defaultPassword}
             disabled={pending}
             id="password"
             maxLength={64}
@@ -154,7 +148,7 @@ export default function SignupForm() {
           <input
             aria-invalid={!!passwordConfirmError}
             autoCapitalize="off"
-            defaultValue={!response.ok ? response.formData?.get('password-confirm')?.toString() : undefined}
+            defaultValue={defaultPasswordConfirm}
             disabled={pending}
             id="password-confirm"
             maxLength={64}
@@ -171,7 +165,7 @@ export default function SignupForm() {
           <input
             aria-invalid={!!nicknameError}
             autoCapitalize="off"
-            defaultValue={getDefaultValue('nickname')}
+            defaultValue={defaultNickname}
             disabled={pending}
             id="nickname"
             maxLength={32}

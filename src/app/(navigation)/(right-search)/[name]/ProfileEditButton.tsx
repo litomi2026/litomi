@@ -39,23 +39,19 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
   const [profileImageURL, setProfileImageURL] = useState(defaultProfileImageURL)
   const [_, startTransition] = useTransition()
 
-  const [response, dispatchNewProfile, pending] = useActionResponse(
-    editProfile,
-    {},
-    {
-      onSuccess: (data) => {
-        toast.success(data.message)
-        queryClient.invalidateQueries({ queryKey: QueryKeys.me, exact: true })
-        setShowModal(false)
-        router.replace(data.location)
-      },
-      onError: (error) => {
-        if (typeof error === 'string') {
-          toast.error(error)
-        }
-      },
+  const [response, dispatchNewProfile, pending] = useActionResponse(editProfile, {
+    onSuccess: (data) => {
+      toast.success(data.message)
+      queryClient.invalidateQueries({ queryKey: QueryKeys.me, exact: true })
+      setShowModal(false)
+      router.replace(data.location)
     },
-  )
+    onError: (error) => {
+      if (typeof error === 'string') {
+        toast.error(error)
+      }
+    },
+  })
 
   const nameError = getFieldError(response, 'name')
   const nicknameError = getFieldError(response, 'nickname')

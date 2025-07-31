@@ -44,9 +44,9 @@ describe('signup action', () => {
     const result = await signup({}, formData)
 
     expect(result.ok).toBe(false)
-    expect('error' in result).toBe(true)
+    expect(!result.ok && typeof result.error === 'object' && 'password' in result.error).toBe(true)
 
-    if (!result.ok && typeof result.error === 'object') {
+    if (!result.ok && typeof result.error === 'object' && 'password' in result.error) {
       expect(result.error.password).toContain('비밀번호는')
     }
   })
@@ -59,9 +59,9 @@ describe('signup action', () => {
     const result = await signup({}, formData)
 
     expect(result.ok).toBe(false)
-    expect('error' in result).toBe(true)
+    expect(!result.ok && typeof result.error === 'object' && 'password-confirm' in result.error).toBe(true)
 
-    if (!result.ok && typeof result.error === 'object') {
+    if (!result.ok && typeof result.error === 'object' && 'password-confirm' in result.error) {
       expect(result.error['password-confirm']).toBe('비밀번호와 비밀번호 확인 값이 일치하지 않아요')
     }
   })
@@ -74,9 +74,9 @@ describe('signup action', () => {
     const result = await signup({}, formData)
 
     expect(result.ok).toBe(false)
-    expect('error' in result).toBe(true)
+    expect(!result.ok && typeof result.error === 'object' && 'password' in result.error).toBe(true)
 
-    if (!result.ok && typeof result.error === 'object') {
+    if (!result.ok && typeof result.error === 'object' && 'password' in result.error) {
       expect(result.error.password).toBe('아이디와 비밀번호는 같을 수 없어요')
     }
   })

@@ -63,18 +63,14 @@ export default function LoginForm() {
     [queryClient, router],
   )
 
-  const [response, formAction, pending] = useActionResponse(
-    login,
-    {},
-    {
-      onSuccess: handleLoginSuccess,
-      onError: (error) => {
-        if (typeof error === 'string') {
-          toast.error(error)
-        }
-      },
+  const [response, formAction, pending] = useActionResponse(login, {
+    onSuccess: handleLoginSuccess,
+    onError: (error) => {
+      if (typeof error === 'string') {
+        toast.error(error)
+      }
     },
-  )
+  })
 
   const loginIdError = getFieldError(response, 'loginId')
   const passwordError = getFieldError(response, 'password')
