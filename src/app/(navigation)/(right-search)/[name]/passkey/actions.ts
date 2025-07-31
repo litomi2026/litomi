@@ -4,6 +4,7 @@ import {
   AuthenticatorTransportFuture,
   generateAuthenticationOptions,
   generateRegistrationOptions,
+  RegistrationResponseJSON,
   verifyAuthenticationResponse,
   verifyRegistrationResponse,
 } from '@simplewebauthn/server'
@@ -15,6 +16,7 @@ import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID, WEBAUTHN_RP_NAME } from '@/constants/e
 import { db } from '@/database/drizzle'
 import { ChallengeType, decodeDeviceType, encodeDeviceType } from '@/database/enum'
 import { challengeTable, credentialTable, userTable } from '@/database/schema'
+import { badRequest, forbidden, internalServerError, ok, unauthorized } from '@/utils/action-response'
 import { getUserIdFromAccessToken, setAccessTokenCookie } from '@/utils/cookie'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
 
@@ -22,6 +24,7 @@ import { getAuthenticationOptionsSchema, verifyAuthenticationSchema, verifyRegis
 import { generateFakeCredentials } from './utils'
 
 const THREE_MINUTES = 3 * 60 * 1000
+const MAX_CREDENTIALS_PER_USER = 10
 
 export async function deleteCredential(credentialId: string, username?: string) {
   const cookieStore = await cookies()
@@ -73,7 +76,7 @@ export async function getAuthenticationOptions(loginId: string) {
         transports: credentialTable.transports,
       })
       .from(userTable)
-      .leftJoin(credentialTable, sql`${credentialTable.userId} = ${userTable.id}`)
+      .innerJoin(credentialTable, sql`${credentialTable.userId} = ${userTable.id}`)
       .where(sql`${userTable.loginId} = ${loginId}`)
 
     const userId = userWithCredentials[0]?.userId
@@ -82,7 +85,7 @@ export async function getAuthenticationOptions(loginId: string) {
       ? userWithCredentials
           .filter((credential) => credential.credentialId)
           .map((credential) => ({
-            id: credential.credentialId!,
+            id: credential.credentialId,
             ...(credential.transports && { transports: credential.transports as AuthenticatorTransportFuture[] }),
           }))
       : generateFakeCredentials(loginId)
@@ -120,66 +123,67 @@ export async function getRegistrationOptions() {
   const userId = await getUserIdFromAccessToken(cookieStore)
 
   if (!userId) {
-    return { success: false, error: 'Unauthorized' } as const
+    return unauthorized('로그인 정보가 없거나 만료됐어요')
   }
 
   try {
-    const [user] = await db
-      .select({
-        id: userTable.id,
-        name: userTable.name,
-        loginId: userTable.loginId,
-        nickname: userTable.nickname,
-      })
-      .from(userTable)
-      .where(sql`${userTable.id} = ${userId}`)
+    return await db.transaction(async (tx) => {
+      const existingCredentials = await tx
+        .select({
+          userId: userTable.id,
+          name: userTable.name,
+          loginId: userTable.loginId,
+          nickname: userTable.nickname,
+          credentialId: credentialTable.id,
+          transports: credentialTable.transports,
+        })
+        .from(userTable)
+        .innerJoin(credentialTable, sql`${credentialTable.userId} = ${userTable.id}`)
+        .where(sql`${userTable.id} = ${userId}`)
 
-    if (!user) {
-      return { success: false, error: 'Not Found' } as const
-    }
+      const user = existingCredentials[0]
 
-    const existingCredentials = await db
-      .select({
-        id: credentialTable.id,
-        transports: credentialTable.transports,
-      })
-      .from(credentialTable)
-      .where(sql`${credentialTable.userId} = ${user.id}`)
+      if (existingCredentials.length >= MAX_CREDENTIALS_PER_USER) {
+        return badRequest(`최대 ${MAX_CREDENTIALS_PER_USER}개의 패스키만 등록할 수 있어요`)
+      }
 
-    const options = await generateRegistrationOptions({
-      rpName: WEBAUTHN_RP_NAME,
-      rpID: WEBAUTHN_RP_ID,
-      userName: user.loginId,
-      userID: new Uint8Array(Buffer.from(user.id.toString())),
-      userDisplayName: user.nickname || user.name,
-      attestationType: 'direct',
-      excludeCredentials: existingCredentials.map((c) => ({
-        id: c.id,
+      const excludeCredentials = existingCredentials.map((c) => ({
+        id: c.credentialId,
         ...(c.transports?.length && { transports: c.transports as AuthenticatorTransportFuture[] }),
-      })),
-      authenticatorSelection: {
-        userVerification: 'required',
-        residentKey: 'required',
-      },
+      }))
+
+      const options = await generateRegistrationOptions({
+        rpName: WEBAUTHN_RP_NAME,
+        rpID: WEBAUTHN_RP_ID,
+        userName: user.loginId,
+        userID: new Uint8Array(Buffer.from(user.userId.toString())),
+        userDisplayName: user.nickname || user.name,
+        attestationType: 'direct',
+        excludeCredentials,
+        authenticatorSelection: {
+          userVerification: 'required',
+          residentKey: 'required',
+        },
+      })
+
+      await tx
+        .insert(challengeTable)
+        .values({
+          userId: user.userId,
+          challenge: options.challenge,
+          type: ChallengeType.REGISTRATION,
+          expiresAt: new Date(Date.now() + THREE_MINUTES),
+        })
+        .onConflictDoUpdate({
+          target: [challengeTable.userId, challengeTable.type],
+          set: { challenge: options.challenge, expiresAt: new Date(Date.now() + THREE_MINUTES) },
+        })
+
+      return ok(options)
     })
-
-    await db
-      .insert(challengeTable)
-      .values({
-        userId: user.id,
-        challenge: options.challenge,
-        type: ChallengeType.REGISTRATION,
-        expiresAt: new Date(Date.now() + THREE_MINUTES),
-      })
-      .onConflictDoUpdate({
-        target: [challengeTable.userId, challengeTable.type],
-        set: { challenge: options.challenge, expiresAt: new Date(Date.now() + THREE_MINUTES) },
-      })
-
-    return { success: true, options } as const
   } catch (error) {
     console.error('getRegistrationOptions:', error)
-    return { success: false, error: 'Internal Server Error' } as const
+    return internalServerError('패스키 등록 중 오류가 발생했어요')
   }
 }
 
@@ -273,11 +277,11 @@ export async function verifyAuthentication(body: unknown) {
   }
 }
 
-export async function verifyRegistration(body: unknown, username: string) {
+export async function verifyRegistration(body: RegistrationResponseJSON, username: string) {
   const validation = verifyRegistrationSchema.safeParse(body)
 
   if (!validation.success) {
-    return { success: false, error: 'Bad Request' } as const
+    return badRequest('잘못된 요청이에요')
   }
 
   const registrationResponse = validation.data
@@ -285,67 +289,62 @@ export async function verifyRegistration(body: unknown, username: string) {
   const userId = await getUserIdFromAccessToken(cookieStore)
 
   if (!userId) {
-    return { success: false, error: 'Unauthorized' } as const
+    return unauthorized('로그인 정보가 없거나 만료됐어요')
   }
 
   try {
-    const [stored] = await db
-      .select({ challenge: challengeTable.challenge })
-      .from(challengeTable)
-      .where(
-        sql`${challengeTable.userId} = ${userId} AND ${challengeTable.type} = ${ChallengeType.REGISTRATION} AND ${challengeTable.expiresAt} > NOW()`,
-      )
+    return await db.transaction(async (tx) => {
+      const [stored] = await tx
+        .select({ challenge: challengeTable.challenge })
+        .from(challengeTable)
+        .where(
+          sql`${challengeTable.userId} = ${userId} AND ${challengeTable.type} = ${ChallengeType.REGISTRATION} AND ${challengeTable.expiresAt} > NOW()`,
+        )
 
-    if (!stored) {
-      return { success: false, error: 'Forbidden' } as const
-    }
+      if (!stored) {
+        return forbidden('패스키를 등록할 수 없어요')
+      }
 
-    const { verified, registrationInfo } = await verifyRegistrationResponse({
-      response: registrationResponse,
-      expectedChallenge: stored.challenge,
-      expectedOrigin: WEBAUTHN_ORIGIN,
-      expectedRPID: WEBAUTHN_RP_ID,
-    })
+      const { verified, registrationInfo } = await verifyRegistrationResponse({
+        response: registrationResponse,
+        expectedChallenge: stored.challenge,
+        expectedOrigin: WEBAUTHN_ORIGIN,
+        expectedRPID: WEBAUTHN_RP_ID,
+      })
 
-    if (!verified || !registrationInfo) {
-      return { success: false, error: 'Forbidden' } as const
-    }
+      if (!verified || !registrationInfo) {
+        return forbidden('패스키를 등록할 수 없어요')
+      }
 
-    const { credential } = registrationInfo
-    const { id: credentialId, counter, transports, publicKey } = credential
+      const { credential } = registrationInfo
+      const { id: credentialId, counter, transports, publicKey } = credential
 
-    const newPasskey = {
-      id: credentialId,
-      counter,
-      publicKey: Buffer.from(publicKey).toString('base64'),
-      deviceType: encodeDeviceType(registrationResponse.authenticatorAttachment),
-      transports,
-      userId: Number(userId),
-      createdAt: new Date(),
-    }
+      const newPasskey = {
+        id: credentialId,
+        counter,
+        publicKey: Buffer.from(publicKey).toString('base64'),
+        deviceType: encodeDeviceType(registrationResponse.authenticatorAttachment),
+        transports,
+        userId: Number(userId),
+        createdAt: new Date(),
+      }
 
-    await db.transaction((tx) =>
-      Promise.all([
+      await Promise.all([
         tx.insert(credentialTable).values(newPasskey),
         tx
           .delete(challengeTable)
-          .where(sql`${challengeTable.userId} = ${userId} AND ${challengeTable.type} = ${ChallengeType.REGISTRATION}`),
-      ]),
-    )
+          .where(sql`${challengeTable.userId} = ${userId} AND ${challengeTable.expiresAt} < NOW()`),
+      ])
 
-    revalidatePath(`/@${username}/passkey`)
+      revalidatePath(`/@${username}/passkey`)
 
-    return {
-      success: true,
-      passkey: {
-        id: newPasskey.id,
-        createdAt: newPasskey.createdAt,
+      return ok({
+        ...newPasskey,
         deviceType: decodeDeviceType(newPasskey.deviceType),
-        transports: newPasskey.transports,
-      },
-    } as const
+      })
+    })
   } catch (error) {
     console.error('verifyRegistration:', error)
-    return { success: false, error: 'Internal Server Error' } as const
+    return internalServerError('패스키 등록 중 오류가 발생했어요')
   }
 }

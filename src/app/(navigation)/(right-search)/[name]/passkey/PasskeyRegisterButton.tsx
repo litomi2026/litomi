@@ -1,7 +1,6 @@
 'use client'
 
 import { startRegistration } from '@simplewebauthn/browser'
-import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -16,7 +15,6 @@ import { getRegistrationOptions, verifyRegistration } from './actions'
 export default function PasskeyRegisterButton() {
   const [loading, setLoading] = useState(false)
   const [showInfoModal, setShowInfoModal] = useState(false)
-  const router = useRouter()
   const { data: me } = useMeQuery()
   const myName = me?.name
 
@@ -31,21 +29,20 @@ export default function PasskeyRegisterButton() {
     try {
       const optionsResult = await getRegistrationOptions()
 
-      if (!optionsResult.success) {
-        toast.error('패스키 등록을 시작할 수 없어요')
+      if (!optionsResult.ok) {
+        toast.error(optionsResult.error)
         return
       }
 
-      const registrationResponse = await startRegistration({ optionsJSON: optionsResult.options })
+      const registrationResponse = await startRegistration({ optionsJSON: optionsResult.data })
       const verifyResult = await verifyRegistration(registrationResponse, myName)
 
-      if (!verifyResult.success) {
-        toast.error('패스키 등록에 실패했어요')
+      if (!verifyResult.ok) {
+        toast.error(verifyResult.error)
         return
       }
 
-      toast.success('패스키가 등록됐어요')
-      router.refresh()
+      toast.success('패스키를 등록했어요')
     } catch (error) {
       if (error instanceof Error) {
         if (error.name === 'NotAllowedError') {
@@ -54,9 +51,9 @@ export default function PasskeyRegisterButton() {
           toast.error('이미 등록된 패스키가 있어요')
         } else if (error.name === 'NotSupportedError') {
           toast.error('이 브라우저는 패스키를 지원하지 않아요')
-        } else {
-          toast.error('패스키 등록 중 오류가 발생했어요')
         }
+      } else {
+        toast.error('패스키 등록 중 오류가 발생했어요')
       }
     } finally {
       setLoading(false)
