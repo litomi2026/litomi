@@ -1,7 +1,7 @@
 import { CANONICAL_URL } from './url'
 
 export const APPLICATION_NAME = 'Litomi - Manga mirror'
-export const SHORT_NAME = 'Litomi'
+export const SHORT_NAME = '리토미'
 
 export const DESCRIPTION =
   'Read manga online for free without any ads. Fast loading and mobile friendly. Update daily with latest chapters.'
