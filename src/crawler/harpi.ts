@@ -177,11 +177,7 @@ export class HarpiClient {
         const tagInfo = HARPI_TAG_MAP[tagId]
 
         if (!tagInfo) {
-          return {
-            category: '',
-            value: tagId,
-            label: tagId,
-          }
+          return null
         }
 
         const enTag = tagInfo.en

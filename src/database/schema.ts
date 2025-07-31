@@ -45,7 +45,8 @@ export const credentialTable = pgTable(
   {
     id: varchar({ length: 256 }).primaryKey(),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-    counter: bigint({ mode: 'number' }).notNull().default(0),
+    lastUsedAt: timestamp('last_used_at', { withTimezone: true }).defaultNow().notNull(),
+    counter: integer().notNull().default(0),
     publicKey: text('public_key').notNull(),
     deviceType: smallint('device_type').notNull(),
     transports: text().array(),
