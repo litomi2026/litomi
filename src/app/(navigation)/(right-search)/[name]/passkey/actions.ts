@@ -16,7 +16,7 @@ import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID, WEBAUTHN_RP_NAME } from '@/constants/e
 import { db } from '@/database/drizzle'
 import { ChallengeType, decodeDeviceType, encodeDeviceType } from '@/database/enum'
 import { challengeTable, credentialTable, userTable } from '@/database/schema'
-import { badRequest, forbidden, internalServerError, ok, unauthorized } from '@/utils/action-response'
+import { badRequest, forbidden, internalServerError, ok, tooManyRequests, unauthorized } from '@/utils/action-response'
 import { getUserIdFromAccessToken, setAccessTokenCookie } from '@/utils/cookie'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
 
@@ -53,68 +53,75 @@ export async function deleteCredential(credentialId: string, username?: string) 
   }
 }
 
-const authenticationOptionsLimiter = new RateLimiter(RateLimitPresets.strict())
+const authenticationLimiter = new RateLimiter(RateLimitPresets.strict())
 
 export async function getAuthenticationOptions(loginId: string) {
   const validation = getAuthenticationOptionsSchema.safeParse({ loginId })
 
   if (!validation.success) {
-    return { success: false, error: 'Bad Request' } as const
+    return badRequest('잘못된 요청이에요')
   }
 
-  const { allowed, retryAfter } = await authenticationOptionsLimiter.check(loginId)
+  const { allowed, retryAfter } = await authenticationLimiter.check(loginId)
 
   if (!allowed) {
-    return { success: false, error: 'Too Many Requests', retryAfter } as const
+    const minutes = retryAfter ? Math.ceil(retryAfter / 60) : 1
+    return tooManyRequests(`너무 많은 로그인 시도가 있었어요. ${minutes}분 후에 다시 시도해주세요.`)
   }
 
   try {
-    const userWithCredentials = await db
-      .select({
-        userId: userTable.id,
-        credentialId: credentialTable.id,
-        transports: credentialTable.transports,
+    const response = await db.transaction(async (tx) => {
+      const userWithCredentials = await tx
+        .select({
+          userId: userTable.id,
+          credentialId: credentialTable.id,
+          transports: credentialTable.transports,
+        })
+        .from(userTable)
+        .innerJoin(credentialTable, sql`${credentialTable.userId} = ${userTable.id}`)
+        .where(sql`${userTable.loginId} = ${loginId}`)
+
+      const userId = userWithCredentials[0]?.userId
+
+      const allowCredentials = userId
+        ? userWithCredentials
+            .filter((credential) => credential.credentialId)
+            .map((credential) => ({
+              id: credential.credentialId,
+              ...(credential.transports && { transports: credential.transports as AuthenticatorTransportFuture[] }),
+            }))
+        : generateFakeCredentials(loginId)
+
+      const options = await generateAuthenticationOptions({
+        rpID: WEBAUTHN_RP_ID,
+        allowCredentials,
+        userVerification: 'required',
       })
-      .from(userTable)
-      .innerJoin(credentialTable, sql`${credentialTable.userId} = ${userTable.id}`)
-      .where(sql`${userTable.loginId} = ${loginId}`)
 
-    const userId = userWithCredentials[0]?.userId
+      if (userId) {
+        await tx
+          .insert(challengeTable)
+          .values({
+            userId,
+            challenge: options.challenge,
+            type: ChallengeType.AUTHENTICATION,
+            expiresAt: new Date(Date.now() + THREE_MINUTES),
+          })
+          .onConflictDoUpdate({
+            target: [challengeTable.userId, challengeTable.type],
+            set: { challenge: options.challenge, expiresAt: new Date(Date.now() + THREE_MINUTES) },
+          })
+      }
 
-    const allowCredentials = userId
-      ? userWithCredentials
-          .filter((credential) => credential.credentialId)
-          .map((credential) => ({
-            id: credential.credentialId,
-            ...(credential.transports && { transports: credential.transports as AuthenticatorTransportFuture[] }),
-          }))
-      : generateFakeCredentials(loginId)
-
-    const options = await generateAuthenticationOptions({
-      rpID: WEBAUTHN_RP_ID,
-      allowCredentials,
-      userVerification: 'required',
+      return ok(options)
     })
 
-    if (userId) {
-      await db
-        .insert(challengeTable)
-        .values({
-          userId,
-          challenge: options.challenge,
-          type: ChallengeType.AUTHENTICATION,
-          expiresAt: new Date(Date.now() + THREE_MINUTES),
-        })
-        .onConflictDoUpdate({
-          target: [challengeTable.userId, challengeTable.type],
-          set: { challenge: options.challenge, expiresAt: new Date(Date.now() + THREE_MINUTES) },
-        })
-    }
+    await authenticationLimiter.reward(loginId)
 
-    return { success: true, options } as const
+    return response
   } catch (error) {
     console.error('getAuthenticationOptions:', error)
-    return { success: false, error: 'Internal Server Error' } as const
+    return internalServerError('패스키 인증 중 오류가 발생했어요')
   }
 }
 
@@ -191,89 +198,83 @@ export async function verifyAuthentication(body: unknown) {
   const validation = verifyAuthenticationSchema.safeParse(body)
 
   if (!validation.success) {
-    return { success: false, error: 'Bad Request' } as const
+    return badRequest('잘못된 요청이에요')
   }
 
   const validatedData = validation.data
 
   try {
-    const credentialId = validatedData.id
-
-    const [result] = await db
-      .select({
-        credential: credentialTable,
-        challenge: challengeTable.challenge,
-      })
-      .from(credentialTable)
-      .leftJoin(
-        challengeTable,
-        sql`${challengeTable.userId} = ${credentialTable.userId} 
+    return await db.transaction(async (tx) => {
+      const [result] = await tx
+        .select({
+          credential: credentialTable,
+          challenge: challengeTable.challenge,
+        })
+        .from(credentialTable)
+        .innerJoin(challengeTable, sql`${challengeTable.userId} = ${credentialTable.userId}`)
+        .where(
+          sql`${credentialTable.id} = ${validatedData.id} 
             AND ${challengeTable.type} = ${ChallengeType.AUTHENTICATION} 
             AND ${challengeTable.expiresAt} > NOW()`,
-      )
-      .where(sql`${credentialTable.id} = ${validatedData.id}`)
+        )
 
-    const { credential, challenge } = result ?? {}
+      if (!result) {
+        return unauthorized('패스키를 검증할 수 없어요')
+      }
 
-    if (!challenge || !credential) {
-      return { success: false, error: 'Unauthorized' } as const
-    }
+      const { credential, challenge } = result
 
-    const { verified, authenticationInfo } = await verifyAuthenticationResponse({
-      response: validatedData,
-      expectedChallenge: challenge,
-      expectedOrigin: WEBAUTHN_ORIGIN,
-      expectedRPID: WEBAUTHN_RP_ID,
-      credential: {
-        publicKey: new Uint8Array(Buffer.from(credential.publicKey, 'base64')),
-        id: credential.id,
-        counter: Number(credential.counter),
-      },
-    })
+      const { verified, authenticationInfo } = await verifyAuthenticationResponse({
+        response: validatedData,
+        expectedChallenge: challenge,
+        expectedOrigin: WEBAUTHN_ORIGIN,
+        expectedRPID: WEBAUTHN_RP_ID,
+        credential: {
+          publicKey: new Uint8Array(Buffer.from(credential.publicKey, 'base64')),
+          id: credential.id,
+          counter: Number(credential.counter),
+        },
+      })
 
-    if (!verified || !authenticationInfo) {
-      return { success: false, error: 'Forbidden' } as const
-    }
+      if (!verified || !authenticationInfo) {
+        return forbidden('패스키를 검증할 수 없어요')
+      }
 
-    const newCounter =
-      authenticationInfo.credentialDeviceType === 'singleDevice' ? authenticationInfo.newCounter : credential.counter
+      const newCounter =
+        authenticationInfo.credentialDeviceType === 'singleDevice' ? authenticationInfo.newCounter : credential.counter
 
-    await db.transaction((tx) =>
-      Promise.all([
+      const [[user]] = await Promise.all([
+        tx
+          .update(userTable)
+          .set({ loginAt: new Date() })
+          .where(sql`${userTable.id} = ${credential.userId}`)
+          .returning({
+            id: userTable.id,
+            loginId: userTable.loginId,
+            name: userTable.name,
+            lastLoginAt: userTable.loginAt,
+            lastLogoutAt: userTable.logoutAt,
+          }),
         tx
           .update(credentialTable)
           .set({
             counter: newCounter,
             lastUsedAt: new Date(),
           })
-          .where(sql`${credentialTable.id} = ${credentialId}`),
+          .where(sql`${credentialTable.id} = ${validatedData.id}`),
         tx
           .delete(challengeTable)
           .where(sql`${challengeTable.userId} = ${credential.userId} AND ${challengeTable.expiresAt} < NOW()`),
-      ]),
-    )
-
-    const cookieStore = await cookies()
-
-    const [, [user]] = await Promise.all([
-      setAccessTokenCookie(cookieStore, credential.userId),
-      db
-        .update(userTable)
-        .set({ loginAt: new Date() })
-        .where(sql`${userTable.id} = ${credential.userId}`)
-        .returning({
-          id: userTable.id,
-          loginId: userTable.loginId,
-          name: userTable.name,
-          lastLoginAt: userTable.loginAt,
-          lastLogoutAt: userTable.logoutAt,
+        cookies().then((cookieStore) => {
+          setAccessTokenCookie(cookieStore, credential.userId)
         }),
-    ])
+      ])
 
-    return { success: true, user } as const
+      return ok(user)
+    })
   } catch (error) {
     console.error('verifyAuthentication:', error)
-    return { success: false, error: 'Internal Server Error' } as const
+    return internalServerError('패스키 인증 중 오류가 발생했어요')
   }
 }
 
