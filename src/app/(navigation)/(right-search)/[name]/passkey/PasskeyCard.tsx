@@ -21,23 +21,27 @@ type Props = {
 }
 
 export default function PasskeyCard({ passkey, username }: Readonly<Props>) {
-  const { deviceType, createdAt, transports, id } = passkey
+  const { deviceType, createdAt, lastUsedAt, transports, id } = passkey
   const { icon, label, bgColor } = getDeviceInfo(deviceType || '')
-  const createdDate = createdAt ? new Date(createdAt) : null
-  const relativeTime = createdDate ? getRelativeTime(createdDate) : null
+  const createdRelativeTime = getRelativeTime(createdAt)
+  const lastUsedRelativeTime = getRelativeTime(lastUsedAt)
   const truncatedId = getTruncatedId(id)
   const verificationMethod = getUserVerificationMethod(deviceType || '')
+  const isPlatform = deviceType === 'platform'
 
   return (
     <PasskeyMobileDeleteWrapper credentialId={passkey.id} username={username}>
-      <div className="relative bg-zinc-900 border border-zinc-800 rounded-xl p-4 sm:p-5">
-        <div className="flex gap-3">
-          <div className="shrink-0">
-            <div className={`h-10 w-10 rounded-lg ${bgColor} flex items-center justify-center`}>{icon}</div>
+      <div
+        className="group relative bg-zinc-900 border-2 rounded-2xl p-5 data-[platform=true]:border-brand-end/40 border-zinc-800"
+        data-platform={isPlatform}
+      >
+        <div className="flex items-start gap-4">
+          <div className="relative shrink-0">
+            <div className={`h-12 w-12 rounded-xl ${bgColor} flex items-center justify-center transition`}>{icon}</div>
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-3">
-              <div>
+              <div className="flex-1">
                 <h3 className="font-medium text-base text-zinc-100 flex items-center gap-2">
                   {label}
                   {deviceType === 'platform' && (
@@ -47,19 +51,14 @@ export default function PasskeyCard({ passkey, username }: Readonly<Props>) {
                     </span>
                   )}
                 </h3>
-                {createdDate && (
-                  <p className="text-sm text-zinc-500 mt-0.5">
-                    {relativeTime ||
-                      createdDate.toLocaleDateString('ko-KR', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                      })}
-                  </p>
-                )}
+                <div className="flex items-center gap-2 mt-1">
+                  {lastUsedAt && <p className="text-sm text-zinc-400">{lastUsedRelativeTime} 사용</p>}
+                  {createdAt && lastUsedAt && <span className="text-zinc-600">·</span>}
+                  {createdAt && <p className="text-sm text-zinc-500">{createdRelativeTime} 등록</p>}
+                </div>
               </div>
               <PasskeyDeleteButton
-                className="p-2 text-zinc-500 hover:text-red-500 rounded-xl hover:bg-red-900/20 transition"
+                className="opacity-0 group-hover:opacity-100 p-2 text-zinc-600 hover:text-red-400 rounded-xl hover:bg-red-900/10 transition-all"
                 credentialId={passkey.id}
                 username={username}
               />
@@ -85,6 +84,9 @@ export default function PasskeyCard({ passkey, username }: Readonly<Props>) {
             </div>
           </div>
         </div>
+        {isPlatform && (
+          <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-brand-end/80 to-transparent opacity-0 group-hover:opacity-100 transition" />
+        )}
       </div>
     </PasskeyMobileDeleteWrapper>
   )
@@ -92,6 +94,14 @@ export default function PasskeyCard({ passkey, username }: Readonly<Props>) {
 
 export function PasskeyCardSkeleton() {
   return (
-    <div className=" h-[104px] sm:h-[112px] rounded-xl bg-zinc-900 border border-zinc-800 p-4 sm:p-5 animate-fade-in" />
+    <div className="h-[88px] rounded-2xl bg-zinc-900/50 backdrop-blur-sm border border-zinc-800/50 animate-pulse">
+      <div className="p-5 flex items-start gap-4">
+        <div className="h-12 w-12 rounded-xl bg-zinc-800 animate-pulse" />
+        <div className="flex-1 space-y-2">
+          <div className="h-5 w-32 bg-zinc-800 rounded animate-pulse" />
+          <div className="h-4 w-24 bg-zinc-800 rounded animate-pulse" />
+        </div>
+      </div>
+    </div>
   )
 }

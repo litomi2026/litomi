@@ -238,13 +238,14 @@ export async function verifyAuthentication(body: unknown) {
       Promise.all([
         tx
           .update(credentialTable)
-          .set({ counter: newCounter })
+          .set({
+            counter: newCounter,
+            lastUsedAt: new Date(),
+          })
           .where(sql`${credentialTable.id} = ${credentialId}`),
         tx
           .delete(challengeTable)
-          .where(
-            sql`${challengeTable.userId} = ${credential.userId} AND ${challengeTable.type} = ${ChallengeType.AUTHENTICATION}`,
-          ),
+          .where(sql`${challengeTable.userId} = ${credential.userId} AND ${challengeTable.expiresAt} < NOW()`),
       ]),
     )
 

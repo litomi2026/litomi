@@ -31,6 +31,7 @@ export default async function PasskeyPage({ params }: PageProps<Params>) {
     .select({
       id: credentialTable.id,
       createdAt: credentialTable.createdAt,
+      lastUsedAt: credentialTable.lastUsedAt,
       deviceType: credentialTable.deviceType,
       transports: credentialTable.transports,
     })
