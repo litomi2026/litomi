@@ -30,7 +30,8 @@ export default function BookmarkList({ initialBookmarks }: Readonly<Props>) {
     isFetchingNextPage: isLoadingMoreBookmarks,
   } = useBookmarkIdsInfiniteQuery(initialBookmarks)
 
-  const bookmarkIds = useMemo(() => bookmarksData.pages.flatMap((page) => page.bookmarks), [bookmarksData.pages])
+  const bookmarkPages = bookmarksData?.pages
+  const bookmarkIds = useMemo(() => bookmarkPages?.flatMap((page) => page.bookmarks) ?? [], [bookmarkPages])
 
   const infiniteScrollTriggerRef = useInfiniteScrollObserver({
     hasNextPage: hasMoreBookmarksToLoad,
