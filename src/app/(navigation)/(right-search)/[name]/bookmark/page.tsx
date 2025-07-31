@@ -5,30 +5,37 @@ import { Suspense } from 'react'
 import BookmarkDownloadButton from '@/app/(navigation)/(right-search)/[name]/bookmark/BookmarkDownloadButton'
 import BookmarkUploadButton from '@/app/(navigation)/(right-search)/[name]/bookmark/BookmarkUploadButton'
 import selectBookmarks from '@/sql/selectBookmarks'
+import { PageProps } from '@/types/nextjs'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
+import { getUsernameFromParam } from '@/utils/param'
 
+import { getUserById } from '../common'
 import BookmarkList from './BookmarkList'
 import BookmarkTooltip from './BookmarkTooltip'
 import { BOOKMARKS_PER_PAGE } from './constants'
 import { GuestView } from './GuestView'
 import Loading from './loading'
+import { PrivateBookmarksView } from './PrivateBookmarksView'
 import RefreshButton from './RefreshButton'
 
-export default async function BookmarkPage() {
-  const cookieStore = await cookies()
+type Params = {
+  name: string
+}
+
+export default async function BookmarkPage({ params }: PageProps<Params>) {
+  const [cookieStore, { name }] = await Promise.all([cookies(), params])
+  const usernameFromParam = getUsernameFromParam(name)
   const userId = await getUserIdFromAccessToken(cookieStore, false)
 
   if (!userId) {
     return <GuestView />
   }
 
-  // TODO(2025-07-16): 해당 사용자의 북마크 공개/비공개 판단하기
-  // if (!loginIdFromToken) {
-  //   return <GuestView />
-  // }
-  // if (loginIdFromToken !== loginIdFromParam) {
-  //   return <PrivateBookmarksView attemptedLoginId={loginIdFromParam} currentUserLoginId={loginIdFromToken} />
-  // }
+  const user = await getUserById(userId)
+
+  if (user.name !== usernameFromParam) {
+    return <PrivateBookmarksView usernameFromLoginUser={user.name} usernameFromParam={usernameFromParam} />
+  }
 
   const bookmarkRows = await selectBookmarks({ userId, limit: BOOKMARKS_PER_PAGE })
 

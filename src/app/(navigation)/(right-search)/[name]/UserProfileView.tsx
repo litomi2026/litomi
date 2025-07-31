@@ -18,7 +18,7 @@ type Props = {
   }
 }
 
-export default function UserProfile({ user }: Readonly<Props>) {
+export default function UserProfileView({ user }: Readonly<Props>) {
   return (
     <>
       <div className="relative h-48 w-full shrink-0">
