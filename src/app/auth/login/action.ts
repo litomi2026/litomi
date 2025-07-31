@@ -10,6 +10,7 @@ import { userTable } from '@/database/schema'
 import { loginIdSchema, passwordSchema } from '@/database/zod'
 import { badRequest, ok, tooManyRequests, unauthorized } from '@/utils/action-response'
 import { setAccessTokenCookie, setRefreshTokenCookie } from '@/utils/cookie'
+import { flattenZodFieldErrors } from '@/utils/form-error'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
 
 const loginSchema = z.object({
@@ -28,12 +29,7 @@ export default async function login(_prevState: unknown, formData: FormData) {
   })
 
   if (!validation.success) {
-    const fieldErrors: Record<string, string> = {}
-    validation.error.issues.forEach((issue) => {
-      const field = issue.path.join('.')
-      fieldErrors[field] = issue.message
-    })
-    return badRequest(fieldErrors)
+    return badRequest(flattenZodFieldErrors(validation.error))
   }
 
   const { loginId, password, remember } = validation.data

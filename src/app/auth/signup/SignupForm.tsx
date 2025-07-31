@@ -1,61 +1,76 @@
 'use client'
 
 import { useQueryClient } from '@tanstack/react-query'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useActionState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useCallback } from 'react'
 import { toast } from 'sonner'
 
-import IconInfo from '@/components/icons/IconInfo'
 import Loading from '@/components/ui/Loading'
-import TooltipPopover from '@/components/ui/TooltipPopover'
 import { loginIdPattern, passwordPattern } from '@/constants/pattern'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
+import { useActionResponse } from '@/hook/useActionResponse'
 import amplitude from '@/lib/amplitude/lazy'
 import { resetMeQuery } from '@/query/useMeQuery'
 import { sanitizeRedirect } from '@/utils'
-import { getErrorMessage, hasFieldError } from '@/utils/form-error'
 
 import signup from './action'
 
-const initialState = {} as Awaited<ReturnType<typeof signup>>
+type SignupData = {
+  userId: number
+  loginId: string
+  name: string
+  nickname: string
+}
 
 export default function SignupForm() {
-  const [{ error, success, formData, data }, formAction, pending] = useActionState(signup, initialState)
   const router = useRouter()
   const queryClient = useQueryClient()
-  const searchParams = useSearchParams()
-  const { loginId, name, userId, nickname } = data ?? {}
 
-  // NOTE: 폼 제출 후 오류 메시지를 표시함
-  useEffect(() => {
-    const errorMessage = getErrorMessage(error)
-    if (errorMessage) {
-      toast.error(errorMessage)
-    }
-  }, [error])
+  const handleSignupSuccess = useCallback(
+    async ({ loginId, name, userId, nickname }: SignupData) => {
+      toast.success(`${loginId} 계정으로 가입했어요`)
 
-  // NOTE: 회원가입 성공 후 로직을 처리함
-  useEffect(() => {
-    if (!success) {
-      return
-    }
+      if (userId) {
+        amplitude.setUserId(userId)
+        amplitude.track('signup', { loginId, nickname })
+      }
 
-    toast.success(`${loginId} 계정으로 가입했어요`)
-
-    if (userId) {
-      amplitude.setUserId(userId)
-      amplitude.track('signup', { loginId, nickname })
-    }
-
-    ;(async () => {
       resetMeQuery()
       await queryClient.invalidateQueries({ queryKey: QueryKeys.me, type: 'all' })
-      const redirect = searchParams.get(SearchParamKey.REDIRECT)
+      const params = new URLSearchParams(window.location.search)
+      const redirect = params.get(SearchParamKey.REDIRECT)
       const sanitizedURL = sanitizeRedirect(redirect) || '/'
-      router.replace(sanitizedURL.replace(/^\/@\//, `/@${name}/`))
-    })()
-  }, [loginId, name, queryClient, router, searchParams, success, userId, nickname])
+      const redirectURL = sanitizedURL.replace(/^\/@(?=\/|$|\?)/, `/@${name}`)
+      router.replace(redirectURL)
+    },
+    [queryClient, router],
+  )
+
+  const [response, formAction, pending] = useActionResponse(
+    signup,
+    {},
+    {
+      onSuccess: handleSignupSuccess,
+      onError: (error) => {
+        if (typeof error === 'string') {
+          toast.error(error)
+        }
+      },
+    },
+  )
+
+  function getFieldError(fieldName: string) {
+    if (!response.ok && typeof response.error === 'object') {
+      return response.error[fieldName]
+    }
+  }
+
+  function getDefaultValue(fieldName: string) {
+    if (!response.ok) {
+      return response.formData?.get(fieldName)?.toString()
+    }
+  }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     const formElement = e.target as HTMLFormElement
@@ -73,34 +88,23 @@ export default function SignupForm() {
     <form
       action={formAction}
       className="grid gap-6 
-        [&_label]:block [&_label]:text-sm [&_label]:md:text-base [&_label]:font-medium [&_label]:text-zinc-300 [&_label]:leading-7
-        [&_input]:mt-1 [&_input]:w-full [&_input]:rounded-md [&_input]:bg-zinc-800 [&_input]:border [&_input]:border-zinc-600 
-        [&_input]:px-3 [&_input]:py-2 [&_input]:placeholder-zinc-500 [&_input]:focus:outline-none [&_input]:focus:ring-2 [&_input]:focus:ring-zinc-500 
-        [&_input]:focus:border-transparent [&_input]:disabled:bg-zinc-700 [&_input]:disabled:text-zinc-400 [&_input]:disabled:border-zinc-500 [&_input]:disabled:cursor-not-allowed
-        [&_input]:aria-invalid:border-red-700 [&_input]:aria-invalid:focus:ring-red-700 [&_input]:aria-invalid:placeholder-red-700"
+      [&_label]:block [&_label]:text-sm [&_label]:md:text-base [&_label]:font-medium [&_label]:text-zinc-300 [&_label]:leading-7
+      [&_input]:mt-1 [&_input]:w-full [&_input]:rounded-md [&_input]:bg-zinc-800 [&_input]:border [&_input]:border-zinc-600 
+      [&_input]:px-3 [&_input]:py-2 [&_input]:placeholder-zinc-500 [&_input]:focus:outline-none [&_input]:focus:ring-2 [&_input]:focus:ring-zinc-500 
+      [&_input]:focus:border-transparent [&_input]:disabled:bg-zinc-700 [&_input]:disabled:text-zinc-400 [&_input]:disabled:border-zinc-500 [&_input]:disabled:cursor-not-allowed
+      [&_input]:aria-invalid:border-red-700 [&_input]:aria-invalid:focus:ring-red-700 [&_input]:aria-invalid:placeholder-red-700"
       onSubmit={handleSubmit}
     >
       <div className="grid gap-4">
         <div>
-          <div className="flex items-center gap-1">
-            <label htmlFor="loginId">
-              아이디 <span className="text-red-500">*</span>
-            </label>
-            <TooltipPopover className="flex" position="right" type="tooltip">
-              <IconInfo className="p-1.5 w-7 md:w-8 md:p-2" />
-              <div className="rounded-xl border-2 border-zinc-700 bg-background p-3 whitespace-nowrap text-sm">
-                <p>
-                  알파벳, 숫자 - . _ ~ 만 사용하여 <br />
-                  2자 이상의 아이디를 입력해주세요
-                </p>
-              </div>
-            </TooltipPopover>
-          </div>
+          <label htmlFor="loginId">
+            아이디 <span className="text-red-500">*</span>
+          </label>
           <input
-            aria-invalid={hasFieldError(error, 'loginId')}
+            aria-invalid={!!getFieldError('loginId')}
             autoCapitalize="off"
             autoFocus
-            defaultValue={formData?.get('loginId')?.toString()}
+            defaultValue={getDefaultValue('loginId')}
             disabled={pending}
             id="loginId"
             maxLength={32}
@@ -110,26 +114,22 @@ export default function SignupForm() {
             placeholder="아이디를 입력하세요"
             required
           />
+          {getFieldError('loginId') ? (
+            <p className="mt-1 text-xs text-red-500">{getFieldError('loginId')}</p>
+          ) : (
+            <p className="mt-1 text-xs text-zinc-400">
+              알파벳, 숫자 - . _ ~ 만 사용하여 2자 이상의 아이디를 입력해주세요
+            </p>
+          )}
         </div>
         <div>
-          <div className="flex items-center gap-1">
-            <label htmlFor="password">
-              비밀번호 <span className="text-red-500">*</span>
-            </label>
-            <TooltipPopover className="flex" position="right" type="tooltip">
-              <IconInfo className="p-1.5 w-7 md:w-8 md:p-2" />
-              <div className="rounded-xl border-2 border-zinc-700 bg-background p-3 whitespace-nowrap text-sm">
-                <p>
-                  알파벳, 숫자를 하나 이상 포함하여 <br />
-                  8자 이상의 비밀번호를 입력해주세요
-                </p>
-              </div>
-            </TooltipPopover>
-          </div>
+          <label htmlFor="password">
+            비밀번호 <span className="text-red-500">*</span>
+          </label>
           <input
-            aria-invalid={hasFieldError(error, 'password')}
+            aria-invalid={!!getFieldError('password')}
             autoCapitalize="off"
-            defaultValue={formData?.get('password')?.toString()}
+            defaultValue={getDefaultValue('password')}
             disabled={pending}
             id="password"
             maxLength={64}
@@ -140,15 +140,22 @@ export default function SignupForm() {
             required
             type="password"
           />
+          {getFieldError('password') ? (
+            <p className="mt-1 text-xs text-red-500">{getFieldError('password')}</p>
+          ) : (
+            <p className="mt-1 text-xs text-zinc-400">
+              알파벳, 숫자를 하나 이상 포함하여 8자 이상의 비밀번호를 입력해주세요
+            </p>
+          )}
         </div>
         <div>
           <label htmlFor="password-confirm">
             비밀번호 확인 <span className="text-red-500">*</span>
           </label>
           <input
-            aria-invalid={hasFieldError(error, 'password-confirm')}
+            aria-invalid={!!getFieldError('password-confirm')}
             autoCapitalize="off"
-            defaultValue={formData?.get('password-confirm')?.toString()}
+            defaultValue={!response.ok ? response.formData?.get('password-confirm')?.toString() : undefined}
             disabled={pending}
             id="password-confirm"
             maxLength={64}
@@ -158,21 +165,16 @@ export default function SignupForm() {
             required
             type="password"
           />
+          {getFieldError('password-confirm') && (
+            <p className="mt-1 text-xs text-red-500">{getFieldError('password-confirm')}</p>
+          )}
         </div>
         <div>
-          <div className="flex items-center gap-1">
-            <label htmlFor="nickname">닉네임</label>
-            <TooltipPopover className="flex" position="right" type="tooltip">
-              <IconInfo className="p-1.5 w-7 md:w-8 md:p-2" />
-              <div className="rounded-xl border-2 border-zinc-700 bg-background p-3 whitespace-nowrap text-sm">
-                <p>2자 이상 32자 이하로 입력해주세요. 나중에 변경할 수 있어요.</p>
-              </div>
-            </TooltipPopover>
-          </div>
+          <label htmlFor="nickname">닉네임</label>
           <input
-            aria-invalid={hasFieldError(error, 'nickname')}
+            aria-invalid={!!getFieldError('nickname')}
             autoCapitalize="off"
-            defaultValue={formData?.get('nickname')?.toString()}
+            defaultValue={getDefaultValue('nickname')}
             disabled={pending}
             id="nickname"
             maxLength={32}
@@ -180,6 +182,13 @@ export default function SignupForm() {
             name="nickname"
             placeholder="닉네임을 입력하세요"
           />
+          {getFieldError('nickname') ? (
+            <p className="mt-1 text-xs text-red-500">{getFieldError('nickname')}</p>
+          ) : (
+            <p className="mt-1 text-xs text-zinc-400">
+              닉네임은 2자 이상 32자 이하로 입력해주세요. 나중에 변경할 수 있어요.
+            </p>
+          )}
         </div>
       </div>
       <button

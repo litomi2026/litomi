@@ -28,8 +28,12 @@ describe('signup action', () => {
 
     const result = await signup({}, formData)
 
-    expect(result.success).toBeUndefined()
-    expect(result.error?.fields?.loginId).toBe('아이디는 최소 2자 이상이어야 해요')
+    expect(result.ok).toBe(false)
+    expect('error' in result).toBe(true)
+
+    if (!result.ok && typeof result.error === 'object') {
+      expect(result.error.loginId).toBe('아이디는 최소 2자 이상이어야 해요')
+    }
   })
 
   test('should return validation error for invalid password', async () => {
@@ -39,8 +43,12 @@ describe('signup action', () => {
 
     const result = await signup({}, formData)
 
-    expect(result.success).toBeUndefined()
-    expect(result.error?.fields?.password).toContain('비밀번호는')
+    expect(result.ok).toBe(false)
+    expect('error' in result).toBe(true)
+
+    if (!result.ok && typeof result.error === 'object') {
+      expect(result.error.password).toContain('비밀번호는')
+    }
   })
 
   test('should return validation error for password mismatch', async () => {
@@ -50,8 +58,12 @@ describe('signup action', () => {
 
     const result = await signup({}, formData)
 
-    expect(result.success).toBeUndefined()
-    expect(result.error?.fields?.['password-confirm']).toBe('비밀번호와 비밀번호 확인 값이 일치하지 않아요')
+    expect(result.ok).toBe(false)
+    expect('error' in result).toBe(true)
+
+    if (!result.ok && typeof result.error === 'object') {
+      expect(result.error['password-confirm']).toBe('비밀번호와 비밀번호 확인 값이 일치하지 않아요')
+    }
   })
 
   test('should return validation error when loginId equals password', async () => {
@@ -61,16 +73,23 @@ describe('signup action', () => {
 
     const result = await signup({}, formData)
 
-    expect(result.success).toBeUndefined()
-    expect(result.error?.fields?.password).toBe('아이디와 비밀번호는 같을 수 없어요')
+    expect(result.ok).toBe(false)
+    expect('error' in result).toBe(true)
+
+    if (!result.ok && typeof result.error === 'object') {
+      expect(result.error.password).toBe('아이디와 비밀번호는 같을 수 없어요')
+    }
   })
 
   test('should return FormErrors.INVALID_INPUT for empty form data', async () => {
     const result = await signup({}, formData)
 
-    expect(result.success).toBeUndefined()
-    expect(result.error?.fields).toHaveProperty('loginId')
-    expect(result.error?.fields).toHaveProperty('password')
-    expect(result.error?.fields).toHaveProperty('password-confirm')
+    expect(result.ok).toBe(false)
+
+    if (!result.ok) {
+      expect(result.error).toHaveProperty('loginId')
+      expect(result.error).toHaveProperty('password')
+      expect(result.error).toHaveProperty('password-confirm')
+    }
   })
 })

@@ -8,11 +8,13 @@ import { SALT_ROUNDS } from '@/constants'
 import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
 import { loginIdSchema, nicknameSchema, passwordSchema } from '@/database/zod'
+import { badRequest, conflict, created, tooManyRequests } from '@/utils/action-response'
 import { setAccessTokenCookie, setRefreshTokenCookie } from '@/utils/cookie'
-import { createFormError, FormError, FormErrors, zodToFormError } from '@/utils/form-error'
+import { flattenZodFieldErrors } from '@/utils/form-error'
 import { generateRandomNickname, generateRandomProfileImage } from '@/utils/nickname'
+import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
 
-const schema = z
+const signupSchema = z
   .object({
     loginId: loginIdSchema,
     password: passwordSchema,
@@ -28,20 +30,10 @@ const schema = z
     path: ['password'],
   })
 
-type SignupResult = {
-  success?: boolean
-  error?: FormError
-  formData?: FormData
-  data?: {
-    userId: number
-    loginId: string
-    name: string
-    nickname: string
-  }
-}
+const signupLimiter = new RateLimiter(RateLimitPresets.strict())
 
-export default async function signup(_prevState: unknown, formData: FormData): Promise<SignupResult> {
-  const validation = schema.safeParse({
+export default async function signup(_prevState: unknown, formData: FormData) {
+  const validation = signupSchema.safeParse({
     loginId: formData.get('loginId'),
     password: formData.get('password'),
     'password-confirm': formData.get('password-confirm'),
@@ -49,14 +41,17 @@ export default async function signup(_prevState: unknown, formData: FormData): P
   })
 
   if (!validation.success) {
-    const zodErrors = z.treeifyError(validation.error).properties
-    return {
-      error: zodErrors ? zodToFormError(zodErrors) : createFormError(FormErrors.INVALID_INPUT),
-      formData,
-    }
+    return badRequest(flattenZodFieldErrors(validation.error))
   }
 
   const { loginId, password, nickname } = validation.data
+  const { allowed, retryAfter } = await signupLimiter.check(loginId)
+
+  if (!allowed) {
+    const minutes = retryAfter ? Math.ceil(retryAfter / 60) : 1
+    return tooManyRequests(`너무 많은 회원가입 시도가 있었어요. ${minutes}분 후에 다시 시도해주세요.`)
+  }
+
   const passwordHash = await hash(password, SALT_ROUNDS)
 
   const [result] = await db
@@ -72,10 +67,7 @@ export default async function signup(_prevState: unknown, formData: FormData): P
     .returning({ id: userTable.id })
 
   if (!result) {
-    return {
-      error: { fields: { loginId: '이미 사용 중인 아이디에요' } },
-      formData,
-    }
+    return conflict('이미 사용 중인 아이디에요', formData)
   }
 
   const { id: userId } = result
@@ -83,13 +75,10 @@ export default async function signup(_prevState: unknown, formData: FormData): P
 
   await Promise.all([setAccessTokenCookie(cookieStore, userId), setRefreshTokenCookie(cookieStore, userId)])
 
-  return {
-    success: true,
-    data: {
-      userId,
-      loginId,
-      name: loginId,
-      nickname,
-    },
-  }
+  return created({
+    userId,
+    loginId,
+    name: loginId,
+    nickname,
+  })
 }
