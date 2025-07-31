@@ -8,7 +8,7 @@ import IconEye from '@/components/icons/IconEye'
 import IconEyeOff from '@/components/icons/IconEyeOff'
 import Loading from '@/components/ui/Loading'
 import { passwordPattern } from '@/constants/pattern'
-import useActionResponseV2, { getFieldError, getFormField } from '@/hook/useActionResponseV2'
+import useActionResponse, { getFieldError, getFormField } from '@/hook/useActionResponse'
 
 import changePassword from './action'
 
@@ -29,7 +29,7 @@ export default function PasswordChangeForm({ userId }: Readonly<Props>) {
     setPasswordStrength(strength)
   }, [])
 
-  const [response, dispatchAction, isPending] = useActionResponseV2({
+  const [response, dispatchAction, isPending] = useActionResponse({
     action: changePassword,
     onError: (error) => {
       if (typeof error === 'string') {
@@ -49,22 +49,18 @@ export default function PasswordChangeForm({ userId }: Readonly<Props>) {
   const defaultNewPassword = getFormField(response, 'newPassword')
   const defaultConfirmPassword = getFormField(response, 'confirmPassword')
 
-  function handleSubmit(e: FormEvent) {
-    const formData = new FormData(e.target as HTMLFormElement)
-    const currentPassword = formData.get('currentPassword')
-    const newPassword = formData.get('newPassword')
-    const confirmPassword = formData.get('confirmPassword')
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    const formElement = e.currentTarget
+    const currentPassword = formElement.currentPassword.value
+    const newPassword = formElement.newPassword.value
+    const confirmPassword = formElement.confirmPassword.value
 
     if (newPassword !== confirmPassword) {
       e.preventDefault()
       toast.warning('새 비밀번호가 일치하지 않아요')
-      return
-    }
-
-    if (currentPassword === newPassword) {
+    } else if (currentPassword === newPassword) {
       e.preventDefault()
       toast.warning('현재 비밀번호와 새 비밀번호가 같아요')
-      return
     }
   }
 

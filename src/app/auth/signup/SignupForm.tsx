@@ -2,14 +2,14 @@
 
 import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
-import { useCallback } from 'react'
+import { FormEvent, useCallback } from 'react'
 import { toast } from 'sonner'
 
 import Loading from '@/components/ui/Loading'
 import { loginIdPattern, passwordPattern } from '@/constants/pattern'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
-import { getFieldError, getFormField, useActionResponse } from '@/hook/useActionResponse'
+import useActionResponse, { getFieldError, getFormField } from '@/hook/useActionResponse'
 import amplitude from '@/lib/amplitude/lazy'
 import { resetMeQuery } from '@/query/useMeQuery'
 import { sanitizeRedirect } from '@/utils'
@@ -47,7 +47,8 @@ export default function SignupForm() {
     [queryClient, router],
   )
 
-  const [response, formAction, pending] = useActionResponse(signup, {
+  const [response, formAction, pending] = useActionResponse({
+    action: signup,
     onSuccess: handleSignupSuccess,
     onError: (error) => {
       if (typeof error === 'string') {
@@ -65,13 +66,16 @@ export default function SignupForm() {
   const defaultPasswordConfirm = getFormField(response, 'password-confirm')
   const defaultNickname = getFormField(response, 'nickname')
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    const formElement = e.target as HTMLFormElement
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    const formElement = e.currentTarget
+    const loginId = formElement.loginId.value
+    const password = formElement.password.value
+    const passwordConfirm = formElement['password-confirm'].value
 
-    if (formElement.password.value !== formElement['password-confirm'].value) {
+    if (password !== passwordConfirm) {
       e.preventDefault()
       toast.warning('비밀번호가 일치하지 않아요')
-    } else if (formElement.loginId.value === formElement.password.value) {
+    } else if (loginId === password) {
       e.preventDefault()
       toast.warning('아이디와 비밀번호를 다르게 입력해주세요')
     }

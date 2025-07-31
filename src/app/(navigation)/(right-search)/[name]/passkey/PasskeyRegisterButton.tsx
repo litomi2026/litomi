@@ -115,7 +115,7 @@ export default function PasskeyRegisterButton() {
               </div>
               <div>
                 <p className="font-medium mb-1">비밀번호 불필요</p>
-                <p className="text-xs text-zinc-500">복잡한 비밀번호를 기억할 필요 없어요</p>
+                <p className="text-xs text-zinc-500">복잡한 비밀번호를 기억하지 않아도 돼요</p>
               </div>
             </div>
           </div>

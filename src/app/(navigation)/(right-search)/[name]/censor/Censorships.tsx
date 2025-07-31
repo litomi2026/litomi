@@ -2,7 +2,7 @@
 
 import { useQueryClient } from '@tanstack/react-query'
 import dynamic from 'next/dynamic'
-import { startTransition, useActionState, useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
 import Icon3Dots from '@/components/icons/Icon3Dots'
@@ -12,8 +12,7 @@ import IconSearch from '@/components/icons/IconSearch'
 import IconSpinner from '@/components/icons/IconSpinner'
 import { QueryKeys } from '@/constants/query'
 import { CensorshipKey } from '@/database/enum'
-import useActionErrorEffect from '@/hook/useActionErrorEffect'
-import useActionSuccessEffect from '@/hook/useActionSuccessEffect'
+import useActionResponse from '@/hook/useActionResponse'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useCensorshipsInfiniteQuery from '@/query/useCensorshipInfiniteQuery'
 
@@ -26,13 +25,8 @@ import DefaultCensorshipInfo from './DefaultCensorshipInfo'
 const AddCensorshipModal = dynamic(() => import('./AddCensorshipModal'))
 const ImportExportModal = dynamic(() => import('./ImportExportModal'))
 
-const initialState = {} as Awaited<ReturnType<typeof addCensorships>>
-const initialDeleteState = {} as Awaited<ReturnType<typeof deleteCensorships>>
-
 export default function Censorships() {
   const queryClient = useQueryClient()
-  const [addState, addAction] = useActionState(addCensorships, initialState)
-  const [deleteState, deleteAction] = useActionState(deleteCensorships, initialDeleteState)
   const [showAddModal, setShowAddModal] = useState(false)
   const [showImportExportModal, setShowImportExportModal] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -40,6 +34,37 @@ export default function Censorships() {
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
   const [deletingIds, setDeletingIds] = useState<Set<number>>(new Set())
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } = useCensorshipsInfiniteQuery()
+
+  const [_, addDispatchAction] = useActionResponse({
+    action: addCensorships,
+    onError: (error) => {
+      if (typeof error === 'string') {
+        toast.error(error)
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QueryKeys.censorships })
+      toast.success('검열 규칙이 추가되었습니다')
+      setShowAddModal(false)
+    },
+  })
+
+  const [__, deleteDispatchAction] = useActionResponse({
+    action: deleteCensorships,
+    onError: (error) => {
+      if (typeof error === 'string') {
+        toast.error(error)
+      }
+
+      setDeletingIds(new Set())
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QueryKeys.censorships })
+      toast.success('검열 규칙이 삭제되었습니다')
+      setSelectedIds(new Set())
+      setDeletingIds(new Set())
+    },
+  })
 
   const loadMoreRef = useInfiniteScrollObserver({
     hasNextPage,
@@ -57,19 +82,6 @@ export default function Censorships() {
     })
   }, [allCensorships, searchQuery, filterKey])
 
-  const handleAddSuccess = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: QueryKeys.censorships })
-    toast.success('검열 규칙이 추가되었습니다')
-    setShowAddModal(false)
-  }, [queryClient])
-
-  const handleDeleteSuccess = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: QueryKeys.censorships })
-    toast.success('검열 규칙이 삭제되었습니다')
-    setSelectedIds(new Set())
-    setDeletingIds(new Set())
-  }, [queryClient])
-
   const handleCloseAddModal = useCallback(() => {
     setShowAddModal(false)
   }, [])
@@ -77,24 +89,6 @@ export default function Censorships() {
   const handleCloseImportExportModal = useCallback(() => {
     setShowImportExportModal(false)
   }, [])
-
-  useActionErrorEffect({
-    status: addState.status || deleteState.status,
-    error: addState.message || deleteState.message,
-    onError: (message) => toast.error(message),
-  })
-
-  useActionSuccessEffect({
-    status: addState.status,
-    data: addState.data,
-    onSuccess: handleAddSuccess,
-  })
-
-  useActionSuccessEffect({
-    status: deleteState.status,
-    data: deleteState.data,
-    onSuccess: handleDeleteSuccess,
-  })
 
   const handleToggleSelect = (id: number) => {
     const newSelectedIds = new Set(selectedIds)
@@ -109,27 +103,12 @@ export default function Censorships() {
   const handleBulkDelete = () => {
     if (selectedIds.size === 0) return
 
-    // Mark selected items as deleting
     setDeletingIds(new Set(selectedIds))
-
     const formData = new FormData()
     selectedIds.forEach((id) => formData.append('id', id.toString()))
-
-    startTransition(() => {
-      deleteAction(formData)
-    })
+    deleteDispatchAction(formData)
   }
 
-  // Reset deletingIds when deletion completes or fails
-  useEffect(() => {
-    if (deleteState.status === 200 || deleteState.status === 204) {
-      // Already handled in handleDeleteSuccess
-    } else if (deleteState.status && deleteState.status >= 400) {
-      setDeletingIds(new Set())
-    }
-  }, [deleteState.status])
-
-  // Disable interactions during deletion
   const isDeleting = deletingIds.size > 0
 
   return (
@@ -266,12 +245,16 @@ export default function Censorships() {
         )}
       </div>
 
-      <AddCensorshipModal onClose={handleCloseAddModal} onSubmit={addAction} open={showAddModal && !isDeleting} />
+      <AddCensorshipModal
+        onClose={handleCloseAddModal}
+        onSubmit={addDispatchAction}
+        open={showAddModal && !isDeleting}
+      />
 
       <ImportExportModal
         censorships={allCensorships}
         onClose={handleCloseImportExportModal}
-        onImport={addAction}
+        onImport={addDispatchAction}
         open={showImportExportModal && !isDeleting}
       />
     </div>

@@ -12,6 +12,7 @@ import { userTable } from '@/database/schema'
 import { imageURLSchema, nameSchema, nicknameSchema } from '@/database/zod'
 import { badRequest, conflict, internalServerError, seeOther, unauthorized } from '@/utils/action-response'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
+import { flattenZodFieldErrors } from '@/utils/form-error'
 
 const profileSchema = z.object({
   name: nameSchema.nullable().transform((val) => val ?? undefined),
@@ -34,12 +35,7 @@ export default async function editProfile(_prevState: unknown, formData: FormDat
   })
 
   if (!validation.success) {
-    const fieldErrors = validation.error.issues.reduce((acc, issue) => {
-      const field = issue.path.join('.')
-      return { ...acc, [field]: issue.message }
-    }, {})
-
-    return badRequest(fieldErrors, formData)
+    return badRequest(flattenZodFieldErrors(validation.error), formData)
   }
 
   const { name, nickname, imageURL } = validation.data

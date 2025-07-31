@@ -4,14 +4,14 @@ import { captureException } from '@sentry/nextjs'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
-import { use, useEffect, useState, useTransition } from 'react'
+import { FormEvent, use, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 import IconEdit from '@/components/icons/IconEdit'
 import IconX from '@/components/icons/IconX'
 import Modal from '@/components/ui/Modal'
 import { QueryKeys } from '@/constants/query'
-import { getFieldError, useActionResponse } from '@/hook/useActionResponse'
+import useActionResponse, { getFieldError } from '@/hook/useActionResponse'
 
 import editProfile from './action'
 
@@ -37,19 +37,19 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
   const router = useRouter()
   const defaultProfileImageURL = me.imageURL ?? ''
   const [profileImageURL, setProfileImageURL] = useState(defaultProfileImageURL)
-  const [_, startTransition] = useTransition()
 
-  const [response, dispatchNewProfile, pending] = useActionResponse(editProfile, {
+  const [response, dispatchAction, isPending] = useActionResponse({
+    action: editProfile,
+    onError: (error) => {
+      if (typeof error === 'string') {
+        toast.error(error)
+      }
+    },
     onSuccess: (data) => {
       toast.success(data.message)
       queryClient.invalidateQueries({ queryKey: QueryKeys.me, exact: true })
       setShowModal(false)
       router.replace(data.location)
-    },
-    onError: (error) => {
-      if (typeof error === 'string') {
-        toast.error(error)
-      }
     },
   })
 
@@ -57,36 +57,20 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
   const nicknameError = getFieldError(response, 'nickname')
   const imageURLError = getFieldError(response, 'imageURL')
 
-  const handleClose = () => {
+  function handleClose() {
     setShowModal(false)
   }
 
-  const handleAction = (formData: FormData) => {
-    const changedData = new FormData()
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    const formData = new FormData(e.currentTarget)
     const name = formData.get('name')
     const nickname = formData.get('nickname')
     const imageURL = formData.get('imageURL')
 
-    if (name && name !== me.name) {
-      changedData.append('name', name)
-    }
-
-    if (nickname && nickname !== me.nickname) {
-      changedData.append('nickname', nickname)
-    }
-
-    if (imageURL && imageURL !== me.imageURL) {
-      changedData.append('imageURL', imageURL)
-    }
-
-    if (changedData.keys().next().done) {
+    if (name === me.name && nickname === me.nickname && imageURL === (me.imageURL ?? '')) {
+      e.preventDefault()
       toast.warning('수정할 정보를 입력해주세요')
-      return
     }
-
-    startTransition(() => {
-      dispatchNewProfile(changedData)
-    })
   }
 
   return (
@@ -107,8 +91,9 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
         showDragButton
       >
         <form
-          action={handleAction}
+          action={dispatchAction}
           className="w-full h-full flex flex-col bg-background md:bg-zinc-900 md:border-2 md:rounded-xl md:max-w-2xl"
+          onSubmit={handleSubmit}
         >
           <header className="flex items-center justify-between p-4 border-b border-zinc-800 shrink-0">
             <div className="flex items-center gap-4">
@@ -239,7 +224,7 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
             </button>
             <button
               className="px-6 py-2 bg-white text-black font-medium text-sm rounded-lg hover:bg-zinc-200 active:bg-zinc-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={pending}
+              disabled={isPending}
               type="submit"
             >
               저장
