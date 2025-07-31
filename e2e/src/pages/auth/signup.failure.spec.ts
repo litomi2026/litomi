@@ -35,7 +35,7 @@ test.describe('/auth/signup', () => {
 
         await page.click('button[type="submit"]')
 
-        await expect(page.locator('[data-sonner-toast]')).toBeVisible()
+        await expect(page.locator('p.text-red-500').first()).toBeVisible()
         await expect(page.locator('text=/아이디는 최소 2자 이상이어야 해요/i')).toBeVisible()
       })
 
@@ -54,7 +54,7 @@ test.describe('/auth/signup', () => {
 
         await page.click('button[type="submit"]')
 
-        await expect(page.locator('[data-sonner-toast]')).toBeVisible()
+        await expect(page.locator('p.text-red-500').first()).toBeVisible()
         await expect(page.locator('text=/아이디는 최소 2자 이상이어야 해요/i')).toBeVisible()
       })
 
@@ -86,7 +86,7 @@ test.describe('/auth/signup', () => {
 
         await page.click('button[type="submit"]')
 
-        await expect(page.locator('[data-sonner-toast]')).toBeVisible()
+        await expect(page.locator('p.text-red-500').first()).toBeVisible()
         await expect(page.locator('text=/아이디는 최대 32자까지 입력할 수 있어요/i')).toBeVisible()
       })
 
@@ -117,7 +117,7 @@ test.describe('/auth/signup', () => {
 
         await page.click('button[type="submit"]')
 
-        await expect(page.locator('[data-sonner-toast]')).toBeVisible()
+        await expect(page.locator('p.text-red-500').first()).toBeVisible()
         await expect(page.locator('text=/아이디는 알파벳, 숫자, _ 로만 구성해야 해요/i')).toBeVisible()
       })
 
@@ -136,7 +136,7 @@ test.describe('/auth/signup', () => {
 
         await page.click('button[type="submit"]')
 
-        await expect(page.locator('[data-sonner-toast]')).toBeVisible()
+        await expect(page.locator('p.text-red-500').first()).toBeVisible()
         await expect(page.locator('text=/아이디는 알파벳, 숫자, _ 로만 구성해야 해요/i')).toBeVisible()
       })
     })
@@ -174,7 +174,7 @@ test.describe('/auth/signup', () => {
         await page.fill('input[name="password-confirm"]', 'nodigits')
         await page.click('button[type="submit"]')
 
-        await expect(page.locator('[data-sonner-toast]')).toBeVisible()
+        await expect(page.locator('p.text-red-500').first()).toBeVisible()
         await expect(page.locator('text=/비밀번호는 알파벳과 숫자를 하나 이상 포함해야 해요/i')).toBeVisible()
       })
 
@@ -226,7 +226,7 @@ test.describe('/auth/signup', () => {
 
         await page.click('button[type="submit"]')
 
-        await expect(page.locator('[data-sonner-toast]')).toBeVisible()
+        await expect(page.locator('p.text-red-500').first()).toBeVisible()
         await expect(page.locator('text=/비밀번호는 최소 8자 이상이어야 해요/i')).toBeVisible()
       })
 
@@ -271,7 +271,7 @@ test.describe('/auth/signup', () => {
         await confirmInput.fill(longPassword)
         await page.click('button[type="submit"]')
 
-        await expect(page.locator('[data-sonner-toast]')).toBeVisible()
+        await expect(page.locator('p.text-red-500').first()).toBeVisible()
         await expect(page.locator('text=/비밀번호는 최대 64자까지 입력할 수 있어요/i')).toBeVisible()
       })
 
@@ -298,7 +298,7 @@ test.describe('/auth/signup', () => {
 
         await page.click('button[type="submit"]')
 
-        await expect(page.locator('[data-sonner-toast]')).toBeVisible()
+        await expect(page.locator('p.text-red-500').first()).toBeVisible()
         await expect(page.locator('text=/비밀번호는 알파벳과 숫자를 하나 이상 포함해야 해요/i')).toBeVisible()
       })
 
@@ -325,7 +325,7 @@ test.describe('/auth/signup', () => {
 
         await page.click('button[type="submit"]')
 
-        await expect(page.locator('[data-sonner-toast]')).toBeVisible()
+        await expect(page.locator('p.text-red-500').first()).toBeVisible()
         await expect(page.locator('text=/비밀번호는 알파벳과 숫자를 하나 이상 포함해야 해요/i')).toBeVisible()
       })
 
@@ -374,7 +374,7 @@ test.describe('/auth/signup', () => {
 
         await page.click('button[type="submit"]')
 
-        await expect(page.locator('[data-sonner-toast]')).toBeVisible()
+        await expect(page.locator('p.text-red-500').first()).toBeVisible()
         await expect(page.locator('text=/닉네임은 최소 2자 이상이어야 해요/i')).toBeVisible()
       })
 
@@ -410,7 +410,7 @@ test.describe('/auth/signup', () => {
         await nicknameInput.fill(longNickname)
         await page.click('button[type="submit"]')
 
-        await expect(page.locator('[data-sonner-toast]')).toBeVisible()
+        await expect(page.locator('p.text-red-500').first()).toBeVisible()
         await expect(page.locator('text=/닉네임은 최대 32자까지 입력할 수 있어요/i')).toBeVisible()
       })
     })
