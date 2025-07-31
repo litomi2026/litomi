@@ -1,20 +1,40 @@
 import { useActionState, useEffect, useRef } from 'react'
 
-import type { ActionResponse } from '@/utils/action-response'
+import type { ActionResponse, ErrorResponse, SuccessResponse } from '@/utils/action-response'
 
-type ServerAction<TResponse> = (prevState: unknown, formData: FormData) => Promise<TResponse>
+type ServerAction<TData, TError> = (
+  prevState: unknown,
+  formData: FormData,
+) => Promise<
+  | ErrorResponse<TError extends string | Record<string, string> ? Record<string, string> : never>
+  | ErrorResponse<TError extends string | Record<string, string> ? string : TError>
+  | SuccessResponse<TData>
+>
 
 type UseActionResponseOptions<TData, TError> = {
   onSuccess?: (data: TData) => Promise<void> | void
   onError?: (error: TError) => Promise<void> | void
 }
 
+export function getFieldError<TData, TError extends string | Record<string, string>>(
+  response: ActionResponse<TData, TError>,
+  field: string,
+): string | undefined {
+  if (!response.ok && typeof response.error === 'object' && response.error !== null) {
+    return (response.error as Record<string, string>)[field]
+  }
+  return undefined
+}
+
 export function useActionResponse<TData = unknown, TError = string | Record<string, string>>(
-  action: ServerAction<ActionResponse<TData, TError>>,
+  action: ServerAction<TData, TError>,
   initialState: Partial<ActionResponse<TData, TError>> = {},
   options?: UseActionResponseOptions<TData, TError>,
 ) {
-  const [response, dispatch, pending] = useActionState(action, initialState as ActionResponse<TData, TError>)
+  const [response, dispatch, pending] = useActionState(
+    action as (prevState: unknown, formData: FormData) => Promise<ActionResponse<TData, TError>>,
+    initialState as ActionResponse<TData, TError>,
+  )
   const lastResponseRef = useRef(response)
   const { onSuccess, onError } = options || {}
 

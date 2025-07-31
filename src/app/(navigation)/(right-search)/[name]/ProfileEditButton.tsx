@@ -11,7 +11,7 @@ import IconEdit from '@/components/icons/IconEdit'
 import IconX from '@/components/icons/IconX'
 import Modal from '@/components/ui/Modal'
 import { QueryKeys } from '@/constants/query'
-import { useActionResponse } from '@/hook/useActionResponse'
+import { getFieldError, useActionResponse } from '@/hook/useActionResponse'
 
 import editProfile from './action'
 
@@ -57,11 +57,9 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
     },
   )
 
-  const getFieldError = (field: string) => {
-    if (!response.ok && typeof response.error === 'object') {
-      return response.error[field]
-    }
-  }
+  const nameError = getFieldError(response, 'name')
+  const nicknameError = getFieldError(response, 'nickname')
+  const imageURLError = getFieldError(response, 'imageURL')
 
   const handleClose = () => {
     setShowModal(false)
@@ -163,7 +161,7 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
                     이름
                   </label>
                   <input
-                    aria-invalid={!!getFieldError('name')}
+                    aria-invalid={!!nameError}
                     autoCapitalize="off"
                     className="w-full px-3 py-2 bg-zinc-800 border rounded-lg placeholder-zinc-500 focus:outline-none focus:ring-2 focus:border-transparent 
                       aria-invalid:border-red-500 aria-invalid:focus:ring-red-500 border-zinc-700 focus:ring-zinc-600"
@@ -175,8 +173,8 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
                     placeholder="고유한 이름을 입력하세요"
                     type="text"
                   />
-                  <p aria-invalid={!!getFieldError('name')} className="text-xs text-zinc-500 aria-invalid:text-red-400">
-                    {getFieldError('name') || '이름으로 찾을 수 있어요 (2-32자)'}
+                  <p aria-invalid={!!nameError} className="text-xs text-zinc-500 aria-invalid:text-red-400">
+                    {nameError || '이름으로 찾을 수 있어요 (2-32자)'}
                   </p>
                 </div>
               </div>
@@ -187,7 +185,7 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
                     닉네임
                   </label>
                   <input
-                    aria-invalid={!!getFieldError('nickname')}
+                    aria-invalid={!!nicknameError}
                     autoCapitalize="off"
                     className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:border-transparent 
                       aria-invalid:border-red-500 aria-invalid:focus:ring-red-500"
@@ -199,11 +197,8 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
                     placeholder="사용할 닉네임을 입력하세요"
                     type="text"
                   />
-                  <p
-                    aria-invalid={!!getFieldError('nickname')}
-                    className="text-xs text-zinc-500 aria-invalid:text-red-400"
-                  >
-                    {getFieldError('nickname') || '다른 사용자에게 표시되는 별명이에요 (2-32자)'}
+                  <p aria-invalid={!!nicknameError} className="text-xs text-zinc-500 aria-invalid:text-red-400">
+                    {nicknameError || '다른 사용자에게 표시되는 별명이에요 (2-32자)'}
                   </p>
                 </div>
                 <div className="space-y-1">
@@ -211,7 +206,7 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
                     프로필 이미지 URL
                   </label>
                   <input
-                    aria-invalid={!!getFieldError('imageURL')}
+                    aria-invalid={!!imageURLError}
                     autoCapitalize="off"
                     className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:border-transparent 
                       aria-invalid:border-red-500 aria-invalid:focus:ring-red-500"
@@ -225,11 +220,8 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
                     placeholder="https://example.com/profile.jpg"
                     type="url"
                   />
-                  <p
-                    aria-invalid={!!getFieldError('imageURL')}
-                    className="text-xs text-zinc-500 aria-invalid:text-red-400"
-                  >
-                    {getFieldError('imageURL') || '이미지는 정사각형 비율을 권장해요'}
+                  <p aria-invalid={!!imageURLError} className="text-xs text-zinc-500 aria-invalid:text-red-400">
+                    {imageURLError || '이미지는 정사각형 비율을 권장해요'}
                   </p>
                 </div>
               </div>

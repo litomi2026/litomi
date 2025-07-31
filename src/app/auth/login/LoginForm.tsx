@@ -11,7 +11,7 @@ import Loading from '@/components/ui/Loading'
 import { loginIdPattern, passwordPattern } from '@/constants/pattern'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
-import { useActionResponse } from '@/hook/useActionResponse'
+import { getFieldError, useActionResponse } from '@/hook/useActionResponse'
 import amplitude from '@/lib/amplitude/lazy'
 import { resetMeQuery } from '@/query/useMeQuery'
 import { sanitizeRedirect } from '@/utils'
@@ -76,11 +76,8 @@ export default function LoginForm() {
     },
   )
 
-  const getFieldError = (field: string) => {
-    if (!response.ok && typeof response.error === 'object') {
-      return response.error[field]
-    }
-  }
+  const loginIdError = getFieldError(response, 'loginId')
+  const passwordError = getFieldError(response, 'password')
 
   return (
     <form
@@ -101,7 +98,7 @@ export default function LoginForm() {
           <label htmlFor="loginId">아이디</label>
           <div className="relative">
             <input
-              aria-invalid={!!getFieldError('loginId')}
+              aria-invalid={!!loginIdError}
               autoCapitalize="off"
               autoFocus
               defaultValue={currentLoginId}
@@ -119,13 +116,13 @@ export default function LoginForm() {
               <IconX className="w-3.5" />
             </button>
           </div>
-          {getFieldError('loginId') && <p className="mt-1 text-xs text-red-500">{getFieldError('loginId')}</p>}
+          {loginIdError && <p className="mt-1 text-xs text-red-500">{loginIdError}</p>}
         </div>
         <div>
           <label htmlFor="password">비밀번호</label>
           <div className="relative">
             <input
-              aria-invalid={!!getFieldError('password')}
+              aria-invalid={!!passwordError}
               disabled={pending}
               id="password"
               maxLength={64}
@@ -140,7 +137,7 @@ export default function LoginForm() {
               <IconX className="w-3.5" />
             </button>
           </div>
-          {getFieldError('password') && <p className="mt-1 text-xs text-red-500">{getFieldError('password')}</p>}
+          {passwordError && <p className="mt-1 text-xs text-red-500">{passwordError}</p>}
         </div>
         <label className="!flex w-fit ml-auto items-center gap-2 cursor-pointer" htmlFor="remember">
           <input

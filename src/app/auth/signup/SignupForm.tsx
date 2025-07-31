@@ -9,7 +9,7 @@ import Loading from '@/components/ui/Loading'
 import { loginIdPattern, passwordPattern } from '@/constants/pattern'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
-import { useActionResponse } from '@/hook/useActionResponse'
+import { getFieldError, useActionResponse } from '@/hook/useActionResponse'
 import amplitude from '@/lib/amplitude/lazy'
 import { resetMeQuery } from '@/query/useMeQuery'
 import { sanitizeRedirect } from '@/utils'
@@ -60,11 +60,10 @@ export default function SignupForm() {
     },
   )
 
-  function getFieldError(fieldName: string) {
-    if (!response.ok && typeof response.error === 'object') {
-      return response.error[fieldName]
-    }
-  }
+  const loginIdError = getFieldError(response, 'loginId')
+  const passwordError = getFieldError(response, 'password')
+  const passwordConfirmError = getFieldError(response, 'password-confirm')
+  const nicknameError = getFieldError(response, 'nickname')
 
   function getDefaultValue(fieldName: string) {
     if (!response.ok) {
@@ -101,7 +100,7 @@ export default function SignupForm() {
             아이디 <span className="text-red-500">*</span>
           </label>
           <input
-            aria-invalid={!!getFieldError('loginId')}
+            aria-invalid={!!loginIdError}
             autoCapitalize="off"
             autoFocus
             defaultValue={getDefaultValue('loginId')}
@@ -114,8 +113,8 @@ export default function SignupForm() {
             placeholder="아이디를 입력하세요"
             required
           />
-          {getFieldError('loginId') ? (
-            <p className="mt-1 text-xs text-red-500">{getFieldError('loginId')}</p>
+          {loginIdError ? (
+            <p className="mt-1 text-xs text-red-500">{loginIdError}</p>
           ) : (
             <p className="mt-1 text-xs text-zinc-400">
               알파벳, 숫자 - . _ ~ 만 사용하여 2자 이상의 아이디를 입력해주세요
@@ -127,7 +126,7 @@ export default function SignupForm() {
             비밀번호 <span className="text-red-500">*</span>
           </label>
           <input
-            aria-invalid={!!getFieldError('password')}
+            aria-invalid={!!passwordError}
             autoCapitalize="off"
             defaultValue={getDefaultValue('password')}
             disabled={pending}
@@ -140,8 +139,8 @@ export default function SignupForm() {
             required
             type="password"
           />
-          {getFieldError('password') ? (
-            <p className="mt-1 text-xs text-red-500">{getFieldError('password')}</p>
+          {passwordError ? (
+            <p className="mt-1 text-xs text-red-500">{passwordError}</p>
           ) : (
             <p className="mt-1 text-xs text-zinc-400">
               알파벳, 숫자를 하나 이상 포함하여 8자 이상의 비밀번호를 입력해주세요
@@ -153,7 +152,7 @@ export default function SignupForm() {
             비밀번호 확인 <span className="text-red-500">*</span>
           </label>
           <input
-            aria-invalid={!!getFieldError('password-confirm')}
+            aria-invalid={!!passwordConfirmError}
             autoCapitalize="off"
             defaultValue={!response.ok ? response.formData?.get('password-confirm')?.toString() : undefined}
             disabled={pending}
@@ -165,14 +164,12 @@ export default function SignupForm() {
             required
             type="password"
           />
-          {getFieldError('password-confirm') && (
-            <p className="mt-1 text-xs text-red-500">{getFieldError('password-confirm')}</p>
-          )}
+          {passwordConfirmError && <p className="mt-1 text-xs text-red-500">{passwordConfirmError}</p>}
         </div>
         <div>
           <label htmlFor="nickname">닉네임</label>
           <input
-            aria-invalid={!!getFieldError('nickname')}
+            aria-invalid={!!nicknameError}
             autoCapitalize="off"
             defaultValue={getDefaultValue('nickname')}
             disabled={pending}
@@ -182,8 +179,8 @@ export default function SignupForm() {
             name="nickname"
             placeholder="닉네임을 입력하세요"
           />
-          {getFieldError('nickname') ? (
-            <p className="mt-1 text-xs text-red-500">{getFieldError('nickname')}</p>
+          {nicknameError ? (
+            <p className="mt-1 text-xs text-red-500">{nicknameError}</p>
           ) : (
             <p className="mt-1 text-xs text-zinc-400">
               닉네임은 2자 이상 32자 이하로 입력해주세요. 나중에 변경할 수 있어요.
