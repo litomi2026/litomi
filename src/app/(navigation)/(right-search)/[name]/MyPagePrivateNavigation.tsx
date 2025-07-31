@@ -9,7 +9,7 @@ type Props = {
   username: string
 }
 
-export default async function MyPageNavigation({ username }: Readonly<Props>) {
+export default async function MyPagePrivateNavigation({ username }: Readonly<Props>) {
   const cookieStore = await cookies()
   const loginUserId = await getUserIdFromAccessToken(cookieStore, false)
 

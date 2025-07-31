@@ -8,7 +8,10 @@ import { db } from '@/database/drizzle'
 import { decodeDeviceType } from '@/database/enum'
 import { credentialTable } from '@/database/schema'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
+import { getUsernameFromParam } from '@/utils/param'
 
+import { getUserById } from '../common'
+import Forbidden from './Forbidden'
 import GuestView from './GuestView'
 import PasskeyList from './PasskeyList'
 
@@ -17,14 +20,18 @@ type Params = {
 }
 
 export default async function PasskeyPage({ params }: PageProps<Params>) {
-  const { name } = await params
-  const username = name.startsWith('@') ? name.slice(1) : name
-
   const cookieStore = await cookies()
   const userId = await getUserIdFromAccessToken(cookieStore, false)
 
   if (!userId) {
     return <GuestView />
+  }
+
+  const [loginUser, { name }] = await Promise.all([getUserById(userId), params])
+  const usernameFromParam = getUsernameFromParam(name)
+
+  if (loginUser.name !== usernameFromParam) {
+    return <Forbidden />
   }
 
   const credentials = await db
@@ -45,5 +52,5 @@ export default async function PasskeyPage({ params }: PageProps<Params>) {
     transports: credential.transports as AuthenticatorTransportFuture[],
   }))
 
-  return <PasskeyList passkeys={passkeys} username={username} />
+  return <PasskeyList passkeys={passkeys} username={usernameFromParam} />
 }
