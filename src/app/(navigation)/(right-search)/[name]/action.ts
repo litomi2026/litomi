@@ -10,7 +10,7 @@ import { db } from '@/database/drizzle'
 import { isPostgresError } from '@/database/error'
 import { userTable } from '@/database/schema'
 import { imageURLSchema, nameSchema, nicknameSchema } from '@/database/zod'
-import { badRequest, conflict, seeOther, serverError, unauthorized } from '@/utils/action-response'
+import { badRequest, conflict, internalServerError, seeOther, unauthorized } from '@/utils/action-response'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
 
 const profileSchema = z.object({
@@ -65,6 +65,6 @@ export default async function editProfile(_prevState: unknown, formData: FormDat
     }
 
     captureException(error, { extra: { name: 'editProfile', userId } })
-    return serverError('프로필 수정 중 오류가 발생했어요', formData)
+    return internalServerError('프로필 수정 중 오류가 발생했어요', formData)
   }
 }

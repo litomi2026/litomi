@@ -1,6 +1,6 @@
 'use server'
 
-import { inArray, sql } from 'drizzle-orm'
+import { count, inArray, sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 
 import { db } from '@/database/drizzle'
@@ -39,15 +39,15 @@ export async function addCensorships(_prevState: unknown, formData: FormData) {
 
   try {
     const { insertResults, exceeded, message, status } = await db.transaction(async (tx) => {
-      const [{ count }] = await tx
-        .select({ count: sql<number>`COUNT(*)` })
+      const [{ censorshipCount }] = await tx
+        .select({ censorshipCount: count() })
         .from(userCensorshipTable)
         .where(sql`${userCensorshipTable.userId} = ${userId}`)
 
-      if (count + censorships.length > 100) {
+      if (censorshipCount + censorships.length > 100) {
         return {
           status: 400,
-          message: `검열 규칙은 최대 100개까지만 추가할 수 있어요. (현재 ${count}개)`,
+          message: `검열 규칙은 최대 100개까지만 추가할 수 있어요. (현재 ${censorshipCount}개)`,
           exceeded: true,
         }
       }

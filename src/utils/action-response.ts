@@ -15,7 +15,10 @@ export type SuccessResponse<TData = unknown> = {
   data: TData
 }
 
-export function badRequest(error: string | Record<string, string>, formData?: FormData): ErrorResponse {
+export function badRequest<TError = string | Record<string, string>>(
+  error: TError,
+  formData?: FormData,
+): ErrorResponse<TError> {
   return {
     ok: false as const,
     status: 400,
@@ -45,6 +48,15 @@ export function forbidden(error = 'Forbidden', formData?: FormData): ErrorRespon
   return {
     ok: false as const,
     status: 403,
+    error,
+    formData,
+  }
+}
+
+export function internalServerError(error = 'Internal Server Error', formData?: FormData): ErrorResponse<string> {
+  return {
+    ok: false as const,
+    status: 500,
     error,
     formData,
   }
@@ -83,15 +95,6 @@ export function seeOther(location: string, message: string): SuccessResponse<{ l
       location,
       message,
     },
-  }
-}
-
-export function serverError(error = 'Internal Server Error', formData?: FormData): ErrorResponse<string> {
-  return {
-    ok: false as const,
-    status: 500,
-    error,
-    formData,
   }
 }
 
