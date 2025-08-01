@@ -19,7 +19,7 @@ export async function GET() {
   const userId = await getUserIdFromAccessToken(cookieStore)
 
   if (!userId) {
-    return new Response('401 Unauthorized', { status: 401 })
+    return new Response('Unauthorized', { status: 401 })
   }
 
   const [user] = await db
@@ -35,7 +35,7 @@ export async function GET() {
 
   if (!user) {
     cookieStore.delete(CookieKey.ACCESS_TOKEN)
-    return new Response('404 Not Found', { status: 404 })
+    return new Response('Not Found', { status: 404 })
   }
 
   return Response.json(user satisfies GETMeResponse)

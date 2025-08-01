@@ -78,18 +78,16 @@ export async function getAuthenticationOptions(loginId: string) {
           transports: credentialTable.transports,
         })
         .from(userTable)
-        .innerJoin(credentialTable, sql`${credentialTable.userId} = ${userTable.id}`)
+        .leftJoin(credentialTable, sql`${credentialTable.userId} = ${userTable.id}`)
         .where(sql`${userTable.loginId} = ${loginId}`)
 
-      const userId = userWithCredentials[0]?.userId
+      const userId = userWithCredentials[0].userId
 
       const allowCredentials = userId
-        ? userWithCredentials
-            .filter((credential) => credential.credentialId)
-            .map((credential) => ({
-              id: credential.credentialId,
-              ...(credential.transports && { transports: credential.transports as AuthenticatorTransportFuture[] }),
-            }))
+        ? userWithCredentials.filter(hasCredentialId).map((credential) => ({
+            id: credential.credentialId,
+            ...(credential.transports && { transports: credential.transports as AuthenticatorTransportFuture[] }),
+          }))
         : generateFakeCredentials(loginId)
 
       const options = await generateAuthenticationOptions({
@@ -145,7 +143,7 @@ export async function getRegistrationOptions() {
           transports: credentialTable.transports,
         })
         .from(userTable)
-        .innerJoin(credentialTable, sql`${credentialTable.userId} = ${userTable.id}`)
+        .leftJoin(credentialTable, sql`${credentialTable.userId} = ${userTable.id}`)
         .where(sql`${userTable.id} = ${userId}`)
 
       const user = existingCredentials[0]
@@ -154,7 +152,7 @@ export async function getRegistrationOptions() {
         return badRequest(`최대 ${MAX_CREDENTIALS_PER_USER}개의 패스키만 등록할 수 있어요`)
       }
 
-      const excludeCredentials = existingCredentials.map((c) => ({
+      const excludeCredentials = existingCredentials.filter(hasCredentialId).map((c) => ({
         id: c.credentialId,
         ...(c.transports?.length && { transports: c.transports as AuthenticatorTransportFuture[] }),
       }))
@@ -348,4 +346,8 @@ export async function verifyRegistration(body: RegistrationResponseJSON, usernam
     console.error('verifyRegistration:', error)
     return internalServerError('패스키 등록 중 오류가 발생했어요')
   }
+}
+
+function hasCredentialId<T extends { credentialId: string | null }>(value: T): value is T & { credentialId: string } {
+  return value.credentialId !== null
 }
