@@ -17,7 +17,12 @@ interface ExecutionContext {
 const ALLOWED_DOMAINS = ['thumb.k-hentai.org', 'k-hentai.org', 'api-kh.hiyobi.org', 'ehgt.org', 'soujpa.in'] as const
 
 const ALLOWED_ORIGINS = [
+  'https://litomi.in',
   'https://litomi.vercel.app',
+  'https://litomi.onrender.com',
+  'https://litomi.netlify.app',
+  'https://litomi.sherpa.software',
+  'https://litomi.fly.dev',
   'https://litomi-git-stage-team2837.vercel.app',
   'http://localhost:3000',
 ] as const

@@ -24,7 +24,7 @@ export default async function MyPagePrivateNavigation({ username }: Readonly<Pro
   const privateLinks = [
     { href: `/@${username}/censor`, label: '검열' },
     { href: `/@${username}/passkey`, label: '패스키' },
-    { href: `/@${username}/password`, label: '비밀번호' },
+    { href: `/@${username}/settings`, label: '설정' },
   ]
 
   return (

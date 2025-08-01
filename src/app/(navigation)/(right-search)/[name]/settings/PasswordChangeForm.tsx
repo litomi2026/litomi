@@ -10,7 +10,7 @@ import Loading from '@/components/ui/Loading'
 import { passwordPattern } from '@/constants/pattern'
 import useActionResponse, { getFieldError, getFormField } from '@/hook/useActionResponse'
 
-import changePassword from './action'
+import { changePassword } from './actions'
 
 type Props = {
   userId: string
@@ -37,7 +37,8 @@ export default function PasswordChangeForm({ userId }: Readonly<Props>) {
       }
     },
     onSuccess: (response) => {
-      toast.success(response)
+      const message = typeof response === 'string' ? response : '비밀번호가 변경됐어요'
+      toast.success(message)
       router.push('/auth/login')
     },
   })
@@ -67,7 +68,7 @@ export default function PasswordChangeForm({ userId }: Readonly<Props>) {
   return (
     <form
       action={dispatchAction}
-      className="grid gap-6 bg-zinc-900 border-2 p-6 rounded-xl
+      className="grid gap-6
       [&_label]:block [&_label]:mb-1.5 [&_label]:text-sm [&_label]:font-medium [&_label]:text-zinc-300
       [&_input]:w-full [&_input]:rounded-md [&_input]:bg-zinc-800 [&_input]:border [&_input]:border-zinc-600 
       [&_input]:px-3 [&_input]:py-2 [&_input]:placeholder-zinc-500 [&_input]:focus:outline-none [&_input]:focus:ring-2 
