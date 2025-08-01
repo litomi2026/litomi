@@ -24,7 +24,7 @@ export async function GET(request: Request) {
   const userId = await getUserIdFromAccessToken(cookieStore)
 
   if (!userId) {
-    return new Response('401 Unauthorized', { status: 401 })
+    return new Response('Unauthorized', { status: 401 })
   }
 
   const url = new URL(request.url)
@@ -32,7 +32,7 @@ export async function GET(request: Request) {
   const validation = GETCensorshipsSchema.safeParse(params)
 
   if (!validation.success) {
-    return new Response('400 Bad Request', { status: 400 })
+    return new Response('Bad Request', { status: 400 })
   }
 
   const { cursorId, cursorTime, limit } = validation.data
@@ -45,7 +45,7 @@ export async function GET(request: Request) {
   })
 
   if (censorshipRows.length === 0) {
-    return new Response('404 Not Found', { status: 404 })
+    return new Response('No Content', { status: 204 })
   }
 
   const hasNextPage = limit ? censorshipRows.length > limit : false
