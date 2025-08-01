@@ -16,7 +16,7 @@ export const bookmarkTable = pgTable(
   'bookmark',
   {
     userId: bigint('user_id', { mode: 'number' })
-      .references(() => userTable.id)
+      .references(() => userTable.id, { onDelete: 'cascade' })
       .notNull(),
     mangaId: integer('manga_id').notNull(),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
@@ -34,7 +34,7 @@ export const userCensorshipTable = pgTable(
     value: varchar({ length: 256 }).notNull(),
     level: smallint().notNull(),
     userId: bigint('user_id', { mode: 'number' })
-      .references(() => userTable.id)
+      .references(() => userTable.id, { onDelete: 'cascade' })
       .notNull(),
   },
   (table) => [index('idx_user_censorship_user_id').on(table.userId)],
@@ -51,7 +51,7 @@ export const credentialTable = pgTable(
     deviceType: smallint('device_type').notNull(),
     transports: text().array(),
     userId: bigint('user_id', { mode: 'number' })
-      .references(() => userTable.id)
+      .references(() => userTable.id, { onDelete: 'cascade' })
       .notNull(),
   },
   (table) => [index('idx_credential_user_id').on(table.userId)],
@@ -61,7 +61,7 @@ export const challengeTable = pgTable(
   'challenge',
   {
     userId: bigint('user_id', { mode: 'number' })
-      .references(() => userTable.id)
+      .references(() => userTable.id, { onDelete: 'cascade' })
       .notNull(),
     type: smallint().notNull(),
     challenge: varchar({ length: 256 }).notNull(),
