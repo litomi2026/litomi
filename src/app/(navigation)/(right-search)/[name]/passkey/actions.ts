@@ -81,7 +81,8 @@ export async function getAuthenticationOptions(loginId: string) {
         .leftJoin(credentialTable, sql`${credentialTable.userId} = ${userTable.id}`)
         .where(sql`${userTable.loginId} = ${loginId}`)
 
-      const userId = userWithCredentials[0].userId
+      // NOTE: 존재하지 않는 로그인 아이디로 요청한 경우 빈 배열이 반환됨
+      const userId = userWithCredentials[0]?.userId
 
       const allowCredentials = userId
         ? userWithCredentials.filter(hasCredentialId).map((credential) => ({
