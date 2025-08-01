@@ -23,7 +23,7 @@ bun dev
 
 브라우저에서 [http://localhost:3000](http://localhost:3000) 주소 열어서 결과 보기
 
-## 도메인
+## 배포
 
 - 인도: https://litomi.in
 - Vercel: https://litomi.vercel.app
@@ -31,6 +31,10 @@ bun dev
 - Netlify: https://litomi.netlify.app
 - sherpa.io: https://litomi.sherpa.software
 - Fly.io: https://litomi.fly.dev
+
+## 기타
+
+- SonarQube: https://sonarcloud.io/summary/overall?id=gwak2837_litomi&branch=main
 
 ## 목적
 

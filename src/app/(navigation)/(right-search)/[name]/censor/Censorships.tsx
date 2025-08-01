@@ -35,7 +35,7 @@ export default function Censorships() {
   const [deletingIds, setDeletingIds] = useState<Set<number>>(new Set())
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } = useCensorshipsInfiniteQuery()
 
-  const [_, addDispatchAction] = useActionResponse({
+  const [_, dispatchAddAction] = useActionResponse({
     action: addCensorships,
     onError: (error) => {
       if (typeof error === 'string') {
@@ -49,7 +49,7 @@ export default function Censorships() {
     },
   })
 
-  const [__, deleteDispatchAction] = useActionResponse({
+  const [__, dispatchDeleteAction] = useActionResponse({
     action: deleteCensorships,
     onError: (error) => {
       if (typeof error === 'string') {
@@ -106,7 +106,7 @@ export default function Censorships() {
     setDeletingIds(new Set(selectedIds))
     const formData = new FormData()
     selectedIds.forEach((id) => formData.append('id', id.toString()))
-    deleteDispatchAction(formData)
+    dispatchDeleteAction(formData)
   }
 
   const isDeleting = deletingIds.size > 0
@@ -247,14 +247,14 @@ export default function Censorships() {
 
       <AddCensorshipModal
         onClose={handleCloseAddModal}
-        onSubmit={addDispatchAction}
+        onSubmit={dispatchAddAction}
         open={showAddModal && !isDeleting}
       />
 
       <ImportExportModal
         censorships={allCensorships}
         onClose={handleCloseImportExportModal}
-        onImport={addDispatchAction}
+        onImport={dispatchAddAction}
         open={showImportExportModal && !isDeleting}
       />
     </div>

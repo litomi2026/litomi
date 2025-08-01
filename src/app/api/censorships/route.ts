@@ -45,7 +45,7 @@ export async function GET(request: Request) {
   })
 
   if (censorshipRows.length === 0) {
-    return new Response('No Content', { status: 204 })
+    return new Response(null, { status: 204 })
   }
 
   const hasNextPage = limit ? censorshipRows.length > limit : false
