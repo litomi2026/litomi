@@ -117,7 +117,7 @@ export default function Censorships() {
       <div className="border-b-2">
         <div className="p-3 pb-0">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold">검열 설정</h1>
+            <h2 className="text-2xl font-bold">검열 설정</h2>
             <div className="flex gap-2">
               <button
                 className="px-3 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition border-2 disabled:opacity-50"

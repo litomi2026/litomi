@@ -31,7 +31,7 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Read
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QueryKeys.censorships })
-      toast.success('검열 규칙이 수정되었어요')
+      toast.success('검열 규칙을 수정했어요')
       onEditCompleted()
     },
   })
