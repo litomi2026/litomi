@@ -10,7 +10,7 @@ import { db } from '@/database/drizzle'
 import { isPostgresError } from '@/database/error'
 import { userTable } from '@/database/schema'
 import { imageURLSchema, nameSchema, nicknameSchema } from '@/database/zod'
-import { badRequest, conflict, internalServerError, seeOther, unauthorized } from '@/utils/action-response'
+import { badRequest, conflict, internalServerError, ok, seeOther, unauthorized } from '@/utils/action-response'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 
@@ -52,7 +52,12 @@ export default async function editProfile(formData: FormData) {
       .returning({ name: userTable.name })
 
     revalidatePath(`/@${updatedName}`)
-    return seeOther(`/@${updatedName}`, '프로필을 수정했어요')
+
+    if (name) {
+      return seeOther(`/@${updatedName}`, '프로필을 수정했어요')
+    }
+
+    return ok('프로필을 수정했어요')
   } catch (error) {
     if (isPostgresError(error)) {
       if (error.cause.code === '23505' && error.cause.constraint_name === 'user_name_unique') {

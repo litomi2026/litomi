@@ -1,5 +1,6 @@
 import dynamic from 'next/dynamic'
 import { cookies } from 'next/headers'
+import { Suspense } from 'react'
 
 import type { PageProps } from '@/types/nextjs'
 
@@ -14,7 +15,7 @@ import { getUserById } from '../common'
 import SettingsForbidden from './SettingsForbidden'
 
 const AccountDeletionForm = dynamic(() => import('./delete/AccountDeletionForm'))
-const NotificationSettings = dynamic(() => import('./push/PushSetting'))
+const PushSettings = dynamic(() => import('./push/PushSettings'))
 const PasswordChangeForm = dynamic(() => import('./password/PasswordChangeForm'))
 
 type Params = {
@@ -26,7 +27,7 @@ export default async function SettingsPage({ params }: PageProps<Params>) {
   const userId = await getUserIdFromAccessToken(cookieStore, false)
 
   if (!userId) {
-    return null
+    return
   }
 
   const [loginUser, { name }] = await Promise.all([getUserById(userId), params])
@@ -43,7 +44,9 @@ export default async function SettingsPage({ params }: PageProps<Params>) {
         icon={<IconBell className="w-5 flex-shrink-0 text-brand-end" />}
         title="푸시 알림 설정"
       >
-        <NotificationSettings />
+        <Suspense>
+          <PushSettings userId={userId} />
+        </Suspense>
       </CollapsibleSection>
       <CollapsibleSection
         description="계정 보안을 위해 비밀번호를 변경하세요"

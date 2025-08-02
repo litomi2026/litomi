@@ -46,9 +46,15 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
       }
     },
     onSuccess: (data) => {
-      toast.success(data.message)
       queryClient.invalidateQueries({ queryKey: QueryKeys.me, exact: true })
       setShowModal(false)
+
+      if (typeof data === 'string') {
+        toast.success(data)
+        return
+      }
+
+      toast.success(data.message)
       router.replace(data.location)
     },
   })

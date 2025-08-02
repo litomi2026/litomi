@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-import ToggleButton from '@/components/ui/ToggleButton'
+import Toggle from '@/components/ui/Toggle'
 import { NEXT_PUBLIC_VAPID_PUBLIC_KEY } from '@/constants/env'
 import useActionResponse from '@/hook/useActionResponse'
 import { urlBase64ToUint8Array } from '@/utils/browser'
@@ -118,11 +118,11 @@ export default function PushSubscriptionToggle({ isEnabled, onToggle }: Readonly
   }
 
   return (
-    <ToggleButton
-      aria-label="푸시 알림 토글"
-      className="w-12 aria-pressed:bg-brand-end/80 disabled:opacity-50 disabled:cursor-not-allowed"
+    <Toggle
+      className="w-14 peer-checked:bg-brand-end/80 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed"
+      defaultChecked={isEnabled}
       disabled={isPending}
-      enabled={isEnabled}
+      name="enabled"
       onToggle={handleToggle}
     />
   )

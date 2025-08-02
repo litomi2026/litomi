@@ -1,14 +1,17 @@
 'use server'
 
 import { captureException } from '@sentry/nextjs'
+import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 
+import { db } from '@/database/drizzle'
+import { pushSettingsTable } from '@/database/schema'
 import { NotificationService } from '@/lib/notification/NotificationService'
 import { badRequest, created, internalServerError, ok, unauthorized } from '@/utils/action-response'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 
-import { subscriptionSchema, testNotificationSchema, unsubscribeSchema } from './schema'
+import { subscriptionSchema, testNotificationSchema, unsubscribeSchema, updatePushSettingsSchema } from './schema'
 
 export async function subscribeToNotifications(data: Record<string, unknown>) {
   const cookieStore = await cookies()
@@ -29,7 +32,7 @@ export async function subscribeToNotifications(data: Record<string, unknown>) {
 
   try {
     await notificationService.subscribeUser(userId, subscription, userAgent)
-    return created('해당 기기의 푸시 알림이 활성화됐어요')
+    return created('해당 기기의 푸시 알림을 활성화했어요')
   } catch (error) {
     captureException(error, { tags: { action: 'subscribeToNotifications' } })
     return internalServerError('푸시 알림 활성화 중 오류가 발생했어요')
@@ -97,9 +100,53 @@ export async function unsubscribeFromNotifications(data: Record<string, unknown>
   try {
     const notificationService = NotificationService.getInstance()
     await notificationService.unsubscribeUser(Number(userId), endpoint)
-    return ok('해당 기기의 푸시 알림이 비활성화됐어요')
+    return ok('해당 기기의 푸시 알림을 비활성화했어요')
   } catch (error) {
     captureException(error, { tags: { action: 'unsubscribeFromNotifications' } })
     return internalServerError('푸시 알림 비활성화 중 오류가 발생했어요')
+  }
+}
+
+export async function updatePushSettings(formData: FormData) {
+  const cookieStore = await cookies()
+  const userId = await getUserIdFromAccessToken(cookieStore)
+
+  if (!userId) {
+    return unauthorized('로그인이 필요합니다')
+  }
+
+  const validation = updatePushSettingsSchema.safeParse({
+    username: formData.get('username'),
+    quietEnabled: formData.has('quietEnabled'),
+    quietStart: formData.get('quietStart'),
+    quietEnd: formData.get('quietEnd'),
+    batchEnabled: formData.has('batchEnabled'),
+    maxDaily: formData.get('maxDaily'),
+  })
+
+  if (!validation.success) {
+    return badRequest(flattenZodFieldErrors(validation.error), formData)
+  }
+
+  const { username, ...rest } = validation.data
+  const updateValues = { ...rest, updatedAt: new Date() }
+
+  try {
+    await db
+      .insert(pushSettingsTable)
+      .values({
+        userId: Number(userId),
+        ...updateValues,
+      })
+      .onConflictDoUpdate({
+        target: pushSettingsTable.userId,
+        set: updateValues,
+      })
+
+    revalidatePath(`/@${username}`)
+    return ok('푸시 알림을 설정했어요')
+  } catch (error) {
+    captureException(error, { tags: { action: 'updateNotificationSettings' } })
+    return internalServerError('푸시 알림 설정 중 오류가 발생했어요', formData)
   }
 }

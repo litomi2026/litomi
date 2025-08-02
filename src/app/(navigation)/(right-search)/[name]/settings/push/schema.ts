@@ -18,3 +18,12 @@ export const unsubscribeSchema = z.object({
 export const testNotificationSchema = z.object({
   message: z.string().min(1),
 })
+
+export const updatePushSettingsSchema = z.object({
+  username: z.string().min(1),
+  quietEnabled: z.boolean().optional(),
+  quietStart: z.coerce.number().min(0).max(23).optional(),
+  quietEnd: z.coerce.number().min(0).max(23).optional(),
+  batchEnabled: z.boolean().optional(),
+  maxDaily: z.coerce.number().min(1).max(999).optional(),
+})
