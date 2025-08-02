@@ -63,7 +63,7 @@ export default function PushSettingsForm({ initialSettings }: Props) {
   }, [])
 
   return (
-    <form action={dispatchAction} className="grid gap-6 mt-4">
+    <form action={dispatchAction} className="grid gap-4 sm:gap-6 ">
       <input name="username" type="hidden" value={getUsernameFromParam(name)} />
       <p className="text-sm text-zinc-500">
         브라우저 Push API 기능으로 푸시 알림을 받을 수 있어요{' '}
@@ -71,7 +71,7 @@ export default function PushSettingsForm({ initialSettings }: Props) {
           (지원 브라우저)
         </a>
       </p>
-      <ToggleSection description="새로운 만화가 업데이트되면 실시간으로 알려드려요" title="푸시 알림">
+      <ToggleSection description="새로운 만화가 업데이트되면 이 브라우저에 실시간으로 알려드려요" title="푸시 알림">
         <PushSubscriptionToggle isEnabled={isEnabled} onToggle={setIsEnabled} />
       </ToggleSection>
       <div
@@ -178,8 +178,8 @@ function ToggleSection({
   children: ReactNode | ReactNode[]
 }) {
   return (
-    <label className="grid gap-4 bg-zinc-900/50 rounded-xl p-6 backdrop-blur-sm border cursor-pointer hover:border-zinc-700 transition">
-      <div className="flex items-center justify-between">
+    <label className="grid gap-4 bg-zinc-900/50 rounded-xl p-4 sm:p-6 backdrop-blur-sm border cursor-pointer hover:border-zinc-700 transition">
+      <div className="flex items-center justify-between gap-4">
         <div className="flex-1">
           <h4 className="font-medium text-base mb-1">{title}</h4>
           <p className="text-sm text-zinc-500">{description}</p>

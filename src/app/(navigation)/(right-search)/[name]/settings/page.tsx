@@ -53,7 +53,7 @@ export default async function SettingsPage({ params }: PageProps<Params>) {
         icon={<IconKey className="w-5 flex-shrink-0 text-zinc-400" />}
         title="비밀번호 변경"
       >
-        <p className="text-zinc-400 text-sm my-4">
+        <p className="text-zinc-400 text-sm mb-4 sm:mb-6">
           계정 보안을 위해 다른 사이트에서 사용하는 비밀번호와 다르게 설정하는 것을 권장해요
         </p>
         <PasswordChangeForm userId={userId} />
@@ -64,7 +64,7 @@ export default async function SettingsPage({ params }: PageProps<Params>) {
         title="계정 삭제"
         variant="danger"
       >
-        <p className="text-zinc-400 text-sm my-4">
+        <p className="text-zinc-400 text-sm mb-4 sm:mb-6">
           계정을 삭제하면 사용자 관련 모든 데이터가 영구적으로 삭제되고 복구할 수 없어요
         </p>
         <AccountDeletionForm loginId={loginUser.loginId} />

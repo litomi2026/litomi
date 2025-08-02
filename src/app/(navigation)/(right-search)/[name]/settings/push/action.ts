@@ -32,7 +32,7 @@ export async function subscribeToNotifications(data: Record<string, unknown>) {
 
   try {
     await notificationService.subscribeUser(userId, subscription, userAgent)
-    return created('해당 기기의 푸시 알림을 활성화했어요')
+    return created('이 브라우저의 푸시 알림을 활성화했어요')
   } catch (error) {
     captureException(error, { tags: { action: 'subscribeToNotifications' } })
     return internalServerError('푸시 알림 활성화 중 오류가 발생했어요')
@@ -100,7 +100,7 @@ export async function unsubscribeFromNotifications(data: Record<string, unknown>
   try {
     const notificationService = NotificationService.getInstance()
     await notificationService.unsubscribeUser(Number(userId), endpoint)
-    return ok('해당 기기의 푸시 알림을 비활성화했어요')
+    return ok('이 브라우저의 푸시 알림을 비활성화했어요')
   } catch (error) {
     captureException(error, { tags: { action: 'unsubscribeFromNotifications' } })
     return internalServerError('푸시 알림 비활성화 중 오류가 발생했어요')

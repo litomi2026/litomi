@@ -148,7 +148,9 @@ export default function PasswordChangeForm({ userId }: Readonly<Props>) {
                   />
                 ))}
               </div>
-              <p className={`text-xs ${strengthInfo.color}`}>비밀번호 강도: {strengthInfo.text}</p>
+              {strengthInfo.text && (
+                <p className={`text-xs ${strengthInfo.color}`}>비밀번호 강도: {strengthInfo.text}</p>
+              )}
             </div>
             <p className="mt-1 text-xs text-zinc-400">
               알파벳, 숫자를 하나 이상 포함하여 8자 이상의 비밀번호를 입력해주세요
