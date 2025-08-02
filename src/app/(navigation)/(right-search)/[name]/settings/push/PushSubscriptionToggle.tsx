@@ -1,3 +1,5 @@
+'use client'
+
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -93,7 +95,7 @@ export default function PushSubscriptionToggle({ isEnabled, onToggle }: Readonly
 
       if (!subscription) {
         onToggle(false)
-        toast.success('알림이 비활성화되었습니다')
+        toast.success('알림이 비활성화됐어요')
         return
       }
 
@@ -101,7 +103,7 @@ export default function PushSubscriptionToggle({ isEnabled, onToggle }: Readonly
       dispatchUnsubscriptionAction({ endpoint: subscription.endpoint })
     } catch (error) {
       console.error('unsubscribeNotification:', error)
-      toast.error('알림 비활성화 중 오류가 발생했습니다')
+      toast.error('알림 비활성화 중 오류가 발생했어요')
     } finally {
       setIsPending(false)
     }
@@ -118,7 +120,7 @@ export default function PushSubscriptionToggle({ isEnabled, onToggle }: Readonly
   return (
     <ToggleButton
       aria-label="푸시 알림 토글"
-      className="w-12 aria-pressed:bg-brand-gradient disabled:opacity-50 disabled:cursor-not-allowed"
+      className="w-12 aria-pressed:bg-brand-end/80 disabled:opacity-50 disabled:cursor-not-allowed"
       disabled={isPending}
       enabled={isEnabled}
       onToggle={handleToggle}
