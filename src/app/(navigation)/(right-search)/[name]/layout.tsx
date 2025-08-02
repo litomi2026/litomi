@@ -14,7 +14,7 @@ export default async function Layout({ params, children }: LayoutProps) {
 
   const publicLinks = [
     { href: `/@${username}`, label: '게시글' },
-    { href: `/@${username}/reply`, label: '답글' },
+    // { href: `/@${username}/reply`, label: '답글' },
     { href: `/@${username}/bookmark`, label: '북마크' },
   ]
 

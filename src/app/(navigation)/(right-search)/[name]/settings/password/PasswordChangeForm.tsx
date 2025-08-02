@@ -10,7 +10,7 @@ import Loading from '@/components/ui/Loading'
 import { passwordPattern } from '@/constants/pattern'
 import useActionResponse, { getFieldError, getFormField } from '@/hook/useActionResponse'
 
-import { changePassword } from './actions'
+import { changePassword } from './action'
 
 type Props = {
   userId: string
