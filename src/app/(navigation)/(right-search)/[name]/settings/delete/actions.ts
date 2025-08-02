@@ -19,7 +19,7 @@ const deleteAccountSchema = z.object({
   password: passwordSchema,
 })
 
-export async function deleteAccount(_prevState: unknown, formData: FormData) {
+export async function deleteAccount(formData: FormData) {
   const cookieStore = await cookies()
   const userId = await getUserIdFromAccessToken(cookieStore)
 
@@ -61,7 +61,7 @@ export async function deleteAccount(_prevState: unknown, formData: FormData) {
   }
 }
 
-export async function exportUserData(_prevState: unknown, _formData: FormData) {
+export async function exportUserData() {
   const cookieStore = await cookies()
   const userId = await getUserIdFromAccessToken(cookieStore)
 

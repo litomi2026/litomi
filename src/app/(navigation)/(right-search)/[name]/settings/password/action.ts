@@ -33,7 +33,7 @@ const changePasswordSchema = z
 
 const passwordChangeLimiter = new RateLimiter(RateLimitPresets.strict())
 
-export async function changePassword(_prevState: unknown, formData: FormData) {
+export async function changePassword(formData: FormData) {
   const cookieStore = await cookies()
   const userId = await getUserIdFromAccessToken(cookieStore)
 

@@ -20,7 +20,7 @@ const profileSchema = z.object({
   imageURL: imageURLSchema.nullable().transform((val) => val ?? undefined),
 })
 
-export default async function editProfile(_prevState: unknown, formData: FormData) {
+export default async function editProfile(formData: FormData) {
   const cookieStore = await cookies()
   const userId = await getUserIdFromAccessToken(cookieStore)
 

@@ -32,7 +32,7 @@ const signupSchema = z
 
 const signupLimiter = new RateLimiter(RateLimitPresets.strict())
 
-export default async function signup(_prevState: unknown, formData: FormData) {
+export default async function signup(formData: FormData) {
   const validation = signupSchema.safeParse({
     loginId: formData.get('loginId'),
     password: formData.get('password'),

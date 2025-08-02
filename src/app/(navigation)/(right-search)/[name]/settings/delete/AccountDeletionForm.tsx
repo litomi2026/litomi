@@ -41,7 +41,7 @@ export default function AccountDeletionForm({ loginId }: Readonly<Props>) {
   const [hasExportedData, setHasExportedData] = useState(false)
   const queryClient = useQueryClient()
 
-  const [_response, dispatchAction, isPending] = useActionResponse({
+  const [_, dispatchAction, isPending] = useActionResponse({
     action: deleteAccount,
     onError: (error) => {
       if (typeof error === 'string') {

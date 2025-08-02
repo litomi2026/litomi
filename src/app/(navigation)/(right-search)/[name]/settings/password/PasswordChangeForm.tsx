@@ -36,9 +36,8 @@ export default function PasswordChangeForm({ userId }: Readonly<Props>) {
         toast.error(error)
       }
     },
-    onSuccess: (response) => {
-      const message = typeof response === 'string' ? response : '비밀번호가 변경됐어요'
-      toast.success(message)
+    onSuccess: (data) => {
+      toast.success(data)
       router.push('/auth/login')
     },
   })
