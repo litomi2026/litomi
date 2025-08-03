@@ -39,10 +39,10 @@ export async function removeDevice(params: Record<string, unknown>) {
   try {
     await db.delete(webPushTable).where(sql`${webPushTable.id} = ${deviceId} AND ${webPushTable.userId} = ${userId}`)
     revalidatePath(`/${username}/settings`)
-    return ok('기기가 제거되었어요')
+    return ok('푸시 알림을 해제했어요')
   } catch (error) {
     captureException(error, { tags: { action: 'removeDevice' } })
-    return internalServerError('기기 제거에 실패했어요')
+    return internalServerError('푸시 알림을 해제하지 못했어요')
   }
 }
 
@@ -69,7 +69,7 @@ export async function subscribeToNotifications(data: Record<string, unknown>) {
     return created('이 브라우저의 푸시 알림을 활성화했어요')
   } catch (error) {
     captureException(error, { tags: { action: 'subscribeToNotifications' } })
-    return internalServerError('푸시 알림 활성화 중 오류가 발생했어요')
+    return internalServerError('푸시 알림을 활성화하지 못했어요')
   }
 }
 
