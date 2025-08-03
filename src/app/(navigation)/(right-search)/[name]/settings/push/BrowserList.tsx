@@ -45,7 +45,7 @@ export default function BrowserList({ webPushes }: Props) {
       return
     }
 
-    if (!confirm('이 기기에서 푸시 알림을 비활성화하시겠어요?')) {
+    if (!confirm('이 브라우저의 푸시 알림을 비활성화하시겠어요?')) {
       return
     }
 
@@ -58,7 +58,7 @@ export default function BrowserList({ webPushes }: Props) {
   }, [webPushes])
 
   if (webPushes.length === 0) {
-    return <div className="text-sm text-zinc-500">등록된 기기가 없어요</div>
+    return <div className="text-sm text-zinc-500">등록된 브라우저가 없어요</div>
   }
 
   return (
@@ -84,7 +84,7 @@ export default function BrowserList({ webPushes }: Props) {
                     {formatDeviceInfo(webPush.userAgent)}
                     {isCurrentDevice && (
                       <span className="text-xs whitespace-nowrap font-medium text-brand-end bg-brand-end/10 px-2 py-0.5 rounded-full">
-                        현재 기기
+                        현재
                       </span>
                     )}
                   </div>
