@@ -14,15 +14,7 @@ export default function BookmarkLink({ className }: Readonly<Props>) {
   const name = me?.name
 
   return (
-    <SelectableLink className={className} href={`/@${name ?? ''}/bookmark`} Icon={<IconBookmark />}>
-      북마크
-    </SelectableLink>
-  )
-}
-
-export function BookmarkLinkSkeleton() {
-  return (
-    <SelectableLink className="pointer-events-none text-zinc-700" href="" Icon={<IconBookmark />}>
+    <SelectableLink className={className} href={`/@${name ?? ''}/bookmark`} Icon={IconBookmark}>
       북마크
     </SelectableLink>
   )

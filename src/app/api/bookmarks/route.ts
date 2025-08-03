@@ -1,9 +1,7 @@
-import { cookies } from 'next/headers'
-
 import { createCacheControl } from '@/crawler/proxy-utils'
 import { BookmarkSource } from '@/database/enum'
 import selectBookmarks from '@/sql/selectBookmarks'
-import { getUserIdFromAccessToken } from '@/utils/cookie'
+import { getUserIdFromCookie } from '@/utils/session'
 
 import { GETBookmarksSchema } from './schema'
 
@@ -22,11 +20,10 @@ export type GETBookmarksResponse = {
 }
 
 export async function GET(request: Request) {
-  const cookieStore = await cookies()
-  const userId = await getUserIdFromAccessToken(cookieStore)
+  const userId = await getUserIdFromCookie()
 
   if (!userId) {
-    return new Response('401 Unauthorized', { status: 401 })
+    return new Response('Unauthorized', { status: 401 })
   }
 
   const url = new URL(request.url)
@@ -34,7 +31,7 @@ export async function GET(request: Request) {
   const validation = GETBookmarksSchema.safeParse(params)
 
   if (!validation.success) {
-    return new Response('400 Bad Request', { status: 400 })
+    return new Response('Bad Request', { status: 400 })
   }
 
   const { cursorId, cursorTime, limit } = validation.data

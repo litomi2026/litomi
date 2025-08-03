@@ -2,18 +2,17 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { cloneElement, ComponentProps, memo, ReactElement } from 'react'
+import { ComponentProps, memo, ReactNode } from 'react'
 
 type Props = ComponentProps<typeof Link> & {
   className?: string
-  iconClassName?: string
-  Icon: ReactElement<ComponentProps<'svg'> & { selected: boolean }>
+  Icon: (props: { className: string; selected: boolean }) => ReactNode
   hrefMatch?: string
 }
 
 export default memo(SelectableLink)
 
-function SelectableLink({ className, iconClassName, Icon, children, href, hrefMatch }: Readonly<Props>) {
+function SelectableLink({ className = '', Icon, children, href, hrefMatch }: Readonly<Props>) {
   const pathname = usePathname()
   const isSelected = hrefMatch ? pathname.includes(hrefMatch) : pathname === href.toString()
 
@@ -25,13 +24,10 @@ function SelectableLink({ className, iconClassName, Icon, children, href, hrefMa
       href={href}
     >
       <div
-        className="flex items-center gap-5 w-fit mx-auto p-3 rounded-full transition 2xl:m-0
-        group-hover:bg-zinc-800 group-active:scale-90 md:group-active:scale-95"
+        className="flex items-center gap-5 w-fit mx-auto p-3 rounded-full transition 2xl:m-0 relative
+        group-hover:bg-zinc-800 group-active:scale-90 group-active:md:scale-95"
       >
-        {cloneElement(Icon, {
-          className: `w-6 transition ${iconClassName ?? ''}`,
-          selected: isSelected,
-        })}
+        <Icon className="w-6 transition" selected={isSelected} />
         <span className="hidden min-w-0 2xl:block">{children}</span>
       </div>
     </Link>
