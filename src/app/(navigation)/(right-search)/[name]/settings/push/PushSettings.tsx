@@ -27,7 +27,7 @@ export default async function PushSettings({ userId }: Props) {
           <PushSubscriptionToggle endpoints={endpoints} />
         </div>
         <p className="text-sm text-zinc-400">
-          새로운 만화가 업데이트되면 이 브라우저에 실시간으로 알려드려요{' '}
+          새로운 만화가 업데이트되면 이 브라우저에 실시간으로 알려줘요{' '}
           <a
             className="text-xs font-medium text-brand-end hover:underline"
             href="https://caniuse.com/push-api"
