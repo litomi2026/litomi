@@ -57,12 +57,6 @@ export async function testNotification(data: Record<string, unknown>) {
   const notificationService = NotificationService.getInstance()
 
   try {
-    const shouldSend = await notificationService.shouldSendNotification(userId)
-
-    if (!shouldSend) {
-      return badRequest('현재 알림을 보낼 수 없어요. 알림 설정을 확인해주세요.')
-    }
-
     await notificationService.sendNotificationToUser(userId, {
       title: '테스트 알림',
       body: message,
@@ -74,7 +68,7 @@ export async function testNotification(data: Record<string, unknown>) {
       },
     })
 
-    return ok('테스트 푸시 알림을 발송했어요')
+    return ok('테스트 푸시 알림을 보냈어요')
   } catch (error) {
     captureException(error, { tags: { action: 'testNotification' } })
     return internalServerError('테스트 푸시 알림 발송 중 오류가 발생했어요')

@@ -35,6 +35,7 @@ export default function PushTestButton({ isEnabled }: Readonly<Props>) {
       active:scale-95
       "
       onClick={() => dispatchTestNotification({ message: '테스트 알림' })}
+      type="button"
     >
       <span className="relative z-10">테스트 알림 보내기</span>
       <div

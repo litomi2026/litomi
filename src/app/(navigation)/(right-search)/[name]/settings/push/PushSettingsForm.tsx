@@ -74,88 +74,86 @@ export default function PushSettingsForm({ initialSettings }: Props) {
       <ToggleSection description="새로운 만화가 업데이트되면 이 브라우저에 실시간으로 알려드려요" title="푸시 알림">
         <PushSubscriptionToggle isEnabled={isEnabled} onToggle={setIsEnabled} />
       </ToggleSection>
-      <div
-        aria-hidden={!isEnabled}
-        className="space-y-4 transition duration-500 ease-in-out 
-        aria-hidden:pointer-events-none aria-hidden:opacity-0 aria-hidden:translate-y-2"
-      >
-        <ToggleSection description="설정한 시간에는 알림을 보내지 않아요" title="방해 금지 시간">
-          <Toggle
-            className="w-14 peer-checked:bg-brand-end/80"
-            defaultChecked={defaultQuietEnabled}
-            name="quietEnabled"
-          />
-          <div className="flex items-center gap-3">
-            <select
-              className="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-sm transition
+      {isEnabled && (
+        <>
+          <ToggleSection description="설정한 시간에는 알림을 보내지 않아요" title="방해 금지 시간">
+            <Toggle
+              className="w-14 peer-checked:bg-brand-end/80"
+              defaultChecked={defaultQuietEnabled}
+              name="quietEnabled"
+            />
+            <div className="flex items-center gap-3">
+              <select
+                className="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-sm transition
               focus:outline-none focus:border-brand-end/50 focus:ring-1 focus:ring-brand-end/20
               hover:border-zinc-700 cursor-pointer"
-              defaultValue={defaultQuietStart}
-              key={initialSettings.quietStart}
-              name="quietStart"
-            >
-              {hourOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-            <span className="text-sm text-zinc-400">부터</span>
-            <select
-              className="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-sm
+                defaultValue={defaultQuietStart}
+                key={initialSettings.quietStart}
+                name="quietStart"
+              >
+                {hourOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              <span className="text-sm text-zinc-400">부터</span>
+              <select
+                className="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-sm
                   transition
                   focus:outline-none focus:border-brand-end/50 focus:ring-1 focus:ring-brand-end/20
                   hover:border-zinc-700 cursor-pointer"
-              defaultValue={defaultQuietEnd}
-              key={initialSettings.quietEnd}
-              name="quietEnd"
-            >
-              {hourOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-            <span className="text-sm text-zinc-400">까지</span>
-          </div>
-        </ToggleSection>
-        <ToggleSection description="여러 업데이트를 하나로 모아서 알려드려요" title="스마트 알림">
-          <Toggle
-            className="w-14 peer-checked:bg-brand-end/80"
-            defaultChecked={defaultBatchEnabled}
-            name="batchEnabled"
-          />
-        </ToggleSection>
-        <ToggleSection description="하루 최대 알림 개수를 설정합니다" title="일일 알림 제한">
-          <select
-            className="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-sm
+                defaultValue={defaultQuietEnd}
+                key={initialSettings.quietEnd}
+                name="quietEnd"
+              >
+                {hourOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              <span className="text-sm text-zinc-400">까지</span>
+            </div>
+          </ToggleSection>
+          <ToggleSection description="여러 업데이트를 하나로 모아서 알려드려요" title="스마트 알림">
+            <Toggle
+              className="w-14 peer-checked:bg-brand-end/80"
+              defaultChecked={defaultBatchEnabled}
+              name="batchEnabled"
+            />
+          </ToggleSection>
+          <ToggleSection description="하루 최대 알림 개수를 설정합니다" title="일일 알림 제한">
+            <select
+              className="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-sm
                 transition
                 focus:outline-none focus:border-brand-end/50 focus:ring-1 focus:ring-brand-end/20
                 hover:border-zinc-700 cursor-pointer"
-            defaultValue={defaultMaxDaily}
-            key={initialSettings.maxDaily}
-            name="maxDaily"
-          >
-            <option value={5}>5개</option>
-            <option value={10}>10개</option>
-            <option value={20}>20개</option>
-            <option value={50}>50개</option>
-            <option value={999}>무제한</option>
-          </select>
-        </ToggleSection>
-        <div className="flex justify-end gap-3 pt-4">
-          <button
-            className="px-4 py-2 relative bg-brand-end font-bold text-background rounded-lg transition text-sm
+              defaultValue={defaultMaxDaily}
+              key={initialSettings.maxDaily}
+              name="maxDaily"
+            >
+              <option value={5}>5개</option>
+              <option value={10}>10개</option>
+              <option value={20}>20개</option>
+              <option value={50}>50개</option>
+              <option value={999}>무제한</option>
+            </select>
+          </ToggleSection>
+          <div className="flex justify-end gap-3 pt-2">
+            <PushTestButton isEnabled={isEnabled} />
+            <button
+              className="px-4 py-2 relative bg-brand-end font-bold text-background rounded-lg transition text-sm
             disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={isPending}
-            type="submit"
-          >
-            {isPending && <IconSpinner className="w-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />}
-            저장하기
-          </button>
-          <PushTestButton isEnabled={isEnabled} />
-        </div>
-      </div>
+              disabled={isPending}
+              type="submit"
+            >
+              {isPending && <IconSpinner className="w-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />}
+              저장하기
+            </button>
+          </div>
+        </>
+      )}
     </form>
   )
 }
