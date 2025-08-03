@@ -47,14 +47,14 @@ export default function SignupForm() {
     [queryClient, router],
   )
 
-  const [response, formAction, pending] = useActionResponse({
+  const [response, dispatchAction, pending] = useActionResponse({
     action: signup,
-    onSuccess: handleSignupSuccess,
     onError: (error) => {
       if (typeof error === 'string') {
         toast.error(error)
       }
     },
+    onSuccess: handleSignupSuccess,
   })
 
   const loginIdError = getFieldError(response, 'loginId')
@@ -83,7 +83,7 @@ export default function SignupForm() {
 
   return (
     <form
-      action={formAction}
+      action={dispatchAction}
       className="grid gap-6 
       [&_label]:block [&_label]:text-sm [&_label]:md:text-base [&_label]:font-medium [&_label]:text-zinc-300 [&_label]:leading-7
       [&_input]:mt-1 [&_input]:w-full [&_input]:rounded-md [&_input]:bg-zinc-800 [&_input]:border [&_input]:border-zinc-600 

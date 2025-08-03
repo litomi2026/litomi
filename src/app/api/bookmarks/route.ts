@@ -53,8 +53,8 @@ export async function GET(request: Request) {
   })
 
   if (bookmarkRows.length === 0) {
-    return new Response('404 Not Found', {
-      status: 404,
+    return new Response(null, {
+      status: 204,
       headers: { 'Cache-Control': cacheControl },
     })
   }

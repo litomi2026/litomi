@@ -18,14 +18,14 @@ type Props = {
 export default function ExportDataSection({ hasExported, onExportComplete }: Readonly<Props>) {
   const [_, dispatchAction, isPending] = useActionResponse({
     action: exportUserData,
+    onError: (error) => {
+      toast.error(error)
+    },
     onSuccess: (data) => {
       const blob = new Blob([data], { type: 'application/json' })
       downloadBlob(blob, `litomi-${new Date().toISOString().split('T')[0]}.json`)
       onExportComplete()
       toast.success('데이터를 성공적으로 내보냈어요')
-    },
-    onError: (error) => {
-      toast.error(typeof error === 'string' ? error : '데이터 내보내기에 실패했어요')
     },
     shouldSetResponse: false,
   })

@@ -36,6 +36,12 @@ export enum DeviceType {
   CROSS_PLATFORM = 2,
 }
 
+export enum NotificationType {
+  NEW_MANGA = 0,
+  BOOKMARK_UPDATE = 1,
+  CRAWL_HISTORY = 2,
+}
+
 export function decodeDeviceType(deviceType: number) {
   switch (deviceType) {
     case DeviceType.CROSS_PLATFORM:

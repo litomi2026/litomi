@@ -12,7 +12,7 @@ import { flattenZodFieldErrors } from '@/utils/form-error'
 
 import { addCensorshipsSchema, deleteCensorshipsSchema, updateCensorshipsSchema } from './schema'
 
-export async function addCensorships(_prevState: unknown, formData: FormData) {
+export async function addCensorships(formData: FormData) {
   const cookieStore = await cookies()
   const userIdFromToken = await getUserIdFromAccessToken(cookieStore)
 
@@ -74,7 +74,7 @@ export async function addCensorships(_prevState: unknown, formData: FormData) {
   }
 }
 
-export async function deleteCensorships(_prevState: unknown, formData: FormData) {
+export async function deleteCensorships(formData: FormData) {
   const cookieStore = await cookies()
   const userIdFromToken = await getUserIdFromAccessToken(cookieStore)
 
@@ -114,7 +114,7 @@ export async function deleteCensorships(_prevState: unknown, formData: FormData)
   }
 }
 
-export async function updateCensorships(_prevState: unknown, formData: FormData) {
+export async function updateCensorships(formData: FormData) {
   const cookieStore = await cookies()
   const userIdFromToken = await getUserIdFromAccessToken(cookieStore)
 

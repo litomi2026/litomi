@@ -10,7 +10,7 @@ import Loading from '@/components/ui/Loading'
 import { passwordPattern } from '@/constants/pattern'
 import useActionResponse, { getFieldError, getFormField } from '@/hook/useActionResponse'
 
-import { changePassword } from './actions'
+import { changePassword } from './action'
 
 type Props = {
   userId: string
@@ -36,9 +36,8 @@ export default function PasswordChangeForm({ userId }: Readonly<Props>) {
         toast.error(error)
       }
     },
-    onSuccess: (response) => {
-      const message = typeof response === 'string' ? response : '비밀번호가 변경됐어요'
-      toast.success(message)
+    onSuccess: (data) => {
+      toast.success(data)
       router.push('/auth/login')
     },
   })
@@ -149,7 +148,9 @@ export default function PasswordChangeForm({ userId }: Readonly<Props>) {
                   />
                 ))}
               </div>
-              <p className={`text-xs ${strengthInfo.color}`}>비밀번호 강도: {strengthInfo.text}</p>
+              {strengthInfo.text && (
+                <p className={`text-xs ${strengthInfo.color}`}>비밀번호 강도: {strengthInfo.text}</p>
+              )}
             </div>
             <p className="mt-1 text-xs text-zinc-400">
               알파벳, 숫자를 하나 이상 포함하여 8자 이상의 비밀번호를 입력해주세요

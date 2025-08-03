@@ -46,9 +46,15 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
       }
     },
     onSuccess: (data) => {
-      toast.success(data.message)
       queryClient.invalidateQueries({ queryKey: QueryKeys.me, exact: true })
       setShowModal(false)
+
+      if (typeof data === 'string') {
+        toast.success(data)
+        return
+      }
+
+      toast.success(data.message)
       router.replace(data.location)
     },
   })
@@ -76,11 +82,11 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
   return (
     <>
       <button
-        className="flex items-center gap-3 text-sm font-semibold rounded-full p-2 transition hover:bg-zinc-800 active:bg-zinc-900 disabled:text-zinc-500 disabled:bg-zinc-800 disabled:pointer-events-none
-          md:px-3 md:py-2 aria-hidden:hidden"
+        className="flex items-center gap-3 text-sm font-semibold rounded-full p-2 transition whitespace-nowrap md:px-3 md:py-2
+        hover:bg-zinc-800 active:bg-zinc-900 disabled:text-zinc-500 disabled:bg-zinc-800 disabled:pointer-events-none aria-hidden:hidden"
         onClick={() => setShowModal(true)}
       >
-        <IconEdit className="w-5" />
+        <IconEdit className="w-5 flex-shrink-0" />
         <span className="min-w-0 hidden md:block">프로필 수정</span>
       </button>
       <Modal

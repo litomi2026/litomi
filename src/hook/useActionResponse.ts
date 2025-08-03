@@ -5,8 +5,8 @@ import { QueryKeys } from '@/constants/query'
 import amplitude from '@/lib/amplitude/lazy'
 import { ActionResponse, ErrorResponse, SuccessResponse } from '@/utils/action-response'
 
-type Props<T extends ActionResponse> = {
-  action: (prevState: unknown, formData: FormData) => Promise<T>
+type Props<T extends ActionResponse, TActionArgs extends unknown[]> = {
+  action: (...args: TActionArgs) => Promise<T>
   onSuccess?: (data: T extends SuccessResponse<infer D> ? D : never) => void
   onError?: (error: T extends ErrorResponse<infer E> ? E : never) => void
   onSettled?: (response: T) => void
@@ -33,19 +33,19 @@ export function getFormField<T extends ActionResponse>(response: T | undefined, 
   }
 }
 
-export default function useActionResponse<T extends ActionResponse>({
+export default function useActionResponse<T extends ActionResponse, TActionArgs extends unknown[]>({
   action,
   onSuccess,
   onError,
   shouldSetResponse = true,
-}: Readonly<Props<T>>) {
+}: Readonly<Props<T, TActionArgs>>) {
   const [response, setResponse] = useState<T>()
   const [isPending, startTransition] = useTransition()
   const queryClient = useQueryClient()
 
-  function dispatchAction(formData: FormData) {
+  function dispatchAction(...args: TActionArgs) {
     startTransition(async () => {
-      const response = await action({}, formData)
+      const response = await action(...args)
 
       if (shouldSetResponse) {
         setResponse(response)

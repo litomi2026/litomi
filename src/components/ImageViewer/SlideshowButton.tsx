@@ -4,7 +4,7 @@ import { memo, useEffect, useId, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import Modal from '../ui/Modal'
-import ToggleButton from '../ui/ToggleButton'
+import Toggle from '../ui/Toggle'
 import { useImageIndexStore } from './store/imageIndex'
 
 type Props = {
@@ -112,12 +112,7 @@ function SlideshowButton({ maxImageIndex, offset, onIntervalChange }: Readonly<P
               <span>초</span>
             </div>
             <strong>반복</strong>
-            <ToggleButton
-              aria-label="반복 토글"
-              className="w-14 aria-pressed:bg-brand-gradient"
-              enabled={isChecked}
-              onToggle={setIsChecked}
-            />
+            <Toggle className="w-14 peer-checked:bg-brand-end/80" defaultChecked={isChecked} onToggle={setIsChecked} />
           </div>
           <div className="grid gap-2 pt-6 text-sm [&_button]:hover:bg-zinc-800 [&_button]:active:bg-zinc-900 [&_button]:rounded-full [&_button]:transition">
             <button className="border-2 p-2 font-bold text-foreground transition border-zinc-700" type="submit">

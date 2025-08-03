@@ -21,7 +21,7 @@ const loginSchema = z.object({
 
 const loginLimiter = new RateLimiter(RateLimitPresets.strict())
 
-export default async function login(_prevState: unknown, formData: FormData) {
+export default async function login(formData: FormData) {
   const validation = loginSchema.safeParse({
     loginId: formData.get('loginId'),
     password: formData.get('password'),

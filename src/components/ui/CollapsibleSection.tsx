@@ -21,7 +21,7 @@ export default function CollapsibleSection({
 
   return (
     <details className={`bg-zinc-900 border-2 ${borderColor} rounded-xl overflow-hidden group`}>
-      <summary className="w-full px-6 py-4 flex items-center justify-between gap-3 hover:bg-zinc-800/50 transition">
+      <summary className="w-full px-4 sm:px-6 py-4 flex items-center justify-between gap-3 hover:bg-zinc-800/50 transition">
         <div className="flex items-center gap-3">
           {icon}
           <div className="text-left">
@@ -39,7 +39,7 @@ export default function CollapsibleSection({
         </svg>
       </summary>
 
-      <div className={`px-6 pb-6 border-t ${contentBorderColor}`}>{children}</div>
+      <div className={`p-4 sm:p-6 border-t ${contentBorderColor}`}>{children}</div>
     </details>
   )
 }

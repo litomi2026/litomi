@@ -26,7 +26,7 @@ describe('signup action', () => {
     formData.append('password', 'Password123')
     formData.append('password-confirm', 'Password123')
 
-    const result = await signup({}, formData)
+    const result = await signup(formData)
 
     expect(result.ok).toBe(false)
     expect('error' in result).toBe(true)
@@ -41,7 +41,7 @@ describe('signup action', () => {
     formData.append('password', 'short')
     formData.append('password-confirm', 'short')
 
-    const result = await signup({}, formData)
+    const result = await signup(formData)
 
     expect(result.ok).toBe(false)
     expect(!result.ok && typeof result.error === 'object' && 'password' in result.error).toBe(true)
@@ -56,7 +56,7 @@ describe('signup action', () => {
     formData.append('password', 'Password123')
     formData.append('password-confirm', 'Password456')
 
-    const result = await signup({}, formData)
+    const result = await signup(formData)
 
     expect(result.ok).toBe(false)
     expect(!result.ok && typeof result.error === 'object' && 'password-confirm' in result.error).toBe(true)
@@ -71,7 +71,7 @@ describe('signup action', () => {
     formData.append('password', 'testuser123')
     formData.append('password-confirm', 'testuser123')
 
-    const result = await signup({}, formData)
+    const result = await signup(formData)
 
     expect(result.ok).toBe(false)
     expect(!result.ok && typeof result.error === 'object' && 'password' in result.error).toBe(true)
@@ -82,7 +82,7 @@ describe('signup action', () => {
   })
 
   test('should return FormErrors.INVALID_INPUT for empty form data', async () => {
-    const result = await signup({}, formData)
+    const result = await signup(formData)
 
     expect(result.ok).toBe(false)
 
