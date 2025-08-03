@@ -42,7 +42,7 @@ export default async function SettingsPage({ params }: PageProps<Params>) {
       <CollapsibleSection
         description="새로운 업데이트를 실시간으로 받아보세요"
         icon={<IconBell className="w-5 flex-shrink-0 text-brand-end" />}
-        title="푸시 알림 설정"
+        title="푸시 알림"
       >
         <Suspense>
           <PushSettings userId={userId} />

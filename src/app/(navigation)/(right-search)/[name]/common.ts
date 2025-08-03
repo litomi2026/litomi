@@ -17,3 +17,7 @@ export const getUserById = cache(async (userId: string) => {
 
   return user
 })
+
+export type Params = {
+  name: string
+}

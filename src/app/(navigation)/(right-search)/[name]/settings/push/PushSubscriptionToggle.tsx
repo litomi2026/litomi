@@ -1,22 +1,40 @@
 'use client'
 
-import { useState } from 'react'
+import { useParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 import Toggle from '@/components/ui/Toggle'
 import { NEXT_PUBLIC_VAPID_PUBLIC_KEY } from '@/constants/env'
 import useActionResponse from '@/hook/useActionResponse'
 import { urlBase64ToUint8Array } from '@/utils/browser'
+import { getUsernameFromParam } from '@/utils/param'
 
+import { Params } from '../../common'
 import { subscribeToNotifications, unsubscribeFromNotifications } from './action'
+import { getCurrentBrowserEndpoint } from './common'
 
 type Props = {
-  isEnabled: boolean
-  onToggle: (enabled: boolean) => void
+  endpoints: string[]
 }
 
-export default function PushSubscriptionToggle({ isEnabled, onToggle }: Readonly<Props>) {
+export default function PushSubscriptionToggle({ endpoints }: Readonly<Props>) {
   const [isPending, setIsPending] = useState(false)
+  const [isSubscribed, setIsSubscribed] = useState(false)
+  const { name } = useParams<Params>()
+  const username = getUsernameFromParam(name)
+
+  useEffect(() => {
+    if (endpoints.length > 0) {
+      ;(async () => {
+        const currentEndpoint = await getCurrentBrowserEndpoint()
+
+        if (currentEndpoint && endpoints.includes(currentEndpoint)) {
+          setIsSubscribed(true)
+        }
+      })()
+    }
+  }, [endpoints])
 
   const [_, dispatchSubscriptionAction] = useActionResponse({
     action: subscribeToNotifications,
@@ -26,7 +44,7 @@ export default function PushSubscriptionToggle({ isEnabled, onToggle }: Readonly
       }
     },
     onSuccess: (data) => {
-      onToggle(true)
+      setIsSubscribed(true)
       toast.success(data)
     },
     shouldSetResponse: false,
@@ -40,7 +58,7 @@ export default function PushSubscriptionToggle({ isEnabled, onToggle }: Readonly
       }
     },
     onSuccess: (data) => {
-      onToggle(false)
+      setIsSubscribed(false)
       toast.success(data)
     },
     shouldSetResponse: false,
@@ -77,6 +95,7 @@ export default function PushSubscriptionToggle({ isEnabled, onToggle }: Readonly
       dispatchSubscriptionAction({
         subscription: subscription.toJSON(),
         userAgent: navigator.userAgent,
+        username,
       })
     } catch (error) {
       console.error('requestNotificationPermission:', error)
@@ -94,13 +113,16 @@ export default function PushSubscriptionToggle({ isEnabled, onToggle }: Readonly
       const subscription = await registration.pushManager.getSubscription()
 
       if (!subscription) {
-        onToggle(false)
         toast.success('알림이 비활성화됐어요')
         return
       }
 
       await subscription.unsubscribe()
-      dispatchUnsubscriptionAction({ endpoint: subscription.endpoint })
+
+      dispatchUnsubscriptionAction({
+        endpoint: subscription.endpoint,
+        username,
+      })
     } catch (error) {
       console.error('unsubscribeNotification:', error)
       toast.error('알림 비활성화 중 오류가 발생했어요')
@@ -119,10 +141,9 @@ export default function PushSubscriptionToggle({ isEnabled, onToggle }: Readonly
 
   return (
     <Toggle
+      checked={isSubscribed}
       className="w-14 peer-checked:bg-brand-end/80 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed"
-      defaultChecked={isEnabled}
       disabled={isPending}
-      name="enabled"
       onToggle={handleToggle}
     />
   )
