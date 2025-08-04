@@ -20,7 +20,7 @@ export async function GET(request: Request) {
   const validation = GETProxyKSearchSchema.safeParse(searchParams)
 
   if (!validation.success) {
-    return new Response('400 Bad Request', { status: 400 })
+    return new Response('Bad Request', { status: 400 })
   }
 
   const {
@@ -57,23 +57,23 @@ export async function GET(request: Request) {
     })
 
     const mangas = filterMangasByMinusPrefix(searchedMangas, query)
+    const nextCursor = mangas.length > 0 ? mangas[mangas.length - 1].id.toString() : null
+    const hasNextPage = mangas.length > 0
+
+    const cacheControl = createCacheControl({
+      public: true,
+      maxAge,
+      sMaxAge: maxAge,
+      staleWhileRevalidate: maxAge,
+    })
 
     return Response.json(
       {
         mangas,
-        nextCursor: mangas.length > 0 ? mangas[mangas.length - 1].id.toString() : null,
-        hasNextPage: mangas.length > 0,
+        nextCursor,
+        hasNextPage,
       } satisfies GETProxyKSearchResponse,
-      {
-        headers: {
-          'Cache-Control': createCacheControl({
-            public: true,
-            maxAge,
-            sMaxAge: maxAge,
-            staleWhileRevalidate: maxAge,
-          }),
-        },
-      },
+      { headers: { 'Cache-Control': cacheControl } },
     )
   } catch (error) {
     return handleRouteError(error, request)

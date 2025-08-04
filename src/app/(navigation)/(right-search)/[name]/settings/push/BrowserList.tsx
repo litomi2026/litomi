@@ -58,54 +58,74 @@ export default function BrowserList({ webPushes }: Props) {
   }, [webPushes])
 
   if (webPushes.length === 0) {
-    return <div className="text-sm text-zinc-500">등록된 브라우저가 없어요</div>
+    return (
+      <div className="text-center py-3 text-sm text-zinc-500">
+        <Monitor className="w-8 h-8 mx-auto mb-2 opacity-30" />
+        등록된 브라우저가 없어요
+      </div>
+    )
   }
 
   return (
-    <div className="space-y-3">
-      <div className="space-y-2">
-        {webPushes.map((webPush) => {
-          const isCurrentDevice = webPush.endpoint === currentEndpoint
-          const isMobile = webPush.userAgent?.includes('Mobile') ?? false
+    <div className="space-y-2">
+      {webPushes.map((webPush) => {
+        const isCurrentDevice = webPush.endpoint === currentEndpoint
+        const isMobile = webPush.userAgent?.includes('Mobile') ?? false
 
-          return (
-            <div
-              className="flex items-center justify-between p-3 bg-zinc-900 rounded-lg border border-zinc-800"
-              key={webPush.id}
-            >
-              <div className="flex items-center gap-3">
-                {isMobile ? (
-                  <Smartphone className="w-5 h-5 text-zinc-500" />
-                ) : (
-                  <Monitor className="w-5 h-5 text-zinc-500" />
-                )}
-                <div>
-                  <div className="text-sm text-zinc-300 flex items-center gap-2">
-                    {formatDeviceInfo(webPush.userAgent)}
-                    {isCurrentDevice && (
-                      <span className="text-xs whitespace-nowrap font-medium text-brand-end bg-brand-end/10 px-2 py-0.5 rounded-full">
-                        현재
-                      </span>
-                    )}
-                  </div>
-                  <div className="text-xs text-zinc-500 mt-1">
-                    등록일: {dayjs(webPush.createdAt).format('YYYY. M. D. HH:mm')}
-                  </div>
+        return (
+          <div
+            className={`flex items-center justify-between p-4 rounded-xl border transition-all ${
+              isCurrentDevice
+                ? 'bg-gradient-to-r from-zinc-800/50 to-zinc-800/30 border-brand-end/20'
+                : 'bg-zinc-800/30 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-800/50'
+            }`}
+            key={webPush.id}
+          >
+            <div className="flex items-center gap-3.5">
+              {isMobile ? (
+                <Smartphone
+                  className={`w-4 h-4 p-2 rounded-lg box-content ${isCurrentDevice ? 'text-brand-end bg-brand-end/10' : 'text-zinc-400 bg-zinc-800/50'}`}
+                />
+              ) : (
+                <Monitor
+                  className={`w-4 h-4 p-2 rounded-lg box-content ${isCurrentDevice ? 'text-brand-end bg-brand-end/10' : 'text-zinc-400 bg-zinc-800/50'}`}
+                />
+              )}
+              <div>
+                <div className="text-sm text-zinc-200 flex items-center gap-2">
+                  <span className="font-medium">{formatDeviceInfo(webPush.userAgent)}</span>
+                  {isCurrentDevice && (
+                    <span className="text-[12px] whitespace-nowrap font-medium text-brand-end bg-brand-end/10 px-2 rounded-full border border-brand-end/20">
+                      현재
+                    </span>
+                  )}
+                </div>
+                <div className="text-xs text-zinc-500 mt-1.5 flex items-center gap-1">
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                    />
+                  </svg>
+                  {dayjs(webPush.createdAt).format('YYYY년 M월 D일 HH:mm')}
                 </div>
               </div>
-              {!isCurrentDevice && (
-                <button
-                  className="p-2 text-zinc-500 hover:text-red-500 transition-colors"
-                  onClick={() => handleRemoveDevice(webPush.id)}
-                  type="button"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              )}
             </div>
-          )
-        })}
-      </div>
+            {!isCurrentDevice && (
+              <button
+                aria-label="기기 제거"
+                className="p-2.5 text-zinc-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all duration-200"
+                onClick={() => handleRemoveDevice(webPush.id)}
+                type="button"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+        )
+      })}
     </div>
   )
 }

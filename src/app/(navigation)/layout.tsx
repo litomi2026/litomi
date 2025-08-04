@@ -4,9 +4,9 @@ import { Suspense } from 'react'
 import type { LayoutProps } from '@/types/nextjs'
 
 import BookmarkLink from '@/components/header/BookmarkLink'
+import NotificationLink from '@/components/header/NotificationLink'
 import ProfileLink from '@/components/header/ProfileLink'
 import PublishButton from '@/components/header/PublishButton'
-import IconBell from '@/components/icons/IconBell'
 import IconHome from '@/components/icons/IconHome'
 import IconLogo from '@/components/icons/IconLogo'
 import IconPost from '@/components/icons/IconPost'
@@ -27,19 +27,17 @@ export default async function Layout({ children }: LayoutProps) {
           <Link className="p-2 w-fit mx-auto hidden sm:block 2xl:m-0" href="/">
             <IconLogo className="w-8" priority />
           </Link>
-          <SelectableLink href="/mangas/latest/1/hi/card" Icon={<IconHome />}>
+          <SelectableLink href="/mangas/latest/1/hi/card" Icon={IconHome}>
             홈
           </SelectableLink>
-          <SelectableLink href="/search" Icon={<IconSearch />}>
+          <SelectableLink href="/search" Icon={IconSearch}>
             검색
           </SelectableLink>
-          <SelectableLink href="/posts/recommand" hrefMatch="/post" Icon={<IconPost />}>
+          <SelectableLink href="/posts/recommand" hrefMatch="/post" Icon={IconPost}>
             글
           </SelectableLink>
           <BookmarkLink />
-          <SelectableLink className="hidden sm:block" href="/notification" Icon={<IconBell />}>
-            알림
-          </SelectableLink>
+          <NotificationLink className="hidden sm:block" />
           <ProfileLink className="hidden sm:block" />
           <PublishButton className="hidden mx-auto my-4 sm:block xl:mx-0" />
         </nav>

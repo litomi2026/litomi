@@ -46,14 +46,23 @@ export default function PushTestButton({ endpoints }: Props) {
 
   return (
     <button
-      className="flex items-center gap-2 whitespace-nowrap px-4 py-2 rounded-lg text-sm transition bg-zinc-900 hover:bg-zinc-800 
-        border border-zinc-800 hover:border-zinc-700 text-zinc-300 hover:text-white
-        focus:outline-none focus:ring-2 focus:ring-brand-end/20 focus:ring-offset-2 focus:ring-offset-zinc-900"
+      className="flex items-center justify-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-sm font-medium
+        bg-gradient-to-r from-zinc-800 to-zinc-800/70 hover:from-zinc-700 hover:to-zinc-700/70
+        border border-zinc-700/50 hover:border-zinc-600
+        text-zinc-200 hover:text-white transition-all duration-200
+        shadow-sm hover:shadow-md hover:shadow-zinc-900/50
+        focus:outline-none focus:ring-2 focus:ring-brand-end/30 focus:border-brand-end/50
+        active:scale-[0.98] touch-manipulation"
       onClick={handleTestNotification}
       type="button"
     >
-      <BellRing className="w-4 h-4" />
-      <span>{hasTestedOnce ? '다시 보내기' : '알림 보내기'}</span>
+      <div className="relative">
+        <BellRing className={`w-4 h-4 flex-shrink-0 ${hasTestedOnce ? 'text-brand-end/70' : ''}`} />
+        {!hasTestedOnce && (
+          <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-brand-end rounded-full animate-pulse" />
+        )}
+      </div>
+      <span className="whitespace-nowrap">{hasTestedOnce ? '다시 보내기' : '알림 보내기'}</span>
     </button>
   )
 }
