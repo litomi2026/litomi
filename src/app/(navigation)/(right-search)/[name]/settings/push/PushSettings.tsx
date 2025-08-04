@@ -23,7 +23,7 @@ export default async function PushSettings({ userId }: Props) {
         <div className="flex items-center gap-4 flex-1">
           <Bell className="w-5 text-brand-end p-2.5 bg-brand-end/10 rounded-xl border border-brand-end/20 box-content" />
           <div className="flex-1">
-            <div className="flex-1 flex justify-between space-y-1">
+            <div className="flex-1 flex items-center justify-between gap-1">
               <h3 className="text-lg font-semibold text-zinc-100">브라우저 푸시</h3>
               <PushSubscriptionToggle endpoints={endpoints} />
             </div>
