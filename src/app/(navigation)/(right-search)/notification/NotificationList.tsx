@@ -124,6 +124,7 @@ export default function NotificationList() {
       queryClient.invalidateQueries({ queryKey: QueryKeys.notifications(searchParams) })
       queryClient.invalidateQueries({ queryKey: QueryKeys.notificationUnreadCount })
     },
+    shouldSetResponse: false,
   })
 
   const [__, dispatchDeleteNotifications, isDeleteNotificationsPending] = useActionResponse({
@@ -138,6 +139,7 @@ export default function NotificationList() {
       queryClient.invalidateQueries({ queryKey: QueryKeys.notifications(searchParams) })
       queryClient.invalidateQueries({ queryKey: QueryKeys.notificationUnreadCount })
     },
+    shouldSetResponse: false,
   })
 
   const handleBatchAction = useCallback(
