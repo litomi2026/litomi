@@ -5,6 +5,8 @@ export const QueryKeys = {
   infiniteCensorships: ['me', 'censorships', 'infinite'],
   censorships: ['me', 'censorships'],
   passkeys: ['me', 'passkeys'],
+  notificationUnreadCount: ['me', 'notifications', 'unread-count'],
+  notifications: (searchParams: URLSearchParams) => ['me', 'notifications', Object.fromEntries(searchParams)],
 
   infiniteManga: ['infinite', 'manga'],
   search: (searchParams: URLSearchParams) => ['search', Object.fromEntries(searchParams)],

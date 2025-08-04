@@ -112,11 +112,7 @@ export function handleRouteError(error: unknown, request: Request) {
     },
   }
 
-  const headers = new Headers({
-    'Content-Type': 'application/json',
-    'X-Error-Code': normalizedError.errorCode,
-  })
-
+  const headers = new Headers({ 'X-Error-Code': normalizedError.errorCode })
   return Response.json(response, { status: normalizedError.statusCode, headers })
 }
 
