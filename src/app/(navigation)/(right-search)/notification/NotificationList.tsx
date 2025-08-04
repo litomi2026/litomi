@@ -122,6 +122,7 @@ export default function NotificationList() {
       setSelectedIds(new Set())
       setSelectionMode(false)
       queryClient.invalidateQueries({ queryKey: QueryKeys.notifications(searchParams) })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.notificationUnreadCount })
     },
   })
 
@@ -135,6 +136,7 @@ export default function NotificationList() {
       setSelectedIds(new Set())
       setSelectionMode(false)
       queryClient.invalidateQueries({ queryKey: QueryKeys.notifications(searchParams) })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.notificationUnreadCount })
     },
   })
 
