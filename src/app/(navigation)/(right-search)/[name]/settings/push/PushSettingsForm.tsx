@@ -50,7 +50,7 @@ export default function PushSettingsForm({ initialSettings }: Props) {
   const defaultMaxDaily = getFormField(response, 'maxDaily') ?? initialSettings.maxDaily
 
   return (
-    <form action={dispatchAction} className="grid gap-4 ">
+    <form action={dispatchAction} className="grid gap-3">
       <input name="username" type="hidden" value={getUsernameFromParam(username)} />
       <ToggleSection
         description="설정한 시간에는 알림을 보내지 않아요"
@@ -58,57 +58,61 @@ export default function PushSettingsForm({ initialSettings }: Props) {
         title="방해 금지 시간"
       >
         <Toggle
-          className="w-14 peer-checked:bg-brand-end/80"
+          className="w-12 sm:w-14 peer-checked:bg-brand-end/80"
           defaultChecked={defaultQuietEnabled}
           name="quietEnabled"
         />
-        <div className="flex items-center gap-3">
-          <select
-            className="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-sm transition
-              focus:outline-none focus:border-brand-end/50 focus:ring-1 focus:ring-brand-end/20
-              hover:border-zinc-700 cursor-pointer"
-            defaultValue={defaultQuietStart}
-            key={initialSettings.quietStart}
-            name="quietStart"
-          >
-            {hourOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-          <span className="text-sm text-zinc-400">부터</span>
-          <select
-            className="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-sm
-                  transition
-                  focus:outline-none focus:border-brand-end/50 focus:ring-1 focus:ring-brand-end/20
-                  hover:border-zinc-700 cursor-pointer"
-            defaultValue={defaultQuietEnd}
-            key={initialSettings.quietEnd}
-            name="quietEnd"
-          >
-            {hourOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-          <span className="text-sm text-zinc-400">까지</span>
+        <div className="grid grid-cols-2 gap-2 whitespace-nowrap sm:flex sm:items-center sm:gap-3">
+          <div className="flex items-center gap-2">
+            <select
+              className="bg-zinc-900 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-sm transition
+                focus:outline-none focus:border-brand-end/50 focus:ring-1 focus:ring-brand-end/20
+                hover:border-zinc-700 cursor-pointer w-full sm:w-auto"
+              defaultValue={defaultQuietStart}
+              key={initialSettings.quietStart}
+              name="quietStart"
+            >
+              {hourOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <span className="text-xs sm:text-sm text-zinc-400">부터</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <select
+              className="bg-zinc-900 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-sm
+                transition
+                focus:outline-none focus:border-brand-end/50 focus:ring-1 focus:ring-brand-end/20
+                hover:border-zinc-700 cursor-pointer w-full sm:w-auto"
+              defaultValue={defaultQuietEnd}
+              key={initialSettings.quietEnd}
+              name="quietEnd"
+            >
+              {hourOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <span className="text-xs sm:text-sm text-zinc-400">까지</span>
+          </div>
         </div>
       </ToggleSection>
-      <ToggleSection description="여러 업데이트를 하나로 모아서 알려드려요" title="스마트 알림">
+      <ToggleSection description="여러 업데이트를 모아서 알림" title="스마트 알림">
         <Toggle
-          className="w-14 peer-checked:bg-brand-end/80"
+          className="w-12 sm:w-14 peer-checked:bg-brand-end/80"
           defaultChecked={defaultBatchEnabled}
           name="batchEnabled"
         />
       </ToggleSection>
-      <ToggleSection description="하루 최대 알림 개수를 설정합니다" title="일일 알림 제한">
+      <ToggleSection description="하루 최대 알림 개수" title="일일 제한">
         <select
-          className="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-sm
-                transition
-                focus:outline-none focus:border-brand-end/50 focus:ring-1 focus:ring-brand-end/20
-                hover:border-zinc-700 cursor-pointer"
+          className="bg-zinc-900 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-sm
+            transition
+            focus:outline-none focus:border-brand-end/50 focus:ring-1 focus:ring-brand-end/20
+            hover:border-zinc-700 cursor-pointer min-w-[80px]"
           defaultValue={defaultMaxDaily}
           key={initialSettings.maxDaily}
           name="maxDaily"
@@ -121,9 +125,10 @@ export default function PushSettingsForm({ initialSettings }: Props) {
         </select>
       </ToggleSection>
       <button
-        className="px-6 py-2 relative bg-brand-end font-bold text-background rounded-lg transition text-sm
+        className="px-4 py-2.5 mt-2 relative bg-brand-end font-medium text-background rounded-lg transition text-sm
         hover:bg-brand-end/90 disabled:opacity-50 disabled:cursor-not-allowed
-        focus:outline-none focus:ring-2 focus:ring-brand-end/50 focus:ring-offset-2 focus:ring-offset-zinc-900"
+        focus:outline-none focus:ring-2 focus:ring-brand-end/50 focus:ring-offset-2 focus:ring-offset-zinc-900
+        w-full sm:w-auto sm:px-6"
         disabled={isPending}
         type="submit"
       >
@@ -156,16 +161,16 @@ function ToggleSection({
   children: ReactNode | ReactNode[]
 }) {
   return (
-    <label className="grid gap-4 rounded-lg p-4 backdrop-blur-sm border border-zinc-800 cursor-pointer hover:border-zinc-700 transition">
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-1">
+    <label className="grid gap-3 rounded-xl p-3 sm:p-4 backdrop-blur-sm border border-zinc-800 cursor-pointer hover:border-zinc-700 transition">
+      <div className="flex items-start sm:items-center justify-between gap-3">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-0.5">
             {icon}
             <h4 className="font-medium text-sm">{title}</h4>
           </div>
-          <p className="text-xs text-zinc-500">{description}</p>
+          <p className="text-xs text-zinc-500 pr-2">{description}</p>
         </div>
-        {Array.isArray(children) ? children[0] : children}
+        <div className="flex-shrink-0">{Array.isArray(children) ? children[0] : children}</div>
       </div>
       {Array.isArray(children) ? children[1] : null}
     </label>

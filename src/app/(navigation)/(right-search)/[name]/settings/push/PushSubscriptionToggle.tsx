@@ -142,7 +142,7 @@ export default function PushSubscriptionToggle({ endpoints }: Readonly<Props>) {
   return (
     <Toggle
       checked={isSubscribed}
-      className="w-14 peer-checked:bg-brand-end/80 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed"
+      className="w-12 sm:w-14 peer-checked:bg-brand-end/80 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed"
       disabled={isPending}
       onToggle={handleToggle}
     />
