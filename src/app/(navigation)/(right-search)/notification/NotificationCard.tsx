@@ -34,27 +34,6 @@ export default function NotificationCard({
   const parsedData = notification.data ? JSON.parse(notification.data) : null
   const isUnread = notification.read === 0
 
-  const getNotificationStyle = () => {
-    const baseStyle = 'group relative rounded-xl border transition-all duration-200 flex gap-3 p-3 sm:gap-4 sm:p-4'
-
-    if (selected) {
-      return `${baseStyle} border-brand-end bg-brand-end/10`
-    }
-
-    if (isUnread) {
-      switch (notification.type) {
-        case NotificationType.BOOKMARK_UPDATE:
-          return `${baseStyle} border-purple-800/50 bg-purple-900/20 hover:border-purple-700 hover:bg-purple-900/30`
-        case NotificationType.NEW_MANGA:
-          return `${baseStyle} border-blue-800/50 bg-blue-900/20 hover:border-blue-700 hover:bg-blue-900/30`
-        default:
-          return `${baseStyle} border-zinc-800 bg-zinc-900/30 hover:border-zinc-700 hover:bg-zinc-900/50`
-      }
-    }
-
-    return `${baseStyle} border-zinc-800/30 bg-zinc-900/10 hover:border-zinc-700/50 hover:bg-zinc-900/20`
-  }
-
   const getNotificationIcon = () => {
     switch (notification.type) {
       case NotificationType.BOOKMARK_UPDATE:
@@ -81,7 +60,9 @@ export default function NotificationCard({
 
   return (
     <div
-      className={getNotificationStyle()}
+      aria-selected={selected}
+      className="group relative rounded-xl border transition-all duration-200 flex gap-3 p-3 sm:gap-4 sm:p-4 border-zinc-800 bg-zinc-900/30 
+      hover:border-zinc-700 hover:bg-zinc-900/50 aria-selected:border-brand-end aria-selected:bg-brand-end/10"
       onClick={() => {
         if (selectionMode && onSelect) {
           onSelect(notification.id)
