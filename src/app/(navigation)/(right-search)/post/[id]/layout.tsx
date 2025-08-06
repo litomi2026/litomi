@@ -4,8 +4,6 @@ import type { LayoutProps } from '@/types/nextjs'
 
 import BackButton from '@/components/BackButton'
 
-export const dynamic = 'error'
-
 type Props = LayoutProps & {
   comment: ReactNode
   post: ReactNode

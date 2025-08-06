@@ -12,6 +12,8 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core'
 
+import { mangaSeenTable, notificationConditionTable, notificationCriteriaTable } from './notification-schema'
+
 export const userTable = pgTable('user', {
   id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
@@ -41,13 +43,13 @@ export const userCensorshipTable = pgTable(
   'user_censorship',
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
+    userId: bigint('user_id', { mode: 'number' })
+      .references(() => userTable.id, { onDelete: 'cascade' })
+      .notNull(),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     key: smallint().notNull(),
     value: varchar({ length: 256 }).notNull(),
     level: smallint().notNull(),
-    userId: bigint('user_id', { mode: 'number' })
-      .references(() => userTable.id, { onDelete: 'cascade' })
-      .notNull(),
   },
   (table) => [index('idx_user_censorship_user_id').on(table.userId)],
 ).enableRLS()
@@ -56,15 +58,15 @@ export const credentialTable = pgTable(
   'credential',
   {
     id: varchar({ length: 256 }).primaryKey(),
+    userId: bigint('user_id', { mode: 'number' })
+      .references(() => userTable.id, { onDelete: 'cascade' })
+      .notNull(),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     lastUsedAt: timestamp('last_used_at', { withTimezone: true }).defaultNow().notNull(),
     counter: integer().notNull().default(0),
     publicKey: text('public_key').notNull(),
     deviceType: smallint('device_type').notNull(),
     transports: text().array(),
-    userId: bigint('user_id', { mode: 'number' })
-      .references(() => userTable.id, { onDelete: 'cascade' })
-      .notNull(),
   },
   (table) => [index('idx_credential_user_id').on(table.userId)],
 ).enableRLS()
@@ -89,15 +91,15 @@ export const webPushTable = pgTable(
   'web_push',
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+    userId: bigint('user_id', { mode: 'number' })
+      .references(() => userTable.id, { onDelete: 'cascade' })
+      .notNull(),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     lastUsedAt: timestamp('last_used_at', { withTimezone: true }).defaultNow().notNull(),
     endpoint: text().notNull(),
     p256dh: text().notNull(),
     auth: text().notNull(),
     userAgent: text('user_agent'),
-    userId: bigint('user_id', { mode: 'number' })
-      .references(() => userTable.id, { onDelete: 'cascade' })
-      .notNull(),
   },
   (table) => [unique('idx_web_push_user_endpoint').on(table.userId, table.endpoint)],
 ).enableRLS()
@@ -133,3 +135,5 @@ export const notificationTable = pgTable(
   },
   (table) => [index('idx_notification_user_id').on(table.userId)],
 ).enableRLS()
+
+export { mangaSeenTable, notificationConditionTable, notificationCriteriaTable }

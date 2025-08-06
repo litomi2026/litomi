@@ -36,11 +36,29 @@ export enum DeviceType {
   CROSS_PLATFORM = 2,
 }
 
+export enum NotificationConditionType {
+  SERIES = 1,
+  CHARACTER = 2,
+  TAG = 3,
+  ARTIST = 4,
+  GROUP = 5,
+  LANGUAGE = 6,
+}
+
 export enum NotificationType {
   NEW_MANGA = 0,
   BOOKMARK_UPDATE = 1,
   CRAWL_HISTORY = 2,
 }
+
+export const NotificationConditionTypeNames = {
+  [NotificationConditionType.SERIES]: '시리즈',
+  [NotificationConditionType.CHARACTER]: '캐릭터',
+  [NotificationConditionType.TAG]: '태그',
+  [NotificationConditionType.ARTIST]: '작가',
+  [NotificationConditionType.GROUP]: '그룹',
+  [NotificationConditionType.LANGUAGE]: '언어',
+} as const
 
 export function decodeDeviceType(deviceType: number) {
   switch (deviceType) {
