@@ -1,0 +1,192 @@
+import { sql } from 'drizzle-orm'
+
+import type { Manga } from '@/types/manga'
+
+import { HarpiComicKind, HarpiListMode, HarpiRandomMode, HarpiSort } from '@/app/api/proxy/harpi/search/schema'
+import { HarpiClient } from '@/crawler/harpi'
+import { HiyobiClient } from '@/crawler/hiyobi'
+import { KHentaiClient } from '@/crawler/k-hentai'
+import { db } from '@/database/drizzle'
+import { BookmarkSource } from '@/database/enum'
+import { MangaNotificationProcessor } from '@/lib/notification/MangaNotificationProcessor'
+
+// Configuration
+const CONFIG = {
+  HARPI: {
+    enabled: true,
+    maxPages: 1, // Number of pages to crawl
+  },
+  HIYOBI: {
+    enabled: true,
+    maxPages: 1, // Number of pages to crawl
+  },
+  K_HENTAI: {
+    enabled: true,
+    pageLimit: 50, // Number of results per request
+  },
+  BATCH_SIZE: 50, // Process notifications in batches
+  DELAY_MS: 2000, // Delay between crawl requests to avoid rate limiting
+}
+
+// Logger utility
+const log = {
+  info: (msg: string, ...args: unknown[]) => console.log(`[${new Date().toISOString()}] ℹ️  ${msg}`, ...args),
+  success: (msg: string, ...args: unknown[]) => console.log(`[${new Date().toISOString()}] ✅ ${msg}`, ...args),
+  error: (msg: string, ...args: unknown[]) => console.error(`[${new Date().toISOString()}] ❌ ${msg}`, ...args),
+  warn: (msg: string, ...args: unknown[]) => console.warn(`[${new Date().toISOString()}] ⚠️  ${msg}`, ...args),
+}
+
+// Sleep utility
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+// Main crawl and notify function
+async function crawlAndNotify() {
+  // Check required environment variables
+  const requiredEnvVars = ['POSTGRES_URL', 'NEXT_PUBLIC_VAPID_PUBLIC_KEY', 'VAPID_PRIVATE_KEY']
+  const missingEnvVars = requiredEnvVars.filter((varName) => !process.env[varName])
+
+  if (missingEnvVars.length > 0) {
+    log.error(`Missing required environment variables: ${missingEnvVars.join(', ')}`)
+    process.exit(1)
+  }
+
+  log.info('Starting crawl and notify process...')
+  const startTime = Date.now()
+
+  try {
+    // Test database connection
+    await db.execute(sql`SELECT 1`)
+    log.success('Database connection established')
+
+    // Initialize notification processor
+    const processor = MangaNotificationProcessor.getInstance()
+
+    // Crawl all sources in parallel
+    const [harpiResults, hiyobiResults, kHentaiResults] = await Promise.all([
+      crawlHarpi(),
+      crawlHiyobi(),
+      crawlKHentai(),
+    ])
+
+    const allManga = [...harpiResults, ...hiyobiResults, ...kHentaiResults]
+    log.info(`Total manga crawled: ${allManga.length}`)
+
+    if (allManga.length === 0) {
+      log.warn('No manga found during crawl')
+      return
+    }
+
+    // Process manga for notifications
+    log.info('Processing manga for notifications...')
+    const result = await processor.processBatches(allManga, { batchSize: CONFIG.BATCH_SIZE })
+
+    log.success('Crawl and notify process completed!')
+
+    const duration = Date.now() - startTime
+    log.info(`Total execution time: ${(duration / 1000).toFixed(2)} seconds`)
+
+    // Log results
+    log.info('Results:', {
+      matched: result.matched,
+      notificationsSent: result.notificationsSent,
+      errors: result.errors.length,
+    })
+
+    if (result.errors.length > 0) {
+      log.warn('Errors encountered:')
+      result.errors.forEach((error) => log.error(error))
+    }
+  } catch (error) {
+    log.error('Fatal error during crawl and notify:', error)
+    process.exit(1)
+  }
+}
+
+// Crawl Harpi source
+async function crawlHarpi(): Promise<Array<{ manga: Manga; source: BookmarkSource }>> {
+  if (!CONFIG.HARPI.enabled) return []
+
+  const client = HarpiClient.getInstance()
+  const results: Array<{ manga: Manga; source: BookmarkSource }> = []
+
+  try {
+    for (let page = 0; page < CONFIG.HARPI.maxPages; page++) {
+      log.info(`Crawling Harpi page ${page + 1}/${CONFIG.HARPI.maxPages}`)
+
+      const mangas = await client.fetchMangas({
+        comicKind: HarpiComicKind.EMPTY,
+        isIncludeTagsAnd: true,
+        minImageCount: 0,
+        maxImageCount: 0,
+        listMode: HarpiListMode.SORT,
+        randomMode: HarpiRandomMode.SEARCH,
+        page,
+        pageLimit: 10,
+        sort: HarpiSort.DATE_DESC,
+      })
+
+      results.push(...mangas.map((manga) => ({ manga, source: BookmarkSource.HARPI })))
+
+      log.success(`Fetched ${mangas.length} manga from Harpi page ${page + 1}`)
+
+      if (page < CONFIG.HARPI.maxPages - 1) {
+        await sleep(CONFIG.DELAY_MS)
+      }
+    }
+  } catch (error) {
+    log.error('Error crawling Harpi:', error)
+  }
+
+  return results
+}
+
+// Crawl Hiyobi source
+async function crawlHiyobi(): Promise<Array<{ manga: Manga; source: BookmarkSource }>> {
+  if (!CONFIG.HIYOBI.enabled) return []
+
+  const client = HiyobiClient.getInstance()
+  const results: Array<{ manga: Manga; source: BookmarkSource }> = []
+
+  try {
+    for (let page = 1; page <= CONFIG.HIYOBI.maxPages; page++) {
+      log.info(`Crawling Hiyobi page ${page}/${CONFIG.HIYOBI.maxPages}`)
+
+      const mangas = await client.fetchMangas(page)
+      results.push(...mangas.map((manga) => ({ manga, source: BookmarkSource.HIYOBI })))
+
+      log.success(`Fetched ${mangas.length} manga from Hiyobi page ${page}`)
+
+      if (page < CONFIG.HIYOBI.maxPages) {
+        await sleep(CONFIG.DELAY_MS)
+      }
+    }
+  } catch (error) {
+    log.error('Error crawling Hiyobi:', error)
+  }
+
+  return results
+}
+
+// Crawl K-Hentai source
+async function crawlKHentai(): Promise<Array<{ manga: Manga; source: BookmarkSource }>> {
+  if (!CONFIG.K_HENTAI.enabled) return []
+
+  const client = KHentaiClient.getInstance()
+  const results: Array<{ manga: Manga; source: BookmarkSource }> = []
+
+  try {
+    // Fetch Korean manga (most relevant for the service)
+    log.info('Crawling K-Hentai Korean manga')
+
+    const mangas = await client.searchMangas()
+    results.push(...mangas.map((manga) => ({ manga, source: BookmarkSource.K_HENTAI })))
+
+    log.success(`Fetched ${mangas.length} manga from K-Hentai`)
+  } catch (error) {
+    log.error('Error crawling K-Hentai:', error)
+  }
+
+  return results
+}
+
+crawlAndNotify()
