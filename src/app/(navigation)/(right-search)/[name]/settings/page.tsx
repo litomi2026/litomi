@@ -6,7 +6,6 @@ import type { PageProps } from '@/types/nextjs'
 
 import IconBell from '@/components/icons/IconBell'
 import IconKey from '@/components/icons/IconKey'
-import IconSearch from '@/components/icons/IconSearch'
 import IconTrash from '@/components/icons/IconTrash'
 import CollapsibleSection from '@/components/ui/CollapsibleSection'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
@@ -18,7 +17,6 @@ import SettingsForbidden from './SettingsForbidden'
 const AccountDeletionForm = dynamic(() => import('./delete/AccountDeletionForm'))
 const PushSettings = dynamic(() => import('./push/PushSettings'))
 const PasswordChangeForm = dynamic(() => import('./password/PasswordChangeForm'))
-const KeywordSettings = dynamic(() => import('./keyword/KeywordSettings'))
 
 type Params = {
   name: string
@@ -48,15 +46,6 @@ export default async function SettingsPage({ params }: PageProps<Params>) {
       >
         <Suspense>
           <PushSettings userId={userId} />
-        </Suspense>
-      </CollapsibleSection>
-      <CollapsibleSection
-        description="관심 키워드를 등록하여 새로운 만화 알림을 받아보세요"
-        icon={<IconSearch className="w-5 flex-shrink-0 text-blue-500" />}
-        title="키워드 알림"
-      >
-        <Suspense>
-          <KeywordSettings userId={userId} />
         </Suspense>
       </CollapsibleSection>
       <CollapsibleSection
