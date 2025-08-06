@@ -6,15 +6,7 @@ import { revalidatePath } from 'next/cache'
 
 import { db } from '@/database/drizzle'
 import { notificationConditionTable, notificationCriteriaTable } from '@/database/notification-schema'
-import {
-  badRequest,
-  created,
-  internalServerError,
-  noContent,
-  notFound,
-  ok,
-  unauthorized,
-} from '@/utils/action-response'
+import { badRequest, created, internalServerError, notFound, ok, unauthorized } from '@/utils/action-response'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 import { getUserIdFromCookie } from '@/utils/session'
 
@@ -76,7 +68,7 @@ export async function createNotificationCriteria(formData: FormData) {
     }
 
     revalidatePath('/[name]/settings', 'page')
-    return created(result)
+    return created({ id: result.id })
   } catch (error) {
     captureException(error, { extra: { name: 'createNotificationCriteria', userId } })
     return internalServerError('알림 기준 생성 중 오류가 발생했어요', formData)
@@ -111,7 +103,7 @@ export async function deleteNotificationCriteria(formData: FormData) {
     }
 
     revalidatePath('/[name]/settings', 'page')
-    return noContent()
+    return ok({ deletedId: result[0].id })
   } catch (error) {
     captureException(error, { extra: { name: 'deleteNotificationCriteria', userId, criteriaId } })
     return internalServerError('알림 기준 삭제 중 오류가 발생했어요')
