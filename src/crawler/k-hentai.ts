@@ -219,7 +219,7 @@ export class KHentaiClient {
       maxPages?: string
       startDate?: string
       endDate?: string
-    } = {},
+    },
     revalidate = 0,
   ): Promise<Manga[]> {
     const kebabCaseParams = Object.entries(params)

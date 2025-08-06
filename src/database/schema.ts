@@ -120,6 +120,9 @@ export const notificationTable = pgTable(
   'notification',
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+    userId: bigint('user_id', { mode: 'number' })
+      .references(() => userTable.id, { onDelete: 'cascade' })
+      .notNull(),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     type: smallint().notNull(), // 'new_manga', 'bookmark_update', etc.
     read: smallint().notNull().default(0),
@@ -127,9 +130,6 @@ export const notificationTable = pgTable(
     body: text().notNull(),
     data: text(),
     sentAt: timestamp('sent_at', { withTimezone: true }),
-    userId: bigint('user_id', { mode: 'number' })
-      .references(() => userTable.id, { onDelete: 'cascade' })
-      .notNull(),
   },
   (table) => [index('idx_notification_user_id').on(table.userId)],
 ).enableRLS()

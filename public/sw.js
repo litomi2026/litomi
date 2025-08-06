@@ -7,7 +7,7 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(self.clients.claim())
 })
 
-self.addEventListener('push', (event) => {
+self.addEventListener('push', function (event) {
   if (event.data) {
     const { title, body, icon, badge, tag, data, notificationId } = event.data.json()
 
@@ -15,9 +15,11 @@ self.addEventListener('push', (event) => {
       body,
       icon: icon || '/icon.png',
       badge: badge || '/badge.png',
-      vibrate: [200, 100, 200],
+      vibrate: [100, 50, 100],
       tag: tag || 'default',
+      requireInteraction: false,
       renotify: true,
+      silent: false,
       data: {
         ...data,
         notificationId,
@@ -41,30 +43,24 @@ self.addEventListener('push', (event) => {
   }
 })
 
-self.addEventListener('notificationclick', (event) => {
+self.addEventListener('notificationclick', function (event) {
+  console.log('Notification click received:', event.action)
   event.notification.close()
 
   const notificationData = event.notification.data
   let targetUrl = 'https://litomi.in'
 
-  if (event.action === 'view' || !event.action) {
-    if (notificationData?.url) {
-      targetUrl = `https://litomi.in${notificationData.url}`
-    }
-  } else if (event.action === 'bookmark') {
-    if (notificationData?.mangaId && notificationData?.source) {
-      targetUrl = `https://litomi.in/manga/${notificationData.mangaId}/${notificationData.source}?action=bookmark`
-    }
+  if (event.action === 'view' && notificationData?.url) {
+    targetUrl = `https://litomi.in${notificationData.url}`
   } else if (notificationData?.url) {
     targetUrl = `https://litomi.in${notificationData.url}`
   }
 
   event.waitUntil(
-    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(async function (clientList) {
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (clientList) {
       for (const client of clientList) {
-        const isAlreadyOpen = client.url.startsWith('https://litomi.in') && 'focus' in client
-        if (isAlreadyOpen) {
-          await client.navigate(targetUrl)
+        if (client.url.startsWith('https://litomi.in') && 'focus' in client) {
+          client.navigate(targetUrl)
           return client.focus()
         }
       }

@@ -10,14 +10,15 @@
     "analyze": "ANALYZE=true next build",
     "prettier": "prettier --write .",
     "type": "tsc --noEmit",
+    "crawl": "bun tools/crawlMangas.ts",
+    "crawl:harpi": "bun src/crawler/harpi.ts",
     "prepare": "husky",
     "db:push": "drizzle-kit push",
     "db:local": "docker compose down -v && docker compose up -d",
     "test:watch": "bun test --watch",
     "test:coverage": "bun test --coverage",
     "test:e2e": "playwright test",
-    "test:e2e:docker": "./e2e/test-e2e-docker.sh",
-    "crawl": "bun --conditions=react-server tools/crawlAndNotify.ts"
+    "test:e2e:docker": "./e2e/test-e2e-docker.sh"
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^2.20.1",

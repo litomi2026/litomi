@@ -7,7 +7,7 @@ import { cookies } from 'next/headers'
 
 import { db } from '@/database/drizzle'
 import { pushSettingsTable, webPushTable } from '@/database/schema'
-import { WebPushService } from '@/lib/notification/WebPushService'
+import { NotificationService } from '@/lib/notification/NotificationService'
 import { badRequest, created, internalServerError, ok, unauthorized } from '@/utils/action-response'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
@@ -61,10 +61,10 @@ export async function subscribeToNotifications(data: Record<string, unknown>) {
   }
 
   const { subscription, userAgent, username } = validation.data
-  const notificationService = WebPushService.getInstance()
+  const notificationService = NotificationService.getInstance()
 
   try {
-    await notificationService.subscribeUser(Number(userId), subscription, userAgent)
+    await notificationService.subscribeUser(userId, subscription, userAgent)
     revalidatePath(`/@${username}/settings`)
     return created('이 브라우저의 푸시 알림을 활성화했어요')
   } catch (error) {
@@ -88,10 +88,10 @@ export async function testNotification(data: Record<string, unknown>) {
   }
 
   const { message, endpoint } = validation.data
-  const notificationService = WebPushService.getInstance()
+  const notificationService = NotificationService.getInstance()
 
   try {
-    await notificationService.sendTestWebPushToEndpoint(userId, endpoint, {
+    await notificationService.sendTestPushToEndpoint(userId, endpoint, {
       title: '테스트 알림',
       body: message,
       icon: '/icon.png',
@@ -126,8 +126,8 @@ export async function unsubscribeFromNotifications(data: Record<string, unknown>
   const { endpoint, username } = validation.data
 
   try {
-    const notificationService = WebPushService.getInstance()
-    await notificationService.unsubscribeUser(userId, endpoint)
+    const notificationService = NotificationService.getInstance()
+    await notificationService.unsubscribeUser(Number(userId), endpoint)
     revalidatePath(`/@${username}/settings`)
     return ok('이 브라우저의 푸시 알림을 비활성화했어요')
   } catch (error) {
