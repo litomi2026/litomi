@@ -149,8 +149,12 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
       onClose={onClose}
       open={isOpen}
     >
-      <div className="flex flex-col h-full sm:max-h-[calc(100vh-8rem)] bg-zinc-900 overflow-hidden sm:border-2 sm:border-zinc-700 sm:rounded-xl sm:shadow-xl">
-        <div className="flex-shrink-0 flex items-center justify-between p-4 bg-zinc-900 border-b border-zinc-800">
+      <form
+        action={dispatchAction}
+        className="flex flex-col h-full sm:max-h-[calc(100vh-8rem)] bg-zinc-900 overflow-hidden sm:border-2 sm:border-zinc-700 sm:rounded-xl"
+        ref={formRef}
+      >
+        <div className="flex items-center justify-between p-4 border-b">
           <h3 className="text-xl font-bold text-zinc-100 sm:text-lg">
             {editingCriteria ? '알림 조건 수정' : '새 알림 만들기'}
           </h3>
@@ -164,130 +168,119 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
         </div>
 
         {/* Scrollable content area */}
-        <div className="flex-1 overflow-y-auto">
-          <form
-            action={dispatchAction}
-            className="flex flex-col p-4 space-y-4
-              [&_label]:block [&_label]:text-sm [&_label]:font-medium [&_label]:text-zinc-300 [&_label]:mb-1"
-            ref={formRef}
-          >
-            <input name="conditionCount" type="hidden" value={conditionCount} />
-            <p className="text-sm text-zinc-500 -mt-2">관심있는 작품을 놓치지 않도록 알림 조건을 설정하세요</p>
-
-            <div>
-              <label htmlFor={nameId}>알림 이름</label>
-              <input
-                aria-invalid={Boolean(nameError)}
-                autoCapitalize="off"
-                className="w-full text-base px-3 py-2 rounded-lg bg-zinc-800 border border-zinc-700 placeholder-zinc-500 
+        <div className="flex-1 flex flex-col p-4 gap-4 overflow-y-auto [&_label]:block [&_label]:text-sm [&_label]:font-medium [&_label]:text-zinc-300 [&_label]:mb-1">
+          <input name="conditionCount" type="hidden" value={conditionCount} />
+          <p className="text-sm text-zinc-500 -mt-2">관심있는 작품을 놓치지 않도록 알림 조건을 설정하세요</p>
+          <div>
+            <label htmlFor={nameId}>알림 이름</label>
+            <input
+              aria-invalid={Boolean(nameError)}
+              autoCapitalize="off"
+              className="w-full text-base px-3 py-2 rounded-lg bg-zinc-800 border border-zinc-700 placeholder-zinc-500 
                 focus:outline-none focus:ring-2 focus:ring-brand-end/50 focus:border-transparent 
                 aria-invalid:ring-2 aria-invalid:ring-red-500 disabled:opacity-50 transition"
-                disabled={isPending}
-                id={nameId}
-                name="name"
-                placeholder="나루토 신작 알림"
-                required
-                type="text"
-              />
-              {nameError && <p className="mt-1 text-xs text-red-400">{nameError}</p>}
-            </div>
-
-            {/* Conditions */}
-            <div className="flex-1 space-y-3">
-              <div>
-                <label>매칭 조건</label>
-                <p className="text-xs text-zinc-500">설정한 모든 조건이 일치하는 작품만 알림을 받아요</p>
-              </div>
-
-              <div className="space-y-2">
-                {Array.from({ length: conditionCount }, (_, index) => (
-                  <div className="flex flex-col sm:flex-row gap-2" key={index}>
-                    <select
-                      className="px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100
+              disabled={isPending}
+              id={nameId}
+              name="name"
+              placeholder="나루토 신작 알림"
+              required
+              type="text"
+            />
+            {nameError && <p className="mt-1 text-xs text-red-400">{nameError}</p>}
+          </div>
+          <div className="flex-1 space-y-3">
+            <label>매칭 조건</label>
+            <p className="text-xs text-zinc-500">설정한 모든 조건이 일치하는 작품만 알림을 받아요</p>
+            <div className="space-y-2">
+              {Array.from({ length: conditionCount }, (_, index) => (
+                <div className="flex flex-col sm:flex-row gap-2" key={index}>
+                  <select
+                    className="px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100
                       focus:outline-none focus:ring-2 focus:ring-brand-end/50 focus:border-transparent appearance-none cursor-pointer
                       disabled:opacity-50 transition"
-                      defaultValue={NotificationConditionType.SERIES}
-                      disabled={isPending}
-                      name={`condition-type-${index}`}
-                    >
-                      {Object.entries(NotificationConditionTypeNames).map(([value, label]) => (
-                        <option key={value} value={value}>
-                          {label}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="flex gap-2 flex-1">
-                      <input
-                        autoCapitalize="off"
-                        autoComplete="off"
-                        className="flex-1 text-base px-3 py-2 rounded-lg bg-zinc-800 border border-zinc-700 placeholder-zinc-500 
+                    defaultValue={NotificationConditionType.SERIES}
+                    disabled={isPending}
+                    name={`condition-type-${index}`}
+                  >
+                    {Object.entries(NotificationConditionTypeNames).map(([value, label]) => (
+                      <option key={value} value={value}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="flex gap-2 flex-1">
+                    <input
+                      autoCapitalize="off"
+                      autoComplete="off"
+                      className="flex-1 text-base px-3 py-2 rounded-lg bg-zinc-800 border border-zinc-700 placeholder-zinc-500 
                         focus:outline-none focus:ring-2 focus:ring-brand-end/50 focus:border-transparent 
                         disabled:opacity-50 transition"
-                        disabled={isPending}
-                        name={`condition-value-${index}`}
-                        placeholder="검색어 입력..."
-                        required
-                        type="text"
-                      />
-                      {conditionCount > 1 && (
-                        <button
-                          className="px-2.5 py-2 rounded-lg text-zinc-500 hover:text-red-400 hover:bg-red-900/10 
+                      disabled={isPending}
+                      name={`condition-value-${index}`}
+                      placeholder="검색어 입력..."
+                      required
+                      type="text"
+                    />
+                    {conditionCount > 1 && (
+                      <button
+                        className="px-2.5 py-2 rounded-lg text-zinc-500 hover:text-red-400 hover:bg-red-900/10 
                           disabled:opacity-50 transition-all"
-                          disabled={isPending}
-                          onClick={() => handleRemoveCondition(index)}
-                          type="button"
-                        >
-                          <IconTrash className="h-4 w-4" />
-                        </button>
-                      )}
-                    </div>
+                        disabled={isPending}
+                        onClick={() => handleRemoveCondition(index)}
+                        type="button"
+                      >
+                        <IconTrash className="h-4 w-4" />
+                      </button>
+                    )}
                   </div>
-                ))}
-              </div>
-
-              <button
-                className="inline-flex items-center gap-2 px-3 py-2 text-sm text-brand-end hover:bg-zinc-800/50 
-                rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition"
-                disabled={isPending || conditionCount >= 10}
-                onClick={handleAddCondition}
-                type="button"
-              >
-                <IconPlus className="h-4 w-4" />
-                조건 추가
-              </button>
-
-              {conditionCount >= 10 && (
-                <p className="flex items-center gap-2 text-xs text-yellow-500">
-                  <span className="inline-block w-4 h-4 rounded bg-yellow-500/10 text-yellow-500 text-center leading-4 text-[10px] font-medium">
-                    !
-                  </span>
-                  최대 10개 조건까지 추가 가능해요
-                </p>
-              )}
+                </div>
+              ))}
             </div>
-          </form>
+
+            <button
+              className="inline-flex items-center gap-2 px-3 py-2 text-sm text-brand-end hover:bg-zinc-800/50 
+                rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition"
+              disabled={isPending || conditionCount >= 10}
+              onClick={handleAddCondition}
+              type="button"
+            >
+              <IconPlus className="h-4 w-4" />
+              조건 추가
+            </button>
+
+            {conditionCount >= 10 && (
+              <p className="flex items-center gap-2 text-xs text-yellow-500">
+                <span className="inline-block w-4 h-4 rounded bg-yellow-500/10 text-yellow-500 text-center leading-4 text-[10px] font-medium">
+                  !
+                </span>
+                최대 10개 조건까지 추가 가능해요
+              </p>
+            )}
+          </div>
         </div>
-        <div className="flex-shrink-0 flex gap-2 p-4 bg-zinc-900 border-t border-zinc-800">
-          <button
-            className="flex-1 sm:flex-none px-4 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-medium rounded-lg
+        <div className="p-4 bg-zinc-900 border-t border-zinc-800">
+          <div className="flex gap-2 pb-safe px-safe">
+            <button
+              className="flex-1 px-4 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-medium rounded-lg
               transition focus:outline-none focus:ring-2 focus:ring-zinc-400 disabled:opacity-50"
-            disabled={isPending}
-            onClick={onClose}
-            type="button"
-          >
-            취소
-          </button>
-          <button
-            className="flex items-center justify-center flex-1 sm:flex-none px-4 py-2.5 bg-brand-end hover:bg-brand-end/90 
+              disabled={isPending}
+              onClick={onClose}
+              type="button"
+            >
+              취소
+            </button>
+            <button
+              className="flex items-center justify-center flex-1 px-4 py-2.5 bg-brand-end hover:bg-brand-end/90 
               text-background font-medium rounded-lg transition focus:outline-none focus:ring-2 focus:ring-brand-end/50
               disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={isPending}
-            type="submit"
-          >
-            {isPending ? <IconSpinner className="w-5 h-5" /> : editingCriteria ? '저장' : '만들기'}
-          </button>
+              disabled={isPending}
+              type="submit"
+            >
+              {isPending ? <IconSpinner className="w-5 h-5" /> : editingCriteria ? '저장' : '만들기'}
+            </button>
+          </div>
         </div>
-      </div>
+      </form>
     </Modal>
   )
 }

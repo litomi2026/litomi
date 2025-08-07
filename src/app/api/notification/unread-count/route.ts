@@ -1,4 +1,4 @@
-import { count, sql } from 'drizzle-orm'
+import { and, count, eq, sql } from 'drizzle-orm'
 
 import { handleRouteError } from '@/crawler/proxy-utils'
 import { db } from '@/database/drizzle'
@@ -13,12 +13,12 @@ export async function GET(request: Request) {
   }
 
   try {
-    const [unreadNotifications] = await db
+    const [{ count: unreadCount }] = await db
       .select({ count: count(notificationTable.id) })
       .from(notificationTable)
-      .where(sql`${notificationTable.userId} = ${userId} AND ${notificationTable.read} = false`)
+      .where(and(sql`${notificationTable.userId} = ${userId}`, eq(notificationTable.read, false)))
 
-    return Response.json(unreadNotifications.count)
+    return Response.json(unreadCount)
   } catch (error) {
     return handleRouteError(error, request)
   }
