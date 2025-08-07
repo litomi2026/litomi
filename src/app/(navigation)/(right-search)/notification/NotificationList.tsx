@@ -33,7 +33,7 @@ interface Notification {
   createdAt: string | Date
   data: string | null
   id: number
-  read: number
+  read: boolean
   sentAt: string | Date | null
   title: string
   type: number
@@ -117,8 +117,7 @@ export default function NotificationList() {
     onError: (error) => {
       toast.error(error)
     },
-    onSuccess: (data) => {
-      toast.success(data)
+    onSuccess: () => {
       setSelectedIds(new Set())
       setSelectionMode(false)
       queryClient.invalidateQueries({ queryKey: QueryKeys.notifications(searchParams) })

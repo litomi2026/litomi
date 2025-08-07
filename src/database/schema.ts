@@ -127,7 +127,7 @@ export const notificationTable = pgTable(
       .notNull(),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     type: smallint().notNull(), // 'new_manga', 'bookmark_update', etc.
-    read: smallint().notNull().default(0),
+    read: boolean().notNull().default(false),
     title: text().notNull(),
     body: text().notNull(),
     data: text(),

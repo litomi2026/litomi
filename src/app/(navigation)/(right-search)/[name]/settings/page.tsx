@@ -52,7 +52,7 @@ export default async function SettingsPage({ params }: PageProps<Params>) {
       </CollapsibleSection>
       <CollapsibleSection
         description="관심 키워드를 등록하여 새로운 만화 알림을 받아보세요"
-        icon={<IconSearch className="w-5 flex-shrink-0 text-blue-500" />}
+        icon={<IconSearch className="w-5 flex-shrink-0 text-brand-end" />}
         title="키워드 알림"
       >
         <Suspense>

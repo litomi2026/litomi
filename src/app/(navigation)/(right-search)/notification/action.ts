@@ -47,8 +47,8 @@ export async function markAllAsRead() {
   try {
     await db
       .update(notificationTable)
-      .set({ read: 1 })
-      .where(sql`${notificationTable.userId} = ${userId} AND ${notificationTable.read} = 0`)
+      .set({ read: true })
+      .where(sql`${notificationTable.userId} = ${userId} AND ${notificationTable.read} = false`)
 
     return ok('모든 알림을 읽었어요')
   } catch (error) {
@@ -75,7 +75,7 @@ export async function markAsRead(data: Record<string, unknown>) {
   try {
     await db
       .update(notificationTable)
-      .set({ read: 1 })
+      .set({ read: true })
       .where(and(sql`${notificationTable.userId} = ${userId}`, inArray(notificationTable.id, ids)))
 
     return ok('알림을 읽었어요')

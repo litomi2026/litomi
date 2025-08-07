@@ -15,7 +15,7 @@ export type GETNotificationResponse = {
     userId: number
     createdAt: Date
     type: number
-    read: number
+    read: boolean
     title: string
     body: string
     data: string | null
@@ -59,9 +59,9 @@ export async function GET(request: Request) {
     }
 
     if (filter === NotificationFilter.UNREAD) {
-      query = query.where(eq(notificationTable.read, 0))
+      query = query.where(eq(notificationTable.read, false))
     } else if (filter === NotificationFilter.READ) {
-      query = query.where(eq(notificationTable.read, 1))
+      query = query.where(eq(notificationTable.read, true))
     }
 
     if (types && types.length > 0) {
@@ -69,7 +69,6 @@ export async function GET(request: Request) {
     }
 
     const results = await query
-
     const hasNextPage = results.length > LIMIT
     const notifications = results.slice(0, LIMIT)
 

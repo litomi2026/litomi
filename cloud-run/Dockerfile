@@ -23,7 +23,6 @@ COPY tsconfig.json ./
 COPY drizzle.config.ts ./
 COPY cloud-run/ ./cloud-run/
 COPY src/ ./src/
-COPY drizzle/ ./drizzle/
 
 ENV NODE_ENV=production
 

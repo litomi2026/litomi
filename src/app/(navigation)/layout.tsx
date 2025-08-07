@@ -36,8 +36,8 @@ export default async function Layout({ children }: LayoutProps) {
           <SelectableLink href="/posts/recommand" hrefMatch="/post" Icon={IconPost}>
             글
           </SelectableLink>
-          <BookmarkLink />
-          <NotificationLink className="hidden sm:block" />
+          <NotificationLink />
+          <BookmarkLink className="hidden sm:block" />
           <ProfileLink className="hidden sm:block" />
           <PublishButton className="hidden mx-auto my-4 sm:block xl:mx-0" />
         </nav>

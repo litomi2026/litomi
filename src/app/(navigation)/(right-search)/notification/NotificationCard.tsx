@@ -17,7 +17,7 @@ interface NotificationCardProps {
     title: string
     body: string
     createdAt: string | Date
-    read: number
+    read: boolean
     data: string | null
   }
   onSelect?: (id: number) => void
@@ -32,7 +32,7 @@ export default function NotificationCard({
   selectionMode = false,
 }: NotificationCardProps) {
   const parsedData = notification.data ? JSON.parse(notification.data) : null
-  const isUnread = notification.read === 0
+  const isUnread = !notification.read
 
   const getNotificationIcon = () => {
     switch (notification.type) {
@@ -42,19 +42,6 @@ export default function NotificationCard({
         return <IconBook className="w-5" />
       default:
         return <IconBell className="w-5" />
-    }
-  }
-
-  const getIconColor = () => {
-    if (!isUnread) return 'text-zinc-500'
-
-    switch (notification.type) {
-      case NotificationType.BOOKMARK_UPDATE:
-        return 'text-purple-400'
-      case NotificationType.NEW_MANGA:
-        return 'text-blue-400'
-      default:
-        return 'text-zinc-400'
     }
   }
 
@@ -79,7 +66,9 @@ export default function NotificationCard({
           </div>
         </div>
       )}
-      <div className={`mt-0.5 transition ${getIconColor()}`}>{getNotificationIcon()}</div>
+      <div aria-current={isUnread} className="mt-0.5 transition text-zinc-500 aria-current:text-brand-end">
+        {getNotificationIcon()}
+      </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-4">
           <h3
