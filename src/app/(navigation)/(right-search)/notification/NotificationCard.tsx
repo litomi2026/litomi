@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useInView } from 'react-intersection-observer'
 
 import IconBell from '@/components/icons/IconBell'
 import IconBook from '@/components/icons/IconBook'
@@ -12,6 +13,8 @@ import IconEye from '@/components/icons/IconEye'
 import IconTrash from '@/components/icons/IconTrash'
 import { NotificationType } from '@/database/enum'
 import { formatDistanceToNow } from '@/utils/date'
+
+const AUTO_MARK_AS_READ_DELAY = 2000
 
 interface NotificationCardProps {
   autoMarkAsRead: boolean
@@ -44,40 +47,47 @@ export default function NotificationCard({
   const mangaViewerURL = parsedData?.url
   const isUnread = !notification.read
   const router = useRouter()
-  const cardRef = useRef<HTMLDivElement>(null)
   const [hasBeenViewed, setHasBeenViewed] = useState(false)
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
+  const skipAutoMarkingAsRead = !autoMarkAsRead || notification.read || hasBeenViewed
+
+  const { ref: cardRef, inView } = useInView({
+    threshold: 0.7,
+    skip: skipAutoMarkingAsRead,
+  })
 
   useEffect(() => {
-    if (!autoMarkAsRead || notification.read || hasBeenViewed) {
+    if (skipAutoMarkingAsRead) {
       return
     }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const timer = setTimeout(() => {
-              if (!notification.read && onMarkAsRead) {
-                onMarkAsRead(notification.id)
-                setHasBeenViewed(true)
-              }
-            }, 2000)
+    if (inView) {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current)
+        timerRef.current = null
+      }
 
-            return () => clearTimeout(timer)
-          }
-        })
-      },
-      { threshold: 0.7 }, // 70% visible
-    )
-
-    if (cardRef.current) {
-      observer.observe(cardRef.current)
+      timerRef.current = setTimeout(() => {
+        if (!notification.read && onMarkAsRead) {
+          onMarkAsRead(notification.id)
+          setHasBeenViewed(true)
+        }
+        timerRef.current = null
+      }, AUTO_MARK_AS_READ_DELAY)
+    } else {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current)
+        timerRef.current = null
+      }
     }
 
     return () => {
-      observer.disconnect()
+      if (timerRef.current) {
+        clearTimeout(timerRef.current)
+        timerRef.current = null
+      }
     }
-  }, [notification.id, notification.read, onMarkAsRead, autoMarkAsRead, hasBeenViewed])
+  }, [inView, notification.id, notification.read, onMarkAsRead, skipAutoMarkingAsRead])
 
   const getNotificationIcon = () => {
     switch (notification.type) {
@@ -97,7 +107,6 @@ export default function NotificationCard({
     }
 
     if (mangaViewerURL) {
-      onMarkAsRead(notification.id)
       router.push(mangaViewerURL)
     }
   }
@@ -130,7 +139,7 @@ export default function NotificationCard({
                 e.stopPropagation()
                 onMarkAsRead(notification.id)
               }}
-              title="Mark as read"
+              title="읽음 표시"
             >
               <IconEye className="w-3.5 h-3.5 text-zinc-400" />
             </button>
@@ -142,7 +151,7 @@ export default function NotificationCard({
                 e.stopPropagation()
                 onDelete(notification.id)
               }}
-              title="Delete"
+              title="삭제"
             >
               <IconTrash className="w-3.5 h-3.5 text-zinc-400" />
             </button>
