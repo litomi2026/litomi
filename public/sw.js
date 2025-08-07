@@ -17,7 +17,6 @@ self.addEventListener('push', (event) => {
       badge: badge || '/badge.png',
       vibrate: [200, 100, 200],
       tag: tag || 'default',
-      renotify: true,
       data: {
         ...data,
         notificationId,
