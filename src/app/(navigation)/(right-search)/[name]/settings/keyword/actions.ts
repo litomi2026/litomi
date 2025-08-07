@@ -40,43 +40,36 @@ export async function createNotificationCriteria(formData: FormData) {
 
   const { name, conditions, isActive } = validation.data
 
+  // TODO: transaction 적용하기
   try {
-    const result = await db.transaction(async (tx) => {
-      const [existingCount] = await tx
-        .select({ count: count() })
-        .from(notificationCriteriaTable)
-        .where(sql`${notificationCriteriaTable.userId} = ${userId}`)
+    const [existingCount] = await db
+      .select({ count: count() })
+      .from(notificationCriteriaTable)
+      .where(sql`${notificationCriteriaTable.userId} = ${userId}`)
 
-      if (existingCount.count >= MAX_CRITERIA_COUNT) {
-        return badRequest({ name: `최대 ${MAX_CRITERIA_COUNT}개까지만 추가할 수 있어요` }, formData)
-      }
-
-      const [criteria] = await tx
-        .insert(notificationCriteriaTable)
-        .values({
-          userId: Number(userId),
-          name,
-          isActive,
-        })
-        .returning({ id: notificationCriteriaTable.id })
-
-      const conditionValues = conditions.map((condition) => ({
-        criteriaId: criteria.id,
-        type: condition.type,
-        value: condition.value,
-      }))
-
-      await tx.insert(notificationConditionTable).values(conditionValues)
-
-      return criteria
-    })
-
-    if ('error' in result) {
-      return result
+    if (existingCount.count >= MAX_CRITERIA_COUNT) {
+      return badRequest({ name: `최대 ${MAX_CRITERIA_COUNT}개까지만 추가할 수 있어요` }, formData)
     }
 
+    const [criteria] = await db
+      .insert(notificationCriteriaTable)
+      .values({
+        userId: Number(userId),
+        name,
+        isActive,
+      })
+      .returning({ id: notificationCriteriaTable.id })
+
+    const conditionValues = conditions.map((condition) => ({
+      criteriaId: criteria.id,
+      type: condition.type,
+      value: condition.value,
+    }))
+
+    await db.insert(notificationConditionTable).values(conditionValues)
+
     revalidatePath('/[name]/settings', 'page')
-    return created(result)
+    return created(criteria)
   } catch (error) {
     captureException(error, { extra: { name: 'createNotificationCriteria', userId } })
     return internalServerError('알림 기준 생성 중 오류가 발생했어요', formData)
