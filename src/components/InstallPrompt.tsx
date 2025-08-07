@@ -2,6 +2,8 @@
 
 import { memo, useEffect, useState } from 'react'
 
+import { checkIOSDevice } from '@/utils/browser'
+
 import { IconDownload } from './icons/IconDownload'
 
 declare global {
@@ -28,7 +30,7 @@ function InstallPrompt() {
 
   // iOS 판별
   useEffect(() => {
-    setIsIOS(/iPad|iPhone|iPod/.test(navigator.userAgent) && !('MSStream' in window))
+    setIsIOS(checkIOSDevice())
   }, [])
 
   // PWA 환경(standalone) 판별

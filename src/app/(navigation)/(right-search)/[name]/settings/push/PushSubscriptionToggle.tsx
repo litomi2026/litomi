@@ -7,7 +7,7 @@ import { toast } from 'sonner'
 import Toggle from '@/components/ui/Toggle'
 import { NEXT_PUBLIC_VAPID_PUBLIC_KEY } from '@/constants/env'
 import useActionResponse from '@/hook/useActionResponse'
-import { urlBase64ToUint8Array } from '@/utils/browser'
+import { checkIOSDevice, checkIOSSafari, urlBase64ToUint8Array } from '@/utils/browser'
 import { getUsernameFromParam } from '@/utils/param'
 
 import { Params } from '../../common'
@@ -66,12 +66,18 @@ export default function PushSubscriptionToggle({ endpoints }: Readonly<Props>) {
 
   async function subscribeNotification() {
     if (!('Notification' in window)) {
-      toast.error('이 브라우저는 알림을 지원하지 않아요')
+      if (checkIOSSafari()) {
+        toast.warning('iOS Safari 환경에선 앱을 홈 화면에 추가하여 PWA로 설치하면 알림을 받을 수 있어요')
+      } else if (checkIOSDevice()) {
+        toast.warning('iOS에서는 Safari를 통해 홈 화면에 추가하여 PWA로 설치하면 알림을 받을 수 있어요')
+      } else {
+        toast.warning('이 브라우저는 알림을 지원하지 않아요')
+      }
       return
     }
 
     if (!('serviceWorker' in navigator)) {
-      toast.error('Service Worker를 사용할 수 없어요')
+      toast.warning('Service Worker를 사용할 수 없어요')
       return
     }
 
