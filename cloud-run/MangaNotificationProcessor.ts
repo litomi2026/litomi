@@ -160,8 +160,7 @@ export class MangaNotificationProcessor {
       result.notificationsSent = processResult.notificationsSent
       result.errors.push(...processResult.errors)
 
-      const newMangaMetadataList = newMangas.map((item) => ({ ...item, mangaId: item.manga.id }))
-      await db.insert(mangaSeenTable).values(newMangaMetadataList)
+      await db.insert(mangaSeenTable).values(newMangas.map((item) => ({ mangaId: item.manga.id })))
 
       return result
     } catch (error) {

@@ -1,15 +1,4 @@
-import {
-  bigint,
-  boolean,
-  index,
-  integer,
-  jsonb,
-  pgTable,
-  smallint,
-  timestamp,
-  unique,
-  varchar,
-} from 'drizzle-orm/pg-core'
+import { bigint, boolean, index, integer, pgTable, smallint, timestamp, unique, varchar } from 'drizzle-orm/pg-core'
 
 import { userTable } from './schema'
 
@@ -52,7 +41,6 @@ export const mangaSeenTable = pgTable(
   {
     mangaId: integer('manga_id').primaryKey(),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-    metadata: jsonb(),
   },
   (table) => [index('idx_manga_seen_created').on(table.createdAt)],
 ).enableRLS()
