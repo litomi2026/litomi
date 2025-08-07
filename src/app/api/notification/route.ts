@@ -1,4 +1,4 @@
-import { desc, eq, inArray, sql } from 'drizzle-orm'
+import { and, desc, eq, inArray, sql } from 'drizzle-orm'
 
 import { handleRouteError } from '@/crawler/proxy-utils'
 import { db } from '@/database/drizzle'
@@ -46,29 +46,29 @@ export async function GET(request: Request) {
   const { nextId, filter, types } = validation.data
 
   try {
-    let query = db
-      .select()
-      .from(notificationTable)
-      .where(sql`${notificationTable.userId} = ${userId}`)
-      .orderBy(desc(notificationTable.id))
-      .limit(LIMIT + 1)
-      .$dynamic()
+    const conditions = [sql`${notificationTable.userId} = ${userId}`]
 
     if (nextId) {
-      query = query.where(sql`${notificationTable.id} < ${nextId}`)
+      conditions.push(sql`${notificationTable.id} < ${nextId}`)
     }
 
     if (filter === NotificationFilter.UNREAD) {
-      query = query.where(eq(notificationTable.read, false))
+      conditions.push(eq(notificationTable.read, false))
     } else if (filter === NotificationFilter.READ) {
-      query = query.where(eq(notificationTable.read, true))
+      conditions.push(eq(notificationTable.read, true))
     }
 
     if (types && types.length > 0) {
-      query = query.where(inArray(notificationTable.type, types))
+      conditions.push(inArray(notificationTable.type, types))
     }
 
-    const results = await query
+    const results = await db
+      .select()
+      .from(notificationTable)
+      .where(and(...conditions))
+      .orderBy(desc(notificationTable.id))
+      .limit(LIMIT + 1)
+
     const hasNextPage = results.length > LIMIT
     const notifications = results.slice(0, LIMIT)
 

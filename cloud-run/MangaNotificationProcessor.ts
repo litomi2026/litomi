@@ -174,12 +174,9 @@ export class MangaNotificationProcessor {
 
   private createNotificationPayload(notification: UserMangaNotification) {
     const notificationTitle = notification.mangaTitle || `만화 #${notification.mangaId}`
-
-    const notificationBody =
-      notification.criteriaMatches.length > 1
-        ? `${notification.criteriaMatches[0].name} 외 ${notification.criteriaMatches.length - 1}개`
-        : notification.criteriaMatches[0].name
-
+    const names = notification.criteriaMatches.map((c) => c.name).join(', ')
+    const totalCount = notification.criteriaMatches.length
+    const notificationBody = names.length > 25 ? `${names.slice(0, 20)}... (${totalCount}개)` : names
     const sourceParam = mapBookmarkSourceToSourceParam(notification.source)
     const mangaUrl = getViewerLink(notification.mangaId, sourceParam)
 
