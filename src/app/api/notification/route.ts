@@ -1,7 +1,8 @@
-import { desc, eq, inArray, sql } from 'drizzle-orm'
+import { and, desc, eq, sql } from 'drizzle-orm'
 
 import { handleRouteError } from '@/crawler/proxy-utils'
 import { db } from '@/database/drizzle'
+import { NotificationType } from '@/database/enum'
 import { notificationTable } from '@/database/schema'
 import { getUserIdFromCookie } from '@/utils/session'
 
@@ -15,7 +16,7 @@ export type GETNotificationResponse = {
     userId: number
     createdAt: Date
     type: number
-    read: number
+    read: boolean
     title: string
     body: string
     data: string | null
@@ -35,40 +36,36 @@ export async function GET(request: Request) {
 
   const validation = GETNotificationSchema.safeParse({
     nextId: searchParams.get('nextId'),
-    filter: searchParams.get('filter'),
-    types: searchParams.getAll('type'),
+    filters: searchParams.getAll('filter'),
   })
 
   if (!validation.success) {
     return new Response('Bad Request', { status: 400 })
   }
 
-  const { nextId, filter, types } = validation.data
+  const { nextId, filters } = validation.data
 
   try {
-    let query = db
-      .select()
-      .from(notificationTable)
-      .where(sql`${notificationTable.userId} = ${userId}`)
-      .orderBy(desc(notificationTable.id))
-      .limit(LIMIT + 1)
-      .$dynamic()
+    const conditions = [sql`${notificationTable.userId} = ${userId}`]
 
     if (nextId) {
-      query = query.where(sql`${notificationTable.id} < ${nextId}`)
+      conditions.push(sql`${notificationTable.id} < ${nextId}`)
     }
 
-    if (filter === NotificationFilter.UNREAD) {
-      query = query.where(eq(notificationTable.read, 0))
-    } else if (filter === NotificationFilter.READ) {
-      query = query.where(eq(notificationTable.read, 1))
+    if (filters?.includes(NotificationFilter.UNREAD)) {
+      conditions.push(eq(notificationTable.read, false))
     }
 
-    if (types && types.length > 0) {
-      query = query.where(inArray(notificationTable.type, types))
+    if (filters?.includes(NotificationFilter.NEW_MANGA)) {
+      conditions.push(eq(notificationTable.type, NotificationType.NEW_MANGA))
     }
 
-    const results = await query
+    const results = await db
+      .select()
+      .from(notificationTable)
+      .where(and(...conditions))
+      .orderBy(desc(notificationTable.id))
+      .limit(LIMIT + 1)
 
     const hasNextPage = results.length > LIMIT
     const notifications = results.slice(0, LIMIT)

@@ -8,6 +8,7 @@ ARTIFACT_REGISTRY_REPO=${ARTIFACT_REGISTRY_REPO:-"artifact-registry-repo"}
 SERVICE_ACCOUNT_NAME=${SERVICE_ACCOUNT_NAME:-"service-account-name"}
 IMAGE_NAME="${REGION}-docker.pkg.dev/${PROJECT_ID}/${ARTIFACT_REGISTRY_REPO}/${JOB_NAME}"
 SERVICE_ACCOUNT="${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
+KEEP_IMAGES=${KEEP_IMAGES:-3}
 
 # Check for required environment variables
 if [ "$PROJECT_ID" = "your-project-id" ]; then
@@ -26,87 +27,82 @@ if [ "$PROJECT_ID" = "your-project-id" ]; then
     exit 1
 fi
 
-# Check if gcloud is available
-if ! command -v gcloud &> /dev/null; then
-    echo "❌ Error: gcloud CLI not found in PATH"
-    echo ""
-    echo "Please install or activate Google Cloud SDK:"
-    echo "  Option 1: brew install google-cloud-sdk"
-    echo "  Option 2: source ~/.zshrc (if already installed)"
-    echo "  Option 3: Download from https://cloud.google.com/sdk/install"
-    exit 1
+# Clean up existing images in Artifact Registry
+echo "Cleaning up existing Docker images from Artifact Registry..."
+echo "Repository: ${ARTIFACT_REGISTRY_REPO}, Region: ${REGION}, Project: ${PROJECT_ID}"
+
+# First check if the repository exists
+if ! gcloud artifacts repositories describe ${ARTIFACT_REGISTRY_REPO} \
+  --location=${REGION} \
+  --project=${PROJECT_ID} >/dev/null 2>&1; then
+  echo "⚠️  Warning: Artifact Registry repository '${ARTIFACT_REGISTRY_REPO}' not found"
+  echo "Please check your ARTIFACT_REGISTRY_REPO environment variable"
+  echo "To list available repositories: gcloud artifacts repositories list --location=${REGION} --project=${PROJECT_ID}"
 fi
 
-# Enable required APIs
-echo "Ensuring required APIs are enabled..."
+REGISTRY_PATH="${REGION}-docker.pkg.dev/${PROJECT_ID}/${ARTIFACT_REGISTRY_REPO}"
 
-# Enable Cloud Run API
-if ! gcloud services list --enabled --filter="name:run.googleapis.com" --format="value(name)" --project=${PROJECT_ID} | grep -q run; then
-  echo "Enabling Cloud Run API..."
-  gcloud services enable run.googleapis.com --project=${PROJECT_ID}
-  sleep 5
-fi
+# Get all images with their digests, sorted by creation time (newest first)
+echo "Checking for existing images..."
+ALL_IMAGES=$(gcloud artifacts docker images list ${REGISTRY_PATH} \
+  --format="csv[no-heading](IMAGE,DIGEST,CREATE_TIME)" \
+  --sort-by="~CREATE_TIME" 2>&1 | grep -v "^Listing items" || true)
 
-# Enable Artifact Registry API
-if ! gcloud services list --enabled --filter="name:artifactregistry.googleapis.com" --format="value(name)" --project=${PROJECT_ID} | grep -q artifactregistry; then
-  echo "Enabling Artifact Registry API..."
-  gcloud services enable artifactregistry.googleapis.com --project=${PROJECT_ID}
-  sleep 5
-fi
-
-# Check if service account exists, create if not
-echo "Checking service account..."
-if ! gcloud iam service-accounts describe ${SERVICE_ACCOUNT} --project=${PROJECT_ID} >/dev/null 2>&1; then
-  echo "Creating service account..."
-  gcloud iam service-accounts create ${SERVICE_ACCOUNT_NAME} \
-    --display-name="Litomi Crawler Service Account" \
-    --project=${PROJECT_ID}
+if [ -n "$ALL_IMAGES" ] && [ "$ALL_IMAGES" != "Listed 0 items." ]; then
+  IMAGE_COUNT=$(echo "$ALL_IMAGES" | wc -l | tr -d ' ')
+  echo "Found ${IMAGE_COUNT} existing images"
+  
+  if [ "$KEEP_IMAGES" -gt 0 ] && [ "$IMAGE_COUNT" -gt "$KEEP_IMAGES" ]; then
+    echo "Keeping the ${KEEP_IMAGES} most recent images, deleting older ones..."
+    
+    # Skip the first KEEP_IMAGES lines (newest images) and delete the rest
+    IMAGES_TO_DELETE=$(echo "$ALL_IMAGES" | tail -n +$((KEEP_IMAGES + 1)))
+    
+    while IFS=',' read -r image digest create_time; do
+      if [ -n "$image" ] && [ -n "$digest" ]; then
+        full_image_ref="${image}@${digest}"
+        echo "Deleting: ${full_image_ref} (created: ${create_time})"
+        
+        if gcloud artifacts docker images delete "${full_image_ref}" \
+          --quiet \
+          --project=${PROJECT_ID} 2>/dev/null; then
+          echo "  ✓ Deleted successfully"
+        else
+          echo "  ✗ Failed to delete (may already be deleted)"
+        fi
+      fi
+    done <<< "$IMAGES_TO_DELETE"
+    
+    echo "✅ Artifact Registry cleanup completed (kept ${KEEP_IMAGES} recent images)"
+  elif [ "$KEEP_IMAGES" -eq 0 ]; then
+    echo "Deleting all images (KEEP_IMAGES=0)..."
+    
+    while IFS=',' read -r image digest create_time; do
+      if [ -n "$image" ] && [ -n "$digest" ]; then
+        full_image_ref="${image}@${digest}"
+        echo "Deleting: ${full_image_ref} (created: ${create_time})"
+        
+        if gcloud artifacts docker images delete "${full_image_ref}" \
+          --quiet \
+          --project=${PROJECT_ID} 2>/dev/null; then
+          echo "  ✓ Deleted successfully"
+        else
+          echo "  ✗ Failed to delete (may already be deleted)"
+        fi
+      fi
+    done <<< "$ALL_IMAGES"
+    
+    echo "✅ Artifact Registry cleanup completed (deleted all images)"
+  else
+    echo "No cleanup needed (${IMAGE_COUNT} images <= ${KEEP_IMAGES} keep limit)"
+  fi
 else
-  echo "Service account already exists: ${SERVICE_ACCOUNT}"
-fi
-
-# Grant necessary permissions (whether newly created or existing)
-echo "Ensuring service account has necessary permissions..."
-
-# Grant Cloud Run Invoker role (to invoke services)
-echo "Granting Cloud Run Invoker role..."
-gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-  --member="serviceAccount:${SERVICE_ACCOUNT}" \
-  --role="roles/run.invoker" \
-  --condition=None
-
-# Grant Cloud Run Developer role (to execute jobs)
-echo "Granting Cloud Run Developer role..."
-gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-  --member="serviceAccount:${SERVICE_ACCOUNT}" \
-  --role="roles/run.developer" \
-  --condition=None
-
-# Grant permission to act as the service account
-echo "Granting Service Account User role..."
-gcloud iam service-accounts add-iam-policy-binding ${SERVICE_ACCOUNT} \
-  --member="serviceAccount:${SERVICE_ACCOUNT}" \
-  --role="roles/iam.serviceAccountUser" \
-  --project=${PROJECT_ID}
-
-# Create Artifact Registry repository if it doesn't exist
-echo "Checking Artifact Registry repository..."
-if ! gcloud artifacts repositories describe ${ARTIFACT_REGISTRY_REPO} --location=${REGION} --project=${PROJECT_ID} >/dev/null 2>&1; then
-  echo "Creating Artifact Registry repository..."
-  gcloud artifacts repositories create ${ARTIFACT_REGISTRY_REPO} \
-    --repository-format=docker \
-    --location=${REGION} \
-    --description="Cloud Run Jobs Docker images" \
-    --project=${PROJECT_ID}
+  echo "No existing images found in Artifact Registry"
 fi
 
 # Configure Docker authentication for Artifact Registry
 echo "Configuring Docker authentication for Artifact Registry..."
 gcloud auth configure-docker ${REGION}-docker.pkg.dev
-
-# Note: Cleanup policies can be set manually via console or using gcloud beta
-echo "Note: To set up automatic cleanup (keep latest 3 versions), configure it in the GCP Console"
-echo "      or ensure you have gcloud beta components installed."
 
 # Build and push the Docker image
 echo "Building and pushing Docker image for linux/amd64 platform..."
@@ -190,20 +186,6 @@ fi
 
 if [ $? -eq 0 ]; then
   echo "✅ Cloud Scheduler job '${SCHEDULER_JOB_NAME}' set up successfully!"
-  echo ""
-  echo "The job will run hourly at minute 0 (e.g., 1:00, 2:00, 3:00...)"
-  echo ""
-  echo "To check the scheduled job status:"
-  echo "  gcloud scheduler jobs describe ${SCHEDULER_JOB_NAME} --location=${REGION}"
-  echo ""
-  echo "To run the scheduler job immediately (for testing):"
-  echo "  gcloud scheduler jobs run ${SCHEDULER_JOB_NAME} --location=${REGION}"
-  echo ""
-  echo "To pause the scheduled job:"
-  echo "  gcloud scheduler jobs pause ${SCHEDULER_JOB_NAME} --location=${REGION}"
-  echo ""
-  echo "To resume the scheduled job:"
-  echo "  gcloud scheduler jobs resume ${SCHEDULER_JOB_NAME} --location=${REGION}"
   echo ""
   echo "Testing the setup by executing the job once..."
   if gcloud scheduler jobs run ${SCHEDULER_JOB_NAME} --location=${REGION}; then

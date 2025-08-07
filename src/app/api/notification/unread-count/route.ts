@@ -16,7 +16,7 @@ export async function GET(request: Request) {
     const [unreadNotifications] = await db
       .select({ count: count(notificationTable.id) })
       .from(notificationTable)
-      .where(sql`${notificationTable.userId} = ${userId} AND ${notificationTable.read} = 0`)
+      .where(sql`${notificationTable.userId} = ${userId} AND ${notificationTable.read} = false`)
 
     return Response.json(unreadNotifications.count)
   } catch (error) {

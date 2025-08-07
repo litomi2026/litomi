@@ -2,7 +2,6 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'next/navigation'
 
 import { GETNotificationResponse } from '@/app/api/notification/route'
-import { NotificationFilter } from '@/app/api/notification/schema'
 import { QueryKeys } from '@/constants/query'
 import { handleResponseError } from '@/utils/react-query-error'
 
@@ -21,15 +20,9 @@ export default function useNotificationInfiniteQuery() {
       if (pageParam) {
         queryParams.set('nextId', pageParam.toString())
       }
-      const filter = searchParams.get('filter')
-      if (filter && filter !== NotificationFilter.ALL) {
-        queryParams.set('filter', filter)
-      }
-      const types = searchParams.getAll('type')
-      if (types.length > 0) {
-        for (const type of types) {
-          queryParams.append('type', type)
-        }
+      const filters = searchParams.getAll('filter')
+      for (const filter of filters) {
+        queryParams.append('filter', filter)
       }
       return fetchNotifications(queryParams)
     },

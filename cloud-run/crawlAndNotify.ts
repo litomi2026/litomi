@@ -163,8 +163,7 @@ async function crawlKHentai(): Promise<Array<{ manga: Manga; source: BookmarkSou
   const results: Array<{ manga: Manga; source: BookmarkSource }> = []
 
   try {
-    // Fetch Korean manga (most relevant for the service)
-    log.info('Crawling K-Hentai Korean manga')
+    log.info('Crawling K-Hentai manga')
 
     const mangas = await client.searchMangas()
     results.push(...mangas.map((manga) => ({ manga, source: BookmarkSource.K_HENTAI })))

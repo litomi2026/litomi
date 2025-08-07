@@ -5,35 +5,30 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { ReactNode, useCallback, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
+import { NotificationFilter } from '@/app/api/notification/schema'
 import IconBell from '@/components/icons/IconBell'
 import IconBook from '@/components/icons/IconBook'
-import IconBookmark from '@/components/icons/IconBookmark'
 import IconCheck from '@/components/icons/IconCheck'
 import IconFilter from '@/components/icons/IconFilter'
 import IconSpinner from '@/components/icons/IconSpinner'
 import IconTrash from '@/components/icons/IconTrash'
 import { QueryKeys } from '@/constants/query'
-import { NotificationType } from '@/database/enum'
 import useActionResponse from '@/hook/useActionResponse'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 
 import { deleteNotifications, markAsRead } from './action'
+import { SearchParams } from './common'
 import NotificationCard from './NotificationCard'
+import SwipeableWrapper from './SwipeableNotificationCard'
+import useBatcher from './useBatcher'
 import useNotificationInfiniteQuery from './useNotificationsInfiniteQuery'
-
-enum Filter {
-  ALL = 'all',
-  BOOKMARK = 'bookmark',
-  NEW_MANGA = 'new',
-  UNREAD = 'unread',
-}
 
 interface Notification {
   body: string
   createdAt: string | Date
   data: string | null
   id: number
-  read: number
+  read: boolean
   sentAt: string | Date | null
   title: string
   type: number
@@ -43,68 +38,13 @@ interface Notification {
 export default function NotificationList() {
   const router = useRouter()
   const searchParams = useSearchParams()
-
-  const getInitialFilter = (): Filter => {
-    const urlFilter = searchParams.get('filter')
-    const urlType = searchParams.get('type')
-
-    switch (urlType) {
-      case Filter.BOOKMARK:
-      case Filter.NEW_MANGA:
-        return urlType
-    }
-
-    switch (urlFilter) {
-      case Filter.UNREAD:
-        return urlFilter
-    }
-
-    return Filter.ALL
-  }
-
-  const [filter, setFilter] = useState(getInitialFilter())
+  const filter = searchParams.get(SearchParams.FILTER) as NotificationFilter | null
   const [selectionMode, setSelectionMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useNotificationInfiniteQuery()
   const notifications = useMemo(() => data?.pages.flatMap((page) => page.notifications) ?? [], [data])
   const groupedNotifications = groupNotificationsByDate(notifications)
   const queryClient = useQueryClient()
-
-  const updateURL = useCallback(
-    (newFilter: Filter) => {
-      const params = new URLSearchParams(window.location.search)
-
-      params.delete('filter')
-      params.delete('type')
-      switch (newFilter) {
-        case Filter.ALL:
-          break
-        case Filter.BOOKMARK:
-          params.delete('type')
-          params.set('type', String(NotificationType.BOOKMARK_UPDATE))
-          break
-        case Filter.NEW_MANGA:
-          params.delete('type')
-          params.set('type', String(NotificationType.NEW_MANGA))
-          break
-        case Filter.UNREAD:
-          params.delete('filter')
-          params.set('filter', 'unread')
-          break
-      }
-
-      router.replace(`?${params.toString()}`)
-    },
-    [router],
-  )
-
-  const handleFilterChange = useCallback(
-    (newFilter: Filter) => {
-      setFilter(newFilter)
-      updateURL(newFilter)
-    },
-    [updateURL],
-  )
 
   const loadMoreRef = useInfiniteScrollObserver({
     hasNextPage,
@@ -117,8 +57,7 @@ export default function NotificationList() {
     onError: (error) => {
       toast.error(error)
     },
-    onSuccess: (data) => {
-      toast.success(data)
+    onSuccess: () => {
       setSelectedIds(new Set())
       setSelectionMode(false)
       queryClient.invalidateQueries({ queryKey: QueryKeys.notifications(searchParams) })
@@ -141,6 +80,22 @@ export default function NotificationList() {
     },
     shouldSetResponse: false,
   })
+
+  const { addToQueue: handleMarkAsRead } = useBatcher({
+    batchDelay: 3000,
+    onBatchStart: (ids) => {
+      if (ids.length > 0) {
+        dispatchMarkAsRead({ ids })
+      }
+    },
+  })
+
+  const handleDelete = useCallback(
+    (id: number) => {
+      dispatchDeleteNotifications({ ids: [id] })
+    },
+    [dispatchDeleteNotifications],
+  )
 
   const handleBatchAction = useCallback(
     (action: 'delete' | 'read') => {
@@ -170,82 +125,82 @@ export default function NotificationList() {
 
   return (
     <>
-      <div className="sticky top-0 z-10 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 bg-background border-b-2 -mx-4 px-3 py-2 whitespace-nowrap sm:-mx-6 sm:px-4 sm:py-3">
-        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hidden">
-          <FilterButton
-            active={filter === Filter.ALL}
-            disabled={isMarkAsReadPending || isDeleteNotificationsPending}
-            onClick={() => handleFilterChange(Filter.ALL)}
-          >
-            <span>전체</span>
-          </FilterButton>
-          <FilterButton
-            active={filter === Filter.UNREAD}
-            disabled={isMarkAsReadPending || isDeleteNotificationsPending}
-            highlight
-            onClick={() => handleFilterChange(Filter.UNREAD)}
-          >
-            <span>읽지 않음</span>
-          </FilterButton>
-          <FilterButton
-            active={filter === Filter.BOOKMARK}
-            disabled={isMarkAsReadPending || isDeleteNotificationsPending}
-            icon={<IconBookmark className="w-4" />}
-            onClick={() => handleFilterChange(Filter.BOOKMARK)}
-          >
-            <span className="hidden sm:inline">북마크</span>
-          </FilterButton>
-          <FilterButton
-            active={filter === Filter.NEW_MANGA}
-            disabled={isMarkAsReadPending || isDeleteNotificationsPending}
-            icon={<IconBook className="w-4" />}
-            onClick={() => handleFilterChange(Filter.NEW_MANGA)}
-          >
-            <span className="hidden sm:inline">신규</span>
-          </FilterButton>
-        </div>
-        <div className="flex items-center gap-1.5">
-          {selectionMode ? (
-            <>
-              <button
-                className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-zinc-300 bg-zinc-800 rounded-md hover:bg-zinc-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={selectedIds.size === 0 || isMarkAsReadPending || isDeleteNotificationsPending}
-                onClick={() => handleBatchAction('read')}
-                title="Mark as read"
-              >
-                {isMarkAsReadPending ? <IconSpinner className="w-4" /> : <IconCheck className="w-4" />}
-                <span className="hidden sm:inline">읽음</span>
-              </button>
-              <button
-                className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-red-400 bg-red-900/20 rounded-md hover:bg-red-900/30 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={selectedIds.size === 0 || isMarkAsReadPending || isDeleteNotificationsPending}
-                onClick={() => handleBatchAction('delete')}
-                title="Delete"
-              >
-                {isDeleteNotificationsPending ? <IconSpinner className="w-4" /> : <IconTrash className="w-4" />}
-                <span className="hidden sm:inline">삭제</span>
-              </button>
+      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-zinc-800 -mx-4 px-3 py-2 sm:-mx-6 sm:px-4 sm:py-3">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
+          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hidden">
+            <FilterButton
+              active={!filter}
+              disabled={isMarkAsReadPending || isDeleteNotificationsPending}
+              onClick={() => router.replace(`?`)}
+            >
+              <span>전체</span>
+            </FilterButton>
+            <FilterButton
+              active={filter === NotificationFilter.UNREAD}
+              disabled={isMarkAsReadPending || isDeleteNotificationsPending}
+              onClick={() => router.replace(`?filter=${NotificationFilter.UNREAD}`)}
+            >
+              <span>읽지 않음</span>
+            </FilterButton>
+            <FilterButton
+              active={filter === NotificationFilter.NEW_MANGA}
+              disabled={isMarkAsReadPending || isDeleteNotificationsPending}
+              icon={<IconBook className="w-4" />}
+              onClick={() => router.replace(`?filter=${NotificationFilter.NEW_MANGA}`)}
+            >
+              <span className="hidden sm:inline">신규</span>
+            </FilterButton>
+          </div>
+          <div className="flex items-center gap-1.5">
+            {filter === NotificationFilter.UNREAD && (
               <button
                 className="px-2.5 py-1.5 text-xs font-medium text-zinc-400 hover:text-zinc-300 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={isMarkAsReadPending || isDeleteNotificationsPending}
-                onClick={() => {
-                  setSelectionMode(false)
-                  setSelectedIds(new Set())
-                }}
+                onClick={() => dispatchMarkAsRead({ ids: notifications.filter((n) => !n.read).map((n) => n.id) })}
               >
-                취소
+                모두 읽음
               </button>
-            </>
-          ) : (
-            <button
-              className="px-2.5 py-1.5 text-zinc-400 hover:text-zinc-300 transition disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={isMarkAsReadPending || isDeleteNotificationsPending}
-              onClick={() => setSelectionMode(true)}
-              title="Select multiple"
-            >
-              <IconFilter className="w-4" />
-            </button>
-          )}
+            )}
+            {selectionMode ? (
+              <>
+                <button
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-zinc-300 bg-zinc-800 rounded-md hover:bg-zinc-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={selectedIds.size === 0 || isMarkAsReadPending || isDeleteNotificationsPending}
+                  onClick={() => handleBatchAction('read')}
+                >
+                  {isMarkAsReadPending ? <IconSpinner className="w-4" /> : <IconCheck className="w-4" />}
+                  <span className="hidden sm:inline">읽음</span>
+                </button>
+                <button
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-red-400 bg-red-900/20 rounded-md hover:bg-red-900/30 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={selectedIds.size === 0 || isMarkAsReadPending || isDeleteNotificationsPending}
+                  onClick={() => handleBatchAction('delete')}
+                >
+                  {isDeleteNotificationsPending ? <IconSpinner className="w-4" /> : <IconTrash className="w-4" />}
+                  <span className="hidden sm:inline">삭제</span>
+                </button>
+                <button
+                  className="px-2.5 py-1.5 text-xs font-medium text-zinc-400 hover:text-zinc-300 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isMarkAsReadPending || isDeleteNotificationsPending}
+                  onClick={() => {
+                    setSelectionMode(false)
+                    setSelectedIds(new Set())
+                  }}
+                >
+                  취소
+                </button>
+              </>
+            ) : (
+              <button
+                className="px-2.5 py-1.5 text-zinc-400 hover:text-zinc-300 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isMarkAsReadPending || isDeleteNotificationsPending}
+                onClick={() => setSelectionMode(true)}
+                title="선택 모드"
+              >
+                <IconFilter className="w-4" />
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -257,25 +212,35 @@ export default function NotificationList() {
         <EmptyState filter={filter} />
       ) : (
         <div
-          className={`space-y-6 py-4 transition-all duration-200 ${selectionMode ? 'scale-[0.99]' : 'scale-100'} ${
-            isMarkAsReadPending || isDeleteNotificationsPending ? 'opacity-70 pointer-events-none' : 'opacity-100'
-          }`}
+          aria-current={selectionMode}
+          aria-disabled={isMarkAsReadPending || isDeleteNotificationsPending}
+          className="grid gap-6 py-4 transition-all aria-current:scale-x-[0.99] aria-disabled:opacity-70 aria-disabled:pointer-events-none"
         >
           {Object.entries(groupedNotifications).map(([dateGroup, groupNotifications]) => (
             <div key={dateGroup}>
-              <h2 className="mb-3 text-sm font-medium text-zinc-400 sticky top-0 bg-background py-1">
+              <h2 className="mb-3 text-sm font-medium text-zinc-400 bg-background py-1">
                 {dateGroup}
                 <span className="ml-2 text-xs text-zinc-600">({groupNotifications.length})</span>
               </h2>
-              <div className="space-y-2">
+              <div className="grid gap-2 sm:gap-3">
                 {groupNotifications.map((notification) => (
-                  <NotificationCard
+                  <SwipeableWrapper
+                    enabled={selectionMode}
                     key={notification.id}
                     notification={notification}
-                    onSelect={toggleSelection}
-                    selected={selectedIds.has(notification.id)}
-                    selectionMode={selectionMode}
-                  />
+                    onDelete={handleDelete}
+                    onMarkAsRead={handleMarkAsRead}
+                  >
+                    <NotificationCard
+                      autoMarkAsRead={!selectionMode && filter !== NotificationFilter.UNREAD}
+                      notification={notification}
+                      onDelete={handleDelete}
+                      onMarkAsRead={handleMarkAsRead}
+                      onSelect={toggleSelection}
+                      selected={selectedIds.has(notification.id)}
+                      selectionMode={selectionMode}
+                    />
+                  </SwipeableWrapper>
                 ))}
               </div>
             </div>
@@ -289,24 +254,17 @@ export default function NotificationList() {
   )
 }
 
-function EmptyState({ filter }: { filter: Filter }) {
-  const getEmptyMessage = () => {
-    switch (filter) {
-      case Filter.BOOKMARK:
-        return '북마크 관련 알림이 없어요'
-      case Filter.NEW_MANGA:
-        return '새 만화 알림이 없어요'
-      case Filter.UNREAD:
-        return '읽지 않은 알림이 없어요'
-      default:
-        return '알림이 없어요'
-    }
-  }
+function EmptyState({ filter }: { filter: NotificationFilter | null }) {
+  const content = getEmptyContent(filter)
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center">
-      <IconBell className="mb-4 h-10 w-10 text-zinc-600 sm:h-12 sm:w-12" />
-      <p className="text-zinc-400">{getEmptyMessage()}</p>
+    <div className="flex-1 flex flex-col items-center justify-center p-8">
+      <div className="relative">
+        {content.icon}
+        <div className="absolute inset-0 bg-gradient-to-t from-brand-end/10 to-transparent rounded-full blur-3xl" />
+      </div>
+      <h3 className="text-lg font-medium text-zinc-300 mb-2">{content.title}</h3>
+      <p className="text-sm text-zinc-500 text-center max-w-xs">{content.description}</p>
     </div>
   )
 }
@@ -315,43 +273,52 @@ function FilterButton({
   active,
   onClick,
   children,
-  count,
-  highlight = false,
   icon,
   disabled = false,
 }: {
   active: boolean
   onClick: () => void
   children: ReactNode
-  count?: number
-  highlight?: boolean
   icon?: ReactNode
   disabled?: boolean
 }) {
   return (
     <button
       aria-pressed={active}
-      className="px-2.5 py-1.5 rounded-md text-xs font-medium transition-all flex items-center gap-1 whitespace-nowrap bg-zinc-800/50
-      aria-pressed:bg-brand-end aria-pressed:text-background aria-pressed:font-bold  hover:bg-zinc-800/50 hover:text-zinc-300
+      className="relative px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1 whitespace-nowrap
+      aria-pressed:bg-brand-end aria-pressed:text-background aria-pressed:font-bold
+      bg-zinc-800/50 hover:bg-zinc-700/50 hover:text-zinc-200
       disabled:opacity-50 disabled:cursor-not-allowed"
       disabled={disabled}
       onClick={onClick}
     >
       {icon}
       {children}
-      {count !== undefined && (
-        <span
-          aria-selected={active}
-          className={`ml-0.5 px-0.5 rounded-full text-[10px] font-bold min-w-[1.25rem] text-center
-          aria-selected:bg-background/20 aria-selected:text-background
-          ${highlight && count > 0 ? 'bg-brand-end text-background' : 'bg-zinc-700 text-zinc-400'}
-        `}
-        >
-          {count > 99 ? '99+' : count}
-        </span>
-      )}
     </button>
   )
+}
+
+function getEmptyContent(filter: NotificationFilter | null) {
+  switch (filter) {
+    case NotificationFilter.NEW_MANGA:
+      return {
+        icon: <IconBook className="mb-4 h-12 w-12 text-zinc-600/50" />,
+        title: '신규 만화 알림이 없어요',
+        description: '새로운 만화가 추가되면 알려드릴게요',
+      }
+    case NotificationFilter.UNREAD:
+      return {
+        icon: <IconCheck className="mb-4 h-12 w-12 text-zinc-600/50" />,
+        title: '모든 알림을 확인했어요',
+        description: '새로운 알림이 도착하면 여기에 표시됩니다',
+      }
+    default:
+      return {
+        icon: <IconBell className="mb-4 h-12 w-12 text-zinc-600/50" />,
+        title: '아직 알림이 없어요',
+        description: '만화 업데이트와 새로운 소식을 알려드릴게요',
+      }
+  }
 }
 
 function groupNotificationsByDate(notifications: Notification[]) {
