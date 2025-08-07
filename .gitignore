@@ -176,6 +176,7 @@ dist
 
 # Environment variables
 .env.*
+!.env.template
 
 # Certificates
 certificates
