@@ -5,13 +5,13 @@ This directory contains the necessary files to deploy the manga crawler and noti
 ## Prerequisites
 
 ```zsh
-cp .env.template .env
+cp cloud-run/env.example cloud-run/.env
 ```
 
-Edit the `.env` file.
+Edit the `.env` file with your actual values.
 
 ```zsh
-source .env
+source cloud-run/.env
 ./cloud-run/setup.sh
 ```
 
@@ -20,6 +20,7 @@ Only execute once.
 ## Deployment
 
 ```zsh
+source cloud-run/.env
 ./cloud-run/deploy.sh
 ```
 
