@@ -1,16 +1,15 @@
 import { and, count, inArray, sql } from 'drizzle-orm'
 
-import type { Manga } from '@/types/manga'
+import type { Manga } from '../src/types/manga'
 
-import { db } from '@/database/drizzle'
-import { BookmarkSource, NotificationType } from '@/database/enum'
-import { mangaSeenTable } from '@/database/notification-schema'
-import { notificationTable } from '@/database/schema'
-import { getImageSrc, getViewerLink } from '@/utils/manga'
-import { mapBookmarkSourceToSourceParam } from '@/utils/param'
-
-import { OptimizedNotificationMatcher } from './OptimizedNotificationMatcher'
-import { WebPushService } from './WebPushService'
+import { db } from '../src/database/drizzle'
+import { BookmarkSource, NotificationType } from '../src/database/enum'
+import { mangaSeenTable } from '../src/database/notification-schema'
+import { notificationTable } from '../src/database/schema'
+import { OptimizedNotificationMatcher } from '../src/lib/notification/OptimizedNotificationMatcher'
+import { WebPushService } from '../src/lib/notification/WebPushService'
+import { getImageSrc, getViewerLink } from '../src/utils/manga'
+import { mapBookmarkSourceToSourceParam } from '../src/utils/param'
 
 interface CriteriaMatch {
   id: number
@@ -236,7 +235,10 @@ export class MangaNotificationProcessor {
       .groupBy(notificationTable.userId)
 
     const userDailyCounts = new Map(dailyCounts.map((row) => [row.userId, row.count]))
-    const webPushes = []
+    const webPushes: {
+      userId: number
+      payload: ReturnType<MangaNotificationProcessor['createNotificationPayload']>
+    }[] = []
 
     for (const [userId, mangaNotifications] of userNotificationsMap) {
       // Check if user should receive notifications

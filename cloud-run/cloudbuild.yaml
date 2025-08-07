@@ -1,0 +1,59 @@
+# Cloud Build configuration for deploying the crawler job
+# Usage: gcloud builds submit --config=cloud-run/cloudbuild.yaml --substitutions=_REGION=asia-northeast1
+
+substitutions:
+  _JOB_NAME: ${JOB_NAME}
+  _REGION: ${REGION}
+  _ARTIFACT_REGISTRY_REPO: ${ARTIFACT_REGISTRY_REPO}
+  _SERVICE_ACCOUNT: ${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com
+
+steps:
+  # Create Artifact Registry repository if it doesn't exist
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        if ! gcloud artifacts repositories describe ${_ARTIFACT_REGISTRY_REPO} --location=${_REGION} --project=${PROJECT_ID} >/dev/null 2>&1; then
+          gcloud artifacts repositories create ${_ARTIFACT_REGISTRY_REPO} \
+            --repository-format=docker \
+            --location=${_REGION} \
+            --description="Cloud Run Jobs Docker images" \
+            --project=${PROJECT_ID}
+        fi
+
+  # Build the Docker image with buildx for linux/amd64
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'buildx'
+      - 'build'
+      - '--platform=linux/amd64'
+      - '-t'
+      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/${_JOB_NAME}'
+      - '-f'
+      - 'cloud-run/Dockerfile'
+      - '--push'
+      - '.'
+
+  # Deploy to Cloud Run Jobs
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'jobs'
+      - 'deploy'
+      - '${_JOB_NAME}'
+      - '--image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/${_JOB_NAME}'
+      - '--region=${_REGION}'
+      - '--parallelism=1'
+      - '--max-retries=1'
+      - '--task-timeout=10m'
+      - '--memory=2Gi'
+      - '--cpu=2'
+      - '--set-env-vars=NODE_ENV=production'
+
+images:
+  - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/${_JOB_NAME}'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
