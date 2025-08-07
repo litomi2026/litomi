@@ -2,7 +2,7 @@
 
 import { useQueryClient } from '@tanstack/react-query'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
+import { ReactNode, useCallback, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
 import { NotificationFilter } from '@/app/api/notification/schema'
@@ -20,6 +20,7 @@ import { deleteNotifications, markAsRead } from './action'
 import { SearchParams } from './common'
 import NotificationCard from './NotificationCard'
 import SwipeableWrapper from './SwipeableNotificationCard'
+import useBatcher from './useBatcher'
 import useNotificationInfiniteQuery from './useNotificationsInfiniteQuery'
 
 interface Notification {
@@ -80,12 +81,14 @@ export default function NotificationList() {
     shouldSetResponse: false,
   })
 
-  const handleMarkAsRead = useCallback(
-    (id: number) => {
-      dispatchMarkAsRead({ ids: [id] })
+  const { addToQueue: handleMarkAsRead } = useBatcher({
+    batchDelay: 3000,
+    onBatchStart: (ids) => {
+      if (ids.length > 0) {
+        dispatchMarkAsRead({ ids })
+      }
     },
-    [dispatchMarkAsRead],
-  )
+  })
 
   const handleDelete = useCallback(
     (id: number) => {

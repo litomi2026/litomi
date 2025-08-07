@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import IconPlus from '@/components/icons/IconPlus'
@@ -24,6 +24,7 @@ interface Props {
 export default function NotificationCriteriaModal({ isOpen, onClose, editingCriteria }: Props) {
   const formRef = useRef<HTMLFormElement>(null)
   const [conditionCount, setConditionCount] = useState(1)
+  const nameId = useId()
 
   const processAndSubmit = async (formData: FormData) => {
     const conditionCountFromForm = parseInt(formData.get('conditionCount')?.toString() || '1')
@@ -168,14 +169,13 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
             action={dispatchAction}
             className="flex flex-col p-4 space-y-4
               [&_label]:block [&_label]:text-sm [&_label]:font-medium [&_label]:text-zinc-300 [&_label]:mb-1"
-            id="notification-form"
             ref={formRef}
           >
             <input name="conditionCount" type="hidden" value={conditionCount} />
             <p className="text-sm text-zinc-500 -mt-2">관심있는 작품을 놓치지 않도록 알림 조건을 설정하세요</p>
 
             <div>
-              <label htmlFor="notification-name">알림 이름</label>
+              <label htmlFor={nameId}>알림 이름</label>
               <input
                 aria-invalid={Boolean(nameError)}
                 autoCapitalize="off"
@@ -183,7 +183,7 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
                 focus:outline-none focus:ring-2 focus:ring-brand-end/50 focus:border-transparent 
                 aria-invalid:ring-2 aria-invalid:ring-red-500 disabled:opacity-50 transition"
                 disabled={isPending}
-                id="notification-name"
+                id={nameId}
                 name="name"
                 placeholder="나루토 신작 알림"
                 required
@@ -282,7 +282,6 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
               text-background font-medium rounded-lg transition focus:outline-none focus:ring-2 focus:ring-brand-end/50
               disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={isPending}
-            form="notification-form"
             type="submit"
           >
             {isPending ? <IconSpinner className="w-5 h-5" /> : editingCriteria ? '저장' : '만들기'}
