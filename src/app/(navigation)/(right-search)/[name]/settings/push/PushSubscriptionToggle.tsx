@@ -67,9 +67,9 @@ export default function PushSubscriptionToggle({ endpoints }: Readonly<Props>) {
   async function subscribeNotification() {
     if (!('Notification' in window)) {
       if (checkIOSSafari()) {
-        toast.warning('iOS Safari 환경에선 앱을 홈 화면에 추가하여 PWA로 설치하면 알림을 받을 수 있어요')
+        toast.warning('iOS Safari 환경에선 사이트를 홈 화면에 추가해야 알림을 받을 수 있어요')
       } else if (checkIOSDevice()) {
-        toast.warning('iOS에서는 Safari를 통해 홈 화면에 추가하여 PWA로 설치하면 알림을 받을 수 있어요')
+        toast.warning('iOS에서는 Safari를 통해 사이트를 홈 화면에 추가해야 알림을 받을 수 있어요')
       } else {
         toast.warning('이 브라우저는 알림을 지원하지 않아요')
       }
