@@ -1,5 +1,17 @@
 // Client side ONLY
 
+export function checkIOSDevice(): boolean {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !('MSStream' in window)
+}
+
+export function checkIOSSafari(): boolean {
+  const isIOS = checkIOSDevice()
+  const userAgent = navigator.userAgent
+  const isSafari = /Safari/.test(userAgent) && !/CriOS|FxiOS|EdgiOS/.test(userAgent)
+
+  return isIOS && isSafari
+}
+
 export function getSafeAreaBottom() {
   return parseFloat(window.getComputedStyle(document.documentElement).getPropertyValue('--safe-area-bottom'))
 }
