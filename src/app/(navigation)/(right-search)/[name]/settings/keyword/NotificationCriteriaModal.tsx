@@ -149,7 +149,11 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
       onClose={onClose}
       open={isOpen}
     >
-      <div className="flex flex-col h-full sm:max-h-[calc(100vh-8rem)] bg-zinc-900 overflow-hidden sm:border-2 sm:border-zinc-700 sm:rounded-xl sm:shadow-xl">
+      <form
+        action={dispatchAction}
+        className="flex flex-col h-full sm:max-h-[calc(100vh-8rem)] bg-zinc-900 overflow-hidden sm:border-2 sm:border-zinc-700 sm:rounded-xl sm:shadow-xl"
+        ref={formRef}
+      >
         <div className="flex-shrink-0 flex items-center justify-between p-4 bg-zinc-900 border-b border-zinc-800">
           <h3 className="text-xl font-bold text-zinc-100 sm:text-lg">
             {editingCriteria ? '알림 조건 수정' : '새 알림 만들기'}
@@ -165,11 +169,9 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
 
         {/* Scrollable content area */}
         <div className="flex-1 overflow-y-auto">
-          <form
-            action={dispatchAction}
+          <div
             className="flex flex-col p-4 space-y-4
               [&_label]:block [&_label]:text-sm [&_label]:font-medium [&_label]:text-zinc-300 [&_label]:mb-1"
-            ref={formRef}
           >
             <input name="conditionCount" type="hidden" value={conditionCount} />
             <p className="text-sm text-zinc-500 -mt-2">관심있는 작품을 놓치지 않도록 알림 조건을 설정하세요</p>
@@ -265,7 +267,7 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
                 </p>
               )}
             </div>
-          </form>
+          </div>
         </div>
         <div className="flex-shrink-0 flex gap-2 p-4 bg-zinc-900 border-t border-zinc-800">
           <button
@@ -287,7 +289,7 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
             {isPending ? <IconSpinner className="w-5 h-5" /> : editingCriteria ? '저장' : '만들기'}
           </button>
         </div>
-      </div>
+      </form>
     </Modal>
   )
 }
