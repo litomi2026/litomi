@@ -10,25 +10,23 @@ import { db } from '../src/database/drizzle'
 import { BookmarkSource } from '../src/database/enum'
 import { MangaNotificationProcessor } from './MangaNotificationProcessor'
 
-// Configuration
 const CONFIG = {
   HARPI: {
     enabled: true,
-    maxPages: 1, // Number of pages to crawl
+    maxPages: 1,
   },
   HIYOBI: {
     enabled: true,
-    maxPages: 1, // Number of pages to crawl
+    maxPages: 1,
   },
   K_HENTAI: {
     enabled: true,
-    pageLimit: 50, // Number of results per request
+    pageLimit: 50,
   },
-  BATCH_SIZE: 50, // Process notifications in batches
+  BATCH_SIZE: 100,
   DELAY_MS: 2000, // Delay between crawl requests to avoid rate limiting
 }
 
-// Logger utility
 const log = {
   info: (msg: string, ...args: unknown[]) => console.log(`[${new Date().toISOString()}] ℹ️  ${msg}`, ...args),
   success: (msg: string, ...args: unknown[]) => console.log(`[${new Date().toISOString()}] ✅ ${msg}`, ...args),
@@ -36,12 +34,9 @@ const log = {
   warn: (msg: string, ...args: unknown[]) => console.warn(`[${new Date().toISOString()}] ⚠️  ${msg}`, ...args),
 }
 
-// Sleep utility
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
-// Main crawl and notify function
 async function crawlAndNotify() {
-  // Check required environment variables
   const requiredEnvVars = ['POSTGRES_URL', 'NEXT_PUBLIC_VAPID_PUBLIC_KEY', 'VAPID_PRIVATE_KEY']
   const missingEnvVars = requiredEnvVars.filter((varName) => !process.env[varName])
 
@@ -54,14 +49,10 @@ async function crawlAndNotify() {
   const startTime = Date.now()
 
   try {
-    // Test database connection
     await db.execute(sql`SELECT 1`)
     log.success('Database connection established')
-
-    // Initialize notification processor
     const processor = MangaNotificationProcessor.getInstance()
 
-    // Crawl all sources in parallel
     const [harpiResults, hiyobiResults, kHentaiResults] = await Promise.all([
       crawlHarpi(),
       crawlHiyobi(),
@@ -76,7 +67,6 @@ async function crawlAndNotify() {
       return
     }
 
-    // Process manga for notifications
     log.info('Processing manga for notifications...')
     const result = await processor.processBatches(allManga, { batchSize: CONFIG.BATCH_SIZE })
 
@@ -85,7 +75,6 @@ async function crawlAndNotify() {
     const duration = Date.now() - startTime
     log.info(`Total execution time: ${(duration / 1000).toFixed(2)} seconds`)
 
-    // Log results
     log.info('Results:', {
       matched: result.matched,
       notificationsSent: result.notificationsSent,
@@ -96,13 +85,14 @@ async function crawlAndNotify() {
       log.warn('Errors encountered:')
       result.errors.forEach((error) => log.error(error))
     }
+
+    process.exit(0)
   } catch (error) {
     log.error('Fatal error during crawl and notify:', error)
     process.exit(1)
   }
 }
 
-// Crawl Harpi source
 async function crawlHarpi(): Promise<Array<{ manga: Manga; source: BookmarkSource }>> {
   if (!CONFIG.HARPI.enabled) return []
 
@@ -140,7 +130,6 @@ async function crawlHarpi(): Promise<Array<{ manga: Manga; source: BookmarkSourc
   return results
 }
 
-// Crawl Hiyobi source
 async function crawlHiyobi(): Promise<Array<{ manga: Manga; source: BookmarkSource }>> {
   if (!CONFIG.HIYOBI.enabled) return []
 
@@ -167,7 +156,6 @@ async function crawlHiyobi(): Promise<Array<{ manga: Manga; source: BookmarkSour
   return results
 }
 
-// Crawl K-Hentai source
 async function crawlKHentai(): Promise<Array<{ manga: Manga; source: BookmarkSource }>> {
   if (!CONFIG.K_HENTAI.enabled) return []
 

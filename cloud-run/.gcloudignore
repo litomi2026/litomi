@@ -1,0 +1,50 @@
+# Ignore files for Google Cloud Build
+.gcloudignore
+.git
+.gitignore
+*.md
+*.lock
+
+# Node/Bun
+node_modules/
+.next/
+dist/
+build/
+coverage/
+.env*
+*.log
+
+# Test files
+test/
+tests/
+__tests__/
+*.test.*
+*.spec.*
+playwright-report/
+test-results/
+e2e/
+
+# Development files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Documentation
+docs/
+README.md
+
+# Other unnecessary files
+public/
+trash/
+tools/
+fly.toml
+vercel.json
+render.yaml
+docker-compose.yml
+Dockerfile
+cloudbuild.yaml
+.prettierrc*
+.eslintrc*
+tsconfig.tsbuildinfo
