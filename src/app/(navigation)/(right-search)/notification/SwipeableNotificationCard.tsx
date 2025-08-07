@@ -18,7 +18,7 @@ interface Props {
   onMarkAsRead: (id: number) => void
 }
 
-export default function SwipableWrapper({ notification, onDelete, onMarkAsRead, enabled, children }: Props) {
+export default function SwipeableWrapper({ notification, onDelete, onMarkAsRead, enabled, children }: Props) {
   const [swipeX, setSwipeX] = useState(0)
   const [isSwiping, setIsSwiping] = useState(false)
   const startX = useRef(0)
@@ -44,10 +44,10 @@ export default function SwipableWrapper({ notification, onDelete, onMarkAsRead, 
 
     const threshold = 80
     if (swipeX > threshold && onMarkAsRead && notification && !notification.read) {
-      // Swipe right - mark as read
+      // 오른쪽으로 스와이프
       onMarkAsRead(notification.id)
     } else if (swipeX < -threshold && onDelete) {
-      // Swipe left - delete
+      // 왼쪽으로 스와이프
       onDelete(notification.id)
     }
 

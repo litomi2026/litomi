@@ -1,7 +1,8 @@
-import { and, desc, eq, inArray, sql } from 'drizzle-orm'
+import { and, desc, eq, sql } from 'drizzle-orm'
 
 import { handleRouteError } from '@/crawler/proxy-utils'
 import { db } from '@/database/drizzle'
+import { NotificationType } from '@/database/enum'
 import { notificationTable } from '@/database/schema'
 import { getUserIdFromCookie } from '@/utils/session'
 
@@ -35,15 +36,14 @@ export async function GET(request: Request) {
 
   const validation = GETNotificationSchema.safeParse({
     nextId: searchParams.get('nextId'),
-    filter: searchParams.get('filter'),
-    types: searchParams.getAll('type'),
+    filters: searchParams.getAll('filter'),
   })
 
   if (!validation.success) {
     return new Response('Bad Request', { status: 400 })
   }
 
-  const { nextId, filter, types } = validation.data
+  const { nextId, filters } = validation.data
 
   try {
     const conditions = [sql`${notificationTable.userId} = ${userId}`]
@@ -52,14 +52,12 @@ export async function GET(request: Request) {
       conditions.push(sql`${notificationTable.id} < ${nextId}`)
     }
 
-    if (filter === NotificationFilter.UNREAD) {
+    if (filters?.includes(NotificationFilter.UNREAD)) {
       conditions.push(eq(notificationTable.read, false))
-    } else if (filter === NotificationFilter.READ) {
-      conditions.push(eq(notificationTable.read, true))
     }
 
-    if (types && types.length > 0) {
-      conditions.push(inArray(notificationTable.type, types))
+    if (filters?.includes(NotificationFilter.NEW_MANGA)) {
+      conditions.push(eq(notificationTable.type, NotificationType.NEW_MANGA))
     }
 
     const results = await db
