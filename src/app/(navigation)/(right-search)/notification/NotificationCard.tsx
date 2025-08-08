@@ -106,6 +106,11 @@ export default function NotificationCard({
       onSelect?.(notification.id)
       return
     }
+
+    if (!mangaViewerURL) {
+      e.preventDefault()
+      return
+    }
   }
 
   return (
@@ -115,7 +120,7 @@ export default function NotificationCard({
       ${isUnread ? 'border-zinc-700 bg-zinc-900/50' : 'border-zinc-800 bg-zinc-900/20'}
       hover:border-zinc-600 hover:bg-zinc-900/60 aria-selected:border-brand-end aria-selected:bg-brand-end/10
       ${mangaViewerURL && !selectionMode ? 'cursor-pointer' : ''}`}
-      href={mangaViewerURL}
+      href={mangaViewerURL ?? ''}
       onClick={handleClick}
       ref={cardRef}
     >
