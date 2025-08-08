@@ -7,12 +7,9 @@ import { ERROR_MANGA } from '@/constants/json'
 import { CANONICAL_URL } from '@/constants/url'
 import { HiyobiClient } from '@/crawler/hiyobi'
 import { KHentaiClient } from '@/crawler/k-hentai'
-import { harpiMangaIds, harpiMangas } from '@/database/harpi'
-import { Manga } from '@/types/manga'
 import { PageProps } from '@/types/nextjs'
 import { getViewerLink } from '@/utils/manga'
 import { SourceParam, validateSource, validateView, ViewCookie } from '@/utils/param'
-import { sampleBySecureFisherYates } from '@/utils/random'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 export const revalidate = 15
@@ -75,19 +72,15 @@ export default async function Page({ params }: PageProps) {
 }
 
 async function getMangas({ source }: Params) {
-  let mangas: Manga[] | null = null
-
   try {
     if (source === SourceParam.HARPI) {
-      mangas = sampleBySecureFisherYates(harpiMangaIds, 20).map((id) => harpiMangas[id])
+      return [ERROR_MANGA]
     } else if (source === SourceParam.HIYOBI) {
-      mangas = await HiyobiClient.getInstance().fetchRandomMangas()
+      return await HiyobiClient.getInstance().fetchRandomMangas()
     } else if (source === SourceParam.K_HENTAI) {
-      mangas = await KHentaiClient.getInstance().fetchRandomKoreanMangas()
+      return await KHentaiClient.getInstance().fetchRandomKoreanMangas()
     }
   } catch (error) {
-    mangas = [{ ...ERROR_MANGA, id: -1, title: JSON.stringify(error) ?? '오류가 발생했어요' }, ERROR_MANGA]
+    return [{ ...ERROR_MANGA, id: -1, title: JSON.stringify(error) ?? '오류가 발생했어요' }, ERROR_MANGA]
   }
-
-  return mangas
 }

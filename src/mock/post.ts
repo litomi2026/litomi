@@ -1,12 +1,10 @@
-import { harpiMangaIds, harpiMangas } from '@/database/harpi'
-import { getImageSrc } from '@/utils/manga'
-import { getElementBySecureFisherYates } from '@/utils/random'
-
 export type TAuthor = (typeof mockedPosts)[number]['author']
 export type TPost = TPost2 & { parentPosts?: TPost2[] }
 export type TPost2 = (typeof mockedPosts)[number]
 export type TPost3 = (typeof mockedPosts)[number]
 export type TReferedPost = NonNullable<TPost['referredPost']>
+
+export const THUMBNAIL_IMAGE_URL = '/image/thumbnail.avif'
 
 export const samplePosts = [
   {
@@ -56,12 +54,7 @@ export const mockedPosts = [
     status: 0,
     content:
       'asdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdf',
-    imageURLs: (() => {
-      const randomMangaId = getElementBySecureFisherYates(harpiMangaIds)
-      return harpiMangas[randomMangaId].images
-        .slice(0, 4)
-        .map((path) => getImageSrc({ cdn: 'HARPI', id: randomMangaId, path }))
-    })(),
+    imageURLs: [THUMBNAIL_IMAGE_URL, THUMBNAIL_IMAGE_URL, THUMBNAIL_IMAGE_URL],
     referredPostId: '13',
     author: {
       id: '35',
@@ -77,12 +70,7 @@ export const mockedPosts = [
       category: 0,
       status: 0,
       content: 'asds',
-      imageURLs: (() => {
-        const randomMangaId = getElementBySecureFisherYates(harpiMangaIds)
-        return harpiMangas[randomMangaId].images
-          .slice(0, 4)
-          .map((path) => getImageSrc({ cdn: 'HARPI', id: randomMangaId, path }))
-      })(),
+      imageURLs: [THUMBNAIL_IMAGE_URL],
       author: {
         id: '42',
         name: '94895fe0-011e-4517-a5fa-c10c0fde4161',
@@ -99,12 +87,7 @@ export const mockedPosts = [
     publishAt: '2024-07-28T16:10:14.754Z',
     status: 0,
     content: 'asds',
-    imageURLs: (() => {
-      const randomMangaId = getElementBySecureFisherYates(harpiMangaIds)
-      return harpiMangas[randomMangaId].images
-        .slice(0, 3)
-        .map((path) => getImageSrc({ cdn: 'HARPI', id: randomMangaId, path }))
-    })(),
+    imageURLs: [THUMBNAIL_IMAGE_URL, THUMBNAIL_IMAGE_URL, THUMBNAIL_IMAGE_URL, THUMBNAIL_IMAGE_URL],
     author: {
       id: '42',
       name: '94895fe0-011e-4517-a5fa-c10c0fde4161',
@@ -118,12 +101,7 @@ export const mockedPosts = [
       category: 0,
       status: 0,
       content: 'asds',
-      imageURLs: (() => {
-        const randomMangaId = getElementBySecureFisherYates(harpiMangaIds)
-        return harpiMangas[randomMangaId].images
-          .slice(0, 3)
-          .map((path) => getImageSrc({ cdn: 'HARPI', id: randomMangaId, path }))
-      })(),
+      imageURLs: [THUMBNAIL_IMAGE_URL, THUMBNAIL_IMAGE_URL, THUMBNAIL_IMAGE_URL, THUMBNAIL_IMAGE_URL],
       author: {
         id: '42',
         name: '94895fe0-011e-4517-a5fa-c10c0fde4161',
@@ -138,12 +116,7 @@ export const mockedPosts = [
     publishAt: '2024-07-29T10:54:13.199Z',
     status: 0,
     content: 'sdfasdf',
-    imageURLs: (() => {
-      const randomMangaId = getElementBySecureFisherYates(harpiMangaIds)
-      return harpiMangas[randomMangaId].images
-        .slice(0, 2)
-        .map((path) => getImageSrc({ cdn: 'HARPI', id: randomMangaId, path }))
-    })(),
+    imageURLs: [THUMBNAIL_IMAGE_URL, THUMBNAIL_IMAGE_URL],
     author: {
       id: '35',
       name: '22895fe0-011e-4517-a5fa-c10c0fde4162',
@@ -160,12 +133,7 @@ export const mockedPosts = [
       category: 0,
       status: 0,
       content: 'asds',
-      imageURLs: (() => {
-        const randomMangaId = getElementBySecureFisherYates(harpiMangaIds)
-        return harpiMangas[randomMangaId].images
-          .slice(0, 2)
-          .map((path) => getImageSrc({ cdn: 'HARPI', id: randomMangaId, path }))
-      })(),
+      imageURLs: [THUMBNAIL_IMAGE_URL, THUMBNAIL_IMAGE_URL],
       author: {
         id: '42',
         name: '94895fe0-011e-4517-a5fa-c10c0fde4161',
@@ -179,12 +147,7 @@ export const mockedPosts = [
     publishAt: '2024-07-27T16:52:36.186Z',
     status: 0,
     content: 'asfasdf',
-    imageURLs: (() => {
-      const randomMangaId = getElementBySecureFisherYates(harpiMangaIds)
-      return harpiMangas[randomMangaId].images
-        .slice(0, 1)
-        .map((path) => getImageSrc({ cdn: 'HARPI', id: randomMangaId, path }))
-    })(),
+    imageURLs: [THUMBNAIL_IMAGE_URL],
     author: {
       id: '35',
       name: '22895fe0-011e-4517-a5fa-c10c0fde4162',
@@ -199,12 +162,7 @@ export const mockedPosts = [
       category: 0,
       status: 0,
       content: 'asds',
-      imageURLs: (() => {
-        const randomMangaId = getElementBySecureFisherYates(harpiMangaIds)
-        return harpiMangas[randomMangaId].images
-          .slice(0, 1)
-          .map((path) => getImageSrc({ cdn: 'HARPI', id: randomMangaId, path }))
-      })(),
+      imageURLs: [THUMBNAIL_IMAGE_URL],
       author: {
         id: '42',
         name: '94895fe0-011e-4517-a5fa-c10c0fde4161',
@@ -218,12 +176,7 @@ export const mockedPosts = [
     publishAt: '2024-07-27T06:30:56.578Z',
     status: 0,
     content: 'sadf',
-    imageURLs: (() => {
-      const randomMangaId = getElementBySecureFisherYates(harpiMangaIds)
-      return harpiMangas[randomMangaId].images
-        .slice(0, 4)
-        .map((path) => getImageSrc({ cdn: 'HARPI', id: randomMangaId, path }))
-    })(),
+    imageURLs: [THUMBNAIL_IMAGE_URL, THUMBNAIL_IMAGE_URL, THUMBNAIL_IMAGE_URL],
     referredPostId: '13',
     author: {
       id: '35',
@@ -263,12 +216,7 @@ export const mockedPosts = [
       category: 0,
       status: 0,
       content: 'asds',
-      imageURLs: (() => {
-        const randomMangaId = getElementBySecureFisherYates(harpiMangaIds)
-        return harpiMangas[randomMangaId].images
-          .slice(0, 4)
-          .map((path) => getImageSrc({ cdn: 'HARPI', id: randomMangaId, path }))
-      })(),
+      imageURLs: [THUMBNAIL_IMAGE_URL, THUMBNAIL_IMAGE_URL, THUMBNAIL_IMAGE_URL],
     },
     commentCount: '3',
   },

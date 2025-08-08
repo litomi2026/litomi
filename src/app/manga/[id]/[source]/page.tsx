@@ -5,11 +5,10 @@ import type { PageProps } from '@/types/nextjs'
 
 import ImageViewer from '@/components/ImageViewer/ImageViewer'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
-import { ERROR_MANGA, FALLBACK_IMAGE_URL } from '@/constants/json'
+import { ERROR_MANGA } from '@/constants/json'
 import { CANONICAL_URL } from '@/constants/url'
 import { HiyobiClient } from '@/crawler/hiyobi'
 import { KHentaiClient } from '@/crawler/k-hentai'
-import { harpiMangas } from '@/database/harpi'
 import { getImageSrc } from '@/utils/manga'
 import { SourceParam } from '@/utils/param'
 
@@ -85,25 +84,26 @@ export default async function Page({ params }: PageProps) {
 }
 
 async function getManga({ source, id }: { source: SourceParam; id: number }) {
-  if (source === SourceParam.HIYOBI) {
-    const hiyobiClient = HiyobiClient.getInstance()
+  try {
+    if (source === SourceParam.HIYOBI) {
+      const hiyobiClient = HiyobiClient.getInstance()
 
-    const [mangaFromHiyobi, mangaImages] = await Promise.all([
-      hiyobiClient.fetchManga(id).catch(() => ({ id, title: '오류가 발생했어요', images: [] })),
-      hiyobiClient.fetchMangaImages(id).catch(() => [FALLBACK_IMAGE_URL]),
-    ])
+      const [mangaFromHiyobi, mangaImages] = await Promise.all([
+        hiyobiClient.fetchManga(id),
+        hiyobiClient.fetchMangaImages(id),
+      ])
 
-    return {
-      ...(mangaFromHiyobi ?? { id, title: '만화 정보가 없어요' }),
-      id,
-      images: mangaImages,
-      cdn: 'hiyobi',
+      return {
+        ...(mangaFromHiyobi ?? { id, title: '만화 정보가 없어요' }),
+        images: mangaImages,
+        cdn: 'hiyobi',
+      }
+    } else if (source === SourceParam.K_HENTAI) {
+      return await KHentaiClient.getInstance().fetchManga(id)
+    } else if (source === SourceParam.HARPI) {
+      return ERROR_MANGA
     }
-  } else if (source === SourceParam.K_HENTAI) {
-    return await KHentaiClient.getInstance()
-      .fetchManga(id)
-      .catch((error) => ({ ...ERROR_MANGA, title: JSON.stringify(error) ?? '' }))
-  } else if (source === SourceParam.HARPI) {
-    return harpiMangas[id]
+  } catch (error) {
+    return { ...ERROR_MANGA, id, title: JSON.stringify(error) ?? '오류가 발생했어요' }
   }
 }
