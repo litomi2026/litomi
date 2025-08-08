@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 
 import MangaCard from '@/components/card/MangaCard'
 import MangaCardImage from '@/components/card/MangaCardImage'
+import { ERROR_MANGA } from '@/constants/json'
 import { CANONICAL_URL } from '@/constants/url'
 import { HiyobiClient } from '@/crawler/hiyobi'
 import { KHentaiClient } from '@/crawler/k-hentai'
@@ -76,12 +77,16 @@ export default async function Page({ params }: PageProps) {
 async function getMangas({ source }: Params) {
   let mangas: Manga[] | null = null
 
-  if (source === SourceParam.HARPI) {
-    mangas = sampleBySecureFisherYates(harpiMangaIds, 20).map((id) => harpiMangas[id])
-  } else if (source === SourceParam.HIYOBI) {
-    mangas = await HiyobiClient.getInstance().fetchRandomMangas()
-  } else if (source === SourceParam.K_HENTAI) {
-    mangas = await KHentaiClient.getInstance().fetchRandomKoreanMangas()
+  try {
+    if (source === SourceParam.HARPI) {
+      mangas = sampleBySecureFisherYates(harpiMangaIds, 20).map((id) => harpiMangas[id])
+    } else if (source === SourceParam.HIYOBI) {
+      mangas = await HiyobiClient.getInstance().fetchRandomMangas()
+    } else if (source === SourceParam.K_HENTAI) {
+      mangas = await KHentaiClient.getInstance().fetchRandomKoreanMangas()
+    }
+  } catch (error) {
+    mangas = [{ ...ERROR_MANGA, id: -1, title: JSON.stringify(error) ?? '오류가 발생했어요' }, ERROR_MANGA]
   }
 
   return mangas

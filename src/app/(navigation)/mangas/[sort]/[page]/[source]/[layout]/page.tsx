@@ -11,17 +11,10 @@ import { KHentaiClient } from '@/crawler/k-hentai'
 import { Manga } from '@/types/manga'
 import { PageProps } from '@/types/nextjs'
 import { getViewerLink } from '@/utils/manga'
-import {
-  getTotalPages,
-  SortParam,
-  SourceParam,
-  validatePage,
-  validateSort,
-  validateSource,
-  validateView,
-  ViewCookie,
-} from '@/utils/param'
+import { getTotalPages, SortParam, SourceParam, ViewCookie } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
+
+import { mangasSchema } from './schema'
 
 export const revalidate = 86400 // 1 day
 
@@ -62,19 +55,17 @@ export async function generateStaticParams() {
 }
 
 export default async function Page({ params }: PageProps) {
-  const { sort, page, source, layout } = await params
-  const sortString = validateSort(sort)
-  const pageNumber = validatePage(page)
-  const sourceString = validateSource(source)
-  const layoutString = validateView(layout)
+  const validation = mangasSchema.safeParse(await params)
 
-  if (!sortString || !pageNumber || !sourceString || !layoutString) {
+  if (!validation.success) {
     notFound()
   }
 
+  const { page, source, layout } = validation.data
+
   const mangas = await getMangas({
-    source: sourceString,
-    page: pageNumber,
+    source,
+    page,
   })
 
   if (!mangas || mangas.length === 0) {
@@ -83,27 +74,27 @@ export default async function Page({ params }: PageProps) {
 
   return (
     <>
-      <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[layoutString]} gap-2 grow`}>
+      <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[layout]} gap-2 grow`}>
         {mangas.map((manga, i) =>
-          layoutString === ViewCookie.IMAGE ? (
+          layout === ViewCookie.IMAGE ? (
             <MangaCardImage
               className="bg-zinc-900 rounded-xl border-2 relative [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-cover [&_img]:aspect-[3/4]"
-              href={getViewerLink(manga.id, sourceString)}
+              href={getViewerLink(manga.id, source)}
               index={i}
               key={manga.id}
               manga={manga}
             />
           ) : (
-            <MangaCard index={i} key={manga.id} manga={manga} source={sourceString} />
+            <MangaCard index={i} key={manga.id} manga={manga} source={source} />
           ),
         )}
       </ul>
-      {sourceString !== SourceParam.K_HENTAI && (
+      {source !== SourceParam.K_HENTAI && (
         <Navigation
-          currentPage={pageNumber}
+          currentPage={page}
           hrefPrefix="../../"
-          hrefSuffix={`/${sourceString || SourceParam.HIYOBI}/${layoutString}`}
-          totalPages={getTotalPages(sourceString)}
+          hrefSuffix={`/${source || SourceParam.HIYOBI}/${layout}`}
+          totalPages={getTotalPages(source)}
         />
       )}
     </>
@@ -120,10 +111,7 @@ async function getMangas({ source, page }: Params) {
       mangas = await KHentaiClient.getInstance().searchKoreanMangas()
     }
   } catch (error) {
-    mangas = [
-      { ...ERROR_MANGA, title: JSON.stringify(error) ?? '오류가 발생했어요' },
-      { ...ERROR_MANGA, id: -1, title: JSON.stringify(error) ?? '오류가 발생했어요' },
-    ]
+    mangas = [{ ...ERROR_MANGA, id: -1, title: JSON.stringify(error) ?? '오류가 발생했어요' }, ERROR_MANGA]
   }
 
   return mangas
