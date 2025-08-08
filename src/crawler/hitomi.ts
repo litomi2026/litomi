@@ -139,7 +139,6 @@ export class HitomiClient {
     return manga?.images ?? []
   }
 
-  // ✅
   private convertHitomiGalleryToManga(gallery: HitomiGallery): Manga {
     const locale = 'ko' // TODO: Get from user preferences or context
     const artistValues = gallery.artists?.map(({ artist }) => artist)
@@ -171,7 +170,6 @@ export class HitomiClient {
     }
   }
 
-  // ✅
   private findMatchingBrace(str: string, startIndex: number): number {
     let braceCount = 0
     let inString = false
@@ -215,7 +213,6 @@ export class HitomiClient {
     return ''
   }
 
-  // ✅
   private parseGalleryFromJS(jsText: string, id: number): Manga {
     let jsonText = ''
 
