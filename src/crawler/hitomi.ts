@@ -1,12 +1,23 @@
-import { captureException } from '@sentry/nextjs'
-
 import { translateArtistList } from '@/translation/artist'
+import { translateCharacterList } from '@/translation/character'
+import { normalizeValue } from '@/translation/common'
+import { translateGroupList } from '@/translation/group'
 import { translateLanguageList } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
+import { translateTag } from '@/translation/tag'
 import { Manga } from '@/types/manga'
+
+import { NotFoundError, ParseError } from './errors'
+import { ProxyClient, ProxyClientConfig } from './proxy'
+import { isUpstreamServer5XXError } from './proxy-utils'
 
 export interface Artist {
   artist: string
+  url: string
+}
+
+export interface Character {
+  character: string
   url: string
 }
 
@@ -18,25 +29,30 @@ export interface File {
   width: number
 }
 
+export interface Group {
+  group: string
+  url: string
+}
+
 export interface HitomiGallery {
-  artists: Artist[]
+  artists: Artist[] | null
   blocked: number
-  characters: unknown
+  characters: Character[] | null
   date: string
   datepublished: unknown
   files: File[]
   galleryurl: string
-  groups: unknown
+  groups: Group[] | null
   id: string
   japanese_title: unknown
   language: string
   language_localname: string
   language_url: string
-  languages: Language[]
-  parodys: Parody[]
+  languages: Language[] | null
+  parodys: Parody[] | null
   related: number[]
   scene_indexes: unknown[]
-  tags: Tag[]
+  tags: Tag[] | null
   title: string
   type: string
   video: unknown
@@ -62,54 +78,183 @@ export interface Tag {
   url: string
 }
 
-export async function fetchMangaFromHitomi({ id }: { id: number }) {
-  const res = await fetch(`https://ltn.gold-usergeneratedcontent.net/galleries/${id}.js`, {
-    referrerPolicy: 'no-referrer',
-    next: { revalidate: 300 }, // 5 minutes
-  })
-
-  if (res.status === 404) {
-    return null
-  } else if (!res.ok) {
-    const body = await res.text()
-    captureException('ltn.gold-usergeneratedcontent.net 서버 오류 - 만화 정보', { extra: { res, body } })
-    throw new Error('hi 서버에서 만화를 불러오는데 실패했어요.')
-  }
-
-  const jsText = await res.text()
-  const match = jsText.match(/var\s+galleryinfo\s*=\s*(\{[\s\S]*?\});/)
-
-  if (!match) {
-    captureException('ltn.gold-usergeneratedcontent.net `galleryinfo` 변수 못 찾음', { extra: { res } })
-    return null
-  }
-
-  try {
-    const gallery = JSON.parse(match[1]) as HitomiGallery
-    return convertHitomiGalleryToManga(gallery)
-  } catch (error) {
-    captureException(error, { extra: { name: 'ltn.gold-usergeneratedcontent.net `galleryinfo` 변수 파싱 오류', res } })
-    return null
-  }
+const HITOMI_CONFIG: ProxyClientConfig = {
+  baseURL: 'https://ltn.gold-usergeneratedcontent.net',
+  circuitBreaker: {
+    failureThreshold: 5,
+    successThreshold: 3,
+    timeout: 60000, // 1 minute
+    shouldCountAsFailure: isUpstreamServer5XXError,
+  },
+  retry: {
+    maxRetries: 3,
+    initialDelay: 1000,
+    maxDelay: 10000,
+    backoffMultiplier: 2,
+    jitter: true,
+  },
+  defaultHeaders: {
+    Referer: 'https://hitomi.la',
+  },
 }
 
-function convertHitomiGalleryToManga(gallery: HitomiGallery): Manga {
-  const locale = 'ko' // TODO: Get from user preferences or context
-  const seriesValues = gallery.parodys.map(({ parody }) => parody)
-  const artistValues = gallery.artists.map(({ artist }) => artist)
-  const languageValues = gallery.languages.map(({ name }) => name)
+export class HitomiClient {
+  private static instance: HitomiClient
+  private readonly client: ProxyClient
 
-  return {
-    id: Number(gallery.id),
-    title: gallery.title,
-    artists: translateArtistList(artistValues, locale),
-    series: translateSeriesList(seriesValues, locale),
-    tags: gallery.tags.map((tag) => ({
-      category: 'other',
-      value: tag.tag,
-      label: tag.tag,
-    })),
-    languages: translateLanguageList(languageValues, locale),
-    images: gallery.files.map((file) => `https://ltn.gold-usergeneratedcontent.net/1/111/${file.hash}`),
+  private constructor() {
+    this.client = new ProxyClient(HITOMI_CONFIG)
+  }
+
+  static getInstance(): HitomiClient {
+    if (!HitomiClient.instance) {
+      HitomiClient.instance = new HitomiClient()
+    }
+    return HitomiClient.instance
+  }
+
+  async fetchManga(id: number, revalidate = 300) {
+    try {
+      const jsText = await this.client.fetch<string>(
+        `/galleries/${id}.js`,
+        {
+          cache: revalidate > 0 ? 'force-cache' : 'no-store',
+          next: { revalidate },
+          headers: { Accept: 'text/javascript,application/javascript,*/*;q=0.8' },
+        },
+        true,
+      )
+
+      return this.parseGalleryFromJS(jsText, id)
+    } catch (error) {
+      if (error instanceof NotFoundError) {
+        return null
+      }
+      throw error
+    }
+  }
+
+  async fetchMangaImages(id: number) {
+    const manga = await this.fetchManga(id)
+    return manga?.images ?? []
+  }
+
+  // ✅
+  private convertHitomiGalleryToManga(gallery: HitomiGallery): Manga {
+    const locale = 'ko' // TODO: Get from user preferences or context
+    const artistValues = gallery.artists?.map(({ artist }) => artist)
+    const characterValues = gallery.characters?.map(({ character }) => character)
+    const groupValues = gallery.groups?.map(({ group }) => group)
+    const seriesValues = gallery.parodys?.map(({ parody }) => parody)
+    const languageValues = gallery.languages?.map(({ name }) => name) ?? [gallery.language]
+
+    return {
+      id: Number(gallery.id),
+      artists: translateArtistList(artistValues, locale),
+      group: translateGroupList(groupValues, locale),
+      title: gallery.title,
+      date: gallery.date,
+      characters: translateCharacterList(characterValues, locale),
+      series: translateSeriesList(seriesValues, locale),
+      tags: gallery.tags?.map((tag) => {
+        const category = tag.female === '1' ? 'female' : tag.male === '1' ? 'male' : 'other'
+        return {
+          category,
+          value: normalizeValue(tag.tag),
+          label: translateTag(category, tag.tag, locale),
+        }
+      }),
+      languages: translateLanguageList(languageValues, locale),
+      images: gallery.files.map((file) => this.getImageUrl(gallery.id, file)),
+      related: gallery.related,
+      count: gallery.files.length,
+    }
+  }
+
+  // ✅
+  private findMatchingBrace(str: string, startIndex: number): number {
+    let braceCount = 0
+    let inString = false
+    let escapeNext = false
+
+    for (let i = startIndex; i < str.length; i++) {
+      const char = str[i]
+
+      if (escapeNext) {
+        escapeNext = false
+        continue
+      }
+
+      if (char === '\\') {
+        escapeNext = true
+        continue
+      }
+
+      if (char === '"' && !inString) {
+        inString = true
+      } else if (char === '"' && inString) {
+        inString = false
+      }
+
+      if (!inString) {
+        if (char === '{') {
+          braceCount++
+        } else if (char === '}') {
+          braceCount--
+          if (braceCount === 0) {
+            return i
+          }
+        }
+      }
+    }
+
+    return -1
+  }
+
+  private getImageUrl(galleryId: string, file: File) {
+    return ''
+  }
+
+  // ✅
+  private parseGalleryFromJS(jsText: string, id: number): Manga {
+    let jsonText = ''
+
+    // Try with semicolon
+    let match = jsText.match(/var\s+galleryinfo\s*=\s*(\{[\s\S]*?\});/)
+
+    if (!match) {
+      // Try without semicolon
+      match = jsText.match(/var\s+galleryinfo\s*=\s*(\{[\s\S]*\})$/)
+    }
+
+    if (!match) {
+      // Find the JSON boundaries
+      const startIndex = jsText.indexOf('var galleryinfo = ')
+
+      if (startIndex === -1) {
+        throw new ParseError('hitomi: `galleryinfo` 변수를 찾을 수 없어요.', { mangaId: id })
+      }
+
+      const jsonStart = jsText.indexOf('{', startIndex)
+      const jsonEnd = this.findMatchingBrace(jsText, jsonStart)
+
+      if (jsonEnd === -1) {
+        throw new ParseError('hitomi: JSON 객체의 끝을 찾을 수 없어요.', { mangaId: id })
+      }
+
+      jsonText = jsText.slice(jsonStart, jsonEnd + 1)
+    } else {
+      jsonText = match[1]
+    }
+
+    try {
+      const gallery = JSON.parse(jsonText) as HitomiGallery
+      return this.convertHitomiGalleryToManga(gallery)
+    } catch (error) {
+      throw new ParseError('hitomi: `galleryinfo` 변수를 읽을 수 없어요.', {
+        mangaId: id,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      })
+    }
   }
 }
