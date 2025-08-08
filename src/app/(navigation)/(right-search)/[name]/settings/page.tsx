@@ -44,6 +44,7 @@ export default async function SettingsPage({ params }: PageProps<Params>) {
       <CollapsibleSection
         description="새로운 업데이트를 실시간으로 받아보세요"
         icon={<IconBell className="w-5 flex-shrink-0 text-brand-end" />}
+        id="push"
         title="푸시 알림"
       >
         <Suspense>
@@ -53,6 +54,7 @@ export default async function SettingsPage({ params }: PageProps<Params>) {
       <CollapsibleSection
         description="관심 키워드를 등록하여 새로운 만화 알림을 받아보세요"
         icon={<IconSearch className="w-5 flex-shrink-0 text-brand-end" />}
+        id="keyword"
         title="키워드 알림"
       >
         <Suspense>
