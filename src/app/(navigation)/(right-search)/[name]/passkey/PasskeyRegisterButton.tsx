@@ -35,7 +35,7 @@ export default function PasskeyRegisterButton() {
       }
 
       const registrationResponse = await startRegistration({ optionsJSON: optionsResult.data })
-      const verifyResult = await verifyRegistration(registrationResponse, myName)
+      const verifyResult = await verifyRegistration(registrationResponse)
 
       if (!verifyResult.ok) {
         toast.error(verifyResult.error)
