@@ -4,7 +4,7 @@ import { captureException } from '@sentry/nextjs'
 import { and, count, eq, sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 
-import { db } from '@/database/drizzle'
+import { db, sessionDB } from '@/database/drizzle'
 import { notificationConditionTable, notificationCriteriaTable } from '@/database/notification-schema'
 import {
   badRequest,
@@ -40,36 +40,42 @@ export async function createNotificationCriteria(formData: FormData) {
 
   const { name, conditions, isActive } = validation.data
 
-  // TODO: transaction 적용하기
   try {
-    const [existingCount] = await db
-      .select({ count: count() })
-      .from(notificationCriteriaTable)
-      .where(sql`${notificationCriteriaTable.userId} = ${userId}`)
+    const result = await sessionDB.transaction(async (tx) => {
+      const [existingCount] = await tx
+        .select({ count: count() })
+        .from(notificationCriteriaTable)
+        .where(sql`${notificationCriteriaTable.userId} = ${userId}`)
 
-    if (existingCount.count >= MAX_CRITERIA_COUNT) {
-      return badRequest({ name: `최대 ${MAX_CRITERIA_COUNT}개까지만 추가할 수 있어요` }, formData)
+      if (existingCount.count >= MAX_CRITERIA_COUNT) {
+        return badRequest({ name: `최대 ${MAX_CRITERIA_COUNT}개까지만 추가할 수 있어요` }, formData)
+      }
+
+      const [criteria] = await tx
+        .insert(notificationCriteriaTable)
+        .values({
+          userId: Number(userId),
+          name,
+          isActive,
+        })
+        .returning({ id: notificationCriteriaTable.id })
+
+      const conditionValues = conditions.map((condition) => ({
+        criteriaId: criteria.id,
+        type: condition.type,
+        value: condition.value,
+      }))
+
+      await tx.insert(notificationConditionTable).values(conditionValues)
+      return criteria
+    })
+
+    if ('error' in result) {
+      return result
     }
 
-    const [criteria] = await db
-      .insert(notificationCriteriaTable)
-      .values({
-        userId: Number(userId),
-        name,
-        isActive,
-      })
-      .returning({ id: notificationCriteriaTable.id })
-
-    const conditionValues = conditions.map((condition) => ({
-      criteriaId: criteria.id,
-      type: condition.type,
-      value: condition.value,
-    }))
-
-    await db.insert(notificationConditionTable).values(conditionValues)
-
     revalidatePath('/[name]/settings', 'page')
-    return created(criteria)
+    return created(result.id)
   } catch (error) {
     captureException(error, { extra: { name: 'createNotificationCriteria', userId } })
     return internalServerError('알림 기준 생성 중 오류가 발생했어요', formData)
@@ -167,16 +173,16 @@ export async function updateNotificationCriteria(formData: FormData) {
 
   try {
     // Verify ownership
-    const [existing] = await db
-      .select()
-      .from(notificationCriteriaTable)
-      .where(and(eq(notificationCriteriaTable.id, criteriaId), sql`${notificationCriteriaTable.userId} = ${userId}`))
+    const result = await sessionDB.transaction(async (tx) => {
+      const [existing] = await tx
+        .select()
+        .from(notificationCriteriaTable)
+        .where(and(eq(notificationCriteriaTable.id, criteriaId), sql`${notificationCriteriaTable.userId} = ${userId}`))
 
-    if (!existing) {
-      return notFound('알림 기준을 찾을 수 없어요', formData)
-    }
+      if (!existing) {
+        return notFound('알림 기준을 찾을 수 없어요', formData)
+      }
 
-    await db.transaction(async (tx) => {
       const updates: { updatedAt: Date; name?: string; isActive?: boolean } = { updatedAt: new Date() }
       if (name !== undefined) updates.name = name
       if (isActive !== undefined) updates.isActive = isActive
@@ -197,7 +203,13 @@ export async function updateNotificationCriteria(formData: FormData) {
 
         await tx.insert(notificationConditionTable).values(conditionValues)
       }
+
+      return existing
     })
+
+    if ('error' in result) {
+      return result
+    }
 
     // Get updated criteria with conditions
     const updatedConditions =
@@ -214,13 +226,13 @@ export async function updateNotificationCriteria(formData: FormData) {
 
     return ok({
       id: Number(criteriaId),
-      name: name || existing.name,
-      isActive: isActive !== undefined ? isActive : existing.isActive,
-      createdAt: existing.createdAt,
+      name: name || result.name,
+      isActive: isActive !== undefined ? isActive : result.isActive,
+      createdAt: result.createdAt,
       updatedAt: new Date(),
       conditions: updatedConditions,
-      matchCount: existing.matchCount,
-      lastMatchedAt: existing.lastMatchedAt,
+      matchCount: result.matchCount,
+      lastMatchedAt: result.lastMatchedAt,
     })
   } catch (error) {
     captureException(error, { extra: { name: 'updateNotificationCriteria', userId, criteriaId } })

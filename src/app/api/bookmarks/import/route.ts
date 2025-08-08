@@ -3,7 +3,7 @@ import { cookies } from 'next/headers'
 import { z } from 'zod/v4'
 
 import { handleRouteError } from '@/crawler/proxy-utils'
-import { db } from '@/database/drizzle'
+import { sessionDB } from '@/database/drizzle'
 import { BookmarkSource } from '@/database/enum'
 import { bookmarkTable } from '@/database/schema'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
     let skipped = 0
 
     // TODO: AI 코드 분석하기
-    await db.transaction(async (tx) => {
+    await sessionDB.transaction(async (tx) => {
       // If replace mode, delete all existing bookmarks first
       if (mode === 'replace') {
         await tx.delete(bookmarkTable).where(sql`${bookmarkTable.userId} = ${userId}`)
