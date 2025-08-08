@@ -15,6 +15,7 @@ import IconTrash from '@/components/icons/IconTrash'
 import { QueryKeys } from '@/constants/query'
 import useActionResponse from '@/hook/useActionResponse'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
+import useMeQuery from '@/query/useMeQuery'
 
 import { deleteNotifications, markAsRead } from './action'
 import { SearchParams } from './common'
@@ -256,6 +257,8 @@ export default function NotificationList() {
 
 function EmptyState({ filter }: { filter: NotificationFilter | null }) {
   const content = getEmptyContent(filter)
+  const { data: me } = useMeQuery()
+  const username = me?.name ?? ''
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-8">
@@ -265,6 +268,22 @@ function EmptyState({ filter }: { filter: NotificationFilter | null }) {
       </div>
       <h3 className="text-lg font-medium text-zinc-300 mb-2">{content.title}</h3>
       <p className="text-sm text-zinc-500 text-center max-w-xs">{content.description}</p>
+      <div className="mt-4 flex items-center gap-2">
+        <a
+          aria-label="푸시 알림 설정으로 이동"
+          className="px-3 py-1.5 rounded-md text-xs font-semibold bg-brand-end text-background hover:opacity-90 transition"
+          href={`/@${username}/settings#push`}
+        >
+          푸시 알림 켜기
+        </a>
+        <a
+          aria-label="키워드 알림 설정으로 이동"
+          className="px-3 py-1.5 rounded-md text-xs font-medium bg-zinc-800 text-zinc-200 hover:bg-zinc-700 transition"
+          href={`/@${username}/settings#keyword`}
+        >
+          키워드 알림 설정
+        </a>
+      </div>
     </div>
   )
 }
@@ -316,7 +335,7 @@ function getEmptyContent(filter: NotificationFilter | null) {
       return {
         icon: <IconBell className="mb-4 h-12 w-12 text-zinc-600/50" />,
         title: '아직 알림이 없어요',
-        description: '만화 업데이트와 새로운 소식을 알려드릴게요',
+        description: '신규 만화와 새로운 소식을 알려드릴게요',
       }
   }
 }

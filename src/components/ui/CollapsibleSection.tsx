@@ -6,6 +6,7 @@ type Props = {
   description: string
   variant?: 'danger' | 'default'
   children: ReactNode
+  id?: string
 }
 
 export default function CollapsibleSection({
@@ -14,13 +15,14 @@ export default function CollapsibleSection({
   description,
   variant = 'default',
   children,
+  id,
 }: Readonly<Props>) {
   const borderColor = variant === 'danger' ? 'border-red-900/50' : 'border-zinc-800'
   const titleColor = variant === 'danger' ? 'text-red-500' : ''
   const contentBorderColor = variant === 'danger' ? 'border-red-900/50' : 'border-zinc-800'
 
   return (
-    <details className={`bg-zinc-900 border-2 ${borderColor} rounded-xl overflow-hidden group`}>
+    <details className={`bg-zinc-900 border-2 ${borderColor} rounded-xl overflow-hidden group`} id={id}>
       <summary className="w-full px-4 sm:px-6 py-4 flex items-center justify-between gap-3 hover:bg-zinc-800/50 transition">
         <div className="flex items-center gap-3">
           {icon}

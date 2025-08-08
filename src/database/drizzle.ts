@@ -1,6 +1,9 @@
 import { drizzle } from 'drizzle-orm/postgres-js'
+import postgres from 'postgres'
 import 'server-only'
 
-import { POSTGRES_URL } from '@/constants/env'
+import { POSTGRES_URL, POSTGRES_URL_NON_POOLING } from '@/constants/env'
 
-export const db = drizzle(POSTGRES_URL)
+export const client = postgres(POSTGRES_URL, { prepare: false })
+export const db = drizzle(client)
+export const sessionDB = drizzle(POSTGRES_URL_NON_POOLING)

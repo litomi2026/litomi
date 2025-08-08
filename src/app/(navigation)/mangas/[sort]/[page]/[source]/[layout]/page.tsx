@@ -12,6 +12,7 @@ import { PageProps } from '@/types/nextjs'
 import { getViewerLink } from '@/utils/manga'
 import {
   getTotalPages,
+  SortParam,
   SourceParam,
   validatePage,
   validateSort,
@@ -33,6 +34,30 @@ export const metadata: Metadata = {
 type Params = {
   source: SourceParam
   page: number
+}
+
+export async function generateStaticParams() {
+  const params = []
+  const sorts = [SortParam.LATEST, SortParam.POPULAR]
+  const pages = Array.from({ length: 10 }, (_, i) => String(i + 1))
+  const sources = [SourceParam.HIYOBI]
+  const views = [ViewCookie.CARD, ViewCookie.IMAGE]
+  for (const view of views) {
+    for (const page of pages) {
+      for (const source of sources) {
+        params.push({ sort: SortParam.LATEST, page, source, layout: view })
+      }
+    }
+  }
+  for (const view of views) {
+    for (const sort of sorts) {
+      params.push({ sort, page: '1', source: SourceParam.K_HENTAI, layout: view })
+    }
+  }
+  for (const view of views) {
+    params.push({ sort: SortParam.LATEST, page: '1', source: SourceParam.HARPI, layout: view })
+  }
+  return params
 }
 
 export default async function Page({ params }: PageProps) {

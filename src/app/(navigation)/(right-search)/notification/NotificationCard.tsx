@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import Link, { useLinkStatus } from 'next/link'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 
@@ -10,6 +10,7 @@ import IconBookmark from '@/components/icons/IconBookmark'
 import IconCheck from '@/components/icons/IconCheck'
 import IconDot from '@/components/icons/IconDot'
 import IconEye from '@/components/icons/IconEye'
+import IconSpinner from '@/components/icons/IconSpinner'
 import IconTrash from '@/components/icons/IconTrash'
 import { NotificationType } from '@/database/enum'
 import { formatDistanceToNow } from '@/utils/date'
@@ -46,7 +47,6 @@ export default function NotificationCard({
   const parsedData = useMemo(() => (notification.data ? JSON.parse(notification.data) : null), [notification.data])
   const mangaViewerURL = parsedData?.url
   const isUnread = !notification.read
-  const router = useRouter()
   const [hasBeenViewed, setHasBeenViewed] = useState(false)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   const skipAutoMarkingAsRead = !autoMarkAsRead || notification.read || hasBeenViewed
@@ -100,24 +100,27 @@ export default function NotificationCard({
     }
   }
 
-  const handleClick = () => {
-    if (selectionMode && onSelect) {
-      onSelect(notification.id)
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (selectionMode) {
+      e.preventDefault()
+      onSelect?.(notification.id)
       return
     }
 
-    if (mangaViewerURL) {
-      router.push(mangaViewerURL)
+    if (!mangaViewerURL) {
+      e.preventDefault()
+      return
     }
   }
 
   return (
-    <div
+    <Link
       aria-selected={selected}
       className={`group relative rounded-xl border transition-all flex gap-3 p-3 sm:gap-4 sm:p-4 
       ${isUnread ? 'border-zinc-700 bg-zinc-900/50' : 'border-zinc-800 bg-zinc-900/20'}
       hover:border-zinc-600 hover:bg-zinc-900/60 aria-selected:border-brand-end aria-selected:bg-brand-end/10
       ${mangaViewerURL && !selectionMode ? 'cursor-pointer' : ''}`}
+      href={mangaViewerURL ?? ''}
       onClick={handleClick}
       ref={cardRef}
     >
@@ -171,14 +174,7 @@ export default function NotificationCard({
             {notification.title}
           </h3>
           <div className="flex items-center gap-2 flex-shrink-0">
-            {isUnread && (
-              <div className="relative">
-                <IconDot className="h-2 w-2 text-brand-end animate-pulse" />
-                {autoMarkAsRead && hasBeenViewed && (
-                  <div className="absolute inset-0 bg-brand-end rounded-full animate-ping" />
-                )}
-              </div>
-            )}
+            {isUnread && <IconDot className="h-2 w-2 text-brand-end animate-pulse" />}
             <span className="text-xs text-zinc-500">
               {formatDistanceToNow(
                 typeof notification.createdAt === 'string' ? new Date(notification.createdAt) : notification.createdAt,
@@ -202,6 +198,21 @@ export default function NotificationCard({
           />
         </div>
       </div>
+      <Loading />
+    </Link>
+  )
+}
+
+function Loading() {
+  const { pending } = useLinkStatus()
+
+  if (!pending) {
+    return null
+  }
+
+  return (
+    <div className="flex items-center justify-center h-full absolute inset-0">
+      <IconSpinner className="h-5 w-5 animate-spin text-zinc-600" />
     </div>
   )
 }

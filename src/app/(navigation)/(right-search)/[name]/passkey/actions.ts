@@ -13,7 +13,7 @@ import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 
 import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID, WEBAUTHN_RP_NAME } from '@/constants/env'
-import { db } from '@/database/drizzle'
+import { db, sessionDB } from '@/database/drizzle'
 import { ChallengeType, decodeDeviceType, encodeDeviceType } from '@/database/enum'
 import { challengeTable, credentialTable, userTable } from '@/database/schema'
 import { badRequest, forbidden, internalServerError, ok, tooManyRequests, unauthorized } from '@/utils/action-response'
@@ -70,7 +70,7 @@ export async function getAuthenticationOptions(loginId: string) {
   }
 
   try {
-    const response = await db.transaction(async (tx) => {
+    const options = await sessionDB.transaction(async (tx) => {
       const userWithCredentials = await tx
         .select({
           userId: userTable.id,
@@ -112,12 +112,11 @@ export async function getAuthenticationOptions(loginId: string) {
           })
       }
 
-      return ok(options)
+      return options
     })
 
     await authenticationLimiter.reward(loginId)
-
-    return response
+    return ok(options)
   } catch (error) {
     console.error('getAuthenticationOptions:', error)
     return internalServerError('패스키 인증 중 오류가 발생했어요')
@@ -133,7 +132,7 @@ export async function getRegistrationOptions() {
   }
 
   try {
-    return await db.transaction(async (tx) => {
+    const result = await sessionDB.transaction(async (tx) => {
       const existingCredentials = await tx
         .select({
           userId: userTable.id,
@@ -185,8 +184,14 @@ export async function getRegistrationOptions() {
           set: { challenge: options.challenge, expiresAt: new Date(Date.now() + THREE_MINUTES) },
         })
 
-      return ok(options)
+      return options
     })
+
+    if ('error' in result) {
+      return result
+    }
+
+    return ok(result)
   } catch (error) {
     console.error('getRegistrationOptions:', error)
     return internalServerError('패스키 등록 중 오류가 발생했어요')
@@ -203,7 +208,7 @@ export async function verifyAuthentication(body: unknown) {
   const validatedData = validation.data
 
   try {
-    return await db.transaction(async (tx) => {
+    const result = await sessionDB.transaction(async (tx) => {
       const [result] = await tx
         .select({
           credential: credentialTable,
@@ -269,8 +274,14 @@ export async function verifyAuthentication(body: unknown) {
         }),
       ])
 
-      return ok(user)
+      return user
     })
+
+    if ('error' in result) {
+      return result
+    }
+
+    return ok(result)
   } catch (error) {
     console.error('verifyAuthentication:', error)
     return internalServerError('패스키 인증 중 오류가 발생했어요')
@@ -293,7 +304,7 @@ export async function verifyRegistration(body: RegistrationResponseJSON, usernam
   }
 
   try {
-    return await db.transaction(async (tx) => {
+    const result = await sessionDB.transaction(async (tx) => {
       const [stored] = await tx
         .select({ challenge: challengeTable.challenge })
         .from(challengeTable)
@@ -336,12 +347,18 @@ export async function verifyRegistration(body: RegistrationResponseJSON, usernam
           .where(sql`${challengeTable.userId} = ${userId} AND ${challengeTable.expiresAt} < NOW()`),
       ])
 
-      revalidatePath(`/@${username}/passkey`)
+      return newPasskey
+    })
 
-      return ok({
-        ...newPasskey,
-        deviceType: decodeDeviceType(newPasskey.deviceType),
-      })
+    if ('error' in result) {
+      return result
+    }
+
+    revalidatePath(`/@${username}/passkey`)
+
+    return ok({
+      ...result,
+      deviceType: decodeDeviceType(result.deviceType),
     })
   } catch (error) {
     console.error('verifyRegistration:', error)

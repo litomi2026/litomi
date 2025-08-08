@@ -10,20 +10,22 @@ import { HiyobiClient } from '@/crawler/hiyobi'
 import { KHentaiClient } from '@/crawler/k-hentai'
 import { harpiMangas } from '@/database/harpi'
 import { getImageSrc } from '@/utils/manga'
-import { SourceParam, validateId, validateSource } from '@/utils/param'
+import { SourceParam } from '@/utils/param'
+
+import { FALLBACK_IMAGE_URL } from './constants'
+import { mangaSchema } from './schema'
 
 export const revalidate = 28800 // 8 hours
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { id, source } = await params
-  const idNumber = validateId(id)
-  const sourceString = validateSource(source)
+  const validation = mangaSchema.safeParse(params)
 
-  if (!idNumber || !sourceString) {
+  if (!validation.success) {
     notFound()
   }
 
-  const manga = await getManga({ source: sourceString, id: idNumber })
+  const { id, source } = validation.data
+  const manga = await getManga({ source, id })
 
   if (!manga) {
     notFound()
@@ -62,15 +64,14 @@ export async function generateStaticParams() {
 }
 
 export default async function Page({ params }: PageProps) {
-  const { id, source } = await params
-  const idNumber = validateId(id)
-  const sourceString = validateSource(source)
+  const validation = mangaSchema.safeParse(params)
 
-  if (!idNumber || !sourceString) {
+  if (!validation.success) {
     notFound()
   }
 
-  const manga = await getManga({ source: sourceString, id: idNumber })
+  const { id, source } = validation.data
+  const manga = await getManga({ source, id })
 
   if (!manga) {
     notFound()
@@ -78,7 +79,7 @@ export default async function Page({ params }: PageProps) {
 
   return (
     <main>
-      <ImageViewer manga={manga} source={sourceString} />
+      <ImageViewer manga={manga} source={source} />
     </main>
   )
 }
@@ -89,7 +90,7 @@ async function getManga({ source, id }: { source: SourceParam; id: number }) {
 
     const [mangaFromHiyobi, mangaImages] = await Promise.all([
       hiyobiClient.fetchManga(id).catch(() => ({ id, title: '오류가 발생했어요', images: [] })),
-      hiyobiClient.fetchMangaImages(id),
+      hiyobiClient.fetchMangaImages(id).catch(() => [FALLBACK_IMAGE_URL]),
     ])
 
     return {
