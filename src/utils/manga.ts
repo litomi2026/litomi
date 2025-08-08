@@ -15,6 +15,7 @@ export function getImageSrc({ cdn, path }: Params) {
       return path
     case 'HARPI':
       return `${CDN.HARPI}/${path}`
+    case 'hiyobi':
     case 'k-hentai':
       return path
     case 'thumb.k-hentai':

@@ -8,3 +8,12 @@ export const BLIND_TAG_VALUE_TO_LABEL: Record<string, string> = {
 }
 
 export const BLIND_TAG_VALUES = Object.keys(BLIND_TAG_VALUE_TO_LABEL)
+
+export const FALLBACK_IMAGE_URL = '/image/fallback.svg'
+
+export const ERROR_MANGA = {
+  id: 0,
+  title: '오류가 발생했어요',
+  images: [FALLBACK_IMAGE_URL],
+  cdn: '',
+}
