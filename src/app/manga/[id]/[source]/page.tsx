@@ -12,6 +12,8 @@ import { harpiMangas } from '@/database/harpi'
 import { getImageSrc } from '@/utils/manga'
 import { SourceParam, validateId, validateSource } from '@/utils/param'
 
+import { FALLBACK_IMAGE_URL } from './constants'
+
 export const revalidate = 28800 // 8 hours
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -89,7 +91,7 @@ async function getManga({ source, id }: { source: SourceParam; id: number }) {
 
     const [mangaFromHiyobi, mangaImages] = await Promise.all([
       hiyobiClient.fetchManga(id).catch(() => ({ id, title: '오류가 발생했어요', images: [] })),
-      hiyobiClient.fetchMangaImages(id),
+      hiyobiClient.fetchMangaImages(id).catch(() => [FALLBACK_IMAGE_URL]),
     ])
 
     return {
