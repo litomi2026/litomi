@@ -134,6 +134,7 @@ export class WebPushService {
         id: notificationTable.id,
         userId: notificationTable.userId,
       }),
+      db.delete(notificationTable).where(sql`${notificationTable.createdAt} < NOW() - INTERVAL '30 days'`),
     ])
 
     const subscriptionsByUser = new Map<number, typeof subscriptions>()
