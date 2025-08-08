@@ -146,7 +146,7 @@ export default function NotificationList() {
             <FilterButton
               active={filter === NotificationFilter.NEW_MANGA}
               disabled={isMarkAsReadPending || isDeleteNotificationsPending}
-              icon={<IconBook className="w-4" />}
+              icon={<IconBook className="w-5" />}
               onClick={() => router.replace(`?filter=${NotificationFilter.NEW_MANGA}`)}
             >
               <span className="hidden sm:inline">신규</span>
@@ -155,8 +155,8 @@ export default function NotificationList() {
           <div className="flex items-center gap-1.5">
             {filter === NotificationFilter.UNREAD && (
               <button
-                className="px-2.5 py-1.5 text-xs font-medium text-zinc-400 hover:text-zinc-300 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={isMarkAsReadPending || isDeleteNotificationsPending}
+                className="px-2.5 py-1.5 text-sm font-medium text-zinc-400 hover:text-zinc-300 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={notifications.length === 0 || isMarkAsReadPending || isDeleteNotificationsPending}
                 onClick={() => dispatchMarkAsRead({ ids: notifications.filter((n) => !n.read).map((n) => n.id) })}
               >
                 모두 읽음
@@ -165,23 +165,23 @@ export default function NotificationList() {
             {selectionMode ? (
               <>
                 <button
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-zinc-300 bg-zinc-800 rounded-md hover:bg-zinc-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 text-sm font-medium text-zinc-300 bg-zinc-800 rounded-md hover:bg-zinc-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={selectedIds.size === 0 || isMarkAsReadPending || isDeleteNotificationsPending}
                   onClick={() => handleBatchAction('read')}
                 >
-                  {isMarkAsReadPending ? <IconSpinner className="w-4" /> : <IconCheck className="w-4" />}
+                  {isMarkAsReadPending ? <IconSpinner className="w-5" /> : <IconCheck className="w-5" />}
                   <span className="hidden sm:inline">읽음</span>
                 </button>
                 <button
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-red-400 bg-red-900/20 rounded-md hover:bg-red-900/30 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 text-sm font-medium text-red-400 bg-red-900/20 rounded-md hover:bg-red-900/30 transition disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={selectedIds.size === 0 || isMarkAsReadPending || isDeleteNotificationsPending}
                   onClick={() => handleBatchAction('delete')}
                 >
-                  {isDeleteNotificationsPending ? <IconSpinner className="w-4" /> : <IconTrash className="w-4" />}
+                  {isDeleteNotificationsPending ? <IconSpinner className="w-5" /> : <IconTrash className="w-5" />}
                   <span className="hidden sm:inline">삭제</span>
                 </button>
                 <button
-                  className="px-2.5 py-1.5 text-xs font-medium text-zinc-400 hover:text-zinc-300 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-2.5 py-1.5 text-sm font-medium text-zinc-400 hover:text-zinc-300 transition disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={isMarkAsReadPending || isDeleteNotificationsPending}
                   onClick={() => {
                     setSelectionMode(false)
@@ -194,11 +194,11 @@ export default function NotificationList() {
             ) : (
               <button
                 className="px-2.5 py-1.5 text-zinc-400 hover:text-zinc-300 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={isMarkAsReadPending || isDeleteNotificationsPending}
+                disabled={notifications.length === 0 || isMarkAsReadPending || isDeleteNotificationsPending}
                 onClick={() => setSelectionMode(true)}
                 title="선택 모드"
               >
-                <IconFilter className="w-4" />
+                <IconFilter className="w-5" />
               </button>
             )}
           </div>
@@ -307,7 +307,7 @@ function FilterButton({
   return (
     <button
       aria-pressed={active}
-      className="relative px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1 whitespace-nowrap
+      className="relative px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1 whitespace-nowrap
       aria-pressed:bg-brand-end aria-pressed:text-background aria-pressed:font-bold
       bg-zinc-800/50 hover:bg-zinc-700/50 hover:text-zinc-200
       disabled:opacity-50 disabled:cursor-not-allowed"
