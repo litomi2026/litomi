@@ -7,6 +7,7 @@ import ImageViewer from '@/components/ImageViewer/ImageViewer'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { ERROR_MANGA } from '@/constants/json'
 import { CANONICAL_URL } from '@/constants/url'
+import { HitomiClient } from '@/crawler/hitomi'
 import { HiyobiClient } from '@/crawler/hiyobi'
 import { KHentaiClient } from '@/crawler/k-hentai'
 import { getImageSrc } from '@/utils/manga'
@@ -17,7 +18,7 @@ import { mangaSchema } from './schema'
 export const revalidate = 28800 // 8 hours
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const validation = mangaSchema.safeParse(params)
+  const validation = mangaSchema.safeParse(await params)
 
   if (!validation.success) {
     notFound()
@@ -100,8 +101,8 @@ async function getManga({ source, id }: { source: SourceParam; id: number }) {
       }
     } else if (source === SourceParam.K_HENTAI) {
       return await KHentaiClient.getInstance().fetchManga(id)
-    } else if (source === SourceParam.HARPI) {
-      return ERROR_MANGA
+    } else if (source === SourceParam.HITOMI) {
+      return await HitomiClient.getInstance().fetchManga(id)
     }
   } catch (error) {
     return { ...ERROR_MANGA, id, title: JSON.stringify(error) ?? '오류가 발생했어요' }

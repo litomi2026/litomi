@@ -245,31 +245,32 @@ export class KHentaiClient {
 
   private convertKHentaiCommonToManga(manga: KHentaiMangaCommon) {
     const locale = 'ko' // TODO: Get from user preferences or context
-    const seriesValues = manga.tags.filter(({ tag }) => tag[0] === 'parody').map(({ tag }) => tag[1])
-    const characterValues = manga.tags.filter(({ tag }) => tag[0] === 'character').map(({ tag }) => tag[1])
-    const groupValues = manga.tags.filter(({ tag }) => tag[0] === 'group').map(({ tag }) => tag[1])
-    const artistValues = manga.tags.filter(({ tag }) => tag[0] === 'artist').map(({ tag }) => tag[1])
-    const languageValues = manga.tags.filter(({ tag }) => tag[0] === 'language').map(({ tag }) => tag[1])
+    const { id, title, category, posted, rating, tags, filecount, views } = manga
+    const seriesValues = tags.filter(({ tag }) => tag[0] === 'parody').map(({ tag }) => tag[1])
+    const characterValues = tags.filter(({ tag }) => tag[0] === 'character').map(({ tag }) => tag[1])
+    const groupValues = tags.filter(({ tag }) => tag[0] === 'group').map(({ tag }) => tag[1])
+    const artistValues = tags.filter(({ tag }) => tag[0] === 'artist').map(({ tag }) => tag[1])
+    const languageValues = tags.filter(({ tag }) => tag[0] === 'language').map(({ tag }) => tag[1])
 
     return {
-      id: manga.id,
+      id,
       artists: translateArtistList(artistValues, locale),
       characters: translateCharacterList(characterValues, locale),
       group: translateGroupList(groupValues, locale),
-      date: new Date(manga.posted * 1000).toISOString(),
+      date: new Date(posted * 1000).toISOString(),
       series: translateSeriesList(seriesValues, locale),
-      tags: manga.tags.filter(this.isValidKHentaiTag).map(({ tag: [category, value] }) => ({
+      tags: tags.filter(this.isValidKHentaiTag).map(({ tag: [category, value] }) => ({
         category,
         value: normalizeValue(value),
         label: translateTag(category, value, locale),
       })),
-      title: manga.title,
-      type: kHentaiTypeNumberToName[manga.category] ?? '?',
+      title,
+      type: kHentaiTypeNumberToName[category] ?? '?',
       languages: translateLanguageList(languageValues, locale),
       cdn: 'ehgt.org',
-      count: manga.filecount,
-      rating: manga.rating / 100,
-      viewCount: manga.views,
+      count: filecount,
+      rating: rating / 100,
+      viewCount: views,
     }
   }
 
