@@ -16,23 +16,44 @@ import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID, WEBAUTHN_RP_NAME } from '@/constants/e
 import { db, sessionDB } from '@/database/drizzle'
 import { ChallengeType, decodeDeviceType, encodeDeviceType } from '@/database/enum'
 import { challengeTable, credentialTable, userTable } from '@/database/schema'
-import { badRequest, forbidden, internalServerError, ok, tooManyRequests, unauthorized } from '@/utils/action-response'
-import { getUserIdFromAccessToken, setAccessTokenCookie } from '@/utils/cookie'
+import {
+  badRequest,
+  forbidden,
+  internalServerError,
+  notFound,
+  ok,
+  tooManyRequests,
+  unauthorized,
+} from '@/utils/action-response'
+import { setAccessTokenCookie } from '@/utils/cookie'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
+import { getUserIdFromCookie } from '@/utils/session'
 
-import { getAuthenticationOptionsSchema, verifyAuthenticationSchema, verifyRegistrationSchema } from './schema'
+import {
+  deleteCredentialSchema,
+  getAuthenticationOptionsSchema,
+  verifyAuthenticationSchema,
+  verifyRegistrationSchema,
+} from './schema'
 import { generateFakeCredentials } from './utils'
 
 const THREE_MINUTES = 3 * 60 * 1000
 const MAX_CREDENTIALS_PER_USER = 10
 
-export async function deleteCredential(credentialId: string, username?: string) {
-  const cookieStore = await cookies()
-  const userId = await getUserIdFromAccessToken(cookieStore)
+export async function deleteCredential(formData: FormData) {
+  const userId = await getUserIdFromCookie()
 
-  if (!userId || !username) {
-    return { success: false, error: 'Unauthorized' } as const
+  if (!userId) {
+    return unauthorized('로그인 정보가 없거나 만료됐어요')
   }
+
+  const validation = deleteCredentialSchema.safeParse({ 'credential-id': formData.get('credential-id') })
+
+  if (!validation.success) {
+    return badRequest('잘못된 요청이에요')
+  }
+
+  const { 'credential-id': credentialId } = validation.data
 
   try {
     const [deletedCredential] = await db
@@ -41,15 +62,14 @@ export async function deleteCredential(credentialId: string, username?: string) 
       .returning({ id: credentialTable.id })
 
     if (!deletedCredential) {
-      return { success: false, error: 'Not Found' } as const
+      return notFound('패스키를 찾을 수 없어요')
     }
 
-    revalidatePath(`/@${username}/passkey`)
-
-    return { success: true }
+    revalidatePath('/[name]/passkey', 'page')
+    return ok('패스키가 삭제됐어요')
   } catch (error) {
     console.error('deleteCredential:', error)
-    return { success: false, error: 'Internal Server Error' } as const
+    return internalServerError('패스키 삭제 중 오류가 발생했어요')
   }
 }
 
@@ -124,8 +144,7 @@ export async function getAuthenticationOptions(loginId: string) {
 }
 
 export async function getRegistrationOptions() {
-  const cookieStore = await cookies()
-  const userId = await getUserIdFromAccessToken(cookieStore)
+  const userId = await getUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -288,7 +307,13 @@ export async function verifyAuthentication(body: unknown) {
   }
 }
 
-export async function verifyRegistration(body: RegistrationResponseJSON, username: string) {
+export async function verifyRegistration(body: RegistrationResponseJSON) {
+  const userId = await getUserIdFromCookie()
+
+  if (!userId) {
+    return unauthorized('로그인 정보가 없거나 만료됐어요')
+  }
+
   const validation = verifyRegistrationSchema.safeParse(body)
 
   if (!validation.success) {
@@ -296,12 +321,6 @@ export async function verifyRegistration(body: RegistrationResponseJSON, usernam
   }
 
   const registrationResponse = validation.data
-  const cookieStore = await cookies()
-  const userId = await getUserIdFromAccessToken(cookieStore)
-
-  if (!userId) {
-    return unauthorized('로그인 정보가 없거나 만료됐어요')
-  }
 
   try {
     const result = await sessionDB.transaction(async (tx) => {
@@ -354,7 +373,7 @@ export async function verifyRegistration(body: RegistrationResponseJSON, usernam
       return result
     }
 
-    revalidatePath(`/@${username}/passkey`)
+    revalidatePath('/[name]/passkey', 'page')
 
     return ok({
       ...result,

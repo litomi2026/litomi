@@ -30,3 +30,7 @@ export const verifyRegistrationSchema = z.object({
   clientExtensionResults: z.object({}).optional().default({}),
   authenticatorAttachment: z.enum(['platform', 'cross-platform']).optional(),
 })
+
+export const deleteCredentialSchema = z.object({
+  'credential-id': z.coerce.number().int().positive(),
+})

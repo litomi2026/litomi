@@ -5,6 +5,7 @@ import type { PageProps } from '@/types/nextjs'
 
 import ImageViewer from '@/components/ImageViewer/ImageViewer'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
+import { ERROR_MANGA, FALLBACK_IMAGE_URL } from '@/constants/json'
 import { CANONICAL_URL } from '@/constants/url'
 import { HiyobiClient } from '@/crawler/hiyobi'
 import { KHentaiClient } from '@/crawler/k-hentai'
@@ -12,7 +13,6 @@ import { harpiMangas } from '@/database/harpi'
 import { getImageSrc } from '@/utils/manga'
 import { SourceParam } from '@/utils/param'
 
-import { FALLBACK_IMAGE_URL } from './constants'
 import { mangaSchema } from './schema'
 
 export const revalidate = 28800 // 8 hours
@@ -64,7 +64,7 @@ export async function generateStaticParams() {
 }
 
 export default async function Page({ params }: PageProps) {
-  const validation = mangaSchema.safeParse(params)
+  const validation = mangaSchema.safeParse(await params)
 
   if (!validation.success) {
     notFound()
@@ -97,10 +97,12 @@ async function getManga({ source, id }: { source: SourceParam; id: number }) {
       ...(mangaFromHiyobi ?? { id, title: '만화 정보가 없어요' }),
       id,
       images: mangaImages,
-      cdn: 'k-hentai',
+      cdn: 'hiyobi',
     }
   } else if (source === SourceParam.K_HENTAI) {
-    return await KHentaiClient.getInstance().fetchManga(id)
+    return await KHentaiClient.getInstance()
+      .fetchManga(id)
+      .catch((error) => ({ ...ERROR_MANGA, title: JSON.stringify(error) ?? '' }))
   } else if (source === SourceParam.HARPI) {
     return harpiMangas[id]
   }

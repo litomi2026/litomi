@@ -146,7 +146,7 @@ export default function NotificationList() {
             <FilterButton
               active={filter === NotificationFilter.NEW_MANGA}
               disabled={isMarkAsReadPending || isDeleteNotificationsPending}
-              icon={<IconBook className="w-4" />}
+              icon={<IconBook className="w-5" />}
               onClick={() => router.replace(`?filter=${NotificationFilter.NEW_MANGA}`)}
             >
               <span className="hidden sm:inline">신규</span>
@@ -155,8 +155,8 @@ export default function NotificationList() {
           <div className="flex items-center gap-1.5">
             {filter === NotificationFilter.UNREAD && (
               <button
-                className="px-2.5 py-1.5 text-xs font-medium text-zinc-400 hover:text-zinc-300 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={isMarkAsReadPending || isDeleteNotificationsPending}
+                className="px-2.5 py-1.5 text-sm font-medium text-zinc-400 hover:text-zinc-300 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={notifications.length === 0 || isMarkAsReadPending || isDeleteNotificationsPending}
                 onClick={() => dispatchMarkAsRead({ ids: notifications.filter((n) => !n.read).map((n) => n.id) })}
               >
                 모두 읽음
@@ -165,23 +165,23 @@ export default function NotificationList() {
             {selectionMode ? (
               <>
                 <button
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-zinc-300 bg-zinc-800 rounded-md hover:bg-zinc-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 text-sm font-medium text-zinc-300 bg-zinc-800 rounded-md hover:bg-zinc-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={selectedIds.size === 0 || isMarkAsReadPending || isDeleteNotificationsPending}
                   onClick={() => handleBatchAction('read')}
                 >
-                  {isMarkAsReadPending ? <IconSpinner className="w-4" /> : <IconCheck className="w-4" />}
+                  {isMarkAsReadPending ? <IconSpinner className="w-5" /> : <IconCheck className="w-5" />}
                   <span className="hidden sm:inline">읽음</span>
                 </button>
                 <button
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-red-400 bg-red-900/20 rounded-md hover:bg-red-900/30 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 text-sm font-medium text-red-400 bg-red-900/20 rounded-md hover:bg-red-900/30 transition disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={selectedIds.size === 0 || isMarkAsReadPending || isDeleteNotificationsPending}
                   onClick={() => handleBatchAction('delete')}
                 >
-                  {isDeleteNotificationsPending ? <IconSpinner className="w-4" /> : <IconTrash className="w-4" />}
+                  {isDeleteNotificationsPending ? <IconSpinner className="w-5" /> : <IconTrash className="w-5" />}
                   <span className="hidden sm:inline">삭제</span>
                 </button>
                 <button
-                  className="px-2.5 py-1.5 text-xs font-medium text-zinc-400 hover:text-zinc-300 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-2.5 py-1.5 text-sm font-medium text-zinc-400 hover:text-zinc-300 transition disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={isMarkAsReadPending || isDeleteNotificationsPending}
                   onClick={() => {
                     setSelectionMode(false)
@@ -194,11 +194,11 @@ export default function NotificationList() {
             ) : (
               <button
                 className="px-2.5 py-1.5 text-zinc-400 hover:text-zinc-300 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={isMarkAsReadPending || isDeleteNotificationsPending}
+                disabled={notifications.length === 0 || isMarkAsReadPending || isDeleteNotificationsPending}
                 onClick={() => setSelectionMode(true)}
                 title="선택 모드"
               >
-                <IconFilter className="w-4" />
+                <IconFilter className="w-5" />
               </button>
             )}
           </div>
@@ -259,6 +259,7 @@ function EmptyState({ filter }: { filter: NotificationFilter | null }) {
   const content = getEmptyContent(filter)
   const { data: me } = useMeQuery()
   const username = me?.name ?? ''
+  const showKeywordSetting = content.showKeywordSetting
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-8">
@@ -268,22 +269,24 @@ function EmptyState({ filter }: { filter: NotificationFilter | null }) {
       </div>
       <h3 className="text-lg font-medium text-zinc-300 mb-2">{content.title}</h3>
       <p className="text-sm text-zinc-500 text-center max-w-xs">{content.description}</p>
-      <div className="mt-4 flex items-center gap-2">
-        <a
-          aria-label="푸시 알림 설정으로 이동"
-          className="px-3 py-1.5 rounded-md text-xs font-semibold bg-brand-end text-background hover:opacity-90 transition"
-          href={`/@${username}/settings#push`}
-        >
-          푸시 알림 켜기
-        </a>
-        <a
-          aria-label="키워드 알림 설정으로 이동"
-          className="px-3 py-1.5 rounded-md text-xs font-medium bg-zinc-800 text-zinc-200 hover:bg-zinc-700 transition"
-          href={`/@${username}/settings#keyword`}
-        >
-          키워드 알림 설정
-        </a>
-      </div>
+      {showKeywordSetting && (
+        <div className="mt-4 flex items-center gap-2">
+          <a
+            aria-label="푸시 알림 설정으로 이동"
+            className="px-3 py-1.5 rounded-md text-xs font-semibold bg-brand-end text-background hover:opacity-90 transition"
+            href={`/@${username}/settings#push`}
+          >
+            푸시 알림 켜기
+          </a>
+          <a
+            aria-label="키워드 알림 설정으로 이동"
+            className="px-3 py-1.5 rounded-md text-xs font-medium bg-zinc-800 text-zinc-200 hover:bg-zinc-700 transition"
+            href={`/@${username}/settings#keyword`}
+          >
+            키워드 알림 설정
+          </a>
+        </div>
+      )}
     </div>
   )
 }
@@ -304,7 +307,7 @@ function FilterButton({
   return (
     <button
       aria-pressed={active}
-      className="relative px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1 whitespace-nowrap
+      className="relative px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1 whitespace-nowrap
       aria-pressed:bg-brand-end aria-pressed:text-background aria-pressed:font-bold
       bg-zinc-800/50 hover:bg-zinc-700/50 hover:text-zinc-200
       disabled:opacity-50 disabled:cursor-not-allowed"
@@ -335,7 +338,14 @@ function getEmptyContent(filter: NotificationFilter | null) {
       return {
         icon: <IconBell className="mb-4 h-12 w-12 text-zinc-600/50" />,
         title: '아직 알림이 없어요',
-        description: '신규 만화와 새로운 소식을 알려드릴게요',
+        description: (
+          <>
+            신규 만화와 새로운 소식을 알려드릴게요
+            <br />
+            <span className="text-xs text-zinc-500">(알림은 30일 동안 보관돼요)</span>
+          </>
+        ),
+        showKeywordSetting: true,
       }
   }
 }

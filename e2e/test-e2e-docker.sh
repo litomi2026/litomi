@@ -82,7 +82,7 @@ fi
 
 # Set the test database URL (this will override any existing POSTGRES_URL)
 export POSTGRES_URL="postgresql://e2e_test_user:e2e_test_password@localhost:5433/e2e_test_db"
-export POSTGRES_URL_NON_POOLING="postgresql://e2e_test_user:e2e_test_password@localhost:5433/e2e_test_db"
+export POSTGRES_URL_DIRECT="postgresql://e2e_test_user:e2e_test_password@localhost:5433/e2e_test_db"
 print_success "Test database URL configured"
 
 # Initialize database schema

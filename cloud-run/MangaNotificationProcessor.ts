@@ -231,6 +231,7 @@ export class MangaNotificationProcessor {
       .groupBy(notificationTable.userId)
 
     const userDailyCounts = new Map(dailyCounts.map((row) => [row.userId, row.count]))
+
     const webPushes: {
       userId: number
       payload: ReturnType<MangaNotificationProcessor['createNotificationPayload']>

@@ -1,11 +1,12 @@
 'use client'
-import { useActionState, useState } from 'react'
+import { useState } from 'react'
 import { toast } from 'sonner'
 
 import IconShield from '@/components/icons/IconShield'
 import IconTrash from '@/components/icons/IconTrash'
 import Loading from '@/components/ui/Loading'
 import Modal from '@/components/ui/Modal'
+import useActionResponse from '@/hook/useActionResponse'
 
 import { deleteCredential } from './actions'
 
@@ -20,14 +21,12 @@ type Props = {
 
 export default function PasskeyDeleteButton({
   credentialId,
-  username,
   className,
   onCancel,
   open,
   onOpenChange,
 }: Readonly<Props>) {
   const [internalOpen, setInternalOpen] = useState(false)
-
   const isControlled = open !== undefined
   const isOpen = isControlled ? open : internalOpen
 
@@ -38,25 +37,21 @@ export default function PasskeyDeleteButton({
     onOpenChange?.(value)
   }
 
-  async function deleteWithToast(_: unknown, formData: FormData) {
-    const credentialId = formData.get('credentialId') as string
-    const result = await deleteCredential(credentialId, username)
-
-    if (!result.success) {
-      toast.error('패스키 삭제에 실패했어요')
-      return
-    }
-
-    toast.success('패스키가 삭제됐어요')
-    setIsOpen(false)
-  }
-
   function handleCancel() {
     setIsOpen(false)
     onCancel?.()
   }
 
-  const [_, formAction, isPending] = useActionState(deleteWithToast, null)
+  const [_, dispatchAction, isPending] = useActionResponse({
+    action: deleteCredential,
+    onSuccess: (data) => {
+      toast.success(data)
+      setIsOpen(false)
+    },
+    onError: (error) => {
+      toast.error(error)
+    },
+  })
 
   return (
     <>
@@ -94,8 +89,8 @@ export default function PasskeyDeleteButton({
             >
               취소
             </button>
-            <form action={formAction} className="flex-1">
-              <input name="credentialId" type="hidden" value={credentialId} />
+            <form action={dispatchAction} className="flex-1">
+              <input name="credential-id" type="hidden" value={credentialId} />
               <button
                 className="w-full h-10 px-4 rounded-lg bg-red-600 text-white font-medium disabled:opacity-70 disabled:cursor-not-allowed relative"
                 disabled={isPending}

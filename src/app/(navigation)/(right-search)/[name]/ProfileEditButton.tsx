@@ -220,21 +220,23 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
               </div>
             </div>
           </div>
-          <footer className="flex items-center justify-between p-4 border-t border-zinc-800 bg-zinc-900/50 shrink-0">
-            <button
-              className="px-4 py-2 text-sm font-medium text-zinc-400 hover:text-zinc-300"
-              onClick={() => setProfileImageURL(defaultProfileImageURL)}
-              type="reset"
-            >
-              초기화
-            </button>
-            <button
-              className="px-6 py-2 bg-white text-black font-medium text-sm rounded-lg hover:bg-zinc-200 active:bg-zinc-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={isPending}
-              type="submit"
-            >
-              저장
-            </button>
+          <footer className="shrink-0 px-safe pb-safe border-t border-zinc-800 bg-zinc-900/50">
+            <div className="flex items-center justify-between p-4">
+              <button
+                className="px-4 py-2 text-sm font-medium text-zinc-400 hover:text-zinc-300"
+                onClick={() => setProfileImageURL(defaultProfileImageURL)}
+                type="reset"
+              >
+                초기화
+              </button>
+              <button
+                className="px-6 py-2 bg-white text-black font-medium text-sm rounded-lg hover:bg-zinc-200 active:bg-zinc-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isPending}
+                type="submit"
+              >
+                저장
+              </button>
+            </div>
           </footer>
         </form>
       </Modal>
