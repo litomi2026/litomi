@@ -4,7 +4,6 @@ import MangaCard from '@/components/card/MangaCard'
 import IconBookmark from '@/components/icons/IconBookmark'
 import LoginButton from '@/components/LoginButton'
 import { SearchParamKey } from '@/constants/storage'
-import { SourceParam } from '@/utils/param'
 
 import { EXAMPLE_MANGAS } from './constants'
 
@@ -57,7 +56,7 @@ export function GuestView() {
         </div>
         <ul className="grid gap-2 md:grid-cols-2 opacity-60 hover:opacity-80 transition" role="list">
           {EXAMPLE_MANGAS.map((manga) => (
-            <MangaCard key={manga.id} manga={manga} source={SourceParam.K_HENTAI} />
+            <MangaCard key={manga.id} manga={manga} />
           ))}
         </ul>
       </div>

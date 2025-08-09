@@ -1,12 +1,11 @@
 'use server'
 
 import { sql } from 'drizzle-orm'
-import { cookies } from 'next/headers'
 import { z } from 'zod/v4'
 
 import { db } from '@/database/drizzle'
 import { BookmarkSource } from '@/database/enum'
-import { getUserIdFromAccessToken } from '@/utils/cookie'
+import { getUserIdFromCookie } from '@/utils/session'
 
 type BookmarkResult = {
   mangaId: number
@@ -19,8 +18,7 @@ const schema = z.object({
 })
 
 export default async function toggleBookmark(_prevState: unknown, formData: FormData) {
-  const cookieStore = await cookies()
-  const userId = await getUserIdFromAccessToken(cookieStore)
+  const userId = await getUserIdFromCookie()
 
   if (!userId) {
     return { status: 401, message: '로그인 정보가 없거나 만료됐어요' }

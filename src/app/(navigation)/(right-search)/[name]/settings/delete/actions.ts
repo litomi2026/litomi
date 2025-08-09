@@ -13,7 +13,6 @@ import { passwordSchema } from '@/database/zod'
 import { badRequest, internalServerError, ok, unauthorized } from '@/utils/action-response'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
-import { mapBookmarkSourceToSourceParam } from '@/utils/param'
 
 const deleteAccountSchema = z.object({
   password: passwordSchema,
@@ -88,7 +87,6 @@ export async function exportUserData() {
     const bookmarks = await db
       .select({
         mangaId: bookmarkTable.mangaId,
-        source: bookmarkTable.source,
         createdAt: bookmarkTable.createdAt,
       })
       .from(bookmarkTable)
@@ -109,7 +107,6 @@ export async function exportUserData() {
       user,
       bookmarks: bookmarks.map((bookmark) => ({
         mangaId: bookmark.mangaId,
-        source: mapBookmarkSourceToSourceParam(bookmark.source),
         createdAt: bookmark.createdAt,
       })),
       censorships,

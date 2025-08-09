@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 
 import MangaCard from '@/components/card/MangaCard'
 import MangaCardImage from '@/components/card/MangaCardImage'
-import { ERROR_MANGA } from '@/constants/json'
+import { createErrorManga } from '@/constants/json'
 import { CANONICAL_URL } from '@/constants/url'
 import { HiyobiClient } from '@/crawler/hiyobi'
 import { KHentaiClient } from '@/crawler/k-hentai'
@@ -58,13 +58,13 @@ export default async function Page({ params }: PageProps) {
         layoutString === ViewCookie.IMAGE ? (
           <MangaCardImage
             className="bg-zinc-900 rounded-xl border-2 relative h-fit [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-cover [&_img]:aspect-[3/4]"
-            href={getViewerLink(manga.id, sourceString)}
+            href={getViewerLink(manga.id)}
             index={i}
             key={manga.id}
             manga={manga}
           />
         ) : (
-          <MangaCard index={i} key={manga.id} manga={manga} source={sourceString} />
+          <MangaCard index={i} key={manga.id} manga={manga} />
         ),
       )}
     </ul>
@@ -73,14 +73,12 @@ export default async function Page({ params }: PageProps) {
 
 async function getMangas({ source }: Params) {
   try {
-    if (source === SourceParam.HARPI) {
-      return [ERROR_MANGA]
-    } else if (source === SourceParam.HIYOBI) {
+    if (source === SourceParam.HIYOBI) {
       return await HiyobiClient.getInstance().fetchRandomMangas()
     } else if (source === SourceParam.K_HENTAI) {
       return await KHentaiClient.getInstance().fetchRandomKoreanMangas()
     }
   } catch (error) {
-    return [{ ...ERROR_MANGA, id: -1, title: JSON.stringify(error) ?? '오류가 발생했어요' }, ERROR_MANGA]
+    return [createErrorManga({ error })]
   }
 }

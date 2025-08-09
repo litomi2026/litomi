@@ -162,22 +162,10 @@ export function getTruncatedId(id: string): string {
 export function getUserVerificationMethod(deviceType: string) {
   switch (deviceType) {
     case 'cross-platform':
-      return {
-        requiresVerification: true,
-        verificationLabel: '사용자 확인',
-        verificationDescription: '보안 키의 버튼을 누르거나 PIN 입력',
-      }
+      return '사용자 확인'
     case 'platform':
-      return {
-        requiresVerification: true,
-        verificationLabel: '생체 인증',
-        verificationDescription: '지문, 얼굴 인식 또는 PIN으로 인증',
-      }
+      return '생체 인증'
     default:
-      return {
-        requiresVerification: false,
-        verificationLabel: '',
-        verificationDescription: '',
-      }
+      return ''
   }
 }

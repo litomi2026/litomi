@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation'
 import MangaCard from '@/components/card/MangaCard'
 import MangaCardImage from '@/components/card/MangaCardImage'
 import Navigation from '@/components/Navigation'
-import { ERROR_MANGA } from '@/constants/json'
+import { createErrorManga } from '@/constants/json'
 import { CANONICAL_URL } from '@/constants/url'
 import { HiyobiClient } from '@/crawler/hiyobi'
 import { KHentaiClient } from '@/crawler/k-hentai'
@@ -78,13 +78,13 @@ export default async function Page({ params }: PageProps) {
           layout === ViewCookie.IMAGE ? (
             <MangaCardImage
               className="bg-zinc-900 rounded-xl border-2 relative [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-cover [&_img]:aspect-[3/4]"
-              href={getViewerLink(manga.id, source)}
+              href={getViewerLink(manga.id)}
               index={i}
               key={manga.id}
               manga={manga}
             />
           ) : (
-            <MangaCard index={i} key={manga.id} manga={manga} source={source} />
+            <MangaCard index={i} key={manga.id} manga={manga} />
           ),
         )}
       </ul>
@@ -108,6 +108,6 @@ async function getMangas({ source, page }: Params) {
       return await KHentaiClient.getInstance().searchKoreanMangas()
     }
   } catch (error) {
-    return [{ ...ERROR_MANGA, id: -1, title: JSON.stringify(error) ?? '오류가 발생했어요' }, ERROR_MANGA]
+    return [createErrorManga({ error })]
   }
 }
