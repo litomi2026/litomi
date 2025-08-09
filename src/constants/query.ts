@@ -8,6 +8,7 @@ export const QueryKeys = {
   notificationUnreadCount: ['me', 'notifications', 'unread-count'],
   notifications: (searchParams: URLSearchParams) => ['me', 'notifications', Object.fromEntries(searchParams)],
 
+  manga: (id: number) => ['manga', id],
   infiniteManga: ['infinite', 'manga'],
   search: (searchParams: URLSearchParams) => ['search', Object.fromEntries(searchParams)],
   searchSuggestions: (query: string, locale: string) => ['search', 'suggestions', locale, query],

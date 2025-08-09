@@ -25,7 +25,7 @@ function MangaDetailButton({ manga }: Readonly<Props>) {
   return (
     <>
       <button className="hover:underline" onClick={() => setIsOpened(true)} type="button">
-        <h1 className="flex-1 text-center line-clamp-1 font-bold text-foreground md:text-lg">{title}</h1>
+        <h1 className="flex-1 text-center line-clamp-1 font-bold text-foreground break-all md:text-lg">{title}</h1>
       </button>
       <Modal onClose={() => setIsOpened(false)} open={isOpened} showCloseButton showDragButton>
         <div className="bg-zinc-900 min-w-3xs w-screen max-w-sm md:max-w-lg rounded-xl p-4 pt-8 shadow-xl border grid gap-3 text-sm overflow-auto max-h-svh md:text-base">

@@ -64,7 +64,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
         aria-current={showController}
         className="fixed top-0 left-0 right-0 z-10 bg-background/70 backdrop-blur border-b border-zinc-500 px-safe transition opacity-0 pointer-events-none aria-current:opacity-100 aria-current:pointer-events-auto"
       >
-        <div className="flex gap-2 items-center justify-between p-3 [&_button]:rounded-full [&_button]:active:text-zinc-500 [&_button]:hover:bg-zinc-800 [&_button]:transition [&_button]:p-2">
+        <div className="flex gap-2 items-center justify-between p-3 [&_button]:rounded-full [&_button]:active:text-zinc-500 [&_button]:hover:bg-zinc-800 [&_button]:transition [&_button]:p-2 [&_button]:px-3">
           <div className="flex gap-1">
             <button aria-label="뒤로가기" onClick={() => router.back()}>
               <IconChevronLeft className="w-6" />

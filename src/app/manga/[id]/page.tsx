@@ -4,13 +4,13 @@ import { notFound } from 'next/navigation'
 import type { PageProps } from '@/types/nextjs'
 
 import { getMangaFromMultipleSources } from '@/common/manga'
-import ImageViewer from '@/components/ImageViewer/ImageViewer'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { CANONICAL_URL } from '@/constants/url'
 import { HiyobiClient } from '@/crawler/hiyobi'
 import { getImageSource } from '@/utils/manga'
 import { SourceParam } from '@/utils/param'
 
+import MangaViewer from './MangaViewer'
 import { mangaSchema } from './schema'
 
 export const revalidate = 28800 // 8 hours
@@ -70,15 +70,10 @@ export default async function Page({ params }: PageProps) {
   }
 
   const { id } = validation.data
-  const manga = await getMangaFromMultipleSources(id)
-
-  if (!manga) {
-    notFound()
-  }
 
   return (
     <main>
-      <ImageViewer manga={manga} />
+      <MangaViewer id={id} />
     </main>
   )
 }
