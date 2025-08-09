@@ -1,3 +1,5 @@
+import { MangaSource } from '@/database/enum'
+
 export type LabeledValue = {
   label: string
   value: string
@@ -5,26 +7,31 @@ export type LabeledValue = {
 
 export type Manga = {
   id: number
+  title: string
   images: string[]
   artists?: LabeledValue[]
   characters?: LabeledValue[]
+  count?: number
   date?: string
   group?: LabeledValue[]
-  related?: number[]
-  series?: LabeledValue[]
-  tags?: MangaTag[]
-  title: string
-  type?: string
   languages?: LabeledValue[]
-  cdn?: string
-  count?: number
   like?: number
   likeAnonymous?: number
-  viewCount?: number
+  origin?: string
   rating?: number
+  related?: number[]
+  series?: LabeledValue[]
+  source?: MangaSource
+  tags?: MangaTag[]
+  type?: string
+  viewCount?: number
 
   // Harpi
   harpiId?: string
+}
+
+export type MangaError = Manga & {
+  isError: true
 }
 
 export type MangaTag = LabeledValue & {

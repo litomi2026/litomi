@@ -3,7 +3,7 @@ import { toast } from 'sonner'
 
 import { Manga } from '@/types/manga'
 import { downloadImage, downloadMultipleImages } from '@/utils/download'
-import { getImageSrc } from '@/utils/manga'
+import { getImageSource } from '@/utils/manga'
 
 export function useDownload(manga: Manga) {
   const [isDownloading, setIsDownloading] = useState(false)
@@ -11,16 +11,18 @@ export function useDownload(manga: Manga) {
 
   const downloadSingleImage = useCallback(
     async (imageIndex: number) => {
-      if (isDownloading) return
+      if (isDownloading) {
+        return
+      }
 
       setIsDownloading(true)
 
       try {
-        const { id, title, images, cdn } = manga
-        const imageUrl = getImageSrc({ cdn, id, path: images[imageIndex] })
+        const { title, images, origin } = manga
+        const imageURL = getImageSource({ imageURL: images[imageIndex], origin })
         const filename = `${title} ${imageIndex + 1}.jpg`
 
-        await downloadImage(imageUrl, filename)
+        await downloadImage(imageURL, filename)
         toast.success('다운로드가 완료됐어요')
       } catch (error) {
         toast.error(error instanceof Error ? error.message : '다운로드에 실패했어요')
@@ -32,16 +34,18 @@ export function useDownload(manga: Manga) {
   )
 
   const downloadAllImages = useCallback(async () => {
-    if (isDownloading) return
+    if (isDownloading) {
+      return
+    }
 
     setIsDownloading(true)
     setDownloadedCount(0)
 
     try {
-      const { id, title, images, cdn } = manga
+      const { title, images, origin } = manga
 
       const imageList = images.map((image, index) => ({
-        url: getImageSrc({ cdn, id, path: image }),
+        url: getImageSource({ imageURL: image, origin }),
         filename: `${String(index + 1).padStart(Math.log10(images.length) + 1, '0')}.jpg`,
       }))
 

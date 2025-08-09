@@ -1,7 +1,7 @@
 import { ImgHTMLAttributes, memo } from 'react'
 
 import { Manga } from '@/types/manga'
-import { getImageSrc } from '@/utils/manga'
+import { getImageSource } from '@/utils/manga'
 
 const INITIAL_DISPLAYED_IMAGE = 5
 
@@ -14,18 +14,18 @@ type Props = ImgHTMLAttributes<HTMLImageElement> & {
 export default memo(MangaImage)
 
 function MangaImage({ manga, imageIndex, imageRef, ...props }: Readonly<Props>) {
-  const { images, cdn, id } = manga
-  const imagePath = images[imageIndex]
+  const { images, origin } = manga
+  const imageURL = images[imageIndex]
 
   return (
-    imagePath && (
+    imageURL && (
       <img
         alt={`manga-image-${imageIndex + 1}`}
         draggable={false}
         fetchPriority={imageIndex < INITIAL_DISPLAYED_IMAGE ? 'high' : undefined}
         ref={imageRef}
         referrerPolicy="same-origin"
-        src={getImageSrc({ cdn, id, path: imagePath })}
+        src={getImageSource({ imageURL, origin })}
         {...props}
       />
     )
