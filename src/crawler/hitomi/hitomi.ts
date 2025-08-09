@@ -1,3 +1,4 @@
+import { MangaSource } from '@/database/enum'
 import { translateArtistList } from '@/translation/artist'
 import { translateCharacterList } from '@/translation/character'
 import { normalizeValue } from '@/translation/common'
@@ -52,11 +53,7 @@ export class HitomiClient {
     try {
       const jsText = await this.client.fetch<string>(
         `/galleries/${id}.js`,
-        {
-          cache: revalidate > 0 ? 'force-cache' : 'no-store',
-          next: { revalidate },
-          headers: { Accept: 'text/javascript,application/javascript,*/*;q=0.8' },
-        },
+        { cache: revalidate > 0 ? 'force-cache' : 'no-store', next: { revalidate } },
         true,
       )
 
@@ -102,6 +99,7 @@ export class HitomiClient {
       images: await Promise.all(gallery.files.map((file) => this.getImageURL(gallery.id, file))),
       related: gallery.related,
       count: gallery.files.length,
+      source: MangaSource.HITOMI,
     }
   }
 

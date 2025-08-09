@@ -1,0 +1,51 @@
+import { getMangasFromMultipleSources } from '@/common/manga'
+import { MAX_THUMBNAIL_IMAGES } from '@/constants/manga'
+import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
+
+import { GETProxyIdSchema, ProxyIdOnly } from './schema'
+
+export const runtime = 'edge'
+const maxAge = 43200 // 12 hours
+
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url)
+
+  const validation = GETProxyIdSchema.safeParse({
+    ids: searchParams.getAll('id'),
+    only: searchParams.get('only') ?? undefined,
+  })
+
+  if (!validation.success) {
+    return new Response('400 Bad Request', { status: 400 })
+  }
+
+  const { ids, only } = validation.data
+  const uniqueIds = Array.from(new Set(ids))
+
+  try {
+    const mangas = await getMangasFromMultipleSources(uniqueIds)
+
+    if (Object.keys(mangas).length === 0) {
+      return new Response('404 Not Found', { status: 404 })
+    }
+
+    if (only === ProxyIdOnly.THUMBNAIL) {
+      for (const id of uniqueIds) {
+        mangas[id].images = mangas[id].images.slice(0, MAX_THUMBNAIL_IMAGES)
+      }
+    }
+
+    return Response.json(mangas, {
+      headers: {
+        'Cache-Control': createCacheControl({
+          public: true,
+          maxAge,
+          sMaxAge: maxAge,
+          staleWhileRevalidate: maxAge,
+        }),
+      },
+    })
+  } catch (error) {
+    return handleRouteError(error, request)
+  }
+}

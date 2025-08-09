@@ -53,6 +53,10 @@ export async function GET(request: Request) {
   try {
     const mangas = await client.fetchMangas(validatedParams)
 
+    if (!mangas) {
+      return new Response('404 Not Found', { status: 404 })
+    }
+
     return Response.json({ mangas } satisfies GETProxyHarpiSearchResponse, {
       headers: {
         'Cache-Control': createCacheControl({

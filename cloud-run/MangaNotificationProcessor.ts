@@ -3,13 +3,12 @@ import { and, count, inArray, sql } from 'drizzle-orm'
 import type { Manga } from '../src/types/manga'
 
 import { db } from '../src/database/drizzle'
-import { BookmarkSource, NotificationType } from '../src/database/enum'
+import { MangaSource, NotificationType } from '../src/database/enum'
 import { mangaSeenTable } from '../src/database/notification-schema'
 import { notificationTable } from '../src/database/schema'
 import { OptimizedNotificationMatcher } from '../src/lib/notification/OptimizedNotificationMatcher'
 import { WebPushService } from '../src/lib/notification/WebPushService'
-import { getImageSrc, getViewerLink } from '../src/utils/manga'
-import { mapBookmarkSourceToSourceParam } from '../src/utils/param'
+import { getImageSource, getViewerLink } from '../src/utils/manga'
 
 interface CriteriaMatch {
   id: number
@@ -28,7 +27,7 @@ interface UserMangaNotification {
   mangaId: number
   mangaTitle?: string
   previewImageUrl?: string
-  source: BookmarkSource
+  source: MangaSource
 }
 
 export class MangaNotificationProcessor {
@@ -50,7 +49,7 @@ export class MangaNotificationProcessor {
   }
 
   async processBatches(
-    mangaList: { manga: Manga; source: BookmarkSource }[],
+    mangaList: { manga: Manga; source: MangaSource }[],
     { batchSize = 50 }: { batchSize?: number },
   ): Promise<ProcessResult> {
     const result: ProcessResult = {
@@ -132,7 +131,7 @@ export class MangaNotificationProcessor {
               const userNotifications = allUserNotificationsMap.get(userId)
 
               const previewImageUrl = manga.images?.[0]
-                ? getImageSrc({ cdn: manga.cdn, path: manga.images[0] })
+                ? getImageSource({ imageURL: manga.images[0], origin: manga.origin })
                 : undefined
 
               const newNotification = {
@@ -176,8 +175,7 @@ export class MangaNotificationProcessor {
     const names = notification.criteriaMatches.map((c) => c.name).join(', ')
     const totalCount = notification.criteriaMatches.length
     const notificationBody = names.length > 25 ? `${names.slice(0, 20)}... (${totalCount}개)` : names
-    const sourceParam = mapBookmarkSourceToSourceParam(notification.source)
-    const mangaUrl = getViewerLink(notification.mangaId, sourceParam)
+    const mangaUrl = getViewerLink(notification.mangaId)
 
     return {
       title: notificationTitle,
