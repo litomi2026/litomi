@@ -1,10 +1,5 @@
 import { redirect } from 'next/navigation'
 
-import { PageProps } from '@/types/nextjs'
-
-export const dynamic = 'error'
-
-export default async function Page({ params }: PageProps) {
-  const { sort, page, source } = await params
-  redirect(`/mangas/${sort}/${page}/${source}/card`)
+export default async function Page() {
+  redirect(`/mangas/latest/1/hi/card`)
 }

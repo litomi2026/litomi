@@ -4,22 +4,21 @@ import { useMemo } from 'react'
 import { useInView } from 'react-intersection-observer'
 
 import useBookmarkIdsInfiniteQuery from '@/app/(navigation)/(right-search)/[name]/bookmark/useBookmarkIdsInfiniteQuery'
-import { BookmarkWithSource } from '@/app/api/bookmarks/route'
+import { Bookmark } from '@/app/api/bookmarks/route'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
-import { mapBookmarkSourceToSourceParam } from '@/utils/param'
+import { Manga } from '@/types/manga'
 
-import useMangaInfiniteQuery, { MangaDetails } from './useMangaInfiniteQuery'
-import { generateBookmarkKey } from './utils'
+import useMangaInfiniteQuery from './useMangaInfiniteQuery'
 
 interface BookmarkItemProps {
   index: number
-  mangaDetails: MangaDetails | undefined
+  manga?: Manga
   onInView?: () => void
 }
 
 interface Props {
-  initialBookmarks: BookmarkWithSource[]
+  initialBookmarks: Bookmark[]
 }
 
 export default function BookmarkList({ initialBookmarks }: Readonly<Props>) {
@@ -46,7 +45,7 @@ export default function BookmarkList({ initialBookmarks }: Readonly<Props>) {
   } = useMangaInfiniteQuery(bookmarkIds)
 
   const mangaDetailsMap = useMemo(() => {
-    const map = new Map<string, MangaDetails>()
+    const map = new Map<number, Manga>()
 
     if (!mangaDetails?.pages) {
       return map
@@ -54,7 +53,7 @@ export default function BookmarkList({ initialBookmarks }: Readonly<Props>) {
 
     mangaDetails.pages.forEach((page) => {
       page.forEach((item) => {
-        map.set(generateBookmarkKey(item), item)
+        map.set(item.id, item)
       })
     })
 
@@ -68,7 +67,7 @@ export default function BookmarkList({ initialBookmarks }: Readonly<Props>) {
   }
 
   const firstUnfetchedMangaIndex = useMemo(() => {
-    return bookmarkIds.findIndex((bookmark) => !mangaDetailsMap.has(generateBookmarkKey(bookmark)))
+    return bookmarkIds.findIndex((bookmark) => !mangaDetailsMap.has(bookmark.mangaId))
   }, [bookmarkIds, mangaDetailsMap])
 
   if (bookmarkIds.length === 0 && !isLoadingMoreBookmarks) {
@@ -79,14 +78,14 @@ export default function BookmarkList({ initialBookmarks }: Readonly<Props>) {
     <>
       <ul className="grid gap-2 md:grid-cols-2 grow">
         {bookmarkIds.map((bookmark, index) => {
-          const key = generateBookmarkKey(bookmark)
+          const key = bookmark.mangaId
           const shouldFetchMangaDetails = index === firstUnfetchedMangaIndex
 
           return (
             <BookmarkItem
               index={index}
               key={key}
-              mangaDetails={mangaDetailsMap.get(key)}
+              manga={mangaDetailsMap.get(key)}
               onInView={shouldFetchMangaDetails ? onMangaVisible : undefined}
             />
           )
@@ -99,14 +98,14 @@ export default function BookmarkList({ initialBookmarks }: Readonly<Props>) {
   )
 }
 
-function BookmarkItem({ mangaDetails, index, onInView }: Readonly<BookmarkItemProps>) {
+function BookmarkItem({ manga, index, onInView }: Readonly<BookmarkItemProps>) {
   const { ref } = useInView({
     rootMargin: '100px',
     threshold: 0.1,
     onChange: (inView) => inView && onInView?.(),
   })
 
-  if (!mangaDetails?.manga) {
+  if (!manga) {
     return (
       <div ref={ref}>
         <MangaCardSkeleton />
@@ -114,9 +113,7 @@ function BookmarkItem({ mangaDetails, index, onInView }: Readonly<BookmarkItemPr
     )
   }
 
-  return (
-    <MangaCard index={index} manga={mangaDetails.manga} source={mapBookmarkSourceToSourceParam(mangaDetails.source)} />
-  )
+  return <MangaCard index={index} manga={manga} />
 }
 
 function EmptyBookmarks() {

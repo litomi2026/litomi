@@ -1,3 +1,4 @@
+import { MangaSource } from '@/database/enum'
 import { translateArtistList } from '@/translation/artist'
 import { translateCharacterList } from '@/translation/character'
 import { Multilingual, normalizeValue } from '@/translation/common'
@@ -73,7 +74,8 @@ const HIYOBI_CONFIG: ProxyClientConfig = {
     jitter: true,
   },
   defaultHeaders: {
-    Referer: 'https://hiyobi.org',
+    Origin: 'https://hiyobi.org/',
+    Referer: 'https://hiyobi.org/',
   },
 }
 
@@ -118,11 +120,15 @@ export class HiyobiClient {
   async fetchManga(
     id: number,
     revalidate = 604800, // 1 week
-  ): Promise<Manga> {
+  ): Promise<Manga | null> {
     const manga = await this.client.fetch<HiyobiManga>(`/gallery/${id}`, {
       cache: revalidate > 0 ? 'force-cache' : 'no-store',
       next: { revalidate },
     })
+
+    if (!manga.id) {
+      return null
+    }
 
     return this.convertHiyobiToManga(manga)
   }
@@ -142,7 +148,7 @@ export class HiyobiClient {
   ): Promise<Manga[]> {
     const response = await this.client.fetch<{ list: HiyobiManga[] }>(`/list/${page}`, { next: { revalidate } })
 
-    return response.list.map((manga) => this.convertHiyobiToManga(manga))
+    return response.list.filter((manga) => manga.id).map((manga) => this.convertHiyobiToManga(manga))
   }
 
   async fetchRandomMangas(): Promise<Manga[] | null> {
@@ -162,7 +168,7 @@ export class HiyobiClient {
         const sortedCategory = sortTagValue(category)
         return {
           category: sortedCategory,
-          value: category,
+          value: normalizeValue(value),
           label: translateTag(sortedCategory, category, locale),
         }
       }
@@ -203,15 +209,15 @@ export class HiyobiClient {
       group: translateGroupList(groupValues, locale),
       series: translateSeriesList(seriesValues, locale),
       tags: this.convertHiyobiTagsToTags(tags, locale),
-      title,
+      title: title === '정보없음' ? '' : title,
       type: hiyobiTypeNumberToName[type] ?? `${type}?`,
       languages: translateLanguageList([language], locale),
       images: [this.getKHentaiThumbnailURL(id)],
-      cdn: 'thumb.k-hentai',
       count: filecount,
       like,
       viewCount: count,
       likeAnonymous: like_anonymous,
+      source: MangaSource.HIYOBI,
     }
   }
 
@@ -219,6 +225,6 @@ export class HiyobiClient {
     const millions = Math.floor(id / 1_000_000)
     const thousands = Math.floor((id % 1_000_000) / 1_000)
     const remainder = id % 1000
-    return `${millions}/${thousands}/${remainder}`
+    return `https://thumb.k-hentai.org/${millions}/${thousands}/${remainder}`
   }
 }

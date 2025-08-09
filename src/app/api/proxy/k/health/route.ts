@@ -9,7 +9,7 @@ export async function GET() {
     'k',
     {
       search: async () => Array.isArray(await KHentaiClient.getInstance().searchMangas({ search: 'qwerpoiuasdflkj' })),
-      images: async () => Array.isArray((await KHentaiClient.getInstance().fetchManga(3291051)).images), // 인기순 1위 망가
+      images: async () => (((await KHentaiClient.getInstance().fetchManga(3291051)) ?? {}).images?.length ?? 0) > 0, // 인기순 1위 망가
     },
     {
       headers: {

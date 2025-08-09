@@ -3,16 +3,13 @@ import { notFound } from 'next/navigation'
 
 import MangaCard from '@/components/card/MangaCard'
 import MangaCardImage from '@/components/card/MangaCardImage'
-import { ERROR_MANGA } from '@/constants/json'
+import { createErrorManga } from '@/constants/json'
 import { CANONICAL_URL } from '@/constants/url'
 import { HiyobiClient } from '@/crawler/hiyobi'
 import { KHentaiClient } from '@/crawler/k-hentai'
-import { harpiMangaIds, harpiMangas } from '@/database/harpi'
-import { Manga } from '@/types/manga'
 import { PageProps } from '@/types/nextjs'
 import { getViewerLink } from '@/utils/manga'
 import { SourceParam, validateSource, validateView, ViewCookie } from '@/utils/param'
-import { sampleBySecureFisherYates } from '@/utils/random'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 export const revalidate = 15
@@ -61,13 +58,13 @@ export default async function Page({ params }: PageProps) {
         layoutString === ViewCookie.IMAGE ? (
           <MangaCardImage
             className="bg-zinc-900 rounded-xl border-2 relative h-fit [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-cover [&_img]:aspect-[3/4]"
-            href={getViewerLink(manga.id, sourceString)}
+            href={getViewerLink(manga.id)}
             index={i}
             key={manga.id}
             manga={manga}
           />
         ) : (
-          <MangaCard index={i} key={manga.id} manga={manga} source={sourceString} />
+          <MangaCard index={i} key={manga.id} manga={manga} />
         ),
       )}
     </ul>
@@ -75,19 +72,13 @@ export default async function Page({ params }: PageProps) {
 }
 
 async function getMangas({ source }: Params) {
-  let mangas: Manga[] | null = null
-
   try {
-    if (source === SourceParam.HARPI) {
-      mangas = sampleBySecureFisherYates(harpiMangaIds, 20).map((id) => harpiMangas[id])
-    } else if (source === SourceParam.HIYOBI) {
-      mangas = await HiyobiClient.getInstance().fetchRandomMangas()
+    if (source === SourceParam.HIYOBI) {
+      return await HiyobiClient.getInstance().fetchRandomMangas()
     } else if (source === SourceParam.K_HENTAI) {
-      mangas = await KHentaiClient.getInstance().fetchRandomKoreanMangas()
+      return await KHentaiClient.getInstance().fetchRandomKoreanMangas()
     }
   } catch (error) {
-    mangas = [{ ...ERROR_MANGA, id: -1, title: JSON.stringify(error) ?? '오류가 발생했어요' }, ERROR_MANGA]
+    return [createErrorManga({ error })]
   }
-
-  return mangas
 }

@@ -5,7 +5,7 @@ import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import MangaCardImage from '@/components/card/MangaCardImage'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import { getViewerLink } from '@/utils/manga'
-import { SourceParam, ViewCookie } from '@/utils/param'
+import { ViewCookie } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 type Props = {
@@ -37,13 +37,13 @@ export default function SearchResults({ view }: Readonly<Props>) {
           view === ViewCookie.IMAGE ? (
             <MangaCardImage
               className="bg-zinc-900 rounded-xl border-2 relative [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-cover [&_img]:aspect-[3/4]"
-              href={getViewerLink(manga.id, SourceParam.K_HENTAI)}
+              href={getViewerLink(manga.id)}
               index={i}
               key={manga.id}
               manga={manga}
             />
           ) : (
-            <MangaCard index={i} key={manga.id} manga={manga} showSearchFromNextButton source={SourceParam.K_HENTAI} />
+            <MangaCard index={i} key={manga.id} manga={manga} showSearchFromNextButton />
           ),
         )}
         {isFetchingNextPage && <MangaCardSkeleton />}

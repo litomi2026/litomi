@@ -1,4 +1,4 @@
-import { BookmarkSource } from '@/database/enum'
+import { MangaSource } from '@/database/enum'
 import { Manga } from '@/types/manga'
 
 export const BOOKMARKS_PER_PAGE = 20
@@ -56,7 +56,6 @@ export const EXAMPLE_MANGAS: Manga[] = [
     title: '[Fence14] Giji SEX Kyoudai 0~2 【Kinshinsoukan】 | 유사 섹스 남매 0~2 【근친상간】 [Korean] [Team Edge]',
     type: '동인지',
     languages: [{ value: 'korean', label: '한국어' }],
-    cdn: 'ehgt.org',
     count: 49,
     rating: 4.61,
     viewCount: 18473,
@@ -113,7 +112,6 @@ export const EXAMPLE_MANGAS: Manga[] = [
     title: '[k-vam] 걸스 투 입대띵',
     type: '기타',
     languages: [{ value: 'korean', label: '한국어' }],
-    cdn: 'ehgt.org',
     count: 970,
     rating: 1.42,
     viewCount: 2192,
@@ -129,6 +127,6 @@ export type BookmarkExportData = {
 
 export type ExportedBookmark = {
   mangaId: number
-  source: BookmarkSource
+  source: MangaSource
   createdAt: string
 }

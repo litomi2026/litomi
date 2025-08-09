@@ -2,7 +2,7 @@ import 'server-only'
 
 import seriesTranslationJSON from '@/translation/series.json'
 
-import { Multilingual, translateValue } from './common'
+import { Multilingual, normalizeValue, translateValue } from './common'
 
 const SERIES_TRANSLATION: Record<string, Multilingual> = seriesTranslationJSON
 
@@ -23,8 +23,11 @@ export function getAllSeriesWithLabels() {
 }
 
 export function translateSeriesList(seriesList: string[] | undefined, locale: keyof Multilingual) {
-  return seriesList?.map((series) => ({
-    value: series,
-    label: translateValue(SERIES_TRANSLATION, series, locale),
-  }))
+  return seriesList?.map((series) => {
+    const normalizedValue = normalizeValue(series)
+    return {
+      value: normalizedValue,
+      label: translateValue(SERIES_TRANSLATION, normalizedValue, locale),
+    }
+  })
 }

@@ -3,13 +3,12 @@ import { and, count, inArray, sql } from 'drizzle-orm'
 import type { Manga } from '../src/types/manga'
 
 import { db } from '../src/database/drizzle'
-import { BookmarkSource, NotificationType } from '../src/database/enum'
+import { MangaSource, NotificationType } from '../src/database/enum'
 import { mangaSeenTable } from '../src/database/notification-schema'
 import { notificationTable } from '../src/database/schema'
 import { OptimizedNotificationMatcher } from '../src/lib/notification/OptimizedNotificationMatcher'
 import { WebPushService } from '../src/lib/notification/WebPushService'
-import { getImageSrc, getViewerLink } from '../src/utils/manga'
-import { mapBookmarkSourceToSourceParam } from '../src/utils/param'
+import { getImageSource, getViewerLink } from '../src/utils/manga'
 
 interface CriteriaMatch {
   id: number
@@ -28,7 +27,7 @@ interface UserMangaNotification {
   mangaId: number
   mangaTitle?: string
   previewImageUrl?: string
-  source: BookmarkSource
+  source: MangaSource
 }
 
 export class MangaNotificationProcessor {
@@ -49,10 +48,7 @@ export class MangaNotificationProcessor {
     return MangaNotificationProcessor.instance
   }
 
-  async processBatches(
-    mangaList: { manga: Manga; source: BookmarkSource }[],
-    { batchSize = 50 }: { batchSize?: number },
-  ): Promise<ProcessResult> {
+  async processBatches(mangaList: Manga[], { batchSize = 50 }: { batchSize?: number }): Promise<ProcessResult> {
     const result: ProcessResult = {
       matched: 0,
       notificationsSent: 0,
@@ -72,7 +68,7 @@ export class MangaNotificationProcessor {
     }
 
     this.isProcessing = true
-    const mangaMap = new Map(mangaList.map((item) => [item.manga.id, item]))
+    const mangaMap = new Map(mangaList.map((item) => [item.id, item]))
     const deduplicatedMangas = Array.from(mangaMap.values())
     const uniqueMangaIds = Array.from(mangaMap.keys())
 
@@ -85,11 +81,11 @@ export class MangaNotificationProcessor {
       const existingSet = new Set(existingManga.map((m) => m.mangaId))
 
       const newMangas = deduplicatedMangas
-        .filter((item) => !existingSet.has(item.manga.id))
+        .filter((item) => !existingSet.has(item.id))
         .map((item) => ({
-          manga: item.manga,
+          manga: item,
           source: item.source,
-          metadata: this.matcher.convertMangaToMetadata(item.manga),
+          metadata: this.matcher.convertMangaToMetadata(item),
         }))
 
       if (newMangas.length === 0) {
@@ -132,7 +128,7 @@ export class MangaNotificationProcessor {
               const userNotifications = allUserNotificationsMap.get(userId)
 
               const previewImageUrl = manga.images?.[0]
-                ? getImageSrc({ cdn: manga.cdn, path: manga.images[0] })
+                ? getImageSource({ imageURL: manga.images[0], origin: manga.origin })
                 : undefined
 
               const newNotification = {
@@ -176,8 +172,7 @@ export class MangaNotificationProcessor {
     const names = notification.criteriaMatches.map((c) => c.name).join(', ')
     const totalCount = notification.criteriaMatches.length
     const notificationBody = names.length > 25 ? `${names.slice(0, 20)}... (${totalCount}개)` : names
-    const sourceParam = mapBookmarkSourceToSourceParam(notification.source)
-    const mangaUrl = getViewerLink(notification.mangaId, sourceParam)
+    const mangaUrl = getViewerLink(notification.mangaId)
 
     return {
       title: notificationTitle,

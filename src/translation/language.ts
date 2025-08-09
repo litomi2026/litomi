@@ -26,21 +26,23 @@ const languageTranslations: Record<string, Multilingual> = {
 }
 
 export function getAllLanguagesWithLabels(locale: keyof Multilingual) {
-  return Object.entries(languageTranslations).map(([value, translations]) => ({
-    value,
-    label: translations[locale] ?? value,
+  return Object.entries(languageTranslations).map(([key, translations]) => ({
+    value: key,
+    label: translations[locale] ?? key,
   }))
 }
 
-export function translateLanguage(value: string, locale: keyof Multilingual) {
-  const normalized = normalizeValue(value)
-  const translation = languageTranslations[normalized]
-  return translation?.[locale] ?? value.replaceAll('_', ' ')
+export function translateLanguage(normalizedValue: string, locale: keyof Multilingual) {
+  const translation = languageTranslations[normalizedValue]
+  return translation?.[locale] ?? normalizedValue.replaceAll('_', ' ')
 }
 
-export function translateLanguageList(values: string[], locale: keyof Multilingual) {
-  return values.map((value) => ({
-    value: normalizeValue(value),
-    label: translateLanguage(value, locale),
-  }))
+export function translateLanguageList(values: string[] | undefined, locale: keyof Multilingual) {
+  return values?.map((value) => {
+    const normalizedValue = normalizeValue(value)
+    return {
+      value: normalizedValue,
+      label: translateLanguage(normalizedValue, locale),
+    }
+  })
 }

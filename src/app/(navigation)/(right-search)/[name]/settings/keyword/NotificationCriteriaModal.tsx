@@ -45,7 +45,7 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
 
     // Create new FormData with processed conditions
     const processedData = new FormData()
-    processedData.append('name', formData.get('name') || '')
+    processedData.append('name', formData.get('name') ?? '')
     processedData.append('conditions', JSON.stringify(conditions))
     processedData.append('isActive', 'true')
 

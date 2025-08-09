@@ -34,7 +34,6 @@ export const bookmarkTable = pgTable(
       .notNull(),
     mangaId: integer('manga_id').notNull(),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-    source: smallint().notNull(),
   },
   (table) => [primaryKey({ columns: [table.userId, table.mangaId] }), index('idx_bookmark_user_id').on(table.userId)],
 ).enableRLS()

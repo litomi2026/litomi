@@ -30,15 +30,15 @@ export enum HarpiSort {
 export const HarpiSearchSchema = z
   .object({
     // Required
-    comicKind: z.enum(HarpiComicKind).default(HarpiComicKind.EMPTY),
-    isIncludeTagsAnd: z.coerce.boolean().default(true),
-    minImageCount: z.coerce.number().int().min(0).max(2000).default(0),
-    maxImageCount: z.coerce.number().int().min(0).max(2000).default(0),
-    listMode: z.enum(HarpiListMode).default(HarpiListMode.SORT),
-    randomMode: z.enum(HarpiRandomMode).default(HarpiRandomMode.SEARCH),
-    page: z.coerce.number().int().min(0).default(0),
-    pageLimit: z.coerce.number().int().positive().max(1000).default(10),
-    sort: z.enum(HarpiSort).default(HarpiSort.DATE_DESC),
+    comicKind: z.enum(HarpiComicKind).optional().default(HarpiComicKind.EMPTY),
+    isIncludeTagsAnd: z.coerce.boolean().optional().default(true),
+    minImageCount: z.coerce.number().int().min(0).max(2000).optional().default(0),
+    maxImageCount: z.coerce.number().int().min(0).max(2000).optional().default(0),
+    listMode: z.enum(HarpiListMode).optional().default(HarpiListMode.SORT),
+    randomMode: z.enum(HarpiRandomMode).optional().default(HarpiRandomMode.SEARCH),
+    page: z.coerce.number().int().min(0).optional().default(0),
+    pageLimit: z.coerce.number().int().positive().max(1000).optional().default(10),
+    sort: z.enum(HarpiSort).optional().default(HarpiSort.DATE_DESC),
     // Optional
     searchText: z.string().trim().max(200).optional(),
     lineText: z.string().optional(),

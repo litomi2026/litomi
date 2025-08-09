@@ -3,12 +3,11 @@
 import Link from 'next/link'
 import { memo, useEffect, useRef, useState } from 'react'
 
+import { MAX_THUMBNAIL_IMAGES } from '@/constants/manga'
 import { Manga } from '@/types/manga'
 
 import { IconNextPage, IconPrevPage } from '../icons/IconArrows'
 import MangaImage from '../MangaImage'
-
-const MAX_DISPLAYED_IMAGES = 4
 
 type Props = {
   className?: string
@@ -23,7 +22,7 @@ function MangaCardPreviewImages({ className, manga, mangaIndex = 0, href }: Read
   const { images } = manga
   const sliderRef = useRef<HTMLAnchorElement>(null)
   const [activeIndex, setActiveIndex] = useState(0)
-  const totalSlides = Math.min(images.length, MAX_DISPLAYED_IMAGES)
+  const totalSlides = Math.min(images.length, MAX_THUMBNAIL_IMAGES)
 
   useEffect(() => {
     const slider = sliderRef.current

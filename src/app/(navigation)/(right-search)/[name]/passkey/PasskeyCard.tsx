@@ -22,11 +22,11 @@ type Props = {
 
 export default function PasskeyCard({ passkey, username }: Readonly<Props>) {
   const { deviceType, createdAt, lastUsedAt, transports, id } = passkey
-  const { icon, label, bgColor } = getDeviceInfo(deviceType || '')
+  const { icon, label, bgColor } = getDeviceInfo(deviceType ?? '')
   const createdRelativeTime = getRelativeTime(createdAt)
   const lastUsedRelativeTime = getRelativeTime(lastUsedAt)
   const truncatedId = getTruncatedId(id)
-  const verificationMethod = getUserVerificationMethod(deviceType || '')
+  const verificationMethod = getUserVerificationMethod(deviceType ?? '')
   const isPlatform = deviceType === 'platform'
 
   return (
@@ -64,10 +64,10 @@ export default function PasskeyCard({ passkey, username }: Readonly<Props>) {
               />
             </div>
             <div className="flex items-center gap-3 text-xs text-zinc-500 mt-2">
-              {verificationMethod.requiresVerification && (
+              {verificationMethod && (
                 <span className="flex items-center gap-1">
                   <IconFingerprint className="h-3.5 w-3.5" />
-                  {verificationMethod.verificationLabel}
+                  {verificationMethod}
                 </span>
               )}
               {transports && transports.length > 0 && (

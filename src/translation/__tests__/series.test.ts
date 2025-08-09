@@ -77,7 +77,7 @@ describe('translateSeriesListAsLabeledValues', () => {
     const translated = translateSeriesList(series, 'ko')
     expect(translated).toEqual([
       { label: 'unknown series', value: 'unknown_series' },
-      { label: 'Some Random Series', value: 'Some Random Series' },
+      { label: 'some random series', value: 'some_random_series' },
     ])
   })
 })

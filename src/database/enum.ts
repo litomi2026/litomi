@@ -1,12 +1,3 @@
-export enum BookmarkSource {
-  HASHA = 0,
-  HARPI = 1,
-  HIYOBI = 2,
-  K_HENTAI = 3,
-  // E_HENTAI = 4,
-  // EX_HENTAI = 5,
-}
-
 export enum CensorshipKey {
   ARTIST = 1,
   GROUP = 2,
@@ -34,6 +25,16 @@ export enum DeviceType {
   UNKNOWN = 0,
   PLATFORM = 1,
   CROSS_PLATFORM = 2,
+}
+
+export enum MangaSource {
+  HASHA = 0,
+  HARPI = 1,
+  HIYOBI = 2,
+  K_HENTAI = 3,
+  HITOMI = 4,
+  // E_HENTAI = 5,
+  // EX_HENTAI = 6,
 }
 
 export enum NotificationConditionType {

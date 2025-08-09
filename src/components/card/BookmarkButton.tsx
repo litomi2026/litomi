@@ -9,12 +9,10 @@ import { toast } from 'sonner'
 import toggleBookmark from '@/app/(navigation)/(right-search)/[name]/bookmark/action'
 import { GETBookmarksResponse } from '@/app/api/bookmarks/route'
 import { QueryKeys } from '@/constants/query'
-import { BookmarkSource } from '@/database/enum'
 import useActionErrorEffect from '@/hook/useActionErrorEffect'
 import useBookmarksQuery from '@/query/useBookmarksQuery'
 import useMeQuery from '@/query/useMeQuery'
 import { Manga } from '@/types/manga'
-import { mapSourceParamToBookmarkSource, SourceParam } from '@/utils/param'
 
 import IconBookmark from '../icons/IconBookmark'
 import LoginLink from '../LoginLink'
@@ -27,11 +25,10 @@ type BookmarkButtonSkeletonProps = {
 
 type Props = {
   manga: Manga
-  source: SourceParam
   className?: string
 }
 
-export default function BookmarkButton({ manga, source, className }: Readonly<Props>) {
+export default function BookmarkButton({ manga, className }: Readonly<Props>) {
   const { id: mangaId } = manga
   const { data: me } = useMeQuery()
   const { data: bookmarks } = useBookmarksQuery()
@@ -56,11 +53,7 @@ export default function BookmarkButton({ manga, source, className }: Readonly<Pr
     toast.success(data.isBookmarked ? '북마크를 추가했어요' : '북마크를 삭제했어요')
 
     queryClient.setQueryData<GETBookmarksResponse>(QueryKeys.bookmarks, (oldBookmarks) => {
-      const newBookmark = {
-        mangaId,
-        source: mapSourceParamToBookmarkSource(source) ?? BookmarkSource.K_HENTAI,
-        createdAt,
-      }
+      const newBookmark = { mangaId, createdAt }
 
       if (!oldBookmarks) {
         return {
@@ -83,7 +76,7 @@ export default function BookmarkButton({ manga, source, className }: Readonly<Pr
     if (isBookmarked) {
       queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteBookmarks })
     }
-  }, [data, queryClient, mangaId, source])
+  }, [data, queryClient, mangaId])
 
   function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
     if (!me) {
@@ -100,7 +93,6 @@ export default function BookmarkButton({ manga, source, className }: Readonly<Pr
   return (
     <form action={formAction} className={className}>
       <input name="mangaId" type="hidden" value={mangaId} />
-      <input name="source" type="hidden" value={mapSourceParamToBookmarkSource(source)} />
       <button
         className="flex justify-center items-center gap-1 w-full h-full transition disabled:bg-zinc-900 disabled:cursor-not-allowed"
         disabled={isPending}
@@ -121,7 +113,7 @@ export function BookmarkButtonError({ error, reset }: Readonly<ErrorBoundaryFall
 
   return (
     <button
-      className="flex justify-center items-center gap-1 border-2 w-fit border-red-800 rounded-lg p-1 px-2 transition grow"
+      className="flex justify-center items-center gap-1 border-2 w-fit border-red-800 rounded-lg p-1 px-2 transition flex-1"
       onClick={reset}
     >
       <IconBookmark className="w-4 text-red-700" />

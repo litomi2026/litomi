@@ -1,10 +1,13 @@
+import { desc, sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 
 import BookmarkDownloadButton from '@/app/(navigation)/(right-search)/[name]/bookmark/BookmarkDownloadButton'
 import BookmarkUploadButton from '@/app/(navigation)/(right-search)/[name]/bookmark/BookmarkUploadButton'
-import selectBookmarks from '@/sql/selectBookmarks'
+import { Bookmark } from '@/app/api/bookmarks/route'
+import { db } from '@/database/drizzle'
+import { bookmarkTable } from '@/database/schema'
 import { PageProps } from '@/types/nextjs'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
 import { getUsernameFromParam } from '@/utils/param'
@@ -37,16 +40,25 @@ export default async function BookmarkPage({ params }: PageProps<Params>) {
     return <PrivateBookmarksView usernameFromLoginUser={user.name} usernameFromParam={usernameFromParam} />
   }
 
-  const bookmarkRows = await selectBookmarks({ userId, limit: BOOKMARKS_PER_PAGE })
+  const bookmarkRows = await db
+    .select({
+      mangaId: bookmarkTable.mangaId,
+      createdAt: bookmarkTable.createdAt,
+    })
+    .from(bookmarkTable)
+    .where(sql`${bookmarkTable.userId} = ${userId}`)
+    .orderBy(desc(bookmarkTable.createdAt), desc(bookmarkTable.mangaId))
+    .limit(BOOKMARKS_PER_PAGE)
 
   if (bookmarkRows.length === 0) {
     notFound()
   }
 
-  const bookmarks = bookmarkRows.map((bookmark) => ({
-    ...bookmark,
-    createdAt: bookmark.createdAt.getTime(),
-  }))
+  const bookmarks = bookmarkRows as unknown as Bookmark[]
+
+  for (const bookmark of bookmarks) {
+    bookmark.createdAt = (bookmark.createdAt as unknown as Date).getTime()
+  }
 
   return (
     <>

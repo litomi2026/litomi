@@ -8,7 +8,6 @@ import { useNavigationModeStore } from '@/components/ImageViewer/store/navigatio
 import { useScreenFitStore } from '@/components/ImageViewer/store/screenFit'
 import { useTouchOrientationStore } from '@/components/ImageViewer/store/touchOrientation'
 import { type Manga } from '@/types/manga'
-import { SourceParam } from '@/utils/param'
 
 import { IconChevronLeft, IconReload } from '../icons/IconImageViewer'
 import FullscreenButton from './FullscreenButton'
@@ -24,10 +23,9 @@ const ScrollViewer = dynamic(() => import('@/components/ImageViewer/ScrollViewer
 
 type Props = {
   manga: Manga
-  source: SourceParam
 }
 
-export default function ImageViewer({ manga, source }: Readonly<Props>) {
+export default function ImageViewer({ manga }: Readonly<Props>) {
   const [showController, setShowController] = useState(false)
   const { navMode, setNavMode } = useNavigationModeStore()
   const { screenFit, setScreenFit } = useScreenFitStore()
@@ -66,7 +64,7 @@ export default function ImageViewer({ manga, source }: Readonly<Props>) {
         aria-current={showController}
         className="fixed top-0 left-0 right-0 z-10 bg-background/70 backdrop-blur border-b border-zinc-500 px-safe transition opacity-0 pointer-events-none aria-current:opacity-100 aria-current:pointer-events-auto"
       >
-        <div className="flex gap-2 items-center justify-between p-3 [&_button]:rounded-full [&_button]:active:text-zinc-500 [&_button]:hover:bg-zinc-800 [&_button]:transition [&_button]:p-2">
+        <div className="flex gap-2 items-center justify-between p-3 [&_button]:rounded-full [&_button]:active:text-zinc-500 [&_button]:hover:bg-zinc-800 [&_button]:transition [&_button]:p-2 [&_button]:px-3">
           <div className="flex gap-1">
             <button aria-label="뒤로가기" onClick={() => router.back()}>
               <IconChevronLeft className="w-6" />
@@ -75,7 +73,7 @@ export default function ImageViewer({ manga, source }: Readonly<Props>) {
               <IconReload className="w-6" />
             </button>
           </div>
-          <MangaDetailButton manga={manga} source={source} />
+          <MangaDetailButton manga={manga} />
           <div className="flex gap-1">
             <ShareButton />
             <FullscreenButton />

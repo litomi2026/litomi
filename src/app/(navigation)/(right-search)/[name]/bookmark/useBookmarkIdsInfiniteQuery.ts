@@ -1,6 +1,6 @@
 import { useSuspenseInfiniteQuery } from '@tanstack/react-query'
 
-import { BookmarkWithSource, GETBookmarksResponse } from '@/app/api/bookmarks/route'
+import { Bookmark, GETBookmarksResponse } from '@/app/api/bookmarks/route'
 import { QueryKeys } from '@/constants/query'
 import { handleResponseError } from '@/utils/react-query-error'
 
@@ -22,7 +22,7 @@ export async function fetchBookmarksPaginated(
   return handleResponseError<GETBookmarksResponse>(response)
 }
 
-export default function useBookmarkIdsInfiniteQuery(initialBookmarks: BookmarkWithSource[]) {
+export default function useBookmarkIdsInfiniteQuery(initialBookmarks: Bookmark[]) {
   return useSuspenseInfiniteQuery<GETBookmarksResponse, Error>({
     queryKey: QueryKeys.infiniteBookmarks,
     queryFn: ({ pageParam }) => fetchBookmarksPaginated(pageParam as { mangaId: number; createdAt: number } | null),
@@ -35,7 +35,7 @@ export default function useBookmarkIdsInfiniteQuery(initialBookmarks: BookmarkWi
   })
 }
 
-function getNextCursor(bookmarks: BookmarkWithSource[]) {
+function getNextCursor(bookmarks: Bookmark[]) {
   if (bookmarks.length !== BOOKMARKS_PER_PAGE) {
     return null
   }

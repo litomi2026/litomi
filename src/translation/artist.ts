@@ -2,7 +2,7 @@ import 'server-only'
 
 import artistTranslationJSON from '@/translation/artist.json'
 
-import { Multilingual, translateValue } from './common'
+import { Multilingual, normalizeValue, translateValue } from './common'
 
 const ARTIST_TRANSLATION: Record<string, Multilingual> = artistTranslationJSON
 
@@ -23,8 +23,11 @@ export function getAllArtistsWithLabels() {
 }
 
 export function translateArtistList(artistList: string[] | undefined, locale: keyof Multilingual) {
-  return artistList?.map((artist) => ({
-    value: artist,
-    label: translateValue(ARTIST_TRANSLATION, artist, locale),
-  }))
+  return artistList?.map((artist) => {
+    const normalizedValue = normalizeValue(artist)
+    return {
+      value: normalizedValue,
+      label: translateValue(ARTIST_TRANSLATION, normalizedValue, locale),
+    }
+  })
 }

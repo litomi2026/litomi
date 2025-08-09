@@ -1,21 +1,27 @@
-import fs from 'fs'
-import path from 'path'
-import prettier from 'prettier'
+import { FALLBACK_IMAGE_URL } from '@/constants/json'
 
-type Params = {
-  pathname: string
-  json: Record<string, unknown>
-}
+export function getOriginFromImageURLs(urls: string[] | null | undefined) {
+  if (!urls || urls.length === 0) {
+    return { images: [FALLBACK_IMAGE_URL] }
+  }
 
-// Prettier를 사용해 JSON 문자열로 포맷팅한 후 파일에 덮어씁니다.
-export async function prettifyJSON({ pathname, json }: Params) {
-  const filePath = path.resolve(__dirname, pathname)
-  const prettierConfig = await prettier.resolveConfig(filePath)
+  try {
+    const firstOrigin = new URL(urls[0]).origin
 
-  const formattedJson = await prettier.format(JSON.stringify(json), {
-    parser: 'json',
-    ...prettierConfig,
-  })
+    const allSameOrigin = urls.every((url) => {
+      try {
+        return new URL(url).origin === firstOrigin
+      } catch {
+        return false
+      }
+    })
 
-  fs.writeFileSync(filePath, formattedJson, 'utf-8')
+    if (!allSameOrigin) {
+      return { images: urls }
+    }
+
+    return { origin: firstOrigin, images: urls.map((url) => url.replace(firstOrigin, '')) }
+  } catch {
+    return { images: urls }
+  }
 }

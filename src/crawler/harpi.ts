@@ -1,12 +1,7 @@
 import type { Multilingual } from '@/translation/common'
 
-import {
-  GETHarpiSearchRequest,
-  HarpiComicKind,
-  HarpiListMode,
-  HarpiRandomMode,
-  HarpiSort,
-} from '@/app/api/proxy/harpi/search/schema'
+import { GETHarpiSearchRequest, HarpiSearchSchema } from '@/app/api/proxy/harpi/search/schema'
+import { MangaSource } from '@/database/enum'
 import { HARPI_TAG_MAP } from '@/database/harpi-tag'
 import { translateArtistList } from '@/translation/artist'
 import { translateCharacterList } from '@/translation/character'
@@ -65,12 +60,8 @@ const HARPI_CONFIG: ProxyClientConfig = {
     jitter: true,
   },
   defaultHeaders: {
-    Accept: 'application/json',
-    'Accept-Language': 'ko-KR,ko;q=0.9,zh-CN;q=0.8,zh;q=0.7,ja;q=0.6,sm;q=0.5,en;q=0.4',
     Origin: 'https://harpi.in/',
     Referer: 'https://harpi.in/',
-    'User-Agent':
-      'Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.96 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
   },
 }
 
@@ -99,32 +90,20 @@ export class HarpiClient {
     return this.convertHarpiToManga(response.data)
   }
 
-  async fetchMangas(
-    params: GETHarpiSearchRequest = {
-      comicKind: HarpiComicKind.EMPTY,
-      isIncludeTagsAnd: true,
-      minImageCount: 0,
-      maxImageCount: 0,
-      listMode: HarpiListMode.SORT,
-      randomMode: HarpiRandomMode.SEARCH,
-      page: 0,
-      pageLimit: 10,
-      sort: HarpiSort.DATE_DESC,
-    },
-    revalidate = 0,
-  ): Promise<Manga[]> {
-    const searchParams = this.buildSearchParams(params)
+  async fetchMangas(params: Partial<GETHarpiSearchRequest> = {}, revalidate = 0): Promise<Manga[] | null> {
+    const validatedParams = HarpiSearchSchema.parse(params)
+    const searchParams = this.buildSearchParams(validatedParams)
 
     const response = await this.client.fetch<HarpiListResponse>(`/animation/list?${searchParams}`, {
       cache: revalidate > 0 ? 'force-cache' : 'no-store',
       next: { revalidate },
     })
 
-    return response.data.map((manga) => this.convertHarpiToManga(manga))
-  }
+    if (response.data.length === 0) {
+      return null
+    }
 
-  private buildImageUrls(imageUrls: string[]): string[] {
-    return this.sortImageUrls(imageUrls).map((url) => `https://soujpa.in/start/${url}`)
+    return response.data.map((manga) => this.convertHarpiToManga(manga))
   }
 
   private buildSearchParams(params: GETHarpiSearchRequest): URLSearchParams {
@@ -232,11 +211,12 @@ export class HarpiClient {
       type: harpiManga.type,
       languages: translateLanguageList(['korean'], locale),
       date: new Date(harpiManga.date).toISOString(),
-      images: this.buildImageUrls(harpiManga.imageUrl),
-      cdn: 'soujpa.in',
+      images: this.sortImageURLs(harpiManga.imageUrl).map((url) => `/start/${url}`),
+      origin: 'https://soujpa.in',
       viewCount: harpiManga.views,
       count: harpiManga.imageUrl.length,
       rating: harpiManga.meanRating,
+      source: MangaSource.HARPI,
     }
   }
 
@@ -249,7 +229,7 @@ export class HarpiClient {
    * - image123.gif
    * - image_001_final.jpg
    */
-  private sortImageUrls(urls: string[]): string[] {
+  private sortImageURLs(urls: string[]): string[] {
     return urls.slice().sort((a, b) => {
       const patterns = [
         // Matches: _123.ext, -123.ext, .123.ext

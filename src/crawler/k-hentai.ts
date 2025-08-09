@@ -1,5 +1,6 @@
 import type { Manga } from '@/types/manga'
 
+import { MangaSource } from '@/database/enum'
 import { translateArtistList } from '@/translation/artist'
 import { translateCharacterList } from '@/translation/character'
 import { normalizeValue } from '@/translation/common'
@@ -9,9 +10,10 @@ import { translateSeriesList } from '@/translation/series'
 import { translateTag } from '@/translation/tag'
 import { convertCamelCaseToKebabCase } from '@/utils/param'
 
-import { ParseError } from './errors'
+import { NotFoundError, ParseError } from './errors'
 import { ProxyClient, ProxyClientConfig } from './proxy'
 import { isUpstreamServer5XXError } from './proxy-utils'
+import { getOriginFromImageURLs } from './utils'
 
 const kHentaiTypeNumberToName: Record<number, string> = {
   1: '동인지',
@@ -157,7 +159,8 @@ const K_HENTAI_CONFIG: ProxyClientConfig = {
     jitter: true,
   },
   defaultHeaders: {
-    Referer: 'https://k-hentai.org',
+    Origin: 'https://k-hentai.org/',
+    Referer: 'https://k-hentai.org/',
   },
 }
 
@@ -177,17 +180,26 @@ export class KHentaiClient {
     return KHentaiClient.instance
   }
 
-  async fetchManga(id: number): Promise<Manga> {
+  async fetchManga(id: number): Promise<Manga | null> {
     const gallery = await this.fetchGallery(id)
+
+    if (!gallery) {
+      return null
+    }
 
     return {
       ...this.convertKHentaiCommonToManga(gallery),
-      images: gallery.files.map((file) => file.image.url),
+      ...getOriginFromImageURLs(gallery.files.map((file) => file.image.url)),
     }
   }
 
-  async fetchMangaImages(id: number): Promise<string[]> {
+  async fetchMangaImages(id: number): Promise<string[] | null> {
     const gallery = await this.fetchGallery(id)
+
+    if (!gallery) {
+      return null
+    }
+
     return gallery.files.map((file) => file.image.url)
   }
 
@@ -235,56 +247,62 @@ export class KHentaiClient {
 
     const mangas = kHentaiMangas
       .filter((manga) => manga.archived === 1)
-      .map((manga) => ({
-        ...this.convertKHentaiCommonToManga(manga),
-        images: [manga.thumb],
-      }))
+      .map((manga) => this.convertKHentaiCommonToManga(manga))
 
     return params.offset ? mangas.slice(Number(params.offset)) : mangas
   }
 
   private convertKHentaiCommonToManga(manga: KHentaiMangaCommon) {
     const locale = 'ko' // TODO: Get from user preferences or context
-    const seriesValues = manga.tags.filter(({ tag }) => tag[0] === 'parody').map(({ tag }) => tag[1])
-    const characterValues = manga.tags.filter(({ tag }) => tag[0] === 'character').map(({ tag }) => tag[1])
-    const groupValues = manga.tags.filter(({ tag }) => tag[0] === 'group').map(({ tag }) => tag[1])
-    const artistValues = manga.tags.filter(({ tag }) => tag[0] === 'artist').map(({ tag }) => tag[1])
-    const languageValues = manga.tags.filter(({ tag }) => tag[0] === 'language').map(({ tag }) => tag[1])
+    const { id, title, category, posted, rating, tags, filecount, views } = manga
+    const seriesValues = tags.filter(({ tag }) => tag[0] === 'parody').map(({ tag }) => tag[1])
+    const characterValues = tags.filter(({ tag }) => tag[0] === 'character').map(({ tag }) => tag[1])
+    const groupValues = tags.filter(({ tag }) => tag[0] === 'group').map(({ tag }) => tag[1])
+    const artistValues = tags.filter(({ tag }) => tag[0] === 'artist').map(({ tag }) => tag[1])
+    const languageValues = tags.filter(({ tag }) => tag[0] === 'language').map(({ tag }) => tag[1])
 
     return {
-      id: manga.id,
+      id,
+      title,
+      images: [manga.thumb],
       artists: translateArtistList(artistValues, locale),
       characters: translateCharacterList(characterValues, locale),
       group: translateGroupList(groupValues, locale),
-      date: new Date(manga.posted * 1000).toISOString(),
+      date: new Date(posted * 1000).toISOString(),
       series: translateSeriesList(seriesValues, locale),
-      tags: manga.tags.filter(this.isValidKHentaiTag).map(({ tag: [category, value] }) => ({
+      tags: tags.filter(this.isValidKHentaiTag).map(({ tag: [category, value] }) => ({
         category,
         value: normalizeValue(value),
         label: translateTag(category, value, locale),
       })),
-      title: manga.title,
-      type: kHentaiTypeNumberToName[manga.category] ?? '?',
+      type: kHentaiTypeNumberToName[category] ?? '?',
       languages: translateLanguageList(languageValues, locale),
-      cdn: 'ehgt.org',
-      count: manga.filecount,
-      rating: manga.rating / 100,
-      viewCount: manga.views,
+      count: filecount,
+      rating: rating / 100,
+      viewCount: views,
+      source: MangaSource.K_HENTAI,
     }
   }
 
-  private async fetchGallery(id: number): Promise<KHentaiGallery> {
-    const html = await this.client.fetch<string>(
-      `/r/${id}`,
-      {
-        cache: 'force-cache',
-        next: { revalidate: 43200 }, // 12 hours
-        headers: { Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' },
-      },
-      true,
-    )
+  private async fetchGallery(id: number): Promise<KHentaiGallery | null> {
+    try {
+      const html = await this.client.fetch<string>(
+        `/r/${id}`,
+        {
+          cache: 'force-cache',
+          next: { revalidate: 43200 }, // 12 hours
+          headers: { Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' },
+        },
+        true,
+      )
 
-    return this.parseGalleryFromHTML(html, id)
+      return this.parseGalleryFromHTML(html, id)
+    } catch (error) {
+      if (error instanceof NotFoundError) {
+        return null
+      }
+      throw error
+    }
   }
 
   // NOTE: k-hentai에서 언어, 그룹, 패러디 등의 값도 태그로 내려줘서, 진짜 태그만 추출하기 위한 함수

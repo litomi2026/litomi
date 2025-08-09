@@ -2,7 +2,7 @@ import 'server-only'
 
 import characterTranslationJSON from '@/translation/character.json'
 
-import { Multilingual, translateValue } from './common'
+import { Multilingual, normalizeValue, translateValue } from './common'
 
 const CHARACTER_TRANSLATION: Record<string, Multilingual> = characterTranslationJSON
 
@@ -23,8 +23,11 @@ export function getAllCharactersWithLabels() {
 }
 
 export function translateCharacterList(characterList: string[] | undefined, locale: keyof Multilingual) {
-  return characterList?.map((character) => ({
-    value: character,
-    label: translateValue(CHARACTER_TRANSLATION, character, locale),
-  }))
+  return characterList?.map((character) => {
+    const normalizedValue = normalizeValue(character)
+    return {
+      value: normalizedValue,
+      label: translateValue(CHARACTER_TRANSLATION, normalizedValue, locale),
+    }
+  })
 }

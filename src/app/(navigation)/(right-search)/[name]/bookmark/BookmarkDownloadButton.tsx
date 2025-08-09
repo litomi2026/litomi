@@ -32,7 +32,6 @@ export default function BookmarkDownloadButton() {
       totalCount: data.bookmarks.length,
       bookmarks: data.bookmarks.map((bookmark) => ({
         mangaId: bookmark.mangaId,
-        source: bookmark.source,
         createdAt: new Date(bookmark.createdAt || Date.now()).toISOString(),
       })),
     }

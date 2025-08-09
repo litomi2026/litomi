@@ -4,7 +4,7 @@ import webpush, { PushSubscription } from 'web-push'
 import { NEXT_PUBLIC_VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY } from '@/constants/env'
 import { CANONICAL_URL } from '@/constants/url'
 import { db } from '@/database/drizzle'
-import { BookmarkSource } from '@/database/enum'
+import { MangaSource } from '@/database/enum'
 import { notificationTable, pushSettingsTable, webPushTable } from '@/database/schema'
 
 webpush.setVapidDetails(CANONICAL_URL, NEXT_PUBLIC_VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY)
@@ -14,7 +14,7 @@ export interface WebPushPayload {
   body: string
   data?: {
     mangaId?: number
-    source?: BookmarkSource
+    source?: MangaSource
     url?: string
     timestamp?: number
     notificationType?: 'bookmark' | 'keyword' | 'new_manga'
