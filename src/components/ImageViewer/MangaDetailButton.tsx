@@ -3,9 +3,9 @@ import dayjs from 'dayjs'
 import { memo, Suspense, useState } from 'react'
 
 import { Manga } from '@/types/manga'
-import { SourceParam } from '@/utils/param'
 
 import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from '../card/BookmarkButton'
+import DownloadButton, { DownloadButtonError, DownloadButtonSkeleton } from '../card/DownloadButton'
 import MangaMetadataItem from '../card/MangaMetadataItem'
 import MangaMetadataList from '../card/MangaMetadataList'
 import TagList from '../TagList'
@@ -13,14 +13,14 @@ import Modal from '../ui/Modal'
 
 type Props = {
   manga: Manga
-  source: SourceParam
 }
 
 export default memo(MangaDetailButton)
 
-function MangaDetailButton({ manga, source }: Readonly<Props>) {
-  const { title, artists, group, series, characters, type, tags, date, languages } = manga
+function MangaDetailButton({ manga }: Readonly<Props>) {
+  const { title, artists, group, series, characters, type, tags, date, languages, origin } = manga
   const [isOpened, setIsOpened] = useState(false)
+  const isDownloadable = origin === 'https://soujpa.in'
 
   return (
     <>
@@ -81,15 +81,22 @@ function MangaDetailButton({ manga, source }: Readonly<Props>) {
             )}
           </div>
           <div
-            className="flex flex-wrap justify-around gap-2 text-sm [&_button]:transition [&_button]:bg-zinc-900 [&_button]:rounded-lg [&_button]:p-1 [&_button]:px-2 [&_button]:border-2 [&_button]:h-full [&_button]:w-full
+            className="grid grid-cols-2 gap-2 text-sm [&_button]:transition [&_button]:bg-zinc-900 [&_button]:rounded-lg [&_button]:p-1 [&_button]:px-2 [&_button]:border-2 [&_button]:h-full [&_button]:w-full
             [&_button]:disabled:bg-zinc-800 [&_button]:disabled:pointer-events-none [&_button]:disabled:text-zinc-500 [&_button]:disabled:cursor-not-allowed 
             [&_button]:hover:bg-zinc-800 [&_button]:active:bg-zinc-900 [&_button]:active:border-zinc-700"
           >
             <ErrorBoundary fallback={BookmarkButtonError}>
               <Suspense fallback={<BookmarkButtonSkeleton className="grow" />}>
-                <BookmarkButton className="grow" manga={manga} source={source} />
+                <BookmarkButton className="grow" manga={manga} />
               </Suspense>
             </ErrorBoundary>
+            {isDownloadable && (
+              <ErrorBoundary fallback={DownloadButtonError}>
+                <Suspense fallback={<DownloadButtonSkeleton className="flex-1" />}>
+                  <DownloadButton className="flex-1" manga={manga} />
+                </Suspense>
+              </ErrorBoundary>
+            )}
           </div>
         </div>
       </Modal>

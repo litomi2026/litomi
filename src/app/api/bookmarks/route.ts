@@ -1,5 +1,4 @@
 import { createCacheControl } from '@/crawler/proxy-utils'
-import { BookmarkSource } from '@/database/enum'
 import selectBookmarks from '@/sql/selectBookmarks'
 import { getUserIdFromCookie } from '@/utils/session'
 
@@ -8,14 +7,13 @@ import { GETBookmarksSchema } from './schema'
 // NOTE: 로그인 후 다른 계정으로 로그인 시 이전 계정의 북마크 목록이 캐시되어 보여지는 이슈가 있음
 const maxAge = 10
 
-export type BookmarkWithSource = {
+export type Bookmark = {
   mangaId: number
-  source: BookmarkSource
   createdAt: number
 }
 
 export type GETBookmarksResponse = {
-  bookmarks: BookmarkWithSource[]
+  bookmarks: Bookmark[]
   nextCursor: { mangaId: number; createdAt: number } | null
 }
 

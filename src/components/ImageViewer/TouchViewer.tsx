@@ -3,7 +3,7 @@
 import { useSearchParams } from 'next/navigation'
 import { memo, useCallback, useEffect, useRef } from 'react'
 
-import { MangaIdSourceSearchParam } from '@/app/manga/[id]/[source]/constants'
+import { MangaIdSourceSearchParam } from '@/app/manga/[id]/constants'
 import { PageView } from '@/components/ImageViewer/store/pageView'
 import { ScreenFit } from '@/components/ImageViewer/store/screenFit'
 import { useTouchOrientationStore } from '@/components/ImageViewer/store/touchOrientation'

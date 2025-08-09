@@ -4,7 +4,6 @@ import { sql } from 'drizzle-orm'
 import { z } from 'zod/v4'
 
 import { db } from '@/database/drizzle'
-import { BookmarkSource } from '@/database/enum'
 import { getUserIdFromCookie } from '@/utils/session'
 
 type BookmarkResult = {
@@ -14,7 +13,6 @@ type BookmarkResult = {
 
 const schema = z.object({
   mangaId: z.coerce.number().int().positive(),
-  source: z.enum(BookmarkSource),
 })
 
 export default async function toggleBookmark(_prevState: unknown, formData: FormData) {
@@ -26,14 +24,13 @@ export default async function toggleBookmark(_prevState: unknown, formData: Form
 
   const validation = schema.safeParse({
     mangaId: formData.get('mangaId'),
-    source: +(formData.get('source') ?? ''),
   })
 
   if (!validation.success) {
     return { status: 400, message: validation.error.issues[0].message }
   }
 
-  const { mangaId, source } = validation.data
+  const { mangaId } = validation.data
 
   const results = await db.execute<BookmarkResult>(sql`
     WITH deleted AS (
@@ -41,8 +38,8 @@ export default async function toggleBookmark(_prevState: unknown, formData: Form
       WHERE manga_id = ${mangaId} AND user_id = ${userId}
       RETURNING manga_id
     )
-    INSERT INTO bookmark (manga_id, user_id, source)
-    SELECT ${mangaId}, ${userId}, ${source}
+    INSERT INTO bookmark (manga_id, user_id)
+    SELECT ${mangaId}, ${userId}
     WHERE NOT EXISTS (
       SELECT 1 FROM deleted
     )

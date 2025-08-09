@@ -206,7 +206,7 @@ describe('GET /api/search/suggestions', () => {
         expect(response.status).toBe(200)
         expect(data.length).toBeGreaterThan(0)
         expect(data.every((item) => item.value.includes(':lolic'))).toBe(true)
-        expect(data.some((item) => item.value === 'female:lolicon' && item.label === '여:로리')).toBe(true)
+        expect(data.some((item) => item.value === 'female:lolicon' && item.label === '여:로리콘')).toBe(true)
       })
 
       test('"female:lolic" 값을 검색했을 때 "female:lolicon" 값만 반환한다', async () => {
@@ -217,7 +217,7 @@ describe('GET /api/search/suggestions', () => {
         expect(response.status).toBe(200)
         expect(data).toBeArray()
         expect(data.length).toBe(1)
-        expect(data[0]).toEqual({ label: '여:로리', value: 'female:lolicon' })
+        expect(data[0]).toEqual({ label: '여:로리콘', value: 'female:lolicon' })
       })
 
       test('"female:lolicon" 값을 검색했을 때 값을 반환하지 않는다', async () => {

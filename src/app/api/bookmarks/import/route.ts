@@ -4,13 +4,11 @@ import { z } from 'zod/v4'
 
 import { handleRouteError } from '@/crawler/proxy-utils'
 import { sessionDB } from '@/database/drizzle'
-import { BookmarkSource } from '@/database/enum'
 import { bookmarkTable } from '@/database/schema'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
 
 const importedBookmarkSchema = z.object({
   mangaId: z.number().int().positive(),
-  source: z.enum(BookmarkSource),
   createdAt: z.iso.datetime({ offset: true }).optional(),
 })
 
@@ -96,7 +94,6 @@ export async function POST(request: Request) {
             await tx.insert(bookmarkTable).values({
               userId: Number(userId),
               mangaId: bookmark.mangaId,
-              source: bookmark.source,
               createdAt: bookmark.createdAt ? new Date(bookmark.createdAt) : new Date(),
             })
 

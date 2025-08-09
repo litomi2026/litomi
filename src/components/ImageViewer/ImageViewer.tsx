@@ -8,7 +8,6 @@ import { useNavigationModeStore } from '@/components/ImageViewer/store/navigatio
 import { useScreenFitStore } from '@/components/ImageViewer/store/screenFit'
 import { useTouchOrientationStore } from '@/components/ImageViewer/store/touchOrientation'
 import { type Manga } from '@/types/manga'
-import { SourceParam } from '@/utils/param'
 
 import { IconChevronLeft, IconReload } from '../icons/IconImageViewer'
 import FullscreenButton from './FullscreenButton'
@@ -24,10 +23,9 @@ const ScrollViewer = dynamic(() => import('@/components/ImageViewer/ScrollViewer
 
 type Props = {
   manga: Manga
-  source: SourceParam
 }
 
-export default function ImageViewer({ manga, source }: Readonly<Props>) {
+export default function ImageViewer({ manga }: Readonly<Props>) {
   const [showController, setShowController] = useState(false)
   const { navMode, setNavMode } = useNavigationModeStore()
   const { screenFit, setScreenFit } = useScreenFitStore()
@@ -75,7 +73,7 @@ export default function ImageViewer({ manga, source }: Readonly<Props>) {
               <IconReload className="w-6" />
             </button>
           </div>
-          <MangaDetailButton manga={manga} source={source} />
+          <MangaDetailButton manga={manga} />
           <div className="flex gap-1">
             <ShareButton />
             <FullscreenButton />

@@ -6,12 +6,10 @@ import { memo, Suspense } from 'react'
 import { CensorshipLevel } from '@/database/enum'
 import { Manga } from '@/types/manga'
 import { getViewerLink } from '@/utils/manga'
-import { SourceParam } from '@/utils/param'
 
 import IconExternalLink from '../icons/IconExternalLink'
 import TagList from '../TagList'
 import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from './BookmarkButton'
-import DownloadButton, { DownloadButtonError, DownloadButtonSkeleton } from './DownloadButton'
 import LanguageBadge from './LanguageBadge'
 import MangaCardCensorship from './MangaCardCensorship'
 import MangaCardImage from './MangaCardImage'
@@ -21,7 +19,6 @@ import SearchFromHereButton from './SearchFromHereButton'
 
 type Props = {
   manga: Manga
-  source: SourceParam
   index?: number
   className?: string
   showSearchFromNextButton?: boolean
@@ -35,10 +32,9 @@ export function MangaCardSkeleton() {
   return <li className="animate-fade-in rounded-xl bg-zinc-900 border-2 aspect-[3/4] w-full h-full" />
 }
 
-function MangaCard({ manga, index = 0, source, className = '', showSearchFromNextButton }: Readonly<Props>) {
-  const { id, artists, characters, date, group, series, tags, title, type, languages, images } = manga
-  const viewerLink = getViewerLink(id, source)
-  const isAllDownloadable = images.every((image) => image.startsWith('https://soujpa.in/')) // TODO: 다운로드 가능 여부 확인
+function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton }: Readonly<Props>) {
+  const { id, artists, characters, date, group, series, tags, title, type, languages } = manga
+  const viewerLink = getViewerLink(id)
 
   return (
     <li className={`flex flex-col border-2 rounded-xl overflow-hidden bg-zinc-900 relative ${className}`} key={id}>
@@ -114,19 +110,13 @@ function MangaCard({ manga, index = 0, source, className = '', showSearchFromNex
           >
             <ErrorBoundary fallback={BookmarkButtonError}>
               <Suspense fallback={<BookmarkButtonSkeleton className="flex-1" />}>
-                <BookmarkButton className="flex-1" manga={manga} source={source} />
+                <BookmarkButton className="flex-1" manga={manga} />
               </Suspense>
             </ErrorBoundary>
             {showSearchFromNextButton ? (
               <Suspense>
                 <SearchFromHereButton className="flex-1" mangaId={id} />
               </Suspense>
-            ) : isAllDownloadable ? (
-              <ErrorBoundary fallback={DownloadButtonError}>
-                <Suspense fallback={<DownloadButtonSkeleton className="flex-1" />}>
-                  <DownloadButton className="flex-1" manga={manga} />
-                </Suspense>
-              </ErrorBoundary>
             ) : null}
           </div>
         </div>

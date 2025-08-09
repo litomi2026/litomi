@@ -5,7 +5,6 @@ import { bookmarkTable } from '@/database/schema'
 
 export type BookmarkRow = {
   mangaId: number
-  source: number
   createdAt: Date
 }
 
@@ -33,7 +32,6 @@ export default async function selectBookmarks({ userId, limit, cursorId, cursorT
   const query = db
     .select({
       mangaId: bookmarkTable.mangaId,
-      source: bookmarkTable.source,
       createdAt: bookmarkTable.createdAt,
     })
     .from(bookmarkTable)

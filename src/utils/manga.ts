@@ -1,30 +1,111 @@
-import { CDN } from '@/constants/url'
+import type { LabeledValue, Manga, MangaTag, MangaTagCategory } from '@/types/manga'
 
-import { SourceParam } from './param'
+import { checkDefined } from './type'
 
 type Params = {
-  cdn?: string
-  id?: number | string
-  path: string
+  origin?: string
+  imageURL: string
 }
 
-export function getImageSrc({ cdn, path }: Params) {
-  switch (cdn) {
-    case 'ehgt.org':
-    case 'soujpa.in':
-      return path
-    case 'HARPI':
-      return `${CDN.HARPI}/${path}`
-    case 'hiyobi':
-    case 'k-hentai':
-      return path
-    case 'thumb.k-hentai':
-      return `${CDN.K_HENTAI_THUMB}/${path}`
-    default:
-      return path
+export function getImageSource({ imageURL, origin }: Params) {
+  if (origin) {
+    return `${origin}${imageURL}`
   }
+
+  return imageURL
 }
 
-export function getViewerLink(id: number, source: SourceParam) {
-  return `/manga/${id}/${source}`
+export function getViewerLink(id: number) {
+  return `/manga/${id}`
+}
+
+export function mergeMangas(mangas: Manga[]) {
+  const mergedArtists = deduplicateLabeledValues(mangas.flatMap((m) => m.artists).filter(checkDefined))
+  const mergedCharacters = deduplicateLabeledValues(mangas.flatMap((m) => m.characters).filter(checkDefined))
+  const mergedGroups = deduplicateLabeledValues(mangas.flatMap((m) => m.group).filter(checkDefined))
+  const mergedSeries = deduplicateLabeledValues(mangas.flatMap((m) => m.series).filter(checkDefined))
+  const mergedLanguages = deduplicateLabeledValues(mangas.flatMap((m) => m.languages).filter(checkDefined))
+  const mergedTags = deduplicateLabeledValues(mangas.flatMap((m) => m.tags).filter(checkDefined))
+  const mergedRelated = Array.from(new Set(mangas.flatMap((m) => m.related).filter(checkDefined)))
+
+  return deleteUndefinedValues({
+    ...mangas[0],
+    id: mangas[0].id,
+    title: getExistingValue(mangas, 'title') ?? '404 Not Found',
+    count: getExistingValue(mangas, 'count'),
+    date: getExistingValue(mangas, 'date'),
+    like: getExistingValue(mangas, 'like'),
+    likeAnonymous: getExistingValue(mangas, 'likeAnonymous'),
+    type: getExistingValue(mangas, 'type'),
+    viewCount: getExistingValue(mangas, 'viewCount'),
+    rating: getExistingValue(mangas, 'rating'),
+    harpiId: getExistingValue(mangas, 'harpiId'),
+    artists: getExistingArray(mergedArtists),
+    characters: getExistingArray(mergedCharacters),
+    group: getExistingArray(mergedGroups),
+    series: getExistingArray(mergedSeries),
+    languages: getExistingArray(mergedLanguages),
+    tags: sortLabeledValues(getExistingArray(mergedTags)),
+    related: getExistingArray(mergedRelated),
+  })
+}
+
+function deduplicateLabeledValues<T extends LabeledValue>(items: T[]) {
+  if (items.length === 0) {
+    return null
+  }
+
+  const seen = new Set<string>()
+
+  return items.filter((item) => {
+    if (seen.has(item.value)) {
+      return false
+    }
+    seen.add(item.value)
+    return true
+  })
+}
+
+function deleteUndefinedValues<T extends Record<string, unknown>>(object: T): T {
+  for (const key in object) {
+    if (object[key] === undefined) {
+      delete object[key]
+    }
+  }
+
+  return object
+}
+
+function getExistingArray<T>(array: T[] | null | undefined): T[] | undefined {
+  return array != null && array.length > 0 ? array : undefined
+}
+
+function getExistingValue<T, K extends keyof T>(validMangas: T[], key: K): T[K] | undefined {
+  for (const manga of validMangas) {
+    const value = manga[key]
+    if (value) {
+      return value
+    }
+  }
+  return undefined
+}
+
+const categoryOrder: Record<MangaTagCategory, number> = {
+  female: 1,
+  male: 2,
+  mixed: 3,
+  other: 4,
+  '': 5,
+}
+
+function sortLabeledValues(labeledValues?: MangaTag[]) {
+  return labeledValues?.sort((a, b) => {
+    const categoryDiff = categoryOrder[a.category] - categoryOrder[b.category]
+
+    if (categoryDiff !== 0) {
+      return categoryDiff
+    }
+
+    return a.label.localeCompare(b.label)
+  })
 }
