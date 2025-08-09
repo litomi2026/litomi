@@ -22,11 +22,11 @@ type Props = {
 
 export default function PasskeyCard({ passkey, username }: Readonly<Props>) {
   const { deviceType, createdAt, lastUsedAt, transports, id } = passkey
-  const { icon, label, bgColor } = getDeviceInfo(deviceType || '')
+  const { icon, label, bgColor } = getDeviceInfo(deviceType ?? '')
   const createdRelativeTime = getRelativeTime(createdAt)
   const lastUsedRelativeTime = getRelativeTime(lastUsedAt)
   const truncatedId = getTruncatedId(id)
-  const verificationMethod = getUserVerificationMethod(deviceType || '')
+  const verificationMethod = getUserVerificationMethod(deviceType ?? '')
   const isPlatform = deviceType === 'platform'
 
   return (
