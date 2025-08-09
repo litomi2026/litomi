@@ -60,12 +60,8 @@ const HARPI_CONFIG: ProxyClientConfig = {
     jitter: true,
   },
   defaultHeaders: {
-    Accept: 'application/json',
-    'Accept-Language': 'ko-KR,ko;q=0.9,zh-CN;q=0.8,zh;q=0.7,ja;q=0.6,sm;q=0.5,en;q=0.4',
     Origin: 'https://harpi.in/',
     Referer: 'https://harpi.in/',
-    'User-Agent':
-      'Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.96 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
   },
 }
 

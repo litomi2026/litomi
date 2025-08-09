@@ -113,7 +113,7 @@ export function BookmarkButtonError({ error, reset }: Readonly<ErrorBoundaryFall
 
   return (
     <button
-      className="flex justify-center items-center gap-1 border-2 w-fit border-red-800 rounded-lg p-1 px-2 transition grow"
+      className="flex justify-center items-center gap-1 border-2 w-fit border-red-800 rounded-lg p-1 px-2 transition flex-1"
       onClick={reset}
     >
       <IconBookmark className="w-4 text-red-700" />

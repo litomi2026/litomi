@@ -74,7 +74,8 @@ const HIYOBI_CONFIG: ProxyClientConfig = {
     jitter: true,
   },
   defaultHeaders: {
-    Referer: 'https://hiyobi.org',
+    Origin: 'https://hiyobi.org/',
+    Referer: 'https://hiyobi.org/',
   },
 }
 

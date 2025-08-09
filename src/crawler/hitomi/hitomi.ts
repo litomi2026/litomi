@@ -30,7 +30,8 @@ const HITOMI_CONFIG: ProxyClientConfig = {
     jitter: true,
   },
   defaultHeaders: {
-    Referer: 'https://hitomi.la',
+    Origin: 'https://hitomi.la/',
+    Referer: 'https://hitomi.la/',
   },
 }
 

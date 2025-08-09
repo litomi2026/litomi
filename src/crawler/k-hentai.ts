@@ -159,7 +159,8 @@ const K_HENTAI_CONFIG: ProxyClientConfig = {
     jitter: true,
   },
   defaultHeaders: {
-    Referer: 'https://k-hentai.org',
+    Origin: 'https://k-hentai.org/',
+    Referer: 'https://k-hentai.org/',
   },
 }
 
