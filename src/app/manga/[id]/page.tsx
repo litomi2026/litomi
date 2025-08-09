@@ -3,14 +3,12 @@ import { notFound } from 'next/navigation'
 
 import type { PageProps } from '@/types/nextjs'
 
+import { getMangaFromMultipleSources } from '@/common/manga'
 import ImageViewer from '@/components/ImageViewer/ImageViewer'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
-import { ERROR_MANGA } from '@/constants/json'
 import { CANONICAL_URL } from '@/constants/url'
-import { HitomiClient } from '@/crawler/hitomi/hitomi'
 import { HiyobiClient } from '@/crawler/hiyobi'
-import { KHentaiClient } from '@/crawler/k-hentai'
-import { getImageSrc } from '@/utils/manga'
+import { getImageSource } from '@/utils/manga'
 import { SourceParam } from '@/utils/param'
 
 import { mangaSchema } from './schema'
@@ -24,14 +22,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     notFound()
   }
 
-  const { id, source } = validation.data
-  const manga = await getManga({ source, id })
+  const { id } = validation.data
+  const manga = await getMangaFromMultipleSources(id)
 
   if (!manga) {
     notFound()
   }
 
-  const { title, images, cdn } = manga
+  const { title, images, origin } = manga
 
   return {
     alternates: {
@@ -41,7 +39,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title: `${title} - ${SHORT_NAME}`,
     openGraph: {
       ...defaultOpenGraph,
-      images: images.slice(0, 3).map((path) => getImageSrc({ path, cdn, id: +id })),
+      images: images.slice(0, 3).map((imageURL) => getImageSource({ imageURL, origin })),
     },
   }
 }
@@ -70,8 +68,8 @@ export default async function Page({ params }: PageProps) {
     notFound()
   }
 
-  const { id, source } = validation.data
-  const manga = await getManga({ source, id })
+  const { id } = validation.data
+  const manga = await getMangaFromMultipleSources(id)
 
   if (!manga) {
     notFound()
@@ -79,32 +77,7 @@ export default async function Page({ params }: PageProps) {
 
   return (
     <main>
-      <ImageViewer manga={manga} source={source} />
+      <ImageViewer manga={manga} />
     </main>
   )
-}
-
-async function getManga({ source, id }: { source: SourceParam; id: number }) {
-  try {
-    if (source === SourceParam.HIYOBI) {
-      const hiyobiClient = HiyobiClient.getInstance()
-
-      const [mangaFromHiyobi, mangaImages] = await Promise.all([
-        hiyobiClient.fetchManga(id),
-        hiyobiClient.fetchMangaImages(id),
-      ])
-
-      return {
-        ...(mangaFromHiyobi ?? { id, title: '만화 정보가 없어요' }),
-        images: mangaImages,
-        cdn: 'hiyobi',
-      }
-    } else if (source === SourceParam.K_HENTAI) {
-      return await KHentaiClient.getInstance().fetchManga(id)
-    } else if (source === SourceParam.HITOMI) {
-      return await HitomiClient.getInstance().fetchManga(id)
-    }
-  } catch (error) {
-    return { ...ERROR_MANGA, id, title: JSON.stringify(error) ?? '오류가 발생했어요' }
-  }
 }
