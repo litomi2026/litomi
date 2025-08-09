@@ -16,7 +16,7 @@ export async function GET(request: Request) {
   })
 
   if (!validation.success) {
-    return new Response('400 Bad Request', { status: 400 })
+    return new Response('Bad Request', { status: 400 })
   }
 
   const { ids, only } = validation.data
@@ -26,7 +26,7 @@ export async function GET(request: Request) {
     const mangas = await getMangasFromMultipleSources(uniqueIds)
 
     if (Object.keys(mangas).length === 0) {
-      return new Response('404 Not Found', { status: 404 })
+      return new Response('Not Found', { status: 404 })
     }
 
     if (only === ProxyIdOnly.THUMBNAIL) {
