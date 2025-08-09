@@ -2,7 +2,7 @@ import 'server-only'
 
 import groupTranslationJSON from '@/translation/group.json'
 
-import { Multilingual, translateValue } from './common'
+import { Multilingual, normalizeValue, translateValue } from './common'
 
 const GROUP_TRANSLATION: Record<string, Multilingual> = groupTranslationJSON
 
@@ -23,8 +23,11 @@ export function getAllGroupsWithLabels() {
 }
 
 export function translateGroupList(groupList: string[] | undefined, locale: keyof Multilingual) {
-  return groupList?.map((group) => ({
-    value: group,
-    label: translateValue(GROUP_TRANSLATION, group, locale),
-  }))
+  return groupList?.map((group) => {
+    const normalizedValue = normalizeValue(group)
+    return {
+      value: normalizedValue,
+      label: translateValue(GROUP_TRANSLATION, normalizedValue, locale),
+    }
+  })
 }

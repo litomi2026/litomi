@@ -37,6 +37,7 @@ class GG {
   private async doRefresh(): Promise<void> {
     try {
       const response = await fetch('https://ltn.gold-usergeneratedcontent.net/gg.js')
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
