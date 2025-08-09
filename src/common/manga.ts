@@ -62,7 +62,7 @@ export async function getMangasFromMultipleSources(ids: number[]): Promise<Recor
   const harpiClient = HarpiClient.getInstance()
   const harpiMangas = await harpiClient.fetchMangas({ ids }).catch((error) => new Error(error))
   const mangaMap: Record<number, Manga> = {}
-  const remainingIds: number[] = []
+  const remainingIds = [...ids]
 
   if (harpiMangas) {
     for (const id of ids) {
