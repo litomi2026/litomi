@@ -15,7 +15,7 @@ import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 import { mangasSchema } from './schema'
 
-export const revalidate = 86400 // 1 day
+export const dynamic = 'error'
 
 export const metadata: Metadata = {
   alternates: {

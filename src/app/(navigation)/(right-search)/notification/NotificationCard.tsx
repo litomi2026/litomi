@@ -1,6 +1,6 @@
 'use client'
 
-import Link, { useLinkStatus } from 'next/link'
+import Link from 'next/link'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 
@@ -10,8 +10,8 @@ import IconBookmark from '@/components/icons/IconBookmark'
 import IconCheck from '@/components/icons/IconCheck'
 import IconDot from '@/components/icons/IconDot'
 import IconEye from '@/components/icons/IconEye'
-import IconSpinner from '@/components/icons/IconSpinner'
 import IconTrash from '@/components/icons/IconTrash'
+import LinkLoading from '@/components/LinkLoading'
 import { NotificationType } from '@/database/enum'
 import { formatDistanceToNow } from '@/utils/date'
 
@@ -198,21 +198,7 @@ export default function NotificationCard({
           />
         </div>
       </div>
-      <Loading />
+      <LinkLoading />
     </Link>
-  )
-}
-
-function Loading() {
-  const { pending } = useLinkStatus()
-
-  if (!pending) {
-    return null
-  }
-
-  return (
-    <div className="flex items-center justify-center h-full absolute inset-0">
-      <IconSpinner className="h-5 w-5 animate-spin text-zinc-600" />
-    </div>
   )
 }

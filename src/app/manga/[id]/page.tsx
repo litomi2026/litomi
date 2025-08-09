@@ -13,7 +13,6 @@ import { SourceParam } from '@/utils/param'
 import MangaViewer from './MangaViewer'
 import { mangaSchema } from './schema'
 
-export const revalidate = 28800 // 8 hours
 export const dynamic = 'error'
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {

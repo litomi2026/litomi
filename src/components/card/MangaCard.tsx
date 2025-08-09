@@ -8,6 +8,7 @@ import { Manga } from '@/types/manga'
 import { getViewerLink } from '@/utils/manga'
 
 import IconExternalLink from '../icons/IconExternalLink'
+import LinkLoading from '../LinkLoading'
 import TagList from '../TagList'
 import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from './BookmarkButton'
 import LanguageBadge from './LanguageBadge'
@@ -51,7 +52,9 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
               className="flex-1 hover:underline focus:underline"
               href={viewerLink}
               prefetch={index < PREFETCH_INDEX}
+              target="_blank"
             >
+              <LinkLoading />
               <h4 className="line-clamp-3 font-bold text-base leading-5 min-w-0 break-words break-all">{title}</h4>
             </Link>
             {languages && languages.length > 0 && (
