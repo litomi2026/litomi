@@ -48,10 +48,7 @@ export class MangaNotificationProcessor {
     return MangaNotificationProcessor.instance
   }
 
-  async processBatches(
-    mangaList: { manga: Manga; source: MangaSource }[],
-    { batchSize = 50 }: { batchSize?: number },
-  ): Promise<ProcessResult> {
+  async processBatches(mangaList: Manga[], { batchSize = 50 }: { batchSize?: number }): Promise<ProcessResult> {
     const result: ProcessResult = {
       matched: 0,
       notificationsSent: 0,
@@ -71,7 +68,7 @@ export class MangaNotificationProcessor {
     }
 
     this.isProcessing = true
-    const mangaMap = new Map(mangaList.map((item) => [item.manga.id, item]))
+    const mangaMap = new Map(mangaList.map((item) => [item.id, item]))
     const deduplicatedMangas = Array.from(mangaMap.values())
     const uniqueMangaIds = Array.from(mangaMap.keys())
 
@@ -84,11 +81,11 @@ export class MangaNotificationProcessor {
       const existingSet = new Set(existingManga.map((m) => m.mangaId))
 
       const newMangas = deduplicatedMangas
-        .filter((item) => !existingSet.has(item.manga.id))
+        .filter((item) => !existingSet.has(item.id))
         .map((item) => ({
-          manga: item.manga,
+          manga: item,
           source: item.source,
-          metadata: this.matcher.convertMangaToMetadata(item.manga),
+          metadata: this.matcher.convertMangaToMetadata(item),
         }))
 
       if (newMangas.length === 0) {

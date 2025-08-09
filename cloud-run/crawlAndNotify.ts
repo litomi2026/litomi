@@ -7,7 +7,6 @@ import { HarpiClient } from '../src/crawler/harpi'
 import { HiyobiClient } from '../src/crawler/hiyobi'
 import { KHentaiClient } from '../src/crawler/k-hentai'
 import { db } from '../src/database/drizzle'
-import { BookmarkSource } from '../src/database/enum'
 import { MangaNotificationProcessor } from './MangaNotificationProcessor'
 
 const CONFIG = {
@@ -93,11 +92,11 @@ async function crawlAndNotify() {
   }
 }
 
-async function crawlHarpi(): Promise<Array<{ manga: Manga; source: BookmarkSource }>> {
+async function crawlHarpi(): Promise<Manga[]> {
   if (!CONFIG.HARPI.enabled) return []
 
   const client = HarpiClient.getInstance()
-  const results: Array<{ manga: Manga; source: BookmarkSource }> = []
+  const results: Manga[] = []
 
   try {
     for (let page = 0; page < CONFIG.HARPI.maxPages; page++) {
@@ -115,7 +114,11 @@ async function crawlHarpi(): Promise<Array<{ manga: Manga; source: BookmarkSourc
         sort: HarpiSort.DATE_DESC,
       })
 
-      results.push(...mangas.map((manga) => ({ manga, source: BookmarkSource.HARPI })))
+      if (!mangas) {
+        continue
+      }
+
+      results.push(...mangas)
 
       log.success(`Fetched ${mangas.length} manga from Harpi page ${page + 1}`)
 
@@ -130,18 +133,18 @@ async function crawlHarpi(): Promise<Array<{ manga: Manga; source: BookmarkSourc
   return results
 }
 
-async function crawlHiyobi(): Promise<Array<{ manga: Manga; source: BookmarkSource }>> {
+async function crawlHiyobi(): Promise<Manga[]> {
   if (!CONFIG.HIYOBI.enabled) return []
 
   const client = HiyobiClient.getInstance()
-  const results: Array<{ manga: Manga; source: BookmarkSource }> = []
+  const results: Manga[] = []
 
   try {
     for (let page = 1; page <= CONFIG.HIYOBI.maxPages; page++) {
       log.info(`Crawling Hiyobi page ${page}/${CONFIG.HIYOBI.maxPages}`)
 
       const mangas = await client.fetchMangas(page)
-      results.push(...mangas.map((manga) => ({ manga, source: BookmarkSource.HIYOBI })))
+      results.push(...mangas)
 
       log.success(`Fetched ${mangas.length} manga from Hiyobi page ${page}`)
 
@@ -156,17 +159,17 @@ async function crawlHiyobi(): Promise<Array<{ manga: Manga; source: BookmarkSour
   return results
 }
 
-async function crawlKHentai(): Promise<Array<{ manga: Manga; source: BookmarkSource }>> {
+async function crawlKHentai(): Promise<Manga[]> {
   if (!CONFIG.K_HENTAI.enabled) return []
 
   const client = KHentaiClient.getInstance()
-  const results: Array<{ manga: Manga; source: BookmarkSource }> = []
+  const results: Manga[] = []
 
   try {
     log.info('Crawling K-Hentai manga')
 
     const mangas = await client.searchMangas()
-    results.push(...mangas.map((manga) => ({ manga, source: BookmarkSource.K_HENTAI })))
+    results.push(...mangas)
 
     log.success(`Fetched ${mangas.length} manga from K-Hentai`)
   } catch (error) {
