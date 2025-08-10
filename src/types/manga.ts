@@ -22,6 +22,7 @@ export type Manga = {
   related?: number[]
   series?: LabeledValue[]
   source?: MangaSource
+  sources?: MangaSource[]
   tags?: MangaTag[]
   type?: string
   viewCount?: number

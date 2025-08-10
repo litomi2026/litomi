@@ -147,7 +147,6 @@ export class HiyobiClient {
     revalidate = 21600, // 6 hours
   ): Promise<Manga[]> {
     const response = await this.client.fetch<{ list: HiyobiManga[] }>(`/list/${page}`, { next: { revalidate } })
-
     return response.list.filter((manga) => manga.id).map((manga) => this.convertHiyobiToManga(manga))
   }
 
@@ -168,7 +167,7 @@ export class HiyobiClient {
         const sortedCategory = sortTagValue(category)
         return {
           category: sortedCategory,
-          value: normalizeValue(value),
+          value: category,
           label: translateTag(sortedCategory, category, locale),
         }
       }

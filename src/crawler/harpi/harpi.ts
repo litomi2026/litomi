@@ -60,8 +60,11 @@ const HARPI_CONFIG: ProxyClientConfig = {
     jitter: true,
   },
   defaultHeaders: {
-    Origin: 'https://harpi.in/',
+    'accept-encoding': 'gzip, deflate, br, zstd',
+    Origin: 'https://harpi.in',
     Referer: 'https://harpi.in/',
+    'User-Agent':
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
   },
 }
 
