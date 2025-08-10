@@ -1,6 +1,6 @@
 import { CANONICAL_URL } from './url'
 
-export const APPLICATION_NAME = 'Litomi - Manga mirror'
+export const APPLICATION_NAME = '리토미 - Litomi'
 export const SHORT_NAME = '리토미'
 
 export const DESCRIPTION =
