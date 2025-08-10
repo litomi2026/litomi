@@ -1,8 +1,9 @@
 import { FALLBACK_IMAGE_URL } from '@/constants/json'
-import { HarpiClient } from '@/crawler/harpi'
+import { HarpiClient } from '@/crawler/harpi/harpi'
 import { HitomiClient } from '@/crawler/hitomi/hitomi'
 import { HiyobiClient } from '@/crawler/hiyobi'
 import { KHentaiClient } from '@/crawler/k-hentai'
+import { KomiClient } from '@/crawler/komi/komi'
 import { getOriginFromImageURLs } from '@/crawler/utils'
 import { MangaSource } from '@/database/enum'
 import { Manga } from '@/types/manga'
@@ -16,8 +17,9 @@ export async function getMangaFromMultipleSources(id: number): Promise<Manga | n
   const hitomiClient = HitomiClient.getInstance()
   const kHentaiClient = KHentaiClient.getInstance()
   const harpiClient = HarpiClient.getInstance()
+  const komiClient = KomiClient.getInstance()
 
-  const [hiyobiManga, hiyobiImages, kHentaiManga, [harpiManga], hitomiManga] = await Promise.all([
+  const [hiyobiManga, hiyobiImages, kHentaiManga, [harpiManga], komiManga, hitomiManga] = await Promise.all([
     hiyobiClient.fetchManga(id).catch((error) => new Error(error)),
     hiyobiClient.fetchMangaImages(id).catch(() => null),
     kHentaiClient.fetchManga(id).catch((error) => new Error(error)),
@@ -25,10 +27,11 @@ export async function getMangaFromMultipleSources(id: number): Promise<Manga | n
       .fetchMangas({ ids: [id] })
       .then((mangas) => mangas ?? [])
       .catch((error) => [new Error(error)]),
+    komiClient.fetchManga(id).catch((error) => new Error(error)),
     hitomiClient.fetchManga(id).catch((error) => new Error(error)),
   ])
 
-  const sources: MangaResult[] = [harpiManga, hiyobiManga, kHentaiManga, hitomiManga]
+  const sources: MangaResult[] = [harpiManga, hiyobiManga, kHentaiManga, komiManga, hitomiManga]
   const definedSources = sources.filter(checkDefined)
 
   if (definedSources.length === 0) {
@@ -52,6 +55,7 @@ export async function getMangaFromMultipleSources(id: number): Promise<Manga | n
   return {
     ...mergeMangas(validMangas),
     ...getOriginFromImageURLs(validMangas[0].images),
+    sources: validMangas.map((manga) => manga.source).filter(checkDefined),
   }
 }
 
@@ -85,16 +89,18 @@ export async function getMangasFromMultipleSources(ids: number[]): Promise<Recor
   const hiyobiClient = HiyobiClient.getInstance()
   const hitomiClient = HitomiClient.getInstance()
   const kHentaiClient = KHentaiClient.getInstance()
+  const komiClient = KomiClient.getInstance()
 
-  const [hiyobiMangas, hiyobiImages, kHentaiMangas, hitomiMangas] = await Promise.all([
+  const [hiyobiMangas, hiyobiImages, kHentaiMangas, komiMangas, hitomiMangas] = await Promise.all([
     Promise.all(remainingIds.map((id) => hiyobiClient.fetchManga(id).catch((error) => new Error(error)))),
     Promise.all(remainingIds.map((id) => hiyobiClient.fetchMangaImages(id).catch(() => null))),
     Promise.all(remainingIds.map((id) => kHentaiClient.fetchManga(id).catch((error) => new Error(error)))),
+    Promise.all(remainingIds.map((id) => komiClient.fetchManga(id).catch((error) => new Error(error)))),
     Promise.all(remainingIds.map((id) => hitomiClient.fetchManga(id).catch((error) => new Error(error)))),
   ])
 
   for (let i = 0; i < remainingIds.length; i++) {
-    const sources: MangaResult[] = [hiyobiMangas[i], kHentaiMangas[i], hitomiMangas[i]]
+    const sources: MangaResult[] = [hiyobiMangas[i], kHentaiMangas[i], komiMangas[i], hitomiMangas[i]]
     const definedSources = sources.filter(checkDefined)
 
     if (definedSources.length === 0) {
@@ -120,6 +126,7 @@ export async function getMangasFromMultipleSources(ids: number[]): Promise<Recor
     mangaMap[id] = {
       ...mergeMangas(validMangas),
       ...getOriginFromImageURLs(validMangas[0].images),
+      sources: validMangas.map((manga) => manga.source).filter(checkDefined),
     }
   }
 

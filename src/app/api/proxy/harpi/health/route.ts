@@ -1,4 +1,4 @@
-import { HarpiClient } from '@/crawler/harpi'
+import { HarpiClient } from '@/crawler/harpi/harpi'
 import { createCacheControl, createHealthCheckHandler } from '@/crawler/proxy-utils'
 
 export const runtime = 'edge'

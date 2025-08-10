@@ -1,4 +1,4 @@
-import { HarpiClient } from '@/crawler/harpi'
+import { HarpiClient } from '@/crawler/harpi/harpi'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { Manga } from '@/types/manga'
 

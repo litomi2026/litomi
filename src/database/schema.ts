@@ -12,8 +12,6 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core'
 
-import { mangaSeenTable, notificationConditionTable, notificationCriteriaTable } from './notification-schema'
-
 export const userTable = pgTable('user', {
   id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
@@ -135,4 +133,20 @@ export const notificationTable = pgTable(
   (table) => [index('idx_notification_user_id').on(table.userId)],
 ).enableRLS()
 
-export { mangaSeenTable, notificationConditionTable, notificationCriteriaTable }
+export {
+  artistTable,
+  characterTable,
+  groupTable,
+  languageTable,
+  mangaArtistTable,
+  mangaCharacterTable,
+  mangaGroupTable,
+  mangaLanguageTable,
+  mangaSeriesTable,
+  mangaTable,
+  mangaTagTable,
+  seriesTable,
+  tagTable,
+} from './manga-schema'
+
+export { mangaSeenTable, notificationConditionTable, notificationCriteriaTable } from './notification-schema'

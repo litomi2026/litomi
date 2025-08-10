@@ -1,8 +1,8 @@
 import type { Multilingual } from '@/translation/common'
 
 import { GETHarpiSearchRequest, HarpiSearchSchema } from '@/app/api/proxy/harpi/search/schema'
+import { HARPI_TAG_MAP } from '@/crawler/harpi/tag'
 import { MangaSource } from '@/database/enum'
-import { HARPI_TAG_MAP } from '@/database/harpi-tag'
 import { translateArtistList } from '@/translation/artist'
 import { translateCharacterList } from '@/translation/character'
 import { translateLanguageList } from '@/translation/language'
@@ -10,8 +10,8 @@ import { translateSeriesList } from '@/translation/series'
 import { translateTag } from '@/translation/tag'
 import { Manga, MangaTag } from '@/types/manga'
 
-import { ProxyClient, ProxyClientConfig } from './proxy'
-import { isUpstreamServer5XXError } from './proxy-utils'
+import { ProxyClient, ProxyClientConfig } from '../proxy'
+import { isUpstreamServer5XXError } from '../proxy-utils'
 
 type HarpiListResponse = {
   alert: string
@@ -60,8 +60,11 @@ const HARPI_CONFIG: ProxyClientConfig = {
     jitter: true,
   },
   defaultHeaders: {
-    Origin: 'https://harpi.in/',
+    'accept-encoding': 'gzip, deflate, br, zstd',
+    Origin: 'https://harpi.in',
     Referer: 'https://harpi.in/',
+    'User-Agent':
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
   },
 }
 

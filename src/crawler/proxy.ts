@@ -2,18 +2,20 @@ import { CircuitBreaker, CircuitBreakerConfig } from './CircuitBreaker'
 import { NotFoundError, UpstreamServerError } from './errors'
 import { RetryConfig, retryWithBackoff } from './retry'
 
-// Common proxy headers
 export const PROXY_HEADERS = {
-  'User-Agent':
-    'Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.96 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
-  Accept: 'application/json',
-  'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6,sm;q=0.5',
-  'Accept-Encoding': 'gzip, deflate',
-  'Cache-Control': 'no-cache',
-  Pragma: 'no-cache',
+  'accept-language': 'ko-KR,ko;q=0.9',
+  connection: 'keep-alive',
+  priority: 'u=0, i',
+  'sec-ch-ua': '"Not)A;Brand";v="8", "Chromium";v="138", "Google Chrome";v="138"',
+  'sec-ch-ua-mobile': '?0',
+  'sec-ch-ua-platform': '"macOS"',
+  'sec-fetch-dest': 'document',
+  'sec-fetch-mode': 'navigate',
+  'sec-fetch-site': 'none',
+  'sec-fetch-user': '?1',
+  'upgrade-insecure-requests': '1',
 } as const
 
-// Create a managed proxy client
 export interface ProxyClientConfig {
   baseURL: string
   circuitBreaker?: CircuitBreakerConfig
@@ -42,7 +44,6 @@ export class ProxyClient {
           ...options.headers,
         },
         redirect: options.redirect || 'manual',
-        referrerPolicy: 'no-referrer',
       })
 
       if (response.status === 404) {
