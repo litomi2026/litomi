@@ -1,7 +1,9 @@
 import 'server-only'
 
 import { MangaSource } from '@/database/enum'
+import { normalizeValue } from '@/translation/common'
 import { translateLanguageList } from '@/translation/language'
+import { translateTag } from '@/translation/tag'
 import { Manga } from '@/types/manga'
 
 import { ProxyClient, ProxyClientConfig } from '../proxy'
@@ -17,18 +19,22 @@ type KomiManga = {
   group: string
   category: string
   language: string
-  tags: string[]
+  tags: {
+    id: string
+    namespace: string
+    name: string
+  }[]
   images: {
-    hash: string
-    width: number
-    height: number
-    objectKey: string
-    sizeBytes: number
     bucketName: string
     contentType: string
+    hash: string
+    height: number
     isSinglePageSpread: boolean
-    url: string
+    objectKey: string
     pageNumber: number
+    sizeBytes: number
+    url: string
+    width: number
   }[]
   uploadDate: string
   pages: number
@@ -91,8 +97,24 @@ export class KomiClient {
       return null
     }
 
-    const response = await this.client.fetch<KomiManga>(`/api/galleries/${uuid}`)
+    const response = await this.client.fetch<KomiManga>(`/api/galleries/${uuid}`, {
+      cache: 'force-cache',
+      next: { revalidate: 86400 },
+    })
+
     return this.convertKomiToManga(response, id)
+  }
+
+  private checkTagCategory(namespace: string) {
+    switch (namespace) {
+      case 'female':
+      case 'male':
+      case 'mixed':
+      case 'other':
+        return namespace
+      default:
+        return 'other'
+    }
   }
 
   private convertKomiToManga(komiManga: KomiManga, numericId: number): Manga {
@@ -109,10 +131,10 @@ export class KomiClient {
       viewCount: komiManga.viewCount,
       count: komiManga.pages,
       rating: komiManga.rating ?? undefined,
-      tags: komiManga.tags.map((tag) => ({
-        label: tag,
-        value: tag,
-        category: '' as const,
+      tags: komiManga.tags.map(({ name, namespace }) => ({
+        label: translateTag(namespace, name, locale),
+        value: normalizeValue(name),
+        category: this.checkTagCategory(namespace),
       })),
       source: MangaSource.KOMI,
       ...getOriginFromImageURLs(komiManga.images.sort((a, b) => a.pageNumber - b.pageNumber).map((img) => img.url)),
