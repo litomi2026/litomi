@@ -1,14 +1,11 @@
-import { SourceParam } from '@/utils/param'
-
 import IconInfo from '../icons/IconInfo'
 import TooltipPopover from '../ui/TooltipPopover'
 
 type Props = {
-  source: SourceParam
   disabled?: boolean
 }
 
-export default function SourceTooltip({ source, disabled }: Readonly<Props>) {
+export default function SourceTooltip({ disabled }: Readonly<Props>) {
   return (
     <TooltipPopover disabled={disabled} position="bottom" type="tooltip">
       <div aria-disabled={disabled} className="flex items-center gap-1 aria-disabled:text-zinc-600">
@@ -16,8 +13,7 @@ export default function SourceTooltip({ source, disabled }: Readonly<Props>) {
         <IconInfo className="w-3 md:w-4" />
       </div>
       <>
-        {source === SourceParam.HARPI && <HarpiTooltip />}
-        {source === SourceParam.HIYOBI && <HiyobiTooltip />}
+        <HiyobiTooltip />
       </>
     </TooltipPopover>
   )

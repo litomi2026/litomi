@@ -46,7 +46,7 @@ export default async function Layout({ params, children }: LayoutProps) {
       </div>
       {sourceString && (
         <div className="flex justify-center whitespace-nowrap">
-          <SourceTooltip source={sourceString} />
+          <SourceTooltip />
         </div>
       )}
       {children}

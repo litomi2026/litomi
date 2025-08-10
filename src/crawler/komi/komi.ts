@@ -1,3 +1,5 @@
+import 'server-only'
+
 import { MangaSource } from '@/database/enum'
 import { translateLanguageList } from '@/translation/language'
 import { Manga } from '@/types/manga'
@@ -5,6 +7,7 @@ import { Manga } from '@/types/manga'
 import { ProxyClient, ProxyClientConfig } from '../proxy'
 import { isUpstreamServer5XXError } from '../proxy-utils'
 import { getOriginFromImageURLs } from '../utils'
+import { BinaryIdMap } from './BinaryIdMap'
 import idMap from './id.json'
 
 type KomiManga = {
@@ -66,12 +69,12 @@ const KOMI_CONFIG: ProxyClientConfig = {
 export class KomiClient {
   private static instance: KomiClient
   private readonly client: ProxyClient
-  private readonly idMapping: Record<string, string>
+  private readonly idMapping: BinaryIdMap
 
   // Singleton instance
   private constructor() {
     this.client = new ProxyClient(KOMI_CONFIG)
-    this.idMapping = idMap
+    this.idMapping = new BinaryIdMap(idMap as [number, string][])
   }
 
   static getInstance(): KomiClient {
@@ -82,7 +85,7 @@ export class KomiClient {
   }
 
   async fetchManga(id: number): Promise<Manga | null> {
-    const uuid = this.idMapping[id.toString()]
+    const uuid = this.idMapping.get(id)
 
     if (!uuid) {
       return null
