@@ -1,5 +1,5 @@
 import { FALLBACK_IMAGE_URL } from '@/constants/json'
-import { HarpiClient } from '@/crawler/harpi'
+import { HarpiClient } from '@/crawler/harpi/harpi'
 import { HitomiClient } from '@/crawler/hitomi/hitomi'
 import { HiyobiClient } from '@/crawler/hiyobi'
 import { KHentaiClient } from '@/crawler/k-hentai'

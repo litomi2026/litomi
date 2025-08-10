@@ -1,4 +1,4 @@
-import harpiTagJSON from '@/database/harpi-tag.json'
+import harpiTagJSON from '@/crawler/harpi/tag.json'
 
 type HarpiTag = {
   en: string

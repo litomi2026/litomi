@@ -1,8 +1,8 @@
 import type { Multilingual } from '@/translation/common'
 
 import { GETHarpiSearchRequest, HarpiSearchSchema } from '@/app/api/proxy/harpi/search/schema'
+import { HARPI_TAG_MAP } from '@/crawler/harpi/tag'
 import { MangaSource } from '@/database/enum'
-import { HARPI_TAG_MAP } from '@/database/harpi-tag'
 import { translateArtistList } from '@/translation/artist'
 import { translateCharacterList } from '@/translation/character'
 import { translateLanguageList } from '@/translation/language'
@@ -10,8 +10,8 @@ import { translateSeriesList } from '@/translation/series'
 import { translateTag } from '@/translation/tag'
 import { Manga, MangaTag } from '@/types/manga'
 
-import { ProxyClient, ProxyClientConfig } from './proxy'
-import { isUpstreamServer5XXError } from './proxy-utils'
+import { ProxyClient, ProxyClientConfig } from '../proxy'
+import { isUpstreamServer5XXError } from '../proxy-utils'
 
 type HarpiListResponse = {
   alert: string
