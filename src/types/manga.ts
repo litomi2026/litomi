@@ -13,10 +13,12 @@ export type Manga = {
   characters?: LabeledValue[]
   count?: number
   date?: string
+  description?: string
   group?: LabeledValue[]
   languages?: LabeledValue[]
   like?: number
   likeAnonymous?: number
+  lines?: string[]
   origin?: string
   rating?: number
   related?: number[]

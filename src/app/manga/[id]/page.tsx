@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     notFound()
   }
 
-  const { title, images, origin } = manga
+  const { title, description, images, origin } = manga
 
   return {
     alternates: {
@@ -39,7 +39,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title: `${title} - ${SHORT_NAME}`,
     openGraph: {
       ...defaultOpenGraph,
+      title: `${title} - ${SHORT_NAME}`,
+      ...(description && { description }),
       images: images.slice(0, 3).map((imageURL) => getImageSource({ imageURL, origin })),
+      url: `${CANONICAL_URL}/manga/${id}`,
     },
   }
 }
