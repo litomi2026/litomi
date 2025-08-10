@@ -96,10 +96,7 @@ export async function testNotification(data: Record<string, unknown>) {
       body: message,
       icon: '/icon.png',
       badge: '/badge.png',
-      data: {
-        timestamp: Date.now(),
-        notificationType: 'test' as 'bookmark' | 'keyword',
-      },
+      data: { url: 'https://litomi.in' },
     })
 
     return ok('현재 브라우저에 테스트 알림을 보냈어요')

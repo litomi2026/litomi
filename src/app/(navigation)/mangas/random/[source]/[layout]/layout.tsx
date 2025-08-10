@@ -4,7 +4,7 @@ import ShuffleButton from '@/components/ShuffleButton'
 import SourceSliderLink from '@/components/SourceSliderLink'
 import SourceTooltip from '@/components/tooltip/SourceTooltip'
 import ViewSliderLink from '@/components/ViewSliderLink'
-import { SourceParam, validateSource, validateView, ViewCookie } from '@/utils/param'
+import { validateSource, validateView, ViewCookie } from '@/utils/param'
 
 export default async function Layout({ params, children }: LayoutProps) {
   const { source, layout } = await params
@@ -18,11 +18,9 @@ export default async function Layout({ params, children }: LayoutProps) {
         <SourceSliderLink current={sourceString} hrefPrefixes={() => '../'} hrefSuffix={`/${layoutString}`} />
         <ShuffleButton action="refresh" iconClassName="w-5" />
       </div>
-      {sourceString && (
-        <div className="flex justify-center whitespace-nowrap">
-          <SourceTooltip disabled={sourceString === SourceParam.K_HENTAI} source={sourceString} />
-        </div>
-      )}
+      <div className="flex justify-center whitespace-nowrap">
+        <SourceTooltip />
+      </div>
       {children}
       <div className="flex justify-center items-center">
         <ShuffleButton action="refresh" iconClassName="w-5" />

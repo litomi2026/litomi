@@ -24,7 +24,6 @@ export function mergeMangas(mangas: Manga[]) {
   const mergedCharacters = deduplicateLabeledValues(mangas.flatMap((m) => m.characters).filter(checkDefined))
   const mergedGroups = deduplicateLabeledValues(mangas.flatMap((m) => m.group).filter(checkDefined))
   const mergedSeries = deduplicateLabeledValues(mangas.flatMap((m) => m.series).filter(checkDefined))
-  const mergedLanguages = deduplicateLabeledValues(mangas.flatMap((m) => m.languages).filter(checkDefined))
   const mergedTags = deduplicateLabeledValues(mangas.flatMap((m) => m.tags).filter(checkDefined))
   const mergedRelated = Array.from(new Set(mangas.flatMap((m) => m.related).filter(checkDefined)))
 
@@ -44,7 +43,6 @@ export function mergeMangas(mangas: Manga[]) {
     characters: getExistingArray(mergedCharacters),
     group: getExistingArray(mergedGroups),
     series: getExistingArray(mergedSeries),
-    languages: getExistingArray(mergedLanguages),
     tags: sortLabeledValues(getExistingArray(mergedTags)),
     related: getExistingArray(mergedRelated),
   })

@@ -16,7 +16,7 @@ export const userTable = pgTable('user', {
   id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   loginAt: timestamp('login_at', { withTimezone: true }).defaultNow().notNull(),
-  logoutAt: timestamp('logout_at', { withTimezone: true }).defaultNow().notNull(),
+  logoutAt: timestamp('logout_at', { withTimezone: true }),
   loginId: varchar('login_id', { length: 32 }).notNull().unique(),
   name: varchar({ length: 32 }).notNull().unique(),
   passwordHash: text('password_hash').notNull(),

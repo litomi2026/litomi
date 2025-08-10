@@ -270,11 +270,9 @@ export class KHentaiClient {
       group: translateGroupList(groupValues, locale),
       date: new Date(posted * 1000).toISOString(),
       series: translateSeriesList(seriesValues, locale),
-      tags: tags.filter(this.isValidKHentaiTag).map(({ tag: [category, value] }) => ({
-        category,
-        value: normalizeValue(value),
-        label: translateTag(category, value, locale),
-      })),
+      tags: tags
+        .filter(this.isValidKHentaiTag)
+        .map(({ tag: [category, value] }) => translateTag(category, value, locale)),
       type: kHentaiTypeNumberToName[category] ?? '?',
       languages: translateLanguageList(languageValues, locale),
       count: filecount,

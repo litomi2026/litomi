@@ -1,33 +1,29 @@
 import { and, count, inArray, sql } from 'drizzle-orm'
 
+import type { NotificationData } from '../src/database/type'
 import type { Manga } from '../src/types/manga'
 
 import { db } from '../src/database/drizzle'
-import { MangaSource, NotificationType } from '../src/database/enum'
+import { NotificationType } from '../src/database/enum'
 import { mangaSeenTable } from '../src/database/notification-schema'
 import { notificationTable } from '../src/database/schema'
 import { OptimizedNotificationMatcher } from '../src/lib/notification/OptimizedNotificationMatcher'
-import { WebPushService } from '../src/lib/notification/WebPushService'
+import { WebPushPayload, WebPushService } from '../src/lib/notification/WebPushService'
 import { getImageSource, getViewerLink } from '../src/utils/manga'
 
-interface CriteriaMatch {
-  id: number
-  name: string
+interface NewMangaNotification {
+  artists?: string[]
+  body: string
+  mangaId: number
+  previewImageURL: string
+  title: string
+  url: string
 }
 
 interface ProcessResult {
   errors: string[]
   matched: number
   notificationsSent: number
-}
-
-interface UserMangaNotification {
-  criteriaMatches: CriteriaMatch[]
-  mangaArtists?: string[]
-  mangaId: number
-  mangaTitle?: string
-  previewImageUrl?: string
-  source: MangaSource
 }
 
 export class MangaNotificationProcessor {
@@ -84,7 +80,6 @@ export class MangaNotificationProcessor {
         .filter((item) => !existingSet.has(item.id))
         .map((item) => ({
           manga: item,
-          source: item.source,
           metadata: this.matcher.convertMangaToMetadata(item),
         }))
 
@@ -92,9 +87,8 @@ export class MangaNotificationProcessor {
         return result
       }
 
-      const mangaSourceMap = new Map(newMangas.map((item) => [item.manga.id, item.source]))
       const mangaDataMap = new Map(newMangas.map((item) => [item.manga.id, item.manga]))
-      const allUserNotificationsMap = new Map<number, UserMangaNotification[]>()
+      const userNotificationsMap = new Map<number, NewMangaNotification[]>()
 
       for (let i = 0; i < newMangas.length; i += batchSize) {
         const batch = newMangas.slice(i, i + batchSize)
@@ -103,7 +97,11 @@ export class MangaNotificationProcessor {
         try {
           const matchedMangas = await this.matcher.findMatchingUsersWithCriteria(metadataList)
 
-          for (const [mangaId, matches] of matchedMangas || []) {
+          if (!matchedMangas) {
+            continue
+          }
+
+          for (const [mangaId, matches] of matchedMangas) {
             if (matches.length === 0) {
               continue
             }
@@ -121,29 +119,27 @@ export class MangaNotificationProcessor {
               }
             }
 
-            const source = mangaSourceMap.get(mangaId)!
             const manga = mangaDataMap.get(mangaId)!
 
             for (const [userId, criteriaMatches] of userMatches) {
-              const userNotifications = allUserNotificationsMap.get(userId)
+              const previewImageURL = getImageSource({ imageURL: manga.images[0], origin: manga.origin })
+              const criteriaNames = criteriaMatches.map((c) => c.criteriaName).join(', ')
+              const totalCount = criteriaMatches.length
+              const userNotifications = userNotificationsMap.get(userId)
 
-              const previewImageUrl = manga.images?.[0]
-                ? getImageSource({ imageURL: manga.images[0], origin: manga.origin })
-                : undefined
-
-              const newNotification = {
-                criteriaMatches: criteriaMatches.map((c) => ({ id: c.criteriaId, name: c.criteriaName })),
+              const newMangaNotification: NewMangaNotification = {
+                title: manga.title || `만화 #${mangaId}`,
+                body: criteriaNames.length > 25 ? `${criteriaNames.slice(0, 20)}... (${totalCount}개)` : criteriaNames,
                 mangaId,
-                source,
-                mangaTitle: manga.title,
-                mangaArtists: manga.artists?.map((a) => a.value),
-                previewImageUrl,
+                previewImageURL,
+                url: getViewerLink(mangaId),
+                artists: manga.artists?.map((a) => a.value),
               }
 
               if (userNotifications) {
-                userNotifications.push(newNotification)
+                userNotifications.push(newMangaNotification)
               } else {
-                allUserNotificationsMap.set(userId, [newNotification])
+                userNotificationsMap.set(userId, [newMangaNotification])
               }
             }
           }
@@ -152,7 +148,7 @@ export class MangaNotificationProcessor {
         }
       }
 
-      const processResult = await this.processAllUserNotifications(allUserNotificationsMap)
+      const processResult = await this.insertAndSendNotifications(userNotificationsMap)
       result.notificationsSent = processResult.notificationsSent
       result.errors.push(...processResult.errors)
 
@@ -167,31 +163,14 @@ export class MangaNotificationProcessor {
     }
   }
 
-  private createNotificationPayload(notification: UserMangaNotification) {
-    const notificationTitle = notification.mangaTitle || `만화 #${notification.mangaId}`
-    const names = notification.criteriaMatches.map((c) => c.name).join(', ')
-    const totalCount = notification.criteriaMatches.length
-    const notificationBody = names.length > 25 ? `${names.slice(0, 20)}... (${totalCount}개)` : names
-    const mangaUrl = getViewerLink(notification.mangaId)
-
-    return {
-      title: notificationTitle,
-      body: notificationBody,
-      data: {
-        ...notification,
-        url: mangaUrl,
-        notificationType: 'new_manga' as const,
-      },
-      icon: notification.previewImageUrl || '/icon.png',
-      badge: '/badge.png',
-      tag: `manga-${notification.mangaId}`,
-    }
-  }
-
   /**
-   * NOTE(2025-08-06): 데이터베이스 요청 7번
+   * Process notifications for all users:
+   * 1. Insert all notifications into database
+   * 2. Send push notifications only to users with active subscriptions and appropriate settings
+   *
+   * NOTE(2025-08-06): 데이터베이스 요청 8번 (insert notifications, delete old, get settings, get daily counts, get subscriptions, update sentAt)
    */
-  private async processAllUserNotifications(userNotificationsMap: Map<number, UserMangaNotification[]>) {
+  private async insertAndSendNotifications(userNotificationsMap: Map<number, NewMangaNotification[]>) {
     const result = {
       errors: [] as string[],
       notificationsSent: 0,
@@ -202,7 +181,47 @@ export class MangaNotificationProcessor {
     }
 
     const allUserIds = Array.from(userNotificationsMap.keys())
-    const userSettings = await this.notificationService.getUsersPushSettings(allUserIds)
+
+    // Step 1: Insert all notifications into database for all users
+    const allNotificationInserts: {
+      userId: number
+      type: number
+      title: string
+      body: string
+      data: string
+    }[] = []
+
+    for (const [userId, mangaNotifications] of userNotificationsMap) {
+      for (const notification of mangaNotifications) {
+        allNotificationInserts.push({
+          userId,
+          type: NotificationType.NEW_MANGA,
+          title: notification.title,
+          body: notification.body,
+          data: JSON.stringify({
+            url: notification.url,
+            artists: notification.artists,
+            previewImageURL: notification.previewImageURL,
+            mangaId: notification.mangaId,
+          } satisfies NotificationData),
+        })
+      }
+    }
+
+    try {
+      if (allNotificationInserts.length > 0) {
+        await Promise.all([
+          db.insert(notificationTable).values(allNotificationInserts),
+          db.delete(notificationTable).where(sql`${notificationTable.createdAt} < NOW() - INTERVAL '30 days'`),
+        ])
+      }
+    } catch (error) {
+      result.errors.push(`Failed to insert notifications: ${error}`)
+      return result
+    }
+
+    // Step 2: Determine which users should receive push notifications
+    const userSettings = await this.notificationService.getPushSettingsOfUsers(allUserIds)
 
     if (!userSettings) {
       return result
@@ -211,6 +230,7 @@ export class MangaNotificationProcessor {
     const todayStart = new Date()
     todayStart.setHours(0, 0, 0, 0)
 
+    // Get count of push notifications sent today (only those with sentAt set)
     const dailyCounts = await db
       .select({
         userId: notificationTable.userId,
@@ -227,19 +247,18 @@ export class MangaNotificationProcessor {
 
     const userDailyCounts = new Map(dailyCounts.map((row) => [row.userId, row.count]))
 
-    const webPushes: {
-      userId: number
-      payload: ReturnType<MangaNotificationProcessor['createNotificationPayload']>
-    }[] = []
+    // Step 3: Build list of push notifications to send
+    const userWebPushes: { userId: number; payload: WebPushPayload }[] = []
 
     for (const [userId, mangaNotifications] of userNotificationsMap) {
-      // Check if user should receive notifications
       const settings = userSettings.get(userId)
+
+      // Skip if user doesn't have push settings or quiet hours are active
       if (!settings || !this.shouldSendNotificationBasedOnSettings(settings)) {
         continue
       }
 
-      // Check daily limit
+      // Check daily limit for push notifications
       const dailyCount = userDailyCounts.get(userId) || 0
       const remainingToday = settings.maxPerDay - dailyCount
 
@@ -247,17 +266,23 @@ export class MangaNotificationProcessor {
         continue
       }
 
-      // Create notifications for each manga, respecting daily limit
+      // Create push notifications for each manga, respecting daily limit
       let sentForUser = 0
       for (const notification of mangaNotifications) {
-        // Stop if we've reached the daily limit for this user
         if (sentForUser >= remainingToday) {
           break
         }
 
-        webPushes.push({
+        userWebPushes.push({
           userId,
-          payload: this.createNotificationPayload(notification),
+          payload: {
+            title: notification.title,
+            body: notification.body,
+            data: { url: notification.url },
+            icon: notification.previewImageURL,
+            tag: `manga-${notification.mangaId}`,
+            badge: '/badge.png',
+          },
         })
 
         result.notificationsSent++
@@ -265,16 +290,27 @@ export class MangaNotificationProcessor {
       }
     }
 
+    if (userWebPushes.length === 0) {
+      return result
+    }
+
+    // Step 4: Send push notifications (only to users with active subscriptions)
     try {
-      await this.notificationService.sendWebPushesToUsers(webPushes, ({ userId, payload }) => ({
-        userId,
-        type: NotificationType.NEW_MANGA,
-        title: payload.title,
-        body: payload.body,
-        data: JSON.stringify(payload.data),
-      }))
+      await this.notificationService.sendWebPushesToUsers(userWebPushes)
+      const sentUserIds = userWebPushes.map((wp) => wp.userId)
+
+      await db
+        .update(notificationTable)
+        .set({ sentAt: new Date() })
+        .where(
+          and(
+            inArray(notificationTable.userId, sentUserIds),
+            sql`${notificationTable.sentAt} IS NULL`,
+            sql`${notificationTable.createdAt} >= ${todayStart.toISOString()}`,
+          ),
+        )
     } catch (error) {
-      result.errors.push(`Failed to batch send push notifications: ${error}`)
+      result.errors.push(`Failed to send push notifications: ${error}`)
     }
 
     return result

@@ -166,11 +166,7 @@ export class HarpiClient {
         const colonIndex = enTag.indexOf(':')
 
         if (colonIndex === -1) {
-          return {
-            category: 'other',
-            value: enTag,
-            label: translateTag('other', enTag, locale),
-          }
+          return translateTag('other', enTag, locale)
         }
 
         const categoryStr = enTag.substring(0, colonIndex)
@@ -191,11 +187,7 @@ export class HarpiClient {
             category = ''
         }
 
-        return {
-          category,
-          value,
-          label: translateTag(category, value, locale),
-        }
+        return translateTag(category, value, locale)
       })
       .filter((tag): tag is MangaTag => Boolean(tag))
   }

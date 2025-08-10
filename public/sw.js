@@ -9,7 +9,7 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('push', (event) => {
   if (event.data) {
-    const { title, body, icon, badge, tag, data, notificationId } = event.data.json()
+    const { title, body, icon, badge, tag, data } = event.data.json()
 
     const options = {
       body,
@@ -17,11 +17,7 @@ self.addEventListener('push', (event) => {
       badge: badge || '/badge.png',
       vibrate: [200, 100, 200],
       tag: tag || 'default',
-      data: {
-        ...data,
-        notificationId,
-        dateOfArrival: Date.now(),
-      },
+      data,
       actions: [
         {
           action: 'view',
@@ -44,18 +40,14 @@ self.addEventListener('notificationclick', (event) => {
   event.notification.close()
 
   const notificationData = event.notification.data
-  let targetUrl = 'https://litomi.in'
+  let targetURL = 'https://litomi.in'
 
   if (event.action === 'view' || !event.action) {
     if (notificationData?.url) {
-      targetUrl = `https://litomi.in${notificationData.url}`
-    }
-  } else if (event.action === 'bookmark') {
-    if (notificationData?.mangaId && notificationData?.source) {
-      targetUrl = `https://litomi.in/manga/${notificationData.mangaId}/${notificationData.source}?action=bookmark`
+      targetURL = `https://litomi.in${notificationData.url}`
     }
   } else if (notificationData?.url) {
-    targetUrl = `https://litomi.in${notificationData.url}`
+    targetURL = `https://litomi.in${notificationData.url}`
   }
 
   event.waitUntil(
@@ -63,12 +55,12 @@ self.addEventListener('notificationclick', (event) => {
       for (const client of clientList) {
         const isAlreadyOpen = client.url.startsWith('https://litomi.in') && 'focus' in client
         if (isAlreadyOpen) {
-          await client.navigate(targetUrl)
+          await client.navigate(targetURL)
           return client.focus()
         }
       }
       if (self.clients.openWindow) {
-        return self.clients.openWindow(targetUrl)
+        return self.clients.openWindow(targetURL)
       }
     }),
   )

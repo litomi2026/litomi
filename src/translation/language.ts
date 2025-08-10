@@ -21,7 +21,7 @@ const languageTranslations: Record<string, Multilingual> = {
   'n/a': { en: 'N/A', ko: 'N/A', ja: 'N/A' },
   translated: { en: 'Translated', ko: '번역됨', ja: '翻訳' },
   rewrite: { en: 'Rewrite', ko: '재작성', ja: '書き換え' },
-  speechless: { en: 'Speechless', ko: '무언어', ja: '無言' },
+  speechless: { en: 'Speechless', ko: '대사없음', ja: '無言' },
   text_cleaned: { en: 'Text Cleaned', ko: '글 지워짐', ja: 'テキストクリーン' },
 }
 

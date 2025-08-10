@@ -1,14 +1,13 @@
 import { MangaSource } from '@/database/enum'
 import { translateArtistList } from '@/translation/artist'
 import { translateCharacterList } from '@/translation/character'
-import { Multilingual, normalizeValue } from '@/translation/common'
+import { Multilingual } from '@/translation/common'
 import { translateGroupList } from '@/translation/group'
 import { translateLanguageList } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
 import { sortTagValue, translateTag } from '@/translation/tag'
 import { Manga, MangaTag } from '@/types/manga'
 
-import { isValidKHentaiTagCategory } from './k-hentai'
 import { ProxyClient, ProxyClientConfig } from './proxy'
 import { isUpstreamServer5XXError } from './proxy-utils'
 
@@ -165,18 +164,10 @@ export class HiyobiClient {
 
       if (!value) {
         const sortedCategory = sortTagValue(category)
-        return {
-          category: sortedCategory,
-          value: category,
-          label: translateTag(sortedCategory, category, locale),
-        }
+        return translateTag(sortedCategory, category, locale)
       }
 
-      return {
-        category: isValidKHentaiTagCategory(category) ? category : '',
-        value: normalizeValue(value),
-        label: translateTag(category, value, locale),
-      }
+      return translateTag(category, value, locale)
     })
   }
 

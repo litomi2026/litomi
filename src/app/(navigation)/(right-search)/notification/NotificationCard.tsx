@@ -13,6 +13,7 @@ import IconEye from '@/components/icons/IconEye'
 import IconTrash from '@/components/icons/IconTrash'
 import LinkLoading from '@/components/LinkLoading'
 import { NotificationType } from '@/database/enum'
+import { NotificationData } from '@/database/type'
 import { formatDistanceToNow } from '@/utils/date'
 
 const AUTO_MARK_AS_READ_DELAY = 2000
@@ -44,7 +45,11 @@ export default function NotificationCard({
   selected = false,
   selectionMode = false,
 }: NotificationCardProps) {
-  const parsedData = useMemo(() => (notification.data ? JSON.parse(notification.data) : null), [notification.data])
+  const parsedData = useMemo(
+    () => (notification.data ? (JSON.parse(notification.data) as NotificationData) : null),
+    [notification.data],
+  )
+
   const mangaViewerURL = parsedData?.url
   const isUnread = !notification.read
   const [hasBeenViewed, setHasBeenViewed] = useState(false)
@@ -185,17 +190,19 @@ export default function NotificationCard({
         <div className="flex justify-between gap-2 mt-1">
           <div>
             <p className="font-medium text-sm text-zinc-400 line-clamp-2">{notification.body}</p>
-            {parsedData.mangaArtists && parsedData.mangaArtists.length > 0 && (
-              <p className="text-xs text-zinc-400 line-clamp-1 mt-1">작가: {parsedData.mangaArtists.join(', ')}</p>
+            {parsedData && parsedData.artists && parsedData.artists.length > 0 && (
+              <p className="text-xs text-zinc-400 line-clamp-1 mt-1">작가: {parsedData.artists.join(', ')}</p>
             )}
           </div>
-          <img
-            alt={parsedData.mangaId}
-            className="rounded-md object-cover"
-            height={64}
-            src={parsedData.previewImageUrl}
-            width={48}
-          />
+          {parsedData && (
+            <img
+              alt={parsedData.mangaId.toString()}
+              className="rounded-md object-cover"
+              height={64}
+              src={parsedData.previewImageURL}
+              width={48}
+            />
+          )}
         </div>
       </div>
       <LinkLoading />

@@ -1,10 +1,14 @@
+import 'server-only'
+
 import { MangaSource } from '@/database/enum'
 import { translateLanguageList } from '@/translation/language'
+import { translateTag } from '@/translation/tag'
 import { Manga } from '@/types/manga'
 
 import { ProxyClient, ProxyClientConfig } from '../proxy'
 import { isUpstreamServer5XXError } from '../proxy-utils'
 import { getOriginFromImageURLs } from '../utils'
+import { BinaryIdMap } from './BinaryIdMap'
 import idMap from './id.json'
 
 type KomiManga = {
@@ -14,18 +18,22 @@ type KomiManga = {
   group: string
   category: string
   language: string
-  tags: string[]
+  tags: {
+    id: string
+    namespace: string
+    name: string
+  }[]
   images: {
-    hash: string
-    width: number
-    height: number
-    objectKey: string
-    sizeBytes: number
     bucketName: string
     contentType: string
+    hash: string
+    height: number
     isSinglePageSpread: boolean
-    url: string
+    objectKey: string
     pageNumber: number
+    sizeBytes: number
+    url: string
+    width: number
   }[]
   uploadDate: string
   pages: number
@@ -66,12 +74,12 @@ const KOMI_CONFIG: ProxyClientConfig = {
 export class KomiClient {
   private static instance: KomiClient
   private readonly client: ProxyClient
-  private readonly idMapping: Record<string, string>
+  private readonly idMapping: BinaryIdMap
 
   // Singleton instance
   private constructor() {
     this.client = new ProxyClient(KOMI_CONFIG)
-    this.idMapping = idMap
+    this.idMapping = new BinaryIdMap(idMap as [number, string][])
   }
 
   static getInstance(): KomiClient {
@@ -82,13 +90,17 @@ export class KomiClient {
   }
 
   async fetchManga(id: number): Promise<Manga | null> {
-    const uuid = this.idMapping[id.toString()]
+    const uuid = this.idMapping.get(id)
 
     if (!uuid) {
       return null
     }
 
-    const response = await this.client.fetch<KomiManga>(`/api/galleries/${uuid}`)
+    const response = await this.client.fetch<KomiManga>(`/api/galleries/${uuid}`, {
+      cache: 'force-cache',
+      next: { revalidate: 86400 },
+    })
+
     return this.convertKomiToManga(response, id)
   }
 
@@ -106,11 +118,7 @@ export class KomiClient {
       viewCount: komiManga.viewCount,
       count: komiManga.pages,
       rating: komiManga.rating ?? undefined,
-      tags: komiManga.tags.map((tag) => ({
-        label: tag,
-        value: tag,
-        category: '' as const,
-      })),
+      tags: komiManga.tags.map(({ name, namespace }) => translateTag(namespace, name, locale)),
       source: MangaSource.KOMI,
       ...getOriginFromImageURLs(komiManga.images.sort((a, b) => a.pageNumber - b.pageNumber).map((img) => img.url)),
     }
