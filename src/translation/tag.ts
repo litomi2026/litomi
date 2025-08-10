@@ -5,7 +5,7 @@ import tagMaleFemaleJSON from '@/translation/tag-male-female.json'
 import tagMixedJSON from '@/translation/tag-mixed.json'
 import tagOtherJSON from '@/translation/tag-other.json'
 import tagTranslationJSON from '@/translation/tag.json'
-import { MangaTagCategory } from '@/types/manga'
+import { MangaTag, MangaTagCategory } from '@/types/manga'
 
 import { Multilingual, normalizeValue } from './common'
 
@@ -39,25 +39,41 @@ export function sortTagValue(value: string): MangaTagCategory {
   return 'other'
 }
 
-export function translateTag(category: string, value: string, locale: keyof Multilingual) {
-  const tag = `${category}:${normalizeValue(value)}`
-  const translatedCategory = translateTagCategory(category, locale)
-  const translatedValue = TAG_TRANSLATION[tag]?.[locale] || TAG_TRANSLATION[tag]?.en || translateTagValue(value, locale)
-  return `${translatedCategory}:${translatedValue}`
-}
-
-export function translateTagCategory(category: string, locale: keyof Multilingual): string {
-  const translation = TAG_CATEGORY_TRANSLATION[category]
-  return translation?.[locale] || translation?.en || category.replace(/_/g, ' ')
-}
-
-export function translateTagValue(value: string, locale: keyof Multilingual): string {
+// TODO: tag.json 등 분류 완료되면 category 없이도 번역 가능하게 하기
+export function translateTag(category: string, value: string, locale: keyof Multilingual): MangaTag {
   const normalizedValue = normalizeValue(value)
+  const sanitizedCategory = sanitizeTagCategory(category)
+  const tag = `${sanitizedCategory}:${normalizedValue}`
+  const translatedCategory = translateTagCategory(sanitizedCategory, locale)
 
-  const translation =
-    TAG_MALE_FEMALE_TRANSLATION[normalizedValue] ||
-    TAG_MIXED_TRANSLATION[normalizedValue] ||
-    TAG_OTHER_TRANSLATION[normalizedValue]
+  const translatedValue =
+    TAG_TRANSLATION[tag]?.[locale] || TAG_TRANSLATION[tag]?.en || translateTagValue(normalizedValue, locale)
 
-  return translation?.[locale] || translation?.en || value.replace(/_/g, ' ')
+  return {
+    category: sanitizedCategory,
+    value: normalizedValue,
+    label: `${translatedCategory}:${translatedValue}`,
+  }
+}
+
+function sanitizeTagCategory(category: string): MangaTagCategory {
+  switch (category) {
+    case 'female':
+    case 'male':
+    case 'mixed':
+    case 'other':
+      return category
+    default:
+      return 'other'
+  }
+}
+
+function translateTagCategory(category: string, locale: keyof Multilingual): string {
+  const translation = TAG_CATEGORY_TRANSLATION[category]
+  return translation?.[locale] || translation?.en || category
+}
+
+function translateTagValue(value: string, locale: keyof Multilingual): string {
+  const translation = TAG_MALE_FEMALE_TRANSLATION[value] || TAG_MIXED_TRANSLATION[value] || TAG_OTHER_TRANSLATION[value]
+  return translation?.[locale] || translation?.en || value
 }

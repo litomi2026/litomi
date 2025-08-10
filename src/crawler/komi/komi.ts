@@ -1,7 +1,6 @@
 import 'server-only'
 
 import { MangaSource } from '@/database/enum'
-import { normalizeValue } from '@/translation/common'
 import { translateLanguageList } from '@/translation/language'
 import { translateTag } from '@/translation/tag'
 import { Manga } from '@/types/manga'
@@ -105,18 +104,6 @@ export class KomiClient {
     return this.convertKomiToManga(response, id)
   }
 
-  private checkTagCategory(namespace: string) {
-    switch (namespace) {
-      case 'female':
-      case 'male':
-      case 'mixed':
-      case 'other':
-        return namespace
-      default:
-        return 'other'
-    }
-  }
-
   private convertKomiToManga(komiManga: KomiManga, numericId: number): Manga {
     const locale = 'ko' // TODO: Get from user preferences or context
 
@@ -131,11 +118,7 @@ export class KomiClient {
       viewCount: komiManga.viewCount,
       count: komiManga.pages,
       rating: komiManga.rating ?? undefined,
-      tags: komiManga.tags.map(({ name, namespace }) => ({
-        label: translateTag(namespace, name, locale),
-        value: normalizeValue(name),
-        category: this.checkTagCategory(namespace),
-      })),
+      tags: komiManga.tags.map(({ name, namespace }) => translateTag(namespace, name, locale)),
       source: MangaSource.KOMI,
       ...getOriginFromImageURLs(komiManga.images.sort((a, b) => a.pageNumber - b.pageNumber).map((img) => img.url)),
     }

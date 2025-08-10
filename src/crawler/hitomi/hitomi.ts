@@ -1,7 +1,6 @@
 import { MangaSource } from '@/database/enum'
 import { translateArtistList } from '@/translation/artist'
 import { translateCharacterList } from '@/translation/character'
-import { normalizeValue } from '@/translation/common'
 import { translateGroupList } from '@/translation/group'
 import { translateLanguageList } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
@@ -95,11 +94,7 @@ export class HitomiClient {
       series: translateSeriesList(seriesValues, locale),
       tags: gallery.tags?.map((tag) => {
         const category = tag.female === '1' ? 'female' : tag.male === '1' ? 'male' : 'other'
-        return {
-          category,
-          value: normalizeValue(tag.tag),
-          label: translateTag(category, tag.tag, locale),
-        }
+        return translateTag(category, tag.tag, locale)
       }),
       languages: translateLanguageList(languageValues, locale),
       images: await Promise.all(gallery.files.map((file) => this.getImageURL(gallery.id, file))),
