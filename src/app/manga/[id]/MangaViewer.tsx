@@ -16,18 +16,18 @@ export default function MangaViewer({ id }: Readonly<Props>) {
   const { data } = useQuery({
     queryKey: QueryKeys.manga(id),
     queryFn: () => fetchManga(id),
-    placeholderData: () => ({ [id]: { id, title: '불러오는 중', images: [] } }),
+    placeholderData: () => ({ id, title: '불러오는 중', images: [] }),
   })
 
   if (!data) {
     return <NotFound />
   }
 
-  return <ImageViewer manga={data[id]} />
+  return <ImageViewer manga={data} />
 }
 
 async function fetchManga(id: number) {
-  const res = await fetch(`/api/proxy/manga?id=${id}`)
+  const res = await fetch(`/api/proxy/manga/${id}`)
 
   if (!res.ok) {
     return null
