@@ -12,7 +12,7 @@ import TagList from '../TagList'
 import Modal from '../ui/Modal'
 
 const MAX_DESCRIPTION_LENGTH = 150
-const MAX_INITIAL_LINES = 3
+const MAX_INITIAL_LINES = 1
 
 type Props = {
   manga: Manga
@@ -51,7 +51,7 @@ function MangaDetailButton({ manga }: Readonly<Props>) {
                 {displayDescription}
                 {shouldTruncateDescription && (
                   <button
-                    className="ml-1 text-brand-end hover:underline transition text-sm"
+                    className="ml-1 text-brand-end font-medium hover:underline transition text-sm"
                     onClick={() => setShowFullDescription(!showFullDescription)}
                     type="button"
                   >
@@ -119,7 +119,7 @@ function MangaDetailButton({ manga }: Readonly<Props>) {
                 <span className="text-zinc-400 text-sm font-medium">대사 미리보기</span>
                 {hasMoreLines && (
                   <button
-                    className="text-brand-end group-hover:underline transition text-xs"
+                    className="text-brand-end font-medium group-hover:underline transition text-xs"
                     onClick={() => setShowAllLines(!showAllLines)}
                     type="button"
                   >
