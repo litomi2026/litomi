@@ -9,8 +9,9 @@ export async function GET(request: Request) {
 
   try {
     const response = await fetch(`https://komi.la/api/galleries/${id}`)
+    const data = await response.json()
 
-    return Response.json(response, {
+    return Response.json(data, {
       // headers: {
       //   'Cache-Control': createCacheControl({
       //     public: true,
