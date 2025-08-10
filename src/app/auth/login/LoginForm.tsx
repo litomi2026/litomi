@@ -23,7 +23,7 @@ type User = {
   loginId: string
   name: string
   lastLoginAt: Date
-  lastLogoutAt: Date
+  lastLogoutAt?: Date | null
 }
 
 export default function LoginForm() {
