@@ -35,7 +35,7 @@ export class WebPushService {
     return WebPushService.instance
   }
 
-  async getUsersPushSettings(userIds: number[]) {
+  async getPushSettingsOfUsers(userIds: number[]) {
     if (userIds.length === 0) {
       return
     }

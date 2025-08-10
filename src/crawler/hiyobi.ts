@@ -167,7 +167,7 @@ export class HiyobiClient {
         const sortedCategory = sortTagValue(category)
         return {
           category: sortedCategory,
-          value: category,
+          value: normalizeValue(category),
           label: translateTag(sortedCategory, category, locale),
         }
       }
