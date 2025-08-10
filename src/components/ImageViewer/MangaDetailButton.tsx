@@ -40,7 +40,7 @@ function MangaDetailButton({ manga }: Readonly<Props>) {
       <button className="hover:underline" onClick={() => setIsOpened(true)} type="button">
         <h1 className="flex-1 text-center line-clamp-1 font-bold text-foreground break-all md:text-lg">{title}</h1>
       </button>
-      <Modal onClose={() => setIsOpened(false)} open={isOpened} showCloseButton showDragButton>
+      <Modal className="pb-safe" onClose={() => setIsOpened(false)} open={isOpened} showCloseButton showDragButton>
         <div className="bg-zinc-900 min-w-3xs w-screen max-w-sm md:max-w-lg rounded-xl p-4 pt-8 shadow-xl border grid gap-4 text-sm overflow-y-auto max-h-svh md:text-base">
           {/* Title */}
           <h2 className="font-bold text-lg md:text-xl">{title}</h2>
@@ -138,7 +138,7 @@ function MangaDetailButton({ manga }: Readonly<Props>) {
             </div>
           )}
           <div
-            className="flex gap-2 text-sm pb-safe
+            className="flex gap-2 text-sm
             [&_button]:transition [&_button]:bg-zinc-900 [&_button]:rounded-lg [&_button]:p-1 [&_button]:px-2 [&_button]:border-2 [&_button]:h-full [&_button]:w-full
             [&_button]:disabled:bg-zinc-800 [&_button]:disabled:pointer-events-none [&_button]:disabled:text-zinc-500 [&_button]:disabled:cursor-not-allowed 
             [&_button]:hover:bg-zinc-800 [&_button]:active:bg-zinc-900 [&_button]:active:border-zinc-700"
