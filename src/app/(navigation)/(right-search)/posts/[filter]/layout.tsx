@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 
 import type { LayoutProps } from '@/types/nextjs'
 
+import { PostFilter } from '@/app/api/post/schema'
 import PostCreationForm from '@/components/post/PostCreationForm'
 import TopNavigation from '@/components/TopNavigation'
 
@@ -44,7 +45,7 @@ export default async function Layout({ params, children }: LayoutProps) {
       <PostCreationForm
         buttonText="게시하기"
         className="hidden p-4 sm:flex"
-        filter={filter}
+        filter={filter === PostFilterParams.Recommand ? PostFilter.RECOMMAND : PostFilter.FOLLOWING}
         placeholder="무슨 일이 일어나고 있나요?"
       />
       {children}

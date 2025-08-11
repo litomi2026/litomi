@@ -10,7 +10,7 @@ import ReferredPostCard, { ReferredPost } from './ReferredPostCard'
 export type Post = {
   id: number
   createdAt: Date
-  updatedAt: Date
+  updatedAt?: Date
   content?: string | null
   imageURLs?: string[] | null
   author?: {
@@ -18,12 +18,12 @@ export type Post = {
     nickname: string
     name: string
     imageURL: string | null
-  }
+  } | null
   commentCount: number
   repostCount: number
   likeCount: number
   viewCount?: number
-  referredPost?: ReferredPost
+  referredPost?: ReferredPost | null
 }
 
 type Props = {
