@@ -37,16 +37,6 @@ export function getUsernameFromParam(username: string) {
   return decodeURIComponent(username).slice(1)
 }
 
-export function validateId(id: string) {
-  const idNumber = parseInt(id, 10)
-
-  if (isNaN(idNumber) || !isFinite(idNumber) || idNumber < 1) {
-    return 0
-  }
-
-  return idNumber
-}
-
 export function validatePage(page: string) {
   const pageNumber = parseInt(page, 10)
 
@@ -55,42 +45,6 @@ export function validatePage(page: string) {
   }
 
   return pageNumber
-}
-
-export function validatePositiveNumber(str?: string | null) {
-  if (!str) return 0
-
-  const num = parseInt(str, 10)
-
-  if (isNaN(num) || !isFinite(num) || num < 1 || num > Number.MAX_SAFE_INTEGER) {
-    return 0
-  }
-
-  return num
-}
-
-export function validatePostFilter(str: string) {
-  switch (str) {
-    case 'following':
-      return 'following'
-    case 'recommand':
-      return 'recommand'
-    default:
-      return ''
-  }
-}
-
-export function validateSort(order: string) {
-  switch (order) {
-    case SortParam.LATEST:
-      return SortParam.LATEST
-    case SortParam.OLDEST:
-      return SortParam.OLDEST
-    case SortParam.POPULAR:
-      return SortParam.POPULAR
-    default:
-      return ''
-  }
 }
 
 export function validateSource(src: string) {
