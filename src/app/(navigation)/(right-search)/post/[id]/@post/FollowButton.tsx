@@ -8,7 +8,7 @@ import useMeQuery from '@/query/useMeQuery'
 
 type Props = {
   leader: {
-    id: string
+    id: number
     name: string
   }
 }

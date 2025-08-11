@@ -7,25 +7,28 @@ import PostActionButtons from './PostActionButtons'
 import PostImages from './PostImages'
 import ReferredPostCard, { ReferredPost } from './ReferredPostCard'
 
+export type Post = {
+  id: number
+  createdAt: Date
+  updatedAt: Date
+  content: string
+  imageURLs: string[]
+  author: {
+    id: number
+    nickname: string
+    name: string
+    imageURL: string
+  }
+  commentCount?: number
+  repostCount?: number
+  viewCount?: number
+  likeCount?: number
+  referredPost?: ReferredPost
+}
+
 type Props = {
   className?: string
-  post: {
-    id: number
-    createdAt: Date
-    updatedAt: Date
-    content: string
-    imageURLs: string[]
-    author: {
-      nickname: string
-      name: string
-      imageURL: string
-    }
-    commentCount?: number
-    repostCount?: number
-    viewCount?: number
-    likeCount?: number
-    referredPost?: ReferredPost
-  }
+  post: Post
   isThread?: boolean
 }
 

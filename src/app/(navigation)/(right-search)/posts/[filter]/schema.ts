@@ -1,12 +1,10 @@
 import { z } from 'zod/v4'
 
-export enum PostFilter {
-  All = 'all',
+export enum PostFilterParams {
   Following = 'following',
   Recommand = 'recommand',
-  Manga = 'manga',
 }
 
 export const postFilterSchema = z.object({
-  filter: z.enum(PostFilter),
+  filter: z.enum(PostFilterParams),
 })

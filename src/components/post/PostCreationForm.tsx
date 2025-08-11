@@ -1,10 +1,13 @@
 'use client'
 
+import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
 import { toast } from 'sonner'
 
 import { createPost } from '@/app/(navigation)/(right-search)/posts/action'
+import { PostFilter } from '@/app/api/post/schema'
+import { QueryKeys } from '@/constants/query'
 import useActionResponse, { getFormField } from '@/hook/useActionResponse'
 import useMeQuery from '@/query/useMeQuery'
 
@@ -18,6 +21,7 @@ type Props = {
   className?: string
   placeholder?: string
   isReply?: boolean
+  filter: PostFilter
   mangaId?: number
   parentPostId?: number
   referredPostId?: number
@@ -30,11 +34,13 @@ export default function PostCreationForm({
   buttonText = '게시하기',
   mangaId,
   parentPostId,
+  filter,
   referredPostId,
 }: Readonly<Props>) {
   const [content, setContent] = useState('')
   const [hasFocusedBefore, setHasFocusedBefore] = useState(false)
   const { data: me } = useMeQuery()
+  const queryClient = useQueryClient()
 
   const [response, dispatchAction, isPending] = useActionResponse({
     action: createPost,
@@ -46,6 +52,7 @@ export default function PostCreationForm({
       }
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QueryKeys.posts(filter, mangaId) })
       toast.success('글을 작성했어요')
       setContent('')
     },

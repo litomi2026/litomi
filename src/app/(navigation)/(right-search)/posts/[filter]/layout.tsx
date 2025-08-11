@@ -6,7 +6,7 @@ import type { LayoutProps } from '@/types/nextjs'
 import PostCreationForm from '@/components/post/PostCreationForm'
 import TopNavigation from '@/components/TopNavigation'
 
-import { PostFilter, postFilterSchema } from './schema'
+import { PostFilterParams, postFilterSchema } from './schema'
 
 export const dynamic = 'error'
 
@@ -18,8 +18,8 @@ export default async function Layout({ params, children }: LayoutProps) {
   }
 
   const { filter } = validation.data
-  const isRecommand = filter === PostFilter.Recommand
-  const isFollowing = filter === PostFilter.Following
+  const isRecommand = filter === PostFilterParams.Recommand
+  const isFollowing = filter === PostFilterParams.Following
   const barClassName = 'absolute bottom-0 left-1/2 -translate-x-1/2 h-1 rounded w-14 aria-selected:bg-zinc-300'
 
   return (
@@ -41,7 +41,12 @@ export default async function Layout({ params, children }: LayoutProps) {
       </TopNavigation>
       <div className="h-26 sm:hidden" />
       <h2 className="sr-only">게시글 목록</h2>
-      <PostCreationForm buttonText="게시하기" className="hidden p-4 sm:flex" placeholder="무슨 일이 일어나고 있나요?" />
+      <PostCreationForm
+        buttonText="게시하기"
+        className="hidden p-4 sm:flex"
+        filter={filter}
+        placeholder="무슨 일이 일어나고 있나요?"
+      />
       {children}
     </div>
   )
