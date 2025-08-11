@@ -146,13 +146,27 @@ export const postTable = pgTable(
     mangaId: integer('manga_id'),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     content: varchar({ length: 160 }).notNull(),
-    type: smallint().notNull(), // 'text', 'image', 'video', 'audio', 'link', 'poll', 'event', 'other'
+    type: smallint().notNull(), // 'text', 'image', 'video', 'audio', 'poll', 'event', etc.
   },
   (table) => [
     index('idx_post_user_id').on(table.userId),
     index('idx_post_manga_id').on(table.mangaId),
     index('idx_post_parent_post_id').on(table.parentPostId),
   ],
+).enableRLS()
+
+export const postLikeTable = pgTable(
+  'post_like',
+  {
+    userId: bigint('user_id', { mode: 'number' })
+      .references(() => userTable.id, { onDelete: 'cascade' })
+      .notNull(),
+    postId: bigint('post_id', { mode: 'number' })
+      .references(() => postTable.id, { onDelete: 'cascade' })
+      .notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.userId, table.postId] }), index('idx_post_like_post_id').on(table.postId)],
 ).enableRLS()
 
 export {
