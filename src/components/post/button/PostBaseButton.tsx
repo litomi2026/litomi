@@ -10,7 +10,7 @@ export default function PostBaseButton({ disabled, children, onClick }: Readonly
   return (
     <label
       aria-disabled={disabled}
-      className="hover:bg-zinc-500/50 h-fit rounded-full p-2 transition aria-disabled:cursor-not-allowed aria-disabled:text-zinc-500 hover:aria-disabled:bg-transparent"
+      className="hover:bg-zinc-500/50 h-fit cursor-pointer rounded-full p-2 transition aria-disabled:cursor-not-allowed aria-disabled:text-zinc-500 hover:aria-disabled:bg-transparent"
       onClick={onClick}
     >
       {children}

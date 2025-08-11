@@ -1,3 +1,5 @@
+import { PostFilter } from '@/app/api/post/schema'
+
 export const QueryKeys = {
   me: ['me'],
   bookmarks: ['me', 'bookmarks'],
@@ -12,4 +14,5 @@ export const QueryKeys = {
   infiniteManga: ['infinite', 'manga'],
   search: (searchParams: URLSearchParams) => ['search', Object.fromEntries(searchParams)],
   searchSuggestions: (query: string, locale: string) => ['search', 'suggestions', locale, query],
+  posts: (filter: PostFilter, mangaId?: number) => ['posts', filter, mangaId],
 }

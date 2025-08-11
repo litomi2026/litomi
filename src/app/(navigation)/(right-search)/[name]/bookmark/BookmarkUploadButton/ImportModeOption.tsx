@@ -1,4 +1,4 @@
-import { ImportMode } from '@/app/api/bookmarks/import/route'
+import { ImportMode } from '@/app/api/bookmark/import/route'
 
 type Props = {
   colorScheme: 'blue' | 'orange'

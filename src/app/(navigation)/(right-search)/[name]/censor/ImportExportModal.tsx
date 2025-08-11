@@ -3,7 +3,7 @@
 import { memo, useState, useTransition } from 'react'
 import { toast } from 'sonner'
 
-import { CensorshipItem } from '@/app/api/censorships/route'
+import { CensorshipItem } from '@/app/api/censorship/route'
 import { IconDownload } from '@/components/icons/IconDownload'
 import { IconUpload } from '@/components/icons/IconUpload'
 import IconX from '@/components/icons/IconX'

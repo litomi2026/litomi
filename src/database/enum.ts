@@ -53,6 +53,11 @@ export enum NotificationType {
   CRAWL_HISTORY = 2,
 }
 
+export enum PostType {
+  TEXT = 0,
+  POLL = 1,
+}
+
 export const NotificationConditionTypeNames = {
   [NotificationConditionType.SERIES]: '시리즈',
   [NotificationConditionType.CHARACTER]: '캐릭터',

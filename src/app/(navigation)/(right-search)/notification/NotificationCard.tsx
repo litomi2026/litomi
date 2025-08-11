@@ -197,7 +197,7 @@ export default function NotificationCard({
           {parsedData && (
             <img
               alt={parsedData.mangaId.toString()}
-              className="rounded-md object-cover"
+              className="rounded-md object-cover aspect-[3/4]"
               height={64}
               src={parsedData.previewImageURL}
               width={48}

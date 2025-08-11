@@ -11,12 +11,11 @@ type Params = {
   id: string
 }
 
-export async function GET(request: Request, props: RouteProps<Params>) {
-  const params = await props.params
-  const validation = GETProxyKIdSchema.safeParse(params)
+export async function GET(request: Request, { params }: RouteProps<Params>) {
+  const validation = GETProxyKIdSchema.safeParse(await params)
 
   if (!validation.success) {
-    return new Response('400 Bad Request', { status: 400 })
+    return new Response('Bad Request', { status: 400 })
   }
 
   const { id } = validation.data
@@ -26,16 +25,16 @@ export async function GET(request: Request, props: RouteProps<Params>) {
     const manga = await client.fetchManga(id)
 
     if (!manga) {
-      return new Response('404 Not Found', { status: 404 })
+      return new Response('Not Found', { status: 404 })
     }
 
     return Response.json(manga, {
       headers: {
         'Cache-Control': createCacheControl({
           public: true,
-          maxAge: maxAge - 300,
-          sMaxAge: maxAge - 300,
-          staleWhileRevalidate: 300,
+          maxAge,
+          sMaxAge: maxAge,
+          staleWhileRevalidate: maxAge,
         }),
       },
     })

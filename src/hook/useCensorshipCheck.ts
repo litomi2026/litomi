@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 
-import { CensorshipItem } from '@/app/api/censorships/route'
+import { CensorshipItem } from '@/app/api/censorship/route'
 import { BLIND_TAG_VALUE_TO_LABEL, BLIND_TAG_VALUES } from '@/constants/json'
 import { CensorshipKey, CensorshipLevel } from '@/database/enum'
 import { Manga, MangaTagCategory } from '@/types/manga'

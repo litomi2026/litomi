@@ -1,13 +1,13 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { GETBookmarksResponse } from '@/app/api/bookmarks/route'
+import { GETBookmarksResponse } from '@/app/api/bookmark/route'
 import { QueryKeys } from '@/constants/query'
 import { handleResponseError } from '@/utils/react-query-error'
 
 import useMeQuery from './useMeQuery'
 
 export async function fetchBookmarks() {
-  const response = await fetch('/api/bookmarks')
+  const response = await fetch('/api/bookmark')
   return handleResponseError<GETBookmarksResponse>(response)
 }
 

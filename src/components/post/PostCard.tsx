@@ -1,36 +1,48 @@
 import dayjs from 'dayjs'
 import Link from 'next/link'
 
-import { TPost } from '@/mock/post'
-
 import Icon3Dots from '../icons/Icon3Dots'
-import IconBookmark from '../icons/IconBookmark'
-import IconChart from '../icons/IconChart'
-import IconChat from '../icons/IconChat'
-import IconHeart from '../icons/IconHeart'
-import IconLogout from '../icons/IconLogout'
-import IconRepeat from '../icons/IconRepeat'
 import Squircle from '../ui/Squircle'
+import PostActionButtons from './PostActionButtons'
 import PostImages from './PostImages'
-import ReferredPostCard from './ReferredPostCard'
+import ReferredPostCard, { ReferredPost } from './ReferredPostCard'
+
+export type Post = {
+  id: number
+  createdAt: Date
+  updatedAt?: Date
+  content?: string | null
+  imageURLs?: string[] | null
+  author?: {
+    id: number
+    nickname: string
+    name: string
+    imageURL: string | null
+  } | null
+  commentCount: number
+  repostCount: number
+  likeCount: number
+  viewCount?: number
+  referredPost?: ReferredPost | null
+}
 
 type Props = {
-  post: TPost
-  isThread?: boolean
   className?: string
+  post: Post
+  isThread?: boolean
 }
 
 export default function PostCard({ post, isThread, className = '' }: Readonly<Props>) {
-  const imageURLs = post.imageURLs
   const author = post.author
   const referredPost = post.referredPost
+  const imageURLs = post.imageURLs
 
   return (
     <div
       className={`[&:has(.child:hover)]:bg-zinc-900 grid min-w-0 grid-cols-[auto_1fr] gap-2 px-4 pb-2 pt-3 transition ${className}`}
     >
       <div className="relative flex flex-col items-center gap-1">
-        <Squircle className="w-10" src={author?.profileImageURLs?.[0]} textClassName="text-foreground">
+        <Squircle className="w-10" src={author?.imageURL} textClassName="text-foreground">
           {author?.nickname.slice(0, 2) ?? '탈퇴'}
         </Squircle>
         {isThread && (
@@ -59,7 +71,6 @@ export default function PostCard({ post, isThread, className = '' }: Readonly<Pr
                 )}
                 <div className="shrink-0 text-xs overflow-hidden">
                   {dayjs(post.createdAt).format('YYYY-MM-DD HH:mm')}
-                  {post.updatedAt && <span> (수정됨)</span>}
                 </div>
               </div>
             </div>
@@ -68,39 +79,16 @@ export default function PostCard({ post, isThread, className = '' }: Readonly<Pr
           <Link className="child" href={`/post/${post.id}`}>
             <p className="min-w-0 whitespace-pre-wrap break-all">{post.content}</p>
           </Link>
-          {imageURLs && (
-            <PostImages
-              className="max-h-[512px] overflow-hidden border rounded-2xl"
-              initialPost={post}
-              urls={imageURLs}
-            />
-          )}
+          {imageURLs && <PostImages className="max-h-[512px] overflow-hidden border rounded-2xl" urls={imageURLs} />}
           {referredPost && <ReferredPostCard referredPost={referredPost} />}
         </div>
-        <div className="flex flex-wrap gap-2 text-zinc-400">
-          <div className="grid grow grid-cols-4 gap-1 text-sm">
-            <div className="flex items-center">
-              <IconChat className="w-9 shrink-0 p-2" />
-              {post.commentCount}
-            </div>
-            <div className="flex items-center">
-              <IconRepeat className="w-9 shrink-0 p-2" />
-              {post.repostCount}
-            </div>
-            <div className="flex items-center">
-              <IconHeart className="w-9 shrink-0 p-2" />
-              {post.likeCount}
-            </div>
-            <div className="flex items-center">
-              <IconChart className="w-9 shrink-0 p-2" />
-              {post.viewCount}
-            </div>
-          </div>
-          <div className="flex">
-            <IconBookmark className="w-9 p-2" selected={false} />
-            <IconLogout className="w-9 -rotate-90 p-2" />
-          </div>
-        </div>
+        <PostActionButtons
+          commentCount={post.commentCount}
+          likeCount={post.likeCount}
+          postId={post.id}
+          repostCount={post.repostCount}
+          viewCount={post.viewCount}
+        />
       </div>
     </div>
   )

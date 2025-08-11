@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 
 import { BookmarkExportData } from '@/app/(navigation)/(right-search)/[name]/bookmark/constants'
-import { ImportMode, ImportResult } from '@/app/api/bookmarks/import/route'
+import { ImportMode, ImportResult } from '@/app/api/bookmark/import/route'
 import { QueryKeys } from '@/constants/query'
 
 import type { ImportState } from './types'
@@ -34,7 +34,7 @@ export function useBookmarkImport() {
     setImportState('importing')
 
     try {
-      const response = await fetch(`/api/bookmarks/import?mode=${importMode}`, {
+      const response = await fetch(`/api/bookmark/import?mode=${importMode}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(previewData),

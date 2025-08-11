@@ -1,6 +1,6 @@
 import { useSuspenseInfiniteQuery } from '@tanstack/react-query'
 
-import { Bookmark, GETBookmarksResponse } from '@/app/api/bookmarks/route'
+import { Bookmark, GETBookmarksResponse } from '@/app/api/bookmark/route'
 import { QueryKeys } from '@/constants/query'
 import { handleResponseError } from '@/utils/react-query-error'
 
@@ -18,7 +18,7 @@ export async function fetchBookmarksPaginated(
     searchParams.append('cursorTime', cursor.createdAt.toString())
   }
 
-  const response = await fetch(`/api/bookmarks?${searchParams}`)
+  const response = await fetch(`/api/bookmark?${searchParams}`)
   return handleResponseError<GETBookmarksResponse>(response)
 }
 

@@ -1,13 +1,13 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { CensorshipItem, GETCensorshipsResponse } from '@/app/api/censorships/route'
+import { CensorshipItem, GETCensorshipsResponse } from '@/app/api/censorship/route'
 import { QueryKeys } from '@/constants/query'
 import { handleResponseError } from '@/utils/react-query-error'
 
 import useMeQuery from './useMeQuery'
 
 export async function fetchCensorshipsMap() {
-  const response = await fetch('/api/censorships')
+  const response = await fetch('/api/censorship')
   const result = await handleResponseError<GETCensorshipsResponse>(response)
 
   if (result.censorships.length === 0) {

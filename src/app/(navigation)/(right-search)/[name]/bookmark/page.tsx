@@ -5,7 +5,7 @@ import { Suspense } from 'react'
 
 import BookmarkDownloadButton from '@/app/(navigation)/(right-search)/[name]/bookmark/BookmarkDownloadButton'
 import BookmarkUploadButton from '@/app/(navigation)/(right-search)/[name]/bookmark/BookmarkUploadButton'
-import { Bookmark } from '@/app/api/bookmarks/route'
+import { Bookmark } from '@/app/api/bookmark/route'
 import { db } from '@/database/drizzle'
 import { bookmarkTable } from '@/database/schema'
 import { PageProps } from '@/types/nextjs'

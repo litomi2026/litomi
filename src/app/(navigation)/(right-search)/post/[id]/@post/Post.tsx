@@ -1,22 +1,22 @@
-import { Suspense } from '@suspensive/react'
 import dayjs from 'dayjs'
 
+import { PostFilter } from '@/app/api/post/schema'
 import Icon3Dots from '@/components/icons/Icon3Dots'
 import IconBookmark from '@/components/icons/IconBookmark'
 import IconChart from '@/components/icons/IconChart'
 import IconChat from '@/components/icons/IconChat'
 import IconHeart from '@/components/icons/IconHeart'
 import IconRepeat from '@/components/icons/IconRepeat'
-import PostCreationForm, { PostCreationFormSkeleton } from '@/components/post/PostCreationForm'
+import { type Post } from '@/components/post/PostCard'
+import PostCreationForm from '@/components/post/PostCreationForm'
 import PostImages from '@/components/post/PostImages'
 import ReferredPostCard from '@/components/post/ReferredPostCard'
 import Squircle from '@/components/ui/Squircle'
-import { type TPost } from '@/mock/post'
 
 import FollowButton from './FollowButton'
 
 type Props = {
-  post: TPost
+  post: Post
 }
 
 export default function Post({ post }: Readonly<Props>) {
@@ -30,7 +30,7 @@ export default function Post({ post }: Readonly<Props>) {
       <div className="relative grid gap-4 px-4 py-3">
         <div className="flex items-start justify-between gap-2">
           <div className="flex gap-2">
-            <Squircle className="w-10 flex-shrink-0" src={author?.profileImageURLs?.[0]}>
+            <Squircle className="w-10 flex-shrink-0" src={author?.imageURL}>
               {author?.nickname.slice(0, 2)}
             </Squircle>
             <div>
@@ -41,18 +41,12 @@ export default function Post({ post }: Readonly<Props>) {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {!isMyPost && author && (
-              <Suspense clientOnly>
-                <FollowButton leader={author} />
-              </Suspense>
-            )}
+            {!isMyPost && author && <FollowButton leader={author} />}
             <Icon3Dots className="w-5 text-zinc-500" />
           </div>
         </div>
         <p className="min-w-0 whitespace-pre-wrap break-all text-lg">{post.content}</p>
-        {post.imageURLs && (
-          <PostImages className="w-full overflow-hidden border" initialPost={post} urls={post.imageURLs} />
-        )}
+        {post.imageURLs && <PostImages className="w-full overflow-hidden border" urls={post.imageURLs} />}
         {referredPost && <ReferredPostCard referredPost={referredPost} />}
         <div className="flex items-center gap-1 text-zinc-500">
           <span>{dayjs(post.createdAt).format('YYYY-MM-DD HH:mm')}</span>
@@ -98,9 +92,13 @@ export default function Post({ post }: Readonly<Props>) {
             </div>
           ))}
         </div>
-        <Suspense fallback={<PostCreationFormSkeleton />}>
-          <PostCreationForm buttonText="답글" className="flex" isReply placeholder="답글 게시하기" />
-        </Suspense>
+        <PostCreationForm
+          buttonText="답글"
+          className="flex"
+          filter={PostFilter.RECOMMAND} // TODO: 변경해야함
+          isReply
+          placeholder="답글 게시하기"
+        />
       </div>
     </section>
   )

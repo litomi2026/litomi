@@ -1,20 +1,30 @@
 'use client'
 
+import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
 import { toast } from 'sonner'
 
+import { createPost } from '@/app/(navigation)/(right-search)/posts/action'
+import { PostFilter } from '@/app/api/post/schema'
+import { QueryKeys } from '@/constants/query'
+import useActionResponse, { getFormField } from '@/hook/useActionResponse'
 import useMeQuery from '@/query/useMeQuery'
 
+import IconSpinner from '../icons/IconSpinner'
 import LoginLink from '../LoginLink'
 import Squircle from '../ui/Squircle'
 import PostGeolocationButton from './button/PostGeolocationButton'
 
 type Props = {
+  buttonText: string
   className?: string
   placeholder?: string
-  buttonText?: string
   isReply?: boolean
+  filter: PostFilter
+  mangaId?: number
+  parentPostId?: number
+  referredPostId?: number
 }
 
 export default function PostCreationForm({
@@ -22,13 +32,60 @@ export default function PostCreationForm({
   placeholder,
   isReply,
   buttonText = '게시하기',
+  mangaId,
+  parentPostId,
+  filter,
+  referredPostId,
 }: Readonly<Props>) {
   const [content, setContent] = useState('')
   const [hasFocusedBefore, setHasFocusedBefore] = useState(false)
-
   const { data: me } = useMeQuery()
+  const queryClient = useQueryClient()
 
-  const handleClick = () => {
+  const [response, dispatchAction, isPending] = useActionResponse({
+    action: createPost,
+    onError: (error) => {
+      if (typeof error === 'string') {
+        toast.error(error)
+      } else {
+        toast.error(error.content || error.mangaId || error.parentPostId || error.referredPostId)
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QueryKeys.posts(filter, mangaId) })
+      toast.success('글을 작성했어요')
+      setContent('')
+    },
+  })
+
+  const defaultContent = getFormField(response, 'content')
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    if (!me) {
+      e.preventDefault()
+      toast.warning(
+        <div className="flex gap-2 items-center">
+          <div>로그인이 필요해요.</div>
+          <LoginLink>로그인하기</LoginLink>
+        </div>,
+      )
+      return
+    }
+
+    if (content.length < 2) {
+      e.preventDefault()
+      toast.warning('내용을 2자 이상 입력해주세요')
+      return
+    }
+
+    if (content.length > 160) {
+      e.preventDefault()
+      toast.warning('내용은 160자 이하로 입력해주세요')
+      return
+    }
+  }
+
+  function handleClick() {
     if (!me) {
       toast.warning(
         <div className="flex gap-2 items-center">
@@ -40,8 +97,21 @@ export default function PostCreationForm({
     }
   }
 
+  function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault()
+      const form = e.currentTarget.closest('form')
+      if (form) {
+        form.requestSubmit()
+      }
+    }
+  }
+
   return (
-    <form className={`gap-2 ${className}`} onClick={handleClick} onSubmit={(e) => e.preventDefault()}>
+    <form action={dispatchAction} className={`gap-2 ${className}`} onClick={handleClick} onSubmit={handleSubmit}>
+      {mangaId && <input name="manga-id" type="hidden" value={mangaId} />}
+      {parentPostId && <input name="parent-post-id" type="hidden" value={parentPostId} />}
+      {referredPostId && <input name="referred-post-id" type="hidden" value={referredPostId} />}
       <Squircle className="w-10 flex-shrink-0" src={me?.imageURL} textClassName="text-foreground">
         {me?.nickname.slice(0, 2)}
       </Squircle>
@@ -55,12 +125,16 @@ export default function PostCreationForm({
         <TextareaAutosize
           aria-disabled={!me}
           className="h-7 max-h-screen w-full max-w-prose resize-none text-xl focus:outline-none aria-disabled:pointer-events-none"
+          defaultValue={defaultContent}
+          maxLength={160}
           maxRows={25}
+          minLength={2}
+          name="content"
           onChange={(e) => setContent(e.target.value)}
           onFocus={() => setHasFocusedBefore(true)}
+          onKeyDown={handleKeyDown}
           placeholder={placeholder}
           required
-          value={content}
         />
         {hasFocusedBefore && (
           <div className="flex justify-between gap-2">
@@ -70,11 +144,18 @@ export default function PostCreationForm({
             <div className="flex items-center gap-3">
               <div>{content.length}</div>
               <button
-                className="whitespace-nowrap bg-zinc-600 rounded-full px-4 py-2 text-foreground disabled:text-zinc-500 disabled:bg-zinc-800"
-                disabled={!me}
+                aria-busy={isPending}
+                className="whitespace-nowrap relative bg-brand-end text-background rounded-full px-4 py-2 font-semibold 
+                disabled:text-zinc-500 disabled:bg-zinc-800 disabled:cursor-not-allowed aria-busy:text-background/0"
+                disabled={!me || isPending || content.length < 2 || content.length > 160}
                 type="submit"
               >
                 {buttonText}
+                {isPending && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <IconSpinner className="w-4 text-zinc-900" />
+                  </div>
+                )}
               </button>
             </div>
           </div>
@@ -82,8 +163,4 @@ export default function PostCreationForm({
       </div>
     </form>
   )
-}
-
-export function PostCreationFormSkeleton({ className = '' }: { className?: string }) {
-  return <div className={`h-10 rounded-xl animate-fade-in bg-zinc-800 border-b-2 ${className}`} />
 }

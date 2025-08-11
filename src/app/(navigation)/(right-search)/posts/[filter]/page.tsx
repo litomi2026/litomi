@@ -1,23 +1,40 @@
 import { notFound } from 'next/navigation'
 
-import PostCard from '@/components/post/PostCard'
-import { mockedPosts } from '@/mock/post'
+import { PostFilter } from '@/app/api/post/schema'
+import { PageProps } from '@/types/nextjs'
+
+import PostList from './PostList'
+import { PostFilterParams, postFilterSchema } from './schema'
 
 export const dynamic = 'error'
 
-export async function generateStaticParams() {
-  return [{ filter: 'recommand' }, { filter: 'following' }]
+type Params = {
+  filter: PostFilterParams
 }
 
-export default async function Page() {
-  if (!mockedPosts) {
+// Map string filter params to numeric PostFilter enum
+const filterParamsToPostFilter: Record<PostFilterParams, PostFilter> = {
+  [PostFilterParams.Following]: PostFilter.FOLLOWING,
+  [PostFilterParams.Recommand]: PostFilter.RECOMMAND,
+}
+
+export async function generateStaticParams() {
+  return [{ filter: PostFilterParams.Recommand }, { filter: PostFilterParams.Following }]
+}
+
+export default async function Page({ params }: PageProps<Params>) {
+  const validation = postFilterSchema.safeParse(await params)
+
+  if (!validation.success) {
     notFound()
   }
 
-  return (
-    <ul>
-      {mockedPosts?.map((post) => <PostCard className="border-t-2" key={post.id} post={post} />)}
-      <div className="h-10" />
-    </ul>
-  )
+  const { filter } = validation.data
+  const postFilter = filterParamsToPostFilter[filter]
+
+  if (postFilter === undefined) {
+    notFound()
+  }
+
+  return <PostList filter={postFilter} />
 }
