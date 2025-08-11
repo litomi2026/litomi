@@ -44,7 +44,7 @@ export async function GET(request: Request) {
   const validation = HarpiSearchSchema.safeParse(params)
 
   if (!validation.success) {
-    return new Response('400 Bad Request', { status: 400 })
+    return new Response('Bad Request', { status: 400 })
   }
 
   const validatedParams = validation.data
@@ -54,7 +54,7 @@ export async function GET(request: Request) {
     const mangas = await client.searchMangas(validatedParams)
 
     if (!mangas) {
-      return new Response('404 Not Found', { status: 404 })
+      return new Response('Not Found', { status: 404 })
     }
 
     return Response.json({ mangas } satisfies GETProxyHarpiSearchResponse, {
