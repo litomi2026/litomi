@@ -238,6 +238,7 @@ export class KHentaiClient {
       .map(([key, value]) => [convertCamelCaseToKebabCase(key), value])
 
     const searchParams = new URLSearchParams(kebabCaseParams)
+    searchParams.sort()
 
     const kHentaiMangas = await this.client.fetch<KHentaiManga[]>(`/ajax/search?${searchParams}`, {
       cache: revalidate > 0 ? 'force-cache' : 'no-store',

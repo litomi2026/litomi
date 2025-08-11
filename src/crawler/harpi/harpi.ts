@@ -112,7 +112,7 @@ export class HarpiClient {
   private buildSearchParams(params: GETHarpiSearchRequest): URLSearchParams {
     const searchParams = new URLSearchParams()
 
-    const appendMultipleValues = (key: string, value: number | string | number[] | string[]) => {
+    function appendMultipleValues(key: string, value: number | string | number[] | string[]) {
       const values = Array.isArray(value)
         ? value.sort()
         : value
@@ -124,12 +124,18 @@ export class HarpiClient {
     }
 
     if (params.searchText) {
-      const searchTerms = params.searchText.split(' ').filter((term) => term.trim())
+      const searchTerms = params.searchText
+        .split(' ')
+        .filter((term) => term.trim())
+        .sort()
       searchTerms.forEach((term) => searchParams.append('searchText', term))
     }
 
     if (params.lineText) {
-      const lineTexts = params.lineText.split(' ').filter((text) => text.trim())
+      const lineTexts = params.lineText
+        .split(' ')
+        .filter((text) => text.trim())
+        .sort()
       lineTexts.forEach((text) => searchParams.append('lineText', text))
     }
 
