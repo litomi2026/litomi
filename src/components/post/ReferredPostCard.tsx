@@ -1,14 +1,25 @@
 import dayjs from 'dayjs'
 import Link from 'next/link'
 
-import type { TPost, TReferedPost } from '@/mock/post'
-
 import Icon3Dots from '../icons/Icon3Dots'
 import Squircle from '../ui/Squircle'
 import PostImages from './PostImages'
 
+export type ReferredPost = {
+  id: number
+  createdAt: Date
+  updatedAt: Date
+  content: string
+  imageURLs: string[]
+  author: {
+    nickname: string
+    name: string
+    profileImageURLs: string[]
+  }
+}
+
 type Props = {
-  referredPost: TReferedPost
+  referredPost: ReferredPost
 }
 
 export default function ReferredPostCard({ referredPost }: Readonly<Props>) {
@@ -45,13 +56,7 @@ export default function ReferredPostCard({ referredPost }: Readonly<Props>) {
         </div>
         {content && <p className="min-w-0 whitespace-pre-wrap break-all">{content}</p>}
       </div>
-      {imageURLs && (
-        <PostImages
-          className="w-full max-h-[512px] overflow-hidden"
-          initialPost={referredPost as unknown as TPost}
-          urls={imageURLs}
-        />
-      )}
+      {imageURLs && <PostImages className="w-full max-h-[512px] overflow-hidden" urls={imageURLs} />}
     </Link>
   )
 }

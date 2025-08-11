@@ -1,7 +1,5 @@
 'use client'
 
-import type { TPost } from '@/mock/post'
-
 const containerStyle: Record<number, string> = {
   0: '',
   1: 'w-fit',
@@ -21,7 +19,6 @@ const imageStyle: Record<number, string> = {
 type Props = {
   className?: string
   urls: string[]
-  initialPost: TPost
 }
 
 export default function PostImages({ className = '', urls }: Readonly<Props>) {
