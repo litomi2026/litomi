@@ -1,6 +1,5 @@
 'use client'
 
-import { useSearchParams } from 'next/navigation'
 import { memo, useCallback, useEffect, useRef } from 'react'
 
 import { MangaIdSourceSearchParam } from '@/app/manga/[id]/constants'
@@ -59,7 +58,6 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Readonly<Props>) {
   const ulRef = useRef<HTMLUListElement>(null)
   const throttleRef = useRef(false)
   const previousIndexRef = useRef(currentIndex)
-  const searchParams = useSearchParams()
 
   const { prevPage, nextPage } = useImageNavigation({
     maxIndex: images.length - 1,
@@ -262,9 +260,10 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Readonly<Props>) {
     }, 500)
   }, [currentIndex])
 
-  // NOTE: URL의 page 값이 변경되면 이미지 인덱스를 업데이트함
+  // NOTE: page 파라미터가 있으면 초기 페이지를 변경함. 1번만 실행됨.
   useEffect(() => {
-    const pageStr = searchParams.get(MangaIdSourceSearchParam.PAGE) ?? ''
+    const params = new URLSearchParams(window.location.search)
+    const pageStr = params.get(MangaIdSourceSearchParam.PAGE) ?? ''
     const parsedPage = parseInt(pageStr, 10)
 
     if (isNaN(parsedPage) || parsedPage < 1 || parsedPage > images.length) {
@@ -272,7 +271,7 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Readonly<Props>) {
     }
 
     setImageIndex(parsedPage - 1)
-  }, [images.length, searchParams, setImageIndex])
+  }, [images.length, setImageIndex])
 
   return (
     <ul
