@@ -34,6 +34,7 @@
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.2.0",
     "bcrypt": "^5.1.1",
+    "caniuse-lite": "^1.0.30001733",
     "dayjs": "^1.11.13",
     "drizzle-orm": "^0.44.3",
     "jose": "^6.0.12",
