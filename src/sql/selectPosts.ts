@@ -27,7 +27,7 @@ type Params = {
   mangaId?: number
   filter?: 'following' | 'manga' | 'recommand'
   userId?: number
-  currentUserId?: number | null
+  currentUserId?: string | null
 }
 
 export default async function selectPosts({

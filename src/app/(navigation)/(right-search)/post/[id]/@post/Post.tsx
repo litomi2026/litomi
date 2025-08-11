@@ -7,7 +7,7 @@ import IconChart from '@/components/icons/IconChart'
 import IconChat from '@/components/icons/IconChat'
 import IconHeart from '@/components/icons/IconHeart'
 import IconRepeat from '@/components/icons/IconRepeat'
-import PostCreationForm, { PostCreationFormSkeleton } from '@/components/post/PostCreationForm'
+import PostCreationForm from '@/components/post/PostCreationForm'
 import PostImages from '@/components/post/PostImages'
 import ReferredPostCard from '@/components/post/ReferredPostCard'
 import Squircle from '@/components/ui/Squircle'
@@ -98,9 +98,7 @@ export default function Post({ post }: Readonly<Props>) {
             </div>
           ))}
         </div>
-        <Suspense fallback={<PostCreationFormSkeleton />}>
-          <PostCreationForm buttonText="답글" className="flex" isReply placeholder="답글 게시하기" />
-        </Suspense>
+        <PostCreationForm buttonText="답글" className="flex" isReply placeholder="답글 게시하기" />
       </div>
     </section>
   )
