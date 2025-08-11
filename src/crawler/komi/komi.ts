@@ -89,7 +89,7 @@ export class KomiClient {
     return KomiClient.instance
   }
 
-  async fetchManga(id: number): Promise<Manga | null> {
+  async fetchManga(id: number, revalidate = 86400): Promise<Manga | null> {
     const uuid = this.idMapping.get(id)
 
     if (!uuid) {
@@ -97,8 +97,8 @@ export class KomiClient {
     }
 
     const response = await this.client.fetch<KomiManga>(`/api/galleries/${uuid}`, {
-      cache: 'force-cache',
-      next: { revalidate: 86400 },
+      cache: revalidate > 0 ? 'force-cache' : 'no-store',
+      next: { revalidate },
     })
 
     return this.convertKomiToManga(response, id)

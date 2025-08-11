@@ -93,7 +93,7 @@ export class HarpiClient {
     return this.convertHarpiToManga(response.data)
   }
 
-  async fetchMangas(params: Partial<GETHarpiSearchRequest> = {}, revalidate = 0): Promise<Manga[] | null> {
+  async fetchMangas(params: Partial<GETHarpiSearchRequest> = {}, revalidate = 86400): Promise<Manga[] | null> {
     const validatedParams = HarpiSearchSchema.parse(params)
     const searchParams = this.buildSearchParams(validatedParams)
 

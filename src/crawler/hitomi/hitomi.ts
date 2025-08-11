@@ -54,7 +54,7 @@ export class HitomiClient {
     return HitomiClient.instance
   }
 
-  async fetchManga(id: number, revalidate = 300) {
+  async fetchManga(id: number, revalidate = 3600) {
     try {
       const jsText = await this.client.fetch<string>(
         `/galleries/${id}.js`,
