@@ -2,9 +2,8 @@ import './globals.css'
 
 import type { Metadata, Viewport } from 'next'
 
-import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
-import { Analytics } from '@vercel/analytics/react'
-import { SpeedInsights } from '@vercel/speed-insights/next'
+import { GoogleAnalytics } from '@next/third-parties/google'
+import dynamic from 'next/dynamic'
 import localFont from 'next/font/local'
 import { ReactNode } from 'react'
 import { Toaster } from 'sonner'
@@ -13,9 +12,14 @@ import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar'
 import { defaultOpenGraph, DESCRIPTION, SHORT_NAME } from '@/constants'
 import { AMPLITUDE_API_KEY, GA_ID, GTM_ID, VERCEL_ANALYTICS, VERCEL_SPEED_INSIGHTS } from '@/constants/env'
 import { CANONICAL_URL } from '@/constants/url'
-import AmplitudeLazy from '@/lib/amplitude/AmplitudeLazy'
 
 import QueryProvider from '../components/QueryProvider'
+
+// NOTE: 사용하지 않을 수 있어서 dynamic import
+const Amplitude = dynamic(() => import('@/lib/amplitude/Amplitude'))
+const Analytics = dynamic(() => import('@vercel/analytics/react').then((mod) => mod.Analytics))
+const SpeedInsights = dynamic(() => import('@vercel/speed-insights/next').then((mod) => mod.SpeedInsights))
+const GoogleTagManager = dynamic(() => import('@next/third-parties/google').then((mod) => mod.GoogleTagManager))
 
 const PretendardVariable = localFont({
   src: '../fonts/PretendardVariable.400-700.3713.woff2',
@@ -79,7 +83,7 @@ export default function RootLayout({ children }: Readonly<Props>) {
         <Toaster duration={3000} position="top-center" richColors theme="dark" />
         {VERCEL_SPEED_INSIGHTS && <SpeedInsights />}
         {VERCEL_ANALYTICS && <Analytics />}
-        {AMPLITUDE_API_KEY && <AmplitudeLazy apiKey={AMPLITUDE_API_KEY} />}
+        {AMPLITUDE_API_KEY && <Amplitude apiKey={AMPLITUDE_API_KEY} />}
         {GTM_ID && <GoogleTagManager gtmId={GTM_ID} />}
         {GA_ID && <GoogleAnalytics gaId={GA_ID} />}
       </body>
