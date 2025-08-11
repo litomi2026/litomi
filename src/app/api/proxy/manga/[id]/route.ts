@@ -11,9 +11,8 @@ type Params = {
   id: string
 }
 
-export async function GET(request: Request, props: RouteProps<Params>) {
-  const params = await props.params
-  const validation = GETProxyMangaIdSchema.safeParse(params)
+export async function GET(request: Request, { params }: RouteProps<Params>) {
+  const validation = GETProxyMangaIdSchema.safeParse(await params)
 
   if (!validation.success) {
     return new Response('Bad Request', { status: 400 })

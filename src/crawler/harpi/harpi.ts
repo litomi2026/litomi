@@ -93,7 +93,7 @@ export class HarpiClient {
     return this.convertHarpiToManga(response.data)
   }
 
-  async fetchMangas(params: Partial<GETHarpiSearchRequest> = {}, revalidate = 86400): Promise<Manga[] | null> {
+  async searchMangas(params: Partial<GETHarpiSearchRequest> = {}, revalidate = 60): Promise<Manga[] | null> {
     const validatedParams = HarpiSearchSchema.parse(params)
     const searchParams = this.buildSearchParams(validatedParams)
 
@@ -114,11 +114,12 @@ export class HarpiClient {
 
     const appendMultipleValues = (key: string, value: number | string | number[] | string[]) => {
       const values = Array.isArray(value)
-        ? value
+        ? value.sort()
         : value
             .toString()
             .split(',')
             .map((v) => v.trim())
+            .sort()
       values.forEach((v) => searchParams.append(key, v.toString()))
     }
 
