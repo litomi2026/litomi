@@ -58,6 +58,7 @@ export default function PushSettingsForm({ initialSettings }: Props) {
         title="방해 금지 시간"
       >
         <Toggle
+          aria-label="방해 금지 시간 활성화"
           className="w-12 sm:w-14 peer-checked:bg-brand-end/80"
           defaultChecked={defaultQuietEnabled}
           name="quietEnabled"
@@ -102,6 +103,7 @@ export default function PushSettingsForm({ initialSettings }: Props) {
       </ToggleSection>
       <ToggleSection description="여러 업데이트를 모아서 알림" title="스마트 알림">
         <Toggle
+          aria-label="스마트 알림 활성화"
           className="w-12 sm:w-14 peer-checked:bg-brand-end/80"
           defaultChecked={defaultBatchEnabled}
           name="batchEnabled"
