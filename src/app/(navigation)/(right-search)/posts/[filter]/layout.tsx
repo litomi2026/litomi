@@ -8,6 +8,8 @@ import PostCreationForm, { PostCreationFormSkeleton } from '@/components/post/Po
 import TopNavigation from '@/components/TopNavigation'
 import { validatePostFilter } from '@/utils/param'
 
+export const dynamic = 'error'
+
 export default async function Layout({ params, children }: LayoutProps) {
   const { filter } = await params
   const postFilter = validatePostFilter(filter)
