@@ -8,13 +8,13 @@ import PostImages from './PostImages'
 export type ReferredPost = {
   id: number
   createdAt: Date
-  updatedAt: Date
+  updatedAt?: Date
   content: string
-  imageURLs: string[]
-  author: {
+  imageURLs?: string[] | null
+  author?: {
     nickname: string
     name: string
-    profileImageURLs: string[]
+    imageURL?: string | null
   }
 }
 
@@ -33,7 +33,7 @@ export default function ReferredPostCard({ referredPost }: Readonly<Props>) {
       <div className="grid gap-1 p-3">
         <div className="flex min-w-0 justify-between gap-1">
           <div className="flex min-w-0 gap-1 whitespace-nowrap">
-            <Squircle className="w-6 flex-shrink-0" src={author?.profileImageURLs?.[0]} textClassName="text-foreground">
+            <Squircle className="w-6 flex-shrink-0" src={author?.imageURL} textClassName="text-foreground">
               {author?.nickname.slice(0, 2) ?? '탈퇴'}
             </Squircle>
             <div aria-disabled={!author} className="min-w-0 max-w-40 overflow-hidden font-semibold">

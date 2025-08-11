@@ -27,6 +27,8 @@ export default async function selectPosts({
   const conditions: (SQL | undefined)[] = []
   const comments = alias(postTable, 'comments')
   const reposts = alias(postTable, 'reposts')
+  const referredPosts = alias(postTable, 'referred_posts')
+  const referredUser = alias(userTable, 'referred_user')
 
   if (cursor) {
     conditions.push(sql`${postTable.id} < ${cursor}`)
@@ -51,13 +53,9 @@ export default async function selectPosts({
   const query = db
     .select({
       id: postTable.id,
-      userId: postTable.userId,
-      content: postTable.content,
-      mangaId: postTable.mangaId,
-      parentPostId: postTable.parentPostId,
-      referredPostId: postTable.referredPostId,
-      type: postTable.type,
       createdAt: postTable.createdAt,
+      type: postTable.type,
+      content: postTable.content,
       author: {
         id: userTable.id,
         name: userTable.name,
@@ -67,14 +65,28 @@ export default async function selectPosts({
       likeCount: countDistinct(postLikeTable.userId),
       commentCount: countDistinct(comments.id),
       repostCount: countDistinct(reposts.id),
+      referredPost: {
+        id: referredPosts.id,
+        createdAt: referredPosts.createdAt,
+        content: referredPosts.content,
+        author: {
+          id: referredUser.id,
+          name: referredUser.name,
+          nickname: referredUser.nickname,
+          imageURL: referredUser.imageURL,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any,
+      },
     })
     .from(postTable)
     .leftJoin(userTable, eq(postTable.userId, userTable.id))
     .leftJoin(postLikeTable, eq(postTable.id, postLikeTable.postId))
     .leftJoin(comments, eq(comments.parentPostId, postTable.id))
     .leftJoin(reposts, eq(reposts.referredPostId, postTable.id))
+    .leftJoin(referredPosts, eq(referredPosts.id, postTable.referredPostId))
+    .leftJoin(referredUser, eq(referredUser.id, referredPosts.userId))
     .where(conditions.length > 0 ? and(...conditions) : undefined)
-    .groupBy(postTable.id, userTable.id)
+    .groupBy(postTable.id, userTable.id, referredPosts.id, referredUser.id)
     .orderBy(desc(postTable.createdAt), desc(postTable.id))
 
   if (limit) {
