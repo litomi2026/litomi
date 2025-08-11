@@ -1,9 +1,9 @@
 import { z } from 'zod/v4'
 
 export enum PostFilter {
-  FOLLOWING,
-  MANGA,
-  RECOMMAND,
+  FOLLOWING = '0',
+  MANGA = '1',
+  RECOMMAND = '2',
 }
 
 export const GETPostSchema = z.object({

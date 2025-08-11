@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 
+import { PostFilter } from '@/app/api/post/schema'
 import { PageProps } from '@/types/nextjs'
 
 import PostList from './PostList'
@@ -9,6 +10,12 @@ export const dynamic = 'error'
 
 type Params = {
   filter: PostFilterParams
+}
+
+// Map string filter params to numeric PostFilter enum
+const filterParamsToPostFilter: Record<PostFilterParams, PostFilter> = {
+  [PostFilterParams.Following]: PostFilter.FOLLOWING,
+  [PostFilterParams.Recommand]: PostFilter.RECOMMAND,
 }
 
 export async function generateStaticParams() {
@@ -23,6 +30,11 @@ export default async function Page({ params }: PageProps<Params>) {
   }
 
   const { filter } = validation.data
+  const postFilter = filterParamsToPostFilter[filter]
 
-  return <PostList filter={filter} />
+  if (postFilter === undefined) {
+    notFound()
+  }
+
+  return <PostList filter={postFilter} />
 }

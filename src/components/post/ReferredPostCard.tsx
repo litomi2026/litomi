@@ -9,7 +9,7 @@ export type ReferredPost = {
   id: number
   createdAt: Date
   updatedAt?: Date
-  content: string
+  content?: string | null
   imageURLs?: string[] | null
   author?: {
     nickname: string
@@ -36,7 +36,10 @@ export default function ReferredPostCard({ referredPost }: Readonly<Props>) {
             <Squircle className="w-6 flex-shrink-0" src={author?.imageURL} textClassName="text-foreground">
               {author?.nickname.slice(0, 2) ?? '탈퇴'}
             </Squircle>
-            <div aria-disabled={!author} className="min-w-0 max-w-40 overflow-hidden font-semibold">
+            <div
+              aria-disabled={!author}
+              className="min-w-0 max-w-40 overflow-hidden font-semibold aria-disabled:text-zinc-500"
+            >
               {author?.nickname ?? '탈퇴한 사용자입니다'}
             </div>
             <div className="flex min-w-0 items-center gap-1 text-zinc-500">
@@ -54,7 +57,11 @@ export default function ReferredPostCard({ referredPost }: Readonly<Props>) {
           </div>
           <Icon3Dots className="w-5 text-zinc-600" />
         </div>
-        {content && <p className="min-w-0 whitespace-pre-wrap break-all">{content}</p>}
+        {content ? (
+          <p className="min-w-0 whitespace-pre-wrap break-all">{content}</p>
+        ) : (
+          <p className="min-w-0 whitespace-pre-wrap break-all text-zinc-500">글이 삭제됐어요</p>
+        )}
       </div>
       {imageURLs && <PostImages className="w-full max-h-[512px] overflow-hidden" urls={imageURLs} />}
     </Link>

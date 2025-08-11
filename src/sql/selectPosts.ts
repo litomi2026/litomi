@@ -54,7 +54,6 @@ export default async function selectPosts({
     .select({
       id: postTable.id,
       createdAt: postTable.createdAt,
-      type: postTable.type,
       content: postTable.content,
       author: {
         id: userTable.id,
@@ -62,9 +61,9 @@ export default async function selectPosts({
         nickname: userTable.nickname,
         imageURL: userTable.imageURL,
       },
-      likeCount: countDistinct(postLikeTable.userId),
       commentCount: countDistinct(comments.id),
       repostCount: countDistinct(reposts.id),
+      likeCount: countDistinct(postLikeTable.userId),
       referredPost: {
         id: referredPosts.id,
         createdAt: referredPosts.createdAt,

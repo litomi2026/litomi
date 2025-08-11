@@ -1,3 +1,4 @@
+import { ReferredPost } from '@/components/post/ReferredPostCard'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import selectPosts from '@/sql/selectPosts'
 import { getUserIdFromCookie } from '@/utils/session'
@@ -14,13 +15,8 @@ export type GETPostsResponse = {
 
 export type Post = {
   id: number
-  userId: number
-  content: string | null
-  mangaId: number | null
-  parentPostId: number | null
-  referredPostId: number | null
-  type: number
   createdAt: Date
+  content: string | null
   author: {
     id: number
     name: string
@@ -28,6 +24,10 @@ export type Post = {
     imageURL: string | null
   } | null
   likeCount: number
+  commentCount: number
+  repostCount: number
+  viewCount?: number
+  referredPost: ReferredPost | null
 }
 
 export async function GET(request: Request) {

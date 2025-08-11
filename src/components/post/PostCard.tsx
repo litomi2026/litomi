@@ -11,18 +11,18 @@ export type Post = {
   id: number
   createdAt: Date
   updatedAt: Date
-  content: string
-  imageURLs: string[]
-  author: {
+  content?: string | null
+  imageURLs?: string[] | null
+  author?: {
     id: number
     nickname: string
     name: string
-    imageURL: string
+    imageURL: string | null
   }
-  commentCount?: number
-  repostCount?: number
+  commentCount: number
+  repostCount: number
+  likeCount: number
   viewCount?: number
-  likeCount?: number
   referredPost?: ReferredPost
 }
 
