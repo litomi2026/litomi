@@ -153,6 +153,7 @@ export const postTable = pgTable(
     index('idx_post_user_id').on(table.userId),
     index('idx_post_manga_id').on(table.mangaId),
     index('idx_post_parent_post_id').on(table.parentPostId),
+    index('idx_post_referred_post_id').on(table.referredPostId),
   ],
 ).enableRLS()
 

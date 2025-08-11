@@ -15,7 +15,7 @@ export type GETPostsResponse = {
 export type Post = {
   id: number
   userId: number
-  content: string
+  content: string | null
   mangaId: number | null
   parentPostId: number | null
   referredPostId: number | null

@@ -1,31 +1,16 @@
-import { and, count, desc, eq, SQL, sql } from 'drizzle-orm'
+import { and, countDistinct, desc, eq, SQL, sql } from 'drizzle-orm'
+import { alias } from 'drizzle-orm/pg-core'
 
+import { PostFilter } from '@/app/api/post/schema'
 import { db } from '@/database/drizzle'
 import { postLikeTable, postTable, userTable } from '@/database/schema'
-
-export type PostRow = {
-  id: number
-  userId: number
-  content: string
-  mangaId: number | null
-  parentPostId: number | null
-  referredPostId: number | null
-  type: number
-  createdAt: Date
-  author: {
-    id: number
-    name: string
-    nickname: string
-    imageURL: string | null
-  } | null
-  likeCount: number
-}
 
 type Params = {
   limit?: number
   cursor?: number
   mangaId?: number
-  filter?: 'following' | 'manga' | 'recommand'
+  filter?: PostFilter
+  parentPostId?: number
   userId?: number
   currentUserId?: string | null
 }
@@ -35,10 +20,13 @@ export default async function selectPosts({
   cursor,
   mangaId,
   filter,
+  parentPostId,
   userId,
   currentUserId,
-}: Params): Promise<PostRow[]> {
+}: Params) {
   const conditions: (SQL | undefined)[] = []
+  const comments = alias(postTable, 'comments')
+  const reposts = alias(postTable, 'reposts')
 
   if (cursor) {
     conditions.push(sql`${postTable.id} < ${cursor}`)
@@ -48,8 +36,12 @@ export default async function selectPosts({
     conditions.push(eq(postTable.mangaId, mangaId))
   }
 
-  if (filter === 'manga') {
+  if (filter === PostFilter.MANGA) {
     conditions.push(sql`${postTable.mangaId} IS NOT NULL`)
+  }
+
+  if (parentPostId) {
+    conditions.push(eq(postTable.parentPostId, parentPostId))
   }
 
   if (userId) {
@@ -72,11 +64,15 @@ export default async function selectPosts({
         nickname: userTable.nickname,
         imageURL: userTable.imageURL,
       },
-      likeCount: count(postLikeTable.userId),
+      likeCount: countDistinct(postLikeTable.userId),
+      commentCount: countDistinct(comments.id),
+      repostCount: countDistinct(reposts.id),
     })
     .from(postTable)
     .leftJoin(userTable, eq(postTable.userId, userTable.id))
     .leftJoin(postLikeTable, eq(postTable.id, postLikeTable.postId))
+    .leftJoin(comments, eq(comments.parentPostId, postTable.id))
+    .leftJoin(reposts, eq(reposts.referredPostId, postTable.id))
     .where(conditions.length > 0 ? and(...conditions) : undefined)
     .groupBy(postTable.id, userTable.id)
     .orderBy(desc(postTable.createdAt), desc(postTable.id))
