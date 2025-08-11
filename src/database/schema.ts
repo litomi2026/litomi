@@ -1,4 +1,5 @@
 import {
+  AnyPgColumn,
   bigint,
   boolean,
   index,
@@ -131,6 +132,27 @@ export const notificationTable = pgTable(
     sentAt: timestamp('sent_at', { withTimezone: true }),
   },
   (table) => [index('idx_notification_user_id').on(table.userId)],
+).enableRLS()
+
+export const postTable = pgTable(
+  'post',
+  {
+    id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+    userId: bigint('user_id', { mode: 'number' })
+      .references(() => userTable.id, { onDelete: 'cascade' })
+      .notNull(),
+    parentPostId: bigint('parent_post_id', { mode: 'number' }).references((): AnyPgColumn => postTable.id),
+    referredPostId: bigint('referred_post_id', { mode: 'number' }).references((): AnyPgColumn => postTable.id),
+    mangaId: integer('manga_id'),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+    content: varchar({ length: 160 }).notNull(),
+    type: smallint().notNull(), // 'text', 'image', 'video', 'audio', 'link', 'poll', 'event', 'other'
+  },
+  (table) => [
+    index('idx_post_user_id').on(table.userId),
+    index('idx_post_manga_id').on(table.mangaId),
+    index('idx_post_parent_post_id').on(table.parentPostId),
+  ],
 ).enableRLS()
 
 export {

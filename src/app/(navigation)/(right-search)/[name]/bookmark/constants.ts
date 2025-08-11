@@ -76,7 +76,7 @@ export const EXAMPLE_MANGAS: Manga[] = [
       {
         category: 'male',
         value: 'shaved_head',
-        label: '남:shaved head',
+        label: '남:삭발',
       },
       {
         category: 'female',
