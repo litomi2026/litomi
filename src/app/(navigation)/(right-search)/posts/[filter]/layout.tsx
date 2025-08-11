@@ -6,22 +6,22 @@ import type { LayoutProps } from '@/types/nextjs'
 
 import PostCreationForm, { PostCreationFormSkeleton } from '@/components/post/PostCreationForm'
 import TopNavigation from '@/components/TopNavigation'
-import { validatePostFilter } from '@/utils/param'
+
+import { PostFilter, postFilterSchema } from './schema'
 
 export const dynamic = 'error'
 
 export default async function Layout({ params, children }: LayoutProps) {
-  const { filter } = await params
-  const postFilter = validatePostFilter(filter)
+  const validation = postFilterSchema.safeParse(await params)
 
-  if (!postFilter) {
+  if (!validation.success) {
     notFound()
   }
 
+  const { filter } = validation.data
+  const isRecommand = filter === PostFilter.Recommand
+  const isFollowing = filter === PostFilter.Following
   const barClassName = 'absolute bottom-0 left-1/2 -translate-x-1/2 h-1 rounded w-14 aria-selected:bg-zinc-300'
-
-  const isRecommand = filter === 'recommand'
-  const isFollowing = filter === 'following'
 
   return (
     <div className="relative">
@@ -41,7 +41,7 @@ export default async function Layout({ params, children }: LayoutProps) {
         </div>
       </TopNavigation>
       <div className="h-26 sm:hidden" />
-      <h2 className="text-center font-bold text-xl text-yellow-300 py-4">준비 중입니다</h2>
+      <h2 className="sr-only">게시글</h2>
       <Suspense fallback={<PostCreationFormSkeleton className="m-4" />}>
         <PostCreationForm
           buttonText="게시하기"

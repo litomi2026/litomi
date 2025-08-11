@@ -32,7 +32,7 @@ export async function deleteNotifications(data: Record<string, unknown>) {
 
     return ok('알림을 삭제했어요')
   } catch (error) {
-    captureException(error, { extra: { userId, ids } })
+    captureException(error, { extra: data })
     return internalServerError('알림 삭제 중 오류가 발생했어요')
   }
 }
