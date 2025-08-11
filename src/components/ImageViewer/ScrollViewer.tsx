@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { memo, RefObject, useCallback, useEffect, useRef } from 'react'
 import { useInView } from 'react-intersection-observer'
 
-import { MangaIdSourceSearchParam } from '@/app/manga/[id]/constants'
+import { MangaIdSourceSearchParam } from '@/app/manga/[id]/common'
 import { PageView } from '@/components/ImageViewer/store/pageView'
 import { ScreenFit } from '@/components/ImageViewer/store/screenFit'
 import { useImageStatus } from '@/hook/useImageStatus'

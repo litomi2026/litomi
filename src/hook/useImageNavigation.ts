@@ -2,7 +2,7 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useEffect } from 'react'
 import { toast } from 'sonner'
 
-import { MangaIdSourceSearchParam } from '@/app/manga/[id]/constants'
+import { MangaIdSourceSearchParam } from '@/app/manga/[id]/common'
 import { useImageIndexStore } from '@/components/ImageViewer/store/imageIndex'
 
 type Params = {
