@@ -1,4 +1,4 @@
-import { ImportResult } from '@/app/api/bookmarks/import/route'
+import { ImportResult } from '@/app/api/bookmark/import/route'
 
 import { ResultCard } from './ResultCard'
 

@@ -7,7 +7,7 @@ import { useActionState, useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
 
 import toggleBookmark from '@/app/(navigation)/(right-search)/[name]/bookmark/action'
-import { GETBookmarksResponse } from '@/app/api/bookmarks/route'
+import { GETBookmarksResponse } from '@/app/api/bookmark/route'
 import { QueryKeys } from '@/constants/query'
 import useActionErrorEffect from '@/hook/useActionErrorEffect'
 import useBookmarksQuery from '@/query/useBookmarksQuery'

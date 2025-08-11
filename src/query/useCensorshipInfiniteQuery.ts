@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 
-import { GETCensorshipsResponse } from '@/app/api/censorships/route'
+import { GETCensorshipsResponse } from '@/app/api/censorship/route'
 import { QueryKeys } from '@/constants/query'
 import { handleResponseError } from '@/utils/react-query-error'
 
@@ -15,7 +15,7 @@ export async function fetchPaginatedCensorships({ pageParam }: { pageParam?: { i
     params.set('cursorTime', pageParam.createdAt.toString())
   }
 
-  const response = await fetch(`/api/censorships?${params}`)
+  const response = await fetch(`/api/censorship?${params}`)
   return handleResponseError<GETCensorshipsResponse>(response)
 }
 

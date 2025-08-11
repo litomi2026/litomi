@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from 'react'
 
-import { CensorshipItem } from '@/app/api/censorships/route'
+import { CensorshipItem } from '@/app/api/censorship/route'
 import IconCheck from '@/components/icons/IconCheck'
 import IconEdit from '@/components/icons/IconEdit'
 

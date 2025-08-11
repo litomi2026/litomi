@@ -1,7 +1,7 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useRef } from 'react'
 
-import { Bookmark } from '@/app/api/bookmarks/route'
+import { Bookmark } from '@/app/api/bookmark/route'
 import { ProxyIdOnly } from '@/app/api/proxy/manga/schema'
 import { createErrorManga } from '@/constants/json'
 import { QueryKeys } from '@/constants/query'

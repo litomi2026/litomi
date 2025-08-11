@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
 
-import { CensorshipItem } from '@/app/api/censorships/route'
+import { CensorshipItem } from '@/app/api/censorship/route'
 import IconCheck from '@/components/icons/IconCheck'
 import { QueryKeys } from '@/constants/query'
 import { CensorshipLevel } from '@/database/enum'
