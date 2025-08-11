@@ -1,10 +1,9 @@
-import { Suspense } from '@suspensive/react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
 import type { LayoutProps } from '@/types/nextjs'
 
-import PostCreationForm, { PostCreationFormSkeleton } from '@/components/post/PostCreationForm'
+import PostCreationForm from '@/components/post/PostCreationForm'
 import TopNavigation from '@/components/TopNavigation'
 
 import { PostFilter, postFilterSchema } from './schema'
@@ -41,14 +40,8 @@ export default async function Layout({ params, children }: LayoutProps) {
         </div>
       </TopNavigation>
       <div className="h-26 sm:hidden" />
-      <h2 className="sr-only">게시글</h2>
-      <Suspense fallback={<PostCreationFormSkeleton className="m-4" />}>
-        <PostCreationForm
-          buttonText="게시하기"
-          className="hidden p-4 sm:flex"
-          placeholder="무슨 일이 일어나고 있나요?"
-        />
-      </Suspense>
+      <h2 className="sr-only">게시글 목록</h2>
+      <PostCreationForm buttonText="게시하기" className="hidden p-4 sm:flex" placeholder="무슨 일이 일어나고 있나요?" />
       {children}
     </div>
   )

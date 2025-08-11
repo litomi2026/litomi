@@ -157,7 +157,3 @@ export default function PostCreationForm({
     </form>
   )
 }
-
-export function PostCreationFormSkeleton({ className = '' }: { className?: string }) {
-  return <div className={`h-10 rounded-xl animate-fade-in bg-zinc-800 border-b-2 ${className}`} />
-}
