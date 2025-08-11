@@ -5,6 +5,10 @@ import { mockedPosts } from '@/mock/post'
 
 export const dynamic = 'error'
 
+export async function generateStaticParams() {
+  return [{ filter: 'recommand' }, { filter: 'following' }]
+}
+
 export default async function Page() {
   if (!mockedPosts) {
     notFound()
