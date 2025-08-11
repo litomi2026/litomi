@@ -143,9 +143,10 @@ export const postTable = pgTable(
       .notNull(),
     parentPostId: bigint('parent_post_id', { mode: 'number' }).references((): AnyPgColumn => postTable.id),
     referredPostId: bigint('referred_post_id', { mode: 'number' }).references((): AnyPgColumn => postTable.id),
-    mangaId: integer('manga_id'),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-    content: varchar({ length: 160 }).notNull(),
+    deletedAt: timestamp('deleted_at', { withTimezone: true }),
+    mangaId: integer('manga_id'),
+    content: varchar({ length: 160 }),
     type: smallint().notNull(), // 'text', 'image', 'video', 'audio', 'poll', 'event', etc.
   },
   (table) => [

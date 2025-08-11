@@ -60,7 +60,6 @@ export async function createPost(formData: FormData) {
 
     revalidatePath('/posts/recommand')
 
-    console.log('👀 - createPost - mangaId:', mangaId)
     if (mangaId) {
       revalidatePath(`/manga/${mangaId}/post`)
     }
@@ -81,7 +80,11 @@ export async function deletePost(postId: number) {
 
   try {
     const [deletedPost] = await db
-      .delete(postTable)
+      .update(postTable)
+      .set({
+        deletedAt: new Date(),
+        content: null,
+      })
       .where(and(sql`${postTable.userId} = ${userId}`, eq(postTable.id, postId)))
       .returning({ id: postTable.id })
 
