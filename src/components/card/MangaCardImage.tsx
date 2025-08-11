@@ -8,8 +8,6 @@ import MangaImage from '../MangaImage'
 import MangaCardCensorship from './MangaCardCensorship'
 import MangaCardPreviewImages from './MangaCardPreviewImages'
 
-const PREFETCH_INDEX = 10
-
 type Props = {
   href: string
   manga: Manga
@@ -34,7 +32,6 @@ export default function MangaCardImage({ manga, href, index, className = '' }: R
         <Link
           className="flex overflow-x-auto h-fit snap-x snap-mandatory select-none scrollbar-hidden relative"
           href={href}
-          prefetch={index < PREFETCH_INDEX}
         >
           <LinkLoading />
           <MangaImage imageIndex={0} manga={manga} />
