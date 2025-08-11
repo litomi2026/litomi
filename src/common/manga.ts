@@ -24,7 +24,7 @@ export async function getMangaFromMultipleSources(id: number): Promise<Manga | n
     hiyobiClient.fetchMangaImages(id).catch(() => null),
     kHentaiClient.fetchManga(id).catch((error) => new Error(error)),
     harpiClient
-      .fetchMangas({ ids: [id] })
+      .searchMangas({ ids: [id] })
       .then((mangas) => mangas ?? [])
       .catch((error) => [new Error(error)]),
     komiClient.fetchManga(id).catch((error) => new Error(error)),
@@ -64,7 +64,7 @@ export async function getMangaFromMultipleSources(id: number): Promise<Manga | n
  */
 export async function getMangasFromMultipleSources(ids: number[]): Promise<Record<number, Manga>> {
   const harpiClient = HarpiClient.getInstance()
-  const harpiMangas = await harpiClient.fetchMangas({ ids }).catch((error) => new Error(error))
+  const harpiMangas = await harpiClient.searchMangas({ ids }).catch((error) => new Error(error))
   const mangaMap: Record<number, Manga> = {}
   const remainingIds = []
 

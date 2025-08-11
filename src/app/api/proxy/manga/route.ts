@@ -12,7 +12,7 @@ export async function GET(request: Request) {
 
   const validation = GETProxyIdSchema.safeParse({
     ids: searchParams.getAll('id'),
-    only: searchParams.get('only') ?? undefined,
+    only: searchParams.get('only'),
   })
 
   if (!validation.success) {

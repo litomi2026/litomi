@@ -8,7 +8,7 @@ export async function GET() {
   return createHealthCheckHandler(
     'harpi',
     {
-      search: async () => Boolean(await HarpiClient.getInstance().fetchMangas()),
+      search: async () => Boolean(await HarpiClient.getInstance().searchMangas()),
       manga: async () => Boolean(await HarpiClient.getInstance().fetchMangaByHarpiId('67e5a1b843721660bba361b2')), // 조회수 1위 망가
     },
     {

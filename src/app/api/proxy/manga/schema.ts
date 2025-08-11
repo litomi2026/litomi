@@ -6,7 +6,7 @@ export enum ProxyIdOnly {
 
 export const GETProxyIdSchema = z.object({
   ids: z.array(z.coerce.number().int().positive()).min(1).max(10),
-  only: z.enum(ProxyIdOnly).optional(),
+  only: z.enum(ProxyIdOnly).nullable(),
 })
 
 export type GETProxyIdRequest = z.infer<typeof GETProxyIdSchema>

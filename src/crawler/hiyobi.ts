@@ -132,10 +132,10 @@ export class HiyobiClient {
     return this.convertHiyobiToManga(manga)
   }
 
-  async fetchMangaImages(id: number): Promise<string[]> {
+  async fetchMangaImages(id: number, revalidate = 43200): Promise<string[]> {
     const hiyobiImages = await this.imageClient.fetch<HiyobiImage[]>(`/hiyobi/list?id=${id}`, {
-      cache: 'force-cache',
-      next: { revalidate: 43200 }, // 12 hours
+      cache: revalidate > 0 ? 'force-cache' : 'no-store',
+      next: { revalidate },
     })
 
     return hiyobiImages.map((image) => image.url)

@@ -51,7 +51,7 @@ export async function GET(request: Request) {
   const client = HarpiClient.getInstance()
 
   try {
-    const mangas = await client.fetchMangas(validatedParams)
+    const mangas = await client.searchMangas(validatedParams)
 
     if (!mangas) {
       return new Response('404 Not Found', { status: 404 })
