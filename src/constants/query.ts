@@ -14,5 +14,5 @@ export const QueryKeys = {
   infiniteManga: ['infinite', 'manga'],
   search: (searchParams: URLSearchParams) => ['search', Object.fromEntries(searchParams)],
   searchSuggestions: (query: string, locale: string) => ['search', 'suggestions', locale, query],
-  posts: (filter: PostFilter, mangaId?: number) => ['posts', filter, mangaId],
+  posts: (filter: PostFilter, mangaId?: number, username?: string) => ['posts', filter, { mangaId, username }],
 }

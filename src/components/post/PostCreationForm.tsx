@@ -17,7 +17,7 @@ import Squircle from '../ui/Squircle'
 import PostGeolocationButton from './button/PostGeolocationButton'
 
 type Props = {
-  buttonText: string
+  buttonText?: string
   className?: string
   placeholder?: string
   isReply?: boolean
@@ -108,7 +108,7 @@ export default function PostCreationForm({
   }
 
   return (
-    <form action={dispatchAction} className={`gap-2 ${className}`} onClick={handleClick} onSubmit={handleSubmit}>
+    <form action={dispatchAction} className={`gap-3 ${className}`} onClick={handleClick} onSubmit={handleSubmit}>
       {mangaId && <input name="manga-id" type="hidden" value={mangaId} />}
       {parentPostId && <input name="parent-post-id" type="hidden" value={parentPostId} />}
       {referredPostId && <input name="referred-post-id" type="hidden" value={referredPostId} />}
@@ -139,7 +139,7 @@ export default function PostCreationForm({
         {hasFocusedBefore && (
           <div className="flex justify-between gap-2">
             <div className="flex -translate-x-2 items-center text-foreground">
-              <PostGeolocationButton disabled={!me} onLocationChange={(geolocation) => console.log(geolocation)} />
+              <PostGeolocationButton disabled={!me} onLocationChange={() => {}} />
             </div>
             <div className="flex items-center gap-3">
               <div>{content.length}</div>

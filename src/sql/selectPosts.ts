@@ -11,7 +11,7 @@ type Params = {
   mangaId?: number
   filter?: PostFilter
   parentPostId?: number
-  userId?: number
+  username?: string
   currentUserId?: string | null
 }
 
@@ -21,7 +21,7 @@ export default async function selectPosts({
   mangaId,
   filter,
   parentPostId,
-  userId,
+  username,
   currentUserId,
 }: Params) {
   const conditions: (SQL | undefined)[] = []
@@ -46,8 +46,8 @@ export default async function selectPosts({
     conditions.push(eq(postTable.parentPostId, parentPostId))
   }
 
-  if (userId) {
-    conditions.push(sql`${postTable.userId} = ${userId}`)
+  if (username) {
+    conditions.push(eq(userTable.name, username))
   }
 
   const query = db

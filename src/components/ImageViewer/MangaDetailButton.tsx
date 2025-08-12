@@ -41,7 +41,7 @@ function MangaDetailButton({ manga }: Readonly<Props>) {
         <h1 className="flex-1 text-center line-clamp-1 font-bold text-foreground break-all md:text-lg">{title}</h1>
       </button>
       <Modal className="pb-safe" onClose={() => setIsOpened(false)} open={isOpened} showCloseButton showDragButton>
-        <div className="bg-zinc-900 min-w-3xs w-screen max-w-sm md:max-w-lg rounded-xl p-4 pt-8 shadow-xl border grid gap-4 text-sm overflow-y-auto max-h-svh md:text-base">
+        <div className="bg-zinc-900 min-w-3xs w-screen max-w-prose rounded-xl p-4 pt-8 shadow-xl border grid gap-4 text-sm overflow-y-auto max-h-svh md:text-base">
           {/* Title */}
           <h2 className="font-bold text-lg md:text-xl">{title}</h2>
           {/* Description - Primary Information */}

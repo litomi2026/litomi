@@ -4,20 +4,23 @@ import { GETPostsResponse } from '@/app/api/post/route'
 import { PostFilter } from '@/app/api/post/schema'
 import { QueryKeys } from '@/constants/query'
 
-export default function usePostsInfiniteQuery(filter: PostFilter, mangaId?: number) {
+export default function usePostsInfiniteQuery(filter: PostFilter, mangaId?: number, username?: string) {
   return useInfiniteQuery<GETPostsResponse>({
-    queryKey: QueryKeys.posts(filter, mangaId),
+    queryKey: QueryKeys.posts(filter, mangaId, username),
     queryFn: async ({ pageParam }) => {
-      const params = new URLSearchParams({ filter })
+      const searchParams = new URLSearchParams({ filter })
 
       if (pageParam) {
-        params.set('cursor', String(pageParam))
+        searchParams.set('cursor', String(pageParam))
       }
       if (mangaId) {
-        params.set('mangaId', String(mangaId))
+        searchParams.set('mangaId', String(mangaId))
+      }
+      if (username) {
+        searchParams.set('username', username)
       }
 
-      const response = await fetch(`/api/post?${params}`)
+      const response = await fetch(`/api/post?${searchParams}`)
 
       if (!response.ok) {
         throw new Error(`${response.status} ${response.statusText}: ${await response.text()}`)
