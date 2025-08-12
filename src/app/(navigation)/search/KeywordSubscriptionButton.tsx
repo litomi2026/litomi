@@ -55,7 +55,17 @@ export default function KeywordSubscriptionButton() {
     }
 
     if (!query.trim() || !hasValidConditions) {
-      toast.warning('검색 조건을 입력해주세요')
+      toast.warning('검색어를 입력해주세요')
+      return
+    }
+
+    if (!hasValidConditions) {
+      toast.warning('제외 키워드 알림은 아직 지원하지 않아요')
+      return
+    }
+
+    if (parsedQuery.plainKeywords.length > 20) {
+      toast.warning('최대 20개 키워드까지 설정할 수 있어요')
       return
     }
 
