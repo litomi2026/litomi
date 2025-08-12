@@ -8,5 +8,5 @@ type Props = {
 }
 
 export default function IconLogo({ className, priority }: Readonly<Props>) {
-  return <Image alt="로고" className={className} priority={priority} src={logoImage} />
+  return <Image alt="logo" className={className} priority={priority} src={logoImage} />
 }

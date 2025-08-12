@@ -108,7 +108,7 @@ export default function PostCreationForm({
   }
 
   return (
-    <form action={dispatchAction} className={`gap-2 ${className}`} onClick={handleClick} onSubmit={handleSubmit}>
+    <form action={dispatchAction} className={`gap-3 ${className}`} onClick={handleClick} onSubmit={handleSubmit}>
       {mangaId && <input name="manga-id" type="hidden" value={mangaId} />}
       {parentPostId && <input name="parent-post-id" type="hidden" value={parentPostId} />}
       {referredPostId && <input name="referred-post-id" type="hidden" value={referredPostId} />}
