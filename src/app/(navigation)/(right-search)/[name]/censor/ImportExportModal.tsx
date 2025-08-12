@@ -1,10 +1,10 @@
 'use client'
 
+import { Download } from 'lucide-react'
 import { memo, useState, useTransition } from 'react'
 import { toast } from 'sonner'
 
 import { CensorshipItem } from '@/app/api/censorship/route'
-import { IconDownload } from '@/components/icons/IconDownload'
 import { IconUpload } from '@/components/icons/IconUpload'
 import IconX from '@/components/icons/IconX'
 import Modal from '@/components/ui/Modal'
@@ -223,7 +223,7 @@ function ImportExportModal({ open, onClose, censorships, onImport }: Readonly<Pr
               disabled={censorships.length === 0}
               onClick={handleExport}
             >
-              <IconDownload className="w-5 h-5" />
+              <Download className="size-5" />
               <span>내보내기</span>
             </button>
           ) : (

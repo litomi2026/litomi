@@ -1,11 +1,10 @@
 'use client'
 
+import { Download } from 'lucide-react'
 import { toast } from 'sonner'
 
 import useBookmarksQuery from '@/query/useBookmarksQuery'
 import { downloadBlob } from '@/utils/download'
-
-import { IconDownload } from '../../../../../components/icons/IconDownload'
 
 export default function BookmarkDownloadButton() {
   const { data, isLoading } = useBookmarksQuery()
@@ -51,7 +50,7 @@ export default function BookmarkDownloadButton() {
       title={getDisabledTitle()}
       type="button"
     >
-      <IconDownload className="w-5" />
+      <Download className="size-5" />
       <span className="hidden sm:block">북마크 다운로드</span>
     </button>
   )

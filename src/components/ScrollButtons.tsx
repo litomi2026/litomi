@@ -1,6 +1,6 @@
 'use client'
 
-import IconArrowLeft from './icons/IconArrowLeft'
+import { ArrowLeft } from 'lucide-react'
 
 const PADDING = 30
 
@@ -25,10 +25,10 @@ export default function ScrollButtons() {
       [&_button]:border-2 [&_button]:border-brand-gradient [&_button]:transition [&_button]:hover:brightness-125 [&_button]:active:brightness-75 [&_button]:rounded-full"
     >
       <button aria-label="맨 위로 가기" onClick={scrollToTop}>
-        <IconArrowLeft className="p-2 w-9 sm:w-10 rotate-90" />
+        <ArrowLeft className="p-2 size-9 sm:size-10 rotate-90" />
       </button>
       <button aria-label="맨 아래로 가기" onClick={scrollToBottom}>
-        <IconArrowLeft className="p-2 w-9 sm:w-10 rotate-270" />
+        <ArrowLeft className="p-2 size-9 sm:size-10 rotate-270" />
       </button>
     </div>
   )

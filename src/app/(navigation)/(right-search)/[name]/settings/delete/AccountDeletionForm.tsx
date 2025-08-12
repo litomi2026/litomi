@@ -1,12 +1,11 @@
 'use client'
 
 import { useQueryClient } from '@tanstack/react-query'
+import { AlertTriangle, Check, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-import IconAlertTriangle from '@/components/icons/IconAlertTriangle'
-import IconCheck from '@/components/icons/IconCheck'
 import IconSpinner from '@/components/icons/IconSpinner'
 import IconTrash from '@/components/icons/IconTrash'
 import { QueryKeys } from '@/constants/query'
@@ -69,13 +68,13 @@ export default function AccountDeletionForm({ loginId }: Readonly<Props>) {
         <div className="space-y-6">
           <div className="bg-red-950/20 border-2 border-red-900/50 rounded-xl p-6">
             <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <IconAlertTriangle className="w-5 text-red-500" />
+              <AlertTriangle className="w-5 text-red-500" />
               계정 삭제 시 다음 내용이 영구 삭제돼요
             </h2>
             <ul className="space-y-3">
               {CONSEQUENCES.map((text, index) => (
                 <li className="flex items-center gap-3 text-zinc-300" key={index}>
-                  <IconTrash className="w-4 text-red-400" />
+                  <Trash2 className="size-4 text-red-400" />
                   <span>{text}</span>
                 </li>
               ))}
@@ -142,7 +141,7 @@ export default function AccountDeletionForm({ loginId }: Readonly<Props>) {
               onClick={() => setStep(DeletionStep.FINAL)}
               type="button"
             >
-              {isConfirmTextValid && <IconCheck className="w-4" />}
+              {isConfirmTextValid && <Check className="size-4" />}
               최종 확인
             </button>
           </div>

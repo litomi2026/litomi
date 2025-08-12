@@ -1,12 +1,12 @@
 'use client'
 
+import { SquarePen } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 
 import { PostFilter } from '@/app/api/post/schema'
 import CloudProviderStatus from '@/components/CloudProviderStatus'
-import IconEdit from '@/components/icons/IconEdit'
 import IconRepeat from '@/components/icons/IconRepeat'
 import PostCard, { PostSkeleton } from '@/components/post/PostCard'
 import RetryGuidance from '@/components/RetryGuidance'
@@ -125,7 +125,7 @@ function EmptyState({ filter, mangaId }: { filter: PostFilter; mangaId?: number 
             className="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors"
             href={config.action.href}
           >
-            <IconEdit className="w-4 h-4" />
+            <SquarePen className="size-4" />
             <span>{config.action.label}</span>
           </Link>
         ))}

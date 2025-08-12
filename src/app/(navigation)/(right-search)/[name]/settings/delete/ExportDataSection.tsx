@@ -1,9 +1,8 @@
 'use client'
 
+import { Check, Download } from 'lucide-react'
 import { toast } from 'sonner'
 
-import IconCheck from '@/components/icons/IconCheck'
-import { IconDownload } from '@/components/icons/IconDownload'
 import IconSpinner from '@/components/icons/IconSpinner'
 import useActionResponse from '@/hook/useActionResponse'
 import { downloadBlob } from '@/utils/download'
@@ -46,17 +45,17 @@ export default function ExportDataSection({ hasExported, onExportComplete }: Rea
         >
           {isPending ? (
             <>
-              <IconSpinner className="w-4" />
+              <IconSpinner className="size-4" />
               내보내는 중...
             </>
           ) : hasExported ? (
             <>
-              <IconCheck className="w-4 text-green-500" />
+              <Check className="size-4 text-green-500" />
               데이터 내보내기 완료
             </>
           ) : (
             <>
-              <IconDownload className="w-4" />
+              <Download className="size-4" />
               데이터 내보내기
             </>
           )}

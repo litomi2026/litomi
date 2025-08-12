@@ -1,6 +1,7 @@
 'use client'
 
 import { useQueryClient } from '@tanstack/react-query'
+import { Check } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ReactNode, useCallback, useMemo, useState } from 'react'
 import { toast } from 'sonner'
@@ -8,7 +9,6 @@ import { toast } from 'sonner'
 import { NotificationFilter } from '@/app/api/notification/schema'
 import IconBell from '@/components/icons/IconBell'
 import IconBook from '@/components/icons/IconBook'
-import IconCheck from '@/components/icons/IconCheck'
 import IconFilter from '@/components/icons/IconFilter'
 import IconSpinner from '@/components/icons/IconSpinner'
 import IconTrash from '@/components/icons/IconTrash'
@@ -169,7 +169,7 @@ export default function NotificationList() {
                   disabled={selectedIds.size === 0 || isMarkAsReadPending || isDeleteNotificationsPending}
                   onClick={() => handleBatchAction('read')}
                 >
-                  {isMarkAsReadPending ? <IconSpinner className="w-5" /> : <IconCheck className="w-5" />}
+                  {isMarkAsReadPending ? <IconSpinner className="size-5" /> : <Check className="size-5" />}
                   <span className="hidden sm:inline">읽음</span>
                 </button>
                 <button
@@ -177,7 +177,7 @@ export default function NotificationList() {
                   disabled={selectedIds.size === 0 || isMarkAsReadPending || isDeleteNotificationsPending}
                   onClick={() => handleBatchAction('delete')}
                 >
-                  {isDeleteNotificationsPending ? <IconSpinner className="w-5" /> : <IconTrash className="w-5" />}
+                  {isDeleteNotificationsPending ? <IconSpinner className="size-5" /> : <IconTrash className="size-5" />}
                   <span className="hidden sm:inline">삭제</span>
                 </button>
                 <button
@@ -324,19 +324,19 @@ function getEmptyContent(filter: NotificationFilter | null) {
   switch (filter) {
     case NotificationFilter.NEW_MANGA:
       return {
-        icon: <IconBook className="mb-4 h-12 w-12 text-zinc-600/50" />,
+        icon: <IconBook className="mb-4 size-12 text-zinc-600/50" />,
         title: '신규 만화 알림이 없어요',
         description: '새로운 만화가 추가되면 알려드릴게요',
       }
     case NotificationFilter.UNREAD:
       return {
-        icon: <IconCheck className="mb-4 h-12 w-12 text-zinc-600/50" />,
+        icon: <Check className="mb-4 size-12 text-zinc-600/50" />,
         title: '모든 알림을 확인했어요',
         description: '새로운 알림이 도착하면 여기에 표시됩니다',
       }
     default:
       return {
-        icon: <IconBell className="mb-4 h-12 w-12 text-zinc-600/50" />,
+        icon: <IconBell className="mb-4 size-12 text-zinc-600/50" />,
         title: '아직 알림이 없어요',
         description: (
           <>

@@ -1,9 +1,9 @@
 import { useQueryClient } from '@tanstack/react-query'
+import { Check } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
 
 import { CensorshipItem } from '@/app/api/censorship/route'
-import IconCheck from '@/components/icons/IconCheck'
 import { QueryKeys } from '@/constants/query'
 import { CensorshipLevel } from '@/database/enum'
 import useActionResponse from '@/hook/useActionResponse'
@@ -106,7 +106,7 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Read
               <span>저장 중...</span>
             ) : (
               <>
-                <IconCheck className="w-4" />
+                <Check className="size-4" />
                 <span>저장</span>
               </>
             )}

@@ -1,9 +1,8 @@
 'use client'
 
+import { ArrowRight } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useRef } from 'react'
-
-import IconArrow from './icons/IconArrow'
 
 type Props = {
   totalPages: number
@@ -44,7 +43,7 @@ export default function NavigationJump({ totalPages, hrefPrefix = '', hrefSuffix
         className="whitespace-nowrap p-2 bg-zinc-800 text-foreground rounded hover:bg-zinc-700 focus:outline-none focus:ring-1 focus:ring-zinc-300"
         type="submit"
       >
-        <IconArrow />
+        <ArrowRight />
       </button>
     </form>
   )

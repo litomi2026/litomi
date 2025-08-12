@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
+import { MoreHorizontal } from 'lucide-react'
 import Link from 'next/link'
 
-import Icon3Dots from '../icons/Icon3Dots'
 import Squircle from '../ui/Squircle'
 import PostActionButtons from './PostActionButtons'
 import PostImages from './PostImages'
@@ -74,7 +74,7 @@ export default function PostCard({ post, isThread, className = '' }: Readonly<Pr
                 </div>
               </div>
             </div>
-            <Icon3Dots className="w-5 text-zinc-600" />
+            <MoreHorizontal className="size-5 text-zinc-600" />
           </div>
           <Link className="child" href={`/post/${post.id}`}>
             <p className="min-w-0 whitespace-pre-wrap break-all">{post.content}</p>
