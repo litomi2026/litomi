@@ -231,7 +231,7 @@ export class KHentaiClient {
       startDate?: string
       endDate?: string
     } = {},
-    revalidate = 60,
+    revalidate = 0,
   ): Promise<Manga[]> {
     const kebabCaseParams = Object.entries(params)
       .filter(([key, value]) => key !== 'offset' && value !== undefined)

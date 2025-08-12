@@ -59,6 +59,7 @@ export async function GET(request: Request) {
     const mangas = filterMangasByMinusPrefix(searchedMangas, query)
     const nextCursor = mangas.length > 0 ? mangas[mangas.length - 1].id.toString() : null
     const hasNextPage = mangas.length > 0
+    const response: GETProxyKSearchResponse = { mangas, nextCursor, hasNextPage }
 
     const cacheControl = createCacheControl({
       public: true,
@@ -67,14 +68,7 @@ export async function GET(request: Request) {
       staleWhileRevalidate: maxAge,
     })
 
-    return Response.json(
-      {
-        mangas,
-        nextCursor,
-        hasNextPage,
-      } satisfies GETProxyKSearchResponse,
-      { headers: { 'Cache-Control': cacheControl } },
-    )
+    return Response.json(response, { headers: { 'Cache-Control': cacheControl } })
   } catch (error) {
     return handleRouteError(error, request)
   }
