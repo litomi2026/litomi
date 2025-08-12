@@ -20,6 +20,7 @@ export default function PostGeolocationButton({ disabled, onLocationChange }: Re
       (position) => {
         const { latitude, longitude } = position.coords
         onLocationChange({ lat: latitude, lon: longitude })
+        toast.warning('위치 기능은 현재 지원하지 않아요')
       },
       (error) => {
         console.warn(error)

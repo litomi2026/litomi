@@ -12,8 +12,7 @@ type Params = {
   filter: PostFilterParams
 }
 
-// Map string filter params to numeric PostFilter enum
-const filterParamsToPostFilter: Record<PostFilterParams, PostFilter> = {
+const filterParamsToPostFilter = {
   [PostFilterParams.Following]: PostFilter.FOLLOWING,
   [PostFilterParams.Recommand]: PostFilter.RECOMMAND,
 }
@@ -31,10 +30,6 @@ export default async function Page({ params }: PageProps<Params>) {
 
   const { filter } = validation.data
   const postFilter = filterParamsToPostFilter[filter]
-
-  if (postFilter === undefined) {
-    notFound()
-  }
 
   return <PostList filter={postFilter} />
 }

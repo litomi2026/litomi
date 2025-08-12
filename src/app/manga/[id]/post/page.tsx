@@ -20,12 +20,12 @@ export default async function Page({ params }: PageProps) {
 
   return (
     <div className="min-h-screen">
-      <div className="sticky top-0 bg-background/75 backdrop-blur border-b-2 p-4">
-        <h2 className="text-xl font-bold">망가 게시글 목록</h2>
+      <div className="sticky top-0 z-10 bg-background/75 backdrop-blur border-b-2 p-4">
+        <h2 className="text-xl font-bold">이야기</h2>
       </div>
       <PostCreationForm
         buttonText="게시하기"
-        className="flex p-4 border-b-2"
+        className="flex p-4"
         filter={PostFilter.MANGA}
         mangaId={id}
         placeholder="이 작품은 어땠나요?"

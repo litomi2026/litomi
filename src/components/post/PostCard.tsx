@@ -1,6 +1,7 @@
 import dayjs from 'dayjs'
 import { MoreHorizontal } from 'lucide-react'
 import Link from 'next/link'
+import { ComponentProps } from 'react'
 
 import Squircle from '../ui/Squircle'
 import PostActionButtons from './PostActionButtons'
@@ -26,20 +27,21 @@ export type Post = {
   referredPost?: ReferredPost | null
 }
 
-type Props = {
+type Props = ComponentProps<'li'> & {
   className?: string
   post: Post
   isThread?: boolean
 }
 
-export default function PostCard({ post, isThread, className = '' }: Readonly<Props>) {
+export default function PostCard({ post, isThread, className = '', ...props }: Readonly<Props>) {
   const author = post.author
   const referredPost = post.referredPost
   const imageURLs = post.imageURLs
 
   return (
-    <div
+    <li
       className={`[&:has(.child:hover)]:bg-zinc-900 grid min-w-0 grid-cols-[auto_1fr] gap-2 px-4 pb-2 pt-3 transition ${className}`}
+      {...props}
     >
       <div className="relative flex flex-col items-center gap-1">
         <Squircle className="w-10" src={author?.imageURL} textClassName="text-foreground">
@@ -90,7 +92,7 @@ export default function PostCard({ post, isThread, className = '' }: Readonly<Pr
           viewCount={post.viewCount}
         />
       </div>
-    </div>
+    </li>
   )
 }
 

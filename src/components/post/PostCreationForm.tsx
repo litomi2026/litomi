@@ -139,7 +139,7 @@ export default function PostCreationForm({
         {hasFocusedBefore && (
           <div className="flex justify-between gap-2">
             <div className="flex -translate-x-2 items-center text-foreground">
-              <PostGeolocationButton disabled={!me} onLocationChange={(geolocation) => console.log(geolocation)} />
+              <PostGeolocationButton disabled={!me} onLocationChange={() => {}} />
             </div>
             <div className="flex items-center gap-3">
               <div>{content.length}</div>

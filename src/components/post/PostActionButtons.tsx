@@ -53,34 +53,39 @@ export default function PostActionButtons({
   }
 
   return (
-    <div className="flex flex-wrap gap-2 text-zinc-400">
+    <div className="flex flex-wrap gap-2 text-zinc-400 [&_svg]:size-9 [&_svg]:shrink-0 [&_svg]:p-2 [&_svg]:rounded-full [&_svg]:transition-all">
       <div className="grid grow grid-cols-4 gap-1 text-sm">
         <div className="flex items-center">
-          <IconChat className="w-9 shrink-0 p-2" />
+          <IconChat />
           {commentCount}
         </div>
         <div className="flex items-center">
-          <IconRepeat className="w-9 shrink-0 p-2" />
+          <IconRepeat />
           {repostCount}
         </div>
         <button
-          className="flex items-center group transition-all duration-150 hover:text-red-500 disabled:opacity-50"
+          className="flex items-center group transition-all hover:text-red-500 disabled:opacity-50"
           disabled={isPending}
           onClick={handleLike}
         >
           <IconHeart
             aria-selected={isLiked}
-            className="w-9 shrink-0 p-2 transition-all duration-150 group-hover:bg-red-500/20 group-hover:text-red-500 aria-selected:text-red-500"
+            className="group-hover:bg-red-500/20 group-hover:text-red-500 aria-selected:text-red-500"
           />
-          <span className={`transition-all duration-150 ${isLiked ? 'font-medium' : ''}`}>{likeCount}</span>
+          <span
+            aria-selected={isLiked}
+            className={`transition-all aria-selected:font-medium aria-selected:text-red-500`}
+          >
+            {likeCount}
+          </span>
         </button>
         <div className="flex items-center">
-          <ChartNoAxesColumn className="size-9 shrink-0 p-2" />
+          <ChartNoAxesColumn />
           {viewCount}
         </div>
       </div>
       <div className="flex">
-        <IconLogout className="w-9 -rotate-90 p-2" />
+        <IconLogout className="-rotate-90" />
       </div>
     </div>
   )

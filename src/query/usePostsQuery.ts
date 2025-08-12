@@ -8,16 +8,16 @@ export default function usePostsInfiniteQuery(filter: PostFilter, mangaId?: numb
   return useInfiniteQuery<GETPostsResponse>({
     queryKey: QueryKeys.posts(filter, mangaId),
     queryFn: async ({ pageParam }) => {
-      const params = new URLSearchParams({ filter })
+      const searchParams = new URLSearchParams({ filter })
 
       if (pageParam) {
-        params.set('cursor', String(pageParam))
+        searchParams.set('cursor', String(pageParam))
       }
       if (mangaId) {
-        params.set('mangaId', String(mangaId))
+        searchParams.set('mangaId', String(mangaId))
       }
 
-      const response = await fetch(`/api/post?${params}`)
+      const response = await fetch(`/api/post?${searchParams}`)
 
       if (!response.ok) {
         throw new Error(`${response.status} ${response.statusText}: ${await response.text()}`)

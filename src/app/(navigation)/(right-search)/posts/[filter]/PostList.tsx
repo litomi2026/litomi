@@ -1,6 +1,5 @@
 'use client'
 
-import { SquarePen } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
@@ -48,14 +47,17 @@ export default function PostList({ filter, mangaId }: Readonly<Props>) {
 
   return (
     <ul role="feed">
-      {allPosts.map((post, index) => (
-        <li aria-posinset={index + 1} aria-setsize={-1} key={post.id} role="article">
-          <PostCard className="border-t-2 border-zinc-800 hover:bg-zinc-900/50 transition-colors" post={post} />
-        </li>
+      {allPosts.map((post) => (
+        <PostCard
+          className="border-t-2 border-zinc-800 hover:bg-zinc-900/50 transition-colors"
+          key={post.id}
+          post={post}
+          role="article"
+        />
       ))}
       {hasNextPage && (
         <li
-          aria-label={isFetchingNextPage ? '더 많은 포스트 로딩 중' : '더 많은 포스트 로드'}
+          aria-label={isFetchingNextPage ? '글을 가져오는 중' : '글을 더 가져오기'}
           className="py-4"
           ref={ref}
           role="status"
@@ -74,22 +76,19 @@ export default function PostList({ filter, mangaId }: Readonly<Props>) {
 function EmptyState({ filter, mangaId }: { filter: PostFilter; mangaId?: number }) {
   const emptyStateConfig = {
     [PostFilter.FOLLOWING]: {
-      title: '팔로우한 사용자의 포스트가 없습니다',
-      description: '다른 사용자를 팔로우하거나 모든 포스트를 확인해보세요',
+      title: '팔로우한 사용자의 글이 없어요',
+      description: '다른 사용자를 팔로우하거나 모든 글을 확인해보세요',
       icon: '👥',
-      action: { label: '모든 포스트 보기', href: '/posts/all' },
     },
     [PostFilter.RECOMMAND]: {
-      title: '추천 포스트가 없습니다',
+      title: '추천 포스트가 없어요',
       description: '잠시 후 다시 확인해주세요',
       icon: '🎯',
-      action: { label: '새로고침', href: '#' },
     },
     [PostFilter.MANGA]: {
-      title: '이 작품에 대한 포스트가 없습니다',
+      title: '이 작품에 대한 글이 없어요',
       description: '첫 번째로 이 작품에 대해 이야기해보세요!',
       icon: '📚',
-      action: { label: '포스트 작성', href: '#' },
     },
   }
 
@@ -97,7 +96,7 @@ function EmptyState({ filter, mangaId }: { filter: PostFilter; mangaId?: number 
     mangaId && filter === PostFilter.RECOMMAND
       ? emptyStateConfig[PostFilter.MANGA]
       : (emptyStateConfig[filter] ?? {
-          title: '아직 포스트가 없습니다',
+          title: '아직 글이 없어요',
           description: '첫 번째 포스트를 작성해보세요!',
           icon: '✨',
           action: { label: '포스트 작성', href: '#' },
@@ -110,36 +109,6 @@ function EmptyState({ filter, mangaId }: { filter: PostFilter; mangaId?: number 
       </div>
       <h3 className="text-lg font-semibold text-zinc-200 mb-2">{config.title}</h3>
       <p className="text-sm text-zinc-500 mb-6 max-w-sm">{config.description}</p>
-
-      {config.action &&
-        (config.action.label === '새로고침' ? (
-          <button
-            className="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors"
-            onClick={() => window.location.reload()}
-          >
-            <IconRepeat className="w-4 h-4" />
-            <span>{config.action.label}</span>
-          </button>
-        ) : (
-          <Link
-            className="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors"
-            href={config.action.href}
-          >
-            <SquarePen className="size-4" />
-            <span>{config.action.label}</span>
-          </Link>
-        ))}
-
-      {/* Alternative actions */}
-      <div className="mt-8 flex items-center gap-2 text-xs text-zinc-600">
-        <Link className="hover:text-zinc-400 transition-colors" href="/posts/all">
-          모든 포스트
-        </Link>
-        <span>•</span>
-        <Link className="hover:text-zinc-400 transition-colors" href="/search">
-          검색하기
-        </Link>
-      </div>
     </div>
   )
 }
@@ -152,7 +121,7 @@ function ErrorState({ error, retry }: { error: Error; retry: () => void }) {
       <div aria-label="error icon" className="text-3xl mb-4" role="img">
         😔
       </div>
-      <h3 className="text-lg font-semibold text-zinc-200 mb-2">포스트를 불러올 수 없습니다</h3>
+      <h3 className="text-lg font-semibold text-zinc-200 mb-2">글을 불러올 수 없어요</h3>
 
       <CloudProviderStatus onStatusUpdate={setHasSystemIssues} />
       <RetryGuidance errorMessage={error.message} hasSystemIssues={hasSystemIssues} />
@@ -168,37 +137,29 @@ function ErrorState({ error, retry }: { error: Error; retry: () => void }) {
       <div className="mt-6 text-xs text-zinc-600">
         문제가 지속되면{' '}
         <Link className="underline hover:text-zinc-400" href="/posts/all">
-          다른 포스트를 확인해보세요
+          다른 글을 확인해보세요
         </Link>
       </div>
     </div>
   )
 }
 
-// Enhanced skeleton with more realistic content shapes
 function PostListSkeleton() {
   return (
     <ul className="animate-fade-in">
       {[...Array(3)].map((_, i) => (
         <li className="border-t-2 border-zinc-800" key={i}>
           <div className="grid min-w-0 grid-cols-[auto_1fr] gap-2 px-4 pb-2 pt-3">
-            {/* Avatar skeleton */}
             <div className="w-10 h-10 bg-zinc-800 rounded-xl animate-pulse" />
-
             <div className="grid gap-2">
-              {/* Header skeleton */}
               <div className="flex items-center gap-2">
                 <div className="w-24 h-4 bg-zinc-800 rounded animate-pulse" />
                 <div className="w-32 h-3 bg-zinc-800/50 rounded animate-pulse" />
               </div>
-
-              {/* Content skeleton */}
               <div className="space-y-1">
                 <div className="w-full h-4 bg-zinc-800 rounded animate-pulse" />
                 <div className="w-3/4 h-4 bg-zinc-800 rounded animate-pulse" />
               </div>
-
-              {/* Actions skeleton */}
               <div className="flex gap-4 mt-2">
                 {[...Array(4)].map((_, j) => (
                   <div className="w-12 h-6 bg-zinc-800/50 rounded animate-pulse" key={j} />
