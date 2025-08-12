@@ -93,7 +93,7 @@ export default function Post({ post }: Readonly<Props>) {
         </div>
         <PostCreationForm
           buttonText="답글"
-          className="flex"
+          className="flex border-t-2"
           filter={PostFilter.RECOMMAND} // TODO: 변경해야함
           isReply
           placeholder="답글 게시하기"

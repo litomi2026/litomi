@@ -25,7 +25,7 @@ export default async function Page({ params }: PageProps) {
       </div>
       <PostCreationForm
         buttonText="게시하기"
-        className="flex p-4"
+        className="flex p-4 border-b-2"
         filter={PostFilter.MANGA}
         mangaId={id}
         placeholder="이 작품은 어땠나요?"

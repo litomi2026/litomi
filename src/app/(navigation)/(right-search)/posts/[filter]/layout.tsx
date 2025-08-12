@@ -44,7 +44,7 @@ export default async function Layout({ params, children }: LayoutProps) {
       <h2 className="sr-only">게시글 목록</h2>
       <PostCreationForm
         buttonText="게시하기"
-        className="flex p-4"
+        className="flex p-4 border-b-2"
         filter={filter === PostFilterParams.RECOMMAND ? PostFilter.RECOMMAND : PostFilter.FOLLOWING}
         placeholder="무슨 일이 일어나고 있나요?"
       />

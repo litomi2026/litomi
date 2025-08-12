@@ -48,14 +48,9 @@ export default function PostList({ filter, mangaId, username, NotFound }: Readon
   }
 
   return (
-    <ul role="feed">
+    <ul className="[&_li]:not-first:border-t-2 [&_li]:hover:bg-zinc-900/50 [&_li]:transition" role="feed">
       {allPosts.map((post) => (
-        <PostCard
-          className="border-t-2 border-zinc-800 hover:bg-zinc-900/50 transition-colors"
-          key={post.id}
-          post={post}
-          role="article"
-        />
+        <PostCard key={post.id} post={post} role="article" />
       ))}
       {hasNextPage && (
         <li
@@ -108,25 +103,21 @@ function ErrorState({ error, retry }: { error: Error; retry: () => void }) {
 
 function PostListSkeleton() {
   return (
-    <ul className="animate-fade-in">
+    <ul className="animate-fade-in [&_li]:not-first:border-t-2 [&_li]:border-zinc-800">
       {[...Array(3)].map((_, i) => (
-        <li className="border-t-2 border-zinc-800" key={i}>
+        <li key={i}>
           <div className="grid min-w-0 grid-cols-[auto_1fr] gap-2 px-4 pb-2 pt-3">
-            <div className="w-10 h-10 bg-zinc-800 rounded-xl animate-pulse" />
+            <div className="size-10 bg-zinc-800 rounded-xl" />
             <div className="grid gap-2">
               <div className="flex items-center gap-2">
-                <div className="w-24 h-4 bg-zinc-800 rounded animate-pulse" />
-                <div className="w-32 h-3 bg-zinc-800/50 rounded animate-pulse" />
+                <div className="w-24 h-4 bg-zinc-800 rounded" />
+                <div className="w-32 h-3 bg-zinc-800/50 rounded" />
               </div>
               <div className="space-y-1">
-                <div className="w-full h-4 bg-zinc-800 rounded animate-pulse" />
-                <div className="w-3/4 h-4 bg-zinc-800 rounded animate-pulse" />
+                <div className="w-full h-4 bg-zinc-800 rounded" />
+                <div className="w-3/4 h-4 bg-zinc-800 rounded" />
               </div>
-              <div className="flex gap-4 mt-2">
-                {[...Array(4)].map((_, j) => (
-                  <div className="w-12 h-6 bg-zinc-800/50 rounded animate-pulse" key={j} />
-                ))}
-              </div>
+              <div className="my-1 h-7 bg-zinc-800/50 rounded" />
             </div>
           </div>
         </li>
