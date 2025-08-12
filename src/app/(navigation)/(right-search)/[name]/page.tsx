@@ -1,7 +1,15 @@
-export default async function Page() {
-  return (
-    <ul className="flex flex-col grow">
-      <div className="h-10" />
-    </ul>
-  )
+import { PageProps } from '@/types/nextjs'
+import { getUsernameFromParam } from '@/utils/param'
+
+import UserPostList from './UserPostList'
+
+type Params = {
+  name: string
+}
+
+export default async function Page({ params }: PageProps<Params>) {
+  const { name } = await params
+  const username = getUsernameFromParam(name)
+
+  return <UserPostList username={username} />
 }
