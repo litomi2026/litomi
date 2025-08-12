@@ -60,10 +60,8 @@ export async function GET(request: Request) {
     })
 
     if (postRows.length === 0) {
-      return new Response(null, {
-        status: 204,
-        headers: { 'Cache-Control': cacheControl },
-      })
+      const response: GETPostsResponse = { posts: [], nextCursor: null }
+      return Response.json(response, { headers: { 'Cache-Control': cacheControl } })
     }
 
     const hasNextPage = postRows.length > limit
