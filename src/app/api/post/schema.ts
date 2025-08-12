@@ -4,6 +4,7 @@ export enum PostFilter {
   FOLLOWING = '0',
   MANGA = '1',
   RECOMMAND = '2',
+  USER = '3',
 }
 
 export const GETPostSchema = z.object({
@@ -11,7 +12,7 @@ export const GETPostSchema = z.object({
   limit: z.coerce.number().int().positive().max(100).optional(),
   mangaId: z.coerce.number().int().positive().optional(),
   filter: z.enum(PostFilter).optional(),
-  userId: z.coerce.number().int().positive().optional(),
+  username: z.string().min(1).max(32).optional(),
 })
 
 export type GETPostRequest = z.infer<typeof GETPostSchema>

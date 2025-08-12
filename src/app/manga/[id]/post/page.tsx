@@ -30,7 +30,19 @@ export default async function Page({ params }: PageProps) {
         mangaId={id}
         placeholder="이 작품은 어땠나요?"
       />
-      <PostList filter={PostFilter.MANGA} mangaId={id} />
+      <PostList filter={PostFilter.MANGA} mangaId={id} NotFound={<EmptyState />} />
+    </div>
+  )
+}
+
+function EmptyState() {
+  return (
+    <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+      <div aria-label="empty state icon" className="text-4xl mb-4" role="img">
+        📚
+      </div>
+      <h3 className="text-lg font-semibold text-zinc-200 mb-2">이 작품에 대한 글이 없어요</h3>
+      <p className="text-sm text-zinc-500 mb-6 max-w-sm">첫 번째로 이 작품에 대해 이야기해보세요!</p>
     </div>
   )
 }

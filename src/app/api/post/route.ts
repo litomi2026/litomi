@@ -5,7 +5,7 @@ import { getUserIdFromCookie } from '@/utils/session'
 
 import { GETPostSchema } from './schema'
 
-const maxAge = 10
+const maxAge = 5
 const LIMIT = 20
 
 export type GETPostsResponse = {
@@ -39,7 +39,7 @@ export async function GET(request: Request) {
     return new Response('Bad Request', { status: 400 })
   }
 
-  const { cursor, limit = LIMIT, mangaId, filter, userId } = validation.data
+  const { cursor, limit = LIMIT, mangaId, filter, username } = validation.data
   const currentUserId = await getUserIdFromCookie()
 
   try {
@@ -48,16 +48,11 @@ export async function GET(request: Request) {
       cursor,
       mangaId,
       filter,
-      userId,
+      username,
       currentUserId,
     })
 
-    const cacheControl = createCacheControl({
-      public: false,
-      private: true,
-      maxAge,
-      staleWhileRevalidate: maxAge,
-    })
+    const cacheControl = createCacheControl({ private: true, maxAge })
 
     if (postRows.length === 0) {
       const response: GETPostsResponse = { posts: [], nextCursor: null }

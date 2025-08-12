@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useMemo, useState } from 'react'
+import { ReactNode, useEffect, useMemo, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 
 import { PostFilter } from '@/app/api/post/schema'
@@ -14,11 +14,13 @@ import usePostsInfiniteQuery from '@/query/usePostsQuery'
 type Props = {
   filter: PostFilter
   mangaId?: number
+  username?: string
+  NotFound: ReactNode
 }
 
-export default function PostList({ filter, mangaId }: Readonly<Props>) {
+export default function PostList({ filter, mangaId, username, NotFound }: Readonly<Props>) {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, error, refetch } =
-    usePostsInfiniteQuery(filter, mangaId)
+    usePostsInfiniteQuery(filter, mangaId, username)
 
   const allPosts = useMemo(() => data?.pages.flatMap((page) => page.posts) ?? [], [data])
 
@@ -37,12 +39,12 @@ export default function PostList({ filter, mangaId }: Readonly<Props>) {
     return <PostListSkeleton />
   }
 
-  if (isError && error) {
+  if (isError) {
     return <ErrorState error={error} retry={() => refetch()} />
   }
 
   if (allPosts.length === 0) {
-    return <EmptyState filter={filter} mangaId={mangaId} />
+    return NotFound
   }
 
   return (
@@ -70,46 +72,6 @@ export default function PostList({ filter, mangaId }: Readonly<Props>) {
       )}
       <div aria-hidden="true" className="h-20" />
     </ul>
-  )
-}
-
-function EmptyState({ filter, mangaId }: { filter: PostFilter; mangaId?: number }) {
-  const emptyStateConfig = {
-    [PostFilter.FOLLOWING]: {
-      title: '팔로우한 사용자의 글이 없어요',
-      description: '다른 사용자를 팔로우하거나 모든 글을 확인해보세요',
-      icon: '👥',
-    },
-    [PostFilter.RECOMMAND]: {
-      title: '추천 포스트가 없어요',
-      description: '잠시 후 다시 확인해주세요',
-      icon: '🎯',
-    },
-    [PostFilter.MANGA]: {
-      title: '이 작품에 대한 글이 없어요',
-      description: '첫 번째로 이 작품에 대해 이야기해보세요!',
-      icon: '📚',
-    },
-  }
-
-  const config =
-    mangaId && filter === PostFilter.RECOMMAND
-      ? emptyStateConfig[PostFilter.MANGA]
-      : (emptyStateConfig[filter] ?? {
-          title: '아직 글이 없어요',
-          description: '첫 번째 포스트를 작성해보세요!',
-          icon: '✨',
-          action: { label: '포스트 작성', href: '#' },
-        })
-
-  return (
-    <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
-      <div aria-label="empty state icon" className="text-4xl mb-4" role="img">
-        {config.icon}
-      </div>
-      <h3 className="text-lg font-semibold text-zinc-200 mb-2">{config.title}</h3>
-      <p className="text-sm text-zinc-500 mb-6 max-w-sm">{config.description}</p>
-    </div>
   )
 }
 

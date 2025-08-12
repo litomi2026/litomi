@@ -1,8 +1,8 @@
 import { z } from 'zod/v4'
 
 export enum PostFilterParams {
-  Following = 'following',
-  Recommand = 'recommand',
+  FOLLOWING = 'following',
+  RECOMMAND = 'recommand',
 }
 
 export const postFilterSchema = z.object({

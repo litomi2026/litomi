@@ -17,7 +17,7 @@ import Squircle from '../ui/Squircle'
 import PostGeolocationButton from './button/PostGeolocationButton'
 
 type Props = {
-  buttonText: string
+  buttonText?: string
   className?: string
   placeholder?: string
   isReply?: boolean
