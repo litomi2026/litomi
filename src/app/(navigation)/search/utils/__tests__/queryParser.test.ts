@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'bun:test'
+
 import { NotificationConditionType } from '@/database/enum'
 
 import { areConditionsEqual, type ParsedCondition, parseSearchQuery } from '../queryParser'
