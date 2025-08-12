@@ -25,7 +25,7 @@ export default function CollapsibleSection({
 
   return (
     <details className={`bg-zinc-900 border-2 ${borderColor} rounded-xl overflow-hidden group`} id={id}>
-      <CollapsibleSectionOpen id={id} />
+      {id && <CollapsibleSectionOpen id={id} />}
       <summary className="w-full px-4 sm:px-6 py-4 flex items-center justify-between gap-3 hover:bg-zinc-800/50 transition">
         <div className="flex items-center gap-3">
           {icon}
