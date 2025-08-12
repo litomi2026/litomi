@@ -1,9 +1,8 @@
 import dayjs from 'dayjs'
+import { ChartNoAxesColumn, MoreHorizontal } from 'lucide-react'
 
 import { PostFilter } from '@/app/api/post/schema'
-import Icon3Dots from '@/components/icons/Icon3Dots'
 import IconBookmark from '@/components/icons/IconBookmark'
-import IconChart from '@/components/icons/IconChart'
 import IconChat from '@/components/icons/IconChat'
 import IconHeart from '@/components/icons/IconHeart'
 import IconRepeat from '@/components/icons/IconRepeat'
@@ -42,7 +41,7 @@ export default function Post({ post }: Readonly<Props>) {
           </div>
           <div className="flex items-center gap-2">
             {!isMyPost && author && <FollowButton leader={author} />}
-            <Icon3Dots className="w-5 text-zinc-500" />
+            <MoreHorizontal className="size-5 text-zinc-500" />
           </div>
         </div>
         <p className="min-w-0 whitespace-pre-wrap break-all text-lg">{post.content}</p>
@@ -75,7 +74,7 @@ export default function Post({ post }: Readonly<Props>) {
               textClassName: 'hover:text-red-500',
             },
             {
-              Icon: IconChart,
+              Icon: ChartNoAxesColumn,
               content: post.viewCount,
               iconClassName: 'group-hover:bg-zinc-800',
             },

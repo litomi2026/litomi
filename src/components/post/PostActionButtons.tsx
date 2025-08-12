@@ -1,12 +1,12 @@
 'use client'
 
+import { ChartNoAxesColumn } from 'lucide-react'
 import { useTransition } from 'react'
 import { toast } from 'sonner'
 
 import { toggleLikingPost } from '@/app/(navigation)/(right-search)/posts/action'
 import useMeQuery from '@/query/useMeQuery'
 
-import IconChart from '../icons/IconChart'
 import IconChat from '../icons/IconChat'
 import IconHeart from '../icons/IconHeart'
 import IconLogout from '../icons/IconLogout'
@@ -75,7 +75,7 @@ export default function PostActionButtons({
           <span className={`transition-all duration-150 ${isLiked ? 'font-medium' : ''}`}>{likeCount}</span>
         </button>
         <div className="flex items-center">
-          <IconChart className="w-9 shrink-0 p-2" />
+          <ChartNoAxesColumn className="size-9 shrink-0 p-2" />
           {viewCount}
         </div>
       </div>

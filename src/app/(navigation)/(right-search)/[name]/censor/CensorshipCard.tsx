@@ -1,10 +1,9 @@
 'use client'
 
+import { Check, SquarePen } from 'lucide-react'
 import { useCallback, useState } from 'react'
 
 import { CensorshipItem } from '@/app/api/censorship/route'
-import IconCheck from '@/components/icons/IconCheck'
-import IconEdit from '@/components/icons/IconEdit'
 
 import CensorshipEditForm from './CensorshipEditForm'
 import { CENSORSHIP_KEY_LABELS, CENSORSHIP_LEVEL_LABELS } from './constants'
@@ -70,7 +69,7 @@ export default function CensorshipCard({
           className="w-5 h-5 rounded border-2 mt-0.5 flex items-center justify-center transition border-zinc-600 aria-checked:bg-brand-end aria-checked:border-brand-end"
           role="checkbox"
         >
-          {isSelected && <IconCheck className="w-3 text-background" />}
+          {isSelected && <Check className="size-3 text-background" />}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
@@ -91,7 +90,7 @@ export default function CensorshipCard({
               onClick={handleEdit}
               type="button"
             >
-              <IconEdit className="w-4" />
+              <SquarePen className="size-4" />
             </button>
           </div>
         </div>

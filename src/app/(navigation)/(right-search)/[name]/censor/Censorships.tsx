@@ -1,11 +1,11 @@
 'use client'
 
 import { useQueryClient } from '@tanstack/react-query'
+import { MoreHorizontal } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { useCallback, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
-import Icon3Dots from '@/components/icons/Icon3Dots'
 import IconFilter from '@/components/icons/IconFilter'
 import IconPlus from '@/components/icons/IconPlus'
 import IconSearch from '@/components/icons/IconSearch'
@@ -125,7 +125,7 @@ export default function Censorships() {
                 onClick={() => setShowImportExportModal(true)}
                 title="가져오기/내보내기"
               >
-                <Icon3Dots className="w-4" />
+                <MoreHorizontal className="w-4" />
               </button>
               <button
                 className="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition border-2 disabled:opacity-50"

@@ -1,8 +1,8 @@
 import dayjs from 'dayjs'
+import { Calendar } from 'lucide-react'
 import Image from 'next/image'
 import { Suspense } from 'react'
 
-import IconCalendar from '@/components/icons/IconCalendar'
 import IconProfile from '@/components/icons/IconProfile'
 
 import MyPageButtons from './MyPageButtons'
@@ -73,7 +73,7 @@ function UserProfileDescription({ user }: Readonly<Props>) {
   return (
     <>
       <div className="mt-2 flex items-center gap-1 text-zinc-500 text-sm">
-        <IconCalendar className="w-4" /> 가입일: {dayjs(user.createdAt).format('YYYY년 M월')}
+        <Calendar className="size-4" /> 가입일: {dayjs(user.createdAt).format('YYYY년 M월')}
       </div>
       <div className="mt-4 flex gap-6">
         <div className="flex gap-2">

@@ -3,11 +3,11 @@
 import { captureException } from '@sentry/nextjs'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import { useQueryClient } from '@tanstack/react-query'
+import { SquarePen } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { FormEvent, use, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
-import IconEdit from '@/components/icons/IconEdit'
 import IconX from '@/components/icons/IconX'
 import Modal from '@/components/ui/Modal'
 import { QueryKeys } from '@/constants/query'
@@ -86,7 +86,7 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
         hover:bg-zinc-800 active:bg-zinc-900 disabled:text-zinc-500 disabled:bg-zinc-800 disabled:pointer-events-none aria-hidden:hidden"
         onClick={() => setShowModal(true)}
       >
-        <IconEdit className="w-5 flex-shrink-0" />
+        <SquarePen className="size-5 flex-shrink-0" />
         <span className="min-w-0 hidden md:block">프로필 수정</span>
       </button>
       <Modal
@@ -255,7 +255,7 @@ export function ProfileEditButtonError({ error, reset }: Readonly<ErrorBoundaryF
       onClick={reset}
       type="reset"
     >
-      <IconEdit className="w-5 transition group-disabled:scale-100" />
+      <SquarePen className="size-5 transition group-disabled:scale-100" />
       <span className="min-w-0 hidden md:block">오류 (재시도)</span>
     </button>
   )

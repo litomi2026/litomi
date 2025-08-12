@@ -1,10 +1,9 @@
 'use client'
 
+import { Download } from 'lucide-react'
 import { memo, useEffect, useState } from 'react'
 
 import { checkIOSDevice } from '@/utils/browser'
-
-import { IconDownload } from './icons/IconDownload'
 
 declare global {
   export interface WindowEventMap {
@@ -98,7 +97,7 @@ function InstallPrompt() {
         }}
       >
         <div className="flex items-center gap-2 px-3 py-2 text-sm font-semibold">
-          <IconDownload className="w-5" />
+          <Download className="size-5" />
           <span>홈 화면에 추가</span>
         </div>
       </button>

@@ -171,20 +171,4 @@ export const postLikeTable = pgTable(
   (table) => [primaryKey({ columns: [table.userId, table.postId] }), index('idx_post_like_post_id').on(table.postId)],
 ).enableRLS()
 
-export {
-  artistTable,
-  characterTable,
-  groupTable,
-  languageTable,
-  mangaArtistTable,
-  mangaCharacterTable,
-  mangaGroupTable,
-  mangaLanguageTable,
-  mangaSeriesTable,
-  mangaTable,
-  mangaTagTable,
-  seriesTable,
-  tagTable,
-} from './manga-schema'
-
 export { mangaSeenTable, notificationConditionTable, notificationCriteriaTable } from './notification-schema'

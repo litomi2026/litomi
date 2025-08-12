@@ -1,5 +1,6 @@
 'use client'
 
+import { Check } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
@@ -7,7 +8,6 @@ import { useInView } from 'react-intersection-observer'
 import IconBell from '@/components/icons/IconBell'
 import IconBook from '@/components/icons/IconBook'
 import IconBookmark from '@/components/icons/IconBookmark'
-import IconCheck from '@/components/icons/IconCheck'
 import IconDot from '@/components/icons/IconDot'
 import IconEye from '@/components/icons/IconEye'
 import IconTrash from '@/components/icons/IconTrash'
@@ -135,7 +135,7 @@ export default function NotificationCard({
             aria-selected={selected}
             className="h-5 w-5 rounded-md border-2 transition-all aria-selected:border-brand-end aria-selected:bg-brand-end"
           >
-            {selected && <IconCheck className="h-full w-full text-background" />}
+            {selected && <Check className="size-full text-background" />}
           </div>
         </div>
       ) : (

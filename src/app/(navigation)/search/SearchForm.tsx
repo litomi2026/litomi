@@ -1,11 +1,11 @@
 'use client'
 
+import { X } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { FormEvent, memo, Suspense, useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react'
 
 import IconSpinner from '@/components/icons/IconSpinner'
-import IconX from '@/components/icons/IconX'
 
 import { type SearchSuggestion } from './constants'
 import useSearchSuggestions from './useSearchSuggestions'
@@ -216,7 +216,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
             onFocus={handleFocus}
             onKeyDown={handleKeyDown}
             onSelect={handleSelect}
-            placeholder="검색어를 입력하세요"
+            placeholder="/ 키를 눌러 검색하기"
             ref={inputRef}
             type="search"
             value={keyword}
@@ -229,7 +229,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
               onClick={handleClear}
               type="button"
             >
-              <IconX className="w-5" />
+              <X className="size-5" />
             </button>
           )}
         </div>

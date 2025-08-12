@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
+import { MoreHorizontal } from 'lucide-react'
 import Link from 'next/link'
 
-import Icon3Dots from '../icons/Icon3Dots'
 import Squircle from '../ui/Squircle'
 import PostImages from './PostImages'
 
@@ -55,7 +55,7 @@ export default function ReferredPostCard({ referredPost }: Readonly<Props>) {
               </div>
             </div>
           </div>
-          <Icon3Dots className="w-5 text-zinc-600" />
+          <MoreHorizontal className="size-5 text-zinc-600" />
         </div>
         {content ? (
           <p className="min-w-0 whitespace-pre-wrap break-all">{content}</p>
