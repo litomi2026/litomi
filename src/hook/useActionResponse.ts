@@ -8,7 +8,7 @@ import { ActionResponse, ErrorResponse, SuccessResponse } from '@/utils/action-r
 type Props<T extends ActionResponse, TActionArgs extends unknown[]> = {
   action: (...args: TActionArgs) => Promise<T>
   onSuccess?: (data: T extends SuccessResponse<infer D> ? D : never) => void
-  onError?: (error: T extends ErrorResponse<infer E> ? E : never) => void
+  onError?: (error: T extends ErrorResponse<infer E> ? E : never, response: T) => void
   onSettled?: (response: T) => void
   shouldSetResponse?: boolean
 }
@@ -57,7 +57,8 @@ export default function useActionResponse<T extends ActionResponse, TActionArgs 
           amplitude.reset()
         }
 
-        onError?.(response.error as T extends ErrorResponse<infer E> ? E : never)
+        // TODO: 첫번째 파라미터를 두번째 파라미터로 바꾸기
+        onError?.(response.error as T extends ErrorResponse<infer E> ? E : never, response)
       } else {
         onSuccess?.(response.data as T extends SuccessResponse<infer D> ? D : never)
       }
