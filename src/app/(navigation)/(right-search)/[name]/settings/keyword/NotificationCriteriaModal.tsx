@@ -59,9 +59,9 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
 
   const [response, dispatchAction, isPending] = useActionResponse({
     action: processAndSubmit,
-    onSuccess: () => {
+    onSuccess: (data) => {
+      toast.success(data)
       onClose()
-      toast.success(editingCriteria ? '알림 기준을 수정했어요' : '알림 기준을 생성했어요')
     },
     onError: (error) => {
       if (typeof error === 'string') {
