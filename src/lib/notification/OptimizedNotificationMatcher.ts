@@ -1,4 +1,4 @@
-import { and, count, eq, inArray, or } from 'drizzle-orm'
+import { and, count, eq, inArray, or, sql } from 'drizzle-orm'
 
 import type { Manga } from '@/types/manga'
 
@@ -197,6 +197,20 @@ export class OptimizedNotificationMatcher {
     }
 
     return result
+  }
+
+  async updateMatchStatistics(uniqueCriteriaIds: Set<number>): Promise<void> {
+    if (uniqueCriteriaIds.size === 0) {
+      return
+    }
+
+    await db
+      .update(notificationCriteriaTable)
+      .set({
+        matchCount: sql`${notificationCriteriaTable.matchCount} + 1`,
+        lastMatchedAt: new Date(),
+      })
+      .where(inArray(notificationCriteriaTable.id, Array.from(uniqueCriteriaIds)))
   }
 
   private extractNormalizedValues(metadata: MangaMetadata): Map<NotificationConditionType, Set<string>> {
