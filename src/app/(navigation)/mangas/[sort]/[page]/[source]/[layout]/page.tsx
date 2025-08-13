@@ -61,11 +61,7 @@ export default async function Page({ params }: PageProps) {
   }
 
   const { page, source, layout } = validation.data
-
-  const mangas = await getMangas({
-    source,
-    page,
-  })
+  const mangas = await getMangas({ source, page })
 
   if (!mangas || mangas.length === 0) {
     notFound()
@@ -101,6 +97,7 @@ export default async function Page({ params }: PageProps) {
 }
 
 async function getMangas({ source, page }: Params) {
+  // cacheLife('hours')
   try {
     if (source === SourceParam.HIYOBI) {
       return await HiyobiClient.getInstance().fetchMangas(page)

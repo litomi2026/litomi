@@ -102,7 +102,7 @@ async function crawlHarpi(): Promise<Manga[]> {
     for (let page = 0; page < CONFIG.HARPI.maxPages; page++) {
       log.info(`Crawling Harpi page ${page + 1}/${CONFIG.HARPI.maxPages}`)
 
-      const mangas = await client.fetchMangas({
+      const mangas = await client.searchMangas({
         comicKind: HarpiComicKind.EMPTY,
         isIncludeTagsAnd: true,
         minImageCount: 0,

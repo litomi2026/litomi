@@ -5,7 +5,7 @@ import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { GETProxyIdSchema, ProxyIdOnly } from './schema'
 
 export const runtime = 'edge'
-const maxAge = 43200 // 12 hours
+const revalidate = 43200 // 12 hours
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -35,16 +35,14 @@ export async function GET(request: Request) {
       }
     }
 
-    return Response.json(mangas, {
-      headers: {
-        'Cache-Control': createCacheControl({
-          public: true,
-          maxAge,
-          sMaxAge: maxAge,
-          staleWhileRevalidate: maxAge,
-        }),
-      },
+    const cacheControl = createCacheControl({
+      public: true,
+      maxAge: revalidate,
+      sMaxAge: revalidate,
+      staleWhileRevalidate: revalidate,
     })
+
+    return Response.json(mangas, { headers: { 'Cache-Control': cacheControl } })
   } catch (error) {
     return handleRouteError(error, request)
   }

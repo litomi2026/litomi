@@ -12,7 +12,9 @@ import { checkDefined } from '@/utils/type'
 
 type MangaResult = Error | Manga | null | undefined
 
-export async function getMangaFromMultipleSources(id: number): Promise<Manga | null> {
+// TODO: 추후 'use cache' 로 변경하고 revalidate 파라미터 제거하기
+export async function getMangaFromMultipleSources(id: number, revalidate: number): Promise<Manga | null> {
+  // cacheLife('hours')
   const hiyobiClient = HiyobiClient.getInstance()
   const hitomiClient = HitomiClient.getInstance()
   const kHentaiClient = KHentaiClient.getInstance()
@@ -20,15 +22,15 @@ export async function getMangaFromMultipleSources(id: number): Promise<Manga | n
   const komiClient = KomiClient.getInstance()
 
   const [hiyobiManga, hiyobiImages, kHentaiManga, [harpiManga], komiManga, hitomiManga] = await Promise.all([
-    hiyobiClient.fetchManga(id).catch((error) => new Error(error)),
-    hiyobiClient.fetchMangaImages(id).catch(() => null),
-    kHentaiClient.fetchManga(id).catch((error) => new Error(error)),
+    hiyobiClient.fetchManga(id, revalidate).catch((error) => new Error(error)),
+    hiyobiClient.fetchMangaImages(id, revalidate).catch(() => null),
+    kHentaiClient.fetchManga(id, revalidate).catch((error) => new Error(error)),
     harpiClient
-      .searchMangas({ ids: [id] })
+      .searchMangas({ ids: [id] }, revalidate)
       .then((mangas) => mangas ?? [])
       .catch((error) => [new Error(error)]),
-    komiClient.fetchManga(id).catch((error) => new Error(error)),
-    hitomiClient.fetchManga(id).catch((error) => new Error(error)),
+    komiClient.fetchManga(id, revalidate).catch((error) => new Error(error)),
+    hitomiClient.fetchManga(id, revalidate).catch((error) => new Error(error)),
   ])
 
   const sources: MangaResult[] = [harpiManga, hiyobiManga, kHentaiManga, komiManga, hitomiManga]

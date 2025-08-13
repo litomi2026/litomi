@@ -89,6 +89,7 @@ export class MangaNotificationProcessor {
 
       const mangaDataMap = new Map(newMangas.map((item) => [item.manga.id, item.manga]))
       const userNotificationsMap = new Map<number, NewMangaNotification[]>()
+      const matchedCriteriaIds = new Set<number>()
 
       for (let i = 0; i < newMangas.length; i += batchSize) {
         const batch = newMangas.slice(i, i + batchSize)
@@ -111,6 +112,7 @@ export class MangaNotificationProcessor {
 
             for (const match of matches) {
               const userMatch = userMatches.get(match.userId)
+              matchedCriteriaIds.add(match.criteriaId)
 
               if (userMatch) {
                 userMatch.push(match)
@@ -151,6 +153,14 @@ export class MangaNotificationProcessor {
       const processResult = await this.insertAndSendNotifications(userNotificationsMap)
       result.notificationsSent = processResult.notificationsSent
       result.errors.push(...processResult.errors)
+
+      if (matchedCriteriaIds.size > 0) {
+        try {
+          await this.matcher.updateMatchStatistics(matchedCriteriaIds)
+        } catch (error) {
+          result.errors.push(`Failed to update match statistics: ${error}`)
+        }
+      }
 
       await db.insert(mangaSeenTable).values(newMangas.map((item) => ({ mangaId: item.manga.id })))
 

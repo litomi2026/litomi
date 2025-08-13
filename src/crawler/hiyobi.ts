@@ -121,7 +121,6 @@ export class HiyobiClient {
     revalidate = 604800, // 1 week
   ): Promise<Manga | null> {
     const manga = await this.client.fetch<HiyobiManga>(`/gallery/${id}`, {
-      cache: revalidate > 0 ? 'force-cache' : 'no-store',
       next: { revalidate },
     })
 
@@ -134,7 +133,6 @@ export class HiyobiClient {
 
   async fetchMangaImages(id: number, revalidate = 43200): Promise<string[]> {
     const hiyobiImages = await this.imageClient.fetch<HiyobiImage[]>(`/hiyobi/list?id=${id}`, {
-      cache: revalidate > 0 ? 'force-cache' : 'no-store',
       next: { revalidate },
     })
 

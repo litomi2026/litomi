@@ -75,7 +75,7 @@ export async function createNotificationCriteria(formData: FormData) {
     }
 
     revalidatePath('/[name]/settings', 'page')
-    return created(result.id)
+    return created('알림 기준을 생성했어요')
   } catch (error) {
     captureException(error, { extra: { name: 'createNotificationCriteria', userId } })
     return internalServerError('알림 기준 생성 중 오류가 발생했어요', formData)
@@ -211,29 +211,8 @@ export async function updateNotificationCriteria(formData: FormData) {
       return result
     }
 
-    // Get updated criteria with conditions
-    const updatedConditions =
-      conditions ||
-      (await db
-        .select({
-          type: notificationConditionTable.type,
-          value: notificationConditionTable.value,
-        })
-        .from(notificationConditionTable)
-        .where(eq(notificationConditionTable.criteriaId, Number(criteriaId))))
-
     revalidatePath('/[name]/settings', 'page')
-
-    return ok({
-      id: Number(criteriaId),
-      name: name || result.name,
-      isActive: isActive !== undefined ? isActive : result.isActive,
-      createdAt: result.createdAt,
-      updatedAt: new Date(),
-      conditions: updatedConditions,
-      matchCount: result.matchCount,
-      lastMatchedAt: result.lastMatchedAt,
-    })
+    return ok('알림 기준을 수정했어요')
   } catch (error) {
     captureException(error, { extra: { name: 'updateNotificationCriteria', userId, criteriaId } })
     return internalServerError('알림 기준 수정 중 오류가 발생했어요', formData)

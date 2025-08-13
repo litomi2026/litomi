@@ -179,8 +179,8 @@ export class KHentaiClient {
     return KHentaiClient.instance
   }
 
-  async fetchManga(id: number): Promise<Manga | null> {
-    const gallery = await this.fetchGallery(id)
+  async fetchManga(id: number, revalidate = 43200): Promise<Manga | null> {
+    const gallery = await this.fetchGallery(id, revalidate)
 
     if (!gallery) {
       return null
@@ -192,8 +192,8 @@ export class KHentaiClient {
     }
   }
 
-  async fetchMangaImages(id: number): Promise<string[] | null> {
-    const gallery = await this.fetchGallery(id)
+  async fetchMangaImages(id: number, revalidate = 43200): Promise<string[] | null> {
+    const gallery = await this.fetchGallery(id, revalidate)
 
     if (!gallery) {
       return null
@@ -231,7 +231,7 @@ export class KHentaiClient {
       startDate?: string
       endDate?: string
     } = {},
-    revalidate = 60,
+    revalidate = 300,
   ): Promise<Manga[]> {
     const kebabCaseParams = Object.entries(params)
       .filter(([key, value]) => key !== 'offset' && value !== undefined)
@@ -241,7 +241,6 @@ export class KHentaiClient {
     searchParams.sort()
 
     const kHentaiMangas = await this.client.fetch<KHentaiManga[]>(`/ajax/search?${searchParams}`, {
-      cache: revalidate > 0 ? 'force-cache' : 'no-store',
       next: { revalidate },
     })
 
@@ -282,18 +281,9 @@ export class KHentaiClient {
     }
   }
 
-  private async fetchGallery(id: number): Promise<KHentaiGallery | null> {
+  private async fetchGallery(id: number, revalidate = 43200): Promise<KHentaiGallery | null> {
     try {
-      const html = await this.client.fetch<string>(
-        `/r/${id}`,
-        {
-          cache: 'force-cache',
-          next: { revalidate: 43200 }, // 12 hours
-          headers: { Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' },
-        },
-        true,
-      )
-
+      const html = await this.client.fetch<string>(`/r/${id}`, { next: { revalidate } }, true)
       return this.parseGalleryFromHTML(html, id)
     } catch (error) {
       if (error instanceof NotFoundError) {

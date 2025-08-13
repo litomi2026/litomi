@@ -84,21 +84,19 @@ export class HarpiClient {
     return HarpiClient.instance
   }
 
-  async fetchMangaByHarpiId(harpiId: string): Promise<Manga> {
+  async fetchMangaByHarpiId(harpiId: string, revalidate = 43200): Promise<Manga> {
     const response = await this.client.fetch<{ data: HarpiManga }>(`/animation/${harpiId}`, {
-      cache: 'force-cache',
-      next: { revalidate: 43200 }, // 12 hours
+      next: { revalidate },
     })
 
     return this.convertHarpiToManga(response.data)
   }
 
-  async searchMangas(params: Partial<GETHarpiSearchRequest> = {}, revalidate = 60): Promise<Manga[] | null> {
+  async searchMangas(params: Partial<GETHarpiSearchRequest> = {}, revalidate = 300): Promise<Manga[] | null> {
     const validatedParams = HarpiSearchSchema.parse(params)
     const searchParams = this.buildSearchParams(validatedParams)
 
     const response = await this.client.fetch<HarpiListResponse>(`/animation/list?${searchParams}`, {
-      cache: revalidate > 0 ? 'force-cache' : 'no-store',
       next: { revalidate },
     })
 
