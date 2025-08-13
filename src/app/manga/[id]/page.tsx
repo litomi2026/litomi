@@ -53,11 +53,8 @@ export async function generateStaticParams() {
     .searchKoreanMangas()
     .then((mangas) => mangas?.map((manga) => String(manga.id)) ?? [])
     .catch(() => [] as string[])
-  const params: Record<string, unknown>[] = []
-  for (const id of kHentaiIds) {
-    params.push({ id })
-  }
-  return params
+
+  return kHentaiIds.map((id) => ({ id }))
 }
 
 export default async function Page({ params }: PageProps) {
