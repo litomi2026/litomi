@@ -241,7 +241,6 @@ export class KHentaiClient {
     searchParams.sort()
 
     const kHentaiMangas = await this.client.fetch<KHentaiManga[]>(`/ajax/search?${searchParams}`, {
-      cache: revalidate > 0 ? 'force-cache' : 'no-store',
       next: { revalidate },
     })
 
