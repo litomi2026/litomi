@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { unstable_cache } from 'next/cache'
 import { notFound } from 'next/navigation'
 
 import type { PageProps } from '@/types/nextjs'
@@ -16,6 +17,7 @@ import { mangaSchema } from './schema'
 export const dynamic = 'error'
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  // cacheLife('days')
   const validation = mangaSchema.safeParse(await params)
 
   if (!validation.success) {
@@ -23,7 +25,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const { id } = validation.data
-  const manga = await getMangaFromMultipleSources(id, 86400)
+  const manga = await getCachedManga(id)
 
   if (!manga) {
     notFound()
@@ -79,3 +81,10 @@ export default async function Page({ params }: PageProps) {
     </main>
   )
 }
+
+// TODO: 추후 'use cache' 로 변경하면서 getCachedManga 함수 제거하기
+const getCachedManga = unstable_cache(
+  async (id: number) => getMangaFromMultipleSources(id, 86400),
+  ['getCachedManga'],
+  { revalidate: 86400 },
+)
