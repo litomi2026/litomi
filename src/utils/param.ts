@@ -1,11 +1,3 @@
-export enum SortParam {
-  // BOOKMARK = 'bookmark',
-  LATEST = 'latest',
-  OLDEST = 'oldest',
-  POPULAR = 'popular',
-  // LIKE = 'like',
-}
-
 export enum SourceParam {
   HIYOBI = 'hi',
   HARPI = 'hp',

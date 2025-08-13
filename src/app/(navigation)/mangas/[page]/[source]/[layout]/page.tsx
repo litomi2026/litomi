@@ -4,13 +4,14 @@ import { notFound } from 'next/navigation'
 import MangaCard from '@/components/card/MangaCard'
 import MangaCardImage from '@/components/card/MangaCardImage'
 import Navigation from '@/components/Navigation'
+import { SHORT_NAME } from '@/constants'
 import { createErrorManga } from '@/constants/json'
 import { CANONICAL_URL } from '@/constants/url'
 import { HiyobiClient } from '@/crawler/hiyobi'
 import { KHentaiClient } from '@/crawler/k-hentai'
 import { PageProps } from '@/types/nextjs'
 import { getViewerLink } from '@/utils/manga'
-import { getTotalPages, SortParam, SourceParam, ViewCookie } from '@/utils/param'
+import { getTotalPages, SourceParam, ViewCookie } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 import { mangasSchema } from './schema'
@@ -18,6 +19,7 @@ import { mangasSchema } from './schema'
 export const dynamic = 'error'
 
 export const metadata: Metadata = {
+  title: `목록 - ${SHORT_NAME}`,
   alternates: {
     canonical: `${CANONICAL_URL}/mangas`,
     languages: { ko: `${CANONICAL_URL}/mangas` },
@@ -31,8 +33,8 @@ type Params = {
 
 export async function generateStaticParams() {
   const params = []
-  const pages = Array.from({ length: 10 }, (_, i) => String(i + 1))
   const views = [ViewCookie.CARD, ViewCookie.IMAGE]
+  const pages = Array.from({ length: 10 }, (_, i) => String(i + 1))
 
   for (const view of views) {
     for (const page of pages) {

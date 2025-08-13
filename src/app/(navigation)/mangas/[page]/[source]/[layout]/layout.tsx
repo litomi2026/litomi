@@ -22,7 +22,7 @@ export default async function Layout({ params, children }: LayoutProps) {
           current={sourceString}
           hrefPrefixes={(source) => {
             if (source === SourceParam.HIYOBI) {
-              return `../../../${Math.min(pageNumber, getTotalPages(source))}/`
+              return `../../${Math.min(pageNumber, getTotalPages(source))}/`
             } else {
               return `../../${Math.min(pageNumber, getTotalPages(source))}/`
             }
