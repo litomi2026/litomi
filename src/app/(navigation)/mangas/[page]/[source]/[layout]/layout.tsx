@@ -4,15 +4,7 @@ import ShuffleButton from '@/components/ShuffleButton'
 import SourceSliderLink from '@/components/SourceSliderLink'
 import SourceTooltip from '@/components/tooltip/SourceTooltip'
 import ViewSliderLink from '@/components/ViewSliderLink'
-import {
-  getTotalPages,
-  SortParam,
-  SourceParam,
-  validatePage,
-  validateSource,
-  validateView,
-  ViewCookie,
-} from '@/utils/param'
+import { getTotalPages, SourceParam, validatePage, validateSource, validateView, ViewCookie } from '@/utils/param'
 
 export default async function Layout({ params, children }: LayoutProps) {
   const { page, source, layout } = await params
@@ -30,7 +22,7 @@ export default async function Layout({ params, children }: LayoutProps) {
           current={sourceString}
           hrefPrefixes={(source) => {
             if (source === SourceParam.HIYOBI) {
-              return `../../../${SortParam.LATEST}/${Math.min(pageNumber, getTotalPages(source))}/`
+              return `../../../${Math.min(pageNumber, getTotalPages(source))}/`
             } else {
               return `../../${Math.min(pageNumber, getTotalPages(source))}/`
             }
