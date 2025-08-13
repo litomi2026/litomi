@@ -1,3 +1,4 @@
+import ms from 'ms'
 import { unstable_cache } from 'next/cache'
 
 import { getMangaFromMultipleSources } from '@/common/manga'
@@ -7,7 +8,7 @@ import { RouteProps } from '@/types/nextjs'
 import { GETProxyMangaIdSchema } from './schema'
 
 export const runtime = 'edge'
-const revalidate = 43200 // 12 hours
+const revalidate = ms('12 hours') / 1000
 
 type Params = {
   id: string
