@@ -97,7 +97,6 @@ export class KomiClient {
     }
 
     const response = await this.client.fetch<KomiManga>(`/api/galleries/${uuid}`, {
-      cache: revalidate > 0 ? 'force-cache' : 'no-store',
       next: { revalidate },
     })
 

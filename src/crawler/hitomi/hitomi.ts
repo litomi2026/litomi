@@ -56,11 +56,7 @@ export class HitomiClient {
 
   async fetchManga(id: number, revalidate = 86400) {
     try {
-      const jsText = await this.client.fetch<string>(
-        `/galleries/${id}.js`,
-        { cache: revalidate > 0 ? 'force-cache' : 'no-store', next: { revalidate } },
-        true,
-      )
+      const jsText = await this.client.fetch<string>(`/galleries/${id}.js`, { next: { revalidate } }, true)
 
       return await this.parseGalleryFromJS(jsText, id)
     } catch (error) {
