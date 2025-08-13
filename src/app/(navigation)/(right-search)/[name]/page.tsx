@@ -3,6 +3,8 @@ import { getUsernameFromParam } from '@/utils/param'
 
 import UserPostList from './UserPostList'
 
+export const dynamic = 'error'
+
 type Params = {
   name: string
 }
