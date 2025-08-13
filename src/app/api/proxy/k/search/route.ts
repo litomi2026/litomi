@@ -42,10 +42,9 @@ export async function GET(request: Request) {
   const lowerQuery = convertQueryKey(query?.toLowerCase())
   const categories = getCategories(lowerQuery)
   const search = lowerQuery?.replace(/\btype:\S+/gi, '').trim()
-  const client = KHentaiClient.getInstance()
 
   try {
-    const searchedMangas = await client.searchMangas({
+    const searchedMangas = await searchCachedMangas({
       search,
       nextId: nextId?.toString(),
       sort,
@@ -76,3 +75,10 @@ export async function GET(request: Request) {
     return handleRouteError(error, request)
   }
 }
+
+// TODO: 추후 'use cache' 로 변경하고 searchCachedMangas 함수 제거하기
+const searchCachedMangas = unstable_cache(
+  async (params: KHentaiMangaSearchOptions) => KHentaiClient.getInstance().searchMangas(params),
+  ['searchCachedMangas'],
+  { revalidate },
+)
