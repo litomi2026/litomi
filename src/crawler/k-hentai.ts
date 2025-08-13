@@ -88,6 +88,20 @@ export interface KHentaiManga extends KHentaiMangaCommon {
   torrents: Torrent[]
 }
 
+export type KHentaiMangaSearchOptions = {
+  search?: string
+  nextId?: string
+  sort?: string
+  offset?: string
+  categories?: string
+  minViews?: string
+  maxViews?: string
+  minPages?: string
+  maxPages?: string
+  startDate?: string
+  endDate?: string
+}
+
 export interface Thumbnail {
   extension: string
   height: number
@@ -206,33 +220,11 @@ export class KHentaiClient {
     return this.searchMangas({ search: 'language:korean', sort: 'random' }, 15)
   }
 
-  async searchKoreanMangas(
-    params?: {
-      nextId?: string
-      sort?: string
-      offset?: string
-    },
-    revalidate = 21600, // 6 hours
-  ): Promise<Manga[]> {
-    return this.searchMangas({ search: 'language:korean', ...params }, revalidate)
+  async searchKoreanMangas(): Promise<Manga[]> {
+    return this.searchMangas({ search: 'language:korean' }, 21600)
   }
 
-  async searchMangas(
-    params: {
-      search?: string
-      nextId?: string
-      sort?: string
-      offset?: string
-      categories?: string
-      minViews?: string
-      maxViews?: string
-      minPages?: string
-      maxPages?: string
-      startDate?: string
-      endDate?: string
-    } = {},
-    revalidate = 300,
-  ): Promise<Manga[]> {
+  async searchMangas(params: KHentaiMangaSearchOptions = {}, revalidate = 300): Promise<Manga[]> {
     const kebabCaseParams = Object.entries(params)
       .filter(([key, value]) => key !== 'offset' && value !== undefined)
       .map(([key, value]) => [convertCamelCaseToKebabCase(key), value])

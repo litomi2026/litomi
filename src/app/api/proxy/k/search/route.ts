@@ -1,12 +1,15 @@
+import ms from 'ms'
+import { unstable_cache } from 'next/cache'
+
 import { GETProxyKSearchSchema } from '@/app/api/proxy/k/search/schema'
-import { getCategories, KHentaiClient } from '@/crawler/k-hentai'
+import { getCategories, KHentaiClient, KHentaiMangaSearchOptions } from '@/crawler/k-hentai'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { Manga } from '@/types/manga'
 
 import { convertQueryKey, filterMangasByMinusPrefix } from './utils'
 
 export const runtime = 'edge'
-const maxAge = 300
+const revalidate = ms('5 minutes') / 1000
 
 export type GETProxyKSearchResponse = {
   mangas: Manga[]
@@ -63,9 +66,9 @@ export async function GET(request: Request) {
 
     const cacheControl = createCacheControl({
       public: true,
-      maxAge,
-      sMaxAge: maxAge,
-      staleWhileRevalidate: maxAge,
+      maxAge: revalidate,
+      sMaxAge: revalidate,
+      staleWhileRevalidate: revalidate,
     })
 
     return Response.json(response, { headers: { 'Cache-Control': cacheControl } })
