@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const { id } = validation.data
-  const manga = await getMangaFromMultipleSources(id)
+  const manga = await getMangaFromMultipleSources(id, 86400)
 
   if (!manga) {
     notFound()

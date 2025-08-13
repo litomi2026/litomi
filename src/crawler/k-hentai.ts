@@ -179,8 +179,8 @@ export class KHentaiClient {
     return KHentaiClient.instance
   }
 
-  async fetchManga(id: number): Promise<Manga | null> {
-    const gallery = await this.fetchGallery(id)
+  async fetchManga(id: number, revalidate = 43200): Promise<Manga | null> {
+    const gallery = await this.fetchGallery(id, revalidate)
 
     if (!gallery) {
       return null
@@ -192,8 +192,8 @@ export class KHentaiClient {
     }
   }
 
-  async fetchMangaImages(id: number): Promise<string[] | null> {
-    const gallery = await this.fetchGallery(id)
+  async fetchMangaImages(id: number, revalidate = 43200): Promise<string[] | null> {
+    const gallery = await this.fetchGallery(id, revalidate)
 
     if (!gallery) {
       return null
@@ -231,7 +231,7 @@ export class KHentaiClient {
       startDate?: string
       endDate?: string
     } = {},
-    revalidate = 60,
+    revalidate = 300,
   ): Promise<Manga[]> {
     const kebabCaseParams = Object.entries(params)
       .filter(([key, value]) => key !== 'offset' && value !== undefined)

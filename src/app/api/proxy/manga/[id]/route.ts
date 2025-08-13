@@ -5,7 +5,7 @@ import { RouteProps } from '@/types/nextjs'
 import { GETProxyMangaIdSchema } from './schema'
 
 export const runtime = 'edge'
-const maxAge = 43200 // 12 hours
+const revalidate = 43200 // 12 hours
 
 type Params = {
   id: string
@@ -21,7 +21,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
   const { id } = validation.data
 
   try {
-    const manga = await getMangaFromMultipleSources(id)
+    const manga = await getMangaFromMultipleSources(id, revalidate)
 
     if (!manga) {
       return new Response('Not Found', { status: 404 })
@@ -31,9 +31,9 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       headers: {
         'Cache-Control': createCacheControl({
           public: true,
-          maxAge,
-          sMaxAge: maxAge,
-          staleWhileRevalidate: maxAge,
+          maxAge: revalidate,
+          sMaxAge: revalidate,
+          staleWhileRevalidate: revalidate,
         }),
       },
     })
