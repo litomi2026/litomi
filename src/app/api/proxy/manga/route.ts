@@ -1,3 +1,5 @@
+import ms from 'ms'
+
 import { getMangasFromMultipleSources } from '@/common/manga'
 import { MAX_THUMBNAIL_IMAGES } from '@/constants/manga'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
@@ -5,7 +7,7 @@ import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { GETProxyIdSchema, ProxyIdOnly } from './schema'
 
 export const runtime = 'edge'
-const revalidate = 43200 // 12 hours
+const revalidate = ms('12 hours') / 1000
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)

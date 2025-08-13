@@ -1,10 +1,12 @@
+import ms from 'ms'
+
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 
 import { type GETSearchSuggestionsResponse, GETSearchSuggestionsSchema, queryBlacklist } from './schema'
 import { suggestionTrie } from './suggestion-trie'
 
 export const runtime = 'edge'
-const maxAge = 86400 // 1 day
+const revalidate = ms('3 days') / 1000
 
 export async function GET(request: Request) {
   const url = new URL(request.url)
@@ -24,15 +26,15 @@ export async function GET(request: Request) {
   try {
     const suggestions = suggestionTrie.search(query, locale)
 
+    const cacheControl = createCacheControl({
+      public: true,
+      maxAge: revalidate,
+      sMaxAge: revalidate,
+      staleWhileRevalidate: revalidate,
+    })
+
     return Response.json(suggestions satisfies GETSearchSuggestionsResponse, {
-      headers: {
-        'Cache-Control': createCacheControl({
-          public: true,
-          maxAge,
-          sMaxAge: maxAge,
-          staleWhileRevalidate: maxAge,
-        }),
-      },
+      headers: { 'Cache-Control': cacheControl },
     })
   } catch (error) {
     return handleRouteError(error, request)
