@@ -11,13 +11,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
-      url: `${CANONICAL_URL}/mangas/latest/1/hi/card`,
+      url: `${CANONICAL_URL}/mangas/1/hi/card`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.9,
     },
     {
-      url: `${CANONICAL_URL}/mangas/latest/1/k/card`,
+      url: `${CANONICAL_URL}/mangas/1/k/card`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.9,
