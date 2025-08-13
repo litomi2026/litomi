@@ -7,6 +7,12 @@ import IconProfile from '@/components/icons/IconProfile'
 
 import MyPageButtons from './MyPageButtons'
 
+export enum UserType {
+  GUEST,
+  NOT_FOUND,
+  LOADING,
+}
+
 type Props = {
   user: {
     id?: number
@@ -14,7 +20,7 @@ type Props = {
     nickname?: string
     imageURL?: string | null
     createdAt?: Date
-    type?: string
+    type?: UserType
   }
 }
 
@@ -48,7 +54,7 @@ export default function UserProfileView({ user }: Readonly<Props>) {
             </div>
           </div>
           <Suspense>
-            <MyPageButtons />
+            <MyPageButtons user={user} />
           </Suspense>
         </div>
         <UserProfileDescription user={user} />
@@ -58,15 +64,15 @@ export default function UserProfileView({ user }: Readonly<Props>) {
 }
 
 function UserProfileDescription({ user }: Readonly<Props>) {
-  if (user.type === 'not-found') {
+  if (user.type === UserType.NOT_FOUND) {
     return <div className="mt-2 h-[4.75rem] text-zinc-500 text-sm">존재하지 않는 사용자에요</div>
   }
 
-  if (user.type === 'guest') {
+  if (user.type === UserType.GUEST) {
     return <div className="mt-2 h-[4.75rem] text-zinc-500 text-sm">로그인하면 모든 기능을 이용할 수 있습니다</div>
   }
 
-  if (user.type === 'loading') {
+  if (user.type === UserType.LOADING) {
     return <div className="mt-2 h-[4.75rem] text-zinc-500 animate-fade-in bg-zinc-800 rounded-xl text-sm">.</div>
   }
 

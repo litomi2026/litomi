@@ -1,6 +1,4 @@
-import { cookies } from 'next/headers'
-
-import { getUserIdFromAccessToken } from '@/utils/cookie'
+import { getUserIdFromCookie } from '@/utils/session'
 
 import { getUserById } from './common'
 import MyPageNavigationLink from './MyPageNavigationLink'
@@ -10,11 +8,10 @@ type Props = {
 }
 
 export default async function MyPagePrivateNavigation({ username }: Readonly<Props>) {
-  const cookieStore = await cookies()
-  const loginUserId = await getUserIdFromAccessToken(cookieStore, false)
+  const userId = await getUserIdFromCookie()
 
-  if (loginUserId) {
-    const loginUser = await getUserById(loginUserId)
+  if (userId && username) {
+    const loginUser = await getUserById(userId)
 
     if (loginUser.name !== username) {
       return

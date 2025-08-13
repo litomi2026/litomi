@@ -22,15 +22,8 @@ export type Params = {
   name: string
 }
 
-export async function getUserByName(name: string) {
-  if (!name) {
-    return {
-      type: 'guest',
-      nickname: '비회원',
-    }
-  }
-
-  const [dbUser] = await db
+export const getUserByName = cache(async (name: string) => {
+  const [user] = await db
     .select({
       id: userTable.id,
       loginId: userTable.loginId,
@@ -42,13 +35,5 @@ export async function getUserByName(name: string) {
     .from(userTable)
     .where(sql`${userTable.name} = ${name}`)
 
-  if (!dbUser) {
-    return {
-      type: 'not-found',
-      name,
-      nickname: '존재하지 않는 사용자',
-    }
-  }
-
-  return dbUser
-}
+  return user
+})

@@ -12,7 +12,7 @@ import { PageProps } from '@/types/nextjs'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
 import { getUsernameFromParam } from '@/utils/param'
 
-import { getUserById } from '../common'
+import { getUserById, getUserByName } from '../common'
 import BookmarkList from './BookmarkList'
 import BookmarkTooltip from './BookmarkTooltip'
 import { BOOKMARKS_PER_PAGE } from './constants'
@@ -26,18 +26,28 @@ type Params = {
 }
 
 export default async function BookmarkPage({ params }: PageProps<Params>) {
-  const [cookieStore, { name }] = await Promise.all([cookies(), params])
+  const { name } = await params
   const usernameFromParam = getUsernameFromParam(name)
+  const user = await getUserByName(usernameFromParam)
+
+  // NOTE: 존재하지 않는 사용자
+  if (!user) {
+    return
+  }
+
+  const cookieStore = await cookies()
   const userId = await getUserIdFromAccessToken(cookieStore, false)
 
-  if (!userId) {
+  // NOTE: 로그인하지 않았거나 name이 없는 경우
+  if (!userId || !usernameFromParam) {
     return <GuestView />
   }
 
-  const user = await getUserById(userId)
+  const loginUser = await getUserById(userId)
 
-  if (user.name !== usernameFromParam) {
-    return <PrivateBookmarksView usernameFromLoginUser={user.name} usernameFromParam={usernameFromParam} />
+  // NOTE: 로그인한 사용자와 name이 다른 경우
+  if (loginUser.name !== usernameFromParam) {
+    return <PrivateBookmarksView usernameFromLoginUser={loginUser.name} usernameFromParam={usernameFromParam} />
   }
 
   const bookmarkRows = await db

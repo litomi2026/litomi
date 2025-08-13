@@ -6,7 +6,7 @@ import { getUsernameFromParam } from '@/utils/param'
 import MyPageNavigationLink from './MyPageNavigationLink'
 import MyPagePrivateNavigation from './MyPagePrivateNavigation'
 import UserProfile from './UserProfile'
-import UserProfileView from './UserProfileView'
+import UserProfileView, { UserType } from './UserProfileView'
 
 export default async function Layout({ params, children }: LayoutProps) {
   const { name } = await params
@@ -14,13 +14,12 @@ export default async function Layout({ params, children }: LayoutProps) {
 
   const publicLinks = [
     { href: `/@${username}`, label: '게시글' },
-    // { href: `/@${username}/reply`, label: '답글' },
     { href: `/@${username}/bookmark`, label: '북마크' },
   ]
 
   return (
     <main className="flex flex-col grow">
-      <Suspense fallback={<UserProfileView user={{ type: 'loading', name: username, nickname: '...' }} />}>
+      <Suspense fallback={<UserProfileView user={{ type: UserType.LOADING, name: username, nickname: '...' }} />}>
         <UserProfile username={username} />
       </Suspense>
       <nav
