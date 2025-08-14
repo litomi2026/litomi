@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-import { MAX_QUERY_LENGTH } from '@/app/api/proxy/k/search/schema'
+import { MAX_SEARCH_QUERY_LENGTH } from '@/constants/policy'
 
 import { FILTER_CONFIG } from './constants'
 
@@ -24,7 +24,7 @@ export default function Error400({ message }: Readonly<Props>) {
         <div className="bg-zinc-900 border border-zinc-700 rounded-lg p-4 text-left">
           <h2 className="font-semibold text-zinc-300 mb-2">검색 조건 가이드</h2>
           <ul className="text-zinc-400 text-sm space-y-2">
-            <li>• 검색어: 최대 {MAX_QUERY_LENGTH}자까지 가능</li>
+            <li>• 검색어: 최대 {MAX_SEARCH_QUERY_LENGTH}자까지 가능</li>
             <li>• 조회수/페이지: 1 ~ 10,000</li>
             <li>• 날짜 범위: 시작일이 종료일보다 이전이어야 함</li>
             <li>• 정렬: {validSortOptionsLabel} 중 선택</li>
