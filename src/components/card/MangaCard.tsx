@@ -1,5 +1,4 @@
 import { ErrorBoundary } from '@suspensive/react'
-import dayjs from 'dayjs'
 import Link from 'next/link'
 import { memo, Suspense } from 'react'
 
@@ -13,7 +12,9 @@ import TagList from '../TagList'
 import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from './BookmarkButton'
 import LanguageBadge from './LanguageBadge'
 import MangaCardCensorship from './MangaCardCensorship'
+import MangaCardDate from './MangaCardDate'
 import MangaCardImage from './MangaCardImage'
+import MangaCardStats from './MangaCardStats'
 import MangaMetadataItem from './MangaMetadataItem'
 import MangaMetadataList from './MangaMetadataList'
 import SearchFromHereButton from './SearchFromHereButton'
@@ -40,10 +41,10 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
       <MangaCardImage
         className="h-fit my-auto aspect-[4/3] [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-contain [&_img]:aspect-[4/3]"
         href={viewerLink}
-        index={index}
         manga={manga}
+        mangaIndex={index}
       />
-      <div className="flex grow flex-col justify-between gap-2 p-2 border-t-2 sm:border-t-0 sm:border-l-2 md:border-l-0 md:border-t-2">
+      <div className="flex grow flex-col justify-between gap-2 p-2 border-t-2">
         <dl className="flex flex-col gap-2 text-sm [&_dt]:whitespace-nowrap [&_dt]:font-semibold">
           <div className="flex items-start gap-1.5">
             <Link className="flex-1 hover:underline focus:underline" href={viewerLink} target="_blank">
@@ -85,6 +86,7 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
             </div>
           )}
           {tags && tags.length > 0 && <TagList className="flex flex-wrap gap-1 font-semibold" tags={tags} />}
+          <MangaCardStats manga={manga} />
         </dl>
         <div className="grid gap-2">
           <div className="flex text-xs justify-between items-center gap-1">
@@ -96,7 +98,7 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
               {id}
               <IconExternalLink className="w-3" />
             </a>
-            {date && <div className="text-right text-zinc-400">{dayjs(date).format('YYYY-MM-DD HH:mm')}</div>}
+            {date && <MangaCardDate manga={manga} />}
           </div>
           <div
             className="flex flex-wrap justify-around gap-2 text-sm font-medium 

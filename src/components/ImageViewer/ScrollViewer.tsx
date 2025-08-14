@@ -1,11 +1,9 @@
 'use client'
 
 import { useVirtualizer } from '@tanstack/react-virtual'
-import { useRouter } from 'next/navigation'
 import { memo, RefObject, useCallback, useEffect, useRef } from 'react'
 import { useInView } from 'react-intersection-observer'
 
-import { MangaIdSourceSearchParam } from '@/app/manga/[id]/common'
 import { PageView } from '@/components/ImageViewer/store/pageView'
 import { ScreenFit } from '@/components/ImageViewer/store/screenFit'
 import { useImageStatus } from '@/hook/useImageStatus'
@@ -93,13 +91,12 @@ function ScrollViewer({ manga, onClick, screenFit, pageView }: Readonly<Props>) 
 const VirtualItemMemo = memo(VirtualItem)
 
 function VirtualItem({ index, manga, virtualizer, pageView, itemHeightMap }: Readonly<VirtualItemProps>) {
-  const setImageIndex = useImageIndexStore((state) => state.setImageIndex)
+  const navigateToImageIndex = useImageIndexStore((state) => state.navigateToImageIndex)
   const isDoublePage = pageView === 'double'
   const firstImageIndex = isDoublePage ? index * 2 : index
   const nextImageIndex = firstImageIndex + 1
   const firstImageStatus = useImageStatus()
   const nextImageStatus = useImageStatus()
-  const router = useRouter()
 
   const { ref, inView } = useInView({
     threshold: 0,
@@ -108,11 +105,9 @@ function VirtualItem({ index, manga, virtualizer, pageView, itemHeightMap }: Rea
 
   useEffect(() => {
     if (inView) {
-      const newImageIndex = firstImageIndex
-      setImageIndex(newImageIndex)
-      router.replace(`?${MangaIdSourceSearchParam.PAGE}=${newImageIndex + 1}`)
+      navigateToImageIndex(firstImageIndex)
     }
-  }, [firstImageIndex, inView, router, setImageIndex])
+  }, [firstImageIndex, inView, navigateToImageIndex])
 
   function registerRef(element: HTMLLIElement | null) {
     if (firstImageStatus.loaded && (!isDoublePage || nextImageStatus.loaded)) {

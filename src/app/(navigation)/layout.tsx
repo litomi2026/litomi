@@ -27,7 +27,7 @@ export default async function Layout({ children }: LayoutProps) {
           <Link className="p-2 w-fit mx-auto hidden sm:block 2xl:m-0" href="/">
             <IconLogo className="w-8" priority />
           </Link>
-          <SelectableLink href="/mangas/latest/1/hi/card" Icon={IconHome}>
+          <SelectableLink href="/mangas/1/hi/card" Icon={IconHome}>
             홈
           </SelectableLink>
           <SelectableLink href="/search" Icon={IconSearch}>

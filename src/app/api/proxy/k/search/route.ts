@@ -1,5 +1,4 @@
 import ms from 'ms'
-import { unstable_cache } from 'next/cache'
 
 import { GETProxyKSearchSchema } from '@/app/api/proxy/k/search/schema'
 import { getCategories, KHentaiClient, KHentaiMangaSearchOptions } from '@/crawler/k-hentai'
@@ -43,21 +42,22 @@ export async function GET(request: Request) {
   const categories = getCategories(lowerQuery)
   const search = lowerQuery?.replace(/\btype:\S+/gi, '').trim()
 
-  try {
-    const searchedMangas = await searchCachedMangas({
-      search,
-      nextId: nextId?.toString(),
-      sort,
-      offset: skip?.toString(),
-      categories,
-      minViews: minView?.toString(),
-      maxViews: maxView?.toString(),
-      minPages: minPage?.toString(),
-      maxPages: maxPage?.toString(),
-      startDate: from?.toString(),
-      endDate: to?.toString(),
-    })
+  const params: KHentaiMangaSearchOptions = {
+    search,
+    nextId: nextId?.toString(),
+    sort,
+    offset: skip?.toString(),
+    categories,
+    minViews: minView?.toString(),
+    maxViews: maxView?.toString(),
+    minPages: minPage?.toString(),
+    maxPages: maxPage?.toString(),
+    startDate: from?.toString(),
+    endDate: to?.toString(),
+  }
 
+  try {
+    const searchedMangas = await KHentaiClient.getInstance().searchMangas(params, 0)
     const mangas = filterMangasByMinusPrefix(searchedMangas, query)
     const nextCursor = mangas.length > 0 ? mangas[mangas.length - 1].id.toString() : null
     const hasNextPage = mangas.length > 0
@@ -75,10 +75,3 @@ export async function GET(request: Request) {
     return handleRouteError(error, request)
   }
 }
-
-// TODO: 추후 'use cache' 로 변경하고 searchCachedMangas 함수 제거하기
-const searchCachedMangas = unstable_cache(
-  async (params: KHentaiMangaSearchOptions) => KHentaiClient.getInstance().searchMangas(params),
-  ['searchCachedMangas'],
-  { revalidate },
-)

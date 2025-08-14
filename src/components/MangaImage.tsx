@@ -7,13 +7,13 @@ const INITIAL_DISPLAYED_IMAGE = 5
 
 type Props = ImgHTMLAttributes<HTMLImageElement> & {
   manga: Manga
-  imageIndex: number
+  imageIndex?: number
   imageRef?: (node?: Element | null) => void
 }
 
 export default memo(MangaImage)
 
-function MangaImage({ manga, imageIndex, imageRef, ...props }: Readonly<Props>) {
+function MangaImage({ manga, imageIndex = 0, imageRef, ...props }: Readonly<Props>) {
   const { images, origin } = manga
   const imageURL = images[imageIndex]
 

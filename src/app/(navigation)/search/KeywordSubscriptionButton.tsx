@@ -1,6 +1,6 @@
 'use client'
 
-import { Bell, BellOff } from 'lucide-react'
+import { Bell, BellRing } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
@@ -94,9 +94,9 @@ export default function KeywordSubscriptionButton() {
       {isPending ? (
         <IconSpinner className="size-4 animate-spin" />
       ) : isSubscribed ? (
-        <Bell className="size-4 text-brand-end" />
+        <BellRing className="size-4 text-brand-end" />
       ) : (
-        <BellOff className="size-4" />
+        <Bell className="size-4" />
       )}
       <span className="hidden sm:inline">{isSubscribed ? '키워드 보기' : '키워드 설정'}</span>
       <span className="sm:hidden">{isSubscribed ? '보기' : '설정'}</span>

@@ -25,8 +25,8 @@ function EmptyState({ isOwnProfile }: { isOwnProfile: boolean }) {
 
   return (
     <div className="flex flex-col grow">
-      <PostCreationForm className="p-4" filter={PostFilter.USER} placeholder="첫 글을 작성해보세요!" />
-      <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+      <PostCreationForm className="flex p-4 border-b-2" filter={PostFilter.USER} placeholder="첫 글을 작성해보세요!" />
+      <div className="flex-1 flex flex-col items-center justify-center px-4 text-center">
         <div aria-label="empty state icon" className="text-4xl mb-4" role="img">
           ✍️
         </div>

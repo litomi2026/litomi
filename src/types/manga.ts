@@ -21,6 +21,8 @@ export type Manga = {
   lines?: string[]
   origin?: string
   rating?: number
+  ratingCount?: number
+  bookmarkCount?: number
   related?: number[]
   series?: LabeledValue[]
   source?: MangaSource

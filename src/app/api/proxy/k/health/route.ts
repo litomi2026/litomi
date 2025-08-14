@@ -8,7 +8,8 @@ export async function GET() {
   return createHealthCheckHandler(
     'k',
     {
-      search: async () => Array.isArray(await KHentaiClient.getInstance().searchMangas({ search: 'qwerpoiuasdflkj' })),
+      search: async () =>
+        Array.isArray(await KHentaiClient.getInstance().searchMangas({ search: 'qwerpoiuasdflkj' }, 0)),
       images: async () => (((await KHentaiClient.getInstance().fetchManga(3291051)) ?? {}).images?.length ?? 0) > 0, // 인기순 1위 망가
     },
     {

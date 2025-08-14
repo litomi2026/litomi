@@ -22,7 +22,7 @@ test.describe('/', () => {
 
   test('연령 확인 후 만화 목록으로 이동한다', async ({ page }) => {
     await page.getByRole('link', { name: '19세 이상 성인입니다' }).click()
-    await expect(page).toHaveURL(/\/mangas\/latest\/1\/hi\/card/i)
+    await expect(page).toHaveURL(/\/mangas\/1\/hi\/card/i)
 
     const nav = page.locator('header nav')
     await expect(nav).toBeVisible()

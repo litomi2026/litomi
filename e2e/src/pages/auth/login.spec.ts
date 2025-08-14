@@ -72,7 +72,7 @@ test.describe('/auth/login', () => {
     })
 
     test('리다이렉트 파라미터를 처리한다', async ({ page }) => {
-      const targetPath = '/mangas/latest/1/hi/card'
+      const targetPath = '/mangas/1/hi/card'
       await page.goto(`/auth/login?redirect=${encodeURIComponent(targetPath)}`)
       await page.fill('input[name="loginId"]', user.loginId)
       await page.fill('input[name="password"]', user.password)

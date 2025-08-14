@@ -11,11 +11,11 @@ import MangaCardPreviewImages from './MangaCardPreviewImages'
 type Props = {
   href: string
   manga: Manga
-  index: number
+  mangaIndex: number
   className?: string
 }
 
-export default function MangaCardImage({ manga, href, index, className = '' }: Readonly<Props>) {
+export default function MangaCardImage({ manga, href, mangaIndex, className = '' }: Readonly<Props>) {
   const { count, images } = manga
 
   return (
@@ -26,7 +26,7 @@ export default function MangaCardImage({ manga, href, index, className = '' }: R
           className="flex overflow-x-auto h-fit snap-x snap-mandatory select-none scrollbar-hidden relative"
           href={href}
           manga={manga}
-          mangaIndex={index}
+          mangaIndex={mangaIndex}
         />
       ) : (
         <Link
@@ -34,7 +34,7 @@ export default function MangaCardImage({ manga, href, index, className = '' }: R
           href={href}
         >
           <LinkLoading />
-          <MangaImage imageIndex={0} manga={manga} />
+          <MangaImage fetchPriority={mangaIndex < 4 ? 'high' : undefined} manga={manga} />
         </Link>
       )}
       <MangaCardCensorship level={CensorshipLevel.LIGHT} manga={manga} />
