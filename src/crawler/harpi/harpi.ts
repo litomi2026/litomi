@@ -218,6 +218,8 @@ export class HarpiClient {
       viewCount: harpiManga.views,
       count: harpiManga.imageUrl.length,
       rating: harpiManga.meanRating,
+      ratingCount: harpiManga.countRating,
+      bookmarkCount: harpiManga.bookmarks,
       source: MangaSource.HARPI,
     }
   }

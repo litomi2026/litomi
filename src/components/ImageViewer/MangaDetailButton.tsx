@@ -6,6 +6,7 @@ import { Manga } from '@/types/manga'
 
 import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from '../card/BookmarkButton'
 import DownloadButton, { DownloadButtonError, DownloadButtonSkeleton } from '../card/DownloadButton'
+import MangaCardStats from '../card/MangaCardStats'
 import MangaMetadataItem from '../card/MangaMetadataItem'
 import MangaMetadataList from '../card/MangaMetadataList'
 import TagList from '../TagList'
@@ -111,6 +112,7 @@ function MangaDetailButton({ manga }: Readonly<Props>) {
                 tags={tags}
               />
             )}
+            <MangaCardStats manga={manga} />
           </div>
           {/* Lines/Dialogue Preview - Quaternary Information */}
           {lines && lines.length > 0 && (
