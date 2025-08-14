@@ -15,8 +15,6 @@ export const defaultOpenGraph = {
   type: 'website',
 }
 
-export const MANGA_PER_PAGE = 18
-
 export const SALT_ROUNDS = 12
 export const ONE_HOUR = 3600
 export const THIRTY_DAYS = 2592000

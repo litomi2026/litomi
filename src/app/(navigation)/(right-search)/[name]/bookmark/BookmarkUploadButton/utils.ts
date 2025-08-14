@@ -1,9 +1,8 @@
 import { toast } from 'sonner'
 
-import { BookmarkExportData } from '../constants'
+import { MAX_BOOKMARK_FILE_SIZE } from '@/constants/policy'
 
-export const MAX_FILE_SIZE = 1024 * 1024 // 1MB
-export const ACCEPTED_FILE_TYPE = 'application/json'
+import { BookmarkExportData } from '../constants'
 
 export function validateBookmarkData(data: unknown): data is BookmarkExportData {
   if (!data || typeof data !== 'object') {
@@ -15,12 +14,12 @@ export function validateBookmarkData(data: unknown): data is BookmarkExportData 
 }
 
 export function validateFile(file: File): boolean {
-  if (file.type !== ACCEPTED_FILE_TYPE) {
+  if (file.type !== 'application/json') {
     toast.error('JSON 파일만 가능해요')
     return false
   }
 
-  if (file.size > MAX_FILE_SIZE) {
+  if (file.size > MAX_BOOKMARK_FILE_SIZE) {
     toast.error('파일 크기는 1MB를 초과할 수 없어요. 북마크가 많다면 파일을 쪼개주세요.')
     return false
   }

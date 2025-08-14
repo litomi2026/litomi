@@ -4,6 +4,7 @@ import { captureException } from '@sentry/nextjs'
 import { and, count, eq, sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 
+import { MAX_CRITERIA_PER_USER } from '@/constants/policy'
 import { db, sessionDB } from '@/database/drizzle'
 import { notificationConditionTable, notificationCriteriaTable } from '@/database/notification-schema'
 import {
@@ -18,7 +19,6 @@ import {
 import { flattenZodFieldErrors } from '@/utils/form-error'
 import { getUserIdFromCookie } from '@/utils/session'
 
-import { MAX_CRITERIA_COUNT } from './common'
 import { createCriteriaSchema, deleteCriteriaSchema, updateCriteriaSchema } from './schema'
 
 export async function createNotificationCriteria(formData: FormData) {
@@ -47,8 +47,8 @@ export async function createNotificationCriteria(formData: FormData) {
         .from(notificationCriteriaTable)
         .where(sql`${notificationCriteriaTable.userId} = ${userId}`)
 
-      if (existingCount.count >= MAX_CRITERIA_COUNT) {
-        return badRequest({ name: `최대 ${MAX_CRITERIA_COUNT}개까지만 추가할 수 있어요` }, formData)
+      if (existingCount.count >= MAX_CRITERIA_PER_USER) {
+        return badRequest({ name: `최대 ${MAX_CRITERIA_PER_USER}개까지만 추가할 수 있어요` }, formData)
       }
 
       const [criteria] = await tx

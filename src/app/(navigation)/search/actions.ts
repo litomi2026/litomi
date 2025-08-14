@@ -4,13 +4,13 @@ import { captureException } from '@sentry/nextjs'
 import { count, eq, sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 
+import { MAX_CRITERIA_PER_USER } from '@/constants/policy'
 import { sessionDB } from '@/database/drizzle'
 import { notificationConditionTable, notificationCriteriaTable } from '@/database/notification-schema'
 import { badRequest, conflict, created, internalServerError, unauthorized } from '@/utils/action-response'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 import { getUserIdFromCookie } from '@/utils/session'
 
-import { MAX_CRITERIA_COUNT } from '../(right-search)/[name]/settings/keyword/common'
 import { subscribeToKeywordSchema } from './schema'
 import { areConditionsEqual, type ParsedCondition } from './utils/queryParser'
 
@@ -37,8 +37,8 @@ export async function subscribeToKeyword(conditions: ParsedCondition[], criteria
         .from(notificationCriteriaTable)
         .where(sql`${notificationCriteriaTable.userId} = ${userId}`)
 
-      if (existingCount.count >= MAX_CRITERIA_COUNT) {
-        return badRequest({ error: `최대 ${MAX_CRITERIA_COUNT}개까지만 추가할 수 있어요` })
+      if (existingCount.count >= MAX_CRITERIA_PER_USER) {
+        return badRequest({ error: `최대 ${MAX_CRITERIA_PER_USER}개까지만 추가할 수 있어요` })
       }
 
       const existingCriteria = await tx

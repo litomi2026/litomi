@@ -6,6 +6,7 @@ import { MangaIdSearchParam } from '@/app/manga/[id]/common'
 import { PageView } from '@/components/ImageViewer/store/pageView'
 import { ScreenFit } from '@/components/ImageViewer/store/screenFit'
 import { useTouchOrientationStore } from '@/components/ImageViewer/store/touchOrientation'
+import { TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT } from '@/constants/policy'
 import useImageNavigation from '@/hook/useImageNavigation'
 import { Manga } from '@/types/manga'
 
@@ -16,7 +17,6 @@ import { useImageIndexStore } from './store/imageIndex'
 const HORIZONTAL_SWIPE_THRESHOLD = 50 // 가로 스와이프 임계값 (px)
 const VERTICAL_SWIPE_THRESHOLD = 10 // 세로 스와이프 임계값 (px)
 const EDGE_CLICK_THRESHOLD = 1 / 3 // 화면 3등분 시의 경계값
-const IMAGE_PREFETCH_AMOUNT = 6
 const IMAGE_FETCH_PRIORITY_THRESHOLD = 3
 const SCROLL_THRESHOLD = 1
 const SCROLL_THROTTLE = 500
@@ -283,7 +283,7 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Readonly<Props>) {
       onPointerUp={handlePointerUp}
       ref={ulRef}
     >
-      {Array.from({ length: IMAGE_PREFETCH_AMOUNT }).map((_, offset) => (
+      {Array.from({ length: TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT }).map((_, offset) => (
         <TouchViewerItem key={offset} manga={manga} offset={offset} pageView={pageView} />
       ))}
     </ul>
