@@ -2,7 +2,7 @@
 
 import { memo, useCallback, useEffect, useRef } from 'react'
 
-import { MangaIdSourceSearchParam } from '@/app/manga/[id]/common'
+import { MangaIdSearchParam } from '@/app/manga/[id]/common'
 import { PageView } from '@/components/ImageViewer/store/pageView'
 import { ScreenFit } from '@/components/ImageViewer/store/screenFit'
 import { useTouchOrientationStore } from '@/components/ImageViewer/store/touchOrientation'
@@ -263,7 +263,7 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Readonly<Props>) {
   // NOTE: page 파라미터가 있으면 초기 페이지를 변경함. 1번만 실행됨.
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
-    const pageStr = params.get(MangaIdSourceSearchParam.PAGE) ?? ''
+    const pageStr = params.get(MangaIdSearchParam.PAGE) ?? ''
     const parsedPage = parseInt(pageStr, 10)
 
     if (isNaN(parsedPage) || parsedPage < 1 || parsedPage > images.length) {
