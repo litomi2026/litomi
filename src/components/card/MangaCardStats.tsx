@@ -12,10 +12,10 @@ type Props = {
 export default memo(MangaCardStats)
 
 function MangaCardStats({ manga, className = '' }: Readonly<Props>) {
-  const { rating, ratingCount, viewCount, like, likeAnonymous, bookmarkCount } = manga
-  const totalLikes = (like ?? 0) + (likeAnonymous ?? 0)
+  const { rating = 0, ratingCount = 0, viewCount = 0, like = 0, likeAnonymous = 0, bookmarkCount = 0 } = manga
+  const totalLikes = like + likeAnonymous
 
-  const hasStats = rating || viewCount || totalLikes > 0 || bookmarkCount
+  const hasStats = rating > 0 || viewCount > 0 || totalLikes > 0 || bookmarkCount > 0
 
   if (!hasStats) {
     return null
@@ -23,19 +23,19 @@ function MangaCardStats({ manga, className = '' }: Readonly<Props>) {
 
   return (
     <div className={`flex items-center gap-2.5 text-zinc-400 ${className}`}>
-      {viewCount && (
+      {viewCount > 0 && (
         <div className="flex items-center gap-1.5">
           <Eye className="size-[1em] shrink-0" />
           <span className="tabular-nums">{formatNumber(viewCount, 'ko')}</span>
         </div>
       )}
-      {bookmarkCount && (
+      {bookmarkCount > 0 && (
         <div className="flex items-center gap-1.5">
           <Bookmark className="size-[1em] shrink-0 text-blue-400" />
           <span className="tabular-nums">{formatNumber(bookmarkCount, 'ko')}</span>
         </div>
       )}
-      {rating && (
+      {rating > 0 && (
         <div className="flex items-center gap-1.5">
           <Star className="size-[1em] shrink-0 text-yellow-500" />
           <span className="font-medium tabular-nums">
