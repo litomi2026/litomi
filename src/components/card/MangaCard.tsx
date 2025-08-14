@@ -41,8 +41,8 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
       <MangaCardImage
         className="h-fit my-auto aspect-[4/3] [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-contain [&_img]:aspect-[4/3]"
         href={viewerLink}
-        index={index}
         manga={manga}
+        mangaIndex={index}
       />
       <div className="flex grow flex-col justify-between gap-2 p-2 border-t-2">
         <dl className="flex flex-col gap-2 text-sm [&_dt]:whitespace-nowrap [&_dt]:font-semibold">

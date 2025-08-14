@@ -61,9 +61,9 @@ export default async function Page({ params }: PageProps) {
           <MangaCardImage
             className="bg-zinc-900 rounded-xl border-2 relative h-fit [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-cover [&_img]:aspect-[3/4]"
             href={getViewerLink(manga.id)}
-            index={i}
             key={manga.id}
             manga={manga}
+            mangaIndex={i}
           />
         ) : (
           <MangaCard index={i} key={manga.id} manga={manga} />

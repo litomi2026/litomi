@@ -59,12 +59,12 @@ function MangaCardPreviewImages({ className, manga, mangaIndex = 0, href }: Read
       {/* 슬라이드 컨테이너 */}
       <Link className={className} href={href} ref={sliderRef}>
         <LinkLoading />
-        {Array.from({ length: totalSlides }).map((_, i) => (
+        {Array.from({ length: totalSlides }).map((_, imageIndex) => (
           <MangaImage
-            fetchPriority={mangaIndex < 4 && i < 1 ? 'high' : undefined}
-            imageIndex={i}
-            key={i}
-            loading={i >= 1 ? 'lazy' : undefined}
+            fetchPriority={mangaIndex < 4 && imageIndex < 1 ? 'high' : undefined}
+            imageIndex={imageIndex}
+            key={imageIndex}
+            loading={imageIndex >= 1 ? 'lazy' : undefined}
             manga={manga}
           />
         ))}
