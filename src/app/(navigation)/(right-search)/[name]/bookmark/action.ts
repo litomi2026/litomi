@@ -3,56 +3,76 @@
 import { sql } from 'drizzle-orm'
 import { z } from 'zod/v4'
 
+import { MAX_BOOKMARKS_PER_USER } from '@/constants/policy'
 import { db } from '@/database/drizzle'
+import { bookmarkTable } from '@/database/schema'
+import { badRequest, ok, unauthorized } from '@/utils/action-response'
+import { flattenZodFieldErrors } from '@/utils/form-error'
+import { formatNumber } from '@/utils/format'
 import { getUserIdFromCookie } from '@/utils/session'
 
 type BookmarkResult = {
   mangaId: number
-  createdAt: Date
+  createdAt: Date | null
+  bookmarkCount: number
 }
 
 const schema = z.object({
   mangaId: z.coerce.number().int().positive(),
 })
 
-export default async function toggleBookmark(_prevState: unknown, formData: FormData) {
+export default async function toggleBookmark(formData: FormData) {
   const userId = await getUserIdFromCookie()
 
   if (!userId) {
-    return { status: 401, message: '로그인 정보가 없거나 만료됐어요' }
+    return unauthorized('로그인 정보가 없거나 만료됐어요')
   }
 
-  const validation = schema.safeParse({
-    mangaId: formData.get('mangaId'),
-  })
+  const validation = schema.safeParse({ mangaId: formData.get('mangaId') })
 
   if (!validation.success) {
-    return { status: 400, message: validation.error.issues[0].message }
+    return badRequest(flattenZodFieldErrors(validation.error))
   }
 
   const { mangaId } = validation.data
 
-  const results = await db.execute<BookmarkResult>(sql`
-    WITH deleted AS (
-      DELETE FROM bookmark
-      WHERE manga_id = ${mangaId} AND user_id = ${userId}
-      RETURNING manga_id
+  const [{ bookmarkCount, createdAt }] = await db.execute<BookmarkResult>(sql`
+    WITH 
+    deleted AS (
+      DELETE FROM ${bookmarkTable}
+      WHERE ${bookmarkTable.mangaId} = ${mangaId} AND ${bookmarkTable.userId} = ${userId}
+      RETURNING ${bookmarkTable.mangaId}
+    ),
+    current_count AS (
+      SELECT COUNT(${bookmarkTable.mangaId}) as count
+      FROM ${bookmarkTable}
+      WHERE ${bookmarkTable.userId} = ${userId}
+    ),
+    inserted AS (
+      INSERT INTO ${bookmarkTable} (manga_id, user_id)
+      SELECT ${mangaId}, ${userId}
+      WHERE NOT EXISTS (SELECT 1 FROM deleted)
+        AND (SELECT count FROM current_count) < ${MAX_BOOKMARKS_PER_USER}
+      RETURNING ${bookmarkTable.mangaId} as "mangaId", ${bookmarkTable.createdAt} as "createdAt"
     )
-    INSERT INTO bookmark (manga_id, user_id)
-    SELECT ${mangaId}, ${userId}
-    WHERE NOT EXISTS (
-      SELECT 1 FROM deleted
-    )
-    RETURNING manga_id as "mangaId", created_at as "createdAt"
+    SELECT 
+      i."mangaId",
+      i."createdAt",
+      c.count as "bookmarkCount"
+    FROM inserted i
+    CROSS JOIN current_count c
+    UNION ALL
+    SELECT 
+      NULL as "mangaId",
+      NULL as "createdAt",
+      c.count as "bookmarkCount"
+    FROM current_count c
+    WHERE NOT EXISTS (SELECT 1 FROM inserted)
   `)
 
-  const createdAt = results[0]?.createdAt
-
-  return {
-    status: 200,
-    data: {
-      isBookmarked: results.length > 0,
-      createdAt: createdAt ? new Date(createdAt).getTime() : undefined,
-    },
+  if (bookmarkCount >= MAX_BOOKMARKS_PER_USER) {
+    return badRequest(`북마크는 최대 ${formatNumber(MAX_BOOKMARKS_PER_USER)}개까지 저장할 수 있어요`)
   }
+
+  return ok({ mangaId, createdAt })
 }

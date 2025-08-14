@@ -1,12 +1,12 @@
 import { useMemo, useState } from 'react'
 
+import { MAX_SEARCH_SUGGESTIONS } from '@/constants/policy'
 import useDebouncedValue from '@/hook/useDebouncedValue'
 
 import { MIN_SUGGESTION_QUERY_LENGTH, SEARCH_SUGGESTIONS, type SearchSuggestion } from './constants'
 import useSearchSuggestionsQuery from './useSearchSuggestionsQuery'
 
 const DEBOUNCE_MS = 500
-const MAX_SUGGESTIONS = 15
 const INITIAL_SELECTED_INDEX = -1
 
 type Props = {
@@ -14,7 +14,7 @@ type Props = {
   limit?: number
 }
 
-export default function useSearchSuggestions({ keyword, limit = MAX_SUGGESTIONS }: Readonly<Props>) {
+export default function useSearchSuggestions({ keyword, limit = MAX_SEARCH_SUGGESTIONS }: Readonly<Props>) {
   const [selectedIndex, setSelectedIndex] = useState(INITIAL_SELECTED_INDEX)
 
   const debouncedKeyword = useDebouncedValue({

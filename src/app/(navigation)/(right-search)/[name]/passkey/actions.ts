@@ -13,6 +13,7 @@ import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 
 import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID, WEBAUTHN_RP_NAME } from '@/constants/env'
+import { MAX_CREDENTIALS_PER_USER } from '@/constants/policy'
 import { db, sessionDB } from '@/database/drizzle'
 import { ChallengeType, decodeDeviceType, encodeDeviceType } from '@/database/enum'
 import { challengeTable, credentialTable, userTable } from '@/database/schema'
@@ -38,7 +39,6 @@ import {
 import { generateFakeCredentials } from './utils'
 
 const THREE_MINUTES = 3 * 60 * 1000
-const MAX_CREDENTIALS_PER_USER = 10
 
 export async function deleteCredential(formData: FormData) {
   const userId = await getUserIdFromCookie()

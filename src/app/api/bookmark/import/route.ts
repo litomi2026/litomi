@@ -2,6 +2,7 @@ import { sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 import { z } from 'zod/v4'
 
+import { MAX_BOOKMARK_FILE_SIZE, MAX_BOOKMARKS_PER_USER } from '@/constants/policy'
 import { handleRouteError } from '@/crawler/proxy-utils'
 import { sessionDB } from '@/database/drizzle'
 import { bookmarkTable } from '@/database/schema'
@@ -27,7 +28,6 @@ export type ImportResult = {
   errors: string[]
 }
 
-const MAX_FILE_SIZE = 1024 * 1024 // 1MB
 const BATCH_SIZE = 100
 
 export async function POST(request: Request) {
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
 
   const contentLength = request.headers.get('content-length')
 
-  if (contentLength && parseInt(contentLength, 10) > MAX_FILE_SIZE) {
+  if (contentLength && parseInt(contentLength, 10) > MAX_BOOKMARK_FILE_SIZE) {
     return new Response('400 Bad Request', { status: 400 })
   }
 

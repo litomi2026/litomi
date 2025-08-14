@@ -2,6 +2,7 @@ import { ErrorBoundary } from '@suspensive/react'
 import dayjs from 'dayjs'
 import { memo, Suspense, useState } from 'react'
 
+import { MANGA_INITIAL_LINES, MAX_MANGA_DESCRIPTION_LENGTH } from '@/constants/policy'
 import { Manga } from '@/types/manga'
 
 import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from '../card/BookmarkButton'
@@ -11,9 +12,6 @@ import MangaMetadataItem from '../card/MangaMetadataItem'
 import MangaMetadataList from '../card/MangaMetadataList'
 import TagList from '../TagList'
 import Modal from '../ui/Modal'
-
-const MAX_DESCRIPTION_LENGTH = 150
-const MAX_INITIAL_LINES = 1
 
 type Props = {
   manga: Manga
@@ -27,13 +25,13 @@ function MangaDetailButton({ manga }: Readonly<Props>) {
   const [showFullDescription, setShowFullDescription] = useState(false)
   const [showAllLines, setShowAllLines] = useState(false)
   const isDownloadable = origin === 'https://soujpa.in'
-  const shouldTruncateDescription = description && description.length > MAX_DESCRIPTION_LENGTH
-  const hasMoreLines = lines && lines.length > MAX_INITIAL_LINES
-  const displayLines = showAllLines ? lines : lines?.slice(0, MAX_INITIAL_LINES)
+  const shouldTruncateDescription = description && description.length > MAX_MANGA_DESCRIPTION_LENGTH
+  const hasMoreLines = lines && lines.length > MANGA_INITIAL_LINES
+  const displayLines = showAllLines ? lines : lines?.slice(0, MANGA_INITIAL_LINES)
 
   const displayDescription =
     shouldTruncateDescription && !showFullDescription
-      ? description.slice(0, MAX_DESCRIPTION_LENGTH) + '...'
+      ? description.slice(0, MAX_MANGA_DESCRIPTION_LENGTH) + '...'
       : description
 
   return (
@@ -125,7 +123,7 @@ function MangaDetailButton({ manga }: Readonly<Props>) {
                     onClick={() => setShowAllLines(!showAllLines)}
                     type="button"
                   >
-                    {showAllLines ? `접기` : `더보기 (+${lines.length - MAX_INITIAL_LINES})`}
+                    {showAllLines ? `접기` : `더보기 (+${lines.length - MANGA_INITIAL_LINES})`}
                   </button>
                 )}
               </div>
