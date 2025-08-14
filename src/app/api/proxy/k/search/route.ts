@@ -78,7 +78,7 @@ export async function GET(request: Request) {
 
 // TODO: 추후 'use cache' 로 변경하고 searchCachedMangas 함수 제거하기
 const searchCachedMangas = unstable_cache(
-  async (params: KHentaiMangaSearchOptions) => KHentaiClient.getInstance().searchMangas(params),
+  async (params: KHentaiMangaSearchOptions) => KHentaiClient.getInstance().searchMangas(params, 0),
   ['searchCachedMangas'],
   { revalidate },
 )
