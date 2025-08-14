@@ -106,7 +106,12 @@ export function normalizeError(error: unknown, defaultMessage = '알 수 없는 
   }
 
   if (error instanceof Error) {
-    if (error.message.includes('fetch') || error.message.includes('network')) {
+    if (
+      error.message.includes('fetch') ||
+      error.message.includes('network') ||
+      error.message.includes('ECONNRESET') ||
+      error.message.includes('socket hang up')
+    ) {
       return new NetworkError(error.message)
     }
 
