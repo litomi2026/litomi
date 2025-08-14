@@ -176,7 +176,7 @@ export default function LoginForm() {
           <div className="w-full border-t border-zinc-700" />
         </div>
         <div className="flex justify-center text-sm">
-          <span className="px-4 bg-zinc-900 text-zinc-500">또는</span>
+          <span className="relative z-10 px-4 bg-zinc-900 text-zinc-500">또는</span>
         </div>
       </div>
       <PasskeyLoginButton disabled={isPending} loginId={currentLoginId} onSuccess={handleLoginSuccess} />
