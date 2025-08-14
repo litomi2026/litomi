@@ -34,7 +34,7 @@ export default function MangaCardImage({ manga, href, mangaIndex, className = ''
           href={href}
         >
           <LinkLoading />
-          <MangaImage imageIndex={mangaIndex} manga={manga} />
+          <MangaImage fetchPriority={mangaIndex < 4 ? 'high' : undefined} manga={manga} />
         </Link>
       )}
       <MangaCardCensorship level={CensorshipLevel.LIGHT} manga={manga} />
