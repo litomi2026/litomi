@@ -41,11 +41,7 @@ function CensorshipCreationBar() {
   const [_, dispatchAddAction, isSubmitting] = useActionResponse({
     action: addCensorships,
     onSuccess: (items) => {
-      if (!items) {
-        return
-      }
-
-      toast.success(`${items.length}개의 검열 규칙을 추가했어요`)
+      toast.success(`${items?.length ?? 0}개의 검열 규칙을 추가했어요`)
       setInputValue('')
       setCursorPosition(0)
       setShowSuggestions(false)
