@@ -12,7 +12,7 @@ import IconX from '@/components/icons/IconX'
 import Modal from '@/components/ui/Modal'
 import { CensorshipKey, CensorshipLevel } from '@/database/enum'
 
-import { CENSORSHIP_KEY_LABELS } from './constants'
+import { CENSORSHIP_KEY_LABELS } from '../src/app/(navigation)/(right-search)/[name]/censor/constants'
 
 type Props = {
   open: boolean
