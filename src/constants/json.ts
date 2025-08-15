@@ -20,3 +20,14 @@ export function createErrorManga({ error }: { error: unknown }): Manga {
     images: [FALLBACK_IMAGE_URL],
   }
 }
+
+export const DEFAULT_SUGGESTIONS = [
+  { value: 'artist:', label: '작가:' },
+  { value: 'group:', label: '그룹:' },
+  { value: 'series:', label: '시리즈:' },
+  { value: 'character:', label: '캐릭터:' },
+  { value: 'female:', label: '여성:' },
+  { value: 'male:', label: '남성:' },
+  { value: 'mixed:', label: '혼합:' },
+  { value: 'other:', label: '기타:' },
+]
