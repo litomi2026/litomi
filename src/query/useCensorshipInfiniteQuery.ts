@@ -6,13 +6,11 @@ import { handleResponseError } from '@/utils/react-query-error'
 
 import useMeQuery from './useMeQuery'
 
-export async function fetchPaginatedCensorships({ pageParam }: { pageParam?: { id: number; createdAt: number } }) {
+export async function fetchPaginatedCensorships({ pageParam }: { pageParam?: number }) {
   const params = new URLSearchParams()
-  params.set('limit', '20')
 
   if (pageParam) {
-    params.set('cursorId', pageParam.id.toString())
-    params.set('cursorTime', pageParam.createdAt.toString())
+    params.set('cursor', pageParam.toString())
   }
 
   const response = await fetch(`/api/censorship?${params}`)
@@ -27,7 +25,7 @@ export default function useCensorshipsInfiniteQuery() {
     queryKey: QueryKeys.infiniteCensorships,
     queryFn: fetchPaginatedCensorships,
     enabled: Boolean(userId),
-    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    getNextPageParam: (lastPage) => lastPage.nextCursor?.id,
     initialPageParam: undefined,
   })
 }

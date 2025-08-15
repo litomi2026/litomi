@@ -3,16 +3,20 @@ import { Check } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
 
-import { CensorshipItem } from '@/app/api/censorship/route'
 import { QueryKeys } from '@/constants/query'
-import { CensorshipLevel } from '@/database/enum'
+import { CensorshipKey, CensorshipLevel } from '@/database/enum'
 import useActionResponse from '@/hook/useActionResponse'
 
 import { updateCensorships } from './action'
 import { CENSORSHIP_LEVEL_LABELS } from './constants'
 
 type Props = {
-  censorship: CensorshipItem
+  censorship: {
+    id: number
+    key: CensorshipKey
+    value: string
+    level: CensorshipLevel
+  }
   onEditCompleted: () => void
 }
 
@@ -24,11 +28,6 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Read
 
   const [response, dispatchAction, isPending] = useActionResponse({
     action: updateCensorships,
-    onError: (error) => {
-      if (typeof error === 'string') {
-        toast.error(error)
-      }
-    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QueryKeys.censorships })
       toast.success('검열 규칙을 수정했어요')

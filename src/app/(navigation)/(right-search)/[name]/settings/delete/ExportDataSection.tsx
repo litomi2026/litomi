@@ -17,9 +17,6 @@ type Props = {
 export default function ExportDataSection({ hasExported, onExportComplete }: Readonly<Props>) {
   const [_, dispatchAction, isPending] = useActionResponse({
     action: exportUserData,
-    onError: (error) => {
-      toast.error(error)
-    },
     onSuccess: (data) => {
       const blob = new Blob([data], { type: 'application/json' })
       downloadBlob(blob, `litomi-${new Date().toISOString().split('T')[0]}.json`)

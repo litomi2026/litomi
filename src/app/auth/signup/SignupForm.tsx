@@ -49,11 +49,6 @@ export default function SignupForm() {
 
   const [response, dispatchAction, pending] = useActionResponse({
     action: signup,
-    onError: (error) => {
-      if (typeof error === 'string') {
-        toast.error(error)
-      }
-    },
     onSuccess: handleSignupSuccess,
   })
 

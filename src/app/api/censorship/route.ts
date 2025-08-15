@@ -1,7 +1,10 @@
+import { and, desc, sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 
+import { handleRouteError } from '@/crawler/proxy-utils'
+import { db } from '@/database/drizzle'
 import { CensorshipKey, CensorshipLevel } from '@/database/enum'
-import selectCensorships from '@/sql/selectCensorships'
+import { userCensorshipTable } from '@/database/schema'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
 
 import { GETCensorshipsSchema } from './schema'
@@ -16,7 +19,7 @@ export type CensorshipItem = {
 
 export type GETCensorshipsResponse = {
   censorships: CensorshipItem[]
-  nextCursor: { id: number; createdAt: number } | null
+  nextCursor: { id: number } | null
 }
 
 export async function GET(request: Request) {
@@ -35,34 +38,40 @@ export async function GET(request: Request) {
     return new Response('Bad Request', { status: 400 })
   }
 
-  const { cursorId, cursorTime, limit } = validation.data
+  const { cursor, limit } = validation.data
 
-  const censorshipRows = await selectCensorships({
-    userId,
-    limit: limit ? limit + 1 : undefined,
-    cursorId: cursorId?.toString(),
-    cursorTime: cursorTime ? new Date(cursorTime).toISOString() : undefined,
-  })
+  try {
+    const censorshipRows = await db
+      .select({
+        id: userCensorshipTable.id,
+        key: userCensorshipTable.key,
+        value: userCensorshipTable.value,
+        level: userCensorshipTable.level,
+        createdAt: userCensorshipTable.createdAt,
+      })
+      .from(userCensorshipTable)
+      .where(
+        and(
+          sql`${userCensorshipTable.userId} = ${userId}`,
+          cursor ? sql`${userCensorshipTable.id} < ${cursor}` : undefined,
+        ),
+      )
+      .orderBy(desc(userCensorshipTable.id))
+      .limit(limit + 1)
 
-  if (censorshipRows.length === 0) {
-    return new Response(null, { status: 204 })
+    if (censorshipRows.length === 0) {
+      return Response.json({ censorships: [], nextCursor: null } satisfies GETCensorshipsResponse)
+    }
+
+    const hasNextPage = limit ? censorshipRows.length > limit : false
+    const censorships = hasNextPage ? censorshipRows.slice(0, limit) : censorshipRows
+    const nextCursor = hasNextPage ? { id: censorshipRows[censorshipRows.length - 1].id } : null
+
+    return Response.json({
+      censorships: censorships.map((row) => ({ ...row, createdAt: row.createdAt.getTime() })),
+      nextCursor,
+    } satisfies GETCensorshipsResponse)
+  } catch (error) {
+    return handleRouteError(error, request)
   }
-
-  const hasNextPage = limit ? censorshipRows.length > limit : false
-  const censorships = hasNextPage ? censorshipRows.slice(0, limit) : censorshipRows
-  const lastCensorship = censorships[censorships.length - 1]
-  const nextCursor = hasNextPage
-    ? {
-        id: lastCensorship.id,
-        createdAt: lastCensorship.createdAt.getTime(),
-      }
-    : null
-
-  return Response.json({
-    censorships: censorships.map((censorship) => ({
-      ...censorship,
-      createdAt: censorship.createdAt.getTime(),
-    })),
-    nextCursor,
-  } satisfies GETCensorshipsResponse)
 }

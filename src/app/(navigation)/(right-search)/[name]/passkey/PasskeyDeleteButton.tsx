@@ -48,9 +48,6 @@ export default function PasskeyDeleteButton({
       toast.success(data)
       setIsOpen(false)
     },
-    onError: (error) => {
-      toast.error(error)
-    },
   })
 
   return (

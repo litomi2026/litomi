@@ -1,15 +1,19 @@
 'use client'
 
+import { useQueryClient } from '@tanstack/react-query'
 import { Download } from 'lucide-react'
-import { memo, useState, useTransition } from 'react'
+import { memo, useState } from 'react'
 import { toast } from 'sonner'
 
 import { CensorshipItem } from '@/app/api/censorship/route'
 import { IconUpload } from '@/components/icons/IconUpload'
 import IconX from '@/components/icons/IconX'
 import Modal from '@/components/ui/Modal'
+import { QueryKeys } from '@/constants/query'
+import useActionResponse from '@/hook/useActionResponse'
 import { downloadBlob } from '@/utils/download'
 
+import { addCensorships } from './action'
 import { CENSORSHIP_KEY_LABELS, CENSORSHIP_LEVEL_LABELS } from './constants'
 
 const PLACEHOLDER_JSON = `[
@@ -26,18 +30,26 @@ type Props = {
   open: boolean
   onClose: () => void
   censorships: CensorshipItem[]
-  onImport: (formData: FormData) => void
 }
 
 type Tab = 'export' | 'import'
 
 export default memo(ImportExportModal)
 
-function ImportExportModal({ open, onClose, censorships, onImport }: Readonly<Props>) {
+function ImportExportModal({ open, onClose, censorships }: Readonly<Props>) {
   const [activeTab, setActiveTab] = useState<Tab>('export')
   const [exportFormat, setExportFormat] = useState<ExportFormat>('json')
   const [importText, setImportText] = useState('')
-  const [isPending, startTransition] = useTransition()
+  const queryClient = useQueryClient()
+
+  const [_, dispatchAddAction, isPending] = useActionResponse({
+    action: addCensorships,
+    onSuccess: () => {
+      setImportText('')
+      onClose()
+      queryClient.invalidateQueries({ queryKey: QueryKeys.censorships })
+    },
+  })
 
   const handleExport = () => {
     try {
@@ -116,11 +128,7 @@ function ImportExportModal({ open, onClose, censorships, onImport }: Readonly<Pr
         }
       })
 
-      startTransition(() => {
-        onImport(formData)
-        setImportText('')
-        onClose()
-      })
+      dispatchAddAction(formData)
     } catch {
       toast.error('올바른 JSON 형식이 아니에요')
     }

@@ -40,11 +40,6 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
 
   const [response, dispatchAction, isPending] = useActionResponse({
     action: editProfile,
-    onError: (error) => {
-      if (typeof error === 'string') {
-        toast.error(error)
-      }
-    },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: QueryKeys.me, exact: true })
       setShowModal(false)

@@ -6,7 +6,6 @@ export type ApiResponse<T = unknown> = T & {
   error?: {
     code: string
     message: string
-    details?: unknown
   }
 }
 
@@ -108,7 +107,6 @@ export function handleRouteError(error: unknown, request: Request) {
     error: {
       code: normalizedError.errorCode,
       message: normalizedError.message,
-      details: normalizedError.context,
     },
   }
 

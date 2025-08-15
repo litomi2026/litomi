@@ -7,7 +7,6 @@ import { useCallback, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
 import IconFilter from '@/components/icons/IconFilter'
-import IconPlus from '@/components/icons/IconPlus'
 import IconSearch from '@/components/icons/IconSearch'
 import IconSpinner from '@/components/icons/IconSpinner'
 import { QueryKeys } from '@/constants/query'
@@ -16,51 +15,29 @@ import useActionResponse from '@/hook/useActionResponse'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useCensorshipsInfiniteQuery from '@/query/useCensorshipInfiniteQuery'
 
-import { addCensorships, deleteCensorships } from './action'
+import { deleteCensorships } from './action'
 import CensorshipCard, { CensorshipCardSkeleton } from './CensorshipCard'
+import CensorshipCreationBar from './CensorshipCreationBar'
 import CensorshipStats from './CensorshipStats'
 import { CENSORSHIP_KEY_LABELS } from './constants'
 import DefaultCensorshipInfo from './DefaultCensorshipInfo'
 
-const AddCensorshipModal = dynamic(() => import('./AddCensorshipModal'))
 const ImportExportModal = dynamic(() => import('./ImportExportModal'))
 
 export default function Censorships() {
   const queryClient = useQueryClient()
-  const [showAddModal, setShowAddModal] = useState(false)
   const [showImportExportModal, setShowImportExportModal] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [filterKey, setFilterKey] = useState<CensorshipKey | null>(null)
-  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
-  const [deletingIds, setDeletingIds] = useState<Set<number>>(new Set())
+  const [selectedIds, setSelectedIds] = useState(new Set<number>())
+  const [deletingIds, setDeletingIds] = useState(new Set<number>())
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } = useCensorshipsInfiniteQuery()
-
-  const [_, dispatchAddAction] = useActionResponse({
-    action: addCensorships,
-    onError: (error) => {
-      if (typeof error === 'string') {
-        toast.error(error)
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QueryKeys.censorships })
-      toast.success('검열 규칙이 추가되었습니다')
-      setShowAddModal(false)
-    },
-  })
 
   const [__, dispatchDeleteAction] = useActionResponse({
     action: deleteCensorships,
-    onError: (error) => {
-      if (typeof error === 'string') {
-        toast.error(error)
-      }
-
-      setDeletingIds(new Set())
-    },
-    onSuccess: () => {
+    onSuccess: (deletedIds) => {
       queryClient.invalidateQueries({ queryKey: QueryKeys.censorships })
-      toast.success('검열 규칙이 삭제되었습니다')
+      toast.success(`${deletedIds?.length ?? 0}개의 검열 규칙을 삭제했어요`)
       setSelectedIds(new Set())
       setDeletingIds(new Set())
     },
@@ -81,10 +58,6 @@ export default function Censorships() {
       return matchesSearch && matchesFilter
     })
   }, [allCensorships, searchQuery, filterKey])
-
-  const handleCloseAddModal = useCallback(() => {
-    setShowAddModal(false)
-  }, [])
 
   const handleCloseImportExportModal = useCallback(() => {
     setShowImportExportModal(false)
@@ -127,19 +100,14 @@ export default function Censorships() {
               >
                 <MoreHorizontal className="w-4" />
               </button>
-              <button
-                className="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition border-2 disabled:opacity-50"
-                disabled={isLoading || isDeleting}
-                onClick={() => setShowAddModal(true)}
-              >
-                <IconPlus className="w-4" />
-                <span>추가</span>
-              </button>
             </div>
           </div>
 
+          {/* Quick Add Bar - Primary way to add censorships */}
+          <CensorshipCreationBar />
+
           {/* Search and Filter - Always visible */}
-          <div className="flex gap-2 mb-4">
+          <div className="flex gap-2 my-4">
             <div className="flex-1 relative">
               <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 text-zinc-400" />
               <input
@@ -208,17 +176,11 @@ export default function Censorships() {
         ) : filteredCensorships.length === 0 ? (
           <div className="text-center py-12">
             <IconFilter className="w-12 h-12 mx-auto mb-4 text-zinc-600" />
-            <p className="text-zinc-400 mb-4">
+            <p className="text-zinc-400">
               {searchQuery || filterKey !== null ? '검색 결과가 없습니다' : '아직 검열 규칙이 없습니다'}
             </p>
             {!searchQuery && filterKey === null && (
-              <button
-                className="text-brand-end hover:underline disabled:opacity-50"
-                disabled={isDeleting}
-                onClick={() => setShowAddModal(true)}
-              >
-                첫 검열 규칙 추가하기
-              </button>
+              <p className="text-zinc-500 text-sm mt-2">위의 입력창에 검열할 키워드를 입력하세요</p>
             )}
           </div>
         ) : (
@@ -245,16 +207,9 @@ export default function Censorships() {
         )}
       </div>
 
-      <AddCensorshipModal
-        onClose={handleCloseAddModal}
-        onSubmit={dispatchAddAction}
-        open={showAddModal && !isDeleting}
-      />
-
       <ImportExportModal
         censorships={allCensorships}
         onClose={handleCloseImportExportModal}
-        onImport={dispatchAddAction}
         open={showImportExportModal && !isDeleting}
       />
     </div>

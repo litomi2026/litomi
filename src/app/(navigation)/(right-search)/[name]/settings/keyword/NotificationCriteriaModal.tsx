@@ -63,11 +63,6 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
       toast.success(data)
       onClose()
     },
-    onError: (error) => {
-      if (typeof error === 'string') {
-        toast.error(error)
-      }
-    },
   })
 
   const nameError = getFieldError(response, 'name')

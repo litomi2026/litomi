@@ -29,7 +29,6 @@ export async function handleResponseError<T>(response: Response) {
       data.error.message || '오류가 발생했어요.',
       data.error.code || 'UNKNOWN_ERROR',
       response.status,
-      data.error.details,
     )
   }
 

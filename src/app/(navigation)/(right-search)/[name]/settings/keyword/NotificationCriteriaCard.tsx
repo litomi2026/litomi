@@ -32,11 +32,6 @@ export default function NotificationCriteriaCard({ criterion, onEdit }: Notifica
     onSuccess: (data) => {
       toast.success(data.isActive ? '알림을 활성화했어요' : '알림을 비활성화했어요')
     },
-    onError: (error) => {
-      if (typeof error === 'string') {
-        toast.error(error)
-      }
-    },
     shouldSetResponse: false,
   })
 
@@ -44,11 +39,6 @@ export default function NotificationCriteriaCard({ criterion, onEdit }: Notifica
     action: deleteNotificationCriteria,
     onSuccess: () => {
       toast.success('알림 기준을 삭제했어요')
-    },
-    onError: (error) => {
-      if (typeof error === 'string') {
-        toast.error(error)
-      }
     },
     shouldSetResponse: false,
   })

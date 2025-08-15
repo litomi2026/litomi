@@ -29,6 +29,10 @@
   }
 }
 
+@utility callout-none {
+  -webkit-touch-callout: none;
+}
+
 @utility pb-safe {
   padding-bottom: var(--safe-area-bottom);
 }

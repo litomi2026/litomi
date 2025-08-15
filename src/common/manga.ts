@@ -33,7 +33,7 @@ export async function getMangaFromMultipleSources(id: number, revalidate: number
     hitomiClient.fetchManga(id, revalidate).catch((error) => new Error(error)),
   ])
 
-  const sources: MangaResult[] = [harpiManga, hiyobiManga, kHentaiManga, komiManga, hitomiManga]
+  const sources: MangaResult[] = [harpiManga, komiManga, hiyobiManga, kHentaiManga, hitomiManga]
   const definedSources = sources.filter(checkDefined)
 
   if (definedSources.length === 0) {

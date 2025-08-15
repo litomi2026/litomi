@@ -1,15 +1,10 @@
+import { DEFAULT_SUGGESTIONS } from '@/constants/json'
+
 // value: 소문자여야 함
 export const SEARCH_SUGGESTIONS = [
   { value: 'language:korean', label: '한국어' },
   { value: 'language:', label: '언어' },
-  { value: 'female:', label: '여성 태그' },
-  { value: 'male:', label: '남성 태그' },
-  { value: 'mixed:', label: '혼합 태그' },
-  { value: 'other:', label: '기타 태그' },
-  { value: 'artist:', label: '작가' },
-  { value: 'group:', label: '그룹' },
-  { value: 'character:', label: '캐릭터' },
-  { value: 'series:', label: '시리즈' },
+  ...DEFAULT_SUGGESTIONS,
   { value: 'type:', label: '종류' },
   { value: 'id:', label: '망가 ID' },
 ]
