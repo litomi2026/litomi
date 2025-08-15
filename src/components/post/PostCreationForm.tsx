@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 
 import { createPost } from '@/app/(navigation)/(right-search)/posts/action'
 import { PostFilter } from '@/app/api/post/schema'
+import { MAX_POST_CONTENT_LENGTH } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import useActionResponse, { getFormField } from '@/hook/useActionResponse'
 import useMeQuery from '@/query/useMeQuery'
@@ -78,9 +79,9 @@ export default function PostCreationForm({
       return
     }
 
-    if (content.length > 160) {
+    if (content.length > MAX_POST_CONTENT_LENGTH) {
       e.preventDefault()
-      toast.warning('내용은 160자 이하로 입력해주세요')
+      toast.warning(`내용은 ${MAX_POST_CONTENT_LENGTH}자 이하로 입력해주세요`)
       return
     }
   }

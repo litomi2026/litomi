@@ -5,6 +5,7 @@ import { and, eq, sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod/v4'
 
+import { MAX_POST_CONTENT_LENGTH } from '@/constants/policy'
 import { db } from '@/database/drizzle'
 import { PostType } from '@/database/enum'
 import { postLikeTable, postTable } from '@/database/schema'
@@ -13,7 +14,7 @@ import { flattenZodFieldErrors } from '@/utils/form-error'
 import { getUserIdFromCookie } from '@/utils/session'
 
 const createPostSchema = z.object({
-  content: z.string().min(2).max(160),
+  content: z.string().min(2).max(MAX_POST_CONTENT_LENGTH),
   mangaId: z.coerce.number().int().positive().nullable(),
   parentPostId: z.coerce.number().int().positive().nullable(),
   referredPostId: z.coerce.number().int().positive().nullable(),
