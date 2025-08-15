@@ -246,61 +246,61 @@ function CensorshipCreationBar() {
       </form>
 
       {/* Suggestions Dropdown */}
-      {showSuggestions && (
-        <div
-          className="absolute z-10 w-full mt-1 bg-zinc-800 border border-zinc-700 rounded-lg shadow-lg overflow-hidden"
-          ref={suggestionsRef}
-        >
-          <div className="max-h-64 overflow-y-auto relative">
-            {isLoading && suggestions.length === 0 && (
-              <div className="flex items-center justify-center py-8">
-                <IconSpinner className="w-5 text-zinc-400" />
-              </div>
-            )}
-            <div aria-busy={isFetching} className="transition aria-busy:opacity-60">
-              {suggestions.map((suggestion, index) => (
-                <button
-                  aria-current={selectedIndex === index}
-                  className="w-full px-4 py-2.5 text-left hover:bg-zinc-700/50 transition flex items-center justify-between aria-current:bg-zinc-700/70"
-                  data-index={index}
-                  key={suggestion.value}
-                  onMouseDown={(e) => {
-                    e.preventDefault()
-                    handleSelectSuggestion(suggestion)
-                  }}
-                  onMouseEnter={() => setSelectedIndex(index)}
-                  type="button"
-                >
-                  <div className="flex flex-col flex-1">
-                    <span className="text-sm">
-                      {suggestion.value.endsWith(':') ? (
-                        <>
-                          <span className="text-brand-end font-medium">{suggestion.value}</span>
-                          <span className="text-zinc-400 ml-1">{suggestion.label.replace(':', '')}</span>
-                        </>
-                      ) : (
-                        <>
-                          <span className="text-zinc-200">{suggestion.value}</span>
-                          {suggestion.label !== suggestion.value && (
-                            <span className="text-zinc-400 ml-1">({suggestion.label})</span>
-                          )}
-                        </>
-                      )}
-                    </span>
-                    {BLIND_TAG_VALUES.includes(suggestion.value) && (
-                      <span className="text-xs text-orange-500 mt-0.5">기본 검열 태그</span>
-                    )}
-                  </div>
-                  {suggestion.value.endsWith(':') && <span className="text-xs text-zinc-500">접두사</span>}
-                </button>
-              ))}
+      <div
+        aria-hidden={!showSuggestions}
+        className="absolute z-10 w-full mt-1 bg-zinc-800 border border-zinc-700 rounded-lg shadow-lg overflow-hidden transition
+        aria-hidden:opacity-0 aria-hidden:pointer-events-none"
+        ref={suggestionsRef}
+      >
+        <div className="max-h-64 overflow-y-auto relative">
+          {isLoading && suggestions.length === 0 && (
+            <div className="flex items-center justify-center py-8">
+              <IconSpinner className="w-5 text-zinc-400" />
             </div>
-            {!isLoading && suggestions.length === 0 && debouncedWord && (
-              <div className="text-center py-4 text-zinc-500 text-sm">검색 결과가 없습니다</div>
-            )}
+          )}
+          <div aria-busy={isFetching} className="transition aria-busy:opacity-60">
+            {suggestions.map((suggestion, index) => (
+              <button
+                aria-current={selectedIndex === index}
+                className="w-full px-4 py-2.5 text-left hover:bg-zinc-700/50 transition flex items-center justify-between aria-current:bg-zinc-700/70"
+                data-index={index}
+                key={suggestion.value}
+                onMouseDown={(e) => {
+                  e.preventDefault()
+                  handleSelectSuggestion(suggestion)
+                }}
+                onMouseEnter={() => setSelectedIndex(index)}
+                type="button"
+              >
+                <div className="flex flex-col flex-1">
+                  <span className="text-sm">
+                    {suggestion.value.endsWith(':') ? (
+                      <>
+                        <span className="text-brand-end font-medium">{suggestion.value}</span>
+                        <span className="text-zinc-400 ml-1">{suggestion.label.replace(':', '')}</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-zinc-200">{suggestion.value}</span>
+                        {suggestion.label !== suggestion.value && (
+                          <span className="text-zinc-400 ml-1">({suggestion.label})</span>
+                        )}
+                      </>
+                    )}
+                  </span>
+                  {BLIND_TAG_VALUES.includes(suggestion.value) && (
+                    <span className="text-xs text-orange-500 mt-0.5">기본 검열 태그</span>
+                  )}
+                </div>
+                {suggestion.value.endsWith(':') && <span className="text-xs text-zinc-500">접두사</span>}
+              </button>
+            ))}
           </div>
+          {!isLoading && suggestions.length === 0 && debouncedWord && (
+            <div className="text-center py-4 text-zinc-500 text-sm">검색 결과가 없습니다</div>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Collapsible help section for mobile */}
       {showHelp ? (
