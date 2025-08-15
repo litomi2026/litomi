@@ -111,11 +111,11 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
                 <BookmarkButton className="flex-1" manga={manga} />
               </Suspense>
             </ErrorBoundary>
-            {showSearchFromNextButton ? (
+            {showSearchFromNextButton && (
               <Suspense>
                 <SearchFromHereButton className="flex-1" mangaId={id} />
               </Suspense>
-            ) : null}
+            )}
           </div>
         </div>
       </div>

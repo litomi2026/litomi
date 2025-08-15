@@ -23,10 +23,10 @@ export default function RetryGuidance({ hasSystemIssues, errorMessage = '' }: Sm
 
     if (ERROR_PATTERNS.network.test(errorMessage)) {
       setGuidance('네트워크 연결을 확인하고 다시 시도해주세요.')
-    } else if (ERROR_PATTERNS.authentication.test(errorMessage)) {
-      setGuidance('로그인이 필요하거나 권한이 없어요.')
     } else if (ERROR_PATTERNS.database.test(errorMessage)) {
       setGuidance('데이터 처리 중 문제가 발생했어요.')
+    } else if (ERROR_PATTERNS.authentication.test(errorMessage)) {
+      setGuidance('로그인이 필요하거나 권한이 없어요.')
     } else if (ERROR_PATTERNS.rateLimit.test(errorMessage)) {
       setGuidance('요청이 너무 많아요. 잠시 후 다시 시도해주세요.')
     } else {
@@ -39,11 +39,9 @@ export default function RetryGuidance({ hasSystemIssues, errorMessage = '' }: Sm
   }
 
   return (
-    <div className="my-3 px-4 py-2 rounded-lg bg-zinc-900/50 border border-zinc-800">
-      <p className="text-xs text-zinc-300 flex items-center gap-2">
-        <span className="text-zinc-500">💡</span>
-        {guidance}
-      </p>
-    </div>
+    <p className="my-3 px-4 py-2 rounded-lg bg-zinc-900/50 border border-zinc-800 text-xs text-zinc-300 flex items-center justify-center gap-2">
+      <span className="text-zinc-500">💡</span>
+      {guidance}
+    </p>
   )
 }

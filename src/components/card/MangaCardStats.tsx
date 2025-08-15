@@ -32,7 +32,7 @@ function MangaCardStats({ manga, className = '' }: Readonly<Props>) {
           <Star className="size-[1em] shrink-0 text-yellow-500" />
           <span className="font-medium tabular-nums">
             {rating.toFixed(1)}
-            {ratingCount && (
+            {ratingCount > 0 && (
               <span className="text-zinc-500 font-normal ml-0.5">({formatNumber(ratingCount, 'ko')}개)</span>
             )}
           </span>

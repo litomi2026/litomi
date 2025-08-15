@@ -79,13 +79,11 @@ export class ValidationError extends ProxyError {
   readonly statusCode = 400
 }
 
-// Helper to determine if an error is retryable
 export function isRetryableError(error: unknown): boolean {
   if (error instanceof ProxyError) {
     return error.isRetryable
   }
 
-  // Check for common retryable error patterns
   if (error instanceof Error) {
     const message = error.message.toLowerCase()
     return (
