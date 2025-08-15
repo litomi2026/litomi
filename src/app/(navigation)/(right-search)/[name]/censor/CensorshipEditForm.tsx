@@ -3,16 +3,20 @@ import { Check } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
 
-import { CensorshipItem } from '@/app/api/censorship/route'
 import { QueryKeys } from '@/constants/query'
-import { CensorshipLevel } from '@/database/enum'
+import { CensorshipKey, CensorshipLevel } from '@/database/enum'
 import useActionResponse from '@/hook/useActionResponse'
 
 import { updateCensorships } from './action'
 import { CENSORSHIP_LEVEL_LABELS } from './constants'
 
 type Props = {
-  censorship: CensorshipItem
+  censorship: {
+    id: number
+    key: CensorshipKey
+    value: string
+    level: CensorshipLevel
+  }
   onEditCompleted: () => void
 }
 

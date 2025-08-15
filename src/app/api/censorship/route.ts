@@ -14,6 +14,7 @@ export type CensorshipItem = {
   key: CensorshipKey
   value: string
   level: CensorshipLevel
+  createdAt: number
 }
 
 export type GETCensorshipsResponse = {
@@ -37,7 +38,7 @@ export async function GET(request: Request) {
     return new Response('Bad Request', { status: 400 })
   }
 
-  const { cursorId, limit } = validation.data
+  const { cursor, limit } = validation.data
 
   try {
     const censorshipRows = await db
@@ -52,7 +53,7 @@ export async function GET(request: Request) {
       .where(
         and(
           sql`${userCensorshipTable.userId} = ${userId}`,
-          cursorId ? sql`${userCensorshipTable.id} < ${cursorId}` : undefined,
+          cursor ? sql`${userCensorshipTable.id} < ${cursor}` : undefined,
         ),
       )
       .orderBy(desc(userCensorshipTable.id))
@@ -66,7 +67,10 @@ export async function GET(request: Request) {
     const censorships = hasNextPage ? censorshipRows.slice(0, limit) : censorshipRows
     const nextCursor = hasNextPage ? { id: censorshipRows[censorshipRows.length - 1].id } : null
 
-    return Response.json({ censorships, nextCursor } satisfies GETCensorshipsResponse)
+    return Response.json({
+      censorships: censorships.map((row) => ({ ...row, createdAt: row.createdAt.getTime() })),
+      nextCursor,
+    } satisfies GETCensorshipsResponse)
   } catch (error) {
     return handleRouteError(error, request)
   }
