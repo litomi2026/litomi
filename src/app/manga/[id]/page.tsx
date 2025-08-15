@@ -1,3 +1,4 @@
+import ms from 'ms'
 import { Metadata } from 'next'
 import { unstable_cache } from 'next/cache'
 import { notFound } from 'next/navigation'
@@ -77,5 +78,5 @@ export default async function Page({ params }: PageProps) {
 const getCachedManga = unstable_cache(
   async (id: number) => getMangaFromMultipleSources(id, 86400),
   ['getCachedManga'],
-  { revalidate: 86400 },
+  { revalidate: ms('1 week') / 1000 },
 )
