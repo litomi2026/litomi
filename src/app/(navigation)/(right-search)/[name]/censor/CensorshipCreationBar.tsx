@@ -75,7 +75,7 @@ function CensorshipCreationBar({ onSubmit }: Readonly<Props>) {
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 relative">
       <form className="relative" onSubmit={handleSubmit} ref={formRef}>
         <input
           className="w-full pl-4 pr-20 sm:pr-12 py-3 bg-zinc-800/70 rounded-lg border-2 border-zinc-700 outline-none transition
@@ -87,9 +87,9 @@ function CensorshipCreationBar({ onSubmit }: Readonly<Props>) {
           ref={inputRef}
           type="text"
         />
-        <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+        <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
           <button
-            className="p-2 rounded-md text-zinc-400 hover:text-zinc-300 hover:bg-zinc-700/50 transition"
+            className="p-2 rounded text-zinc-400 hover:text-zinc-300 hover:bg-zinc-700/50 transition"
             onClick={() => setShowHelp(!showHelp)}
             title="도움말"
             type="button"
@@ -97,8 +97,7 @@ function CensorshipCreationBar({ onSubmit }: Readonly<Props>) {
             <IconInfo className="w-4" />
           </button>
           <button
-            className="p-2 rounded-md bg-zinc-700 hover:bg-zinc-600 disabled:bg-transparent 
-              disabled:cursor-not-allowed transition-all group"
+            className="p-2 rounded hover:bg-zinc-800 disabled:bg-transparent disabled:cursor-not-allowed transition"
             disabled={isSubmitting}
             title="검열 추가 (Enter)"
             type="submit"
