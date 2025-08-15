@@ -18,11 +18,6 @@ export default function PushTestButton({ endpoints }: Props) {
 
   const [_, dispatchTestNotification] = useActionResponse({
     action: testNotification,
-    onError: (error) => {
-      if (typeof error === 'string') {
-        toast.error(error)
-      }
-    },
     onSuccess: (data) => {
       toast.success(data)
       setHasTestedOnce(true)

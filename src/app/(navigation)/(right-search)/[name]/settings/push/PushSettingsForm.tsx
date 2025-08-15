@@ -32,11 +32,6 @@ export default function PushSettingsForm({ initialSettings }: Props) {
 
   const [response, dispatchAction, isPending] = useActionResponse({
     action: updatePushSettings,
-    onError: (error) => {
-      if (typeof error === 'string') {
-        toast.error(error)
-      }
-    },
     onSuccess: (data) => {
       toast.success(data)
     },

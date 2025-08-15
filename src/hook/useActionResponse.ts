@@ -1,5 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useState, useTransition } from 'react'
+import { toast } from 'sonner'
 
 import { QueryKeys } from '@/constants/query'
 import amplitude from '@/lib/amplitude/lazy'
@@ -57,8 +58,14 @@ export default function useActionResponse<T extends ActionResponse, TActionArgs 
           amplitude.reset()
         }
 
-        // TODO: 첫번째 파라미터를 두번째 파라미터로 바꾸기
-        onError?.(response.error as T extends ErrorResponse<infer E> ? E : never, response)
+        if (onError) {
+          // TODO: 첫번째 파라미터를 두번째 파라미터로 바꾸기
+          onError(response.error as T extends ErrorResponse<infer E> ? E : never, response)
+        } else {
+          if (typeof response.error === 'string') {
+            toast.error(response.error)
+          }
+        }
       } else {
         onSuccess?.(response.data as T extends SuccessResponse<infer D> ? D : never)
       }

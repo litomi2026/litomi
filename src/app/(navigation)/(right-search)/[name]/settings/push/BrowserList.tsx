@@ -30,11 +30,6 @@ export default function BrowserList({ webPushes }: Props) {
 
   const [_, dispatchRemoveDevice] = useActionResponse({
     action: removeDevice,
-    onError: (error) => {
-      if (typeof error === 'string') {
-        toast.error(error)
-      }
-    },
     onSuccess: (data) => {
       toast.success(data)
     },

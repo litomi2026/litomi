@@ -38,11 +38,6 @@ export default function PushSubscriptionToggle({ endpoints }: Readonly<Props>) {
 
   const [_, dispatchSubscriptionAction] = useActionResponse({
     action: subscribeToNotifications,
-    onError: (error) => {
-      if (typeof error === 'string') {
-        toast.error(error)
-      }
-    },
     onSuccess: (data) => {
       setIsSubscribed(true)
       toast.success(data)
@@ -52,11 +47,6 @@ export default function PushSubscriptionToggle({ endpoints }: Readonly<Props>) {
 
   const [__, dispatchUnsubscriptionAction] = useActionResponse({
     action: unsubscribeFromNotifications,
-    onError: (error) => {
-      if (typeof error === 'string') {
-        toast.error(error)
-      }
-    },
     onSuccess: (data) => {
       setIsSubscribed(false)
       toast.success(data)

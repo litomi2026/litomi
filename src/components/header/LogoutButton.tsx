@@ -15,9 +15,6 @@ export default function LogoutButton() {
 
   const [_, dispatchAction, isPending] = useActionResponse({
     action: logout,
-    onError: (error) => {
-      toast.error(error)
-    },
     onSuccess: ({ loginId }) => {
       toast.success(`${loginId} 계정에서 로그아웃했어요`)
       amplitude.track('logout')

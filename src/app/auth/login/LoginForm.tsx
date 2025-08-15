@@ -65,11 +65,6 @@ export default function LoginForm() {
 
   const [response, dispatchAction, isPending] = useActionResponse({
     action: login,
-    onError: (error) => {
-      if (typeof error === 'string') {
-        toast.error(error)
-      }
-    },
     onSuccess: handleLoginSuccess,
   })
 

@@ -24,11 +24,6 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Read
 
   const [response, dispatchAction, isPending] = useActionResponse({
     action: updateCensorships,
-    onError: (error) => {
-      if (typeof error === 'string') {
-        toast.error(error)
-      }
-    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QueryKeys.censorships })
       toast.success('검열 규칙을 수정했어요')

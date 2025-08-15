@@ -31,11 +31,6 @@ export default function PasswordChangeForm({ userId }: Readonly<Props>) {
 
   const [response, dispatchAction, isPending] = useActionResponse({
     action: changePassword,
-    onError: (error) => {
-      if (typeof error === 'string') {
-        toast.error(error)
-      }
-    },
     onSuccess: (data) => {
       toast.success(data)
       router.push('/auth/login')

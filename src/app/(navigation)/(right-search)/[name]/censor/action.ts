@@ -4,6 +4,7 @@ import { captureException } from '@sentry/nextjs'
 import { count, inArray, sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 
+import { MAX_CENSORSHIPS_PER_USER } from '@/constants/policy'
 import { db, sessionDB } from '@/database/drizzle'
 import { userCensorshipTable } from '@/database/schema'
 import { badRequest, internalServerError, noContent, ok, unauthorized } from '@/utils/action-response'
@@ -47,8 +48,11 @@ export async function addCensorships(formData: FormData) {
         .from(userCensorshipTable)
         .where(sql`${userCensorshipTable.userId} = ${userId}`)
 
-      if (censorshipCount + censorships.length > 100) {
-        return badRequest(`검열 규칙은 최대 100개까지만 추가할 수 있어요. (현재 ${censorshipCount}개)`, formData)
+      if (censorshipCount + censorships.length > MAX_CENSORSHIPS_PER_USER) {
+        return badRequest(
+          `검열 규칙은 최대 ${MAX_CENSORSHIPS_PER_USER}개까지만 추가할 수 있어요. (현재 ${censorshipCount}개)`,
+          formData,
+        )
       }
 
       const insertedCensorships = await tx

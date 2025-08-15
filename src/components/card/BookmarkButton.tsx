@@ -36,11 +36,6 @@ export default function BookmarkButton({ manga, className }: Readonly<Props>) {
 
   const [_, dispatchAction, isPending] = useActionResponse({
     action: toggleBookmark,
-    onError: (error) => {
-      if (typeof error === 'string') {
-        toast.error(error)
-      }
-    },
     onSuccess: ({ mangaId, createdAt }) => {
       const isBookmarked = Boolean(createdAt)
 

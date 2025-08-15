@@ -55,9 +55,6 @@ export default function NotificationList() {
 
   const [_, dispatchMarkAsRead, isMarkAsReadPending] = useActionResponse({
     action: markAsRead,
-    onError: (error) => {
-      toast.error(error)
-    },
     onSuccess: () => {
       setSelectedIds(new Set())
       setSelectionMode(false)
@@ -69,9 +66,6 @@ export default function NotificationList() {
 
   const [__, dispatchDeleteNotifications, isDeleteNotificationsPending] = useActionResponse({
     action: deleteNotifications,
-    onError: (error) => {
-      toast.error(error)
-    },
     onSuccess: (data) => {
       toast.success(data)
       setSelectedIds(new Set())
