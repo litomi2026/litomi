@@ -1,12 +1,15 @@
 'use client'
 
-import { memo, useRef, useState, useTransition } from 'react'
+import { memo, useCallback, useEffect, useRef, useState, useTransition } from 'react'
 import { toast } from 'sonner'
 
 import IconInfo from '@/components/icons/IconInfo'
 import IconSpinner from '@/components/icons/IconSpinner'
 import IconX from '@/components/icons/IconX'
+import { BLIND_TAG_VALUES } from '@/constants/json'
 import { CensorshipKey, CensorshipLevel } from '@/database/enum'
+
+import useCensorshipSuggestions, { type CensorshipSuggestion } from './useCensorshipSuggestions'
 
 type Props = {
   onSubmit: (formData: FormData) => void
@@ -28,14 +31,31 @@ export default memo(CensorshipCreationBar)
 function CensorshipCreationBar({ onSubmit }: Readonly<Props>) {
   const [isSubmitting, startSubmission] = useTransition()
   const [showHelp, setShowHelp] = useState(false)
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const [inputValue, setInputValue] = useState('')
+  const [cursorPosition, setCursorPosition] = useState(0)
   const formRef = useRef<HTMLFormElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const suggestionsRef = useRef<HTMLDivElement>(null)
+
+  const {
+    suggestions,
+    selectedIndex,
+    setSelectedIndex,
+    resetSelection,
+    navigateSelection,
+    selectSuggestion,
+    currentWord,
+    debouncedWord,
+    isLoading,
+    isFetching,
+  } = useCensorshipSuggestions({
+    inputValue,
+    cursorPosition,
+  })
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-
-    const formData = new FormData(e.currentTarget)
-    const inputValue = formData.get('censorships') as string
 
     if (!inputValue?.trim()) {
       return
@@ -62,30 +82,143 @@ function CensorshipCreationBar({ onSubmit }: Readonly<Props>) {
 
       onSubmit(bulkFormData)
       toast.success(`${items.length}개의 검열 규칙을 추가했어요`)
-      formRef.current?.reset()
+      setInputValue('')
+      setCursorPosition(0)
+      setShowSuggestions(false)
+      resetSelection()
       inputRef.current?.blur()
     })
   }
 
+  const updateCursorPosition = useCallback(() => {
+    if (inputRef.current) {
+      setCursorPosition(inputRef.current.selectionStart || 0)
+    }
+  }, [])
+
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value
+      const position = e.target.selectionStart || 0
+
+      setInputValue(value)
+      setCursorPosition(position)
+      setShowSuggestions(true)
+      resetSelection()
+    },
+    [resetSelection],
+  )
+
+  const handleFocus = useCallback(() => {
+    setShowSuggestions(true)
+    resetSelection()
+    updateCursorPosition()
+  }, [resetSelection, updateCursorPosition])
+
+  const handleBlur = useCallback(
+    (e: React.FocusEvent<HTMLInputElement>) => {
+      if (!suggestionsRef.current?.contains(e.relatedTarget)) {
+        setTimeout(() => {
+          setShowSuggestions(false)
+          resetSelection()
+        }, 200)
+      }
+    },
+    [resetSelection],
+  )
+
+  const handleSelectSuggestion = useCallback(
+    (suggestion: CensorshipSuggestion) => {
+      const newValue = selectSuggestion(suggestion)
+      setInputValue(newValue)
+
+      // Set cursor position after the selected suggestion
+      const newCursorPos = currentWord.start + suggestion.value.length
+      setCursorPosition(newCursorPos)
+
+      setShowSuggestions(false)
+      resetSelection()
+      inputRef.current?.focus()
+
+      // Set cursor position in the input
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.selectionStart = inputRef.current.selectionEnd = newCursorPos
+        }
+      }, 0)
+    },
+    [selectSuggestion, currentWord, resetSelection],
+  )
+
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      formRef.current?.requestSubmit()
+    if (!showSuggestions || suggestions.length === 0) {
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        formRef.current?.requestSubmit()
+      }
+      return
+    }
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault()
+        navigateSelection('down')
+        break
+      case 'ArrowUp':
+        e.preventDefault()
+        navigateSelection('up')
+        break
+      case 'Enter':
+        e.preventDefault()
+        if (selectedIndex >= 0) {
+          handleSelectSuggestion(suggestions[selectedIndex])
+        } else {
+          formRef.current?.requestSubmit()
+        }
+        break
+      case 'Escape':
+        setShowSuggestions(false)
+        resetSelection()
+        break
+      case 'Tab':
+        if (selectedIndex >= 0) {
+          e.preventDefault()
+          handleSelectSuggestion(suggestions[selectedIndex])
+        }
+        break
     }
   }
+
+  // NOTE: 선택된 곳으로 스크롤을 이동함
+  useEffect(() => {
+    if (selectedIndex >= 0 && suggestionsRef.current) {
+      const selectedElement = suggestionsRef.current.querySelector(`[data-index="${selectedIndex}"]`) as HTMLElement
+
+      if (selectedElement) {
+        selectedElement.scrollIntoView({ block: 'nearest' })
+      }
+    }
+  }, [selectedIndex])
 
   return (
     <div className="space-y-2 relative">
       <form className="relative" onSubmit={handleSubmit} ref={formRef}>
         <input
+          autoCapitalize="off"
+          autoComplete="off"
           className="w-full pl-4 pr-20 sm:pr-12 py-3 bg-zinc-800/70 rounded-lg border-2 border-zinc-700 outline-none transition
           focus:border-brand-end focus:bg-zinc-800 placeholder:text-zinc-500 disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={isSubmitting}
           name="censorships"
+          onBlur={handleBlur}
+          onChange={handleInputChange}
+          onFocus={handleFocus}
           onKeyDown={handleKeyDown}
+          onSelect={updateCursorPosition}
           placeholder="검열할 키워드를 입력해주세요"
           ref={inputRef}
           type="text"
+          value={inputValue}
         />
         <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
           <button
@@ -106,6 +239,63 @@ function CensorshipCreationBar({ onSubmit }: Readonly<Props>) {
           </button>
         </div>
       </form>
+
+      {/* Suggestions Dropdown */}
+      {showSuggestions && (
+        <div
+          className="absolute z-10 w-full mt-1 bg-zinc-800 border border-zinc-700 rounded-lg shadow-lg overflow-hidden"
+          ref={suggestionsRef}
+        >
+          <div className="max-h-64 overflow-y-auto relative">
+            {isLoading && suggestions.length === 0 && (
+              <div className="flex items-center justify-center py-8">
+                <IconSpinner className="w-5 text-zinc-400" />
+              </div>
+            )}
+            <div aria-busy={isFetching} className="transition aria-busy:opacity-60">
+              {suggestions.map((suggestion, index) => (
+                <button
+                  aria-current={selectedIndex === index}
+                  className="w-full px-4 py-2.5 text-left hover:bg-zinc-700/50 transition flex items-center justify-between aria-current:bg-zinc-700/70"
+                  data-index={index}
+                  key={suggestion.value}
+                  onMouseDown={(e) => {
+                    e.preventDefault()
+                    handleSelectSuggestion(suggestion)
+                  }}
+                  onMouseEnter={() => setSelectedIndex(index)}
+                  type="button"
+                >
+                  <div className="flex flex-col flex-1">
+                    <span className="text-sm">
+                      {suggestion.value.endsWith(':') ? (
+                        <>
+                          <span className="text-brand-end font-medium">{suggestion.value}</span>
+                          <span className="text-zinc-400 ml-1">{suggestion.label.replace(':', '')}</span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="text-zinc-200">{suggestion.value}</span>
+                          {suggestion.label !== suggestion.value && (
+                            <span className="text-zinc-400 ml-1">({suggestion.label})</span>
+                          )}
+                        </>
+                      )}
+                    </span>
+                    {BLIND_TAG_VALUES.includes(suggestion.value) && (
+                      <span className="text-xs text-orange-500 mt-0.5">기본 검열 태그</span>
+                    )}
+                  </div>
+                  {suggestion.value.endsWith(':') && <span className="text-xs text-zinc-500">접두사</span>}
+                </button>
+              ))}
+            </div>
+            {!isLoading && suggestions.length === 0 && debouncedWord && (
+              <div className="text-center py-4 text-zinc-500 text-sm">검색 결과가 없습니다</div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Collapsible help section for mobile */}
       {showHelp ? (
