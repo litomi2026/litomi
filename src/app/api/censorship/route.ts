@@ -46,9 +46,15 @@ export async function GET(request: Request) {
         key: userCensorshipTable.key,
         value: userCensorshipTable.value,
         level: userCensorshipTable.level,
+        createdAt: userCensorshipTable.createdAt,
       })
       .from(userCensorshipTable)
-      .where(and(sql`${userCensorshipTable.userId} = ${userId}`, sql`${userCensorshipTable.id} < ${cursorId}`))
+      .where(
+        and(
+          sql`${userCensorshipTable.userId} = ${userId}`,
+          cursorId ? sql`${userCensorshipTable.id} < ${cursorId}` : undefined,
+        ),
+      )
       .orderBy(desc(userCensorshipTable.id))
       .limit(limit + 1)
 
