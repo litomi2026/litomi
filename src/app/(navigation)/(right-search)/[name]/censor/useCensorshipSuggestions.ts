@@ -63,11 +63,11 @@ export default function useCensorshipSuggestions({ inputValue, cursorPosition }:
   })
 
   const { data: apiSuggestions = [], isLoading, isFetching } = useCensorshipSuggestionsQuery({ query: debouncedWord })
-  const cachedSuggestionsRef = useRef(DEFAULT_SUGGESTIONS.slice(0, MAX_SEARCH_SUGGESTIONS))
+  const cachedSuggestionsRef = useRef(DEFAULT_SUGGESTIONS)
 
   const suggestions = useMemo(() => {
     if (!debouncedWord) {
-      return cachedSuggestionsRef.current
+      return DEFAULT_SUGGESTIONS
     }
 
     const seenValues = new Set<string>()

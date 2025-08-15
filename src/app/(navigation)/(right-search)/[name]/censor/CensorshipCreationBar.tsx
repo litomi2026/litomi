@@ -1,19 +1,19 @@
 'use client'
 
-import { memo, useCallback, useEffect, useRef, useState, useTransition } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import IconInfo from '@/components/icons/IconInfo'
 import IconSpinner from '@/components/icons/IconSpinner'
 import IconX from '@/components/icons/IconX'
 import { BLIND_TAG_VALUES } from '@/constants/json'
+import { QueryKeys } from '@/constants/query'
 import { CensorshipKey, CensorshipLevel } from '@/database/enum'
+import useActionResponse from '@/hook/useActionResponse'
 
+import { addCensorships } from './action'
 import useCensorshipSuggestions, { type CensorshipSuggestion } from './useCensorshipSuggestions'
-
-type Props = {
-  onSubmit: (formData: FormData) => void
-}
 
 const TYPE_PATTERNS: Record<string, CensorshipKey> = {
   'artist:': CensorshipKey.ARTIST,
@@ -28,8 +28,7 @@ const TYPE_PATTERNS: Record<string, CensorshipKey> = {
 
 export default memo(CensorshipCreationBar)
 
-function CensorshipCreationBar({ onSubmit }: Readonly<Props>) {
-  const [isSubmitting, startSubmission] = useTransition()
+function CensorshipCreationBar() {
   const [showHelp, setShowHelp] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [inputValue, setInputValue] = useState('')
@@ -37,6 +36,24 @@ function CensorshipCreationBar({ onSubmit }: Readonly<Props>) {
   const formRef = useRef<HTMLFormElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const suggestionsRef = useRef<HTMLDivElement>(null)
+  const queryClient = useQueryClient()
+
+  const [_, dispatchAddAction, isSubmitting] = useActionResponse({
+    action: addCensorships,
+    onSuccess: (items) => {
+      if (!items) {
+        return
+      }
+
+      toast.success(`${items.length}개의 검열 규칙을 추가했어요`)
+      setInputValue('')
+      setCursorPosition(0)
+      setShowSuggestions(false)
+      resetSelection()
+      inputRef.current?.blur()
+      queryClient.invalidateQueries({ queryKey: QueryKeys.censorships })
+    },
+  })
 
   const {
     suggestions,
@@ -70,24 +87,16 @@ function CensorshipCreationBar({ onSubmit }: Readonly<Props>) {
       return
     }
 
-    startSubmission(() => {
-      const bulkFormData = new FormData()
+    const bulkFormData = new FormData()
 
-      for (const item of items) {
-        const { key, value } = detectTypeAndValue(item)
-        bulkFormData.append('key', key.toString())
-        bulkFormData.append('value', value)
-        bulkFormData.append('level', CensorshipLevel.LIGHT.toString())
-      }
+    for (const item of items) {
+      const { key, value } = detectTypeAndValue(item)
+      bulkFormData.append('key', key.toString())
+      bulkFormData.append('value', value)
+      bulkFormData.append('level', CensorshipLevel.LIGHT.toString())
+    }
 
-      onSubmit(bulkFormData)
-      toast.success(`${items.length}개의 검열 규칙을 추가했어요`)
-      setInputValue('')
-      setCursorPosition(0)
-      setShowSuggestions(false)
-      resetSelection()
-      inputRef.current?.blur()
-    })
+    dispatchAddAction(bulkFormData)
   }
 
   const updateCursorPosition = useCallback(() => {

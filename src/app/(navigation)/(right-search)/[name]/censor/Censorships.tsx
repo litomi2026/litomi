@@ -15,7 +15,7 @@ import useActionResponse from '@/hook/useActionResponse'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useCensorshipsInfiniteQuery from '@/query/useCensorshipInfiniteQuery'
 
-import { addCensorships, deleteCensorships } from './action'
+import { deleteCensorships } from './action'
 import CensorshipCard, { CensorshipCardSkeleton } from './CensorshipCard'
 import CensorshipCreationBar from './CensorshipCreationBar'
 import CensorshipStats from './CensorshipStats'
@@ -32,14 +32,6 @@ export default function Censorships() {
   const [selectedIds, setSelectedIds] = useState(new Set<number>())
   const [deletingIds, setDeletingIds] = useState(new Set<number>())
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } = useCensorshipsInfiniteQuery()
-
-  const [_, dispatchAddAction] = useActionResponse({
-    action: addCensorships,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QueryKeys.censorships })
-      toast.success('검열 규칙이 추가되었습니다')
-    },
-  })
 
   const [__, dispatchDeleteAction] = useActionResponse({
     action: deleteCensorships,
@@ -112,7 +104,7 @@ export default function Censorships() {
           </div>
 
           {/* Quick Add Bar - Primary way to add censorships */}
-          <CensorshipCreationBar onSubmit={dispatchAddAction} />
+          <CensorshipCreationBar />
 
           {/* Search and Filter - Always visible */}
           <div className="flex gap-2 my-4">
@@ -218,7 +210,6 @@ export default function Censorships() {
       <ImportExportModal
         censorships={allCensorships}
         onClose={handleCloseImportExportModal}
-        onImport={dispatchAddAction}
         open={showImportExportModal && !isDeleting}
       />
     </div>
