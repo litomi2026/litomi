@@ -44,7 +44,8 @@ function ImportExportModal({ open, onClose, censorships }: Readonly<Props>) {
 
   const [_, dispatchAddAction, isPending] = useActionResponse({
     action: addCensorships,
-    onSuccess: () => {
+    onSuccess: (items) => {
+      toast.success(`${items?.length ?? 0}개 규칙을 추가했어요`)
       setImportText('')
       onClose()
       queryClient.invalidateQueries({ queryKey: QueryKeys.censorships })
