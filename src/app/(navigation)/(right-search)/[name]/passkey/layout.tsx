@@ -5,15 +5,11 @@ import PasskeyRegisterButton from './PasskeyRegisterButton'
 export default async function Layout({ children }: LayoutProps) {
   return (
     <main className="flex h-full flex-col bg-background">
+      <h2 className="sr-only">패스키</h2>
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-brand-end/5 via-transparent to-transparent" />
-        <div className="relative px-4 py-6 sm:px-6 sm:py-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <h2 className="sr-only">패스키</h2>
-            <div className="self-end sm:self-auto">
-              <PasskeyRegisterButton />
-            </div>
-          </div>
+        <div className="relative flex justify-end px-4 py-6 sm:px-6 sm:py-8">
+          <PasskeyRegisterButton />
         </div>
         <div className="h-px bg-gradient-to-r from-transparent via-brand-end/20 to-transparent" />
       </div>
