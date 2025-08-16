@@ -10,6 +10,7 @@ import IconExternalLink from '../icons/IconExternalLink'
 import LinkLoading from '../LinkLoading'
 import TagList from '../TagList'
 import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from './BookmarkButton'
+import DownloadButton from './DownloadButton'
 import LanguageBadge from './LanguageBadge'
 import MangaCardCensorship from './MangaCardCensorship'
 import MangaCardDate from './MangaCardDate'
@@ -33,7 +34,8 @@ export function MangaCardSkeleton() {
 }
 
 function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton }: Readonly<Props>) {
-  const { id, artists, characters, date, group, series, tags, title, type, languages } = manga
+  const { id, artists, characters, date, group, series, tags, title, type, origin, languages } = manga
+  const isDownloadable = origin === 'https://soujpa.in'
   const viewerLink = getViewerLink(id)
 
   return (
@@ -111,11 +113,13 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
                 <BookmarkButton className="flex-1" manga={manga} />
               </Suspense>
             </ErrorBoundary>
-            {showSearchFromNextButton && (
+            {showSearchFromNextButton ? (
               <Suspense>
                 <SearchFromHereButton className="flex-1" mangaId={id} />
               </Suspense>
-            )}
+            ) : isDownloadable ? (
+              <DownloadButton className="flex-1" manga={manga} />
+            ) : null}
           </div>
         </div>
       </div>
