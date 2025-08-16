@@ -1,13 +1,36 @@
+import { Book } from 'lucide-react'
+import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 import PostList from '@/app/(navigation)/(right-search)/posts/[filter]/PostList'
 import { PostFilter } from '@/app/api/post/schema'
 import PostCreationForm from '@/components/post/PostCreationForm'
+import { defaultOpenGraph, SHORT_NAME } from '@/constants'
+import { CANONICAL_URL } from '@/constants/url'
 import { PageProps } from '@/types/nextjs'
 
 import { mangaSchema } from '../schema'
 
 export const dynamic = 'error'
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const validation = mangaSchema.safeParse(await params)
+
+  if (!validation.success) {
+    notFound()
+  }
+
+  const { id } = validation.data
+
+  return {
+    title: `${id} 이야기 - ${SHORT_NAME}`,
+    openGraph: {
+      ...defaultOpenGraph,
+      title: `${id} 이야기 - ${SHORT_NAME}`,
+      url: `${CANONICAL_URL}/manga/${id}/post`,
+    },
+  }
+}
 
 export default async function Page({ params }: PageProps) {
   const validation = mangaSchema.safeParse(await params)
@@ -38,9 +61,7 @@ export default async function Page({ params }: PageProps) {
 function EmptyState() {
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
-      <div aria-label="empty state icon" className="text-4xl mb-4" role="img">
-        📚
-      </div>
+      <Book className="size-8 mb-4 text-brand-end" role="img" />
       <h3 className="text-lg font-semibold text-zinc-200 mb-2">이 작품에 대한 글이 없어요</h3>
       <p className="text-sm text-zinc-500 mb-6 max-w-sm">첫 번째로 이 작품에 대해 이야기해보세요!</p>
     </div>

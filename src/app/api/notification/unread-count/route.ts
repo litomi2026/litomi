@@ -1,9 +1,11 @@
 import { and, count, eq, sql } from 'drizzle-orm'
 
-import { handleRouteError } from '@/crawler/proxy-utils'
+import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { db } from '@/database/drizzle'
 import { notificationTable } from '@/database/schema'
 import { getUserIdFromCookie } from '@/utils/session'
+
+const maxAge = 10
 
 export async function GET(request: Request) {
   const userId = await getUserIdFromCookie()
@@ -18,7 +20,13 @@ export async function GET(request: Request) {
       .from(notificationTable)
       .where(and(sql`${notificationTable.userId} = ${userId}`, eq(notificationTable.read, false)))
 
-    return Response.json(unreadCount)
+    const cacheControl = createCacheControl({
+      private: true,
+      maxAge,
+      staleWhileRevalidate: maxAge,
+    })
+
+    return Response.json(unreadCount, { headers: { 'Cache-Control': cacheControl } })
   } catch (error) {
     return handleRouteError(error, request)
   }
