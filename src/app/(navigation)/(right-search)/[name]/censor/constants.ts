@@ -11,6 +11,7 @@ export const CENSORSHIP_KEY_LABELS: Record<CensorshipKey, string> = {
   [CensorshipKey.TAG_CATEGORY_MALE]: '남성 태그',
   [CensorshipKey.TAG_CATEGORY_MIXED]: '혼합 태그',
   [CensorshipKey.TAG_CATEGORY_OTHER]: '기타 태그',
+  [CensorshipKey.LANGUAGE]: '언어',
 }
 
 export const CENSORSHIP_LEVEL_LABELS: Record<CensorshipLevel, { label: string; color: string }> = {

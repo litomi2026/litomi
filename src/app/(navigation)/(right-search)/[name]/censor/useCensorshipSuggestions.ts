@@ -15,7 +15,7 @@ export type CensorshipSuggestion = {
 
 const INITIAL_SELECTED_INDEX = -1
 
-const BLIND_TAG_SUGGESTIONS: CensorshipSuggestion[] = BLIND_TAG_VALUES.map((value) => ({
+const BLIND_TAG_SUGGESTIONS = BLIND_TAG_VALUES.map((value) => ({
   value,
   label: BLIND_TAG_VALUE_TO_LABEL[value],
 }))
@@ -25,6 +25,7 @@ const CENSORSHIP_PREFIX_SET = new Set([
   'character:',
   'female:',
   'group:',
+  'language:',
   'male:',
   'mixed:',
   'other:',

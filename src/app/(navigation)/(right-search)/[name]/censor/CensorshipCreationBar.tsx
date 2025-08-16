@@ -24,6 +24,7 @@ const TYPE_PATTERNS: Record<string, CensorshipKey> = {
   'male:': CensorshipKey.TAG_CATEGORY_MALE,
   'mixed:': CensorshipKey.TAG_CATEGORY_MIXED,
   'other:': CensorshipKey.TAG_CATEGORY_OTHER,
+  'language:': CensorshipKey.LANGUAGE,
 }
 
 export default memo(CensorshipCreationBar)
@@ -194,6 +195,11 @@ function CensorshipCreationBar() {
     }
   }
 
+  function handleSuggestionMouseDown(e: React.MouseEvent<HTMLButtonElement>, suggestion: CensorshipSuggestion) {
+    e.preventDefault()
+    handleSelectSuggestion(suggestion)
+  }
+
   // NOTE: 선택된 곳으로 스크롤을 이동함
   useEffect(() => {
     if (selectedIndex >= 0 && suggestionsRef.current) {
@@ -265,10 +271,7 @@ function CensorshipCreationBar() {
                 className="w-full px-4 py-2.5 text-left hover:bg-zinc-700/50 transition flex items-center justify-between aria-current:bg-zinc-700/70"
                 data-index={index}
                 key={suggestion.value}
-                onMouseDown={(e) => {
-                  e.preventDefault()
-                  handleSelectSuggestion(suggestion)
-                }}
+                onMouseDown={(e) => handleSuggestionMouseDown(e, suggestion)}
                 onMouseEnter={() => setSelectedIndex(index)}
                 type="button"
               >
@@ -332,7 +335,7 @@ function CensorshipCreationBar() {
                   • 작가: <code className="text-zinc-300">artist:작가명</code>
                 </p>
                 <p>
-                  • 그룹: <code className="text-zinc-300">group:그룹명</code>
+                  • 그룹: <code className="text-zinc-300">group:zenmai_kourogi</code>
                 </p>
                 <p>
                   • 시리즈: <code className="text-zinc-300">series:작품명</code>
@@ -340,20 +343,23 @@ function CensorshipCreationBar() {
                 <p>
                   • 캐릭터: <code className="text-zinc-300">character:캐릭터명</code>
                 </p>
+                <p>
+                  • 언어: <code className="text-zinc-300">language:chinese</code>
+                </p>
               </div>
               <div>
                 <p className="font-medium text-zinc-300 mb-1">태그 카테고리</p>
                 <p>
-                  • 여성: <code className="text-zinc-300">female:태그명</code>
+                  • 여성: <code className="text-zinc-300">female:furry</code>
                 </p>
                 <p>
-                  • 남성: <code className="text-zinc-300">male:태그명</code>
+                  • 남성: <code className="text-zinc-300">male:males_only</code>
                 </p>
                 <p>
-                  • 혼합: <code className="text-zinc-300">mixed:태그명</code>
+                  • 혼합: <code className="text-zinc-300">mixed:incest</code>
                 </p>
                 <p>
-                  • 기타: <code className="text-zinc-300">other:태그명</code>
+                  • 기타: <code className="text-zinc-300">other:ai_generated</code>
                 </p>
               </div>
             </div>
@@ -361,7 +367,7 @@ function CensorshipCreationBar() {
         </div>
       ) : (
         <p className="text-xs text-zinc-500 px-1 line-clamp-1 break-all">
-          쉼표로 여러 개 입력 가능 (예: scat, male:males_only, group:zenmai_kourogi, other:ai_generated, ...)
+          쉼표로 여러 개 입력 가능 (예: scat, male:males_only, group:zenmai_kourogi, language:chinese, ...)
         </p>
       )}
     </div>

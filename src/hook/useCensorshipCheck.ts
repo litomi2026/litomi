@@ -11,7 +11,7 @@ type Params = {
 }
 
 export default function useMatchedCensorships({ manga, censorshipsMap }: Readonly<Params>) {
-  const { artists, characters, group, series, tags } = manga
+  const { artists, characters, group, series, tags, languages } = manga
 
   return useMemo(() => {
     let highest = CensorshipLevel.LIGHT
@@ -94,6 +94,16 @@ export default function useMatchedCensorships({ manga, censorshipsMap }: Readonl
       }
     }
 
+    for (const language of languages ?? []) {
+      const languageKey = `${CensorshipKey.LANGUAGE}:${language.value}`
+      const languageMatches = censorshipsMap.get(languageKey)
+
+      if (languageMatches && languageMatches.level !== CensorshipLevel.NONE) {
+        matchedLabels.push(`${language.label}`)
+        highest = Math.max(highest, languageMatches.level)
+      }
+    }
+
     if (matchedLabels.length === 0) {
       return {}
     }
@@ -102,7 +112,7 @@ export default function useMatchedCensorships({ manga, censorshipsMap }: Readonl
       censoringReasons: Array.from(new Set(matchedLabels)),
       highestCensorshipLevel: highest,
     }
-  }, [artists, censorshipsMap, characters, group, series, tags])
+  }, [artists, censorshipsMap, characters, group, series, tags, languages])
 }
 
 function mapTagCategoryToCensorshipKey(category: MangaTagCategory) {
