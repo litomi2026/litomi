@@ -24,7 +24,7 @@ export default function PasskeyCard({ passkey, username }: Readonly<Props>) {
   const { deviceType, createdAt, lastUsedAt, transports, id } = passkey
   const { icon, label, bgColor } = getDeviceInfo(deviceType ?? '')
   const createdRelativeTime = getRelativeTime(createdAt)
-  const lastUsedRelativeTime = getRelativeTime(lastUsedAt)
+  const lastUsedRelativeTime = lastUsedAt ? getRelativeTime(lastUsedAt) : null
   const truncatedId = getTruncatedId(id)
   const verificationMethod = getUserVerificationMethod(deviceType ?? '')
   const isPlatform = deviceType === 'platform'
@@ -52,8 +52,8 @@ export default function PasskeyCard({ passkey, username }: Readonly<Props>) {
                   )}
                 </h3>
                 <div className="flex items-center gap-2 mt-1">
-                  {lastUsedAt && <p className="text-sm text-zinc-400">{lastUsedRelativeTime} 사용</p>}
-                  {createdAt && lastUsedAt && <span className="text-zinc-600">·</span>}
+                  {lastUsedRelativeTime && <p className="text-sm text-zinc-400">{lastUsedRelativeTime} 사용</p>}
+                  {createdAt && lastUsedRelativeTime && <span className="text-zinc-600">·</span>}
                   {createdAt && <p className="text-sm text-zinc-500">{createdRelativeTime} 등록</p>}
                 </div>
               </div>
