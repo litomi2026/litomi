@@ -1,9 +1,12 @@
 import { AuthenticatorTransportFuture } from '@simplewebauthn/server'
 import { sql } from 'drizzle-orm'
+import { Metadata } from 'next'
 import { cookies } from 'next/headers'
 
 import type { PageProps } from '@/types/nextjs'
 
+import { defaultOpenGraph, SHORT_NAME } from '@/constants'
+import { CANONICAL_URL } from '@/constants/url'
 import { db } from '@/database/drizzle'
 import { decodeDeviceType } from '@/database/enum'
 import { credentialTable } from '@/database/schema'
@@ -14,6 +17,15 @@ import { getUserById } from '../common'
 import Forbidden from './Forbidden'
 import GuestView from './GuestView'
 import PasskeyList from './PasskeyList'
+
+export const metadata: Metadata = {
+  title: `패스키 - ${SHORT_NAME}`,
+  openGraph: {
+    ...defaultOpenGraph,
+    title: `패스키 - ${SHORT_NAME}`,
+    url: `${CANONICAL_URL}/@/passkey`,
+  },
+}
 
 type Params = {
   name: string

@@ -72,15 +72,17 @@ function CensorshipCreationBar() {
     e.preventDefault()
 
     if (!inputValue?.trim()) {
+      toast.warning('검열할 키워드를 입력해주세요')
       return
     }
 
     const items = inputValue
-      .split(/[,\n]/)
+      .split(',')
       .map((item) => item.trim().toLowerCase())
       .filter(Boolean)
 
     if (items.length === 0) {
+      toast.warning('검열할 키워드를 입력해주세요')
       return
     }
 

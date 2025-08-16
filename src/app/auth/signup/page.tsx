@@ -1,9 +1,21 @@
+import { Metadata } from 'next'
 import Link from 'next/link'
 import { Suspense } from 'react'
 
 import IconLogo from '@/components/icons/IconLogo'
+import { defaultOpenGraph, SHORT_NAME } from '@/constants'
+import { CANONICAL_URL } from '@/constants/url'
 
 import SignupForm, { SignupFormSkeleton } from './SignupForm'
+
+export const metadata: Metadata = {
+  title: `회원가입 - ${SHORT_NAME}`,
+  openGraph: {
+    ...defaultOpenGraph,
+    title: `회원가입 - ${SHORT_NAME}`,
+    url: `${CANONICAL_URL}/auth/signup`,
+  },
+}
 
 export default function Page() {
   return (

@@ -1,3 +1,17 @@
+import { Metadata } from 'next'
+
+import { defaultOpenGraph, SHORT_NAME } from '@/constants'
+import { CANONICAL_URL } from '@/constants/url'
+
+export const metadata: Metadata = {
+  title: `개인정보 처리방침 - ${SHORT_NAME}`,
+  openGraph: {
+    ...defaultOpenGraph,
+    title: `개인정보 처리방침 - ${SHORT_NAME}`,
+    url: `${CANONICAL_URL}/doc/privacy`,
+  },
+}
+
 export default async function Page() {
   return (
     <div className="p-4 md:p-16 [&_h2]:text-xl [&_h2]:font-semibold [&_ul]:list-disc [&_ul]:list-inside">

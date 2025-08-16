@@ -16,7 +16,7 @@ function MangaCardStats({ manga, className = '' }: Readonly<Props>) {
   const totalLikes = like + likeAnonymous
 
   return (
-    <div className={`flex items-center gap-2.5 text-zinc-400 ${className}`}>
+    <div className={`flex items-center gap-2.5 text-sm text-zinc-400 ${className}`}>
       <div className="flex items-center gap-1.5">
         <Eye className="size-[1em] shrink-0" />
         <span className="tabular-nums">{formatNumber(viewCount, 'ko')}</span>

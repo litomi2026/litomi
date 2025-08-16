@@ -1,3 +1,5 @@
+import { Lock, ScanFace, Shield } from 'lucide-react'
+
 import IconKey from '@/components/icons/IconKey'
 import IconShield from '@/components/icons/IconShield'
 
@@ -17,7 +19,7 @@ export default function PasskeyEmptyState() {
       <div className="w-full max-w-md space-y-3 mb-8">
         <div className="flex items-center gap-4 p-4 rounded-2xl bg-zinc-900/50 border border-zinc-800/50">
           <div className="h-10 w-10 rounded-xl bg-brand-end/10 flex items-center justify-center flex-shrink-0">
-            <span className="text-lg">🛡️</span>
+            <Shield className="size-5" />
           </div>
           <div className="text-left">
             <p className="font-medium text-sm mb-0.5">피싱 공격 차단</p>
@@ -26,16 +28,16 @@ export default function PasskeyEmptyState() {
         </div>
         <div className="flex items-center gap-4 p-4 rounded-2xl bg-zinc-900/50 border border-zinc-800/50">
           <div className="h-10 w-10 rounded-xl bg-brand-end/10 flex items-center justify-center flex-shrink-0">
-            <span className="text-lg">👆</span>
+            <ScanFace className="size-5" />
           </div>
           <div className="text-left">
-            <p className="font-medium text-sm mb-0.5">한 번의 터치로</p>
+            <p className="font-medium text-sm mb-0.5">한 번의 생체인증</p>
             <p className="text-xs text-zinc-500">지문이나 얼굴로 즉시 로그인</p>
           </div>
         </div>
         <div className="flex items-center gap-4 p-4 rounded-2xl bg-zinc-900/50 border border-zinc-800/50">
           <div className="h-10 w-10 rounded-xl bg-brand-end/10 flex items-center justify-center flex-shrink-0">
-            <span className="text-lg">🔐</span>
+            <Lock className="size-5" />
           </div>
           <div className="text-left">
             <p className="font-medium text-sm mb-0.5">비밀번호 불필요</p>

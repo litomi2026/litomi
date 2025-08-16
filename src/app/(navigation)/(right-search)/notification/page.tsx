@@ -1,11 +1,23 @@
+import { Metadata } from 'next'
 import { Suspense } from 'react'
 
 import IconBell from '@/components/icons/IconBell'
 import IconLock from '@/components/icons/IconLock'
+import { defaultOpenGraph, SHORT_NAME } from '@/constants'
+import { CANONICAL_URL } from '@/constants/url'
 import { getUserIdFromCookie } from '@/utils/session'
 
 import NotificationList from './NotificationList'
 import NotificationSettingsLink from './NotificationSettingsLink'
+
+export const metadata: Metadata = {
+  title: `알림 - ${SHORT_NAME}`,
+  openGraph: {
+    ...defaultOpenGraph,
+    title: `알림 - ${SHORT_NAME}`,
+    url: `${CANONICAL_URL}/notification`,
+  },
+}
 
 export default async function Page() {
   const userId = await getUserIdFromCookie()

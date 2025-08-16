@@ -1,6 +1,6 @@
 import { and, desc, eq, sql } from 'drizzle-orm'
 
-import { handleRouteError } from '@/crawler/proxy-utils'
+import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { db } from '@/database/drizzle'
 import { NotificationType } from '@/database/enum'
 import { notificationTable } from '@/database/schema'
@@ -9,6 +9,7 @@ import { getUserIdFromCookie } from '@/utils/session'
 import { GETNotificationSchema, NotificationFilter } from './schema'
 
 const LIMIT = 20
+const maxAge = 10
 
 export type GETNotificationResponse = {
   notifications: {
@@ -70,10 +71,19 @@ export async function GET(request: Request) {
     const hasNextPage = results.length > LIMIT
     const notifications = results.slice(0, LIMIT)
 
-    return Response.json({
-      notifications,
-      hasNextPage,
-    } satisfies GETNotificationResponse)
+    const cacheControl = createCacheControl({
+      private: true,
+      maxAge,
+      staleWhileRevalidate: maxAge,
+    })
+
+    return Response.json(
+      {
+        notifications,
+        hasNextPage,
+      } satisfies GETNotificationResponse,
+      { headers: { 'Cache-Control': cacheControl } },
+    )
   } catch (error) {
     return handleRouteError(error, request)
   }

@@ -1,5 +1,17 @@
 /* eslint-disable react/no-unescaped-entities */
+import { Metadata } from 'next'
 
+import { defaultOpenGraph, SHORT_NAME } from '@/constants'
+import { CANONICAL_URL } from '@/constants/url'
+
+export const metadata: Metadata = {
+  title: `이용약관 - ${SHORT_NAME}`,
+  openGraph: {
+    ...defaultOpenGraph,
+    title: `이용약관 - ${SHORT_NAME}`,
+    url: `${CANONICAL_URL}/doc/terms`,
+  },
+}
 export default async function Page() {
   return (
     <div className="p-4 md:p-16 [&_h2]:text-xl [&_h2]:font-semibold [&_ul]:list-disc [&_ul]:list-inside">
