@@ -23,6 +23,7 @@ function CensorshipStats({ censorships }: Readonly<Props>) {
       [CensorshipKey.TAG_CATEGORY_MALE]: 0,
       [CensorshipKey.TAG_CATEGORY_MIXED]: 0,
       [CensorshipKey.TAG_CATEGORY_OTHER]: 0,
+      [CensorshipKey.LANGUAGE]: 0,
     }
 
     const levelCount: Record<CensorshipLevel, number> = {

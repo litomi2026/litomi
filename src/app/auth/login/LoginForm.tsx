@@ -5,9 +5,9 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
+import IconSpinner from '@/components/icons/IconSpinner'
 import IconX from '@/components/icons/IconX'
 import PasskeyLoginButton from '@/components/PasskeyLoginButton'
-import Loading from '@/components/ui/Loading'
 import { loginIdPattern, passwordPattern } from '@/constants/pattern'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
@@ -163,7 +163,7 @@ export default function LoginForm() {
           className="p-2 flex justify-center bg-zinc-900 rounded-xl hover:bg-zinc-800 transition active:bg-zinc-900 
           group-disabled:bg-zinc-800 group-disabled:cursor-not-allowed"
         >
-          {isPending ? <Loading className="text-zinc-500 w-12 p-2" /> : '로그인'}
+          {isPending ? <IconSpinner className="size-6 p-0.5" /> : '로그인'}
         </div>
       </button>
       <div className="relative">

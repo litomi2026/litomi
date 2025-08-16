@@ -60,7 +60,7 @@ export const credentialTable = pgTable(
       .references(() => userTable.id, { onDelete: 'cascade' })
       .notNull(),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-    lastUsedAt: timestamp('last_used_at', { withTimezone: true }).defaultNow().notNull(),
+    lastUsedAt: timestamp('last_used_at', { withTimezone: true }),
     counter: integer().notNull().default(0),
     publicKey: text('public_key').notNull(),
     deviceType: smallint('device_type').notNull(),

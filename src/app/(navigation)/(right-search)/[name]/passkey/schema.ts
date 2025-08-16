@@ -32,5 +32,5 @@ export const verifyRegistrationSchema = z.object({
 })
 
 export const deleteCredentialSchema = z.object({
-  'credential-id': z.coerce.number().int().positive(),
+  'credential-id': z.string(),
 })

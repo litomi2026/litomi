@@ -1,5 +1,6 @@
 'use client'
 
+import { OctagonMinus } from 'lucide-react'
 import Link from 'next/link'
 
 import { CensorshipLevel } from '@/database/enum'
@@ -32,9 +33,9 @@ export default function MangaCardCensorship({ manga, level }: Readonly<Props>) {
       <div className="absolute inset-0 animate-fade-in-fast bg-zinc-900 flex items-center justify-center p-4 text-zinc-400 text-center">
         <div>
           <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-zinc-800 flex items-center justify-center">
-            <span className="text-xl">🚫</span>
+            <OctagonMinus className="size-6 text-red-500" />
           </div>
-          <div className="font-semibold mb-1">검열된 콘텐츠</div>
+          <div className="font-semibold mb-1">검열된 작품</div>
           <Link className="hover:underline" href={`/@${myName}/censor`}>
             {censoringReasons.join(', ')}
           </Link>

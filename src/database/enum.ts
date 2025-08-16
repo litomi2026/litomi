@@ -8,6 +8,7 @@ export enum CensorshipKey {
   TAG_CATEGORY_MALE = 7,
   TAG_CATEGORY_MIXED = 8,
   TAG_CATEGORY_OTHER = 9,
+  LANGUAGE = 10,
 }
 
 export enum CensorshipLevel {

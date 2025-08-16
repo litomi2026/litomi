@@ -3,7 +3,6 @@ import { DEFAULT_SUGGESTIONS } from '@/constants/json'
 // value: 소문자여야 함
 export const SEARCH_SUGGESTIONS = [
   { value: 'language:korean', label: '한국어' },
-  { value: 'language:', label: '언어' },
   ...DEFAULT_SUGGESTIONS,
   { value: 'type:', label: '종류' },
   { value: 'id:', label: '망가 ID' },
