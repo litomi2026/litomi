@@ -1,4 +1,5 @@
 import { desc, sql } from 'drizzle-orm'
+import { Metadata } from 'next'
 import { cookies } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
@@ -6,6 +7,8 @@ import { Suspense } from 'react'
 import BookmarkDownloadButton from '@/app/(navigation)/(right-search)/[name]/bookmark/BookmarkDownloadButton'
 import BookmarkUploadButton from '@/app/(navigation)/(right-search)/[name]/bookmark/BookmarkUploadButton'
 import { Bookmark } from '@/app/api/bookmark/route'
+import { defaultOpenGraph, SHORT_NAME } from '@/constants'
+import { CANONICAL_URL } from '@/constants/url'
 import { db } from '@/database/drizzle'
 import { bookmarkTable } from '@/database/schema'
 import { PageProps } from '@/types/nextjs'
@@ -20,6 +23,15 @@ import { GuestView } from './GuestView'
 import Loading from './loading'
 import { PrivateBookmarksView } from './PrivateBookmarksView'
 import RefreshButton from './RefreshButton'
+
+export const metadata: Metadata = {
+  title: `북마크 - ${SHORT_NAME}`,
+  openGraph: {
+    ...defaultOpenGraph,
+    title: `북마크 - ${SHORT_NAME}`,
+    url: `${CANONICAL_URL}/@/bookmark`,
+  },
+}
 
 type Params = {
   name: string

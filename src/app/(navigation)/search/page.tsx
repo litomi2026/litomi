@@ -1,6 +1,9 @@
 import { Suspense } from '@suspensive/react'
+import { Metadata } from 'next'
 import { cookies } from 'next/headers'
 
+import { defaultOpenGraph, SHORT_NAME } from '@/constants'
+import { CANONICAL_URL } from '@/constants/url'
 import { PageProps } from '@/types/nextjs'
 import { getCookieJSON } from '@/utils/cookie'
 import { ViewCookie } from '@/utils/param'
@@ -10,6 +13,15 @@ import ActiveFilters from './ActiveFilters'
 import Error400 from './Error400'
 import Loading from './loading'
 import SearchResults from './SearchResults'
+
+export const metadata: Metadata = {
+  title: `검색 - ${SHORT_NAME}`,
+  openGraph: {
+    ...defaultOpenGraph,
+    title: `검색 - ${SHORT_NAME}`,
+    url: `${CANONICAL_URL}/search`,
+  },
+}
 
 export default async function Page({ searchParams }: PageProps) {
   const [cookieStore, searchParamsJSON] = await Promise.all([cookies(), searchParams])

@@ -34,11 +34,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { title, description, images, origin } = manga
 
   return {
-    alternates: {
-      canonical: `${CANONICAL_URL}/manga/${id}`,
-      languages: { ko: `${CANONICAL_URL}/manga/${id}` },
-    },
     title: `${title} - ${SHORT_NAME}`,
+    ...(description && { description }),
     openGraph: {
       ...defaultOpenGraph,
       title: `${title} - ${SHORT_NAME}`,

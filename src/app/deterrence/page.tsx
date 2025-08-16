@@ -1,7 +1,18 @@
+import { Metadata } from 'next'
 import Link from 'next/link'
 
 import IconLogo from '@/components/icons/IconLogo'
-import { SHORT_NAME } from '@/constants'
+import { defaultOpenGraph, SHORT_NAME } from '@/constants'
+import { CANONICAL_URL } from '@/constants/url'
+
+export const metadata: Metadata = {
+  title: `19세 이상 연령 확인 - ${SHORT_NAME}`,
+  openGraph: {
+    ...defaultOpenGraph,
+    title: `19세 이상 연령 확인 - ${SHORT_NAME}`,
+    url: `${CANONICAL_URL}/deterrence`,
+  },
+}
 
 export default async function Page() {
   return (
