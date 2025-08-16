@@ -86,9 +86,9 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
             </div>
           )}
           {tags && tags.length > 0 && <TagList className="flex flex-wrap gap-1 font-semibold" tags={tags} />}
-          <MangaCardStats manga={manga} />
         </dl>
         <div className="grid gap-2">
+          <MangaCardStats manga={manga} />
           <div className="flex text-xs justify-between items-center gap-1">
             <a
               className="text-zinc-400 focus:underline flex items-center gap-1 hover:underline"

@@ -1,8 +1,10 @@
 'use client'
 
+import { CN, DE, ES, FR, HU, IT, JP, KR, NL, PT, RU, TH, US, VN } from 'country-flag-icons/react/3x2'
+import { Globe, Meh, Pencil } from 'lucide-react'
 import Link, { useLinkStatus } from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { useMemo } from 'react'
+import { ReactNode, useMemo } from 'react'
 
 import IconSpinner from '../icons/IconSpinner'
 
@@ -12,23 +14,23 @@ type Props = {
 }
 
 // Language to emoji flag mapping
-const LANGUAGE_FLAGS: Record<string, string> = {
-  korean: '🇰🇷',
-  japanese: '🇯🇵',
-  english: '🇬🇧',
-  chinese: '🇨🇳',
-  spanish: '🇪🇸',
-  hungarian: '🇭🇺',
-  french: '🇫🇷',
-  german: '🇩🇪',
-  dutch: '🇳🇱',
-  italian: '🇮🇹',
-  portuguese: '🇵🇹',
-  russian: '🇷🇺',
-  thai: '🇹🇭',
-  vietnamese: '🇻🇳',
-  speechless: '😶',
-  rewrite: '✏️',
+const LANGUAGE_FLAGS: Record<string, ReactNode> = {
+  korean: <KR title="Korea" />,
+  japanese: <JP title="Japan" />,
+  english: <US title="United States" />,
+  chinese: <CN title="China" />,
+  spanish: <ES title="Spain" />,
+  hungarian: <HU title="Hungary" />,
+  french: <FR title="France" />,
+  german: <DE title="Germany" />,
+  dutch: <NL title="Netherlands" />,
+  italian: <IT title="Italy" />,
+  portuguese: <PT title="Portugal" />,
+  russian: <RU title="Russia" />,
+  thai: <TH title="Thailand" />,
+  vietnamese: <VN title="Vietnam" />,
+  speechless: <Meh />,
+  rewrite: <Pencil />,
 }
 
 // Language to ISO 639-1 code mapping
@@ -101,7 +103,7 @@ export default function LanguageBadge({ language, className = '' }: Readonly<Pro
 
 function LanguageBadgeContent({ language }: { language: string }) {
   const { pending } = useLinkStatus()
-  const flag = LANGUAGE_FLAGS[language.toLowerCase()] || '🌐'
+  const flag = LANGUAGE_FLAGS[language.toLowerCase()] || <Globe className="text-brand-start" />
   const code = LANGUAGE_CODES[language.toLowerCase()] || language.toUpperCase().slice(0, 2)
 
   return (
@@ -110,9 +112,9 @@ function LanguageBadgeContent({ language }: { language: string }) {
         aria-hidden={!pending}
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition aria-hidden:opacity-0 text-foreground p-0.5 w-5 h-5"
       />
-      <span aria-hidden={pending} className="flex items-center gap-0.5 aria-hidden:opacity-0 transition">
-        <span className="text-base leading-none">{flag}</span>
-        <span className="text-xs uppercase group-hover:underline group-focus:underline">{code}</span>
+      <span aria-hidden={pending} className="flex items-center gap-1 aria-hidden:opacity-0 transition">
+        <span className="text-base leading-none [&>svg]:size-[1em]">{flag}</span>
+        <span className="text-xs font-mono uppercase group-hover:underline group-focus:underline">{code}</span>
       </span>
     </>
   )
