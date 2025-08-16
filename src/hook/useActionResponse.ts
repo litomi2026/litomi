@@ -19,8 +19,8 @@ export function getFieldError<T extends ActionResponse>(response: T | undefined,
     return
   }
 
-  if (!response.ok && typeof response.error === 'object' && response.error !== null) {
-    return (response.error as Record<string, string>)[field]
+  if (!response.ok && typeof response.error === 'object' && response.error !== null && !Array.isArray(response.error)) {
+    return response.error[field]
   }
 }
 
@@ -58,12 +58,18 @@ export default function useActionResponse<T extends ActionResponse, TActionArgs 
           amplitude.reset()
         }
 
+        const error = response.error as T extends ErrorResponse<infer E> ? E : never
+
         if (onError) {
           // TODO: 첫번째 파라미터를 두번째 파라미터로 바꾸기
-          onError(response.error as T extends ErrorResponse<infer E> ? E : never, response)
-        } else {
-          if (typeof response.error === 'string') {
-            toast.error(response.error)
+          onError(error, response)
+        } else if (typeof error === 'string') {
+          toast.error(error)
+        } else if (Array.isArray(error)) {
+          const firstError = error.find((err) => err !== undefined)
+
+          if (firstError && typeof firstError === 'string') {
+            toast.error(firstError)
           }
         }
       } else {

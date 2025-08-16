@@ -1,4 +1,31 @@
-import { ImportMode } from '@/app/api/bookmark/import/route'
+import { ImportMode } from './action'
+
+const colors = {
+  blue: {
+    badge: 'from-blue-600 to-blue-500',
+    badgeShadow: 'shadow-blue-600/20',
+    bg: 'aria-current:bg-blue-600/10',
+    border: 'aria-current:border-blue-600/40',
+    gradient: 'from-blue-600/5 to-blue-500/5',
+    ring: 'focus-within:ring-blue-500/40',
+    shadow: 'aria-current:shadow-blue-600/10',
+    warningBg: '',
+    warningBorder: '',
+    warningText: '',
+  },
+  orange: {
+    badge: '',
+    badgeShadow: '',
+    bg: 'aria-current:bg-orange-600/10',
+    border: 'aria-current:border-orange-600/40',
+    gradient: 'from-orange-600/5 to-orange-500/5',
+    ring: 'focus-within:ring-orange-500/40',
+    shadow: 'aria-current:shadow-orange-600/10',
+    warningBg: 'bg-orange-600/10',
+    warningBorder: 'border-orange-600/30',
+    warningText: 'text-orange-300',
+  },
+}
 
 type Props = {
   colorScheme: 'blue' | 'orange'
@@ -22,34 +49,6 @@ export function ImportModeOption({
   title,
 }: Readonly<Props>) {
   const isSelected = currentMode === mode
-
-  const colors = {
-    blue: {
-      badge: 'from-blue-600 to-blue-500',
-      badgeShadow: 'shadow-blue-600/20',
-      bg: 'aria-current:bg-blue-600/10',
-      border: 'aria-current:border-blue-600/40',
-      gradient: 'from-blue-600/5 to-blue-500/5',
-      ring: 'focus-within:ring-blue-500/40',
-      shadow: 'aria-current:shadow-blue-600/10',
-      warningBg: '',
-      warningBorder: '',
-      warningText: '',
-    },
-    orange: {
-      badge: '',
-      badgeShadow: '',
-      bg: 'aria-current:bg-orange-600/10',
-      border: 'aria-current:border-orange-600/40',
-      gradient: 'from-orange-600/5 to-orange-500/5',
-      ring: 'focus-within:ring-orange-500/40',
-      shadow: 'aria-current:shadow-orange-600/10',
-      warningBg: 'bg-orange-600/10',
-      warningBorder: 'border-orange-600/30',
-      warningText: 'text-orange-300',
-    },
-  }
-
   const colorClasses = colors[colorScheme]
 
   return (
