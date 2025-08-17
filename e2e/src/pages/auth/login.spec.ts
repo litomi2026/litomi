@@ -226,8 +226,7 @@ test.describe('/auth/login', () => {
       await expect(page.locator('input[name="password"]')).toBeDisabled({ timeout: 1000 })
       await expect(page.locator('input[name="remember"]')).toBeDisabled({ timeout: 1000 })
       await expect(page.locator('button[type="submit"]')).toBeDisabled({ timeout: 1000 })
-
-      await expect(page.locator('button[type="submit"] .text-zinc-500')).toBeVisible({ timeout: 1000 })
+      await expect(page.locator('button[type="submit"] svg.animate-spin')).toBeVisible({ timeout: 1000 })
 
       await submitPromise
       await page.unroute('**/auth/login')

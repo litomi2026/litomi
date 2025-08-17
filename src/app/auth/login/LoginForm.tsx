@@ -13,7 +13,6 @@ import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
 import useActionResponse, { getFieldError, getFormField } from '@/hook/useActionResponse'
 import amplitude from '@/lib/amplitude/lazy'
-import { resetMeQuery } from '@/query/useMeQuery'
 import { sanitizeRedirect } from '@/utils'
 
 import login from './action'
@@ -52,7 +51,6 @@ export default function LoginForm() {
         amplitude.track('login', { loginId, lastLoginAt, lastLogoutAt })
       }
 
-      resetMeQuery()
       await queryClient.invalidateQueries({ queryKey: QueryKeys.me, type: 'all' })
       const params = new URLSearchParams(window.location.search)
       const redirect = params.get(SearchParamKey.REDIRECT)

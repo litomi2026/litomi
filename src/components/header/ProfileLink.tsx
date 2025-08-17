@@ -15,7 +15,7 @@ export default function ProfileLink({ className }: Readonly<Props>) {
 
   return (
     <SelectableLink className={className} href={`/@${name}`} Icon={IconProfile}>
-      프로필
+      내 리토미
     </SelectableLink>
   )
 }

@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
 
-import { APPLICATION_NAME, DESCRIPTION, SHORT_NAME } from '@/constants'
+import { APPLICATION_NAME, DESCRIPTION, SHORT_NAME, THEME_COLOR } from '@/constants'
 import { CANONICAL_URL } from '@/constants/url'
 
 export default function manifest(): MetadataRoute.Manifest {
@@ -10,8 +10,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: DESCRIPTION,
     start_url: '/',
     display: 'standalone',
-    background_color: '#0a0a0a',
-    theme_color: '#0a0a0a',
+    background_color: THEME_COLOR,
+    theme_color: THEME_COLOR,
     icons: [
       {
         src: '/web-app-manifest-144x144.png',

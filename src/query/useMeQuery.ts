@@ -1,48 +1,42 @@
 import { useQuery } from '@tanstack/react-query'
+import ms from 'ms'
 import { useEffect } from 'react'
 
 import { GETMeResponse } from '@/app/api/me/route'
 import { QueryKeys } from '@/constants/query'
 import amplitude from '@/lib/amplitude/lazy'
-import { handleResponseError } from '@/utils/react-query-error'
+import { handleResponseError, ResponseError } from '@/utils/react-query-error'
 
 export async function fetchMe() {
-  const response = await fetch('/api/me')
-  return handleResponseError<GETMeResponse>(response)
-}
-
-let hasMeQueryFetched = false
-
-export function resetMeQuery() {
-  hasMeQueryFetched = false
+  try {
+    const response = await fetch('/api/me')
+    return await handleResponseError<GETMeResponse>(response)
+  } catch (error) {
+    if (error instanceof ResponseError && error.status === 401) {
+      return null
+    }
+    throw error
+  }
 }
 
 export default function useMeQuery() {
   const result = useQuery({
     queryKey: QueryKeys.me,
     queryFn: fetchMe,
-    enabled: !hasMeQueryFetched,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchOnMount: false,
-    staleTime: Infinity,
+    staleTime: ms('1 hour'),
+    gcTime: ms('1 hour'),
   })
 
   const userId = result.data?.id
-  const isFetched = result.isFetched
 
   useEffect(() => {
     if (userId) {
       amplitude.setUserId(userId)
-      hasMeQueryFetched = true
     }
   }, [userId])
-
-  useEffect(() => {
-    if (isFetched) {
-      hasMeQueryFetched = true
-    }
-  }, [isFetched])
 
   return result
 }

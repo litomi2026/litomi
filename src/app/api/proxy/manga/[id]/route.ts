@@ -1,5 +1,4 @@
 import ms from 'ms'
-import { unstable_cache } from 'next/cache'
 
 import { getMangaFromMultipleSources } from '@/common/manga'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
@@ -8,7 +7,7 @@ import { RouteProps } from '@/types/nextjs'
 import { GETProxyMangaIdSchema } from './schema'
 
 export const runtime = 'edge'
-const revalidate = ms('12 hours') / 1000
+const maxAge = ms('1 day') / 1000
 
 type Params = {
   id: string
@@ -24,7 +23,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
   const { id } = validation.data
 
   try {
-    const manga = await getCachedManga(id)
+    const manga = await getMangaFromMultipleSources(id, 0)
 
     if (!manga) {
       return new Response('Not Found', { status: 404 })
@@ -32,9 +31,9 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
 
     const cacheControl = createCacheControl({
       public: true,
-      maxAge: revalidate,
-      sMaxAge: revalidate,
-      staleWhileRevalidate: revalidate,
+      maxAge,
+      sMaxAge: maxAge,
+      staleWhileRevalidate: 300,
     })
 
     return Response.json(manga, { headers: { 'Cache-Control': cacheControl } })
@@ -42,10 +41,3 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
     return handleRouteError(error, request)
   }
 }
-
-// TODO: 추후 'use cache' 로 변경하면서 getCachedManga 함수 제거하기
-const getCachedManga = unstable_cache(
-  async (id: number) => getMangaFromMultipleSources(id, revalidate),
-  ['getCachedManga'],
-  { revalidate },
-)
