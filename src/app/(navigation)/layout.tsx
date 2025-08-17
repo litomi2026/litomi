@@ -4,10 +4,12 @@ import { Suspense } from 'react'
 import type { LayoutProps } from '@/types/nextjs'
 
 import BookmarkLink from '@/components/header/BookmarkLink'
-import NotificationLink from '@/components/header/NotificationLink'
+import NotificationCount from '@/components/header/NotificationCount'
 import ProfileLink from '@/components/header/ProfileLink'
 import PublishButton from '@/components/header/PublishButton'
+import IconBell from '@/components/icons/IconBell'
 import IconHome from '@/components/icons/IconHome'
+import IconLibraryBig from '@/components/icons/IconLibraryBig'
 import IconLogo from '@/components/icons/IconLogo'
 import IconPost from '@/components/icons/IconPost'
 import IconSearch from '@/components/icons/IconSearch'
@@ -36,8 +38,16 @@ export default async function Layout({ children }: LayoutProps) {
           <SelectableLink href="/posts/recommand" hrefMatch="/post" Icon={IconPost}>
             글
           </SelectableLink>
-          <NotificationLink />
+          <div className="relative">
+            <SelectableLink href="/notification" Icon={IconBell}>
+              알림
+            </SelectableLink>
+            <NotificationCount />
+          </div>
           <BookmarkLink className="hidden sm:block" />
+          <SelectableLink className="hidden sm:block" href="/library" Icon={IconLibraryBig}>
+            서재
+          </SelectableLink>
           <ProfileLink className="hidden sm:block" />
           <PublishButton className="hidden mx-auto my-4 sm:block xl:mx-0" />
         </nav>
