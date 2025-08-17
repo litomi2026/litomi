@@ -1,6 +1,7 @@
 import { CANONICAL_URL } from './url'
 
 export const GA_ID = process.env.GA_ID
+export const GOOGLE_ADSENSE_ACCOUNT = process.env.GOOGLE_ADSENSE_ACCOUNT ?? ''
 export const GTM_ID = process.env.GTM_ID
 export const AMPLITUDE_API_KEY = process.env.AMPLITUDE_API_KEY
 export const NEXT_PUBLIC_VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? ''

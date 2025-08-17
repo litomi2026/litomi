@@ -1,7 +1,7 @@
-import { ImportMode } from '@/app/api/bookmark/import/route'
 import IconBookmark from '@/components/icons/IconBookmark'
 
 import { BookmarkExportData } from '../constants'
+import { ImportMode } from './action'
 import { ImportModeOption } from './ImportModeOption'
 
 type Props = {

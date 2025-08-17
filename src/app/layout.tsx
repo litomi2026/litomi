@@ -10,7 +10,14 @@ import { Toaster } from 'sonner'
 
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar'
 import { defaultOpenGraph, DESCRIPTION, SHORT_NAME } from '@/constants'
-import { AMPLITUDE_API_KEY, GA_ID, GTM_ID, VERCEL_ANALYTICS, VERCEL_SPEED_INSIGHTS } from '@/constants/env'
+import {
+  AMPLITUDE_API_KEY,
+  GA_ID,
+  GOOGLE_ADSENSE_ACCOUNT,
+  GTM_ID,
+  VERCEL_ANALYTICS,
+  VERCEL_SPEED_INSIGHTS,
+} from '@/constants/env'
 import { CANONICAL_URL } from '@/constants/url'
 
 import QueryProvider from '../components/QueryProvider'
@@ -76,6 +83,7 @@ export default function RootLayout({ children }: Readonly<Props>) {
     <html className="h-full" lang="ko">
       <head>
         <meta content={SHORT_NAME} name="apple-mobile-web-app-title" />
+        {GOOGLE_ADSENSE_ACCOUNT && <meta content={GOOGLE_ADSENSE_ACCOUNT} name="google-adsense-account" />}
       </head>
       <body className={`${PretendardVariable.className} antialiased h-full`}>
         <QueryProvider>{children}</QueryProvider>

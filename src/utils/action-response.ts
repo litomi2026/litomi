@@ -1,4 +1,4 @@
-export type ActionResponse<TData = unknown, TError = string | Record<string, string>> =
+export type ActionResponse<TData = unknown, TError = string | Record<string, string> | unknown[]> =
   | ErrorResponse<TError>
   | SuccessResponse<TData>
 

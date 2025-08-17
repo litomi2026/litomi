@@ -14,7 +14,11 @@ import LoginIconLink from './LoginIconLink'
 import LogoutButton from './LogoutButton'
 
 export default function Profile() {
-  const { data: user } = useMeQuery()
+  const { data: user, isLoading } = useMeQuery()
+
+  if (isLoading) {
+    return <ProfileSkeleton />
+  }
 
   if (!user) {
     return <LoginIconLink />

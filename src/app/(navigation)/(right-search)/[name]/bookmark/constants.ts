@@ -1,4 +1,3 @@
-import { MangaSource } from '@/database/enum'
 import { Manga } from '@/types/manga'
 
 export const BOOKMARKS_PER_PAGE = 20
@@ -120,13 +119,12 @@ export const EXAMPLE_MANGAS: Manga[] = [
 ]
 
 export type BookmarkExportData = {
-  exportedAt: string
+  exportedAt: Date
   totalCount: number
   bookmarks: ExportedBookmark[]
 }
 
 export type ExportedBookmark = {
   mangaId: number
-  source: MangaSource
-  createdAt: string
+  createdAt: Date
 }
