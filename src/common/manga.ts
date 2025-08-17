@@ -14,7 +14,7 @@ type MangaResult = Error | Manga | null | undefined
 
 // TODO: 추후 'use cache' 로 변경하고 revalidate 파라미터 제거하기
 export async function getMangaFromMultipleSources(id: number, revalidate: number): Promise<Manga | null> {
-  // cacheLife('hours')
+  // cacheLife('days')
   const hiyobiClient = HiyobiClient.getInstance()
   const hitomiClient = HitomiClient.getInstance()
   const kHentaiClient = KHentaiClient.getInstance()
@@ -22,14 +22,14 @@ export async function getMangaFromMultipleSources(id: number, revalidate: number
   const komiClient = KomiClient.getInstance()
 
   const [hiyobiManga, hiyobiImages, kHentaiManga, [harpiManga], komiManga, hitomiManga] = await Promise.all([
-    hiyobiClient.fetchManga(id, revalidate).catch((error) => new Error(error)),
+    hiyobiClient.fetchManga(id).catch((error) => new Error(error)),
     hiyobiClient.fetchMangaImages(id, revalidate).catch(() => null),
     kHentaiClient.fetchManga(id, revalidate).catch((error) => new Error(error)),
     harpiClient
-      .searchMangas({ ids: [id] }, revalidate)
+      .searchMangas({ ids: [id] })
       .then((mangas) => mangas ?? [])
       .catch((error) => [new Error(error)]),
-    komiClient.fetchManga(id, revalidate).catch((error) => new Error(error)),
+    komiClient.fetchManga(id).catch((error) => new Error(error)),
     hitomiClient.fetchManga(id, revalidate).catch((error) => new Error(error)),
   ])
 
@@ -64,9 +64,9 @@ export async function getMangaFromMultipleSources(id: number, revalidate: number
 /**
  * @param ids - 10개 이하의 고유한 만화 ID 배열
  */
-export async function getMangasFromMultipleSources(ids: number[]): Promise<Record<number, Manga>> {
+export async function getMangasFromMultipleSources(ids: number[], revalidate: number): Promise<Record<number, Manga>> {
   const harpiClient = HarpiClient.getInstance()
-  const harpiMangas = await harpiClient.searchMangas({ ids }).catch((error) => new Error(error))
+  const harpiMangas = await harpiClient.searchMangas({ ids }, revalidate).catch((error) => new Error(error))
   const mangaMap: Record<number, Manga> = {}
   const remainingIds = []
 
@@ -95,14 +95,14 @@ export async function getMangasFromMultipleSources(ids: number[]): Promise<Recor
 
   const [hiyobiMangas, hiyobiImages, kHentaiMangas, komiMangas, hitomiMangas] = await Promise.all([
     Promise.all(remainingIds.map((id) => hiyobiClient.fetchManga(id).catch((error) => new Error(error)))),
-    Promise.all(remainingIds.map((id) => hiyobiClient.fetchMangaImages(id).catch(() => null))),
-    Promise.all(remainingIds.map((id) => kHentaiClient.fetchManga(id).catch((error) => new Error(error)))),
+    Promise.all(remainingIds.map((id) => hiyobiClient.fetchMangaImages(id, revalidate).catch(() => null))),
+    Promise.all(remainingIds.map((id) => kHentaiClient.fetchManga(id, revalidate).catch((error) => new Error(error)))),
     Promise.all(remainingIds.map((id) => komiClient.fetchManga(id).catch((error) => new Error(error)))),
-    Promise.all(remainingIds.map((id) => hitomiClient.fetchManga(id).catch((error) => new Error(error)))),
+    Promise.all(remainingIds.map((id) => hitomiClient.fetchManga(id, revalidate).catch((error) => new Error(error)))),
   ])
 
   for (let i = 0; i < remainingIds.length; i++) {
-    const sources: MangaResult[] = [hiyobiMangas[i], kHentaiMangas[i], komiMangas[i], hitomiMangas[i]]
+    const sources: MangaResult[] = [komiMangas[i], hiyobiMangas[i], kHentaiMangas[i], hitomiMangas[i]]
     const definedSources = sources.filter(checkDefined)
 
     if (definedSources.length === 0) {

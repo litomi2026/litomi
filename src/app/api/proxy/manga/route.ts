@@ -7,7 +7,7 @@ import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { GETProxyIdSchema, ProxyIdOnly } from './schema'
 
 export const runtime = 'edge'
-const revalidate = ms('12 hours') / 1000
+const maxAge = ms('1 day') / 1000
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -25,7 +25,7 @@ export async function GET(request: Request) {
   const uniqueIds = Array.from(new Set(ids))
 
   try {
-    const mangas = await getMangasFromMultipleSources(uniqueIds)
+    const mangas = await getMangasFromMultipleSources(uniqueIds, 0)
 
     if (Object.keys(mangas).length === 0) {
       return new Response('Not Found', { status: 404 })
@@ -39,9 +39,9 @@ export async function GET(request: Request) {
 
     const cacheControl = createCacheControl({
       public: true,
-      maxAge: revalidate,
-      sMaxAge: revalidate,
-      staleWhileRevalidate: revalidate,
+      maxAge,
+      sMaxAge: maxAge,
+      staleWhileRevalidate: 300,
     })
 
     return Response.json(mangas, { headers: { 'Cache-Control': cacheControl } })
