@@ -9,7 +9,7 @@ import { ReactNode } from 'react'
 import { Toaster } from 'sonner'
 
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar'
-import { defaultOpenGraph, DESCRIPTION, SHORT_NAME } from '@/constants'
+import { defaultOpenGraph, DESCRIPTION, SHORT_NAME, THEME_COLOR } from '@/constants'
 import {
   AMPLITUDE_API_KEY,
   GA_ID,
@@ -71,7 +71,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
-  themeColor: '#0a0a0a',
+  themeColor: THEME_COLOR,
 }
 
 type Props = {

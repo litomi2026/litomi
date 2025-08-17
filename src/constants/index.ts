@@ -18,3 +18,4 @@ export const defaultOpenGraph = {
 export const SALT_ROUNDS = 12
 export const ONE_HOUR = 3600
 export const THIRTY_DAYS = 2592000
+export const THEME_COLOR = '#0a0a0a'
