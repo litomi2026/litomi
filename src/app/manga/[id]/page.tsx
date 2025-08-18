@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export async function generateStaticParams() {
   const kHentaiIds = await KHentaiClient.getInstance()
     .searchKoreanMangas()
-    .then((mangas) => mangas.map((manga) => manga.id))
+    .then((mangas) => mangas.map((manga) => String(manga.id)))
     .catch(() => [])
 
   return kHentaiIds.map((id) => ({ id }))
