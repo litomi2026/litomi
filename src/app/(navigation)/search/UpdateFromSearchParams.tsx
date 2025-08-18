@@ -1,28 +1,26 @@
 'use client'
 
-import { useSearchParams } from 'next/navigation'
+import { ReadonlyURLSearchParams, useSearchParams } from 'next/navigation'
 import { Suspense, useEffect } from 'react'
 
 type Props = {
-  queryKey: string
-  onUpdate: (value: string) => void
+  onUpdate: (searchParams: ReadonlyURLSearchParams) => void
 }
 
-export default function UpdateFromSearchParams({ queryKey, onUpdate }: Readonly<Props>) {
+export default function UpdateFromSearchParams({ onUpdate }: Readonly<Props>) {
   return (
     <Suspense>
-      <UpdateValueFromSearchParams onUpdate={onUpdate} queryKey={queryKey} />
+      <UpdateValueFromSearchParams onUpdate={onUpdate} />
     </Suspense>
   )
 }
 
-function UpdateValueFromSearchParams({ queryKey, onUpdate }: Readonly<Props>) {
+function UpdateValueFromSearchParams({ onUpdate }: Readonly<Props>) {
   const searchParams = useSearchParams()
-  const value = searchParams.get(queryKey) ?? ''
 
   useEffect(() => {
-    onUpdate(value)
-  }, [value, onUpdate])
+    onUpdate(searchParams)
+  }, [onUpdate, searchParams])
 
   return null
 }

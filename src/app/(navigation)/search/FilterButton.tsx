@@ -1,13 +1,15 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { Suspense, useCallback, useEffect, useRef, useState } from 'react'
+import { ReadonlyURLSearchParams } from 'next/navigation'
+import { useCallback, useRef, useState } from 'react'
 
 import useMounted from '@/hook/useMounted'
 
 import type { FilterState } from './constants'
 
 import { FILTER_KEYS, isDateFilter } from './constants'
+import UpdateFromSearchParams from './UpdateFromSearchParams'
 
 // NOTE: 필터 패널은 사용자가 필터를 클릭할 때만 표시되므로 초기 bundle 크기를 줄이기 위해 dynamic import 사용
 const FilterPanel = dynamic(() => import('./FilterPanel'))
@@ -24,11 +26,11 @@ export default function FilterButton() {
     setShowFilters(false)
   }, [])
 
-  useEffect(() => {
+  const handleSearchParamUpdate = useCallback((searchParams: ReadonlyURLSearchParams) => {
     const initialState: FilterState = {}
 
     FILTER_KEYS.forEach((key) => {
-      const value = new URLSearchParams(window.location.search).get(key)
+      const value = searchParams.get(key)
       if (!value) return
 
       if (isDateFilter(key)) {
@@ -43,6 +45,7 @@ export default function FilterButton() {
 
   return (
     <div className="relative">
+      <UpdateFromSearchParams onUpdate={handleSearchParamUpdate} />
       <button
         aria-pressed={hasActiveFilters}
         className="relative px-3 py-2 h-full text-sm font-medium rounded-xl border-2 transition-all
@@ -61,15 +64,13 @@ export default function FilterButton() {
         )}
       </button>
       {mounted && (
-        <Suspense>
-          <FilterPanel
-            buttonRef={buttonRef}
-            filters={filters}
-            onClose={handleClose}
-            setFilters={setFilters}
-            show={showFilters}
-          />
-        </Suspense>
+        <FilterPanel
+          buttonRef={buttonRef}
+          filters={filters}
+          onClose={handleClose}
+          setFilters={setFilters}
+          show={showFilters}
+        />
       )}
     </div>
   )

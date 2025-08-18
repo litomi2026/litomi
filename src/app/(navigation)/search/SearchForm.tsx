@@ -2,7 +2,7 @@
 
 import { X } from 'lucide-react'
 import dynamic from 'next/dynamic'
-import { usePathname, useRouter } from 'next/navigation'
+import { ReadonlyURLSearchParams, usePathname, useRouter } from 'next/navigation'
 import { FormEvent, memo, Suspense, useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react'
 
 import IconSpinner from '@/components/icons/IconSpinner'
@@ -145,9 +145,10 @@ function SearchForm({ className = '' }: Readonly<Props>) {
     })
   }
 
-  const handleSearchParamUpdate = useCallback((value: string) => {
-    setKeyword(value)
-    setCursorPosition(value.length)
+  const handleSearchParamUpdate = useCallback((searchParams: ReadonlyURLSearchParams) => {
+    const query = searchParams.get('query') ?? ''
+    setKeyword(query)
+    setCursorPosition(query.length)
   }, [])
 
   // NOTE: "/" 키보드 단축키로 검색 입력창에 포커스
@@ -190,7 +191,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
 
   return (
     <div className={`relative ${className}`}>
-      <UpdateFromSearchParams onUpdate={handleSearchParamUpdate} queryKey="query" />
+      <UpdateFromSearchParams onUpdate={handleSearchParamUpdate} />
       <form
         className="flex bg-zinc-900 border-2 border-zinc-700 rounded-xl text-zinc-400
           overflow-hidden transition duration-200

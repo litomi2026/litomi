@@ -1,7 +1,7 @@
 'use client'
 
 import { Bell, BellRing } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { ReadonlyURLSearchParams, useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -40,8 +40,8 @@ export default function KeywordSubscriptionButton() {
     shouldSetResponse: false,
   })
 
-  const updateQuery = useCallback((value: string) => {
-    setQuery(parseSearchQuery(value))
+  const updateQuery = useCallback((searchParams: ReadonlyURLSearchParams) => {
+    setQuery(parseSearchQuery(searchParams.get('query') ?? ''))
   }, [])
 
   function handleToggleSubscription() {
@@ -54,7 +54,7 @@ export default function KeywordSubscriptionButton() {
       return
     }
 
-    if (query.plainKeywords.length === 0) {
+    if (!query.suggestedName) {
       toast.warning('검색어를 입력해주세요')
       return
     }
@@ -91,7 +91,7 @@ export default function KeywordSubscriptionButton() {
       onClick={handleToggleSubscription}
       title={isSubscribed ? '키워드 알림 설정 보기' : '이 검색 조건으로 알림 받기'}
     >
-      <UpdateFromSearchParams onUpdate={updateQuery} queryKey="query" />
+      <UpdateFromSearchParams onUpdate={updateQuery} />
       {isPending ? (
         <IconSpinner className="size-4 animate-spin" />
       ) : isSubscribed ? (
