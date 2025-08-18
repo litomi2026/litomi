@@ -24,6 +24,10 @@ export const metadata: Metadata = {
     title: `패스키 - ${SHORT_NAME}`,
     url: `${CANONICAL_URL}/@/passkey`,
   },
+  alternates: {
+    canonical: '/@/passkey',
+    languages: { ko: '/@/passkey' },
+  },
 }
 
 type Params = {

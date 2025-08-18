@@ -2,14 +2,18 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 
 import IconLogo from '@/components/icons/IconLogo'
-import { CANONICAL_URL, defaultOpenGraph, SHORT_NAME } from '@/constants'
+import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 
 export const metadata: Metadata = {
   title: `19세 이상 연령 확인 - ${SHORT_NAME}`,
   openGraph: {
     ...defaultOpenGraph,
     title: `19세 이상 연령 확인 - ${SHORT_NAME}`,
-    url: `${CANONICAL_URL}/deterrence`,
+    url: '/deterrence',
+  },
+  alternates: {
+    canonical: '/deterrence',
+    languages: { ko: '/deterrence' },
   },
 }
 

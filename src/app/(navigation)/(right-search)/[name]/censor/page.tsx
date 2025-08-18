@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import { cookies } from 'next/headers'
 
-import { CANONICAL_URL, defaultOpenGraph, SHORT_NAME } from '@/constants'
+import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
 
 import Censorships from './Censorships'
@@ -12,7 +12,11 @@ export const metadata: Metadata = {
   openGraph: {
     ...defaultOpenGraph,
     title: `검열 - ${SHORT_NAME}`,
-    url: `${CANONICAL_URL}/@/censor`,
+    url: '/@/censor',
+  },
+  alternates: {
+    canonical: '/@/censor',
+    languages: { ko: '/@/censor' },
   },
 }
 

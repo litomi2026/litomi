@@ -7,7 +7,7 @@ import { Suspense } from 'react'
 import BookmarkDownloadButton from '@/app/(navigation)/(right-search)/[name]/bookmark/BookmarkDownloadButton'
 import BookmarkUploadButton from '@/app/(navigation)/(right-search)/[name]/bookmark/BookmarkUploadButton'
 import { Bookmark } from '@/app/api/bookmark/route'
-import { CANONICAL_URL, defaultOpenGraph, SHORT_NAME } from '@/constants'
+import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { db } from '@/database/drizzle'
 import { bookmarkTable } from '@/database/schema'
 import { PageProps } from '@/types/nextjs'
@@ -28,7 +28,11 @@ export const metadata: Metadata = {
   openGraph: {
     ...defaultOpenGraph,
     title: `북마크 - ${SHORT_NAME}`,
-    url: `${CANONICAL_URL}/@/bookmark`,
+    url: '/@/bookmark',
+  },
+  alternates: {
+    canonical: '/@/bookmark',
+    languages: { ko: '/@/bookmark' },
   },
 }
 
