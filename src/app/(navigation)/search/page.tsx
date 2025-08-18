@@ -3,7 +3,6 @@ import { Metadata } from 'next'
 import { cookies } from 'next/headers'
 
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
-import { CANONICAL_URL } from '@/constants/url'
 import { PageProps } from '@/types/nextjs'
 import { getCookieJSON } from '@/utils/cookie'
 import { ViewCookie } from '@/utils/param'
@@ -19,7 +18,11 @@ export const metadata: Metadata = {
   openGraph: {
     ...defaultOpenGraph,
     title: `검색 - ${SHORT_NAME}`,
-    url: `${CANONICAL_URL}/search`,
+    url: '/search',
+  },
+  alternates: {
+    canonical: '/search',
+    languages: { ko: '/search' },
   },
 }
 

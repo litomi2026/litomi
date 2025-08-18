@@ -4,7 +4,6 @@ import { Suspense } from 'react'
 
 import IconLogo from '@/components/icons/IconLogo'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
-import { CANONICAL_URL } from '@/constants/url'
 
 import SignupForm, { SignupFormSkeleton } from './SignupForm'
 
@@ -13,7 +12,11 @@ export const metadata: Metadata = {
   openGraph: {
     ...defaultOpenGraph,
     title: `회원가입 - ${SHORT_NAME}`,
-    url: `${CANONICAL_URL}/auth/signup`,
+    url: '/auth/signup',
+  },
+  alternates: {
+    canonical: '/auth/signup',
+    languages: { ko: '/auth/signup' },
   },
 }
 

@@ -1,8 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 import { Metadata } from 'next'
 
-import { defaultOpenGraph, SHORT_NAME } from '@/constants'
-import { CANONICAL_URL } from '@/constants/url'
+import { CANONICAL_URL, defaultOpenGraph, SHORT_NAME } from '@/constants'
 
 export const metadata: Metadata = {
   title: `이용약관 - ${SHORT_NAME}`,

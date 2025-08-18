@@ -1,7 +1,6 @@
 import type { MetadataRoute } from 'next'
 
-import { APPLICATION_NAME, DESCRIPTION, SHORT_NAME, THEME_COLOR } from '@/constants'
-import { CANONICAL_URL } from '@/constants/url'
+import { APPLICATION_NAME, CANONICAL_URL, DESCRIPTION, SHORT_NAME, THEME_COLOR } from '@/constants'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {

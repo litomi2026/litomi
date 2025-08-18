@@ -5,7 +5,6 @@ import MangaCard from '@/components/card/MangaCard'
 import MangaCardImage from '@/components/card/MangaCardImage'
 import { SHORT_NAME } from '@/constants'
 import { createErrorManga } from '@/constants/json'
-import { CANONICAL_URL } from '@/constants/url'
 import { HiyobiClient } from '@/crawler/hiyobi'
 import { KHentaiClient } from '@/crawler/k-hentai'
 import { PageProps } from '@/types/nextjs'
@@ -18,8 +17,8 @@ export const revalidate = 15
 export const metadata: Metadata = {
   title: `랜덤 - ${SHORT_NAME}`,
   alternates: {
-    canonical: `${CANONICAL_URL}/mangas/random`,
-    languages: { ko: `${CANONICAL_URL}/mangas/random` },
+    canonical: '/mangas/random',
+    languages: { ko: '/mangas/random' },
   },
 }
 

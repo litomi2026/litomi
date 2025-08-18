@@ -4,9 +4,8 @@ import { notFound } from 'next/navigation'
 import MangaCard from '@/components/card/MangaCard'
 import MangaCardImage from '@/components/card/MangaCardImage'
 import Navigation from '@/components/Navigation'
-import { SHORT_NAME } from '@/constants'
+import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { createErrorManga } from '@/constants/json'
-import { CANONICAL_URL } from '@/constants/url'
 import { HiyobiClient } from '@/crawler/hiyobi'
 import { KHentaiClient } from '@/crawler/k-hentai'
 import { PageProps } from '@/types/nextjs'
@@ -20,9 +19,14 @@ export const dynamic = 'error'
 
 export const metadata: Metadata = {
   title: `목록 - ${SHORT_NAME}`,
+  openGraph: {
+    ...defaultOpenGraph,
+    title: `목록 - ${SHORT_NAME}`,
+    url: '/mangas',
+  },
   alternates: {
-    canonical: `${CANONICAL_URL}/mangas`,
-    languages: { ko: `${CANONICAL_URL}/mangas` },
+    canonical: '/mangas',
+    languages: { ko: '/mangas' },
   },
 }
 

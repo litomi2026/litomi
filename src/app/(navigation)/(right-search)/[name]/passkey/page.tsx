@@ -5,8 +5,7 @@ import { cookies } from 'next/headers'
 
 import type { PageProps } from '@/types/nextjs'
 
-import { defaultOpenGraph, SHORT_NAME } from '@/constants'
-import { CANONICAL_URL } from '@/constants/url'
+import { CANONICAL_URL, defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { db } from '@/database/drizzle'
 import { decodeDeviceType } from '@/database/enum'
 import { credentialTable } from '@/database/schema'
@@ -24,6 +23,10 @@ export const metadata: Metadata = {
     ...defaultOpenGraph,
     title: `패스키 - ${SHORT_NAME}`,
     url: `${CANONICAL_URL}/@/passkey`,
+  },
+  alternates: {
+    canonical: '/@/passkey',
+    languages: { ko: '/@/passkey' },
   },
 }
 

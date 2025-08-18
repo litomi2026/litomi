@@ -4,7 +4,6 @@ import { Suspense } from 'react'
 import IconBell from '@/components/icons/IconBell'
 import IconLock from '@/components/icons/IconLock'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
-import { CANONICAL_URL } from '@/constants/url'
 import { getUserIdFromCookie } from '@/utils/session'
 
 import NotificationList from './NotificationList'
@@ -15,7 +14,11 @@ export const metadata: Metadata = {
   openGraph: {
     ...defaultOpenGraph,
     title: `알림 - ${SHORT_NAME}`,
-    url: `${CANONICAL_URL}/notification`,
+    url: '/notification',
+  },
+  alternates: {
+    canonical: '/notification',
+    languages: { ko: '/notification' },
   },
 }
 

@@ -2,9 +2,8 @@ import type { JWTPayload } from 'jose'
 
 import { jwtVerify, SignJWT } from 'jose'
 
-import { ONE_HOUR, THIRTY_DAYS } from '@/constants'
+import { CANONICAL_URL, ONE_HOUR, THIRTY_DAYS } from '@/constants'
 import { JWT_SECRET_ACCESS_TOKEN, JWT_SECRET_REFRESH_TOKEN } from '@/constants/env'
-import { CANONICAL_URL } from '@/constants/url'
 
 const url = new URL(CANONICAL_URL)
 

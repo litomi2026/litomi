@@ -8,7 +8,6 @@ import BookmarkDownloadButton from '@/app/(navigation)/(right-search)/[name]/boo
 import BookmarkUploadButton from '@/app/(navigation)/(right-search)/[name]/bookmark/BookmarkUploadButton'
 import { Bookmark } from '@/app/api/bookmark/route'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
-import { CANONICAL_URL } from '@/constants/url'
 import { db } from '@/database/drizzle'
 import { bookmarkTable } from '@/database/schema'
 import { PageProps } from '@/types/nextjs'
@@ -29,7 +28,11 @@ export const metadata: Metadata = {
   openGraph: {
     ...defaultOpenGraph,
     title: `북마크 - ${SHORT_NAME}`,
-    url: `${CANONICAL_URL}/@/bookmark`,
+    url: '/@/bookmark',
+  },
+  alternates: {
+    canonical: '/@/bookmark',
+    languages: { ko: '/@/bookmark' },
   },
 }
 

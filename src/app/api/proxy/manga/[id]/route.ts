@@ -1,11 +1,14 @@
 import { getMangaFromMultipleSources } from '@/common/manga'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
+import { Manga } from '@/types/manga'
 import { RouteProps } from '@/types/nextjs'
 import { sec } from '@/utils/date'
 
 import { GETProxyMangaIdSchema } from './schema'
 
 export const runtime = 'edge'
+
+export type GETProxyMangaIdResponse = Manga | null
 
 type Params = {
   id: string

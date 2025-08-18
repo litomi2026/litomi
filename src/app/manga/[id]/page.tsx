@@ -1,14 +1,11 @@
 import { Metadata } from 'next'
-import { unstable_cache } from 'next/cache'
 import { notFound } from 'next/navigation'
 
 import type { PageProps } from '@/types/nextjs'
 
-import { getMangaFromMultipleSources } from '@/common/manga'
-import { defaultOpenGraph, SHORT_NAME } from '@/constants'
-import { CANONICAL_URL } from '@/constants/url'
+import { GETProxyMangaIdResponse } from '@/app/api/proxy/manga/[id]/route'
+import { CANONICAL_URL, defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { KHentaiClient } from '@/crawler/k-hentai'
-import { sec } from '@/utils/date'
 import { getImageSource } from '@/utils/manga'
 
 import MangaViewer from './MangaViewer'
@@ -17,7 +14,6 @@ import { mangaSchema } from './schema'
 export const dynamic = 'error'
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  // cacheLife('days')
   const validation = mangaSchema.safeParse(await params)
 
   if (!validation.success) {
@@ -25,23 +21,30 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const { id } = validation.data
-  const manga = await getCachedManga(id)
+  const response = await fetch(`${CANONICAL_URL}/api/proxy/manga/${id}`)
+  const manga = (await response.json()) as GETProxyMangaIdResponse
 
   if (!manga) {
     notFound()
   }
 
   const { title, description, images, origin } = manga
+  const titleSlice = title?.slice(0, 50)
+  const descriptionSlice = description?.slice(0, 160)
 
   return {
-    title: `${title} - ${SHORT_NAME}`,
-    ...(description && { description }),
+    title: `${titleSlice} - ${SHORT_NAME}`,
+    ...(description && { description: descriptionSlice }),
     openGraph: {
       ...defaultOpenGraph,
-      title: `${title} - ${SHORT_NAME}`,
-      ...(description && { description }),
-      images: images.slice(0, 3).map((imageURL) => getImageSource({ imageURL, origin })),
-      url: `${CANONICAL_URL}/manga/${id}`,
+      title: `${titleSlice} - ${SHORT_NAME}`,
+      ...(description && { description: descriptionSlice }),
+      images: getImageSource({ imageURL: images[0], origin }),
+      url: `/manga/${id}`,
+    },
+    alternates: {
+      canonical: `/manga/${id}`,
+      languages: { ko: `/manga/${id}` },
     },
   }
 }
@@ -70,11 +73,3 @@ export default async function Page({ params }: PageProps) {
     </main>
   )
 }
-
-// TODO: Neon DB에 직접 망가 크롤링 후 fetch 제거하기
-// TODO: 추후 'use cache' 로 변경하면서 getCachedManga 함수 제거하기
-const getCachedManga = unstable_cache(
-  async (id: number) => getMangaFromMultipleSources(id, sec('1 week')),
-  ['getCachedManga'],
-  { revalidate: sec('1 week') },
-)
