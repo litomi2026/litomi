@@ -1,13 +1,11 @@
-import ms from 'ms'
-
 import { getMangaFromMultipleSources } from '@/common/manga'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { RouteProps } from '@/types/nextjs'
+import { sec } from '@/utils/date'
 
 import { GETProxyMangaIdSchema } from './schema'
 
 export const runtime = 'edge'
-const maxAge = ms('1 day') / 1000
 
 type Params = {
   id: string
@@ -29,11 +27,14 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       return new Response('Not Found', { status: 404 })
     }
 
+    const maxAge = sec('1 hour')
+    const swr = sec('5 minutes')
+
     const cacheControl = createCacheControl({
       public: true,
       maxAge,
-      sMaxAge: maxAge,
-      staleWhileRevalidate: 300,
+      sMaxAge: sec('1 day') - maxAge - swr,
+      swr,
     })
 
     return Response.json(manga, { headers: { 'Cache-Control': cacheControl } })

@@ -1,9 +1,8 @@
-import ms from 'ms'
-
 import { GETProxyKSearchSchema } from '@/app/api/proxy/k/search/schema'
 import { getCategories, KHentaiClient, KHentaiMangaSearchOptions } from '@/crawler/k-hentai'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { Manga } from '@/types/manga'
+import { sec } from '@/utils/date'
 
 import { convertQueryKey, filterMangasByMinusPrefix } from './utils'
 
@@ -56,8 +55,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const maxAge = params.nextId ? ms('1 day') / 1000 : ms('1 hour') / 1000
-    const revalidate = params.nextId ? maxAge : 0
+    const revalidate = params.nextId ? sec('1 day') : 0
     const searchedMangas = await KHentaiClient.getInstance().searchMangas(params, revalidate)
     const mangas = filterMangasByMinusPrefix(searchedMangas, query)
     const nextCursor = mangas.length > 0 ? mangas[mangas.length - 1].id.toString() : null
@@ -66,9 +64,9 @@ export async function GET(request: Request) {
 
     const cacheControl = createCacheControl({
       public: true,
-      maxAge,
-      sMaxAge: maxAge,
-      staleWhileRevalidate: maxAge,
+      maxAge: params.nextId ? sec('1 day') : sec('1 hour'),
+      sMaxAge: sec('1 hour'),
+      swr: sec('5 minutes'),
     })
 
     return Response.json(response, { headers: { 'Cache-Control': cacheControl } })
