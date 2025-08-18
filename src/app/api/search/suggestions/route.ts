@@ -30,7 +30,7 @@ export async function GET(request: Request) {
       public: true,
       maxAge: revalidate,
       sMaxAge: revalidate,
-      staleWhileRevalidate: revalidate,
+      swr: revalidate,
     })
 
     return Response.json(suggestions satisfies GETSearchSuggestionsResponse, {

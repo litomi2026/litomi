@@ -1,4 +1,3 @@
-import ms from 'ms'
 import { Metadata } from 'next'
 import { unstable_cache } from 'next/cache'
 import { notFound } from 'next/navigation'
@@ -9,6 +8,7 @@ import { getMangaFromMultipleSources } from '@/common/manga'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { CANONICAL_URL } from '@/constants/url'
 import { KHentaiClient } from '@/crawler/k-hentai'
+import { sec } from '@/utils/date'
 import { getImageSource } from '@/utils/manga'
 
 import MangaViewer from './MangaViewer'
@@ -71,9 +71,10 @@ export default async function Page({ params }: PageProps) {
   )
 }
 
+// TODO: Neon DB에 직접 망가 크롤링 후 fetch 제거하기
 // TODO: 추후 'use cache' 로 변경하면서 getCachedManga 함수 제거하기
 const getCachedManga = unstable_cache(
-  async (id: number) => getMangaFromMultipleSources(id, 86400),
+  async (id: number) => getMangaFromMultipleSources(id, sec('1 week')),
   ['getCachedManga'],
-  { revalidate: ms('1 week') / 1000 },
+  { revalidate: sec('1 week') },
 )

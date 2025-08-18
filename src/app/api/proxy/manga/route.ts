@@ -1,13 +1,11 @@
-import ms from 'ms'
-
 import { getMangasFromMultipleSources } from '@/common/manga'
 import { MAX_THUMBNAIL_IMAGES } from '@/constants/manga'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
+import { sec } from '@/utils/date'
 
 import { GETProxyIdSchema, ProxyIdOnly } from './schema'
 
 export const runtime = 'edge'
-const maxAge = ms('1 day') / 1000
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -37,11 +35,14 @@ export async function GET(request: Request) {
       }
     }
 
+    const sMaxAge = sec('1 hour')
+    const swr = sec('5 minutes')
+
     const cacheControl = createCacheControl({
       public: true,
-      maxAge,
-      sMaxAge: maxAge,
-      staleWhileRevalidate: 300,
+      maxAge: sec('1 day') - sMaxAge - swr,
+      sMaxAge,
+      swr,
     })
 
     return Response.json(mangas, { headers: { 'Cache-Control': cacheControl } })

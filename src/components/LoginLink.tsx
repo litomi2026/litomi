@@ -1,8 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname, useSearchParams } from 'next/navigation'
-import { ComponentProps } from 'react'
+import { usePathname } from 'next/navigation'
+import { ComponentProps, useEffect, useState } from 'react'
 
 import { SearchParamKey } from '@/constants/storage'
 
@@ -10,8 +10,12 @@ type Props = Omit<ComponentProps<typeof Link>, 'href'>
 
 export default function LoginLink({ className = '', children, ...props }: Readonly<Props>) {
   const pathname = usePathname()
-  const searchParams = useSearchParams()
-  const fullPath = `${pathname}?${searchParams.toString()}`
+  const [searchParams, setSearchParams] = useState('')
+  const fullPath = `${pathname}?${searchParams}`
+
+  useEffect(() => {
+    setSearchParams(new URLSearchParams(window.location.search).toString())
+  }, [])
 
   return (
     <Link

@@ -1,3 +1,5 @@
+import ms, { StringValue } from 'ms'
+
 export function formatDistanceToNow(date: Date): string {
   const now = new Date()
   const diff = now.getTime() - date.getTime()
@@ -13,4 +15,8 @@ export function formatDistanceToNow(date: Date): string {
   if (days < 30) return `${Math.floor(days / 7)}주 전`
   if (days < 365) return `${Math.floor(days / 30)}달 전`
   return `${Math.floor(days / 365)}년 전`
+}
+
+export function sec(text: StringValue): number {
+  return ms(text) / 1000
 }

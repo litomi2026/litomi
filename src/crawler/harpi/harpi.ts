@@ -9,6 +9,7 @@ import { translateLanguageList } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
 import { translateTag } from '@/translation/tag'
 import { Manga, MangaTag } from '@/types/manga'
+import { sec } from '@/utils/date'
 
 import { ProxyClient, ProxyClientConfig } from '../proxy'
 import { isUpstreamServer5XXError } from '../proxy-utils'
@@ -84,7 +85,7 @@ export class HarpiClient {
     return HarpiClient.instance
   }
 
-  async fetchManga(id: number, revalidate = 86400): Promise<Manga | null> {
+  async fetchManga(id: number, revalidate = sec('1 week')): Promise<Manga | null> {
     const validatedParams = HarpiSearchSchema.parse({ ids: [id] })
     const searchParams = this.buildSearchParams(validatedParams)
 

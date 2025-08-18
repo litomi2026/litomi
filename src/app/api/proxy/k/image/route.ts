@@ -26,7 +26,7 @@ export async function GET(request: Request) {
           public: true,
           maxAge: maxAge - 300,
           sMaxAge: maxAge - 300,
-          staleWhileRevalidate: 300,
+          swr: 300,
         }),
       },
     })
