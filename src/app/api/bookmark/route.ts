@@ -44,7 +44,7 @@ export async function GET(request: Request) {
   const cacheControl = createCacheControl({
     private: true,
     maxAge,
-    staleWhileRevalidate: maxAge,
+    swr: maxAge,
   })
 
   if (bookmarkRows.length === 0) {

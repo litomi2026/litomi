@@ -34,7 +34,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
           public: true,
           maxAge,
           sMaxAge: maxAge,
-          staleWhileRevalidate: maxAge,
+          swr: maxAge,
         }),
       },
     })

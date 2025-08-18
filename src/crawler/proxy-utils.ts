@@ -14,7 +14,7 @@ export function createCacheControl(options: {
   private?: boolean
   maxAge?: number
   sMaxAge?: number
-  staleWhileRevalidate?: number
+  swr?: number
   mustRevalidate?: boolean
   noCache?: boolean
   noStore?: boolean
@@ -42,8 +42,8 @@ export function createCacheControl(options: {
   if (options.sMaxAge !== undefined && !options.private) {
     parts.push(`s-maxage=${options.sMaxAge}`)
   }
-  if (options.staleWhileRevalidate !== undefined) {
-    parts.push(`stale-while-revalidate=${options.staleWhileRevalidate}`)
+  if (options.swr !== undefined) {
+    parts.push(`stale-while-revalidate=${options.swr}`)
   }
 
   return parts.join(', ')

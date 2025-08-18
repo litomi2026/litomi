@@ -23,7 +23,7 @@ export async function GET(request: Request) {
     const cacheControl = createCacheControl({
       private: true,
       maxAge,
-      staleWhileRevalidate: maxAge,
+      swr: maxAge,
     })
 
     return Response.json(unreadCount, { headers: { 'Cache-Control': cacheControl } })

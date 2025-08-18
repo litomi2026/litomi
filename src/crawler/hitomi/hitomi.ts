@@ -6,6 +6,7 @@ import { translateLanguageList } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
 import { translateTag } from '@/translation/tag'
 import { Manga } from '@/types/manga'
+import { sec } from '@/utils/date'
 
 import { NotFoundError, ParseError } from '../errors'
 import { ProxyClient, ProxyClientConfig } from '../proxy'
@@ -54,7 +55,7 @@ export class HitomiClient {
     return HitomiClient.instance
   }
 
-  async fetchManga(id: number, revalidate = 86400) {
+  async fetchManga(id: number, revalidate = sec('1 day')) {
     try {
       const jsText = await this.client.fetch<string>(`/galleries/${id}.js`, { next: { revalidate } }, true)
 

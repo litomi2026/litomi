@@ -13,7 +13,7 @@ import { checkDefined } from '@/utils/type'
 type MangaResult = Error | Manga | null | undefined
 
 // TODO: 추후 'use cache' 로 변경하고 revalidate 파라미터 제거하기
-export async function getMangaFromMultipleSources(id: number, revalidate: number): Promise<Manga | null> {
+export async function getMangaFromMultipleSources(id: number, revalidate?: number): Promise<Manga | null> {
   // cacheLife('days')
   const hiyobiClient = HiyobiClient.getInstance()
   const hitomiClient = HitomiClient.getInstance()

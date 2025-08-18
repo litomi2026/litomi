@@ -4,6 +4,7 @@ import { MangaSource } from '@/database/enum'
 import { translateLanguageList } from '@/translation/language'
 import { translateTag } from '@/translation/tag'
 import { Manga } from '@/types/manga'
+import { sec } from '@/utils/date'
 
 import { ProxyClient, ProxyClientConfig } from '../proxy'
 import { isUpstreamServer5XXError } from '../proxy-utils'
@@ -89,7 +90,7 @@ export class KomiClient {
     return KomiClient.instance
   }
 
-  async fetchManga(id: number, revalidate = 86400): Promise<Manga | null> {
+  async fetchManga(id: number, revalidate = sec('1 week')): Promise<Manga | null> {
     const uuid = this.idMapping.get(id)
 
     if (!uuid) {
