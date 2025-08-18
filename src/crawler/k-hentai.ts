@@ -231,11 +231,9 @@ export class KHentaiClient {
 
     const searchParams = new URLSearchParams(kebabCaseParams)
     searchParams.sort()
-
-    const kHentaiMangas = await this.client.fetch<KHentaiManga[]>(`/ajax/search?${searchParams}`, {
-      cache: revalidate > 0 ? 'force-cache' : 'no-store', // NOTE: Vercel Edge 환경 캐싱 버그 때문에 넣음
-      next: { revalidate },
-    })
+    const cacheBuster = revalidate === 0 ? `&_t=${Date.now()}` : '' // NOTE: Vercel Edge 환경 캐싱 버그 때문에 넣음
+    const url = `/ajax/search?${searchParams}${cacheBuster}`
+    const kHentaiMangas = await this.client.fetch<KHentaiManga[]>(url, { next: { revalidate } })
 
     const mangas = kHentaiMangas
       .filter((manga) => manga.archived === 1)
