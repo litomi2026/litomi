@@ -3,8 +3,7 @@ import Link from 'next/link'
 import { Suspense } from 'react'
 
 import IconLogo from '@/components/icons/IconLogo'
-import { defaultOpenGraph, SHORT_NAME } from '@/constants'
-import { CANONICAL_URL } from '@/constants/url'
+import { CANONICAL_URL, defaultOpenGraph, SHORT_NAME } from '@/constants'
 
 import LoginForm, { LoginFormSkeleton } from './LoginForm'
 

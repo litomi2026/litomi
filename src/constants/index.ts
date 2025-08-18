@@ -1,7 +1,7 @@
-import { CANONICAL_URL } from './url'
-
 export const APPLICATION_NAME = '리토미 - Litomi'
 export const SHORT_NAME = '리토미'
+export const LOCAL_URL = 'http://localhost:3000'
+export const CANONICAL_URL = process.env.NODE_ENV === 'production' ? 'https://litomi.in' : LOCAL_URL
 
 export const DESCRIPTION =
   'Read manga online for free without any ads. Fast loading and mobile friendly. Update daily with latest chapters.'

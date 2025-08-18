@@ -1,7 +1,6 @@
 import { Metadata } from 'next'
 
-import { defaultOpenGraph, SHORT_NAME } from '@/constants'
-import { CANONICAL_URL } from '@/constants/url'
+import { CANONICAL_URL, defaultOpenGraph, SHORT_NAME } from '@/constants'
 
 export const metadata: Metadata = {
   title: `개인정보 처리방침 - ${SHORT_NAME}`,

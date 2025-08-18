@@ -1,8 +1,7 @@
 import { Metadata } from 'next'
 import { cookies } from 'next/headers'
 
-import { defaultOpenGraph, SHORT_NAME } from '@/constants'
-import { CANONICAL_URL } from '@/constants/url'
+import { CANONICAL_URL, defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
 
 import Censorships from './Censorships'

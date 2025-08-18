@@ -1,4 +1,4 @@
-import { CANONICAL_URL } from '@/constants/url'
+import { CANONICAL_URL } from '@/constants'
 
 const privateIP = `
   ^(?:

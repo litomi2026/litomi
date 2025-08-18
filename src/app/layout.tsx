@@ -9,7 +9,7 @@ import { ReactNode } from 'react'
 import { Toaster } from 'sonner'
 
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar'
-import { defaultOpenGraph, DESCRIPTION, SHORT_NAME, THEME_COLOR } from '@/constants'
+import { CANONICAL_URL, defaultOpenGraph, DESCRIPTION, SHORT_NAME, THEME_COLOR } from '@/constants'
 import {
   AMPLITUDE_API_KEY,
   GA_ID,
@@ -18,7 +18,6 @@ import {
   VERCEL_ANALYTICS,
   VERCEL_SPEED_INSIGHTS,
 } from '@/constants/env'
-import { CANONICAL_URL } from '@/constants/url'
 
 import QueryProvider from '../components/QueryProvider'
 

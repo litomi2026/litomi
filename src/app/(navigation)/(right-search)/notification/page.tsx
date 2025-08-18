@@ -3,8 +3,7 @@ import { Suspense } from 'react'
 
 import IconBell from '@/components/icons/IconBell'
 import IconLock from '@/components/icons/IconLock'
-import { defaultOpenGraph, SHORT_NAME } from '@/constants'
-import { CANONICAL_URL } from '@/constants/url'
+import { CANONICAL_URL, defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { getUserIdFromCookie } from '@/utils/session'
 
 import NotificationList from './NotificationList'

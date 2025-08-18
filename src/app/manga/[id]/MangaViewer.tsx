@@ -28,10 +28,5 @@ export default function MangaViewer({ id }: Readonly<Props>) {
 
 async function fetchManga(id: number) {
   const res = await fetch(`/api/proxy/manga/${id}`)
-
-  if (!res.ok) {
-    return null
-  }
-
-  return res.json()
+  return res.ok ? res.json() : null
 }

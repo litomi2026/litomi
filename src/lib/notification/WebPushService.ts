@@ -1,8 +1,8 @@
 import { and, eq, inArray, sql } from 'drizzle-orm'
 import webpush, { PushSubscription } from 'web-push'
 
+import { CANONICAL_URL } from '@/constants'
 import { NEXT_PUBLIC_VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY } from '@/constants/env'
-import { CANONICAL_URL } from '@/constants/url'
 import { db } from '@/database/drizzle'
 import { pushSettingsTable, webPushTable } from '@/database/schema'
 
