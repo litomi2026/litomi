@@ -8,7 +8,6 @@ import { Manga } from '@/types/manga'
 import { convertQueryKey, filterMangasByMinusPrefix } from './utils'
 
 export const runtime = 'edge'
-const revalidate = ms('1 hour') / 1000
 
 export type GETProxyKSearchResponse = {
   mangas: Manga[]
@@ -57,7 +56,9 @@ export async function GET(request: Request) {
   }
 
   try {
-    const searchedMangas = await KHentaiClient.getInstance().searchMangas(params, 0)
+    const maxAge = params.nextId ? ms('1 day') / 1000 : ms('1 hour') / 1000
+    const revalidate = params.nextId ? maxAge : 0
+    const searchedMangas = await KHentaiClient.getInstance().searchMangas(params, revalidate)
     const mangas = filterMangasByMinusPrefix(searchedMangas, query)
     const nextCursor = mangas.length > 0 ? mangas[mangas.length - 1].id.toString() : null
     const hasNextPage = mangas.length > 0
@@ -65,9 +66,9 @@ export async function GET(request: Request) {
 
     const cacheControl = createCacheControl({
       public: true,
-      maxAge: revalidate,
-      sMaxAge: revalidate,
-      staleWhileRevalidate: revalidate,
+      maxAge: maxAge,
+      sMaxAge: maxAge,
+      staleWhileRevalidate: maxAge,
     })
 
     return Response.json(response, { headers: { 'Cache-Control': cacheControl } })
