@@ -33,7 +33,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
     const cacheControl = createCacheControl({
       public: true,
       maxAge,
-      sMaxAge: sec('1 day') - maxAge - swr,
+      sMaxAge: sec('1 day') - maxAge - Math.min(swr, maxAge),
       swr,
     })
 

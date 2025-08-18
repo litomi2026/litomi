@@ -9,6 +9,12 @@ export type ApiResponse<T = unknown> = T & {
   }
 }
 
+/**
+ * - 요청 주기: s-maxage ~ (s-maxage + swr) 주기로 요청 보냄
+ * - 최대 캐싱 데이터 수명: s-maxage + maxage + min(swr, maxage)
+ * - 로딩 볼 확률: s-maxage + swr 주기마다 (s-maxage / (s-maxage + swr))^n 확률로 로딩을 봄
+ *   - n = s-maxage + swr 기간 동안 들어오는 사용자 수
+ */
 export function createCacheControl(options: {
   public?: boolean
   private?: boolean
