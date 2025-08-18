@@ -1,6 +1,6 @@
 'use client'
 
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { Dispatch, FormEvent, RefObject, SetStateAction, useCallback, useEffect, useState, useTransition } from 'react'
 import { createPortal } from 'react-dom'
 
@@ -23,7 +23,6 @@ interface FilterPanelProps {
 export default function FilterPanel({ buttonRef, filters, onClose, setFilters, show }: FilterPanelProps) {
   const router = useRouter()
   const pathname = usePathname()
-  const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
   const [buttonRect, setButtonRect] = useState<DOMRect | null>(null)
   const isDefaultSort = filters.sort === undefined || filters.sort === ''
@@ -93,32 +92,6 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
           right: `${window.innerWidth - buttonRect.right}px`,
         }
       : undefined
-
-  // NOTE: URL 파라미터가 변경될 때 필터 상태를 동기화함
-  useEffect(() => {
-    const newFilters: FilterState = {}
-
-    FILTER_KEYS.forEach((key) => {
-      const value = searchParams.get(key)
-      if (!value) return
-
-      if (!isDateFilter(key)) {
-        newFilters[key] = value
-        return
-      }
-
-      const timestamp = parseInt(value, 10)
-      if (isNaN(timestamp)) return
-
-      const date = new Date(timestamp * 1000)
-      const year = date.getFullYear()
-      const month = (date.getMonth() + 1).toString().padStart(2, '0')
-      const day = date.getDate().toString().padStart(2, '0')
-      newFilters[key] = `${year}-${month}-${day}`
-    })
-
-    setFilters(newFilters)
-  }, [searchParams, setFilters])
 
   // NOTE: 모바일 환경에서 필터 활성화 시 body 스크롤을 방지함
   useEffect(() => {
