@@ -8,7 +8,7 @@ import { Manga } from '@/types/manga'
 import { convertQueryKey, filterMangasByMinusPrefix } from './utils'
 
 export const runtime = 'edge'
-const revalidate = ms('5 minutes') / 1000
+const revalidate = ms('1 hour') / 1000
 
 export type GETProxyKSearchResponse = {
   mangas: Manga[]
