@@ -2,23 +2,20 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ComponentProps } from 'react'
+import { ComponentProps, useEffect, useState } from 'react'
 
 import { SearchParamKey } from '@/constants/storage'
-import useMounted from '@/hook/useMounted'
 
 type Props = Omit<ComponentProps<typeof Link>, 'href'>
 
 export default function LoginLink({ className = '', children, ...props }: Readonly<Props>) {
   const pathname = usePathname()
-  const isMounted = useMounted()
+  const [searchParams, setSearchParams] = useState('')
+  const fullPath = `${pathname}?${searchParams}`
 
-  if (!isMounted) {
-    return null
-  }
-
-  const searchParams = new URLSearchParams(window.location.search)
-  const fullPath = `${pathname}?${searchParams.toString()}`
+  useEffect(() => {
+    setSearchParams(new URLSearchParams(window.location.search).toString())
+  }, [])
 
   return (
     <Link
