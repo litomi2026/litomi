@@ -21,14 +21,11 @@ export async function getMangaFromMultipleSources(id: number, revalidate: number
   const harpiClient = HarpiClient.getInstance()
   const komiClient = KomiClient.getInstance()
 
-  const [hiyobiManga, hiyobiImages, kHentaiManga, [harpiManga], komiManga, hitomiManga] = await Promise.all([
+  const [hiyobiManga, hiyobiImages, kHentaiManga, harpiManga, komiManga, hitomiManga] = await Promise.all([
     hiyobiClient.fetchManga(id).catch((error) => new Error(error)),
     hiyobiClient.fetchMangaImages(id, revalidate).catch(() => null),
     kHentaiClient.fetchManga(id, revalidate).catch((error) => new Error(error)),
-    harpiClient
-      .searchMangas({ ids: [id] })
-      .then((mangas) => mangas ?? [])
-      .catch((error) => [new Error(error)]),
+    harpiClient.fetchManga(id).catch((error) => new Error(error)),
     komiClient.fetchManga(id).catch((error) => new Error(error)),
     hitomiClient.fetchManga(id, revalidate).catch((error) => new Error(error)),
   ])
