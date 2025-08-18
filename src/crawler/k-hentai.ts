@@ -233,7 +233,6 @@ export class KHentaiClient {
     searchParams.sort()
 
     const kHentaiMangas = await this.client.fetch<KHentaiManga[]>(`/ajax/search?${searchParams}`, {
-      cache: revalidate > 0 ? 'force-cache' : 'no-store', // NOTE: Vercel Edge 환경 캐싱 버그 때문에 넣음
       next: { revalidate },
     })
 
