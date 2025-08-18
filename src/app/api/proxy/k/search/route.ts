@@ -66,7 +66,7 @@ export async function GET(request: Request) {
 
     const cacheControl = createCacheControl({
       public: true,
-      maxAge: maxAge,
+      maxAge,
       sMaxAge: maxAge,
       staleWhileRevalidate: maxAge,
     })
