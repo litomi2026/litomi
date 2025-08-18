@@ -29,16 +29,22 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const { title, description, images, origin } = manga
+  const titleSlice = title?.slice(0, 50)
+  const descriptionSlice = description?.slice(0, 160)
 
   return {
-    title: `${title} - ${SHORT_NAME}`,
-    ...(description && { description }),
+    title: `${titleSlice} - ${SHORT_NAME}`,
+    ...(description && { description: descriptionSlice }),
     openGraph: {
       ...defaultOpenGraph,
-      title: `${title} - ${SHORT_NAME}`,
-      ...(description && { description }),
-      images: images.slice(0, 3).map((imageURL) => getImageSource({ imageURL, origin })),
-      url: `${CANONICAL_URL}/manga/${id}`,
+      title: `${titleSlice} - ${SHORT_NAME}`,
+      ...(description && { description: descriptionSlice }),
+      images: getImageSource({ imageURL: images[0], origin }),
+      url: `/manga/${id}`,
+    },
+    alternates: {
+      canonical: `/manga/${id}`,
+      languages: { ko: `/manga/${id}` },
     },
   }
 }
