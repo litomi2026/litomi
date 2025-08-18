@@ -1,8 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useSearchParams } from 'next/navigation'
-import { Suspense, useCallback, useRef, useState } from 'react'
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react'
 
 import useMounted from '@/hook/useMounted'
 
@@ -14,16 +13,22 @@ import { FILTER_KEYS, isDateFilter } from './constants'
 const FilterPanel = dynamic(() => import('./FilterPanel'))
 
 export default function FilterButton() {
-  const searchParams = useSearchParams()
   const [showFilters, setShowFilters] = useState(false)
   const mounted = useMounted()
   const buttonRef = useRef<HTMLButtonElement>(null)
+  const [filters, setFilters] = useState<FilterState>({})
+  const hasActiveFilters = FILTER_KEYS.some((key) => Boolean(filters[key]))
+  const activeFilterCount = FILTER_KEYS.filter((key) => Boolean(filters[key])).length
 
-  const [filters, setFilters] = useState<FilterState>(() => {
+  const handleClose = useCallback(() => {
+    setShowFilters(false)
+  }, [])
+
+  useEffect(() => {
     const initialState: FilterState = {}
 
     FILTER_KEYS.forEach((key) => {
-      const value = searchParams.get(key)
+      const value = new URLSearchParams(window.location.search).get(key)
       if (!value) return
 
       if (isDateFilter(key)) {
@@ -33,15 +38,8 @@ export default function FilterButton() {
       }
     })
 
-    return initialState
-  })
-
-  const handleClose = useCallback(() => {
-    setShowFilters(false)
+    setFilters(initialState)
   }, [])
-
-  const hasActiveFilters = FILTER_KEYS.some((key) => Boolean(filters[key]))
-  const activeFilterCount = FILTER_KEYS.filter((key) => Boolean(filters[key])).length
 
   return (
     <div className="relative">
@@ -62,7 +60,6 @@ export default function FilterButton() {
           </span>
         )}
       </button>
-
       {mounted && (
         <Suspense>
           <FilterPanel

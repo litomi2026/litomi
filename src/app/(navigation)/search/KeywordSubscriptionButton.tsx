@@ -1,32 +1,28 @@
 'use client'
 
 import { Bell, BellRing } from 'lucide-react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 import IconSpinner from '@/components/icons/IconSpinner'
 import useActionResponse from '@/hook/useActionResponse'
-import useDebouncedValue from '@/hook/useDebouncedValue'
 import useMeQuery from '@/query/useMeQuery'
 
 import { subscribeToKeyword } from './actions'
-import { parseSearchQuery } from './utils/queryParser'
+import UpdateFromSearchParams from './UpdateFromSearchParams'
+import { ParsedSearchQuery, parseSearchQuery } from './utils/queryParser'
 
 export default function KeywordSubscriptionButton() {
   const [isSubscribed, setIsSubscribed] = useState(false)
   const router = useRouter()
-  const searchParams = useSearchParams()
   const { data: me } = useMeQuery()
-  const query = searchParams.get('query') || ''
-  const debouncedQuery = useDebouncedValue({ value: query, delay: 500 })
-  const parsedQuery = useMemo(() => parseSearchQuery(debouncedQuery), [debouncedQuery])
-  const hasValidConditions = parsedQuery.conditions.length > 0
+  const [query, setQuery] = useState<ParsedSearchQuery | null>(null)
 
   const [_, dispatchAction, isPending] = useActionResponse({
     action: subscribeToKeyword,
     onSuccess: () => {
-      toast.success(`키워드 알림이 설정됐어요: ${parsedQuery.suggestedName}`)
+      toast.success(`키워드 알림이 설정됐어요: ${query?.suggestedName ?? ''}`)
       setIsSubscribed(true)
     },
     onError: (error, response) => {
@@ -44,8 +40,12 @@ export default function KeywordSubscriptionButton() {
     shouldSetResponse: false,
   })
 
+  const updateQuery = useCallback((value: string) => {
+    setQuery(parseSearchQuery(value))
+  }, [])
+
   function handleToggleSubscription() {
-    if (isPending) {
+    if (isPending || !query) {
       return
     }
 
@@ -54,17 +54,17 @@ export default function KeywordSubscriptionButton() {
       return
     }
 
-    if (!query.trim() || !hasValidConditions) {
+    if (query.plainKeywords.length === 0) {
       toast.warning('검색어를 입력해주세요')
       return
     }
 
-    if (!hasValidConditions) {
+    if (query.conditions.length === 0) {
       toast.warning('제외 키워드 알림은 아직 지원하지 않아요')
       return
     }
 
-    if (parsedQuery.plainKeywords.length > 20) {
+    if (query.plainKeywords.length > 20) {
       toast.warning('최대 20개 키워드까지 설정할 수 있어요')
       return
     }
@@ -74,13 +74,13 @@ export default function KeywordSubscriptionButton() {
       return
     }
 
-    dispatchAction(parsedQuery.conditions, parsedQuery.suggestedName)
+    dispatchAction(query.conditions, query.suggestedName)
   }
 
   // NOTE: 검색어가 변경되면 구독 상태를 초기화함
   useEffect(() => {
     setIsSubscribed(false)
-  }, [debouncedQuery.length])
+  }, [query])
 
   return (
     <button
@@ -91,6 +91,7 @@ export default function KeywordSubscriptionButton() {
       onClick={handleToggleSubscription}
       title={isSubscribed ? '키워드 알림 설정 보기' : '이 검색 조건으로 알림 받기'}
     >
+      <UpdateFromSearchParams onUpdate={updateQuery} queryKey="query" />
       {isPending ? (
         <IconSpinner className="size-4 animate-spin" />
       ) : isSubscribed ? (

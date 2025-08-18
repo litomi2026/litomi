@@ -2,12 +2,13 @@
 
 import { X } from 'lucide-react'
 import dynamic from 'next/dynamic'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { FormEvent, memo, Suspense, useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react'
 
 import IconSpinner from '@/components/icons/IconSpinner'
 
 import { type SearchSuggestion } from './constants'
+import UpdateFromSearchParams from './UpdateFromSearchParams'
 import useSearchSuggestions from './useSearchSuggestions'
 import { getWordAtCursor, translateKoreanToEnglish } from './utils'
 
@@ -23,10 +24,8 @@ export default memo(SearchForm)
 function SearchForm({ className = '' }: Readonly<Props>) {
   const router = useRouter()
   const pathname = usePathname()
-  const searchParams = useSearchParams()
-  const query = searchParams.get('query') ?? ''
-  const [keyword, setKeyword] = useState(query)
-  const [cursorPosition, setCursorPosition] = useState(query.length)
+  const [keyword, setKeyword] = useState('')
+  const [cursorPosition, setCursorPosition] = useState(0)
   const [isSearching, startSearching] = useTransition()
   const [_, startClosing] = useTransition()
   const [showSuggestions, setShowSuggestions] = useState(false)
@@ -146,6 +145,11 @@ function SearchForm({ className = '' }: Readonly<Props>) {
     })
   }
 
+  const handleSearchParamUpdate = useCallback((value: string) => {
+    setKeyword(value)
+    setCursorPosition(value.length)
+  }, [])
+
   // NOTE: "/" 키보드 단축키로 검색 입력창에 포커스
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
@@ -184,14 +188,9 @@ function SearchForm({ className = '' }: Readonly<Props>) {
     return () => document.removeEventListener('mousedown', handleOutsideClick)
   }, [setShowSuggestions])
 
-  // NOTE: URL의 query 값이 변경되면 검색어도 업데이트함
-  useEffect(() => {
-    setKeyword(query)
-    setCursorPosition(query.length)
-  }, [query])
-
   return (
     <div className={`relative ${className}`}>
+      <UpdateFromSearchParams onUpdate={handleSearchParamUpdate} queryKey="query" />
       <form
         className="flex bg-zinc-900 border-2 border-zinc-700 rounded-xl text-zinc-400
           overflow-hidden transition duration-200

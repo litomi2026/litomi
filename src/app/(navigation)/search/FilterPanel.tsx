@@ -62,7 +62,7 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
         params.set(key, timestamp.toString())
       })
 
-      if (filters.sort !== '' && filters['next-id']) {
+      if (!isDefaultSort && filters['next-id']) {
         params.delete('next-id')
       }
 
@@ -71,7 +71,7 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
         onClose()
       })
     },
-    [filters, onClose, pathname, router],
+    [filters, isDefaultSort, onClose, pathname, router],
   )
 
   const clearFilters = useCallback(() => {
