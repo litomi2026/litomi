@@ -1,1 +1,13 @@
->0.21%, defaults, not IE 11, maintained node versions
+defaults
+
+# Desktop browsers
+Chrome >= 109
+Edge >= 135
+Firefox >= 137
+Safari >= 15
+
+# Mobile browsers
+ChromeAndroid >= 131
+FirefoxAndroid >= 138
+Samsung >= 25
+iOS >= 15
