@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const { id } = validation.data
-  const response = await fetch(`${CANONICAL_URL}/api/proxy/manga/${id}`)
+  const response = await fetch(`${CANONICAL_URL}/api/proxy/manga/${id}`, { cache: 'force-cache' })
   const manga = (await response.json()) as GETProxyMangaIdResponse
 
   if (!manga) {
