@@ -5,7 +5,7 @@ import { Multilingual } from '@/translation/common'
 import { translateGroupList } from '@/translation/group'
 import { translateLanguageList } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
-import { sortTagValue, translateTag } from '@/translation/tag'
+import { translateTag } from '@/translation/tag'
 import { Manga, MangaTag } from '@/types/manga'
 
 import { ProxyClient, ProxyClientConfig } from './proxy'
@@ -161,8 +161,7 @@ export class HiyobiClient {
       const [category, value] = hTag.value.split(':')
 
       if (!value) {
-        const sortedCategory = sortTagValue(category)
-        return translateTag(sortedCategory, category, locale)
+        return translateTag('other', category, locale)
       }
 
       return translateTag(category, value, locale)

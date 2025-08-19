@@ -5,7 +5,7 @@ import { translateGroupList } from '@/translation/group'
 import { translateLanguageList } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
 import { translateTag } from '@/translation/tag'
-import { Manga, MangaTagCategory } from '@/types/manga'
+import { Manga } from '@/types/manga'
 import { sec } from '@/utils/date'
 
 import { NotFoundError, ParseError } from '../errors'
@@ -144,7 +144,7 @@ export class HitomiClient {
     return await urlFromUrlFromHash(Number(galleryId), file, 'webp')
   }
 
-  private getTagCategory(tag: Tag): MangaTagCategory {
+  private getTagCategory(tag: Tag): string {
     if (tag.female === 1 || tag.female === '1') {
       return 'female'
     }

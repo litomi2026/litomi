@@ -15,6 +15,14 @@ export default function GlobalError({ error, reset }: ErrorProps) {
   const [hasSystemIssues, setHasSystemIssues] = useState(false)
 
   useEffect(() => {
+    console.error('Full error details:', {
+      message: error.message,
+      stack: error.stack,
+      digest: error.digest,
+      pathname,
+      searchParams: Object.fromEntries(searchParams),
+    })
+
     Sentry.captureException(error, {
       tags: { error_boundary: pathname },
       extra: { searchParams: Object.fromEntries(searchParams) },
