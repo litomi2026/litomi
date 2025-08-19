@@ -1,4 +1,4 @@
-import { getMangaFromMultipleSources } from '@/common/manga'
+import { getMangaFromMultiSources } from '@/common/manga'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { Manga } from '@/types/manga'
 import { RouteProps } from '@/types/nextjs'
@@ -24,7 +24,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
   const { id } = validation.data
 
   try {
-    const manga = await getMangaFromMultipleSources(id, 0)
+    const manga = await getMangaFromMultiSources(id, 0)
 
     if (!manga) {
       return new Response('Not Found', { status: 404 })

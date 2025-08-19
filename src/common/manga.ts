@@ -13,7 +13,7 @@ import { checkDefined } from '@/utils/type'
 type MangaResult = Error | Manga | null | undefined
 
 // TODO: 추후 'use cache' 로 변경하고 revalidate 파라미터 제거하기
-export async function getMangaFromMultipleSources(id: number, revalidate?: number): Promise<Manga | null> {
+export async function getMangaFromMultiSources(id: number, revalidate?: number): Promise<Manga | null> {
   // cacheLife('days')
   const hiyobiClient = HiyobiClient.getInstance()
   const hitomiClient = HitomiClient.getInstance()
@@ -61,7 +61,7 @@ export async function getMangaFromMultipleSources(id: number, revalidate?: numbe
 /**
  * @param ids - 10개 이하의 고유한 만화 ID 배열
  */
-export async function getMangasFromMultipleSources(ids: number[], revalidate: number): Promise<Record<number, Manga>> {
+export async function getMangasFromMultiSources(ids: number[], revalidate: number): Promise<Record<number, Manga>> {
   const harpiClient = HarpiClient.getInstance()
   const harpiMangas = await harpiClient.searchMangas({ ids }, revalidate).catch((error) => new Error(error))
   const mangaMap: Record<number, Manga> = {}

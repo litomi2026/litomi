@@ -11,7 +11,7 @@ import { sec } from '@/utils/date'
 import { NotFoundError, ParseError } from '../errors'
 import { ProxyClient, ProxyClientConfig } from '../proxy'
 import { isUpstreamServer5XXError } from '../proxy-utils'
-import { HitomiFile, HitomiGallery } from './types'
+import { HitomiFile, HitomiGallery, Tag } from './types'
 import { urlFromUrlFromHash } from './utils'
 
 const HITOMI_CONFIG: ProxyClientConfig = {
@@ -36,7 +36,7 @@ const HITOMI_CONFIG: ProxyClientConfig = {
     Origin: 'https://hitomi.la',
     Referer: 'https://hitomi.la/',
     'User-Agent':
-      'Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.96 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+      'Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.7204.183 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
   },
 }
 
@@ -58,8 +58,8 @@ export class HitomiClient {
   async fetchManga(id: number, revalidate = sec('1 day')) {
     try {
       const jsText = await this.client.fetch<string>(`/galleries/${id}.js`, { next: { revalidate } }, true)
-
-      return await this.parseGalleryFromJS(jsText, id)
+      const gallery = await this.parseGalleryFromJS(jsText, id)
+      return await this.convertHitomiGalleryToManga(gallery)
     } catch (error) {
       if (error instanceof NotFoundError) {
         return null
@@ -90,7 +90,7 @@ export class HitomiClient {
       characters: translateCharacterList(characterValues, locale),
       series: translateSeriesList(seriesValues, locale),
       tags: gallery.tags?.map((tag) => {
-        const category = tag.female === '1' ? 'female' : tag.male === '1' ? 'male' : 'other'
+        const category = this.getTagCategory(tag)
         return translateTag(category, tag.tag, locale)
       }),
       languages: translateLanguageList(languageValues, locale),
@@ -144,7 +144,19 @@ export class HitomiClient {
     return await urlFromUrlFromHash(Number(galleryId), file, 'webp')
   }
 
-  private async parseGalleryFromJS(jsText: string, id: number): Promise<Manga> {
+  private getTagCategory(tag: Tag): string {
+    if (tag.female === 1 || tag.female === '1') {
+      return 'female'
+    }
+
+    if (tag.male === 1 || tag.male === '1') {
+      return 'male'
+    }
+
+    return 'other'
+  }
+
+  private async parseGalleryFromJS(jsText: string, id: number): Promise<HitomiGallery> {
     let jsonText = ''
 
     // Try with semicolon
@@ -176,8 +188,7 @@ export class HitomiClient {
     }
 
     try {
-      const gallery = JSON.parse(jsonText) as HitomiGallery
-      return await this.convertHitomiGalleryToManga(gallery)
+      return JSON.parse(jsonText) as HitomiGallery
     } catch (error) {
       throw new ParseError('hitomi: `galleryinfo` 변수를 읽을 수 없어요.', {
         mangaId: id,

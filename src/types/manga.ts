@@ -40,7 +40,5 @@ export type MangaError = Manga & {
 }
 
 export type MangaTag = LabeledValue & {
-  category: MangaTagCategory
+  category: string
 }
-
-export type MangaTagCategory = '' | 'female' | 'male' | 'mixed' | 'other'

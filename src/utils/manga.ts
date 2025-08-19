@@ -1,4 +1,4 @@
-import type { LabeledValue, Manga, MangaTag, MangaTagCategory } from '@/types/manga'
+import type { LabeledValue, Manga, MangaTag } from '@/types/manga'
 
 import { checkDefined } from './type'
 
@@ -88,17 +88,16 @@ function getExistingValue<T, K extends keyof T>(validMangas: T[], key: K): T[K] 
   return undefined
 }
 
-const categoryOrder: Record<MangaTagCategory, number> = {
-  female: 1,
-  male: 2,
-  mixed: 3,
-  other: 4,
-  '': 5,
+const categoryOrder: Record<string, number> = {
+  female: 4,
+  male: 3,
+  mixed: 2,
+  other: 1,
 }
 
 function sortLabeledValues(labeledValues?: MangaTag[]) {
   return labeledValues?.sort((a, b) => {
-    const categoryDiff = categoryOrder[a.category] - categoryOrder[b.category]
+    const categoryDiff = (categoryOrder[b.category] ?? 0) - (categoryOrder[a.category] ?? 0)
 
     if (categoryDiff !== 0) {
       return categoryDiff

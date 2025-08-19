@@ -64,8 +64,8 @@ export async function GET(request: Request) {
 
     const cacheControl = createCacheControl({
       public: true,
-      maxAge: params.nextId ? sec('1 week') : sec('1 hour'), // NOTE: 캐시 메모리 용량당 과금 있으면 1 week -> 1 day 바꾸기
-      sMaxAge: sec('1 hour'),
+      maxAge: params.nextId ? sec('1 week') : sec('1 hour'),
+      sMaxAge: params.nextId ? sec('1 week') : sec('1 hour'), // NOTE: 캐시 메모리 용량당 과금 있으면 1 week -> 1 day 바꾸기
       swr: sec('5 minutes'),
     })
 

@@ -139,7 +139,7 @@ function createFilterLookup(filters: { category: ExcludableCategory; value: stri
       male: new Set<string>(),
       mixed: new Set<string>(),
       other: new Set<string>(),
-    },
+    } as Record<string, Set<string>>,
     series: new Set<string>(),
     artists: new Set<string>(),
     groups: new Set<string>(),
