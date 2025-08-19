@@ -60,8 +60,8 @@ export interface Parody {
 }
 
 export interface Tag {
-  female?: string
-  male?: string
+  female?: number | string
+  male?: number | string
   tag: string
   url: string
 }
