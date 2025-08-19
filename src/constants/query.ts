@@ -15,4 +15,7 @@ export const QueryKeys = {
   search: (searchParams: URLSearchParams) => ['search', Object.fromEntries(searchParams)],
   searchSuggestions: (query: string, locale: string) => ['search', 'suggestions', locale, query],
   posts: (filter: PostFilter, mangaId?: number, username?: string) => ['posts', filter, { mangaId, username }],
+
+  libraries: ['me', 'libraries'],
+  libraryItems: (libraryId: number) => ['me', 'library', libraryId],
 }

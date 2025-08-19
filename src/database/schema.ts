@@ -13,6 +13,8 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core'
 
+import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/constants/policy'
+
 export const userTable = pgTable('user', {
   id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
@@ -35,6 +37,38 @@ export const bookmarkTable = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [primaryKey({ columns: [table.userId, table.mangaId] }), index('idx_bookmark_user_id').on(table.userId)],
+).enableRLS()
+
+export const libraryTable = pgTable(
+  'library',
+  {
+    id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+    userId: bigint('user_id', { mode: 'number' })
+      .references(() => userTable.id, { onDelete: 'cascade' })
+      .notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+    name: varchar('name', { length: MAX_LIBRARY_NAME_LENGTH }).notNull(),
+    description: varchar('description', { length: MAX_LIBRARY_DESCRIPTION_LENGTH }),
+    color: integer('color'),
+    icon: varchar('icon', { length: 4 }), // Emoji
+    isPublic: boolean('is_public').default(false).notNull(),
+  },
+  (table) => [index('idx_library_user_id').on(table.userId)],
+).enableRLS()
+
+export const libraryItemTable = pgTable(
+  'library_item',
+  {
+    libraryId: bigint('library_id', { mode: 'number' })
+      .references(() => libraryTable.id, { onDelete: 'cascade' })
+      .notNull(),
+    mangaId: integer('manga_id').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.libraryId, table.mangaId] }),
+    index('idx_library_item_created_at').on(table.createdAt),
+  ],
 ).enableRLS()
 
 export const userCensorshipTable = pgTable(
