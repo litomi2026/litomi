@@ -32,16 +32,16 @@ export default function ShareLibraryButton({ libraryId, libraryName }: Readonly<
       <button
         className="p-3 hover:bg-zinc-800 rounded-lg transition"
         onClick={() => setIsModalOpen(true)}
-        title="라이브러리 공유"
+        title="서재 공유"
         type="button"
       >
         <Share2 className="size-5" />
       </button>
       <Modal onClose={() => setIsModalOpen(false)} open={isModalOpen}>
         <div className="grid gap-4 bg-zinc-900 w-screen max-w-md rounded-3xl border-2 p-6">
-          <h2 className="text-xl font-bold">라이브러리 공유</h2>
-          <p className="text-sm text-zinc-400">이 라이브러리는 공개 상태이므로 링크를 통해 누구나 볼 수 있어요</p>
-          <h3 className="font-medium text-center line-clamp-1">{libraryName}</h3>
+          <h2 className="text-xl font-bold">서재 공유</h2>
+          <p className="text-sm text-zinc-400">이 서재는 링크를 통해 누구나 볼 수 있어요</p>
+          <h3 className="font-medium text-center line-clamp-1 break-all">{libraryName}</h3>
           <div className="flex gap-2">
             <input
               className="flex-1 px-3 py-2 rounded-lg bg-zinc-800 border border-zinc-700 text-sm text-zinc-300 cursor-text select-all"
