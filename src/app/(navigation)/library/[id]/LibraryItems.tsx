@@ -10,9 +10,10 @@ type Props = {
     id: number
     name: string
   }
+  isOwner: boolean
 }
 
-export default async function LibraryItems({ library }: Readonly<Props>) {
+export default async function LibraryItems({ library, isOwner }: Readonly<Props>) {
   const libraryItems = await db
     .select({
       createdAt: libraryItemTable.createdAt,
@@ -24,5 +25,5 @@ export default async function LibraryItems({ library }: Readonly<Props>) {
     .orderBy(desc(libraryItemTable.createdAt), desc(libraryItemTable.mangaId))
     .limit(20)
 
-  return <LibraryItemsClient initialItems={libraryItems} library={library} />
+  return <LibraryItemsClient initialItems={libraryItems} isOwner={isOwner} library={library} />
 }
