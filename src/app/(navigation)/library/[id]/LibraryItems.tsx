@@ -3,7 +3,7 @@ import { desc, eq } from 'drizzle-orm'
 import { db } from '@/database/drizzle'
 import { libraryItemTable } from '@/database/schema'
 
-import LibraryContent from '../LibraryContent'
+import LibraryItemsClient from './LibraryItemsClient'
 
 type Props = {
   library: {
@@ -24,5 +24,5 @@ export default async function LibraryItems({ library }: Readonly<Props>) {
     .orderBy(desc(libraryItemTable.createdAt), desc(libraryItemTable.mangaId))
     .limit(20)
 
-  return <LibraryContent initialItems={libraryItems} library={library} />
+  return <LibraryItemsClient initialItems={libraryItems} library={library} />
 }
