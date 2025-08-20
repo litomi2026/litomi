@@ -45,7 +45,7 @@ const HENTAIPAW_CONFIG: ProxyClientConfig = {
     backoffMultiplier: 2,
     jitter: true,
   },
-  requestTimeout: ms('5 seconds'),
+  requestTimeout: ms('20 seconds'),
   defaultHeaders: {
     Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
     'Accept-Language': 'en-US,en;q=0.9',
