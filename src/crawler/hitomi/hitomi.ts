@@ -1,3 +1,5 @@
+import ms from 'ms'
+
 import { MangaSource } from '@/database/enum'
 import { translateArtistList } from '@/translation/artist'
 import { translateCharacterList } from '@/translation/character'
@@ -19,13 +21,13 @@ const HITOMI_CONFIG: ProxyClientConfig = {
   circuitBreaker: {
     failureThreshold: 5,
     successThreshold: 3,
-    timeout: 60000, // 1 minute
+    timeout: ms('1 minute'),
     shouldCountAsFailure: isUpstreamServer5XXError,
   },
   retry: {
     maxRetries: 3,
-    initialDelay: 1000,
-    maxDelay: 10000,
+    initialDelay: ms('1 second'),
+    maxDelay: ms('5 seconds'),
     backoffMultiplier: 2,
     jitter: true,
   },
