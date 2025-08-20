@@ -74,7 +74,7 @@ export class UpstreamServerError extends ProxyError {
     super(message, context)
     this.message = message
     this.statusCode = upstreamStatus >= 500 ? 502 : upstreamStatus
-    this.isRetryable = upstreamStatus >= 500 && upstreamStatus < 600
+    this.isRetryable = [500, 502, 503, 504, 507, 509, 520, 598, 599].includes(upstreamStatus)
   }
 }
 
@@ -93,7 +93,7 @@ export function isRetryableError(error: unknown): boolean {
 
   if (error instanceof Error) {
     if (error.name === 'AbortError') {
-      return true
+      return false
     }
 
     const message = error.message.toLowerCase()
