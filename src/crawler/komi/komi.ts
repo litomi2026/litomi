@@ -55,14 +55,14 @@ const KOMI_CONFIG: ProxyClientConfig = {
   circuitBreaker: {
     failureThreshold: 5,
     successThreshold: 3,
-    timeout: ms('1 minute'),
+    timeout: ms('10 minutes'),
     shouldCountAsFailure: isUpstreamServer5XXError,
   },
   retry: {
     maxRetries: 2,
     initialDelay: ms('1 second'),
     maxDelay: ms('5 seconds'),
-    backoffMultiplier: 3,
+    backoffMultiplier: 2,
     jitter: true,
   },
   requestTimeout: ms('5 seconds'),

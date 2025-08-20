@@ -1,8 +1,8 @@
 import { captureException } from '@sentry/nextjs'
+import ms from 'ms'
 
 import { CircuitBreakerError } from './errors'
 
-// Circuit breaker configuration
 export interface CircuitBreakerConfig {
   failureThreshold: number // CLOSED -> OPEN
   shouldCountAsFailure?: (error: unknown) => boolean
@@ -13,7 +13,7 @@ export interface CircuitBreakerConfig {
 export const DEFAULT_CIRCUIT_BREAKER_CONFIG: CircuitBreakerConfig = {
   failureThreshold: 3,
   successThreshold: 3,
-  timeout: 60000, // 1 minute
+  timeout: ms('1 minute'),
 }
 
 enum CircuitState {
