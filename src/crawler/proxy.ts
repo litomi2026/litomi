@@ -20,6 +20,7 @@ export interface ProxyClientConfig {
   baseURL: string
   circuitBreaker?: CircuitBreakerConfig
   defaultHeaders?: Record<string, string>
+  requestTimeout?: number
   retry?: RetryConfig
 }
 
@@ -36,8 +37,18 @@ export class ProxyClient {
     const url = `${this.config.baseURL}${path}`
 
     const execute = async () => {
+      let signal: AbortSignal | null | undefined
+
+      if (this.config.requestTimeout) {
+        const timeoutSignal = AbortSignal.timeout(this.config.requestTimeout)
+        signal = options.signal ? AbortSignal.any([options.signal, timeoutSignal]) : timeoutSignal
+      } else {
+        signal = options.signal
+      }
+
       const response = await fetch(url, {
         ...options,
+        signal,
         headers: {
           ...PROXY_HEADERS,
           ...this.config.defaultHeaders,

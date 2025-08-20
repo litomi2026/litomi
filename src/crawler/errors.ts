@@ -57,6 +57,13 @@ export class ParseError extends ProxyError {
   readonly statusCode = 502
 }
 
+export class TimeoutError extends ProxyError {
+  readonly errorCode = 'REQUEST_TIMEOUT'
+  readonly isRetryable = true
+  readonly message = '요청 시간이 초과되었어요'
+  readonly statusCode = 408
+}
+
 export class UpstreamServerError extends ProxyError {
   readonly errorCode = 'UPSTREAM_ERROR'
   readonly isRetryable: boolean
@@ -85,13 +92,19 @@ export function isRetryableError(error: unknown): boolean {
   }
 
   if (error instanceof Error) {
+    if (error.name === 'AbortError') {
+      return true
+    }
+
     const message = error.message.toLowerCase()
+
     return (
       message.includes('network') ||
       message.includes('fetch') ||
       message.includes('timeout') ||
       message.includes('econnreset') ||
-      message.includes('econnrefused')
+      message.includes('econnrefused') ||
+      message.includes('socket hang up')
     )
   }
 
@@ -104,11 +117,18 @@ export function normalizeError(error: unknown, defaultMessage = '알 수 없는 
   }
 
   if (error instanceof Error) {
+    const message = error.message.toLowerCase()
+
+    if (error.name === 'AbortError' || message.includes('timeout')) {
+      return new TimeoutError(error.message)
+    }
+
     if (
-      error.message.includes('fetch') ||
-      error.message.includes('network') ||
-      error.message.includes('ECONNRESET') ||
-      error.message.includes('socket hang up')
+      message.includes('fetch') ||
+      message.includes('network') ||
+      message.includes('econnreset') ||
+      message.includes('econnrefused') ||
+      message.includes('socket hang up')
     ) {
       return new NetworkError(error.message)
     }

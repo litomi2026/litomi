@@ -68,12 +68,13 @@ const HIYOBI_CONFIG: ProxyClientConfig = {
     shouldCountAsFailure: isUpstreamServer5XXError,
   },
   retry: {
-    maxRetries: 3,
+    maxRetries: 2,
     initialDelay: ms('1 second'),
     maxDelay: ms('5 seconds'),
-    backoffMultiplier: 2,
+    backoffMultiplier: 3,
     jitter: true,
   },
+  requestTimeout: ms('5 seconds'),
   defaultHeaders: {
     Origin: 'https://hiyobi.org/',
     Referer: 'https://hiyobi.org/',
@@ -89,12 +90,13 @@ const HIYOBI_IMAGE_CONFIG: ProxyClientConfig = {
     shouldCountAsFailure: isUpstreamServer5XXError,
   },
   retry: {
-    maxRetries: 3,
+    maxRetries: 2,
     initialDelay: ms('1 second'),
     maxDelay: ms('5 seconds'),
-    backoffMultiplier: 2,
+    backoffMultiplier: 3,
     jitter: true,
   },
+  requestTimeout: ms('5 seconds'),
   defaultHeaders: {
     Referer: 'https://hiyobi.org',
   },

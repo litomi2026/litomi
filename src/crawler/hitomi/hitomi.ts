@@ -25,12 +25,13 @@ const HITOMI_CONFIG: ProxyClientConfig = {
     shouldCountAsFailure: isUpstreamServer5XXError,
   },
   retry: {
-    maxRetries: 3,
+    maxRetries: 2,
     initialDelay: ms('1 second'),
     maxDelay: ms('5 seconds'),
-    backoffMultiplier: 2,
+    backoffMultiplier: 3,
     jitter: true,
   },
+  requestTimeout: ms('5 seconds'),
   defaultHeaders: {
     accept:
       'text/html,application/json,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
