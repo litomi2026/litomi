@@ -37,6 +37,7 @@ export enum MangaSource {
   // E_HENTAI = 5,
   // EX_HENTAI = 6,
   KOMI = 7,
+  HENTAIPAW = 8,
 }
 
 export enum NotificationConditionType {
