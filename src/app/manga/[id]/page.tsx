@@ -3,8 +3,8 @@ import { notFound } from 'next/navigation'
 
 import type { PageProps } from '@/types/nextjs'
 
-import { GETProxyMangaIdResponse } from '@/app/api/proxy/manga/[id]/route'
-import { CANONICAL_URL, defaultOpenGraph, SHORT_NAME } from '@/constants'
+import { defaultOpenGraph, SHORT_NAME } from '@/constants'
+import { HarpiClient } from '@/crawler/harpi/harpi'
 import { KHentaiClient } from '@/crawler/k-hentai'
 import { getImageSource } from '@/utils/manga'
 
@@ -21,8 +21,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const { id } = validation.data
-  const response = await fetch(`${CANONICAL_URL}/api/proxy/manga/${id}`, { cache: 'force-cache' })
-  const manga = (await response.json()) as GETProxyMangaIdResponse
+  const harpiClient = HarpiClient.getInstance()
+  const manga = await harpiClient.fetchManga(id, undefined, { cache: 'force-cache' }).catch(() => null)
 
   if (!manga) {
     notFound()
