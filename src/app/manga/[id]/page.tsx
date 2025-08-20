@@ -25,7 +25,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const manga = await harpiClient.fetchManga(id, undefined, { cache: 'force-cache' }).catch(() => null)
 
   if (!manga) {
-    notFound()
+    return {
+      title: `작품 - ${SHORT_NAME}`,
+      openGraph: {
+        ...defaultOpenGraph,
+        title: `작품 - ${SHORT_NAME}`,
+        url: `/manga/${id}`,
+      },
+      alternates: {
+        canonical: `/manga/${id}`,
+        languages: { ko: `/manga/${id}` },
+      },
+    }
   }
 
   const { title, description, images, origin } = manga
