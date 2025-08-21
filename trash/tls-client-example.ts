@@ -88,8 +88,10 @@ export class TLSClient {
         curl.setOpt('COOKIEJAR', '/tmp/cookies.txt')
 
         // Disable SSL verification for testing (remove in production)
-        // curl.setOpt('SSL_VERIFYPEER', false)
-        // curl.setOpt('SSL_VERIFYHOST', false)
+        if (process.env.NODE_ENV === 'development') {
+          curl.setOpt('SSL_VERIFYPEER', false)
+          curl.setOpt('SSL_VERIFYHOST', false)
+        }
 
         // Set up response handling
         let responseData = ''
