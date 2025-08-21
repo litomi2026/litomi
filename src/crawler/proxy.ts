@@ -19,7 +19,7 @@ export const PROXY_HEADERS = {
 export interface ProxyClientConfig {
   baseURL: string
   circuitBreaker?: CircuitBreakerConfig
-  defaultHeaders?: Record<string, string>
+  defaultHeaders?: HeadersInit
   requestTimeout?: number
   retry?: RetryConfig
 }

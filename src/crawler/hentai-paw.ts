@@ -1,78 +1,206 @@
-// https://transform.tools/typescript-to-javascript
-// https://hentaipaw.com/
-// https://jsonformatter.org/8f087a
+import ms from 'ms'
+import { parse } from 'node-html-parser'
 
-function extractArticleId(listHTML: string) {
-  // 정규식 패턴 생성
-  // a 태그 내부에 fi-kr 클래스를 가진 span이 있는 패턴을 찾음
-  const pattern =
-    /<a[^>]*href=["']([^"']+)["'][^>]*>(?:(?!<\/a>).)*?<span[^>]*class=["'][^"']*fi-kr[^"']*["'][^>]*>(?:(?!<\/a>).)*?<\/a>/g
+import { MangaSource } from '@/database/enum'
+import { translateArtistList } from '@/translation/artist'
+import { translateCharacterList } from '@/translation/character'
+import { Multilingual } from '@/translation/common'
+import { translateGroupList } from '@/translation/group'
+import { translateLanguageList } from '@/translation/language'
+import { translateSeriesList } from '@/translation/series'
+import { translateTag } from '@/translation/tag'
+import { Manga } from '@/types/manga'
+import { sec } from '@/utils/date'
 
-  // href 값을 추출하기 위한 정규식
-  const hrefPattern = /<a[^>]*href=["']([^"']+)["'][^>]*>/
+import { ProxyClient, ProxyClientConfig } from './proxy'
+import { isUpstreamServer5XXError } from './proxy-utils'
 
-  // 마지막 숫자를 추출하기 위한 정규식
-  const numberPattern = /\/(\d+)(?:[^/\d]*)?$/
+type HentaiPawSlide = {
+  src: string
+}
 
-  const numbers = []
-  let match
+const HENTAIPAW_CONFIG: ProxyClientConfig = {
+  baseURL: 'https://hentaipaw.com',
+  circuitBreaker: {
+    failureThreshold: 5,
+    successThreshold: 3,
+    timeout: ms('10 minutes'),
+    shouldCountAsFailure: isUpstreamServer5XXError,
+  },
+  retry: {
+    maxRetries: 2,
+    initialDelay: ms('1 second'),
+    maxDelay: ms('5 seconds'),
+    backoffMultiplier: 2,
+    jitter: true,
+  },
+  requestTimeout: ms('5 seconds'),
+  defaultHeaders: {
+    accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'accept-language': 'en-US,en;q=0.9',
+    referer: 'https://hentaipaw.com/',
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+  },
+}
 
-  // 모든 일치하는 a 태그 찾기
-  while ((match = pattern.exec(listHTML)) !== null) {
-    // 찾은 a 태그에서 href 속성 추출
-    const hrefMatch = hrefPattern.exec(match[0])
-    if (hrefMatch && hrefMatch[1]) {
-      const href = hrefMatch[1]
+export class HentaiPawClient {
+  private static instance: HentaiPawClient
+  private readonly client: ProxyClient
 
-      // href에서 마지막 숫자 추출
-      const numberMatch = numberPattern.exec(href)
-      if (numberMatch && numberMatch[1]) {
-        numbers.push(parseInt(numberMatch[1], 10))
+  private constructor() {
+    this.client = new ProxyClient(HENTAIPAW_CONFIG)
+  }
+
+  static getInstance(): HentaiPawClient {
+    if (!HentaiPawClient.instance) {
+      HentaiPawClient.instance = new HentaiPawClient()
+    }
+    return HentaiPawClient.instance
+  }
+
+  async fetchManga(id: number, revalidate = sec('1 week')): Promise<Manga | null> {
+    const html = await this.client.fetch<string>(`/articles/${id}`, { next: { revalidate } }, true)
+    return this.parseMangaFromHTML(html, id)
+  }
+
+  async fetchMangaImages(id: number, revalidate = sec('1 day')): Promise<string[] | null> {
+    const html = await this.client.fetch<string>(`/viewer?articleId=${id}`, { next: { revalidate } }, true)
+    return this.extractImageURLsFromHTML(html)
+  }
+
+  private extractImageURLsFromHTML(html: string): string[] | null {
+    const root = parse(html)
+    const scripts = root.querySelectorAll('script')
+
+    for (const script of scripts) {
+      const scriptContent = script.innerHTML
+      console.log('👀 - HentaiPawClient - extractImageURLsFromHTML - scriptContent:', scriptContent)
+
+      if (!scriptContent.includes('"slides":')) {
+        continue
+      }
+
+      const slidesMatch =
+        scriptContent.match(/"slides":\s*(\[[\s\S]*?\])\s*(?:,\s*"[^"]+"|})/) ||
+        scriptContent.match(/"slides":\[(.*?)\],"startingPage":/s)
+
+      if (!slidesMatch || !slidesMatch[1]) {
+        return null
+      }
+
+      try {
+        const slides: HentaiPawSlide[] = JSON.parse(slidesMatch[1])
+        return slides.map((slide) => slide.src).filter(Boolean)
+      } catch (parseError) {
+        console.error('HentaiPawClient - extractImageURLsFromHTML:', parseError)
       }
     }
+
+    const matches = html.match(/https:\/\/cdn\.imagedeliveries\.com\/\d+\/\w+\/\d+\.webp/g)
+    return matches ? Array.from(new Set(matches)) : null
   }
 
-  return numbers
-}
+  private parseMangaFromHTML(html: string, id: number): Manga | null {
+    const root = parse(html)
+    const articleDetails = root.querySelector('#article-details')
 
-async function fetchMangaImageURLs({ articleId }: { articleId: number | string }) {
-  const response = await fetch(`https://hentaipaw.com/viewer?articleId=${articleId}`)
-  const viewerHTML = await response.text()
-  const urls = getImageURLs(viewerHTML)
-  return urls
-}
+    if (!articleDetails) {
+      console.error('HentaiPawClient - parseMangaFromHTML - Article details not found')
+      return null
+    }
 
-async function fetchMangaList({ page }: { page: number }) {
-  const response = await fetch(`https://hentaipaw.com/?page=${page}`)
-  const listHTML = await response.text()
-  const hrefs = extractArticleId(listHTML)
-  return hrefs
-}
+    const title = articleDetails.querySelector('h2')?.text?.trim() || articleDetails.querySelector('h1')?.text?.trim()
 
-function getImageURLs(viewerHTML: string) {
-  const pattern = /https:\/\/cdn\.imagedeliveries\.com\/\d+\/\w+\/\d+\.webp/g
-  const matches = viewerHTML.match(pattern) || []
-  return matches
-}
+    if (!title) {
+      console.error('HentaiPawClient - parseMangaFromHTML - Title not found')
+      return null
+    }
 
-const manga: Record<string, string[]> = {}
+    const articleTagInformation = articleDetails.querySelector('#article-tag-information')
 
-async function main() {
-  for (let page = 1; page < 6; page++) {
-    console.log('👀 ~ page:', page)
-    const articleIds = await fetchMangaList({ page })
-    await sleep(2000)
+    if (!articleTagInformation) {
+      console.error('HentaiPawClient - parseMangaFromHTML - Article tag information not found')
+      return null
+    }
 
-    for (const articleId of articleIds) {
-      const urls = await fetchMangaImageURLs({ articleId })
-      manga[articleId] = urls
-      await sleep(2000)
+    const sections = articleTagInformation.querySelectorAll('.flex.flex-wrap.gap-1')
+    let artists: string[] | undefined
+    let groups: string[] | undefined
+    let series: string[] | undefined
+    let type: string | undefined
+    let languages: string[] | undefined
+    let tags: string[] | undefined
+    let characters: string[] | undefined
+    let pageCount = 0
+
+    for (const section of sections) {
+      const heading = section.querySelector('h3')?.text?.trim().toLowerCase()
+
+      if (!heading) {
+        continue
+      }
+
+      const hasNA = section.querySelector('p')?.text?.trim() === 'N/A'
+
+      if (hasNA) {
+        continue
+      }
+
+      const links = section.querySelectorAll('a')
+      const values = links.map((link) => link.text.trim()).filter(Boolean)
+
+      if (values.length === 0) {
+        continue
+      }
+
+      switch (heading) {
+        case 'artists:':
+          artists = values
+          break
+        case 'category:':
+          type = values[0]
+          break
+        case 'characters:':
+          characters = values
+          break
+        case 'groups:':
+          groups = values
+          break
+        case 'language:':
+          languages = values
+          break
+        case 'parodies:':
+          series = values
+          break
+        case 'tags:':
+          tags = values
+          break
+      }
+    }
+
+    const pageCountMatch = html.match(/(\d+)\s*(?:pages?|images?)/i)
+
+    if (pageCountMatch) {
+      pageCount = parseInt(pageCountMatch[1], 10)
+    } else {
+      pageCount = 1
+    }
+
+    const locale: keyof Multilingual = 'ko'
+
+    return {
+      id,
+      title,
+      tags: tags?.map((tag) => translateTag('other', tag, locale)),
+      artists: translateArtistList(artists, locale),
+      group: translateGroupList(groups, locale),
+      series: translateSeriesList(series, locale),
+      type,
+      languages: translateLanguageList(languages, locale),
+      count: pageCount,
+      characters: translateCharacterList(characters, locale),
+      images: [`https://cdn.imagedeliveries.com/${id}/thumbnails/cover.webp`],
+      source: MangaSource.HENTAIPAW,
     }
   }
 }
-
-function sleep(ms: number) {
-  return new Promise((r) => setTimeout(r, ms))
-}
-
-main()

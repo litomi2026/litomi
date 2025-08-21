@@ -1,4 +1,4 @@
-import { useSuspenseInfiniteQuery } from '@tanstack/react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'next/navigation'
 
 import { GETProxyKSearchResponse } from '@/app/api/proxy/k/search/route'
@@ -17,7 +17,7 @@ export function useSearchQuery() {
   const searchParams = useSearchParams()
   const whitelisted = whitelistSearchParams(searchParams, SEARCH_PAGE_SEARCH_PARAMS)
 
-  return useSuspenseInfiniteQuery<GETProxyKSearchResponse, Error>({
+  return useInfiniteQuery<GETProxyKSearchResponse, Error>({
     queryKey: QueryKeys.search(whitelisted),
     queryFn: ({ pageParam }) => {
       const searchParamsWithCursor = new URLSearchParams(whitelisted)
