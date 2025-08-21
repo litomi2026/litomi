@@ -1,5 +1,6 @@
 import { FALLBACK_IMAGE_URL } from '@/constants/json'
 import { HarpiClient } from '@/crawler/harpi/harpi'
+import { HentaiPawClient } from '@/crawler/hentai-paw'
 import { HitomiClient } from '@/crawler/hitomi/hitomi'
 import { HiyobiClient } from '@/crawler/hiyobi'
 import { KHentaiClient } from '@/crawler/k-hentai'
@@ -20,25 +21,34 @@ export async function getMangaFromMultiSources(id: number, revalidate?: number):
   const kHentaiClient = KHentaiClient.getInstance()
   const harpiClient = HarpiClient.getInstance()
   const komiClient = KomiClient.getInstance()
+  const hentaiPawClient = HentaiPawClient.getInstance()
 
-  const [hiyobiManga, hiyobiImages, kHentaiManga, harpiManga, komiManga, hitomiManga] = await Promise.all([
-    hiyobiClient.fetchManga(id).catch((error) => new Error(error)),
-    hiyobiClient.fetchMangaImages(id, revalidate).catch(() => null),
-    kHentaiClient.fetchManga(id, revalidate).catch((error) => new Error(error)),
-    harpiClient.fetchManga(id).catch((error) => new Error(error)),
-    komiClient.fetchManga(id).catch((error) => new Error(error)),
-    hitomiClient.fetchManga(id, revalidate).catch((error) => new Error(error)),
-  ])
+  const [hiyobiManga, hiyobiImages, kHentaiManga, harpiManga, komiManga, hitomiManga, hentaiPawImages] =
+    await Promise.all([
+      hiyobiClient.fetchManga(id).catch((error) => new Error(error)),
+      hiyobiClient.fetchMangaImages(id, revalidate).catch(() => null),
+      kHentaiClient.fetchManga(id, revalidate).catch((error) => new Error(error)),
+      harpiClient.fetchManga(id).catch((error) => new Error(error)),
+      komiClient.fetchManga(id).catch((error) => new Error(error)),
+      hitomiClient.fetchManga(id, revalidate).catch((error) => new Error(error)),
+      hentaiPawClient.fetchMangaImages(id, revalidate).catch(() => null),
+    ])
 
-  const sources: MangaResult[] = [harpiManga, komiManga, hiyobiManga, kHentaiManga, hitomiManga]
-  const definedSources = sources.filter(checkDefined)
+  const sources: MangaResult[] = [
+    harpiManga,
+    komiManga,
+    hiyobiManga,
+    kHentaiManga,
+    createHentaiPawManga(id, hentaiPawImages),
+    hitomiManga,
+  ].filter(checkDefined)
 
-  if (definedSources.length === 0) {
+  if (sources.length === 0) {
     return null
   }
 
-  const errors = definedSources.filter((source): source is Error => source instanceof Error)
-  const validMangas = definedSources.filter((source): source is Manga => !(source instanceof Error))
+  const errors = sources.filter((source): source is Error => source instanceof Error)
+  const validMangas = sources.filter((source): source is Manga => !(source instanceof Error))
 
   if (validMangas.length === 0) {
     const error = errors[Math.floor(Math.random() * errors.length)] ?? new Error('알 수 없는 오류')
@@ -89,26 +99,34 @@ export async function getMangasFromMultiSources(ids: number[], revalidate: numbe
   const hitomiClient = HitomiClient.getInstance()
   const kHentaiClient = KHentaiClient.getInstance()
   const komiClient = KomiClient.getInstance()
+  const hentaiPawClient = HentaiPawClient.getInstance()
 
-  const [hiyobiMangas, hiyobiImages, kHentaiMangas, komiMangas, hitomiMangas] = await Promise.all([
+  const [hiyobiMangas, hiyobiImages, kHentaiMangas, komiMangas, hitomiMangas, hentaiPawImages] = await Promise.all([
     Promise.all(remainingIds.map((id) => hiyobiClient.fetchManga(id).catch((error) => new Error(error)))),
     Promise.all(remainingIds.map((id) => hiyobiClient.fetchMangaImages(id, revalidate).catch(() => null))),
     Promise.all(remainingIds.map((id) => kHentaiClient.fetchManga(id, revalidate).catch((error) => new Error(error)))),
     Promise.all(remainingIds.map((id) => komiClient.fetchManga(id).catch((error) => new Error(error)))),
     Promise.all(remainingIds.map((id) => hitomiClient.fetchManga(id, revalidate).catch((error) => new Error(error)))),
+    Promise.all(remainingIds.map((id) => hentaiPawClient.fetchMangaImages(id, revalidate).catch(() => null))),
   ])
 
   for (let i = 0; i < remainingIds.length; i++) {
-    const sources: MangaResult[] = [komiMangas[i], hiyobiMangas[i], kHentaiMangas[i], hitomiMangas[i]]
-    const definedSources = sources.filter(checkDefined)
+    const id = remainingIds[i]
 
-    if (definedSources.length === 0) {
+    const sources: MangaResult[] = [
+      komiMangas[i],
+      hiyobiMangas[i],
+      kHentaiMangas[i],
+      hitomiMangas[i],
+      createHentaiPawManga(id, hentaiPawImages[i]),
+    ].filter(checkDefined)
+
+    if (sources.length === 0) {
       continue
     }
 
-    const errors = definedSources.filter((source): source is Error => source instanceof Error)
-    const validMangas = definedSources.filter((source): source is Manga => !(source instanceof Error))
-    const id = remainingIds[i]
+    const errors = sources.filter((source): source is Error => source instanceof Error)
+    const validMangas = sources.filter((source): source is Manga => !(source instanceof Error))
 
     if (validMangas.length === 0) {
       mangaMap[id] = createErrorManga(id, errors[Math.floor(Math.random() * errors.length)])
@@ -116,10 +134,16 @@ export async function getMangasFromMultiSources(ids: number[], revalidate: numbe
     }
 
     const validHiyobiManga = validMangas.find((manga) => manga.source === MangaSource.HIYOBI)
+    const validHentaiPawManga = validMangas.find((manga) => manga.source === MangaSource.HENTAIPAW)
     const validHiyobiImages = hiyobiImages[i]
+    const validHentaiPawImages = hentaiPawImages[i]
 
     if (validHiyobiManga && validHiyobiImages) {
       validHiyobiManga.images = validHiyobiImages
+    }
+
+    if (validHentaiPawManga && validHentaiPawImages) {
+      validHentaiPawManga.images = validHentaiPawImages
     }
 
     mangaMap[id] = {
@@ -134,6 +158,20 @@ export async function getMangasFromMultiSources(ids: number[], revalidate: numbe
 
 function createErrorManga(id: number, error: Error): Manga {
   return { id, title: `${error.name}: ${error.message}\n${error.cause ?? ''}`, images: [FALLBACK_IMAGE_URL] }
+}
+
+function createHentaiPawManga(id: number, images: string[] | null): Manga | null {
+  if (!images || images.length === 0) {
+    return null
+  }
+
+  return {
+    id,
+    title: id.toString(),
+    images,
+    source: MangaSource.HENTAIPAW,
+    count: images.length,
+  }
 }
 
 function findHarpiManga(harpiMangas: Error | Manga[] | null, id: number) {

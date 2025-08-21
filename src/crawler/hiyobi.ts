@@ -76,8 +76,9 @@ const HIYOBI_CONFIG: ProxyClientConfig = {
   },
   requestTimeout: ms('5 seconds'),
   defaultHeaders: {
-    Origin: 'https://hiyobi.org/',
-    Referer: 'https://hiyobi.org/',
+    'accept-encoding': 'gzip, deflate, br, zstd',
+    origin: 'https://hiyobi.org',
+    referer: 'https://hiyobi.org/',
   },
 }
 
@@ -98,7 +99,9 @@ const HIYOBI_IMAGE_CONFIG: ProxyClientConfig = {
   },
   requestTimeout: ms('5 seconds'),
   defaultHeaders: {
-    Referer: 'https://hiyobi.org',
+    'accept-encoding': 'gzip, deflate, br, zstd',
+    origin: 'https://hiyobi.org',
+    referer: 'https://hiyobi.org',
   },
 }
 

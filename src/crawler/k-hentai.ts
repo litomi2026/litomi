@@ -175,8 +175,9 @@ const K_HENTAI_CONFIG: ProxyClientConfig = {
   },
   requestTimeout: ms('5 seconds'),
   defaultHeaders: {
-    Origin: 'https://k-hentai.org/',
-    Referer: 'https://k-hentai.org/',
+    'accept-encoding': 'gzip, deflate, br, zstd',
+    origin: 'https://k-hentai.org',
+    referer: 'https://k-hentai.org/',
   },
 }
 
