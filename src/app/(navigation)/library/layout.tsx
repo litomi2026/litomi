@@ -3,11 +3,11 @@ import { ReactNode } from 'react'
 
 import { db } from '@/database/drizzle'
 import { libraryItemTable, libraryTable } from '@/database/schema'
+import { intToHexColor } from '@/utils/color'
 import { getUserIdFromCookie } from '@/utils/session'
 
 import LibrarySidebar from './LibrarySidebar'
 import MobileLibraryHeader from './MobileLibraryHeader'
-import { formatHexColor } from './utils'
 
 type Props = {
   children: ReactNode
@@ -34,10 +34,10 @@ export default async function LibraryLayout({ children }: Props) {
 
   if (userId) {
     const libraryRows = await query.where(eq(libraryTable.userId, Number(userId))).orderBy(libraryTable.id)
-    libraries = libraryRows.map((lib) => ({ ...lib, color: formatHexColor(lib.color) }))
+    libraries = libraryRows.map((lib) => ({ ...lib, color: intToHexColor(lib.color) }))
   } else {
     const publicLibraries = await query.where(eq(libraryTable.isPublic, true)).orderBy(libraryTable.id).limit(20)
-    libraries = publicLibraries.map((lib) => ({ ...lib, color: formatHexColor(lib.color) }))
+    libraries = publicLibraries.map((lib) => ({ ...lib, color: intToHexColor(lib.color) }))
   }
 
   return (
