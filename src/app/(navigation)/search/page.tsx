@@ -1,4 +1,3 @@
-import { Suspense } from '@suspensive/react'
 import { Metadata } from 'next'
 import { cookies } from 'next/headers'
 
@@ -8,9 +7,8 @@ import { getCookieJSON } from '@/utils/cookie'
 import { ViewCookie } from '@/utils/param'
 
 import { GETProxyKSearchSchema } from '../../api/proxy/k/search/schema'
-import ActiveFilters from './ActiveFilters'
+import ActiveFilters, { ClearAllFilters } from './ActiveFilters'
 import Error400 from './Error400'
-import Loading from './loading'
 import SearchResults from './SearchResults'
 
 export const metadata: Metadata = {
@@ -56,10 +54,16 @@ export default async function Page({ searchParams }: PageProps) {
 
   return (
     <>
-      {hasActiveFilters && <ActiveFilters filters={validationResult.data} />}
-      <Suspense clientOnly fallback={<Loading />}>
-        <SearchResults view={viewType} />
-      </Suspense>
+      {hasActiveFilters && (
+        <div className="gap-2 mb-4 hidden sm:grid">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-medium text-zinc-400">적용된 필터</h3>
+            <ClearAllFilters />
+          </div>
+          <ActiveFilters filters={validationResult.data} />
+        </div>
+      )}
+      <SearchResults view={viewType} />
     </>
   )
 }

@@ -1,5 +1,7 @@
 'use client'
 
+import { useMemo } from 'react'
+
 import { useSearchQuery } from '@/app/(navigation)/search/useSearchQuery'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import MangaCardImage from '@/components/card/MangaCardImage'
@@ -13,14 +15,25 @@ type Props = {
 }
 
 export default function SearchResults({ view }: Readonly<Props>) {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useSearchQuery()
-  const mangas = data.pages.flatMap((page) => page.mangas)
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useSearchQuery()
+  const mangas = useMemo(() => data?.pages.flatMap((page) => page.mangas) ?? [], [data])
 
   const loadMoreRef = useInfiniteScrollObserver({
     hasNextPage,
     isFetchingNextPage,
     fetchNextPage,
   })
+
+  if (isLoading) {
+    const skeletonCount = view === ViewCookie.IMAGE ? 12 : 6
+    return (
+      <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2 grow`}>
+        {Array.from({ length: skeletonCount }).map((_, i) => (
+          <MangaCardSkeleton key={i} />
+        ))}
+      </ul>
+    )
+  }
 
   if (mangas.length === 0 && !isFetchingNextPage) {
     return (
