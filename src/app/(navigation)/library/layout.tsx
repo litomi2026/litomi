@@ -42,8 +42,8 @@ export default async function LibraryLayout({ children }: Props) {
 
   return (
     <div className="flex-1 flex flex-col sm:flex-row">
-      <LibrarySidebar libraries={libraries} username={userId} />
-      <MobileLibraryHeader libraries={libraries} username={userId} />
+      <LibrarySidebar className="hidden sm:flex sm:flex-col max-w-56" libraries={libraries} userId={userId} />
+      <MobileLibraryHeader libraries={libraries} userId={userId} />
       {children}
     </div>
   )
