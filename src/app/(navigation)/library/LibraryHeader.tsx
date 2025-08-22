@@ -1,14 +1,17 @@
 'use client'
 
 import { Menu, MoreVertical, X } from 'lucide-react'
+import dynamic from 'next/dynamic'
 import { useParams } from 'next/navigation'
 import { useCallback, useState } from 'react'
 
 import type { LibraryWithCount } from '@/app/api/library/route'
 
-import BulkOperationsToolbar from './[id]/BulkOperationsToolbar'
 import { useLibrarySelectionStore } from './[id]/librarySelection'
+import ShareLibraryButton from './[id]/ShareLibraryButton'
 import LibrarySidebar from './LibrarySidebar'
+
+const BulkOperationsToolbar = dynamic(() => import('./[id]/BulkOperationsToolbar'))
 
 type Params = {
   id: string
@@ -19,11 +22,10 @@ type Props = {
   userId: string | null
 }
 
-export default function MobileLibraryHeader({ libraries, userId }: Readonly<Props>) {
+export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const { id } = useParams<Params>()
-  const { enterSelectionMode, exitSelectionMode, isSelectionMode, selectedItems } = useLibrarySelectionStore()
-  const selectedCount = selectedItems.size
+  const { enterSelectionMode, exitSelectionMode, isSelectionMode } = useLibrarySelectionStore()
   const currentLibrary = id ? libraries.find((lib) => lib.id === Number(id)) : null
   const isOwner = currentLibrary?.userId === Number(userId)
   const isGuest = !userId
@@ -59,28 +61,46 @@ export default function MobileLibraryHeader({ libraries, userId }: Readonly<Prop
 
   return (
     <>
-      <div className="sticky top-0 z-40 flex justify-between items-center gap-3 p-4 bg-zinc-950 border-b border-zinc-800 sm:hidden">
+      <div className="sticky top-0 z-40 flex justify-between items-center gap-3 p-4 bg-zinc-950 border-b border-zinc-800">
         <div className="flex items-center gap-3">
           <button
             aria-label="library-menu"
-            className="p-2 -m-1 -mx-2 hover:bg-zinc-800 rounded-lg transition-colors"
+            className="p-2 -m-1 -mx-2 hover:bg-zinc-800 rounded-lg transition sm:hidden"
             onClick={openDrawer}
             type="button"
           >
             <Menu className="size-5" />
           </button>
+          {!isSelectionMode && currentLibrary && (
+            <div
+              className="hidden size-10 my-1 mr-2 rounded-lg sm:flex items-center bg-zinc-800 justify-center text-xl shrink-0"
+              style={{ backgroundColor: currentLibrary.color ?? '' }}
+            >
+              {currentLibrary?.icon?.slice(0, 2) ?? currentLibrary?.name.slice(0, 1)}
+            </div>
+          )}
           {currentLibrary ? (
-            !isSelectionMode && <h1 className="text-lg font-medium line-clamp-1 break-all">{currentLibrary.name}</h1>
+            !isSelectionMode && (
+              <div className="grid flex-1 break-all">
+                <h1 className="text-lg font-medium line-clamp-1 sm:text-xl sm:font-bold" title={currentLibrary.name}>
+                  {currentLibrary.name}
+                </h1>
+                {currentLibrary.description && (
+                  <p className="max-sm:hidden text-sm text-zinc-400 line-clamp-1">{currentLibrary.description}</p>
+                )}
+              </div>
+            )
           ) : (
             <span className="text-lg font-medium">{isGuest ? '공개 서재' : '모든 서재'}</span>
           )}
         </div>
-        {isSelectionMode && selectedCount > 0 && currentLibrary && (
-          <BulkOperationsToolbar currentLibraryId={currentLibrary.id} />
+        {!isSelectionMode && currentLibrary && (
+          <ShareLibraryButton className="p-2 -mx-1" libraryId={currentLibrary.id} libraryName={currentLibrary.name} />
         )}
+        {isSelectionMode && currentLibrary && <BulkOperationsToolbar currentLibraryId={currentLibrary.id} />}
         {isOwner && (
           <button
-            className="p-2 -m-1 -mx-2 hover:bg-zinc-800 rounded-lg transition"
+            className="p-2 -mx-1 sm:my-1.5 hover:bg-zinc-800 rounded-lg transition"
             onClick={handleSelectionModeChange}
             title={isSelectionMode ? '선택 모드 종료' : '선택 모드'}
             type="button"
@@ -89,8 +109,6 @@ export default function MobileLibraryHeader({ libraries, userId }: Readonly<Prop
           </button>
         )}
       </div>
-
-      {/* Mobile Drawer */}
       {isDrawerOpen && (
         <>
           <div className="fixed inset-0 z-50 bg-black/50 animate-fade-in-fast sm:hidden" onClick={closeDrawer} />

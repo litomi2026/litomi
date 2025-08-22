@@ -6,8 +6,8 @@ import { libraryItemTable, libraryTable } from '@/database/schema'
 import { intToHexColor } from '@/utils/color'
 import { getUserIdFromCookie } from '@/utils/session'
 
+import LibraryHeader from './LibraryHeader'
 import LibrarySidebar from './LibrarySidebar'
-import MobileLibraryHeader from './MobileLibraryHeader'
 
 type Props = {
   children: ReactNode
@@ -42,9 +42,11 @@ export default async function LibraryLayout({ children }: Props) {
 
   return (
     <div className="flex-1 flex flex-col sm:flex-row">
-      <LibrarySidebar className="hidden sm:flex sm:flex-col max-w-56" libraries={libraries} userId={userId} />
-      <MobileLibraryHeader libraries={libraries} userId={userId} />
-      {children}
+      <LibrarySidebar className="max-sm:hidden flex flex-col max-w-52" libraries={libraries} userId={userId} />
+      <div className="flex flex-col flex-1">
+        <LibraryHeader libraries={libraries} userId={userId} />
+        {children}
+      </div>
     </div>
   )
 }
