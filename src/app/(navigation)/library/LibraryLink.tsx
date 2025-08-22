@@ -10,6 +10,7 @@ type LibraryHomeLinkProps = {
   isGuest: boolean
   libraryCount: number
   mangaCount: number
+  onClick?: () => void
 }
 
 type Props = {
@@ -21,9 +22,10 @@ type Props = {
     color?: string | null
     icon?: string | null
   }
+  onClick?: () => void
 }
 
-export function LibraryHomeLink({ isGuest, libraryCount, mangaCount }: Readonly<LibraryHomeLinkProps>) {
+export function LibraryHomeLink({ isGuest, libraryCount, mangaCount, onClick }: Readonly<LibraryHomeLinkProps>) {
   const pathname = usePathname()
 
   return (
@@ -32,6 +34,7 @@ export function LibraryHomeLink({ isGuest, libraryCount, mangaCount }: Readonly<
       className="flex items-center gap-3 p-2 rounded-lg border border-transparent transition hover:bg-zinc-800/50 text-zinc-400 hover:text-white
       aria-current:bg-zinc-800 aria-current:text-white aria-current:border-zinc-700"
       href="/library"
+      onClick={onClick}
     >
       <div className="size-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-md">
         <LibraryBig className="w-4 h-4 text-white" />
@@ -46,7 +49,7 @@ export function LibraryHomeLink({ isGuest, libraryCount, mangaCount }: Readonly<
   )
 }
 
-export default function LibraryLink({ library }: Readonly<Props>) {
+export default function LibraryLink({ library, onClick }: Readonly<Props>) {
   const params = useParams()
   const currentLibraryId = params.id
   const isActive = currentLibraryId === library.id.toString()
@@ -56,6 +59,7 @@ export default function LibraryLink({ library }: Readonly<Props>) {
       aria-current={isActive}
       className="flex items-center gap-3 p-2 rounded-lg transition aria-current:bg-zinc-800 aria-current:border aria-current:border-zinc-700 hover:bg-zinc-800/50 border border-transparent"
       href={`/library/${library.id}`}
+      onClick={onClick}
     >
       <div
         aria-current={isActive}
