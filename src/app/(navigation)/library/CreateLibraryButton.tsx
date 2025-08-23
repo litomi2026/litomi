@@ -50,23 +50,18 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
   const [formErrors, dispatchAction, isPending] = useActionResponse({
     action: createLibrary,
     onSuccess: (newLibraryId, [formData]) => {
-      queryClient.setQueryData<GETLibraryResponse>(QueryKeys.libraries, (oldData) => {
+      queryClient.setQueryData<GETLibraryResponse>(QueryKeys.libraries, (oldLibraries) => {
         const newLibrary = {
           id: newLibraryId,
           name: formData.get('name')?.toString() ?? '',
-          description: formData.get('description')?.toString() ?? '',
-          color: formData.get('color')?.toString() ?? '',
-          icon: formData.get('icon')?.toString() ?? '',
-          isPublic: formData.get('isPublic')?.toString() === 'true',
+          description: formData.get('description')?.toString(),
+          color: formData.get('color')?.toString() ?? null,
+          icon: formData.get('icon')?.toString() ?? null,
+          isPublic: formData.get('is-public')?.toString() === 'on',
           itemCount: 0,
         }
 
-        if (!oldData) {
-          return { libraries: [newLibrary] }
-        }
-
-        oldData.libraries.push(newLibrary)
-        return { libraries: oldData.libraries }
+        return oldLibraries ? [...oldLibraries, newLibrary] : [newLibrary]
       })
 
       toast.success('서재를 생성했어요')
