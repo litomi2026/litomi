@@ -1,21 +1,26 @@
 'use client'
 
-import { Check, Copy, Share2 } from 'lucide-react'
+import { Check, Copy, Share2, X } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
 import Modal from '@/components/ui/Modal'
 
 type Props = {
+  className?: string
   libraryId: number
   libraryName: string
 }
 
-export default function ShareLibraryButton({ libraryId, libraryName }: Readonly<Props>) {
+export default function ShareLibraryButton({ className = '', libraryId, libraryName }: Readonly<Props>) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
   const origin = typeof window !== 'undefined' ? window.location.origin : ''
   const shareUrl = `${origin}/library/public/${libraryId}`
+
+  const handleClose = () => {
+    setIsModalOpen(false)
+  }
 
   async function handleCopyLink() {
     try {
@@ -30,7 +35,7 @@ export default function ShareLibraryButton({ libraryId, libraryName }: Readonly<
   return (
     <>
       <button
-        className="p-3 hover:bg-zinc-800 rounded-lg transition"
+        className={`hover:bg-zinc-800 rounded-lg transition ${className}`}
         onClick={() => setIsModalOpen(true)}
         title="서재 공유"
         type="button"
@@ -51,7 +56,7 @@ export default function ShareLibraryButton({ libraryId, libraryName }: Readonly<
             />
             <button
               className="px-4 py-2 rounded-lg bg-brand-end text-background hover:bg-brand-end/90 transition font-semibold flex items-center gap-2"
-              onClick={handleCopyLink}
+              onClick={handleClose}
               type="button"
             >
               {isCopied ? (

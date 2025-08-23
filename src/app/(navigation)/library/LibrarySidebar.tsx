@@ -1,10 +1,17 @@
-import type { LibraryWithCount } from '@/app/api/library/route'
-
 import CreateLibraryButton from './CreateLibraryButton'
 import LibraryLink, { LibraryHomeLink } from './LibraryLink'
 
 type Props = {
-  libraries: LibraryWithCount[]
+  libraries: {
+    id: number
+    name: string
+    description: string | null
+    color: string | null
+    icon: string | null
+    userId: number
+    isPublic: boolean
+    itemCount: number
+  }[]
   userId: string | null
   className?: string
   onClick?: () => void

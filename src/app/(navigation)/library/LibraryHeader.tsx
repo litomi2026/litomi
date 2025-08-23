@@ -5,8 +5,6 @@ import dynamic from 'next/dynamic'
 import { useParams } from 'next/navigation'
 import { useCallback, useState } from 'react'
 
-import type { LibraryWithCount } from '@/app/api/library/route'
-
 import { useLibrarySelectionStore } from './[id]/librarySelection'
 import ShareLibraryButton from './[id]/ShareLibraryButton'
 import LibrarySidebar from './LibrarySidebar'
@@ -18,7 +16,16 @@ type Params = {
 }
 
 type Props = {
-  libraries: LibraryWithCount[]
+  libraries: {
+    id: number
+    name: string
+    description: string | null
+    color: string | null
+    icon: string | null
+    userId: number
+    isPublic: boolean
+    itemCount: number
+  }[]
   userId: string | null
 }
 
@@ -94,7 +101,9 @@ export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
             <span className="text-lg font-medium">{isGuest ? '공개 서재 둘러보기' : '모든 서재'}</span>
           )}
         </div>
-        {isSelectionMode && currentLibrary && <BulkOperationsToolbar currentLibraryId={currentLibrary.id} />}
+        {isSelectionMode && currentLibrary && (
+          <BulkOperationsToolbar currentLibraryId={currentLibrary.id} libraries={libraries} />
+        )}
         <div className="flex items-center gap-3">
           {!isSelectionMode && currentLibrary && (
             <ShareLibraryButton className="p-2 -mx-1" libraryId={currentLibrary.id} libraryName={currentLibrary.name} />
