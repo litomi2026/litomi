@@ -83,7 +83,7 @@ export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
               className="hidden size-10 my-1 mr-2 rounded-lg sm:flex items-center bg-zinc-800 justify-center text-xl shrink-0"
               style={{ backgroundColor: currentLibrary.color ?? '' }}
             >
-              {currentLibrary?.icon?.slice(0, 2) ?? currentLibrary?.name.slice(0, 1)}
+              {currentLibrary.icon?.slice(0, 2) ?? currentLibrary.name.slice(0, 1)}
             </div>
           )}
           {currentLibrary ? (
@@ -105,9 +105,7 @@ export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
           <BulkOperationsToolbar currentLibraryId={currentLibrary.id} libraries={libraries} />
         )}
         <div className="flex items-center gap-3">
-          {!isSelectionMode && currentLibrary && (
-            <ShareLibraryButton className="p-2 -mx-1" libraryId={currentLibrary.id} libraryName={currentLibrary.name} />
-          )}
+          {!isSelectionMode && currentLibrary && <ShareLibraryButton className="p-2 -mx-1" library={currentLibrary} />}
           {isOwner && (
             <button
               className="p-2 -mx-1 sm:my-1.5 hover:bg-zinc-800 rounded-lg transition"
