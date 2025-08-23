@@ -1,6 +1,7 @@
 'use server'
 
 import { and, eq, exists, inArray, sql } from 'drizzle-orm'
+import { revalidatePath } from 'next/cache'
 
 import { MAX_LIBRARIES_PER_USER } from '@/constants/policy'
 import { db } from '@/database/drizzle'
@@ -46,10 +47,11 @@ export async function addMangaToLibrary(formData: FormData) {
     return conflict('이미 추가된 작품이에요')
   }
 
+  revalidatePath(`/library/${libraryId}`, 'page')
   return ok(true)
 }
 
-export async function bulkCopyToLibrary(data: { fromLibraryId: number; toLibraryId: number; mangaIds: number[] }) {
+export async function bulkCopyToLibrary(data: { toLibraryId: number; mangaIds: number[] }) {
   const userId = await getUserIdFromCookie()
 
   if (!userId) {
@@ -57,7 +59,6 @@ export async function bulkCopyToLibrary(data: { fromLibraryId: number; toLibrary
   }
 
   const validation = bulkOperationSchema.safeParse({
-    fromLibraryId: data.fromLibraryId,
     toLibraryId: data.toLibraryId,
     mangaIds: data.mangaIds,
   })
@@ -66,17 +67,13 @@ export async function bulkCopyToLibrary(data: { fromLibraryId: number; toLibrary
     return badRequest(flattenZodFieldErrors(validation.error))
   }
 
-  const { fromLibraryId, toLibraryId, mangaIds } = validation.data
+  const { toLibraryId, mangaIds } = validation.data
 
   const result = await db.execute<{ libraryId: number; mangaId: number }>(sql`
     INSERT INTO ${libraryItemTable} (library_id, manga_id)
     SELECT ${toLibraryId}, manga_id
     FROM (SELECT UNNEST(ARRAY[${sql.join(mangaIds, sql`, `)}]::int[]) AS manga_id)
     WHERE EXISTS (
-      SELECT 1 FROM ${libraryTable}
-      WHERE user_id = ${userId} AND id = ${fromLibraryId}
-    )
-    AND EXISTS (
       SELECT 1 FROM ${libraryTable}
       WHERE user_id = ${userId} AND id = ${toLibraryId}
     )
@@ -89,6 +86,7 @@ export async function bulkCopyToLibrary(data: { fromLibraryId: number; toLibrary
     return conflict('이미 추가된 작품이에요')
   }
 
+  revalidatePath(`/library/${data.toLibraryId}`, 'page')
   return ok(result.length)
 }
 
@@ -137,6 +135,8 @@ export async function bulkMoveToLibrary(data: { fromLibraryId: number; toLibrary
     return conflict('이미 추가된 작품이에요')
   }
 
+  revalidatePath(`/library/${data.fromLibraryId}`, 'page')
+  revalidatePath(`/library/${data.toLibraryId}`, 'page')
   return ok(result.length)
 }
 
@@ -179,6 +179,7 @@ export async function bulkRemoveFromLibrary(data: { libraryId: number; mangaIds:
     return notFound('해당 작품을 찾을 수 없어요')
   }
 
+  revalidatePath(`/library/${libraryId}`, 'page')
   return ok(result.length)
 }
 
@@ -223,5 +224,6 @@ export async function createLibrary(formData: FormData) {
     return badRequest('서재 생성에 실패했어요')
   }
 
+  revalidatePath('/library', 'layout')
   return created(newLibrary.id)
 }
