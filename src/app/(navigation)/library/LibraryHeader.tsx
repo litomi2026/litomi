@@ -1,15 +1,21 @@
 'use client'
 
 import { Menu, MoreVertical, X } from 'lucide-react'
+import ms from 'ms'
 import dynamic from 'next/dynamic'
 import { useParams } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
+
+import useThrottledDownScroll from '@/hook/useThrottledScroll'
 
 import { useLibrarySelectionStore } from './[id]/librarySelection'
 import ShareLibraryButton from './[id]/ShareLibraryButton'
 import LibrarySidebar from './LibrarySidebar'
 
 const BulkOperationsToolbar = dynamic(() => import('./[id]/BulkOperationsToolbar'))
+
+const SCROLL_THROTTLE_MS = ms('0.5s')
+const SCROLL_THRESHOLD_PX = 50
 
 type Params = {
   id: string
@@ -31,6 +37,7 @@ type Props = {
 
 export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const isDownScroll = useThrottledDownScroll({ threshold: SCROLL_THRESHOLD_PX, throttle: SCROLL_THROTTLE_MS })
   const { id: libraryId } = useParams<Params>()
   const { enterSelectionMode, exitSelectionMode, isSelectionMode } = useLibrarySelectionStore()
   const currentLibrary = libraryId ? libraries.find((lib) => lib.id === Number(libraryId)) : null
@@ -73,7 +80,10 @@ export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
 
   return (
     <>
-      <div className="sticky top-0 z-40 flex justify-between items-center gap-3 p-4 bg-zinc-950 border-b border-zinc-800">
+      <div
+        aria-hidden={isDownScroll}
+        className="sticky top-0 z-40 flex justify-between items-center gap-3 p-4 border-b border-zinc-800 transition bg-zinc-950 aria-hidden:opacity-50"
+      >
         <div className="flex items-center gap-3">
           <button
             aria-label="library-menu"
