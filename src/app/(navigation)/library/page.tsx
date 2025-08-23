@@ -52,7 +52,7 @@ export default async function LibraryPage() {
         <Folder className="size-24 sm:size-32 mx-auto mb-4 sm:mb-6 text-zinc-700" />
         <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">아직 서재가 없어요</h2>
         <p className="text-sm sm:text-base text-zinc-500 mb-6 sm:mb-8">서재를 만들어 만화를 체계적으로 관리해보세요</p>
-        <CreateLibraryButton />
+        <CreateLibraryButton className="justify-center" />
       </div>
     )
   }

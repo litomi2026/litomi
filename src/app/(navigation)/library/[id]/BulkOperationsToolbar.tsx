@@ -2,7 +2,7 @@
 
 import { useQueryClient } from '@tanstack/react-query'
 import { Copy, FolderInput, Trash2, X } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { toast } from 'sonner'
 
 import { useLibrarySelectionStore } from '@/app/(navigation)/library/[id]/librarySelection'
@@ -28,7 +28,6 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId }: P
   const { selectedItems, exitSelectionMode } = useLibrarySelectionStore()
   const [showModal, setShowModal] = useState(false)
   const [operation, setOperation] = useState<'copy' | 'move'>('move')
-  const targetLibraryIdRef = useRef(0)
   const selectedCount = selectedItems.size
 
   function handleClose() {
@@ -47,29 +46,45 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId }: P
 
   const [__, dispatchDeletingAction, isDeleting] = useActionResponse({
     action: bulkRemoveFromLibrary,
-    onSuccess: (deletedCount) => {
+    onSuccess: (deletedCount, [{ libraryId }]) => {
       toast.success(`${deletedCount}개 작품을 제거했어요`)
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraries })
-      queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItems(currentLibraryId) })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItems(libraryId) })
       exitSelectionMode()
     },
     shouldSetResponse: false,
   })
 
-  const [___, dispatchMovingOrCopyingAction, isMovingOrCopying] = useActionResponse({
-    action: operation === 'move' ? bulkMoveToLibrary : bulkCopyToLibrary,
-    onSuccess: (processedCount) => {
-      toast.success(`${processedCount}개 작품을 ${operation === 'move' ? '이동' : '복사'}했어요`)
+  const [___, dispatchCopyingAction, isCopying] = useActionResponse({
+    action: bulkCopyToLibrary,
+    onSuccess: (copiedCount, [{ toLibraryId, mangaIds }]) => {
+      const alreadyExistsCount = mangaIds.length - copiedCount
+      const extraMessage = alreadyExistsCount > 0 ? ` (중복: ${alreadyExistsCount}개)` : ''
+      toast.success(`${copiedCount}개 작품을 복사했어요${extraMessage}`)
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraries })
-      queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItems(currentLibraryId) })
-      queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItems(targetLibraryIdRef.current) })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItems(toLibraryId) })
       exitSelectionMode()
       setShowModal(false)
     },
     shouldSetResponse: false,
   })
 
-  const disabledReason = getDisabledReason(isDeleting, isMovingOrCopying, selectedCount, operation)
+  const [____, dispatchMovingAction, isMoving] = useActionResponse({
+    action: bulkMoveToLibrary,
+    onSuccess: (movedCount, [{ fromLibraryId, toLibraryId, mangaIds }]) => {
+      const alreadyExistsCount = mangaIds.length - movedCount
+      const extraMessage = alreadyExistsCount > 0 ? ` (중복: ${alreadyExistsCount}개)` : ''
+      toast.success(`${movedCount}개 작품을 이동했어요${extraMessage}`)
+      queryClient.invalidateQueries({ queryKey: QueryKeys.libraries })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItems(fromLibraryId) })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItems(toLibraryId) })
+      exitSelectionMode()
+      setShowModal(false)
+    },
+    shouldSetResponse: false,
+  })
+
+  const disabledReason = getDisabledReason(isDeleting, isMoving, isCopying, selectedCount)
   const disabled = disabledReason !== ''
 
   function handleDelete() {
@@ -84,12 +99,18 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId }: P
   }
 
   function handleLibrarySelect(targetLibraryId: number) {
-    targetLibraryIdRef.current = targetLibraryId
-    dispatchMovingOrCopyingAction({
-      fromLibraryId: currentLibraryId,
-      toLibraryId: targetLibraryId,
-      mangaIds: Array.from(selectedItems),
-    })
+    if (operation === 'move') {
+      dispatchMovingAction({
+        fromLibraryId: currentLibraryId,
+        toLibraryId: targetLibraryId,
+        mangaIds: Array.from(selectedItems),
+      })
+    } else if (operation === 'copy') {
+      dispatchCopyingAction({
+        toLibraryId: targetLibraryId,
+        mangaIds: Array.from(selectedItems),
+      })
+    }
   }
 
   return (
@@ -133,9 +154,9 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId }: P
         </div>
       </div>
       <Modal
-        className="fixed inset-0 z-[70] sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2
-          sm:w-full sm:max-w-md sm:max-h-[calc(100dvh-4rem)]
-          bg-zinc-900 sm:border-2 sm:border-zinc-700 sm:rounded-xl flex flex-col overflow-hidden"
+        className="fixed inset-0 z-50 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2
+          flex flex-col overflow-hidden
+          bg-zinc-900 sm:w-full sm:max-w-md sm:max-h-[calc(100dvh-4rem)] sm:border-2 sm:rounded-xl sm:-translate-y-1/2"
         onClose={handleClose}
         open={showModal}
       >
@@ -201,17 +222,15 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId }: P
   )
 }
 
-function getDisabledReason(
-  isDeleting: boolean,
-  isMovingOrCopying: boolean,
-  selectedCount: number,
-  operation: 'copy' | 'move',
-) {
+function getDisabledReason(isDeleting: boolean, isMoving: boolean, isCopying: boolean, selectedCount: number) {
   if (isDeleting) {
     return '삭제 중'
   }
-  if (isMovingOrCopying) {
-    return operation === 'move' ? '이동 중' : '복사 중'
+  if (isMoving) {
+    return '이동 중'
+  }
+  if (isCopying) {
+    return '복사 중'
   }
   if (selectedCount === 0) {
     return '선택된 작품이 없어요'

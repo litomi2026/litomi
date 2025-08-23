@@ -11,7 +11,7 @@ import { hexColorToInt } from '@/utils/color'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 import { getUserIdFromCookie } from '@/utils/session'
 
-import { addToLibrarySchema, bulkOperationSchema, bulkRemoveSchema, createLibrarySchema } from './schema'
+import { addToLibrarySchema, bulkCopySchema, bulkMoveSchema, bulkRemoveSchema, createLibrarySchema } from './schema'
 
 export async function addMangaToLibrary(formData: FormData) {
   const userId = await getUserIdFromCookie()
@@ -58,7 +58,7 @@ export async function bulkCopyToLibrary(data: { toLibraryId: number; mangaIds: n
     return unauthorized('로그인 정보가 없거나 만료됐어요')
   }
 
-  const validation = bulkOperationSchema.safeParse({
+  const validation = bulkCopySchema.safeParse({
     toLibraryId: data.toLibraryId,
     mangaIds: data.mangaIds,
   })
@@ -97,7 +97,7 @@ export async function bulkMoveToLibrary(data: { fromLibraryId: number; toLibrary
     return unauthorized('로그인 정보가 없거나 만료됐어요')
   }
 
-  const validation = bulkOperationSchema.safeParse({
+  const validation = bulkMoveSchema.safeParse({
     fromLibraryId: data.fromLibraryId,
     toLibraryId: data.toLibraryId,
     mangaIds: data.mangaIds,
@@ -195,7 +195,7 @@ export async function createLibrary(formData: FormData) {
     description: formData.get('description'),
     color: formData.get('color'),
     icon: formData.get('icon'),
-    isPublic: formData.get('isPublic') === 'true',
+    isPublic: formData.get('is-public') === 'on',
   })
 
   if (!validation.success) {

@@ -31,7 +31,7 @@ export const addToLibrarySchema = z.object({
   mangaId: positiveIntegerSchema,
 })
 
-export const bulkOperationSchema = z
+export const bulkMoveSchema = z
   .object({
     fromLibraryId: positiveIntegerSchema,
     toLibraryId: positiveIntegerSchema,
@@ -41,6 +41,11 @@ export const bulkOperationSchema = z
     error: '같은 서재로는 이동할 수 없어요',
     path: ['toLibraryId'],
   })
+
+export const bulkCopySchema = z.object({
+  toLibraryId: positiveIntegerSchema,
+  mangaIds: mangaIdsArraySchema,
+})
 
 export const bulkRemoveSchema = z.object({
   libraryId: positiveIntegerSchema,
