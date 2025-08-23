@@ -3,7 +3,7 @@
 import { Menu, MoreVertical, X } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { useParams } from 'next/navigation'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { useLibrarySelectionStore } from './[id]/librarySelection'
 import ShareLibraryButton from './[id]/ShareLibraryButton'
@@ -31,9 +31,9 @@ type Props = {
 
 export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-  const { id } = useParams<Params>()
+  const { id: libraryId } = useParams<Params>()
   const { enterSelectionMode, exitSelectionMode, isSelectionMode } = useLibrarySelectionStore()
-  const currentLibrary = id ? libraries.find((lib) => lib.id === Number(id)) : null
+  const currentLibrary = libraryId ? libraries.find((lib) => lib.id === Number(libraryId)) : null
   const isOwner = currentLibrary?.userId === Number(userId)
   const isGuest = !userId
 
@@ -65,6 +65,11 @@ export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
       enterSelectionMode()
     }
   }
+
+  // NOTE: 서재 변경 시 선택 모드 종료하기
+  useEffect(() => {
+    exitSelectionMode()
+  }, [libraryId, exitSelectionMode])
 
   return (
     <>
