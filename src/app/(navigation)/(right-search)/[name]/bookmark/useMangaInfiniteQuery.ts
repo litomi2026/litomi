@@ -31,9 +31,9 @@ export default function useMangaInfiniteQuery(bookmarks: Bookmark[]) {
 
       const batch = unfetchedItems.slice(0, MANGA_DETAILS_BATCH_SIZE)
 
-      batch.forEach((item) => {
+      for (const item of batch) {
         fetchedItemsRef.current.add(item.mangaId)
-      })
+      }
 
       return fetchMangaBatch(batch)
     },

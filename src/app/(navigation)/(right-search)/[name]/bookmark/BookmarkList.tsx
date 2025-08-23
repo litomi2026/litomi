@@ -51,11 +51,11 @@ export default function BookmarkList({ initialBookmarks }: Readonly<Props>) {
       return map
     }
 
-    mangaDetails.pages.forEach((page) => {
-      page.forEach((item) => {
+    for (const page of mangaDetails.pages) {
+      for (const item of page) {
         map.set(item.id, item)
-      })
-    })
+      }
+    }
 
     return map
   }, [mangaDetails])
