@@ -91,7 +91,7 @@ export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
               </div>
             )
           ) : (
-            <span className="text-lg font-medium">{isGuest ? '공개 서재' : '모든 서재'}</span>
+            <span className="text-lg font-medium">{isGuest ? '공개 서재 둘러보기' : '모든 서재'}</span>
           )}
         </div>
         {!isSelectionMode && currentLibrary && (

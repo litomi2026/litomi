@@ -31,7 +31,17 @@ export default async function LibraryPage() {
   }
 
   const libraryItemRows = await query
-  const libraryItems = libraryItemRows.map((item) => ({ ...item, libraryColor: intToHexColor(item.libraryColor) }))
+
+  const libraryItems = libraryItemRows.map((item) => ({
+    mangaId: item.mangaId,
+    createdAt: item.createdAt.getTime(),
+    library: {
+      id: item.libraryId,
+      name: item.libraryName,
+      color: intToHexColor(item.libraryColor),
+      icon: item.libraryIcon,
+    },
+  }))
 
   return (
     <main className="flex-1">

@@ -40,7 +40,7 @@ export function LibraryHomeLink({ isGuest, libraryCount, mangaCount, onClick }: 
         <LibraryBig className="w-4 h-4 text-white" />
       </div>
       <div className="sm:hidden lg:block">
-        <p className="flex-1 font-medium">{isGuest ? '공개 서재 둘러보기' : '모든 서재'}</p>
+        <p className="flex-1 font-medium">{isGuest ? '모든 공개 서재' : '모든 서재'}</p>
         <p className="text-xs text-zinc-500 break-words">
           {libraryCount}개 서재 · {mangaCount}개 만화
         </p>
