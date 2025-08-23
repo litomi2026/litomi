@@ -8,7 +8,7 @@ import { ActionResponse, ErrorResponse, SuccessResponse } from '@/utils/action-r
 
 type Props<T extends ActionResponse, TActionArgs extends unknown[]> = {
   action: (...args: TActionArgs) => Promise<T>
-  onSuccess?: (data: T extends SuccessResponse<infer D> ? D : never) => void
+  onSuccess?: (data: T extends SuccessResponse<infer D> ? D : never, args: TActionArgs) => void
   onError?: (error: T extends ErrorResponse<infer E> ? E : never, response: T) => void
   onSettled?: (response: T) => void
   shouldSetResponse?: boolean
@@ -73,7 +73,7 @@ export default function useActionResponse<T extends ActionResponse, TActionArgs 
           }
         }
       } else {
-        onSuccess?.(response.data as T extends SuccessResponse<infer D> ? D : never)
+        onSuccess?.(response.data as T extends SuccessResponse<infer D> ? D : never, args)
       }
     })
   }
