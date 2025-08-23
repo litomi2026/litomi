@@ -10,8 +10,8 @@ import { shouldRetryError } from '@/utils/react-query-error'
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: ms('5 minutes'),
-      gcTime: ms('10 minutes'),
+      staleTime: ms('10 minutes'),
+      gcTime: ms('20 minutes'),
       retry: (failureCount, error) => shouldRetryError(error, failureCount),
       retryDelay: (attemptIndex) => Math.min(100 * 2 ** attemptIndex, 5000),
     },
