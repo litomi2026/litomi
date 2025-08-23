@@ -16,9 +16,7 @@ type Props = {
 export default async function LibraryLayout({ children }: Props) {
   const userId = await getUserIdFromCookie()
 
-  let libraries
-
-  const query = db
+  let query = db
     .select({
       id: libraryTable.id,
       userId: libraryTable.userId,
@@ -31,14 +29,17 @@ export default async function LibraryLayout({ children }: Props) {
       itemCount: sql<number>`(SELECT COUNT(*) FROM ${libraryItemTable} WHERE ${libraryItemTable.libraryId} = ${libraryTable.id})::int`,
     })
     .from(libraryTable)
+    .orderBy(libraryTable.id)
+    .$dynamic()
 
   if (userId) {
-    const libraryRows = await query.where(eq(libraryTable.userId, Number(userId))).orderBy(libraryTable.id)
-    libraries = libraryRows.map((lib) => ({ ...lib, color: intToHexColor(lib.color) }))
+    query = query.where(eq(libraryTable.userId, Number(userId)))
   } else {
-    const publicLibraries = await query.where(eq(libraryTable.isPublic, true)).orderBy(libraryTable.id).limit(20)
-    libraries = publicLibraries.map((lib) => ({ ...lib, color: intToHexColor(lib.color) }))
+    query = query.where(eq(libraryTable.isPublic, true)).limit(20)
   }
+
+  const libraryRows = await query
+  const libraries = libraryRows.map((lib) => ({ ...lib, color: intToHexColor(lib.color) }))
 
   return (
     <div className="flex-1 flex flex-col sm:flex-row">
