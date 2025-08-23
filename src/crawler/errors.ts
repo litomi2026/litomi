@@ -25,42 +25,42 @@ export abstract class ProxyError extends Error {
 export class CircuitBreakerError extends ProxyError {
   readonly errorCode = 'CIRCUIT_BREAKER_OPEN'
   readonly isRetryable = false
-  readonly message = '현재 외부 API 서비스에 접속할 수 없어요.'
+  readonly message = '현재 외부 API 서비스에 접속할 수 없어요'
   readonly statusCode = 503
 }
 
 export class InternalError extends ProxyError {
   readonly errorCode = 'INTERNAL_ERROR'
   readonly isRetryable = false
-  readonly message = '알 수 없는 오류가 발생했어요.'
+  readonly message = '알 수 없는 오류가 발생했어요'
   readonly statusCode = 500
 }
 
 export class NetworkError extends ProxyError {
   readonly errorCode = 'NETWORK_ERROR'
   readonly isRetryable = true
-  readonly message = '네트워크 연결을 확인해주세요.'
+  readonly message = '네트워크 연결을 확인해주세요'
   readonly statusCode = 503
 }
 
 export class NotFoundError extends ProxyError {
   readonly errorCode = 'NOT_FOUND'
   readonly isRetryable = false
-  readonly message = '요청하신 정보를 찾을 수 없어요.'
+  readonly message = '요청하신 정보를 찾을 수 없어요'
   readonly statusCode = 404
 }
 
 export class ParseError extends ProxyError {
   readonly errorCode = 'PARSE_ERROR'
   readonly isRetryable = false
-  readonly message = '작업을 처리하는 중 문제가 발생했어요.'
+  readonly message = '작업을 처리하는 중 문제가 발생했어요'
   readonly statusCode = 502
 }
 
 export class TimeoutError extends ProxyError {
   readonly errorCode = 'REQUEST_TIMEOUT'
   readonly isRetryable = true
-  readonly message = '요청 시간이 초과되었어요'
+  readonly message = '요청 시간이 초과됐어요'
   readonly statusCode = 408
 }
 

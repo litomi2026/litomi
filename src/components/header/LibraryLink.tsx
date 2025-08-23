@@ -11,7 +11,7 @@ type Props = {
 export default function LibraryLink({ className }: Readonly<Props>) {
   return (
     <SelectableLink className={className} href={`/library`} Icon={Folder}>
-      라이브러리
+      서재
     </SelectableLink>
   )
 }
