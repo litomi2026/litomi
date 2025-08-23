@@ -77,6 +77,8 @@ mock.module('@/database/drizzle', () => ({
 }))
 
 describe('GET /api/me', () => {
+  const meRequest = new Request('http://localhost/api/me')
+
   beforeEach(() => {
     shouldThrowDatabaseError = false
     mockCookie = undefined
@@ -91,7 +93,7 @@ describe('GET /api/me', () => {
       mockCookie = { value: token }
 
       // When
-      const response = await GET()
+      const response = await GET(meRequest)
       const contentType = response.headers.get('content-type')
       const data = await response.json()
 
@@ -113,7 +115,7 @@ describe('GET /api/me', () => {
       mockCookie = { value: token }
 
       // When
-      const response = await GET()
+      const response = await GET(meRequest)
       const data = await response.json()
 
       // Then
@@ -134,7 +136,7 @@ describe('GET /api/me', () => {
       mockCookie = undefined
 
       // When
-      const response = await GET()
+      const response = await GET(meRequest)
 
       // Then
       expect(response.status).toBe(401)
@@ -148,7 +150,7 @@ describe('GET /api/me', () => {
       setSystemTime(new Date(Date.now() + 2 * 60 * 60 * 1000))
 
       // When
-      const response = await GET()
+      const response = await GET(meRequest)
 
       // Then
       expect(response.status).toBe(401)
@@ -171,7 +173,7 @@ describe('GET /api/me', () => {
       }))
 
       // When
-      const response = await GET()
+      const response = await GET(meRequest)
 
       // Then
       expect(response.status).toBe(401)
@@ -183,7 +185,7 @@ describe('GET /api/me', () => {
       mockCookie = { value: 'invalid-token-format' }
 
       // When
-      const response = await GET()
+      const response = await GET(meRequest)
 
       // Then
       expect(response.status).toBe(401)
@@ -196,7 +198,7 @@ describe('GET /api/me', () => {
       mockCookie = { value: token }
 
       // When
-      const response = await GET()
+      const response = await GET(meRequest)
       const text = await response.text()
 
       // Then
@@ -213,7 +215,7 @@ describe('GET /api/me', () => {
       mockCookie = { value: token }
 
       // When
-      const promises = Array.from({ length: 5 }, () => GET())
+      const promises = Array.from({ length: 5 }, () => GET(meRequest))
       const responses = await Promise.all(promises)
       const data = await Promise.all(responses.map((r) => r.json()))
 
@@ -230,12 +232,11 @@ describe('GET /api/me', () => {
       shouldThrowDatabaseError = true
 
       // When
-      const request = async () => {
-        await GET()
-      }
+      const response = await GET(meRequest)
 
       // Then
-      expect(request).toThrow('Database connection failed')
+      expect(response.status).toBe(500)
+      expect(deletedCookies).toEqual([])
     })
   })
 
@@ -246,7 +247,7 @@ describe('GET /api/me', () => {
       mockCookie = { value: token }
 
       // When
-      const response = await GET()
+      const response = await GET(meRequest)
       const data = await response.json()
 
       // Then
@@ -272,7 +273,7 @@ describe('GET /api/me', () => {
         deletedCookies = []
 
         // When
-        const response = await GET()
+        const response = await GET(meRequest)
 
         // Then
         expect(response.status).toBe(401)
