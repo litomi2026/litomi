@@ -10,7 +10,7 @@ import Modal from '@/components/ui/Modal'
 import { QueryKeys } from '@/constants/query'
 import useActionResponse from '@/hook/useActionResponse'
 
-import { bulkCopyToLibrary, bulkMoveToLibrary, bulkRemoveFromLibrary } from '../actions'
+import { bulkCopyToLibrary, bulkMoveToLibrary, bulkRemoveFromLibrary } from '../action'
 
 type Props = {
   libraries: {
@@ -141,7 +141,7 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId }: P
               .map((library) => (
                 <button
                   className="group flex items-center gap-3 py-3 rounded-lg transition text-left disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled={isProcessing}
+                  disabled={isMovingOrCopying}
                   key={library.id}
                   onClick={() => handleLibrarySelect(library.id)}
                 >
