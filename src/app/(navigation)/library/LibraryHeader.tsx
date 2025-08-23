@@ -94,20 +94,22 @@ export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
             <span className="text-lg font-medium">{isGuest ? '공개 서재 둘러보기' : '모든 서재'}</span>
           )}
         </div>
-        {!isSelectionMode && currentLibrary && (
-          <ShareLibraryButton className="p-2 -mx-1" libraryId={currentLibrary.id} libraryName={currentLibrary.name} />
-        )}
         {isSelectionMode && currentLibrary && <BulkOperationsToolbar currentLibraryId={currentLibrary.id} />}
-        {isOwner && (
-          <button
-            className="p-2 -mx-1 sm:my-1.5 hover:bg-zinc-800 rounded-lg transition"
-            onClick={handleSelectionModeChange}
-            title={isSelectionMode ? '선택 모드 종료' : '선택 모드'}
-            type="button"
-          >
-            {isSelectionMode ? <X className="size-5" /> : <MoreVertical className="size-5" />}
-          </button>
-        )}
+        <div className="flex items-center gap-3">
+          {!isSelectionMode && currentLibrary && (
+            <ShareLibraryButton className="p-2 -mx-1" libraryId={currentLibrary.id} libraryName={currentLibrary.name} />
+          )}
+          {isOwner && (
+            <button
+              className="p-2 -mx-1 sm:my-1.5 hover:bg-zinc-800 rounded-lg transition"
+              onClick={handleSelectionModeChange}
+              title={isSelectionMode ? '선택 모드 종료' : '선택 모드'}
+              type="button"
+            >
+              {isSelectionMode ? <X className="size-5" /> : <MoreVertical className="size-5" />}
+            </button>
+          )}
+        </div>
       </div>
       {isDrawerOpen && (
         <>
