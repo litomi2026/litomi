@@ -26,11 +26,6 @@ export const createLibrarySchema = z.object({
   isPublic: z.boolean().optional().default(false),
 })
 
-export const addToLibrarySchema = z.object({
-  libraryId: positiveIntegerSchema,
-  mangaId: positiveIntegerSchema,
-})
-
 export const bulkMoveSchema = z
   .object({
     fromLibraryId: positiveIntegerSchema,
@@ -50,4 +45,12 @@ export const bulkCopySchema = z.object({
 export const bulkRemoveSchema = z.object({
   libraryId: positiveIntegerSchema,
   mangaIds: mangaIdsArraySchema,
+})
+
+export const addMangaToLibrariesSchema = z.object({
+  mangaId: positiveIntegerSchema,
+  libraryIds: z
+    .array(positiveIntegerSchema)
+    .min(1, '서재를 선택해주세요')
+    .max(20, '최대 20개 서재까지 선택할 수 있어요'),
 })

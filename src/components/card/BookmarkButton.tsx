@@ -16,6 +16,7 @@ import { Manga } from '@/types/manga'
 
 import IconBookmark from '../icons/IconBookmark'
 import LoginLink from '../LoginLink'
+import { useLibraryModal } from './LibraryModal'
 
 type BookmarkButtonSkeletonProps = {
   className?: string
@@ -33,6 +34,7 @@ export default function BookmarkButton({ manga, className }: Readonly<Props>) {
   const bookmarkIds = useMemo(() => new Set(bookmarks?.bookmarks.map((bookmark) => bookmark.mangaId)), [bookmarks])
   const isIconSelected = bookmarkIds.has(mangaId)
   const queryClient = useQueryClient()
+  const { open: openLibraryModal } = useLibraryModal()
 
   const [_, dispatchAction, isPending] = useActionResponse({
     action: toggleBookmark,
@@ -40,7 +42,21 @@ export default function BookmarkButton({ manga, className }: Readonly<Props>) {
       const isBookmarked = Boolean(createdAt)
 
       if (isBookmarked) {
-        toast.success('북마크를 추가했어요')
+        toast.success(
+          <div className="flex items-center justify-between gap-2 w-full">
+            <span>북마크를 추가했어요</span>
+            <button
+              className="text-brand hover:underline text-sm font-bold"
+              onClick={() => {
+                toast.dismiss()
+                openLibraryModal(mangaId)
+              }}
+            >
+              [서재에도 추가하기]
+            </button>
+          </div>,
+          { duration: 5000 },
+        )
       } else {
         toast.success('북마크를 삭제했어요')
       }

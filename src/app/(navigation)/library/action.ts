@@ -11,44 +11,47 @@ import { hexColorToInt } from '@/utils/color'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 import { getUserIdFromCookie } from '@/utils/session'
 
-import { addToLibrarySchema, bulkCopySchema, bulkMoveSchema, bulkRemoveSchema, createLibrarySchema } from './schema'
+import {
+  addMangaToLibrariesSchema,
+  bulkCopySchema,
+  bulkMoveSchema,
+  bulkRemoveSchema,
+  createLibrarySchema,
+} from './schema'
 
-export async function addMangaToLibrary(formData: FormData) {
+export async function addMangaToLibraries(data: { mangaId: number; libraryIds: number[] }) {
   const userId = await getUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
   }
 
-  const validation = addToLibrarySchema.safeParse({
-    libraryId: formData.get('libraryId'),
-    mangaId: formData.get('mangaId'),
-  })
+  const validation = addMangaToLibrariesSchema.safeParse(data)
 
   if (!validation.success) {
     return badRequest(flattenZodFieldErrors(validation.error))
   }
 
-  const { libraryId, mangaId } = validation.data
+  const { mangaId, libraryIds } = validation.data
 
-  const result = await db.execute<{ libraryId: number; mangaId: number }>(sql`
-    INSERT INTO ${libraryItemTable} (library_id, manga_id)
-    SELECT ${libraryId}, ${mangaId}
-    WHERE EXISTS (
-      SELECT 1 FROM ${libraryTable}
-      WHERE id = ${libraryId} AND user_id = ${userId}
+  const result = await db.execute<{ libraryId: number; mangaId: number; alreadyExists: boolean }>(sql`
+    WITH user_libraries AS (
+      SELECT ${libraryTable.id} 
+      FROM ${libraryTable}
+      WHERE ${libraryTable.userId} = ${userId} AND ${libraryTable.id} = ANY(ARRAY[${sql.join(libraryIds, sql`, `)}]::int[])
     )
+    INSERT INTO ${libraryItemTable} (library_id, manga_id)
+    SELECT id, ${mangaId}
+    FROM user_libraries
     ON CONFLICT (library_id, manga_id) DO NOTHING
     RETURNING ${libraryItemTable.libraryId}, ${libraryItemTable.mangaId}
   `)
 
-  if (result.length === 0) {
-    // NOTE: 403 권한이 없는 경우일 수도 있지만 굳이 구분하지 않음
-    return conflict('이미 추가된 작품이에요')
+  for (const { libraryId } of result) {
+    revalidatePath(`/library/${libraryId}`, 'page')
   }
 
-  revalidatePath(`/library/${libraryId}`, 'page')
-  return ok(true)
+  return ok(result.length)
 }
 
 export async function bulkCopyToLibrary(data: { toLibraryId: number; mangaIds: number[] }) {
