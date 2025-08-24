@@ -5,6 +5,7 @@ import { CSSProperties, memo, RefObject, useCallback, useEffect, useRef } from '
 import { useInView } from 'react-intersection-observer'
 
 import { PageView } from '@/components/ImageViewer/store/pageView'
+import { ReadingDirection } from '@/components/ImageViewer/store/readingDirection'
 import { ScreenFit } from '@/components/ImageViewer/store/screenFit'
 import { useImageStatus } from '@/hook/useImageStatus'
 import { type Manga } from '@/types/manga'
@@ -27,6 +28,7 @@ type Props = {
   onClick: () => void
   pageView: PageView
   screenFit: ScreenFit
+  readingDirection: ReadingDirection
 }
 
 type VirtualItemProps = {
@@ -34,12 +36,13 @@ type VirtualItemProps = {
   manga: Manga
   virtualizer: ReturnType<typeof useVirtualizer<HTMLDivElement, Element>>
   pageView: PageView
+  readingDirection: ReadingDirection
   itemHeightMap: RefObject<Map<number, number>>
 }
 
 export default memo(ScrollViewer)
 
-function ScrollViewer({ manga, onClick, screenFit, pageView }: Readonly<Props>) {
+function ScrollViewer({ manga, onClick, screenFit, pageView, readingDirection }: Props) {
   const { images } = manga
   const parentRef = useRef<HTMLDivElement>(null)
   const setVirtualizer = useVirtualizerStore((state) => state.setVirtualizer)
@@ -86,6 +89,7 @@ function ScrollViewer({ manga, onClick, screenFit, pageView }: Readonly<Props>) 
               key={key}
               manga={manga}
               pageView={pageView}
+              readingDirection={readingDirection}
               virtualizer={virtualizer}
             />
           ))}
@@ -97,9 +101,10 @@ function ScrollViewer({ manga, onClick, screenFit, pageView }: Readonly<Props>) 
 
 const VirtualItemMemo = memo(VirtualItem)
 
-function VirtualItem({ index, manga, virtualizer, pageView, itemHeightMap }: Readonly<VirtualItemProps>) {
+function VirtualItem({ index, manga, virtualizer, pageView, readingDirection, itemHeightMap }: VirtualItemProps) {
   const navigateToImageIndex = useImageIndexStore((state) => state.navigateToImageIndex)
   const isDoublePage = pageView === 'double'
+  const isRTL = readingDirection === 'rtl'
   const firstImageIndex = isDoublePage ? index * 2 : index
   const nextImageIndex = firstImageIndex + 1
   const firstImageStatus = useImageStatus()
@@ -127,26 +132,41 @@ function VirtualItem({ index, manga, virtualizer, pageView, itemHeightMap }: Rea
     }
   }
 
+  const firstImage = (
+    <MangaImage
+      aria-invalid={firstImageStatus.error}
+      fetchPriority="high"
+      imageIndex={firstImageIndex}
+      imageRef={ref}
+      manga={manga}
+      onError={firstImageStatus.handleError}
+      onLoad={firstImageStatus.handleSuccess}
+    />
+  )
+
+  const secondImage = isDoublePage && (
+    <MangaImage
+      aria-invalid={nextImageStatus.error}
+      fetchPriority="high"
+      imageIndex={nextImageIndex}
+      manga={manga}
+      onError={nextImageStatus.handleError}
+      onLoad={nextImageStatus.handleSuccess}
+    />
+  )
+
   return (
     <li data-index={index} ref={registerRef}>
-      <MangaImage
-        aria-invalid={firstImageStatus.error}
-        fetchPriority="high"
-        imageIndex={firstImageIndex}
-        imageRef={ref}
-        manga={manga}
-        onError={firstImageStatus.handleError}
-        onLoad={firstImageStatus.handleSuccess}
-      />
-      {isDoublePage && (
-        <MangaImage
-          aria-invalid={nextImageStatus.error}
-          fetchPriority="high"
-          imageIndex={nextImageIndex}
-          manga={manga}
-          onError={nextImageStatus.handleError}
-          onLoad={nextImageStatus.handleSuccess}
-        />
+      {isRTL ? (
+        <>
+          {secondImage}
+          {firstImage}
+        </>
+      ) : (
+        <>
+          {firstImage}
+          {secondImage}
+        </>
       )}
     </li>
   )

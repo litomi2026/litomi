@@ -1,5 +1,6 @@
 'use client'
 
+import { ArrowLeft, ArrowRight } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -7,6 +8,7 @@ import { useCallback, useEffect, useState } from 'react'
 
 import { useImageWidthStore } from '@/components/ImageViewer/store/imageWidth'
 import { useNavigationModeStore } from '@/components/ImageViewer/store/navigationMode'
+import { useReadingDirectionStore } from '@/components/ImageViewer/store/readingDirection'
 import { useScreenFitStore } from '@/components/ImageViewer/store/screenFit'
 import { useTouchOrientationStore } from '@/components/ImageViewer/store/touchOrientation'
 import { type Manga } from '@/types/manga'
@@ -22,7 +24,7 @@ import { useImageIndexStore } from './store/imageIndex'
 import { usePageViewStore } from './store/pageView'
 import TouchViewer from './TouchViewer'
 
-const ScrollViewer = dynamic(() => import('@/components/ImageViewer/ScrollViewer'))
+const ScrollViewer = dynamic(() => import('@/components/ImageViewer/ScrollViewer'), { ssr: false })
 
 type Props = {
   manga: Manga
@@ -35,6 +37,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
   const { touchOrientation, setTouchOrientation } = useTouchOrientationStore()
   const { pageView, setPageView } = usePageViewStore()
   const { imageWidth, cycleImageWidth } = useImageWidthStore()
+  const { readingDirection, toggleReadingDirection } = useReadingDirectionStore()
   const correctImageIndex = useImageIndexStore((state) => state.correctImageIndex)
   const setImageIndex = useImageIndexStore((state) => state.setImageIndex)
   const toggleController = useCallback(() => setShowController((prev) => !prev), [])
@@ -92,9 +95,23 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
       </div>
 
       {isTouchMode ? (
-        <TouchViewer manga={manga} onClick={toggleController} pageView={pageView} screenFit={screenFit} />
+        <TouchViewer
+          manga={manga}
+          onClick={toggleController}
+          pageView={pageView}
+          readingDirection={readingDirection}
+          screenFit={screenFit}
+        />
       ) : (
-        <ScrollViewer manga={manga} onClick={toggleController} pageView={pageView} screenFit={screenFit} />
+        <ScrollViewer
+          {...{
+            manga,
+            onClick: toggleController,
+            pageView,
+            readingDirection,
+            screenFit,
+          }}
+        />
       )}
 
       <div
@@ -131,6 +148,12 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
               </>
             )}
             {!isTouchMode && <button onClick={cycleImageWidth}>너비 {imageWidth}%</button>}
+            {isDoublePage && (
+              <button className="flex items-center justify-center gap-1" onClick={toggleReadingDirection}>
+                좌 {readingDirection === 'ltr' ? <ArrowRight className="size-4" /> : <ArrowLeft className="size-4" />}{' '}
+                우
+              </button>
+            )}
           </div>
         </div>
       </div>
