@@ -14,7 +14,7 @@ import LibrarySidebar from './LibrarySidebar'
 
 const BulkOperationsToolbar = dynamic(() => import('./[id]/BulkOperationsToolbar'))
 
-const SCROLL_THROTTLE_MS = ms('0.5s')
+const SCROLL_THROTTLE_MS = ms('0.3s')
 const SCROLL_THRESHOLD_PX = 50
 
 type Params = {
