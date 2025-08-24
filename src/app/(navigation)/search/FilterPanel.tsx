@@ -101,10 +101,15 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
 
   // NOTE: 모바일 환경에서 필터 활성화 시 body 스크롤을 방지함
   useEffect(() => {
-    if (!show) return
+    if (!show) {
+      return
+    }
 
     const isMobile = window.matchMedia('(max-width: 640px)').matches
-    if (!isMobile) return
+
+    if (!isMobile) {
+      return
+    }
 
     document.body.style.overflow = 'hidden'
 
@@ -115,9 +120,12 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
 
   // NOTE: 화면 크기가 변경될 때 필터 레이아웃을 변경함
   useEffect(() => {
-    if (!buttonRef.current) return
+    if (!buttonRef.current) {
+      return
+    }
 
     let timeoutId: NodeJS.Timeout
+
     const handleDebouncedResize = () => {
       clearTimeout(timeoutId)
       timeoutId = setTimeout(() => {
@@ -128,7 +136,6 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
     }
 
     handleDebouncedResize()
-
     window.addEventListener('resize', handleDebouncedResize)
 
     return () => {
@@ -339,9 +346,9 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
             </div>
           </div>
           {/* Action buttons */}
-          <div className="sticky bottom-0 mb-safe left-0 right-0 flex gap-2 bg-zinc-900 px-4 py-4 border-t">
+          <div className="sticky bottom-0 left-0 right-0 flex gap-2 bg-zinc-900 px-4 py-4 border-t">
             <button
-              className="flex-1 px-3 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-medium rounded-lg
+              className="flex-1 mb-safe px-3 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-medium rounded-lg
               transition focus:outline-none focus:ring-2 focus:ring-zinc-400"
               onClick={clearFilters}
               type="button"
@@ -349,7 +356,7 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
               초기화
             </button>
             <button
-              className="flex items-center justify-center flex-1 px-3 py-2 bg-zinc-700 hover:bg-zinc-600 text-zinc-100 font-medium rounded-lg
+              className="flex items-center justify-center flex-1 mb-safe px-3 py-2 bg-zinc-700 hover:bg-zinc-600 text-zinc-100 font-medium rounded-lg
                 transition focus:outline-none focus:ring-2 focus:ring-zinc-400
                 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isPending}

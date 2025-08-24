@@ -5,8 +5,8 @@ import { memo, useCallback, useRef, useState } from 'react'
 
 const RATING_PRESETS = [
   { label: '망작', min: '0.01', max: '1.5' },
-  { label: '명작', min: '3.5', max: '' },
-  { label: '만신', min: '4.5', max: '' },
+  { label: '명작', min: '3.5', max: '5' },
+  { label: '만신', min: '4.5', max: '5' },
 ]
 
 type Props = {
