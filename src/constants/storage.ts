@@ -9,6 +9,7 @@ export enum LocalStorageKey {
   CONTROLLER_NAVIGATION_MODE = 'controller/navigation-mode',
   CONTROLLER_TOUCH_ORIENTATION = 'controller/touch-orientation',
   CONTROLLER_PAGE_VIEW = 'controller/page-view',
+  CONTROLLER_IMAGE_WIDTH = 'controller/image-width',
 }
 
 export enum SearchParamKey {

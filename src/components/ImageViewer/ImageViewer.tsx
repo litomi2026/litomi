@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
+import { useImageWidthStore } from '@/components/ImageViewer/store/imageWidth'
 import { useNavigationModeStore } from '@/components/ImageViewer/store/navigationMode'
 import { useScreenFitStore } from '@/components/ImageViewer/store/screenFit'
 import { useTouchOrientationStore } from '@/components/ImageViewer/store/touchOrientation'
@@ -33,6 +34,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
   const { screenFit, setScreenFit } = useScreenFitStore()
   const { touchOrientation, setTouchOrientation } = useTouchOrientationStore()
   const { pageView, setPageView } = usePageViewStore()
+  const { imageWidth, cycleImageWidth } = useImageWidthStore()
   const correctImageIndex = useImageIndexStore((state) => state.correctImageIndex)
   const setImageIndex = useImageIndexStore((state) => state.setImageIndex)
   const toggleController = useCallback(() => setShowController((prev) => !prev), [])
@@ -45,6 +47,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
   const isWidthFit = screenFit === 'width'
   const isHorizontalTouch = touchOrientation === 'horizontal'
 
+  // NOTE: 스크롤 방지
   useEffect(() => {
     document.documentElement.style.overscrollBehavior = 'none'
     document.body.style.overscrollBehavior = 'none'
@@ -54,6 +57,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
     }
   }, [])
 
+  // NOTE: 뷰어를 벗어나면 페이지 초기화
   useEffect(() => {
     return () => {
       setImageIndex(0)
@@ -126,11 +130,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
                 />
               </>
             )}
-            {!isTouchMode && (
-              <button disabled onClick={() => {}}>
-                너비 100%
-              </button>
-            )}
+            {!isTouchMode && <button onClick={cycleImageWidth}>너비 {imageWidth}%</button>}
           </div>
         </div>
       </div>

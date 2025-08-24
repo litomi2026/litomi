@@ -1,7 +1,7 @@
 'use client'
 
 import { useVirtualizer } from '@tanstack/react-virtual'
-import { memo, RefObject, useCallback, useEffect, useRef } from 'react'
+import { CSSProperties, memo, RefObject, useCallback, useEffect, useRef } from 'react'
 import { useInView } from 'react-intersection-observer'
 
 import { PageView } from '@/components/ImageViewer/store/pageView'
@@ -12,6 +12,7 @@ import { getSafeAreaBottom } from '@/utils/browser'
 
 import MangaImage from '../MangaImage'
 import { useImageIndexStore } from './store/imageIndex'
+import { useImageWidthStore } from './store/imageWidth'
 import { useVirtualizerStore } from './store/virtualizer'
 
 const screenFitStyle: Record<ScreenFit, string> = {
@@ -42,6 +43,7 @@ function ScrollViewer({ manga, onClick, screenFit, pageView }: Readonly<Props>) 
   const { images } = manga
   const parentRef = useRef<HTMLDivElement>(null)
   const setVirtualizer = useVirtualizerStore((state) => state.setVirtualizer)
+  const imageWidth = useImageWidthStore((state) => state.imageWidth)
   const isDoublePage = pageView === 'double'
   const rowCount = isDoublePage ? Math.ceil(images.length / 2) : images.length
   const itemHeightMap = useRef(new Map<number, number>())
@@ -63,14 +65,19 @@ function ScrollViewer({ manga, onClick, screenFit, pageView }: Readonly<Props>) 
   const virtualItems = virtualizer.getVirtualItems()
   const translateY = virtualItems[0]?.start ?? 0
 
+  const dynamicStyle = {
+    transform: `translateY(${translateY}px)`,
+    '--image-width': `${imageWidth}%`,
+  } as CSSProperties
+
   return (
     <div className="overflow-y-auto overscroll-none contain-strict h-dvh select-none" onClick={onClick} ref={parentRef}>
       <div className="w-full relative" style={{ height: virtualizer.getTotalSize() }}>
         <ul
           className={`absolute top-0 left-0 w-full [&_li]:flex [&_img]:border [&_img]:border-background 
             [&_img]:aria-invalid:w-40 [&_img]:aria-invalid:h-40 [&_img]:aria-invalid:text-foreground 
-            ${screenFitStyle[screenFit]}`}
-          style={{ transform: `translateY(${translateY}px)` }}
+            ${screenFitStyle[screenFit]} [&_img]:w-[var(--image-width)]`}
+          style={dynamicStyle}
         >
           {virtualItems.map(({ index, key }) => (
             <VirtualItemMemo
