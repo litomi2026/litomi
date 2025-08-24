@@ -1,6 +1,7 @@
 import { desc, eq } from 'drizzle-orm'
 import { Folder } from 'lucide-react'
 
+import { LIBRARY_ITEMS_PER_PAGE } from '@/constants/policy'
 import { db } from '@/database/drizzle'
 import { libraryItemTable, libraryTable } from '@/database/schema'
 import { intToHexColor } from '@/utils/color'
@@ -13,7 +14,7 @@ export default async function LibraryPage() {
   const userId = await getUserIdFromCookie()
 
   let query = db
-    .select({
+    .selectDistinctOn([libraryItemTable.mangaId], {
       libraryId: libraryItemTable.libraryId,
       mangaId: libraryItemTable.mangaId,
       createdAt: libraryItemTable.createdAt,
@@ -23,13 +24,14 @@ export default async function LibraryPage() {
     })
     .from(libraryItemTable)
     .innerJoin(libraryTable, eq(libraryItemTable.libraryId, libraryTable.id))
-    .orderBy(desc(libraryItemTable.createdAt), desc(libraryItemTable.mangaId))
+    .orderBy(desc(libraryItemTable.mangaId))
+    .limit(LIBRARY_ITEMS_PER_PAGE)
     .$dynamic()
 
   if (userId) {
     query = query.where(eq(libraryTable.userId, Number(userId)))
   } else {
-    query = query.where(eq(libraryTable.isPublic, true)).limit(20)
+    query = query.where(eq(libraryTable.isPublic, true))
   }
 
   const libraryItemRows = await query

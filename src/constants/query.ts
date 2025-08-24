@@ -11,7 +11,7 @@ export const QueryKeys = {
   notifications: (searchParams: URLSearchParams) => ['me', 'notifications', Object.fromEntries(searchParams)],
 
   manga: (id: number) => ['manga', id],
-  infiniteManga: ['infinite', 'manga'],
+  mangaCard: (id: number) => ['mangaCard', id],
   search: (searchParams: URLSearchParams) => ['search', Object.fromEntries(searchParams)],
   searchSuggestions: (query: string, locale: string) => ['search', 'suggestions', locale, query],
   posts: (filter: PostFilter, mangaId?: number, username?: string) => ['posts', filter, { mangaId, username }],

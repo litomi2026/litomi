@@ -1,16 +1,15 @@
 'use client'
 
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 
 import { GETLibraryItemsResponse } from '@/app/api/library/[id]/route'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
+import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import useLibraryItemsInfiniteQuery from '@/query/useLibraryItemsInfiniteQuery'
-import { Manga } from '@/types/manga'
 import { ViewCookie } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
-import useMangaInfiniteQuery from '../../(right-search)/[name]/bookmark/useMangaInfiniteQuery'
 import { useLibrarySelectionStore } from './librarySelection'
 import SelectableMangaCard from './SelectableMangaCard'
 
@@ -45,37 +44,7 @@ export default function LibraryItemsClient({ library, initialItems }: Readonly<P
     fetchNextPage: fetchMoreItems,
   })
 
-  const {
-    data: mangaDetails,
-    fetchNextPage: fetchMoreMangaDetails,
-    isFetchingNextPage: isLoadingMoreManga,
-  } = useMangaInfiniteQuery(items)
-
-  const mangaDetailsMap = useMemo(() => {
-    const map = new Map<number, Manga>()
-
-    if (!mangaDetails?.pages) {
-      return map
-    }
-
-    for (const page of mangaDetails.pages) {
-      for (const item of page) {
-        map.set(item.id, item)
-      }
-    }
-
-    return map
-  }, [mangaDetails])
-
-  const firstUnfetchedMangaIndex = useMemo(() => {
-    return items.findIndex((item) => !mangaDetailsMap.has(item.mangaId))
-  }, [items, mangaDetailsMap])
-
-  useEffect(() => {
-    if (firstUnfetchedMangaIndex !== -1 && !isLoadingMoreManga) {
-      fetchMoreMangaDetails()
-    }
-  }, [firstUnfetchedMangaIndex, isLoadingMoreManga, fetchMoreMangaDetails])
+  const { mangaMap } = useMangaListCachedQuery({ mangaIds: items.map((item) => item.mangaId) })
 
   if (items.length === 0 && !isLoadingMoreItems) {
     return (
@@ -88,7 +57,7 @@ export default function LibraryItemsClient({ library, initialItems }: Readonly<P
   return (
     <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[ViewCookie.CARD]} gap-2 grow p-4`}>
       {items.map(({ mangaId }, index) => {
-        const manga = mangaDetailsMap.get(mangaId)
+        const manga = mangaMap.get(mangaId)
 
         if (!manga) {
           return <MangaCardSkeleton key={mangaId} />
