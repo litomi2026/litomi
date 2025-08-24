@@ -64,12 +64,20 @@ export default function useActionResponse<T extends ActionResponse, TActionArgs 
           // TODO: 첫번째 파라미터를 두번째 파라미터로 바꾸기
           onError(error, response)
         } else if (typeof error === 'string') {
-          toast.error(error)
+          if (response.status >= 400 && response.status < 500) {
+            toast.warning(error)
+          } else {
+            toast.error(error)
+          }
         } else if (Array.isArray(error)) {
           const firstError = error.find((err) => err !== undefined)
 
           if (firstError && typeof firstError === 'string') {
-            toast.error(firstError)
+            if (response.status >= 400 && response.status < 500) {
+              toast.warning(firstError)
+            } else {
+              toast.error(firstError)
+            }
           }
         }
       } else {
