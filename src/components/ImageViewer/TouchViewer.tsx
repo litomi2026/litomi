@@ -4,6 +4,7 @@ import { memo, useCallback, useEffect, useRef } from 'react'
 
 import { MangaIdSearchParam } from '@/app/manga/[id]/common'
 import { PageView } from '@/components/ImageViewer/store/pageView'
+import { ReadingDirection } from '@/components/ImageViewer/store/readingDirection'
 import { ScreenFit } from '@/components/ImageViewer/store/screenFit'
 import { useTouchOrientationStore } from '@/components/ImageViewer/store/touchOrientation'
 import { TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT } from '@/constants/policy'
@@ -34,17 +35,19 @@ type Props = {
   onClick: () => void
   pageView: PageView
   screenFit: ScreenFit
+  readingDirection: ReadingDirection
 }
 
 type TouchViewerItemProps = {
   offset: number
   manga: Manga
   pageView: PageView
+  readingDirection: ReadingDirection
 }
 
 export default memo(TouchViewer)
 
-function TouchViewer({ manga, onClick, screenFit, pageView }: Readonly<Props>) {
+function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection }: Readonly<Props>) {
   const { images } = manga
   const getTouchOrientation = useTouchOrientationStore((state) => state.getTouchOrientation)
   const getBrightness = useBrightnessStore((state) => state.getBrightness)
@@ -284,30 +287,53 @@ function TouchViewer({ manga, onClick, screenFit, pageView }: Readonly<Props>) {
       ref={ulRef}
     >
       {Array.from({ length: TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT }).map((_, offset) => (
-        <TouchViewerItem key={offset} manga={manga} offset={offset} pageView={pageView} />
+        <TouchViewerItem
+          key={offset}
+          manga={manga}
+          offset={offset}
+          pageView={pageView}
+          readingDirection={readingDirection}
+        />
       ))}
     </ul>
   )
 }
 
-function TouchViewerItem({ offset, manga, pageView }: Readonly<TouchViewerItemProps>) {
+function TouchViewerItem({ offset, manga, pageView, readingDirection }: Readonly<TouchViewerItemProps>) {
   const currentIndex = useImageIndexStore((state) => state.imageIndex)
   const imageIndex = currentIndex + offset
   const brightness = useBrightnessStore((state) => state.brightness)
+  const isRTL = readingDirection === 'rtl'
+  const isDoublePage = pageView === 'double' && offset === 0
+
+  const firstImage = (
+    <MangaImage
+      fetchPriority={offset < IMAGE_FETCH_PRIORITY_THRESHOLD ? 'high' : 'low'}
+      imageIndex={imageIndex}
+      manga={manga}
+    />
+  )
+
+  const secondImage = isDoublePage && (
+    <MangaImage
+      fetchPriority={offset < IMAGE_FETCH_PRIORITY_THRESHOLD ? 'high' : 'low'}
+      imageIndex={imageIndex + 1}
+      manga={manga}
+    />
+  )
 
   return (
     <li aria-hidden={offset !== 0} style={{ filter: `brightness(${brightness}%)` }}>
-      <MangaImage
-        fetchPriority={offset < IMAGE_FETCH_PRIORITY_THRESHOLD ? 'high' : 'low'}
-        imageIndex={imageIndex}
-        manga={manga}
-      />
-      {pageView === 'double' && offset === 0 && (
-        <MangaImage
-          fetchPriority={offset < IMAGE_FETCH_PRIORITY_THRESHOLD ? 'high' : 'low'}
-          imageIndex={imageIndex + 1}
-          manga={manga}
-        />
+      {isRTL ? (
+        <>
+          {secondImage}
+          {firstImage}
+        </>
+      ) : (
+        <>
+          {firstImage}
+          {secondImage}
+        </>
       )}
     </li>
   )

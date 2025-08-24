@@ -74,7 +74,6 @@ export class HentaiPawClient {
 
     for (const script of scripts) {
       const scriptContent = script.innerHTML
-      console.log('👀 - HentaiPawClient - extractImageURLsFromHTML - scriptContent:', scriptContent)
 
       if (!scriptContent.includes('"slides":')) {
         continue
