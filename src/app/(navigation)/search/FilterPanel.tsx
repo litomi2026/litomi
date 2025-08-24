@@ -218,6 +218,7 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
             maxValue={filters['max-view'] ?? ''}
             min={FILTER_CONFIG['min-view'].min}
             minId="min-view"
+            minPlaceholder="0"
             minValue={filters['min-view'] ?? ''}
             onMaxChange={(value) => handleFilterChange('max-view', value)}
             onMinChange={(value) => handleFilterChange('min-view', value)}
@@ -229,9 +230,11 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
             label={FILTER_CONFIG['min-page'].label}
             max={FILTER_CONFIG['max-page'].max}
             maxId="max-page"
+            maxPlaceholder="10,000"
             maxValue={filters['max-page'] ?? ''}
             min={FILTER_CONFIG['min-page'].min}
             minId="min-page"
+            minPlaceholder="1"
             minValue={filters['min-page'] ?? ''}
             onMaxChange={(value) => handleFilterChange('max-page', value)}
             onMinChange={(value) => handleFilterChange('min-page', value)}
