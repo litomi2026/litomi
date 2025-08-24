@@ -45,6 +45,20 @@ export const FILTER_CONFIG = {
     min: 1,
     max: 10000,
   },
+  'min-rating': {
+    type: 'number' as const,
+    label: '별점',
+    min: 0,
+    max: 5,
+    step: 0.1,
+  },
+  'max-rating': {
+    type: 'number' as const,
+    label: '별점',
+    min: 0,
+    max: 5,
+    step: 0.1,
+  },
   from: {
     type: 'date' as const,
     label: '업로드 날짜',
@@ -71,18 +85,7 @@ export const FILTER_CONFIG = {
   },
 } as const
 
-export const FILTER_KEYS = [
-  'sort',
-  'min-view',
-  'max-view',
-  'min-page',
-  'max-page',
-  'from',
-  'to',
-  'next-id',
-  'skip',
-] as const
-
+export const FILTER_KEYS = Object.keys(FILTER_CONFIG) as (keyof typeof FILTER_CONFIG)[]
 export const SEARCH_PAGE_SEARCH_PARAMS = [...FILTER_KEYS, 'query'] as const
 
 export type FilterKey = (typeof FILTER_KEYS)[number]

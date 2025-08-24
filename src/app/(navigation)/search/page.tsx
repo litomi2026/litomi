@@ -43,6 +43,8 @@ export default async function Page({ searchParams }: PageProps) {
     'max-view': maxView,
     'min-page': minPage,
     'max-page': maxPage,
+    'min-rating': minRating,
+    'max-rating': maxRating,
     from,
     to,
     'next-id': nextId,
@@ -50,7 +52,10 @@ export default async function Page({ searchParams }: PageProps) {
   } = validationResult.data
 
   const viewType = view === 'img' ? ViewCookie.IMAGE : ViewCookie.CARD
-  const hasActiveFilters = Boolean(from ?? to ?? sort ?? nextId ?? minView ?? maxView ?? minPage ?? maxPage ?? skip)
+
+  const hasActiveFilters = Boolean(
+    from ?? to ?? sort ?? nextId ?? minView ?? maxView ?? minPage ?? maxPage ?? minRating ?? maxRating ?? skip,
+  )
 
   return (
     <>

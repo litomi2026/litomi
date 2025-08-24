@@ -14,6 +14,8 @@ export const GETProxyKSearchSchema = z
     query: z.string().trim().max(MAX_SEARCH_QUERY_LENGTH).optional(),
     view: z.enum(ViewCookie).default(ViewCookie.CARD),
     sort: z.enum(Sort).optional(),
+    'min-rating': z.coerce.number().int().min(0).max(500).optional(),
+    'max-rating': z.coerce.number().int().min(0).max(500).optional(),
     'min-view': z.coerce.number().int().min(0).optional(),
     'max-view': z.coerce.number().int().min(0).optional(),
     'min-page': z.coerce.number().int().positive().max(10000).optional(),
@@ -32,6 +34,9 @@ export const GETProxyKSearchSchema = z
         return false
       }
       if (data.from && data.to && data.from > data.to) {
+        return false
+      }
+      if (data['min-rating'] && data['max-rating'] && data['min-rating'] > data['max-rating']) {
         return false
       }
       return true
