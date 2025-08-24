@@ -31,7 +31,7 @@ export function LibraryHomeLink({ isGuest, libraryCount, mangaCount, onClick }: 
   return (
     <Link
       aria-current={pathname === '/library'}
-      className="flex items-center gap-3 p-2 lg:pr-4 rounded-lg border border-transparent transition hover:bg-zinc-800/50 text-zinc-400 hover:text-white
+      className="flex text-sm items-center gap-3 p-2 lg:px-3 rounded-lg border border-transparent transition hover:bg-zinc-800/50 text-zinc-400 hover:text-white
       aria-current:bg-zinc-800 aria-current:text-white aria-current:border-zinc-700"
       href="/library"
       onClick={onClick}
@@ -57,7 +57,7 @@ export default function LibraryLink({ library, onClick }: Readonly<Props>) {
   return (
     <Link
       aria-current={isActive}
-      className="flex items-center gap-3 p-2 rounded-lg transition aria-current:bg-zinc-800 aria-current:border aria-current:border-zinc-700 hover:bg-zinc-800/50 border border-transparent"
+      className="flex items-center gap-3 p-2 lg:px-3 rounded-lg transition aria-current:bg-zinc-800 aria-current:border aria-current:border-zinc-700 hover:bg-zinc-800/50 border border-transparent"
       href={`/library/${library.id}`}
       onClick={onClick}
     >
