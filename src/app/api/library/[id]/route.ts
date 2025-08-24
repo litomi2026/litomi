@@ -1,6 +1,8 @@
-import { and, desc, eq, or, sql } from 'drizzle-orm'
-import { z } from 'zod'
+import { and, desc, eq, lt, or } from 'drizzle-orm'
+import { z } from 'zod/v4'
 
+import { decodeLibraryIdCursor, encodeLibraryIdCursor } from '@/common/cursor'
+import { LIBRARY_ITEMS_PER_PAGE } from '@/constants/policy'
 import { db } from '@/database/drizzle'
 import { libraryItemTable, libraryTable } from '@/database/schema'
 import { RouteProps } from '@/types/nextjs'
@@ -8,14 +10,12 @@ import { getUserIdFromCookie } from '@/utils/session'
 
 const GETLibraryIdSchema = z.object({
   id: z.coerce.number().int().positive(),
-  cursor: z.coerce.number().int().positive().optional(),
+  cursor: z.string().optional(),
 })
-
-const limit = 10
 
 export type GETLibraryItemsResponse = {
   items: { mangaId: number; createdAt: number }[]
-  nextCursor: number | null
+  nextCursor: string | null
 }
 
 type Params = {
@@ -62,22 +62,33 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       .select({ mangaId: libraryItemTable.mangaId, createdAt: libraryItemTable.createdAt })
       .from(libraryItemTable)
       .orderBy(desc(libraryItemTable.createdAt), desc(libraryItemTable.mangaId))
-      .limit(limit + 1)
+      .limit(LIBRARY_ITEMS_PER_PAGE + 1)
       .$dynamic()
 
     if (cursor) {
+      const cursorData = decodeLibraryIdCursor(cursor)
+
+      if (!cursorData) {
+        return new Response('Bad Request', { status: 400 })
+      }
+
+      const { timestamp: cursorTimestamp, mangaId: cursorMangaId } = cursorData
+
       query = query.where(
         and(
-          eq(libraryItemTable.libraryId, Number(libraryId)),
-          sql`${libraryItemTable.createdAt} < ${new Date(cursor)}`,
+          eq(libraryItemTable.libraryId, libraryId),
+          or(
+            lt(libraryItemTable.createdAt, new Date(cursorTimestamp)),
+            and(eq(libraryItemTable.createdAt, new Date(cursorTimestamp)), lt(libraryItemTable.mangaId, cursorMangaId)),
+          ),
         ),
       )
     } else {
-      query = query.where(eq(libraryItemTable.libraryId, Number(libraryId)))
+      query = query.where(eq(libraryItemTable.libraryId, libraryId))
     }
 
     const itemRows = await query
-    const hasNext = itemRows.length > limit
+    const hasNext = itemRows.length > LIBRARY_ITEMS_PER_PAGE
 
     if (hasNext) {
       itemRows.pop()
@@ -88,7 +99,9 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       createdAt: item.createdAt.getTime(),
     }))
 
-    const nextCursor = hasNext ? items[items.length - 1].createdAt : null
+    const nextCursor = hasNext
+      ? encodeLibraryIdCursor(items[items.length - 1].createdAt, items[items.length - 1].mangaId)
+      : null
 
     return Response.json({ items, nextCursor } satisfies GETLibraryItemsResponse)
   } catch (error) {
