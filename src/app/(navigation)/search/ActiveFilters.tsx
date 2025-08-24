@@ -61,6 +61,13 @@ export default function ActiveFilters({ filters }: Readonly<Props>) {
       onRemove: () => removeRangeFilter('min-page', 'max-page'),
     },
     {
+      condition: filters['min-rating'] || filters['max-rating'],
+      icon: '🌟',
+      label: '별점',
+      value: `${formatNumber(filters['min-rating']! / 100, '0')} ~ ${formatNumber(filters['max-rating']! / 100, '5')}`,
+      onRemove: () => removeRangeFilter('min-rating', 'max-rating'),
+    },
+    {
       condition: filters.from || filters.to,
       icon: '📅',
       label: '날짜',

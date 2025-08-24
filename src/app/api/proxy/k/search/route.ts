@@ -30,6 +30,8 @@ export async function GET(request: Request) {
     'max-view': maxView,
     'min-page': minPage,
     'max-page': maxPage,
+    'min-rating': minRating,
+    'max-rating': maxRating,
     from,
     to,
     'next-id': nextId,
@@ -52,6 +54,8 @@ export async function GET(request: Request) {
     maxPages: maxPage?.toString(),
     startDate: from?.toString(),
     endDate: to?.toString(),
+    minRating: minRating?.toString(),
+    maxRating: maxRating?.toString(),
   }
 
   try {

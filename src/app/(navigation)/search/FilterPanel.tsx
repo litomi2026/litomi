@@ -11,6 +11,7 @@ import type { FilterKey, FilterState } from './constants'
 
 import { FILTER_CONFIG, FILTER_KEYS, isDateFilter } from './constants'
 import RangeInput from './RangeInput'
+import RatingSlider from './RatingSlider'
 
 interface FilterPanelProps {
   buttonRef: RefObject<HTMLButtonElement | null>
@@ -43,6 +44,11 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
 
         if (!value) {
           params.delete(key)
+          return
+        }
+
+        if (key === 'min-rating' || key === 'max-rating') {
+          params.set(key, Math.round(parseFloat(value) * 100).toString())
           return
         }
 
@@ -230,6 +236,14 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
             onMaxChange={(value) => handleFilterChange('max-page', value)}
             onMinChange={(value) => handleFilterChange('min-page', value)}
             type="number"
+          />
+
+          {/* Rating range */}
+          <RatingSlider
+            maxValue={filters['max-rating']}
+            minValue={filters['min-rating']}
+            onMaxChange={(value) => handleFilterChange('max-rating', value)}
+            onMinChange={(value) => handleFilterChange('min-rating', value)}
           />
 
           {/* Date range */}

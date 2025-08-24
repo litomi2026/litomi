@@ -102,6 +102,8 @@ export type KHentaiMangaSearchOptions = {
   maxPages?: string
   startDate?: string
   endDate?: string
+  minRating?: string
+  maxRating?: string
 }
 
 export interface Thumbnail {

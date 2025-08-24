@@ -35,6 +35,8 @@ export default function FilterButton() {
 
       if (isDateFilter(key)) {
         initialState[key] = new Date(Number(value) * 1000).toISOString().split('T')[0]
+      } else if (key === 'min-rating' || key === 'max-rating') {
+        initialState[key] = (Number(value) / 100).toFixed(1)
       } else {
         initialState[key] = value
       }
