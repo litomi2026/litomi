@@ -26,35 +26,13 @@ export default function Modal({
   showCloseButton,
   showDragButton,
 }: Readonly<Props>) {
+  const isMounted = useMounted()
+  const modalRef = useRef<HTMLDivElement>(null)
+
   function closeModal(e: MouseEvent) {
     e.stopPropagation()
     onClose?.()
   }
-
-  useEffect(() => {
-    function closeOnEscapeKey(e: KeyboardEvent) {
-      if (e.code === 'Escape') {
-        onClose?.()
-      }
-    }
-
-    if (open) {
-      const bodyStyle = document.body.style
-
-      document.addEventListener('keydown', closeOnEscapeKey, false)
-      bodyStyle.overflow = 'hidden'
-      bodyStyle.touchAction = 'none'
-
-      return () => {
-        document.removeEventListener('keydown', closeOnEscapeKey, false)
-        bodyStyle.overflow = ''
-        bodyStyle.touchAction = ''
-      }
-    }
-  }, [onClose, open])
-
-  // --
-  const modalRef = useRef<HTMLDivElement>(null)
 
   function dragModalMouse(event: MouseEvent) {
     const modal = modalRef.current
@@ -96,10 +74,37 @@ export default function Modal({
     document.addEventListener('touchcancel', () => document.removeEventListener('touchmove', moveModal), { once: true })
   }
 
-  // --
-  const isMounted = useMounted()
+  // NOTE: ESC 키로 모달을 닫고 페이지 스크롤 방지
+  useEffect(() => {
+    function closeOnEscapeKey(e: KeyboardEvent) {
+      if (e.code === 'Escape') {
+        onClose?.()
+      }
+    }
 
-  if (!isMounted) return null
+    document.addEventListener('keydown', closeOnEscapeKey)
+
+    return () => {
+      document.removeEventListener('keydown', closeOnEscapeKey)
+    }
+  }, [onClose])
+
+  // NOTE: 기존 페이지 스크롤 방지
+  useEffect(() => {
+    const bodyStyle = document.body.style
+
+    if (open) {
+      bodyStyle.overflow = 'hidden'
+      bodyStyle.touchAction = 'none'
+    } else {
+      bodyStyle.overflow = ''
+      bodyStyle.touchAction = ''
+    }
+  }, [open])
+
+  if (!isMounted) {
+    return null
+  }
 
   return (
     <>

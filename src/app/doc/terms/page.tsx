@@ -29,13 +29,12 @@ export default async function Page() {
         <p className="mb-4">
           본 서비스는 불법 도박, 피싱, 스캠, 성인 광고 등이 있는 사이트의 많은 만화 작품을 수집하여 제공하는 것을
           목적으로 하며, 여타 만화 사이트가 이용자에게 해를 끼치는 광고로 수익을 창출하는 것을 방지하기 위해 오픈 소스로
-          운영됩니다. 본 서비스는 이용자에게 평생 무료로 제공되며, '기다리면 무료'와 같은 비즈니스 모델을 도입하지
-          않겠으며, 불법 광고를 통한 수익 창출을 목적으로 하지 않습니다.
+          운영됩니다.
         </p>
         <h2 className="mb-2">제 4 조 (광고 게재 정책)</h2>
         <p className="mb-4">
-          본 서비스는 수익 창출을 목적으로 하지 않으며, 현재 및 향후 구글 광고나 성인 광고 등 외부 광고를 게재하지 않을
-          것입니다.
+          본 서비스는 현재 및 향후에도 도박, 성인물, 약물, 스캠, 피싱 등 사용자에게 금전적, 정신적 피해를 끼치는 광고를
+          게재하지 않을 것입니다. 본 서비스는 불법 광고를 통한 수익 창출을 목적으로 하지 않습니다.
         </p>
         <h2 className="mb-2">제 5 조 (오픈 소스 전환)</h2>
         <p className="mb-4">
@@ -45,17 +44,17 @@ export default async function Page() {
         <h2 className="mb-2">제 6 조 (지원하는 브라우저)</h2>
         <p className="mb-4">
           본 서비스는 최신 버전의 웹 브라우저에서 최적화되어 있으며, 구형 브라우저에서는 일부 기능이 제한될 수 있습니다.
-          <br />본 서비스는 다음의 브라우저에서 지원됩니다.
+          본 서비스는 다음의 브라우저에서 지원됩니다.
         </p>
         <ul className="mb-4">
-          <li>Chrome 80</li>
-          <li>Edge 80</li>
-          <li>Safari 14, iOS Safari 14.4</li>
-          <li>Firefox 74</li>
-          <li>Opera 67</li>
-          <li>Samsung Internet 13.0</li>
+          <li>Chrome 109</li>
+          <li>Edge 135</li>
+          <li>Firefox 137</li>
+          <li>Safari 15</li>
+          <li>Samsung Internet 25</li>
+          <li>iOS Safari 15</li>
         </ul>
-        <h3 className="mt-6 text-center">시행일 2025-03-30</h3>
+        <h3 className="mt-6 text-center">시행일 2025-08-23</h3>
       </div>
     </div>
   )

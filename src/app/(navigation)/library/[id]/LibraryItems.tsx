@@ -1,5 +1,7 @@
 import { desc, eq } from 'drizzle-orm'
 
+import { encodeLibraryIdCursor } from '@/common/cursor'
+import { LIBRARY_ITEMS_PER_PAGE } from '@/constants/policy'
 import { db } from '@/database/drizzle'
 import { libraryItemTable } from '@/database/schema'
 
@@ -14,16 +16,30 @@ type Props = {
 }
 
 export default async function LibraryItems({ library, isOwner }: Readonly<Props>) {
-  const libraryItems = await db
+  const libraryItemRows = await db
     .select({
-      createdAt: libraryItemTable.createdAt,
-      libraryId: libraryItemTable.libraryId,
       mangaId: libraryItemTable.mangaId,
+      createdAt: libraryItemTable.createdAt,
     })
     .from(libraryItemTable)
     .where(eq(libraryItemTable.libraryId, library.id))
     .orderBy(desc(libraryItemTable.createdAt), desc(libraryItemTable.mangaId))
-    .limit(20)
+    .limit(LIBRARY_ITEMS_PER_PAGE + 1)
 
-  return <LibraryItemsClient initialItems={libraryItems} isOwner={isOwner} library={library} />
+  const hasNext = libraryItemRows.length > LIBRARY_ITEMS_PER_PAGE
+
+  if (hasNext) {
+    libraryItemRows.pop()
+  }
+
+  const items = libraryItemRows.map((item) => ({
+    mangaId: item.mangaId,
+    createdAt: item.createdAt.getTime(),
+  }))
+
+  const nextCursor = hasNext
+    ? encodeLibraryIdCursor(items[items.length - 1].createdAt, items[items.length - 1].mangaId)
+    : null
+
+  return <LibraryItemsClient initialItems={{ items, nextCursor }} isOwner={isOwner} library={library} />
 }

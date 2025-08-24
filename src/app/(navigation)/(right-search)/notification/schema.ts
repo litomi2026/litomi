@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from 'zod/v4'
 
 export const markAsReadSchema = z.object({
   ids: z.array(z.coerce.number().int().positive()).min(1),

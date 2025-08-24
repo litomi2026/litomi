@@ -2,6 +2,7 @@ import { sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 
 import { CookieKey } from '@/constants/storage'
+import { handleRouteError } from '@/crawler/proxy-utils'
 import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
@@ -14,7 +15,7 @@ export type GETMeResponse = {
   imageURL: string | null
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   const cookieStore = await cookies()
   const userId = await getUserIdFromAccessToken(cookieStore)
 
@@ -22,21 +23,25 @@ export async function GET() {
     return new Response('Unauthorized', { status: 401 })
   }
 
-  const [user] = await db
-    .select({
-      id: userTable.id,
-      loginId: userTable.loginId,
-      name: userTable.name,
-      nickname: userTable.nickname,
-      imageURL: userTable.imageURL,
-    })
-    .from(userTable)
-    .where(sql`${userTable.id} = ${userId}`)
+  try {
+    const [user] = await db
+      .select({
+        id: userTable.id,
+        loginId: userTable.loginId,
+        name: userTable.name,
+        nickname: userTable.nickname,
+        imageURL: userTable.imageURL,
+      })
+      .from(userTable)
+      .where(sql`${userTable.id} = ${userId}`)
 
-  if (!user) {
-    cookieStore.delete(CookieKey.ACCESS_TOKEN)
-    return new Response('Not Found', { status: 404 })
+    if (!user) {
+      cookieStore.delete(CookieKey.ACCESS_TOKEN)
+      return new Response('Not Found', { status: 404 })
+    }
+
+    return Response.json(user satisfies GETMeResponse)
+  } catch (error) {
+    return handleRouteError(error, request)
   }
-
-  return Response.json(user satisfies GETMeResponse)
 }

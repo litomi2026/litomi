@@ -1,15 +1,21 @@
 'use client'
 
 import { Menu, MoreVertical, X } from 'lucide-react'
+import ms from 'ms'
 import dynamic from 'next/dynamic'
 import { useParams } from 'next/navigation'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+
+import useThrottledDownScroll from '@/hook/useThrottledScroll'
 
 import { useLibrarySelectionStore } from './[id]/librarySelection'
 import ShareLibraryButton from './[id]/ShareLibraryButton'
 import LibrarySidebar from './LibrarySidebar'
 
 const BulkOperationsToolbar = dynamic(() => import('./[id]/BulkOperationsToolbar'))
+
+const SCROLL_THROTTLE_MS = ms('0.3s')
+const SCROLL_THRESHOLD_PX = 50
 
 type Params = {
   id: string
@@ -31,9 +37,10 @@ type Props = {
 
 export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-  const { id } = useParams<Params>()
+  const isDownScroll = useThrottledDownScroll({ threshold: SCROLL_THRESHOLD_PX, throttle: SCROLL_THROTTLE_MS })
+  const { id: libraryId } = useParams<Params>()
   const { enterSelectionMode, exitSelectionMode, isSelectionMode } = useLibrarySelectionStore()
-  const currentLibrary = id ? libraries.find((lib) => lib.id === Number(id)) : null
+  const currentLibrary = libraryId ? libraries.find((lib) => lib.id === Number(libraryId)) : null
   const isOwner = currentLibrary?.userId === Number(userId)
   const isGuest = !userId
 
@@ -66,9 +73,17 @@ export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
     }
   }
 
+  // NOTE: 서재 변경 시 선택 모드 종료하기
+  useEffect(() => {
+    exitSelectionMode()
+  }, [libraryId, exitSelectionMode])
+
   return (
     <>
-      <div className="sticky top-0 z-40 flex justify-between items-center gap-3 p-4 bg-zinc-950 border-b border-zinc-800">
+      <div
+        aria-hidden={isDownScroll}
+        className="sticky top-0 z-40 flex justify-between items-center gap-3 p-4 border-b border-zinc-800 transition bg-zinc-950 aria-hidden:opacity-50"
+      >
         <div className="flex items-center gap-3">
           <button
             aria-label="library-menu"
@@ -83,7 +98,7 @@ export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
               className="hidden size-10 my-1 mr-2 rounded-lg sm:flex items-center bg-zinc-800 justify-center text-xl shrink-0"
               style={{ backgroundColor: currentLibrary.color ?? '' }}
             >
-              {currentLibrary?.icon?.slice(0, 2) ?? currentLibrary?.name.slice(0, 1)}
+              {currentLibrary.icon?.slice(0, 2) ?? currentLibrary.name.slice(0, 1)}
             </div>
           )}
           {currentLibrary ? (
@@ -105,9 +120,7 @@ export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
           <BulkOperationsToolbar currentLibraryId={currentLibrary.id} libraries={libraries} />
         )}
         <div className="flex items-center gap-3">
-          {!isSelectionMode && currentLibrary && (
-            <ShareLibraryButton className="p-2 -mx-1" libraryId={currentLibrary.id} libraryName={currentLibrary.name} />
-          )}
+          {!isSelectionMode && currentLibrary && <ShareLibraryButton className="p-2 -mx-1" library={currentLibrary} />}
           {isOwner && (
             <button
               className="p-2 -mx-1 sm:my-1.5 hover:bg-zinc-800 rounded-lg transition"

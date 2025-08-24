@@ -8,6 +8,7 @@ import localFont from 'next/font/local'
 import { ReactNode } from 'react'
 import { Toaster } from 'sonner'
 
+import LibraryModal from '@/components/card/LibraryModal'
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar'
 import { CANONICAL_URL, defaultOpenGraph, DESCRIPTION, SHORT_NAME, THEME_COLOR } from '@/constants'
 import {
@@ -85,7 +86,10 @@ export default function RootLayout({ children }: Readonly<Props>) {
         {GOOGLE_ADSENSE_ACCOUNT && <meta content={GOOGLE_ADSENSE_ACCOUNT} name="google-adsense-account" />}
       </head>
       <body className={`${PretendardVariable.className} antialiased h-full`}>
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          {children}
+          <LibraryModal />
+        </QueryProvider>
         <ServiceWorkerRegistrar />
         <Toaster duration={3000} position="top-center" richColors theme="dark" />
         {VERCEL_SPEED_INSIGHTS && <SpeedInsights />}
