@@ -44,7 +44,7 @@ export default function LibraryModal() {
       } else if (successCount > 0) {
         toast.success(`${successCount}개 서재에 추가했어요 (중복 ${libraryIds.length - successCount}개)`)
       } else {
-        toast.warning(`모든 서재에 이미 추가되어 있어요`)
+        toast.warning(`해당 서재에 이미 추가되어 있어요`)
       }
 
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraries })
