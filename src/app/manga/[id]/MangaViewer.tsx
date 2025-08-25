@@ -24,11 +24,11 @@ export default function MangaViewer({ id }: Readonly<Props>) {
     placeholderData: () => ({ id, title: '불러오는 중', images: [] }),
   })
 
-  // NOTE: Fluid Active CPU 비용을 줄이기 위해
+  // NOTE: Vercel Fluid Active CPU 비용을 줄이기 위해
   useClientSideMetadata({
     title: manga?.title,
     description: manga?.description,
-    images: manga?.images.map((image) => getImageSource({ imageURL: image, origin: manga?.origin })).slice(0, 4),
+    image: manga?.images.map((image) => getImageSource({ imageURL: image, origin: manga?.origin }))[0],
   })
 
   if (!manga) {
