@@ -89,7 +89,8 @@ export const userCensorshipTable = pgTable(
 export const credentialTable = pgTable(
   'credential',
   {
-    id: varchar({ length: 256 }).primaryKey(),
+    id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+    credentialId: varchar({ length: 256 }).notNull(),
     userId: bigint('user_id', { mode: 'number' })
       .references(() => userTable.id, { onDelete: 'cascade' })
       .notNull(),
@@ -100,7 +101,10 @@ export const credentialTable = pgTable(
     deviceType: smallint('device_type').notNull(),
     transports: text().array(),
   },
-  (table) => [index('idx_credential_user_id').on(table.userId)],
+  (table) => [
+    index('idx_credential_user_id').on(table.userId),
+    unique('idx_credential_credential_id').on(table.credentialId),
+  ],
 ).enableRLS()
 
 export const challengeTable = pgTable(

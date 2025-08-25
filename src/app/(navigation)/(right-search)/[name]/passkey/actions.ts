@@ -94,7 +94,7 @@ export async function getAuthenticationOptions(loginId: string) {
       const userWithCredentials = await tx
         .select({
           userId: userTable.id,
-          credentialId: credentialTable.id,
+          credentialId: credentialTable.credentialId,
           transports: credentialTable.transports,
         })
         .from(userTable)
@@ -158,7 +158,7 @@ export async function getRegistrationOptions() {
           name: userTable.name,
           loginId: userTable.loginId,
           nickname: userTable.nickname,
-          credentialId: credentialTable.id,
+          credentialId: credentialTable.credentialId,
           transports: credentialTable.transports,
         })
         .from(userTable)
@@ -236,7 +236,7 @@ export async function verifyAuthentication(body: unknown) {
         .from(credentialTable)
         .innerJoin(challengeTable, sql`${challengeTable.userId} = ${credentialTable.userId}`)
         .where(
-          sql`${credentialTable.id} = ${validatedData.id} 
+          sql`${credentialTable.credentialId} = ${validatedData.id} 
             AND ${challengeTable.type} = ${ChallengeType.AUTHENTICATION} 
             AND ${challengeTable.expiresAt} > NOW()`,
         )
@@ -254,7 +254,7 @@ export async function verifyAuthentication(body: unknown) {
         expectedRPID: WEBAUTHN_RP_ID,
         credential: {
           publicKey: new Uint8Array(Buffer.from(credential.publicKey, 'base64')),
-          id: credential.id,
+          id: credential.credentialId,
           counter: Number(credential.counter),
         },
       })
@@ -284,7 +284,7 @@ export async function verifyAuthentication(body: unknown) {
             counter: newCounter,
             lastUsedAt: new Date(),
           })
-          .where(sql`${credentialTable.id} = ${validatedData.id}`),
+          .where(sql`${credentialTable.credentialId} = ${validatedData.id}`),
         tx
           .delete(challengeTable)
           .where(sql`${challengeTable.userId} = ${credential.userId} AND ${challengeTable.expiresAt} < NOW()`),
@@ -350,7 +350,7 @@ export async function verifyRegistration(body: RegistrationResponseJSON) {
       const { id: credentialId, counter, transports, publicKey } = credential
 
       const newPasskey = {
-        id: credentialId,
+        credentialId: credentialId,
         counter,
         publicKey: Buffer.from(publicKey).toString('base64'),
         deviceType: encodeDeviceType(registrationResponse.authenticatorAttachment),
