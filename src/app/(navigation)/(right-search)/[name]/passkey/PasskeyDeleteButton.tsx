@@ -11,7 +11,7 @@ import useActionResponse from '@/hook/useActionResponse'
 import { deleteCredential } from './actions'
 
 type Props = {
-  credentialId: string
+  id: number
   username: string
   className?: string
   onCancel?: () => void
@@ -19,13 +19,7 @@ type Props = {
   onOpenChange?: (open: boolean) => void
 }
 
-export default function PasskeyDeleteButton({
-  credentialId,
-  className,
-  onCancel,
-  open,
-  onOpenChange,
-}: Readonly<Props>) {
+export default function PasskeyDeleteButton({ id, className, onCancel, open, onOpenChange }: Readonly<Props>) {
   const [internalOpen, setInternalOpen] = useState(false)
   const isControlled = open !== undefined
   const isOpen = isControlled ? open : internalOpen
@@ -87,7 +81,7 @@ export default function PasskeyDeleteButton({
               취소
             </button>
             <form action={dispatchAction} className="flex-1">
-              <input name="credential-id" type="hidden" value={credentialId} />
+              <input name="credential-id" type="hidden" value={id} />
               <button
                 className="w-full h-10 px-4 rounded-lg bg-red-600 text-white font-medium disabled:opacity-70 disabled:cursor-not-allowed relative"
                 disabled={isPending}

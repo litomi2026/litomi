@@ -32,7 +32,7 @@ export const useLibraryModalStore = create<LibraryModalStore>()((set) => ({
 
 export default function LibraryModal() {
   const { isOpen, mangaId, setIsOpen, setMangaId } = useLibraryModalStore()
-  const { data: libraries = [] } = useLibrariesQuery()
+  const { data: libraries } = useLibrariesQuery()
   const queryClient = useQueryClient()
   const [selectedLibraryIds, setSelectedLibraryIds] = useState<Set<number>>(new Set())
 
@@ -100,7 +100,7 @@ export default function LibraryModal() {
           </button>
         </div>
         <div className="flex flex-col gap-4 flex-1 overflow-y-auto p-4">
-          {libraries.length === 0 ? (
+          {libraries?.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-zinc-400 mb-6">아직 서재가 없어요</p>
               <Link
@@ -114,7 +114,7 @@ export default function LibraryModal() {
               </Link>
             </div>
           ) : (
-            libraries.map((library) => (
+            libraries?.map((library) => (
               <label
                 className="flex items-center gap-3 w-full p-3 rounded-lg border-2 hover:bg-zinc-800 hover:border-zinc-600 transition cursor-pointer"
                 key={library.id}
@@ -140,7 +140,7 @@ export default function LibraryModal() {
             ))
           )}
         </div>
-        {libraries.length > 0 && (
+        {libraries?.length && libraries.length > 0 && (
           <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-zinc-900 border-t-2 border-zinc-800 flex-shrink-0 space-y-2">
             <button
               className="flex items-center justify-center gap-2 w-full px-4 py-3 text-background font-medium bg-brand-end rounded-lg transition hover:bg-brand-end/90

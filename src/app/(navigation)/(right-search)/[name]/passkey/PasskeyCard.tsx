@@ -25,12 +25,12 @@ export default function PasskeyCard({ passkey, username }: Readonly<Props>) {
   const { icon, label, bgColor } = getDeviceInfo(deviceType ?? '')
   const createdRelativeTime = getRelativeTime(createdAt)
   const lastUsedRelativeTime = lastUsedAt ? getRelativeTime(lastUsedAt) : null
-  const truncatedId = getTruncatedId(id)
+  const truncatedId = getTruncatedId(passkey.credentialId)
   const verificationMethod = getUserVerificationMethod(deviceType ?? '')
   const isPlatform = deviceType === 'platform'
 
   return (
-    <PasskeyMobileDeleteWrapper credentialId={passkey.id} username={username}>
+    <PasskeyMobileDeleteWrapper id={id} username={username}>
       <div
         className="group relative bg-zinc-900 border-2 rounded-2xl p-5 data-[platform=true]:border-brand-end/40 border-zinc-800"
         data-platform={isPlatform}
@@ -59,7 +59,7 @@ export default function PasskeyCard({ passkey, username }: Readonly<Props>) {
               </div>
               <PasskeyDeleteButton
                 className="opacity-0 group-hover:opacity-100 p-2 text-zinc-600 hover:text-red-400 rounded-xl hover:bg-red-900/10 transition-all"
-                credentialId={passkey.id}
+                id={id}
                 username={username}
               />
             </div>

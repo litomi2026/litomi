@@ -52,6 +52,7 @@ export default async function PasskeyPage({ params }: PageProps<Params>) {
   const credentials = await db
     .select({
       id: credentialTable.id,
+      credentialId: credentialTable.credentialId,
       createdAt: credentialTable.createdAt,
       lastUsedAt: credentialTable.lastUsedAt,
       deviceType: credentialTable.deviceType,
