@@ -2,9 +2,9 @@ name: Database Backup
 
 on:
   schedule:
-    # Run daily at 3 AM UTC
+    # Run daily at 6 AM KST
     - cron: '0 21 * * *'
-  workflow_dispatch: # Allow manual trigger
+  workflow_dispatch:
 
 jobs:
   backup:
@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install PostgreSQL client
         run: |
@@ -48,8 +48,7 @@ jobs:
           path: backups/
           retention-days: 30
 
-      # Keep only last 10 backups in the repo to save space
-      - name: Cleanup old artifacts
+      - name: Cleanup old artifacts (keep only last 10)
         uses: actions/github-script@v7
         with:
           script: |
