@@ -14,6 +14,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
+      - name: Generate date
+        id: date
+        run: echo "date=$(date +%Y%m%d-%H%M)" >> $GITHUB_OUTPUT
+
       - name: Install PostgreSQL client
         run: |
           sudo apt-get update
@@ -22,9 +26,15 @@ jobs:
       - name: Create backup
         env:
           POSTGRES_URL_DIRECT: ${{ secrets.POSTGRES_URL_DIRECT }}
+          DATE: ${{ steps.date.outputs.date }}
+          BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
+          BACKUP_PREFIX: 'litomi'
+          BACKUP_DIR: 'backups'
         run: |
-          DATE=$(date +%Y%m%d_%H%M%S)
-          mkdir -p backups
+          FILENAME="${BACKUP_PREFIX}-${DATE}"
+          DUMP_FILE="${BACKUP_DIR}/${FILENAME}.dump"
+          ENCRYPTED_FILE="${BACKUP_DIR}/${FILENAME}.dump.gpg"
+          mkdir -p "${BACKUP_DIR}"
 
           # Create compressed backup
           pg_dump "$POSTGRES_URL_DIRECT" \
@@ -33,39 +43,28 @@ jobs:
             --no-comments \
             --format=custom \
             --compress=9 \
-            --file="backups/litomi_${DATE}.dump"
+            --file="${DUMP_FILE}"
 
-          # Create checksum
-          sha256sum "backups/litomi_${DATE}.dump" > "backups/litomi_${DATE}.dump.sha256"
+          # Encrypt the backup using GPG with symmetric encryption
+          gpg --batch --yes \
+            --passphrase="$BACKUP_ENCRYPTION_KEY" \
+            --cipher-algo AES256 \
+            --symmetric \
+            --output "${ENCRYPTED_FILE}" \
+            "${DUMP_FILE}"
+
+          rm "${DUMP_FILE}"
+          sha256sum "${ENCRYPTED_FILE}" > "${ENCRYPTED_FILE}.sha256"
 
           # Display backup info
-          ls -lh backups/
+          ls -lh "${BACKUP_DIR}/"
 
       - name: Upload to GitHub Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: database-backup-${{ github.run_number }}
-          path: backups/
+          name: ${{ env.BACKUP_PREFIX }}-backup-${{ steps.date.outputs.date }}
+          path: ${{ env.BACKUP_DIR }}/
           retention-days: 30
-
-      - name: Cleanup old artifacts (keep only last 10)
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const artifacts = await github.rest.actions.listArtifactsForRepo({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: 'database-backup'
-            });
-
-            const sortedArtifacts = artifacts.data.artifacts.sort((a, b) => 
-              new Date(b.created_at) - new Date(a.created_at)
-            );
-
-            for (let i = 10; i < sortedArtifacts.length; i++) {
-              await github.rest.actions.deleteArtifact({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                artifact_id: sortedArtifacts[i].id
-              });
-            }
+        env:
+          BACKUP_PREFIX: 'litomi'
+          BACKUP_DIR: 'backups'
