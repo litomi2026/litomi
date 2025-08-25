@@ -157,18 +157,17 @@ function RatingSlider({ minValue, maxValue, onMinChange, onMaxChange }: Readonly
         />
         {[1, 2, 3, 4].map((star) => (
           <div
-            className="absolute flex flex-col items-center pointer-events-none top-1"
+            className="absolute flex flex-col items-center pointer-events-none top-1 -translate-x-1/2"
             key={star}
-            style={{ left: `${(star / 5) * 100}%`, transform: 'translateX(-50%)' }}
+            style={{ left: `${(star / 5) * 100}%` }}
           >
             <div className="h-2 w-px bg-zinc-700" />
             <span className="text-[10px] text-zinc-600 mt-2">{star}</span>
           </div>
         ))}
         <div
-          className={`absolute w-6 h-6 -translate-x-1/2 cursor-grab transition-transform ${
-            isDragging === 'min' ? 'scale-125 cursor-grabbing' : 'hover:scale-110'
-          }`}
+          aria-current={isDragging === 'min'}
+          className="absolute size-6 -translate-x-1/2 cursor-grab transition aria-current:scale-110 aria-current:cursor-grabbing hover:scale-105"
           onPointerDown={(e) => handlePointerDown(e, 'min')}
           style={{ left: `${minPos}%` }}
         >
@@ -177,9 +176,8 @@ function RatingSlider({ minValue, maxValue, onMinChange, onMaxChange }: Readonly
           </div>
         </div>
         <div
-          className={`absolute w-6 h-6 -translate-x-1/2 cursor-grab transition-transform ${
-            isDragging === 'max' ? 'scale-125 cursor-grabbing' : 'hover:scale-110'
-          }`}
+          aria-current={isDragging === 'max'}
+          className="absolute size-6 -translate-x-1/2 cursor-grab transition aria-current:scale-110 aria-current:cursor-grabbing hover:scale-105"
           onPointerDown={(e) => handlePointerDown(e, 'max')}
           style={{ left: `${maxPos}%` }}
         >

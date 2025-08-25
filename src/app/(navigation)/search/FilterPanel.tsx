@@ -6,6 +6,7 @@ import { createPortal } from 'react-dom'
 
 import IconSpinner from '@/components/icons/IconSpinner'
 import IconX from '@/components/icons/IconX'
+import { formatLocalDate } from '@/utils/date'
 
 import type { FilterKey, FilterState } from './constants'
 
@@ -61,6 +62,8 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
 
         if (key === 'to') {
           date.setHours(23, 59, 59, 999)
+        } else {
+          date.setHours(0, 0, 0, 0)
         }
 
         const timestamp = Math.floor(date.getTime() / 1000)
@@ -294,8 +297,8 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
                         const to = new Date()
                         const from = new Date()
                         from.setDate(from.getDate() - days)
-                        handleFilterChange('from', from.toISOString().split('T')[0])
-                        handleFilterChange('to', to.toISOString().split('T')[0])
+                        handleFilterChange('from', formatLocalDate(from))
+                        handleFilterChange('to', formatLocalDate(to))
                       }
                     }}
                     type="button"
