@@ -88,14 +88,13 @@ export class HarpiClient {
     return HarpiClient.instance
   }
 
-  async fetchManga(id: number, revalidate = sec('1 week'), options?: RequestInit): Promise<Manga | null> {
+  async fetchManga(id: number, revalidate = sec('1 week')): Promise<Manga | null> {
     const validatedParams = HarpiSearchSchema.parse({ ids: [id] })
     const searchParams = this.buildSearchParams(validatedParams)
 
-    const response = await this.client.fetch<HarpiListResponse>(
-      `/animation/list?${searchParams}`,
-      options ? options : { next: { revalidate } },
-    )
+    const response = await this.client.fetch<HarpiListResponse>(`/animation/list?${searchParams}`, {
+      next: { revalidate },
+    })
 
     if (response.data.length === 0) {
       return null
@@ -130,31 +129,47 @@ export class HarpiClient {
   private buildSearchParams(params: GETHarpiSearchRequest): URLSearchParams {
     const searchParams = new URLSearchParams()
 
+    function normalizeStringArray(value: string[]) {
+      const result = []
+
+      for (const v of value) {
+        const trimmed = v.trim()
+        if (trimmed.length > 0) {
+          result.push(trimmed)
+        }
+      }
+
+      return result.sort()
+    }
+
     function appendMultipleValues(key: string, value: number | string | number[] | string[]) {
-      const values = Array.isArray(value)
-        ? value.sort()
-        : value
-            .toString()
-            .split(',')
-            .map((v) => v.trim())
-            .sort()
-      values.forEach((v) => searchParams.append(key, v.toString()))
+      let normalizedValues: (number | string)[]
+
+      if (Array.isArray(value)) {
+        normalizedValues = value.sort()
+      } else {
+        normalizedValues = normalizeStringArray(value.toString().split(','))
+      }
+
+      for (const v of normalizedValues) {
+        searchParams.append(key, v.toString())
+      }
     }
 
     if (params.searchText) {
-      const searchTerms = params.searchText
-        .split(' ')
-        .filter((term) => term.trim())
-        .sort()
-      searchTerms.forEach((term) => searchParams.append('searchText', term))
+      const searchTerms = normalizeStringArray(params.searchText.split(' '))
+
+      for (const term of searchTerms) {
+        searchParams.append('searchText', term)
+      }
     }
 
     if (params.lineText) {
-      const lineTexts = params.lineText
-        .split(' ')
-        .filter((text) => text.trim())
-        .sort()
-      lineTexts.forEach((text) => searchParams.append('lineText', text))
+      const lineTexts = normalizeStringArray(params.lineText.split(' '))
+
+      for (const text of lineTexts) {
+        searchParams.append('lineText', text)
+      }
     }
 
     if (params.authors) appendMultipleValues('selectedAuthors', params.authors)
