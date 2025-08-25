@@ -1,0 +1,72 @@
+name: Database Backup
+
+on:
+  schedule:
+    # Run daily at 3 AM UTC
+    - cron: '0 21 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Create backup
+        env:
+          POSTGRES_URL_DIRECT: ${{ secrets.POSTGRES_URL_DIRECT }}
+        run: |
+          DATE=$(date +%Y%m%d_%H%M%S)
+          mkdir -p backups
+
+          # Create compressed backup
+          pg_dump "$POSTGRES_URL_DIRECT" \
+            --no-owner \
+            --no-privileges \
+            --no-comments \
+            --format=custom \
+            --compress=9 \
+            --file="backups/litomi_${DATE}.dump"
+
+          # Create checksum
+          sha256sum "backups/litomi_${DATE}.dump" > "backups/litomi_${DATE}.dump.sha256"
+
+          # Display backup info
+          ls -lh backups/
+
+      - name: Upload to GitHub Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: database-backup-${{ github.run_number }}
+          path: backups/
+          retention-days: 30
+
+      # Keep only last 10 backups in the repo to save space
+      - name: Cleanup old artifacts
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const artifacts = await github.rest.actions.listArtifactsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'database-backup'
+            });
+
+            const sortedArtifacts = artifacts.data.artifacts.sort((a, b) => 
+              new Date(b.created_at) - new Date(a.created_at)
+            );
+
+            for (let i = 10; i < sortedArtifacts.length; i++) {
+              await github.rest.actions.deleteArtifact({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                artifact_id: sortedArtifacts[i].id
+              });
+            }
