@@ -5,6 +5,7 @@ import { ReadonlyURLSearchParams } from 'next/navigation'
 import { useCallback, useRef, useState } from 'react'
 
 import useMounted from '@/hook/useMounted'
+import { formatLocalDate } from '@/utils/date'
 
 import type { FilterState } from './constants'
 
@@ -34,7 +35,7 @@ export default function FilterButton() {
       if (!value) return
 
       if (isDateFilter(key)) {
-        initialState[key] = new Date(Number(value) * 1000).toISOString().split('T')[0]
+        initialState[key] = formatLocalDate(new Date(Number(value) * 1000))
       } else if (key === 'min-rating' || key === 'max-rating') {
         initialState[key] = (Number(value) / 100).toFixed(1)
       } else {

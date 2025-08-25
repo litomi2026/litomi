@@ -1,3 +1,5 @@
+import { formatLocalDate } from '@/utils/date'
+
 type BaseProps = {
   label: string
   minId: string
@@ -52,7 +54,7 @@ export default function RangeInput({
         },
       }
     } else if (type === 'date') {
-      const today = new Date().toISOString().split('T')[0]
+      const today = formatLocalDate(new Date())
       return {
         minInput: {
           max: maxValue || today,
