@@ -10,7 +10,7 @@ import { getUserIdFromCookie } from '@/utils/session'
 
 const GETLibraryIdSchema = z.object({
   id: z.coerce.number().int().positive(),
-  cursor: z.string().optional(),
+  cursor: z.string().nullable(),
 })
 
 export type GETLibraryItemsResponse = {
