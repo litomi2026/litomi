@@ -17,6 +17,7 @@ import {
   bulkMoveSchema,
   bulkRemoveSchema,
   createLibrarySchema,
+  updateLibrarySchema,
 } from './schema'
 
 export async function addMangaToLibraries(data: { mangaId: number; libraryIds: number[] }) {
@@ -229,4 +230,65 @@ export async function createLibrary(formData: FormData) {
 
   revalidatePath('/library', 'layout')
   return created(newLibrary.id)
+}
+
+export async function deleteLibrary(libraryId: number) {
+  const userId = await getUserIdFromCookie()
+
+  if (!userId) {
+    return unauthorized('로그인 정보가 없거나 만료됐어요')
+  }
+
+  const [deletedLibrary] = await db
+    .delete(libraryTable)
+    .where(and(eq(libraryTable.id, libraryId), eq(libraryTable.userId, Number(userId))))
+    .returning({ id: libraryTable.id })
+
+  if (!deletedLibrary) {
+    return notFound('서재를 찾을 수 없어요')
+  }
+
+  revalidatePath('/library', 'layout')
+  return ok(deletedLibrary.id)
+}
+
+export async function updateLibrary(formData: FormData) {
+  const userId = await getUserIdFromCookie()
+
+  if (!userId) {
+    return unauthorized('로그인 정보가 없거나 만료됐어요')
+  }
+
+  const validation = updateLibrarySchema.safeParse({
+    libraryId: formData.get('library-id'),
+    name: formData.get('name'),
+    description: formData.get('description'),
+    color: formData.get('color'),
+    icon: formData.get('icon'),
+  })
+
+  if (!validation.success) {
+    return badRequest(flattenZodFieldErrors(validation.error))
+  }
+
+  const { libraryId, name, description, color, icon } = validation.data
+
+  const [updatedLibrary] = await db
+    .update(libraryTable)
+    .set({
+      name: name.trim(),
+      description: description?.trim() || null,
+      color: color ? hexColorToInt(color) : null,
+      icon: icon || null,
+    })
+    .where(and(eq(libraryTable.id, libraryId), eq(libraryTable.userId, Number(userId))))
+    .returning({ id: libraryTable.id })
+
+  if (!updatedLibrary) {
+    return notFound('서재를 찾을 수 없어요')
+  }
+
+  revalidatePath('/library', 'layout')
+  revalidatePath(`/library/${libraryId}`, 'page')
+  return ok(updatedLibrary.id)
 }
