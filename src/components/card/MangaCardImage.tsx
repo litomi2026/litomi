@@ -32,6 +32,7 @@ export default function MangaCardImage({ manga, href, mangaIndex, className = ''
         <Link
           className="flex overflow-x-auto h-fit snap-x snap-mandatory select-none scrollbar-hidden relative"
           href={href}
+          prefetch={false}
         >
           <LinkLoading />
           <MangaImage fetchPriority={mangaIndex < 4 ? 'high' : undefined} manga={manga} />

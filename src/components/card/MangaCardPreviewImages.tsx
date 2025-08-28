@@ -57,7 +57,7 @@ function MangaCardPreviewImages({ className, manga, mangaIndex = 0, href }: Read
   return (
     <>
       {/* 슬라이드 컨테이너 */}
-      <Link className={className} href={href} ref={sliderRef}>
+      <Link className={className} href={href} prefetch={false} ref={sliderRef}>
         <LinkLoading />
         {Array.from({ length: totalSlides }).map((_, imageIndex) => (
           <MangaImage
