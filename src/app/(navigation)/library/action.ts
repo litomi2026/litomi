@@ -256,7 +256,7 @@ export async function updateLibrary(formData: FormData) {
   const userId = await getUserIdFromCookie()
 
   if (!userId) {
-    return unauthorized('로그인 정보가 없거나 만료됐어요')
+    return unauthorized('로그인 정보가 없거나 만료됐어요', formData)
   }
 
   const validation = updateLibrarySchema.safeParse({
@@ -268,7 +268,7 @@ export async function updateLibrary(formData: FormData) {
   })
 
   if (!validation.success) {
-    return badRequest(flattenZodFieldErrors(validation.error))
+    return badRequest(flattenZodFieldErrors(validation.error), formData)
   }
 
   const { libraryId, name, description, color, icon } = validation.data
@@ -285,7 +285,7 @@ export async function updateLibrary(formData: FormData) {
     .returning({ id: libraryTable.id })
 
   if (!updatedLibrary) {
-    return notFound('서재를 찾을 수 없어요')
+    return notFound('서재를 찾을 수 없어요', formData)
   }
 
   revalidatePath('/library', 'layout')
