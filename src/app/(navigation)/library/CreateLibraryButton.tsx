@@ -149,7 +149,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
                 autoCapitalize="off"
                 autoComplete="off"
                 autoFocus
-                className="w-full px-4 py-2 bg-zinc-800 rounded-lg border-2 border-zinc-700 focus:border-zinc-600 outline-none transition text-zinc-100 placeholder-zinc-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-3 py-2 bg-zinc-800 rounded-lg border-2 border-zinc-700 focus:border-zinc-600 outline-none transition text-zinc-100 placeholder-zinc-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={isPending}
                 id="name"
                 maxLength={MAX_LIBRARY_NAME_LENGTH}
@@ -169,7 +169,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
                 설명 (선택사항)
               </label>
               <textarea
-                className="w-full px-4 py-3 bg-zinc-800 rounded-lg border-2 border-zinc-700 focus:border-zinc-600 outline-none transition text-zinc-100 placeholder-zinc-500 resize-none disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full p-3 bg-zinc-800 rounded-lg border-2 border-zinc-700 focus:border-zinc-600 outline-none transition text-zinc-100 placeholder-zinc-500 resize-none disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={isPending}
                 id="description"
                 maxLength={MAX_LIBRARY_DESCRIPTION_LENGTH}

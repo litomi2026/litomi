@@ -54,3 +54,20 @@ export const addMangaToLibrariesSchema = z.object({
     .min(1, '서재를 선택해주세요')
     .max(20, '최대 20개 서재까지 선택할 수 있어요'),
 })
+
+export const updateLibrarySchema = z.object({
+  libraryId: positiveIntegerSchema,
+  name: z
+    .string()
+    .min(1, '서재 이름을 입력해주세요')
+    .max(MAX_LIBRARY_NAME_LENGTH, `이름은 ${MAX_LIBRARY_NAME_LENGTH}자 이하여야 해요`),
+  description: z
+    .string()
+    .max(MAX_LIBRARY_DESCRIPTION_LENGTH, `설명은 ${MAX_LIBRARY_DESCRIPTION_LENGTH}자 이하여야 해요`)
+    .nullable(),
+  color: z
+    .string()
+    .regex(/^#[0-9A-F]{6}$/i, '올바른 색상 코드를 입력해주세요')
+    .nullable(),
+  icon: z.string().max(4, '이모지는 하나만 입력할 수 있어요').nullable(),
+})

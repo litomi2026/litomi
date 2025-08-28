@@ -122,97 +122,88 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
                 </div>
               </div>
             </div>
-            <div className="px-4 pt-16 pb-4 space-y-6">
-              <div className="space-y-4">
-                <h3 className="text-xs font-medium text-zinc-500 uppercase tracking-wider">계정 정보</h3>
-                <div className="space-y-1">
-                  <label className="block text-sm font-medium text-zinc-400" htmlFor="loginId">
-                    아이디
-                  </label>
-                  <input
-                    className="w-full px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-zinc-500 cursor-not-allowed"
-                    defaultValue={me.loginId}
-                    disabled
-                    id="loginId"
-                    type="text"
-                  />
-                  <p className="text-xs text-zinc-600">변경할 수 없어요</p>
-                </div>
-                <div className="space-y-1">
-                  <label className="block text-sm font-medium text-zinc-300" htmlFor={formId.name}>
-                    이름
-                  </label>
-                  <input
-                    aria-invalid={!!nameError}
-                    autoCapitalize="off"
-                    className="w-full px-3 py-2 bg-zinc-800 border rounded-lg placeholder-zinc-500 focus:outline-none focus:ring-2 focus:border-transparent 
+            <div className="grid gap-4 p-4 pt-16">
+              <div className="grid gap-1">
+                <label className="block text-sm font-medium text-zinc-400" htmlFor="loginId">
+                  아이디
+                </label>
+                <input
+                  className="w-full px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-zinc-500 cursor-not-allowed"
+                  defaultValue={me.loginId}
+                  disabled
+                  id="loginId"
+                  type="text"
+                />
+                <p className="text-xs text-zinc-600">변경할 수 없어요</p>
+              </div>
+              <div className="grid gap-1">
+                <label className="block text-sm font-medium text-zinc-300" htmlFor={formId.name}>
+                  이름
+                </label>
+                <input
+                  aria-invalid={!!nameError}
+                  autoCapitalize="off"
+                  className="w-full px-3 py-2 bg-zinc-800 border rounded-lg placeholder-zinc-500 focus:outline-none focus:ring-2 focus:border-transparent 
                       aria-invalid:border-red-500 aria-invalid:focus:ring-red-500 border-zinc-700 focus:ring-zinc-600"
-                    defaultValue={me.name}
-                    id={formId.name}
-                    maxLength={32}
-                    minLength={2}
-                    name={formId.name}
-                    placeholder="고유한 이름을 입력하세요"
-                    type="text"
-                  />
-                  <p aria-invalid={!!nameError} className="text-xs text-zinc-500 aria-invalid:text-red-400">
-                    {nameError || '이름으로 찾을 수 있어요 (2-32자)'}
-                  </p>
-                </div>
-              </div>
-              <div className="space-y-4">
-                <h3 className="text-xs font-medium text-zinc-500 uppercase tracking-wider">프로필 정보</h3>
-                <div className="space-y-1">
-                  <label className="block text-sm font-medium text-zinc-300" htmlFor={formId.nickname}>
-                    닉네임
-                  </label>
-                  <input
-                    aria-invalid={!!nicknameError}
-                    autoCapitalize="off"
-                    className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:border-transparent 
-                      aria-invalid:border-red-500 aria-invalid:focus:ring-red-500"
-                    defaultValue={me.nickname}
-                    id={formId.nickname}
-                    maxLength={32}
-                    minLength={2}
-                    name={formId.nickname}
-                    placeholder="사용할 닉네임을 입력하세요"
-                    type="text"
-                  />
-                  <p aria-invalid={!!nicknameError} className="text-xs text-zinc-500 aria-invalid:text-red-400">
-                    {nicknameError || '다른 사용자에게 표시되는 별명이에요 (2-32자)'}
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <label className="block text-sm font-medium text-zinc-300" htmlFor={formId.imageURL}>
-                    프로필 이미지 URL
-                  </label>
-                  <input
-                    aria-invalid={!!imageURLError}
-                    autoCapitalize="off"
-                    className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:border-transparent 
-                      aria-invalid:border-red-500 aria-invalid:focus:ring-red-500"
-                    defaultValue={defaultProfileImageURL}
-                    id={formId.imageURL}
-                    maxLength={256}
-                    minLength={8}
-                    name={formId.imageURL}
-                    onChange={(e) => setProfileImageURL(e.target.value)}
-                    pattern="https?://.+"
-                    placeholder="https://example.com/profile.jpg"
-                    type="url"
-                  />
-                  <p aria-invalid={!!imageURLError} className="text-xs text-zinc-500 aria-invalid:text-red-400">
-                    {imageURLError || '이미지는 정사각형 비율을 권장해요'}
-                  </p>
-                </div>
-              </div>
-              <div className="mt-8 p-3 bg-zinc-800/50 rounded-lg">
-                <p className="text-xs text-zinc-400 leading-relaxed">
-                  클라우드 비용 절감을 위해 서버 트래픽을 제한하고 있어 변경 사항이 반영되는데 최대 1분이 소요될 수
-                  있어요
+                  defaultValue={me.name}
+                  id={formId.name}
+                  maxLength={32}
+                  minLength={2}
+                  name={formId.name}
+                  placeholder="고유한 이름을 입력하세요"
+                  type="text"
+                />
+                <p aria-invalid={!!nameError} className="text-xs text-zinc-500 aria-invalid:text-red-400">
+                  {nameError || '이름으로 찾을 수 있어요 (2-32자)'}
                 </p>
               </div>
+              <div className="grid gap-1">
+                <label className="block text-sm font-medium text-zinc-300" htmlFor={formId.nickname}>
+                  닉네임
+                </label>
+                <input
+                  aria-invalid={!!nicknameError}
+                  autoCapitalize="off"
+                  className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:border-transparent 
+                      aria-invalid:border-red-500 aria-invalid:focus:ring-red-500"
+                  defaultValue={me.nickname}
+                  id={formId.nickname}
+                  maxLength={32}
+                  minLength={2}
+                  name={formId.nickname}
+                  placeholder="사용할 닉네임을 입력하세요"
+                  type="text"
+                />
+                <p aria-invalid={!!nicknameError} className="text-xs text-zinc-500 aria-invalid:text-red-400">
+                  {nicknameError || '다른 사용자에게 표시되는 별명이에요 (2-32자)'}
+                </p>
+              </div>
+              <div className="grid gap-1">
+                <label className="block text-sm font-medium text-zinc-300" htmlFor={formId.imageURL}>
+                  프로필 이미지 URL
+                </label>
+                <input
+                  aria-invalid={!!imageURLError}
+                  autoCapitalize="off"
+                  className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:border-transparent 
+                      aria-invalid:border-red-500 aria-invalid:focus:ring-red-500"
+                  defaultValue={defaultProfileImageURL}
+                  id={formId.imageURL}
+                  maxLength={256}
+                  minLength={8}
+                  name={formId.imageURL}
+                  onChange={(e) => setProfileImageURL(e.target.value)}
+                  pattern="https?://.+"
+                  placeholder="https://example.com/profile.jpg"
+                  type="url"
+                />
+                <p aria-invalid={!!imageURLError} className="text-xs text-zinc-500 aria-invalid:text-red-400">
+                  {imageURLError || '이미지는 정사각형 비율을 권장해요'}
+                </p>
+              </div>
+              <p className="p-3 bg-zinc-800/50 rounded-lg text-xs text-zinc-400 leading-relaxed">
+                클라우드 비용 절감을 위해 서버 트래픽을 제한하고 있어 변경 사항이 반영되는데 최대 1분이 소요될 수 있어요
+              </p>
             </div>
           </div>
           <footer className="shrink-0 px-safe pb-safe border-t border-zinc-800 bg-zinc-900/50">

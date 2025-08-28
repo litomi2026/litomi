@@ -1,6 +1,6 @@
 'use client'
 
-import { Menu, MoreVertical, X } from 'lucide-react'
+import { Edit, Menu, X } from 'lucide-react'
 import ms from 'ms'
 import dynamic from 'next/dynamic'
 import { useParams } from 'next/navigation'
@@ -10,6 +10,7 @@ import useThrottledDownScroll from '@/hook/useThrottledScroll'
 
 import { useLibrarySelectionStore } from './[id]/librarySelection'
 import ShareLibraryButton from './[id]/ShareLibraryButton'
+import LibraryManagementMenu from './LibraryManagementMenu'
 import LibrarySidebar from './LibrarySidebar'
 
 const BulkOperationsToolbar = dynamic(() => import('./[id]/BulkOperationsToolbar'))
@@ -73,6 +74,11 @@ export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
     }
   }
 
+  function removeAriaHidden(e: React.MouseEvent<HTMLDivElement>) {
+    const element = e.currentTarget
+    element.removeAttribute('aria-hidden')
+  }
+
   // NOTE: 서재 변경 시 선택 모드 종료하기
   useEffect(() => {
     exitSelectionMode()
@@ -83,6 +89,7 @@ export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
       <div
         aria-hidden={isDownScroll}
         className="sticky top-0 z-40 flex justify-between items-center gap-3 p-4 border-b border-zinc-800 transition bg-zinc-950 aria-hidden:opacity-50"
+        onClick={removeAriaHidden}
       >
         <div className="flex items-center gap-3">
           <button
@@ -119,18 +126,19 @@ export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
         {isSelectionMode && currentLibrary && (
           <BulkOperationsToolbar currentLibraryId={currentLibrary.id} libraries={libraries} />
         )}
-        <div className="flex items-center gap-3">
-          {!isSelectionMode && currentLibrary && <ShareLibraryButton className="p-2 -mx-1" library={currentLibrary} />}
+        <div className="flex items-center gap-1">
+          {!isSelectionMode && currentLibrary && <ShareLibraryButton className="p-2 " library={currentLibrary} />}
           {isOwner && (
             <button
-              className="p-2 -mx-1 sm:my-1.5 hover:bg-zinc-800 rounded-lg transition"
+              className="p-2 sm:my-1.5 hover:bg-zinc-800 rounded-lg transition"
               onClick={handleSelectionModeChange}
               title={isSelectionMode ? '선택 모드 종료' : '선택 모드'}
               type="button"
             >
-              {isSelectionMode ? <X className="size-5" /> : <MoreVertical className="size-5" />}
+              {isSelectionMode ? <X className="size-5" /> : <Edit className="size-5" />}
             </button>
           )}
+          {isOwner && !isSelectionMode && <LibraryManagementMenu className="-mr-1" library={currentLibrary} />}
         </div>
       </div>
       {isDrawerOpen && (
