@@ -41,7 +41,7 @@ export default function KeywordSettingsForm({ initialCriteria: criteria }: Props
         <>
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h2 className="text-base sm:text-lg font-medium text-zinc-200">키워드 조건</h2>
+              <h2 className="text-base sm:text-lg font-medium text-zinc-200">조건</h2>
               <p className="hidden sm:block text-sm text-zinc-500 mt-0.5 sm:mt-1">
                 {criteria.length}개의 알림 조건이 활성화되어 있어요
               </p>

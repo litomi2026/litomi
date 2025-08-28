@@ -122,7 +122,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
           <ImageSlider maxImageIndex={maxImageIndex} />
           <div className="font-semibold whitespace-nowrap flex-wrap justify-center text-sm flex gap-2 text-background [&_button]:rounded-full [&_button]:bg-zinc-100 [&_button]:px-2 [&_button]:py-1 [&_button]:hover:bg-foreground [&_button]:active:bg-zinc-400 [&_button]:disabled:bg-zinc-400 [&_button]:disabled:text-zinc-500 [&_button]:min-w-20 [&_button]:transition">
             <button onClick={() => setNavMode(isTouchMode ? 'scroll' : 'touch')}>
-              {isTouchMode ? '터치' : '스크롤'} 모드
+              {isTouchMode ? '터치' : '스크롤'}보기
             </button>
             <button
               onClick={() => {
