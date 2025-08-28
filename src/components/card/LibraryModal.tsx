@@ -39,15 +39,23 @@ export default function LibraryModal() {
   const [, dispatchAddToLibraries, isPending] = useActionResponse({
     action: addMangaToLibraries,
     onSuccess: (successCount, [{ libraryIds }]) => {
+      if (successCount === 0) {
+        toast.warning(`해당 서재에 이미 추가되어 있어요`)
+        return
+      }
+
       if (successCount === libraryIds.length) {
         toast.success(`${successCount}개 서재에 추가했어요`)
       } else if (successCount > 0) {
         toast.success(`${successCount}개 서재에 추가했어요 (중복 ${libraryIds.length - successCount}개)`)
-      } else {
-        toast.warning(`해당 서재에 이미 추가되어 있어요`)
       }
 
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraries })
+
+      for (const id of libraryIds) {
+        queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItems(id) })
+      }
+
       handleClose()
     },
     shouldSetResponse: false,

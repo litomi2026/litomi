@@ -76,7 +76,7 @@ export async function bulkCopyToLibrary(data: { toLibraryId: number; mangaIds: n
   const result = await db.execute<{ libraryId: number; mangaId: number }>(sql`
     INSERT INTO ${libraryItemTable} (library_id, manga_id)
     SELECT ${toLibraryId}, manga_id
-    FROM (SELECT UNNEST(ARRAY[${sql.join(mangaIds, sql`, `)}]::int[]) AS manga_id)
+    FROM (SELECT UNNEST(ARRAY[${sql.join(mangaIds, sql`, `)}]::int[]) AS manga_id) AS t
     WHERE EXISTS (
       SELECT 1 FROM ${libraryTable}
       WHERE user_id = ${userId} AND id = ${toLibraryId}
