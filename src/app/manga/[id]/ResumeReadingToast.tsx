@@ -6,27 +6,21 @@ import { toast } from 'sonner'
 import useReadingHistory from '@/app/manga/[id]/useReadingHistory'
 import { useImageIndexStore } from '@/components/ImageViewer/store/imageIndex'
 
-import { MangaIdSearchParam } from './common'
-
 type Props = {
   mangaId: number
 }
 
 export default function ResumeReadingToast({ mangaId }: Readonly<Props>) {
-  const imageIndex = useImageIndexStore((state) => state.imageIndex)
+  const navigateToImageIndex = useImageIndexStore((state) => state.navigateToImageIndex)
   const { lastPage } = useReadingHistory(mangaId)
 
   useEffect(() => {
-    if (lastPage && lastPage > 1 && imageIndex === 0) {
+    if (lastPage) {
       const toastId = toast(`마지막으로 읽던 페이지 ${lastPage}`, {
-        duration: 10_000,
+        duration: 5_000,
         action: {
           label: '이동',
-          onClick: () => {
-            const url = new URL(window.location.href)
-            url.searchParams.set(MangaIdSearchParam.PAGE, String(lastPage))
-            window.history.replaceState({}, '', url.toString())
-          },
+          onClick: () => navigateToImageIndex(lastPage - 1),
         },
       })
 
@@ -34,7 +28,7 @@ export default function ResumeReadingToast({ mangaId }: Readonly<Props>) {
         toast.dismiss(toastId)
       }
     }
-  }, [lastPage, imageIndex])
+  }, [lastPage, navigateToImageIndex])
 
   return null
 }
