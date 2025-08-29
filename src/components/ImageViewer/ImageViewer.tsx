@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
+import ResumeReadingToast from '@/app/manga/[id]/ResumeReadingToast'
 import { useImageWidthStore } from '@/components/ImageViewer/store/imageWidth'
 import { useNavigationModeStore } from '@/components/ImageViewer/store/navigationMode'
 import { useReadingDirectionStore } from '@/components/ImageViewer/store/readingDirection'
@@ -69,6 +70,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
 
   return (
     <div className="relative">
+      <ResumeReadingToast mangaId={manga.id} />
       <div
         aria-current={showController}
         className="fixed top-0 left-0 right-0 z-10 bg-background/70 backdrop-blur border-b border-zinc-500 px-safe transition opacity-0 pointer-events-none aria-current:opacity-100 aria-current:pointer-events-auto"
@@ -104,13 +106,11 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
         />
       ) : (
         <ScrollViewer
-          {...{
-            manga,
-            onClick: toggleController,
-            pageView,
-            readingDirection,
-            screenFit,
-          }}
+          manga={manga}
+          onClick={toggleController}
+          pageView={pageView}
+          readingDirection={readingDirection}
+          screenFit={screenFit}
         />
       )}
 
