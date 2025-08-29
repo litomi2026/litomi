@@ -30,7 +30,7 @@ export default function MangaCardCensorship({ manga, level }: Readonly<Props>) {
 
   if (highestCensorshipLevel === CensorshipLevel.HEAVY) {
     return (
-      <div className="absolute inset-0 animate-fade-in-fast bg-zinc-900 flex items-center justify-center p-4 text-zinc-400 text-center">
+      <div className="absolute inset-0 z-50 animate-fade-in-fast bg-zinc-900 flex items-center justify-center p-4 text-zinc-400 text-center">
         <div>
           <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-zinc-800 flex items-center justify-center">
             <OctagonMinus className="size-6 text-red-500" />
