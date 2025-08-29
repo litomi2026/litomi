@@ -12,11 +12,12 @@ type Props = {
 }
 
 export default function ResumeReadingToast({ mangaId }: Readonly<Props>) {
+  const getImageIndex = useImageIndexStore((state) => state.getImageIndex)
   const navigateToImageIndex = useImageIndexStore((state) => state.navigateToImageIndex)
   const { lastPage } = useReadingHistory(mangaId)
 
   useEffect(() => {
-    if (lastPage) {
+    if (lastPage && lastPage !== getImageIndex() + 1) {
       const toastId = toast(`마지막으로 읽던 페이지 ${lastPage}`, {
         duration: ms('5 seconds'),
         action: {
@@ -29,7 +30,7 @@ export default function ResumeReadingToast({ mangaId }: Readonly<Props>) {
         toast.dismiss(toastId)
       }
     }
-  }, [lastPage, navigateToImageIndex])
+  }, [lastPage, navigateToImageIndex, getImageIndex])
 
   return null
 }

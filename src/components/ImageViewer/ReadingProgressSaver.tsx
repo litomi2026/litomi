@@ -47,7 +47,7 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
 
   useEffect(() => {
     if (imageIndex > 0 && !isSaving) {
-      saveProgress(imageIndex)
+      saveProgress(imageIndex + 1)
     }
   }, [imageIndex, isSaving, saveProgress])
 
