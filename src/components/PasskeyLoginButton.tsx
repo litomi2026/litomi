@@ -1,7 +1,6 @@
 'use client'
 
 import { startAuthentication } from '@simplewebauthn/browser'
-import { memo } from 'react'
 import { toast } from 'sonner'
 
 import {
@@ -27,14 +26,10 @@ type User = {
   lastLogoutAt: Date | null
 }
 
-export default memo(PasskeyLoginButton)
-
-function PasskeyLoginButton({ loginId, disabled, onSuccess }: Readonly<Props>) {
+export default function PasskeyLoginButton({ loginId, disabled, onSuccess }: Readonly<Props>) {
   const [_, dispatchAction, isPending] = useActionResponse({
     action: verifyAuthentication,
-    onSuccess: (user) => {
-      onSuccess?.(user)
-    },
+    onSuccess,
     shouldSetResponse: false,
   })
 
