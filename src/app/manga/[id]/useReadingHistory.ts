@@ -7,24 +7,22 @@ import { SessionStorageKeyMap } from '@/constants/storage'
 import useMeQuery from '@/query/useMeQuery'
 import { handleResponseError } from '@/utils/react-query-error'
 
-import { type ReadingHistoryResponse } from './actions'
-
 export default function useReadingHistory(mangaId: number) {
-  const { data: user } = useMeQuery()
+  const { data: me, isLoading: isMeLoading } = useMeQuery()
 
   const { data: lastPage } = useQuery({
     queryKey: QueryKeys.readingHistory(mangaId),
     queryFn: async () => {
-      if (user) {
+      if (me) {
         const response = await fetch(`/api/manga/${mangaId}/reading-history`)
-        const data = await handleResponseError<ReadingHistoryResponse>(response)
-        return data.lastPage
+        const lastPage = await handleResponseError<number>(response)
+        return lastPage
       } else {
         const stored = sessionStorage.getItem(SessionStorageKeyMap.readingHistory(mangaId))
         return stored ? parseInt(stored, 10) : null
       }
     },
-    enabled: Boolean(mangaId),
+    enabled: Boolean(mangaId) && !isMeLoading,
   })
 
   return { lastPage }

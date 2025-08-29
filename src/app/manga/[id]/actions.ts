@@ -18,10 +18,6 @@ const saveReadingProgressSchema = z.object({
   page: z.number().int().positive(),
 })
 
-export type ReadingHistoryResponse = {
-  lastPage: number | null
-}
-
 export async function saveReadingProgress(mangaId: number, page: number) {
   const userId = await getUserIdFromCookie()
 
