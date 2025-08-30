@@ -1,3 +1,4 @@
+import { MAX_CRITERIA_NAME_LENGTH } from '@/constants/policy'
 import { NotificationConditionType } from '@/database/enum'
 import { normalizeValue } from '@/translation/common'
 
@@ -173,7 +174,7 @@ export function parseSearchQuery(query: string): ParsedSearchQuery {
     }
   }
 
-  const suggestedName = generateSuggestedName(processedParts, conditions)
+  const suggestedName = generateSuggestedName(processedParts, conditions).slice(0, MAX_CRITERIA_NAME_LENGTH)
 
   return { conditions, plainKeywords, suggestedName }
 }
