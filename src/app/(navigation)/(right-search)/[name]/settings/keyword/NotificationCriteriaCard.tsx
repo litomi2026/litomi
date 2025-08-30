@@ -24,6 +24,7 @@ const CONDITION_TYPE_LABELS: Record<number, string> = {
   [NotificationConditionType.ARTIST]: '작가',
   [NotificationConditionType.GROUP]: '그룹',
   [NotificationConditionType.LANGUAGE]: '언어',
+  [NotificationConditionType.UPLOADER]: '업로더',
 }
 
 export default function NotificationCriteriaCard({ criterion, onEdit }: NotificationCriteriaCardProps) {

@@ -47,6 +47,7 @@ export enum NotificationConditionType {
   ARTIST = 4,
   GROUP = 5,
   LANGUAGE = 6,
+  UPLOADER = 7,
 }
 
 export enum NotificationType {
@@ -67,6 +68,7 @@ export const NotificationConditionTypeNames = {
   [NotificationConditionType.ARTIST]: '작가',
   [NotificationConditionType.GROUP]: '그룹',
   [NotificationConditionType.LANGUAGE]: '언어',
+  [NotificationConditionType.UPLOADER]: '업로더',
 } as const
 
 export function decodeDeviceType(deviceType: number) {

@@ -212,7 +212,7 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
                         disabled:opacity-50 transition"
                       disabled={isPending}
                       name={`condition-value-${index}`}
-                      placeholder="검색어 입력..."
+                      placeholder="검색어 입력 (공백은 _로)"
                       required
                       type="text"
                     />

@@ -25,6 +25,7 @@ const CATEGORY_TO_TYPE_MAP: Record<string, NotificationConditionType> = {
   artist: NotificationConditionType.ARTIST,
   group: NotificationConditionType.GROUP,
   language: NotificationConditionType.LANGUAGE,
+  uploader: NotificationConditionType.UPLOADER,
   // Korean mappings
   시리즈: NotificationConditionType.SERIES,
   패러디: NotificationConditionType.SERIES,
@@ -37,6 +38,7 @@ const CATEGORY_TO_TYPE_MAP: Record<string, NotificationConditionType> = {
   작가: NotificationConditionType.ARTIST,
   그룹: NotificationConditionType.GROUP,
   언어: NotificationConditionType.LANGUAGE,
+  업로더: NotificationConditionType.UPLOADER,
 }
 
 export function areConditionsEqual(
@@ -193,7 +195,8 @@ function generateSuggestedName(parts: string[], conditions: ParsedCondition[]): 
         (c) =>
           c.type === NotificationConditionType.ARTIST ||
           c.type === NotificationConditionType.SERIES ||
-          c.type === NotificationConditionType.CHARACTER,
+          c.type === NotificationConditionType.CHARACTER ||
+          c.type === NotificationConditionType.UPLOADER,
       )
       .slice(0, 2)
 
