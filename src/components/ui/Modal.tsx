@@ -69,7 +69,7 @@ export default function Modal({
       modalStyle.top = Math.min(Math.max(0, clientY - shiftY), window.innerHeight - modalRect.height) + 'px'
     }
 
-    document.addEventListener('touchmove', moveModal)
+    document.addEventListener('touchmove', moveModal, { passive: true })
     document.addEventListener('touchend', () => document.removeEventListener('touchmove', moveModal), { once: true })
     document.addEventListener('touchcancel', () => document.removeEventListener('touchmove', moveModal), { once: true })
   }
