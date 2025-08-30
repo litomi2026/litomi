@@ -209,4 +209,20 @@ export const postLikeTable = pgTable(
   (table) => [primaryKey({ columns: [table.userId, table.postId] }), index('idx_post_like_post_id').on(table.postId)],
 ).enableRLS()
 
+export const readingHistoryTable = pgTable(
+  'reading_history',
+  {
+    userId: bigint('user_id', { mode: 'number' })
+      .references(() => userTable.id, { onDelete: 'cascade' })
+      .notNull(),
+    mangaId: integer('manga_id').notNull(),
+    lastPage: integer('last_page').notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.userId, table.mangaId] }),
+    index('idx_reading_history_updated_at').on(table.userId, table.updatedAt.desc()),
+  ],
+).enableRLS()
+
 export { mangaSeenTable, notificationConditionTable, notificationCriteriaTable } from './notification-schema'

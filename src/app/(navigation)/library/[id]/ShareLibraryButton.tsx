@@ -19,7 +19,7 @@ export default function ShareLibraryButton({ className = '', library }: Readonly
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
   const origin = typeof window !== 'undefined' ? window.location.origin : ''
-  const shareUrl = `${origin}/library/public/${id}`
+  const shareUrl = `${origin}/library/${id}`
 
   const handleClose = () => {
     setIsModalOpen(false)
@@ -69,7 +69,7 @@ export default function ShareLibraryButton({ className = '', library }: Readonly
               <label className="block text-sm font-medium text-zinc-300">공유 링크</label>
               <div className="flex gap-2">
                 <input
-                  className="flex-1 px-4 py-2 bg-zinc-800 rounded-lg border-2 border-zinc-700 text-sm text-zinc-100 cursor-text select-all outline-none focus:border-zinc-500 transition"
+                  className="flex-1 px-3 py-2 bg-zinc-800 rounded-lg border-2 border-zinc-700 text-sm text-zinc-100 cursor-text select-all outline-none focus:border-zinc-500 transition"
                   onClick={(e) => e.currentTarget.select()}
                   readOnly
                   value={shareUrl}

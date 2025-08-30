@@ -66,15 +66,37 @@ export async function GET(request: Request) {
     const hasNextPage = mangas.length > 0
     const response: GETProxyKSearchResponse = { mangas, nextCursor, hasNextPage }
 
-    const cacheControl = createCacheControl({
-      public: true,
-      maxAge: params.nextId ? sec('1 week') : sec('1 hour'),
-      sMaxAge: params.nextId ? sec('1 week') : sec('1 hour'), // NOTE: 캐시 메모리 용량당 과금 있으면 1 week -> 1 day 바꾸기
-      swr: sec('5 minutes'),
-    })
-
-    return Response.json(response, { headers: { 'Cache-Control': cacheControl } })
+    return Response.json(response, { headers: { 'Cache-Control': getCacheControl(params) } })
   } catch (error) {
     return handleRouteError(error, request)
   }
+}
+
+function getCacheControl(params: KHentaiMangaSearchOptions) {
+  const { nextId, sort } = params
+
+  if (sort === 'random') {
+    return createCacheControl({
+      public: true,
+      maxAge: sec('30 seconds'),
+      sMaxAge: sec('30 seconds'),
+      swr: sec('5 seconds'),
+    })
+  }
+
+  if (nextId) {
+    return createCacheControl({
+      public: true,
+      maxAge: sec('1 week'),
+      sMaxAge: sec('1 week'), // NOTE: 캐시 메모리 용량당 과금 있으면 1 week -> 1 day 바꾸기
+      swr: sec('5 minutes'),
+    })
+  }
+
+  return createCacheControl({
+    public: true,
+    maxAge: sec('1 hour'),
+    sMaxAge: sec('1 hour'),
+    swr: sec('5 minutes'),
+  })
 }

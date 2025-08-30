@@ -102,8 +102,8 @@ export default function useReadingHistory(mangaId: number) {
           return data.lastPage || null
         }
       } else {
-        // Guest user: read from localStorage
-        const stored = localStorage.getItem(`manga_${mangaId}_lastPage`)
+        // Guest user: read from sessionStorage
+        const stored = sessionStorage.getItem(`manga_${mangaId}_lastPage`)
         return stored ? parseInt(stored, 10) : null
       }
       return null
@@ -115,7 +115,7 @@ export default function useReadingHistory(mangaId: number) {
 }
 ```
 
-#### 2. Client Component with Toast or Modal based on existance of `page` search param
+#### 2. Client Component with Toast or Modal based on existance of `page` search param on viewer page
 
 #### 3. Progress Saving Implementation
 
@@ -142,9 +142,9 @@ export default function useReadingProgress(mangaId: number) {
         dispatchAction(mangaId, page)
       }, 2000)
     } else {
-      // Guest: immediate localStorage save
+      // Guest: immediate sessionStorage save
       return debounce((page: number) => {
-        localStorage.setItem(`manga_${mangaId}_lastPage`, String(page))
+        sessionStorage.setItem(`manga_${mangaId}_lastPage`, String(page))
       }, 500)
     }
   }, [user, mangaId, dispatchAction])

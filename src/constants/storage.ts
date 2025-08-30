@@ -21,3 +21,7 @@ export enum SessionStorageKey {
   // zustand
   CONTROLLER_BRIGHTNESS = 'controller/brightness',
 }
+
+export const SessionStorageKeyMap = {
+  readingHistory: (mangaId: number) => `reading-history-${mangaId}`,
+}

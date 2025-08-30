@@ -2,12 +2,14 @@
 
 import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
-import { useCallback, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 
+import { migrateReadingHistory } from '@/app/manga/[id]/actions'
 import IconSpinner from '@/components/icons/IconSpinner'
 import IconX from '@/components/icons/IconX'
 import PasskeyLoginButton from '@/components/PasskeyLoginButton'
+import { clearMigratedHistory, getLocalReadingHistory } from '@/components/ReadingHistoryMigrator'
 import { loginIdPattern, passwordPattern } from '@/constants/pattern'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
@@ -42,24 +44,33 @@ export default function LoginForm() {
     passwordInput.value = ''
   }
 
-  const handleLoginSuccess = useCallback(
-    async ({ loginId, name, id, lastLoginAt, lastLogoutAt }: User) => {
-      toast.success(`${loginId} 계정으로 로그인했어요`)
+  const [_, dispatchMigration] = useActionResponse({
+    action: migrateReadingHistory,
+    shouldSetResponse: false,
+    onSuccess: () => clearMigratedHistory(),
+  })
 
-      if (id) {
-        amplitude.setUserId(id)
-        amplitude.track('login', { loginId, lastLoginAt, lastLogoutAt })
-      }
+  async function handleLoginSuccess({ loginId, name, id, lastLoginAt, lastLogoutAt }: User) {
+    toast.success(`${loginId} 계정으로 로그인했어요`)
 
-      await queryClient.invalidateQueries({ queryKey: QueryKeys.me, type: 'all' })
-      const params = new URLSearchParams(window.location.search)
-      const redirect = params.get(SearchParamKey.REDIRECT)
-      const sanitizedURL = sanitizeRedirect(redirect) || '/'
-      const redirectURL = sanitizedURL.replace(/^\/@(?=\/|$|\?)/, `/@${name}`)
-      router.replace(redirectURL)
-    },
-    [queryClient, router],
-  )
+    if (id) {
+      amplitude.setUserId(id)
+      amplitude.track('login', { loginId, lastLoginAt, lastLogoutAt })
+    }
+
+    const localHistory = getLocalReadingHistory()
+
+    if (localHistory.length > 0) {
+      dispatchMigration(localHistory)
+    }
+
+    await queryClient.invalidateQueries({ queryKey: QueryKeys.me, type: 'all' })
+    const params = new URLSearchParams(window.location.search)
+    const redirect = params.get(SearchParamKey.REDIRECT)
+    const sanitizedURL = sanitizeRedirect(redirect) || '/'
+    const redirectURL = sanitizedURL.replace(/^\/@(?=\/|$|\?)/, `/@${name}`)
+    router.replace(redirectURL)
+  }
 
   const [response, dispatchAction, isPending] = useActionResponse({
     action: login,

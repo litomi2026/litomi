@@ -18,6 +18,8 @@ import { IconChevronLeft } from '../icons/IconImageViewer'
 import FullscreenButton from './FullscreenButton'
 import ImageSlider from './ImageSlider'
 import MangaDetailButton from './MangaDetailButton'
+import ReadingProgressSaver from './ReadingProgressSaver'
+import ResumeReadingToast from './ResumeReadingToast'
 import ShareButton from './ShareButton'
 import SlideshowButton from './SlideshowButton'
 import { useImageIndexStore } from './store/imageIndex'
@@ -69,6 +71,8 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
 
   return (
     <div className="relative">
+      <ResumeReadingToast mangaId={manga.id} />
+      <ReadingProgressSaver mangaId={manga.id} />
       <div
         aria-current={showController}
         className="fixed top-0 left-0 right-0 z-10 bg-background/70 backdrop-blur border-b border-zinc-500 px-safe transition opacity-0 pointer-events-none aria-current:opacity-100 aria-current:pointer-events-auto"
@@ -104,13 +108,11 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
         />
       ) : (
         <ScrollViewer
-          {...{
-            manga,
-            onClick: toggleController,
-            pageView,
-            readingDirection,
-            screenFit,
-          }}
+          manga={manga}
+          onClick={toggleController}
+          pageView={pageView}
+          readingDirection={readingDirection}
+          screenFit={screenFit}
         />
       )}
 
