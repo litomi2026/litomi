@@ -1,14 +1,13 @@
 'use client'
 
 import ms from 'ms'
-import { useCallback, useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 
 import { saveReadingProgress } from '@/app/manga/[id]/actions'
 import { useImageIndexStore } from '@/components/ImageViewer/store/imageIndex'
 import { SessionStorageKeyMap } from '@/constants/storage'
 import useActionResponse from '@/hook/useActionResponse'
 import useMeQuery from '@/query/useMeQuery'
-import { debounce } from '@/utils/debounce'
 
 type Props = {
   mangaId: number
@@ -17,33 +16,49 @@ type Props = {
 export default function ReadingProgressSaver({ mangaId }: Props) {
   const { data: me, isLoading } = useMeQuery()
   const imageIndex = useImageIndexStore((state) => state.imageIndex)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const lastSavedPageRef = useRef<number | null>(null)
 
   const [_, dispatchAction, isSaving] = useActionResponse({
     action: saveReadingProgress,
     shouldSetResponse: false,
   })
 
-  const saveProgress = useMemo(() => {
-    if (isLoading) {
-      return () => {}
-    }
+  const saveProgress = useCallback(
+    (page: number) => {
+      if (lastSavedPageRef.current === page) {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current)
+          timeoutRef.current = null
+        }
+        return
+      }
 
-    if (me) {
-      return debounce((page: number) => {
-        dispatchAction(mangaId, page)
-      }, ms('10 seconds'))
-    } else {
-      return debounce((page: number) => {
-        sessionStorage.setItem(SessionStorageKeyMap.readingHistory(mangaId), String(page))
-      }, 500)
-    }
-  }, [me, mangaId, dispatchAction, isLoading])
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = null
+      }
 
-  const clearProgress = useCallback(() => {
-    if (!me) {
-      sessionStorage.removeItem(SessionStorageKeyMap.readingHistory(mangaId))
-    }
-  }, [me, mangaId])
+      if (isLoading) {
+        return
+      }
+
+      if (me) {
+        timeoutRef.current = setTimeout(() => {
+          lastSavedPageRef.current = page
+          dispatchAction(mangaId, page)
+          timeoutRef.current = null
+        }, ms('10 seconds'))
+      } else {
+        timeoutRef.current = setTimeout(() => {
+          lastSavedPageRef.current = page
+          sessionStorage.setItem(SessionStorageKeyMap.readingHistory(mangaId), String(page))
+          timeoutRef.current = null
+        }, ms('1 second'))
+      }
+    },
+    [me, mangaId, dispatchAction, isLoading],
+  )
 
   useEffect(() => {
     if (imageIndex > 0 && !isSaving) {
@@ -53,9 +68,12 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
 
   useEffect(() => {
     return () => {
-      clearProgress()
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = null
+      }
     }
-  }, [clearProgress])
+  }, [])
 
   return null
 }
