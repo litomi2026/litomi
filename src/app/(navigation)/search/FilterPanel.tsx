@@ -218,6 +218,9 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
                   </option>
                 ))}
               </select>
+              {filters.sort === 'random' && (
+                <p className="mt-1 text-xs text-zinc-500">랜덤 정렬은 최대 1분 간격으로 결과가 업데이트돼요</p>
+              )}
             </div>
 
             {/* View count range */}
@@ -322,12 +325,12 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
                 onChange={(e) => handleFilterChange('next-id', e.target.value)}
                 pattern="[0-9]*"
                 placeholder={FILTER_CONFIG['next-id'].placeholder}
-                title={isDefaultSort ? '' : '기본순 정렬일 때만 사용할 수 있어요.'}
+                title={isDefaultSort ? '' : '기본순 정렬일 때만 사용할 수 있어요'}
                 type={FILTER_CONFIG['next-id'].type}
                 value={filters['next-id'] ?? ''}
               />
               <p aria-disabled={!isDefaultSort} className="mt-1 text-xs text-zinc-500">
-                {isDefaultSort ? '지정한 ID 이후의 결과만 표시해요.' : '기본순 정렬일 때만 사용할 수 있어요.'}
+                {isDefaultSort ? '지정한 ID 이후의 결과만 표시해요' : '기본순 정렬일 때만 사용할 수 있어요'}
               </p>
             </div>
 
@@ -341,11 +344,11 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
                 onChange={(e) => handleFilterChange('skip', e.target.value)}
                 pattern="[0-9]*"
                 placeholder={FILTER_CONFIG['skip'].placeholder}
-                title="처음 N개의 결과를 건너뛰어요."
+                title="처음 N개의 결과를 건너뛰어요"
                 type={FILTER_CONFIG['skip'].type}
                 value={filters['skip'] ?? ''}
               />
-              <p className="mt-1 text-xs text-zinc-500">처음 N개의 결과를 건너뛰어요.</p>
+              <p className="mt-1 text-xs text-zinc-500">처음 N개의 결과를 건너뛰어요</p>
             </div>
           </div>
           {/* Action buttons */}
