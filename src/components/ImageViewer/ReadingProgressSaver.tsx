@@ -48,7 +48,7 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
           lastSavedPageRef.current = page
           dispatchAction(mangaId, page)
           timeoutRef.current = null
-        }, ms('10 seconds'))
+        }, ms('5 seconds'))
       } else {
         timeoutRef.current = setTimeout(() => {
           lastSavedPageRef.current = page

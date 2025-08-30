@@ -23,7 +23,7 @@ interface Props {
 
 export default function NotificationCriteriaModal({ isOpen, onClose, editingCriteria }: Props) {
   const formRef = useRef<HTMLFormElement>(null)
-  const [conditionCount, setConditionCount] = useState(1)
+  const [conditionCount, setConditionCount] = useState(editingCriteria?.conditions.length || 1)
   const nameId = useId()
 
   const processAndSubmit = async (formData: FormData) => {
@@ -108,33 +108,10 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
     }, 0)
   }
 
-  // NOTE: 모달이 열릴 때 초기값 설정
+  // NOTE: 모달이 열릴 때 조건 개수 설정
   useEffect(() => {
-    if (!isOpen) {
-      return
-    }
-
-    if (editingCriteria) {
-      setConditionCount(editingCriteria.conditions.length || 1)
-
-      if (!formRef.current) {
-        return
-      }
-
-      const form = formRef.current
-      const nameInput = form.elements.namedItem('name') as HTMLInputElement
-      if (nameInput) nameInput.value = editingCriteria.name
-
-      editingCriteria.conditions.forEach((condition, index) => {
-        const typeSelect = form.elements.namedItem(`condition-type-${index}`) as HTMLSelectElement
-        const valueInput = form.elements.namedItem(`condition-value-${index}`) as HTMLInputElement
-
-        if (typeSelect) typeSelect.value = condition.type.toString()
-        if (valueInput) valueInput.value = condition.value
-      })
-    } else {
-      setConditionCount(1)
-      formRef.current?.reset()
+    if (isOpen) {
+      setConditionCount(editingCriteria?.conditions.length || 1)
     }
   }, [editingCriteria, isOpen])
 
@@ -147,6 +124,7 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
       <form
         action={dispatchAction}
         className="flex flex-col h-full sm:max-h-[calc(100vh-8rem)] bg-zinc-900 overflow-hidden sm:border-2 sm:border-zinc-700 sm:rounded-xl"
+        key={editingCriteria?.id || 'new'}
         ref={formRef}
       >
         <div className="flex items-center justify-between p-4 border-b">
@@ -174,6 +152,7 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
               className="w-full text-base px-3 py-2 rounded-lg bg-zinc-800 border border-zinc-700 placeholder-zinc-500 
                 focus:outline-none focus:ring-2 focus:ring-brand-end/50 focus:border-transparent 
                 aria-invalid:ring-2 aria-invalid:ring-red-500 disabled:opacity-50 transition"
+              defaultValue={editingCriteria?.name}
               disabled={isPending}
               id={nameId}
               name="name"
@@ -193,7 +172,7 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
                     className="px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100
                       focus:outline-none focus:ring-2 focus:ring-brand-end/50 focus:border-transparent appearance-none cursor-pointer
                       disabled:opacity-50 transition"
-                    defaultValue={NotificationConditionType.SERIES}
+                    defaultValue={editingCriteria?.conditions[index]?.type || NotificationConditionType.SERIES}
                     disabled={isPending}
                     name={`condition-type-${index}`}
                   >
@@ -210,9 +189,10 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
                       className="flex-1 text-base px-3 py-2 rounded-lg bg-zinc-800 border border-zinc-700 placeholder-zinc-500 
                         focus:outline-none focus:ring-2 focus:ring-brand-end/50 focus:border-transparent 
                         disabled:opacity-50 transition"
+                      defaultValue={editingCriteria?.conditions[index]?.value}
                       disabled={isPending}
                       name={`condition-value-${index}`}
-                      placeholder="검색어 입력..."
+                      placeholder="검색어 입력 (공백은 _로)"
                       required
                       type="text"
                     />

@@ -20,7 +20,22 @@ type Props = {
 export default memo(MangaDetailButton)
 
 function MangaDetailButton({ manga }: Readonly<Props>) {
-  const { title, artists, group, series, characters, type, tags, date, languages, origin, description, lines } = manga
+  const {
+    title,
+    artists,
+    group,
+    series,
+    characters,
+    type,
+    tags,
+    date,
+    languages,
+    origin,
+    description,
+    lines,
+    uploader,
+  } = manga
+
   const [isOpened, setIsOpened] = useState(false)
   const [showFullDescription, setShowFullDescription] = useState(false)
   const [showAllLines, setShowAllLines] = useState(false)
@@ -84,6 +99,12 @@ function MangaDetailButton({ manga }: Readonly<Props>) {
               <div className="flex gap-2">
                 <strong>그룹</strong>
                 <MangaMetadataList details={group} filterType="group" />
+              </div>
+            )}
+            {uploader && (
+              <div className="flex gap-2">
+                <strong>업로더</strong>
+                <MangaMetadataItem filterType="uploader" value={uploader} />
               </div>
             )}
             {series && series.length > 0 && (

@@ -34,7 +34,7 @@ export function MangaCardSkeleton() {
 }
 
 function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton }: Readonly<Props>) {
-  const { id, artists, characters, date, group, series, tags, title, type, origin, languages } = manga
+  const { id, artists, characters, date, group, series, tags, title, type, origin, languages, uploader } = manga
   const isDownloadable = origin === 'https://soujpa.in'
   const viewerLink = getViewerLink(id)
 
@@ -73,6 +73,12 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
             <div className="flex gap-1">
               <dt>그룹</dt>
               <MangaMetadataList details={group} filterType="group" />
+            </div>
+          )}
+          {uploader && (
+            <div className="flex gap-1">
+              <dt>업로더</dt>
+              <MangaMetadataItem filterType="uploader" value={uploader} />
             </div>
           )}
           {series && series.length > 0 && (

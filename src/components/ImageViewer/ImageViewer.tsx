@@ -75,10 +75,11 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
       <ReadingProgressSaver mangaId={manga.id} />
       <div
         aria-current={showController}
-        className="fixed top-0 left-0 right-0 z-10 bg-background/70 backdrop-blur border-b border-zinc-500 px-safe transition opacity-0 pointer-events-none aria-current:opacity-100 aria-current:pointer-events-auto"
+        className="fixed top-0 left-0 right-0 z-10 bg-background/70 backdrop-blur border-b border-zinc-500 px-safe transition opacity-0 pointer-events-none
+        aria-current:opacity-100 aria-current:pointer-events-auto"
       >
         <div
-          className="flex gap-2 items-center justify-between p-3 
+          className="flex gap-2 items-center justify-between p-3 select-none
           [&_button]:rounded-full [&_button]:active:text-zinc-500 [&_button]:hover:bg-zinc-800 [&_button]:transition [&_button]:p-2
           [&_a]:rounded-full [&_a]:active:text-zinc-500 [&_a]:hover:bg-zinc-800 [&_a]:transition [&_a]:p-2"
         >
@@ -118,11 +119,15 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
 
       <div
         aria-current={showController}
-        className="fixed bottom-0 left-0 right-0 z-10 bg-background/70 backdrop-blur border-t border-zinc-500 px-safe pb-safe transition opacity-0 pointer-events-none aria-current:opacity-100 aria-current:pointer-events-auto"
+        className="fixed bottom-0 left-0 right-0 z-10 bg-background/70 backdrop-blur border-t border-zinc-500 px-safe pb-safe transition opacity-0 pointer-events-none
+        aria-current:opacity-100 aria-current:pointer-events-auto"
       >
-        <div className="p-3 grid gap-1.5">
+        <div className="p-3 grid gap-1.5 select-none">
           <ImageSlider maxImageIndex={maxImageIndex} />
-          <div className="font-semibold whitespace-nowrap flex-wrap justify-center text-sm flex gap-2 text-background [&_button]:rounded-full [&_button]:bg-zinc-100 [&_button]:px-2 [&_button]:py-1 [&_button]:hover:bg-foreground [&_button]:active:bg-zinc-400 [&_button]:disabled:bg-zinc-400 [&_button]:disabled:text-zinc-500 [&_button]:min-w-20 [&_button]:transition">
+          <div
+            className="font-semibold whitespace-nowrap flex-wrap justify-center text-sm flex gap-2 text-background 
+            [&_button]:rounded-full [&_button]:bg-zinc-100 [&_button]:px-2 [&_button]:py-1 [&_button]:hover:bg-foreground [&_button]:active:bg-zinc-400 [&_button]:disabled:bg-zinc-400 [&_button]:disabled:text-zinc-500 [&_button]:min-w-20 [&_button]:transition"
+          >
             <button onClick={() => setNavMode(isTouchMode ? 'scroll' : 'touch')}>
               {isTouchMode ? '터치' : '스크롤'}보기
             </button>

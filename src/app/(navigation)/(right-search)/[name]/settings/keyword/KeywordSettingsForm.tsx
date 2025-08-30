@@ -99,7 +99,7 @@ function EmptyState({ onCreateClick }: { onCreateClick: () => void }) {
           </div>
           <div className="text-left">
             <p className="font-medium text-xs sm:text-sm mb-0.5">정확한 매칭</p>
-            <p className="text-[11px] sm:text-xs text-zinc-500">시리즈, 캐릭터, 태그로 원하는 작품만 필터링</p>
+            <p className="text-[11px] sm:text-xs text-zinc-500">시리즈, 캐릭터, 태그, 업로더로 원하는 작품만 필터링</p>
           </div>
         </div>
         <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-zinc-900/50 border border-zinc-800/50">

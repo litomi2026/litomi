@@ -14,6 +14,7 @@ export interface MangaMetadata {
   mangaId: number
   series?: string[]
   tags?: string[]
+  uploader?: string
 }
 
 /**
@@ -47,6 +48,7 @@ export class OptimizedNotificationMatcher {
       artists: manga.artists?.map((a) => a.value) || [],
       groups: manga.group?.map((g) => g.value) || [],
       languages: manga.languages?.map((l) => l.value) || [],
+      uploader: manga.uploader,
     }
   }
 
@@ -244,6 +246,11 @@ export class OptimizedNotificationMatcher {
     // Languages
     if (metadata.languages?.length) {
       valueMap.set(NotificationConditionType.LANGUAGE, new Set(metadata.languages.map((l) => this.normalizeValue(l))))
+    }
+
+    // Uploader
+    if (metadata.uploader) {
+      valueMap.set(NotificationConditionType.UPLOADER, new Set([metadata.uploader]))
     }
 
     return valueMap

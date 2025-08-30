@@ -10,10 +10,12 @@ export type Manga = {
   title: string
   images: string[]
   artists?: LabeledValue[]
+  bookmarkCount?: number
   characters?: LabeledValue[]
   count?: number
   date?: string
   description?: string
+  filesize?: number
   group?: LabeledValue[]
   languages?: LabeledValue[]
   like?: number
@@ -22,13 +24,14 @@ export type Manga = {
   origin?: string
   rating?: number
   ratingCount?: number
-  bookmarkCount?: number
   related?: number[]
   series?: LabeledValue[]
   source?: MangaSource
   sources?: MangaSource[]
   tags?: MangaTag[]
+  torrentCount?: number
   type?: string
+  uploader?: string
   viewCount?: number
 
   // Harpi
