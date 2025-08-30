@@ -40,12 +40,10 @@ function SearchSuggestionDropdown({
     }
 
     checkPosition()
-    window.addEventListener('resize', checkPosition)
-    window.addEventListener('scroll', checkPosition)
+    window.addEventListener('resize', checkPosition, { passive: true })
 
     return () => {
       window.removeEventListener('resize', checkPosition)
-      window.removeEventListener('scroll', checkPosition)
     }
   }, [suggestions])
 

@@ -183,8 +183,8 @@ function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection }: 
 
   // NOTE: 마우스/터치패드 환경에서 스크롤 시 페이지를 전환함
   useEffect(() => {
-    const handleWheel = ({ deltaX, deltaY }: WheelEvent) => {
-      if (throttleRef.current) return
+    const handleWheel = ({ deltaX, deltaY, metaKey }: WheelEvent) => {
+      if (!metaKey || throttleRef.current) return
 
       throttleRef.current = true
       setTimeout(() => {
@@ -263,7 +263,7 @@ function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection }: 
     }, 500)
   }, [currentIndex])
 
-  // NOTE: page 파라미터가 있으면 초기 페이지를 변경함. 1번만 실행됨.
+  // NOTE: page 파라미터가 있으면 초기 페이지를 변경함. (1번만 실행됨)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const pageStr = params.get(MangaIdSearchParam.PAGE) ?? ''
