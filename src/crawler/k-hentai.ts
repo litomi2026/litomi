@@ -104,6 +104,7 @@ export type KHentaiMangaSearchOptions = {
   endDate?: string
   minRating?: string
   maxRating?: string
+  uploader?: string
 }
 
 export interface Thumbnail {
@@ -249,9 +250,21 @@ export class KHentaiClient {
     return params.offset ? mangas.slice(Number(params.offset)) : mangas
   }
 
-  private convertKHentaiCommonToManga(manga: KHentaiMangaCommon) {
+  private convertKHentaiCommonToManga({
+    id,
+    title,
+    category,
+    posted,
+    rating,
+    tags,
+    filecount,
+    views,
+    uploader,
+    filesize,
+    torrentcount,
+    thumb,
+  }: KHentaiMangaCommon) {
     const locale = 'ko' // TODO: Get from user preferences or context
-    const { id, title, category, posted, rating, tags, filecount, views } = manga
     const seriesValues = tags.filter(({ tag }) => tag[0] === 'parody').map(({ tag }) => tag[1])
     const characterValues = tags.filter(({ tag }) => tag[0] === 'character').map(({ tag }) => tag[1])
     const groupValues = tags.filter(({ tag }) => tag[0] === 'group').map(({ tag }) => tag[1])
@@ -261,7 +274,7 @@ export class KHentaiClient {
     return {
       id,
       title,
-      images: [manga.thumb],
+      images: [thumb],
       artists: translateArtistList(artistValues, locale),
       characters: translateCharacterList(characterValues, locale),
       group: translateGroupList(groupValues, locale),
@@ -275,6 +288,9 @@ export class KHentaiClient {
       count: filecount,
       rating: rating / 100,
       viewCount: views,
+      uploader,
+      filesize,
+      torrentCount: torrentcount,
       source: MangaSource.K_HENTAI,
     }
   }

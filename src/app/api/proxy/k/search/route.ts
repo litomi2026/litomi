@@ -1,4 +1,5 @@
 import { GETProxyKSearchSchema } from '@/app/api/proxy/k/search/schema'
+import { MAX_KHENTAI_SEARCH_QUERY_LENGTH } from '@/constants/policy'
 import { getCategories, KHentaiClient, KHentaiMangaSearchOptions } from '@/crawler/k-hentai'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { Manga } from '@/types/manga'
@@ -38,9 +39,14 @@ export async function GET(request: Request) {
     skip,
   } = validation.data
 
+  const uploaderMatch = query?.match(/\buploader:(\S+)/i)
   const lowerQuery = convertQueryKey(query?.toLowerCase())
   const categories = getCategories(lowerQuery)
-  const search = lowerQuery?.replace(/\btype:\S+/gi, '').trim()
+  const search = lowerQuery?.replace(/\b(type|uploader):\S+/gi, '').trim()
+
+  if (search && search.length > MAX_KHENTAI_SEARCH_QUERY_LENGTH) {
+    return new Response('Bad Request', { status: 400 })
+  }
 
   const params: KHentaiMangaSearchOptions = {
     search,
@@ -56,6 +62,7 @@ export async function GET(request: Request) {
     endDate: to?.toString(),
     minRating: minRating?.toString(),
     maxRating: maxRating?.toString(),
+    uploader: uploaderMatch?.[1]?.replace(/_/g, ' '),
   }
 
   try {

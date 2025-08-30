@@ -6,6 +6,7 @@ import { ReadonlyURLSearchParams, usePathname, useRouter } from 'next/navigation
 import { FormEvent, memo, Suspense, useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react'
 
 import IconSpinner from '@/components/icons/IconSpinner'
+import { MAX_SEARCH_QUERY_LENGTH } from '@/constants/policy'
 
 import { type SearchSuggestion } from './constants'
 import UpdateFromSearchParams from './UpdateFromSearchParams'
@@ -209,7 +210,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
             focus:outline-none
             [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-cancel-button]:appearance-none
             [&::-ms-clear]:hidden [&::-ms-clear]:w-0 [&::-ms-clear]:h-0"
-            maxLength={255}
+            maxLength={MAX_SEARCH_QUERY_LENGTH}
             name="query"
             onBlur={handleBlur}
             onChange={handleInputChange}
