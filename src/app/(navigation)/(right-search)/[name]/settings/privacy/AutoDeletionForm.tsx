@@ -1,6 +1,6 @@
 'use client'
 
-import { Clock, Trash2 } from 'lucide-react'
+import { Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -43,11 +43,7 @@ export default function AutoDeletionForm({ autoDeletionDays }: Props) {
           </p>
         </div>
       </div>
-      <div className="ml-8 space-y-3">
-        <div className="flex items-center gap-2">
-          <Clock className="w-4 h-4 text-zinc-500" />
-          <span className="text-sm text-zinc-400">비활성 기간</span>
-        </div>
+      <div className="grid gap-2">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {dayOptions.map((option) => (
             <label
