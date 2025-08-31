@@ -104,7 +104,7 @@ function ErrorState({ error, retry }: { error: Error; retry: () => void }) {
 function PostListSkeleton() {
   return (
     <ul className="animate-fade-in [&_li]:not-first:border-t-2 [&_li]:border-zinc-800">
-      {[...Array(3)].map((_, i) => (
+      {[...Array(2)].map((_, i) => (
         <li key={i}>
           <div className="grid min-w-0 grid-cols-[auto_1fr] gap-2 px-4 pb-2 pt-3">
             <div className="size-10 bg-zinc-800 rounded-xl" />
