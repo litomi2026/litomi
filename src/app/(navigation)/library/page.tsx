@@ -1,6 +1,8 @@
 import { desc, eq } from 'drizzle-orm'
 import { Folder } from 'lucide-react'
+import { Metadata } from 'next'
 
+import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { LIBRARY_ITEMS_PER_PAGE } from '@/constants/policy'
 import { db } from '@/database/drizzle'
 import { libraryItemTable, libraryTable } from '@/database/schema'
@@ -9,6 +11,19 @@ import { getUserIdFromCookie } from '@/utils/session'
 
 import AllLibraryMangaView from './AllLibraryMangaView'
 import CreateLibraryButton from './CreateLibraryButton'
+
+export const metadata: Metadata = {
+  title: `서재 - ${SHORT_NAME}`,
+  openGraph: {
+    ...defaultOpenGraph,
+    title: `서재 - ${SHORT_NAME}`,
+    url: '/library',
+  },
+  alternates: {
+    canonical: '/library',
+    languages: { ko: '/library' },
+  },
+}
 
 export default async function LibraryPage() {
   const userId = await getUserIdFromCookie()
