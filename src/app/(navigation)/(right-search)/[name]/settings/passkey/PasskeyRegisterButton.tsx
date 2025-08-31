@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 import IconFingerprint from '@/components/icons/IconFingerprint'
 import IconInfo from '@/components/icons/IconInfo'
 import IconPlus from '@/components/icons/IconPlus'
+import IconSpinner from '@/components/icons/IconSpinner'
 import Modal from '@/components/ui/Modal'
 import useMeQuery from '@/query/useMeQuery'
 
@@ -64,21 +65,19 @@ export default function PasskeyRegisterButton() {
     <>
       <div className="flex items-center gap-2">
         <button
-          className="group relative overflow-hidden rounded-full border-brand-end/70 bg-brand-end/5 border-2 px-5 py-2.5 sm:px-6 sm:py-3 text-sm sm:text-base font-medium transition disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
+          className="flex items-center gap-2 group rounded-full border-brand-end/70 bg-brand-end/5 border-2 px-5 py-2.5 text-sm font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={loading}
           onClick={handleRegisterPasskey}
         >
-          <span className="relative flex justify-center items-center gap-2">
-            <IconPlus className="h-4 w-4 sm:h-5 sm:w-5 transition" />
-            {loading ? '등록하는 중' : '패스키 추가'}
-          </span>
+          {loading ? <IconSpinner className="size-4" /> : <IconPlus className="size-4" />}
+          패스키 추가
         </button>
         <button
           aria-label="패스키 정보"
-          className="rounded-full p-2 sm:p-2.5 text-zinc-500 transition-all hover:bg-zinc-800 hover:text-zinc-300 touch-manipulation"
+          className="rounded-full p-2 text-zinc-500 transition hover:bg-zinc-800 hover:text-zinc-300"
           onClick={() => setShowInfoModal(true)}
         >
-          <IconInfo className="h-4 w-4 sm:h-5 sm:w-5" />
+          <IconInfo className="size-5" />
         </button>
       </div>
       <Modal onClose={() => setShowInfoModal(false)} open={showInfoModal} showCloseButton>
