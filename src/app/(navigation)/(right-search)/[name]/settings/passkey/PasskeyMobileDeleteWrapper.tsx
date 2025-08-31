@@ -9,10 +9,9 @@ import PasskeyDeleteButton from './PasskeyDeleteButton'
 type Props = {
   children: React.ReactNode
   id: number
-  username: string
 }
 
-export default function PasskeyMobileDeleteWrapper({ children, id, username }: Readonly<Props>) {
+export default function PasskeyMobileDeleteWrapper({ children, id }: Readonly<Props>) {
   const [swipeX, setSwipeX] = useState(0)
   const [touchStart, setTouchStart] = useState(0)
   const [showConfirmModal, setShowConfirmModal] = useState(false)
@@ -46,7 +45,7 @@ export default function PasskeyMobileDeleteWrapper({ children, id, username }: R
 
   return (
     <div className="relative overflow-hidden touch-manipulation">
-      <div className="absolute inset-y-0 right-0 w-24 rounded-e-2xl bg-red-700 flex items-center justify-center sm:hidden">
+      <div className="absolute inset-y-px right-px w-24 rounded-e-2xl bg-red-800 flex items-center justify-center sm:hidden">
         <button aria-label="패스키 삭제" className="p-4" onClick={() => setShowConfirmModal(true)} type="button">
           <IconTrash className="w-5" />
         </button>
@@ -63,13 +62,7 @@ export default function PasskeyMobileDeleteWrapper({ children, id, username }: R
       >
         {children}
       </div>
-      <PasskeyDeleteButton
-        id={id}
-        onCancel={handleCancel}
-        onOpenChange={setShowConfirmModal}
-        open={showConfirmModal}
-        username={username}
-      />
+      <PasskeyDeleteButton id={id} onCancel={handleCancel} onOpenChange={setShowConfirmModal} open={showConfirmModal} />
     </div>
   )
 }

@@ -12,7 +12,6 @@ import { deleteCredential } from './actions'
 
 type Props = {
   id: number
-  username: string
   className?: string
   onCancel?: () => void
   open?: boolean

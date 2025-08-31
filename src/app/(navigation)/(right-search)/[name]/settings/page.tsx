@@ -5,6 +5,7 @@ import { Suspense } from 'react'
 import type { PageProps } from '@/types/nextjs'
 
 import IconBell from '@/components/icons/IconBell'
+import IconFingerprint from '@/components/icons/IconFingerprint'
 import IconKey from '@/components/icons/IconKey'
 import IconSearch from '@/components/icons/IconSearch'
 import IconShield from '@/components/icons/IconShield'
@@ -21,6 +22,7 @@ const PushSettings = dynamic(() => import('./push/PushSettings'))
 const PasswordChangeForm = dynamic(() => import('./password/PasswordChangeForm'))
 const KeywordSettings = dynamic(() => import('./keyword/KeywordSettings'))
 const PrivacySettings = dynamic(() => import('./privacy/PrivacySettings'))
+const PasskeySettings = dynamic(() => import('./passkey/PasskeySettings'))
 
 type Params = {
   name: string
@@ -61,6 +63,16 @@ export default async function SettingsPage({ params }: PageProps<Params>) {
       >
         <Suspense>
           <KeywordSettings userId={userId} />
+        </Suspense>
+      </CollapsibleSection>
+      <CollapsibleSection
+        description="비밀번호 없이 안전하게 로그인하세요"
+        icon={<IconFingerprint className="w-5 flex-shrink-0 text-brand-end" />}
+        id="passkey"
+        title="패스키"
+      >
+        <Suspense>
+          <PasskeySettings userId={userId} />
         </Suspense>
       </CollapsibleSection>
       <CollapsibleSection

@@ -23,7 +23,7 @@ export default async function Layout({ params, children }: LayoutProps) {
         <UserProfile username={username} />
       </Suspense>
       <nav
-        className="sticky top-0 z-20 min-h-12.5 border-b-2 bg-background/80 backdrop-blur font-semibold
+        className="sticky top-0 z-20 min-h-12.5 border-b-2 bg-background font-semibold
         [&_a]:min-w-16 [&_a]:group [&_a]:relative [&_a]:flex [&_a]:justify-center [&_a]:items-center [&_a]:gap-1 [&_a]:p-3 [&_a]:transition"
       >
         <div className="relative h-full overflow-hidden">

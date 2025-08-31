@@ -3,6 +3,8 @@ import { Lock, ScanFace, Shield } from 'lucide-react'
 import IconKey from '@/components/icons/IconKey'
 import IconShield from '@/components/icons/IconShield'
 
+import PasskeyRegisterButton from './PasskeyRegisterButton'
+
 export default function PasskeyEmptyState() {
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
@@ -45,9 +47,7 @@ export default function PasskeyEmptyState() {
           </div>
         </div>
       </div>
-      <p className="text-sm text-zinc-500">
-        위의 <span className="text-brand-end font-medium">패스키 추가</span> 버튼을 눌러 시작하세요
-      </p>
+      <PasskeyRegisterButton />
     </div>
   )
 }
