@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 import {
   getAuthenticationOptions,
   verifyAuthentication,
-} from '@/app/(navigation)/(right-search)/[name]/passkey/actions'
+} from '@/app/(navigation)/(right-search)/[name]/settings/passkey/actions'
 import IconFingerprint from '@/components/icons/IconFingerprint'
 import useActionResponse from '@/hook/useActionResponse'
 
