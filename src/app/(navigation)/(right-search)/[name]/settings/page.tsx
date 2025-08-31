@@ -7,6 +7,7 @@ import type { PageProps } from '@/types/nextjs'
 import IconBell from '@/components/icons/IconBell'
 import IconKey from '@/components/icons/IconKey'
 import IconSearch from '@/components/icons/IconSearch'
+import IconShield from '@/components/icons/IconShield'
 import IconTrash from '@/components/icons/IconTrash'
 import CollapsibleSection from '@/components/ui/CollapsibleSection'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
@@ -19,6 +20,7 @@ const AccountDeletionForm = dynamic(() => import('./delete/AccountDeletionForm')
 const PushSettings = dynamic(() => import('./push/PushSettings'))
 const PasswordChangeForm = dynamic(() => import('./password/PasswordChangeForm'))
 const KeywordSettings = dynamic(() => import('./keyword/KeywordSettings'))
+const PrivacySettings = dynamic(() => import('./privacy/PrivacySettings'))
 
 type Params = {
   name: string
@@ -59,6 +61,16 @@ export default async function SettingsPage({ params }: PageProps<Params>) {
       >
         <Suspense>
           <KeywordSettings userId={userId} />
+        </Suspense>
+      </CollapsibleSection>
+      <CollapsibleSection
+        description="개인정보 보호를 위한 자동화 설정을 관리하세요"
+        icon={<IconShield className="w-5 flex-shrink-0 text-brand-end" />}
+        id="privacy"
+        title="개인정보 보호"
+      >
+        <Suspense>
+          <PrivacySettings userId={userId} />
         </Suspense>
       </CollapsibleSection>
       <CollapsibleSection
