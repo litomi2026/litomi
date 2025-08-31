@@ -90,7 +90,7 @@ export default function BrowserList({ webPushes }: Props) {
                 <div className="text-sm text-zinc-200 flex items-center gap-2">
                   <span className="font-medium">{formatDeviceInfo(webPush.userAgent)}</span>
                   {isCurrentDevice && (
-                    <span className="text-[12px] whitespace-nowrap font-medium text-brand-end bg-brand-end/10 px-2 rounded-full border border-brand-end/20">
+                    <span className="text-xs whitespace-nowrap font-medium text-brand-end bg-brand-end/10 px-1.5 rounded-full border border-brand-end/20">
                       현재
                     </span>
                   )}

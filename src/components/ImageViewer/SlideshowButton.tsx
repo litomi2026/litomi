@@ -97,7 +97,7 @@ function SlideshowButton({ maxImageIndex, offset, onIntervalChange }: Readonly<P
             <div className="flex items-center gap-2">
               <input
                 className="border-2 w-16 text-foreground rounded-lg px-2 py-0.5 border-zinc-700 focus:outline-none focus:ring-2 focus:ring-zinc-500"
-                defaultValue={5}
+                defaultValue={10}
                 disabled={!isOpened}
                 id={intervalInputId}
                 max={999}

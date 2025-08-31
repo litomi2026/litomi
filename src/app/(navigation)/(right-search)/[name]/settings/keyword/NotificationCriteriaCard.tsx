@@ -107,8 +107,8 @@ export default function NotificationCriteriaCard({ criterion, onEdit }: Notifica
         </div>
 
         <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-1">
-            <h3 className="font-medium text-sm sm:text-base text-zinc-100 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="font-medium text-sm sm:text-base text-zinc-100 flex flex-col sm:flex-row sm:items-center gap-2">
               <span className="break-all line-clamp-1">{criterion.name}</span>
               {criterion.isActive && (
                 <span className="whitespace-nowrap hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand-end/10 text-xs">
