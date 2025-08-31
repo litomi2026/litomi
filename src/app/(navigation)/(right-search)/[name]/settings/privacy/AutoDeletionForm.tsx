@@ -26,8 +26,8 @@ export default function AutoDeletionForm({ autoDeletionDays }: Props) {
 
   const [, dispatchAction, isPending] = useActionResponse({
     action: updateAutoDeletionSettings,
-    onSuccess: (data) => {
-      toast.success(data)
+    onSuccess: () => {
+      toast.success('자동 삭제 설정이 반영됐어요')
     },
     shouldSetResponse: false,
   })
