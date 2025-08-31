@@ -11,7 +11,6 @@ cp cloud-run/env.example cloud-run/.env
 Edit the `.env` file with your actual values.
 
 ```zsh
-source cloud-run/.env
 ./cloud-run/setup.sh
 ```
 
@@ -20,7 +19,6 @@ Only execute once.
 ## Deployment
 
 ```zsh
-source cloud-run/.env
 ./cloud-run/deploy.sh
 ```
 
