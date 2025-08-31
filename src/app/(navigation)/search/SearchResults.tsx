@@ -45,7 +45,7 @@ export default function SearchResults({ view }: Readonly<Props>) {
 
   return (
     <>
-      <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2 grow`}>
+      <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2`}>
         {mangas.map((manga, i) =>
           view === ViewCookie.IMAGE ? (
             <MangaCardImage
