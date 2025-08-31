@@ -66,16 +66,6 @@ export default async function SettingsPage({ params }: PageProps<Params>) {
         </Suspense>
       </CollapsibleSection>
       <CollapsibleSection
-        description="개인정보 보호를 위한 자동화 설정을 관리하세요"
-        icon={<IconShield className="w-5 flex-shrink-0 text-brand-end" />}
-        id="privacy"
-        title="개인정보 보호"
-      >
-        <Suspense>
-          <PrivacySettings userId={userId} />
-        </Suspense>
-      </CollapsibleSection>
-      <CollapsibleSection
         description="비밀번호 없이 안전하게 로그인하세요"
         icon={<IconFingerprint className="w-5 flex-shrink-0 text-brand-end" />}
         id="passkey"
@@ -83,6 +73,16 @@ export default async function SettingsPage({ params }: PageProps<Params>) {
       >
         <Suspense>
           <PasskeySettings userId={userId} username={usernameFromParam} />
+        </Suspense>
+      </CollapsibleSection>
+      <CollapsibleSection
+        description="개인정보 보호를 위한 자동화 설정을 관리하세요"
+        icon={<IconShield className="w-5 flex-shrink-0 text-brand-end" />}
+        id="privacy"
+        title="개인정보 보호"
+      >
+        <Suspense>
+          <PrivacySettings userId={userId} />
         </Suspense>
       </CollapsibleSection>
       <CollapsibleSection
