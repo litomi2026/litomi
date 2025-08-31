@@ -1,6 +1,7 @@
 import { Passkey } from './common'
 import PasskeyCard from './PasskeyCard'
 import PasskeyEmptyState from './PasskeyEmptyState'
+import PasskeyInfoButton from './PasskeyInfoButton'
 import PasskeyRegisterButton from './PasskeyRegisterButton'
 
 type Props = {
@@ -19,7 +20,10 @@ export default function PasskeyList({ passkeys }: Readonly<Props>) {
           <h2 className="text-lg font-medium text-zinc-200">등록된 패스키</h2>
           <p className="text-sm text-zinc-500 mt-1">{passkeys.length}개의 패스키가 등록되어 있어요</p>
         </div>
-        <PasskeyRegisterButton />
+        <div className="flex items-center gap-2">
+          <PasskeyRegisterButton />
+          <PasskeyInfoButton />
+        </div>
       </div>
       <div className="grid gap-3">
         {passkeys.map((passkey) => (
