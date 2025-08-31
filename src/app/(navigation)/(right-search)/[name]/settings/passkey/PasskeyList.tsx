@@ -1,6 +1,7 @@
 import { Passkey } from './common'
 import PasskeyCard from './PasskeyCard'
 import PasskeyEmptyState from './PasskeyEmptyState'
+import PasskeyRegisterButton from './PasskeyRegisterButton'
 
 type Props = {
   passkeys: Passkey[]
@@ -13,17 +14,20 @@ export default function PasskeyList({ passkeys, username }: Readonly<Props>) {
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <div>
-        <h2 className="text-lg font-medium text-zinc-200">등록된 패스키</h2>
-        <p className="text-sm text-zinc-500 mt-1">{passkeys.length}개의 패스키가 등록되어 있어요</p>
+    <div className="grid gap-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="text-lg font-medium text-zinc-200">등록된 패스키</h2>
+          <p className="text-sm text-zinc-500 mt-1">{passkeys.length}개의 패스키가 등록되어 있어요</p>
+        </div>
+        <PasskeyRegisterButton />
       </div>
-      <div className="flex flex-col gap-3">
+      <div className="grid gap-3">
         {passkeys.map((passkey) => (
           <PasskeyCard key={passkey.id} passkey={passkey} username={username} />
         ))}
       </div>
-      <div className="mt-8 rounded-xl bg-zinc-900 border border-zinc-800 p-4">
+      <div className="rounded-xl bg-zinc-900 border border-zinc-800 p-4">
         <p className="text-sm text-zinc-400 flex items-start">
           <span className="inline-block w-5 h-5 rounded bg-zinc-800 text-zinc-400 text-center leading-5 text-xs font-medium mr-2 flex-shrink-0">
             i
