@@ -37,7 +37,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedColor, setSelectedColor] = useState(DEFAULT_COLORS[0])
   const [selectedIcon, setSelectedIcon] = useState(DEFAULT_ICONS[0])
-  const [isPublic, setIsPublic] = useState(false)
+  const [isPublic, setIsPublic] = useState(true)
   const queryClient = useQueryClient()
 
   const handleClose = () => {
