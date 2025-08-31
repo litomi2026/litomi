@@ -21,6 +21,7 @@ export default memo(MangaDetailButton)
 
 function MangaDetailButton({ manga }: Readonly<Props>) {
   const {
+    id,
     title,
     artists,
     group,
@@ -77,6 +78,10 @@ function MangaDetailButton({ manga }: Readonly<Props>) {
           )}
           {/* Core Metadata - Secondary Information */}
           <div className="grid gap-2 [&_strong]:whitespace-nowrap">
+            <div className="flex gap-2">
+              <strong>품번</strong>
+              <span className="text-zinc-300">{id}</span>
+            </div>
             {languages && languages.length > 0 && (
               <div className="flex gap-2">
                 <strong>언어</strong>
