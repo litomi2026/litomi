@@ -5,10 +5,9 @@ import PasskeyRegisterButton from './PasskeyRegisterButton'
 
 type Props = {
   passkeys: Passkey[]
-  username: string
 }
 
-export default function PasskeyList({ passkeys, username }: Readonly<Props>) {
+export default function PasskeyList({ passkeys }: Readonly<Props>) {
   if (passkeys.length === 0) {
     return <PasskeyEmptyState />
   }
@@ -24,7 +23,7 @@ export default function PasskeyList({ passkeys, username }: Readonly<Props>) {
       </div>
       <div className="grid gap-3">
         {passkeys.map((passkey) => (
-          <PasskeyCard key={passkey.id} passkey={passkey} username={username} />
+          <PasskeyCard key={passkey.id} passkey={passkey} />
         ))}
       </div>
       <div className="rounded-xl bg-zinc-900 border border-zinc-800 p-4">

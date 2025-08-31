@@ -9,10 +9,9 @@ import PasskeyList from './PasskeyList'
 
 type Props = {
   userId: string
-  username: string
 }
 
-export default async function PasskeySettings({ userId, username }: Props) {
+export default async function PasskeySettings({ userId }: Props) {
   const credentials = await db
     .select({
       id: credentialTable.id,
@@ -32,6 +31,5 @@ export default async function PasskeySettings({ userId, username }: Props) {
     transports: credential.transports as AuthenticatorTransportFuture[],
   }))
 
-  return <PasskeyList passkeys={passkeys} username={username} />
+  return <PasskeyList passkeys={passkeys} />
 }
-

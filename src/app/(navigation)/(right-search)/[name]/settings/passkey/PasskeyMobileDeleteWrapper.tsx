@@ -9,10 +9,9 @@ import PasskeyDeleteButton from './PasskeyDeleteButton'
 type Props = {
   children: React.ReactNode
   id: number
-  username: string
 }
 
-export default function PasskeyMobileDeleteWrapper({ children, id, username }: Readonly<Props>) {
+export default function PasskeyMobileDeleteWrapper({ children, id }: Readonly<Props>) {
   const [swipeX, setSwipeX] = useState(0)
   const [touchStart, setTouchStart] = useState(0)
   const [showConfirmModal, setShowConfirmModal] = useState(false)
@@ -63,13 +62,7 @@ export default function PasskeyMobileDeleteWrapper({ children, id, username }: R
       >
         {children}
       </div>
-      <PasskeyDeleteButton
-        id={id}
-        onCancel={handleCancel}
-        onOpenChange={setShowConfirmModal}
-        open={showConfirmModal}
-        username={username}
-      />
+      <PasskeyDeleteButton id={id} onCancel={handleCancel} onOpenChange={setShowConfirmModal} open={showConfirmModal} />
     </div>
   )
 }

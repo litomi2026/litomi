@@ -16,11 +16,10 @@ import {
 
 type Props = {
   passkey: Passkey
-  username: string
   enableMobileSwipe?: boolean
 }
 
-export default function PasskeyCard({ passkey, username }: Readonly<Props>) {
+export default function PasskeyCard({ passkey }: Readonly<Props>) {
   const { deviceType, createdAt, lastUsedAt, transports, id } = passkey
   const { icon, label, bgColor } = getDeviceInfo(deviceType ?? '')
   const createdRelativeTime = getRelativeTime(createdAt)
@@ -30,7 +29,7 @@ export default function PasskeyCard({ passkey, username }: Readonly<Props>) {
   const isPlatform = deviceType === 'platform'
 
   return (
-    <PasskeyMobileDeleteWrapper id={id} username={username}>
+    <PasskeyMobileDeleteWrapper id={id}>
       <div
         className="flex items-start gap-3 group/card relative bg-zinc-900 border-2 rounded-2xl p-4 data-[platform=true]:border-brand-end/40 border-zinc-800"
         data-platform={isPlatform}
@@ -53,7 +52,6 @@ export default function PasskeyCard({ passkey, username }: Readonly<Props>) {
               className="opacity-0 sm:opacity-100 -my-2 -mx-1 p-2 text-zinc-600 rounded-xl transition 
               hover:text-red-400 hover:bg-red-900/10 group-hover/card:opacity-100"
               id={id}
-              username={username}
             />
           </div>
           <div className="flex items-center gap-1.5">

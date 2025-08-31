@@ -72,7 +72,7 @@ export default async function SettingsPage({ params }: PageProps<Params>) {
         title="패스키"
       >
         <Suspense>
-          <PasskeySettings userId={userId} username={usernameFromParam} />
+          <PasskeySettings userId={userId} />
         </Suspense>
       </CollapsibleSection>
       <CollapsibleSection
