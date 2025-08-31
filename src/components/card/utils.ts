@@ -3,12 +3,7 @@ export function getKoreanSearchLink(filterType: string, value: string) {
   return `/search?query=${encodeURIComponent(query)}`
 }
 
-export function toggleSearchFilter(
-  currentQuery: string,
-  filterType: string,
-  value: string,
-  addLanguagePrefix: boolean = true,
-): string {
+export function toggleSearchFilter(currentQuery: string, filterType: string, value: string): string {
   const filterPattern = `${filterType}:${value.replaceAll(' ', '_')}`
   const escapedPattern = filterPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   const excapedRegex = new RegExp(`(^|\\s)${escapedPattern}(?=\\s|$)`, 'gi')
@@ -18,8 +13,6 @@ export function toggleSearchFilter(
     return newQuery
   }
 
-  const needsLanguagePrefix = addLanguagePrefix && !currentQuery.includes('language:korean')
-  const languagePrefix = needsLanguagePrefix ? 'language:korean ' : ''
   const separator = currentQuery.trim() ? ' ' : ''
-  return `${languagePrefix}${currentQuery}${separator}${filterPattern}`.trim()
+  return `${currentQuery}${separator}${filterPattern}`.trim()
 }

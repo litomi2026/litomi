@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { memo } from 'react'
 
 import { MangaTag } from '@/types/manga'
@@ -25,9 +25,7 @@ export default memo(TagList)
 
 function TagList({ className, tags }: Readonly<Props>) {
   const searchParams = useSearchParams()
-  const pathname = usePathname()
   const currentQuery = searchParams.get('query') ?? ''
-  const isSearchPage = pathname === '/search'
 
   return (
     <ul
@@ -35,7 +33,7 @@ function TagList({ className, tags }: Readonly<Props>) {
     >
       {tags.map(({ category, value, label }) => {
         const tagColor = tagStyles[category] ?? 'bg-zinc-900'
-        const newQuery = toggleSearchFilter(currentQuery, category, value, !isSearchPage)
+        const newQuery = toggleSearchFilter(currentQuery, category, value)
         const newSearchParams = new URLSearchParams(searchParams)
         if (newQuery) {
           newSearchParams.set('query', newQuery)
