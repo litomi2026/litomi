@@ -65,7 +65,7 @@ export async function deleteCredential(formData: FormData) {
       return notFound('패스키를 찾을 수 없어요')
     }
 
-    revalidatePath('/[name]/passkey', 'page')
+    revalidatePath('/[name]/settings', 'page')
     return ok('패스키가 삭제됐어요')
   } catch (error) {
     console.error('deleteCredential:', error)
@@ -373,7 +373,7 @@ export async function verifyRegistration(body: RegistrationResponseJSON) {
       return result
     }
 
-    revalidatePath('/[name]/passkey', 'page')
+    revalidatePath('/[name]/settings', 'page')
 
     return ok({
       ...result,
