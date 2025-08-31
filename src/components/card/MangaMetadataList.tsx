@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { memo } from 'react'
 
 import MangaMetadataLabel from './MangaMetadataLabel'
@@ -17,16 +17,14 @@ export default memo(MangaMetadataList)
 
 function MangaMetadataList({ details, filterType, className = '' }: Readonly<Props>) {
   const searchParams = useSearchParams()
-  const pathname = usePathname()
   const currentQuery = searchParams.get('query') ?? ''
-  const isSearchPage = pathname === '/search'
 
   return (
     <ul
       className={`break-all [&_a]:px-0.5 [&_a]:first:pl-0 [&_a]:last:pr-0 [&_a]:hover:underline [&_a]:focus:underline [&_a]:aria-pressed:text-brand-end [&_a]:aria-pressed:font-semibold ${className}`}
     >
       {details.map(({ value, label }, idx) => {
-        const newQuery = toggleSearchFilter(currentQuery, filterType, value, !isSearchPage)
+        const newQuery = toggleSearchFilter(currentQuery, filterType, value)
         const newSearchParams = new URLSearchParams(searchParams)
         if (newQuery) {
           newSearchParams.set('query', newQuery)

@@ -5,8 +5,7 @@ import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { type GETSearchSuggestionsResponse, GETSearchSuggestionsSchema, queryBlacklist } from './schema'
 import { suggestionTrie } from './suggestion-trie'
 
-export const runtime = 'edge'
-const revalidate = ms('3 days') / 1000
+const maxAge = ms('3 days') / 1000
 
 export async function GET(request: Request) {
   const url = new URL(request.url)
@@ -28,9 +27,9 @@ export async function GET(request: Request) {
 
     const cacheControl = createCacheControl({
       public: true,
-      maxAge: revalidate,
-      sMaxAge: revalidate,
-      swr: revalidate,
+      maxAge,
+      sMaxAge: maxAge,
+      swr: maxAge,
     })
 
     return Response.json(suggestions satisfies GETSearchSuggestionsResponse, {

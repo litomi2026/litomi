@@ -17,9 +17,9 @@ import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/const
 
 export const userTable = pgTable('user', {
   id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
-  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-  loginAt: timestamp('login_at', { withTimezone: true }),
-  logoutAt: timestamp('logout_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+  loginAt: timestamp('login_at', { precision: 3, withTimezone: true }),
+  logoutAt: timestamp('logout_at', { precision: 3, withTimezone: true }),
   loginId: varchar('login_id', { length: 32 }).notNull().unique(),
   name: varchar({ length: 32 }).notNull().unique(),
   passwordHash: text('password_hash').notNull(),
@@ -34,7 +34,7 @@ export const bookmarkTable = pgTable(
       .references(() => userTable.id, { onDelete: 'cascade' })
       .notNull(),
     mangaId: integer('manga_id').notNull(),
-    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [primaryKey({ columns: [table.userId, table.mangaId] }), index('idx_bookmark_user_id').on(table.userId)],
 ).enableRLS()
@@ -46,7 +46,7 @@ export const libraryTable = pgTable(
     userId: bigint('user_id', { mode: 'number' })
       .references(() => userTable.id, { onDelete: 'cascade' })
       .notNull(),
-    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
     name: varchar('name', { length: MAX_LIBRARY_NAME_LENGTH }).notNull(),
     description: varchar('description', { length: MAX_LIBRARY_DESCRIPTION_LENGTH }),
     color: integer('color'),
@@ -63,7 +63,7 @@ export const libraryItemTable = pgTable(
       .references(() => libraryTable.id, { onDelete: 'cascade' })
       .notNull(),
     mangaId: integer('manga_id').notNull(),
-    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [
     primaryKey({ columns: [table.libraryId, table.mangaId] }),
@@ -78,7 +78,7 @@ export const userCensorshipTable = pgTable(
     userId: bigint('user_id', { mode: 'number' })
       .references(() => userTable.id, { onDelete: 'cascade' })
       .notNull(),
-    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
     key: smallint().notNull(),
     value: varchar({ length: 256 }).notNull(),
     level: smallint().notNull(),
@@ -94,8 +94,8 @@ export const credentialTable = pgTable(
     userId: bigint('user_id', { mode: 'number' })
       .references(() => userTable.id, { onDelete: 'cascade' })
       .notNull(),
-    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-    lastUsedAt: timestamp('last_used_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    lastUsedAt: timestamp('last_used_at', { precision: 3, withTimezone: true }),
     counter: integer().notNull().default(0),
     publicKey: text('public_key').notNull(),
     deviceType: smallint('device_type').notNull(),
@@ -115,7 +115,7 @@ export const challengeTable = pgTable(
       .notNull(),
     type: smallint().notNull(),
     challenge: varchar({ length: 256 }).notNull(),
-    expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+    expiresAt: timestamp('expires_at', { precision: 3, withTimezone: true }).notNull(),
   },
   (table) => [
     primaryKey({ columns: [table.userId, table.type] }),
@@ -130,8 +130,8 @@ export const webPushTable = pgTable(
     userId: bigint('user_id', { mode: 'number' })
       .references(() => userTable.id, { onDelete: 'cascade' })
       .notNull(),
-    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-    lastUsedAt: timestamp('last_used_at', { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    lastUsedAt: timestamp('last_used_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
     endpoint: text().notNull(),
     p256dh: text().notNull(),
     auth: text().notNull(),
@@ -145,8 +145,8 @@ export const pushSettingsTable = pgTable('push_settings', {
     .references(() => userTable.id, { onDelete: 'cascade' })
     .notNull()
     .primaryKey(),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true }).notNull().defaultNow(),
   quietEnabled: boolean('quiet_enabled').notNull().default(true),
   quietStart: smallint('quiet_start').notNull().default(22), // 0-23
   quietEnd: smallint('quiet_end').notNull().default(7), // 0-23
@@ -161,13 +161,13 @@ export const notificationTable = pgTable(
     userId: bigint('user_id', { mode: 'number' })
       .references(() => userTable.id, { onDelete: 'cascade' })
       .notNull(),
-    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
     type: smallint().notNull(), // 'new_manga', 'bookmark_update', etc.
     read: boolean().notNull().default(false),
     title: text().notNull(),
     body: text().notNull(),
     data: text(),
-    sentAt: timestamp('sent_at', { withTimezone: true }),
+    sentAt: timestamp('sent_at', { precision: 3, withTimezone: true }),
   },
   (table) => [index('idx_notification_user_id').on(table.userId)],
 ).enableRLS()
@@ -181,8 +181,8 @@ export const postTable = pgTable(
       .notNull(),
     parentPostId: bigint('parent_post_id', { mode: 'number' }).references((): AnyPgColumn => postTable.id),
     referredPostId: bigint('referred_post_id', { mode: 'number' }).references((): AnyPgColumn => postTable.id),
-    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-    deletedAt: timestamp('deleted_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    deletedAt: timestamp('deleted_at', { precision: 3, withTimezone: true }),
     mangaId: integer('manga_id'),
     content: varchar({ length: 160 }),
     type: smallint().notNull(), // 'text', 'image', 'video', 'audio', 'poll', 'event', etc.
@@ -204,7 +204,7 @@ export const postLikeTable = pgTable(
     postId: bigint('post_id', { mode: 'number' })
       .references(() => postTable.id, { onDelete: 'cascade' })
       .notNull(),
-    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [primaryKey({ columns: [table.userId, table.postId] }), index('idx_post_like_post_id').on(table.postId)],
 ).enableRLS()
@@ -217,7 +217,7 @@ export const readingHistoryTable = pgTable(
       .notNull(),
     mangaId: integer('manga_id').notNull(),
     lastPage: integer('last_page').notNull(),
-    updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [
     primaryKey({ columns: [table.userId, table.mangaId] }),

@@ -156,14 +156,6 @@ gcloud scheduler jobs create http ${SCHEDULER_JOB_NAME} \
 
 if [ $? -eq 0 ]; then
   echo "✅ Cloud Scheduler job '${SCHEDULER_JOB_NAME}' set up successfully!"
-  echo ""
-  echo "Testing the setup by executing the job once..."
-  if gcloud scheduler jobs run ${SCHEDULER_JOB_NAME} --location=${REGION}; then
-    echo "✅ Test execution triggered successfully! Check the logs in a few seconds:"
-    echo "   gcloud logging read 'resource.type=\"cloud_scheduler_job\" AND resource.labels.job_id=\"${SCHEDULER_JOB_NAME}\"' --limit=10 --project=${PROJECT_ID}"
-  else
-    echo "⚠️  Test execution failed. Please check the permissions and try again."
-  fi
 else
   echo "⚠️  Failed to set up Cloud Scheduler job. You may need to enable the Cloud Scheduler API:"
   echo "  gcloud services enable cloudscheduler.googleapis.com --project=${PROJECT_ID}"
