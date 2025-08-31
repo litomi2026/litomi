@@ -91,7 +91,7 @@ export default function PasskeyCard({ passkey, username }: Readonly<Props>) {
         </div>
 
         {isPlatform && (
-          <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-brand-end/80 to-transparent opacity-0 group-hover:opacity-100 transition" />
+          <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-brand-end/80 to-transparent opacity-0 group-hover/card:opacity-100 transition" />
         )}
       </div>
     </PasskeyMobileDeleteWrapper>
