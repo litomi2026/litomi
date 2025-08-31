@@ -1,5 +1,4 @@
 import { ErrorBoundary } from '@suspensive/react'
-import Link from 'next/link'
 import { memo, Suspense } from 'react'
 
 import { CensorshipLevel } from '@/database/enum'
@@ -49,10 +48,10 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
       <div className="flex grow flex-col justify-between gap-2 p-2 border-t-2">
         <dl className="flex flex-col gap-2 text-sm [&_dt]:whitespace-nowrap [&_dt]:font-semibold">
           <div className="flex items-start gap-1.5">
-            <Link className="flex-1 hover:underline focus:underline" href={viewerLink} target="_blank">
+            <a className="flex-1 hover:underline focus:underline" href={viewerLink} target="_blank">
               <LinkLoading />
               <h4 className="line-clamp-3 font-bold text-base leading-5 min-w-0 break-words break-all">{title}</h4>
-            </Link>
+            </a>
             {languages && languages.length > 0 && (
               <LanguageBadge key={languages[0].value} language={languages[0].value} />
             )}
