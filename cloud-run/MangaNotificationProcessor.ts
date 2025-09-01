@@ -130,7 +130,7 @@ export class MangaNotificationProcessor {
               const userNotifications = userNotificationsMap.get(userId)
 
               const newMangaNotification: NewMangaNotification = {
-                title: manga.title || `만화 #${mangaId}`,
+                title: manga.title || `작품 #${mangaId}`,
                 body: criteriaNames.length > 25 ? `${criteriaNames.slice(0, 20)}... (${totalCount}개)` : criteriaNames,
                 mangaId,
                 previewImageURL,

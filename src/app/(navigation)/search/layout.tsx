@@ -15,7 +15,7 @@ export default async function Layout({ children }: LayoutProps) {
       <Suspense>
         <ScrollReset />
       </Suspense>
-      <h1 className="sr-only">만화 검색</h1>
+      <h1 className="sr-only">작품 검색</h1>
       <div className="fixed top-0 left-0 right-0 z-20 p-2 bg-background border-b-2 border-zinc-800 shadow-sm max-w-screen-2xl mx-auto sm:left-20 2xl:max-w-screen-xl 2xl:left-64">
         <div className="flex justify-center flex-wrap gap-2 whitespace-nowrap text-sm md:justify-end md:text-base">
           <SearchForm className="grow w-full md:w-auto" />

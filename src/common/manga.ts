@@ -19,15 +19,23 @@ type ProxyConfig = {
   komi: boolean
   hiyobi: boolean
   hitomi: boolean
-  kHentai: boolean
+  'k-hentai': boolean
   harpi: boolean
-  hentaiPaw: boolean
+  'hentai-paw': boolean
 }
 
 // TODO: 추후 'use cache' 로 변경하고 revalidate 파라미터 제거하기
 export async function getMangaFromMultiSources(id: number, revalidate?: number): Promise<Manga | MangaError | null> {
   // cacheLife('days')
-  const { komi, hiyobi, hitomi, kHentai, harpi, hentaiPaw } = (await get<ProxyConfig>('proxy')) ?? {}
+  const {
+    komi,
+    hiyobi,
+    hitomi,
+    'k-hentai': kHentai,
+    harpi,
+    'hentai-paw': hentaiPaw,
+  } = (await get<ProxyConfig>('proxy')) ?? {}
+
   const hiyobiClient = hiyobi ? HiyobiClient.getInstance() : null
   const hitomiClient = hitomi ? HitomiClient.getInstance() : null
   const kHentaiClient = kHentai ? KHentaiClient.getInstance() : null
@@ -86,7 +94,15 @@ export async function getMangasFromMultiSources(
   ids: number[],
   revalidate: number,
 ): Promise<Record<number, Manga | MangaError>> {
-  const { komi, hiyobi, hitomi, kHentai, harpi, hentaiPaw } = (await get<ProxyConfig>('proxy')) ?? {}
+  const {
+    komi,
+    hiyobi,
+    hitomi,
+    'k-hentai': kHentai,
+    harpi,
+    'hentai-paw': hentaiPaw,
+  } = (await get<ProxyConfig>('proxy')) ?? {}
+
   const harpiClient = harpi ? HarpiClient.getInstance() : null
   const harpiMangas = await harpiClient?.searchMangas({ ids }).catch((error) => new Error(error))
   const mangaMap: Record<number, Manga> = {}

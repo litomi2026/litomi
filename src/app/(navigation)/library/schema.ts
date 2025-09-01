@@ -6,7 +6,7 @@ const positiveIntegerSchema = z.coerce.number().int().positive()
 
 const mangaIdsArraySchema = z
   .array(positiveIntegerSchema)
-  .min(1, '선택한 만화가 없어요')
+  .min(1, '선택한 작품이 없어요')
   .max(100, '최대 100개까지 선택할 수 있어요')
 
 export const createLibrarySchema = z.object({

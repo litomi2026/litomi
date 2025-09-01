@@ -319,8 +319,8 @@ function getEmptyContent(filter: NotificationFilter | null) {
     case NotificationFilter.NEW_MANGA:
       return {
         icon: <IconBook className="mb-4 size-12 text-zinc-600/50" />,
-        title: '신규 만화 알림이 없어요',
-        description: '새로운 만화가 추가되면 알려드릴게요',
+        title: '신규 작품 알림이 없어요',
+        description: '새로운 작품이 추가되면 알려드릴게요',
       }
     case NotificationFilter.UNREAD:
       return {
@@ -334,7 +334,7 @@ function getEmptyContent(filter: NotificationFilter | null) {
         title: '아직 알림이 없어요',
         description: (
           <>
-            신규 만화와 새로운 소식을 알려드릴게요
+            신규 작품과 새로운 소식을 알려드릴게요
             <br />
             <span className="text-xs text-zinc-500">(알림은 30일 동안 보관돼요)</span>
           </>
