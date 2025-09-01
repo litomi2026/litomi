@@ -128,9 +128,13 @@ export function isUpstreamServer4XXError(error: unknown): boolean {
   return false
 }
 
-export function isUpstreamServer5XXError(error: unknown): boolean {
+export function isUpstreamServerError(error: unknown): boolean {
   if (error instanceof UpstreamServerError) {
     return error.statusCode >= 500
+  }
+
+  if (error instanceof Error) {
+    return error.name === 'AbortError'
   }
 
   return false

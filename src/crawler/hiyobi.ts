@@ -11,7 +11,7 @@ import { translateTag } from '@/translation/tag'
 import { Manga, MangaTag } from '@/types/manga'
 
 import { ProxyClient, ProxyClientConfig } from './proxy'
-import { isUpstreamServer5XXError } from './proxy-utils'
+import { isUpstreamServerError } from './proxy-utils'
 
 type HiyobiImage = {
   height: number
@@ -65,7 +65,7 @@ const HIYOBI_CONFIG: ProxyClientConfig = {
     failureThreshold: 5,
     successThreshold: 3,
     timeout: ms('10 minutes'),
-    shouldCountAsFailure: isUpstreamServer5XXError,
+    shouldCountAsFailure: isUpstreamServerError,
   },
   retry: {
     maxRetries: 2,
@@ -88,7 +88,7 @@ const HIYOBI_IMAGE_CONFIG: ProxyClientConfig = {
     failureThreshold: 5,
     successThreshold: 3,
     timeout: ms('10 minutes'),
-    shouldCountAsFailure: isUpstreamServer5XXError,
+    shouldCountAsFailure: isUpstreamServerError,
   },
   retry: {
     maxRetries: 2,

@@ -12,7 +12,7 @@ import { sec } from '@/utils/date'
 
 import { NotFoundError, ParseError } from '../errors'
 import { ProxyClient, ProxyClientConfig } from '../proxy'
-import { isUpstreamServer5XXError } from '../proxy-utils'
+import { isUpstreamServerError } from '../proxy-utils'
 import { HitomiFile, HitomiGallery, Tag } from './types'
 import { urlFromUrlFromHash } from './utils'
 
@@ -22,7 +22,7 @@ const HITOMI_CONFIG: ProxyClientConfig = {
     failureThreshold: 5,
     successThreshold: 3,
     timeout: ms('10 minutes'),
-    shouldCountAsFailure: isUpstreamServer5XXError,
+    shouldCountAsFailure: isUpstreamServerError,
   },
   retry: {
     maxRetries: 2,

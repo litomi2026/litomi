@@ -41,11 +41,13 @@ export async function retryWithBackoff<T>(
 
       // Don't retry if we've exhausted attempts
       if (attempt === config.maxRetries) {
-        captureException(error as Error, {
-          level: 'warning',
-          tags: { retry_attempt: attempt + 1 },
-          extra: { ...context, delay },
-        })
+        if (error instanceof Error) {
+          captureException(error, {
+            level: 'warning',
+            tags: { retry_attempt: attempt + 1 },
+            extra: { ...context, delay, cause: error.cause },
+          })
+        }
         break
       }
 

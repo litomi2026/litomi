@@ -14,7 +14,7 @@ import { Manga, MangaTag } from '@/types/manga'
 import { sec } from '@/utils/date'
 
 import { ProxyClient, ProxyClientConfig } from '../proxy'
-import { isUpstreamServer5XXError } from '../proxy-utils'
+import { isUpstreamServerError } from '../proxy-utils'
 
 type HarpiListResponse = {
   alert: string
@@ -53,7 +53,7 @@ const HARPI_CONFIG: ProxyClientConfig = {
     failureThreshold: 5,
     successThreshold: 3,
     timeout: ms('10 minutes'),
-    shouldCountAsFailure: isUpstreamServer5XXError,
+    shouldCountAsFailure: isUpstreamServerError,
   },
   retry: {
     maxRetries: 2,
