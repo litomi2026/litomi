@@ -68,7 +68,7 @@ export default async function LibraryDetailPage({ params }: PageProps<Params>) {
   const isOwner = library.userId === Number(userId)
 
   return (
-    <main className="flex flex-col">
+    <main className="flex-1 flex flex-col">
       <Suspense>
         <LibraryItems isOwner={isOwner} library={library} />
       </Suspense>

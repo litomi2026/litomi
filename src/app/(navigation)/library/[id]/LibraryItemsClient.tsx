@@ -55,7 +55,7 @@ export default function LibraryItemsClient({ library, initialItems }: Readonly<P
   }
 
   return (
-    <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[ViewCookie.CARD]} gap-2 grow p-4`}>
+    <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[ViewCookie.CARD]} gap-2 p-4`}>
       {items.map(({ mangaId }, index) => {
         const manga = mangaMap.get(mangaId)
 

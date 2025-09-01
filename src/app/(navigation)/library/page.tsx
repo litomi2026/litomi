@@ -1,5 +1,5 @@
 import { desc, eq } from 'drizzle-orm'
-import { Folder } from 'lucide-react'
+import { Library } from 'lucide-react'
 import { Metadata } from 'next'
 
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
@@ -63,15 +63,28 @@ export default async function LibraryPage() {
   }))
 
   if (libraryItems.length === 0) {
-    return (
-      <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
-        <h1 className="sr-only">모든 서재</h1>
-        <Folder className="size-24 sm:size-32 mx-auto mb-4 sm:mb-6 text-zinc-700" />
-        <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">아직 서재가 없어요</h2>
-        <p className="text-sm sm:text-base text-zinc-500 mb-6 sm:mb-8">서재를 만들어 만화를 체계적으로 관리해보세요</p>
-        <CreateLibraryButton className="justify-center" />
-      </div>
-    )
+    if (userId) {
+      return (
+        <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
+          <h1 className="sr-only">모든 서재</h1>
+          <Library className="size-24 sm:size-32 mx-auto mb-4 sm:mb-6 text-zinc-700" />
+          <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">아직 서재가 없어요</h2>
+          <p className="text-sm sm:text-base text-zinc-500 mb-6 sm:mb-8">
+            서재를 만들어 만화를 체계적으로 관리해보세요
+          </p>
+          <CreateLibraryButton className="justify-center" />
+        </div>
+      )
+    } else {
+      return (
+        <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
+          <h1 className="sr-only">모든 서재</h1>
+          <Library className="size-24 sm:size-32 mx-auto mb-4 sm:mb-6 text-zinc-700" />
+          <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">공개된 서재가 없어요</h2>
+          <p className="text-sm sm:text-base text-zinc-500 mb-6 sm:mb-8">다른 사용자들이 공개한 서재가 아직 없어요</p>
+        </div>
+      )
+    }
   }
 
   return (
