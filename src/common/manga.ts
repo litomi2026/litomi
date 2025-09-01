@@ -130,8 +130,8 @@ export async function getMangasFromMultiSources(ids: number[], revalidate: numbe
       komiMangas[i],
       hiyobiMangas[i],
       kHentaiMangas[i],
-      hitomiMangas[i],
       createHentaiPawManga(id, hentaiPawImages[i]),
+      hitomiMangas[i],
     ].filter(checkDefined)
 
     if (sources.length === 0) {
