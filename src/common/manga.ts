@@ -27,8 +27,7 @@ type ProxyConfig = {
 // TODO: 추후 'use cache' 로 변경하고 revalidate 파라미터 제거하기
 export async function getMangaFromMultiSources(id: number, revalidate?: number): Promise<Manga | null> {
   // cacheLife('days')
-  const proxyConfig = await get<ProxyConfig>('proxy')
-  const { komi, hiyobi, hitomi, kHentai, harpi, hentaiPaw } = proxyConfig ?? {}
+  const { komi, hiyobi, hitomi, kHentai, harpi, hentaiPaw } = (await get<ProxyConfig>('proxy')) ?? {}
   const hiyobiClient = hiyobi ? HiyobiClient.getInstance() : null
   const hitomiClient = hitomi ? HitomiClient.getInstance() : null
   const kHentaiClient = kHentai ? KHentaiClient.getInstance() : null
@@ -85,8 +84,9 @@ export async function getMangaFromMultiSources(id: number, revalidate?: number):
  * @param ids - 10개 이하의 고유한 만화 ID 배열
  */
 export async function getMangasFromMultiSources(ids: number[], revalidate: number): Promise<Record<number, Manga>> {
-  const harpiClient = HarpiClient.getInstance()
-  const harpiMangas = await harpiClient.searchMangas({ ids }, revalidate).catch((error) => new Error(error))
+  const { komi, hiyobi, hitomi, kHentai, harpi, hentaiPaw } = (await get<ProxyConfig>('proxy')) ?? {}
+  const harpiClient = harpi ? HarpiClient.getInstance() : null
+  const harpiMangas = await harpiClient?.searchMangas({ ids }, revalidate).catch((error) => new Error(error))
   const mangaMap: Record<number, Manga> = {}
   const remainingIds = []
 
@@ -108,19 +108,19 @@ export async function getMangasFromMultiSources(ids: number[], revalidate: numbe
     return mangaMap
   }
 
-  const hiyobiClient = HiyobiClient.getInstance()
-  const hitomiClient = HitomiClient.getInstance()
-  const kHentaiClient = KHentaiClient.getInstance()
-  const komiClient = KomiClient.getInstance()
-  const hentaiPawClient = HentaiPawClient.getInstance()
+  const hiyobiClient = hiyobi ? HiyobiClient.getInstance() : null
+  const hitomiClient = hitomi ? HitomiClient.getInstance() : null
+  const kHentaiClient = kHentai ? KHentaiClient.getInstance() : null
+  const komiClient = komi ? KomiClient.getInstance() : null
+  const hentaiPawClient = hentaiPaw ? HentaiPawClient.getInstance() : null
 
   const [hiyobiMangas, hiyobiImages, kHentaiMangas, komiMangas, hitomiMangas, hentaiPawImages] = await Promise.all([
-    Promise.all(remainingIds.map((id) => hiyobiClient.fetchManga(id).catch((error) => new Error(error)))),
-    Promise.all(remainingIds.map((id) => hiyobiClient.fetchMangaImages(id, revalidate).catch(() => null))),
-    Promise.all(remainingIds.map((id) => kHentaiClient.fetchManga(id, revalidate).catch((error) => new Error(error)))),
-    Promise.all(remainingIds.map((id) => komiClient.fetchManga(id).catch((error) => new Error(error)))),
-    Promise.all(remainingIds.map((id) => hitomiClient.fetchManga(id, revalidate).catch((error) => new Error(error)))),
-    Promise.all(remainingIds.map((id) => hentaiPawClient.fetchMangaImages(id, revalidate).catch(() => null))),
+    Promise.all(remainingIds.map((id) => hiyobiClient?.fetchManga(id).catch((error) => new Error(error)))),
+    Promise.all(remainingIds.map((id) => hiyobiClient?.fetchMangaImages(id, revalidate).catch(() => null))),
+    Promise.all(remainingIds.map((id) => kHentaiClient?.fetchManga(id, revalidate).catch((error) => new Error(error)))),
+    Promise.all(remainingIds.map((id) => komiClient?.fetchManga(id).catch((error) => new Error(error)))),
+    Promise.all(remainingIds.map((id) => hitomiClient?.fetchManga(id, revalidate).catch((error) => new Error(error)))),
+    Promise.all(remainingIds.map((id) => hentaiPawClient?.fetchMangaImages(id, revalidate).catch(() => null))),
   ])
 
   for (let i = 0; i < remainingIds.length; i++) {
