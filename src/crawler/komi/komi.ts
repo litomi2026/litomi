@@ -8,7 +8,7 @@ import { Manga } from '@/types/manga'
 import { sec } from '@/utils/date'
 
 import { ProxyClient, ProxyClientConfig } from '../proxy'
-import { isUpstreamServer5XXError } from '../proxy-utils'
+import { isUpstreamServerError } from '../proxy-utils'
 import { getOriginFromImageURLs } from '../utils'
 import { BinaryIdMap } from './BinaryIdMap'
 import idMap from './id.json'
@@ -53,10 +53,10 @@ type KomiManga = {
 const KOMI_CONFIG: ProxyClientConfig = {
   baseURL: 'https://komi.la',
   circuitBreaker: {
-    failureThreshold: 5,
+    failureThreshold: 3,
     successThreshold: 3,
     timeout: ms('10 minutes'),
-    shouldCountAsFailure: isUpstreamServer5XXError,
+    shouldCountAsFailure: isUpstreamServerError,
   },
   retry: {
     maxRetries: 2,

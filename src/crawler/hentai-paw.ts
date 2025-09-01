@@ -13,7 +13,7 @@ import { Manga } from '@/types/manga'
 import { sec } from '@/utils/date'
 
 import { ProxyClient, ProxyClientConfig } from './proxy'
-import { isUpstreamServer5XXError } from './proxy-utils'
+import { isUpstreamServerError } from './proxy-utils'
 
 type HentaiPawSlide = {
   src: string
@@ -22,10 +22,10 @@ type HentaiPawSlide = {
 const HENTAIPAW_CONFIG: ProxyClientConfig = {
   baseURL: 'https://hentaipaw.com',
   circuitBreaker: {
-    failureThreshold: 5,
+    failureThreshold: 3,
     successThreshold: 3,
     timeout: ms('10 minutes'),
-    shouldCountAsFailure: isUpstreamServer5XXError,
+    shouldCountAsFailure: isUpstreamServerError,
   },
   retry: {
     maxRetries: 2,

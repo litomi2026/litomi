@@ -13,7 +13,7 @@ import { convertCamelCaseToKebabCase } from '@/utils/param'
 
 import { NotFoundError, ParseError } from './errors'
 import { ProxyClient, ProxyClientConfig } from './proxy'
-import { isUpstreamServer5XXError } from './proxy-utils'
+import { isUpstreamServerError } from './proxy-utils'
 import { getOriginFromImageURLs } from './utils'
 
 const kHentaiTypeNumberToName: Record<number, string> = {
@@ -167,7 +167,7 @@ const K_HENTAI_CONFIG: ProxyClientConfig = {
     failureThreshold: 5,
     successThreshold: 3,
     timeout: ms('10 minutes'),
-    shouldCountAsFailure: isUpstreamServer5XXError,
+    shouldCountAsFailure: isUpstreamServerError,
   },
   retry: {
     maxRetries: 2,
