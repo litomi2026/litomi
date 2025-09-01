@@ -46,7 +46,7 @@ export default async function Page() {
             <h1 className="text-lg font-semibold text-white sm:text-xl">알림</h1>
             <NotificationSettingsLink />
           </div>
-          <p className="text-xs text-zinc-500 mt-0.5">새로운 만화와 업데이트 소식을 확인하세요</p>
+          <p className="text-xs text-zinc-500 mt-0.5">새로운 작품과 업데이트 소식을 확인하세요</p>
         </div>
       </div>
       <Suspense>

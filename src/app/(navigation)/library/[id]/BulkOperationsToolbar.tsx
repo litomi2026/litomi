@@ -194,7 +194,7 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId }: P
                     </div>
                     <div className="flex-1">
                       <h3 className="font-medium text-zinc-100 line-clamp-1 break-all">{library.name}</h3>
-                      <p className="text-sm text-zinc-400">{library.itemCount}개 만화</p>
+                      <p className="text-sm text-zinc-400">{library.itemCount}개 작품</p>
                     </div>
                   </button>
                 ))}

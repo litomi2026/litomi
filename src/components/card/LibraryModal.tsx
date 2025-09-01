@@ -142,7 +142,7 @@ export default function LibraryModal() {
                 </div>
                 <div className="flex-1">
                   <h3 className="font-medium break-all line-clamp-1 text-zinc-100">{library.name}</h3>
-                  <p className="text-sm text-zinc-400">{library.itemCount}개 만화</p>
+                  <p className="text-sm text-zinc-400">{library.itemCount}개 작품</p>
                 </div>
               </label>
             ))
