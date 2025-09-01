@@ -30,6 +30,11 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       return new Response('Not Found', { status: 404 })
     }
 
+    if ('isError' in manga && manga.isError) {
+      const cacheControl = createCacheControl({ public: true, maxAge: sec('10 minutes') })
+      return Response.json(manga, { headers: { 'Cache-Control': cacheControl } })
+    }
+
     const maxAge = sec('1 hour')
     const swr = sec('5 minutes')
 
