@@ -1,3 +1,5 @@
+import { get } from '@vercel/edge-config'
+
 import { FALLBACK_IMAGE_URL } from '@/constants/json'
 import { HarpiClient } from '@/crawler/harpi/harpi'
 import { HentaiPawClient } from '@/crawler/hentai-paw'
@@ -13,25 +15,36 @@ import { checkDefined } from '@/utils/type'
 
 type MangaResult = Error | Manga | null | undefined
 
+type ProxyConfig = {
+  komi: boolean
+  hiyobi: boolean
+  hitomi: boolean
+  kHentai: boolean
+  harpi: boolean
+  hentaiPaw: boolean
+}
+
 // TODO: 추후 'use cache' 로 변경하고 revalidate 파라미터 제거하기
 export async function getMangaFromMultiSources(id: number, revalidate?: number): Promise<Manga | null> {
   // cacheLife('days')
-  const hiyobiClient = HiyobiClient.getInstance()
-  const hitomiClient = HitomiClient.getInstance()
-  const kHentaiClient = KHentaiClient.getInstance()
-  const harpiClient = HarpiClient.getInstance()
-  const komiClient = KomiClient.getInstance()
-  const hentaiPawClient = HentaiPawClient.getInstance()
+  const proxyConfig = await get<ProxyConfig>('proxy')
+  const { komi, hiyobi, hitomi, kHentai, harpi, hentaiPaw } = proxyConfig ?? {}
+  const hiyobiClient = hiyobi ? HiyobiClient.getInstance() : null
+  const hitomiClient = hitomi ? HitomiClient.getInstance() : null
+  const kHentaiClient = kHentai ? KHentaiClient.getInstance() : null
+  const harpiClient = harpi ? HarpiClient.getInstance() : null
+  const komiClient = komi ? KomiClient.getInstance() : null
+  const hentaiPawClient = hentaiPaw ? HentaiPawClient.getInstance() : null
 
   const [hiyobiManga, hiyobiImages, kHentaiManga, harpiManga, komiManga, hitomiManga, hentaiPawImages] =
     await Promise.all([
-      hiyobiClient.fetchManga(id).catch((error) => new Error(error)),
-      hiyobiClient.fetchMangaImages(id, revalidate).catch(() => null),
-      kHentaiClient.fetchManga(id, revalidate).catch((error) => new Error(error)),
-      harpiClient.fetchManga(id).catch((error) => new Error(error)),
-      komiClient.fetchManga(id).catch((error) => new Error(error)),
-      hitomiClient.fetchManga(id, revalidate).catch((error) => new Error(error)),
-      hentaiPawClient.fetchMangaImages(id, revalidate).catch(() => null),
+      hiyobiClient?.fetchManga(id).catch((error) => new Error(error)),
+      hiyobiClient?.fetchMangaImages(id, revalidate).catch(() => null),
+      kHentaiClient?.fetchManga(id, revalidate).catch((error) => new Error(error)),
+      harpiClient?.fetchManga(id).catch((error) => new Error(error)),
+      komiClient?.fetchManga(id).catch((error) => new Error(error)),
+      hitomiClient?.fetchManga(id, revalidate).catch((error) => new Error(error)),
+      hentaiPawClient?.fetchMangaImages(id, revalidate).catch(() => null),
     ])
 
   const sources: MangaResult[] = [
@@ -160,7 +173,7 @@ function createErrorManga(id: number, error: Error): Manga {
   return { id, title: `${error.name}: ${error.message}\n${error.cause ?? ''}`, images: [FALLBACK_IMAGE_URL] }
 }
 
-function createHentaiPawManga(id: number, images: string[] | null): Manga | null {
+function createHentaiPawManga(id: number, images?: string[] | null): Manga | null {
   if (!images || images.length === 0) {
     return null
   }
