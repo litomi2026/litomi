@@ -5,7 +5,7 @@ import { count, eq, sql } from 'drizzle-orm'
 import { z } from 'zod/v4'
 
 import { MAX_BOOKMARKS_PER_USER } from '@/constants/policy'
-import { sessionDB } from '@/database/drizzle'
+import { db } from '@/database/drizzle'
 import { bookmarkTable } from '@/database/schema'
 import { badRequest, forbidden, internalServerError, ok, unauthorized } from '@/utils/action-response'
 import { flattenZodFieldErrors } from '@/utils/form-error'
@@ -43,7 +43,7 @@ export async function importBookmarks(data: BookmarkImportData, mode: ImportMode
   const bookmarks = validation.data
 
   try {
-    const result = await sessionDB.transaction(async (tx) => {
+    const result = await db.transaction(async (tx) => {
       if (mode === 'replace') {
         const userIdNumber = Number(userId)
         const now = new Date()

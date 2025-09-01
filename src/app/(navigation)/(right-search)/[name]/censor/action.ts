@@ -5,7 +5,7 @@ import { count, inArray, sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 
 import { MAX_CENSORSHIPS_PER_USER } from '@/constants/policy'
-import { db, sessionDB } from '@/database/drizzle'
+import { db } from '@/database/drizzle'
 import { userCensorshipTable } from '@/database/schema'
 import { badRequest, internalServerError, noContent, ok, unauthorized } from '@/utils/action-response'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
@@ -42,7 +42,7 @@ export async function addCensorships(formData: FormData) {
   }))
 
   try {
-    const result = await sessionDB.transaction(async (tx) => {
+    const result = await db.transaction(async (tx) => {
       const [{ censorshipCount }] = await tx
         .select({ censorshipCount: count() })
         .from(userCensorshipTable)

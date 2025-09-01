@@ -5,7 +5,7 @@ import { count, eq, sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 
 import { MAX_CRITERIA_PER_USER } from '@/constants/policy'
-import { sessionDB } from '@/database/drizzle'
+import { db } from '@/database/drizzle'
 import { notificationConditionTable, notificationCriteriaTable } from '@/database/notification-schema'
 import { badRequest, conflict, created, internalServerError, unauthorized } from '@/utils/action-response'
 import { flattenZodFieldErrors } from '@/utils/form-error'
@@ -31,7 +31,7 @@ export async function subscribeToKeyword(conditions: ParsedCondition[], criteria
   }
 
   try {
-    const result = await sessionDB.transaction(async (tx) => {
+    const result = await db.transaction(async (tx) => {
       const [existingCount] = await tx
         .select({ count: count() })
         .from(notificationCriteriaTable)
