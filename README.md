@@ -67,7 +67,7 @@ bun dev
 
 #### 비용
 
-- Link prefetch 기능이 너무 많은 [Function Invocations](https://vercel.com/docs/functions/usage-and-pricing)을 유발함 -> 작품 카드에선 비활성화함
+- `<Link>` 컴포넌트의 prefetch 기능이 너무 많은 [Function Invocations](https://vercel.com/docs/functions/usage-and-pricing)을 유발함 -> 작품 카드에선 비활성화함
 - WAF 설정이 너무 많은 [Firewall Rate Limit Requests
   ](https://vercel.com/docs/vercel-firewall/vercel-waf/usage-and-pricing#priced-features-usage)를 유발함 -> WAF path 조건을 세분화함
 
