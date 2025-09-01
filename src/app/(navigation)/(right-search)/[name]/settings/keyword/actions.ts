@@ -5,7 +5,7 @@ import { and, count, eq, sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 
 import { MAX_CRITERIA_PER_USER } from '@/constants/policy'
-import { db, sessionDB } from '@/database/drizzle'
+import { db } from '@/database/drizzle'
 import { notificationConditionTable, notificationCriteriaTable } from '@/database/notification-schema'
 import {
   badRequest,
@@ -41,7 +41,7 @@ export async function createNotificationCriteria(formData: FormData) {
   const { name, conditions, isActive } = validation.data
 
   try {
-    const result = await sessionDB.transaction(async (tx) => {
+    const result = await db.transaction(async (tx) => {
       const [existingCount] = await tx
         .select({ count: count() })
         .from(notificationCriteriaTable)
@@ -173,7 +173,7 @@ export async function updateNotificationCriteria(formData: FormData) {
 
   try {
     // Verify ownership
-    const result = await sessionDB.transaction(async (tx) => {
+    const result = await db.transaction(async (tx) => {
       const [existing] = await tx
         .select()
         .from(notificationCriteriaTable)

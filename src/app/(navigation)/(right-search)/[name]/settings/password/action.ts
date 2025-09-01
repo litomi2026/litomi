@@ -8,7 +8,7 @@ import { z } from 'zod/v4'
 
 import { SALT_ROUNDS } from '@/constants'
 import { CookieKey } from '@/constants/storage'
-import { sessionDB } from '@/database/drizzle'
+import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
 import { passwordSchema } from '@/database/zod'
 import { badRequest, created, internalServerError, tooManyRequests, unauthorized } from '@/utils/action-response'
@@ -60,7 +60,7 @@ export async function changePassword(formData: FormData) {
   }
 
   try {
-    const errorResponse = await sessionDB.transaction(async (tx) => {
+    const errorResponse = await db.transaction(async (tx) => {
       const [user] = await tx
         .select({ passwordHash: userTable.passwordHash })
         .from(userTable)

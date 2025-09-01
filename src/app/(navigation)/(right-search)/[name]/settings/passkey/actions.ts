@@ -14,7 +14,7 @@ import { cookies } from 'next/headers'
 
 import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID, WEBAUTHN_RP_NAME } from '@/constants/env'
 import { MAX_CREDENTIALS_PER_USER } from '@/constants/policy'
-import { db, sessionDB } from '@/database/drizzle'
+import { db } from '@/database/drizzle'
 import { ChallengeType, decodeDeviceType, encodeDeviceType } from '@/database/enum'
 import { challengeTable, credentialTable, userTable } from '@/database/schema'
 import {
@@ -90,7 +90,7 @@ export async function getAuthenticationOptions(loginId: string) {
   }
 
   try {
-    const options = await sessionDB.transaction(async (tx) => {
+    const options = await db.transaction(async (tx) => {
       const userWithCredentials = await tx
         .select({
           userId: userTable.id,
@@ -151,7 +151,7 @@ export async function getRegistrationOptions() {
   }
 
   try {
-    const result = await sessionDB.transaction(async (tx) => {
+    const result = await db.transaction(async (tx) => {
       const existingCredentials = await tx
         .select({
           userId: userTable.id,
@@ -227,7 +227,7 @@ export async function verifyAuthentication(body: unknown) {
   const validatedData = validation.data
 
   try {
-    const result = await sessionDB.transaction(async (tx) => {
+    const result = await db.transaction(async (tx) => {
       const [result] = await tx
         .select({
           credential: credentialTable,
@@ -323,7 +323,7 @@ export async function verifyRegistration(body: RegistrationResponseJSON) {
   const registrationResponse = validation.data
 
   try {
-    const result = await sessionDB.transaction(async (tx) => {
+    const result = await db.transaction(async (tx) => {
       const [stored] = await tx
         .select({ challenge: challengeTable.challenge })
         .from(challengeTable)

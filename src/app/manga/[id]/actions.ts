@@ -5,13 +5,13 @@ import { sql } from 'drizzle-orm'
 import { z } from 'zod/v4'
 
 import { MAX_READING_HISTORY_PER_USER } from '@/constants/policy'
-import { db, sessionDB } from '@/database/drizzle'
+import { db } from '@/database/drizzle'
 import { readingHistoryTable } from '@/database/schema'
 import { badRequest, internalServerError, ok, unauthorized } from '@/utils/action-response'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 import { getUserIdFromCookie } from '@/utils/session'
 
-type SessionDBTransaction = Parameters<Parameters<typeof sessionDB.transaction>[0]>[0]
+type SessionDBTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0]
 
 const saveReadingProgressSchema = z.object({
   mangaId: z.number().int().positive(),
@@ -32,7 +32,7 @@ export async function saveReadingProgress(mangaId: number, page: number) {
   }
 
   try {
-    await sessionDB.transaction(async (tx) => {
+    await db.transaction(async (tx) => {
       await db
         .insert(readingHistoryTable)
         .values({
@@ -115,7 +115,7 @@ export async function migrateReadingHistory(data: ReadingHistoryItem[]) {
   }))
 
   try {
-    const result = await sessionDB.transaction(async (tx) => {
+    const result = await db.transaction(async (tx) => {
       const result = await tx
         .insert(readingHistoryTable)
         .values(values)
