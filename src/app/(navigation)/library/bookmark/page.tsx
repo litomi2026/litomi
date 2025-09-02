@@ -1,5 +1,4 @@
 import { desc, eq } from 'drizzle-orm'
-import { BookmarkIcon } from 'lucide-react'
 import { Metadata } from 'next'
 
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
@@ -12,6 +11,7 @@ import BookmarkDownloadButton from './BookmarkDownloadButton'
 import BookmarkPageClient from './BookmarkPageClient'
 import BookmarkTooltip from './BookmarkTooltip'
 import BookmarkUploadButton from './BookmarkUploadButton'
+import NotFound from './NotFound'
 import Unauthorized from './Unauthorized'
 
 export const metadata: Metadata = {
@@ -45,15 +45,7 @@ export default async function BookmarkPage() {
     .limit(BOOKMARKS_PER_PAGE + 1)
 
   if (bookmarks.length === 0) {
-    return (
-      <div className="flex-1 flex flex-col justify-center items-center gap-4 p-8">
-        <BookmarkIcon className="w-16 h-16 text-zinc-400" />
-        <div className="text-center">
-          <p className="text-zinc-500 text-lg">북마크가 비어 있어요</p>
-          <p className="text-zinc-600 text-sm mt-2">마음에 드는 작품을 북마크해보세요</p>
-        </div>
-      </div>
-    )
+    return <NotFound />
   }
 
   const hasNextPage = bookmarks.length > BOOKMARKS_PER_PAGE
