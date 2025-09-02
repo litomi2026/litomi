@@ -3,7 +3,7 @@
 import { Edit, Menu, X } from 'lucide-react'
 import ms from 'ms'
 import dynamic from 'next/dynamic'
-import { useParams } from 'next/navigation'
+import { useParams, usePathname } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
 import useThrottledDownScroll from '@/hook/useThrottledScroll'
@@ -39,11 +39,13 @@ type Props = {
 export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const isDownScroll = useThrottledDownScroll({ threshold: SCROLL_THRESHOLD_PX, throttle: SCROLL_THROTTLE_MS })
+  const pathname = usePathname()
   const { id: libraryId } = useParams<Params>()
   const { enterSelectionMode, exitSelectionMode, isSelectionMode } = useLibrarySelectionStore()
   const currentLibrary = libraryId ? libraries.find((lib) => lib.id === Number(libraryId)) : null
   const isOwner = currentLibrary?.userId === Number(userId)
   const isGuest = !userId
+  const headerTitle = getHeaderTitle()
 
   const closeDrawer = useCallback(() => {
     setIsDrawerOpen(false)
@@ -59,6 +61,19 @@ export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
     },
     [closeDrawer],
   )
+
+  function getHeaderTitle() {
+    if (pathname === '/library/history') {
+      return '감상 기록'
+    }
+    if (pathname === '/library/bookmark') {
+      return '북마크'
+    }
+    if (currentLibrary) {
+      return currentLibrary.name
+    }
+    return isGuest ? '공개 서재 둘러보기' : '모든 서재'
+  }
 
   function openDrawer() {
     setIsDrawerOpen(true)
@@ -103,34 +118,30 @@ export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
           {!isSelectionMode && currentLibrary && (
             <div
               className="hidden size-10 my-1 mr-2 rounded-lg sm:flex items-center bg-zinc-800 justify-center text-xl shrink-0"
-              style={{ backgroundColor: currentLibrary.color ?? '' }}
+              style={{ backgroundColor: currentLibrary?.color ?? '' }}
             >
-              {currentLibrary.icon?.slice(0, 2) ?? currentLibrary.name.slice(0, 1)}
+              {currentLibrary.icon?.slice(0, 2) ?? currentLibrary.name[0]}
             </div>
           )}
-          {currentLibrary ? (
-            !isSelectionMode && (
-              <div className="grid flex-1 break-all">
-                <h1 className="text-lg font-medium line-clamp-1 sm:text-xl sm:font-bold" title={currentLibrary.name}>
-                  {currentLibrary.name}
-                </h1>
-                {currentLibrary.description && (
-                  <p className="max-sm:hidden text-sm text-zinc-400 line-clamp-1">{currentLibrary.description}</p>
-                )}
-              </div>
-            )
-          ) : (
-            <span className="text-lg font-medium">{isGuest ? '공개 서재 둘러보기' : '모든 서재'}</span>
+          {!isSelectionMode && (
+            <div className="grid flex-1 break-all">
+              <h1 className="text-lg font-medium line-clamp-1 sm:text-xl sm:font-bold" title={headerTitle}>
+                {headerTitle}
+              </h1>
+              {currentLibrary?.description && (
+                <p className="max-sm:hidden text-sm text-zinc-400 line-clamp-1">{currentLibrary.description}</p>
+              )}
+            </div>
           )}
         </div>
         {isSelectionMode && currentLibrary && (
           <BulkOperationsToolbar currentLibraryId={currentLibrary.id} libraries={libraries} />
         )}
         <div className="flex items-center gap-1">
-          {!isSelectionMode && currentLibrary && <ShareLibraryButton className="p-2 " library={currentLibrary} />}
+          {!isSelectionMode && currentLibrary && <ShareLibraryButton className="p-2" library={currentLibrary} />}
           {isOwner && (
             <button
-              className="p-2 sm:my-1.5 hover:bg-zinc-800 rounded-lg transition"
+              className="p-2 hover:bg-zinc-800 rounded-lg transition"
               onClick={handleSelectionModeChange}
               title={isSelectionMode ? '선택 모드 종료' : '선택 모드'}
               type="button"
