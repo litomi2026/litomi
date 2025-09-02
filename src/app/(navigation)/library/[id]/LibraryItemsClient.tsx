@@ -57,11 +57,7 @@ export default function LibraryItemsClient({ library, initialItems }: Readonly<P
   return (
     <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[ViewCookie.CARD]} gap-2 p-4`}>
       {items.map(({ mangaId }, index) => {
-        const manga = mangaMap.get(mangaId)
-
-        if (!manga) {
-          return <MangaCardSkeleton key={mangaId} />
-        }
+        const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
 
         if (!isSelectionMode) {
           return <MangaCard index={index} key={mangaId} manga={manga} />

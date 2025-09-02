@@ -28,15 +28,13 @@ export default function BookmarkPageClient({ initialData }: Props) {
   return (
     <>
       <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[ViewCookie.CARD]} gap-2 p-4`}>
-        {bookmarkIds.map((mangaId, index) => {
-          const manga = mangaMap.get(mangaId)
-
-          if (!manga) {
-            return <MangaCardSkeleton key={mangaId} />
-          }
-
-          return <MangaCard index={index} key={mangaId} manga={manga} />
-        })}
+        {bookmarkIds.map((mangaId, index) => (
+          <MangaCard
+            index={index}
+            key={mangaId}
+            manga={mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }}
+          />
+        ))}
         {isFetchingNextPage && <MangaCardSkeleton />}
       </ul>
       {hasNextPage && <div className="w-full p-2" ref={infiniteScrollTriggerRef} />}

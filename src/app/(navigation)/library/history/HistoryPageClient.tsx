@@ -29,29 +29,19 @@ export default function HistoryPageClient({ initialData }: Props) {
     <>
       <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[ViewCookie.CARD]} gap-2 p-4`}>
         {historyItems.map(({ mangaId, lastPage }, index) => {
-          const manga = mangaMap.get(mangaId)
-
-          if (!manga) {
-            return <MangaCardSkeleton key={mangaId} />
-          }
+          const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
 
           return (
             <div className="relative group" key={mangaId}>
               <MangaCard className="h-full rounded-b-xs" index={index} manga={manga} />
-
-              {manga.images && manga.images.length > 0 && (
-                <div className="absolute bottom-0 left-0 right-0 from-black/80 to-transparent pointer-events-none">
-                  <div className="text-xs bg-brand-end/80 mx-auto w-fit px-2 py-0.5 mb-1 rounded text-background opacity-0 transition group-hover:opacity-100">
-                    {lastPage}/{manga.count ?? 0}p
-                  </div>
-                  <div className="h-1 bg-zinc-800 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-brand-end"
-                      style={{ width: `${(lastPage / (manga.count ?? 1)) * 100}%` }}
-                    />
-                  </div>
+              <div className="absolute bottom-0 left-0 right-0 from-black/80 to-transparent pointer-events-none">
+                <div className="text-xs bg-brand-end/80 mx-auto w-fit px-2 py-0.5 mb-1 rounded text-background opacity-0 transition group-hover:opacity-100">
+                  {lastPage}/{manga.count ?? 0}p
                 </div>
-              )}
+                <div className="h-1 bg-zinc-800 rounded-full overflow-hidden">
+                  <div className="h-full bg-brand-end" style={{ width: `${(lastPage / (manga.count ?? 1)) * 100}%` }} />
+                </div>
+              </div>
             </div>
           )
         })}
