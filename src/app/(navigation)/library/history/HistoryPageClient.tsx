@@ -29,13 +29,13 @@ export default function HistoryPageClient({ initialData }: Props) {
 
   return (
     <>
-      <div className="space-y-6">
+      <div className="grid gap-4">
         {groupedHistory?.map(([dateGroup, items]) => (
           <div key={dateGroup}>
-            <h4 className="bg-background border-b border-white/5 px-4 py-2 mb-2 text-sm font-medium text-zinc-400">
+            <h4 className="bg-background border-b border-white/5 px-4 py-2 text-sm font-medium text-zinc-400">
               {DATE_GROUP_LABELS[dateGroup]}
             </h4>
-            <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[ViewCookie.CARD]} gap-2 px-4`}>
+            <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[ViewCookie.CARD]} gap-2 p-4`}>
               {items.map(({ mangaId, lastPage }) => {
                 const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
                 const index = historyItems.findIndex((item) => item.mangaId === mangaId)
@@ -61,7 +61,7 @@ export default function HistoryPageClient({ initialData }: Props) {
           </div>
         ))}
         {isFetchingNextPage && (
-          <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[ViewCookie.CARD]} gap-2 px-4`}>
+          <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[ViewCookie.CARD]} gap-2 p-4`}>
             <MangaCardSkeleton />
           </ul>
         )}
