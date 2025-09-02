@@ -6,14 +6,19 @@
 
 - 지속: 1시간 7분
 - 내용: [PostgresError]: Unable to check out process from the pool due to timeout
-- 원인:
+- 영향
+  - 로그인, 회원가입 등 계정 관련 전부
+  - 북마크, 서재 등 회원 관련 기능 전부
+- 조치: Cloudflare Under Attack Mode 활성화
+- 원인
   - Supabase Pooler to Database connections 15 -> 5 -> 16
-  - Cloudflare Under Attack Mode 활성화
-- 해결:
+  - Supabase와 Next.js 간 연결이 닫히지 않아 일시적으로 많아짐
+- 해결: Session pooler 방식 삭제
 
 #### 2025-09-01 20:01 ~ 20:38 (GMT+9)
 
 - 지속: 37분
 - 내용: 일부 소스의 이미지를 불러올 수 없음
-- 원인: Vercel edge config 설정 오타
+- 영향: 일부 뷰어에서 404 페이지가 보이면 안 되는데 보임
+- 원인: Vercel Edge config 설정 오타
 - 해결: 오타 수정

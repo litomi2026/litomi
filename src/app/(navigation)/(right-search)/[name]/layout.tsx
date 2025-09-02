@@ -12,10 +12,7 @@ export default async function Layout({ params, children }: LayoutProps) {
   const { name } = await params
   const username = getUsernameFromParam(name)
 
-  const publicLinks = [
-    { href: `/@${username}`, label: '게시글' },
-    { href: `/@${username}/bookmark`, label: '북마크' },
-  ]
+  const publicLinks = [{ href: `/@${username}`, label: '게시글' }]
 
   return (
     <main className="flex flex-col grow">

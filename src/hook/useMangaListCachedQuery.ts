@@ -1,8 +1,10 @@
-import { useIsFetching, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import ms from 'ms'
 import { useMemo } from 'react'
 
+import { GETProxyMangaResponse } from '@/app/api/proxy/manga/route'
 import { ProxyIdOnly } from '@/app/api/proxy/manga/schema'
+import { MAX_HARPI_MANGA_BATCH_SIZE } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import { Manga } from '@/types/manga'
 import { handleResponseError } from '@/utils/react-query-error'
@@ -14,7 +16,7 @@ interface UseMangaBatchWithCacheOptions {
    */
   gcTime?: number
   /**
-   * Array of manga IDs to fetch (max length is 20)
+   * Array of manga IDs to fetch
    */
   mangaIds: number[]
   /**
@@ -39,35 +41,28 @@ export default function useMangaListCachedQuery({
   gcTime = ms('2 hours'),
 }: UseMangaBatchWithCacheOptions) {
   const queryClient = useQueryClient()
-  const uniqueMangaIds = useMemo(() => Array.from(new Set(mangaIds)), [mangaIds])
-  const isAnyMangaBatchFetching = useIsFetching({ queryKey: ['manga-batch'] })
 
-  const { uncachedIds, cachedMangas } = useMemo(() => {
-    const uncached: number[] = []
-    const cached: Manga[] = []
+  const { uncachedIds, cachedMap } = useMemo(() => {
+    const uniqueMangaIds = new Set(mangaIds)
+    const cachedMap = new Map<number, Manga>()
+    const uncachedIds = []
+    const now = Date.now()
 
     for (const id of uniqueMangaIds) {
-      const queryState = queryClient.getQueryState(QueryKeys.mangaCard(id))
-      const data = queryState?.data as Manga | undefined
+      const queryState = queryClient.getQueryState<Manga>(QueryKeys.mangaCard(id))
+      const data = queryState?.data
 
-      if (data && queryState && !queryState.isInvalidated) {
-        const dataUpdatedAt = queryState.dataUpdatedAt
-        const isStale = Date.now() - dataUpdatedAt > staleTime
-
-        if (!isStale) {
-          cached.push(data)
-        } else {
-          uncached.push(id)
-        }
-      } else {
-        uncached.push(id)
+      if (data && now - queryState.dataUpdatedAt <= staleTime) {
+        cachedMap.set(id, data)
+      } else if (uncachedIds.length < MAX_HARPI_MANGA_BATCH_SIZE) {
+        uncachedIds.push(id)
       }
     }
 
-    return { uncachedIds: uncached.slice(0, 10).sort(), cachedMangas: cached }
-  }, [uniqueMangaIds, queryClient, staleTime])
+    return { uncachedIds, cachedMap }
+  }, [mangaIds, queryClient, staleTime])
 
-  const { data, isLoading, isFetching } = useQuery<Record<number, Manga>>({
+  const { data, isLoading, isFetching } = useQuery<GETProxyMangaResponse>({
     queryKey: ['manga-batch', uncachedIds],
     queryFn: async () => {
       const searchParams = new URLSearchParams({ only: ProxyIdOnly.THUMBNAIL })
@@ -77,39 +72,40 @@ export default function useMangaListCachedQuery({
       }
 
       const response = await fetch(`/api/proxy/manga?${searchParams}`)
-      const data = await handleResponseError<Record<number, Manga>>(response)
-      const validatedData: Record<number, Manga> = {}
+      const data = await handleResponseError<GETProxyMangaResponse>(response)
 
       for (const id of uncachedIds) {
         const manga = data[id]
 
         if (manga) {
-          validatedData[id] = manga
           queryClient.setQueryDefaults(QueryKeys.mangaCard(id), { staleTime, gcTime })
           queryClient.setQueryData(QueryKeys.mangaCard(id), manga)
         }
       }
 
-      return validatedData
+      return data
     },
-    enabled: isAnyMangaBatchFetching === 0 && uncachedIds.length > 0,
-    staleTime: 0,
-    gcTime: 0,
+    enabled: uncachedIds.length > 0,
+    staleTime: 0, // Always refetch batch queries
+    gcTime: 0, // Don't keep batch query results
   })
 
   const mangaMap = useMemo(() => {
-    const map = new Map<number, Manga>()
-
-    for (const manga of cachedMangas) {
-      map.set(manga.id, manga)
+    if (!data) {
+      return cachedMap
     }
 
-    for (const [id, manga] of Object.entries(data ?? {})) {
-      map.set(Number(id), manga)
+    const map = new Map(cachedMap)
+
+    for (const id of uncachedIds) {
+      const manga = data[id]
+      if (manga) {
+        map.set(id, manga)
+      }
     }
 
     return map
-  }, [cachedMangas, data])
+  }, [cachedMap, data, uncachedIds])
 
   return {
     mangaMap,

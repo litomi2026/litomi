@@ -1,23 +1,27 @@
+'use client'
+
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { ReactNode } from 'react'
 
 import { SearchParamKey } from '@/constants/storage'
 
 import IconLogin from './icons/IconLogin'
 
 type Props = {
-  children: React.ReactNode
-  redirect: string
+  children: ReactNode
 }
 
-export default function LoginButton({ children, redirect }: Readonly<Props>) {
+export default function LoginButton({ children }: Readonly<Props>) {
+  const pathname = usePathname()
+
   return (
     <Link
-      className="inline-flex items-center gap-2 px-4 py-3 bg-brand-gradient text-background font-semibold rounded-xl 
-      hover:opacity-90 active:opacity-100 transition relative
+      className="inline-flex items-center justify-center gap-2 w-full max-w-3xs p-3 bg-brand-gradient text-background font-semibold rounded-xl transition relative hover:opacity-90 active:opacity-100 
       before:absolute before:inset-0 before:rounded-xl before:border-3 before:border-foreground/40"
-      href={`/auth/login?${SearchParamKey.REDIRECT}=${encodeURIComponent(redirect)}`}
+      href={`/auth/login?${SearchParamKey.REDIRECT}=${encodeURIComponent(pathname)}`}
     >
-      <IconLogin className="w-5 h-5" />
+      <IconLogin className="size-5" />
       {children}
     </Link>
   )

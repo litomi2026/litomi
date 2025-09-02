@@ -67,6 +67,7 @@ bun dev
 
 #### 비용
 
+- [Fluid Active CPU](https://vercel.com/docs/fluid-compute/pricing) 수치를 낮추기 위해 서버 컴포넌트엔 SSG, ISR 기술을 적용하고 route handler 응답엔 cache-control 헤더를 설정함
 - `<Link>` 컴포넌트의 prefetch 기능이 너무 많은 [Function Invocations](https://vercel.com/docs/functions/usage-and-pricing)을 유발함 -> 작품 카드에선 비활성화함
 - WAF 설정이 너무 많은 [Firewall Rate Limit Requests
   ](https://vercel.com/docs/vercel-firewall/vercel-waf/usage-and-pricing#priced-features-usage)를 유발함 -> WAF path 조건을 세분화함

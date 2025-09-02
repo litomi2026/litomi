@@ -1,9 +1,9 @@
 'use client'
 
+import IconProfile from '@/components/icons/IconProfile'
 import useMeQuery from '@/query/useMeQuery'
 
-import IconProfile from '../icons/IconProfile'
-import SelectableLink from '../SelectableLink'
+import SelectableLink from './SelectableLink'
 
 type Props = {
   className?: string

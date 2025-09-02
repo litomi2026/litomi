@@ -1,21 +1,20 @@
 import Link from 'next/link'
-import { Suspense } from 'react'
 
 import type { LayoutProps } from '@/types/nextjs'
 
-import BookmarkLink from '@/components/header/BookmarkLink'
-import NotificationCount from '@/components/header/NotificationCount'
-import ProfileLink from '@/components/header/ProfileLink'
-import PublishButton from '@/components/header/PublishButton'
 import IconBell from '@/components/icons/IconBell'
+import IconBookmark from '@/components/icons/IconBookmark'
 import IconHome from '@/components/icons/IconHome'
 import IconLibraryBig from '@/components/icons/IconLibraryBig'
 import IconLogo from '@/components/icons/IconLogo'
 import IconPost from '@/components/icons/IconPost'
 import IconSearch from '@/components/icons/IconSearch'
-import SelectableLink from '@/components/SelectableLink'
 
-import Profile, { ProfileSkeleton } from '../../components/header/Profile'
+import NotificationCount from './NotificationCount'
+import Profile from './Profile'
+import ProfileLink from './ProfileLink'
+import PublishButton from './PublishButton'
+import SelectableLink from './SelectableLink'
 
 export default async function Layout({ children }: LayoutProps) {
   return (
@@ -44,16 +43,16 @@ export default async function Layout({ children }: LayoutProps) {
             </SelectableLink>
             <NotificationCount />
           </div>
-          <BookmarkLink className="hidden sm:block" />
+          <SelectableLink className="hidden sm:block" href="/library/bookmark" Icon={IconBookmark}>
+            북마크
+          </SelectableLink>
           <SelectableLink className="hidden sm:block" href="/posts/recommand" hrefMatch="/post" Icon={IconPost}>
             글
           </SelectableLink>
           <ProfileLink className="hidden sm:block" />
           <PublishButton className="hidden mx-auto my-4 sm:block xl:mx-0" />
         </nav>
-        <Suspense fallback={<ProfileSkeleton />}>
-          <Profile />
-        </Suspense>
+        <Profile />
       </header>
       <div className="hidden shrink-0 sm:block sm:w-20 2xl:w-3xs" />
       <div className="flex flex-col grow">

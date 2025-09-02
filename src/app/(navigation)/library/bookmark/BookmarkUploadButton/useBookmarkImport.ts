@@ -2,11 +2,10 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-import { BookmarkExportData } from '@/app/(navigation)/(right-search)/[name]/bookmark/constants'
 import { QueryKeys } from '@/constants/query'
 import useActionResponse from '@/hook/useActionResponse'
 
-import type { ImportState } from './types'
+import type { BookmarkExportData, ImportState } from './types'
 
 import { importBookmarks, ImportMode } from './action'
 
