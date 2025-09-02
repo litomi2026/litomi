@@ -1,7 +1,7 @@
 'use client'
 
-import { OctagonMinus } from 'lucide-react'
 import Link from 'next/link'
+import { useEffect, useRef } from 'react'
 
 import { CensorshipLevel } from '@/database/enum'
 import useMatchedCensorships from '@/hook/useCensorshipCheck'
@@ -11,37 +11,30 @@ import { Manga } from '@/types/manga'
 
 type Props = {
   manga: Manga
-  level: CensorshipLevel
 }
 
-export default function MangaCardCensorship({ manga, level }: Readonly<Props>) {
+export default function MangaCardCensorship({ manga }: Readonly<Props>) {
   const { data: me } = useMeQuery()
   const myName = me?.name ?? ''
   const { data: censorshipsMap } = useCensorshipsMapQuery()
   const { censoringReasons, highestCensorshipLevel } = useMatchedCensorships({ manga, censorshipsMap })
+  const ref = useRef<HTMLDivElement>(null)
 
-  if (level !== highestCensorshipLevel) {
-    return null
-  }
+  useEffect(() => {
+    if (highestCensorshipLevel === CensorshipLevel.HEAVY) {
+      const cardElement = ref.current?.closest<HTMLElement>('[data-manga-card]')
+      if (cardElement) {
+        cardElement.style.display = 'none'
+      }
+    }
+  }, [highestCensorshipLevel])
 
   if (!censoringReasons || censoringReasons.length === 0) {
     return null
   }
 
   if (highestCensorshipLevel === CensorshipLevel.HEAVY) {
-    return (
-      <div className="absolute inset-0 z-10 animate-fade-in-fast bg-zinc-900 flex items-center justify-center p-4 text-zinc-400 text-center">
-        <div>
-          <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-zinc-800 flex items-center justify-center">
-            <OctagonMinus className="size-6 text-red-500" />
-          </div>
-          <div className="font-semibold mb-1">검열된 작품</div>
-          <Link className="hover:underline" href={`/@${myName}/censor`}>
-            {censoringReasons.join(', ')}
-          </Link>
-        </div>
-      </div>
-    )
+    return <div ref={ref} style={{ display: 'none' }} />
   }
 
   return (
