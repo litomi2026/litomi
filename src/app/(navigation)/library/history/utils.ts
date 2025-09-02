@@ -1,3 +1,5 @@
+import ms from 'ms'
+
 import { ReadingHistoryItem } from '@/app/api/reading-history/route'
 
 export type DateGroup = 'lastMonth' | 'lastWeek' | 'older' | 'thisMonth' | 'thisWeek' | 'today' | 'yesterday'
@@ -12,56 +14,99 @@ export const DATE_GROUP_LABELS: Record<DateGroup, string> = {
   older: '이전',
 }
 
-const groupOrder: DateGroup[] = ['today', 'yesterday', 'thisWeek', 'lastWeek', 'thisMonth', 'lastMonth', 'older']
+const GROUP_ORDER: DateGroup[] = ['today', 'yesterday', 'thisWeek', 'lastWeek', 'thisMonth', 'lastMonth', 'older']
+const GROUP_ORDER_MAP = new Map(GROUP_ORDER.map((group, index) => [group, index]))
 
-export function groupHistoryByDate(items: ReadingHistoryItem[]): Map<DateGroup, ReadingHistoryItem[]> {
-  const groups = new Map<DateGroup, ReadingHistoryItem[]>()
+let dateBoundaries: {
+  today: number
+  yesterday: number
+  weekStart: number
+  lastWeekStart: number
+  currentMonth: number
+  currentYear: number
+  timestamp: number
+} | null = null
+
+const CACHE_TTL = ms('1 hour')
+
+export function groupHistoryByDate(items: ReadingHistoryItem[]): [DateGroup, ReadingHistoryItem[]][] | null {
+  if (items.length === 0) {
+    return null
+  }
+
+  const groupArrays: (ReadingHistoryItem[] | null)[] = []
 
   for (const item of items) {
     const group = getDateGroup(item.updatedAt)
-    const groupItems = groups.get(group) ?? []
-    groupItems.push(item)
-    groups.set(group, groupItems)
+    const groupIndex = GROUP_ORDER_MAP.get(group)!
+
+    if (!groupArrays[groupIndex]) {
+      groupArrays[groupIndex] = []
+    }
+    groupArrays[groupIndex]!.push(item)
   }
 
-  const orderedGroups = new Map<DateGroup, ReadingHistoryItem[]>()
+  const result: [DateGroup, ReadingHistoryItem[]][] = []
 
-  for (const group of groupOrder) {
-    const histories = groups.get(group)
-
-    if (histories) {
-      orderedGroups.set(group, histories)
+  for (let i = 0; i < GROUP_ORDER.length; i++) {
+    if (groupArrays[i] && groupArrays[i]!.length > 0) {
+      result.push([GROUP_ORDER[i], groupArrays[i]!])
     }
   }
 
-  return orderedGroups
+  return result
+}
+
+function getCachedBoundaries() {
+  const now = Date.now()
+
+  if (!dateBoundaries || now - dateBoundaries.timestamp > CACHE_TTL) {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    const yesterday = new Date(today)
+    yesterday.setDate(today.getDate() - 1)
+
+    const weekStart = new Date(today)
+    weekStart.setDate(today.getDate() - ((today.getDay() + 6) % 7))
+
+    const lastWeekStart = new Date(weekStart)
+    lastWeekStart.setDate(weekStart.getDate() - 7)
+
+    dateBoundaries = {
+      today: today.getTime(),
+      yesterday: yesterday.getTime(),
+      weekStart: weekStart.getTime(),
+      lastWeekStart: lastWeekStart.getTime(),
+      currentMonth: today.getMonth(),
+      currentYear: today.getFullYear(),
+      timestamp: now,
+    }
+  }
+
+  return dateBoundaries
 }
 
 function getDateGroup(timestamp: number): DateGroup {
-  const now = new Date()
+  const boundaries = getCachedBoundaries()
   const date = new Date(timestamp)
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-  const itemDate = new Date(date.getFullYear(), date.getMonth(), date.getDate())
-  const daysDiff = Math.floor((today.getTime() - itemDate.getTime()) / (1000 * 60 * 60 * 24))
+  const itemDate = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
 
-  if (daysDiff === 0) return 'today'
-  if (daysDiff === 1) return 'yesterday'
+  if (itemDate >= boundaries.today) return 'today'
+  if (itemDate >= boundaries.yesterday) return 'yesterday'
+  if (itemDate >= boundaries.weekStart) return 'thisWeek'
+  if (itemDate >= boundaries.lastWeekStart) return 'lastWeek'
 
-  const weekStart = new Date(today)
-  weekStart.setDate(today.getDate() - ((today.getDay() + 6) % 7))
+  const itemMonth = date.getMonth()
+  const itemYear = date.getFullYear()
 
-  const lastWeekStart = new Date(weekStart)
-  lastWeekStart.setDate(weekStart.getDate() - 7)
-
-  if (itemDate >= weekStart) return 'thisWeek'
-  if (itemDate >= lastWeekStart) return 'lastWeek'
-
-  if (date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear()) {
+  if (itemMonth === boundaries.currentMonth && itemYear === boundaries.currentYear) {
     return 'thisMonth'
   }
 
-  const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
-  if (date.getMonth() === lastMonth.getMonth() && date.getFullYear() === lastMonth.getFullYear()) {
+  const lastMonth = new Date(boundaries.currentYear, boundaries.currentMonth - 1, 1)
+
+  if (itemMonth === lastMonth.getMonth() && itemYear === lastMonth.getFullYear()) {
     return 'lastMonth'
   }
 

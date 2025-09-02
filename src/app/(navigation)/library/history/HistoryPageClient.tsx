@@ -30,7 +30,7 @@ export default function HistoryPageClient({ initialData }: Props) {
   return (
     <>
       <div className="space-y-6">
-        {Array.from(groupedHistory.entries()).map(([dateGroup, items]) => (
+        {groupedHistory?.map(([dateGroup, items]) => (
           <div key={dateGroup}>
             <h4 className="bg-background border-b border-white/5 px-4 py-2 mb-2 text-sm font-medium text-zinc-400">
               {DATE_GROUP_LABELS[dateGroup]}
