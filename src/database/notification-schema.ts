@@ -36,11 +36,6 @@ export const notificationConditionTable = pgTable(
   ],
 ).enableRLS()
 
-export const mangaSeenTable = pgTable(
-  'manga_seen',
-  {
-    mangaId: integer('manga_id').primaryKey(),
-    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-  },
-  (table) => [index('idx_manga_seen_created').on(table.createdAt)],
-).enableRLS()
+export const mangaSeenTable = pgTable('manga_seen', {
+  mangaId: integer('manga_id').primaryKey(),
+}).enableRLS()
