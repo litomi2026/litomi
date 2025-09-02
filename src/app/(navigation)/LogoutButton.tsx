@@ -1,14 +1,13 @@
 'use client'
 
 import { useQueryClient } from '@tanstack/react-query'
+import { LogOut } from 'lucide-react'
 import { toast } from 'sonner'
 
 import logout from '@/app/auth/logout/action'
 import { QueryKeys } from '@/constants/query'
 import useActionResponse from '@/hook/useActionResponse'
 import amplitude from '@/lib/amplitude/lazy'
-
-import IconLogout from '../icons/IconLogout'
 
 export default function LogoutButton() {
   const queryClient = useQueryClient()
@@ -39,7 +38,7 @@ export default function LogoutButton() {
       type="button"
     >
       <div className="flex justify-center items-center gap-3">
-        <IconLogout className="w-5 transition group-disabled:scale-100" />
+        <LogOut className="w-5 transition group-disabled:scale-100" />
         <span className="min-w-0 hidden md:block">로그아웃</span>
       </div>
     </button>

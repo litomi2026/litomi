@@ -1,9 +1,9 @@
 import { usePathname, useSearchParams } from 'next/navigation'
 
+import IconLogin from '@/components/icons/IconLogin'
 import { SearchParamKey } from '@/constants/storage'
 
-import IconLogin from '../icons/IconLogin'
-import SelectableLink from '../SelectableLink'
+import SelectableLink from './SelectableLink'
 
 export default function LoginIconLink() {
   const pathname = usePathname()

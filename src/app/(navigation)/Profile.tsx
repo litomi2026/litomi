@@ -1,15 +1,12 @@
 'use client'
 
-import { captureException } from '@sentry/nextjs'
-import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import Link from 'next/link'
-import { useEffect } from 'react'
 
+import IconMore from '@/components/icons/IconMore'
+import Squircle from '@/components/ui/Squircle'
+import TooltipPopover from '@/components/ui/TooltipPopover'
 import useMeQuery from '@/query/useMeQuery'
 
-import IconMore from '../icons/IconMore'
-import Squircle from '../ui/Squircle'
-import TooltipPopover from '../ui/TooltipPopover'
 import LoginIconLink from './LoginIconLink'
 import LogoutButton from './LogoutButton'
 
@@ -51,21 +48,6 @@ export default function Profile() {
         <LogoutButton />
       </div>
     </TooltipPopover>
-  )
-}
-
-export function ProfileError({ error, reset }: Readonly<ErrorBoundaryFallbackProps>) {
-  useEffect(() => {
-    captureException(error, { extra: { name: 'ProfileError' } })
-  }, [error])
-
-  return (
-    <button className="flex items-center p-2 rounded-full sm:my-0 2xl:pl-3 2xl:py-2" onClick={reset}>
-      <Squircle className="w-8 flex-shrink-0 sm:w-10 fill-red-700" textClassName="fill-foreground">
-        오류
-      </Squircle>
-      <p className="ml-3 hidden py-0.5 text-red-600 2xl:block">오류가 발생했어요</p>
-    </button>
   )
 }
 

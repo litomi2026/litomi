@@ -2,7 +2,7 @@ import { ErrorBoundary } from '@suspensive/react'
 import { cookies } from 'next/headers'
 import { Suspense } from 'react'
 
-import LogoutButton from '@/components/header/LogoutButton'
+import LogoutButton from '@/app/(navigation)/LogoutButton'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
 
 import { getUserById } from './common'

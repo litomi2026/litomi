@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 
-import IconPen from '../icons/IconPen'
-import Modal from '../ui/Modal'
+import IconPen from '@/components/icons/IconPen'
+import Modal from '@/components/ui/Modal'
 
 type Props = {
   className?: string
