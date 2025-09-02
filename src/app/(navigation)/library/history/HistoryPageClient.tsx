@@ -61,9 +61,9 @@ export default function HistoryPageClient({ initialData }: Props) {
           </div>
         ))}
         {isFetchingNextPage && (
-          <div className={`grid ${MANGA_LIST_GRID_COLUMNS[ViewCookie.CARD]} gap-2 px-4`}>
+          <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[ViewCookie.CARD]} gap-2 px-4`}>
             <MangaCardSkeleton />
-          </div>
+          </ul>
         )}
       </div>
       {hasNextPage && <div className="w-full p-2" ref={infiniteScrollTriggerRef} />}
