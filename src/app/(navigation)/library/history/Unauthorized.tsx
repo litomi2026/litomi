@@ -1,0 +1,39 @@
+import { Clock } from 'lucide-react'
+import Link from 'next/link'
+
+import LoginButton from '@/components/LoginButton'
+
+export default function Unauthorized() {
+  return (
+    <div className="flex-1 flex flex-col justify-center items-center px-4 py-12">
+      <div className="text-center max-w-md mx-auto">
+        <div className="relative mb-8">
+          <Clock className="w-20 h-20 mx-auto text-zinc-700" />
+        </div>
+        <h2 className="text-xl font-semibold text-zinc-200 mb-3">감상 기록은 로그인이 필요해요</h2>
+        <p className="text-zinc-400 mb-8 leading-relaxed">계정을 만들고 읽은 작품을 자동으로 기록하세요</p>
+        <ul className="mb-8 space-y-2.5 text-sm" role="list">
+          <li className="flex justify-center items-center gap-2.5">
+            <span className="text-brand-end">•</span>
+            <span className="text-zinc-300">읽은 작품 자동 기록</span>
+          </li>
+          <li className="flex justify-center items-center gap-2.5">
+            <span className="text-brand-end">•</span>
+            <span className="text-zinc-300">마지막 읽은 페이지 저장</span>
+          </li>
+          <li className="flex justify-center items-center gap-2.5">
+            <span className="text-brand-end">•</span>
+            <span className="text-zinc-300">모든 기기에서 이어 읽기</span>
+          </li>
+        </ul>
+        <LoginButton>로그인하기</LoginButton>
+        <p className="mt-6 text-sm text-zinc-500">
+          처음이신가요?{' '}
+          <Link className="text-zinc-300 underline hover:text-zinc-100 transition-colors" href="/auth/signup">
+            회원가입
+          </Link>
+        </p>
+      </div>
+    </div>
+  )
+}
