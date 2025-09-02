@@ -47,7 +47,7 @@ export default function LibrarySidebar({ libraries, userId, className = '', onCl
           icon={<Clock className="size-4 text-background" />}
           iconBackground="var(--color-brand-end)"
           onClick={onClick}
-          title="읽기 기록"
+          title="감상 기록"
         />
         <LibrarySidebarLink
           description="즐겨찾기한 작품"

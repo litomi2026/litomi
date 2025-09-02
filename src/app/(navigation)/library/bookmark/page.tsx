@@ -78,8 +78,8 @@ export default async function BookmarkPage() {
         <BookmarkDownloadButton />
         <BookmarkUploadButton />
         <BookmarkTooltip />
-        <BookmarkPageClient initialData={initialData} />
       </div>
+      <BookmarkPageClient initialData={initialData} />
     </main>
   )
 }
