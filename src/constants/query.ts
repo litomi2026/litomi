@@ -9,13 +9,13 @@ export const QueryKeys = {
   passkeys: ['me', 'passkeys'],
   notificationUnreadCount: ['me', 'notifications', 'unread-count'],
   notifications: (searchParams: URLSearchParams) => ['me', 'notifications', Object.fromEntries(searchParams)],
+  libraries: ['me', 'libraries'],
+  libraryItems: (libraryId: number) => ['me', 'library', libraryId],
 
   manga: (id: number) => ['manga', id],
   mangaCard: (id: number) => ['mangaCard', id],
   search: (searchParams: URLSearchParams) => ['search', Object.fromEntries(searchParams)],
   searchSuggestions: (query: string, locale: string) => ['search', 'suggestions', locale, query],
   posts: (filter: PostFilter, mangaId?: number, username?: string) => ['posts', filter, { mangaId, username }],
-  libraries: ['me', 'libraries'],
-  libraryItems: (libraryId: number) => ['me', 'library', libraryId],
   readingHistory: (mangaId: number) => ['readingHistory', mangaId],
 }

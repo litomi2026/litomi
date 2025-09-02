@@ -19,7 +19,12 @@ export default function LogoutButton() {
       toast.success(`${loginId} 계정에서 로그아웃했어요`)
       amplitude.track('logout')
       amplitude.reset()
-      queryClient.setQueriesData({ queryKey: QueryKeys.me }, () => null)
+      queryClient.setQueryData(QueryKeys.me, null)
+
+      queryClient.removeQueries({
+        queryKey: QueryKeys.me,
+        predicate: (query) => query.queryKey.length > 1,
+      })
     },
     shouldSetResponse: false,
   })
