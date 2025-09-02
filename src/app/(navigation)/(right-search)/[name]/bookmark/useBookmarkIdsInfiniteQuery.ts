@@ -1,17 +1,13 @@
-import { useSuspenseInfiniteQuery } from '@tanstack/react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 
-import { Bookmark, GETBookmarksResponse } from '@/app/api/bookmark/route'
+import { GETBookmarksResponse } from '@/app/api/bookmark/route'
+import { BOOKMARKS_PER_PAGE } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import { handleResponseError } from '@/utils/react-query-error'
 
-import { BOOKMARKS_PER_PAGE } from './constants'
-
-export async function fetchBookmarksPaginated(
-  cursor: { mangaId: number; createdAt: number } | null,
-  limit: number = BOOKMARKS_PER_PAGE,
-) {
+export async function fetchBookmarksPaginated(cursor: { mangaId: number; createdAt: number } | null, limit?: number) {
   const searchParams = new URLSearchParams()
-  searchParams.append('limit', limit.toString())
+  searchParams.append('limit', BOOKMARKS_PER_PAGE.toString())
 
   if (cursor) {
     searchParams.append('cursorId', cursor.mangaId.toString())
@@ -22,24 +18,15 @@ export async function fetchBookmarksPaginated(
   return handleResponseError<GETBookmarksResponse>(response)
 }
 
-export default function useBookmarkIdsInfiniteQuery(initialBookmarks: Bookmark[]) {
-  return useSuspenseInfiniteQuery<GETBookmarksResponse, Error>({
+export default function useBookmarkIdsInfiniteQuery(initialData?: GETBookmarksResponse) {
+  return useInfiniteQuery<GETBookmarksResponse, Error>({
     queryKey: QueryKeys.infiniteBookmarks,
     queryFn: ({ pageParam }) => fetchBookmarksPaginated(pageParam as { mangaId: number; createdAt: number } | null),
-    initialPageParam: null,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
-    initialData: {
-      pages: [{ bookmarks: initialBookmarks, nextCursor: getNextCursor(initialBookmarks) }],
+    initialData: initialData && {
+      pages: [initialData],
       pageParams: [null],
     },
+    initialPageParam: null,
   })
-}
-
-function getNextCursor(bookmarks: Bookmark[]) {
-  if (bookmarks.length !== BOOKMARKS_PER_PAGE) {
-    return null
-  }
-
-  const lastBookmark = bookmarks[bookmarks.length - 1]
-  return lastBookmark.createdAt ? { mangaId: lastBookmark.mangaId, createdAt: lastBookmark.createdAt } : null
 }
