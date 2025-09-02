@@ -1,11 +1,14 @@
 import { getMangasFromMultiSources } from '@/common/manga'
 import { MAX_THUMBNAIL_IMAGES } from '@/constants/manga'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
+import { Manga, MangaError } from '@/types/manga'
 import { sec } from '@/utils/date'
 
 import { GETProxyIdSchema, ProxyIdOnly } from './schema'
 
 export const runtime = 'edge'
+
+export type GETProxyMangaResponse = Record<number, Manga | MangaError>
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -45,7 +48,7 @@ export async function GET(request: Request) {
       swr,
     })
 
-    return Response.json(mangas, { headers: { 'Cache-Control': cacheControl } })
+    return Response.json(mangas satisfies GETProxyMangaResponse, { headers: { 'Cache-Control': cacheControl } })
   } catch (error) {
     return handleRouteError(error, request)
   }
