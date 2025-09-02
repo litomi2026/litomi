@@ -12,6 +12,7 @@ import BookmarkDownloadButton from './BookmarkDownloadButton'
 import BookmarkPageClient from './BookmarkPageClient'
 import BookmarkTooltip from './BookmarkTooltip'
 import BookmarkUploadButton from './BookmarkUploadButton'
+import Unauthorized from './Unauthorized'
 
 export const metadata: Metadata = {
   title: `북마크 - ${SHORT_NAME}`,
@@ -30,7 +31,7 @@ export default async function BookmarkPage() {
   const userId = await getUserIdFromCookie()
 
   if (!userId) {
-    return <div>로그인 섹스</div>
+    return <Unauthorized />
   }
 
   const bookmarks = await db

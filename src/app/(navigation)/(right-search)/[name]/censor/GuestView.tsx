@@ -33,7 +33,7 @@ export default function GuestView() {
             <span className="text-zinc-300">모든 기기에서 설정 동기화</span>
           </li>
         </ul>
-        <LoginButton redirect="/@/censor">로그인하고 시작하기</LoginButton>
+        <LoginButton>로그인하고 시작하기</LoginButton>
         <p className="mt-4 text-sm text-zinc-500">
           계정이 없으신가요?{' '}
           <Link
