@@ -67,7 +67,7 @@ export default async function BookmarkPage() {
   return (
     <main className="flex-1 flex flex-col">
       <h1 className="sr-only">북마크</h1>
-      <div className="flex justify-center items-center gap-x-4 flex-wrap mt-4">
+      <div className="flex justify-center items-center gap-x-2 flex-wrap mt-2">
         <BookmarkDownloadButton />
         <BookmarkUploadButton />
         <BookmarkTooltip />
