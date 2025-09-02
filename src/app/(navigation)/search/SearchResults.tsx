@@ -48,13 +48,14 @@ export default function SearchResults({ view }: Readonly<Props>) {
       <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2`}>
         {mangas.map((manga, i) =>
           view === ViewCookie.IMAGE ? (
-            <MangaCardImage
-              className="bg-zinc-900 rounded-xl border-2 [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-cover [&_img]:aspect-[3/4]"
-              href={getViewerLink(manga.id)}
-              key={manga.id}
-              manga={manga}
-              mangaIndex={i}
-            />
+            <li data-manga-card key={manga.id}>
+              <MangaCardImage
+                className="bg-zinc-900 rounded-xl border-2 [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-cover [&_img]:aspect-[3/4]"
+                href={getViewerLink(manga.id)}
+                manga={manga}
+                mangaIndex={i}
+              />
+            </li>
           ) : (
             <MangaCard index={i} key={manga.id} manga={manga} showSearchFromNextButton />
           ),

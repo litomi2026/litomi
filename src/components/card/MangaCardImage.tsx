@@ -18,7 +18,7 @@ export default function MangaCardImage({ manga, href, mangaIndex, className = ''
   const { count, images } = manga
 
   return (
-    <div className={`overflow-hidden relative ${className}`} data-manga-card>
+    <div className={`overflow-hidden relative ${className}`}>
       {/* NOTE(gwak, 2025-04-01): 썸네일 이미지만 있는 경우 대응하기 위해 이미지 배열 길이 검사 */}
       {images.length > 1 ? (
         <MangaCardPreviewImages
