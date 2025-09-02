@@ -1,4 +1,4 @@
-import { and, desc, eq, lt } from 'drizzle-orm'
+import { and, desc, eq, lt, or } from 'drizzle-orm'
 import { z } from 'zod/v4'
 
 import { READING_HISTORY_PER_PAGE } from '@/constants/policy'
@@ -56,9 +56,12 @@ export async function GET(request: Request) {
     if (cursor) {
       const decodedCursor = JSON.parse(Buffer.from(cursor, 'base64').toString())
       query = query.where(
-        and(
-          eq(readingHistoryTable.userId, Number(userId)),
+        or(
           lt(readingHistoryTable.updatedAt, new Date(decodedCursor.updatedAt)),
+          and(
+            eq(readingHistoryTable.updatedAt, new Date(decodedCursor.updatedAt)),
+            lt(readingHistoryTable.mangaId, decodedCursor.mangaId),
+          ),
         ),
       )
     }
@@ -76,16 +79,11 @@ export async function GET(request: Request) {
       updatedAt: row.updatedAt.getTime(),
     }))
 
-    const nextCursor = hasNext
-      ? {
-          updatedAt: items[items.length - 1].updatedAt,
-          mangaId: items[items.length - 1].mangaId,
-        }
-      : null
+    const nextCursor = hasNext ? items[items.length - 1] : null
 
     const cacheControl = createCacheControl({
       private: true,
-      maxAge: sec('1 minute'),
+      maxAge: cursor ? sec('1 hour') : sec('1 minute'),
     })
 
     return Response.json({ items, nextCursor } satisfies GETReadingHistoryResponse, {

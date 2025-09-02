@@ -4,9 +4,6 @@ import { getUserIdFromCookie } from '@/utils/session'
 
 import { GETBookmarksSchema } from './schema'
 
-// NOTE: 로그인 후 다른 계정으로 로그인 시 이전 계정의 북마크 목록이 캐시되어 보여지는 이슈가 있음
-const maxAge = 10
-
 export type Bookmark = {
   mangaId: number
   createdAt: number
@@ -41,10 +38,11 @@ export async function GET(request: Request) {
     cursorTime: cursorTime ? new Date(cursorTime).toISOString() : undefined,
   })
 
+  // NOTE: 로그인 후 다른 계정으로 로그인 시 이전 계정의 북마크 목록이 캐시되어 보여지는 이슈가 있음
   const cacheControl = createCacheControl({
     private: true,
-    maxAge,
-    swr: maxAge,
+    maxAge: 30,
+    swr: 10,
   })
 
   if (bookmarkRows.length === 0) {

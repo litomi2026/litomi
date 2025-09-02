@@ -57,13 +57,14 @@ export default async function Page({ params }: PageProps) {
     <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[layoutString]} gap-2 grow`}>
       {mangas.map((manga, i) =>
         layoutString === ViewCookie.IMAGE ? (
-          <MangaCardImage
-            className="bg-zinc-900 rounded-xl border-2 relative h-fit [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-cover [&_img]:aspect-[3/4]"
-            href={getViewerLink(manga.id)}
-            key={manga.id}
-            manga={manga}
-            mangaIndex={i}
-          />
+          <li data-manga-card key={manga.id}>
+            <MangaCardImage
+              className="bg-zinc-900 rounded-xl border-2 relative h-fit [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-cover [&_img]:aspect-[3/4]"
+              href={getViewerLink(manga.id)}
+              manga={manga}
+              mangaIndex={i}
+            />
+          </li>
         ) : (
           <MangaCard index={i} key={manga.id} manga={manga} />
         ),

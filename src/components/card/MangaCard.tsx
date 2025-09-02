@@ -1,7 +1,6 @@
 import { ErrorBoundary } from '@suspensive/react'
 import { memo, Suspense } from 'react'
 
-import { CensorshipLevel } from '@/database/enum'
 import { Manga } from '@/types/manga'
 import { getViewerLink } from '@/utils/manga'
 
@@ -11,7 +10,6 @@ import TagList from '../TagList'
 import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from './BookmarkButton'
 import DownloadButton from './DownloadButton'
 import LanguageBadge from './LanguageBadge'
-import MangaCardCensorship from './MangaCardCensorship'
 import MangaCardDate from './MangaCardDate'
 import MangaCardImage from './MangaCardImage'
 import MangaCardStats from './MangaCardStats'
@@ -38,7 +36,11 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
   const viewerLink = getViewerLink(id)
 
   return (
-    <li className={`flex flex-col border-2 rounded-xl overflow-hidden bg-zinc-900 relative ${className}`} key={id}>
+    <li
+      className={`flex flex-col border-2 rounded-xl overflow-hidden bg-zinc-900 relative ${className}`}
+      data-manga-card
+      key={id}
+    >
       <MangaCardImage
         className="h-fit my-auto aspect-[4/3] [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-contain [&_img]:aspect-[4/3]"
         href={viewerLink}
@@ -128,7 +130,6 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
           </div>
         </div>
       </div>
-      <MangaCardCensorship level={CensorshipLevel.HEAVY} manga={manga} />
     </li>
   )
 }
