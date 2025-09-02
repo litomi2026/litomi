@@ -3,6 +3,7 @@ import ms from 'ms'
 import { useMemo } from 'react'
 
 import { ProxyIdOnly } from '@/app/api/proxy/manga/schema'
+import { MAX_HARPI_MANGA_BATCH_SIZE } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import { Manga } from '@/types/manga'
 import { handleResponseError } from '@/utils/react-query-error'
@@ -14,7 +15,7 @@ interface UseMangaBatchWithCacheOptions {
    */
   gcTime?: number
   /**
-   * Array of manga IDs to fetch (max length is 20)
+   * Array of manga IDs to fetch
    */
   mangaIds: number[]
   /**
@@ -64,7 +65,7 @@ export default function useMangaListCachedQuery({
       }
     }
 
-    return { uncachedIds: uncached.slice(0, 10).sort(), cachedMangas: cached }
+    return { uncachedIds: uncached.slice(0, MAX_HARPI_MANGA_BATCH_SIZE).sort(), cachedMangas: cached }
   }, [uniqueMangaIds, queryClient, staleTime])
 
   const { data, isLoading, isFetching } = useQuery<Record<number, Manga>>({
