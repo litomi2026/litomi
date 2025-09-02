@@ -2,10 +2,9 @@ import { desc, sql } from 'drizzle-orm'
 import { Metadata } from 'next'
 import { cookies } from 'next/headers'
 import { notFound } from 'next/navigation'
-import { Suspense } from 'react'
 
-import BookmarkDownloadButton from '@/app/(navigation)/(right-search)/[name]/bookmark/BookmarkDownloadButton'
-import BookmarkUploadButton from '@/app/(navigation)/(right-search)/[name]/bookmark/BookmarkUploadButton'
+import BookmarkDownloadButton from '@/app/(navigation)/library/bookmark/BookmarkDownloadButton'
+import BookmarkUploadButton from '@/app/(navigation)/library/bookmark/BookmarkUploadButton'
 import { Bookmark } from '@/app/api/bookmark/route'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { db } from '@/database/drizzle'
@@ -14,12 +13,10 @@ import { PageProps } from '@/types/nextjs'
 import { getUserIdFromAccessToken } from '@/utils/cookie'
 import { getUsernameFromParam } from '@/utils/param'
 
+import BookmarkTooltip from '../../../library/bookmark/BookmarkTooltip'
 import { getUserById, getUserByName } from '../common'
-import BookmarkList from './BookmarkList'
-import BookmarkTooltip from './BookmarkTooltip'
 import { BOOKMARKS_PER_PAGE } from './constants'
 import { GuestView } from './GuestView'
-import Loading from './loading'
 import { PrivateBookmarksView } from './PrivateBookmarksView'
 import RefreshButton from './RefreshButton'
 
@@ -90,12 +87,9 @@ export default async function BookmarkPage({ params }: PageProps<Params>) {
       <div className="flex justify-center items-center gap-x-4 flex-wrap">
         <BookmarkDownloadButton />
         <BookmarkUploadButton />
-        <RefreshButton className="w-9 p-2 rounded-full transition hover:bg-zinc-800 active:bg-zinc-900" />
         <BookmarkTooltip />
+        <RefreshButton className="w-9 p-2 rounded-full transition hover:bg-zinc-800 active:bg-zinc-900" />
       </div>
-      <Suspense fallback={<Loading />}>
-        <BookmarkList initialBookmarks={bookmarks} />
-      </Suspense>
     </>
   )
 }

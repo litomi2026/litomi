@@ -2,7 +2,7 @@ import { toast } from 'sonner'
 
 import { MAX_BOOKMARK_FILE_SIZE } from '@/constants/policy'
 
-import { BookmarkExportData } from '../constants'
+import { BookmarkExportData } from './types'
 
 export function validateBookmarkData(data: unknown): data is BookmarkExportData {
   if (!data || typeof data !== 'object') {

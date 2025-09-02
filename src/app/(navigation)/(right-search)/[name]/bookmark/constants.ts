@@ -117,14 +117,3 @@ export const EXAMPLE_MANGAS: Manga[] = [
     images: ['https://ehgt.org/w/01/538/47924-nrgupfye.webp'],
   },
 ]
-
-export type BookmarkExportData = {
-  exportedAt: Date
-  totalCount: number
-  bookmarks: ExportedBookmark[]
-}
-
-export type ExportedBookmark = {
-  mangaId: number
-  createdAt: Date
-}

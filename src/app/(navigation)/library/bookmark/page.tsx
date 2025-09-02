@@ -8,7 +8,10 @@ import { db } from '@/database/drizzle'
 import { bookmarkTable } from '@/database/schema'
 import { getUserIdFromCookie } from '@/utils/session'
 
+import BookmarkDownloadButton from './BookmarkDownloadButton'
 import BookmarkPageClient from './BookmarkPageClient'
+import BookmarkTooltip from './BookmarkTooltip'
+import BookmarkUploadButton from './BookmarkUploadButton'
 
 export const metadata: Metadata = {
   title: `북마크 - ${SHORT_NAME}`,
@@ -71,7 +74,12 @@ export default async function BookmarkPage() {
   return (
     <main className="flex-1 flex flex-col">
       <h1 className="sr-only">북마크</h1>
-      <BookmarkPageClient initialData={initialData} />
+      <div className="flex justify-center items-center gap-x-4 flex-wrap mt-4">
+        <BookmarkDownloadButton />
+        <BookmarkUploadButton />
+        <BookmarkTooltip />
+        <BookmarkPageClient initialData={initialData} />
+      </div>
     </main>
   )
 }

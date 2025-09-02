@@ -1,12 +1,13 @@
 'use client'
 
-import useBookmarkIdsInfiniteQuery from '@/app/(navigation)/(right-search)/[name]/bookmark/useBookmarkIdsInfiniteQuery'
 import { GETBookmarksResponse } from '@/app/api/bookmark/route'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { ViewCookie } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
+
+import useBookmarkIdsInfiniteQuery from './useBookmarkIdsInfiniteQuery'
 
 type Props = {
   initialData?: GETBookmarksResponse
