@@ -17,7 +17,8 @@ import { useImageWidthStore } from './store/imageWidth'
 import { useVirtualizerStore } from './store/virtualizer'
 
 const screenFitStyle: Record<ScreenFit, string> = {
-  width: '[&_li]:justify-center [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:max-h-fit',
+  width:
+    '[&_li]:justify-center [&_img]:my-auto [&_img]:w-[var(--image-width)] [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:max-h-fit',
   all: '[&_li]:justify-center [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:max-h-dvh',
   height:
     '[&_li]:overflow-x-auto [&_li]:overscroll-x-none [&_li]:mx-auto [&_li]:w-fit [&_li]:max-w-full [&_img]:w-auto [&_img]:max-w-fit [&_img]:h-dvh [&_img]:max-h-fit',
@@ -70,7 +71,7 @@ function ScrollViewer({ manga, onClick, screenFit, pageView, readingDirection }:
 
   const dynamicStyle = {
     transform: `translateY(${translateY}px)`,
-    '--image-width': `${imageWidth}%`,
+    '--image-width': `${isDoublePage ? imageWidth / 2 : imageWidth}%`,
   } as CSSProperties
 
   return (
@@ -79,7 +80,7 @@ function ScrollViewer({ manga, onClick, screenFit, pageView, readingDirection }:
         <ul
           className={`absolute top-0 left-0 w-full [&_li]:flex [&_img]:border [&_img]:border-background 
             [&_img]:aria-invalid:w-40 [&_img]:aria-invalid:h-40 [&_img]:aria-invalid:text-foreground 
-            ${screenFitStyle[screenFit]} [&_img]:w-[var(--image-width)]`}
+            ${screenFitStyle[screenFit]}`}
           style={dynamicStyle}
         >
           {virtualItems.map(({ index, key }) => (

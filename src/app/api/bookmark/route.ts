@@ -64,9 +64,9 @@ export async function GET(request: Request) {
 
   return Response.json(
     {
-      bookmarks: bookmarks.map((bookmark) => ({
-        ...bookmark,
-        createdAt: bookmark.createdAt.getTime(),
+      bookmarks: bookmarks.map(({ mangaId, createdAt }) => ({
+        mangaId,
+        createdAt: createdAt.getTime(),
       })),
       nextCursor,
     } satisfies GETBookmarksResponse,
