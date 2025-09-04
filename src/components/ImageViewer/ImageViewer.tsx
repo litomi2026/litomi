@@ -142,6 +142,12 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
             <button onClick={() => setScreenFit(screenFit === 'all' ? 'width' : isWidthFit ? 'height' : 'all')}>
               {screenFit === 'all' ? '화면' : isWidthFit ? '가로' : '세로'} 맞춤
             </button>
+            {isDoublePage && (
+              <button className="flex items-center justify-center gap-1" onClick={toggleReadingDirection}>
+                좌 {readingDirection === 'ltr' ? <ArrowRight className="size-4" /> : <ArrowLeft className="size-4" />}{' '}
+                우
+              </button>
+            )}
             {isTouchMode && (
               <>
                 <button onClick={() => setTouchOrientation(isHorizontalTouch ? 'vertical' : 'horizontal')}>
@@ -154,13 +160,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
                 />
               </>
             )}
-            {!isTouchMode && <button onClick={cycleImageWidth}>너비 {imageWidth}%</button>}
-            {isDoublePage && (
-              <button className="flex items-center justify-center gap-1" onClick={toggleReadingDirection}>
-                좌 {readingDirection === 'ltr' ? <ArrowRight className="size-4" /> : <ArrowLeft className="size-4" />}{' '}
-                우
-              </button>
-            )}
+            {!isTouchMode && screenFit === 'width' && <button onClick={cycleImageWidth}>너비 {imageWidth}%</button>}
           </div>
         </div>
       </div>
