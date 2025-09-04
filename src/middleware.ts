@@ -9,7 +9,13 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   const method = request.method
 
-  if (method === 'GET' && !pathname.startsWith('/api/')) {
+  if (
+    method === 'GET' &&
+    !pathname.startsWith('/api/') &&
+    !pathname.startsWith('/library') &&
+    !pathname.startsWith('/notification') &&
+    !pathname.startsWith('/@')
+  ) {
     return NextResponse.next()
   }
 
