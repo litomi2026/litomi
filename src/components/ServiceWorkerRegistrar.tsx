@@ -41,10 +41,10 @@ export default function ServiceWorkerRegistrar() {
 
   if (isOffline) {
     return (
-      <div className="fixed bottom-4 left-4 z-50 rounded-lg bg-yellow-500/10 px-3 py-2 text-sm text-yellow-500">
-        <div className="flex items-center gap-2">
-          <WifiOff className="size-4" />
-          <span>오프라인 모드</span>
+      <div className="fixed bottom-20 left-4 z-40">
+        <div className="flex items-center gap-2 text-sm rounded-lg bg-background border border-border shadow-lg px-3 py-2">
+          <WifiOff className="size-4 text-yellow-500" />
+          <span className="text-yellow-500">오프라인</span>
         </div>
       </div>
     )
