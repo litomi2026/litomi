@@ -7,6 +7,15 @@ const CACHE_NAMES = {
   API: `api-cache-${CACHE_VERSION}`,
 }
 
+const PWA_CRITICAL_APP_SHELLS = [
+  '/',
+  '/offline.html',
+  '/manifest.webmanifest',
+  '/web-app-manifest-144x144.png',
+  '/web-app-manifest-192x192.png',
+  '/web-app-manifest-512x512.png',
+]
+
 // NOTE: https://stackoverflow.com/questions/41009167/what-is-the-use-of-self-clients-claim
 self.addEventListener('install', async (event) => {
   const cache = await caches.open(CACHE_NAMES.STATIC)
@@ -21,14 +30,6 @@ self.addEventListener('install', async (event) => {
       return null
     }
   }
-
-  const PWA_CRITICAL_APP_SHELLS = [
-    '/',
-    '/offline.html',
-    '/manifest.webmanifest',
-    '/web-app-manifest-192x192.png',
-    '/web-app-manifest-512x512.png',
-  ]
 
   const requests = PWA_CRITICAL_APP_SHELLS.map((url) => cacheAsset(url))
   await Promise.all(requests)
