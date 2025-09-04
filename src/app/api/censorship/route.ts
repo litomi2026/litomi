@@ -1,7 +1,7 @@
 import { and, desc, sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 
-import { handleRouteError } from '@/crawler/proxy-utils'
+import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { db } from '@/database/drizzle'
 import { CensorshipKey, CensorshipLevel } from '@/database/enum'
 import { userCensorshipTable } from '@/database/schema'
@@ -59,18 +59,28 @@ export async function GET(request: Request) {
       .orderBy(desc(userCensorshipTable.id))
       .limit(limit + 1)
 
+    const cacheControl = createCacheControl({
+      private: true,
+      maxAge: 10,
+    })
+
     if (censorshipRows.length === 0) {
-      return Response.json({ censorships: [], nextCursor: null } satisfies GETCensorshipsResponse)
+      return Response.json({ censorships: [], nextCursor: null } satisfies GETCensorshipsResponse, {
+        headers: { 'Cache-Control': cacheControl },
+      })
     }
 
     const hasNextPage = limit ? censorshipRows.length > limit : false
     const censorships = hasNextPage ? censorshipRows.slice(0, limit) : censorshipRows
     const nextCursor = hasNextPage ? { id: censorshipRows[censorshipRows.length - 1].id } : null
 
-    return Response.json({
-      censorships: censorships.map((row) => ({ ...row, createdAt: row.createdAt.getTime() })),
-      nextCursor,
-    } satisfies GETCensorshipsResponse)
+    return Response.json(
+      {
+        censorships: censorships.map((row) => ({ ...row, createdAt: row.createdAt.getTime() })),
+        nextCursor,
+      } satisfies GETCensorshipsResponse,
+      { headers: { 'Cache-Control': cacheControl } },
+    )
   } catch (error) {
     return handleRouteError(error, request)
   }
