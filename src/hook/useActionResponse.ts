@@ -6,12 +6,31 @@ import { QueryKeys } from '@/constants/query'
 import amplitude from '@/lib/amplitude/lazy'
 import { ActionResponse, ErrorResponse, SuccessResponse } from '@/utils/action-response'
 
+/**
+ * Props for useActionResponse hook
+ *
+ * @example
+ * // User-initiated action with default error handling
+ * useActionResponse({
+ *   action: saveUserData,
+ *   onSuccess: (data) => toast.success('Saved!')
+ * })
+ *
+ * @example
+ * // Background task with silent network errors
+ * useActionResponse({
+ *   action: autoSaveProgress,
+ *   shouldSetResponse: false,
+ *   silentNetworkError: true
+ * })
+ */
 type Props<T extends ActionResponse, TActionArgs extends unknown[]> = {
   action: (...args: TActionArgs) => Promise<T>
   onSuccess?: (data: T extends SuccessResponse<infer D> ? D : never, args: TActionArgs) => void
   onError?: (error: T extends ErrorResponse<infer E> ? E : never, response: T) => void
   onSettled?: (response: T) => void
   shouldSetResponse?: boolean
+  silentNetworkError?: boolean
 }
 
 export function getFieldError<T extends ActionResponse>(response: T | undefined, field: string) {
@@ -39,6 +58,7 @@ export default function useActionResponse<T extends ActionResponse, TActionArgs 
   onSuccess,
   onError,
   shouldSetResponse = true,
+  silentNetworkError,
 }: Readonly<Props<T, TActionArgs>>) {
   const [response, setResponse] = useState<T>()
   const [isPending, startTransition] = useTransition()
@@ -46,42 +66,52 @@ export default function useActionResponse<T extends ActionResponse, TActionArgs 
 
   function dispatchAction(...args: TActionArgs) {
     startTransition(async () => {
-      const response = await action(...args)
+      try {
+        const response = await action(...args)
 
-      if (shouldSetResponse) {
-        setResponse(response)
-      }
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          queryClient.setQueriesData({ queryKey: QueryKeys.me }, () => null)
-          amplitude.reset()
+        if (shouldSetResponse) {
+          setResponse(response)
         }
 
-        const error = response.error as T extends ErrorResponse<infer E> ? E : never
-
-        if (onError) {
-          // TODO: 첫번째 파라미터를 두번째 파라미터로 바꾸기
-          onError(error, response)
-        } else if (typeof error === 'string') {
-          if (response.status >= 400 && response.status < 500) {
-            toast.warning(error)
-          } else {
-            toast.error(error)
+        if (!response.ok) {
+          if (response.status === 401) {
+            queryClient.setQueriesData({ queryKey: QueryKeys.me }, () => null)
+            amplitude.reset()
           }
-        } else if (Array.isArray(error)) {
-          const firstError = error.find((err) => err !== undefined)
 
-          if (firstError && typeof firstError === 'string') {
+          const error = response.error as T extends ErrorResponse<infer E> ? E : never
+
+          if (onError) {
+            // TODO: 첫번째 파라미터를 두번째 파라미터로 바꾸기
+            onError(error, response)
+          } else if (typeof error === 'string') {
             if (response.status >= 400 && response.status < 500) {
-              toast.warning(firstError)
+              toast.warning(error)
             } else {
-              toast.error(firstError)
+              toast.error(error)
+            }
+          } else if (Array.isArray(error)) {
+            const firstError = error.find((err) => err !== undefined)
+
+            if (firstError && typeof firstError === 'string') {
+              if (response.status >= 400 && response.status < 500) {
+                toast.warning(firstError)
+              } else {
+                toast.error(firstError)
+              }
             }
           }
+        } else {
+          onSuccess?.(response.data as T extends SuccessResponse<infer D> ? D : never, args)
         }
-      } else {
-        onSuccess?.(response.data as T extends SuccessResponse<infer D> ? D : never, args)
+      } catch (error) {
+        if (error instanceof Error && !silentNetworkError) {
+          if (!navigator.onLine) {
+            toast.error('네트워크 연결을 확인해 주세요')
+          } else {
+            toast.error('요청 처리 중 오류가 발생했어요')
+          }
+        }
       }
     })
   }
