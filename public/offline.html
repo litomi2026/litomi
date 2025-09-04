@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>오프라인 - Litomi</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background: #0a0a0a;
+        color: #e5e5e5;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .offline-container {
+        text-align: center;
+        max-width: 400px;
+      }
+
+      .offline-icon {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 30px;
+        opacity: 0.5;
+      }
+
+      h1 {
+        font-size: 24px;
+        margin-bottom: 15px;
+        color: #ffffff;
+      }
+
+      p {
+        font-size: 16px;
+        line-height: 1.5;
+        margin-bottom: 30px;
+        color: #a3a3a3;
+      }
+
+      .retry-button {
+        background: #3b82f6;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      .retry-button:hover {
+        background: #2563eb;
+      }
+
+      .retry-button:active {
+        transform: scale(0.98);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="offline-container">
+      <svg class="offline-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM11 17V15H13V17H11ZM11 7V13H13V7H11Z"
+          fill="currentColor"
+        />
+      </svg>
+      <h1>인터넷 연결이 없습니다</h1>
+      <p>현재 오프라인 상태입니다. 인터넷 연결을 확인하고 다시 시도해주세요.</p>
+      <button class="retry-button" onclick="window.location.reload()">다시 시도</button>
+    </div>
+
+    <script>
+      // Auto-retry when connection is restored
+      window.addEventListener('online', () => {
+        window.location.reload()
+      })
+    </script>
+  </body>
+</html>
