@@ -6,6 +6,13 @@ import { setAccessTokenCookie } from './utils/cookie'
 import { TokenType, verifyJWT } from './utils/jwt'
 
 export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
+  const method = request.method
+
+  if (method === 'GET' && !pathname.startsWith('/api/')) {
+    return NextResponse.next()
+  }
+
   const { cookies } = request
   const accessToken = cookies.get(CookieKey.ACCESS_TOKEN)?.value
   const refreshToken = cookies.get(CookieKey.REFRESH_TOKEN)?.value
@@ -57,7 +64,5 @@ function setCookieToRequest(req: NextRequest, res: NextResponse) {
   })
 }
 
-// https://nextjs.org/docs/app/building-your-application/routing/middleware#matcher
-export const config = {
-  matcher: ['/api/:path*', '/@(.*)', '/library(.*)', '/notification'],
-}
+// https://clerk.com/blog/skip-nextjs-middleware-static-and-public-files
+export const config = { matcher: '/((?!.*\\.).*)' }
