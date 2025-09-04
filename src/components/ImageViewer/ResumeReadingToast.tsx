@@ -24,7 +24,7 @@ export default function ResumeReadingToast({ mangaId }: Readonly<Props>) {
   useEffect(() => {
     if (lastPage && lastPage !== getImageIndex() + 1) {
       const toastId = toast(`마지막으로 읽던 페이지 ${lastPage}`, {
-        duration: ms('5 seconds'),
+        duration: ms('10 seconds'),
         action: {
           label: '이동',
           onClick: () => navigateToImageIndex(lastPage - 1),
