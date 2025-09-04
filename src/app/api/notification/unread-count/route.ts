@@ -5,8 +5,6 @@ import { db } from '@/database/drizzle'
 import { notificationTable } from '@/database/schema'
 import { getUserIdFromCookie } from '@/utils/session'
 
-const maxAge = 10
-
 export async function GET(request: Request) {
   const userId = await getUserIdFromCookie()
 
@@ -22,8 +20,8 @@ export async function GET(request: Request) {
 
     const cacheControl = createCacheControl({
       private: true,
-      maxAge,
-      swr: maxAge,
+      maxAge: 10,
+      swr: 10,
     })
 
     return Response.json(unreadCount, { headers: { 'Cache-Control': cacheControl } })

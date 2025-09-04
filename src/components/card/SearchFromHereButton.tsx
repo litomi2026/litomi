@@ -20,7 +20,7 @@ export default function SearchFromHereButton({ mangaId, className = '' }: Readon
 
   const handleSearchFromHere = useCallback(() => {
     const params = new URLSearchParams(window.location.search)
-    params.set('next-id', mangaId.toString())
+    params.set('next-id', (mangaId + 1).toString())
 
     startTransition(() => {
       router.push(`/search?${params}`)
@@ -32,12 +32,12 @@ export default function SearchFromHereButton({ mangaId, className = '' }: Readon
       className={`flex justify-center items-center gap-1 ${className}`}
       disabled={isDisabled}
       onClick={handleSearchFromHere}
-      title={isDefaultSort ? '이 다음 작품부터 검색 결과를 다시 불러옵니다' : '기본순 정렬일 때만 사용할 수 있어요.'}
+      title={isDefaultSort ? '이 작품부터 검색 결과를 다시 불러옵니다' : '기본순 정렬일 때만 사용할 수 있어요'}
       type="button"
     >
       {isPending ? <IconSpinner className="w-4" /> : <IconSearch className="w-4 flex-shrink-0" />}
       <span className="text-sm font-medium whitespace-nowrap">
-        <span>이 다음부터</span>
+        <span>여기부터</span>
         <span className="hidden sm:inline"> 재검색</span>
       </span>
     </button>

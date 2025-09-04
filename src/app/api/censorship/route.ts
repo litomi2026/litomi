@@ -61,7 +61,7 @@ export async function GET(request: Request) {
 
     const cacheControl = createCacheControl({
       private: true,
-      maxAge: 10,
+      maxAge: 5,
     })
 
     if (censorshipRows.length === 0) {

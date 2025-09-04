@@ -2,6 +2,12 @@
 
 ## 장애
 
+#### 2025-09-04 22:26 ~ 22:53 (GMT+9)
+
+- 지속: 27분
+- 내용: [PostgresError]: Unable to check out process from the pool due to timeout
+- 원인: ?
+
 #### 2025-09-01 22:09 ~ 23:16 (GMT+9)
 
 - 지속: 1시간 7분

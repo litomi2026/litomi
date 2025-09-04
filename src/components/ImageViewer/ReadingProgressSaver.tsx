@@ -22,6 +22,7 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
   const [_, dispatchAction, isSaving] = useActionResponse({
     action: saveReadingProgress,
     shouldSetResponse: false,
+    silentNetworkError: true,
   })
 
   const saveProgress = useCallback(
