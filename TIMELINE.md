@@ -2,9 +2,27 @@
 
 ## 장애
 
-#### 2025-09-02 01:00 ~ 2025-09-05 14:59 (GMT+9)
+#### 2025-09-05 14:37 ~ 15:58 (GMT+9)
 
-- 지속: 3일 14시간
+- 지속: 1시간 21분
+- 내용: Edge Function Invocation > 503 Service Unavailable
+- 영향
+  - `/api/proxy/manga`
+    - Osaka, Japan (kix1) 15:31
+  - `/api/proxy/manga/[id]`
+    - Osaka, Japan (kix1) 14:37 ~ 15:57
+    - Singapore (sin1) 15:57 ~ 15:58
+- 조치: 없음 (사후에 인지함)
+- 분석
+  - 방화벽에 같은 날 14:30 ~ 16:00 challenge 기록 남음
+  - 한 번 발생한 오류는 1~2분 안에 끝남
+  - 1~2분 동안 특정 path에만 오류가 발생함
+- 원인: DoS 공격? (외부 API 장애는 아님)
+- 해결: WAF로 해당 요청 IP/JA4/user-agent 차단
+
+#### 2025-09-02 01:00 ~ 2025-09-05 19:59 (GMT+9)
+
+- 지속: 3일 19시간
 - 내용: Error: Failed query: insert into "manga_seen" ...
 - 영향: 알림 테이블에 신작 알림이 중복으로 생성됨
 - 조치: Cloud Run job 알림 작업 일시 중지
