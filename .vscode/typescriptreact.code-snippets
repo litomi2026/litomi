@@ -3,8 +3,6 @@
     "prefix": "page",
     "description": "Page Component",
     "body": [
-      "import type { PageProps } from '@/types/nextjs'",
-      "",
       "import Image from 'next/image'",
       "import Link from 'next/link'",
       "",

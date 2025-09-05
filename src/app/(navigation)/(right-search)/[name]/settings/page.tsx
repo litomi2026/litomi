@@ -1,8 +1,6 @@
 import dynamic from 'next/dynamic'
 import { Suspense } from 'react'
 
-import type { PageProps } from '@/types/nextjs'
-
 import IconBell from '@/components/icons/IconBell'
 import IconFingerprint from '@/components/icons/IconFingerprint'
 import IconKey from '@/components/icons/IconKey'
@@ -23,11 +21,7 @@ const KeywordSettings = dynamic(() => import('./keyword/KeywordSettings'))
 const PrivacySettings = dynamic(() => import('./privacy/PrivacySettings'))
 const PasskeySettings = dynamic(() => import('./passkey/PasskeySettings'))
 
-type Params = {
-  name: string
-}
-
-export default async function SettingsPage({ params }: PageProps<Params>) {
+export default async function SettingsPage({ params }: PageProps<'/[name]/settings'>) {
   const userId = await getUserIdFromCookie()
 
   if (!userId) {

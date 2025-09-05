@@ -1,30 +1,21 @@
-import { PageProps } from '@/types/nextjs'
-import { getUserIdFromCookie } from '@/utils/cookie'
 import { getUsernameFromParam } from '@/utils/param'
 
 import { getUserByName } from './common'
 import UserPostList from './UserPostList'
 
-type Params = {
-  name: string
-}
-
-export default async function Page({ params }: PageProps<Params>) {
+export default async function Page({ params }: PageProps<'/[name]'>) {
   const { name } = await params
-  const usernameFromParam = getUsernameFromParam(name)
-  const user = await getUserByName(usernameFromParam)
+  const username = getUsernameFromParam(name)
 
-  // NOTE: 존재하지 않는 사용자
+  if (!username) {
+    return
+  }
+
+  const user = await getUserByName(username)
+
   if (!user) {
     return
   }
 
-  const userId = await getUserIdFromCookie()
-
-  // NOTE: 로그인하지 않았거나 name이 없는 경우
-  if (!userId || !usernameFromParam) {
-    return // <GuestView />
-  }
-
-  return <UserPostList username={usernameFromParam} />
+  return <UserPostList username={username} />
 }

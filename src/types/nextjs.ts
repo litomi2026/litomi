@@ -12,11 +12,6 @@ export type LayoutProps<Param extends Readonly<Record<string, unknown>> = Readon
   params: Readonly<Promise<Param>>
 }>
 
-export type PageProps<T extends Readonly<Record<string, unknown>> = Readonly<Record<string, string>>> = Readonly<{
-  params: Readonly<Promise<T>>
-  searchParams: Promise<Record<string, string | string[] | undefined>>
-}>
-
 export type RouteProps<T extends Readonly<Record<string, unknown>> = Readonly<Record<string, string>>> = Readonly<{
   params: Readonly<Promise<T>>
 }>

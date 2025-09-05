@@ -7,7 +7,6 @@ import { SHORT_NAME } from '@/constants'
 import { createErrorManga } from '@/constants/json'
 import { HiyobiClient } from '@/crawler/hiyobi'
 import { KHentaiClient } from '@/crawler/k-hentai'
-import { PageProps } from '@/types/nextjs'
 import { getViewerLink } from '@/utils/manga'
 import { SourceParam, validateSource, validateView, ViewCookie } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
@@ -22,10 +21,6 @@ export const metadata: Metadata = {
   },
 }
 
-type Params = {
-  source: string
-}
-
 export async function generateStaticParams() {
   const params = []
   const sources = [SourceParam.HIYOBI]
@@ -38,7 +33,7 @@ export async function generateStaticParams() {
   return params
 }
 
-export default async function Page({ params }: PageProps) {
+export default async function Page({ params }: PageProps<'/mangas/random/[source]/[layout]'>) {
   const { source, layout } = await params
   const sourceString = validateSource(source)
   const layoutString = validateView(layout)
@@ -73,7 +68,7 @@ export default async function Page({ params }: PageProps) {
   )
 }
 
-async function getMangas({ source }: Params) {
+async function getMangas({ source }: { source: SourceParam }) {
   try {
     if (source === SourceParam.HIYOBI) {
       return await HiyobiClient.getInstance().fetchRandomMangas()

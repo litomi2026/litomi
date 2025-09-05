@@ -6,13 +6,12 @@ import PostList from '@/app/(navigation)/(right-search)/posts/[filter]/PostList'
 import { PostFilter } from '@/app/api/post/schema'
 import PostCreationForm from '@/components/post/PostCreationForm'
 import { CANONICAL_URL, defaultOpenGraph, SHORT_NAME } from '@/constants'
-import { PageProps } from '@/types/nextjs'
 
 import { mangaSchema } from '../schema'
 
 export const dynamic = 'error'
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps<'/manga/[id]/post'>): Promise<Metadata> {
   const validation = mangaSchema.safeParse(await params)
 
   if (!validation.success) {
@@ -31,7 +30,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-export default async function Page({ params }: PageProps) {
+export default async function Page({ params }: PageProps<'/manga/[id]/post'>) {
   const validation = mangaSchema.safeParse(await params)
 
   if (!validation.success) {
