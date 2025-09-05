@@ -33,7 +33,7 @@ type Props = {
     isPublic: boolean
     itemCount: number
   }[]
-  userId: string | null
+  userId: number | null
 }
 
 export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
@@ -43,7 +43,7 @@ export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
   const { id: libraryId } = useParams<Params>()
   const { enterSelectionMode, exitSelectionMode, isSelectionMode } = useLibrarySelectionStore()
   const currentLibrary = libraryId ? libraries.find((lib) => lib.id === Number(libraryId)) : null
-  const isOwner = currentLibrary?.userId === Number(userId)
+  const isOwner = currentLibrary?.userId === userId
   const isGuest = !userId
   const headerTitle = getHeaderTitle()
 

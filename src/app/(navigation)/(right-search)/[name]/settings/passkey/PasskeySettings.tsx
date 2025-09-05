@@ -1,5 +1,5 @@
 import { AuthenticatorTransportFuture } from '@simplewebauthn/server'
-import { sql } from 'drizzle-orm'
+import { desc, eq } from 'drizzle-orm'
 
 import { db } from '@/database/drizzle'
 import { decodeDeviceType } from '@/database/enum'
@@ -8,7 +8,7 @@ import { credentialTable } from '@/database/schema'
 import PasskeyList from './PasskeyList'
 
 type Props = {
-  userId: string
+  userId: number
 }
 
 export default async function PasskeySettings({ userId }: Props) {
@@ -22,8 +22,8 @@ export default async function PasskeySettings({ userId }: Props) {
       transports: credentialTable.transports,
     })
     .from(credentialTable)
-    .where(sql`${credentialTable.userId} = ${userId}`)
-    .orderBy(sql`${credentialTable.createdAt} DESC`)
+    .where(eq(credentialTable.userId, userId))
+    .orderBy(desc(credentialTable.createdAt))
 
   const passkeys = credentials.map((credential) => ({
     ...credential,

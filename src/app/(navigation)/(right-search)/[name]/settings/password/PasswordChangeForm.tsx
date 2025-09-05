@@ -13,7 +13,7 @@ import useActionResponse, { getFieldError, getFormField } from '@/hook/useAction
 import { changePassword } from './action'
 
 type Props = {
-  userId: string
+  userId: number
 }
 
 export default function PasswordChangeForm({ userId }: Readonly<Props>) {

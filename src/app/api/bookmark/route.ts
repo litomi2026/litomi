@@ -1,6 +1,6 @@
 import { createCacheControl } from '@/crawler/proxy-utils'
 import selectBookmarks from '@/sql/selectBookmarks'
-import { getUserIdFromCookie } from '@/utils/session'
+import { validateUserIdFromCookie } from '@/utils/cookie'
 
 import { GETBookmarksSchema } from './schema'
 
@@ -15,7 +15,7 @@ export type GETBookmarksResponse = {
 }
 
 export async function GET(request: Request) {
-  const userId = await getUserIdFromCookie()
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return new Response('Unauthorized', { status: 401 })

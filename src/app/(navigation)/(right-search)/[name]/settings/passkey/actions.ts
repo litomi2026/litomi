@@ -8,7 +8,7 @@ import {
   verifyAuthenticationResponse,
   verifyRegistrationResponse,
 } from '@simplewebauthn/server'
-import { sql } from 'drizzle-orm'
+import { and, eq, gt, lt } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 
@@ -26,9 +26,8 @@ import {
   tooManyRequests,
   unauthorized,
 } from '@/utils/action-response'
-import { setAccessTokenCookie } from '@/utils/cookie'
+import { setAccessTokenCookie, validateUserIdFromCookie } from '@/utils/cookie'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
-import { getUserIdFromCookie } from '@/utils/session'
 
 import {
   deleteCredentialSchema,
@@ -41,7 +40,7 @@ import { generateFakeCredentials } from './utils'
 const THREE_MINUTES = 3 * 60 * 1000
 
 export async function deleteCredential(formData: FormData) {
-  const userId = await getUserIdFromCookie()
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -58,7 +57,7 @@ export async function deleteCredential(formData: FormData) {
   try {
     const [deletedCredential] = await db
       .delete(credentialTable)
-      .where(sql`${credentialTable.id} = ${credentialId} AND ${credentialTable.userId} = ${userId}`)
+      .where(and(eq(credentialTable.id, credentialId), eq(credentialTable.userId, userId)))
       .returning({ id: credentialTable.id })
 
     if (!deletedCredential) {
@@ -98,8 +97,8 @@ export async function getAuthenticationOptions(loginId: string) {
           transports: credentialTable.transports,
         })
         .from(userTable)
-        .leftJoin(credentialTable, sql`${credentialTable.userId} = ${userTable.id}`)
-        .where(sql`${userTable.loginId} = ${loginId}`)
+        .leftJoin(credentialTable, eq(credentialTable.userId, userTable.id))
+        .where(eq(userTable.loginId, loginId))
 
       // NOTE: 존재하지 않는 로그인 아이디로 요청한 경우 빈 배열이 반환됨
       const userId = userWithCredentials[0]?.userId
@@ -144,7 +143,7 @@ export async function getAuthenticationOptions(loginId: string) {
 }
 
 export async function getRegistrationOptions() {
-  const userId = await getUserIdFromCookie()
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -162,8 +161,8 @@ export async function getRegistrationOptions() {
           transports: credentialTable.transports,
         })
         .from(userTable)
-        .leftJoin(credentialTable, sql`${credentialTable.userId} = ${userTable.id}`)
-        .where(sql`${userTable.id} = ${userId}`)
+        .leftJoin(credentialTable, eq(credentialTable.userId, userTable.id))
+        .where(eq(userTable.id, userId))
 
       const user = existingCredentials[0]
 
@@ -234,11 +233,13 @@ export async function verifyAuthentication(body: unknown) {
           challenge: challengeTable.challenge,
         })
         .from(credentialTable)
-        .innerJoin(challengeTable, sql`${challengeTable.userId} = ${credentialTable.userId}`)
+        .innerJoin(challengeTable, eq(challengeTable.userId, credentialTable.userId))
         .where(
-          sql`${credentialTable.credentialId} = ${validatedData.id} 
-            AND ${challengeTable.type} = ${ChallengeType.AUTHENTICATION} 
-            AND ${challengeTable.expiresAt} > NOW()`,
+          and(
+            eq(credentialTable.credentialId, validatedData.id),
+            eq(challengeTable.type, ChallengeType.AUTHENTICATION),
+            gt(challengeTable.expiresAt, new Date()),
+          ),
         )
 
       if (!result) {
@@ -267,27 +268,23 @@ export async function verifyAuthentication(body: unknown) {
         authenticationInfo.credentialDeviceType === 'singleDevice' ? authenticationInfo.newCounter : credential.counter
 
       const [[user]] = await Promise.all([
-        tx
-          .update(userTable)
-          .set({ loginAt: new Date() })
-          .where(sql`${userTable.id} = ${credential.userId}`)
-          .returning({
-            id: userTable.id,
-            loginId: userTable.loginId,
-            name: userTable.name,
-            lastLoginAt: userTable.loginAt,
-            lastLogoutAt: userTable.logoutAt,
-          }),
+        tx.update(userTable).set({ loginAt: new Date() }).where(eq(userTable.id, credential.userId)).returning({
+          id: userTable.id,
+          loginId: userTable.loginId,
+          name: userTable.name,
+          lastLoginAt: userTable.loginAt,
+          lastLogoutAt: userTable.logoutAt,
+        }),
         tx
           .update(credentialTable)
           .set({
             counter: newCounter,
             lastUsedAt: new Date(),
           })
-          .where(sql`${credentialTable.credentialId} = ${validatedData.id}`),
+          .where(eq(credentialTable.credentialId, validatedData.id)),
         tx
           .delete(challengeTable)
-          .where(sql`${challengeTable.userId} = ${credential.userId} AND ${challengeTable.expiresAt} < NOW()`),
+          .where(and(eq(challengeTable.userId, credential.userId), lt(challengeTable.expiresAt, new Date()))),
         cookies().then((cookieStore) => {
           setAccessTokenCookie(cookieStore, credential.userId)
         }),
@@ -308,7 +305,7 @@ export async function verifyAuthentication(body: unknown) {
 }
 
 export async function verifyRegistration(body: RegistrationResponseJSON) {
-  const userId = await getUserIdFromCookie()
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -328,7 +325,11 @@ export async function verifyRegistration(body: RegistrationResponseJSON) {
         .select({ challenge: challengeTable.challenge })
         .from(challengeTable)
         .where(
-          sql`${challengeTable.userId} = ${userId} AND ${challengeTable.type} = ${ChallengeType.REGISTRATION} AND ${challengeTable.expiresAt} > NOW()`,
+          and(
+            eq(challengeTable.userId, userId),
+            eq(challengeTable.type, ChallengeType.REGISTRATION),
+            gt(challengeTable.expiresAt, new Date()),
+          ),
         )
 
       if (!stored) {
@@ -355,7 +356,7 @@ export async function verifyRegistration(body: RegistrationResponseJSON) {
         publicKey: Buffer.from(publicKey).toString('base64'),
         deviceType: encodeDeviceType(registrationResponse.authenticatorAttachment),
         transports,
-        userId: Number(userId),
+        userId,
         createdAt: new Date(),
       }
 
@@ -363,7 +364,7 @@ export async function verifyRegistration(body: RegistrationResponseJSON) {
         tx.insert(credentialTable).values(newPasskey),
         tx
           .delete(challengeTable)
-          .where(sql`${challengeTable.userId} = ${userId} AND ${challengeTable.expiresAt} < NOW()`),
+          .where(and(eq(challengeTable.userId, userId), lt(challengeTable.expiresAt, new Date()))),
       ])
 
       return newPasskey

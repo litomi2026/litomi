@@ -7,9 +7,9 @@ import { MAX_BOOKMARKS_PER_USER } from '@/constants/policy'
 import { db } from '@/database/drizzle'
 import { bookmarkTable } from '@/database/schema'
 import { badRequest, ok, unauthorized } from '@/utils/action-response'
+import { validateUserIdFromCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 import { formatNumber } from '@/utils/format'
-import { getUserIdFromCookie } from '@/utils/session'
 
 type BookmarkResult = {
   mangaId: number
@@ -22,7 +22,7 @@ const schema = z.object({
 })
 
 export default async function toggleBookmark(formData: FormData) {
-  const userId = await getUserIdFromCookie()
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')

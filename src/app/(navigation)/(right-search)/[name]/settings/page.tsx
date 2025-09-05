@@ -1,5 +1,4 @@
 import dynamic from 'next/dynamic'
-import { cookies } from 'next/headers'
 import { Suspense } from 'react'
 
 import type { PageProps } from '@/types/nextjs'
@@ -11,7 +10,7 @@ import IconSearch from '@/components/icons/IconSearch'
 import IconShield from '@/components/icons/IconShield'
 import IconTrash from '@/components/icons/IconTrash'
 import CollapsibleSection from '@/components/ui/CollapsibleSection'
-import { getUserIdFromAccessToken } from '@/utils/cookie'
+import { getUserIdFromCookie } from '@/utils/cookie'
 import { getUsernameFromParam } from '@/utils/param'
 
 import { getUserById } from '../common'
@@ -29,8 +28,7 @@ type Params = {
 }
 
 export default async function SettingsPage({ params }: PageProps<Params>) {
-  const cookieStore = await cookies()
-  const userId = await getUserIdFromAccessToken(cookieStore, false)
+  const userId = await getUserIdFromCookie()
 
   if (!userId) {
     return

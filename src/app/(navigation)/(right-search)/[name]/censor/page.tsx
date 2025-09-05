@@ -1,8 +1,7 @@
 import { Metadata } from 'next'
-import { cookies } from 'next/headers'
 
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
-import { getUserIdFromAccessToken } from '@/utils/cookie'
+import { getUserIdFromCookie } from '@/utils/cookie'
 
 import Censorships from './Censorships'
 import GuestView from './GuestView'
@@ -21,8 +20,7 @@ export const metadata: Metadata = {
 }
 
 export default async function CensorPage() {
-  const cookieStore = await cookies()
-  const userId = await getUserIdFromAccessToken(cookieStore, false)
+  const userId = await getUserIdFromCookie()
 
   if (!userId) {
     return <GuestView />

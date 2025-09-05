@@ -1,7 +1,7 @@
 import { ReferredPost } from '@/components/post/ReferredPostCard'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import selectPosts from '@/sql/selectPosts'
-import { getUserIdFromCookie } from '@/utils/session'
+import { validateUserIdFromCookie } from '@/utils/cookie'
 
 import { GETPostSchema } from './schema'
 
@@ -40,7 +40,7 @@ export async function GET(request: Request) {
   }
 
   const { cursor, limit = LIMIT, mangaId, filter, username } = validation.data
-  const currentUserId = await getUserIdFromCookie()
+  const currentUserId = await validateUserIdFromCookie()
 
   try {
     const postRows = await selectPosts({

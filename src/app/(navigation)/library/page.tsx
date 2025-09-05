@@ -7,7 +7,7 @@ import { LIBRARY_ITEMS_PER_PAGE } from '@/constants/policy'
 import { db } from '@/database/drizzle'
 import { libraryItemTable, libraryTable } from '@/database/schema'
 import { intToHexColor } from '@/utils/color'
-import { getUserIdFromCookie } from '@/utils/session'
+import { getUserIdFromCookie } from '@/utils/cookie'
 
 import AllLibraryMangaView from './AllLibraryMangaView'
 import CreateLibraryButton from './CreateLibraryButton'
@@ -44,7 +44,7 @@ export default async function LibraryPage() {
     .$dynamic()
 
   if (userId) {
-    query = query.where(eq(libraryTable.userId, Number(userId)))
+    query = query.where(eq(libraryTable.userId, userId))
   } else {
     query = query.where(eq(libraryTable.isPublic, true))
   }

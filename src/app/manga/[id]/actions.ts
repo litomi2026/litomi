@@ -8,8 +8,8 @@ import { MAX_READING_HISTORY_PER_USER } from '@/constants/policy'
 import { db } from '@/database/drizzle'
 import { readingHistoryTable } from '@/database/schema'
 import { badRequest, internalServerError, ok, unauthorized } from '@/utils/action-response'
+import { validateUserIdFromCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
-import { getUserIdFromCookie } from '@/utils/session'
 
 type SessionDBTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0]
 
@@ -19,7 +19,7 @@ const saveReadingProgressSchema = z.object({
 })
 
 export async function saveReadingProgress(mangaId: number, page: number) {
-  const userId = await getUserIdFromCookie()
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -36,7 +36,7 @@ export async function saveReadingProgress(mangaId: number, page: number) {
       await db
         .insert(readingHistoryTable)
         .values({
-          userId: Number(userId),
+          userId,
           mangaId,
           lastPage: page,
           updatedAt: new Date(),
@@ -49,7 +49,7 @@ export async function saveReadingProgress(mangaId: number, page: number) {
           },
         })
 
-      await enforceHistoryLimit(tx, Number(userId))
+      await enforceHistoryLimit(tx, userId)
     })
 
     return ok(true)
@@ -93,7 +93,7 @@ export type ReadingHistoryItem = {
 }
 
 export async function migrateReadingHistory(data: ReadingHistoryItem[]) {
-  const userId = await getUserIdFromCookie()
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -108,7 +108,7 @@ export async function migrateReadingHistory(data: ReadingHistoryItem[]) {
   const { localHistories } = validation.data
 
   const values = localHistories.map((item) => ({
-    userId: Number(userId),
+    userId,
     mangaId: item.mangaId,
     lastPage: item.lastPage,
     updatedAt: new Date(item.updatedAt),
@@ -122,7 +122,7 @@ export async function migrateReadingHistory(data: ReadingHistoryItem[]) {
         .onConflictDoNothing()
         .returning({ mangaId: readingHistoryTable.mangaId })
 
-      await enforceHistoryLimit(tx, Number(userId))
+      await enforceHistoryLimit(tx, userId)
       return result
     })
 

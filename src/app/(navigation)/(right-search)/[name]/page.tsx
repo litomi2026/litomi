@@ -1,7 +1,5 @@
-import { cookies } from 'next/headers'
-
 import { PageProps } from '@/types/nextjs'
-import { getUserIdFromAccessToken } from '@/utils/cookie'
+import { getUserIdFromCookie } from '@/utils/cookie'
 import { getUsernameFromParam } from '@/utils/param'
 
 import { getUserByName } from './common'
@@ -21,8 +19,7 @@ export default async function Page({ params }: PageProps<Params>) {
     return
   }
 
-  const cookieStore = await cookies()
-  const userId = await getUserIdFromAccessToken(cookieStore, false)
+  const userId = await getUserIdFromCookie()
 
   // NOTE: 로그인하지 않았거나 name이 없는 경우
   if (!userId || !usernameFromParam) {

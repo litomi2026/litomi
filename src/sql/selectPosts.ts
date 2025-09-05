@@ -12,7 +12,7 @@ type Params = {
   filter?: PostFilter
   parentPostId?: number
   username?: string
-  currentUserId?: string | null
+  currentUserId?: number | null
 }
 
 export default async function selectPosts({

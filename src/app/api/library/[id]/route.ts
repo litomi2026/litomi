@@ -6,7 +6,7 @@ import { LIBRARY_ITEMS_PER_PAGE } from '@/constants/policy'
 import { db } from '@/database/drizzle'
 import { libraryItemTable, libraryTable } from '@/database/schema'
 import { RouteProps } from '@/types/nextjs'
-import { getUserIdFromCookie } from '@/utils/session'
+import { validateUserIdFromCookie } from '@/utils/cookie'
 
 const GETLibraryIdSchema = z.object({
   id: z.coerce.number().int().positive(),
@@ -38,7 +38,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
   const { id: libraryId, cursor } = validation.data
 
   try {
-    const userId = await getUserIdFromCookie()
+    const userId = await validateUserIdFromCookie()
 
     const [library] = await db
       .select({
@@ -48,10 +48,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       })
       .from(libraryTable)
       .where(
-        and(
-          eq(libraryTable.id, libraryId),
-          or(eq(libraryTable.userId, Number(userId)), eq(libraryTable.isPublic, true)),
-        ),
+        and(eq(libraryTable.id, libraryId), or(eq(libraryTable.userId, userId ?? 0), eq(libraryTable.isPublic, true))),
       )
 
     if (!library) {

@@ -4,7 +4,7 @@ import { Suspense } from 'react'
 import IconBell from '@/components/icons/IconBell'
 import IconLock from '@/components/icons/IconLock'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
-import { getUserIdFromCookie } from '@/utils/session'
+import { getUserIdFromCookie } from '@/utils/cookie'
 
 import NotificationList from './NotificationList'
 import NotificationSettingsLink from './NotificationSettingsLink'

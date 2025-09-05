@@ -5,7 +5,7 @@ import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { READING_HISTORY_PER_PAGE } from '@/constants/policy'
 import { db } from '@/database/drizzle'
 import { readingHistoryTable } from '@/database/schema'
-import { getUserIdFromCookie } from '@/utils/session'
+import { getUserIdFromCookie } from '@/utils/cookie'
 
 import HistoryPageClient from './HistoryPageClient'
 import NotFound from './NotFound'
@@ -38,7 +38,7 @@ export default async function HistoryPage() {
       updatedAt: readingHistoryTable.updatedAt,
     })
     .from(readingHistoryTable)
-    .where(eq(readingHistoryTable.userId, Number(userId)))
+    .where(eq(readingHistoryTable.userId, userId))
     .orderBy(desc(readingHistoryTable.updatedAt), desc(readingHistoryTable.mangaId))
     .limit(READING_HISTORY_PER_PAGE + 1)
 

@@ -1,4 +1,4 @@
-import { getUserIdFromCookie } from '@/utils/session'
+import { getUserIdFromCookie } from '@/utils/cookie'
 
 import { getUserById } from './common'
 import MyPageNavigationLink from './MyPageNavigationLink'

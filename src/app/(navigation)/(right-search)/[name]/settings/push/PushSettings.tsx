@@ -1,4 +1,4 @@
-import { sql } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import { Bell, Settings, Smartphone } from 'lucide-react'
 
 import { db } from '@/database/drizzle'
@@ -10,7 +10,7 @@ import PushSubscriptionToggle from './PushSubscriptionToggle'
 import PushTestButton from './PushTestButton'
 
 type Props = {
-  userId: string
+  userId: number
 }
 
 export default async function PushSettings({ userId }: Props) {
@@ -66,7 +66,7 @@ export default async function PushSettings({ userId }: Props) {
   )
 }
 
-async function getPushSettings(userId: string) {
+async function getPushSettings(userId: number) {
   const [[settings], webPushes] = await Promise.all([
     db
       .select({
@@ -77,7 +77,7 @@ async function getPushSettings(userId: string) {
         maxDaily: pushSettingsTable.maxDaily,
       })
       .from(pushSettingsTable)
-      .where(sql`${pushSettingsTable.userId} = ${userId}`),
+      .where(eq(pushSettingsTable.userId, userId)),
     db
       .select({
         id: webPushTable.id,
@@ -86,7 +86,7 @@ async function getPushSettings(userId: string) {
         createdAt: webPushTable.createdAt,
       })
       .from(webPushTable)
-      .where(sql`${webPushTable.userId} = ${userId}`),
+      .where(eq(webPushTable.userId, userId)),
   ])
 
   return {

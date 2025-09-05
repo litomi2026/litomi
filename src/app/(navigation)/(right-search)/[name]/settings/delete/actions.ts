@@ -2,7 +2,7 @@
 
 import { captureException } from '@sentry/nextjs'
 import { compare } from 'bcrypt'
-import { sql } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 import { z } from 'zod/v4'
 
@@ -11,7 +11,7 @@ import { db } from '@/database/drizzle'
 import { bookmarkTable, userCensorshipTable, userTable } from '@/database/schema'
 import { passwordSchema } from '@/database/zod'
 import { badRequest, internalServerError, ok, unauthorized } from '@/utils/action-response'
-import { getUserIdFromAccessToken } from '@/utils/cookie'
+import { validateUserIdFromCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 
 const deleteAccountSchema = z.object({
@@ -19,8 +19,7 @@ const deleteAccountSchema = z.object({
 })
 
 export async function deleteAccount(formData: FormData) {
-  const cookieStore = await cookies()
-  const userId = await getUserIdFromAccessToken(cookieStore)
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요', formData)
@@ -41,7 +40,7 @@ export async function deleteAccount(formData: FormData) {
         passwordHash: userTable.passwordHash,
       })
       .from(userTable)
-      .where(sql`${userTable.id} = ${userId}`)
+      .where(eq(userTable.id, userId))
 
     const isValidPassword = await compare(password, user.passwordHash)
 
@@ -49,8 +48,9 @@ export async function deleteAccount(formData: FormData) {
       return unauthorized('비밀번호가 일치하지 않아요', formData)
     }
 
-    await db.delete(userTable).where(sql`${userTable.id} = ${userId}`)
+    await db.delete(userTable).where(eq(userTable.id, userId))
 
+    const cookieStore = await cookies()
     cookieStore.delete(CookieKey.ACCESS_TOKEN)
     cookieStore.delete(CookieKey.REFRESH_TOKEN)
     return ok(`${user.loginId} 계정을 삭제했어요`)
@@ -61,8 +61,7 @@ export async function deleteAccount(formData: FormData) {
 }
 
 export async function exportUserData() {
-  const cookieStore = await cookies()
-  const userId = await getUserIdFromAccessToken(cookieStore)
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -78,7 +77,7 @@ export async function exportUserData() {
         imageURL: userTable.imageURL,
       })
       .from(userTable)
-      .where(sql`${userTable.id} = ${userId}`)
+      .where(eq(userTable.id, userId))
 
     if (!user) {
       return unauthorized('사용자를 찾을 수 없어요')
@@ -90,7 +89,7 @@ export async function exportUserData() {
         createdAt: bookmarkTable.createdAt,
       })
       .from(bookmarkTable)
-      .where(sql`${bookmarkTable.userId} = ${userId}`)
+      .where(eq(bookmarkTable.userId, userId))
 
     const censorships = await db
       .select({
@@ -100,7 +99,7 @@ export async function exportUserData() {
         createdAt: userCensorshipTable.createdAt,
       })
       .from(userCensorshipTable)
-      .where(sql`${userCensorshipTable.userId} = ${userId}`)
+      .where(eq(userCensorshipTable.userId, userId))
 
     const exportData = {
       exportedAt: new Date().toISOString(),

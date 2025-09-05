@@ -2,22 +2,20 @@
 
 import { captureException } from '@sentry/nextjs'
 import { count, inArray, sql } from 'drizzle-orm'
-import { cookies } from 'next/headers'
 
 import { MAX_CENSORSHIPS_PER_USER } from '@/constants/policy'
 import { db } from '@/database/drizzle'
 import { userCensorshipTable } from '@/database/schema'
 import { badRequest, internalServerError, noContent, ok, unauthorized } from '@/utils/action-response'
-import { getUserIdFromAccessToken } from '@/utils/cookie'
+import { validateUserIdFromCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 
 import { addCensorshipsSchema, deleteCensorshipsSchema, updateCensorshipsSchema } from './schema'
 
 export async function addCensorships(formData: FormData) {
-  const cookieStore = await cookies()
-  const userIdFromToken = await getUserIdFromAccessToken(cookieStore)
+  const userId = await validateUserIdFromCookie()
 
-  if (!userIdFromToken) {
+  if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요', formData)
   }
 
@@ -25,14 +23,13 @@ export async function addCensorships(formData: FormData) {
     keys: formData.getAll('key').map((key) => Number(key)),
     values: formData.getAll('value'),
     levels: formData.getAll('level').map((level) => Number(level)),
-    userId: userIdFromToken,
   })
 
   if (!validation.success) {
     return badRequest(flattenZodFieldErrors(validation.error), formData)
   }
 
-  const { keys, values, levels, userId } = validation.data
+  const { keys, values, levels } = validation.data
 
   const censorships = keys.map((key, index) => ({
     userId,
@@ -85,16 +82,14 @@ export async function addCensorships(formData: FormData) {
 }
 
 export async function deleteCensorships(formData: FormData) {
-  const cookieStore = await cookies()
-  const userIdFromToken = await getUserIdFromAccessToken(cookieStore)
+  const userId = await validateUserIdFromCookie()
 
-  if (!userIdFromToken) {
+  if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요', formData)
   }
 
   const validation = deleteCensorshipsSchema.safeParse({
     ids: formData.getAll('id'),
-    userId: userIdFromToken,
   })
 
   if (!validation.success) {
@@ -125,10 +120,9 @@ export async function deleteCensorships(formData: FormData) {
 }
 
 export async function updateCensorships(formData: FormData) {
-  const cookieStore = await cookies()
-  const userIdFromToken = await getUserIdFromAccessToken(cookieStore)
+  const userId = await validateUserIdFromCookie()
 
-  if (!userIdFromToken) {
+  if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요', formData)
   }
 
@@ -137,14 +131,13 @@ export async function updateCensorships(formData: FormData) {
     keys: formData.getAll('key').map((key) => Number(key)),
     values: formData.getAll('value'),
     levels: formData.getAll('level').map((level) => Number(level)),
-    userId: userIdFromToken,
   })
 
   if (!validation.success) {
     return badRequest(flattenZodFieldErrors(validation.error), formData)
   }
 
-  const { ids, keys, values, levels, userId } = validation.data
+  const { ids, keys, values, levels } = validation.data
 
   const updateData = ids.map((id, index) => ({
     id,

@@ -7,7 +7,6 @@ export const addCensorshipsSchema = z
     keys: z.array(z.enum(CensorshipKey)).min(1).max(100),
     values: z.array(z.string().min(1).max(256)).min(1).max(100),
     levels: z.array(z.enum(CensorshipLevel)).min(1).max(100),
-    userId: z.coerce.number().int().positive(),
   })
   .refine((data) => data.keys.length === data.values.length && data.values.length === data.levels.length, {
     message: 'Arrays must have the same length',
@@ -16,7 +15,6 @@ export const addCensorshipsSchema = z
 
 export const deleteCensorshipsSchema = z.object({
   ids: z.array(z.coerce.number().int().positive()).min(1).max(100),
-  userId: z.coerce.number().int().positive(),
 })
 
 export const updateCensorshipsSchema = z
@@ -25,7 +23,6 @@ export const updateCensorshipsSchema = z
     keys: z.array(z.enum(CensorshipKey)).min(1).max(100),
     values: z.array(z.string().min(1).max(256)).min(1).max(100),
     levels: z.array(z.enum(CensorshipLevel)).min(1).max(100),
-    userId: z.coerce.number().int().positive(),
   })
   .refine(
     (data) =>

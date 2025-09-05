@@ -1,12 +1,12 @@
-import { and, count, eq, sql } from 'drizzle-orm'
+import { and, count, eq } from 'drizzle-orm'
 
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { db } from '@/database/drizzle'
 import { notificationTable } from '@/database/schema'
-import { getUserIdFromCookie } from '@/utils/session'
+import { validateUserIdFromCookie } from '@/utils/cookie'
 
 export async function GET(request: Request) {
-  const userId = await getUserIdFromCookie()
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return new Response('Unauthorized', { status: 401 })
@@ -16,7 +16,7 @@ export async function GET(request: Request) {
     const [{ count: unreadCount }] = await db
       .select({ count: count(notificationTable.id) })
       .from(notificationTable)
-      .where(and(sql`${notificationTable.userId} = ${userId}`, eq(notificationTable.read, false)))
+      .where(and(eq(notificationTable.userId, userId), eq(notificationTable.read, false)))
 
     const cacheControl = createCacheControl({
       private: true,

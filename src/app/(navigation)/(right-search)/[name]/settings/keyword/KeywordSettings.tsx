@@ -1,4 +1,4 @@
-import { eq, sql } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 
 import { db } from '@/database/drizzle'
 import { notificationConditionTable, notificationCriteriaTable } from '@/database/notification-schema'
@@ -16,13 +16,13 @@ type CriteriaWithConditions = {
   lastMatchedAt: Date | null
 }
 
-export default async function KeywordSettings({ userId }: { userId: string }) {
+export default async function KeywordSettings({ userId }: { userId: number }) {
   const criteria = await getUserCriteria(userId)
 
   return <KeywordSettingsForm initialCriteria={criteria} />
 }
 
-async function getUserCriteria(userId: string) {
+async function getUserCriteria(userId: number) {
   const results = await db
     .select({
       criteriaId: notificationCriteriaTable.id,
@@ -37,7 +37,7 @@ async function getUserCriteria(userId: string) {
     })
     .from(notificationCriteriaTable)
     .innerJoin(notificationConditionTable, eq(notificationCriteriaTable.id, notificationConditionTable.criteriaId))
-    .where(sql`${notificationCriteriaTable.userId} = ${userId}`)
+    .where(eq(notificationCriteriaTable.userId, userId))
     .orderBy(notificationCriteriaTable.createdAt)
 
   const criteriaMap = new Map<number, CriteriaWithConditions>()

@@ -3,7 +3,6 @@
 import { captureException } from '@sentry/nextjs'
 import { sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
-import { cookies } from 'next/headers'
 import { z } from 'zod/v4'
 
 import { db } from '@/database/drizzle'
@@ -11,7 +10,7 @@ import { isPostgresError } from '@/database/error'
 import { userTable } from '@/database/schema'
 import { imageURLSchema, nameSchema, nicknameSchema } from '@/database/zod'
 import { badRequest, conflict, internalServerError, ok, seeOther, unauthorized } from '@/utils/action-response'
-import { getUserIdFromAccessToken } from '@/utils/cookie'
+import { validateUserIdFromCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 
 const profileSchema = z.object({
@@ -21,8 +20,7 @@ const profileSchema = z.object({
 })
 
 export default async function editProfile(formData: FormData) {
-  const cookieStore = await cookies()
-  const userId = await getUserIdFromAccessToken(cookieStore)
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요', formData)
