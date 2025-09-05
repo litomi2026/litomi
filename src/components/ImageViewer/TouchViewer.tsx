@@ -278,7 +278,7 @@ function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection }: 
 
   return (
     <ul
-      className={`h-dvh touch-none select-none overscroll-none [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:pb-safe [&_img]:border [&_img]:border-background ${screenFitStyle[screenFit]}`}
+      className={`h-dvh touch-pinch-zoom select-none overscroll-none [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:pb-safe [&_img]:border [&_img]:border-background ${screenFitStyle[screenFit]}`}
       onClick={handleClick}
       onPointerCancel={handlePointerCancel}
       onPointerDown={handlePointerDown}
