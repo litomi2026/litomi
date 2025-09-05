@@ -1,4 +1,4 @@
-import { and, eq, inArray, sql } from 'drizzle-orm'
+import { and, eq, inArray } from 'drizzle-orm'
 import webpush, { PushSubscription } from 'web-push'
 
 import { CANONICAL_URL } from '@/constants'
@@ -40,7 +40,17 @@ export class WebPushService {
       return
     }
 
-    const settings = await db.select().from(pushSettingsTable).where(inArray(pushSettingsTable.userId, userIds))
+    const settings = await db
+      .select({
+        userId: pushSettingsTable.userId,
+        quietEnabled: pushSettingsTable.quietEnabled,
+        quietStart: pushSettingsTable.quietStart,
+        quietEnd: pushSettingsTable.quietEnd,
+        batchEnabled: pushSettingsTable.batchEnabled,
+        maxDaily: pushSettingsTable.maxDaily,
+      })
+      .from(pushSettingsTable)
+      .where(inArray(pushSettingsTable.userId, userIds))
     const result = new Map<number, PushSettings>()
 
     for (const setting of settings) {
@@ -65,11 +75,16 @@ export class WebPushService {
     return result
   }
 
-  async sendTestWebPushToEndpoint(userId: string, endpoint: string, payload: WebPushPayload) {
+  async sendTestWebPushToEndpoint(userId: number, endpoint: string, payload: WebPushPayload) {
     const [subscription] = await db
-      .select()
+      .select({
+        id: webPushTable.id,
+        endpoint: webPushTable.endpoint,
+        p256dh: webPushTable.p256dh,
+        auth: webPushTable.auth,
+      })
       .from(webPushTable)
-      .where(and(sql`${webPushTable.userId} = ${userId}`, eq(webPushTable.endpoint, endpoint)))
+      .where(and(eq(webPushTable.userId, userId), eq(webPushTable.endpoint, endpoint)))
 
     if (!subscription) {
       throw new Error('No push subscription found for this endpoint')
@@ -200,13 +215,11 @@ export class WebPushService {
     return upsertedSubscription
   }
 
-  async unsubscribeUser(userId: string, endpoint?: string) {
+  async unsubscribeUser(userId: number, endpoint?: string) {
     if (endpoint) {
-      await db
-        .delete(webPushTable)
-        .where(and(sql`${webPushTable.userId} = ${userId}`, eq(webPushTable.endpoint, endpoint)))
+      await db.delete(webPushTable).where(and(eq(webPushTable.userId, userId), eq(webPushTable.endpoint, endpoint)))
     } else {
-      await db.delete(webPushTable).where(sql`${webPushTable.userId} = ${userId}`)
+      await db.delete(webPushTable).where(eq(webPushTable.userId, userId))
     }
   }
 

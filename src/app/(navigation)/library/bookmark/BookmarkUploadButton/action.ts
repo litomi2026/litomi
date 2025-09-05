@@ -1,15 +1,15 @@
 'use server'
 
 import { captureException } from '@sentry/nextjs'
-import { count, eq, sql } from 'drizzle-orm'
+import { count, eq } from 'drizzle-orm'
 import { z } from 'zod/v4'
 
 import { MAX_BOOKMARKS_PER_USER } from '@/constants/policy'
 import { db } from '@/database/drizzle'
 import { bookmarkTable } from '@/database/schema'
 import { badRequest, forbidden, internalServerError, ok, unauthorized } from '@/utils/action-response'
+import { validateUserIdFromCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
-import { getUserIdFromCookie } from '@/utils/session'
 
 export type ImportMode = 'merge' | 'replace'
 
@@ -28,7 +28,7 @@ const bookmarkImportSchema = z.array(importedBookmarkSchema).min(1).max(MAX_BOOK
 export type BookmarkImportData = z.infer<typeof bookmarkImportSchema>
 
 export async function importBookmarks(data: BookmarkImportData, mode: ImportMode = 'merge') {
-  const userId = await getUserIdFromCookie()
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -45,16 +45,15 @@ export async function importBookmarks(data: BookmarkImportData, mode: ImportMode
   try {
     const result = await db.transaction(async (tx) => {
       if (mode === 'replace') {
-        const userIdNumber = Number(userId)
         const now = new Date()
 
         const newBookmarks = bookmarks.map((bookmark) => ({
           mangaId: bookmark.mangaId,
-          userId: userIdNumber,
+          userId,
           createdAt: bookmark.createdAt ?? now,
         }))
 
-        await tx.delete(bookmarkTable).where(eq(bookmarkTable.userId, userIdNumber))
+        await tx.delete(bookmarkTable).where(eq(bookmarkTable.userId, userId))
         await tx.insert(bookmarkTable).values(newBookmarks)
 
         return {
@@ -65,7 +64,7 @@ export async function importBookmarks(data: BookmarkImportData, mode: ImportMode
         const [{ count: currentCount }] = await tx
           .select({ count: count(bookmarkTable.mangaId) })
           .from(bookmarkTable)
-          .where(sql`${bookmarkTable.userId} = ${userId}`)
+          .where(eq(bookmarkTable.userId, userId))
 
         if (currentCount >= MAX_BOOKMARKS_PER_USER) {
           return forbidden(`북마크 저장 한도에 도달했어요: ${MAX_BOOKMARKS_PER_USER}개`)
@@ -77,12 +76,11 @@ export async function importBookmarks(data: BookmarkImportData, mode: ImportMode
           return forbidden(`최대 ${availableSlots}개만 추가로 가져올 수 있어요: 현재 ${currentCount}개`)
         }
 
-        const userIdNumber = Number(userId)
         const now = new Date()
 
         const newBookmarks = bookmarks.map((bookmark) => ({
           mangaId: bookmark.mangaId,
-          userId: userIdNumber,
+          userId,
           createdAt: bookmark.createdAt ?? now,
         }))
 

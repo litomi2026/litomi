@@ -16,13 +16,13 @@ import {
   ok,
   unauthorized,
 } from '@/utils/action-response'
+import { validateUserIdFromCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
-import { getUserIdFromCookie } from '@/utils/session'
 
 import { createCriteriaSchema, deleteCriteriaSchema, updateCriteriaSchema } from './schema'
 
 export async function createNotificationCriteria(formData: FormData) {
-  const userId = await getUserIdFromCookie()
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요', formData)
@@ -54,7 +54,7 @@ export async function createNotificationCriteria(formData: FormData) {
       const [criteria] = await tx
         .insert(notificationCriteriaTable)
         .values({
-          userId: Number(userId),
+          userId,
           name,
           isActive,
         })
@@ -83,7 +83,7 @@ export async function createNotificationCriteria(formData: FormData) {
 }
 
 export async function deleteNotificationCriteria(formData: FormData) {
-  const userId = await getUserIdFromCookie()
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -118,7 +118,7 @@ export async function deleteNotificationCriteria(formData: FormData) {
 }
 
 export async function toggleNotificationCriteria(formData: FormData) {
-  const userId = await getUserIdFromCookie()
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인이 필요합니다')
@@ -152,7 +152,7 @@ export async function toggleNotificationCriteria(formData: FormData) {
 }
 
 export async function updateNotificationCriteria(formData: FormData) {
-  const userId = await getUserIdFromCookie()
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요', formData)
@@ -192,11 +192,11 @@ export async function updateNotificationCriteria(formData: FormData) {
       // Update conditions if provided
       if (conditions) {
         // Delete existing conditions
-        await tx.delete(notificationConditionTable).where(eq(notificationConditionTable.criteriaId, Number(criteriaId)))
+        await tx.delete(notificationConditionTable).where(eq(notificationConditionTable.criteriaId, criteriaId))
 
         // Insert new conditions
         const conditionValues = conditions.map((condition) => ({
-          criteriaId: Number(criteriaId),
+          criteriaId: criteriaId,
           type: condition.type,
           value: condition.value, // Already normalized in schema
         }))

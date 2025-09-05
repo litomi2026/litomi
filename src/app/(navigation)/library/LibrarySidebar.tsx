@@ -16,7 +16,7 @@ type Props = {
     isPublic: boolean
     itemCount: number
   }[]
-  userId: string | null
+  userId: number | null
   className?: string
   onClick?: () => void
 }

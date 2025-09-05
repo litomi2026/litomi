@@ -1,10 +1,10 @@
-import { and, desc, eq, sql } from 'drizzle-orm'
+import { and, desc, eq, lt } from 'drizzle-orm'
 
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { db } from '@/database/drizzle'
 import { NotificationType } from '@/database/enum'
 import { notificationTable } from '@/database/schema'
-import { getUserIdFromCookie } from '@/utils/session'
+import { validateUserIdFromCookie } from '@/utils/cookie'
 
 import { GETNotificationSchema, NotificationFilter } from './schema'
 
@@ -27,7 +27,7 @@ export type GETNotificationResponse = {
 }
 
 export async function GET(request: Request) {
-  const userId = await getUserIdFromCookie()
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return new Response('Unauthorized', { status: 401 })
@@ -47,10 +47,10 @@ export async function GET(request: Request) {
   const { nextId, filters } = validation.data
 
   try {
-    const conditions = [sql`${notificationTable.userId} = ${userId}`]
+    const conditions = [eq(notificationTable.userId, userId)]
 
     if (nextId) {
-      conditions.push(sql`${notificationTable.id} < ${nextId}`)
+      conditions.push(lt(notificationTable.id, nextId))
     }
 
     if (filters?.includes(NotificationFilter.UNREAD)) {

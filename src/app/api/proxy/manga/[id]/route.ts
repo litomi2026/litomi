@@ -28,7 +28,12 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
     }
 
     if ('isError' in manga && manga.isError) {
-      const cacheControl = createCacheControl({ public: true, maxAge: sec('10 minutes') })
+      const cacheControl = createCacheControl({
+        public: true,
+        maxAge: sec('1 minutes'),
+        sMaxAge: sec('1 minutes'),
+      })
+
       return Response.json(manga, { headers: { 'Cache-Control': cacheControl } })
     }
 

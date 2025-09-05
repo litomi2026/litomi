@@ -5,7 +5,7 @@ import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { BOOKMARKS_PER_PAGE } from '@/constants/policy'
 import { db } from '@/database/drizzle'
 import { bookmarkTable } from '@/database/schema'
-import { getUserIdFromCookie } from '@/utils/session'
+import { getUserIdFromCookie } from '@/utils/cookie'
 
 import BookmarkDownloadButton from './BookmarkDownloadButton'
 import BookmarkPageClient from './BookmarkPageClient'
@@ -40,7 +40,7 @@ export default async function BookmarkPage() {
       createdAt: bookmarkTable.createdAt,
     })
     .from(bookmarkTable)
-    .where(eq(bookmarkTable.userId, Number(userId)))
+    .where(eq(bookmarkTable.userId, userId))
     .orderBy(desc(bookmarkTable.createdAt), desc(bookmarkTable.mangaId))
     .limit(BOOKMARKS_PER_PAGE + 1)
 

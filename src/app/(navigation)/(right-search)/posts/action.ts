@@ -10,8 +10,8 @@ import { db } from '@/database/drizzle'
 import { PostType } from '@/database/enum'
 import { postLikeTable, postTable } from '@/database/schema'
 import { badRequest, created, internalServerError, noContent, notFound, unauthorized } from '@/utils/action-response'
+import { validateUserIdFromCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
-import { getUserIdFromCookie } from '@/utils/session'
 
 const createPostSchema = z.object({
   content: z.string().min(2).max(MAX_POST_CONTENT_LENGTH),
@@ -27,7 +27,7 @@ enum ToggleLikingPostAction {
 }
 
 export async function createPost(formData: FormData) {
-  const userId = await getUserIdFromCookie()
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요', formData)
@@ -50,7 +50,7 @@ export async function createPost(formData: FormData) {
     const [post] = await db
       .insert(postTable)
       .values({
-        userId: Number(userId),
+        userId,
         content,
         mangaId,
         parentPostId,
@@ -73,7 +73,7 @@ export async function createPost(formData: FormData) {
 }
 
 export async function deletePost(postId: number) {
-  const userId = await getUserIdFromCookie()
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -86,7 +86,7 @@ export async function deletePost(postId: number) {
         deletedAt: new Date(),
         content: null,
       })
-      .where(and(sql`${postTable.userId} = ${userId}`, eq(postTable.id, postId)))
+      .where(and(eq(postTable.userId, userId), eq(postTable.id, postId)))
       .returning({ id: postTable.id })
 
     if (!deletedPost) {
@@ -102,7 +102,7 @@ export async function deletePost(postId: number) {
 }
 
 export async function toggleLikingPost(postId: number) {
-  const userId = await getUserIdFromCookie()
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')

@@ -4,7 +4,7 @@ import IconX from '@/components/icons/IconX'
 import LoginButton from '@/components/LoginButton'
 import { SearchParamKey } from '@/constants/storage'
 
-export default function GuestView() {
+export default function Unauthorized() {
   return (
     <div className="flex flex-col flex-1 items-center px-4 py-8">
       <div className="text-center max-w-2xl mx-auto">

@@ -1,8 +1,6 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
-import type { PageProps } from '@/types/nextjs'
-
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { KHentaiClient } from '@/crawler/k-hentai'
 
@@ -11,7 +9,7 @@ import { mangaSchema } from './schema'
 
 export const dynamic = 'error'
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps<'/manga/[id]'>): Promise<Metadata> {
   const validation = mangaSchema.safeParse(await params)
 
   if (!validation.success) {
@@ -43,7 +41,7 @@ export async function generateStaticParams() {
   return kHentaiIds.map((id) => ({ id }))
 }
 
-export default async function Page({ params }: PageProps) {
+export default async function Page({ params }: PageProps<'/manga/[id]'>) {
   const validation = mangaSchema.safeParse(await params)
 
   if (!validation.success) {

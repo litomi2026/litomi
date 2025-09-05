@@ -1,16 +1,11 @@
 import { notFound } from 'next/navigation'
 
 import { PostFilter } from '@/app/api/post/schema'
-import { PageProps } from '@/types/nextjs'
 
 import PostList from './PostList'
 import { PostFilterParams, postFilterSchema } from './schema'
 
 export const dynamic = 'error'
-
-type Params = {
-  filter: PostFilterParams
-}
 
 const filterParamsToPostFilter = {
   [PostFilterParams.FOLLOWING]: PostFilter.FOLLOWING,
@@ -21,7 +16,7 @@ export async function generateStaticParams() {
   return [{ filter: PostFilterParams.RECOMMAND }, { filter: PostFilterParams.FOLLOWING }]
 }
 
-export default async function Page({ params }: PageProps<Params>) {
+export default async function Page({ params }: PageProps<'/posts/[filter]'>) {
   const validation = postFilterSchema.safeParse(await params)
 
   if (!validation.success) {

@@ -8,8 +8,8 @@ import { db } from '@/database/drizzle'
 import { libraryItemTable, libraryTable } from '@/database/schema'
 import { badRequest, conflict, created, notFound, ok, unauthorized } from '@/utils/action-response'
 import { hexColorToInt } from '@/utils/color'
+import { validateUserIdFromCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
-import { getUserIdFromCookie } from '@/utils/session'
 
 import {
   addMangaToLibrariesSchema,
@@ -21,7 +21,7 @@ import {
 } from './schema'
 
 export async function addMangaToLibraries(data: { mangaId: number; libraryIds: number[] }) {
-  const userId = await getUserIdFromCookie()
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -56,7 +56,7 @@ export async function addMangaToLibraries(data: { mangaId: number; libraryIds: n
 }
 
 export async function bulkCopyToLibrary(data: { toLibraryId: number; mangaIds: number[] }) {
-  const userId = await getUserIdFromCookie()
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -95,7 +95,7 @@ export async function bulkCopyToLibrary(data: { toLibraryId: number; mangaIds: n
 }
 
 export async function bulkMoveToLibrary(data: { fromLibraryId: number; toLibraryId: number; mangaIds: number[] }) {
-  const userId = await getUserIdFromCookie()
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -145,7 +145,7 @@ export async function bulkMoveToLibrary(data: { fromLibraryId: number; toLibrary
 }
 
 export async function bulkRemoveFromLibrary(data: { libraryId: number; mangaIds: number[] }) {
-  const userId = await getUserIdFromCookie()
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -172,7 +172,7 @@ export async function bulkRemoveFromLibrary(data: { libraryId: number; mangaIds:
           db
             .select()
             .from(libraryTable)
-            .where(and(eq(libraryTable.id, libraryId), eq(libraryTable.userId, Number(userId)))),
+            .where(and(eq(libraryTable.id, libraryId), eq(libraryTable.userId, userId))),
         ),
       ),
     )
@@ -188,7 +188,7 @@ export async function bulkRemoveFromLibrary(data: { libraryId: number; mangaIds:
 }
 
 export async function createLibrary(formData: FormData) {
-  const userId = await getUserIdFromCookie()
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -207,19 +207,18 @@ export async function createLibrary(formData: FormData) {
   }
 
   const { name, description, color, icon, isPublic } = validation.data
-  const userIdNum = Number(userId)
 
   const [newLibrary] = await db.execute<{ id: number }>(sql`
     INSERT INTO ${libraryTable} (user_id, name, description, color, icon, is_public)
     SELECT 
-      ${userIdNum},
+      ${userId},
       ${name},
       ${description},
       ${color ? hexColorToInt(color) : null},
       ${icon},
       ${isPublic}
     WHERE (
-      SELECT COUNT(${libraryTable.id}) FROM ${libraryTable} WHERE user_id = ${userIdNum}
+      SELECT COUNT(${libraryTable.id}) FROM ${libraryTable} WHERE user_id = ${userId}
     ) < ${MAX_LIBRARIES_PER_USER}
     RETURNING ${libraryTable.id}
   `)
@@ -233,7 +232,7 @@ export async function createLibrary(formData: FormData) {
 }
 
 export async function deleteLibrary(libraryId: number) {
-  const userId = await getUserIdFromCookie()
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -241,7 +240,7 @@ export async function deleteLibrary(libraryId: number) {
 
   const [deletedLibrary] = await db
     .delete(libraryTable)
-    .where(and(eq(libraryTable.id, libraryId), eq(libraryTable.userId, Number(userId))))
+    .where(and(eq(libraryTable.id, libraryId), eq(libraryTable.userId, userId)))
     .returning({ id: libraryTable.id })
 
   if (!deletedLibrary) {
@@ -253,7 +252,7 @@ export async function deleteLibrary(libraryId: number) {
 }
 
 export async function updateLibrary(formData: FormData) {
-  const userId = await getUserIdFromCookie()
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요', formData)
@@ -281,7 +280,7 @@ export async function updateLibrary(formData: FormData) {
       color: color ? hexColorToInt(color) : null,
       icon: icon || null,
     })
-    .where(and(eq(libraryTable.id, libraryId), eq(libraryTable.userId, Number(userId))))
+    .where(and(eq(libraryTable.id, libraryId), eq(libraryTable.userId, userId)))
     .returning({ id: libraryTable.id })
 
   if (!updatedLibrary) {

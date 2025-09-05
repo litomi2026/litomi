@@ -1,11 +1,11 @@
-import { sql } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 
 import { CookieKey } from '@/constants/storage'
 import { handleRouteError } from '@/crawler/proxy-utils'
 import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
-import { getUserIdFromAccessToken } from '@/utils/cookie'
+import { validateUserIdFromCookie } from '@/utils/cookie'
 
 export type GETMeResponse = {
   id: number
@@ -16,8 +16,7 @@ export type GETMeResponse = {
 }
 
 export async function GET(request: Request) {
-  const cookieStore = await cookies()
-  const userId = await getUserIdFromAccessToken(cookieStore)
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return new Response('Unauthorized', { status: 401 })
@@ -33,9 +32,10 @@ export async function GET(request: Request) {
         imageURL: userTable.imageURL,
       })
       .from(userTable)
-      .where(sql`${userTable.id} = ${userId}`)
+      .where(eq(userTable.id, userId))
 
     if (!user) {
+      const cookieStore = await cookies()
       cookieStore.delete(CookieKey.ACCESS_TOKEN)
       return new Response('Not Found', { status: 404 })
     }

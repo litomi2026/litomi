@@ -8,7 +8,6 @@ import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { createErrorManga } from '@/constants/json'
 import { HiyobiClient } from '@/crawler/hiyobi'
 import { KHentaiClient } from '@/crawler/k-hentai'
-import { PageProps } from '@/types/nextjs'
 import { getViewerLink } from '@/utils/manga'
 import { getTotalPages, SourceParam, ViewCookie } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
@@ -30,11 +29,6 @@ export const metadata: Metadata = {
   },
 }
 
-type Params = {
-  source: SourceParam
-  page: number
-}
-
 export async function generateStaticParams() {
   const params = []
   const views = [ViewCookie.CARD, ViewCookie.IMAGE]
@@ -53,7 +47,7 @@ export async function generateStaticParams() {
   return params
 }
 
-export default async function Page({ params }: PageProps) {
+export default async function Page({ params }: PageProps<'/mangas/[page]/[source]/[layout]'>) {
   const validation = mangasSchema.safeParse(await params)
 
   if (!validation.success) {
@@ -97,7 +91,7 @@ export default async function Page({ params }: PageProps) {
   )
 }
 
-async function getMangas({ source, page }: Params) {
+async function getMangas({ source, page }: { source: SourceParam; page: number }) {
   // cacheLife('hours')
   try {
     if (source === SourceParam.HIYOBI) {

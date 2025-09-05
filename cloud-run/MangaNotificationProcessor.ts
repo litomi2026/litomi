@@ -7,9 +7,9 @@ import { db } from '../src/database/drizzle'
 import { NotificationType } from '../src/database/enum'
 import { mangaSeenTable } from '../src/database/notification-schema'
 import { notificationTable } from '../src/database/schema'
-import { OptimizedNotificationMatcher } from '../src/lib/notification/OptimizedNotificationMatcher'
 import { WebPushPayload, WebPushService } from '../src/lib/notification/WebPushService'
 import { getImageSource, getViewerLink } from '../src/utils/manga'
+import { OptimizedNotificationMatcher } from './OptimizedNotificationMatcher'
 
 interface NewMangaNotification {
   artists?: string[]

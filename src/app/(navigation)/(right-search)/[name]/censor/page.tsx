@@ -1,11 +1,10 @@
 import { Metadata } from 'next'
-import { cookies } from 'next/headers'
 
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
-import { getUserIdFromAccessToken } from '@/utils/cookie'
+import { getUserIdFromCookie } from '@/utils/cookie'
 
 import Censorships from './Censorships'
-import GuestView from './GuestView'
+import Unauthorized from './Unauthorized'
 
 export const metadata: Metadata = {
   title: `검열 - ${SHORT_NAME}`,
@@ -20,12 +19,11 @@ export const metadata: Metadata = {
   },
 }
 
-export default async function CensorPage() {
-  const cookieStore = await cookies()
-  const userId = await getUserIdFromAccessToken(cookieStore, false)
+export default async function Page() {
+  const userId = await getUserIdFromCookie()
 
   if (!userId) {
-    return <GuestView />
+    return <Unauthorized />
   }
 
   return <Censorships />

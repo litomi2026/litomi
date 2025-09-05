@@ -1,10 +1,10 @@
-import { and, count, eq, inArray, or, sql } from 'drizzle-orm'
+import { and, count, eq, inArray, or, SQL, sql } from 'drizzle-orm'
 
-import type { Manga } from '@/types/manga'
+import type { Manga } from '../src/types/manga'
 
-import { db } from '@/database/drizzle'
-import { NotificationConditionType } from '@/database/enum'
-import { notificationConditionTable, notificationCriteriaTable } from '@/database/notification-schema'
+import { db } from '../src/database/drizzle'
+import { NotificationConditionType } from '../src/database/enum'
+import { notificationConditionTable, notificationCriteriaTable } from '../src/database/notification-schema'
 
 export interface MangaMetadata {
   artists?: string[]
@@ -86,7 +86,8 @@ export class OptimizedNotificationMatcher {
     }
 
     // Step 2: Build conditions for the query
-    const conditions = []
+    const conditions: (SQL | undefined)[] = []
+
     for (const [type, values] of valuesByType) {
       if (values.size > 0) {
         conditions.push(
@@ -170,7 +171,7 @@ export class OptimizedNotificationMatcher {
     const result = new Map<number, Array<{ userId: number; criteriaId: number; criteriaName: string }>>()
 
     for (const [mangaId, mangaValues] of mangaValueMaps) {
-      const matches = []
+      const matches: { userId: number; criteriaId: number; criteriaName: string }[] = []
 
       for (const [criteriaId, criteriaData] of criteriaConditionsMap) {
         let matchedCount = 0

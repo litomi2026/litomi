@@ -32,44 +32,46 @@ mock.module('@/database/drizzle', () => ({
   db: {
     select: () => ({
       from: () => ({
-        where: async (condition: { queryChunks?: unknown[] }) => {
+        where: (condition: { queryChunks?: { value?: unknown }[] }) => {
           if (shouldThrowDatabaseError) {
-            throw new Error('Database connection failed')
+            return Promise.reject(new Error('Database connection failed'))
           }
 
-          let userId: string | null = null
+          let userId: number | null = null
 
-          if (condition && condition.queryChunks && condition.queryChunks.length > 3) {
-            const userIdChunk = condition.queryChunks[3]
-            if (typeof userIdChunk === 'number' || (typeof userIdChunk === 'string' && /^\d+$/.test(userIdChunk))) {
-              userId = String(userIdChunk)
+          for (const { value } of condition.queryChunks ?? []) {
+            if (typeof value === 'number' || (typeof value === 'string' && /^\d+$/.test(value))) {
+              userId = Number(value)
+              break
             }
           }
 
-          if (userId === '1') {
-            return [
+          if (userId === 1) {
+            return Promise.resolve([
               {
                 id: 1,
                 loginId: 'testuser1',
+                name: 'Test User 1',
                 nickname: 'Test User 1',
                 imageURL: 'https://example.com/avatar1.jpg',
               },
-            ]
+            ])
           }
-          if (userId === '2') {
-            return [
+          if (userId === 2) {
+            return Promise.resolve([
               {
                 id: 2,
                 loginId: 'testuser2',
+                name: 'Test User 2',
                 nickname: 'Test User 2',
                 imageURL: null,
               },
-            ]
+            ])
           }
-          if (userId === '999') {
-            return []
+          if (userId === 999) {
+            return Promise.resolve([])
           }
-          return []
+          return Promise.resolve([])
         },
       }),
     }),
@@ -103,6 +105,7 @@ describe('GET /api/me', () => {
       expect(data).toEqual({
         id: 1,
         loginId: 'testuser1',
+        name: 'Test User 1',
         nickname: 'Test User 1',
         imageURL: 'https://example.com/avatar1.jpg',
       })
@@ -123,6 +126,7 @@ describe('GET /api/me', () => {
       expect(data).toEqual({
         id: 2,
         loginId: 'testuser2',
+        name: 'Test User 2',
         nickname: 'Test User 2',
         imageURL: null,
       })

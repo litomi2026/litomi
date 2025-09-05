@@ -1,15 +1,14 @@
 'use server'
 
 import { captureException } from '@sentry/nextjs'
-import { sql } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
-import { cookies } from 'next/headers'
 
 import { db } from '@/database/drizzle'
 import { pushSettingsTable, webPushTable } from '@/database/schema'
 import { WebPushService } from '@/lib/notification/WebPushService'
 import { badRequest, created, internalServerError, ok, unauthorized } from '@/utils/action-response'
-import { getUserIdFromAccessToken } from '@/utils/cookie'
+import { validateUserIdFromCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 
 import {
@@ -21,8 +20,7 @@ import {
 } from './schema'
 
 export async function removeDevice(params: Record<string, unknown>) {
-  const cookieStore = await cookies()
-  const userId = await getUserIdFromAccessToken(cookieStore)
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -37,7 +35,7 @@ export async function removeDevice(params: Record<string, unknown>) {
   const { deviceId, username } = validation.data
 
   try {
-    await db.delete(webPushTable).where(sql`${webPushTable.id} = ${deviceId} AND ${webPushTable.userId} = ${userId}`)
+    await db.delete(webPushTable).where(and(eq(webPushTable.id, deviceId), eq(webPushTable.userId, userId)))
     revalidatePath(`/${username}/settings`)
     return ok('푸시 알림을 해제했어요')
   } catch (error) {
@@ -47,8 +45,7 @@ export async function removeDevice(params: Record<string, unknown>) {
 }
 
 export async function subscribeToNotifications(data: Record<string, unknown>) {
-  const cookieStore = await cookies()
-  const userId = await getUserIdFromAccessToken(cookieStore)
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -64,7 +61,7 @@ export async function subscribeToNotifications(data: Record<string, unknown>) {
   const notificationService = WebPushService.getInstance()
 
   try {
-    await notificationService.subscribeUser(Number(userId), subscription, userAgent)
+    await notificationService.subscribeUser(userId, subscription, userAgent)
     revalidatePath(`/@${username}/settings`)
     return created('이 브라우저의 푸시 알림을 활성화했어요')
   } catch (error) {
@@ -74,8 +71,7 @@ export async function subscribeToNotifications(data: Record<string, unknown>) {
 }
 
 export async function testNotification(data: Record<string, unknown>) {
-  const cookieStore = await cookies()
-  const userId = await getUserIdFromAccessToken(cookieStore)
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -107,8 +103,7 @@ export async function testNotification(data: Record<string, unknown>) {
 }
 
 export async function unsubscribeFromNotifications(data: Record<string, unknown>) {
-  const cookieStore = await cookies()
-  const userId = await getUserIdFromAccessToken(cookieStore)
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -134,8 +129,7 @@ export async function unsubscribeFromNotifications(data: Record<string, unknown>
 }
 
 export async function updatePushSettings(formData: FormData) {
-  const cookieStore = await cookies()
-  const userId = await getUserIdFromAccessToken(cookieStore)
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인이 필요합니다')
@@ -161,7 +155,7 @@ export async function updatePushSettings(formData: FormData) {
     await db
       .insert(pushSettingsTable)
       .values({
-        userId: Number(userId),
+        userId,
         ...updateValues,
       })
       .onConflictDoUpdate({

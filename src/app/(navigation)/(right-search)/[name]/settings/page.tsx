@@ -1,8 +1,5 @@
 import dynamic from 'next/dynamic'
-import { cookies } from 'next/headers'
 import { Suspense } from 'react'
-
-import type { PageProps } from '@/types/nextjs'
 
 import IconBell from '@/components/icons/IconBell'
 import IconFingerprint from '@/components/icons/IconFingerprint'
@@ -11,11 +8,11 @@ import IconSearch from '@/components/icons/IconSearch'
 import IconShield from '@/components/icons/IconShield'
 import IconTrash from '@/components/icons/IconTrash'
 import CollapsibleSection from '@/components/ui/CollapsibleSection'
-import { getUserIdFromAccessToken } from '@/utils/cookie'
+import { getUserIdFromCookie } from '@/utils/cookie'
 import { getUsernameFromParam } from '@/utils/param'
 
-import { getUserById } from '../common'
-import SettingsForbidden from './SettingsForbidden'
+import { getMe } from '../common'
+import Forbidden from './Forbidden'
 
 const AccountDeletionForm = dynamic(() => import('./delete/AccountDeletionForm'))
 const PushSettings = dynamic(() => import('./push/PushSettings'))
@@ -24,23 +21,18 @@ const KeywordSettings = dynamic(() => import('./keyword/KeywordSettings'))
 const PrivacySettings = dynamic(() => import('./privacy/PrivacySettings'))
 const PasskeySettings = dynamic(() => import('./passkey/PasskeySettings'))
 
-type Params = {
-  name: string
-}
-
-export default async function SettingsPage({ params }: PageProps<Params>) {
-  const cookieStore = await cookies()
-  const userId = await getUserIdFromAccessToken(cookieStore, false)
+export default async function SettingsPage({ params }: PageProps<'/[name]/settings'>) {
+  const userId = await getUserIdFromCookie()
 
   if (!userId) {
     return
   }
 
-  const [loginUser, { name }] = await Promise.all([getUserById(userId), params])
+  const [me, { name }] = await Promise.all([getMe(userId), params])
   const usernameFromParam = getUsernameFromParam(name)
 
-  if (loginUser.name !== usernameFromParam) {
-    return <SettingsForbidden loginUsername={loginUser.name} />
+  if (me.name !== usernameFromParam) {
+    return <Forbidden loginUsername={me.name} />
   }
 
   return (
@@ -104,7 +96,7 @@ export default async function SettingsPage({ params }: PageProps<Params>) {
         <p className="text-zinc-400 text-sm mb-4 sm:mb-6">
           계정을 삭제하면 사용자 관련 모든 데이터가 영구적으로 삭제되고 복구할 수 없어요
         </p>
-        <AccountDeletionForm loginId={loginUser.loginId} />
+        <AccountDeletionForm loginId={me.loginId} />
       </CollapsibleSection>
     </>
   )

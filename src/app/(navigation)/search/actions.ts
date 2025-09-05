@@ -1,21 +1,21 @@
 'use server'
 
 import { captureException } from '@sentry/nextjs'
-import { count, eq, sql } from 'drizzle-orm'
+import { count, eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 
 import { MAX_CRITERIA_PER_USER } from '@/constants/policy'
 import { db } from '@/database/drizzle'
 import { notificationConditionTable, notificationCriteriaTable } from '@/database/notification-schema'
 import { badRequest, conflict, created, internalServerError, unauthorized } from '@/utils/action-response'
+import { validateUserIdFromCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
-import { getUserIdFromCookie } from '@/utils/session'
 
 import { subscribeToKeywordSchema } from './schema'
 import { areConditionsEqual, type ParsedCondition } from './utils/queryParser'
 
 export async function subscribeToKeyword(conditions: ParsedCondition[], criteriaName: string) {
-  const userId = await getUserIdFromCookie()
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -35,7 +35,7 @@ export async function subscribeToKeyword(conditions: ParsedCondition[], criteria
       const [existingCount] = await tx
         .select({ count: count() })
         .from(notificationCriteriaTable)
-        .where(sql`${notificationCriteriaTable.userId} = ${userId}`)
+        .where(eq(notificationCriteriaTable.userId, userId))
 
       if (existingCount.count >= MAX_CRITERIA_PER_USER) {
         return badRequest({ error: `최대 ${MAX_CRITERIA_PER_USER}개까지만 추가할 수 있어요` })
@@ -50,7 +50,7 @@ export async function subscribeToKeyword(conditions: ParsedCondition[], criteria
         })
         .from(notificationCriteriaTable)
         .innerJoin(notificationConditionTable, eq(notificationCriteriaTable.id, notificationConditionTable.criteriaId))
-        .where(sql`${notificationCriteriaTable.userId} = ${userId}`)
+        .where(eq(notificationCriteriaTable.userId, userId))
 
       const criteriaMap = new Map<number, { name: string; conditions: { type: number; value: string }[] }>()
 
@@ -78,7 +78,7 @@ export async function subscribeToKeyword(conditions: ParsedCondition[], criteria
       const [criteria] = await tx
         .insert(notificationCriteriaTable)
         .values({
-          userId: Number(userId),
+          userId,
           name: criteriaName,
           isActive: true,
         })

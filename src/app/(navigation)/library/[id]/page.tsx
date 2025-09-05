@@ -7,8 +7,7 @@ import { z } from 'zod/v4'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { db } from '@/database/drizzle'
 import { libraryTable } from '@/database/schema'
-import { PageProps } from '@/types/nextjs'
-import { getUserIdFromCookie } from '@/utils/session'
+import { getUserIdFromCookie } from '@/utils/cookie'
 
 import LibraryItems from './LibraryItems'
 
@@ -16,12 +15,8 @@ const schema = z.object({
   id: z.coerce.number().int().positive(),
 })
 
-type Params = {
-  id: string
-}
-
 // NOTE: 연산이 무거우면 정적 메타데이터로 바꾸기
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps<'/library/[id]'>): Promise<Metadata> {
   const validation = schema.safeParse(await params)
 
   if (!validation.success) {
@@ -30,7 +25,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const { id: libraryId } = validation.data
   const userId = await getUserIdFromCookie()
-  const library = await getLibrary(libraryId, Number(userId))
+  const library = await getLibrary(libraryId, userId)
 
   if (!library) {
     notFound()
@@ -50,7 +45,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-export default async function LibraryDetailPage({ params }: PageProps<Params>) {
+export default async function LibraryDetailPage({ params }: PageProps<'/library/[id]'>) {
   const validation = schema.safeParse(await params)
 
   if (!validation.success) {
@@ -59,13 +54,13 @@ export default async function LibraryDetailPage({ params }: PageProps<Params>) {
 
   const { id: libraryId } = validation.data
   const userId = await getUserIdFromCookie()
-  const library = await getLibrary(libraryId, Number(userId))
+  const library = await getLibrary(libraryId, userId)
 
   if (!library) {
     notFound()
   }
 
-  const isOwner = library.userId === Number(userId)
+  const isOwner = library.userId === userId
 
   return (
     <main className="flex-1 flex flex-col">
@@ -76,7 +71,7 @@ export default async function LibraryDetailPage({ params }: PageProps<Params>) {
   )
 }
 
-const getLibrary = cache(async (libraryId: number, userId: number) => {
+const getLibrary = cache(async (libraryId: number, userId: number | null) => {
   const [library] = await db
     .select({
       id: libraryTable.id,
@@ -88,7 +83,9 @@ const getLibrary = cache(async (libraryId: number, userId: number) => {
       userId: libraryTable.userId,
     })
     .from(libraryTable)
-    .where(and(eq(libraryTable.id, libraryId), or(eq(libraryTable.userId, userId), eq(libraryTable.isPublic, true))))
+    .where(
+      and(eq(libraryTable.id, libraryId), or(eq(libraryTable.userId, userId ?? 0), eq(libraryTable.isPublic, true))),
+    )
 
   return library
 })

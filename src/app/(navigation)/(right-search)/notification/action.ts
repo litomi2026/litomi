@@ -1,17 +1,17 @@
 'use server'
 
 import { captureException } from '@sentry/nextjs'
-import { and, inArray, sql } from 'drizzle-orm'
+import { and, eq, inArray } from 'drizzle-orm'
 
 import { db } from '@/database/drizzle'
 import { notificationTable } from '@/database/schema'
 import { badRequest, internalServerError, ok, unauthorized } from '@/utils/action-response'
-import { getUserIdFromCookie } from '@/utils/session'
+import { validateUserIdFromCookie } from '@/utils/cookie'
 
 import { deleteNotificationsSchema, markAsReadSchema } from './schema'
 
 export async function deleteNotifications(data: Record<string, unknown>) {
-  const userId = await getUserIdFromCookie()
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -28,7 +28,7 @@ export async function deleteNotifications(data: Record<string, unknown>) {
   try {
     await db
       .delete(notificationTable)
-      .where(and(sql`${notificationTable.userId} = ${userId}`, inArray(notificationTable.id, ids)))
+      .where(and(eq(notificationTable.userId, userId), inArray(notificationTable.id, ids)))
 
     return ok('알림을 삭제했어요')
   } catch (error) {
@@ -38,7 +38,7 @@ export async function deleteNotifications(data: Record<string, unknown>) {
 }
 
 export async function markAllAsRead() {
-  const userId = await getUserIdFromCookie()
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -48,7 +48,7 @@ export async function markAllAsRead() {
     await db
       .update(notificationTable)
       .set({ read: true })
-      .where(sql`${notificationTable.userId} = ${userId} AND ${notificationTable.read} = false`)
+      .where(and(eq(notificationTable.userId, userId), eq(notificationTable.read, false)))
 
     return ok('모든 알림을 읽었어요')
   } catch (error) {
@@ -58,7 +58,7 @@ export async function markAllAsRead() {
 }
 
 export async function markAsRead(data: Record<string, unknown>) {
-  const userId = await getUserIdFromCookie()
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -76,7 +76,7 @@ export async function markAsRead(data: Record<string, unknown>) {
     await db
       .update(notificationTable)
       .set({ read: true })
-      .where(and(sql`${notificationTable.userId} = ${userId}`, inArray(notificationTable.id, ids)))
+      .where(and(eq(notificationTable.userId, userId), inArray(notificationTable.id, ids)))
 
     return ok('알림을 읽었어요')
   } catch (error) {

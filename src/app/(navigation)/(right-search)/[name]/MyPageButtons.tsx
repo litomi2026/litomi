@@ -1,11 +1,10 @@
 import { ErrorBoundary } from '@suspensive/react'
-import { cookies } from 'next/headers'
 import { Suspense } from 'react'
 
 import LogoutButton from '@/app/(navigation)/LogoutButton'
-import { getUserIdFromAccessToken } from '@/utils/cookie'
+import { getUserIdFromCookie } from '@/utils/cookie'
 
-import { getUserById } from './common'
+import { getMe } from './common'
 import ProfileEditButton, { ProfileEditButtonError, ProfileEditButtonSkeleton } from './ProfileEditButton'
 
 type Props = {
@@ -13,8 +12,7 @@ type Props = {
 }
 
 export default async function MyPageButtons({ user }: Readonly<Props>) {
-  const cookieStore = await cookies()
-  const userId = await getUserIdFromAccessToken(cookieStore, false)
+  const userId = await getUserIdFromCookie()
 
   // NOTE: 로그인하지 않은 경우
   if (!userId) {
@@ -22,11 +20,11 @@ export default async function MyPageButtons({ user }: Readonly<Props>) {
   }
 
   // NOTE: 로그인한 사용자와 name이 다른 경우
-  if (user.id?.toString() !== userId) {
+  if (user.id !== userId) {
     return null
   }
 
-  const loginUser = getUserById(userId)
+  const loginUser = getMe(userId)
 
   return (
     <div className="flex items-center gap-2">

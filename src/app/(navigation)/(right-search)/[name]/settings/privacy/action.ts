@@ -1,14 +1,14 @@
 'use server'
 
 import { captureException } from '@sentry/nextjs'
-import { sql } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import { z } from 'zod/v4'
 
 import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
 import { badRequest, internalServerError, ok, unauthorized } from '@/utils/action-response'
+import { validateUserIdFromCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
-import { getUserIdFromCookie } from '@/utils/session'
 
 const updateAutoDeletionSchema = z.object({
   autoDeletionDays: z.coerce
@@ -19,7 +19,7 @@ const updateAutoDeletionSchema = z.object({
 })
 
 export async function updateAutoDeletionSettings(formData: FormData) {
-  const userId = await getUserIdFromCookie()
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요', formData)
@@ -36,10 +36,7 @@ export async function updateAutoDeletionSettings(formData: FormData) {
   const { autoDeletionDays } = validation.data
 
   try {
-    await db
-      .update(userTable)
-      .set({ autoDeletionDays })
-      .where(sql`${userTable.id} = ${userId}`)
+    await db.update(userTable).set({ autoDeletionDays }).where(eq(userTable.id, userId))
 
     return ok(true)
   } catch (error) {

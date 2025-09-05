@@ -2,7 +2,6 @@ import { Metadata } from 'next'
 import { cookies } from 'next/headers'
 
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
-import { PageProps } from '@/types/nextjs'
 import { getCookieJSON } from '@/utils/cookie'
 import { ViewCookie } from '@/utils/param'
 
@@ -24,7 +23,7 @@ export const metadata: Metadata = {
   },
 }
 
-export default async function Page({ searchParams }: PageProps) {
+export default async function Page({ searchParams }: PageProps<'/search'>) {
   const [cookieStore, searchParamsJSON] = await Promise.all([cookies(), searchParams])
 
   const validationResult = GETProxyKSearchSchema.safeParse({

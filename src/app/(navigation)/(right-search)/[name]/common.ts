@@ -1,10 +1,10 @@
-import { sql } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import { cache } from 'react'
 
 import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
 
-export const getUserById = cache(async (userId: string) => {
+export const getMe = cache(async (userId: number) => {
   const [user] = await db
     .select({
       loginId: userTable.loginId,
@@ -13,7 +13,7 @@ export const getUserById = cache(async (userId: string) => {
       imageURL: userTable.imageURL,
     })
     .from(userTable)
-    .where(sql`${userTable.id} = ${userId}`)
+    .where(eq(userTable.id, userId))
 
   return user
 })
@@ -33,7 +33,7 @@ export const getUserByName = cache(async (name: string) => {
       imageURL: userTable.imageURL,
     })
     .from(userTable)
-    .where(sql`${userTable.name} = ${name}`)
+    .where(eq(userTable.name, name))
 
   return user
 })

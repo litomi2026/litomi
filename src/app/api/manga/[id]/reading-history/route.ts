@@ -6,8 +6,8 @@ import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { db } from '@/database/drizzle'
 import { readingHistoryTable } from '@/database/schema'
 import { RouteProps } from '@/types/nextjs'
+import { validateUserIdFromCookie } from '@/utils/cookie'
 import { sec } from '@/utils/date'
-import { getUserIdFromCookie } from '@/utils/session'
 
 const GETMangaIdReadingHistorySchema = z.object({
   id: z.coerce.number().int().positive().max(MAX_MANGA_ID),
@@ -18,7 +18,7 @@ type Params = {
 }
 
 export async function GET(request: Request, { params }: RouteProps<Params>) {
-  const userId = await getUserIdFromCookie()
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return new Response('Unauthorized', { status: 401 })
@@ -36,7 +36,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
     const [history] = await db
       .select({ lastPage: readingHistoryTable.lastPage })
       .from(readingHistoryTable)
-      .where(and(eq(readingHistoryTable.userId, Number(userId)), eq(readingHistoryTable.mangaId, mangaId)))
+      .where(and(eq(readingHistoryTable.userId, userId), eq(readingHistoryTable.mangaId, mangaId)))
 
     const cacheControl = createCacheControl({
       private: true,

@@ -8,11 +8,10 @@ import { CookieKey } from '@/constants/storage'
 import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
 import { internalServerError, ok, unauthorized } from '@/utils/action-response'
-import { getUserIdFromAccessToken } from '@/utils/cookie'
+import { validateUserIdFromCookie } from '@/utils/cookie'
 
 export default async function logout() {
-  const cookieStore = await cookies()
-  const userId = await getUserIdFromAccessToken(cookieStore)
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요')
@@ -25,6 +24,7 @@ export default async function logout() {
       .where(sql`${userTable.id} = ${userId}`)
       .returning({ loginId: userTable.loginId })
 
+    const cookieStore = await cookies()
     cookieStore.delete(CookieKey.ACCESS_TOKEN)
     cookieStore.delete(CookieKey.REFRESH_TOKEN)
 

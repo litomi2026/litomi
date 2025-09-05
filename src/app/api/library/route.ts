@@ -4,7 +4,7 @@ import { handleRouteError } from '@/crawler/proxy-utils'
 import { db } from '@/database/drizzle'
 import { libraryItemTable, libraryTable } from '@/database/schema'
 import { intToHexColor } from '@/utils/color'
-import { getUserIdFromCookie } from '@/utils/session'
+import { validateUserIdFromCookie } from '@/utils/cookie'
 
 export type GETLibraryResponse = {
   id: number
@@ -15,7 +15,7 @@ export type GETLibraryResponse = {
 }[]
 
 export async function GET(request: Request) {
-  const userId = await getUserIdFromCookie()
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return new Response('Unauthorized', { status: 401 })
@@ -35,7 +35,7 @@ export async function GET(request: Request) {
         itemCount: sql<number>`(SELECT COUNT(*) FROM ${libraryItemTable} WHERE ${libraryItemTable.libraryId} = ${libraryTable.id})::int`,
       })
       .from(libraryTable)
-      .where(eq(libraryTable.userId, Number(userId)))
+      .where(eq(libraryTable.userId, userId))
       .orderBy(libraryTable.id)
 
     const librariesWithHexColors = libraries.map((lib) => ({ ...lib, color: intToHexColor(lib.color) }))

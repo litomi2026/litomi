@@ -5,8 +5,8 @@ import { READING_HISTORY_PER_PAGE } from '@/constants/policy'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { db } from '@/database/drizzle'
 import { readingHistoryTable } from '@/database/schema'
+import { validateUserIdFromCookie } from '@/utils/cookie'
 import { sec } from '@/utils/date'
-import { getUserIdFromCookie } from '@/utils/session'
 
 const searchParamsSchema = z.object({
   cursor: z.string().optional(),
@@ -25,7 +25,7 @@ export type ReadingHistoryItem = {
 }
 
 export async function GET(request: Request) {
-  const userId = await getUserIdFromCookie()
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return new Response('Unauthorized', { status: 401 })
@@ -48,7 +48,7 @@ export async function GET(request: Request) {
         updatedAt: readingHistoryTable.updatedAt,
       })
       .from(readingHistoryTable)
-      .where(eq(readingHistoryTable.userId, Number(userId)))
+      .where(eq(readingHistoryTable.userId, userId))
       .orderBy(desc(readingHistoryTable.updatedAt), desc(readingHistoryTable.mangaId))
       .limit(limit + 1)
       .$dynamic()

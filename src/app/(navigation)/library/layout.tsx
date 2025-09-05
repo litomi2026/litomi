@@ -4,7 +4,7 @@ import { ReactNode } from 'react'
 import { db } from '@/database/drizzle'
 import { libraryItemTable, libraryTable } from '@/database/schema'
 import { intToHexColor } from '@/utils/color'
-import { getUserIdFromCookie } from '@/utils/session'
+import { getUserIdFromCookie } from '@/utils/cookie'
 
 import LibraryHeader from './LibraryHeader'
 import LibrarySidebar from './LibrarySidebar'
@@ -33,7 +33,7 @@ export default async function LibraryLayout({ children }: Props) {
     .$dynamic()
 
   if (userId) {
-    query = query.where(eq(libraryTable.userId, Number(userId)))
+    query = query.where(eq(libraryTable.userId, userId))
   } else {
     query = query.where(eq(libraryTable.isPublic, true)).limit(20)
   }

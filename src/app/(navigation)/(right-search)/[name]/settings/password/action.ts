@@ -12,7 +12,7 @@ import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
 import { passwordSchema } from '@/database/zod'
 import { badRequest, created, internalServerError, tooManyRequests, unauthorized } from '@/utils/action-response'
-import { getUserIdFromAccessToken } from '@/utils/cookie'
+import { validateUserIdFromCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
 
@@ -34,8 +34,7 @@ const changePasswordSchema = z
 const passwordChangeLimiter = new RateLimiter(RateLimitPresets.strict())
 
 export async function changePassword(formData: FormData) {
-  const cookieStore = await cookies()
-  const userId = await getUserIdFromAccessToken(cookieStore)
+  const userId = await validateUserIdFromCookie()
 
   if (!userId) {
     return unauthorized('로그인 정보가 없거나 만료됐어요', formData)
@@ -52,7 +51,7 @@ export async function changePassword(formData: FormData) {
   }
 
   const { currentPassword, newPassword } = validation.data
-  const { allowed, retryAfter } = await passwordChangeLimiter.check(userId)
+  const { allowed, retryAfter } = await passwordChangeLimiter.check(userId.toString())
 
   if (!allowed) {
     const minutes = retryAfter ? Math.ceil(retryAfter / 60) : 1
@@ -87,9 +86,10 @@ export async function changePassword(formData: FormData) {
       return errorResponse
     }
 
+    const cookieStore = await cookies()
     cookieStore.delete(CookieKey.ACCESS_TOKEN)
     cookieStore.delete(CookieKey.REFRESH_TOKEN)
-    passwordChangeLimiter.reward(userId)
+    passwordChangeLimiter.reward(userId.toString())
     return created('비밀번호가 변경됐어요')
   } catch (error) {
     captureException(error)

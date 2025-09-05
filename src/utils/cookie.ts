@@ -1,10 +1,13 @@
 import { ResponseCookies } from 'next/dist/compiled/@edge-runtime/cookies'
 import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies'
+import { cookies } from 'next/headers'
 
 import { ONE_HOUR, THIRTY_DAYS } from '@/constants'
 import { CookieKey } from '@/constants/storage'
 
 import { signJWT, TokenType, verifyJWT } from './jwt'
+
+type CookieStore = Awaited<ReturnType<typeof cookies>>
 
 export function getCookieJSON(cookieStore: ReadonlyRequestCookies, keys: string[]) {
   const result: Record<string, string | undefined> = {}
@@ -15,24 +18,9 @@ export function getCookieJSON(cookieStore: ReadonlyRequestCookies, keys: string[
   return result
 }
 
-export async function getUserIdFromAccessToken(cookieStore: ReadonlyRequestCookies, reset: boolean = true) {
-  const accessToken = cookieStore.get(CookieKey.ACCESS_TOKEN)?.value
-
-  if (!accessToken) {
-    return null
-  }
-
-  const payload = await verifyJWT(accessToken, TokenType.ACCESS).catch(() => null)
-  const userId = payload?.sub
-
-  if (!userId) {
-    if (reset) {
-      cookieStore.delete(CookieKey.ACCESS_TOKEN)
-    }
-    return null
-  }
-
-  return userId
+export async function getUserIdFromCookie() {
+  const cookieStore = await cookies()
+  return (await verifyAccessToken(cookieStore)) ?? null
 }
 
 export async function setAccessTokenCookie(
@@ -58,4 +46,30 @@ export async function setRefreshTokenCookie(cookieStore: ReadonlyRequestCookies,
     sameSite: 'lax',
     maxAge: THIRTY_DAYS,
   })
+}
+
+export async function validateUserIdFromCookie() {
+  const cookieStore = await cookies()
+  const userId = await verifyAccessToken(cookieStore)
+
+  if (!userId) {
+    if (userId === null) {
+      cookieStore.delete(CookieKey.ACCESS_TOKEN)
+    }
+    return null
+  }
+
+  return userId
+}
+
+async function verifyAccessToken(cookieStore: CookieStore) {
+  const accessToken = cookieStore.get(CookieKey.ACCESS_TOKEN)?.value
+
+  if (!accessToken) {
+    return
+  }
+
+  const payload = await verifyJWT(accessToken, TokenType.ACCESS).catch(() => null)
+  const userId = payload?.sub
+  return userId ? Number(userId) : null
 }

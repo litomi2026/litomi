@@ -4,7 +4,7 @@ type Props = {
   loginUsername: string
 }
 
-export default function SettingsForbidden({ loginUsername }: Readonly<Props>) {
+export default function Forbidden({ loginUsername }: Readonly<Props>) {
   return (
     <div className="grid gap-6 p-8">
       <div className="max-w-2xl mx-auto w-full text-center">
