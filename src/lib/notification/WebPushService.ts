@@ -40,7 +40,17 @@ export class WebPushService {
       return
     }
 
-    const settings = await db.select().from(pushSettingsTable).where(inArray(pushSettingsTable.userId, userIds))
+    const settings = await db
+      .select({
+        userId: pushSettingsTable.userId,
+        quietEnabled: pushSettingsTable.quietEnabled,
+        quietStart: pushSettingsTable.quietStart,
+        quietEnd: pushSettingsTable.quietEnd,
+        batchEnabled: pushSettingsTable.batchEnabled,
+        maxDaily: pushSettingsTable.maxDaily,
+      })
+      .from(pushSettingsTable)
+      .where(inArray(pushSettingsTable.userId, userIds))
     const result = new Map<number, PushSettings>()
 
     for (const setting of settings) {
@@ -67,7 +77,12 @@ export class WebPushService {
 
   async sendTestWebPushToEndpoint(userId: number, endpoint: string, payload: WebPushPayload) {
     const [subscription] = await db
-      .select()
+      .select({
+        id: webPushTable.id,
+        endpoint: webPushTable.endpoint,
+        p256dh: webPushTable.p256dh,
+        auth: webPushTable.auth,
+      })
       .from(webPushTable)
       .where(and(eq(webPushTable.userId, userId), eq(webPushTable.endpoint, endpoint)))
 
