@@ -4,7 +4,7 @@ import { cache } from 'react'
 import { db } from '@/database/drizzle'
 import { userTable } from '@/database/schema'
 
-export const getUserById = cache(async (userId: number) => {
+export const getMe = cache(async (userId: number) => {
   const [user] = await db
     .select({
       loginId: userTable.loginId,

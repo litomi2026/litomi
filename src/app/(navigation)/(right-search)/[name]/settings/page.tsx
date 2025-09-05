@@ -13,8 +13,8 @@ import CollapsibleSection from '@/components/ui/CollapsibleSection'
 import { getUserIdFromCookie } from '@/utils/cookie'
 import { getUsernameFromParam } from '@/utils/param'
 
-import { getUserById } from '../common'
-import SettingsForbidden from './SettingsForbidden'
+import { getMe } from '../common'
+import Forbidden from './Forbidden'
 
 const AccountDeletionForm = dynamic(() => import('./delete/AccountDeletionForm'))
 const PushSettings = dynamic(() => import('./push/PushSettings'))
@@ -34,11 +34,11 @@ export default async function SettingsPage({ params }: PageProps<Params>) {
     return
   }
 
-  const [loginUser, { name }] = await Promise.all([getUserById(userId), params])
+  const [me, { name }] = await Promise.all([getMe(userId), params])
   const usernameFromParam = getUsernameFromParam(name)
 
-  if (loginUser.name !== usernameFromParam) {
-    return <SettingsForbidden loginUsername={loginUser.name} />
+  if (me.name !== usernameFromParam) {
+    return <Forbidden loginUsername={me.name} />
   }
 
   return (
@@ -102,7 +102,7 @@ export default async function SettingsPage({ params }: PageProps<Params>) {
         <p className="text-zinc-400 text-sm mb-4 sm:mb-6">
           계정을 삭제하면 사용자 관련 모든 데이터가 영구적으로 삭제되고 복구할 수 없어요
         </p>
-        <AccountDeletionForm loginId={loginUser.loginId} />
+        <AccountDeletionForm loginId={me.loginId} />
       </CollapsibleSection>
     </>
   )

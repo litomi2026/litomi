@@ -1,6 +1,6 @@
 import { getUserIdFromCookie } from '@/utils/cookie'
 
-import { getUserById } from './common'
+import { getMe } from './common'
 import MyPageNavigationLink from './MyPageNavigationLink'
 
 type Props = {
@@ -11,9 +11,9 @@ export default async function MyPagePrivateNavigation({ username }: Readonly<Pro
   const userId = await getUserIdFromCookie()
 
   if (userId && username) {
-    const loginUser = await getUserById(userId)
+    const me = await getMe(userId)
 
-    if (loginUser.name !== username) {
+    if (me.name !== username) {
       return
     }
   }

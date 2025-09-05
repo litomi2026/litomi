@@ -4,7 +4,7 @@ import { Suspense } from 'react'
 import LogoutButton from '@/app/(navigation)/LogoutButton'
 import { getUserIdFromCookie } from '@/utils/cookie'
 
-import { getUserById } from './common'
+import { getMe } from './common'
 import ProfileEditButton, { ProfileEditButtonError, ProfileEditButtonSkeleton } from './ProfileEditButton'
 
 type Props = {
@@ -24,7 +24,7 @@ export default async function MyPageButtons({ user }: Readonly<Props>) {
     return null
   }
 
-  const loginUser = getUserById(userId)
+  const loginUser = getMe(userId)
 
   return (
     <div className="flex items-center gap-2">
