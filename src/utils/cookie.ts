@@ -20,7 +20,7 @@ export function getCookieJSON(cookieStore: ReadonlyRequestCookies, keys: string[
 
 export async function getUserIdFromCookie() {
   const cookieStore = await cookies()
-  return verifyAccessToken(cookieStore)
+  return (await verifyAccessToken(cookieStore)) ?? null
 }
 
 export async function setAccessTokenCookie(
