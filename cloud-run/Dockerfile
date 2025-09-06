@@ -6,13 +6,6 @@ WORKDIR /app
 COPY package.json bun.lock ./
 RUN bun install --production --ignore-scripts
 
-# Build stage
-FROM base AS builder
-WORKDIR /app
-COPY package.json bun.lock ./
-RUN bun install
-COPY . .
-
 # Production stage
 FROM base AS runner
 WORKDIR /app
@@ -26,4 +19,4 @@ COPY src/ ./src/
 
 ENV NODE_ENV=production
 
-CMD ["bun", "--conditions=react-server", "cloud-run/crawlAndNotify.ts"]
+CMD ["bun", "--conditions=react-server", "cloud-run/src/crawlAndNotify.ts"]
