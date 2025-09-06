@@ -14,8 +14,8 @@ RUN bun build --compile \
   --minify \
   --sourcemap \
   # --bytecode \
-  ./cloud-run/src/crawl.ts \
-  --outfile crawl
+  ./cloud-run/src/crawlAndNotify.ts \
+  --outfile crawl-and-notify
 
 # Runtime stage
 FROM gcr.io/distroless/base-nossl-debian12:nonroot
@@ -23,6 +23,6 @@ FROM gcr.io/distroless/base-nossl-debian12:nonroot
 ENV NODE_ENV=production
 WORKDIR /home
 
-COPY --chown=nonroot:nonroot --from=builder /app/crawl ./
+COPY --chown=nonroot:nonroot --from=builder /app/crawl-and-notify ./
 
-ENTRYPOINT [ "./crawl" ]
+ENTRYPOINT [ "./crawl-and-notify" ]

@@ -35,7 +35,7 @@ const log = {
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
-export async function crawlAndNotify() {
+async function crawlAndNotify() {
   const requiredEnvVars = ['POSTGRES_URL', 'NEXT_PUBLIC_VAPID_PUBLIC_KEY', 'VAPID_PRIVATE_KEY']
   const missingEnvVars = requiredEnvVars.filter((varName) => !process.env[varName])
 
@@ -178,3 +178,5 @@ async function crawlKHentai(): Promise<Manga[]> {
 
   return results
 }
+
+crawlAndNotify()
