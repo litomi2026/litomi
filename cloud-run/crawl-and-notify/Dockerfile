@@ -13,7 +13,6 @@ RUN bun build --compile \
   --conditions=react-server \
   --minify \
   --sourcemap \
-  # --bytecode \
   ./cloud-run/crawl-and-notify/src/index.ts \
   --outfile crawl-and-notify
 
