@@ -7,7 +7,7 @@ WORKDIR /app
 COPY bun.lock drizzle.config.ts package.json tsconfig.json ./
 RUN bun install --ignore-scripts --production --silent --frozen-lockfile
 
-COPY cloud-run/ ./cloud-run/
+COPY cloud-run/crawl-and-notify ./cloud-run/crawl-and-notify/
 COPY src/ ./src/
 RUN bun build --compile \
   --conditions=react-server \
