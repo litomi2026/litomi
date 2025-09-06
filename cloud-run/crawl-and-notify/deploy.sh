@@ -108,30 +108,8 @@ if gcloud run jobs deploy ${JOB_NAME} \
   --set-env-vars="NEXT_PUBLIC_VAPID_PUBLIC_KEY=${NEXT_PUBLIC_VAPID_PUBLIC_KEY}" \
   --set-env-vars="VAPID_PRIVATE_KEY=${VAPID_PRIVATE_KEY}" \
   --service-account="${SERVICE_ACCOUNT}"; then
-  echo "Cloud Run Job deployed successfully!"
+  echo "✅ Cloud Run Job ${JOB_NAME} deployed successfully!"
 else
   echo "Failed to deploy Cloud Run Job. Please check the error messages above."
   exit 1
-fi
-echo ""
-echo "To execute the job manually:"
-echo "gcloud run jobs execute ${JOB_NAME} --region=${REGION}"
-echo ""
-
-echo "Creating Cloud Scheduler job..."
-gcloud scheduler jobs create http ${SCHEDULER_JOB_NAME} \
-  --location=${REGION} \
-  --schedule="0 * * * *" \
-  --uri="https://${REGION}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${PROJECT_ID}/jobs/${JOB_NAME}:run" \
-  --http-method=POST \
-  --oauth-service-account-email=${SERVICE_ACCOUNT} \
-  --project=${PROJECT_ID}
-
-if [ $? -eq 0 ]; then
-  echo "✅ Cloud Scheduler job '${SCHEDULER_JOB_NAME}' set up successfully!"
-else
-  echo "⚠️  Failed to set up Cloud Scheduler job. You may need to enable the Cloud Scheduler API:"
-  echo "  gcloud services enable cloudscheduler.googleapis.com --project=${PROJECT_ID}"
-  echo ""
-  echo "Then re-run this script or manually create the scheduler job."
 fi

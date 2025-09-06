@@ -12,14 +12,14 @@ type Props = {
 export default memo(MangaCardStats)
 
 function MangaCardStats({ manga, className = '' }: Readonly<Props>) {
-  const { rating = 0, ratingCount = 0, viewCount = 0, like = 0, likeAnonymous = 0, bookmarkCount = 0 } = manga
+  const { rating = 0, ratingCount = 0, viewCount, like = 0, likeAnonymous = 0, bookmarkCount = 0 } = manga
   const totalLikes = like + likeAnonymous
 
   return (
     <div className={`flex items-center gap-2.5 text-sm text-zinc-400 ${className}`}>
       <div className="flex items-center gap-1.5">
         <Eye className="size-[1em] shrink-0" />
-        <span className="tabular-nums">{formatNumber(viewCount, 'ko')}</span>
+        <span className="tabular-nums">{viewCount ? formatNumber(viewCount, 'ko') : '-'}</span>
       </div>
       {bookmarkCount > 0 && (
         <div className="flex items-center gap-1.5">
