@@ -11,7 +11,7 @@ export const defaultOpenGraph = {
   description: DESCRIPTION,
   url: CANONICAL_URL,
   siteName: SHORT_NAME,
-  images: [{ url: '/og-image.png' }],
+  images: [{ url: '/og-image.png', alt: SHORT_NAME }],
   type: 'website',
 }
 

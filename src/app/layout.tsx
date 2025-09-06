@@ -55,7 +55,11 @@ export const metadata: Metadata = {
   description: DESCRIPTION,
   applicationName: SHORT_NAME,
   keywords: 'litomi, manga, comic, webtoon, manhwa, manhua, 리토미, 망가, 만화, 웹툰',
-  robots: 'index, follow',
+  referrer: 'strict-origin-when-cross-origin',
+  robots: {
+    index: true,
+    follow: true,
+  },
   alternates: {
     canonical: CANONICAL_URL,
     languages: { ko: CANONICAL_URL },
@@ -72,6 +76,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: 'cover',
   themeColor: THEME_COLOR,
+  colorScheme: 'dark',
 }
 
 type Props = {
