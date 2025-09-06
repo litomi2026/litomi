@@ -14,7 +14,7 @@ RUN bun build --compile \
   --minify \
   --sourcemap \
   # --bytecode \
-  ./cloud-run/src/crawlAndNotify.ts \
+  ./cloud-run/crawl-and-notify/src/index.ts \
   --outfile crawl-and-notify
 
 # Runtime stage

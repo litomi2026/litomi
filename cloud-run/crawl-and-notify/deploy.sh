@@ -2,7 +2,7 @@
 
 # Load environment variables or use defaults
 set -a
-source cloud-run/.env
+source cloud-run/crawl-and-notify/.env
 set +a
 
 PROJECT_ID=${PROJECT_ID:-"your-project-id"}
@@ -19,7 +19,7 @@ if [ "$PROJECT_ID" = "your-project-id" ]; then
     echo "❌ Error: PROJECT_ID environment variable not set"
     echo ""
     echo "Please copy env.example to .env and source it:"
-    echo "  cp cloud-run/env.example cloud-run/.env"
+    echo "  cp cloud-run/crawl-and-notify/.env.example cloud-run/crawl-and-notify/.env"
     echo "  # Edit cloud-run/.env with your values"
     exit 1
 fi
@@ -39,34 +39,7 @@ echo "Job Name: ${JOB_NAME}"
 echo "Artifact Registry Repo: ${ARTIFACT_REGISTRY_REPO}"
 echo ""
 
-# Step 1: Delete Cloud Scheduler job
-echo "Step 1: Deleting Cloud Scheduler job..."
-if gcloud scheduler jobs describe ${SCHEDULER_JOB_NAME} --location=${REGION} --project=${PROJECT_ID} >/dev/null 2>&1; then
-  gcloud scheduler jobs delete ${SCHEDULER_JOB_NAME} \
-    --location=${REGION} \
-    --project=${PROJECT_ID} \
-    --quiet
-  echo "✅ Cloud Scheduler job deleted"
-else
-  echo "⚠️  Cloud Scheduler job not found (may already be deleted)"
-fi
-echo ""
-
-# Step 2: Delete Cloud Run job
-echo "Step 2: Deleting Cloud Run job..."
-if gcloud run jobs describe ${JOB_NAME} --region=${REGION} --project=${PROJECT_ID} >/dev/null 2>&1; then
-  gcloud run jobs deploy ${JOB_NAME} \
-    --image="hello-world" \
-    --region=${REGION} \
-    --project=${PROJECT_ID} \
-    --quiet
-  echo "✅ Cloud Run job deleted"
-else
-  echo "⚠️  Cloud Run job not found (may already be deleted)"
-fi
-echo ""
-
-echo "Step 3: Cleaning up Artifact Registry images..."
+echo "Cleaning up Artifact Registry images..."
 REGISTRY_PATH="${REGION}-docker.pkg.dev/${PROJECT_ID}/${ARTIFACT_REGISTRY_REPO}"
 ALL_IMAGES=$(gcloud artifacts docker images list ${REGISTRY_PATH} \
   --format="csv[no-heading](IMAGE,DIGEST,CREATE_TIME)" 2>&1 | grep -v "^Listing items" || true)
@@ -105,7 +78,7 @@ gcloud auth configure-docker ${REGION}-docker.pkg.dev
 
 # Build and push the Docker image
 echo "Building and pushing Docker image for linux/amd64 platform..."
-if ! docker buildx build --platform linux/amd64 --push -t ${IMAGE_NAME} -f cloud-run/Dockerfile .; then
+if ! docker buildx build --platform linux/amd64 --push -t ${IMAGE_NAME} -f cloud-run/crawl-and-notify/Dockerfile .; then
   echo "Failed to build/push Docker image. Please check the error messages above."
   echo ""
   echo "Common fixes:"

@@ -13,7 +13,7 @@ if [ "$PROJECT_ID" = "your-project-id" ]; then
     echo "  export PROJECT_ID=your-gcp-project-id"
     echo ""
     echo "Or copy env.example to .env and source it:"
-    echo "  cp cloud-run/env.example cloud-run/.env"
+    echo "  cp cloud-run/crawl-and-notify/.env.example cloud-run/crawl-and-notify/.env"
     echo "  # Edit cloud-run/.env with your values"
     echo "  source cloud-run/.env"
     exit 1
