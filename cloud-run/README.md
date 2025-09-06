@@ -24,7 +24,7 @@ Only execute once.
 
 ## Scheduling
 
-The deployment script includes commands to set up Cloud Scheduler. By default, it's configured to run every 6 hours (`0 */6 * * *`).
+The deployment script includes commands to set up Cloud Scheduler. By default, it's configured to run every hour (`0 * * * *`).
 
 To modify the schedule, update the cron expression in the Cloud Scheduler command.
 

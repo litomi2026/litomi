@@ -1,12 +1,12 @@
 import { sql } from 'drizzle-orm'
 
-import type { Manga } from '../src/types/manga'
+import type { Manga } from '../../src/types/manga'
 
-import { HarpiComicKind, HarpiListMode, HarpiRandomMode, HarpiSort } from '../src/app/api/proxy/harpi/search/schema'
-import { HarpiClient } from '../src/crawler/harpi/harpi'
-import { HiyobiClient } from '../src/crawler/hiyobi'
-import { KHentaiClient } from '../src/crawler/k-hentai'
-import { db } from '../src/database/drizzle'
+import { HarpiComicKind, HarpiListMode, HarpiRandomMode, HarpiSort } from '../../src/app/api/proxy/harpi/search/schema'
+import { HarpiClient } from '../../src/crawler/harpi/harpi'
+import { HiyobiClient } from '../../src/crawler/hiyobi'
+import { KHentaiClient } from '../../src/crawler/k-hentai'
+import { db } from '../../src/database/drizzle'
 import { MangaNotificationProcessor } from './MangaNotificationProcessor'
 
 const CONFIG = {
