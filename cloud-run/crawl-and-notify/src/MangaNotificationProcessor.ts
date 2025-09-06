@@ -1,14 +1,14 @@
 import { and, count, inArray, sql } from 'drizzle-orm'
 
-import type { NotificationData } from '../../src/database/type'
-import type { Manga } from '../../src/types/manga'
+import type { NotificationData } from '../../../src/database/type'
+import type { Manga } from '../../../src/types/manga'
 
-import { NotificationType } from '../../src/database/enum'
-import { db } from '../../src/database/supabase/drizzle'
-import { mangaSeenTable } from '../../src/database/supabase/notification-schema'
-import { notificationTable } from '../../src/database/supabase/schema'
-import { WebPushPayload, WebPushService } from '../../src/lib/notification/WebPushService'
-import { getImageSource, getViewerLink } from '../../src/utils/manga'
+import { NotificationType } from '../../../src/database/enum'
+import { db } from '../../../src/database/supabase/drizzle'
+import { mangaSeenTable } from '../../../src/database/supabase/notification-schema'
+import { notificationTable } from '../../../src/database/supabase/schema'
+import { WebPushPayload, WebPushService } from '../../../src/lib/notification/WebPushService'
+import { getImageSource, getViewerLink } from '../../../src/utils/manga'
 import { OptimizedNotificationMatcher } from './OptimizedNotificationMatcher'
 
 interface NewMangaNotification {

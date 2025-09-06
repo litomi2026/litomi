@@ -1,10 +1,13 @@
 import { and, count, eq, inArray, or, SQL, sql } from 'drizzle-orm'
 
-import type { Manga } from '../../src/types/manga'
+import type { Manga } from '../../../src/types/manga'
 
-import { NotificationConditionType } from '../../src/database/enum'
-import { db } from '../../src/database/supabase/drizzle'
-import { notificationConditionTable, notificationCriteriaTable } from '../../src/database/supabase/notification-schema'
+import { NotificationConditionType } from '../../../src/database/enum'
+import { db } from '../../../src/database/supabase/drizzle'
+import {
+  notificationConditionTable,
+  notificationCriteriaTable,
+} from '../../../src/database/supabase/notification-schema'
 
 export interface MangaMetadata {
   artists?: string[]

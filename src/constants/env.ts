@@ -5,6 +5,7 @@ export const GA_ID = process.env.GA_ID
 export const GOOGLE_ADSENSE_ACCOUNT = process.env.GOOGLE_ADSENSE_ACCOUNT ?? ''
 export const GTM_ID = process.env.GTM_ID
 export const NEON_DATABASE_URL = process.env.NEON_DATABASE_URL ?? ''
+export const NEON_DATABASE_URL_RO = process.env.NEON_DATABASE_URL_RO ?? ''
 export const NEXT_PUBLIC_VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? ''
 export const NEXT_PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL
 export const POSTGRES_URL = process.env.POSTGRES_URL ?? ''
