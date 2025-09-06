@@ -93,7 +93,7 @@ export interface KHentaiManga extends KHentaiMangaCommon {
 export type KHentaiMangaSearchOptions = {
   search?: string
   nextId?: string
-  sort?: string
+  sort?: 'id_asc' | 'popular' | 'random'
   offset?: string
   categories?: string
   minViews?: string
