@@ -28,7 +28,7 @@ mock.module('next/headers', () => ({
   }),
 }))
 
-mock.module('@/database/drizzle', () => ({
+mock.module('@/database/supabase/drizzle', () => ({
   db: {
     select: () => ({
       from: () => ({
