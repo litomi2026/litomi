@@ -1,8 +1,8 @@
 import { eq } from 'drizzle-orm'
 import { Bell, Settings, Smartphone } from 'lucide-react'
 
-import { db } from '@/database/drizzle'
-import { pushSettingsTable, webPushTable } from '@/database/schema'
+import { db } from '@/database/supabase/drizzle'
+import { pushSettingsTable, webPushTable } from '@/database/supabase/schema'
 
 import BrowserList from './BrowserList'
 import PushSettingsForm from './PushSettingsForm'

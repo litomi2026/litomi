@@ -1,7 +1,7 @@
 import { and, desc, or, SQL, sql } from 'drizzle-orm'
 
-import { db } from '@/database/drizzle'
-import { bookmarkTable } from '@/database/schema'
+import { db } from '@/database/supabase/drizzle'
+import { bookmarkTable } from '@/database/supabase/schema'
 
 export type BookmarkRow = {
   mangaId: number

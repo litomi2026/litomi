@@ -1,9 +1,9 @@
 import { and, desc, eq, lt } from 'drizzle-orm'
 
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
-import { db } from '@/database/drizzle'
 import { NotificationType } from '@/database/enum'
-import { notificationTable } from '@/database/schema'
+import { db } from '@/database/supabase/drizzle'
+import { notificationTable } from '@/database/supabase/schema'
 import { validateUserIdFromCookie } from '@/utils/cookie'
 
 import { GETNotificationSchema, NotificationFilter } from './schema'

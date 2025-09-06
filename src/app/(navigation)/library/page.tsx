@@ -4,8 +4,8 @@ import { Metadata } from 'next'
 
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { LIBRARY_ITEMS_PER_PAGE } from '@/constants/policy'
-import { db } from '@/database/drizzle'
-import { libraryItemTable, libraryTable } from '@/database/schema'
+import { db } from '@/database/supabase/drizzle'
+import { libraryItemTable, libraryTable } from '@/database/supabase/schema'
 import { intToHexColor } from '@/utils/color'
 import { getUserIdFromCookie } from '@/utils/cookie'
 

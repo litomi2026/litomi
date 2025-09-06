@@ -5,8 +5,8 @@ import { cache, Suspense } from 'react'
 import { z } from 'zod/v4'
 
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
-import { db } from '@/database/drizzle'
-import { libraryTable } from '@/database/schema'
+import { db } from '@/database/supabase/drizzle'
+import { libraryTable } from '@/database/supabase/schema'
 import { getUserIdFromCookie } from '@/utils/cookie'
 
 import LibraryItems from './LibraryItems'

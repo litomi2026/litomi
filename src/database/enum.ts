@@ -40,6 +40,20 @@ export enum MangaSource {
   HENTAIPAW = 8,
 }
 
+export enum MangaType {
+  DOUJINSHI = 1,
+  MANGA = 2,
+  ARTIST_CG = 3,
+  GAME_CG = 4,
+  WESTERN = 5,
+  IMAGE_SET = 6,
+  NON_H = 7,
+  COSPLAY = 8,
+  ASIAN_PORN = 9,
+  MISC = 10,
+  HIDDEN = 11,
+}
+
 export enum NotificationConditionType {
   SERIES = 1,
   CHARACTER = 2,

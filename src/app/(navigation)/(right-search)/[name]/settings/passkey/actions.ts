@@ -14,9 +14,9 @@ import { cookies } from 'next/headers'
 
 import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID, WEBAUTHN_RP_NAME } from '@/constants/env'
 import { MAX_CREDENTIALS_PER_USER } from '@/constants/policy'
-import { db } from '@/database/drizzle'
 import { ChallengeType, decodeDeviceType, encodeDeviceType } from '@/database/enum'
-import { challengeTable, credentialTable, userTable } from '@/database/schema'
+import { db } from '@/database/supabase/drizzle'
+import { challengeTable, credentialTable, userTable } from '@/database/supabase/schema'
 import {
   badRequest,
   forbidden,

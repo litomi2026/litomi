@@ -5,13 +5,13 @@ This directory contains the necessary files to deploy the manga crawler and noti
 ## Prerequisites
 
 ```zsh
-cp cloud-run/env.example cloud-run/.env
+cp cloud-run/crawl-and-notify/.env.template cloud-run/.env
 ```
 
 Edit the `.env` file with your actual values.
 
 ```zsh
-./cloud-run/setup.sh
+./cloud-run/crawl-and-notify/setup.sh
 ```
 
 Only execute once.
@@ -19,12 +19,12 @@ Only execute once.
 ## Deployment
 
 ```zsh
-./cloud-run/deploy.sh
+./cloud-run/crawl-and-notify/deploy.sh
 ```
 
 ## Scheduling
 
-The deployment script includes commands to set up Cloud Scheduler. By default, it's configured to run every 6 hours (`0 */6 * * *`).
+The deployment script includes commands to set up Cloud Scheduler. By default, it's configured to run every hour (`0 * * * *`).
 
 To modify the schedule, update the cron expression in the Cloud Scheduler command.
 

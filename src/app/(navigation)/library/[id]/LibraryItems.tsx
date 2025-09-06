@@ -2,8 +2,8 @@ import { desc, eq } from 'drizzle-orm'
 
 import { encodeLibraryIdCursor } from '@/common/cursor'
 import { LIBRARY_ITEMS_PER_PAGE } from '@/constants/policy'
-import { db } from '@/database/drizzle'
-import { libraryItemTable } from '@/database/schema'
+import { db } from '@/database/supabase/drizzle'
+import { libraryItemTable } from '@/database/supabase/schema'
 
 import LibraryItemsClient from './LibraryItemsClient'
 

@@ -3,8 +3,8 @@ import webpush, { PushSubscription } from 'web-push'
 
 import { CANONICAL_URL } from '@/constants'
 import { NEXT_PUBLIC_VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY } from '@/constants/env'
-import { db } from '@/database/drizzle'
-import { pushSettingsTable, webPushTable } from '@/database/schema'
+import { db } from '@/database/supabase/drizzle'
+import { pushSettingsTable, webPushTable } from '@/database/supabase/schema'
 
 webpush.setVapidDetails(CANONICAL_URL.replace('http://', 'https://'), NEXT_PUBLIC_VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY)
 

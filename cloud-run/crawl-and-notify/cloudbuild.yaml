@@ -48,7 +48,7 @@ steps:
       - '--parallelism=1'
       - '--max-retries=1'
       - '--task-timeout=10m'
-      - '--memory=2Gi'
+      - '--memory=1Gi'
       - '--cpu=2'
       - '--set-env-vars=NODE_ENV=production'
 
