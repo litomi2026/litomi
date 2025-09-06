@@ -3,8 +3,8 @@ import { Metadata } from 'next'
 
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { BOOKMARKS_PER_PAGE } from '@/constants/policy'
-import { db } from '@/database/drizzle'
-import { bookmarkTable } from '@/database/schema'
+import { db } from '@/database/supabase/drizzle'
+import { bookmarkTable } from '@/database/supabase/schema'
 import { getUserIdFromCookie } from '@/utils/cookie'
 
 import BookmarkDownloadButton from './BookmarkDownloadButton'

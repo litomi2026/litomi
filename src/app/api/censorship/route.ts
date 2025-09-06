@@ -1,9 +1,9 @@
 import { and, desc, eq, sql } from 'drizzle-orm'
 
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
-import { db } from '@/database/drizzle'
 import { CensorshipKey, CensorshipLevel } from '@/database/enum'
-import { userCensorshipTable } from '@/database/schema'
+import { db } from '@/database/supabase/drizzle'
+import { userCensorshipTable } from '@/database/supabase/schema'
 import { validateUserIdFromCookie } from '@/utils/cookie'
 
 import { GETCensorshipsSchema } from './schema'

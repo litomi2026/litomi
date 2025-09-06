@@ -3,8 +3,8 @@ import { z } from 'zod/v4'
 
 import { decodeLibraryIdCursor, encodeLibraryIdCursor } from '@/common/cursor'
 import { LIBRARY_ITEMS_PER_PAGE } from '@/constants/policy'
-import { db } from '@/database/drizzle'
-import { libraryItemTable, libraryTable } from '@/database/schema'
+import { db } from '@/database/supabase/drizzle'
+import { libraryItemTable, libraryTable } from '@/database/supabase/schema'
 import { RouteProps } from '@/types/nextjs'
 import { validateUserIdFromCookie } from '@/utils/cookie'
 

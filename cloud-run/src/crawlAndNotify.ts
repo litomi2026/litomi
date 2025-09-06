@@ -6,7 +6,7 @@ import { HarpiComicKind, HarpiListMode, HarpiRandomMode, HarpiSort } from '../..
 import { HarpiClient } from '../../src/crawler/harpi/harpi'
 import { HiyobiClient } from '../../src/crawler/hiyobi'
 import { KHentaiClient } from '../../src/crawler/k-hentai'
-import { db } from '../../src/database/drizzle'
+import { db } from '../../src/database/supabase/drizzle'
 import { MangaNotificationProcessor } from './MangaNotificationProcessor'
 
 const CONFIG = {

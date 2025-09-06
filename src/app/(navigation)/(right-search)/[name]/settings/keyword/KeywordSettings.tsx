@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm'
 
-import { db } from '@/database/drizzle'
-import { notificationConditionTable, notificationCriteriaTable } from '@/database/notification-schema'
+import { db } from '@/database/supabase/drizzle'
+import { notificationConditionTable, notificationCriteriaTable } from '@/database/supabase/notification-schema'
 
 import KeywordSettingsForm from './KeywordSettingsForm'
 

@@ -5,8 +5,8 @@ import { and, count, eq, sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 
 import { MAX_CRITERIA_PER_USER } from '@/constants/policy'
-import { db } from '@/database/drizzle'
-import { notificationConditionTable, notificationCriteriaTable } from '@/database/notification-schema'
+import { db } from '@/database/supabase/drizzle'
+import { notificationConditionTable, notificationCriteriaTable } from '@/database/supabase/notification-schema'
 import {
   badRequest,
   created,

@@ -3,8 +3,8 @@ import { z } from 'zod/v4'
 
 import { READING_HISTORY_PER_PAGE } from '@/constants/policy'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
-import { db } from '@/database/drizzle'
-import { readingHistoryTable } from '@/database/schema'
+import { db } from '@/database/supabase/drizzle'
+import { readingHistoryTable } from '@/database/supabase/schema'
 import { validateUserIdFromCookie } from '@/utils/cookie'
 import { sec } from '@/utils/date'
 

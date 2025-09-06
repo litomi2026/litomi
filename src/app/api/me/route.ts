@@ -3,8 +3,8 @@ import { cookies } from 'next/headers'
 
 import { CookieKey } from '@/constants/storage'
 import { handleRouteError } from '@/crawler/proxy-utils'
-import { db } from '@/database/drizzle'
-import { userTable } from '@/database/schema'
+import { db } from '@/database/supabase/drizzle'
+import { userTable } from '@/database/supabase/schema'
 import { validateUserIdFromCookie } from '@/utils/cookie'
 
 export type GETMeResponse = {

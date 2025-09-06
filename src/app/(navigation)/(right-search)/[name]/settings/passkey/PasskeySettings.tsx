@@ -1,9 +1,9 @@
 import { AuthenticatorTransportFuture } from '@simplewebauthn/server'
 import { desc, eq } from 'drizzle-orm'
 
-import { db } from '@/database/drizzle'
 import { decodeDeviceType } from '@/database/enum'
-import { credentialTable } from '@/database/schema'
+import { db } from '@/database/supabase/drizzle'
+import { credentialTable } from '@/database/supabase/schema'
 
 import PasskeyList from './PasskeyList'
 

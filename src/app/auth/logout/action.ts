@@ -5,8 +5,8 @@ import { sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 
 import { CookieKey } from '@/constants/storage'
-import { db } from '@/database/drizzle'
-import { userTable } from '@/database/schema'
+import { db } from '@/database/supabase/drizzle'
+import { userTable } from '@/database/supabase/schema'
 import { internalServerError, ok, unauthorized } from '@/utils/action-response'
 import { validateUserIdFromCookie } from '@/utils/cookie'
 

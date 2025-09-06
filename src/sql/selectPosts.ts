@@ -2,8 +2,8 @@ import { and, countDistinct, desc, eq, SQL, sql } from 'drizzle-orm'
 import { alias } from 'drizzle-orm/pg-core'
 
 import { PostFilter } from '@/app/api/post/schema'
-import { db } from '@/database/drizzle'
-import { postLikeTable, postTable, userTable } from '@/database/schema'
+import { db } from '@/database/supabase/drizzle'
+import { postLikeTable, postTable, userTable } from '@/database/supabase/schema'
 
 type Params = {
   limit?: number

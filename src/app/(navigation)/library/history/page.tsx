@@ -3,8 +3,8 @@ import { Metadata } from 'next'
 
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { READING_HISTORY_PER_PAGE } from '@/constants/policy'
-import { db } from '@/database/drizzle'
-import { readingHistoryTable } from '@/database/schema'
+import { db } from '@/database/supabase/drizzle'
+import { readingHistoryTable } from '@/database/supabase/schema'
 import { getUserIdFromCookie } from '@/utils/cookie'
 
 import HistoryPageClient from './HistoryPageClient'

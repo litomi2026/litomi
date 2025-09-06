@@ -1,8 +1,8 @@
 import { eq, sql } from 'drizzle-orm'
 import { ReactNode } from 'react'
 
-import { db } from '@/database/drizzle'
-import { libraryItemTable, libraryTable } from '@/database/schema'
+import { db } from '@/database/supabase/drizzle'
+import { libraryItemTable, libraryTable } from '@/database/supabase/schema'
 import { intToHexColor } from '@/utils/color'
 import { getUserIdFromCookie } from '@/utils/cookie'
 
