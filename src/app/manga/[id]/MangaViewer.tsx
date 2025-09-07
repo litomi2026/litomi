@@ -15,13 +15,15 @@ const NotFound = dynamic(() => import('./not-found'))
 
 type Props = {
   id: number
+  initialData?: Manga | null
 }
 
-export default function MangaViewer({ id }: Readonly<Props>) {
+export default function MangaViewer({ id, initialData }: Readonly<Props>) {
   const { data: manga } = useQuery({
     queryKey: QueryKeys.manga(id),
     queryFn: () => fetchManga(id),
-    placeholderData: () => ({ id, title: '불러오는 중', images: [] }),
+    placeholderData: initialData ? undefined : () => ({ id, title: '불러오는 중', images: [] }),
+    initialData: initialData ?? undefined,
   })
 
   // NOTE: Vercel Fluid Active CPU 비용을 줄이기 위해
