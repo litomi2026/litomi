@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { desc, sql } from 'drizzle-orm'
+import { sql } from 'drizzle-orm'
 
 import type { Manga } from '../../../src/types/manga'
 
@@ -11,9 +11,11 @@ import { mangaTable } from '../../../src/database/neon/schema'
 
 // Configuration
 const CONFIG = {
-  MAX_RETRIES: 3,
-  RETRY_DELAY_MS: 5000,
-  CONCURRENT_REQUESTS: 10,
+  BATCH_DELAY_MS: 20_000, // Delay between batches
+  MAX_MANGAS_TO_PROCESS: 100000, // Optional limit for total mangas to process
+  CONCURRENT_REQUESTS: 10, // Number of concurrent manga fetches per batch
+  MAX_RETRIES: 3, // Max retries for fetching individual manga
+  RETRY_DELAY_MS: 5000, // Delay between retries
 }
 
 const dateFormat = 'YYYY-MM-DD HH:mm:ss'
@@ -29,78 +31,80 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 /**
  * Main crawl function
- * Fetches manga from the highest ID in DB to the latest ID from K-Hentai
+ * Fetches Korean manga IDs from K-Hentai search, then fetches full data for each
  */
 export async function crawlMangas() {
   const startTime = Date.now()
 
   try {
-    // Step 1: Fetch highest manga ID from neon DB
-    const highestDBId = await getHighestMangaIdFromDB()
-    log.info(`Highest manga ID in database: ${highestDBId || 'None (empty database)'}`)
-
-    // Step 2: Get manga IDs from K-Hentai (single API call)
-    const kHentaiInfo = await getKHentaiMangaRange()
-    if (!kHentaiInfo) {
-      log.warn('Could not fetch manga info from K-Hentai')
-      return
-    }
-    log.info(`K-Hentai manga range: ${kHentaiInfo.lowestId} to ${kHentaiInfo.highestId}`)
-
-    // Step 3: Determine the range to crawl
-    // If DB is empty, start from the lowest K-Hentai ID; otherwise, continue from where we left off
-    const startId = highestDBId ? highestDBId + 1 : kHentaiInfo.lowestId
-    const endId = kHentaiInfo.highestId
-
-    if (startId > endId) {
-      log.info('Database is already up to date. No new mangas to crawl.')
-      return
-    }
-
-    const totalCount = endId - startId + 1
-    log.info(`Starting manga crawl from ID ${startId} to ${endId} (${totalCount} mangas)`)
-
-    // Step 3 & 4: Fetch and save manga information
-    let processedCount = 0
+    const kHentaiClient = KHentaiClient.getInstance()
+    let nextId: string | undefined = undefined
+    let totalProcessed = 0
     let successCount = 0
     let failedCount = 0
+    let batchNumber = 0
 
-    // Process IDs in chunks for concurrent processing
-    // for (let i = startId; i <= endId; i += CONFIG.CONCURRENT_REQUESTS) {
-    for (let i = startId; i <= 3_525_000; i += CONFIG.CONCURRENT_REQUESTS) {
-      const chunkStartTimestamp = Date.now()
-      const chunkIds: number[] = []
+    log.info('Starting Korean manga crawl from K-Hentai')
 
-      for (let j = i; j < Math.min(i + CONFIG.CONCURRENT_REQUESTS, endId + 1); j++) {
-        chunkIds.push(j)
+    while (true) {
+      batchNumber++
+      const batchStartTime = Date.now()
+
+      log.info(`Fetching batch #${batchNumber} ${nextId ? `(starting from ID: ${nextId})` : '(initial batch)'}`)
+
+      // Fetch Korean manga IDs from search
+      const searchParams: { search: string; nextId?: string } = { search: 'language:korean' }
+      if (nextId) {
+        searchParams.nextId = nextId
       }
 
-      // Fetch all mangas in the chunk concurrently
-      const mangaResults = await Promise.allSettled(chunkIds.map(async (id) => crawlMangaWithRetry(id)))
+      const searchResults = await kHentaiClient.searchMangas(searchParams)
 
-      // Filter out successful manga fetches
+      if (!searchResults || searchResults.length === 0) {
+        log.info('No more mangas to crawl. Reached the end.')
+        break
+      }
+
+      const mangaIds = searchResults.map((manga) => manga.id)
       const validMangas: Manga[] = []
-      mangaResults.forEach((result) => {
-        processedCount++
-        if (result.status === 'fulfilled' && result.value) {
-          validMangas.push(result.value)
-        } else {
-          failedCount++
-        }
-      })
 
-      // Bulk save all valid mangas in this chunk
+      for (let i = 0; i < mangaIds.length; i += CONFIG.CONCURRENT_REQUESTS) {
+        const chunkIds = mangaIds.slice(i, Math.min(i + CONFIG.CONCURRENT_REQUESTS, mangaIds.length))
+
+        // Fetch full manga data for each ID concurrently
+        const mangaResults = await Promise.allSettled(
+          chunkIds.map(async (id) => {
+            const result = await crawlMangaWithRetry(id)
+            totalProcessed++
+            return result
+          }),
+        )
+
+        // Collect successful manga fetches
+        mangaResults.forEach((result) => {
+          if (result.status === 'fulfilled' && result.value) {
+            validMangas.push(result.value)
+          } else {
+            failedCount++
+          }
+        })
+      }
+
+      // Bulk save all valid mangas from this batch
+      let batchSaved = 0
       if (validMangas.length > 0) {
         try {
           await bulkSaveMangasToDatabase(validMangas)
           successCount += validMangas.length
-          log.success(`Bulk saved ${validMangas.length} mangas`)
+          batchSaved = validMangas.length
         } catch (error) {
-          log.error(`Failed to bulk save mangas:`, error)
+          log.error(`Failed to bulk save mangas from batch #${batchNumber}:`, error)
+          // Try saving individually as fallback
           for (const manga of validMangas) {
             try {
               await saveMangaToDatabase(manga)
               successCount++
+              batchSaved++
             } catch (e) {
               failedCount++
               log.error(`Failed to save manga #${manga.id}:`, e)
@@ -109,18 +113,34 @@ export async function crawlMangas() {
         }
       }
 
-      log.info(`Progress: ${processedCount}/${totalCount} processed (${successCount} saved, ${failedCount} failed)`)
+      // Get the lowest ID from search results to use as nextId for pagination
+      // Since default sort is id_desc, the last manga has the lowest ID
+      const lowestId = Math.min(...mangaIds)
+      nextId = lowestId.toString()
 
-      const elapsedTime = Date.now() - chunkStartTimestamp
-      const sleepTime = Math.max(0, 20_000 - elapsedTime)
+      log.success(
+        `Batch #${batchNumber} completed: [Batch: ${batchSaved}/${mangaIds.length} saved] [Total: ${successCount}/${totalProcessed} saved, ${failedCount} failed]`,
+      )
+
+      // Add delay between batches to respect rate limits
+      const elapsedTime = Date.now() - batchStartTime
+      const sleepTime = Math.max(0, CONFIG.BATCH_DELAY_MS - elapsedTime)
 
       if (sleepTime > 0) {
+        log.info(`Waiting ${(sleepTime / 1000).toFixed(1)}s before next batch...`)
         await sleep(sleepTime)
+      }
+
+      // Optional: Add a stop condition (e.g., after processing a certain number of mangas)
+      // This can be removed if you want to crawl everything
+      if (CONFIG.MAX_MANGAS_TO_PROCESS && totalProcessed >= CONFIG.MAX_MANGAS_TO_PROCESS) {
+        log.info(`Reached processing limit of ${CONFIG.MAX_MANGAS_TO_PROCESS.toLocaleString()} mangas. Stopping.`)
+        break
       }
     }
 
     const duration = (Date.now() - startTime) / 1000
-    log.success(`Crawl completed! Processed ${totalCount} manga IDs in ${duration.toFixed(2)} seconds`)
+    log.success(`Crawl completed! Processed ${totalProcessed} Korean mangas in ${duration.toFixed(2)} seconds`)
     log.success(`Results: ${successCount} saved, ${failedCount} failed`)
   } catch (error) {
     log.error('Crawl failed:', error)
@@ -141,7 +161,7 @@ async function bulkSaveMangasToDatabase(mangas: Manga[]) {
       title: manga.title,
       description: manga.description,
       lines: manga.lines,
-      type: getMangaTypeValue(manga.type),
+      type: getMangaTypeValue(manga.type, manga.id),
       count: manga.count,
       createdAt: manga.date ? new Date(manga.date) : null,
     }))
@@ -488,7 +508,9 @@ async function bulkSaveMangasToDatabase(mangas: Manga[]) {
 async function crawlMangaWithRetry(id: number, retries = CONFIG.MAX_RETRIES): Promise<Manga | null> {
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
-      log.info(`Fetching manga #${id} (attempt ${attempt}/${retries})...`)
+      if (attempt > 1) {
+        log.info(`Fetching manga #${id} (attempt ${attempt}/${retries})...`)
+      }
       const result = await getMangaFromMultiSources(id)
 
       if (!result) {
@@ -501,13 +523,14 @@ async function crawlMangaWithRetry(id: number, retries = CONFIG.MAX_RETRIES): Pr
         return null
       }
 
-      return result as Manga
+      return result
     } catch (error) {
       log.error(`Attempt ${attempt} failed for manga #${id}:`, error)
       if (attempt < retries) {
         await sleep(CONFIG.RETRY_DELAY_MS)
       } else {
-        throw error
+        log.error(`All attempts failed for manga #${id}`)
+        return null
       }
     }
   }
@@ -516,64 +539,76 @@ async function crawlMangaWithRetry(id: number, retries = CONFIG.MAX_RETRIES): Pr
 }
 
 /**
- * Fetch the highest manga ID from the neon database
- */
-async function getHighestMangaIdFromDB(): Promise<number | null> {
-  try {
-    const result = await neonDB.select({ id: mangaTable.id }).from(mangaTable).orderBy(desc(mangaTable.id)).limit(1)
-
-    return result.length > 0 ? result[0].id : null
-  } catch (error) {
-    log.error('Failed to fetch highest manga ID from database:', error)
-    throw error
-  }
-}
-
-/**
- * Fetch manga ID range from K-Hentai with a single API call
- * Returns both the highest (latest) and lowest IDs from the results
- */
-async function getKHentaiMangaRange(): Promise<{ highestId: number; lowestId: number } | null> {
-  try {
-    const kHentaiClient = KHentaiClient.getInstance()
-    // Fetch the newest mangas - this gives us the latest manga ID
-    const mangas = await kHentaiClient.searchMangas()
-
-    if (mangas && mangas.length > 0) {
-      // The first manga should be the newest one (highest ID)
-      const highestId = mangas[0].id
-      // Find the lowest ID from the returned results
-      const lowestId = Math.min(...mangas.map((m) => m.id))
-
-      return { highestId, lowestId }
-    }
-
-    return null
-  } catch (error) {
-    log.error('Failed to fetch manga range from K-Hentai:', error)
-    throw error
-  }
-}
-
-/**
  * Map manga type string to enum value
  */
-function getMangaTypeValue(type?: string): number {
+function getMangaTypeValue(type: string | undefined, mangaId: number): number {
   const typeMap: Record<string, MangaType> = {
+    // English mappings
     manga: MangaType.MANGA,
     doujinshi: MangaType.DOUJINSHI,
     'artist cg': MangaType.ARTIST_CG,
+    'artist-cg': MangaType.ARTIST_CG,
+    artist_cg: MangaType.ARTIST_CG,
+    artistcg: MangaType.ARTIST_CG,
     'game cg': MangaType.GAME_CG,
+    'game-cg': MangaType.GAME_CG,
+    game_cg: MangaType.GAME_CG,
+    gamecg: MangaType.GAME_CG,
     'image set': MangaType.IMAGE_SET,
+    'image-set': MangaType.IMAGE_SET,
+    image_set: MangaType.IMAGE_SET,
+    imageset: MangaType.IMAGE_SET,
     cosplay: MangaType.COSPLAY,
     'asian porn': MangaType.ASIAN_PORN,
+    'asian-porn': MangaType.ASIAN_PORN,
+    asian_porn: MangaType.ASIAN_PORN,
+    asianporn: MangaType.ASIAN_PORN,
+    asian: MangaType.ASIAN_PORN,
     'non-h': MangaType.NON_H,
+    'non h': MangaType.NON_H,
+    non_h: MangaType.NON_H,
+    nonh: MangaType.NON_H,
     western: MangaType.WESTERN,
     misc: MangaType.MISC,
+    other: MangaType.MISC,
+
+    // Korean mappings
+    동인지: MangaType.DOUJINSHI,
+    만화: MangaType.MANGA,
+    망가: MangaType.MANGA,
+    '아티스트 cg': MangaType.ARTIST_CG,
+    아티스트cg: MangaType.ARTIST_CG,
+    아티스트_cg: MangaType.ARTIST_CG,
+    '게임 cg': MangaType.GAME_CG,
+    게임cg: MangaType.GAME_CG,
+    게임_cg: MangaType.GAME_CG,
+    서양: MangaType.WESTERN,
+    '이미지 모음': MangaType.IMAGE_SET,
+    이미지모음: MangaType.IMAGE_SET,
+    이미지_모음: MangaType.IMAGE_SET,
+    건전: MangaType.NON_H,
+    코스프레: MangaType.COSPLAY,
+    아시안: MangaType.ASIAN_PORN,
+    기타: MangaType.MISC,
+    비공개: MangaType.HIDDEN,
+    private: MangaType.HIDDEN,
+    hidden: MangaType.HIDDEN,
   }
 
-  if (!type) return MangaType.MISC
-  return typeMap[type.toLowerCase()] ?? MangaType.MISC
+  if (!type) {
+    log.warn(`No type provided for manga #${mangaId}, defaulting to MISC`)
+    return MangaType.MISC
+  }
+
+  const normalizedType = type.toLowerCase().trim()
+  const mappedType = typeMap[normalizedType]
+
+  if (mappedType === undefined) {
+    log.warn(`Unknown manga type: "${type}" for manga #${mangaId}, defaulting to MISC`)
+    return MangaType.MISC
+  }
+
+  return mappedType
 }
 
 /**
@@ -591,7 +626,7 @@ async function saveMangaToDatabase(manga: Manga) {
         title: manga.title,
         description: manga.description,
         lines: manga.lines,
-        type: getMangaTypeValue(manga.type),
+        type: getMangaTypeValue(manga.type, manga.id),
         count: manga.count,
         createdAt: manga.date ? new Date(manga.date) : null,
       })
@@ -601,7 +636,7 @@ async function saveMangaToDatabase(manga: Manga) {
           title: manga.title,
           description: manga.description,
           lines: manga.lines,
-          type: getMangaTypeValue(manga.type),
+          type: getMangaTypeValue(manga.type, manga.id),
           count: manga.count,
           createdAt: manga.date ? new Date(manga.date) : null,
         },
@@ -781,8 +816,6 @@ async function saveMangaToDatabase(manga: Manga) {
           ON CONFLICT DO NOTHING
         `)
     }
-
-    log.success(`Saved manga #${manga.id}: ${manga.title}`)
   } catch (error) {
     log.error(`Failed to save manga #${manga.id}:`, error)
     throw error
