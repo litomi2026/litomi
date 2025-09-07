@@ -8,7 +8,6 @@ const log = {
 }
 
 async function main() {
-  log.info('Starting manga crawl job...')
   const startTime = Date.now()
 
   try {

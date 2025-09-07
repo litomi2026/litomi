@@ -122,8 +122,6 @@ export async function crawlMangas() {
       for (let i = 0; i < mangaIds.length; i += CONFIG.CONCURRENT_REQUESTS) {
         const chunkIds = mangaIds.slice(i, Math.min(i + CONFIG.CONCURRENT_REQUESTS, mangaIds.length))
 
-        log.info(`Processing ${chunkIds.length} manga IDs concurrently from batch #${batchNumber}`)
-
         // Fetch full manga data for each ID concurrently
         const mangaResults = await Promise.allSettled(
           chunkIds.map(async (id) => {
