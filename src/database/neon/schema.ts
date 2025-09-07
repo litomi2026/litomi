@@ -3,7 +3,6 @@ import { integer, pgTable, smallint, text, timestamp, unique } from 'drizzle-orm
 export const mangaTable = pgTable('manga', {
   id: integer().primaryKey(),
   createdAt: timestamp('created_at', { withTimezone: true }),
-  uploadedAt: timestamp('uploaded_at', { withTimezone: true }),
   title: text().notNull(),
   type: smallint().notNull(),
   description: text(),
