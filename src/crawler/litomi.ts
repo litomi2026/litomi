@@ -100,10 +100,17 @@ export class LitomiClient {
       group: translateGroupList(result.groups, locale),
       languages: translateLanguageList(result.languages, locale),
       uploader: result.uploaders[0],
-      tags: result.tags.map((t) => {
-        const category = TagCategoryName[t.category] ?? 'other'
-        return translateTag(category, t.value, locale)
-      }),
+      tags: result.tags
+        .sort((a, b) => {
+          if (a.category !== b.category) {
+            return a.category - b.category
+          }
+          return a.value.localeCompare(b.value)
+        })
+        .map((t) => {
+          const category = TagCategoryName[t.category] ?? 'other'
+          return translateTag(category, t.value, locale)
+        }),
       related: result.related.length > 0 ? result.related : undefined,
     }
   }
