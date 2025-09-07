@@ -133,6 +133,8 @@ export class LitomiClient {
 
   /**
    * Private method to get manga by ID with all related data
+   * Optimized using correlated subqueries instead of multiple LEFT JOINs
+   * to avoid cartesian product and improve performance
    */
   private async selectMangaById(id: number): Promise<Manga | null> {
     const [result] = await neonDBRO
@@ -144,75 +146,76 @@ export class LitomiClient {
         type: mangaTable.type,
         count: mangaTable.count,
         createdAt: mangaTable.createdAt,
+        // Use correlated subqueries for each relation to avoid cartesian product
         artists: sql<string[]>`
           COALESCE(
-            ARRAY_AGG(DISTINCT ${artistTable.value}) 
-            FILTER (WHERE ${artistTable.value} IS NOT NULL), 
+            (SELECT ARRAY_AGG(DISTINCT a.value)
+             FROM ${mangaArtistTable} ma
+             INNER JOIN ${artistTable} a ON ma."artistId" = a.id
+             WHERE ma."mangaId" = ${mangaTable.id}),
             '{}'::text[]
           )
         `,
         characters: sql<string[]>`
           COALESCE(
-            ARRAY_AGG(DISTINCT ${characterTable.value}) 
-            FILTER (WHERE ${characterTable.value} IS NOT NULL), 
+            (SELECT ARRAY_AGG(DISTINCT c.value)
+             FROM ${mangaCharacterTable} mc
+             INNER JOIN ${characterTable} c ON mc."characterId" = c.id
+             WHERE mc."mangaId" = ${mangaTable.id}),
             '{}'::text[]
           )
         `,
         tags: sql<{ value: string; category: number }[]>`
           COALESCE(
-            JSON_AGG(DISTINCT jsonb_build_object(
-              'value', ${tagTable.value},
-              'category', ${tagTable.category}
-            )) FILTER (WHERE ${tagTable.value} IS NOT NULL),
+            (SELECT JSON_AGG(DISTINCT jsonb_build_object(
+               'value', t.value,
+               'category', t.category
+             ))
+             FROM ${mangaTagTable} mt
+             INNER JOIN ${tagTable} t ON mt."tagId" = t.id
+             WHERE mt."mangaId" = ${mangaTable.id}),
             '[]'::json
           )
         `,
         series: sql<string[]>`
           COALESCE(
-            ARRAY_AGG(DISTINCT ${seriesTable.value}) 
-            FILTER (WHERE ${seriesTable.value} IS NOT NULL), 
+            (SELECT ARRAY_AGG(DISTINCT s.value)
+             FROM ${mangaSeriesTable} ms
+             INNER JOIN ${seriesTable} s ON ms."seriesId" = s.id
+             WHERE ms."mangaId" = ${mangaTable.id}),
             '{}'::text[]
           )
         `,
         groups: sql<string[]>`
           COALESCE(
-            ARRAY_AGG(DISTINCT ${groupTable.value}) 
-            FILTER (WHERE ${groupTable.value} IS NOT NULL), 
+            (SELECT ARRAY_AGG(DISTINCT g.value)
+             FROM ${mangaGroupTable} mg
+             INNER JOIN ${groupTable} g ON mg."groupId" = g.id
+             WHERE mg."mangaId" = ${mangaTable.id}),
             '{}'::text[]
           )
         `,
         languages: sql<string[]>`
           COALESCE(
-            ARRAY_AGG(DISTINCT ${languageTable.value}) 
-            FILTER (WHERE ${languageTable.value} IS NOT NULL), 
+            (SELECT ARRAY_AGG(DISTINCT l.value)
+             FROM ${mangaLanguageTable} ml
+             INNER JOIN ${languageTable} l ON ml."languageId" = l.id
+             WHERE ml."mangaId" = ${mangaTable.id}),
             '{}'::text[]
           )
         `,
         uploaders: sql<string[]>`
           COALESCE(
-            ARRAY_AGG(DISTINCT ${uploaderTable.value}) 
-            FILTER (WHERE ${uploaderTable.value} IS NOT NULL), 
+            (SELECT ARRAY_AGG(DISTINCT u.value)
+             FROM ${mangaUploaderTable} mu
+             INNER JOIN ${uploaderTable} u ON mu."uploaderId" = u.id
+             WHERE mu."mangaId" = ${mangaTable.id}),
             '{}'::text[]
           )
         `,
       })
       .from(mangaTable)
-      .leftJoin(mangaArtistTable, eq(mangaTable.id, mangaArtistTable.mangaId))
-      .leftJoin(artistTable, eq(mangaArtistTable.artistId, artistTable.id))
-      .leftJoin(mangaCharacterTable, eq(mangaTable.id, mangaCharacterTable.mangaId))
-      .leftJoin(characterTable, eq(mangaCharacterTable.characterId, characterTable.id))
-      .leftJoin(mangaTagTable, eq(mangaTable.id, mangaTagTable.mangaId))
-      .leftJoin(tagTable, eq(mangaTagTable.tagId, tagTable.id))
-      .leftJoin(mangaSeriesTable, eq(mangaTable.id, mangaSeriesTable.mangaId))
-      .leftJoin(seriesTable, eq(mangaSeriesTable.seriesId, seriesTable.id))
-      .leftJoin(mangaGroupTable, eq(mangaTable.id, mangaGroupTable.mangaId))
-      .leftJoin(groupTable, eq(mangaGroupTable.groupId, groupTable.id))
-      .leftJoin(mangaLanguageTable, eq(mangaTable.id, mangaLanguageTable.mangaId))
-      .leftJoin(languageTable, eq(mangaLanguageTable.languageId, languageTable.id))
-      .leftJoin(mangaUploaderTable, eq(mangaTable.id, mangaUploaderTable.mangaId))
-      .leftJoin(uploaderTable, eq(mangaUploaderTable.uploaderId, uploaderTable.id))
       .where(eq(mangaTable.id, id))
-      .groupBy(mangaTable.id)
 
     if (!result) {
       return null
