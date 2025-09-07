@@ -75,8 +75,6 @@ export async function crawlMangas() {
         chunkIds.push(j)
       }
 
-      log.info(`Processing IDs ${chunkIds[0]} to ${chunkIds[chunkIds.length - 1]}...`)
-
       // Fetch all mangas in the chunk concurrently
       const mangaResults = await Promise.allSettled(chunkIds.map(async (id) => crawlMangaWithRetry(id)))
 
