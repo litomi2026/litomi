@@ -17,6 +17,27 @@ export enum CensorshipLevel {
   HEAVY = 2,
 }
 
+export enum TagCategory {
+  FEMALE = 0,
+  MALE = 1,
+  MIXED = 2,
+  OTHER = 3,
+}
+
+export const TagCategoryName = {
+  [TagCategory.FEMALE]: 'female',
+  [TagCategory.MALE]: 'male',
+  [TagCategory.MIXED]: 'mixed',
+  [TagCategory.OTHER]: 'other',
+} as const
+
+export const TagCategoryFromName = {
+  female: TagCategory.FEMALE,
+  male: TagCategory.MALE,
+  mixed: TagCategory.MIXED,
+  other: TagCategory.OTHER,
+} as const
+
 export enum ChallengeType {
   REGISTRATION = 1,
   AUTHENTICATION = 2,

@@ -3,6 +3,8 @@ import type { NextConfig } from 'next'
 import withBundleAnalyzer from '@next/bundle-analyzer'
 import { withSentryConfig } from '@sentry/nextjs'
 
+import { sec } from '@/utils/date'
+
 const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
@@ -19,9 +21,13 @@ const nextConfig: NextConfig = {
       source: '/sw.js',
       headers: [
         { key: 'Content-Type', value: 'application/javascript; charset=utf-8' },
-        { key: 'Cache-Control', value: 'public, max-age=300, must-revalidate' },
+        { key: 'Cache-Control', value: `public, max-age=${sec('5 minutes')}, must-revalidate` },
         { key: 'Content-Security-Policy', value: "default-src 'self'; script-src 'self'" },
       ],
+    },
+    {
+      source: '/manifest.webmanifest',
+      headers: [{ key: 'Cache-Control', value: `public, max-age=${sec('1 day')}, must-revalidate` }],
     },
   ],
   poweredByHeader: false,
