@@ -12,15 +12,6 @@ async function main() {
   const startTime = Date.now()
 
   try {
-    // Check required environment variables
-    const requiredEnvVars = ['POSTGRES_URL']
-    const missingEnvVars = requiredEnvVars.filter((varName) => !process.env[varName])
-
-    if (missingEnvVars.length > 0) {
-      log.error(`Missing required environment variables: ${missingEnvVars.join(', ')}`)
-      process.exit(1)
-    }
-
     // Run the crawl job
     await crawlMangas()
 
@@ -56,5 +47,4 @@ async function main() {
   }
 }
 
-// Run the main function
 main()
