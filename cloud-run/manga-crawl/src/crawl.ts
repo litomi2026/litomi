@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { sql } from 'drizzle-orm'
+import { max, min, sql } from 'drizzle-orm'
 
 import type { Manga } from '../../../src/types/manga'
 
@@ -11,7 +11,7 @@ import { mangaTable } from '../../../src/database/neon/schema'
 
 // Configuration
 const CONFIG = {
-  BATCH_DELAY_MS: 20_000, // Delay between batches
+  BATCH_DELAY_MS: 15_000, // Delay between batches
   MAX_MANGAS_TO_PROCESS: 100000, // Optional limit for total mangas to process
   CONCURRENT_REQUESTS: 10, // Number of concurrent manga fetches per batch
   MAX_RETRIES: 3, // Max retries for fetching individual manga
@@ -37,8 +37,21 @@ export async function crawlMangas() {
   const startTime = Date.now()
 
   try {
+    // Get existing manga ID range from database to skip already crawled manga
+    const existingRange = await getExistingMangaIdRange()
+
+    log.info(
+      `Existing manga ID range in database: ${
+        existingRange.lowestId !== null && existingRange.highestId !== null
+          ? `${existingRange.lowestId} to ${existingRange.highestId}`
+          : 'Database is empty'
+      }`,
+    )
+
     const kHentaiClient = KHentaiClient.getInstance()
     let nextId: string | undefined = undefined
+    let hasSkippedToOlderMangas = false
+
     let totalProcessed = 0
     let successCount = 0
     let failedCount = 0
@@ -65,11 +78,51 @@ export async function crawlMangas() {
         break
       }
 
-      const mangaIds = searchResults.map((manga) => manga.id)
+      let mangaIds = searchResults.map((manga) => manga.id)
+
+      // Smart skipping logic:
+      // 1. First, crawl newer manga (IDs > highestId in DB)
+      // 2. When we reach the existing range, skip to older manga (IDs < lowestId in DB)
+      // 3. This ensures we crawl both new manga and older manga, while skipping the already-crawled middle range
+      if (!hasSkippedToOlderMangas && existingRange.lowestId !== null && existingRange.highestId !== null) {
+        // Check if any of the current batch IDs are within or below our existing range
+        const maxBatchId = Math.max(...mangaIds)
+        const minBatchId = Math.min(...mangaIds)
+
+        if (maxBatchId <= existingRange.highestId) {
+          // We've reached the already-crawled range, skip to older manga
+          log.info(
+            `Already-crawled range (batch IDs: ${minBatchId}-${maxBatchId}). Skipping to older manga with nextId: ${existingRange.lowestId}`,
+          )
+          nextId = existingRange.lowestId.toString()
+          hasSkippedToOlderMangas = true
+          continue // Skip this batch and fetch with new nextId
+        }
+
+        // Filter out IDs that are already in the database
+        const idsToProcess = mangaIds.filter((id) => id > existingRange.highestId! || id < existingRange.lowestId!)
+
+        if (idsToProcess.length === 0) {
+          log.info(`All ${mangaIds.length} manga IDs in batch #${batchNumber} are already in database, skipping...`)
+          const lowestId = Math.min(...mangaIds)
+          nextId = lowestId.toString()
+          continue
+        }
+
+        log.info(
+          `Processing ${idsToProcess.length} new manga IDs from batch #${batchNumber} (${mangaIds.length - idsToProcess.length} already in DB)`,
+        )
+        mangaIds = idsToProcess
+      } else {
+        log.info(`Found ${mangaIds.length} Korean manga IDs in batch #${batchNumber}`)
+      }
+
       const validMangas: Manga[] = []
 
       for (let i = 0; i < mangaIds.length; i += CONFIG.CONCURRENT_REQUESTS) {
         const chunkIds = mangaIds.slice(i, Math.min(i + CONFIG.CONCURRENT_REQUESTS, mangaIds.length))
+
+        log.info(`Processing ${chunkIds.length} manga IDs concurrently from batch #${batchNumber}`)
 
         // Fetch full manga data for each ID concurrently
         const mangaResults = await Promise.allSettled(
@@ -81,11 +134,16 @@ export async function crawlMangas() {
         )
 
         // Collect successful manga fetches
-        mangaResults.forEach((result) => {
+        mangaResults.forEach((result, index) => {
           if (result.status === 'fulfilled' && result.value) {
             validMangas.push(result.value)
           } else {
             failedCount++
+            if (result.status === 'fulfilled') {
+              log.warn(`Manga #${chunkIds[index]} returned null (not found or error)`)
+            } else {
+              log.warn(`Manga #${chunkIds[index]} fetch failed: ${result.reason}`)
+            }
           }
         })
       }
@@ -94,9 +152,12 @@ export async function crawlMangas() {
       let batchSaved = 0
       if (validMangas.length > 0) {
         try {
-          await bulkSaveMangasToDatabase(validMangas)
-          successCount += validMangas.length
-          batchSaved = validMangas.length
+          const actualSaved = await bulkSaveMangasToDatabase(validMangas)
+          successCount += actualSaved
+          batchSaved = actualSaved
+          if (actualSaved < validMangas.length) {
+            log.warn(`Only ${actualSaved} out of ${validMangas.length} manga were actually saved/updated`)
+          }
         } catch (error) {
           log.error(`Failed to bulk save mangas from batch #${batchNumber}:`, error)
           // Try saving individually as fallback
@@ -115,11 +176,12 @@ export async function crawlMangas() {
 
       // Get the lowest ID from search results to use as nextId for pagination
       // Since default sort is id_desc, the last manga has the lowest ID
-      const lowestId = Math.min(...mangaIds)
+      // Note: We use the original search results, not filtered IDs
+      const lowestId = Math.min(...searchResults.map((m) => m.id))
       nextId = lowestId.toString()
 
       log.success(
-        `Batch #${batchNumber} completed: [Batch: ${batchSaved}/${mangaIds.length} saved] [Total: ${successCount}/${totalProcessed} saved, ${failedCount} failed]`,
+        `Batch #${batchNumber} completed: [Batch: ${batchSaved} saved] [Total: ${successCount} saved, ${failedCount} failed]`,
       )
 
       // Add delay between batches to respect rate limits
@@ -150,8 +212,9 @@ export async function crawlMangas() {
 
 /**
  * Bulk save multiple mangas to database without transactions
+ * Returns the number of mangas that were actually saved (inserted or updated)
  */
-async function bulkSaveMangasToDatabase(mangas: Manga[]) {
+async function bulkSaveMangasToDatabase(mangas: Manga[]): Promise<number> {
   try {
     // NOTE: neon-http driver doesn't support transactions, so we execute operations sequentially
     // This is less atomic but should work for the crawl script
@@ -166,7 +229,7 @@ async function bulkSaveMangasToDatabase(mangas: Manga[]) {
       createdAt: manga.date ? new Date(manga.date) : null,
     }))
 
-    await neonDB
+    const result = await neonDB
       .insert(mangaTable)
       .values(mangaValues)
       .onConflictDoUpdate({
@@ -180,6 +243,7 @@ async function bulkSaveMangasToDatabase(mangas: Manga[]) {
           createdAt: sql`excluded.created_at`,
         },
       })
+      .returning({ id: mangaTable.id })
 
     // Collect all unique values for bulk insert
     const allArtists = new Set<string>()
@@ -496,6 +560,8 @@ async function bulkSaveMangasToDatabase(mangas: Manga[]) {
           ON CONFLICT DO NOTHING
         `)
     }
+
+    return result.length
   } catch (error) {
     log.error(`Failed to bulk save mangas:`, error)
     throw error
@@ -536,6 +602,37 @@ async function crawlMangaWithRetry(id: number, retries = CONFIG.MAX_RETRIES): Pr
   }
 
   return null
+}
+
+/**
+ * Get the range of manga IDs already in the database
+ */
+async function getExistingMangaIdRange(
+  enabled: boolean = true,
+): Promise<{ lowestId: number | null; highestId: number | null }> {
+  if (!enabled) {
+    return {
+      lowestId: null,
+      highestId: null,
+    }
+  }
+
+  try {
+    const result = await neonDB
+      .select({
+        lowestId: min(mangaTable.id),
+        highestId: max(mangaTable.id),
+      })
+      .from(mangaTable)
+
+    return {
+      lowestId: result[0]?.lowestId ?? null,
+      highestId: result[0]?.highestId ?? null,
+    }
+  } catch (error) {
+    log.error('Failed to fetch manga ID range from database:', error)
+    throw error
+  }
 }
 
 /**
