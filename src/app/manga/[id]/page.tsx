@@ -67,5 +67,5 @@ export default async function Page({ params }: PageProps<'/manga/[id]'>) {
 
 const getManga = cache(async (id: number): Promise<Manga | null> => {
   const litomiClient = LitomiClient.getInstance()
-  return litomiClient.fetchManga(id)
+  return litomiClient.getManga(id)
 })

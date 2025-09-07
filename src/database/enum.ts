@@ -24,19 +24,19 @@ export enum TagCategory {
   OTHER = 3,
 }
 
-export const TagCategoryName = {
+export const TagCategoryName: Record<number, string> = {
   [TagCategory.FEMALE]: 'female',
   [TagCategory.MALE]: 'male',
   [TagCategory.MIXED]: 'mixed',
   [TagCategory.OTHER]: 'other',
-} as const
+}
 
-export const TagCategoryFromName = {
+export const TagCategoryFromName: Record<string, TagCategory> = {
   female: TagCategory.FEMALE,
   male: TagCategory.MALE,
   mixed: TagCategory.MIXED,
   other: TagCategory.OTHER,
-} as const
+}
 
 export enum ChallengeType {
   REGISTRATION = 1,

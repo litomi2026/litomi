@@ -16,8 +16,8 @@ export const artistTable = pgTable('artist', {
 }).enableRLS()
 
 export const mangaArtistTable = pgTable('manga_artist', {
-  mangaId: integer().references(() => mangaTable.id),
-  artistId: integer().references(() => artistTable.id),
+  mangaId: integer().references(() => mangaTable.id, { onDelete: 'cascade' }),
+  artistId: integer().references(() => artistTable.id, { onDelete: 'cascade' }),
 }).enableRLS()
 
 export const characterTable = pgTable('character', {
@@ -26,8 +26,8 @@ export const characterTable = pgTable('character', {
 }).enableRLS()
 
 export const mangaCharacterTable = pgTable('manga_character', {
-  mangaId: integer().references(() => mangaTable.id),
-  characterId: integer().references(() => characterTable.id),
+  mangaId: integer().references(() => mangaTable.id, { onDelete: 'cascade' }),
+  characterId: integer().references(() => characterTable.id, { onDelete: 'cascade' }),
 }).enableRLS()
 
 export const tagTable = pgTable(
@@ -41,8 +41,8 @@ export const tagTable = pgTable(
 ).enableRLS()
 
 export const mangaTagTable = pgTable('manga_tag', {
-  mangaId: integer().references(() => mangaTable.id),
-  tagId: integer().references(() => tagTable.id),
+  mangaId: integer().references(() => mangaTable.id, { onDelete: 'cascade' }),
+  tagId: integer().references(() => tagTable.id, { onDelete: 'cascade' }),
 }).enableRLS()
 
 export const seriesTable = pgTable('series', {
@@ -51,8 +51,8 @@ export const seriesTable = pgTable('series', {
 }).enableRLS()
 
 export const mangaSeriesTable = pgTable('manga_series', {
-  mangaId: integer().references(() => mangaTable.id),
-  seriesId: integer().references(() => seriesTable.id),
+  mangaId: integer().references(() => mangaTable.id, { onDelete: 'cascade' }),
+  seriesId: integer().references(() => seriesTable.id, { onDelete: 'cascade' }),
 }).enableRLS()
 
 export const groupTable = pgTable('group', {
@@ -61,8 +61,8 @@ export const groupTable = pgTable('group', {
 }).enableRLS()
 
 export const mangaGroupTable = pgTable('manga_group', {
-  mangaId: integer().references(() => mangaTable.id),
-  groupId: integer().references(() => groupTable.id),
+  mangaId: integer().references(() => mangaTable.id, { onDelete: 'cascade' }),
+  groupId: integer().references(() => groupTable.id, { onDelete: 'cascade' }),
 }).enableRLS()
 
 export const languageTable = pgTable('language', {
@@ -71,8 +71,8 @@ export const languageTable = pgTable('language', {
 }).enableRLS()
 
 export const mangaLanguageTable = pgTable('manga_language', {
-  mangaId: integer().references(() => mangaTable.id),
-  languageId: smallint().references(() => languageTable.id),
+  mangaId: integer().references(() => mangaTable.id, { onDelete: 'cascade' }),
+  languageId: smallint().references(() => languageTable.id, { onDelete: 'cascade' }),
 }).enableRLS()
 
 export const uploaderTable = pgTable('uploader', {
@@ -81,6 +81,6 @@ export const uploaderTable = pgTable('uploader', {
 }).enableRLS()
 
 export const mangaUploaderTable = pgTable('manga_uploader', {
-  mangaId: integer().references(() => mangaTable.id),
-  uploaderId: smallint().references(() => uploaderTable.id),
+  mangaId: integer().references(() => mangaTable.id, { onDelete: 'cascade' }),
+  uploaderId: smallint().references(() => uploaderTable.id, { onDelete: 'cascade' }),
 }).enableRLS()
