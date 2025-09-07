@@ -5,7 +5,6 @@ import { cache } from 'react'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { KHentaiClient } from '@/crawler/k-hentai'
 import { LitomiClient } from '@/crawler/litomi'
-import { Manga } from '@/types/manga'
 
 import MangaViewer from './MangaViewer'
 import { mangaSchema } from './schema'
@@ -56,16 +55,15 @@ export default async function Page({ params }: PageProps<'/manga/[id]'>) {
   }
 
   const { id } = validation.data
-  const manga = await getManga(id)
+  const manga = (await getManga(id)) ?? undefined
 
   return (
     <main>
-      <MangaViewer id={id} initialData={manga} />
+      <MangaViewer id={id} initialManga={manga} />
     </main>
   )
 }
 
-const getManga = cache(async (id: number): Promise<Manga | null> => {
-  const litomiClient = LitomiClient.getInstance()
-  return litomiClient.getManga(id)
+const getManga = cache(async (id: number) => {
+  return LitomiClient.getInstance().getManga(id)
 })

@@ -15,15 +15,14 @@ const NotFound = dynamic(() => import('./not-found'))
 
 type Props = {
   id: number
-  initialData?: Manga | null
+  initialManga?: Manga
 }
 
-export default function MangaViewer({ id, initialData }: Readonly<Props>) {
+export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
   const { data: manga } = useQuery({
     queryKey: QueryKeys.manga(id),
     queryFn: () => fetchManga(id),
-    placeholderData: initialData ? undefined : () => ({ id, title: '불러오는 중', images: [] }),
-    initialData: initialData ?? undefined,
+    placeholderData: { id, title: '불러오는 중', images: [] },
   })
 
   // NOTE: Vercel Fluid Active CPU 비용을 줄이기 위해
@@ -34,6 +33,9 @@ export default function MangaViewer({ id, initialData }: Readonly<Props>) {
   })
 
   if (!manga) {
+    if (initialManga) {
+      return <ImageViewer manga={initialManga} />
+    }
     return <NotFound />
   }
 
