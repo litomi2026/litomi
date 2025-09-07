@@ -1,4 +1,5 @@
 import { eq, sql } from 'drizzle-orm'
+import ms from 'ms'
 
 import type { Manga } from '@/types/manga'
 
@@ -13,7 +14,6 @@ import {
   mangaCharacterTable,
   mangaGroupTable,
   mangaLanguageTable,
-  mangaRelatedTable,
   mangaSeriesTable,
   mangaTable,
   mangaTagTable,
@@ -29,6 +29,8 @@ import { translateLanguageList } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
 import { translateTag } from '@/translation/tag'
 
+import { CircuitBreaker, CircuitBreakerConfig } from './CircuitBreaker'
+
 const typeMap: Record<number, string> = {
   1: '동인지',
   2: '망가',
@@ -43,11 +45,20 @@ const typeMap: Record<number, string> = {
   11: '비공개',
 }
 
+const LITOMI_CIRCUIT_BREAKER_CONFIG: CircuitBreakerConfig = {
+  failureThreshold: 5, // Open circuit after 5 consecutive failures
+  successThreshold: 3, // Close circuit after 3 consecutive successes in half-open state
+  timeout: ms('2 minutes'), // Try to recover after 2 minutes
+}
+
 export class LitomiClient {
   private static instance: LitomiClient
+  private readonly circuitBreaker: CircuitBreaker
 
   // Singleton instance
-  private constructor() {}
+  private constructor() {
+    this.circuitBreaker = new CircuitBreaker('LitomiDB', LITOMI_CIRCUIT_BREAKER_CONFIG)
+  }
 
   static getInstance(): LitomiClient {
     if (!LitomiClient.instance) {
@@ -57,10 +68,17 @@ export class LitomiClient {
   }
 
   /**
+   * Get the current state of the circuit breaker
+   */
+  getCircuitBreakerState() {
+    return this.circuitBreaker.getState()
+  }
+
+  /**
    * Fetch a single manga by ID from the database
    */
   async getManga(id: number): Promise<Manga | null> {
-    return this.selectMangaById(id)
+    return this.circuitBreaker.execute(() => this.selectMangaById(id))
   }
 
   /**
@@ -81,7 +99,6 @@ export class LitomiClient {
     groups: string[]
     languages: string[]
     uploaders: string[]
-    related: number[]
   }): Manga {
     const locale = 'ko' // TODO: Get from user preferences or context
 
@@ -111,7 +128,6 @@ export class LitomiClient {
           const category = TagCategoryName[t.category] ?? 'other'
           return translateTag(category, t.value, locale)
         }),
-      related: result.related.length > 0 ? result.related : undefined,
     }
   }
 
@@ -179,13 +195,6 @@ export class LitomiClient {
             '{}'::text[]
           )
         `,
-        related: sql<number[]>`
-          COALESCE(
-            ARRAY_AGG(DISTINCT ${mangaRelatedTable.relatedMangaId}) 
-            FILTER (WHERE ${mangaRelatedTable.relatedMangaId} IS NOT NULL), 
-            '{}'::int[]
-          )
-        `,
       })
       .from(mangaTable)
       .leftJoin(mangaArtistTable, eq(mangaTable.id, mangaArtistTable.mangaId))
@@ -202,7 +211,6 @@ export class LitomiClient {
       .leftJoin(languageTable, eq(mangaLanguageTable.languageId, languageTable.id))
       .leftJoin(mangaUploaderTable, eq(mangaTable.id, mangaUploaderTable.mangaId))
       .leftJoin(uploaderTable, eq(mangaUploaderTable.uploaderId, uploaderTable.id))
-      .leftJoin(mangaRelatedTable, eq(mangaTable.id, mangaRelatedTable.mangaId))
       .where(eq(mangaTable.id, id))
       .groupBy(mangaTable.id)
 
