@@ -55,7 +55,7 @@ export default async function Page({ params }: PageProps<'/manga/[id]'>) {
   }
 
   const { id } = validation.data
-  const manga = (await getManga(id)) ?? undefined
+  const manga = await getManga(id)
 
   return (
     <main>
@@ -65,5 +65,7 @@ export default async function Page({ params }: PageProps<'/manga/[id]'>) {
 }
 
 const getManga = cache(async (id: number) => {
-  return LitomiClient.getInstance().getManga(id)
+  return LitomiClient.getInstance()
+    .getManga(id)
+    .catch(() => null)
 })

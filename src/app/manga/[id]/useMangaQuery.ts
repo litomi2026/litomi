@@ -5,7 +5,7 @@ import { QueryKeys } from '@/constants/query'
 import { Manga } from '@/types/manga'
 import { handleResponseError } from '@/utils/react-query-error'
 
-export function useMangaQuery(id: number, initialManga?: Manga) {
+export function useMangaQuery(id: number, initialManga?: Manga | null) {
   const scope = initialManga ? MangaResponseScope.EXCLUDE_METADATA : null
 
   return useQuery({
