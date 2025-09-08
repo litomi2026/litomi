@@ -1,13 +1,10 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
 import dynamic from 'next/dynamic'
 
+import { useMangaQuery } from '@/app/manga/[id]/useMangaQuery'
 import ImageViewer from '@/components/ImageViewer/ImageViewer'
-import { QueryKeys } from '@/constants/query'
-import { Manga } from '@/types/manga'
-import { getImageSource } from '@/utils/manga'
-import { handleResponseError } from '@/utils/react-query-error'
+import { Manga, MangaError } from '@/types/manga'
 
 import useClientSideMetadata from './useClientSideMetadata'
 
@@ -19,30 +16,38 @@ type Props = {
 }
 
 export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
-  const { data: manga } = useQuery({
-    queryKey: QueryKeys.manga(id),
-    queryFn: () => fetchManga(id),
-    placeholderData: { id, title: '불러오는 중', images: [] },
-  })
+  const { data } = useMangaQuery(id, initialManga)
+  const manga = prepareManga(data, initialManga)
 
   // NOTE: Vercel Fluid Active CPU 비용을 줄이기 위해
-  useClientSideMetadata({
-    title: manga?.title,
-    description: manga?.description,
-    image: manga?.images.map((image) => getImageSource({ imageURL: image, origin: manga?.origin }))[0],
-  })
+  useClientSideMetadata(manga ?? {})
 
   if (!manga) {
-    if (initialManga) {
-      return <ImageViewer manga={initialManga} />
-    }
     return <NotFound />
   }
 
   return <ImageViewer manga={manga} />
 }
 
-async function fetchManga(id: number) {
-  const response = await fetch(`/api/proxy/manga/${id}`)
-  return handleResponseError<Manga>(response)
+function prepareManga(data: Manga | MangaError | undefined, initialManga: Manga | undefined): Manga | null | undefined {
+  if (!data && !initialManga) {
+    return null
+  }
+
+  if (data?.images.length === 0) {
+    return initialManga ?? data
+  }
+
+  const isError = data && 'isError' in data && data.isError
+
+  if (isError) {
+    return {
+      ...initialManga,
+      id: data.id,
+      title: initialManga?.title || data.title,
+      images: data.images,
+    }
+  }
+
+  return initialManga ? { ...initialManga, ...data } : data
 }
