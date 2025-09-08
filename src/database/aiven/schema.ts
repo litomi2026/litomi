@@ -1,4 +1,4 @@
-import { index, integer, pgTable, smallint, text, timestamp, unique } from 'drizzle-orm/pg-core'
+import { index, integer, pgTable, primaryKey, smallint, text, timestamp, unique } from 'drizzle-orm/pg-core'
 
 export const mangaTable = pgTable('manga', {
   id: integer().primaryKey(),
@@ -22,7 +22,7 @@ export const mangaArtistTable = pgTable(
     artistId: integer().references(() => artistTable.id, { onDelete: 'cascade' }),
   },
   (table) => [
-    index('idx_manga_artist_composite').on(table.mangaId, table.artistId),
+    primaryKey({ columns: [table.mangaId, table.artistId] }),
     index('idx_manga_artist_artist_id').on(table.artistId),
   ],
 ).enableRLS()
@@ -39,7 +39,7 @@ export const mangaCharacterTable = pgTable(
     characterId: integer().references(() => characterTable.id, { onDelete: 'cascade' }),
   },
   (table) => [
-    index('idx_manga_character_composite').on(table.mangaId, table.characterId),
+    primaryKey({ columns: [table.mangaId, table.characterId] }),
     index('idx_manga_character_character_id').on(table.characterId),
   ],
 ).enableRLS()
@@ -60,10 +60,7 @@ export const mangaTagTable = pgTable(
     mangaId: integer().references(() => mangaTable.id, { onDelete: 'cascade' }),
     tagId: integer().references(() => tagTable.id, { onDelete: 'cascade' }),
   },
-  (table) => [
-    index('idx_manga_tag_composite').on(table.mangaId, table.tagId),
-    index('idx_manga_tag_tag_id').on(table.tagId),
-  ],
+  (table) => [primaryKey({ columns: [table.mangaId, table.tagId] }), index('idx_manga_tag_tag_id').on(table.tagId)],
 ).enableRLS()
 
 export const seriesTable = pgTable('series', {
@@ -78,7 +75,7 @@ export const mangaSeriesTable = pgTable(
     seriesId: integer().references(() => seriesTable.id, { onDelete: 'cascade' }),
   },
   (table) => [
-    index('idx_manga_series_composite').on(table.mangaId, table.seriesId),
+    primaryKey({ columns: [table.mangaId, table.seriesId] }),
     index('idx_manga_series_series_id').on(table.seriesId),
   ],
 ).enableRLS()
@@ -95,7 +92,7 @@ export const mangaGroupTable = pgTable(
     groupId: integer().references(() => groupTable.id, { onDelete: 'cascade' }),
   },
   (table) => [
-    index('idx_manga_group_composite').on(table.mangaId, table.groupId),
+    primaryKey({ columns: [table.mangaId, table.groupId] }),
     index('idx_manga_group_group_id').on(table.groupId),
   ],
 ).enableRLS()
@@ -112,7 +109,7 @@ export const mangaLanguageTable = pgTable(
     languageId: smallint().references(() => languageTable.id, { onDelete: 'cascade' }),
   },
   (table) => [
-    index('idx_manga_language_composite').on(table.mangaId, table.languageId),
+    primaryKey({ columns: [table.mangaId, table.languageId] }),
     index('idx_manga_language_language_id').on(table.languageId),
   ],
 ).enableRLS()
@@ -129,7 +126,7 @@ export const mangaUploaderTable = pgTable(
     uploaderId: integer().references(() => uploaderTable.id, { onDelete: 'cascade' }),
   },
   (table) => [
-    index('idx_manga_uploader_composite').on(table.mangaId, table.uploaderId),
+    primaryKey({ columns: [table.mangaId, table.uploaderId] }),
     index('idx_manga_uploader_uploader_id').on(table.uploaderId),
   ],
 ).enableRLS()

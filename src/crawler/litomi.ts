@@ -3,8 +3,8 @@ import ms from 'ms'
 
 import type { Manga } from '@/types/manga'
 
+import { aivenDB } from '@/database/aiven/drizzle'
 import { TagCategoryName } from '@/database/enum'
-import { neonDBRO } from '@/database/neon/drizzle'
 import {
   artistTable,
   characterTable,
@@ -137,7 +137,7 @@ export class LitomiClient {
    * to avoid cartesian product and improve performance
    */
   private async selectMangaById(id: number): Promise<Manga | null> {
-    const [result] = await neonDBRO
+    const [result] = await aivenDB
       .select({
         id: mangaTable.id,
         title: mangaTable.title,
@@ -149,67 +149,70 @@ export class LitomiClient {
         // Use correlated subqueries for each relation to avoid cartesian product
         artists: sql<string[]>`
           COALESCE(
-            (SELECT ARRAY_AGG(DISTINCT a.value)
+            (SELECT ARRAY_AGG(a.value)
              FROM ${mangaArtistTable} ma
              INNER JOIN ${artistTable} a ON ma."artistId" = a.id
-             WHERE ma."mangaId" = ${mangaTable.id}),
+             WHERE ma."mangaId" = ${id}),
             '{}'::text[]
           )
         `,
         characters: sql<string[]>`
           COALESCE(
-            (SELECT ARRAY_AGG(DISTINCT c.value)
+            (SELECT ARRAY_AGG(c.value)
              FROM ${mangaCharacterTable} mc
              INNER JOIN ${characterTable} c ON mc."characterId" = c.id
-             WHERE mc."mangaId" = ${mangaTable.id}),
+             WHERE mc."mangaId" = ${id}),
             '{}'::text[]
           )
         `,
         tags: sql<{ value: string; category: number }[]>`
           COALESCE(
-            (SELECT JSON_AGG(DISTINCT jsonb_build_object(
-               'value', t.value,
-               'category', t.category
-             ))
-             FROM ${mangaTagTable} mt
-             INNER JOIN ${tagTable} t ON mt."tagId" = t.id
-             WHERE mt."mangaId" = ${mangaTable.id}),
+            (SELECT JSON_AGG(tag_data)
+             FROM (
+               SELECT jsonb_build_object(
+                 'value', t.value,
+                 'category', t.category
+               ) as tag_data
+               FROM ${mangaTagTable} mt
+               INNER JOIN ${tagTable} t ON mt."tagId" = t.id
+               WHERE mt."mangaId" = ${id}
+             ) sub),
             '[]'::json
           )
         `,
         series: sql<string[]>`
           COALESCE(
-            (SELECT ARRAY_AGG(DISTINCT s.value)
+            (SELECT ARRAY_AGG(s.value)
              FROM ${mangaSeriesTable} ms
              INNER JOIN ${seriesTable} s ON ms."seriesId" = s.id
-             WHERE ms."mangaId" = ${mangaTable.id}),
+             WHERE ms."mangaId" = ${id}),
             '{}'::text[]
           )
         `,
         groups: sql<string[]>`
           COALESCE(
-            (SELECT ARRAY_AGG(DISTINCT g.value)
+            (SELECT ARRAY_AGG(g.value)
              FROM ${mangaGroupTable} mg
              INNER JOIN ${groupTable} g ON mg."groupId" = g.id
-             WHERE mg."mangaId" = ${mangaTable.id}),
+             WHERE mg."mangaId" = ${id}),
             '{}'::text[]
           )
         `,
         languages: sql<string[]>`
           COALESCE(
-            (SELECT ARRAY_AGG(DISTINCT l.value)
+            (SELECT ARRAY_AGG(l.value)
              FROM ${mangaLanguageTable} ml
              INNER JOIN ${languageTable} l ON ml."languageId" = l.id
-             WHERE ml."mangaId" = ${mangaTable.id}),
+             WHERE ml."mangaId" = ${id}),
             '{}'::text[]
           )
         `,
         uploaders: sql<string[]>`
           COALESCE(
-            (SELECT ARRAY_AGG(DISTINCT u.value)
+            (SELECT ARRAY_AGG(u.value)
              FROM ${mangaUploaderTable} mu
              INNER JOIN ${uploaderTable} u ON mu."uploaderId" = u.id
-             WHERE mu."mangaId" = ${mangaTable.id}),
+             WHERE mu."mangaId" = ${id}),
             '{}'::text[]
           )
         `,
