@@ -106,12 +106,6 @@ function MangaDetailButton({ manga }: Readonly<Props>) {
                 <MangaMetadataList details={group} filterType="group" />
               </div>
             )}
-            {uploader && (
-              <div className="flex gap-2">
-                <strong>업로더</strong>
-                <MangaMetadataItem filterType="uploader" value={uploader} />
-              </div>
-            )}
             {series && series.length > 0 && (
               <div className="flex gap-2">
                 <strong>시리즈</strong>
@@ -122,6 +116,12 @@ function MangaDetailButton({ manga }: Readonly<Props>) {
               <div className="flex gap-2">
                 <strong>캐릭터</strong>
                 <MangaMetadataList details={characters} filterType="character" />
+              </div>
+            )}
+            {uploader && (
+              <div className="flex gap-2">
+                <strong>업로더</strong>
+                <MangaMetadataItem filterType="uploader" value={uploader} />
               </div>
             )}
             {date && (
