@@ -6,7 +6,7 @@ import { Manga } from '@/types/manga'
 import { handleResponseError } from '@/utils/react-query-error'
 
 export function useMangaQuery(id: number, initialManga?: Manga) {
-  const scope = initialManga ? MangaResponseScope.IMAGE : null
+  const scope = initialManga ? MangaResponseScope.EXCLUDE_METADATA : null
 
   return useQuery({
     queryKey: QueryKeys.manga(id, scope),
