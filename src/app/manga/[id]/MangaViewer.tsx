@@ -1,35 +1,28 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
 import dynamic from 'next/dynamic'
 
+import { useMangaQuery } from '@/app/manga/[id]/useMangaQuery'
 import ImageViewer from '@/components/ImageViewer/ImageViewer'
-import { QueryKeys } from '@/constants/query'
-import { Manga } from '@/types/manga'
+import { Manga, MangaError } from '@/types/manga'
 import { getImageSource } from '@/utils/manga'
-import { handleResponseError } from '@/utils/react-query-error'
 
-import useClientSideMetadata from './useClientSideMetadata'
+import usePageMetadata from './usePageMetadata'
 
 const NotFound = dynamic(() => import('./not-found'))
 
 type Props = {
   id: number
+  initialManga?: Manga
 }
 
-export default function MangaViewer({ id }: Readonly<Props>) {
-  const { data: manga } = useQuery({
-    queryKey: QueryKeys.manga(id),
-    queryFn: () => fetchManga(id),
-    placeholderData: () => ({ id, title: '불러오는 중', images: [] }),
-  })
+export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
+  const { data } = useMangaQuery(id, initialManga)
+  const manga = prepareManga(data, initialManga)
+  const metadata = prepareMetadata(manga)
 
   // NOTE: Vercel Fluid Active CPU 비용을 줄이기 위해
-  useClientSideMetadata({
-    title: manga?.title,
-    description: manga?.description,
-    image: manga?.images.map((image) => getImageSource({ imageURL: image, origin: manga?.origin }))[0],
-  })
+  usePageMetadata(metadata)
 
   if (!manga) {
     return <NotFound />
@@ -38,7 +31,89 @@ export default function MangaViewer({ id }: Readonly<Props>) {
   return <ImageViewer manga={manga} />
 }
 
-async function fetchManga(id: number) {
-  const response = await fetch(`/api/proxy/manga/${id}`)
-  return handleResponseError<Manga>(response)
+function prepareManga(data: Manga | MangaError | undefined, initialManga: Manga | undefined): Manga | null | undefined {
+  if (!data && !initialManga) {
+    return null
+  }
+
+  if (data?.images.length === 0) {
+    return initialManga ?? data
+  }
+
+  const isError = data && 'isError' in data && data.isError
+
+  if (isError) {
+    return {
+      ...initialManga,
+      id: data.id,
+      title: initialManga?.title || data.title,
+      images: data.images,
+    }
+  }
+
+  return initialManga ? { ...initialManga, ...data } : data
+}
+
+function prepareMetadata(manga: Manga | null | undefined) {
+  if (!manga || manga.images.length === 0) {
+    return {}
+  }
+
+  const parts: string[] = []
+
+  if (manga.artists && manga.artists.length > 0) {
+    const artistNames = manga.artists
+      .slice(0, 3)
+      .map((a) => a.label)
+      .join(', ')
+    parts.push(`작가: ${artistNames}`)
+  }
+
+  if (manga.series && manga.series.length > 0) {
+    const seriesNames = manga.series
+      .slice(0, 2)
+      .map((s) => s.label)
+      .join(', ')
+    parts.push(`시리즈: ${seriesNames}`)
+  }
+
+  if (manga.characters && manga.characters.length > 0) {
+    const characterNames = manga.characters
+      .slice(0, 3)
+      .map((c) => c.label)
+      .join(', ')
+    parts.push(`캐릭터: ${characterNames}`)
+  }
+
+  if (manga.tags && manga.tags.length > 0) {
+    const tagNames = manga.tags
+      .slice(0, 5)
+      .map((t) => t.label)
+      .join(', ')
+    parts.push(`태그: ${tagNames}`)
+  }
+
+  if (manga.type) {
+    parts.push(`종류: ${manga.type}`)
+  }
+
+  if (manga.languages && manga.languages.length > 0) {
+    const languages = manga.languages.map((l) => l.label).join(', ')
+    parts.push(`언어: ${languages}`)
+  }
+
+  if (manga.count) {
+    parts.push(`${manga.count} 페이지`)
+  }
+
+  const description = manga.description || parts.join(' • ')
+
+  return {
+    title: manga.title,
+    description,
+    image: getImageSource({
+      imageURL: manga.images[0],
+      origin: manga.origin,
+    }),
+  }
 }

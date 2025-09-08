@@ -8,7 +8,7 @@ type Props = {
   image?: string
 }
 
-export default function useClientSideMetadata({ title, description, image }: Readonly<Props>) {
+export default function usePageMetadata({ title, description, image }: Props) {
   useEffect(() => {
     if (title) {
       const fullTitle = `${title.slice(0, 50)} - ${SHORT_NAME}`

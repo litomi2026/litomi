@@ -57,6 +57,7 @@ const hiyobiTypeNumberToName: Record<number, string> = {
   8: '코스프레',
   9: '아시안',
   10: '기타',
+  11: '비공개',
 }
 
 const HIYOBI_CONFIG: ProxyClientConfig = {

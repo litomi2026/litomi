@@ -1,8 +1,10 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { cache } from 'react'
 
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { KHentaiClient } from '@/crawler/k-hentai'
+import { LitomiClient } from '@/crawler/litomi'
 
 import MangaViewer from './MangaViewer'
 import { mangaSchema } from './schema'
@@ -17,12 +19,16 @@ export async function generateMetadata({ params }: PageProps<'/manga/[id]'>): Pr
   }
 
   const { id } = validation.data
+  const manga = await getManga(id)
 
   return {
-    title: `작품 - ${SHORT_NAME}`,
+    title: `${manga?.title ?? '작품'} - ${SHORT_NAME}`,
+    description: manga?.description,
     openGraph: {
       ...defaultOpenGraph,
-      title: `작품 - ${SHORT_NAME}`,
+      title: `${manga?.title ?? '작품'} - ${SHORT_NAME}`,
+      description: manga?.description,
+      images: `https://soujpa.in/start/${id}/${id}_0.avif`,
       url: `/manga/${id}`,
     },
     alternates: {
@@ -49,10 +55,15 @@ export default async function Page({ params }: PageProps<'/manga/[id]'>) {
   }
 
   const { id } = validation.data
+  const manga = (await getManga(id)) ?? undefined
 
   return (
     <main>
-      <MangaViewer id={id} />
+      <MangaViewer id={id} initialManga={manga} />
     </main>
   )
 }
+
+const getManga = cache(async (id: number) => {
+  return LitomiClient.getInstance().getManga(id)
+})

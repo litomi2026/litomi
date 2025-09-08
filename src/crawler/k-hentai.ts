@@ -275,10 +275,10 @@ export class KHentaiClient {
       id,
       title,
       images: [thumb],
+      date: new Date(posted * 1000).toISOString(),
       artists: translateArtistList(artistValues, locale),
       characters: translateCharacterList(characterValues, locale),
       group: translateGroupList(groupValues, locale),
-      date: new Date(posted * 1000).toISOString(),
       series: translateSeriesList(seriesValues, locale),
       tags: tags
         .filter(this.isValidKHentaiTag)
