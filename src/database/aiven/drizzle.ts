@@ -1,0 +1,48 @@
+import { drizzle } from 'drizzle-orm/postgres-js'
+import postgres from 'postgres'
+import 'server-only'
+
+import { AIVEN_POSTGRES_URL } from '@/constants/env'
+
+import * as schema from './schema'
+
+const aivenClient = postgres(AIVEN_POSTGRES_URL, {
+  // Connection pool configuration for serverless
+  max: 3, // Maximum connections per instance (Vercel recommends 1-3)
+  idle_timeout: 20, // Close idle connections after 20 seconds
+  connect_timeout: 10, // Connection timeout in seconds
+  max_lifetime: 60 * 30, // Maximum connection lifetime (30 minutes)
+  prepare: false, // Disable prepared statements for better compatibility
+  ssl: {
+    ca: `-----BEGIN CERTIFICATE-----
+MIIEUDCCArigAwIBAgIUGJ1zyFBYN0fGhixchlBBV4U4r5EwDQYJKoZIhvcNAQEM
+BQAwQDE+MDwGA1UEAww1NzAwZTZhMjItMGZkOC00ZmNjLWE0MGItN2VjM2M2NDlm
+MDgzIEdFTiAxIFByb2plY3QgQ0EwHhcNMjUwOTA4MDkyMTI3WhcNMzUwOTA2MDky
+MTI3WjBAMT4wPAYDVQQDDDU3MDBlNmEyMi0wZmQ4LTRmY2MtYTQwYi03ZWMzYzY0
+OWYwODMgR0VOIDEgUHJvamVjdCBDQTCCAaIwDQYJKoZIhvcNAQEBBQADggGPADCC
+AYoCggGBALeMAAzOmSCaDsSrZvYkGbmBYSZgn5bc6iOrBmXW/HIBVpLZKbm8dEGU
+WD/ChkVIDn77Vb0CSPRhAz7T9zoMUSa1RaNDUNTgMaRwvqHKrYv2HKjM7xsUOMEX
+CydxLI83BnfrNPWWd5WOBbDnveYVlV2qjKoyjnhi5v7M9vYYHtsAuNoyvLxVtV97
+irMGIRRptokz8+GZD15MN7k4yV8lqX+QZH7Pu4iwGTxVDBrelDHReR+je8KTlUTQ
+2Dx91q2LKuyqp81xDzEX/GoeOBmKS7bhASvIwZOmDEt9NAvA8d73FBV8+SwP0D8r
+IP9NowYzwwn/yxVE1zghmxa7jRvR8NFowcHHo9tbGOrv8B/VNmJXcNiPJDrEsTZA
+e5oTNNQuURalz8iWHOHaQ2vFryqWRN2xlO/yiZBfj8UfQRc7tDgBzoOas3IwPC1g
+TgTnPtX09JmjUO3nVee4w1NFpg796+y+gXYjuR+XePn/2xDl1IX5FrgsvOjbmM8v
+1ic20+nLMwIDAQABo0IwQDAdBgNVHQ4EFgQUCLd8JC6I2LSRtP6nd7Q5N5mONacw
+EgYDVR0TAQH/BAgwBgEB/wIBADALBgNVHQ8EBAMCAQYwDQYJKoZIhvcNAQEMBQAD
+ggGBAAoOr0cxBx0q+iHo3dagZrarok3PdRjo4/W7JF0kLmdIq2nXKE29U3oR3jtY
+mtt7VZnNsP5VOnV8DV6lNPg8rPoWGo5Oj9Vzitlu5+zzPJHt92XSzZPiEFKPPi0z
+UFGA1rmvbpg13TOu/lkF2MkTQ6aBVyEjfCnX88lPlUoa38E8lYUqeHNMjTFuSDyI
+T0X1KZAUMbj8vuX78OAPCkyUatzCL2KG6TflsO2/USPMAtlla8NqoeaFI+pQD4zL
+XYAQfiKFpdX4wgoRqJt1h43UrQ3eY6gk0A3YVstt6mSZBkpllqxeNb36HReCGjlo
+C5yU//3Y2PbvqU9s53eLQQm/I0UfbqzDVGP9j0GlBP9azdQcpIrbzW6dUUjLEoYq
+fAt1DUQ/M66ozbZX6IZlkcBDURGrCgYUYn2yOhf+1oSP2H7cuUS+1qP5OV/kjU0T
+THV4mqSvK75CL2FYw8TS4OD1pTpvsKQ/wwb1GYVYCvpbs/crXAu0hwwYWaDWRwFa
+iql0uQ==
+-----END CERTIFICATE-----
+`,
+    rejectUnauthorized: true,
+  },
+})
+
+export const aivenDB = drizzle({ client: aivenClient, schema })

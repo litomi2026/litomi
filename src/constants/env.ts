@@ -1,5 +1,6 @@
 import { CANONICAL_URL, LOCAL_URL } from '.'
 
+export const AIVEN_POSTGRES_URL = process.env.AIVEN_POSTGRES_URL ?? ''
 export const AMPLITUDE_API_KEY = process.env.AMPLITUDE_API_KEY
 export const GA_ID = process.env.GA_ID
 export const GOOGLE_ADSENSE_ACCOUNT = process.env.GOOGLE_ADSENSE_ACCOUNT ?? ''

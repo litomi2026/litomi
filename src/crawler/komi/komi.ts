@@ -92,8 +92,8 @@ export class KomiClient {
     return KomiClient.instance
   }
 
-  async fetchManga(id: number, revalidate = sec('1 week')): Promise<Manga | null> {
-    const uuid = this.idMapping.get(id)
+  async fetchManga(id: number | string, revalidate = sec('1 week')): Promise<Manga | null> {
+    const uuid = typeof id === 'number' ? this.idMapping.get(id) : id
 
     if (!uuid) {
       return null
@@ -103,7 +103,7 @@ export class KomiClient {
       next: { revalidate },
     })
 
-    return this.convertKomiToManga(response, id)
+    return this.convertKomiToManga(response, typeof id === 'number' ? id : 1)
   }
 
   private convertKomiToManga(komiManga: KomiManga, numericId: number): Manga {

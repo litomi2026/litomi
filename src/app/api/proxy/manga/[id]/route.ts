@@ -53,10 +53,32 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
     })
 
     if (scope === MangaResponseScope.IMAGE) {
-      return Response.json(
-        { origin: manga.origin, images: manga.images },
-        { headers: { 'Cache-Control': cacheControl } },
-      )
+      const mangaImages = {
+        origin: manga.origin,
+        images: manga.images,
+      }
+
+      return Response.json(mangaImages, { headers: { 'Cache-Control': cacheControl } })
+    }
+
+    if (scope === MangaResponseScope.EXCLUDE_METADATA) {
+      const mangaWithoutMetadata = {
+        ...manga,
+        artists: undefined,
+        characters: undefined,
+        count: undefined,
+        date: undefined,
+        description: undefined,
+        group: undefined,
+        languages: undefined,
+        lines: undefined,
+        series: undefined,
+        tags: undefined,
+        title: undefined,
+        type: undefined,
+      }
+
+      return Response.json(mangaWithoutMetadata, { headers: { 'Cache-Control': cacheControl } })
     }
 
     return Response.json(manga, { headers: { 'Cache-Control': cacheControl } })

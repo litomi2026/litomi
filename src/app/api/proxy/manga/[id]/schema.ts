@@ -3,7 +3,8 @@ import { z } from 'zod/v4'
 import { MAX_MANGA_ID } from '@/constants/policy'
 
 export enum MangaResponseScope {
-  IMAGE = 'image',
+  IMAGE = '1',
+  EXCLUDE_METADATA = '2',
 }
 
 export const GETProxyMangaIdSchema = z.object({

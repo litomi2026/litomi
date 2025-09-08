@@ -76,12 +76,6 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
               <MangaMetadataList details={group} filterType="group" />
             </div>
           )}
-          {uploader && (
-            <div className="flex gap-1">
-              <dt>업로더</dt>
-              <MangaMetadataItem filterType="uploader" value={uploader} />
-            </div>
-          )}
           {series && series.length > 0 && (
             <div className="flex gap-1">
               <dt>시리즈</dt>
@@ -92,6 +86,12 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
             <div className="flex gap-1">
               <dt>캐릭터</dt>
               <MangaMetadataList details={characters} filterType="character" />
+            </div>
+          )}
+          {uploader && (
+            <div className="flex gap-1">
+              <dt>업로더</dt>
+              <MangaMetadataItem filterType="uploader" value={uploader} />
             </div>
           )}
           {tags && tags.length > 0 && <TagList className="flex flex-wrap gap-1 font-semibold" tags={tags} />}

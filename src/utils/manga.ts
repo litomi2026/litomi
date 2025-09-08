@@ -38,6 +38,7 @@ export function mergeMangas(mangas: Manga[]) {
     type: getExistingValue(mangas, 'type'),
     viewCount: getExistingValue(mangas, 'viewCount'),
     rating: getExistingValue(mangas, 'rating'),
+    uploader: getExistingValue(mangas, 'uploader'),
     harpiId: getExistingValue(mangas, 'harpiId'),
     artists: getExistingArray(mergedArtists),
     characters: getExistingArray(mergedCharacters),

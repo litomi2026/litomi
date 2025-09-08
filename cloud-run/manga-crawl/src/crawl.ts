@@ -5,13 +5,13 @@ import type { Manga } from '../../../src/types/manga'
 
 import { getMangaFromMultiSources } from '../../../src/common/manga'
 import { KHentaiClient } from '../../../src/crawler/k-hentai'
+import { aivenDB } from '../../../src/database/aiven/drizzle'
+import { mangaTable } from '../../../src/database/aiven/schema'
 import { MangaType, TagCategoryFromName } from '../../../src/database/enum'
-import { neonDB } from '../../../src/database/neon/drizzle'
-import { mangaTable } from '../../../src/database/neon/schema'
 
 // Configuration
 const CONFIG = {
-  BATCH_DELAY_MS: 15_000, // Delay between batches
+  BATCH_DELAY_MS: 12_000, // Delay between batches
   MAX_MANGAS_TO_PROCESS: 100000, // Optional limit for total mangas to process
   CONCURRENT_REQUESTS: 10, // Number of concurrent manga fetches per batch
   MAX_RETRIES: 3, // Max retries for fetching individual manga
@@ -56,8 +56,6 @@ export async function crawlMangas() {
     let successCount = 0
     let failedCount = 0
     let batchNumber = 0
-
-    log.info('Starting Korean manga crawl from K-Hentai')
 
     while (true) {
       batchNumber++
@@ -113,8 +111,6 @@ export async function crawlMangas() {
           `Processing ${idsToProcess.length} new manga IDs from batch #${batchNumber} (${mangaIds.length - idsToProcess.length} already in DB)`,
         )
         mangaIds = idsToProcess
-      } else {
-        log.info(`Found ${mangaIds.length} Korean manga IDs in batch #${batchNumber}`)
       }
 
       const validMangas: Manga[] = []
@@ -227,7 +223,7 @@ async function bulkSaveMangasToDatabase(mangas: Manga[]): Promise<number> {
       createdAt: manga.date ? new Date(manga.date) : null,
     }))
 
-    const result = await neonDB
+    const result = await aivenDB
       .insert(mangaTable)
       .values(mangaValues)
       .onConflictDoUpdate({
@@ -279,7 +275,7 @@ async function bulkSaveMangasToDatabase(mangas: Manga[]): Promise<number> {
         sql`, `,
       )})`
 
-      await neonDB.execute(sql`
+      await aivenDB.execute(sql`
           WITH inserted_artists AS (
             INSERT INTO artist (value)
             VALUES ${artistValues}
@@ -318,7 +314,7 @@ async function bulkSaveMangasToDatabase(mangas: Manga[]): Promise<number> {
         sql`, `,
       )})`
 
-      await neonDB.execute(sql`
+      await aivenDB.execute(sql`
           WITH inserted_characters AS (
             INSERT INTO character (value)
             VALUES ${characterValues}
@@ -368,7 +364,7 @@ async function bulkSaveMangasToDatabase(mangas: Manga[]): Promise<number> {
         sql`), (`,
       )})`
 
-      await neonDB.execute(sql`
+      await aivenDB.execute(sql`
           WITH inserted_tags AS (
             INSERT INTO tag (value, category)
             VALUES ${tagInsertValues}
@@ -417,7 +413,7 @@ async function bulkSaveMangasToDatabase(mangas: Manga[]): Promise<number> {
         sql`, `,
       )})`
 
-      await neonDB.execute(sql`
+      await aivenDB.execute(sql`
           WITH inserted_series AS (
             INSERT INTO series (value)
             VALUES ${seriesValues}
@@ -455,7 +451,7 @@ async function bulkSaveMangasToDatabase(mangas: Manga[]): Promise<number> {
         sql`, `,
       )})`
 
-      await neonDB.execute(sql`
+      await aivenDB.execute(sql`
           WITH inserted_groups AS (
             INSERT INTO "group" (value)
             VALUES ${groupValues}
@@ -493,7 +489,7 @@ async function bulkSaveMangasToDatabase(mangas: Manga[]): Promise<number> {
         sql`, `,
       )})`
 
-      await neonDB.execute(sql`
+      await aivenDB.execute(sql`
           WITH inserted_languages AS (
             INSERT INTO language (value)
             VALUES ${languageValues}
@@ -533,7 +529,7 @@ async function bulkSaveMangasToDatabase(mangas: Manga[]): Promise<number> {
         sql`, `,
       )})`
 
-      await neonDB.execute(sql`
+      await aivenDB.execute(sql`
           WITH inserted_uploaders AS (
             INSERT INTO uploader (value)
             VALUES ${uploaderValues}
@@ -616,7 +612,7 @@ async function getExistingMangaIdRange(
   }
 
   try {
-    const result = await neonDB
+    const result = await aivenDB
       .select({
         lowestId: min(mangaTable.id),
         highestId: max(mangaTable.id),
@@ -714,7 +710,7 @@ async function saveMangaToDatabase(manga: Manga) {
     // NOTE: neon-http driver doesn't support transactions, so we execute operations sequentially
     // This is less atomic but should work for the crawl script
     // Insert or update main manga record
-    await neonDB
+    await aivenDB
       .insert(mangaTable)
       .values({
         id: manga.id,
@@ -741,7 +737,7 @@ async function saveMangaToDatabase(manga: Manga) {
     if (manga.artists && manga.artists.length > 0) {
       for (const artist of manga.artists) {
         // Single query to handle both entity and junction table
-        await neonDB.execute(sql`
+        await aivenDB.execute(sql`
             WITH artist_id AS (
               -- First try to insert, returns ID if successful
               INSERT INTO artist (value)
@@ -766,7 +762,7 @@ async function saveMangaToDatabase(manga: Manga) {
     if (manga.characters && manga.characters.length > 0) {
       for (const character of manga.characters) {
         // Single query to handle both entity and junction table
-        await neonDB.execute(sql`
+        await aivenDB.execute(sql`
             WITH character_id AS (
               -- First try to insert, returns ID if successful
               INSERT INTO character (value)
@@ -793,7 +789,7 @@ async function saveMangaToDatabase(manga: Manga) {
         const categoryNum =
           TagCategoryFromName[tag.category as keyof typeof TagCategoryFromName] ?? TagCategoryFromName['other']
         // Single query to handle both entity and junction table
-        await neonDB.execute(sql`
+        await aivenDB.execute(sql`
             WITH tag_id AS (
               -- First try to insert, returns ID if successful
               INSERT INTO tag (value, category)
@@ -818,7 +814,7 @@ async function saveMangaToDatabase(manga: Manga) {
     if (manga.series && manga.series.length > 0) {
       for (const serie of manga.series) {
         // Single query to handle both entity and junction table
-        await neonDB.execute(sql`
+        await aivenDB.execute(sql`
             WITH series_id AS (
               -- First try to insert, returns ID if successful
               INSERT INTO series (value)
@@ -843,7 +839,7 @@ async function saveMangaToDatabase(manga: Manga) {
     if (manga.group && manga.group.length > 0) {
       for (const grp of manga.group) {
         // Single query to handle both entity and junction table
-        await neonDB.execute(sql`
+        await aivenDB.execute(sql`
             WITH group_id AS (
               -- First try to insert, returns ID if successful
               INSERT INTO "group" (value)
@@ -868,7 +864,7 @@ async function saveMangaToDatabase(manga: Manga) {
     if (manga.languages && manga.languages.length > 0) {
       for (const language of manga.languages) {
         // Single query to handle both entity and junction table
-        await neonDB.execute(sql`
+        await aivenDB.execute(sql`
             WITH language_id AS (
               -- First try to insert, returns ID if successful
               INSERT INTO language (value)
@@ -892,7 +888,7 @@ async function saveMangaToDatabase(manga: Manga) {
     // Handle uploader
     if (manga.uploader) {
       // Single query to handle both entity and junction table
-      await neonDB.execute(sql`
+      await aivenDB.execute(sql`
           WITH uploader_id AS (
             -- First try to insert, returns ID if successful
             INSERT INTO uploader (value)
