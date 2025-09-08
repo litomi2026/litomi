@@ -80,7 +80,7 @@ function MangaDetailButton({ manga }: Readonly<Props>) {
           <div className="grid gap-2 [&_strong]:whitespace-nowrap">
             <div className="flex gap-2">
               <strong>품번</strong>
-              <span className="text-zinc-300">{id}</span>
+              <MangaMetadataItem filterType="id" value={id.toString()} />
             </div>
             {languages && languages.length > 0 && (
               <div className="flex gap-2">
