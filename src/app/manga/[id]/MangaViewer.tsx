@@ -13,7 +13,7 @@ const NotFound = dynamic(() => import('./not-found'))
 
 type Props = {
   id: number
-  initialManga?: Manga
+  initialManga?: Manga | null
 }
 
 export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
@@ -31,7 +31,10 @@ export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
   return <ImageViewer manga={manga} />
 }
 
-function prepareManga(data: Manga | MangaError | undefined, initialManga: Manga | undefined): Manga | null | undefined {
+function prepareManga(
+  data: Manga | MangaError | undefined,
+  initialManga: Manga | null | undefined,
+): Manga | null | undefined {
   if (!data && !initialManga) {
     return null
   }
