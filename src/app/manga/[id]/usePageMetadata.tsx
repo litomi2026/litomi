@@ -5,10 +5,10 @@ import { SHORT_NAME } from '@/constants'
 type Props = {
   title?: string
   description?: string
-  images?: string[]
+  image?: string
 }
 
-export default function useClientSideMetadata({ title, description, images }: Props) {
+export default function usePageMetadata({ title, description, image }: Props) {
   useEffect(() => {
     if (title) {
       const fullTitle = `${title.slice(0, 50)} - ${SHORT_NAME}`
@@ -28,13 +28,11 @@ export default function useClientSideMetadata({ title, description, images }: Pr
   }, [description])
 
   useEffect(() => {
-    const firstImage = images?.[0]
-
-    if (firstImage) {
-      updateMetaTag('property', 'og:image', firstImage)
-      updateMetaTag('name', 'twitter:image', firstImage)
+    if (image) {
+      updateMetaTag('property', 'og:image', image)
+      updateMetaTag('name', 'twitter:image', image)
     }
-  }, [images])
+  }, [image])
 
   return null
 }
