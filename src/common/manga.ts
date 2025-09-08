@@ -190,7 +190,7 @@ export async function getMangasFromMultiSources(
 function createErrorManga(id: number, error: Error): MangaError {
   return {
     id,
-    title: `${error.name}: ${error.message}\n${error.cause ?? ''}`,
+    title: `${error.message}\n${error.cause ?? ''}`,
     images: [FALLBACK_IMAGE_URL],
     isError: true,
   }

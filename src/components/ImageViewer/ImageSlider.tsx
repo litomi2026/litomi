@@ -1,5 +1,6 @@
 import { memo, useCallback } from 'react'
 
+import IconSpinner from '../icons/IconSpinner'
 import Slider from '../ui/Slider'
 import { useImageIndexStore } from './store/imageIndex'
 import { usePageViewStore } from './store/pageView'
@@ -35,7 +36,8 @@ function ImageSlider({ maxImageIndex }: Readonly<Props>) {
         <Slider className="h-6" max={maxImageIndex} onValueCommit={handleValueCommit} value={imageIndex} />
       </div>
       <div className="flex justify-center gap-1 text-xs">
-        <span>{startPage === endPage ? startPage : `${startPage}-${endPage}`}</span>/<span>{maxPage}</span>
+        <span>{startPage === endPage ? startPage : `${startPage}-${endPage}`}</span>/
+        {maxPage > 0 ? <span>{maxPage}</span> : <IconSpinner className="size-4" />}
       </div>
     </>
   )
