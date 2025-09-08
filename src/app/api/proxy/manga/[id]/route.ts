@@ -16,14 +16,14 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
 
   const validation = GETProxyMangaIdSchema.safeParse({
     id: (await params).id,
-    only: searchParams.get('only'),
+    scope: searchParams.get('scope'),
   })
 
   if (!validation.success) {
     return new Response('Bad Request', { status: 400 })
   }
 
-  const { id, only } = validation.data
+  const { id, scope } = validation.data
 
   try {
     const manga = await getMangaFromMultiSources(id, 0)
@@ -52,7 +52,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       swr,
     })
 
-    if (only === MangaResponseScope.IMAGE) {
+    if (scope === MangaResponseScope.IMAGE) {
       return Response.json(
         { origin: manga.origin, images: manga.images },
         { headers: { 'Cache-Control': cacheControl } },

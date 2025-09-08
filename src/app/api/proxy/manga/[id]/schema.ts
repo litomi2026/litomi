@@ -8,5 +8,5 @@ export enum MangaResponseScope {
 
 export const GETProxyMangaIdSchema = z.object({
   id: z.coerce.number().int().positive().max(MAX_MANGA_ID),
-  only: z.enum(MangaResponseScope).nullable(),
+  scope: z.enum(MangaResponseScope).nullable(),
 })

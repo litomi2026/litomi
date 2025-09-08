@@ -1,4 +1,5 @@
 import { PostFilter } from '@/app/api/post/schema'
+import { MangaResponseScope } from '@/app/api/proxy/manga/[id]/schema'
 
 export const QueryKeys = {
   me: ['me'],
@@ -13,7 +14,7 @@ export const QueryKeys = {
   libraries: ['me', 'libraries'],
   libraryItems: (libraryId: number) => ['me', 'library', libraryId],
 
-  manga: (id: number) => ['manga', id],
+  manga: (id: number, scope: MangaResponseScope | null) => ['manga', id, scope],
   mangaCard: (id: number) => ['mangaCard', id],
   search: (searchParams: URLSearchParams) => ['search', Object.fromEntries(searchParams)],
   searchSuggestions: (query: string, locale: string) => ['search', 'suggestions', locale, query],
