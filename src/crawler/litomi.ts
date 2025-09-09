@@ -1,4 +1,4 @@
-import { eq, sql } from 'drizzle-orm'
+import { sql } from 'drizzle-orm'
 import ms from 'ms'
 
 import type { Manga } from '@/types/manga'
@@ -54,10 +54,12 @@ const LITOMI_CIRCUIT_BREAKER_CONFIG: CircuitBreakerConfig = {
 export class LitomiClient {
   private static instance: LitomiClient
   private readonly circuitBreaker: CircuitBreaker
+  private readonly preparedSelectMangaById: ReturnType<typeof this.prepareMangaQuery>
 
   // Singleton instance
   private constructor() {
     this.circuitBreaker = new CircuitBreaker('LitomiDB', LITOMI_CIRCUIT_BREAKER_CONFIG)
+    this.preparedSelectMangaById = this.prepareMangaQuery()
   }
 
   static getInstance(): LitomiClient {
@@ -131,13 +133,8 @@ export class LitomiClient {
     }
   }
 
-  /**
-   * Private method to get manga by ID with all related data
-   * Optimized using correlated subqueries instead of multiple LEFT JOINs
-   * to avoid cartesian product and improve performance
-   */
-  private async selectMangaById(id: number): Promise<Manga | null> {
-    const [result] = await aivenDB
+  private prepareMangaQuery() {
+    return aivenDB
       .select({
         id: mangaTable.id,
         title: mangaTable.title,
@@ -146,13 +143,13 @@ export class LitomiClient {
         type: mangaTable.type,
         count: mangaTable.count,
         createdAt: mangaTable.createdAt,
-        // Use correlated subqueries for each relation to avoid cartesian product
+        // Use placeholder $mangaId for the manga ID parameter
         artists: sql<string[]>`
           COALESCE(
             (SELECT ARRAY_AGG(a.value)
              FROM ${mangaArtistTable} ma
              INNER JOIN ${artistTable} a ON ma."artistId" = a.id
-             WHERE ma."mangaId" = ${id}),
+             WHERE ma."mangaId" = $mangaId),
             '{}'::text[]
           )
         `,
@@ -161,7 +158,7 @@ export class LitomiClient {
             (SELECT ARRAY_AGG(c.value)
              FROM ${mangaCharacterTable} mc
              INNER JOIN ${characterTable} c ON mc."characterId" = c.id
-             WHERE mc."mangaId" = ${id}),
+             WHERE mc."mangaId" = $mangaId),
             '{}'::text[]
           )
         `,
@@ -175,7 +172,7 @@ export class LitomiClient {
                ) as tag_data
                FROM ${mangaTagTable} mt
                INNER JOIN ${tagTable} t ON mt."tagId" = t.id
-               WHERE mt."mangaId" = ${id}
+               WHERE mt."mangaId" = $mangaId
              ) sub),
             '[]'::json
           )
@@ -185,7 +182,7 @@ export class LitomiClient {
             (SELECT ARRAY_AGG(s.value)
              FROM ${mangaSeriesTable} ms
              INNER JOIN ${seriesTable} s ON ms."seriesId" = s.id
-             WHERE ms."mangaId" = ${id}),
+             WHERE ms."mangaId" = $mangaId),
             '{}'::text[]
           )
         `,
@@ -194,7 +191,7 @@ export class LitomiClient {
             (SELECT ARRAY_AGG(g.value)
              FROM ${mangaGroupTable} mg
              INNER JOIN ${groupTable} g ON mg."groupId" = g.id
-             WHERE mg."mangaId" = ${id}),
+             WHERE mg."mangaId" = $mangaId),
             '{}'::text[]
           )
         `,
@@ -203,7 +200,7 @@ export class LitomiClient {
             (SELECT ARRAY_AGG(l.value)
              FROM ${mangaLanguageTable} ml
              INNER JOIN ${languageTable} l ON ml."languageId" = l.id
-             WHERE ml."mangaId" = ${id}),
+             WHERE ml."mangaId" = $mangaId),
             '{}'::text[]
           )
         `,
@@ -212,13 +209,18 @@ export class LitomiClient {
             (SELECT ARRAY_AGG(u.value)
              FROM ${mangaUploaderTable} mu
              INNER JOIN ${uploaderTable} u ON mu."uploaderId" = u.id
-             WHERE mu."mangaId" = ${id}),
+             WHERE mu."mangaId" = $mangaId),
             '{}'::text[]
           )
         `,
       })
       .from(mangaTable)
-      .where(eq(mangaTable.id, id))
+      .where(sql`${mangaTable.id} = $mangaId`)
+      .prepare('selectMangaById')
+  }
+
+  private async selectMangaById(id: number): Promise<Manga | null> {
+    const [result] = await this.preparedSelectMangaById.execute({ mangaId: id })
 
     if (!result) {
       return null
