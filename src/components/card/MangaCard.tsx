@@ -19,6 +19,7 @@ import SearchFromHereButton from './SearchFromHereButton'
 
 type Props = {
   manga: Manga
+  simple?: boolean
   index?: number
   className?: string
   showSearchFromNextButton?: boolean
@@ -30,7 +31,7 @@ export function MangaCardSkeleton() {
   return <li className="animate-fade-in rounded-xl bg-zinc-900 border-2 aspect-[3/4] w-full h-full" />
 }
 
-function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton }: Readonly<Props>) {
+function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton, simple }: Readonly<Props>) {
   const { id, artists, characters, date, group, series, tags, title, type, origin, languages, uploader } = manga
   const isDownloadable = origin === 'https://soujpa.in'
   const viewerLink = getViewerLink(id)
