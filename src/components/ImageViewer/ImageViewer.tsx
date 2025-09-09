@@ -75,7 +75,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
       <ReadingProgressSaver mangaId={manga.id} />
       <div
         aria-current={showController}
-        className="fixed top-0 left-0 right-0 z-10 bg-background/70 backdrop-blur border-b border-zinc-500 px-safe transition opacity-0 pointer-events-none
+        className="fixed top-0 left-0 right-0 z-10 bg-background/80 backdrop-blur border-b border-zinc-500 px-safe transition opacity-0 pointer-events-none
         aria-current:opacity-100 aria-current:pointer-events-auto"
       >
         <div
@@ -119,7 +119,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
 
       <div
         aria-current={showController}
-        className="fixed bottom-0 left-0 right-0 z-10 bg-background/70 backdrop-blur border-t border-zinc-500 px-safe pb-safe transition opacity-0 pointer-events-none
+        className="fixed bottom-0 left-0 right-0 z-10 bg-background/80 backdrop-blur border-t border-zinc-500 px-safe pb-safe transition opacity-0 pointer-events-none
         aria-current:opacity-100 aria-current:pointer-events-auto"
       >
         <div className="p-3 grid gap-1.5 select-none">
