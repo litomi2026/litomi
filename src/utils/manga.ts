@@ -1,5 +1,8 @@
-import type { LabeledValue, Manga, MangaTag } from '@/types/manga'
+import type { Manga, MangaTag } from '@/types/manga'
 
+import { tagCategoryNameToInt } from '@/database/enum'
+
+import { uniqBy } from './array'
 import { checkDefined } from './type'
 
 type Params = {
@@ -20,11 +23,11 @@ export function getViewerLink(id: number) {
 }
 
 export function mergeMangas(mangas: Manga[]) {
-  const mergedArtists = deduplicateLabeledValues(mangas.flatMap((m) => m.artists).filter(checkDefined))
-  const mergedCharacters = deduplicateLabeledValues(mangas.flatMap((m) => m.characters).filter(checkDefined))
-  const mergedGroups = deduplicateLabeledValues(mangas.flatMap((m) => m.group).filter(checkDefined))
-  const mergedSeries = deduplicateLabeledValues(mangas.flatMap((m) => m.series).filter(checkDefined))
-  const mergedTags = deduplicateLabeledValues(mangas.flatMap((m) => m.tags).filter(checkDefined))
+  const mergedArtists = uniqBy(mangas.flatMap((m) => m.artists).filter(checkDefined), 'value')
+  const mergedCharacters = uniqBy(mangas.flatMap((m) => m.characters).filter(checkDefined), 'value')
+  const mergedGroups = uniqBy(mangas.flatMap((m) => m.group).filter(checkDefined), 'value')
+  const mergedSeries = uniqBy(mangas.flatMap((m) => m.series).filter(checkDefined), 'value')
+  const mergedTags = uniqBy(mangas.flatMap((m) => m.tags).filter(checkDefined), 'value')
   const mergedRelated = Array.from(new Set(mangas.flatMap((m) => m.related).filter(checkDefined)))
 
   return deleteUndefinedValues({
@@ -46,22 +49,6 @@ export function mergeMangas(mangas: Manga[]) {
     series: getExistingArray(mergedSeries),
     tags: sortLabeledValues(getExistingArray(mergedTags)),
     related: getExistingArray(mergedRelated),
-  })
-}
-
-function deduplicateLabeledValues<T extends LabeledValue>(items: T[]) {
-  if (items.length === 0) {
-    return null
-  }
-
-  const seen = new Set<string>()
-
-  return items.filter((item) => {
-    if (seen.has(item.value)) {
-      return false
-    }
-    seen.add(item.value)
-    return true
   })
 }
 
@@ -89,21 +76,11 @@ function getExistingValue<T, K extends keyof T>(validMangas: T[], key: K): T[K] 
   return undefined
 }
 
-const categoryOrder: Record<string, number> = {
-  female: 4,
-  male: 3,
-  mixed: 2,
-  other: 1,
-}
-
-function sortLabeledValues(labeledValues?: MangaTag[]) {
+function sortLabeledValues(labeledValues: MangaTag[] | undefined) {
   return labeledValues?.sort((a, b) => {
-    const categoryDiff = (categoryOrder[b.category] ?? 0) - (categoryOrder[a.category] ?? 0)
-
-    if (categoryDiff !== 0) {
-      return categoryDiff
+    if (a.category === b.category) {
+      return a.label.localeCompare(b.label)
     }
-
-    return a.label.localeCompare(b.label)
+    return tagCategoryNameToInt[a.category] - tagCategoryNameToInt[b.category]
   })
 }

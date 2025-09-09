@@ -4,7 +4,7 @@ import ms from 'ms'
 import type { Manga } from '@/types/manga'
 
 import { aivenDB } from '@/database/aiven/drizzle'
-import { TagCategoryName } from '@/database/enum'
+import { tagCategoryIntToName } from '@/database/enum'
 import {
   artistTable,
   characterTable,
@@ -122,7 +122,7 @@ export class LitomiClient {
       tags: result.tags
         .sort((a, b) => a.category - b.category)
         .map((t) => {
-          const category = TagCategoryName[t.category] ?? 'other'
+          const category = tagCategoryIntToName[t.category] ?? 'other'
           return translateTag(category, t.value, locale)
         })
         .sort((a, b) => {
