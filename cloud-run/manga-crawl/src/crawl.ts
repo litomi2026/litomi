@@ -11,7 +11,7 @@ import { MangaType, TagCategory, tagCategoryNameToInt } from '../../../src/datab
 
 // Configuration
 const CONFIG = {
-  BATCH_DELAY_MS: 12_000, // Delay between batches
+  BATCH_DELAY_MS: 10_000, // Delay between batches
   MAX_MANGAS_TO_PROCESS: 100000, // Optional limit for total mangas to process
   CONCURRENT_REQUESTS: 10, // Number of concurrent manga fetches per batch
   MAX_RETRIES: 3, // Max retries for fetching individual manga
@@ -183,7 +183,6 @@ export async function crawlMangas() {
       const sleepTime = Math.max(0, CONFIG.BATCH_DELAY_MS - elapsedTime)
 
       if (sleepTime > 0) {
-        log.info(`Waiting ${(sleepTime / 1000).toFixed(1)}s before next batch...`)
         await sleep(sleepTime)
       }
 

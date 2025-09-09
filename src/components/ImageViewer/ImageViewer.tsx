@@ -71,7 +71,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
 
   return (
     <div className="relative">
-      <ResumeReadingToast mangaId={manga.id} />
+      <ResumeReadingToast manga={manga} />
       <ReadingProgressSaver mangaId={manga.id} />
       <div
         aria-current={showController}
