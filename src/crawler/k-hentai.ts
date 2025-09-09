@@ -2,7 +2,7 @@ import ms from 'ms'
 
 import type { Manga } from '@/types/manga'
 
-import { MangaSource } from '@/database/enum'
+import { MangaSource, tagCategoryNameToInt } from '@/database/enum'
 import { translateArtistList } from '@/translation/artist'
 import { translateCharacterList } from '@/translation/character'
 import { translateGroupList } from '@/translation/group'
@@ -282,7 +282,14 @@ export class KHentaiClient {
       series: translateSeriesList(seriesValues, locale),
       tags: tags
         .filter(this.isValidKHentaiTag)
-        .map(({ tag: [category, value] }) => translateTag(category, value, locale)),
+        .map(({ tag: [category, value] }) => translateTag(category, value, locale))
+        // NOTE: 알파벳순으로 정렬되기에 카테고리, locale 순서대로 정렬
+        .sort((a, b) => {
+          if (a.category !== b.category) {
+            return tagCategoryNameToInt[a.category] - tagCategoryNameToInt[b.category]
+          }
+          return a.label.localeCompare(b.label)
+        }),
       type: kHentaiTypeNumberToName[category] ?? '?',
       languages: translateLanguageList(languageValues, locale),
       count: filecount,
