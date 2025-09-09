@@ -7,7 +7,7 @@ import { getMangaFromMultiSources } from '../../../src/common/manga'
 import { KHentaiClient } from '../../../src/crawler/k-hentai'
 import { aivenDB } from '../../../src/database/aiven/drizzle'
 import { mangaTable } from '../../../src/database/aiven/schema'
-import { MangaType, TagCategoryFromName } from '../../../src/database/enum'
+import { MangaType, TagCategory, tagCategoryNameToInt } from '../../../src/database/enum'
 
 // Configuration
 const CONFIG = {
@@ -347,8 +347,7 @@ async function bulkSaveMangasToDatabase(mangas: Manga[]): Promise<number> {
       // Prepare all unique tag value-category pairs
       const tagPairs: Array<{ value: string; categoryNum: number }> = []
       allTags.forEach((values, category) => {
-        const categoryNum =
-          TagCategoryFromName[category as keyof typeof TagCategoryFromName] ?? TagCategoryFromName['other']
+        const categoryNum = tagCategoryNameToInt[category] ?? TagCategory.OTHER
         values.forEach((value) => {
           tagPairs.push({ value, categoryNum })
         })
@@ -384,9 +383,7 @@ async function bulkSaveMangasToDatabase(mangas: Manga[]): Promise<number> {
                 mangas.flatMap(
                   (manga) =>
                     manga.tags?.map((tag) => {
-                      const categoryNum =
-                        TagCategoryFromName[tag.category as keyof typeof TagCategoryFromName] ??
-                        TagCategoryFromName['other']
+                      const categoryNum = tagCategoryNameToInt[tag.category] ?? TagCategory.OTHER
                       return sql`(${manga.id}, ${tag.value}, ${categoryNum}::smallint)`
                     }) || [],
                 ),
@@ -786,8 +783,7 @@ async function saveMangaToDatabase(manga: Manga) {
     // Handle tags
     if (manga.tags && manga.tags.length > 0) {
       for (const tag of manga.tags) {
-        const categoryNum =
-          TagCategoryFromName[tag.category as keyof typeof TagCategoryFromName] ?? TagCategoryFromName['other']
+        const categoryNum = tagCategoryNameToInt[tag.category] ?? TagCategory.OTHER
         // Single query to handle both entity and junction table
         await aivenDB.execute(sql`
             WITH tag_id AS (
