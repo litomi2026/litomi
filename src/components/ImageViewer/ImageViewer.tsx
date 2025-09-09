@@ -91,14 +91,13 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
           </div>
           <MangaDetailButton manga={manga} />
           <div className="flex gap-1">
-            <Link aria-label="리뷰 보기" href={`/manga/${manga.id}/post`}>
+            <Link aria-label="리뷰 보기" href={`/manga/${manga.id}/detail`}>
               <IconChat className="size-6" />
             </Link>
             <ShareButton />
           </div>
         </div>
       </div>
-
       {isTouchMode ? (
         <TouchViewer
           manga={manga}
@@ -116,7 +115,6 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
           screenFit={screenFit}
         />
       )}
-
       <div
         aria-current={showController}
         className="fixed bottom-0 left-0 right-0 z-10 bg-background/80 backdrop-blur border-t border-zinc-500 px-safe pb-safe transition opacity-0 pointer-events-none

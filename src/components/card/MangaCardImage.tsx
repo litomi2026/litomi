@@ -1,6 +1,7 @@
 import Link from 'next/link'
 
 import { Manga } from '@/types/manga'
+import { getViewerLink } from '@/utils/manga'
 
 import LinkLoading from '../LinkLoading'
 import MangaImage from '../MangaImage'
@@ -8,14 +9,14 @@ import MangaCardCensorship from './MangaCardCensorship'
 import MangaCardPreviewImages from './MangaCardPreviewImages'
 
 type Props = {
-  href: string
   manga: Manga
   mangaIndex: number
   className?: string
 }
 
-export default function MangaCardImage({ manga, href, mangaIndex, className = '' }: Readonly<Props>) {
+export default function MangaCardImage({ manga, mangaIndex, className = '' }: Readonly<Props>) {
   const { count, images } = manga
+  const href = getViewerLink(manga.id)
 
   return (
     <div className={`overflow-hidden relative ${className}`}>

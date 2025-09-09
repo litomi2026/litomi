@@ -8,10 +8,11 @@ import PostCreationForm from '@/components/post/PostCreationForm'
 import { CANONICAL_URL, defaultOpenGraph, SHORT_NAME } from '@/constants'
 
 import { mangaSchema } from '../schema'
+import RelatedMangaSection from './RelatedMangaSection'
 
 export const dynamic = 'error'
 
-export async function generateMetadata({ params }: PageProps<'/manga/[id]/post'>): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps<'/manga/[id]/detail'>): Promise<Metadata> {
   const validation = mangaSchema.safeParse(await params)
 
   if (!validation.success) {
@@ -21,16 +22,16 @@ export async function generateMetadata({ params }: PageProps<'/manga/[id]/post'>
   const { id } = validation.data
 
   return {
-    title: `${id} 이야기 - ${SHORT_NAME}`,
+    title: `작품 상세 ${id} - ${SHORT_NAME}`,
     openGraph: {
       ...defaultOpenGraph,
-      title: `${id} 이야기 - ${SHORT_NAME}`,
-      url: `${CANONICAL_URL}/manga/${id}/post`,
+      title: `작품 상세 ${id} - ${SHORT_NAME}`,
+      url: `${CANONICAL_URL}/manga/${id}/detail`,
     },
   }
 }
 
-export default async function Page({ params }: PageProps<'/manga/[id]/post'>) {
+export default async function Page({ params }: PageProps<'/manga/[id]/detail'>) {
   const validation = mangaSchema.safeParse(await params)
 
   if (!validation.success) {
@@ -42,8 +43,9 @@ export default async function Page({ params }: PageProps<'/manga/[id]/post'>) {
   return (
     <div className="min-h-screen">
       <div className="sticky top-0 z-10 bg-background/75 backdrop-blur border-b-2 p-4">
-        <h2 className="text-xl font-bold">이야기</h2>
+        <h2 className="text-xl font-bold">작품 상세</h2>
       </div>
+      <RelatedMangaSection mangaId={id} />
       <PostCreationForm
         buttonText="게시하기"
         className="flex p-4 border-b-2"

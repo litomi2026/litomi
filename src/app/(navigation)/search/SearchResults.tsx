@@ -6,7 +6,6 @@ import { useSearchQuery } from '@/app/(navigation)/search/useSearchQuery'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import MangaCardImage from '@/components/card/MangaCardImage'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
-import { getViewerLink } from '@/utils/manga'
 import { ViewCookie } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
@@ -51,7 +50,6 @@ export default function SearchResults({ view }: Readonly<Props>) {
             <li data-manga-card key={manga.id}>
               <MangaCardImage
                 className="bg-zinc-900 rounded-xl border-2 [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-cover [&_img]:aspect-[3/4]"
-                href={getViewerLink(manga.id)}
                 manga={manga}
                 mangaIndex={i}
               />

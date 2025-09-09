@@ -43,7 +43,6 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
     >
       <MangaCardImage
         className="h-fit my-auto aspect-[4/3] [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-contain [&_img]:aspect-[4/3]"
-        href={viewerLink}
         manga={manga}
         mangaIndex={index}
       />
