@@ -1,7 +1,7 @@
 import 'server-only'
 
 import tagCategoryJSON from '@/translation/tag-category.json'
-import tagMaleFemaleJSON from '@/translation/tag-male-female.json'
+import tagMaleFemaleMixedJSON from '@/translation/tag-male-female.json'
 import tagMixedJSON from '@/translation/tag-mixed.json'
 import tagOtherJSON from '@/translation/tag-other.json'
 import tagTranslationJSON from '@/translation/tag.json'
@@ -9,7 +9,7 @@ import { MangaTag } from '@/types/manga'
 
 import { Multilingual, normalizeValue } from './common'
 
-const TAG_MALE_FEMALE_TRANSLATION: Record<string, Multilingual | undefined> = tagMaleFemaleJSON
+const TAG_MALE_FEMALE_MIXEDTRANSLATION: Record<string, Multilingual | undefined> = tagMaleFemaleMixedJSON
 const TAG_OTHER_TRANSLATION: Record<string, Multilingual | undefined> = tagOtherJSON
 const TAG_MIXED_TRANSLATION: Record<string, Multilingual | undefined> = tagMixedJSON
 const TAG_CATEGORY_TRANSLATION: Record<string, Multilingual | undefined> = tagCategoryJSON
@@ -43,6 +43,14 @@ function findTranslation(
     }
   }
 
+  const maleFemaleMixedTranslation = TAG_MALE_FEMALE_MIXEDTRANSLATION[normalizedValue]
+  if (maleFemaleMixedTranslation) {
+    return {
+      translation: maleFemaleMixedTranslation,
+      category: category === 'male' || category === 'female' || category === 'mixed' ? category : 'other',
+    }
+  }
+
   const mixedTranslation = TAG_MIXED_TRANSLATION[normalizedValue]
   if (mixedTranslation) {
     return {
@@ -56,14 +64,6 @@ function findTranslation(
     return {
       translation: otherTranslation,
       category: 'other',
-    }
-  }
-
-  const maleFemaleTranslation = TAG_MALE_FEMALE_TRANSLATION[normalizedValue]
-  if (maleFemaleTranslation) {
-    return {
-      translation: maleFemaleTranslation,
-      category: category === 'male' || category === 'female' ? category : 'other',
     }
   }
 

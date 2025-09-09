@@ -24,14 +24,14 @@ export enum TagCategory {
   OTHER = 3,
 }
 
-export const TagCategoryName: Record<number, string> = {
+export const tagCategoryIntToName: Record<number, string> = {
   [TagCategory.FEMALE]: 'female',
   [TagCategory.MALE]: 'male',
   [TagCategory.MIXED]: 'mixed',
   [TagCategory.OTHER]: 'other',
 }
 
-export const TagCategoryFromName: Record<string, TagCategory> = {
+export const tagCategoryNameToInt: Record<string, TagCategory> = {
   female: TagCategory.FEMALE,
   male: TagCategory.MALE,
   mixed: TagCategory.MIXED,

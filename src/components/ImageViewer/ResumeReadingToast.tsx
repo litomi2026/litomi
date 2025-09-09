@@ -6,15 +6,18 @@ import { useEffect } from 'react'
 import { toast } from 'sonner'
 
 import { QueryKeys } from '@/constants/query'
+import { Manga } from '@/types/manga'
 
 import { useImageIndexStore } from './store/imageIndex'
 import useReadingHistory from './useReadingHistory'
 
 type Props = {
-  mangaId: number
+  manga: Manga
 }
 
-export default function ResumeReadingToast({ mangaId }: Readonly<Props>) {
+export default function ResumeReadingToast({ manga }: Readonly<Props>) {
+  const { id: mangaId, images } = manga
+  const imageCount = images.length
   const getImageIndex = useImageIndexStore((state) => state.getImageIndex)
   const navigateToImageIndex = useImageIndexStore((state) => state.navigateToImageIndex)
   const { lastPage } = useReadingHistory(mangaId)
@@ -22,7 +25,9 @@ export default function ResumeReadingToast({ mangaId }: Readonly<Props>) {
 
   // NOTE: 읽은 페이지 토스트 표시
   useEffect(() => {
-    if (lastPage && lastPage !== getImageIndex() + 1) {
+    const currentPage = getImageIndex() + 1
+
+    if (lastPage && lastPage !== currentPage && lastPage !== imageCount) {
       const toastId = toast(`마지막으로 읽던 페이지 ${lastPage}`, {
         duration: ms('10 seconds'),
         action: {
@@ -35,7 +40,7 @@ export default function ResumeReadingToast({ mangaId }: Readonly<Props>) {
         toast.dismiss(toastId)
       }
     }
-  }, [lastPage, navigateToImageIndex, getImageIndex])
+  }, [lastPage, navigateToImageIndex, getImageIndex, imageCount])
 
   // NOTE: 뷰어 들어오면 최신 감상 기록으로 갱신
   useEffect(() => {

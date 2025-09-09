@@ -7,11 +7,11 @@ import { getMangaFromMultiSources } from '../../../src/common/manga'
 import { KHentaiClient } from '../../../src/crawler/k-hentai'
 import { aivenDB } from '../../../src/database/aiven/drizzle'
 import { mangaTable } from '../../../src/database/aiven/schema'
-import { MangaType, TagCategoryFromName } from '../../../src/database/enum'
+import { MangaType, TagCategory, tagCategoryNameToInt } from '../../../src/database/enum'
 
 // Configuration
 const CONFIG = {
-  BATCH_DELAY_MS: 12_000, // Delay between batches
+  BATCH_DELAY_MS: 10_000, // Delay between batches
   MAX_MANGAS_TO_PROCESS: 100000, // Optional limit for total mangas to process
   CONCURRENT_REQUESTS: 10, // Number of concurrent manga fetches per batch
   MAX_RETRIES: 3, // Max retries for fetching individual manga
@@ -90,7 +90,7 @@ export async function crawlMangas() {
         if (maxBatchId <= existingRange.highestId) {
           // We've reached the already-crawled range, skip to older manga
           log.info(
-            `Already-crawled range (batch IDs: ${minBatchId}-${maxBatchId}). Skipping to older manga with nextId: ${existingRange.lowestId}`,
+            `Already-crawled range (id: ${minBatchId}-${maxBatchId}). Skipping to nextId: ${existingRange.lowestId}`,
           )
           nextId = existingRange.lowestId.toString()
           hasSkippedToOlderMangas = true
@@ -183,7 +183,6 @@ export async function crawlMangas() {
       const sleepTime = Math.max(0, CONFIG.BATCH_DELAY_MS - elapsedTime)
 
       if (sleepTime > 0) {
-        log.info(`Waiting ${(sleepTime / 1000).toFixed(1)}s before next batch...`)
         await sleep(sleepTime)
       }
 
@@ -347,8 +346,7 @@ async function bulkSaveMangasToDatabase(mangas: Manga[]): Promise<number> {
       // Prepare all unique tag value-category pairs
       const tagPairs: Array<{ value: string; categoryNum: number }> = []
       allTags.forEach((values, category) => {
-        const categoryNum =
-          TagCategoryFromName[category as keyof typeof TagCategoryFromName] ?? TagCategoryFromName['other']
+        const categoryNum = tagCategoryNameToInt[category] ?? TagCategory.OTHER
         values.forEach((value) => {
           tagPairs.push({ value, categoryNum })
         })
@@ -384,9 +382,7 @@ async function bulkSaveMangasToDatabase(mangas: Manga[]): Promise<number> {
                 mangas.flatMap(
                   (manga) =>
                     manga.tags?.map((tag) => {
-                      const categoryNum =
-                        TagCategoryFromName[tag.category as keyof typeof TagCategoryFromName] ??
-                        TagCategoryFromName['other']
+                      const categoryNum = tagCategoryNameToInt[tag.category] ?? TagCategory.OTHER
                       return sql`(${manga.id}, ${tag.value}, ${categoryNum}::smallint)`
                     }) || [],
                 ),
@@ -786,8 +782,7 @@ async function saveMangaToDatabase(manga: Manga) {
     // Handle tags
     if (manga.tags && manga.tags.length > 0) {
       for (const tag of manga.tags) {
-        const categoryNum =
-          TagCategoryFromName[tag.category as keyof typeof TagCategoryFromName] ?? TagCategoryFromName['other']
+        const categoryNum = tagCategoryNameToInt[tag.category] ?? TagCategory.OTHER
         // Single query to handle both entity and junction table
         await aivenDB.execute(sql`
             WITH tag_id AS (

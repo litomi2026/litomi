@@ -3,16 +3,15 @@ import postgres from 'postgres'
 import 'server-only'
 
 import { AIVEN_POSTGRES_URL } from '@/constants/env'
+import { sec } from '@/utils/date'
 
 import * as schema from './schema'
 
 const aivenClient = postgres(AIVEN_POSTGRES_URL, {
-  // Connection pool configuration for serverless
-  max: 3, // Maximum connections per instance (Vercel recommends 1-3)
-  idle_timeout: 20, // Close idle connections after 20 seconds
-  connect_timeout: 10, // Connection timeout in seconds
-  max_lifetime: 60 * 30, // Maximum connection lifetime (30 minutes)
-  prepare: false, // Disable prepared statements for better compatibility
+  max: 3,
+  idle_timeout: 20,
+  connect_timeout: 10,
+  max_lifetime: sec('30 minutes'),
   ssl: {
     ca: `-----BEGIN CERTIFICATE-----
 MIIEUDCCArigAwIBAgIUGJ1zyFBYN0fGhixchlBBV4U4r5EwDQYJKoZIhvcNAQEM

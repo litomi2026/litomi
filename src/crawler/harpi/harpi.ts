@@ -4,13 +4,14 @@ import type { Multilingual } from '@/translation/common'
 
 import { GETHarpiSearchRequest, HarpiSearchSchema } from '@/app/api/proxy/harpi/search/schema'
 import { HARPI_TAG_MAP } from '@/crawler/harpi/tag'
-import { MangaSource } from '@/database/enum'
+import { MangaSource, tagCategoryNameToInt } from '@/database/enum'
 import { translateArtistList } from '@/translation/artist'
 import { translateCharacterList } from '@/translation/character'
 import { translateLanguageList } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
 import { translateTag } from '@/translation/tag'
 import { Manga, MangaTag } from '@/types/manga'
+import { uniqBy } from '@/utils/array'
 import { sec } from '@/utils/date'
 
 import { ProxyClient, ProxyClientConfig } from '../proxy'
@@ -194,7 +195,7 @@ export class HarpiClient {
   }
 
   private convertHarpiTagIdsToTags(tagIds: string[], locale: keyof Multilingual): MangaTag[] {
-    return tagIds
+    const sortedTags = tagIds
       .map((tagId) => {
         const tagInfo = HARPI_TAG_MAP[tagId]
 
@@ -230,6 +231,16 @@ export class HarpiClient {
         return translateTag(category, value, locale)
       })
       .filter((tag): tag is MangaTag => Boolean(tag))
+      // NOTE: 기본적으로 정렬되지 않음
+      .sort((a, b) => {
+        if (a.category === b.category) {
+          return a.label.localeCompare(b.label)
+        }
+        return tagCategoryNameToInt[a.category] - tagCategoryNameToInt[b.category]
+      })
+
+    // NOTE: female:incest, male:incest, other:incest -> mixed:incest x3 중복 제거
+    return uniqBy(sortedTags, 'label')
   }
 
   private convertHarpiToManga(harpiManga: HarpiManga): Manga {
