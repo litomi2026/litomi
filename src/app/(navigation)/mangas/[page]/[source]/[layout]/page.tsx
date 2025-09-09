@@ -8,7 +8,6 @@ import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { createErrorManga } from '@/constants/json'
 import { HiyobiClient } from '@/crawler/hiyobi'
 import { KHentaiClient } from '@/crawler/k-hentai'
-import { getViewerLink } from '@/utils/manga'
 import { getTotalPages, SourceParam, ViewCookie } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
@@ -69,7 +68,6 @@ export default async function Page({ params }: PageProps<'/mangas/[page]/[source
             <li data-manga-card key={manga.id}>
               <MangaCardImage
                 className="bg-zinc-900 rounded-xl border-2 relative [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-cover [&_img]:aspect-[3/4]"
-                href={getViewerLink(manga.id)}
                 manga={manga}
                 mangaIndex={i}
               />

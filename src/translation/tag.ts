@@ -43,19 +43,19 @@ function findTranslation(
     }
   }
 
-  const maleFemaleMixedTranslation = TAG_MALE_FEMALE_MIXEDTRANSLATION[normalizedValue]
-  if (maleFemaleMixedTranslation) {
-    return {
-      translation: maleFemaleMixedTranslation,
-      category: category === 'male' || category === 'female' || category === 'mixed' ? category : 'other',
-    }
-  }
-
   const mixedTranslation = TAG_MIXED_TRANSLATION[normalizedValue]
   if (mixedTranslation) {
     return {
       translation: mixedTranslation,
       category: 'mixed',
+    }
+  }
+
+  const maleFemaleMixedTranslation = TAG_MALE_FEMALE_MIXEDTRANSLATION[normalizedValue]
+  if (maleFemaleMixedTranslation) {
+    return {
+      translation: maleFemaleMixedTranslation,
+      category: ['female', 'male', 'mixed'].includes(category) ? category : 'other',
     }
   }
 
