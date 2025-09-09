@@ -120,15 +120,16 @@ export class LitomiClient {
       languages: translateLanguageList(result.languages, locale),
       uploader: result.uploaders[0],
       tags: result.tags
-        .sort((a, b) => {
-          if (a.category !== b.category) {
-            return a.category - b.category
-          }
-          return a.value.localeCompare(b.value)
-        })
+        .sort((a, b) => a.category - b.category)
         .map((t) => {
           const category = TagCategoryName[t.category] ?? 'other'
           return translateTag(category, t.value, locale)
+        })
+        .sort((a, b) => {
+          if (a.category === b.category) {
+            return a.label.localeCompare(b.label)
+          }
+          return 0
         }),
     }
   }
@@ -143,22 +144,21 @@ export class LitomiClient {
         type: mangaTable.type,
         count: mangaTable.count,
         createdAt: mangaTable.createdAt,
-        // Use placeholder $mangaId for the manga ID parameter
         artists: sql<string[]>`
           COALESCE(
-            (SELECT ARRAY_AGG(a.value)
-             FROM ${mangaArtistTable} ma
-             INNER JOIN ${artistTable} a ON ma."artistId" = a.id
-             WHERE ma."mangaId" = $mangaId),
+            (SELECT ARRAY_AGG(${artistTable.value})
+             FROM ${mangaArtistTable}
+             INNER JOIN ${artistTable} ON ${mangaArtistTable.artistId} = ${artistTable.id}
+             WHERE ${mangaArtistTable.mangaId} = ${sql.placeholder('mangaId')}),
             '{}'::text[]
           )
         `,
         characters: sql<string[]>`
           COALESCE(
-            (SELECT ARRAY_AGG(c.value)
-             FROM ${mangaCharacterTable} mc
-             INNER JOIN ${characterTable} c ON mc."characterId" = c.id
-             WHERE mc."mangaId" = $mangaId),
+            (SELECT ARRAY_AGG(${characterTable.value})
+             FROM ${mangaCharacterTable}
+             INNER JOIN ${characterTable} ON ${mangaCharacterTable.characterId} = ${characterTable.id}
+             WHERE ${mangaCharacterTable.mangaId} = ${sql.placeholder('mangaId')}),
             '{}'::text[]
           )
         `,
@@ -167,55 +167,55 @@ export class LitomiClient {
             (SELECT JSON_AGG(tag_data)
              FROM (
                SELECT jsonb_build_object(
-                 'value', t.value,
-                 'category', t.category
+                 'value', ${tagTable.value},
+                 'category', ${tagTable.category}
                ) as tag_data
-               FROM ${mangaTagTable} mt
-               INNER JOIN ${tagTable} t ON mt."tagId" = t.id
-               WHERE mt."mangaId" = $mangaId
+               FROM ${mangaTagTable}
+               INNER JOIN ${tagTable} ON ${mangaTagTable.tagId} = ${tagTable.id}
+               WHERE ${mangaTagTable.mangaId} = ${sql.placeholder('mangaId')}
              ) sub),
             '[]'::json
           )
         `,
         series: sql<string[]>`
           COALESCE(
-            (SELECT ARRAY_AGG(s.value)
-             FROM ${mangaSeriesTable} ms
-             INNER JOIN ${seriesTable} s ON ms."seriesId" = s.id
-             WHERE ms."mangaId" = $mangaId),
+            (SELECT ARRAY_AGG(${seriesTable.value})
+             FROM ${mangaSeriesTable}
+             INNER JOIN ${seriesTable} ON ${mangaSeriesTable.seriesId} = ${seriesTable.id}
+             WHERE ${mangaSeriesTable.mangaId} = ${sql.placeholder('mangaId')}),
             '{}'::text[]
           )
         `,
         groups: sql<string[]>`
           COALESCE(
-            (SELECT ARRAY_AGG(g.value)
-             FROM ${mangaGroupTable} mg
-             INNER JOIN ${groupTable} g ON mg."groupId" = g.id
-             WHERE mg."mangaId" = $mangaId),
+            (SELECT ARRAY_AGG(${groupTable.value})
+             FROM ${mangaGroupTable}
+             INNER JOIN ${groupTable} ON ${mangaGroupTable.groupId} = ${groupTable.id}
+             WHERE ${mangaGroupTable.mangaId} = ${sql.placeholder('mangaId')}),
             '{}'::text[]
           )
         `,
         languages: sql<string[]>`
           COALESCE(
-            (SELECT ARRAY_AGG(l.value)
-             FROM ${mangaLanguageTable} ml
-             INNER JOIN ${languageTable} l ON ml."languageId" = l.id
-             WHERE ml."mangaId" = $mangaId),
+            (SELECT ARRAY_AGG(${languageTable.value})
+             FROM ${mangaLanguageTable}
+             INNER JOIN ${languageTable} ON ${mangaLanguageTable.languageId} = ${languageTable.id}
+             WHERE ${mangaLanguageTable.mangaId} = ${sql.placeholder('mangaId')}),
             '{}'::text[]
           )
         `,
         uploaders: sql<string[]>`
           COALESCE(
-            (SELECT ARRAY_AGG(u.value)
-             FROM ${mangaUploaderTable} mu
-             INNER JOIN ${uploaderTable} u ON mu."uploaderId" = u.id
-             WHERE mu."mangaId" = $mangaId),
+            (SELECT ARRAY_AGG(${uploaderTable.value})
+             FROM ${mangaUploaderTable}
+             INNER JOIN ${uploaderTable} ON ${mangaUploaderTable.uploaderId} = ${uploaderTable.id}
+             WHERE ${mangaUploaderTable.mangaId} = ${sql.placeholder('mangaId')}),
             '{}'::text[]
           )
         `,
       })
       .from(mangaTable)
-      .where(sql`${mangaTable.id} = $mangaId`)
+      .where(sql`${mangaTable.id} = ${sql.placeholder('mangaId')}`)
       .prepare('selectMangaById')
   }
 
