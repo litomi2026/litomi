@@ -90,7 +90,7 @@ export async function crawlMangas() {
         if (maxBatchId <= existingRange.highestId) {
           // We've reached the already-crawled range, skip to older manga
           log.info(
-            `Already-crawled range (batch IDs: ${minBatchId}-${maxBatchId}). Skipping to older manga with nextId: ${existingRange.lowestId}`,
+            `Already-crawled range (id: ${minBatchId}-${maxBatchId}). Skipping to nextId: ${existingRange.lowestId}`,
           )
           nextId = existingRange.lowestId.toString()
           hasSkippedToOlderMangas = true
