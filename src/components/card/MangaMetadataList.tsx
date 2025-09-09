@@ -36,7 +36,7 @@ function MangaMetadataList({ details, filterType, className = '' }: Readonly<Pro
         const isActive = currentQuery ? new RegExp(`(^|\\s)${escapedPattern}(?=\\s|$)`, 'i').test(currentQuery) : false
 
         return (
-          <Link aria-pressed={isActive} href={`/search?${newSearchParams}`} key={value}>
+          <Link aria-pressed={isActive} href={`/search?${newSearchParams}`} key={value} prefetch={false}>
             <MangaMetadataLabel>
               {label}
               {idx < details.length - 1 && ','}
