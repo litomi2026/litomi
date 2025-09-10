@@ -11,7 +11,7 @@ import IconBookmark from '@/components/icons/IconBookmark'
 import IconDot from '@/components/icons/IconDot'
 import IconEye from '@/components/icons/IconEye'
 import IconTrash from '@/components/icons/IconTrash'
-import LinkLoading from '@/components/LinkLoading'
+import LinkPending from '@/components/LinkPending'
 import { NotificationType } from '@/database/enum'
 import { NotificationData } from '@/database/type'
 import { formatDistanceToNow } from '@/utils/date'
@@ -121,7 +121,7 @@ export default function NotificationCard({
   return (
     <Link
       aria-selected={selected}
-      className={`group relative rounded-xl border transition-all flex gap-3 p-3 sm:gap-4 sm:p-4 
+      className={`group relative rounded-xl border transition-all flex gap-3 p-3 sm:gap-4 sm:p-4 overflow-hidden
       ${isUnread ? 'border-zinc-700 bg-zinc-900/50' : 'border-zinc-800 bg-zinc-900/20'}
       hover:border-zinc-600 hover:bg-zinc-900/60 aria-selected:border-brand-end aria-selected:bg-brand-end/10
       ${mangaViewerURL && !selectionMode ? 'cursor-pointer' : ''}`}
@@ -205,7 +205,10 @@ export default function NotificationCard({
           )}
         </div>
       </div>
-      <LinkLoading />
+      <LinkPending
+        className="size-5"
+        wrapperClassName="flex items-center justify-center absolute inset-0 bg-background/50 animate-fade-in-fast"
+      />
     </Link>
   )
 }

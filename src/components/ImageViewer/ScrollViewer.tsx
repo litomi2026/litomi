@@ -11,6 +11,7 @@ import { useImageStatus } from '@/hook/useImageStatus'
 import { type Manga } from '@/types/manga'
 import { getSafeAreaBottom } from '@/utils/browser'
 
+import IconSpinner from '../icons/IconSpinner'
 import MangaImage from '../MangaImage'
 import { useImageIndexStore } from './store/imageIndex'
 import { useImageWidthStore } from './store/imageWidth'
@@ -76,26 +77,32 @@ function ScrollViewer({ manga, onClick, screenFit, pageView, readingDirection }:
 
   return (
     <div className="overflow-y-auto overscroll-none contain-strict h-dvh select-none" onClick={onClick} ref={parentRef}>
-      <div className="w-full relative" style={{ height: virtualizer.getTotalSize() }}>
-        <ul
-          className={`absolute top-0 left-0 w-full [&_li]:flex [&_img]:border [&_img]:border-background 
+      {images.length === 0 ? (
+        <li className="flex items-center justify-center h-full">
+          <IconSpinner className="size-8" />
+        </li>
+      ) : (
+        <div className="w-full relative" style={{ height: virtualizer.getTotalSize() }}>
+          <ul
+            className={`absolute top-0 left-0 w-full [&_li]:flex [&_img]:border [&_img]:border-background 
             [&_img]:aria-invalid:w-40 [&_img]:aria-invalid:h-40 [&_img]:aria-invalid:text-foreground 
             ${screenFitStyle[screenFit]}`}
-          style={dynamicStyle}
-        >
-          {virtualItems.map(({ index, key }) => (
-            <VirtualItemMemo
-              index={index}
-              itemHeightMap={itemHeightMap}
-              key={key}
-              manga={manga}
-              pageView={pageView}
-              readingDirection={readingDirection}
-              virtualizer={virtualizer}
-            />
-          ))}
-        </ul>
-      </div>
+            style={dynamicStyle}
+          >
+            {virtualItems.map(({ index, key }) => (
+              <VirtualItemMemo
+                index={index}
+                itemHeightMap={itemHeightMap}
+                key={key}
+                manga={manga}
+                pageView={pageView}
+                readingDirection={readingDirection}
+                virtualizer={virtualizer}
+              />
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   )
 }

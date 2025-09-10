@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { Manga } from '@/types/manga'
 import { getViewerLink } from '@/utils/manga'
 
-import LinkLoading from '../LinkLoading'
+import LinkPending from '../LinkPending'
 import MangaImage from '../MangaImage'
 import MangaCardCensorship from './MangaCardCensorship'
 import MangaCardPreviewImages from './MangaCardPreviewImages'
@@ -34,10 +34,13 @@ export default function MangaCardImage({ manga, mangaIndex, className = '' }: Re
           href={href}
           prefetch={false}
         >
-          <LinkLoading />
           <MangaImage fetchPriority={mangaIndex < 4 ? 'high' : undefined} manga={manga} />
         </Link>
       )}
+      <LinkPending
+        className="size-6"
+        wrapperClassName="flex items-center justify-center absolute inset-0 bg-background/80 animate-fade-in-fast"
+      />
       <MangaCardCensorship manga={manga} />
       <div className="absolute bottom-1 right-1 px-1 font-medium text-sm bg-background rounded">
         {count ?? images.length}p

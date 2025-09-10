@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ComponentProps, memo, ReactNode } from 'react'
 
+import LinkPending from '@/components/LinkPending'
+
 type Props = ComponentProps<typeof Link> & {
   className?: string
   Icon: (props: { className: string; selected: boolean }) => ReactNode
@@ -12,7 +14,7 @@ type Props = ComponentProps<typeof Link> & {
 
 export default memo(SelectableLink)
 
-function SelectableLink({ className = '', Icon, children, href, hrefMatch }: Readonly<Props>) {
+function SelectableLink({ className = '', Icon, children, href, hrefMatch }: Props) {
   const pathname = usePathname()
   const isSelected = hrefMatch ? pathname.includes(hrefMatch) : pathname === href.toString()
 
@@ -27,7 +29,9 @@ function SelectableLink({ className = '', Icon, children, href, hrefMatch }: Rea
         className="flex items-center gap-5 w-fit mx-auto p-3 rounded-full transition 2xl:m-0 relative
         group-hover:bg-zinc-800 group-active:scale-90 group-active:md:scale-95"
       >
-        <Icon className="w-6 transition" selected={isSelected} />
+        <LinkPending className="w-6">
+          <Icon className="w-6" selected={isSelected} />
+        </LinkPending>
         <span className="hidden min-w-0 2xl:block">{children}</span>
       </div>
     </Link>

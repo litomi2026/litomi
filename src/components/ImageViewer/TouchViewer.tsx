@@ -11,6 +11,7 @@ import { TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT } from '@/constants/policy'
 import useImageNavigation from '@/hook/useImageNavigation'
 import { Manga } from '@/types/manga'
 
+import IconSpinner from '../icons/IconSpinner'
 import MangaImage from '../MangaImage'
 import { useBrightnessStore } from './store/brightness'
 import { useImageIndexStore } from './store/imageIndex'
@@ -286,15 +287,21 @@ function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection }: 
       onPointerUp={handlePointerUp}
       ref={ulRef}
     >
-      {Array.from({ length: TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT }).map((_, offset) => (
-        <TouchViewerItem
-          key={offset}
-          manga={manga}
-          offset={offset}
-          pageView={pageView}
-          readingDirection={readingDirection}
-        />
-      ))}
+      {images.length === 0 ? (
+        <li className="flex items-center justify-center h-full">
+          <IconSpinner className="size-8" />
+        </li>
+      ) : (
+        Array.from({ length: TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT }).map((_, offset) => (
+          <TouchViewerItem
+            key={offset}
+            manga={manga}
+            offset={offset}
+            pageView={pageView}
+            readingDirection={readingDirection}
+          />
+        ))
+      )}
     </ul>
   )
 }
