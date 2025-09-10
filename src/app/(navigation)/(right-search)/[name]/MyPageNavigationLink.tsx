@@ -3,6 +3,8 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
+import LinkPendingIcon from '@/components/LinkPendingIcon'
+
 type Props = {
   href: string
   label: string
@@ -18,7 +20,7 @@ export default function MyPageNavigationLink({ href, label }: Readonly<Props>) {
       href={href}
       key={href}
     >
-      {label}
+      <LinkPendingIcon className="size-6" icon={label} />
       <span
         aria-current={pathname === href}
         className="absolute bottom-0 left-0 right-0 h-1 rounded-full bg-transparent transition group-hover:bg-zinc-600 aria-current:bg-zinc-500"
