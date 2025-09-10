@@ -1,8 +1,16 @@
 'use client'
 
-import Link from 'next/link'
+import Link, { useLinkStatus } from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ComponentProps, memo, ReactNode } from 'react'
+
+import IconSpinner from '@/components/icons/IconSpinner'
+
+type LoadableIconProps = {
+  className: string
+  Icon: (props: { className: string; selected: boolean }) => ReactNode
+  selected: boolean
+}
 
 type Props = ComponentProps<typeof Link> & {
   className?: string
@@ -12,7 +20,12 @@ type Props = ComponentProps<typeof Link> & {
 
 export default memo(SelectableLink)
 
-function SelectableLink({ className = '', Icon, children, href, hrefMatch }: Readonly<Props>) {
+function LoadableIcon({ className, Icon, selected }: LoadableIconProps) {
+  const { pending } = useLinkStatus()
+  return pending ? <IconSpinner className={className} /> : <Icon className={className} selected={selected} />
+}
+
+function SelectableLink({ className = '', Icon, children, href, hrefMatch }: Props) {
   const pathname = usePathname()
   const isSelected = hrefMatch ? pathname.includes(hrefMatch) : pathname === href.toString()
 
@@ -27,7 +40,7 @@ function SelectableLink({ className = '', Icon, children, href, hrefMatch }: Rea
         className="flex items-center gap-5 w-fit mx-auto p-3 rounded-full transition 2xl:m-0 relative
         group-hover:bg-zinc-800 group-active:scale-90 group-active:md:scale-95"
       >
-        <Icon className="w-6 transition" selected={isSelected} />
+        <LoadableIcon className="w-6" Icon={Icon} selected={isSelected} />
         <span className="hidden min-w-0 2xl:block">{children}</span>
       </div>
     </Link>
