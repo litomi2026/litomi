@@ -1,17 +1,19 @@
 'use client'
 
 import { useLinkStatus } from 'next/link'
-import { useEffect, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 
 import { LINK_PENDING_DELAY } from '@/constants/policy'
 
 import IconSpinner from './icons/IconSpinner'
 
 type Props = {
+  children?: ReactNode
   className?: string
+  wrapperClassName?: string
 }
 
-export default function LinkLoading({ className = '' }: Readonly<Props>) {
+export default function LinkPending({ children, className, wrapperClassName }: Props) {
   const { pending } = useLinkStatus()
   const [showSpinner, setShowSpinner] = useState(false)
 
@@ -32,13 +34,11 @@ export default function LinkLoading({ className = '' }: Readonly<Props>) {
 
   if (showSpinner) {
     return (
-      <div
-        className={`flex items-center justify-center h-full absolute inset-0 bg-background/80 animate-fade-in-fast z-10 ${className}`}
-      >
-        <IconSpinner className="h-5 w-5 animate-spin text-foreground" />
+      <div className={wrapperClassName}>
+        <IconSpinner className={className} />
       </div>
     )
   }
 
-  return null
+  return <>{children}</>
 }

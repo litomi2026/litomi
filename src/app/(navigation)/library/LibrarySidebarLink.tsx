@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useParams, usePathname } from 'next/navigation'
 import { ReactNode } from 'react'
 
-import LinkPendingIcon from '@/components/LinkPendingIcon'
+import LinkPending from '@/components/LinkPending'
 
 type LibrarySidebarLinkProps = {
   href: string
@@ -46,7 +46,7 @@ export default function LibrarySidebarLink({
         className="size-8 rounded-lg flex items-center justify-center flex-shrink-0 aria-current:shadow-md"
         style={iconBackground ? { background: iconBackground } : undefined}
       >
-        <LinkPendingIcon className="size-4 text-background" icon={icon} />
+        <LinkPending className="size-4 text-background">{icon}</LinkPending>
       </div>
       <div className="flex-1 sm:hidden lg:block">
         <div className="flex items-center justify-between gap-1.5">

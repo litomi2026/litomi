@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ComponentProps, memo, ReactNode } from 'react'
 
-import LinkPendingIcon from '@/components/LinkPendingIcon'
+import LinkPending from '@/components/LinkPending'
 
 type Props = ComponentProps<typeof Link> & {
   className?: string
@@ -29,7 +29,9 @@ function SelectableLink({ className = '', Icon, children, href, hrefMatch }: Pro
         className="flex items-center gap-5 w-fit mx-auto p-3 rounded-full transition 2xl:m-0 relative
         group-hover:bg-zinc-800 group-active:scale-90 group-active:md:scale-95"
       >
-        <LinkPendingIcon className="w-6" icon={<Icon className="w-6" selected={isSelected} />} />
+        <LinkPending className="w-6">
+          <Icon className="w-6" selected={isSelected} />
+        </LinkPending>
         <span className="hidden min-w-0 2xl:block">{children}</span>
       </div>
     </Link>

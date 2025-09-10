@@ -5,7 +5,6 @@ import { Manga } from '@/types/manga'
 import { getViewerLink } from '@/utils/manga'
 
 import IconExternalLink from '../icons/IconExternalLink'
-import LinkLoading from '../LinkLoading'
 import TagList from '../TagList'
 import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from './BookmarkButton'
 import DownloadButton from './DownloadButton'
@@ -51,7 +50,6 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton,
         <dl className="flex flex-col gap-2 text-sm [&_dt]:whitespace-nowrap [&_dt]:font-semibold">
           <div className="flex items-start gap-1.5">
             <a className="flex-1 hover:underline focus:underline" href={viewerLink} target="_blank">
-              <LinkLoading />
               <h4 className="line-clamp-3 font-bold text-base leading-5 min-w-0 break-words break-all">{title}</h4>
             </a>
             {languages && languages.length > 0 && (

@@ -7,7 +7,6 @@ import { MAX_THUMBNAIL_IMAGES } from '@/constants/manga'
 import { Manga } from '@/types/manga'
 
 import { IconNextPage, IconPrevPage } from '../icons/IconArrows'
-import LinkLoading from '../LinkLoading'
 import MangaImage from '../MangaImage'
 
 type Props = {
@@ -58,7 +57,6 @@ function MangaCardPreviewImages({ className, manga, mangaIndex = 0, href }: Read
     <>
       {/* 슬라이드 컨테이너 */}
       <Link className={className} href={href} prefetch={false} ref={sliderRef}>
-        <LinkLoading />
         {Array.from({ length: totalSlides }).map((_, imageIndex) => (
           <MangaImage
             fetchPriority={mangaIndex < 4 && imageIndex < 1 ? 'high' : undefined}
