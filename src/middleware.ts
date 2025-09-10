@@ -1,12 +1,12 @@
+import { RequestCookies, ResponseCookies } from 'next/dist/server/web/spec-extension/cookies'
 import { NextRequest, NextResponse } from 'next/server'
 
 import { CookieKey } from './constants/storage'
 import { setAccessTokenCookie } from './utils/cookie'
 import { TokenType, verifyJWT } from './utils/jwt'
 
-export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
-  const method = request.method
+export async function middleware({ nextUrl, method, cookies, headers }: NextRequest) {
+  const { pathname } = nextUrl
 
   if (
     method === 'GET' &&
@@ -18,7 +18,6 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  const { cookies } = request
   const accessToken = cookies.get(CookieKey.ACCESS_TOKEN)?.value
   const validAT = await verifyJWT(accessToken ?? '', TokenType.ACCESS).catch(() => null)
 
@@ -50,7 +49,23 @@ export async function middleware(request: NextRequest) {
   // at가 만료됐는데 rt는 유효한 경우 -> at 재발급
   const response = NextResponse.next()
   await setAccessTokenCookie(response.cookies, userId)
+  setCookieToRequest(headers, response)
   return response
+}
+
+// https://github.com/vercel/next.js/discussions/50374
+function setCookieToRequest(requestHeaders: Headers, res: NextResponse) {
+  const setCookies = new ResponseCookies(res.headers)
+  const newReqHeaders = new Headers(requestHeaders)
+  const newReqCookies = new RequestCookies(newReqHeaders)
+  setCookies.getAll().forEach((cookie) => newReqCookies.set(cookie))
+  const dummyRes = NextResponse.next({ request: { headers: newReqHeaders } })
+
+  for (const [key, value] of dummyRes.headers) {
+    if (key === 'x-middleware-override-headers' || key.startsWith('x-middleware-request-')) {
+      res.headers.set(key, value)
+    }
+  }
 }
 
 export const config = {
