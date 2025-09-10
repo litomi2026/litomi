@@ -23,15 +23,14 @@ function ShuffleButton({ iconClassName, className = '', action, href, retryInter
   const { cooldown, startTimer } = useShffleStore()
 
   const handleClick = useCallback(() => {
-    if (action === 'refresh') {
-      startTransition(() => {
+    startTransition(() => {
+      if (action === 'refresh') {
         router.refresh()
-      })
-    } else if (href) {
-      startTransition(() => {
+      } else if (href) {
         router.push(href)
-      })
-    }
+      }
+    })
+
     startTimer(retryInterval)
     window.scrollTo({ top: 0 })
   }, [action, retryInterval, href, router, startTimer])
