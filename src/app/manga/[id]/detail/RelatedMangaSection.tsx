@@ -19,8 +19,7 @@ export default function RelatedMangaSection({ mangaId }: Props) {
   const relatedIds = manga?.related ?? []
   const { mangaMap, isLoading: isRelatedLoading, isFetching } = useMangaListCachedQuery({ mangaIds: relatedIds })
   const direct = manga ? relatedIds.map((id) => mangaMap.get(id)).filter((m): m is Manga => Boolean(m)) : []
-  const similar = manga ? findSimilarManga(manga, direct) : []
-  const hasRecommendations = direct.length > 0 || similar.length > 0
+  const hasRecommendations = direct.length > 0
   const hasMore = direct.length > 10
   const [showAll, setShowAll] = useState(false)
 
@@ -73,7 +72,7 @@ export default function RelatedMangaSection({ mangaId }: Props) {
               >
                 <MangaCardImage
                   className="w-32 sm:w-36 bg-zinc-900 rounded-lg border border-zinc-800 hover:border-zinc-600 transition-colors
-                      [&_img]:aspect-[3/4] [&_img]:object-cover"
+                  [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:aspect-[3/4] [&_img]:object-cover"
                   manga={manga}
                   mangaIndex={index}
                 />
@@ -102,23 +101,6 @@ export default function RelatedMangaSection({ mangaId }: Props) {
               <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-background to-transparent pointer-events-none" />
             </>
           )}
-        </div>
-      )}
-
-      {/* Fallback suggestions - compact version */}
-      {direct.length === 0 && similar.length > 0 && (
-        <div className="flex gap-2 overflow-x-auto scrollbar-hidden pb-1">
-          {similar.slice(0, 4).map((suggestion) => (
-            <Link
-              className="flex-shrink-0 px-3 py-2 bg-zinc-800/50 rounded-lg hover:bg-zinc-700/50 transition-colors text-xs"
-              href={`/search?query=${encodeURIComponent(suggestion.query)}`}
-              key={suggestion.query}
-            >
-              <span className="text-zinc-500">{suggestion.type}:</span>
-              <span className="ml-1 font-medium">{suggestion.label}</span>
-              <span className="ml-1 text-zinc-600">({suggestion.count})</span>
-            </Link>
-          ))}
         </div>
       )}
     </section>
@@ -151,62 +133,6 @@ function EmptyState({ mangaId: _mangaId }: { mangaId: number }) {
       </div>
     </section>
   )
-}
-
-// Helper function to find similar manga based on metadata
-function findSimilarManga(
-  manga: Manga,
-  _alreadyFetched: Manga[],
-): Array<{
-  type: string
-  label: string
-  query: string
-  count: number
-}> {
-  const suggestions: Array<{
-    type: string
-    label: string
-    query: string
-    count: number
-  }> = []
-
-  // Add series-based suggestions
-  if (manga.series?.length) {
-    manga.series.slice(0, 2).forEach((series) => {
-      suggestions.push({
-        type: '시리즈',
-        label: series.label,
-        query: `series:${series.value}`,
-        count: Math.floor(Math.random() * 20) + 5, // Would be replaced with actual count
-      })
-    })
-  }
-
-  // Add artist-based suggestions
-  if (manga.artists?.length) {
-    manga.artists.slice(0, 2).forEach((artist) => {
-      suggestions.push({
-        type: '작가',
-        label: artist.label,
-        query: `artist:${artist.value}`,
-        count: Math.floor(Math.random() * 30) + 10, // Would be replaced with actual count
-      })
-    })
-  }
-
-  // Add group-based suggestions
-  if (manga.group?.length) {
-    manga.group.slice(0, 1).forEach((group) => {
-      suggestions.push({
-        type: '그룹',
-        label: group.label,
-        query: `group:${group.value}`,
-        count: Math.floor(Math.random() * 15) + 3, // Would be replaced with actual count
-      })
-    })
-  }
-
-  return suggestions
 }
 
 // Loading content - compact horizontal version
