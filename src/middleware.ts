@@ -24,12 +24,16 @@ export async function middleware(request: NextRequest) {
   const refreshToken = cookies.get(CookieKey.REFRESH_TOKEN)?.value
 
   // 비로그인 상태 -> 통과
-  if (!accessToken && !refreshToken) return NextResponse.next()
+  if (!accessToken && !refreshToken) {
+    return NextResponse.next()
+  }
 
   const validAT = await verifyJWT(accessToken ?? '', TokenType.ACCESS).catch(() => null)
 
   // 로그인 상태 -> 통과
-  if (validAT) return NextResponse.next()
+  if (validAT) {
+    return NextResponse.next()
+  }
 
   // at만 있는데 at가 만료된 경우 -> 쿠키 삭제
   if (!refreshToken) {
