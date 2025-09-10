@@ -1,4 +1,3 @@
-import { RequestCookies, ResponseCookies } from 'next/dist/server/web/spec-extension/cookies'
 import { NextRequest, NextResponse } from 'next/server'
 
 import { CookieKey } from './constants/storage'
@@ -21,19 +20,14 @@ export async function middleware(request: NextRequest) {
 
   const { cookies } = request
   const accessToken = cookies.get(CookieKey.ACCESS_TOKEN)?.value
-  const refreshToken = cookies.get(CookieKey.REFRESH_TOKEN)?.value
-
-  // 비로그인 상태 -> 통과
-  if (!accessToken && !refreshToken) {
-    return NextResponse.next()
-  }
-
   const validAT = await verifyJWT(accessToken ?? '', TokenType.ACCESS).catch(() => null)
 
   // 로그인 상태 -> 통과
   if (validAT) {
     return NextResponse.next()
   }
+
+  const refreshToken = cookies.get(CookieKey.REFRESH_TOKEN)?.value
 
   // at만 있는데 at가 만료된 경우 -> 쿠키 삭제
   if (!refreshToken) {
@@ -56,23 +50,20 @@ export async function middleware(request: NextRequest) {
   // at가 만료됐는데 rt는 유효한 경우 -> at 재발급
   const response = NextResponse.next()
   await setAccessTokenCookie(response.cookies, userId)
-  setCookieToRequest(request, response)
   return response
 }
 
-// https://github.com/vercel/next.js/discussions/50374
-function setCookieToRequest(req: NextRequest, res: NextResponse) {
-  const setCookies = new ResponseCookies(res.headers)
-  const newReqHeaders = new Headers(req.headers)
-  const newReqCookies = new RequestCookies(newReqHeaders)
-  setCookies.getAll().forEach((cookie) => newReqCookies.set(cookie))
-
-  NextResponse.next({ request: { headers: newReqHeaders } }).headers.forEach((value, key) => {
-    if (key === 'x-middleware-override-headers' || key.startsWith('x-middleware-request-')) {
-      res.headers.set(key, value)
-    }
-  })
+export const config = {
+  // DOCS: The matcher values need to be constants so they can be statically analyzed at build-time
+  // https://clerk.com/blog/skip-nextjs-middleware-static-and-public-files
+  matcher: [
+    {
+      source: '/((?!.*\\.|_next/static|_next/image).*)',
+      has: [{ type: 'cookie', key: 'rt' }],
+    },
+    {
+      source: '/((?!.*\\.|_next/static|_next/image).*)',
+      has: [{ type: 'cookie', key: 'at' }],
+    },
+  ],
 }
-
-// https://clerk.com/blog/skip-nextjs-middleware-static-and-public-files
-export const config = { matcher: '/((?!.*\\.).*)' }
