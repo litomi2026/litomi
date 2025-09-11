@@ -37,7 +37,6 @@ export default async function signup(formData: FormData) {
   const validator = new TurnstileValidator()
   const turnstileToken = getTurnstileToken(formData)
   const headersList = await headers()
-  const idempotencyKey = crypto.randomUUID()
 
   const remoteIP =
     headersList.get('CF-Connecting-IP') ||
@@ -45,9 +44,10 @@ export default async function signup(formData: FormData) {
     headersList.get('x-forwarded-for') ||
     'unknown'
 
-  const turnstile = await validator.validate(turnstileToken, remoteIP, {
+  const turnstile = await validator.validate({
+    token: turnstileToken,
+    remoteIP,
     expectedAction: 'signup',
-    idempotencyKey,
   })
 
   if (!turnstile.success) {
