@@ -3,6 +3,8 @@ import 'server-only'
 
 import { TURNSTILE_SECRET_KEY } from '@/constants/env'
 
+import { sleep } from './time'
+
 export interface TurnstileVerifyResponse {
   action?: string
   cdata?: string
@@ -15,10 +17,12 @@ export interface TurnstileVerifyResponse {
 interface TurnstileVerifyOptions {
   expectedAction?: string
   expectedHostname?: string
-  idempotencyKey?: string
+  remoteIP: string
+  token: string | null
 }
 
 export default class TurnstileValidator {
+  private maxRetries
   private timeout
 
   private turnstileErrorMap: Record<string, string> = {
@@ -38,15 +42,16 @@ export default class TurnstileValidator {
     'token-too-long': '토큰이 너무 길어요',
   }
 
-  constructor(timeout = ms('10 seconds')) {
+  constructor(timeout = ms('10 seconds'), maxRetries = 3) {
     this.timeout = timeout
+    this.maxRetries = maxRetries
   }
 
   getTurnstileErrorMessage(errorCodes?: string[]) {
     return this.turnstileErrorMap[errorCodes?.[0] ?? '']
   }
 
-  async validate(token: unknown, remoteIP: string, options: TurnstileVerifyOptions = {}) {
+  async validate({ expectedAction, expectedHostname, token, remoteIP }: TurnstileVerifyOptions) {
     if (!token || typeof token !== 'string') {
       return { success: false, 'error-codes': ['invalid-token-format'] }
     }
@@ -55,59 +60,66 @@ export default class TurnstileValidator {
       return { success: false, 'error-codes': ['token-too-long'] }
     }
 
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), this.timeout)
+    const formData = new FormData()
+    formData.append('secret', TURNSTILE_SECRET_KEY)
+    formData.append('response', token)
+    formData.append('idempotency_key', crypto.randomUUID())
+    formData.append('remoteip', remoteIP)
 
-    try {
-      const formData = new FormData()
-      formData.append('secret', TURNSTILE_SECRET_KEY)
-      formData.append('response', token)
+    for (let attempt = 1; attempt <= this.maxRetries; attempt++) {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), this.timeout)
 
-      if (remoteIP) {
-        formData.append('remoteip', remoteIP)
-      }
+      try {
+        const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+          method: 'POST',
+          body: formData,
+          signal: controller.signal,
+        })
 
-      if (options.idempotencyKey) {
-        formData.append('idempotency_key', options.idempotencyKey)
-      }
+        const result: TurnstileVerifyResponse = await response.json()
 
-      const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-        method: 'POST',
-        body: formData,
-        signal: controller.signal,
-      })
+        if (result.success) {
+          if (expectedAction && result.action !== expectedAction) {
+            return {
+              success: false,
+              'error-codes': ['action-mismatch'],
+              expected: expectedAction,
+              received: result.action,
+            }
+          }
 
-      const result: TurnstileVerifyResponse = await response.json()
-
-      if (result.success) {
-        if (options.expectedAction && result.action !== options.expectedAction) {
-          return {
-            success: false,
-            'error-codes': ['action-mismatch'],
-            expected: options.expectedAction,
-            received: result.action,
+          if (expectedHostname && result.hostname !== expectedHostname) {
+            return {
+              success: false,
+              'error-codes': ['hostname-mismatch'],
+              expected: expectedHostname,
+              received: result.hostname,
+            }
           }
         }
 
-        if (options.expectedHostname && result.hostname !== options.expectedHostname) {
-          return {
-            success: false,
-            'error-codes': ['hostname-mismatch'],
-            expected: options.expectedHostname,
-            received: result.hostname,
-          }
+        if (response.ok) {
+          return result
         }
-      }
 
-      return result
-    } catch (error) {
-      if (error instanceof Error && error.name === 'AbortError') {
-        return { success: false, 'error-codes': ['validation-timeout'] }
+        if (attempt === this.maxRetries) {
+          return result
+        }
+
+        await sleep(Math.pow(2, attempt) * 1000)
+      } catch (error) {
+        if (error instanceof Error && error.name === 'AbortError') {
+          return { success: false, 'error-codes': ['validation-timeout'] }
+        }
+        return { success: false, 'error-codes': ['internal-error'] }
+      } finally {
+        clearTimeout(timeoutId)
       }
-      return { success: false, 'error-codes': ['internal-error'] }
-    } finally {
-      clearTimeout(timeoutId)
     }
+
+    // NOTE: 이 코드는 실제로 실행되지 않음
+    return { success: false, 'error-codes': ['max-retries-exceeded'] }
   }
 }
 
