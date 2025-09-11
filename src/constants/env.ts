@@ -20,3 +20,5 @@ export const WEBAUTHN_ORIGIN = process.env.NODE_ENV === 'production' ? CANONICAL
 export const WEBAUTHN_RP_ID = process.env.NODE_ENV === 'production' ? new URL(CANONICAL_URL).hostname : 'localhost'
 export const WEBAUTHN_RP_NAME = 'litomi'
 export const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY ?? ''
+export const NEXT_PUBLIC_TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? ''
+export const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY ?? ''

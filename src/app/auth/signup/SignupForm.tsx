@@ -1,10 +1,12 @@
 'use client'
 
+import { TurnstileInstance } from '@marsidev/react-turnstile'
 import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
-import { FormEvent, useCallback } from 'react'
+import { FormEvent, useCallback, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
+import TurnstileWidget from '@/components/TurnstileWidget'
 import Loading from '@/components/ui/Loading'
 import { loginIdPattern, passwordPattern } from '@/constants/pattern'
 import { QueryKeys } from '@/constants/query'
@@ -25,6 +27,8 @@ type SignupData = {
 export default function SignupForm() {
   const router = useRouter()
   const queryClient = useQueryClient()
+  const turnstileRef = useRef<TurnstileInstance>(null)
+  const [turnstileToken, setTurnstileToken] = useState('')
 
   const handleSignupSuccess = useCallback(
     async ({ loginId, name, userId, nickname }: SignupData) => {
@@ -47,6 +51,10 @@ export default function SignupForm() {
 
   const [response, dispatchAction, pending] = useActionResponse({
     action: signup,
+    onError: () => {
+      turnstileRef.current?.reset()
+      setTurnstileToken('')
+    },
     onSuccess: handleSignupSuccess,
   })
 
@@ -179,9 +187,16 @@ export default function SignupForm() {
           )}
         </div>
       </div>
+      <TurnstileWidget
+        className="overflow-x-auto scrollbar-hidden sm:flex justify-center"
+        onTokenChange={setTurnstileToken}
+        options={{ action: 'signup' }}
+        token={turnstileToken}
+        turnstileRef={turnstileRef}
+      />
       <button
         className="group border-2 border-brand-gradient font-medium rounded-xl disabled:border-zinc-500 disabled:pointer-events-none disabled:text-zinc-500 focus:outline-none focus:ring-3 focus:ring-zinc-500"
-        disabled={pending}
+        disabled={pending || !turnstileToken}
         type="submit"
       >
         <div className="p-2 flex justify-center bg-zinc-900 cursor-pointer rounded-xl hover:bg-zinc-800 transition active:bg-zinc-900 group-disabled:bg-zinc-800 group-disabled:cursor-not-allowed">
