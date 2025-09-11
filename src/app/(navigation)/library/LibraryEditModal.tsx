@@ -33,14 +33,14 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
 
   const [response, dispatchAction, isPending] = useActionResponse({
     action: updateLibrary,
+    onError: ({ error }) => {
+      if (typeof error !== 'string') {
+        toast.error(error.libraryId || error.name || error.description || error.color || error.icon)
+      }
+    },
     onSuccess: () => {
       toast.success('서재가 수정됐어요')
       onOpenChange(false)
-    },
-    onError: (error) => {
-      if (typeof error === 'string') {
-        toast.error(error)
-      }
     },
   })
 
