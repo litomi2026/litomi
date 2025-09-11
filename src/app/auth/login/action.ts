@@ -1,8 +1,8 @@
 'use server'
 
 import { compare } from 'bcrypt'
-import { sql } from 'drizzle-orm'
-import { cookies } from 'next/headers'
+import { eq } from 'drizzle-orm'
+import { cookies, headers } from 'next/headers'
 import { z } from 'zod/v4'
 
 import { db } from '@/database/supabase/drizzle'
@@ -12,6 +12,7 @@ import { badRequest, ok, tooManyRequests, unauthorized } from '@/utils/action-re
 import { setAccessTokenCookie, setRefreshTokenCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
+import TurnstileValidator, { getTurnstileToken } from '@/utils/turnstile'
 
 const loginSchema = z.object({
   loginId: loginIdSchema,
@@ -22,6 +23,27 @@ const loginSchema = z.object({
 const loginLimiter = new RateLimiter(RateLimitPresets.strict())
 
 export default async function login(formData: FormData) {
+  const validator = new TurnstileValidator()
+  const turnstileToken = getTurnstileToken(formData)
+  const headersList = await headers()
+  const idempotencyKey = crypto.randomUUID()
+
+  const remoteIP =
+    headersList.get('CF-Connecting-IP') ||
+    headersList.get('x-real-ip') ||
+    headersList.get('x-forwarded-for') ||
+    'unknown'
+
+  const turnstile = await validator.validate(turnstileToken, remoteIP, {
+    expectedAction: 'login',
+    idempotencyKey,
+  })
+
+  if (!turnstile.success) {
+    const message = validator.getTurnstileErrorMessage(turnstile['error-codes'])
+    return badRequest({ form: message }, formData)
+  }
+
   const validation = loginSchema.safeParse({
     loginId: formData.get('loginId'),
     password: formData.get('password'),
@@ -49,7 +71,7 @@ export default async function login(formData: FormData) {
       lastLogoutAt: userTable.logoutAt,
     })
     .from(userTable)
-    .where(sql`${userTable.loginId} = ${loginId}`)
+    .where(eq(userTable.loginId, loginId))
 
   if (!user) {
     return unauthorized('아이디 또는 비밀번호가 일치하지 않아요', formData)
@@ -67,10 +89,7 @@ export default async function login(formData: FormData) {
   await Promise.all([
     setAccessTokenCookie(cookieStore, id),
     remember && setRefreshTokenCookie(cookieStore, id),
-    db
-      .update(userTable)
-      .set({ loginAt: new Date() })
-      .where(sql`${userTable.id} = ${id}`),
+    db.update(userTable).set({ loginAt: new Date() }).where(eq(userTable.id, id)),
   ])
 
   loginLimiter.reward(loginId)
