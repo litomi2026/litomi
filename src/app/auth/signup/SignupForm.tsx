@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 
 import TurnstileWidget from '@/components/TurnstileWidget'
 import Loading from '@/components/ui/Loading'
-import { loginIdPattern, passwordPattern } from '@/constants/pattern'
+import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
 import useActionResponse, { getFieldError, getFormField } from '@/hook/useActionResponse'
@@ -108,16 +108,14 @@ export default function SignupForm() {
             maxLength={32}
             minLength={2}
             name="loginId"
-            pattern={loginIdPattern}
+            pattern={LOGIN_ID_PATTERN}
             placeholder="아이디를 입력하세요"
             required
           />
           {loginIdError ? (
             <p className="mt-1 text-xs text-red-500">{loginIdError}</p>
           ) : (
-            <p className="mt-1 text-xs text-zinc-400">
-              알파벳, 숫자 - . _ ~ 만 사용하여 2자 이상의 아이디를 입력해주세요
-            </p>
+            <p className="mt-1 text-xs text-zinc-400">알파벳, 숫자, _ 만 사용하여 2자 이상의 아이디를 입력해주세요</p>
           )}
         </div>
         <div>
@@ -133,7 +131,7 @@ export default function SignupForm() {
             maxLength={64}
             minLength={8}
             name="password"
-            pattern={passwordPattern}
+            pattern={PASSWORD_PATTERN}
             placeholder="비밀번호를 입력하세요"
             required
             type="password"
@@ -163,7 +161,11 @@ export default function SignupForm() {
             required
             type="password"
           />
-          {passwordConfirmError && <p className="mt-1 text-xs text-red-500">{passwordConfirmError}</p>}
+          {passwordConfirmError ? (
+            <p className="mt-1 text-xs text-red-500">{passwordConfirmError}</p>
+          ) : (
+            <p className="mt-1 text-xs text-zinc-400">비밀번호는 bcrypt 해싱으로 암호화하여 안전하게 처리하고 있어요</p>
+          )}
         </div>
         <div>
           <label htmlFor="nickname">닉네임</label>
@@ -181,19 +183,10 @@ export default function SignupForm() {
           {nicknameError ? (
             <p className="mt-1 text-xs text-red-500">{nicknameError}</p>
           ) : (
-            <p className="mt-1 text-xs text-zinc-400">
-              닉네임은 2자 이상 32자 이하로 입력해주세요. 나중에 변경할 수 있어요.
-            </p>
+            <p className="mt-1 text-xs text-zinc-400">닉네임은 2자 이상 32자 이하로 입력해주세요</p>
           )}
         </div>
       </div>
-      <TurnstileWidget
-        className="overflow-x-auto scrollbar-hidden sm:flex justify-center"
-        onTokenChange={setTurnstileToken}
-        options={{ action: 'signup' }}
-        token={turnstileToken}
-        turnstileRef={turnstileRef}
-      />
       <button
         className="group border-2 border-brand-gradient font-medium rounded-xl disabled:border-zinc-500 disabled:pointer-events-none disabled:text-zinc-500 focus:outline-none focus:ring-3 focus:ring-zinc-500"
         disabled={pending || !turnstileToken}
@@ -203,6 +196,12 @@ export default function SignupForm() {
           {pending ? <Loading className="text-zinc-500 w-12 p-2" /> : '회원가입'}
         </div>
       </button>
+      <TurnstileWidget
+        onTokenChange={setTurnstileToken}
+        options={{ action: 'signup' }}
+        token={turnstileToken}
+        turnstileRef={turnstileRef}
+      />
     </form>
   )
 }

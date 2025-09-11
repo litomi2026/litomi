@@ -12,7 +12,7 @@ import IconX from '@/components/icons/IconX'
 import PasskeyLoginButton from '@/components/PasskeyLoginButton'
 import { clearMigratedHistory, getLocalReadingHistory } from '@/components/ReadingHistoryMigrator'
 import TurnstileWidget from '@/components/TurnstileWidget'
-import { loginIdPattern, passwordPattern } from '@/constants/pattern'
+import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
 import useActionResponse, { getFieldError, getFormField } from '@/hook/useActionResponse'
@@ -120,7 +120,7 @@ export default function LoginForm() {
               minLength={2}
               name="loginId"
               onChange={(e) => setCurrentLoginId(e.target.value)}
-              pattern={loginIdPattern}
+              pattern={LOGIN_ID_PATTERN}
               placeholder="아이디를 입력하세요"
               required
             />
@@ -141,7 +141,7 @@ export default function LoginForm() {
               maxLength={64}
               minLength={8}
               name="password"
-              pattern={passwordPattern}
+              pattern={PASSWORD_PATTERN}
               placeholder="비밀번호를 입력하세요"
               required
               type="password"
@@ -193,7 +193,6 @@ export default function LoginForm() {
       </div>
       <PasskeyLoginButton disabled={isPending} loginId={currentLoginId} onSuccess={handleLoginSuccess} />
       <TurnstileWidget
-        className="overflow-x-auto scrollbar-hidden sm:flex justify-center"
         onTokenChange={setTurnstileToken}
         options={{ action: 'login' }}
         token={turnstileToken}
