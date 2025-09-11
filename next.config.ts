@@ -3,7 +3,15 @@ import type { NextConfig } from 'next'
 import withBundleAnalyzer from '@next/bundle-analyzer'
 import { withSentryConfig } from '@sentry/nextjs'
 
+import { createCacheControl } from '@/crawler/proxy-utils'
 import { sec } from '@/utils/date'
+
+const oneDayPublicCacheControl = createCacheControl({
+  public: true,
+  maxAge: sec('12 hours'),
+  sMaxAge: sec('12 hours'),
+  swr: sec('5 minutes'),
+})
 
 const nextConfig: NextConfig = {
   eslint: {
@@ -27,7 +35,15 @@ const nextConfig: NextConfig = {
     },
     {
       source: '/manifest.webmanifest',
-      headers: [{ key: 'Cache-Control', value: `public, max-age=${sec('1 day')}, must-revalidate` }],
+      headers: [{ key: 'Cache-Control', value: oneDayPublicCacheControl }],
+    },
+    {
+      source: '/web-app-manifest(.*)',
+      headers: [{ key: 'Cache-Control', value: oneDayPublicCacheControl }],
+    },
+    {
+      source: '/favicon(.*)',
+      headers: [{ key: 'Cache-Control', value: oneDayPublicCacheControl }],
     },
   ],
   poweredByHeader: false,
