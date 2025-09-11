@@ -10,7 +10,7 @@ import {
 } from '@simplewebauthn/server'
 import { and, eq, gt, lt } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 
 import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID, WEBAUTHN_RP_NAME } from '@/constants/env'
 import { MAX_CREDENTIALS_PER_USER } from '@/constants/policy'
@@ -28,6 +28,7 @@ import {
 } from '@/utils/action-response'
 import { setAccessTokenCookie, validateUserIdFromCookie } from '@/utils/cookie'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
+import TurnstileValidator from '@/utils/turnstile'
 
 import {
   deleteCredentialSchema,
@@ -216,7 +217,29 @@ export async function getRegistrationOptions() {
   }
 }
 
-export async function verifyAuthentication(body: unknown) {
+const verifyAuthenticationLimiter = new RateLimiter(RateLimitPresets.strict())
+
+export async function verifyAuthentication(body: unknown, turnstileToken: string) {
+  const validator = new TurnstileValidator()
+  const headersList = await headers()
+
+  const remoteIP =
+    headersList.get('CF-Connecting-IP') ||
+    headersList.get('x-real-ip') ||
+    headersList.get('x-forwarded-for') ||
+    'unknown'
+
+  const turnstile = await validator.validate({
+    token: turnstileToken,
+    remoteIP,
+    expectedAction: 'passkey-login',
+  })
+
+  if (!turnstile.success) {
+    const message = validator.getTurnstileErrorMessage(turnstile['error-codes'])
+    return badRequest(message)
+  }
+
   const validation = verifyAuthenticationSchema.safeParse(body)
 
   if (!validation.success) {
@@ -224,6 +247,12 @@ export async function verifyAuthentication(body: unknown) {
   }
 
   const validatedData = validation.data
+  const { allowed, retryAfter } = await verifyAuthenticationLimiter.check(validatedData.id)
+
+  if (!allowed) {
+    const minutes = retryAfter ? Math.ceil(retryAfter / 60) : 1
+    return tooManyRequests(`너무 많은 로그인 시도가 있었어요. ${minutes}분 후에 다시 시도해주세요.`)
+  }
 
   try {
     const result = await db.transaction(async (tx) => {

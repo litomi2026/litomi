@@ -191,7 +191,12 @@ export default function LoginForm() {
           <span className="relative z-10 px-4 bg-zinc-900 text-zinc-500">또는</span>
         </div>
       </div>
-      <PasskeyLoginButton disabled={isPending} loginId={currentLoginId} onSuccess={handleLoginSuccess} />
+      <PasskeyLoginButton
+        disabled={isPending}
+        loginId={currentLoginId}
+        onSuccess={handleLoginSuccess}
+        turnstileToken={turnstileToken}
+      />
       <TurnstileWidget
         onTokenChange={setTurnstileToken}
         options={{ action: 'login' }}
