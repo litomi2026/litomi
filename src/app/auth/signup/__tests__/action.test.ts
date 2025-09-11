@@ -2,15 +2,35 @@ import { beforeEach, describe, expect, mock, test } from 'bun:test'
 
 import signup from '../action'
 
-mock.module('@/database/drizzle', () => ({
+mock.module('next/headers', () => ({
+  headers: mock(() =>
+    Promise.resolve({
+      get: mock(() => '127.0.0.1'),
+    }),
+  ),
+  cookies: mock(() =>
+    Promise.resolve({
+      set: mock(() => {}),
+    }),
+  ),
+}))
+
+const mockDbInsert = mock(() => Promise.resolve([{ id: 123 }]))
+mock.module('@/database/supabase/drizzle', () => ({
   db: {
     insert: mock(() => ({
       values: mock(() => ({
         onConflictDoNothing: mock(() => ({
-          returning: mock(() => Promise.resolve([{ id: '123' }])),
+          returning: mockDbInsert,
         })),
       })),
     })),
+  },
+}))
+
+mock.module('@/utils/turnstile', () => ({
+  default: class MockTurnstileValidator {
+    validate = mock(() => Promise.resolve({ success: true }))
   },
 }))
 
@@ -19,6 +39,8 @@ describe('signup action', () => {
 
   beforeEach(() => {
     formData = new FormData()
+    mockDbInsert.mockReset()
+    mockDbInsert.mockImplementation(() => Promise.resolve([{ id: 123 }]))
   })
 
   test('should return validation error for invalid loginId', async () => {
@@ -90,6 +112,23 @@ describe('signup action', () => {
       expect(result.error).toHaveProperty('loginId')
       expect(result.error).toHaveProperty('password')
       expect(result.error).toHaveProperty('password-confirm')
+    }
+  })
+
+  test('should return conflict error for duplicate loginId', async () => {
+    mockDbInsert.mockImplementationOnce(() => Promise.resolve([]))
+
+    formData.append('loginId', 'existinguser')
+    formData.append('password', 'Password123!')
+    formData.append('password-confirm', 'Password123!')
+
+    const result = await signup(formData)
+
+    expect(result.ok).toBe(false)
+    expect('error' in result).toBe(true)
+
+    if (!result.ok && typeof result.error === 'object') {
+      expect(result.error.loginId).toBe('이미 사용 중인 아이디에요')
     }
   })
 })

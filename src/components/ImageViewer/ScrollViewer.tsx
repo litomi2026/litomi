@@ -78,7 +78,7 @@ function ScrollViewer({ manga, onClick, screenFit, pageView, readingDirection }:
   return (
     <div className="overflow-y-auto overscroll-none contain-strict h-dvh select-none" onClick={onClick} ref={parentRef}>
       {images.length === 0 ? (
-        <li className="flex items-center justify-center h-full">
+        <li className="flex items-center justify-center h-full animate-fade-in">
           <IconSpinner className="size-8" />
         </li>
       ) : (

@@ -7,7 +7,7 @@ import { toast } from 'sonner'
 import IconEye from '@/components/icons/IconEye'
 import IconEyeOff from '@/components/icons/IconEyeOff'
 import Loading from '@/components/ui/Loading'
-import { passwordPattern } from '@/constants/pattern'
+import { PASSWORD_PATTERN } from '@/constants/policy'
 import useActionResponse, { getFieldError, getFormField } from '@/hook/useActionResponse'
 
 import { changePassword } from './action'
@@ -114,7 +114,7 @@ export default function PasswordChangeForm({ userId }: Readonly<Props>) {
             minLength={8}
             name="newPassword"
             onChange={handlePasswordChange}
-            pattern={passwordPattern}
+            pattern={PASSWORD_PATTERN}
             placeholder="새 비밀번호를 입력하세요"
             required
             type={showNewPassword ? 'text' : 'password'}

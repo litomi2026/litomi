@@ -1,12 +1,14 @@
 'use client'
 
+import { TurnstileInstance } from '@marsidev/react-turnstile'
 import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
-import { FormEvent, useCallback } from 'react'
+import { FormEvent, useCallback, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
+import TurnstileWidget from '@/components/TurnstileWidget'
 import Loading from '@/components/ui/Loading'
-import { loginIdPattern, passwordPattern } from '@/constants/pattern'
+import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
 import useActionResponse, { getFieldError, getFormField } from '@/hook/useActionResponse'
@@ -25,6 +27,8 @@ type SignupData = {
 export default function SignupForm() {
   const router = useRouter()
   const queryClient = useQueryClient()
+  const turnstileRef = useRef<TurnstileInstance>(null)
+  const [turnstileToken, setTurnstileToken] = useState('')
 
   const handleSignupSuccess = useCallback(
     async ({ loginId, name, userId, nickname }: SignupData) => {
@@ -47,6 +51,10 @@ export default function SignupForm() {
 
   const [response, dispatchAction, pending] = useActionResponse({
     action: signup,
+    onError: () => {
+      turnstileRef.current?.reset()
+      setTurnstileToken('')
+    },
     onSuccess: handleSignupSuccess,
   })
 
@@ -100,16 +108,14 @@ export default function SignupForm() {
             maxLength={32}
             minLength={2}
             name="loginId"
-            pattern={loginIdPattern}
+            pattern={LOGIN_ID_PATTERN}
             placeholder="아이디를 입력하세요"
             required
           />
           {loginIdError ? (
             <p className="mt-1 text-xs text-red-500">{loginIdError}</p>
           ) : (
-            <p className="mt-1 text-xs text-zinc-400">
-              알파벳, 숫자 - . _ ~ 만 사용하여 2자 이상의 아이디를 입력해주세요
-            </p>
+            <p className="mt-1 text-xs text-zinc-400">알파벳, 숫자, _ 만 사용하여 2자 이상의 아이디를 입력해주세요</p>
           )}
         </div>
         <div>
@@ -125,7 +131,7 @@ export default function SignupForm() {
             maxLength={64}
             minLength={8}
             name="password"
-            pattern={passwordPattern}
+            pattern={PASSWORD_PATTERN}
             placeholder="비밀번호를 입력하세요"
             required
             type="password"
@@ -155,7 +161,11 @@ export default function SignupForm() {
             required
             type="password"
           />
-          {passwordConfirmError && <p className="mt-1 text-xs text-red-500">{passwordConfirmError}</p>}
+          {passwordConfirmError ? (
+            <p className="mt-1 text-xs text-red-500">{passwordConfirmError}</p>
+          ) : (
+            <p className="mt-1 text-xs text-zinc-400">비밀번호는 bcrypt 해싱으로 암호화하여 안전하게 처리하고 있어요</p>
+          )}
         </div>
         <div>
           <label htmlFor="nickname">닉네임</label>
@@ -173,21 +183,25 @@ export default function SignupForm() {
           {nicknameError ? (
             <p className="mt-1 text-xs text-red-500">{nicknameError}</p>
           ) : (
-            <p className="mt-1 text-xs text-zinc-400">
-              닉네임은 2자 이상 32자 이하로 입력해주세요. 나중에 변경할 수 있어요.
-            </p>
+            <p className="mt-1 text-xs text-zinc-400">닉네임은 2자 이상 32자 이하로 입력해주세요</p>
           )}
         </div>
       </div>
       <button
         className="group border-2 border-brand-gradient font-medium rounded-xl disabled:border-zinc-500 disabled:pointer-events-none disabled:text-zinc-500 focus:outline-none focus:ring-3 focus:ring-zinc-500"
-        disabled={pending}
+        disabled={pending || !turnstileToken}
         type="submit"
       >
         <div className="p-2 flex justify-center bg-zinc-900 cursor-pointer rounded-xl hover:bg-zinc-800 transition active:bg-zinc-900 group-disabled:bg-zinc-800 group-disabled:cursor-not-allowed">
           {pending ? <Loading className="text-zinc-500 w-12 p-2" /> : '회원가입'}
         </div>
       </button>
+      <TurnstileWidget
+        onTokenChange={setTurnstileToken}
+        options={{ action: 'signup' }}
+        token={turnstileToken}
+        turnstileRef={turnstileRef}
+      />
     </form>
   )
 }

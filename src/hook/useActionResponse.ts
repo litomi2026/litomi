@@ -27,7 +27,7 @@ import { ActionResponse, ErrorResponse, SuccessResponse } from '@/utils/action-r
 type Props<T extends ActionResponse, TActionArgs extends unknown[]> = {
   action: (...args: TActionArgs) => Promise<T>
   onSuccess?: (data: T extends SuccessResponse<infer D> ? D : never, args: TActionArgs) => void
-  onError?: (error: T extends ErrorResponse<infer E> ? E : never, response: T) => void
+  onError?: (response: Extract<T, { ok: false }>) => void
   onSettled?: (response: T) => void
   shouldSetResponse?: boolean
   silentNetworkError?: boolean
@@ -81,10 +81,7 @@ export default function useActionResponse<T extends ActionResponse, TActionArgs 
 
           const error = response.error as T extends ErrorResponse<infer E> ? E : never
 
-          if (onError) {
-            // TODO: 첫번째 파라미터를 두번째 파라미터로 바꾸기
-            onError(error, response)
-          } else if (typeof error === 'string') {
+          if (typeof error === 'string') {
             if (response.status >= 400 && response.status < 500) {
               toast.warning(error)
             } else {
@@ -100,6 +97,10 @@ export default function useActionResponse<T extends ActionResponse, TActionArgs 
                 toast.error(firstError)
               }
             }
+          }
+
+          if (onError) {
+            onError(response as Extract<T, { ok: false }>)
           }
         } else {
           onSuccess?.(response.data as T extends SuccessResponse<infer D> ? D : never, args)

@@ -1,7 +1,7 @@
 'use server'
 
 import { hash } from 'bcrypt'
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import { z } from 'zod/v4'
 
 import { SALT_ROUNDS } from '@/constants'
@@ -9,10 +9,11 @@ import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/schema'
 import { loginIdSchema, nicknameSchema, passwordSchema } from '@/database/zod'
 import { badRequest, conflict, created, tooManyRequests } from '@/utils/action-response'
-import { setAccessTokenCookie, setRefreshTokenCookie } from '@/utils/cookie'
+import { setAccessTokenCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 import { generateRandomNickname, generateRandomProfileImage } from '@/utils/nickname'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
+import TurnstileValidator, { getTurnstileToken } from '@/utils/turnstile'
 
 const signupSchema = z
   .object({
@@ -33,6 +34,34 @@ const signupSchema = z
 const signupLimiter = new RateLimiter(RateLimitPresets.strict())
 
 export default async function signup(formData: FormData) {
+  const validator = new TurnstileValidator()
+  const turnstileToken = getTurnstileToken(formData)
+  const headersList = await headers()
+  const idempotencyKey = crypto.randomUUID()
+
+  const remoteIP =
+    headersList.get('CF-Connecting-IP') ||
+    headersList.get('x-real-ip') ||
+    headersList.get('x-forwarded-for') ||
+    'unknown'
+
+  const turnstile = await validator.validate(turnstileToken, remoteIP, {
+    expectedAction: 'signup',
+    idempotencyKey,
+  })
+
+  if (!turnstile.success) {
+    const message = validator.getTurnstileErrorMessage(turnstile['error-codes'])
+    return badRequest(message, formData)
+  }
+
+  const { allowed, retryAfter } = await signupLimiter.check(remoteIP)
+
+  if (!allowed) {
+    const minutes = retryAfter ? Math.ceil(retryAfter / 60) : 1
+    return tooManyRequests(`너무 많은 회원가입 시도가 있었어요. ${minutes}분 후에 다시 시도해주세요.`, formData)
+  }
+
   const validation = signupSchema.safeParse({
     loginId: formData.get('loginId'),
     password: formData.get('password'),
@@ -45,12 +74,6 @@ export default async function signup(formData: FormData) {
   }
 
   const { loginId, password, nickname } = validation.data
-  const { allowed, retryAfter } = await signupLimiter.check(loginId)
-
-  if (!allowed) {
-    const minutes = retryAfter ? Math.ceil(retryAfter / 60) : 1
-    return tooManyRequests(`너무 많은 회원가입 시도가 있었어요. ${minutes}분 후에 다시 시도해주세요.`, formData)
-  }
 
   const passwordHash = await hash(password, SALT_ROUNDS)
 
@@ -72,8 +95,7 @@ export default async function signup(formData: FormData) {
 
   const { id: userId } = result
   const cookieStore = await cookies()
-
-  await Promise.all([setAccessTokenCookie(cookieStore, userId), setRefreshTokenCookie(cookieStore, userId)])
+  await setAccessTokenCookie(cookieStore, userId)
 
   return created({
     userId,

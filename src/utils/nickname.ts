@@ -77,7 +77,7 @@ export function generateRandomNickname() {
 }
 
 const profileImages = [
-  'https://i.imgur.com/i0A7nbA_d.webp?maxwidth=760&fidelity=grand',
+  'https://assets.puzzlefactory.com/puzzle/318/906/original.jpg',
   'https://blog.kakaocdn.net/dn/b0lZwd/btrWKoqu9yV/IwOySShKSWOKuandJQ6P11/img.gif',
   'https://i2.ruliweb.com/img/18/01/18/16109bfd96744ab5f.jpg',
   'https://i1.ruliweb.com/img/18/01/18/16109c0141644ab5f.png',

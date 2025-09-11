@@ -45,10 +45,8 @@ export default function PostCreationForm({
 
   const [response, dispatchAction, isPending] = useActionResponse({
     action: createPost,
-    onError: (error) => {
-      if (typeof error === 'string') {
-        toast.error(error)
-      } else {
+    onError: ({ error }) => {
+      if (typeof error !== 'string') {
         toast.error(error.content || error.mangaId || error.parentPostId || error.referredPostId)
       }
     },

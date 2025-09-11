@@ -1,6 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { toast } from 'sonner'
 
 import { QueryKeys } from '@/constants/query'
 import useActionResponse from '@/hook/useActionResponse'
@@ -17,15 +16,12 @@ export function useBookmarkImport() {
 
   const [importResult, dispatchAction] = useActionResponse({
     action: importBookmarks,
+    onError: () => {
+      setImportState('preview')
+    },
     onSuccess: () => {
       setImportState('complete')
       queryClient.invalidateQueries({ queryKey: QueryKeys.bookmarks })
-    },
-    onError: (error) => {
-      if (typeof error === 'string') {
-        toast.error(error)
-      }
-      setImportState('preview')
     },
   })
 

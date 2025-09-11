@@ -25,3 +25,6 @@ export const BOOKMARKS_PER_PAGE = 20
 export const READING_HISTORY_PER_PAGE = 20
 export const LIBRARY_ITEMS_PER_PAGE = 20
 export const LINK_PENDING_DELAY = 500
+
+export const LOGIN_ID_PATTERN = '^[a-zA-Z][a-zA-Z0-9_]*$'
+export const PASSWORD_PATTERN = '^(?=.*[A-Za-z])(?=.*[0-9]).+$'

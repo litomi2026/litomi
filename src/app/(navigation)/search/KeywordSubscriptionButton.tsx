@@ -21,21 +21,14 @@ export default function KeywordSubscriptionButton() {
 
   const [_, dispatchAction, isPending] = useActionResponse({
     action: subscribeToKeyword,
-    onSuccess: () => {
-      toast.success(`키워드 알림이 설정됐어요: ${query?.suggestedName ?? ''}`)
-      setIsSubscribed(true)
-    },
-    onError: (error, response) => {
+    onError: (response) => {
       if (response.status === 409) {
         setIsSubscribed(true)
       }
-      if (typeof error === 'string') {
-        if (response.status >= 400 && response.status < 500) {
-          toast.warning(error)
-        } else {
-          toast.error(error)
-        }
-      }
+    },
+    onSuccess: () => {
+      toast.success(`키워드 알림이 설정됐어요: ${query?.suggestedName ?? ''}`)
+      setIsSubscribed(true)
     },
     shouldSetResponse: false,
   })

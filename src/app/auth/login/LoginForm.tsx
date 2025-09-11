@@ -1,5 +1,6 @@
 'use client'
 
+import { TurnstileInstance } from '@marsidev/react-turnstile'
 import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
@@ -10,7 +11,8 @@ import IconSpinner from '@/components/icons/IconSpinner'
 import IconX from '@/components/icons/IconX'
 import PasskeyLoginButton from '@/components/PasskeyLoginButton'
 import { clearMigratedHistory, getLocalReadingHistory } from '@/components/ReadingHistoryMigrator'
-import { loginIdPattern, passwordPattern } from '@/constants/pattern'
+import TurnstileWidget from '@/components/TurnstileWidget'
+import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
 import useActionResponse, { getFieldError, getFormField } from '@/hook/useActionResponse'
@@ -30,8 +32,10 @@ type User = {
 export default function LoginForm() {
   const router = useRouter()
   const formRef = useRef<HTMLFormElement>(null)
+  const turnstileRef = useRef<TurnstileInstance>(null)
   const queryClient = useQueryClient()
   const [currentLoginId, setCurrentLoginId] = useState('')
+  const [turnstileToken, setTurnstileToken] = useState('')
 
   function resetId() {
     const loginIdInput = formRef.current?.loginId as HTMLInputElement
@@ -74,6 +78,10 @@ export default function LoginForm() {
 
   const [response, dispatchAction, isPending] = useActionResponse({
     action: login,
+    onError: () => {
+      turnstileRef.current?.reset()
+      setTurnstileToken('')
+    },
     onSuccess: handleLoginSuccess,
   })
 
@@ -112,7 +120,7 @@ export default function LoginForm() {
               minLength={2}
               name="loginId"
               onChange={(e) => setCurrentLoginId(e.target.value)}
-              pattern={loginIdPattern}
+              pattern={LOGIN_ID_PATTERN}
               placeholder="아이디를 입력하세요"
               required
             />
@@ -133,7 +141,7 @@ export default function LoginForm() {
               maxLength={64}
               minLength={8}
               name="password"
-              pattern={passwordPattern}
+              pattern={PASSWORD_PATTERN}
               placeholder="비밀번호를 입력하세요"
               required
               type="password"
@@ -165,7 +173,7 @@ export default function LoginForm() {
       <button
         className="group border-2 border-brand-gradient font-medium rounded-xl focus:outline-none focus:ring-3 focus:ring-zinc-500
         disabled:border-zinc-500 disabled:pointer-events-none disabled:text-zinc-500"
-        disabled={isPending}
+        disabled={isPending || !turnstileToken}
         type="submit"
       >
         <div
@@ -184,6 +192,12 @@ export default function LoginForm() {
         </div>
       </div>
       <PasskeyLoginButton disabled={isPending} loginId={currentLoginId} onSuccess={handleLoginSuccess} />
+      <TurnstileWidget
+        onTokenChange={setTurnstileToken}
+        options={{ action: 'login' }}
+        token={turnstileToken}
+        turnstileRef={turnstileRef}
+      />
     </form>
   )
 }

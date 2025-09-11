@@ -42,10 +42,7 @@ export default function AccountDeletionForm({ loginId }: Readonly<Props>) {
 
   const [_, dispatchAction, isPending] = useActionResponse({
     action: deleteAccount,
-    onError: (error) => {
-      if (typeof error === 'string') {
-        toast.error(error)
-      }
+    onError: () => {
       setStep(DeletionStep.INITIAL)
       setConfirmText('')
       setPassword('')

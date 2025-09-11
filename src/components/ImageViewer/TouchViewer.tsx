@@ -288,7 +288,7 @@ function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection }: 
       ref={ulRef}
     >
       {images.length === 0 ? (
-        <li className="flex items-center justify-center h-full">
+        <li className="flex items-center justify-center h-full animate-fade-in">
           <IconSpinner className="size-8" />
         </li>
       ) : (
