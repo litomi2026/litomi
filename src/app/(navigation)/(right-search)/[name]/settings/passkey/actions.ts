@@ -232,7 +232,7 @@ export async function verifyAuthentication(body: unknown, turnstileToken: string
   const turnstile = await validator.validate({
     token: turnstileToken,
     remoteIP,
-    expectedAction: 'passkey-login',
+    expectedAction: 'login',
   })
 
   if (!turnstile.success) {
