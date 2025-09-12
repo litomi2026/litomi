@@ -1,5 +1,6 @@
 'use server'
 
+import { captureException } from '@sentry/nextjs'
 import { hash } from 'bcrypt'
 import { cookies, headers } from 'next/headers'
 import { z } from 'zod/v4'
@@ -8,7 +9,7 @@ import { SALT_ROUNDS } from '@/constants'
 import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/schema'
 import { loginIdSchema, nicknameSchema, passwordSchema } from '@/database/zod'
-import { badRequest, conflict, created, tooManyRequests } from '@/utils/action-response'
+import { badRequest, conflict, created, internalServerError, tooManyRequests } from '@/utils/action-response'
 import { setAccessTokenCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 import { generateRandomNickname, generateRandomProfileImage } from '@/utils/nickname'
@@ -74,33 +75,37 @@ export default async function signup(formData: FormData) {
   }
 
   const { loginId, password, nickname } = validation.data
-
   const passwordHash = await hash(password, SALT_ROUNDS)
 
-  const [result] = await db
-    .insert(userTable)
-    .values({
+  try {
+    const [result] = await db
+      .insert(userTable)
+      .values({
+        loginId,
+        name: loginId,
+        passwordHash,
+        nickname,
+        imageURL: generateRandomProfileImage(),
+      })
+      .onConflictDoNothing()
+      .returning({ id: userTable.id })
+
+    if (!result) {
+      return conflict({ loginId: '이미 사용 중인 아이디에요' }, formData)
+    }
+
+    const { id: userId } = result
+    const cookieStore = await cookies()
+    await setAccessTokenCookie(cookieStore, userId)
+
+    return created({
+      userId,
       loginId,
       name: loginId,
-      passwordHash,
       nickname,
-      imageURL: generateRandomProfileImage(),
     })
-    .onConflictDoNothing()
-    .returning({ id: userTable.id })
-
-  if (!result) {
-    return conflict({ loginId: '이미 사용 중인 아이디에요' }, formData)
+  } catch (error) {
+    captureException(error, { extra: { name: 'signup', loginId } })
+    return internalServerError('회원가입 중 오류가 발생했어요', formData)
   }
-
-  const { id: userId } = result
-  const cookieStore = await cookies()
-  await setAccessTokenCookie(cookieStore, userId)
-
-  return created({
-    userId,
-    loginId,
-    name: loginId,
-    nickname,
-  })
 }
