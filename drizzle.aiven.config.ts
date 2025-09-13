@@ -7,5 +7,8 @@ export default defineConfig({
   out: './drizzle/aiven',
   schema: './src/database/aiven/schema.ts',
   dialect: 'postgresql',
-  dbCredentials: { url: process.env.AIVEN_POSTGRES_URL ?? '' },
+  dbCredentials: {
+    url: process.env.AIVEN_POSTGRES_URL ?? '',
+    ssl: process.env.AIVEN_CERTIFICATE ? { ca: process.env.AIVEN_CERTIFICATE, rejectUnauthorized: true } : 'prefer',
+  },
 })

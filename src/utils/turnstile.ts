@@ -11,6 +11,7 @@ export interface TurnstileVerifyResponse {
   challenge_ts?: string
   'error-codes'?: string[]
   hostname?: string
+  metadata?: { result_with_testing_key: boolean }
   success: boolean
 }
 
@@ -79,7 +80,7 @@ export default class TurnstileValidator {
 
         const result: TurnstileVerifyResponse = await response.json()
 
-        if (result.success) {
+        if (result.success && result.metadata?.result_with_testing_key !== true) {
           if (expectedAction && result.action !== expectedAction) {
             return {
               success: false,

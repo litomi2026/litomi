@@ -316,7 +316,7 @@ export class KHentaiClient {
 
   // NOTE: k-hentai에서 언어, 그룹, 패러디 등의 값도 태그로 내려줘서, 진짜 태그만 추출하기 위한 함수
   private isValidKHentaiTag(tag: KHentaiTag): tag is { id: number; tag: [TagCategory, string] } {
-    return isValidKHentaiTagCategory(tag.tag[0])
+    return VALID_TAG_CATEGORIES.includes(tag.tag[0] as TagCategory)
   }
 
   private parseGalleryFromHTML(html: string, id: number): KHentaiGallery {
@@ -347,8 +347,4 @@ export function getCategories(query?: string) {
     })
     .filter(Boolean)
     .join(',')
-}
-
-export function isValidKHentaiTagCategory(category: string): category is TagCategory {
-  return VALID_TAG_CATEGORIES.includes(category as TagCategory)
 }

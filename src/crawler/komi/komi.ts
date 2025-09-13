@@ -20,11 +20,7 @@ type KomiManga = {
   group: string
   category: string
   language: string
-  tags: {
-    id: string
-    namespace: string
-    name: string
-  }[]
+  tags: KomiTag[]
   images: {
     bucketName: string
     contentType: string
@@ -50,6 +46,12 @@ type KomiManga = {
   isBlocked: boolean
 }
 
+type KomiTag = {
+  id: string
+  namespace: string
+  name: string
+}
+
 const KOMI_CONFIG: ProxyClientConfig = {
   baseURL: 'https://komi.la',
   circuitBreaker: {
@@ -73,6 +75,9 @@ const KOMI_CONFIG: ProxyClientConfig = {
     Referer: 'https://komi.la/',
   },
 }
+
+const VALID_KOMI_TAG_CATEGORIES = ['female', 'male', 'mixed', 'misc'] as const
+type KomiTagCategory = (typeof VALID_KOMI_TAG_CATEGORIES)[number]
 
 export class KomiClient {
   private static instance: KomiClient
@@ -120,9 +125,16 @@ export class KomiClient {
       viewCount: komiManga.viewCount,
       count: komiManga.pages,
       rating: komiManga.rating ?? undefined,
-      tags: komiManga.tags.map(({ name, namespace }) => translateTag(namespace, name, locale)),
+      tags: komiManga.tags
+        .filter(this.isValidKomiTag)
+        .map(({ name, namespace }) => translateTag(namespace, name, locale)),
       source: MangaSource.KOMI,
       ...getOriginFromImageURLs(komiManga.images.sort((a, b) => a.pageNumber - b.pageNumber).map((img) => img.url)),
     }
+  }
+
+  // NOTE: komi에서 언어 등의 값도 태그로 내려줘서, 진짜 태그만 추출하기 위한 함수
+  private isValidKomiTag(tag: KomiTag): tag is { id: string; namespace: KomiTagCategory; name: string } {
+    return VALID_KOMI_TAG_CATEGORIES.includes(tag.namespace as KomiTagCategory)
   }
 }

@@ -1,5 +1,6 @@
 'use server'
 
+import { captureException } from '@sentry/nextjs'
 import { compare } from 'bcrypt'
 import { eq } from 'drizzle-orm'
 import { cookies, headers } from 'next/headers'
@@ -8,7 +9,7 @@ import { z } from 'zod/v4'
 import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/schema'
 import { loginIdSchema, passwordSchema } from '@/database/zod'
-import { badRequest, ok, tooManyRequests, unauthorized } from '@/utils/action-response'
+import { badRequest, internalServerError, ok, tooManyRequests, unauthorized } from '@/utils/action-response'
 import { setAccessTokenCookie, setRefreshTokenCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
@@ -62,43 +63,48 @@ export default async function login(formData: FormData) {
     return tooManyRequests(`너무 많은 로그인 시도가 있었어요. ${minutes}분 후에 다시 시도해주세요.`)
   }
 
-  const [user] = await db
-    .select({
-      id: userTable.id,
-      name: userTable.name,
-      passwordHash: userTable.passwordHash,
-      lastLoginAt: userTable.loginAt,
-      lastLogoutAt: userTable.logoutAt,
+  try {
+    const [user] = await db
+      .select({
+        id: userTable.id,
+        name: userTable.name,
+        passwordHash: userTable.passwordHash,
+        lastLoginAt: userTable.loginAt,
+        lastLogoutAt: userTable.logoutAt,
+      })
+      .from(userTable)
+      .where(eq(userTable.loginId, loginId))
+
+    if (!user) {
+      return unauthorized('아이디 또는 비밀번호가 일치하지 않아요', formData)
+    }
+
+    const { id, name, lastLoginAt, lastLogoutAt, passwordHash } = user
+    const isValidPassword = await compare(password, passwordHash)
+
+    if (!isValidPassword) {
+      return unauthorized('아이디 또는 비밀번호가 일치하지 않아요', formData)
+    }
+
+    const cookieStore = await cookies()
+
+    await Promise.all([
+      setAccessTokenCookie(cookieStore, id),
+      remember && setRefreshTokenCookie(cookieStore, id),
+      db.update(userTable).set({ loginAt: new Date() }).where(eq(userTable.id, id)),
+    ])
+
+    loginLimiter.reward(loginId)
+
+    return ok({
+      id,
+      loginId,
+      name,
+      lastLoginAt,
+      lastLogoutAt,
     })
-    .from(userTable)
-    .where(eq(userTable.loginId, loginId))
-
-  if (!user) {
-    return unauthorized('아이디 또는 비밀번호가 일치하지 않아요', formData)
+  } catch (error) {
+    captureException(error, { extra: { name: 'login', loginId } })
+    return internalServerError('로그인 중 오류가 발생했어요', formData)
   }
-
-  const { id, name, lastLoginAt, lastLogoutAt, passwordHash } = user
-  const isValidPassword = await compare(password, passwordHash)
-
-  if (!isValidPassword) {
-    return unauthorized('아이디 또는 비밀번호가 일치하지 않아요', formData)
-  }
-
-  const cookieStore = await cookies()
-
-  await Promise.all([
-    setAccessTokenCookie(cookieStore, id),
-    remember && setRefreshTokenCookie(cookieStore, id),
-    db.update(userTable).set({ loginAt: new Date() }).where(eq(userTable.id, id)),
-  ])
-
-  loginLimiter.reward(loginId)
-
-  return ok({
-    id,
-    loginId,
-    name,
-    lastLoginAt,
-    lastLogoutAt,
-  })
 }

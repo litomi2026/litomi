@@ -1,6 +1,5 @@
 'use client'
 
-import { Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -34,15 +33,9 @@ export default function AutoDeletionForm({ autoDeletionDays }: Props) {
 
   return (
     <form action={dispatchAction} className="grid gap-4">
-      <div className="flex gap-3">
-        <Trash2 className="size-5 mt-0.5 flex-shrink-0" />
-        <div className="flex-1 grid gap-1">
-          <h3 className="font-medium">자동 계정 삭제</h3>
-          <p className="text-sm text-zinc-400">
-            설정한 기간 동안 로그인하지 않으면 개인정보 보호를 위해 계정이 자동으로 삭제돼요
-          </p>
-        </div>
-      </div>
+      <p className="text-sm text-zinc-400">
+        설정한 기간 동안 로그인하지 않으면 개인정보 보호를 위해 계정이 자동으로 삭제돼요
+      </p>
       <div className="grid gap-2">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {dayOptions.map((option) => (

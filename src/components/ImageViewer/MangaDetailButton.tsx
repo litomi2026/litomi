@@ -1,5 +1,8 @@
+'use client'
+
 import { ErrorBoundary } from '@suspensive/react'
 import dayjs from 'dayjs'
+import Link from 'next/link'
 import { memo, Suspense, useState } from 'react'
 
 import { MANGA_INITIAL_LINES, MAX_MANGA_DESCRIPTION_LENGTH } from '@/constants/policy'
@@ -9,6 +12,7 @@ import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from '../
 import DownloadButton, { DownloadButtonError, DownloadButtonSkeleton } from '../card/DownloadButton'
 import MangaCardStats from '../card/MangaCardStats'
 import MangaMetadataItem from '../card/MangaMetadataItem'
+import MangaMetadataLabel from '../card/MangaMetadataLabel'
 import MangaMetadataList from '../card/MangaMetadataList'
 import TagList from '../TagList'
 import Modal from '../ui/Modal'
@@ -127,7 +131,12 @@ function MangaDetailButton({ manga }: Readonly<Props>) {
             {date && (
               <div className="flex gap-2">
                 <strong>날짜</strong>
-                <span>{dayjs(date).format('YYYY-MM-DD HH:mm')}</span>
+                <Link
+                  className="hover:underline focus:underline"
+                  href={`/search?to=${Math.ceil(new Date(date).getTime() / 1000) + 60}`}
+                >
+                  <MangaMetadataLabel>{dayjs(date).format('YYYY-MM-DD HH:mm')}</MangaMetadataLabel>
+                </Link>
               </div>
             )}
             {tags && tags.length > 0 && (
