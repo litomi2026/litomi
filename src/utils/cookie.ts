@@ -18,6 +18,9 @@ export function getCookieJSON(cookieStore: ReadonlyRequestCookies, keys: string[
   return result
 }
 
+/**
+ * For server component
+ */
 export async function getUserIdFromCookie() {
   const cookieStore = await cookies()
   return (await verifyAccessToken(cookieStore)) ?? null
@@ -48,6 +51,9 @@ export async function setRefreshTokenCookie(cookieStore: ReadonlyRequestCookies,
   })
 }
 
+/**
+ * For server action, router handler
+ */
 export async function validateUserIdFromCookie() {
   const cookieStore = await cookies()
   const userId = await verifyAccessToken(cookieStore)
