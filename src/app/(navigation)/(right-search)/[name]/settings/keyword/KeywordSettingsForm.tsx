@@ -1,12 +1,13 @@
 'use client'
 
-import { Bell, Sparkles } from 'lucide-react'
+import { CaseSensitive, Filter, Heart, Rabbit } from 'lucide-react'
 import { useState } from 'react'
 
 import IconPlus from '@/components/icons/IconPlus'
 
 import type { NotificationCriteria } from './types'
 
+import Onboarding from '../Onboarding'
 import NotificationCriteriaCard from './NotificationCriteriaCard'
 import NotificationCriteriaModal from './NotificationCriteriaModal'
 
@@ -36,7 +37,36 @@ export default function KeywordSettingsForm({ initialCriteria: criteria }: Props
   return (
     <div className="flex flex-col gap-4 sm:gap-6">
       {criteria.length === 0 ? (
-        <EmptyState onCreateClick={handleCreateClick} />
+        <Onboarding
+          benefits={[
+            {
+              icon: <Rabbit className="size-5" />,
+              title: '실시간 알림',
+              description: '새 작품이 올라오면 즉시 알려드려요',
+            },
+            {
+              icon: <Filter className="size-5" />,
+              title: '정밀한 필터링',
+              description: '원하는 키워드만 정확하게 추적해요',
+            },
+            {
+              icon: <Heart className="size-5" />,
+              title: '개인화된 경험',
+              description: '취향에 맞는 작품을 편하게 관리해요',
+            },
+          ]}
+          description="관심있는 시리즈와 태그를 놓치지 않도록 알려드릴게요"
+          icon={<CaseSensitive className="size-12 text-brand-end" />}
+          title="키워드 알림 시작하기"
+        >
+          <button
+            className="px-6 py-3 rounded-2xl bg-brand-end text-background font-semibold hover:opacity-90 transition"
+            onClick={handleCreateClick}
+            type="button"
+          >
+            키워드 알림 설정하기
+          </button>
+        </Onboarding>
       ) : (
         <>
           <div className="flex items-center justify-between gap-3">
@@ -73,60 +103,6 @@ export default function KeywordSettingsForm({ initialCriteria: criteria }: Props
       )}
 
       <NotificationCriteriaModal editingCriteria={editingCriteria} isOpen={isModalOpen} onClose={handleModalClose} />
-    </div>
-  )
-}
-
-function EmptyState({ onCreateClick }: { onCreateClick: () => void }) {
-  return (
-    <div className="flex flex-col items-center justify-center py-8 sm:py-12 px-4 text-center">
-      <div className="mb-6 sm:mb-8 relative">
-        <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-brand-end/20 to-brand-end/5 flex items-center justify-center">
-          <Bell className="h-10 w-10 sm:h-12 sm:w-12 text-brand-end" />
-        </div>
-        <div className="absolute -bottom-2 -right-2 h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-zinc-900 border-2 border-background flex items-center justify-center">
-          <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-brand-end" />
-        </div>
-      </div>
-      <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 sm:mb-3">알림을 설정해 보세요</h2>
-      <p className="text-sm sm:text-base text-zinc-400 max-w-xs sm:max-w-sm mb-6 sm:mb-8">
-        좋아하는 시리즈의 새 작품을 놓치지 마세요
-      </p>
-      <div className="w-full max-w-sm sm:max-w-md space-y-2 sm:space-y-3 mb-6 sm:mb-8">
-        <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-zinc-900/50 border border-zinc-800/50">
-          <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-brand-end/10 flex items-center justify-center flex-shrink-0">
-            <span className="text-base sm:text-lg">🎯</span>
-          </div>
-          <div className="text-left">
-            <p className="font-medium text-xs sm:text-sm mb-0.5">정확한 매칭</p>
-            <p className="text-[11px] sm:text-xs text-zinc-500">시리즈, 캐릭터, 태그, 업로더로 원하는 작품만 필터링</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-zinc-900/50 border border-zinc-800/50">
-          <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-brand-end/10 flex items-center justify-center flex-shrink-0">
-            <span className="text-base sm:text-lg">⚡</span>
-          </div>
-          <div className="text-left">
-            <p className="font-medium text-xs sm:text-sm mb-0.5">즉시 알림</p>
-            <p className="text-[11px] sm:text-xs text-zinc-500">새 작품이 추가되면 바로 알려드려요</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-zinc-900/50 border border-zinc-800/50">
-          <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-brand-end/10 flex items-center justify-center flex-shrink-0">
-            <span className="text-base sm:text-lg">🎨</span>
-          </div>
-          <div className="text-left">
-            <p className="font-medium text-xs sm:text-sm mb-0.5">다양한 조건</p>
-            <p className="text-[11px] sm:text-xs text-zinc-500">복수 조건으로 더 정밀한 알림 설정</p>
-          </div>
-        </div>
-      </div>
-      <button
-        className="inline-flex items-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl bg-brand-end px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-background hover:bg-brand-end/90 focus:outline-none focus:ring-2 focus:ring-brand-end/50 focus:ring-offset-2 transition-all"
-        onClick={onCreateClick}
-      >
-        <IconPlus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />첫 알림 만들기
-      </button>
     </div>
   )
 }
