@@ -1,7 +1,7 @@
 import ms from 'ms'
 import 'server-only'
 
-import { MangaSource, TagCategory } from '@/database/enum'
+import { MangaSource } from '@/database/enum'
 import { translateLanguageList } from '@/translation/language'
 import { translateTag } from '@/translation/tag'
 import { Manga } from '@/types/manga'
@@ -76,8 +76,8 @@ const KOMI_CONFIG: ProxyClientConfig = {
   },
 }
 
-const VALID_TAG_CATEGORIES = ['female', 'male', 'mixed', 'misc'] as const
-type TagCategory = (typeof VALID_TAG_CATEGORIES)[number]
+const VALID_KOMI_TAG_CATEGORIES = ['female', 'male', 'mixed', 'misc'] as const
+type KomiTagCategory = (typeof VALID_KOMI_TAG_CATEGORIES)[number]
 
 export class KomiClient {
   private static instance: KomiClient
@@ -134,7 +134,7 @@ export class KomiClient {
   }
 
   // NOTE: komi에서 언어 등의 값도 태그로 내려줘서, 진짜 태그만 추출하기 위한 함수
-  private isValidKomiTag(tag: KomiTag): tag is { id: string; namespace: TagCategory; name: string } {
-    return VALID_TAG_CATEGORIES.includes(tag.namespace as TagCategory)
+  private isValidKomiTag(tag: KomiTag): tag is { id: string; namespace: KomiTagCategory; name: string } {
+    return VALID_KOMI_TAG_CATEGORIES.includes(tag.namespace as KomiTagCategory)
   }
 }
