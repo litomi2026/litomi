@@ -1,3 +1,4 @@
+import { CalendarMinus, RectangleEllipsis } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { Suspense } from 'react'
 
@@ -20,6 +21,7 @@ const PasswordChangeForm = dynamic(() => import('./password/PasswordChangeForm')
 const KeywordSettings = dynamic(() => import('./keyword/KeywordSettings'))
 const PrivacySettings = dynamic(() => import('./privacy/PrivacySettings'))
 const PasskeySettings = dynamic(() => import('./passkey/PasskeySettings'))
+const TwoFactorSettings = dynamic(() => import('./two-factor/TwoFactorSettings'))
 
 export default async function SettingsPage({ params }: PageProps<'/[name]/settings'>) {
   const userId = await getUserIdFromCookie()
@@ -39,7 +41,7 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
     <>
       <CollapsibleSection
         description="새로운 업데이트를 실시간으로 받아보세요"
-        icon={<IconBell className="w-5 flex-shrink-0 text-brand-end" />}
+        icon={<IconBell className="size-5 flex-shrink-0 text-brand-end" />}
         id="push"
         title="푸시 알림"
       >
@@ -49,7 +51,7 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
       </CollapsibleSection>
       <CollapsibleSection
         description="관심 키워드를 등록하여 새로운 작품 알림을 받아보세요"
-        icon={<IconSearch className="w-5 flex-shrink-0 text-brand-end" />}
+        icon={<IconSearch className="size-5 flex-shrink-0 text-brand-end" />}
         id="keyword"
         title="키워드 알림"
       >
@@ -59,7 +61,7 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
       </CollapsibleSection>
       <CollapsibleSection
         description="비밀번호 없이 안전하게 로그인하세요"
-        icon={<IconFingerprint className="w-5 flex-shrink-0 text-brand-end" />}
+        icon={<IconFingerprint className="size-5 flex-shrink-0 text-brand-end" />}
         id="passkey"
         title="패스키"
       >
@@ -68,10 +70,20 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
         </Suspense>
       </CollapsibleSection>
       <CollapsibleSection
-        description="개인정보 보호를 위한 자동화 설정을 관리하세요"
-        icon={<IconShield className="w-5 flex-shrink-0 text-brand-end" />}
+        description="로그인 시 추가 인증으로 계정을 보호하세요"
+        icon={<RectangleEllipsis className="size-5 flex-shrink-0 text-brand-end" />}
+        id="two-factor"
+        title="2단계 인증"
+      >
+        <Suspense>
+          <TwoFactorSettings userId={userId} />
+        </Suspense>
+      </CollapsibleSection>
+      <CollapsibleSection
+        description="개인정보 보호를 위해 계정 자동 삭제 기간을 관리하세요"
+        icon={<CalendarMinus className="size-5 flex-shrink-0 text-brand-end" />}
         id="privacy"
-        title="개인정보 보호"
+        title="계정 자동 삭제"
       >
         <Suspense>
           <PrivacySettings userId={userId} />
@@ -79,7 +91,7 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
       </CollapsibleSection>
       <CollapsibleSection
         description="계정 보안을 위해 비밀번호를 변경하세요"
-        icon={<IconKey className="w-5 flex-shrink-0 text-zinc-400" />}
+        icon={<IconKey className="size-5 flex-shrink-0 text-zinc-400" />}
         title="비밀번호 변경"
       >
         <p className="text-zinc-400 text-sm mb-4 sm:mb-6">
@@ -89,7 +101,7 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
       </CollapsibleSection>
       <CollapsibleSection
         description="계정과 모든 데이터를 영구적으로 삭제해요"
-        icon={<IconTrash className="w-5 flex-shrink-0 text-red-500" />}
+        icon={<IconTrash className="size-5 flex-shrink-0 text-red-500" />}
         title="계정 삭제"
         variant="danger"
       >
