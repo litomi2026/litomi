@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { memo, useEffect, useRef, useState } from 'react'
 
-import { MAX_THUMBNAIL_IMAGES } from '@/constants/manga'
+import { MAX_THUMBNAIL_IMAGES } from '@/constants/policy'
 import { Manga } from '@/types/manga'
 
 import { IconNextPage, IconPrevPage } from '../icons/IconArrows'

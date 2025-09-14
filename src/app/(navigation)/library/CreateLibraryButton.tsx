@@ -111,7 +111,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
                     aria-pressed={selectedIcon === icon}
                     className="p-3 rounded-lg border-2 text-2xl transition flex items-center justify-center
                       aria-pressed:bg-zinc-700 aria-pressed:border-brand-end aria-pressed:hover:bg-zinc-700
-                      border-zinc-700 hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                      border-zinc-700 hover:bg-zinc-800 disabled:opacity-50"
                     disabled={isPending}
                     key={icon}
                     onClick={() => setSelectedIcon(icon)}
@@ -129,7 +129,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
                   <button
                     aria-pressed={selectedColor === color}
                     className="h-12 rounded-lg border-2 border-background transition aria-pressed:ring-2 aria-pressed:ring-brand-end
-                      disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled:opacity-50"
                     disabled={isPending}
                     key={color}
                     onClick={() => setSelectedColor(color)}
@@ -213,7 +213,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
           {/* Footer */}
           <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-zinc-900 border-t-2 border-zinc-800 flex gap-2 flex-shrink-0">
             <button
-              className="flex-1 px-4 py-3 text-zinc-300 font-medium bg-zinc-800 hover:bg-zinc-700 disabled:bg-zinc-700 disabled:text-zinc-500 disabled:cursor-not-allowed rounded-lg transition"
+              className="flex-1 px-4 py-3 text-zinc-300 font-medium bg-zinc-800 hover:bg-zinc-700 disabled:bg-zinc-700 disabled:text-zinc-500 rounded-lg transition"
               disabled={isPending}
               onClick={handleClose}
               type="button"
@@ -221,7 +221,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
               취소
             </button>
             <button
-              className="flex-1 px-4 py-3 text-background font-semibold bg-brand-end hover:bg-brand-end/90 disabled:bg-zinc-700 disabled:text-zinc-500 disabled:cursor-not-allowed rounded-lg transition flex items-center justify-center gap-2"
+              className="flex-1 px-4 py-3 text-background font-semibold bg-brand-end hover:bg-brand-end/90 disabled:bg-zinc-700 disabled:text-zinc-500 rounded-lg transition flex items-center justify-center gap-2"
               disabled={isPending}
               type="submit"
             >

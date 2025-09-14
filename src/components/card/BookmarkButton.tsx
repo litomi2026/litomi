@@ -105,7 +105,7 @@ export default function BookmarkButton({ manga, className }: Readonly<Props>) {
     <form action={dispatchAction} className={className}>
       <input name="mangaId" type="hidden" value={mangaId} />
       <button
-        className="flex justify-center items-center gap-1 w-full h-full transition disabled:bg-zinc-900 disabled:cursor-not-allowed"
+        className="flex justify-center items-center gap-1 w-full h-full transition disabled:bg-zinc-900"
         disabled={isPending}
         onClick={handleClick}
         type="submit"

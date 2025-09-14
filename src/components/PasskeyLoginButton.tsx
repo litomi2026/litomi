@@ -1,13 +1,13 @@
 'use client'
 
 import { startAuthentication } from '@simplewebauthn/browser'
+import { Fingerprint } from 'lucide-react'
 import { toast } from 'sonner'
 
 import {
   getAuthenticationOptions,
   verifyAuthentication,
 } from '@/app/(navigation)/(right-search)/[name]/settings/passkey/actions'
-import IconFingerprint from '@/components/icons/IconFingerprint'
 import useActionResponse from '@/hook/useActionResponse'
 
 import IconSpinner from './icons/IconSpinner'
@@ -65,13 +65,13 @@ export default function PasskeyLoginButton({ loginId, disabled, onSuccess, turns
 
   return (
     <button
-      className="flex items-center justify-center space-x-2 rounded-lg bg-zinc-800 px-4 py-3 text-zinc-300 transition-all hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-50"
+      className="flex items-center justify-center space-x-2 rounded-lg bg-zinc-800 px-4 py-3 text-zinc-300 transition-all hover:bg-zinc-700 disabled:opacity-50"
       disabled={disabled || isPending || !turnstileToken}
       onClick={handlePasskeyLogin}
       title="패스키로 로그인"
       type="button"
     >
-      {isPending ? <IconSpinner className="w-5" /> : <IconFingerprint className="w-5" />}
+      {isPending ? <IconSpinner className="w-5" /> : <Fingerprint className="w-5" />}
       <span className="font-medium">패스키로 로그인</span>
     </button>
   )

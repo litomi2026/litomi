@@ -152,7 +152,7 @@ export default function LibraryModal() {
           <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-zinc-900 border-t-2 border-zinc-800 flex-shrink-0 space-y-2">
             <button
               className="flex items-center justify-center gap-2 w-full px-4 py-3 text-background font-medium bg-brand-end rounded-lg transition hover:bg-brand-end/90
-              disabled:bg-zinc-700 disabled:text-zinc-500 disabled:cursor-not-allowed"
+              disabled:bg-zinc-700 disabled:text-zinc-500"
               disabled={isPending || selectedLibraryIds.size === 0}
               type="submit"
             >
@@ -163,7 +163,7 @@ export default function LibraryModal() {
             </button>
             <button
               className="w-full px-4 py-3 text-zinc-300 font-medium bg-zinc-800 rounded-lg transitionhover:bg-zinc-700
-              disabled:bg-zinc-700 disabled:text-zinc-500 disabled:cursor-not-allowed"
+              disabled:bg-zinc-700 disabled:text-zinc-500"
               disabled={isPending}
               onClick={handleClose}
               type="button"

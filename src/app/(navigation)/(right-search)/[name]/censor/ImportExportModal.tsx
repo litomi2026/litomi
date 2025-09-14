@@ -228,7 +228,7 @@ function ImportExportModal({ open, onClose, censorships }: Readonly<Props>) {
         <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-zinc-900 border-t-2 border-zinc-800 flex-shrink-0">
           {activeTab === 'export' ? (
             <button
-              className="w-full px-4 py-3 text-zinc-900 font-semibold bg-brand-end hover:bg-brand-end/90 disabled:bg-zinc-700 disabled:text-zinc-500 disabled:cursor-not-allowed rounded-lg transition flex items-center justify-center gap-2"
+              className="w-full px-4 py-3 text-zinc-900 font-semibold bg-brand-end hover:bg-brand-end/90 disabled:bg-zinc-700 disabled:text-zinc-500 rounded-lg transition flex items-center justify-center gap-2"
               disabled={censorships.length === 0}
               onClick={handleExport}
             >
@@ -237,7 +237,7 @@ function ImportExportModal({ open, onClose, censorships }: Readonly<Props>) {
             </button>
           ) : (
             <button
-              className="w-full px-4 py-3 text-zinc-900 font-semibold bg-brand-end hover:bg-brand-end/90 disabled:bg-zinc-700 disabled:text-zinc-500 disabled:cursor-not-allowed rounded-lg transition flex items-center justify-center gap-2"
+              className="w-full px-4 py-3 text-zinc-900 font-semibold bg-brand-end hover:bg-brand-end/90 disabled:bg-zinc-700 disabled:text-zinc-500 rounded-lg transition flex items-center justify-center gap-2"
               disabled={!importText.trim() || isPending}
               onClick={handleImport}
               type="button"

@@ -71,7 +71,7 @@ export default function AutoDeletionForm({ autoDeletionDays }: Props) {
       </div>
       <button
         className="p-2 relative bg-brand-end font-medium text-background rounded-lg transition text-sm w-full
-          hover:bg-brand-end/90 disabled:opacity-50 disabled:cursor-not-allowed
+          hover:bg-brand-end/90 disabled:opacity-50
           focus:outline-none focus:ring-2 focus:ring-brand-end/50 focus:ring-offset-2 focus:ring-offset-zinc-900"
         disabled={isPending}
         type="submit"

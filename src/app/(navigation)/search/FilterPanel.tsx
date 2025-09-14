@@ -355,7 +355,7 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
           <div className="sticky bottom-0 left-0 right-0 flex gap-2 bg-zinc-900 px-4 py-4 border-t">
             <button
               className="flex-1 mb-safe px-3 py-2 bg-zinc-800 text-zinc-300 font-medium rounded-lg transition
-              disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-zinc-400 hover:bg-zinc-700"
+              disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-zinc-400 hover:bg-zinc-700"
               disabled={isPending}
               onClick={clearFilters}
               type="button"
@@ -364,7 +364,7 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
             </button>
             <button
               className="flex items-center justify-center flex-1 mb-safe px-3 py-2 bg-brand-end text-background font-medium rounded-lg transition
-                focus:outline-none focus:ring-2 focus:ring-brand-end/50 hover:bg-brand-end/90 disabled:opacity-50 disabled:cursor-not-allowed"
+                focus:outline-none focus:ring-2 focus:ring-brand-end/50 hover:bg-brand-end/90 disabled:opacity-50"
               disabled={isPending}
               type="submit"
             >

@@ -1,4 +1,5 @@
-import IconFingerprint from '@/components/icons/IconFingerprint'
+import { Fingerprint } from 'lucide-react'
+
 import IconKey from '@/components/icons/IconKey'
 import IconShield from '@/components/icons/IconShield'
 
@@ -70,7 +71,7 @@ export default function PasskeyCard({ passkey }: Readonly<Props>) {
           <div className="flex items-center gap-3 text-xs text-zinc-500 mt-1">
             {verificationMethod && (
               <span className="flex items-center gap-1">
-                <IconFingerprint className="h-3.5 w-3.5" />
+                <Fingerprint className="h-3.5 w-3.5" />
                 {verificationMethod}
               </span>
             )}

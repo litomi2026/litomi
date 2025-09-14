@@ -120,7 +120,7 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId }: P
         <div className="flex items-center gap-2">
           <button
             className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 
-              rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+              rounded-lg transition disabled:opacity-50"
             disabled={disabled}
             onClick={handleMove}
             title={disabledReason}
@@ -131,7 +131,7 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId }: P
           </button>
           <button
             className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 
-              rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+              rounded-lg transition disabled:opacity-50"
             disabled={disabled}
             onClick={handleCopy}
             title={disabledReason}
@@ -142,7 +142,7 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId }: P
           </button>
           <button
             className="flex items-center gap-2 px-3 py-1.5 bg-red-900/50 hover:bg-red-900/70 
-              text-red-400 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+              text-red-400 rounded-lg transition disabled:opacity-50"
             disabled={disabled}
             onClick={handleDelete}
             title={disabledReason}
@@ -181,7 +181,7 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId }: P
                   <button
                     className="w-full flex items-center gap-3 p-3 rounded-lg border-2
                       hover:bg-zinc-800 hover:border-zinc-600 transition text-left 
-                      disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled:opacity-50"
                     disabled={disabled}
                     key={library.id}
                     onClick={() => handleLibrarySelect(library.id)}
@@ -208,7 +208,7 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId }: P
           <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-zinc-900 border-t-2 flex-shrink-0">
             <button
               className="w-full px-4 py-3 text-zinc-300 font-medium bg-zinc-800 hover:bg-zinc-700
-                disabled:bg-zinc-700 disabled:text-zinc-500 disabled:cursor-not-allowed rounded-lg transition"
+                disabled:bg-zinc-700 disabled:text-zinc-500 rounded-lg transition"
               disabled={disabled}
               onClick={handleClose}
               type="button"

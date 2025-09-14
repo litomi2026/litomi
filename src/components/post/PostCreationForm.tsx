@@ -145,7 +145,7 @@ export default function PostCreationForm({
               <button
                 aria-busy={isPending}
                 className="whitespace-nowrap relative bg-brand-end text-background rounded-full px-4 py-2 font-semibold 
-                disabled:text-zinc-500 disabled:bg-zinc-800 disabled:cursor-not-allowed aria-busy:text-background/0"
+                disabled:text-zinc-500 disabled:bg-zinc-800 aria-busy:text-background/0"
                 disabled={!me || isPending || content.length < 2 || content.length > 160}
                 type="submit"
               >

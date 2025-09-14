@@ -149,7 +149,7 @@ export default function Censorships() {
                   선택 해제
                 </button>
                 <button
-                  className="px-3 min-w-12 py-1 text-sm bg-red-600 hover:bg-red-700 rounded transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="px-3 min-w-12 py-1 text-sm bg-red-600 hover:bg-red-700 rounded transition disabled:opacity-50 flex items-center justify-center gap-2"
                   disabled={isDeleting}
                   onClick={handleBulkDelete}
                 >
