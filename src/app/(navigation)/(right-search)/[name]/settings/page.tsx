@@ -42,7 +42,7 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
         title="푸시 알림"
       >
         <ErrorBoundary fallback={InternalServerError}>
-          <Suspense fallback={<IconSpinner className="size-5 mx-auto" />}>
+          <Suspense fallback={<LoadingFallback />}>
             <PushSettings userId={userId} />
           </Suspense>
         </ErrorBoundary>
@@ -54,7 +54,7 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
         title="키워드 알림"
       >
         <ErrorBoundary fallback={InternalServerError}>
-          <Suspense fallback={<IconSpinner className="size-5 mx-auto" />}>
+          <Suspense fallback={<LoadingFallback />}>
             <KeywordSettings userId={userId} />
           </Suspense>
         </ErrorBoundary>
@@ -66,7 +66,7 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
         title="패스키"
       >
         <ErrorBoundary fallback={InternalServerError}>
-          <Suspense fallback={<IconSpinner className="size-5 mx-auto" />}>
+          <Suspense fallback={<LoadingFallback />}>
             <PasskeySettings userId={userId} />
           </Suspense>
         </ErrorBoundary>
@@ -78,7 +78,7 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
         title="2단계 인증"
       >
         <ErrorBoundary fallback={InternalServerError}>
-          <Suspense fallback={<IconSpinner className="size-5 mx-auto" />}>
+          <Suspense fallback={<LoadingFallback />}>
             <TwoFactorSettings userId={userId} />
           </Suspense>
         </ErrorBoundary>
@@ -90,7 +90,7 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
         title="계정 자동 삭제"
       >
         <ErrorBoundary fallback={InternalServerError}>
-          <Suspense fallback={<IconSpinner className="size-5 mx-auto" />}>
+          <Suspense fallback={<LoadingFallback />}>
             <PrivacySettings userId={userId} />
           </Suspense>
         </ErrorBoundary>
@@ -117,5 +117,13 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
         <AccountDeletionForm loginId={me.loginId} />
       </CollapsibleSection>
     </>
+  )
+}
+
+function LoadingFallback() {
+  return (
+    <div className="animate-fade-in [animation-delay:0.5s] [animation-fill-mode:both]">
+      <IconSpinner className="size-5 mx-auto" />
+    </div>
   )
 }
