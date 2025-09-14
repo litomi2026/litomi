@@ -1,4 +1,4 @@
-import { eq, sql } from 'drizzle-orm'
+import { and, eq, isNull, sql } from 'drizzle-orm'
 
 import { db } from '@/database/supabase/drizzle'
 import { twoFactorBackupCodeTable, twoFactorTable } from '@/database/supabase/schema'
@@ -18,7 +18,6 @@ export default async function TwoFactorSettings({ userId }: Props) {
 async function getTwoFactorStatus(userId: number) {
   const [result] = await db
     .select({
-      enabled: twoFactorTable.enabled,
       createdAt: twoFactorTable.createdAt,
       lastUsedAt: twoFactorTable.lastUsedAt,
       remainingBackupCodes: sql<number>`
@@ -31,7 +30,7 @@ async function getTwoFactorStatus(userId: number) {
       `,
     })
     .from(twoFactorTable)
-    .where(eq(twoFactorTable.userId, userId))
+    .where(and(eq(twoFactorTable.userId, userId), isNull(twoFactorTable.expiresAt)))
 
   if (!result) {
     return null

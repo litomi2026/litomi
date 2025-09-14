@@ -1,24 +1,17 @@
-import { bigint, boolean, index, pgTable, primaryKey, text, timestamp, unique, varchar } from 'drizzle-orm/pg-core'
+import { bigint, index, pgTable, primaryKey, text, timestamp, unique, varchar } from 'drizzle-orm/pg-core'
 
 import { userTable } from './schema'
 
-export const twoFactorTable = pgTable(
-  'two_factor',
-  {
-    userId: bigint('user_id', { mode: 'number' })
-      .references(() => userTable.id, { onDelete: 'cascade' })
-      .notNull()
-      .primaryKey(),
-    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
-    expiresAt: timestamp('expires_at', { withTimezone: true }),
-    secret: text().notNull(),
-    encryptionKeyId: varchar('encryption_key_id', { length: 36 }).notNull().default('v1'),
-    enabled: boolean().notNull().default(false),
-    lastUsedAt: timestamp('last_used_at', { withTimezone: true }),
-  },
-  (table) => [index('idx_two_factor_enabled').on(table.enabled)],
-).enableRLS()
+export const twoFactorTable = pgTable('two_factor', {
+  userId: bigint('user_id', { mode: 'number' })
+    .references(() => userTable.id, { onDelete: 'cascade' })
+    .notNull()
+    .primaryKey(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  lastUsedAt: timestamp('last_used_at', { withTimezone: true }),
+  expiresAt: timestamp('expires_at', { withTimezone: true }),
+  secret: text().notNull(),
+}).enableRLS()
 
 export const twoFactorBackupCodeTable = pgTable(
   'two_factor_backup_code',

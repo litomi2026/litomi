@@ -6,7 +6,6 @@ export interface TwoFactorSetupData {
 
 export interface TwoFactorStatus {
   createdAt?: Date
-  enabled: boolean
   lastUsedAt?: Date | null
   remainingBackupCodes: number
 }

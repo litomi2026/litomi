@@ -9,7 +9,7 @@ import useActionResponse, { getFormField } from '@/hook/useActionResponse'
 
 import type { TwoFactorStatus } from '../types'
 
-import { disableTwoFactor, regenerateBackupCodes } from '../actions'
+import { regenerateBackupCodes, removeTwoFactor } from '../actions'
 import TokenInput from './VerificationInput'
 
 interface DisableConfirmationProps {
@@ -19,7 +19,7 @@ interface DisableConfirmationProps {
 
 interface Props {
   onBackupCodesChange: (codes: string[]) => void
-  onStatusChange: (status: TwoFactorStatus) => void
+  onStatusChange: (status: null) => void
   status: TwoFactorStatus
 }
 
@@ -31,16 +31,13 @@ interface RegenerateBackupCodesFormProps {
 export default function TwoFactorManagement({ onBackupCodesChange, onStatusChange, status }: Props) {
   const [showDisableConfirm, setShowDisableConfirm] = useState(false)
   const [showRegenerateModal, setShowRegenerateModal] = useState(false)
-  const { remainingBackupCodes, enabled, createdAt, lastUsedAt } = status
+  const { remainingBackupCodes, createdAt, lastUsedAt } = status
 
   return (
-    <div className="grid gap-6">
+    <div className="grid gap-4">
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold text-zinc-100">2단계 인증 (2FA)</h2>
-          <p className="text-sm text-zinc-400">{enabled ? '활성화됨' : '비활성화됨'}</p>
-        </div>
-        {enabled && <div className="rounded-full bg-green-900/20 px-3 py-1 text-sm text-green-500">보호됨</div>}
+        <h2 className="text-xl font-bold text-zinc-100">2단계 인증 (2FA)</h2>
+        <div className="rounded-full bg-green-900/20 px-3 py-1 text-xs font-medium text-green-500">활성화됨</div>
       </div>
       <div className="rounded-lg bg-zinc-900 p-4 space-y-2">
         {createdAt && (
@@ -87,7 +84,7 @@ export default function TwoFactorManagement({ onBackupCodesChange, onStatusChang
         <DisableConfirmation
           onCancel={() => setShowDisableConfirm(false)}
           onSuccess={() => {
-            onStatusChange({ ...status, enabled: false })
+            onStatusChange(null)
             setShowDisableConfirm(false)
             toast.info('2단계 인증이 비활성화됐어요')
           }}
@@ -109,7 +106,7 @@ export default function TwoFactorManagement({ onBackupCodesChange, onStatusChang
 
 function DisableConfirmation({ onSuccess, onCancel }: DisableConfirmationProps) {
   const [response, disableAction, isDisabling] = useActionResponse({
-    action: disableTwoFactor,
+    action: removeTwoFactor,
     onSuccess,
   })
 
@@ -118,7 +115,7 @@ function DisableConfirmation({ onSuccess, onCancel }: DisableConfirmationProps) 
   return (
     <form action={disableAction} className="grid gap-3">
       <div className="rounded-lg bg-red-900/20 border border-red-900 p-4">
-        <p className="text-sm text-red-500">2단계 인증을 비활성화하면 계정 보안이 약해집니다. 계속하시겠습니까?</p>
+        <p className="text-sm text-red-500">2단계 인증을 비활성화하면 계정 보안이 약해져요. 계속할까요?</p>
       </div>
       <TokenInput defaultValue={defaultToken} />
       <div className="flex gap-3">
@@ -154,7 +151,7 @@ function RegenerateBackupCodesForm({ onCancel, onSuccess }: RegenerateBackupCode
     <form action={regenerateAction} className="grid gap-3">
       <div className="rounded-lg bg-yellow-900/20 border border-yellow-800 p-4">
         <p className="text-sm text-yellow-500">
-          새로운 백업 코드를 생성하면 기존 백업 코드는 모두 무효화됩니다. 계속하시겠습니까?
+          새로운 백업 코드를 생성하면 기존 백업 코드는 모두 무효화돼요. 계속할까요?
         </p>
       </div>
       <TokenInput defaultValue={defaultToken} />

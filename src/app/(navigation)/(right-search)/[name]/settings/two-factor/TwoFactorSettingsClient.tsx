@@ -19,24 +19,33 @@ export default function TwoFactorSettingsClient({ initialStatus }: Props) {
   const [backupCodes, setBackupCodes] = useState<string[]>([])
 
   if (setupData) {
-    function handleSuccess(backupcodes: string[]) {
-      setBackupCodes(backupcodes)
-      setSetupData(null)
-      setStatus(() => ({
-        createdAt: new Date(),
-        remainingBackupCodes: 10,
-        enabled: true,
-      }))
-    }
-
-    return <TwoFactorSetup onSuccess={handleSuccess} setupData={setupData} />
+    return (
+      <TwoFactorSetup
+        onSuccess={(backupcodes) => {
+          setBackupCodes(backupcodes)
+          setSetupData(null)
+        }}
+        setupData={setupData}
+      />
+    )
   }
 
   if (backupCodes.length > 0) {
-    return <TwoFactorBackupCodes backupCodes={backupCodes} onComplete={() => setBackupCodes([])} />
+    return (
+      <TwoFactorBackupCodes
+        backupCodes={backupCodes}
+        onComplete={() => {
+          setBackupCodes([])
+          setStatus({
+            createdAt: new Date(),
+            remainingBackupCodes: backupCodes.length,
+          })
+        }}
+      />
+    )
   }
 
-  if (!status?.enabled) {
+  if (!status) {
     return <TwoFactorOnboarding onSuccess={(setupData) => setSetupData(setupData)} />
   }
 
