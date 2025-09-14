@@ -12,7 +12,7 @@ import { and, eq, gt, lt } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 import { cookies, headers } from 'next/headers'
 
-import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID, WEBAUTHN_RP_NAME } from '@/constants/env'
+import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID, WEBAUTHN_RP_NAME } from '@/constants'
 import { MAX_CREDENTIALS_PER_USER } from '@/constants/policy'
 import { ChallengeType, decodeDeviceType, encodeDeviceType } from '@/database/enum'
 import { db } from '@/database/supabase/drizzle'

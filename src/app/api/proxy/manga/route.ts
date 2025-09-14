@@ -1,5 +1,5 @@
 import { getMangasFromMultiSources } from '@/common/manga'
-import { MAX_THUMBNAIL_IMAGES } from '@/constants/manga'
+import { MAX_THUMBNAIL_IMAGES } from '@/constants/policy'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { Manga, MangaError } from '@/types/manga'
 import { sec } from '@/utils/date'

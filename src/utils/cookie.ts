@@ -2,9 +2,9 @@ import { ResponseCookies } from 'next/dist/compiled/@edge-runtime/cookies'
 import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies'
 import { cookies } from 'next/headers'
 
-import { ONE_HOUR, THIRTY_DAYS } from '@/constants'
 import { CookieKey } from '@/constants/storage'
 
+import { sec } from './date'
 import { signJWT, TokenType, verifyJWT } from './jwt'
 
 type CookieStore = Awaited<ReturnType<typeof cookies>>
@@ -36,7 +36,7 @@ export async function setAccessTokenCookie(
     httpOnly: true,
     secure: true,
     sameSite: 'lax',
-    maxAge: ONE_HOUR,
+    maxAge: sec('1 hour'),
   })
 }
 
@@ -47,7 +47,7 @@ export async function setRefreshTokenCookie(cookieStore: ReadonlyRequestCookies,
     httpOnly: true,
     secure: true,
     sameSite: 'lax',
-    maxAge: THIRTY_DAYS,
+    maxAge: sec('30 days'),
   })
 }
 
