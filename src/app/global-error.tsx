@@ -15,14 +15,6 @@ export default function GlobalError({ error, reset }: ErrorProps) {
   const [hasSystemIssues, setHasSystemIssues] = useState(false)
 
   useEffect(() => {
-    console.error('Full error details:', {
-      message: error.message,
-      stack: error.stack,
-      digest: error.digest,
-      pathname,
-      searchParams: Object.fromEntries(searchParams),
-    })
-
     Sentry.captureException(error, {
       tags: { error_boundary: pathname },
       extra: { searchParams: Object.fromEntries(searchParams) },
@@ -36,7 +28,6 @@ export default function GlobalError({ error, reset }: ErrorProps) {
           <h2 className="my-8 text-2xl font-medium">문제가 발생했어요</h2>
           <div className="space-y-2">
             {error.digest && <p className="text-xs text-zinc-500">오류 코드: {error.digest}</p>}
-            <p className="text-sm text-[#ff6369] break-words px-4">{error.message}</p>
           </div>
           <RetryGuidance errorMessage={error.message} hasSystemIssues={hasSystemIssues} />
           <CloudProviderStatus onStatusUpdate={setHasSystemIssues} />
