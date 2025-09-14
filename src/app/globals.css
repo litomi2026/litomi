@@ -75,6 +75,10 @@ button {
   cursor: pointer;
 }
 
+button:disabled {
+  cursor: not-allowed;
+}
+
 code {
   font-family: 'Courier New', Courier, monospace;
   white-space: nowrap;

@@ -65,7 +65,7 @@ export default function PasskeyLoginButton({ loginId, disabled, onSuccess, turns
 
   return (
     <button
-      className="flex items-center justify-center space-x-2 rounded-lg bg-zinc-800 px-4 py-3 text-zinc-300 transition-all hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-50"
+      className="flex items-center justify-center space-x-2 rounded-lg bg-zinc-800 px-4 py-3 text-zinc-300 transition-all hover:bg-zinc-700 disabled:opacity-50"
       disabled={disabled || isPending || !turnstileToken}
       onClick={handlePasskeyLogin}
       title="패스키로 로그인"

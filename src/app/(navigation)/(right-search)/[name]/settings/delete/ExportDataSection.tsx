@@ -35,7 +35,7 @@ export default function ExportDataSection({ hasExported, onExportComplete }: Rea
       <form action={dispatchAction}>
         <button
           className="w-full px-4 py-3 bg-zinc-800 hover:bg-zinc-700 disabled:bg-zinc-800 
-            disabled:cursor-not-allowed rounded-lg font-medium transition 
+            rounded-lg font-medium transition 
             flex items-center justify-center gap-2"
           disabled={isPending || hasExported}
           type="submit"

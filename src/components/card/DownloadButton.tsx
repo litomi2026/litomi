@@ -38,7 +38,7 @@ export function DownloadButtonError({ error, reset }: Readonly<ErrorBoundaryFall
 
 export function DownloadButtonSkeleton({ className = '' }: { className?: string }) {
   return (
-    <button className={`${commonButtonStyle} disabled:opacity-50 disabled:cursor-not-allowed ${className}`} disabled>
+    <button className={`${commonButtonStyle} disabled:opacity-50 ${className}`} disabled>
       <Download className="size-4" />
       다운로드
     </button>

@@ -97,7 +97,7 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Read
             취소
           </button>
           <button
-            className="flex-1 px-3 py-2 font-semibold bg-brand-end/80 text-background hover:bg-brand-end/90 rounded transition flex items-center justify-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-3 py-2 font-semibold bg-brand-end/80 text-background hover:bg-brand-end/90 rounded transition flex items-center justify-center gap-1 disabled:opacity-50"
             disabled={isPending || !editValue.trim() || (editValue === value && editLevel === level)}
             type="submit"
           >

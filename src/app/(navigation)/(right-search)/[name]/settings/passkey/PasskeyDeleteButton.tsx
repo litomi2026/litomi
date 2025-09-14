@@ -72,7 +72,7 @@ export default function PasskeyDeleteButton({ id, className, onCancel, open, onO
           </div>
           <div className="flex gap-3">
             <button
-              className="flex-1 h-10 px-4 rounded-lg bg-zinc-800 text-zinc-300 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 h-10 px-4 rounded-lg bg-zinc-800 text-zinc-300 font-medium disabled:opacity-50"
               disabled={isPending}
               onClick={handleCancel}
               type="button"
@@ -82,7 +82,7 @@ export default function PasskeyDeleteButton({ id, className, onCancel, open, onO
             <form action={dispatchAction} className="flex-1">
               <input name="credential-id" type="hidden" value={id} />
               <button
-                className="w-full h-10 px-4 rounded-lg bg-red-600 text-white font-medium disabled:opacity-70 disabled:cursor-not-allowed relative"
+                className="w-full h-10 px-4 rounded-lg bg-red-600 text-white font-medium disabled:opacity-70 relative"
                 disabled={isPending}
                 type="submit"
               >

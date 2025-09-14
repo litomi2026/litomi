@@ -243,7 +243,7 @@ function CensorshipCreationBar() {
             <IconInfo className="w-4" />
           </button>
           <button
-            className="p-2 rounded hover:bg-zinc-800 disabled:bg-transparent disabled:cursor-not-allowed transition"
+            className="p-2 rounded hover:bg-zinc-800 disabled:bg-transparent transition"
             disabled={isSubmitting}
             title="검열 추가 (Enter)"
             type="submit"
