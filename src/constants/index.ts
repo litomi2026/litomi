@@ -3,6 +3,7 @@ export const CANONICAL_URL = process.env.NODE_ENV === 'production' ? 'https://li
 export const SALT_ROUNDS = 12
 export const SHORT_NAME = '리토미'
 export const THEME_COLOR = '#0a0a0a'
+export const TOTP_ISSUER = new URL(CANONICAL_URL).hostname
 export const WEBAUTHN_ORIGIN = CANONICAL_URL
 export const WEBAUTHN_RP_ID = new URL(CANONICAL_URL).hostname
 export const WEBAUTHN_RP_NAME = 'litomi'
