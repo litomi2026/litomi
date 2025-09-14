@@ -1,0 +1,90 @@
+'use client'
+
+import { Check, Copy } from 'lucide-react'
+import { toast } from 'sonner'
+
+import IconSpinner from '@/components/icons/IconSpinner'
+import useActionResponse, { getFormField } from '@/hook/useActionResponse'
+
+import type { TwoFactorSetupData } from '../types'
+
+import { verifyAndEnableTwoFactor } from '../actions'
+import { useClipboard } from '../hooks/useClipboard'
+import { VerificationInput } from './VerificationInput'
+
+interface Props {
+  onSuccess: (backupcodes: string[]) => void
+  setupData: TwoFactorSetupData
+}
+
+export default function TwoFactorSetup({ setupData, onSuccess }: Props) {
+  const { copy, copied } = useClipboard()
+  const { qrCode, secret } = setupData
+
+  const [response, verifyAction, isVerifying] = useActionResponse({
+    action: verifyAndEnableTwoFactor,
+    onSuccess: (backupcodes) => {
+      onSuccess(backupcodes)
+      toast.success('2단계 인증이 활성화됐어요')
+    },
+  })
+
+  const defaultToken = getFormField(response, 'token')
+
+  return (
+    <div className="grid gap-6 py-3">
+      <div>
+        <h2 className="text-xl font-bold text-zinc-100 mb-2">2단계 인증 설정</h2>
+        <p className="text-sm text-zinc-400">Google Authenticator, Authy 등의 인증 앱으로 QR 코드를 스캔하세요.</p>
+      </div>
+      <div className="rounded-lg bg-zinc-900 p-4 sm:p-6">
+        <div className="flex justify-center mb-4">
+          {qrCode && <img alt="2FA QR Code" className="rounded-lg bg-white" src={qrCode} />}
+        </div>
+        <div className="grid gap-2">
+          <p className="text-xs text-zinc-500 text-center">QR 코드를 스캔할 수 없나요?</p>
+          <div className="flex items-center gap-2">
+            <input
+              className="flex-1 w-full rounded bg-zinc-800 px-3 py-2 text-xs font-mono text-zinc-300"
+              name="secret"
+              readOnly
+              type="text"
+              value={secret}
+            />
+            <button className="rounded bg-zinc-800 p-2 text-zinc-400 hover:bg-zinc-700" onClick={() => copy(secret)}>
+              {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
+            </button>
+          </div>
+        </div>
+      </div>
+      <form action={verifyAction} className="grid gap-3">
+        <label className="block text-sm font-medium text-center text-zinc-300" htmlFor="token">
+          인증 앱의 6자리 코드를 입력하세요
+        </label>
+        <VerificationInput
+          defaultValue={defaultToken}
+          id="token"
+          maxLength={6}
+          minLength={6}
+          name="token"
+          placeholder="000000"
+        />
+        <button
+          className="w-full rounded-lg bg-brand-end px-4 py-3 font-medium text-background hover:bg-brand-end/90 disabled:cursor-not-allowed disabled:opacity-50 transition"
+          disabled={isVerifying}
+          title={isVerifying ? '코드 확인 중' : '6자리 코드를 입력하세요'}
+          type="submit"
+        >
+          {isVerifying ? (
+            <span className="flex items-center justify-center">
+              <IconSpinner className="mr-2 size-5" />
+              코드 확인 중
+            </span>
+          ) : (
+            '활성화하기'
+          )}
+        </button>
+      </form>
+    </div>
+  )
+}
