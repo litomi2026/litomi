@@ -5,11 +5,11 @@ import { toast } from 'sonner'
 
 import IconSpinner from '@/components/icons/IconSpinner'
 import useActionResponse, { getFormField } from '@/hook/useActionResponse'
+import useClipboard from '@/hook/useClipboard'
 
 import type { TwoFactorSetupData } from '../types'
 
 import { verifyAndEnableTwoFactor } from '../actions'
-import { useClipboard } from '../hooks/useClipboard'
 import { VerificationInput } from './VerificationInput'
 
 interface Props {

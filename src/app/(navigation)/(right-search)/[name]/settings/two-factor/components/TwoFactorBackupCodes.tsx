@@ -2,7 +2,7 @@
 
 import { AlertTriangle, Check, Copy } from 'lucide-react'
 
-import { useClipboard } from '../hooks/useClipboard'
+import useClipboard from '@/hook/useClipboard'
 
 interface Props {
   backupCodes: string[]
@@ -16,7 +16,7 @@ export default function TwoFactorBackupCodes({ backupCodes, onComplete }: Props)
     <div className="grid gap-6">
       <div className="rounded-lg bg-yellow-900/20 border border-yellow-800 p-4">
         <div className="flex items-start space-x-3">
-          <AlertTriangle className="h-5 w-5 text-yellow-500 mt-0.5" />
+          <AlertTriangle className="size-5 text-yellow-500 mt-0.5" />
           <div className="flex-1">
             <h3 className="font-semibold text-yellow-500 mb-2">백업 코드를 안전하게 보관해주세요!</h3>
             <p className="text-sm text-zinc-400">
@@ -35,12 +35,12 @@ export default function TwoFactorBackupCodes({ backupCodes, onComplete }: Props)
           >
             {copied ? (
               <>
-                <Check className="h-4 w-4" />
+                <Check className="size-4" />
                 <span>복사됨</span>
               </>
             ) : (
               <>
-                <Copy className="h-4 w-4" />
+                <Copy className="size-4" />
                 <span>모두 복사</span>
               </>
             )}
