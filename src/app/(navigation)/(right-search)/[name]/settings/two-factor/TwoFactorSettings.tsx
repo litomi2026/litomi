@@ -23,10 +23,9 @@ async function getTwoFactorStatus(userId: number) {
       lastUsedAt: twoFactorTable.lastUsedAt,
       remainingBackupCodes: sql<number>`
         COALESCE(
-          (SELECT COUNT(*)::int
+          (SELECT COUNT(${twoFactorBackupCodeTable.userId})
            FROM ${twoFactorBackupCodeTable}
-           WHERE ${twoFactorBackupCodeTable.userId} = ${userId}
-             AND ${twoFactorBackupCodeTable.usedAt} IS NULL),
+           WHERE ${twoFactorBackupCodeTable.userId} = ${userId}),
           0
         )
       `,
