@@ -104,7 +104,7 @@ function SlideshowButton({ maxImageIndex, offset, onIntervalChange }: Readonly<P
                 min={1}
                 name="interval"
                 onKeyDown={(e) => e.stopPropagation()}
-                pattern="\d*"
+                pattern="[0-9]*"
                 ref={inputRef}
                 required
                 type="number"

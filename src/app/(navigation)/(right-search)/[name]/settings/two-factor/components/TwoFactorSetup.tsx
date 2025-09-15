@@ -10,7 +10,7 @@ import useClipboard from '@/hook/useClipboard'
 import type { TwoFactorSetupData } from '../types'
 
 import { verifyAndEnableTwoFactor } from '../actions'
-import TokenInput from './VerificationInput'
+import TokenInput from './TokenInput'
 
 interface Props {
   onSuccess: (backupcodes: string[]) => void

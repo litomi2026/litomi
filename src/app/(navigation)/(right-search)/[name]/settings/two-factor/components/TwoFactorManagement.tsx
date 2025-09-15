@@ -10,7 +10,7 @@ import useActionResponse, { getFormField } from '@/hook/useActionResponse'
 import type { TwoFactorStatus } from '../types'
 
 import { regenerateBackupCodes, removeTwoFactor } from '../actions'
-import TokenInput from './VerificationInput'
+import TokenInput from './TokenInput'
 
 interface DisableConfirmationProps {
   onCancel: () => void
