@@ -30,15 +30,15 @@ export default class TurnstileValidator {
     'missing-input-secret': '서버 설정 오류가 발생했어요',
     'invalid-input-secret': '서버 설정 오류가 발생했어요',
     'missing-input-response': '보안 검증을 완료해주세요',
-    'invalid-input-response': '보안 검증이 만료되었어요',
+    'invalid-input-response': 'Cloudflare 보안 검증이 만료되었어요',
     'bad-request': '잘못된 요청이에요',
-    'timeout-or-duplicate': '보안 검증이 만료되었어요',
+    'timeout-or-duplicate': 'Cloudflare 보안 검증이 만료되었어요',
     'internal-error': '일시적인 오류가 발생했어요',
 
     // Custom error codes
     'action-mismatch': '액션이 잘못됐어요',
     'hostname-mismatch': '주소가 잘못됐어요',
-    'validation-timeout': '보안 검증이 만료됐어요',
+    'validation-timeout': 'Cloudflare 보안 검증이 만료됐어요',
     'invalid-token-format': '토큰이 잘못됐어요',
     'token-too-long': '토큰이 너무 길어요',
   }
