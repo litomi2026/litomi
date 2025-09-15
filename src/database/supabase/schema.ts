@@ -108,22 +108,6 @@ export const credentialTable = pgTable(
   ],
 ).enableRLS()
 
-export const challengeTable = pgTable(
-  'challenge',
-  {
-    userId: bigint('user_id', { mode: 'number' })
-      .references(() => userTable.id, { onDelete: 'cascade' })
-      .notNull(),
-    type: smallint().notNull(),
-    challenge: varchar({ length: 256 }).notNull(),
-    expiresAt: timestamp('expires_at', { precision: 3, withTimezone: true }).notNull(),
-  },
-  (table) => [
-    primaryKey({ columns: [table.userId, table.type] }),
-    index('idx_challenge_expires_at').on(table.expiresAt),
-  ],
-).enableRLS()
-
 export const webPushTable = pgTable(
   'web_push',
   {
