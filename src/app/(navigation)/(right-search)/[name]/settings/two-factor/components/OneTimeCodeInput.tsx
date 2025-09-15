@@ -2,11 +2,11 @@
 
 import { ComponentProps } from 'react'
 
-export default function TokenInput(props: ComponentProps<'input'>) {
+export default function OneTimeCodeInput(props: ComponentProps<'input'>) {
   return (
     <input
       {...props}
-      autoComplete="false"
+      autoComplete="one-time-code"
       className="w-full rounded-lg bg-zinc-800 px-4 py-3 text-center text-xl font-mono text-zinc-100 placeholder-zinc-600"
       id="token"
       maxLength={6}

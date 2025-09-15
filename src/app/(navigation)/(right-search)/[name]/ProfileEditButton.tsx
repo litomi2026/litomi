@@ -143,6 +143,7 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
                 <input
                   aria-invalid={!!nameError}
                   autoCapitalize="off"
+                  autoComplete="username"
                   className="w-full px-3 py-2 bg-zinc-800 border rounded-lg placeholder-zinc-500 focus:outline-none focus:ring-2 focus:border-transparent 
                       aria-invalid:border-red-500 aria-invalid:focus:ring-red-500 border-zinc-700 focus:ring-zinc-600"
                   defaultValue={me.name}
@@ -185,6 +186,7 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
                 <input
                   aria-invalid={!!imageURLError}
                   autoCapitalize="off"
+                  autoComplete="photo"
                   className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:border-transparent 
                       aria-invalid:border-red-500 aria-invalid:focus:ring-red-500"
                   defaultValue={defaultProfileImageURL}
