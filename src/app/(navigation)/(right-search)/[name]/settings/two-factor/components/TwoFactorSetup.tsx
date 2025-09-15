@@ -42,7 +42,9 @@ export default function TwoFactorSetup({ setupData, onSuccess }: Props) {
           {qrCode && <img alt="2FA QR Code" className="rounded-lg bg-white" src={qrCode} />}
         </div>
         <div className="grid gap-2">
-          <p className="text-xs text-zinc-500 text-center">QR 코드를 스캔할 수 없나요?</p>
+          <p className="text-xs text-zinc-500 text-center">
+            QR 코드를 스캔할 수 없나요? 아래 시간 기준 키를 복사하세요.
+          </p>
           <div className="flex items-center gap-2">
             <input
               className="flex-1 w-full rounded bg-zinc-800 px-3 py-2 text-xs font-mono text-zinc-300"
