@@ -32,7 +32,7 @@ export default function NavigationJump({ totalPages, hrefPrefix = '', hrefSuffix
         max={totalPages}
         min="1"
         name="page"
-        pattern="\d*"
+        pattern="[0-9]*"
         placeholder={`${totalPages}`}
         ref={inputRef}
         required

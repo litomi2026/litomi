@@ -125,6 +125,7 @@ export default function SignupForm() {
           <input
             aria-invalid={!!passwordError}
             autoCapitalize="off"
+            autoComplete="new-password"
             defaultValue={defaultPassword}
             disabled={pending}
             id="password"

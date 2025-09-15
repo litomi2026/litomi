@@ -10,7 +10,7 @@ import useActionResponse, { getFormField } from '@/hook/useActionResponse'
 import type { TwoFactorStatus } from '../types'
 
 import { regenerateBackupCodes, removeTwoFactor } from '../actions'
-import TokenInput from './VerificationInput'
+import OneTimeCodeInput from './OneTimeCodeInput'
 
 interface DisableConfirmationProps {
   onCancel: () => void
@@ -117,7 +117,7 @@ function DisableConfirmation({ onSuccess, onCancel }: DisableConfirmationProps) 
       <div className="rounded-lg bg-red-900/20 border border-red-900 p-4">
         <p className="text-sm text-red-500">2단계 인증을 비활성화하면 계정 보안이 약해져요. 계속할까요?</p>
       </div>
-      <TokenInput defaultValue={defaultToken} />
+      <OneTimeCodeInput defaultValue={defaultToken} />
       <div className="flex gap-3">
         <button
           className="flex-1 rounded-lg bg-red-900 px-4 py-3 font-medium text-white transition
@@ -154,7 +154,7 @@ function RegenerateBackupCodesForm({ onCancel, onSuccess }: RegenerateBackupCode
           새로운 백업 코드를 생성하면 기존 백업 코드는 모두 무효화돼요. 계속할까요?
         </p>
       </div>
-      <TokenInput defaultValue={defaultToken} />
+      <OneTimeCodeInput defaultValue={defaultToken} />
       <div className="flex gap-3">
         <button
           className="flex-1 rounded-lg bg-brand-end px-4 py-3 font-medium text-background transition

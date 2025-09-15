@@ -10,7 +10,7 @@ import useClipboard from '@/hook/useClipboard'
 import type { TwoFactorSetupData } from '../types'
 
 import { verifyAndEnableTwoFactor } from '../actions'
-import TokenInput from './VerificationInput'
+import OneTimeCodeInput from './OneTimeCodeInput'
 
 interface Props {
   onSuccess: (backupcodes: string[]) => void
@@ -61,7 +61,7 @@ export default function TwoFactorSetup({ setupData, onSuccess }: Props) {
         <label className="block text-sm font-medium text-center text-zinc-300" htmlFor="token">
           인증 앱의 6자리 코드를 입력하세요
         </label>
-        <TokenInput defaultValue={defaultToken} />
+        <OneTimeCodeInput defaultValue={defaultToken} />
         <button
           className="w-full rounded-lg bg-brand-end px-4 py-3 font-medium text-background hover:bg-brand-end/90 disabled:cursor-not-allowed disabled:opacity-50 transition"
           disabled={isVerifying}
