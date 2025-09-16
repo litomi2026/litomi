@@ -2,16 +2,18 @@
 
 import { captureException } from '@sentry/nextjs'
 import { compare } from 'bcrypt'
-import { eq } from 'drizzle-orm'
+import { and, eq, isNull } from 'drizzle-orm'
 import { cookies, headers } from 'next/headers'
 import { z } from 'zod/v4'
 
+import { twoFactorTable } from '@/database/supabase/2fa-schema'
 import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/schema'
 import { loginIdSchema, passwordSchema } from '@/database/zod'
 import { badRequest, internalServerError, ok, tooManyRequests, unauthorized } from '@/utils/action-response'
 import { setAccessTokenCookie, setRefreshTokenCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
+import { initiatePKCEChallenge } from '@/utils/pkce-server'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
 import TurnstileValidator, { getTurnstileToken } from '@/utils/turnstile'
 
@@ -19,6 +21,8 @@ const loginSchema = z.object({
   loginId: loginIdSchema,
   password: passwordSchema,
   remember: z.literal('on').nullable(),
+  codeChallenge: z.string(),
+  fingerprint: z.string(),
 })
 
 const loginLimiter = new RateLimiter(RateLimitPresets.strict())
@@ -49,13 +53,15 @@ export default async function login(formData: FormData) {
     loginId: formData.get('loginId'),
     password: formData.get('password'),
     remember: formData.get('remember'),
+    codeChallenge: formData.get('codeChallenge'),
+    fingerprint: formData.get('fingerprint'),
   })
 
   if (!validation.success) {
     return badRequest(flattenZodFieldErrors(validation.error), formData)
   }
 
-  const { loginId, password, remember } = validation.data
+  const { loginId, password, remember, codeChallenge, fingerprint } = validation.data
   const { allowed, retryAfter } = await loginLimiter.check(loginId)
 
   if (!allowed) {
@@ -64,45 +70,67 @@ export default async function login(formData: FormData) {
   }
 
   try {
-    const [user] = await db
-      .select({
-        id: userTable.id,
-        name: userTable.name,
-        passwordHash: userTable.passwordHash,
-        lastLoginAt: userTable.loginAt,
-        lastLogoutAt: userTable.logoutAt,
+    const result = await db.transaction(async (tx) => {
+      const [user] = await tx
+        .select({
+          id: userTable.id,
+          name: userTable.name,
+          passwordHash: userTable.passwordHash,
+          lastLoginAt: userTable.loginAt,
+          lastLogoutAt: userTable.logoutAt,
+        })
+        .from(userTable)
+        .where(eq(userTable.loginId, loginId))
+
+      // NOTE: 타이밍 공격을 방어하기 위해서 임의의 문자열을 사용함
+      const passwordHash = user.passwordHash || '$2b$10$dummyhashfortimingatackprevention'
+      const isValidPassword = await compare(password, passwordHash)
+
+      if (!user || !isValidPassword) {
+        return unauthorized('아이디 또는 비밀번호가 일치하지 않아요', formData)
+      }
+
+      const [twoFactor] = await tx
+        .select({ enabled: twoFactorTable.userId })
+        .from(twoFactorTable)
+        .where(and(eq(twoFactorTable.userId, user.id), isNull(twoFactorTable.expiresAt)))
+
+      const { id, name, lastLoginAt, lastLogoutAt } = user
+
+      if (twoFactor) {
+        // TODO: 신뢰하는 기기 구현하기
+        return await initiatePKCEChallenge(user.id, codeChallenge, fingerprint)
+      }
+
+      await tx.update(userTable).set({ loginAt: new Date() }).where(eq(userTable.id, id))
+
+      return ok({
+        id,
+        loginId,
+        name,
+        lastLoginAt,
+        lastLogoutAt,
       })
-      .from(userTable)
-      .where(eq(userTable.loginId, loginId))
+    })
 
-    if (!user) {
-      return unauthorized('아이디 또는 비밀번호가 일치하지 않아요', formData)
+    if ('error' in result) {
+      return result
     }
 
-    const { id, name, lastLoginAt, lastLogoutAt, passwordHash } = user
-    const isValidPassword = await compare(password, passwordHash)
-
-    if (!isValidPassword) {
-      return unauthorized('아이디 또는 비밀번호가 일치하지 않아요', formData)
+    // NOTE: 2FA 인증 필요 시
+    if ('sessionId' in result) {
+      return ok({ sessionId: result.sessionId })
     }
 
+    loginLimiter.reward(loginId)
     const cookieStore = await cookies()
 
     await Promise.all([
-      setAccessTokenCookie(cookieStore, id),
-      remember && setRefreshTokenCookie(cookieStore, id),
-      db.update(userTable).set({ loginAt: new Date() }).where(eq(userTable.id, id)),
+      setAccessTokenCookie(cookieStore, result.data.id),
+      remember && setRefreshTokenCookie(cookieStore, result.data.id),
     ])
 
-    loginLimiter.reward(loginId)
-
-    return ok({
-      id,
-      loginId,
-      name,
-      lastLoginAt,
-      lastLogoutAt,
-    })
+    return result
   } catch (error) {
     captureException(error, { extra: { name: 'login', loginId } })
     return internalServerError('로그인 중 오류가 발생했어요', formData)

@@ -1,5 +1,6 @@
 'use client'
 
+import FingerprintJS from '@fingerprintjs/fingerprintjs'
 import { TurnstileInstance } from '@marsidev/react-turnstile'
 import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
@@ -18,8 +19,16 @@ import { SearchParamKey } from '@/constants/storage'
 import useActionResponse, { getFieldError, getFormField } from '@/hook/useActionResponse'
 import amplitude from '@/lib/amplitude/lazy'
 import { sanitizeRedirect } from '@/utils'
+import { generatePKCEChallenge, PKCEChallenge } from '@/utils/pkce-browser'
 
 import login from './action'
+import TwoFactorVerification from './TwoFactorVerification'
+
+type TwoFactorData = {
+  fingerprint: string
+  remember: boolean
+  sessionId: string
+}
 
 type User = {
   id: number
@@ -36,6 +45,8 @@ export default function LoginForm() {
   const queryClient = useQueryClient()
   const [currentLoginId, setCurrentLoginId] = useState('')
   const [turnstileToken, setTurnstileToken] = useState('')
+  const [twoFactorData, setTwoFactorData] = useState<TwoFactorData | null>(null)
+  const pkceChallengeRef = useRef<PKCEChallenge>(null)
 
   function resetId() {
     const loginIdInput = formRef.current?.loginId as HTMLInputElement
@@ -45,13 +56,14 @@ export default function LoginForm() {
 
   function resetPassword() {
     const passwordInput = formRef.current?.password as HTMLInputElement
+    if (!passwordInput) return
     passwordInput.value = ''
   }
 
   const [_, dispatchMigration] = useActionResponse({
     action: migrateReadingHistory,
     shouldSetResponse: false,
-    onSuccess: () => clearMigratedHistory(),
+    onSuccess: clearMigratedHistory,
   })
 
   async function handleLoginSuccess({ loginId, name, id, lastLoginAt, lastLogoutAt }: User) {
@@ -82,7 +94,17 @@ export default function LoginForm() {
       turnstileRef.current?.reset()
       setTurnstileToken('')
     },
-    onSuccess: handleLoginSuccess,
+    onSuccess: (data, [formData]) => {
+      if ('sessionId' in data) {
+        setTwoFactorData({
+          fingerprint: formData.get('fingerprint') as string,
+          remember: formData.get('remember') === 'on',
+          sessionId: data.sessionId,
+        })
+      } else {
+        handleLoginSuccess(data)
+      }
+    },
   })
 
   const loginIdError = getFieldError(response, 'loginId')
@@ -91,9 +113,37 @@ export default function LoginForm() {
   const defaultPassword = getFormField(response, 'password')
   const defaultRemember = getFormField(response, 'remember')
 
+  async function dispatchLoginAction(formData: FormData) {
+    const [pkceChallenge, fingerprint] = await Promise.all([
+      generatePKCEChallenge(),
+      FingerprintJS.load().then((fp) => fp.get()),
+    ])
+
+    pkceChallengeRef.current = pkceChallenge
+    formData.append('codeChallenge', pkceChallenge.codeChallenge)
+    formData.append('fingerprint', fingerprint.visitorId)
+    dispatchAction(formData)
+  }
+
+  if (twoFactorData && pkceChallengeRef.current) {
+    return (
+      <TwoFactorVerification
+        onCancel={() => {
+          setTwoFactorData(null)
+          pkceChallengeRef.current = null
+          turnstileRef.current?.reset()
+          setTurnstileToken('')
+        }}
+        onSuccess={handleLoginSuccess}
+        pkceChallenge={pkceChallengeRef.current}
+        twoFactorData={twoFactorData}
+      />
+    )
+  }
+
   return (
     <form
-      action={dispatchAction}
+      action={dispatchLoginAction}
       className="grid gap-5 
       [&_label]:block [&_label]:mb-1.5 [&_label]:text-sm [&_label]:font-medium [&_label]:text-zinc-300 [&_label]:leading-7
       [&_input]:w-full [&_input]:rounded-md [&_input]:bg-zinc-800 [&_input]:border [&_input]:border-zinc-600 

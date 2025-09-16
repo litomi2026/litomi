@@ -1,0 +1,69 @@
+'use server'
+
+import crypto from 'crypto'
+
+import { redisClient } from '@/database/redis'
+
+import { sec } from './date'
+
+interface AuthChallenge {
+  codeChallenge: string
+  fingerprint: string
+  sessionId: string
+  userId: number
+}
+
+export async function initiatePKCEChallenge(userId: number, codeChallenge: string, fingerprint: string) {
+  const sessionId = crypto.randomBytes(32).toString('base64url')
+
+  const challenge: AuthChallenge = {
+    codeChallenge,
+    fingerprint,
+    sessionId,
+    userId,
+  }
+
+  const key = getPKCEChallengeKey(sessionId)
+  await redisClient.set(key, JSON.stringify(challenge), { ex: sec('3 minutes') })
+
+  return { sessionId }
+}
+
+export async function verifyPKCEChallenge(
+  sessionId: string,
+  codeVerifier: string,
+  fingerprint: string,
+): Promise<{ valid: false; reason: string } | { valid: true; userId: number }> {
+  const key = getPKCEChallengeKey(sessionId)
+  const pipeline = redisClient.pipeline()
+  pipeline.get(key)
+  pipeline.del(key)
+  const [dataStr] = await pipeline.exec()
+
+  if (!dataStr) {
+    return { valid: false, reason: 'session_not_found' }
+  }
+
+  let authChallenge: AuthChallenge
+  try {
+    authChallenge = JSON.parse(dataStr as string) as AuthChallenge
+  } catch {
+    return { valid: false, reason: 'invalid_session' }
+  }
+
+  if (authChallenge.fingerprint !== fingerprint) {
+    return { valid: false, reason: 'invalid_fingerprint' }
+  }
+
+  const expectedCodeChallenge = crypto.createHash('sha256').update(codeVerifier).digest('base64url')
+
+  if (authChallenge.codeChallenge !== expectedCodeChallenge) {
+    return { valid: false, reason: 'invalid_pkce' }
+  }
+
+  return { valid: true, userId: authChallenge.userId }
+}
+
+function getPKCEChallengeKey(sessionId: string): string {
+  return `pkce:session:${sessionId}`
+}
