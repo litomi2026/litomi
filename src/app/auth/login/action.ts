@@ -122,12 +122,12 @@ export default async function login(formData: FormData) {
       return ok({ sessionId: result.sessionId })
     }
 
-    loginLimiter.reward(loginId)
     const cookieStore = await cookies()
 
     await Promise.all([
       setAccessTokenCookie(cookieStore, result.data.id),
       remember && setRefreshTokenCookie(cookieStore, result.data.id),
+      loginLimiter.reward(loginId),
     ])
 
     return result

@@ -86,10 +86,9 @@ export async function changePassword(formData: FormData) {
       return errorResponse
     }
 
-    const cookieStore = await cookies()
+    const [cookieStore] = await Promise.all([cookies(), passwordChangeLimiter.reward(userId.toString())])
     cookieStore.delete(CookieKey.ACCESS_TOKEN)
     cookieStore.delete(CookieKey.REFRESH_TOKEN)
-    passwordChangeLimiter.reward(userId.toString())
     return created('비밀번호가 변경됐어요')
   } catch (error) {
     captureException(error)

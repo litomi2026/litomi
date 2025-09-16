@@ -8,6 +8,7 @@ import OneTimeCodeInput from '@/app/(navigation)/(right-search)/[name]/settings/
 import IconKey from '@/components/icons/IconKey'
 import IconSpinner from '@/components/icons/IconSpinner'
 import Toggle from '@/components/ui/Toggle'
+import { BACKUP_CODE_PATTERN } from '@/constants/policy'
 import useActionResponse, { getFormField } from '@/hook/useActionResponse'
 import { PKCEChallenge } from '@/utils/pkce-browser'
 
@@ -77,7 +78,7 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
               disabled={isPending}
               maxLength={isBackupCode ? 9 : 6}
               minLength={isBackupCode ? 9 : 6}
-              pattern={isBackupCode ? '[0-9A-Z\\-]*' : '[0-9]*'}
+              pattern={isBackupCode ? BACKUP_CODE_PATTERN : '[0-9]*'}
               placeholder={isBackupCode ? 'XXXX-XXXX' : '000000'}
             />
           </div>
