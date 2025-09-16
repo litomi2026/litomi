@@ -65,7 +65,7 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
           </p>
         </div>
         <form action={dispatchAction} className="grid gap-4">
-          <input name="codeChallenge" type="hidden" value={pkceChallenge.codeChallenge} />
+          <input name="codeVerifier" type="hidden" value={pkceChallenge.codeVerifier} />
           <input name="fingerprint" type="hidden" value={twoFactorData.fingerprint} />
           <input name="sessionId" type="hidden" value={twoFactorData.sessionId} />
           {twoFactorData.remember && <input name="remember" type="hidden" value="on" />}

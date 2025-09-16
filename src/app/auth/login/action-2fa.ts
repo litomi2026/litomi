@@ -17,7 +17,7 @@ import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
 import { decryptTOTPSecret, verifyBackupCode, verifyTOTPToken } from '@/utils/two-factor'
 
 const verifyTwoFactorSchema = z.object({
-  codeChallenge: z.string(),
+  codeVerifier: z.string(),
   fingerprint: z.string(),
   remember: z.literal('on').nullable(),
   sessionId: z.string(),
@@ -29,7 +29,7 @@ const twoFactorLimiter = new RateLimiter(RateLimitPresets.strict())
 
 export async function verifyTwoFactorLogin(formData: FormData) {
   const validation = verifyTwoFactorSchema.safeParse({
-    codeChallenge: formData.get('codeChallenge'),
+    codeVerifier: formData.get('codeVerifier'),
     fingerprint: formData.get('fingerprint'),
     sessionId: formData.get('sessionId'),
     remember: formData.get('remember'),
@@ -41,9 +41,8 @@ export async function verifyTwoFactorLogin(formData: FormData) {
     return badRequest(flattenZodFieldErrors(validation.error), formData)
   }
 
-  const { codeChallenge, fingerprint, remember, sessionId, token, trustDevice } = validation.data
-
-  const challengeData = await verifyPKCEChallenge(sessionId, codeChallenge, fingerprint)
+  const { codeVerifier, fingerprint, remember, sessionId, token, trustDevice } = validation.data
+  const challengeData = await verifyPKCEChallenge(sessionId, codeVerifier, fingerprint)
 
   if (!challengeData.valid) {
     return unauthorized('2단계 인증을 완료할 수 없어요', formData)
