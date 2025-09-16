@@ -50,6 +50,7 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
   })
 
   const defaultToken = getFormField(response, 'token')
+  const defaultTrustDevice = getFormField(response, 'trustDevice')
 
   return (
     <div className="flex items-center justify-center">
@@ -67,7 +68,7 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
           <input name="codeChallenge" type="hidden" value={pkceChallenge.codeChallenge} />
           <input name="fingerprint" type="hidden" value={twoFactorData.fingerprint} />
           <input name="sessionId" type="hidden" value={twoFactorData.sessionId} />
-          <input defaultChecked={twoFactorData.remember} name="remember" type="hidden" />
+          {twoFactorData.remember && <input name="remember" type="hidden" value="on" />}
           <div>
             <label className="sr-only" htmlFor="token">
               인증 코드
@@ -92,6 +93,7 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
               <Toggle
                 aria-label="기기 신뢰하기"
                 className="w-10 peer-checked:bg-brand-end/80"
+                defaultChecked={defaultTrustDevice === 'on'}
                 disabled={isPending || isBackupCode}
                 name="trustDevice"
               />

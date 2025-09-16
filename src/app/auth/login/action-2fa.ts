@@ -46,7 +46,7 @@ export async function verifyTwoFactorLogin(formData: FormData) {
   const challengeData = await verifyPKCEChallenge(sessionId, codeChallenge, fingerprint)
 
   if (!challengeData.valid) {
-    return unauthorized('2단계 인증을 완료할 수 없어요')
+    return unauthorized('2단계 인증을 완료할 수 없어요', formData)
   }
 
   const { userId } = challengeData
@@ -65,7 +65,7 @@ export async function verifyTwoFactorLogin(formData: FormData) {
         .where(and(eq(twoFactorTable.userId, userId), isNull(twoFactorTable.expiresAt)))
 
       if (!twoFactor) {
-        return unauthorized('2단계 인증을 완료할 수 없어요')
+        return unauthorized('2단계 인증을 완료할 수 없어요', formData)
       }
 
       let verified = false
@@ -77,9 +77,8 @@ export async function verifyTwoFactorLogin(formData: FormData) {
           const secret = decryptTOTPSecret(twoFactor.secret)
           verified = verifyTOTPToken(token, secret)
         } catch (decryptError) {
-          console.error('Failed to decrypt TOTP secret:', decryptError)
-          // If decryption fails, it might be due to key mismatch
-          return badRequest('2단계 인증 설정에 문제가 있어요. 관리자에게 문의해주세요.')
+          console.error('Failed to decrypt TOTP secret. it might be due to key mismatch:', decryptError)
+          return badRequest('2단계 인증 설정에 문제가 있어요. 관리자에게 문의해주세요.', formData)
         }
       } else if (token.length === 9) {
         const backupCodes = await tx
@@ -112,7 +111,7 @@ export async function verifyTwoFactorLogin(formData: FormData) {
       }
 
       if (!verified) {
-        return unauthorized('2단계 인증을 완료할 수 없어요')
+        return unauthorized('2단계 인증을 완료할 수 없어요', formData)
       }
 
       await tx.update(twoFactorTable).set({ lastUsedAt: new Date() }).where(eq(twoFactorTable.userId, userId))
@@ -163,18 +162,14 @@ export async function verifyTwoFactorLogin(formData: FormData) {
 
       await twoFactorLimiter.reward(String(userId))
 
-      return {
+      return ok({
         ...user,
         isBackupCodeUsed: isBackupCode,
         remainingBackupCodes,
-      }
+      })
     })
 
-    if ('error' in result) {
-      return result
-    }
-
-    return ok(result)
+    return result
   } catch (error) {
     console.error('verifyTwoFactorLogin:', error)
     captureException(error, { extra: { name: 'verifyTwoFactorLogin', userId } })
