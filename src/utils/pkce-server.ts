@@ -38,17 +38,10 @@ export async function verifyPKCEChallenge(
   const pipeline = redisClient.pipeline()
   pipeline.get(key)
   pipeline.del(key)
-  const [dataStr] = await pipeline.exec()
+  const [authChallenge] = await pipeline.exec<[AuthChallenge | null, number]>()
 
-  if (!dataStr) {
+  if (!authChallenge) {
     return { valid: false, reason: 'session_not_found' }
-  }
-
-  let authChallenge: AuthChallenge
-  try {
-    authChallenge = JSON.parse(dataStr as string) as AuthChallenge
-  } catch {
-    return { valid: false, reason: 'invalid_session' }
   }
 
   if (authChallenge.fingerprint !== fingerprint) {
