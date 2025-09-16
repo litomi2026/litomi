@@ -7,34 +7,34 @@ import { redisClient } from '@/database/redis'
 import { sec } from './date'
 
 interface AuthChallenge {
+  authorizationCode: string
   codeChallenge: string
   fingerprint: string
-  sessionId: string
   userId: number
 }
 
 export async function initiatePKCEChallenge(userId: number, codeChallenge: string, fingerprint: string) {
-  const sessionId = crypto.randomBytes(32).toString('base64url')
+  const authorizationCode = crypto.randomBytes(32).toString('base64url')
 
   const challenge: AuthChallenge = {
+    authorizationCode,
     codeChallenge,
     fingerprint,
-    sessionId,
     userId,
   }
 
-  const key = getPKCEChallengeKey(sessionId)
+  const key = getPKCEChallengeKey(authorizationCode)
   await redisClient.set(key, JSON.stringify(challenge), { ex: sec('3 minutes') })
 
-  return { sessionId }
+  return { authorizationCode }
 }
 
 export async function verifyPKCEChallenge(
-  sessionId: string,
+  authorizationCode: string,
   codeVerifier: string,
   fingerprint: string,
 ): Promise<{ valid: false; reason: string } | { valid: true; userId: number }> {
-  const key = getPKCEChallengeKey(sessionId)
+  const key = getPKCEChallengeKey(authorizationCode)
   const pipeline = redisClient.pipeline()
   pipeline.get(key)
   pipeline.del(key)
@@ -57,6 +57,6 @@ export async function verifyPKCEChallenge(
   return { valid: true, userId: authChallenge.userId }
 }
 
-function getPKCEChallengeKey(sessionId: string): string {
-  return `pkce:session:${sessionId}`
+function getPKCEChallengeKey(authorizationCode: string): string {
+  return `pkce:authorization:${authorizationCode}`
 }

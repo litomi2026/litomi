@@ -27,7 +27,7 @@ import TwoFactorVerification from './TwoFactorVerification'
 type TwoFactorData = {
   fingerprint: string
   remember: boolean
-  sessionId: string
+  authorizationCode: string
 }
 
 type User = {
@@ -95,11 +95,11 @@ export default function LoginForm() {
       setTurnstileToken('')
     },
     onSuccess: (data, [formData]) => {
-      if ('sessionId' in data) {
+      if ('authorizationCode' in data) {
         setTwoFactorData({
           fingerprint: formData.get('fingerprint') as string,
           remember: formData.get('remember') === 'on',
-          sessionId: data.sessionId,
+          authorizationCode: data.authorizationCode,
         })
       } else {
         handleLoginSuccess(data)

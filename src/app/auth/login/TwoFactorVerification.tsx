@@ -27,7 +27,7 @@ interface Props {
   twoFactorData: {
     fingerprint: string
     remember: boolean
-    sessionId: string
+    authorizationCode: string
   }
 }
 
@@ -67,7 +67,7 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
         <form action={dispatchAction} className="grid gap-4">
           <input name="codeVerifier" type="hidden" value={pkceChallenge.codeVerifier} />
           <input name="fingerprint" type="hidden" value={twoFactorData.fingerprint} />
-          <input name="sessionId" type="hidden" value={twoFactorData.sessionId} />
+          <input name="authorizationCode" type="hidden" value={twoFactorData.authorizationCode} />
           {twoFactorData.remember && <input name="remember" type="hidden" value="on" />}
           <div>
             <label className="sr-only" htmlFor="token">

@@ -118,8 +118,8 @@ export default async function login(formData: FormData) {
     }
 
     // NOTE: 2FA 인증 필요 시
-    if ('sessionId' in result) {
-      return ok({ sessionId: result.sessionId })
+    if ('authorizationCode' in result) {
+      return ok({ authorizationCode: result.authorizationCode })
     }
 
     const cookieStore = await cookies()

@@ -20,7 +20,7 @@ const verifyTwoFactorSchema = z.object({
   codeVerifier: z.string(),
   fingerprint: z.string(),
   remember: z.literal('on').nullable(),
-  sessionId: z.string(),
+  authorizationCode: z.string(),
   token: z.union([z.string().length(6).regex(/^\d+$/), z.string().length(9).regex(new RegExp(BACKUP_CODE_PATTERN))]),
   trustDevice: z.literal('on').nullable(),
 })
@@ -31,7 +31,7 @@ export async function verifyTwoFactorLogin(formData: FormData) {
   const validation = verifyTwoFactorSchema.safeParse({
     codeVerifier: formData.get('codeVerifier'),
     fingerprint: formData.get('fingerprint'),
-    sessionId: formData.get('sessionId'),
+    authorizationCode: formData.get('authorizationCode'),
     remember: formData.get('remember'),
     token: formData.get('token'),
     trustDevice: formData.get('trustDevice'),
@@ -41,8 +41,8 @@ export async function verifyTwoFactorLogin(formData: FormData) {
     return badRequest(flattenZodFieldErrors(validation.error), formData)
   }
 
-  const { codeVerifier, fingerprint, remember, sessionId, token, trustDevice } = validation.data
-  const challengeData = await verifyPKCEChallenge(sessionId, codeVerifier, fingerprint)
+  const { codeVerifier, fingerprint, remember, authorizationCode, token, trustDevice } = validation.data
+  const challengeData = await verifyPKCEChallenge(authorizationCode, codeVerifier, fingerprint)
 
   if (!challengeData.valid) {
     return unauthorized('2단계 인증을 완료할 수 없어요', formData)
@@ -77,7 +77,7 @@ export async function verifyTwoFactorLogin(formData: FormData) {
           verified = verifyTOTPToken(token, secret)
         } catch (decryptError) {
           console.error('Failed to decrypt TOTP secret. it might be due to key mismatch:', decryptError)
-          return badRequest('2단계 인증 설정에 문제가 있어요. 관리자에게 문의해주세요.', formData)
+          return badRequest('2단계 인증에 문제가 있어요. 관리자에게 문의해주세요.', formData)
         }
       } else if (token.length === 9) {
         const backupCodes = await tx
