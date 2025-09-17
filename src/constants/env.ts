@@ -15,6 +15,7 @@ export const UPSTASH_KV_REST_API_TOKEN = process.env.UPSTASH_KV_REST_API_TOKEN ?
 export const SUPABASE_CERTIFICATE = process.env.SUPABASE_CERTIFICATE ?? ''
 export const JWT_SECRET_ACCESS_TOKEN = process.env.JWT_SECRET_ACCESS_TOKEN ?? ''
 export const JWT_SECRET_REFRESH_TOKEN = process.env.JWT_SECRET_REFRESH_TOKEN ?? ''
+export const JWT_SECRET_TRUSTED_DEVICE = process.env.JWT_SECRET_TRUSTED_DEVICE ?? ''
 export const NEXT_PUBLIC_CORS_PROXY_URL = process.env.NEXT_PUBLIC_CORS_PROXY_URL ?? ''
 export const NEXT_PUBLIC_TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? ''
 export const VERCEL_ANALYTICS = process.env.VERCEL_ANALYTICS ?? ''

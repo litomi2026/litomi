@@ -15,6 +15,7 @@ import { setAccessTokenCookie, setRefreshTokenCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 import { initiatePKCEChallenge } from '@/utils/pkce-server'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
+import { checkTrustedDevice } from '@/utils/trusted-device'
 import TurnstileValidator, { getTurnstileToken } from '@/utils/turnstile'
 
 const loginSchema = z.object({
@@ -97,9 +98,12 @@ export default async function login(formData: FormData) {
     const { id, name, lastLoginAt, lastLogoutAt } = user
 
     if (twoFactor) {
-      // TODO: 신뢰하는 기기 구현하기
-      const { authorizationCode } = await initiatePKCEChallenge(user.id, codeChallenge, fingerprint)
-      return ok({ authorizationCode })
+      const isTrustedDevice = await checkTrustedDevice(user.id, fingerprint)
+
+      if (!isTrustedDevice) {
+        const { authorizationCode } = await initiatePKCEChallenge(user.id, codeChallenge, fingerprint)
+        return ok({ authorizationCode })
+      }
     }
 
     const cookieStore = await cookies()
