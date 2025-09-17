@@ -1,5 +1,3 @@
-import { Fingerprint } from 'lucide-react'
-
 import IconKey from '@/components/icons/IconKey'
 import IconShield from '@/components/icons/IconShield'
 
