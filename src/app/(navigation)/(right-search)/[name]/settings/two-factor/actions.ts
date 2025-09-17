@@ -8,7 +8,7 @@ import { z } from 'zod/v4'
 
 import { TOTP_ISSUER } from '@/constants'
 import { db } from '@/database/supabase/drizzle'
-import { twoFactorBackupCodeTable, twoFactorTable, userTable } from '@/database/supabase/schema'
+import { trustedBrowserTable, twoFactorBackupCodeTable, twoFactorTable, userTable } from '@/database/supabase/schema'
 import { badRequest, forbidden, internalServerError, noContent, ok, unauthorized } from '@/utils/action-response'
 import { validateUserIdFromCookie } from '@/utils/cookie'
 import {
@@ -125,6 +125,44 @@ export async function removeTwoFactor(formData: FormData) {
   } catch (error) {
     captureException(error, { tags: { action: 'removeTwoFactor' } })
     return badRequest('2단계 인증 비활성화 중 오류가 발생했어요', formData)
+  }
+}
+
+export async function revokeAllTrustedDevices() {
+  const userId = await validateUserIdFromCookie()
+
+  if (!userId) {
+    return unauthorized('로그인 정보가 없거나 만료됐어요')
+  }
+
+  try {
+    await db.delete(trustedBrowserTable).where(eq(trustedBrowserTable.userId, userId))
+
+    return noContent()
+  } catch (error) {
+    console.error('revokeAllTrustedDevices:', error)
+    captureException(error, { tags: { action: 'revokeAllTrustedDevices' } })
+    return internalServerError('브라우저 제거에 실패했어요')
+  }
+}
+
+export async function revokeTrustedDevice(browserId: number) {
+  const userId = await validateUserIdFromCookie()
+
+  if (!userId) {
+    return unauthorized('로그인 정보가 없거나 만료됐어요')
+  }
+
+  try {
+    await db
+      .delete(trustedBrowserTable)
+      .where(and(eq(trustedBrowserTable.userId, userId), eq(trustedBrowserTable.id, browserId)))
+
+    return noContent()
+  } catch (error) {
+    console.error('revokeTrustedDevice:', error)
+    captureException(error, { tags: { action: 'revokeTrustedDevice' } })
+    return internalServerError('브라우저 제거에 실패했어요')
   }
 }
 
