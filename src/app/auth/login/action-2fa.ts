@@ -45,7 +45,7 @@ export async function verifyTwoFactorLogin(formData: FormData) {
   const challengeData = await verifyPKCEChallenge(authorizationCode, codeVerifier, fingerprint)
 
   if (!challengeData.valid) {
-    return unauthorized('2단계 인증을 완료할 수 없어요', formData)
+    return unauthorized('세션이 만료됐어요. 새로고침 후 시도해주세요.', formData)
   }
 
   const { userId } = challengeData
@@ -64,19 +64,19 @@ export async function verifyTwoFactorLogin(formData: FormData) {
         .where(and(eq(twoFactorTable.userId, userId), isNull(twoFactorTable.expiresAt)))
 
       if (!twoFactor) {
-        return unauthorized('2단계 인증을 완료할 수 없어요', formData)
+        return unauthorized('세션이 만료됐어요. 새로고침 후 시도해주세요.', formData)
       }
 
       let verified = false
       let isBackupCode = false
-      let remainingBackupCodes = 0
+      let backupCodeCount = 0
 
       if (token.length === 6) {
         try {
           const secret = decryptTOTPSecret(twoFactor.secret)
           verified = verifyTOTPToken(token, secret)
         } catch (decryptError) {
-          console.error('Failed to decrypt TOTP secret. it might be due to key mismatch:', decryptError)
+          console.error('Failed to decrypt TOTP secret. It might be due to key mismatch:', decryptError)
           return badRequest('2단계 인증에 문제가 있어요. 관리자에게 문의해주세요.', formData)
         }
       } else if (token.length === 9) {
@@ -105,12 +105,12 @@ export async function verifyTwoFactorLogin(formData: FormData) {
 
           verified = true
           isBackupCode = true
-          remainingBackupCodes = verificationResults.length - 1
+          backupCodeCount = verificationResults.length - 1
         }
       }
 
       if (!verified) {
-        return unauthorized('2단계 인증을 완료할 수 없어요', formData)
+        return badRequest('인증 코드를 확인해주세요', formData)
       }
 
       await tx.update(twoFactorTable).set({ lastUsedAt: new Date() }).where(eq(twoFactorTable.userId, userId))
@@ -143,8 +143,8 @@ export async function verifyTwoFactorLogin(formData: FormData) {
         const alertReasons = []
         alertReasons.push('백업 코드가 사용됐어요')
 
-        if (remainingBackupCodes <= 2) {
-          alertReasons.push(`남은 백업 코드: ${remainingBackupCodes}개`)
+        if (backupCodeCount <= 2) {
+          alertReasons.push(`남은 백업 코드: ${backupCodeCount}개`)
         }
 
         // sendSecurityAlert({
@@ -163,8 +163,8 @@ export async function verifyTwoFactorLogin(formData: FormData) {
 
       return ok({
         ...user,
-        isBackupCodeUsed: isBackupCode,
-        remainingBackupCodes,
+        isBackupCode,
+        backupCodeCount,
       })
     })
 

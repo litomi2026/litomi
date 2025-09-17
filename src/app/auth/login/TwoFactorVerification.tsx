@@ -37,11 +37,11 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
   const [response, dispatchAction, isPending] = useActionResponse({
     action: verifyTwoFactorLogin,
     onSuccess: (data) => {
-      if (data.isBackupCodeUsed && data.remainingBackupCodes !== undefined) {
-        if (data.remainingBackupCodes > 0) {
-          toast.info(`남은 백업 코드: ${data.remainingBackupCodes}개`)
+      if (data.isBackupCode) {
+        if (data.backupCodeCount > 0) {
+          toast.info(`남은 백업 코드: ${data.backupCodeCount}개`)
         } else {
-          toast.warning('모든 백업 코드를 사용했어요. 새로운 백업 코드를 생성해주세요.')
+          toast.warning('백업 코드를 모두 사용했어요. 새로운 백업 코드를 생성해주세요.')
         }
       }
 

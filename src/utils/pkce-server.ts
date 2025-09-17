@@ -24,7 +24,7 @@ export async function initiatePKCEChallenge(userId: number, codeChallenge: strin
   }
 
   const key = getPKCEChallengeKey(authorizationCode)
-  await redisClient.set(key, JSON.stringify(challenge), { ex: sec('3 minutes') })
+  await redisClient.set(key, challenge, { ex: sec('3 minutes') })
 
   return { authorizationCode }
 }
