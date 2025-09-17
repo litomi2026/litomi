@@ -70,67 +70,54 @@ export default async function login(formData: FormData) {
   }
 
   try {
-    const result = await db.transaction(async (tx) => {
-      const [user] = await tx
-        .select({
-          id: userTable.id,
-          name: userTable.name,
-          passwordHash: userTable.passwordHash,
-          lastLoginAt: userTable.loginAt,
-          lastLogoutAt: userTable.logoutAt,
-        })
-        .from(userTable)
-        .where(eq(userTable.loginId, loginId))
-
-      // NOTE: 타이밍 공격을 방어하기 위해서 임의의 문자열을 사용함
-      const passwordHash = user.passwordHash || '$2b$10$dummyhashfortimingatackprevention'
-      const isValidPassword = await compare(password, passwordHash)
-
-      if (!user || !isValidPassword) {
-        return unauthorized('아이디 또는 비밀번호가 일치하지 않아요', formData)
-      }
-
-      const [twoFactor] = await tx
-        .select({ enabled: twoFactorTable.userId })
-        .from(twoFactorTable)
-        .where(and(eq(twoFactorTable.userId, user.id), isNull(twoFactorTable.expiresAt)))
-
-      const { id, name, lastLoginAt, lastLogoutAt } = user
-
-      if (twoFactor) {
-        // TODO: 신뢰하는 기기 구현하기
-        return await initiatePKCEChallenge(user.id, codeChallenge, fingerprint)
-      }
-
-      await tx.update(userTable).set({ loginAt: new Date() }).where(eq(userTable.id, id))
-
-      return ok({
-        id,
-        loginId,
-        name,
-        lastLoginAt,
-        lastLogoutAt,
+    const [user] = await db
+      .select({
+        id: userTable.id,
+        name: userTable.name,
+        passwordHash: userTable.passwordHash,
+        lastLoginAt: userTable.loginAt,
+        lastLogoutAt: userTable.logoutAt,
       })
-    })
+      .from(userTable)
+      .where(eq(userTable.loginId, loginId))
 
-    if ('error' in result) {
-      return result
+    // NOTE: 타이밍 공격을 방어하기 위해서 임의의 문자열을 사용함
+    const passwordHash = user.passwordHash || '$2b$10$dummyhashfortimingatackprevention'
+    const isValidPassword = await compare(password, passwordHash)
+
+    if (!user || !isValidPassword) {
+      return unauthorized('아이디 또는 비밀번호가 일치하지 않아요', formData)
     }
 
-    // NOTE: 2FA 인증 필요 시
-    if ('authorizationCode' in result) {
-      return ok({ authorizationCode: result.authorizationCode })
+    const [twoFactor] = await db
+      .select({ enabled: twoFactorTable.userId })
+      .from(twoFactorTable)
+      .where(and(eq(twoFactorTable.userId, user.id), isNull(twoFactorTable.expiresAt)))
+
+    const { id, name, lastLoginAt, lastLogoutAt } = user
+
+    if (twoFactor) {
+      // TODO: 신뢰하는 기기 구현하기
+      const { authorizationCode } = await initiatePKCEChallenge(user.id, codeChallenge, fingerprint)
+      return ok({ authorizationCode })
     }
 
     const cookieStore = await cookies()
 
     await Promise.all([
-      setAccessTokenCookie(cookieStore, result.data.id),
-      remember && setRefreshTokenCookie(cookieStore, result.data.id),
+      db.update(userTable).set({ loginAt: new Date() }).where(eq(userTable.id, id)),
       loginLimiter.reward(loginId),
+      setAccessTokenCookie(cookieStore, id),
+      remember && setRefreshTokenCookie(cookieStore, id),
     ])
 
-    return result
+    return ok({
+      id,
+      loginId,
+      name,
+      lastLoginAt,
+      lastLogoutAt,
+    })
   } catch (error) {
     captureException(error, { extra: { name: 'login', loginId } })
     return internalServerError('로그인 중 오류가 발생했어요', formData)

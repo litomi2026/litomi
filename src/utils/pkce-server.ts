@@ -23,8 +23,13 @@ export async function initiatePKCEChallenge(userId: number, codeChallenge: strin
     userId,
   }
 
-  const key = getPKCEChallengeKey(authorizationCode)
-  await redisClient.set(key, challenge, { ex: sec('3 minutes') })
+  try {
+    const key = getPKCEChallengeKey(authorizationCode)
+    await redisClient.set(key, challenge, { ex: sec('3 minutes') })
+  } catch (error) {
+    console.error('initiatePKCEChallenge:', error)
+    throw new Error('Service temporarily unavailable')
+  }
 
   return { authorizationCode }
 }
@@ -34,27 +39,32 @@ export async function verifyPKCEChallenge(
   codeVerifier: string,
   fingerprint: string,
 ): Promise<{ valid: false; reason: string } | { valid: true; userId: number }> {
-  const key = getPKCEChallengeKey(authorizationCode)
-  const pipeline = redisClient.pipeline()
-  pipeline.get(key)
-  pipeline.del(key)
-  const [authChallenge] = await pipeline.exec<[AuthChallenge | null, number]>()
+  try {
+    const key = getPKCEChallengeKey(authorizationCode)
+    const pipeline = redisClient.pipeline()
+    pipeline.get(key)
+    pipeline.del(key)
+    const [authChallenge] = await pipeline.exec<[AuthChallenge | null, number]>()
 
-  if (!authChallenge) {
+    if (!authChallenge) {
+      return { valid: false, reason: 'session_not_found' }
+    }
+
+    if (authChallenge.fingerprint !== fingerprint) {
+      return { valid: false, reason: 'invalid_fingerprint' }
+    }
+
+    const expectedCodeChallenge = crypto.createHash('sha256').update(codeVerifier).digest('base64url')
+
+    if (authChallenge.codeChallenge !== expectedCodeChallenge) {
+      return { valid: false, reason: 'invalid_pkce' }
+    }
+
+    return { valid: true, userId: authChallenge.userId }
+  } catch (error) {
+    console.error('verifyPKCEChallenge:', error)
     return { valid: false, reason: 'session_not_found' }
   }
-
-  if (authChallenge.fingerprint !== fingerprint) {
-    return { valid: false, reason: 'invalid_fingerprint' }
-  }
-
-  const expectedCodeChallenge = crypto.createHash('sha256').update(codeVerifier).digest('base64url')
-
-  if (authChallenge.codeChallenge !== expectedCodeChallenge) {
-    return { valid: false, reason: 'invalid_pkce' }
-  }
-
-  return { valid: true, userId: authChallenge.userId }
 }
 
 function getPKCEChallengeKey(authorizationCode: string): string {
