@@ -36,7 +36,7 @@ export default function PasskeyCard({ passkey }: Readonly<Props>) {
               {label}
               {deviceType === 'platform' && (
                 <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand-end/10 text-xs">
-                  <IconShield className="h-3 w-3 text-brand-end" />
+                  <IconShield className="size-3 text-brand-end" />
                   <span className="text-brand-end font-medium">보안</span>
                 </span>
               )}
@@ -63,8 +63,8 @@ export default function PasskeyCard({ passkey }: Readonly<Props>) {
           <div className="flex items-center gap-3 text-xs text-zinc-500 mt-1">
             {verificationMethod && (
               <span className="flex items-center gap-1">
-                <Fingerprint className="h-3.5 w-3.5" />
-                {verificationMethod}
+                {verificationMethod.icon}
+                {verificationMethod.label}
               </span>
             )}
             {transports && transports.length > 0 && (
@@ -75,7 +75,7 @@ export default function PasskeyCard({ passkey }: Readonly<Props>) {
               </span>
             )}
             <span className="hidden sm:flex items-center gap-1">
-              <IconKey className="h-3.5 w-3.5" />
+              <IconKey className="size-3" />
               {credentialId}
             </span>
           </div>
