@@ -22,7 +22,7 @@ const verifyTwoFactorSchema = z.object({
   remember: z.literal('on').nullable(),
   authorizationCode: z.string(),
   token: z.union([z.string().length(6).regex(/^\d+$/), z.string().length(9).regex(new RegExp(BACKUP_CODE_PATTERN))]),
-  trustDevice: z.literal('on').nullable(),
+  trustBrowser: z.literal('on').nullable(),
 })
 
 const twoFactorLimiter = new RateLimiter(RateLimitPresets.strict())
@@ -34,14 +34,14 @@ export async function verifyTwoFactorLogin(formData: FormData) {
     authorizationCode: formData.get('authorizationCode'),
     remember: formData.get('remember'),
     token: formData.get('token'),
-    trustDevice: formData.get('trustDevice'),
+    trustBrowser: formData.get('trustBrowser'),
   })
 
   if (!validation.success) {
     return badRequest(flattenZodFieldErrors(validation.error), formData)
   }
 
-  const { codeVerifier, fingerprint, remember, authorizationCode, token, trustDevice } = validation.data
+  const { codeVerifier, fingerprint, remember, authorizationCode, token, trustBrowser } = validation.data
   const challengeData = await verifyPKCEChallenge(authorizationCode, codeVerifier, fingerprint)
 
   if (!challengeData.valid) {
@@ -113,26 +113,32 @@ export async function verifyTwoFactorLogin(formData: FormData) {
         return badRequest('인증 코드를 확인해주세요', formData)
       }
 
-      await tx.update(twoFactorTable).set({ lastUsedAt: new Date() }).where(eq(twoFactorTable.userId, userId))
+      const [cookieStore, [user]] = await Promise.all([
+        cookies(),
+        tx
+          .update(userTable)
+          .set({
+            loginAt: new Date(),
+          })
+          .where(eq(userTable.id, userId))
+          .returning({
+            id: userTable.id,
+            loginId: userTable.loginId,
+            name: userTable.name,
+            lastLoginAt: userTable.loginAt,
+            lastLogoutAt: userTable.logoutAt,
+          }),
+        tx
+          .update(twoFactorTable)
+          .set({
+            lastUsedAt: new Date(),
+          })
+          .where(eq(twoFactorTable.userId, userId)),
+      ])
 
-      // Security: Only trust device if:
-      // 1. User explicitly requested it (trustDevice checkbox)
-      // 2. NOT using a backup code (backup codes shouldn't establish trust)
-      // 3. Device fingerprint is valid (not 'unknown')
-      // 4. IP address is valid (not 'unknown')
-      if (trustDevice && !isBackupCode) {
+      if (trustBrowser && !isBackupCode) {
         // TODO: 신뢰하는 기기 구현하기 - LRU 알고리즘으로 최대 5개까지 유지하기
       }
-
-      const [user] = await tx.update(userTable).set({ loginAt: new Date() }).where(eq(userTable.id, userId)).returning({
-        id: userTable.id,
-        loginId: userTable.loginId,
-        name: userTable.name,
-        lastLoginAt: userTable.loginAt,
-        lastLogoutAt: userTable.logoutAt,
-      })
-
-      const cookieStore = await cookies()
 
       await Promise.all([
         setAccessTokenCookie(cookieStore, userId),

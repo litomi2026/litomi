@@ -76,12 +76,11 @@ export async function generateBackupCodes(count: number = 10): Promise<{ codes: 
 /**
  * Generate a QR code for the TOTP secret
  */
-export async function generateQRCode(otpauthUrl: string): Promise<string> {
+export async function generateQRCode(keyURI: string): Promise<string> {
   try {
-    const qrCodeDataUrl = await QRCode.toDataURL(otpauthUrl, { width: 256 })
-    return qrCodeDataUrl
+    return await QRCode.toDataURL(keyURI, { width: 256 })
   } catch (error) {
-    console.error('Failed to generate QR code:', error)
+    console.error('generateQRCode:', error)
     throw new Error('QR 코드 생성에 실패했어요')
   }
 }
@@ -104,12 +103,7 @@ export async function verifyBackupCode(inputCode: string, hashedCode: string): P
 export function verifyTOTPToken(token: string, secret: string): boolean {
   try {
     authenticator.options = { window: 1 }
-
-    const verified = authenticator.verify({
-      secret,
-      token,
-    })
-    return verified
+    return authenticator.verify({ secret, token })
   } catch {
     return false
   }

@@ -185,9 +185,8 @@ export async function setupTwoFactor() {
       return forbidden('2단계 인증을 설정할 수 없어요')
     }
 
-    const otpauthURL = authenticator.keyuri(loginId, TOTP_ISSUER, rawSecret)
-
-    const qrCodeDataURL = await generateQRCode(otpauthURL)
+    const keyURI = authenticator.keyuri(loginId, TOTP_ISSUER, rawSecret)
+    const qrCodeDataURL = await generateQRCode(keyURI)
 
     return ok({
       qrCode: qrCodeDataURL,

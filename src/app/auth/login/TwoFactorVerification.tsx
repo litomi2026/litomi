@@ -50,7 +50,7 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
   })
 
   const defaultToken = getFormField(response, 'token')
-  const defaultTrustDevice = getFormField(response, 'trustDevice')
+  const defaultTrustBrowser = getFormField(response, 'trustBrowser')
 
   return (
     <div className="flex items-center justify-center">
@@ -87,15 +87,15 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
             <label
               aria-disabled={isBackupCode}
               className="flex items-center gap-2 transition aria-disabled:opacity-50"
-              title={isBackupCode ? '백업 코드를 사용하면 기기 신뢰 설정을 사용할 수 없어요' : ''}
+              title={isBackupCode ? '백업 코드를 사용하면 브라우저 신뢰 설정을 사용할 수 없어요' : ''}
             >
-              <span className="ml-2 text-sm text-zinc-400">이 기기를 30일간 신뢰</span>
+              <span className="ml-2 text-sm text-zinc-400">이 브라우저 신뢰 (30일)</span>
               <Toggle
-                aria-label="기기 신뢰하기"
+                aria-label="브라우저 신뢰하기"
                 className="w-10 peer-checked:bg-brand-end/80"
-                defaultChecked={defaultTrustDevice === 'on'}
+                defaultChecked={defaultTrustBrowser === 'on'}
                 disabled={isPending || isBackupCode}
-                name="trustDevice"
+                name="trustBrowser"
               />
             </label>
           </div>
