@@ -3,7 +3,7 @@
 import { captureException } from '@sentry/nextjs'
 import { and, eq, gt, isNull, sql } from 'drizzle-orm'
 import ms from 'ms'
-import speakeasy from 'speakeasy'
+import { authenticator } from 'otplib'
 import { z } from 'zod/v4'
 
 import { TOTP_ISSUER } from '@/constants'
@@ -136,7 +136,7 @@ export async function setupTwoFactor() {
   }
 
   try {
-    const rawSecret = speakeasy.generateSecret().base32
+    const rawSecret = authenticator.generateSecret()
     const encryptedSecret = encryptTOTPSecret(rawSecret)
     const expiresAt = new Date(Date.now() + ms('5 minutes'))
     const expiresAtString = expiresAt.toISOString()
@@ -185,12 +185,7 @@ export async function setupTwoFactor() {
       return forbidden('2단계 인증을 설정할 수 없어요')
     }
 
-    const otpauthURL = speakeasy.otpauthURL({
-      secret: rawSecret,
-      label: loginId,
-      issuer: TOTP_ISSUER,
-      encoding: 'base32',
-    })
+    const otpauthURL = authenticator.keyuri(loginId, TOTP_ISSUER, rawSecret)
 
     const qrCodeDataURL = await generateQRCode(otpauthURL)
 

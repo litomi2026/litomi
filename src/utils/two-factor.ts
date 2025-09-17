@@ -1,7 +1,7 @@
 import { compare, hash } from 'bcrypt'
 import crypto from 'crypto'
+import { authenticator } from 'otplib'
 import QRCode from 'qrcode'
-import speakeasy from 'speakeasy'
 
 import { SALT_ROUNDS, TOTP_ISSUER } from '@/constants'
 import { TOTP_ENCRYPTION_KEY } from '@/constants/env'
@@ -103,11 +103,11 @@ export async function verifyBackupCode(inputCode: string, hashedCode: string): P
  */
 export function verifyTOTPToken(token: string, secret: string): boolean {
   try {
-    const verified = speakeasy.totp.verify({
+    authenticator.options = { window: 1 }
+
+    const verified = authenticator.verify({
       secret,
-      encoding: 'base32',
       token,
-      window: 1,
     })
     return verified
   } catch {
