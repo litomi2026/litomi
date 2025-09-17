@@ -6,14 +6,7 @@ import IconShield from '@/components/icons/IconShield'
 import { Passkey } from './common'
 import PasskeyDeleteButton from './PasskeyDeleteButton'
 import PasskeyMobileDeleteWrapper from './PasskeyMobileDeleteWrapper'
-import {
-  getDeviceInfo,
-  getRelativeTime,
-  getTransportIcon,
-  getTransportLabel,
-  getTruncatedId,
-  getUserVerificationMethod,
-} from './utils'
+import { getDeviceInfo, getRelativeTime, getTransportIcon, getTransportLabel, getUserVerificationMethod } from './utils'
 
 type Props = {
   passkey: Passkey
@@ -21,11 +14,10 @@ type Props = {
 }
 
 export default function PasskeyCard({ passkey }: Readonly<Props>) {
-  const { deviceType, createdAt, lastUsedAt, transports, id } = passkey
+  const { deviceType, createdAt, credentialId, lastUsedAt, transports, id } = passkey
   const { icon, label, bgColor } = getDeviceInfo(deviceType ?? '')
   const createdRelativeTime = getRelativeTime(createdAt)
   const lastUsedRelativeTime = lastUsedAt ? getRelativeTime(lastUsedAt) : null
-  const truncatedId = getTruncatedId(passkey.credentialId)
   const verificationMethod = getUserVerificationMethod(deviceType ?? '')
   const isPlatform = deviceType === 'platform'
 
@@ -84,7 +76,7 @@ export default function PasskeyCard({ passkey }: Readonly<Props>) {
             )}
             <span className="hidden sm:flex items-center gap-1">
               <IconKey className="h-3.5 w-3.5" />
-              {truncatedId}
+              {credentialId}
             </span>
           </div>
         </div>
