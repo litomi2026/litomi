@@ -179,3 +179,9 @@ export function getUserVerificationMethod(deviceType: string) {
       }
   }
 }
+
+export function hasCredentialId<T extends { credentialId: string | null }>(
+  value: T,
+): value is T & { credentialId: string } {
+  return value.credentialId !== null
+}

@@ -8,7 +8,7 @@ import Loading from '@/components/ui/Loading'
 import Modal from '@/components/ui/Modal'
 import useActionResponse from '@/hook/useActionResponse'
 
-import { deleteCredential } from './actions'
+import { deleteCredential } from './action-delete'
 
 type Props = {
   id: number

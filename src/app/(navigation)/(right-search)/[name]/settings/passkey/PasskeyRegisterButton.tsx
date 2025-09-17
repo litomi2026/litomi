@@ -7,7 +7,7 @@ import IconPlus from '@/components/icons/IconPlus'
 import IconSpinner from '@/components/icons/IconSpinner'
 import useActionResponse from '@/hook/useActionResponse'
 
-import { getRegistrationOptions, verifyRegistration } from './actions'
+import { getRegistrationOptions, verifyRegistration } from './action-register'
 
 export default function PasskeyRegisterButton() {
   const [, dispatchAction, isPending] = useActionResponse({
