@@ -15,8 +15,9 @@ import { setAccessTokenCookie, setRefreshTokenCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 import { initiatePKCEChallenge } from '@/utils/pkce-server'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
-import { checkTrustedDevice } from '@/utils/trusted-device'
 import TurnstileValidator, { getTurnstileToken } from '@/utils/turnstile'
+
+import { checkTrustedBrowser } from './utils'
 
 const loginSchema = z.object({
   loginId: loginIdSchema,
@@ -96,17 +97,16 @@ export default async function login(formData: FormData) {
       .where(and(eq(twoFactorTable.userId, user.id), isNull(twoFactorTable.expiresAt)))
 
     const { id, name, lastLoginAt, lastLogoutAt } = user
+    const cookieStore = await cookies()
 
     if (twoFactor) {
-      const isTrustedDevice = await checkTrustedDevice(user.id, fingerprint)
+      const isTrustedBrowser = await checkTrustedBrowser(cookieStore, user.id, fingerprint)
 
-      if (!isTrustedDevice) {
+      if (!isTrustedBrowser) {
         const { authorizationCode } = await initiatePKCEChallenge(user.id, codeChallenge, fingerprint)
         return ok({ authorizationCode })
       }
     }
-
-    const cookieStore = await cookies()
 
     await Promise.all([
       db.update(userTable).set({ loginAt: new Date() }).where(eq(userTable.id, id)),

@@ -13,7 +13,7 @@ const url = new URL(CANONICAL_URL)
 export enum JWTType {
   ACCESS,
   REFRESH,
-  TRUSTED_DEVICE,
+  TRUSTED_BROWSER,
 }
 
 export async function signJWT(payload: JWTPayload, type: JWTType): Promise<string> {
@@ -54,7 +54,7 @@ function getConfig(type: JWTType) {
         secretKey: JWT_SECRET_REFRESH_TOKEN,
         typeName: CookieKey.REFRESH_TOKEN,
       }
-    case JWTType.TRUSTED_DEVICE:
+    case JWTType.TRUSTED_BROWSER:
       return {
         duration: sec('30 days'),
         secretKey: JWT_SECRET_TRUSTED_DEVICE,
