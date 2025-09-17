@@ -74,27 +74,6 @@ export async function generateBackupCodes(count: number = 10): Promise<{ codes: 
 }
 
 /**
- * Generate a device fingerprint from request headers and user agent
- */
-// export function generateDeviceFingerprint(
-//   userAgent: string | null,
-//   acceptLanguage: string | null,
-//   acceptEncoding: string | null,
-//   secChUa: string | null,
-// ): string {
-//   // Combine multiple browser characteristics for a more reliable fingerprint
-//   const components = [
-//     userAgent || 'unknown',
-//     acceptLanguage || 'unknown',
-//     acceptEncoding || 'unknown',
-//     secChUa || 'unknown',
-//   ].join('|')
-
-//   // Create a hash of the combined components
-//   return crypto.createHash('sha256').update(components).digest('hex')
-// }
-
-/**
  * Generate a QR code for the TOTP secret
  */
 export async function generateQRCode(otpauthUrl: string): Promise<string> {

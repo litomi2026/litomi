@@ -29,3 +29,4 @@ export const LINK_PENDING_DELAY = 500
 
 export const LOGIN_ID_PATTERN = '^[a-zA-Z][a-zA-Z0-9_]*$'
 export const PASSWORD_PATTERN = '^(?=.*[A-Za-z])(?=.*[0-9]).+$'
+export const BACKUP_CODE_PATTERN = '^[A-Z0-9\\-]*$'

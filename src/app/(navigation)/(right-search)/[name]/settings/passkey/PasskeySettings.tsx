@@ -6,6 +6,7 @@ import { db } from '@/database/supabase/drizzle'
 import { credentialTable } from '@/database/supabase/schema'
 
 import PasskeyList from './PasskeyList'
+import { getTruncatedId } from './utils'
 
 type Props = {
   userId: number
@@ -27,6 +28,7 @@ export default async function PasskeySettings({ userId }: Props) {
 
   const passkeys = credentials.map((credential) => ({
     ...credential,
+    credentialId: getTruncatedId(credential.credentialId),
     deviceType: decodeDeviceType(credential.deviceType),
     transports: credential.transports as AuthenticatorTransportFuture[],
   }))

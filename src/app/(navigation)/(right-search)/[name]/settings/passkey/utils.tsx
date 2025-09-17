@@ -1,4 +1,5 @@
 import { AuthenticatorTransportFuture } from '@simplewebauthn/server'
+import { Fingerprint, SquareAsterisk } from 'lucide-react'
 
 import IconBluetooth from '@/components/icons/IconBluetooth'
 import IconCable from '@/components/icons/IconCable'
@@ -62,20 +63,20 @@ export function getDeviceInfo(deviceType: string) {
   switch (deviceType) {
     case 'cross-platform':
       return {
-        icon: <IconUSB className="w-6 text-brand-end" />,
-        label: '외부 기기',
+        icon: <IconUSB className="size-6 text-brand-end" />,
+        label: '외부 보안키',
         bgColor: 'bg-brand-end/10',
       }
     case 'platform':
       return {
-        icon: <IconSmartphone className="w-6 text-brand-end" />,
-        label: '현재 기기',
+        icon: <IconSmartphone className="size-6 text-brand-end" />,
+        label: '내장 인증',
         bgColor: 'bg-brand-end/10',
       }
     default:
       return {
-        icon: <IconKey className="w-6 text-zinc-400" />,
-        label: '알 수 없는 기기',
+        icon: <IconKey className="size-6 text-zinc-400" />,
+        label: '알 수 없는 인증',
         bgColor: 'bg-zinc-800',
       }
   }
@@ -116,19 +117,19 @@ export function getRelativeTime(date: Date): string {
 export function getTransportIcon(transport: AuthenticatorTransportFuture) {
   switch (transport) {
     case 'ble':
-      return <IconBluetooth className="h-3 w-3" />
+      return <IconBluetooth className="size-3" />
     case 'cable':
-      return <IconCable className="h-3 w-3" />
+      return <IconCable className="size-3" />
     case 'hybrid':
-      return <IconSmartphone className="h-3 w-3" />
+      return <IconSmartphone className="size-3" />
     case 'internal':
-      return <IconChip className="h-3 w-3" />
+      return <IconChip className="size-3" />
     case 'nfc':
-      return <IconNFC className="h-3 w-3" />
+      return <IconNFC className="size-3" />
     case 'smart-card':
-      return <IconSmartCard className="h-3 w-3" />
+      return <IconSmartCard className="size-3" />
     case 'usb':
-      return <IconUSB className="h-3 w-3" />
+      return <IconUSB className="size-3" />
     default:
       return null
   }
@@ -162,10 +163,25 @@ export function getTruncatedId(id: string): string {
 export function getUserVerificationMethod(deviceType: string) {
   switch (deviceType) {
     case 'cross-platform':
-      return '사용자 확인'
+      return {
+        icon: <SquareAsterisk className="size-3" />,
+        label: 'PIN/터치',
+      }
     case 'platform':
-      return '생체 인증'
+      return {
+        icon: <Fingerprint className="size-3" />,
+        label: '생체 인증',
+      }
     default:
-      return ''
+      return {
+        icon: <IconKey className="size-3" />,
+        label: '알 수 없는 인증',
+      }
   }
+}
+
+export function hasCredentialId<T extends { credentialId: string | null }>(
+  value: T,
+): value is T & { credentialId: string } {
+  return value.credentialId !== null
 }

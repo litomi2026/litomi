@@ -1,19 +1,10 @@
-import { Fingerprint } from 'lucide-react'
-
 import IconKey from '@/components/icons/IconKey'
 import IconShield from '@/components/icons/IconShield'
 
 import { Passkey } from './common'
 import PasskeyDeleteButton from './PasskeyDeleteButton'
 import PasskeyMobileDeleteWrapper from './PasskeyMobileDeleteWrapper'
-import {
-  getDeviceInfo,
-  getRelativeTime,
-  getTransportIcon,
-  getTransportLabel,
-  getTruncatedId,
-  getUserVerificationMethod,
-} from './utils'
+import { getDeviceInfo, getRelativeTime, getTransportIcon, getTransportLabel, getUserVerificationMethod } from './utils'
 
 type Props = {
   passkey: Passkey
@@ -21,11 +12,10 @@ type Props = {
 }
 
 export default function PasskeyCard({ passkey }: Readonly<Props>) {
-  const { deviceType, createdAt, lastUsedAt, transports, id } = passkey
+  const { deviceType, createdAt, credentialId, lastUsedAt, transports, id } = passkey
   const { icon, label, bgColor } = getDeviceInfo(deviceType ?? '')
   const createdRelativeTime = getRelativeTime(createdAt)
   const lastUsedRelativeTime = lastUsedAt ? getRelativeTime(lastUsedAt) : null
-  const truncatedId = getTruncatedId(passkey.credentialId)
   const verificationMethod = getUserVerificationMethod(deviceType ?? '')
   const isPlatform = deviceType === 'platform'
 
@@ -44,7 +34,7 @@ export default function PasskeyCard({ passkey }: Readonly<Props>) {
               {label}
               {deviceType === 'platform' && (
                 <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand-end/10 text-xs">
-                  <IconShield className="h-3 w-3 text-brand-end" />
+                  <IconShield className="size-3 text-brand-end" />
                   <span className="text-brand-end font-medium">보안</span>
                 </span>
               )}
@@ -71,8 +61,8 @@ export default function PasskeyCard({ passkey }: Readonly<Props>) {
           <div className="flex items-center gap-3 text-xs text-zinc-500 mt-1">
             {verificationMethod && (
               <span className="flex items-center gap-1">
-                <Fingerprint className="h-3.5 w-3.5" />
-                {verificationMethod}
+                {verificationMethod.icon}
+                {verificationMethod.label}
               </span>
             )}
             {transports && transports.length > 0 && (
@@ -83,8 +73,8 @@ export default function PasskeyCard({ passkey }: Readonly<Props>) {
               </span>
             )}
             <span className="hidden sm:flex items-center gap-1">
-              <IconKey className="h-3.5 w-3.5" />
-              {truncatedId}
+              <IconKey className="size-3" />
+              {credentialId}
             </span>
           </div>
         </div>

@@ -5,7 +5,6 @@ import { ComponentProps } from 'react'
 export default function OneTimeCodeInput(props: ComponentProps<'input'>) {
   return (
     <input
-      {...props}
       autoComplete="one-time-code"
       className="w-full rounded-lg bg-zinc-800 px-4 py-3 text-center text-xl font-mono text-zinc-100 placeholder-zinc-600"
       id="token"
@@ -16,6 +15,7 @@ export default function OneTimeCodeInput(props: ComponentProps<'input'>) {
       placeholder="000000"
       required
       type="text"
+      {...props}
     />
   )
 }

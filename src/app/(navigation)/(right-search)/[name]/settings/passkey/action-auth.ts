@@ -4,76 +4,38 @@ import { captureException } from '@sentry/nextjs'
 import {
   AuthenticatorTransportFuture,
   generateAuthenticationOptions,
-  generateRegistrationOptions,
-  RegistrationResponseJSON,
   verifyAuthenticationResponse,
-  verifyRegistrationResponse,
 } from '@simplewebauthn/server'
-import { and, eq } from 'drizzle-orm'
-import { revalidatePath } from 'next/cache'
+import { eq } from 'drizzle-orm'
 import { cookies, headers } from 'next/headers'
+import { z } from 'zod/v4'
 
-import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID, WEBAUTHN_RP_NAME } from '@/constants'
-import { MAX_CREDENTIALS_PER_USER } from '@/constants/policy'
-import { ChallengeType, encodeDeviceType } from '@/database/enum'
+import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID } from '@/constants'
+import { ChallengeType } from '@/database/enum'
 import { db } from '@/database/supabase/drizzle'
 import { credentialTable, userTable } from '@/database/supabase/schema'
-import {
-  badRequest,
-  forbidden,
-  internalServerError,
-  noContent,
-  notFound,
-  ok,
-  tooManyRequests,
-  unauthorized,
-} from '@/utils/action-response'
-import { setAccessTokenCookie, validateUserIdFromCookie } from '@/utils/cookie'
+import { badRequest, forbidden, internalServerError, ok, tooManyRequests, unauthorized } from '@/utils/action-response'
+import { setAccessTokenCookie } from '@/utils/cookie'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
 import { getAndDeleteChallenge, storeChallenge } from '@/utils/redis-challenge'
 import TurnstileValidator from '@/utils/turnstile'
 
-import {
-  deleteCredentialSchema,
-  getAuthenticationOptionsSchema,
-  verifyAuthenticationSchema,
-  verifyRegistrationSchema,
-} from './schema'
-import { generateFakeCredentials } from './utils'
+import { generateFakeCredentials, hasCredentialId } from './utils'
 
-export async function deleteCredential(formData: FormData) {
-  const userId = await validateUserIdFromCookie()
+const getAuthenticationOptionsSchema = z.object({ loginId: z.string() })
 
-  if (!userId) {
-    return unauthorized('로그인 정보가 없거나 만료됐어요')
-  }
-
-  const validation = deleteCredentialSchema.safeParse({ 'credential-id': formData.get('credential-id') })
-
-  if (!validation.success) {
-    return badRequest('잘못된 요청이에요')
-  }
-
-  const { 'credential-id': credentialId } = validation.data
-
-  try {
-    const [deletedCredential] = await db
-      .delete(credentialTable)
-      .where(and(eq(credentialTable.id, credentialId), eq(credentialTable.userId, userId)))
-      .returning({ id: credentialTable.id })
-
-    if (!deletedCredential) {
-      return notFound('패스키를 찾을 수 없어요')
-    }
-
-    revalidatePath('/[name]/settings', 'page')
-    return ok('패스키가 삭제됐어요')
-  } catch (error) {
-    console.error('deleteCredential:', error)
-    captureException(error, { extra: { name: 'deleteCredential', userId } })
-    return internalServerError('패스키 삭제 중 오류가 발생했어요')
-  }
-}
+const verifyAuthenticationSchema = z.object({
+  id: z.string(),
+  rawId: z.string(),
+  response: z.object({
+    authenticatorData: z.string(),
+    clientDataJSON: z.string(),
+    signature: z.string(),
+    userHandle: z.string().optional(),
+  }),
+  type: z.literal('public-key'),
+  clientExtensionResults: z.record(z.string(), z.unknown()).optional().default({}),
+})
 
 const authenticationLimiter = new RateLimiter(RateLimitPresets.strict())
 
@@ -128,62 +90,6 @@ export async function getAuthenticationOptions(loginId: string) {
     console.error('getAuthenticationOptions:', error)
     captureException(error, { extra: { name: 'getAuthenticationOptions', loginId } })
     return internalServerError('패스키 인증 중 오류가 발생했어요')
-  }
-}
-
-export async function getRegistrationOptions() {
-  const userId = await validateUserIdFromCookie()
-
-  if (!userId) {
-    return unauthorized('로그인 정보가 없거나 만료됐어요')
-  }
-
-  try {
-    const existingCredentials = await db
-      .select({
-        userId: userTable.id,
-        name: userTable.name,
-        loginId: userTable.loginId,
-        nickname: userTable.nickname,
-        credentialId: credentialTable.credentialId,
-        transports: credentialTable.transports,
-      })
-      .from(userTable)
-      .leftJoin(credentialTable, eq(credentialTable.userId, userTable.id))
-      .where(eq(userTable.id, userId))
-
-    const user = existingCredentials[0]
-
-    if (existingCredentials.length >= MAX_CREDENTIALS_PER_USER) {
-      return badRequest(`최대 ${MAX_CREDENTIALS_PER_USER}개의 패스키만 등록할 수 있어요`)
-    }
-
-    const excludeCredentials = existingCredentials.filter(hasCredentialId).map((c) => ({
-      id: c.credentialId,
-      ...(c.transports?.length && { transports: c.transports as AuthenticatorTransportFuture[] }),
-    }))
-
-    const options = await generateRegistrationOptions({
-      rpName: WEBAUTHN_RP_NAME,
-      rpID: WEBAUTHN_RP_ID,
-      userName: user.loginId,
-      userID: new Uint8Array(Buffer.from(user.userId.toString())),
-      userDisplayName: user.nickname || user.name,
-      attestationType: 'direct',
-      excludeCredentials,
-      authenticatorSelection: {
-        userVerification: 'required',
-        residentKey: 'required',
-      },
-    })
-
-    await storeChallenge(user.userId, ChallengeType.REGISTRATION, options.challenge)
-
-    return ok(options)
-  } catch (error) {
-    console.error('getRegistrationOptions:', error)
-    captureException(error, { extra: { name: 'getRegistrationOptions', userId } })
-    return internalServerError('패스키 등록 중 오류가 발생했어요')
   }
 }
 
@@ -294,65 +200,4 @@ export async function verifyAuthentication(body: unknown, turnstileToken: string
     captureException(error, { extra: { name: 'verifyAuthentication', userId: validatedData.id } })
     return internalServerError('패스키 인증 중 오류가 발생했어요')
   }
-}
-
-export async function verifyRegistration(body: RegistrationResponseJSON) {
-  const userId = await validateUserIdFromCookie()
-
-  if (!userId) {
-    return unauthorized('로그인 정보가 없거나 만료됐어요')
-  }
-
-  const validation = verifyRegistrationSchema.safeParse(body)
-
-  if (!validation.success) {
-    return badRequest('잘못된 요청이에요')
-  }
-
-  const registrationResponse = validation.data
-
-  try {
-    const challenge = await getAndDeleteChallenge(userId, ChallengeType.REGISTRATION)
-
-    if (!challenge) {
-      return forbidden('패스키를 등록할 수 없어요')
-    }
-
-    const { verified, registrationInfo } = await verifyRegistrationResponse({
-      response: registrationResponse,
-      expectedChallenge: challenge,
-      expectedOrigin: WEBAUTHN_ORIGIN,
-      expectedRPID: WEBAUTHN_RP_ID,
-    })
-
-    if (!verified || !registrationInfo) {
-      return forbidden('패스키를 등록할 수 없어요')
-    }
-
-    const { credential } = registrationInfo
-    const { id: credentialId, counter, transports, publicKey } = credential
-
-    const newPasskey = {
-      credentialId: credentialId,
-      counter,
-      publicKey: Buffer.from(publicKey).toString('base64'),
-      deviceType: encodeDeviceType(registrationResponse.authenticatorAttachment),
-      transports,
-      userId,
-      createdAt: new Date(),
-    }
-
-    await db.insert(credentialTable).values(newPasskey)
-    revalidatePath('/[name]/settings', 'page')
-
-    return noContent()
-  } catch (error) {
-    console.error('verifyRegistration:', error)
-    captureException(error, { extra: { name: 'verifyRegistration', userId } })
-    return internalServerError('패스키 등록 중 오류가 발생했어요')
-  }
-}
-
-function hasCredentialId<T extends { credentialId: string | null }>(value: T): value is T & { credentialId: string } {
-  return value.credentialId !== null
 }

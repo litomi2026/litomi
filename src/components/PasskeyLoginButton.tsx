@@ -7,7 +7,7 @@ import { toast } from 'sonner'
 import {
   getAuthenticationOptions,
   verifyAuthentication,
-} from '@/app/(navigation)/(right-search)/[name]/settings/passkey/actions'
+} from '@/app/(navigation)/(right-search)/[name]/settings/passkey/action-auth'
 import useActionResponse from '@/hook/useActionResponse'
 
 import IconSpinner from './icons/IconSpinner'
