@@ -18,9 +18,9 @@ export default function TwoFactorBackupCodes({ backupCodes, onComplete }: Props)
         <div className="flex items-start space-x-3">
           <AlertTriangle className="size-5 text-yellow-500 mt-0.5" />
           <div className="flex-1">
-            <h3 className="font-semibold text-yellow-500 mb-2">백업 코드를 안전하게 보관해주세요!</h3>
+            <h3 className="font-semibold text-yellow-500 mb-2">복구 코드를 안전하게 보관해주세요!</h3>
             <p className="text-sm text-zinc-400">
-              이 코드들은 인증 앱을 사용할 수 없을 때 로그인하는 데 사용됩니다. 각 코드는 한 번만 사용할 수 있으며, 이
+              이 코드는 인증 앱을 사용할 수 없을 때 로그인하는 데 사용됩니다. 각 코드는 한 번만 사용할 수 있으며, 이
               페이지를 떠나면 다시 볼 수 없습니다.
             </p>
           </div>
@@ -28,7 +28,7 @@ export default function TwoFactorBackupCodes({ backupCodes, onComplete }: Props)
       </div>
       <div className="rounded-lg bg-zinc-900 p-4">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-zinc-100">백업 코드</h3>
+          <h3 className="font-semibold text-zinc-100">복구 코드</h3>
           <button
             className="flex items-center space-x-1 rounded-lg bg-zinc-800 px-3 py-1.5 text-sm text-zinc-300 hover:bg-zinc-700"
             onClick={() => copy(backupCodes.join('\n'))}

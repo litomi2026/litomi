@@ -77,7 +77,7 @@ export async function regenerateBackupCodes(formData: FormData) {
     return result
   } catch (error) {
     captureException(error, { tags: { action: 'regenerateBackupCodes' } })
-    return badRequest('백업 코드 재생성 중 오류가 발생했어요')
+    return badRequest('복구 코드 재생성 중 오류가 발생했어요')
   }
 }
 

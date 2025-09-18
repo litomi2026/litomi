@@ -39,9 +39,9 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
     onSuccess: (data) => {
       if (data.isBackupCode) {
         if (data.backupCodeCount > 0) {
-          toast.info(`남은 백업 코드: ${data.backupCodeCount}개`)
+          toast.info(`남은 복구 코드: ${data.backupCodeCount}개`)
         } else {
-          toast.warning('백업 코드를 모두 사용했어요. 새로운 백업 코드를 생성해주세요.')
+          toast.warning('복구 코드를 모두 사용했어요. 새로운 복구 코드를 생성해주세요.')
         }
       }
 
@@ -61,7 +61,7 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
           </div>
           <h1 className="text-2xl font-bold text-zinc-100">2단계 인증</h1>
           <p className="mt-2 text-sm text-zinc-400">
-            {isBackupCode ? '백업 코드를 입력해주세요' : '인증 앱의 6자리 코드를 입력해주세요'}
+            {isBackupCode ? '복구 코드를 입력해주세요' : '인증 앱의 6자리 코드를 입력해주세요'}
           </p>
         </div>
         <form action={dispatchAction} className="grid gap-4">
@@ -87,7 +87,7 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
             <label
               aria-disabled={isBackupCode}
               className="flex items-center gap-2 transition aria-disabled:opacity-50"
-              title={isBackupCode ? '백업 코드를 사용하면 브라우저 신뢰 설정을 사용할 수 없어요' : ''}
+              title={isBackupCode ? '복구 코드를 사용하면 브라우저 신뢰 설정을 사용할 수 없어요' : ''}
             >
               <span className="ml-2 text-sm text-zinc-400">이 브라우저 신뢰 (30일)</span>
               <Toggle
@@ -122,7 +122,7 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
               type="button"
             >
               <IconKey className="mr-1 size-4" />
-              {isBackupCode ? '인증 코드 사용' : '백업 코드 사용'}
+              {isBackupCode ? '인증 코드 사용' : '복구 코드 사용'}
             </button>
 
             <button

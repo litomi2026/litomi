@@ -58,14 +58,14 @@ export default function TwoFactorManagement({ onBackupCodesChange, onStatusChang
           </div>
         )}
         <div className="flex justify-between text-sm">
-          <span className="text-zinc-500">남은 백업 코드</span>
+          <span className="text-zinc-500">남은 복구 코드</span>
           <span className="text-zinc-300">{remainingBackupCodes}개</span>
         </div>
       </div>
       {remainingBackupCodes < 3 && (
         <div className="rounded-lg bg-yellow-900/20 border border-yellow-800 p-4">
           <p className="text-sm text-yellow-500">
-            백업 코드가 {remainingBackupCodes}개만 남았어요. 새로운 백업 코드를 생성하는 것을 권장합니다.
+            복구 코드가 {remainingBackupCodes}개만 남았어요. 새로운 복구 코드를 생성하는 것을 권장합니다.
           </p>
         </div>
       )}
@@ -81,7 +81,7 @@ export default function TwoFactorManagement({ onBackupCodesChange, onStatusChang
             className="w-full rounded-lg bg-zinc-800 px-4 py-3 font-medium text-zinc-100 hover:bg-zinc-700"
             onClick={() => setShowRegenerateModal(true)}
           >
-            백업 코드 재생성
+            복구 코드 재생성
           </button>
         </div>
       )}
@@ -101,7 +101,7 @@ export default function TwoFactorManagement({ onBackupCodesChange, onStatusChang
           onSuccess={(backupCodes) => {
             onBackupCodesChange(backupCodes)
             setShowRegenerateModal(false)
-            toast.success('새로운 백업 코드를 생성했어요')
+            toast.success('새로운 복구 코드를 생성했어요')
           }}
         />
       )}
@@ -159,7 +159,7 @@ function RegenerateBackupCodesForm({ onCancel, onSuccess }: RegenerateBackupCode
     <form action={regenerateAction} className="grid gap-3">
       <div className="rounded-lg bg-yellow-900/20 border border-yellow-800 p-4">
         <p className="text-sm text-yellow-500">
-          새로운 백업 코드를 생성하면 기존 백업 코드는 모두 무효화돼요. 계속할까요?
+          새로운 복구 코드를 생성하면 기존 복구 코드는 모두 무효화돼요. 계속할까요?
         </p>
       </div>
       <OneTimeCodeInput defaultValue={defaultToken} />
