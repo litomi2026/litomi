@@ -2,7 +2,7 @@
 
 import { captureException } from '@sentry/nextjs'
 import { and, eq, isNull } from 'drizzle-orm'
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import { z } from 'zod/v4'
 
 import { BACKUP_CODE_PATTERN } from '@/constants/policy'
@@ -14,6 +14,7 @@ import { setAccessTokenCookie, setRefreshTokenCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 import { verifyPKCEChallenge } from '@/utils/pkce-server'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
+import { createTrustedBrowserToken, insertTrustedBrowser, setTrustedBrowserCookie } from '@/utils/trusted-browser'
 import { decryptTOTPSecret, verifyBackupCode, verifyTOTPToken } from '@/utils/two-factor'
 
 const verifyTwoFactorSchema = z.object({
@@ -49,10 +50,17 @@ export async function verifyTwoFactorLogin(formData: FormData) {
   }
 
   const { userId } = challengeData
-  const { allowed, retryAfter } = await twoFactorLimiter.check(String(userId))
+  const { allowed, retryAfter, limit } = await twoFactorLimiter.check(String(userId))
 
   if (!allowed) {
     const minutes = retryAfter ? Math.ceil(retryAfter / 60) : 1
+
+    // sendSecurityAlert({
+    //   userId,
+    //   event: 'multiple_failed_2fa',
+    //   details: { failedAttempts: limit },
+    // })
+
     return tooManyRequests(`너무 많은 인증 시도가 있었어요. ${minutes}분 후에 다시 시도해주세요.`)
   }
 
@@ -71,6 +79,7 @@ export async function verifyTwoFactorLogin(formData: FormData) {
       let isBackupCode = false
       let backupCodeCount = 0
 
+      // TOTP token
       if (token.length === 6) {
         try {
           const secret = decryptTOTPSecret(twoFactor.secret)
@@ -79,7 +88,9 @@ export async function verifyTwoFactorLogin(formData: FormData) {
           console.error('Failed to decrypt TOTP secret. It might be due to key mismatch:', decryptError)
           return badRequest('2단계 인증에 문제가 있어요. 관리자에게 문의해주세요.', formData)
         }
-      } else if (token.length === 9) {
+      }
+      // Backup code
+      else if (token.length === 9) {
         const backupCodes = await tx
           .select({ codeHash: twoFactorBackupCodeTable.codeHash })
           .from(twoFactorBackupCodeTable)
@@ -106,6 +117,12 @@ export async function verifyTwoFactorLogin(formData: FormData) {
           verified = true
           isBackupCode = true
           backupCodeCount = verificationResults.length - 1
+
+          // sendSecurityAlert({
+          //   userId,
+          //   event: 'backup_code_used',
+          //   details: { backupCodeCount },
+          // })
         }
       }
 
@@ -137,33 +154,31 @@ export async function verifyTwoFactorLogin(formData: FormData) {
       ])
 
       if (trustBrowser && !isBackupCode) {
-        // TODO: 신뢰하는 기기 구현하기 - LRU 알고리즘으로 최대 5개까지 유지하기
+        const headerList = await headers()
+        const userAgent = headerList.get('user-agent') || headerList.get('sec-ch-ua') || 'unknown'
+
+        try {
+          const browserId = await insertTrustedBrowser(userId, fingerprint, userAgent)
+          const token = await createTrustedBrowserToken(userId, fingerprint, browserId)
+          await setTrustedBrowserCookie(cookieStore, token)
+        } catch (error) {
+          console.error('insertTrustedBrowser:', error)
+        }
+
+        // sendSecurityAlert({
+        //   userId,
+        //   event: 'new_trusted_browser',
+        //   details: {
+        //     browserName: userAgent,
+        //     ipAddress: headerList.get('x-forwarded-for')?.split(',')[0].trim() || headerList.get('x-real-ip') || '',
+        //   },
+        // })
       }
 
       await Promise.all([
         setAccessTokenCookie(cookieStore, userId),
         remember && setRefreshTokenCookie(cookieStore, userId),
       ])
-
-      if (isBackupCode) {
-        const alertReasons = []
-        alertReasons.push('백업 코드가 사용됐어요')
-
-        if (backupCodeCount <= 2) {
-          alertReasons.push(`남은 백업 코드: ${backupCodeCount}개`)
-        }
-
-        // sendSecurityAlert({
-        //   userId,
-        //   event: 'backup_code_used',
-        //   details: {
-        //     reasons: alertReasons,
-        //     remainingBackupCodes,
-        //   },
-        // }).catch((error) => {
-        //   console.error('Failed to send security alert:', error)
-        // })
-      }
 
       await twoFactorLimiter.reward(String(userId))
 
@@ -176,7 +191,6 @@ export async function verifyTwoFactorLogin(formData: FormData) {
 
     return result
   } catch (error) {
-    console.error('verifyTwoFactorLogin:', error)
     captureException(error, { extra: { name: 'verifyTwoFactorLogin', userId } })
     return internalServerError('2단계 인증 중 오류가 발생했어요', formData)
   }

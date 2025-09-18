@@ -11,6 +11,7 @@ import type { TwoFactorStatus } from '../types'
 
 import { regenerateBackupCodes, removeTwoFactor } from '../actions'
 import OneTimeCodeInput from './OneTimeCodeInput'
+import TrustedBrowsers from './TrustedBrowsers'
 
 interface DisableConfirmationProps {
   onCancel: () => void
@@ -31,36 +32,40 @@ interface RegenerateBackupCodesFormProps {
 export default function TwoFactorManagement({ onBackupCodesChange, onStatusChange, status }: Props) {
   const [showDisableConfirm, setShowDisableConfirm] = useState(false)
   const [showRegenerateModal, setShowRegenerateModal] = useState(false)
-  const { remainingBackupCodes, createdAt, lastUsedAt } = status
+  const { remainingBackupCodes, createdAt, lastUsedAt, trustedBrowsers } = status
 
   return (
     <div className="grid gap-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-zinc-100">2단계 인증 (2FA)</h2>
-        <div className="rounded-full bg-green-900/20 px-3 py-1 text-xs font-medium text-green-500">활성화됨</div>
+        <h2 className="text-lg font-bold text-zinc-100">2단계 인증 (2FA)</h2>
+        <div className="rounded-full bg-green-900/20 px-2.5 py-1 text-xs font-medium text-green-500">활성화</div>
       </div>
       <div className="rounded-lg bg-zinc-900 p-4 space-y-2">
         {createdAt && (
           <div className="flex justify-between text-sm">
             <span className="text-zinc-500">활성화 일시</span>
-            <span className="text-zinc-300">{dayjs(createdAt).format('YYYY-MM-DD HH:mm')}</span>
+            <span className="text-zinc-300" title={dayjs(createdAt).format('YYYY년 M월 D일 HH:mm')}>
+              {dayjs(createdAt).format('YYYY년 M월 D일')}
+            </span>
           </div>
         )}
         {lastUsedAt && (
           <div className="flex justify-between text-sm">
             <span className="text-zinc-500">마지막 사용</span>
-            <span className="text-zinc-300">{dayjs(lastUsedAt).format('YYYY-MM-DD HH:mm')}</span>
+            <span className="text-zinc-300" title={dayjs(lastUsedAt).format('YYYY년 M월 D일 HH:mm')}>
+              {dayjs(lastUsedAt).format('YYYY년 M월 D일')}
+            </span>
           </div>
         )}
         <div className="flex justify-between text-sm">
-          <span className="text-zinc-500">남은 백업 코드</span>
+          <span className="text-zinc-500">남은 복구 코드</span>
           <span className="text-zinc-300">{remainingBackupCodes}개</span>
         </div>
       </div>
       {remainingBackupCodes < 3 && (
         <div className="rounded-lg bg-yellow-900/20 border border-yellow-800 p-4">
           <p className="text-sm text-yellow-500">
-            백업 코드가 {remainingBackupCodes}개만 남았어요. 새로운 백업 코드를 생성하는 것을 권장합니다.
+            복구 코드가 {remainingBackupCodes}개만 남았어요. 새로운 복구 코드를 생성하는 것을 권장합니다.
           </p>
         </div>
       )}
@@ -76,7 +81,7 @@ export default function TwoFactorManagement({ onBackupCodesChange, onStatusChang
             className="w-full rounded-lg bg-zinc-800 px-4 py-3 font-medium text-zinc-100 hover:bg-zinc-700"
             onClick={() => setShowRegenerateModal(true)}
           >
-            백업 코드 재생성
+            복구 코드 재생성
           </button>
         </div>
       )}
@@ -96,10 +101,13 @@ export default function TwoFactorManagement({ onBackupCodesChange, onStatusChang
           onSuccess={(backupCodes) => {
             onBackupCodesChange(backupCodes)
             setShowRegenerateModal(false)
-            toast.success('새로운 백업 코드를 생성했어요')
+            toast.success('새로운 복구 코드를 생성했어요')
           }}
         />
       )}
+      <div className="mt-8 border-t border-zinc-800 pt-8">
+        <TrustedBrowsers trustedBrowsers={trustedBrowsers || []} />
+      </div>
     </div>
   )
 }
@@ -151,7 +159,7 @@ function RegenerateBackupCodesForm({ onCancel, onSuccess }: RegenerateBackupCode
     <form action={regenerateAction} className="grid gap-3">
       <div className="rounded-lg bg-yellow-900/20 border border-yellow-800 p-4">
         <p className="text-sm text-yellow-500">
-          새로운 백업 코드를 생성하면 기존 백업 코드는 모두 무효화돼요. 계속할까요?
+          새로운 복구 코드를 생성하면 기존 복구 코드는 모두 무효화돼요. 계속할까요?
         </p>
       </div>
       <OneTimeCodeInput defaultValue={defaultToken} />

@@ -32,7 +32,7 @@ export default function TwoFactorOnboarding({ onSuccess }: Props) {
         },
         {
           icon: <KeyRound className="size-5" />,
-          title: '백업 코드 제공',
+          title: '복구 코드 제공',
           description: '휴대폰을 잃어버려도 로그인할 수 있어요',
         },
       ]}
