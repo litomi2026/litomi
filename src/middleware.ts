@@ -71,6 +71,8 @@ function setCookieToRequest(requestHeaders: Headers, res: NextResponse) {
 export const config = {
   // DOCS: The matcher values need to be constants so they can be statically analyzed at build-time
   // https://clerk.com/blog/skip-nextjs-middleware-static-and-public-files
+  // DOCS: Ignoring matching prefetches
+  // https://nextjs.org/docs/app/guides/content-security-policy#adding-a-nonce-with-middleware
   matcher: [
     {
       source: '/((?!.*\\.|_next/static|_next/image).*)',
