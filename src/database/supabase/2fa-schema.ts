@@ -1,4 +1,4 @@
-import { bigint, index, pgTable, primaryKey, text, timestamp, unique, varchar } from 'drizzle-orm/pg-core'
+import { bigint, pgTable, primaryKey, text, timestamp, unique } from 'drizzle-orm/pg-core'
 
 import { userTable } from './schema'
 
@@ -32,16 +32,10 @@ export const trustedBrowserTable = pgTable(
       .references(() => userTable.id, { onDelete: 'cascade' })
       .notNull(),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-    lastUsedAt: timestamp('last_used_at', { withTimezone: true }).defaultNow().notNull(),
     expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+    lastUsedAt: timestamp('last_used_at', { withTimezone: true }),
     browserId: text('browser_id').notNull(),
     browserName: text('browser_name'),
-    userAgent: text('user_agent'),
-    ipHash: varchar('ip_hash', { length: 64 }),
   },
-  (table) => [
-    index('idx_trusted_browser_user_id').on(table.userId),
-    index('idx_trusted_browser_browser_id').on(table.browserId),
-    unique('idx_trusted_browser_unique').on(table.userId, table.browserId),
-  ],
+  (table) => [unique('idx_trusted_browser_unique').on(table.userId, table.browserId)],
 ).enableRLS()
