@@ -2,6 +2,7 @@
 
 import { TurnstileInstance } from '@marsidev/react-turnstile'
 import { useQueryClient } from '@tanstack/react-query'
+import { Info } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { FormEvent, useCallback, useRef, useState } from 'react'
 import { toast } from 'sonner'
@@ -184,8 +185,20 @@ export default function SignupForm() {
           {nicknameError ? (
             <p className="mt-1 text-xs text-red-500">{nicknameError}</p>
           ) : (
-            <p className="mt-1 text-xs text-zinc-400">닉네임은 2자 이상 32자 이하로 입력해주세요</p>
+            <p className="mt-1 text-xs text-zinc-400">닉네임은 2자 이상 입력해주세요</p>
           )}
+        </div>
+      </div>
+      <div className="rounded-lg bg-zinc-800/50 border border-zinc-700 p-4">
+        <div className="flex gap-3">
+          <Info className="size-4 text-zinc-400 flex-shrink-0 mt-0.5" />
+          <div className="text-zinc-400">
+            <p className="text-sm font-medium text-zinc-300 mb-1">계정 자동 삭제 안내</p>
+            <p className="text-xs">
+              기본적으로 1년 동안 활동이 없는 계정은 자동으로 삭제돼요. 자동 삭제 기간은 회원 가입 후 설정 페이지에서
+              변경할 수 있어요.
+            </p>
+          </div>
         </div>
       </div>
       <button
