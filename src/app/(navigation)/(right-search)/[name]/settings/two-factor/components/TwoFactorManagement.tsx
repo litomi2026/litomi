@@ -11,6 +11,7 @@ import type { TwoFactorStatus } from '../types'
 
 import { regenerateBackupCodes, removeTwoFactor } from '../actions'
 import OneTimeCodeInput from './OneTimeCodeInput'
+import TrustedBrowsers from './TrustedBrowsers'
 
 interface DisableConfirmationProps {
   onCancel: () => void
@@ -31,25 +32,29 @@ interface RegenerateBackupCodesFormProps {
 export default function TwoFactorManagement({ onBackupCodesChange, onStatusChange, status }: Props) {
   const [showDisableConfirm, setShowDisableConfirm] = useState(false)
   const [showRegenerateModal, setShowRegenerateModal] = useState(false)
-  const { remainingBackupCodes, createdAt, lastUsedAt } = status
+  const { remainingBackupCodes, createdAt, lastUsedAt, trustedBrowsers } = status
 
   return (
     <div className="grid gap-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-zinc-100">2단계 인증 (2FA)</h2>
-        <div className="rounded-full bg-green-900/20 px-3 py-1 text-xs font-medium text-green-500">활성화됨</div>
+        <h2 className="text-lg font-bold text-zinc-100">2단계 인증 (2FA)</h2>
+        <div className="rounded-full bg-green-900/20 px-2.5 py-1 text-xs font-medium text-green-500">활성화</div>
       </div>
       <div className="rounded-lg bg-zinc-900 p-4 space-y-2">
         {createdAt && (
           <div className="flex justify-between text-sm">
             <span className="text-zinc-500">활성화 일시</span>
-            <span className="text-zinc-300">{dayjs(createdAt).format('YYYY-MM-DD HH:mm')}</span>
+            <span className="text-zinc-300" title={dayjs(createdAt).format('YYYY년 M월 D일 HH:mm')}>
+              {dayjs(createdAt).format('YYYY년 M월 D일')}
+            </span>
           </div>
         )}
         {lastUsedAt && (
           <div className="flex justify-between text-sm">
             <span className="text-zinc-500">마지막 사용</span>
-            <span className="text-zinc-300">{dayjs(lastUsedAt).format('YYYY-MM-DD HH:mm')}</span>
+            <span className="text-zinc-300" title={dayjs(lastUsedAt).format('YYYY년 M월 D일 HH:mm')}>
+              {dayjs(lastUsedAt).format('YYYY년 M월 D일')}
+            </span>
           </div>
         )}
         <div className="flex justify-between text-sm">
@@ -100,6 +105,9 @@ export default function TwoFactorManagement({ onBackupCodesChange, onStatusChang
           }}
         />
       )}
+      <div className="mt-8 border-t border-zinc-800 pt-8">
+        <TrustedBrowsers trustedBrowsers={trustedBrowsers || []} />
+      </div>
     </div>
   )
 }
