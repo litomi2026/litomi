@@ -18,9 +18,10 @@ type Props = {
 type TrustedBrowser = {
   id: number
   browserName: string | null
-  lastUsedAt: Date
+  lastUsedAt: Date | null
   createdAt: Date
   expiresAt: Date
+  isCurrentBrowser: boolean
 }
 
 export default function TrustedBrowsers({ trustedBrowsers }: Props) {
@@ -63,9 +64,9 @@ export default function TrustedBrowsers({ trustedBrowsers }: Props) {
           <p className="mt-1 text-sm text-zinc-400">신뢰하는 브라우저에서는 2단계 인증 없이 로그인할 수 있어요</p>
         </div>
         {browsers.length > 0 && (
-          <form action={dispatchRevokeAll} onSubmit={handleRevokeAll}>
+          <form action={dispatchRevokeAll} className="flex-shrink-0" onSubmit={handleRevokeAll}>
             <button
-              className="text-sm text-red-400 hover:text-red-300 transition whitespace-nowrap disabled:opacity-50"
+              className="text-sm text-red-400 hover:text-red-300 transition disabled:opacity-50"
               disabled={isRevokingAll}
               type="submit"
             >
@@ -83,37 +84,39 @@ export default function TrustedBrowsers({ trustedBrowsers }: Props) {
       ) : (
         <div className="space-y-2">
           {browsers.map((browser) => {
-            const { lastUsed, expiresIn } = formatDeviceInfo(browser)
-            const isCurrentDevice = lastUsed === '방금 전'
+            const { browserName, lastUsedAt, expiresAt, id, isCurrentBrowser } = browser
+            const { lastUsed, expiresIn } = formatBrowserInfo(browser)
 
             return (
               <div
                 className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-900/50 p-4"
-                key={browser.id}
+                key={id}
               >
                 <div className="flex items-center gap-3">
-                  <div className="text-zinc-400">{getDeviceIcon(browser.browserName)}</div>
+                  <div className="text-zinc-400">{getDeviceIcon(browserName)}</div>
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-zinc-200 line-clamp-1">
-                        {browser.browserName || '알 수 없는 브라우저'}
+                        {browserName || '알 수 없는 브라우저'}
                       </span>
-                      {isCurrentDevice && (
-                        <span className="rounded-full bg-green-900/50 px-2 py-0.5 text-xs text-green-400">
-                          현재 브라우저
+                      {isCurrentBrowser && (
+                        <span className="rounded-full bg-green-900/50 px-2 py-0.5 text-xs text-green-400 flex-shrink-0">
+                          현재
                         </span>
                       )}
                     </div>
                     <div className="mt-1 flex items-center gap-2 text-xs text-zinc-500">
-                      <span
-                        className="text-zinc-400"
-                        title={`${dayjs(browser.lastUsedAt).format('YYYY년 M월 D일 HH:mm')} 사용`}
-                      >
-                        {lastUsed}
-                        <span className="hidden sm:inline"> 사용</span>
-                      </span>
-                      <span>•</span>
-                      <span title={`${dayjs(browser.expiresAt).format('YYYY년 M월 D일 HH:mm')} 만료`}>
+                      {lastUsedAt && (
+                        <span
+                          className="text-zinc-400"
+                          title={`${dayjs(lastUsedAt).format('YYYY년 M월 D일 HH:mm')} 사용`}
+                        >
+                          {lastUsed}
+                          <span className="hidden sm:inline"> 사용</span>
+                        </span>
+                      )}
+                      {lastUsedAt && <span>•</span>}
+                      <span title={`${dayjs(expiresAt).format('YYYY년 M월 D일 HH:mm')} 만료`}>
                         {expiresIn}
                         <span className="hidden sm:inline"> 만료</span>
                       </span>
@@ -121,7 +124,7 @@ export default function TrustedBrowsers({ trustedBrowsers }: Props) {
                   </div>
                 </div>
                 <form action={dispatchRevokeSingle} onSubmit={handleRevokeDevice}>
-                  <input name="trustedBrowserId" type="hidden" value={browser.id} />
+                  <input name="trustedBrowserId" type="hidden" value={id} />
                   <button
                     className="rounded-lg p-2 text-zinc-400 hover:bg-zinc-800 hover:text-red-400 
                       disabled:opacity-50 transition"
@@ -150,10 +153,10 @@ export default function TrustedBrowsers({ trustedBrowsers }: Props) {
   )
 }
 
-function formatDeviceInfo(device: TrustedBrowser) {
-  const lastUsed = formatDistanceToNow(new Date(device.lastUsedAt))
+function formatBrowserInfo(browser: TrustedBrowser) {
+  const lastUsed = browser.lastUsedAt ? formatDistanceToNow(new Date(browser.lastUsedAt)) : null
   const now = dayjs()
-  const expiresAt = dayjs(device.expiresAt)
+  const expiresAt = dayjs(browser.expiresAt)
   const daysUntilExpiry = expiresAt.diff(now, 'day')
 
   let expiresIn: string

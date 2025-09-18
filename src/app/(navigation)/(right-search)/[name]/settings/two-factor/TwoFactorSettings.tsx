@@ -1,7 +1,11 @@
 import { and, eq, isNull, sql } from 'drizzle-orm'
+import { cookies } from 'next/headers'
 
+import { CookieKey } from '@/constants/storage'
 import { db } from '@/database/supabase/drizzle'
 import { trustedBrowserTable, twoFactorBackupCodeTable, twoFactorTable } from '@/database/supabase/schema'
+import { JWTType, verifyJWT } from '@/utils/jwt'
+import { TrustedBrowserPayload } from '@/utils/trusted-browser'
 
 import TwoFactorSettingsClient from './TwoFactorSettingsClient'
 import { TwoFactorStatus } from './types'
@@ -11,12 +15,15 @@ type Props = {
 }
 
 export default async function TwoFactorSettings({ userId }: Props) {
-  const status = await getTwoFactorStatus(userId)
+  const cookieStore = await cookies()
+  const trustedBrowserToken = cookieStore.get(CookieKey.TRUSTED_BROWSER_TOKEN)?.value
+  const currentBrowserId = await verifyTrustedBrowserToken(trustedBrowserToken, userId)
+  const status = await getTwoFactorStatus(userId, currentBrowserId)
 
   return <TwoFactorSettingsClient initialStatus={status} />
 }
 
-async function getTwoFactorStatus(userId: number) {
+async function getTwoFactorStatus(userId: number, currentBrowserId: string | null) {
   const [result] = await db
     .select({
       createdAt: twoFactorTable.createdAt,
@@ -38,7 +45,8 @@ async function getTwoFactorStatus(userId: number) {
                 'browserName', ${trustedBrowserTable.browserName},
                 'lastUsedAt', ${trustedBrowserTable.lastUsedAt},
                 'createdAt', ${trustedBrowserTable.createdAt},
-                'expiresAt', ${trustedBrowserTable.expiresAt}
+                'expiresAt', ${trustedBrowserTable.expiresAt},
+                'isCurrentBrowser', ${trustedBrowserTable.browserId} = ${currentBrowserId}
               ) ORDER BY ${trustedBrowserTable.lastUsedAt} DESC
             )
             FROM ${trustedBrowserTable}
@@ -57,4 +65,20 @@ async function getTwoFactorStatus(userId: number) {
   }
 
   return result
+}
+
+async function verifyTrustedBrowserToken(token: string | undefined, userId: number) {
+  if (!token) {
+    return null
+  }
+
+  try {
+    const tokenData = await verifyJWT<TrustedBrowserPayload>(token, JWTType.TRUSTED_BROWSER)
+    if (tokenData && +tokenData.userId === userId) {
+      return tokenData.sub
+    }
+    return null
+  } catch {
+    return null
+  }
 }

@@ -11,8 +11,9 @@ export interface TwoFactorStatus {
   trustedBrowsers?: {
     id: number
     browserName: string | null
-    lastUsedAt: Date
+    lastUsedAt: Date | null
     createdAt: Date
     expiresAt: Date
+    isCurrentBrowser: boolean
   }[]
 }
