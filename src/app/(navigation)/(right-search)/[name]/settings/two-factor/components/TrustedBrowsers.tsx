@@ -146,7 +146,7 @@ export default function TrustedBrowsers({ trustedBrowsers }: Props) {
           <li>• 신뢰하는 브라우저는 30일 후 자동으로 만료돼요</li>
           <li>• 최대 5개까지 브라우저를 신뢰할 수 있어요</li>
           <li>• 공용 컴퓨터에서는 이 옵션을 사용하지 마세요</li>
-          <li>• 의심스러운 활동이 감지되면 즉시 모든 브라우저를 제거하세요</li>
+          <li>• 의심스러운 활동이 감지되면 즉시 모두 제거하세요</li>
         </ul>
       </div>
     </div>
