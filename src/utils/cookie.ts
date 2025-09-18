@@ -5,7 +5,7 @@ import { cookies } from 'next/headers'
 import { CookieKey } from '@/constants/storage'
 
 import { sec } from './date'
-import { signJWT, TokenType, verifyJWT } from './jwt'
+import { JWTType, signJWT, verifyJWT } from './jwt'
 
 type CookieStore = Awaited<ReturnType<typeof cookies>>
 
@@ -30,7 +30,7 @@ export async function setAccessTokenCookie(
   cookieStore: ReadonlyRequestCookies | ResponseCookies,
   userId: number | string,
 ) {
-  const cookieValue = await signJWT({ sub: String(userId) }, TokenType.ACCESS)
+  const cookieValue = await signJWT({ sub: String(userId) }, JWTType.ACCESS)
 
   cookieStore.set(CookieKey.ACCESS_TOKEN, cookieValue, {
     httpOnly: true,
@@ -41,7 +41,7 @@ export async function setAccessTokenCookie(
 }
 
 export async function setRefreshTokenCookie(cookieStore: ReadonlyRequestCookies, userId: number | string) {
-  const cookieValue = await signJWT({ sub: String(userId) }, TokenType.REFRESH)
+  const cookieValue = await signJWT({ sub: String(userId) }, JWTType.REFRESH)
 
   cookieStore.set(CookieKey.REFRESH_TOKEN, cookieValue, {
     httpOnly: true,
@@ -75,7 +75,7 @@ async function verifyAccessToken(cookieStore: CookieStore) {
     return
   }
 
-  const payload = await verifyJWT(accessToken, TokenType.ACCESS).catch(() => null)
+  const payload = await verifyJWT(accessToken, JWTType.ACCESS).catch(() => null)
   const userId = payload?.sub
   return userId ? Number(userId) : null
 }

@@ -212,7 +212,7 @@ export default function LoginForm() {
             type="checkbox"
           />
           <span className="text-sm text-zinc-400 select-none transition peer-checked:text-foreground">
-            로그인 상태 유지
+            로그인 유지 (30일)
           </span>
           <div className="relative transition peer-checked:[&>span]:translate-x-full peer-checked:[&>div]:bg-brand-gradient peer-active:[&>div]:ring-2">
             <div className="w-10 h-6 bg-zinc-600 ring-zinc-500 rounded-full transition" />

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, mock, setSystemTime, test } from 'bun:test'
 
 import { CookieKey } from '@/constants/storage'
-import { signJWT, TokenType } from '@/utils/jwt'
+import { JWTType, signJWT } from '@/utils/jwt'
 
 import { GET } from '../route'
 
@@ -91,7 +91,7 @@ describe('GET /api/me', () => {
   describe('성공', () => {
     test('인증된 사용자가 자신의 프로필 정보를 성공적으로 조회한다', async () => {
       // Given
-      const token = await signJWT({ sub: '1', loginId: 'testuser1' }, TokenType.ACCESS)
+      const token = await signJWT({ sub: '1', loginId: 'testuser1' }, JWTType.ACCESS)
       mockCookie = { value: token }
 
       // When
@@ -114,7 +114,7 @@ describe('GET /api/me', () => {
 
     test('프로필 이미지가 없는 사용자의 정보를 조회한다', async () => {
       // Given
-      const token = await signJWT({ sub: '2', loginId: 'testuser2' }, TokenType.ACCESS)
+      const token = await signJWT({ sub: '2', loginId: 'testuser2' }, JWTType.ACCESS)
       mockCookie = { value: token }
 
       // When
@@ -149,7 +149,7 @@ describe('GET /api/me', () => {
 
     test('만료된 access token으로 요청하는 경우 401 응답을 반환한다', async () => {
       // Given
-      const expiredToken = await signJWT({ sub: '1', loginId: 'testuser1' }, TokenType.ACCESS)
+      const expiredToken = await signJWT({ sub: '1', loginId: 'testuser1' }, JWTType.ACCESS)
       mockCookie = { value: expiredToken }
       setSystemTime(new Date(Date.now() + 2 * 60 * 60 * 1000))
 
@@ -168,7 +168,7 @@ describe('GET /api/me', () => {
         JWT_SECRET_REFRESH_TOKEN: 'test-secret-refresh-token-for-testing',
       }))
 
-      const invalidToken = await signJWT({ sub: '1', loginId: 'testuser1' }, TokenType.ACCESS)
+      const invalidToken = await signJWT({ sub: '1', loginId: 'testuser1' }, JWTType.ACCESS)
       mockCookie = { value: invalidToken }
 
       mock.module('@/constants/env', () => ({
@@ -198,7 +198,7 @@ describe('GET /api/me', () => {
 
     test('삭제된 사용자의 토큰으로 요청하는 경우 404 응답을 반환한다', async () => {
       // Given
-      const token = await signJWT({ sub: '999', loginId: 'deleteduser' }, TokenType.ACCESS)
+      const token = await signJWT({ sub: '999', loginId: 'deleteduser' }, JWTType.ACCESS)
       mockCookie = { value: token }
 
       // When
@@ -215,7 +215,7 @@ describe('GET /api/me', () => {
   describe('기타', () => {
     test('동시에 여러 요청을 보내는 경우 일관된 응답을 반환한다', async () => {
       // Given
-      const token = await signJWT({ sub: '1', loginId: 'testuser1' }, TokenType.ACCESS)
+      const token = await signJWT({ sub: '1', loginId: 'testuser1' }, JWTType.ACCESS)
       mockCookie = { value: token }
 
       // When
@@ -231,7 +231,7 @@ describe('GET /api/me', () => {
 
     test('데이터베이스 연결 오류 시 적절한 오류 응답을 반환한다', async () => {
       // Given
-      const token = await signJWT({ sub: '1', loginId: 'testuser1' }, TokenType.ACCESS)
+      const token = await signJWT({ sub: '1', loginId: 'testuser1' }, JWTType.ACCESS)
       mockCookie = { value: token }
       shouldThrowDatabaseError = true
 
@@ -247,7 +247,7 @@ describe('GET /api/me', () => {
   describe('보안', () => {
     test('다른 사용자의 정보에 접근할 수 없다', async () => {
       // Given
-      const token = await signJWT({ sub: '1', loginId: 'testuser1' }, TokenType.ACCESS)
+      const token = await signJWT({ sub: '1', loginId: 'testuser1' }, JWTType.ACCESS)
       mockCookie = { value: token }
 
       // When

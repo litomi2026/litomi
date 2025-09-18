@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 import { CookieKey } from './constants/storage'
 import { setAccessTokenCookie } from './utils/cookie'
-import { TokenType, verifyJWT } from './utils/jwt'
+import { JWTType, verifyJWT } from './utils/jwt'
 
 export async function middleware({ nextUrl, method, cookies, headers }: NextRequest) {
   const { pathname } = nextUrl
@@ -19,7 +19,7 @@ export async function middleware({ nextUrl, method, cookies, headers }: NextRequ
   }
 
   const accessToken = cookies.get(CookieKey.ACCESS_TOKEN)?.value
-  const validAT = await verifyJWT(accessToken ?? '', TokenType.ACCESS).catch(() => null)
+  const validAT = await verifyJWT(accessToken ?? '', JWTType.ACCESS).catch(() => null)
 
   // 로그인 상태 -> 통과
   if (validAT) {
@@ -35,7 +35,7 @@ export async function middleware({ nextUrl, method, cookies, headers }: NextRequ
     return response
   }
 
-  const validRT = await verifyJWT(refreshToken, TokenType.REFRESH).catch(() => null)
+  const validRT = await verifyJWT(refreshToken, JWTType.REFRESH).catch(() => null)
   const userId = validRT?.sub
 
   // at가 만료됐는데 rt도 만료된 경우 -> 쿠키 삭제

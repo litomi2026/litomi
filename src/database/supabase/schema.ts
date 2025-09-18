@@ -210,5 +210,5 @@ export const readingHistoryTable = pgTable(
   ],
 ).enableRLS()
 
-export { trustedDeviceTable, twoFactorBackupCodeTable, twoFactorTable } from './2fa-schema'
+export { trustedBrowserTable, twoFactorBackupCodeTable, twoFactorTable } from './2fa-schema'
 export { mangaSeenTable, notificationConditionTable, notificationCriteriaTable } from './notification-schema'

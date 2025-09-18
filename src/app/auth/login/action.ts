@@ -17,6 +17,8 @@ import { initiatePKCEChallenge } from '@/utils/pkce-server'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
 import TurnstileValidator, { getTurnstileToken } from '@/utils/turnstile'
 
+import { checkTrustedBrowser } from './utils'
+
 const loginSchema = z.object({
   loginId: loginIdSchema,
   password: passwordSchema,
@@ -95,14 +97,16 @@ export default async function login(formData: FormData) {
       .where(and(eq(twoFactorTable.userId, user.id), isNull(twoFactorTable.expiresAt)))
 
     const { id, name, lastLoginAt, lastLogoutAt } = user
+    const cookieStore = await cookies()
 
     if (twoFactor) {
-      // TODO: 신뢰하는 기기 구현하기
-      const { authorizationCode } = await initiatePKCEChallenge(user.id, codeChallenge, fingerprint)
-      return ok({ authorizationCode })
-    }
+      const isTrustedBrowser = await checkTrustedBrowser(cookieStore, user.id, fingerprint)
 
-    const cookieStore = await cookies()
+      if (!isTrustedBrowser) {
+        const { authorizationCode } = await initiatePKCEChallenge(user.id, codeChallenge, fingerprint)
+        return ok({ authorizationCode })
+      }
+    }
 
     await Promise.all([
       db.update(userTable).set({ loginAt: new Date() }).where(eq(userTable.id, id)),

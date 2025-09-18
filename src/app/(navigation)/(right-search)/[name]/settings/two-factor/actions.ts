@@ -3,12 +3,12 @@
 import { captureException } from '@sentry/nextjs'
 import { and, eq, gt, isNull, sql } from 'drizzle-orm'
 import ms from 'ms'
-import speakeasy from 'speakeasy'
+import { authenticator } from 'otplib'
 import { z } from 'zod/v4'
 
 import { TOTP_ISSUER } from '@/constants'
 import { db } from '@/database/supabase/drizzle'
-import { twoFactorBackupCodeTable, twoFactorTable, userTable } from '@/database/supabase/schema'
+import { trustedBrowserTable, twoFactorBackupCodeTable, twoFactorTable, userTable } from '@/database/supabase/schema'
 import { badRequest, forbidden, internalServerError, noContent, ok, unauthorized } from '@/utils/action-response'
 import { validateUserIdFromCookie } from '@/utils/cookie'
 import {
@@ -128,6 +128,44 @@ export async function removeTwoFactor(formData: FormData) {
   }
 }
 
+export async function revokeAllTrustedDevices() {
+  const userId = await validateUserIdFromCookie()
+
+  if (!userId) {
+    return unauthorized('로그인 정보가 없거나 만료됐어요')
+  }
+
+  try {
+    await db.delete(trustedBrowserTable).where(eq(trustedBrowserTable.userId, userId))
+
+    return noContent()
+  } catch (error) {
+    console.error('revokeAllTrustedDevices:', error)
+    captureException(error, { tags: { action: 'revokeAllTrustedDevices' } })
+    return internalServerError('브라우저 제거에 실패했어요')
+  }
+}
+
+export async function revokeTrustedDevice(browserId: number) {
+  const userId = await validateUserIdFromCookie()
+
+  if (!userId) {
+    return unauthorized('로그인 정보가 없거나 만료됐어요')
+  }
+
+  try {
+    await db
+      .delete(trustedBrowserTable)
+      .where(and(eq(trustedBrowserTable.userId, userId), eq(trustedBrowserTable.id, browserId)))
+
+    return noContent()
+  } catch (error) {
+    console.error('revokeTrustedDevice:', error)
+    captureException(error, { tags: { action: 'revokeTrustedDevice' } })
+    return internalServerError('브라우저 제거에 실패했어요')
+  }
+}
+
 export async function setupTwoFactor() {
   const userId = await validateUserIdFromCookie()
 
@@ -136,7 +174,7 @@ export async function setupTwoFactor() {
   }
 
   try {
-    const rawSecret = speakeasy.generateSecret().base32
+    const rawSecret = authenticator.generateSecret()
     const encryptedSecret = encryptTOTPSecret(rawSecret)
     const expiresAt = new Date(Date.now() + ms('5 minutes'))
     const expiresAtString = expiresAt.toISOString()
@@ -185,14 +223,8 @@ export async function setupTwoFactor() {
       return forbidden('2단계 인증을 설정할 수 없어요')
     }
 
-    const otpauthURL = speakeasy.otpauthURL({
-      secret: rawSecret,
-      label: loginId,
-      issuer: TOTP_ISSUER,
-      encoding: 'base32',
-    })
-
-    const qrCodeDataURL = await generateQRCode(otpauthURL)
+    const keyURI = authenticator.keyuri(loginId, TOTP_ISSUER, rawSecret)
+    const qrCodeDataURL = await generateQRCode(keyURI)
 
     return ok({
       qrCode: qrCodeDataURL,
