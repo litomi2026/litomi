@@ -75,10 +75,12 @@ export const config = {
     {
       source: '/((?!.*\\.|_next/static|_next/image).*)',
       has: [{ type: 'cookie', key: 'rt' }],
+      missing: [{ type: 'header', key: 'next-router-prefetch' }],
     },
     {
       source: '/((?!.*\\.|_next/static|_next/image).*)',
       has: [{ type: 'cookie', key: 'at' }],
+      missing: [{ type: 'header', key: 'next-router-prefetch' }],
     },
   ],
 }
