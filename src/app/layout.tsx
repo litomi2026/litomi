@@ -9,6 +9,7 @@ import { ReactNode } from 'react'
 import { Toaster } from 'sonner'
 
 import LibraryModal from '@/components/card/LibraryModal'
+import HiyobiPing from '@/components/HiyobiPing'
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar'
 import { CANONICAL_URL, defaultOpenGraph, DESCRIPTION, SHORT_NAME, THEME_COLOR } from '@/constants'
 import {
@@ -96,6 +97,7 @@ export default function RootLayout({ children }: Readonly<Props>) {
           <LibraryModal />
         </QueryProvider>
         <ServiceWorkerRegistrar />
+        <HiyobiPing />
         <Toaster duration={3000} position="top-center" richColors theme="dark" />
         {VERCEL_SPEED_INSIGHTS && <SpeedInsights />}
         {VERCEL_ANALYTICS && <Analytics />}
