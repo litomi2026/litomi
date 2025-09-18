@@ -56,7 +56,7 @@ export const metadata: Metadata = {
   description: DESCRIPTION,
   applicationName: SHORT_NAME,
   keywords: 'litomi, manga, comic, webtoon, manhwa, manhua, 리토미, 망가, 만화, 웹툰',
-  referrer: 'strict-origin-when-cross-origin',
+  referrer: 'same-origin',
   robots: {
     index: true,
     follow: true,
