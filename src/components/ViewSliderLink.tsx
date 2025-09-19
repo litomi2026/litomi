@@ -16,12 +16,14 @@ export default function ViewSliderLink() {
   const { layout: currentLayout } = useParams()
 
   return (
-    <div
-      className="flex bg-zinc-900 border-2 p-1 rounded-xl text-zinc-400
-        [&_a]:flex [&_a]:items-center [&_a]:relative [&_a]:rounded [&_a]:px-3 [&_a]:py-1 [&_a]:aria-current:font-bold [&_a]:aria-current:text-foreground [&_a]:aria-current:pointer-events-none"
-    >
+    <div className="flex bg-zinc-900 border-2 p-1 rounded-xl text-zinc-400">
       {layouts.map(([layout, { index, label }]) => (
-        <Link aria-current={currentLayout === layout} href={layout} key={label}>
+        <Link
+          aria-current={currentLayout === layout}
+          className="flex items-center relative rounded px-3 py-1 aria-current:font-bold aria-current:text-foreground aria-current:pointer-events-none"
+          href={layout}
+          key={label}
+        >
           {index === 0 && isValidLayout(currentLayout) && (
             <div
               className="absolute inset-0 bg-zinc-800 rounded-lg border-2 border-zinc-700 pointer-events-none transition"
