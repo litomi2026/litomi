@@ -88,7 +88,7 @@ function InstallPrompt() {
   if (deferredPrompt) {
     return (
       <button
-        className="mx-auto text-foreground rounded-lg border-2 border-brand-gradient hover:brightness-125 active:brightness-75 transition"
+        className="mx-auto text-foreground rounded-full border-2 border-brand-gradient hover:brightness-125 active:brightness-75 transition"
         onClick={async () => {
           await deferredPrompt.prompt()
           const { outcome } = await deferredPrompt.userChoice
