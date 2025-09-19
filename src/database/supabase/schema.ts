@@ -201,7 +201,7 @@ export const readingHistoryTable = pgTable(
       .references(() => userTable.id, { onDelete: 'cascade' })
       .notNull(),
     mangaId: integer('manga_id').notNull(),
-    lastPage: integer('last_page').notNull(),
+    lastPage: smallint('last_page').notNull(),
     updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [
