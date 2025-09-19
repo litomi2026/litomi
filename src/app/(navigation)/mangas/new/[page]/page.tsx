@@ -1,4 +1,6 @@
 import { Metadata } from 'next'
+import { notFound } from 'next/navigation'
+import z from 'zod/v4'
 
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 
@@ -17,6 +19,18 @@ export const metadata: Metadata = {
   },
 }
 
-export default function Page() {
-  return <div>Page</div>
+const mangasNewSchema = z.object({
+  page: z.coerce.number().int().positive(),
+})
+
+export default async function Page({ params }: PageProps<'/mangas/new/[page]'>) {
+  const validation = mangasNewSchema.safeParse(await params)
+
+  if (!validation.success) {
+    notFound()
+  }
+
+  const { page } = validation.data
+
+  return <div>{page}</div>
 }
