@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "bun tools/checkEnvVars.ts && next dev --turbopack",
+    "dev:prod": "bun tools/checkEnvVars.ts && env-cmd -f .env.production next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -95,6 +96,7 @@
     "bun": "^1.2.21",
     "dotenv": "^16.6.1",
     "drizzle-kit": "^0.31.4",
+    "env-cmd": "^11.0.0",
     "eslint": "^9.35.0",
     "eslint-config-next": "15.3.0",
     "eslint-config-prettier": "^10.1.8",

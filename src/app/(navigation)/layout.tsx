@@ -47,7 +47,7 @@ export default async function Layout({ children }: LayoutProps) {
             북마크
           </SelectableLink>
           <SelectableLink className="hidden sm:block" href="/posts/recommand" hrefMatch="/post" Icon={IconPost}>
-            글
+            이야기
           </SelectableLink>
           <ProfileLink className="hidden sm:block" />
           <PublishButton className="hidden mx-auto my-4 sm:block xl:mx-0" />
