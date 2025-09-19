@@ -51,7 +51,6 @@ export default async function Page({ params }: PageProps<'/ranking/[metric]/[per
 
   const { metric, period } = validation.data
   const rankings = await getRankingData(metric, period)
-  console.log('👀 - Page - rankings:', rankings)
 
   if (!rankings) {
     notFound()

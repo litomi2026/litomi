@@ -16,10 +16,12 @@ function getPeriodStart(period: PeriodParam): Date | null {
       return null
     case PeriodParam.DAY:
       return new Date(now.getTime() - ms('1 day'))
+    case PeriodParam.HALF:
+      return new Date(now.getTime() - ms('0.5 year'))
     case PeriodParam.MONTH:
       return new Date(now.getTime() - ms('30 days'))
     case PeriodParam.QUARTER:
-      return new Date(now.getTime() - ms('91 days'))
+      return new Date(now.getTime() - ms('0.25 year'))
     case PeriodParam.WEEK:
       return new Date(now.getTime() - ms('1 week'))
     case PeriodParam.YEAR:
