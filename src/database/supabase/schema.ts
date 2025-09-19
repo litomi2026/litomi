@@ -68,7 +68,7 @@ export const libraryItemTable = pgTable(
   },
   (table) => [
     primaryKey({ columns: [table.libraryId, table.mangaId] }),
-    index('idx_library_item_created_at').on(table.createdAt),
+    index('idx_library_item_created_at').on(table.createdAt.desc()),
   ],
 ).enableRLS()
 

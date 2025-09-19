@@ -1,9 +1,9 @@
 'use client'
 
-import { Clock, TrendingUp } from 'lucide-react'
+import { TrendingUp } from 'lucide-react'
 import { useParams } from 'next/navigation'
 
-import { metricInfo, Params, periodLabels, PeriodParam } from './common'
+import { metricInfo, Params, periodLabels } from './common'
 
 export default function RankingTitle() {
   const { metric, period } = useParams<Params>()
@@ -16,8 +16,7 @@ export default function RankingTitle() {
         {periodLabels[period]} {currentMetric?.label} 순위
       </h1>
       <div className="ml-auto flex items-center gap-2">
-        {period === PeriodParam.ALL && <TrendingUp className="size-4 text-zinc-500" />}
-        {period !== PeriodParam.ALL && <Clock className="size-4 text-zinc-500" />}
+        <TrendingUp className="size-4 text-zinc-500" />
         <span className="text-sm text-zinc-500">TOP 20</span>
       </div>
     </div>
