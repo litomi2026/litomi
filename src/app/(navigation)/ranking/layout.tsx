@@ -1,11 +1,8 @@
-import Link from 'next/link'
-
 import type { LayoutProps } from '@/types/nextjs'
 
-import LinkPending from '@/components/LinkPending'
-
-import { metricInfo, MetricParam, periodLabels } from './common'
+import { metricInfo, MetricParam, periodLabels, PeriodParam } from './common'
 import MetricLink from './MetricLink'
+import PeriodLink from './PeriodLink'
 import RankingTitle from './RankingTitle'
 
 export default async function Layout({ children }: LayoutProps) {
@@ -19,14 +16,8 @@ export default async function Layout({ children }: LayoutProps) {
           ))}
         </nav>
         <nav className="flex gap-1 overflow-x-auto">
-          {Object.entries(periodLabels).map(([value, label]) => (
-            <Link
-              className="p-2 px-4 rounded-lg text-sm font-medium transition text-zinc-400 hover:text-white hover:bg-zinc-900"
-              href={value}
-              key={value}
-            >
-              <LinkPending className="text-foreground w-6 h-5">{label}</LinkPending>
-            </Link>
+          {Object.keys(periodLabels).map((value) => (
+            <PeriodLink key={value} value={value as PeriodParam} />
           ))}
         </nav>
       </header>
