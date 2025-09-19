@@ -5,10 +5,9 @@ import z from 'zod/v4'
 import { getMangasFromMultiSources } from '@/common/manga'
 import MangaCard from '@/components/card/MangaCard'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
-import { sec } from '@/utils/date'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
-import { metricInfo, MetricParam, periodLabels, PeriodParam } from '../../common'
+import { metricInfo, MetricParam, periodLabels, PeriodParam, RANKING_PAGE_REVALIDATE } from '../../common'
 import { getRankingData } from './query'
 
 export const dynamic = 'force-static'
@@ -42,6 +41,16 @@ export async function generateMetadata({ params }: PageProps<'/ranking/[metric]/
   }
 }
 
+export async function generateStaticParams() {
+  const params = []
+  for (const metric of Object.values(MetricParam)) {
+    for (const period of Object.values(PeriodParam)) {
+      params.push({ metric, period })
+    }
+  }
+  return params
+}
+
 export default async function Page({ params }: PageProps<'/ranking/[metric]/[period]'>) {
   const validation = mangasRankingSchema.safeParse(await params)
 
@@ -56,11 +65,9 @@ export default async function Page({ params }: PageProps<'/ranking/[metric]/[per
     notFound()
   }
 
-  const revalidate = sec('1 day')
-
   const [mangasMap1, mangasMap2] = await Promise.all([
-    getMangasFromMultiSources(rankings.map((ranking) => ranking.mangaId).slice(0, 10), revalidate),
-    getMangasFromMultiSources(rankings.map((ranking) => ranking.mangaId).slice(10, 20), revalidate),
+    getMangasFromMultiSources(rankings.map((ranking) => ranking.mangaId).slice(0, 10), RANKING_PAGE_REVALIDATE),
+    getMangasFromMultiSources(rankings.map((ranking) => ranking.mangaId).slice(10, 20), RANKING_PAGE_REVALIDATE),
   ])
 
   return (

@@ -17,7 +17,7 @@ export default async function Layout({ children }: LayoutProps) {
       <h1 className="sr-only">작품 목록</h1>
       <div className="flex justify-center flex-wrap gap-2 whitespace-nowrap text-sm sm:justify-end md:text-base">
         <Link
-          className="flex items-center gap-2 p-2 px-4 rounded-xl text-sm font-medium transition border-2 text-zinc-400 hover:text-white hover:bg-zinc-900"
+          className="flex items-center gap-2 p-2 px-4 rounded-xl text-sm font-medium transition border-2 text-white hover:bg-zinc-900"
           href={`/ranking/${DEFAULT_METRIC}/${DEFAULT_PERIOD}`}
         >
           <LinkPending className="size-5">

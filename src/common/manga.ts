@@ -115,7 +115,7 @@ export async function getMangasFromMultiSources(
   } = (EDGE_CONFIG ? await get<ProxyConfig>('proxy') : DEFAULT_PROXY_CONFIG) ?? {}
 
   const harpiClient = harpi ? HarpiClient.getInstance() : null
-  const harpiMangas = await harpiClient?.searchMangas({ ids }).catch((error) => new Error(error))
+  const harpiMangas = await harpiClient?.searchMangas({ ids }, revalidate).catch((error) => new Error(error))
   const mangaMap: Record<number, Manga> = {}
   const remainingIds = []
 
