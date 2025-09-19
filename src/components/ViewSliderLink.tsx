@@ -1,4 +1,7 @@
+'use client'
+
 import Link from 'next/link'
+import { useParams } from 'next/navigation'
 
 import { ViewCookie } from '@/utils/param'
 
@@ -9,24 +12,20 @@ const layoutMap = {
 
 const layouts = Object.entries(layoutMap)
 
-type Props = {
-  current: '' | ViewCookie
-  hrefPrefix?: string
-  hrefSuffix?: string
-}
+export default function ViewSliderLink() {
+  const { layout: currentLayout } = useParams()
 
-export default function ViewSliderLink({ current, hrefPrefix = '', hrefSuffix = '' }: Readonly<Props>) {
   return (
     <div
       className="flex bg-zinc-900 border-2 p-1 rounded-xl text-zinc-400
         [&_a]:flex [&_a]:items-center [&_a]:relative [&_a]:rounded [&_a]:px-3 [&_a]:py-1 [&_a]:aria-current:font-bold [&_a]:aria-current:text-foreground [&_a]:aria-current:pointer-events-none"
     >
       {layouts.map(([layout, { index, label }]) => (
-        <Link aria-current={current === layout} href={`${hrefPrefix}${layout}${hrefSuffix}`} key={label}>
-          {index === 0 && current && (
+        <Link aria-current={currentLayout === layout} href={layout} key={label}>
+          {index === 0 && isValidLayout(currentLayout) && (
             <div
               className="absolute inset-0 bg-zinc-800 rounded-lg border-2 border-zinc-700 pointer-events-none transition"
-              style={{ transform: `translateX(${100 * layoutMap[current].index}%)` }}
+              style={{ transform: `translateX(${100 * layoutMap[currentLayout].index}%)` }}
             />
           )}
           <span className="relative">{label}</span>
@@ -34,4 +33,8 @@ export default function ViewSliderLink({ current, hrefPrefix = '', hrefSuffix = 
       ))}
     </div>
   )
+}
+
+function isValidLayout(layout: unknown): layout is keyof typeof layoutMap {
+  return typeof layout === 'string' && layout in layoutMap
 }

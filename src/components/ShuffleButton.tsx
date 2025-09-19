@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { ComponentProps, memo, useCallback, useEffect, useTransition } from 'react'
 
 import IconShuffle from '@/components/icons/IconShuffle'
@@ -9,7 +9,7 @@ import { useShffleStore } from '@/store/shuffle'
 import IconSpinner from './icons/IconSpinner'
 
 interface Props extends ComponentProps<'button'> {
-  action: 'random' | 'refresh'
+  action: 'navigate' | 'refresh'
   href?: string
   iconClassName?: string
   retryInterval?: number
@@ -19,6 +19,7 @@ export default memo(ShuffleButton)
 
 function ShuffleButton({ iconClassName, className = '', action, href, retryInterval = 20, ...props }: Readonly<Props>) {
   const router = useRouter()
+  const { layout } = useParams()
   const [isPending, startTransition] = useTransition()
   const { cooldown, startTimer } = useShffleStore()
 
@@ -27,13 +28,13 @@ function ShuffleButton({ iconClassName, className = '', action, href, retryInter
       if (action === 'refresh') {
         router.refresh()
       } else if (href) {
-        router.push(href)
+        router.push(`${href}/${layout}`)
       }
     })
 
     startTimer(retryInterval)
     window.scrollTo({ top: 0 })
-  }, [action, retryInterval, href, router, startTimer])
+  }, [action, retryInterval, href, router, startTimer, layout])
 
   useEffect(() => {
     startTimer()

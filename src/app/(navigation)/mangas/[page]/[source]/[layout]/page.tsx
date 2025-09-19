@@ -7,8 +7,7 @@ import Navigation from '@/components/Navigation'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { createErrorManga } from '@/constants/json'
 import { HiyobiClient } from '@/crawler/hiyobi'
-import { KHentaiClient } from '@/crawler/k-hentai'
-import { getTotalPages, SourceParam, ViewCookie } from '@/utils/param'
+import { SourceParam, ViewCookie } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 import { mangasSchema } from './schema'
@@ -39,10 +38,6 @@ export async function generateStaticParams() {
     }
   }
 
-  for (const view of views) {
-    params.push({ page: '1', source: SourceParam.K_HENTAI, layout: view })
-  }
-
   return params
 }
 
@@ -53,8 +48,8 @@ export default async function Page({ params }: PageProps<'/mangas/[page]/[source
     notFound()
   }
 
-  const { page, source, layout } = validation.data
-  const mangas = await getMangas({ source, page })
+  const { page, layout } = validation.data
+  const mangas = await getMangas({ page })
 
   if (!mangas || mangas.length === 0) {
     notFound()
@@ -77,26 +72,20 @@ export default async function Page({ params }: PageProps<'/mangas/[page]/[source
           ),
         )}
       </ul>
-      {source !== SourceParam.K_HENTAI && (
-        <Navigation
-          currentPage={page}
-          hrefPrefix="../../"
-          hrefSuffix={`/${source || SourceParam.HIYOBI}/${layout}`}
-          totalPages={getTotalPages(source)}
-        />
-      )}
+      <Navigation
+        currentPage={page}
+        hrefPrefix="../../"
+        hrefSuffix={`/${SourceParam.HIYOBI}/${layout}`}
+        totalPages={7500}
+      />
     </>
   )
 }
 
-async function getMangas({ source, page }: { source: SourceParam; page: number }) {
+async function getMangas({ page }: { page: number }) {
   // cacheLife('hours')
   try {
-    if (source === SourceParam.HIYOBI) {
-      return await HiyobiClient.getInstance().fetchMangas(page)
-    } else if (source === SourceParam.K_HENTAI) {
-      return await KHentaiClient.getInstance().searchKoreanMangas()
-    }
+    return await HiyobiClient.getInstance().fetchMangas(page)
   } catch (error) {
     return [createErrorManga({ error })]
   }
