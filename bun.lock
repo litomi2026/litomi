@@ -72,6 +72,7 @@
         "bun": "^1.2.21",
         "dotenv": "^16.6.1",
         "drizzle-kit": "^0.31.4",
+        "env-cmd": "^11.0.0",
         "eslint": "^9.35.0",
         "eslint-config-next": "15.3.0",
         "eslint-config-prettier": "^10.1.8",
@@ -148,6 +149,8 @@
     "@babel/traverse": ["@babel/traverse@7.28.0", "", { "dependencies": { "@babel/code-frame": "^7.27.1", "@babel/generator": "^7.28.0", "@babel/helper-globals": "^7.28.0", "@babel/parser": "^7.28.0", "@babel/template": "^7.27.2", "@babel/types": "^7.28.0", "debug": "^4.3.1" } }, "sha512-mGe7UK5wWyh0bKRfupsUchrQGqvDbZDbKJw+kcRGSmdHVYrv+ltd0pnpDTVpiTqnaBru9iEvA8pz8W46v0Amwg=="],
 
     "@babel/types": ["@babel/types@7.28.1", "", { "dependencies": { "@babel/helper-string-parser": "^7.27.1", "@babel/helper-validator-identifier": "^7.27.1" } }, "sha512-x0LvFTekgSX+83TI28Y9wYPUfzrnl2aT5+5QLnO6v7mSJYtEEevuDRN0F0uSHRk1G1IWZC43o00Y0xDDrpBGPQ=="],
+
+    "@commander-js/extra-typings": ["@commander-js/extra-typings@13.1.0", "", { "peerDependencies": { "commander": "~13.1.0" } }, "sha512-q5P52BYb1hwVWE6dtID7VvuJWrlfbCv4klj7BjUUOqMz4jbSZD4C9fJ9lRjL2jnBGTg+gDDlaXN51rkWcLk4fg=="],
 
     "@discoveryjs/json-ext": ["@discoveryjs/json-ext@0.5.7", "", {}, "sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw=="],
 
@@ -976,6 +979,8 @@
     "enhanced-resolve": ["enhanced-resolve@5.18.3", "", { "dependencies": { "graceful-fs": "^4.2.4", "tapable": "^2.2.0" } }, "sha512-d4lC8xfavMeBjzGr2vECC3fsGXziXZQyJxD868h2M/mBI3PwAuODxAkLkq5HYuvrPYcUtiLzsTo8U3PgX3Ocww=="],
 
     "entities": ["entities@4.5.0", "", {}, "sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw=="],
+
+    "env-cmd": ["env-cmd@11.0.0", "", { "dependencies": { "@commander-js/extra-typings": "^13.1.0", "commander": "^13.1.0", "cross-spawn": "^7.0.6" }, "bin": { "env-cmd": "bin/env-cmd.js" } }, "sha512-gnG7H1PlwPqsGhFJNTv68lsDGyQdK+U9DwLVitcj1+wGq7LeOBgUzZd2puZ710bHcH9NfNeGWe2sbw7pdvAqDw=="],
 
     "environment": ["environment@1.1.0", "", {}, "sha512-xUtoPkMggbz0MPyPiIWr1Kp4aeWJjDZ6SMvURhimjdZgsRuDplF5/s9hcgGhyXMhs+6vpnuoiZ2kFiu3FMnS8Q=="],
 

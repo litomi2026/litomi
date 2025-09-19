@@ -1,5 +1,6 @@
 import { get } from '@vercel/edge-config'
 
+import { EDGE_CONFIG } from '@/constants/env'
 import { FALLBACK_IMAGE_URL } from '@/constants/json'
 import { HarpiClient } from '@/crawler/harpi/harpi'
 import { HentaiPawClient } from '@/crawler/hentai-paw'
@@ -24,9 +25,19 @@ type ProxyConfig = {
   'hentai-paw': boolean
 }
 
+const DEFAULT_PROXY_CONFIG: ProxyConfig = {
+  komi: true,
+  hiyobi: true,
+  hitomi: true,
+  'k-hentai': true,
+  harpi: true,
+  'hentai-paw': true,
+}
+
 // TODO: 추후 'use cache' 로 변경하고 revalidate 파라미터 제거하기
 export async function getMangaFromMultiSources(id: number, revalidate?: number): Promise<Manga | MangaError | null> {
   // cacheLife('days')
+
   const {
     komi,
     hiyobi,
@@ -34,7 +45,7 @@ export async function getMangaFromMultiSources(id: number, revalidate?: number):
     'k-hentai': kHentai,
     harpi,
     'hentai-paw': hentaiPaw,
-  } = (await get<ProxyConfig>('proxy')) ?? {}
+  } = (EDGE_CONFIG ? await get<ProxyConfig>('proxy') : DEFAULT_PROXY_CONFIG) ?? {}
 
   const hiyobiClient = hiyobi ? HiyobiClient.getInstance() : null
   const hitomiClient = hitomi ? HitomiClient.getInstance() : null
@@ -101,10 +112,10 @@ export async function getMangasFromMultiSources(
     'k-hentai': kHentai,
     harpi,
     'hentai-paw': hentaiPaw,
-  } = (await get<ProxyConfig>('proxy')) ?? {}
+  } = (EDGE_CONFIG ? await get<ProxyConfig>('proxy') : DEFAULT_PROXY_CONFIG) ?? {}
 
   const harpiClient = harpi ? HarpiClient.getInstance() : null
-  const harpiMangas = await harpiClient?.searchMangas({ ids }).catch((error) => new Error(error))
+  const harpiMangas = await harpiClient?.searchMangas({ ids }, revalidate).catch((error) => new Error(error))
   const mangaMap: Record<number, Manga> = {}
   const remainingIds = []
 

@@ -1,21 +1,14 @@
 import type { LayoutProps } from '@/types/nextjs'
 
 import ShuffleButton from '@/components/ShuffleButton'
-import SourceSliderLink from '@/components/SourceSliderLink'
 import SourceTooltip from '@/components/tooltip/SourceTooltip'
 import ViewSliderLink from '@/components/ViewSliderLink'
-import { validateSource, validateView, ViewCookie } from '@/utils/param'
 
-export default async function Layout({ params, children }: LayoutProps) {
-  const { source, layout } = await params
-  const sourceString = validateSource(source)
-  const layoutString = validateView(layout) || ViewCookie.CARD
-
+export default async function Layout({ children }: LayoutProps) {
   return (
     <main className="flex flex-col grow gap-2">
       <div className="flex flex-wrap justify-center gap-2 text-sm sm:justify-end sm:text-base">
-        <ViewSliderLink current={layoutString} />
-        <SourceSliderLink current={sourceString} hrefPrefixes={() => '../'} hrefSuffix={`/${layoutString}`} />
+        <ViewSliderLink />
         <ShuffleButton action="refresh" iconClassName="w-5" />
       </div>
       <div className="flex justify-center whitespace-nowrap">

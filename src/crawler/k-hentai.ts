@@ -9,6 +9,7 @@ import { translateGroupList } from '@/translation/group'
 import { translateLanguageList } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
 import { translateTag } from '@/translation/tag'
+import { sec } from '@/utils/date'
 import { convertCamelCaseToKebabCase } from '@/utils/param'
 
 import { NotFoundError, ParseError } from './errors'
@@ -200,7 +201,7 @@ export class KHentaiClient {
     return KHentaiClient.instance
   }
 
-  async fetchManga(id: number, revalidate = 43200): Promise<Manga | null> {
+  async fetchManga(id: number, revalidate = sec('12 hours')): Promise<Manga | null> {
     const gallery = await this.fetchGallery(id, revalidate)
 
     if (!gallery) {
@@ -213,7 +214,7 @@ export class KHentaiClient {
     }
   }
 
-  async fetchMangaImages(id: number, revalidate = 43200): Promise<string[] | null> {
+  async fetchMangaImages(id: number, revalidate = sec('12 hours')): Promise<string[] | null> {
     const gallery = await this.fetchGallery(id, revalidate)
 
     if (!gallery) {
@@ -228,10 +229,10 @@ export class KHentaiClient {
   }
 
   async searchKoreanMangas(): Promise<Manga[]> {
-    return this.searchMangas({ search: 'language:korean' }, 21600)
+    return this.searchMangas({ search: 'language:korean' }, sec('6 hours'))
   }
 
-  async searchMangas(params: KHentaiMangaSearchOptions = {}, revalidate = 300): Promise<Manga[]> {
+  async searchMangas(params: KHentaiMangaSearchOptions = {}, revalidate = sec('5 minutes')): Promise<Manga[]> {
     const kebabCaseParams = Object.entries(params)
       .filter(([key, value]) => key !== 'offset' && value !== undefined)
       .map(([key, value]) => [convertCamelCaseToKebabCase(key), value])
@@ -302,7 +303,7 @@ export class KHentaiClient {
     }
   }
 
-  private async fetchGallery(id: number, revalidate = 43200): Promise<KHentaiGallery | null> {
+  private async fetchGallery(id: number, revalidate = sec('12 hours')): Promise<KHentaiGallery | null> {
     try {
       const html = await this.client.fetch<string>(`/r/${id}`, { next: { revalidate } }, true)
       return this.parseGalleryFromHTML(html, id)

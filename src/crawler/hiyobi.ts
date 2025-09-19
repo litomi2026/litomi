@@ -9,6 +9,7 @@ import { translateLanguageList } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
 import { translateTag } from '@/translation/tag'
 import { Manga, MangaTag } from '@/types/manga'
+import { sec } from '@/utils/date'
 
 import { ProxyClient, ProxyClientConfig } from './proxy'
 import { isUpstreamServerError } from './proxy-utils'
@@ -124,10 +125,7 @@ export class HiyobiClient {
     return HiyobiClient.instance
   }
 
-  async fetchManga(
-    id: number,
-    revalidate = 604800, // 1 week
-  ): Promise<Manga | null> {
+  async fetchManga(id: number, revalidate = sec('1 week')): Promise<Manga | null> {
     const manga = await this.client.fetch<HiyobiManga>(`/gallery/${id}`, {
       next: { revalidate },
     })
@@ -139,7 +137,7 @@ export class HiyobiClient {
     return this.convertHiyobiToManga(manga)
   }
 
-  async fetchMangaImages(id: number, revalidate = 43200): Promise<string[]> {
+  async fetchMangaImages(id: number, revalidate = sec('12 hours')): Promise<string[]> {
     const hiyobiImages = await this.imageClient.fetch<HiyobiImage[]>(`/hiyobi/list?id=${id}`, {
       next: { revalidate },
     })
@@ -147,10 +145,7 @@ export class HiyobiClient {
     return hiyobiImages.map((image) => image.url)
   }
 
-  async fetchMangas(
-    page: number,
-    revalidate = 21600, // 6 hours
-  ): Promise<Manga[]> {
+  async fetchMangas(page: number, revalidate = sec('6 hours')): Promise<Manga[]> {
     const response = await this.client.fetch<{ list: HiyobiManga[] }>(`/list/${page}`, { next: { revalidate } })
     return response.list.filter((manga) => manga.id).map((manga) => this.convertHiyobiToManga(manga))
   }

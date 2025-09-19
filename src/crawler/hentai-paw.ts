@@ -63,7 +63,7 @@ export class HentaiPawClient {
     return this.parseMangaFromHTML(html, id)
   }
 
-  async fetchMangaImages(id: number, revalidate = sec('1 day')): Promise<string[] | null> {
+  async fetchMangaImages(id: number, revalidate = sec('1 week')): Promise<string[] | null> {
     const html = await this.client.fetch<string>(`/viewer?articleId=${id}`, { next: { revalidate } }, true)
     return this.extractImageURLsFromHTML(html)
   }

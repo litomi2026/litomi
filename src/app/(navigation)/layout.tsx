@@ -4,6 +4,7 @@ import type { LayoutProps } from '@/types/nextjs'
 
 import IconBell from '@/components/icons/IconBell'
 import IconBookmark from '@/components/icons/IconBookmark'
+import IconFlame from '@/components/icons/IconFlame'
 import IconHome from '@/components/icons/IconHome'
 import IconLibraryBig from '@/components/icons/IconLibraryBig'
 import IconLogo from '@/components/icons/IconLogo'
@@ -14,6 +15,7 @@ import NotificationCount from './NotificationCount'
 import Profile from './Profile'
 import ProfileLink from './ProfileLink'
 import PublishButton from './PublishButton'
+import { DEFAULT_METRIC, DEFAULT_PERIOD } from './ranking/common'
 import SelectableLink from './SelectableLink'
 
 export default async function Layout({ children }: LayoutProps) {
@@ -37,6 +39,13 @@ export default async function Layout({ children }: LayoutProps) {
           <SelectableLink href="/library" Icon={IconLibraryBig}>
             서재
           </SelectableLink>
+          <SelectableLink
+            className="hidden sm:block"
+            href={`/ranking/${DEFAULT_METRIC}/${DEFAULT_PERIOD}`}
+            Icon={IconFlame}
+          >
+            인기
+          </SelectableLink>
           <div className="relative">
             <SelectableLink href="/notification" Icon={IconBell}>
               알림
@@ -47,7 +56,7 @@ export default async function Layout({ children }: LayoutProps) {
             북마크
           </SelectableLink>
           <SelectableLink className="hidden sm:block" href="/posts/recommand" hrefMatch="/post" Icon={IconPost}>
-            글
+            이야기
           </SelectableLink>
           <ProfileLink className="hidden sm:block" />
           <PublishButton className="hidden mx-auto my-4 sm:block xl:mx-0" />
