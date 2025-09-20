@@ -14,16 +14,16 @@ export default async function Layout({ children }: LayoutProps) {
         인기 순위는 리토미 사용자가 많아져야 더 정확해져요. 주변에 많이 알려주세요.
       </p>
       <header
-        className="sticky top-0 z-20 grid gap-1 bg-background/90 backdrop-blur border-b p-2 whitespace-nowwrap transition aria-busy:opacity-50"
+        className="sticky top-0 z-20 grid gap-1 bg-background/90 backdrop-blur border-b p-2 transition aria-busy:opacity-50"
         data-navigation-header
       >
         <AutoHideNavigation selector="[data-navigation-header]" />
-        <nav className="flex gap-1 overflow-x-auto scrollbar-hidden">
+        <nav className="flex gap-1 overflow-x-auto scrollbar-hidden whitespace-nowrap">
           {Object.keys(metricInfo).map((value) => (
             <MetricLink key={value} value={value as MetricParam} />
           ))}
         </nav>
-        <nav className="flex gap-1 overflow-x-auto scrollbar-hidden">
+        <nav className="flex gap-1 overflow-x-auto scrollbar-hidden whitespace-nowrap">
           {Object.keys(periodLabels).map((value) => (
             <PeriodLink key={value} value={value as PeriodParam} />
           ))}
