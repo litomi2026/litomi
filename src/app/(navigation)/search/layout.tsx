@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 
 import type { LayoutProps } from '@/types/nextjs'
 
-import ViewToggle from '@/components/ViewSlider'
+import ViewToggle from '@/components/ViewToggle'
 
 import FilterButton from './FilterButton'
 import KeywordSubscriptionButton from './KeywordSubscriptionButton'

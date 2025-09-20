@@ -2,12 +2,11 @@ import Link from 'next/link'
 
 import type { LayoutProps } from '@/types/nextjs'
 
+import RandomMangaLink from '@/app/(navigation)/(top-navigation)/RandomMangaLink'
 import IconFlame from '@/components/icons/IconFlame'
 import LinkPending from '@/components/LinkPending'
-import RandomLink from '@/components/RandomLink'
 import SourceTooltip from '@/components/tooltip/SourceTooltip'
 import ViewSliderLink from '@/components/ViewSliderLink'
-import { SourceParam } from '@/utils/param'
 
 import { DEFAULT_METRIC, DEFAULT_PERIOD } from '../../ranking/common'
 
@@ -26,7 +25,7 @@ export default async function Layout({ children }: LayoutProps) {
           인기
         </Link>
         <ViewSliderLink />
-        <RandomLink href={`/mangas/random/${SourceParam.K_HENTAI}/card`} />
+        <RandomMangaLink />
       </div>
       <div className="flex justify-center whitespace-nowrap">
         <SourceTooltip />
