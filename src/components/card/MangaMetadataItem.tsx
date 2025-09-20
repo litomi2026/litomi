@@ -30,8 +30,8 @@ function MangaMetadataItem({ value, filterType }: Readonly<Props>) {
 
   return (
     <Link
-      aria-pressed={isActive}
-      className="hover:underline focus:underline aria-pressed:text-brand-end aria-pressed:font-semibold"
+      aria-current={isActive}
+      className="hover:underline focus:underline aria-current:text-brand-end aria-current:font-semibold"
       href={`/search?${newSearchParams}`}
       prefetch={false}
     >

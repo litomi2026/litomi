@@ -29,7 +29,7 @@ function TagList({ className, tags }: Readonly<Props>) {
 
   return (
     <ul
-      className={`[&_a]:rounded [&_a]:px-1 [&_a]:text-foreground [&_a]:hover:underline [&_a]:focus:underline [&_a]:active:opacity-80 [&_a]:transition [&_a]:block [&_a]:aria-pressed:ring-2 [&_a]:aria-pressed:ring-brand-end [&_a]:aria-disabled:pointer-events-none ${className}`}
+      className={`[&_a]:rounded [&_a]:px-1 [&_a]:text-foreground [&_a]:hover:underline [&_a]:focus:underline [&_a]:active:opacity-80 [&_a]:transition [&_a]:block [&_a]:aria-current:ring-2 [&_a]:aria-current:ring-brand-end [&_a]:aria-disabled:pointer-events-none ${className}`}
     >
       {tags.map(({ category, value, label }) => {
         const tagColor = tagStyles[category] ?? 'bg-zinc-900'
@@ -46,7 +46,7 @@ function TagList({ className, tags }: Readonly<Props>) {
 
         return (
           <Link
-            aria-pressed={isActive}
+            aria-current={isActive}
             className={tagColor}
             href={`/search?${newSearchParams}`}
             key={`${category}:${value}`}

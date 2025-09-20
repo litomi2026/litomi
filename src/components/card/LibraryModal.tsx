@@ -102,6 +102,7 @@ export default function LibraryModal() {
           <button
             className="p-2 -mr-2 rounded-lg hover:bg-zinc-800 transition sm:p-1.5 sm:-mr-1.5"
             onClick={handleClose}
+            title="닫기"
             type="button"
           >
             <IconX className="w-6 h-6 sm:w-5 sm:h-5" />

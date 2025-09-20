@@ -90,9 +90,9 @@ export default function LanguageBadge({ language, className = '' }: Readonly<Pro
 
   return (
     <Link
+      aria-current={isActive}
       aria-label={`Filter by ${language}`}
-      aria-pressed={isActive}
-      className={`group relative px-1.5 py-0.5 text-xs font-medium rounded-md bg-zinc-700 transition aria-pressed:ring-2 aria-pressed:ring-brand-end aria-pressed:bg-zinc-700 ${className}`}
+      className={`group relative px-1.5 py-0.5 text-xs font-medium rounded-md bg-zinc-700 transition aria-current:ring-2 aria-current:ring-brand-end aria-current:bg-zinc-700 ${className}`}
       href={`/search?${newSearchParams}`}
       title={`${language} 작품 보기`}
     >
