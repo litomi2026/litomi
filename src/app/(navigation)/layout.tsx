@@ -11,6 +11,7 @@ import IconLogo from '@/components/icons/IconLogo'
 import IconPost from '@/components/icons/IconPost'
 import IconSearch from '@/components/icons/IconSearch'
 
+import AutoHideNavigation from './AutoHideNavigation'
 import NotificationCount from './NotificationCount'
 import Profile from './Profile'
 import ProfileLink from './ProfileLink'
@@ -23,9 +24,11 @@ export default async function Layout({ children }: LayoutProps) {
     <div className="flex flex-col min-h-full mx-auto pb-safe max-w-screen-2xl sm:flex-row">
       <header
         className="fixed bottom-0 left-0 right-0 z-50 m-auto px-safe pb-safe grid grid-cols-[4fr_1fr] border-t-2 bg-background/70 backdrop-blur
-          sm:inset-auto sm:flex sm:h-full sm:w-20 sm:flex-col sm:justify-between sm:gap-8 sm:border-r-2 sm:border-t-0 sm:p-2
-          2xl:w-3xs"
+          sm:inset-auto sm:flex sm:h-full sm:w-20 sm:flex-col sm:justify-between sm:gap-8 sm:border-r-2 sm:border-t-0 sm:p-2 2xl:w-3xs
+          aria-busy:max-sm:opacity-50"
+        data-navigation-header
       >
+        <AutoHideNavigation />
         <nav className="grid grid-cols-4 select-none whitespace-nowrap overflow-y-auto scrollbar-hidden sm:grid-cols-none sm:gap-2 xl:text-xl xl:leading-6">
           <Link className="p-2 w-fit mx-auto hidden sm:block 2xl:m-0" href="/">
             <IconLogo className="w-8" priority />
