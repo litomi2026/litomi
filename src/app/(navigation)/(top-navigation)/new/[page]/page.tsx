@@ -16,23 +16,23 @@ export const metadata: Metadata = {
   openGraph: {
     ...defaultOpenGraph,
     title: `신작 - ${SHORT_NAME}`,
-    url: '/mangas/new',
+    url: '/new',
   },
   alternates: {
-    canonical: '/mangas/new',
-    languages: { ko: '/mangas/new' },
+    canonical: '/new',
+    languages: { ko: '/new' },
   },
 }
 
-// export async function generateStaticParams() {
-//   return Array.from({ length: 10 }, (_, i) => String(i + 1)).map((page) => ({ page }))
-// }
+export async function generateStaticParams() {
+  return Array.from({ length: 10 }, (_, i) => String(i + 1)).map((page) => ({ page }))
+}
 
 const mangasNewSchema = z.object({
   page: z.coerce.number().int().positive(),
 })
 
-export default async function Page({ params }: PageProps<'/mangas/new/[page]'>) {
+export default async function Page({ params }: PageProps<'/new/[page]'>) {
   const validation = mangasNewSchema.safeParse(await params)
 
   if (!validation.success) {
@@ -48,12 +48,14 @@ export default async function Page({ params }: PageProps<'/mangas/new/[page]'>) 
 
   return (
     <>
-      <ul className={`grid ${MANGA_LIST_GRID_COLUMNS.card} gap-2 grow`}>
-        {mangas.map((manga, i) => (
-          <MangaCard index={i} key={manga.id} manga={manga} />
-        ))}
-      </ul>
-      <Navigation currentPage={page} totalPages={7500} />
+      <div className="flex-1">
+        <ul className={`grid ${MANGA_LIST_GRID_COLUMNS.card} gap-2`}>
+          {mangas.map((manga, i) => (
+            <MangaCard index={i} key={manga.id} manga={manga} />
+          ))}
+        </ul>
+      </div>
+      <Navigation className="py-4" currentPage={page} totalPages={7500} />
     </>
   )
 }

@@ -11,7 +11,7 @@ export default async function Layout({ children }: LayoutProps) {
     <main className="flex flex-col grow">
       <RankingTitle />
       <p className="p-1 px-4 text-xs text-zinc-500">
-        인기 순위는 리토미 사용자가 많아져야 더 정확해져요. 주변에 많이 알려주세요.
+        인기 순위는 이용자가 많아져야 더 정확해져요. 주변에 많이 알려주세요.
       </p>
       <header
         className="sticky top-0 z-20 grid gap-1 bg-background/90 backdrop-blur border-b p-2 transition aria-busy:opacity-50"

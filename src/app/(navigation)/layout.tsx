@@ -23,7 +23,7 @@ export default async function Layout({ children }: LayoutProps) {
   return (
     <div className="flex flex-col min-h-full mx-auto pb-safe max-w-screen-2xl sm:flex-row">
       <header
-        className="fixed bottom-0 left-0 right-0 z-50 m-auto px-safe pb-safe grid grid-cols-[4fr_1fr] border-t-2 bg-background/70 backdrop-blur transition
+        className="fixed bottom-0 left-0 right-0 z-50 m-auto px-safe pb-safe grid grid-cols-[4fr_1fr] border-t-2 bg-background/80 backdrop-blur transition
           sm:inset-auto sm:flex sm:h-full sm:w-20 sm:flex-col sm:justify-between sm:gap-8 sm:border-r-2 sm:border-t-0 sm:p-2 2xl:w-3xs
           aria-busy:max-sm:opacity-50"
         data-navigation-header
@@ -33,7 +33,7 @@ export default async function Layout({ children }: LayoutProps) {
           <Link className="p-2 w-fit mx-auto hidden sm:block 2xl:m-0" href="/">
             <IconLogo className="w-8" priority />
           </Link>
-          <SelectableLink href="/mangas/1/hi/card" Icon={IconHome}>
+          <SelectableLink href="/new/1" Icon={IconHome}>
             홈
           </SelectableLink>
           <SelectableLink href="/search" Icon={IconSearch}>

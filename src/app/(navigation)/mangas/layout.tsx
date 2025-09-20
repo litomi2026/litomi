@@ -11,7 +11,7 @@ export default function Layout({ children }: LayoutProps) {
     <div className="flex flex-col grow max-w-screen-2xl">
       <div className="flex flex-col grow p-2 gap-6">
         {children}
-        <footer className="text-center grid gap-2 text-sm">
+        <footer className="text-center grid gap-2 pb-4 text-sm">
           <InstallPrompt />
           <p>ⓒ 2025. {SHORT_NAME}. All rights reserved.</p>
           <div className="flex justify-center gap-2 flex-wrap text-xs">

@@ -31,7 +31,7 @@ export default function ErrorPage({ error, reset }: Readonly<Props>) {
         <p className="text-red-600">{error.message}</p>
       </div>
       <button
-        className="bg-zinc-700 rounded-full text-sm font-semibold min-w-50 hover:bg-zinc-600 active:bg-zinc-700 px-4 py-2 transition disabled:bg-zinc-600 disabled:text-zinc-400 disabled:pointer-events-none"
+        className="bg-zinc-700 text-sm font-semibold rounded-full min-w-50 hover:bg-zinc-600 active:bg-zinc-700 px-4 py-2 transition disabled:bg-zinc-600 disabled:text-zinc-400 disabled:pointer-events-none"
         disabled={cooldown > 0}
         onClick={reset}
       >
