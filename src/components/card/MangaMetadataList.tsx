@@ -21,7 +21,7 @@ function MangaMetadataList({ details, filterType, className = '' }: Readonly<Pro
 
   return (
     <ul
-      className={`break-all [&_a]:px-0.5 [&_a]:first:pl-0 [&_a]:last:pr-0 [&_a]:hover:underline [&_a]:focus:underline [&_a]:aria-pressed:text-brand-end [&_a]:aria-pressed:font-semibold ${className}`}
+      className={`break-all [&_a]:px-0.5 [&_a]:first:pl-0 [&_a]:last:pr-0 [&_a]:hover:underline [&_a]:focus:underline [&_a]:aria-current:text-brand-end [&_a]:aria-current:font-semibold ${className}`}
     >
       {details.map(({ value, label }, idx) => {
         const newQuery = toggleSearchFilter(currentQuery, filterType, value)
@@ -36,7 +36,7 @@ function MangaMetadataList({ details, filterType, className = '' }: Readonly<Pro
         const isActive = currentQuery ? new RegExp(`(^|\\s)${escapedPattern}(?=\\s|$)`, 'i').test(currentQuery) : false
 
         return (
-          <Link aria-pressed={isActive} href={`/search?${newSearchParams}`} key={value} prefetch={false}>
+          <Link aria-current={isActive} href={`/search?${newSearchParams}`} key={value} prefetch={false}>
             <MangaMetadataLabel>
               {label}
               {idx < details.length - 1 && ','}
