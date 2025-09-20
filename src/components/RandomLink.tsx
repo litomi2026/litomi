@@ -35,7 +35,8 @@ function RandomLink({ href }: Props) {
   if (href) {
     return (
       <Link className={className} href={href}>
-        <Dices className="size-5" /> 랜덤
+        <Dices className="size-5" />
+        <span className="min-w-9 text-center">랜덤</span>
       </Link>
     )
   }
@@ -50,7 +51,7 @@ function RandomLink({ href }: Props) {
       <LinkPending className="size-5">
         <Dices className="size-5" />
       </LinkPending>
-      <span className="min-w-9 text-center shrink-0">{cooldown > 0 ? `${cooldown}초` : '랜덤'}</span>
+      <span className="min-w-9 text-center">{cooldown > 0 ? `${cooldown}초` : '랜덤'}</span>
     </button>
   )
 }
