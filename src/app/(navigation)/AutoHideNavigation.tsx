@@ -1,22 +1,36 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 import { SCROLL_THRESHOLD_PX, SCROLL_THROTTLE_MS } from '@/constants/policy'
 import useThrottledDownScroll from '@/hook/useThrottledScroll'
 
-export default function AutoHideNavigation() {
+type Props = {
+  selector: string
+}
+
+export default function AutoHideNavigation({ selector }: Props) {
   const isDownScroll = useThrottledDownScroll({ threshold: SCROLL_THRESHOLD_PX, throttle: SCROLL_THROTTLE_MS })
+  const componentRef = useRef<HTMLDivElement>(null)
+  const navigationHeaderRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const navigationHeader = document.querySelector('[data-navigation-header]')
+    if (componentRef.current) {
+      navigationHeaderRef.current = componentRef.current.closest(selector)
 
+      navigationHeaderRef.current?.addEventListener('click', () => {
+        navigationHeaderRef.current?.removeAttribute('aria-busy')
+      })
+    }
+  }, [selector])
+
+  useEffect(() => {
     if (isDownScroll) {
-      navigationHeader?.setAttribute('aria-busy', 'true')
+      navigationHeaderRef.current?.setAttribute('aria-busy', 'true')
     } else {
-      navigationHeader?.removeAttribute('aria-busy')
+      navigationHeaderRef.current?.removeAttribute('aria-busy')
     }
   }, [isDownScroll])
 
-  return null
+  return <div className="hidden" ref={componentRef} />
 }

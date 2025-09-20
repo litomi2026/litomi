@@ -5,9 +5,7 @@ import dynamic from 'next/dynamic'
 import { useParams, usePathname } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
-import { SCROLL_THRESHOLD_PX, SCROLL_THROTTLE_MS } from '@/constants/policy'
-import useThrottledDownScroll from '@/hook/useThrottledScroll'
-
+import AutoHideNavigation from '../AutoHideNavigation'
 import { useLibrarySelectionStore } from './[id]/librarySelection'
 import ShareLibraryButton from './[id]/ShareLibraryButton'
 import LibraryManagementMenu from './LibraryManagementMenu'
@@ -35,7 +33,6 @@ type Props = {
 
 export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-  const isDownScroll = useThrottledDownScroll({ threshold: SCROLL_THRESHOLD_PX, throttle: SCROLL_THROTTLE_MS })
   const pathname = usePathname()
   const { id: libraryId } = useParams<Params>()
   const { enterSelectionMode, exitSelectionMode, isSelectionMode } = useLibrarySelectionStore()
@@ -86,11 +83,6 @@ export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
     }
   }
 
-  function removeAriaHidden(e: React.MouseEvent<HTMLDivElement>) {
-    const element = e.currentTarget
-    element.removeAttribute('aria-hidden')
-  }
-
   // NOTE: 서재 변경 시 선택 모드 종료하기
   useEffect(() => {
     exitSelectionMode()
@@ -98,11 +90,11 @@ export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
 
   return (
     <>
-      <div
-        aria-hidden={isDownScroll}
-        className="sticky top-0 z-40 flex justify-between items-center gap-3 p-4 border-b border-zinc-800 transition bg-zinc-950 aria-hidden:opacity-50"
-        onClick={removeAriaHidden}
+      <header
+        className="sticky top-0 z-40 flex justify-between items-center gap-3 p-4 border-b border-zinc-800 transition bg-zinc-950 aria-busy:opacity-50"
+        data-header
       >
+        <AutoHideNavigation selector="[data-header]" />
         <div className="flex items-center gap-3">
           <button
             aria-label="library-menu"
@@ -148,7 +140,7 @@ export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
           )}
           {isOwner && !isSelectionMode && <LibraryManagementMenu className="-mr-1" library={currentLibrary} />}
         </div>
-      </div>
+      </header>
       {isDrawerOpen && (
         <>
           <div className="fixed inset-0 z-50 bg-black/50 animate-fade-in-fast sm:hidden" onClick={closeDrawer} />

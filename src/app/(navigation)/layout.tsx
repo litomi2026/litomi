@@ -28,7 +28,7 @@ export default async function Layout({ children }: LayoutProps) {
           aria-busy:max-sm:opacity-50"
         data-navigation-header
       >
-        <AutoHideNavigation />
+        <AutoHideNavigation selector="[data-navigation-header]" />
         <nav className="grid grid-cols-4 select-none whitespace-nowrap overflow-y-auto scrollbar-hidden sm:grid-cols-none sm:gap-2 xl:text-xl xl:leading-6">
           <Link className="p-2 w-fit mx-auto hidden sm:block 2xl:m-0" href="/">
             <IconLogo className="w-8" priority />
