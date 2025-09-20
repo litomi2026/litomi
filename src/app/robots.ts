@@ -7,7 +7,6 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/api', '/test', '/@', '/search?*'],
     },
     sitemap: CANONICAL_URL + '/sitemap.xml',
   }
