@@ -26,7 +26,7 @@ export default async function Layout({ children }: LayoutProps) {
           인기
         </Link>
         <ViewSliderLink />
-        <RandomLink href={`/mangas/random/${SourceParam.HIYOBI}`} />
+        <RandomLink href={`/mangas/random/${SourceParam.K_HENTAI}/card`} />
       </div>
       <div className="flex justify-center whitespace-nowrap">
         <SourceTooltip />

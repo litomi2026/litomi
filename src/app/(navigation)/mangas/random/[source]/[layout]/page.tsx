@@ -1,13 +1,13 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { z } from 'zod/v4'
 
 import MangaCard from '@/components/card/MangaCard'
 import MangaCardImage from '@/components/card/MangaCardImage'
 import { SHORT_NAME } from '@/constants'
 import { createErrorManga } from '@/constants/json'
-import { HiyobiClient } from '@/crawler/hiyobi'
 import { KHentaiClient } from '@/crawler/k-hentai'
-import { SourceParam, validateSource, validateView, ViewCookie } from '@/utils/param'
+import { SourceParam, ViewCookie } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 export const revalidate = 15
@@ -22,35 +22,36 @@ export const metadata: Metadata = {
 
 export async function generateStaticParams() {
   const params = []
-  const sources = [SourceParam.HIYOBI]
   const layouts = [ViewCookie.CARD, ViewCookie.IMAGE]
-  for (const source of sources) {
-    for (const layout of layouts) {
-      params.push({ source, layout })
-    }
+  for (const layout of layouts) {
+    params.push({ source: SourceParam.K_HENTAI, layout })
   }
+
   return params
 }
 
-export default async function Page({ params }: PageProps<'/mangas/random/[source]/[layout]'>) {
-  const { source, layout } = await params
-  const sourceString = validateSource(source)
-  const layoutString = validateView(layout)
+const randomSchema = z.object({
+  layout: z.enum(ViewCookie),
+})
 
-  if (!sourceString || !layoutString) {
+export default async function Page({ params }: PageProps<'/mangas/random/[source]/[layout]'>) {
+  const validation = randomSchema.safeParse(await params)
+
+  if (!validation.success) {
     notFound()
   }
 
-  const mangas = await getMangas({ source: sourceString })
+  const { layout } = validation.data
+  const mangas = await getMangas()
 
-  if (!mangas || mangas.length === 0) {
+  if (mangas.length === 0) {
     notFound()
   }
 
   return (
-    <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[layoutString]} gap-2 grow`}>
+    <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[layout]} gap-2`}>
       {mangas.map((manga, i) =>
-        layoutString === ViewCookie.IMAGE ? (
+        layout === ViewCookie.IMAGE ? (
           <li data-manga-card key={manga.id}>
             <MangaCardImage
               className="bg-zinc-900 rounded-xl border-2 relative h-fit [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-cover [&_img]:aspect-[3/4]"
@@ -66,13 +67,9 @@ export default async function Page({ params }: PageProps<'/mangas/random/[source
   )
 }
 
-async function getMangas({ source }: { source: SourceParam }) {
+async function getMangas() {
   try {
-    if (source === SourceParam.HIYOBI) {
-      return await HiyobiClient.getInstance().fetchRandomMangas()
-    } else if (source === SourceParam.K_HENTAI) {
-      return await KHentaiClient.getInstance().fetchRandomKoreanMangas()
-    }
+    return await KHentaiClient.getInstance().fetchRandomKoreanMangas()
   } catch (error) {
     return [createErrorManga({ error })]
   }
