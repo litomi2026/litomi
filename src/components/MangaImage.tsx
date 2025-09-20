@@ -24,7 +24,6 @@ function MangaImage({ manga, imageIndex = 0, imageRef, ...props }: Readonly<Prop
         draggable={false}
         fetchPriority={imageIndex < INITIAL_DISPLAYED_IMAGE ? 'high' : undefined}
         ref={imageRef}
-        referrerPolicy="same-origin"
         src={getImageSource({ imageURL, origin })}
         {...props}
       />
