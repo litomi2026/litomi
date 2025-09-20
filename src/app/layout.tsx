@@ -12,22 +12,12 @@ import LibraryModal from '@/components/card/LibraryModal'
 import HiyobiPing from '@/components/HiyobiPing'
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar'
 import { CANONICAL_URL, defaultOpenGraph, DESCRIPTION, SHORT_NAME, THEME_COLOR } from '@/constants'
-import {
-  AMPLITUDE_API_KEY,
-  GA_ID,
-  GOOGLE_ADSENSE_ACCOUNT,
-  GTM_ID,
-  VERCEL_ANALYTICS,
-  VERCEL_SPEED_INSIGHTS,
-} from '@/constants/env'
+import { AMPLITUDE_API_KEY, GA_ID, GOOGLE_ADSENSE_ACCOUNT } from '@/constants/env'
 
 import QueryProvider from '../components/QueryProvider'
 
 // NOTE: 사용하지 않을 수 있어서 dynamic import
 const Amplitude = dynamic(() => import('@/lib/amplitude/Amplitude'))
-const Analytics = dynamic(() => import('@vercel/analytics/react').then((mod) => mod.Analytics))
-const SpeedInsights = dynamic(() => import('@vercel/speed-insights/next').then((mod) => mod.SpeedInsights))
-const GoogleTagManager = dynamic(() => import('@next/third-parties/google').then((mod) => mod.GoogleTagManager))
 
 const PretendardVariable = localFont({
   src: '../fonts/PretendardVariable.400-700.3713.woff2',
@@ -99,10 +89,7 @@ export default function RootLayout({ children }: Readonly<Props>) {
         <ServiceWorkerRegistrar />
         <HiyobiPing />
         <Toaster duration={3000} position="top-center" richColors theme="dark" />
-        {VERCEL_SPEED_INSIGHTS && <SpeedInsights />}
-        {VERCEL_ANALYTICS && <Analytics />}
         {AMPLITUDE_API_KEY && <Amplitude apiKey={AMPLITUDE_API_KEY} />}
-        {GTM_ID && <GoogleTagManager gtmId={GTM_ID} />}
         {GA_ID && <GoogleAnalytics gaId={GA_ID} />}
       </body>
     </html>
