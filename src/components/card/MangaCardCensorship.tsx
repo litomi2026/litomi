@@ -24,7 +24,7 @@ export default function MangaCardCensorship({ manga }: Readonly<Props>) {
     if (highestCensorshipLevel === CensorshipLevel.HEAVY) {
       const cardElement = ref.current?.closest<HTMLElement>('[data-manga-card]')
       if (cardElement) {
-        cardElement.remove()
+        cardElement.style.display = 'none'
       }
     }
   }, [highestCensorshipLevel])
