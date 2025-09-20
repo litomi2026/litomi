@@ -42,7 +42,7 @@ function RandomMangaLink() {
       <LinkPending className="size-5">
         <Dices className="size-5" />
       </LinkPending>
-      <span className="min-w-9 text-center">{cooldown > 0 ? `${cooldown}초` : '랜덤'}</span>
+      <span className="min-w-9 text-center">{cooldown > 0 ? `${cooldown}초` : '갱신'}</span>
     </button>
   )
 }
