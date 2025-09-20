@@ -1,11 +1,11 @@
 'use client'
 
 import { Edit, Menu, X } from 'lucide-react'
-import ms from 'ms'
 import dynamic from 'next/dynamic'
 import { useParams, usePathname } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
+import { SCROLL_THRESHOLD_PX, SCROLL_THROTTLE_MS } from '@/constants/policy'
 import useThrottledDownScroll from '@/hook/useThrottledScroll'
 
 import { useLibrarySelectionStore } from './[id]/librarySelection'
@@ -14,9 +14,6 @@ import LibraryManagementMenu from './LibraryManagementMenu'
 import LibrarySidebar from './LibrarySidebar'
 
 const BulkOperationsToolbar = dynamic(() => import('./[id]/BulkOperationsToolbar'))
-
-const SCROLL_THROTTLE_MS = ms('0.3s')
-const SCROLL_THRESHOLD_PX = 10
 
 type Params = {
   id: string
