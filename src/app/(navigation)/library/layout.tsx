@@ -1,4 +1,4 @@
-import { eq, sql } from 'drizzle-orm'
+import { desc, eq, sql } from 'drizzle-orm'
 import { ReactNode } from 'react'
 
 import { db } from '@/database/supabase/drizzle'
@@ -29,7 +29,7 @@ export default async function LibraryLayout({ children }: Props) {
       itemCount: sql<number>`(SELECT COUNT(*) FROM ${libraryItemTable} WHERE ${libraryItemTable.libraryId} = ${libraryTable.id})::int`,
     })
     .from(libraryTable)
-    .orderBy(libraryTable.id)
+    .orderBy(({ itemCount }) => desc(itemCount))
     .$dynamic()
 
   if (userId) {

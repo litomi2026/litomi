@@ -22,23 +22,34 @@ type Props = {
 }
 
 export default function LibrarySidebar({ libraries, userId, className = '', onClick }: Readonly<Props>) {
-  const isGuest = !userId
   const mangaCount = libraries.reduce((sum, lib) => sum + lib.itemCount, 0)
+
+  const info = userId
+    ? {
+        headerTitle: '서재',
+        title: '모든 서재',
+        description: `${libraries.length}개 서재 · ${formatNumber(mangaCount, 'ko')}개`,
+      }
+    : {
+        headerTitle: '공개 서재',
+        title: '모든 공개 서재',
+        description: `${formatNumber(mangaCount, 'ko')}개`,
+      }
 
   return (
     <aside className={`border-r ${className}`}>
       <div className="grid gap-2 p-2 lg:p-3 lg:gap-3">
         <div className="flex items-center justify-center lg:justify-between">
-          <h2 className="text-sm font-medium text-zinc-400 hidden lg:block">{isGuest ? '공개 서재' : '서재'}</h2>
+          <h2 className="text-sm font-medium text-zinc-400 hidden lg:block">{info.headerTitle}</h2>
           <CreateLibraryButton />
         </div>
         <LibrarySidebarLink
-          description={`${libraries.length}개 서재 · ${mangaCount}개 작품`}
+          description={info.description}
           href="/library"
           icon={<LibraryBig className="size-4 text-background" />}
           iconBackground="linear-gradient(to bottom right, var(--color-brand-start), var(--color-brand-end))"
           onClick={onClick}
-          title={isGuest ? '모든 공개 서재' : '모든 서재'}
+          title={info.title}
         />
         <div className="h-px bg-zinc-800 my-1" />
         <LibrarySidebarLink

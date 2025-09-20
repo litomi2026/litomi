@@ -6,6 +6,17 @@ import { withSentryConfig } from '@sentry/nextjs'
 import { createCacheControl } from '@/crawler/proxy-utils'
 import { sec } from '@/utils/date'
 
+const cspHeader = `
+  default-src 'self';
+  script-src 'self' 'unsafe-eval' 'unsafe-inline' https:;
+  style-src 'self' 'unsafe-inline';
+  img-src 'self' blob: data: https: http:;
+  connect-src 'self' https:;
+  object-src 'none';
+  frame-src 'self' https:;
+  frame-ancestors 'none';
+`
+
 const oneDayPublicCacheControl = createCacheControl({
   public: true,
   maxAge: sec('12 hours'),
@@ -28,6 +39,10 @@ const nextConfig: NextConfig = {
           value: `max-age=${sec('2 years')}; includeSubDomains; preload`,
         },
         { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
+        {
+          key: 'Content-Security-Policy-Report-Only',
+          value: cspHeader.replace(/\s{2,}/g, ' ').trim(),
+        },
       ],
     },
     {

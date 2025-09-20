@@ -4,7 +4,7 @@ import type { LayoutProps } from '@/types/nextjs'
 
 import IconFlame from '@/components/icons/IconFlame'
 import LinkPending from '@/components/LinkPending'
-import ShuffleButton from '@/components/ShuffleButton'
+import RandomLink from '@/components/RandomLink'
 import SourceTooltip from '@/components/tooltip/SourceTooltip'
 import ViewSliderLink from '@/components/ViewSliderLink'
 import { SourceParam } from '@/utils/param'
@@ -17,7 +17,7 @@ export default async function Layout({ children }: LayoutProps) {
       <h1 className="sr-only">작품 목록</h1>
       <div className="flex justify-center flex-wrap gap-2 whitespace-nowrap text-sm sm:justify-end md:text-base">
         <Link
-          className="flex items-center gap-2 p-2 px-4 rounded-xl text-sm font-medium transition border-2 text-white hover:bg-zinc-900"
+          className="flex items-center gap-2 p-2 px-3 rounded-xl transition border-2 text-white hover:bg-zinc-900"
           href={`/ranking/${DEFAULT_METRIC}/${DEFAULT_PERIOD}`}
         >
           <LinkPending className="size-5">
@@ -26,12 +26,7 @@ export default async function Layout({ children }: LayoutProps) {
           인기
         </Link>
         <ViewSliderLink />
-        <ShuffleButton
-          action="navigate"
-          className="w-fit"
-          href={`/mangas/random/${SourceParam.HIYOBI}`}
-          iconClassName="w-5"
-        />
+        <RandomLink href={`/mangas/random/${SourceParam.HIYOBI}`} />
       </div>
       <div className="flex justify-center whitespace-nowrap">
         <SourceTooltip />
