@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next'
 
 import { CANONICAL_URL } from '@/constants'
 
-import { MetricParam, PeriodParam } from './(navigation)/ranking/common'
+import { MetricParam, PeriodParam } from './(navigation)/(ranking)/common'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [

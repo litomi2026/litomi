@@ -11,12 +11,12 @@ import IconLogo from '@/components/icons/IconLogo'
 import IconPost from '@/components/icons/IconPost'
 import IconSearch from '@/components/icons/IconSearch'
 
+import { DEFAULT_METRIC, DEFAULT_PERIOD } from './(ranking)/common'
 import AutoHideNavigation from './AutoHideNavigation'
 import NotificationCount from './NotificationCount'
 import Profile from './Profile'
 import ProfileLink from './ProfileLink'
 import PublishButton from './PublishButton'
-import { DEFAULT_METRIC, DEFAULT_PERIOD } from './ranking/common'
 import SelectableLink from './SelectableLink'
 
 export default async function Layout({ children }: LayoutProps) {

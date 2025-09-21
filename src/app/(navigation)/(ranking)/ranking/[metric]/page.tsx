@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 
-import { DEFAULT_METRIC, DEFAULT_PERIOD } from './common'
+import { DEFAULT_METRIC, DEFAULT_PERIOD } from '../../common'
 
 export const dynamic = 'force-static'
 

@@ -6,7 +6,7 @@ import { MANGA_TOP_PER_PAGE } from '@/constants/policy'
 import { db } from '@/database/supabase/drizzle'
 import { bookmarkTable, libraryItemTable, postTable, readingHistoryTable } from '@/database/supabase/schema'
 
-import { MetricParam, PeriodParam, RANKING_PAGE_REVALIDATE } from '../../common'
+import { MetricParam, PeriodParam, RANKING_PAGE_REVALIDATE } from '../../../common'
 
 function getPeriodStart(period: PeriodParam): Date | null {
   const now = new Date()
