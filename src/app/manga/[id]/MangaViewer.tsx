@@ -51,6 +51,7 @@ function prepareManga(
       id: data.id,
       title: initialManga?.title || data.title,
       images: data.images,
+      origin: data.origin,
     }
   }
 

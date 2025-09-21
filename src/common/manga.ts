@@ -1,9 +1,9 @@
 import { get } from '@vercel/edge-config'
 
 import { EDGE_CONFIG } from '@/constants/env'
-import { FALLBACK_IMAGE_URL } from '@/constants/json'
 import { HarpiClient } from '@/crawler/harpi/harpi'
 import { HentaiPawClient } from '@/crawler/hentai-paw'
+import { HentKorClient } from '@/crawler/hentkor'
 import { HitomiClient } from '@/crawler/hitomi/hitomi'
 import { HiyobiClient } from '@/crawler/hiyobi'
 import { KHentaiClient } from '@/crawler/k-hentai'
@@ -199,10 +199,11 @@ export async function getMangasFromMultiSources(
 }
 
 function createErrorManga(id: number, error: Error): MangaError {
+  const images = HentKorClient.getInstance().fetchMangaImages(id, 100)
   return {
     id,
-    title: `${error.message}\n${error.cause ?? ''}`,
-    images: [FALLBACK_IMAGE_URL],
+    title: `${error?.message}\n${error?.cause ?? ''}`,
+    ...getOriginFromImageURLs(images),
     isError: true,
   }
 }
