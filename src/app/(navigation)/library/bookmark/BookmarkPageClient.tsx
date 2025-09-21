@@ -27,7 +27,7 @@ export default function BookmarkPageClient({ initialData }: Props) {
 
   return (
     <>
-      <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[ViewCookie.CARD]} gap-2 p-2 px-4`}>
+      <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[ViewCookie.CARD]} gap-2 p-2`}>
         {bookmarkIds.map((mangaId, index) => (
           <MangaCard
             index={index}
