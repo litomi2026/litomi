@@ -60,6 +60,7 @@ export enum MangaSource {
   KOMI = 7,
   HENTAIPAW = 8,
   LITOMI = 9,
+  HENTKOR = 10,
 }
 
 export enum MangaType {

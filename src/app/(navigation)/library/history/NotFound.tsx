@@ -1,13 +1,42 @@
-import { Clock } from 'lucide-react'
+'use client'
+
+import { Calendar, Clock, TrendingUp, Trophy } from 'lucide-react'
+import Link from 'next/link'
+
+import Onboarding from '@/app/(navigation)/(right-search)/[name]/settings/Onboarding'
 
 export default function NotFound() {
   return (
-    <div className="flex-1 flex flex-col justify-center items-center gap-4 p-8">
-      <Clock className="w-16 h-16 text-zinc-400" />
-      <div className="text-center">
-        <p className="text-zinc-500 text-lg">아직 읽은 작품이 없어요</p>
-        <p className="text-zinc-600 text-sm mt-2">작품을 읽으면 여기에 기록이 남아요</p>
-      </div>
+    <div className="flex-1 flex items-center justify-center">
+      <Onboarding
+        benefits={[
+          {
+            icon: <Calendar className="size-5" />,
+            title: '자동 기록',
+            description: '읽은 작품이 날짜별로 자동 정리돼요',
+          },
+          {
+            icon: <TrendingUp className="size-5" />,
+            title: '진행 상황',
+            description: '읽은 페이지와 진행률을 한눈에 확인해요',
+          },
+          {
+            icon: <Trophy className="size-5" />,
+            title: '독서 통계',
+            description: '얼마나 많이 읽었는지 기록이 쌓여요',
+          },
+        ]}
+        description="작품을 읽으면 자동으로 기록이 남아요"
+        icon={<Clock className="size-12 text-brand-end" />}
+        title="아직 읽은 작품이 없어요"
+      >
+        <Link
+          className="px-6 py-3 rounded-2xl bg-brand-end font-semibold text-background hover:opacity-80 transition"
+          href="/new/1"
+        >
+          작품 둘러보기
+        </Link>
+      </Onboarding>
     </div>
   )
 }

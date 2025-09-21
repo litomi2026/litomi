@@ -28,7 +28,7 @@ export default function AllLibraryMangaView({ initialItems }: Props) {
   const { mangaMap } = useMangaListCachedQuery({ mangaIds: initialItems.map((item) => item.mangaId) })
 
   return (
-    <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[ViewCookie.CARD]} gap-2 p-4`}>
+    <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[ViewCookie.CARD]} gap-2 p-2`}>
       {initialItems.map(({ library, mangaId }, index) => {
         const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
 

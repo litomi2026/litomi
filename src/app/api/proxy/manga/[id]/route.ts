@@ -83,6 +83,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
 
     return Response.json(manga, { headers: { 'Cache-Control': cacheControl } })
   } catch (error) {
+    console.error(error)
     return handleRouteError(error, request)
   }
 }

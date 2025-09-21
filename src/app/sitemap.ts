@@ -2,24 +2,38 @@ import type { MetadataRoute } from 'next'
 
 import { CANONICAL_URL } from '@/constants'
 
+import { MetricParam, PeriodParam } from './(navigation)/ranking/common'
+
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
       url: CANONICAL_URL,
       lastModified: new Date(),
-      changeFrequency: 'yearly',
-      priority: 0.5,
-    },
-    {
-      url: `${CANONICAL_URL}/mangas/1/hi/card`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
+      changeFrequency: 'monthly',
       priority: 1,
     },
     {
-      url: `${CANONICAL_URL}/mangas/1/k/card`,
+      url: `${CANONICAL_URL}/new/1`,
       lastModified: new Date(),
-      changeFrequency: 'weekly',
+      changeFrequency: 'daily',
+      priority: 1,
+    },
+    {
+      url: `${CANONICAL_URL}/new/2`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 1,
+    },
+    {
+      url: `${CANONICAL_URL}/ranking/${MetricParam.VIEW}/${PeriodParam.WEEK}`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 1,
+    },
+    {
+      url: `${CANONICAL_URL}/ranking/${MetricParam.BOOKMARK}/${PeriodParam.WEEK}`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
       priority: 1,
     },
     {
@@ -55,13 +69,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: `${CANONICAL_URL}/doc/privacy`,
       lastModified: new Date(),
-      changeFrequency: 'yearly',
+      changeFrequency: 'monthly',
       priority: 0.1,
     },
     {
       url: `${CANONICAL_URL}/doc/terms`,
       lastModified: new Date(),
-      changeFrequency: 'yearly',
+      changeFrequency: 'monthly',
       priority: 0.1,
     },
   ]
