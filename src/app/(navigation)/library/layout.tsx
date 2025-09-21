@@ -48,7 +48,7 @@ export default async function LibraryLayout({ children }: Props) {
         libraries={libraries}
         userId={userId}
       />
-      <div className="hidden sm:block sm:w-[66px] lg:w-52" />
+      <div className="hidden sm:block sm:w-[67px] lg:w-52" />
       <div className="flex flex-col flex-1">
         <LibraryHeader libraries={libraries} userId={userId} />
         {children}
