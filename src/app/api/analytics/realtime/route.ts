@@ -65,6 +65,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json(response, { headers: { 'Cache-Control': cacheControl } })
   } catch (error) {
+    console.error(error)
     return handleRouteError(error, request)
   }
 }

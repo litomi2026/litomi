@@ -56,7 +56,7 @@ export default function RealtimePage() {
             <div>
               <p className="text-sm text-zinc-400">현재 활성 사용자</p>
               <p className="mt-2 text-5xl font-bold animate-fade-in [animation-delay:0.5s] [animation-fill-mode:both]">
-                {isLoading ? <IconSpinner className="size-12 p-2" /> : (data?.totalActiveUsers.toLocaleString() ?? '.')}
+                {isLoading ? <IconSpinner className="size-12 p-2" /> : (data?.totalActiveUsers.toLocaleString() ?? '-')}
               </p>
             </div>
             <div className="flex size-20 items-center justify-center rounded-full bg-zinc-700/50">
