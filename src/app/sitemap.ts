@@ -9,7 +9,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: CANONICAL_URL,
       lastModified: new Date(),
-      changeFrequency: 'yearly',
+      changeFrequency: 'monthly',
       priority: 1,
     },
     {
@@ -69,13 +69,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: `${CANONICAL_URL}/doc/privacy`,
       lastModified: new Date(),
-      changeFrequency: 'yearly',
+      changeFrequency: 'monthly',
       priority: 0.1,
     },
     {
       url: `${CANONICAL_URL}/doc/terms`,
       lastModified: new Date(),
-      changeFrequency: 'yearly',
+      changeFrequency: 'monthly',
       priority: 0.1,
     },
   ]

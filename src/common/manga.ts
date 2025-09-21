@@ -202,7 +202,7 @@ function createErrorManga(id: number, error: Error): MangaError {
   const images = HentKorClient.getInstance().fetchMangaImages(id, 100)
   return {
     id,
-    title: `${error?.message}\n${error?.cause ?? ''}`,
+    title: `${error.message}\n${error.cause ?? ''}`,
     ...getOriginFromImageURLs(images),
     isError: true,
   }
