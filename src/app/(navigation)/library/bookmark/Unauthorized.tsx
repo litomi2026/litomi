@@ -1,39 +1,46 @@
+'use client'
+
+import { Cloud, Download, Heart, LockKeyhole } from 'lucide-react'
 import Link from 'next/link'
 
-import IconBookmark from '@/components/icons/IconBookmark'
+import Onboarding from '@/app/(navigation)/(right-search)/[name]/settings/Onboarding'
 import LoginButton from '@/components/LoginButton'
 
 export default function Unauthorized() {
   return (
-    <div className="flex-1 flex flex-col justify-center items-center px-4 py-12">
-      <div className="text-center max-w-md mx-auto">
-        <div className="relative mb-8">
-          <IconBookmark className="w-20 h-20 mx-auto text-zinc-700" />
+    <div className="flex-1 flex items-center justify-center">
+      <Onboarding
+        benefits={[
+          {
+            icon: <Heart className="size-5" />,
+            title: '좋아하는 작품 저장',
+            description: '마음에 드는 작품을 언제든 다시 찾아보세요',
+          },
+          {
+            icon: <Cloud className="size-5" />,
+            title: '모든 기기 동기화',
+            description: '어떤 기기에서도 북마크를 확인할 수 있어요',
+          },
+          {
+            icon: <Download className="size-5" />,
+            title: '백업 및 내보내기',
+            description: '북마크를 안전하게 다운로드하고 보관해요',
+          },
+        ]}
+        description="계정을 만들고 마음에 드는 작품을 저장하세요"
+        icon={<LockKeyhole className="size-12 text-brand-end" />}
+        title="북마크 기능은 로그인이 필요해요"
+      >
+        <div className="flex flex-col w-full items-center gap-3">
+          <LoginButton>로그인하기</LoginButton>
+          <p className="text-sm text-zinc-500">
+            처음이신가요?{' '}
+            <Link className="text-zinc-300 underline hover:text-zinc-100 transition-colors" href="/auth/signup">
+              회원가입
+            </Link>
+          </p>
         </div>
-        <h2 className="text-xl font-semibold text-zinc-200 mb-3">북마크 기능은 로그인이 필요해요</h2>
-        <p className="text-zinc-400 mb-8 leading-relaxed">계정을 만들고 마음에 드는 작품을 저장하세요</p>
-        <ul className="mb-8 space-y-2.5 text-sm" role="list">
-          <li className="flex justify-center items-center gap-2.5">
-            <span className="text-brand-end">•</span>
-            <span className="text-zinc-300">좋아하는 작품 저장하기</span>
-          </li>
-          <li className="flex justify-center items-center gap-2.5">
-            <span className="text-brand-end">•</span>
-            <span className="text-zinc-300">모든 기기에서 북마크 동기화</span>
-          </li>
-          <li className="flex justify-center items-center gap-2.5">
-            <span className="text-brand-end">•</span>
-            <span className="text-zinc-300">북마크 다운로드 및 백업</span>
-          </li>
-        </ul>
-        <LoginButton>로그인하기</LoginButton>
-        <p className="mt-6 text-sm text-zinc-500">
-          처음이신가요?{' '}
-          <Link className="text-zinc-300 underline hover:text-zinc-100 transition-colors" href={`/auth/signup`}>
-            회원가입
-          </Link>
-        </p>
-      </div>
+      </Onboarding>
     </div>
   )
 }
