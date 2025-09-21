@@ -3,8 +3,8 @@ import type { LayoutProps } from '@/types/nextjs'
 import AutoHideNavigation from '../AutoHideNavigation'
 import { metricInfo, MetricParam, periodLabels, PeriodParam } from './common'
 import MetricLink from './MetricLink'
-import PeriodLink from './ranking/PeriodLink'
-import RankingTitle from './ranking/RankingTitle'
+import PeriodLink from './PeriodLink'
+import RankingTitle from './RankingTitle'
 import RealtimeLink from './RealtimeLink'
 
 export default async function Layout({ children }: LayoutProps) {

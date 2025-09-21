@@ -20,4 +20,5 @@ export const QueryKeys = {
   searchSuggestions: (query: string, locale: string) => ['search', 'suggestions', locale, query],
   posts: (filter: PostFilter, mangaId?: number, username?: string) => ['posts', filter, { mangaId, username }],
   readingHistory: (mangaId: number) => ['readingHistory', mangaId],
+  realtimeAnalytics: ['realtime-analytics'],
 }
