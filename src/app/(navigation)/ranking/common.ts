@@ -11,13 +11,14 @@ export enum MetricParam {
 }
 
 export enum PeriodParam {
-  ALL = 'all',
+  REALTIME = 'realtime',
   DAY = 'day',
   WEEK = 'week',
   MONTH = 'month',
   QUARTER = 'quarter',
   HALF = 'half',
   YEAR = 'year',
+  ALL = 'all',
 }
 
 export type Params = {
@@ -36,6 +37,7 @@ export const metricInfo: Record<string, { label: string; icon: ElementType }> = 
 }
 
 export const periodLabels: Record<string, string> = {
+  [PeriodParam.REALTIME]: '실시간',
   [PeriodParam.DAY]: '일간',
   [PeriodParam.WEEK]: '주간',
   [PeriodParam.MONTH]: '월간',

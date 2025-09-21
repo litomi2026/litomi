@@ -30,6 +30,7 @@ export const LIBRARY_ITEMS_PER_PAGE = 20
 export const LINK_PENDING_DELAY = 500
 export const SCROLL_THROTTLE_MS = 200
 export const SCROLL_THRESHOLD_PX = 10
+export const REALTIME_PAGE_VIEW_MIN_THRESHOLD = 10
 
 export const LOGIN_ID_PATTERN = '^[a-zA-Z][a-zA-Z0-9_]*$'
 export const PASSWORD_PATTERN = '^(?=.*[A-Za-z])(?=.*[0-9]).+$'

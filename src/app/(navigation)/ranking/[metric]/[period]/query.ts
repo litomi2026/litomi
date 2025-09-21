@@ -11,8 +11,6 @@ import { MetricParam, PeriodParam, RANKING_PAGE_REVALIDATE } from '../../common'
 function getPeriodStart(period: PeriodParam): Date | null {
   const now = new Date()
   switch (period) {
-    case PeriodParam.ALL:
-      return null
     case PeriodParam.DAY:
       return new Date(now.getTime() - ms('1 day'))
     case PeriodParam.HALF:
@@ -25,6 +23,8 @@ function getPeriodStart(period: PeriodParam): Date | null {
       return new Date(now.getTime() - ms('1 week'))
     case PeriodParam.YEAR:
       return new Date(now.getTime() - ms('1 year'))
+    default:
+      return null
   }
 }
 
