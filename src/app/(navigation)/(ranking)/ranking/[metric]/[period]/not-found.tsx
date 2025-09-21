@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-import { DEFAULT_METRIC, DEFAULT_PERIOD } from '../../common'
+import { DEFAULT_METRIC, DEFAULT_PERIOD } from '../../../common'
 
 export default function NotFound() {
   return (

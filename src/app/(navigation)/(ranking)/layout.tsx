@@ -5,6 +5,7 @@ import { metricInfo, MetricParam, periodLabels, PeriodParam } from './common'
 import MetricLink from './MetricLink'
 import PeriodLink from './PeriodLink'
 import RankingTitle from './RankingTitle'
+import RealtimeLink from './RealtimeLink'
 
 export default async function Layout({ children }: LayoutProps) {
   return (
@@ -22,6 +23,7 @@ export default async function Layout({ children }: LayoutProps) {
           {Object.keys(metricInfo).map((value) => (
             <MetricLink key={value} value={value as MetricParam} />
           ))}
+          <RealtimeLink />
         </nav>
         <nav className="flex gap-1 overflow-x-auto scrollbar-hidden whitespace-nowrap">
           {Object.keys(periodLabels).map((value) => (

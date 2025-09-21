@@ -7,7 +7,7 @@ import MangaCard from '@/components/card/MangaCard'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
-import { metricInfo, MetricParam, periodLabels, PeriodParam, RANKING_PAGE_REVALIDATE } from '../../common'
+import { metricInfo, MetricParam, periodLabels, PeriodParam, RANKING_PAGE_REVALIDATE } from '../../../common'
 import { getRankingData } from './query'
 
 export const dynamic = 'force-static'
@@ -71,7 +71,7 @@ export default async function Page({ params }: PageProps<'/ranking/[metric]/[per
   ])
 
   return (
-    <ul className={`grid ${MANGA_LIST_GRID_COLUMNS.card} gap-2 p-4`}>
+    <ul className={`grid ${MANGA_LIST_GRID_COLUMNS.card} gap-2 p-2`}>
       {rankings.map((ranking, i) => (
         <MangaCard index={i} key={ranking.mangaId} manga={mangasMap1[ranking.mangaId] || mangasMap2[ranking.mangaId]} />
       ))}

@@ -8,7 +8,7 @@ import LinkPending from '@/components/LinkPending'
 import SourceTooltip from '@/components/tooltip/SourceTooltip'
 import { SHORT_NAME } from '@/constants'
 
-import { DEFAULT_METRIC, DEFAULT_PERIOD } from '../ranking/common'
+import { DEFAULT_METRIC, DEFAULT_PERIOD } from '../(ranking)/common'
 import NewMangaLink from './NewMangaLink'
 import RandomMangaLink from './RandomMangaLink'
 

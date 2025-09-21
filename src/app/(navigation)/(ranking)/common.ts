@@ -11,13 +11,13 @@ export enum MetricParam {
 }
 
 export enum PeriodParam {
-  ALL = 'all',
   DAY = 'day',
   WEEK = 'week',
   MONTH = 'month',
   QUARTER = 'quarter',
   HALF = 'half',
   YEAR = 'year',
+  ALL = 'all',
 }
 
 export type Params = {

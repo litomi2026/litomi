@@ -149,7 +149,7 @@ export default function LibraryModal() {
             ))
           )}
         </div>
-        {libraries?.length && libraries.length > 0 && (
+        {libraries && libraries.length > 0 && (
           <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-zinc-900 border-t-2 border-zinc-800 flex-shrink-0 space-y-2">
             <button
               className="flex items-center justify-center gap-2 w-full px-4 py-3 text-background font-medium bg-brand-end rounded-lg transition hover:bg-brand-end/90
