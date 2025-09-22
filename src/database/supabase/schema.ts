@@ -154,7 +154,12 @@ export const notificationTable = pgTable(
     data: text(),
     sentAt: timestamp('sent_at', { precision: 3, withTimezone: true }),
   },
-  (table) => [index('idx_notification_user_id').on(table.userId)],
+  (table) => [
+    // NOTE: PARTITION BY user_id ORDER BY created_at DESC, id DESC
+    index('idx_notification_user_created_id').on(table.userId, table.createdAt.desc(), table.id.desc()),
+    // NOTE: createdAt < (NOW() - INTERVAL '30 days')
+    index('idx_notification_created_at').on(table.createdAt),
+  ],
 ).enableRLS()
 
 export const postTable = pgTable(
