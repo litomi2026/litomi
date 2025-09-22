@@ -46,9 +46,9 @@ export default function MangaCardCensorship({ manga }: Readonly<Props>) {
       className="absolute inset-0 animate-fade-in-fast flex items-center justify-center text-center p-4 pointer-events-none transition aria-current:bg-background/80 aria-current:backdrop-blur"
     >
       <button
-        aria-label={isBlurDisabled ? '검열 블러 적용' : '검열 블러 해제'}
         className="absolute top-2 right-2 p-2.5 rounded-full bg-background/90 hover:bg-background border border-zinc-700 pointer-events-auto transition"
         onClick={() => setIsBlurDisabled(!isBlurDisabled)}
+        title={isBlurDisabled ? '검열 적용' : '검열 임시 해제'}
         type="button"
       >
         {isBlurDisabled ? <IconEye className="size-5" /> : <IconEyeOff className="size-5" />}

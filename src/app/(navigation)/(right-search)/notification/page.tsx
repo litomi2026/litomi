@@ -3,11 +3,11 @@ import { Metadata } from 'next'
 import { Suspense } from 'react'
 
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
-import { getUserIdFromCookie } from '@/utils/cookie'
 
 import NotificationList from './NotificationList'
 import NotificationSettingsLink from './NotificationSettingsLink'
-import Unauthorized from './Unauthorized'
+
+export const dynamic = 'force-static'
 
 export const metadata: Metadata = {
   title: '알림',
@@ -23,12 +23,6 @@ export const metadata: Metadata = {
 }
 
 export default async function Page() {
-  const userId = await getUserIdFromCookie()
-
-  if (!userId) {
-    return <Unauthorized />
-  }
-
   return (
     <div className="flex-1 flex flex-col">
       <div className="flex items-center gap-3 pb-4">

@@ -9,7 +9,6 @@ import { validateUserIdFromCookie } from '@/utils/cookie'
 import { GETNotificationSchema, NotificationFilter } from './schema'
 
 const LIMIT = 20
-const maxAge = 5
 
 export type GETNotificationResponse = {
   notifications: {
@@ -73,7 +72,7 @@ export async function GET(request: Request) {
 
     const cacheControl = createCacheControl({
       private: true,
-      maxAge,
+      maxAge: 5,
     })
 
     return Response.json(

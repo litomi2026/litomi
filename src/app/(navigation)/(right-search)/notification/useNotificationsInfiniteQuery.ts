@@ -3,6 +3,7 @@ import { useSearchParams } from 'next/navigation'
 
 import { GETNotificationResponse } from '@/app/api/notification/route'
 import { QueryKeys } from '@/constants/query'
+import useMeQuery from '@/query/useMeQuery'
 import { handleResponseError } from '@/utils/react-query-error'
 
 export async function fetchNotifications(searchParams: URLSearchParams) {
@@ -12,6 +13,7 @@ export async function fetchNotifications(searchParams: URLSearchParams) {
 
 export default function useNotificationInfiniteQuery() {
   const searchParams = useSearchParams()
+  const { data: me } = useMeQuery()
 
   return useInfiniteQuery<GETNotificationResponse, Error>({
     queryKey: QueryKeys.notifications(searchParams),
@@ -29,5 +31,6 @@ export default function useNotificationInfiniteQuery() {
     getNextPageParam: ({ hasNextPage, notifications }) =>
       hasNextPage ? notifications[notifications.length - 1]?.id.toString() : null,
     initialPageParam: undefined,
+    enabled: Boolean(me),
   })
 }

@@ -60,9 +60,7 @@ export async function GET(request: Request) {
     })
 
     if (censorshipRows.length === 0) {
-      return Response.json({ censorships: [], nextCursor: null } satisfies GETCensorshipsResponse, {
-        headers: { 'Cache-Control': cacheControl },
-      })
+      return Response.json({ censorships: [], nextCursor: null }, { headers: { 'Cache-Control': cacheControl } })
     }
 
     const hasNextPage = limit ? censorshipRows.length > limit : false
