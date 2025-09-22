@@ -11,7 +11,7 @@ import Error400 from './Error400'
 import SearchResults from './SearchResults'
 
 export const metadata: Metadata = {
-  title: `검색 - ${SHORT_NAME}`,
+  title: '검색',
   openGraph: {
     ...defaultOpenGraph,
     title: `검색 - ${SHORT_NAME}`,

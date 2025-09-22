@@ -15,7 +15,7 @@ import NotFound from './NotFound'
 import Unauthorized from './Unauthorized'
 
 export const metadata: Metadata = {
-  title: `북마크 - ${SHORT_NAME}`,
+  title: '북마크',
   openGraph: {
     ...defaultOpenGraph,
     title: `북마크 - ${SHORT_NAME}`,

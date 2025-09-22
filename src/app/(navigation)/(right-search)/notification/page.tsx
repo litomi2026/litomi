@@ -10,7 +10,7 @@ import NotificationSettingsLink from './NotificationSettingsLink'
 import Unauthorized from './Unauthorized'
 
 export const metadata: Metadata = {
-  title: `알림 - ${SHORT_NAME}`,
+  title: '알림',
   openGraph: {
     ...defaultOpenGraph,
     title: `알림 - ${SHORT_NAME}`,

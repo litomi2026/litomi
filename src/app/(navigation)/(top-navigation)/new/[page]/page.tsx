@@ -12,7 +12,7 @@ import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 export const dynamic = 'force-static'
 
 export const metadata: Metadata = {
-  title: `신작 - ${SHORT_NAME}`,
+  title: '신작',
   openGraph: {
     ...defaultOpenGraph,
     title: `신작 - ${SHORT_NAME}`,

@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: PageProps<'/library/[id]'>): 
   }
 
   return {
-    title: `${library.name} - ${SHORT_NAME}`,
+    title: `${library.name}`,
     openGraph: {
       ...defaultOpenGraph,
       title: `${library.name} - ${SHORT_NAME}`,

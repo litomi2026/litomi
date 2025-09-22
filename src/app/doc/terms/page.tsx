@@ -3,7 +3,7 @@ import { Metadata } from 'next'
 import { CANONICAL_URL, defaultOpenGraph, SHORT_NAME } from '@/constants'
 
 export const metadata: Metadata = {
-  title: `이용약관 - ${SHORT_NAME}`,
+  title: '이용약관',
   openGraph: {
     ...defaultOpenGraph,
     title: `이용약관 - ${SHORT_NAME}`,

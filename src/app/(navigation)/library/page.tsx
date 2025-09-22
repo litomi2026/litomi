@@ -13,7 +13,7 @@ import AllLibraryMangaView from './AllLibraryMangaView'
 import CreateLibraryButton from './CreateLibraryButton'
 
 export const metadata: Metadata = {
-  title: `서재 - ${SHORT_NAME}`,
+  title: '서재',
   openGraph: {
     ...defaultOpenGraph,
     title: `서재 - ${SHORT_NAME}`,

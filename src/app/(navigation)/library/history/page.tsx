@@ -12,7 +12,7 @@ import NotFound from './NotFound'
 import Unauthorized from './Unauthorized'
 
 export const metadata: Metadata = {
-  title: `감상 기록 - ${SHORT_NAME}`,
+  title: '감상 기록',
   openGraph: {
     ...defaultOpenGraph,
     title: `감상 기록 - ${SHORT_NAME}`,

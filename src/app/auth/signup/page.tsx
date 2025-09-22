@@ -8,7 +8,7 @@ import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import SignupForm, { SignupFormSkeleton } from './SignupForm'
 
 export const metadata: Metadata = {
-  title: `회원가입 - ${SHORT_NAME}`,
+  title: '회원가입',
   openGraph: {
     ...defaultOpenGraph,
     title: `회원가입 - ${SHORT_NAME}`,

@@ -5,7 +5,7 @@ import IconLogo from '@/components/icons/IconLogo'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 
 export const metadata: Metadata = {
-  title: `19세 이상 연령 확인 - ${SHORT_NAME}`,
+  title: '19세 이상 연령 확인',
   openGraph: {
     ...defaultOpenGraph,
     title: `19세 이상 연령 확인 - ${SHORT_NAME}`,

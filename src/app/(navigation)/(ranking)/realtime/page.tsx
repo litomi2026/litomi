@@ -8,7 +8,7 @@ import RealtimeToggleButton from './RealtimeToggleButton'
 export const dynamic = 'force-static'
 
 export const metadata: Metadata = {
-  title: `실시간 - ${SHORT_NAME}`,
+  title: '실시간',
   openGraph: {
     ...defaultOpenGraph,
     title: `실시간 - ${SHORT_NAME}`,
