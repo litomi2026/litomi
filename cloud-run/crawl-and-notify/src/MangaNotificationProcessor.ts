@@ -219,7 +219,7 @@ export class MangaNotificationProcessor {
               ORDER BY created_at DESC, id DESC
             ) as row_num
           FROM ${notificationTable}
-          WHERE ${notificationTable.userId} = ANY(${affectedUserIds})
+          WHERE ${inArray(notificationTable.userId, affectedUserIds)}
         ) ranked_notifications
         WHERE 
           created_at < (NOW() - INTERVAL '30 days')
@@ -287,7 +287,7 @@ export class MangaNotificationProcessor {
         await this.insertAndCleanupNotifications(allNotificationInserts, allUserIds)
       }
     } catch (error) {
-      result.errors.push(`Failed to insert notifications: ${error}`)
+      result.errors.push(`insertAndCleanupNotifications: ${error}`)
       return result
     }
 

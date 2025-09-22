@@ -9,7 +9,7 @@ export const WEBAUTHN_RP_ID = new URL(CANONICAL_URL).hostname
 export const WEBAUTHN_RP_NAME = 'litomi'
 
 export const DESCRIPTION =
-  'Read manga online for free without any ads. Fast loading and mobile friendly. Update daily with latest chapters.'
+  '만화 웹 뷰어 - 히토미 대체 서비스로 E-Hentai 계열 만화, 동인지, 일러스트를 광고 없이 한 곳에서 감상하세요.'
 
 export const defaultOpenGraph = {
   title: APPLICATION_NAME,
