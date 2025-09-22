@@ -3,6 +3,7 @@ import { and, count, inArray, sql } from 'drizzle-orm'
 import type { NotificationData } from '../../../src/database/type'
 import type { Manga } from '../../../src/types/manga'
 
+import { MAX_MANGA_TITLE_LENGTH } from '../../../src/constants/policy'
 import { NotificationType } from '../../../src/database/enum'
 import { db } from '../../../src/database/supabase/drizzle'
 import { mangaSeenTable } from '../../../src/database/supabase/notification-schema'
@@ -129,13 +130,18 @@ export class MangaNotificationProcessor {
               const totalCount = criteriaMatches.length
               const userNotifications = userNotificationsMap.get(userId)
 
+              const slicedTitle =
+                manga.title.length > MAX_MANGA_TITLE_LENGTH
+                  ? `${manga.title.slice(0, MAX_MANGA_TITLE_LENGTH - 3)}...`
+                  : manga.title
+
               const newMangaNotification: NewMangaNotification = {
-                title: manga.title || `작품 #${mangaId}`,
+                title: slicedTitle || `작품 #${mangaId}`,
                 body: criteriaNames.length > 25 ? `${criteriaNames.slice(0, 20)}... (${totalCount}개)` : criteriaNames,
                 mangaId,
                 previewImageURL,
                 url: getViewerLink(mangaId),
-                artists: manga.artists?.map((a) => a.value),
+                artists: manga.artists?.slice(0, 3).map((a) => a.value),
               }
 
               if (userNotifications) {
@@ -225,6 +231,7 @@ export class MangaNotificationProcessor {
       if (allNotificationInserts.length > 0) {
         await Promise.all([
           db.insert(notificationTable).values(allNotificationInserts),
+          // TODO: MAX_NOTIFICATION_COUNT
           db.delete(notificationTable).where(sql`${notificationTable.createdAt} < NOW() - INTERVAL '30 days'`),
         ])
       }

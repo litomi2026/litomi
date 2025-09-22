@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 
 import { SHORT_NAME } from '@/constants'
+import { MAX_MANGA_DESCRIPTION_LENGTH, MAX_MANGA_TITLE_LENGTH } from '@/constants/policy'
 
 type Props = {
   title?: string
@@ -11,7 +12,7 @@ type Props = {
 export default function usePageMetadata({ title, description, image }: Props) {
   useEffect(() => {
     if (title) {
-      const fullTitle = `${title.slice(0, 50)} - ${SHORT_NAME}`
+      const fullTitle = `${title.slice(0, MAX_MANGA_TITLE_LENGTH)} - ${SHORT_NAME}`
       document.title = fullTitle
       updateMetaTag('property', 'og:title', fullTitle)
       updateMetaTag('name', 'twitter:title', fullTitle)
@@ -20,7 +21,7 @@ export default function usePageMetadata({ title, description, image }: Props) {
 
   useEffect(() => {
     if (description) {
-      const slicedDescription = description.slice(0, 160)
+      const slicedDescription = description.slice(0, MAX_MANGA_DESCRIPTION_LENGTH)
       updateMetaTag('name', 'description', slicedDescription)
       updateMetaTag('property', 'og:description', slicedDescription)
       updateMetaTag('name', 'twitter:description', slicedDescription)

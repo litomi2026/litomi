@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { cache } from 'react'
 
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
+import { MAX_MANGA_DESCRIPTION_LENGTH, MAX_MANGA_TITLE_LENGTH } from '@/constants/policy'
 import { KHentaiClient } from '@/crawler/k-hentai'
 import { LitomiClient } from '@/crawler/litomi'
 
@@ -20,14 +21,16 @@ export async function generateMetadata({ params }: PageProps<'/manga/[id]'>): Pr
 
   const { id } = validation.data
   const manga = await getManga(id)
+  const slicedTitle = manga?.title?.slice(0, MAX_MANGA_TITLE_LENGTH) || '작품'
+  const slicedDescription = manga?.description?.slice(0, MAX_MANGA_DESCRIPTION_LENGTH)
 
   return {
-    title: `${manga?.title ?? '작품'} - ${SHORT_NAME}`,
-    description: manga?.description,
+    title: `${slicedTitle} - ${SHORT_NAME}`,
+    description: slicedDescription,
     openGraph: {
       ...defaultOpenGraph,
-      title: `${manga?.title ?? '작품'} - ${SHORT_NAME}`,
-      description: manga?.description,
+      title: `${slicedTitle} - ${SHORT_NAME}`,
+      description: slicedDescription,
       images: `https://soujpa.in/start/${id}/${id}_0.avif`,
       url: `/manga/${id}`,
     },
