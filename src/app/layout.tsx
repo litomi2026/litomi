@@ -63,7 +63,12 @@ export const metadata: Metadata = {
     },
   },
   openGraph: defaultOpenGraph,
-  verification: { google: 'E8dCRgQMvY3hE4oaZ-vsuhopmTS7qyQG-O5WIMdVenA' },
+  verification: {
+    google: 'E8dCRgQMvY3hE4oaZ-vsuhopmTS7qyQG-O5WIMdVenA',
+    other: {
+      'naver-site-verification': '951da3c56656abd80e31d52bbcd22e78f45ac9da',
+    },
+  },
   other: {
     RATING: 'RTA-5042-1996-1400-1577-RTA',
     rating: 'adult',
