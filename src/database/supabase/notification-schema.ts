@@ -38,4 +38,5 @@ export const notificationConditionTable = pgTable(
 
 export const mangaSeenTable = pgTable('manga_seen', {
   mangaId: integer('manga_id').primaryKey(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
 }).enableRLS()

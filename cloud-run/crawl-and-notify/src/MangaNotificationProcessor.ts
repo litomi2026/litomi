@@ -66,18 +66,18 @@ export class MangaNotificationProcessor {
     this.isProcessing = true
     const mangaMap = new Map(mangaList.map((item) => [item.id, item]))
     const deduplicatedMangas = Array.from(mangaMap.values())
-    const uniqueMangaIds = Array.from(mangaMap.keys())
 
     try {
-      const existingManga = await db
+      const latestProcessedResult = await db
         .select({ mangaId: mangaSeenTable.mangaId })
         .from(mangaSeenTable)
-        .where(inArray(mangaSeenTable.mangaId, uniqueMangaIds))
+        .orderBy(sql`${mangaSeenTable.mangaId} DESC`)
+        .limit(1)
 
-      const existingSet = new Set(existingManga.map((m) => m.mangaId))
+      const latestProcessedId = latestProcessedResult[0]?.mangaId || 0
 
       const newMangas = deduplicatedMangas
-        .filter((item) => !existingSet.has(item.id))
+        .filter((item) => item.id > latestProcessedId)
         .map((item) => ({
           manga: item,
           metadata: this.matcher.convertMangaToMetadata(item),
@@ -162,7 +162,10 @@ export class MangaNotificationProcessor {
         }
       }
 
-      await db.insert(mangaSeenTable).values(newMangas.map((item) => ({ mangaId: item.manga.id })))
+      if (newMangas.length > 0) {
+        const maxMangaId = Math.max(...newMangas.map((item) => item.manga.id))
+        await db.insert(mangaSeenTable).values({ mangaId: maxMangaId })
+      }
 
       return result
     } catch (error) {
