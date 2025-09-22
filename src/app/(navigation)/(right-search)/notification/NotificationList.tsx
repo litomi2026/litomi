@@ -21,6 +21,7 @@ import { deleteNotifications, markAsRead } from './action'
 import { SearchParams } from './common'
 import NotificationCard from './NotificationCard'
 import SwipeableWrapper from './SwipeableNotificationCard'
+import Unauthorized from './Unauthorized'
 import useBatcher from './useBatcher'
 import useNotificationInfiniteQuery from './useNotificationsInfiniteQuery'
 
@@ -42,6 +43,7 @@ export default function NotificationList() {
   const filter = searchParams.get(SearchParams.FILTER) as NotificationFilter | null
   const [selectionMode, setSelectionMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
+  const { data: me, isLoading: isMeLoading } = useMeQuery()
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useNotificationInfiniteQuery()
   const notifications = useMemo(() => data?.pages.flatMap((page) => page.notifications) ?? [], [data])
   const groupedNotifications = groupNotificationsByDate(notifications)
@@ -53,7 +55,7 @@ export default function NotificationList() {
     fetchNextPage,
   })
 
-  const [_, dispatchMarkAsRead, isMarkAsReadPending] = useActionResponse({
+  const [, dispatchMarkAsRead, isMarkAsReadPending] = useActionResponse({
     action: markAsRead,
     onSuccess: () => {
       setSelectedIds(new Set())
@@ -64,7 +66,7 @@ export default function NotificationList() {
     shouldSetResponse: false,
   })
 
-  const [__, dispatchDeleteNotifications, isDeleteNotificationsPending] = useActionResponse({
+  const [, dispatchDeleteNotifications, isDeleteNotificationsPending] = useActionResponse({
     action: deleteNotifications,
     onSuccess: (data) => {
       toast.success(data)
@@ -198,18 +200,19 @@ export default function NotificationList() {
           </div>
         </div>
       </div>
-
-      {isLoading ? (
-        <div className="flex-1 flex items-center justify-center">
+      {isLoading || isMeLoading ? (
+        <div className="flex-1 flex items-center justify-center animate-fade-in [animation-delay:0.3s] [animation-fill-mode:both]">
           <IconSpinner className="w-10 text-zinc-600 animate-spin sm:w-12" />
         </div>
+      ) : !me ? (
+        <Unauthorized />
       ) : notifications.length === 0 ? (
         <EmptyState filter={filter} />
       ) : (
         <div
           aria-current={selectionMode}
           aria-disabled={isMarkAsReadPending || isDeleteNotificationsPending}
-          className="grid gap-6 py-4 transition-all aria-current:scale-x-[0.99] aria-disabled:opacity-70 aria-disabled:pointer-events-none"
+          className="grid gap-6 py-4 transition aria-disabled:opacity-70 aria-disabled:pointer-events-none"
         >
           {Object.entries(groupedNotifications).map(([dateGroup, groupNotifications]) => (
             <div key={dateGroup}>

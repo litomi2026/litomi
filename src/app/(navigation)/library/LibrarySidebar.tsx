@@ -74,7 +74,14 @@ export default function LibrarySidebar({ libraries, userId, className = '', onCl
             badge={!library.isPublic && <Lock className="size-3 text-zinc-500 flex-shrink-0" />}
             description={`${formatNumber(library.itemCount)}개`}
             href={`/library/${library.id}`}
-            icon={<span className="text-sm">{library.icon || '📚'}</span>}
+            icon={
+              <>
+                <span className="text-sm sm:hidden lg:inline">{library.icon || '📚'}</span>
+                <span className="text-sm hidden sm:inline lg:hidden text-foreground font-semibold">
+                  {library.name.slice(0, 1)}
+                </span>
+              </>
+            }
             iconBackground={library.color || 'rgb(113 113 122)'}
             key={library.id}
             onClick={onClick}

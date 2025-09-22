@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: PageProps<'/manga/[id]'>): Pr
   const slicedDescription = manga?.description?.slice(0, MAX_MANGA_DESCRIPTION_LENGTH)
 
   return {
-    title: `${slicedTitle} - ${SHORT_NAME}`,
+    title: `${slicedTitle}`,
     description: slicedDescription,
     openGraph: {
       ...defaultOpenGraph,
