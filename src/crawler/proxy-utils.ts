@@ -92,6 +92,7 @@ export async function createHealthCheckHandler(
 }
 
 export function handleRouteError(error: unknown, request: Request) {
+  console.error(error)
   const normalizedError = normalizeError(error)
 
   if (!isUpstreamServer4XXError(normalizedError)) {

@@ -44,12 +44,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: PRIORITY_LEVELS.SEARCH,
     },
     {
-      url: `${CANONICAL_URL}/posts/recommand`,
-      lastModified,
-      changeFrequency: 'monthly',
-      priority: PRIORITY_LEVELS.POSTS,
-    },
-    {
       url: `${CANONICAL_URL}/library`,
       lastModified,
       changeFrequency: 'weekly',
@@ -72,6 +66,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified,
       changeFrequency: 'monthly',
       priority: PRIORITY_LEVELS.USER_PAGES,
+    },
+    {
+      url: `${CANONICAL_URL}/posts/recommand`,
+      lastModified,
+      changeFrequency: 'monthly',
+      priority: PRIORITY_LEVELS.POSTS,
     },
     {
       url: `${CANONICAL_URL}/doc/privacy`,
