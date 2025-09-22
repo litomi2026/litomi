@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 }
 
 export async function generateStaticParams() {
-  return Array.from({ length: 10 }, (_, i) => String(i + 1)).map((page) => ({ page }))
+  return Array.from({ length: 9 }, (_, i) => String(i + 1)).map((page) => ({ page }))
 }
 
 const mangasNewSchema = z.object({
