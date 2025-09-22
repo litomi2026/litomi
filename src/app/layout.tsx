@@ -11,7 +11,7 @@ import { Toaster } from 'sonner'
 import LibraryModal from '@/components/card/LibraryModal'
 import HiyobiPing from '@/components/HiyobiPing'
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar'
-import { CANONICAL_URL, defaultOpenGraph, DESCRIPTION, SHORT_NAME, THEME_COLOR } from '@/constants'
+import { APPLICATION_NAME, CANONICAL_URL, defaultOpenGraph, DESCRIPTION, SHORT_NAME, THEME_COLOR } from '@/constants'
 import { AMPLITUDE_API_KEY, GA_ID, GOOGLE_ADSENSE_ACCOUNT } from '@/constants/env'
 
 import QueryProvider from '../components/QueryProvider'
@@ -42,10 +42,14 @@ const PretendardVariable = localFont({
 
 export const metadata: Metadata = {
   metadataBase: new URL(CANONICAL_URL),
-  title: SHORT_NAME,
+  title: {
+    default: APPLICATION_NAME,
+    template: `%s - ${SHORT_NAME}`,
+  },
   description: DESCRIPTION,
   applicationName: SHORT_NAME,
-  keywords: 'litomi, manga, comic, webtoon, manhwa, manhua, 리토미, 망가, 만화, 웹툰',
+  keywords:
+    '리토미, 망가, 만화, 웹툰, 동인지, 온라인 만화 뷰어, litomi, doujinshi, manga, comic, webtoon, artist cg, hentai',
   referrer: 'same-origin',
   robots: {
     index: true,
@@ -53,9 +57,13 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: CANONICAL_URL,
-    languages: { ko: CANONICAL_URL },
+    languages: {
+      ko: CANONICAL_URL,
+      'x-default': CANONICAL_URL,
+    },
   },
   openGraph: defaultOpenGraph,
+  verification: { google: 'E8dCRgQMvY3hE4oaZ-vsuhopmTS7qyQG-O5WIMdVenA' },
   other: {
     RATING: 'RTA-5042-1996-1400-1577-RTA',
     rating: 'adult',
