@@ -7,7 +7,7 @@ import Censorships from './Censorships'
 import Unauthorized from './Unauthorized'
 
 export const metadata: Metadata = {
-  title: `검열 - ${SHORT_NAME}`,
+  title: '검열',
   openGraph: {
     ...defaultOpenGraph,
     title: `검열 - ${SHORT_NAME}`,

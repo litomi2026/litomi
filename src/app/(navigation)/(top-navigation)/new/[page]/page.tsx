@@ -12,20 +12,20 @@ import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 export const dynamic = 'force-static'
 
 export const metadata: Metadata = {
-  title: `신작 - ${SHORT_NAME}`,
+  title: '신작',
   openGraph: {
     ...defaultOpenGraph,
     title: `신작 - ${SHORT_NAME}`,
-    url: '/new',
+    url: '/new/1',
   },
   alternates: {
-    canonical: '/new',
-    languages: { ko: '/new' },
+    canonical: '/new/1',
+    languages: { ko: '/new/1' },
   },
 }
 
 export async function generateStaticParams() {
-  return Array.from({ length: 10 }, (_, i) => String(i + 1)).map((page) => ({ page }))
+  return Array.from({ length: 9 }, (_, i) => String(i + 1)).map((page) => ({ page }))
 }
 
 const mangasNewSchema = z.object({

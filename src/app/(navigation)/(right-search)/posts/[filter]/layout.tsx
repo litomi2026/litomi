@@ -1,8 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
-import type { LayoutProps } from '@/types/nextjs'
-
 import { PostFilter } from '@/app/api/post/schema'
 import PostCreationForm from '@/components/post/PostCreationForm'
 import TopNavigation from '@/components/TopNavigation'
@@ -11,7 +9,7 @@ import { PostFilterParams, postFilterSchema } from './schema'
 
 export const dynamic = 'error'
 
-export default async function Layout({ params, children }: LayoutProps) {
+export default async function Layout({ params, children }: LayoutProps<'/posts/[filter]'>) {
   const validation = postFilterSchema.safeParse(await params)
 
   if (!validation.success) {

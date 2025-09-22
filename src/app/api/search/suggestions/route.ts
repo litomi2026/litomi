@@ -1,11 +1,8 @@
-import ms from 'ms'
-
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
+import { sec } from '@/utils/date'
 
 import { type GETSearchSuggestionsResponse, GETSearchSuggestionsSchema, queryBlacklist } from './schema'
 import { suggestionTrie } from './suggestion-trie'
-
-const maxAge = ms('3 days') / 1000
 
 export async function GET(request: Request) {
   const url = new URL(request.url)
@@ -27,9 +24,9 @@ export async function GET(request: Request) {
 
     const cacheControl = createCacheControl({
       public: true,
-      maxAge,
-      sMaxAge: maxAge,
-      swr: maxAge,
+      maxAge: sec('3 days'),
+      sMaxAge: sec('3 days'),
+      swr: sec('3 days'),
     })
 
     return Response.json(suggestions satisfies GETSearchSuggestionsResponse, {

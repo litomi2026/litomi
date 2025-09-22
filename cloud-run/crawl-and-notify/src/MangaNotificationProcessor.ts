@@ -3,6 +3,7 @@ import { and, count, inArray, sql } from 'drizzle-orm'
 import type { NotificationData } from '../../../src/database/type'
 import type { Manga } from '../../../src/types/manga'
 
+import { MAX_MANGA_TITLE_LENGTH, MAX_NOTIFICATION_COUNT } from '../../../src/constants/policy'
 import { NotificationType } from '../../../src/database/enum'
 import { db } from '../../../src/database/supabase/drizzle'
 import { mangaSeenTable } from '../../../src/database/supabase/notification-schema'
@@ -66,18 +67,18 @@ export class MangaNotificationProcessor {
     this.isProcessing = true
     const mangaMap = new Map(mangaList.map((item) => [item.id, item]))
     const deduplicatedMangas = Array.from(mangaMap.values())
-    const uniqueMangaIds = Array.from(mangaMap.keys())
 
     try {
-      const existingManga = await db
+      const latestProcessedResult = await db
         .select({ mangaId: mangaSeenTable.mangaId })
         .from(mangaSeenTable)
-        .where(inArray(mangaSeenTable.mangaId, uniqueMangaIds))
+        .orderBy(sql`${mangaSeenTable.mangaId} DESC`)
+        .limit(1)
 
-      const existingSet = new Set(existingManga.map((m) => m.mangaId))
+      const latestProcessedId = latestProcessedResult[0]?.mangaId || 0
 
       const newMangas = deduplicatedMangas
-        .filter((item) => !existingSet.has(item.id))
+        .filter((item) => item.id > latestProcessedId)
         .map((item) => ({
           manga: item,
           metadata: this.matcher.convertMangaToMetadata(item),
@@ -129,13 +130,18 @@ export class MangaNotificationProcessor {
               const totalCount = criteriaMatches.length
               const userNotifications = userNotificationsMap.get(userId)
 
+              const slicedTitle =
+                manga.title.length > MAX_MANGA_TITLE_LENGTH
+                  ? `${manga.title.slice(0, MAX_MANGA_TITLE_LENGTH - 3)}...`
+                  : manga.title
+
               const newMangaNotification: NewMangaNotification = {
-                title: manga.title || `작품 #${mangaId}`,
+                title: slicedTitle || `작품 #${mangaId}`,
                 body: criteriaNames.length > 25 ? `${criteriaNames.slice(0, 20)}... (${totalCount}개)` : criteriaNames,
                 mangaId,
                 previewImageURL,
                 url: getViewerLink(mangaId),
-                artists: manga.artists?.map((a) => a.value),
+                artists: manga.artists?.slice(0, 3).map((a) => a.value),
               }
 
               if (userNotifications) {
@@ -162,7 +168,10 @@ export class MangaNotificationProcessor {
         }
       }
 
-      await db.insert(mangaSeenTable).values(newMangas.map((item) => ({ mangaId: item.manga.id })))
+      if (newMangas.length > 0) {
+        const maxMangaId = Math.max(...newMangas.map((item) => item.manga.id))
+        await db.insert(mangaSeenTable).values({ mangaId: maxMangaId })
+      }
 
       return result
     } catch (error) {
@@ -170,6 +179,61 @@ export class MangaNotificationProcessor {
       return result
     } finally {
       this.isProcessing = false
+    }
+  }
+
+  /**
+   * Combined insert and cleanup operation in a single query
+   *
+   * 1. Inserts new notifications
+   * 2. Removes notifications older than 30 days
+   * 3. Keeps only the latest MAX_NOTIFICATION_COUNT per user
+   */
+  private async insertAndCleanupNotifications(
+    notificationInserts: {
+      userId: number
+      type: number
+      title: string
+      body: string
+      data: string
+    }[],
+    affectedUserIds: number[],
+  ): Promise<void> {
+    const values = notificationInserts.map((n) => sql`(${n.userId}, ${n.type}, ${n.title}, ${n.body}, ${n.data})`)
+    const valuesQuery = sql.join(values, sql.raw(', '))
+
+    await db.execute(sql`
+      WITH inserted AS (
+        INSERT INTO ${notificationTable} (user_id, type, title, body, data)
+        VALUES ${valuesQuery}
+      ),
+      notifications_to_delete AS (
+        SELECT id
+        FROM (
+          SELECT 
+            ${notificationTable.id},
+            ${notificationTable.userId},
+            ${notificationTable.createdAt},
+            ROW_NUMBER() OVER (
+              PARTITION BY user_id 
+              ORDER BY created_at DESC, id DESC
+            ) as row_num
+          FROM ${notificationTable}
+          WHERE ${inArray(notificationTable.userId, affectedUserIds)}
+        ) ranked_notifications
+        WHERE 
+          created_at < (NOW() - INTERVAL '30 days')
+          OR row_num > ${MAX_NOTIFICATION_COUNT}
+      )
+      DELETE FROM ${notificationTable}
+      WHERE id IN (SELECT id FROM notifications_to_delete)
+    `)
+
+    if (Math.random() < 0.01) {
+      await db.execute(sql`
+        DELETE FROM ${notificationTable}
+        WHERE ${notificationTable.createdAt} < (NOW() - INTERVAL '30 days')
+      `)
     }
   }
 
@@ -220,13 +284,10 @@ export class MangaNotificationProcessor {
 
     try {
       if (allNotificationInserts.length > 0) {
-        await Promise.all([
-          db.insert(notificationTable).values(allNotificationInserts),
-          db.delete(notificationTable).where(sql`${notificationTable.createdAt} < NOW() - INTERVAL '30 days'`),
-        ])
+        await this.insertAndCleanupNotifications(allNotificationInserts, allUserIds)
       }
     } catch (error) {
-      result.errors.push(`Failed to insert notifications: ${error}`)
+      result.errors.push(`insertAndCleanupNotifications: ${error}`)
       return result
     }
 

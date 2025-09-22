@@ -55,7 +55,7 @@ if [ -n "$ALL_IMAGES" ] && [ "$ALL_IMAGES" != "Listed 0 items." ]; then
   while IFS=',' read -r image digest create_time; do
     if [ -n "$image" ] && [ -n "$digest" ]; then
       full_image_ref="${image}@${digest}"
-      echo "Deleting: ${full_image_ref} (created: ${create_time})"
+      echo "Deleting: https://${full_image_ref} (created: ${create_time})"
       
       if gcloud artifacts docker images delete "${full_image_ref}" \
         --quiet \

@@ -1,5 +1,5 @@
 import dotenv from 'dotenv'
-dotenv.config({ path: process.env.DB_ENV === 'prod' ? '.env.production' : '.env.local' })
+dotenv.config({ path: process.env.DB_ENV === 'production' ? '.env.production' : '.env.development' })
 
 import { defineConfig } from 'drizzle-kit'
 

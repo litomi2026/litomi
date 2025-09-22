@@ -1,6 +1,5 @@
 import { Suspense } from 'react'
 
-import { LayoutProps } from '@/types/nextjs'
 import { getUsernameFromParam } from '@/utils/param'
 
 import MyPageNavigationLink from './MyPageNavigationLink'
@@ -8,7 +7,7 @@ import MyPagePrivateNavigation from './MyPagePrivateNavigation'
 import UserProfile from './UserProfile'
 import UserProfileView, { UserType } from './UserProfileView'
 
-export default async function Layout({ params, children }: LayoutProps) {
+export default async function Layout({ params, children }: LayoutProps<'/[name]'>) {
   const { name } = await params
   const username = getUsernameFromParam(name)
 

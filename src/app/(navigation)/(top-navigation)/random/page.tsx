@@ -2,7 +2,6 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 import MangaCard from '@/components/card/MangaCard'
-import { SHORT_NAME } from '@/constants'
 import { createErrorManga } from '@/constants/json'
 import { KHentaiClient } from '@/crawler/k-hentai'
 import { ViewCookie } from '@/utils/param'
@@ -13,7 +12,7 @@ import RandomMangaLink from '../RandomMangaLink'
 export const revalidate = 15
 
 export const metadata: Metadata = {
-  title: `랜덤 - ${SHORT_NAME}`,
+  title: '랜덤',
   alternates: {
     canonical: '/random',
     languages: { ko: '/random' },

@@ -4,7 +4,7 @@ import z from 'zod/v4'
 
 import { getMangasFromMultiSources } from '@/common/manga'
 import MangaCard from '@/components/card/MangaCard'
-import { defaultOpenGraph, SHORT_NAME } from '@/constants'
+import { defaultOpenGraph } from '@/constants'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 import { metricInfo, MetricParam, periodLabels, PeriodParam, RANKING_PAGE_REVALIDATE } from '../../../common'
@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: PageProps<'/ranking/[metric]/
   }
 
   const { metric, period } = validation.data
-  const title = `${periodLabels[period]} ${metricInfo[metric].label} 순위 - ${SHORT_NAME}`
+  const title = `${periodLabels[period]} ${metricInfo[metric].label} 순위`
 
   return {
     title,

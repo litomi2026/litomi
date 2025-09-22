@@ -22,10 +22,10 @@ export async function generateMetadata({ params }: PageProps<'/manga/[id]/detail
   const { id } = validation.data
 
   return {
-    title: `작품 상세 ${id} - ${SHORT_NAME}`,
+    title: `작품 상세 #${id}`,
     openGraph: {
       ...defaultOpenGraph,
-      title: `작품 상세 ${id} - ${SHORT_NAME}`,
+      title: `작품 상세 #${id} - ${SHORT_NAME}`,
       url: `${CANONICAL_URL}/manga/${id}/detail`,
     },
   }

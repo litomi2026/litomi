@@ -1,5 +1,3 @@
-import type { LayoutProps } from '@/types/nextjs'
-
 import AutoHideNavigation from '../AutoHideNavigation'
 import { metricInfo, MetricParam, periodLabels, PeriodParam } from './common'
 import MetricLink from './MetricLink'
@@ -7,7 +5,7 @@ import PeriodLink from './PeriodLink'
 import RankingTitle from './RankingTitle'
 import RealtimeLink from './RealtimeLink'
 
-export default async function Layout({ children }: LayoutProps) {
+export default async function Layout({ children }: LayoutProps<'/'>) {
   return (
     <main className="flex flex-col grow">
       <RankingTitle />

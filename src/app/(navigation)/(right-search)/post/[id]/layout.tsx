@@ -1,17 +1,8 @@
-import type { ReactNode } from 'react'
-
-import type { LayoutProps } from '@/types/nextjs'
-
 import BackButton from '@/components/BackButton'
 
 export const dynamic = 'error'
 
-type Props = LayoutProps & {
-  comment: ReactNode
-  post: ReactNode
-}
-
-export default function Layout({ post, comment }: Props) {
+export default function Layout({ post, comment }: LayoutProps<'/post/[id]'>) {
   return (
     <>
       <div className="sticky top-0 left-0 right-0 z-10 flex items-center justify-between gap-2 p-2 backdrop-blur whitespace-nowrap bg-background/70 border-background border-b">
