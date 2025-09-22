@@ -89,7 +89,7 @@ export default function RealtimePage() {
               <thead className="border-b border-zinc-800">
                 <tr>
                   <th className="px-4 py-3 text-left text-sm font-medium text-zinc-400">순위</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-zinc-400">페이지</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-zinc-400">페이지 제목</th>
                   <th className="px-4 py-3 text-right text-sm font-medium text-zinc-400">조회수</th>
                 </tr>
               </thead>
