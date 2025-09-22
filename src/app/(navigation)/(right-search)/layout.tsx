@@ -1,6 +1,4 @@
-import type { LayoutProps } from '@/types/nextjs'
-
-export default function Layout({ children }: LayoutProps) {
+export default function Layout({ children }: LayoutProps<'/'>) {
   return (
     <div className="flex grow min-h-full lg:gap-8 2xl:gap-10">
       <div className="flex flex-col grow lg:border-r-2">{children}</div>

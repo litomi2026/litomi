@@ -1,7 +1,5 @@
 import Link from 'next/link'
 
-import type { LayoutProps } from '@/types/nextjs'
-
 import IconFlame from '@/components/icons/IconFlame'
 import InstallPrompt from '@/components/InstallPrompt'
 import LinkPending from '@/components/LinkPending'
@@ -12,7 +10,7 @@ import { DEFAULT_METRIC, DEFAULT_PERIOD } from '../(ranking)/common'
 import NewMangaLink from './NewMangaLink'
 import RandomMangaLink from './RandomMangaLink'
 
-export default async function Layout({ children }: LayoutProps) {
+export default async function Layout({ children }: LayoutProps<'/'>) {
   return (
     <div className="flex flex-col flex-1 gap-2 p-2">
       <div className="flex flex-wrap justify-center gap-2 text-sm sm:justify-end sm:text-base">

@@ -1,7 +1,5 @@
 import Link from 'next/link'
 
-import type { LayoutProps } from '@/types/nextjs'
-
 import IconBell from '@/components/icons/IconBell'
 import IconBookmark from '@/components/icons/IconBookmark'
 import IconFlame from '@/components/icons/IconFlame'
@@ -19,7 +17,7 @@ import ProfileLink from './ProfileLink'
 import PublishButton from './PublishButton'
 import SelectableLink from './SelectableLink'
 
-export default async function Layout({ children }: LayoutProps) {
+export default async function Layout({ children }: LayoutProps<'/'>) {
   return (
     <div className="flex flex-col min-h-full mx-auto pb-safe max-w-screen-2xl sm:flex-row">
       <header
