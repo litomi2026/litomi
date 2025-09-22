@@ -16,11 +16,11 @@ export const metadata: Metadata = {
   openGraph: {
     ...defaultOpenGraph,
     title: `신작 - ${SHORT_NAME}`,
-    url: '/new',
+    url: '/new/1',
   },
   alternates: {
-    canonical: '/new',
-    languages: { ko: '/new' },
+    canonical: '/new/1',
+    languages: { ko: '/new/1' },
   },
 }
 
