@@ -57,12 +57,12 @@ bun dev
 
 #### 배포
 
-- 인도: https://litomi.in
+- 인도 도메인: https://litomi.in
 - Vercel: https://litomi.vercel.app
-- Render: https://litomi.onrender.com
 - Netlify: https://litomi.netlify.app
-- sherpa.io: https://litomi.sherpa.software
 - Fly.io: https://litomi.fly.dev
+- Render: https://litomi.onrender.com
+- sherpa.io: https://litomi.sherpa.software
 
 #### 기타
 
