@@ -43,6 +43,12 @@
   "non-h_imageset": { "en": "non-h imageset", "ko": "건전 이미지셋", "ja": "非Hイメージセット", "zh-CN": "非H图集" },
   "novel": { "en": "novel", "ko": "소설", "ja": "小説", "zh-CN": "小说" },
   "nudity_only": { "en": "nudity only", "ko": "나체만 나옴" },
+  "object_insertion_only": {
+    "en": "object insertion only",
+    "ko": "물건 삽입만",
+    "ja": "オブジェクト挿入のみ",
+    "zh-CN": "仅物体插入"
+  },
   "out_of_order": { "en": "out of order", "ko": "순서가 뒤바뀜" },
   "realporn": { "en": "real porn", "ko": "현실 음란물", "ja": "リアルポル" },
   "redraw": { "en": "redraw", "ko": "다시 그림", "ja": "リドロー", "zh-CN": "重绘" },

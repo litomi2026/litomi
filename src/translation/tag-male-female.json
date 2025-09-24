@@ -485,12 +485,6 @@
   "nudism": { "en": "nudism", "ko": "나체주의" },
   "nun": { "en": "nun", "ko": "수녀", "ja": "修道女", "zh-CN": "修女", "zh-TW": "修女" },
   "nurse": { "en": "nurse", "ko": "간호사", "ja": "ナース", "zh-CN": "护士", "zh-TW": "護士" },
-  "object_insertion_only": {
-    "en": "object insertion only",
-    "ko": "물건 삽입만",
-    "ja": "オブジェクト挿入のみ",
-    "zh-CN": "仅物体插入"
-  },
   "octopus": { "en": "octopus", "ko": "문어", "ja": "タコ", "zh-CN": "章鱼" },
   "office": { "en": "office", "ko": "사무실", "ja": "オフィス", "zh-CN": "办公室" },
   "oil": { "en": "oil", "ko": "오일" },
