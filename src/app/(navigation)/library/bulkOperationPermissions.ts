@@ -8,7 +8,7 @@ export type BulkOperationPermissions = {
 type Params = {
   pathname: string
   isOwner: boolean
-  isPublicLibrary: boolean
+  isPublicLibrary: boolean | undefined
   userId: number | null
   currentLibraryId?: number
 }

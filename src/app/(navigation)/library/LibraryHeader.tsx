@@ -41,14 +41,16 @@ export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
   const isOwner = currentLibrary?.userId === userId
   const isGuest = !userId
   const isEmpty = currentLibrary?.itemCount === 0
+  const isPublicLibrary = currentLibrary?.isPublic
+  const currentLibraryId = currentLibrary?.id
   const headerTitle = getHeaderTitle()
 
   const permissions = getBulkOperationPermissions({
     pathname,
     isOwner,
-    isPublicLibrary: currentLibrary?.isPublic ?? false,
+    isPublicLibrary,
     userId,
-    currentLibraryId: currentLibrary?.id,
+    currentLibraryId,
   })
 
   const closeDrawer = useCallback(() => {
@@ -135,15 +137,13 @@ export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
         </div>
         {isSelectionMode && (
           <BulkOperationsToolbar
-            currentLibraryId={currentLibrary?.id}
+            currentLibraryId={currentLibraryId}
             libraries={libraries.filter((lib) => lib.userId === userId && lib.id !== currentLibrary?.id)}
             permissions={permissions}
           />
         )}
         <div className="flex items-center gap-1">
-          {!isSelectionMode && currentLibrary?.isPublic && (
-            <ShareLibraryButton className="p-2" library={currentLibrary} />
-          )}
+          {!isSelectionMode && isPublicLibrary && <ShareLibraryButton className="p-2" library={currentLibrary} />}
           {permissions.canSelectItems && (
             <button
               className="p-2 hover:bg-zinc-800 rounded-lg transition disabled:opacity-50"
