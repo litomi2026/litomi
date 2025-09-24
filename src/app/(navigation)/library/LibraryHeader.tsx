@@ -8,10 +8,11 @@ import { useCallback, useEffect, useState } from 'react'
 import AutoHideNavigation from '../AutoHideNavigation'
 import { useLibrarySelectionStore } from './[id]/librarySelection'
 import ShareLibraryButton from './[id]/ShareLibraryButton'
+import { getBulkOperationPermissions } from './bulkOperationPermissions'
 import LibraryManagementMenu from './LibraryManagementMenu'
 import LibrarySidebar from './LibrarySidebar'
 
-const BulkOperationsToolbar = dynamic(() => import('./[id]/BulkOperationsToolbar'))
+const BulkOperationsToolbar = dynamic(() => import('./BulkOperationsToolbar'))
 
 type Params = {
   id: string
@@ -39,7 +40,18 @@ export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
   const currentLibrary = libraryId ? libraries.find((lib) => lib.id === Number(libraryId)) : null
   const isOwner = currentLibrary?.userId === userId
   const isGuest = !userId
+  const isEmpty = currentLibrary?.itemCount === 0
+  const isPublicLibrary = currentLibrary?.isPublic
+  const currentLibraryId = currentLibrary?.id
   const headerTitle = getHeaderTitle()
+
+  const permissions = getBulkOperationPermissions({
+    pathname,
+    isOwner,
+    isPublicLibrary,
+    userId,
+    currentLibraryId,
+  })
 
   const closeDrawer = useCallback(() => {
     setIsDrawerOpen(false)
@@ -123,22 +135,27 @@ export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
             </div>
           )}
         </div>
-        {isSelectionMode && currentLibrary && (
-          <BulkOperationsToolbar currentLibraryId={currentLibrary.id} libraries={libraries} />
+        {isSelectionMode && (
+          <BulkOperationsToolbar
+            currentLibraryId={currentLibraryId}
+            libraries={libraries.filter((lib) => lib.userId === userId && lib.id !== currentLibrary?.id)}
+            permissions={permissions}
+          />
         )}
         <div className="flex items-center gap-1">
-          {!isSelectionMode && currentLibrary && <ShareLibraryButton className="p-2" library={currentLibrary} />}
-          {isOwner && (
+          {!isSelectionMode && isPublicLibrary && <ShareLibraryButton className="p-2" library={currentLibrary} />}
+          {permissions.canSelectItems && (
             <button
-              className="p-2 hover:bg-zinc-800 rounded-lg transition"
+              className="p-2 hover:bg-zinc-800 rounded-lg transition disabled:opacity-50"
+              disabled={isEmpty}
               onClick={handleSelectionModeChange}
-              title={isSelectionMode ? '선택 모드 종료' : '선택 모드'}
+              title={isEmpty ? '작품이 없어요' : '선택 모드 전환'}
               type="button"
             >
               {isSelectionMode ? <X className="size-5" /> : <Edit className="size-5" />}
             </button>
           )}
-          {isOwner && !isSelectionMode && <LibraryManagementMenu className="-mr-1" library={currentLibrary} />}
+          {!isSelectionMode && isOwner && <LibraryManagementMenu className="-mr-1" library={currentLibrary} />}
         </div>
       </header>
       {isDrawerOpen && (

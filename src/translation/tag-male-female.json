@@ -485,12 +485,6 @@
   "nudism": { "en": "nudism", "ko": "나체주의" },
   "nun": { "en": "nun", "ko": "수녀", "ja": "修道女", "zh-CN": "修女", "zh-TW": "修女" },
   "nurse": { "en": "nurse", "ko": "간호사", "ja": "ナース", "zh-CN": "护士", "zh-TW": "護士" },
-  "object_insertion_only": {
-    "en": "object insertion only",
-    "ko": "물건 삽입만",
-    "ja": "オブジェクト挿入のみ",
-    "zh-CN": "仅物体插入"
-  },
   "octopus": { "en": "octopus", "ko": "문어", "ja": "タコ", "zh-CN": "章鱼" },
   "office": { "en": "office", "ko": "사무실", "ja": "オフィス", "zh-CN": "办公室" },
   "oil": { "en": "oil", "ko": "오일" },
@@ -533,7 +527,7 @@
   "ponygirl": { "en": "ponygirl", "ko": "포니걸" },
   "ponytail": { "en": "ponytail", "ko": "포니테일", "ja": "ポニーテール", "zh-CN": "马尾辫" },
   "pool": { "en": "pool", "ko": "수영장", "ja": "プール", "zh-CN": "游泳池" },
-  "possession": { "en": "possession", "ko": "신체 제어권 상실" },
+  "possession": { "en": "possession", "ko": "빙의" },
   "pregnant": { "en": "pregnant", "ko": "임신", "ja": "妊娠", "zh-CN": "怀孕" },
   "prehensile_hair": { "en": "prehensile hair", "ko": "잡는 머리" },
   "priest": { "en": "priest", "ko": "사제" },
