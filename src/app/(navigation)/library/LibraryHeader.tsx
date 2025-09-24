@@ -11,7 +11,7 @@ import ShareLibraryButton from './[id]/ShareLibraryButton'
 import LibraryManagementMenu from './LibraryManagementMenu'
 import LibrarySidebar from './LibrarySidebar'
 
-const BulkOperationsToolbar = dynamic(() => import('./[id]/BulkOperationsToolbar'))
+const BulkOperationsToolbar = dynamic(() => import('./BulkOperationsToolbar'))
 
 type Params = {
   id: string
