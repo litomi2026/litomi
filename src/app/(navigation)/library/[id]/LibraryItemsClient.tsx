@@ -10,8 +10,8 @@ import useLibraryItemsInfiniteQuery from '@/query/useLibraryItemsInfiniteQuery'
 import { ViewCookie } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
+import SelectableMangaCard from '../SelectableMangaCard'
 import { useLibrarySelectionStore } from './librarySelection'
-import SelectableMangaCard from './SelectableMangaCard'
 
 type Props = {
   library: {
