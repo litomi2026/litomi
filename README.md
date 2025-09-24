@@ -30,6 +30,7 @@
 - 실시간 인기 페이지 순위 (Google Analytics Data API)
 - 패스키 로그인
 - 2단계 인증 (TOTP)
+- 회원가입, 로그인
 
 ## 개발 환경
 
