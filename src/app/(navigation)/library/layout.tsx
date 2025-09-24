@@ -1,5 +1,4 @@
-import { desc, eq, sql } from 'drizzle-orm'
-import { ReactNode } from 'react'
+import { desc, eq, or, sql } from 'drizzle-orm'
 
 import { db } from '@/database/supabase/drizzle'
 import { libraryItemTable, libraryTable } from '@/database/supabase/schema'
@@ -9,11 +8,7 @@ import { getUserIdFromCookie } from '@/utils/cookie'
 import LibraryHeader from './LibraryHeader'
 import LibrarySidebar from './LibrarySidebar'
 
-type Props = {
-  children: ReactNode
-}
-
-export default async function LibraryLayout({ children }: Props) {
+export default async function LibraryLayout({ children }: LayoutProps<'/library'>) {
   const userId = await getUserIdFromCookie()
 
   let query = db
@@ -29,13 +24,15 @@ export default async function LibraryLayout({ children }: Props) {
       itemCount: sql<number>`(SELECT COUNT(*) FROM ${libraryItemTable} WHERE ${libraryItemTable.libraryId} = ${libraryTable.id})::int`,
     })
     .from(libraryTable)
-    .orderBy(({ itemCount }) => desc(itemCount))
+    .limit(20)
     .$dynamic()
 
   if (userId) {
-    query = query.where(eq(libraryTable.userId, userId))
+    query = query
+      .where(or(eq(libraryTable.userId, userId), eq(libraryTable.isPublic, true)))
+      .orderBy(({ itemCount }) => [desc(eq(libraryTable.userId, userId)), desc(itemCount)])
   } else {
-    query = query.where(eq(libraryTable.isPublic, true)).limit(20)
+    query = query.where(eq(libraryTable.isPublic, true)).orderBy(({ itemCount }) => desc(itemCount))
   }
 
   const libraryRows = await query

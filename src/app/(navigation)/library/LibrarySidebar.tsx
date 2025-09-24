@@ -1,4 +1,4 @@
-import { Bookmark, Clock, LibraryBig, Lock } from 'lucide-react'
+import { Bookmark, Clock, Globe, LibraryBig, Lock } from 'lucide-react'
 
 import { formatNumber } from '@/utils/format'
 
@@ -71,7 +71,13 @@ export default function LibrarySidebar({ libraries, userId, className = '', onCl
         {libraries.length > 0 && <div className="h-px bg-zinc-800 my-1" />}
         {libraries.map((library) => (
           <LibrarySidebarLink
-            badge={!library.isPublic && <Lock className="size-3 text-zinc-500 flex-shrink-0" />}
+            badge={
+              !library.isPublic ? (
+                <Lock className="size-3 text-zinc-500 flex-shrink-0" />
+              ) : library.userId !== userId ? (
+                <Globe className="size-3 text-zinc-500 flex-shrink-0" />
+              ) : null
+            }
             description={`${formatNumber(library.itemCount)}개`}
             href={`/library/${library.id}`}
             icon={
