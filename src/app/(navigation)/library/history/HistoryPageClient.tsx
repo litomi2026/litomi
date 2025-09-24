@@ -38,7 +38,7 @@ export default function HistoryPageClient({ initialData }: Props) {
             <h4 className="bg-background border-b border-white/5 px-4 py-2 text-sm font-medium text-zinc-400">
               {DATE_GROUP_LABELS[dateGroup]}
             </h4>
-            <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[ViewCookie.CARD]} gap-2 p-4`}>
+            <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[ViewCookie.CARD]} gap-2 p-2`}>
               {items.map(({ mangaId, lastPage }) => {
                 const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
                 const index = historyItems.findIndex((item) => item.mangaId === mangaId)
