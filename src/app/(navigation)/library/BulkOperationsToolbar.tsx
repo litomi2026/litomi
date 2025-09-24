@@ -67,7 +67,6 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId, per
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraries })
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItems(toLibraryId) })
       exitSelectionMode()
-      setShowModal(false)
     },
     shouldSetResponse: false,
   })
@@ -82,7 +81,6 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId, per
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItems(fromLibraryId) })
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItems(toLibraryId) })
       exitSelectionMode()
-      setShowModal(false)
     },
     shouldSetResponse: false,
   })

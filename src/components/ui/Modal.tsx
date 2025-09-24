@@ -100,6 +100,11 @@ export default function Modal({
       bodyStyle.overflow = ''
       bodyStyle.touchAction = ''
     }
+
+    return () => {
+      bodyStyle.overflow = ''
+      bodyStyle.touchAction = ''
+    }
   }, [open])
 
   if (!isMounted) {
