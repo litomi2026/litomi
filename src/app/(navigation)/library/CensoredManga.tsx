@@ -3,12 +3,13 @@ import Link from 'next/link'
 
 type Props = {
   mangaId: number
+  className?: string
 }
 
-export default function CensoredManga({ mangaId }: Readonly<Props>) {
+export default function CensoredManga({ mangaId, className = '' }: Readonly<Props>) {
   return (
     <Link
-      className="absolute inset-0 flex flex-col items-center justify-center p-4 rounded-t-xl animate-fade-in-fast bg-zinc-900 text-zinc-400 hover:underline pointer-events-none"
+      className={`absolute inset-0 flex flex-col items-center justify-center p-4 rounded-t-xl animate-fade-in-fast bg-zinc-900 text-zinc-400 hover:underline ${className}`}
       href={`/manga/${mangaId}`}
     >
       <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-zinc-800 flex items-center justify-center">
