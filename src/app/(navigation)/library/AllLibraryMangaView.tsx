@@ -7,6 +7,8 @@ import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { ViewCookie } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
+import CensoredManga from './CensoredManga'
+
 type Library = {
   id: number
   name: string
@@ -33,7 +35,8 @@ export default function AllLibraryMangaView({ initialItems }: Props) {
         const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
 
         return (
-          <div className="relative" key={`${library.id}-${mangaId}`}>
+          <div className="relative overflow-hidden" key={`${library.id}-${mangaId}`}>
+            <CensoredManga mangaId={mangaId} />
             <MangaCard className="h-full" index={index} manga={manga} />
             <Link
               className="absolute top-2 right-2 z-10 flex items-center gap-1 px-2 py-1 rounded-md bg-zinc-900/90 border border-zinc-700 shadow-lg hover:bg-zinc-800 transition"

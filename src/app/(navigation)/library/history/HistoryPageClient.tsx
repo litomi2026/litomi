@@ -46,7 +46,7 @@ export default function HistoryPageClient({ initialData }: Props) {
 
                 if (!isSelectionMode) {
                   return (
-                    <div className="relative group" key={mangaId}>
+                    <div className="relative group overflow-hidden" key={mangaId}>
                       <CensoredManga mangaId={mangaId} />
                       <MangaCard className="h-full rounded-b-xs" index={index} manga={manga} />
                       <div className="absolute bottom-0 left-0 right-0 from-black/80 to-transparent pointer-events-none">
