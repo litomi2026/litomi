@@ -70,7 +70,7 @@ export default function RealtimeRanking() {
         <div className="overflow-hidden rounded-lg bg-zinc-900">
           {data && data.pageRanking.length > 0 && (
             <table className="w-full">
-              <thead className="border-b border-zinc-800">
+              <thead className="border-b border-zinc-800 whitespace-nowrap">
                 <tr>
                   <th className="px-4 py-3 text-left text-sm font-medium text-zinc-400">순위</th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-zinc-400">페이지 제목</th>
