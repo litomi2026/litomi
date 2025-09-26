@@ -34,7 +34,7 @@ export async function setAccessTokenCookie(
 
   cookieStore.set(CookieKey.ACCESS_TOKEN, cookieValue, {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     maxAge: sec('1 hour'),
   })
@@ -45,7 +45,7 @@ export async function setRefreshTokenCookie(cookieStore: ReadonlyRequestCookies,
 
   cookieStore.set(CookieKey.REFRESH_TOKEN, cookieValue, {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     maxAge: sec('30 days'),
   })
