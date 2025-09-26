@@ -9,7 +9,7 @@ import IconSpinner from '@/components/icons/IconSpinner'
 import useActionResponse from '@/hook/useActionResponse'
 import useMeQuery from '@/query/useMeQuery'
 
-import { subscribeToKeyword } from './actions'
+import { subscribeToKeyword } from './action-keyword'
 import UpdateFromSearchParams from './UpdateFromSearchParams'
 import { ParsedSearchQuery, parseSearchQuery } from './utils/queryParser'
 

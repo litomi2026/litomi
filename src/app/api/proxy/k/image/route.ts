@@ -11,7 +11,7 @@ export async function GET(request: Request) {
   const validation = GETProxyKImageSchema.safeParse(searchParams)
 
   if (!validation.success) {
-    return new Response('400 Bad Request', { status: 400 })
+    return new Response('Bad Request', { status: 400 })
   }
 
   const { id } = validation.data
