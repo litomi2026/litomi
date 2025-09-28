@@ -44,7 +44,7 @@ export default async function Page() {
         <h2 className="mb-2">제 6 조 (지원하는 브라우저)</h2>
         <p className="mb-4">
           본 서비스는 최신 버전의 웹 브라우저에서 최적화되어 있으며, 구형 브라우저에서는 일부 기능이 제한될 수 있습니다.
-          본 서비스는 다음의 브라우저에서 지원됩니다.
+          본 서비스는 다음의 브라우저 버전 이상에서 지원됩니다.
         </p>
         <ul className="mb-4">
           <li>Chrome 109</li>
@@ -54,7 +54,7 @@ export default async function Page() {
           <li>Samsung Internet 25</li>
           <li>iOS Safari 15</li>
         </ul>
-        <h3 className="mt-6 text-center">시행일 2025-08-23</h3>
+        <h3 className="mt-6 text-center">시행일 2025-09-28</h3>
       </div>
     </div>
   )

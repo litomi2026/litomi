@@ -16,5 +16,24 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis
+    ports:
+      - '6380:6379'
+    volumes:
+      - redis-data:/data
+
+  srh:
+    image: hiett/serverless-redis-http:latest
+    ports:
+      - '8079:80'
+    environment:
+      SRH_MODE: env
+      SRH_TOKEN: local_dev_token
+      SRH_CONNECTION_STRING: 'redis://redis:6379'
+    depends_on:
+      - redis
+
 volumes:
   test-db-data:
+  redis-data:

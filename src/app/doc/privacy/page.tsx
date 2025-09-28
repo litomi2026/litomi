@@ -40,12 +40,13 @@ export default async function Page() {
         <p className="mb-6">개인정보 수집 및 이용 목적이 달성된 후에는 해당 정보를 지체 없이 파기합니다.</p>
         <h2 className="mb-3">4. 개인정보의 제3자 제공</h2>
         <p className="mb-2">
-          귀하의 개인정보는 원칙적으로 Google Analytics와 Vercel에만 제공됩니다. 아래의 경우에도 법원으로부터 적법한
-          영장이 발부되기 전까진 제공하지 않습니다.
+          귀하의 개인정보는 원칙적으로 Google Analytics와 Vercel, Amplitude에 익명 처리되어 제공됩니다. 아래의 경우에도
+          대한민국 법관으로부터 적법한 절차에 따라 압수·수색 영장이 발부되기 전까진 어느 주체에게도 제공하지 않습니다.
         </p>
         <ul className="mb-6">
           <li>법령에 의거하거나 수사 목적으로 관계 기관의 요청이 있는 경우</li>
           <li>수사 기관에서 임의제출 요청이 있는 경우</li>
+          <li>이용자 간의 고소·고발로 인한 경우</li>
         </ul>
         <h2 className="mb-3">5. 개인정보의 안전성 확보 조치</h2>
         <p className="mb-2">
@@ -70,7 +71,7 @@ export default async function Page() {
         </p>
         <h2 className="mb-3">7. 개인정보 처리방침 변경</h2>
         <p className="mb-6">본 개인정보 처리방침은 관련 법령, 정책 및 내부 운영 방침에 따라 변경될 수 있습니다.</p>
-        <h3 className="mb-1 text-center">시행일 2025-03-15</h3>
+        <h3 className="mb-1 text-center">시행일 2025-09-28</h3>
       </div>
     </div>
   )
