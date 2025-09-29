@@ -77,7 +77,7 @@ export class TrendingKeywordsRedisService {
   }
 
   async trackSearch(keyword: string): Promise<void> {
-    if (!keyword || keyword.length > this.MAX_KEYWORD_LENGTH) {
+    if (!keyword) {
       return
     }
 
