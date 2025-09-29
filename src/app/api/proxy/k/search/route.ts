@@ -2,6 +2,7 @@ import { GETProxyKSearchSchema } from '@/app/api/proxy/k/search/schema'
 import { MAX_KHENTAI_SEARCH_QUERY_LENGTH } from '@/constants/policy'
 import { getCategories, KHentaiClient, KHentaiMangaSearchOptions } from '@/crawler/k-hentai'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
+import { trendingKeywordsService } from '@/services/TrendingKeywordsService'
 import { Manga } from '@/types/manga'
 import { sec } from '@/utils/date'
 
@@ -66,6 +67,10 @@ export async function GET(request: Request) {
   }
 
   try {
+    if (query && !nextId) {
+      trendingKeywordsService.trackSearch(query).catch(console.error)
+    }
+
     const revalidate = params.nextId ? sec('1 day') : 0
     const searchedMangas = await KHentaiClient.getInstance().searchMangas(params, revalidate)
     const mangas = filterMangasByMinusPrefix(searchedMangas, query)
