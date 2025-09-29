@@ -50,6 +50,7 @@
     "zh-CN": "仅物体插入"
   },
   "out_of_order": { "en": "out of order", "ko": "순서가 뒤바뀜" },
+  "pixel_art": { "en": "pixel art", "ko": "픽셀 아트", "ja": "ピクセルアート", "zh-CN": "像素画" },
   "realporn": { "en": "real porn", "ko": "현실 음란물", "ja": "リアルポル" },
   "redraw": { "en": "redraw", "ko": "다시 그림", "ja": "リドロー", "zh-CN": "重绘" },
   "replaced": { "en": "replaced", "ko": "교체됨" },
