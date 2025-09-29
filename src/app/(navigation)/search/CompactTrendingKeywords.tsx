@@ -1,6 +1,5 @@
 'use client'
 
-import { TrendingUp } from 'lucide-react'
 import Link from 'next/link'
 
 import LinkPending from '@/components/LinkPending'
@@ -14,8 +13,7 @@ export default function CompactTrendingKeywords() {
   return (
     <div className="grid grid-cols-[auto_1fr] items-center gap-2 rounded-lg md:px-3 md:p-2 md:bg-zinc-900/50">
       <div className="flex items-center gap-2 py-1 text-zinc-500">
-        <TrendingUp className="size-4" />
-        <span className="text-xs">인기</span>
+        <span className="text-xs">인기 검색어</span>
       </div>
       <div className="flex gap-2 overflow-x-auto scrollbar-hidden">
         {trendingKeywords.map((item, index) => (

@@ -37,7 +37,6 @@ export default async function Page({ searchParams }: PageProps<'/search'>) {
   }
 
   const {
-    query,
     view,
     sort,
     'min-view': minView,
@@ -53,7 +52,6 @@ export default async function Page({ searchParams }: PageProps<'/search'>) {
   } = validationResult.data
 
   const viewType = view === 'img' ? ViewCookie.IMAGE : ViewCookie.CARD
-  const hasNoQuery = !query
 
   const hasActiveFilters = Boolean(
     from ?? to ?? sort ?? nextId ?? minView ?? maxView ?? minPage ?? maxPage ?? minRating ?? maxRating ?? skip,
@@ -69,9 +67,9 @@ export default async function Page({ searchParams }: PageProps<'/search'>) {
           </div>
           <ActiveFilters filters={validationResult.data} />
         </div>
-      ) : hasNoQuery ? (
+      ) : (
         <CompactTrendingKeywords />
-      ) : null}
+      )}
       <SearchResults view={viewType} />
     </>
   )
