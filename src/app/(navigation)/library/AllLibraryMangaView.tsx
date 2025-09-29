@@ -39,7 +39,7 @@ export default function AllLibraryMangaView({ initialItems }: Props) {
             <CensoredManga mangaId={mangaId} />
             <MangaCard className="h-full" index={index} manga={manga} />
             <Link
-              className="absolute top-2 right-2 z-10 flex items-center gap-1 px-2 py-1 rounded-md bg-zinc-900/90 border border-zinc-700 shadow-lg hover:bg-zinc-800 transition"
+              className="absolute top-2 left-2 z-10 flex items-center gap-1 px-2 py-1 rounded-md bg-zinc-900/90 border border-zinc-700 shadow-lg hover:bg-zinc-800 transition"
               href={`/library/${library.id}`}
               style={{ borderColor: library.color ?? '' }}
             >
