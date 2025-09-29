@@ -217,3 +217,4 @@ export const readingHistoryTable = pgTable(
 
 export { trustedBrowserTable, twoFactorBackupCodeTable, twoFactorTable } from './2fa-schema'
 export { mangaSeenTable, notificationConditionTable, notificationCriteriaTable } from './notification-schema'
+export { searchTrendsTable } from './search-trends-schema'
