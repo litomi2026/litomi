@@ -74,7 +74,10 @@ export async function GET(request: Request) {
     const hasNextPage = mangas.length > 0
     const response: GETProxyKSearchResponse = { mangas, nextCursor, hasNextPage }
 
-    if (query && !nextId && mangas.length > 0) {
+    const hasOtherFilters =
+      sort || minView || maxView || minPage || maxPage || minRating || maxRating || from || to || nextId || skip
+
+    if (query && !hasOtherFilters && mangas.length > 0) {
       trendingKeywordsRedisService.trackSearch(query).catch(console.error)
     }
 

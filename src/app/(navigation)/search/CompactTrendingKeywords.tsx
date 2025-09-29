@@ -13,7 +13,8 @@ export default function CompactTrendingKeywords() {
   return (
     <div className="grid grid-cols-[auto_1fr] items-center gap-2 rounded-lg md:px-3 md:p-2 md:bg-zinc-900/50">
       <div className="flex items-center gap-1 py-1 text-zinc-500 text-xs">
-        <span>인기</span> <span className="hidden sm:inline">검색어</span>
+        <span>인기</span>
+        <span className="hidden sm:inline">검색어</span>
       </div>
       <div className="flex gap-2 overflow-x-auto scrollbar-hidden">
         {trendingKeywords?.map((item, index) => (
