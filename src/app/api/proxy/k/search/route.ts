@@ -67,16 +67,16 @@ export async function GET(request: Request) {
   }
 
   try {
-    if (query && !nextId) {
-      trendingKeywordsRedisService.trackSearch(query).catch(console.error)
-    }
-
     const revalidate = params.nextId ? sec('1 day') : 0
     const searchedMangas = await KHentaiClient.getInstance().searchMangas(params, revalidate)
     const mangas = filterMangasByMinusPrefix(searchedMangas, query)
     const nextCursor = mangas.length > 0 ? mangas[mangas.length - 1].id.toString() : null
     const hasNextPage = mangas.length > 0
     const response: GETProxyKSearchResponse = { mangas, nextCursor, hasNextPage }
+
+    if (query && !nextId && mangas.length > 0) {
+      trendingKeywordsRedisService.trackSearch(query).catch(console.error)
+    }
 
     return Response.json(response, { headers: { 'Cache-Control': getCacheControl(params) } })
   } catch (error) {
