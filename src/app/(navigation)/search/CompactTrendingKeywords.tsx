@@ -7,7 +7,7 @@ import useTrendingKeywordsQuery from './useTrendingKeywordsQuery'
 
 export default function CompactTrendingKeywords() {
   const router = useRouter()
-  const { data } = useTrendingKeywordsQuery({ limit: 5 })
+  const { data } = useTrendingKeywordsQuery()
 
   const handleClick = (keyword: string) => {
     const params = new URLSearchParams()
