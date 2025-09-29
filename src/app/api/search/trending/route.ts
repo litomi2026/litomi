@@ -33,28 +33,25 @@ export async function GET(request: Request) {
   const { type } = validation.data
 
   try {
-    let keywords: TrendingKeyword[]
-    let cacheMaxAge: number
+    const limit = 5
+    let keywords: TrendingKeyword[] = []
+    let cacheMaxAge: number = sec('1 minute')
 
     switch (type) {
       case 'daily':
-        keywords = await trendingKeywordsService.getTrendingDaily(5)
+        keywords = await trendingKeywordsService.getTrendingDaily(limit)
         cacheMaxAge = sec('1 hour')
         break
 
       case 'realtime':
-        keywords = await trendingKeywordsService.getTrendingRealtime(5)
-        cacheMaxAge = sec('1 minute')
+        keywords = await trendingKeywordsService.getTrendingRealtime(limit)
+        cacheMaxAge = sec('5 minutes')
         break
 
       case 'weekly':
-        keywords = await trendingKeywordsService.getTrendingHistorical(7, 5)
+        keywords = await trendingKeywordsService.getTrendingHistorical(7, limit)
         cacheMaxAge = sec('1 day')
         break
-
-      default:
-        keywords = []
-        cacheMaxAge = sec('1 minute')
     }
 
     const response: GETTrendingKeywordsResponse = {
