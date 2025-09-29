@@ -7,7 +7,7 @@ import useTrendingKeywordsQuery from './useTrendingKeywordsQuery'
 
 export default function CompactTrendingKeywords() {
   const router = useRouter()
-  const { data } = useTrendingKeywordsQuery()
+  const { data = { keywords: [{ keyword: 'language:korean' }] } } = useTrendingKeywordsQuery()
 
   const handleClick = (keyword: string) => {
     const params = new URLSearchParams()
@@ -28,6 +28,7 @@ export default function CompactTrendingKeywords() {
             hover:text-white hover:bg-zinc-700"
             key={item.keyword}
             onClick={() => handleClick(item.keyword)}
+            title={item.keyword}
           >
             {index < 3 && <span className="text-[10px] font-bold text-brand-end">{index + 1}</span>}
             <span className="truncate">{item.keyword}</span>
