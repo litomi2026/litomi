@@ -70,8 +70,8 @@ export async function GET(request: Request) {
     const revalidate = params.nextId ? sec('1 day') : 0
     const searchedMangas = await KHentaiClient.getInstance().searchMangas(params, revalidate)
     const mangas = filterMangasByMinusPrefix(searchedMangas, query)
-    const nextCursor = mangas.length > 0 ? mangas[mangas.length - 1].id.toString() : null
     const hasNextPage = mangas.length > 0
+    const nextCursor = hasNextPage ? mangas[mangas.length - 1].id.toString() : null
     const response: GETProxyKSearchResponse = { mangas, nextCursor, hasNextPage }
 
     const hasOtherFilters =
