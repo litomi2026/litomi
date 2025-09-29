@@ -1,7 +1,6 @@
 export const AIVEN_CERTIFICATE = process.env.AIVEN_CERTIFICATE ?? ''
 export const AIVEN_POSTGRES_URL = process.env.AIVEN_POSTGRES_URL ?? ''
 export const AMPLITUDE_API_KEY = process.env.AMPLITUDE_API_KEY
-export const EDGE_CONFIG = process.env.EDGE_CONFIG ?? ''
 export const GA_ID = process.env.GA_ID
 export const GA_PROPERTY_ID = process.env.GA_PROPERTY_ID ?? ''
 export const GA_SERVICE_ACCOUNT_EMAIL = process.env.GA_SERVICE_ACCOUNT_EMAIL ?? ''

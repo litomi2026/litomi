@@ -1,6 +1,3 @@
-import { get } from '@vercel/edge-config'
-
-import { EDGE_CONFIG } from '@/constants/env'
 import { HarpiClient } from '@/crawler/harpi/harpi'
 import { HentaiPawClient } from '@/crawler/hentai-paw'
 import { HentKorClient } from '@/crawler/hentkor'
@@ -16,43 +13,15 @@ import { checkDefined } from '@/utils/type'
 
 type MangaResult = Error | Manga | null | undefined
 
-type ProxyConfig = {
-  komi: boolean
-  hiyobi: boolean
-  hitomi: boolean
-  'k-hentai': boolean
-  harpi: boolean
-  'hentai-paw': boolean
-}
-
-const DEFAULT_PROXY_CONFIG: ProxyConfig = {
-  komi: true,
-  hiyobi: true,
-  hitomi: true,
-  'k-hentai': true,
-  harpi: true,
-  'hentai-paw': true,
-}
-
 // TODO: 추후 'use cache' 로 변경하고 revalidate 파라미터 제거하기
 export async function getMangaFromMultiSources(id: number, revalidate?: number): Promise<Manga | MangaError | null> {
   // cacheLife('days')
-
-  const {
-    komi,
-    hiyobi,
-    hitomi,
-    'k-hentai': kHentai,
-    harpi,
-    'hentai-paw': hentaiPaw,
-  } = (EDGE_CONFIG ? await get<ProxyConfig>('proxy') : DEFAULT_PROXY_CONFIG) ?? {}
-
-  const hiyobiClient = hiyobi ? HiyobiClient.getInstance() : null
-  const hitomiClient = hitomi ? HitomiClient.getInstance() : null
-  const kHentaiClient = kHentai ? KHentaiClient.getInstance() : null
-  const harpiClient = harpi ? HarpiClient.getInstance() : null
-  const komiClient = komi ? KomiClient.getInstance() : null
-  const hentaiPawClient = hentaiPaw ? HentaiPawClient.getInstance() : null
+  const hiyobiClient = HiyobiClient.getInstance()
+  const hitomiClient = HitomiClient.getInstance()
+  const kHentaiClient = KHentaiClient.getInstance()
+  const harpiClient = HarpiClient.getInstance()
+  const komiClient = KomiClient.getInstance()
+  const hentaiPawClient = HentaiPawClient.getInstance()
 
   const [hiyobiManga, hiyobiImages, kHentaiManga, harpiManga, komiManga, hitomiManga, hentaiPawImages] =
     await Promise.all([
@@ -105,16 +74,7 @@ export async function getMangasFromMultiSources(
   ids: number[],
   revalidate: number,
 ): Promise<Record<number, Manga | MangaError>> {
-  const {
-    komi,
-    hiyobi,
-    hitomi,
-    'k-hentai': kHentai,
-    harpi,
-    'hentai-paw': hentaiPaw,
-  } = (EDGE_CONFIG ? await get<ProxyConfig>('proxy') : DEFAULT_PROXY_CONFIG) ?? {}
-
-  const harpiClient = harpi ? HarpiClient.getInstance() : null
+  const harpiClient = HarpiClient.getInstance()
   const harpiMangas = await harpiClient?.searchMangas({ ids }, revalidate).catch((error) => new Error(error))
   const mangaMap: Record<number, Manga> = {}
   const remainingIds = []
@@ -137,11 +97,11 @@ export async function getMangasFromMultiSources(
     return mangaMap
   }
 
-  const hiyobiClient = hiyobi ? HiyobiClient.getInstance() : null
-  const hitomiClient = hitomi ? HitomiClient.getInstance() : null
-  const kHentaiClient = kHentai ? KHentaiClient.getInstance() : null
-  const komiClient = komi ? KomiClient.getInstance() : null
-  const hentaiPawClient = hentaiPaw ? HentaiPawClient.getInstance() : null
+  const hiyobiClient = HiyobiClient.getInstance()
+  const hitomiClient = HitomiClient.getInstance()
+  const kHentaiClient = KHentaiClient.getInstance()
+  const komiClient = KomiClient.getInstance()
+  const hentaiPawClient = HentaiPawClient.getInstance()
 
   const [hiyobiMangas, hiyobiImages, kHentaiMangas, komiMangas, hitomiMangas, hentaiPawImages] = await Promise.all([
     Promise.all(remainingIds.map((id) => hiyobiClient?.fetchManga(id).catch((error) => new Error(error)))),

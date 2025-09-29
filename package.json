@@ -43,7 +43,6 @@
     "@tanstack/react-query-devtools": "^5.87.3",
     "@tanstack/react-virtual": "^3.13.12",
     "@upstash/redis": "^1.35.3",
-    "@vercel/edge-config": "^1.4.0",
     "bcrypt": "^5.1.1",
     "caniuse-lite": "^1.0.30001741",
     "country-flag-icons": "^1.5.19",

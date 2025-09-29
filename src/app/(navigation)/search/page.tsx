@@ -7,6 +7,7 @@ import { ViewCookie } from '@/utils/param'
 
 import { GETProxyKSearchSchema } from '../../api/proxy/k/search/schema'
 import ActiveFilters, { ClearAllFilters } from './ActiveFilters'
+import CompactTrendingKeywords from './CompactTrendingKeywords'
 import Error400 from './Error400'
 import SearchResults from './SearchResults'
 
@@ -58,7 +59,7 @@ export default async function Page({ searchParams }: PageProps<'/search'>) {
 
   return (
     <>
-      {hasActiveFilters && (
+      {hasActiveFilters ? (
         <div className="gap-2 mb-4 hidden sm:grid">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-medium text-zinc-400">적용된 필터</h3>
@@ -66,6 +67,8 @@ export default async function Page({ searchParams }: PageProps<'/search'>) {
           </div>
           <ActiveFilters filters={validationResult.data} />
         </div>
+      ) : (
+        <CompactTrendingKeywords />
       )}
       <SearchResults view={viewType} />
     </>

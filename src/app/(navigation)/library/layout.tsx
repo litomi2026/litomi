@@ -30,9 +30,15 @@ export default async function LibraryLayout({ children }: LayoutProps<'/library'
   if (userId) {
     query = query
       .where(or(eq(libraryTable.userId, userId), eq(libraryTable.isPublic, true)))
-      .orderBy(({ itemCount }) => [desc(eq(libraryTable.userId, userId)), desc(itemCount)])
+      .orderBy(({ itemCount }) => [
+        desc(eq(libraryTable.userId, userId)),
+        desc(itemCount),
+        desc(libraryTable.createdAt),
+      ])
   } else {
-    query = query.where(eq(libraryTable.isPublic, true)).orderBy(({ itemCount }) => desc(itemCount))
+    query = query
+      .where(eq(libraryTable.isPublic, true))
+      .orderBy(({ itemCount }) => [desc(itemCount), desc(libraryTable.createdAt)])
   }
 
   const libraryRows = await query

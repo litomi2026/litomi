@@ -13,6 +13,7 @@ export const QueryKeys = {
   notifications: (searchParams: URLSearchParams) => ['me', 'notifications', Object.fromEntries(searchParams)],
   libraries: ['me', 'libraries'],
   libraryItems: (libraryId: number) => ['me', 'library', libraryId],
+  trendingKeywords: ['trending-keywords'],
 
   manga: (id: number, scope: MangaResponseScope | null) => ['manga', id, scope],
   mangaCard: (id: number) => ['mangaCard', id],

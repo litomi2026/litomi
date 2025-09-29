@@ -23,7 +23,7 @@ export default async function Layout({ children }: LayoutProps<'/search'>) {
         </div>
       </header>
       <div className="h-[110px] md:h-[62px]" />
-      <div className="flex flex-col p-2 grow">{children}</div>
+      <div className="flex flex-col gap-2 p-2 grow">{children}</div>
     </main>
   )
 }

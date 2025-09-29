@@ -2,6 +2,7 @@ import { GETProxyKSearchSchema } from '@/app/api/proxy/k/search/schema'
 import { MAX_KHENTAI_SEARCH_QUERY_LENGTH } from '@/constants/policy'
 import { getCategories, KHentaiClient, KHentaiMangaSearchOptions } from '@/crawler/k-hentai'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
+import { trendingKeywordsRedisService } from '@/services/TrendingKeywordsRedisService'
 import { Manga } from '@/types/manga'
 import { sec } from '@/utils/date'
 
@@ -72,6 +73,10 @@ export async function GET(request: Request) {
     const nextCursor = mangas.length > 0 ? mangas[mangas.length - 1].id.toString() : null
     const hasNextPage = mangas.length > 0
     const response: GETProxyKSearchResponse = { mangas, nextCursor, hasNextPage }
+
+    if (query && !nextId && mangas.length > 0) {
+      trendingKeywordsRedisService.trackSearch(query).catch(console.error)
+    }
 
     return Response.json(response, { headers: { 'Cache-Control': getCacheControl(params) } })
   } catch (error) {
