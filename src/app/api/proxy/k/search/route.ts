@@ -5,7 +5,7 @@ import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { trendingKeywordsRedisService } from '@/services/TrendingKeywordsRedisService'
 import { Manga } from '@/types/manga'
 import { sec } from '@/utils/date'
-import { chance } from '@/utils/random'
+import { chance } from '@/utils/random-edge'
 
 import { convertQueryKey, filterMangasByMinusPrefix } from './utils'
 
