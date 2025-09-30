@@ -41,10 +41,7 @@ export async function verifyPKCEChallenge(
 ): Promise<{ valid: false; reason: string } | { valid: true; userId: number }> {
   try {
     const key = getPKCEChallengeKey(authorizationCode)
-    const pipeline = redisClient.pipeline()
-    pipeline.get(key)
-    pipeline.del(key)
-    const [authChallenge] = await pipeline.exec<[AuthChallenge | null, number]>()
+    const authChallenge = await redisClient.getdel<AuthChallenge>(key)
 
     if (!authChallenge) {
       return { valid: false, reason: 'session_not_found' }

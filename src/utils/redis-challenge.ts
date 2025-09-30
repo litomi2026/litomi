@@ -11,11 +11,7 @@ import { sec } from './date'
 export async function getAndDeleteChallenge(userId: number, type: ChallengeType): Promise<string | null> {
   try {
     const key = getChallengeKey(userId, type)
-    const pipeline = redisClient.pipeline()
-    pipeline.get(key)
-    pipeline.del(key)
-    const results = await pipeline.exec()
-    return results?.[0] as string | null
+    return await redisClient.getdel<string>(key)
   } catch (error) {
     console.error('getAndDeleteChallenge:', error)
     return null
