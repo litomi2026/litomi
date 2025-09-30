@@ -10,16 +10,36 @@ type Store = {
   correctImageIndex: () => void
 }
 
+let navigationTimer: NodeJS.Timeout | null = null
+let lastImageIndex: number | null = null
+
+function updatePageSearchParam(imageIndex: number) {
+  const url = new URL(window.location.href)
+  url.searchParams.set(MangaIdSearchParam.PAGE, String(imageIndex))
+  window.history.replaceState({}, '', url.toString())
+}
+
 export const useImageIndexStore = create<Store>()((set, get) => ({
   imageIndex: 0,
   getImageIndex: () => get().imageIndex,
   setImageIndex: (imageIndex) => set({ imageIndex }),
   navigateToImageIndex: (imageIndex) => {
     set({ imageIndex })
+    lastImageIndex = imageIndex
 
-    const url = new URL(window.location.href)
-    url.searchParams.set(MangaIdSearchParam.PAGE, String(imageIndex + 1))
-    window.history.replaceState({}, '', url.toString())
+    if (navigationTimer) {
+      clearTimeout(navigationTimer)
+    }
+
+    navigationTimer = setTimeout(() => {
+      try {
+        if (lastImageIndex) {
+          updatePageSearchParam(lastImageIndex + 1)
+        }
+      } catch (error) {
+        console.warn('navigateToImageIndex:', error)
+      }
+    }, 200)
   },
   correctImageIndex: () => set((state) => ({ imageIndex: Math.max(0, state.imageIndex) })),
 }))

@@ -22,23 +22,17 @@ const HENTKOR_CONFIG: ProxyClientConfig = {
   defaultHeaders: {},
 }
 
-export class HentKorClient {
-  private static instance: HentKorClient
+class HentKorClient {
   private readonly client: ProxyClient
 
-  // Singleton instance
-  private constructor() {
+  constructor() {
     this.client = new ProxyClient(HENTKOR_CONFIG)
-  }
-
-  static getInstance(): HentKorClient {
-    if (!HentKorClient.instance) {
-      HentKorClient.instance = new HentKorClient()
-    }
-    return HentKorClient.instance
   }
 
   fetchMangaImages(id: number, count: number): string[] {
     return Array.from({ length: count }, (_, i) => `https://cdn.hentkor.net/pages/${id}/${i + 1}.avif`)
   }
 }
+
+// Singleton instance
+export const hentKorClient = new HentKorClient()

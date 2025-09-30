@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 
 import MangaCard from '@/components/card/MangaCard'
 import { createErrorManga } from '@/constants/json'
-import { KHentaiClient } from '@/crawler/k-hentai'
+import { kHentaiClient } from '@/crawler/k-hentai'
 import { ViewCookie } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
@@ -44,7 +44,7 @@ export default async function Page() {
 
 async function getMangas() {
   try {
-    return await KHentaiClient.getInstance().fetchRandomKoreanMangas()
+    return await kHentaiClient.fetchRandomKoreanMangas()
   } catch (error) {
     return [createErrorManga({ error })]
   }

@@ -1,11 +1,11 @@
-import { HiyobiClient } from '@/crawler/hiyobi'
+import { hiyobiClient } from '@/crawler/hiyobi'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { RouteProps } from '@/types/nextjs'
+import { sec } from '@/utils/date'
 
 import { GETProxyHiyobiIdSchema } from './schema'
 
 export const runtime = 'edge'
-const maxAge = 43200 // 12 hours
 
 type Params = {
   id: string
@@ -19,10 +19,9 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
   }
 
   const { id } = validation.data
-  const client = HiyobiClient.getInstance()
 
   try {
-    const manga = await client.fetchManga(id)
+    const manga = await hiyobiClient.fetchManga(id)
 
     if (!manga) {
       return new Response('Not Found', { status: 404 })
@@ -32,9 +31,9 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       headers: {
         'Cache-Control': createCacheControl({
           public: true,
-          maxAge,
-          sMaxAge: maxAge,
-          swr: maxAge,
+          maxAge: sec('12 hours'),
+          sMaxAge: sec('12 hours'),
+          swr: sec('5 minutes'),
         }),
       },
     })

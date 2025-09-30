@@ -4,7 +4,7 @@ import { max, min, sql } from 'drizzle-orm'
 import type { Manga } from '../../../src/types/manga'
 
 import { getMangaFromMultiSources } from '../../../src/common/manga'
-import { KHentaiClient } from '../../../src/crawler/k-hentai'
+import { kHentaiClient } from '../../../src/crawler/k-hentai'
 import { aivenDB } from '../../../src/database/aiven/drizzle'
 import { mangaTable } from '../../../src/database/aiven/schema'
 import { MangaType, TagCategory, tagCategoryNameToInt } from '../../../src/database/enum'
@@ -48,7 +48,6 @@ export async function crawlMangas() {
       }`,
     )
 
-    const kHentaiClient = KHentaiClient.getInstance()
     let nextId: string | undefined = undefined
     let hasSkippedToOlderMangas = false
 

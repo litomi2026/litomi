@@ -1,4 +1,4 @@
-import { KHentaiClient } from '@/crawler/k-hentai'
+import { kHentaiClient } from '@/crawler/k-hentai'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { RouteProps } from '@/types/nextjs'
 
@@ -19,10 +19,9 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
   }
 
   const { id } = validation.data
-  const client = KHentaiClient.getInstance()
 
   try {
-    const manga = await client.fetchManga(id)
+    const manga = await kHentaiClient.fetchManga(id)
 
     if (!manga) {
       return new Response('Not Found', { status: 404 })

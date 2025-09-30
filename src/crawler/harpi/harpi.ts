@@ -73,20 +73,11 @@ const HARPI_CONFIG: ProxyClientConfig = {
   },
 }
 
-export class HarpiClient {
-  private static instance: HarpiClient
+class HarpiClient {
   private readonly client: ProxyClient
 
-  // Singleton instance
-  private constructor() {
+  constructor() {
     this.client = new ProxyClient(HARPI_CONFIG)
-  }
-
-  static getInstance(): HarpiClient {
-    if (!HarpiClient.instance) {
-      HarpiClient.instance = new HarpiClient()
-    }
-    return HarpiClient.instance
   }
 
   async fetchManga(id: number, revalidate = sec('1 week')): Promise<Manga | null> {
@@ -326,3 +317,6 @@ export class HarpiClient {
     })
   }
 }
+
+// Singleton instance
+export const harpiClient = new HarpiClient()

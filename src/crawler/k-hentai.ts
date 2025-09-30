@@ -185,20 +185,11 @@ const K_HENTAI_CONFIG: ProxyClientConfig = {
   },
 }
 
-export class KHentaiClient {
-  private static instance: KHentaiClient
+class KHentaiClient {
   private readonly client: ProxyClient
 
-  // Singleton instance
-  private constructor() {
+  constructor() {
     this.client = new ProxyClient(K_HENTAI_CONFIG)
-  }
-
-  static getInstance(): KHentaiClient {
-    if (!KHentaiClient.instance) {
-      KHentaiClient.instance = new KHentaiClient()
-    }
-    return KHentaiClient.instance
   }
 
   async fetchManga(id: number, revalidate = sec('12 hours')): Promise<Manga | null> {
@@ -337,6 +328,9 @@ export class KHentaiClient {
     }
   }
 }
+
+// Singleton instance
+export const kHentaiClient = new KHentaiClient()
 
 export function getCategories(query?: string) {
   return query

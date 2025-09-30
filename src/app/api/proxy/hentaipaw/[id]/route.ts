@@ -1,4 +1,4 @@
-import { HentaiPawClient } from '@/crawler/hentai-paw'
+import { hentaiPawClient } from '@/crawler/hentai-paw'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { RouteProps } from '@/types/nextjs'
 
@@ -19,10 +19,9 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
   }
 
   const { id } = validation.data
-  const client = HentaiPawClient.getInstance()
 
   try {
-    const manga = await client.fetchManga(id)
+    const manga = await hentaiPawClient.fetchManga(id)
 
     if (!manga) {
       return new Response('Not Found', { status: 404 })

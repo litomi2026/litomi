@@ -84,7 +84,7 @@ export default async function login(formData: FormData) {
       .where(eq(userTable.loginId, loginId))
 
     // NOTE: 타이밍 공격을 방어하기 위해서 임의의 문자열을 사용함
-    const passwordHash = user.passwordHash || '$2b$10$dummyhashfortimingatackprevention'
+    const passwordHash = user?.passwordHash || '$2b$10$dummyhashfortimingatackprevention'
     const isValidPassword = await compare(password, passwordHash)
 
     if (!user || !isValidPassword) {

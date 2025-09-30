@@ -6,7 +6,7 @@ import MangaCard from '@/components/card/MangaCard'
 import Navigation from '@/components/Navigation'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { createErrorManga } from '@/constants/json'
-import { HiyobiClient } from '@/crawler/hiyobi'
+import { hiyobiClient } from '@/crawler/hiyobi'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 export const dynamic = 'force-static'
@@ -63,7 +63,7 @@ export default async function Page({ params }: PageProps<'/new/[page]'>) {
 async function getMangas({ page }: { page: number }) {
   // cacheLife('hours')
   try {
-    return await HiyobiClient.getInstance().fetchMangas(page)
+    return await hiyobiClient.fetchMangas(page)
   } catch (error) {
     return [createErrorManga({ error })]
   }
