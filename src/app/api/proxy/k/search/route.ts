@@ -1,5 +1,3 @@
-import { randomInt } from 'crypto'
-
 import { GETProxyKSearchSchema } from '@/app/api/proxy/k/search/schema'
 import { MAX_KHENTAI_SEARCH_QUERY_LENGTH } from '@/constants/policy'
 import { getCategories, KHentaiClient, KHentaiMangaSearchOptions } from '@/crawler/k-hentai'
@@ -7,6 +5,7 @@ import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { trendingKeywordsRedisService } from '@/services/TrendingKeywordsRedisService'
 import { Manga } from '@/types/manga'
 import { sec } from '@/utils/date'
+import { chance } from '@/utils/random'
 
 import { convertQueryKey, filterMangasByMinusPrefix } from './utils'
 
@@ -79,8 +78,10 @@ export async function GET(request: Request) {
     const hasOtherFilters =
       sort || minView || maxView || minPage || maxPage || minRating || maxRating || from || to || nextId || skip
 
-    if (query && !hasOtherFilters && mangas.length > 0 && randomInt(0, 10) < 1) {
-      trendingKeywordsRedisService.trackSearch(query).catch(console.error)
+    if (query && !hasOtherFilters && mangas.length > 0) {
+      if (chance(0.1)) {
+        trendingKeywordsRedisService.trackSearch(query).catch(console.error)
+      }
     }
 
     return Response.json(response, { headers: { 'Cache-Control': getCacheControl(params) } })
