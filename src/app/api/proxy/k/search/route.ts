@@ -5,6 +5,7 @@ import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { trendingKeywordsRedisService } from '@/services/TrendingKeywordsRedisService'
 import { Manga } from '@/types/manga'
 import { sec } from '@/utils/date'
+import { chance } from '@/utils/random-edge'
 
 import { convertQueryKey, filterMangasByMinusPrefix } from './utils'
 
@@ -70,15 +71,17 @@ export async function GET(request: Request) {
     const revalidate = params.nextId ? sec('1 day') : 0
     const searchedMangas = await KHentaiClient.getInstance().searchMangas(params, revalidate)
     const mangas = filterMangasByMinusPrefix(searchedMangas, query)
-    const nextCursor = mangas.length > 0 ? mangas[mangas.length - 1].id.toString() : null
     const hasNextPage = mangas.length > 0
+    const nextCursor = hasNextPage ? mangas[mangas.length - 1].id.toString() : null
     const response: GETProxyKSearchResponse = { mangas, nextCursor, hasNextPage }
 
     const hasOtherFilters =
       sort || minView || maxView || minPage || maxPage || minRating || maxRating || from || to || nextId || skip
 
     if (query && !hasOtherFilters && mangas.length > 0) {
-      trendingKeywordsRedisService.trackSearch(query).catch(console.error)
+      if (chance(0.1)) {
+        trendingKeywordsRedisService.trackSearch(query).catch(console.error)
+      }
     }
 
     return Response.json(response, { headers: { 'Cache-Control': getCacheControl(params) } })

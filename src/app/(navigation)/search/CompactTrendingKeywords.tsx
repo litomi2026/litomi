@@ -26,7 +26,7 @@ export default function CompactTrendingKeywords() {
             title={item.keyword}
           >
             {index < 3 && <span className="text-[10px] font-bold text-brand-end">{index + 1}</span>}
-            <span className="truncate max-w-[25svw]">{item.keyword}</span>
+            <span className="truncate max-w-[50svw] sm:max-w-[25svw]">{item.keyword}</span>
             <LinkPending
               className="size-4"
               wrapperClassName="absolute inset-0 flex items-center justify-center animate-fade-in bg-zinc-800"

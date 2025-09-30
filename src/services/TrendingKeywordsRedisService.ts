@@ -50,12 +50,14 @@ export class TrendingKeywordsRedisService {
       `${this.HOURLY_KEY}:${currentWindow}`,
       `${this.HOURLY_KEY}:${currentWindow - 1}`,
       `${this.HOURLY_KEY}:${currentWindow - 2}`,
+      `${this.HOURLY_KEY}:${currentWindow - 3}`,
+      `${this.HOURLY_KEY}:${currentWindow - 4}`,
     ]
 
     try {
       await redisClient
         .multi()
-        .zunionstore(aggregateKey, keys.length, keys, { weights: [1, 0.6, 0.3] })
+        .zunionstore(aggregateKey, keys.length, keys, { weights: [1, 0.7, 0.4, 0.2, 0.1] })
         .expire(aggregateKey, sec('5 minutes'))
         .exec()
 
