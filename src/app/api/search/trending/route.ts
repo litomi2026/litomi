@@ -33,7 +33,7 @@ export async function GET(request: Request) {
   const { type } = validation.data
 
   try {
-    const limit = 5
+    const limit = 10
     let keywords: TrendingKeyword[] = []
     let cacheMaxAge: number = sec('1 minute')
 
