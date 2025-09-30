@@ -51,22 +51,13 @@ const LITOMI_CIRCUIT_BREAKER_CONFIG: CircuitBreakerConfig = {
   timeout: ms('2 minutes'), // Try to recover after 2 minutes
 }
 
-export class LitomiClient {
-  private static instance: LitomiClient
+class LitomiClient {
   private readonly circuitBreaker: CircuitBreaker
   private readonly preparedSelectMangaById: ReturnType<typeof this.prepareMangaQuery>
 
-  // Singleton instance
-  private constructor() {
+  constructor() {
     this.circuitBreaker = new CircuitBreaker('LitomiDB', LITOMI_CIRCUIT_BREAKER_CONFIG)
     this.preparedSelectMangaById = this.prepareMangaQuery()
-  }
-
-  static getInstance(): LitomiClient {
-    if (!LitomiClient.instance) {
-      LitomiClient.instance = new LitomiClient()
-    }
-    return LitomiClient.instance
   }
 
   /**
@@ -229,3 +220,6 @@ export class LitomiClient {
     return this.convertDatabaseToManga(result)
   }
 }
+
+// Singleton instance
+export const litomiClient = new LitomiClient()

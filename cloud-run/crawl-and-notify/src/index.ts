@@ -8,9 +8,9 @@ import {
   HarpiRandomMode,
   HarpiSort,
 } from '../../../src/app/api/proxy/harpi/search/schema'
-import { HarpiClient } from '../../../src/crawler/harpi/harpi'
-import { HiyobiClient } from '../../../src/crawler/hiyobi'
-import { KHentaiClient } from '../../../src/crawler/k-hentai'
+import { harpiClient } from '../../../src/crawler/harpi/harpi'
+import { hiyobiClient } from '../../../src/crawler/hiyobi'
+import { kHentaiClient } from '../../../src/crawler/k-hentai'
 import { db } from '../../../src/database/supabase/drizzle'
 import { MangaNotificationProcessor } from './MangaNotificationProcessor'
 
@@ -100,14 +100,13 @@ async function crawlAndNotify() {
 async function crawlHarpi(): Promise<Manga[]> {
   if (!CONFIG.HARPI.enabled) return []
 
-  const client = HarpiClient.getInstance()
   const results: Manga[] = []
 
   try {
     for (let page = 0; page < CONFIG.HARPI.maxPages; page++) {
       log.info(`Crawling Harpi page ${page + 1}/${CONFIG.HARPI.maxPages}`)
 
-      const mangas = await client.searchMangas({
+      const mangas = await harpiClient.searchMangas({
         comicKind: HarpiComicKind.EMPTY,
         isIncludeTagsAnd: true,
         minImageCount: 0,
@@ -139,16 +138,17 @@ async function crawlHarpi(): Promise<Manga[]> {
 }
 
 async function crawlHiyobi(): Promise<Manga[]> {
-  if (!CONFIG.HIYOBI.enabled) return []
+  if (!CONFIG.HIYOBI.enabled) {
+    return []
+  }
 
-  const client = HiyobiClient.getInstance()
   const results: Manga[] = []
 
   try {
     for (let page = 1; page <= CONFIG.HIYOBI.maxPages; page++) {
       log.info(`Crawling Hiyobi page ${page}/${CONFIG.HIYOBI.maxPages}`)
 
-      const mangas = await client.fetchMangas(page)
+      const mangas = await hiyobiClient.fetchMangas(page)
       results.push(...mangas)
 
       log.success(`Fetched ${mangas.length} manga from Hiyobi page ${page}`)
@@ -165,15 +165,16 @@ async function crawlHiyobi(): Promise<Manga[]> {
 }
 
 async function crawlKHentai(): Promise<Manga[]> {
-  if (!CONFIG.K_HENTAI.enabled) return []
+  if (!CONFIG.K_HENTAI.enabled) {
+    return []
+  }
 
-  const client = KHentaiClient.getInstance()
   const results: Manga[] = []
 
   try {
     log.info('Crawling K-Hentai manga')
 
-    const mangas = await client.searchMangas()
+    const mangas = await kHentaiClient.searchMangas()
     results.push(...mangas)
 
     log.success(`Fetched ${mangas.length} manga from K-Hentai`)

@@ -4,8 +4,8 @@ import { cache } from 'react'
 
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { MAX_MANGA_DESCRIPTION_LENGTH, MAX_MANGA_TITLE_LENGTH } from '@/constants/policy'
-import { KHentaiClient } from '@/crawler/k-hentai'
-import { LitomiClient } from '@/crawler/litomi'
+import { kHentaiClient } from '@/crawler/k-hentai'
+import { litomiClient } from '@/crawler/litomi'
 
 import MangaViewer from './MangaViewer'
 import { mangaSchema } from './schema'
@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: PageProps<'/manga/[id]'>): Pr
 }
 
 export async function generateStaticParams() {
-  const kHentaiIds = await KHentaiClient.getInstance()
+  const kHentaiIds = await kHentaiClient
     .searchKoreanMangas()
     .then((mangas) => mangas.map((manga) => String(manga.id)))
     .catch(() => [])
@@ -68,7 +68,5 @@ export default async function Page({ params }: PageProps<'/manga/[id]'>) {
 }
 
 const getManga = cache(async (id: number) => {
-  return LitomiClient.getInstance()
-    .getManga(id)
-    .catch(() => null)
+  return litomiClient.getManga(id).catch(() => null)
 })

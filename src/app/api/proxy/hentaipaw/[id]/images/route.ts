@@ -1,4 +1,4 @@
-import { HentaiPawClient } from '@/crawler/hentai-paw'
+import { hentaiPawClient } from '@/crawler/hentai-paw'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 
 import { GETProxyHentaiPawImagesSchema } from './schema'
@@ -18,10 +18,9 @@ export async function GET(request: Request) {
   }
 
   const { id } = validation.data
-  const client = HentaiPawClient.getInstance()
 
   try {
-    const images = await client.fetchMangaImages(id)
+    const images = await hentaiPawClient.fetchMangaImages(id)
 
     return Response.json(images, {
       headers: {

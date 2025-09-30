@@ -43,19 +43,11 @@ const HENTAIPAW_CONFIG: ProxyClientConfig = {
   },
 }
 
-export class HentaiPawClient {
-  private static instance: HentaiPawClient
+class HentaiPawClient {
   private readonly client: ProxyClient
 
-  private constructor() {
+  constructor() {
     this.client = new ProxyClient(HENTAIPAW_CONFIG)
-  }
-
-  static getInstance(): HentaiPawClient {
-    if (!HentaiPawClient.instance) {
-      HentaiPawClient.instance = new HentaiPawClient()
-    }
-    return HentaiPawClient.instance
   }
 
   async fetchManga(id: number, revalidate = sec('1 week')): Promise<Manga | null> {
@@ -203,3 +195,6 @@ export class HentaiPawClient {
     }
   }
 }
+
+// Singleton instance
+export const hentaiPawClient = new HentaiPawClient()

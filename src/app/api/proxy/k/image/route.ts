@@ -1,5 +1,5 @@
 import { GETProxyKImageSchema } from '@/app/api/proxy/k/image/schema'
-import { KHentaiClient } from '@/crawler/k-hentai'
+import { kHentaiClient } from '@/crawler/k-hentai'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 
 export const runtime = 'edge'
@@ -15,10 +15,9 @@ export async function GET(request: Request) {
   }
 
   const { id } = validation.data
-  const client = KHentaiClient.getInstance()
 
   try {
-    const images = await client.fetchMangaImages(id)
+    const images = await kHentaiClient.fetchMangaImages(id)
 
     return Response.json(images, {
       headers: {

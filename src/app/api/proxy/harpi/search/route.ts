@@ -1,4 +1,4 @@
-import { HarpiClient } from '@/crawler/harpi/harpi'
+import { harpiClient } from '@/crawler/harpi/harpi'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { Manga } from '@/types/manga'
 
@@ -48,10 +48,9 @@ export async function GET(request: Request) {
   }
 
   const validatedParams = validation.data
-  const client = HarpiClient.getInstance()
 
   try {
-    const mangas = await client.searchMangas(validatedParams)
+    const mangas = await harpiClient.searchMangas(validatedParams)
 
     if (!mangas) {
       return new Response('Not Found', { status: 404 })

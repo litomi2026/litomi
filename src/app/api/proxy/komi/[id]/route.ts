@@ -1,4 +1,4 @@
-import { KomiClient } from '@/crawler/komi/komi'
+import { komiClient } from '@/crawler/komi/komi'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { RouteProps } from '@/types/nextjs'
 
@@ -19,10 +19,9 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
   }
 
   const { id } = validation.data
-  const client = KomiClient.getInstance()
 
   try {
-    const manga = await client.fetchManga(id)
+    const manga = await komiClient.fetchManga(id)
 
     if (!manga) {
       return new Response('Not Found', { status: 404 })

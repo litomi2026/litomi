@@ -43,19 +43,11 @@ const HITOMI_CONFIG: ProxyClientConfig = {
   },
 }
 
-export class HitomiClient {
-  private static instance: HitomiClient
+class HitomiClient {
   private readonly client: ProxyClient
 
-  private constructor() {
+  constructor() {
     this.client = new ProxyClient(HITOMI_CONFIG)
-  }
-
-  static getInstance(): HitomiClient {
-    if (!HitomiClient.instance) {
-      HitomiClient.instance = new HitomiClient()
-    }
-    return HitomiClient.instance
   }
 
   async fetchManga(id: number, revalidate = sec('1 day')) {
@@ -200,3 +192,6 @@ export class HitomiClient {
     }
   }
 }
+
+// Singleton instance
+export const hitomiClient = new HitomiClient()

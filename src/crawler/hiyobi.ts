@@ -107,22 +107,13 @@ const HIYOBI_IMAGE_CONFIG: ProxyClientConfig = {
   },
 }
 
-export class HiyobiClient {
-  private static instance: HiyobiClient
+class HiyobiClient {
   private readonly client: ProxyClient
   private readonly imageClient: ProxyClient
 
-  // Singleton instance
-  private constructor() {
+  constructor() {
     this.client = new ProxyClient(HIYOBI_CONFIG)
     this.imageClient = new ProxyClient(HIYOBI_IMAGE_CONFIG)
-  }
-
-  static getInstance(): HiyobiClient {
-    if (!HiyobiClient.instance) {
-      HiyobiClient.instance = new HiyobiClient()
-    }
-    return HiyobiClient.instance
   }
 
   async fetchManga(id: number, revalidate = sec('1 week')): Promise<Manga | null> {
@@ -218,3 +209,6 @@ export class HiyobiClient {
     return `https://thumb.k-hentai.org/${millions}/${thousands}/${remainder}`
   }
 }
+
+// Singleton instance
+export const hiyobiClient = new HiyobiClient()

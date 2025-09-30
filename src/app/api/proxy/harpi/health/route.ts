@@ -1,4 +1,4 @@
-import { HarpiClient } from '@/crawler/harpi/harpi'
+import { harpiClient } from '@/crawler/harpi/harpi'
 import { createCacheControl, createHealthCheckHandler } from '@/crawler/proxy-utils'
 
 export const runtime = 'edge'
@@ -8,8 +8,8 @@ export async function GET() {
   return createHealthCheckHandler(
     'harpi',
     {
-      search: async () => Boolean(await HarpiClient.getInstance().searchMangas()),
-      manga: async () => Boolean(await HarpiClient.getInstance().fetchMangaByHarpiId('67e5a1b843721660bba361b2')), // 조회수 1위 망가
+      search: async () => Boolean(await harpiClient.searchMangas()),
+      manga: async () => Boolean(await harpiClient.fetchMangaByHarpiId('67e5a1b843721660bba361b2')), // 조회수 1위 망가
     },
     {
       headers: {

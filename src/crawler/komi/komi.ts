@@ -79,22 +79,13 @@ const KOMI_CONFIG: ProxyClientConfig = {
 const VALID_KOMI_TAG_CATEGORIES = ['female', 'male', 'mixed', 'misc'] as const
 type KomiTagCategory = (typeof VALID_KOMI_TAG_CATEGORIES)[number]
 
-export class KomiClient {
-  private static instance: KomiClient
+class KomiClient {
   private readonly client: ProxyClient
   private readonly idMapping: BinaryIdMap
 
-  // Singleton instance
-  private constructor() {
+  constructor() {
     this.client = new ProxyClient(KOMI_CONFIG)
     this.idMapping = new BinaryIdMap(idMap as [number, string][])
-  }
-
-  static getInstance(): KomiClient {
-    if (!KomiClient.instance) {
-      KomiClient.instance = new KomiClient()
-    }
-    return KomiClient.instance
   }
 
   async fetchManga(id: number | string, revalidate = sec('1 week')): Promise<Manga | null> {
@@ -138,3 +129,6 @@ export class KomiClient {
     return VALID_KOMI_TAG_CATEGORIES.includes(tag.namespace as KomiTagCategory)
   }
 }
+
+// Singleton instance
+export const komiClient = new KomiClient()
