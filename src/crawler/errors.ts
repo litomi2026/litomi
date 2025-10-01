@@ -94,7 +94,7 @@ export class UpstreamServerError extends ProxyError {
   ) {
     super(message, context)
     this.statusCode = upstreamStatus >= 500 ? 502 : upstreamStatus
-    this.isRetryable = [500, 502, 503, 504, 507, 509, 520, 598, 599].includes(upstreamStatus)
+    this.isRetryable = [429, 500, 502, 503, 504, 507, 509, 520, 598, 599].includes(upstreamStatus)
   }
 }
 
