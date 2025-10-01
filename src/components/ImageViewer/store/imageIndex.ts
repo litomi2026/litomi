@@ -33,7 +33,7 @@ export const useImageIndexStore = create<Store>()((set, get) => ({
 
     navigationTimer = setTimeout(() => {
       try {
-        if (lastImageIndex) {
+        if (typeof lastImageIndex === 'number') {
           updatePageSearchParam(lastImageIndex + 1)
         }
       } catch (error) {
