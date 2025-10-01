@@ -8,7 +8,7 @@ export default function BankAccountInfo() {
 
   return (
     <button className="hover:underline" onClick={() => copy(bankAccount)}>
-      ㅋㅋㅇ뱅크 {bankAccount} 곽*욱
+      ㅋㅋㅇ뱅크 {bankAccount} ㄱㅌㅇ
     </button>
   )
 }
