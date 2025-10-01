@@ -52,8 +52,18 @@ export class CircuitBreaker {
 
   async execute<T>(fn: () => Promise<T>): Promise<T> {
     if (this.state === CircuitState.OPEN) {
-      if (Date.now() - (this.lastFailureTime || 0) < this.config.timeout) {
-        throw new CircuitBreakerError(`현재 외부 API 서비스에 접속할 수 없어요: ${this.name} (OPEN)`)
+      const now = Date.now()
+      const timeSinceFailure = now - (this.lastFailureTime || 0)
+      const remainingTimeout = this.config.timeout - timeSinceFailure
+
+      if (timeSinceFailure < this.config.timeout) {
+        throw new CircuitBreakerError(`${this.name}: 현재 외부 서비스에 접속할 수 없어요`, {
+          circuitName: this.name,
+          state: CircuitState.OPEN,
+          failureCount: this.failureCount,
+          lastFailureTime: this.lastFailureTime,
+          remainingTimeout: Math.ceil(remainingTimeout / 1000),
+        })
       }
 
       // NOTE: timeout 시간이 지나면 HALF_OPEN 상태로 전환 (CircuitState.OPEN -> CircuitState.HALF_OPEN)
@@ -63,7 +73,13 @@ export class CircuitBreaker {
     }
 
     if (this.state === CircuitState.HALF_OPEN && this.halfOpenAttempts >= this.halfOpenRequests) {
-      throw new CircuitBreakerError(`현재 외부 API 서비스에 접속할 수 없어요: ${this.name} (HALF_OPEN)`)
+      throw new CircuitBreakerError(`${this.name}: 현재 외부 서비스에 접속할 수 없어요`, {
+        circuitName: this.name,
+        state: CircuitState.HALF_OPEN,
+        halfOpenAttempts: this.halfOpenAttempts,
+        halfOpenRequests: this.halfOpenRequests,
+        halfOpenSuccesses: this.halfOpenSuccesses,
+      })
     }
 
     try {
@@ -110,9 +126,12 @@ export class CircuitBreaker {
       if (this.failureCount >= this.config.failureThreshold) {
         this.state = CircuitState.OPEN
         this.lastFailureTime = Date.now()
+
         captureException(new Error(`Circuit breaker opened for ${this.name}`), {
-          tags: { circuit_breaker: this.name },
-          extra: { failureCount: this.failureCount },
+          tags: {
+            circuit_breaker: this.name,
+            circuit_state: 'OPEN',
+          },
         })
       }
     } else if (this.state === CircuitState.HALF_OPEN) {

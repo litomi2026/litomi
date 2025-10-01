@@ -25,65 +25,77 @@ export abstract class ProxyError extends Error {
 export class CircuitBreakerError extends ProxyError {
   readonly errorCode = 'CIRCUIT_BREAKER_OPEN'
   readonly isRetryable = false
-  readonly message = '현재 외부 API 서비스에 접속할 수 없어요'
   readonly statusCode = 503
+
+  constructor(message = '현재 외부 API 서비스에 접속할 수 없어요', context?: Record<string, unknown>) {
+    super(message, context)
+  }
 }
 
 export class InternalError extends ProxyError {
   readonly errorCode = 'INTERNAL_ERROR'
   readonly isRetryable = false
-  readonly message = '알 수 없는 오류가 발생했어요'
   readonly statusCode = 500
+
+  constructor(message = '알 수 없는 오류가 발생했어요', context?: Record<string, unknown>) {
+    super(message, context)
+  }
 }
 
 export class NetworkError extends ProxyError {
   readonly errorCode = 'NETWORK_ERROR'
   readonly isRetryable = true
-  readonly message = '네트워크 연결을 확인해주세요'
   readonly statusCode = 503
+
+  constructor(message = '네트워크 연결을 확인해주세요', context?: Record<string, unknown>) {
+    super(message, context)
+  }
 }
 
 export class NotFoundError extends ProxyError {
   readonly errorCode = 'NOT_FOUND'
   readonly isRetryable = false
-  readonly message = '요청하신 정보를 찾을 수 없어요'
   readonly statusCode = 404
+
+  constructor(message = '요청하신 정보를 찾을 수 없어요', context?: Record<string, unknown>) {
+    super(message, context)
+  }
 }
 
 export class ParseError extends ProxyError {
   readonly errorCode = 'PARSE_ERROR'
   readonly isRetryable = false
-  readonly message = '작업을 처리하는 중 문제가 발생했어요'
   readonly statusCode = 502
+
+  constructor(message = '작업을 처리하는 중 문제가 발생했어요', context?: Record<string, unknown>) {
+    super(message, context)
+  }
 }
 
 export class TimeoutError extends ProxyError {
   readonly errorCode = 'REQUEST_TIMEOUT'
   readonly isRetryable = true
-  readonly message = '요청 시간이 초과됐어요'
   readonly statusCode = 408
+
+  constructor(message = '요청 시간이 초과됐어요', context?: Record<string, unknown>) {
+    super(message, context)
+  }
 }
 
 export class UpstreamServerError extends ProxyError {
   readonly errorCode = 'UPSTREAM_ERROR'
   readonly isRetryable: boolean
-  readonly message: string
   readonly statusCode: number
 
-  constructor(message: string, upstreamStatus: number, context?: Record<string, unknown>) {
+  constructor(
+    message = '작업을 처리하는 중 문제가 발생했어요',
+    upstreamStatus: number,
+    context?: Record<string, unknown>,
+  ) {
     super(message, context)
-    this.message = message
     this.statusCode = upstreamStatus >= 500 ? 502 : upstreamStatus
     this.isRetryable = [500, 502, 503, 504, 507, 509, 520, 598, 599].includes(upstreamStatus)
   }
-}
-
-// Validation errors
-export class ValidationError extends ProxyError {
-  readonly errorCode = 'VALIDATION_ERROR'
-  readonly isRetryable = false
-  readonly message = '잘못된 요청입니다.'
-  readonly statusCode = 400
 }
 
 export function isRetryableError(error: unknown): boolean {
