@@ -7,6 +7,7 @@ import SourceTooltip from '@/components/tooltip/SourceTooltip'
 import { SHORT_NAME } from '@/constants'
 
 import { DEFAULT_METRIC, DEFAULT_PERIOD } from '../(ranking)/common'
+import BankAccountInfo from './BankAccountInfo'
 import NewMangaLink from './NewMangaLink'
 import RandomMangaLink from './RandomMangaLink'
 
@@ -51,7 +52,7 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           <a className="hover:text-pink-400 transition" href="https://github.com/sponsors/gwak2837" target="_blank">
             후원하기
           </a>
-          <span>ㅋㅋㅇ뱅크 3333-23-9770326 곽*욱</span>
+          <BankAccountInfo />
           <a className="hover:text-purple-400 transition" href="https://patreon.com/litomi" target="_blank">
             Patreon
           </a>

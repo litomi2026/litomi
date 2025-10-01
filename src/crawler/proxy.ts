@@ -63,9 +63,12 @@ export class ProxyClient {
 
       if (!response.ok) {
         const body = await response.json().catch(() => response.text().catch(() => '응답을 읽을 수 없습니다.'))
+        const retryAfter = response.headers.get('Retry-After')
+
         throw new UpstreamServerError(`HTTP ${response.status} ${response.statusText}`, response.status, {
           url,
           body,
+          retryAfter,
         })
       }
 

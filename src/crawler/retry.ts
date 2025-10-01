@@ -1,6 +1,6 @@
 import { captureException } from '@sentry/nextjs'
 
-import { isRetryableError } from './errors'
+import { isRetryableError, UpstreamServerError } from './errors'
 
 // Configuration for retry logic
 export interface RetryConfig {
@@ -51,19 +51,45 @@ export async function retryWithBackoff<T>(
         break
       }
 
-      // Calculate delay with optional jitter
       let currentDelay = delay
-      if (config.jitter) {
+      const retryAfter = error instanceof UpstreamServerError ? error.retryAfter : null
+      const retryAfterDelay = parseRetryAfter(retryAfter)
+
+      if (retryAfterDelay) {
+        // Use Retry-After value, but respect maxDelay
+        currentDelay = Math.min(retryAfterDelay, config.maxDelay)
+      } else if (config.jitter) {
         currentDelay = delay * (0.5 + Math.random() * 0.5)
       }
 
       // Wait before retrying
       await new Promise((resolve) => setTimeout(resolve, currentDelay))
 
-      // Increase delay for next attempt
-      delay = Math.min(delay * config.backoffMultiplier, config.maxDelay)
+      // Increase delay for next attempt (only if not using Retry-After)
+      if (!retryAfterDelay) {
+        delay = Math.min(delay * config.backoffMultiplier, config.maxDelay)
+      }
     }
   }
 
   throw lastError
+}
+
+function parseRetryAfter(retryAfter: string | null | undefined): number | null {
+  if (!retryAfter) return null
+
+  // If it's a number, treat it as seconds
+  const seconds = Number(retryAfter)
+  if (!isNaN(seconds) && seconds > 0) {
+    return seconds * 1000 // Convert to milliseconds
+  }
+
+  // Otherwise, try to parse as HTTP date
+  const retryDate = new Date(retryAfter)
+  if (!isNaN(retryDate.getTime())) {
+    const delay = retryDate.getTime() - Date.now()
+    return delay > 0 ? delay : null
+  }
+
+  return null
 }

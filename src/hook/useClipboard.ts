@@ -9,7 +9,7 @@ export default function useClipboard(timeout = 2000) {
       await navigator.clipboard.writeText(text)
       setCopied(true)
       setTimeout(() => setCopied(false), timeout)
-      toast.success('클립보드에 복사되었어요')
+      toast.success('클립보드에 복사됐어요')
     } catch {
       toast.error('복사에 실패했어요')
     }
