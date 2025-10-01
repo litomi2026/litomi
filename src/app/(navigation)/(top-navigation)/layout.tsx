@@ -33,7 +33,7 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
       <footer className="text-center grid gap-2 p-4 text-sm">
         <InstallPrompt />
         <p>ⓒ 2025. {SHORT_NAME}. All rights reserved.</p>
-        <div className="flex justify-center gap-2 flex-wrap text-xs">
+        <div className="flex justify-center gap-2 gap-y-1 flex-wrap text-xs">
           <Link className="hover:underline" href="/doc/terms">
             이용약관
           </Link>
@@ -45,6 +45,18 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           </Link>
           <a className="hover:underline" href="https://github.com/gwak2837/litomi/issues" target="_blank">
             이슈 제보
+          </a>
+        </div>
+        <div className="flex justify-center gap-2 gap-y-1 flex-wrap text-xs">
+          <a className="hover:text-pink-400 transition" href="https://github.com/sponsors/gwak2837" target="_blank">
+            후원하기
+          </a>
+          <span>ㅋㅋㅇ뱅크 3333-23-9770326 곽*욱</span>
+          <a className="hover:text-purple-400 transition" href="https://patreon.com/litomi" target="_blank">
+            Patreon
+          </a>
+          <a className="hover:text-yellow-400 transition" href="https://ko-fi.com/litomi" target="_blank">
+            Ko-fi
           </a>
         </div>
       </footer>

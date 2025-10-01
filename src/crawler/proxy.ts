@@ -58,7 +58,7 @@ export class ProxyClient {
       })
 
       if (response.status === 404) {
-        throw new NotFoundError('404 Not Found', { url })
+        throw new NotFoundError(undefined, { url })
       }
 
       if (!response.ok) {
