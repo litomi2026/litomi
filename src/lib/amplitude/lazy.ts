@@ -1,3 +1,5 @@
+import { BrowserOptions } from '@amplitude/analytics-browser/lib/esm/types'
+
 let amplitudeInstance: typeof import('@amplitude/analytics-browser') | null = null
 let isInitialized = false
 let isInitializing = false
@@ -27,15 +29,17 @@ async function ensureAmplitude(): Promise<typeof import('@amplitude/analytics-br
     amplitudeInstance = await import('@amplitude/analytics-browser')
     return amplitudeInstance
   } catch (error) {
-    console.error('Amplitude 불러오기 실패:', error)
+    console.error('ensureAmplitude:', error)
     throw error
   } finally {
     isInitializing = false
   }
 }
 
-function init(apiKey: string, options?: Record<string, unknown>): void {
-  if (!apiKey) return
+function init(apiKey: string, options?: BrowserOptions): void {
+  if (!apiKey) {
+    return
+  }
 
   ensureAmplitude()
     .then((amplitude) => {
@@ -44,7 +48,7 @@ function init(apiKey: string, options?: Record<string, unknown>): void {
       processQueue()
     })
     .catch((error) => {
-      console.error('Amplitude 초기화 실패:', error)
+      console.error('amplitude.init:', error)
     })
 }
 
