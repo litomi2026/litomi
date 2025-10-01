@@ -85,6 +85,7 @@ export class TimeoutError extends ProxyError {
 export class UpstreamServerError extends ProxyError {
   readonly errorCode = 'UPSTREAM_ERROR'
   readonly isRetryable: boolean
+  readonly retryAfter: string | null
   readonly statusCode: number
 
   constructor(
@@ -93,6 +94,7 @@ export class UpstreamServerError extends ProxyError {
     context?: Record<string, unknown>,
   ) {
     super(message, context)
+    this.retryAfter = context?.retryAfter as string | null
     this.statusCode = upstreamStatus >= 500 ? 502 : upstreamStatus
     this.isRetryable = [429, 500, 502, 503, 504, 507, 509, 520, 598, 599].includes(upstreamStatus)
   }

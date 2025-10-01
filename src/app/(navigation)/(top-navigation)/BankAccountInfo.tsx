@@ -4,11 +4,11 @@ import useClipboard from '@/hook/useClipboard'
 
 export default function BankAccountInfo() {
   const { copy } = useClipboard()
-  const bankAccount = 'ㅋㅋㅇ뱅크 3333-23-9770326 곽*욱'
+  const bankAccount = '3333-23-9770326'
 
   return (
     <button className="hover:underline" onClick={() => copy(bankAccount)}>
-      {bankAccount}
+      ㅋㅋㅇ뱅크 {bankAccount} 곽*욱
     </button>
   )
 }
