@@ -18,12 +18,7 @@ jobs:
         id: date
         run: echo "date=$(date +%Y%m%d-%H%M)" >> $GITHUB_OUTPUT
 
-      - name: Install PostgreSQL client
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y postgresql-client
-
-      - name: Create backup
+      - name: Create backup using Docker
         env:
           POSTGRES_URL_DIRECT: ${{ secrets.POSTGRES_URL_DIRECT }}
           DATE: ${{ steps.date.outputs.date }}
@@ -36,14 +31,18 @@ jobs:
           ENCRYPTED_FILE="${BACKUP_DIR}/${FILENAME}.dump.gpg"
           mkdir -p "${BACKUP_DIR}"
 
-          # Create compressed backup
-          pg_dump "$POSTGRES_URL_DIRECT" \
-            --no-owner \
-            --no-privileges \
-            --no-comments \
-            --format=custom \
-            --compress=9 \
-            --file="${DUMP_FILE}"
+          # Create compressed backup using PostgreSQL 17 Docker image
+          docker run --rm \
+            -v "$(pwd)/${BACKUP_DIR}:/backups" \
+            -e POSTGRES_URL_DIRECT="$POSTGRES_URL_DIRECT" \
+            postgres:17-alpine \
+            sh -c "pg_dump \"\$POSTGRES_URL_DIRECT\" \
+              --no-owner \
+              --no-privileges \
+              --no-comments \
+              --format=custom \
+              --compress=9 \
+              --file=\"/backups/${FILENAME}.dump\""
 
           # Encrypt the backup using GPG with symmetric encryption
           gpg --batch --yes \
