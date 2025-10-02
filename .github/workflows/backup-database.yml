@@ -18,16 +18,7 @@ jobs:
         id: date
         run: echo "date=$(date +%Y%m%d-%H%M)" >> $GITHUB_OUTPUT
 
-      - name: Install PostgreSQL 17 client
-        run: |
-          # Add the official PostgreSQL APT repository
-          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-          sudo apt update
-          # Install PostgreSQL 17 client tools
-          sudo apt install -y postgresql-client-17
-
-      - name: Create backup
+      - name: Create backup using Docker
         env:
           POSTGRES_URL_DIRECT: ${{ secrets.POSTGRES_URL_DIRECT }}
           DATE: ${{ steps.date.outputs.date }}
