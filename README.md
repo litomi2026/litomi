@@ -34,9 +34,10 @@
 
 ## 개발 환경
 
-- macOS 15.3
+- macOS 15.6
 - Bun 1.2
 - Docker 28.1
+- PostgreSQL(psql) 17.5
 
 ## 시작하기
 
@@ -44,6 +45,12 @@
 
 ```bash
 bun i
+```
+
+환경 변수 설정하기
+
+```bash
+cp -i .env.template .env.development
 ```
 
 개발 서버 실행하기
