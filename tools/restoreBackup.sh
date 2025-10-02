@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Restore script for database backups from GitHub Actions artifacts
-# Usage: ./tools/restoreBackup.sh [backup_file.dump.gpg] [target_database_url]
+# Usage: ./tools/restoreBackup.sh [backup_file.dump.gpg]
 
 set -e
 
@@ -63,18 +63,13 @@ main() {
             exit 1
         fi
     fi
-    
-    # Get target database URL
-    if [ -z "$2" ]; then
-        echo ""
-        echo "🔗 Enter your local PostgreSQL database URL"
-        echo "Format: postgresql://username:password@localhost:5432/database_name"
-        read -sp "Database URL: " DATABASE_URL
-        echo ""
-    else
-        DATABASE_URL="$2"
-    fi
-    
+
+    echo ""
+    echo "🔗 Enter your local PostgreSQL database URL"
+    echo "Format: postgresql://username:password@localhost:5432/database_name"
+    read -sp "Database URL: " DATABASE_URL
+    echo ""
+
     # Get encryption key
     echo ""
     echo "🔐 Enter the backup encryption key (BACKUP_ENCRYPTION_KEY)"
