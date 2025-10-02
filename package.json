@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^2.25.1",
+    "@amplitude/analytics-client-common": "2.4.2",
     "@amplitude/analytics-node": "^1.5.13",
     "@fingerprintjs/fingerprintjs": "^4.6.2",
     "@google-analytics/data": "^5.2.0",
