@@ -3,6 +3,7 @@ import Link from 'next/link'
 import IconFlame from '@/components/icons/IconFlame'
 import InstallPrompt from '@/components/InstallPrompt'
 import LinkPending from '@/components/LinkPending'
+import ScrollButtons from '@/components/ScrollButtons'
 import SourceTooltip from '@/components/tooltip/SourceTooltip'
 import { SHORT_NAME } from '@/constants'
 
@@ -61,6 +62,7 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           </a>
         </div>
       </footer>
+      <ScrollButtons />
     </div>
   )
 }
