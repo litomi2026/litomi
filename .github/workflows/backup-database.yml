@@ -18,10 +18,10 @@ jobs:
         id: date
         run: echo "date=$(date +%Y%m%d-%H%M)" >> $GITHUB_OUTPUT
 
-      - name: Install PostgreSQL client
+      - name: Install PostgreSQL
         run: |
-          sudo apt-get update
-          sudo apt-get install -y postgresql-client
+          sudo apt update
+          sudo apt install -y postgresql
 
       - name: Create backup
         env:
