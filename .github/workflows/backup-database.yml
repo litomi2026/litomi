@@ -53,7 +53,9 @@ jobs:
             "${DUMP_FILE}"
 
           rm "${DUMP_FILE}"
-          sha256sum "${ENCRYPTED_FILE}" > "${ENCRYPTED_FILE}.sha256"
+
+          # Create checksum with just the filename
+          (cd "${BACKUP_DIR}" && sha256sum "$(basename ${ENCRYPTED_FILE})" > "$(basename ${ENCRYPTED_FILE}).sha256")
 
           # Display backup info
           ls -lh "${BACKUP_DIR}/"
