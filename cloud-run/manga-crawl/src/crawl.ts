@@ -208,9 +208,6 @@ export async function crawlMangas() {
  */
 async function bulkSaveMangasToDatabase(mangas: Manga[]): Promise<number> {
   try {
-    // NOTE: neon-http driver doesn't support transactions, so we execute operations sequentially
-    // This is less atomic but should work for the crawl script
-    // Bulk insert manga records
     const mangaValues = mangas.map((manga) => ({
       id: manga.id,
       title: manga.title,
