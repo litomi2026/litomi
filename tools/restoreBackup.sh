@@ -85,14 +85,14 @@ main() {
     TEMP_DIR=$(mktemp -d)
     DECRYPTED_FILE="${TEMP_DIR}/backup.dump"
     
-    echo ""
-    echo "📂 Working directory: $TEMP_DIR"
-    
     # Verify checksum if available
     CHECKSUM_FILE="${ENCRYPTED_FILE}.sha256"
     if [ -f "$CHECKSUM_FILE" ]; then
+        echo ""
         echo "🔍 Verifying checksum..."
-        if sha256sum -c "$CHECKSUM_FILE" 2>/dev/null; then
+        BACKUP_DIR=$(dirname "$ENCRYPTED_FILE")
+        BACKUP_FILENAME=$(basename "$ENCRYPTED_FILE")
+        if (cd "$BACKUP_DIR" && sha256sum -c "${BACKUP_FILENAME}.sha256" 2>/dev/null); then
             echo "✅ Checksum verified"
         else
             echo "⚠️  Checksum verification failed"
@@ -142,6 +142,7 @@ main() {
     DB_PORT=$(echo "$DATABASE_URL" | sed -n 's/.*:\([0-9]*\)\/.*/\1/p')
     DB_USER=$(echo "$DATABASE_URL" | sed -n 's/.*:\/\/\([^:]*\).*/\1/p')
     
+    echo ""
     echo "Creating database if it doesn't exist: $DB_NAME"
     PGPASSWORD=$(echo "$DATABASE_URL" | sed -n 's/.*:\/\/[^:]*:\([^@]*\).*/\1/p') \
         psql -h "$DB_HOST" -p "${DB_PORT:-5432}" -U "$DB_USER" -d postgres -c "CREATE DATABASE $DB_NAME;" 2>/dev/null || true
@@ -162,21 +163,15 @@ main() {
     RESTORE_EXIT_CODE=$?
     
     # pg_restore returns exit code 1 when there are warnings but data was restored
-    # Check if core tables were created to determine if restore was successful
     if [ $RESTORE_EXIT_CODE -eq 0 ] || [ $RESTORE_EXIT_CODE -eq 1 ]; then
-      # Check if core tables exist
       TABLE_COUNT=$(PGPASSWORD=$(echo "$DATABASE_URL" | sed -n 's/.*:\/\/[^:]*:\([^@]*\).*/\1/p') \
         psql "$DATABASE_URL" -t -c "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public';" 2>/dev/null || echo "0")
       
       if [ "$TABLE_COUNT" -gt 0 ]; then
-        echo ""
         echo "✅ Database restored successfully!"
         echo ""
         echo "ℹ️  Note: Errors about missing extensions (pg_cron, pgsodium, supabase_vault) are EXPECTED"
-        echo "    These are Supabase-specific and not needed for local development."
-        echo ""
-        echo "    The --disable-triggers flag was used to handle circular foreign key constraints."
-        echo "    All your application data has been restored successfully."
+        echo "ℹ️  Note: The --disable-triggers flag was used to handle circular foreign key constraints."
       else
         echo "⚠️  Restore completed with warnings. Please verify your data."
       fi
