@@ -16,6 +16,18 @@
 
 ## 장애
 
+#### 2025년 10월 3일 오전 2:27 ~ 오전 4:03 (GMT+9)
+
+- 지속: 1시간 36분
+- 내용: Error: Your function was stopped as it did not return an initial response within 25s
+- 영향: `/api/proxy/manga` 504 Gateway Timeout 오류 응답
+- 원인: 외부 서비스들의 429 (Rate Limit) 응답 후 retry로 인한 지연
+  - hiyobi API가 특히 많은 429 오류 반환
+  - Promise.all로 모든 소스를 기다리면서 25초 제한 초과
+- 해결: 모든 외부 API 호출에 8초 timeout 적용
+  - 느린/rate-limited 소스는 timeout 후 null 반환
+  - 사용 가능한 소스들로 우아한 성능 저하(graceful degradation)
+
 #### 2025-09-05 14:37 ~ 15:58 (GMT+9)
 
 - 지속: 1시간 21분
