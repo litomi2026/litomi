@@ -116,7 +116,7 @@ class HiyobiClient {
     this.imageClient = new ProxyClient(HIYOBI_IMAGE_CONFIG)
   }
 
-  async fetchManga(id: number, revalidate = sec('1 week')): Promise<Manga | null> {
+  async fetchManga({ id, revalidate = sec('1 week') }: { id: number; revalidate?: number }) {
     const manga = await this.client.fetch<HiyobiManga>(`/gallery/${id}`, {
       next: { revalidate },
     })
@@ -128,7 +128,7 @@ class HiyobiClient {
     return this.convertHiyobiToManga(manga)
   }
 
-  async fetchMangaImages(id: number, revalidate = sec('12 hours')): Promise<string[]> {
+  async fetchMangaImages({ id, revalidate = sec('12 hours') }: { id: number; revalidate?: number }) {
     const hiyobiImages = await this.imageClient.fetch<HiyobiImage[]>(`/hiyobi/list?id=${id}`, {
       next: { revalidate },
     })
@@ -136,12 +136,12 @@ class HiyobiClient {
     return hiyobiImages.map((image) => image.url)
   }
 
-  async fetchMangas(page: number, revalidate = sec('6 hours')): Promise<Manga[]> {
+  async fetchMangas({ page, revalidate = sec('6 hours') }: { page: number; revalidate?: number }) {
     const response = await this.client.fetch<{ list: HiyobiManga[] }>(`/list/${page}`, { next: { revalidate } })
     return response.list.filter((manga) => manga.id).map((manga) => this.convertHiyobiToManga(manga))
   }
 
-  async fetchRandomMangas(): Promise<Manga[] | null> {
+  async fetchRandomMangas() {
     const mangas = await this.client.fetch<HiyobiManga[]>('/random', {
       method: 'POST',
       next: { revalidate: 15 },

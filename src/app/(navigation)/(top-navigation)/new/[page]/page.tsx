@@ -63,7 +63,7 @@ export default async function Page({ params }: PageProps<'/new/[page]'>) {
 async function getMangas({ page }: { page: number }) {
   // cacheLife('hours')
   try {
-    return await hiyobiClient.fetchMangas(page)
+    return await hiyobiClient.fetchMangas({ page })
   } catch (error) {
     return [createErrorManga({ error })]
   }
