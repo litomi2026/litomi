@@ -259,7 +259,7 @@ class HarpiClient {
         ? this.sortImageURLs(harpiManga.imageUrl).map((url) => `/start/${url}`)
         : Array(harpiManga.imageCount)
             .fill('')
-            .map((_, index) => `/start/${mangaId}/${mangaId}_${index + 1}.avif`),
+            .map((_, index) => `/start/${mangaId}/${mangaId}_${index}.avif`),
       origin: 'https://soujpa.in',
       viewCount: harpiManga.views,
       count: harpiManga.imageCount,
