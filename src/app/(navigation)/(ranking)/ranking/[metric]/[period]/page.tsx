@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import z from 'zod/v4'
 
-import { getMangasFromMultiSources } from '@/common/manga'
+import { fetchMangasFromMultiSources } from '@/common/manga'
 import MangaCard from '@/components/card/MangaCard'
 import { defaultOpenGraph } from '@/constants'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
@@ -66,8 +66,8 @@ export default async function Page({ params }: PageProps<'/ranking/[metric]/[per
   }
 
   const [mangasMap1, mangasMap2] = await Promise.all([
-    getMangasFromMultiSources(rankings.map((ranking) => ranking.mangaId).slice(0, 10), RANKING_PAGE_REVALIDATE),
-    getMangasFromMultiSources(rankings.map((ranking) => ranking.mangaId).slice(10, 20), RANKING_PAGE_REVALIDATE),
+    fetchMangasFromMultiSources(rankings.map((ranking) => ranking.mangaId).slice(0, 10), RANKING_PAGE_REVALIDATE),
+    fetchMangasFromMultiSources(rankings.map((ranking) => ranking.mangaId).slice(10, 20), RANKING_PAGE_REVALIDATE),
   ])
 
   return (

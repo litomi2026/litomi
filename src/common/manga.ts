@@ -14,7 +14,7 @@ import { checkDefined } from '@/utils/type'
 type MangaResult = Error | Manga | null | undefined
 
 // TODO: 추후 'use cache' 로 변경하고 revalidate 파라미터 제거하기
-export async function getMangaFromMultiSources(id: number, revalidate?: number): Promise<Manga | MangaError | null> {
+export async function fetchMangaFromMultiSources(id: number, revalidate?: number): Promise<Manga | MangaError | null> {
   // cacheLife('days')
 
   const [hiyobiManga, hiyobiImages, kHentaiManga, harpiManga, komiManga, hitomiManga, hentaiPawImages] =
@@ -64,7 +64,7 @@ export async function getMangaFromMultiSources(id: number, revalidate?: number):
 /**
  * @param ids - 10개 이하의 고유한 만화 ID 배열
  */
-export async function getMangasFromMultiSources(
+export async function fetchMangasFromMultiSources(
   ids: number[],
   revalidate: number,
 ): Promise<Record<number, Manga | MangaError>> {

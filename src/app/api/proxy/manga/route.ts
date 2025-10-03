@@ -1,4 +1,4 @@
-import { getMangasFromMultiSources } from '@/common/manga'
+import { fetchMangasFromMultiSources } from '@/common/manga'
 import { MAX_THUMBNAIL_IMAGES } from '@/constants/policy'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { Manga, MangaError } from '@/types/manga'
@@ -26,7 +26,7 @@ export async function GET(request: Request) {
   const uniqueIds = Array.from(new Set(ids))
 
   try {
-    const mangas = await getMangasFromMultiSources(uniqueIds, 0)
+    const mangas = await fetchMangasFromMultiSources(uniqueIds, 0)
 
     if (Object.keys(mangas).length === 0) {
       return new Response('Not Found', { status: 404 })
