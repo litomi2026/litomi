@@ -301,7 +301,9 @@ function CensorshipCreationBar() {
                     <span className="text-xs text-orange-500 mt-0.5">기본 검열 태그</span>
                   )}
                 </div>
-                {suggestion.value.endsWith(':') && <span className="text-xs text-zinc-500">접두사</span>}
+                {suggestion.value.endsWith(':') && (
+                  <span className="text-xs text-zinc-400 bg-zinc-700/50 px-1.5 py-0.5 rounded">접두사</span>
+                )}
               </button>
             ))}
           </div>
