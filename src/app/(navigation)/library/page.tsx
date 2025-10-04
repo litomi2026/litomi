@@ -89,7 +89,6 @@ export default async function LibraryPage() {
 
   return (
     <main className="flex-1">
-      <h1 className="sr-only">모든 서재</h1>
       <AllLibraryMangaView initialItems={libraryItems} />
     </main>
   )
