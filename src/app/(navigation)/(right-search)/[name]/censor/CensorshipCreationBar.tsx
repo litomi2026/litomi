@@ -256,7 +256,7 @@ function CensorshipCreationBar() {
       {/* Suggestions Dropdown */}
       <div
         aria-hidden={!showSuggestions}
-        className="absolute z-10 w-full mt-1 bg-zinc-800 border border-zinc-700 rounded-lg shadow-lg overflow-hidden transition
+        className="absolute z-10 w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg shadow-lg overflow-hidden transition
         aria-hidden:opacity-0 aria-hidden:pointer-events-none"
         ref={suggestionsRef}
       >
@@ -277,18 +277,22 @@ function CensorshipCreationBar() {
                 onMouseEnter={() => setSelectedIndex(index)}
                 type="button"
               >
-                <div className="flex flex-col flex-1">
-                  <span className="text-sm">
+                <div className="flex flex-col flex-1 text-sm">
+                  <span>
                     {suggestion.value.endsWith(':') ? (
                       <>
-                        <span className="text-brand-end font-medium">{suggestion.value}</span>
-                        <span className="text-zinc-400 ml-1">{suggestion.label.replace(':', '')}</span>
+                        <span>{renderHighlightedText(suggestion.value, currentWord.word)}</span>
+                        <span className="text-zinc-400 text-xs ml-1">
+                          {renderHighlightedText(suggestion.label.replace(':', ''), currentWord.word)}
+                        </span>
                       </>
                     ) : (
                       <>
-                        <span className="text-zinc-200">{suggestion.value}</span>
+                        <span>{renderHighlightedText(suggestion.value, currentWord.word)}</span>
                         {suggestion.label !== suggestion.value && (
-                          <span className="text-zinc-400 ml-1">({suggestion.label})</span>
+                          <span className="text-zinc-400 text-xs ml-1">
+                            ({renderHighlightedText(suggestion.label, currentWord.word)})
+                          </span>
                         )}
                       </>
                     )}
@@ -392,4 +396,30 @@ function detectTypeAndValue(text: string): { key: CensorshipKey; value: string }
     key: CensorshipKey.TAG,
     value: trimmed,
   }
+}
+
+function renderHighlightedText(text: string, searchTerm: string) {
+  if (!searchTerm) {
+    return text
+  }
+
+  const lowerText = text.toLowerCase()
+  const lowerSearchTerm = searchTerm.toLowerCase()
+  const index = lowerText.indexOf(lowerSearchTerm)
+
+  if (index === -1) {
+    return text
+  }
+
+  const beforeMatch = text.slice(0, index)
+  const matchedText = text.slice(index, index + searchTerm.length)
+  const afterMatch = text.slice(index + searchTerm.length)
+
+  return (
+    <>
+      {beforeMatch}
+      <span className="text-brand-end font-semibold">{matchedText}</span>
+      {afterMatch}
+    </>
+  )
 }
