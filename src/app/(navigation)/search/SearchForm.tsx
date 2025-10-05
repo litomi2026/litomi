@@ -1,20 +1,17 @@
 'use client'
 
 import { X } from 'lucide-react'
-import dynamic from 'next/dynamic'
 import { ReadonlyURLSearchParams, usePathname, useRouter } from 'next/navigation'
-import { FormEvent, memo, Suspense, useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react'
+import { FormEvent, memo, useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react'
 
 import IconSpinner from '@/components/icons/IconSpinner'
 import { MAX_SEARCH_QUERY_LENGTH } from '@/constants/policy'
 
 import { type SearchSuggestion } from './constants'
+import SuggestionDropdown from './SuggestionDropdown'
 import UpdateFromSearchParams from './UpdateFromSearchParams'
 import useSearchSuggestions from './useSearchSuggestions'
 import { getWordAtCursor, translateKoreanToEnglish } from './utils'
-
-// NOTE: 드롭다운은 사용자가 검색어를 입력할 때만 표시되므로 초기 bundle 크기를 줄이기 위해 dynamic import 사용
-const SearchSuggestionDropdown = dynamic(() => import('./SearchSuggestionDropdown'))
 
 type Props = {
   className?: string
@@ -28,14 +25,20 @@ function SearchForm({ className = '' }: Readonly<Props>) {
   const [keyword, setKeyword] = useState('')
   const [cursorPosition, setCursorPosition] = useState(0)
   const [isSearching, startSearching] = useTransition()
-  const [_, startClosing] = useTransition()
   const [showSuggestions, setShowSuggestions] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const suggestionsRef = useRef<HTMLDivElement>(null)
   const currentWordInfo = useMemo(() => getWordAtCursor(keyword, cursorPosition), [keyword, cursorPosition])
 
-  const { selectedIndex, setSelectedIndex, searchSuggestions, showHeader, resetSelection, navigateSelection } =
-    useSearchSuggestions({ keyword: currentWordInfo.word.replace(/^-/g, '') })
+  const {
+    selectedIndex,
+    setSelectedIndex,
+    searchSuggestions,
+    resetSelection,
+    navigateSelection,
+    isLoading,
+    isFetching,
+  } = useSearchSuggestions({ keyword: currentWordInfo.word.replace(/^-/g, '') })
 
   const selectSuggestion = useCallback(
     (suggestion: SearchSuggestion) => {
@@ -112,10 +115,10 @@ function SearchForm({ className = '' }: Readonly<Props>) {
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     if (!suggestionsRef.current?.contains(e.relatedTarget)) {
-      startClosing(() => {
+      setTimeout(() => {
         setShowSuggestions(false)
         resetSelection()
-      })
+      }, 300)
     }
   }
 
@@ -246,20 +249,17 @@ function SearchForm({ className = '' }: Readonly<Props>) {
           {isSearching ? <IconSpinner className="w-5 mx-1" /> : <span className="block min-w-7">검색</span>}
         </button>
       </form>
-      {showSuggestions && searchSuggestions.length > 0 && (
-        <Suspense>
-          <div ref={suggestionsRef}>
-            <SearchSuggestionDropdown
-              className="max-w-full sm:right-auto"
-              onMouseEnter={setSelectedIndex}
-              onSelect={selectSuggestion}
-              selectedIndex={selectedIndex}
-              showHeader={showHeader}
-              suggestions={searchSuggestions}
-            />
-          </div>
-        </Suspense>
-      )}
+      <SuggestionDropdown
+        dropdownRef={suggestionsRef}
+        isFetching={isFetching}
+        isLoading={isLoading}
+        onMouseEnter={setSelectedIndex}
+        onSelect={selectSuggestion}
+        searchTerm={currentWordInfo.word}
+        selectedIndex={selectedIndex}
+        showSuggestions={showSuggestions}
+        suggestions={searchSuggestions}
+      />
     </div>
   )
 }

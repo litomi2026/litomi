@@ -1,9 +1,10 @@
 'use client'
 
 import { useQueryClient } from '@tanstack/react-query'
-import { memo, useCallback, useEffect, useRef, useState } from 'react'
+import { memo, useCallback, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
+import SuggestionDropdown from '@/app/(navigation)/search/SuggestionDropdown'
 import IconInfo from '@/components/icons/IconInfo'
 import IconSpinner from '@/components/icons/IconSpinner'
 import IconX from '@/components/icons/IconX'
@@ -197,22 +198,6 @@ function CensorshipCreationBar() {
     }
   }
 
-  function handleSuggestionMouseDown(e: React.MouseEvent<HTMLButtonElement>, suggestion: CensorshipSuggestion) {
-    e.preventDefault()
-    handleSelectSuggestion(suggestion)
-  }
-
-  // NOTE: 선택된 곳으로 스크롤을 이동함
-  useEffect(() => {
-    if (selectedIndex >= 0 && suggestionsRef.current) {
-      const selectedElement = suggestionsRef.current.querySelector(`[data-index="${selectedIndex}"]`) as HTMLElement
-
-      if (selectedElement) {
-        selectedElement.scrollIntoView({ block: 'nearest' })
-      }
-    }
-  }, [selectedIndex])
-
   return (
     <div className="space-y-2 relative">
       <form className="relative" onSubmit={handleSubmit} ref={formRef}>
@@ -252,66 +237,20 @@ function CensorshipCreationBar() {
           </button>
         </div>
       </form>
-
-      {/* Suggestions Dropdown */}
-      <div
-        aria-hidden={!showSuggestions}
-        className="absolute z-10 w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg shadow-lg overflow-hidden transition
-        aria-hidden:opacity-0 aria-hidden:pointer-events-none"
-        ref={suggestionsRef}
-      >
-        <div className="max-h-64 overflow-y-auto relative">
-          {isLoading && suggestions.length === 0 && (
-            <div className="flex items-center justify-center py-8">
-              <IconSpinner className="w-5 text-zinc-400" />
-            </div>
-          )}
-          <div aria-busy={isFetching} className="transition aria-busy:opacity-60">
-            {suggestions.map((suggestion, index) => (
-              <button
-                aria-current={selectedIndex === index}
-                className="w-full px-4 py-2.5 text-left hover:bg-zinc-700/50 transition flex items-center justify-between aria-current:bg-zinc-700/70"
-                data-index={index}
-                key={suggestion.value}
-                onMouseDown={(e) => handleSuggestionMouseDown(e, suggestion)}
-                onMouseEnter={() => setSelectedIndex(index)}
-                type="button"
-              >
-                <div className="flex flex-col flex-1 text-sm">
-                  <span>
-                    {suggestion.value.endsWith(':') ? (
-                      <>
-                        <span>{renderHighlightedText(suggestion.value, currentWord.word)}</span>
-                        <span className="text-zinc-400 text-xs ml-1">
-                          {renderHighlightedText(suggestion.label.replace(':', ''), currentWord.word)}
-                        </span>
-                      </>
-                    ) : (
-                      <>
-                        <span>{renderHighlightedText(suggestion.value, currentWord.word)}</span>
-                        {suggestion.label !== suggestion.value && (
-                          <span className="text-zinc-400 text-xs ml-1">
-                            ({renderHighlightedText(suggestion.label, currentWord.word)})
-                          </span>
-                        )}
-                      </>
-                    )}
-                  </span>
-                  {BLIND_TAG_VALUES.includes(suggestion.value) && (
-                    <span className="text-xs text-orange-500 mt-0.5">기본 검열 태그</span>
-                  )}
-                </div>
-                {suggestion.value.endsWith(':') && (
-                  <span className="text-xs text-zinc-400 bg-zinc-700/50 px-1.5 py-0.5 rounded">접두사</span>
-                )}
-              </button>
-            ))}
-          </div>
-          {!isLoading && suggestions.length === 0 && debouncedWord && (
-            <div className="text-center py-4 text-zinc-500 text-sm">검색 결과가 없습니다</div>
-          )}
-        </div>
-      </div>
+      <SuggestionDropdown
+        dropdownRef={suggestionsRef}
+        isFetching={isFetching}
+        isLoading={isLoading}
+        onMouseEnter={setSelectedIndex}
+        onSelect={selectSuggestion}
+        renderRightContent={(value) =>
+          BLIND_TAG_VALUES.includes(value) && <span className="text-xs text-orange-500 mt-0.5">기본 검열 태그</span>
+        }
+        searchTerm={debouncedWord}
+        selectedIndex={selectedIndex}
+        showSuggestions={showSuggestions}
+        suggestions={suggestions}
+      />
 
       {/* Collapsible help section for mobile */}
       {showHelp ? (
@@ -398,30 +337,4 @@ function detectTypeAndValue(text: string): { key: CensorshipKey; value: string }
     key: CensorshipKey.TAG,
     value: trimmed,
   }
-}
-
-function renderHighlightedText(text: string, searchTerm: string) {
-  if (!searchTerm) {
-    return text
-  }
-
-  const lowerText = text.toLowerCase()
-  const lowerSearchTerm = searchTerm.toLowerCase()
-  const index = lowerText.indexOf(lowerSearchTerm)
-
-  if (index === -1) {
-    return text
-  }
-
-  const beforeMatch = text.slice(0, index)
-  const matchedText = text.slice(index, index + searchTerm.length)
-  const afterMatch = text.slice(index + searchTerm.length)
-
-  return (
-    <>
-      {beforeMatch}
-      <span className="text-brand-end font-semibold">{matchedText}</span>
-      {afterMatch}
-    </>
-  )
 }

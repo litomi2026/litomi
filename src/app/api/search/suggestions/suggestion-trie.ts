@@ -13,7 +13,7 @@ import tagTranslations from '@/translation/tag.json'
 import SuggestionTrie, { SuggestionItem } from './trie'
 
 // Language and type options
-const TYPE_OPTIONS = ['manga', 'doujinshi', 'artist cg', 'game cg', 'western', 'image set', 'cosplay', 'asian porn']
+const TYPE_OPTIONS = ['manga', 'doujinshi', 'artist_cg', 'game_cg', 'western', 'image_set', 'cosplay', 'asian_porn']
 
 // Initialize the Trie with all suggestions
 export const suggestionTrie = new SuggestionTrie()
