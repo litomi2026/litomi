@@ -22,6 +22,7 @@
 - 태그 한글 번역
 - 북마크
 - 감상 기록
+- 인기 검색어
 - 키워드 알림
 - 웹 푸시 알림
 - 키워드로 작품 검열
@@ -34,9 +35,10 @@
 
 ## 개발 환경
 
-- macOS 15.3
+- macOS 15.6
 - Bun 1.2
 - Docker 28.1
+- PostgreSQL(psql) 17.5
 
 ## 시작하기
 
@@ -44,6 +46,12 @@
 
 ```bash
 bun i
+```
+
+환경 변수 설정하기
+
+```bash
+cp -i .env.template .env.development
 ```
 
 개발 서버 실행하기

@@ -148,7 +148,7 @@ async function crawlHiyobi(): Promise<Manga[]> {
     for (let page = 1; page <= CONFIG.HIYOBI.maxPages; page++) {
       log.info(`Crawling Hiyobi page ${page}/${CONFIG.HIYOBI.maxPages}`)
 
-      const mangas = await hiyobiClient.fetchMangas(page)
+      const mangas = await hiyobiClient.fetchMangas({ page })
       results.push(...mangas)
 
       log.success(`Fetched ${mangas.length} manga from Hiyobi page ${page}`)

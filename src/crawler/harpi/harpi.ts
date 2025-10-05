@@ -40,7 +40,8 @@ type HarpiManga = {
   meanRating: number
   countRating: number
   date: string
-  imageUrl: string[]
+  imageUrl?: string[]
+  imageCount?: number
   isUserDirectUpload: boolean
   uploader: string
   authorsLikesId: string[]
@@ -239,9 +240,10 @@ class HarpiClient {
 
   private convertHarpiToManga(harpiManga: HarpiManga): Manga {
     const locale = 'ko' // TODO: Get from user preferences or context
+    const mangaId = parseInt(harpiManga.parseKey, 10) || 0
 
     return {
-      id: parseInt(harpiManga.parseKey, 10) || 0,
+      id: mangaId,
       harpiId: harpiManga.id,
       title: harpiManga.korTitle || harpiManga.engTitle || harpiManga.title,
       artists: translateArtistList(harpiManga.authors, locale),
@@ -253,10 +255,14 @@ class HarpiClient {
       type: harpiManga.type,
       languages: translateLanguageList(['korean'], locale),
       date: new Date(harpiManga.date).toISOString(),
-      images: this.sortImageURLs(harpiManga.imageUrl).map((url) => `/start/${url}`),
+      images: harpiManga.imageUrl
+        ? this.sortImageURLs(harpiManga.imageUrl).map((url) => `/start/${url}`)
+        : Array(harpiManga.imageCount)
+            .fill('')
+            .map((_, index) => `/start/${mangaId}/${mangaId}_${index}.avif`),
       origin: 'https://soujpa.in',
       viewCount: harpiManga.views,
-      count: harpiManga.imageUrl.length,
+      count: harpiManga.imageCount,
       rating: harpiManga.meanRating,
       ratingCount: harpiManga.countRating,
       bookmarkCount: harpiManga.bookmarks,

@@ -22,7 +22,7 @@ export default function useSearchSuggestions({ keyword, limit = MAX_SEARCH_SUGGE
     delay: DEBOUNCE_MS,
   })
 
-  const { data: suggestions = [] } = useSearchSuggestionsQuery({ query: debouncedKeyword })
+  const { data: suggestions = [], isLoading, isFetching } = useSearchSuggestionsQuery({ query: debouncedKeyword })
 
   const searchSuggestions = useMemo(() => {
     if (debouncedKeyword === '') {
@@ -63,5 +63,7 @@ export default function useSearchSuggestions({ keyword, limit = MAX_SEARCH_SUGGE
     showHeader: debouncedKeyword === '',
     resetSelection,
     navigateSelection,
+    isLoading,
+    isFetching,
   }
 }
