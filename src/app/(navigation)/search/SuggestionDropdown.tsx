@@ -64,7 +64,7 @@ export default function SuggestionDropdown<T extends SuggestionItem = Suggestion
           {suggestions.map((suggestion, index) => (
             <button
               aria-current={selectedIndex === index}
-              className="w-full px-4 py-2.5 text-left hover:bg-zinc-700/50 transition flex items-center justify-between aria-current:bg-zinc-700/70"
+              className="w-full p-4 py-2.5 text-left hover:bg-zinc-700/50 transition flex items-center justify-between aria-current:bg-zinc-700/70"
               data-index={index}
               key={suggestion.value}
               onClick={() => onSelect(suggestion)}

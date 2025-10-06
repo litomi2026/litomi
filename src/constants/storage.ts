@@ -12,6 +12,8 @@ export enum LocalStorageKey {
   CONTROLLER_PAGE_VIEW = 'controller/page-view',
   CONTROLLER_IMAGE_WIDTH = 'controller/image-width',
   CONTROLLER_READING_DIRECTION = 'controller/reading-direction',
+  RECENT_SEARCHES = 'recent-searches',
+  RECENT_SEARCHES_ENABLED = 'recent-searches-enabled',
 }
 
 export enum SearchParamKey {
