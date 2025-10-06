@@ -65,6 +65,7 @@
   "female:tall_girl": { "en": "tall girl", "ko": "키 큰 소녀" },
   "female:virginity": { "en": "virginity", "ko": "처녀성", "ja": "処女", "zh-CN": "处女" },
   "female:wolf_girl": { "en": "wolf girl", "ko": "늑대 소녀", "ja": "狼少女", "zh-CN": "狼女孩", "zh-TW": "狼女孩" },
+  "female:yuri": { "en": "girls love", "ko": "백합", "ja": "百合", "zh-CN": "百合", "zh-TW": "百合" },
   "male:bbm": { "en": "bbm", "ko": "뚱뚱남", "ja": "デブ", "zh-CN": "胖子", "zh-TW": "胖子" },
   "male:bird_boy": { "en": "bird boy", "ko": "새 소년", "ja": "鳥少年", "zh-CN": "鸟男孩" },
   "male:brother": { "en": "brother", "ko": "남동생/오빠/형", "ja": "弟", "zh-CN": "弟弟", "zh-TW": "弟弟" },
@@ -97,5 +98,6 @@
   "male:tomgirl": { "en": "tomgirl", "ko": "보추" },
   "male:virginity": { "en": "virginity", "ko": "동정", "ja": "処男", "zh-CN": "处男" },
   "male:wolf_boy": { "en": "wolf boy", "ko": "늑대 소년" },
+  "male:yaoi": { "en": "boys love", "ko": "BL", "ja": "やおい", "zh-CN": "耽美", "zh-TW": "耽美" },
   "mixed:oyakodon": { "en": "oyakodon", "ko": "부모자녀덮밥" }
 }

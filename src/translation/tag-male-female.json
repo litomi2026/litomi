@@ -721,8 +721,6 @@
   "wrestling": { "en": "wrestling", "ko": "레슬링" },
   "x-ray": { "en": "x-ray", "ko": "투시" },
   "yandere": { "en": "yandere", "ko": "얀데레" },
-  "yaoi": { "en": "boys love", "ko": "BL", "ja": "やおい", "zh-CN": "耽美", "zh-TW": "耽美" },
-  "yuri": { "en": "girls love", "ko": "백합", "ja": "百合", "zh-CN": "百合", "zh-TW": "百合" },
   "zebra": { "en": "zebra", "ko": "얼룩말" },
   "zombie": { "en": "zombie", "ko": "좀비" }
 }
