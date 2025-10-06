@@ -1,6 +1,6 @@
 'use client'
 
-import { memo, useCallback, useEffect, useRef } from 'react'
+import { memo, useCallback, useEffect, useRef, useState } from 'react'
 
 import { MangaIdSearchParam } from '@/app/manga/[id]/common'
 import { PageView } from '@/components/ImageViewer/store/pageView'
@@ -23,6 +23,9 @@ const IMAGE_FETCH_PRIORITY_THRESHOLD = 3
 const SCROLL_THRESHOLD = 1
 const SCROLL_THROTTLE = 500
 const SCREEN_EDGE_THRESHOLD = 40 // 브라우저 제스처 감지를 위한 화면 가장자리 임계값 (px)
+const ZOOM_SPEED = 0.002
+const MAX_ZOOM = 10
+const DEFAULT_ZOOM = 1
 
 const screenFitStyle = {
   width:
@@ -56,6 +59,8 @@ function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection }: 
   const setBrightness = useBrightnessStore((state) => state.setBrightness)
   const setImageIndex = useImageIndexStore((state) => state.setImageIndex)
   const currentIndex = useImageIndexStore((state) => state.imageIndex)
+  const [zoomLevel, setZoomLevel] = useState(DEFAULT_ZOOM)
+  const [zoomOrigin, setZoomOrigin] = useState({ x: '50%', y: '50%' })
   const pointerStartRef = useRef<{ x: number; y: number } | null>(null)
   const initialBrightnessRef = useRef(100)
   const swipeDetectedRef = useRef(false)
@@ -183,10 +188,12 @@ function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection }: 
     [getTouchOrientation, nextPage, onClick, prevPage],
   )
 
-  // NOTE: 마우스 휠 또는 터치패드 스와이프 시 페이지를 전환함 (ctrl 키 누르면 전환 안 됨)
+  // NOTE: 마우스 휠 또는 터치패드 스와이프 시 페이지를 전환함
   useEffect(() => {
-    const handleWheel = ({ deltaX, deltaY, ctrlKey }: WheelEvent) => {
-      if (ctrlKey || throttleRef.current) return
+    function handleWheel({ deltaX, deltaY, ctrlKey, metaKey }: WheelEvent) {
+      if (ctrlKey || metaKey || throttleRef.current) {
+        return
+      }
 
       throttleRef.current = true
       setTimeout(() => {
@@ -229,6 +236,54 @@ function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection }: 
     return () => window.removeEventListener('wheel', handleWheel)
   }, [nextPage, prevPage])
 
+  // NOTE: metakey + scroll 시 이미지 확대/축소함
+  useEffect(() => {
+    function handleWheel(event: WheelEvent) {
+      const { deltaY, metaKey, clientX, clientY } = event
+
+      if (!metaKey) {
+        return
+      }
+
+      const ul = ulRef.current
+      if (!ul) return
+
+      event.preventDefault()
+      const rect = ul.getBoundingClientRect()
+      const oldScrollLeft = ul.scrollLeft
+      const oldScrollTop = ul.scrollTop
+      const mouseX = clientX - rect.left
+      const mouseY = clientY - rect.top
+      const contentX = (mouseX + oldScrollLeft) / zoomLevel
+      const contentY = (mouseY + oldScrollTop) / zoomLevel
+      const originX = (mouseX / rect.width) * 100
+      const originY = (mouseY / rect.height) * 100
+      setZoomOrigin({ x: `${originX.toFixed(2)}%`, y: `${originY.toFixed(2)}%` })
+
+      const zoomDelta = -deltaY * ZOOM_SPEED
+      const newZoom = zoomLevel * (1 + zoomDelta)
+      const clampedZoom = Math.min(Math.max(1, newZoom), MAX_ZOOM)
+
+      if (clampedZoom === zoomLevel) {
+        return
+      }
+
+      const newScrollLeft = contentX * clampedZoom - mouseX
+      const newScrollTop = contentY * clampedZoom - mouseY
+      setZoomLevel(clampedZoom)
+
+      requestAnimationFrame(() => {
+        if (ul) {
+          ul.scrollLeft = Math.max(0, newScrollLeft)
+          ul.scrollTop = Math.max(0, newScrollTop)
+        }
+      })
+    }
+
+    window.addEventListener('wheel', handleWheel, { passive: false })
+    return () => window.removeEventListener('wheel', handleWheel)
+  }, [zoomLevel])
+
   // NOTE: 이미지 스크롤 가능할 때 페이지 변경 시 스크롤 위치를 자연스럽게 설정함
   useEffect(() => {
     const ul = ulRef.current
@@ -265,6 +320,25 @@ function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection }: 
     }, 500)
   }, [currentIndex])
 
+  // NOTE: Cmd + 0 키로 줌 리셋
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.metaKey && e.key === '0') {
+        setZoomLevel(DEFAULT_ZOOM)
+        setZoomOrigin({ x: '50%', y: '50%' })
+
+        const ul = ulRef.current
+        if (ul) {
+          ul.scrollLeft = 0
+          ul.scrollTop = 0
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
   // NOTE: page 파라미터가 있으면 초기 페이지를 변경함. (1번만 실행됨)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -280,13 +354,17 @@ function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection }: 
 
   return (
     <ul
-      className={`h-dvh touch-pinch-zoom select-none overscroll-none [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:pb-safe [&_img]:border [&_img]:border-background ${screenFitStyle[screenFit]}`}
+      className={`h-dvh touch-pinch-zoom select-none overscroll-none transition duration-100 ease-out [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:pb-safe [&_img]:border [&_img]:border-background ${screenFitStyle[screenFit]}`}
       onClick={handleClick}
       onPointerCancel={handlePointerCancel}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       ref={ulRef}
+      style={{
+        transform: `scale(${zoomLevel.toFixed(2)})`,
+        transformOrigin: `${zoomOrigin.x} ${zoomOrigin.y}`,
+      }}
     >
       {images.length === 0 ? (
         <li className="flex items-center justify-center h-full animate-fade-in">
