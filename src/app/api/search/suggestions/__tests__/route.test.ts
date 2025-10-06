@@ -20,7 +20,7 @@ describe('GET /api/search/suggestions', () => {
 
         expect(response.status).toBe(200)
         expect(data).toBeArray()
-        expect(data[0]).toEqual({ label: '언어:', value: 'language:' })
+        expect(data[0]).toEqual({ label: '언어', value: 'language:' })
         expect(data.every((item) => item.value.includes('langu'))).toBe(true)
         expect(data.some((item) => item.value === 'language:korean' && item.label === '언어:한국어')).toBe(true)
         expect(data.some((item) => item.value === 'language:english' && item.label === '언어:영어')).toBe(true)
@@ -33,7 +33,7 @@ describe('GET /api/search/suggestions', () => {
 
         expect(response.status).toBe(200)
         expect(data).toBeArray()
-        expect(data[0]).toEqual({ label: '언어:', value: 'language:' })
+        expect(data[0]).toEqual({ label: '언어', value: 'language:' })
         expect(data.every((item) => item.value.includes('language'))).toBe(true)
         expect(data.some((item) => item.value === 'language:korean' && item.label === '언어:한국어')).toBe(true)
         expect(data.some((item) => item.value === 'language:english' && item.label === '언어:영어')).toBe(true)
@@ -89,7 +89,7 @@ describe('GET /api/search/suggestions', () => {
 
         expect(response.status).toBe(200)
         expect(data).toBeArray()
-        expect(data[0]).toEqual({ label: '종류:', value: 'type:' })
+        expect(data[0]).toEqual({ label: '종류', value: 'type:' })
       })
 
       test('"type:manga" 값을 검색했을 때 값을 반환하지 않는다', async () => {
@@ -131,7 +131,7 @@ describe('GET /api/search/suggestions', () => {
         const data = (await response.json()) as GETSearchSuggestionsResponse
 
         expect(response.status).toBe(200)
-        expect(data.some((item) => item.value === 'female:' && item.label === '여:')).toBe(true)
+        expect(data.some((item) => item.value === 'female:' && item.label === '여')).toBe(true)
         expect(data.some((item) => item.value.startsWith('female:'))).toBe(true)
       })
 
@@ -276,8 +276,8 @@ describe('GET /api/search/suggestions', () => {
           const data = (await response.json()) as GETSearchSuggestionsResponse
 
           expect(response.status).toBe(200)
-          expect(data.some((item) => item.value === 'series:' && item.label === '시리즈:')).toBe(true)
-          expect(data.every((item) => item.value.startsWith('series:') && item.label.startsWith('시리즈:'))).toBe(true)
+          expect(data.some((item) => item.value === 'series:' && item.label === '시리즈')).toBe(true)
+          expect(data.every((item) => item.value.startsWith('series:') && item.label.startsWith('시리즈'))).toBe(true)
         })
 
         test('"시리즈" 값을 검색했을 때 series 카테고리를 반환한다', async () => {
@@ -286,8 +286,8 @@ describe('GET /api/search/suggestions', () => {
           const data = (await response.json()) as GETSearchSuggestionsResponse
 
           expect(response.status).toBe(200)
-          expect(data.some((item) => item.value === 'series:' && item.label === '시리즈:')).toBe(true)
-          expect(data.every((item) => item.value.startsWith('series:') && item.label.startsWith('시리즈:'))).toBe(true)
+          expect(data.some((item) => item.value === 'series:' && item.label === '시리즈')).toBe(true)
+          expect(data.every((item) => item.value.startsWith('series:') && item.label.startsWith('시리즈'))).toBe(true)
         })
 
         test('"series:" 값을 검색했을 때 시리즈 목록을 반환한다', async () => {
@@ -297,7 +297,7 @@ describe('GET /api/search/suggestions', () => {
 
           expect(response.status).toBe(200)
           expect(data.length).toBeGreaterThan(0)
-          expect(data.every((item) => item.value.startsWith('series:') && item.label.startsWith('시리즈:'))).toBe(true)
+          expect(data.every((item) => item.value.startsWith('series:') && item.label.startsWith('시리즈'))).toBe(true)
         })
       })
 
@@ -350,7 +350,7 @@ describe('GET /api/search/suggestions', () => {
 
         expect(response.status).toBe(200)
         expect(data).toBeArray()
-        expect(data[0]).toEqual({ label: 'language:', value: 'language:' })
+        expect(data[0]).toEqual({ label: 'language', value: 'language:' })
         expect(data.some((item) => item.value === 'language:korean' && item.label === 'language:Korean')).toBe(true)
       })
 
@@ -371,7 +371,7 @@ describe('GET /api/search/suggestions', () => {
 
         expect(response.status).toBe(200)
         expect(data).toBeArray()
-        expect(data[0]).toEqual({ label: '女:', value: 'female:' })
+        expect(data[0]).toEqual({ label: '女', value: 'female:' })
       })
 
       test('일본어 로케일로 검색 시 일본어 라벨을 반환한다', async () => {
@@ -391,7 +391,7 @@ describe('GET /api/search/suggestions', () => {
 
         expect(response.status).toBe(200)
         expect(data).toBeArray()
-        expect(data[0]).toEqual({ label: '男:', value: 'male:' })
+        expect(data[0]).toEqual({ label: '男', value: 'male:' })
       })
     })
   })
