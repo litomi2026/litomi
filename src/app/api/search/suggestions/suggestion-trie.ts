@@ -67,16 +67,16 @@ function getLabels(
   Object.entries(tagCategoryTranslations).forEach(([category, translations]) => {
     const categoryValue = `${category}:`
     const labels: SuggestionItem['labels'] = {
-      ko: `${translations.ko}:`,
-      en: `${translations.en}:`,
-      ja: translations.ja ? `${translations.ja}:` : undefined,
-      'zh-CN': translations['zh-CN'] ? `${translations['zh-CN']}:` : undefined,
-      'zh-TW': translations['zh-TW'] ? `${translations['zh-TW']}:` : undefined,
+      ko: `${translations.ko}`,
+      en: `${translations.en}`,
+      ja: translations.ja ? `${translations.ja}` : undefined,
+      'zh-CN': translations['zh-CN'] ? `${translations['zh-CN']}` : undefined,
+      'zh-TW': translations['zh-TW'] ? `${translations['zh-TW']}` : undefined,
     }
 
     // Insert for both the category name and its translations
     suggestionTrie.insert(category, { value: categoryValue, labels })
-    suggestionTrie.insert(categoryValue, { value: categoryValue, labels }) // Also insert with colon
+    suggestionTrie.insert(categoryValue, { value: categoryValue, labels })
     Object.values(translations).forEach((translation) => {
       if (typeof translation === 'string') {
         suggestionTrie.insert(translation.toLowerCase(), { value: categoryValue, labels })
@@ -94,11 +94,11 @@ function getLabels(
   // Add language suggestions
   suggestionTrie.insert('language', {
     value: 'language:',
-    labels: { ko: '언어:', en: 'language:' },
+    labels: { ko: '언어', en: 'language' },
   })
   suggestionTrie.insert('언어', {
     value: 'language:',
-    labels: { ko: '언어:', en: 'language:' },
+    labels: { ko: '언어', en: 'language' },
   })
 
   getAllLanguagesWithLabels('ko').forEach(({ value, label: koLabel }) => {
@@ -124,11 +124,11 @@ function getLabels(
   // Add type suggestions
   suggestionTrie.insert('type', {
     value: 'type:',
-    labels: { ko: '종류:', en: 'type:' },
+    labels: { ko: '종류', en: 'type' },
   })
   suggestionTrie.insert('종류', {
     value: 'type:',
-    labels: { ko: '종류:', en: 'type:' },
+    labels: { ko: '종류', en: 'type' },
   })
 
   TYPE_OPTIONS.forEach((type) => {
@@ -233,21 +233,21 @@ function getLabels(
   suggestionTrie.insert('series', {
     value: 'series:',
     labels: {
-      ko: '시리즈:',
-      en: 'series:',
-      ja: 'シリーズ:',
-      'zh-CN': '系列:',
-      'zh-TW': '系列:',
+      ko: '시리즈',
+      en: 'series',
+      ja: 'シリーズ',
+      'zh-CN': '系列',
+      'zh-TW': '系列',
     },
   })
   suggestionTrie.insert('시리즈', {
     value: 'series:',
     labels: {
-      ko: '시리즈:',
-      en: 'series:',
-      ja: 'シリーズ:',
-      'zh-CN': '系列:',
-      'zh-TW': '系列:',
+      ko: '시리즈',
+      en: 'series',
+      ja: 'シリーズ',
+      'zh-CN': '系列',
+      'zh-TW': '系列',
     },
   })
 
@@ -278,21 +278,21 @@ function getLabels(
   suggestionTrie.insert('character', {
     value: 'character:',
     labels: {
-      ko: '캐릭터:',
-      en: 'character:',
-      ja: 'キャラクター:',
-      'zh-CN': '角色:',
-      'zh-TW': '角色:',
+      ko: '캐릭터',
+      en: 'character',
+      ja: 'キャラクター',
+      'zh-CN': '角色',
+      'zh-TW': '角色',
     },
   })
   suggestionTrie.insert('캐릭터', {
     value: 'character:',
     labels: {
-      ko: '캐릭터:',
-      en: 'character:',
-      ja: 'キャラクター:',
-      'zh-CN': '角色:',
-      'zh-TW': '角色:',
+      ko: '캐릭터',
+      en: 'character',
+      ja: 'キャラクター',
+      'zh-CN': '角色',
+      'zh-TW': '角色',
     },
   })
 
@@ -323,21 +323,21 @@ function getLabels(
   suggestionTrie.insert('artist', {
     value: 'artist:',
     labels: {
-      ko: '작가:',
-      en: 'artist:',
-      ja: 'アーティスト:',
-      'zh-CN': '艺术家:',
-      'zh-TW': '藝術家:',
+      ko: '작가',
+      en: 'artist',
+      ja: 'アーティスト',
+      'zh-CN': '艺术家',
+      'zh-TW': '藝術家',
     },
   })
   suggestionTrie.insert('작가', {
     value: 'artist:',
     labels: {
-      ko: '작가:',
-      en: 'artist:',
-      ja: 'アーティスト:',
-      'zh-CN': '艺术家:',
-      'zh-TW': '藝術家:',
+      ko: '작가',
+      en: 'artist',
+      ja: 'アーティスト',
+      'zh-CN': '艺术家',
+      'zh-TW': '藝術家',
     },
   })
 

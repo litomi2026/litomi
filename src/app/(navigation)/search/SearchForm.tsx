@@ -1,15 +1,17 @@
 'use client'
 
-import { X } from 'lucide-react'
+import { Clock, X, X as XIcon } from 'lucide-react'
 import { ReadonlyURLSearchParams, usePathname, useRouter } from 'next/navigation'
 import { FormEvent, memo, useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react'
 
 import IconSpinner from '@/components/icons/IconSpinner'
+import Toggle from '@/components/ui/Toggle'
 import { MAX_SEARCH_QUERY_LENGTH } from '@/constants/policy'
 
 import { type SearchSuggestion } from './constants'
 import SuggestionDropdown from './SuggestionDropdown'
 import UpdateFromSearchParams from './UpdateFromSearchParams'
+import useRecentSearches from './useRecentSearches'
 import useSearchSuggestions from './useSearchSuggestions'
 import { getWordAtCursor, translateKoreanToEnglish } from './utils'
 
@@ -29,16 +31,10 @@ function SearchForm({ className = '' }: Readonly<Props>) {
   const inputRef = useRef<HTMLInputElement>(null)
   const suggestionsRef = useRef<HTMLDivElement>(null)
   const currentWordInfo = useMemo(() => getWordAtCursor(keyword, cursorPosition), [keyword, cursorPosition])
+  const { recentSearches, isEnabled, saveRecentSearch, removeRecentSearch, toggleEnabled } = useRecentSearches()
 
-  const {
-    selectedIndex,
-    setSelectedIndex,
-    searchSuggestions,
-    resetSelection,
-    navigateSelection,
-    isLoading,
-    isFetching,
-  } = useSearchSuggestions({ keyword: currentWordInfo.word.replace(/^-/g, '') })
+  const { selectedIndex, searchSuggestions, resetSelection, navigateSelection, isLoading, isFetching } =
+    useSearchSuggestions({ keyword: currentWordInfo.word.replace(/^-/g, '') })
 
   const selectSuggestion = useCallback(
     (suggestion: SearchSuggestion) => {
@@ -139,7 +135,9 @@ function SearchForm({ className = '' }: Readonly<Props>) {
     if (keyword.trim()) {
       const convertedQuery = keyword.trim()
       const translatedKeyword = translateKoreanToEnglish(convertedQuery)
-      params.set('query', translatedKeyword || convertedQuery)
+      const finalQuery = translatedKeyword || convertedQuery
+      params.set('query', finalQuery)
+      saveRecentSearch(finalQuery)
     } else {
       params.delete('query')
     }
@@ -251,10 +249,69 @@ function SearchForm({ className = '' }: Readonly<Props>) {
       </form>
       <SuggestionDropdown
         dropdownRef={suggestionsRef}
+        header={
+          keyword === '' && (
+            <div className="border-b border-zinc-800">
+              <div className="flex items-center justify-between px-4 py-2">
+                <div className="flex items-center gap-2 text-xs text-zinc-400">
+                  <Clock className="size-3" />
+                  <span>최근 검색어</span>
+                </div>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <span className="text-xs text-zinc-500">자동 저장</span>
+                  <Toggle
+                    aria-label="최근 검색 자동 저장"
+                    checked={isEnabled}
+                    className="w-10 peer-checked:bg-brand-end/80"
+                    onToggle={toggleEnabled}
+                  />
+                </label>
+              </div>
+              {isEnabled && recentSearches.length === 0 && (
+                <div className="p-2.5 text-center text-sm text-zinc-500">최근 검색어가 여기에 표시됩니다</div>
+              )}
+              {!isEnabled && (
+                <div className="p-2.5 text-center text-sm text-zinc-500">최근 검색 저장이 비활성화되어 있습니다</div>
+              )}
+              {isEnabled &&
+                recentSearches.map((search) => (
+                  <div
+                    className="w-full flex items-center hover:bg-zinc-700/50 transition group"
+                    key={search.timestamp}
+                  >
+                    <button
+                      className="flex-1 p-4 py-2.5 text-left text-sm"
+                      onClick={() => {
+                        setKeyword(search.query)
+                        setCursorPosition(search.query.length)
+                        setShowSuggestions(false)
+                        inputRef.current?.focus()
+                      }}
+                      type="button"
+                    >
+                      {search.query}
+                    </button>
+                    <button
+                      aria-label={`${search.query} 삭제`}
+                      className="opacity-0 group-hover:opacity-100 transition p-3 text-zinc-500 hover:text-red-400"
+                      onClick={() => removeRecentSearch(search.query)}
+                      type="button"
+                    >
+                      <XIcon className="size-3" />
+                    </button>
+                  </div>
+                ))}
+            </div>
+          )
+        }
         isFetching={isFetching}
         isLoading={isLoading}
-        onMouseEnter={setSelectedIndex}
         onSelect={selectSuggestion}
+        renderRightContent={({ value }) =>
+          value.endsWith(':') && (
+            <span className="text-xs text-zinc-400 bg-zinc-700/50 px-1.5 py-0.5 rounded">접두사</span>
+          )
+        }
         searchTerm={currentWordInfo.word}
         selectedIndex={selectedIndex}
         showSuggestions={showSuggestions}
