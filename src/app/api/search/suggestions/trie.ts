@@ -55,21 +55,8 @@ export default class SuggestionTrie {
     // Deduplicate suggestions by value
     const seen = new Set<string>()
     const uniqueSuggestions: SuggestionItem[] = []
-    let exactCategoryMatch: SuggestionItem | null = null
 
     for (const suggestion of node.suggestions) {
-      // Handle exact matches
-      if (suggestion.value.toLowerCase() === lowerQuery) {
-        // If it's a category (ends with ":"), save it separately to put first
-        if (suggestion.value.endsWith(':')) {
-          exactCategoryMatch = suggestion
-          continue
-        } else {
-          // Skip non-category exact matches
-          continue
-        }
-      }
-
       if (!seen.has(suggestion.value)) {
         seen.add(suggestion.value)
         uniqueSuggestions.push(suggestion)
@@ -96,18 +83,10 @@ export default class SuggestionTrie {
       return a.value.localeCompare(b.value)
     })
 
-    // If we have an exact category match, put it first
-    if (exactCategoryMatch) {
-      uniqueSuggestions.unshift(exactCategoryMatch)
-    }
-
     // Map to the response format with locale-specific labels
-    return uniqueSuggestions
-      .filter((item) => item.value !== query)
-      .slice(0, limit)
-      .map((item) => ({
-        value: item.value,
-        label: item.labels[locale as keyof typeof item.labels] || item.labels.en || item.value,
-      }))
+    return uniqueSuggestions.slice(0, limit).map((item) => ({
+      value: item.value,
+      label: item.labels[locale as keyof typeof item.labels] || item.labels.en || item.value,
+    }))
   }
 }

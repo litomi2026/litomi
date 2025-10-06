@@ -23,12 +23,12 @@ export function createErrorManga({ error }: { error: unknown }): Manga {
 
 export const DEFAULT_SUGGESTIONS = [
   { value: 'language:', label: '언어' },
-  { value: 'artist:', label: '작가:' },
-  { value: 'group:', label: '그룹:' },
-  { value: 'series:', label: '시리즈:' },
-  { value: 'character:', label: '캐릭터:' },
-  { value: 'female:', label: '여성:' },
-  { value: 'male:', label: '남성:' },
-  { value: 'mixed:', label: '혼합:' },
-  { value: 'other:', label: '기타:' },
+  { value: 'artist:', label: '작가' },
+  { value: 'group:', label: '그룹' },
+  { value: 'series:', label: '시리즈' },
+  { value: 'character:', label: '캐릭터' },
+  { value: 'female:', label: '여' },
+  { value: 'male:', label: '남' },
+  { value: 'mixed:', label: '혼합' },
+  { value: 'other:', label: '기타' },
 ]
