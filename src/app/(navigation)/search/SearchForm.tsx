@@ -253,8 +253,12 @@ function SearchForm({ className = '' }: Readonly<Props>) {
         dropdownRef={suggestionsRef}
         isFetching={isFetching}
         isLoading={isLoading}
-        onMouseEnter={setSelectedIndex}
         onSelect={selectSuggestion}
+        renderRightContent={({ value }) =>
+          value.endsWith(':') && (
+            <span className="text-xs text-zinc-400 bg-zinc-700/50 px-1.5 py-0.5 rounded">접두사</span>
+          )
+        }
         searchTerm={currentWordInfo.word}
         selectedIndex={selectedIndex}
         showSuggestions={showSuggestions}

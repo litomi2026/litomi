@@ -241,18 +241,19 @@ function CensorshipCreationBar() {
         dropdownRef={suggestionsRef}
         isFetching={isFetching}
         isLoading={isLoading}
-        onMouseEnter={setSelectedIndex}
-        onSelect={selectSuggestion}
-        renderRightContent={(value) =>
-          BLIND_TAG_VALUES.includes(value) && <span className="text-xs text-orange-500 mt-0.5">기본 검열 태그</span>
+        onSelect={handleSelectSuggestion}
+        renderRightContent={({ value }) =>
+          value.endsWith(':') ? (
+            <span className="text-xs text-zinc-400 bg-zinc-700/50 px-1.5 py-0.5 rounded">접두사</span>
+          ) : BLIND_TAG_VALUES.includes(value) ? (
+            <span className="text-xs text-orange-500 mt-0.5">기본 검열 태그</span>
+          ) : null
         }
         searchTerm={debouncedWord}
         selectedIndex={selectedIndex}
         showSuggestions={showSuggestions}
         suggestions={suggestions}
       />
-
-      {/* Collapsible help section for mobile */}
       {showHelp ? (
         <div className={`overflow-hidden`}>
           <div className="bg-zinc-800/50 rounded-lg border border-zinc-700 p-3 text-sm space-y-2">

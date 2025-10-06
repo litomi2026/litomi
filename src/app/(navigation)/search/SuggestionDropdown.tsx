@@ -5,10 +5,12 @@ import IconSpinner from '@/components/icons/IconSpinner'
 export type SuggestionItem = {
   value: string
   label: string
+  icon?: ReactNode
 }
 
 type Props<T extends SuggestionItem = SuggestionItem> = {
   className?: string
+  header?: ReactNode
   showSuggestions: boolean
   suggestions: T[]
   selectedIndex: number
@@ -16,13 +18,13 @@ type Props<T extends SuggestionItem = SuggestionItem> = {
   isFetching?: boolean
   searchTerm?: string
   onSelect: (suggestion: T) => void
-  onMouseEnter: (index: number) => void
-  renderRightContent?: (value: string) => ReactNode
+  renderRightContent?: (suggestion: T) => ReactNode
   dropdownRef?: RefObject<HTMLDivElement | null>
 }
 
 export default function SuggestionDropdown<T extends SuggestionItem = SuggestionItem>({
   showSuggestions,
+  header,
   className,
   suggestions,
   selectedIndex,
@@ -30,7 +32,6 @@ export default function SuggestionDropdown<T extends SuggestionItem = Suggestion
   isFetching,
   searchTerm = '',
   onSelect,
-  onMouseEnter,
   renderRightContent,
   dropdownRef,
 }: Props<T>) {
@@ -53,6 +54,7 @@ export default function SuggestionDropdown<T extends SuggestionItem = Suggestion
       ref={dropdownRef}
     >
       <div className="max-h-64 overflow-y-auto relative">
+        {header}
         {isLoading && suggestions.length === 0 && (
           <div className="flex items-center justify-center py-8">
             <IconSpinner className="w-5 text-zinc-400" />
@@ -66,32 +68,25 @@ export default function SuggestionDropdown<T extends SuggestionItem = Suggestion
               data-index={index}
               key={suggestion.value}
               onClick={() => onSelect(suggestion)}
-              onMouseEnter={() => onMouseEnter(index)}
               type="button"
             >
-              <div className="flex flex-col flex-1 text-sm">
-                <span>
-                  {suggestion.value.endsWith(':') ? (
-                    <>
-                      <span>{renderHighlightedText(suggestion.value, searchTerm)}</span>
-                      <span className="text-zinc-400 text-xs ml-1">
-                        {renderHighlightedText(suggestion.label.replace(':', ''), searchTerm)}
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <span>{renderHighlightedText(suggestion.value, searchTerm)}</span>
-                      {suggestion.label !== suggestion.value && (
-                        <span className="text-zinc-400 text-xs ml-1">({suggestion.label})</span>
-                      )}
-                    </>
-                  )}
-                </span>
-                {renderRightContent?.(suggestion.value)}
+              <div className="flex items-center flex-1 text-sm font-medium">
+                {suggestion.icon}
+                {suggestion.value.endsWith(':') ? (
+                  <>
+                    <span>{renderHighlightedText(suggestion.value, searchTerm)}</span>
+                    <span className="text-zinc-400 text-xs font-normal ml-1.5">{suggestion.label}</span>
+                  </>
+                ) : (
+                  <>
+                    <span>{renderHighlightedText(suggestion.value, searchTerm)}</span>
+                    {suggestion.label !== suggestion.value && (
+                      <span className="text-zinc-400 text-xs font-normal ml-1.5">{suggestion.label}</span>
+                    )}
+                  </>
+                )}
               </div>
-              {suggestion.value.endsWith(':') && (
-                <span className="text-xs text-zinc-400 bg-zinc-700/50 px-1.5 py-0.5 rounded">접두사</span>
-              )}
+              {renderRightContent?.(suggestion)}
             </button>
           ))}
         </div>
@@ -138,7 +133,7 @@ function renderHighlightedText(text: string, searchTerm: string) {
   return (
     <>
       {beforeMatch}
-      <span className="text-brand-end font-semibold">{matchedText}</span>
+      <span className="text-brand-end">{matchedText}</span>
       {afterMatch}
     </>
   )
