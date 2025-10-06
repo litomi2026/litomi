@@ -95,7 +95,7 @@ export default function SuggestionDropdown<T extends SuggestionItem = Suggestion
             </button>
           ))}
         </div>
-        {!isLoading && suggestions.length === 0 && searchTerm && (
+        {suggestions.length === 0 && searchTerm && !isLoading && (
           <div className="text-center py-4 text-zinc-500 text-sm">검색 결과가 없습니다</div>
         )}
       </div>
