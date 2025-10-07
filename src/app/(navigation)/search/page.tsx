@@ -60,7 +60,7 @@ export default async function Page({ searchParams }: PageProps<'/search'>) {
   return (
     <>
       {hasActiveFilters ? (
-        <div className="gap-2 mb-4 hidden sm:grid">
+        <div className="gap-2 mb-2 hidden sm:grid">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-medium text-zinc-400">적용된 필터</h3>
             <ClearAllFilters />
