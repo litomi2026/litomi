@@ -1,9 +1,10 @@
 import { ErrorBoundary } from '@suspensive/react'
-import { memo, Suspense } from 'react'
+import { memo, ReactNode, Suspense } from 'react'
 
 import { Manga } from '@/types/manga'
 import { getViewerLink } from '@/utils/manga'
 
+import CoupangPartners from '../CoupangPartners'
 import IconExternalLink from '../icons/IconExternalLink'
 import TagList from '../TagList'
 import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from './BookmarkButton'
@@ -25,8 +26,24 @@ type Props = {
 
 export default memo(MangaCard)
 
-export function MangaCardSkeleton() {
-  return <li className="animate-fade-in rounded-xl bg-zinc-900 border-2 aspect-[3/4] w-full h-full" />
+export function MangaCardDonation() {
+  return (
+    <MangaCardSkeleton>
+      <span>
+        쿠팡 파트너스로 삼다수를 구매해서 가난한 개발자를 구해주세요. 쿠팡에서 정말 소중한 일정1액의 수수료를
+        제공받아요. 서버 운영에 큰 도움이 돼요. 사이트를 위해서 참여해주시면 감사하겠습니다...
+      </span>
+      <CoupangPartners />
+    </MangaCardSkeleton>
+  )
+}
+
+export function MangaCardSkeleton({ children }: { children?: ReactNode }) {
+  return (
+    <li className="animate-fade-in rounded-xl bg-zinc-900 border-2 aspect-[3/4] w-full h-full flex flex-col justify-center items-center gap-2 p-4">
+      {children}
+    </li>
+  )
 }
 
 function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton }: Readonly<Props>) {
