@@ -1,9 +1,6 @@
-import type { Manga, MangaTag } from '@/types/manga'
+import type { LabeledValue, Manga, MangaTag } from '@/types/manga'
 
 import { tagCategoryNameToInt } from '@/database/enum'
-
-import { uniqBy } from './array'
-import { checkDefined } from './type'
 
 type Params = {
   origin?: string
@@ -22,34 +19,108 @@ export function getViewerLink(id: number) {
   return `/manga/${id}`
 }
 
-export function mergeMangas(mangas: Manga[]) {
-  const mergedArtists = uniqBy(mangas.flatMap((m) => m.artists).filter(checkDefined), 'value')
-  const mergedCharacters = uniqBy(mangas.flatMap((m) => m.characters).filter(checkDefined), 'value')
-  const mergedGroups = uniqBy(mangas.flatMap((m) => m.group).filter(checkDefined), 'value')
-  const mergedSeries = uniqBy(mangas.flatMap((m) => m.series).filter(checkDefined), 'value')
-  const mergedTags = uniqBy(mangas.flatMap((m) => m.tags).filter(checkDefined), 'value')
-  const mergedRelated = Array.from(new Set(mangas.flatMap((m) => m.related).filter(checkDefined)))
+/**
+ * Merges multiple manga objects into a single manga object.
+ */
+export function mergeMangas(mangas: Manga[]): Manga {
+  if (mangas.length === 0) {
+    throw new Error('mergeMangas: Cannot merge empty manga array')
+  }
+
+  const mergedData = deduplicateCollections(mangas)
+  const baseManga = mangas[0]
 
   return deleteUndefinedValues({
-    ...mangas[0],
-    id: mangas[0].id,
-    title: getExistingValue(mangas, 'title') ?? '404 Not Found',
-    count: getExistingValue(mangas, 'count'),
-    date: getExistingValue(mangas, 'date'),
-    like: getExistingValue(mangas, 'like'),
-    likeAnonymous: getExistingValue(mangas, 'likeAnonymous'),
-    type: getExistingValue(mangas, 'type'),
-    viewCount: getExistingValue(mangas, 'viewCount'),
-    rating: getExistingValue(mangas, 'rating'),
-    uploader: getExistingValue(mangas, 'uploader'),
-    harpiId: getExistingValue(mangas, 'harpiId'),
-    artists: getExistingArray(mergedArtists),
-    characters: getExistingArray(mergedCharacters),
-    group: getExistingArray(mergedGroups),
-    series: getExistingArray(mergedSeries),
-    tags: sortLabeledValues(getExistingArray(mergedTags)),
-    related: getExistingArray(mergedRelated),
+    ...baseManga,
+    id: baseManga.id,
+    title: getFirstTruthyValue(mangas, 'title') ?? '404 Not Found',
+    count: getFirstTruthyValue(mangas, 'count'),
+    date: getFirstTruthyValue(mangas, 'date'),
+    like: getFirstTruthyValue(mangas, 'like'),
+    likeAnonymous: getFirstTruthyValue(mangas, 'likeAnonymous'),
+    type: getFirstTruthyValue(mangas, 'type'),
+    viewCount: getFirstTruthyValue(mangas, 'viewCount'),
+    rating: getFirstTruthyValue(mangas, 'rating'),
+    uploader: getFirstTruthyValue(mangas, 'uploader'),
+    harpiId: getFirstTruthyValue(mangas, 'harpiId'),
+    artists: getNonEmptyArray(mergedData.artists),
+    characters: getNonEmptyArray(mergedData.characters),
+    group: getNonEmptyArray(mergedData.groups),
+    series: getNonEmptyArray(mergedData.series),
+    tags: sortLabeledValues(getNonEmptyArray(mergedData.tags)),
+    related: getNonEmptyArray(mergedData.related),
   })
+}
+
+/**
+ * Deduplicates collections (artists, tags, etc.) from multiple manga objects.
+ */
+function deduplicateCollections(mangas: Manga[]) {
+  const artistsMap = new Map<string, LabeledValue>()
+  const charactersMap = new Map<string, LabeledValue>()
+  const groupsMap = new Map<string, LabeledValue>()
+  const seriesMap = new Map<string, LabeledValue>()
+  const tagsMap = new Map<string, MangaTag>()
+  const relatedSet = new Set<number>()
+
+  for (const manga of mangas) {
+    if (manga.artists) {
+      for (const artist of manga.artists) {
+        if (artist) {
+          artistsMap.set(artist.value, artist)
+        }
+      }
+    }
+
+    if (manga.characters) {
+      for (const character of manga.characters) {
+        if (character) {
+          charactersMap.set(character.value, character)
+        }
+      }
+    }
+
+    if (manga.group) {
+      for (const grp of manga.group) {
+        if (grp) {
+          groupsMap.set(grp.value, grp)
+        }
+      }
+    }
+
+    if (manga.series) {
+      for (const ser of manga.series) {
+        if (ser) {
+          seriesMap.set(ser.value, ser)
+        }
+      }
+    }
+
+    if (manga.tags) {
+      for (const tag of manga.tags) {
+        if (tag) {
+          tagsMap.set(tag.value, tag)
+        }
+      }
+    }
+
+    if (manga.related) {
+      for (const id of manga.related) {
+        if (id != null) {
+          relatedSet.add(id)
+        }
+      }
+    }
+  }
+
+  return {
+    artists: Array.from(artistsMap.values()),
+    characters: Array.from(charactersMap.values()),
+    groups: Array.from(groupsMap.values()),
+    series: Array.from(seriesMap.values()),
+    tags: Array.from(tagsMap.values()),
+    related: Array.from(relatedSet),
+  }
 }
 
 function deleteUndefinedValues<T extends Record<string, unknown>>(object: T): T {
@@ -62,18 +133,26 @@ function deleteUndefinedValues<T extends Record<string, unknown>>(object: T): T 
   return object
 }
 
-function getExistingArray<T>(array: T[] | null | undefined): T[] | undefined {
-  return array != null && array.length > 0 ? array : undefined
-}
-
-function getExistingValue<T, K extends keyof T>(validMangas: T[], key: K): T[K] | undefined {
-  for (const manga of validMangas) {
-    const value = manga[key]
+/**
+ * Finds and returns the first truthy value for a given property across multiple objects.
+ * Used to get the first valid value from multiple manga sources.
+ */
+function getFirstTruthyValue<T, K extends keyof T>(objects: T[], key: K): T[K] | undefined {
+  for (const obj of objects) {
+    const value = obj[key]
     if (value) {
       return value
     }
   }
   return undefined
+}
+
+/**
+ * Returns the array if it's non-empty, otherwise undefined.
+ * Used to exclude empty arrays from the final result.
+ */
+function getNonEmptyArray<T>(array: T[] | null | undefined): T[] | undefined {
+  return array != null && array.length > 0 ? array : undefined
 }
 
 function sortLabeledValues(labeledValues: MangaTag[] | undefined) {
