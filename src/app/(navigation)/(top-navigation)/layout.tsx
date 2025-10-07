@@ -1,5 +1,6 @@
 import Link from 'next/link'
 
+import CoupangPartners from '@/components/CoupangPartners'
 import IconFlame from '@/components/icons/IconFlame'
 import InstallPrompt from '@/components/InstallPrompt'
 import LinkPending from '@/components/LinkPending'
@@ -53,12 +54,10 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           <a className="hover:text-pink-400 transition" href="https://github.com/sponsors/gwak2837" target="_blank">
             후원하기
           </a>
+          <CoupangPartners />
           <BankAccountInfo />
           <a className="hover:text-purple-400 transition" href="https://patreon.com/litomi" target="_blank">
             Patreon
-          </a>
-          <a className="hover:text-yellow-400 transition" href="https://ko-fi.com/litomi" target="_blank">
-            Ko-fi
           </a>
         </div>
       </footer>

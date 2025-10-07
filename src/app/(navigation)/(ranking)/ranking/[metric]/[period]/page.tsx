@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import z from 'zod/v4'
 
 import { fetchMangasFromMultiSources } from '@/common/manga'
-import MangaCard from '@/components/card/MangaCard'
+import MangaCard, { MangaCardDonation } from '@/components/card/MangaCard'
 import { defaultOpenGraph } from '@/constants'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
@@ -76,6 +76,7 @@ export default async function Page({ params }: PageProps<'/ranking/[metric]/[per
       {rankings.map((ranking, i) => (
         <MangaCard index={i} key={ranking.mangaId} manga={mangasMap1[ranking.mangaId] || mangasMap2[ranking.mangaId]} />
       ))}
+      <MangaCardDonation />
     </ul>
   )
 }

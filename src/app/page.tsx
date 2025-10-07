@@ -39,19 +39,6 @@ export default function Home() {
         </Link>
         <a
           className="flex justify-center items-center gap-2 rounded"
-          href="https://github.com/gwak2837/litomi"
-          target="_blank"
-        >
-          <svg className="w-6" viewBox="0 0 24 24">
-            <path
-              d="M12 1a11 11 0 0 0-3.5 21.4c.6.1.8-.2.8-.5v-2c-2.8.5-3.5-.7-3.7-1.3-.2-.3-.7-1.3-1.2-1.6-.3-.2-.9-.7 0-.7s1.5.8 1.7 1.1c1 1.7 2.6 1.2 3.2 1 .1-.8.4-1.3.7-1.5-2.4-.3-5-1.3-5-5.5 0-1.2.4-2.2 1.1-3a4 4 0 0 1 .2-2.8s.9-.3 3 1a10.2 10.2 0 0 1 5.5 0c2-1.4 3-1 3-1a4 4 0 0 1 .1 2.9 4 4 0 0 1 1.1 3c0 4.1-2.5 5-5 5.4.4.3.8 1 .8 2v3c0 .3.2.6.7.5A11 11 0 0 0 12 1Z"
-              fill="currentColor"
-            />
-          </svg>
-          GitHub
-        </a>
-        <a
-          className="flex justify-center items-center gap-2 rounded"
           href="https://discord.gg/xTrbQaxpyD"
           target="_blank"
         >

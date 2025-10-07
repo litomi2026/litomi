@@ -11,7 +11,6 @@ export const MAX_LIBRARIES_PER_USER = 10
 export const MAX_LIBRARY_NAME_LENGTH = 50
 export const MAX_LIBRARY_DESCRIPTION_LENGTH = 100
 export const MAX_MANGA_DESCRIPTION_LENGTH = 150
-export const MAX_MANGA_ID = 10_000_000 // NOTE: 꾸준히 올려줘야 함
 export const MAX_MANGA_TITLE_LENGTH = 50
 export const MAX_NOTIFICATION_COUNT = 500
 export const MAX_POST_CONTENT_LENGTH = 160
@@ -33,6 +32,10 @@ export const LINK_PENDING_DELAY = 500
 export const SCROLL_THROTTLE_MS = 200
 export const SCROLL_THRESHOLD_PX = 10
 export const REALTIME_PAGE_VIEW_MIN_THRESHOLD = 10
+
+// NOTE: 꾸준히 올려줘야 함
+export const MAX_MANGA_ID = 10_000_000
+export const TOTAL_HIYOBI_PAGES = 7736
 
 export const LOGIN_ID_PATTERN = '^[a-zA-Z][a-zA-Z0-9_]*$'
 export const PASSWORD_PATTERN = '^(?=.*[A-Za-z])(?=.*[0-9]).+$'

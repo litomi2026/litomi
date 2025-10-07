@@ -3,7 +3,7 @@
 import { useMemo } from 'react'
 
 import { useSearchQuery } from '@/app/(navigation)/search/useSearchQuery'
-import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
+import MangaCard, { MangaCardDonation, MangaCardSkeleton } from '@/components/card/MangaCard'
 import MangaCardImage from '@/components/card/MangaCardImage'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import { ViewCookie } from '@/utils/param'
@@ -24,9 +24,10 @@ export default function SearchResults({ view }: Readonly<Props>) {
   })
 
   if (isLoading) {
-    const skeletonCount = view === ViewCookie.IMAGE ? 12 : 6
+    const skeletonCount = view === ViewCookie.IMAGE ? 11 : 5
     return (
       <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2 grow`}>
+        <MangaCardDonation />
         {Array.from({ length: skeletonCount }).map((_, i) => (
           <MangaCardSkeleton key={i} />
         ))}
@@ -58,7 +59,7 @@ export default function SearchResults({ view }: Readonly<Props>) {
             <MangaCard index={i} key={manga.id} manga={manga} showSearchFromNextButton />
           ),
         )}
-        {isFetchingNextPage && <MangaCardSkeleton />}
+        {isFetchingNextPage && <MangaCardDonation />}
       </ul>
       <div className="w-full py-4 flex justify-center" ref={loadMoreRef} />
     </>

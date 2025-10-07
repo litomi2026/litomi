@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
-import MangaCard from '@/components/card/MangaCard'
+import MangaCard, { MangaCardDonation } from '@/components/card/MangaCard'
 import { createErrorManga } from '@/constants/json'
 import { kHentaiClient } from '@/crawler/k-hentai'
 import { ViewCookie } from '@/utils/param'
@@ -33,6 +33,7 @@ export default async function Page() {
           {mangas.map((manga, i) => (
             <MangaCard index={i} key={manga.id} manga={manga} />
           ))}
+          <MangaCardDonation />
         </ul>
       </div>
       <div className="flex justify-center items-center">

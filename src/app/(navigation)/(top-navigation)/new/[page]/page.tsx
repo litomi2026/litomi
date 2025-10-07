@@ -2,10 +2,11 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import z from 'zod/v4'
 
-import MangaCard from '@/components/card/MangaCard'
+import MangaCard, { MangaCardDonation } from '@/components/card/MangaCard'
 import Navigation from '@/components/Navigation'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { createErrorManga } from '@/constants/json'
+import { TOTAL_HIYOBI_PAGES } from '@/constants/policy'
 import { hiyobiClient } from '@/crawler/hiyobi'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
@@ -53,9 +54,10 @@ export default async function Page({ params }: PageProps<'/new/[page]'>) {
           {mangas.map((manga, i) => (
             <MangaCard index={i} key={manga.id} manga={manga} />
           ))}
+          <MangaCardDonation />
         </ul>
       </div>
-      <Navigation className="py-4" currentPage={page} totalPages={7500} />
+      <Navigation className="py-4" currentPage={page} totalPages={TOTAL_HIYOBI_PAGES} />
     </>
   )
 }
