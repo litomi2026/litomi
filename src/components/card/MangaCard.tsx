@@ -33,7 +33,7 @@ export function MangaCardDonation() {
         쿠팡 파트너스로 삼다수를 구매해서 가난한 개발자를 구해주세요. 쿠팡에서 정말 소중한 일정1액의 수수료를
         제공받아요. 서버 운영에 큰 도움이 돼요. 사이트를 위해서 참여해주시면 감사하겠습니다...
       </span>
-      <CoupangPartners />
+      <CoupangPartners className="font-bold" />
     </MangaCardSkeleton>
   )
 }
