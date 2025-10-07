@@ -11,6 +11,7 @@ import { metricInfo, MetricParam, periodLabels, PeriodParam, RANKING_PAGE_REVALI
 import { getRankingData } from './query'
 
 export const dynamic = 'force-static'
+export const revalidate = 82800 // 23 hours
 
 const mangasRankingSchema = z.object({
   metric: z.enum(MetricParam),

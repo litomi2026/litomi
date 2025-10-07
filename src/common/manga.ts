@@ -77,7 +77,7 @@ export async function fetchMangasFromMultiSources(
       const harpiManga = findHarpiManga(harpiMangas, id)
 
       if (harpiManga) {
-        mangaMap[id] = harpiManga
+        mangaMap[id] = mergeMangas([harpiManga])
       } else {
         remainingIds.push(id)
       }

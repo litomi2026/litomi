@@ -35,7 +35,7 @@ export default function AllLibraryMangaView({ initialItems }: Props) {
         const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
 
         return (
-          <div className="relative overflow-hidden" key={`${library.id}-${mangaId}`}>
+          <div className="relative rounded-xl overflow-hidden" key={`${library.id}-${mangaId}`}>
             <CensoredManga mangaId={mangaId} />
             <MangaCard className="h-full" index={index} manga={manga} />
             <Link
