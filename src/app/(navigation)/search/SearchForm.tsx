@@ -289,7 +289,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
                     </button>
                     <button
                       aria-label={`${search.query} 삭제`}
-                      className="opacity-0 group-hover:opacity-100 transition p-3 text-zinc-500 hover:text-red-400"
+                      className="transition p-3 text-zinc-500 hover:text-red-400"
                       onClick={() => {
                         removeRecentSearch(search.query)
                         inputRef.current?.focus()
