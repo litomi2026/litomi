@@ -19,7 +19,7 @@ export default function CompactTrendingKeywords() {
       <div className="flex gap-2 overflow-x-auto scrollbar-hidden">
         {trendingKeywords?.map((item, index) => (
           <Link
-            className="flex items-center gap-1 relative text-xs px-2.5 py-1 rounded-full flex-shrink-0 bg-zinc-800 text-zinc-400 transition
+            className="flex items-center gap-1 relative text-xs px-2.5 py-1 rounded-full flex-shrink-0 bg-zinc-800 text-zinc-400 transition overflow-hidden
             hover:text-white hover:bg-zinc-700"
             href={`/search?query=${item.keyword}`}
             key={item.keyword}
