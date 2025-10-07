@@ -91,7 +91,6 @@ function SearchForm({ className = '' }: Readonly<Props>) {
 
     setKeyword(value)
     setCursorPosition(position)
-    setShowSuggestions(currentWordInfo.word.length >= 0)
     resetSelection()
   }
 
@@ -112,7 +111,6 @@ function SearchForm({ className = '' }: Readonly<Props>) {
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     if (!suggestionsRef.current?.contains(e.relatedTarget)) {
       setTimeout(() => {
-        setShowSuggestions(false)
         resetSelection()
       }, 300)
     }
@@ -121,7 +119,6 @@ function SearchForm({ className = '' }: Readonly<Props>) {
   const handleClear = () => {
     setKeyword('')
     setCursorPosition(0)
-    setShowSuggestions(false)
     resetSelection()
     inputRef.current?.focus()
   }
@@ -195,9 +192,8 @@ function SearchForm({ className = '' }: Readonly<Props>) {
     <div className={`relative ${className}`}>
       <UpdateFromSearchParams onUpdate={handleSearchParamUpdate} />
       <form
-        className="flex bg-zinc-900 border-2 border-zinc-700 rounded-xl text-zinc-400
-          overflow-hidden transition duration-200
-          hover:border-zinc-500 focus-within:border-zinc-400 focus-within:shadow-lg focus-within:shadow-zinc-400/30"
+        className="flex bg-zinc-900 border-2 border-zinc-700 rounded-xl text-zinc-400 overflow-hidden transition
+        hover:border-zinc-500 focus-within:border-zinc-400"
         onSubmit={onSubmit}
       >
         <div className="relative flex-1">
@@ -284,7 +280,6 @@ function SearchForm({ className = '' }: Readonly<Props>) {
                       onClick={() => {
                         setKeyword(search.query)
                         setCursorPosition(search.query.length)
-                        setShowSuggestions(false)
                         inputRef.current?.focus()
                       }}
                       type="button"
@@ -294,7 +289,10 @@ function SearchForm({ className = '' }: Readonly<Props>) {
                     <button
                       aria-label={`${search.query} 삭제`}
                       className="opacity-0 group-hover:opacity-100 transition p-3 text-zinc-500 hover:text-red-400"
-                      onClick={() => removeRecentSearch(search.query)}
+                      onClick={() => {
+                        removeRecentSearch(search.query)
+                        inputRef.current?.focus()
+                      }}
                       type="button"
                     >
                       <XIcon className="size-3" />
