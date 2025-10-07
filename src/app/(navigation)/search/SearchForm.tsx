@@ -91,6 +91,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
 
     setKeyword(value)
     setCursorPosition(position)
+    setShowSuggestions(true)
     resetSelection()
   }
 
