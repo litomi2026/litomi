@@ -34,7 +34,7 @@ export default function TrendingKeywords() {
               index={index}
               key={keyword}
               keyword={keyword}
-              onClick={() => handleKeywordClick(index)}
+              // onClick={() => handleKeywordClick(index)}
             />
           ))}
         </div>
@@ -46,7 +46,7 @@ export default function TrendingKeywords() {
                 aria-label={`Keyword ${i + 1}`}
                 className="rounded-full transition-all flex-shrink-0 size-1.5 bg-zinc-600 hover:bg-zinc-500 aria-current:w-6 aria-current:bg-zinc-400"
                 key={keyword}
-                onClick={() => handleIndicatorClick(i)}
+                // onClick={() => handleIndicatorClick(i)}
               />
             ))}
           </div>
