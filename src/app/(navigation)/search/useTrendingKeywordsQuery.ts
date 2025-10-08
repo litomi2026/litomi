@@ -12,7 +12,7 @@ export async function fetchTrendingKeywords() {
 }
 
 export default function useTrendingKeywordsQuery() {
-  return useQuery<GETTrendingKeywordsResponse, Error>({
+  return useQuery<GETTrendingKeywordsResponse>({
     queryKey: QueryKeys.trendingKeywords,
     queryFn: fetchTrendingKeywords,
   })
