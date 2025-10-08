@@ -277,7 +277,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
                     key={search.timestamp}
                   >
                     <button
-                      className="flex-1 p-4 py-2.5 text-left text-sm"
+                      className="flex-1 p-4 py-2.5 text-left text-sm truncate"
                       onClick={() => {
                         setKeyword(search.query)
                         setCursorPosition(search.query.length)
