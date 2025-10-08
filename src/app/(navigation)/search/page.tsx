@@ -7,9 +7,9 @@ import { ViewCookie } from '@/utils/param'
 
 import { GETProxyKSearchSchema } from '../../api/proxy/k/search/schema'
 import ActiveFilters, { ClearAllFilters } from './ActiveFilters'
-import CompactTrendingKeywords from './CompactTrendingKeywords'
 import Error400 from './Error400'
 import SearchResults from './SearchResults'
+import TrendingKeywords from './TrendingKeywords'
 
 export const metadata: Metadata = {
   title: '검색',
@@ -68,7 +68,7 @@ export default async function Page({ searchParams }: PageProps<'/search'>) {
           <ActiveFilters filters={validationResult.data} />
         </div>
       ) : (
-        <CompactTrendingKeywords />
+        <TrendingKeywords />
       )}
       <SearchResults view={viewType} />
     </>
