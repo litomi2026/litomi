@@ -205,7 +205,7 @@ const KOHENTAI_CONFIG: ProxyClientConfig = {
     accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
     origin: 'https://kohentai.org',
     referer: 'https://kohentai.org/',
-    cookie: 'kh_session_id=952793d253ed50545542fbcc5643e0ac48f79ce9a7825e3eebacda2ac1c09586',
+    cookie: 'kh_session_id=952793d253ed50545542fbcc5643e0ac48f79ce9a7825e3eebacda2ac1c09586', // NOTE: 2026-10-01 새로운 값으로 교체하기
   },
 }
 
