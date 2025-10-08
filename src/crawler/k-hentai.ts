@@ -12,7 +12,7 @@ import { translateTag } from '@/translation/tag'
 import { sec } from '@/utils/date'
 import { convertCamelCaseToKebabCase } from '@/utils/param'
 
-import { NotFoundError, ParseError } from './errors'
+import { NotFoundError, ParseError, UpstreamServerError } from './errors'
 import { ProxyClient, ProxyClientConfig } from './proxy'
 import { isUpstreamServerError } from './proxy-utils'
 import { getOriginFromImageURLs } from './utils'
@@ -165,9 +165,9 @@ interface Torrent {
 const K_HENTAI_CONFIG: ProxyClientConfig = {
   baseURL: 'https://k-hentai.org',
   circuitBreaker: {
-    failureThreshold: 5,
+    failureThreshold: 8,
     successThreshold: 3,
-    timeout: ms('10 minutes'),
+    timeout: ms('5 minutes'),
     shouldCountAsFailure: isUpstreamServerError,
   },
   retry: {
@@ -185,11 +185,37 @@ const K_HENTAI_CONFIG: ProxyClientConfig = {
   },
 }
 
+const KOHENTAI_CONFIG: ProxyClientConfig = {
+  baseURL: 'https://kohentai.org',
+  circuitBreaker: {
+    failureThreshold: 5,
+    successThreshold: 3,
+    timeout: ms('10 minutes'),
+    shouldCountAsFailure: isUpstreamServerError,
+  },
+  retry: {
+    maxRetries: 2,
+    initialDelay: ms('1 second'),
+    maxDelay: ms('5 seconds'),
+    backoffMultiplier: 2,
+    jitter: true,
+  },
+  requestTimeout: ms('5 seconds'),
+  defaultHeaders: {
+    accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+    origin: 'https://kohentai.org',
+    referer: 'https://kohentai.org/',
+    cookie: 'kh_session_id=952793d253ed50545542fbcc5643e0ac48f79ce9a7825e3eebacda2ac1c09586',
+  },
+}
+
 class KHentaiClient {
   private readonly client: ProxyClient
+  private readonly fallbackClient: ProxyClient
 
   constructor() {
     this.client = new ProxyClient(K_HENTAI_CONFIG)
+    this.fallbackClient = new ProxyClient(KOHENTAI_CONFIG)
   }
 
   async fetchManga(id: number, revalidate = sec('12 hours')): Promise<Manga | null> {
@@ -302,6 +328,12 @@ class KHentaiClient {
       if (error instanceof NotFoundError) {
         return null
       }
+
+      if (error instanceof UpstreamServerError && error.statusCode === 403) {
+        const html = await this.fallbackClient.fetch<string>(`/r/${id}`, { next: { revalidate } }, true)
+        return this.parseGalleryFromHTML(html, id)
+      }
+
       throw error
     }
   }
