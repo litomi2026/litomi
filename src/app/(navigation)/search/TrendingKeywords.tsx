@@ -6,7 +6,7 @@ import LinkPending from '@/components/LinkPending'
 
 import useTrendingKeywordsQuery from './useTrendingKeywordsQuery'
 
-export default function CompactTrendingKeywords() {
+export default function TrendingKeywords() {
   const { data } = useTrendingKeywordsQuery()
   const trendingKeywords = data?.keywords.length === 0 ? [{ keyword: 'language:korean' }] : data?.keywords
 
@@ -21,7 +21,7 @@ export default function CompactTrendingKeywords() {
           <Link
             className="flex items-center gap-1 relative text-xs px-2.5 py-1 rounded-full flex-shrink-0 bg-zinc-800 text-zinc-400 transition overflow-hidden
             hover:text-white hover:bg-zinc-700"
-            href={`/search?query=${item.keyword}`}
+            href={`/search?${new URLSearchParams({ query: item.keyword })}`}
             key={item.keyword}
             title={item.keyword}
           >
