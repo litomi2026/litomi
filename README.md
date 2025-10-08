@@ -77,6 +77,7 @@ bun dev
 #### 기타
 
 - SonarQube: https://sonarcloud.io/summary/overall?id=gwak2837_litomi&branch=main
+- X: https://x.com/litomi_in
 
 ## 고민
 
