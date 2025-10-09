@@ -320,10 +320,10 @@ function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection }: 
     }, 500)
   }, [currentIndex])
 
-  // NOTE: Cmd + 0 키로 줌 리셋
+  // NOTE: ctrl/cmd + 0 키로 줌 리셋
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.metaKey && e.key === '0') {
+      if ((e.metaKey || e.ctrlKey) && e.key === '0') {
         setZoomLevel(DEFAULT_ZOOM)
         setZoomOrigin({ x: '50%', y: '50%' })
 

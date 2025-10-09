@@ -18,6 +18,7 @@
   - 슬라이드쇼
   - 마지막 감상 페이지부터 이어서 보기
   - 터치보기: 스크롤로 페이지 넘기기
+  - 터치보기: meta + 스크롤로 이미지 확대
   - 스크롤보기: 이미지 너비 조절
 - 태그 한글 번역
 - 북마크
@@ -77,6 +78,7 @@ bun dev
 #### 기타
 
 - SonarQube: https://sonarcloud.io/summary/overall?id=gwak2837_litomi&branch=main
+- Discord: https://discord.gg/xTrbQaxpyD
 - X: https://x.com/litomi_in
 
 ## 고민
