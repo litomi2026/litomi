@@ -1,6 +1,7 @@
 'use client'
 
 import { ArrowLeft, ArrowRight } from 'lucide-react'
+import ms from 'ms'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -68,6 +69,17 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
       setImageIndex(0)
     }
   }, [setImageIndex])
+
+  // NOTE: 컨트롤러 자동 숨김
+  useEffect(() => {
+    if (showController) {
+      const timer = setTimeout(() => {
+        setShowController(false)
+      }, ms('10 seconds'))
+
+      return () => clearTimeout(timer)
+    }
+  }, [showController])
 
   return (
     <div className="relative">
