@@ -9,6 +9,7 @@ import { translateGroupList } from '@/translation/group'
 import { translateLanguageList } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
 import { translateTag } from '@/translation/tag'
+import { validateUserIdFromCookie } from '@/utils/cookie'
 import { sec } from '@/utils/date'
 import { convertCamelCaseToKebabCase } from '@/utils/param'
 
@@ -330,6 +331,12 @@ class KHentaiClient {
       }
 
       if (error instanceof UpstreamServerError && error.statusCode === 403) {
+        const userId = await validateUserIdFromCookie()
+
+        if (!userId) {
+          throw error
+        }
+
         const html = await this.fallbackClient.fetch<string>(`/r/${id}`, { next: { revalidate } }, true)
         return this.parseGalleryFromHTML(html, id)
       }
