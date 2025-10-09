@@ -1,18 +1,144 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import KeywordLink from './KeywordLink'
 import useTrendingKeywordsQuery from './useTrendingKeywordsQuery'
 
+const ROTATION_INTERVAL = 1000
+const SCROLL_THROTTLE_DELAY = 300
+
 export default function TrendingKeywords() {
   const { data } = useTrendingKeywordsQuery()
   const [currentIndex, setCurrentIndex] = useState(0)
+  const trendingKeywords = data && data.keywords.length > 0 ? data.keywords : [{ keyword: 'language:korean' }]
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const rotationTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const isUserInteractingRef = useRef(false)
+  const scrollThrottleTimerRef = useRef<NodeJS.Timeout | null>(null)
 
-  const trendingKeywords = useMemo(
-    () => (data && data.keywords.length > 0 ? data.keywords : [{ keyword: 'language:korean' }]),
-    [data],
-  )
+  const rotateToNext = useCallback(() => {
+    if (isUserInteractingRef.current || trendingKeywords.length === 1) {
+      return
+    }
+
+    setCurrentIndex((prevIndex) => {
+      const nextIndex = (prevIndex + 1) % trendingKeywords.length
+      scrollToKeyword(nextIndex)
+      return nextIndex
+    })
+  }, [trendingKeywords.length])
+
+  const startRotation = useCallback(() => {
+    if (rotationTimerRef.current) {
+      clearInterval(rotationTimerRef.current)
+    }
+    rotationTimerRef.current = setInterval(rotateToNext, ROTATION_INTERVAL)
+  }, [rotateToNext])
+
+  const stopRotation = useCallback(() => {
+    if (rotationTimerRef.current) {
+      clearInterval(rotationTimerRef.current)
+      rotationTimerRef.current = null
+    }
+  }, [])
+
+  function handleScroll() {
+    if (!scrollContainerRef.current) {
+      return
+    }
+
+    if (scrollThrottleTimerRef.current) {
+      clearTimeout(scrollThrottleTimerRef.current)
+    }
+
+    scrollThrottleTimerRef.current = setTimeout(() => {
+      if (!scrollContainerRef.current) {
+        return
+      }
+
+      const container = scrollContainerRef.current
+      const scrollLeft = container.scrollLeft
+      const children = Array.from(container.children) as HTMLElement[]
+
+      let closestIndex = 0
+      let minDistance = Infinity
+
+      for (let i = 0; i < children.length; i++) {
+        const child = children[i]
+        const childCenter = child.offsetLeft + child.offsetWidth / 2
+        const containerCenter = scrollLeft + container.offsetWidth / 2
+        const distance = Math.abs(childCenter - containerCenter)
+
+        if (distance < minDistance) {
+          minDistance = distance
+          closestIndex = i
+        }
+      }
+
+      setCurrentIndex(closestIndex)
+    }, SCROLL_THROTTLE_DELAY)
+  }
+
+  function handleInteractionStart() {
+    isUserInteractingRef.current = true
+    stopRotation()
+  }
+
+  function handleInteractionEnd() {
+    isUserInteractingRef.current = false
+    startRotation()
+  }
+
+  function handleTouchStart() {
+    handleInteractionStart()
+  }
+
+  function handleTouchEnd() {
+    // NOTE: 스크롤 모멘텀을 방지하기 위해 1초 대기
+    setTimeout(() => {
+      handleInteractionEnd()
+    }, 1000)
+  }
+
+  function handleIndicatorClick(index: number) {
+    handleInteractionStart()
+    setCurrentIndex(index)
+    scrollToKeyword(index)
+    setTimeout(handleInteractionEnd, ROTATION_INTERVAL)
+  }
+
+  function scrollToKeyword(index: number) {
+    if (scrollContainerRef.current) {
+      const keywordElements = scrollContainerRef.current.children
+      if (keywordElements[index]) {
+        keywordElements[index].scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'center',
+        })
+      }
+    }
+  }
+
+  function handleFocus(index: number) {
+    handleInteractionStart()
+    scrollToKeyword(index)
+  }
+
+  // NOTE: 인기 검색어 회전 시작 및 종료
+  useEffect(() => {
+    if (trendingKeywords.length > 1) {
+      startRotation()
+    }
+
+    return () => {
+      stopRotation()
+      if (scrollThrottleTimerRef.current) {
+        clearTimeout(scrollThrottleTimerRef.current)
+      }
+    }
+  }, [trendingKeywords.length, startRotation, stopRotation])
 
   return (
     <>
@@ -26,7 +152,15 @@ export default function TrendingKeywords() {
             </span>
           )}
         </div>
-        <div className="flex gap-1.5 px-1 overflow-x-auto scrollbar-hidden snap-x snap-mandatory scroll-smooth">
+        <div
+          className="flex gap-1.5 px-1 overflow-x-auto scrollbar-hidden snap-x snap-mandatory scroll-smooth"
+          onMouseEnter={handleInteractionStart}
+          onMouseLeave={handleInteractionEnd}
+          onScroll={handleScroll}
+          onTouchEnd={handleTouchEnd}
+          onTouchStart={handleTouchStart}
+          ref={scrollContainerRef}
+        >
           {trendingKeywords.map(({ keyword }, index) => (
             <KeywordLink
               ariaCurrent={currentIndex === index}
@@ -34,7 +168,8 @@ export default function TrendingKeywords() {
               index={index}
               key={keyword}
               keyword={keyword}
-              // onClick={() => handleKeywordClick(index)}
+              onBlur={handleInteractionEnd}
+              onFocus={() => handleFocus(index)}
             />
           ))}
         </div>
@@ -46,7 +181,7 @@ export default function TrendingKeywords() {
                 aria-label={`Keyword ${i + 1}`}
                 className="rounded-full transition-all flex-shrink-0 size-1.5 bg-zinc-600 hover:bg-zinc-500 aria-current:w-6 aria-current:bg-zinc-400"
                 key={keyword}
-                // onClick={() => handleIndicatorClick(i)}
+                onClick={() => handleIndicatorClick(i)}
               />
             ))}
           </div>
