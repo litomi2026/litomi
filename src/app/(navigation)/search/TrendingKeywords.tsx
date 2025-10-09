@@ -110,14 +110,20 @@ export default function TrendingKeywords() {
 
   function scrollToKeyword(index: number) {
     if (scrollContainerRef.current) {
-      const keywordElements = scrollContainerRef.current.children
-      if (keywordElements[index]) {
+      const container = scrollContainerRef.current
+      const keywordElement = container.children[index] as HTMLElement
+
+      if (keywordElement) {
         isProgrammaticScrollRef.current = true
 
-        keywordElements[index].scrollIntoView({
+        const elementLeft = keywordElement.offsetLeft
+        const elementWidth = keywordElement.offsetWidth
+        const containerWidth = container.offsetWidth
+        const targetScrollLeft = elementLeft - containerWidth / 2 + elementWidth / 2
+
+        container.scrollTo({
+          left: targetScrollLeft,
           behavior: 'smooth',
-          block: 'nearest',
-          inline: 'center',
         })
 
         setTimeout(() => {
