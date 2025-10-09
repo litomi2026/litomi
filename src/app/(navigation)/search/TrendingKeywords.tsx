@@ -5,8 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import KeywordLink from './KeywordLink'
 import useTrendingKeywordsQuery from './useTrendingKeywordsQuery'
 
-const ROTATION_INTERVAL = 1000
-const SCROLL_THROTTLE_DELAY = 300
+const ROTATION_INTERVAL = 5000
 
 export default function TrendingKeywords() {
   const { data } = useTrendingKeywordsQuery()
@@ -15,7 +14,7 @@ export default function TrendingKeywords() {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const rotationTimerRef = useRef<NodeJS.Timeout | null>(null)
   const isUserInteractingRef = useRef(false)
-  const scrollThrottleTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const scrollDebounceTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   const rotateToNext = useCallback(() => {
     if (isUserInteractingRef.current || trendingKeywords.length === 1) {
@@ -48,11 +47,11 @@ export default function TrendingKeywords() {
       return
     }
 
-    if (scrollThrottleTimerRef.current) {
-      clearTimeout(scrollThrottleTimerRef.current)
+    if (scrollDebounceTimerRef.current) {
+      clearTimeout(scrollDebounceTimerRef.current)
     }
 
-    scrollThrottleTimerRef.current = setTimeout(() => {
+    scrollDebounceTimerRef.current = setTimeout(() => {
       if (!scrollContainerRef.current) {
         return
       }
@@ -77,7 +76,7 @@ export default function TrendingKeywords() {
       }
 
       setCurrentIndex(closestIndex)
-    }, SCROLL_THROTTLE_DELAY)
+    }, 300)
   }
 
   function handleInteractionStart() {
@@ -134,8 +133,8 @@ export default function TrendingKeywords() {
 
     return () => {
       stopRotation()
-      if (scrollThrottleTimerRef.current) {
-        clearTimeout(scrollThrottleTimerRef.current)
+      if (scrollDebounceTimerRef.current) {
+        clearTimeout(scrollDebounceTimerRef.current)
       }
     }
   }, [trendingKeywords.length, startRotation, stopRotation])
