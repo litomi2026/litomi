@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { Users, View } from 'lucide-react'
+import { ExternalLink, Users } from 'lucide-react'
 import ms from 'ms'
 import Link from 'next/link'
 
@@ -72,29 +72,33 @@ export default function RealtimeRanking() {
             <table className="w-full">
               <thead className="border-b border-zinc-800 whitespace-nowrap">
                 <tr>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-zinc-400">순위</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-zinc-400">페이지 제목</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-zinc-400">조회수</th>
+                  <th className="p-4 py-3 text-left text-sm font-medium text-zinc-400">순위</th>
+                  <th className="py-3 text-left text-sm font-medium text-zinc-400">페이지 제목</th>
+                  <th className="p-4 py-3 text-right text-sm font-medium text-zinc-400">조회수</th>
                 </tr>
               </thead>
               <tbody>
                 {data.pageRanking.map((item, index) => (
-                  <tr className="border-b border-zinc-800 transition-colors hover:bg-zinc-800/50" key={item.page}>
-                    <td className="px-4 py-3 text-sm">
+                  <tr className="border-b border-zinc-800 transition hover:bg-zinc-800/50" key={item.page}>
+                    <td className="p-4 py-3 text-sm">
                       <span className="font-semibold text-zinc-400">#{index + 1}</span>
                     </td>
-                    <td className="px-4 py-3">
-                      <Link href={`/search?query=${item.page}`}>
-                        <p className="text-sm font-medium text-white line-clamp-1 hover:underline">{item.page}</p>
-                      </Link>
+                    <td className="">
+                      <div className="flex items-center justify-between gap-2">
+                        <Link className="py-3 flex-1 hover:underline" href={`/search?query=${item.page}`}>
+                          <p className="text-sm font-medium text-white line-clamp-1">{item.page}</p>
+                        </Link>
+                        <a
+                          className="text-xs p-2 -m-2 text-zinc-400 flex-shrink-0 whitespace-nowrap hover:underline flex items-center gap-1"
+                          href={`https://www.google.com/search?q=site:litomi.in+${item.page}`}
+                          target="_blank"
+                        >
+                          <span className="hidden sm:inline">Google</span> <ExternalLink className="size-3" />
+                        </a>
+                      </div>
                     </td>
-                    <td className="px-4 py-3 text-right">
-                      <span className="inline-flex items-center gap-1">
-                        <View className="size-3 text-brand-end" />
-                        <span className="text-sm font-semibold text-brand-end">
-                          {item.activeUsers.toLocaleString()}
-                        </span>
-                      </span>
+                    <td className="p-4 py-3 text-right">
+                      <span className="text-sm font-semibold text-brand-end">{item.activeUsers.toLocaleString()}</span>
                     </td>
                   </tr>
                 ))}
