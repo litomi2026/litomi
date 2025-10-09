@@ -6,6 +6,7 @@ import KeywordLink from './KeywordLink'
 import useTrendingKeywordsQuery from './useTrendingKeywordsQuery'
 
 const ROTATION_INTERVAL = 5000
+const SCROLL_MOMENTUM_DELAY = 1000 // NOTE: 스크롤 모멘텀을 방지하기 위해 1초 대기
 
 export default function TrendingKeywords() {
   const { data } = useTrendingKeywordsQuery()
@@ -15,6 +16,7 @@ export default function TrendingKeywords() {
   const rotationTimerRef = useRef<NodeJS.Timeout | null>(null)
   const isUserInteractingRef = useRef(false)
   const scrollDebounceTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const isProgrammaticScrollRef = useRef(false)
 
   const rotateToNext = useCallback(() => {
     if (isUserInteractingRef.current || trendingKeywords.length === 1) {
@@ -43,7 +45,7 @@ export default function TrendingKeywords() {
   }, [])
 
   function handleScroll() {
-    if (!scrollContainerRef.current) {
+    if (!scrollContainerRef.current || isProgrammaticScrollRef.current) {
       return
     }
 
@@ -94,10 +96,9 @@ export default function TrendingKeywords() {
   }
 
   function handleTouchEnd() {
-    // NOTE: 스크롤 모멘텀을 방지하기 위해 1초 대기
     setTimeout(() => {
       handleInteractionEnd()
-    }, 1000)
+    }, SCROLL_MOMENTUM_DELAY)
   }
 
   function handleIndicatorClick(index: number) {
@@ -111,11 +112,17 @@ export default function TrendingKeywords() {
     if (scrollContainerRef.current) {
       const keywordElements = scrollContainerRef.current.children
       if (keywordElements[index]) {
+        isProgrammaticScrollRef.current = true
+
         keywordElements[index].scrollIntoView({
           behavior: 'smooth',
           block: 'nearest',
           inline: 'center',
         })
+
+        setTimeout(() => {
+          isProgrammaticScrollRef.current = false
+        }, SCROLL_MOMENTUM_DELAY)
       }
     }
   }
