@@ -6,6 +6,8 @@ type Props = {
   keyword: string
   index: number
   onClick?: () => void
+  onFocus?: () => void
+  onBlur?: () => void
   ariaCurrent?: boolean
   className?: string
   textClassName?: string
@@ -15,6 +17,8 @@ export default function KeywordLink({
   keyword,
   index,
   onClick,
+  onFocus,
+  onBlur,
   ariaCurrent,
   className = '',
   textClassName = '',
@@ -25,7 +29,9 @@ export default function KeywordLink({
       className={`flex items-center justify-center gap-1 relative text-xs px-2.5 py-1 rounded-full flex-shrink-0 transition overflow-hidden bg-zinc-800 text-zinc-400  
       hover:text-foreground hover:bg-zinc-700 ${className}`}
       href={`/search?${new URLSearchParams({ query: keyword })}`}
+      onBlur={onBlur}
       onClick={onClick}
+      onFocus={onFocus}
       title={keyword}
     >
       <span aria-current={index < 3} className="text-xs font-bold aria-current:text-brand-end">
