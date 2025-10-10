@@ -27,7 +27,7 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           인기
         </Link>
         <NewMangaLink />
-        <RandomMangaLink />
+        <RandomMangaLink timer={20} />
       </div>
       <div className="flex justify-center whitespace-nowrap">
         <SourceTooltip />

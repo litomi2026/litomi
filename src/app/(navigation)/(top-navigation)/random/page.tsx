@@ -37,7 +37,7 @@ export default async function Page() {
         </ul>
       </div>
       <div className="flex justify-center items-center">
-        <RandomMangaLink />
+        <RandomMangaLink timer={20} />
       </div>
     </>
   )

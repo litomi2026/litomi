@@ -3,18 +3,23 @@
 import { useMemo } from 'react'
 
 import { useSearchQuery } from '@/app/(navigation)/search/useSearchQuery'
+import { Sort } from '@/app/api/proxy/k/search/schema'
 import MangaCard, { MangaCardDonation, MangaCardSkeleton } from '@/components/card/MangaCard'
 import MangaCardImage from '@/components/card/MangaCardImage'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import { ViewCookie } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
+import RandomRefreshButton from '../(top-navigation)/RandomRefreshButton'
+
 type Props = {
   view: ViewCookie
+  sort?: Sort
 }
 
-export default function SearchResults({ view }: Readonly<Props>) {
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useSearchQuery()
+export default function SearchResults({ view, sort }: Props) {
+  const isRandomSort = sort === Sort.RANDOM
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage, refetch, isRefetching } = useSearchQuery()
   const mangas = useMemo(() => data?.pages.flatMap((page) => page.mangas) ?? [], [data])
 
   const loadMoreRef = useInfiniteScrollObserver({
@@ -61,7 +66,19 @@ export default function SearchResults({ view }: Readonly<Props>) {
         )}
         {isFetchingNextPage && <MangaCardDonation />}
       </ul>
-      <div className="w-full py-4 flex justify-center" ref={loadMoreRef} />
+      {isRandomSort ? (
+        <RandomRefreshButton
+          className="flex gap-1 items-center border-2 px-3 p-2 rounded-xl transition mx-auto"
+          isLoading={isRefetching}
+          onClick={async () => {
+            await refetch()
+            window.scrollTo({ top: 0, behavior: 'smooth' })
+          }}
+          timer={60}
+        />
+      ) : (
+        <div className="w-full py-4 flex justify-center" ref={loadMoreRef} />
+      )}
     </>
   )
 }

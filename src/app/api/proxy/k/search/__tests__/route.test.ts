@@ -17,11 +17,15 @@ describe('GET /api/proxy/k/search', () => {
         const searchParams = new URLSearchParams(urlString.split('?')[1])
         const sort = searchParams.get('sort')
         const nextId = searchParams.get('next-id')
+        const nextViews = searchParams.get('next-views')
+        const nextViewsId = searchParams.get('next-views-id')
 
         let result = [...mockKHentaiMangas]
 
         if (sort === 'id_asc') {
           result = result.sort((a, b) => a.id - b.id)
+        } else if (sort === 'popular') {
+          result = result.sort((a, b) => b.views - a.views || b.id - a.id)
         } else if (sort === 'random') {
           result = result.sort(() => Math.random() - 0.5)
         }
@@ -29,6 +33,10 @@ describe('GET /api/proxy/k/search', () => {
         if (nextId) {
           const nextIdNum = parseInt(nextId)
           result = result.filter((m) => m.id > nextIdNum)
+        } else if (nextViews && nextViewsId) {
+          const viewsNum = parseInt(nextViews)
+          const idNum = parseInt(nextViewsId)
+          result = result.filter((m) => m.views < viewsNum || (m.views === viewsNum && m.id > idNum))
         }
 
         return new Response(JSON.stringify(result), {
@@ -258,6 +266,39 @@ describe('GET /api/proxy/k/search', () => {
       expect(response.status).toBe(200)
       expect(data.mangas).toHaveLength(3)
       expect(data.mangas[0].id).toBe(2)
+    })
+
+    test('popular 정렬일 때 next-views와 next-views-id를 처리해야 한다', async () => {
+      const searchParams = new URLSearchParams({
+        sort: 'popular',
+      })
+
+      const request = new Request(`${baseUrl}?${searchParams}`)
+      const response = await GET(request)
+      const data = await response.json()
+
+      expect(response.status).toBe(200)
+      expect(data.mangas).toHaveLength(5)
+      // For popular sorting, cursor should contain both views and id
+      const lastManga = data.mangas[data.mangas.length - 1]
+      expect(data.nextCursor).toBe(`${lastManga.viewCount}-${lastManga.id}`)
+      expect(data.hasNextPage).toBe(true)
+    })
+
+    test('popular 정렬에서 next-views와 next-views-id를 사용한 페이지네이션', async () => {
+      const searchParams = new URLSearchParams({
+        sort: 'popular',
+        'next-views': '1000',
+        'next-views-id': '3',
+      })
+
+      const request = new Request(`${baseUrl}?${searchParams}`)
+      const response = await GET(request)
+      const data = await response.json()
+
+      expect(response.status).toBe(200)
+      // Results should be filtered based on views and id
+      expect(data.hasNextPage).toBeDefined()
     })
   })
 

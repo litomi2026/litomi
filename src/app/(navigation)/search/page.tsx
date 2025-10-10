@@ -70,7 +70,7 @@ export default async function Page({ searchParams }: PageProps<'/search'>) {
       ) : (
         <TrendingKeywords />
       )}
-      <SearchResults view={viewType} />
+      <SearchResults sort={sort} view={viewType} />
     </>
   )
 }

@@ -2,26 +2,22 @@
 
 import { Dices } from 'lucide-react'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { memo } from 'react'
 
-import LinkPending from '@/components/LinkPending'
-import { useShffleStore } from '@/store/shuffle'
+import RandomRefreshButton from './RandomRefreshButton'
 
 const className = 'flex gap-1 items-center border-2 px-3 p-2 rounded-xl transition'
 
+type Props = {
+  timer?: number
+}
+
 export default memo(RandomMangaLink)
 
-function RandomMangaLink() {
-  const router = useRouter()
+function RandomMangaLink({ timer }: Props) {
   const pathname = usePathname()
   const isRandomPage = pathname === '/random'
-  const { cooldown, startTimer } = useShffleStore()
-
-  function handleClick() {
-    router.refresh()
-    startTimer(20)
-  }
 
   if (!isRandomPage) {
     return (
@@ -32,17 +28,5 @@ function RandomMangaLink() {
     )
   }
 
-  return (
-    <button
-      aria-disabled={cooldown > 0}
-      className={`bg-brand-end text-background font-semibold hover:bg-brand-end/90 active:bg-brand-end/95 aria-disabled:font-normal aria-disabled:text-zinc-800 aria-disabled:bg-brand-end/50 aria-disabled:pointer-events-none ${className}`}
-      onClick={handleClick}
-      title={cooldown > 0 ? `잠시 후에 시도해주세요` : '새로고침'}
-    >
-      <LinkPending className="size-5">
-        <Dices className="size-5" />
-      </LinkPending>
-      <span className="min-w-9 text-center">{cooldown > 0 ? `${cooldown}초` : '갱신'}</span>
-    </button>
-  )
+  return <RandomRefreshButton className={className} timer={timer} />
 }

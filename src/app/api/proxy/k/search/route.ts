@@ -38,6 +38,8 @@ export async function GET(request: Request) {
     from,
     to,
     'next-id': nextId,
+    'next-views': nextViews,
+    'next-views-id': nextViewsId,
     skip,
   } = validation.data
 
@@ -53,6 +55,8 @@ export async function GET(request: Request) {
   const params: KHentaiMangaSearchOptions = {
     search,
     nextId: nextId?.toString(),
+    nextViews: nextViews?.toString(),
+    nextViewsId: nextViewsId?.toString(),
     sort,
     offset: skip?.toString(),
     categories,
@@ -68,17 +72,43 @@ export async function GET(request: Request) {
   }
 
   try {
-    const revalidate = params.nextId ? sec('1 day') : 0
+    const revalidate = params.nextViewsId ? sec('1 day') : params.nextId ? sec('30 days') : 0
     const searchedMangas = await kHentaiClient.searchMangas(params, revalidate)
     const mangas = filterMangasByMinusPrefix(searchedMangas, query)
-    const hasNextPage = mangas.length > 0
-    const nextCursor = hasNextPage ? mangas[mangas.length - 1].id.toString() : null
-    const response: GETProxyKSearchResponse = { mangas, nextCursor, hasNextPage }
+    const hasManga = mangas.length > 0
+
+    let nextCursor = null
+    if (hasManga) {
+      const lastManga = mangas[mangas.length - 1]
+      if (sort === 'popular') {
+        nextCursor = `${lastManga.viewCount}-${lastManga.id}`
+      } else {
+        nextCursor = lastManga.id.toString()
+      }
+    }
+
+    const response: GETProxyKSearchResponse = {
+      mangas,
+      nextCursor,
+      hasNextPage: hasManga,
+    }
 
     const hasOtherFilters =
-      sort || minView || maxView || minPage || maxPage || minRating || maxRating || from || to || nextId || skip
+      sort ||
+      minView ||
+      maxView ||
+      minPage ||
+      maxPage ||
+      minRating ||
+      maxRating ||
+      from ||
+      to ||
+      nextId ||
+      nextViews ||
+      nextViewsId ||
+      skip
 
-    if (query && !hasOtherFilters && mangas.length > 0) {
+    if (query && !hasOtherFilters && hasManga) {
       if (chance(0.1)) {
         trendingKeywordsRedisService.trackSearch(query).catch(console.error)
       }

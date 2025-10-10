@@ -23,6 +23,8 @@ export const GETProxyKSearchSchema = z
     from: z.coerce.number().int().min(0).optional(),
     to: z.coerce.number().int().min(0).optional(),
     'next-id': z.coerce.number().int().positive().optional(),
+    'next-views': z.coerce.number().int().min(0).optional(),
+    'next-views-id': z.coerce.number().int().positive().optional(),
     skip: z.coerce.number().int().min(0).max(10000).optional(),
   })
   .refine(
