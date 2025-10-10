@@ -1,4 +1,5 @@
 import { DEFAULT_SUGGESTIONS } from '@/constants/json'
+import { MAX_MANGA_ID } from '@/constants/policy'
 
 // value: 소문자여야 함
 export const SEARCH_SUGGESTIONS = [
@@ -73,7 +74,7 @@ export const FILTER_CONFIG = {
     type: 'number' as const,
     label: '시작 ID',
     min: 1,
-    max: Number.MAX_SAFE_INTEGER,
+    max: MAX_MANGA_ID,
     placeholder: '특정 ID부터 검색',
   },
   skip: {
@@ -88,14 +89,14 @@ export const FILTER_CONFIG = {
     label: '시작 조회수',
     min: 0,
     max: Number.MAX_SAFE_INTEGER,
-    placeholder: '특정 조회수부터 검색',
+    placeholder: '123,456',
   },
   'next-views-id': {
     type: 'number' as const,
-    label: '시작 조회수 ID',
+    label: '시작 ID (인기순)',
     min: 1,
-    max: Number.MAX_SAFE_INTEGER,
-    placeholder: '특정 조회수 ID부터 검색',
+    max: MAX_MANGA_ID,
+    placeholder: '특정 ID부터 검색 (인기순)',
   },
 } as const
 

@@ -27,7 +27,9 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
   const pathname = usePathname()
   const [isPending, startTransition] = useTransition()
   const [buttonRect, setButtonRect] = useState<DOMRect | null>(null)
-  const isDefaultSort = filters.sort === undefined || filters.sort === ''
+  const isLatestSort = filters.sort === undefined || filters.sort === ''
+  const isPopularSort = filters.sort === 'popular'
+  const isOldestSort = filters.sort === 'id_asc'
 
   const handleFilterChange = useCallback(
     (key: FilterKey, value: string) => setFilters((prev) => ({ ...prev, [key]: value })),
@@ -70,8 +72,16 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
         params.set(key, timestamp.toString())
       })
 
-      if (!isDefaultSort && filters['next-id']) {
+      // Clean up pagination params
+      if (isPopularSort) {
         params.delete('next-id')
+      } else if (isLatestSort || isOldestSort) {
+        params.delete('next-views')
+        params.delete('next-views-id')
+      } else {
+        params.delete('next-id')
+        params.delete('next-views')
+        params.delete('next-views-id')
       }
 
       startTransition(() => {
@@ -79,7 +89,7 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
         onClose()
       })
     },
-    [filters, isDefaultSort, onClose, pathname, router],
+    [filters, isLatestSort, isPopularSort, isOldestSort, onClose, pathname, router],
   )
 
   const clearFilters = useCallback(() => {
@@ -310,27 +320,50 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
             </div>
           </div>
 
-          {/* Next ID */}
-          <div>
-            <label aria-disabled={!isDefaultSort} className="aria-disabled:opacity-50" htmlFor="next-id">
-              {FILTER_CONFIG['next-id'].label}
-            </label>
-            <input
-              className="w-full disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={!isDefaultSort}
-              id="next-id"
-              min={FILTER_CONFIG['next-id'].min}
-              onChange={(e) => handleFilterChange('next-id', e.target.value)}
-              pattern="[0-9]*"
-              placeholder={FILTER_CONFIG['next-id'].placeholder}
-              title={isDefaultSort ? '' : '기본순 정렬일 때만 사용할 수 있어요'}
-              type={FILTER_CONFIG['next-id'].type}
-              value={filters['next-id'] ?? ''}
-            />
-            <p aria-disabled={!isDefaultSort} className="mt-1 text-xs text-zinc-500">
-              {isDefaultSort ? '지정한 ID 이후의 결과만 표시해요' : '기본순 정렬일 때만 사용할 수 있어요'}
-            </p>
-          </div>
+          {/* Cursor Pagination Fields */}
+          {isPopularSort ? (
+            <div>
+              <label htmlFor="next-views">{FILTER_CONFIG['next-views'].label}</label>
+              <input
+                className="w-full"
+                id="next-views"
+                min={FILTER_CONFIG['next-views'].min}
+                onChange={(e) => handleFilterChange('next-views', e.target.value)}
+                pattern="[0-9]*"
+                placeholder={FILTER_CONFIG['next-views'].placeholder}
+                type={FILTER_CONFIG['next-views'].type}
+                value={filters['next-views'] ?? ''}
+              />
+              <p className="mt-1 text-xs text-zinc-500">시작 조회수 이하의 작품만 표시해요 (커서 페이지네이션)</p>
+            </div>
+          ) : (
+            <div>
+              <label
+                aria-disabled={!(isLatestSort || isOldestSort)}
+                className="aria-disabled:opacity-50"
+                htmlFor="next-id"
+              >
+                {FILTER_CONFIG['next-id'].label}
+              </label>
+              <input
+                className="w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={!(isLatestSort || isOldestSort)}
+                id="next-id"
+                min={FILTER_CONFIG['next-id'].min}
+                onChange={(e) => handleFilterChange('next-id', e.target.value)}
+                pattern="[0-9]*"
+                placeholder={FILTER_CONFIG['next-id'].placeholder}
+                title={isLatestSort || isOldestSort ? '' : '기본순 또는 오래된순 정렬일 때만 사용할 수 있어요'}
+                type={FILTER_CONFIG['next-id'].type}
+                value={filters['next-id'] ?? ''}
+              />
+              <p aria-disabled={!(isLatestSort || isOldestSort)} className="mt-1 text-xs text-zinc-500">
+                {isLatestSort || isOldestSort
+                  ? '지정한 ID 이후의 결과만 표시해요'
+                  : '기본순 또는 오래된순 정렬일 때만 사용할 수 있어요'}
+              </p>
+            </div>
+          )}
 
           {/* Skip */}
           <div>
