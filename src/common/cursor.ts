@@ -23,3 +23,27 @@ export function decodeLibraryIdCursor(cursor: string) {
 export function encodeLibraryIdCursor(timestamp: number, mangaId: number) {
   return `${timestamp}-${mangaId}`
 }
+
+const BookmarkCursorSchema = z.object({
+  timestamp: z.coerce.number().int().positive(),
+  mangaId: z.coerce.number().int().positive(),
+})
+
+export function decodeBookmarkCursor(cursor: string) {
+  const [timestamp, mangaId] = cursor.split('-')
+
+  const validation = BookmarkCursorSchema.safeParse({
+    timestamp,
+    mangaId,
+  })
+
+  if (!validation.success) {
+    return null
+  }
+
+  return validation.data
+}
+
+export function encodeBookmarkCursor(timestamp: number, mangaId: number) {
+  return `${timestamp}-${mangaId}`
+}

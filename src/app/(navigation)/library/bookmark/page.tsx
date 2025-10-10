@@ -1,6 +1,7 @@
 import { desc, eq } from 'drizzle-orm'
 import { Metadata } from 'next'
 
+import { encodeBookmarkCursor } from '@/common/cursor'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { BOOKMARKS_PER_PAGE } from '@/constants/policy'
 import { db } from '@/database/supabase/drizzle'
@@ -59,9 +60,11 @@ export default async function BookmarkPage() {
     createdAt: b.createdAt.getTime(),
   }))
 
+  const lastBookmark = initialBookmarks[initialBookmarks.length - 1]
+
   const initialData = {
     bookmarks: initialBookmarks,
-    nextCursor: hasNextPage ? initialBookmarks[initialBookmarks.length - 1] : null,
+    nextCursor: hasNextPage ? encodeBookmarkCursor(lastBookmark.createdAt, lastBookmark.mangaId) : null,
   }
 
   return (

@@ -56,7 +56,7 @@ export async function GET(request: Request) {
 
     const cacheControl = createCacheControl({
       private: true,
-      maxAge: 5,
+      maxAge: 3,
     })
 
     if (censorshipRows.length === 0) {
@@ -67,13 +67,12 @@ export async function GET(request: Request) {
     const censorships = hasNextPage ? censorshipRows.slice(0, limit) : censorshipRows
     const nextCursor = hasNextPage ? { id: censorshipRows[censorshipRows.length - 1].id } : null
 
-    return Response.json(
-      {
-        censorships: censorships.map((row) => ({ ...row, createdAt: row.createdAt.getTime() })),
-        nextCursor,
-      } satisfies GETCensorshipsResponse,
-      { headers: { 'Cache-Control': cacheControl } },
-    )
+    const result: GETCensorshipsResponse = {
+      censorships: censorships.map((row) => ({ ...row, createdAt: row.createdAt.getTime() })),
+      nextCursor,
+    }
+
+    return Response.json(result, { headers: { 'Cache-Control': cacheControl } })
   } catch (error) {
     return handleRouteError(error, request)
   }

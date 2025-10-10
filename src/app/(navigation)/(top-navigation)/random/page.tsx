@@ -9,9 +9,6 @@ import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 import RandomMangaLink from '../RandomMangaLink'
 
-export const dynamic = 'force-static'
-export const revalidate = 15
-
 export const metadata: Metadata = {
   title: '랜덤',
   alternates: {
@@ -46,7 +43,7 @@ export default async function Page() {
 
 async function getMangas() {
   try {
-    return await kHentaiClient.fetchRandomKoreanMangas()
+    return await kHentaiClient.fetchRandomKoreanMangas(15)
   } catch (error) {
     return [createErrorManga({ error })]
   }

@@ -5,13 +5,12 @@ import { BOOKMARKS_PER_PAGE } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import { handleResponseError } from '@/utils/react-query-error'
 
-export async function fetchBookmarksPaginated(cursor: { mangaId: number; createdAt: number } | null) {
+export async function fetchBookmarksPaginated(cursor: string | null) {
   const searchParams = new URLSearchParams()
   searchParams.append('limit', BOOKMARKS_PER_PAGE.toString())
 
   if (cursor) {
-    searchParams.append('cursorId', cursor.mangaId.toString())
-    searchParams.append('cursorTime', cursor.createdAt.toString())
+    searchParams.append('cursor', cursor)
   }
 
   const response = await fetch(`/api/bookmark?${searchParams}`)
@@ -19,9 +18,9 @@ export async function fetchBookmarksPaginated(cursor: { mangaId: number; created
 }
 
 export default function useBookmarkIdsInfiniteQuery(initialData?: GETBookmarksResponse) {
-  return useInfiniteQuery<GETBookmarksResponse, Error>({
+  return useInfiniteQuery({
     queryKey: QueryKeys.infiniteBookmarks,
-    queryFn: ({ pageParam }) => fetchBookmarksPaginated(pageParam as { mangaId: number; createdAt: number } | null),
+    queryFn: ({ pageParam }: { pageParam: string | null }) => fetchBookmarksPaginated(pageParam),
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialData: initialData && {
       pages: [initialData],
