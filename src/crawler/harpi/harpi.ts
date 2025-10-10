@@ -12,6 +12,7 @@ import { translateSeriesList } from '@/translation/series'
 import { translateTag } from '@/translation/tag'
 import { Manga, MangaTag } from '@/types/manga'
 import { uniqBy } from '@/utils/array'
+import { sec } from '@/utils/date'
 
 import { ProxyClient, ProxyClientConfig } from '../proxy'
 import { isUpstreamServerError } from '../proxy-utils'
@@ -108,7 +109,10 @@ class HarpiClient {
     return this.convertHarpiToManga(response.data)
   }
 
-  async searchMangas(params: Partial<GETHarpiSearchRequest> = {}, revalidate?: number): Promise<Manga[] | null> {
+  async searchMangas(
+    params: Partial<GETHarpiSearchRequest> = {},
+    revalidate = sec('5 minutes'),
+  ): Promise<Manga[] | null> {
     const validatedParams = HarpiSearchSchema.parse(params)
     const searchParams = this.buildSearchParams(validatedParams)
 
