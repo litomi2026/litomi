@@ -137,16 +137,27 @@ function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection }: 
 
       if (Math.abs(diffX) > HORIZONTAL_SWIPE_THRESHOLD) {
         swipeDetectedRef.current = true
+        const touchOrientation = getTouchOrientation()
+        const isReversed = touchOrientation === 'horizontal-reverse' || touchOrientation === 'vertical-reverse'
+
         if (diffX > 0) {
-          prevPage() // 오른쪽 스와이프
+          if (isReversed) {
+            nextPage()
+          } else {
+            prevPage()
+          }
         } else {
-          nextPage() // 왼쪽 스와이프
+          if (isReversed) {
+            prevPage()
+          } else {
+            nextPage()
+          }
         }
       }
 
       pointerStartRef.current = null
     },
-    [nextPage, prevPage],
+    [getTouchOrientation, nextPage, prevPage],
   )
 
   // 포인터 캔슬 시 포인터 ID 제거
@@ -174,12 +185,30 @@ function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection }: 
         } else {
           onClick()
         }
+      } else if (touchOrientation === 'horizontal-reverse') {
+        const clickX = e.clientX - rect.left
+        if (clickX < rect.width * EDGE_CLICK_THRESHOLD) {
+          nextPage()
+        } else if (clickX > rect.width * (1 - EDGE_CLICK_THRESHOLD)) {
+          prevPage()
+        } else {
+          onClick()
+        }
       } else if (touchOrientation === 'vertical') {
         const clickY = e.clientY - rect.top
         if (clickY < rect.height * EDGE_CLICK_THRESHOLD) {
           prevPage()
         } else if (clickY > rect.height * (1 - EDGE_CLICK_THRESHOLD)) {
           nextPage()
+        } else {
+          onClick()
+        }
+      } else if (touchOrientation === 'vertical-reverse') {
+        const clickY = e.clientY - rect.top
+        if (clickY < rect.height * EDGE_CLICK_THRESHOLD) {
+          nextPage()
+        } else if (clickY > rect.height * (1 - EDGE_CLICK_THRESHOLD)) {
+          prevPage()
         } else {
           onClick()
         }
@@ -300,11 +329,21 @@ function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection }: 
     if (isNavigatingBackward) {
       if (touchOrientation === 'vertical') {
         ul.scrollTo({ top: ul.scrollHeight - ul.clientHeight, left: 0, behavior: 'instant' })
+      } else if (touchOrientation === 'vertical-reverse') {
+        ul.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+      } else if (touchOrientation === 'horizontal-reverse') {
+        ul.scrollTo({ top: 0, left: 0, behavior: 'instant' })
       } else {
         ul.scrollTo({ top: 0, left: ul.scrollWidth - ul.clientWidth, behavior: 'instant' })
       }
     } else {
-      ul.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+      if (touchOrientation === 'vertical-reverse') {
+        ul.scrollTo({ top: ul.scrollHeight - ul.clientHeight, left: 0, behavior: 'instant' })
+      } else if (touchOrientation === 'horizontal-reverse') {
+        ul.scrollTo({ top: 0, left: ul.scrollWidth - ul.clientWidth, behavior: 'instant' })
+      } else {
+        ul.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+      }
     }
   }, [currentIndex, getTouchOrientation])
 

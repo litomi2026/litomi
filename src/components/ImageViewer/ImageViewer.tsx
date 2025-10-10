@@ -11,7 +11,7 @@ import { useImageWidthStore } from '@/components/ImageViewer/store/imageWidth'
 import { useNavigationModeStore } from '@/components/ImageViewer/store/navigationMode'
 import { useReadingDirectionStore } from '@/components/ImageViewer/store/readingDirection'
 import { useScreenFitStore } from '@/components/ImageViewer/store/screenFit'
-import { useTouchOrientationStore } from '@/components/ImageViewer/store/touchOrientation'
+import { orientations, useTouchOrientationStore } from '@/components/ImageViewer/store/touchOrientation'
 import { type Manga } from '@/types/manga'
 
 import IconChat from '../icons/IconChat'
@@ -51,7 +51,6 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
   const isDoublePage = pageView === 'double'
   const isTouchMode = navMode === 'touch'
   const isWidthFit = screenFit === 'width'
-  const isHorizontalTouch = touchOrientation === 'horizontal'
 
   // NOTE: 스크롤 방지
   useEffect(() => {
@@ -160,8 +159,17 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
             )}
             {isTouchMode && (
               <>
-                <button onClick={() => setTouchOrientation(isHorizontalTouch ? 'vertical' : 'horizontal')}>
-                  {isHorizontalTouch ? '좌우' : '상하'} 넘기기
+                <button
+                  onClick={() => {
+                    const currentIndex = orientations.indexOf(touchOrientation)
+                    const nextIndex = (currentIndex + 1) % orientations.length
+                    setTouchOrientation(orientations[nextIndex])
+                  }}
+                >
+                  {touchOrientation === 'horizontal' && '좌우 넘기기'}
+                  {touchOrientation === 'vertical' && '상하 넘기기'}
+                  {touchOrientation === 'horizontal-reverse' && '우좌 넘기기'}
+                  {touchOrientation === 'vertical-reverse' && '하상 넘기기'}
                 </button>
                 <SlideshowButton
                   maxImageIndex={maxImageIndex}

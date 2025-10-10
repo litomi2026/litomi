@@ -121,7 +121,7 @@ export async function GET(request: Request) {
 }
 
 function getCacheControl(params: KHentaiMangaSearchOptions) {
-  const { nextId, sort } = params
+  const { nextId, nextViews, sort } = params
 
   if (sort === 'random') {
     return createCacheControl({
@@ -135,8 +135,17 @@ function getCacheControl(params: KHentaiMangaSearchOptions) {
   if (nextId) {
     return createCacheControl({
       public: true,
-      maxAge: sec('1 week'),
+      maxAge: sec('30 days'),
       sMaxAge: sec('1 week'), // NOTE: 캐시 메모리 용량당 과금 있으면 1 week -> 1 day 바꾸기
+      swr: sec('5 minutes'),
+    })
+  }
+
+  if (nextViews) {
+    return createCacheControl({
+      public: true,
+      maxAge: sec('1 day'),
+      sMaxAge: sec('1 day'),
       swr: sec('5 minutes'),
     })
   }

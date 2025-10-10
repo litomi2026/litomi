@@ -3,7 +3,8 @@ import { persist } from 'zustand/middleware'
 
 import { LocalStorageKey } from '@/constants/storage'
 
-export type TouchOrientation = 'horizontal' | 'vertical'
+type TouchOrientation = 'horizontal-reverse' | 'horizontal' | 'vertical-reverse' | 'vertical'
+export const orientations: TouchOrientation[] = ['horizontal', 'vertical', 'horizontal-reverse', 'vertical-reverse']
 
 type Store = {
   touchOrientation: TouchOrientation
