@@ -3,6 +3,7 @@
 import { useMemo } from 'react'
 
 import { useSearchQuery } from '@/app/(navigation)/search/useSearchQuery'
+import { Sort } from '@/app/api/proxy/k/search/schema'
 import MangaCard, { MangaCardDonation, MangaCardSkeleton } from '@/components/card/MangaCard'
 import MangaCardImage from '@/components/card/MangaCardImage'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
@@ -11,9 +12,11 @@ import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 type Props = {
   view: ViewCookie
+  sort: Sort
 }
 
-export default function SearchResults({ view }: Readonly<Props>) {
+export default function SearchResults({ view, sort }: Readonly<Props>) {
+  const isRandomSort = sort === Sort.RANDOM
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useSearchQuery()
   const mangas = useMemo(() => data?.pages.flatMap((page) => page.mangas) ?? [], [data])
 
@@ -61,7 +64,7 @@ export default function SearchResults({ view }: Readonly<Props>) {
         )}
         {isFetchingNextPage && <MangaCardDonation />}
       </ul>
-      <div className="w-full py-4 flex justify-center" ref={loadMoreRef} />
+      {isRandomSort ? <button>sdf</button> : <div className="w-full py-4 flex justify-center" ref={loadMoreRef} />}
     </>
   )
 }
