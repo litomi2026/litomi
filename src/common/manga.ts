@@ -61,11 +61,8 @@ export async function fetchMangaFromMultiSources(id: number): Promise<Manga | Ma
 /**
  * @param ids - 10개 이하의 고유한 만화 ID 배열
  */
-export async function fetchMangasFromMultiSources(
-  ids: number[],
-  revalidate: number,
-): Promise<Record<number, Manga | MangaError>> {
-  const harpiMangas = await harpiClient.searchMangas({ ids }, revalidate).catch((error) => new Error(error))
+export async function fetchMangasFromMultiSources(ids: number[]): Promise<Record<number, Manga | MangaError>> {
+  const harpiMangas = await harpiClient.searchMangas({ ids }).catch((error) => new Error(error))
   const mangaMap: Record<number, Manga> = {}
   const remainingIds = []
 
@@ -89,15 +86,11 @@ export async function fetchMangasFromMultiSources(
 
   const [hiyobiMangas, hiyobiImages, kHentaiMangas, komiMangas, hitomiMangas, hentaiPawImages] = await Promise.all([
     Promise.all(remainingIds.map((id) => hiyobiClient.fetchManga({ id }).catch((error) => new Error(error)))),
-    Promise.all(remainingIds.map((id) => hiyobiClient.fetchMangaImages({ id, revalidate }).catch(() => null))),
-    Promise.all(
-      remainingIds.map((id) => kHentaiClient.fetchManga({ id, revalidate }).catch((error) => new Error(error))),
-    ),
-    Promise.all(remainingIds.map((id) => komiClient.fetchManga({ id, revalidate }).catch((error) => new Error(error)))),
-    Promise.all(
-      remainingIds.map((id) => hitomiClient.fetchManga({ id, revalidate }).catch((error) => new Error(error))),
-    ),
-    Promise.all(remainingIds.map((id) => hentaiPawClient.fetchMangaImages({ id, revalidate }).catch(() => null))),
+    Promise.all(remainingIds.map((id) => hiyobiClient.fetchMangaImages({ id }).catch(() => null))),
+    Promise.all(remainingIds.map((id) => kHentaiClient.fetchManga({ id }).catch((error) => new Error(error)))),
+    Promise.all(remainingIds.map((id) => komiClient.fetchManga({ id }).catch((error) => new Error(error)))),
+    Promise.all(remainingIds.map((id) => hitomiClient.fetchManga({ id }).catch((error) => new Error(error)))),
+    Promise.all(remainingIds.map((id) => hentaiPawClient.fetchMangaImages({ id }).catch(() => null))),
   ])
 
   for (let i = 0; i < remainingIds.length; i++) {

@@ -26,7 +26,7 @@ export async function GET(request: Request) {
   const uniqueIds = Array.from(new Set(ids))
 
   try {
-    const mangas = await fetchMangasFromMultiSources(uniqueIds, 0)
+    const mangas = await fetchMangasFromMultiSources(uniqueIds)
 
     if (Object.keys(mangas).length === 0) {
       return new Response('Not Found', { status: 404 })

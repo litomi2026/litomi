@@ -21,7 +21,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
   const { id } = validation.data
 
   try {
-    const manga = await komiClient.fetchManga(id)
+    const manga = await komiClient.fetchManga({ id })
 
     if (!manga) {
       return new Response('Not Found', { status: 404 })

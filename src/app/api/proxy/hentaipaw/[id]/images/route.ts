@@ -20,7 +20,7 @@ export async function GET(request: Request) {
   const { id } = validation.data
 
   try {
-    const images = await hentaiPawClient.fetchMangaImages(id)
+    const images = await hentaiPawClient.fetchMangaImages({ id })
 
     return Response.json(images, {
       headers: {

@@ -7,11 +7,10 @@ import MangaCard, { MangaCardDonation } from '@/components/card/MangaCard'
 import { defaultOpenGraph } from '@/constants'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
-import { metricInfo, MetricParam, periodLabels, PeriodParam, RANKING_PAGE_REVALIDATE } from '../../../common'
+import { metricInfo, MetricParam, periodLabels, PeriodParam } from '../../../common'
 import { getRankingData } from './query'
 
-export const dynamic = 'force-static'
-export const revalidate = 82800 // 23 hours
+export const revalidate = 43200 // 12 hours
 
 const mangasRankingSchema = z.object({
   metric: z.enum(MetricParam),
@@ -67,8 +66,8 @@ export default async function Page({ params }: PageProps<'/ranking/[metric]/[per
   }
 
   const [mangasMap1, mangasMap2] = await Promise.all([
-    fetchMangasFromMultiSources(rankings.map((ranking) => ranking.mangaId).slice(0, 10), RANKING_PAGE_REVALIDATE),
-    fetchMangasFromMultiSources(rankings.map((ranking) => ranking.mangaId).slice(10, 20), RANKING_PAGE_REVALIDATE),
+    fetchMangasFromMultiSources(rankings.map((ranking) => ranking.mangaId).slice(0, 10)),
+    fetchMangasFromMultiSources(rankings.map((ranking) => ranking.mangaId).slice(10, 20)),
   ])
 
   return (

@@ -1,8 +1,6 @@
 import { Bookmark, Eye, Library, MessageCircle } from 'lucide-react'
 import { ElementType } from 'react'
 
-import { sec } from '@/utils/date'
-
 export enum MetricParam {
   VIEW = 'view',
   LIBRARY = 'library',
@@ -44,5 +42,3 @@ export const periodLabels: Record<string, string> = {
   [PeriodParam.YEAR]: '연간',
   [PeriodParam.ALL]: '전체',
 }
-
-export const RANKING_PAGE_REVALIDATE = sec('23 hours')
