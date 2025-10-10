@@ -7,7 +7,6 @@ import { db } from '@/database/supabase/drizzle'
 import { readingHistoryTable } from '@/database/supabase/schema'
 import { RouteProps } from '@/types/nextjs'
 import { validateUserIdFromCookie } from '@/utils/cookie'
-import { sec } from '@/utils/date'
 
 const GETMangaIdReadingHistorySchema = z.object({
   id: z.coerce.number().int().positive().max(MAX_MANGA_ID),
@@ -40,7 +39,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
 
     const cacheControl = createCacheControl({
       private: true,
-      maxAge: sec('10 seconds'),
+      maxAge: 3,
     })
 
     if (!history) {

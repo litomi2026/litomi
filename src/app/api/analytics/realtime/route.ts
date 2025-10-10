@@ -5,7 +5,6 @@ import { SHORT_NAME } from '@/constants'
 import { GA_PROPERTY_ID, GA_SERVICE_ACCOUNT_EMAIL, GA_SERVICE_ACCOUNT_KEY } from '@/constants/env'
 import { REALTIME_PAGE_VIEW_MIN_THRESHOLD } from '@/constants/policy'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
-import { sec } from '@/utils/date'
 
 let analyticsClient: BetaAnalyticsDataClient | null = null
 
@@ -58,9 +57,9 @@ export async function GET(request: Request) {
 
     const cacheControl = createCacheControl({
       public: true,
-      maxAge: sec('1 minute'),
-      sMaxAge: sec('1 minute'),
-      swr: sec('1 minute'),
+      maxAge: 30,
+      sMaxAge: 30,
+      swr: 30,
     })
 
     return NextResponse.json(response, { headers: { 'Cache-Control': cacheControl } })
@@ -69,7 +68,7 @@ export async function GET(request: Request) {
   }
 }
 
-function getAnalyticsClient(): BetaAnalyticsDataClient {
+function getAnalyticsClient() {
   if (!analyticsClient) {
     analyticsClient = new BetaAnalyticsDataClient({
       credentials: {
