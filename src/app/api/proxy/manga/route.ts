@@ -38,17 +38,16 @@ export async function GET(request: Request) {
       }
     }
 
-    const sMaxAge = sec('1 hour')
-    const swr = sec('5 minutes')
+    const successHeaders = {
+      'Cache-Control': createCacheControl({
+        public: true,
+        maxAge: sec('10 hours'),
+        sMaxAge: sec('10 hours'),
+        swr: sec('1 hour'),
+      }),
+    }
 
-    const cacheControl = createCacheControl({
-      public: true,
-      maxAge: sec('1 day') - sMaxAge - swr,
-      sMaxAge,
-      swr,
-    })
-
-    return Response.json(mangas satisfies GETProxyMangaResponse, { headers: { 'Cache-Control': cacheControl } })
+    return Response.json(mangas satisfies GETProxyMangaResponse, { headers: successHeaders })
   } catch (error) {
     return handleRouteError(error, request)
   }
