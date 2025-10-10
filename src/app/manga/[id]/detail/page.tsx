@@ -10,8 +10,6 @@ import { CANONICAL_URL, defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { mangaSchema } from '../schema'
 import RelatedMangaSection from './RelatedMangaSection'
 
-export const dynamic = 'error'
-
 export async function generateMetadata({ params }: PageProps<'/manga/[id]/detail'>): Promise<Metadata> {
   const validation = mangaSchema.safeParse(await params)
 

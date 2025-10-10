@@ -4,13 +4,10 @@ import { cache } from 'react'
 
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { MAX_MANGA_DESCRIPTION_LENGTH, MAX_MANGA_TITLE_LENGTH } from '@/constants/policy'
-import { kHentaiClient } from '@/crawler/k-hentai'
 import { litomiClient } from '@/crawler/litomi'
 
 import MangaViewer from './MangaViewer'
 import { mangaSchema } from './schema'
-
-export const dynamic = 'force-static'
 
 export async function generateMetadata({ params }: PageProps<'/manga/[id]'>): Promise<Metadata> {
   const validation = mangaSchema.safeParse(await params)
@@ -39,15 +36,6 @@ export async function generateMetadata({ params }: PageProps<'/manga/[id]'>): Pr
       languages: { ko: `/manga/${id}` },
     },
   }
-}
-
-export async function generateStaticParams() {
-  const kHentaiIds = await kHentaiClient
-    .searchKoreanMangas()
-    .then((mangas) => mangas.map((manga) => String(manga.id)))
-    .catch(() => [])
-
-  return kHentaiIds.map((id) => ({ id }))
 }
 
 export default async function Page({ params }: PageProps<'/manga/[id]'>) {
