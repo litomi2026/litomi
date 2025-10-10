@@ -5,7 +5,6 @@ import { MangaSource } from '@/database/enum'
 import { translateLanguageList } from '@/translation/language'
 import { translateTag } from '@/translation/tag'
 import { Manga } from '@/types/manga'
-import { sec } from '@/utils/date'
 
 import { ProxyClient, ProxyClientConfig } from '../proxy'
 import { isUpstreamServerError } from '../proxy-utils'
@@ -52,6 +51,11 @@ type KomiTag = {
   name: string
 }
 
+type MangaFetchParams = {
+  id: number | string
+  revalidate?: number
+}
+
 const KOMI_CONFIG: ProxyClientConfig = {
   baseURL: 'https://komi.la',
   circuitBreaker: {
@@ -88,7 +92,7 @@ class KomiClient {
     this.idMapping = new BinaryIdMap(idMap as [number, string][])
   }
 
-  async fetchManga(id: number | string, revalidate = sec('1 week')): Promise<Manga | null> {
+  async fetchManga({ id, revalidate }: MangaFetchParams): Promise<Manga | null> {
     const uuid = typeof id === 'number' ? this.idMapping.get(id) : id
 
     if (!uuid) {

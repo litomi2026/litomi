@@ -1,5 +1,6 @@
 import { fetchMangaFromMultiSources } from '@/common/manga'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
+import { Manga, MangaError } from '@/types/manga'
 import { RouteProps } from '@/types/nextjs'
 import { sec } from '@/utils/date'
 
@@ -10,6 +11,21 @@ export const runtime = 'edge'
 type Params = {
   id: string
 }
+
+const METADATA_FIELDS = [
+  'artists',
+  'characters',
+  'count',
+  'date',
+  'description',
+  'group',
+  'languages',
+  'lines',
+  'series',
+  'tags',
+  'title',
+  'type',
+] as const
 
 export async function GET(request: Request, { params }: RouteProps<Params>) {
   const { searchParams } = new URL(request.url)
@@ -26,63 +42,52 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
   const { id, scope } = validation.data
 
   try {
-    const manga = await fetchMangaFromMultiSources(id, 0)
+    const manga = await fetchMangaFromMultiSources(id)
 
     if (!manga) {
-      return new Response('Not Found', { status: 404 })
+      const notFoundHeaders = {
+        'Cache-Control': createCacheControl({
+          public: true,
+          maxAge: sec('1 hour'),
+          sMaxAge: sec('1 hour'),
+        }),
+      }
+
+      return new Response('Not Found', { status: 404, headers: notFoundHeaders })
     }
 
-    if ('isError' in manga && manga.isError) {
-      const cacheControl = createCacheControl({
+    const successHeaders = {
+      'Cache-Control': createCacheControl({
         public: true,
-        maxAge: sec('1 minute'),
-        sMaxAge: sec('1 minute'),
-      })
-
-      return Response.json(manga, { headers: { 'Cache-Control': cacheControl } })
+        maxAge: sec('10 hours'),
+        sMaxAge: sec('10 hours'),
+        swr: sec('1 hour'),
+      }),
     }
 
-    const maxAge = sec('1 hour')
-    const swr = sec('5 minutes')
+    const responseData = getMangaResponseData(manga, scope)
+    return Response.json(responseData, { headers: successHeaders })
+  } catch (error) {
+    return handleRouteError(error, request)
+  }
+}
 
-    const cacheControl = createCacheControl({
-      public: true,
-      maxAge,
-      sMaxAge: sec('1 day') - maxAge - Math.min(swr, maxAge),
-      swr,
-    })
+function getMangaResponseData(manga: Manga | MangaError, scope: string | null) {
+  switch (scope) {
+    case MangaResponseScope.EXCLUDE_METADATA: {
+      for (const field of METADATA_FIELDS) {
+        delete manga[field]
+      }
+      return manga
+    }
 
-    if (scope === MangaResponseScope.IMAGE) {
-      const mangaImages = {
+    case MangaResponseScope.IMAGE:
+      return {
         origin: manga.origin,
         images: manga.images,
       }
 
-      return Response.json(mangaImages, { headers: { 'Cache-Control': cacheControl } })
-    }
-
-    if (scope === MangaResponseScope.EXCLUDE_METADATA) {
-      const mangaWithoutMetadata = {
-        ...manga,
-        artists: undefined,
-        characters: undefined,
-        count: undefined,
-        date: undefined,
-        description: undefined,
-        group: undefined,
-        languages: undefined,
-        lines: undefined,
-        series: undefined,
-        tags: undefined,
-        title: undefined,
-        type: undefined,
-      }
-
-      return Response.json(mangaWithoutMetadata, { headers: { 'Cache-Control': cacheControl } })
-    }
-
-    return Response.json(manga, { headers: { 'Cache-Control': cacheControl } })
-  } catch (error) {
-    return handleRouteError(error, request)
+    default:
+      return manga
   }
 }

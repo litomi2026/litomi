@@ -13,19 +13,16 @@ import { checkDefined } from '@/utils/type'
 
 type MangaResult = Error | Manga | null | undefined
 
-// TODO: 추후 'use cache' 로 변경하고 revalidate 파라미터 제거하기
-export async function fetchMangaFromMultiSources(id: number, revalidate?: number): Promise<Manga | MangaError | null> {
-  // cacheLife('days')
-
+export async function fetchMangaFromMultiSources(id: number): Promise<Manga | MangaError | null> {
   const [hiyobiManga, hiyobiImages, kHentaiManga, harpiManga, komiManga, hitomiManga, hentaiPawImages] =
     await Promise.all([
       hiyobiClient.fetchManga({ id }).catch((error) => new Error(error)),
-      hiyobiClient.fetchMangaImages({ id, revalidate }).catch(() => null),
-      kHentaiClient.fetchManga(id, revalidate).catch((error) => new Error(error)),
-      harpiClient.fetchManga(id).catch((error) => new Error(error)),
-      komiClient.fetchManga(id).catch((error) => new Error(error)),
-      hitomiClient.fetchManga(id, revalidate).catch((error) => new Error(error)),
-      hentaiPawClient.fetchMangaImages(id).catch(() => null),
+      hiyobiClient.fetchMangaImages({ id }).catch(() => null),
+      kHentaiClient.fetchManga({ id }).catch((error) => new Error(error)),
+      harpiClient.fetchManga({ id }).catch((error) => new Error(error)),
+      komiClient.fetchManga({ id }).catch((error) => new Error(error)),
+      hitomiClient.fetchManga({ id }).catch((error) => new Error(error)),
+      hentaiPawClient.fetchMangaImages({ id }).catch(() => null),
     ])
 
   const sources: MangaResult[] = [
@@ -93,10 +90,14 @@ export async function fetchMangasFromMultiSources(
   const [hiyobiMangas, hiyobiImages, kHentaiMangas, komiMangas, hitomiMangas, hentaiPawImages] = await Promise.all([
     Promise.all(remainingIds.map((id) => hiyobiClient.fetchManga({ id }).catch((error) => new Error(error)))),
     Promise.all(remainingIds.map((id) => hiyobiClient.fetchMangaImages({ id, revalidate }).catch(() => null))),
-    Promise.all(remainingIds.map((id) => kHentaiClient.fetchManga(id, revalidate).catch((error) => new Error(error)))),
-    Promise.all(remainingIds.map((id) => komiClient.fetchManga(id).catch((error) => new Error(error)))),
-    Promise.all(remainingIds.map((id) => hitomiClient.fetchManga(id, revalidate).catch((error) => new Error(error)))),
-    Promise.all(remainingIds.map((id) => hentaiPawClient.fetchMangaImages(id).catch(() => null))),
+    Promise.all(
+      remainingIds.map((id) => kHentaiClient.fetchManga({ id, revalidate }).catch((error) => new Error(error))),
+    ),
+    Promise.all(remainingIds.map((id) => komiClient.fetchManga({ id, revalidate }).catch((error) => new Error(error)))),
+    Promise.all(
+      remainingIds.map((id) => hitomiClient.fetchManga({ id, revalidate }).catch((error) => new Error(error))),
+    ),
+    Promise.all(remainingIds.map((id) => hentaiPawClient.fetchMangaImages({ id, revalidate }).catch(() => null))),
   ])
 
   for (let i = 0; i < remainingIds.length; i++) {

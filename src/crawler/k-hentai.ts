@@ -154,6 +154,11 @@ interface KHentaiTag {
   tag: [string, string] // e.g. ['female', 'big_breasts']
 }
 
+type MangaFetchParams = {
+  id: number
+  revalidate?: number
+}
+
 type TagCategory = (typeof VALID_TAG_CATEGORIES)[number]
 
 interface Torrent {
@@ -220,7 +225,7 @@ class KHentaiClient {
     this.fallbackClient = new ProxyClient(KOHENTAI_CONFIG)
   }
 
-  async fetchManga(id: number, revalidate = sec('12 hours')): Promise<Manga | null> {
+  async fetchManga({ id, revalidate }: MangaFetchParams): Promise<Manga | null> {
     const gallery = await this.fetchGallery(id, revalidate)
 
     if (!gallery) {
@@ -233,7 +238,7 @@ class KHentaiClient {
     }
   }
 
-  async fetchMangaImages(id: number, revalidate = sec('12 hours')): Promise<string[] | null> {
+  async fetchMangaImages({ id, revalidate }: MangaFetchParams): Promise<string[] | null> {
     const gallery = await this.fetchGallery(id, revalidate)
 
     if (!gallery) {

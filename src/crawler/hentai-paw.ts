@@ -10,13 +10,17 @@ import { translateLanguageList } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
 import { translateTag } from '@/translation/tag'
 import { Manga } from '@/types/manga'
-import { sec } from '@/utils/date'
 
 import { ProxyClient, ProxyClientConfig } from './proxy'
 import { isUpstreamServerError } from './proxy-utils'
 
 type HentaiPawSlide = {
   src: string
+}
+
+type MangaFetchParams = {
+  id: number
+  revalidate?: number
 }
 
 const HENTAIPAW_CONFIG: ProxyClientConfig = {
@@ -50,12 +54,12 @@ class HentaiPawClient {
     this.client = new ProxyClient(HENTAIPAW_CONFIG)
   }
 
-  async fetchManga(id: number, revalidate = sec('1 week')): Promise<Manga | null> {
+  async fetchManga({ id, revalidate }: MangaFetchParams): Promise<Manga | null> {
     const html = await this.client.fetch<string>(`/articles/${id}`, { next: { revalidate } }, true)
     return this.parseMangaFromHTML(html, id)
   }
 
-  async fetchMangaImages(id: number, revalidate = sec('1 week')): Promise<string[] | null> {
+  async fetchMangaImages({ id, revalidate }: MangaFetchParams): Promise<string[] | null> {
     const html = await this.client.fetch<string>(`/viewer?articleId=${id}`, { next: { revalidate } }, true)
     return this.extractImageURLsFromHTML(html)
   }

@@ -49,6 +49,11 @@ type HarpiManga = {
   memorableQuote: string[]
 }
 
+type MangaFetchParams = {
+  id: number | string
+  revalidate?: number
+}
+
 const HARPI_CONFIG: ProxyClientConfig = {
   baseURL: 'https://harpi.in',
   circuitBreaker: {
@@ -81,7 +86,7 @@ class HarpiClient {
     this.client = new ProxyClient(HARPI_CONFIG)
   }
 
-  async fetchManga(id: number, revalidate = sec('1 week')): Promise<Manga | null> {
+  async fetchManga({ id, revalidate }: MangaFetchParams): Promise<Manga | null> {
     const validatedParams = HarpiSearchSchema.parse({ ids: [id] })
     const searchParams = this.buildSearchParams(validatedParams)
 
@@ -96,8 +101,8 @@ class HarpiClient {
     return this.convertHarpiToManga(response.data[0])
   }
 
-  async fetchMangaByHarpiId(harpiId: string, revalidate = sec('12 hours')): Promise<Manga> {
-    const response = await this.client.fetch<{ data: HarpiManga }>(`/animation/${harpiId}`, {
+  async fetchMangaByHarpiId({ id, revalidate }: MangaFetchParams): Promise<Manga> {
+    const response = await this.client.fetch<{ data: HarpiManga }>(`/animation/${id}`, {
       next: { revalidate },
     })
 
