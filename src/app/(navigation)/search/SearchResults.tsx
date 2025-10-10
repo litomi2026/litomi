@@ -10,12 +10,14 @@ import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import { ViewCookie } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
+import RandomRefreshButton from '../(top-navigation)/RandomRefreshButton'
+
 type Props = {
   view: ViewCookie
-  sort: Sort
+  sort?: Sort
 }
 
-export default function SearchResults({ view, sort }: Readonly<Props>) {
+export default function SearchResults({ view, sort }: Props) {
   const isRandomSort = sort === Sort.RANDOM
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useSearchQuery()
   const mangas = useMemo(() => data?.pages.flatMap((page) => page.mangas) ?? [], [data])
@@ -64,7 +66,14 @@ export default function SearchResults({ view, sort }: Readonly<Props>) {
         )}
         {isFetchingNextPage && <MangaCardDonation />}
       </ul>
-      {isRandomSort ? <button>sdf</button> : <div className="w-full py-4 flex justify-center" ref={loadMoreRef} />}
+      {isRandomSort ? (
+        <RandomRefreshButton
+          className="flex gap-1 items-center border-2 px-3 p-2 rounded-xl transition mx-auto"
+          timer={1}
+        />
+      ) : (
+        <div className="w-full py-4 flex justify-center" ref={loadMoreRef} />
+      )}
     </>
   )
 }
