@@ -329,11 +329,21 @@ function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection }: 
     if (isNavigatingBackward) {
       if (touchOrientation === 'vertical') {
         ul.scrollTo({ top: ul.scrollHeight - ul.clientHeight, left: 0, behavior: 'instant' })
+      } else if (touchOrientation === 'vertical-reverse') {
+        ul.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+      } else if (touchOrientation === 'horizontal-reverse') {
+        ul.scrollTo({ top: 0, left: 0, behavior: 'instant' })
       } else {
         ul.scrollTo({ top: 0, left: ul.scrollWidth - ul.clientWidth, behavior: 'instant' })
       }
     } else {
-      ul.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+      if (touchOrientation === 'vertical-reverse') {
+        ul.scrollTo({ top: ul.scrollHeight - ul.clientHeight, left: 0, behavior: 'instant' })
+      } else if (touchOrientation === 'horizontal-reverse') {
+        ul.scrollTo({ top: 0, left: ul.scrollWidth - ul.clientWidth, behavior: 'instant' })
+      } else {
+        ul.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+      }
     }
   }, [currentIndex, getTouchOrientation])
 
