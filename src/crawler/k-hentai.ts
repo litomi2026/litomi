@@ -251,10 +251,6 @@ class KHentaiClient {
     return this.searchMangas({ search: 'language:korean', sort: 'random' }, revalidate)
   }
 
-  async searchKoreanMangas(revalidate?: number): Promise<Manga[]> {
-    return this.searchMangas({ search: 'language:korean' }, revalidate)
-  }
-
   async searchMangas(params: KHentaiMangaSearchOptions = {}, revalidate?: number): Promise<Manga[]> {
     const kebabCaseParams = Object.entries(params)
       .filter(([key, value]) => key !== 'offset' && value !== undefined)

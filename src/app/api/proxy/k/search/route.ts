@@ -72,7 +72,8 @@ export async function GET(request: Request) {
   }
 
   try {
-    const searchedMangas = await kHentaiClient.searchMangas(params)
+    const revalidate = params.nextViewsId ? sec('12 hours') : params.nextId ? sec('30 days') : sec('30 minutes')
+    const searchedMangas = await kHentaiClient.searchMangas(params, revalidate)
     const mangas = filterMangasByMinusPrefix(searchedMangas, query)
     const hasManga = mangas.length > 0
 
@@ -143,7 +144,7 @@ function getCacheControl(params: KHentaiMangaSearchOptions) {
   if (nextViews) {
     return createCacheControl({
       public: true,
-      maxAge: sec('1 day'),
+      maxAge: sec('12 hours'),
       sMaxAge: sec('10 minutes'),
       swr: sec('10 minutes'),
     })
@@ -151,7 +152,7 @@ function getCacheControl(params: KHentaiMangaSearchOptions) {
 
   return createCacheControl({
     public: true,
-    maxAge: sec('1 hour'),
+    maxAge: sec('30 minutes'),
     sMaxAge: sec('10 minutes'),
     swr: sec('10 minutes'),
   })

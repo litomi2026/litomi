@@ -8,21 +8,24 @@ import { komiClient } from '@/crawler/komi/komi'
 import { getOriginFromImageURLs } from '@/crawler/utils'
 import { MangaSource } from '@/database/enum'
 import { Manga, MangaError } from '@/types/manga'
+import { sec } from '@/utils/date'
 import { mergeMangas } from '@/utils/manga'
 import { checkDefined } from '@/utils/type'
 
 type MangaResult = Error | Manga | null | undefined
 
 export async function fetchMangaFromMultiSources(id: number): Promise<Manga | MangaError | null> {
+  const revalidate = sec('30 days')
+
   const [hiyobiManga, hiyobiImages, kHentaiManga, harpiManga, komiManga, hitomiManga, hentaiPawImages] =
     await Promise.all([
-      hiyobiClient.fetchManga({ id }).catch((error) => new Error(error)),
+      hiyobiClient.fetchManga({ id, revalidate }).catch(Error),
       hiyobiClient.fetchMangaImages({ id }).catch(() => null),
-      kHentaiClient.fetchManga({ id }).catch((error) => new Error(error)),
-      harpiClient.fetchManga({ id }).catch((error) => new Error(error)),
-      komiClient.fetchManga({ id }).catch((error) => new Error(error)),
-      hitomiClient.fetchManga({ id }).catch((error) => new Error(error)),
-      hentaiPawClient.fetchMangaImages({ id }).catch(() => null),
+      kHentaiClient.fetchManga({ id }).catch(Error),
+      harpiClient.fetchManga({ id, revalidate }).catch(Error),
+      komiClient.fetchManga({ id, revalidate }).catch(Error),
+      hitomiClient.fetchManga({ id }).catch(Error),
+      hentaiPawClient.fetchMangaImages({ id, revalidate }).catch(() => null),
     ])
 
   const sources: MangaResult[] = [
@@ -62,7 +65,8 @@ export async function fetchMangaFromMultiSources(id: number): Promise<Manga | Ma
  * @param ids - 10개 이하의 고유한 만화 ID 배열
  */
 export async function fetchMangasFromMultiSources(ids: number[]): Promise<Record<number, Manga | MangaError>> {
-  const harpiMangas = await harpiClient.searchMangas({ ids }).catch((error) => new Error(error))
+  const revalidate = sec('30 days')
+  const harpiMangas = await harpiClient.searchMangas({ ids }, revalidate).catch((error) => new Error(error))
   const mangaMap: Record<number, Manga> = {}
   const remainingIds = []
 
@@ -85,12 +89,12 @@ export async function fetchMangasFromMultiSources(ids: number[]): Promise<Record
   }
 
   const [hiyobiMangas, hiyobiImages, kHentaiMangas, komiMangas, hitomiMangas, hentaiPawImages] = await Promise.all([
-    Promise.all(remainingIds.map((id) => hiyobiClient.fetchManga({ id }).catch((error) => new Error(error)))),
+    Promise.all(remainingIds.map((id) => hiyobiClient.fetchManga({ id, revalidate }).catch(Error))),
     Promise.all(remainingIds.map((id) => hiyobiClient.fetchMangaImages({ id }).catch(() => null))),
-    Promise.all(remainingIds.map((id) => kHentaiClient.fetchManga({ id }).catch((error) => new Error(error)))),
-    Promise.all(remainingIds.map((id) => komiClient.fetchManga({ id }).catch((error) => new Error(error)))),
-    Promise.all(remainingIds.map((id) => hitomiClient.fetchManga({ id }).catch((error) => new Error(error)))),
-    Promise.all(remainingIds.map((id) => hentaiPawClient.fetchMangaImages({ id }).catch(() => null))),
+    Promise.all(remainingIds.map((id) => kHentaiClient.fetchManga({ id }).catch(Error))),
+    Promise.all(remainingIds.map((id) => komiClient.fetchManga({ id, revalidate }).catch(Error))),
+    Promise.all(remainingIds.map((id) => hitomiClient.fetchManga({ id }).catch(Error))),
+    Promise.all(remainingIds.map((id) => hentaiPawClient.fetchMangaImages({ id, revalidate }).catch(() => null))),
   ])
 
   for (let i = 0; i < remainingIds.length; i++) {

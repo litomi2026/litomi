@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
+import { unstable_cache } from 'next/cache'
 import { notFound } from 'next/navigation'
-import { cache } from 'react'
 
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { MAX_MANGA_DESCRIPTION_LENGTH, MAX_MANGA_TITLE_LENGTH } from '@/constants/policy'
@@ -55,6 +55,10 @@ export default async function Page({ params }: PageProps<'/manga/[id]'>) {
   )
 }
 
-const getManga = cache(async (id: number) => {
-  return litomiClient.getManga(id).catch(() => null)
-})
+const getManga = unstable_cache(
+  async (id: number) => {
+    return litomiClient.getManga(id).catch(() => null)
+  },
+  ['manga'],
+  { tags: ['manga', 'litomi'] },
+)
