@@ -9,7 +9,6 @@ import { translateGroupList } from '@/translation/group'
 import { translateLanguageList } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
 import { translateTag } from '@/translation/tag'
-import { sec } from '@/utils/date'
 import { convertCamelCaseToKebabCase } from '@/utils/param'
 
 import { NotFoundError, ParseError, UpstreamServerError } from './errors'
@@ -226,7 +225,7 @@ class KHentaiClient {
   }
 
   async fetchManga({ id, revalidate }: MangaFetchParams): Promise<Manga | null> {
-    const gallery = await this.fetchGallery(id, revalidate)
+    const gallery = await this.fetchGallery({ id, revalidate })
 
     if (!gallery) {
       return null
@@ -239,7 +238,7 @@ class KHentaiClient {
   }
 
   async fetchMangaImages({ id, revalidate }: MangaFetchParams): Promise<string[] | null> {
-    const gallery = await this.fetchGallery(id, revalidate)
+    const gallery = await this.fetchGallery({ id, revalidate })
 
     if (!gallery) {
       return null
@@ -327,7 +326,7 @@ class KHentaiClient {
     }
   }
 
-  private async fetchGallery(id: number, revalidate = sec('12 hours')): Promise<KHentaiGallery | null> {
+  private async fetchGallery({ id, revalidate }: MangaFetchParams): Promise<KHentaiGallery | null> {
     try {
       const html = await this.client.fetch<string>(`/r/${id}`, { next: { revalidate } }, true)
       return this.parseGalleryFromHTML(html, id)
