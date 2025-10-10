@@ -1,7 +1,7 @@
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { sec } from '@/utils/date'
 
-import { type GETSearchSuggestionsResponse, GETSearchSuggestionsSchema, queryBlacklist } from './schema'
+import { GETSearchSuggestionsSchema, queryBlacklist } from './schema'
 import { suggestionTrie } from './suggestion-trie'
 
 export async function GET(request: Request) {
@@ -24,14 +24,12 @@ export async function GET(request: Request) {
 
     const cacheControl = createCacheControl({
       public: true,
-      maxAge: sec('3 days'),
-      sMaxAge: sec('3 days'),
-      swr: sec('3 days'),
+      maxAge: sec('30 days'),
+      sMaxAge: sec('1 day'),
+      swr: sec('1 day'),
     })
 
-    return Response.json(suggestions satisfies GETSearchSuggestionsResponse, {
-      headers: { 'Cache-Control': cacheControl },
-    })
+    return Response.json(suggestions, { headers: { 'Cache-Control': cacheControl } })
   } catch (error) {
     return handleRouteError(error, request)
   }

@@ -1,7 +1,5 @@
 import BackButton from '@/components/BackButton'
 
-export const dynamic = 'error'
-
 export default function Layout({ post, comment }: LayoutProps<'/post/[id]'>) {
   return (
     <>
