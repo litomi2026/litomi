@@ -10,6 +10,7 @@ import { TOTAL_HIYOBI_PAGES } from '@/constants/policy'
 import { hiyobiClient } from '@/crawler/hiyobi'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
+export const dynamic = 'force-static'
 export const revalidate = 10800 // 3 hours
 
 export const metadata: Metadata = {
