@@ -248,15 +248,15 @@ class KHentaiClient {
     return gallery.files.map((file) => file.image.url)
   }
 
-  async fetchRandomKoreanMangas(): Promise<Manga[]> {
-    return this.searchMangas({ search: 'language:korean', sort: 'random' }, 15)
+  async fetchRandomKoreanMangas(revalidate?: number): Promise<Manga[]> {
+    return this.searchMangas({ search: 'language:korean', sort: 'random' }, revalidate)
   }
 
-  async searchKoreanMangas(): Promise<Manga[]> {
-    return this.searchMangas({ search: 'language:korean' }, sec('6 hours'))
+  async searchKoreanMangas(revalidate?: number): Promise<Manga[]> {
+    return this.searchMangas({ search: 'language:korean' }, revalidate)
   }
 
-  async searchMangas(params: KHentaiMangaSearchOptions = {}, revalidate = sec('5 minutes')): Promise<Manga[]> {
+  async searchMangas(params: KHentaiMangaSearchOptions = {}, revalidate?: number): Promise<Manga[]> {
     const kebabCaseParams = Object.entries(params)
       .filter(([key, value]) => key !== 'offset' && value !== undefined)
       .map(([key, value]) => [convertCamelCaseToKebabCase(key), value])

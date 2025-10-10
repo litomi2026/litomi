@@ -9,6 +9,7 @@ import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 import RandomMangaLink from '../RandomMangaLink'
 
+export const dynamic = 'force-static'
 export const revalidate = 15
 
 export const metadata: Metadata = {
