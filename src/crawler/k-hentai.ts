@@ -154,6 +154,11 @@ interface KHentaiTag {
   tag: [string, string] // e.g. ['female', 'big_breasts']
 }
 
+type MangaFetchParams = {
+  id: number
+  revalidate?: number
+}
+
 type TagCategory = (typeof VALID_TAG_CATEGORIES)[number]
 
 interface Torrent {
@@ -220,7 +225,7 @@ class KHentaiClient {
     this.fallbackClient = new ProxyClient(KOHENTAI_CONFIG)
   }
 
-  async fetchManga(id: number, revalidate = sec('12 hours')): Promise<Manga | null> {
+  async fetchManga({ id, revalidate }: MangaFetchParams): Promise<Manga | null> {
     const gallery = await this.fetchGallery(id, revalidate)
 
     if (!gallery) {
@@ -233,7 +238,7 @@ class KHentaiClient {
     }
   }
 
-  async fetchMangaImages(id: number, revalidate = sec('12 hours')): Promise<string[] | null> {
+  async fetchMangaImages({ id, revalidate }: MangaFetchParams): Promise<string[] | null> {
     const gallery = await this.fetchGallery(id, revalidate)
 
     if (!gallery) {
@@ -243,15 +248,15 @@ class KHentaiClient {
     return gallery.files.map((file) => file.image.url)
   }
 
-  async fetchRandomKoreanMangas(): Promise<Manga[]> {
-    return this.searchMangas({ search: 'language:korean', sort: 'random' }, 15)
+  async fetchRandomKoreanMangas(revalidate?: number): Promise<Manga[]> {
+    return this.searchMangas({ search: 'language:korean', sort: 'random' }, revalidate)
   }
 
-  async searchKoreanMangas(): Promise<Manga[]> {
-    return this.searchMangas({ search: 'language:korean' }, sec('6 hours'))
+  async searchKoreanMangas(revalidate?: number): Promise<Manga[]> {
+    return this.searchMangas({ search: 'language:korean' }, revalidate)
   }
 
-  async searchMangas(params: KHentaiMangaSearchOptions = {}, revalidate = sec('5 minutes')): Promise<Manga[]> {
+  async searchMangas(params: KHentaiMangaSearchOptions = {}, revalidate?: number): Promise<Manga[]> {
     const kebabCaseParams = Object.entries(params)
       .filter(([key, value]) => key !== 'offset' && value !== undefined)
       .map(([key, value]) => [convertCamelCaseToKebabCase(key), value])

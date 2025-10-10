@@ -11,6 +11,7 @@ import { hiyobiClient } from '@/crawler/hiyobi'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 export const dynamic = 'force-static'
+export const revalidate = 10800 // 3 hours
 
 export const metadata: Metadata = {
   title: '신작',
@@ -41,7 +42,7 @@ export default async function Page({ params }: PageProps<'/new/[page]'>) {
   }
 
   const { page } = validation.data
-  const mangas = await getMangas({ page })
+  const mangas = await getMangas(page)
 
   if (mangas.length === 0) {
     notFound()
@@ -62,8 +63,7 @@ export default async function Page({ params }: PageProps<'/new/[page]'>) {
   )
 }
 
-async function getMangas({ page }: { page: number }) {
-  // cacheLife('hours')
+async function getMangas(page: number) {
   try {
     return await hiyobiClient.fetchMangas({ page })
   } catch (error) {

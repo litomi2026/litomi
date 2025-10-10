@@ -10,7 +10,7 @@ import { litomiClient } from '@/crawler/litomi'
 import MangaViewer from './MangaViewer'
 import { mangaSchema } from './schema'
 
-export const dynamic = 'error'
+export const dynamic = 'force-static'
 
 export async function generateMetadata({ params }: PageProps<'/manga/[id]'>): Promise<Metadata> {
   const validation = mangaSchema.safeParse(await params)

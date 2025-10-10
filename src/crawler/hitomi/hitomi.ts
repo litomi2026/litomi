@@ -8,7 +8,6 @@ import { translateLanguageList } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
 import { translateTag } from '@/translation/tag'
 import { Manga } from '@/types/manga'
-import { sec } from '@/utils/date'
 
 import { NotFoundError, ParseError } from '../errors'
 import { ProxyClient, ProxyClientConfig } from '../proxy'
@@ -16,6 +15,10 @@ import { isUpstreamServerError } from '../proxy-utils'
 import { HitomiFile, HitomiGallery, Tag } from './types'
 import { urlFromUrlFromHash } from './utils'
 
+type MangaFetchParams = {
+  id: number
+  revalidate?: number
+}
 const HITOMI_CONFIG: ProxyClientConfig = {
   baseURL: 'https://ltn.gold-usergeneratedcontent.net',
   circuitBreaker: {
@@ -50,7 +53,7 @@ class HitomiClient {
     this.client = new ProxyClient(HITOMI_CONFIG)
   }
 
-  async fetchManga(id: number, revalidate = sec('1 day')) {
+  async fetchManga({ id, revalidate }: MangaFetchParams) {
     try {
       const jsText = await this.client.fetch<string>(`/galleries/${id}.js`, { next: { revalidate } }, true)
       const gallery = await this.parseGalleryFromJS(jsText, id)
@@ -63,8 +66,8 @@ class HitomiClient {
     }
   }
 
-  async fetchMangaImages(id: number) {
-    const manga = await this.fetchManga(id)
+  async fetchMangaImages({ id, revalidate }: MangaFetchParams) {
+    const manga = await this.fetchManga({ id, revalidate })
     return manga?.images ?? []
   }
 
