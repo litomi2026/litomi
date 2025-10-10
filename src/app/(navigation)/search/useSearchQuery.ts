@@ -22,7 +22,14 @@ export function useSearchQuery() {
     queryFn: ({ pageParam }) => {
       const searchParamsWithCursor = new URLSearchParams(whitelisted)
       if (pageParam) {
-        searchParamsWithCursor.set('next-id', pageParam.toString())
+        const cursor = pageParam.toString()
+        if (searchParamsWithCursor.get('sort') === 'popular') {
+          const [nextViews, nextViewsId] = cursor.split('-')
+          searchParamsWithCursor.set('next-views', nextViews)
+          searchParamsWithCursor.set('next-views-id', nextViewsId)
+        } else {
+          searchParamsWithCursor.set('next-id', cursor)
+        }
         searchParamsWithCursor.delete('skip')
       }
       return searchMangas(searchParamsWithCursor)

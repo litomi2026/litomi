@@ -15,7 +15,7 @@ export const FILTER_CONFIG = {
     type: 'select' as const,
     label: '정렬',
     options: [
-      { value: '', label: '기본' },
+      { value: '', label: '최신순' },
       { value: 'random', label: '랜덤' },
       { value: 'id_asc', label: '오래된 순' },
       { value: 'popular', label: '인기순' },
@@ -82,6 +82,20 @@ export const FILTER_CONFIG = {
     min: 0,
     max: 10000,
     placeholder: '처음 N개 건너뛰기',
+  },
+  'next-views': {
+    type: 'number' as const,
+    label: '시작 조회수',
+    min: 0,
+    max: Number.MAX_SAFE_INTEGER,
+    placeholder: '특정 조회수부터 검색',
+  },
+  'next-views-id': {
+    type: 'number' as const,
+    label: '시작 조회수 ID',
+    min: 1,
+    max: Number.MAX_SAFE_INTEGER,
+    placeholder: '특정 조회수 ID부터 검색',
   },
 } as const
 
