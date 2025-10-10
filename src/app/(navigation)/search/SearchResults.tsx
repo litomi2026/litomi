@@ -19,7 +19,7 @@ type Props = {
 
 export default function SearchResults({ view, sort }: Props) {
   const isRandomSort = sort === Sort.RANDOM
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useSearchQuery()
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage, refetch, isRefetching } = useSearchQuery()
   const mangas = useMemo(() => data?.pages.flatMap((page) => page.mangas) ?? [], [data])
 
   const loadMoreRef = useInfiniteScrollObserver({
@@ -69,7 +69,12 @@ export default function SearchResults({ view, sort }: Props) {
       {isRandomSort ? (
         <RandomRefreshButton
           className="flex gap-1 items-center border-2 px-3 p-2 rounded-xl transition mx-auto"
-          timer={1}
+          isLoading={isRefetching}
+          onClick={async () => {
+            await refetch()
+            window.scrollTo({ top: 0, behavior: 'smooth' })
+          }}
+          timer={60}
         />
       ) : (
         <div className="w-full py-4 flex justify-center" ref={loadMoreRef} />
