@@ -16,9 +16,9 @@ export const FILTER_CONFIG = {
     label: '정렬',
     options: [
       { value: '', label: '최신순' },
+      { value: 'popular', label: '인기순' },
       { value: 'random', label: '랜덤' },
       { value: 'id_asc', label: '오래된 순' },
-      { value: 'popular', label: '인기순' },
     ],
   },
   'min-view': {
