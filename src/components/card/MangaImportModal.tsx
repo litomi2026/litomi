@@ -3,7 +3,7 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { UploadCloud } from 'lucide-react'
 import ms from 'ms'
-import { useMemo, useState } from 'react'
+import { FormEvent, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { create } from 'zustand'
 
@@ -72,7 +72,7 @@ export default function MangaImportModal() {
     setIsImporting(false)
   }
 
-  async function handleImport(e?: React.FormEvent) {
+  async function handleImport(e?: FormEvent) {
     e?.preventDefault()
 
     if (!libraryId) {
@@ -90,51 +90,14 @@ export default function MangaImportModal() {
       return
     }
 
-    toast.warning('준비 중입니다...')
-    return
-
-    // setIsImporting(true)
-
-    // setImportStatuses(
-    //   mangaIds.map((id) => ({
-    //     id,
-    //     status: 'pending',
-    //   })),
-    // )
-
-    // try {
-    //   const metadataPromises = mangaIds.map(async (id) => {
-    //     setImportStatuses((prev) => prev.map((s) => (s.id === id ? { ...s, status: 'loading' } : s)))
-
-    //     try {
-    //       const response = await fetch(`/api/proxy/manga/${id}`)
-    //       const data = await response.json()
-
-    //       setImportStatuses((prev) =>
-    //         prev.map((s) => (s.id === id ? { ...s, status: 'success', title: data.title || `#${id}` } : s)),
-    //       )
-
-    //       return { id, success: true, title: data.title }
-    //     } catch {
-    //       setImportStatuses((prev) =>
-    //         prev.map((s) => (s.id === id ? { ...s, status: 'error', error: '정보를 가져올 수 없음' } : s)),
-    //       )
-    //       return { id, success: false }
-    //     }
-    //   })
-
-    //   await Promise.all(metadataPromises)
-    //   dispatchBulkImport({ mangaIds, toLibraryId: libraryId })
-    // } finally {
-    //   setIsImporting(false)
-    // }
+    dispatchBulkImport({ mangaIds, toLibraryId: libraryId })
   }
 
   return (
     <Modal
       className="fixed inset-0 z-50 flex flex-col overflow-hidden bg-zinc-900 
         sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2
-        sm:w-full sm:max-w-2xl sm:max-h-[calc(100dvh-4rem)] sm:rounded-xl sm:border-2"
+        sm:w-full sm:max-w-prose sm:max-h-[calc(100dvh-4rem)] sm:rounded-xl sm:border-2"
       onClose={handleClose}
       open={Boolean(libraryId)}
     >
