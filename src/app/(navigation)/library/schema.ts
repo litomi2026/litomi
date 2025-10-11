@@ -1,11 +1,12 @@
 import z from 'zod/v4'
 
-import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/constants/policy'
+import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAME_LENGTH, MAX_MANGA_ID } from '@/constants/policy'
 
 const positiveIntegerSchema = z.coerce.number().int().positive()
+const mangaIdSchema = z.coerce.number().int().positive().max(MAX_MANGA_ID)
 
 const mangaIdsArraySchema = z
-  .array(positiveIntegerSchema)
+  .array(mangaIdSchema)
   .min(1, '선택한 작품이 없어요')
   .max(100, '최대 100개까지 선택할 수 있어요')
 
@@ -47,8 +48,13 @@ export const bulkRemoveSchema = z.object({
   mangaIds: mangaIdsArraySchema,
 })
 
+export const bulkImportMangaSchema = z.object({
+  libraryId: positiveIntegerSchema,
+  mangaIds: mangaIdsArraySchema,
+})
+
 export const addMangaToLibrariesSchema = z.object({
-  mangaId: positiveIntegerSchema,
+  mangaId: mangaIdSchema,
   libraryIds: z
     .array(positiveIntegerSchema)
     .min(1, '서재를 선택해주세요')

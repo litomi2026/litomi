@@ -19,6 +19,7 @@ type MangaFetchParams = {
   id: number
   revalidate?: number
 }
+
 const HITOMI_CONFIG: ProxyClientConfig = {
   baseURL: 'https://ltn.gold-usergeneratedcontent.net',
   circuitBreaker: {
@@ -57,6 +58,11 @@ class HitomiClient {
     try {
       const jsText = await this.client.fetch<string>(`/galleries/${id}.js`, { next: { revalidate } }, true)
       const gallery = await this.parseGalleryFromJS(jsText, id)
+
+      if (gallery.id !== id.toString()) {
+        return null
+      }
+
       return await this.convertHitomiGalleryToManga(gallery)
     } catch (error) {
       if (error instanceof NotFoundError) {

@@ -43,7 +43,7 @@ function prepareManga(
     return initialManga ?? data
   }
 
-  const isError = data && 'isError' in data && data.isError
+  const isError = data && 'isError' in data
 
   if (isError) {
     return {

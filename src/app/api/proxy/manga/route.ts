@@ -42,7 +42,7 @@ export async function GET(request: Request) {
       'Cache-Control': createCacheControl({
         public: true,
         maxAge: sec('10 hours'),
-        sMaxAge: sec('10 hours'),
+        sMaxAge: sec('1 hour'),
         swr: sec('1 hour'),
       }),
     }

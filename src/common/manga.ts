@@ -109,6 +109,11 @@ export async function fetchMangasFromMultiSources(ids: number[]): Promise<Record
     ].filter(checkDefined)
 
     if (sources.length === 0) {
+      mangaMap[id] = {
+        id,
+        title: '해당 작품을 찾을 수 없어요',
+        images: [],
+      }
       continue
     }
 

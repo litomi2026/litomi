@@ -10,7 +10,7 @@ import Modal from '@/components/ui/Modal'
 import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/constants/policy'
 import useActionResponse, { getFieldError, getFormField } from '@/hook/useActionResponse'
 
-import { updateLibrary } from './action'
+import { updateLibrary } from './action-library'
 
 const DEFAULT_ICONS = ['📚', '❤️', '⭐', '📖', '🔖', '📌', '💾', '🗂️']
 

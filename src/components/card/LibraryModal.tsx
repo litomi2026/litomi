@@ -6,7 +6,7 @@ import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
 import { create } from 'zustand'
 
-import { addMangaToLibraries } from '@/app/(navigation)/library/action'
+import { addMangaToLibraries } from '@/app/(navigation)/library/action-library-item'
 import { QueryKeys } from '@/constants/query'
 import useActionResponse from '@/hook/useActionResponse'
 

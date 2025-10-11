@@ -8,7 +8,7 @@ import IconTrash from '@/components/icons/IconTrash'
 import Modal from '@/components/ui/Modal'
 import useActionResponse from '@/hook/useActionResponse'
 
-import { deleteLibrary } from './action'
+import { deleteLibrary } from './action-library'
 
 type Props = {
   libraryId: number
