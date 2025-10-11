@@ -6,6 +6,7 @@
     "christian-kohler.path-intellisense",
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
+    "hashicorp.terraform",
     "visualstudioexptteam.vscodeintellicode"
   ]
 }
