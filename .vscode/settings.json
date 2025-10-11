@@ -11,10 +11,6 @@
     "**/out": true
   },
   "turboConsoleLog.logMessagePrefix": "👀",
-  "[dockerfile]": { "editor.defaultFormatter": "foxundermoon.shell-format" },
-  "[dotenv]": { "editor.defaultFormatter": "foxundermoon.shell-format" },
-  "[ignore]": { "editor.defaultFormatter": "foxundermoon.shell-format" },
-  "[prisma]": { "editor.defaultFormatter": "Prisma.prisma" },
-  "[shellscript]": { "editor.defaultFormatter": "foxundermoon.shell-format" },
-  "[svg]": { "editor.defaultFormatter": "jock.svg" }
+  "[svg]": { "editor.defaultFormatter": "jock.svg" },
+  "[terraform]": { "editor.defaultFormatter": "hashicorp.terraform" }
 }

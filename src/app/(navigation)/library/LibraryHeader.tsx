@@ -5,6 +5,9 @@ import dynamic from 'next/dynamic'
 import { useParams, usePathname } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
+import MangaImportButton from '@/components/card/MangaImportButton'
+import MangaImportModal from '@/components/card/MangaImportModal'
+
 import AutoHideNavigation from '../AutoHideNavigation'
 import { useLibrarySelectionStore } from './[id]/librarySelection'
 import ShareLibraryButton from './[id]/ShareLibraryButton'
@@ -144,6 +147,12 @@ export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
         )}
         <div className="flex items-center gap-1">
           {!isSelectionMode && isPublicLibrary && <ShareLibraryButton className="p-2" library={currentLibrary} />}
+          {!isSelectionMode && isOwner && (
+            <>
+              <MangaImportButton libraryId={currentLibrary.id} />
+              <MangaImportModal />
+            </>
+          )}
           {permissions.canSelectItems && (
             <button
               className="p-2 hover:bg-zinc-800 rounded-lg transition disabled:opacity-50"

@@ -30,7 +30,8 @@ export async function addMangaToLibraries(data: { mangaId: number; libraryIds: n
     WITH user_libraries AS (
       SELECT ${libraryTable.id} 
       FROM ${libraryTable}
-      WHERE ${libraryTable.userId} = ${userId} AND ${libraryTable.id} = ANY(ARRAY[${sql.join(libraryIds, sql`, `)}]::int[])
+      WHERE ${libraryTable.userId} = ${userId} 
+        AND ${libraryTable.id} = ANY(ARRAY[${sql.join(libraryIds, sql`, `)}]::int[])
     )
     INSERT INTO ${libraryItemTable} (library_id, manga_id)
     SELECT id, ${mangaId}
