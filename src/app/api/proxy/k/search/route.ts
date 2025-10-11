@@ -72,7 +72,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const revalidate = params.nextViewsId ? sec('12 hours') : params.nextId ? sec('30 days') : 0
+    const revalidate = params.nextId ? sec('30 days') : 0
     const searchedMangas = await kHentaiClient.searchMangas(params, revalidate)
     const mangas = filterMangasByMinusPrefix(searchedMangas, query)
     const hasManga = mangas.length > 0
