@@ -44,7 +44,9 @@ export async function createLibrary(formData: FormData) {
       ${icon},
       ${isPublic}
     WHERE (
-      SELECT COUNT(${libraryTable.id}) FROM ${libraryTable} WHERE user_id = ${userId}
+      SELECT COUNT(${libraryTable.id}) 
+      FROM ${libraryTable} 
+      WHERE ${libraryTable.userId} = ${userId}
     ) < ${MAX_LIBRARIES_PER_USER}
     RETURNING ${libraryTable.id}
   `)
