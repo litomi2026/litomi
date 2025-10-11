@@ -65,17 +65,17 @@ export default function MangaImportModal() {
     e?.preventDefault()
 
     if (!libraryId) {
-      toast.error('서재를 선택해주세요')
+      toast.warning('서재를 선택해주세요')
       return
     }
 
     if (mangaIds.length === 0) {
-      toast.error('유효한 작품 ID를 입력해주세요')
+      toast.warning('유효한 작품 ID를 입력해주세요')
       return
     }
 
     if (mangaIds.length > MAX_LIBRARY_ITEMS_PER_LIBRARY) {
-      toast.error(`한 번에 최대 ${MAX_LIBRARY_ITEMS_PER_LIBRARY}개까지 가져올 수 있어요`)
+      toast.warning(`한 번에 최대 ${MAX_LIBRARY_ITEMS_PER_LIBRARY}개까지 가져올 수 있어요`)
       return
     }
 
