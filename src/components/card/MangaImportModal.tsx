@@ -111,7 +111,7 @@ export default function MangaImportModal() {
             </span>
           </label>
           <textarea
-            className="w-full min-h-32 max-h-96 px-3 py-2 bg-zinc-800 border-2 border-zinc-700 rounded-lg transition font-mono text-sm
+            className="w-full min-h-32 max-h-96 px-3 py-2 bg-zinc-800 border-2 border-zinc-700 rounded-lg transition font-mono
             text-zinc-100 placeholder-zinc-500 focus:border-brand-end focus:outline-none"
             disabled={isImporting}
             onChange={(e) => setInputText(e.target.value)}
