@@ -45,7 +45,7 @@ export async function GET(request: Request) {
 
       case 'realtime':
         keywords = await trendingKeywordsService.getTrendingRealtime(limit)
-        cacheMaxAge = sec('5 minutes')
+        cacheMaxAge = sec('10 minutes')
         break
 
       case 'weekly':
@@ -64,7 +64,7 @@ export async function GET(request: Request) {
       public: true,
       maxAge: cacheMaxAge,
       sMaxAge: cacheMaxAge,
-      swr: cacheMaxAge * 2,
+      swr: cacheMaxAge,
     })
 
     return NextResponse.json(response, { headers: { 'Cache-Control': cacheControl } })
