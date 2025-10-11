@@ -12,7 +12,7 @@ import useActionResponse from '@/hook/useActionResponse'
 
 import type { BulkOperationPermissions } from './bulkOperationPermissions'
 
-import { bulkCopyToLibrary, bulkMoveToLibrary, bulkRemoveFromLibrary } from './action'
+import { bulkCopyToLibrary, bulkMoveToLibrary, bulkRemoveFromLibrary } from './action-library-item'
 
 type Props = {
   libraries: {

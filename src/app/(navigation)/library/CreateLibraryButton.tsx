@@ -14,7 +14,7 @@ import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/const
 import { QueryKeys } from '@/constants/query'
 import useActionResponse from '@/hook/useActionResponse'
 
-import { createLibrary } from './action'
+import { createLibrary } from './action-library'
 
 const DEFAULT_COLORS = [
   '#3B82F6', // Blue
