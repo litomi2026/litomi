@@ -3,7 +3,7 @@ import { max, min, sql } from 'drizzle-orm'
 
 import type { Manga } from '../../../src/types/manga'
 
-import { getMangaFromMultiSources } from '../../../src/common/manga'
+import { fetchMangaFromMultiSources } from '../../../src/common/manga'
 import { kHentaiClient } from '../../../src/crawler/k-hentai'
 import { aivenDB } from '../../../src/database/aiven/drizzle'
 import { mangaTable } from '../../../src/database/aiven/schema'
@@ -563,14 +563,14 @@ async function crawlMangaWithRetry(id: number, retries = CONFIG.MAX_RETRIES): Pr
       if (attempt > 1) {
         log.info(`Fetching manga #${id} (attempt ${attempt}/${retries})...`)
       }
-      const result = await getMangaFromMultiSources(id)
+      const result = await fetchMangaFromMultiSources(id)
 
       if (!result) {
         log.warn(`No data found for manga #${id}`)
         return null
       }
 
-      if ('isError' in result && result.isError) {
+      if ('isError' in result) {
         log.warn(`Error for manga #${id}: ${result.title}`)
         return null
       }
