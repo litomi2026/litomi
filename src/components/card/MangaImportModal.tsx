@@ -22,13 +22,6 @@ type ImportMangaModalStore = {
   setLibraryId: (libraryId: number | null) => void
 }
 
-type ImportStatus = {
-  id: number
-  status: 'error' | 'loading' | 'pending' | 'success'
-  error?: string
-  title?: string
-}
-
 const placeholder = `1234567
 2345678, 3456789
 여러 줄로 입력 가능`
@@ -39,15 +32,13 @@ export const useImportMangaModalStore = create<ImportMangaModalStore>()((set) =>
 }))
 
 export default function MangaImportModal() {
-  const [importStatuses, setImportStatuses] = useState<ImportStatus[]>([])
-  const [isImporting, setIsImporting] = useState(false)
   const [inputText, setInputText] = useState('')
   const debouncedInputText = useDebouncedValue({ value: inputText, delay: ms('0.5s') })
   const mangaIds = useMemo(() => parseIDs(debouncedInputText), [debouncedInputText])
   const { libraryId, setLibraryId } = useImportMangaModalStore()
   const queryClient = useQueryClient()
 
-  const [, dispatchBulkImport] = useActionResponse({
+  const [, dispatchBulkImport, isImporting] = useActionResponse({
     action: bulkCopyToLibrary,
     onSuccess: (successCount, [{ mangaIds, toLibraryId }]) => {
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItems(toLibraryId) })
@@ -68,8 +59,6 @@ export default function MangaImportModal() {
   function handleClose() {
     setLibraryId(null)
     setInputText('')
-    setImportStatuses([])
-    setIsImporting(false)
   }
 
   async function handleImport(e?: FormEvent) {
@@ -115,61 +104,27 @@ export default function MangaImportModal() {
           </button>
         </div>
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-2">
-              작품 ID 입력
-              <span className="ml-2 text-xs text-zinc-500">
-                {typeof navigator !== 'undefined' && navigator.platform?.includes('Mac') ? '⌘' : 'Ctrl'}+Enter로 제출
-              </span>
-            </label>
-            <textarea
-              className="w-full min-h-32 max-h-96 px-3 py-2 bg-zinc-800 border-2 border-zinc-700 rounded-lg transition
-                text-zinc-100 placeholder-zinc-500 focus:border-brand-end focus:outline-none
-                font-mono text-sm"
-              disabled={isImporting}
-              onChange={(e) => setInputText(e.target.value)}
-              onKeyDown={(e) => {
-                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                  if (!isImporting) {
-                    handleImport()
-                  }
+          <label className="block text-sm font-medium text-zinc-300 mb-2">
+            작품 ID 입력
+            <span className="ml-2 text-xs text-zinc-500">
+              {typeof navigator !== 'undefined' && navigator.platform?.includes('Mac') ? '⌘' : 'Ctrl'}+Enter로 제출
+            </span>
+          </label>
+          <textarea
+            className="w-full min-h-32 max-h-96 px-3 py-2 bg-zinc-800 border-2 border-zinc-700 rounded-lg transition font-mono text-sm
+            text-zinc-100 placeholder-zinc-500 focus:border-brand-end focus:outline-none"
+            disabled={isImporting}
+            onChange={(e) => setInputText(e.target.value)}
+            onKeyDown={(e) => {
+              if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                if (!isImporting) {
+                  handleImport()
                 }
-              }}
-              placeholder={placeholder}
-              value={inputText}
-            />
-          </div>
-
-          {/* 가져오기 진행 상태 */}
-          {importStatuses.length > 0 && (
-            <div>
-              <h3 className="text-sm font-medium text-zinc-300 mb-2">진행 상태</h3>
-              <div className="max-h-64 overflow-y-auto bg-zinc-800 rounded-lg p-3 space-y-1">
-                {importStatuses.map((status) => (
-                  <div className="flex items-center justify-between text-sm py-1 px-2 rounded" key={status.id}>
-                    <span className="font-mono text-zinc-400">#{status.id}</span>
-                    {status.title && <span className="flex-1 mx-2 text-zinc-300 truncate">{status.title}</span>}
-                    <span
-                      className={`text-xs font-medium ${
-                        status.status === 'success'
-                          ? 'text-green-400'
-                          : status.status === 'error'
-                            ? 'text-red-400'
-                            : status.status === 'loading'
-                              ? 'text-blue-400'
-                              : 'text-zinc-500'
-                      }`}
-                    >
-                      {status.status === 'pending' && '대기중'}
-                      {status.status === 'loading' && <IconSpinner className="w-4 h-4" />}
-                      {status.status === 'success' && '✓ 완료'}
-                      {status.status === 'error' && `✗ ${status.error || '실패'}`}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+              }
+            }}
+            placeholder={placeholder}
+            value={inputText}
+          />
         </div>
         <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-zinc-900 border-t-2 border-zinc-800 flex-shrink-0">
           <button
