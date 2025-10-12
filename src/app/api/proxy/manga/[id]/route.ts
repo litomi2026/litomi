@@ -1,4 +1,5 @@
 import { fetchMangaFromMultiSources } from '@/common/manga'
+import { BLACKLISTED_MANGA_IDS } from '@/constants/policy'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { Manga, MangaError } from '@/types/manga'
 import { RouteProps } from '@/types/nextjs'
@@ -40,6 +41,19 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
   }
 
   const { id, scope } = validation.data
+
+  if (BLACKLISTED_MANGA_IDS.includes(id)) {
+    const forbiddenHeaders = {
+      'Cache-Control': createCacheControl({
+        public: true,
+        maxAge: sec('30 days'),
+        sMaxAge: sec('30 days'),
+        swr: sec('30 days'),
+      }),
+    }
+
+    return new Response('Forbidden', { status: 403, headers: forbiddenHeaders })
+  }
 
   try {
     const manga = await fetchMangaFromMultiSources(id)
