@@ -30,8 +30,8 @@ export function MangaCardDonation() {
   return (
     <MangaCardSkeleton>
       <span>
-        쿠팡 파트너스에서 물품을 구매해서 가난한 개발자를 도와주세요. 쿠팡에서 정말 소중한 일정1액의 수수료를
-        제공받아요. 광고 없이 서버를 운영하기 위해서 참여해주시면 감사하겠습니다... 🙇
+        쿠팡 파트너스에서 물품을 구매해서 서비스를 도와주세요. 쿠팡에서 소중한 일정액의 수수료를 제공받아요. 매일 몇
+        천원의 서버 비용이 발생하는데, 유해 광고 없이 서비스를 운영하기 위해서 참여해주시면 감사하겠습니다. 🙇
       </span>
       <CoupangPartners className="font-bold" />
     </MangaCardSkeleton>
