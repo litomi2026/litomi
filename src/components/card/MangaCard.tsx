@@ -30,8 +30,8 @@ export function MangaCardDonation() {
   return (
     <MangaCardSkeleton>
       <span>
-        쿠팡 파트너스에서 물품을 구매해서 가난한 개발자를 도와주세요. 쿠팡에서 정말 소중한 일정1액의 수수료를
-        제공받아요. 광고 없이 서버를 운영하기 위해서 참여해주시면 감사하겠습니다... 🙇
+        쿠팡 파트너스에서 물품을 구매해서 서비스를 도와주세요. 쿠팡에서 소중한 일정액의 수수료를 제공받아요. 매일 몇
+        천원의 서버 비용이 발생하는데, 유해 광고 없이 서비스를 운영하기 위해서 참여해주시면 감사하겠습니다. 🙇
       </span>
       <CoupangPartners className="font-bold" />
     </MangaCardSkeleton>
@@ -69,46 +69,64 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
               <h4 className="line-clamp-3 font-bold text-base leading-5 min-w-0 break-words break-all">{title}</h4>
             </a>
             {languages && languages.length > 0 && (
-              <LanguageBadge key={languages[0].value} language={languages[0].value} />
+              <Suspense>
+                <LanguageBadge key={languages[0].value} language={languages[0].value} />
+              </Suspense>
             )}
           </div>
           {type && (
             <div className="flex gap-1">
               <dt>종류</dt>
-              <MangaMetadataItem filterType="type" value={type} />
+              <Suspense>
+                <MangaMetadataItem filterType="type" value={type} />
+              </Suspense>
             </div>
           )}
           {artists && artists.length > 0 && (
             <div className="flex gap-1">
               <dt>작가</dt>
-              <MangaMetadataList details={artists} filterType="artist" />
+              <Suspense>
+                <MangaMetadataList details={artists} filterType="artist" />
+              </Suspense>
             </div>
           )}
           {group && group.length > 0 && (
             <div className="flex gap-1">
               <dt>그룹</dt>
-              <MangaMetadataList details={group} filterType="group" />
+              <Suspense>
+                <MangaMetadataList details={group} filterType="group" />
+              </Suspense>
             </div>
           )}
           {series && series.length > 0 && (
             <div className="flex gap-1">
               <dt>시리즈</dt>
-              <MangaMetadataList details={series} filterType="series" />
+              <Suspense>
+                <MangaMetadataList details={series} filterType="series" />
+              </Suspense>
             </div>
           )}
           {characters && characters.length > 0 && (
             <div className="flex gap-1">
               <dt>캐릭터</dt>
-              <MangaMetadataList details={characters} filterType="character" />
+              <Suspense>
+                <MangaMetadataList details={characters} filterType="character" />
+              </Suspense>
             </div>
           )}
           {uploader && (
             <div className="flex gap-1">
               <dt>업로더</dt>
-              <MangaMetadataItem filterType="uploader" value={uploader} />
+              <Suspense>
+                <MangaMetadataItem filterType="uploader" value={uploader} />
+              </Suspense>
             </div>
           )}
-          {tags && tags.length > 0 && <TagList className="flex flex-wrap gap-1 font-semibold" tags={tags} />}
+          {tags && tags.length > 0 && (
+            <Suspense>
+              <TagList className="flex flex-wrap gap-1 font-semibold" tags={tags} />
+            </Suspense>
+          )}
         </dl>
         <div className="grid gap-2">
           <MangaCardStats manga={manga} />
