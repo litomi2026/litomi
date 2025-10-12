@@ -16,7 +16,7 @@ export default function useRecentSearches() {
 
   const saveRecentSearch = useCallback(
     (query: string) => {
-      if (!query.trim() || !isEnabled) {
+      if (!isEnabled || !query.trim()) {
         return
       }
 
@@ -60,11 +60,6 @@ export default function useRecentSearches() {
 
     try {
       localStorage.setItem(LocalStorageKey.RECENT_SEARCHES_ENABLED, String(enabled))
-
-      if (!enabled) {
-        setRecentSearches([])
-        localStorage.removeItem(LocalStorageKey.RECENT_SEARCHES)
-      }
     } catch (error) {
       console.error('toggleEnabled:', error)
     }

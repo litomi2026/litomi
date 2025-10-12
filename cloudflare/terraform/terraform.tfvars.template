@@ -1,0 +1,3 @@
+zone_id    = "your-zone-id-here"
+account_id = "your-account-id-here"
+domain     = "your-domain.com"

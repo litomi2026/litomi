@@ -3,6 +3,7 @@ import { z } from 'zod/v4'
 
 import { decodeLibraryIdCursor, encodeLibraryIdCursor } from '@/common/cursor'
 import { LIBRARY_ITEMS_PER_PAGE } from '@/constants/policy'
+import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { db } from '@/database/supabase/drizzle'
 import { libraryItemTable, libraryTable } from '@/database/supabase/schema'
 import { RouteProps } from '@/types/nextjs'
@@ -100,9 +101,18 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       ? encodeLibraryIdCursor(items[items.length - 1].createdAt, items[items.length - 1].mangaId)
       : null
 
-    return Response.json({ items, nextCursor } satisfies GETLibraryItemsResponse)
+    const result: GETLibraryItemsResponse = {
+      items,
+      nextCursor,
+    }
+
+    const cacheControl = createCacheControl({
+      private: true,
+      maxAge: 3,
+    })
+
+    return Response.json(result, { headers: { 'Cache-Control': cacheControl } })
   } catch (error) {
-    console.error('Failed to fetch library items:', error)
-    return Response.json('Internal Server Error', { status: 500 })
+    return handleRouteError(error, request)
   }
 }

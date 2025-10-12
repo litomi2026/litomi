@@ -101,7 +101,7 @@ export default function TrendingKeywords() {
     }, SCROLL_MOMENTUM_DELAY)
   }
 
-  function handleIndicatorClick(index: number) {
+  function handleClick(index: number) {
     handleInteractionStart()
     setCurrentIndex(index)
     scrollToKeyword(index)
@@ -173,15 +173,16 @@ export default function TrendingKeywords() {
           onTouchStart={handleTouchStart}
           ref={scrollContainerRef}
         >
-          {trendingKeywords.map(({ keyword }, index) => (
+          {trendingKeywords.map(({ keyword }, i) => (
             <KeywordLink
-              ariaCurrent={currentIndex === index}
+              ariaCurrent={currentIndex === i}
               className="max-w-full snap-center aria-current:bg-zinc-700 aria-current:text-zinc-100"
-              index={index}
+              index={i}
               key={keyword}
               keyword={keyword}
               onBlur={handleInteractionEnd}
-              onFocus={() => handleFocus(index)}
+              onClick={() => handleClick(i)}
+              onFocus={() => handleFocus(i)}
             />
           ))}
         </div>
@@ -193,7 +194,7 @@ export default function TrendingKeywords() {
                 aria-label={`Keyword ${i + 1}`}
                 className="rounded-full transition-all flex-shrink-0 size-1.5 bg-zinc-600 hover:bg-zinc-500 aria-current:w-6 aria-current:bg-zinc-400"
                 key={keyword}
-                onClick={() => handleIndicatorClick(i)}
+                onClick={() => handleClick(i)}
               />
             ))}
           </div>
