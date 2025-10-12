@@ -67,21 +67,17 @@ export async function GET(request: Request) {
       .orderBy(desc(notificationTable.id))
       .limit(LIMIT + 1)
 
-    const hasNextPage = results.length > LIMIT
-    const notifications = results.slice(0, LIMIT)
+    const result: GETNotificationResponse = {
+      notifications: results.slice(0, LIMIT),
+      hasNextPage: results.length > LIMIT,
+    }
 
     const cacheControl = createCacheControl({
       private: true,
-      maxAge: 5,
+      maxAge: 3,
     })
 
-    return Response.json(
-      {
-        notifications,
-        hasNextPage,
-      } satisfies GETNotificationResponse,
-      { headers: { 'Cache-Control': cacheControl } },
-    )
+    return Response.json(result, { headers: { 'Cache-Control': cacheControl } })
   } catch (error) {
     return handleRouteError(error, request)
   }

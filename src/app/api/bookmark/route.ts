@@ -2,7 +2,6 @@ import { decodeBookmarkCursor, encodeBookmarkCursor } from '@/common/cursor'
 import { createCacheControl } from '@/crawler/proxy-utils'
 import selectBookmarks from '@/sql/selectBookmarks'
 import { validateUserIdFromCookie } from '@/utils/cookie'
-import { sec } from '@/utils/date'
 
 import { GETBookmarksSchema } from './schema'
 
@@ -79,16 +78,10 @@ export async function GET(request: Request) {
     nextCursor,
   }
 
-  // NOTE: 로그인 후 다른 계정으로 로그인 시 이전 계정의 북마크 목록이 캐시되어 보여지는 이슈가 있음
-  const cacheControl = cursor
-    ? createCacheControl({
-        private: true,
-        maxAge: sec('10 minutes'),
-      })
-    : createCacheControl({
-        private: true,
-        maxAge: 3,
-      })
+  const cacheControl = createCacheControl({
+    private: true,
+    maxAge: 3,
+  })
 
   return Response.json(result, { headers: { 'Cache-Control': cacheControl } })
 }
