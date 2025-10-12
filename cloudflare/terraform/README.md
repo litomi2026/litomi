@@ -15,7 +15,7 @@ This directory contains Terraform configuration for managing Cloudflare cache ru
 1. **Install Terraform** (if not already installed):
 
    ```bash
-   brew install terraform  # macOS
+   brew install terraform
    ```
 
 2. **Run the setup script**:
@@ -52,8 +52,9 @@ This directory contains Terraform configuration for managing Cloudflare cache ru
 5. **Review and apply changes**:
 
    ```bash
-   export $(grep -v '^#' .env | xargs) && terraform plan
-   export $(grep -v '^#' .env | xargs) && terraform apply
+   export $(grep -v '^#' .env | xargs)
+   terraform plan
+   terraform apply
    ```
 
 ## 🔑 Authentication
