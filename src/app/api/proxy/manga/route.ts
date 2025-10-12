@@ -26,28 +26,36 @@ export async function GET(request: Request) {
   const uniqueIds = Array.from(new Set(ids))
 
   try {
-    const mangas = await fetchMangasFromMultiSources(uniqueIds)
+    const mangaMap = await fetchMangasFromMultiSources(uniqueIds)
+    const mangas = Object.values(mangaMap)
 
-    if (Object.keys(mangas).length === 0) {
+    if (mangas.length === 0) {
       return new Response('Not Found', { status: 404 })
     }
 
     if (only === ProxyIdOnly.THUMBNAIL) {
       for (const id of uniqueIds) {
-        mangas[id].images = mangas[id].images.slice(0, MAX_THUMBNAIL_IMAGES)
+        mangaMap[id].images = mangaMap[id].images.slice(0, MAX_THUMBNAIL_IMAGES)
       }
     }
 
-    const successHeaders = {
-      'Cache-Control': createCacheControl({
-        public: true,
-        maxAge: sec('10 hours'),
-        sMaxAge: sec('1 hour'),
-        swr: sec('1 hour'),
-      }),
-    }
+    const hasErrorManga = mangas.some((manga) => 'isError' in manga && manga.isError)
 
-    return Response.json(mangas satisfies GETProxyMangaResponse, { headers: successHeaders })
+    const cacheControl = hasErrorManga
+      ? createCacheControl({
+          public: true,
+          maxAge: sec('30 seconds'),
+          sMaxAge: sec('10 seconds'),
+          swr: sec('20 seconds'),
+        })
+      : createCacheControl({
+          public: true,
+          maxAge: sec('10 hours'),
+          sMaxAge: sec('1 hour'),
+          swr: sec('1 hour'),
+        })
+
+    return Response.json(mangaMap satisfies GETProxyMangaResponse, { headers: { 'Cache-Control': cacheControl } })
   } catch (error) {
     return handleRouteError(error, request)
   }
