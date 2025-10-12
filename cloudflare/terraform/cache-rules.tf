@@ -13,6 +13,7 @@ resource "cloudflare_ruleset" "cache_rules" {
       action      = "set_cache_settings"
 
       action_parameters = {
+        cache = true
         edge_ttl = {
           mode = "respect_origin"
         }
