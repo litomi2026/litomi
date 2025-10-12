@@ -55,7 +55,6 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
             후원하기
           </a>
           <CoupangPartners />
-          <BankAccountInfo />
           <a className="hover:text-purple-400 transition" href="https://patreon.com/litomi" target="_blank">
             Patreon
           </a>
