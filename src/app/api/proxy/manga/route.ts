@@ -1,5 +1,5 @@
 import { fetchMangasFromMultiSources } from '@/common/manga'
-import { MAX_THUMBNAIL_IMAGES } from '@/constants/policy'
+import { BLACKLISTED_MANGA_IDS, MAX_THUMBNAIL_IMAGES } from '@/constants/policy'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { Manga, MangaError } from '@/types/manga'
 import { sec } from '@/utils/date'
@@ -23,7 +23,7 @@ export async function GET(request: Request) {
   }
 
   const { ids, only } = validation.data
-  const uniqueIds = Array.from(new Set(ids))
+  const uniqueIds = Array.from(new Set(ids.filter((id) => !BLACKLISTED_MANGA_IDS.includes(id))))
 
   try {
     const mangaMap = await fetchMangasFromMultiSources(uniqueIds)

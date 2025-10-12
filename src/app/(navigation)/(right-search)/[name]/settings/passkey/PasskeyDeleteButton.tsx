@@ -3,8 +3,8 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 
 import IconShield from '@/components/icons/IconShield'
+import IconSpinner from '@/components/icons/IconSpinner'
 import IconTrash from '@/components/icons/IconTrash'
-import Loading from '@/components/ui/Loading'
 import Modal from '@/components/ui/Modal'
 import useActionResponse from '@/hook/useActionResponse'
 
@@ -56,11 +56,6 @@ export default function PasskeyDeleteButton({ id, className, onCancel, open, onO
         open={isOpen}
       >
         <div className="p-5 relative">
-          {isPending && (
-            <div className="absolute inset-0 bg-zinc-900/90 rounded-xl flex items-center justify-center z-10">
-              <Loading className="w-5 text-zinc-400" />
-            </div>
-          )}
           <div className="flex flex-col items-center text-center mb-5">
             <div className="mb-3 h-12 w-12 rounded-xl bg-zinc-800 flex items-center justify-center">
               <IconShield className="h-6 w-6 text-red-500" />
@@ -82,11 +77,11 @@ export default function PasskeyDeleteButton({ id, className, onCancel, open, onO
             <form action={dispatchAction} className="flex-1">
               <input name="credential-id" type="hidden" value={id} />
               <button
-                className="w-full h-10 px-4 rounded-lg bg-red-600 text-white font-medium disabled:opacity-70 relative"
+                className="flex items-center justify-center w-full h-10 px-4 rounded-lg bg-red-600 text-white font-medium disabled:opacity-70 relative"
                 disabled={isPending}
                 type="submit"
               >
-                {isPending ? <Loading className="h-4 w-4 mx-auto" /> : '삭제'}
+                {isPending ? <IconSpinner className="size-6" /> : '삭제'}
               </button>
             </form>
           </div>

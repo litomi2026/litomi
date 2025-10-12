@@ -1,5 +1,5 @@
 import { GETProxyKSearchSchema } from '@/app/api/proxy/k/search/schema'
-import { MAX_KHENTAI_SEARCH_QUERY_LENGTH } from '@/constants/policy'
+import { BLACKLISTED_MANGA_IDS, MAX_KHENTAI_SEARCH_QUERY_LENGTH } from '@/constants/policy'
 import { getCategories, kHentaiClient, KHentaiMangaSearchOptions } from '@/crawler/k-hentai'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { trendingKeywordsRedisService } from '@/services/TrendingKeywordsRedisService'
@@ -74,7 +74,8 @@ export async function GET(request: Request) {
   try {
     const revalidate = params.nextId ? sec('30 days') : 0
     const searchedMangas = await kHentaiClient.searchMangas(params, revalidate)
-    const mangas = filterMangasByMinusPrefix(searchedMangas, query)
+    const filteredMangas = searchedMangas.filter((manga) => !BLACKLISTED_MANGA_IDS.includes(manga.id))
+    const mangas = filterMangasByMinusPrefix(filteredMangas, query)
     const hasManga = mangas.length > 0
 
     let nextCursor = null

@@ -27,7 +27,7 @@ import { useImageIndexStore } from './store/imageIndex'
 import { usePageViewStore } from './store/pageView'
 import TouchViewer from './TouchViewer'
 
-const ScrollViewer = dynamic(() => import('@/components/ImageViewer/ScrollViewer'), { ssr: false })
+const ScrollViewer = dynamic(() => import('@/components/ImageViewer/ScrollViewer'))
 
 type Props = {
   manga: Manga

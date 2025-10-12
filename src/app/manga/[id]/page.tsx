@@ -4,9 +4,10 @@ import { notFound } from 'next/navigation'
 import { cache } from 'react'
 
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
-import { MAX_MANGA_DESCRIPTION_LENGTH, MAX_MANGA_TITLE_LENGTH } from '@/constants/policy'
+import { BLACKLISTED_MANGA_IDS, MAX_MANGA_DESCRIPTION_LENGTH, MAX_MANGA_TITLE_LENGTH } from '@/constants/policy'
 import { litomiClient } from '@/crawler/litomi'
 
+import Forbidden from './Forbidden'
 import MangaViewer from './MangaViewer'
 import { mangaSchema } from './schema'
 
@@ -18,6 +19,14 @@ export async function generateMetadata({ params }: PageProps<'/manga/[id]'>): Pr
   }
 
   const { id } = validation.data
+
+  if (BLACKLISTED_MANGA_IDS.includes(id)) {
+    return {
+      title: '403 Forbidden',
+      description: '규정에 따라 볼 수 없는 작품이에요.',
+    }
+  }
+
   const manga = await getManga(id)
   const slicedTitle = manga?.title?.slice(0, MAX_MANGA_TITLE_LENGTH) || '작품'
   const slicedDescription = manga?.description?.slice(0, MAX_MANGA_DESCRIPTION_LENGTH)
@@ -47,6 +56,11 @@ export default async function Page({ params }: PageProps<'/manga/[id]'>) {
   }
 
   const { id } = validation.data
+
+  if (BLACKLISTED_MANGA_IDS.includes(id)) {
+    return <Forbidden />
+  }
+
   const manga = await getManga(id)
 
   return (

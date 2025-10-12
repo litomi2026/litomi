@@ -7,8 +7,8 @@ import { useRouter } from 'next/navigation'
 import { FormEvent, useCallback, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
+import IconSpinner from '@/components/icons/IconSpinner'
 import TurnstileWidget from '@/components/TurnstileWidget'
-import Loading from '@/components/ui/Loading'
 import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
@@ -207,7 +207,7 @@ export default function SignupForm() {
         type="submit"
       >
         <div className="p-2 flex justify-center bg-zinc-900 cursor-pointer rounded-xl hover:bg-zinc-800 transition active:bg-zinc-900 group-disabled:bg-zinc-800 group-disabled:cursor-not-allowed">
-          {pending ? <Loading className="text-zinc-500 w-12 p-2" /> : '회원가입'}
+          {pending ? <IconSpinner className="text-zinc-500 size-6 p-0.5" /> : '회원가입'}
         </div>
       </button>
       <TurnstileWidget

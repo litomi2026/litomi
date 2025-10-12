@@ -40,3 +40,14 @@ export const TOTAL_HIYOBI_PAGES = 7736
 export const LOGIN_ID_PATTERN = '^[a-zA-Z][a-zA-Z0-9_]*$'
 export const PASSWORD_PATTERN = '^(?=.*[A-Za-z])(?=.*[0-9]).+$'
 export const BACKUP_CODE_PATTERN = '^[A-Z0-9\\-]*$'
+
+export const BLACKLISTED_MANGA_IDS = [
+  2905292, // 张元英之财阀的快乐裸着表演 [AI Generated]
+  2910760, // 张元英之财阀的快乐裸着表演 [AI Generated]
+  3210070, // 美女迪丽热巴和网红们的私密照[AI Generated]
+  3309543, // won
+  3316020, // won 2
+  3343193, // 美女网红明星原图去衣合集[AI Generated]
+  3358108, // Various Celebrità Fake [AI Generated]
+  3581879, // AI Jennifer Love Hewett
+]

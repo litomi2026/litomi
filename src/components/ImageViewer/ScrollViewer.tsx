@@ -4,6 +4,7 @@ import { useVirtualizer } from '@tanstack/react-virtual'
 import { CSSProperties, memo, RefObject, useCallback, useEffect, useRef } from 'react'
 import { useInView } from 'react-intersection-observer'
 
+import { MangaIdSearchParam } from '@/app/manga/[id]/common'
 import { PageView } from '@/components/ImageViewer/store/pageView'
 import { ReadingDirection } from '@/components/ImageViewer/store/readingDirection'
 import { ScreenFit } from '@/components/ImageViewer/store/screenFit'
@@ -57,15 +58,10 @@ function ScrollViewer({ manga, onClick, screenFit, pageView, readingDirection }:
     count: rowCount,
     estimateSize: useCallback((index) => itemHeightMap.current.get(index) || window.innerHeight, []),
     getScrollElement: useCallback(() => parentRef.current, []),
-    overscan: 1,
+    overscan: 2,
     useAnimationFrameWithResizeObserver: true,
     paddingEnd: getSafeAreaBottom(),
   })
-
-  useEffect(() => {
-    setVirtualizer(virtualizer)
-    return () => setVirtualizer(null)
-  }, [setVirtualizer, virtualizer])
 
   const virtualItems = virtualizer.getVirtualItems()
   const translateY = virtualItems[0]?.start ?? 0
@@ -74,6 +70,25 @@ function ScrollViewer({ manga, onClick, screenFit, pageView, readingDirection }:
     transform: `translateY(${translateY}px)`,
     '--image-width': `${isDoublePage ? imageWidth / 2 : imageWidth}%`,
   } as CSSProperties
+
+  // NOTE: virtualizer 저장
+  useEffect(() => {
+    setVirtualizer(virtualizer)
+    return () => setVirtualizer(null)
+  }, [setVirtualizer, virtualizer])
+
+  // NOTE: page 파라미터가 있으면 초기 페이지를 변경함
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const pageStr = params.get(MangaIdSearchParam.PAGE) ?? ''
+    const parsedPage = parseInt(pageStr, 10)
+
+    if (isNaN(parsedPage) || parsedPage < 1 || parsedPage > images.length) {
+      return
+    }
+
+    virtualizer.scrollToIndex(parsedPage - 1)
+  }, [images.length, virtualizer])
 
   return (
     <div className="overflow-y-auto overscroll-none contain-strict h-dvh select-none" onClick={onClick} ref={parentRef}>

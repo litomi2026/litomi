@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 
 import IconEye from '@/components/icons/IconEye'
 import IconEyeOff from '@/components/icons/IconEyeOff'
-import Loading from '@/components/ui/Loading'
+import IconSpinner from '@/components/icons/IconSpinner'
 import { PASSWORD_PATTERN } from '@/constants/policy'
 import useActionResponse, { getFieldError, getFormField } from '@/hook/useActionResponse'
 
@@ -193,7 +193,7 @@ export default function PasswordChangeForm({ userId }: Readonly<Props>) {
           className="p-2 flex justify-center bg-zinc-900 rounded-xl hover:bg-zinc-800 transition active:bg-zinc-900 
           group-disabled:bg-zinc-800 group-disabled:cursor-not-allowed"
         >
-          {isPending ? <Loading className="text-zinc-500 w-12 p-2" /> : '비밀번호 변경'}
+          {isPending ? <IconSpinner className="text-zinc-500 size-6 p-0.5" /> : '비밀번호 변경'}
         </div>
       </button>
     </form>
