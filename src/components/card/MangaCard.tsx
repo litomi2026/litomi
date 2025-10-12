@@ -1,11 +1,11 @@
 import { ErrorBoundary } from '@suspensive/react'
+import { ExternalLink } from 'lucide-react'
 import { memo, ReactNode, Suspense } from 'react'
 
 import { Manga } from '@/types/manga'
 import { getViewerLink } from '@/utils/manga'
 
 import CoupangPartners from '../CoupangPartners'
-import IconExternalLink from '../icons/IconExternalLink'
 import TagList from '../TagList'
 import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from './BookmarkButton'
 import DownloadButton from './DownloadButton'
@@ -66,7 +66,9 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
         <dl className="flex flex-col gap-2 text-sm [&_dt]:whitespace-nowrap [&_dt]:font-semibold">
           <div className="flex items-start gap-1.5">
             <a className="flex-1 hover:underline focus:underline" href={viewerLink} target="_blank">
-              <h4 className="line-clamp-3 font-bold text-base leading-5 min-w-0 break-words break-all">{title}</h4>
+              <h4 className="line-clamp-3 font-bold text-base leading-5 min-w-0 break-words break-all">
+                {title} <ExternalLink className="size-3 ml-1 text-zinc-400 inline-block" />
+              </h4>
             </a>
             {languages && languages.length > 0 && (
               <Suspense>
@@ -137,7 +139,7 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
               target="_blank"
             >
               {id}
-              <IconExternalLink className="w-3" />
+              <ExternalLink className="size-3" />
             </a>
             {date && <MangaCardDate manga={manga} />}
           </div>
