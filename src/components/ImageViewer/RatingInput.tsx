@@ -41,19 +41,24 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
     onSuccess: (_, [{ rating }]) => {
       setJustSaved(true)
       setTimeout(() => setJustSaved(false), 1000)
-      toast.success(`${rating}점으로 평가했어요`)
       queryClient.invalidateQueries({ queryKey: QueryKeys.userRating(mangaId) })
+
+      if (rating === 0) {
+        toast.success('평가를 취소했어요')
+      } else {
+        toast.success(`${rating}점으로 평가했어요`)
+      }
     },
   })
 
   const handleRating = useCallback(
-    (value: number) => {
+    (value: number, force = false) => {
       if (!me) {
         toast.warning('로그인이 필요해요')
         return
       }
 
-      if (value === rating) {
+      if (!force && value === rating) {
         return
       }
 
@@ -171,9 +176,11 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
       newRating = Math.min(5, rating + 1)
     } else if (e.key >= '1' && e.key <= '5') {
       newRating = parseInt(e.key)
-    } else if ((e.key === 'Enter' || e.key === ' ') && rating > 0) {
+    } else if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
-      handleRating(rating)
+      if (rating > 0) {
+        handleRating(rating, true)
+      }
       return
     } else {
       return
@@ -210,11 +217,7 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
   }, [isDragging, handlePointerUp])
 
   return (
-    <div
-      className={`flex flex-col items-center justify-center gap-6 overflow-y-auto outline-none ${className}`}
-      onKeyDown={handleKeyDown}
-      tabIndex={0}
-    >
+    <div className={`flex flex-col items-center justify-center gap-6 overflow-y-auto ${className}`}>
       <div className="text-center space-y-2">
         <h2 className="text-2xl font-bold text-foreground">작품이 어떠셨나요?</h2>
         <p className="text-zinc-400 text-sm max-w-sm">
@@ -222,7 +225,6 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
             ? '별점을 드래그하거나 클릭해서 평가를 수정하세요'
             : '별점을 드래그하거나 클릭해서 평가해주세요'}
         </p>
-        <p className="text-zinc-500 text-xs">키보드: ← → 또는 1-5 숫자키</p>
       </div>
       <div
         aria-current={isDragging}
@@ -230,7 +232,8 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
         aria-valuemax={5}
         aria-valuemin={1}
         aria-valuenow={rating}
-        className="flex gap-2 select-none touch-manipulation aria-current:cursor-grabbing cursor-pointer"
+        className="flex gap-2 select-none touch-manipulation aria-current:cursor-grabbing cursor-pointer outline-none"
+        onKeyDown={handleKeyDown}
         onPointerDown={handlePointerDown}
         onPointerEnter={handlePointerEnter}
         onPointerLeave={handlePointerLeave}
@@ -238,6 +241,7 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
         onPointerUp={handlePointerUp}
         ref={containerRef}
         role="slider"
+        tabIndex={0}
       >
         {[1, 2, 3, 4, 5].map((value, i) => (
           <button
