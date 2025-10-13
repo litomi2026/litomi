@@ -6,6 +6,7 @@ import { Manga } from '@/types/manga'
 import { getViewerLink } from '@/utils/manga'
 
 import CoupangPartners from '../CoupangPartners'
+import LogoX from '../icons/LogoX'
 import TagList from '../TagList'
 import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from './BookmarkButton'
 import DownloadButton from './DownloadButton'
@@ -30,9 +31,17 @@ export function MangaCardDonation() {
   return (
     <MangaCardSkeleton>
       <span>
-        쿠팡 파트너스에서 물품을 구매해서 서비스를 도와주세요. 쿠팡에서 소중한 일정액의 수수료를 제공받아요. 매일 몇
-        천원의 서버 비용이 발생하는데, 유해 광고 없이 서비스를 운영하기 위해서 참여해주시면 감사하겠습니다. 🙇
+        리토미를 도와주세요. X 계정 팔로우 및 게시글 좋아요를 하거나 쿠팡 파트너스 링크로 물품을 구매하여 서비스를
+        응원해주세요. 매일 몇 천원의 서버 비용이 발생하는데, 유해 광고 없이 서비스를 운영하기 위해서 참여해주시면
+        감사하겠습니다. 🙇
       </span>
+      <a
+        className="inline-flex items-center gap-1 font-bold hover:underline"
+        href="https://x.com/litomi_in"
+        target="_blank"
+      >
+        <LogoX className="size-4" /> @litomi_in
+      </a>
       <CoupangPartners className="font-bold" />
     </MangaCardSkeleton>
   )
@@ -40,7 +49,7 @@ export function MangaCardDonation() {
 
 export function MangaCardSkeleton({ children }: { children?: ReactNode }) {
   return (
-    <li className="animate-fade-in rounded-xl bg-zinc-900 border-2 aspect-[3/4] w-full h-full flex flex-col justify-center items-center gap-2 p-4">
+    <li className="animate-fade-in rounded-xl bg-zinc-900 border-2 aspect-[3/4] w-full h-full flex flex-col justify-center items-center gap-1 p-4">
       {children}
     </li>
   )

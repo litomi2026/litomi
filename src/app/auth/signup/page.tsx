@@ -1,11 +1,10 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { Suspense } from 'react'
 
 import IconLogo from '@/components/icons/IconLogo'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 
-import SignupForm, { SignupFormSkeleton } from './SignupForm'
+import SignupForm from './SignupForm'
 
 export const metadata: Metadata = {
   title: '회원가입',
@@ -28,9 +27,7 @@ export default function Page() {
         <Link className="w-fit mx-auto" href="/">
           <IconLogo className="w-9" priority />
         </Link>
-        <Suspense fallback={<SignupFormSkeleton />}>
-          <SignupForm />
-        </Suspense>
+        <SignupForm />
         <div className="grid gap-2 text-center text-xs leading-3.5 text-zinc-400 whitespace-nowrap">
           <p className="flex gap-1 justify-center flex-wrap">
             본 서비스에 가입하는 것으로

@@ -1,3 +1,9 @@
+# Cloudflare Configuration
 zone_id    = "your-zone-id-here"
 account_id = "your-account-id-here"
 domain     = "your-domain.com"
+
+# Rate Limiting Configuration
+rate_limit_period   = 10000
+rate_limit_requests = 10000
+rate_limit_timeout  = 10000

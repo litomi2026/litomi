@@ -13,4 +13,23 @@ variable "account_id" {
 variable "domain" {
   description = "Domain name"
   type        = string
+  sensitive   = true
+}
+
+variable "rate_limit_period" {
+  description = "The period in seconds for rate limiting"
+  type        = number
+  sensitive   = true
+}
+
+variable "rate_limit_requests" {
+  description = "Maximum number of requests allowed per period"
+  type        = number
+  sensitive   = true
+}
+
+variable "rate_limit_timeout" {
+  description = "Mitigation timeout in seconds when rate limit is exceeded"
+  type        = number
+  sensitive   = true
 }
