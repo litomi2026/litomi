@@ -23,3 +23,29 @@ export const defaultOpenGraph: OpenGraph = {
   locale: 'ko_KR',
   alternateLocale: ['en_US', 'ja_JP'],
 }
+
+type Params = {
+  title: string
+  description?: string
+  images?: string
+  url?: string
+}
+
+export function generateOpenGraphMetadata({ title, description, images, url }: Params) {
+  return {
+    openGraph: {
+      ...defaultOpenGraph,
+      title: `${title} - ${SHORT_NAME}`,
+      description,
+      images,
+      url,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      site: '@litomi_in',
+      title: `${title} - ${SHORT_NAME}`,
+      description,
+      images,
+    },
+  }
+}

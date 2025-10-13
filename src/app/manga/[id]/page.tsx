@@ -3,7 +3,7 @@ import { unstable_cache } from 'next/cache'
 import { notFound } from 'next/navigation'
 import { cache } from 'react'
 
-import { defaultOpenGraph, SHORT_NAME } from '@/constants'
+import { generateOpenGraphMetadata, SHORT_NAME } from '@/constants'
 import { BLACKLISTED_MANGA_IDS, MAX_MANGA_DESCRIPTION_LENGTH, MAX_MANGA_TITLE_LENGTH } from '@/constants/policy'
 import { litomiClient } from '@/crawler/litomi'
 
@@ -30,17 +30,17 @@ export async function generateMetadata({ params }: PageProps<'/manga/[id]'>): Pr
   const manga = await getManga(id)
   const slicedTitle = manga?.title?.slice(0, MAX_MANGA_TITLE_LENGTH) || '작품'
   const slicedDescription = manga?.description?.slice(0, MAX_MANGA_DESCRIPTION_LENGTH)
+  const imageURL = `https://soujpa.in/start/${id}/${id}_0.avif`
 
   return {
     title: `${slicedTitle}`,
     description: slicedDescription,
-    openGraph: {
-      ...defaultOpenGraph,
+    ...generateOpenGraphMetadata({
       title: `${slicedTitle} - ${SHORT_NAME}`,
       description: slicedDescription,
-      images: `https://soujpa.in/start/${id}/${id}_0.avif`,
+      images: imageURL,
       url: `/manga/${id}`,
-    },
+    }),
     alternates: {
       canonical: `/manga/${id}`,
       languages: { ko: `/manga/${id}` },
