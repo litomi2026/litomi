@@ -1,4 +1,5 @@
 import { OpenGraph } from 'next/dist/lib/metadata/types/opengraph-types'
+import { Twitter } from 'next/dist/lib/metadata/types/twitter-types'
 
 export const APPLICATION_NAME = '리토미 - 만화 웹 뷰어'
 export const CANONICAL_URL = process.env.NODE_ENV === 'production' ? 'https://litomi.in' : 'http://localhost:3000'
@@ -22,4 +23,32 @@ export const defaultOpenGraph: OpenGraph = {
   type: 'website',
   locale: 'ko_KR',
   alternateLocale: ['en_US', 'ja_JP'],
+}
+
+type Params = {
+  title?: string
+  description?: string
+  images?: Twitter['images']
+  url?: string
+}
+
+export function generateOpenGraphMetadata({ title, description, images, url }: Params = {}) {
+  const metadataOverrides = {
+    title: title ? `${title} - ${SHORT_NAME}` : defaultOpenGraph.title,
+    description: description || defaultOpenGraph.description,
+    images: images || defaultOpenGraph.images,
+  }
+
+  return {
+    openGraph: {
+      ...defaultOpenGraph,
+      ...metadataOverrides,
+      ...(url && { url }),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      site: '@litomi_in',
+      ...metadataOverrides,
+    },
+  }
 }

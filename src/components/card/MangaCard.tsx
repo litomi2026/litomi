@@ -1,11 +1,12 @@
 import { ErrorBoundary } from '@suspensive/react'
-import { ExternalLink } from 'lucide-react'
+import { ExternalLink, Heart } from 'lucide-react'
 import { memo, ReactNode, Suspense } from 'react'
 
 import { Manga } from '@/types/manga'
 import { getViewerLink } from '@/utils/manga'
 
-import CoupangPartners from '../CoupangPartners'
+import LogoDiscord from '../icons/LogoDiscord'
+import LogoGitHub from '../icons/LogoGitHub'
 import LogoX from '../icons/LogoX'
 import TagList from '../TagList'
 import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from './BookmarkButton'
@@ -29,27 +30,93 @@ export default memo(MangaCard)
 
 export function MangaCardDonation() {
   return (
-    <MangaCardSkeleton>
-      <span>
-        리토미를 도와주세요. X 계정 팔로우 및 게시글 좋아요를 하거나 쿠팡 파트너스 링크로 물품을 구매하여 서비스를
-        응원해주세요. 매일 몇 천원의 서버 비용이 발생하는데, 유해 광고 없이 서비스를 운영하기 위해서 참여해주시면
-        감사하겠습니다. 🙇
-      </span>
-      <a
-        className="inline-flex items-center gap-1 font-bold hover:underline"
-        href="https://x.com/litomi_in"
-        target="_blank"
-      >
-        <LogoX className="size-4" /> @litomi_in
-      </a>
-      <CoupangPartners className="font-bold" />
+    <MangaCardSkeleton className="overflow-hidden">
+      <div className="h-full w-full overflow-y-auto flex">
+        <div className="m-auto flex flex-col items-center gap-6 p-6 text-center max-w-sm">
+          <div className="flex flex-col items-center gap-3">
+            <div className="p-3 rounded-full bg-zinc-800/50 text-pink-500">
+              <Heart className="size-6 fill-current" />
+            </div>
+            <h3 className="text-lg font-semibold text-zinc-100">리토미를 도와주세요</h3>
+          </div>
+          <p className="text-sm text-zinc-400 leading-relaxed">
+            매일 몇 천원의 서버 비용이 발생하는데 유해 광고 없이 서비스를 운영하기 위해 여러분의 도움이 필요합니다.
+          </p>
+          <div className="flex flex-col gap-4 w-full">
+            <div className="flex flex-col gap-2">
+              <span className="text-xs text-zinc-500 uppercase tracking-wider font-medium">소셜</span>
+              <div className="flex flex-col gap-2">
+                <a
+                  className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition-colors text-sm font-medium"
+                  href="https://x.com/litomi_in"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <LogoX className="size-4" />
+                  <span>@litomi_in 팔로우</span>
+                </a>
+                <a
+                  className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition-colors text-sm font-medium"
+                  href="https://github.com/gwak2837/litomi"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <LogoGitHub className="size-4" />
+                  <span>GitHub Star</span>
+                </a>
+                <a
+                  className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition-colors text-sm font-medium"
+                  href="https://discord.gg/xTrbQaxpyD"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <LogoDiscord className="size-4" />
+                  <span>Discord 채널 부스트</span>
+                </a>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <span className="text-xs text-zinc-500 uppercase tracking-wider font-medium">후원</span>
+              <div className="grid grid-cols-2 gap-2">
+                <a
+                  className="py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition-colors text-sm font-medium text-center"
+                  href="https://patreon.com/litomi"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  Patreon
+                </a>
+                <a
+                  className="py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition-colors text-sm font-medium text-center"
+                  href="https://ko-fi.com/litomi"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  Ko-fi
+                </a>
+                <a
+                  className="col-span-2 py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition-colors text-sm font-medium text-center"
+                  href="https://velog.io/@gwak2837/%EC%A0%9C%EC%A3%BC-%EC%82%BC%EB%8B%A4%EC%88%98"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  쿠팡 파트너스
+                </a>
+              </div>
+            </div>
+          </div>
+          <p className="text-xs text-zinc-500">참여해주셔서 감사합니다 🙇</p>
+        </div>
+      </div>
     </MangaCardSkeleton>
   )
 }
 
-export function MangaCardSkeleton({ children }: { children?: ReactNode }) {
+export function MangaCardSkeleton({ children, className = '' }: { children?: ReactNode; className?: string }) {
   return (
-    <li className="animate-fade-in rounded-xl bg-zinc-900 border-2 aspect-[3/4] w-full h-full flex flex-col justify-center items-center gap-1 p-4">
+    <li
+      className={`animate-fade-in rounded-xl bg-zinc-900 border-2 aspect-[3/4] w-full h-full flex flex-col justify-center items-center gap-1 ${className}`}
+    >
       {children}
     </li>
   )

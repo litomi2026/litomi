@@ -1,6 +1,8 @@
 import Link from 'next/link'
 
 import IconFlame from '@/components/icons/IconFlame'
+import LogoDiscord from '@/components/icons/LogoDiscord'
+import LogoGitHub from '@/components/icons/LogoGitHub'
 import LogoX from '@/components/icons/LogoX'
 import InstallPrompt from '@/components/InstallPrompt'
 import LinkPending from '@/components/LinkPending'
@@ -47,11 +49,19 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           </Link>
         </div>
         <div className="flex justify-center gap-2 gap-y-1 flex-wrap text-xs">
-          <a className="hover:underline" href="https://github.com/gwak2837/litomi" target="_blank">
-            GitHub
+          <a
+            className="inline-flex items-center gap-1 hover:underline"
+            href="https://github.com/gwak2837/litomi"
+            target="_blank"
+          >
+            <LogoGitHub className="size-3" /> GitHub
           </a>
-          <a className="hover:underline" href="https://discord.gg/xTrbQaxpyD" target="_blank">
-            Discord
+          <a
+            className="inline-flex items-center gap-1 hover:underline"
+            href="https://discord.gg/xTrbQaxpyD"
+            target="_blank"
+          >
+            <LogoDiscord className="size-3" /> Discord
           </a>
           <a
             className="inline-flex items-center gap-0.5 hover:underline"
@@ -59,17 +69,6 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
             target="_blank"
           >
             <LogoX className="size-3" /> @litomi_in
-          </a>
-        </div>
-        <div className="flex justify-center gap-2 gap-y-1 flex-wrap text-xs">
-          <a className="hover:underline" href="https://github.com/sponsors/gwak2837" target="_blank">
-            후원하기
-          </a>
-          <a className="hover:underline" href="https://patreon.com/litomi" target="_blank">
-            Patreon
-          </a>
-          <a className="hover:underline" href="https://ko-fi.com/litomi" target="_blank">
-            Ko-fi
           </a>
         </div>
       </footer>
