@@ -12,7 +12,7 @@ import { validateUserIdFromCookie } from '@/utils/cookie'
 export type GETMangaIdRatingResponse = {
   rating: number
   updatedAt: string
-}
+} | null
 
 type Params = {
   id: string

@@ -5,6 +5,7 @@ import { Star, X } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
+import { GETMangaIdRatingResponse } from '@/app/api/manga/[id]/rating/route'
 import { saveRating } from '@/app/manga/[id]/actions'
 import { QueryKeys } from '@/constants/query'
 import useActionResponse from '@/hook/useActionResponse'
@@ -16,39 +17,44 @@ type Props = {
   className?: string
 }
 
+const MIN_RATING = 1
+const MAX_RATING = 5
+const HORIZONTAL_THRESHOLD = 5
+const VERTICAL_THRESHOLD = 10
+const DIRECTION_DETERMINATION_THRESHOLD = 15
+
 export default function RatingInput({ mangaId, className = '' }: Props) {
   const queryClient = useQueryClient()
   const { data: existingRating } = useUserRatingQuery(mangaId)
+  const { data: me } = useMeQuery()
   const [rating, setRating] = useState(0)
   const [hoveredRating, setHoveredRating] = useState(0)
-  const [isDragging, setIsDragging] = useState(false)
   const [justSaved, setJustSaved] = useState(false)
-  const { data: me } = useMeQuery()
   const containerRef = useRef<HTMLDivElement>(null)
-  const starsRef = useRef<(HTMLButtonElement | null)[]>([])
   const initialPointerPos = useRef<{ x: number; y: number } | null>(null)
-  const hasMoved = useRef(false)
-  const pointerDownTime = useRef<number>(0)
-
-  useEffect(() => {
-    if (existingRating?.rating) {
-      setRating(existingRating.rating)
-    }
-  }, [existingRating])
+  const gestureDirection = useRef<'horizontal' | 'vertical' | null>(null)
+  const displayRating = hoveredRating || rating
 
   const [, dispatchAction, isPending] = useActionResponse({
     action: saveRating,
     onSuccess: (_, [{ rating }]) => {
       setJustSaved(true)
       setTimeout(() => setJustSaved(false), 1000)
-      queryClient.invalidateQueries({ queryKey: QueryKeys.userRating(mangaId) })
 
       if (rating === 0) {
-        toast.success('평가를 취소했어요')
+        queryClient.setQueryData<GETMangaIdRatingResponse | null>(QueryKeys.userRating(mangaId), null)
+        toast.info('평가를 취소했어요')
       } else {
+        const newRating = {
+          rating,
+          updatedAt: new Date().toISOString(),
+        }
+
+        queryClient.setQueryData<GETMangaIdRatingResponse>(QueryKeys.userRating(mangaId), newRating)
         toast.success(`${rating}점으로 평가했어요`)
       }
     },
+    shouldSetResponse: false,
   })
 
   const handleRating = useCallback(
@@ -76,86 +82,80 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
     const rect = containerRef.current.getBoundingClientRect()
     const x = clientX - rect.left
     const width = rect.width
-    const starWidth = width / 5
+    const starWidth = width / MAX_RATING
     const starIndex = Math.floor(x / starWidth)
 
-    return Math.max(1, Math.min(5, starIndex + 1))
+    return Math.max(MIN_RATING, Math.min(starIndex + 1, MAX_RATING))
   }, [])
 
-  function handlePointerDown(e: React.PointerEvent) {
-    e.preventDefault()
-    initialPointerPos.current = { x: e.clientX, y: e.clientY }
-    hasMoved.current = false
-    pointerDownTime.current = Date.now()
-    setIsDragging(true)
+  function clearPointerState() {
+    setHoveredRating(0)
+    initialPointerPos.current = null
+    gestureDirection.current = null
+  }
 
-    const value = getRatingFromPosition(e.clientX)
-    setHoveredRating(value)
+  function handlePointerDown(e: React.PointerEvent) {
+    initialPointerPos.current = { x: e.clientX, y: e.clientY }
+    gestureDirection.current = null
   }
 
   function handlePointerMove(e: React.PointerEvent) {
-    if (!isDragging || !initialPointerPos.current) {
+    if (!initialPointerPos.current) {
       return
     }
 
     const deltaX = Math.abs(e.clientX - initialPointerPos.current.x)
     const deltaY = Math.abs(e.clientY - initialPointerPos.current.y)
+    const totalMovement = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
 
-    if (deltaX > 3 || deltaY > 3) {
-      hasMoved.current = true
+    if (!gestureDirection.current) {
+      if (totalMovement >= DIRECTION_DETERMINATION_THRESHOLD) {
+        const ratio = deltaX / (deltaY || 1)
+
+        if (ratio > 1.5) {
+          gestureDirection.current = 'horizontal'
+        } else if (ratio < 0.66) {
+          gestureDirection.current = 'vertical'
+        } else if (deltaY > VERTICAL_THRESHOLD) {
+          gestureDirection.current = 'vertical'
+        } else if (deltaX > HORIZONTAL_THRESHOLD) {
+          gestureDirection.current = 'horizontal'
+        }
+      }
     }
 
-    const value = getRatingFromPosition(e.clientX)
+    if (gestureDirection.current === 'vertical') {
+      clearPointerState()
+      return
+    }
 
-    // Only update if value is valid and different
-    if (value > 0 && value !== hoveredRating) {
-      if ('vibrate' in navigator) {
-        navigator.vibrate(10)
+    if (gestureDirection.current === 'horizontal' || (!gestureDirection.current && deltaX > HORIZONTAL_THRESHOLD)) {
+      e.preventDefault()
+      const value = getRatingFromPosition(e.clientX)
+
+      if (value > 0 && value !== hoveredRating) {
+        if ('vibrate' in navigator) {
+          navigator.vibrate(10)
+        }
+        setHoveredRating(value)
       }
-      setHoveredRating(value)
     }
   }
 
   const handlePointerUp = useCallback(
     (e: PointerEvent | React.PointerEvent) => {
-      if (!isDragging) {
+      if (!initialPointerPos.current) {
         return
       }
 
-      // Use the hoveredRating if available (when dragging), otherwise calculate from position
-      const value = hoveredRating || getRatingFromPosition(e.clientX)
-      const timeDiff = Date.now() - pointerDownTime.current
-
-      if (timeDiff < 200 || !hasMoved.current) {
-        handleRating(value)
-      } else {
-        handleRating(value)
+      if (gestureDirection.current === 'horizontal' || !gestureDirection.current) {
+        handleRating(hoveredRating || getRatingFromPosition(e.clientX))
       }
 
-      setIsDragging(false)
-      setHoveredRating(0)
-      initialPointerPos.current = null
-      hasMoved.current = false
+      clearPointerState()
     },
-    [isDragging, hoveredRating, handleRating, getRatingFromPosition],
+    [hoveredRating, handleRating, getRatingFromPosition],
   )
-
-  function handlePointerLeave() {
-    if (isDragging) {
-      return
-    }
-
-    setHoveredRating(0)
-  }
-
-  function handlePointerEnter(e: React.PointerEvent) {
-    if (isDragging) {
-      const value = getRatingFromPosition(e.clientX)
-      if (value > 0) {
-        setHoveredRating(value)
-      }
-    }
-  }
 
   function handleKeyDown(e: React.KeyboardEvent) {
     if (isPending) {
@@ -191,34 +191,29 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
     setTimeout(() => setHoveredRating(0), 500)
   }
 
-  function clearRating() {
-    setRating(0)
-    toast.success('평가를 취소했어요')
-    dispatchAction({ mangaId, rating: 0 })
-  }
-
-  const displayRating = hoveredRating || rating
-
   // NOTE: 드래그 중에 컴포넌트 밖에서 포인터가 올라오면 평가를 적용하기 위해
   useEffect(() => {
-    if (!isDragging) {
+    if (!initialPointerPos.current) {
       return
     }
 
-    const handleGlobalPointerUp = (e: PointerEvent) => {
-      handlePointerUp(e)
-    }
-
-    document.addEventListener('pointerup', handleGlobalPointerUp)
+    document.addEventListener('pointerup', handlePointerUp)
 
     return () => {
-      document.removeEventListener('pointerup', handleGlobalPointerUp)
+      document.removeEventListener('pointerup', handlePointerUp)
     }
-  }, [isDragging, handlePointerUp])
+  }, [handlePointerUp])
+
+  // NOTE: 기존 평가가 있으면 표시함
+  useEffect(() => {
+    if (existingRating?.rating) {
+      setRating(existingRating.rating)
+    }
+  }, [existingRating])
 
   return (
     <div className={`flex flex-col items-center justify-center gap-6 overflow-y-auto ${className}`}>
-      <div className="text-center space-y-2">
+      <div className="grid gap-2 text-center">
         <h2 className="text-2xl font-bold text-foreground">작품이 어떠셨나요?</h2>
         <p className="text-zinc-400 text-sm max-w-sm">
           {existingRating?.rating
@@ -227,16 +222,14 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
         </p>
       </div>
       <div
-        aria-current={isDragging}
+        aria-current={hoveredRating > 0}
         aria-label="별점 선택"
-        aria-valuemax={5}
-        aria-valuemin={1}
+        aria-valuemax={MAX_RATING}
+        aria-valuemin={MIN_RATING}
         aria-valuenow={rating}
-        className="flex gap-2 select-none touch-manipulation aria-current:cursor-grabbing cursor-pointer outline-none"
+        className="flex gap-2 select-none cursor-pointer outline-none touch-pan-y aria-current:cursor-grabbing"
         onKeyDown={handleKeyDown}
         onPointerDown={handlePointerDown}
-        onPointerEnter={handlePointerEnter}
-        onPointerLeave={handlePointerLeave}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         ref={containerRef}
@@ -246,21 +239,18 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
         {[1, 2, 3, 4, 5].map((value, i) => (
           <button
             aria-busy={justSaved && value <= rating}
+            aria-current={value <= displayRating}
             aria-label={`${value}점`}
-            aria-pressed={value <= displayRating}
-            className="transition pointer-events-none aria-pressed:scale-110 aria-busy:animate-[rating-saved_0.5s_ease-in-out]"
+            className="transition pointer-events-none aria-current:scale-110 aria-busy:animate-[rating-saved_0.5s_ease-in-out]"
             disabled={isPending}
             key={value}
-            ref={(el) => {
-              starsRef.current[i] = el
-            }}
-            style={{ animationDelay: value <= rating ? `${i * 50}ms` : undefined }}
+            style={{ animationDelay: `${i * 50}ms` }}
             tabIndex={-1}
           >
             <Star
-              aria-checked={value <= displayRating}
-              aria-current={isDragging && value === displayRating}
-              className="size-12 transition text-zinc-600 hover:text-zinc-500 aria-checked:fill-brand-end aria-checked:text-brand-end aria-checked:drop-shadow-lg aria-current:scale-125 aria-current:rotate-12"
+              aria-current={value <= displayRating}
+              aria-pressed={hoveredRating > 0 && value === displayRating}
+              className="size-12 transition text-zinc-600 aria-current:fill-brand-end aria-current:text-brand-end aria-current:drop-shadow-lg aria-pressed:scale-125 aria-pressed:rotate-12"
             />
           </button>
         ))}
@@ -270,7 +260,7 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
       </div>
       <div className="text-center min-h-[4rem]">
         {displayRating > 0 ? (
-          <div className="space-y-1 animate-fade-in">
+          <div className="grid gap-1 animate-fade-in">
             <div className="text-3xl font-bold text-brand-end">
               {displayRating}.0
               <span className="text-lg ml-2">/ 5.0</span>
@@ -281,10 +271,10 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
           <div className="text-zinc-500 text-sm">평가를 선택해주세요</div>
         )}
       </div>
-      <div aria-hidden={rating === 0} className="flex gap-4 aria-hidden:opacity-0">
+      <div aria-hidden={rating === 0} className="flex gap-4 aria-hidden:opacity-0 aria-hidden:pointer-events-none">
         <button
           className="flex items-center gap-2 text-zinc-500 hover:text-red-400 text-sm transition"
-          onClick={clearRating}
+          onClick={() => handleRating(0)}
         >
           <X className="size-4" />
           평가 취소
