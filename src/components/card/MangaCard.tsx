@@ -31,17 +31,18 @@ export default memo(MangaCard)
 export function MangaCardDonation() {
   return (
     <MangaCardSkeleton className="overflow-hidden">
-      <div className="h-full w-full overflow-y-auto flex">
+      <div className="h-full w-full overflow-y-auto flex scrollbar-hidden">
         <div className="m-auto flex flex-col items-center gap-6 p-6 text-center max-w-sm">
           <div className="flex flex-col items-center gap-3">
-            <div className="p-3 rounded-full bg-zinc-800/50 text-pink-500">
-              <Heart className="size-6 fill-current" />
+            <div className="p-3 rounded-full bg-zinc-800/50">
+              <Heart className="size-6 fill-current text-brand-end" />
             </div>
             <h3 className="text-lg font-semibold text-zinc-100">리토미를 도와주세요</h3>
           </div>
           <p className="text-sm text-zinc-400 leading-relaxed">
-            매일 몇 천원의 서버 비용이 발생하는데 유해 광고 없이 서비스를 운영하기 위해 여러분의 도움이 필요합니다.
+            매일 몇 천원의 서버 비용이 발생하는데 유해 광고 없이 서비스를 운영하기 위해 여러분의 도움이 필요해요.
           </p>
+          <p className="text-xs text-zinc-500">참여해주셔서 감사합니다 🙇</p>
           <div className="flex flex-col gap-4 w-full">
             <div className="flex flex-col gap-2">
               <span className="text-xs text-zinc-500 uppercase tracking-wider font-medium">소셜</span>
@@ -105,7 +106,6 @@ export function MangaCardDonation() {
               </div>
             </div>
           </div>
-          <p className="text-xs text-zinc-500">참여해주셔서 감사합니다 🙇</p>
         </div>
       </div>
     </MangaCardSkeleton>
