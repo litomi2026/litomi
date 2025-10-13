@@ -256,7 +256,3 @@ export default function LoginForm() {
     </form>
   )
 }
-
-export function LoginFormSkeleton() {
-  return <div className="h-[278px] rounded-xl bg-zinc-700 animate-fade-in" />
-}

@@ -219,7 +219,3 @@ export default function SignupForm() {
     </form>
   )
 }
-
-export function SignupFormSkeleton() {
-  return <div className="h-[484px] rounded-xl bg-zinc-700 animate-fade-in" />
-}

@@ -25,8 +25,8 @@ resource "cloudflare_ruleset" "cache_rules" {
     {
       ref         = "manga_pages_html"
       enabled     = true
-      description = "Cache manga viewer HTML pages"
-      expression  = "(starts_with(http.request.uri.path, \"/manga/\") and not http.request.uri.path contains \".\")"
+      description = "Cache static HTML pages"
+      expression  = "(starts_with(http.request.uri.path, \"/manga/\") and not http.request.uri.path contains \".\") or (http.request.uri.path eq \"/deterrence\") or (http.request.uri.path eq \"/\") or (http.request.uri.path eq \"/auth/login\") or (http.request.uri.path eq \"/auth/signup\")"
       action      = "set_cache_settings"
 
       action_parameters = {

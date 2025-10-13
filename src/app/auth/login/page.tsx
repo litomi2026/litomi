@@ -1,11 +1,10 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { Suspense } from 'react'
 
 import IconLogo from '@/components/icons/IconLogo'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 
-import LoginForm, { LoginFormSkeleton } from './LoginForm'
+import LoginForm from './LoginForm'
 
 export const metadata: Metadata = {
   title: '로그인',
@@ -28,9 +27,7 @@ export default function Page() {
         <Link className="w-fit mx-auto" href="/">
           <IconLogo className="w-9" priority />
         </Link>
-        <Suspense fallback={<LoginFormSkeleton />}>
-          <LoginForm />
-        </Suspense>
+        <LoginForm />
         <p className="text-center flex flex-wrap gap-1 justify-center text-xs text-zinc-400">
           계정이 없으신가요?
           <Link className="underline" href="/auth/signup">
