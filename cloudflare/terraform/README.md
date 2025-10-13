@@ -1,6 +1,6 @@
 # Cloudflare Terraform
 
-This directory contains Terraform configuration for managing Cloudflare cache rules for the Litomi application.
+This directory contains Terraform configuration for managing Cloudflare cache rules and rate limiting for the Litomi application.
 
 ## 🚀 Quick Start
 
@@ -41,13 +41,13 @@ This directory contains Terraform configuration for managing Cloudflare cache ru
 
 4. **Configure Terraform variables**:
 
-   Edit `terraform.tfvars` with your Cloudflare details:
+   Copy the template and create your local configuration:
 
-   ```hcl
-   zone_id    = "your-zone-id"
-   account_id = "your-account-id"
-   domain     = "your-domain.com"
+   ```bash
+   cp terraform.tfvars.template terraform.tfvars
    ```
+
+   Edit `terraform.tfvars` with your Cloudflare details:
 
 5. **Review and apply changes**:
 
