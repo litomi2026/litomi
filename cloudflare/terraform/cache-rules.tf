@@ -1,3 +1,33 @@
+locals {
+  cached_path_equals = [
+    "/deterrence",
+    "/doc/privacy",
+    "/doc/terms",
+    "/auth/login",
+    "/auth/signup",
+    "/@",
+    "/manga",
+    "/404",
+  ]
+
+  cached_path_prefixes = [
+    "/@/",
+    "/manga/"
+  ]
+
+  exact_path_conditions = join(" or ", [
+    for path in local.cached_path_equals :
+    "(http.request.uri.path eq \"${path}\")"
+  ])
+
+  prefix_path_conditions = join(" or ", [
+    for prefix in local.cached_path_prefixes :
+    "(starts_with(http.request.uri.path, \"${prefix}\"))"
+  ])
+
+  static_pages_expression = "${local.exact_path_conditions} or ${local.prefix_path_conditions}"
+}
+
 resource "cloudflare_ruleset" "cache_rules" {
   zone_id = var.zone_id
   name    = "Cache Rules"
@@ -26,7 +56,7 @@ resource "cloudflare_ruleset" "cache_rules" {
       ref         = "manga_pages_html"
       enabled     = true
       description = "Cache static HTML pages"
-      expression  = "(http.request.uri.path eq \"/\") or (http.request.uri.path eq \"/deterrence\") or (http.request.uri.path eq \"/doc/privacy\") or (http.request.uri.path eq \"/doc/terms\") or (http.request.uri.path eq \"/auth/login\") or (http.request.uri.path eq \"/auth/signup\") or (http.request.uri.path eq \"/@\") or (starts_with(http.request.uri.path, \"/@/\") and not http.request.uri.path contains \".\") or (starts_with(http.request.uri.path, \"/manga/\") and not http.request.uri.path contains \".\")"
+      expression  = local.static_pages_expression
       action      = "set_cache_settings"
 
       action_parameters = {
