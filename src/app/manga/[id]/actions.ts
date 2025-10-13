@@ -135,7 +135,7 @@ export async function migrateReadingHistory(data: ReadingHistoryItem[]) {
 
 const saveRatingSchema = z.object({
   mangaId: z.number().int().positive(),
-  rating: z.number().int().min(1).max(5),
+  rating: z.number().int().min(0).max(5),
 })
 
 export async function saveRating(data: { mangaId: number; rating: number }) {
@@ -154,20 +154,26 @@ export async function saveRating(data: { mangaId: number; rating: number }) {
   const { mangaId, rating } = validation.data
 
   try {
-    await db
-      .insert(userRatingTable)
-      .values({
-        userId,
-        mangaId,
-        rating,
-      })
-      .onConflictDoUpdate({
-        target: [userRatingTable.userId, userRatingTable.mangaId],
-        set: {
+    if (rating === 0) {
+      await db
+        .delete(userRatingTable)
+        .where(sql`${userRatingTable.userId} = ${userId} AND ${userRatingTable.mangaId} = ${mangaId}`)
+    } else {
+      await db
+        .insert(userRatingTable)
+        .values({
+          userId,
+          mangaId,
           rating,
-          updatedAt: new Date(),
-        },
-      })
+        })
+        .onConflictDoUpdate({
+          target: [userRatingTable.userId, userRatingTable.mangaId],
+          set: {
+            rating,
+            updatedAt: new Date(),
+          },
+        })
+    }
 
     return ok(true)
   } catch (error) {
