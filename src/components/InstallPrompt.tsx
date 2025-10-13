@@ -1,6 +1,6 @@
 'use client'
 
-import { Download } from 'lucide-react'
+import { Download, Share, SquarePlus } from 'lucide-react'
 import { memo, useEffect, useState } from 'react'
 
 import { checkIOSDevice } from '@/utils/browser'
@@ -55,31 +55,26 @@ function InstallPrompt() {
   }, [])
 
   // PWA 환경(standalone)에서는 버튼 표시하지 않음
-  if (isStandalone) return null
+  if (isStandalone) {
+    return null
+  }
 
   // 앱이 설치되지 않은 상태 (iOS): 설치 인스트럭션
   if (isIOS) {
     return (
-      <p className="flex flex-wrap justify-center items-center gap-2 w-fit mx-auto p-4 text-sm">
-        홈 화면에 추가하려면 Safari에서
-        <span className="flex items-center gap-1">
+      <p className="flex flex-wrap justify-center items-center gap-2 w-fit mx-auto py-4 text-sm">
+        홈 화면에 추가하려면 Safari 브라우저에서
+        <span className="inline-flex items-center gap-1">
           공유 버튼
-          <svg
-            className="text-foreground w-5"
-            fill="none"
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
-            <polyline points="16 6 12 2 8 6"></polyline>
-            <line x1="12" x2="12" y1="2" y2="15"></line>
-          </svg>
-          을
+          <Share className="size-4" />을
         </span>
-        눌러 {'"'}홈 화면에 추가{'"'}를 선택하세요.
+        눌러{' '}
+        <span className="inline-flex items-center gap-1">
+          {'"'}홈 화면에 추가
+          <SquarePlus className="size-4" />
+          {'"'}
+        </span>
+        를 선택하세요.
       </p>
     )
   }
