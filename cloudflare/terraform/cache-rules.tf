@@ -26,7 +26,7 @@ resource "cloudflare_ruleset" "cache_rules" {
       ref         = "manga_pages_html"
       enabled     = true
       description = "Cache static HTML pages"
-      expression  = "(http.request.uri.path eq \"/\") or (http.request.uri.path eq \"/deterrence\") or (http.request.uri.path eq \"/doc/privacy\") or (http.request.uri.path eq \"/doc/terms\") or (http.request.uri.path eq \"/auth/login\") or (http.request.uri.path eq \"/auth/signup\") or (http.request.uri.path eq \"/@\") or (starts_with(http.request.uri.path, \"/@/\")) or (starts_with(http.request.uri.path, \"/manga/\"))"
+      expression  = "(http.request.uri.path eq \"/\") or (http.request.uri.path eq \"/deterrence\") or (http.request.uri.path eq \"/doc/privacy\") or (http.request.uri.path eq \"/doc/terms\") or (http.request.uri.path eq \"/auth/login\") or (http.request.uri.path eq \"/auth/signup\") or (http.request.uri.path eq \"/@\") or (starts_with(http.request.uri.path, \"/@/\") and not http.request.uri.path contains \".\") or (starts_with(http.request.uri.path, \"/manga/\") and not http.request.uri.path contains \".\")"
       action      = "set_cache_settings"
 
       action_parameters = {

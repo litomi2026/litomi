@@ -103,3 +103,13 @@ code {
     width: 100%;
   }
 }
+
+@keyframes rating-saved {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.3) rotate(12deg);
+  }
+}

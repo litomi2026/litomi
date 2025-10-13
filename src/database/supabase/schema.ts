@@ -215,6 +215,20 @@ export const readingHistoryTable = pgTable(
   ],
 ).enableRLS()
 
+export const userRatingTable = pgTable(
+  'user_rating',
+  {
+    userId: bigint('user_id', { mode: 'number' })
+      .references(() => userTable.id, { onDelete: 'cascade' })
+      .notNull(),
+    mangaId: integer('manga_id').notNull(),
+    rating: smallint('rating').notNull(), // 1-5 stars
+    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.userId, table.mangaId] })],
+).enableRLS()
+
 export { trustedBrowserTable, twoFactorBackupCodeTable, twoFactorTable } from './2fa-schema'
 export { mangaSeenTable, notificationConditionTable, notificationCriteriaTable } from './notification-schema'
 export { searchTrendsTable } from './search-trends-schema'

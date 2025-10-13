@@ -13,7 +13,7 @@ export const QueryKeys = {
   notifications: (searchParams: URLSearchParams) => ['me', 'notifications', Object.fromEntries(searchParams)],
   libraries: ['me', 'libraries'],
   libraryItems: (libraryId: number) => ['me', 'library', libraryId],
-  trendingKeywords: ['trending-keywords'],
+  userRating: (mangaId: number) => ['me', 'rating', mangaId],
 
   manga: (id: number, scope: MangaResponseScope | null) => ['manga', id, scope],
   mangaCard: (id: number) => ['mangaCard', id],
@@ -22,4 +22,5 @@ export const QueryKeys = {
   posts: (filter: PostFilter, mangaId?: number, username?: string) => ['posts', filter, { mangaId, username }],
   readingHistory: (mangaId: number) => ['readingHistory', mangaId],
   realtimeAnalytics: ['realtime-analytics'],
+  trendingKeywords: ['trending-keywords'],
 }

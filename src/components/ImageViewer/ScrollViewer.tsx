@@ -14,6 +14,7 @@ import { getSafeAreaBottom } from '@/utils/browser'
 
 import IconSpinner from '../icons/IconSpinner'
 import MangaImage from '../MangaImage'
+import RatingInput from './RatingInput'
 import { useImageIndexStore } from './store/imageIndex'
 import { useImageWidthStore } from './store/imageWidth'
 import { useVirtualizerStore } from './store/virtualizer'
@@ -51,11 +52,11 @@ function ScrollViewer({ manga, onClick, screenFit, pageView, readingDirection }:
   const setVirtualizer = useVirtualizerStore((state) => state.setVirtualizer)
   const imageWidth = useImageWidthStore((state) => state.imageWidth)
   const isDoublePage = pageView === 'double'
-  const rowCount = isDoublePage ? Math.ceil(images.length / 2) : images.length
+  const imagePageCount = isDoublePage ? Math.ceil(images.length / 2) : images.length
   const itemHeightMap = useRef(new Map<number, number>())
 
   const virtualizer = useVirtualizer({
-    count: rowCount,
+    count: imagePageCount + 1, // NOTE: 마지막 페이지는 평가 페이지
     estimateSize: useCallback((index) => itemHeightMap.current.get(index) || window.innerHeight, []),
     getScrollElement: useCallback(() => parentRef.current, []),
     overscan: 2,
@@ -104,17 +105,21 @@ function ScrollViewer({ manga, onClick, screenFit, pageView, readingDirection }:
             ${screenFitStyle[screenFit]}`}
             style={dynamicStyle}
           >
-            {virtualItems.map(({ index, key }) => (
-              <VirtualItemMemo
-                index={index}
-                itemHeightMap={itemHeightMap}
-                key={key}
-                manga={manga}
-                pageView={pageView}
-                readingDirection={readingDirection}
-                virtualizer={virtualizer}
-              />
-            ))}
+            {virtualItems.map(({ index, key }) =>
+              index < imagePageCount ? (
+                <VirtualItemMemo
+                  index={index}
+                  itemHeightMap={itemHeightMap}
+                  key={key}
+                  manga={manga}
+                  pageView={pageView}
+                  readingDirection={readingDirection}
+                  virtualizer={virtualizer}
+                />
+              ) : (
+                <RatingInput className="flex-1 h-svh p-4" key={index} mangaId={manga.id} />
+              ),
+            )}
           </ul>
         </div>
       )}
