@@ -289,11 +289,11 @@ function getRatingText(rating: number): string {
     case 1:
       return '별로예요 😞'
     case 2:
-      return '그저 그래요 😐'
+      return '아쉬워요 😐'
     case 3:
       return '괜찮아요 🙂'
     case 4:
-      return '재미있어요 😊'
+      return '재밌어요 😊'
     case 5:
       return '최고예요 😍'
     default:
