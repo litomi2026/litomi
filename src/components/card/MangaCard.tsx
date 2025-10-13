@@ -30,7 +30,7 @@ export default memo(MangaCard)
 
 export function MangaCardDonation() {
   return (
-    <MangaCardSkeleton className="!p-0 overflow-hidden">
+    <MangaCardSkeleton className="overflow-hidden">
       <div className="h-full w-full overflow-y-auto flex">
         <div className="m-auto flex flex-col items-center gap-1 p-4">
           <span>
@@ -77,7 +77,7 @@ export function MangaCardDonation() {
 export function MangaCardSkeleton({ children, className = '' }: { children?: ReactNode; className?: string }) {
   return (
     <li
-      className={`animate-fade-in rounded-xl bg-zinc-900 border-2 aspect-[3/4] w-full h-full flex flex-col justify-center items-center gap-1 p-4 ${className}`}
+      className={`animate-fade-in rounded-xl bg-zinc-900 border-2 aspect-[3/4] w-full h-full flex flex-col justify-center items-center gap-1 ${className}`}
     >
       {children}
     </li>
