@@ -53,7 +53,7 @@ This directory contains Terraform configuration for managing Cloudflare cache ru
 
    ```bash
    export $(grep -v '^#' .env | xargs)
-   terraform plan
+   # terraform plan
    terraform apply
    ```
 
