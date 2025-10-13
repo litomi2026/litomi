@@ -1,6 +1,7 @@
 import Link from 'next/link'
 
 import IconFlame from '@/components/icons/IconFlame'
+import LogoX from '@/components/icons/LogoX'
 import InstallPrompt from '@/components/InstallPrompt'
 import LinkPending from '@/components/LinkPending'
 import ScrollButtons from '@/components/ScrollButtons'
@@ -52,8 +53,12 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           <a className="hover:underline" href="https://discord.gg/xTrbQaxpyD" target="_blank">
             Discord
           </a>
-          <a className="hover:underline" href="https://x.com/litomi_in" target="_blank">
-            X (@litomi_in)
+          <a
+            className="inline-flex items-center gap-0.5 hover:underline"
+            href="https://x.com/litomi_in"
+            target="_blank"
+          >
+            <LogoX className="size-3" /> @litomi_in
           </a>
         </div>
         <div className="flex justify-center gap-2 gap-y-1 flex-wrap text-xs">
