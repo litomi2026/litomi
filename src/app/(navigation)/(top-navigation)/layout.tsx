@@ -1,6 +1,5 @@
 import Link from 'next/link'
 
-import CoupangPartners from '@/components/CoupangPartners'
 import IconFlame from '@/components/icons/IconFlame'
 import InstallPrompt from '@/components/InstallPrompt'
 import LinkPending from '@/components/LinkPending'
@@ -9,7 +8,6 @@ import SourceTooltip from '@/components/tooltip/SourceTooltip'
 import { SHORT_NAME } from '@/constants'
 
 import { DEFAULT_METRIC, DEFAULT_PERIOD } from '../(ranking)/common'
-import BankAccountInfo from './BankAccountInfo'
 import NewMangaLink from './NewMangaLink'
 import RandomMangaLink from './RandomMangaLink'
 
@@ -46,18 +44,27 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           <Link className="hover:underline" href="/deterrence">
             사용자 연령 제한 규정
           </Link>
-          <a className="hover:underline" href="https://github.com/gwak2837/litomi/issues" target="_blank">
-            이슈 제보
+        </div>
+        <div className="flex justify-center gap-2 gap-y-1 flex-wrap text-xs">
+          <a className="hover:underline" href="https://github.com/gwak2837/litomi" target="_blank">
+            GitHub
+          </a>
+          <a className="hover:underline" href="https://discord.gg/xTrbQaxpyD" target="_blank">
+            Discord
+          </a>
+          <a className="hover:underline" href="https://x.com/litomi_in" target="_blank">
+            X (@litomi_in)
           </a>
         </div>
         <div className="flex justify-center gap-2 gap-y-1 flex-wrap text-xs">
-          <a className="hover:text-pink-400 transition" href="https://github.com/sponsors/gwak2837" target="_blank">
+          <a className="hover:underline" href="https://github.com/sponsors/gwak2837" target="_blank">
             후원하기
           </a>
-          <CoupangPartners />
-          <BankAccountInfo />
-          <a className="hover:text-purple-400 transition" href="https://patreon.com/litomi" target="_blank">
+          <a className="hover:underline" href="https://patreon.com/litomi" target="_blank">
             Patreon
+          </a>
+          <a className="hover:underline" href="https://ko-fi.com/litomi" target="_blank">
+            Ko-fi
           </a>
         </div>
       </footer>
