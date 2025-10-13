@@ -5,7 +5,8 @@ import { memo, ReactNode, Suspense } from 'react'
 import { Manga } from '@/types/manga'
 import { getViewerLink } from '@/utils/manga'
 
-import CoupangPartners from '../CoupangPartners'
+import LogoDiscord from '../icons/LogoDiscord'
+import LogoGitHub from '../icons/LogoGitHub'
 import LogoX from '../icons/LogoX'
 import TagList from '../TagList'
 import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from './BookmarkButton'
@@ -29,27 +30,55 @@ export default memo(MangaCard)
 
 export function MangaCardDonation() {
   return (
-    <MangaCardSkeleton>
-      <span>
-        리토미를 도와주세요. X 계정 팔로우 및 게시글 좋아요를 하거나 쿠팡 파트너스 링크로 물품을 구매하여 서비스를
-        응원해주세요. 매일 몇 천원의 서버 비용이 발생하는데, 유해 광고 없이 서비스를 운영하기 위해서 참여해주시면
-        감사하겠습니다. 🙇
-      </span>
-      <a
-        className="inline-flex items-center gap-1 font-bold hover:underline"
-        href="https://x.com/litomi_in"
-        target="_blank"
-      >
-        <LogoX className="size-4" /> @litomi_in
-      </a>
-      <CoupangPartners className="font-bold" />
+    <MangaCardSkeleton className="!p-0 overflow-hidden">
+      <div className="h-full w-full overflow-y-auto flex">
+        <div className="m-auto flex flex-col items-center gap-1 p-4">
+          <span>
+            리토미를 도와주세요. X 계정 팔로우 및 게시글 좋아요를 하거나 GitHub Star 클릭, Discord 채널 부스트, Patreon
+            후원, Ko-fi 후원, 또는 쿠팡 파트너스 링크로 물품을 구매하여 서비스를 응원해주세요. 매일 몇 천원의 서버
+            비용이 발생하는데, 유해 광고 없이 서비스를 운영하기 위해서 참여해주시면 감사하겠습니다. 🙇
+          </span>
+          <a className="inline-flex items-center gap-1 hover:underline" href="https://x.com/litomi_in" target="_blank">
+            <LogoX className="size-4" /> @litomi_in
+          </a>
+          <a
+            className="inline-flex items-center gap-1 hover:underline"
+            href="https://github.com/gwak2837/litomi"
+            target="_blank"
+          >
+            <LogoGitHub className="size-4" /> GitHub Star
+          </a>
+          <a
+            className="inline-flex items-center gap-1 hover:underline"
+            href="https://discord.gg/xTrbQaxpyD"
+            target="_blank"
+          >
+            <LogoDiscord className="size-4" /> Discord 부스트
+          </a>
+          <a className="hover:underline" href="https://patreon.com/litomi" target="_blank">
+            Patreon
+          </a>
+          <a className="hover:underline" href="https://ko-fi.com/litomi" target="_blank">
+            Ko-fi
+          </a>
+          <a
+            className="hover:underline"
+            href="https://velog.io/@gwak2837/%EC%A0%9C%EC%A3%BC-%EC%82%BC%EB%8B%A4%EC%88%98"
+            target="_blank"
+          >
+            쿠팡 파트너스
+          </a>
+        </div>
+      </div>
     </MangaCardSkeleton>
   )
 }
 
-export function MangaCardSkeleton({ children }: { children?: ReactNode }) {
+export function MangaCardSkeleton({ children, className = '' }: { children?: ReactNode; className?: string }) {
   return (
-    <li className="animate-fade-in rounded-xl bg-zinc-900 border-2 aspect-[3/4] w-full h-full flex flex-col justify-center items-center gap-1 p-4">
+    <li
+      className={`animate-fade-in rounded-xl bg-zinc-900 border-2 aspect-[3/4] w-full h-full flex flex-col justify-center items-center gap-1 p-4 ${className}`}
+    >
       {children}
     </li>
   )

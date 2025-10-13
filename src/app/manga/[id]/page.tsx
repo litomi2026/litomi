@@ -30,7 +30,6 @@ export async function generateMetadata({ params }: PageProps<'/manga/[id]'>): Pr
   const manga = await getManga(id)
   const slicedTitle = manga?.title?.slice(0, MAX_MANGA_TITLE_LENGTH) || '작품'
   const slicedDescription = manga?.description?.slice(0, MAX_MANGA_DESCRIPTION_LENGTH)
-  const imageURL = `https://soujpa.in/start/${id}/${id}_0.avif`
 
   return {
     title: `${slicedTitle}`,
@@ -38,7 +37,7 @@ export async function generateMetadata({ params }: PageProps<'/manga/[id]'>): Pr
     ...generateOpenGraphMetadata({
       title: `${slicedTitle} - ${SHORT_NAME}`,
       description: slicedDescription,
-      images: imageURL,
+      images: `https://soujpa.in/start/${id}/${id}_0.avif`,
       url: `/manga/${id}`,
     }),
     alternates: {
