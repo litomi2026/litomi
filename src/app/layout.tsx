@@ -11,7 +11,14 @@ import { Toaster } from 'sonner'
 import LibraryModal from '@/components/card/LibraryModal'
 import HiyobiPing from '@/components/HiyobiPing'
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar'
-import { APPLICATION_NAME, CANONICAL_URL, defaultOpenGraph, DESCRIPTION, SHORT_NAME, THEME_COLOR } from '@/constants'
+import {
+  APPLICATION_NAME,
+  CANONICAL_URL,
+  DESCRIPTION,
+  generateOpenGraphMetadata,
+  SHORT_NAME,
+  THEME_COLOR,
+} from '@/constants'
 import { AMPLITUDE_API_KEY, GA_ID, GOOGLE_ADSENSE_ACCOUNT } from '@/constants/env'
 
 import QueryProvider from '../components/QueryProvider'
@@ -62,7 +69,7 @@ export const metadata: Metadata = {
       'x-default': CANONICAL_URL,
     },
   },
-  openGraph: defaultOpenGraph,
+  ...generateOpenGraphMetadata(),
   verification: { google: 'E8dCRgQMvY3hE4oaZ-vsuhopmTS7qyQG-O5WIMdVenA' },
   other: {
     RATING: 'RTA-5042-1996-1400-1577-RTA',
