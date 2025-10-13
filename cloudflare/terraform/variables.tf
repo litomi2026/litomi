@@ -13,6 +13,7 @@ variable "account_id" {
 variable "domain" {
   description = "Domain name"
   type        = string
+  sensitive   = true
 }
 
 variable "rate_limit_period" {
