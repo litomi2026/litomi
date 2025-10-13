@@ -9,6 +9,11 @@ import { userRatingTable } from '@/database/supabase/schema'
 import { RouteProps } from '@/types/nextjs'
 import { validateUserIdFromCookie } from '@/utils/cookie'
 
+export type GETMangaIdRatingResponse = {
+  rating: number
+  updatedAt: string
+}
+
 type Params = {
   id: string
 }
