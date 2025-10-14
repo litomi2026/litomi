@@ -1,4 +1,4 @@
-import { Cloud, Download, Heart, LockKeyhole } from 'lucide-react'
+import { Cloud, LockKeyhole, Star, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
 
 import Onboarding from '@/app/(navigation)/(right-search)/[name]/settings/Onboarding'
@@ -10,24 +10,24 @@ export default function Unauthorized() {
       <Onboarding
         benefits={[
           {
-            icon: <Heart className="size-5" />,
-            title: '좋아하는 작품 저장',
-            description: '마음에 드는 작품을 언제든 다시 찾아보세요',
+            icon: <Star className="size-5" />,
+            title: '평가 기록 저장',
+            description: '별점과 리뷰가 안전하게 저장돼요',
           },
           {
-            icon: <Download className="size-5" />,
-            title: '백업 및 내보내기',
-            description: '북마크를 안전하게 다운로드하고 보관해요',
+            icon: <TrendingUp className="size-5" />,
+            title: '취향 분석 제공',
+            description: '평가 기록으로 취향을 분석해드려요',
           },
           {
             icon: <Cloud className="size-5" />,
-            title: '모든 기기 동기화',
-            description: '어떤 기기에서도 북마크를 확인할 수 있어요',
+            title: '모든 기기에서 동기화',
+            description: '언제 어디서나 평가를 확인하고 수정해요',
           },
         ]}
-        description="계정을 만들고 마음에 드는 작품을 저장하세요"
+        description="계정을 만들고 작품을 평가해보세요"
         icon={<LockKeyhole className="size-12 text-brand-end" />}
-        title="북마크 기능은 로그인이 필요해요"
+        title="평가 기능은 로그인이 필요해요"
       >
         <div className="flex flex-col w-full items-center gap-3">
           <LoginButton>로그인하기</LoginButton>

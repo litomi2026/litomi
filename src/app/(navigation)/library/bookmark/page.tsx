@@ -2,7 +2,7 @@ import { desc, eq } from 'drizzle-orm'
 import { Metadata } from 'next'
 
 import { encodeBookmarkCursor } from '@/common/cursor'
-import { defaultOpenGraph, SHORT_NAME } from '@/constants'
+import { generateOpenGraphMetadata, SHORT_NAME } from '@/constants'
 import { BOOKMARKS_PER_PAGE } from '@/constants/policy'
 import { db } from '@/database/supabase/drizzle'
 import { bookmarkTable } from '@/database/supabase/schema'
@@ -17,11 +17,10 @@ import Unauthorized from './Unauthorized'
 
 export const metadata: Metadata = {
   title: '북마크',
-  openGraph: {
-    ...defaultOpenGraph,
+  ...generateOpenGraphMetadata({
     title: `북마크 - ${SHORT_NAME}`,
     url: '/library/bookmark',
-  },
+  }),
   alternates: {
     canonical: '/library/bookmark',
     languages: { ko: '/library/bookmark' },

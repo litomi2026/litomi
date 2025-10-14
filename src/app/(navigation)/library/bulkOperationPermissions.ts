@@ -38,6 +38,15 @@ export function getBulkOperationPermissions({
     }
   }
 
+  if (pathname === '/library/rating') {
+    return {
+      canSelectItems: userId != null,
+      canCopy: userId != null,
+      canMove: false,
+      canDelete: false,
+    }
+  }
+
   if (currentLibraryId) {
     if (isOwner) {
       return {

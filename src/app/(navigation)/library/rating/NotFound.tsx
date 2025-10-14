@@ -1,4 +1,4 @@
-import { Calendar, Clock, TrendingUp, Trophy } from 'lucide-react'
+import { Star, TrendingUp, Trophy } from 'lucide-react'
 import Link from 'next/link'
 
 import Onboarding from '@/app/(navigation)/(right-search)/[name]/settings/Onboarding'
@@ -9,24 +9,24 @@ export default function NotFound() {
       <Onboarding
         benefits={[
           {
-            icon: <Calendar className="size-5" />,
-            title: '자동 기록',
-            description: '읽은 작품이 날짜별로 자동 정리돼요',
+            icon: <Star className="size-5" />,
+            title: '나만의 평가',
+            description: '작품을 별점으로 평가하고 기록해요',
           },
           {
             icon: <TrendingUp className="size-5" />,
-            title: '진행 상황',
-            description: '읽은 페이지와 진행률을 한눈에 확인해요',
+            title: '취향 분석',
+            description: '평가 데이터로 취향을 파악할 수 있어요',
           },
           {
             icon: <Trophy className="size-5" />,
-            title: '독서 통계',
-            description: '얼마나 많이 읽었는지 기록이 쌓여요',
+            title: '추천 개선',
+            description: '평가할수록 더 정확한 추천을 받아요',
           },
         ]}
-        description="작품을 읽으면 자동으로 기록이 남아요"
-        icon={<Clock className="size-12 text-brand-end" />}
-        title="아직 읽은 작품이 없어요"
+        description="작품을 평가하고 나만의 취향을 기록해보세요"
+        icon={<Star className="size-12 text-brand-end" />}
+        title="아직 평가한 작품이 없어요"
       >
         <Link
           className="px-6 py-3 rounded-2xl bg-brand-end font-semibold text-background hover:opacity-80 transition"

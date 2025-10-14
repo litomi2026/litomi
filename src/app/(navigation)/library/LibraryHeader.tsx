@@ -33,9 +33,12 @@ type Props = {
     itemCount: number
   }[]
   userId: number | null
+  bookmarkCount?: number
+  historyCount?: number
+  ratingCount?: number
 }
 
-export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
+export default function LibraryHeader({ libraries, userId, bookmarkCount, historyCount, ratingCount }: Props) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const pathname = usePathname()
   const { id: libraryId } = useParams<Params>()
@@ -77,6 +80,9 @@ export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
     }
     if (pathname === '/library/bookmark') {
       return '북마크'
+    }
+    if (pathname === '/library/rating') {
+      return '평가'
     }
     if (currentLibrary) {
       return currentLibrary.name
@@ -129,7 +135,7 @@ export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
           )}
           {!isSelectionMode && (
             <div className="grid flex-1 break-all">
-              <h1 className="text-lg font-medium line-clamp-1 sm:text-xl sm:font-bold" title={headerTitle}>
+              <h1 className="text-lg font-medium line-clamp-1 py-1 sm:text-xl sm:font-bold" title={headerTitle}>
                 {headerTitle}
               </h1>
               {currentLibrary?.description && (
@@ -182,7 +188,15 @@ export default function LibraryHeader({ libraries, userId }: Readonly<Props>) {
                 <X className="size-5" />
               </button>
             </div>
-            <LibrarySidebar className="pb-safe" libraries={libraries} onClick={closeDrawer} userId={userId} />
+            <LibrarySidebar
+              bookmarkCount={bookmarkCount}
+              className="pb-safe"
+              historyCount={historyCount}
+              libraries={libraries}
+              onClick={closeDrawer}
+              ratingCount={ratingCount}
+              userId={userId}
+            />
           </div>
         </>
       )}

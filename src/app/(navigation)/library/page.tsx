@@ -2,7 +2,7 @@ import { desc, eq } from 'drizzle-orm'
 import { Library } from 'lucide-react'
 import { Metadata } from 'next'
 
-import { defaultOpenGraph, SHORT_NAME } from '@/constants'
+import { generateOpenGraphMetadata, SHORT_NAME } from '@/constants'
 import { LIBRARY_ITEMS_PER_PAGE } from '@/constants/policy'
 import { db } from '@/database/supabase/drizzle'
 import { libraryItemTable, libraryTable } from '@/database/supabase/schema'
@@ -14,11 +14,10 @@ import CreateLibraryButton from './CreateLibraryButton'
 
 export const metadata: Metadata = {
   title: '서재',
-  openGraph: {
-    ...defaultOpenGraph,
+  ...generateOpenGraphMetadata({
     title: `서재 - ${SHORT_NAME}`,
     url: '/library',
-  },
+  }),
   alternates: {
     canonical: '/library',
     languages: { ko: '/library' },

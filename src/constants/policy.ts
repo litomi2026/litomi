@@ -27,6 +27,7 @@ export const SUGGESTION_DEBOUNCE_MS = 500
 export const BOOKMARKS_PER_PAGE = 20
 export const MANGA_TOP_PER_PAGE = 20
 export const READING_HISTORY_PER_PAGE = 20
+export const RATING_PER_PAGE = 20
 export const LIBRARY_ITEMS_PER_PAGE = 20
 export const LINK_PENDING_DELAY = 500
 export const SCROLL_THROTTLE_MS = 200
