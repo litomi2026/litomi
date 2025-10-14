@@ -74,7 +74,7 @@ function ErrorState({ error, retry }: { error: Error; retry: () => void }) {
   const [hasSystemIssues, setHasSystemIssues] = useState(false)
 
   return (
-    <div className="flex flex-col items-center justify-center py-16 px-4">
+    <div className="flex flex-col items-center justify-center py-8 p-4">
       <div aria-label="error icon" className="text-3xl mb-4" role="img">
         😔
       </div>

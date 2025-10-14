@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 
 import PostList from '@/app/(navigation)/(right-search)/posts/[filter]/PostList'
 import { PostFilter } from '@/app/api/post/schema'
+import RatingInput from '@/components/ImageViewer/RatingInput'
 import PostCreationForm from '@/components/post/PostCreationForm'
 import { CANONICAL_URL, defaultOpenGraph, SHORT_NAME } from '@/constants'
 
@@ -44,6 +45,9 @@ export default async function Page({ params }: PageProps<'/manga/[id]/detail'>) 
         <h2 className="text-xl font-bold">작품 상세</h2>
       </div>
       <RelatedMangaSection mangaId={id} />
+      <div className="border-b-2">
+        <RatingInput mangaId={id} />
+      </div>
       <PostCreationForm
         buttonText="게시하기"
         className="flex p-4 border-b-2"
