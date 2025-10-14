@@ -1,3 +1,4 @@
+import { RatingSortOption } from '@/app/(navigation)/library/rating/useRatingInfiniteQuery'
 import { PostFilter } from '@/app/api/post/schema'
 import { MangaResponseScope } from '@/app/api/proxy/manga/[id]/schema'
 
@@ -6,6 +7,7 @@ export const QueryKeys = {
   bookmarks: ['me', 'bookmarks'],
   infiniteBookmarks: ['me', 'bookmarks', 'infinite'],
   infiniteReadingHistory: ['me', 'readingHistory', 'infinite'],
+  infiniteRatings: (sort: RatingSortOption) => ['me', 'ratings', 'infinite', sort],
   infiniteCensorships: ['me', 'censorships', 'infinite'],
   censorships: ['me', 'censorships'],
   passkeys: ['me', 'passkeys'],
