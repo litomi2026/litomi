@@ -34,8 +34,11 @@ export function MangaCardDonation() {
       <div className="h-full w-full overflow-y-auto flex scrollbar-hidden">
         <div className="m-auto flex flex-col items-center gap-6 p-6 text-center max-w-sm">
           <div className="flex flex-col items-center gap-3">
-            <div className="p-3 rounded-full bg-zinc-800/50">
-              <Heart className="size-6 fill-current text-brand-end" />
+            <div className="relative">
+              <div className="absolute inset-0 rounded-full bg-brand-end/10 animate-pulse-ring" />
+              <div className="relative p-3 rounded-full bg-zinc-800/50">
+                <Heart className="size-6 fill-current text-brand-end animate-heartbeat" />
+              </div>
             </div>
             <h3 className="text-lg font-semibold text-zinc-100">리토미를 도와주세요</h3>
           </div>
