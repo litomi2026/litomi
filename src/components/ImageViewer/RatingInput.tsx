@@ -241,7 +241,7 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
             aria-busy={justSaved && value <= rating}
             aria-current={value <= displayRating}
             aria-label={`${value}점`}
-            className="transition-transform pointer-events-none aria-current:scale-110 aria-busy:animate-[rating-saved_0.5s_ease-in-out] p-1"
+            className="transition pointer-events-none aria-current:scale-110 aria-busy:animate-[rating-saved_0.5s_ease-in-out] p-1"
             disabled={isPending}
             key={value}
             style={{ animationDelay: `${i * 50}ms` }}
@@ -250,7 +250,7 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
             <Star
               aria-current={value <= displayRating}
               aria-pressed={hoveredRating > 0 && value === displayRating}
-              className="size-10 sm:size-12 transition-all text-zinc-600 aria-current:fill-brand-end aria-current:text-brand-end aria-current:drop-shadow-lg aria-pressed:scale-125 aria-pressed:rotate-12"
+              className="size-10 sm:size-12 transition text-zinc-600 aria-current:fill-brand-end aria-current:text-brand-end aria-pressed:scale-125 aria-pressed:rotate-12"
             />
           </button>
         ))}
@@ -259,7 +259,7 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
         <div className="grid gap-1 animate-fade-in min-h-[4rem]">
           <div
             aria-current={displayRating > 0}
-            className="text-2xl sm:text-3xl font-bold text-zinc-500 aria-current:text-brand-end transition-colors"
+            className="text-2xl sm:text-3xl font-bold text-zinc-500 aria-current:text-brand-end transition"
           >
             {displayRating}.0
             <span className="text-base sm:text-lg ml-2 text-zinc-400">/ 5.0</span>
@@ -269,10 +269,10 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
       </div>
       <div
         aria-hidden={rating === 0}
-        className="flex gap-4 transition-all aria-hidden:opacity-0 aria-hidden:pointer-events-none aria-hidden:scale-95"
+        className="flex gap-4 transition aria-hidden:opacity-0 aria-hidden:pointer-events-none aria-hidden:scale-95"
       >
         <button
-          className="flex items-center gap-2 text-zinc-500 hover:text-red-400 text-sm transition-colors px-3 py-1 rounded hover:bg-red-400/10"
+          className="flex items-center gap-2 text-zinc-500 hover:text-red-400 text-sm transition px-3 py-1 rounded hover:bg-red-400/10"
           onClick={() => handleRating(0)}
         >
           <X className="size-4" />
