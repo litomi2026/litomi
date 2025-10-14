@@ -255,9 +255,6 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
           </button>
         ))}
       </div>
-      <div className="w-64 h-2 bg-zinc-800 rounded-full overflow-hidden">
-        <div className="h-full bg-brand-gradient transition-all" style={{ width: `${(displayRating / 5) * 100}%` }} />
-      </div>
       <div className="text-center min-h-[4rem]">
         {displayRating > 0 ? (
           <div className="grid gap-1 animate-fade-in">
