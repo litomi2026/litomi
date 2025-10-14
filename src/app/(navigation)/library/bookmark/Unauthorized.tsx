@@ -1,5 +1,3 @@
-'use client'
-
 import { Cloud, Download, Heart, LockKeyhole } from 'lucide-react'
 import Link from 'next/link'
 
@@ -17,14 +15,14 @@ export default function Unauthorized() {
             description: '마음에 드는 작품을 언제든 다시 찾아보세요',
           },
           {
-            icon: <Cloud className="size-5" />,
-            title: '모든 기기 동기화',
-            description: '어떤 기기에서도 북마크를 확인할 수 있어요',
-          },
-          {
             icon: <Download className="size-5" />,
             title: '백업 및 내보내기',
             description: '북마크를 안전하게 다운로드하고 보관해요',
+          },
+          {
+            icon: <Cloud className="size-5" />,
+            title: '모든 기기 동기화',
+            description: '어떤 기기에서도 북마크를 확인할 수 있어요',
           },
         ]}
         description="계정을 만들고 마음에 드는 작품을 저장하세요"

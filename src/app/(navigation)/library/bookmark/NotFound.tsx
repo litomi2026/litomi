@@ -1,5 +1,3 @@
-'use client'
-
 import { Bookmark, Clock, Download, Search } from 'lucide-react'
 import Link from 'next/link'
 

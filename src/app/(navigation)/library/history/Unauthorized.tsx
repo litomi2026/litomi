@@ -1,5 +1,3 @@
-'use client'
-
 import { BookOpen, Cloud, LockKeyhole, RotateCw } from 'lucide-react'
 import Link from 'next/link'
 

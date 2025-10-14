@@ -1,5 +1,3 @@
-'use client'
-
 import { Calendar, Clock, TrendingUp, Trophy } from 'lucide-react'
 import Link from 'next/link'
 
