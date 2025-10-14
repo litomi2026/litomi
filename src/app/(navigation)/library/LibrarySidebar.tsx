@@ -1,4 +1,4 @@
-import { Bookmark, Clock, Globe, LibraryBig, Lock } from 'lucide-react'
+import { Bookmark, Clock, Globe, LibraryBig, Lock, Star } from 'lucide-react'
 
 import { formatNumber } from '@/utils/format'
 
@@ -19,9 +19,20 @@ type Props = {
   userId: number | null
   className?: string
   onClick?: () => void
+  bookmarkCount?: number
+  historyCount?: number
+  ratingCount?: number
 }
 
-export default function LibrarySidebar({ libraries, userId, className = '', onClick }: Readonly<Props>) {
+export default function LibrarySidebar({
+  libraries,
+  userId,
+  className = '',
+  onClick,
+  bookmarkCount,
+  historyCount,
+  ratingCount,
+}: Props) {
   const mangaCount = libraries.reduce((sum, lib) => sum + lib.itemCount, 0)
 
   const info = userId
@@ -53,7 +64,7 @@ export default function LibrarySidebar({ libraries, userId, className = '', onCl
         />
         <div className="h-px bg-zinc-800 my-1" />
         <LibrarySidebarLink
-          description="최근 읽은 작품"
+          description={historyCount !== undefined ? `${formatNumber(historyCount, 'ko')}개 작품` : '최근 읽은 작품'}
           href="/library/history"
           icon={<Clock className="size-4 text-background" />}
           iconBackground="var(--color-brand-end)"
@@ -61,12 +72,20 @@ export default function LibrarySidebar({ libraries, userId, className = '', onCl
           title="감상 기록"
         />
         <LibrarySidebarLink
-          description="즐겨찾기한 작품"
+          description={bookmarkCount !== undefined ? `${formatNumber(bookmarkCount, 'ko')}개 작품` : '즐겨찾기한 작품'}
           href="/library/bookmark"
           icon={<Bookmark className="size-4 text-background" />}
           iconBackground="var(--color-brand-end)"
           onClick={onClick}
           title="북마크"
+        />
+        <LibrarySidebarLink
+          description={ratingCount !== undefined ? `${formatNumber(ratingCount, 'ko')}개 작품` : '평가한 작품'}
+          href="/library/rating"
+          icon={<Star className="size-4 text-background" />}
+          iconBackground="var(--color-brand-end)"
+          onClick={onClick}
+          title="평가"
         />
         {libraries.length > 0 && <div className="h-px bg-zinc-800 my-1" />}
         {libraries.map((library) => (
