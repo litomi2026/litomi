@@ -1,6 +1,7 @@
 import Link from 'next/link'
 
 import LogoDiscord from '@/components/icons/LogoDiscord'
+import SEOText from '@/components/SEOText'
 
 export default function Home() {
   return (
@@ -48,6 +49,7 @@ export default function Home() {
           Discord
         </a>
       </div>
+      <SEOText className="sr-only" />
     </main>
   )
 }

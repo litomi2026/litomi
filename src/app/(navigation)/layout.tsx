@@ -8,6 +8,7 @@ import IconLibraryBig from '@/components/icons/IconLibraryBig'
 import IconLogo from '@/components/icons/IconLogo'
 import IconPost from '@/components/icons/IconPost'
 import IconSearch from '@/components/icons/IconSearch'
+import SEOText from '@/components/SEOText'
 
 import { DEFAULT_METRIC, DEFAULT_PERIOD } from './(ranking)/common'
 import AutoHideNavigation from './AutoHideNavigation'
@@ -68,9 +69,7 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
       <div className="flex flex-col grow">
         {children}
         <p className="h-0 overflow-hidden tracking-widest invisible">
-          litomi, manga, comic, webtoon, manhwa, manhua, cartoon, hitomi, illustration, episode, series, japan manga,
-          web viewer, reader app, 리토미, 망가, 만화, 웹툰, 일러스트, 일러스트레이션, 에피소드, 단행본, 컬러웹툰, 카툰,
-          짧은만화, 히토미, 일본만화, 만화 웹 뷰어
+          <SEOText />
         </p>
       </div>
       <div className="w-full h-16 shrink-0 sm:hidden" />
