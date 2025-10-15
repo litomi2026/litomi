@@ -3,46 +3,47 @@ import { useMemo, useState } from 'react'
 import { MAX_SEARCH_SUGGESTIONS } from '@/constants/policy'
 import useDebouncedValue from '@/hook/useDebouncedValue'
 
-import { MIN_SUGGESTION_QUERY_LENGTH, SEARCH_SUGGESTIONS, type SearchSuggestion } from './constants'
+import { MIN_SUGGESTION_QUERY_LENGTH, SEARCH_SUGGESTIONS } from './constants'
 import useSearchSuggestionsQuery from './useSearchSuggestionsQuery'
 
-const DEBOUNCE_MS = 500
+const DEBOUNCE_MS = 300
 const INITIAL_SELECTED_INDEX = -1
 
 type Props = {
   keyword: string
-  limit?: number
 }
 
-export default function useSearchSuggestions({ keyword, limit = MAX_SEARCH_SUGGESTIONS }: Readonly<Props>) {
+export default function useSearchSuggestions({ keyword }: Readonly<Props>) {
   const [selectedIndex, setSelectedIndex] = useState(INITIAL_SELECTED_INDEX)
 
   const debouncedKeyword = useDebouncedValue({
-    value: keyword.length >= MIN_SUGGESTION_QUERY_LENGTH ? keyword : '',
+    value: keyword,
     delay: DEBOUNCE_MS,
   })
 
   const { data: suggestions = [], isLoading, isFetching } = useSearchSuggestionsQuery({ query: debouncedKeyword })
 
+  const defaultSuggestions = useMemo(() => {
+    if (keyword.length >= MIN_SUGGESTION_QUERY_LENGTH) {
+      return []
+    }
+
+    if (keyword === '') {
+      return SEARCH_SUGGESTIONS
+    } else {
+      return SEARCH_SUGGESTIONS.filter((filter) => filter.value.startsWith(keyword))
+    }
+  }, [keyword])
+
   const searchSuggestions = useMemo(() => {
-    if (debouncedKeyword === '') {
-      return SEARCH_SUGGESTIONS.slice(0, limit)
-    }
+    const a =
+      suggestions.length > 0
+        ? suggestions
+        : SEARCH_SUGGESTIONS.filter((filter) => filter.value.startsWith(debouncedKeyword))
 
-    const matchedFilters = SEARCH_SUGGESTIONS.filter(
-      (filter) => filter.value.startsWith(debouncedKeyword) && filter.value !== debouncedKeyword,
-    )
-
-    if (debouncedKeyword.length < MIN_SUGGESTION_QUERY_LENGTH) {
-      return matchedFilters.slice(0, limit)
-    }
-
-    const a = suggestions.length > 0 ? suggestions : matchedFilters
-    const b = a.map((suggestion) => [suggestion.label, suggestion] as const)
-    const suggestionMap = new Map<string, SearchSuggestion>(b)
-
-    return Array.from(suggestionMap.values()).slice(0, limit)
-  }, [debouncedKeyword, suggestions, limit])
+    const suggestionMap = new Map(a.map((suggestion) => [suggestion.label, suggestion]))
+    return Array.from(suggestionMap.values()).slice(0, MAX_SEARCH_SUGGESTIONS)
+  }, [debouncedKeyword, suggestions])
 
   const resetSelection = () => {
     setSelectedIndex(INITIAL_SELECTED_INDEX)
@@ -59,8 +60,8 @@ export default function useSearchSuggestions({ keyword, limit = MAX_SEARCH_SUGGE
   return {
     selectedIndex,
     setSelectedIndex,
-    searchSuggestions,
-    showHeader: debouncedKeyword === '',
+    searchSuggestions: keyword.length >= MIN_SUGGESTION_QUERY_LENGTH ? searchSuggestions : defaultSuggestions,
+    showHeader: keyword === '',
     resetSelection,
     navigateSelection,
     isLoading,
