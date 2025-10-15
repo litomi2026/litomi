@@ -1,0 +1,79 @@
+{
+  "doujinshi": {
+    "en": "Doujinshi",
+    "ko": "동인지",
+    "ja": "同人誌",
+    "zh-CN": "同人志",
+    "zh-TW": "同人誌"
+  },
+  "manga": {
+    "en": "Manga",
+    "ko": "망가",
+    "ja": "漫画",
+    "zh-CN": "漫画",
+    "zh-TW": "漫畫"
+  },
+  "artist_cg": {
+    "en": "Artist CG",
+    "ko": "아티스트 CG",
+    "ja": "アーティストCG",
+    "zh-CN": "艺术家CG",
+    "zh-TW": "藝術家CG"
+  },
+  "game_cg": {
+    "en": "Game CG",
+    "ko": "게임 CG",
+    "ja": "ゲームCG",
+    "zh-CN": "游戏CG",
+    "zh-TW": "遊戲CG"
+  },
+  "western": {
+    "en": "Western",
+    "ko": "서양",
+    "ja": "西洋",
+    "zh-CN": "西方",
+    "zh-TW": "西方"
+  },
+  "image_set": {
+    "en": "Image Set",
+    "ko": "이미지 모음",
+    "ja": "イメージセット",
+    "zh-CN": "图像集",
+    "zh-TW": "圖像集"
+  },
+  "non_h": {
+    "en": "Non-H",
+    "ko": "건전",
+    "ja": "非エロ",
+    "zh-CN": "非H",
+    "zh-TW": "非H"
+  },
+  "cosplay": {
+    "en": "Cosplay",
+    "ko": "코스프레",
+    "ja": "コスプレ",
+    "zh-CN": "角色扮演",
+    "zh-TW": "角色扮演"
+  },
+  "asian": {
+    "en": "Asian",
+    "ko": "아시안",
+    "ja": "アジアン",
+    "zh-CN": "亚洲",
+    "zh-TW": "亞洲"
+  },
+  "other": {
+    "en": "Other",
+    "ko": "기타",
+    "ja": "その他",
+    "zh-CN": "其他",
+    "zh-TW": "其他"
+  },
+  "private": {
+    "en": "Private",
+    "ko": "비공개",
+    "ja": "プライベート",
+    "zh-CN": "私人",
+    "zh-TW": "私人"
+  }
+}
