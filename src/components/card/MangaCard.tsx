@@ -8,7 +8,6 @@ import { getViewerLink } from '@/utils/manga'
 import LogoDiscord from '../icons/LogoDiscord'
 import LogoGitHub from '../icons/LogoGitHub'
 import LogoX from '../icons/LogoX'
-import TagList from '../TagList'
 import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from './BookmarkButton'
 import DownloadButton from './DownloadButton'
 import LanguageBadge from './LanguageBadge'
@@ -17,6 +16,7 @@ import MangaCardImage from './MangaCardImage'
 import MangaCardStats from './MangaCardStats'
 import MangaMetadataLink from './MangaMetadataLink'
 import MangaMetadataList from './MangaMetadataList'
+import MangaTagList from './MangaTagList'
 import SearchFromHereButton from './SearchFromHereButton'
 
 type Props = {
@@ -197,7 +197,7 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
           )}
           {tags && tags.length > 0 && (
             <Suspense>
-              <TagList className="flex flex-wrap gap-1 font-semibold" tags={tags} />
+              <MangaTagList className="flex flex-wrap gap-1 font-semibold" tags={tags} />
             </Suspense>
           )}
         </dl>

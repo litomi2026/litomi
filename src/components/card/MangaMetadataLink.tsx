@@ -1,11 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
 import { memo } from 'react'
 
+import { useSearchFilter } from '@/components/card/useSearchFilter'
+
 import MangaMetadataLabel from './MangaMetadataLabel'
-import { toggleSearchFilter } from './utils'
 
 type Props = {
   value: string
@@ -17,18 +17,7 @@ type Props = {
 export default memo(MangaMetadataLink)
 
 function MangaMetadataLink({ value, label, filterType, i = 0 }: Props) {
-  const searchParams = useSearchParams()
-  const currentQuery = searchParams.get('query') ?? ''
-  const newQuery = toggleSearchFilter(currentQuery, filterType, value)
-  const newSearchParams = new URLSearchParams(searchParams)
-  if (newQuery) {
-    newSearchParams.set('query', newQuery)
-  } else {
-    newSearchParams.delete('query')
-  }
-  const filterPattern = `${filterType}:${value.replaceAll(' ', '_')}`
-  const escapedPattern = filterPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  const isActive = currentQuery ? new RegExp(`(^|\\s)${escapedPattern}(?=\\s|$)`, 'i').test(currentQuery) : false
+  const { href, isActive } = useSearchFilter(filterType, value)
 
   return (
     <>
@@ -36,7 +25,7 @@ function MangaMetadataLink({ value, label, filterType, i = 0 }: Props) {
       <Link
         aria-current={isActive}
         className="hover:underline focus:underline aria-current:text-brand-end aria-current:font-semibold"
-        href={`/search?${newSearchParams}`}
+        href={href}
         prefetch={false}
       >
         <MangaMetadataLabel>{label || value}</MangaMetadataLabel>

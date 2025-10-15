@@ -14,7 +14,7 @@ import MangaCardStats from '../card/MangaCardStats'
 import MangaMetadataLabel from '../card/MangaMetadataLabel'
 import MangaMetadataLink from '../card/MangaMetadataLink'
 import MangaMetadataList from '../card/MangaMetadataList'
-import TagList from '../TagList'
+import MangaTagList from '../card/MangaTagList'
 import Modal from '../ui/Modal'
 
 type Props = {
@@ -147,7 +147,7 @@ function MangaDetailButton({ manga }: Readonly<Props>) {
             )}
             {tags && tags.length > 0 && (
               <Suspense>
-                <TagList
+                <MangaTagList
                   className="flex flex-wrap gap-1 font-medium [&_li]:rounded [&_li]:px-1 [&_li]:text-foreground"
                   tags={tags}
                 />
