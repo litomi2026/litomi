@@ -24,7 +24,7 @@ export function getAllTypesWithLabels() {
 
 export function translateType(type: string | undefined, locale: keyof Multilingual) {
   if (!type) {
-    return null
+    return
   }
 
   const normalizedType = normalizeValue(type)

@@ -9,6 +9,7 @@ import { translateGroupList } from '@/translation/group'
 import { translateLanguageList } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
 import { translateTag } from '@/translation/tag'
+import { translateType } from '@/translation/type'
 import { Manga } from '@/types/manga'
 
 import { ProxyClient, ProxyClientConfig } from './proxy'
@@ -190,7 +191,7 @@ class HentaiPawClient {
       artists: translateArtistList(artists, locale),
       group: translateGroupList(groups, locale),
       series: translateSeriesList(series, locale),
-      type,
+      type: translateType(type, locale),
       languages: translateLanguageList(languages, locale),
       count: pageCount,
       characters: translateCharacterList(characters, locale),

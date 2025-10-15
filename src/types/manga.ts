@@ -30,7 +30,7 @@ export type Manga = {
   sources?: MangaSource[]
   tags?: MangaTag[]
   torrentCount?: number
-  type?: string
+  type?: LabeledValue
   uploader?: string
   viewCount?: number
 

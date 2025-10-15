@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import { max, min, sql } from 'drizzle-orm'
 
-import type { Manga } from '../../../src/types/manga'
+import type { LabeledValue, Manga } from '../../../src/types/manga'
 
 import { fetchMangaFromMultiSources } from '../../../src/common/manga'
 import { kHentaiClient } from '../../../src/crawler/k-hentai'
@@ -622,9 +622,9 @@ async function getExistingMangaIdRange(
 }
 
 /**
- * Map manga type string to enum value
+ * Map manga type LabeledValue to enum value
  */
-function getMangaTypeValue(type: string | undefined, mangaId: number): number {
+function getMangaTypeValue(type: LabeledValue | undefined, mangaId: number): number {
   const typeMap: Record<string, MangaType> = {
     // English mappings
     manga: MangaType.MANGA,
@@ -683,11 +683,11 @@ function getMangaTypeValue(type: string | undefined, mangaId: number): number {
     return MangaType.MISC
   }
 
-  const normalizedType = type.toLowerCase().trim()
+  const normalizedType = type.value.toLowerCase().trim()
   const mappedType = typeMap[normalizedType]
 
   if (mappedType === undefined) {
-    log.warn(`Unknown manga type: "${type}" for manga #${mangaId}, defaulting to MISC`)
+    log.warn(`Unknown manga type: "${type.value}" for manga #${mangaId}, defaulting to MISC`)
     return MangaType.MISC
   }
 

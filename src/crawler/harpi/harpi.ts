@@ -10,6 +10,7 @@ import { translateCharacterList } from '@/translation/character'
 import { translateLanguageList } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
 import { translateTag } from '@/translation/tag'
+import { translateType } from '@/translation/type'
 import { Manga, MangaTag } from '@/types/manga'
 import { uniqBy } from '@/utils/array'
 
@@ -253,7 +254,7 @@ class HarpiClient {
       series: translateSeriesList(harpiManga.series, locale),
       lines: harpiManga.memorableQuote,
       tags: harpiManga.tagsIds ? this.convertHarpiTagIdsToTags(harpiManga.tagsIds, locale) : [],
-      type: harpiManga.type,
+      type: translateType(harpiManga.type, locale),
       languages: translateLanguageList(['korean'], locale),
       date: new Date(harpiManga.date).toISOString(),
       images: harpiManga.imageUrl

@@ -9,6 +9,7 @@ import { translateGroupList } from '@/translation/group'
 import { translateLanguageList } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
 import { translateTag } from '@/translation/tag'
+import { translateType } from '@/translation/type'
 import { convertCamelCaseToKebabCase } from '@/utils/param'
 
 import { NotFoundError, ParseError, UpstreamServerError } from './errors'
@@ -17,17 +18,17 @@ import { isUpstreamServerError } from './proxy-utils'
 import { getOriginFromImageURLs } from './utils'
 
 const kHentaiTypeNumberToName: Record<number, string> = {
-  1: '동인지',
-  2: '망가',
-  3: '아티스트 CG',
-  4: '게임 CG',
-  5: '서양',
-  6: '이미지 모음',
-  7: '건전',
-  8: '코스프레',
-  9: '아시안',
-  10: '기타',
-  11: '비공개',
+  1: 'doujinshi',
+  2: 'manga',
+  3: 'artist_cg',
+  4: 'game_cg',
+  5: 'western',
+  6: 'image_set',
+  7: 'non_h',
+  8: 'cosplay',
+  9: 'asian_porn',
+  10: 'misc',
+  11: 'hidden',
 }
 
 const typeNameToNumber: Record<string, number> = {
@@ -310,7 +311,7 @@ class KHentaiClient {
           }
           return a.label.localeCompare(b.label)
         }),
-      type: kHentaiTypeNumberToName[category] ?? '?',
+      type: translateType(kHentaiTypeNumberToName[category] ?? `${category}?`, locale),
       languages: translateLanguageList(languageValues, locale),
       count: filecount,
       rating: rating / 100,

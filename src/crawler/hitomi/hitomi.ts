@@ -7,6 +7,7 @@ import { translateGroupList } from '@/translation/group'
 import { translateLanguageList } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
 import { translateTag } from '@/translation/tag'
+import { translateType } from '@/translation/type'
 import { Manga } from '@/types/manga'
 
 import { NotFoundError, ParseError } from '../errors'
@@ -97,6 +98,7 @@ class HitomiClient {
         const category = this.getTagCategory(tag)
         return translateTag(category, tag.tag, locale)
       }),
+      type: translateType(gallery.type, locale),
       languages: translateLanguageList(languageValues, locale),
       images: await Promise.all(gallery.files.map((file) => this.getImageURL(gallery.id, file))),
       related: gallery.related,

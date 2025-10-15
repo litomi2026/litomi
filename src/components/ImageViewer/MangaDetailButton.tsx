@@ -98,7 +98,7 @@ function MangaDetailButton({ manga }: Readonly<Props>) {
               <div className="flex gap-2">
                 <strong>종류</strong>
                 <Suspense>
-                  <MangaMetadataLink filterType="type" value={type} />
+                  <MangaMetadataLink filterType="type" label={type.label} value={type.value} />
                 </Suspense>
               </div>
             )}

@@ -62,8 +62,8 @@
     "zh-CN": "亚洲",
     "zh-TW": "亞洲"
   },
-  "other": {
-    "en": "Other",
+  "misc": {
+    "en": "Misc.",
     "ko": "기타",
     "ja": "その他",
     "zh-CN": "其他",

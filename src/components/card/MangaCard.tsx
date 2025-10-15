@@ -159,7 +159,7 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
             <div className="flex gap-1">
               <dt>종류</dt>
               <Suspense>
-                <MangaMetadataLink filterType="type" label={type} value={type} />
+                <MangaMetadataLink filterType="type" label={type.label} value={type.value} />
               </Suspense>
             </div>
           )}

@@ -49,7 +49,7 @@ export function filterMangasByMinusPrefix(mangas: Manga[], query?: string) {
     }
 
     if (filterLookup.types.size > 0 && manga.type) {
-      if (filterLookup.types.has(normalizedValueMap.get(manga.type))) {
+      if (filterLookup.types.has(normalizedValueMap.get(manga.type.value))) {
         return false
       }
     }
