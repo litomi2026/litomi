@@ -8,14 +8,14 @@ import MangaMetadataLabel from './MangaMetadataLabel'
 import { toggleSearchFilter } from './utils'
 
 type Props = {
-  details: { value: string; label: string }[]
+  labeledValues: { value: string; label: string }[]
   filterType: string
   className?: string
 }
 
 export default memo(MangaMetadataList)
 
-function MangaMetadataList({ details, filterType, className = '' }: Readonly<Props>) {
+function MangaMetadataList({ labeledValues, filterType, className = '' }: Readonly<Props>) {
   const searchParams = useSearchParams()
   const currentQuery = searchParams.get('query') ?? ''
 
@@ -23,7 +23,7 @@ function MangaMetadataList({ details, filterType, className = '' }: Readonly<Pro
     <ul
       className={`break-all [&_a]:px-0.5 [&_a]:first:pl-0 [&_a]:last:pr-0 [&_a]:hover:underline [&_a]:focus:underline [&_a]:aria-current:text-brand-end [&_a]:aria-current:font-semibold ${className}`}
     >
-      {details.map(({ value, label }, idx) => {
+      {labeledValues.map(({ value, label }, i) => {
         const newQuery = toggleSearchFilter(currentQuery, filterType, value)
         const newSearchParams = new URLSearchParams(searchParams)
         if (newQuery) {
@@ -39,7 +39,7 @@ function MangaMetadataList({ details, filterType, className = '' }: Readonly<Pro
           <Link aria-current={isActive} href={`/search?${newSearchParams}`} key={value} prefetch={false}>
             <MangaMetadataLabel>
               {label}
-              {idx < details.length - 1 && ','}
+              {i < labeledValues.length - 1 && ','}
             </MangaMetadataLabel>
           </Link>
         )

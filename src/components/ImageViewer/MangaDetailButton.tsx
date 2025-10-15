@@ -89,7 +89,7 @@ function MangaDetailButton({ manga }: Readonly<Props>) {
             {languages && languages.length > 0 && (
               <div className="flex gap-2">
                 <strong>언어</strong>
-                <MangaMetadataList details={languages} filterType="language" />
+                <MangaMetadataList filterType="language" labeledValues={languages} />
               </div>
             )}
             {type && (
@@ -101,25 +101,25 @@ function MangaDetailButton({ manga }: Readonly<Props>) {
             {artists && artists.length > 0 && (
               <div className="flex gap-2">
                 <strong>작가</strong>
-                <MangaMetadataList details={artists} filterType="artist" />
+                <MangaMetadataList filterType="artist" labeledValues={artists} />
               </div>
             )}
             {group && group.length > 0 && (
               <div className="flex gap-2">
                 <strong>그룹</strong>
-                <MangaMetadataList details={group} filterType="group" />
+                <MangaMetadataList filterType="group" labeledValues={group} />
               </div>
             )}
             {series && series.length > 0 && (
               <div className="flex gap-2">
                 <strong>시리즈</strong>
-                <MangaMetadataList details={series} filterType="series" />
+                <MangaMetadataList filterType="series" labeledValues={series} />
               </div>
             )}
             {characters && characters.length > 0 && (
               <div className="flex gap-2">
                 <strong>캐릭터</strong>
-                <MangaMetadataList details={characters} filterType="character" />
+                <MangaMetadataList filterType="character" labeledValues={characters} />
               </div>
             )}
             {uploader && (

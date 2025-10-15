@@ -167,7 +167,7 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
             <div className="flex gap-1">
               <dt>작가</dt>
               <Suspense>
-                <MangaMetadataList details={artists} filterType="artist" />
+                <MangaMetadataList filterType="artist" labeledValues={artists} />
               </Suspense>
             </div>
           )}
@@ -175,7 +175,7 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
             <div className="flex gap-1">
               <dt>그룹</dt>
               <Suspense>
-                <MangaMetadataList details={group} filterType="group" />
+                <MangaMetadataList filterType="group" labeledValues={group} />
               </Suspense>
             </div>
           )}
@@ -183,7 +183,7 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
             <div className="flex gap-1">
               <dt>시리즈</dt>
               <Suspense>
-                <MangaMetadataList details={series} filterType="series" />
+                <MangaMetadataList filterType="series" labeledValues={series} />
               </Suspense>
             </div>
           )}
@@ -191,7 +191,7 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
             <div className="flex gap-1">
               <dt>캐릭터</dt>
               <Suspense>
-                <MangaMetadataList details={characters} filterType="character" />
+                <MangaMetadataList filterType="character" labeledValues={characters} />
               </Suspense>
             </div>
           )}
