@@ -8,6 +8,7 @@ import { translateGroupList } from '@/translation/group'
 import { translateLanguageList } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
 import { translateTag } from '@/translation/tag'
+import { translateType } from '@/translation/type'
 import { Manga, MangaTag } from '@/types/manga'
 
 import { ProxyClient, ProxyClientConfig } from './proxy'
@@ -52,17 +53,17 @@ type MangaFetchParams = {
 }
 
 const hiyobiTypeNumberToName: Record<number, string> = {
-  1: '동인지',
-  2: '망가',
-  3: '아티스트 CG',
-  4: '게임 CG',
-  5: '서양',
-  6: '이미지 모음',
-  7: '건전',
-  8: '코스프레',
-  9: '아시안',
-  10: '기타',
-  11: '비공개',
+  1: 'doujinshi',
+  2: 'manga',
+  3: 'artist_cg',
+  4: 'game_cg',
+  5: 'western',
+  6: 'image_set',
+  7: 'non_h',
+  8: 'cosplay',
+  9: 'asian_porn',
+  10: 'misc',
+  11: 'hidden',
 }
 
 const HIYOBI_CONFIG: ProxyClientConfig = {
@@ -195,7 +196,7 @@ class HiyobiClient {
       series: translateSeriesList(seriesValues, locale),
       tags: this.convertHiyobiTagsToTags(tags, locale),
       title: title === '정보없음' ? '' : title,
-      type: hiyobiTypeNumberToName[type] ?? `${type}?`,
+      type: translateType(hiyobiTypeNumberToName[type] ?? `${type}?`, locale),
       languages: translateLanguageList([language], locale),
       images: [this.getKHentaiThumbnailURL(id)],
       count: filecount,

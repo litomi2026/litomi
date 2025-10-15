@@ -68,7 +68,7 @@ export async function GET(request: Request) {
     endDate: to?.toString(),
     minRating: minRating?.toString(),
     maxRating: maxRating?.toString(),
-    uploader: uploaderMatch?.[1]?.replace(/_/g, ' '),
+    uploader: uploaderMatch?.[1],
   }
 
   try {

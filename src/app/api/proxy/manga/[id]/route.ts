@@ -1,9 +1,9 @@
 import { fetchMangaFromMultiSources } from '@/common/manga'
-import { CANONICAL_URL } from '@/constants'
 import { BLACKLISTED_MANGA_IDS } from '@/constants/policy'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { Manga, MangaError } from '@/types/manga'
 import { RouteProps } from '@/types/nextjs'
+import { calculateOptimalCacheDuration } from '@/utils/cache-control'
 import { sec } from '@/utils/date'
 
 import { GETProxyMangaIdSchema, MangaResponseScope } from './schema'
@@ -98,45 +98,6 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
   } catch (error) {
     return handleRouteError(error, request)
   }
-}
-
-function calculateOptimalCacheDuration(images: string[]): number {
-  const now = Math.floor(Date.now() / 1000)
-  let nearestExpiration
-
-  for (const imageUrl of images) {
-    const expiration = extractExpirationFromURL(imageUrl)
-    if (expiration && expiration > now) {
-      if (!nearestExpiration || expiration < nearestExpiration) {
-        nearestExpiration = expiration
-      }
-    }
-  }
-
-  if (!nearestExpiration) {
-    return sec('30 days')
-  }
-
-  // Apply a small buffer (5 minutes) for:
-  // - Clock skew between servers
-  // - Request processing time
-  // - User's actual image loading time
-  const buffer = sec('5 minutes')
-
-  return nearestExpiration - buffer - now
-}
-
-function extractExpirationFromURL(imageUrl: string): number | null {
-  try {
-    const url = new URL(imageUrl, CANONICAL_URL)
-    const expires = url.searchParams.get('expires')
-    if (expires && /^\d+$/.test(expires)) {
-      return parseInt(expires, 10)
-    }
-  } catch {
-    // Not a valid URL
-  }
-  return null
 }
 
 function getMangaResponseData(manga: Manga | MangaError, scope: string | null) {

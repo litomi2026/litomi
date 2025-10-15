@@ -3,10 +3,10 @@
 import { CN, DE, ES, FR, HU, IT, JP, KR, NL, PT, RU, TH, US, VN } from 'country-flag-icons/react/3x2'
 import { Globe, Meh, Pencil } from 'lucide-react'
 import Link, { useLinkStatus } from 'next/link'
-import { useSearchParams } from 'next/navigation'
-import { ReactNode, useMemo } from 'react'
+import { ReactNode } from 'react'
 
 import IconSpinner from '../icons/IconSpinner'
+import { useSearchFilter } from './useSearchFilter'
 
 type Props = {
   language: string
@@ -53,47 +53,15 @@ const LANGUAGE_CODES: Record<string, string> = {
   rewrite: 'R',
 }
 
-export default function LanguageBadge({ language, className = '' }: Readonly<Props>) {
-  const searchParams = useSearchParams()
-  const currentQuery = searchParams.get('query') ?? ''
-
-  const { newQuery, isActive } = useMemo(() => {
-    const normalizedLang = language.toLowerCase()
-
-    const queryWithoutLanguage = currentQuery
-      .split(/\s+/)
-      .filter((term) => !term.startsWith('language:'))
-      .join(' ')
-      .trim()
-
-    const isCurrentlyActive = new RegExp(`(^|\\s)language:${normalizedLang}(?=\\s|$)`, 'i').test(currentQuery)
-
-    const newQueryValue = isCurrentlyActive
-      ? queryWithoutLanguage
-      : queryWithoutLanguage
-        ? `${queryWithoutLanguage} language:${normalizedLang}`
-        : `language:${normalizedLang}`
-
-    return {
-      newQuery: newQueryValue.trim(),
-      isActive: isCurrentlyActive,
-    }
-  }, [language, currentQuery])
-
-  const newSearchParams = new URLSearchParams(searchParams)
-
-  if (newQuery) {
-    newSearchParams.set('query', newQuery)
-  } else {
-    newSearchParams.delete('query')
-  }
+export default function MangaLanguageLink({ language, className = '' }: Readonly<Props>) {
+  const { href, isActive } = useSearchFilter(`language:${language}`)
 
   return (
     <Link
       aria-current={isActive}
       aria-label={`Filter by ${language}`}
       className={`group relative px-1.5 py-0.5 text-xs font-medium rounded-md bg-zinc-700 transition aria-current:ring-2 aria-current:ring-brand-end aria-current:bg-zinc-700 ${className}`}
-      href={`/search?${newSearchParams}`}
+      href={href}
       title={`${language} 작품 보기`}
     >
       <LanguageBadgeContent language={language} />

@@ -9,24 +9,9 @@ import tagMaleFemaleTranslations from '@/translation/tag-male-female.json'
 import tagMixedTranslations from '@/translation/tag-mixed.json'
 import tagOtherTranslations from '@/translation/tag-other.json'
 import tagTranslations from '@/translation/tag.json'
+import { getAllTypesWithLabels } from '@/translation/type'
 
 import SuggestionTrie, { SuggestionItem } from './trie'
-
-// TODO: 제거 후 artist, group, series, character 등 다른 요소와 비슷하게 처리해야 함
-// Language and type options
-const TYPE_OPTIONS = [
-  'doujinshi',
-  'manga',
-  'artist_cg',
-  'game_cg',
-  'western',
-  'image_set',
-  'non_h',
-  'cosplay',
-  'asian',
-  'other',
-  'private',
-]
 
 // Initialize the Trie with all suggestions
 export const suggestionTrie = new SuggestionTrie()
@@ -137,31 +122,45 @@ function getLabels(
   // Add type suggestions
   suggestionTrie.insert('type', {
     value: 'type:',
-    labels: { ko: '종류', en: 'type' },
+    labels: {
+      ko: '종류',
+      en: 'type',
+      ja: 'タイプ',
+      'zh-CN': '类型',
+      'zh-TW': '類型',
+    },
   })
   suggestionTrie.insert('종류', {
     value: 'type:',
-    labels: { ko: '종류', en: 'type' },
+    labels: {
+      ko: '종류',
+      en: 'type',
+      ja: 'タイプ',
+      'zh-CN': '类型',
+      'zh-TW': '類型',
+    },
   })
 
-  // TODO: 제거 후 artist, group, series, character 등 다른 요소와 비슷하게 처리해야 함
-  TYPE_OPTIONS.forEach((type) => {
-    const value = `type:${type}`
-    const koLabel = type === 'manga' ? '망가' : type === 'doujinshi' ? '동인지' : type
+  // Add all types with their translations
+  const allTypes = getAllTypesWithLabels()
+  allTypes.forEach((typeItem) => {
+    // Insert for the full value (e.g., "type:manga")
+    suggestionTrie.insert(typeItem.value, typeItem)
 
-    const suggestion: SuggestionItem = {
-      value,
-      labels: {
-        ko: `종류:${koLabel}`,
-        en: value,
-      },
-    }
+    // Extract the type key from "type:key"
+    const typeKey = typeItem.value.replace(/^type:/, '')
+    suggestionTrie.insert(typeKey, typeItem)
 
-    suggestionTrie.insert(value, suggestion)
-    suggestionTrie.insert(type.replace(' ', '_'), suggestion)
-    if (koLabel !== type) {
-      suggestionTrie.insert(koLabel, suggestion)
-    }
+    // Insert for each translation
+    Object.entries(typeItem.labels).forEach(([_locale, label]) => {
+      if (label) {
+        // Extract just the type name from the label (e.g., "종류:망가" -> "망가")
+        const typeName = label.split(':')[1]
+        if (typeName) {
+          suggestionTrie.insert(typeName.toLowerCase(), typeItem)
+        }
+      }
+    })
   })
 
   // Add male/female tags
@@ -243,7 +242,6 @@ function getLabels(
   })
 
   // Add series suggestions
-  // First add the series category
   suggestionTrie.insert('series', {
     value: 'series:',
     labels: {
@@ -288,7 +286,6 @@ function getLabels(
   })
 
   // Add character suggestions
-  // First add the character category
   suggestionTrie.insert('character', {
     value: 'character:',
     labels: {
@@ -317,7 +314,7 @@ function getLabels(
     suggestionTrie.insert(characterItem.value, characterItem)
 
     // Extract the character key from "character:key"
-    const characterKey = characterItem.value.replace('character:', '')
+    const characterKey = characterItem.value.replace(/^character:/, '')
     suggestionTrie.insert(characterKey, characterItem)
 
     // Insert for each translation
@@ -333,7 +330,6 @@ function getLabels(
   })
 
   // Add artist suggestions
-  // First add the artist category
   suggestionTrie.insert('artist', {
     value: 'artist:',
     labels: {
@@ -362,7 +358,7 @@ function getLabels(
     suggestionTrie.insert(artistItem.value, artistItem)
 
     // Extract the artist key from "artist:key"
-    const artistKey = artistItem.value.replace('artist:', '')
+    const artistKey = artistItem.value.replace(/^artist:/, '')
     suggestionTrie.insert(artistKey, artistItem)
 
     // Insert for each translation
@@ -378,7 +374,6 @@ function getLabels(
   })
 
   // Add group suggestions
-  // First add the group category
   suggestionTrie.insert('group', {
     value: 'group:',
     labels: {
@@ -407,7 +402,7 @@ function getLabels(
     suggestionTrie.insert(groupItem.value, groupItem)
 
     // Extract the group key from "group:key"
-    const groupKey = groupItem.value.replace('group:', '')
+    const groupKey = groupItem.value.replace(/^group:/, '')
     suggestionTrie.insert(groupKey, groupItem)
 
     // Insert for each translation

@@ -11,10 +11,10 @@ import { Manga } from '@/types/manga'
 import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from '../card/BookmarkButton'
 import DownloadButton, { DownloadButtonError, DownloadButtonSkeleton } from '../card/DownloadButton'
 import MangaCardStats from '../card/MangaCardStats'
-import MangaMetadataItem from '../card/MangaMetadataItem'
 import MangaMetadataLabel from '../card/MangaMetadataLabel'
+import MangaMetadataLink from '../card/MangaMetadataLink'
 import MangaMetadataList from '../card/MangaMetadataList'
-import TagList from '../TagList'
+import MangaTagList from '../card/MangaTagList'
 import Modal from '../ui/Modal'
 
 type Props = {
@@ -84,48 +84,54 @@ function MangaDetailButton({ manga }: Readonly<Props>) {
           <div className="grid gap-2 [&_strong]:whitespace-nowrap">
             <div className="flex gap-2">
               <strong>품번</strong>
-              <MangaMetadataItem filterType="id" value={id.toString()} />
+              <Suspense>
+                <MangaMetadataLink filterType="id" value={id.toString()} />
+              </Suspense>
             </div>
             {languages && languages.length > 0 && (
               <div className="flex gap-2">
                 <strong>언어</strong>
-                <MangaMetadataList details={languages} filterType="language" />
+                <MangaMetadataList filterType="language" labeledValues={languages} />
               </div>
             )}
             {type && (
               <div className="flex gap-2">
                 <strong>종류</strong>
-                <MangaMetadataItem filterType="type" value={type} />
+                <Suspense>
+                  <MangaMetadataLink filterType="type" label={type.label} value={type.value} />
+                </Suspense>
               </div>
             )}
             {artists && artists.length > 0 && (
               <div className="flex gap-2">
                 <strong>작가</strong>
-                <MangaMetadataList details={artists} filterType="artist" />
+                <MangaMetadataList filterType="artist" labeledValues={artists} />
               </div>
             )}
             {group && group.length > 0 && (
               <div className="flex gap-2">
                 <strong>그룹</strong>
-                <MangaMetadataList details={group} filterType="group" />
+                <MangaMetadataList filterType="group" labeledValues={group} />
               </div>
             )}
             {series && series.length > 0 && (
               <div className="flex gap-2">
                 <strong>시리즈</strong>
-                <MangaMetadataList details={series} filterType="series" />
+                <MangaMetadataList filterType="series" labeledValues={series} />
               </div>
             )}
             {characters && characters.length > 0 && (
               <div className="flex gap-2">
                 <strong>캐릭터</strong>
-                <MangaMetadataList details={characters} filterType="character" />
+                <MangaMetadataList filterType="character" labeledValues={characters} />
               </div>
             )}
             {uploader && (
               <div className="flex gap-2">
                 <strong>업로더</strong>
-                <MangaMetadataItem filterType="uploader" value={uploader} />
+                <Suspense>
+                  <MangaMetadataLink filterType="uploader" value={uploader} />
+                </Suspense>
               </div>
             )}
             {date && (
@@ -140,10 +146,9 @@ function MangaDetailButton({ manga }: Readonly<Props>) {
               </div>
             )}
             {tags && tags.length > 0 && (
-              <TagList
-                className="flex flex-wrap gap-1 font-medium [&_li]:rounded [&_li]:px-1 [&_li]:text-foreground"
-                tags={tags}
-              />
+              <Suspense>
+                <MangaTagList className="font-medium" tags={tags} />
+              </Suspense>
             )}
             <MangaCardStats manga={manga} />
           </div>

@@ -4,9 +4,10 @@ import { MAX_MANGA_ID } from '@/constants/policy'
 // value: 소문자여야 함
 export const SEARCH_SUGGESTIONS = [
   { value: 'language:korean', label: '한국어' },
-  ...DEFAULT_SUGGESTIONS,
-  { value: 'type:', label: '종류' },
   { value: 'id:', label: '품번' },
+  { value: 'type:', label: '종류' },
+  ...DEFAULT_SUGGESTIONS,
+  { value: 'uploader:', label: '업로더' },
 ]
 
 export type SearchSuggestion = (typeof SEARCH_SUGGESTIONS)[number]

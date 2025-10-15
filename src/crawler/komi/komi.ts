@@ -4,6 +4,7 @@ import 'server-only'
 import { MangaSource } from '@/database/enum'
 import { translateLanguageList } from '@/translation/language'
 import { translateTag } from '@/translation/tag'
+import { translateType } from '@/translation/type'
 import { Manga } from '@/types/manga'
 
 import { ProxyClient, ProxyClientConfig } from '../proxy'
@@ -114,7 +115,7 @@ class KomiClient {
       title: komiManga.title,
       artists: komiManga.artist ? [{ label: komiManga.artist, value: komiManga.artist }] : undefined,
       group: komiManga.group ? [{ label: komiManga.group, value: komiManga.group }] : undefined,
-      type: komiManga.category,
+      type: translateType(komiManga.category, locale),
       languages: translateLanguageList([komiManga.language], locale),
       date: komiManga.createdAt,
       viewCount: komiManga.viewCount,
