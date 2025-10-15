@@ -15,7 +15,7 @@ import LanguageBadge from './LanguageBadge'
 import MangaCardDate from './MangaCardDate'
 import MangaCardImage from './MangaCardImage'
 import MangaCardStats from './MangaCardStats'
-import MangaMetadataItem from './MangaMetadataItem'
+import MangaMetadataLink from './MangaMetadataLink'
 import MangaMetadataList from './MangaMetadataList'
 import SearchFromHereButton from './SearchFromHereButton'
 
@@ -159,47 +159,39 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
             <div className="flex gap-1">
               <dt>종류</dt>
               <Suspense>
-                <MangaMetadataItem filterType="type" value={type} />
+                <MangaMetadataLink filterType="type" label={type} value={type} />
               </Suspense>
             </div>
           )}
           {artists && artists.length > 0 && (
             <div className="flex gap-1">
               <dt>작가</dt>
-              <Suspense>
-                <MangaMetadataList filterType="artist" labeledValues={artists} />
-              </Suspense>
+              <MangaMetadataList filterType="artist" labeledValues={artists} />
             </div>
           )}
           {group && group.length > 0 && (
             <div className="flex gap-1">
               <dt>그룹</dt>
-              <Suspense>
-                <MangaMetadataList filterType="group" labeledValues={group} />
-              </Suspense>
+              <MangaMetadataList filterType="group" labeledValues={group} />
             </div>
           )}
           {series && series.length > 0 && (
             <div className="flex gap-1">
               <dt>시리즈</dt>
-              <Suspense>
-                <MangaMetadataList filterType="series" labeledValues={series} />
-              </Suspense>
+              <MangaMetadataList filterType="series" labeledValues={series} />
             </div>
           )}
           {characters && characters.length > 0 && (
             <div className="flex gap-1">
               <dt>캐릭터</dt>
-              <Suspense>
-                <MangaMetadataList filterType="character" labeledValues={characters} />
-              </Suspense>
+              <MangaMetadataList filterType="character" labeledValues={characters} />
             </div>
           )}
           {uploader && (
             <div className="flex gap-1">
               <dt>업로더</dt>
               <Suspense>
-                <MangaMetadataItem filterType="uploader" value={uploader} />
+                <MangaMetadataLink filterType="uploader" value={uploader} />
               </Suspense>
             </div>
           )}

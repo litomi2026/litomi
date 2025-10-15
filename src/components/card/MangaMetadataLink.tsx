@@ -9,12 +9,14 @@ import { toggleSearchFilter } from './utils'
 
 type Props = {
   value: string
+  label?: string
   filterType: string
+  i?: number
 }
 
-export default memo(MangaMetadataItem)
+export default memo(MangaMetadataLink)
 
-function MangaMetadataItem({ value, filterType }: Readonly<Props>) {
+function MangaMetadataLink({ value, label, filterType, i = 0 }: Props) {
   const searchParams = useSearchParams()
   const currentQuery = searchParams.get('query') ?? ''
   const newQuery = toggleSearchFilter(currentQuery, filterType, value)
@@ -29,13 +31,16 @@ function MangaMetadataItem({ value, filterType }: Readonly<Props>) {
   const isActive = currentQuery ? new RegExp(`(^|\\s)${escapedPattern}(?=\\s|$)`, 'i').test(currentQuery) : false
 
   return (
-    <Link
-      aria-current={isActive}
-      className="hover:underline focus:underline aria-current:text-brand-end aria-current:font-semibold"
-      href={`/search?${newSearchParams}`}
-      prefetch={false}
-    >
-      <MangaMetadataLabel>{value}</MangaMetadataLabel>
-    </Link>
+    <>
+      {i > 0 && <span className="pr-1">,</span>}
+      <Link
+        aria-current={isActive}
+        className="hover:underline focus:underline aria-current:text-brand-end aria-current:font-semibold"
+        href={`/search?${newSearchParams}`}
+        prefetch={false}
+      >
+        <MangaMetadataLabel>{label || value}</MangaMetadataLabel>
+      </Link>
+    </>
   )
 }

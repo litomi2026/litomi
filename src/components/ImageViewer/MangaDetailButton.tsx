@@ -11,8 +11,8 @@ import { Manga } from '@/types/manga'
 import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from '../card/BookmarkButton'
 import DownloadButton, { DownloadButtonError, DownloadButtonSkeleton } from '../card/DownloadButton'
 import MangaCardStats from '../card/MangaCardStats'
-import MangaMetadataItem from '../card/MangaMetadataItem'
 import MangaMetadataLabel from '../card/MangaMetadataLabel'
+import MangaMetadataLink from '../card/MangaMetadataLink'
 import MangaMetadataList from '../card/MangaMetadataList'
 import TagList from '../TagList'
 import Modal from '../ui/Modal'
@@ -84,7 +84,9 @@ function MangaDetailButton({ manga }: Readonly<Props>) {
           <div className="grid gap-2 [&_strong]:whitespace-nowrap">
             <div className="flex gap-2">
               <strong>품번</strong>
-              <MangaMetadataItem filterType="id" value={id.toString()} />
+              <Suspense>
+                <MangaMetadataLink filterType="id" value={id.toString()} />
+              </Suspense>
             </div>
             {languages && languages.length > 0 && (
               <div className="flex gap-2">
@@ -95,7 +97,9 @@ function MangaDetailButton({ manga }: Readonly<Props>) {
             {type && (
               <div className="flex gap-2">
                 <strong>종류</strong>
-                <MangaMetadataItem filterType="type" value={type} />
+                <Suspense>
+                  <MangaMetadataLink filterType="type" value={type} />
+                </Suspense>
               </div>
             )}
             {artists && artists.length > 0 && (
@@ -125,7 +129,9 @@ function MangaDetailButton({ manga }: Readonly<Props>) {
             {uploader && (
               <div className="flex gap-2">
                 <strong>업로더</strong>
-                <MangaMetadataItem filterType="uploader" value={uploader} />
+                <Suspense>
+                  <MangaMetadataLink filterType="uploader" value={uploader} />
+                </Suspense>
               </div>
             )}
             {date && (
@@ -140,10 +146,12 @@ function MangaDetailButton({ manga }: Readonly<Props>) {
               </div>
             )}
             {tags && tags.length > 0 && (
-              <TagList
-                className="flex flex-wrap gap-1 font-medium [&_li]:rounded [&_li]:px-1 [&_li]:text-foreground"
-                tags={tags}
-              />
+              <Suspense>
+                <TagList
+                  className="flex flex-wrap gap-1 font-medium [&_li]:rounded [&_li]:px-1 [&_li]:text-foreground"
+                  tags={tags}
+                />
+              </Suspense>
             )}
             <MangaCardStats manga={manga} />
           </div>
