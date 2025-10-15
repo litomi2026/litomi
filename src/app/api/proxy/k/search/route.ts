@@ -14,7 +14,6 @@ export const runtime = 'edge'
 export type GETProxyKSearchResponse = {
   mangas: Manga[]
   nextCursor: string | null
-  hasNextPage: boolean
 }
 
 export async function GET(request: Request) {
@@ -74,13 +73,11 @@ export async function GET(request: Request) {
   try {
     const revalidate = params.nextId ? sec('30 days') : 0
     const searchedMangas = await kHentaiClient.searchMangas(params, revalidate)
-    const filteredMangas = searchedMangas.filter((manga) => !BLACKLISTED_MANGA_IDS.includes(manga.id))
-    const mangas = filterMangasByMinusPrefix(filteredMangas, query)
-    const hasManga = mangas.length > 0
+    const hasManga = searchedMangas.length > 0
 
     let nextCursor = null
     if (hasManga) {
-      const lastManga = mangas[mangas.length - 1]
+      const lastManga = searchedMangas[searchedMangas.length - 1]
       if (sort === 'popular') {
         nextCursor = `${lastManga.viewCount}-${lastManga.id}`
       } else {
@@ -88,10 +85,12 @@ export async function GET(request: Request) {
       }
     }
 
+    const filteredMangas = searchedMangas.filter((manga) => !BLACKLISTED_MANGA_IDS.includes(manga.id))
+    const mangas = filterMangasByMinusPrefix(filteredMangas, query)
+
     const response: GETProxyKSearchResponse = {
       mangas,
       nextCursor,
-      hasNextPage: hasManga,
     }
 
     const hasOtherFilters =

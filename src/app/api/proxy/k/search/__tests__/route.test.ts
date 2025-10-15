@@ -116,7 +116,6 @@ describe('GET /api/proxy/k/search', () => {
       expect(response.status).toBe(200)
       expect(data.mangas.every((m: Manga) => m.id > 2)).toBe(true)
       expect(data.nextCursor).toBe('5')
-      expect(data.hasNextPage).toBe(true)
     })
 
     test('skip 파라미터를 사용한 오프셋 페이지네이션을 처리해야 한다', async () => {
@@ -141,7 +140,6 @@ describe('GET /api/proxy/k/search', () => {
       expect(response.status).toBe(200)
       expect(data.mangas).toHaveLength(5)
       expect(data.nextCursor).toBe('5')
-      expect(data.hasNextPage).toBe(true)
     })
 
     test('페이지 범위 파라미터를 처리해야 한다', async () => {
@@ -282,7 +280,6 @@ describe('GET /api/proxy/k/search', () => {
       // For popular sorting, cursor should contain both views and id
       const lastManga = data.mangas[data.mangas.length - 1]
       expect(data.nextCursor).toBe(`${lastManga.viewCount}-${lastManga.id}`)
-      expect(data.hasNextPage).toBe(true)
     })
 
     test('popular 정렬에서 next-views와 next-views-id를 사용한 페이지네이션', async () => {
@@ -298,7 +295,7 @@ describe('GET /api/proxy/k/search', () => {
 
       expect(response.status).toBe(200)
       // Results should be filtered based on views and id
-      expect(data.hasNextPage).toBeDefined()
+      expect(data.mangas).toHaveLength(5)
     })
   })
 
