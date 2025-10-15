@@ -12,8 +12,21 @@ import tagTranslations from '@/translation/tag.json'
 
 import SuggestionTrie, { SuggestionItem } from './trie'
 
+// TODO: 제거 후 artist, group, series, character 등 다른 요소와 비슷하게 처리해야 함
 // Language and type options
-const TYPE_OPTIONS = ['manga', 'doujinshi', 'artist_cg', 'game_cg', 'western', 'image_set', 'cosplay', 'asian_porn']
+const TYPE_OPTIONS = [
+  'doujinshi',
+  'manga',
+  'artist_cg',
+  'game_cg',
+  'western',
+  'image_set',
+  'non_h',
+  'cosplay',
+  'asian',
+  'other',
+  'private',
+]
 
 // Initialize the Trie with all suggestions
 export const suggestionTrie = new SuggestionTrie()
@@ -131,6 +144,7 @@ function getLabels(
     labels: { ko: '종류', en: 'type' },
   })
 
+  // TODO: 제거 후 artist, group, series, character 등 다른 요소와 비슷하게 처리해야 함
   TYPE_OPTIONS.forEach((type) => {
     const value = `type:${type}`
     const koLabel = type === 'manga' ? '망가' : type === 'doujinshi' ? '동인지' : type

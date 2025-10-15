@@ -6,7 +6,7 @@ export const SEARCH_SUGGESTIONS = [
   { value: 'language:korean', label: '한국어' },
   ...DEFAULT_SUGGESTIONS,
   { value: 'type:', label: '종류' },
-  { value: 'id:', label: '망가 ID' },
+  { value: 'id:', label: '품번' },
 ]
 
 export type SearchSuggestion = (typeof SEARCH_SUGGESTIONS)[number]
