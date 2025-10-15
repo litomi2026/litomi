@@ -3,7 +3,6 @@ import ms from 'ms'
 import { useMemo } from 'react'
 
 import { GETProxyMangaResponse } from '@/app/api/proxy/manga/route'
-import { ProxyIdOnly } from '@/app/api/proxy/manga/schema'
 import { MAX_HARPI_MANGA_BATCH_SIZE } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import { Manga } from '@/types/manga'
@@ -65,7 +64,7 @@ export default function useMangaListCachedQuery({
   const { data, isLoading, isFetching } = useQuery<GETProxyMangaResponse>({
     queryKey: ['manga-batch', uncachedIds],
     queryFn: async () => {
-      const searchParams = new URLSearchParams({ only: ProxyIdOnly.THUMBNAIL })
+      const searchParams = new URLSearchParams()
 
       for (const id of uncachedIds) {
         searchParams.append('id', id.toString())
