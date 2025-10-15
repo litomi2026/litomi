@@ -12,6 +12,7 @@ import tagTranslations from '@/translation/tag.json'
 
 import SuggestionTrie, { SuggestionItem } from './trie'
 
+// TODO: 제거 후 artist, group, series, character 등 다른 요소와 비슷하게 처리해야 함
 // Language and type options
 const TYPE_OPTIONS = [
   'doujinshi',
@@ -143,6 +144,7 @@ function getLabels(
     labels: { ko: '종류', en: 'type' },
   })
 
+  // TODO: 제거 후 artist, group, series, character 등 다른 요소와 비슷하게 처리해야 함
   TYPE_OPTIONS.forEach((type) => {
     const value = `type:${type}`
     const koLabel = type === 'manga' ? '망가' : type === 'doujinshi' ? '동인지' : type
