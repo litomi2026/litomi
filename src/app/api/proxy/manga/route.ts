@@ -68,38 +68,38 @@ export async function GET(request: Request) {
         }
       }
 
-      if (allImages.length > 0) {
-        const optimalCacheDuration = calculateOptimalCacheDuration(allImages)
-        const cloudflareDuration = Math.floor(optimalCacheDuration * 0.9)
-        const vercelDuration = Math.floor(optimalCacheDuration * 0.05)
-        const browserDuration = optimalCacheDuration - cloudflareDuration - vercelDuration
-        const swrDuration = Math.floor(Math.min(cloudflareDuration, vercelDuration, browserDuration) * 0.1)
-
+      if (allImages.length === 0) {
         return {
-          'Vercel-CDN-Cache-Control': createCacheControl({
-            maxAge: vercelDuration - swrDuration,
-            swr: swrDuration,
-          }),
-          'Cloudflare-Cache-Control': createCacheControl({
-            maxAge: cloudflareDuration - swrDuration,
-            swr: swrDuration,
-          }),
           'Cache-Control': createCacheControl({
             public: true,
-            maxAge: browserDuration - swrDuration,
-            swr: swrDuration,
+            maxAge: sec('30 days'),
+            sMaxAge: sec('30 days'),
+            swr: sec('30 days'),
           }),
-        } as HeadersInit
+        }
       }
 
+      const optimalCacheDuration = calculateOptimalCacheDuration(allImages)
+      const cloudflareDuration = Math.floor(optimalCacheDuration * 0.9)
+      const vercelDuration = Math.floor(optimalCacheDuration * 0.05)
+      const browserDuration = optimalCacheDuration - cloudflareDuration - vercelDuration
+      const swrDuration = Math.floor(Math.min(cloudflareDuration, vercelDuration, browserDuration) * 0.1)
+
       return {
+        'Vercel-CDN-Cache-Control': createCacheControl({
+          maxAge: vercelDuration - swrDuration,
+          swr: swrDuration,
+        }),
+        'Cloudflare-Cache-Control': createCacheControl({
+          maxAge: cloudflareDuration - swrDuration,
+          swr: swrDuration,
+        }),
         'Cache-Control': createCacheControl({
           public: true,
-          maxAge: sec('30 days'),
-          sMaxAge: sec('30 days'),
-          swr: sec('30 days'),
+          maxAge: browserDuration - swrDuration,
+          swr: swrDuration,
         }),
-      }
+      } as HeadersInit
     })()
 
     return Response.json(mangaMap satisfies GETProxyMangaResponse, { headers })
