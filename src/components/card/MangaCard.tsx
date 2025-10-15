@@ -10,10 +10,10 @@ import LogoGitHub from '../icons/LogoGitHub'
 import LogoX from '../icons/LogoX'
 import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from './BookmarkButton'
 import DownloadButton from './DownloadButton'
-import LanguageBadge from './LanguageBadge'
 import MangaCardDate from './MangaCardDate'
 import MangaCardImage from './MangaCardImage'
 import MangaCardStats from './MangaCardStats'
+import MangaLanguageLink from './MangaLanguageLink'
 import MangaMetadataLink from './MangaMetadataLink'
 import MangaMetadataList from './MangaMetadataList'
 import MangaTagList from './MangaTagList'
@@ -151,7 +151,7 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
             </a>
             {languages && languages.length > 0 && (
               <Suspense>
-                <LanguageBadge key={languages[0].value} language={languages[0].value} />
+                <MangaLanguageLink key={languages[0].value} language={languages[0].value} />
               </Suspense>
             )}
           </div>
