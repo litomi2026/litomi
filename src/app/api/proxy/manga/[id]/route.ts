@@ -75,7 +75,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
     const cloudflareDuration = Math.floor(optimalCacheDuration * 0.9)
     const vercelDuration = Math.floor(optimalCacheDuration * 0.05)
     const browserDuration = optimalCacheDuration - cloudflareDuration - vercelDuration
-    const swrDuration = Math.floor(optimalCacheDuration * 0.005)
+    const swrDuration = Math.min(cloudflareDuration, vercelDuration, browserDuration) * 0.1
 
     const successHeaders = {
       'Vercel-CDN-Cache-Control': createCacheControl({
