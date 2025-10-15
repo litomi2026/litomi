@@ -1,8 +1,3 @@
-export function getKoreanSearchLink(filterType: string, value: string) {
-  const query = `language:korean ${filterType}:${value.replaceAll(' ', '_')}`
-  return `/search?query=${encodeURIComponent(query)}`
-}
-
 export function toggleSearchFilter(currentQuery: string, filterType: string, value: string): string {
   const filterPattern = `${filterType}:${value.replaceAll(' ', '_')}`
   const escapedPattern = filterPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
