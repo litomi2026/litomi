@@ -112,7 +112,7 @@ export default function LibraryHeader({ libraries, userId, bookmarkCount, histor
   return (
     <>
       <header
-        className="sticky top-0 z-40 flex justify-between items-center gap-3 p-4 border-b border-zinc-800 transition bg-background aria-busy:opacity-50"
+        className="sticky top-0 z-40 flex justify-between items-center gap-3 p-2 sm:p-3 border-b border-zinc-800 transition bg-background aria-busy:opacity-50"
         data-header
       >
         <AutoHideNavigation selector="[data-header]" />
@@ -127,7 +127,7 @@ export default function LibraryHeader({ libraries, userId, bookmarkCount, histor
           </button>
           {!isSelectionMode && currentLibrary && (
             <div
-              className="hidden size-10 my-1 mr-2 rounded-lg sm:flex items-center bg-zinc-800 justify-center text-xl shrink-0"
+              className="hidden size-10 rounded-lg sm:flex items-center bg-zinc-800 justify-center text-xl shrink-0"
               style={{ backgroundColor: currentLibrary?.color ?? '' }}
             >
               {currentLibrary.icon?.slice(0, 2) ?? currentLibrary.name[0]}
@@ -135,11 +135,11 @@ export default function LibraryHeader({ libraries, userId, bookmarkCount, histor
           )}
           {!isSelectionMode && (
             <div className="grid flex-1 break-all">
-              <h1 className="text-lg font-medium line-clamp-1 py-1 sm:text-xl sm:font-bold" title={headerTitle}>
+              <h1 className="text-lg font-medium line-clamp-1 sm:text-xl sm:font-bold" title={headerTitle}>
                 {headerTitle}
               </h1>
               {currentLibrary?.description && (
-                <p className="max-sm:hidden text-sm text-zinc-400 line-clamp-1">{currentLibrary.description}</p>
+                <p className="max-sm:hidden text-xs text-zinc-400 line-clamp-1">{currentLibrary.description}</p>
               )}
             </div>
           )}
@@ -151,8 +151,8 @@ export default function LibraryHeader({ libraries, userId, bookmarkCount, histor
             permissions={permissions}
           />
         )}
-        <div className="flex items-center gap-1">
-          {!isSelectionMode && isPublicLibrary && <ShareLibraryButton className="p-2" library={currentLibrary} />}
+        <div className="flex items-center">
+          {!isSelectionMode && isPublicLibrary && <ShareLibraryButton className="p-3" library={currentLibrary} />}
           {!isSelectionMode && isOwner && (
             <>
               <MangaImportButton libraryId={currentLibrary.id} />
@@ -161,7 +161,7 @@ export default function LibraryHeader({ libraries, userId, bookmarkCount, histor
           )}
           {permissions.canSelectItems && (
             <button
-              className="p-2 hover:bg-zinc-800 rounded-lg transition disabled:opacity-50"
+              className="p-3 hover:bg-zinc-800 rounded-lg transition disabled:opacity-50"
               disabled={isEmpty}
               onClick={handleSelectionModeChange}
               title={isEmpty ? '작품이 없어요' : '선택 모드 전환'}
@@ -170,7 +170,7 @@ export default function LibraryHeader({ libraries, userId, bookmarkCount, histor
               {isSelectionMode ? <X className="size-5" /> : <Edit className="size-5" />}
             </button>
           )}
-          {!isSelectionMode && isOwner && <LibraryManagementMenu className="-mr-1" library={currentLibrary} />}
+          {!isSelectionMode && isOwner && <LibraryManagementMenu className="-mr-1 p-3" library={currentLibrary} />}
         </div>
       </header>
       {isDrawerOpen && (
@@ -180,7 +180,7 @@ export default function LibraryHeader({ libraries, userId, bookmarkCount, histor
             <div className="sticky top-0 bg-background flex items-center justify-between p-4 border-b border-zinc-800">
               <h2 className="text-lg font-medium">{isGuest ? '공개 서재' : '서재'}</h2>
               <button
-                className="p-2 -m-2 hover:bg-zinc-800 rounded-lg transition"
+                className="p-3 -m-2 hover:bg-zinc-800 rounded-lg transition"
                 onClick={closeDrawer}
                 title="close drawer"
                 type="button"
