@@ -2,22 +2,19 @@
 
 import { useSearchParams } from 'next/navigation'
 
-import { toggleSearchFilter } from '@/components/card/utils'
-
-export function useSearchFilter(filterType: string, value: string) {
+export function useSearchFilter(filterPattern: string) {
   const searchParams = useSearchParams()
-  const currentQuery = searchParams.get('query') ?? ''
-  const filterPattern = `${filterType}:${value}`
-  const escapedPattern = filterPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  const isActive = currentQuery ? new RegExp(`(^|\\s)${escapedPattern}(?=\\s|$)`, 'i').test(currentQuery) : false
-  const newQuery = toggleSearchFilter(currentQuery, filterType, value)
-  const newSearchParams = new URLSearchParams(searchParams)
+  const query = searchParams.get('query') ?? ''
+  const isActive = query.includes(filterPattern)
 
-  if (newQuery) {
-    newSearchParams.set('query', newQuery)
-  } else {
-    newSearchParams.delete('query')
-  }
+  const newQuery = isActive
+    ? query.replace(filterPattern, '').replace(/\s+/g, ' ').trim()
+    : query
+      ? `${query} ${filterPattern}`
+      : filterPattern
+
+  const newSearchParams = new URLSearchParams(searchParams)
+  newSearchParams.set('query', newQuery)
 
   return {
     href: `/search?${newSearchParams}`,

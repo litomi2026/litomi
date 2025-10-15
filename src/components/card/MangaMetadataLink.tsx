@@ -17,7 +17,7 @@ type Props = {
 export default memo(MangaMetadataLink)
 
 function MangaMetadataLink({ value, label, filterType, i = 0 }: Props) {
-  const { href, isActive } = useSearchFilter(filterType, value)
+  const { href, isActive } = useSearchFilter(`${filterType}:${value}`)
 
   return (
     <>

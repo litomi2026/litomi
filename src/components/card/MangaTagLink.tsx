@@ -24,12 +24,12 @@ export default memo(MangaTagLink)
 
 function MangaTagLink({ category, value, label }: Props) {
   const tagColor = tagStyles[category] ?? 'bg-zinc-900'
-  const { href, isActive } = useSearchFilter(category, value)
+  const { href, isActive } = useSearchFilter(`${category}:${value}`)
 
   return (
     <Link
       aria-current={isActive}
-      className={`rounded px-1 text-foreground hover:underline focus:underline active:opacity-80 transition block aria-current:ring-2 aria-current:ring-brand-end aria-current:pointer-events-none ${tagColor}`}
+      className={`rounded px-1 text-foreground hover:underline focus:underline active:opacity-80 transition block aria-current:ring-2 aria-current:ring-brand-end ${tagColor}`}
       href={href}
     >
       <MangaTagLabel>{label}</MangaTagLabel>
