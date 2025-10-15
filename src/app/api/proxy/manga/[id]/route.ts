@@ -1,4 +1,5 @@
 import { fetchMangaFromMultiSources } from '@/common/manga'
+import { CANONICAL_URL } from '@/constants'
 import { BLACKLISTED_MANGA_IDS } from '@/constants/policy'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { Manga, MangaError } from '@/types/manga'
@@ -70,12 +71,25 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       return new Response('Not Found', { status: 404, headers: notFoundHeaders })
     }
 
+    const optimalCacheDuration = calculateOptimalCacheDuration(manga.images)
+    const swrDuration = sec('10 minutes')
+    const cloudflareDuration = Math.floor(optimalCacheDuration * 0.8)
+    const vercelDuration = Math.floor(optimalCacheDuration * 0.1)
+    const browserDuration = optimalCacheDuration - cloudflareDuration - vercelDuration
+
     const successHeaders = {
+      'Vercel-CDN-Cache-Control': createCacheControl({
+        maxAge: vercelDuration - swrDuration,
+        swr: swrDuration,
+      }),
+      'Cloudflare-Cache-Control': createCacheControl({
+        maxAge: cloudflareDuration - swrDuration,
+        swr: swrDuration,
+      }),
       'Cache-Control': createCacheControl({
         public: true,
-        maxAge: sec('10 hours'),
-        sMaxAge: sec('10 hours'),
-        swr: sec('1 hour'),
+        maxAge: browserDuration - swrDuration,
+        swr: swrDuration,
       }),
     }
 
@@ -84,6 +98,45 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
   } catch (error) {
     return handleRouteError(error, request)
   }
+}
+
+function calculateOptimalCacheDuration(images: string[]): number {
+  const now = Math.floor(Date.now() / 1000)
+  let nearestExpiration
+
+  for (const imageUrl of images) {
+    const expiration = extractExpirationFromURL(imageUrl)
+    if (expiration && expiration > now) {
+      if (!nearestExpiration || expiration < nearestExpiration) {
+        nearestExpiration = expiration
+      }
+    }
+  }
+
+  if (!nearestExpiration) {
+    return sec('30 days')
+  }
+
+  // Apply a small buffer (5 minutes) for:
+  // - Clock skew between servers
+  // - Request processing time
+  // - User's actual image loading time
+  const buffer = sec('5 minutes')
+
+  return nearestExpiration - buffer - now
+}
+
+function extractExpirationFromURL(imageUrl: string): number | null {
+  try {
+    const url = new URL(imageUrl, CANONICAL_URL)
+    const expires = url.searchParams.get('expires')
+    if (expires && /^\d+$/.test(expires)) {
+      return parseInt(expires, 10)
+    }
+  } catch {
+    // Not a valid URL
+  }
+  return null
 }
 
 function getMangaResponseData(manga: Manga | MangaError, scope: string | null) {
