@@ -197,7 +197,7 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
           )}
           {tags && tags.length > 0 && (
             <Suspense>
-              <MangaTagList className="flex flex-wrap gap-1 font-semibold" tags={tags} />
+              <MangaTagList className="font-semibold" tags={tags} />
             </Suspense>
           )}
         </dl>

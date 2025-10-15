@@ -147,10 +147,7 @@ function MangaDetailButton({ manga }: Readonly<Props>) {
             )}
             {tags && tags.length > 0 && (
               <Suspense>
-                <MangaTagList
-                  className="flex flex-wrap gap-1 font-medium [&_li]:rounded [&_li]:px-1 [&_li]:text-foreground"
-                  tags={tags}
-                />
+                <MangaTagList className="font-medium" tags={tags} />
               </Suspense>
             )}
             <MangaCardStats manga={manga} />
