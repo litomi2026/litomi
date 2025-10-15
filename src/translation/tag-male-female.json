@@ -676,6 +676,7 @@
   "unbirth": { "en": "unbirth", "ko": "자궁회귀", "ja": "アンバース", "zh-CN": "逆向分娩" },
   "uncle": { "en": "uncle", "ko": "삼촌" },
   "underwater": { "en": "underwater", "ko": "수중", "ja": "水中", "zh-CN": "水下" },
+  "underwater_sex": { "en": "underwater sex", "ko": "수중 섹스", "ja": "水中性交", "zh-CN": "水下性交" },
   "unicorn": { "en": "unicorn", "ko": "유니콘" },
   "uniform": { "en": "uniform", "ko": "제복", "ja": "ユニフォーム", "zh-CN": "制服" },
   "unusual_insertions": { "en": "unusual insertions", "ko": "특이한 삽입", "ja": "異常挿入", "zh-CN": "异常插入" },
