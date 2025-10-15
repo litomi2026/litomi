@@ -123,11 +123,11 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId, per
   return (
     <>
       <div className="flex-1 flex items-center justify-between gap-2">
-        <span className="text-sm sm:text-base font-medium">{selectedCount}개 선택</span>
+        <span className="py-2.5 text-sm sm:text-base font-medium">{selectedCount}개 선택</span>
         <div className="flex items-center gap-2">
           {permissions.canMove && (
             <button
-              className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 
+              className="flex items-center gap-2 p-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 
               rounded-lg transition disabled:opacity-50"
               disabled={disabled}
               onClick={handleMove}
@@ -140,7 +140,7 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId, per
           )}
           {permissions.canCopy && (
             <button
-              className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 
+              className="flex items-center gap-2 p-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 
               rounded-lg transition disabled:opacity-50"
               disabled={disabled}
               onClick={handleCopy}
@@ -153,7 +153,7 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId, per
           )}
           {permissions.canDelete && (
             <button
-              className="flex items-center gap-2 px-3 py-1.5 bg-red-900/50 hover:bg-red-900/70 
+              className="flex items-center gap-2 p-3 py-1.5 bg-red-900/50 hover:bg-red-900/70 
               text-red-400 rounded-lg transition disabled:opacity-50"
               disabled={disabled}
               onClick={handleDelete}

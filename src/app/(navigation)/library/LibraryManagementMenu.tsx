@@ -30,7 +30,7 @@ export default function LibraryManagementMenu({ library, className = '' }: Reado
   return (
     <>
       <Dropdown>
-        <DropdownTrigger aria-label="서재 관리" className={`p-2 hover:bg-zinc-800 rounded-lg transition ${className}`}>
+        <DropdownTrigger aria-label="서재 관리" className={`hover:bg-zinc-800 rounded-lg transition ${className}`}>
           <MoreVertical className="size-5" />
         </DropdownTrigger>
         <DropdownContent align="end" className="w-48 opacity-100">

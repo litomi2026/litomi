@@ -27,11 +27,6 @@ export async function GET(request: Request) {
   try {
     const fetchedMangas = await fetchMangasFromMultiSources(validIds)
     const mangaMap: GETProxyMangaResponse = { ...fetchedMangas }
-
-    for (const id of blacklistedIds) {
-      mangaMap[id] = null
-    }
-
     const mangas = Object.values(fetchedMangas)
 
     if (mangas.length === 0 && blacklistedIds.length === 0) {
@@ -53,8 +48,16 @@ export async function GET(request: Request) {
       }
     }
 
-    const allImages = mangas.flatMap((manga) => manga.images)
+    for (const id of blacklistedIds) {
+      mangaMap[id] = {
+        id,
+        title: '감상이 제한된 작품이에요',
+        images: [],
+      }
+    }
+
     const hasErrorManga = mangas.some((manga) => 'isError' in manga)
+    const allImages = mangas.flatMap((manga) => manga.images)
 
     const headers = (() => {
       if (hasErrorManga) {
@@ -69,12 +72,20 @@ export async function GET(request: Request) {
       }
 
       if (allImages.length === 0) {
+        const swr = sec('10 minutes')
         return {
+          'Vercel-CDN-Cache-Control': createCacheControl({
+            maxAge: sec('30 days'),
+            swr,
+          }),
+          'Cloudflare-Cache-Control': createCacheControl({
+            maxAge: sec('30 days'),
+            swr,
+          }),
           'Cache-Control': createCacheControl({
             public: true,
-            maxAge: sec('30 days'),
-            sMaxAge: sec('30 days'),
-            swr: sec('30 days'),
+            maxAge: sec('5 minutes'),
+            swr,
           }),
         }
       }

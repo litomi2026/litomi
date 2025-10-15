@@ -14,7 +14,6 @@ export const runtime = 'edge'
 export type GETProxyKSearchResponse = {
   mangas: Manga[]
   nextCursor: string | null
-  hasNextPage: boolean
 }
 
 export async function GET(request: Request) {
@@ -74,13 +73,11 @@ export async function GET(request: Request) {
   try {
     const revalidate = params.nextId ? sec('30 days') : 0
     const searchedMangas = await kHentaiClient.searchMangas(params, revalidate)
-    const filteredMangas = searchedMangas.filter((manga) => !BLACKLISTED_MANGA_IDS.includes(manga.id))
-    const mangas = filterMangasByMinusPrefix(filteredMangas, query)
-    const hasManga = mangas.length > 0
+    const hasManga = searchedMangas.length > 0
 
     let nextCursor = null
     if (hasManga) {
-      const lastManga = mangas[mangas.length - 1]
+      const lastManga = searchedMangas[searchedMangas.length - 1]
       if (sort === 'popular') {
         nextCursor = `${lastManga.viewCount}-${lastManga.id}`
       } else {
@@ -88,10 +85,12 @@ export async function GET(request: Request) {
       }
     }
 
+    const filteredMangas = searchedMangas.filter((manga) => !BLACKLISTED_MANGA_IDS.includes(manga.id))
+    const mangas = filterMangasByMinusPrefix(filteredMangas, query)
+
     const response: GETProxyKSearchResponse = {
       mangas,
       nextCursor,
-      hasNextPage: hasManga,
     }
 
     const hasOtherFilters =
@@ -115,46 +114,87 @@ export async function GET(request: Request) {
       }
     }
 
-    return Response.json(response, { headers: { 'Cache-Control': getCacheControl(params) } })
+    return Response.json(response, { headers: getCacheControlHeader(params) })
   } catch (error) {
     return handleRouteError(error, request)
   }
 }
 
-function getCacheControl(params: KHentaiMangaSearchOptions) {
+function getCacheControlHeader(params: KHentaiMangaSearchOptions) {
   const { nextId, nextViews, sort } = params
 
   if (sort === 'random') {
-    return createCacheControl({
-      public: true,
-      maxAge: sec('20 seconds'),
-      sMaxAge: sec('5 seconds'),
-      swr: sec('5 seconds'),
-    })
+    const swr = sec('5 seconds')
+    return {
+      'Vercel-CDN-Cache-Control': createCacheControl({
+        maxAge: sec('5 seconds'),
+        swr,
+      }),
+      'Cloudflare-Cache-Control': createCacheControl({
+        maxAge: sec('30 seconds'),
+        swr,
+      }),
+      'Cache-Control': createCacheControl({
+        public: true,
+        maxAge: sec('5 seconds'),
+        swr,
+      }),
+    }
   }
 
   if (nextId) {
-    return createCacheControl({
-      public: true,
-      maxAge: sec('30 days'),
-      sMaxAge: sec('10 minutes'),
-      swr: sec('10 minutes'),
-    })
+    const swr = sec('10 minutes')
+    return {
+      'Vercel-CDN-Cache-Control': createCacheControl({
+        maxAge: sec('30 days'),
+        swr,
+      }),
+      'Cloudflare-Cache-Control': createCacheControl({
+        maxAge: sec('30 days'),
+        swr,
+      }),
+      'Cache-Control': createCacheControl({
+        public: true,
+        maxAge: sec('10 minutes'),
+        swr,
+      }),
+    }
   }
 
   if (nextViews) {
-    return createCacheControl({
-      public: true,
-      maxAge: sec('12 hours'),
-      sMaxAge: sec('10 minutes'),
-      swr: sec('10 minutes'),
-    })
+    const swr = sec('10 minutes')
+    return {
+      'Vercel-CDN-Cache-Control': createCacheControl({
+        maxAge: sec('1 hour'),
+        swr,
+      }),
+      'Cloudflare-Cache-Control': createCacheControl({
+        maxAge: sec('1 day'),
+        swr,
+      }),
+      'Cache-Control': createCacheControl({
+        public: true,
+        maxAge: sec('10 minutes'),
+        swr,
+      }),
+    }
   }
 
-  return createCacheControl({
-    public: true,
-    maxAge: sec('30 minutes'),
-    sMaxAge: sec('10 minutes'),
-    swr: sec('10 minutes'),
-  })
+  const swr = sec('10 minutes')
+
+  return {
+    'Vercel-CDN-Cache-Control': createCacheControl({
+      maxAge: sec('10 minutes'),
+      swr,
+    }),
+    'Cloudflare-Cache-Control': createCacheControl({
+      maxAge: sec('1 hour'),
+      swr,
+    }),
+    'Cache-Control': createCacheControl({
+      public: true,
+      maxAge: sec('5 minutes'),
+      swr,
+    }),
+  }
 }
