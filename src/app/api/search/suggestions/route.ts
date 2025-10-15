@@ -21,15 +21,25 @@ export async function GET(request: Request) {
 
   try {
     const suggestions = suggestionTrie.search(query, locale)
+    const swr = sec('1 day')
 
-    const cacheControl = createCacheControl({
-      public: true,
-      maxAge: sec('30 days'),
-      sMaxAge: sec('1 day'),
-      swr: sec('1 day'),
-    })
+    const cacheControlHeader = {
+      'Vercel-CDN-Cache-Control': createCacheControl({
+        maxAge: sec('30 days'),
+        swr,
+      }),
+      'Cloudflare-Cache-Control': createCacheControl({
+        maxAge: sec('30 days'),
+        swr,
+      }),
+      'Cache-Control': createCacheControl({
+        public: true,
+        maxAge: sec('5 minutes'),
+        swr,
+      }),
+    }
 
-    return Response.json(suggestions, { headers: { 'Cache-Control': cacheControl } })
+    return Response.json(suggestions, { headers: cacheControlHeader })
   } catch (error) {
     return handleRouteError(error, request)
   }

@@ -2,7 +2,7 @@ import { eq } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 
 import { CookieKey } from '@/constants/storage'
-import { handleRouteError } from '@/crawler/proxy-utils'
+import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/schema'
 import { validateUserIdFromCookie } from '@/utils/cookie'
@@ -18,8 +18,13 @@ export type GETMeResponse = {
 export async function GET(request: Request) {
   const userId = await validateUserIdFromCookie()
 
+  const cacheControl = createCacheControl({
+    private: true,
+    maxAge: 3,
+  })
+
   if (!userId) {
-    return new Response('Unauthorized', { status: 401 })
+    return new Response('Unauthorized', { status: 401, headers: { 'Cache-Control': cacheControl } })
   }
 
   try {
@@ -37,10 +42,10 @@ export async function GET(request: Request) {
     if (!user) {
       const cookieStore = await cookies()
       cookieStore.delete(CookieKey.ACCESS_TOKEN)
-      return new Response('Not Found', { status: 404 })
+      return new Response('Not Found', { status: 404, headers: { 'Cache-Control': cacheControl } })
     }
 
-    return Response.json(user satisfies GETMeResponse)
+    return Response.json(user satisfies GETMeResponse, { headers: { 'Cache-Control': cacheControl } })
   } catch (error) {
     return handleRouteError(error, request)
   }
