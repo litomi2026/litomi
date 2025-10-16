@@ -1,5 +1,11 @@
 import { MangaSource } from '@/database/enum'
 
+export type ImageWithVariants = {
+  original?: ImageVariant
+  thumbnail?: ImageVariant
+  medium?: ImageVariant
+}
+
 export type LabeledValue = {
   label: string
   value: string
@@ -8,7 +14,7 @@ export type LabeledValue = {
 export type Manga = {
   id: number
   title: string
-  images: string[]
+  images?: ImageWithVariants[]
   artists?: LabeledValue[]
   bookmarkCount?: number
   characters?: LabeledValue[]
@@ -21,7 +27,6 @@ export type Manga = {
   like?: number
   likeAnonymous?: number
   lines?: string[]
-  origin?: string
   rating?: number
   ratingCount?: number
   related?: number[]
@@ -44,4 +49,10 @@ export type MangaError = Manga & {
 
 export type MangaTag = LabeledValue & {
   category: string
+}
+
+type ImageVariant = {
+  url: string
+  width?: number
+  height?: number
 }

@@ -24,6 +24,6 @@ export function useMangaQuery(id: number, initialManga?: Manga | null) {
       const response = await fetch(url)
       return handleResponseError<Manga>(response)
     },
-    placeholderData: initialManga ?? { id, title: '불러오는 중', images: [] },
+    placeholderData: initialManga ?? { id, title: '불러오는 중' },
   })
 }

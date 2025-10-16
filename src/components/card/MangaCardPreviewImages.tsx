@@ -20,7 +20,7 @@ type Props = {
 export default memo(MangaCardPreviewImages)
 
 function MangaCardPreviewImages({ className, manga, mangaIndex = 0, href }: Readonly<Props>) {
-  const { images } = manga
+  const { images = [] } = manga
   const sliderRef = useRef<HTMLAnchorElement>(null)
   const [activeIndex, setActiveIndex] = useState(0)
   const totalSlides = Math.min(images.length, MAX_THUMBNAIL_IMAGES)
@@ -68,7 +68,7 @@ function MangaCardPreviewImages({ className, manga, mangaIndex = 0, href }: Read
             imageIndex={imageIndex}
             key={imageIndex}
             loading={imageIndex >= 1 ? 'lazy' : undefined}
-            manga={manga}
+            src={images[imageIndex]?.thumbnail?.url ?? images[imageIndex]?.original?.url}
           />
         ))}
       </Link>

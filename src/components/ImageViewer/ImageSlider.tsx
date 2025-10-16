@@ -20,7 +20,7 @@ function ImageSlider({ maxImageIndex }: Readonly<Props>) {
   const currentPage = imageIndex + 1
   const maxPage = maxImageIndex + 1
   const startPage = Math.max(1, currentPage)
-  const endPage = isDoublePage ? Math.min(currentPage + 1, maxPage) : startPage
+  const endPage = isDoublePage ? Math.max(startPage, Math.min(currentPage + 1, maxPage)) : startPage
 
   const handleValueCommit = useCallback(
     (value: number) => {

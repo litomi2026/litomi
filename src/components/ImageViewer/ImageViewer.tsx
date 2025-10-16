@@ -45,7 +45,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
   const setImageIndex = useImageIndexStore((state) => state.setImageIndex)
   const toggleController = useCallback(() => setShowController((prev) => !prev), [])
   const router = useRouter()
-  const { images } = manga
+  const { images = [] } = manga
   const imageCount = images.length
   const maxImageIndex = imageCount - 1
   const isDoublePage = pageView === 'double'

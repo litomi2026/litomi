@@ -17,7 +17,7 @@ type Props = {
 }
 
 export default function ResumeReadingToast({ manga }: Readonly<Props>) {
-  const { id: mangaId, images } = manga
+  const { id: mangaId, images = [] } = manga
   const imageCount = images.length
   const getImageIndex = useImageIndexStore((state) => state.getImageIndex)
   const navigateToImageIndex = useImageIndexStore((state) => state.navigateToImageIndex)

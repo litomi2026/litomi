@@ -198,7 +198,7 @@ class HiyobiClient {
       title: title === '정보없음' ? '' : title,
       type: translateType(hiyobiTypeNumberToName[type] ?? `${type}?`, locale),
       languages: translateLanguageList([language], locale),
-      images: [this.getKHentaiThumbnailURL(id)],
+      images: [{ thumbnail: { url: this.getKHentaiThumbnailURL(id) } }],
       count: filecount,
       like,
       viewCount: count,

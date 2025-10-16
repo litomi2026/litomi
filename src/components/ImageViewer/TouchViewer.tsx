@@ -9,7 +9,7 @@ import { ScreenFit } from '@/components/ImageViewer/store/screenFit'
 import { useTouchOrientationStore } from '@/components/ImageViewer/store/touchOrientation'
 import { TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT } from '@/constants/policy'
 import useImageNavigation from '@/hook/useImageNavigation'
-import { Manga } from '@/types/manga'
+import { ImageWithVariants, Manga } from '@/types/manga'
 
 import IconSpinner from '../icons/IconSpinner'
 import MangaImage from '../MangaImage'
@@ -45,7 +45,7 @@ type Props = {
 
 type TouchViewerItemProps = {
   offset: number
-  manga: Manga
+  images: ImageWithVariants[]
   pageView: PageView
   readingDirection: ReadingDirection
 }
@@ -53,7 +53,7 @@ type TouchViewerItemProps = {
 export default memo(TouchViewer)
 
 function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection }: Readonly<Props>) {
-  const { images } = manga
+  const { images = [] } = manga
   const getTouchOrientation = useTouchOrientationStore((state) => state.getTouchOrientation)
   const getBrightness = useBrightnessStore((state) => state.getBrightness)
   const setBrightness = useBrightnessStore((state) => state.setBrightness)
@@ -412,8 +412,8 @@ function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection }: 
       ) : (
         Array.from({ length: TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT }).map((_, offset) => (
           <TouchViewerItem
+            images={images}
             key={offset}
-            manga={manga}
             offset={offset}
             pageView={pageView}
             readingDirection={readingDirection}
@@ -424,7 +424,7 @@ function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection }: 
   )
 }
 
-function TouchViewerItem({ offset, manga, pageView, readingDirection }: Readonly<TouchViewerItemProps>) {
+function TouchViewerItem({ offset, images, pageView, readingDirection }: Readonly<TouchViewerItemProps>) {
   const currentIndex = useImageIndexStore((state) => state.imageIndex)
   const imageIndex = currentIndex + offset
   const brightness = useBrightnessStore((state) => state.brightness)
@@ -435,7 +435,7 @@ function TouchViewerItem({ offset, manga, pageView, readingDirection }: Readonly
     <MangaImage
       fetchPriority={offset < IMAGE_FETCH_PRIORITY_THRESHOLD ? 'high' : 'low'}
       imageIndex={imageIndex}
-      manga={manga}
+      src={images[imageIndex]?.original?.url}
     />
   )
 
@@ -443,7 +443,7 @@ function TouchViewerItem({ offset, manga, pageView, readingDirection }: Readonly
     <MangaImage
       fetchPriority={offset < IMAGE_FETCH_PRIORITY_THRESHOLD ? 'high' : 'low'}
       imageIndex={imageIndex + 1}
-      manga={manga}
+      src={images[imageIndex + 1]?.original?.url}
     />
   )
 

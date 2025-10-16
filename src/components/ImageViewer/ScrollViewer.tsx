@@ -1,11 +1,10 @@
-import { CSSProperties, memo, useEffect, useRef } from 'react'
+import { CSSProperties, memo, useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { List, RowComponentProps, useDynamicRowHeight, useListRef } from 'react-window'
 
 import { MangaIdSearchParam } from '@/app/manga/[id]/common'
 import { useImageStatus } from '@/hook/useImageStatus'
 import { Manga } from '@/types/manga'
-import { getImageSource } from '@/utils/manga'
 
 import IconSpinner from '../icons/IconSpinner'
 import MangaImage from '../MangaImage'
@@ -43,7 +42,7 @@ type RowProps = {
 export default memo(ScrollViewer)
 
 function ScrollViewer({ manga, onClick, pageView, readingDirection, screenFit }: Props) {
-  const { images } = manga
+  const { images = [] } = manga
   const listRef = useListRef(null)
   const imageWidth = useImageWidthStore((state) => state.imageWidth)
   const setListRef = useVirtualScrollStore((state) => state.setListRef)
@@ -89,7 +88,7 @@ function ScrollViewer({ manga, onClick, pageView, readingDirection, screenFit }:
   return (
     <div className={`overflow-hidden h-dvh select-none contain-strict`} onClick={onClick} style={dynamicStyle}>
       <List
-        className={`overscroll-none  ${screenFitStyle[screenFit]}`}
+        className={`overscroll-none ${screenFitStyle[screenFit]}`}
         listRef={listRef}
         overscanCount={2}
         rowComponent={ScrollViewerRow}
@@ -102,7 +101,7 @@ function ScrollViewer({ manga, onClick, pageView, readingDirection, screenFit }:
 }
 
 function ScrollViewerRow({ index, style, manga, pageView, ...rest }: RowComponentProps<RowProps>) {
-  const { images } = manga
+  const { images = [] } = manga
   const isDoublePage = pageView === 'double'
   const imagePageCount = isDoublePage ? Math.ceil(images.length / 2) : images.length
 
@@ -119,14 +118,15 @@ function ScrollViewerRow({ index, style, manga, pageView, ...rest }: RowComponen
 
 function ScrollViewerRowItem({ index, manga, pageView, readingDirection, style }: RowComponentProps<RowProps>) {
   const navigateToImageIndex = useImageIndexStore((state) => state.navigateToImageIndex)
-  const { origin, images } = manga
+  const { images = [] } = manga
   const isDoublePage = pageView === 'double'
   const isRTL = readingDirection === 'rtl'
   const firstImageIndex = isDoublePage ? index * 2 : index
   const nextImageIndex = firstImageIndex + 1
+  const firstImage = images[firstImageIndex]
+  const nextImage = images[nextImageIndex]
   const firstImageStatus = useImageStatus()
   const nextImageStatus = useImageStatus()
-  const itemRef = useRef<HTMLLIElement>(null)
 
   const { ref: inViewRef, inView } = useInView({
     threshold: 0,
@@ -139,48 +139,48 @@ function ScrollViewerRowItem({ index, manga, pageView, readingDirection, style }
     }
   }, [firstImageIndex, inView, navigateToImageIndex])
 
-  const firstImage = (
+  const first = (
     <picture>
-      <source media="(min-width: 1024px)" srcSet={getImageSource({ imageURL: images[firstImageIndex], origin })} />
+      <source media={`(min-width: ${firstImage?.thumbnail?.width ?? 320}px)`} srcSet={firstImage?.original?.url} />
       <MangaImage
         aria-invalid={firstImageStatus.error}
         fetchPriority="high"
         imageIndex={firstImageIndex}
         imageRef={inViewRef}
-        manga={manga}
         onError={firstImageStatus.handleError}
         onLoad={firstImageStatus.handleSuccess}
+        src={firstImage?.thumbnail?.url}
       />
     </picture>
   )
 
-  const secondImage = isDoublePage && nextImageIndex < images.length && (
+  const second = isDoublePage && nextImageIndex < images.length && (
     <picture>
-      <source media="(min-width: 1024px)" srcSet={getImageSource({ imageURL: images[nextImageIndex], origin })} />
+      <source media={`(min-width: ${nextImage?.thumbnail?.width ?? 320}px)`} srcSet={nextImage?.original?.url} />
       <MangaImage
         aria-invalid={nextImageStatus.error}
         fetchPriority="high"
         imageIndex={nextImageIndex}
-        manga={manga}
         onError={nextImageStatus.handleError}
         onLoad={nextImageStatus.handleSuccess}
+        src={nextImage?.thumbnail?.url}
       />
     </picture>
   )
 
   return (
-    <li ref={itemRef} style={style}>
+    <div style={style}>
       {isRTL ? (
         <>
-          {secondImage}
-          {firstImage}
+          {second}
+          {first}
         </>
       ) : (
         <>
-          {firstImage}
-          {secondImage}
+          {first}
+          {second}
         </>
       )}
-    </li>
+    </div>
   )
 }

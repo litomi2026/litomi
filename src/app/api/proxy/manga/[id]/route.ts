@@ -79,7 +79,9 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       return new Response('Not Found', { status: 404, headers: notFoundHeaders })
     }
 
-    const optimalCacheDuration = calculateOptimalCacheDuration(manga.images)
+    // NOTE: 첫번쨰 이미지만 확인함
+    const firstImageURL = manga.images?.[0]?.original?.url ?? manga.images?.[0]?.thumbnail?.url ?? ''
+    const optimalCacheDuration = calculateOptimalCacheDuration([firstImageURL])
     const swr = Math.floor(optimalCacheDuration * 0.01)
 
     const successHeaders = createCacheControlHeaders({
@@ -93,8 +95,8 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       },
     })
 
-    const responseData = getMangaResponseData(manga, scope)
-    return Response.json(responseData, { headers: successHeaders })
+    const result = getMangaResponseData(manga, scope)
+    return Response.json(result, { headers: successHeaders })
   } catch (error) {
     return handleRouteError(error, request)
   }
@@ -110,10 +112,7 @@ function getMangaResponseData(manga: Manga | MangaError, scope: string | null) {
     }
 
     case MangaResponseScope.IMAGE:
-      return {
-        origin: manga.origin,
-        images: manga.images,
-      }
+      return { images: manga.images }
 
     default:
       return manga

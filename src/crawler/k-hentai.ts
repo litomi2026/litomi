@@ -15,7 +15,6 @@ import { convertCamelCaseToKebabCase } from '@/utils/param'
 import { NotFoundError, ParseError, UpstreamServerError } from './errors'
 import { ProxyClient, ProxyClientConfig } from './proxy'
 import { isUpstreamServerError } from './proxy-utils'
-import { getOriginFromImageURLs } from './utils'
 
 const kHentaiTypeNumberToName: Record<number, string> = {
   1: 'doujinshi',
@@ -234,7 +233,18 @@ class KHentaiClient {
 
     return {
       ...this.convertKHentaiCommonToManga(gallery),
-      ...getOriginFromImageURLs(gallery.files.map((file) => file.image.url)),
+      images: gallery.files.map(({ image, thumbnail }) => ({
+        original: {
+          width: image.width,
+          height: image.height,
+          url: image.url,
+        },
+        thumbnail: {
+          width: thumbnail.width,
+          height: thumbnail.height,
+          url: thumbnail.url,
+        },
+      })),
     }
   }
 
@@ -295,7 +305,7 @@ class KHentaiClient {
     return {
       id,
       title,
-      images: [thumb],
+      images: [{ thumbnail: { url: thumb } }],
       date: new Date(posted * 1000).toISOString(),
       artists: translateArtistList(artistValues, locale),
       characters: translateCharacterList(characterValues, locale),

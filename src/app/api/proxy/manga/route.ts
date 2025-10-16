@@ -4,6 +4,7 @@ import { createCacheControl, createCacheControlHeaders, handleRouteError } from 
 import { Manga, MangaError } from '@/types/manga'
 import { calculateOptimalCacheDuration } from '@/utils/cache-control'
 import { sec } from '@/utils/date'
+import { checkDefined } from '@/utils/type'
 
 import { GETProxyIdSchema } from './schema'
 
@@ -44,7 +45,7 @@ export async function GET(request: Request) {
     for (const id of validIds) {
       const manga = mangaMap[id]
       if (manga) {
-        manga.images = manga.images.slice(0, MAX_THUMBNAIL_IMAGES)
+        manga.images = manga.images?.slice(0, MAX_THUMBNAIL_IMAGES)
       }
     }
 
@@ -57,7 +58,7 @@ export async function GET(request: Request) {
     }
 
     const hasErrorManga = mangas.some((manga) => 'isError' in manga)
-    const allImages = mangas.flatMap((manga) => manga.images)
+    const allImages = mangas.flatMap((manga) => manga.images).filter(checkDefined)
 
     const headers = (() => {
       if (hasErrorManga) {
@@ -91,7 +92,8 @@ export async function GET(request: Request) {
         })
       }
 
-      const optimalCacheDuration = calculateOptimalCacheDuration(allImages)
+      const allImageURLs = allImages.map((image) => image.original?.url ?? image.thumbnail?.url).filter(checkDefined)
+      const optimalCacheDuration = calculateOptimalCacheDuration(allImageURLs)
       const swr = Math.floor(optimalCacheDuration * 0.01)
 
       return createCacheControlHeaders({

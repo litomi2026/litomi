@@ -195,7 +195,7 @@ class HentaiPawClient {
       languages: translateLanguageList(languages, locale),
       count: pageCount,
       characters: translateCharacterList(characters, locale),
-      images: [`https://cdn.imagedeliveries.com/${id}/thumbnails/cover.webp`],
+      images: [{ thumbnail: { url: `https://cdn.imagedeliveries.com/${id}/thumbnails/cover.webp` } }],
       source: MangaSource.HENTAIPAW,
     }
   }
