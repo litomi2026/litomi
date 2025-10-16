@@ -112,14 +112,14 @@ export default function LibraryHeader({ libraries, userId, bookmarkCount, histor
   return (
     <>
       <header
-        className="sticky top-0 z-40 flex justify-between items-center gap-3 p-2 sm:p-3 border-b border-zinc-800 transition bg-background aria-busy:opacity-50"
+        className="sticky top-0 z-40 flex justify-between items-center gap-3 p-2.5 sm:p-3 border-b border-zinc-800 transition bg-background aria-busy:opacity-50"
         data-header
       >
         <AutoHideNavigation selector="[data-header]" />
         <div className="flex items-center gap-3">
           <button
             aria-label="library-menu"
-            className="p-2 -m-1 -mx-2 hover:bg-zinc-800 rounded-lg transition sm:hidden"
+            className="p-1.5 -m-1.5 hover:bg-zinc-800 rounded-lg transition sm:hidden"
             onClick={openDrawer}
             type="button"
           >
@@ -135,7 +135,7 @@ export default function LibraryHeader({ libraries, userId, bookmarkCount, histor
           )}
           {!isSelectionMode && (
             <div className="grid flex-1 break-all">
-              <h1 className="text-lg font-medium line-clamp-1 sm:text-xl sm:font-bold" title={headerTitle}>
+              <h1 className="text-base font-medium line-clamp-1 sm:text-lg sm:font-bold" title={headerTitle}>
                 {headerTitle}
               </h1>
               {currentLibrary?.description && (

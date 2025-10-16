@@ -40,6 +40,9 @@ export const useImageIndexStore = create<Store>()((set, get) => ({
         console.warn('navigateToImageIndex:', error)
       }
     }, 200)
+
+    // NOTE: 여기에 아래 로직을 넣어야 하나?
+    // getVirtualizer()?.scrollToIndex(imageIndex)
   },
   correctImageIndex: () => set((state) => ({ imageIndex: Math.max(0, state.imageIndex) })),
 }))

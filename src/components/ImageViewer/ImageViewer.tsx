@@ -27,7 +27,7 @@ import { useImageIndexStore } from './store/imageIndex'
 import { usePageViewStore } from './store/pageView'
 import TouchViewer from './TouchViewer'
 
-const ScrollViewer = dynamic(() => import('@/components/ImageViewer/ScrollViewer'))
+const ScrollViewer = dynamic(() => import('./ScrollViewer'))
 
 type Props = {
   manga: Manga
@@ -178,7 +178,9 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
                 />
               </>
             )}
-            {!isTouchMode && screenFit === 'width' && <button onClick={cycleImageWidth}>너비 {imageWidth}%</button>}
+            {!isTouchMode && (screenFit === 'width' || screenFit === 'all') && (
+              <button onClick={cycleImageWidth}>너비 {imageWidth}%</button>
+            )}
           </div>
         </div>
       </div>

@@ -9,6 +9,7 @@ import { QueryKeys } from '@/constants/query'
 import { Manga } from '@/types/manga'
 
 import { useImageIndexStore } from './store/imageIndex'
+import { useVirtualizerStore } from './store/virtualizer'
 import useReadingHistory from './useReadingHistory'
 
 type Props = {
@@ -22,6 +23,7 @@ export default function ResumeReadingToast({ manga }: Readonly<Props>) {
   const navigateToImageIndex = useImageIndexStore((state) => state.navigateToImageIndex)
   const { lastPage } = useReadingHistory(mangaId)
   const queryClient = useQueryClient()
+  const getVirtualizer = useVirtualizerStore((state) => state.getVirtualizer)
 
   // NOTE: 읽은 페이지 토스트 표시
   useEffect(() => {
@@ -32,7 +34,10 @@ export default function ResumeReadingToast({ manga }: Readonly<Props>) {
         duration: ms('10 seconds'),
         action: {
           label: '이동',
-          onClick: () => navigateToImageIndex(lastPage - 1),
+          onClick: () => {
+            navigateToImageIndex(lastPage - 1)
+            getVirtualizer()?.scrollToIndex(lastPage - 1)
+          },
         },
       })
 
@@ -40,7 +45,7 @@ export default function ResumeReadingToast({ manga }: Readonly<Props>) {
         toast.dismiss(toastId)
       }
     }
-  }, [lastPage, navigateToImageIndex, getImageIndex, imageCount])
+  }, [lastPage, navigateToImageIndex, getImageIndex, imageCount, getVirtualizer])
 
   // NOTE: 뷰어 들어오면 최신 감상 기록으로 갱신
   useEffect(() => {
