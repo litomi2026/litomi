@@ -66,8 +66,7 @@ resource "cloudflare_ruleset" "cache_rules" {
           default = 2592000 # 30 days
         }
         browser_ttl = {
-          mode    = "override_origin"
-          default = 600 # 10 minutes
+          mode = "respect_origin"
         }
       }
     }
