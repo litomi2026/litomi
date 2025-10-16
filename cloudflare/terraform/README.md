@@ -52,6 +52,7 @@ This directory contains Terraform configuration for managing Cloudflare cache ru
 5. **Review and apply changes**:
 
    ```bash
+   cd cloudflare/terraform
    export $(grep -v '^#' .env | xargs)
    # terraform plan
    terraform apply
