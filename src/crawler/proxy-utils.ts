@@ -9,11 +9,13 @@ export type ApiResponse<T = unknown> = T & {
   }
 }
 
-/**
- * - Origin 서버 요청 주기: s-maxage ~ (s-maxage + swr)
- * - 최대 캐싱 데이터 수명: s-maxage + maxage + min(swr, maxage)
- */
-export function createCacheControl(options: {
+type CacheControlHeaders = {
+  vercel?: CacheControlOptions
+  cloudflare?: CacheControlOptions
+  browser?: CacheControlOptions
+}
+
+type CacheControlOptions = {
   public?: boolean
   private?: boolean
   maxAge?: number
@@ -22,7 +24,13 @@ export function createCacheControl(options: {
   mustRevalidate?: boolean
   noCache?: boolean
   noStore?: boolean
-}): string {
+}
+
+/**
+ * - Origin 서버 요청 주기: s-maxage ~ (s-maxage + swr)
+ * - 최대 캐싱 데이터 수명: s-maxage + maxage + min(swr, maxage)
+ */
+export function createCacheControl(options: CacheControlOptions): string {
   const parts: string[] = []
 
   if (options.public && !options.private) {
@@ -51,6 +59,20 @@ export function createCacheControl(options: {
   }
 
   return parts.join(', ')
+}
+
+export function createCacheControlHeaders({ vercel, cloudflare, browser }: CacheControlHeaders): HeadersInit {
+  const headers: HeadersInit = {}
+  if (vercel) {
+    headers['Vercel-CDN-Cache-Control'] = createCacheControl(vercel)
+  }
+  if (cloudflare) {
+    headers['Cloudflare-Cache-Control'] = createCacheControl(cloudflare)
+  }
+  if (browser) {
+    headers['Cache-Control'] = createCacheControl(browser)
+  }
+  return headers
 }
 
 export async function createHealthCheckHandler(

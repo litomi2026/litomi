@@ -17,12 +17,11 @@ const cspHeader = `
   frame-ancestors 'none';
 `
 
-const oneDayPublicCacheControl = createCacheControl({
-  public: true,
-  maxAge: sec('12 hours'),
-  sMaxAge: sec('12 hours'),
-  swr: sec('5 minutes'),
-})
+const cacheControlHeaders = [
+  { key: 'Vercel-CDN-Cache-Control', value: createCacheControl({ maxAge: sec('1 hour') }) },
+  { key: 'Cloudflare-Cache-Control', value: createCacheControl({ maxAge: sec('1 days') }) },
+  { key: 'Cache-Control', value: createCacheControl({ maxAge: 0 }) },
+]
 
 const nextConfig: NextConfig = {
   eslint: {
@@ -48,23 +47,23 @@ const nextConfig: NextConfig = {
     {
       source: '/sw.js',
       headers: [
+        // ...cacheControlHeaders,
         { key: 'Content-Type', value: 'application/javascript; charset=utf-8' },
-        { key: 'Cache-Control', value: `public, max-age=${sec('5 minutes')}, must-revalidate` },
         { key: 'Content-Security-Policy', value: "default-src 'self'; script-src 'self'" },
       ],
     },
-    {
-      source: '/manifest.webmanifest',
-      headers: [{ key: 'Cache-Control', value: oneDayPublicCacheControl }],
-    },
-    {
-      source: '/web-app-manifest(.*)',
-      headers: [{ key: 'Cache-Control', value: oneDayPublicCacheControl }],
-    },
-    {
-      source: '/favicon(.*)',
-      headers: [{ key: 'Cache-Control', value: oneDayPublicCacheControl }],
-    },
+    // {
+    //   source: '/manifest.webmanifest',
+    //   headers: cacheControlHeaders,
+    // },
+    // {
+    //   source: '/web-app-manifest(.*)',
+    //   headers: cacheControlHeaders,
+    // },
+    // {
+    //   source: '/favicon(.*)',
+    //   headers: cacheControlHeaders,
+    // },
   ],
   poweredByHeader: false,
   ...(process.env.BUILD_OUTPUT === 'standalone' && { output: 'standalone' }),

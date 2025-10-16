@@ -6,7 +6,6 @@ import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { db } from '@/database/supabase/drizzle'
 import { readingHistoryTable } from '@/database/supabase/schema'
 import { validateUserIdFromCookie } from '@/utils/cookie'
-import { sec } from '@/utils/date'
 
 const searchParamsSchema = z.object({
   cursor: z.string().optional(),
@@ -79,16 +78,17 @@ export async function GET(request: Request) {
       updatedAt: row.updatedAt.getTime(),
     }))
 
-    const nextCursor = hasNext ? items[items.length - 1] : null
+    const result: GETReadingHistoryResponse = {
+      items,
+      nextCursor: hasNext ? items[items.length - 1] : null,
+    }
 
     const cacheControl = createCacheControl({
       private: true,
-      maxAge: cursor ? sec('1 hour') : sec('1 minute'),
+      maxAge: 3,
     })
 
-    return Response.json({ items, nextCursor } satisfies GETReadingHistoryResponse, {
-      headers: { 'cache-control': cacheControl },
-    })
+    return Response.json(result, { headers: { 'Cache-Control': cacheControl } })
   } catch (error) {
     return handleRouteError(error, request)
   }
