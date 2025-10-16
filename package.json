@@ -43,7 +43,6 @@
     "@suspensive/react": "^2.18.13",
     "@tanstack/react-query": "^5.90.2",
     "@tanstack/react-query-devtools": "^5.90.2",
-    "@tanstack/react-virtual": "^3.13.12",
     "@upstash/redis": "^1.35.4",
     "bcrypt": "^5.1.1",
     "caniuse-lite": "^1.0.30001746",

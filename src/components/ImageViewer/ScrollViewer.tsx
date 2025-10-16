@@ -1,82 +1,57 @@
-'use client'
-
-import { useVirtualizer } from '@tanstack/react-virtual'
-import { CSSProperties, memo, RefObject, useCallback, useEffect, useRef } from 'react'
+import { CSSProperties, memo, useEffect, useRef } from 'react'
 import { useInView } from 'react-intersection-observer'
+import { List, RowComponentProps, useDynamicRowHeight, useListRef } from 'react-window'
 
 import { MangaIdSearchParam } from '@/app/manga/[id]/common'
-import { PageView } from '@/components/ImageViewer/store/pageView'
-import { ReadingDirection } from '@/components/ImageViewer/store/readingDirection'
-import { ScreenFit } from '@/components/ImageViewer/store/screenFit'
 import { useImageStatus } from '@/hook/useImageStatus'
-import { type Manga } from '@/types/manga'
-import { getSafeAreaBottom } from '@/utils/browser'
+import { Manga } from '@/types/manga'
+import { getImageSource } from '@/utils/manga'
 
 import IconSpinner from '../icons/IconSpinner'
 import MangaImage from '../MangaImage'
 import RatingInput from './RatingInput'
 import { useImageIndexStore } from './store/imageIndex'
 import { useImageWidthStore } from './store/imageWidth'
+import { PageView } from './store/pageView'
+import { ReadingDirection } from './store/readingDirection'
+import { ScreenFit } from './store/screenFit'
 import { useVirtualizerStore } from './store/virtualizer'
 
 const screenFitStyle: Record<ScreenFit, string> = {
   width:
-    '[&_li]:justify-center [&_img]:my-auto [&_img]:w-[var(--image-width)] [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:max-h-fit',
-  all: '[&_li]:justify-center [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:max-h-dvh',
+    '[&_li]:flex [&_li]:justify-center [&_li]:w-[var(--image-width)]! [&_li]:left-1/2! [&_li]:-translate-x-1/2 [&_img]:max-w-full [&_img]:max-h-fit',
+  all: '[&_li]:flex [&_li]:justify-center [&_li]:w-[var(--image-width)]! [&_li]:left-1/2! [&_li]:-translate-x-1/2 [&_img]:max-w-full [&_img]:max-h-dvh',
   height:
-    '[&_li]:overflow-x-auto [&_li]:overscroll-x-none [&_li]:mx-auto [&_li]:w-fit [&_li]:max-w-full [&_img]:w-auto [&_img]:max-w-fit [&_img]:h-dvh [&_img]:max-h-fit',
+    '[&_li]:flex [&_li]:w-fit! [&_li]:max-w-full [&_li]:left-1/2! [&_li]:-translate-x-1/2 [&_li]:overflow-x-auto [&_li]:overscroll-x-none [&_img]:w-auto [&_img]:max-w-fit [&_img]:h-dvh [&_img]:max-h-fit',
 }
 
 type Props = {
   manga: Manga
   onClick: () => void
   pageView: PageView
-  screenFit: ScreenFit
   readingDirection: ReadingDirection
+  screenFit: ScreenFit
 }
 
-type VirtualItemProps = {
-  index: number
+type RowProps = {
   manga: Manga
-  virtualizer: ReturnType<typeof useVirtualizer<HTMLDivElement, Element>>
   pageView: PageView
   readingDirection: ReadingDirection
-  itemHeightMap: RefObject<Map<number, number>>
+  screenFit: ScreenFit
 }
 
-export default memo(ScrollViewer)
+export default memo(ScrollViewer2)
 
-function ScrollViewer({ manga, onClick, screenFit, pageView, readingDirection }: Props) {
+function ScrollViewer2({ manga, onClick, pageView, readingDirection, screenFit }: Props) {
   const { images } = manga
-  const parentRef = useRef<HTMLDivElement>(null)
-  const setVirtualizer = useVirtualizerStore((state) => state.setVirtualizer)
+  const listRef = useListRef(null)
   const imageWidth = useImageWidthStore((state) => state.imageWidth)
+  const setVirtualizer = useVirtualizerStore((state) => state.setVirtualizer)
   const isDoublePage = pageView === 'double'
   const imagePageCount = isDoublePage ? Math.ceil(images.length / 2) : images.length
-  const itemHeightMap = useRef(new Map<number, number>())
-
-  const virtualizer = useVirtualizer({
-    count: imagePageCount + 1, // NOTE: 마지막 페이지는 평가 페이지
-    estimateSize: useCallback((index) => itemHeightMap.current.get(index) || window.innerHeight, []),
-    getScrollElement: useCallback(() => parentRef.current, []),
-    overscan: 2,
-    useAnimationFrameWithResizeObserver: true,
-    paddingEnd: getSafeAreaBottom(),
-  })
-
-  const virtualItems = virtualizer.getVirtualItems()
-  const translateY = virtualItems[0]?.start ?? 0
-
-  const dynamicStyle = {
-    transform: `translateY(${translateY}px)`,
-    '--image-width': `${isDoublePage ? imageWidth / 2 : imageWidth}%`,
-  } as CSSProperties
-
-  // NOTE: virtualizer 저장
-  useEffect(() => {
-    setVirtualizer(virtualizer)
-    return () => setVirtualizer(null)
-  }, [setVirtualizer, virtualizer])
+  const totalItemCount = imagePageCount + 1 // +1 for rating page
+  const rowHeight = useDynamicRowHeight({ defaultRowHeight: window.innerHeight })
+  const dynamicStyle = { '--image-width': `${imageWidth}%` } as CSSProperties
 
   // NOTE: page 파라미터가 있으면 초기 페이지를 변경함
   useEffect(() => {
@@ -88,57 +63,80 @@ function ScrollViewer({ manga, onClick, screenFit, pageView, readingDirection }:
       return
     }
 
-    virtualizer.scrollToIndex(parsedPage - 1)
-  }, [images.length, virtualizer])
+    requestAnimationFrame(() => {
+      listRef.current?.scrollToRow({
+        index: isDoublePage ? Math.floor((parsedPage - 1) / 2) : parsedPage - 1,
+        align: 'start',
+      })
+    })
+  }, [images.length, isDoublePage, listRef])
+
+  // NOTE: virtualizer 초기화 및 정리
+  useEffect(() => {
+    // @ts-expect-error - Adapter provides compatible interface for scrollToIndex
+    setVirtualizer({
+      scrollToIndex: (index: number) => {
+        const targetIndex = Math.max(0, Math.min(index, imagePageCount - 1))
+        listRef.current?.scrollToRow({ index: targetIndex, align: 'start' })
+      },
+    })
+
+    return () => {
+      setVirtualizer(null)
+    }
+  }, [imagePageCount, listRef, setVirtualizer])
+
+  if (images.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-dvh animate-fade-in" onClick={onClick}>
+        <IconSpinner className="size-8" />
+      </div>
+    )
+  }
 
   return (
-    <div className="overflow-y-auto overscroll-none contain-strict h-dvh select-none" onClick={onClick} ref={parentRef}>
-      {images.length === 0 ? (
-        <li className="flex items-center justify-center h-full animate-fade-in">
-          <IconSpinner className="size-8" />
-        </li>
-      ) : (
-        <div className="w-full relative" style={{ height: virtualizer.getTotalSize() }}>
-          <ul
-            className={`absolute top-0 left-0 w-full [&_li]:flex [&_img]:border [&_img]:border-background 
-            [&_img]:aria-invalid:w-40 [&_img]:aria-invalid:h-40 [&_img]:aria-invalid:text-foreground 
-            ${screenFitStyle[screenFit]}`}
-            style={dynamicStyle}
-          >
-            {virtualItems.map(({ index, key }) =>
-              index < imagePageCount ? (
-                <VirtualItemMemo
-                  index={index}
-                  itemHeightMap={itemHeightMap}
-                  key={key}
-                  manga={manga}
-                  pageView={pageView}
-                  readingDirection={readingDirection}
-                  virtualizer={virtualizer}
-                />
-              ) : (
-                <RatingInput className="flex-1 h-svh p-4" key={index} mangaId={manga.id} />
-              ),
-            )}
-          </ul>
-        </div>
-      )}
+    <div className={`overflow-hidden h-dvh select-none contain-strict`} onClick={onClick} style={dynamicStyle}>
+      <List
+        className={`overscroll-none  ${screenFitStyle[screenFit]}`}
+        listRef={listRef}
+        overscanCount={2}
+        rowComponent={ScrollViewerRow}
+        rowCount={totalItemCount}
+        rowHeight={rowHeight}
+        rowProps={{ manga, pageView, readingDirection, screenFit }}
+      />
     </div>
   )
 }
 
-const VirtualItemMemo = memo(VirtualItem)
+function ScrollViewerRow({ index, style, manga, pageView, ...rest }: RowComponentProps<RowProps>) {
+  const { images } = manga
+  const isDoublePage = pageView === 'double'
+  const imagePageCount = isDoublePage ? Math.ceil(images.length / 2) : images.length
 
-function VirtualItem({ index, manga, virtualizer, pageView, readingDirection, itemHeightMap }: VirtualItemProps) {
+  if (index === imagePageCount) {
+    return (
+      <div style={style}>
+        <RatingInput className="flex-1 h-svh p-4" mangaId={manga.id} />
+      </div>
+    )
+  }
+
+  return <ScrollViewerRowItem index={index} manga={manga} pageView={pageView} style={style} {...rest} />
+}
+
+function ScrollViewerRowItem({ index, manga, pageView, readingDirection, style }: RowComponentProps<RowProps>) {
   const navigateToImageIndex = useImageIndexStore((state) => state.navigateToImageIndex)
+  const { origin, images } = manga
   const isDoublePage = pageView === 'double'
   const isRTL = readingDirection === 'rtl'
   const firstImageIndex = isDoublePage ? index * 2 : index
   const nextImageIndex = firstImageIndex + 1
   const firstImageStatus = useImageStatus()
   const nextImageStatus = useImageStatus()
+  const itemRef = useRef<HTMLLIElement>(null)
 
-  const { ref, inView } = useInView({
+  const { ref: inViewRef, inView } = useInView({
     threshold: 0,
     rootMargin: '-50% 0% -50% 0%',
   })
@@ -149,42 +147,37 @@ function VirtualItem({ index, manga, virtualizer, pageView, readingDirection, it
     }
   }, [firstImageIndex, inView, navigateToImageIndex])
 
-  function registerRef(element: HTMLLIElement | null) {
-    if (firstImageStatus.loaded && (!isDoublePage || nextImageStatus.loaded)) {
-      virtualizer.measureElement(element)
-
-      if (firstImageStatus.success && (!isDoublePage || nextImageStatus.success) && element) {
-        const { height } = element.getBoundingClientRect()
-        itemHeightMap.current.set(index, height)
-      }
-    }
-  }
-
   const firstImage = (
-    <MangaImage
-      aria-invalid={firstImageStatus.error}
-      fetchPriority="high"
-      imageIndex={firstImageIndex}
-      imageRef={ref}
-      manga={manga}
-      onError={firstImageStatus.handleError}
-      onLoad={firstImageStatus.handleSuccess}
-    />
+    <picture>
+      <source media="(min-width: 1024px)" srcSet={getImageSource({ imageURL: images[firstImageIndex], origin })} />
+      <MangaImage
+        aria-invalid={firstImageStatus.error}
+        fetchPriority="high"
+        imageIndex={firstImageIndex}
+        imageRef={inViewRef}
+        manga={manga}
+        onError={firstImageStatus.handleError}
+        onLoad={firstImageStatus.handleSuccess}
+      />
+    </picture>
   )
 
-  const secondImage = isDoublePage && (
-    <MangaImage
-      aria-invalid={nextImageStatus.error}
-      fetchPriority="high"
-      imageIndex={nextImageIndex}
-      manga={manga}
-      onError={nextImageStatus.handleError}
-      onLoad={nextImageStatus.handleSuccess}
-    />
+  const secondImage = isDoublePage && nextImageIndex < images.length && (
+    <picture>
+      <source media="(min-width: 1024px)" srcSet={getImageSource({ imageURL: images[nextImageIndex], origin })} />
+      <MangaImage
+        aria-invalid={nextImageStatus.error}
+        fetchPriority="high"
+        imageIndex={nextImageIndex}
+        manga={manga}
+        onError={nextImageStatus.handleError}
+        onLoad={nextImageStatus.handleSuccess}
+      />
+    </picture>
   )
 
   return (
-    <li data-index={index} ref={registerRef}>
+    <li ref={itemRef} style={style}>
       {isRTL ? (
         <>
           {secondImage}
