@@ -1,14 +1,15 @@
-import { Virtualizer } from '@tanstack/react-virtual'
+import { RefObject } from 'react'
+import { ListImperativeAPI } from 'react-window'
 import { create } from 'zustand'
 
 type Store = {
-  virtualizer: Virtualizer<HTMLDivElement, Element> | null
-  getVirtualizer: () => Virtualizer<HTMLDivElement, Element> | null
-  setVirtualizer: (virtualizer: Virtualizer<HTMLDivElement, Element> | null) => void
+  listRef: RefObject<ListImperativeAPI | null> | null
+  getListRef: () => RefObject<ListImperativeAPI | null> | null
+  setListRef: (listRef: RefObject<ListImperativeAPI | null> | null) => void
 }
 
-export const useVirtualizerStore = create<Store>()((set, get) => ({
-  virtualizer: null,
-  getVirtualizer: () => get().virtualizer,
-  setVirtualizer: (virtualizer) => set({ virtualizer }),
+export const useVirtualScrollStore = create<Store>()((set, get) => ({
+  listRef: null,
+  getListRef: () => get().listRef,
+  setListRef: (listRef) => set({ listRef }),
 }))

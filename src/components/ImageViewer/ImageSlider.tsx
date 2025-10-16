@@ -4,7 +4,7 @@ import IconSpinner from '../icons/IconSpinner'
 import Slider from '../ui/Slider'
 import { useImageIndexStore } from './store/imageIndex'
 import { usePageViewStore } from './store/pageView'
-import { useVirtualizerStore } from './store/virtualizer'
+import { useVirtualScrollStore } from './store/virtualizer'
 
 type Props = {
   maxImageIndex: number
@@ -15,7 +15,7 @@ export default memo(ImageSlider)
 function ImageSlider({ maxImageIndex }: Readonly<Props>) {
   const { imageIndex, navigateToImageIndex } = useImageIndexStore()
   const pageView = usePageViewStore((state) => state.pageView)
-  const getVirtualizer = useVirtualizerStore((state) => state.getVirtualizer)
+  const getListRef = useVirtualScrollStore((state) => state.getListRef)
   const isDoublePage = pageView === 'double'
   const currentPage = imageIndex + 1
   const maxPage = maxImageIndex + 1
@@ -25,9 +25,9 @@ function ImageSlider({ maxImageIndex }: Readonly<Props>) {
   const handleValueCommit = useCallback(
     (value: number) => {
       navigateToImageIndex(value)
-      getVirtualizer()?.scrollToIndex(isDoublePage ? Math.floor(value / 2) : value)
+      getListRef()?.current?.scrollToRow({ index: isDoublePage ? Math.floor(value / 2) : value, align: 'start' })
     },
-    [getVirtualizer, isDoublePage, navigateToImageIndex],
+    [getListRef, isDoublePage, navigateToImageIndex],
   )
 
   return (

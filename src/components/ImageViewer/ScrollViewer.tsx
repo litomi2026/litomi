@@ -15,7 +15,7 @@ import { useImageWidthStore } from './store/imageWidth'
 import { PageView } from './store/pageView'
 import { ReadingDirection } from './store/readingDirection'
 import { ScreenFit } from './store/screenFit'
-import { useVirtualizerStore } from './store/virtualizer'
+import { useVirtualScrollStore } from './store/virtualizer'
 
 const screenFitStyle: Record<ScreenFit, string> = {
   width:
@@ -40,13 +40,13 @@ type RowProps = {
   screenFit: ScreenFit
 }
 
-export default memo(ScrollViewer2)
+export default memo(ScrollViewer)
 
-function ScrollViewer2({ manga, onClick, pageView, readingDirection, screenFit }: Props) {
+function ScrollViewer({ manga, onClick, pageView, readingDirection, screenFit }: Props) {
   const { images } = manga
   const listRef = useListRef(null)
   const imageWidth = useImageWidthStore((state) => state.imageWidth)
-  const setVirtualizer = useVirtualizerStore((state) => state.setVirtualizer)
+  const setListRef = useVirtualScrollStore((state) => state.setListRef)
   const isDoublePage = pageView === 'double'
   const imagePageCount = isDoublePage ? Math.ceil(images.length / 2) : images.length
   const totalItemCount = imagePageCount + 1 // +1 for rating page
@@ -73,18 +73,9 @@ function ScrollViewer2({ manga, onClick, pageView, readingDirection, screenFit }
 
   // NOTE: virtualizer 초기화 및 정리
   useEffect(() => {
-    // @ts-expect-error - Adapter provides compatible interface for scrollToIndex
-    setVirtualizer({
-      scrollToIndex: (index: number) => {
-        const targetIndex = Math.max(0, Math.min(index, imagePageCount - 1))
-        listRef.current?.scrollToRow({ index: targetIndex, align: 'start' })
-      },
-    })
-
-    return () => {
-      setVirtualizer(null)
-    }
-  }, [imagePageCount, listRef, setVirtualizer])
+    setListRef(listRef)
+    return () => setListRef(null)
+  }, [listRef, setListRef])
 
   if (images.length === 0) {
     return (
