@@ -1,6 +1,6 @@
 import { fetchMangasFromMultiSources } from '@/common/manga'
 import { BLACKLISTED_MANGA_IDS, MAX_THUMBNAIL_IMAGES } from '@/constants/policy'
-import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
+import { createCacheControl, createCacheControlHeaders, handleRouteError } from '@/crawler/proxy-utils'
 import { Manga, MangaError } from '@/types/manga'
 import { calculateOptimalCacheDuration } from '@/utils/cache-control'
 import { sec } from '@/utils/date'
@@ -61,56 +61,49 @@ export async function GET(request: Request) {
 
     const headers = (() => {
       if (hasErrorManga) {
-        return {
-          'Cache-Control': createCacheControl({
-            public: true,
+        return createCacheControlHeaders({
+          vercel: {
+            maxAge: sec('10 seconds'),
+          },
+          cloudflare: {
             maxAge: sec('30 seconds'),
-            sMaxAge: sec('10 seconds'),
-            swr: sec('20 seconds'),
-          }),
-        }
+          },
+          browser: {
+            public: true,
+            maxAge: 3,
+          },
+        })
       }
 
       if (allImages.length === 0) {
-        const swr = sec('10 minutes')
-        return {
-          'Vercel-CDN-Cache-Control': createCacheControl({
+        return createCacheControlHeaders({
+          vercel: {
             maxAge: sec('30 days'),
-            swr,
-          }),
-          'Cloudflare-Cache-Control': createCacheControl({
+          },
+          cloudflare: {
             maxAge: sec('30 days'),
-            swr,
-          }),
-          'Cache-Control': createCacheControl({
+            swr: sec('10 minutes'),
+          },
+          browser: {
             public: true,
-            maxAge: sec('5 minutes'),
-            swr,
-          }),
-        }
+            maxAge: 3,
+          },
+        })
       }
 
       const optimalCacheDuration = calculateOptimalCacheDuration(allImages)
-      const cloudflareDuration = Math.floor(optimalCacheDuration * 0.9)
-      const vercelDuration = Math.floor(optimalCacheDuration * 0.05)
-      const browserDuration = optimalCacheDuration - cloudflareDuration - vercelDuration
-      const swrDuration = Math.floor(Math.min(cloudflareDuration, vercelDuration, browserDuration) * 0.1)
+      const swr = Math.floor(optimalCacheDuration * 0.01)
 
-      return {
-        'Vercel-CDN-Cache-Control': createCacheControl({
-          maxAge: vercelDuration - swrDuration,
-          swr: swrDuration,
-        }),
-        'Cloudflare-Cache-Control': createCacheControl({
-          maxAge: cloudflareDuration - swrDuration,
-          swr: swrDuration,
-        }),
-        'Cache-Control': createCacheControl({
+      return createCacheControlHeaders({
+        cloudflare: {
+          maxAge: optimalCacheDuration - swr,
+          swr,
+        },
+        browser: {
           public: true,
-          maxAge: browserDuration - swrDuration,
-          swr: swrDuration,
-        }),
-      } as HeadersInit
+          maxAge: 3,
+        },
+      })
     })()
 
     return Response.json(mangaMap satisfies GETProxyMangaResponse, { headers })

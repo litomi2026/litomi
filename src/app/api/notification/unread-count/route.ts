@@ -21,7 +21,6 @@ export async function GET(request: Request) {
     const cacheControl = createCacheControl({
       private: true,
       maxAge: 10,
-      swr: 10,
     })
 
     return Response.json(unreadCount, { headers: { 'Cache-Control': cacheControl } })

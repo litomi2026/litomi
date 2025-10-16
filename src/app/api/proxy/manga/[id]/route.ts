@@ -1,6 +1,6 @@
 import { fetchMangaFromMultiSources } from '@/common/manga'
 import { BLACKLISTED_MANGA_IDS } from '@/constants/policy'
-import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
+import { createCacheControlHeaders, handleRouteError } from '@/crawler/proxy-utils'
 import { Manga, MangaError } from '@/types/manga'
 import { RouteProps } from '@/types/nextjs'
 import { calculateOptimalCacheDuration } from '@/utils/cache-control'
@@ -44,14 +44,19 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
   const { id, scope } = validation.data
 
   if (BLACKLISTED_MANGA_IDS.includes(id)) {
-    const forbiddenHeaders = {
-      'Cache-Control': createCacheControl({
-        public: true,
+    const forbiddenHeaders = createCacheControlHeaders({
+      vercel: {
         maxAge: sec('30 days'),
-        sMaxAge: sec('30 days'),
-        swr: sec('30 days'),
-      }),
-    }
+      },
+      cloudflare: {
+        maxAge: sec('30 days'),
+        swr: sec('10 minutes'),
+      },
+      browser: {
+        public: true,
+        maxAge: 3,
+      },
+    })
 
     return new Response('Forbidden', { status: 403, headers: forbiddenHeaders })
   }
@@ -60,38 +65,33 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
     const manga = await fetchMangaFromMultiSources(id)
 
     if (!manga) {
-      const notFoundHeaders = {
-        'Cache-Control': createCacheControl({
-          public: true,
+      const notFoundHeaders = createCacheControlHeaders({
+        cloudflare: {
           maxAge: sec('1 hour'),
-          sMaxAge: sec('1 hour'),
-        }),
-      }
+          swr: sec('10 minutes'),
+        },
+        browser: {
+          public: true,
+          maxAge: 3,
+        },
+      })
 
       return new Response('Not Found', { status: 404, headers: notFoundHeaders })
     }
 
     const optimalCacheDuration = calculateOptimalCacheDuration(manga.images)
-    const cloudflareDuration = Math.floor(optimalCacheDuration * 0.9)
-    const vercelDuration = Math.floor(optimalCacheDuration * 0.05)
-    const browserDuration = optimalCacheDuration - cloudflareDuration - vercelDuration
-    const swrDuration = Math.floor(Math.min(cloudflareDuration, vercelDuration, browserDuration) * 0.1)
+    const swr = Math.floor(optimalCacheDuration * 0.01)
 
-    const successHeaders = {
-      'Vercel-CDN-Cache-Control': createCacheControl({
-        maxAge: vercelDuration - swrDuration,
-        swr: swrDuration,
-      }),
-      'Cloudflare-Cache-Control': createCacheControl({
-        maxAge: cloudflareDuration - swrDuration,
-        swr: swrDuration,
-      }),
-      'Cache-Control': createCacheControl({
+    const successHeaders = createCacheControlHeaders({
+      cloudflare: {
+        maxAge: optimalCacheDuration - swr,
+        swr,
+      },
+      browser: {
         public: true,
-        maxAge: browserDuration - swrDuration,
-        swr: swrDuration,
-      }),
-    }
+        maxAge: 3,
+      },
+    })
 
     const responseData = getMangaResponseData(manga, scope)
     return Response.json(responseData, { headers: successHeaders })

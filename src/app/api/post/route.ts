@@ -5,7 +5,6 @@ import { validateUserIdFromCookie } from '@/utils/cookie'
 
 import { GETPostSchema } from './schema'
 
-const maxAge = 5
 const LIMIT = 20
 
 export type GETPostsResponse = {
@@ -52,7 +51,10 @@ export async function GET(request: Request) {
       currentUserId,
     })
 
-    const cacheControl = createCacheControl({ private: true, maxAge })
+    const cacheControl = createCacheControl({
+      public: true,
+      maxAge: 3,
+    })
 
     if (postRows.length === 0) {
       const response: GETPostsResponse = { posts: [], nextCursor: null }

@@ -1,7 +1,7 @@
 import { GETProxyKSearchSchema } from '@/app/api/proxy/k/search/schema'
 import { BLACKLISTED_MANGA_IDS, MAX_KHENTAI_SEARCH_QUERY_LENGTH } from '@/constants/policy'
 import { getCategories, kHentaiClient, KHentaiMangaSearchOptions } from '@/crawler/k-hentai'
-import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
+import { createCacheControlHeaders, handleRouteError } from '@/crawler/proxy-utils'
 import { trendingKeywordsRedisService } from '@/services/TrendingKeywordsRedisService'
 import { Manga } from '@/types/manga'
 import { sec } from '@/utils/date'
@@ -124,77 +124,61 @@ function getCacheControlHeader(params: KHentaiMangaSearchOptions) {
   const { nextId, nextViews, sort } = params
 
   if (sort === 'random') {
-    const swr = sec('5 seconds')
-    return {
-      'Vercel-CDN-Cache-Control': createCacheControl({
-        maxAge: sec('5 seconds'),
-        swr,
-      }),
-      'Cloudflare-Cache-Control': createCacheControl({
-        maxAge: sec('30 seconds'),
-        swr,
-      }),
-      'Cache-Control': createCacheControl({
+    return createCacheControlHeaders({
+      cloudflare: {
+        maxAge: sec('40 seconds'),
+        swr: sec('10 seconds'),
+      },
+      browser: {
         public: true,
-        maxAge: sec('5 seconds'),
-        swr,
-      }),
-    }
+        maxAge: 3,
+      },
+    })
   }
 
   if (nextId) {
-    const swr = sec('10 minutes')
-    return {
-      'Vercel-CDN-Cache-Control': createCacheControl({
+    return createCacheControlHeaders({
+      vercel: {
         maxAge: sec('30 days'),
-        swr,
-      }),
-      'Cloudflare-Cache-Control': createCacheControl({
+      },
+      cloudflare: {
         maxAge: sec('30 days'),
-        swr,
-      }),
-      'Cache-Control': createCacheControl({
+        swr: sec('10 minutes'),
+      },
+      browser: {
         public: true,
-        maxAge: sec('10 minutes'),
-        swr,
-      }),
-    }
+        maxAge: 3,
+      },
+    })
   }
 
   if (nextViews) {
-    const swr = sec('10 minutes')
-    return {
-      'Vercel-CDN-Cache-Control': createCacheControl({
+    return createCacheControlHeaders({
+      vercel: {
         maxAge: sec('1 hour'),
-        swr,
-      }),
-      'Cloudflare-Cache-Control': createCacheControl({
+      },
+      cloudflare: {
         maxAge: sec('1 day'),
-        swr,
-      }),
-      'Cache-Control': createCacheControl({
+        swr: sec('10 minutes'),
+      },
+      browser: {
         public: true,
-        maxAge: sec('10 minutes'),
-        swr,
-      }),
-    }
+        maxAge: 3,
+      },
+    })
   }
 
-  const swr = sec('10 minutes')
-
-  return {
-    'Vercel-CDN-Cache-Control': createCacheControl({
+  return createCacheControlHeaders({
+    vercel: {
       maxAge: sec('10 minutes'),
-      swr,
-    }),
-    'Cloudflare-Cache-Control': createCacheControl({
+    },
+    cloudflare: {
       maxAge: sec('1 hour'),
-      swr,
-    }),
-    'Cache-Control': createCacheControl({
+      swr: sec('10 minutes'),
+    },
+    browser: {
       public: true,
-      maxAge: sec('5 minutes'),
-      swr,
-    }),
-  }
+      maxAge: 3,
+    },
+  })
 }
