@@ -1,4 +1,4 @@
-import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
+import { createCacheControlHeaders, handleRouteError } from '@/crawler/proxy-utils'
 import { sec } from '@/utils/date'
 
 import { GETSearchSuggestionsSchema, queryBlacklist } from './schema'
@@ -21,23 +21,20 @@ export async function GET(request: Request) {
 
   try {
     const suggestions = suggestionTrie.search(query, locale)
-    const swr = sec('1 day')
 
-    const cacheControlHeader = {
-      'Vercel-CDN-Cache-Control': createCacheControl({
+    const cacheControlHeader = createCacheControlHeaders({
+      vercel: {
+        maxAge: sec('3 days'),
+      },
+      cloudflare: {
         maxAge: sec('30 days'),
-        swr,
-      }),
-      'Cloudflare-Cache-Control': createCacheControl({
-        maxAge: sec('30 days'),
-        swr,
-      }),
-      'Cache-Control': createCacheControl({
+        swr: sec('1 day'),
+      },
+      browser: {
         public: true,
-        maxAge: sec('5 minutes'),
-        swr,
-      }),
-    }
+        maxAge: 3,
+      },
+    })
 
     return Response.json(suggestions, { headers: cacheControlHeader })
   } catch (error) {

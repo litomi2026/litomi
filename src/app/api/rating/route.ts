@@ -173,7 +173,7 @@ export async function GET(request: Request) {
 
     const cacheControl = createCacheControl({
       private: true,
-      maxAge: cursor ? sec('10 minutes') : 3,
+      maxAge: 3,
     })
 
     return Response.json(result, { headers: { 'cache-control': cacheControl } })
