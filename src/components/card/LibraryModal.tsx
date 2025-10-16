@@ -23,7 +23,7 @@ type LibraryModalStore = {
   setMangaId: (mangaId: number | null) => void
 }
 
-export const useLibraryModalStore = create<LibraryModalStore>()((set) => ({
+const useLibraryModalStore = create<LibraryModalStore>()((set) => ({
   isOpen: false,
   mangaId: null,
   setIsOpen: (isOpen: boolean) => set({ isOpen }),
