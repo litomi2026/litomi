@@ -66,7 +66,8 @@ function ScrollViewer({ manga, onClick, pageView, readingDirection, screenFit }:
     requestAnimationFrame(() => {
       listRef.current?.scrollToRow({
         index: isDoublePage ? Math.floor((parsedPage - 1) / 2) : parsedPage - 1,
-        align: 'start',
+        align: 'center',
+        behavior: 'instant',
       })
     })
   }, [images.length, isDoublePage, listRef])
