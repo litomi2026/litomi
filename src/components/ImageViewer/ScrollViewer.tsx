@@ -107,9 +107,9 @@ function ScrollViewerRow({ index, style, manga, pageView, ...rest }: RowComponen
 
   if (index === imagePageCount) {
     return (
-      <div style={style}>
-        <RatingInput className="flex-1 h-svh p-4" mangaId={manga.id} />
-      </div>
+      <li style={style}>
+        <RatingInput className="flex-1 p-4" mangaId={manga.id} />
+      </li>
     )
   }
 
@@ -141,7 +141,7 @@ function ScrollViewerRowItem({ index, manga, pageView, readingDirection, style }
 
   const first = (
     <picture>
-      <source media={`(min-width: ${firstImage?.thumbnail?.width ?? 320}px)`} srcSet={firstImage?.original?.url} />
+      <source media={`(min-width: ${firstImage?.thumbnail?.width ?? 0}px)`} srcSet={firstImage?.original?.url} />
       <MangaImage
         aria-invalid={firstImageStatus.error}
         fetchPriority="high"
@@ -156,7 +156,7 @@ function ScrollViewerRowItem({ index, manga, pageView, readingDirection, style }
 
   const second = isDoublePage && nextImageIndex < images.length && (
     <picture>
-      <source media={`(min-width: ${nextImage?.thumbnail?.width ?? 320}px)`} srcSet={nextImage?.original?.url} />
+      <source media={`(min-width: ${nextImage?.thumbnail?.width ?? 0}px)`} srcSet={nextImage?.original?.url} />
       <MangaImage
         aria-invalid={nextImageStatus.error}
         fetchPriority="high"
@@ -169,7 +169,7 @@ function ScrollViewerRowItem({ index, manga, pageView, readingDirection, style }
   )
 
   return (
-    <div style={style}>
+    <li style={style}>
       {isRTL ? (
         <>
           {second}
@@ -181,6 +181,6 @@ function ScrollViewerRowItem({ index, manga, pageView, readingDirection, style }
           {second}
         </>
       )}
-    </div>
+    </li>
   )
 }
