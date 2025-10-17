@@ -19,8 +19,14 @@ const cspHeader = `
 
 const cacheControlHeaders = [
   { key: 'Vercel-CDN-Cache-Control', value: createCacheControl({ maxAge: sec('1 day') }) },
-  { key: 'Cloudflare-Cache-Control', value: createCacheControl({ maxAge: sec('30 days'), swr: sec('1 day') }) },
-  { key: 'Cache-Control', value: createCacheControl({ public: true, maxAge: 3 }) },
+  {
+    key: 'Cache-Control',
+    value: createCacheControl({
+      public: true,
+      maxAge: 3,
+      sMaxAge: sec('1 year'),
+    }),
+  },
 ]
 
 const nextConfig: NextConfig = {
