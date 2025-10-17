@@ -38,6 +38,10 @@ function prepareManga(
     return null
   }
 
+  if (initialManga?.images?.length) {
+    return initialManga
+  }
+
   if (!data?.images || data?.images.length === 0) {
     return initialManga ?? data
   }

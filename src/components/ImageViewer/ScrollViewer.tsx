@@ -107,8 +107,8 @@ function ScrollViewerRow({ index, style, manga, pageView, ...rest }: RowComponen
 
   if (index === imagePageCount) {
     return (
-      <li style={style}>
-        <RatingInput className="flex-1 p-4" mangaId={manga.id} />
+      <li onClick={(e) => e.stopPropagation()} style={style}>
+        <RatingInput className="flex-1 p-2 pt-8" mangaId={manga.id} />
       </li>
     )
   }

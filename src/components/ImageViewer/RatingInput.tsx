@@ -212,13 +212,11 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
   }, [existingRating])
 
   return (
-    <div className={`flex flex-col items-center justify-center gap-4 p-6 ${className}`}>
+    <div className={`flex flex-col items-center justify-center gap-4 ${className}`}>
       <div className="grid gap-2 text-center">
         <h2 className="text-xl font-semibold text-foreground">작품이 어떠셨나요?</h2>
         <p className="text-zinc-400 text-sm max-w-sm mx-auto">
-          {existingRating?.rating
-            ? '별점을 드래그하거나 클릭해서 평가를 수정하세요'
-            : '별점을 드래그하거나 클릭해서 평가해주세요'}
+          별점을 드래그하거나 클릭해서 {existingRating?.rating ? '수정' : '평가'}해주세요
         </p>
       </div>
       <div
