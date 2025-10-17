@@ -103,7 +103,7 @@ export function MangaCardDonation() {
                   rel="noopener noreferrer"
                   target="_blank"
                 >
-                  쿠팡 파트너스
+                  (광고) 쿠팡 파트너스
                 </a>
               </div>
             </div>
@@ -132,7 +132,7 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
 
   return (
     <li
-      className={`flex flex-col border-2 rounded-xl overflow-hidden bg-zinc-900 relative ${className}`}
+      className={`flex flex-col border-2 rounded-xl overflow-hidden bg-zinc-900 relative content-auto ${className}`}
       data-manga-card
       key={id}
     >
