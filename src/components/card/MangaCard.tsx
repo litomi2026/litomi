@@ -103,7 +103,7 @@ export function MangaCardDonation() {
                   rel="noopener noreferrer"
                   target="_blank"
                 >
-                  쿠팡 파트너스
+                  (광고) 쿠팡 파트너스
                 </a>
               </div>
             </div>
