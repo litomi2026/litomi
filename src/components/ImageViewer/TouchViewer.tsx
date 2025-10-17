@@ -9,10 +9,11 @@ import { ScreenFit } from '@/components/ImageViewer/store/screenFit'
 import { useTouchOrientationStore } from '@/components/ImageViewer/store/touchOrientation'
 import { TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT } from '@/constants/policy'
 import useImageNavigation from '@/hook/useImageNavigation'
-import { ImageWithVariants, Manga } from '@/types/manga'
+import { Manga } from '@/types/manga'
 
 import IconSpinner from '../icons/IconSpinner'
 import MangaImage from '../MangaImage'
+import RatingInput from './RatingInput'
 import { useBrightnessStore } from './store/brightness'
 import { useImageIndexStore } from './store/imageIndex'
 
@@ -45,7 +46,7 @@ type Props = {
 
 type TouchViewerItemProps = {
   offset: number
-  images: ImageWithVariants[]
+  manga: Manga
   pageView: PageView
   readingDirection: ReadingDirection
 }
@@ -59,6 +60,7 @@ function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection }: 
   const setBrightness = useBrightnessStore((state) => state.setBrightness)
   const setImageIndex = useImageIndexStore((state) => state.setImageIndex)
   const currentIndex = useImageIndexStore((state) => state.imageIndex)
+  const getImageIndex = useImageIndexStore((state) => state.getImageIndex)
   const [zoomLevel, setZoomLevel] = useState(DEFAULT_ZOOM)
   const [zoomOrigin, setZoomOrigin] = useState({ x: '50%', y: '50%' })
   const pointerStartRef = useRef<{ x: number; y: number } | null>(null)
@@ -70,7 +72,7 @@ function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection }: 
   const previousIndexRef = useRef(currentIndex)
 
   const { prevPage, nextPage } = useImageNavigation({
-    maxIndex: images.length - 1,
+    maxIndex: images.length,
     offset: pageView === 'double' ? 2 : 1,
   })
 
@@ -82,11 +84,14 @@ function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection }: 
       activePointers.current.add(e.pointerId)
 
       const isEdgeSwipe = e.clientX < SCREEN_EDGE_THRESHOLD || e.clientX > window.innerWidth - SCREEN_EDGE_THRESHOLD
-      if (!isEdgeSwipe) {
-        pointerStartRef.current = { x: e.clientX, y: e.clientY }
+
+      if (!isEdgeSwipe || getImageIndex() === images.length) {
+        return
       }
+
+      pointerStartRef.current = { x: e.clientX, y: e.clientY }
     },
-    [getBrightness],
+    [getBrightness, getImageIndex, images.length],
   )
 
   // 포인터 이동 시: 세로 스와이프 감지 시 밝기 업데이트, 핀치 줌(멀티 터치) 중이면 밝기 조절 방지
@@ -412,9 +417,9 @@ function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection }: 
       ) : (
         Array.from({ length: TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT }).map((_, offset) => (
           <TouchViewerItem
-            images={images}
             key={offset}
-            offset={offset}
+            manga={manga}
+            offset={offset - 1}
             pageView={pageView}
             readingDirection={readingDirection}
           />
@@ -424,10 +429,24 @@ function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection }: 
   )
 }
 
-function TouchViewerItem({ offset, images, pageView, readingDirection }: Readonly<TouchViewerItemProps>) {
+function TouchViewerItem({ offset, manga, pageView, readingDirection }: Readonly<TouchViewerItemProps>) {
+  const { images = [] } = manga
   const currentIndex = useImageIndexStore((state) => state.imageIndex)
   const imageIndex = currentIndex + offset
   const brightness = useBrightnessStore((state) => state.brightness)
+
+  if (imageIndex < 0 || imageIndex >= images.length + 1) {
+    return null
+  }
+
+  if (imageIndex === images.length) {
+    return (
+      <li aria-hidden={offset !== 0}>
+        <RatingInput className="select-text" mangaId={manga.id} />
+      </li>
+    )
+  }
+
   const isRTL = readingDirection === 'rtl'
   const isDoublePage = pageView === 'double' && offset === 0
 

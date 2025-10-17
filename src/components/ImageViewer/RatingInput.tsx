@@ -15,6 +15,7 @@ import { useUserRatingQuery } from '@/query/useUserRatingQuery'
 type Props = {
   mangaId: number
   className?: string
+  onClick?: (e: React.MouseEvent) => void
 }
 
 const MIN_RATING = 1
@@ -23,7 +24,7 @@ const HORIZONTAL_THRESHOLD = 5
 const VERTICAL_THRESHOLD = 10
 const DIRECTION_DETERMINATION_THRESHOLD = 15
 
-export default function RatingInput({ mangaId, className = '' }: Props) {
+export default function RatingInput({ mangaId, className = '', onClick }: Props) {
   const queryClient = useQueryClient()
   const { data: existingRating } = useUserRatingQuery(mangaId)
   const { data: me } = useMeQuery()
@@ -191,6 +192,11 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
     setTimeout(() => setHoveredRating(0), 500)
   }
 
+  function handleCancelClick(e: React.MouseEvent) {
+    e.stopPropagation()
+    handleRating(0)
+  }
+
   // NOTE: 드래그 중에 컴포넌트 밖에서 포인터가 올라오면 평가를 적용하기 위해
   useEffect(() => {
     if (!initialPointerPos.current) {
@@ -212,7 +218,7 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
   }, [existingRating])
 
   return (
-    <div className={`flex flex-col items-center justify-center gap-4 ${className}`}>
+    <div className={`flex flex-col items-center justify-center gap-4 ${className}`} onClick={onClick}>
       <div className="grid gap-2 text-center">
         <h2 className="text-xl font-semibold text-foreground">작품이 어떠셨나요?</h2>
         <p className="text-zinc-400 text-sm max-w-sm mx-auto">
@@ -226,6 +232,7 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
         aria-valuemin={MIN_RATING}
         aria-valuenow={rating}
         className="flex gap-1 sm:gap-2 select-none cursor-pointer outline-none touch-pan-y aria-current:cursor-grabbing py-2"
+        onClick={(e) => e.stopPropagation()}
         onKeyDown={handleKeyDown}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
@@ -271,7 +278,7 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
       >
         <button
           className="flex items-center gap-2 text-zinc-500 hover:text-red-400 text-sm transition px-3 py-1 rounded hover:bg-red-400/10"
-          onClick={() => handleRating(0)}
+          onClick={handleCancelClick}
         >
           <X className="size-4" />
           평가 취소

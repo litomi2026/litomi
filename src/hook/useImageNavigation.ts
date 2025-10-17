@@ -26,7 +26,7 @@ export default function useImageNavigation({ maxIndex, offset }: Params) {
     const currentImageIndex = getImageIndex()
 
     if (currentImageIndex + offset > maxIndex) {
-      toast.warning('마지막 이미지에요')
+      toast.warning('마지막 페이지에요')
       return
     }
 
@@ -48,7 +48,7 @@ export default function useImageNavigation({ maxIndex, offset }: Params) {
     const currentImageIndex = getImageIndex()
 
     if (currentImageIndex === maxIndex) {
-      toast.warning('마지막 이미지에요')
+      toast.warning('마지막 페이지에요')
       return
     }
 
