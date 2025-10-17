@@ -46,10 +46,11 @@ export function DownloadButtonSkeleton({ className = '' }: { className?: string 
 }
 
 function DownloadButton({ manga, className = '' }: Readonly<Props>) {
+  const { images = [] } = manga
   const { isDownloading, downloadedCount, downloadAllImages } = useDownload(manga)
   const throttledCount = useThrottleValue(downloadedCount, THROTTLE_DELAY)
-  const progress = Math.round((throttledCount / manga.images.length) * 100)
-  const totalCount = manga.images.length
+  const progress = Math.round((throttledCount / images.length) * 100)
+  const totalCount = images.length
 
   const getProgressText = () => {
     if (!isDownloading) return '다운로드'

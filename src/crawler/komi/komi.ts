@@ -9,7 +9,6 @@ import { Manga } from '@/types/manga'
 
 import { ProxyClient, ProxyClientConfig } from '../proxy'
 import { isUpstreamServerError } from '../proxy-utils'
-import { getOriginFromImageURLs } from '../utils'
 import { BinaryIdMap } from './BinaryIdMap'
 import idMap from './id.json'
 
@@ -125,7 +124,13 @@ class KomiClient {
         .filter(this.isValidKomiTag)
         .map(({ name, namespace }) => translateTag(namespace, name, locale)),
       source: MangaSource.KOMI,
-      ...getOriginFromImageURLs(komiManga.images.sort((a, b) => a.pageNumber - b.pageNumber).map((img) => img.url)),
+      images: komiManga.images.map((img) => ({
+        original: {
+          url: img.url,
+          height: img.height,
+          width: img.width,
+        },
+      })),
     }
   }
 

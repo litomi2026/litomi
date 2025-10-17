@@ -35,7 +35,7 @@ function MangaDetailButton({ manga }: Readonly<Props>) {
     tags,
     date,
     languages,
-    origin,
+    images,
     description,
     lines,
     uploader,
@@ -44,7 +44,7 @@ function MangaDetailButton({ manga }: Readonly<Props>) {
   const [isOpened, setIsOpened] = useState(false)
   const [showFullDescription, setShowFullDescription] = useState(false)
   const [showAllLines, setShowAllLines] = useState(false)
-  const isDownloadable = origin === 'https://soujpa.in'
+  const isDownloadable = images?.[0]?.original?.url?.includes('soujpa.in')
   const shouldTruncateDescription = description && description.length > MAX_MANGA_DESCRIPTION_LENGTH
   const hasMoreLines = lines && lines.length > MANGA_INITIAL_LINES
   const displayLines = showAllLines ? lines : lines?.slice(0, MANGA_INITIAL_LINES)

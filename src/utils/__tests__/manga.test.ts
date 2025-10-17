@@ -1,17 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 
-import { getImageSource, getViewerLink } from '../manga'
-
-describe('getImageSource', () => {
-  test('CDN 별로 이미지 소스를 반환한다', () => {
-    expect(getImageSource({ origin: 'https://thumb.k-hentai', imageURL: '/thumbnail.jpg' })).toBe(
-      'https://thumb.k-hentai/thumbnail.jpg',
-    )
-    expect(getImageSource({ origin: undefined, imageURL: 'https://example.com/image.jpg' })).toBe(
-      'https://example.com/image.jpg',
-    )
-  })
-})
+import { getViewerLink } from '../manga'
 
 describe('getViewerLink', () => {
   test('소스 별로 뷰어 링크를 생성한다', () => {

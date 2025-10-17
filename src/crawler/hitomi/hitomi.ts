@@ -85,6 +85,7 @@ class HitomiClient {
     const groupValues = gallery.groups?.map(({ group }) => group)
     const seriesValues = gallery.parodys?.map(({ parody }) => parody)
     const languageValues = gallery.languages?.map(({ name }) => name) ?? [gallery.language]
+    const imageURLs = await Promise.all(gallery.files.map((file) => this.getImageURL(gallery.id, file)))
 
     return {
       id: Number(gallery.id),
@@ -100,7 +101,7 @@ class HitomiClient {
       }),
       type: translateType(gallery.type, locale),
       languages: translateLanguageList(languageValues, locale),
-      images: await Promise.all(gallery.files.map((file) => this.getImageURL(gallery.id, file))),
+      images: imageURLs.map((url) => ({ original: { url } })),
       related: gallery.related,
       count: gallery.files.length,
       source: MangaSource.HITOMI,

@@ -23,7 +23,7 @@ const ALLOWED_ORIGINS = [
   'https://litomi.netlify.app',
   'https://litomi.sherpa.software',
   'https://litomi.fly.dev',
-  'https://litomi-git-stage-team2837.vercel.app',
+  'https://litomi-git-stage-litomi.vercel.app',
   'http://localhost:3000',
 ] as const
 

@@ -2,18 +2,7 @@ import type { LabeledValue, Manga, MangaTag } from '@/types/manga'
 
 import { tagCategoryNameToInt } from '@/database/enum'
 
-type Params = {
-  origin?: string
-  imageURL: string
-}
-
-export function getImageSource({ imageURL, origin }: Params) {
-  if (origin) {
-    return `${origin}${imageURL}`
-  }
-
-  return imageURL
-}
+import { checkDefined } from './type'
 
 export function getViewerLink(id: number) {
   return `/manga/${id}`
@@ -49,6 +38,7 @@ export function mergeMangas(mangas: Manga[]): Manga {
     series: getNonEmptyArray(mergedData.series),
     tags: sortLabeledValues(getNonEmptyArray(mergedData.tags)),
     related: getNonEmptyArray(mergedData.related),
+    sources: mangas.map((manga) => manga.source).filter(checkDefined),
   })
 }
 

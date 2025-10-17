@@ -7,7 +7,6 @@ import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { db } from '@/database/supabase/drizzle'
 import { userRatingTable } from '@/database/supabase/schema'
 import { validateUserIdFromCookie } from '@/utils/cookie'
-import { sec } from '@/utils/date'
 
 const searchParamsSchema = z.object({
   cursor: z.string().optional(),

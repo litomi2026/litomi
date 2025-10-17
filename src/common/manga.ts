@@ -5,7 +5,6 @@ import { hitomiClient } from '@/crawler/hitomi/hitomi'
 import { hiyobiClient } from '@/crawler/hiyobi'
 import { kHentaiClient } from '@/crawler/k-hentai'
 import { komiClient } from '@/crawler/komi/komi'
-import { getOriginFromImageURLs } from '@/crawler/utils'
 import { MangaSource } from '@/database/enum'
 import { Manga, MangaError } from '@/types/manga'
 import { sec } from '@/utils/date'
@@ -31,8 +30,8 @@ export async function fetchMangaFromMultiSources(id: number): Promise<Manga | Ma
   const sources: MangaResult[] = [
     harpiManga,
     komiManga,
-    hiyobiManga,
     kHentaiManga,
+    hiyobiManga,
     createHentaiPawManga(id, hentaiPawImages),
     hitomiManga,
   ].filter(checkDefined)
@@ -51,14 +50,10 @@ export async function fetchMangaFromMultiSources(id: number): Promise<Manga | Ma
   const validHiyobiManga = validMangas.find((manga) => manga.source === MangaSource.HIYOBI)
 
   if (validHiyobiManga && hiyobiImages) {
-    validHiyobiManga.images = hiyobiImages
+    validHiyobiManga.images = hiyobiImages.map((image) => ({ original: { url: image } }))
   }
 
-  return {
-    ...mergeMangas(validMangas),
-    ...getOriginFromImageURLs(validMangas[0].images),
-    sources: validMangas.map((manga) => manga.source).filter(checkDefined),
-  }
+  return mergeMangas(validMangas)
 }
 
 /**
@@ -131,29 +126,24 @@ export async function fetchMangasFromMultiSources(ids: number[]): Promise<Record
     const validHentaiPawImages = hentaiPawImages[i]
 
     if (validHiyobiManga && validHiyobiImages) {
-      validHiyobiManga.images = validHiyobiImages
+      validHiyobiManga.images = validHiyobiImages.map((image) => ({ original: { url: image } }))
     }
 
     if (validHentaiPawManga && validHentaiPawImages) {
-      validHentaiPawManga.images = validHentaiPawImages
+      validHentaiPawManga.images = validHentaiPawImages.map((image) => ({ original: { url: image } }))
     }
 
-    mangaMap[id] = {
-      ...mergeMangas(validMangas),
-      ...getOriginFromImageURLs(validMangas[0].images),
-      sources: validMangas.map((manga) => manga.source).filter(checkDefined),
-    }
+    mangaMap[id] = mergeMangas(validMangas)
   }
 
   return mangaMap
 }
 
 function createErrorManga(id: number, error: Error): MangaError {
-  const images = hentKorClient.fetchMangaImages(id, 100)
   return {
     id,
     title: `${error.message}\n${error.cause ?? ''}`,
-    ...getOriginFromImageURLs(images),
+    images: hentKorClient.fetchMangaImages(id, 100).map((image) => ({ original: { url: image } })),
     isError: true,
   }
 }
@@ -166,7 +156,7 @@ function createHentaiPawManga(id: number, images?: string[] | null): Manga | nul
   return {
     id,
     title: id.toString(),
-    images,
+    images: images.map((image) => ({ original: { url: image } })),
     source: MangaSource.HENTAIPAW,
     count: images.length,
   }

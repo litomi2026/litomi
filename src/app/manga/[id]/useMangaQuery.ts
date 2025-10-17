@@ -24,6 +24,7 @@ export function useMangaQuery(id: number, initialManga?: Manga | null) {
       const response = await fetch(url)
       return handleResponseError<Manga>(response)
     },
-    placeholderData: initialManga ?? { id, title: '불러오는 중', images: [] },
+    placeholderData: initialManga ?? { id, title: '불러오는 중' },
+    enabled: !(initialManga?.images?.length ?? 0 > 0), // TODO: 모든 작품 이미지를 R2 저장소로 자동 관리할 떄 지우기
   })
 }

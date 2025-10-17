@@ -9,7 +9,7 @@ import { db } from '../../../src/database/supabase/drizzle'
 import { mangaSeenTable } from '../../../src/database/supabase/notification-schema'
 import { notificationTable } from '../../../src/database/supabase/schema'
 import { WebPushPayload, WebPushService } from '../../../src/lib/notification/WebPushService'
-import { getImageSource, getViewerLink } from '../../../src/utils/manga'
+import { getViewerLink } from '../../../src/utils/manga'
 import { OptimizedNotificationMatcher } from './OptimizedNotificationMatcher'
 
 interface NewMangaNotification {
@@ -125,7 +125,8 @@ export class MangaNotificationProcessor {
             const manga = mangaDataMap.get(mangaId)!
 
             for (const [userId, criteriaMatches] of userMatches) {
-              const previewImageURL = getImageSource({ imageURL: manga.images[0], origin: manga.origin })
+              const image = manga.images?.[0]
+              const previewImageURL = image?.original?.url ?? image?.thumbnail?.url ?? ''
               const criteriaNames = criteriaMatches.map((c) => c.criteriaName).join(', ')
               const totalCount = criteriaMatches.length
               const userNotifications = userNotificationsMap.get(userId)

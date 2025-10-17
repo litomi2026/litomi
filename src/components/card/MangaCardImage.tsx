@@ -15,7 +15,7 @@ type Props = {
 }
 
 export default function MangaCardImage({ manga, mangaIndex, className = '' }: Readonly<Props>) {
-  const { count, images } = manga
+  const { count, images = [] } = manga
   const href = getViewerLink(manga.id)
 
   return (
@@ -38,7 +38,10 @@ export default function MangaCardImage({ manga, mangaIndex, className = '' }: Re
             className="size-6"
             wrapperClassName="flex items-center justify-center absolute inset-0 bg-background/80 animate-fade-in-fast"
           />
-          <MangaImage fetchPriority={mangaIndex < 4 ? 'high' : undefined} manga={manga} />
+          <MangaImage
+            fetchPriority={mangaIndex < 4 ? 'high' : undefined}
+            src={images[0]?.thumbnail?.url ?? images[0]?.original?.url}
+          />
         </Link>
       )}
       <MangaCardCensorship manga={manga} />

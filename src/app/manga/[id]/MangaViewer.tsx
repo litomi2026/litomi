@@ -5,7 +5,6 @@ import dynamic from 'next/dynamic'
 import { useMangaQuery } from '@/app/manga/[id]/useMangaQuery'
 import ImageViewer from '@/components/ImageViewer/ImageViewer'
 import { Manga, MangaError } from '@/types/manga'
-import { getImageSource } from '@/utils/manga'
 
 import usePageMetadata from './usePageMetadata'
 
@@ -39,7 +38,12 @@ function prepareManga(
     return null
   }
 
-  if (data?.images.length === 0) {
+  // TODO: 모든 작품 이미지를 R2 저장소로 자동 관리할 떄 지우기
+  if (initialManga?.images?.length) {
+    return initialManga
+  }
+
+  if (!data?.images || data?.images.length === 0) {
     return initialManga ?? data
   }
 
@@ -51,7 +55,6 @@ function prepareManga(
       id: data.id,
       title: initialManga?.title || data.title,
       images: data.images,
-      origin: data.origin,
     }
   }
 
@@ -59,7 +62,7 @@ function prepareManga(
 }
 
 function prepareMetadata(manga: Manga | null | undefined) {
-  if (!manga || manga.images.length === 0) {
+  if (!manga || !manga.images || manga.images.length === 0) {
     return {}
   }
 
@@ -111,13 +114,11 @@ function prepareMetadata(manga: Manga | null | undefined) {
   }
 
   const description = manga.description || parts.join(' • ')
+  const firstImage = manga.images[0]
 
   return {
     title: manga.title,
     description,
-    image: getImageSource({
-      imageURL: manga.images[0],
-      origin: manga.origin,
-    }),
+    image: firstImage.original?.url ?? firstImage.thumbnail?.url ?? '',
   }
 }

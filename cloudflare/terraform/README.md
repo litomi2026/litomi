@@ -1,6 +1,6 @@
 # Cloudflare Terraform
 
-This directory contains Terraform configuration for managing Cloudflare cache rules and rate limiting for the Litomi application.
+This directory contains Terraform configuration for managing Cloudflare settings for the Litomi application.
 
 ## 🚀 Quick Start
 
@@ -9,54 +9,47 @@ This directory contains Terraform configuration for managing Cloudflare cache ru
 - [Terraform](https://www.terraform.io/downloads) >= 1.0
 - Cloudflare account with API access
 - Cloudflare API token with appropriate permissions
+- `jq` for JSON parsing (installed automatically if missing)
 
-### Setup
+### Initial Setup
 
 1. **Install Terraform** (if not already installed):
 
-   ```bash
-   brew install terraform
-   ```
+```bash
+brew install terraform
+```
 
-2. **Run the setup script**:
+2. **Configure your environment**:
 
-   ```bash
-   ./setup.sh
-   ```
+   Edit `.env` file with your Cloudflare API token:
 
-   The script will:
+```bash
+CLOUDFLARE_API_TOKEN="your-api-token-here"
+```
 
-   - Check for Terraform installation
-   - Create configuration files from templates
-   - Initialize Terraform
-   - Format and validate the configuration
+3. **Configure Terraform variables**:
 
-3. **Configure your environment**:
+Edit `terraform.tfvars` with your Cloudflare details:
 
-   Create `.env` file with your Cloudflare API token:
+- `zone_id`: Your Cloudflare Zone ID
+- `account_id`: Your Cloudflare Account ID
+- `domain`: Your domain name
 
-   ```bash
-   CLOUDFLARE_API_TOKEN="your-api-token-here"
-   ```
+4. **Run the setup script**:
 
-4. **Configure Terraform variables**:
-
-   Copy the template and create your local configuration:
-
-   ```bash
-   cp terraform.tfvars.template terraform.tfvars
-   ```
-
-   Edit `terraform.tfvars` with your Cloudflare details:
+```bash
+./setup.sh
+./auto-import.sh
+```
 
 5. **Review and apply changes**:
 
-   ```bash
-   cd cloudflare/terraform
-   export $(grep -v '^#' .env | xargs)
-   # terraform plan
-   terraform apply
-   ```
+```bash
+cd cloudflare/terraform
+export $(grep -v '^#' .env | xargs)
+# terraform plan
+terraform apply
+```
 
 ## 🔑 Authentication
 
@@ -69,6 +62,7 @@ This directory contains Terraform configuration for managing Cloudflare cache ru
    - Zone → Cache Purge → Edit
    - Zone → Page Rules → Edit
    - Zone → Zone Settings → Edit
+   - Zone → DNS → Edit
 5. Add zone resources:
    - Include → Specific zone → Your domain
 

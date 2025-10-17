@@ -46,7 +46,7 @@ export default async function Page({ params }: PageProps<'/manga/[id]/detail'>) 
       </div>
       <RelatedMangaSection mangaId={id} />
       <div className="border-b-2">
-        <RatingInput mangaId={id} />
+        <RatingInput className="p-4" mangaId={id} />
       </div>
       <PostCreationForm
         buttonText="게시하기"

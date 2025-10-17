@@ -258,11 +258,12 @@ class HarpiClient {
       languages: translateLanguageList(['korean'], locale),
       date: new Date(harpiManga.date).toISOString(),
       images: harpiManga.imageUrl
-        ? this.sortImageURLs(harpiManga.imageUrl).map((url) => `/start/${url}`)
+        ? this.sortImageURLs(harpiManga.imageUrl).map((pathname) => ({
+            original: { url: `https://soujpa.in/start/${pathname}` },
+          }))
         : Array(harpiManga.imageCount)
             .fill('')
-            .map((_, index) => `/start/${mangaId}/${mangaId}_${index}.avif`),
-      origin: 'https://soujpa.in',
+            .map((_, index) => ({ original: { url: `https://soujpa.in/start/${mangaId}/${mangaId}_${index}.avif` } })),
       viewCount: harpiManga.views,
       count: harpiManga.imageCount,
       rating: harpiManga.meanRating,

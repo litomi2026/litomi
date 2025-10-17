@@ -3,7 +3,9 @@ import { toast } from 'sonner'
 
 import { Manga } from '@/types/manga'
 import { downloadImage, downloadMultipleImages } from '@/utils/download'
-import { getImageSource } from '@/utils/manga'
+
+// Supported image extensions
+const VALID_IMAGE_EXTENSIONS = new Set(['avif', 'bmp', 'gif', 'jpeg', 'jpg', 'png', 'svg', 'webp'])
 
 export function useDownload(manga: Manga) {
   const [isDownloading, setIsDownloading] = useState(false)
@@ -18,9 +20,11 @@ export function useDownload(manga: Manga) {
       setIsDownloading(true)
 
       try {
-        const { title, images, origin } = manga
-        const imageURL = getImageSource({ imageURL: images[imageIndex], origin })
-        const filename = `${title} ${imageIndex + 1}.jpg`
+        const { title, images = [] } = manga
+        const image = images[imageIndex]
+        const imageURL = image?.original?.url ?? image?.thumbnail?.url ?? ''
+        const extension = getImageExtension(imageURL)
+        const filename = `${title} ${imageIndex + 1}${extension}`
 
         await downloadImage(imageURL, filename)
         toast.success('다운로드가 완료됐어요')
@@ -42,12 +46,16 @@ export function useDownload(manga: Manga) {
     setDownloadedCount(0)
 
     try {
-      const { title, images, origin } = manga
+      const { title, images = [] } = manga
 
-      const imageList = images.map((image, index) => ({
-        url: getImageSource({ imageURL: image, origin }),
-        filename: `${String(index + 1).padStart(Math.log10(images.length) + 1, '0')}.jpg`,
-      }))
+      const imageList = images.map(({ original, thumbnail }, index) => {
+        const url = original?.url ?? thumbnail?.url ?? ''
+        const extension = getImageExtension(url)
+        return {
+          url,
+          filename: `${String(index + 1).padStart(Math.log10(images.length) + 1, '0')}${extension}`,
+        }
+      })
 
       await downloadMultipleImages({
         filename: title,
@@ -69,5 +77,40 @@ export function useDownload(manga: Manga) {
     downloadedCount,
     downloadSingleImage,
     downloadAllImages,
+  }
+}
+
+/**
+ * Extracts image extension from a URL, handling query parameters and fragments
+ * @param imageURL - The image URL to parse
+ * @returns A valid image extension or 'jpg' as fallback
+ */
+function getImageExtension(imageURL: string): string {
+  try {
+    // Parse URL to get pathname without query params or fragments
+    const url = new URL(imageURL, 'https://example.com')
+    const pathname = url.pathname
+
+    // Extract filename from pathname
+    const filename = pathname.split('/').pop() || ''
+
+    // Get extension from filename (after last dot)
+    const lastDotIndex = filename.lastIndexOf('.')
+    if (lastDotIndex === -1 || lastDotIndex === filename.length - 1) {
+      return ''
+    }
+
+    const extension = filename.slice(lastDotIndex + 1).toLowerCase()
+
+    // Validate extension against known image formats
+    if (VALID_IMAGE_EXTENSIONS.has(extension)) {
+      return `.${extension}`
+    }
+
+    // Default to jpg for unrecognized extensions
+    return '.jpg'
+  } catch {
+    // Fallback for invalid URLs or other errors
+    return ''
   }
 }

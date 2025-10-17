@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: PageProps<'/manga/[id]'>): Pr
     ...generateOpenGraphMetadata({
       title: `${slicedTitle} - ${SHORT_NAME}`,
       description: slicedDescription,
-      images: `https://soujpa.in/start/${id}/${id}_0.avif`,
+      images: manga?.images?.[0]?.original?.url ?? `https://soujpa.in/start/${id}/${id}_0.avif`,
       url: `/manga/${id}`,
     }),
     alternates: {

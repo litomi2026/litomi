@@ -32,6 +32,11 @@ import { translateType } from '@/translation/type'
 
 import { CircuitBreaker, CircuitBreakerConfig } from './CircuitBreaker'
 
+const R2_ORIGIN_URL = 'https://r2.litomi.in'
+
+// TODO: 작품 id 동적으로 관리하기
+const R2_MANGA_IDS = [3540978, 3542485]
+
 const typeMap: Record<number, string> = {
   1: 'doujinshi',
   2: 'manga',
@@ -95,11 +100,16 @@ class LitomiClient {
     uploaders: string[]
   }): Manga {
     const locale = 'ko' // TODO: Get from user preferences or context
+    const isR2Manga = R2_MANGA_IDS.includes(result.id)
 
     return {
       id: result.id,
       title: result.title,
-      images: [],
+      images: isR2Manga
+        ? Array.from({ length: result.count ?? 0 }, (_, i) => ({
+            original: { url: `${R2_ORIGIN_URL}/${result.id}/${i}.avif` },
+          }))
+        : [],
       description: result.description ?? undefined,
       lines: result.lines ?? undefined,
       count: result.count ?? undefined,
