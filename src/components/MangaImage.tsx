@@ -9,14 +9,17 @@ type Props = ImgHTMLAttributes<HTMLImageElement> & {
 
 export default memo(MangaImage)
 
-function MangaImage({ imageIndex = 0, imageRef, ...props }: Readonly<Props>) {
+function MangaImage({ imageIndex = 0, imageRef, src, ...props }: Readonly<Props>) {
   return (
-    <img
-      alt={`manga-image-${imageIndex + 1}`}
-      draggable={false}
-      fetchPriority={imageIndex < INITIAL_DISPLAYED_IMAGE ? 'high' : undefined}
-      ref={imageRef}
-      {...props}
-    />
+    src && (
+      <img
+        alt={`manga-image-${imageIndex + 1}`}
+        draggable={false}
+        fetchPriority={imageIndex < INITIAL_DISPLAYED_IMAGE ? 'high' : undefined}
+        ref={imageRef}
+        src={src}
+        {...props}
+      />
+    )
   )
 }

@@ -67,6 +67,7 @@ const nextConfig: NextConfig = {
   ],
   poweredByHeader: false,
   ...(process.env.BUILD_OUTPUT === 'standalone' && { output: 'standalone' }),
+  ...(process.env.NODE_ENV === 'production' && { compiler: { removeConsole: { exclude: ['error', 'warn'] } } }),
 }
 
 const withAnalyzer = withBundleAnalyzer({
