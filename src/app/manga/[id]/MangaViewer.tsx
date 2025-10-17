@@ -38,6 +38,7 @@ function prepareManga(
     return null
   }
 
+  // TODO: 모든 작품 이미지를 R2 저장소로 자동 관리할 떄 지우기
   if (initialManga?.images?.length) {
     return initialManga
   }
