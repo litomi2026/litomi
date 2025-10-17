@@ -38,7 +38,7 @@ resource "cloudflare_ruleset" "cache_rules" {
     {
       ref         = "respect_origin_cache_control"
       enabled     = true
-      description = "Respect origin cache-control header (json only)"
+      description = "Respect origin cache-control (json, webmanifest, api)"
       expression  = "(http.request.uri.path.extension in {\"json\" \"webmanifest\"}) or (starts_with(http.request.uri.path, \"/api\"))"
       action      = "set_cache_settings"
 
@@ -55,7 +55,7 @@ resource "cloudflare_ruleset" "cache_rules" {
     {
       ref         = "manga_pages_html"
       enabled     = true
-      description = "Cache static HTML pages"
+      description = "Override cache for static pages"
       expression  = local.static_pages_expression
       action      = "set_cache_settings"
 
@@ -67,6 +67,25 @@ resource "cloudflare_ruleset" "cache_rules" {
         }
         browser_ttl = {
           mode = "respect_origin"
+        }
+      }
+    },
+    {
+      ref         = "r2_storage"
+      enabled     = true
+      description = "Override cache for R2 storage"
+      expression  = "(http.host eq \"r2.litomi.in\")"
+      action      = "set_cache_settings"
+
+      action_parameters = {
+        cache = true
+        edge_ttl = {
+          mode    = "override_origin"
+          default = 31536000
+        }
+        browser_ttl = {
+          mode    = "override_origin"
+          default = 43200
         }
       }
     }

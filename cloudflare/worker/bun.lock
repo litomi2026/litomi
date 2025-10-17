@@ -4,9 +4,9 @@
     "": {
       "name": "image-cors-proxy",
       "devDependencies": {
-        "@cloudflare/workers-types": "latest",
-        "typescript": "latest",
-        "wrangler": "latest",
+        "@cloudflare/workers-types": "^4.20250715.0",
+        "typescript": "^5.8.3",
+        "wrangler": "^4.24.3",
       },
     },
   },
