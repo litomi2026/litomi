@@ -1,9 +1,9 @@
-import { and, count, desc, gte, isNotNull, sql } from 'drizzle-orm'
+import { avg, count, desc, gt, gte } from 'drizzle-orm'
 import ms from 'ms'
 
 import { MANGA_TOP_PER_PAGE } from '@/constants/policy'
 import { db } from '@/database/supabase/drizzle'
-import { bookmarkTable, libraryItemTable, postTable, readingHistoryTable } from '@/database/supabase/schema'
+import { bookmarkTable, libraryItemTable, readingHistoryTable, userRatingTable } from '@/database/supabase/schema'
 
 import { MetricParam, PeriodParam } from '../../../common'
 
@@ -48,21 +48,43 @@ export async function getRankingData(metric: MetricParam, period: PeriodParam) {
       break
     }
 
-    case MetricParam.POST: {
+    // TODO: 지금은 데이터가 부족해서 추후 추가하기
+    // case MetricParam.POST: {
+    //   query = db
+    //     .select({
+    //       mangaId: sql<number>`${postTable.mangaId}`,
+    //       score: count(postTable.userId),
+    //     })
+    //     .from(postTable)
+    //     .where(isNotNull(postTable.mangaId))
+    //     .groupBy(postTable.mangaId)
+    //     .orderBy(({ score }) => desc(score))
+    //     .limit(MANGA_TOP_PER_PAGE)
+    //     .$dynamic()
+
+    //   if (periodStart) {
+    //     query = query.where(and(isNotNull(postTable.mangaId), gte(postTable.createdAt, periodStart)))
+    //   }
+    //   break
+    // }
+
+    case MetricParam.RATING: {
       query = db
         .select({
-          mangaId: sql<number>`${postTable.mangaId}`,
-          score: count(postTable.userId),
+          mangaId: userRatingTable.mangaId,
+          averageRating: avg(userRatingTable.rating),
+          ratingCount: count(userRatingTable.userId),
         })
-        .from(postTable)
-        .where(isNotNull(postTable.mangaId))
-        .groupBy(postTable.mangaId)
-        .orderBy(({ score }) => desc(score))
+        .from(userRatingTable)
+        .where(gt(userRatingTable.rating, 1))
+        .groupBy(userRatingTable.mangaId)
+        // .having(({ ratingCount }) => gt(ratingCount, 1)) // TODO: 지금은 데이터가 부족해서 추후 추가하기
+        .orderBy(({ averageRating, ratingCount }) => [desc(averageRating), desc(ratingCount)])
         .limit(MANGA_TOP_PER_PAGE)
         .$dynamic()
 
       if (periodStart) {
-        query = query.where(and(isNotNull(postTable.mangaId), gte(postTable.createdAt, periodStart)))
+        query = query.where(gte(userRatingTable.createdAt, periodStart))
       }
       break
     }
@@ -103,16 +125,17 @@ function getPeriodStart(period: PeriodParam): Date | null {
   switch (period) {
     case PeriodParam.DAY:
       return new Date(now.getTime() - ms('1 day'))
-    case PeriodParam.HALF:
-      return new Date(now.getTime() - ms('0.5 year'))
     case PeriodParam.MONTH:
       return new Date(now.getTime() - ms('30 days'))
     case PeriodParam.QUARTER:
       return new Date(now.getTime() - ms('0.25 year'))
     case PeriodParam.WEEK:
       return new Date(now.getTime() - ms('1 week'))
-    case PeriodParam.YEAR:
-      return new Date(now.getTime() - ms('1 year'))
+    // TODO: 지금은 데이터가 부족해서 추후 추가하기
+    // case PeriodParam.HALF:
+    //   return new Date(now.getTime() - ms('0.5 year'))
+    // case PeriodParam.YEAR:
+    //   return new Date(now.getTime() - ms('1 year'))
     default:
       return null
   }
