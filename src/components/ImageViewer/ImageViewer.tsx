@@ -5,7 +5,7 @@ import ms from 'ms'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { useImageWidthStore } from '@/components/ImageViewer/store/imageWidth'
 import { useNavigationModeStore } from '@/components/ImageViewer/store/navigationMode'
@@ -36,6 +36,7 @@ type Props = {
 export default function ImageViewer({ manga }: Readonly<Props>) {
   const [showController, setShowController] = useState(false)
   const [showThumbnails, setShowThumbnails] = useState(false)
+  const isHoveringControllerRef = useRef(false)
   const { navMode, setNavMode } = useNavigationModeStore()
   const { screenFit, setScreenFit } = useScreenFitStore()
   const { touchOrientation, setTouchOrientation } = useTouchOrientationStore()
@@ -44,7 +45,6 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
   const { readingDirection, toggleReadingDirection } = useReadingDirectionStore()
   const correctImageIndex = useImageIndexStore((state) => state.correctImageIndex)
   const setImageIndex = useImageIndexStore((state) => state.setImageIndex)
-  const toggleController = useCallback(() => setShowController((prev) => !prev), [])
   const router = useRouter()
   const { images = [] } = manga
   const imageCount = images.length
@@ -52,6 +52,28 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
   const isDoublePage = pageView === 'double'
   const isTouchMode = navMode === 'touch'
   const isWidthFit = screenFit === 'width'
+
+  function setAutoHideControllerTimeout() {
+    setTimeout(() => {
+      if (!isHoveringControllerRef.current) {
+        setShowController(false)
+      }
+    }, ms('5 seconds'))
+  }
+
+  const toggleController = useCallback(() => {
+    setShowController((prev) => !prev)
+    setAutoHideControllerTimeout()
+  }, [])
+
+  function handlePointerEnter() {
+    isHoveringControllerRef.current = true
+  }
+
+  function handlePointerLeave() {
+    isHoveringControllerRef.current = false
+    setAutoHideControllerTimeout()
+  }
 
   // NOTE: 스크롤 방지
   useEffect(() => {
@@ -70,17 +92,6 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
     }
   }, [setImageIndex])
 
-  // NOTE: 컨트롤러 자동 숨김
-  useEffect(() => {
-    if (showController) {
-      const timer = setTimeout(() => {
-        setShowController(false)
-      }, ms('10 seconds'))
-
-      return () => clearTimeout(timer)
-    }
-  }, [showController])
-
   return (
     <div className="relative">
       <ResumeReadingToast manga={manga} />
@@ -89,6 +100,8 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
         aria-current={showController}
         className="fixed top-0 left-0 right-0 z-20 bg-background/80 backdrop-blur border-b border-zinc-500 px-safe transition opacity-0 pointer-events-none
         aria-current:opacity-100 aria-current:pointer-events-auto"
+        onPointerEnter={handlePointerEnter}
+        onPointerLeave={handlePointerLeave}
       >
         <div
           className="flex gap-2 items-center justify-between p-3 select-none
@@ -132,6 +145,8 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
         aria-current={showController}
         className="fixed bottom-0 left-0 right-0 z-20 bg-background/80 backdrop-blur border-t border-zinc-500 px-safe pb-safe transition opacity-0 pointer-events-none
         aria-current:opacity-100 aria-current:pointer-events-auto"
+        onPointerEnter={handlePointerEnter}
+        onPointerLeave={handlePointerLeave}
       >
         <div className="p-3 grid gap-1.5 select-none">
           <ImageSlider maxImageIndex={imageCount} />
