@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 import IconSpinner from '@/components/icons/IconSpinner'
 import IconX from '@/components/icons/IconX'
 import Modal from '@/components/ui/Modal'
+import Toggle from '@/components/ui/Toggle'
 import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/constants/policy'
 import useActionResponse, { getFieldError, getFormField } from '@/hook/useActionResponse'
 
@@ -20,6 +21,7 @@ type Library = {
   description: string | null
   color: string | null
   icon: string | null
+  isPublic: boolean
 }
 
 type Props = {
@@ -50,6 +52,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
   const descriptionValue = getFormField(response, 'description') || library.description || ''
   const colorValue = getFormField(response, 'color') || library.color || '#6366f1'
   const iconValue = getFormField(response, 'icon') || library.icon || '📚'
+  const isPublic = getFormField(response, 'is-public') === 'on' || library.isPublic
 
   function handleIconClick(emoji: string) {
     if (!formRef.current) {
@@ -178,6 +181,21 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
                   </button>
                 ))}
               </div>
+            </div>
+
+            {/* Visibility Toggle */}
+            <div className="flex items-center justify-between mt-2">
+              <div>
+                <div className="text-sm text-zinc-100">공개 설정</div>
+                <div className="text-xs text-zinc-500 mt-0.5">다른 사용자가 이 서재를 볼 수 있어요</div>
+              </div>
+              <Toggle
+                aria-label="서재 공개 설정"
+                className="w-12 peer-checked:bg-brand-end/80"
+                defaultChecked={isPublic}
+                disabled={isPending}
+                name="is-public"
+              />
             </div>
           </div>
         </div>

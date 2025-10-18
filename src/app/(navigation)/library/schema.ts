@@ -76,4 +76,5 @@ export const updateLibrarySchema = z.object({
     .regex(/^#[0-9A-F]{6}$/i, '올바른 색상 코드를 입력해주세요')
     .nullable(),
   icon: z.string().max(4, '이모지는 하나만 입력할 수 있어요').nullable(),
+  isPublic: z.boolean().optional().default(false),
 })

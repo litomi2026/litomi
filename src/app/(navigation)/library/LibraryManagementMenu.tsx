@@ -16,6 +16,7 @@ type Library = {
   color: string | null
   icon: string | null
   itemCount: number
+  isPublic: boolean
 }
 
 type Props = {
