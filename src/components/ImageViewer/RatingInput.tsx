@@ -96,6 +96,7 @@ export default function RatingInput({ mangaId, className = '', onClick }: Props)
   }
 
   function handlePointerDown(e: React.PointerEvent) {
+    e.stopPropagation()
     initialPointerPos.current = { x: e.clientX, y: e.clientY }
     gestureDirection.current = null
   }
@@ -145,6 +146,8 @@ export default function RatingInput({ mangaId, className = '', onClick }: Props)
 
   const handlePointerUp = useCallback(
     (e: PointerEvent | React.PointerEvent) => {
+      e.stopPropagation()
+
       if (!initialPointerPos.current) {
         return
       }
