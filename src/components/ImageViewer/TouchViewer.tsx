@@ -20,7 +20,7 @@ import { useImageIndexStore } from './store/imageIndex'
 const HORIZONTAL_SWIPE_THRESHOLD = 50 // 가로 스와이프 임계값 (px)
 const VERTICAL_SWIPE_THRESHOLD = 10 // 세로 스와이프 임계값 (px)
 const EDGE_CLICK_THRESHOLD = 1 / 3 // 화면 3등분 시의 경계값
-const IMAGE_FETCH_PRIORITY_THRESHOLD = 3
+const IMAGE_FETCH_PRIORITY_THRESHOLD = 2
 const SCROLL_THRESHOLD = 1
 const SCROLL_THROTTLE = 500
 const SCREEN_EDGE_THRESHOLD = 40 // 브라우저 제스처 감지를 위한 화면 가장자리 임계값 (px)
@@ -69,13 +69,13 @@ function TouchAreaOverlay({ showController }: TouchAreaOverlayProps) {
       aria-orientation={isHorizontal ? 'horizontal' : 'vertical'}
       className="absolute inset-0 z-10 pointer-events-none flex transition text-background text-xs font-bold aria-hidden:opacity-0 aria-[orientation=vertical]:flex-col"
     >
-      <div className="flex-1 bg-brand-end/20 border-2 border-brand-end flex items-center justify-center aria-[orientation=horizontal]:max-w-1/3 aria-[orientation=vertical]:h-1/3">
+      <div className="flex-1 bg-brand-end/20 border border-background flex items-center justify-center aria-[orientation=horizontal]:max-w-1/3 aria-[orientation=vertical]:h-1/3">
         <span className="p-3 py-1.5 rounded-lg border border-brand-end bg-brand-end">
           {isReversed ? '다음' : '이전'}
         </span>
       </div>
       <div className="flex-1 aria-[orientation=vertical]:hidden" />
-      <div className="flex-1 bg-brand-end/20 border-2 border-brand-end flex items-center justify-center aria-[orientation=horizontal]:max-w-1/3 aria-[orientation=vertical]:h-1/3">
+      <div className="flex-1 bg-brand-end/20 border border-background flex items-center justify-center aria-[orientation=horizontal]:max-w-1/3 aria-[orientation=vertical]:h-1/3">
         <span className="p-3 py-1.5 rounded-lg border border-brand-end bg-brand-end">
           {isReversed ? '이전' : '다음'}
         </span>
