@@ -383,7 +383,7 @@ function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection }: 
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
 
-  // NOTE: page 파라미터가 있으면 초기 페이지를 변경함. (1번만 실행됨)
+  // NOTE: page 파라미터가 있으면 초기 페이지를 변경함
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const pageStr = params.get(MangaIdSearchParam.PAGE) ?? ''
