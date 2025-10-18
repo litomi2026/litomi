@@ -179,9 +179,9 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
               aria-disabled={!hasThumbnails}
               className="flex items-center justify-center gap-1 aria-disabled:opacity-50 aria-disabled:cursor-not-allowed"
               onClick={() => hasThumbnails && setShowThumbnails((prev) => !prev)}
-              title={hasThumbnails ? '썸네일 보기' : '썸네일이 없어요'}
+              title={hasThumbnails ? '미리보기' : '썸네일이 없어요'}
             >
-              썸네일 보기
+              미리보기
             </button>
           </div>
         </div>
