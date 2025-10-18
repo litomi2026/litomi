@@ -28,7 +28,7 @@ export default function MangaCardImage({ manga, mangaIndex, className = '' }: Re
           manga={manga}
           mangaIndex={mangaIndex}
         />
-      ) : (
+      ) : images.length > 0 ? (
         <Link
           className="flex overflow-x-auto h-fit snap-x snap-mandatory select-none scrollbar-hidden relative"
           href={href}
@@ -43,7 +43,7 @@ export default function MangaCardImage({ manga, mangaIndex, className = '' }: Re
             src={images[0]?.thumbnail?.url ?? images[0]?.original?.url}
           />
         </Link>
-      )}
+      ) : null}
       <MangaCardCensorship manga={manga} />
       <div className="absolute bottom-1 right-1 px-1 font-medium text-sm bg-background rounded">
         {count ?? images.length}p
