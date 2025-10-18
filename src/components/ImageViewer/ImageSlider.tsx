@@ -15,7 +15,7 @@ export default memo(ImageSlider)
 function ImageSlider({ maxImageIndex }: Readonly<Props>) {
   const { imageIndex, navigateToImageIndex } = useImageIndexStore()
   const pageView = usePageViewStore((state) => state.pageView)
-  const getListRef = useVirtualScrollStore((state) => state.getListRef)
+  const scrollToRow = useVirtualScrollStore((state) => state.scrollToRow)
   const isDoublePage = pageView === 'double'
   const currentPage = imageIndex + 1
   const maxPage = maxImageIndex + 1
@@ -25,9 +25,9 @@ function ImageSlider({ maxImageIndex }: Readonly<Props>) {
   const handleValueCommit = useCallback(
     (value: number) => {
       navigateToImageIndex(value)
-      getListRef()?.current?.scrollToRow({ index: isDoublePage ? Math.floor(value / 2) : value, align: 'start' })
+      scrollToRow(isDoublePage ? Math.floor(value / 2) : value)
     },
-    [getListRef, isDoublePage, navigateToImageIndex],
+    [isDoublePage, navigateToImageIndex, scrollToRow],
   )
 
   return (

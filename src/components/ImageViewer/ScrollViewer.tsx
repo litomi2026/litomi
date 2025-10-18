@@ -46,6 +46,7 @@ function ScrollViewer({ manga, onClick, pageView, readingDirection, screenFit }:
   const listRef = useListRef(null)
   const imageWidth = useImageWidthStore((state) => state.imageWidth)
   const setListRef = useVirtualScrollStore((state) => state.setListRef)
+  const scrollToRow = useVirtualScrollStore((state) => state.scrollToRow)
   const isDoublePage = pageView === 'double'
   const imagePageCount = isDoublePage ? Math.ceil(images.length / 2) : images.length
   const totalItemCount = imagePageCount + 1 // +1 for rating page
@@ -62,14 +63,8 @@ function ScrollViewer({ manga, onClick, pageView, readingDirection, screenFit }:
       return
     }
 
-    requestAnimationFrame(() => {
-      listRef.current?.scrollToRow({
-        index: isDoublePage ? Math.floor((parsedPage - 1) / 2) : parsedPage - 1,
-        align: 'center',
-        behavior: 'instant',
-      })
-    })
-  }, [images.length, isDoublePage, listRef])
+    scrollToRow(isDoublePage ? Math.floor((parsedPage - 1) / 2) : parsedPage - 1)
+  }, [images.length, isDoublePage, scrollToRow])
 
   // NOTE: virtualizer 초기화 및 정리
   useEffect(() => {

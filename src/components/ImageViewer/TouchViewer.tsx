@@ -42,6 +42,11 @@ type Props = {
   pageView: PageView
   screenFit: ScreenFit
   readingDirection: ReadingDirection
+  showController: boolean
+}
+
+type TouchAreaOverlayProps = {
+  showController: boolean
 }
 
 type TouchViewerItemProps = {
@@ -53,7 +58,33 @@ type TouchViewerItemProps = {
 
 export default memo(TouchViewer)
 
-function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection }: Readonly<Props>) {
+function TouchAreaOverlay({ showController }: TouchAreaOverlayProps) {
+  const touchOrientation = useTouchOrientationStore((state) => state.touchOrientation)
+  const isHorizontal = touchOrientation === 'horizontal' || touchOrientation === 'horizontal-reverse'
+  const isReversed = touchOrientation === 'horizontal-reverse' || touchOrientation === 'vertical-reverse'
+
+  return (
+    <div
+      aria-hidden={!showController}
+      aria-orientation={isHorizontal ? 'horizontal' : 'vertical'}
+      className="absolute inset-0 z-10 pointer-events-none flex transition text-background text-xs font-bold aria-hidden:opacity-0 aria-[orientation=vertical]:flex-col"
+    >
+      <div className="flex-1 bg-brand-end/20 border-2 border-brand-end flex items-center justify-center aria-[orientation=horizontal]:max-w-1/3 aria-[orientation=vertical]:h-1/3">
+        <span className="p-3 py-1.5 rounded-lg border border-brand-end bg-brand-end">
+          {isReversed ? '다음' : '이전'}
+        </span>
+      </div>
+      <div className="flex-1 aria-[orientation=vertical]:hidden" />
+      <div className="flex-1 bg-brand-end/20 border-2 border-brand-end flex items-center justify-center aria-[orientation=horizontal]:max-w-1/3 aria-[orientation=vertical]:h-1/3">
+        <span className="p-3 py-1.5 rounded-lg border border-brand-end bg-brand-end">
+          {isReversed ? '이전' : '다음'}
+        </span>
+      </div>
+    </div>
+  )
+}
+
+function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection, showController }: Readonly<Props>) {
   const { images = [] } = manga
   const getTouchOrientation = useTouchOrientationStore((state) => state.getTouchOrientation)
   const getBrightness = useBrightnessStore((state) => state.getBrightness)
@@ -397,35 +428,38 @@ function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection }: 
   }, [images.length, setImageIndex])
 
   return (
-    <ul
-      className={`h-dvh touch-pinch-zoom select-none overscroll-none transition duration-100 ease-out [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:pb-safe [&_img]:border [&_img]:border-background ${screenFitStyle[screenFit]}`}
-      onClick={handleClick}
-      onPointerCancel={handlePointerCancel}
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
-      ref={ulRef}
-      style={{
-        transform: `scale(${zoomLevel.toFixed(2)})`,
-        transformOrigin: `${zoomOrigin.x} ${zoomOrigin.y}`,
-      }}
-    >
-      {images.length === 0 ? (
-        <li className="flex items-center justify-center h-full animate-fade-in">
-          <IconSpinner className="size-8" />
-        </li>
-      ) : (
-        Array.from({ length: TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT }).map((_, offset) => (
-          <TouchViewerItem
-            key={offset}
-            manga={manga}
-            offset={offset - 1}
-            pageView={pageView}
-            readingDirection={readingDirection}
-          />
-        ))
-      )}
-    </ul>
+    <>
+      {<TouchAreaOverlay showController={showController} />}
+      <ul
+        className={`h-dvh touch-pinch-zoom select-none overscroll-none transition duration-100 ease-out [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:pb-safe [&_img]:border [&_img]:border-background ${screenFitStyle[screenFit]}`}
+        onClick={handleClick}
+        onPointerCancel={handlePointerCancel}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        ref={ulRef}
+        style={{
+          transform: `scale(${zoomLevel.toFixed(2)})`,
+          transformOrigin: `${zoomOrigin.x} ${zoomOrigin.y}`,
+        }}
+      >
+        {images.length === 0 ? (
+          <li className="flex items-center justify-center h-full animate-fade-in">
+            <IconSpinner className="size-8" />
+          </li>
+        ) : (
+          Array.from({ length: TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT }).map((_, offset) => (
+            <TouchViewerItem
+              key={offset}
+              manga={manga}
+              offset={offset - 1}
+              pageView={pageView}
+              readingDirection={readingDirection}
+            />
+          ))
+        )}
+      </ul>
+    </>
   )
 }
 
