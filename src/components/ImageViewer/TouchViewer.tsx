@@ -425,7 +425,7 @@ function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection, sh
 
   return (
     <>
-      {<TouchAreaOverlay showController={showController} />}
+      <TouchAreaOverlay showController={showController} />
       <ul
         className={`h-dvh touch-pinch-zoom select-none overscroll-none transition duration-100 ease-out [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:pb-safe [&_img]:border [&_img]:border-background ${screenFitStyle[screenFit]}`}
         onClick={handleClick}
