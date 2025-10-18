@@ -12,7 +12,6 @@ import { useReadingDirectionStore } from '@/components/ImageViewer/store/reading
 import { useScreenFitStore } from '@/components/ImageViewer/store/screenFit'
 import { orientations, useTouchOrientationStore } from '@/components/ImageViewer/store/touchOrientation'
 import { type Manga } from '@/types/manga'
-import { checkDefined } from '@/utils/type'
 
 import IconChat from '../icons/IconChat'
 import { IconChevronLeft } from '../icons/IconImageViewer'
@@ -25,6 +24,7 @@ import ShareButton from './ShareButton'
 import SlideshowButton from './SlideshowButton'
 import { useImageIndexStore } from './store/imageIndex'
 import { usePageViewStore } from './store/pageView'
+import ThumbnailStrip from './ThumbnailStrip'
 import TouchViewer from './TouchViewer'
 
 const ScrollViewer = dynamic(() => import('./ScrollViewer'))
@@ -46,7 +46,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
   const setImageIndex = useImageIndexStore((state) => state.setImageIndex)
   const router = useRouter()
   const { images = [] } = manga
-  const thumbnailImages = images.map((image) => image.thumbnail).filter(checkDefined)
+  const thumbnailImages = images.map((image) => image.thumbnail)
   const hasThumbnails = thumbnailImages.length > 0
   const imageCount = images.length
   const maxImageIndex = imageCount - 1
@@ -126,6 +126,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
         aria-current:opacity-100 aria-current:pointer-events-auto"
       >
         <div className="p-3 grid gap-1.5 select-none">
+          {showThumbnails && hasThumbnails && <ThumbnailStrip images={thumbnailImages} />}
           <ImageSlider maxImageIndex={imageCount} />
           <div
             className="font-semibold whitespace-nowrap flex-wrap justify-center text-sm flex gap-2 text-background 
