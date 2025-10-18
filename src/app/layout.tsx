@@ -19,7 +19,7 @@ import {
   SHORT_NAME,
   THEME_COLOR,
 } from '@/constants'
-import { AMPLITUDE_API_KEY, GA_ID, GOOGLE_ADSENSE_ACCOUNT } from '@/constants/env'
+import { AMPLITUDE_API_KEY, GOOGLE_ADSENSE_ACCOUNT, NEXT_PUBLIC_GA_ID } from '@/constants/env'
 
 import QueryProvider from '../components/QueryProvider'
 
@@ -105,7 +105,7 @@ export default function RootLayout({ children }: Readonly<Props>) {
         <HiyobiPing />
         <Toaster duration={3000} position="top-center" richColors theme="dark" />
         {AMPLITUDE_API_KEY && <Amplitude apiKey={AMPLITUDE_API_KEY} />}
-        {GA_ID && <GoogleAnalytics gaId={GA_ID} />}
+        {NEXT_PUBLIC_GA_ID && <GoogleAnalytics gaId={NEXT_PUBLIC_GA_ID} />}
       </body>
     </html>
   )
