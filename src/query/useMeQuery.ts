@@ -4,7 +4,7 @@ import ms from 'ms'
 import { useEffect } from 'react'
 
 import { GETMeResponse } from '@/app/api/me/route'
-import { GA_ID } from '@/constants/env'
+import { NEXT_PUBLIC_GA_ID } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
 import amplitude from '@/lib/amplitude/lazy'
 import { handleResponseError, ResponseError } from '@/utils/react-query-error'
@@ -37,7 +37,7 @@ export default function useMeQuery() {
   useEffect(() => {
     if (userId) {
       amplitude.setUserId(userId)
-      sendGAEvent('config', GA_ID, { user_id: userId })
+      sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: userId })
     }
   }, [userId])
 

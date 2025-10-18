@@ -14,7 +14,7 @@ import IconX from '@/components/icons/IconX'
 import PasskeyLoginButton from '@/components/PasskeyLoginButton'
 import { clearMigratedHistory, getLocalReadingHistory } from '@/components/ReadingHistoryMigrator'
 import TurnstileWidget from '@/components/TurnstileWidget'
-import { GA_ID } from '@/constants/env'
+import { NEXT_PUBLIC_GA_ID } from '@/constants/env'
 import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
@@ -74,7 +74,7 @@ export default function LoginForm() {
     if (id) {
       amplitude.setUserId(id)
       amplitude.track('login', { loginId, lastLoginAt, lastLogoutAt })
-      sendGAEvent('config', GA_ID, { user_id: id })
+      sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: id })
       sendGAEvent('event', 'login', { loginId, lastLoginAt, lastLogoutAt })
     }
 
