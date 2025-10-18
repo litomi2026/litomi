@@ -261,7 +261,7 @@ export default function RatingInput({ mangaId, className = '', onClick }: Props)
         ))}
       </div>
       <div className="text-center">
-        <div className="grid gap-1 animate-fade-in min-h-[4rem]">
+        <div className="grid gap-1 min-h-[4rem]">
           <div
             aria-current={displayRating > 0}
             className="text-2xl sm:text-3xl font-bold text-zinc-500 aria-current:text-brand-end transition"
@@ -274,7 +274,7 @@ export default function RatingInput({ mangaId, className = '', onClick }: Props)
       </div>
       <div
         aria-hidden={rating === 0}
-        className="flex gap-4 transition aria-hidden:opacity-0 aria-hidden:pointer-events-none aria-hidden:scale-95"
+        className="flex gap-4 transition aria-hidden:opacity-0 aria-hidden:pointer-events-none"
       >
         <button
           className="flex items-center gap-2 text-zinc-500 hover:text-red-400 text-sm transition px-3 py-1 rounded hover:bg-red-400/10"

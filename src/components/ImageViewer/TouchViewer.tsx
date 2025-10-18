@@ -389,11 +389,11 @@ function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection }: 
     const pageStr = params.get(MangaIdSearchParam.PAGE) ?? ''
     const parsedPage = parseInt(pageStr, 10)
 
-    if (isNaN(parsedPage) || parsedPage < 1 || parsedPage > images.length) {
+    if (isNaN(parsedPage)) {
       return
     }
 
-    setImageIndex(parsedPage - 1)
+    setImageIndex(Math.max(0, Math.min(parsedPage - 1, images.length)))
   }, [images.length, setImageIndex])
 
   return (
