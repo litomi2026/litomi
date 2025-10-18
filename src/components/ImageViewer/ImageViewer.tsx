@@ -1,11 +1,10 @@
 'use client'
 
 import { ArrowLeft, ArrowRight } from 'lucide-react'
-import ms from 'ms'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { useImageWidthStore } from '@/components/ImageViewer/store/imageWidth'
 import { useNavigationModeStore } from '@/components/ImageViewer/store/navigationMode'
@@ -13,6 +12,7 @@ import { useReadingDirectionStore } from '@/components/ImageViewer/store/reading
 import { useScreenFitStore } from '@/components/ImageViewer/store/screenFit'
 import { orientations, useTouchOrientationStore } from '@/components/ImageViewer/store/touchOrientation'
 import { type Manga } from '@/types/manga'
+import { checkDefined } from '@/utils/type'
 
 import IconChat from '../icons/IconChat'
 import { IconChevronLeft } from '../icons/IconImageViewer'
@@ -36,7 +36,6 @@ type Props = {
 export default function ImageViewer({ manga }: Readonly<Props>) {
   const [showController, setShowController] = useState(false)
   const [showThumbnails, setShowThumbnails] = useState(false)
-  const isHoveringControllerRef = useRef(false)
   const { navMode, setNavMode } = useNavigationModeStore()
   const { screenFit, setScreenFit } = useScreenFitStore()
   const { touchOrientation, setTouchOrientation } = useTouchOrientationStore()
@@ -47,33 +46,15 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
   const setImageIndex = useImageIndexStore((state) => state.setImageIndex)
   const router = useRouter()
   const { images = [] } = manga
+  const thumbnailImages = images.map((image) => image.thumbnail).filter(checkDefined)
+  const hasThumbnails = thumbnailImages.length > 0
   const imageCount = images.length
   const maxImageIndex = imageCount - 1
   const isDoublePage = pageView === 'double'
   const isTouchMode = navMode === 'touch'
   const isWidthFit = screenFit === 'width'
 
-  function setAutoHideControllerTimeout() {
-    setTimeout(() => {
-      if (!isHoveringControllerRef.current) {
-        setShowController(false)
-      }
-    }, ms('5 seconds'))
-  }
-
-  const toggleController = useCallback(() => {
-    setShowController((prev) => !prev)
-    setAutoHideControllerTimeout()
-  }, [])
-
-  function handlePointerEnter() {
-    isHoveringControllerRef.current = true
-  }
-
-  function handlePointerLeave() {
-    isHoveringControllerRef.current = false
-    setAutoHideControllerTimeout()
-  }
+  const toggleController = useCallback(() => setShowController((prev) => !prev), [])
 
   // NOTE: 스크롤 방지
   useEffect(() => {
@@ -100,8 +81,6 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
         aria-current={showController}
         className="fixed top-0 left-0 right-0 z-20 bg-background/80 backdrop-blur border-b border-zinc-500 px-safe transition opacity-0 pointer-events-none
         aria-current:opacity-100 aria-current:pointer-events-auto"
-        onPointerEnter={handlePointerEnter}
-        onPointerLeave={handlePointerLeave}
       >
         <div
           className="flex gap-2 items-center justify-between p-3 select-none
@@ -145,8 +124,6 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
         aria-current={showController}
         className="fixed bottom-0 left-0 right-0 z-20 bg-background/80 backdrop-blur border-t border-zinc-500 px-safe pb-safe transition opacity-0 pointer-events-none
         aria-current:opacity-100 aria-current:pointer-events-auto"
-        onPointerEnter={handlePointerEnter}
-        onPointerLeave={handlePointerLeave}
       >
         <div className="p-3 grid gap-1.5 select-none">
           <ImageSlider maxImageIndex={imageCount} />
@@ -199,9 +176,10 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
               <button onClick={cycleImageWidth}>너비 {imageWidth}%</button>
             )}
             <button
-              aria-disabled={images.length === 0}
+              aria-disabled={hasThumbnails}
               className="flex items-center justify-center gap-1 aria-disabled:opacity-50 aria-disabled:pointer-events-none"
-              onClick={() => setShowThumbnails((prev) => !prev)}
+              onClick={() => hasThumbnails && setShowThumbnails((prev) => !prev)}
+              title={hasThumbnails ? '썸네일 보기' : '썸네일이 없어요'}
             >
               썸네일 보기
             </button>

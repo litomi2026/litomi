@@ -30,9 +30,9 @@ const DEFAULT_ZOOM = 1
 
 const screenFitStyle = {
   width:
-    'touch-pan-y overflow-y-auto [&_li]:mx-auto [&_li]:w-fit [&_li]:max-w-full [&_li]:first:h-full [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:h-auto',
+    'flex justify-center items-center touch-pan-y overflow-y-auto [&_li]:w-fit [&_li]:max-w-full [&_li]:h-full [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:h-auto',
   height:
-    'touch-pan-x overflow-x-auto [&_li]:items-center [&_li]:mx-auto [&_li]:w-fit [&_li]:first:h-full [&_img]:max-w-fit [&_img]:h-auto [&_img]:max-h-dvh',
+    'touch-pan-x overflow-x-auto [&_li]:items-center [&_li]:mx-auto [&_li]:w-fit [&_li]:h-full [&_img]:max-w-fit [&_img]:h-auto [&_img]:max-h-dvh',
   all: '[&_li]:items-center [&_li]:mx-auto [&_img]:min-w-0 [&_li]:w-fit [&_li]:h-full [&_img]:max-h-dvh',
 }
 
