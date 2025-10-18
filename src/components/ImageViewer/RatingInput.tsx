@@ -12,6 +12,8 @@ import useActionResponse from '@/hook/useActionResponse'
 import useMeQuery from '@/query/useMeQuery'
 import { useUserRatingQuery } from '@/query/useUserRatingQuery'
 
+import LoginPageLink from '../LoginPageLink'
+
 type Props = {
   mangaId: number
   className?: string
@@ -61,7 +63,12 @@ export default function RatingInput({ mangaId, className = '', onClick }: Props)
   const handleRating = useCallback(
     (value: number, force = false) => {
       if (!me) {
-        toast.warning('로그인이 필요해요')
+        toast.warning(
+          <div className="flex gap-2 items-center">
+            <div>로그인이 필요해요</div>
+            <LoginPageLink>로그인하기</LoginPageLink>
+          </div>,
+        )
         return
       }
 

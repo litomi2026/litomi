@@ -13,7 +13,7 @@ import useActionResponse, { getFormField } from '@/hook/useActionResponse'
 import useMeQuery from '@/query/useMeQuery'
 
 import IconSpinner from '../icons/IconSpinner'
-import LoginLink from '../LoginLink'
+import LoginPageLink from '../LoginPageLink'
 import Squircle from '../ui/Squircle'
 import PostGeolocationButton from './button/PostGeolocationButton'
 
@@ -64,8 +64,8 @@ export default function PostCreationForm({
       e.preventDefault()
       toast.warning(
         <div className="flex gap-2 items-center">
-          <div>로그인이 필요해요.</div>
-          <LoginLink>로그인하기</LoginLink>
+          <div>로그인이 필요해요</div>
+          <LoginPageLink>로그인하기</LoginPageLink>
         </div>,
       )
       return
@@ -88,8 +88,8 @@ export default function PostCreationForm({
     if (!me) {
       toast.warning(
         <div className="flex gap-2 items-center">
-          <div>로그인이 필요해요.</div>
-          <LoginLink>로그인하기</LoginLink>
+          <div>로그인이 필요해요</div>
+          <LoginPageLink>로그인하기</LoginPageLink>
         </div>,
       )
       return
