@@ -2,6 +2,7 @@
 
 import FingerprintJS from '@fingerprintjs/fingerprintjs'
 import { TurnstileInstance } from '@marsidev/react-turnstile'
+import { sendGAEvent } from '@next/third-parties/google'
 import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
@@ -13,6 +14,7 @@ import IconX from '@/components/icons/IconX'
 import PasskeyLoginButton from '@/components/PasskeyLoginButton'
 import { clearMigratedHistory, getLocalReadingHistory } from '@/components/ReadingHistoryMigrator'
 import TurnstileWidget from '@/components/TurnstileWidget'
+import { GA_ID } from '@/constants/env'
 import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
@@ -72,6 +74,8 @@ export default function LoginForm() {
     if (id) {
       amplitude.setUserId(id)
       amplitude.track('login', { loginId, lastLoginAt, lastLogoutAt })
+      sendGAEvent('config', GA_ID, { user_id: id })
+      sendGAEvent('event', 'login', { loginId, lastLoginAt, lastLogoutAt })
     }
 
     const localHistory = getLocalReadingHistory()

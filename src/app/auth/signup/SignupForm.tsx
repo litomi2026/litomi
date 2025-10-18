@@ -1,6 +1,7 @@
 'use client'
 
 import { TurnstileInstance } from '@marsidev/react-turnstile'
+import { sendGAEvent } from '@next/third-parties/google'
 import { useQueryClient } from '@tanstack/react-query'
 import { Info } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -9,6 +10,7 @@ import { toast } from 'sonner'
 
 import IconSpinner from '@/components/icons/IconSpinner'
 import TurnstileWidget from '@/components/TurnstileWidget'
+import { GA_ID } from '@/constants/env'
 import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
@@ -38,6 +40,8 @@ export default function SignupForm() {
       if (userId) {
         amplitude.setUserId(userId)
         amplitude.track('signup', { loginId, nickname })
+        sendGAEvent('config', GA_ID, { user_id: userId })
+        sendGAEvent('event', 'signup', { loginId, nickname })
       }
 
       await queryClient.invalidateQueries({ queryKey: QueryKeys.me, type: 'all' })

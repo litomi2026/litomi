@@ -1,11 +1,12 @@
-import { Bookmark, Eye, Library, MessageCircle } from 'lucide-react'
+import { Bookmark, Eye, Library, Star } from 'lucide-react'
 import { ElementType } from 'react'
 
 export enum MetricParam {
   VIEW = 'view',
   LIBRARY = 'library',
   BOOKMARK = 'bookmark',
-  POST = 'post',
+  RATING = 'rating',
+  // POST = 'post',
 }
 
 export enum PeriodParam {
@@ -13,9 +14,9 @@ export enum PeriodParam {
   WEEK = 'week',
   MONTH = 'month',
   QUARTER = 'quarter',
-  HALF = 'half',
-  YEAR = 'year',
-  ALL = 'all',
+  // HALF = 'half',
+  // YEAR = 'year',
+  // ALL = 'all',
 }
 
 export type Params = {
@@ -30,7 +31,8 @@ export const metricInfo: Record<string, { label: string; icon: ElementType }> = 
   [MetricParam.VIEW]: { label: '조회수', icon: Eye },
   [MetricParam.BOOKMARK]: { label: '북마크', icon: Bookmark },
   [MetricParam.LIBRARY]: { label: '서재', icon: Library },
-  [MetricParam.POST]: { label: '댓글', icon: MessageCircle },
+  [MetricParam.RATING]: { label: '별점', icon: Star },
+  // [MetricParam.POST]: { label: '댓글', icon: MessageCircle },
 }
 
 export const periodLabels: Record<string, string> = {
@@ -38,7 +40,7 @@ export const periodLabels: Record<string, string> = {
   [PeriodParam.WEEK]: '주간',
   [PeriodParam.MONTH]: '월간',
   [PeriodParam.QUARTER]: '분기',
-  [PeriodParam.HALF]: '반기',
-  [PeriodParam.YEAR]: '연간',
-  [PeriodParam.ALL]: '전체',
+  // [PeriodParam.HALF]: '반기',
+  // [PeriodParam.YEAR]: '연간',
+  // [PeriodParam.ALL]: '전체',
 }
