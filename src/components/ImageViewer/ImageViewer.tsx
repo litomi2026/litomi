@@ -176,8 +176,8 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
               <button onClick={cycleImageWidth}>너비 {imageWidth}%</button>
             )}
             <button
-              aria-disabled={hasThumbnails}
-              className="flex items-center justify-center gap-1 aria-disabled:opacity-50 aria-disabled:pointer-events-none"
+              aria-disabled={!hasThumbnails}
+              className="flex items-center justify-center gap-1 aria-disabled:opacity-50 aria-disabled:cursor-not-allowed"
               onClick={() => hasThumbnails && setShowThumbnails((prev) => !prev)}
               title={hasThumbnails ? '썸네일 보기' : '썸네일이 없어요'}
             >

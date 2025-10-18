@@ -91,7 +91,6 @@ function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection, sh
   const setBrightness = useBrightnessStore((state) => state.setBrightness)
   const setImageIndex = useImageIndexStore((state) => state.setImageIndex)
   const currentIndex = useImageIndexStore((state) => state.imageIndex)
-  const getImageIndex = useImageIndexStore((state) => state.getImageIndex)
   const [zoomLevel, setZoomLevel] = useState(DEFAULT_ZOOM)
   const [zoomOrigin, setZoomOrigin] = useState({ x: '50%', y: '50%' })
   const pointerStartRef = useRef<{ x: number; y: number } | null>(null)
@@ -115,14 +114,11 @@ function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection, sh
       activePointers.current.add(e.pointerId)
 
       const isEdgeSwipe = e.clientX < SCREEN_EDGE_THRESHOLD || e.clientX > window.innerWidth - SCREEN_EDGE_THRESHOLD
-
-      if (!isEdgeSwipe || getImageIndex() === images.length) {
-        return
-      }
+      if (isEdgeSwipe) return
 
       pointerStartRef.current = { x: e.clientX, y: e.clientY }
     },
-    [getBrightness, getImageIndex, images.length],
+    [getBrightness],
   )
 
   // 포인터 이동 시: 세로 스와이프 감지 시 밝기 업데이트, 핀치 줌(멀티 터치) 중이면 밝기 조절 방지
