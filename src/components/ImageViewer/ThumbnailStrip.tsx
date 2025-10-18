@@ -57,7 +57,7 @@ function ThumbnailStrip({ images }: Props) {
   }
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative overflow-hidden flex justify-center">
       <button
         aria-hidden={isFirstImageInView}
         className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-r-lg bg-background/90 transition hover:bg-background
