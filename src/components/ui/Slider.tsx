@@ -32,7 +32,7 @@ function Slider({
   }, [controlledValue])
 
   // 현재 값의 비율 계산 (0 ~ 1)
-  const ratio = (value - min) / (max - min)
+  const ratio = (value - min) / (max - min || 1)
   const ratioPercentage = Math.max(0, ratio * 100).toFixed(2)
 
   // clientX 좌표를 기반으로 새로운 값을 계산 및 업데이트

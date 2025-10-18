@@ -11,7 +11,7 @@ import IconChat from '../icons/IconChat'
 import IconHeart from '../icons/IconHeart'
 import IconLogout from '../icons/IconLogout'
 import IconRepeat from '../icons/IconRepeat'
-import LoginLink from '../LoginLink'
+import LoginPageLink from '../LoginPageLink'
 
 type Props = {
   postId: number
@@ -37,8 +37,8 @@ export default function PostActionButtons({
     if (!me) {
       toast.warning(
         <div className="flex gap-2 items-center">
-          <div>로그인이 필요해요.</div>
-          <LoginLink>로그인하기</LoginLink>
+          <div>로그인이 필요해요</div>
+          <LoginPageLink>로그인하기</LoginPageLink>
         </div>,
       )
       return

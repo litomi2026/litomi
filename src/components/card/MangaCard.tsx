@@ -74,7 +74,7 @@ export function MangaCardDonation() {
                   target="_blank"
                 >
                   <LogoDiscord className="size-4" />
-                  <span>Discord 채널 부스트</span>
+                  <span>Discord 서버 부스트</span>
                 </a>
               </div>
             </div>

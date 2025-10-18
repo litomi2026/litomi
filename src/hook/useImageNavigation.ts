@@ -13,31 +13,33 @@ export default function useImageNavigation({ maxIndex, offset }: Params) {
 
   const prevPage = useCallback(() => {
     const currentImageIndex = getImageIndex()
+    const prevImageIndex = Math.max(0, currentImageIndex - offset)
 
-    if (currentImageIndex <= 0) {
-      toast.warning('첫번째 이미지에요')
+    if (currentImageIndex === 0 && prevImageIndex === 0) {
+      toast.warning('첫번째 페이지에요')
       return
     }
 
-    navigateToImageIndex(currentImageIndex - offset)
+    navigateToImageIndex(prevImageIndex)
   }, [getImageIndex, offset, navigateToImageIndex])
 
   const nextPage = useCallback(() => {
     const currentImageIndex = getImageIndex()
+    const nextImageIndex = Math.min(currentImageIndex + offset, maxIndex)
 
-    if (currentImageIndex + offset > maxIndex) {
-      toast.warning('마지막 이미지에요')
+    if (currentImageIndex === maxIndex && nextImageIndex === maxIndex) {
+      toast.warning('마지막 페이지에요')
       return
     }
 
-    navigateToImageIndex(currentImageIndex + offset)
+    navigateToImageIndex(nextImageIndex)
   }, [getImageIndex, maxIndex, offset, navigateToImageIndex])
 
   const firstPage = useCallback(() => {
     const currentImageIndex = getImageIndex()
 
     if (currentImageIndex === 0) {
-      toast.warning('첫번째 이미지에요')
+      toast.warning('첫번째 페이지에요')
       return
     }
 
@@ -48,7 +50,7 @@ export default function useImageNavigation({ maxIndex, offset }: Params) {
     const currentImageIndex = getImageIndex()
 
     if (currentImageIndex === maxIndex) {
-      toast.warning('마지막 이미지에요')
+      toast.warning('마지막 페이지에요')
       return
     }
 

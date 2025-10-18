@@ -9,17 +9,18 @@ import { ScreenFit } from '@/components/ImageViewer/store/screenFit'
 import { useTouchOrientationStore } from '@/components/ImageViewer/store/touchOrientation'
 import { TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT } from '@/constants/policy'
 import useImageNavigation from '@/hook/useImageNavigation'
-import { ImageWithVariants, Manga } from '@/types/manga'
+import { Manga } from '@/types/manga'
 
 import IconSpinner from '../icons/IconSpinner'
 import MangaImage from '../MangaImage'
+import RatingInput from './RatingInput'
 import { useBrightnessStore } from './store/brightness'
 import { useImageIndexStore } from './store/imageIndex'
 
 const HORIZONTAL_SWIPE_THRESHOLD = 50 // 가로 스와이프 임계값 (px)
 const VERTICAL_SWIPE_THRESHOLD = 10 // 세로 스와이프 임계값 (px)
 const EDGE_CLICK_THRESHOLD = 1 / 3 // 화면 3등분 시의 경계값
-const IMAGE_FETCH_PRIORITY_THRESHOLD = 3
+const IMAGE_FETCH_PRIORITY_THRESHOLD = 2
 const SCROLL_THRESHOLD = 1
 const SCROLL_THROTTLE = 500
 const SCREEN_EDGE_THRESHOLD = 40 // 브라우저 제스처 감지를 위한 화면 가장자리 임계값 (px)
@@ -29,9 +30,9 @@ const DEFAULT_ZOOM = 1
 
 const screenFitStyle = {
   width:
-    'touch-pan-y overflow-y-auto [&_li]:mx-auto [&_li]:w-fit [&_li]:max-w-full [&_li]:first:h-full [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:h-auto',
+    'flex justify-center items-center touch-pan-y overflow-y-auto [&_li]:w-fit [&_li]:max-w-full [&_li]:h-full [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:h-auto',
   height:
-    'touch-pan-x overflow-x-auto [&_li]:items-center [&_li]:mx-auto [&_li]:w-fit [&_li]:first:h-full [&_img]:max-w-fit [&_img]:h-auto [&_img]:max-h-dvh',
+    'touch-pan-x overflow-x-auto [&_li]:items-center [&_li]:mx-auto [&_li]:w-fit [&_li]:h-full [&_img]:max-w-fit [&_img]:h-auto [&_img]:max-h-dvh',
   all: '[&_li]:items-center [&_li]:mx-auto [&_img]:min-w-0 [&_li]:w-fit [&_li]:h-full [&_img]:max-h-dvh',
 }
 
@@ -41,18 +42,49 @@ type Props = {
   pageView: PageView
   screenFit: ScreenFit
   readingDirection: ReadingDirection
+  showController: boolean
+}
+
+type TouchAreaOverlayProps = {
+  showController: boolean
 }
 
 type TouchViewerItemProps = {
   offset: number
-  images: ImageWithVariants[]
+  manga: Manga
   pageView: PageView
   readingDirection: ReadingDirection
 }
 
 export default memo(TouchViewer)
 
-function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection }: Readonly<Props>) {
+function TouchAreaOverlay({ showController }: TouchAreaOverlayProps) {
+  const touchOrientation = useTouchOrientationStore((state) => state.touchOrientation)
+  const isHorizontal = touchOrientation === 'horizontal' || touchOrientation === 'horizontal-reverse'
+  const isReversed = touchOrientation === 'horizontal-reverse' || touchOrientation === 'vertical-reverse'
+
+  return (
+    <div
+      aria-hidden={!showController}
+      aria-orientation={isHorizontal ? 'horizontal' : 'vertical'}
+      className="absolute inset-0 z-10 pointer-events-none flex transition text-background text-xs font-bold aria-hidden:opacity-0 aria-[orientation=vertical]:flex-col"
+    >
+      <div className="flex-1 bg-brand-end/20 border border-brand-end flex items-center justify-center aria-[orientation=horizontal]:w-1/3 aria-[orientation=vertical]:h-1/3">
+        <span className="p-3 py-1.5 rounded-lg border border-brand-end bg-brand-end">
+          {isReversed ? '다음' : '이전'}
+        </span>
+      </div>
+      <div className="flex-1 aria-[orientation=vertical]:hidden" />
+      <div className="flex-1 bg-brand-end/20 border border-brand-end flex items-center justify-center aria-[orientation=horizontal]:w-1/3 aria-[orientation=vertical]:h-1/3">
+        <span className="p-3 py-1.5 rounded-lg border border-brand-end bg-brand-end">
+          {isReversed ? '이전' : '다음'}
+        </span>
+      </div>
+    </div>
+  )
+}
+
+function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection, showController }: Readonly<Props>) {
   const { images = [] } = manga
   const getTouchOrientation = useTouchOrientationStore((state) => state.getTouchOrientation)
   const getBrightness = useBrightnessStore((state) => state.getBrightness)
@@ -70,7 +102,7 @@ function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection }: 
   const previousIndexRef = useRef(currentIndex)
 
   const { prevPage, nextPage } = useImageNavigation({
-    maxIndex: images.length - 1,
+    maxIndex: images.length,
     offset: pageView === 'double' ? 2 : 1,
   })
 
@@ -82,9 +114,9 @@ function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection }: 
       activePointers.current.add(e.pointerId)
 
       const isEdgeSwipe = e.clientX < SCREEN_EDGE_THRESHOLD || e.clientX > window.innerWidth - SCREEN_EDGE_THRESHOLD
-      if (!isEdgeSwipe) {
-        pointerStartRef.current = { x: e.clientX, y: e.clientY }
-      }
+      if (isEdgeSwipe) return
+
+      pointerStartRef.current = { x: e.clientX, y: e.clientY }
     },
     [getBrightness],
   )
@@ -378,60 +410,78 @@ function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection }: 
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
 
-  // NOTE: page 파라미터가 있으면 초기 페이지를 변경함. (1번만 실행됨)
+  // NOTE: page 파라미터가 있으면 초기 페이지를 변경함
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const pageStr = params.get(MangaIdSearchParam.PAGE) ?? ''
     const parsedPage = parseInt(pageStr, 10)
 
-    if (isNaN(parsedPage) || parsedPage < 1 || parsedPage > images.length) {
+    if (isNaN(parsedPage)) {
       return
     }
 
-    setImageIndex(parsedPage - 1)
+    setImageIndex(Math.max(0, Math.min(parsedPage - 1, images.length)))
   }, [images.length, setImageIndex])
 
   return (
-    <ul
-      className={`h-dvh touch-pinch-zoom select-none overscroll-none transition duration-100 ease-out [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:pb-safe [&_img]:border [&_img]:border-background ${screenFitStyle[screenFit]}`}
-      onClick={handleClick}
-      onPointerCancel={handlePointerCancel}
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
-      ref={ulRef}
-      style={{
-        transform: `scale(${zoomLevel.toFixed(2)})`,
-        transformOrigin: `${zoomOrigin.x} ${zoomOrigin.y}`,
-      }}
-    >
-      {images.length === 0 ? (
-        <li className="flex items-center justify-center h-full animate-fade-in">
-          <IconSpinner className="size-8" />
-        </li>
-      ) : (
-        Array.from({ length: TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT }).map((_, offset) => (
-          <TouchViewerItem
-            images={images}
-            key={offset}
-            offset={offset}
-            pageView={pageView}
-            readingDirection={readingDirection}
-          />
-        ))
-      )}
-    </ul>
+    <>
+      <TouchAreaOverlay showController={showController} />
+      <ul
+        className={`h-dvh touch-pinch-zoom select-none overscroll-none transition duration-100 ease-out [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:pb-safe [&_img]:border [&_img]:border-background ${screenFitStyle[screenFit]}`}
+        onClick={handleClick}
+        onPointerCancel={handlePointerCancel}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        ref={ulRef}
+        style={{
+          transform: `scale(${zoomLevel.toFixed(2)})`,
+          transformOrigin: `${zoomOrigin.x} ${zoomOrigin.y}`,
+        }}
+      >
+        {images.length === 0 ? (
+          <li className="flex items-center justify-center h-full animate-fade-in">
+            <IconSpinner className="size-8" />
+          </li>
+        ) : (
+          Array.from({ length: TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT }).map((_, offset) => (
+            <TouchViewerItem
+              key={offset}
+              manga={manga}
+              offset={offset - 1}
+              pageView={pageView}
+              readingDirection={readingDirection}
+            />
+          ))
+        )}
+      </ul>
+    </>
   )
 }
 
-function TouchViewerItem({ offset, images, pageView, readingDirection }: Readonly<TouchViewerItemProps>) {
+function TouchViewerItem({ offset, manga, pageView, readingDirection }: Readonly<TouchViewerItemProps>) {
+  const { images = [] } = manga
   const currentIndex = useImageIndexStore((state) => state.imageIndex)
   const imageIndex = currentIndex + offset
   const brightness = useBrightnessStore((state) => state.brightness)
+
+  if (imageIndex < 0 || imageIndex >= images.length + 1) {
+    return null
+  }
+
+  if (imageIndex === images.length) {
+    return (
+      <li aria-hidden={offset !== 0}>
+        <RatingInput className="select-text" mangaId={manga.id} />
+      </li>
+    )
+  }
+
   const isRTL = readingDirection === 'rtl'
   const isDoublePage = pageView === 'double' && offset === 0
+  const nextImageIndex = imageIndex + 1
 
-  const firstImage = (
+  const firstImage = imageIndex >= 0 && (
     <MangaImage
       fetchPriority={offset < IMAGE_FETCH_PRIORITY_THRESHOLD ? 'high' : 'low'}
       imageIndex={imageIndex}
@@ -439,11 +489,11 @@ function TouchViewerItem({ offset, images, pageView, readingDirection }: Readonl
     />
   )
 
-  const secondImage = isDoublePage && (
+  const secondImage = isDoublePage && nextImageIndex < images.length && (
     <MangaImage
       fetchPriority={offset < IMAGE_FETCH_PRIORITY_THRESHOLD ? 'high' : 'low'}
-      imageIndex={imageIndex + 1}
-      src={images[imageIndex + 1]?.original?.url}
+      imageIndex={nextImageIndex}
+      src={images[nextImageIndex]?.original?.url}
     />
   )
 

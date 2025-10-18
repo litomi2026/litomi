@@ -1,7 +1,6 @@
 'use client'
 
 import { ArrowLeft, ArrowRight } from 'lucide-react'
-import ms from 'ms'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -25,6 +24,7 @@ import ShareButton from './ShareButton'
 import SlideshowButton from './SlideshowButton'
 import { useImageIndexStore } from './store/imageIndex'
 import { usePageViewStore } from './store/pageView'
+import ThumbnailStrip from './ThumbnailStrip'
 import TouchViewer from './TouchViewer'
 
 const ScrollViewer = dynamic(() => import('./ScrollViewer'))
@@ -35,6 +35,7 @@ type Props = {
 
 export default function ImageViewer({ manga }: Readonly<Props>) {
   const [showController, setShowController] = useState(false)
+  const [showThumbnails, setShowThumbnails] = useState(false)
   const { navMode, setNavMode } = useNavigationModeStore()
   const { screenFit, setScreenFit } = useScreenFitStore()
   const { touchOrientation, setTouchOrientation } = useTouchOrientationStore()
@@ -43,14 +44,17 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
   const { readingDirection, toggleReadingDirection } = useReadingDirectionStore()
   const correctImageIndex = useImageIndexStore((state) => state.correctImageIndex)
   const setImageIndex = useImageIndexStore((state) => state.setImageIndex)
-  const toggleController = useCallback(() => setShowController((prev) => !prev), [])
   const router = useRouter()
   const { images = [] } = manga
+  const thumbnailImages = images.map((image) => image.thumbnail)
+  const hasThumbnails = thumbnailImages.length > 0
   const imageCount = images.length
   const maxImageIndex = imageCount - 1
   const isDoublePage = pageView === 'double'
   const isTouchMode = navMode === 'touch'
   const isWidthFit = screenFit === 'width'
+
+  const toggleController = useCallback(() => setShowController((prev) => !prev), [])
 
   // NOTE: 스크롤 방지
   useEffect(() => {
@@ -69,24 +73,13 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
     }
   }, [setImageIndex])
 
-  // NOTE: 컨트롤러 자동 숨김
-  useEffect(() => {
-    if (showController) {
-      const timer = setTimeout(() => {
-        setShowController(false)
-      }, ms('10 seconds'))
-
-      return () => clearTimeout(timer)
-    }
-  }, [showController])
-
   return (
     <div className="relative">
       <ResumeReadingToast manga={manga} />
       <ReadingProgressSaver mangaId={manga.id} />
       <div
         aria-current={showController}
-        className="fixed top-0 left-0 right-0 z-10 bg-background/80 backdrop-blur border-b border-zinc-500 px-safe transition opacity-0 pointer-events-none
+        className="fixed top-0 left-0 right-0 z-20 bg-background/80 backdrop-blur border-b border-zinc-500 px-safe transition opacity-0 pointer-events-none
         aria-current:opacity-100 aria-current:pointer-events-auto"
       >
         <div
@@ -116,6 +109,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
           pageView={pageView}
           readingDirection={readingDirection}
           screenFit={screenFit}
+          showController={showController}
         />
       ) : (
         <ScrollViewer
@@ -128,11 +122,12 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
       )}
       <div
         aria-current={showController}
-        className="fixed bottom-0 left-0 right-0 z-10 bg-background/80 backdrop-blur border-t border-zinc-500 px-safe pb-safe transition opacity-0 pointer-events-none
+        className="fixed bottom-0 left-0 right-0 z-20 bg-background/80 backdrop-blur border-t border-zinc-500 px-safe pb-safe transition opacity-0 pointer-events-none
         aria-current:opacity-100 aria-current:pointer-events-auto"
       >
         <div className="p-3 grid gap-1.5 select-none">
-          <ImageSlider maxImageIndex={maxImageIndex} />
+          {showThumbnails && hasThumbnails && <ThumbnailStrip images={thumbnailImages} />}
+          <ImageSlider maxImageIndex={imageCount} />
           <div
             className="font-semibold whitespace-nowrap flex-wrap justify-center text-sm flex gap-2 text-background 
             [&_button]:rounded-full [&_button]:bg-zinc-100 [&_button]:px-2 [&_button]:py-1 [&_button]:hover:bg-foreground [&_button]:active:bg-zinc-400 [&_button]:disabled:bg-zinc-400 [&_button]:disabled:text-zinc-500 [&_button]:min-w-20 [&_button]:transition"
@@ -181,6 +176,14 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
             {!isTouchMode && (screenFit === 'width' || screenFit === 'all') && (
               <button onClick={cycleImageWidth}>너비 {imageWidth}%</button>
             )}
+            <button
+              aria-disabled={!hasThumbnails}
+              className="flex items-center justify-center gap-1 aria-disabled:opacity-50 aria-disabled:cursor-not-allowed"
+              onClick={() => hasThumbnails && setShowThumbnails((prev) => !prev)}
+              title={hasThumbnails ? '미리보기' : '썸네일이 없어요'}
+            >
+              미리보기
+            </button>
           </div>
         </div>
       </div>

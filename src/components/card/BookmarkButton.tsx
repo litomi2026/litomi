@@ -15,7 +15,7 @@ import useMeQuery from '@/query/useMeQuery'
 import { Manga } from '@/types/manga'
 
 import IconBookmark from '../icons/IconBookmark'
-import LoginLink from '../LoginLink'
+import LoginPageLink from '../LoginPageLink'
 import { useLibraryModal } from './LibraryModal'
 
 type BookmarkButtonSkeletonProps = {
@@ -94,8 +94,8 @@ export default function BookmarkButton({ manga, className }: Readonly<Props>) {
       event.preventDefault()
       toast.warning(
         <div className="flex gap-2 items-center">
-          <div>로그인 해주세요.</div>
-          <LoginLink>로그인하기</LoginLink>
+          <div>로그인이 필요해요</div>
+          <LoginPageLink>로그인하기</LoginPageLink>
         </div>,
       )
     }

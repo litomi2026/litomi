@@ -92,13 +92,14 @@ export async function updateLibrary(formData: FormData) {
     description: formData.get('description'),
     color: formData.get('color'),
     icon: formData.get('icon'),
+    isPublic: formData.get('is-public') === 'on',
   })
 
   if (!validation.success) {
     return badRequest(flattenZodFieldErrors(validation.error), formData)
   }
 
-  const { libraryId, name, description, color, icon } = validation.data
+  const { libraryId, name, description, color, icon, isPublic } = validation.data
 
   const [updatedLibrary] = await db
     .update(libraryTable)
@@ -107,6 +108,7 @@ export async function updateLibrary(formData: FormData) {
       description: description?.trim() || null,
       color: color ? hexColorToInt(color) : null,
       icon: icon || null,
+      isPublic,
     })
     .where(and(eq(libraryTable.id, libraryId), eq(libraryTable.userId, userId)))
     .returning({ id: libraryTable.id })

@@ -12,9 +12,12 @@ import useActionResponse from '@/hook/useActionResponse'
 import useMeQuery from '@/query/useMeQuery'
 import { useUserRatingQuery } from '@/query/useUserRatingQuery'
 
+import LoginPageLink from '../LoginPageLink'
+
 type Props = {
   mangaId: number
   className?: string
+  onClick?: (e: React.MouseEvent) => void
 }
 
 const MIN_RATING = 1
@@ -23,7 +26,7 @@ const HORIZONTAL_THRESHOLD = 5
 const VERTICAL_THRESHOLD = 10
 const DIRECTION_DETERMINATION_THRESHOLD = 15
 
-export default function RatingInput({ mangaId, className = '' }: Props) {
+export default function RatingInput({ mangaId, className = '', onClick }: Props) {
   const queryClient = useQueryClient()
   const { data: existingRating } = useUserRatingQuery(mangaId)
   const { data: me } = useMeQuery()
@@ -60,7 +63,12 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
   const handleRating = useCallback(
     (value: number, force = false) => {
       if (!me) {
-        toast.warning('로그인이 필요해요')
+        toast.warning(
+          <div className="flex gap-2 items-center">
+            <div>로그인이 필요해요</div>
+            <LoginPageLink>로그인하기</LoginPageLink>
+          </div>,
+        )
         return
       }
 
@@ -95,6 +103,7 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
   }
 
   function handlePointerDown(e: React.PointerEvent) {
+    e.stopPropagation()
     initialPointerPos.current = { x: e.clientX, y: e.clientY }
     gestureDirection.current = null
   }
@@ -144,6 +153,8 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
 
   const handlePointerUp = useCallback(
     (e: PointerEvent | React.PointerEvent) => {
+      e.stopPropagation()
+
       if (!initialPointerPos.current) {
         return
       }
@@ -191,6 +202,11 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
     setTimeout(() => setHoveredRating(0), 500)
   }
 
+  function handleCancelClick(e: React.MouseEvent) {
+    e.stopPropagation()
+    handleRating(0)
+  }
+
   // NOTE: 드래그 중에 컴포넌트 밖에서 포인터가 올라오면 평가를 적용하기 위해
   useEffect(() => {
     if (!initialPointerPos.current) {
@@ -212,7 +228,7 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
   }, [existingRating])
 
   return (
-    <div className={`flex flex-col items-center justify-center gap-4 ${className}`}>
+    <div className={`flex flex-col items-center justify-center gap-4 ${className}`} onClick={onClick}>
       <div className="grid gap-2 text-center">
         <h2 className="text-xl font-semibold text-foreground">작품이 어떠셨나요?</h2>
         <p className="text-zinc-400 text-sm max-w-sm mx-auto">
@@ -226,6 +242,7 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
         aria-valuemin={MIN_RATING}
         aria-valuenow={rating}
         className="flex gap-1 sm:gap-2 select-none cursor-pointer outline-none touch-pan-y aria-current:cursor-grabbing py-2"
+        onClick={(e) => e.stopPropagation()}
         onKeyDown={handleKeyDown}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
@@ -254,7 +271,7 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
         ))}
       </div>
       <div className="text-center">
-        <div className="grid gap-1 animate-fade-in min-h-[4rem]">
+        <div className="grid gap-1 min-h-[4rem]">
           <div
             aria-current={displayRating > 0}
             className="text-2xl sm:text-3xl font-bold text-zinc-500 aria-current:text-brand-end transition"
@@ -267,11 +284,11 @@ export default function RatingInput({ mangaId, className = '' }: Props) {
       </div>
       <div
         aria-hidden={rating === 0}
-        className="flex gap-4 transition aria-hidden:opacity-0 aria-hidden:pointer-events-none aria-hidden:scale-95"
+        className="flex gap-4 transition aria-hidden:opacity-0 aria-hidden:pointer-events-none"
       >
         <button
           className="flex items-center gap-2 text-zinc-500 hover:text-red-400 text-sm transition px-3 py-1 rounded hover:bg-red-400/10"
-          onClick={() => handleRating(0)}
+          onClick={handleCancelClick}
         >
           <X className="size-4" />
           평가 취소

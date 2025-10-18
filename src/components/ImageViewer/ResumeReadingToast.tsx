@@ -23,7 +23,7 @@ export default function ResumeReadingToast({ manga }: Readonly<Props>) {
   const navigateToImageIndex = useImageIndexStore((state) => state.navigateToImageIndex)
   const { lastPage } = useReadingHistory(mangaId)
   const queryClient = useQueryClient()
-  const getListRef = useVirtualScrollStore((state) => state.getListRef)
+  const scrollToRow = useVirtualScrollStore((state) => state.scrollToRow)
 
   // NOTE: 읽은 페이지 토스트 표시
   useEffect(() => {
@@ -36,7 +36,7 @@ export default function ResumeReadingToast({ manga }: Readonly<Props>) {
           label: '이동',
           onClick: () => {
             navigateToImageIndex(lastPage - 1)
-            getListRef()?.current?.scrollToRow({ index: lastPage - 1, align: 'start' })
+            scrollToRow(lastPage - 1)
           },
         },
       })
@@ -45,7 +45,7 @@ export default function ResumeReadingToast({ manga }: Readonly<Props>) {
         toast.dismiss(toastId)
       }
     }
-  }, [lastPage, navigateToImageIndex, getImageIndex, imageCount, getListRef])
+  }, [lastPage, navigateToImageIndex, getImageIndex, imageCount, scrollToRow])
 
   // NOTE: 뷰어 들어오면 최신 감상 기록으로 갱신
   useEffect(() => {

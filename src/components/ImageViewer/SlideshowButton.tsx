@@ -46,7 +46,7 @@ function SlideshowButton({ maxImageIndex, offset, onIntervalChange }: Readonly<P
       } else if (isRepeating) {
         onIntervalChange?.(0)
       } else {
-        toast.info('마지막 이미지입니다.')
+        toast.info('마지막 이미지에요.')
         setSlideshowInterval(0)
         if (intervalIdRef.current) {
           clearInterval(intervalIdRef.current)
