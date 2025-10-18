@@ -13,24 +13,26 @@ export default function useImageNavigation({ maxIndex, offset }: Params) {
 
   const prevPage = useCallback(() => {
     const currentImageIndex = getImageIndex()
+    const prevImageIndex = Math.max(0, currentImageIndex - offset)
 
-    if (currentImageIndex <= 0) {
+    if (currentImageIndex === 0 && prevImageIndex === 0) {
       toast.warning('첫번째 페이지에요')
       return
     }
 
-    navigateToImageIndex(currentImageIndex - offset)
+    navigateToImageIndex(prevImageIndex)
   }, [getImageIndex, offset, navigateToImageIndex])
 
   const nextPage = useCallback(() => {
     const currentImageIndex = getImageIndex()
+    const nextImageIndex = Math.min(currentImageIndex + offset, maxIndex)
 
-    if (currentImageIndex + offset > maxIndex) {
+    if (currentImageIndex === maxIndex && nextImageIndex === maxIndex) {
       toast.warning('마지막 페이지에요')
       return
     }
 
-    navigateToImageIndex(currentImageIndex + offset)
+    navigateToImageIndex(nextImageIndex)
   }, [getImageIndex, maxIndex, offset, navigateToImageIndex])
 
   const firstPage = useCallback(() => {

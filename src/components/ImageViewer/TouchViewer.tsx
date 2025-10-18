@@ -479,8 +479,9 @@ function TouchViewerItem({ offset, manga, pageView, readingDirection }: Readonly
 
   const isRTL = readingDirection === 'rtl'
   const isDoublePage = pageView === 'double' && offset === 0
+  const nextImageIndex = imageIndex + 1
 
-  const firstImage = (
+  const firstImage = imageIndex >= 0 && (
     <MangaImage
       fetchPriority={offset < IMAGE_FETCH_PRIORITY_THRESHOLD ? 'high' : 'low'}
       imageIndex={imageIndex}
@@ -488,11 +489,11 @@ function TouchViewerItem({ offset, manga, pageView, readingDirection }: Readonly
     />
   )
 
-  const secondImage = isDoublePage && (
+  const secondImage = isDoublePage && nextImageIndex < images.length && (
     <MangaImage
       fetchPriority={offset < IMAGE_FETCH_PRIORITY_THRESHOLD ? 'high' : 'low'}
-      imageIndex={imageIndex + 1}
-      src={images[imageIndex + 1]?.original?.url}
+      imageIndex={nextImageIndex}
+      src={images[nextImageIndex]?.original?.url}
     />
   )
 
