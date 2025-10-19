@@ -1,10 +1,10 @@
 'use client'
 
 import { ChartNoAxesColumn } from 'lucide-react'
-import { useTransition } from 'react'
 import { toast } from 'sonner'
 
 import { toggleLikingPost } from '@/app/(navigation)/(right-search)/posts/action'
+import useActionResponse from '@/hook/useActionResponse'
 import useMeQuery from '@/query/useMeQuery'
 
 import IconChat from '../icons/IconChat'
@@ -30,10 +30,20 @@ export default function PostActionButtons({
   viewCount = 0,
   isLiked = false,
 }: Props) {
-  const [isPending, startTransition] = useTransition()
   const { data: me } = useMeQuery()
 
-  const handleLike = () => {
+  const [_, dispatchAction, isPending] = useActionResponse({
+    action: toggleLikingPost,
+    onSuccess: ({ liked }) => {
+      if (liked) {
+        toast.success('좋아요 했어요')
+      } else {
+        toast.info('좋아요 취소했어요')
+      }
+    },
+  })
+
+  function handleLike() {
     if (!me) {
       toast.warning(
         <div className="flex gap-2 items-center">
@@ -44,12 +54,7 @@ export default function PostActionButtons({
       return
     }
 
-    startTransition(async () => {
-      const result = await toggleLikingPost(postId)
-      if ('error' in result) {
-        toast.error(result.error)
-      }
-    })
+    dispatchAction(postId)
   }
 
   return (
