@@ -7,10 +7,10 @@ import { toast } from 'sonner'
 
 import { GETMangaIdRatingResponse } from '@/app/api/manga/[id]/rating/route'
 import { saveRating } from '@/app/manga/[id]/actions'
+import { useUserRatingQuery } from '@/components/ImageViewer/useUserRatingQuery'
 import { QueryKeys } from '@/constants/query'
 import useActionResponse from '@/hook/useActionResponse'
 import useMeQuery from '@/query/useMeQuery'
-import { useUserRatingQuery } from '@/query/useUserRatingQuery'
 
 import LoginPageLink from '../LoginPageLink'
 

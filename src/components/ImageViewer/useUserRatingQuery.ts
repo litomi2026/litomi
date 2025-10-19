@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import { GETMangaIdRatingResponse } from '@/app/api/manga/[id]/rating/route'
 import { QueryKeys } from '@/constants/query'
+import useMeQuery from '@/query/useMeQuery'
 import { handleResponseError } from '@/utils/react-query-error'
 
 export async function fetchUserRating(mangaId: number) {
@@ -12,8 +13,11 @@ export async function fetchUserRating(mangaId: number) {
 }
 
 export function useUserRatingQuery(mangaId: number) {
+  const { data: me } = useMeQuery()
+
   return useQuery({
     queryKey: QueryKeys.userRating(mangaId),
     queryFn: () => fetchUserRating(mangaId),
+    enabled: Boolean(me),
   })
 }
