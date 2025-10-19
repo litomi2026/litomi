@@ -24,6 +24,7 @@ import ShareButton from './ShareButton'
 import SlideshowButton from './SlideshowButton'
 import { useImageIndexStore } from './store/imageIndex'
 import { usePageViewStore } from './store/pageView'
+import { useVirtualScrollStore } from './store/virtualizer'
 import ThumbnailStrip from './ThumbnailStrip'
 import TouchViewer from './TouchViewer'
 
@@ -44,17 +45,25 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
   const { readingDirection, toggleReadingDirection } = useReadingDirectionStore()
   const correctImageIndex = useImageIndexStore((state) => state.correctImageIndex)
   const setImageIndex = useImageIndexStore((state) => state.setImageIndex)
+  const scrollToRow = useVirtualScrollStore((state) => state.scrollToRow)
+  const toggleController = useCallback(() => setShowController((prev) => !prev), [])
   const router = useRouter()
   const { images = [] } = manga
   const thumbnailImages = images.map((image) => image.thumbnail)
-  const hasThumbnails = thumbnailImages.length > 0
+  const hasThumbnails = thumbnailImages.filter(Boolean).length > 0
   const imageCount = images.length
   const maxImageIndex = imageCount - 1
   const isDoublePage = pageView === 'double'
   const isTouchMode = navMode === 'touch'
   const isWidthFit = screenFit === 'width'
 
-  const toggleController = useCallback(() => setShowController((prev) => !prev), [])
+  const handleIntervalChange = useCallback(
+    (index: number) => {
+      setImageIndex(index)
+      scrollToRow(isDoublePage ? Math.floor(index / 2) : index)
+    },
+    [setImageIndex, isDoublePage, scrollToRow],
+  )
 
   // NOTE: 스크롤 방지
   useEffect(() => {
@@ -166,16 +175,16 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
                   {touchOrientation === 'horizontal-reverse' && '우좌 넘기기'}
                   {touchOrientation === 'vertical-reverse' && '하상 넘기기'}
                 </button>
-                <SlideshowButton
-                  maxImageIndex={maxImageIndex}
-                  offset={isDoublePage ? 2 : 1}
-                  onIntervalChange={setImageIndex}
-                />
               </>
             )}
             {!isTouchMode && (screenFit === 'width' || screenFit === 'all') && (
               <button onClick={cycleImageWidth}>너비 {imageWidth}%</button>
             )}
+            <SlideshowButton
+              maxImageIndex={maxImageIndex}
+              offset={isDoublePage ? 2 : 1}
+              onIntervalChange={handleIntervalChange}
+            />
             <button
               aria-disabled={!hasThumbnails}
               className="flex items-center justify-center gap-1 aria-disabled:opacity-50 aria-disabled:cursor-not-allowed"
