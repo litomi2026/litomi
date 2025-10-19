@@ -25,7 +25,9 @@ function SlideshowButton({ maxImageIndex, offset, onIntervalChange }: Readonly<P
   const inputRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
-    if (!inputRef.current) return
+    if (!inputRef.current) {
+      return
+    }
 
     if (isOpened) {
       inputRef.current?.select()
@@ -36,13 +38,16 @@ function SlideshowButton({ maxImageIndex, offset, onIntervalChange }: Readonly<P
   }, [isOpened, isRepeating, slideshowInterval])
 
   useEffect(() => {
-    if (!slideshowInterval) return
+    if (!slideshowInterval) {
+      return
+    }
 
     intervalIdRef.current = window.setInterval(() => {
       const imageIndex = getImageIndex()
+      const nextImageIndex = imageIndex + offset
 
-      if (imageIndex + offset <= maxImageIndex) {
-        onIntervalChange?.(imageIndex + offset)
+      if (nextImageIndex <= maxImageIndex) {
+        onIntervalChange?.(nextImageIndex)
       } else if (isRepeating) {
         onIntervalChange?.(0)
       } else {

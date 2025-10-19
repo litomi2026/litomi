@@ -9,7 +9,15 @@ import { MAX_POST_CONTENT_LENGTH } from '@/constants/policy'
 import { PostType } from '@/database/enum'
 import { db } from '@/database/supabase/drizzle'
 import { postLikeTable, postTable } from '@/database/supabase/schema'
-import { badRequest, created, internalServerError, noContent, notFound, unauthorized } from '@/utils/action-response'
+import {
+  badRequest,
+  created,
+  internalServerError,
+  noContent,
+  notFound,
+  ok,
+  unauthorized,
+} from '@/utils/action-response'
 import { validateUserIdFromCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 
@@ -21,9 +29,9 @@ const createPostSchema = z.object({
 })
 
 enum ToggleLikingPostAction {
-  DELETED = 1,
-  INSERTED = 2,
-  NONE = 0,
+  DELETED = 'deleted',
+  INSERTED = 'inserted',
+  NONE = 'none',
 }
 
 export async function createPost(formData: FormData) {
@@ -129,7 +137,7 @@ export async function toggleLikingPost(postId: number) {
       ) AS action
     `)
 
-    return { liked: action === ToggleLikingPostAction.INSERTED }
+    return ok({ liked: action === ToggleLikingPostAction.INSERTED })
   } catch (error) {
     captureException(error, { extra: { postId } })
     return internalServerError('좋아요를 처리하지 못했어요')
