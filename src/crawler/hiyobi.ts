@@ -59,11 +59,11 @@ const hiyobiTypeNumberToName: Record<number, string> = {
   4: 'game_cg',
   5: 'western',
   6: 'image_set',
-  7: 'non_h',
+  7: 'non-h',
   8: 'cosplay',
-  9: 'asian_porn',
+  9: 'asian',
   10: 'misc',
-  11: 'hidden',
+  11: 'private',
 }
 
 const HIYOBI_CONFIG: ProxyClientConfig = {
