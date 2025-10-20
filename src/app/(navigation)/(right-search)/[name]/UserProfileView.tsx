@@ -34,7 +34,7 @@ export default function UserProfileView({ user }: Readonly<Props>) {
           fill
           priority
           sizes="100vw, (min-width: 1024px) 1024px"
-          src="/og-image.png"
+          src="/og-image.avif"
         />
       </div>
       {/* 프로필 정보 영역 */}

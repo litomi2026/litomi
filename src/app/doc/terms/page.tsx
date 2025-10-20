@@ -50,11 +50,11 @@ export default async function Page() {
           <li>Chrome 109</li>
           <li>Edge 135</li>
           <li>Firefox 137</li>
-          <li>Safari 15</li>
+          <li>Safari 16.1</li>
           <li>Samsung Internet 25</li>
-          <li>iOS Safari 15</li>
+          <li>iOS Safari 16</li>
         </ul>
-        <h3 className="mt-6 text-center">시행일 2025-09-28</h3>
+        <h3 className="mt-6 text-center">시행일 2025-10-20</h3>
       </div>
     </div>
   )

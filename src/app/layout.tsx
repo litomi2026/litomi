@@ -19,7 +19,7 @@ import {
   SHORT_NAME,
   THEME_COLOR,
 } from '@/constants'
-import { AMPLITUDE_API_KEY, GOOGLE_ADSENSE_ACCOUNT, NEXT_PUBLIC_GA_ID } from '@/constants/env'
+import { AMPLITUDE_API_KEY, NEXT_PUBLIC_GA_ID } from '@/constants/env'
 
 import QueryProvider from '../components/QueryProvider'
 
@@ -94,7 +94,6 @@ export default function RootLayout({ children }: Readonly<Props>) {
     <html className="h-full" lang="ko">
       <head>
         <meta content={SHORT_NAME} name="apple-mobile-web-app-title" />
-        {GOOGLE_ADSENSE_ACCOUNT && <meta content={GOOGLE_ADSENSE_ACCOUNT} name="google-adsense-account" />}
       </head>
       <body className={`${PretendardVariable.className} antialiased h-full`}>
         <QueryProvider>

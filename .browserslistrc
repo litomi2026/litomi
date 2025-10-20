@@ -4,10 +4,10 @@ defaults
 Chrome >= 109
 Edge >= 135
 Firefox >= 137
-Safari >= 15
+Safari >= 16.1
 
 # Mobile browsers
 ChromeAndroid >= 131
 FirefoxAndroid >= 138
 Samsung >= 25
-iOS >= 15
+iOS >= 16

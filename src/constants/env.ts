@@ -4,7 +4,6 @@ export const AMPLITUDE_API_KEY = process.env.AMPLITUDE_API_KEY
 export const GA_PROPERTY_ID = process.env.GA_PROPERTY_ID ?? ''
 export const GA_SERVICE_ACCOUNT_EMAIL = process.env.GA_SERVICE_ACCOUNT_EMAIL ?? ''
 export const GA_SERVICE_ACCOUNT_KEY = process.env.GA_SERVICE_ACCOUNT_KEY ?? ''
-export const GOOGLE_ADSENSE_ACCOUNT = process.env.GOOGLE_ADSENSE_ACCOUNT ?? ''
 export const GTM_ID = process.env.GTM_ID
 export const NEON_DATABASE_URL = process.env.NEON_DATABASE_URL ?? ''
 export const NEON_DATABASE_URL_RO = process.env.NEON_DATABASE_URL_RO ?? ''

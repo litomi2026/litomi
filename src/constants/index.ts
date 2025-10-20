@@ -19,7 +19,7 @@ export const defaultOpenGraph: OpenGraph = {
   description: DESCRIPTION,
   url: CANONICAL_URL,
   siteName: SHORT_NAME,
-  images: [{ url: '/og-image.png', alt: SHORT_NAME }],
+  images: [{ url: '/og-image.webp', alt: SHORT_NAME }], // TODO: 나중에 avif 파일로 바꾸기
   type: 'website',
   locale: 'ko_KR',
   alternateLocale: ['en_US', 'ja_JP'],

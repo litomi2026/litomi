@@ -54,6 +54,13 @@ type MangaFetchParams = {
   revalidate?: number
 }
 
+const HARPI_MANGA_TYPE_MAP: Record<string, string> = {
+  동인지: 'doujinshi',
+  만화: 'manga',
+  아티스트CG: 'artist_cg',
+  이미지모음: 'image_set',
+}
+
 const HARPI_CONFIG: ProxyClientConfig = {
   baseURL: 'https://harpi.in',
   circuitBreaker: {
@@ -254,7 +261,7 @@ class HarpiClient {
       series: translateSeriesList(harpiManga.series, locale),
       lines: harpiManga.memorableQuote,
       tags: harpiManga.tagsIds ? this.convertHarpiTagIdsToTags(harpiManga.tagsIds, locale) : [],
-      type: translateType(harpiManga.type, locale),
+      type: translateType(HARPI_MANGA_TYPE_MAP[harpiManga.type] ?? `${harpiManga.type}?`, locale),
       languages: translateLanguageList(['korean'], locale),
       date: new Date(harpiManga.date).toISOString(),
       images: harpiManga.imageUrl
