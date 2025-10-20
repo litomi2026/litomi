@@ -55,13 +55,13 @@ export async function GET(request: Request) {
     }
 
     const cacheControlHeaders = createCacheControlHeaders({
-      browser: {
-        public: true,
-        maxAge: 30,
-      },
       cloudflare: {
         maxAge: 30,
         swr: 30,
+      },
+      browser: {
+        public: true,
+        maxAge: 30,
       },
     })
 

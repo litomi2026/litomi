@@ -24,7 +24,7 @@ export async function GET(request: Request) {
 
     const cacheControlHeader = createCacheControlHeaders({
       vercel: {
-        maxAge: sec('3 days'),
+        maxAge: sec('30 days'),
       },
       cloudflare: {
         maxAge: sec('30 days'),
