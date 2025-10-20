@@ -9,6 +9,8 @@ import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 import RandomMangaLink from '../RandomMangaLink'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: '랜덤',
   alternates: {
