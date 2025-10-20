@@ -23,5 +23,5 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", ".next", "trash", "cloudflare"]
+  "exclude": ["node_modules", ".next", "trash", "cloudflare", "cloud-run"]
 }
