@@ -8,7 +8,7 @@ app.get('/', (c) => {
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
+  ...app,
   port: Number(process.env.PORT ?? 8080),
   hostname: '0.0.0.0',
-  fetch: app.fetch,
 }
