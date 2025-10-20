@@ -17,13 +17,13 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
         data-navigation-header
       >
         <AutoHideNavigation selector="[data-navigation-header]" />
-        <nav className="flex gap-1 overflow-x-auto scrollbar-hidden whitespace-nowrap">
+        <nav className="flex gap-1 overflow-x-auto scrollbar-hidden whitespace-nowrap overscroll-none">
           {Object.keys(metricInfo).map((value) => (
             <MetricLink key={value} value={value as MetricParam} />
           ))}
           <RealtimeLink />
         </nav>
-        <nav className="flex gap-1 overflow-x-auto scrollbar-hidden whitespace-nowrap">
+        <nav className="flex gap-1 overflow-x-auto scrollbar-hidden whitespace-nowrap overscroll-none">
           {Object.keys(periodLabels).map((value) => (
             <PeriodLink key={value} value={value as PeriodParam} />
           ))}
