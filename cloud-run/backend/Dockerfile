@@ -1,5 +1,5 @@
 # Build stage
-FROM oven/bun:1.2 AS builder
+FROM oven/bun:1.3 AS builder
 
 ENV NODE_ENV=production
 WORKDIR /app
@@ -7,14 +7,13 @@ WORKDIR /app
 COPY bun.lock package.json tsconfig.json ./
 RUN bun install --ignore-scripts --production --silent --frozen-lockfile
 
-COPY cloud-run/backend ./cloud-run/backend/
 COPY src/ ./src/
 
 # https://bun.com/docs/bundler/executables#deploying-to-production
 RUN bun build --compile \
   --minify \
   --sourcemap \
-  ./cloud-run/backend/src/index.ts \
+  ./src/index.ts \
   --outfile litomi-backend
 
 # Runtime stage
