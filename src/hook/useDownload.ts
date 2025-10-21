@@ -46,19 +46,19 @@ export function useDownload(manga: Manga) {
     setDownloadedCount(0)
 
     try {
-      const { title, images = [] } = manga
+      const { id, title, images = [] } = manga
 
       const imageList = images.map(({ original, thumbnail }, index) => {
         const url = original?.url ?? thumbnail?.url ?? ''
         const extension = getImageExtension(url)
         return {
           url,
-          filename: `${String(index + 1).padStart(Math.log10(images.length) + 1, '0')}${extension}`,
+          filename: `${index}${extension}`,
         }
       })
 
       await downloadMultipleImages({
-        filename: title,
+        filename: `${id}-${title}`,
         images: imageList,
         onProgress: (completed) => setDownloadedCount(completed),
       })
