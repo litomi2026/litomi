@@ -55,7 +55,8 @@ export default function Post({ post }: Readonly<Props>) {
             {
               Icon: MessageCircle,
               content: post.commentCount ?? 0,
-              iconClassName: 'group-hover:bg-brand-end/50',
+              iconClassName: 'group-hover:bg-brand-end/20',
+              textClassName: 'hover:text-brand-end',
             },
             {
               Icon: Repeat,
@@ -66,13 +67,14 @@ export default function Post({ post }: Readonly<Props>) {
             {
               Icon: Heart,
               content: post.likeCount ?? 0,
-              iconClassName: 'group-hover:bg-red-500/20 group-hover:text-red-500',
-              textClassName: 'hover:text-red-500',
+              iconClassName: 'group-hover:bg-red-600/20 group-hover:text-red-600',
+              textClassName: 'hover:text-red-600',
             },
             {
               Icon: Bookmark,
               content: post.bookmarkCount ?? 0,
-              iconClassName: 'group-hover:bg-sky-800/80',
+              iconClassName: 'group-hover:bg-sky-800/20',
+              textClassName: 'hover:text-sky-500',
             },
             {
               Icon: Upload,
@@ -80,7 +82,7 @@ export default function Post({ post }: Readonly<Props>) {
             },
           ].map(({ Icon, content, iconClassName = '', textClassName = '' }, i) => (
             <div className="flex items-center" key={i}>
-              <button className={`group flex items-center transition ${textClassName}`}>
+              <button className={`group flex items-center w-fit transition ${textClassName}`}>
                 <div className={`shrink-0 rounded-full transition ${iconClassName}`}>
                   <Icon className="size-10 p-2" />
                 </div>

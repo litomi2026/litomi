@@ -55,6 +55,6 @@ export default async function Page({ params }: PageProps<'/post/[id]'>) {
 }
 
 const getPost = cache(async (id: number) => {
-  const [post] = await selectPosts({ limit: 1, cursor: id })
+  const [post] = await selectPosts({ limit: 1, cursor: id + 1 })
   return post
 })
