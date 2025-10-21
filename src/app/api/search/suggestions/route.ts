@@ -26,13 +26,11 @@ export async function GET(request: Request) {
       vercel: {
         maxAge: sec('30 days'),
       },
-      cloudflare: {
-        maxAge: sec('30 days'),
-        swr: sec('1 day'),
-      },
       browser: {
         public: true,
         maxAge: 3,
+        sMaxAge: sec('30 days'),
+        swr: sec('1 day'),
       },
     })
 
