@@ -66,12 +66,11 @@ export async function GET(request: Request) {
           vercel: {
             maxAge: sec('10 seconds'),
           },
-          cloudflare: {
-            maxAge: sec('30 seconds'),
-          },
           browser: {
             public: true,
             maxAge: 3,
+            sMaxAge: sec('30 seconds'),
+            swr: sec('10 seconds'),
           },
         })
       }
@@ -81,13 +80,11 @@ export async function GET(request: Request) {
           vercel: {
             maxAge: sec('30 days'),
           },
-          cloudflare: {
-            maxAge: sec('30 days'),
-            swr: sec('10 minutes'),
-          },
           browser: {
             public: true,
             maxAge: 3,
+            sMaxAge: sec('30 days'),
+            swr: sec('10 minutes'),
           },
         })
       }

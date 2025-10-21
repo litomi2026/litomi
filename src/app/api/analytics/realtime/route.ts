@@ -3,7 +3,7 @@ import { BetaAnalyticsDataClient } from '@google-analytics/data'
 import { SHORT_NAME } from '@/constants'
 import { GA_PROPERTY_ID, GA_SERVICE_ACCOUNT_EMAIL, GA_SERVICE_ACCOUNT_KEY } from '@/constants/env'
 import { REALTIME_PAGE_VIEW_MIN_THRESHOLD } from '@/constants/policy'
-import { createCacheControlHeaders, handleRouteError } from '@/crawler/proxy-utils'
+import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 
 let analyticsClient: BetaAnalyticsDataClient | null = null
 
@@ -54,18 +54,14 @@ export async function GET(request: Request) {
       timestamp: new Date(),
     }
 
-    const cacheControlHeaders = createCacheControlHeaders({
-      cloudflare: {
-        maxAge: 30,
-        swr: 30,
-      },
-      browser: {
-        public: true,
-        maxAge: 30,
-      },
+    const cacheControl = createCacheControl({
+      public: true,
+      maxAge: 30,
+      sMaxAge: 30,
+      swr: 30,
     })
 
-    return Response.json(response, { headers: cacheControlHeaders })
+    return Response.json(response, { headers: { 'Cache-Control': cacheControl } })
   } catch (error) {
     return handleRouteError(error, request)
   }

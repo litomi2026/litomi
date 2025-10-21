@@ -1,7 +1,7 @@
 import { GETProxyKSearchSchema } from '@/app/api/proxy/k/search/schema'
 import { BLACKLISTED_MANGA_IDS, MAX_KHENTAI_SEARCH_QUERY_LENGTH } from '@/constants/policy'
 import { getCategories, kHentaiClient, KHentaiMangaSearchOptions } from '@/crawler/k-hentai'
-import { createCacheControlHeaders, handleRouteError } from '@/crawler/proxy-utils'
+import { createCacheControl, createCacheControlHeaders, handleRouteError } from '@/crawler/proxy-utils'
 import { trendingKeywordsRedisService } from '@/services/TrendingKeywordsRedisService'
 import { Manga } from '@/types/manga'
 import { sec } from '@/utils/date'
@@ -125,13 +125,14 @@ function getCacheControlHeader(params: KHentaiMangaSearchOptions) {
 
   if (sort === 'random') {
     return createCacheControlHeaders({
-      cloudflare: {
-        maxAge: sec('40 seconds'),
-        swr: sec('10 seconds'),
+      vercel: {
+        maxAge: sec('10 seconds'),
       },
       browser: {
         public: true,
         maxAge: 3,
+        sMaxAge: sec('40 seconds'),
+        swr: sec('10 seconds'),
       },
     })
   }
@@ -141,13 +142,11 @@ function getCacheControlHeader(params: KHentaiMangaSearchOptions) {
       vercel: {
         maxAge: sec('30 days'),
       },
-      cloudflare: {
-        maxAge: sec('30 days'),
-        swr: sec('10 minutes'),
-      },
       browser: {
         public: true,
         maxAge: 3,
+        sMaxAge: sec('30 days'),
+        swr: sec('10 minutes'),
       },
     })
   }
@@ -157,13 +156,11 @@ function getCacheControlHeader(params: KHentaiMangaSearchOptions) {
       vercel: {
         maxAge: sec('1 hour'),
       },
-      cloudflare: {
-        maxAge: sec('1 day'),
-        swr: sec('10 minutes'),
-      },
       browser: {
         public: true,
         maxAge: 3,
+        sMaxAge: sec('1 day'),
+        swr: sec('10 minutes'),
       },
     })
   }
@@ -172,13 +169,11 @@ function getCacheControlHeader(params: KHentaiMangaSearchOptions) {
     vercel: {
       maxAge: sec('10 minutes'),
     },
-    cloudflare: {
-      maxAge: sec('1 hour'),
-      swr: sec('10 minutes'),
-    },
     browser: {
       public: true,
       maxAge: 3,
+      sMaxAge: sec('1 hour'),
+      swr: sec('10 minutes'),
     },
   })
 }

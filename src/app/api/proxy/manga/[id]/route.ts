@@ -48,13 +48,11 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       vercel: {
         maxAge: sec('30 days'),
       },
-      cloudflare: {
-        maxAge: sec('30 days'),
-        swr: sec('10 minutes'),
-      },
       browser: {
         public: true,
         maxAge: 3,
+        sMaxAge: sec('30 days'),
+        swr: sec('10 minutes'),
       },
     })
 
@@ -66,13 +64,14 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
 
     if (!manga) {
       const notFoundHeaders = createCacheControlHeaders({
-        cloudflare: {
-          maxAge: sec('1 hour'),
-          swr: sec('10 minutes'),
+        vercel: {
+          maxAge: sec('10 minutes'),
         },
         browser: {
           public: true,
           maxAge: 3,
+          sMaxAge: sec('1 hour'),
+          swr: sec('10 minutes'),
         },
       })
 
@@ -85,13 +84,14 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
     const swr = Math.floor(optimalCacheDuration * 0.01)
 
     const successHeaders = createCacheControlHeaders({
-      cloudflare: {
-        maxAge: optimalCacheDuration - swr,
-        swr,
+      vercel: {
+        maxAge: 3,
       },
       browser: {
         public: true,
         maxAge: 3,
+        sMaxAge: optimalCacheDuration - swr,
+        swr,
       },
     })
 
