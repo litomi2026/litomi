@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowLeft, ArrowRight } from 'lucide-react'
+import { ArrowLeft, ArrowRight, MessageCircle } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -13,7 +13,6 @@ import { useScreenFitStore } from '@/components/ImageViewer/store/screenFit'
 import { orientations, useTouchOrientationStore } from '@/components/ImageViewer/store/touchOrientation'
 import { type Manga } from '@/types/manga'
 
-import IconChat from '../icons/IconChat'
 import { IconChevronLeft } from '../icons/IconImageViewer'
 import FullscreenButton from './FullscreenButton'
 import ImageSlider from './ImageSlider'
@@ -105,7 +104,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
           <MangaDetailButton manga={manga} />
           <div className="flex gap-1">
             <Link aria-label="리뷰 보기" href={`/manga/${manga.id}/detail`}>
-              <IconChat className="size-6" />
+              <MessageCircle className="size-6" />
             </Link>
             <ShareButton />
           </div>

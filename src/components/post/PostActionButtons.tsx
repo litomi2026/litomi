@@ -1,16 +1,13 @@
 'use client'
 
-import { ChartNoAxesColumn } from 'lucide-react'
+import { ChartNoAxesColumn, Heart, MessageCircle, Repeat } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { toggleLikingPost } from '@/app/(navigation)/(right-search)/posts/action'
 import useActionResponse from '@/hook/useActionResponse'
 import useMeQuery from '@/query/useMeQuery'
 
-import IconChat from '../icons/IconChat'
-import IconHeart from '../icons/IconHeart'
 import IconLogout from '../icons/IconLogout'
-import IconRepeat from '../icons/IconRepeat'
 import LoginPageLink from '../LoginPageLink'
 
 type Props = {
@@ -61,26 +58,23 @@ export default function PostActionButtons({
     <div className="flex flex-wrap gap-2 text-zinc-400 [&_svg]:size-9 [&_svg]:shrink-0 [&_svg]:p-2 [&_svg]:rounded-full [&_svg]:transition-all">
       <div className="grid grow grid-cols-4 gap-1 text-sm">
         <div className="flex items-center">
-          <IconChat />
+          <MessageCircle />
           {commentCount}
         </div>
         <div className="flex items-center">
-          <IconRepeat />
+          <Repeat />
           {repostCount}
         </div>
         <button
-          className="flex items-center group transition-all hover:text-red-500 disabled:opacity-50"
+          className="flex items-center group w-fit transition hover:text-red-500 disabled:opacity-50"
           disabled={isPending}
           onClick={handleLike}
         >
-          <IconHeart
+          <Heart
             aria-selected={isLiked}
             className="group-hover:bg-red-500/20 group-hover:text-red-500 aria-selected:text-red-500"
           />
-          <span
-            aria-selected={isLiked}
-            className={`transition-all aria-selected:font-medium aria-selected:text-red-500`}
-          >
+          <span aria-selected={isLiked} className="transition aria-selected:font-medium aria-selected:text-red-500">
             {likeCount}
           </span>
         </button>

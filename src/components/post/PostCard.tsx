@@ -16,13 +16,14 @@ export type Post = {
   imageURLs?: string[] | null
   author?: {
     id: number
-    nickname: string
     name: string
+    nickname: string
     imageURL: string | null
   } | null
   commentCount: number
   repostCount: number
   likeCount: number
+  bookmarkCount?: number
   viewCount?: number
   referredPost?: ReferredPost | null
 }

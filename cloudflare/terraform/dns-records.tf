@@ -34,6 +34,24 @@ resource "cloudflare_dns_record" "r2_cname" {
   proxied = true
 }
 
+resource "cloudflare_dns_record" "api_cname" {
+  zone_id = var.zone_id
+  name    = "api.litomi.in"
+  type    = "CNAME"
+  content = "ghs.googlehosted.com"
+  ttl     = 1
+  proxied = true
+}
+
+resource "cloudflare_dns_record" "api_stage_cname" {
+  zone_id = var.zone_id
+  name    = "api-stage.litomi.in"
+  type    = "CNAME"
+  content = "ghs.googlehosted.com"
+  ttl     = 1
+  proxied = true
+}
+
 resource "cloudflare_dns_record" "caa" {
   zone_id = var.zone_id
   name    = "litomi.in"
@@ -82,24 +100,4 @@ resource "cloudflare_dns_record" "google_verification_txt" {
   content = "\"google-site-verification=E8dCRgQMvY3hE4oaZ-vsuhopmTS7qyQG-O5WIMdVenA\""
   ttl     = 3600
   proxied = false
-}
-
-resource "cloudflare_dns_record" "api_stage_tunnel" {
-  zone_id = var.zone_id
-  name    = "api-stage.litomi.in"
-  type    = "CNAME"
-  content = "ghs.googlehosted.com"
-  ttl     = 1
-  proxied = true
-  comment = "Stage API"
-}
-
-resource "cloudflare_dns_record" "api_prod_tunnel" {
-  zone_id = var.zone_id
-  name    = "api.litomi.in"
-  type    = "CNAME"
-  content = "ghs.googlehosted.com"
-  ttl     = 1
-  proxied = true
-  comment = "Production API"
 }

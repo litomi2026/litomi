@@ -1,12 +1,12 @@
 'use client'
 
+import { Repeat } from 'lucide-react'
 import Link from 'next/link'
 import { ReactNode, useEffect, useMemo, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 
 import { PostFilter } from '@/app/api/post/schema'
 import CloudProviderStatus from '@/components/CloudProviderStatus'
-import IconRepeat from '@/components/icons/IconRepeat'
 import PostCard, { PostSkeleton } from '@/components/post/PostCard'
 import RetryGuidance from '@/components/RetryGuidance'
 import usePostsInfiniteQuery from '@/query/usePostsQuery'
@@ -87,7 +87,7 @@ function ErrorState({ error, retry }: { error: Error; retry: () => void }) {
         className="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors mt-4"
         onClick={retry}
       >
-        <IconRepeat className="w-4 h-4" />
+        <Repeat className="size-4" />
         <span>다시 시도</span>
       </button>
 
