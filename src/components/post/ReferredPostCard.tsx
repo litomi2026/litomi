@@ -12,10 +12,11 @@ export type ReferredPost = {
   content?: string | null
   imageURLs?: string[] | null
   author?: {
+    id: number
     nickname: string
     name: string
     imageURL?: string | null
-  }
+  } | null
 }
 
 type Props = {

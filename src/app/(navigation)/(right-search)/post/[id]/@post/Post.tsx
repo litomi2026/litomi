@@ -1,11 +1,7 @@
 import dayjs from 'dayjs'
-import { ChartNoAxesColumn, MoreHorizontal } from 'lucide-react'
+import { Bookmark, Heart, MessageCircle, MoreHorizontal, Repeat, Upload } from 'lucide-react'
 
 import { PostFilter } from '@/app/api/post/schema'
-import IconBookmark from '@/components/icons/IconBookmark'
-import IconChat from '@/components/icons/IconChat'
-import IconHeart from '@/components/icons/IconHeart'
-import IconRepeat from '@/components/icons/IconRepeat'
 import { type Post } from '@/components/post/PostCard'
 import PostCreationForm from '@/components/post/PostCreationForm'
 import PostImages from '@/components/post/PostImages'
@@ -51,41 +47,43 @@ export default function Post({ post }: Readonly<Props>) {
           <span>{dayjs(post.createdAt).format('YYYY-MM-DD HH:mm')}</span>
           <span>·</span>
           <span className="text-sm">
-            <span className="font-bold">{101}</span> 조회수
+            <span className="font-bold text-foreground">{post.viewCount ?? 0}</span> 조회수
           </span>
         </div>
         <div className="flex justify-between gap-1 border-y-2 px-2 py-1 text-sm">
           {[
             {
-              Icon: IconChat,
-              content: post.commentCount,
-              iconClassName: 'group-hover:bg-zinc-800',
+              Icon: MessageCircle,
+              content: post.commentCount ?? 0,
+              iconClassName: 'group-hover:bg-brand-end/50',
             },
             {
-              Icon: IconRepeat,
-              content: post.repostCount,
+              Icon: Repeat,
+              content: post.repostCount ?? 0,
               iconClassName: 'group-hover:bg-green-500/20 group-hover:text-green-500',
               textClassName: 'hover:text-green-500',
             },
             {
-              Icon: IconHeart,
-              content: post.likeCount,
+              Icon: Heart,
+              content: post.likeCount ?? 0,
               iconClassName: 'group-hover:bg-red-500/20 group-hover:text-red-500',
               textClassName: 'hover:text-red-500',
             },
             {
-              Icon: ChartNoAxesColumn,
-              content: post.viewCount,
-              iconClassName: 'group-hover:bg-zinc-800',
+              Icon: Bookmark,
+              content: post.bookmarkCount ?? 0,
+              iconClassName: 'group-hover:bg-sky-800/80',
             },
             {
-              Icon: IconBookmark,
+              Icon: Upload,
               iconClassName: 'group-hover:bg-zinc-800',
             },
           ].map(({ Icon, content, iconClassName = '', textClassName = '' }, i) => (
             <div className="flex items-center" key={i}>
               <button className={`group flex items-center transition ${textClassName}`}>
-                <Icon className={`w-10 shrink-0 rounded-full p-2 transition ${iconClassName}`} selected={false} />
+                <div className={`shrink-0 rounded-full transition ${iconClassName}`}>
+                  <Icon className="size-10 p-2" />
+                </div>
                 {content}
               </button>
             </div>
@@ -93,7 +91,7 @@ export default function Post({ post }: Readonly<Props>) {
         </div>
         <PostCreationForm
           buttonText="답글"
-          className="flex border-t-2"
+          className="flex"
           filter={PostFilter.RECOMMAND} // TODO: 변경해야함
           isReply
           placeholder="답글 게시하기"
