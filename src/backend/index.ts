@@ -31,52 +31,28 @@ app.get('/health', (c) =>
 
 app.get('/ready', async (c) => {
   try {
-    const result = await db.execute(sql`
+    const [result] = await db.execute<{ current_time: Date; version: string; connection: number }>(sql`
       SELECT 
         CURRENT_TIMESTAMP as current_time,
         version() as version,
         1 as connection
     `)
 
-    if (!result || result.length === 0) {
-      return c.json(
-        {
-          status: 'error',
-          message: 'Database readiness check failed',
-          timestamp: new Date().toISOString(),
-        },
-        503,
-      )
+    if (!result) {
+      return c.json({ status: 'error', timestamp: new Date().toISOString() }, 503)
     }
-
-    const row = result[0]
 
     return c.json({
       status: 'ready',
       database: {
         connected: true,
-        serverTime: row.currentTime,
-        version: row.version,
+        time: result.current_time,
+        version: result.version,
       },
       timestamp: new Date().toISOString(),
     })
-  } catch (error) {
-    console.error('Database readiness check failed:', error)
-
-    return c.json(
-      {
-        status: 'error',
-        message: 'Database connection failed',
-        error:
-          process.env.NODE_ENV !== 'production'
-            ? error instanceof Error
-              ? error.message
-              : 'Unknown error'
-            : undefined,
-        timestamp: new Date().toISOString(),
-      },
-      503,
-    )
+  } catch {
+    return c.json({ status: 'error', timestamp: new Date().toISOString() }, 503)
   }
 })
 
