@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "bun tools/checkEnvVars.ts && next dev --turbopack",
+    "dev:backend": "bun run --conditions=react-server --hot src/backend/index.ts",
     "dev:prod": "bun tools/checkEnvVars.ts && env-cmd -f .env.production next dev --turbopack",
     "build": "next build",
     "start": "next start",
@@ -49,6 +50,7 @@
     "country-flag-icons": "^1.5.21",
     "dayjs": "^1.11.18",
     "drizzle-orm": "^0.44.5",
+    "hono": "^4.10.2",
     "jose": "^6.1.0",
     "js-cookie": "^3.0.5",
     "jszip": "^3.10.1",

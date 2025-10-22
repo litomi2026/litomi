@@ -10,7 +10,7 @@ import { twoFactorBackupCodeTable, twoFactorTable } from '@/database/supabase/2f
 import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/schema'
 import { badRequest, internalServerError, ok, tooManyRequests, unauthorized } from '@/utils/action-response'
-import { setAccessTokenCookie, setRefreshTokenCookie } from '@/utils/cookie'
+import { getAccessTokenCookieConfig, setRefreshTokenCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 import { verifyPKCEChallenge } from '@/utils/pkce-server'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
@@ -50,7 +50,7 @@ export async function verifyTwoFactorLogin(formData: FormData) {
   }
 
   const { userId } = challengeData
-  const { allowed, retryAfter, limit } = await twoFactorLimiter.check(String(userId))
+  const { allowed, retryAfter } = await twoFactorLimiter.check(String(userId))
 
   if (!allowed) {
     const minutes = retryAfter ? Math.ceil(retryAfter / 60) : 1
@@ -176,7 +176,7 @@ export async function verifyTwoFactorLogin(formData: FormData) {
       }
 
       await Promise.all([
-        setAccessTokenCookie(cookieStore, userId),
+        getAccessTokenCookieConfig(userId).then(({ key, value, options }) => cookieStore.set(key, value, options)),
         remember && setRefreshTokenCookie(cookieStore, userId),
       ])
 

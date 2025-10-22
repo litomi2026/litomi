@@ -42,6 +42,7 @@ export async function GET(request: Request) {
     if (!user) {
       const cookieStore = await cookies()
       cookieStore.delete(CookieKey.ACCESS_TOKEN)
+      cookieStore.delete(CookieKey.REFRESH_TOKEN)
       return new Response('Not Found', { status: 404, headers: { 'Cache-Control': cacheControl } })
     }
 

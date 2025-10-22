@@ -208,7 +208,7 @@ describe('GET /api/me', () => {
       // Then
       expect(response.status).toBe(404)
       expect(text).toBe('Not Found')
-      expect(deletedCookies).toEqual(['at'])
+      expect(deletedCookies).toEqual(['at', 'rt'])
     })
   })
 

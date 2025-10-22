@@ -1,4 +1,3 @@
-import { ResponseCookies } from 'next/dist/compiled/@edge-runtime/cookies'
 import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies'
 import { cookies } from 'next/headers'
 
@@ -8,6 +7,21 @@ import { sec } from './date'
 import { JWTType, signJWT, verifyJWT } from './jwt'
 
 type CookieStore = Awaited<ReturnType<typeof cookies>>
+
+export async function getAccessTokenCookieConfig(userId: number | string) {
+  const cookieValue = await signJWT({ sub: String(userId) }, JWTType.ACCESS)
+
+  return {
+    key: CookieKey.ACCESS_TOKEN,
+    value: cookieValue,
+    options: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax' as const,
+      maxAge: sec('1 hour'),
+    },
+  }
+}
 
 export function getCookieJSON(cookieStore: ReadonlyRequestCookies, keys: string[]) {
   const result: Record<string, string | undefined> = {}
@@ -24,20 +38,6 @@ export function getCookieJSON(cookieStore: ReadonlyRequestCookies, keys: string[
 export async function getUserIdFromCookie() {
   const cookieStore = await cookies()
   return (await verifyAccessToken(cookieStore)) ?? null
-}
-
-export async function setAccessTokenCookie(
-  cookieStore: ReadonlyRequestCookies | ResponseCookies,
-  userId: number | string,
-) {
-  const cookieValue = await signJWT({ sub: String(userId) }, JWTType.ACCESS)
-
-  cookieStore.set(CookieKey.ACCESS_TOKEN, cookieValue, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: sec('1 hour'),
-  })
 }
 
 export async function setRefreshTokenCookie(cookieStore: ReadonlyRequestCookies, userId: number | string) {
