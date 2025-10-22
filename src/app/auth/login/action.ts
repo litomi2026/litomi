@@ -11,7 +11,7 @@ import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/schema'
 import { loginIdSchema, passwordSchema } from '@/database/zod'
 import { badRequest, internalServerError, ok, tooManyRequests, unauthorized } from '@/utils/action-response'
-import { setAccessTokenCookie, setRefreshTokenCookie } from '@/utils/cookie'
+import { getAccessTokenCookieConfig, setRefreshTokenCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 import { initiatePKCEChallenge } from '@/utils/pkce-server'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
@@ -111,7 +111,7 @@ export default async function login(formData: FormData) {
     await Promise.all([
       db.update(userTable).set({ loginAt: new Date() }).where(eq(userTable.id, id)),
       loginLimiter.reward(loginId),
-      setAccessTokenCookie(cookieStore, id),
+      getAccessTokenCookieConfig(id).then(({ key, value, options }) => cookieStore.set(key, value, options)),
       remember && setRefreshTokenCookie(cookieStore, id),
     ])
 

@@ -1,6 +1,7 @@
 import { sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { getConnInfo } from 'hono/bun'
+import { contextStorage } from 'hono/context-storage'
 import { cors } from 'hono/cors'
 import { csrf } from 'hono/csrf'
 import { etag } from 'hono/etag'
@@ -16,14 +17,14 @@ import { CORS_ORIGIN, JWT_SECRET_ACCESS_TOKEN } from '@/constants/env'
 import { CookieKey } from '@/constants/storage'
 import { db } from '@/database/supabase/drizzle'
 
-import { refreshAuthToken } from './middleware/auth'
+import { authMiddleware as auth } from './middleware/auth'
 
 const url = new URL(CANONICAL_URL)
 
 export type Env = {
   Variables: {
     requestId: string
-    userId?: string
+    userId?: number
   }
 }
 
@@ -33,13 +34,14 @@ app.use('*', cors({ origin: CORS_ORIGIN }))
 app.use('*', ipRestriction(getConnInfo, { denyList: [] }))
 app.use('*', requestId())
 // app.use(compress()) // NOTE: This middleware uses CompressionStream which is not yet supported in Bun.
+app.use(contextStorage())
 app.use(csrf({ origin: CORS_ORIGIN, secFetchSite: 'same-site' }))
 app.use(logger())
 app.use(secureHeaders())
 app.use(timing())
 
+app.use('/api/*', auth())
 app.use('/api/*', etag())
-app.use('/api/*', refreshAuthToken())
 
 app.use(
   '/api/*',

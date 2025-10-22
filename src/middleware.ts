@@ -2,7 +2,7 @@ import { RequestCookies, ResponseCookies } from 'next/dist/server/web/spec-exten
 import { NextRequest, NextResponse } from 'next/server'
 
 import { CookieKey } from './constants/storage'
-import { setAccessTokenCookie } from './utils/cookie'
+import { getAccessTokenCookieConfig } from './utils/cookie'
 import { JWTType, verifyJWT } from './utils/jwt'
 
 export async function middleware({ nextUrl, method, cookies, headers }: NextRequest) {
@@ -54,7 +54,8 @@ export async function middleware({ nextUrl, method, cookies, headers }: NextRequ
 
   // at 만료 및 rt 유효 -> at 재발급
   const response = NextResponse.next()
-  await setAccessTokenCookie(response.cookies, userId)
+  const { key, value, options } = await getAccessTokenCookieConfig(userId)
+  response.cookies.set(key, value, options)
   setCookieToRequest(headers, response)
   return response
 }

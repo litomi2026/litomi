@@ -3,11 +3,12 @@ import type { MiddlewareHandler } from 'hono'
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie'
 
 import { CookieKey } from '@/constants/storage'
-import { JWTType, signJWT, verifyJWT } from '@/utils/jwt'
+import { getAccessTokenCookieConfig } from '@/utils/cookie'
+import { JWTType, verifyJWT } from '@/utils/jwt'
 
 import { Env } from '..'
 
-export const refreshAuthToken = (): MiddlewareHandler<Env> => {
+export const authMiddleware = (): MiddlewareHandler<Env> => {
   return async (c, next) => {
     const accessToken = getCookie(c, CookieKey.ACCESS_TOKEN)
 
@@ -17,9 +18,11 @@ export const refreshAuthToken = (): MiddlewareHandler<Env> => {
     }
 
     const validAccessToken = await verifyJWT(accessToken, JWTType.ACCESS).catch(() => null)
+    const loginUserId = validAccessToken?.sub
 
     // 로그인 -> 통과
-    if (validAccessToken) {
+    if (loginUserId) {
+      c.set('userId', Number(loginUserId))
       return await next()
     }
 
@@ -42,13 +45,9 @@ export const refreshAuthToken = (): MiddlewareHandler<Env> => {
     }
 
     // at 만료 및 rt 유효 -> at 재발급
-    setCookie(c, CookieKey.ACCESS_TOKEN, await signJWT({ sub: userId }, JWTType.ACCESS), {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'Lax',
-      maxAge: 60 * 15,
-    })
-
+    const { key, value, options } = await getAccessTokenCookieConfig(userId)
+    setCookie(c, key, value, options)
+    c.set('userId', Number(userId))
     return await next()
   }
 }
