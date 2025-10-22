@@ -6,6 +6,7 @@ import { cookies, headers } from 'next/headers'
 import { z } from 'zod/v4'
 
 import { SALT_ROUNDS } from '@/constants'
+import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/schema'
 import { loginIdSchema, nicknameSchema, passwordSchema } from '@/database/zod'
@@ -98,6 +99,7 @@ export default async function signup(formData: FormData) {
     const cookieStore = await cookies()
     const { key, value, options } = await getAccessTokenCookieConfig(userId)
     cookieStore.set(key, value, options)
+    cookieStore.set(key, value, { ...options, domain: new URL(NEXT_PUBLIC_BACKEND_URL).hostname })
 
     return created({
       userId,

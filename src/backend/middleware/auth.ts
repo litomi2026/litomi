@@ -2,6 +2,7 @@ import type { MiddlewareHandler } from 'hono'
 
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie'
 
+import { CANONICAL_URL } from '@/constants'
 import { CookieKey } from '@/constants/storage'
 import { getAccessTokenCookieConfig } from '@/utils/cookie'
 import { JWTType, verifyJWT } from '@/utils/jwt'
@@ -47,6 +48,7 @@ export const authMiddleware = (): MiddlewareHandler<Env> => {
     // at 만료 및 rt 유효 -> at 재발급
     const { key, value, options } = await getAccessTokenCookieConfig(userId)
     setCookie(c, key, value, options)
+    setCookie(c, key, value, { ...options, domain: new URL(CANONICAL_URL).hostname })
     c.set('userId', Number(userId))
     return await next()
   }

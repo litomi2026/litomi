@@ -5,6 +5,7 @@ import { and, eq, isNull } from 'drizzle-orm'
 import { cookies, headers } from 'next/headers'
 import { z } from 'zod/v4'
 
+import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { BACKUP_CODE_PATTERN } from '@/constants/policy'
 import { twoFactorBackupCodeTable, twoFactorTable } from '@/database/supabase/2fa-schema'
 import { db } from '@/database/supabase/drizzle'
@@ -176,7 +177,10 @@ export async function verifyTwoFactorLogin(formData: FormData) {
       }
 
       await Promise.all([
-        getAccessTokenCookieConfig(userId).then(({ key, value, options }) => cookieStore.set(key, value, options)),
+        getAccessTokenCookieConfig(userId).then(({ key, value, options }) => {
+          cookieStore.set(key, value, options)
+          cookieStore.set(key, value, { ...options, domain: new URL(NEXT_PUBLIC_BACKEND_URL).hostname })
+        }),
         remember && setRefreshTokenCookie(cookieStore, userId),
       ])
 

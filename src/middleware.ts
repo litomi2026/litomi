@@ -1,6 +1,7 @@
 import { RequestCookies, ResponseCookies } from 'next/dist/server/web/spec-extension/cookies'
 import { NextRequest, NextResponse } from 'next/server'
 
+import { NEXT_PUBLIC_BACKEND_URL } from './constants/env'
 import { CookieKey } from './constants/storage'
 import { getAccessTokenCookieConfig } from './utils/cookie'
 import { JWTType, verifyJWT } from './utils/jwt'
@@ -56,6 +57,7 @@ export async function middleware({ nextUrl, method, cookies, headers }: NextRequ
   const response = NextResponse.next()
   const { key, value, options } = await getAccessTokenCookieConfig(userId)
   response.cookies.set(key, value, options)
+  response.cookies.set(key, value, { ...options, domain: new URL(NEXT_PUBLIC_BACKEND_URL).hostname })
   setCookieToRequest(headers, response)
   return response
 }
