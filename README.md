@@ -44,6 +44,8 @@
 
 ## 시작하기
 
+#### Next.js
+
 프로젝트 의존 패키지 설치하기
 
 ```bash
@@ -63,6 +65,13 @@ bun dev
 ```
 
 브라우저에서 [http://localhost:3000](http://localhost:3000) 주소 열어서 결과 보기
+
+#### Backend
+
+```
+docker build . -t litomi-backend
+docker run -e PORT=4000 -p 4000:4000 --rm litomi-backend:latest
+```
 
 ## 링크
 

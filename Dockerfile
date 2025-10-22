@@ -1,25 +1,28 @@
-FROM node:lts-alpine AS base
+# Build stage
+FROM oven/bun:1.3 AS builder
 
-# Stage 1: Install dependencies
-FROM base AS deps
-WORKDIR /app
-COPY package.json ./
-RUN npm install
-
-# Stage 2: Build the application
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
-RUN BUILD_OUTPUT=standalone npm run build
-
-# Stage 3: Production server
-FROM base AS runner
-WORKDIR /app
 ENV NODE_ENV=production
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
-RUN if [ -d "/app/public" ]; then cp -r /app/public ./public; fi # Copy public folder if it exists
+WORKDIR /app
 
-EXPOSE 3000
-CMD ["node", "server.js"]
+COPY bun.lock package.json tsconfig.json ./
+RUN bun install --ignore-scripts --production --silent --frozen-lockfile
+
+COPY src/ ./src
+
+# https://bun.com/docs/bundler/executables#deploying-to-production
+RUN bun build --compile \
+  --conditions=react-server \
+  --minify \
+  --sourcemap \
+  ./src/backend/index.ts \
+  --outfile litomi-backend
+
+# Runtime stage
+FROM gcr.io/distroless/base-nossl-debian12:nonroot
+
+ENV NODE_ENV=production
+WORKDIR /home
+
+COPY --chown=nonroot:nonroot --from=builder /app/litomi-backend ./
+
+ENTRYPOINT [ "./litomi-backend" ]
