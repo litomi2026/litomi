@@ -19,26 +19,32 @@ export async function middleware({ nextUrl, method, cookies, headers }: NextRequ
   }
 
   const accessToken = cookies.get(CookieKey.ACCESS_TOKEN)?.value
-  const validAT = await verifyJWT(accessToken ?? '', JWTType.ACCESS).catch(() => null)
 
-  // 로그인 상태 -> 통과
+  // 미로그인 -> 통과
+  if (!accessToken) {
+    return NextResponse.next()
+  }
+
+  const validAT = await verifyJWT(accessToken, JWTType.ACCESS).catch(() => null)
+
+  // 로그인 -> 통과
   if (validAT) {
     return NextResponse.next()
   }
 
   const refreshToken = cookies.get(CookieKey.REFRESH_TOKEN)?.value
 
-  // at만 있는데 at가 만료된 경우 -> 쿠키 삭제
+  // at 만료 및 rt 없음 -> at 쿠키 삭제
   if (!refreshToken) {
     const response = NextResponse.next()
     response.cookies.delete(CookieKey.ACCESS_TOKEN)
     return response
   }
 
-  const validRT = await verifyJWT(refreshToken, JWTType.REFRESH).catch(() => null)
-  const userId = validRT?.sub
+  const validRefreshToken = await verifyJWT(refreshToken, JWTType.REFRESH).catch(() => null)
+  const userId = validRefreshToken?.sub
 
-  // at가 만료됐는데 rt도 만료된 경우 -> 쿠키 삭제
+  // at 만료 및 rt 만료 -> at, rt 쿠키 삭제
   if (!userId) {
     const response = NextResponse.next()
     response.cookies.delete(CookieKey.ACCESS_TOKEN)
@@ -46,7 +52,7 @@ export async function middleware({ nextUrl, method, cookies, headers }: NextRequ
     return response
   }
 
-  // at가 만료됐는데 rt는 유효한 경우 -> at 재발급
+  // at 만료 및 rt 유효 -> at 재발급
   const response = NextResponse.next()
   await setAccessTokenCookie(response.cookies, userId)
   setCookieToRequest(headers, response)

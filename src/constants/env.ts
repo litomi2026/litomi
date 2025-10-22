@@ -1,3 +1,4 @@
+// Vercel
 export const AIVEN_CERTIFICATE = process.env.AIVEN_CERTIFICATE ?? ''
 export const AIVEN_POSTGRES_URL = process.env.AIVEN_POSTGRES_URL ?? ''
 export const AMPLITUDE_API_KEY = process.env.AMPLITUDE_API_KEY
@@ -25,3 +26,6 @@ export const VERCEL_SPEED_INSIGHTS = process.env.VERCEL_SPEED_INSIGHTS ?? ''
 export const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY ?? ''
 export const TOTP_ENCRYPTION_KEY = process.env.TOTP_ENCRYPTION_KEY ?? ''
 export const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY ?? ''
+
+// Cloud Run
+export const CORS_ORIGIN = process.env.CORS_ORIGIN ?? ''
