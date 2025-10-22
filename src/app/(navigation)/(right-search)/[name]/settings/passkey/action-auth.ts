@@ -11,7 +11,6 @@ import { cookies, headers } from 'next/headers'
 import { z } from 'zod/v4'
 
 import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID } from '@/constants'
-import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { ChallengeType } from '@/database/enum'
 import { db } from '@/database/supabase/drizzle'
 import { credentialTable, userTable } from '@/database/supabase/schema'
@@ -188,10 +187,9 @@ export async function verifyAuthentication(body: unknown, turnstileToken: string
           })
           .where(eq(credentialTable.credentialId, validatedData.id)),
         cookies().then((cookieStore) =>
-          getAccessTokenCookieConfig(credential.userId).then(({ key, value, options }) => {
-            cookieStore.set(key, value, options)
-            cookieStore.set(key, value, { ...options, domain: new URL(NEXT_PUBLIC_BACKEND_URL).hostname })
-          }),
+          getAccessTokenCookieConfig(credential.userId).then(({ key, value, options }) =>
+            cookieStore.set(key, value, options),
+          ),
         ),
       ])
 

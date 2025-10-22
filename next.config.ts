@@ -8,7 +8,7 @@ import { sec } from '@/utils/date'
 
 const cspHeader = `
   default-src 'self';
-  script-src 'self' 'unsafe-eval' 'unsafe-inline' https:;
+  script-src 'self' 'unsafe-inline' https:;
   style-src 'self' 'unsafe-inline';
   img-src 'self' blob: data: https:;
   object-src 'none';

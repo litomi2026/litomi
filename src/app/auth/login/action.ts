@@ -6,7 +6,6 @@ import { and, eq, isNull } from 'drizzle-orm'
 import { cookies, headers } from 'next/headers'
 import { z } from 'zod/v4'
 
-import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { twoFactorTable } from '@/database/supabase/2fa-schema'
 import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/schema'
@@ -112,10 +111,7 @@ export default async function login(formData: FormData) {
     await Promise.all([
       db.update(userTable).set({ loginAt: new Date() }).where(eq(userTable.id, id)),
       loginLimiter.reward(loginId),
-      getAccessTokenCookieConfig(id).then(({ key, value, options }) => {
-        cookieStore.set(key, value, options)
-        cookieStore.set(key, value, { ...options, domain: new URL(NEXT_PUBLIC_BACKEND_URL).hostname })
-      }),
+      getAccessTokenCookieConfig(id).then(({ key, value, options }) => cookieStore.set(key, value, options)),
       remember && setRefreshTokenCookie(cookieStore, id),
     ])
 
