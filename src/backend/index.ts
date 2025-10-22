@@ -70,7 +70,7 @@ app.get('/ready', async (c) => {
     return c.json({
       status: 'ready',
       database: {
-        connected: true,
+        connected: result.connection === 1,
         time: result.current_time,
         version: result.version,
       },
