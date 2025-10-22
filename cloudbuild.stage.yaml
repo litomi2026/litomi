@@ -38,13 +38,13 @@ options:
   substitutionOption: ALLOW_LOOSE
   logging: CLOUD_LOGGING_ONLY
 substitutions:
-  _DEPLOY_REGION: asia-east1
   _AR_HOSTNAME: asia-east1-docker.pkg.dev
-  _AR_REPOSITORY: cloud-run-source-deploy
-  _TRIGGER_ID: 9b82116f-f410-4f5f-bd1a-15f2dcffbcbc
   _AR_PROJECT_ID: litomi
+  _AR_REPOSITORY: cloud-run-source-deploy
+  _DEPLOY_REGION: asia-east1
   _PLATFORM: managed
   _SERVICE_NAME: litomi-stage
+  _TRIGGER_ID: 9b82116f-f410-4f5f-bd1a-15f2dcffbcbc
 tags:
   - gcp-cloud-build-deploy-cloud-run
   - gcp-cloud-build-deploy-cloud-run-managed
