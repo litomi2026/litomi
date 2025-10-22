@@ -6,20 +6,16 @@ import { cors } from 'hono/cors'
 import { csrf } from 'hono/csrf'
 import { etag } from 'hono/etag'
 import { ipRestriction } from 'hono/ip-restriction'
-import { jwt } from 'hono/jwt'
 import { logger } from 'hono/logger'
 import { requestId } from 'hono/request-id'
 import { secureHeaders } from 'hono/secure-headers'
 import { endTime, setMetric, startTime, timing } from 'hono/timing'
 
-import { CANONICAL_URL } from '@/constants'
-import { CORS_ORIGIN, JWT_SECRET_ACCESS_TOKEN } from '@/constants/env'
-import { CookieKey } from '@/constants/storage'
+import { CORS_ORIGIN } from '@/constants/env'
 import { db } from '@/database/supabase/drizzle'
 
 import { authMiddleware as auth } from './middleware/auth'
-
-const url = new URL(CANONICAL_URL)
+import apiRoutes from './routes'
 
 export type Env = {
   Variables: {
@@ -39,20 +35,9 @@ app.use(csrf({ origin: CORS_ORIGIN, secFetchSite: 'same-site' }))
 app.use(logger())
 app.use(secureHeaders())
 app.use(timing())
-
 app.use('/api/*', auth())
 app.use('/api/*', etag())
-
-app.use(
-  '/api/*',
-  jwt({
-    cookie: CookieKey.ACCESS_TOKEN,
-    secret: JWT_SECRET_ACCESS_TOKEN,
-    verification: { iss: url.hostname },
-  }),
-)
-
-// app.route('/api', apiRoutes)
+app.route('/api', apiRoutes)
 
 app.get('/', (c) => {
   startTime(c, 'bar')
