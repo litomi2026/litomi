@@ -23,22 +23,31 @@ export default function GlobalError({ error, reset }: ErrorProps) {
 
   return (
     <html lang="ko">
-      <body className="flex items-center justify-center p-2 h-dvh bg-background">
+      <body className="flex items-center justify-center p-4 h-dvh bg-background">
         <main className="max-w-prose text-center text-foreground">
           <h2 className="my-8 text-2xl font-medium">문제가 발생했어요</h2>
           <div className="space-y-2">
             {error.digest && <p className="text-xs text-zinc-500">오류 코드: {error.digest}</p>}
           </div>
+          <p className="text-sm text-red-400 my-4 max-w-prose break-all">{error.message}</p>
           <RetryGuidance errorMessage={error.message} hasSystemIssues={hasSystemIssues} />
           <CloudProviderStatus onStatusUpdate={setHasSystemIssues} />
           <p className="my-4 break-keep text-sm text-zinc-400">
             문제가 계속되면{' '}
             <a
               className="underline decoration-dotted underline-offset-4"
+              href="https://discord.gg/HRWrV6u6Hw"
+              target="_blank"
+            >
+              Discord
+            </a>{' '}
+            또는{' '}
+            <a
+              className="underline decoration-dotted underline-offset-4"
               href="https://github.com/gwak2837/litomi/issues"
               target="_blank"
             >
-              GitHub 이슈
+              GitHub
             </a>{' '}
             에 남겨주세요
           </p>
