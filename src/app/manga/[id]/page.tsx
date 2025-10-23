@@ -1,12 +1,10 @@
 import { Metadata } from 'next'
-import { unstable_cache } from 'next/cache'
 import { notFound } from 'next/navigation'
-import { cache } from 'react'
 
 import { generateOpenGraphMetadata, SHORT_NAME } from '@/constants'
 import { BLACKLISTED_MANGA_IDS, MAX_MANGA_DESCRIPTION_LENGTH, MAX_MANGA_TITLE_LENGTH } from '@/constants/policy'
-import { litomiClient } from '@/crawler/litomi'
 
+import { getManga } from './common.server'
 import Forbidden from './Forbidden'
 import MangaViewer from './MangaViewer'
 import { mangaSchema } from './schema'
@@ -68,18 +66,3 @@ export default async function Page({ params }: PageProps<'/manga/[id]'>) {
     </main>
   )
 }
-
-const getMangaFromNextjsCache = (id: number) =>
-  unstable_cache(
-    async (id: number) => {
-      try {
-        return await litomiClient.getManga(id)
-      } catch {
-        return null
-      }
-    },
-    ['manga'],
-    { tags: ['manga', 'litomi', `manga:${id}`] },
-  )(id)
-
-const getManga = cache((id: number) => getMangaFromNextjsCache(id))
