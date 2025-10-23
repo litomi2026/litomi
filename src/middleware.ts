@@ -19,16 +19,10 @@ export async function middleware({ nextUrl, method, cookies, headers }: NextRequ
   }
 
   const accessToken = cookies.get(CookieKey.ACCESS_TOKEN)?.value
-
-  // 미로그인 -> 통과
-  if (!accessToken) {
-    return NextResponse.next()
-  }
-
-  const validAT = await verifyJWT(accessToken, JWTType.ACCESS).catch(() => null)
+  const validAccessToken = await verifyJWT(accessToken ?? '', JWTType.ACCESS).catch(() => null)
 
   // 로그인 -> 통과
-  if (validAT) {
+  if (validAccessToken) {
     return NextResponse.next()
   }
 
