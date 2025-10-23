@@ -287,7 +287,7 @@ export default function RatingInput({ mangaId, className = '', onClick }: Props)
         className="flex gap-4 transition aria-hidden:opacity-0 aria-hidden:pointer-events-none"
       >
         <button
-          className="flex items-center gap-2 text-zinc-500 hover:text-red-400 text-sm transition px-3 py-1 rounded hover:bg-red-400/10"
+          className="flex items-center gap-2 text-zinc-500 hover:text-red-400 rounded-full text-sm transition p-3 py-2 -m-2 hover:bg-red-400/10"
           onClick={handleCancelClick}
         >
           <X className="size-4" />

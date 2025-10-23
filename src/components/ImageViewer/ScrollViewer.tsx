@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { CSSProperties, memo, useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { List, RowComponentProps, useDynamicRowHeight, useListRef } from 'react-window'
@@ -102,8 +103,16 @@ function ScrollViewerRow({ index, style, manga, pageView, ...rest }: RowComponen
 
   if (index === imagePageCount) {
     return (
-      <li className="pb-safe px-safe" onClick={(e) => e.stopPropagation()} style={style}>
-        <RatingInput className="flex-1 p-2 py-8" mangaId={manga.id} />
+      <li className="h-full pb-safe px-safe" style={style}>
+        <div className="flex flex-col items-center gap-4 p-4 py-12">
+          <RatingInput className="flex-1" mangaId={manga.id} />
+          <Link
+            className="p-4 py-2 text-sm font-medium text-foreground bg-background border border-foreground/20 rounded-lg hover:bg-foreground/10 transition"
+            href={`/manga/${manga.id}/detail`}
+          >
+            작품 후기 보기
+          </Link>
+        </div>
       </li>
     )
   }
