@@ -26,7 +26,7 @@ export type Env = {
 
 const app = new Hono<Env>()
 
-app.use('*', cors({ origin: CORS_ORIGIN }))
+app.use('*', cors({ origin: CORS_ORIGIN, credentials: true }))
 app.use('*', ipRestriction(getConnInfo, { denyList: [] }))
 app.use('*', requestId())
 // app.use(compress()) // NOTE: This middleware uses CompressionStream which is not yet supported in Bun.
@@ -70,7 +70,7 @@ app.get('/ready', async (c) => {
     return c.json({
       status: 'ready',
       database: {
-        connected: true,
+        connected: result.connection === 1,
         time: result.current_time,
         version: result.version,
       },

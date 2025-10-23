@@ -8,13 +8,14 @@ import { sec } from '@/utils/date'
 
 const cspHeader = `
   default-src 'self';
-  script-src 'self' 'unsafe-eval' 'unsafe-inline' https:;
+  script-src 'self' 'unsafe-inline' https:;
   style-src 'self' 'unsafe-inline';
-  img-src 'self' blob: data: https: http:;
-  connect-src 'self' https:;
+  img-src 'self' blob: data: https:;
   object-src 'none';
+  connect-src 'self' https: http:;
   frame-src 'self' https:;
   frame-ancestors 'none';
+  upgrade-insecure-requests;
 `
 
 const cacheControlHeaders = [
@@ -44,7 +45,7 @@ const nextConfig: NextConfig = {
         },
         { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
         {
-          key: 'Content-Security-Policy-Report-Only',
+          key: 'Content-Security-Policy',
           value: cspHeader.replace(/\s{2,}/g, ' ').trim(),
         },
       ],
