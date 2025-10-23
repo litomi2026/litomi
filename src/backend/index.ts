@@ -1,4 +1,3 @@
-import { sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { getConnInfo } from 'hono/bun'
 import { contextStorage } from 'hono/context-storage'
@@ -6,16 +5,16 @@ import { cors } from 'hono/cors'
 import { csrf } from 'hono/csrf'
 import { etag } from 'hono/etag'
 import { ipRestriction } from 'hono/ip-restriction'
+import { languageDetector } from 'hono/language'
 import { logger } from 'hono/logger'
 import { requestId } from 'hono/request-id'
 import { secureHeaders } from 'hono/secure-headers'
-import { endTime, setMetric, startTime, timing } from 'hono/timing'
+import { timing } from 'hono/timing'
 
 import { CORS_ORIGIN } from '@/constants/env'
-import { db } from '@/database/supabase/drizzle'
 
-import { authMiddleware as auth } from './middleware/auth'
-import apiRoutes from './routes'
+import appRoutes from './app'
+import { auth } from './middleware/auth'
 
 export type Env = {
   Variables: {
@@ -35,51 +34,17 @@ app.use(csrf({ origin: CORS_ORIGIN, secFetchSite: 'same-site' }))
 app.use(logger())
 app.use(secureHeaders())
 app.use(timing())
-app.use('/api/*', auth())
+app.use('/api/*', auth)
 app.use('/api/*', etag())
-app.route('/api', apiRoutes)
 
-app.get('/', (c) => {
-  startTime(c, 'bar')
-  endTime(c, 'bar')
-  setMetric(c, 'foo', 1, 'hello world!')
-
-  return c.json({ requestId: c.get('requestId') })
-})
-
-app.get('/health', (c) =>
-  c.json({
-    status: 'ok',
-    timestamp: new Date(),
+app.use(
+  languageDetector({
+    supportedLanguages: ['en', 'ko', 'ja', 'zh-CN', 'zh-TW'],
+    fallbackLanguage: 'ko',
   }),
 )
 
-app.get('/ready', async (c) => {
-  try {
-    const [result] = await db.execute<{ current_time: Date; version: string; connection: number }>(sql`
-      SELECT 
-        CURRENT_TIMESTAMP as current_time,
-        version() as version,
-        1 as connection
-    `)
-
-    if (!result) {
-      return c.json({ status: 'error', timestamp: new Date() }, 503)
-    }
-
-    return c.json({
-      status: 'ready',
-      database: {
-        connected: result.connection === 1,
-        time: result.current_time,
-        version: result.version,
-      },
-      timestamp: new Date(),
-    })
-  } catch {
-    return c.json({ status: 'error', timestamp: new Date() }, 503)
-  }
-})
+app.route('/', appRoutes)
 
 // app.onError(errorHandler)
 
