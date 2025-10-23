@@ -4,11 +4,14 @@ import { notFound } from 'next/navigation'
 
 import PostList from '@/app/(navigation)/(right-search)/posts/[filter]/PostList'
 import { PostFilter } from '@/app/api/post/schema'
+import BackButton from '@/components/BackButton'
 import RatingInput from '@/components/ImageViewer/RatingInput'
 import PostCreationForm from '@/components/post/PostCreationForm'
 import { CANONICAL_URL, defaultOpenGraph, SHORT_NAME } from '@/constants'
 
+import { getManga } from '../common.server'
 import { mangaSchema } from '../schema'
+import PublicLibraries from './PublicLibraries'
 import RelatedMangaSection from './RelatedMangaSection'
 
 export async function generateMetadata({ params }: PageProps<'/manga/[id]/detail'>): Promise<Metadata> {
@@ -38,25 +41,30 @@ export default async function Page({ params }: PageProps<'/manga/[id]/detail'>) 
   }
 
   const { id } = validation.data
+  const manga = await getManga(id)
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="sticky top-0 z-10 bg-background/90 backdrop-blur border-b-2 p-4">
+    <>
+      <div className="fixed top-0 w-full z-20 flex items-center gap-4 bg-background/90 backdrop-blur border-b-2 p-4">
+        <BackButton className="hover:bg-zinc-500/20 focus-visible:outline-zinc-500 rounded-full p-2 -m-2 transition" />
         <h2 className="text-xl font-bold">작품 상세</h2>
       </div>
-      <RelatedMangaSection mangaId={id} />
-      <div className="border-b-2">
-        <RatingInput className="p-4" mangaId={id} />
+      <div className="flex flex-col flex-1 h-full max-w-screen-sm mx-auto pt-16">
+        <RelatedMangaSection initialRelatedIds={manga?.related} mangaId={id} />
+        <PublicLibraries mangaId={id} />
+        <div className="border-b-2">
+          <RatingInput className="p-4 py-8" mangaId={id} />
+        </div>
+        <PostCreationForm
+          buttonText="게시하기"
+          className="flex p-4 border-b-2"
+          filter={PostFilter.MANGA}
+          mangaId={id}
+          placeholder="이 작품은 어땠나요?"
+        />
+        <PostList filter={PostFilter.MANGA} mangaId={id} NotFound={<EmptyState />} />
       </div>
-      <PostCreationForm
-        buttonText="게시하기"
-        className="flex p-4 border-b-2"
-        filter={PostFilter.MANGA}
-        mangaId={id}
-        placeholder="이 작품은 어땠나요?"
-      />
-      <PostList filter={PostFilter.MANGA} mangaId={id} NotFound={<EmptyState />} />
-    </div>
+    </>
   )
 }
 

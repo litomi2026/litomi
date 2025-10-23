@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
 
 import { MangaIdSearchParam } from '@/app/manga/[id]/common'
@@ -67,16 +68,16 @@ function TouchAreaOverlay({ showController }: TouchAreaOverlayProps) {
     <div
       aria-hidden={!showController}
       aria-orientation={isHorizontal ? 'horizontal' : 'vertical'}
-      className="absolute inset-0 z-10 pointer-events-none flex transition text-background text-xs font-bold aria-hidden:opacity-0 aria-[orientation=vertical]:flex-col"
+      className="absolute inset-0 z-10 pointer-events-none flex transition-opacity duration-300 text-foreground text-xs font-medium aria-hidden:opacity-0 aria-[orientation=vertical]:flex-col"
     >
-      <div className="flex-1 bg-brand-end/20 border border-brand-end flex items-center justify-center aria-[orientation=horizontal]:w-1/3 aria-[orientation=vertical]:h-1/3">
-        <span className="p-3 py-1.5 rounded-lg border border-brand-end bg-brand-end">
+      <div className="flex-1 flex items-center justify-center">
+        <span className="px-4 py-2 rounded-full bg-background/80 border border-foreground/40">
           {isReversed ? '다음' : '이전'}
         </span>
       </div>
-      <div className="flex-1 aria-[orientation=vertical]:hidden" />
-      <div className="flex-1 bg-brand-end/20 border border-brand-end flex items-center justify-center aria-[orientation=horizontal]:w-1/3 aria-[orientation=vertical]:h-1/3">
-        <span className="p-3 py-1.5 rounded-lg border border-brand-end bg-brand-end">
+      {isHorizontal && <div className="flex-1" />}
+      <div className="flex-1 flex items-center justify-center">
+        <span className="px-4 py-2 rounded-full bg-background/80 border border-foreground/40">
           {isReversed ? '이전' : '다음'}
         </span>
       </div>
@@ -460,7 +461,7 @@ function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection, sh
 }
 
 function TouchViewerItem({ offset, manga, pageView, readingDirection }: Readonly<TouchViewerItemProps>) {
-  const { images = [] } = manga
+  const { images = [], id } = manga
   const currentIndex = useImageIndexStore((state) => state.imageIndex)
   const imageIndex = currentIndex + offset
   const brightness = useBrightnessStore((state) => state.brightness)
@@ -471,8 +472,14 @@ function TouchViewerItem({ offset, manga, pageView, readingDirection }: Readonly
 
   if (imageIndex === images.length) {
     return (
-      <li aria-hidden={offset !== 0}>
-        <RatingInput className="select-text" mangaId={manga.id} />
+      <li aria-hidden={offset !== 0} className="flex flex-col items-center justify-center gap-4 p-4">
+        <RatingInput className="select-text" mangaId={id} />
+        <Link
+          className="p-4 py-2 text-sm font-medium text-foreground bg-background border border-foreground/20 rounded-lg hover:bg-foreground/10 transition"
+          href={`/manga/${id}/detail`}
+        >
+          작품 후기 보기
+        </Link>
       </li>
     )
   }
