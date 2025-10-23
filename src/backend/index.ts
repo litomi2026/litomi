@@ -52,5 +52,5 @@ app.route('/', appRoutes)
 export default {
   ...app,
   port: Number(process.env.PORT ?? 8080),
-  hostname: '0.0.0.0',
+  hostname: process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost',
 }
