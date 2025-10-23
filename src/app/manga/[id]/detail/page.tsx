@@ -11,6 +11,7 @@ import { CANONICAL_URL, defaultOpenGraph, SHORT_NAME } from '@/constants'
 
 import { getManga } from '../common.server'
 import { mangaSchema } from '../schema'
+import PublicLibraries from './PublicLibraries'
 import RelatedMangaSection from './RelatedMangaSection'
 
 export async function generateMetadata({ params }: PageProps<'/manga/[id]/detail'>): Promise<Metadata> {
@@ -50,6 +51,7 @@ export default async function Page({ params }: PageProps<'/manga/[id]/detail'>) 
       </div>
       <div className="flex flex-col flex-1 h-full max-w-screen-sm mx-auto pt-16">
         <RelatedMangaSection initialRelatedIds={manga?.related} mangaId={id} />
+        <PublicLibraries mangaId={id} />
         <div className="border-b-2">
           <RatingInput className="p-4 py-8" mangaId={id} />
         </div>
