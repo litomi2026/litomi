@@ -28,7 +28,7 @@ export default function PublicLibrariesSection({ libraries }: Props) {
         {libraries.map((library) => (
           <li className="flex-shrink-0 w-48 snap-start" key={library.id}>
             <Link
-              className="flex flex-col gap-1 p-3 bg-zinc-900 rounded-lg transition border-2 border-transparent hover:border-zinc-600"
+              className="flex flex-col gap-1 h-full p-3 bg-zinc-900 rounded-lg transition border-2 border-transparent hover:border-zinc-600"
               href={`/library/${library.id}`}
             >
               <div className="flex items-center gap-2">
