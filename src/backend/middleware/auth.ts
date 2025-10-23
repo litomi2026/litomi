@@ -9,16 +9,10 @@ import { Env } from '..'
 
 export const auth = createMiddleware<Env>(async (c, next) => {
   const accessToken = getCookie(c, CookieKey.ACCESS_TOKEN)
-
-  // 미로그인 -> 통과
-  if (!accessToken) {
-    return await next()
-  }
-
-  const validAccessToken = await verifyJWT(accessToken, JWTType.ACCESS).catch(() => null)
+  const validAccessToken = await verifyJWT(accessToken ?? '', JWTType.ACCESS).catch(() => null)
   const loginUserId = validAccessToken?.sub
 
-  // 로그인 -> 통과
+  // at 유효 -> 통과
   if (loginUserId) {
     c.set('userId', Number(loginUserId))
     return await next()
