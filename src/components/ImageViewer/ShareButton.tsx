@@ -1,10 +1,10 @@
 'use client'
 
+import { Link } from 'lucide-react'
 import { ComponentProps, useEffect, useState } from 'react'
 
 import { Manga } from '@/types/manga'
 
-import IconLink from '../icons/IconLink'
 import IconLogout from '../icons/IconLogout'
 import LogoFacebook from '../icons/LogoFacebook'
 import LogoLine from '../icons/LogoLine'
@@ -65,30 +65,29 @@ export default function ShareButton({ manga, ...props }: Props) {
   return (
     <>
       <button aria-label="공유하기" onClick={() => setIsOpened(true)} {...props}>
-        <IconLogout className="w-6 rotate-270" />
+        <IconLogout className="size-6 rotate-270" />
       </button>
       <Modal onClose={() => setIsOpened(false)} open={isOpened} showCloseButton showDragButton>
         <div className="flex flex-col gap-4 p-4 sm:p-6 border-2 bg-zinc-900 rounded-2xl min-w-3xs max-w-prose">
           <h2 className="text-lg sm:text-xl text-center font-semibold pt-2">공유하기</h2>
 
           {supportsNativeShare && (
-            <button
-              aria-label="기기 공유"
-              className="flex justify-center items-center gap-2 text-sm font-semibold rounded-xl p-3 w-full transition bg-zinc-800 hover:bg-zinc-700 active:scale-95"
-              onClick={handleNativeShare}
-              type="button"
-            >
-              <IconLogout className="w-5 h-5 rotate-270" />
-              기기 공유
-            </button>
-          )}
-
-          {supportsNativeShare && (
-            <div className="flex items-center gap-3">
-              <div className="flex-1 border-t border-zinc-700" />
-              <span className="text-xs text-zinc-500">또는</span>
-              <div className="flex-1 border-t border-zinc-700" />
-            </div>
+            <>
+              <button
+                aria-label="기기 공유"
+                className="flex justify-center items-center gap-2 text-sm font-semibold rounded-xl p-3 w-full transition bg-zinc-800 hover:bg-zinc-700 active:scale-95"
+                onClick={handleNativeShare}
+                type="button"
+              >
+                <IconLogout className="size-5 rotate-270" />
+                기기 공유
+              </button>
+              <div className="flex items-center gap-3">
+                <div className="flex-1 border-t border-zinc-700" />
+                <span className="text-xs text-zinc-500">또는</span>
+                <div className="flex-1 border-t border-zinc-700" />
+              </div>
+            </>
           )}
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
@@ -98,12 +97,12 @@ export default function ShareButton({ manga, ...props }: Props) {
               return (
                 <button
                   aria-label={`${platform.name}에 공유하기`}
-                  className={`flex flex-col items-center justify-center gap-2 p-3 sm:p-4 rounded-xl ${platform.color} ${platform.hoverColor} transition active:scale-95 touch-manipulation`}
+                  className={`flex flex-col items-center justify-center gap-2 p-2 sm:p-4 rounded-xl ${platform.color} ${platform.hoverColor} transition active:scale-95 touch-manipulation`}
                   key={platform.name}
                   onClick={() => platform.action(currentUrl, sharingText)}
                   type="button"
                 >
-                  <Icon className="w-6 h-6 sm:w-7 sm:h-7" />
+                  <Icon className="size-6 sm:size-7" />
                   <span className="text-xs font-medium">{platform.name}</span>
                 </button>
               )
@@ -125,7 +124,7 @@ export default function ShareButton({ manga, ...props }: Props) {
               onClick={handleCopy}
               type="button"
             >
-              <IconLink className="w-5 h-5" />
+              <Link className="size-5" />
               링크 복사하기
             </button>
           </div>
