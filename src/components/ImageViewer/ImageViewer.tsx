@@ -56,6 +56,11 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
   const isTouchMode = navMode === 'touch'
   const isWidthFit = screenFit === 'width'
 
+  const topButtonClassName = 'rounded-full active:text-zinc-500 hover:bg-zinc-800 transition p-2'
+
+  const bottomButtonClassName =
+    'rounded-full bg-zinc-100 p-2 py-1 hover:bg-foreground active:bg-zinc-400 disabled:bg-zinc-400 disabled:text-zinc-500 min-w-20 transition'
+
   const handleIntervalChange = useCallback(
     (index: number) => {
       setImageIndex(index)
@@ -90,23 +95,19 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
         className="fixed top-0 left-0 right-0 z-20 bg-background/80 backdrop-blur border-b border-zinc-500 px-safe transition opacity-0 pointer-events-none
         aria-current:opacity-100 aria-current:pointer-events-auto"
       >
-        <div
-          className="flex gap-2 items-center justify-between p-3 select-none
-          [&_button]:rounded-full [&_button]:active:text-zinc-500 [&_button]:hover:bg-zinc-800 [&_button]:transition [&_button]:p-2
-          [&_a]:rounded-full [&_a]:active:text-zinc-500 [&_a]:hover:bg-zinc-800 [&_a]:transition [&_a]:p-2"
-        >
+        <div className="flex gap-2 items-center justify-between p-3 select-none">
           <div className="flex gap-1">
-            <button aria-label="뒤로가기" onClick={() => router.back()}>
+            <button aria-label="뒤로가기" className={topButtonClassName} onClick={() => router.back()}>
               <IconChevronLeft className="size-6" />
             </button>
-            <FullscreenButton />
+            <FullscreenButton className={topButtonClassName} />
           </div>
-          <MangaDetailButton manga={manga} />
+          <MangaDetailButton className={`${topButtonClassName} hover:underline`} manga={manga} />
           <div className="flex gap-1">
-            <Link aria-label="리뷰 보기" href={`/manga/${manga.id}/detail`}>
+            <Link aria-label="리뷰 보기" className={topButtonClassName} href={`/manga/${manga.id}/detail`}>
               <MessageCircle className="size-6" />
             </Link>
-            <ShareButton />
+            <ShareButton className={topButtonClassName} />
           </div>
         </div>
       </div>
@@ -136,14 +137,12 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
         <div className="p-3 grid gap-1.5 select-none">
           {showThumbnails && hasThumbnails && <ThumbnailStrip images={thumbnailImages} />}
           <ImageSlider maxImageIndex={imageCount} />
-          <div
-            className="font-semibold whitespace-nowrap flex-wrap justify-center text-sm flex gap-2 text-background 
-            [&_button]:rounded-full [&_button]:bg-zinc-100 [&_button]:px-2 [&_button]:py-1 [&_button]:hover:bg-foreground [&_button]:active:bg-zinc-400 [&_button]:disabled:bg-zinc-400 [&_button]:disabled:text-zinc-500 [&_button]:min-w-20 [&_button]:transition"
-          >
-            <button onClick={() => setNavMode(isTouchMode ? 'scroll' : 'touch')}>
+          <div className="font-semibold whitespace-nowrap flex-wrap justify-center text-sm flex gap-2 text-background">
+            <button className={bottomButtonClassName} onClick={() => setNavMode(isTouchMode ? 'scroll' : 'touch')}>
               {isTouchMode ? '터치' : '스크롤'}보기
             </button>
             <button
+              className={bottomButtonClassName}
               onClick={() => {
                 correctImageIndex()
                 setPageView(isDoublePage ? 'single' : 'double')
@@ -151,11 +150,17 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
             >
               {isDoublePage ? '두 쪽' : '한 쪽'} 보기
             </button>
-            <button onClick={() => setScreenFit(screenFit === 'all' ? 'width' : isWidthFit ? 'height' : 'all')}>
+            <button
+              className={bottomButtonClassName}
+              onClick={() => setScreenFit(screenFit === 'all' ? 'width' : isWidthFit ? 'height' : 'all')}
+            >
               {screenFit === 'all' ? '화면' : isWidthFit ? '가로' : '세로'} 맞춤
             </button>
             {isDoublePage && (
-              <button className="flex items-center justify-center gap-1" onClick={toggleReadingDirection}>
+              <button
+                className={`${bottomButtonClassName} flex items-center justify-center gap-1`}
+                onClick={toggleReadingDirection}
+              >
                 좌 {readingDirection === 'ltr' ? <ArrowRight className="size-4" /> : <ArrowLeft className="size-4" />}{' '}
                 우
               </button>
@@ -163,6 +168,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
             {isTouchMode && (
               <>
                 <button
+                  className={bottomButtonClassName}
                   onClick={() => {
                     const currentIndex = orientations.indexOf(touchOrientation)
                     const nextIndex = (currentIndex + 1) % orientations.length
@@ -177,16 +183,19 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
               </>
             )}
             {!isTouchMode && (screenFit === 'width' || screenFit === 'all') && (
-              <button onClick={cycleImageWidth}>너비 {imageWidth}%</button>
+              <button className={bottomButtonClassName} onClick={cycleImageWidth}>
+                너비 {imageWidth}%
+              </button>
             )}
             <SlideshowButton
+              className={bottomButtonClassName}
               maxImageIndex={maxImageIndex}
               offset={isDoublePage ? 2 : 1}
               onIntervalChange={handleIntervalChange}
             />
             <button
               aria-disabled={!hasThumbnails}
-              className="flex items-center justify-center gap-1 aria-disabled:opacity-50 aria-disabled:cursor-not-allowed"
+              className={`${bottomButtonClassName} flex items-center justify-center gap-1 aria-disabled:opacity-50 aria-disabled:cursor-not-allowed`}
               onClick={() => hasThumbnails && setShowThumbnails((prev) => !prev)}
               title={hasThumbnails ? '미리보기' : '썸네일이 없어요'}
             >

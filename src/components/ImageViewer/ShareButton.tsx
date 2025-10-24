@@ -1,13 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { ComponentProps, useState } from 'react'
 
 import IconLogout from '../icons/IconLogout'
 import Modal from '../ui/Modal'
 
 type CopyStatus = 'error' | 'idle' | 'success'
 
-export default function ShareButton() {
+export default function ShareButton(props: ComponentProps<'button'>) {
   const [isOpened, setIsOpened] = useState(false)
   const [copyStatus, setCopyStatus] = useState<CopyStatus>('idle')
 
@@ -25,7 +25,7 @@ export default function ShareButton() {
 
   return (
     <>
-      <button aria-label="공유하기" onClick={() => setIsOpened(true)}>
+      <button aria-label="공유하기" onClick={() => setIsOpened(true)} {...props}>
         <IconLogout className="w-6 rotate-270" />
       </button>
       <Modal onClose={() => setIsOpened(false)} open={isOpened} showCloseButton showDragButton>

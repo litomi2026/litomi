@@ -4,6 +4,8 @@ import LogoDiscord from '@/components/icons/LogoDiscord'
 import SEOText from '@/components/SEOText'
 
 export default function Home() {
+  const linkClassName = 'border-2 rounded-lg w-60 py-2 font-semibold'
+
   return (
     <main className="h-dvh flex flex-col items-center justify-center gap-5 mx-auto p-4 text-center">
       <svg className="w-14 shrink-0" viewBox="0 0 100 100">
@@ -30,18 +32,18 @@ export default function Home() {
         버튼을 클릭함으로써, 본인이 19세 이상이거나 현지법상 성인임을 확인하고 해당 콘텐츠 이용에 동의하는 것으로
         간주됩니다.
       </h2>
-      <div className="grid gap-2 [&_a]:border-2 [&_a]:rounded-lg [&_a]:w-60 [&_a]:py-2 [&_a]:font-semibold ">
+      <div className="grid gap-2">
         <Link
-          className="bg-brand-gradient relative text-background before:absolute before:inset-0 before:rounded-lg before:border-2 before:border-foreground/40"
+          className={`${linkClassName} bg-brand-gradient relative text-background before:absolute before:inset-0 before:rounded-lg before:border-2 before:border-foreground/40`}
           href="/new/1"
         >
           19세 이상 성인입니다
         </Link>
-        <Link className="rounded" href="/deterrence">
+        <Link className={`${linkClassName} rounded`} href="/deterrence">
           19세 미만 나가기
         </Link>
         <a
-          className="flex justify-center items-center gap-2 rounded"
+          className={`${linkClassName} flex justify-center items-center gap-2 rounded`}
           href="https://discord.gg/xTrbQaxpyD"
           target="_blank"
         >
