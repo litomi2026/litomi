@@ -40,7 +40,7 @@ export default function ShareButton({ manga, ...props }: Props) {
 
   async function handleNativeShare() {
     try {
-      const sharingText = getSharingText(manga, 'native')
+      const sharingText = getSharingText(manga, 'native', currentUrl)
       await navigator.share({ title: sharingText, url: currentUrl })
       setIsOpened(false)
     } catch (error) {
@@ -68,7 +68,7 @@ export default function ShareButton({ manga, ...props }: Props) {
         <IconLogout className="w-6 rotate-270" />
       </button>
       <Modal onClose={() => setIsOpened(false)} open={isOpened} showCloseButton showDragButton>
-        <div className="flex flex-col gap-4 p-6 border-2 bg-zinc-900 rounded-2xl min-w-3xs max-w-prose">
+        <div className="flex flex-col gap-4 p-4 sm:p-6 border-2 bg-zinc-900 rounded-2xl min-w-3xs max-w-prose">
           <h2 className="text-lg sm:text-xl text-center font-semibold pt-2">공유하기</h2>
 
           {supportsNativeShare && (
@@ -94,7 +94,7 @@ export default function ShareButton({ manga, ...props }: Props) {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
             {sharePlatforms.map((platform) => {
               const Icon = platform.icon
-              const sharingText = getSharingText(manga, platform.name.toLowerCase())
+              const sharingText = getSharingText(manga, platform.name.toLowerCase(), currentUrl)
               return (
                 <button
                   aria-label={`${platform.name}에 공유하기`}
@@ -135,7 +135,7 @@ export default function ShareButton({ manga, ...props }: Props) {
   )
 }
 
-function getSharingText(manga: Manga, platform: string): string {
+function getSharingText(manga: Manga, platform: string, currentUrl: string): string {
   const { title } = manga
 
   // Platform-specific templates optimized for engagement based on viral content research
@@ -143,13 +143,13 @@ function getSharingText(manga: Manga, platform: string): string {
   const templates = {
     x: [
       // Curiosity hook - highest CTR pattern
-      `🔥 ${title} - 이거 레전드 아님...? 👀`,
-      `✨ 이거 진짜...? ${title} 대박 😱`,
+      (t: string) => `🔥 ${t} - 이거 레전드 아님...? 👀`,
+      (t: string) => `✨ 이거 진짜...? ${t} 대박 😱`,
       // FOMO-driven - high urgency
-      `💎 다들 이미 보고 있는 ${title} ㄷㄷ`,
-      `👀 ${title}\n이거 놓치면 후회함`,
+      (t: string) => `💎 다들 이미 보고 있는 ${t} ㄷㄷ`,
+      (t: string) => `👀 ${t}\n이거 놓치면 후회함`,
       // Direct recommendation - personal touch
-      `🎨 ${title} - 완전 숨은 명작`,
+      (t: string) => `🎨 ${t} - 완전 숨은 명작`,
     ],
     facebook: [
       // Longer format works on Facebook with line breaks for visual hierarchy
@@ -180,9 +180,66 @@ function getSharingText(manga: Manga, platform: string): string {
     ],
   }
 
-  const platformTemplates = templates[platform as keyof typeof templates]
-  const selectedTemplate = platformTemplates[Math.floor(Math.random() * platformTemplates.length)]
-  return selectedTemplate
+  if (platform === 'x') {
+    const xTemplates = templates.x
+    const selectedTemplate = xTemplates[Math.floor(Math.random() * xTemplates.length)]
+    const PLACEHOLDER = 'PLACEHOLDER'
+    const templateWithPlaceholder = selectedTemplate(PLACEHOLDER)
+    const templateOverhead = getTwitterCharCount(templateWithPlaceholder) - getTwitterCharCount(PLACEHOLDER)
+    const X_CHAR_LIMIT = 280
+    const EXTRA_SPACE = 10
+    const availableForTitle = X_CHAR_LIMIT - templateOverhead - currentUrl.length - EXTRA_SPACE
+    const truncatedTitle = truncateForTwitter(title, availableForTitle)
+    return selectedTemplate(truncatedTitle)
+  }
+
+  const platformTemplates = templates[platform as keyof typeof templates] as string[]
+  return platformTemplates[Math.floor(Math.random() * platformTemplates.length)]
+}
+
+/**
+ * Calculate Twitter character count (unicode=2, alphabet=1)
+ * Twitter counts characters differently: emojis and non-ASCII chars count as 2
+ */
+function getTwitterCharCount(text: string): number {
+  let count = 0
+  for (const char of text) {
+    const code = char.charCodeAt(0)
+    // ASCII printable characters (space to ~) count as 1
+    // Everything else (emoji, Korean, etc.) counts as 2
+    count += code >= 0x20 && code <= 0x7e ? 1 : 2
+  }
+  return count
+}
+
+/**
+ * Truncate title to fit within Twitter's character limit
+ * Twitter limit: 280 chars (unicode=2, alphabet=1)
+ * URL takes ~23 chars (t.co shortlink)
+ */
+function truncateForTwitter(title: string, maxChars: number): string {
+  const titleCharCount = getTwitterCharCount(title)
+
+  if (titleCharCount <= maxChars) {
+    return title
+  }
+
+  // Truncate and add ellipsis
+  let truncated = ''
+  let currentCount = 0
+  const ellipsis = '...'
+  const ellipsisCount = getTwitterCharCount(ellipsis)
+
+  for (const char of title) {
+    const charCount = char.charCodeAt(0) >= 0x20 && char.charCodeAt(0) <= 0x7e ? 1 : 2
+    if (currentCount + charCount + ellipsisCount > maxChars) {
+      break
+    }
+    truncated += char
+    currentCount += charCount
+  }
+
+  return truncated + ellipsis
 }
 
 const sharePlatforms: SharePlatform[] = [
