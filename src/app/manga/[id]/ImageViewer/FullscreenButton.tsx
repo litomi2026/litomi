@@ -22,7 +22,7 @@ function FullscreenButton(props: ComponentProps<'button'>) {
 
   return (
     <button aria-label="전체화면" onClick={toggleFullScreen} {...props}>
-      <IconMaximize className="w-6" />
+      <IconMaximize className="size-6" />
     </button>
   )
 }
