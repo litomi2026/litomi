@@ -32,9 +32,9 @@ export async function generateMetadata({ params }: PageProps<'/library/[id]'>): 
   }
 
   return {
-    title: `${library.name}`,
+    title: library.name,
     ...generateOpenGraphMetadata({
-      title: `${library.name} - ${SHORT_NAME}`,
+      title: library.name,
       url: `/library/${libraryId}`,
     }),
     alternates: {

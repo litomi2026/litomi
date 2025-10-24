@@ -16,7 +16,7 @@ import Unauthorized from './Unauthorized'
 export const metadata: Metadata = {
   title: '작품 평가',
   ...generateOpenGraphMetadata({
-    title: `작품 평가 - ${SHORT_NAME}`,
+    title: '작품 평가',
     url: '/library/rating',
   }),
   alternates: {
