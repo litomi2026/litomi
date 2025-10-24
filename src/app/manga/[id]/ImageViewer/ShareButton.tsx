@@ -3,14 +3,13 @@
 import { Link } from 'lucide-react'
 import { ComponentProps, useEffect, useState } from 'react'
 
+import IconLogout from '@/components/icons/IconLogout'
+import LogoFacebook from '@/components/icons/LogoFacebook'
+import LogoLine from '@/components/icons/LogoLine'
+import LogoTelegram from '@/components/icons/LogoTelegram'
+import LogoX from '@/components/icons/LogoX'
+import Modal from '@/components/ui/Modal'
 import { Manga } from '@/types/manga'
-
-import IconLogout from '../icons/IconLogout'
-import LogoFacebook from '../icons/LogoFacebook'
-import LogoLine from '../icons/LogoLine'
-import LogoTelegram from '../icons/LogoTelegram'
-import LogoX from '../icons/LogoX'
-import Modal from '../ui/Modal'
 
 type CopyStatus = 'error' | 'idle' | 'success'
 
@@ -41,7 +40,13 @@ export default function ShareButton({ manga, ...props }: Props) {
   async function handleNativeShare() {
     try {
       const sharingText = getSharingText(manga, 'native', currentUrl)
-      await navigator.share({ title: sharingText, url: currentUrl })
+
+      await navigator.share({
+        title: document.title,
+        text: sharingText,
+        url: currentUrl,
+      })
+
       setIsOpened(false)
     } catch (error) {
       if ((error as Error).name !== 'AbortError') {

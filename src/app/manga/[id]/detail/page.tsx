@@ -4,8 +4,8 @@ import { notFound } from 'next/navigation'
 
 import PostList from '@/app/(navigation)/(right-search)/posts/[filter]/PostList'
 import { PostFilter } from '@/app/api/post/schema'
+import RatingInput from '@/app/manga/[id]/ImageViewer/RatingInput'
 import BackButton from '@/components/BackButton'
-import RatingInput from '@/components/ImageViewer/RatingInput'
 import PostCreationForm from '@/components/post/PostCreationForm'
 import { CANONICAL_URL, defaultOpenGraph, SHORT_NAME } from '@/constants'
 

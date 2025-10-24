@@ -3,8 +3,9 @@
 import { memo, useEffect, useId, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-import Modal from '../ui/Modal'
-import Toggle from '../ui/Toggle'
+import Modal from '@/components/ui/Modal'
+import Toggle from '@/components/ui/Toggle'
+
 import { useImageIndexStore } from './store/imageIndex'
 
 type Props = {

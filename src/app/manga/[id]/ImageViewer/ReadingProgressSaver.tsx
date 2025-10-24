@@ -3,11 +3,12 @@
 import ms from 'ms'
 import { useCallback, useEffect, useRef } from 'react'
 
-import { saveReadingProgress } from '@/app/manga/[id]/actions'
-import { useImageIndexStore } from '@/components/ImageViewer/store/imageIndex'
 import { SessionStorageKeyMap } from '@/constants/storage'
 import useActionResponse from '@/hook/useActionResponse'
 import useMeQuery from '@/query/useMeQuery'
+
+import { saveReadingProgress } from '../actions'
+import { useImageIndexStore } from './store/imageIndex'
 
 type Props = {
   mangaId: number

@@ -5,17 +5,16 @@ import dayjs from 'dayjs'
 import Link from 'next/link'
 import { ComponentProps, memo, Suspense, useState } from 'react'
 
+import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from '@/components/card/BookmarkButton'
+import DownloadButton, { DownloadButtonError, DownloadButtonSkeleton } from '@/components/card/DownloadButton'
+import MangaCardStats from '@/components/card/MangaCardStats'
+import MangaMetadataLabel from '@/components/card/MangaMetadataLabel'
+import MangaMetadataLink from '@/components/card/MangaMetadataLink'
+import MangaMetadataList from '@/components/card/MangaMetadataList'
+import MangaTagList from '@/components/card/MangaTagList'
+import Modal from '@/components/ui/Modal'
 import { MANGA_INITIAL_LINES, MAX_MANGA_DESCRIPTION_LENGTH } from '@/constants/policy'
 import { Manga } from '@/types/manga'
-
-import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from '../card/BookmarkButton'
-import DownloadButton, { DownloadButtonError, DownloadButtonSkeleton } from '../card/DownloadButton'
-import MangaCardStats from '../card/MangaCardStats'
-import MangaMetadataLabel from '../card/MangaMetadataLabel'
-import MangaMetadataLink from '../card/MangaMetadataLink'
-import MangaMetadataList from '../card/MangaMetadataList'
-import MangaTagList from '../card/MangaTagList'
-import Modal from '../ui/Modal'
 
 interface Props extends ComponentProps<'button'> {
   manga: Manga

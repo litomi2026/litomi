@@ -3,7 +3,7 @@
 import { ComponentProps, memo } from 'react'
 import { toast } from 'sonner'
 
-import { IconMaximize } from '../icons/IconImageViewer'
+import { IconMaximize } from '@/components/icons/IconImageViewer'
 
 export default memo(FullscreenButton)
 

@@ -2,10 +2,10 @@
 
 import dynamic from 'next/dynamic'
 
-import { useMangaQuery } from '@/app/manga/[id]/useMangaQuery'
-import ImageViewer from '@/components/ImageViewer/ImageViewer'
 import { Manga, MangaError } from '@/types/manga'
 
+import ImageViewer from './ImageViewer/ImageViewer'
+import { useMangaQuery } from './useMangaQuery'
 import usePageMetadata from './usePageMetadata'
 
 const NotFound = dynamic(() => import('./not-found'))
