@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation'
 import { cache, Suspense } from 'react'
 import { z } from 'zod/v4'
 
-import { generateOpenGraphMetadata, SHORT_NAME } from '@/constants'
+import { generateOpenGraphMetadata } from '@/constants'
 import { db } from '@/database/supabase/drizzle'
 import { libraryTable } from '@/database/supabase/schema'
 import { getUserIdFromCookie } from '@/utils/cookie'
@@ -32,9 +32,9 @@ export async function generateMetadata({ params }: PageProps<'/library/[id]'>): 
   }
 
   return {
-    title: `${library.name}`,
+    title: library.name,
     ...generateOpenGraphMetadata({
-      title: `${library.name} - ${SHORT_NAME}`,
+      title: library.name,
       url: `/library/${libraryId}`,
     }),
     alternates: {

@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
-import { generateOpenGraphMetadata, SHORT_NAME } from '@/constants'
+import { generateOpenGraphMetadata } from '@/constants'
 import { BLACKLISTED_MANGA_IDS, MAX_MANGA_DESCRIPTION_LENGTH, MAX_MANGA_TITLE_LENGTH } from '@/constants/policy'
 
 import { getManga } from './common.server'
@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: PageProps<'/manga/[id]'>): Pr
     title: `${slicedTitle}`,
     description: slicedDescription,
     ...generateOpenGraphMetadata({
-      title: `${slicedTitle} - ${SHORT_NAME}`,
+      title: slicedTitle,
       description: slicedDescription,
       images: manga?.images?.[0]?.original?.url ?? `https://soujpa.in/start/${id}/${id}_0.avif`,
       url: `/manga/${id}`,

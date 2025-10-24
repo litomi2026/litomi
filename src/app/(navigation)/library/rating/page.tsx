@@ -3,7 +3,7 @@ import { Metadata } from 'next'
 import { z } from 'zod/v4'
 
 import { encodeRatingCursor } from '@/common/cursor'
-import { generateOpenGraphMetadata, SHORT_NAME } from '@/constants'
+import { generateOpenGraphMetadata } from '@/constants'
 import { RATING_PER_PAGE } from '@/constants/policy'
 import { db } from '@/database/supabase/drizzle'
 import { userRatingTable } from '@/database/supabase/schema'
@@ -16,7 +16,7 @@ import Unauthorized from './Unauthorized'
 export const metadata: Metadata = {
   title: '작품 평가',
   ...generateOpenGraphMetadata({
-    title: `작품 평가 - ${SHORT_NAME}`,
+    title: '작품 평가',
     url: '/library/rating',
   }),
   alternates: {

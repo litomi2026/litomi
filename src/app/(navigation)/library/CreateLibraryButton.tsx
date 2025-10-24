@@ -1,7 +1,7 @@
 'use client'
 
 import { useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import { GETLibraryResponse } from '@/app/api/library/route'
@@ -39,8 +39,9 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
   const [selectedIcon, setSelectedIcon] = useState(DEFAULT_ICONS[0])
   const [isPublic, setIsPublic] = useState(true)
   const queryClient = useQueryClient()
+  const nameInputRef = useRef<HTMLInputElement>(null)
 
-  const handleClose = () => {
+  function handleClose() {
     setIsModalOpen(false)
     setSelectedColor(DEFAULT_COLORS[0])
     setSelectedIcon(DEFAULT_ICONS[0])
@@ -68,6 +69,12 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
       handleClose()
     },
   })
+
+  useEffect(() => {
+    if (isModalOpen) {
+      nameInputRef.current?.focus()
+    }
+  }, [isModalOpen])
 
   return (
     <>
@@ -148,13 +155,13 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
               <input
                 autoCapitalize="off"
                 autoComplete="off"
-                autoFocus
                 className="w-full px-3 py-2 bg-zinc-800 rounded-lg border-2 border-zinc-700 focus:border-zinc-600 outline-none transition text-zinc-100 placeholder-zinc-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={isPending}
                 id="name"
                 maxLength={MAX_LIBRARY_NAME_LENGTH}
                 name="name"
                 placeholder="순애작"
+                ref={nameInputRef}
                 required
                 type="text"
               />

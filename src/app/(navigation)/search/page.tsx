@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import { cookies } from 'next/headers'
 
-import { generateOpenGraphMetadata, SHORT_NAME } from '@/constants'
+import { generateOpenGraphMetadata } from '@/constants'
 import { getCookieJSON } from '@/utils/cookie'
 import { ViewCookie } from '@/utils/param'
 
@@ -14,7 +14,7 @@ import TrendingKeywords from './TrendingKeywords'
 export const metadata: Metadata = {
   title: '검색',
   ...generateOpenGraphMetadata({
-    title: `검색 - ${SHORT_NAME}`,
+    title: '검색',
     url: '/search',
   }),
   alternates: {

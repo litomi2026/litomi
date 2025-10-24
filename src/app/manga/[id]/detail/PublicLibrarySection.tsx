@@ -1,24 +1,23 @@
-'use client'
-
+import { and, desc, eq, sql } from 'drizzle-orm'
 import { Library } from 'lucide-react'
+import { unstable_cache } from 'next/cache'
 import Link from 'next/link'
 
+import { db } from '@/database/supabase/drizzle'
+import { libraryItemTable, libraryTable } from '@/database/supabase/schema'
 import { intToHexColor } from '@/utils/color'
-
-type LibraryData = {
-  id: number
-  name: string
-  description: string | null
-  color: number | null
-  icon: string | null
-  itemCount: number
-}
+import { sec } from '@/utils/date'
 
 type Props = {
-  libraries: LibraryData[]
+  mangaId: number
 }
+export default async function PublicLibrarySection({ mangaId }: Props) {
+  const libraries = await getPublicLibraries(mangaId)
 
-export default function PublicLibrariesSection({ libraries }: Props) {
+  if (libraries.length === 0) {
+    return null
+  }
+
   return (
     <div className="border-b-2 p-4">
       <h3 className="text-sm font-semibold text-zinc-400 mb-3 flex items-center gap-2">
@@ -51,3 +50,23 @@ export default function PublicLibrariesSection({ libraries }: Props) {
     </div>
   )
 }
+
+const getPublicLibraries = unstable_cache(
+  async (mangaId: number) =>
+    db
+      .select({
+        id: libraryTable.id,
+        name: libraryTable.name,
+        description: libraryTable.description,
+        color: libraryTable.color,
+        icon: libraryTable.icon,
+        itemCount: sql<number>`(SELECT COUNT(*) FROM ${libraryItemTable} WHERE ${libraryItemTable.libraryId} = ${libraryTable.id})::int`,
+      })
+      .from(libraryItemTable)
+      .innerJoin(libraryTable, eq(libraryItemTable.libraryId, libraryTable.id))
+      .where(and(eq(libraryItemTable.mangaId, mangaId), eq(libraryTable.isPublic, true)))
+      .orderBy(({ itemCount }) => [desc(itemCount), desc(libraryTable.createdAt)])
+      .limit(10),
+  ['public-libraries'],
+  { tags: ['public-libraries'], revalidate: sec('1 day') },
+)
