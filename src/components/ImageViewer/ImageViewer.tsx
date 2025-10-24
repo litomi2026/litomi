@@ -107,7 +107,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
             <Link aria-label="리뷰 보기" className={topButtonClassName} href={`/manga/${manga.id}/detail`}>
               <MessageCircle className="size-6" />
             </Link>
-            <ShareButton className={topButtonClassName} />
+            <ShareButton className={topButtonClassName} manga={manga} />
           </div>
         </div>
       </div>
