@@ -183,9 +183,7 @@ function getSharingText(manga: Manga, platform: string, currentUrl: string): str
   if (platform === 'x') {
     const xTemplates = templates.x
     const selectedTemplate = xTemplates[Math.floor(Math.random() * xTemplates.length)]
-    const PLACEHOLDER = 'PLACEHOLDER'
-    const templateWithPlaceholder = selectedTemplate(PLACEHOLDER)
-    const templateOverhead = getTwitterCharCount(templateWithPlaceholder) - getTwitterCharCount(PLACEHOLDER)
+    const templateOverhead = getTwitterCharCount(selectedTemplate(''))
     const X_CHAR_LIMIT = 280
     const EXTRA_SPACE = 10
     const availableForTitle = X_CHAR_LIMIT - templateOverhead - currentUrl.length - EXTRA_SPACE
@@ -205,8 +203,6 @@ function getTwitterCharCount(text: string): number {
   let count = 0
   for (const char of text) {
     const code = char.charCodeAt(0)
-    // ASCII printable characters (space to ~) count as 1
-    // Everything else (emoji, Korean, etc.) counts as 2
     count += code >= 0x20 && code <= 0x7e ? 1 : 2
   }
   return count
@@ -225,21 +221,21 @@ function truncateForTwitter(title: string, maxChars: number): string {
   }
 
   // Truncate and add ellipsis
-  let truncated = ''
+  let i = 0
   let currentCount = 0
   const ellipsis = '...'
-  const ellipsisCount = getTwitterCharCount(ellipsis)
+  const ellipsisCount = 3
 
   for (const char of title) {
     const charCount = char.charCodeAt(0) >= 0x20 && char.charCodeAt(0) <= 0x7e ? 1 : 2
     if (currentCount + charCount + ellipsisCount > maxChars) {
       break
     }
-    truncated += char
+    i += 1
     currentCount += charCount
   }
 
-  return truncated + ellipsis
+  return title.slice(0, i) + ellipsis
 }
 
 const sharePlatforms: SharePlatform[] = [
