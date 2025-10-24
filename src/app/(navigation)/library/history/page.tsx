@@ -1,7 +1,7 @@
 import { desc, eq } from 'drizzle-orm'
 import { Metadata } from 'next'
 
-import { generateOpenGraphMetadata, SHORT_NAME } from '@/constants'
+import { generateOpenGraphMetadata } from '@/constants'
 import { READING_HISTORY_PER_PAGE } from '@/constants/policy'
 import { db } from '@/database/supabase/drizzle'
 import { readingHistoryTable } from '@/database/supabase/schema'

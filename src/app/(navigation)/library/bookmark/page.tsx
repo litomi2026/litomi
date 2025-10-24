@@ -2,7 +2,7 @@ import { desc, eq } from 'drizzle-orm'
 import { Metadata } from 'next'
 
 import { encodeBookmarkCursor } from '@/common/cursor'
-import { generateOpenGraphMetadata, SHORT_NAME } from '@/constants'
+import { generateOpenGraphMetadata } from '@/constants'
 import { BOOKMARKS_PER_PAGE } from '@/constants/policy'
 import { db } from '@/database/supabase/drizzle'
 import { bookmarkTable } from '@/database/supabase/schema'

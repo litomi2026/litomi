@@ -148,7 +148,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
               <input
                 autoCapitalize="off"
                 autoComplete="off"
-                autoFocus
+                autoFocus={isModalOpen}
                 className="w-full px-3 py-2 bg-zinc-800 rounded-lg border-2 border-zinc-700 focus:border-zinc-600 outline-none transition text-zinc-100 placeholder-zinc-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={isPending}
                 id="name"
