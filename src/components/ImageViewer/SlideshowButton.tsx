@@ -8,6 +8,7 @@ import Toggle from '../ui/Toggle'
 import { useImageIndexStore } from './store/imageIndex'
 
 type Props = {
+  className?: string
   offset: number
   maxImageIndex: number
   onIntervalChange?: (index: number) => void
@@ -15,7 +16,7 @@ type Props = {
 
 export default memo(SlideshowButton)
 
-function SlideshowButton({ maxImageIndex, offset, onIntervalChange }: Readonly<Props>) {
+function SlideshowButton({ className = '', maxImageIndex, offset, onIntervalChange }: Readonly<Props>) {
   const getImageIndex = useImageIndexStore((state) => state.getImageIndex)
   const [slideshowInterval, setSlideshowInterval] = useState(0)
   const [isOpened, setIsOpened] = useState(false)
@@ -80,7 +81,7 @@ function SlideshowButton({ maxImageIndex, offset, onIntervalChange }: Readonly<P
   return (
     <>
       <button
-        className="px-4 py-2 rounded"
+        className={className}
         onClick={() => (slideshowInterval > 0 ? setSlideshowInterval(0) : setIsOpened(true))}
       >
         {slideshowInterval > 0 ? '중지' : '슬라이드쇼'}

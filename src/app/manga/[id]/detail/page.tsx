@@ -46,7 +46,10 @@ export default async function Page({ params }: PageProps<'/manga/[id]/detail'>) 
   return (
     <>
       <div className="fixed top-0 w-full z-20 flex items-center gap-4 bg-background/90 backdrop-blur border-b-2 p-4">
-        <BackButton className="hover:bg-zinc-500/20 focus-visible:outline-zinc-500 rounded-full p-2 -m-2 transition" />
+        <BackButton
+          className="hover:bg-zinc-500/20 focus-visible:outline-zinc-500 rounded-full p-2 -m-2 transition"
+          fallbackUrl={`/manga/${id}`}
+        />
         <h2 className="text-xl font-bold">작품 상세</h2>
       </div>
       <div className="flex flex-col flex-1 h-full max-w-screen-sm mx-auto pt-16">

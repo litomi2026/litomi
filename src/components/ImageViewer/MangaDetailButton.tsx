@@ -3,7 +3,7 @@
 import { ErrorBoundary } from '@suspensive/react'
 import dayjs from 'dayjs'
 import Link from 'next/link'
-import { memo, Suspense, useState } from 'react'
+import { ComponentProps, memo, Suspense, useState } from 'react'
 
 import { MANGA_INITIAL_LINES, MAX_MANGA_DESCRIPTION_LENGTH } from '@/constants/policy'
 import { Manga } from '@/types/manga'
@@ -17,13 +17,13 @@ import MangaMetadataList from '../card/MangaMetadataList'
 import MangaTagList from '../card/MangaTagList'
 import Modal from '../ui/Modal'
 
-type Props = {
+interface Props extends ComponentProps<'button'> {
   manga: Manga
 }
 
 export default memo(MangaDetailButton)
 
-function MangaDetailButton({ manga }: Readonly<Props>) {
+function MangaDetailButton({ manga, ...props }: Props) {
   const {
     id,
     title,
@@ -56,7 +56,7 @@ function MangaDetailButton({ manga }: Readonly<Props>) {
 
   return (
     <>
-      <button className="hover:underline" onClick={() => setIsOpened(true)} type="button">
+      <button onClick={() => setIsOpened(true)} type="button" {...props}>
         <h1 className="flex-1 text-center line-clamp-1 font-bold text-foreground break-all md:text-lg">{title}</h1>
       </button>
       <Modal className="pb-safe" onClose={() => setIsOpened(false)} open={isOpened} showCloseButton showDragButton>

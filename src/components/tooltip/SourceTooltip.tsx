@@ -12,9 +12,7 @@ export default function SourceTooltip({ disabled }: Readonly<Props>) {
         <p className="text-xs md:text-sm">이미지가 안 보여요!</p>
         <IconInfo className="w-3 md:w-4" />
       </div>
-      <>
-        <HiyobiTooltip />
-      </>
+      <HiyobiTooltip />
     </TooltipPopover>
   )
 }
@@ -47,7 +45,7 @@ function HiyobiTooltip() {
   return (
     <div className="rounded-xl border-2 border-zinc-700 bg-background whitespace-pre-line p-3 text-sm min-w-3xs max-w-xs">
       <p>
-        특정 네트워크로 처음으로 접속 시 hi 모드에서 이미지가 보이지 않는 이슈가 있어요(<code>ERR_TIMED_OUT</code>).{' '}
+        특정 네트워크로 처음으로 접속 시 이미지가 보이지 않는 이슈가 있어요.{' '}
         <a className="text-blue-500" href="https://hiyobi.org" rel="noopener noreferrer" target="_blank">
           hiyobi.org
         </a>{' '}
