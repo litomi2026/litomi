@@ -5,6 +5,7 @@ import dayjs from 'dayjs'
 import Link from 'next/link'
 import { ComponentProps, memo, Suspense, useState } from 'react'
 
+import ArtistMetadataList from '@/components/card/ArtistMetadataList'
 import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from '@/components/card/BookmarkButton'
 import DownloadButton, { DownloadButtonError, DownloadButtonSkeleton } from '@/components/card/DownloadButton'
 import MangaCardStats from '@/components/card/MangaCardStats'
@@ -104,7 +105,7 @@ function MangaDetailButton({ manga, ...props }: Props) {
             {artists && artists.length > 0 && (
               <div className="flex gap-2">
                 <strong>작가</strong>
-                <MangaMetadataList filterType="artist" labeledValues={artists} />
+                <ArtistMetadataList artists={artists} />
               </div>
             )}
             {group && group.length > 0 && (

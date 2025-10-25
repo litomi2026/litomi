@@ -5,6 +5,7 @@ import { memo, ReactNode, Suspense } from 'react'
 import { Manga } from '@/types/manga'
 import { getViewerLink } from '@/utils/manga'
 
+import ArtistMetadataList from './ArtistMetadataList'
 import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from './BookmarkButton'
 import DownloadButton from './DownloadButton'
 import MangaCardDate from './MangaCardDate'
@@ -78,7 +79,7 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
           {artists && artists.length > 0 && (
             <div className="flex gap-1">
               <dt>작가</dt>
-              <MangaMetadataList filterType="artist" labeledValues={artists} />
+              <ArtistMetadataList artists={artists} />
             </div>
           )}
           {group && group.length > 0 && (

@@ -1,5 +1,9 @@
 import { MangaSource } from '@/database/enum'
 
+export interface ArtistWithSponsor extends LabeledValue {
+  sponsors?: SponsorLink[]
+}
+
 export type ImageVariant = {
   url: string
   width?: number
@@ -21,7 +25,7 @@ export type Manga = {
   id: number
   title: string
   images?: ImageWithVariants[]
-  artists?: LabeledValue[]
+  artists?: ArtistWithSponsor[]
   bookmarkCount?: number
   characters?: LabeledValue[]
   count?: number
@@ -55,4 +59,9 @@ export type MangaError = Manga & {
 
 export type MangaTag = LabeledValue & {
   category: string
+}
+
+export type SponsorLink = {
+  platform: string
+  url: string
 }
