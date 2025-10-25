@@ -3,7 +3,8 @@ import { notFound } from 'next/navigation'
 import z from 'zod/v4'
 
 import { fetchMangasFromMultiSources } from '@/common/manga'
-import MangaCard, { MangaCardDonation } from '@/components/card/MangaCard'
+import MangaCard from '@/components/card/MangaCard'
+import MangaCardDonation from '@/components/card/MangaCardDonation'
 import { defaultOpenGraph } from '@/constants'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 

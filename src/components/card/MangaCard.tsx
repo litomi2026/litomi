@@ -18,8 +18,6 @@ import MangaMetadataListWithLink from './MangaMetadataListWithLink'
 import MangaTagList from './MangaTagList'
 import SearchFromHereButton from './SearchFromHereButton'
 
-export { default as MangaCardDonation } from './MangaCardDonation'
-
 type Props = {
   manga: Manga
   index?: number

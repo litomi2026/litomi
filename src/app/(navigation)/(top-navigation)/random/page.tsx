@@ -1,7 +1,8 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
-import MangaCard, { MangaCardDonation } from '@/components/card/MangaCard'
+import MangaCard from '@/components/card/MangaCard'
+import MangaCardDonation from '@/components/card/MangaCardDonation'
 import { createErrorManga } from '@/constants/json'
 import { kHentaiClient } from '@/crawler/k-hentai'
 import { ViewCookie } from '@/utils/param'

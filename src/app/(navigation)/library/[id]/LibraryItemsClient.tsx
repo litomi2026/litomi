@@ -3,7 +3,7 @@
 import { useMemo } from 'react'
 
 import { GETLibraryItemsResponse } from '@/app/api/library/[id]/route'
-import MangaCard, { MangaCardDonation } from '@/components/card/MangaCard'
+import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import useLibraryItemsInfiniteQuery from '@/query/useLibraryItemsInfiniteQuery'
@@ -65,7 +65,7 @@ export default function LibraryItemsClient({ library, initialItems }: Readonly<P
 
         return <SelectableMangaCard index={index} key={mangaId} manga={manga} />
       })}
-      {isLoadingMoreItems && <MangaCardDonation />}
+      {isLoadingMoreItems && <MangaCardSkeleton />}
       <div className="w-full p-4" ref={infiniteScrollTriggerRef} />
     </ul>
   )
