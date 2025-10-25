@@ -1,5 +1,4 @@
 import { Bookmark, Eye, Heart, Star } from 'lucide-react'
-import { memo } from 'react'
 
 import { Manga } from '@/types/manga'
 import { formatNumber } from '@/utils/format'
@@ -9,9 +8,7 @@ type Props = {
   className?: string
 }
 
-export default memo(MangaCardStats)
-
-function MangaCardStats({ manga, className = '' }: Readonly<Props>) {
+export default function MangaCardStats({ manga, className = '' }: Readonly<Props>) {
   const { rating = 0, ratingCount = 0, viewCount, like = 0, likeAnonymous = 0, bookmarkCount = 0 } = manga
   const totalLikes = like + likeAnonymous
 
