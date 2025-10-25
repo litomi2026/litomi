@@ -1,6 +1,7 @@
 import { ErrorBoundary } from '@suspensive/react'
 import { ExternalLink } from 'lucide-react'
 import { memo, ReactNode, Suspense } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 import { Manga } from '@/types/manga'
 import { getViewerLink } from '@/utils/manga'
@@ -31,7 +32,10 @@ export default memo(MangaCard)
 export function MangaCardSkeleton({ children, className = '' }: { children?: ReactNode; className?: string }) {
   return (
     <li
-      className={`animate-fade-in rounded-xl bg-zinc-900 border-2 aspect-[3/4] w-full h-full flex flex-col justify-center items-center gap-1 ${className}`}
+      className={twMerge(
+        'animate-fade-in rounded-xl bg-zinc-900 border-2 aspect-[3/4] w-full h-full flex flex-col justify-center items-center gap-1',
+        className,
+      )}
     >
       {children}
     </li>
