@@ -7,6 +7,7 @@ import IconPlus from '@/components/icons/IconPlus'
 import IconSpinner from '@/components/icons/IconSpinner'
 import IconTrash from '@/components/icons/IconTrash'
 import IconX from '@/components/icons/IconX'
+import CustomSelect from '@/components/ui/CustomSelect'
 import Modal from '@/components/ui/Modal'
 import { NotificationConditionType, NotificationConditionTypeNames } from '@/database/enum'
 import useActionResponse, { getFieldError } from '@/hook/useActionResponse'
@@ -168,20 +169,18 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
             <div className="space-y-2">
               {Array.from({ length: conditionCount }, (_, index) => (
                 <div className="flex flex-col sm:flex-row gap-2" key={index}>
-                  <select
-                    className="px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100
-                      focus:outline-none focus:ring-2 focus:ring-brand-end/50 focus:border-transparent appearance-none cursor-pointer
-                      disabled:opacity-50 transition"
-                    defaultValue={editingCriteria?.conditions[index]?.type || NotificationConditionType.SERIES}
+                  <CustomSelect
+                    className="sm:w-40"
+                    defaultValue={(
+                      editingCriteria?.conditions[index]?.type || NotificationConditionType.SERIES
+                    ).toString()}
                     disabled={isPending}
                     name={`condition-type-${index}`}
-                  >
-                    {Object.entries(NotificationConditionTypeNames).map(([value, label]) => (
-                      <option key={value} value={value}>
-                        {label}
-                      </option>
-                    ))}
-                  </select>
+                    options={Object.entries(NotificationConditionTypeNames).map(([value, label]) => ({
+                      value,
+                      label,
+                    }))}
+                  />
                   <div className="flex gap-2 flex-1">
                     <input
                       autoCapitalize="off"

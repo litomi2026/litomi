@@ -9,6 +9,7 @@ import { toast } from 'sonner'
 import IconFilter from '@/components/icons/IconFilter'
 import IconSearch from '@/components/icons/IconSearch'
 import IconSpinner from '@/components/icons/IconSpinner'
+import CustomSelect from '@/components/ui/CustomSelect'
 import { QueryKeys } from '@/constants/query'
 import { CensorshipKey } from '@/database/enum'
 import useActionResponse from '@/hook/useActionResponse'
@@ -119,21 +120,19 @@ export default function Censorships() {
                 value={searchQuery}
               />
             </div>
-            <div className="bg-zinc-800 rounded-lg border-2 flex items-center">
-              <select
-                className="pl-4 mr-2 py-2 focus:border-zinc-600 transition disabled:opacity-50"
-                disabled={isLoading || isDeleting}
-                onChange={(e) => setFilterKey(e.target.value === '' ? null : Number(e.target.value))}
-                value={filterKey ?? ''}
-              >
-                <option value="">모든 유형</option>
-                {Object.entries(CENSORSHIP_KEY_LABELS).map(([key, label]) => (
-                  <option key={key} value={key}>
-                    {label}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <CustomSelect
+              className="w-40"
+              disabled={isLoading || isDeleting}
+              onChange={(value) => setFilterKey(value === '' ? null : Number(value))}
+              options={[
+                { value: '', label: '모든 유형' },
+                ...Object.entries(CENSORSHIP_KEY_LABELS).map(([key, label]) => ({
+                  value: key,
+                  label,
+                })),
+              ]}
+              value={filterKey?.toString() ?? ''}
+            />
           </div>
 
           {/* Selection Actions */}
