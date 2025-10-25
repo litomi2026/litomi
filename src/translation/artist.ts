@@ -1,5 +1,6 @@
 import 'server-only'
 
+import { getArtistSponsors } from '@/sponsor/artist'
 import artistTranslationJSON from '@/translation/artist.json'
 
 import { Multilingual, normalizeValue, translateValue } from './common'
@@ -28,6 +29,7 @@ export function translateArtistList(artistList: string[] | undefined, locale: ke
     return {
       value: normalizedValue,
       label: translateValue(ARTIST_TRANSLATION, normalizedValue, locale),
+      links: getArtistSponsors(normalizedValue),
     }
   })
 }

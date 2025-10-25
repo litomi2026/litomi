@@ -78,6 +78,18 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       return new Response('Not Found', { status: 404, headers: notFoundHeaders })
     }
 
+    if ('isError' in manga) {
+      const errorHeaders = createCacheControlHeaders({
+        browser: {
+          public: true,
+          maxAge: 3,
+          sMaxAge: sec('10 seconds'),
+        },
+      })
+
+      return Response.json(manga, { headers: errorHeaders })
+    }
+
     // NOTE: 첫번쨰 이미지만 확인함
     const firstImageURL = manga.images?.[0]?.original?.url ?? manga.images?.[0]?.thumbnail?.url ?? ''
     const optimalCacheDuration = calculateOptimalCacheDuration([firstImageURL])

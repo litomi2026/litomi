@@ -1,7 +1,8 @@
 import { memo, useCallback } from 'react'
 
-import IconSpinner from '../icons/IconSpinner'
-import Slider from '../ui/Slider'
+import IconSpinner from '@/components/icons/IconSpinner'
+import Slider from '@/components/ui/Slider'
+
 import { useImageIndexStore } from './store/imageIndex'
 import { usePageViewStore } from './store/pageView'
 import { useVirtualScrollStore } from './store/virtualizer'

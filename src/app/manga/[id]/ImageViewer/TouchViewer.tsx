@@ -3,20 +3,20 @@
 import Link from 'next/link'
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
 
-import { MangaIdSearchParam } from '@/app/manga/[id]/common'
-import { PageView } from '@/components/ImageViewer/store/pageView'
-import { ReadingDirection } from '@/components/ImageViewer/store/readingDirection'
-import { ScreenFit } from '@/components/ImageViewer/store/screenFit'
-import { useTouchOrientationStore } from '@/components/ImageViewer/store/touchOrientation'
+import IconSpinner from '@/components/icons/IconSpinner'
+import MangaImage from '@/components/MangaImage'
 import { TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT } from '@/constants/policy'
-import useImageNavigation from '@/hook/useImageNavigation'
 import { Manga } from '@/types/manga'
 
-import IconSpinner from '../icons/IconSpinner'
-import MangaImage from '../MangaImage'
+import { MangaIdSearchParam } from '../common'
 import RatingInput from './RatingInput'
 import { useBrightnessStore } from './store/brightness'
 import { useImageIndexStore } from './store/imageIndex'
+import { PageView } from './store/pageView'
+import { ReadingDirection } from './store/readingDirection'
+import { ScreenFit } from './store/screenFit'
+import { useTouchOrientationStore } from './store/touchOrientation'
+import useImageNavigation from './useImageNavigation'
 
 const HORIZONTAL_SWIPE_THRESHOLD = 50 // 가로 스와이프 임계값 (px)
 const VERTICAL_SWIPE_THRESHOLD = 10 // 세로 스와이프 임계값 (px)

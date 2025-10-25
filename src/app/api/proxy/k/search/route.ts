@@ -1,7 +1,7 @@
 import { GETProxyKSearchSchema } from '@/app/api/proxy/k/search/schema'
 import { BLACKLISTED_MANGA_IDS, MAX_KHENTAI_SEARCH_QUERY_LENGTH } from '@/constants/policy'
 import { getCategories, kHentaiClient, KHentaiMangaSearchOptions } from '@/crawler/k-hentai'
-import { createCacheControl, createCacheControlHeaders, handleRouteError } from '@/crawler/proxy-utils'
+import { createCacheControlHeaders, handleRouteError } from '@/crawler/proxy-utils'
 import { trendingKeywordsRedisService } from '@/services/TrendingKeywordsRedisService'
 import { Manga } from '@/types/manga'
 import { sec } from '@/utils/date'

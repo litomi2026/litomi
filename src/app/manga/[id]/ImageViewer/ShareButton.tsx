@@ -1,16 +1,15 @@
 'use client'
 
+import { Link } from 'lucide-react'
 import { ComponentProps, useEffect, useState } from 'react'
 
+import IconLogout from '@/components/icons/IconLogout'
+import LogoFacebook from '@/components/icons/LogoFacebook'
+import LogoLine from '@/components/icons/LogoLine'
+import LogoTelegram from '@/components/icons/LogoTelegram'
+import LogoX from '@/components/icons/LogoX'
+import Modal from '@/components/ui/Modal'
 import { Manga } from '@/types/manga'
-
-import IconLink from '../icons/IconLink'
-import IconLogout from '../icons/IconLogout'
-import LogoFacebook from '../icons/LogoFacebook'
-import LogoLine from '../icons/LogoLine'
-import LogoTelegram from '../icons/LogoTelegram'
-import LogoX from '../icons/LogoX'
-import Modal from '../ui/Modal'
 
 type CopyStatus = 'error' | 'idle' | 'success'
 
@@ -41,7 +40,13 @@ export default function ShareButton({ manga, ...props }: Props) {
   async function handleNativeShare() {
     try {
       const sharingText = getSharingText(manga, 'native', currentUrl)
-      await navigator.share({ title: sharingText, url: currentUrl })
+
+      await navigator.share({
+        title: document.title,
+        text: sharingText,
+        url: currentUrl,
+      })
+
       setIsOpened(false)
     } catch (error) {
       if ((error as Error).name !== 'AbortError') {
@@ -65,30 +70,29 @@ export default function ShareButton({ manga, ...props }: Props) {
   return (
     <>
       <button aria-label="공유하기" onClick={() => setIsOpened(true)} {...props}>
-        <IconLogout className="w-6 rotate-270" />
+        <IconLogout className="size-6 rotate-270" />
       </button>
       <Modal onClose={() => setIsOpened(false)} open={isOpened} showCloseButton showDragButton>
         <div className="flex flex-col gap-4 p-4 sm:p-6 border-2 bg-zinc-900 rounded-2xl min-w-3xs max-w-prose">
           <h2 className="text-lg sm:text-xl text-center font-semibold pt-2">공유하기</h2>
 
           {supportsNativeShare && (
-            <button
-              aria-label="기기 공유"
-              className="flex justify-center items-center gap-2 text-sm font-semibold rounded-xl p-3 w-full transition bg-zinc-800 hover:bg-zinc-700 active:scale-95"
-              onClick={handleNativeShare}
-              type="button"
-            >
-              <IconLogout className="w-5 h-5 rotate-270" />
-              기기 공유
-            </button>
-          )}
-
-          {supportsNativeShare && (
-            <div className="flex items-center gap-3">
-              <div className="flex-1 border-t border-zinc-700" />
-              <span className="text-xs text-zinc-500">또는</span>
-              <div className="flex-1 border-t border-zinc-700" />
-            </div>
+            <>
+              <button
+                aria-label="기기 공유"
+                className="flex justify-center items-center gap-2 text-sm font-semibold rounded-xl p-3 w-full transition bg-zinc-800 hover:bg-zinc-700 active:scale-95"
+                onClick={handleNativeShare}
+                type="button"
+              >
+                <IconLogout className="size-5 rotate-270" />
+                기기 공유
+              </button>
+              <div className="flex items-center gap-3">
+                <div className="flex-1 border-t border-zinc-700" />
+                <span className="text-xs text-zinc-500">또는</span>
+                <div className="flex-1 border-t border-zinc-700" />
+              </div>
+            </>
           )}
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
@@ -98,12 +102,12 @@ export default function ShareButton({ manga, ...props }: Props) {
               return (
                 <button
                   aria-label={`${platform.name}에 공유하기`}
-                  className={`flex flex-col items-center justify-center gap-2 p-3 sm:p-4 rounded-xl ${platform.color} ${platform.hoverColor} transition active:scale-95 touch-manipulation`}
+                  className={`flex flex-col items-center justify-center gap-2 p-2 sm:p-4 rounded-xl ${platform.color} ${platform.hoverColor} transition active:scale-95 touch-manipulation`}
                   key={platform.name}
                   onClick={() => platform.action(currentUrl, sharingText)}
                   type="button"
                 >
-                  <Icon className="w-6 h-6 sm:w-7 sm:h-7" />
+                  <Icon className="size-6 sm:size-7" />
                   <span className="text-xs font-medium">{platform.name}</span>
                 </button>
               )
@@ -125,7 +129,7 @@ export default function ShareButton({ manga, ...props }: Props) {
               onClick={handleCopy}
               type="button"
             >
-              <IconLink className="w-5 h-5" />
+              <Link className="size-5" />
               링크 복사하기
             </button>
           </div>
@@ -143,8 +147,8 @@ function getSharingText(manga: Manga, platform: string, currentUrl: string): str
   const templates = {
     x: [
       // Curiosity hook - highest CTR pattern
-      (t: string) => `🔥 ${t} - 이거 레전드 아님...? 👀`,
-      (t: string) => `✨ 이거 진짜...? ${t} 대박 😱`,
+      (t: string) => `🔥 ${t} - 이거 레전드 아님...?`,
+      (t: string) => `😱 이거 진짜...? ${t} 대박`,
       // FOMO-driven - high urgency
       (t: string) => `💎 다들 이미 보고 있는 ${t} ㄷㄷ`,
       (t: string) => `👀 ${t}\n이거 놓치면 후회함`,
@@ -168,13 +172,13 @@ function getSharingText(manga: Manga, platform: string, currentUrl: string): str
     telegram: [
       // Community-focused, group sharing optimized
       `💎 ${title}\n그룹에 공유하고 싶은 작품!`,
-      `🔥 ${title}\n이거 완전 레전드 👀`,
+      `🔥 ${title}\n이거 완전 레전드`,
       `✨ ${title} - 숨은 명작 발견`,
       `🎨 ${title}\n다들 이거 봐야 함`,
     ],
     native: [
       // For native device sharing (iOS/Android share sheet)
-      `🔥 ${title} - 이거 대박 👀`,
+      `🔥 ${title} - 이거 대박`,
       `✨ ${title} 추천!`,
       `💎 ${title} - 숨은 명작`,
     ],

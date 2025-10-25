@@ -4,9 +4,9 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { memo, useCallback, useRef } from 'react'
 import { useInView } from 'react-intersection-observer'
 
+import MangaImage from '@/components/MangaImage'
 import { ImageVariant } from '@/types/manga'
 
-import MangaImage from '../MangaImage'
 import { useImageIndexStore } from './store/imageIndex'
 import { usePageViewStore } from './store/pageView'
 import { useVirtualScrollStore } from './store/virtualizer'

@@ -4,11 +4,11 @@ import { useInView } from 'react-intersection-observer'
 import { List, RowComponentProps, useDynamicRowHeight, useListRef } from 'react-window'
 
 import { MangaIdSearchParam } from '@/app/manga/[id]/common'
+import IconSpinner from '@/components/icons/IconSpinner'
+import MangaImage from '@/components/MangaImage'
 import { useImageStatus } from '@/hook/useImageStatus'
 import { Manga } from '@/types/manga'
 
-import IconSpinner from '../icons/IconSpinner'
-import MangaImage from '../MangaImage'
 import RatingInput from './RatingInput'
 import { useImageIndexStore } from './store/imageIndex'
 import { useImageWidthStore } from './store/imageWidth'

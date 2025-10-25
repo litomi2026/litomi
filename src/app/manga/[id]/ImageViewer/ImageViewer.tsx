@@ -6,14 +6,9 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
-import { useImageWidthStore } from '@/components/ImageViewer/store/imageWidth'
-import { useNavigationModeStore } from '@/components/ImageViewer/store/navigationMode'
-import { useReadingDirectionStore } from '@/components/ImageViewer/store/readingDirection'
-import { useScreenFitStore } from '@/components/ImageViewer/store/screenFit'
-import { orientations, useTouchOrientationStore } from '@/components/ImageViewer/store/touchOrientation'
+import { IconChevronLeft } from '@/components/icons/IconImageViewer'
 import { type Manga } from '@/types/manga'
 
-import { IconChevronLeft } from '../icons/IconImageViewer'
 import FullscreenButton from './FullscreenButton'
 import ImageSlider from './ImageSlider'
 import MangaDetailButton from './MangaDetailButton'
@@ -22,7 +17,12 @@ import ResumeReadingToast from './ResumeReadingToast'
 import ShareButton from './ShareButton'
 import SlideshowButton from './SlideshowButton'
 import { useImageIndexStore } from './store/imageIndex'
+import { useImageWidthStore } from './store/imageWidth'
+import { useNavigationModeStore } from './store/navigationMode'
 import { usePageViewStore } from './store/pageView'
+import { useReadingDirectionStore } from './store/readingDirection'
+import { useScreenFitStore } from './store/screenFit'
+import { orientations, useTouchOrientationStore } from './store/touchOrientation'
 import { useVirtualScrollStore } from './store/virtualizer'
 import ThumbnailStrip from './ThumbnailStrip'
 import TouchViewer from './TouchViewer'
@@ -59,7 +59,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
   const topButtonClassName = 'rounded-full active:text-zinc-500 hover:bg-zinc-800 transition p-2'
 
   const bottomButtonClassName =
-    'rounded-full bg-zinc-100 p-2 py-1 hover:bg-foreground active:bg-zinc-400 disabled:bg-zinc-400 disabled:text-zinc-500 min-w-20 transition'
+    'rounded-full bg-foreground p-2 py-1 active:bg-zinc-400 disabled:bg-zinc-400 disabled:text-zinc-500 min-w-20 transition'
 
   const handleIntervalChange = useCallback(
     (index: number) => {

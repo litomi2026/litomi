@@ -17,13 +17,17 @@ export type LabeledValue = {
   value: string
 }
 
+export interface LabeledValueWithLink extends LabeledValue {
+  links?: LabeledValue[]
+}
+
 export type Manga = {
   id: number
   title: string
   images?: ImageWithVariants[]
-  artists?: LabeledValue[]
+  artists?: LabeledValueWithLink[]
   bookmarkCount?: number
-  characters?: LabeledValue[]
+  characters?: LabeledValueWithLink[]
   count?: number
   date?: string
   description?: string
