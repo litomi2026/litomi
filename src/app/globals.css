@@ -72,6 +72,10 @@
   --default-transition-duration: 300ms;
 }
 
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   color: var(--color-foreground);
   background: var(--color-background);
