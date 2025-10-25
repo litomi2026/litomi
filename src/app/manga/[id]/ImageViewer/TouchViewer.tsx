@@ -477,6 +477,7 @@ function TouchViewerItem({ offset, manga, pageView, readingDirection }: Readonly
         <Link
           className="p-4 py-2 text-sm font-medium text-foreground bg-background border border-foreground/20 rounded-lg hover:bg-foreground/10 transition"
           href={`/manga/${id}/detail`}
+          onClick={(e) => e.stopPropagation()}
         >
           작품 후기 보기
         </Link>

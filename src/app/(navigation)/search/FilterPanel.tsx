@@ -6,6 +6,7 @@ import { createPortal } from 'react-dom'
 
 import IconSpinner from '@/components/icons/IconSpinner'
 import IconX from '@/components/icons/IconX'
+import CustomSelect from '@/components/ui/CustomSelect'
 import { formatLocalDate } from '@/utils/date'
 
 import type { FilterKey, FilterState } from './constants'
@@ -167,10 +168,10 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
       }
     }
 
-    window.addEventListener('keydown', handleEscKey)
+    document.addEventListener('keydown', handleEscKey)
 
     return () => {
-      window.removeEventListener('keydown', handleEscKey)
+      document.removeEventListener('keydown', handleEscKey)
     }
   }, [show, onClose])
 
@@ -213,19 +214,12 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
           {/* Sort */}
           <div>
             <label htmlFor="sort">{FILTER_CONFIG.sort.label}</label>
-            <select
-              className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100
-                focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:border-transparent appearance-none"
+            <CustomSelect
               id="sort"
-              onChange={(e) => handleFilterChange('sort', e.target.value)}
+              onChange={(value) => handleFilterChange('sort', value)}
+              options={FILTER_CONFIG.sort.options}
               value={filters.sort ?? ''}
-            >
-              {FILTER_CONFIG.sort.options.map((option: { value: string; label: string }) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+            />
             {filters.sort === 'random' && (
               <p className="mt-1 text-xs text-zinc-500">랜덤 정렬은 최대 1분 간격으로 결과가 업데이트돼요</p>
             )}

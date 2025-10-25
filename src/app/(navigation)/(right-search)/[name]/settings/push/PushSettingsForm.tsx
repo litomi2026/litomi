@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation'
 import { ReactNode } from 'react'
 import { toast } from 'sonner'
 
+import CustomSelect from '@/components/ui/CustomSelect'
 import Toggle from '@/components/ui/Toggle'
 import useActionResponse, { getFormField } from '@/hook/useActionResponse'
 import { getUsernameFromParam } from '@/utils/param'
@@ -80,38 +81,29 @@ export default function PushSettingsForm({ initialSettings }: Props) {
         />
         <div className="grid grid-cols-2 gap-2 whitespace-nowrap sm:flex sm:items-center sm:gap-3">
           <div className="flex items-center gap-2">
-            <select
-              className="bg-zinc-900 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-sm transition
-                focus:outline-none focus:border-brand-end/50 focus:ring-1 focus:ring-brand-end/20
-                hover:border-zinc-700 cursor-pointer w-full sm:w-auto"
-              defaultValue={defaultQuietStart}
+            <CustomSelect
+              className="w-full sm:w-24"
+              defaultValue={defaultQuietStart.toString()}
               key={localQuietStart}
               name="quietStart"
-            >
-              {hourOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+              options={hourOptions.map((option) => ({
+                value: option.value.toString(),
+                label: option.label,
+              }))}
+            />
             <span className="text-xs sm:text-sm text-zinc-400">부터</span>
           </div>
           <div className="flex items-center gap-2">
-            <select
-              className="bg-zinc-900 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-sm
-                transition
-                focus:outline-none focus:border-brand-end/50 focus:ring-1 focus:ring-brand-end/20
-                hover:border-zinc-700 cursor-pointer w-full sm:w-auto"
-              defaultValue={defaultQuietEnd}
+            <CustomSelect
+              className="w-full sm:w-24"
+              defaultValue={defaultQuietEnd.toString()}
               key={localQuietEnd}
               name="quietEnd"
-            >
-              {hourOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+              options={hourOptions.map((option) => ({
+                value: option.value.toString(),
+                label: option.label,
+              }))}
+            />
             <span className="text-xs sm:text-sm text-zinc-400">까지</span>
           </div>
         </div>
@@ -125,21 +117,19 @@ export default function PushSettingsForm({ initialSettings }: Props) {
         />
       </ToggleSection>
       <ToggleSection description="하루 최대 알림 개수" title="일일 제한">
-        <select
-          className="bg-zinc-900 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-sm
-            transition
-            focus:outline-none focus:border-brand-end/50 focus:ring-1 focus:ring-brand-end/20
-            hover:border-zinc-700 cursor-pointer min-w-[80px]"
-          defaultValue={defaultMaxDaily}
+        <CustomSelect
+          className="min-w-[80px]"
+          defaultValue={defaultMaxDaily.toString()}
           key={initialSettings.maxDaily}
           name="maxDaily"
-        >
-          <option value={5}>5개</option>
-          <option value={10}>10개</option>
-          <option value={20}>20개</option>
-          <option value={50}>50개</option>
-          <option value={999}>무제한</option>
-        </select>
+          options={[
+            { value: '5', label: '5개' },
+            { value: '10', label: '10개' },
+            { value: '20', label: '20개' },
+            { value: '50', label: '50개' },
+            { value: '999', label: '무제한' },
+          ]}
+        />
       </ToggleSection>
       <button
         className="px-4 py-2.5 mt-2 relative bg-brand-end font-medium text-background rounded-lg transition text-sm
