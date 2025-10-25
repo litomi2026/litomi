@@ -71,7 +71,7 @@ export default function MangaCardDonation() {
                   className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition-colors text-sm font-medium"
                   href="https://x.com/litomi_in"
                   onClick={() => handleSocialClick('x_twitter')}
-                  rel="noopener noreferrer"
+                  rel="noopener"
                   target="_blank"
                 >
                   <LogoX className="size-4" />
@@ -81,7 +81,7 @@ export default function MangaCardDonation() {
                   className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition-colors text-sm font-medium"
                   href="https://github.com/gwak2837/litomi"
                   onClick={() => handleSocialClick('github')}
-                  rel="noopener noreferrer"
+                  rel="noopener"
                   target="_blank"
                 >
                   <LogoGitHub className="size-4" />
@@ -91,7 +91,7 @@ export default function MangaCardDonation() {
                   className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition-colors text-sm font-medium"
                   href="https://discord.gg/xTrbQaxpyD"
                   onClick={() => handleSocialClick('discord')}
-                  rel="noopener noreferrer"
+                  rel="noopener"
                   target="_blank"
                 >
                   <LogoDiscord className="size-4" />
@@ -106,7 +106,7 @@ export default function MangaCardDonation() {
                   className="py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition-colors text-sm font-medium text-center"
                   href="https://patreon.com/litomi"
                   onClick={() => handleDonationClick('patreon')}
-                  rel="noopener noreferrer"
+                  rel="noopener"
                   target="_blank"
                 >
                   Patreon
@@ -115,7 +115,7 @@ export default function MangaCardDonation() {
                   className="py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition-colors text-sm font-medium text-center"
                   href="https://ko-fi.com/litomi"
                   onClick={() => handleDonationClick('ko-fi')}
-                  rel="noopener noreferrer"
+                  rel="noopener"
                   target="_blank"
                 >
                   Ko-fi
@@ -124,7 +124,7 @@ export default function MangaCardDonation() {
                   className="col-span-2 py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition-colors text-sm font-medium text-center"
                   href="https://velog.io/@gwak2837/%EC%A0%9C%EC%A3%BC-%EC%82%BC%EB%8B%A4%EC%88%98"
                   onClick={() => handleDonationClick('coupang_partners')}
-                  rel="noopener noreferrer"
+                  rel="noopener"
                   target="_blank"
                 >
                   (광고) 쿠팡 파트너스

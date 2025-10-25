@@ -11,6 +11,7 @@ import { translateType } from '@/translation/type'
 import { Manga } from '@/types/manga'
 
 import { NotFoundError, ParseError } from '../errors'
+import { hentKorClient } from '../hentkor'
 import { ProxyClient, ProxyClientConfig } from '../proxy'
 import { isUpstreamServerError } from '../proxy-utils'
 import { HitomiFile, HitomiGallery, Tag } from './types'
@@ -79,16 +80,20 @@ class HitomiClient {
   }
 
   private async convertHitomiGalleryToManga(gallery: HitomiGallery): Promise<Manga> {
+    const mangaId = Number(gallery.id)
     const locale = 'ko' // TODO: Get from user preferences or context
     const artistValues = gallery.artists?.map(({ artist }) => artist)
     const characterValues = gallery.characters?.map(({ character }) => character)
     const groupValues = gallery.groups?.map(({ group }) => group)
     const seriesValues = gallery.parodys?.map(({ parody }) => parody)
     const languageValues = gallery.languages?.map(({ name }) => name) ?? [gallery.language]
-    const imageURLs = await Promise.all(gallery.files.map((file) => this.getImageURL(gallery.id, file)))
+
+    // NOTE: hitomi 사이트 이미지는 referer 헤더가 없으면 못 보기에, hentkor에서 이미지 URL을 가져오도록 함
+    // const imageURLs = await Promise.all(gallery.files.map((file) => this.getImageURL(gallery.id, file)))
+    const imageURLs = hentKorClient.fetchMangaImages(mangaId, gallery.files.length)
 
     return {
-      id: Number(gallery.id),
+      id: mangaId,
       artists: translateArtistList(artistValues, locale),
       group: translateGroupList(groupValues, locale),
       title: gallery.title,
