@@ -147,8 +147,8 @@ function getSharingText(manga: Manga, platform: string, currentUrl: string): str
   const templates = {
     x: [
       // Curiosity hook - highest CTR pattern
-      (t: string) => `🔥 ${t} - 이거 레전드 아님...? 👀`,
-      (t: string) => `✨ 이거 진짜...? ${t} 대박 😱`,
+      (t: string) => `🔥 ${t} - 이거 레전드 아님...?`,
+      (t: string) => `😱 이거 진짜...? ${t} 대박`,
       // FOMO-driven - high urgency
       (t: string) => `💎 다들 이미 보고 있는 ${t} ㄷㄷ`,
       (t: string) => `👀 ${t}\n이거 놓치면 후회함`,
@@ -172,13 +172,13 @@ function getSharingText(manga: Manga, platform: string, currentUrl: string): str
     telegram: [
       // Community-focused, group sharing optimized
       `💎 ${title}\n그룹에 공유하고 싶은 작품!`,
-      `🔥 ${title}\n이거 완전 레전드 👀`,
+      `🔥 ${title}\n이거 완전 레전드`,
       `✨ ${title} - 숨은 명작 발견`,
       `🎨 ${title}\n다들 이거 봐야 함`,
     ],
     native: [
       // For native device sharing (iOS/Android share sheet)
-      `🔥 ${title} - 이거 대박 👀`,
+      `🔥 ${title} - 이거 대박`,
       `✨ ${title} 추천!`,
       `💎 ${title} - 숨은 명작`,
     ],

@@ -59,7 +59,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
   const topButtonClassName = 'rounded-full active:text-zinc-500 hover:bg-zinc-800 transition p-2'
 
   const bottomButtonClassName =
-    'rounded-full bg-zinc-100 p-2 py-1 hover:bg-foreground active:bg-zinc-400 disabled:bg-zinc-400 disabled:text-zinc-500 min-w-20 transition'
+    'rounded-full bg-foreground p-2 py-1 active:bg-zinc-400 disabled:bg-zinc-400 disabled:text-zinc-500 min-w-20 transition'
 
   const handleIntervalChange = useCallback(
     (index: number) => {
