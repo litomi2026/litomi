@@ -1,5 +1,4 @@
 import { Bookmark, Eye, Heart, Star } from 'lucide-react'
-import { memo } from 'react'
 
 import { Manga } from '@/types/manga'
 import { formatNumber } from '@/utils/format'
@@ -9,9 +8,7 @@ type Props = {
   className?: string
 }
 
-export default memo(MangaCardStats)
-
-function MangaCardStats({ manga, className = '' }: Readonly<Props>) {
+export default function MangaCardStats({ manga, className = '' }: Readonly<Props>) {
   const { rating = 0, ratingCount = 0, viewCount, like = 0, likeAnonymous = 0, bookmarkCount = 0 } = manga
   const totalLikes = like + likeAnonymous
 
@@ -28,14 +25,11 @@ function MangaCardStats({ manga, className = '' }: Readonly<Props>) {
         </div>
       )}
       {rating > 0 && (
-        <div className="flex items-center gap-1.5">
-          <Star className="size-[1em] shrink-0 text-yellow-500" />
-          <span className="font-medium tabular-nums">
-            {rating.toFixed(1)}
-            {ratingCount > 0 && (
-              <span className="text-zinc-500 font-normal ml-0.5">({formatNumber(ratingCount, 'ko')}개)</span>
-            )}
-          </span>
+        <div className="flex items-center">
+          <RatingStars rating={rating} />
+          {ratingCount > 0 && (
+            <span className="text-zinc-500 text-xs ml-0.5">({formatNumber(ratingCount, 'ko')}개)</span>
+          )}
         </div>
       )}
       {totalLikes > 0 && (
@@ -44,6 +38,32 @@ function MangaCardStats({ manga, className = '' }: Readonly<Props>) {
           <span className="tabular-nums">{formatNumber(totalLikes, 'ko')}</span>
         </div>
       )}
+    </div>
+  )
+}
+
+function RatingStars({ rating }: { rating: number }) {
+  const fullStars = Math.floor(rating)
+  const partialStar = rating % 1
+  const hasPartialStar = partialStar > 0
+  const emptyStars = 5 - fullStars - (hasPartialStar ? 1 : 0)
+
+  return (
+    <div aria-label={`평점 ${rating.toFixed(1)}점`} className="flex items-center gap-0.5">
+      {Array.from({ length: fullStars }).map((_, i) => (
+        <Star className="size-[1em] shrink-0 text-brand-end" key={`full-${i}`} />
+      ))}
+      {hasPartialStar && (
+        <div className="relative size-[1em] shrink-0">
+          <div className="absolute z-10 inset-0 overflow-hidden" style={{ width: `${partialStar * 100}%` }}>
+            <Star className="size-[1em] shrink-0 text-brand-end" />
+          </div>
+          <Star className="size-[1em] absolute inset-0 text-zinc-600" />
+        </div>
+      )}
+      {Array.from({ length: emptyStars }).map((_, i) => (
+        <Star className="size-[1em] shrink-0 text-zinc-600" key={`empty-${i}`} />
+      ))}
     </div>
   )
 }

@@ -12,6 +12,12 @@ const ARTIST_SPONSORS: Record<string, ArtistSponsor[]> = {
       value: 'https://fantia.jp/fanclubs/1654',
     },
   ],
+  dikk0: [
+    {
+      label: 'Fantia',
+      value: 'https://fantia.jp/fanclubs/4798',
+    },
+  ],
   quzilax: [
     {
       label: 'X',

@@ -1,7 +1,7 @@
 'use client'
 
 import { GETReadingHistoryResponse } from '@/app/api/reading-history/route'
-import MangaCard, { MangaCardDonation } from '@/components/card/MangaCard'
+import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { ViewCookie } from '@/utils/param'
@@ -71,7 +71,7 @@ export default function HistoryPageClient({ initialData }: Props) {
         ))}
         {isFetchingNextPage && (
           <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[ViewCookie.CARD]} gap-2 p-2`}>
-            <MangaCardDonation />
+            <MangaCardSkeleton />
           </ul>
         )}
       </div>

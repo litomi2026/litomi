@@ -1,16 +1,19 @@
 'use client'
 
-import { useMemo } from 'react'
+import { Fragment, useMemo } from 'react'
 
 import { useSearchQuery } from '@/app/(navigation)/search/useSearchQuery'
 import { Sort } from '@/app/api/proxy/k/search/schema'
-import MangaCard, { MangaCardDonation, MangaCardSkeleton } from '@/components/card/MangaCard'
+import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
+import MangaCardDonation from '@/components/card/MangaCardDonation'
 import MangaCardImage from '@/components/card/MangaCardImage'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import { ViewCookie } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 import RandomRefreshButton from '../(top-navigation)/RandomRefreshButton'
+
+const DONATION_CARD_INTERVAL = 30
 
 type Props = {
   view: ViewCookie
@@ -29,10 +32,9 @@ export default function SearchResults({ view, sort }: Props) {
   })
 
   if (isLoading) {
-    const skeletonCount = view === ViewCookie.IMAGE ? 11 : 5
+    const skeletonCount = view === ViewCookie.IMAGE ? 12 : 6
     return (
       <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2 grow`}>
-        <MangaCardDonation />
         {Array.from({ length: skeletonCount }).map((_, i) => (
           <MangaCardSkeleton key={i} />
         ))}
@@ -61,10 +63,13 @@ export default function SearchResults({ view, sort }: Props) {
               />
             </li>
           ) : (
-            <MangaCard index={i} key={manga.id} manga={manga} showSearchFromNextButton />
+            <Fragment key={manga.id}>
+              <MangaCard index={i} manga={manga} showSearchFromNextButton />
+              {i % DONATION_CARD_INTERVAL === DONATION_CARD_INTERVAL - 1 && <MangaCardDonation />}
+            </Fragment>
           ),
         )}
-        {isFetchingNextPage && <MangaCardDonation />}
+        {isFetchingNextPage && <MangaCardSkeleton />}
       </ul>
       {isRandomSort ? (
         <RandomRefreshButton

@@ -4,7 +4,7 @@ import { Star } from 'lucide-react'
 import { useState } from 'react'
 
 import { GETRatingsResponse } from '@/app/api/rating/route'
-import MangaCard, { MangaCardDonation } from '@/components/card/MangaCard'
+import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { Manga } from '@/types/manga'
@@ -152,7 +152,7 @@ function MangaList({ items, mangaMap, ratingItems, isSelectionMode, isFetchingNe
 
         return <SelectableMangaCard index={index} key={mangaId} manga={manga} />
       })}
-      {isFetchingNextPage && <MangaCardDonation />}
+      {isFetchingNextPage && <MangaCardSkeleton />}
     </ul>
   )
 }
