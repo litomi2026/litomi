@@ -1,6 +1,6 @@
 import 'server-only'
 
-import { getArtistSponsors } from '@/database/artistSponsors'
+import { getArtistSponsors } from '@/sponsor/artist'
 import artistTranslationJSON from '@/translation/artist.json'
 
 import { Multilingual, normalizeValue, translateValue } from './common'
