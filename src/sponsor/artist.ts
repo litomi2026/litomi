@@ -1,21 +1,21 @@
 import 'server-only'
 
 export type ArtistSponsor = {
-  platform: string
-  url: string
+  label: string
+  value: string
 }
 
 const ARTIST_SPONSORS: Record<string, ArtistSponsor[]> = {
   asanagi: [
     {
-      platform: 'Fantia',
-      url: 'https://fantia.jp/fanclubs/1654',
+      label: 'Fantia',
+      value: 'https://fantia.jp/fanclubs/1654',
     },
   ],
   quzilax: [
     {
-      platform: 'X',
-      url: 'https://x.com/quzilaxxxx',
+      label: 'X',
+      value: 'https://x.com/quzilaxxxx',
     },
   ],
 }

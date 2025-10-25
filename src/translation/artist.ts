@@ -29,7 +29,7 @@ export function translateArtistList(artistList: string[] | undefined, locale: ke
     return {
       value: normalizedValue,
       label: translateValue(ARTIST_TRANSLATION, normalizedValue, locale),
-      sponsors: getArtistSponsors(normalizedValue),
+      links: getArtistSponsors(normalizedValue),
     }
   })
 }

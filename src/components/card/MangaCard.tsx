@@ -5,7 +5,6 @@ import { memo, ReactNode, Suspense } from 'react'
 import { Manga } from '@/types/manga'
 import { getViewerLink } from '@/utils/manga'
 
-import ArtistMetadataList from './ArtistMetadataList'
 import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from './BookmarkButton'
 import DownloadButton from './DownloadButton'
 import MangaCardDate from './MangaCardDate'
@@ -14,6 +13,7 @@ import MangaCardStats from './MangaCardStats'
 import MangaLanguageLink from './MangaLanguageLink'
 import MangaMetadataLink from './MangaMetadataLink'
 import MangaMetadataList from './MangaMetadataList'
+import MangaMetadataListWithLink from './MangaMetadataListWithLink'
 import MangaTagList from './MangaTagList'
 import SearchFromHereButton from './SearchFromHereButton'
 
@@ -79,7 +79,7 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
           {artists && artists.length > 0 && (
             <div className="flex gap-1">
               <dt>작가</dt>
-              <ArtistMetadataList artists={artists} />
+              <MangaMetadataListWithLink filterType="artist" items={artists} />
             </div>
           )}
           {group && group.length > 0 && (
@@ -97,7 +97,7 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
           {characters && characters.length > 0 && (
             <div className="flex gap-1">
               <dt>캐릭터</dt>
-              <MangaMetadataList filterType="character" labeledValues={characters} />
+              <MangaMetadataListWithLink filterType="character" items={characters} />
             </div>
           )}
           {uploader && (

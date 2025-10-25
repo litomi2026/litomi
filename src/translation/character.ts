@@ -1,5 +1,6 @@
 import 'server-only'
 
+import { getCharacterSponsors } from '@/sponsor/character'
 import characterTranslationJSON from '@/translation/character.json'
 
 import { Multilingual, normalizeValue, translateValue } from './common'
@@ -28,6 +29,7 @@ export function translateCharacterList(characterList: string[] | undefined, loca
     return {
       value: normalizedValue,
       label: translateValue(CHARACTER_TRANSLATION, normalizedValue, locale),
+      links: getCharacterSponsors(normalizedValue),
     }
   })
 }
