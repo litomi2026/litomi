@@ -598,7 +598,13 @@
   "smoking": { "en": "smoking", "ko": "흡연" },
   "snuff": { "en": "snuff", "ko": "살해" },
   "solo": { "en": "solo", "ko": "혼자", "ja": "ソロ", "zh-CN": "单人", "zh-TW": "單人" },
-  "solo_action": { "en": "solo action", "ko": "혼자 즐기기", "ja": "ソロアクション", "zh-CN": "单人动作", "zh-TW": "單人動作" },
+  "solo_action": {
+    "en": "solo action",
+    "ko": "혼자 즐기기",
+    "ja": "ソロアクション",
+    "zh-CN": "单人动作",
+    "zh-TW": "單人動作"
+  },
   "spanking": { "en": "spanking", "ko": "스팽킹", "ja": "スパンキング", "zh-CN": "打屁股" },
   "squirting": { "en": "squirting", "ko": "분수", "ja": "潮吹き", "zh-CN": "喷水" },
   "standing_sex": { "en": "standing sex", "ko": "입위", "ja": "立位", "zh-CN": "站立式" },

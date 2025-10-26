@@ -1,13 +1,13 @@
 import 'server-only'
 
-import tagCategoryJSON from '@/translation/tag-category.json'
-import tagMaleFemaleMixedJSON from '@/translation/tag-male-female.json'
-import tagMixedJSON from '@/translation/tag-mixed.json'
-import tagOtherJSON from '@/translation/tag-other.json'
-import tagTranslationJSON from '@/translation/tag.json'
 import { MangaTag } from '@/types/manga'
 
 import { Multilingual, normalizeValue } from './common'
+import tagCategoryJSON from './tag-category.json'
+import tagMaleFemaleMixedJSON from './tag-male-female.json'
+import tagMixedJSON from './tag-mixed.json'
+import tagOtherJSON from './tag-other.json'
+import tagTranslationJSON from './tag.json'
 
 const TAG_MALE_FEMALE_MIXEDTRANSLATION: Record<string, Multilingual | undefined> = tagMaleFemaleMixedJSON
 const TAG_OTHER_TRANSLATION: Record<string, Multilingual | undefined> = tagOtherJSON

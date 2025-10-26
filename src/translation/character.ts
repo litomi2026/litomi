@@ -1,8 +1,8 @@
 import 'server-only'
 
-import { getCharacterSponsors } from '@/sponsor/character'
-import characterTranslationJSON from '@/translation/character.json'
+import { getCharacterSponsors } from '@/sponsor'
 
+import characterTranslationJSON from './character.json'
 import { Multilingual, normalizeValue, translateValue } from './common'
 
 const CHARACTER_TRANSLATION: Record<string, Multilingual> = characterTranslationJSON

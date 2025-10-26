@@ -1,8 +1,7 @@
 import 'server-only'
 
-import seriesTranslationJSON from '@/translation/series.json'
-
 import { Multilingual, normalizeValue, translateValue } from './common'
+import seriesTranslationJSON from './series.json'
 
 const SERIES_TRANSLATION: Record<string, Multilingual> = seriesTranslationJSON
 
