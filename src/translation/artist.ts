@@ -1,8 +1,8 @@
 import 'server-only'
 
-import { getArtistSponsors } from '@/sponsor/artist'
-import artistTranslationJSON from '@/translation/artist.json'
+import { getArtistSponsors } from '@/sponsor'
 
+import artistTranslationJSON from './artist.json'
 import { Multilingual, normalizeValue, translateValue } from './common'
 
 const ARTIST_TRANSLATION: Record<string, Multilingual> = artistTranslationJSON

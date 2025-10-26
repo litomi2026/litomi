@@ -1,8 +1,7 @@
 import 'server-only'
 
-import typeTranslationJSON from '@/translation/type.json'
-
 import { Multilingual, normalizeValue, translateValue } from './common'
+import typeTranslationJSON from './type.json'
 
 const TYPE_TRANSLATION: Record<string, Multilingual> = typeTranslationJSON
 

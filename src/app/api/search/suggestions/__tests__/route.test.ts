@@ -201,15 +201,15 @@ describe('GET /api/search/suggestions', () => {
     })
 
     describe('특수 태그', () => {
-      test('"lolic" 값을 검색했을 때 전체 카테고리와 함께 "female:lolicon" 값만 반환한다', async () => {
+      test('"lolic" 값을 검색했을 때 "lolic"이 포함된 태그들을 반환한다', async () => {
         const request = createRequest('lolic')
         const response = await GET(request)
         const data = (await response.json()) as GETSearchSuggestionsResponse
 
         expect(response.status).toBe(200)
         expect(data.length).toBeGreaterThan(0)
-        expect(data.every((item) => item.value.includes(':lolic'))).toBe(true)
         expect(data.some((item) => item.value === 'female:lolicon' && item.label === '여:로리콘')).toBe(true)
+        expect(data.some((item) => item.value === 'female:low_lolicon')).toBe(true)
       })
 
       test('"female:lolic" 값을 검색했을 때 "female:lolicon" 값만 반환한다', async () => {
@@ -272,6 +272,35 @@ describe('GET /api/search/suggestions', () => {
       })
     })
 
+    describe('캐릭터', () => {
+      test('"gainsborough" 값을 검색했을 때 aerith_gainsborough를 반환한다', async () => {
+        const request = createRequest('gainsborough')
+        const response = await GET(request)
+        const data = (await response.json()) as GETSearchSuggestionsResponse
+
+        expect(response.status).toBe(200)
+        expect(data.some((item) => item.value === 'character:aerith_gainsborough')).toBe(true)
+      })
+
+      test('"aerith_gainsborough" 값을 검색했을 때 해당 값을 반환한다', async () => {
+        const request = createRequest('aerith_gainsborough')
+        const response = await GET(request)
+        const data = (await response.json()) as GETSearchSuggestionsResponse
+
+        expect(response.status).toBe(200)
+        expect(data.some((item) => item.value === 'character:aerith_gainsborough')).toBe(true)
+      })
+
+      test('"게인브루그" 값을 검색했을 때 aerith_gainsborough를 반환한다 (번역된 단어)', async () => {
+        const request = createRequest('게인브루그')
+        const response = await GET(request)
+        const data = (await response.json()) as GETSearchSuggestionsResponse
+
+        expect(response.status).toBe(200)
+        expect(data.some((item) => item.value === 'character:aerith_gainsborough')).toBe(true)
+      })
+    })
+
     describe('시리즈', () => {
       describe('카테고리', () => {
         test('"series" 값을 검색했을 때 series 카테고리를 반환한다', async () => {
@@ -291,7 +320,8 @@ describe('GET /api/search/suggestions', () => {
 
           expect(response.status).toBe(200)
           expect(data.some((item) => item.value === 'series:' && item.label === '시리즈')).toBe(true)
-          expect(data.every((item) => item.value.startsWith('series:') && item.label.startsWith('시리즈'))).toBe(true)
+          // 번역된 단어에 "시리즈"가 포함된 경우도 반환될 수 있음
+          expect(data.every((item) => item.label.includes('시리즈'))).toBe(true)
         })
 
         test('"series:" 값을 검색했을 때 시리즈 목록을 반환한다', async () => {
@@ -325,6 +355,15 @@ describe('GET /api/search/suggestions', () => {
         expect(data.every((item) => item.label.includes('동방'))).toBe(true)
       })
 
+      test('"프로젝트" 값을 검색했을 때 Touhou Project를 반환한다 (번역된 단어)', async () => {
+        const request = createRequest('프로젝트')
+        const response = await GET(request)
+        const data = (await response.json()) as GETSearchSuggestionsResponse
+
+        expect(response.status).toBe(200)
+        expect(data.some((item) => item.value === 'series:touhou_project')).toBe(true)
+      })
+
       test('"series:touhou_project" 값을 검색했을 때 해당 값을 반환한다', async () => {
         const request = createRequest('series:touhou_project')
         const response = await GET(request)
@@ -343,7 +382,7 @@ describe('GET /api/search/suggestions', () => {
         expect(response.status).toBe(200)
         expect(data.some((item) => item.value === 'series:fate_grand_order')).toBe(true)
         expect(data.some((item) => item.value === 'series:fate_stay_night')).toBe(true)
-        expect(data.every((item) => item.value.includes('fate'))).toBe(true)
+        expect(data.length).toBeGreaterThan(0)
       })
     })
 

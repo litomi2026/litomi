@@ -59,6 +59,35 @@ function getLabels(
   }
 }
 
+function insertTranslationWords(trie: SuggestionTrie, translatedText: string, suggestion: SuggestionItem) {
+  trie.insert(translatedText.toLowerCase(), suggestion)
+  const words = translatedText.split(/[\s\u3000・]+/) // space, full-width space, middle dot
+
+  for (const word of words) {
+    const trimmedWord = word.trim()
+    if (trimmedWord && trimmedWord.length > 2) {
+      // Only insert words longer than 2 characters to avoid noise
+      trie.insert(trimmedWord.toLowerCase(), suggestion)
+    }
+  }
+}
+
+function insertWithWordVariants(trie: SuggestionTrie, key: string, suggestion: SuggestionItem) {
+  trie.insert(key, suggestion)
+
+  // If the key contains underscores, also insert words after each underscore
+  if (key.includes('_')) {
+    const parts = key.split('_')
+    for (let i = 1; i < parts.length; i++) {
+      const word = parts[i]
+      if (word && word.length > 2) {
+        // Only insert words longer than 2 characters to avoid noise
+        trie.insert(word, suggestion)
+      }
+    }
+  }
+}
+
 // Initialize suggestions on module load
 ;(() => {
   // Add category suggestions
@@ -168,17 +197,12 @@ function getLabels(
     ;['female', 'male'].forEach((category) => {
       const value = `${category}:${tag}`
       const labels = getLabels(tag, { [tag]: translations }, category)
-
-      // Insert full value
       suggestionTrie.insert(value, { value, labels })
+      insertWithWordVariants(suggestionTrie, tag, { value, labels })
 
-      // Insert tag name for direct search
-      suggestionTrie.insert(tag, { value, labels })
-
-      // Insert translated names
       Object.values(translations).forEach((translation) => {
         if (typeof translation === 'string' && translation !== tag) {
-          suggestionTrie.insert(translation.toLowerCase(), { value, labels })
+          insertTranslationWords(suggestionTrie, translation, { value, labels })
         }
       })
     })
@@ -188,22 +212,12 @@ function getLabels(
   Object.entries(tagMixedTranslations).forEach(([tag, translations]) => {
     const value = `mixed:${tag}`
     const labels = getLabels(tag, { [tag]: translations }, 'mixed')
-
     suggestionTrie.insert(value, { value, labels })
-    suggestionTrie.insert(tag, { value, labels })
-
-    // For compound tags like "fff_threesome", also insert the suffix "threesome"
-    if (tag.includes('_')) {
-      const parts = tag.split('_')
-      const suffix = parts[parts.length - 1]
-      if (suffix && suffix.length > 3) {
-        suggestionTrie.insert(suffix, { value, labels })
-      }
-    }
+    insertWithWordVariants(suggestionTrie, tag, { value, labels })
 
     Object.values(translations).forEach((translation) => {
       if (typeof translation === 'string' && translation !== tag) {
-        suggestionTrie.insert(translation.toLowerCase(), { value, labels })
+        insertTranslationWords(suggestionTrie, translation, { value, labels })
       }
     })
   })
@@ -212,13 +226,12 @@ function getLabels(
   Object.entries(tagOtherTranslations).forEach(([tag, translations]) => {
     const value = `other:${tag}`
     const labels = getLabels(tag, { [tag]: translations }, 'other')
-
     suggestionTrie.insert(value, { value, labels })
-    suggestionTrie.insert(tag, { value, labels })
+    insertWithWordVariants(suggestionTrie, tag, { value, labels })
 
     Object.values(translations).forEach((translation) => {
       if (typeof translation === 'string' && translation !== tag) {
-        suggestionTrie.insert(translation.toLowerCase(), { value, labels })
+        insertTranslationWords(suggestionTrie, translation, { value, labels })
       }
     })
   })
@@ -229,13 +242,12 @@ function getLabels(
 
     if (category && tag) {
       const labels = getLabels(tag, { [tag]: translations }, category)
-
       suggestionTrie.insert(fullTag, { value: fullTag, labels })
-      suggestionTrie.insert(tag, { value: fullTag, labels })
+      insertWithWordVariants(suggestionTrie, tag, { value: fullTag, labels })
 
       Object.values(translations).forEach((translation) => {
         if (typeof translation === 'string' && translation !== tag) {
-          suggestionTrie.insert(translation.toLowerCase(), { value: fullTag, labels })
+          insertTranslationWords(suggestionTrie, translation, { value: fullTag, labels })
         }
       })
     }
@@ -266,20 +278,16 @@ function getLabels(
   // Add all series with their translations
   const allSeries = getAllSeriesWithLabels()
   allSeries.forEach((seriesItem) => {
-    // Insert for the full value (e.g., "series:touhou_project")
     suggestionTrie.insert(seriesItem.value, seriesItem)
-
-    // Extract the series key from "series:key"
     const seriesKey = seriesItem.value.replace(/^series:/, '')
-    suggestionTrie.insert(seriesKey, seriesItem)
+    insertWithWordVariants(suggestionTrie, seriesKey, seriesItem)
 
-    // Insert for each translation
     Object.entries(seriesItem.labels).forEach(([_locale, label]) => {
       if (label) {
         // Extract just the series name from the label (e.g., "시리즈:동방 프로젝트" -> "동방 프로젝트")
         const seriesName = label.split(':')[1]
         if (seriesName) {
-          suggestionTrie.insert(seriesName.toLowerCase(), seriesItem)
+          insertTranslationWords(suggestionTrie, seriesName, seriesItem)
         }
       }
     })
@@ -310,20 +318,16 @@ function getLabels(
   // Add all characters with their translations
   const allCharacters = getAllCharactersWithLabels()
   allCharacters.forEach((characterItem) => {
-    // Insert for the full value (e.g., "character:akira_kiyosumi")
     suggestionTrie.insert(characterItem.value, characterItem)
-
-    // Extract the character key from "character:key"
     const characterKey = characterItem.value.replace(/^character:/, '')
-    suggestionTrie.insert(characterKey, characterItem)
+    insertWithWordVariants(suggestionTrie, characterKey, characterItem)
 
-    // Insert for each translation
     Object.entries(characterItem.labels).forEach(([_locale, label]) => {
       if (label) {
         // Extract just the character name from the label (e.g., "캐릭터:키요스미 아키라" -> "키요스미 아키라")
         const characterName = label.split(':')[1]
         if (characterName) {
-          suggestionTrie.insert(characterName.toLowerCase(), characterItem)
+          insertTranslationWords(suggestionTrie, characterName, characterItem)
         }
       }
     })
@@ -354,20 +358,16 @@ function getLabels(
   // Add all artists with their translations
   const allArtists = getAllArtistsWithLabels()
   allArtists.forEach((artistItem) => {
-    // Insert for the full value (e.g., "artist:artist_name")
     suggestionTrie.insert(artistItem.value, artistItem)
-
-    // Extract the artist key from "artist:key"
     const artistKey = artistItem.value.replace(/^artist:/, '')
-    suggestionTrie.insert(artistKey, artistItem)
+    insertWithWordVariants(suggestionTrie, artistKey, artistItem)
 
-    // Insert for each translation
     Object.entries(artistItem.labels).forEach(([_locale, label]) => {
       if (label) {
         // Extract just the artist name from the label (e.g., "작가:아티스트명" -> "아티스트명")
         const artistName = label.split(':')[1]
         if (artistName) {
-          suggestionTrie.insert(artistName.toLowerCase(), artistItem)
+          insertTranslationWords(suggestionTrie, artistName, artistItem)
         }
       }
     })
@@ -398,20 +398,16 @@ function getLabels(
   // Add all groups with their translations
   const allGroups = getAllGroupsWithLabels()
   allGroups.forEach((groupItem) => {
-    // Insert for the full value (e.g., "group:group_name")
     suggestionTrie.insert(groupItem.value, groupItem)
-
-    // Extract the group key from "group:key"
     const groupKey = groupItem.value.replace(/^group:/, '')
-    suggestionTrie.insert(groupKey, groupItem)
+    insertWithWordVariants(suggestionTrie, groupKey, groupItem)
 
-    // Insert for each translation
     Object.entries(groupItem.labels).forEach(([_locale, label]) => {
       if (label) {
         // Extract just the group name from the label (e.g., "그룹:그룹명" -> "그룹명")
         const groupName = label.split(':')[1]
         if (groupName) {
-          suggestionTrie.insert(groupName.toLowerCase(), groupItem)
+          insertTranslationWords(suggestionTrie, groupName, groupItem)
         }
       }
     })

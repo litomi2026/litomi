@@ -1,8 +1,7 @@
 import 'server-only'
 
-import groupTranslationJSON from '@/translation/group.json'
-
 import { Multilingual, normalizeValue, translateValue } from './common'
+import groupTranslationJSON from './group.json'
 
 const GROUP_TRANSLATION: Record<string, Multilingual> = groupTranslationJSON
 

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Ref } from 'react'
 
 import LinkPending from '@/components/LinkPending'
 
@@ -11,10 +12,12 @@ type Props = {
   ariaCurrent?: boolean
   className?: string
   textClassName?: string
+  linkRef?: Ref<HTMLAnchorElement>
 }
 
 export default function KeywordLink({
   keyword,
+  linkRef,
   index,
   onClick,
   onFocus,
@@ -32,6 +35,7 @@ export default function KeywordLink({
       onBlur={onBlur}
       onClick={onClick}
       onFocus={onFocus}
+      ref={linkRef}
       title={keyword}
     >
       <span aria-current={index < 3} className="text-xs font-bold aria-current:text-brand-end">
