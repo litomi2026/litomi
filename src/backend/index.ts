@@ -39,6 +39,8 @@ app.use('/api/*', etag())
 
 app.use(
   languageDetector({
+    lookupQueryString: 'locale',
+    lookupCookie: 'locale',
     supportedLanguages: ['en', 'ko', 'ja', 'zh-CN', 'zh-TW'],
     fallbackLanguage: 'ko',
   }),

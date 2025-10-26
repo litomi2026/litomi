@@ -16,7 +16,7 @@ class NormalizedValueMap {
   }
 }
 
-export function convertQueryKey(query?: string) {
+export function convertToKHentaiKey(query?: string) {
   return query?.replace(/\bid:/gi, 'gid:').replace(/\bseries:/gi, 'parody:')
 }
 

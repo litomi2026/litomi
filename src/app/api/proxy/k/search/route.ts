@@ -1,13 +1,17 @@
+import { cookies } from 'next/headers'
+
 import { GETProxyKSearchSchema } from '@/app/api/proxy/k/search/schema'
 import { BLACKLISTED_MANGA_IDS, MAX_KHENTAI_SEARCH_QUERY_LENGTH } from '@/constants/policy'
+import { CookieKey } from '@/constants/storage'
 import { getCategories, kHentaiClient, KHentaiMangaSearchOptions } from '@/crawler/k-hentai'
 import { createCacheControlHeaders, handleRouteError } from '@/crawler/proxy-utils'
 import { trendingKeywordsRedisService } from '@/services/TrendingKeywordsRedisService'
+import { Locale } from '@/translation/common'
 import { Manga } from '@/types/manga'
 import { sec } from '@/utils/date'
 import { chance } from '@/utils/random-edge'
 
-import { convertQueryKey, filterMangasByMinusPrefix } from './utils'
+import { convertToKHentaiKey, filterMangasByMinusPrefix } from './utils'
 
 export const runtime = 'edge'
 
@@ -19,7 +23,12 @@ export type GETProxyKSearchResponse = {
 export async function GET(request: Request) {
   const url = new URL(request.url)
   const searchParams = Object.fromEntries(url.searchParams)
-  const validation = GETProxyKSearchSchema.safeParse(searchParams)
+  const cookieStore = await cookies()
+
+  const validation = GETProxyKSearchSchema.safeParse({
+    ...searchParams,
+    locale: cookieStore.get(CookieKey.LOCALE)?.value,
+  })
 
   if (!validation.success) {
     return new Response('Bad Request', { status: 400 })
@@ -40,12 +49,13 @@ export async function GET(request: Request) {
     'next-views': nextViews,
     'next-views-id': nextViewsId,
     skip,
+    locale,
   } = validation.data
 
-  const uploaderMatch = query?.match(/\buploader:(\S+)/i)
-  const lowerQuery = convertQueryKey(query?.toLowerCase())
-  const categories = getCategories(lowerQuery)
-  const search = lowerQuery?.replace(/\b(type|uploader):\S+/gi, '').trim()
+  const lowerQuery = convertToKHentaiKey(query?.toLowerCase())
+  const baseSearch = lowerQuery?.replace(/\b(type|uploader):\S+/gi, '').trim()
+  const languageFilter = locale ? getKHentaiLanguageFilter(locale) : ''
+  const search = languageFilter ? `${languageFilter} ${baseSearch}` : baseSearch
 
   if (search && search.length > MAX_KHENTAI_SEARCH_QUERY_LENGTH) {
     return new Response('Bad Request', { status: 400 })
@@ -58,7 +68,7 @@ export async function GET(request: Request) {
     nextViewsId: nextViewsId?.toString(),
     sort,
     offset: skip?.toString(),
-    categories,
+    categories: getCategories(lowerQuery),
     minViews: minView?.toString(),
     maxViews: maxView?.toString(),
     minPages: minPage?.toString(),
@@ -67,15 +77,15 @@ export async function GET(request: Request) {
     endDate: to?.toString(),
     minRating: minRating?.toString(),
     maxRating: maxRating?.toString(),
-    uploader: uploaderMatch?.[1],
+    uploader: query?.match(/\buploader:(\S+)/i)?.[1],
   }
 
   try {
     const revalidate = params.nextId ? sec('30 days') : 0
     const searchedMangas = await kHentaiClient.searchMangas(params, revalidate)
     const hasManga = searchedMangas.length > 0
-
     let nextCursor = null
+
     if (hasManga) {
       const lastManga = searchedMangas[searchedMangas.length - 1]
       if (sort === 'popular') {
@@ -176,4 +186,14 @@ function getCacheControlHeader(params: KHentaiMangaSearchOptions) {
       swr: sec('10 minutes'),
     },
   })
+}
+
+function getKHentaiLanguageFilter(locale: Locale) {
+  return {
+    [Locale.KO]: 'language:korean',
+    [Locale.EN]: 'language:english',
+    [Locale.JA]: 'language:japanese',
+    [Locale.ZH_CN]: 'language:chinese',
+    [Locale.ZH_TW]: 'language:chinese',
+  }[locale]
 }
