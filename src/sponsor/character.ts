@@ -12,6 +12,12 @@ const CHARACTER_SPONSORS: Record<string, CharacterSponsor[]> = {
       value: 'https://www.youtube.com/@shirakamifubuki',
     },
   ],
+  usada_pekora: [
+    {
+      label: 'X',
+      value: 'https://x.com/usadapekora',
+    },
+  ],
 }
 
 export function getCharacterSponsors(characterValue: string): CharacterSponsor[] | undefined {
