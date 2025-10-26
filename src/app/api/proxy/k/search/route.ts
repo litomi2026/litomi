@@ -1,8 +1,5 @@
-import { cookies } from 'next/headers'
-
 import { GETProxyKSearchSchema } from '@/app/api/proxy/k/search/schema'
 import { BLACKLISTED_MANGA_IDS, MAX_KHENTAI_SEARCH_QUERY_LENGTH } from '@/constants/policy'
-import { CookieKey } from '@/constants/storage'
 import { getCategories, kHentaiClient, KHentaiMangaSearchOptions } from '@/crawler/k-hentai'
 import { createCacheControlHeaders, handleRouteError } from '@/crawler/proxy-utils'
 import { trendingKeywordsRedisService } from '@/services/TrendingKeywordsRedisService'
@@ -23,12 +20,7 @@ export type GETProxyKSearchResponse = {
 export async function GET(request: Request) {
   const url = new URL(request.url)
   const searchParams = Object.fromEntries(url.searchParams)
-  const cookieStore = await cookies()
-
-  const validation = GETProxyKSearchSchema.safeParse({
-    ...searchParams,
-    locale: cookieStore.get(CookieKey.LOCALE)?.value,
-  })
+  const validation = GETProxyKSearchSchema.safeParse(searchParams)
 
   if (!validation.success) {
     return new Response('Bad Request', { status: 400 })

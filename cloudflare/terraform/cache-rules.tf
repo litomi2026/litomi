@@ -50,6 +50,10 @@ resource "cloudflare_ruleset" "cache_rules" {
         browser_ttl = {
           mode = "respect_origin"
         }
+        cache_key = {
+          cache_deception_armor      = true
+          ignore_query_strings_order = true
+        }
       }
     },
     {
@@ -67,6 +71,10 @@ resource "cloudflare_ruleset" "cache_rules" {
         }
         browser_ttl = {
           mode = "respect_origin"
+        }
+        cache_key = {
+          cache_deception_armor      = true
+          ignore_query_strings_order = true
         }
       }
     },
@@ -86,6 +94,10 @@ resource "cloudflare_ruleset" "cache_rules" {
         browser_ttl = {
           mode    = "override_origin"
           default = 43200
+        }
+        cache_key = {
+          cache_deception_armor      = true
+          ignore_query_strings_order = true
         }
       }
     }

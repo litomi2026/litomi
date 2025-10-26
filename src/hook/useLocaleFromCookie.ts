@@ -1,13 +1,13 @@
 import Cookies from 'js-cookie'
 import { useEffect, useState } from 'react'
 
-type Locale = 'en' | 'ja' | 'ko' | 'zh-CN' | 'zh-TW'
+import { CookieKey } from '@/constants/storage'
 
 export default function useLocaleFromCookie() {
-  const [locale, setLocale] = useState<Locale>('ko')
+  const [locale, setLocale] = useState('')
 
   useEffect(() => {
-    setLocale((Cookies.get('locale') || 'ko') as Locale)
+    setLocale(Cookies.get(CookieKey.LOCALE) ?? '')
   }, [])
 
   return locale

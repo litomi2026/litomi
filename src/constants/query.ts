@@ -19,7 +19,7 @@ export const QueryKeys = {
 
   manga: (id: number, scope: MangaResponseScope | null) => ['manga', id, scope],
   mangaCard: (id: number) => ['mangaCard', id],
-  search: (searchParams: URLSearchParams) => ['search', Object.fromEntries(searchParams)],
+  search: (searchParams: URLSearchParams, locale: string) => ['search', locale, Object.fromEntries(searchParams)],
   searchSuggestions: (query: string, locale: string) => ['search', 'suggestions', locale, query],
   posts: (filter: PostFilter, mangaId?: number, username?: string) => ['posts', filter, { mangaId, username }],
   readingHistory: (mangaId: number) => ['readingHistory', mangaId],
