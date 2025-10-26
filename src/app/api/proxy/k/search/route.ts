@@ -53,9 +53,9 @@ export async function GET(request: Request) {
   } = validation.data
 
   const lowerQuery = convertToKHentaiKey(query?.toLowerCase())
-  const baseSearch = lowerQuery?.replace(/\b(type|uploader):\S+/gi, '').trim()
+  const baseSearch = lowerQuery?.replace(/\b(type|uploader):\S+/gi, '').trim() ?? ''
   const languageFilter = locale ? getKHentaiLanguageFilter(locale) : ''
-  const search = languageFilter ? `${languageFilter} ${baseSearch}` : baseSearch
+  const search = [languageFilter, baseSearch].filter(Boolean).join(' ')
 
   if (search && search.length > MAX_KHENTAI_SEARCH_QUERY_LENGTH) {
     return new Response('Bad Request', { status: 400 })

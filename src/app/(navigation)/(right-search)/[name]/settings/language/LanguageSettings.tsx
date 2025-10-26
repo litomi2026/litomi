@@ -2,10 +2,13 @@
 
 import { CN, JP, KR, TW, US } from 'country-flag-icons/react/3x2'
 import Cookies from 'js-cookie'
-import { Check } from 'lucide-react'
+import { Check, Globe } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
+import { CookieKey } from '@/constants/storage'
+
 const LANGUAGES = [
+  { code: '', label: '모두 보기', Flag: Globe },
   { code: 'ko', label: '한국어', Flag: KR },
   { code: 'en', label: 'English', Flag: US },
   { code: 'ja', label: '日本語', Flag: JP },
@@ -19,13 +22,18 @@ export default function LanguageSettings() {
   const [selectedLanguage, setSelectedLanguage] = useState('')
 
   function handleLanguageChange(language: LanguageCode) {
-    setSelectedLanguage(language)
-    Cookies.set('locale', language, { expires: 365, path: '/' })
+    if (language === '') {
+      Cookies.remove(CookieKey.LOCALE)
+      setSelectedLanguage('')
+    } else {
+      Cookies.set(CookieKey.LOCALE, language, { expires: 365 })
+      setSelectedLanguage(language)
+    }
   }
 
   // NOTE: 쿠키에서 언어 설정을 불러옴
   useEffect(() => {
-    const savedLanguage = Cookies.get('locale')
+    const savedLanguage = Cookies.get(CookieKey.LOCALE)
     if (savedLanguage) {
       setSelectedLanguage(savedLanguage)
     }
