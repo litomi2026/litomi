@@ -1,7 +1,7 @@
 'use client'
 
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { memo, useCallback, useRef } from 'react'
+import { memo, useCallback, useEffect, useRef } from 'react'
 import { useInView } from 'react-intersection-observer'
 
 import MangaImage from '@/components/MangaImage'
@@ -18,7 +18,7 @@ type Props = {
 export default memo(ThumbnailStrip)
 
 function ThumbnailStrip({ images }: Props) {
-  const { imageIndex, navigateToImageIndex } = useImageIndexStore()
+  const { imageIndex, getImageIndex, navigateToImageIndex } = useImageIndexStore()
   const pageView = usePageViewStore((state) => state.pageView)
   const scrollToRow = useVirtualScrollStore((state) => state.scrollToRow)
   const isDoublePage = pageView === 'double'
@@ -55,6 +55,18 @@ function ThumbnailStrip({ images }: Props) {
       })
     }
   }
+
+  useEffect(() => {
+    const container = scrollContainerRef.current
+    if (!container) return
+
+    const thumbnailElements = container.querySelectorAll('button')
+    const currentImageIndex = getImageIndex()
+    const activeThumbnail = thumbnailElements[currentImageIndex]
+    if (!activeThumbnail) return
+
+    activeThumbnail.scrollIntoView({ inline: 'center' })
+  }, [getImageIndex])
 
   return (
     <div className="relative overflow-hidden flex justify-center">
