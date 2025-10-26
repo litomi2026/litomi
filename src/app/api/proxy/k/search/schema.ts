@@ -1,6 +1,7 @@
 import { z } from 'zod/v4'
 
 import { MAX_SEARCH_QUERY_LENGTH } from '@/constants/policy'
+import { Locale } from '@/translation/common'
 import { ViewCookie } from '@/utils/param'
 
 export enum Sort {
@@ -26,6 +27,7 @@ export const GETProxyKSearchSchema = z
     'next-views': z.coerce.number().int().min(0).optional(),
     'next-views-id': z.coerce.number().int().positive().optional(),
     skip: z.coerce.number().int().min(0).max(10000).optional(),
+    locale: z.enum(Locale).optional(),
   })
   .refine(
     (data) => {

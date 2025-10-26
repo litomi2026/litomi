@@ -2,6 +2,7 @@ export enum CookieKey {
   ACCESS_TOKEN = 'at',
   REFRESH_TOKEN = 'rt',
   TRUSTED_BROWSER_TOKEN = 'tbt',
+  LOCALE = 'locale',
 }
 
 export enum LocalStorageKey {

@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test'
 
 import { Manga } from '@/types/manga'
 
-import { convertQueryKey, filterMangasByMinusPrefix, parseMinusPrefixFilters } from '../utils'
+import { convertToKHentaiKey, filterMangasByMinusPrefix, parseMinusPrefixFilters } from '../utils'
 
 describe('parseMinusPrefixFilters', () => {
   test('language 관련 값이 주어지면 언어 필터를 반환한다', () => {
@@ -246,13 +246,13 @@ describe('filterMangasByMinusPrefix', () => {
 describe('convertQueryKey', () => {
   test('id:12345 -> gid:12345', () => {
     const query = 'id:12345'
-    const result = convertQueryKey(query)
+    const result = convertToKHentaiKey(query)
     expect(result).toBe('gid:12345')
   })
 
   test('series:naruto -> parody:naruto', () => {
     const query = 'series:naruto'
-    const result = convertQueryKey(query)
+    const result = convertToKHentaiKey(query)
     expect(result).toBe('parody:naruto')
   })
 })

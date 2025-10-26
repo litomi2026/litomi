@@ -3,6 +3,7 @@ import { useSearchParams } from 'next/navigation'
 
 import { GETProxyKSearchResponse } from '@/app/api/proxy/k/search/route'
 import { QueryKeys } from '@/constants/query'
+import useLocaleFromCookie from '@/hook/useLocaleFromCookie'
 import { whitelistSearchParams } from '@/utils/param'
 import { handleResponseError } from '@/utils/react-query-error'
 
@@ -16,11 +17,13 @@ export async function searchMangas(searchParams: URLSearchParams) {
 export function useSearchQuery() {
   const searchParams = useSearchParams()
   const whitelisted = whitelistSearchParams(searchParams, SEARCH_PAGE_SEARCH_PARAMS)
+  const locale = useLocaleFromCookie()
 
   return useInfiniteQuery<GETProxyKSearchResponse, Error>({
-    queryKey: QueryKeys.search(whitelisted),
+    queryKey: QueryKeys.search(whitelisted, locale),
     queryFn: ({ pageParam }) => {
       const searchParamsWithCursor = new URLSearchParams(whitelisted)
+
       if (pageParam) {
         const cursor = pageParam.toString()
         if (searchParamsWithCursor.get('sort') === 'popular') {
@@ -32,6 +35,11 @@ export function useSearchQuery() {
         }
         searchParamsWithCursor.delete('skip')
       }
+
+      if (locale) {
+        searchParamsWithCursor.set('locale', locale)
+      }
+
       return searchMangas(searchParamsWithCursor)
     },
     getNextPageParam: (lastPage) => lastPage.nextCursor,
