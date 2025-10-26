@@ -5,10 +5,12 @@ import { useSearchParams } from 'next/navigation'
 export function useSearchFilter(filterPattern: string) {
   const searchParams = useSearchParams()
   const query = searchParams.get('query') ?? ''
-  const isActive = query.includes(filterPattern)
+  const escapedPattern = filterPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const wordBoundaryRegex = new RegExp(`\\b${escapedPattern}\\b`)
+  const isActive = wordBoundaryRegex.test(query)
 
   const newQuery = isActive
-    ? query.replace(filterPattern, '').replace(/\s+/g, ' ').trim()
+    ? query.replace(wordBoundaryRegex, '').replace(/\s+/g, ' ').trim()
     : query
       ? `${query} ${filterPattern}`
       : filterPattern

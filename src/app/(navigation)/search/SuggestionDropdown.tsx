@@ -60,34 +60,32 @@ export default function SuggestionDropdown<T extends SuggestionItem = Suggestion
             <IconSpinner className="w-5 text-zinc-400" />
           </div>
         )}
-        <div aria-busy={isFetching} className="transition aria-busy:opacity-60">
+        <div aria-busy={isFetching} className="transition aria-busy:opacity-60 text-sm font-medium">
           {suggestions.map((suggestion, index) => (
             <button
               aria-current={selectedIndex === index}
-              className="w-full p-4 py-2.5 text-left hover:bg-zinc-700/50 transition flex items-center justify-between aria-current:bg-zinc-700/70"
+              className="w-full p-4 py-2.5 text-left hover:bg-zinc-700/50 transition flex items-center justify-between gap-1.5 overflow-x-auto scrollbar-hidden aria-current:bg-zinc-700/70"
               data-index={index}
               key={suggestion.value}
               onClick={() => onSelect(suggestion)}
               type="button"
             >
-              <div className="flex items-center flex-1 text-sm font-medium">
-                {suggestion.icon}
-                {suggestion.value.endsWith(':') ? (
-                  <>
-                    <span>{renderHighlightedText(suggestion.value, searchTerm)}</span>
-                    <span className="text-zinc-400 text-xs font-normal ml-1.5">{suggestion.label}</span>
-                  </>
-                ) : (
-                  <>
-                    <span>{renderHighlightedText(suggestion.value, searchTerm)}</span>
-                    {suggestion.label !== suggestion.value && (
-                      <span className="text-zinc-400 text-xs font-normal ml-1.5">
-                        {renderHighlightedText(suggestion.label, searchTerm)}
-                      </span>
-                    )}
-                  </>
-                )}
-              </div>
+              {suggestion.icon}
+              {suggestion.value.endsWith(':') ? (
+                <>
+                  <span>{renderHighlightedText(suggestion.value, searchTerm)}</span>
+                  <span className="text-zinc-400 text-xs font-normal">{suggestion.label}</span>
+                </>
+              ) : (
+                <>
+                  <span>{renderHighlightedText(suggestion.value, searchTerm)}</span>
+                  {suggestion.label !== suggestion.value && (
+                    <span className="text-zinc-400 text-xs font-normal">
+                      {renderHighlightedText(suggestion.label, searchTerm)}
+                    </span>
+                  )}
+                </>
+              )}
               {renderRightContent?.(suggestion)}
             </button>
           ))}
