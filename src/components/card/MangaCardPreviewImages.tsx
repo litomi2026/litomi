@@ -24,7 +24,18 @@ function MangaCardPreviewImages({ className, manga, mangaIndex = 0, href }: Read
   const sliderRef = useRef<HTMLAnchorElement>(null)
   const [activeIndex, setActiveIndex] = useState(0)
   const totalSlides = Math.min(images.length, MAX_THUMBNAIL_IMAGES)
+  const prevIndex = (activeIndex - 1 + totalSlides) % totalSlides
+  const nextIndex = (activeIndex + 1) % totalSlides
 
+  // 슬라이더 컨테이너의 scrollLeft만 조정하여 수평 스크롤 제어
+  function scrollToSlide(index: number) {
+    if (!sliderRef.current) return
+    const slider = sliderRef.current
+    const slide = slider.children[index] as HTMLElement
+    slider.scrollTo({ left: slide.offsetLeft })
+  }
+
+  // NOTE: 슬라이드 인디케이터 업데이트
   useEffect(() => {
     const slider = sliderRef.current
     if (!slider) return
@@ -42,21 +53,8 @@ function MangaCardPreviewImages({ className, manga, mangaIndex = 0, href }: Read
     return () => observer.disconnect()
   }, [activeIndex])
 
-  // 좌우 버튼 대상 계산
-  const prevIndex = (activeIndex - 1 + totalSlides) % totalSlides
-  const nextIndex = (activeIndex + 1) % totalSlides
-
-  // 슬라이더 컨테이너의 scrollLeft만 조정하여 수평 스크롤 제어
-  const scrollToSlide = (index: number) => {
-    if (!sliderRef.current) return
-    const slider = sliderRef.current
-    const slide = slider.children[index] as HTMLElement
-    slider.scrollTo({ left: slide.offsetLeft })
-  }
-
   return (
     <>
-      {/* 슬라이드 컨테이너 */}
       <Link className={className} href={href} prefetch={false} ref={sliderRef}>
         <LinkPending
           className="size-6"
@@ -72,18 +70,20 @@ function MangaCardPreviewImages({ className, manga, mangaIndex = 0, href }: Read
           />
         ))}
       </Link>
-
-      {/* 좌우 이동 버튼 (JavaScript로 동적으로 업데이트) */}
-      <div className="[&_button]:[@media(pointer:coarse)]:hidden [&_button]:absolute [&_button]:top-1/2 [&_button]:-translate-y-1/2 [&_button]:z-10 [&_button]:rounded-full [&_button]:bg-zinc-700/50 [&_button]:text-foreground [&_button]:p-2 [&_button]:ring-zinc-400 [&_button]:active:ring-2">
-        <button aria-label="이전 이미지" className="left-1" onClick={() => scrollToSlide(prevIndex)}>
-          <IconPrevPage className="w-4" />
-        </button>
-        <button aria-label="다음 이미지" className="right-1" onClick={() => scrollToSlide(nextIndex)}>
-          <IconNextPage className="w-4" />
-        </button>
-      </div>
-
-      {/* 슬라이드 인디케이터 */}
+      <button
+        aria-label="이전 이미지"
+        className="[@media(pointer:coarse)]:hidden absolute left-1 top-1/2 -translate-y-1/2 z-10 rounded-full bg-zinc-700/50 text-foreground p-2 ring-zinc-400 active:ring-2 transition"
+        onClick={() => scrollToSlide(prevIndex)}
+      >
+        <IconPrevPage className="w-4" />
+      </button>
+      <button
+        aria-label="다음 이미지"
+        className="[@media(pointer:coarse)]:hidden absolute right-1 top-1/2 -translate-y-1/2 z-10 rounded-full bg-zinc-700/50 text-foreground p-2 ring-zinc-400 active:ring-2 transition"
+        onClick={() => scrollToSlide(nextIndex)}
+      >
+        <IconNextPage className="w-4" />
+      </button>
       <div className="absolute z-10 bottom-1 left-1/2 -translate-x-1/2 flex gap-2 [&_div]:w-3 [&_div]:h-3 [&_div]:rounded-full [&_div]:bg-zinc-300 [&_div]:border [&_div]:border-zinc-500 [&_div]:aria-current:bg-brand-gradient">
         {Array.from({ length: totalSlides }).map((_, i) => (
           <div aria-current={i === activeIndex} key={i} />

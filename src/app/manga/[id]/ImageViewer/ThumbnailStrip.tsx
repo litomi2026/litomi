@@ -1,7 +1,7 @@
 'use client'
 
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { memo, useCallback, useEffect, useRef } from 'react'
+import { memo, useEffect, useRef } from 'react'
 import { useInView } from 'react-intersection-observer'
 
 import MangaImage from '@/components/MangaImage'
@@ -26,13 +26,10 @@ function ThumbnailStrip({ images }: Props) {
   const { ref: firstImageRef, inView: isFirstImageInView } = useInView()
   const { ref: lastImageRef, inView: isLastImageInView } = useInView()
 
-  const handleThumbnailClick = useCallback(
-    (index: number) => {
-      navigateToImageIndex(index)
-      scrollToRow(isDoublePage ? Math.floor(index / 2) : index)
-    },
-    [isDoublePage, navigateToImageIndex, scrollToRow],
-  )
+  function handleThumbnailClick(index: number) {
+    navigateToImageIndex(index)
+    scrollToRow(isDoublePage ? Math.floor(index / 2) : index)
+  }
 
   function scrollLeft() {
     const container = scrollContainerRef.current
@@ -56,6 +53,7 @@ function ThumbnailStrip({ images }: Props) {
     }
   }
 
+  // NOTE: 현재 이미지 인덱스에 해당하는 썸네일을 가운데 정렬
   useEffect(() => {
     const container = scrollContainerRef.current
     if (!container) return

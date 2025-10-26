@@ -1,6 +1,9 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { ChevronRight } from 'lucide-react'
+import { ComponentProps, PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react'
+import { useInView } from 'react-intersection-observer'
+import { twMerge } from 'tailwind-merge'
 
 import KeywordLink from './KeywordLink'
 import useTrendingKeywordsQuery from './useTrendingKeywordsQuery'
@@ -13,22 +16,36 @@ export default function TrendingKeywords() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const trendingKeywords = data && data.keywords.length > 0 ? data.keywords : [{ keyword: 'language:korean' }]
   const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const scrollContainerDesktopRef = useRef<HTMLDivElement>(null)
   const rotationTimerRef = useRef<NodeJS.Timeout | null>(null)
   const isUserInteractingRef = useRef(false)
   const scrollDebounceTimerRef = useRef<NodeJS.Timeout | null>(null)
   const isProgrammaticScrollRef = useRef(false)
+  const trendingKeywordCount = trendingKeywords.length
+  const { ref: lastRef, inView: isLastKeywordInView } = useInView()
+
+  function scrollRight() {
+    const container = scrollContainerDesktopRef.current
+    if (container) {
+      const scrollAmount = container.clientWidth * 0.8
+      container.scrollTo({
+        left: container.scrollLeft + scrollAmount,
+        behavior: 'smooth',
+      })
+    }
+  }
 
   const rotateToNext = useCallback(() => {
-    if (isUserInteractingRef.current || trendingKeywords.length === 1) {
+    if (isUserInteractingRef.current || trendingKeywordCount === 1) {
       return
     }
 
     setCurrentIndex((prevIndex) => {
-      const nextIndex = (prevIndex + 1) % trendingKeywords.length
+      const nextIndex = (prevIndex + 1) % trendingKeywordCount
       scrollToKeyword(nextIndex)
       return nextIndex
     })
-  }, [trendingKeywords.length])
+  }, [trendingKeywordCount])
 
   const startRotation = useCallback(() => {
     if (rotationTimerRef.current) {
@@ -140,7 +157,7 @@ export default function TrendingKeywords() {
 
   // NOTE: 인기 검색어 회전 시작 및 종료
   useEffect(() => {
-    if (trendingKeywords.length > 1) {
+    if (trendingKeywordCount > 1) {
       startRotation()
     }
 
@@ -150,7 +167,7 @@ export default function TrendingKeywords() {
         clearTimeout(scrollDebounceTimerRef.current)
       }
     }
-  }, [trendingKeywords.length, startRotation, stopRotation])
+  }, [trendingKeywordCount, startRotation, stopRotation])
 
   return (
     <>
@@ -158,9 +175,9 @@ export default function TrendingKeywords() {
       <div className="relative grid gap-2 sm:hidden">
         <div className="flex items-center justify-between text-zinc-500 text-xs">
           <span>인기 검색어</span>
-          {trendingKeywords.length > 1 && (
+          {trendingKeywordCount > 1 && (
             <span className="text-zinc-600">
-              {currentIndex + 1} / {trendingKeywords.length}
+              {currentIndex + 1} / {trendingKeywordCount}
             </span>
           )}
         </div>
@@ -202,22 +219,45 @@ export default function TrendingKeywords() {
       </div>
 
       {/* Desktop */}
-      <div className="hidden sm:grid grid-cols-[auto_1fr] items-center gap-2 rounded-lg md:px-3 md:p-2 md:bg-zinc-900/50">
+      <div className="relative hidden sm:grid grid-cols-[auto_1fr] items-center gap-2 rounded-lg md:px-3 md:p-2 md:bg-zinc-900/50">
         <div className="flex items-center gap-1 py-1 text-zinc-500 text-xs">
           <span>인기</span>
           <span className="hidden sm:inline">검색어</span>
         </div>
-        <div className="flex gap-2 overflow-x-auto scrollbar-hidden">
-          {trendingKeywords.map(({ keyword }, index) => (
+        <ScrollingButton
+          className="right-1"
+          disabled={isLastKeywordInView}
+          onClick={scrollRight}
+          title="오른쪽으로 스크롤하기"
+        >
+          <ChevronRight className="size-4" strokeWidth={2.5} />
+        </ScrollingButton>
+        <div className="relative flex gap-2 overflow-x-auto scrollbar-hidden" ref={scrollContainerDesktopRef}>
+          {trendingKeywords.map(({ keyword }, i) => (
             <KeywordLink
-              index={index}
+              index={i}
               key={keyword}
               keyword={keyword}
+              linkRef={i === trendingKeywordCount - 1 ? lastRef : undefined}
               textClassName="truncate max-w-[50svw] sm:max-w-[25svw]"
             />
           ))}
         </div>
       </div>
     </>
+  )
+}
+
+function ScrollingButton({ children, ...props }: PropsWithChildren<ComponentProps<'button'>>) {
+  return (
+    <button
+      {...props}
+      className={twMerge(
+        'absolute top-1/2 -translate-y-1/2 z-10 p-1.5 rounded-full bg-zinc-900 shadow-lg text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition disabled:opacity-0 disabled:pointer-events-none disabled:scale-90 active:scale-95',
+        props.className,
+      )}
+    >
+      {children}
+    </button>
   )
 }

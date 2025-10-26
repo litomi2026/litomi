@@ -16,7 +16,7 @@ export default function MangaCardStats({ manga, className = '' }: Readonly<Props
     <div className={`flex items-center gap-2.5 text-sm text-zinc-400 ${className}`}>
       <div className="flex items-center gap-1.5">
         <Eye className="size-[1em] shrink-0" />
-        <span className="tabular-nums">{viewCount ? formatNumber(viewCount, 'ko') : '-'}</span>
+        <span className="tabular-nums">{formatNumber(viewCount ?? 0, 'ko')}</span>
       </div>
       {bookmarkCount > 0 && (
         <div className="flex items-center gap-1.5">

@@ -13,7 +13,7 @@ import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 import RandomRefreshButton from '../(top-navigation)/RandomRefreshButton'
 
-const DONATION_CARD_INTERVAL = 30
+const DONATION_CARD_INTERVAL = 20
 
 type Props = {
   view: ViewCookie
