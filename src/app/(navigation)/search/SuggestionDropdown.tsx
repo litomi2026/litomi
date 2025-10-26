@@ -81,7 +81,9 @@ export default function SuggestionDropdown<T extends SuggestionItem = Suggestion
                   <>
                     <span>{renderHighlightedText(suggestion.value, searchTerm)}</span>
                     {suggestion.label !== suggestion.value && (
-                      <span className="text-zinc-400 text-xs font-normal ml-1.5">{suggestion.label}</span>
+                      <span className="text-zinc-400 text-xs font-normal ml-1.5">
+                        {renderHighlightedText(suggestion.label, searchTerm)}
+                      </span>
                     )}
                   </>
                 )}
