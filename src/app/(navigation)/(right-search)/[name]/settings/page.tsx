@@ -1,5 +1,5 @@
 import { ErrorBoundary } from '@suspensive/react'
-import { CalendarMinus, CaseSensitive, Fingerprint, Key, RectangleEllipsis, Trash2 } from 'lucide-react'
+import { CalendarMinus, CaseSensitive, Fingerprint, Key, Languages, RectangleEllipsis, Trash2 } from 'lucide-react'
 import { Suspense } from 'react'
 
 import IconBell from '@/components/icons/IconBell'
@@ -13,6 +13,7 @@ import AccountDeletionForm from './delete/AccountDeletionForm'
 import Forbidden from './Forbidden'
 import InternalServerError from './InternalServerError'
 import KeywordSettings from './keyword/KeywordSettings'
+import LanguageSettings from './language/LanguageSettings'
 import PasskeySettings from './passkey/PasskeySettings'
 import PasswordChangeForm from './password/PasswordChangeForm'
 import PrivacySettings from './privacy/PrivacySettings'
@@ -58,6 +59,14 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
             <KeywordSettings userId={userId} />
           </Suspense>
         </ErrorBoundary>
+      </CollapsibleSection>
+      <CollapsibleSection
+        description="서비스 언어를 선택하세요"
+        icon={<Languages className="size-5 flex-shrink-0 text-brand-end" />}
+        id="language"
+        title="언어"
+      >
+        <LanguageSettings />
       </CollapsibleSection>
       <CollapsibleSection
         description="비밀번호 없이 안전하게 로그인하세요"
