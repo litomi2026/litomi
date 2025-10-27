@@ -1,0 +1,38 @@
+{
+  "chinese": { "en": "Chinese", "ko": "중국어", "ja": "中国語", "zh-CN": "中文", "zh-TW": "中文" },
+  "english": { "en": "English", "ko": "영어", "ja": "英語", "zh-CN": "英语", "zh-TW": "英語" },
+  "french": { "en": "French", "ko": "프랑스어", "ja": "フランス語", "zh-CN": "法语", "zh-TW": "法語" },
+  "german": { "en": "German", "ko": "독일어", "ja": "ドイツ語", "zh-CN": "德语", "zh-TW": "德語" },
+  "indonesian": {
+    "en": "Indonesian",
+    "ko": "인도네시아어",
+    "ja": "インドネシア語",
+    "zh-CN": "印尼语",
+    "zh-TW": "印尼語"
+  },
+  "italian": { "en": "Italian", "ko": "이탈리아어", "ja": "イタリア語", "zh-CN": "意大利语", "zh-TW": "意大利語" },
+  "japanese": { "en": "Japanese", "ko": "일본어", "ja": "日本語", "zh-CN": "日语", "zh-TW": "日語" },
+  "korean": { "en": "Korean", "ko": "한국어", "ja": "韓国語", "zh-CN": "韩语", "zh-TW": "韓語" },
+  "portuguese": {
+    "en": "Portuguese",
+    "ko": "포르투갈어",
+    "ja": "ポルトガル語",
+    "zh-CN": "葡萄牙语",
+    "zh-TW": "葡萄牙語"
+  },
+  "russian": { "en": "Russian", "ko": "러시아어", "ja": "ロシア語", "zh-CN": "俄语", "zh-TW": "俄語" },
+  "spanish": { "en": "Spanish", "ko": "스페인어", "ja": "スペイン語", "zh-CN": "西班牙语", "zh-TW": "西班牙語" },
+  "thai": { "en": "Thai", "ko": "태국어", "ja": "タイ語", "zh-CN": "泰语", "zh-TW": "泰語" },
+  "vietnamese": { "en": "Vietnamese", "ko": "베트남어", "ja": "ベトナム語", "zh-CN": "越南语", "zh-TW": "越南語" },
+  "n/a": { "en": "N/A", "ko": "N/A", "ja": "N/A", "zh-CN": "N/A", "zh-TW": "N/A" },
+  "translated": { "en": "Translated", "ko": "번역됨", "ja": "翻訳", "zh-CN": "已翻译", "zh-TW": "已翻譯" },
+  "rewrite": { "en": "Rewrite", "ko": "재작성", "ja": "書き換え", "zh-CN": "重写", "zh-TW": "重寫" },
+  "speechless": { "en": "Speechless", "ko": "대사없음", "ja": "無言", "zh-CN": "无言", "zh-TW": "無言" },
+  "text_cleaned": {
+    "en": "Text Cleaned",
+    "ko": "글 지워짐",
+    "ja": "テキストクリーン",
+    "zh-CN": "文本清理",
+    "zh-TW": "文本清理"
+  }
+}
