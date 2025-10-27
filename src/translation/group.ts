@@ -14,9 +14,9 @@ export function getAllGroupsWithLabels() {
     labels: {
       ko: `그룹:${translations.ko || translations.en || key.replace(/_/g, ' ')}`,
       en: `group:${translations.en || key.replace(/_/g, ' ')}`,
-      ja: translations.ja ? `グループ:${translations.ja}` : undefined,
-      'zh-CN': translations['zh-CN'] ? `团体:${translations['zh-CN']}` : undefined,
-      'zh-TW': translations['zh-TW'] ? `團體:${translations['zh-TW']}` : undefined,
+      ja: `グループ:${translations.ja || translations.en || key.replace(/_/g, ' ')}`,
+      'zh-CN': `团体:${translations['zh-CN'] || translations.en || key.replace(/_/g, ' ')}`,
+      'zh-TW': `團體:${translations['zh-TW'] || translations.en || key.replace(/_/g, ' ')}`,
     },
   }))
 }
