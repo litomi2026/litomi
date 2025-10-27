@@ -80,6 +80,12 @@ function SearchForm({ className = '' }: Readonly<Props>) {
         wordStart--
       }
 
+      const wordLength = selectionStart - wordStart
+
+      if (wordLength < 3) {
+        return
+      }
+
       e.preventDefault()
       input.setSelectionRange(wordStart, selectionStart)
       return
