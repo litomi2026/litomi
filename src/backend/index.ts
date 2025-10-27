@@ -14,7 +14,6 @@ import { timing } from 'hono/timing'
 import { CORS_ORIGIN } from '@/constants/env'
 
 import appRoutes from './app'
-import { auth } from './middleware/auth'
 
 export type Env = {
   Variables: {
@@ -34,7 +33,7 @@ app.use(csrf({ origin: CORS_ORIGIN, secFetchSite: 'same-site' }))
 app.use(logger())
 app.use(secureHeaders())
 app.use(timing())
-app.use('/api/*', auth)
+// app.use('/api/*', auth) // NOTE: 아직 쿠키 인증이 안 돼서 주석 처리
 app.use('/api/*', etag())
 
 app.use(
@@ -43,6 +42,7 @@ app.use(
     lookupCookie: 'locale',
     supportedLanguages: ['en', 'ko', 'ja', 'zh-CN', 'zh-TW'],
     fallbackLanguage: 'ko',
+    caches: false,
   }),
 )
 
