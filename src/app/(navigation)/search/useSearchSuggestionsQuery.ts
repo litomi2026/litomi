@@ -1,6 +1,7 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
-import { GETSearchSuggestionsResponse, queryBlacklist } from '@/app/api/search/suggestions/schema'
+import { GETSearchSuggestionsResponse, queryBlacklist } from '@/backend/api/v1/search/suggestion/schema'
+import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
 import useLocaleFromCookie from '@/hook/useLocaleFromCookie'
 import { handleResponseError } from '@/utils/react-query-error'
@@ -23,7 +24,7 @@ export async function fetchSearchSuggestions({ query, locale }: Params) {
     searchParams.set('locale', locale)
   }
 
-  const response = await fetch(`/api/search/suggestions?${searchParams}`)
+  const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/search/suggestions?${searchParams}`)
   return handleResponseError<GETSearchSuggestionsResponse>(response)
 }
 

@@ -2,8 +2,9 @@
 
 import { useQuery } from '@tanstack/react-query'
 
-import type { GETSearchSuggestionsResponse } from '@/app/api/search/suggestions/schema'
+import type { GETSearchSuggestionsResponse } from '@/backend/api/v1/search/suggestion/schema'
 
+import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { MIN_SUGGESTION_QUERY_LENGTH } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import useLocaleFromCookie from '@/hook/useLocaleFromCookie'
@@ -25,7 +26,7 @@ export async function fetchCensorshipSuggestions({ query, locale }: Params) {
     params.set('locale', locale)
   }
 
-  const response = await fetch(`/api/search/suggestions?${params}`)
+  const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/search/suggestions?${params}`)
   return handleResponseError<GETSearchSuggestionsResponse>(response)
 }
 
