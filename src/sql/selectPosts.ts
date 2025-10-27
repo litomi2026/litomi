@@ -55,6 +55,7 @@ export default async function selectPosts({
       id: postTable.id,
       createdAt: postTable.createdAt,
       content: postTable.content,
+      mangaId: postTable.mangaId,
       author: {
         id: userTable.id,
         name: userTable.name,
