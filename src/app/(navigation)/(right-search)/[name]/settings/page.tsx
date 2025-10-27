@@ -23,8 +23,19 @@ import TwoFactorSettings from './two-factor/TwoFactorSettings'
 export default async function SettingsPage({ params }: PageProps<'/[name]/settings'>) {
   const userId = await getUserIdFromCookie()
 
+  const languageSelector = (
+    <CollapsibleSection
+      description="서비스 언어를 선택하세요"
+      icon={<Languages className="size-5 flex-shrink-0 text-brand-end" />}
+      id="language"
+      title="언어"
+    >
+      <LanguageSettings />
+    </CollapsibleSection>
+  )
+
   if (!userId) {
-    return
+    return languageSelector
   }
 
   const [me, { name }] = await Promise.all([getMe(userId), params])
@@ -60,14 +71,7 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
           </Suspense>
         </ErrorBoundary>
       </CollapsibleSection>
-      <CollapsibleSection
-        description="서비스 언어를 선택하세요"
-        icon={<Languages className="size-5 flex-shrink-0 text-brand-end" />}
-        id="language"
-        title="언어"
-      >
-        <LanguageSettings />
-      </CollapsibleSection>
+      {languageSelector}
       <CollapsibleSection
         description="비밀번호 없이 안전하게 로그인하세요"
         icon={<Fingerprint className="size-5 flex-shrink-0 text-brand-end" />}
