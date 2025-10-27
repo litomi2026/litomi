@@ -23,8 +23,10 @@ type ImportMangaModalStore = {
 }
 
 const placeholder = `1234567
-2345678, 3456789
-여러 줄로 입력 가능`
+8879273
+2345678, 3456789, 18827
+
+쉼표 또는 여러 줄로 구분해서 입력하기`
 
 export const useImportMangaModalStore = create<ImportMangaModalStore>()((set) => ({
   libraryId: null,
@@ -107,7 +109,7 @@ export default function MangaImportModal() {
           <label className="block text-sm font-medium text-zinc-300 mb-2">
             작품 ID 입력
             <span className="ml-2 text-xs text-zinc-500">
-              {typeof navigator !== 'undefined' && navigator.platform?.includes('Mac') ? '⌘' : 'Ctrl'}+Enter로 제출
+              {typeof navigator !== 'undefined' && navigator.platform?.includes('Mac') ? '⌘' : 'Ctrl'}+Enter로 제출 가능
             </span>
           </label>
           <textarea
