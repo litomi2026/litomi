@@ -71,7 +71,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
       const charBeforeCursor = value[selectionStart - 1]
       const charAtCursor = value[selectionStart]
 
-      if (charBeforeCursor === ' ' || (charAtCursor && charAtCursor !== ' ')) {
+      if (charBeforeCursor !== ' ' || (charAtCursor && charAtCursor !== ' ')) {
         return
       }
 
