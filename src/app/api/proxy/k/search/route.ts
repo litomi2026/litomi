@@ -46,7 +46,8 @@ export async function GET(request: Request) {
 
   const lowerQuery = convertToKHentaiKey(query?.toLowerCase())
   const baseSearch = lowerQuery?.replace(/\b(type|uploader):\S+/gi, '').trim() ?? ''
-  const languageFilter = locale ? getKHentaiLanguageFilter(locale) : ''
+  const hasLanguageFilter = /\blanguage:\S+/i.test(baseSearch)
+  const languageFilter = !hasLanguageFilter && locale ? getKHentaiLanguageFilter(locale) : ''
   const search = [languageFilter, baseSearch].filter(Boolean).join(' ')
 
   if (search && search.length > MAX_KHENTAI_SEARCH_QUERY_LENGTH) {
