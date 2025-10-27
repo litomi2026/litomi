@@ -14,6 +14,7 @@ export type Post = {
   updatedAt?: Date
   content?: string | null
   imageURLs?: string[] | null
+  mangaId?: number | null
   author?: {
     id: number
     name: string

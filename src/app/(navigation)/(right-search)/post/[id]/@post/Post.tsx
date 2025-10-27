@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
 import { Bookmark, Heart, MessageCircle, MoreHorizontal, Repeat, Upload } from 'lucide-react'
+import Link from 'next/link'
 
 import { PostFilter } from '@/app/api/post/schema'
 import { type Post } from '@/components/post/PostCard'
@@ -9,6 +10,7 @@ import ReferredPostCard from '@/components/post/ReferredPostCard'
 import Squircle from '@/components/ui/Squircle'
 
 import FollowButton from './FollowButton'
+import PostMangaCard from './PostMangaCard'
 
 type Props = {
   post: Post
@@ -43,6 +45,14 @@ export default function Post({ post }: Readonly<Props>) {
         <p className="min-w-0 whitespace-pre-wrap break-all text-lg">{post.content}</p>
         {post.imageURLs && <PostImages className="w-full overflow-hidden border" urls={post.imageURLs} />}
         {referredPost && <ReferredPostCard referredPost={referredPost} />}
+        {post.mangaId && (
+          <Link
+            className="flex gap-3 rounded-lg border-2 border-zinc-700 bg-zinc-800/50 p-3 transition hover:bg-zinc-800 hover:border-zinc-600"
+            href={`/manga/${post.mangaId}`}
+          >
+            <PostMangaCard mangaId={post.mangaId} />
+          </Link>
+        )}
         <div className="flex items-center gap-1 text-zinc-500">
           <span>{dayjs(post.createdAt).format('YYYY-MM-DD HH:mm')}</span>
           <span>·</span>
