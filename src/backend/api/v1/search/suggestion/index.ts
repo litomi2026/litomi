@@ -23,7 +23,6 @@ suggestionRoutes.get('/', zValidator('query', querySchema), async (c) => {
   const cacheControlHeader = createCacheControlHeaders({
     cloudflare: {
       maxAge: sec('30 days'),
-      swr: sec('1 day'),
     },
     browser: {
       public: true,
