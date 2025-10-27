@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
-import { IconChevronLeft } from '@/components/icons/IconImageViewer'
+import BackButton from '@/components/BackButton'
 import { type Manga } from '@/types/manga'
 
 import FullscreenButton from './FullscreenButton'
@@ -97,9 +97,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
       >
         <div className="flex gap-2 items-center justify-between p-3 select-none">
           <div className="flex gap-1">
-            <button aria-label="뒤로가기" className={topButtonClassName} onClick={() => router.back()}>
-              <IconChevronLeft className="size-6" />
-            </button>
+            <BackButton className={topButtonClassName} fallbackUrl="/" />
             <FullscreenButton className={topButtonClassName} />
           </div>
           <MangaDetailButton className={`${topButtonClassName} hover:underline`} manga={manga} />

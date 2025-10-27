@@ -20,7 +20,7 @@ export default function BackButton({ fallbackUrl, ...props }: Props) {
   }
 
   return (
-    <button {...props} onClick={handleClick} type="button">
+    <button {...props} onClick={handleClick} title="뒤로가기" type="button">
       <ArrowRight className="size-6 rotate-180" />
     </button>
   )
