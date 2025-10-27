@@ -10,13 +10,13 @@ export async function GET(request: Request) {
   const validation = GETSearchSuggestionsSchema.safeParse(params)
 
   if (!validation.success) {
-    return new Response('400 Bad Request', { status: 400 })
+    return new Response('Bad Request', { status: 400 })
   }
 
   const { query, locale } = validation.data
 
   if (queryBlacklist.some((regex) => regex.test(query))) {
-    return new Response('400 Bad Request', { status: 400 })
+    return new Response('Bad Request', { status: 400 })
   }
 
   try {

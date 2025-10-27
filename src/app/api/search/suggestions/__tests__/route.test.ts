@@ -447,7 +447,7 @@ describe('GET /api/search/suggestions', () => {
       const data = await response.text()
 
       expect(response.status).toBe(400)
-      expect(data).toBe('400 Bad Request')
+      expect(data).toBe('Bad Request')
     })
 
     test('쿼리가 너무 짧은 경우(1글자) 400 에러를 반환한다', async () => {
@@ -456,7 +456,7 @@ describe('GET /api/search/suggestions', () => {
       const data = await response.text()
 
       expect(response.status).toBe(400)
-      expect(data).toBe('400 Bad Request')
+      expect(data).toBe('Bad Request')
     })
 
     test('쿼리가 너무 긴 경우(200글자 초과) 400 에러를 반환한다', async () => {
@@ -466,7 +466,7 @@ describe('GET /api/search/suggestions', () => {
       const data = await response.text()
 
       expect(response.status).toBe(400)
-      expect(data).toBe('400 Bad Request')
+      expect(data).toBe('Bad Request')
     })
 
     test('유효하지 않은 로케일인 경우 400 에러를 반환한다', async () => {
@@ -476,7 +476,7 @@ describe('GET /api/search/suggestions', () => {
       const data = await response.text()
 
       expect(response.status).toBe(400)
-      expect(data).toBe('400 Bad Request')
+      expect(data).toBe('Bad Request')
     })
   })
 

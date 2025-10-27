@@ -17,7 +17,12 @@ type Props = {
 }
 
 export async function fetchSearchSuggestions({ query, locale }: Params) {
-  const searchParams = new URLSearchParams({ query, locale })
+  const searchParams = new URLSearchParams({ query })
+
+  if (locale) {
+    searchParams.set('locale', locale)
+  }
+
   const response = await fetch(`/api/search/suggestions?${searchParams}`)
   return handleResponseError<GETSearchSuggestionsResponse>(response)
 }
