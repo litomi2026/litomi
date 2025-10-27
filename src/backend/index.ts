@@ -42,6 +42,7 @@ app.use(
     lookupCookie: 'locale',
     supportedLanguages: ['en', 'ko', 'ja', 'zh-CN', 'zh-TW'],
     fallbackLanguage: 'ko',
+    caches: false,
   }),
 )
 

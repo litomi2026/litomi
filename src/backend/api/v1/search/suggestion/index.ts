@@ -12,7 +12,7 @@ import { suggestionTrie } from './suggestion-trie'
 const suggestionRoutes = new Hono<Env>()
 
 suggestionRoutes.get('/', zValidator('query', querySchema), async (c) => {
-  const { query, locale } = c.req.valid('query')
+  const { query, locale = c.get('language') } = c.req.valid('query')
 
   if (queryBlacklist.some((regex) => regex.test(query))) {
     throw new HTTPException(400)
@@ -21,13 +21,13 @@ suggestionRoutes.get('/', zValidator('query', querySchema), async (c) => {
   const suggestions = suggestionTrie.search(query, locale)
 
   const cacheControlHeader = createCacheControlHeaders({
-    vercel: {
+    cloudflare: {
       maxAge: sec('30 days'),
+      swr: sec('1 day'),
     },
     browser: {
       public: true,
       maxAge: 3,
-      sMaxAge: sec('30 days'),
       swr: sec('1 day'),
     },
   })
