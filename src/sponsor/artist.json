@@ -11,16 +11,46 @@
       "value": "https://fantia.jp/fanclubs/4798"
     }
   ],
+  "ichinomiya_yuu": [
+    {
+      "label": "X",
+      "value": "https://x.com/yu_ichinomiya"
+    }
+  ],
+  "indo_curry": [
+    {
+      "label": "X",
+      "value": "https://x.com/a_in_k"
+    }
+  ],
+  "kamita": [
+    {
+      "label": "Fantia",
+      "value": "https://fantia.jp/fanclubs/501884"
+    }
+  ],
   "luxsumildo": [
     {
       "label": "Fanbox",
       "value": "https://lux-sumildo.fanbox.cc/"
     }
   ],
+  "taniguchi_daisuke": [
+    {
+      "label": "X",
+      "value": "https://x.com/surumenium"
+    }
+  ],
   "quzilax": [
     {
       "label": "X",
       "value": "https://x.com/quzilaxxxx"
+    }
+  ],
+  "zhen_lu": [
+    {
+      "label": "X",
+      "value": "https://x.com/peter781226"
     }
   ]
 }

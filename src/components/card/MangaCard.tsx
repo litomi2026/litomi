@@ -59,7 +59,11 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
       <div className="flex grow flex-col justify-between gap-2 p-2 border-t-2">
         <dl className="flex flex-col gap-2 text-sm [&_dt]:whitespace-nowrap [&_dt]:font-semibold">
           <div className="flex items-start gap-1.5">
-            <a className="flex-1 hover:underline focus:underline" href={viewerLink} target="_blank">
+            <a
+              className="flex-1 hover:underline focus:underline visited:text-zinc-500"
+              href={viewerLink}
+              target="_blank"
+            >
               <h4 className="line-clamp-3 font-bold text-base leading-5 min-w-0 break-words break-all">
                 {title} <ExternalLink className="size-3 ml-1 text-zinc-400 inline-block" />
               </h4>
