@@ -11,6 +11,7 @@ import SourceTooltip from '@/components/tooltip/SourceTooltip'
 import { SHORT_NAME } from '@/constants'
 
 import { DEFAULT_METRIC, DEFAULT_PERIOD } from '../(ranking)/common'
+import MobileNavigationButton from './MobileNavigationButton'
 import NewMangaLink from './NewMangaLink'
 import RandomMangaLink from './RandomMangaLink'
 
@@ -18,6 +19,7 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
   return (
     <div className="flex flex-col flex-1 gap-2 p-2">
       <div className="flex flex-wrap justify-center gap-2 text-sm sm:justify-end sm:text-base">
+        <MobileNavigationButton />
         <Link
           className="flex items-center gap-2 p-2 px-3 rounded-xl transition border-2 text-white hover:bg-zinc-900"
           href={`/ranking/${DEFAULT_METRIC}/${DEFAULT_PERIOD}`}

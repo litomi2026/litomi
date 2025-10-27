@@ -25,7 +25,7 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
 
   const languageSelector = (
     <CollapsibleSection
-      description="서비스 언어를 선택하세요"
+      description="이 기기에서 사용할 언어를 선택해주세요"
       icon={<Languages className="size-5 flex-shrink-0 text-brand-end" />}
       id="language"
       title="언어"
