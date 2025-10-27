@@ -3,8 +3,8 @@ import { notFound } from 'next/navigation'
 
 import { PostFilter } from '@/app/api/post/schema'
 import PostCreationForm from '@/components/post/PostCreationForm'
-import TopNavigation from '@/components/TopNavigation'
 
+import NavigationWithMobileMenu from './NavigationWithMobileMenu'
 import { PostFilterParams, postFilterSchema } from './schema'
 
 export const dynamic = 'error'
@@ -23,7 +23,7 @@ export default async function Layout({ params, children }: LayoutProps<'/posts/[
 
   return (
     <div className="relative">
-      <TopNavigation className="fixed sm:sticky top-0 left-0 right-0 z-10 border-b-2 sm:backdrop-blur bg-background sm:bg-background/75">
+      <NavigationWithMobileMenu className="fixed sm:sticky top-0 left-0 right-0 z-10 border-b-2 sm:backdrop-blur bg-background sm:bg-background/75">
         <div
           className="grid grid-cols-2 items-center text-center text-zinc-400 [&_a]:p-4 [&_a]:transition [&_a]:relative [&_a]:aria-selected:font-bold [&_a]:aria-selected:text-foreground
            sm:[&_a]:bg-background/50 sm:[&_a]:hover:bg-foreground/10"
@@ -37,7 +37,7 @@ export default async function Layout({ params, children }: LayoutProps<'/posts/[
             <div aria-selected={isFollowing} className={barClassName} />
           </Link>
         </div>
-      </TopNavigation>
+      </NavigationWithMobileMenu>
       <div className="h-26 sm:hidden" />
       <h2 className="sr-only">게시글 목록</h2>
       <PostCreationForm

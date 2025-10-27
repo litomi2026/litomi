@@ -1,11 +1,16 @@
 'use client'
 
-import { Menu } from 'lucide-react'
-import { useCallback, useState } from 'react'
+import { ReactNode, useCallback, useState } from 'react'
 
 import MobileNavigationMenu from '@/components/MobileNavigationMenu'
+import TopNavigation from '@/components/TopNavigation'
 
-export default function MobileNavigationButton() {
+type Props = {
+  children: ReactNode
+  className?: string
+}
+
+export default function NavigationWithMobileMenu({ children, className }: Readonly<Props>) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const handleMenuClick = useCallback(() => {
@@ -18,14 +23,9 @@ export default function MobileNavigationButton() {
 
   return (
     <>
-      <button
-        aria-label="메뉴 열기"
-        className="sm:hidden p-2 px-3 rounded-xl transition border-2 text-white hover:bg-zinc-900"
-        onClick={handleMenuClick}
-        type="button"
-      >
-        <Menu className="size-5" />
-      </button>
+      <TopNavigation className={className} onMenuClick={handleMenuClick}>
+        {children}
+      </TopNavigation>
       {isMenuOpen && <MobileNavigationMenu onClose={handleClose} />}
     </>
   )

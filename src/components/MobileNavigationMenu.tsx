@@ -16,13 +16,10 @@ type MenuLinkProps = {
 }
 
 type Props = {
-  isOpen: boolean
   onClose: () => void
-  defaultMetric: string
-  defaultPeriod: string
 }
 
-export default function MobileNavigationMenu({ isOpen, onClose, defaultMetric, defaultPeriod }: Readonly<Props>) {
+export default function MobileNavigationMenu({ onClose }: Readonly<Props>) {
   const pathname = usePathname()
 
   const handleKeyDown = useCallback(
@@ -35,24 +32,18 @@ export default function MobileNavigationMenu({ isOpen, onClose, defaultMetric, d
   )
 
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden'
-      document.addEventListener('keydown', handleKeyDown)
-      return () => {
-        document.body.style.overflow = ''
-        document.removeEventListener('keydown', handleKeyDown)
-      }
+    document.body.style.overflow = 'hidden'
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.body.style.overflow = ''
+      document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [isOpen, handleKeyDown])
+  }, [handleKeyDown])
 
   // Close menu when route changes
   useEffect(() => {
     onClose()
   }, [pathname, onClose])
-
-  if (!isOpen) {
-    return null
-  }
 
   return (
     <>
