@@ -58,7 +58,33 @@ function SearchForm({ className = '' }: Readonly<Props>) {
     [keyword, currentWordInfo, setShowSuggestions, resetSelection],
   )
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    // NOTE: Backspace 키를 누르면 현재 단어를 선택하기
+    if (e.key === 'Backspace' && inputRef.current) {
+      const input = inputRef.current
+      const { selectionStart, selectionEnd, value } = input
+
+      if (selectionStart !== selectionEnd || !selectionStart || selectionStart <= 0) {
+        return
+      }
+
+      const charBeforeCursor = value[selectionStart - 1]
+      const charAtCursor = value[selectionStart]
+
+      if (charBeforeCursor === ' ' || (charAtCursor && charAtCursor !== ' ')) {
+        return
+      }
+
+      let wordStart = selectionStart - 1
+      for (let i = 0; i < 100 && wordStart > 0 && value[wordStart - 1] !== ' '; i++) {
+        wordStart--
+      }
+
+      e.preventDefault()
+      input.setSelectionRange(wordStart, selectionStart)
+      return
+    }
+
     if (!showSuggestions || searchSuggestions.length === 0) {
       return
     }
@@ -85,7 +111,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
     }
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     const value = e.target.value
     const position = e.target.selectionStart || 0
 
@@ -95,12 +121,12 @@ function SearchForm({ className = '' }: Readonly<Props>) {
     resetSelection()
   }
 
-  const handleSelect = (e: React.SyntheticEvent<HTMLInputElement>) => {
+  function handleSelect(e: React.SyntheticEvent<HTMLInputElement>) {
     const target = e.target as HTMLInputElement
     setCursorPosition(target.selectionStart || 0)
   }
 
-  const handleFocus = () => {
+  function handleFocus() {
     setShowSuggestions(true)
     resetSelection()
 
@@ -109,7 +135,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
     }
   }
 
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+  function handleBlur(e: React.FocusEvent<HTMLInputElement>) {
     if (!suggestionsRef.current?.contains(e.relatedTarget)) {
       setTimeout(() => {
         resetSelection()
@@ -117,14 +143,14 @@ function SearchForm({ className = '' }: Readonly<Props>) {
     }
   }
 
-  const handleClear = () => {
+  function handleClear() {
     setKeyword('')
     setCursorPosition(0)
     resetSelection()
     inputRef.current?.focus()
   }
 
-  const onSubmit = (e: FormEvent) => {
+  function onSubmit(e: FormEvent) {
     e.preventDefault()
     setShowSuggestions(false)
 
