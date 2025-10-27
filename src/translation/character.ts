@@ -16,9 +16,9 @@ export function getAllCharactersWithLabels() {
     labels: {
       ko: `캐릭터:${translations.ko || translations.en || key.replace(/_/g, ' ')}`,
       en: `character:${translations.en || key.replace(/_/g, ' ')}`,
-      ja: translations.ja ? `キャラクター:${translations.ja}` : undefined,
-      'zh-CN': translations['zh-CN'] ? `角色:${translations['zh-CN']}` : undefined,
-      'zh-TW': translations['zh-TW'] ? `角色:${translations['zh-TW']}` : undefined,
+      ja: `キャラクター:${translations.ja || translations.en || key.replace(/_/g, ' ')}`,
+      'zh-CN': `角色:${translations['zh-CN'] || translations.en || key.replace(/_/g, ' ')}`,
+      'zh-TW': `角色:${translations['zh-TW'] || translations.en || key.replace(/_/g, ' ')}`,
     },
   }))
 }

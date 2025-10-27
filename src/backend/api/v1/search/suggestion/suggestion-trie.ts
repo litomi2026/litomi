@@ -121,20 +121,38 @@ function insertWithWordVariants(trie: SuggestionTrie, key: string, suggestion: S
   // Add language suggestions
   suggestionTrie.insert('language', {
     value: 'language:',
-    labels: { ko: '언어', en: 'language' },
+    labels: {
+      ko: '언어',
+      en: 'language',
+      ja: '言語',
+      'zh-CN': '语言',
+      'zh-TW': '語言',
+    },
   })
   suggestionTrie.insert('언어', {
     value: 'language:',
-    labels: { ko: '언어', en: 'language' },
+    labels: {
+      ko: '언어',
+      en: 'language',
+      ja: '言語',
+      'zh-CN': '语言',
+      'zh-TW': '語言',
+    },
   })
 
   getAllLanguagesWithLabels('ko').forEach(({ value, label: koLabel }) => {
     const enLabel = translateLanguage(value, 'en')
+    const jaLabel = translateLanguage(value, 'ja')
+    const zhCNLabel = translateLanguage(value, 'zh-CN')
+    const zhTWLabel = translateLanguage(value, 'zh-TW')
     const suggestion: SuggestionItem = {
       value: `language:${value}`,
       labels: {
         ko: `언어:${koLabel}`,
         en: `language:${enLabel}`,
+        ja: `言語:${jaLabel}`,
+        'zh-CN': `语言:${zhCNLabel}`,
+        'zh-TW': `語言:${zhTWLabel}`,
       },
     }
 

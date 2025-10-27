@@ -16,9 +16,9 @@ export function getAllArtistsWithLabels() {
     labels: {
       ko: `작가:${translations.ko || translations.en || key.replace(/_/g, ' ')}`,
       en: `artist:${translations.en || key.replace(/_/g, ' ')}`,
-      ja: translations.ja ? `アーティスト:${translations.ja}` : undefined,
-      'zh-CN': translations['zh-CN'] ? `艺术家:${translations['zh-CN']}` : undefined,
-      'zh-TW': translations['zh-TW'] ? `藝術家:${translations['zh-TW']}` : undefined,
+      ja: `アーティスト:${translations.ja || translations.en || key.replace(/_/g, ' ')}`,
+      'zh-CN': `艺术家:${translations['zh-CN'] || translations.en || key.replace(/_/g, ' ')}`,
+      'zh-TW': `藝術家:${translations['zh-TW'] || translations.en || key.replace(/_/g, ' ')}`,
     },
   }))
 }

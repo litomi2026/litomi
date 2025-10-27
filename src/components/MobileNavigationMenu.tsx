@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect } from 'react'
 
+import useMeQuery from '@/query/useMeQuery'
+
 import IconPost from './icons/IconPost'
 import LinkPending from './LinkPending'
 
@@ -22,6 +24,8 @@ type Props = {
 
 export default function MobileNavigationMenu({ onClose }: Readonly<Props>) {
   const pathname = usePathname()
+  const { data: me } = useMeQuery()
+  const username = me?.name ?? ''
 
   // NOTE: 메뉴가 열릴 때 body 스크롤을 방지함
   useEffect(() => {
@@ -99,14 +103,14 @@ export default function MobileNavigationMenu({ onClose }: Readonly<Props>) {
             title="평가"
           />
           <MenuLink
-            href="/@/settings"
+            href={`/@${username}/settings`}
             icon={
               <Settings
-                aria-current={pathname.includes('/@/settings') ? 'page' : undefined}
+                aria-current={pathname.includes(`/@${username}/settings`) ? 'page' : undefined}
                 className="size-5 aria-current:fill-foreground"
               />
             }
-            isActive={pathname === '/@/settings'}
+            isActive={pathname === `/@${username}/settings`}
             title="설정"
           />
         </div>

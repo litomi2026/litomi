@@ -12,7 +12,7 @@ import { suggestionTrie } from './suggestion-trie'
 const suggestionRoutes = new Hono<Env>()
 
 suggestionRoutes.get('/', zValidator('query', querySchema), async (c) => {
-  const { query, locale = c.get('language') } = c.req.valid('query')
+  const { query, locale } = c.req.valid('query')
 
   if (queryBlacklist.some((regex) => regex.test(query))) {
     throw new HTTPException(400)
