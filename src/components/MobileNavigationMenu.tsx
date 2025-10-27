@@ -3,9 +3,10 @@
 import { Bookmark, History, Settings, Star, X } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useCallback, useEffect } from 'react'
+import { useEffect } from 'react'
 
 import IconPost from './icons/IconPost'
+import LinkPending from './LinkPending'
 
 type MenuLinkProps = {
   href: string
@@ -22,28 +23,22 @@ type Props = {
 export default function MobileNavigationMenu({ onClose }: Readonly<Props>) {
   const pathname = usePathname()
 
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
+  // NOTE: 메뉴가 열릴 때 body 스크롤을 방지함
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape') {
         onClose()
       }
-    },
-    [onClose],
-  )
+    }
 
-  useEffect(() => {
     document.body.style.overflow = 'hidden'
     document.addEventListener('keydown', handleKeyDown)
+
     return () => {
       document.body.style.overflow = ''
       document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [handleKeyDown])
-
-  // Close menu when route changes
-  useEffect(() => {
-    onClose()
-  }, [pathname, onClose])
+  }, [onClose])
 
   return (
     <>
@@ -124,11 +119,13 @@ function MenuLink({ href, icon, title, description, isActive }: MenuLinkProps) {
   return (
     <Link
       aria-current={isActive ? 'page' : undefined}
-      className="flex items-center gap-4 p-3 rounded-lg transition hover:bg-zinc-800/50
-        aria-[current=page]:bg-zinc-800 aria-[current=page]:border-zinc-700 border border-transparent"
+      className="flex items-center gap-4 p-3 rounded-lg transition hover:bg-zinc-800/50 border border-transparent
+        aria-[current=page]:bg-zinc-800 aria-[current=page]:border-zinc-700"
       href={href}
     >
-      <div className="flex items-center justify-center flex-shrink-0">{icon}</div>
+      <div className="flex-shrink-0">
+        <LinkPending className="size-5">{icon}</LinkPending>
+      </div>
       <div className="flex-1 min-w-0">
         <h3 className="font-semibold text-base leading-tight">{title}</h3>
         {description && <p className="text-sm text-zinc-400 leading-tight mt-0.5">{description}</p>}
