@@ -32,6 +32,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
   const suggestionsRef = useRef<HTMLDivElement>(null)
   const currentWordInfo = useMemo(() => getWordAtCursor(keyword, cursorPosition), [keyword, cursorPosition])
   const { recentSearches, isEnabled, saveRecentSearch, removeRecentSearch, toggleEnabled } = useRecentSearches()
+  const beforeDeletedCharacter = useRef('')
 
   const { selectedIndex, searchSuggestions, resetSelection, navigateSelection, isLoading, isFetching } =
     useSearchSuggestions({ keyword: currentWordInfo.word.replace(/^-/g, '') })
@@ -59,19 +60,31 @@ function SearchForm({ className = '' }: Readonly<Props>) {
   )
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key !== 'Backspace') {
+      beforeDeletedCharacter.current = ''
+    }
+
     // NOTE: Backspace 키를 누르면 현재 단어를 선택하기
     if (e.key === 'Backspace' && inputRef.current) {
       const input = inputRef.current
       const { selectionStart, selectionEnd, value } = input
 
       if (selectionStart !== selectionEnd || !selectionStart || selectionStart <= 0) {
+        beforeDeletedCharacter.current = ''
         return
       }
 
       const charBeforeCursor = value[selectionStart - 1]
       const charAtCursor = value[selectionStart]
 
-      if (charBeforeCursor !== ' ' || (charAtCursor && charAtCursor !== ' ')) {
+      if (charBeforeCursor === ' ' || (charAtCursor && charAtCursor !== ' ')) {
+        beforeDeletedCharacter.current = charBeforeCursor
+        return
+      }
+
+      // Only select word if the previously deleted character was a space
+      if (beforeDeletedCharacter.current !== ' ') {
+        beforeDeletedCharacter.current = charBeforeCursor
         return
       }
 
@@ -83,11 +96,13 @@ function SearchForm({ className = '' }: Readonly<Props>) {
       const wordLength = selectionStart - wordStart
 
       if (wordLength < 3) {
+        beforeDeletedCharacter.current = charBeforeCursor
         return
       }
 
       e.preventDefault()
       input.setSelectionRange(wordStart, selectionStart)
+      beforeDeletedCharacter.current = ''
       return
     }
 
@@ -153,6 +168,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
     setKeyword('')
     setCursorPosition(0)
     resetSelection()
+    beforeDeletedCharacter.current = ''
     inputRef.current?.focus()
   }
 
