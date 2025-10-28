@@ -1,5 +1,6 @@
 import { desc, eq, or, sql } from 'drizzle-orm'
 
+import { LIBRARIES_PER_PAGE } from '@/constants/policy'
 import { db } from '@/database/supabase/drizzle'
 import {
   bookmarkTable,
@@ -30,7 +31,7 @@ export default async function LibraryLayout({ children }: LayoutProps<'/library'
       itemCount: sql<number>`(SELECT COUNT(*) FROM ${libraryItemTable} WHERE ${libraryItemTable.libraryId} = ${libraryTable.id})::int`,
     })
     .from(libraryTable)
-    .limit(20)
+    .limit(LIBRARIES_PER_PAGE)
     .$dynamic()
 
   if (userId) {

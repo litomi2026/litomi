@@ -1,7 +1,7 @@
 import { avg, count, desc, gt, gte } from 'drizzle-orm'
 import ms from 'ms'
 
-import { MANGA_TOP_PER_PAGE } from '@/constants/policy'
+import { TOP_MANGA_PER_PAGE } from '@/constants/policy'
 import { db } from '@/database/supabase/drizzle'
 import { bookmarkTable, libraryItemTable, readingHistoryTable, userRatingTable } from '@/database/supabase/schema'
 
@@ -21,7 +21,7 @@ export async function getRankingData(metric: MetricParam, period: PeriodParam) {
         .from(bookmarkTable)
         .groupBy(bookmarkTable.mangaId)
         .orderBy(({ bookmarkCount }) => desc(bookmarkCount))
-        .limit(MANGA_TOP_PER_PAGE)
+        .limit(TOP_MANGA_PER_PAGE)
         .$dynamic()
 
       if (periodStart) {
@@ -39,7 +39,7 @@ export async function getRankingData(metric: MetricParam, period: PeriodParam) {
         .from(libraryItemTable)
         .groupBy(libraryItemTable.mangaId)
         .orderBy(({ score }) => desc(score))
-        .limit(MANGA_TOP_PER_PAGE)
+        .limit(TOP_MANGA_PER_PAGE)
         .$dynamic()
 
       if (periodStart) {
@@ -80,7 +80,7 @@ export async function getRankingData(metric: MetricParam, period: PeriodParam) {
         .groupBy(userRatingTable.mangaId)
         // .having(({ ratingCount }) => gt(ratingCount, 1)) // TODO: 지금은 데이터가 부족해서 추후 추가하기
         .orderBy(({ averageRating, ratingCount }) => [desc(averageRating), desc(ratingCount)])
-        .limit(MANGA_TOP_PER_PAGE)
+        .limit(TOP_MANGA_PER_PAGE)
         .$dynamic()
 
       if (periodStart) {
@@ -98,7 +98,7 @@ export async function getRankingData(metric: MetricParam, period: PeriodParam) {
         .from(readingHistoryTable)
         .groupBy(readingHistoryTable.mangaId)
         .orderBy(({ viewCount }) => desc(viewCount))
-        .limit(MANGA_TOP_PER_PAGE)
+        .limit(TOP_MANGA_PER_PAGE)
         .$dynamic()
 
       if (periodStart) {

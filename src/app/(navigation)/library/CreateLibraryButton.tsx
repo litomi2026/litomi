@@ -95,7 +95,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
         open={isModalOpen}
       >
         <form action={dispatchAction} className="flex flex-col h-full min-h-0">
-          <div className="flex items-center justify-between p-4 bg-zinc-900 border-b-2 border-zinc-800 flex-shrink-0">
+          <div className="flex items-center justify-between p-4 bg-zinc-900 border-b-2 border-zinc-800 shrink-0">
             <h2 className="text-xl font-bold text-zinc-100">서재 만들기</h2>
             <button className="p-2 -m-1 rounded-lg hover:bg-zinc-800 transition" onClick={handleClose} type="button">
               <IconX className="size-5" />

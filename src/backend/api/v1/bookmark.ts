@@ -46,8 +46,8 @@ bookmarkRoutes.get('/', zValidator('query', querySchema), async (c) => {
       throw new HTTPException(400)
     }
 
-    cursorId = decoded.mangaId.toString()
-    cursorTime = new Date(decoded.timestamp).toISOString()
+    cursorId = decoded.mangaId
+    cursorTime = new Date(decoded.timestamp)
   }
 
   const bookmarkRows = await selectBookmarks({
