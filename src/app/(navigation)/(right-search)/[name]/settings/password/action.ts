@@ -6,7 +6,7 @@ import { sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 import { z } from 'zod/v4'
 
-import { SALT_ROUNDS } from '@/constants'
+import { COOKIE_DOMAIN, SALT_ROUNDS } from '@/constants'
 import { CookieKey } from '@/constants/storage'
 import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/schema'
@@ -87,8 +87,8 @@ export async function changePassword(formData: FormData) {
     }
 
     const [cookieStore] = await Promise.all([cookies(), passwordChangeLimiter.reward(userId.toString())])
-    cookieStore.delete(CookieKey.ACCESS_TOKEN)
-    cookieStore.delete(CookieKey.REFRESH_TOKEN)
+    cookieStore.delete({ name: CookieKey.ACCESS_TOKEN, domain: COOKIE_DOMAIN })
+    cookieStore.delete({ name: CookieKey.REFRESH_TOKEN, domain: COOKIE_DOMAIN })
     return created('비밀번호가 변경됐어요')
   } catch (error) {
     captureException(error)

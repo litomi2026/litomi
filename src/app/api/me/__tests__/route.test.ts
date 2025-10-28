@@ -22,7 +22,7 @@ mock.module('next/headers', () => ({
       }
       return undefined
     },
-    delete: (name: string) => {
+    delete: ({ name }: { name: string }) => {
       deletedCookies.push(name)
     },
   }),

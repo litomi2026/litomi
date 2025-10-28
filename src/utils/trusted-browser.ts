@@ -5,6 +5,7 @@ import { and, desc, eq, inArray, lt, or } from 'drizzle-orm'
 import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies'
 import { userAgent as getUserAgent } from 'next/server'
 
+import { COOKIE_DOMAIN } from '@/constants'
 import { MAX_TRUSTED_DEVICES_PER_USER } from '@/constants/policy'
 import { CookieKey } from '@/constants/storage'
 import { trustedBrowserTable } from '@/database/supabase/2fa-schema'
@@ -85,10 +86,11 @@ export async function insertTrustedBrowser(userId: number, fingerprint: string, 
 
 export async function setTrustedBrowserCookie(cookieStore: ReadonlyRequestCookies, token: string) {
   cookieStore.set(CookieKey.TRUSTED_BROWSER_TOKEN, token, {
+    domain: COOKIE_DOMAIN,
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
     maxAge: sec(`${TRUSTED_DEVICE_EXPIRY_DAYS} days`),
+    sameSite: 'strict',
+    secure: true,
   })
 }
 

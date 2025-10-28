@@ -1,6 +1,7 @@
 import { and, eq, gt } from 'drizzle-orm'
 import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies'
 
+import { COOKIE_DOMAIN } from '@/constants'
 import { CookieKey } from '@/constants/storage'
 import { trustedBrowserTable } from '@/database/supabase/2fa-schema'
 import { db } from '@/database/supabase/drizzle'
@@ -21,17 +22,17 @@ export async function checkTrustedBrowser(
   const tokenData = await verifyTrustedBrowserToken(token)
 
   if (!tokenData) {
-    cookieStore.delete(CookieKey.TRUSTED_BROWSER_TOKEN)
+    cookieStore.delete({ name: CookieKey.TRUSTED_BROWSER_TOKEN, domain: COOKIE_DOMAIN })
     return false
   }
 
   if (tokenData.fingerprint !== expectedFingerprint) {
-    cookieStore.delete(CookieKey.TRUSTED_BROWSER_TOKEN)
+    cookieStore.delete({ name: CookieKey.TRUSTED_BROWSER_TOKEN, domain: COOKIE_DOMAIN })
     return false
   }
 
   if (tokenData.userId !== expectedUserId) {
-    cookieStore.delete(CookieKey.TRUSTED_BROWSER_TOKEN)
+    cookieStore.delete({ name: CookieKey.TRUSTED_BROWSER_TOKEN, domain: COOKIE_DOMAIN })
     return false
   }
 
@@ -48,7 +49,7 @@ export async function checkTrustedBrowser(
     .returning({ id: trustedBrowserTable.id })
 
   if (!browser) {
-    cookieStore.delete(CookieKey.TRUSTED_BROWSER_TOKEN)
+    cookieStore.delete({ name: CookieKey.TRUSTED_BROWSER_TOKEN, domain: COOKIE_DOMAIN })
     return false
   }
 

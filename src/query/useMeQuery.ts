@@ -4,14 +4,14 @@ import ms from 'ms'
 import { useEffect } from 'react'
 
 import { GETMeResponse } from '@/app/api/me/route'
-import { NEXT_PUBLIC_GA_ID } from '@/constants/env'
+import { NEXT_PUBLIC_BACKEND_URL, NEXT_PUBLIC_GA_ID } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
 import amplitude from '@/lib/amplitude/lazy'
 import { handleResponseError, ResponseError } from '@/utils/react-query-error'
 
 export async function fetchMe() {
   try {
-    const response = await fetch('/api/me')
+    const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/me`, { credentials: 'include' })
     return await handleResponseError<GETMeResponse>(response)
   } catch (error) {
     if (error instanceof ResponseError && error.status === 401) {

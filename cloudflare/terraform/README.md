@@ -47,6 +47,7 @@ Edit `terraform.tfvars` with your Cloudflare details:
 ```bash
 cd cloudflare/terraform
 export $(grep -v '^#' .env | xargs)
+terraform init
 # terraform plan
 terraform apply
 ```

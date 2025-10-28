@@ -25,6 +25,15 @@ resource "cloudflare_dns_record" "www_cname" {
   proxied = true
 }
 
+resource "cloudflare_dns_record" "stg_cname" {
+  zone_id = var.zone_id
+  name    = "stg.litomi.in"
+  type    = "CNAME"
+  content = "cname.vercel-dns.com"
+  ttl     = 1
+  proxied = true
+}
+
 resource "cloudflare_dns_record" "r2_cname" {
   zone_id = var.zone_id
   name    = "r2.litomi.in"
@@ -45,7 +54,7 @@ resource "cloudflare_dns_record" "api_cname" {
 
 resource "cloudflare_dns_record" "api_stage_cname" {
   zone_id = var.zone_id
-  name    = "api-stage.litomi.in"
+  name    = "api-stg.litomi.in"
   type    = "CNAME"
   content = "ghs.googlehosted.com"
   ttl     = 1

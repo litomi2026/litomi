@@ -4,6 +4,7 @@ import { captureException } from '@sentry/nextjs'
 import { sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 
+import { COOKIE_DOMAIN } from '@/constants'
 import { CookieKey } from '@/constants/storage'
 import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/schema'
@@ -25,8 +26,8 @@ export default async function logout() {
       .returning({ loginId: userTable.loginId })
 
     const cookieStore = await cookies()
-    cookieStore.delete(CookieKey.ACCESS_TOKEN)
-    cookieStore.delete(CookieKey.REFRESH_TOKEN)
+    cookieStore.delete({ name: CookieKey.ACCESS_TOKEN, domain: COOKIE_DOMAIN })
+    cookieStore.delete({ name: CookieKey.REFRESH_TOKEN, domain: COOKIE_DOMAIN })
 
     return ok(user)
   } catch (error) {
