@@ -42,8 +42,8 @@ export async function GET(request: Request) {
       return new Response('Bad Request', { status: 400 })
     }
 
-    cursorId = decoded.mangaId.toString()
-    cursorTime = new Date(decoded.timestamp).toISOString()
+    cursorId = decoded.mangaId
+    cursorTime = new Date(decoded.timestamp)
   }
 
   const bookmarkRows = await selectBookmarks({
