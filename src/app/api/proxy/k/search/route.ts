@@ -1,6 +1,6 @@
 import { GETProxyKSearchSchema } from '@/app/api/proxy/k/search/schema'
 import { BLACKLISTED_MANGA_IDS, MAX_KHENTAI_SEARCH_QUERY_LENGTH } from '@/constants/policy'
-import { getCategories, kHentaiClient, KHentaiMangaSearchOptions } from '@/crawler/k-hentai'
+import { encodeCategories, kHentaiClient, KHentaiMangaSearchOptions } from '@/crawler/k-hentai'
 import { createCacheControlHeaders, handleRouteError } from '@/crawler/proxy-utils'
 import { trendingKeywordsRedisService } from '@/services/TrendingKeywordsRedisService'
 import { Locale } from '@/translation/common'
@@ -47,6 +47,7 @@ export async function GET(request: Request) {
   const lowerQuery = convertToKHentaiKey(query?.toLowerCase())
   const baseSearch = lowerQuery?.replace(/\b(type|uploader):\S+/gi, '').trim() ?? ''
   const hasLanguageFilter = /\blanguage:\S+/i.test(baseSearch)
+  const matchedCategories = query?.match(/\btype:(\S+)/i)
   const languageFilter = !hasLanguageFilter && locale ? getKHentaiLanguageFilter(locale) : ''
   const search = [languageFilter, baseSearch].filter(Boolean).join(' ')
 
@@ -61,7 +62,7 @@ export async function GET(request: Request) {
     nextViewsId: nextViewsId?.toString(),
     sort,
     offset: skip?.toString(),
-    categories: getCategories(lowerQuery),
+    categories: matchedCategories ? encodeCategories(matchedCategories[1]) : getKHentaiCategories(locale),
     minViews: minView?.toString(),
     maxViews: maxView?.toString(),
     minPages: minPage?.toString(),
@@ -181,11 +182,18 @@ function getCacheControlHeader(params: KHentaiMangaSearchOptions) {
   })
 }
 
+function getKHentaiCategories(locale?: Locale) {
+  if (locale === Locale.JA) {
+    return '1,2,3,6'
+  }
+  return undefined
+}
+
 function getKHentaiLanguageFilter(locale: Locale) {
   return {
     [Locale.KO]: 'language:korean',
     [Locale.EN]: 'language:english',
-    [Locale.JA]: 'language:japanese',
+    [Locale.JA]: '-language:translated',
     [Locale.ZH_CN]: 'language:chinese',
     [Locale.ZH_TW]: 'language:chinese',
   }[locale]
