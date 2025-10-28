@@ -16,11 +16,11 @@ export async function getAccessTokenCookieConfig(userId: number | string) {
     value: cookieValue,
     options: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax' as const,
+      secure: true,
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : undefined,
       maxAge: sec('1 hour'),
     },
-  }
+  } as const
 }
 
 export function getCookieJSON(cookieStore: ReadonlyRequestCookies, keys: string[]) {
@@ -45,8 +45,8 @@ export async function setRefreshTokenCookie(cookieStore: ReadonlyRequestCookies,
 
   cookieStore.set(CookieKey.REFRESH_TOKEN, cookieValue, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: true,
+    sameSite: process.env.NODE_ENV === 'production' ? 'lax' : undefined,
     maxAge: sec('30 days'),
   })
 }
