@@ -2,6 +2,10 @@ import { beforeEach, describe, expect, mock, test } from 'bun:test'
 
 import signup from '../action'
 
+mock.module('@/constants/env', () => ({
+  NEXT_PUBLIC_CANONICAL_URL: 'http://localhost:3000',
+}))
+
 mock.module('next/headers', () => ({
   headers: mock(() =>
     Promise.resolve({
