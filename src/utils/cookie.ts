@@ -1,7 +1,6 @@
 import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies'
 import { cookies } from 'next/headers'
 
-import { COOKIE_DOMAIN } from '@/constants'
 import { CookieKey } from '@/constants/storage'
 
 import { sec } from './date'
@@ -16,7 +15,7 @@ export async function getAccessTokenCookieConfig(userId: number | string) {
     key: CookieKey.ACCESS_TOKEN,
     value: cookieValue,
     options: {
-      domain: process.env.NODE_ENV === 'production' ? COOKIE_DOMAIN : undefined,
+      domain: process.env.NODE_ENV === 'production' ? 'litomi.in' : 'localhost',
       httpOnly: true,
       maxAge: sec('1 hour'),
       sameSite: process.env.NODE_ENV === 'production' ? 'lax' : undefined,
@@ -46,7 +45,7 @@ export async function setRefreshTokenCookie(cookieStore: ReadonlyRequestCookies,
   const cookieValue = await signJWT({ sub: String(userId) }, JWTType.REFRESH)
 
   cookieStore.set(CookieKey.REFRESH_TOKEN, cookieValue, {
-    domain: process.env.NODE_ENV === 'production' ? COOKIE_DOMAIN : undefined,
+    domain: process.env.NODE_ENV === 'production' ? 'litomi.in' : 'localhost',
     httpOnly: true,
     maxAge: sec('30 days'),
     sameSite: process.env.NODE_ENV === 'production' ? 'lax' : undefined,
