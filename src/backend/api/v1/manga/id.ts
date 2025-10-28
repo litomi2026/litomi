@@ -1,3 +1,4 @@
+import { zValidator } from '@hono/zod-validator'
 import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
@@ -10,7 +11,7 @@ import { createCacheControl } from '@/crawler/proxy-utils'
 import { db } from '@/database/supabase/drizzle'
 import { readingHistoryTable } from '@/database/supabase/schema'
 
-const GETReadingHistoryParamsSchema = z.object({
+const paramSchema = z.object({
   id: z.coerce.number().int().positive().max(MAX_MANGA_ID),
 })
 
@@ -18,22 +19,14 @@ export type GETV1MangaIdHistoryResponse = number | null
 
 const mangaRoutes = new Hono<Env>()
 
-mangaRoutes.get('/:id/history', async (c) => {
+mangaRoutes.get('/:id/history', zValidator('param', paramSchema), async (c) => {
   const userId = getUserId()
 
   if (!userId) {
     throw new HTTPException(401)
   }
 
-  const validation = GETReadingHistoryParamsSchema.safeParse({
-    id: c.req.param('id'),
-  })
-
-  if (!validation.success) {
-    throw new HTTPException(400)
-  }
-
-  const { id: mangaId } = validation.data
+  const { id: mangaId } = c.req.valid('param')
 
   const [history] = await db
     .select({ lastPage: readingHistoryTable.lastPage })

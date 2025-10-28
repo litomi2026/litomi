@@ -1,11 +1,15 @@
-import { Env, Hono } from 'hono'
+import { Hono } from 'hono'
 
+import { Env } from '@/backend'
+
+import bookmarkRoutes from './bookmark'
 import mangaRoutes from './manga/id'
 import meRoutes from './me'
 import searchRoutes from './search'
 
 const v1Routes = new Hono<Env>()
 
+v1Routes.route('/bookmark', bookmarkRoutes)
 v1Routes.route('/manga', mangaRoutes)
 v1Routes.route('/me', meRoutes)
 v1Routes.route('/search', searchRoutes)
