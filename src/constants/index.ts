@@ -39,19 +39,20 @@ export function generateOpenGraphMetadata({ title, description, images, url }: P
   const metadataOverrides = {
     title: title ? `${title} - ${SHORT_NAME}` : defaultOpenGraph.title,
     description: description || defaultOpenGraph.description,
-    images: images || defaultOpenGraph.images,
   }
 
   return {
     openGraph: {
       ...defaultOpenGraph,
       ...metadataOverrides,
+      images: images || defaultOpenGraph.images,
       ...(url && { url }),
     },
     twitter: {
       card: 'summary_large_image',
       site: '@litomi_in',
       ...metadataOverrides,
+      images: defaultOpenGraph.images,
     },
   }
 }
