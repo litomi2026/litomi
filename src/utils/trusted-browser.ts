@@ -86,7 +86,7 @@ export async function insertTrustedBrowser(userId: number, fingerprint: string, 
 
 export async function setTrustedBrowserCookie(cookieStore: ReadonlyRequestCookies, token: string) {
   cookieStore.set(CookieKey.TRUSTED_BROWSER_TOKEN, token, {
-    domain: process.env.NODE_ENV === 'production' ? COOKIE_DOMAIN : undefined,
+    domain: COOKIE_DOMAIN,
     httpOnly: true,
     maxAge: sec(`${TRUSTED_DEVICE_EXPIRY_DAYS} days`),
     sameSite: 'lax',

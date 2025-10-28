@@ -16,7 +16,7 @@ export async function getAccessTokenCookieConfig(userId: number | string) {
     key: CookieKey.ACCESS_TOKEN,
     value: cookieValue,
     options: {
-      domain: process.env.NODE_ENV === 'production' ? COOKIE_DOMAIN : undefined,
+      domain: COOKIE_DOMAIN,
       httpOnly: true,
       maxAge: sec('1 hour'),
       sameSite: 'lax',
@@ -46,7 +46,7 @@ export async function setRefreshTokenCookie(cookieStore: ReadonlyRequestCookies,
   const cookieValue = await signJWT({ sub: String(userId) }, JWTType.REFRESH)
 
   cookieStore.set(CookieKey.REFRESH_TOKEN, cookieValue, {
-    domain: process.env.NODE_ENV === 'production' ? COOKIE_DOMAIN : undefined,
+    domain: COOKIE_DOMAIN,
     httpOnly: true,
     maxAge: sec('30 days'),
     sameSite: 'lax',
