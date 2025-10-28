@@ -15,7 +15,7 @@ export async function getAccessTokenCookieConfig(userId: number | string) {
     key: CookieKey.ACCESS_TOKEN,
     value: cookieValue,
     options: {
-      domain: process.env.NODE_ENV === 'production' ? 'litomi.in' : 'localhost',
+      domain: 'litomi.in',
       httpOnly: true,
       maxAge: sec('1 hour'),
       sameSite: process.env.NODE_ENV === 'production' ? 'lax' : undefined,
