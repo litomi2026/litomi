@@ -3,13 +3,12 @@ import { Hono } from 'hono'
 import { deleteCookie } from 'hono/cookie'
 import { HTTPException } from 'hono/http-exception'
 
+import { Env } from '@/backend'
 import { getUserId } from '@/backend/utils/auth'
 import { CookieKey } from '@/constants/storage'
 import { createCacheControl } from '@/crawler/proxy-utils'
 import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/schema'
-
-import type { Env } from '../..'
 
 export type GETV1MeResponse = {
   id: number

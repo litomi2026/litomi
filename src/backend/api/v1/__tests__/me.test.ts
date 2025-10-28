@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, mock, test } from 'bun:test'
+import { beforeAll, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test'
 import { Hono } from 'hono'
 import { contextStorage } from 'hono/context-storage'
 
@@ -9,6 +9,10 @@ import meRoutes from '../me'
 let shouldThrowDatabaseError = false
 let deletedCookies: string[] = []
 let currentUserId: number | undefined
+
+beforeAll(() => {
+  spyOn(console, 'error').mockImplementation(() => {})
+})
 
 type TestEnv = Env & {
   Bindings: {

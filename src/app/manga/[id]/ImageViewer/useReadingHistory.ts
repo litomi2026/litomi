@@ -2,6 +2,8 @@
 
 import { useQuery } from '@tanstack/react-query'
 
+import { GETV1MangaIdHistoryResponse } from '@/backend/api/v1/manga/id'
+import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
 import { SessionStorageKeyMap } from '@/constants/storage'
 import useMeQuery from '@/query/useMeQuery'
@@ -14,9 +16,9 @@ export default function useReadingHistory(mangaId: number) {
     queryKey: QueryKeys.readingHistory(mangaId),
     queryFn: async () => {
       if (me) {
-        const response = await fetch(`/api/manga/${mangaId}/reading-history`)
-        const lastPage = await handleResponseError<number>(response)
-        return lastPage
+        const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/manga/${mangaId}/history`
+        const response = await fetch(url.toString(), { credentials: 'include' })
+        return await handleResponseError<GETV1MangaIdHistoryResponse>(response)
       } else {
         const stored = sessionStorage.getItem(SessionStorageKeyMap.readingHistory(mangaId))
         return stored ? parseInt(stored, 10) : null
