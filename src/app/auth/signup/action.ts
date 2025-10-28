@@ -91,7 +91,7 @@ export default async function signup(formData: FormData) {
       .returning({ id: userTable.id })
 
     if (!result) {
-      return conflict({ loginId: '이미 사용 중인 아이디에요' }, formData)
+      return conflict({ loginId: '이미 사용 중인 아이디예요' }, formData)
     }
 
     const { id: userId } = result

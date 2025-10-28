@@ -33,7 +33,7 @@ export async function regenerateBackupCodes(formData: FormData) {
   const validation = tokenSchema.safeParse({ token: formData.get('token') })
 
   if (!validation.success) {
-    return badRequest('잘못된 인증 코드에요')
+    return badRequest('잘못된 인증 코드예요')
   }
 
   const { token } = validation.data
@@ -46,13 +46,13 @@ export async function regenerateBackupCodes(formData: FormData) {
         .where(and(eq(twoFactorTable.userId, userId), isNull(twoFactorTable.expiresAt)))
 
       if (!twoFactor) {
-        return badRequest('잘못된 인증 코드에요')
+        return badRequest('잘못된 인증 코드예요')
       }
 
       const secret = decryptTOTPSecret(twoFactor.secret)
 
       if (!verifyTOTPToken(token, secret)) {
-        return badRequest('잘못된 인증 코드에요')
+        return badRequest('잘못된 인증 코드예요')
       }
 
       const { codes, hashedCodes } = await generateBackupCodes(8)
@@ -91,7 +91,7 @@ export async function removeTwoFactor(formData: FormData) {
   const validation = tokenSchema.safeParse({ token: formData.get('token') })
 
   if (!validation.success) {
-    return badRequest('잘못된 인증 코드에요')
+    return badRequest('잘못된 인증 코드예요')
   }
 
   const { token } = validation.data
@@ -104,13 +104,13 @@ export async function removeTwoFactor(formData: FormData) {
         .where(and(eq(twoFactorTable.userId, userId), isNull(twoFactorTable.expiresAt)))
 
       if (!twoFactor) {
-        return badRequest('잘못된 인증 코드에요')
+        return badRequest('잘못된 인증 코드예요')
       }
 
       const secret = decryptTOTPSecret(twoFactor.secret)
 
       if (!verifyTOTPToken(token, secret)) {
-        return badRequest('잘못된 인증 코드에요')
+        return badRequest('잘못된 인증 코드예요')
       }
 
       await tx
@@ -209,7 +209,7 @@ export async function verifyAndEnableTwoFactor(formData: FormData) {
   const validation = tokenSchema.safeParse({ token: formData.get('token') })
 
   if (!validation.success) {
-    return badRequest('잘못된 인증 코드에요', formData)
+    return badRequest('잘못된 인증 코드예요', formData)
   }
 
   const { token } = validation.data
@@ -228,7 +228,7 @@ export async function verifyAndEnableTwoFactor(formData: FormData) {
       const secret = decryptTOTPSecret(setup.secret)
 
       if (!verifyTOTPToken(token, secret)) {
-        return badRequest('잘못된 인증 코드에요')
+        return badRequest('잘못된 인증 코드예요')
       }
 
       const { codes, hashedCodes } = await generateBackupCodes(8)

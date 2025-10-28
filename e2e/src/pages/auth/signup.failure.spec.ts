@@ -431,7 +431,7 @@ test.describe('/auth/signup', () => {
       await page.fill('input[name="password-confirm"]', user.password)
       await page.click('button[type="submit"]')
 
-      await expect(page.locator('text=/이미 사용 중인 아이디에요/i')).toBeVisible()
+      await expect(page.locator('text=/이미 사용 중인 아이디예요/i')).toBeVisible()
     })
 
     test('유효성 검사 오류 시 폼 데이터를 보존한다', async ({ page }) => {

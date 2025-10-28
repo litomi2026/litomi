@@ -65,7 +65,7 @@ export default function UserProfileView({ user }: Readonly<Props>) {
 
 function UserProfileDescription({ user }: Readonly<Props>) {
   if (user.type === UserType.NOT_FOUND) {
-    return <div className="mt-2 h-[4.75rem] text-zinc-500 text-sm">존재하지 않는 사용자에요</div>
+    return <div className="mt-2 h-[4.75rem] text-zinc-500 text-sm">존재하지 않는 사용자예요</div>
   }
 
   if (user.type === UserType.GUEST) {

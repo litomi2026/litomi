@@ -128,7 +128,7 @@ describe('signup action', () => {
     expect('error' in result).toBe(true)
 
     if (!result.ok && typeof result.error === 'object') {
-      expect(result.error.loginId).toBe('이미 사용 중인 아이디에요')
+      expect(result.error.loginId).toBe('이미 사용 중인 아이디예요')
     }
   })
 })
