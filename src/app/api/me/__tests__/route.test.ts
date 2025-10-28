@@ -22,8 +22,10 @@ mock.module('next/headers', () => ({
       }
       return undefined
     },
-    delete: (name: string) => {
-      deletedCookies.push(name)
+    set: (name: string, value: string, options?: { maxAge?: number }) => {
+      if (options?.maxAge === 0) {
+        deletedCookies.push(name)
+      }
     },
   }),
 }))

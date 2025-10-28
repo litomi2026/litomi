@@ -8,7 +8,7 @@ import { CookieKey } from '@/constants/storage'
 import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/schema'
 import { internalServerError, ok, unauthorized } from '@/utils/action-response'
-import { validateUserIdFromCookie } from '@/utils/cookie'
+import { deleteCookie, validateUserIdFromCookie } from '@/utils/cookie'
 
 export default async function logout() {
   const userId = await validateUserIdFromCookie()
@@ -25,8 +25,8 @@ export default async function logout() {
       .returning({ loginId: userTable.loginId })
 
     const cookieStore = await cookies()
-    cookieStore.delete(CookieKey.ACCESS_TOKEN)
-    cookieStore.delete(CookieKey.REFRESH_TOKEN)
+    deleteCookie(cookieStore, CookieKey.ACCESS_TOKEN)
+    deleteCookie(cookieStore, CookieKey.REFRESH_TOKEN)
 
     return ok(user)
   } catch (error) {

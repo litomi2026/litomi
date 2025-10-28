@@ -2,7 +2,7 @@ import { RequestCookies, ResponseCookies } from 'next/dist/server/web/spec-exten
 import { NextRequest, NextResponse } from 'next/server'
 
 import { CookieKey } from './constants/storage'
-import { getAccessTokenCookieConfig } from './utils/cookie'
+import { deleteCookie, getAccessTokenCookieConfig } from './utils/cookie'
 import { JWTType, verifyJWT } from './utils/jwt'
 
 export async function middleware({ nextUrl, method, cookies, headers }: NextRequest) {
@@ -31,7 +31,7 @@ export async function middleware({ nextUrl, method, cookies, headers }: NextRequ
   // at 만료 및 rt 없음 -> at 쿠키 삭제
   if (!refreshToken) {
     const response = NextResponse.next()
-    response.cookies.delete(CookieKey.ACCESS_TOKEN)
+    deleteCookie(response.cookies, CookieKey.ACCESS_TOKEN)
     return response
   }
 
@@ -41,8 +41,8 @@ export async function middleware({ nextUrl, method, cookies, headers }: NextRequ
   // at 만료 및 rt 만료 -> at, rt 쿠키 삭제
   if (!userId) {
     const response = NextResponse.next()
-    response.cookies.delete(CookieKey.ACCESS_TOKEN)
-    response.cookies.delete(CookieKey.REFRESH_TOKEN)
+    deleteCookie(response.cookies, CookieKey.ACCESS_TOKEN)
+    deleteCookie(response.cookies, CookieKey.REFRESH_TOKEN)
     return response
   }
 

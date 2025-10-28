@@ -5,7 +5,7 @@ import { CookieKey } from '@/constants/storage'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/schema'
-import { validateUserIdFromCookie } from '@/utils/cookie'
+import { deleteCookie, validateUserIdFromCookie } from '@/utils/cookie'
 
 export type GETMeResponse = {
   id: number
@@ -41,8 +41,8 @@ export async function GET(request: Request) {
 
     if (!user) {
       const cookieStore = await cookies()
-      cookieStore.delete(CookieKey.ACCESS_TOKEN)
-      cookieStore.delete(CookieKey.REFRESH_TOKEN)
+      deleteCookie(cookieStore, CookieKey.ACCESS_TOKEN)
+      deleteCookie(cookieStore, CookieKey.REFRESH_TOKEN)
       return new Response('Not Found', { status: 404, headers: { 'Cache-Control': cacheControl } })
     }
 

@@ -1,4 +1,4 @@
-import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies'
+import { ReadonlyRequestCookies, ResponseCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies'
 import { cookies } from 'next/headers'
 
 import { COOKIE_DOMAIN } from '@/constants'
@@ -8,6 +8,10 @@ import { sec } from './date'
 import { JWTType, signJWT, verifyJWT } from './jwt'
 
 type CookieStore = Awaited<ReturnType<typeof cookies>>
+
+export async function deleteCookie(cookieStore: CookieStore | ResponseCookies, key: CookieKey) {
+  cookieStore.set(key, '', { domain: COOKIE_DOMAIN, maxAge: 0 })
+}
 
 export async function getAccessTokenCookieConfig(userId: number | string) {
   const cookieValue = await signJWT({ sub: String(userId) }, JWTType.ACCESS)
@@ -63,7 +67,7 @@ export async function validateUserIdFromCookie() {
 
   if (!userId) {
     if (userId === null) {
-      cookieStore.delete(CookieKey.ACCESS_TOKEN)
+      deleteCookie(cookieStore, CookieKey.ACCESS_TOKEN)
     }
     return null
   }
