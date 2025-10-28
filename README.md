@@ -38,7 +38,7 @@
 ## 개발 환경
 
 - macOS 15.6
-- Bun 1.2
+- Bun 1.3
 - Docker 28.1
 - PostgreSQL(psql) 17.5
 
