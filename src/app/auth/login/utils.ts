@@ -4,7 +4,6 @@ import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adap
 import { CookieKey } from '@/constants/storage'
 import { trustedBrowserTable } from '@/database/supabase/2fa-schema'
 import { db } from '@/database/supabase/drizzle'
-import { deleteCookie } from '@/utils/cookie'
 import { JWTType, verifyJWT } from '@/utils/jwt'
 import { TrustedBrowserPayload } from '@/utils/trusted-browser'
 
@@ -22,17 +21,17 @@ export async function checkTrustedBrowser(
   const tokenData = await verifyTrustedBrowserToken(token)
 
   if (!tokenData) {
-    deleteCookie(cookieStore, CookieKey.TRUSTED_BROWSER_TOKEN)
+    cookieStore.delete(CookieKey.TRUSTED_BROWSER_TOKEN)
     return false
   }
 
   if (tokenData.fingerprint !== expectedFingerprint) {
-    deleteCookie(cookieStore, CookieKey.TRUSTED_BROWSER_TOKEN)
+    cookieStore.delete(CookieKey.TRUSTED_BROWSER_TOKEN)
     return false
   }
 
   if (tokenData.userId !== expectedUserId) {
-    deleteCookie(cookieStore, CookieKey.TRUSTED_BROWSER_TOKEN)
+    cookieStore.delete(CookieKey.TRUSTED_BROWSER_TOKEN)
     return false
   }
 
@@ -49,7 +48,7 @@ export async function checkTrustedBrowser(
     .returning({ id: trustedBrowserTable.id })
 
   if (!browser) {
-    deleteCookie(cookieStore, CookieKey.TRUSTED_BROWSER_TOKEN)
+    cookieStore.delete(CookieKey.TRUSTED_BROWSER_TOKEN)
     return false
   }
 

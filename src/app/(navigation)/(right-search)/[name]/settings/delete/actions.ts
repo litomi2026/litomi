@@ -11,7 +11,7 @@ import { db } from '@/database/supabase/drizzle'
 import { bookmarkTable, userCensorshipTable, userTable } from '@/database/supabase/schema'
 import { passwordSchema } from '@/database/zod'
 import { badRequest, internalServerError, ok, unauthorized } from '@/utils/action-response'
-import { deleteCookie, validateUserIdFromCookie } from '@/utils/cookie'
+import { validateUserIdFromCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 
 const deleteAccountSchema = z.object({
@@ -51,8 +51,8 @@ export async function deleteAccount(formData: FormData) {
     await db.delete(userTable).where(eq(userTable.id, userId))
 
     const cookieStore = await cookies()
-    deleteCookie(cookieStore, CookieKey.ACCESS_TOKEN)
-    deleteCookie(cookieStore, CookieKey.REFRESH_TOKEN)
+    cookieStore.delete(CookieKey.ACCESS_TOKEN)
+    cookieStore.delete(CookieKey.REFRESH_TOKEN)
     return ok(`${user.loginId} 계정을 삭제했어요`)
   } catch (error) {
     captureException(error)

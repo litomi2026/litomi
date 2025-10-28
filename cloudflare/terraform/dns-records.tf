@@ -54,7 +54,7 @@ resource "cloudflare_dns_record" "api_cname" {
 
 resource "cloudflare_dns_record" "api_stage_cname" {
   zone_id = var.zone_id
-  name    = "api-stage.litomi.in"
+  name    = "api.stg.litomi.in"
   type    = "CNAME"
   content = "ghs.googlehosted.com"
   ttl     = 1

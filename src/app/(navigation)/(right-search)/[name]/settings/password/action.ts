@@ -12,7 +12,7 @@ import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/schema'
 import { passwordSchema } from '@/database/zod'
 import { badRequest, created, internalServerError, tooManyRequests, unauthorized } from '@/utils/action-response'
-import { deleteCookie, validateUserIdFromCookie } from '@/utils/cookie'
+import { validateUserIdFromCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
 
@@ -87,8 +87,8 @@ export async function changePassword(formData: FormData) {
     }
 
     const [cookieStore] = await Promise.all([cookies(), passwordChangeLimiter.reward(userId.toString())])
-    deleteCookie(cookieStore, CookieKey.ACCESS_TOKEN)
-    deleteCookie(cookieStore, CookieKey.REFRESH_TOKEN)
+    cookieStore.delete(CookieKey.ACCESS_TOKEN)
+    cookieStore.delete(CookieKey.REFRESH_TOKEN)
     return created('비밀번호가 변경됐어요')
   } catch (error) {
     captureException(error)

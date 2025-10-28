@@ -4,7 +4,6 @@ import { deleteCookie } from 'hono/cookie'
 import { HTTPException } from 'hono/http-exception'
 
 import { getUserId } from '@/backend/utils/auth'
-import { COOKIE_DOMAIN } from '@/constants'
 import { CookieKey } from '@/constants/storage'
 import { createCacheControl } from '@/crawler/proxy-utils'
 import { db } from '@/database/supabase/drizzle'
@@ -33,8 +32,8 @@ meRoutes.get('/', async (c) => {
     .where(eq(userTable.id, userId))
 
   if (!user) {
-    deleteCookie(c, CookieKey.ACCESS_TOKEN, { domain: COOKIE_DOMAIN })
-    deleteCookie(c, CookieKey.REFRESH_TOKEN, { domain: COOKIE_DOMAIN })
+    deleteCookie(c, CookieKey.ACCESS_TOKEN)
+    deleteCookie(c, CookieKey.REFRESH_TOKEN)
     throw new HTTPException(404)
   }
 
