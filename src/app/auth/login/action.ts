@@ -111,7 +111,10 @@ export default async function login(formData: FormData) {
     await Promise.all([
       db.update(userTable).set({ loginAt: new Date() }).where(eq(userTable.id, id)),
       loginLimiter.reward(loginId),
-      getAccessTokenCookieConfig(id).then(({ key, value, options }) => cookieStore.set(key, value, options)),
+      getAccessTokenCookieConfig(id).then(({ key, value, options }) => {
+        console.warn('🍪 Cookie options:', JSON.stringify(options, null, 2))
+        cookieStore.set(key, value, options)
+      }),
       remember && setRefreshTokenCookie(cookieStore, id),
     ])
 
