@@ -3,13 +3,20 @@ import { Hono } from 'hono'
 import { deleteCookie } from 'hono/cookie'
 import { HTTPException } from 'hono/http-exception'
 
+import { Env } from '@/backend'
 import { getUserId } from '@/backend/utils/auth'
 import { CookieKey } from '@/constants/storage'
 import { createCacheControl } from '@/crawler/proxy-utils'
 import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/schema'
 
-import type { Env } from '../..'
+export type GETV1MeResponse = {
+  id: number
+  loginId: string
+  name: string
+  nickname: string
+  imageURL: string | null
+}
 
 const meRoutes = new Hono<Env>()
 
@@ -42,7 +49,7 @@ meRoutes.get('/', async (c) => {
     maxAge: 3,
   })
 
-  return c.json(user, { headers: { 'Cache-Control': cacheControl } })
+  return c.json<GETV1MeResponse>(user, { headers: { 'Cache-Control': cacheControl } })
 })
 
 export default meRoutes
