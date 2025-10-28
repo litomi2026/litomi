@@ -12,7 +12,6 @@ let deletedCookies: string[] = []
 mock.module('@/constants/env', () => ({
   JWT_SECRET_ACCESS_TOKEN: 'test-secret-access-token-for-testing',
   JWT_SECRET_REFRESH_TOKEN: 'test-secret-refresh-token-for-testing',
-  NEXT_PUBLIC_CANONICAL_URL: 'http://localhost:3000',
 }))
 
 mock.module('next/headers', () => ({
@@ -23,7 +22,7 @@ mock.module('next/headers', () => ({
       }
       return undefined
     },
-    delete: (name: string) => {
+    delete: ({ name }: { name: string }) => {
       deletedCookies.push(name)
     },
   }),
@@ -167,7 +166,6 @@ describe('GET /api/me', () => {
       mock.module('@/constants/env', () => ({
         JWT_SECRET_ACCESS_TOKEN: 'different-secret-key-for-invalid-token',
         JWT_SECRET_REFRESH_TOKEN: 'test-secret-refresh-token-for-testing',
-        NEXT_PUBLIC_CANONICAL_URL: 'http://localhost:3000',
       }))
 
       const invalidToken = await signJWT({ sub: '1', loginId: 'testuser1' }, JWTType.ACCESS)
@@ -176,7 +174,6 @@ describe('GET /api/me', () => {
       mock.module('@/constants/env', () => ({
         JWT_SECRET_ACCESS_TOKEN: 'test-secret-access-token-for-testing',
         JWT_SECRET_REFRESH_TOKEN: 'test-secret-refresh-token-for-testing',
-        NEXT_PUBLIC_CANONICAL_URL: 'http://localhost:3000',
       }))
 
       // When

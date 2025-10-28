@@ -6,6 +6,7 @@ import { eq } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 import { z } from 'zod/v4'
 
+import { COOKIE_DOMAIN } from '@/constants'
 import { CookieKey } from '@/constants/storage'
 import { db } from '@/database/supabase/drizzle'
 import { bookmarkTable, userCensorshipTable, userTable } from '@/database/supabase/schema'
@@ -51,8 +52,8 @@ export async function deleteAccount(formData: FormData) {
     await db.delete(userTable).where(eq(userTable.id, userId))
 
     const cookieStore = await cookies()
-    cookieStore.delete(CookieKey.ACCESS_TOKEN)
-    cookieStore.delete(CookieKey.REFRESH_TOKEN)
+    cookieStore.delete({ name: CookieKey.ACCESS_TOKEN, domain: COOKIE_DOMAIN })
+    cookieStore.delete({ name: CookieKey.REFRESH_TOKEN, domain: COOKIE_DOMAIN })
     return ok(`${user.loginId} 계정을 삭제했어요`)
   } catch (error) {
     captureException(error)

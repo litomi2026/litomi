@@ -1,7 +1,7 @@
 import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies'
 import { cookies } from 'next/headers'
 
-import { NEXT_PUBLIC_CANONICAL_URL } from '@/constants/env'
+import { COOKIE_DOMAIN } from '@/constants'
 import { CookieKey } from '@/constants/storage'
 
 import { sec } from './date'
@@ -16,7 +16,7 @@ export async function getAccessTokenCookieConfig(userId: number | string) {
     key: CookieKey.ACCESS_TOKEN,
     value: cookieValue,
     options: {
-      domain: NEXT_PUBLIC_CANONICAL_URL,
+      domain: COOKIE_DOMAIN,
       httpOnly: true,
       maxAge: sec('1 hour'),
       sameSite: 'strict',
@@ -46,7 +46,7 @@ export async function setRefreshTokenCookie(cookieStore: ReadonlyRequestCookies,
   const cookieValue = await signJWT({ sub: String(userId) }, JWTType.REFRESH)
 
   cookieStore.set(CookieKey.REFRESH_TOKEN, cookieValue, {
-    domain: NEXT_PUBLIC_CANONICAL_URL,
+    domain: COOKIE_DOMAIN,
     httpOnly: true,
     maxAge: sec('30 days'),
     sameSite: 'strict',
@@ -63,7 +63,7 @@ export async function validateUserIdFromCookie() {
 
   if (!userId) {
     if (userId === null) {
-      cookieStore.delete(CookieKey.ACCESS_TOKEN)
+      cookieStore.delete({ name: CookieKey.ACCESS_TOKEN, domain: COOKIE_DOMAIN })
     }
     return null
   }

@@ -1,6 +1,7 @@
 import { eq } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 
+import { COOKIE_DOMAIN } from '@/constants'
 import { CookieKey } from '@/constants/storage'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
 import { db } from '@/database/supabase/drizzle'
@@ -41,8 +42,8 @@ export async function GET(request: Request) {
 
     if (!user) {
       const cookieStore = await cookies()
-      cookieStore.delete(CookieKey.ACCESS_TOKEN)
-      cookieStore.delete(CookieKey.REFRESH_TOKEN)
+      cookieStore.delete({ name: CookieKey.ACCESS_TOKEN, domain: COOKIE_DOMAIN })
+      cookieStore.delete({ name: CookieKey.REFRESH_TOKEN, domain: COOKIE_DOMAIN })
       return new Response('Not Found', { status: 404, headers: { 'Cache-Control': cacheControl } })
     }
 
