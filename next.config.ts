@@ -58,18 +58,6 @@ const nextConfig: NextConfig = {
         { key: 'Content-Security-Policy', value: "default-src 'self'; script-src 'self'" },
       ],
     },
-    {
-      source: '/manifest.webmanifest',
-      headers: cacheControlHeaders,
-    },
-    {
-      source: '/web-app-manifest(.*)',
-      headers: cacheControlHeaders,
-    },
-    {
-      source: '/favicon(.*)',
-      headers: cacheControlHeaders,
-    },
   ],
   poweredByHeader: false,
   ...(process.env.BUILD_OUTPUT === 'standalone' && { output: 'standalone' }),

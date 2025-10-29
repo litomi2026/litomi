@@ -4,7 +4,7 @@ import { Twitter } from 'next/dist/lib/metadata/types/twitter-types'
 import { CORS_ORIGIN, NEXT_PUBLIC_CANONICAL_URL } from './env'
 
 export const APPLICATION_NAME = '리토미 - 만화 웹 뷰어'
-export const CANONICAL_URL = NEXT_PUBLIC_CANONICAL_URL || CORS_ORIGIN
+export const CANONICAL_URL = NEXT_PUBLIC_CANONICAL_URL || CORS_ORIGIN || 'https://litomi.in'
 export const SALT_ROUNDS = 12
 export const SHORT_NAME = '리토미'
 export const THEME_COLOR = '#0a0a0a'

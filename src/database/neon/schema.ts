@@ -11,7 +11,7 @@ export const mangaTable = pgTable('manga', {
 }).enableRLS()
 
 export const artistTable = pgTable('artist', {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  id: integer().primaryKey().generatedByDefaultAsIdentity(),
   value: text().notNull().unique(),
 }).enableRLS()
 
@@ -28,7 +28,7 @@ export const mangaArtistTable = pgTable(
 ).enableRLS()
 
 export const characterTable = pgTable('character', {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  id: integer().primaryKey().generatedByDefaultAsIdentity(),
   value: text().notNull().unique(),
 }).enableRLS()
 
@@ -47,7 +47,7 @@ export const mangaCharacterTable = pgTable(
 export const tagTable = pgTable(
   'tag',
   {
-    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    id: integer().primaryKey().generatedByDefaultAsIdentity(),
     value: text().notNull(),
     category: smallint().notNull(), // 0: female, 1: male, 2: mixed, 3: other
   },
@@ -67,7 +67,7 @@ export const mangaTagTable = pgTable(
 ).enableRLS()
 
 export const seriesTable = pgTable('series', {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  id: integer().primaryKey().generatedByDefaultAsIdentity(),
   value: text().notNull().unique(),
 }).enableRLS()
 
@@ -84,7 +84,7 @@ export const mangaSeriesTable = pgTable(
 ).enableRLS()
 
 export const groupTable = pgTable('group', {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  id: integer().primaryKey().generatedByDefaultAsIdentity(),
   value: text().notNull().unique(),
 }).enableRLS()
 
@@ -101,7 +101,7 @@ export const mangaGroupTable = pgTable(
 ).enableRLS()
 
 export const languageTable = pgTable('language', {
-  id: smallint().primaryKey().generatedAlwaysAsIdentity(),
+  id: smallint().primaryKey().generatedByDefaultAsIdentity(),
   value: text().notNull().unique(),
 }).enableRLS()
 
@@ -118,7 +118,7 @@ export const mangaLanguageTable = pgTable(
 ).enableRLS()
 
 export const uploaderTable = pgTable('uploader', {
-  id: smallint().primaryKey().generatedAlwaysAsIdentity(),
+  id: smallint().primaryKey().generatedByDefaultAsIdentity(),
   value: text().notNull().unique(),
 }).enableRLS()
 

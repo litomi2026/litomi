@@ -16,7 +16,7 @@ import {
 import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/constants/policy'
 
 export const userTable = pgTable('user', {
-  id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+  id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
   createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
   loginAt: timestamp('login_at', { precision: 3, withTimezone: true }),
   logoutAt: timestamp('logout_at', { precision: 3, withTimezone: true }),
@@ -43,7 +43,7 @@ export const bookmarkTable = pgTable(
 export const libraryTable = pgTable(
   'library',
   {
-    id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
     userId: bigint('user_id', { mode: 'number' })
       .references(() => userTable.id, { onDelete: 'cascade' })
       .notNull(),
@@ -90,7 +90,7 @@ export const userCensorshipTable = pgTable(
 export const credentialTable = pgTable(
   'credential',
   {
-    id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
     credentialId: varchar({ length: 256 }).notNull(),
     userId: bigint('user_id', { mode: 'number' })
       .references(() => userTable.id, { onDelete: 'cascade' })
@@ -108,22 +108,18 @@ export const credentialTable = pgTable(
   ],
 ).enableRLS()
 
-export const webPushTable = pgTable(
-  'web_push',
-  {
-    id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
-    userId: bigint('user_id', { mode: 'number' })
-      .references(() => userTable.id, { onDelete: 'cascade' })
-      .notNull(),
-    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
-    lastUsedAt: timestamp('last_used_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
-    endpoint: text().notNull(),
-    p256dh: text().notNull(),
-    auth: text().notNull(),
-    userAgent: text('user_agent'),
-  },
-  (table) => [unique('idx_web_push_user_endpoint').on(table.userId, table.endpoint)],
-).enableRLS()
+export const webPushTable = pgTable('web_push', {
+  id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
+  userId: bigint('user_id', { mode: 'number' })
+    .references(() => userTable.id, { onDelete: 'cascade' })
+    .notNull(),
+  createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+  lastUsedAt: timestamp('last_used_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+  endpoint: text().notNull().unique(),
+  p256dh: text().notNull(),
+  auth: text().notNull(),
+  userAgent: text('user_agent'),
+}).enableRLS()
 
 export const pushSettingsTable = pgTable('push_settings', {
   userId: bigint('user_id', { mode: 'number' })
@@ -142,7 +138,7 @@ export const pushSettingsTable = pgTable('push_settings', {
 export const notificationTable = pgTable(
   'notification',
   {
-    id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
     userId: bigint('user_id', { mode: 'number' })
       .references(() => userTable.id, { onDelete: 'cascade' })
       .notNull(),
@@ -165,7 +161,7 @@ export const notificationTable = pgTable(
 export const postTable = pgTable(
   'post',
   {
-    id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
     userId: bigint('user_id', { mode: 'number' })
       .references(() => userTable.id, { onDelete: 'cascade' })
       .notNull(),

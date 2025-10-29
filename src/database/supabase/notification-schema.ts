@@ -5,7 +5,7 @@ import { userTable } from './schema'
 export const notificationCriteriaTable = pgTable(
   'notification_criteria',
   {
-    id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
     userId: bigint('user_id', { mode: 'number' })
       .references(() => userTable.id, { onDelete: 'cascade' })
       .notNull(),
@@ -22,7 +22,7 @@ export const notificationCriteriaTable = pgTable(
 export const notificationConditionTable = pgTable(
   'notification_condition',
   {
-    id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
     criteriaId: bigint('criteria_id', { mode: 'number' })
       .references(() => notificationCriteriaTable.id, { onDelete: 'cascade' })
       .notNull(),

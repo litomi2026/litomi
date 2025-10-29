@@ -3,7 +3,7 @@ import { bigint, date, index, integer, pgTable, smallint, timestamp, unique, var
 export const searchTrendsTable = pgTable(
   'search_trends',
   {
-    id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
     keyword: varchar({ length: 200 }).notNull(),
     searchCount: integer('search_count').notNull().default(1),
     date: date().notNull().defaultNow(),
