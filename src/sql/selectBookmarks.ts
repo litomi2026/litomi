@@ -1,4 +1,4 @@
-import { and, desc, eq, lt, or, SQL, sql } from 'drizzle-orm'
+import { and, desc, eq, lt, or, SQL } from 'drizzle-orm'
 
 import { db } from '@/database/supabase/drizzle'
 import { bookmarkTable } from '@/database/supabase/schema'

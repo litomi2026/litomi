@@ -28,10 +28,10 @@ export class PerformanceDataSeeder {
 
     console.log('\n=== Starting Performance Data Seeding ===')
     console.log(
-      `- User: ${opts.userCount}\n`,
-      `- Library: ${opts.userCount * opts.librariesPerUser}\n`,
-      `- Library item: ${opts.userCount * opts.librariesPerUser * opts.itemsPerLibrary}\n`,
-      `- Bookmark: ${opts.userCount * opts.bookmarksPerUser}`,
+      `- User: ${opts.userCount}`,
+      `\n- Library: ${opts.userCount * opts.librariesPerUser}`,
+      `\n- Library item: ${opts.userCount * opts.librariesPerUser * opts.itemsPerLibrary}`,
+      `\n- Bookmark: ${opts.userCount * opts.bookmarksPerUser}`,
     )
 
     await this.seedUsers(opts)
@@ -62,7 +62,7 @@ export class PerformanceDataSeeder {
         bookmarksInserted += batchData.length
         batchData.length = 0
 
-        if (bookmarksInserted % (opts.batchSize * 10) === 0) {
+        if (bookmarksInserted % (opts.batchSize * opts.bookmarksPerUser) === 0) {
           console.log(`  Inserted ${bookmarksInserted} / ${totalBookmarks} bookmarks`)
         }
       }
@@ -84,6 +84,7 @@ export class PerformanceDataSeeder {
     const totalLibraries = opts.userCount * opts.librariesPerUser
 
     let libraryId = 1
+    let librariesInserted = 0
     const batchData = []
 
     for (let userId = 1; userId <= opts.userCount; userId++) {
@@ -94,10 +95,11 @@ export class PerformanceDataSeeder {
       // Insert when batch is full
       if (batchData.length >= opts.batchSize) {
         await this.bulkInsert(libraryTable, batchData)
+        librariesInserted += batchData.length
         batchData.length = 0
 
-        if (libraryId % (opts.batchSize * 10) === 0) {
-          console.log(`  Inserted ${libraryId - 1} / ${totalLibraries} libraries`)
+        if (librariesInserted % (opts.batchSize * opts.librariesPerUser) === 0) {
+          console.log(`  Inserted ${librariesInserted} / ${totalLibraries} libraries`)
         }
       }
     }
@@ -130,7 +132,7 @@ export class PerformanceDataSeeder {
         itemsInserted += batchData.length
         batchData.length = 0
 
-        if (itemsInserted % (opts.batchSize * 10) === 0) {
+        if (itemsInserted % (opts.batchSize * opts.librariesPerUser * opts.itemsPerLibrary) === 0) {
           console.log(`  Inserted ${itemsInserted} / ${totalItems} library items`)
         }
       }
@@ -156,10 +158,7 @@ export class PerformanceDataSeeder {
       const count = Math.min(opts.batchSize, opts.userCount - batch * opts.batchSize)
       const users = this.generateUserBatch(startId, count)
       await this.bulkInsert(userTable, users)
-
-      if ((batch + 1) % 10 === 0) {
-        console.log(`  Inserted ${(batch + 1) * opts.batchSize} / ${opts.userCount} users`)
-      }
+      console.log(`  Inserted ${(batch + 1) * opts.batchSize} / ${opts.userCount} users`)
     }
 
     console.log(`✓ Seeded ${opts.userCount} users`)

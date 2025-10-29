@@ -27,10 +27,10 @@
     "test:coverage": "bun test --coverage",
     "test:e2e": "playwright test",
     "test:e2e:docker": "./e2e/test-e2e-docker.sh",
-    "test:performance:run": "bun test --conditions=react-server --env-file=.env.performance --preload ./test/performance/setup-performance.ts ./src/backend/__tests__/performance",
-    "test:performance:setup": "docker compose -f docker-compose.performance.yml up -d --wait",
-    "test:performance:cleanup": "docker compose -f docker-compose.performance.yml down -v",
-    "test:performance": "bun run test:performance:setup && bun run test:performance:run; bun run test:performance:cleanup",
+    "test:performance:run": "bun --conditions=react-server --env-file=.env.performance test --preload ./test/performance/setup-performance.ts --timeout=300000 ./src/backend/__tests__/*.perf.ts",
+    "test:performance:setup": "docker compose -p litomi-performance -f docker-compose.performance.yml up -d --wait",
+    "test:performance:cleanup": "docker compose -p litomi-performance -f docker-compose.performance.yml down -v",
+    "test:performance": "bun run test:performance:cleanup; bun run test:performance:setup && bun run test:performance:run; bun run test:performance:cleanup",
     "notify": "bun --conditions=react-server cloud-run/crawl-and-notify/src/index.ts"
   },
   "dependencies": {
