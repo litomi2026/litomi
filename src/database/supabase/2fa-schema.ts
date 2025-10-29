@@ -27,7 +27,7 @@ export const twoFactorBackupCodeTable = pgTable(
 export const trustedBrowserTable = pgTable(
   'trusted_browser',
   {
-    id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
     userId: bigint('user_id', { mode: 'number' })
       .references(() => userTable.id, { onDelete: 'cascade' })
       .notNull(),
