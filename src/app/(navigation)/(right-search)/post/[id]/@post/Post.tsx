@@ -27,7 +27,7 @@ export default function Post({ post }: Readonly<Props>) {
       <div className="relative grid gap-4 px-4 py-3">
         <div className="flex items-start justify-between gap-2">
           <div className="flex gap-2">
-            <Squircle className="w-10 flex-shrink-0" src={author?.imageURL}>
+            <Squircle className="w-10 shrink-0" src={author?.imageURL}>
               {author?.nickname.slice(0, 2)}
             </Squircle>
             <div>

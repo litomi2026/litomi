@@ -53,9 +53,9 @@ export default function LanguageSettings() {
             onClick={() => handleLanguageChange(code)}
             type="button"
           >
-            <Flag className="size-6 rounded-sm flex-shrink-0" />
+            <Flag className="size-6 rounded-sm shrink-0" />
             <span className="flex-1 font-medium">{label}</span>
-            {isSelected && <Check className="size-5 text-brand-end flex-shrink-0" />}
+            {isSelected && <Check className="size-5 text-brand-end shrink-0" />}
           </button>
         )
       })}

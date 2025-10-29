@@ -92,9 +92,9 @@ export default function LibrarySidebar({
           <LibrarySidebarLink
             badge={
               !library.isPublic ? (
-                <Lock className="size-3 text-zinc-500 flex-shrink-0" />
+                <Lock className="size-3 text-zinc-500 shrink-0" />
               ) : library.userId !== userId ? (
-                <Globe className="size-3 text-zinc-500 flex-shrink-0" />
+                <Globe className="size-3 text-zinc-500 shrink-0" />
               ) : null
             }
             description={`${formatNumber(library.itemCount)}개`}

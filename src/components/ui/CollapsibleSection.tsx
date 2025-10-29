@@ -35,7 +35,7 @@ export default function CollapsibleSection({
           </div>
         </div>
         <svg
-          className="w-5 text-zinc-400 transition group-open:rotate-180 flex-shrink-0"
+          className="w-5 text-zinc-400 transition group-open:rotate-180 shrink-0"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"

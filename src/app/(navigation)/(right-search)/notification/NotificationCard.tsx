@@ -178,7 +178,7 @@ export default function NotificationCard({
           >
             {notification.title}
           </h3>
-          <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="flex items-center gap-2 shrink-0">
             {isUnread && <IconDot className="h-2 w-2 text-brand-end animate-pulse" />}
             <span className="text-xs text-zinc-500">
               {formatDistanceToNow(

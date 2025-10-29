@@ -81,7 +81,7 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
         hover:bg-zinc-800 active:bg-zinc-900 disabled:text-zinc-500 disabled:bg-zinc-800 disabled:pointer-events-none aria-hidden:hidden"
         onClick={() => setShowModal(true)}
       >
-        <SquarePen className="size-5 flex-shrink-0" />
+        <SquarePen className="size-5 shrink-0" />
         <span className="min-w-0 hidden md:block">프로필 수정</span>
       </button>
       <Modal

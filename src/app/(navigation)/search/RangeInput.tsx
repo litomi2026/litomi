@@ -84,7 +84,7 @@ export default function RangeInput({
           {...(type === 'number' && { pattern: '[0-9]*' })}
           {...minInput}
         />
-        <span className={`text-zinc-500 flex-shrink-0`}>~</span>
+        <span className={`text-zinc-500 shrink-0`}>~</span>
         <input
           className={inputClassName}
           id={maxId}

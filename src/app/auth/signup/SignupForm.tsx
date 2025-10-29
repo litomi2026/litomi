@@ -195,7 +195,7 @@ export default function SignupForm() {
       </div>
       <div className="rounded-lg bg-zinc-800/50 border border-zinc-700 p-4">
         <div className="flex gap-3">
-          <Info className="size-4 text-zinc-400 flex-shrink-0 mt-0.5" />
+          <Info className="size-4 text-zinc-400 shrink-0 mt-0.5" />
           <div className="text-zinc-400">
             <p className="text-sm font-medium text-zinc-300 mb-1">계정 자동 삭제 안내</p>
             <p className="text-xs">

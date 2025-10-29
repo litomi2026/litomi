@@ -218,7 +218,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
           </div>
 
           {/* Footer */}
-          <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-zinc-900 border-t-2 border-zinc-800 flex gap-2 flex-shrink-0">
+          <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-zinc-900 border-t-2 border-zinc-800 flex gap-2 shrink-0">
             <button
               className="flex-1 px-4 py-3 text-zinc-300 font-medium bg-zinc-800 hover:bg-zinc-700 disabled:bg-zinc-700 disabled:text-zinc-500 rounded-lg transition"
               disabled={isPending}

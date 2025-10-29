@@ -64,7 +64,7 @@ export default function TrustedBrowsers({ trustedBrowsers }: Props) {
           <p className="mt-1 text-sm text-zinc-400">신뢰하는 브라우저에서는 2단계 인증 없이 로그인할 수 있어요</p>
         </div>
         {browsers.length > 0 && (
-          <form action={dispatchRevokeAll} className="flex-shrink-0" onSubmit={handleRevokeAll}>
+          <form action={dispatchRevokeAll} className="shrink-0" onSubmit={handleRevokeAll}>
             <button
               className="text-sm text-red-400 hover:text-red-300 transition disabled:opacity-50"
               disabled={isRevokingAll}
@@ -100,7 +100,7 @@ export default function TrustedBrowsers({ trustedBrowsers }: Props) {
                         {browserName || '알 수 없는 브라우저'}
                       </span>
                       {isCurrentBrowser && (
-                        <span className="rounded-full bg-green-900/50 px-2 py-0.5 text-xs text-green-400 flex-shrink-0">
+                        <span className="rounded-full bg-green-900/50 px-2 py-0.5 text-xs text-green-400 shrink-0">
                           현재
                         </span>
                       )}

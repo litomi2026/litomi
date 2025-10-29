@@ -35,7 +35,7 @@ export default function Profile() {
         href={`/@${name}`}
         onClick={(e) => e.stopPropagation()}
       >
-        <Squircle className="w-8 flex-shrink-0 sm:w-10 fill-zinc-600" src={imageURL}>
+        <Squircle className="w-8 shrink-0 sm:w-10 fill-zinc-600" src={imageURL}>
           {nickname.slice(0, 2)}
         </Squircle>
         <div className="hidden text-left grow min-w-0 gap-1 py-0.5 2xl:grid">
@@ -54,7 +54,7 @@ export default function Profile() {
 export function ProfileSkeleton() {
   return (
     <div className="flex items-center justify-center w-fit m-auto p-2 rounded-full sm:my-0 2xl:w-full 2xl:pl-3 2xl:py-2">
-      <Squircle className="w-8 animate-fade-in flex-shrink-0 sm:w-10 fill-zinc-700" />
+      <Squircle className="w-8 animate-fade-in shrink-0 sm:w-10 fill-zinc-700" />
       <div className="ml-3 hidden w-full min-w-0 gap-1 py-0.5 2xl:grid">
         <div className="h-5 animate-fade-in rounded-full bg-zinc-700" />
         <div className="h-5 animate-fade-in rounded-full bg-zinc-700" />

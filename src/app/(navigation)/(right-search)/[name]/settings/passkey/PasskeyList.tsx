@@ -59,7 +59,7 @@ export default function PasskeyList({ passkeys }: Readonly<Props>) {
       </div>
       <div className="rounded-xl bg-zinc-900 border border-zinc-800 p-4">
         <p className="text-sm text-zinc-400 flex items-start">
-          <span className="inline-block w-5 h-5 rounded bg-zinc-800 text-zinc-400 text-center leading-5 text-xs font-medium mr-2 flex-shrink-0">
+          <span className="inline-block w-5 h-5 rounded bg-zinc-800 text-zinc-400 text-center leading-5 text-xs font-medium mr-2 shrink-0">
             i
           </span>
           <span>여러 기기에서 패스키를 등록하면 어디서든 안전하게 로그인할 수 있어요</span>

@@ -43,7 +43,7 @@ export default function LibrarySidebarLink({
     >
       <div
         aria-current={isActive}
-        className="size-8 rounded-lg flex items-center justify-center flex-shrink-0 aria-current:shadow-md"
+        className="size-8 rounded-lg flex items-center justify-center shrink-0 aria-current:shadow-md"
         style={iconBackground ? { background: iconBackground } : undefined}
       >
         <LinkPending className="size-4 text-background">{icon}</LinkPending>

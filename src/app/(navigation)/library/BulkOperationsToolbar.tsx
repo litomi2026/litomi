@@ -175,7 +175,7 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId, per
       >
         <div className="flex flex-col h-full min-h-0">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 bg-zinc-900 border-b-2 flex-shrink-0">
+          <div className="flex items-center justify-between p-4 bg-zinc-900 border-b-2 shrink-0">
             <h2 className="text-xl font-bold text-zinc-100">{operation === 'move' ? '서재로 이동' : '서재에 복사'}</h2>
             <button className="p-2 rounded-lg hover:bg-zinc-800 transition -m-1" onClick={handleClose} type="button">
               <X className="size-5" />
@@ -198,7 +198,7 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId, per
                   onClick={() => handleLibrarySelect(library.id)}
                 >
                   <div
-                    className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm"
+                    className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 shadow-sm"
                     style={{ backgroundColor: library.color ?? '#3B82F6' }}
                   >
                     <span className="text-lg">{library.icon || '📚'}</span>
@@ -216,7 +216,7 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId, per
           </div>
 
           {/* Footer */}
-          <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-zinc-900 border-t-2 flex-shrink-0">
+          <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-zinc-900 border-t-2 shrink-0">
             <button
               className="w-full px-4 py-3 text-zinc-300 font-medium bg-zinc-800 hover:bg-zinc-700
                 disabled:bg-zinc-700 disabled:text-zinc-500 rounded-lg transition"

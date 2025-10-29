@@ -97,7 +97,7 @@ export default function LibraryModal() {
       open={isOpen}
     >
       <form action={handleAddToLibraries} className="flex flex-col flex-1 min-h-0">
-        <div className="flex items-center justify-between p-4 bg-zinc-900 border-b-2 border-zinc-800 flex-shrink-0">
+        <div className="flex items-center justify-between p-4 bg-zinc-900 border-b-2 border-zinc-800 shrink-0">
           <h2 className="text-xl font-bold text-zinc-100">서재에 추가</h2>
           <button
             className="p-2 -mr-2 rounded-lg hover:bg-zinc-800 transition sm:p-1.5 sm:-mr-1.5"
@@ -136,7 +136,7 @@ export default function LibraryModal() {
                   type="checkbox"
                 />
                 <div
-                  className="size-10 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm"
+                  className="size-10 rounded-lg flex items-center justify-center shrink-0 shadow-sm"
                   style={{ backgroundColor: typeof library.color === 'string' ? library.color : '#3B82F6' }}
                 >
                   <span className="text-lg">{library.icon || '📚'}</span>
@@ -150,7 +150,7 @@ export default function LibraryModal() {
           )}
         </div>
         {libraries && libraries.length > 0 && (
-          <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-zinc-900 border-t-2 border-zinc-800 flex-shrink-0 space-y-2">
+          <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-zinc-900 border-t-2 border-zinc-800 shrink-0 space-y-2">
             <button
               className="flex items-center justify-center gap-2 w-full px-4 py-3 text-background font-medium bg-brand-end rounded-lg transition hover:bg-brand-end/90
               disabled:bg-zinc-700 disabled:text-zinc-500"

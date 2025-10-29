@@ -28,7 +28,7 @@ export default function PasskeyInfoButton() {
           </div>
           <div className="space-y-4 mb-6">
             <div className="flex gap-3">
-              <div className="mt-1 h-5 w-5 rounded-full bg-brand-end/20 flex items-center justify-center flex-shrink-0">
+              <div className="mt-1 h-5 w-5 rounded-full bg-brand-end/20 flex items-center justify-center shrink-0">
                 <span className="text-xs font-bold text-brand-end">1</span>
               </div>
               <div>
@@ -37,7 +37,7 @@ export default function PasskeyInfoButton() {
               </div>
             </div>
             <div className="flex gap-3">
-              <div className="mt-1 h-5 w-5 rounded-full bg-brand-end/20 flex items-center justify-center flex-shrink-0">
+              <div className="mt-1 h-5 w-5 rounded-full bg-brand-end/20 flex items-center justify-center shrink-0">
                 <span className="text-xs font-bold text-brand-end">2</span>
               </div>
               <div>
@@ -46,7 +46,7 @@ export default function PasskeyInfoButton() {
               </div>
             </div>
             <div className="flex gap-3">
-              <div className="mt-1 h-5 w-5 rounded-full bg-brand-end/20 flex items-center justify-center flex-shrink-0">
+              <div className="mt-1 h-5 w-5 rounded-full bg-brand-end/20 flex items-center justify-center shrink-0">
                 <span className="text-xs font-bold text-brand-end">3</span>
               </div>
               <div>

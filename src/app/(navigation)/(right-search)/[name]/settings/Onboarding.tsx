@@ -23,7 +23,7 @@ export default function Onboarding({ children, title, description, icon, benefit
       <ul className="w-full max-w-md grid gap-3 mb-8">
         {benefits.map((benefit) => (
           <li className="flex items-center gap-4 p-4 rounded-2xl border border-zinc-800/50" key={benefit.title}>
-            <div className="size-10 rounded-xl bg-brand-end/10 flex items-center justify-center flex-shrink-0">
+            <div className="size-10 rounded-xl bg-brand-end/10 flex items-center justify-center shrink-0">
               {benefit.icon}
             </div>
             <div className="text-left">

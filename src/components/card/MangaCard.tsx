@@ -52,7 +52,7 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
       key={id}
     >
       <MangaCardImage
-        className="h-fit my-auto aspect-[4/3] [&_img]:snap-start [&_img]:flex-shrink-0 [&_img]:w-full [&_img]:object-contain [&_img]:aspect-[4/3]"
+        className="h-fit my-auto aspect-[4/3] [&_img]:snap-start [&_img]:shrink-0 [&_img]:w-full [&_img]:object-contain [&_img]:aspect-[4/3]"
         manga={manga}
         mangaIndex={index}
       />

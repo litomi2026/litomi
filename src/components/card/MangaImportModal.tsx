@@ -93,7 +93,7 @@ export default function MangaImportModal() {
       open={Boolean(libraryId)}
     >
       <form className="flex flex-col flex-1 min-h-0" onSubmit={handleImport}>
-        <div className="flex items-center justify-between p-4 bg-zinc-900 border-b-2 border-zinc-800 flex-shrink-0">
+        <div className="flex items-center justify-between p-4 bg-zinc-900 border-b-2 border-zinc-800 shrink-0">
           <h2 className="text-xl font-bold text-zinc-100">작품 가져오기</h2>
           <button
             className="p-2 -mr-2 rounded-lg hover:bg-zinc-800 transition sm:p-1.5 sm:-mr-1.5"
@@ -128,7 +128,7 @@ export default function MangaImportModal() {
             value={inputText}
           />
         </div>
-        <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-zinc-900 border-t-2 border-zinc-800 flex-shrink-0">
+        <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-zinc-900 border-t-2 border-zinc-800 shrink-0">
           <button
             className="flex items-center justify-center gap-2 w-full px-4 py-3 text-background font-medium 
               bg-brand-end rounded-lg transition hover:bg-brand-end/90

@@ -209,7 +209,7 @@ export default function TrendingKeywords() {
               <button
                 aria-current={currentIndex === i}
                 aria-label={`Keyword ${i + 1}`}
-                className="rounded-full transition-all flex-shrink-0 size-1.5 bg-zinc-600 hover:bg-zinc-500 aria-current:w-6 aria-current:bg-zinc-400"
+                className="rounded-full transition-all shrink-0 size-1.5 bg-zinc-600 hover:bg-zinc-500 aria-current:w-6 aria-current:bg-zinc-400"
                 key={keyword}
                 onClick={() => handleClick(i)}
               />
