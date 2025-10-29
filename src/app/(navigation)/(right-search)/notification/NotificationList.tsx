@@ -262,7 +262,7 @@ function EmptyState({ filter }: { filter: NotificationFilter | null }) {
     <div className="flex-1 flex flex-col items-center justify-center p-8">
       <div className="relative">
         {content.icon}
-        <div className="absolute inset-0 bg-gradient-to-t from-brand-end/10 to-transparent rounded-full blur-3xl" />
+        <div className="absolute inset-0 bg-linear-to-t from-brand-end/10 to-transparent rounded-full blur-3xl" />
       </div>
       <h3 className="text-lg font-medium text-zinc-300 mb-2">{content.title}</h3>
       <p className="text-sm text-zinc-500 text-center max-w-xs">{content.description}</p>
