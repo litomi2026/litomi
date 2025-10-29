@@ -12,6 +12,11 @@ locals {
     "/@",
   ]
 
+  cached_extension_equals = [
+    "json",
+    "webmanifest",
+  ]
+
   cached_path_prefixes = [
     "/@/",
     "/manga/",
@@ -24,14 +29,17 @@ locals {
     "(http.request.uri.path eq \"${path}\")"
   ])
 
+  exact_extension_conditions = join(" ", [
+    for extension in local.cached_extension_equals :
+    "\"${extension}\""
+  ])
+
   prefix_path_conditions = join(" or ", [
     for prefix in local.cached_path_prefixes :
     "(starts_with(http.request.uri.path, \"${prefix}\"))"
   ])
 
-  extension_conditions = "(http.request.uri.path.extension in {\"json\" \"webmanifest\"})"
-
-  static_pages_expression = "${local.exact_path_conditions} or ${local.prefix_path_conditions} or ${local.extension_conditions}"
+  static_pages_expression = "${local.exact_path_conditions} or ${local.prefix_path_conditions} or (http.request.uri.path.extension in {${local.exact_extension_conditions}})"
 }
 
 resource "cloudflare_ruleset" "cache_rules" {
@@ -95,11 +103,11 @@ resource "cloudflare_ruleset" "cache_rules" {
         cache = true
         edge_ttl = {
           mode    = "override_origin"
-          default = 31536000
+          default = 31536000 # 1 year
         }
         browser_ttl = {
           mode    = "override_origin"
-          default = 43200
+          default = 86400 # 1 day
         }
         cache_key = {
           cache_deception_armor      = true
