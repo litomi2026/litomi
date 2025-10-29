@@ -1,18 +1,22 @@
 locals {
   cached_path_equals = [
+    "/",
+    "/auth/login",
+    "/auth/signup",
     "/deterrence",
     "/doc/privacy",
     "/doc/terms",
-    "/auth/login",
-    "/auth/signup",
-    "/@",
     "/manga",
+    "/offline.html",
     "/404",
+    "/@",
   ]
 
   cached_path_prefixes = [
     "/@/",
-    "/manga/"
+    "/manga/",
+    "/favicon",
+    "/web-app-manifest",
   ]
 
   exact_path_conditions = join(" or ", [
@@ -25,7 +29,9 @@ locals {
     "(starts_with(http.request.uri.path, \"${prefix}\"))"
   ])
 
-  static_pages_expression = "${local.exact_path_conditions} or ${local.prefix_path_conditions}"
+  extension_conditions = "(http.request.uri.path.extension in {\"json\" \"webmanifest\"})"
+
+  static_pages_expression = "${local.exact_path_conditions} or ${local.prefix_path_conditions} or ${local.extension_conditions}"
 }
 
 resource "cloudflare_ruleset" "cache_rules" {
@@ -38,8 +44,8 @@ resource "cloudflare_ruleset" "cache_rules" {
     {
       ref         = "respect_origin_cache_control"
       enabled     = true
-      description = "Respect origin cache-control (json, webmanifest, api)"
-      expression  = "(http.request.uri.path.extension in {\"json\" \"webmanifest\"}) or (starts_with(http.request.uri.path, \"/api\"))"
+      description = "Respect origin cache-control (api)"
+      expression  = "(starts_with(http.request.uri.path, \"/api\"))"
       action      = "set_cache_settings"
 
       action_parameters = {
