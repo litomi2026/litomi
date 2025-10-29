@@ -8,7 +8,7 @@ import { handleResponseError } from '@/utils/react-query-error'
 import useMeQuery from './useMeQuery'
 
 export async function fetchBookmarks() {
-  const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/bookmark`)
+  const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/bookmark`, { credentials: 'include' })
   return handleResponseError<GETBookmarksResponse>(response)
 }
 
