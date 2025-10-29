@@ -1,6 +1,7 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 
 import { GETBookmarksResponse } from '@/app/api/bookmark/route'
+import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { BOOKMARKS_PER_PAGE } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import { handleResponseError } from '@/utils/react-query-error'
@@ -13,7 +14,7 @@ export async function fetchBookmarksPaginated(cursor: string | null) {
     searchParams.append('cursor', cursor)
   }
 
-  const response = await fetch(`/api/bookmark?${searchParams}`)
+  const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/bookmark?${searchParams}`, { credentials: 'include' })
   return handleResponseError<GETBookmarksResponse>(response)
 }
 
