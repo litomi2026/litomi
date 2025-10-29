@@ -88,7 +88,7 @@ function SlideshowButton({ className = '', maxImageIndex, offset, onIntervalChan
         {slideshowInterval > 0 ? '중지' : '슬라이드쇼'}
       </button>
       <Modal
-        className="[@media(pointer:coarse)]:top-12"
+        className="pointer-coarse:top-12"
         onClose={() => setIsOpened(false)}
         open={isOpened}
         showCloseButton
