@@ -80,7 +80,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
         <input name="library-id" type="hidden" value={library.id} />
 
         {/* Header */}
-        <div className="flex items-center justify-between p-4 bg-zinc-900 border-b border-zinc-800 flex-shrink-0">
+        <div className="flex items-center justify-between p-4 bg-zinc-900 border-b border-zinc-800 shrink-0">
           <h2 className="text-xl font-bold text-zinc-100">서재 수정</h2>
           <button
             className="p-2 hover:bg-zinc-800 rounded-lg transition"
@@ -201,7 +201,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
         </div>
 
         {/* Footer - Action Buttons */}
-        <div className="flex gap-3 p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] bg-zinc-900 border-t border-zinc-800 flex-shrink-0">
+        <div className="flex gap-3 p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] bg-zinc-900 border-t border-zinc-800 shrink-0">
           <button
             className="flex-1 h-10 px-4 rounded-lg bg-zinc-800 text-zinc-300 font-medium 
               hover:bg-zinc-700 transition disabled:opacity-50"

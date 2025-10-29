@@ -377,9 +377,8 @@ class KHentaiClient {
 // Singleton instance
 export const kHentaiClient = new KHentaiClient()
 
-export function getCategories(query?: string) {
-  return query
-    ?.match(/\btype:(\S+)/i)?.[1]
+export function encodeCategories(categories: string) {
+  return categories
     .split(',')
     .map((categoryName) => {
       const normalized = categoryName.trim().toLowerCase().replace(/\s+/g, '')

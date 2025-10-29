@@ -37,7 +37,7 @@ export default function RelatedMangaSection({ mangaId, initialRelatedIds }: Prop
       <ul className="flex gap-2 overflow-x-auto scrollbar-hidden snap-x snap-mandatory">
         {relatedMangas.length > 0
           ? relatedMangas.map((manga, index) => (
-              <li className="flex-shrink-0 w-32 h-48 snap-start" key={manga.id}>
+              <li className="shrink-0 w-32 h-48 snap-start" key={manga.id}>
                 <MangaCardImage
                   className="flex items-center justify-center h-full bg-zinc-900 rounded-lg transition border-2 hover:border-zinc-600"
                   manga={manga}
@@ -46,7 +46,7 @@ export default function RelatedMangaSection({ mangaId, initialRelatedIds }: Prop
               </li>
             ))
           : Array.from({ length: 5 }).map((_, i) => (
-              <div className="flex-shrink-0 w-32 h-48 rounded-lg bg-zinc-800 animate-pulse" key={i} />
+              <div className="shrink-0 w-32 h-48 rounded-lg bg-zinc-800 animate-pulse" key={i} />
             ))}
       </ul>
     </div>

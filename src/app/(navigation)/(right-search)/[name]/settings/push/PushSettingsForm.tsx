@@ -177,7 +177,7 @@ function ToggleSection({
           </div>
           <p className="text-xs text-zinc-500">{description}</p>
         </div>
-        <div className="flex-shrink-0">{Array.isArray(children) ? children[0] : children}</div>
+        <div className="shrink-0">{Array.isArray(children) ? children[0] : children}</div>
       </div>
       {Array.isArray(children) ? children[1] : null}
     </label>

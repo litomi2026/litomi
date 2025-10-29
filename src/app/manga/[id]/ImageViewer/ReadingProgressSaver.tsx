@@ -2,6 +2,7 @@
 
 import ms from 'ms'
 import { useCallback, useEffect, useRef } from 'react'
+import { toast } from 'sonner'
 
 import { SessionStorageKeyMap } from '@/constants/storage'
 import useActionResponse from '@/hook/useActionResponse'
@@ -54,7 +55,11 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
       } else {
         timeoutRef.current = setTimeout(() => {
           lastSavedPageRef.current = page
-          sessionStorage.setItem(SessionStorageKeyMap.readingHistory(mangaId), String(page))
+          try {
+            sessionStorage.setItem(SessionStorageKeyMap.readingHistory(mangaId), String(page))
+          } catch {
+            toast.warning('읽기 기록을 저장하지 못했어요')
+          }
           timeoutRef.current = null
         }, ms('1 second'))
       }

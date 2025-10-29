@@ -1,11 +1,12 @@
 import { zValidator } from '@hono/zod-validator'
 import { sql } from 'drizzle-orm'
-import { Env, Hono } from 'hono'
+import { Hono } from 'hono'
 import { timeout } from 'hono/timeout'
 import { endTime, setMetric, startTime } from 'hono/timing'
 import ms from 'ms'
 import { z } from 'zod/v4'
 
+import { Env } from '@/backend'
 import { db } from '@/database/supabase/drizzle'
 
 import apiRoutes from './api'

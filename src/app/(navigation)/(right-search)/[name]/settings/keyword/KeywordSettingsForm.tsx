@@ -90,7 +90,7 @@ export default function KeywordSettingsForm({ initialCriteria: criteria }: Props
           </div>
           <div className="mt-4 sm:mt-8 rounded-lg sm:rounded-xl bg-zinc-900 border border-zinc-800 p-3 sm:p-4">
             <p className="text-xs sm:text-sm text-zinc-400 flex items-start">
-              <span className="inline-block w-4 h-4 sm:w-5 sm:h-5 rounded bg-zinc-800 text-zinc-400 text-center leading-4 sm:leading-5 text-[10px] sm:text-xs font-medium mr-2 flex-shrink-0">
+              <span className="inline-block w-4 h-4 sm:w-5 sm:h-5 rounded bg-zinc-800 text-zinc-400 text-center leading-4 sm:leading-5 text-[10px] sm:text-xs font-medium mr-2 shrink-0">
                 i
               </span>
               <span>

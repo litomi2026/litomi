@@ -52,7 +52,7 @@ export default function ShareLibraryButton({ className = '', library }: Readonly
         open={isModalOpen}
       >
         <div className="flex flex-col h-full min-h-0">
-          <div className="flex items-center justify-between p-4 bg-zinc-900 border-b-2 border-zinc-800 flex-shrink-0">
+          <div className="flex items-center justify-between p-4 bg-zinc-900 border-b-2 border-zinc-800 shrink-0">
             <h2 className="text-xl font-bold text-zinc-100">서재 공유</h2>
             <button className="p-2 rounded-lg hover:bg-zinc-800 transition -m-1" onClick={handleClose} type="button">
               <X className="size-5" />

@@ -127,7 +127,7 @@ function MenuLink({ href, icon, title, description, isActive }: MenuLinkProps) {
         aria-[current=page]:bg-zinc-800 aria-[current=page]:border-zinc-700"
       href={href}
     >
-      <div className="flex-shrink-0">
+      <div className="shrink-0">
         <LinkPending className="size-5">{icon}</LinkPending>
       </div>
       <div className="flex-1 min-w-0">

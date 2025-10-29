@@ -148,7 +148,7 @@ export default function CustomSelect({
         type="button"
       >
         <span className="truncate">{selectedOption?.label}</span>
-        <ChevronDown aria-selected={isOpen} className="size-4 flex-shrink-0 transition aria-selected:rotate-180" />
+        <ChevronDown aria-selected={isOpen} className="size-4 shrink-0 transition aria-selected:rotate-180" />
       </button>
       {isOpen &&
         createPortal(

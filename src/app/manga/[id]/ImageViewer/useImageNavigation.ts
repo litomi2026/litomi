@@ -16,7 +16,7 @@ export default function useImageNavigation({ maxIndex, offset }: Params) {
     const prevImageIndex = Math.max(0, currentImageIndex - offset)
 
     if (currentImageIndex === 0 && prevImageIndex === 0) {
-      toast.warning('첫번째 페이지에요')
+      toast.warning('첫번째 페이지예요')
       return
     }
 
@@ -28,7 +28,7 @@ export default function useImageNavigation({ maxIndex, offset }: Params) {
     const nextImageIndex = Math.min(currentImageIndex + offset, maxIndex)
 
     if (currentImageIndex === maxIndex && nextImageIndex === maxIndex) {
-      toast.warning('마지막 페이지에요')
+      toast.warning('마지막 페이지예요')
       return
     }
 
@@ -39,7 +39,7 @@ export default function useImageNavigation({ maxIndex, offset }: Params) {
     const currentImageIndex = getImageIndex()
 
     if (currentImageIndex === 0) {
-      toast.warning('첫번째 페이지에요')
+      toast.warning('첫번째 페이지예요')
       return
     }
 
@@ -50,7 +50,7 @@ export default function useImageNavigation({ maxIndex, offset }: Params) {
     const currentImageIndex = getImageIndex()
 
     if (currentImageIndex === maxIndex) {
-      toast.warning('마지막 페이지에요')
+      toast.warning('마지막 페이지예요')
       return
     }
 

@@ -57,10 +57,10 @@ export default function MangaCardDonation() {
               <Heart className="size-6 fill-current text-brand-end animate-heartbeat" />
             </div>
           </div>
-          <h3 className="text-lg font-semibold text-zinc-100">리토미를 도와주세요</h3>
+          <h3 className="text-lg font-semibold text-zinc-100">리토미를 살려주세요</h3>
         </div>
         <p className="text-sm text-zinc-400 leading-relaxed">
-          매일 몇천 원의 서버 비용이 발생하는데 유해 광고 없이 서비스를 운영하기 위해 여러분의 도움이 필요해요.
+          매달 십 몇 만 원의 서버 비용이 발생하는데, 유해 광고 없이 서비스를 운영하기 위해 여러분의 도움이 필요해요
         </p>
         <div className="flex flex-col gap-4 w-full">
           <div className="flex flex-col gap-2">
@@ -121,7 +121,21 @@ export default function MangaCardDonation() {
               </a>
               <a
                 className="col-span-2 py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition-colors text-sm font-medium text-center"
-                href="https://velog.io/@gwak2837/%EC%A0%9C%EC%A3%BC-%EC%82%BC%EB%8B%A4%EC%88%98"
+                href="https://opencollective.com/litomi"
+                onClick={() => handleDonationClick('open_collective')}
+                rel="noopener"
+                target="_blank"
+              >
+                open collective
+              </a>
+            </div>
+          </div>
+          <div className="flex flex-col gap-2">
+            <span className="text-xs text-zinc-500 uppercase tracking-wider font-medium">제휴</span>
+            <div className="grid grid-cols-2 gap-2">
+              <a
+                className="col-span-2 py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition-colors text-sm font-medium text-center"
+                href="https://velog.io/@gwak2837/coupang-partners-samdasoo"
                 onClick={() => handleDonationClick('coupang_partners')}
                 rel="noopener"
                 target="_blank"
@@ -131,7 +145,7 @@ export default function MangaCardDonation() {
             </div>
           </div>
         </div>
-        <p className="text-xs text-zinc-500">참여해주셔서 감사합니다 🙇</p>
+        <p className="text-xs text-zinc-500">참여해주신다면 감사하겠습니다 🙇</p>
       </div>
     </MangaCardSkeleton>
   )

@@ -111,7 +111,7 @@ export default function PostCreationForm({
       {mangaId && <input name="manga-id" type="hidden" value={mangaId} />}
       {parentPostId && <input name="parent-post-id" type="hidden" value={parentPostId} />}
       {referredPostId && <input name="referred-post-id" type="hidden" value={referredPostId} />}
-      <Squircle className="w-10 flex-shrink-0" src={me?.imageURL} textClassName="text-foreground">
+      <Squircle className="w-10 shrink-0" src={me?.imageURL} textClassName="text-foreground">
         {me?.nickname.slice(0, 2)}
       </Squircle>
       <div className="grid items-center gap-3 grow py-1.5">

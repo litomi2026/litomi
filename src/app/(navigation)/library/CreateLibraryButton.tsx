@@ -95,7 +95,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
         open={isModalOpen}
       >
         <form action={dispatchAction} className="flex flex-col h-full min-h-0">
-          <div className="flex items-center justify-between p-4 bg-zinc-900 border-b-2 border-zinc-800 flex-shrink-0">
+          <div className="flex items-center justify-between p-4 bg-zinc-900 border-b-2 border-zinc-800 shrink-0">
             <h2 className="text-xl font-bold text-zinc-100">서재 만들기</h2>
             <button className="p-2 -m-1 rounded-lg hover:bg-zinc-800 transition" onClick={handleClose} type="button">
               <IconX className="size-5" />
@@ -218,7 +218,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
           </div>
 
           {/* Footer */}
-          <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-zinc-900 border-t-2 border-zinc-800 flex gap-2 flex-shrink-0">
+          <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-zinc-900 border-t-2 border-zinc-800 flex gap-2 shrink-0">
             <button
               className="flex-1 px-4 py-3 text-zinc-300 font-medium bg-zinc-800 hover:bg-zinc-700 disabled:bg-zinc-700 disabled:text-zinc-500 rounded-lg transition"
               disabled={isPending}

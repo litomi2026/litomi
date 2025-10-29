@@ -36,7 +36,7 @@ export default function MangaMetadataListWithLink({ filterType, items }: Props) 
                   title={`${label}의 ${link.label} 후원하기`}
                 >
                   <span className="text-xs font-medium">{link.label}</span>
-                  <ExternalLink className="inline size-3 flex-shrink-0 ml-0.5" />
+                  <ExternalLink className="inline size-3 shrink-0 ml-0.5" />
                 </a>
               ))}
             </span>

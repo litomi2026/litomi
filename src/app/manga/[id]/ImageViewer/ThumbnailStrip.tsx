@@ -96,7 +96,7 @@ function ThumbnailStrip({ images }: Props) {
           return (
             <button
               aria-current={isActive || isSecondaryActive}
-              className="relative flex-shrink-0 w-16 h-20 rounded overflow-hidden border-2 transition 
+              className="relative shrink-0 w-16 h-20 rounded overflow-hidden border-2 transition 
               aria-current:border-foreground aria-current:scale-105 active:scale-95 hover:ring-2"
               key={i}
               onClick={() => handleThumbnailClick(i)}

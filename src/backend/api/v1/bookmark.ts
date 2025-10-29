@@ -1,36 +1,40 @@
+import { zValidator } from '@hono/zod-validator'
+import { Hono } from 'hono'
+import { HTTPException } from 'hono/http-exception'
+import { z } from 'zod/v4'
+
+import { getUserId } from '@/backend/utils/auth'
 import { decodeBookmarkCursor, encodeBookmarkCursor } from '@/common/cursor'
 import { createCacheControl } from '@/crawler/proxy-utils'
 import selectBookmarks from '@/sql/selectBookmarks'
-import { validateUserIdFromCookie } from '@/utils/cookie'
 
-import { GETBookmarksSchema } from './schema'
+import type { Env } from '../..'
+
+const querySchema = z.object({
+  cursor: z.string().optional(),
+  limit: z.coerce.number().int().positive().optional(),
+})
 
 export type Bookmark = {
   mangaId: number
   createdAt: number
 }
 
-export type GETBookmarksResponse = {
+export type GETV1BookmarkResponse = {
   bookmarks: Bookmark[]
   nextCursor: string | null
-}
+} | null
 
-export async function GET(request: Request) {
-  const userId = await validateUserIdFromCookie()
+const bookmarkRoutes = new Hono<Env>()
+
+bookmarkRoutes.get('/', zValidator('query', querySchema), async (c) => {
+  const userId = getUserId()
 
   if (!userId) {
-    return new Response('Unauthorized', { status: 401 })
+    throw new HTTPException(401)
   }
 
-  const url = new URL(request.url)
-  const params = Object.fromEntries(url.searchParams)
-  const validation = GETBookmarksSchema.safeParse(params)
-
-  if (!validation.success) {
-    return new Response('Bad Request', { status: 400 })
-  }
-
-  const { cursor, limit } = validation.data
+  const { cursor, limit } = c.req.valid('query')
 
   let cursorId
   let cursorTime
@@ -39,7 +43,7 @@ export async function GET(request: Request) {
     const decoded = decodeBookmarkCursor(cursor)
 
     if (!decoded) {
-      return new Response('Bad Request', { status: 400 })
+      throw new HTTPException(400)
     }
 
     cursorId = decoded.mangaId
@@ -53,16 +57,13 @@ export async function GET(request: Request) {
     cursorTime,
   })
 
+  const cacheControl = createCacheControl({
+    private: true,
+    maxAge: 3,
+  })
+
   if (bookmarkRows.length === 0) {
-    return new Response(null, {
-      status: 204,
-      headers: {
-        'Cache-Control': createCacheControl({
-          private: true,
-          maxAge: 3,
-        }),
-      },
-    })
+    return c.body(null, 204, { 'Cache-Control': cacheControl })
   }
 
   const hasNextPage = limit ? bookmarkRows.length > limit : false
@@ -70,7 +71,7 @@ export async function GET(request: Request) {
   const lastBookmark = bookmarks[bookmarks.length - 1]
   const nextCursor = hasNextPage ? encodeBookmarkCursor(lastBookmark.createdAt.getTime(), lastBookmark.mangaId) : null
 
-  const result: GETBookmarksResponse = {
+  const result = {
     bookmarks: bookmarks.map(({ mangaId, createdAt }) => ({
       mangaId,
       createdAt: createdAt.getTime(),
@@ -78,10 +79,7 @@ export async function GET(request: Request) {
     nextCursor,
   }
 
-  const cacheControl = createCacheControl({
-    private: true,
-    maxAge: 3,
-  })
+  return c.json<GETV1BookmarkResponse>(result, { headers: { 'Cache-Control': cacheControl } })
+})
 
-  return Response.json(result, { headers: { 'Cache-Control': cacheControl } })
-}
+export default bookmarkRoutes

@@ -52,7 +52,7 @@ export default function PushTestButton({ endpoints }: Props) {
       type="button"
     >
       <div className="relative">
-        <BellRing className={`w-4 h-4 flex-shrink-0 ${hasTestedOnce ? 'text-brand-end/70' : ''}`} />
+        <BellRing className={`w-4 h-4 shrink-0 ${hasTestedOnce ? 'text-brand-end/70' : ''}`} />
         {!hasTestedOnce && (
           <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-brand-end rounded-full animate-pulse" />
         )}
