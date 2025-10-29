@@ -47,6 +47,19 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
 
   return (
     <>
+      {languageSelector}
+      <CollapsibleSection
+        description="관심 키워드를 등록하여 새로운 작품 알림을 받아보세요"
+        icon={<CaseSensitive className="size-5 shrink-0 text-brand-end" />}
+        id="keyword"
+        title="키워드 알림"
+      >
+        <ErrorBoundary fallback={InternalServerError}>
+          <Suspense fallback={<LoadingFallback />}>
+            <KeywordSettings userId={userId} />
+          </Suspense>
+        </ErrorBoundary>
+      </CollapsibleSection>
       <CollapsibleSection
         description="새로운 업데이트를 실시간으로 받아보세요"
         icon={<IconBell className="size-5 shrink-0 text-brand-end" />}
@@ -60,21 +73,8 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
         </ErrorBoundary>
       </CollapsibleSection>
       <CollapsibleSection
-        description="관심 키워드를 등록하여 새로운 작품 알림을 받아보세요"
-        icon={<CaseSensitive className="size-5 shrink-0 text-brand-end" />}
-        id="keyword"
-        title="키워드 알림"
-      >
-        <ErrorBoundary fallback={InternalServerError}>
-          <Suspense fallback={<LoadingFallback />}>
-            <KeywordSettings userId={userId} />
-          </Suspense>
-        </ErrorBoundary>
-      </CollapsibleSection>
-      {languageSelector}
-      <CollapsibleSection
         description="비밀번호 없이 안전하게 로그인하세요"
-        icon={<Fingerprint className="size-5 shrink-0 text-brand-end" />}
+        icon={<Fingerprint className="size-5 shrink-0" />}
         id="passkey"
         title="패스키"
       >
@@ -86,7 +86,7 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
       </CollapsibleSection>
       <CollapsibleSection
         description="로그인 시 추가 인증으로 계정을 보호하세요"
-        icon={<RectangleEllipsis className="size-5 shrink-0 text-brand-end" />}
+        icon={<RectangleEllipsis className="size-5 shrink-0" />}
         id="2fa"
         title="2단계 인증"
       >
