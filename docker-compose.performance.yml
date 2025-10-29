@@ -1,0 +1,49 @@
+services:
+  litomi-performance-db:
+    image: postgres:17-alpine
+    container_name: litomi-performance-db
+    environment:
+      POSTGRES_USER: performance_user
+      POSTGRES_PASSWORD: performance_password
+      POSTGRES_DB: litomi_performance
+      POSTGRES_INITDB_ARGS: '--encoding=UTF8 --locale=C'
+    command:
+      - 'postgres'
+      - '-c'
+      - 'shared_buffers=2GB'
+      - '-c'
+      - 'work_mem=512MB'
+      - '-c'
+      - 'maintenance_work_mem=2GB'
+      - '-c'
+      - 'effective_cache_size=6GB'
+      - '-c'
+      - 'checkpoint_completion_target=0.9'
+      - '-c'
+      - 'wal_buffers=16MB'
+      - '-c'
+      - 'max_connections=200'
+      - '-c'
+      - 'random_page_cost=1.1'
+      - '-c'
+      - 'effective_io_concurrency=200'
+      - '-c'
+      - 'min_wal_size=1GB'
+      - '-c'
+      - 'max_wal_size=4GB'
+      - '-c'
+      - 'synchronous_commit=off' # Faster for testing
+      - '-c'
+      - 'fsync=off' # Dangerous but fast for testing only
+      - '-c'
+      - 'full_page_writes=off' # Speed up for testing
+    ports:
+      - '5433:5432' # Different port to avoid conflicts
+
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U performance_user -d litomi_performance']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    tmpfs:
+      - /var/lib/postgresql/data # Use RAM for faster performance
