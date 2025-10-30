@@ -118,7 +118,7 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
 
   return (
     <Modal
-      className="w-full h-full sm:w-[32rem] sm:h-auto sm:max-w-[calc(100vw-2rem)] sm:max-h-[calc(100vh-8rem)]"
+      className="w-full h-full sm:w-lg sm:h-auto sm:max-w-[calc(100vw-2rem)] sm:max-h-[calc(100vh-8rem)]"
       onClose={onClose}
       open={isOpen}
     >

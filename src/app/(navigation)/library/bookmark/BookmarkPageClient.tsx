@@ -4,7 +4,7 @@ import { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
-import { ViewCookie } from '@/utils/param'
+import { View } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 import { useLibrarySelectionStore } from '../[id]/librarySelection'
@@ -30,7 +30,7 @@ export default function BookmarkPageClient({ initialData }: Props) {
 
   return (
     <>
-      <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[ViewCookie.CARD]} gap-2 p-2`}>
+      <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[View.CARD]} gap-2 p-2`}>
         {bookmarkIds.map((mangaId, index) => {
           const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
 

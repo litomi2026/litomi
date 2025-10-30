@@ -1,46 +1,56 @@
 'use client'
 
-import Cookies from 'js-cookie'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
-import { ViewCookie } from '@/utils/param'
+import UpdateFromSearchParams from '@/app/(navigation)/search/UpdateFromSearchParams'
+import { View } from '@/utils/param'
 
-const VIEWS = [
-  [ViewCookie.CARD, '카드'],
-  [ViewCookie.IMAGE, '그림'],
+const VIEW_OPTIONS = [
+  { value: View.CARD, label: '카드' },
+  { value: View.IMAGE, label: '그림' },
 ] as const
 
 export default function ViewToggle() {
   const router = useRouter()
-  const [currentView, setCurrentView] = useState<ViewCookie>()
+  const [currentView, setCurrentView] = useState('')
 
-  useEffect(() => {
-    setCurrentView((Cookies.get('view') as ViewCookie) ?? ViewCookie.CARD)
-  }, [])
+  function select(view: View) {
+    if (view === currentView) {
+      return
+    }
 
-  const select = (v: ViewCookie) => {
-    if (v === currentView) return
-    Cookies.set('view', v, { expires: 365, path: '/', sameSite: 'lax' })
-    setCurrentView(v)
-    router.refresh()
+    const searchParams = new URLSearchParams(window.location.search)
+
+    if (view === View.IMAGE) {
+      searchParams.set('view', View.IMAGE)
+    } else {
+      searchParams.delete('view')
+    }
+
+    router.replace(`/search?${searchParams}`)
+  }
+
+  function handleSearchParamUpdate(searchParams: URLSearchParams) {
+    setCurrentView(searchParams.get('view') ?? View.CARD)
   }
 
   return (
     <div className="relative flex bg-zinc-900 border-2 p-1 rounded-xl text-zinc-400">
+      <UpdateFromSearchParams onUpdate={handleSearchParamUpdate} />
       {currentView && (
         <div
           className="absolute inset-1 right-1/2 bg-zinc-800 rounded-lg border-2 border-zinc-700 transition pointer-events-none"
-          style={{ transform: `translateX(${VIEWS.findIndex(([view]) => view === currentView) * 100}%)` }}
+          style={{ transform: `translateX(${VIEW_OPTIONS.findIndex(({ value }) => value === currentView) * 100}%)` }}
         />
       )}
-      {VIEWS.map(([view, label]) => (
+      {VIEW_OPTIONS.map(({ value, label }) => (
         <button
-          aria-current={currentView === view}
+          aria-current={currentView === value}
           className="relative z-10 flex-1 px-3 py-1 rounded aria-current:font-bold aria-current:text-foreground"
           disabled={!currentView}
-          key={view}
-          onClick={() => select(view)}
+          key={value}
+          onClick={() => select(value)}
           type="button"
         >
           {label}

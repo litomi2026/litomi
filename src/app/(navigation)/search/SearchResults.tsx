@@ -8,7 +8,7 @@ import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import MangaCardDonation from '@/components/card/MangaCardDonation'
 import MangaCardImage from '@/components/card/MangaCardImage'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
-import { ViewCookie } from '@/utils/param'
+import { View } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 import RandomRefreshButton from '../(top-navigation)/RandomRefreshButton'
@@ -16,7 +16,7 @@ import RandomRefreshButton from '../(top-navigation)/RandomRefreshButton'
 const DONATION_CARD_INTERVAL = 20
 
 type Props = {
-  view: ViewCookie
+  view: View
   sort?: Sort
 }
 
@@ -32,7 +32,7 @@ export default function SearchResults({ view, sort }: Props) {
   })
 
   if (isLoading) {
-    const skeletonCount = view === ViewCookie.IMAGE ? 12 : 6
+    const skeletonCount = view === View.IMAGE ? 12 : 6
     return (
       <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2 grow`}>
         {Array.from({ length: skeletonCount }).map((_, i) => (
@@ -54,10 +54,10 @@ export default function SearchResults({ view, sort }: Props) {
     <>
       <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2`}>
         {mangas.map((manga, i) =>
-          view === ViewCookie.IMAGE ? (
+          view === View.IMAGE ? (
             <li data-manga-card key={manga.id}>
               <MangaCardImage
-                className="bg-zinc-900 rounded-xl border-2 [&_img]:snap-start [&_img]:shrink-0 [&_img]:w-full [&_img]:object-cover [&_img]:aspect-[3/4]"
+                className="bg-zinc-900 rounded-xl border-2 [&_img]:snap-start [&_img]:shrink-0 [&_img]:w-full [&_img]:object-cover [&_img]:aspect-3/4"
                 manga={manga}
                 mangaIndex={i}
               />

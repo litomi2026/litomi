@@ -12,6 +12,7 @@ locals {
     "/offline.html",
     "/posts",
     "/realtime",
+    "/search",
     "/404",
     "/@",
   ]
@@ -22,7 +23,7 @@ locals {
   ]
 
   cached_path_prefixes = [
-    "/favicon",
+    "/favicon.",
     "/manga/",
     "/posts/",
     "/web-app-manifest",

@@ -4,7 +4,7 @@ import { GETReadingHistoryResponse } from '@/app/api/reading-history/route'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
-import { ViewCookie } from '@/utils/param'
+import { View } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 import { useLibrarySelectionStore } from '../[id]/librarySelection'
@@ -39,7 +39,7 @@ export default function HistoryPageClient({ initialData }: Props) {
             <h4 className="bg-background border-b border-white/5 px-4 py-2 text-sm font-medium text-zinc-400">
               {DATE_GROUP_LABELS[dateGroup]}
             </h4>
-            <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[ViewCookie.CARD]} gap-2 p-2`}>
+            <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[View.CARD]} gap-2 p-2`}>
               {items.map(({ mangaId, lastPage }) => {
                 const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
                 const index = historyItems.findIndex((item) => item.mangaId === mangaId)
@@ -70,7 +70,7 @@ export default function HistoryPageClient({ initialData }: Props) {
           </div>
         ))}
         {isFetchingNextPage && (
-          <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[ViewCookie.CARD]} gap-2 p-2`}>
+          <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[View.CARD]} gap-2 p-2`}>
             <MangaCardSkeleton />
           </ul>
         )}

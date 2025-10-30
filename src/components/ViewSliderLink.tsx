@@ -3,11 +3,11 @@
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 
-import { ViewCookie } from '@/utils/param'
+import { View } from '@/utils/param'
 
 const layoutMap = {
-  [ViewCookie.CARD]: { index: 0, label: '카드' },
-  [ViewCookie.IMAGE]: { index: 1, label: '그림' },
+  [View.CARD]: { index: 0, label: '카드' },
+  [View.IMAGE]: { index: 1, label: '그림' },
 }
 
 const layouts = Object.entries(layoutMap)
