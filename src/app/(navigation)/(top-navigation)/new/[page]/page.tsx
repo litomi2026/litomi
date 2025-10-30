@@ -11,9 +11,6 @@ import { TOTAL_HIYOBI_PAGES } from '@/constants/policy'
 import { hiyobiClient } from '@/crawler/hiyobi'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
-export const dynamic = 'force-static'
-export const revalidate = 21600 // 6 hours
-
 export const metadata: Metadata = {
   title: '신작',
   openGraph: {
@@ -27,12 +24,8 @@ export const metadata: Metadata = {
   },
 }
 
-export async function generateStaticParams() {
-  return Array.from({ length: 9 }, (_, i) => String(i + 1)).map((page) => ({ page }))
-}
-
 const mangasNewSchema = z.object({
-  page: z.coerce.number().int().positive(),
+  page: z.coerce.number().int().positive().max(TOTAL_HIYOBI_PAGES),
 })
 
 export default async function Page({ params }: PageProps<'/new/[page]'>) {
