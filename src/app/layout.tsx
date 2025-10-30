@@ -10,6 +10,7 @@ import { Toaster } from 'sonner'
 
 import LibraryModal from '@/components/card/LibraryModal'
 import HiyobiPing from '@/components/HiyobiPing'
+import { MangaDetailModal } from '@/components/MangaDetailModal'
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar'
 import {
   APPLICATION_NAME,
@@ -99,6 +100,7 @@ export default function RootLayout({ children }: Readonly<Props>) {
         <QueryProvider>
           {children}
           <LibraryModal />
+          <MangaDetailModal />
         </QueryProvider>
         <ServiceWorkerRegistrar />
         <HiyobiPing />
