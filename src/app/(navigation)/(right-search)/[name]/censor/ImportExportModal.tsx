@@ -5,7 +5,7 @@ import { Download } from 'lucide-react'
 import { memo, useState } from 'react'
 import { toast } from 'sonner'
 
-import { CensorshipItem } from '@/app/api/censorship/route'
+import { CensorshipItem } from '@/backend/api/v1/censorship'
 import { IconUpload } from '@/components/icons/IconUpload'
 import IconX from '@/components/icons/IconX'
 import Modal from '@/components/ui/Modal'
@@ -137,7 +137,7 @@ function ImportExportModal({ open, onClose, censorships }: Readonly<Props>) {
 
   return (
     <Modal
-      className="fixed inset-0 z-[70] sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2
+      className="fixed inset-0 z-70 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2
         sm:w-full sm:max-w-2xl sm:max-h-[calc(100dvh-4rem)] 
         bg-zinc-900 sm:border-2 sm:border-zinc-700 sm:rounded-xl flex flex-col overflow-hidden"
       onClose={onClose}
