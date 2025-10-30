@@ -1,20 +1,26 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 
-import { GETCensorshipsResponse } from '@/app/api/censorship/route'
+import { GETV1CensorshipResponse } from '@/backend/api/v1/censorship'
+import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
 import { handleResponseError } from '@/utils/react-query-error'
 
 import useMeQuery from './useMeQuery'
 
-export async function fetchPaginatedCensorships({ pageParam }: { pageParam?: number }) {
+type Params = {
+  pageParam?: string
+}
+
+export async function fetchPaginatedCensorships({ pageParam }: Params) {
   const params = new URLSearchParams()
 
   if (pageParam) {
-    params.set('cursor', pageParam.toString())
+    params.set('cursor', pageParam)
   }
 
-  const response = await fetch(`/api/censorship?${params}`)
-  return handleResponseError<GETCensorshipsResponse>(response)
+  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/censorship?${params}`
+  const response = await fetch(url, { credentials: 'include' })
+  return handleResponseError<GETV1CensorshipResponse>(response)
 }
 
 export default function useCensorshipsInfiniteQuery() {
@@ -23,9 +29,9 @@ export default function useCensorshipsInfiniteQuery() {
 
   return useInfiniteQuery({
     queryKey: QueryKeys.infiniteCensorships,
-    queryFn: fetchPaginatedCensorships,
+    queryFn: ({ pageParam }: Params) => fetchPaginatedCensorships({ pageParam }),
     enabled: Boolean(userId),
-    getNextPageParam: (lastPage) => lastPage.nextCursor?.id,
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialPageParam: undefined,
   })
 }

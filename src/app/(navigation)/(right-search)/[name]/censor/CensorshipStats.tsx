@@ -2,7 +2,7 @@
 
 import { memo, useMemo } from 'react'
 
-import { CensorshipItem } from '@/app/api/censorship/route'
+import { CensorshipItem } from '@/backend/api/v1/censorship'
 import { CensorshipLevel } from '@/database/enum'
 
 type Props = {

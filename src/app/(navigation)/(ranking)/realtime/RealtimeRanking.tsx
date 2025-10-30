@@ -35,7 +35,7 @@ export default function RealtimeRanking() {
     <>
       {/* Main Stats Card */}
       <div>
-        <div className="rounded-xl bg-gradient-to-br from-zinc-900 to-zinc-800 p-8 shadow-2xl">
+        <div className="rounded-xl bg-linear-to-br from-zinc-900 to-zinc-800 p-8 shadow-2xl">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-zinc-400">현재 활성 사용자</p>

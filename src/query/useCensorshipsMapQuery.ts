@@ -1,19 +1,16 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { CensorshipItem, GETCensorshipsResponse } from '@/app/api/censorship/route'
+import { CensorshipItem, GETV1CensorshipResponse } from '@/backend/api/v1/censorship'
+import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
 import { handleResponseError } from '@/utils/react-query-error'
 
 import useMeQuery from './useMeQuery'
 
 export async function fetchCensorshipsMap() {
-  const response = await fetch('/api/censorship')
-  const result = await handleResponseError<GETCensorshipsResponse>(response)
-
-  if (result.censorships.length === 0) {
-    return new Map<string, CensorshipItem>()
-  }
-
+  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/censorship`
+  const response = await fetch(url, { credentials: 'include' })
+  const result = await handleResponseError<GETV1CensorshipResponse>(response)
   const lookup = new Map<string, CensorshipItem>()
 
   for (const censorship of result.censorships) {

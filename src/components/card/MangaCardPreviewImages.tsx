@@ -72,14 +72,14 @@ function MangaCardPreviewImages({ className, manga, mangaIndex = 0, href }: Read
       </Link>
       <button
         aria-label="이전 이미지"
-        className="[@media(pointer:coarse)]:hidden absolute left-1 top-1/2 -translate-y-1/2 z-10 rounded-full bg-zinc-700/50 text-foreground p-2 ring-zinc-400 active:ring-2 transition"
+        className="pointer-coarse:hidden absolute left-1 top-1/2 -translate-y-1/2 z-10 rounded-full bg-zinc-700/50 text-foreground p-2 ring-zinc-400 active:ring-2 transition"
         onClick={() => scrollToSlide(prevIndex)}
       >
         <IconPrevPage className="w-4" />
       </button>
       <button
         aria-label="다음 이미지"
-        className="[@media(pointer:coarse)]:hidden absolute right-1 top-1/2 -translate-y-1/2 z-10 rounded-full bg-zinc-700/50 text-foreground p-2 ring-zinc-400 active:ring-2 transition"
+        className="pointer-coarse:hidden absolute right-1 top-1/2 -translate-y-1/2 z-10 rounded-full bg-zinc-700/50 text-foreground p-2 ring-zinc-400 active:ring-2 transition"
         onClick={() => scrollToSlide(nextIndex)}
       >
         <IconNextPage className="w-4" />

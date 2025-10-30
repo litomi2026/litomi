@@ -71,7 +71,7 @@ export default function BrowserList({ webPushes }: Props) {
           <div
             className={`flex items-center justify-between p-4 rounded-xl border transition-all ${
               isCurrentDevice
-                ? 'bg-gradient-to-r from-zinc-800/50 to-zinc-800/30 border-brand-end/20'
+                ? 'bg-linear-to-r from-zinc-800/50 to-zinc-800/30 border-brand-end/20'
                 : 'bg-zinc-800/30 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-800/50'
             }`}
             key={webPush.id}

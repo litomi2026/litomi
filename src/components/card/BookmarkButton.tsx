@@ -7,7 +7,7 @@ import { useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
 
 import toggleBookmark from '@/app/(navigation)/library/bookmark/action'
-import { GETBookmarksResponse } from '@/app/api/bookmark/route'
+import { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark'
 import { QueryKeys } from '@/constants/query'
 import useActionResponse from '@/hook/useActionResponse'
 import useBookmarksQuery from '@/query/useBookmarksQuery'
@@ -61,7 +61,7 @@ export default function BookmarkButton({ manga, className }: Readonly<Props>) {
         toast.success('북마크를 삭제했어요')
       }
 
-      queryClient.setQueryData<GETBookmarksResponse>(QueryKeys.bookmarks, (oldBookmarks) => {
+      queryClient.setQueryData<GETV1BookmarkResponse>(QueryKeys.bookmarks, (oldBookmarks) => {
         const newBookmark = { mangaId, createdAt: createdAt ? new Date(createdAt).getTime() : 0 }
 
         if (!oldBookmarks) {

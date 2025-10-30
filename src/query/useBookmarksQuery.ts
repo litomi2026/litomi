@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { GETBookmarksResponse } from '@/app/api/bookmark/route'
+import { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark'
 import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
 import { handleResponseError } from '@/utils/react-query-error'
@@ -8,8 +8,9 @@ import { handleResponseError } from '@/utils/react-query-error'
 import useMeQuery from './useMeQuery'
 
 export async function fetchBookmarks() {
-  const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/bookmark`, { credentials: 'include' })
-  return handleResponseError<GETBookmarksResponse>(response)
+  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/bookmark`
+  const response = await fetch(url, { credentials: 'include' })
+  return handleResponseError<GETV1BookmarkResponse>(response)
 }
 
 export default function useBookmarksQuery() {

@@ -1,6 +1,6 @@
 'use client'
 
-import { GETBookmarksResponse } from '@/app/api/bookmark/route'
+import { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
@@ -12,7 +12,7 @@ import SelectableMangaCard from '../SelectableMangaCard'
 import useBookmarkIdsInfiniteQuery from './useBookmarkIdsInfiniteQuery'
 
 type Props = {
-  initialData?: GETBookmarksResponse
+  initialData?: GETV1BookmarkResponse
 }
 
 export default function BookmarkPageClient({ initialData }: Props) {

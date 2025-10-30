@@ -8,7 +8,10 @@ locals {
     "/doc/terms",
     "/manga",
     "/new",
+    "/notification",
     "/offline.html",
+    "/posts",
+    "/realtime",
     "/404",
     "/@",
   ]
@@ -19,10 +22,11 @@ locals {
   ]
 
   cached_path_prefixes = [
-    "/@/",
-    "/manga/",
     "/favicon",
+    "/manga/",
+    "/posts/",
     "/web-app-manifest",
+    "/@/",
   ]
 
   isr_hour_path_prefixes = [

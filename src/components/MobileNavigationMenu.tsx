@@ -46,9 +46,9 @@ export default function MobileNavigationMenu({ onClose }: Readonly<Props>) {
 
   return (
     <>
-      <div className="fixed inset-0 z-[60] bg-black/50 animate-fade-in-fast" onClick={onClose} />
+      <div className="fixed inset-0 z-60 bg-black/50 animate-fade-in-fast" onClick={onClose} />
       <nav
-        className="fixed top-0 left-0 z-[60] h-full w-3xs bg-background border-r-2 shadow-xl animate-fade-in-fast overflow-y-auto"
+        className="fixed top-0 left-0 z-60 h-full w-3xs bg-background border-r-2 shadow-xl animate-fade-in-fast overflow-y-auto"
         role="navigation"
       >
         <div className="sticky top-0 bg-background flex items-center justify-between p-4 border-b-2 border-zinc-800">
