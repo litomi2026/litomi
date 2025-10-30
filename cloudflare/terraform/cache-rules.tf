@@ -22,7 +22,7 @@ locals {
   ]
 
   cached_path_prefixes = [
-    "/favicon",
+    "/favicon.",
     "/manga/",
     "/posts/",
     "/web-app-manifest",
