@@ -2,14 +2,16 @@
 
 import { useQuery } from '@tanstack/react-query'
 
-import { GETMangaIdRatingResponse } from '@/app/api/manga/[id]/rating/route'
+import { GETV1MangaIdRatingResponse } from '@/backend/api/v1/manga/[id]/rating'
+import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
 import useMeQuery from '@/query/useMeQuery'
 import { handleResponseError } from '@/utils/react-query-error'
 
 export async function fetchUserRating(mangaId: number) {
-  const response = await fetch(`/api/manga/${mangaId}/rating`)
-  return handleResponseError<GETMangaIdRatingResponse>(response)
+  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/manga/${mangaId}/rating`
+  const response = await fetch(url, { credentials: 'include' })
+  return handleResponseError<GETV1MangaIdRatingResponse>(response)
 }
 
 export function useUserRatingQuery(mangaId: number) {

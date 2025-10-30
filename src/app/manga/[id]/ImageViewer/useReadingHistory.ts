@@ -17,7 +17,7 @@ export default function useReadingHistory(mangaId: number) {
     queryFn: async () => {
       if (me) {
         const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/manga/${mangaId}/history`
-        const response = await fetch(url.toString(), { credentials: 'include' })
+        const response = await fetch(url, { credentials: 'include' })
         return await handleResponseError<GETV1MangaIdHistoryResponse>(response)
       } else {
         const stored = sessionStorage.getItem(SessionStorageKeyMap.readingHistory(mangaId))
