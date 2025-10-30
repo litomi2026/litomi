@@ -7,7 +7,7 @@ import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import useLibraryItemsInfiniteQuery from '@/query/useLibraryItemsInfiniteQuery'
-import { ViewCookie } from '@/utils/param'
+import { View } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 import SelectableMangaCard from '../SelectableMangaCard'
@@ -55,7 +55,7 @@ export default function LibraryItemsClient({ library, initialItems }: Readonly<P
   }
 
   return (
-    <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[ViewCookie.CARD]} gap-2 p-2`}>
+    <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[View.CARD]} gap-2 p-2`}>
       {items.map(({ mangaId }, index) => {
         const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
 

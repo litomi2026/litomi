@@ -2,7 +2,7 @@ import { z } from 'zod/v4'
 
 import { MAX_SEARCH_QUERY_LENGTH } from '@/constants/policy'
 import { Locale } from '@/translation/common'
-import { ViewCookie } from '@/utils/param'
+import { View } from '@/utils/param'
 
 export enum Sort {
   RANDOM = 'random',
@@ -13,7 +13,7 @@ export enum Sort {
 export const GETProxyKSearchSchema = z
   .object({
     query: z.string().trim().max(MAX_SEARCH_QUERY_LENGTH).optional(),
-    view: z.enum(ViewCookie).default(ViewCookie.CARD),
+    view: z.enum(View).default(View.CARD),
     sort: z.enum(Sort).optional(),
     'min-rating': z.coerce.number().int().min(0).max(500).optional(),
     'max-rating': z.coerce.number().int().min(0).max(500).optional(),

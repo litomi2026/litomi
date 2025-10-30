@@ -25,15 +25,6 @@ export async function getAccessTokenCookieConfig(userId: number | string) {
   } as const
 }
 
-export function getCookieJSON(cookieStore: ReadonlyRequestCookies, keys: string[]) {
-  const result: Record<string, string | undefined> = {}
-
-  for (const key of keys) {
-    result[key] = cookieStore.get(key)?.value
-  }
-  return result
-}
-
 /**
  * For server component
  */

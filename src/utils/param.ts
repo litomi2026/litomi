@@ -1,4 +1,4 @@
-export enum ViewCookie {
+export enum View {
   IMAGE = 'img',
   CARD = 'card',
 }

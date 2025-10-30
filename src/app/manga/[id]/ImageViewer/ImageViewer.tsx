@@ -3,7 +3,6 @@
 import { ArrowLeft, ArrowRight, MessageCircle } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
 import BackButton from '@/components/BackButton'
@@ -46,7 +45,6 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
   const setImageIndex = useImageIndexStore((state) => state.setImageIndex)
   const scrollToRow = useVirtualScrollStore((state) => state.scrollToRow)
   const toggleController = useCallback(() => setShowController((prev) => !prev), [])
-  const router = useRouter()
   const { images = [] } = manga
   const thumbnailImages = images.map((image) => image.thumbnail)
   const hasThumbnails = thumbnailImages.filter(Boolean).length > 0

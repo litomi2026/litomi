@@ -5,7 +5,7 @@ import MangaCard from '@/components/card/MangaCard'
 import MangaCardDonation from '@/components/card/MangaCardDonation'
 import { createErrorManga } from '@/constants/json'
 import { kHentaiClient } from '@/crawler/k-hentai'
-import { ViewCookie } from '@/utils/param'
+import { View } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 import RandomMangaLink from '../RandomMangaLink'
@@ -30,7 +30,7 @@ export default async function Page() {
   return (
     <>
       <div className="flex-1">
-        <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[ViewCookie.CARD]} gap-2`}>
+        <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[View.CARD]} gap-2`}>
           {mangas.map((manga, i) => (
             <MangaCard index={i} key={manga.id} manga={manga} />
           ))}

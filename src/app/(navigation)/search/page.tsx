@@ -1,9 +1,6 @@
 import { Metadata } from 'next'
-import { cookies } from 'next/headers'
 
 import { generateOpenGraphMetadata } from '@/constants'
-import { getCookieJSON } from '@/utils/cookie'
-import { ViewCookie } from '@/utils/param'
 
 import { GETProxyKSearchSchema } from '../../api/proxy/k/search/schema'
 import ActiveFilters, { ClearAllFilters } from './ActiveFilters'
@@ -24,12 +21,7 @@ export const metadata: Metadata = {
 }
 
 export default async function Page({ searchParams }: PageProps<'/search'>) {
-  const [cookieStore, searchParamsJSON] = await Promise.all([cookies(), searchParams])
-
-  const validationResult = GETProxyKSearchSchema.safeParse({
-    ...getCookieJSON(cookieStore, ['view']),
-    ...searchParamsJSON,
-  })
+  const validationResult = GETProxyKSearchSchema.safeParse(await searchParams)
 
   if (!validationResult.success) {
     return <Error400 message={validationResult.error.issues[0].message} />
@@ -50,8 +42,6 @@ export default async function Page({ searchParams }: PageProps<'/search'>) {
     skip,
   } = validationResult.data
 
-  const viewType = view === 'img' ? ViewCookie.IMAGE : ViewCookie.CARD
-
   const hasActiveFilters = Boolean(
     from ?? to ?? sort ?? nextId ?? minView ?? maxView ?? minPage ?? maxPage ?? minRating ?? maxRating ?? skip,
   )
@@ -69,7 +59,7 @@ export default async function Page({ searchParams }: PageProps<'/search'>) {
       ) : (
         <TrendingKeywords />
       )}
-      <SearchResults sort={sort} view={viewType} />
+      <SearchResults sort={sort} view={view} />
     </>
   )
 }
