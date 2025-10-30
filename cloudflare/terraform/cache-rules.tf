@@ -12,6 +12,7 @@ locals {
     "/offline.html",
     "/posts",
     "/realtime",
+    "/search",
     "/404",
     "/@",
   ]
