@@ -5,6 +5,7 @@ import { z } from 'zod/v4'
 
 import { getUserId } from '@/backend/utils/auth'
 import { decodeBookmarkCursor, encodeBookmarkCursor } from '@/common/cursor'
+import { BOOKMARKS_PER_PAGE } from '@/constants/policy'
 import { createCacheControl } from '@/crawler/proxy-utils'
 import selectBookmarks from '@/sql/selectBookmarks'
 
@@ -12,7 +13,7 @@ import type { Env } from '../..'
 
 const querySchema = z.object({
   cursor: z.string().optional(),
-  limit: z.coerce.number().int().positive().optional(),
+  limit: z.coerce.number().int().positive().max(BOOKMARKS_PER_PAGE).optional(),
 })
 
 export type Bookmark = {
@@ -23,7 +24,7 @@ export type Bookmark = {
 export type GETV1BookmarkResponse = {
   bookmarks: Bookmark[]
   nextCursor: string | null
-} | null
+}
 
 const bookmarkRoutes = new Hono<Env>()
 
@@ -61,10 +62,6 @@ bookmarkRoutes.get('/', zValidator('query', querySchema), async (c) => {
     private: true,
     maxAge: 3,
   })
-
-  if (bookmarkRows.length === 0) {
-    return c.body(null, 204, { 'Cache-Control': cacheControl })
-  }
 
   const hasNextPage = limit ? bookmarkRows.length > limit : false
   const bookmarks = hasNextPage ? bookmarkRows.slice(0, limit) : bookmarkRows

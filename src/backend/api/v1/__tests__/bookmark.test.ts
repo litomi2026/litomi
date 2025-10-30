@@ -105,7 +105,7 @@ describe('GET /api/v1/bookmark', () => {
       expect(data.nextCursor).toBeNull()
     })
 
-    test('북마크가 없는 경우 204 응답을 받는다', async () => {
+    test('북마크가 없는 경우 200 응답을 받는다', async () => {
       // Given
       mockBookmarks.set(1, [])
 
@@ -113,8 +113,10 @@ describe('GET /api/v1/bookmark', () => {
       const response = await app.request('/', {}, { userId: 1 })
 
       // Then
-      expect(response.status).toBe(204)
-      expect(await response.text()).toBe('')
+      const data = await response.json()
+      expect(response.status).toBe(200)
+      expect(data.bookmarks).toHaveLength(0)
+      expect(data.nextCursor).toBeNull()
     })
 
     test('limit을 지정하면 해당 개수만큼 반환하고 nextCursor를 포함한다', async () => {
