@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 
-import { GETV1MangaIdHistoryResponse } from '@/backend/api/v1/manga/id'
+import { GETV1MangaIdHistoryResponse } from '@/backend/api/v1/manga/[id]/history'
 import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
 import { SessionStorageKeyMap } from '@/constants/storage'

@@ -4,7 +4,7 @@ import { contextStorage } from 'hono/context-storage'
 
 import type { Env } from '@/backend'
 
-import mangaRoutes from '../manga/id'
+import mangaRoutes from '../manga/[id]/history'
 
 let shouldThrowDatabaseError = false
 let currentUserId: number | undefined

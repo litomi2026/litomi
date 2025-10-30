@@ -3,7 +3,7 @@ import { Hono } from 'hono'
 import { Env } from '@/backend'
 
 import bookmarkRoutes from './bookmark'
-import mangaRoutes from './manga/id'
+import mangaRoutes from './manga/[id]/history'
 import meRoutes from './me'
 import searchRoutes from './search'
 
