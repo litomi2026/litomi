@@ -5,7 +5,7 @@ import { Star, X } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-import { GETMangaIdRatingResponse } from '@/app/api/manga/[id]/rating/route'
+import { GETV1MangaIdRatingResponse } from '@/backend/api/v1/manga/[id]/rating'
 import LoginPageLink from '@/components/LoginPageLink'
 import { QueryKeys } from '@/constants/query'
 import useActionResponse from '@/hook/useActionResponse'
@@ -45,15 +45,15 @@ export default function RatingInput({ mangaId, className = '', onClick }: Props)
       setTimeout(() => setJustSaved(false), 1000)
 
       if (rating === 0) {
-        queryClient.setQueryData<GETMangaIdRatingResponse | null>(QueryKeys.userRating(mangaId), null)
+        queryClient.setQueryData<GETV1MangaIdRatingResponse | null>(QueryKeys.userRating(mangaId), null)
         toast.info('평가를 취소했어요')
       } else {
         const newRating = {
           rating,
-          updatedAt: new Date().toISOString(),
+          updatedAt: new Date(),
         }
 
-        queryClient.setQueryData<GETMangaIdRatingResponse>(QueryKeys.userRating(mangaId), newRating)
+        queryClient.setQueryData<GETV1MangaIdRatingResponse>(QueryKeys.userRating(mangaId), newRating)
         toast.success(`${rating}점으로 평가했어요`)
       }
     },
@@ -271,7 +271,7 @@ export default function RatingInput({ mangaId, className = '', onClick }: Props)
         ))}
       </div>
       <div className="text-center">
-        <div className="grid gap-1 min-h-[4rem]">
+        <div className="grid gap-1 min-h-16">
           <div
             aria-current={displayRating > 0}
             className="text-2xl sm:text-3xl font-bold text-zinc-500 aria-current:text-brand-end transition"
