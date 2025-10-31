@@ -111,7 +111,7 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
           </header>
           <div className="flex-1 overflow-y-auto">
             <div className="relative">
-              <div className="h-32 bg-gradient-to-b from-zinc-800 to-zinc-900" />
+              <div className="h-32 bg-linear-to-b from-zinc-800 to-zinc-900" />
               <div className="absolute bottom-0 left-4 transform translate-y-1/2">
                 <div className="w-24 h-24 rounded-full border-4 border-background overflow-hidden bg-zinc-800">
                   <img

@@ -83,15 +83,9 @@ export default function BookmarkUploadButton() {
         <IconUpload className="w-5" />
         <span className="hidden sm:block">북마크 업로드</span>
       </button>
-      <Modal
-        className="[@media(pointer:coarse)]:top-12"
-        onClose={handleClose}
-        open={isOpened}
-        showCloseButton
-        showDragButton
-      >
+      <Modal className="pointer-coarse:top-12" onClose={handleClose} open={isOpened} showCloseButton showDragButton>
         <div className="bg-zinc-900 w-screen max-w-lg max-h-dvh rounded-3xl border border-zinc-800/60 overflow-auto flex flex-col shadow-2xl">
-          <div className="p-5 pb-10 border-b border-zinc-800/40 bg-gradient-to-b from-zinc-900 to-zinc-900/95">
+          <div className="p-5 pb-10 border-b border-zinc-800/40 bg-linear-to-b from-zinc-900 to-zinc-900/95">
             <h2 className="text-xl font-bold text-center mb-3 text-foreground">북마크 업로드</h2>
             <ProgressIndicator currentStep={STEP_MAP[importState]?.step || 1} />
           </div>

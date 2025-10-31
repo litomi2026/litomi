@@ -18,9 +18,9 @@ export function PreviewStep({ importMode, isVisible, previewData, setImportMode 
       className="absolute inset-0 transition aria-hidden:opacity-0 aria-hidden:pointer-events-none"
     >
       <div className="h-fit space-y-6 p-6">
-        <div className="bg-gradient-to-br from-blue-600/10 to-blue-500/5 rounded-2xl p-5 border border-blue-600/20">
+        <div className="bg-linear-to-br from-blue-600/10 to-blue-500/5 rounded-2xl p-5 border border-blue-600/20">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-blue-500 flex items-center justify-center shadow-lg shadow-blue-600/20">
+            <div className="w-12 h-12 rounded-xl bg-linear-to-br from-blue-600 to-blue-500 flex items-center justify-center shadow-lg shadow-blue-600/20">
               <IconBookmark className="w-6 h-6 text-foreground" />
             </div>
             <div className="flex-1">

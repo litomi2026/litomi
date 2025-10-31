@@ -58,7 +58,7 @@ export function ImportModeOption({
         ${colorClasses.border} ${colorClasses.bg} ${colorClasses.shadow}
         border-zinc-800/60 hover:border-zinc-700 hover:bg-zinc-800/30 focus-within:ring-2 ${colorClasses.ring} focus-within:ring-offset-2 focus-within:ring-offset-zinc-900`}
     >
-      {isSelected && <div className={`absolute inset-0 bg-gradient-to-br ${colorClasses.gradient}`} />}
+      {isSelected && <div className={`absolute inset-0 bg-linear-to-br ${colorClasses.gradient}`} />}
       <input
         checked={isSelected}
         className={`mt-1 w-4 h-4 text-${colorScheme}-600 bg-zinc-800 border-zinc-600 focus:outline-none`}

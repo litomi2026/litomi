@@ -4,11 +4,11 @@ import IconShield from '@/components/icons/IconShield'
 
 export default function Forbidden() {
   return (
-    <div className="min-h-[100dvh] flex items-center justify-center px-4 py-12 bg-gradient-to-b from-background via-zinc-900/50 to-background">
+    <div className="min-h-[100dvh] flex items-center justify-center px-4 py-12 bg-linear-to-b from-background via-zinc-900/50 to-background">
       <div className="max-w-md w-full space-y-8">
         <div className="relative flex justify-center">
           <div className="absolute inset-0 flex justify-center">
-            <div className="w-32 h-32 bg-gradient-to-br from-red-900/20 via-red-800/10 to-transparent rounded-full blur-3xl animate-pulse" />
+            <div className="w-32 h-32 bg-linear-to-br from-red-900/20 via-red-800/10 to-transparent rounded-full blur-3xl animate-pulse" />
           </div>
           <div className="relative">
             <div className="relative group">
