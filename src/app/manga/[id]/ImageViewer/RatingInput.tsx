@@ -45,7 +45,7 @@ export default function RatingInput({ mangaId, className = '', onClick }: Props)
       setTimeout(() => setJustSaved(false), 1000)
 
       if (rating === 0) {
-        queryClient.setQueryData<GETV1MangaIdRatingResponse | null>(QueryKeys.userRating(mangaId), null)
+        queryClient.setQueryData<GETV1MangaIdRatingResponse>(QueryKeys.userRating(mangaId), null)
         toast.info('평가를 취소했어요')
       } else {
         const newRating = {
