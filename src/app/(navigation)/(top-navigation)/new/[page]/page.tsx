@@ -4,7 +4,7 @@ import z from 'zod/v4'
 
 import MangaCard from '@/components/card/MangaCard'
 import MangaCardDonation from '@/components/card/MangaCardDonation'
-import Navigation from '@/components/Navigation'
+import PageNavigation from '@/components/PageNavigation'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { createErrorManga } from '@/constants/json'
 import { TOTAL_HIYOBI_PAGES } from '@/constants/policy'
@@ -52,7 +52,7 @@ export default async function Page({ params }: PageProps<'/new/[page]'>) {
           <MangaCardDonation />
         </ul>
       </div>
-      <Navigation className="py-4" currentPage={page} totalPages={TOTAL_HIYOBI_PAGES} />
+      <PageNavigation className="py-4" currentPage={page} totalPages={TOTAL_HIYOBI_PAGES} />
     </>
   )
 }
