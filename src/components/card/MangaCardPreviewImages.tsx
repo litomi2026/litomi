@@ -1,12 +1,12 @@
 'use client'
 
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import { memo, useEffect, useRef, useState } from 'react'
 
 import { MAX_THUMBNAIL_IMAGES } from '@/constants/policy'
 import { Manga } from '@/types/manga'
 
-import { IconNextPage, IconPrevPage } from '../icons/IconArrows'
 import LinkPending from '../LinkPending'
 import MangaImage from '../MangaImage'
 
@@ -75,14 +75,14 @@ function MangaCardPreviewImages({ className, manga, mangaIndex = 0, href }: Read
         className="pointer-coarse:hidden absolute left-1 top-1/2 -translate-y-1/2 z-10 rounded-full bg-zinc-700/50 text-foreground p-2 ring-zinc-400 active:ring-2 transition"
         onClick={() => scrollToSlide(prevIndex)}
       >
-        <IconPrevPage className="w-4" />
+        <ChevronLeft className="size-4" />
       </button>
       <button
         aria-label="다음 이미지"
         className="pointer-coarse:hidden absolute right-1 top-1/2 -translate-y-1/2 z-10 rounded-full bg-zinc-700/50 text-foreground p-2 ring-zinc-400 active:ring-2 transition"
         onClick={() => scrollToSlide(nextIndex)}
       >
-        <IconNextPage className="w-4" />
+        <ChevronRight className="size-4" />
       </button>
       <div className="absolute z-10 bottom-1 left-1/2 -translate-x-1/2 flex gap-2 [&_div]:w-3 [&_div]:h-3 [&_div]:rounded-full [&_div]:bg-zinc-300 [&_div]:border [&_div]:border-zinc-500 [&_div]:aria-current:bg-brand-gradient">
         {Array.from({ length: totalSlides }).map((_, i) => (
