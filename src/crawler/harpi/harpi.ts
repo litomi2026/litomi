@@ -270,8 +270,10 @@ class HarpiClient {
       memorableQuote,
     } = harpiManga
 
+    const mangaId = parseInt(parseKey, 10) || 0
+
     return {
-      id: parseInt(parseKey, 10) || 0,
+      id: mangaId,
       harpiId: id,
       title: korTitle || engTitle || title,
       artists: translateArtistList(authors, locale),
