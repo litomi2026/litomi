@@ -5,6 +5,7 @@ import MangaCard from '@/components/card/MangaCard'
 import MangaCardDonation from '@/components/card/MangaCardDonation'
 import { createErrorManga } from '@/constants/json'
 import { kHentaiClient } from '@/crawler/k-hentai'
+import { Locale } from '@/translation/common'
 import { View } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
@@ -46,7 +47,7 @@ export default async function Page() {
 
 async function getMangas() {
   try {
-    return await kHentaiClient.fetchRandomKoreanMangas(15)
+    return await kHentaiClient.fetchRandomKoreanMangas({ locale: Locale.KO, revalidate: 15 })
   } catch (error) {
     return [createErrorManga({ error })]
   }

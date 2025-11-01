@@ -1,6 +1,7 @@
 import { fetchMangasFromMultiSources } from '@/common/manga'
 import { BLACKLISTED_MANGA_IDS, MAX_THUMBNAIL_IMAGES } from '@/constants/policy'
 import { createCacheControl, createCacheControlHeaders, handleRouteError } from '@/crawler/proxy-utils'
+import { Locale } from '@/translation/common'
 import { Manga, MangaError } from '@/types/manga'
 import { calculateOptimalCacheDuration } from '@/utils/cache-control'
 import { sec } from '@/utils/date'
@@ -14,19 +15,23 @@ export type GETProxyMangaResponse = Record<number, Manga | MangaError | null>
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
-  const validation = GETProxyIdSchema.safeParse({ ids: searchParams.getAll('id') })
+
+  const validation = GETProxyIdSchema.safeParse({
+    ids: searchParams.getAll('id'),
+    locale: searchParams.get('locale') ?? Locale.KO,
+  })
 
   if (!validation.success) {
     return new Response('Bad Request', { status: 400 })
   }
 
-  const { ids } = validation.data
+  const { ids, locale } = validation.data
   const uniqueIds = Array.from(new Set(ids))
   const blacklistedIds = uniqueIds.filter((id) => BLACKLISTED_MANGA_IDS.includes(id))
   const validIds = uniqueIds.filter((id) => !BLACKLISTED_MANGA_IDS.includes(id))
 
   try {
-    const fetchedMangas = await fetchMangasFromMultiSources(validIds)
+    const fetchedMangas = await fetchMangasFromMultiSources({ ids: validIds, locale })
     const mangaMap: GETProxyMangaResponse = { ...fetchedMangas }
     const mangas = Object.values(fetchedMangas)
 

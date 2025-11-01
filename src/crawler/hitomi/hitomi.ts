@@ -3,6 +3,7 @@ import ms from 'ms'
 import { MangaSource } from '@/database/enum'
 import { translateArtistList } from '@/translation/artist'
 import { translateCharacterList } from '@/translation/character'
+import { Locale } from '@/translation/common'
 import { translateGroupList } from '@/translation/group'
 import { translateLanguageList } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
@@ -19,6 +20,7 @@ import { urlFromUrlFromHash } from './utils'
 
 type MangaFetchParams = {
   id: number
+  locale: Locale
   revalidate?: number
 }
 
@@ -56,7 +58,7 @@ class HitomiClient {
     this.client = new ProxyClient(HITOMI_CONFIG)
   }
 
-  async fetchManga({ id, revalidate }: MangaFetchParams) {
+  async fetchManga({ id, locale, revalidate }: MangaFetchParams) {
     try {
       const jsText = await this.client.fetch<string>(`/galleries/${id}.js`, { next: { revalidate } }, true)
       const gallery = await this.parseGalleryFromJS(jsText, id)
@@ -65,7 +67,7 @@ class HitomiClient {
         return null
       }
 
-      return await this.convertHitomiGalleryToManga(gallery)
+      return await this.convertHitomiGalleryToManga(gallery, locale)
     } catch (error) {
       if (error instanceof NotFoundError) {
         return null
@@ -74,19 +76,21 @@ class HitomiClient {
     }
   }
 
-  async fetchMangaImages({ id, revalidate }: MangaFetchParams) {
-    const manga = await this.fetchManga({ id, revalidate })
+  async fetchMangaImages({ id, locale, revalidate }: MangaFetchParams) {
+    const manga = await this.fetchManga({ id, locale, revalidate })
     return manga?.images ?? []
   }
 
-  private async convertHitomiGalleryToManga(gallery: HitomiGallery): Promise<Manga> {
-    const mangaId = Number(gallery.id)
-    const locale = 'ko' // TODO: Get from user preferences or context
-    const artistValues = gallery.artists?.map(({ artist }) => artist)
-    const characterValues = gallery.characters?.map(({ character }) => character)
-    const groupValues = gallery.groups?.map(({ group }) => group)
-    const seriesValues = gallery.parodys?.map(({ parody }) => parody)
-    const languageValues = gallery.languages?.map(({ name }) => name) ?? [gallery.language]
+  private async convertHitomiGalleryToManga(gallery: HitomiGallery, locale: Locale): Promise<Manga> {
+    const { id, artists, characters, groups, parodys, languages, language, title, date, tags, type, files, related } =
+      gallery
+
+    const mangaId = Number(id)
+    const artistValues = artists?.map(({ artist }) => artist)
+    const characterValues = characters?.map(({ character }) => character)
+    const groupValues = groups?.map(({ group }) => group)
+    const seriesValues = parodys?.map(({ parody }) => parody)
+    const languageValues = languages?.map(({ name }) => name) ?? [language]
 
     // NOTE: hitomi 사이트 이미지는 referer 헤더가 없으면 못 보기에, hentkor에서 이미지 URL을 가져오도록 함
     // const imageURLs = await Promise.all(gallery.files.map((file) => this.getImageURL(gallery.id, file)))
@@ -96,19 +100,19 @@ class HitomiClient {
       id: mangaId,
       artists: translateArtistList(artistValues, locale),
       group: translateGroupList(groupValues, locale),
-      title: gallery.title,
-      date: gallery.date,
+      title,
+      date,
       characters: translateCharacterList(characterValues, locale),
       series: translateSeriesList(seriesValues, locale),
-      tags: gallery.tags?.map((tag) => {
+      tags: tags?.map((tag) => {
         const category = this.getTagCategory(tag)
         return translateTag(category, tag.tag, locale)
       }),
-      type: translateType(gallery.type, locale),
+      type: translateType(type, locale),
       languages: translateLanguageList(languageValues, locale),
       images: imageURLs.map((url) => ({ original: { url } })),
-      related: gallery.related,
-      count: gallery.files.length,
+      related: related,
+      count: files.length,
       source: MangaSource.HITOMI,
     }
   }

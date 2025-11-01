@@ -24,7 +24,7 @@ export const GETProxyKSearchSchema = z
     'next-views': z.coerce.number().int().min(0).optional(),
     'next-views-id': z.coerce.number().int().positive().optional(),
     skip: z.coerce.number().int().min(0).max(10000).optional(),
-    locale: z.enum(Locale).optional(),
+    locale: z.enum(Locale).optional().default(Locale.KO),
   })
   .refine(
     (data) => {
