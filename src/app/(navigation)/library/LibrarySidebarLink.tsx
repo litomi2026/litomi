@@ -58,7 +58,7 @@ export default function LibrarySidebarLink({
           </h3>
           {badge}
         </div>
-        {description && <p className="text-xs text-zinc-500 break-words">{description}</p>}
+        {description && <p className="text-xs text-zinc-500 wrap-break-word">{description}</p>}
       </div>
       {showActiveIndicator && isActive && <div className="w-1 h-8 bg-brand-end rounded-full hidden lg:block" />}
     </Link>
