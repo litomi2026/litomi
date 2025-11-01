@@ -7,8 +7,8 @@ import { usePathname } from 'next/navigation'
 import { ReactNode, Suspense, useCallback, useEffect, useState } from 'react'
 import { create } from 'zustand'
 
-import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from '@/components/card/BookmarkButton'
-import DownloadButton, { DownloadButtonError, DownloadButtonSkeleton } from '@/components/card/DownloadButton'
+import BookmarkButton, { BookmarkButtonError } from '@/components/card/BookmarkButton'
+import DownloadButton, { DownloadButtonError } from '@/components/card/DownloadButton'
 import MangaCardStats from '@/components/card/MangaCardStats'
 import MangaMetadataLabel from '@/components/card/MangaMetadataLabel'
 import MangaMetadataLink from '@/components/card/MangaMetadataLink'
@@ -91,7 +91,7 @@ export function MangaDetailModal() {
       : description
 
   const commonButtonStyle =
-    'flex-1 transition bg-zinc-900 rounded-lg p-1 px-2 border-2 h-full w-full disabled:bg-zinc-800 disabled:pointer-events-none disabled:text-zinc-500 disabled:cursor-not-allowed hover:bg-zinc-800 active:bg-zinc-900 active:border-zinc-700'
+    'flex-1 bg-zinc-900 rounded-lg p-1 px-2 border-2 h-full w-full transition disabled:bg-zinc-800 disabled:pointer-events-none disabled:text-zinc-500 disabled:cursor-not-allowed hover:bg-zinc-800 active:bg-zinc-900 active:border-zinc-700'
 
   return (
     <Modal onClose={() => setIsOpen()} open showCloseButton showDragButton>
@@ -210,15 +210,11 @@ export function MangaDetailModal() {
         )}
         <div className="flex gap-2 text-sm">
           <ErrorBoundary fallback={BookmarkButtonError}>
-            <Suspense fallback={<BookmarkButtonSkeleton className={commonButtonStyle} />}>
-              <BookmarkButton className={commonButtonStyle} manga={manga} />
-            </Suspense>
+            <BookmarkButton className={commonButtonStyle} manga={manga} />
           </ErrorBoundary>
           {isDownloadable && (
             <ErrorBoundary fallback={DownloadButtonError}>
-              <Suspense fallback={<DownloadButtonSkeleton className={commonButtonStyle} />}>
-                <DownloadButton className={commonButtonStyle} manga={manga} />
-              </Suspense>
+              <DownloadButton className={commonButtonStyle} manga={manga} />
             </ErrorBoundary>
           )}
         </div>

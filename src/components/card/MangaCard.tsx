@@ -6,7 +6,7 @@ import { twMerge } from 'tailwind-merge'
 import { Manga } from '@/types/manga'
 import { getViewerLink } from '@/utils/manga'
 
-import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from './BookmarkButton'
+import BookmarkButton, { BookmarkButtonError } from './BookmarkButton'
 import DownloadButton from './DownloadButton'
 import MangaCardDate from './MangaCardDate'
 import MangaCardImage from './MangaCardImage'
@@ -140,9 +140,7 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
             [&_button]:hover:bg-zinc-800 [&_button]:active:bg-zinc-900 [&_button]:active:border-zinc-700"
           >
             <ErrorBoundary fallback={BookmarkButtonError}>
-              <Suspense fallback={<BookmarkButtonSkeleton className="flex-1" />}>
-                <BookmarkButton className="flex-1" manga={manga} />
-              </Suspense>
+              <BookmarkButton className="flex-1" manga={manga} />
             </ErrorBoundary>
             {showSearchFromNextButton ? (
               <Suspense>
