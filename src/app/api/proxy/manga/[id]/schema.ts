@@ -1,11 +1,9 @@
-import { z } from 'zod/v4'
+import 'server-only'
+import { z } from 'zod'
 
 import { MAX_MANGA_ID } from '@/constants/policy'
 
-export enum MangaResponseScope {
-  IMAGE = '1',
-  EXCLUDE_METADATA = '2',
-}
+import { MangaResponseScope } from './types'
 
 export const GETProxyMangaIdSchema = z.object({
   id: z.coerce.number().int().positive().max(MAX_MANGA_ID),

@@ -1,4 +1,5 @@
-import { z } from 'zod/v4'
+import 'server-only'
+import { z } from 'zod'
 
 import { CensorshipKey, CensorshipLevel } from '@/database/enum'
 

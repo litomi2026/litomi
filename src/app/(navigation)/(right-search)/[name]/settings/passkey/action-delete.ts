@@ -3,7 +3,7 @@
 import { captureException } from '@sentry/nextjs'
 import { and, eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
-import { z } from 'zod/v4'
+import { z } from 'zod'
 
 import { db } from '@/database/supabase/drizzle'
 import { credentialTable } from '@/database/supabase/schema'

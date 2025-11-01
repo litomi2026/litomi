@@ -1,5 +1,5 @@
 import { and, desc, eq, lt, or } from 'drizzle-orm'
-import { z } from 'zod/v4'
+import { z } from 'zod'
 
 import { decodeLibraryIdCursor, encodeLibraryIdCursor } from '@/common/cursor'
 import { LIBRARY_ITEMS_PER_PAGE } from '@/constants/policy'

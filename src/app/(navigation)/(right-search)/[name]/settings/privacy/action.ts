@@ -2,7 +2,7 @@
 
 import { captureException } from '@sentry/nextjs'
 import { eq } from 'drizzle-orm'
-import { z } from 'zod/v4'
+import { z } from 'zod'
 
 import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/schema'

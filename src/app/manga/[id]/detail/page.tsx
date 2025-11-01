@@ -3,7 +3,7 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 import PostList from '@/app/(navigation)/(right-search)/posts/[filter]/PostList'
-import { PostFilter } from '@/app/api/post/schema'
+import { PostFilter } from '@/app/api/post/types'
 import RatingInput from '@/app/manga/[id]/ImageViewer/RatingInput'
 import BackButton from '@/components/BackButton'
 import PostCreationForm from '@/components/post/PostCreationForm'

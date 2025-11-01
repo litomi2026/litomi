@@ -1,15 +1,27 @@
 import { zValidator } from '@hono/zod-validator'
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
+import { z } from 'zod'
 
 import { Env } from '@/backend'
 import { createCacheControl } from '@/crawler/proxy-utils'
+import { Locale } from '@/translation/common'
 import { sec } from '@/utils/date'
 
-import { queryBlacklist, querySchema } from './schema'
+import { queryBlacklist } from './constant'
 import { suggestionTrie } from './suggestion-trie'
 
 const suggestionRoutes = new Hono<Env>()
+
+const querySchema = z.object({
+  query: z.string().trim().min(2).max(200),
+  locale: z.enum(Locale).optional(),
+})
+
+export type GETSearchSuggestionsResponse = {
+  label: string
+  value: string
+}[]
 
 suggestionRoutes.get('/', zValidator('query', querySchema), async (c) => {
   const { query, locale } = c.req.valid('query')

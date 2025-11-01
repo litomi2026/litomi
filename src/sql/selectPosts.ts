@@ -1,7 +1,7 @@
 import { and, countDistinct, desc, eq, SQL, sql } from 'drizzle-orm'
 import { alias } from 'drizzle-orm/pg-core'
 
-import { PostFilter } from '@/app/api/post/schema'
+import { PostFilter } from '@/app/api/post/types'
 import { db } from '@/database/supabase/drizzle'
 import { postLikeTable, postTable, userTable } from '@/database/supabase/schema'
 

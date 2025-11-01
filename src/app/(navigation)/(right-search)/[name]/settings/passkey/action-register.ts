@@ -9,7 +9,7 @@ import {
 } from '@simplewebauthn/server'
 import { eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
-import { z } from 'zod/v4'
+import { z } from 'zod'
 
 import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID, WEBAUTHN_RP_NAME } from '@/constants'
 import { MAX_CREDENTIALS_PER_USER } from '@/constants/policy'

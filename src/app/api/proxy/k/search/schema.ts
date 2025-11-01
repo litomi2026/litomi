@@ -1,14 +1,11 @@
-import { z } from 'zod/v4'
+import 'server-only'
+import { z } from 'zod'
 
 import { MAX_SEARCH_QUERY_LENGTH } from '@/constants/policy'
 import { Locale } from '@/translation/common'
 import { View } from '@/utils/param'
 
-export enum Sort {
-  RANDOM = 'random',
-  ID_ASC = 'id_asc',
-  POPULAR = 'popular',
-}
+import { Sort } from './types'
 
 export const GETProxyKSearchSchema = z
   .object({
@@ -47,5 +44,3 @@ export const GETProxyKSearchSchema = z
     },
     { error: '최소값은 최대값보다 클 수 없어요' },
   )
-
-export type GETProxyKSearchRequest = z.infer<typeof GETProxyKSearchSchema>

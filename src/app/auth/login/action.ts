@@ -4,7 +4,7 @@ import { captureException } from '@sentry/nextjs'
 import { compare } from 'bcrypt'
 import { and, eq, isNull } from 'drizzle-orm'
 import { cookies, headers } from 'next/headers'
-import { z } from 'zod/v4'
+import { z } from 'zod'
 
 import { twoFactorTable } from '@/database/supabase/2fa-schema'
 import { db } from '@/database/supabase/drizzle'

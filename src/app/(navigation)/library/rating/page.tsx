@@ -1,6 +1,6 @@
 import { desc, eq } from 'drizzle-orm'
 import { Metadata } from 'next'
-import { z } from 'zod/v4'
+import { z } from 'zod'
 
 import { encodeRatingCursor } from '@/common/cursor'
 import { generateOpenGraphMetadata } from '@/constants'

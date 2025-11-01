@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { ReactNode, useCallback, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
-import { NotificationFilter } from '@/app/api/notification/schema'
+import { NotificationFilter } from '@/app/api/notification/types'
 import IconBell from '@/components/icons/IconBell'
 import IconBook from '@/components/icons/IconBook'
 import IconFilter from '@/components/icons/IconFilter'

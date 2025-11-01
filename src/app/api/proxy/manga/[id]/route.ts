@@ -6,7 +6,8 @@ import { RouteProps } from '@/types/nextjs'
 import { calculateOptimalCacheDuration } from '@/utils/cache-control'
 import { sec } from '@/utils/date'
 
-import { GETProxyMangaIdSchema, MangaResponseScope } from './schema'
+import { GETProxyMangaIdSchema } from './schema'
+import { MangaResponseScope } from './types'
 
 export const runtime = 'edge'
 

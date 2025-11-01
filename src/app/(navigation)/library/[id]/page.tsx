@@ -2,7 +2,7 @@ import { and, eq, or } from 'drizzle-orm'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { cache, Suspense } from 'react'
-import { z } from 'zod/v4'
+import { z } from 'zod'
 
 import { generateOpenGraphMetadata } from '@/constants'
 import { db } from '@/database/supabase/drizzle'

@@ -3,7 +3,7 @@
 import { captureException } from '@sentry/nextjs'
 import { hash } from 'bcrypt'
 import { cookies, headers } from 'next/headers'
-import { z } from 'zod/v4'
+import { z } from 'zod'
 
 import { SALT_ROUNDS } from '@/constants'
 import { db } from '@/database/supabase/drizzle'

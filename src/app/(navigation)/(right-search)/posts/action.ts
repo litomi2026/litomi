@@ -3,7 +3,7 @@
 import { captureException } from '@sentry/nextjs'
 import { and, eq, sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
-import { z } from 'zod/v4'
+import { z } from 'zod'
 
 import { MAX_POST_CONTENT_LENGTH } from '@/constants/policy'
 import { PostType } from '@/database/enum'

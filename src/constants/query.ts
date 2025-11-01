@@ -1,6 +1,6 @@
 import { RatingSortOption } from '@/app/(navigation)/library/rating/useRatingInfiniteQuery'
-import { PostFilter } from '@/app/api/post/schema'
-import { MangaResponseScope } from '@/app/api/proxy/manga/[id]/schema'
+import { PostFilter } from '@/app/api/post/types'
+import { MangaResponseScope } from '@/app/api/proxy/manga/[id]/types'
 
 export const QueryKeys = {
   me: ['me'],

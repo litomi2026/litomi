@@ -49,8 +49,6 @@ app.use(
 
 app.route('/', appRoutes)
 
-// app.onError(errorHandler)
-
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
   ...app,

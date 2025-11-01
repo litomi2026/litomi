@@ -1,7 +1,7 @@
 'use server'
 
 import { sql } from 'drizzle-orm'
-import { z } from 'zod/v4'
+import { z } from 'zod'
 
 import { MAX_BOOKMARKS_PER_USER } from '@/constants/policy'
 import { db } from '@/database/supabase/drizzle'

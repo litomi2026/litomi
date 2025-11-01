@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import z from 'zod/v4'
+import z from 'zod'
 
 import { fetchMangasFromMultiSources } from '@/common/manga'
 import MangaCard from '@/components/card/MangaCard'

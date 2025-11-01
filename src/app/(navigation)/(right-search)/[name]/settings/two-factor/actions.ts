@@ -4,7 +4,7 @@ import { captureException } from '@sentry/nextjs'
 import { and, eq, gt, isNull, sql } from 'drizzle-orm'
 import ms from 'ms'
 import { authenticator } from 'otplib'
-import { z } from 'zod/v4'
+import { z } from 'zod'
 
 import { TOTP_ISSUER } from '@/constants'
 import { db } from '@/database/supabase/drizzle'

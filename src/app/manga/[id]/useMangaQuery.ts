@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { MangaResponseScope } from '@/app/api/proxy/manga/[id]/schema'
+import { MangaResponseScope } from '@/app/api/proxy/manga/[id]/types'
 import { QueryKeys } from '@/constants/query'
 import { Manga } from '@/types/manga'
 import { handleResponseError } from '@/utils/react-query-error'
