@@ -1,5 +1,6 @@
 import { hiyobiClient } from '@/crawler/hiyobi'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
+import { Locale } from '@/translation/common'
 import { RouteProps } from '@/types/nextjs'
 import { sec } from '@/utils/date'
 
@@ -21,7 +22,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
   const { id } = validation.data
 
   try {
-    const manga = await hiyobiClient.fetchManga({ id })
+    const manga = await hiyobiClient.fetchManga({ id, locale: Locale.KO })
 
     if (!manga) {
       return new Response('Not Found', { status: 404 })
