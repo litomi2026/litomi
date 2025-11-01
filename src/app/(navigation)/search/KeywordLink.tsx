@@ -35,6 +35,7 @@ export default function KeywordLink({
       onBlur={onBlur}
       onClick={onClick}
       onFocus={onFocus}
+      prefetch={false}
       ref={linkRef}
       title={keyword}
     >
