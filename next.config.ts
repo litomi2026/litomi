@@ -58,6 +58,7 @@ const nextConfig: NextConfig = {
     },
   ],
   poweredByHeader: false,
+  reactCompiler: true,
   ...(process.env.BUILD_OUTPUT === 'standalone' && { output: 'standalone' }),
   ...(process.env.NODE_ENV === 'production' && { compiler: { removeConsole: { exclude: ['error', 'warn'] } } }),
 }
