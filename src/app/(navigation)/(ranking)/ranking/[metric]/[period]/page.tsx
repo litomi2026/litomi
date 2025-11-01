@@ -5,13 +5,12 @@ import z from 'zod'
 import { fetchMangasFromMultiSources } from '@/common/manga'
 import MangaCard from '@/components/card/MangaCard'
 import MangaCardDonation from '@/components/card/MangaCardDonation'
-import { defaultOpenGraph } from '@/constants'
+import { generateOpenGraphMetadata } from '@/constants'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 import { metricInfo, MetricParam, periodLabels, PeriodParam } from '../../../common'
 import { getRankingData } from './query'
 
-export const dynamic = 'force-static'
 export const revalidate = 43200 // 12 hours
 
 const mangasRankingSchema = z.object({
@@ -31,11 +30,10 @@ export async function generateMetadata({ params }: PageProps<'/ranking/[metric]/
 
   return {
     title,
-    openGraph: {
-      ...defaultOpenGraph,
+    ...generateOpenGraphMetadata({
       title,
       url: `/ranking/${metric}/${period}`,
-    },
+    }),
     alternates: {
       canonical: `/ranking/${metric}/${period}`,
       languages: { ko: `/ranking/${metric}/${period}` },

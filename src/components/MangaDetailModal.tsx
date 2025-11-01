@@ -3,7 +3,8 @@
 import { ErrorBoundary } from '@suspensive/react'
 import dayjs from 'dayjs'
 import Link from 'next/link'
-import { ReactNode, Suspense, useState } from 'react'
+import { usePathname } from 'next/navigation'
+import { ReactNode, Suspense, useCallback, useEffect, useState } from 'react'
 import { create } from 'zustand'
 
 import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from '@/components/card/BookmarkButton'
@@ -48,6 +49,15 @@ export function MangaDetailModal() {
   const { manga, children, setIsOpen } = useMangaDetailModalStore()
   const [showFullDescription, setShowFullDescription] = useState(false)
   const [showAllLines, setShowAllLines] = useState(false)
+  const pathname = usePathname()
+
+  const closeModal = useCallback(() => {
+    setIsOpen()
+  }, [setIsOpen])
+
+  useEffect(() => {
+    closeModal()
+  }, [pathname, closeModal])
 
   if (!manga) {
     return null
@@ -85,7 +95,7 @@ export function MangaDetailModal() {
 
   return (
     <Modal onClose={() => setIsOpen()} open showCloseButton showDragButton>
-      <div className="bg-zinc-900 min-w-3xs w-screen max-w-prose rounded-xl p-4 pt-8 shadow-xl border grid gap-4 text-sm overflow-y-auto max-h-[calc(100vh-var(--safe-area-bottom))] md:text-base">
+      <div className="bg-zinc-900 min-w-3xs w-screen max-w-prose rounded-xl p-4 pt-8 shadow-xl border grid gap-4 text-sm overflow-y-auto max-h-[calc(100vh-var(--safe-area-bottom))] md:text-base animate-fade-in-fast">
         <h2 className="font-bold text-lg md:text-xl">{title}</h2>
         {description && (
           <div className="bg-zinc-800/30 rounded-lg p-3">

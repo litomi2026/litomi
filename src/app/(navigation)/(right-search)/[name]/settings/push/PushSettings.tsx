@@ -19,7 +19,7 @@ export default async function PushSettings({ userId }: Props) {
   return (
     <div className="space-y-8 sm:space-y-12 max-w-2xl mx-auto">
       <div className="relative bg-linear-to-br from-zinc-800/80 to-zinc-900/80 rounded-2xl p-4 sm:p-5 border border-zinc-700/50 hover:border-brand-end/30 transition-all overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-tr from-brand-start/5 via-transparent to-brand-end/5 pointer-events-none" />
+        <div className="absolute inset-0 bg-linear-to-tr from-brand-start/5 via-transparent to-brand-end/5 pointer-events-none" />
         <div className="flex items-center gap-4 flex-1">
           <Bell className="w-5 text-brand-end p-2.5 bg-brand-end/10 rounded-xl border border-brand-end/20 box-content" />
           <div className="flex-1">
