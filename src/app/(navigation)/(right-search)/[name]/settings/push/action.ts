@@ -7,7 +7,7 @@ import { revalidatePath } from 'next/cache'
 import { db } from '@/database/supabase/drizzle'
 import { pushSettingsTable, webPushTable } from '@/database/supabase/schema'
 import { WebPushService } from '@/lib/notification/WebPushService'
-import { badRequest, created, internalServerError, ok, unauthorized } from '@/utils/action-response'
+import { badRequest, conflict, created, internalServerError, ok, unauthorized } from '@/utils/action-response'
 import { validateUserIdFromCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 
@@ -61,7 +61,12 @@ export async function subscribeToNotifications(data: Record<string, unknown>) {
   const notificationService = WebPushService.getInstance()
 
   try {
-    await notificationService.subscribeUser(userId, subscription, userAgent)
+    const upsertedSubscription = await notificationService.subscribeUser(userId, subscription, userAgent)
+
+    if (!upsertedSubscription) {
+      return conflict('현재 브라우저는 이미 등록되어 있어요')
+    }
+
     revalidatePath(`/@${username}/settings`)
     return created('이 브라우저의 푸시 알림을 활성화했어요')
   } catch (error) {
