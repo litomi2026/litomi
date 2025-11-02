@@ -1,13 +1,21 @@
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
 
-import { Manga } from '@/types/manga'
+import { ImageWithVariants } from '@/types/manga'
 import { downloadImage, downloadMultipleImages } from '@/utils/download'
 
 // Supported image extensions
 const VALID_IMAGE_EXTENSIONS = new Set(['avif', 'bmp', 'gif', 'jpeg', 'jpg', 'png', 'svg', 'webp'])
 
-export function useDownload(manga: Manga) {
+type Props = {
+  manga: {
+    id: number
+    title: string
+    images?: ImageWithVariants[]
+  }
+}
+
+export function useDownload({ manga }: Props) {
   const [isDownloading, setIsDownloading] = useState(false)
   const [downloadedCount, setDownloadedCount] = useState(0)
 

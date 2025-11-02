@@ -14,17 +14,16 @@ import { QueryKeys } from '@/constants/query'
 import useActionResponse from '@/hook/useActionResponse'
 import useBookmarksQuery from '@/query/useBookmarksQuery'
 import useMeQuery from '@/query/useMeQuery'
-import { Manga } from '@/types/manga'
 
 import LoginPageLink from '../LoginPageLink'
 import { useLibraryModal } from './LibraryModal'
 
 type Props = {
-  manga: Manga
+  manga: { id: number }
   className?: string
 }
 
-export default function BookmarkButton({ manga, className }: Readonly<Props>) {
+export default function BookmarkButton({ manga, className }: Props) {
   const { id: mangaId } = manga
   const { data: me } = useMeQuery()
   const { data: bookmarks } = useBookmarksQuery()

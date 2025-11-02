@@ -7,13 +7,17 @@ import { toast } from 'sonner'
 
 import { useDownload } from '@/hook/useDownload'
 import { useThrottleValue } from '@/hook/useThrottleValue'
-import { Manga } from '@/types/manga'
+import { ImageWithVariants } from '@/types/manga'
 
 const commonButtonStyle = 'flex justify-center items-center gap-1'
 const THROTTLE_DELAY = 300
 
 type Props = {
-  manga: Manga
+  manga: {
+    id: number
+    title: string
+    images?: ImageWithVariants[]
+  }
   className?: string
 }
 
@@ -45,9 +49,9 @@ export function DownloadButtonSkeleton({ className = '' }: { className?: string 
   )
 }
 
-function DownloadButton({ manga, className = '' }: Readonly<Props>) {
+function DownloadButton({ manga, className = '' }: Props) {
   const { images = [] } = manga
-  const { isDownloading, downloadedCount, downloadAllImages } = useDownload(manga)
+  const { isDownloading, downloadedCount, downloadAllImages } = useDownload({ manga })
   const throttledCount = useThrottleValue(downloadedCount, THROTTLE_DELAY)
   const progress = Math.round((throttledCount / images.length) * 100)
   const totalCount = images.length
