@@ -1,22 +1,10 @@
 'use client'
 
-import { Check, Monitor, Moon, Palette, Sparkles, Sun } from 'lucide-react'
+import { Check, Moon, Palette, Sparkles, Sun } from 'lucide-react'
 
 import { Theme, useThemeStore } from '@/store/theme'
 
 const THEMES = [
-  {
-    value: Theme.SYSTEM,
-    label: '시스템 설정',
-    description: '기기의 테마 설정을 따릅니다',
-    Icon: () => (
-      <div className="relative size-5">
-        <Monitor className="absolute inset-0 text-black" style={{ clipPath: 'inset(0 50% 0 0)' }} />
-        <Monitor className="absolute inset-0 text-white" style={{ clipPath: 'inset(0 0 0 50%)' }} />
-      </div>
-    ),
-    style: { background: 'linear-gradient(to right, #ffffff 50%, #0a0a0a 50%)' },
-  },
   {
     value: Theme.LIGHT,
     label: '라이트',
@@ -41,14 +29,14 @@ const THEMES = [
     description: '따뜻한 빈티지 감성 테마',
     Icon: Palette,
   },
-]
+] as const
 
 export default function ThemeSettings() {
   const { theme, setTheme } = useThemeStore()
 
   return (
     <div className="grid gap-2">
-      {THEMES.map(({ value, label, description, Icon, style }) => {
+      {THEMES.map(({ value, label, description, Icon }) => {
         const isSelected = theme === value
 
         return (
@@ -63,7 +51,6 @@ export default function ThemeSettings() {
             <div
               className="size-10 rounded-lg shrink-0 flex items-center justify-center border border-zinc-700 bg-background"
               data-theme={value}
-              style={style}
             >
               <Icon className="size-5 text-foreground" />
             </div>

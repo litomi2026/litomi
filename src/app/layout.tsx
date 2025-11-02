@@ -12,6 +12,7 @@ import LibraryModal from '@/components/card/LibraryModal'
 import HiyobiPing from '@/components/HiyobiPing'
 import { MangaDetailModal } from '@/components/MangaDetailModal'
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar'
+import ThemeProvider from '@/components/ThemeProvider'
 import {
   APPLICATION_NAME,
   CANONICAL_URL,
@@ -83,7 +84,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: 'cover',
   themeColor: THEME_COLOR,
-  colorScheme: 'dark',
+  colorScheme: 'dark light',
 }
 
 type Props = {
@@ -97,6 +98,7 @@ export default function RootLayout({ children }: Readonly<Props>) {
         <meta content={SHORT_NAME} name="apple-mobile-web-app-title" />
       </head>
       <body className={`${PretendardVariable.className} antialiased h-full`}>
+        <ThemeProvider />
         <QueryProvider>
           {children}
           <LibraryModal />
@@ -104,7 +106,7 @@ export default function RootLayout({ children }: Readonly<Props>) {
         </QueryProvider>
         <ServiceWorkerRegistrar />
         <HiyobiPing />
-        <Toaster duration={3000} position="top-center" richColors theme="dark" />
+        <Toaster duration={3000} position="top-center" richColors theme="system" />
         {AMPLITUDE_API_KEY && <Amplitude apiKey={AMPLITUDE_API_KEY} />}
         {NEXT_PUBLIC_GA_ID && <GoogleAnalytics gaId={NEXT_PUBLIC_GA_ID} />}
       </body>
