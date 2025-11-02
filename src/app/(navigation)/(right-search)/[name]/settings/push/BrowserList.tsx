@@ -111,7 +111,7 @@ export default function BrowserList({ webPushes }: Props) {
             {!isCurrentDevice && (
               <button
                 aria-label="기기 제거"
-                className="p-2.5 text-zinc-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all duration-200"
+                className="p-2.5 text-zinc-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition"
                 onClick={() => handleRemoveDevice(webPush.id)}
                 type="button"
               >

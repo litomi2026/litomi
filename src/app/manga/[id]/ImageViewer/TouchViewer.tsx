@@ -411,7 +411,7 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
     <>
       <TouchAreaOverlay showController={showController} />
       <ul
-        className={`h-dvh touch-pinch-zoom select-none overscroll-none transition duration-100 ease-out [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:pb-safe [&_img]:border [&_img]:border-background ${screenFitStyle[screenFit]}`}
+        className={`h-dvh touch-pinch-zoom select-none overscroll-none [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:pb-safe [&_img]:border [&_img]:border-background ${screenFitStyle[screenFit]}`}
         onClick={handleClick}
         onPointerCancel={handlePointerCancel}
         onPointerDown={handlePointerDown}
@@ -476,7 +476,7 @@ function TouchAreaOverlay({ showController }: TouchAreaOverlayProps) {
     <div
       aria-hidden={!showController}
       aria-orientation={isHorizontal ? 'horizontal' : 'vertical'}
-      className="absolute inset-0 z-10 pointer-events-none flex transition-opacity duration-300 text-foreground text-xs font-medium aria-hidden:opacity-0 aria-[orientation=vertical]:flex-col"
+      className="absolute inset-0 z-10 pointer-events-none flex transition-opacity text-foreground text-xs font-medium aria-hidden:opacity-0 aria-[orientation=vertical]:flex-col"
     >
       <div className="flex-1 flex items-center justify-center">
         <span className="px-4 py-2 rounded-full bg-background/80 border border-foreground/40">

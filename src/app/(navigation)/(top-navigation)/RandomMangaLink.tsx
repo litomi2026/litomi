@@ -3,7 +3,6 @@
 import { Dices } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { memo } from 'react'
 
 import RandomRefreshButton from './RandomRefreshButton'
 
@@ -13,15 +12,13 @@ type Props = {
   timer?: number
 }
 
-export default memo(RandomMangaLink)
-
-function RandomMangaLink({ timer }: Props) {
+export default function RandomMangaLink({ timer }: Props) {
   const pathname = usePathname()
   const isRandomPage = pathname === '/random'
 
   if (!isRandomPage) {
     return (
-      <Link className={`hover:bg-zinc-900 active:bg-zinc-950 ${className}`} href="/random">
+      <Link className={`hover:bg-zinc-900 active:bg-background ${className}`} href="/random">
         <Dices className="size-5" />
         <span className="min-w-9 text-center">랜덤</span>
       </Link>

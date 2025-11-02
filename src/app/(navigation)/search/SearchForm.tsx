@@ -271,7 +271,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
           {keyword && (
             <button
               aria-label="검색어 지우기"
-              className="absolute right-0 top-0 bottom-0 p-2 shrink-0 transition duration-200 text-zinc-500 
+              className="absolute right-0 top-0 bottom-0 p-2 shrink-0 transition text-zinc-500 
               hover:text-zinc-300 active:text-zinc-400"
               onClick={handleClear}
               type="button"
@@ -282,7 +282,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
         </div>
         <button
           aria-label="검색하기"
-          className="flex items-center justify-center p-2 px-4 shrink-0 font-medium rounded-l-none transition duration-200
+          className="flex items-center justify-center p-2 px-4 shrink-0 font-medium rounded-l-none transition
           aria-disabled:opacity-60 bg-zinc-800 text-zinc-200 
           active:bg-zinc-800 hover:bg-zinc-700 hover:text-white
           focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-inset"

@@ -4,7 +4,7 @@ import IconShield from '@/components/icons/IconShield'
 
 export default function Forbidden() {
   return (
-    <div className="min-h-[100dvh] flex items-center justify-center px-4 py-12 bg-linear-to-b from-background via-zinc-900/50 to-background">
+    <div className="min-h-dvh flex items-center justify-center px-4 py-12 bg-linear-to-b from-background via-zinc-900/50 to-background">
       <div className="max-w-md w-full space-y-8">
         <div className="relative flex justify-center">
           <div className="absolute inset-0 flex justify-center">
@@ -12,10 +12,9 @@ export default function Forbidden() {
           </div>
           <div className="relative">
             <div className="relative group">
-              <div className="absolute -inset-4 bg-gradient-to-r from-red-900/20 to-orange-900/20 rounded-full blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100" />
-
+              <div className="absolute -inset-4 bg-linear-to-r from-red-900/20 to-orange-900/20 rounded-full blur-xl group-hover:blur-2xl transition opacity-0 group-hover:opacity-100" />
               <div className="relative p-6 bg-zinc-900/50 backdrop-blur-sm rounded-full border border-zinc-800/50">
-                <IconShield className="w-16 h-16 text-zinc-500 transition-colors duration-500 group-hover:text-zinc-400" />
+                <IconShield className="w-16 h-16 text-zinc-500 transition group-hover:text-zinc-400" />
               </div>
             </div>
           </div>
@@ -43,7 +42,7 @@ export default function Forbidden() {
             신작 페이지
           </Link>
           <Link
-            className="flex items-center justify-center flex-1 px-6 py-3 bg-gradient-to-r from-zinc-800 to-zinc-700 hover:from-zinc-700 hover:to-zinc-600 rounded-lg text-zinc-100 font-medium transition hover:shadow-lg hover:shadow-zinc-900/50"
+            className="flex items-center justify-center flex-1 px-6 py-3 bg-linear-to-r from-zinc-800 to-zinc-700 hover:from-zinc-700 hover:to-zinc-600 rounded-lg text-zinc-100 font-medium transition hover:shadow-lg hover:shadow-zinc-900/50"
             href="/"
           >
             홈으로 가기
