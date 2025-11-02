@@ -3,7 +3,13 @@ import { persist } from 'zustand/middleware'
 
 import { LocalStorageKey } from '@/constants/storage'
 
-export type Theme = 'dark' | 'light' | 'neon' | 'retro' | 'system'
+export enum Theme {
+  SYSTEM = '',
+  LIGHT = 'light',
+  DARK = 'dark',
+  NEON = 'neon',
+  RETRO = 'retro',
+}
 
 type Store = {
   theme: Theme
@@ -13,10 +19,9 @@ type Store = {
 export const useThemeStore = create<Store>()(
   persist(
     (set) => ({
-      theme: 'system',
+      theme: Theme.SYSTEM,
       setTheme: (theme: Theme) => set({ theme }),
     }),
     { name: LocalStorageKey.THEME },
   ),
 )
-
