@@ -1,9 +1,11 @@
+import { MessageCircle } from 'lucide-react'
 import Link from 'next/link'
-import { CSSProperties, memo, useEffect } from 'react'
+import { CSSProperties, useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { List, RowComponentProps, useDynamicRowHeight, useListRef } from 'react-window'
 
 import { MangaIdSearchParam } from '@/app/manga/[id]/common'
+import BookmarkButton from '@/components/card/BookmarkButton'
 import IconSpinner from '@/components/icons/IconSpinner'
 import MangaImage from '@/components/MangaImage'
 import { useImageStatus } from '@/hook/useImageStatus'
@@ -25,6 +27,13 @@ const screenFitStyle: Record<ScreenFit, string> = {
     '[&_li]:flex [&_li]:items-center [&_li]:w-fit! [&_li]:max-w-full [&_li]:left-1/2! [&_li]:-translate-x-1/2 [&_li]:overflow-x-auto [&_li]:overscroll-x-none [&_img]:w-auto [&_img]:max-w-fit [&_img]:h-dvh [&_img]:max-h-fit',
 }
 
+type LastPageProps = {
+  manga: {
+    id: number
+  }
+  style: CSSProperties
+}
+
 type Props = {
   manga: Manga
   onClick: () => void
@@ -40,9 +49,7 @@ type RowProps = {
   screenFit: ScreenFit
 }
 
-export default memo(ScrollViewer)
-
-function ScrollViewer({ manga, onClick, pageView, readingDirection, screenFit }: Props) {
+export default function ScrollViewer({ manga, onClick, pageView, readingDirection, screenFit }: Props) {
   const { images = [] } = manga
   const listRef = useListRef(null)
   const imageWidth = useImageWidthStore((state) => state.imageWidth)
@@ -96,25 +103,38 @@ function ScrollViewer({ manga, onClick, pageView, readingDirection, screenFit }:
   )
 }
 
+function LastPage({ manga, style }: LastPageProps) {
+  const { id } = manga
+
+  return (
+    <li className="h-full pb-safe px-safe" style={style}>
+      <div className="flex flex-col items-center gap-4 p-4 py-12">
+        <RatingInput className="flex-1" mangaId={id} />
+        <div className="grid grid-cols-2 items-center gap-2 text-sm font-medium text-foreground">
+          <Link
+            className="flex items-center gap-2 p-4 py-2 border border-foreground/20 rounded-lg hover:bg-foreground/10 transition"
+            href={`/manga/${id}/detail`}
+          >
+            <MessageCircle className="size-4" />
+            작품 후기
+          </Link>
+          <BookmarkButton
+            className="p-4 w-full py-2 border border-foreground/20 rounded-lg hover:bg-foreground/10 transition"
+            manga={manga}
+          />
+        </div>
+      </div>
+    </li>
+  )
+}
+
 function ScrollViewerRow({ index, style, manga, pageView, ...rest }: RowComponentProps<RowProps>) {
   const { images = [] } = manga
   const isDoublePage = pageView === 'double'
   const imagePageCount = isDoublePage ? Math.ceil(images.length / 2) : images.length
 
   if (index === imagePageCount) {
-    return (
-      <li className="h-full pb-safe px-safe" style={style}>
-        <div className="flex flex-col items-center gap-4 p-4 py-12">
-          <RatingInput className="flex-1" mangaId={manga.id} />
-          <Link
-            className="p-4 py-2 text-sm font-medium text-foreground bg-background border border-foreground/20 rounded-lg hover:bg-foreground/10 transition"
-            href={`/manga/${manga.id}/detail`}
-          >
-            작품 후기 보기
-          </Link>
-        </div>
-      </li>
-    )
+    return <LastPage manga={manga} style={style} />
   }
 
   return <ScrollViewerRowItem index={index} manga={manga} pageView={pageView} style={style} {...rest} />
