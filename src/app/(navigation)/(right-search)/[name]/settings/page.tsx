@@ -1,5 +1,14 @@
 import { ErrorBoundary } from '@suspensive/react'
-import { CalendarMinus, CaseSensitive, Fingerprint, Key, Languages, RectangleEllipsis, Trash2 } from 'lucide-react'
+import {
+  CalendarMinus,
+  CaseSensitive,
+  Fingerprint,
+  Key,
+  Languages,
+  Palette,
+  RectangleEllipsis,
+  Trash2,
+} from 'lucide-react'
 import { Suspense } from 'react'
 
 import IconBell from '@/components/icons/IconBell'
@@ -18,6 +27,7 @@ import PasskeySettings from './passkey/PasskeySettings'
 import PasswordChangeForm from './password/PasswordChangeForm'
 import PrivacySettings from './privacy/PrivacySettings'
 import PushSettings from './push/PushSettings'
+import ThemeSettings from './theme/ThemeSettings'
 import TwoFactorSettings from './two-factor/TwoFactorSettings'
 
 export default async function SettingsPage({ params }: PageProps<'/[name]/settings'>) {
@@ -34,8 +44,28 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
     </CollapsibleSection>
   )
 
+  const themeSelector = (
+    <CollapsibleSection
+      description="원하는 테마를 선택하여 시각적 경험을 설정하세요"
+      icon={<Palette className="size-5 shrink-0 text-brand-end" />}
+      id="theme"
+      title="테마"
+    >
+      <ErrorBoundary fallback={InternalServerError}>
+        <Suspense fallback={<LoadingFallback />}>
+          <ThemeSettings />
+        </Suspense>
+      </ErrorBoundary>
+    </CollapsibleSection>
+  )
+
   if (!userId) {
-    return languageSelector
+    return (
+      <>
+        {languageSelector}
+        {themeSelector}
+      </>
+    )
   }
 
   const [me, { name }] = await Promise.all([getMe(userId), params])
@@ -48,6 +78,7 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
   return (
     <>
       {languageSelector}
+      {themeSelector}
       <CollapsibleSection
         description="관심 키워드를 등록하여 새로운 작품 알림을 받아보세요"
         icon={<CaseSensitive className="size-5 shrink-0 text-brand-end" />}
