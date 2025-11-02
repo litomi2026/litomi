@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import ms from 'ms'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { GETProxyMangaResponse } from '@/app/api/proxy/manga/route'
 import { MAX_HARPI_MANGA_BATCH_SIZE } from '@/constants/policy'
@@ -40,11 +40,12 @@ export default function useMangaListCachedQuery({
   gcTime = ms('2 hours'),
 }: UseMangaBatchWithCacheOptions) {
   const queryClient = useQueryClient()
+  const [batchTrigger, setBatchTrigger] = useState(0)
 
-  const { uncachedIds, cachedMap } = useMemo(() => {
+  const { uncachedIds, cachedMap, hasMoreBatches } = useMemo(() => {
     const uniqueMangaIds = new Set(mangaIds)
     const cachedMap = new Map<number, Manga>()
-    const uncachedIds = []
+    const allUncachedIds = []
     const now = Date.now()
 
     for (const id of uniqueMangaIds) {
@@ -53,13 +54,18 @@ export default function useMangaListCachedQuery({
 
       if (data && now - queryState.dataUpdatedAt <= staleTime) {
         cachedMap.set(id, data)
-      } else if (uncachedIds.length < MAX_HARPI_MANGA_BATCH_SIZE) {
-        uncachedIds.push(id)
+      } else {
+        allUncachedIds.push(id)
       }
     }
 
-    return { uncachedIds, cachedMap }
-  }, [mangaIds, queryClient, staleTime])
+    const uncachedIds = allUncachedIds.slice(0, MAX_HARPI_MANGA_BATCH_SIZE)
+    const hasMoreBatches = allUncachedIds.length > uncachedIds.length
+
+    return { uncachedIds, cachedMap, hasMoreBatches }
+    // batchTrigger is intentionally included to force re-evaluation after each batch is cached
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mangaIds, queryClient, staleTime, batchTrigger])
 
   const { data, isLoading, isFetching } = useQuery<GETProxyMangaResponse>({
     queryKey: ['manga-batch', uncachedIds],
@@ -88,6 +94,12 @@ export default function useMangaListCachedQuery({
     staleTime: 0, // Always refetch batch queries
     gcTime: 0, // Don't keep batch query results
   })
+
+  useEffect(() => {
+    if (!isFetching && hasMoreBatches) {
+      setBatchTrigger((prev) => prev + 1)
+    }
+  }, [isFetching, hasMoreBatches])
 
   const mangaMap = useMemo(() => {
     if (!data) {
