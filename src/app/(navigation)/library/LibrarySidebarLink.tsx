@@ -39,6 +39,7 @@ export default function LibrarySidebarLink({
       aria-current:bg-zinc-800 aria-current:text-white aria-current:border-zinc-700"
       href={href}
       onClick={onClick}
+      prefetch={false}
       title={title}
     >
       <div
