@@ -1,6 +1,6 @@
 {
-  "female": { "en": "female", "ko": "여", "ja": "女", "zh-CN": "女", "zh-TW": "女" },
-  "male": { "en": "male", "ko": "남", "ja": "男", "zh-CN": "男", "zh-TW": "男" },
+  "female": { "en": "f", "ko": "여", "ja": "女", "zh-CN": "女", "zh-TW": "女" },
+  "male": { "en": "m", "ko": "남", "ja": "男", "zh-CN": "男", "zh-TW": "男" },
   "mixed": { "en": "mixed", "ko": "혼합", "ja": "混合", "zh-CN": "混合", "zh-TW": "混合" },
   "other": { "en": "other", "ko": "기타", "ja": "その他", "zh-CN": "其他", "zh-TW": "其他" }
 }
