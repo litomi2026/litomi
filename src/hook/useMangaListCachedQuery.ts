@@ -96,10 +96,14 @@ export default function useMangaListCachedQuery({
   })
 
   useEffect(() => {
-    if (!isFetching && hasMoreBatches) {
+    // Only trigger next batch when:
+    // 1. Current query is not fetching
+    // 2. Current batch has data (meaning it's cached)
+    // 3. There are more batches to fetch
+    if (!isFetching && data && hasMoreBatches) {
       setBatchTrigger((prev) => prev + 1)
     }
-  }, [isFetching, hasMoreBatches])
+  }, [isFetching, data, hasMoreBatches])
 
   const mangaMap = useMemo(() => {
     if (!data) {
