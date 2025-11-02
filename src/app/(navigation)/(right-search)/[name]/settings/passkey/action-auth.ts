@@ -8,7 +8,7 @@ import {
 } from '@simplewebauthn/server'
 import { eq } from 'drizzle-orm'
 import { cookies, headers } from 'next/headers'
-import { z } from 'zod/v4'
+import { z } from 'zod'
 
 import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID } from '@/constants'
 import { ChallengeType } from '@/database/enum'

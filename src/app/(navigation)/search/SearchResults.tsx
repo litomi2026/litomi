@@ -3,7 +3,7 @@
 import { Fragment, useMemo } from 'react'
 
 import { useSearchQuery } from '@/app/(navigation)/search/useSearchQuery'
-import { Sort } from '@/app/api/proxy/k/search/schema'
+import { Sort } from '@/app/api/proxy/k/search/types'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import MangaCardDonation from '@/components/card/MangaCardDonation'
 import MangaCardImage from '@/components/card/MangaCardImage'

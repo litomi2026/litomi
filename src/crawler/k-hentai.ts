@@ -5,6 +5,7 @@ import type { Manga } from '@/types/manga'
 import { MangaSource, tagCategoryNameToInt } from '@/database/enum'
 import { translateArtistList } from '@/translation/artist'
 import { translateCharacterList } from '@/translation/character'
+import { Locale } from '@/translation/common'
 import { translateGroupList } from '@/translation/group'
 import { translateLanguageList } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
@@ -155,6 +156,7 @@ interface KHentaiTag {
 
 type MangaFetchParams = {
   id: number
+  locale: Locale
   revalidate?: number
 }
 
@@ -224,7 +226,7 @@ class KHentaiClient {
     this.fallbackClient = new ProxyClient(KOHENTAI_CONFIG)
   }
 
-  async fetchManga({ id, revalidate }: MangaFetchParams): Promise<Manga | null> {
+  async fetchManga({ id, locale, revalidate }: MangaFetchParams) {
     const gallery = await this.fetchGallery({ id, revalidate })
 
     if (!gallery) {
@@ -232,7 +234,7 @@ class KHentaiClient {
     }
 
     return {
-      ...this.convertKHentaiCommonToManga(gallery),
+      ...this.convertKHentaiCommonToManga(gallery, locale),
       images: gallery.files.map(({ image, thumbnail }) => ({
         original: {
           width: image.width,
@@ -248,7 +250,7 @@ class KHentaiClient {
     }
   }
 
-  async fetchMangaImages({ id, revalidate }: MangaFetchParams): Promise<string[] | null> {
+  async fetchMangaImages({ id, revalidate }: { id: number; revalidate?: number }) {
     const gallery = await this.fetchGallery({ id, revalidate })
 
     if (!gallery) {
@@ -258,11 +260,11 @@ class KHentaiClient {
     return gallery.files.map((file) => file.image.url)
   }
 
-  async fetchRandomKoreanMangas(revalidate?: number): Promise<Manga[]> {
-    return this.searchMangas({ search: 'language:korean', sort: 'random' }, revalidate)
+  async fetchRandomKoreanMangas({ locale, revalidate }: { locale: Locale; revalidate?: number }) {
+    return this.searchMangas({ search: 'language:korean', sort: 'random' }, locale, revalidate)
   }
 
-  async searchMangas(params: KHentaiMangaSearchOptions = {}, revalidate?: number): Promise<Manga[]> {
+  async searchMangas(params: KHentaiMangaSearchOptions = {}, locale: Locale, revalidate?: number) {
     const kebabCaseParams = Object.entries(params)
       .filter(([key, value]) => key !== 'offset' && value !== undefined)
       .map(([key, value]) => [convertCamelCaseToKebabCase(key), value])
@@ -276,26 +278,15 @@ class KHentaiClient {
 
     const mangas = kHentaiMangas
       .filter((manga) => manga.archived === 1)
-      .map((manga) => this.convertKHentaiCommonToManga(manga))
+      .map((manga) => this.convertKHentaiCommonToManga(manga, locale))
 
     return params.offset ? mangas.slice(Number(params.offset)) : mangas
   }
 
-  private convertKHentaiCommonToManga({
-    id,
-    title,
-    category,
-    posted,
-    rating,
-    tags,
-    filecount,
-    views,
-    uploader,
-    filesize,
-    torrentcount,
-    thumb,
-  }: KHentaiMangaCommon) {
-    const locale = 'ko' // TODO: Get from user preferences or context
+  private convertKHentaiCommonToManga(manga: KHentaiMangaCommon, locale: Locale): Manga {
+    const { id, title, category, posted, rating, tags, filecount, views, uploader, filesize, torrentcount, thumb } =
+      manga
+
     const seriesValues = tags.filter(({ tag }) => tag[0] === 'parody').map(({ tag }) => tag[1])
     const characterValues = tags.filter(({ tag }) => tag[0] === 'character').map(({ tag }) => tag[1])
     const groupValues = tags.filter(({ tag }) => tag[0] === 'group').map(({ tag }) => tag[1])
@@ -333,7 +324,7 @@ class KHentaiClient {
     }
   }
 
-  private async fetchGallery({ id, revalidate }: MangaFetchParams): Promise<KHentaiGallery | null> {
+  private async fetchGallery({ id, revalidate }: { id: number; revalidate?: number }) {
     try {
       const html = await this.client.fetch<string>(`/r/${id}`, { next: { revalidate } }, true)
       return this.parseGalleryFromHTML(html, id)

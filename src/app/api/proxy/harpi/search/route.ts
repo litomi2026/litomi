@@ -1,5 +1,6 @@
 import { harpiClient } from '@/crawler/harpi/harpi'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
+import { Locale } from '@/translation/common'
 import { Manga } from '@/types/manga'
 
 import { HarpiSearchSchema } from './schema'
@@ -50,7 +51,7 @@ export async function GET(request: Request) {
   const validatedParams = validation.data
 
   try {
-    const mangas = await harpiClient.searchMangas(validatedParams)
+    const mangas = await harpiClient.searchMangas(validatedParams, Locale.KO)
 
     if (!mangas) {
       return new Response('Not Found', { status: 404 })

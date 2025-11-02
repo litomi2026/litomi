@@ -1,6 +1,6 @@
 'use client'
 
-import { PostFilter } from '@/app/api/post/schema'
+import { PostFilter } from '@/app/api/post/types'
 import PostCreationForm from '@/components/post/PostCreationForm'
 import useMeQuery from '@/query/useMeQuery'
 

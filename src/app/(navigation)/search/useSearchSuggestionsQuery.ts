@@ -1,6 +1,8 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
-import { GETSearchSuggestionsResponse, queryBlacklist } from '@/backend/api/v1/search/suggestion/schema'
+import type { GETSearchSuggestionsResponse } from '@/backend/api/v1/search/suggestion'
+
+import { queryBlacklist } from '@/backend/api/v1/search/suggestion/constant'
 import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
 import useLocaleFromCookie from '@/hook/useLocaleFromCookie'

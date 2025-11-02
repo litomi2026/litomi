@@ -85,7 +85,11 @@ export default function RealtimeRanking() {
                     </td>
                     <td className="">
                       <div className="flex items-center justify-between gap-2">
-                        <Link className="py-3 flex-1 hover:underline" href={`/search?query=${item.page}`}>
+                        <Link
+                          className="py-3 flex-1 hover:underline"
+                          href={`/search?query=${item.page}`}
+                          prefetch={false}
+                        >
                           <p className="text-sm font-medium text-white line-clamp-1">{item.page}</p>
                         </Link>
                         <a

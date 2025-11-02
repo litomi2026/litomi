@@ -2,7 +2,7 @@ import { zValidator } from '@hono/zod-validator'
 import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
-import { z } from 'zod/v4'
+import { z } from 'zod'
 
 import { Env } from '@/backend'
 import { getUserId } from '@/backend/utils/auth'

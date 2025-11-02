@@ -1,12 +1,11 @@
 import ms from 'ms'
 
-import type { Multilingual } from '@/translation/common'
-
 import { GETHarpiSearchRequest, HarpiSearchSchema } from '@/app/api/proxy/harpi/search/schema'
 import { HARPI_TAG_MAP } from '@/crawler/harpi/tag'
 import { MangaSource, tagCategoryNameToInt } from '@/database/enum'
 import { translateArtistList } from '@/translation/artist'
 import { translateCharacterList } from '@/translation/character'
+import { Locale, Multilingual } from '@/translation/common'
 import { translateLanguageList } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
 import { translateTag } from '@/translation/tag'
@@ -51,6 +50,7 @@ type HarpiManga = {
 
 type MangaFetchParams = {
   id: number | string
+  locale: Locale
   revalidate?: number
 }
 
@@ -93,7 +93,7 @@ class HarpiClient {
     this.client = new ProxyClient(HARPI_CONFIG)
   }
 
-  async fetchManga({ id, revalidate }: MangaFetchParams): Promise<Manga | null> {
+  async fetchManga({ id, revalidate, locale }: MangaFetchParams): Promise<Manga | null> {
     const validatedParams = HarpiSearchSchema.parse({ ids: [id] })
     const searchParams = this.buildSearchParams(validatedParams)
 
@@ -105,18 +105,18 @@ class HarpiClient {
       return null
     }
 
-    return this.convertHarpiToManga(response.data[0])
+    return this.convertHarpiToManga(response.data[0], locale)
   }
 
-  async fetchMangaByHarpiId({ id, revalidate }: MangaFetchParams): Promise<Manga> {
+  async fetchMangaByHarpiId({ id, revalidate, locale }: MangaFetchParams): Promise<Manga> {
     const response = await this.client.fetch<{ data: HarpiManga }>(`/animation/${id}`, {
       next: { revalidate },
     })
 
-    return this.convertHarpiToManga(response.data)
+    return this.convertHarpiToManga(response.data, locale)
   }
 
-  async searchMangas(params: Partial<GETHarpiSearchRequest> = {}, revalidate?: number): Promise<Manga[] | null> {
+  async searchMangas(params: Partial<GETHarpiSearchRequest> = {}, locale: Locale, revalidate?: number) {
     const validatedParams = HarpiSearchSchema.parse(params)
     const searchParams = this.buildSearchParams(validatedParams)
 
@@ -128,7 +128,7 @@ class HarpiClient {
       return null
     }
 
-    return response.data.map((manga) => this.convertHarpiToManga(manga))
+    return response.data.map((manga) => this.convertHarpiToManga(manga, locale))
   }
 
   private buildSearchParams(params: GETHarpiSearchRequest): URLSearchParams {
@@ -247,35 +247,56 @@ class HarpiClient {
     return uniqBy(sortedTags, 'label')
   }
 
-  private convertHarpiToManga(harpiManga: HarpiManga): Manga {
-    const locale = 'ko' // TODO: Get from user preferences or context
-    const mangaId = parseInt(harpiManga.parseKey, 10) || 0
+  private convertHarpiToManga(harpiManga: HarpiManga, locale: Locale): Manga {
+    const {
+      id,
+      parseKey,
+      title,
+      engTitle,
+      korTitle,
+      type,
+      authors,
+      characters,
+      series,
+      tagsIds,
+      date,
+      imageUrl,
+      imageCount,
+      views,
+      meanRating,
+      countRating,
+      bookmarks,
+      textSummary,
+      memorableQuote,
+    } = harpiManga
+
+    const mangaId = parseInt(parseKey, 10) || 0
 
     return {
       id: mangaId,
-      harpiId: harpiManga.id,
-      title: harpiManga.korTitle || harpiManga.engTitle || harpiManga.title,
-      artists: translateArtistList(harpiManga.authors, locale),
-      characters: translateCharacterList(harpiManga.characters, locale),
-      description: harpiManga.textSummary,
-      series: translateSeriesList(harpiManga.series, locale),
-      lines: harpiManga.memorableQuote,
-      tags: harpiManga.tagsIds ? this.convertHarpiTagIdsToTags(harpiManga.tagsIds, locale) : [],
-      type: translateType(HARPI_MANGA_TYPE_MAP[harpiManga.type] ?? `${harpiManga.type}?`, locale),
+      harpiId: id,
+      title: korTitle || engTitle || title,
+      artists: translateArtistList(authors, locale),
+      characters: translateCharacterList(characters, locale),
+      description: textSummary,
+      series: translateSeriesList(series, locale),
+      lines: memorableQuote,
+      tags: tagsIds ? this.convertHarpiTagIdsToTags(tagsIds, locale) : [],
+      type: translateType(HARPI_MANGA_TYPE_MAP[type] ?? `${type}?`, locale),
       languages: translateLanguageList(['korean'], locale),
-      date: new Date(harpiManga.date).toISOString(),
-      images: harpiManga.imageUrl
-        ? this.sortImageURLs(harpiManga.imageUrl).map((pathname) => ({
+      date: new Date(date).toISOString(),
+      images: imageUrl
+        ? this.sortImageURLs(imageUrl).map((pathname) => ({
             original: { url: `https://soujpa.in/start/${pathname}` },
           }))
-        : Array(harpiManga.imageCount)
+        : Array(imageCount)
             .fill('')
             .map((_, index) => ({ original: { url: `https://soujpa.in/start/${mangaId}/${mangaId}_${index}.avif` } })),
-      viewCount: harpiManga.views,
-      count: harpiManga.imageCount,
-      rating: harpiManga.meanRating,
-      ratingCount: harpiManga.countRating,
-      bookmarkCount: harpiManga.bookmarks,
+      viewCount: views,
+      count: imageCount,
+      rating: meanRating,
+      ratingCount: countRating,
+      bookmarkCount: bookmarks,
       source: MangaSource.HARPI,
     }
   }

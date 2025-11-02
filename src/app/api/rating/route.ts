@@ -1,5 +1,5 @@
 import { and, desc, eq, gt, lt, or } from 'drizzle-orm'
-import { z } from 'zod/v4'
+import { z } from 'zod'
 
 import { decodeRatingCursor, encodeRatingCursor } from '@/common/cursor'
 import { RATING_PER_PAGE } from '@/constants/policy'

@@ -1,4 +1,5 @@
-import { z } from 'zod/v4'
+import 'server-only'
+import { z } from 'zod'
 
 export const GETProxyHentaiPawImagesSchema = z.object({
   id: z.coerce.number().int().positive(),

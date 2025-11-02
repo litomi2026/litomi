@@ -15,7 +15,7 @@ export function CompleteStep({ importResult, isVisible }: Readonly<Props>) {
       <div className="flex flex-col h-full p-6">
         <div className="text-center mb-4">
           <div
-            className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center shadow-lg transition border-2 bg-gradient-to-br
+            className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center shadow-lg transition border-2 bg-linear-to-br
             from-emerald-600/20 to-emerald-500/10 text-emerald-400 border-emerald-600/30"
           >
             <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">

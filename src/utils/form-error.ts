@@ -1,4 +1,5 @@
-import z from 'zod/v4'
+import 'server-only'
+import z from 'zod'
 
 export function flattenZodFieldErrors<T>(fieldErrors: z.ZodError<T>) {
   const flattenedErrors = z.flattenError(fieldErrors).fieldErrors

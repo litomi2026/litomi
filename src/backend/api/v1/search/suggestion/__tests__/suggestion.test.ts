@@ -4,9 +4,7 @@ import { contextStorage } from 'hono/context-storage'
 
 import type { Env } from '@/backend'
 
-import type { GETSearchSuggestionsResponse } from '../schema'
-
-import suggestionRoutes from '..'
+import suggestionRoutes, { type GETSearchSuggestionsResponse } from '..'
 
 const app = new Hono<Env>()
 app.use('*', contextStorage())

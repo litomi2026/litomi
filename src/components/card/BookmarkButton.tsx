@@ -3,8 +3,10 @@
 import { captureException } from '@sentry/nextjs'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import { useQueryClient } from '@tanstack/react-query'
+import { Bookmark } from 'lucide-react'
 import { useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
+import { twMerge } from 'tailwind-merge'
 
 import toggleBookmark from '@/app/(navigation)/library/bookmark/action'
 import { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark'
@@ -12,22 +14,16 @@ import { QueryKeys } from '@/constants/query'
 import useActionResponse from '@/hook/useActionResponse'
 import useBookmarksQuery from '@/query/useBookmarksQuery'
 import useMeQuery from '@/query/useMeQuery'
-import { Manga } from '@/types/manga'
 
-import IconBookmark from '../icons/IconBookmark'
 import LoginPageLink from '../LoginPageLink'
 import { useLibraryModal } from './LibraryModal'
 
-type BookmarkButtonSkeletonProps = {
-  className?: string
-}
-
 type Props = {
-  manga: Manga
+  manga: { id: number }
   className?: string
 }
 
-export default function BookmarkButton({ manga, className }: Readonly<Props>) {
+export default function BookmarkButton({ manga, className }: Props) {
   const { id: mangaId } = manga
   const { data: me } = useMeQuery()
   const { data: bookmarks } = useBookmarksQuery()
@@ -102,15 +98,15 @@ export default function BookmarkButton({ manga, className }: Readonly<Props>) {
   }
 
   return (
-    <form action={dispatchAction} className={className}>
+    <form action={dispatchAction} className="flex-1">
       <input name="mangaId" type="hidden" value={mangaId} />
       <button
-        className="flex justify-center items-center gap-1 w-full h-full transition disabled:bg-zinc-900"
+        className={twMerge('flex justify-center items-center gap-1', className)}
         disabled={isPending}
         onClick={handleClick}
         type="submit"
       >
-        <IconBookmark className="w-4" selected={isIconSelected} />
+        <Bookmark className="size-4" fill={isIconSelected ? 'currentColor' : 'none'} />
         <span>북마크</span>
       </button>
     </form>
@@ -127,20 +123,8 @@ export function BookmarkButtonError({ error, reset }: Readonly<ErrorBoundaryFall
       className="flex justify-center items-center gap-1 border-2 w-fit border-red-800 rounded-lg p-1 px-2 transition flex-1"
       onClick={reset}
     >
-      <IconBookmark className="w-4 text-red-700" />
+      <Bookmark className="size-4 text-red-700" />
       <span className="text-red-700">오류</span>
-    </button>
-  )
-}
-
-export function BookmarkButtonSkeleton({ className = '' }: Readonly<BookmarkButtonSkeletonProps>) {
-  return (
-    <button
-      className={`flex justify-center items-center gap-1 border-2 w-fit rounded-lg p-1 px-2 bg-zinc-900 transition ${className}`}
-      disabled
-    >
-      <IconBookmark className="w-4" />
-      <span>북마크</span>
     </button>
   )
 }

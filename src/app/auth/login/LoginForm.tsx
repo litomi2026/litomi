@@ -206,7 +206,7 @@ export default function LoginForm() {
           </div>
           {passwordError && <p className="mt-1 text-xs text-red-500">{passwordError}</p>}
         </div>
-        <label className="!flex w-fit ml-auto items-center gap-2 cursor-pointer" htmlFor="remember">
+        <label className="flex! w-fit ml-auto items-center gap-2 cursor-pointer" htmlFor="remember">
           <input
             className="hidden peer"
             defaultChecked={defaultRemember === 'on'}

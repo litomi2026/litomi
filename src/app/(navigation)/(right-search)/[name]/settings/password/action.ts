@@ -4,7 +4,7 @@ import { captureException } from '@sentry/nextjs'
 import { compare, hash } from 'bcrypt'
 import { sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'
-import { z } from 'zod/v4'
+import { z } from 'zod'
 
 import { COOKIE_DOMAIN, SALT_ROUNDS } from '@/constants'
 import { CookieKey } from '@/constants/storage'

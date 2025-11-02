@@ -1,4 +1,5 @@
-import { z } from 'zod/v4'
+import 'server-only'
+import { z } from 'zod'
 
 export const GETProxyKomiIdSchema = z.object({
   id: z.union([z.coerce.number().int().positive(), z.uuid()]),

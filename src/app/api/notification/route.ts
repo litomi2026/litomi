@@ -6,7 +6,8 @@ import { db } from '@/database/supabase/drizzle'
 import { notificationTable } from '@/database/supabase/schema'
 import { validateUserIdFromCookie } from '@/utils/cookie'
 
-import { GETNotificationSchema, NotificationFilter } from './schema'
+import { GETNotificationSchema } from './schema'
+import { NotificationFilter } from './types'
 
 const LIMIT = 20
 

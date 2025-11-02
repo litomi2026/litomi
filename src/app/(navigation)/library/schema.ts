@@ -1,4 +1,5 @@
-import z from 'zod/v4'
+import 'server-only'
+import z from 'zod'
 
 import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAME_LENGTH, MAX_MANGA_ID } from '@/constants/policy'
 

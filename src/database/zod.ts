@@ -1,5 +1,5 @@
 import 'server-only'
-import { z } from 'zod/v4'
+import { z } from 'zod'
 
 import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@/constants/policy'
 

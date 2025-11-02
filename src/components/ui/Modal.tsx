@@ -121,7 +121,7 @@ export default function Modal({
         >
           {showCloseButton && (
             <button aria-label="닫기" onClick={closeModal}>
-              <IconX className="absolute right-2 top-2 z-[60] w-8 cursor-pointer rounded-full bg-zinc-700/50 p-1" />
+              <IconX className="absolute right-2 top-2 z-60 w-8 cursor-pointer rounded-full bg-zinc-700/50 p-1" />
             </button>
           )}
           <div

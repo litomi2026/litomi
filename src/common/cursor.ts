@@ -1,4 +1,5 @@
-import { z } from 'zod/v4'
+import 'server-only'
+import { z } from 'zod'
 
 const DefaultCursorSchema = z.object({
   timestamp: z.coerce.number().int().positive(),

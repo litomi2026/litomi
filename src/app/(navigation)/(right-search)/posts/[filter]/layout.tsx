@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
-import { PostFilter } from '@/app/api/post/schema'
+import { PostFilter } from '@/app/api/post/types'
 import PostCreationForm from '@/components/post/PostCreationForm'
 
 import NavigationWithMobileMenu from './NavigationWithMobileMenu'

@@ -1,9 +1,7 @@
-import { z } from 'zod/v4'
+import 'server-only'
+import { z } from 'zod'
 
-export enum NotificationFilter {
-  NEW_MANGA = 'new',
-  UNREAD = 'unread',
-}
+import { NotificationFilter } from './types'
 
 export const GETNotificationSchema = z.object({
   nextId: z.coerce.number().nullable(),

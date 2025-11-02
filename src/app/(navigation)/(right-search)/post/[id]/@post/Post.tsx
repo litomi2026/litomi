@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import { Bookmark, Heart, MessageCircle, MoreHorizontal, Repeat, Upload } from 'lucide-react'
 import Link from 'next/link'
 
-import { PostFilter } from '@/app/api/post/schema'
+import { PostFilter } from '@/app/api/post/types'
 import { type Post } from '@/components/post/PostCard'
 import PostCreationForm from '@/components/post/PostCreationForm'
 import PostImages from '@/components/post/PostImages'

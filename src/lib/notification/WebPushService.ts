@@ -201,16 +201,12 @@ export class WebPushService {
         userAgent,
         lastUsedAt: new Date(),
       })
-      .onConflictDoUpdate({
-        target: [webPushTable.userId, webPushTable.endpoint],
-        set: {
-          p256dh: subscription.keys.p256dh,
-          auth: subscription.keys.auth,
-          userAgent,
-          lastUsedAt: new Date(),
-        },
-      })
+      .onConflictDoNothing()
       .returning()
+
+    if (!upsertedSubscription) {
+      return null
+    }
 
     return upsertedSubscription
   }

@@ -1,15 +1,14 @@
 import { zValidator } from '@hono/zod-validator'
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
-import { z } from 'zod/v4'
+import { z } from 'zod'
 
+import { Env } from '@/backend'
 import { getUserId } from '@/backend/utils/auth'
 import { decodeBookmarkCursor, encodeBookmarkCursor } from '@/common/cursor'
 import { BOOKMARKS_PER_PAGE } from '@/constants/policy'
 import { createCacheControl } from '@/crawler/proxy-utils'
 import selectBookmarks from '@/sql/selectBookmarks'
-
-import type { Env } from '../..'
 
 const querySchema = z.object({
   cursor: z.string().optional(),

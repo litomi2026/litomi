@@ -6,7 +6,7 @@ import { twMerge } from 'tailwind-merge'
 import { Manga } from '@/types/manga'
 import { getViewerLink } from '@/utils/manga'
 
-import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from './BookmarkButton'
+import BookmarkButton, { BookmarkButtonError } from './BookmarkButton'
 import DownloadButton from './DownloadButton'
 import MangaCardDate from './MangaCardDate'
 import MangaCardImage from './MangaCardImage'
@@ -31,7 +31,7 @@ export function MangaCardSkeleton({ children, className = '' }: { children?: Rea
   return (
     <li
       className={twMerge(
-        'animate-fade-in rounded-xl bg-zinc-900 border-2 aspect-[3/4] w-full h-full flex flex-col justify-center items-center gap-1',
+        'animate-fade-in rounded-xl bg-zinc-900 border-2 aspect-3/4 w-full h-full flex flex-col justify-center items-center gap-1',
         className,
       )}
     >
@@ -52,7 +52,7 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
       key={id}
     >
       <MangaCardImage
-        className="h-fit my-auto aspect-[4/3] [&_img]:snap-start [&_img]:shrink-0 [&_img]:w-full [&_img]:object-contain [&_img]:aspect-[4/3]"
+        className="h-fit my-auto aspect-4/3 [&_img]:snap-start [&_img]:shrink-0 [&_img]:w-full [&_img]:object-contain [&_img]:aspect-4/3"
         manga={manga}
         mangaIndex={index}
       />
@@ -64,7 +64,7 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
               href={viewerLink}
               target="_blank"
             >
-              <h4 className="line-clamp-3 font-bold text-base leading-5 min-w-0 break-words break-all">
+              <h4 className="line-clamp-3 font-bold text-base leading-5 min-w-0 wrap-break-word break-all">
                 {title} <ExternalLink className="size-3 ml-1 text-zinc-400 inline-block" />
               </h4>
             </a>
@@ -140,9 +140,7 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
             [&_button]:hover:bg-zinc-800 [&_button]:active:bg-zinc-900 [&_button]:active:border-zinc-700"
           >
             <ErrorBoundary fallback={BookmarkButtonError}>
-              <Suspense fallback={<BookmarkButtonSkeleton className="flex-1" />}>
-                <BookmarkButton className="flex-1" manga={manga} />
-              </Suspense>
+              <BookmarkButton className="flex-1" manga={manga} />
             </ErrorBoundary>
             {showSearchFromNextButton ? (
               <Suspense>

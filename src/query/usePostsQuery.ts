@@ -1,7 +1,7 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 
 import { GETPostsResponse } from '@/app/api/post/route'
-import { PostFilter } from '@/app/api/post/schema'
+import { PostFilter } from '@/app/api/post/types'
 import { QueryKeys } from '@/constants/query'
 
 export default function usePostsInfiniteQuery(filter: PostFilter, mangaId?: number, username?: string) {

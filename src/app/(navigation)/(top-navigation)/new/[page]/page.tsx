@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import z from 'zod/v4'
+import z from 'zod'
 
 import MangaCard from '@/components/card/MangaCard'
 import MangaCardDonation from '@/components/card/MangaCardDonation'
@@ -9,6 +9,8 @@ import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { createErrorManga } from '@/constants/json'
 import { TOTAL_HIYOBI_PAGES } from '@/constants/policy'
 import { hiyobiClient } from '@/crawler/hiyobi'
+import { Locale } from '@/translation/common'
+import { sec } from '@/utils/date'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 export const metadata: Metadata = {
@@ -59,7 +61,7 @@ export default async function Page({ params }: PageProps<'/new/[page]'>) {
 
 async function getMangas(page: number) {
   try {
-    return await hiyobiClient.fetchMangas({ page })
+    return await hiyobiClient.fetchMangas({ page, locale: Locale.KO, revalidate: sec('3 hours') })
   } catch (error) {
     return [createErrorManga({ error })]
   }

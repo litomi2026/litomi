@@ -4,7 +4,7 @@ import { Hono } from 'hono'
 import { timeout } from 'hono/timeout'
 import { endTime, setMetric, startTime } from 'hono/timing'
 import ms from 'ms'
-import { z } from 'zod/v4'
+import { z } from 'zod'
 
 import { Env } from '@/backend'
 import { db } from '@/database/supabase/drizzle'

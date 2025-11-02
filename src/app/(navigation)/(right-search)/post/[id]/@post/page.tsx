@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { cache } from 'react'
-import { z } from 'zod/v4'
+import { z } from 'zod'
 
 import { generateOpenGraphMetadata } from '@/constants'
 import selectPosts from '@/sql/selectPosts'

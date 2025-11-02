@@ -3,11 +3,12 @@
 import { ErrorBoundary } from '@suspensive/react'
 import dayjs from 'dayjs'
 import Link from 'next/link'
-import { ReactNode, Suspense, useState } from 'react'
+import { usePathname } from 'next/navigation'
+import { ReactNode, Suspense, useEffect, useState } from 'react'
 import { create } from 'zustand'
 
-import BookmarkButton, { BookmarkButtonError, BookmarkButtonSkeleton } from '@/components/card/BookmarkButton'
-import DownloadButton, { DownloadButtonError, DownloadButtonSkeleton } from '@/components/card/DownloadButton'
+import BookmarkButton, { BookmarkButtonError } from '@/components/card/BookmarkButton'
+import DownloadButton, { DownloadButtonError } from '@/components/card/DownloadButton'
 import MangaCardStats from '@/components/card/MangaCardStats'
 import MangaMetadataLabel from '@/components/card/MangaMetadataLabel'
 import MangaMetadataLink from '@/components/card/MangaMetadataLink'
@@ -19,39 +20,49 @@ import { MANGA_INITIAL_LINES, MAX_MANGA_DESCRIPTION_LENGTH } from '@/constants/p
 import { Manga } from '@/types/manga'
 
 type MangaDetailModalStore = {
-  manga: Manga | null
-  children: ReactNode
-  setIsOpen: (params?: Params) => void
+  isOpen: boolean
+  params: Params
+  setIsOpen: (isOpen: boolean) => void
+  setParams: (params?: Params) => void
 }
 
 type Params = {
-  manga?: Manga | null
+  manga?: Manga
   children?: ReactNode
 }
 
 const useMangaDetailModalStore = create<MangaDetailModalStore>()((set) => ({
-  manga: null,
-  children: null,
-  setIsOpen: ({ manga, children } = {}) => set({ manga, children }),
+  isOpen: false,
+  params: {},
+  setIsOpen: (isOpen: boolean) => set({ isOpen }),
+  setParams: (params: Params = {}) => set({ params }),
 }))
 
 export const useMangaDetailModal = () => {
-  const { setIsOpen } = useMangaDetailModalStore()
+  const setIsOpen = useMangaDetailModalStore((store) => store.setIsOpen)
+  const setParams = useMangaDetailModalStore((store) => store.setParams)
 
   return {
-    open: setIsOpen,
-    close: () => setIsOpen(),
+    open: (params?: Params) => {
+      setIsOpen(true)
+      setParams(params)
+    },
+    close: () => {
+      setIsOpen(false)
+      setTimeout(() => {
+        setParams()
+      }, 300)
+    },
   }
 }
 
 export function MangaDetailModal() {
-  const { manga, children, setIsOpen } = useMangaDetailModalStore()
   const [showFullDescription, setShowFullDescription] = useState(false)
   const [showAllLines, setShowAllLines] = useState(false)
-
-  if (!manga) {
-    return null
-  }
+  const pathname = usePathname()
+  const { isOpen, params } = useMangaDetailModalStore()
+  const { close } = useMangaDetailModal()
+  const { manga = {} as Manga, children } = params
 
   const {
     id,
@@ -81,10 +92,15 @@ export function MangaDetailModal() {
       : description
 
   const commonButtonStyle =
-    'flex-1 transition bg-zinc-900 rounded-lg p-1 px-2 border-2 h-full w-full disabled:bg-zinc-800 disabled:pointer-events-none disabled:text-zinc-500 disabled:cursor-not-allowed hover:bg-zinc-800 active:bg-zinc-900 active:border-zinc-700'
+    'flex-1 bg-zinc-900 rounded-lg p-1 px-2 border-2 h-full w-full transition disabled:bg-zinc-800 disabled:pointer-events-none disabled:text-zinc-500 disabled:cursor-not-allowed hover:bg-zinc-800 active:bg-zinc-900 active:border-zinc-700'
+
+  // NOTE: 페이지 이동 시 모달 닫기
+  useEffect(() => {
+    close()
+  }, [pathname, close])
 
   return (
-    <Modal onClose={() => setIsOpen()} open showCloseButton showDragButton>
+    <Modal onClose={close} open={isOpen} showCloseButton showDragButton>
       <div className="bg-zinc-900 min-w-3xs w-screen max-w-prose rounded-xl p-4 pt-8 shadow-xl border grid gap-4 text-sm overflow-y-auto max-h-[calc(100vh-var(--safe-area-bottom))] md:text-base">
         <h2 className="font-bold text-lg md:text-xl">{title}</h2>
         {description && (
@@ -107,7 +123,7 @@ export function MangaDetailModal() {
           <div className="flex gap-2">
             <strong>품번</strong>
             <Suspense>
-              <MangaMetadataLink filterType="id" value={id.toString()} />
+              <MangaMetadataLink filterType="id" value={id?.toString() ?? ''} />
             </Suspense>
           </div>
           {languages && languages.length > 0 && (
@@ -200,15 +216,11 @@ export function MangaDetailModal() {
         )}
         <div className="flex gap-2 text-sm">
           <ErrorBoundary fallback={BookmarkButtonError}>
-            <Suspense fallback={<BookmarkButtonSkeleton className={commonButtonStyle} />}>
-              <BookmarkButton className={commonButtonStyle} manga={manga} />
-            </Suspense>
+            <BookmarkButton className={commonButtonStyle} manga={manga} />
           </ErrorBoundary>
           {isDownloadable && (
             <ErrorBoundary fallback={DownloadButtonError}>
-              <Suspense fallback={<DownloadButtonSkeleton className={commonButtonStyle} />}>
-                <DownloadButton className={commonButtonStyle} manga={manga} />
-              </Suspense>
+              <DownloadButton className={commonButtonStyle} manga={manga} />
             </ErrorBoundary>
           )}
         </div>

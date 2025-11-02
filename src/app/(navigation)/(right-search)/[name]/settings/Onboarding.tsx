@@ -15,7 +15,7 @@ type Props = {
 export default function Onboarding({ children, title, description, icon, benefits }: Props) {
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-      <div className="size-24 mb-8 rounded-3xl bg-gradient-to-br from-brand-end/20 to-brand-end/5 flex items-center justify-center">
+      <div className="size-24 mb-8 rounded-3xl bg-linear-to-br from-brand-end/20 to-brand-end/5 flex items-center justify-center">
         {icon}
       </div>
       <h2 className="text-xl sm:text-2xl font-bold mb-3">{title}</h2>

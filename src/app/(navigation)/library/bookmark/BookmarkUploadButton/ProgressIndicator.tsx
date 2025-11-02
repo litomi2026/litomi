@@ -39,7 +39,7 @@ export function ProgressIndicator({ currentStep }: Readonly<Props>) {
               aria-current={isCurrent}
               aria-selected={isActive}
               className="w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-bold bg-zinc-900 border-zinc-700 text-zinc-500
-              transition aria-selected:bg-gradient-to-br aria-selected:from-blue-600 aria-selected:to-blue-500 aria-selected:border-transparent aria-selected:text-foreground aria-current:scale-110 aria-current:shadow-lg aria-current:shadow-blue-500/20"
+              transition aria-selected:bg-linear-to-br aria-selected:from-blue-600 aria-selected:to-blue-500 aria-selected:border-transparent aria-selected:text-foreground aria-current:scale-110 aria-current:shadow-lg aria-current:shadow-blue-500/20"
             >
               {step}
             </div>

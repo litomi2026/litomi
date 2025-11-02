@@ -1,17 +1,17 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import z from 'zod/v4'
+import z from 'zod'
 
 import { fetchMangasFromMultiSources } from '@/common/manga'
 import MangaCard from '@/components/card/MangaCard'
 import MangaCardDonation from '@/components/card/MangaCardDonation'
-import { defaultOpenGraph } from '@/constants'
+import { generateOpenGraphMetadata } from '@/constants'
+import { Locale } from '@/translation/common'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 import { metricInfo, MetricParam, periodLabels, PeriodParam } from '../../../common'
 import { getRankingData } from './query'
 
-export const dynamic = 'force-static'
 export const revalidate = 43200 // 12 hours
 
 const mangasRankingSchema = z.object({
@@ -31,11 +31,10 @@ export async function generateMetadata({ params }: PageProps<'/ranking/[metric]/
 
   return {
     title,
-    openGraph: {
-      ...defaultOpenGraph,
+    ...generateOpenGraphMetadata({
       title,
       url: `/ranking/${metric}/${period}`,
-    },
+    }),
     alternates: {
       canonical: `/ranking/${metric}/${period}`,
       languages: { ko: `/ranking/${metric}/${period}` },
@@ -67,9 +66,12 @@ export default async function Page({ params }: PageProps<'/ranking/[metric]/[per
     notFound()
   }
 
+  const locale = Locale.KO
+  const ids = rankings.map((ranking) => ranking.mangaId)
+
   const [mangasMap1, mangasMap2] = await Promise.all([
-    fetchMangasFromMultiSources(rankings.map((ranking) => ranking.mangaId).slice(0, 10)),
-    fetchMangasFromMultiSources(rankings.map((ranking) => ranking.mangaId).slice(10, 20)),
+    fetchMangasFromMultiSources({ ids: ids.slice(0, 10), locale }),
+    fetchMangasFromMultiSources({ ids: ids.slice(10, 20), locale }),
   ])
 
   return (

@@ -3,7 +3,7 @@
 import { captureException } from '@sentry/nextjs'
 import { sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
-import { z } from 'zod/v4'
+import { z } from 'zod'
 
 import { isPostgresError } from '@/database/error'
 import { db } from '@/database/supabase/drizzle'

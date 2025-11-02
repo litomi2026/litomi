@@ -1,12 +1,14 @@
 import { fetchMangaFromMultiSources } from '@/common/manga'
 import { BLACKLISTED_MANGA_IDS } from '@/constants/policy'
 import { createCacheControlHeaders, handleRouteError } from '@/crawler/proxy-utils'
-import { Manga, MangaError } from '@/types/manga'
+import { Locale } from '@/translation/common'
+import { Manga } from '@/types/manga'
 import { RouteProps } from '@/types/nextjs'
 import { calculateOptimalCacheDuration } from '@/utils/cache-control'
 import { sec } from '@/utils/date'
 
-import { GETProxyMangaIdSchema, MangaResponseScope } from './schema'
+import { GETProxyMangaIdSchema } from './schema'
+import { MangaResponseScope } from './types'
 
 export const runtime = 'edge'
 
@@ -35,13 +37,14 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
   const validation = GETProxyMangaIdSchema.safeParse({
     id: (await params).id,
     scope: searchParams.get('scope'),
+    locale: searchParams.get('locale') ?? Locale.KO,
   })
 
   if (!validation.success) {
     return new Response('Bad Request', { status: 400 })
   }
 
-  const { id, scope } = validation.data
+  const { id, scope, locale } = validation.data
 
   if (BLACKLISTED_MANGA_IDS.includes(id)) {
     const forbiddenHeaders = createCacheControlHeaders({
@@ -60,7 +63,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
   }
 
   try {
-    const manga = await fetchMangaFromMultiSources(id)
+    const manga = await fetchMangaFromMultiSources({ id, locale })
 
     if (!manga) {
       const notFoundHeaders = createCacheControlHeaders({
@@ -114,7 +117,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
   }
 }
 
-function getMangaResponseData(manga: Manga | MangaError, scope: string | null) {
+function getMangaResponseData(manga: Manga, scope: MangaResponseScope | null) {
   switch (scope) {
     case MangaResponseScope.EXCLUDE_METADATA: {
       for (const field of METADATA_FIELDS) {

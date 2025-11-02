@@ -2,6 +2,7 @@ import ms from 'ms'
 import 'server-only'
 
 import { MangaSource } from '@/database/enum'
+import { Locale } from '@/translation/common'
 import { translateLanguageList } from '@/translation/language'
 import { translateTag } from '@/translation/tag'
 import { translateType } from '@/translation/type'
@@ -53,6 +54,7 @@ type KomiTag = {
 
 type MangaFetchParams = {
   id: number | string
+  locale: Locale
   revalidate?: number
 }
 
@@ -92,7 +94,7 @@ class KomiClient {
     this.idMapping = new BinaryIdMap(idMap as [number, string][])
   }
 
-  async fetchManga({ id, revalidate }: MangaFetchParams): Promise<Manga | null> {
+  async fetchManga({ id, locale, revalidate }: MangaFetchParams): Promise<Manga | null> {
     const uuid = typeof id === 'number' ? this.idMapping.get(id) : id
 
     if (!uuid) {
@@ -103,28 +105,27 @@ class KomiClient {
       next: { revalidate },
     })
 
-    return this.convertKomiToManga(response, typeof id === 'number' ? id : 1)
+    return this.convertKomiToManga(response, typeof id === 'number' ? id : 1, locale)
   }
 
-  private convertKomiToManga(komiManga: KomiManga, numericId: number): Manga {
-    const locale = 'ko' // TODO: Get from user preferences or context
+  private convertKomiToManga(komiManga: KomiManga, numericId: number, locale: Locale): Manga {
+    console.log('👀 - KomiClient - convertKomiToManga - komiManga:', komiManga)
+    const { title, artist, group, category, language, tags, images, pages, rating, viewCount, createdAt } = komiManga
 
     return {
       id: numericId,
-      title: komiManga.title,
-      artists: komiManga.artist ? [{ label: komiManga.artist, value: komiManga.artist }] : undefined,
-      group: komiManga.group ? [{ label: komiManga.group, value: komiManga.group }] : undefined,
-      type: translateType(komiManga.category, locale),
-      languages: translateLanguageList([komiManga.language], locale),
-      date: komiManga.createdAt,
-      viewCount: komiManga.viewCount,
-      count: komiManga.pages,
-      rating: komiManga.rating ?? undefined,
-      tags: komiManga.tags
-        .filter(this.isValidKomiTag)
-        .map(({ name, namespace }) => translateTag(namespace, name, locale)),
+      title: title,
+      artists: artist ? [{ label: artist, value: artist }] : undefined,
+      group: group ? [{ label: group, value: group }] : undefined,
+      type: translateType(category, locale),
+      languages: translateLanguageList([language], locale),
+      date: createdAt,
+      viewCount: viewCount,
+      count: pages,
+      rating: rating ?? undefined,
+      tags: tags.filter(this.isValidKomiTag).map(({ name, namespace }) => translateTag(namespace, name, locale)),
       source: MangaSource.KOMI,
-      images: komiManga.images.map((img) => ({
+      images: images.map((img) => ({
         original: {
           url: img.url,
           height: img.height,

@@ -1,11 +1,7 @@
-import { z } from 'zod/v4'
+import 'server-only'
+import { z } from 'zod'
 
-export enum PostFilter {
-  FOLLOWING = '0',
-  MANGA = '1',
-  RECOMMAND = '2',
-  USER = '3',
-}
+import { PostFilter } from './types'
 
 export const GETPostSchema = z.object({
   cursor: z.coerce.number().int().positive().optional(),

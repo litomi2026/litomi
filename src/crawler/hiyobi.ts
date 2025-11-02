@@ -3,7 +3,7 @@ import ms from 'ms'
 import { MangaSource } from '@/database/enum'
 import { translateArtistList } from '@/translation/artist'
 import { translateCharacterList } from '@/translation/character'
-import { Multilingual } from '@/translation/common'
+import { Locale } from '@/translation/common'
 import { translateGroupList } from '@/translation/group'
 import { translateLanguageList } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
@@ -49,6 +49,13 @@ type HiyobiTag = {
 
 type MangaFetchParams = {
   id: number
+  locale: Locale
+  revalidate?: number
+}
+
+type MangaListFetchParams = {
+  page: number
+  locale: Locale
   revalidate?: number
 }
 
@@ -121,7 +128,7 @@ class HiyobiClient {
     this.imageClient = new ProxyClient(HIYOBI_IMAGE_CONFIG)
   }
 
-  async fetchManga({ id, revalidate }: MangaFetchParams) {
+  async fetchManga({ id, locale, revalidate }: MangaFetchParams) {
     const manga = await this.client.fetch<HiyobiManga>(`/gallery/${id}`, {
       next: { revalidate },
     })
@@ -130,10 +137,10 @@ class HiyobiClient {
       return null
     }
 
-    return this.convertHiyobiToManga(manga)
+    return this.convertHiyobiToManga(manga, locale)
   }
 
-  async fetchMangaImages({ id, revalidate }: MangaFetchParams) {
+  async fetchMangaImages({ id, revalidate }: { id: number; revalidate?: number }) {
     const hiyobiImages = await this.imageClient.fetch<HiyobiImage[]>(`/hiyobi/list?id=${id}`, {
       next: { revalidate },
     })
@@ -141,21 +148,21 @@ class HiyobiClient {
     return hiyobiImages.map((image) => image.url)
   }
 
-  async fetchMangas({ page, revalidate }: { page: number; revalidate?: number }) {
+  async fetchMangas({ page, locale, revalidate }: MangaListFetchParams) {
     const response = await this.client.fetch<{ list: HiyobiManga[] }>(`/list/${page}`, { next: { revalidate } })
-    return response.list.filter((manga) => manga.id).map((manga) => this.convertHiyobiToManga(manga))
+    return response.list.filter((manga) => manga.id).map((manga) => this.convertHiyobiToManga(manga, locale))
   }
 
-  async fetchRandomMangas() {
+  async fetchRandomMangas({ locale, revalidate }: { locale: Locale; revalidate?: number }) {
     const mangas = await this.client.fetch<HiyobiManga[]>('/random', {
       method: 'POST',
-      next: { revalidate: 15 },
+      next: { revalidate },
     })
 
-    return mangas.map((manga) => this.convertHiyobiToManga(manga))
+    return mangas.map((manga) => this.convertHiyobiToManga(manga, locale))
   }
 
-  private convertHiyobiTagsToTags(hiyobiTags: HiyobiTag[], locale: keyof Multilingual): MangaTag[] {
+  private convertHiyobiTagsToTags(hiyobiTags: HiyobiTag[], locale: Locale): MangaTag[] {
     return hiyobiTags.map((hTag) => {
       const [category, value] = hTag.value.split(':')
 
@@ -167,22 +174,23 @@ class HiyobiClient {
     })
   }
 
-  private convertHiyobiToManga({
-    id,
-    artists,
-    characters,
-    groups,
-    parodys,
-    tags,
-    title,
-    type,
-    filecount,
-    count,
-    like,
-    like_anonymous,
-    language,
-  }: HiyobiManga): Manga {
-    const locale = 'ko' // TODO: Get from user preferences or context
+  private convertHiyobiToManga(manga: HiyobiManga, locale: Locale): Manga {
+    const {
+      id,
+      title,
+      type,
+      filecount,
+      count,
+      like,
+      like_anonymous,
+      language,
+      parodys,
+      artists,
+      characters,
+      groups,
+      tags,
+    } = manga
+
     const seriesValues = parodys.map((series) => series.value)
     const artistValues = artists.map((artist) => artist.display)
     const characterValues = characters.map((character) => character.display)

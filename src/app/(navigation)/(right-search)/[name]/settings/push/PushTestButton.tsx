@@ -42,9 +42,9 @@ export default function PushTestButton({ endpoints }: Props) {
   return (
     <button
       className="flex items-center justify-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-sm font-medium
-        bg-gradient-to-r from-zinc-800 to-zinc-800/70 hover:from-zinc-700 hover:to-zinc-700/70
+        bg-linear-to-r from-zinc-800 to-zinc-800/70 hover:from-zinc-700 hover:to-zinc-700/70
         border border-zinc-700/50 hover:border-zinc-600
-        text-zinc-200 hover:text-white transition-all duration-200
+        text-zinc-200 hover:text-white transition
         shadow-sm hover:shadow-md hover:shadow-zinc-900/50
         focus:outline-none focus:ring-2 focus:ring-brand-end/30 focus:border-brand-end/50
         active:scale-[0.98] touch-manipulation"

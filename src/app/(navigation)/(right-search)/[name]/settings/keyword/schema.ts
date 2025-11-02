@@ -1,4 +1,5 @@
-import z from 'zod/v4'
+import 'server-only'
+import z from 'zod'
 
 export const conditionSchema = z.object({
   type: z.number().int().min(1).max(6),

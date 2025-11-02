@@ -2,6 +2,7 @@ import type { NextConfig } from 'next'
 
 import withBundleAnalyzer from '@next/bundle-analyzer'
 import { withSentryConfig } from '@sentry/nextjs'
+import { withBotId } from 'botid/next/config'
 
 import { createCacheControl } from '@/crawler/proxy-utils'
 import { sec } from '@/utils/date'
@@ -30,9 +31,6 @@ const cacheControlHeaders = [
 ]
 
 const nextConfig: NextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   headers: async () => [
     {
       source: '/(.*)',
@@ -60,13 +58,16 @@ const nextConfig: NextConfig = {
     },
   ],
   poweredByHeader: false,
+  reactCompiler: true,
   ...(process.env.BUILD_OUTPUT === 'standalone' && { output: 'standalone' }),
   ...(process.env.NODE_ENV === 'production' && { compiler: { removeConsole: { exclude: ['error', 'warn'] } } }),
 }
 
+const withBotIdConfig = withBotId(nextConfig)
+
 const withAnalyzer = withBundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
-})(nextConfig)
+})(withBotIdConfig)
 
 export default withSentryConfig(withAnalyzer, {
   // For all available options, see:

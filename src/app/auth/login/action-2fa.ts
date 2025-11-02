@@ -3,7 +3,7 @@
 import { captureException } from '@sentry/nextjs'
 import { and, eq, isNull } from 'drizzle-orm'
 import { cookies, headers } from 'next/headers'
-import { z } from 'zod/v4'
+import { z } from 'zod'
 
 import { BACKUP_CODE_PATTERN } from '@/constants/policy'
 import { twoFactorBackupCodeTable, twoFactorTable } from '@/database/supabase/2fa-schema'

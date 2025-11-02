@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 
-import type { GETSearchSuggestionsResponse } from '@/backend/api/v1/search/suggestion/schema'
+import type { GETSearchSuggestionsResponse } from '@/backend/api/v1/search/suggestion'
 
 import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { MIN_SUGGESTION_QUERY_LENGTH } from '@/constants/policy'

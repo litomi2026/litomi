@@ -1,5 +1,5 @@
 import { and, desc, eq, lt, or } from 'drizzle-orm'
-import { z } from 'zod/v4'
+import { z } from 'zod'
 
 import { READING_HISTORY_PER_PAGE } from '@/constants/policy'
 import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'

@@ -1,4 +1,5 @@
-import { z } from 'zod/v4'
+import 'server-only'
+import { z } from 'zod'
 
 import { MAX_CRITERIA_NAME_LENGTH } from '@/constants/policy'
 
