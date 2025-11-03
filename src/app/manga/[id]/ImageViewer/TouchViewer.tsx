@@ -448,7 +448,7 @@ function LastPage({ manga, isHidden = false }: LastPageProps) {
   const { id } = manga
 
   return (
-    <li aria-hidden={isHidden} className="flex flex-col items-center justify-center gap-4 p-4">
+    <li aria-hidden={isHidden} className="flex flex-col items-center justify-center gap-4 p-4 aria-hidden:hidden">
       <RatingInput className="select-text" mangaId={id} />
       <div className="grid grid-cols-2 items-center gap-2 text-sm font-medium text-foreground">
         <Link
