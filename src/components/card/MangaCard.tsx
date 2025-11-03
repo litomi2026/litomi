@@ -11,11 +11,13 @@ import DownloadButton from './DownloadButton'
 import MangaCardDate from './MangaCardDate'
 import MangaCardImage from './MangaCardImage'
 import MangaCardStats from './MangaCardStats'
+import MangaIdLink from './MangaIdLink'
 import MangaLanguageLink from './MangaLanguageLink'
 import MangaMetadataLink from './MangaMetadataLink'
 import MangaMetadataList from './MangaMetadataList'
 import MangaMetadataListWithLink from './MangaMetadataListWithLink'
 import MangaTagList from './MangaTagList'
+import MangaTitle from './MangaTitle'
 import SearchFromHereButton from './SearchFromHereButton'
 
 type Props = {
@@ -65,7 +67,10 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
               target="_blank"
             >
               <h4 className="line-clamp-3 font-bold text-base leading-5 min-w-0 wrap-break-word break-all">
-                {title} <ExternalLink className="size-3 ml-1 text-zinc-400 inline-block" />
+                <Suspense>
+                  <MangaTitle title={title} />
+                </Suspense>
+                <ExternalLink className="size-3 ml-1 text-zinc-400 inline-block" />
               </h4>
             </a>
             {languages && languages.length > 0 && (
@@ -123,14 +128,9 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
         <div className="grid gap-2">
           <MangaCardStats manga={manga} />
           <div className="flex text-xs justify-between items-center gap-1">
-            <a
-              className="text-zinc-400 focus:underline flex items-center gap-1 hover:underline"
-              href={viewerLink}
-              target="_blank"
-            >
-              {id}
-              <ExternalLink className="size-3" />
-            </a>
+            <Suspense>
+              <MangaIdLink id={id} viewerLink={viewerLink} />
+            </Suspense>
             {date && <MangaCardDate manga={manga} />}
           </div>
           <div

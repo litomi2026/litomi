@@ -22,7 +22,7 @@ export default function PasskeyCard({ passkey }: Readonly<Props>) {
   return (
     <PasskeyMobileDeleteWrapper id={id}>
       <div
-        className="flex items-start gap-3 group/card relative bg-zinc-900 border-2 rounded-2xl p-4 data-[platform=true]:border-brand-end/40 border-zinc-800"
+        className="flex items-start gap-3 group/card relative bg-zinc-900 border-2 rounded-2xl p-4 data-[platform=true]:border-brand/40 border-zinc-800"
         data-platform={isPlatform}
       >
         <div className="relative shrink-0">
@@ -33,9 +33,9 @@ export default function PasskeyCard({ passkey }: Readonly<Props>) {
             <h3 className="font-medium text-base text-zinc-100 flex items-center gap-2">
               {label}
               {deviceType === 'platform' && (
-                <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand-end/10 text-xs">
-                  <IconShield className="size-3 text-brand-end" />
-                  <span className="text-brand-end font-medium">보안</span>
+                <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand/10 text-xs">
+                  <IconShield className="size-3 text-brand" />
+                  <span className="text-brand font-medium">보안</span>
                 </span>
               )}
             </h3>
@@ -80,7 +80,7 @@ export default function PasskeyCard({ passkey }: Readonly<Props>) {
         </div>
 
         {isPlatform && (
-          <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-brand-end/80 to-transparent opacity-0 group-hover/card:opacity-100 transition" />
+          <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-brand/80 to-transparent opacity-0 group-hover/card:opacity-100 transition" />
         )}
       </div>
     </PasskeyMobileDeleteWrapper>

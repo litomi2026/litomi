@@ -113,7 +113,7 @@ export default function LibraryModal() {
             <div className="text-center py-12">
               <p className="text-zinc-400 mb-6">아직 서재가 없어요</p>
               <Link
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-end hover:bg-brand-end/90
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand hover:bg-brand/90
                 transition font-semibold text-background"
                 href="/library"
                 onClick={handleClose}
@@ -152,7 +152,7 @@ export default function LibraryModal() {
         {libraries && libraries.length > 0 && (
           <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-zinc-900 border-t-2 border-zinc-800 shrink-0 space-y-2">
             <button
-              className="flex items-center justify-center gap-2 w-full px-4 py-3 text-background font-medium bg-brand-end rounded-lg transition hover:bg-brand-end/90
+              className="flex items-center justify-center gap-2 w-full px-4 py-3 text-background font-medium bg-brand rounded-lg transition hover:bg-brand/90
               disabled:bg-zinc-700 disabled:text-zinc-500"
               disabled={isPending || selectedLibraryIds.size === 0}
               type="submit"

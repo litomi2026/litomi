@@ -109,7 +109,7 @@ export function MangaDetailModal() {
               {displayDescription}
               {shouldTruncateDescription && (
                 <button
-                  className="ml-1 text-brand-end font-medium hover:underline transition text-sm"
+                  className="ml-1 text-brand font-medium hover:underline transition text-sm"
                   onClick={() => setShowFullDescription(!showFullDescription)}
                   type="button"
                 >
@@ -196,7 +196,7 @@ export function MangaDetailModal() {
               <span className="text-zinc-400 text-sm font-medium">대사 미리보기</span>
               {hasMoreLines && (
                 <button
-                  className="text-brand-end font-medium group-hover:underline transition text-xs"
+                  className="text-brand font-medium group-hover:underline transition text-xs"
                   onClick={() => setShowAllLines(!showAllLines)}
                   type="button"
                 >

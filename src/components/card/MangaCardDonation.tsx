@@ -52,9 +52,9 @@ export default function MangaCardDonation() {
       <div className="flex flex-col items-center gap-6 p-4 sm:p-6 text-center" ref={cardRef}>
         <div className="flex flex-col items-center gap-3">
           <div className="relative">
-            <div className="absolute inset-0 rounded-full bg-brand-end/10 animate-pulse-ring" />
+            <div className="absolute inset-0 rounded-full bg-brand/10 animate-pulse-ring" />
             <div className="relative p-3 rounded-full bg-zinc-800/50">
-              <Heart className="size-6 fill-current text-brand-end animate-heartbeat" />
+              <Heart className="size-6 fill-current text-brand animate-heartbeat" />
             </div>
           </div>
           <h3 className="text-lg font-semibold text-foreground">리토미를 함께 키워주세요</h3>

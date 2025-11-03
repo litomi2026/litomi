@@ -26,7 +26,7 @@ export default function MangaCardStats({ manga, className = '' }: Props) {
       </div>
       {bookmarkCount > 0 && (
         <div className="flex items-center gap-1.5">
-          <Bookmark className="size-[1em] shrink-0 text-brand-end" />
+          <Bookmark className="size-[1em] shrink-0 text-brand" />
           <span className="tabular-nums">{formatNumber(bookmarkCount, 'ko')}</span>
         </div>
       )}
@@ -57,12 +57,12 @@ function RatingStars({ rating }: { rating: number }) {
   return (
     <div aria-label={`평점 ${rating.toFixed(1)}점`} className="flex items-center gap-0.5">
       {Array.from({ length: fullStars }).map((_, i) => (
-        <Star className="size-[1em] shrink-0 text-brand-end" key={`full-${i}`} />
+        <Star className="size-[1em] shrink-0 text-brand" key={`full-${i}`} />
       ))}
       {hasPartialStar && (
         <div className="relative size-[1em] shrink-0">
           <div className="absolute z-10 inset-0 overflow-hidden" style={{ width: `${partialStar * 100}%` }}>
-            <Star className="size-[1em] shrink-0 text-brand-end" />
+            <Star className="size-[1em] shrink-0 text-brand" />
           </div>
           <Star className="size-[1em] absolute inset-0 text-zinc-600" />
         </div>

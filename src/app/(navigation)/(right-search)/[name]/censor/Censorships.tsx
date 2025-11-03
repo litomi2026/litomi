@@ -37,7 +37,7 @@ export default function Censorships() {
   const [__, dispatchDeleteAction] = useActionResponse({
     action: deleteCensorships,
     onSuccess: (deletedIds) => {
-      queryClient.invalidateQueries({ queryKey: QueryKeys.censorships })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.censorship })
       toast.success(`${deletedIds?.length ?? 0}개의 검열 규칙을 삭제했어요`)
       setSelectedIds(new Set())
       setDeletingIds(new Set())

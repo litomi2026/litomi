@@ -48,14 +48,14 @@ export default function LanguageSettings() {
           <button
             aria-pressed={isSelected}
             className="flex items-center gap-4 p-4 rounded-lg border-2 transition text-left border-zinc-700 hover:border-zinc-600 hover:bg-zinc-800/30
-            aria-pressed:border-brand-end aria-pressed:bg-zinc-800/50"
+            aria-pressed:border-brand aria-pressed:bg-zinc-800/50"
             key={code}
             onClick={() => handleLanguageChange(code)}
             type="button"
           >
             <Flag className="size-6 rounded-sm shrink-0" />
             <span className="flex-1 font-medium">{label}</span>
-            {isSelected && <Check className="size-5 text-brand-end shrink-0" />}
+            {isSelected && <Check className="size-5 text-brand shrink-0" />}
           </button>
         )
       })}

@@ -61,6 +61,33 @@ export default function NotificationCard({
     skip: skipAutoMarkingAsRead,
   })
 
+  function getNotificationIcon() {
+    switch (notification.type) {
+      case NotificationType.BOOKMARK_UPDATE:
+        return <IconBookmark className="w-5" />
+      case NotificationType.NEW_MANGA:
+        return <IconBook className="w-5" />
+      case NotificationType.TEST:
+        return <IconBell className="w-5" />
+      default:
+        return <IconBell className="w-5" />
+    }
+  }
+
+  function handleClick(e: React.MouseEvent<HTMLAnchorElement>) {
+    if (selectionMode) {
+      e.preventDefault()
+      onSelect?.(notification.id)
+      return
+    }
+
+    if (!mangaViewerURL) {
+      e.preventDefault()
+      return
+    }
+  }
+
+  // NOTE: 자동 읽음 표시 기능
   useEffect(() => {
     if (skipAutoMarkingAsRead) {
       return
@@ -94,46 +121,23 @@ export default function NotificationCard({
     }
   }, [inView, notification.id, notification.read, onMarkAsRead, skipAutoMarkingAsRead])
 
-  const getNotificationIcon = () => {
-    switch (notification.type) {
-      case NotificationType.BOOKMARK_UPDATE:
-        return <IconBookmark className="w-5" />
-      case NotificationType.NEW_MANGA:
-        return <IconBook className="w-5" />
-      default:
-        return <IconBell className="w-5" />
-    }
-  }
-
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (selectionMode) {
-      e.preventDefault()
-      onSelect?.(notification.id)
-      return
-    }
-
-    if (!mangaViewerURL) {
-      e.preventDefault()
-      return
-    }
-  }
-
   return (
     <Link
       aria-selected={selected}
-      className={`group relative rounded-xl border transition-all flex gap-3 p-3 sm:gap-4 sm:p-4 overflow-hidden
+      className={`group relative rounded-xl border transition flex gap-3 p-3 sm:gap-4 sm:p-4 overflow-hidden
       ${isUnread ? 'border-zinc-700 bg-zinc-900/50' : 'border-zinc-800 bg-zinc-900/20'}
-      hover:border-zinc-600 hover:bg-zinc-900/60 aria-selected:border-brand-end aria-selected:bg-brand-end/10
+      hover:border-zinc-600 hover:bg-zinc-900/60 aria-selected:border-brand aria-selected:bg-brand/10
       ${mangaViewerURL && !selectionMode ? 'cursor-pointer' : ''}`}
       href={mangaViewerURL ?? ''}
       onClick={handleClick}
+      prefetch={false}
       ref={cardRef}
     >
       {selectionMode ? (
-        <div className="flex items-center transition-all">
+        <div className="flex items-center transition">
           <div
             aria-selected={selected}
-            className="h-5 w-5 rounded-md border-2 transition-all aria-selected:border-brand-end aria-selected:bg-brand-end"
+            className="size-5 rounded-md border-2 transition aria-selected:border-brand aria-selected:bg-brand"
           >
             {selected && <Check className="size-full text-background" />}
           </div>
@@ -144,7 +148,7 @@ export default function NotificationCard({
             <button
               className="p-1.5 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 transition"
               onClick={(e) => {
-                e.stopPropagation()
+                e.preventDefault()
                 onMarkAsRead(notification.id)
               }}
               title="읽음 표시"
@@ -156,7 +160,7 @@ export default function NotificationCard({
             <button
               className="p-1.5 rounded-lg bg-zinc-800/80 hover:bg-red-900 hover:text-red-400 transition"
               onClick={(e) => {
-                e.stopPropagation()
+                e.preventDefault()
                 onDelete(notification.id)
               }}
               title="삭제"
@@ -166,20 +170,20 @@ export default function NotificationCard({
           )}
         </div>
       )}
-      <div aria-current={isUnread} className="mt-0.5 transition text-zinc-500 aria-current:text-brand-end">
+      <div aria-current={isUnread} className="mt-0.5 transition text-zinc-500 aria-current:text-brand">
         {getNotificationIcon()}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-4">
           <h3
             className={`font-medium line-clamp-1 transition ${
-              isUnread ? 'text-white' : 'text-zinc-300'
-            } ${mangaViewerURL ? 'group-hover:text-brand-end' : ''}`}
+              isUnread ? 'text-foreground' : 'text-zinc-300'
+            } ${mangaViewerURL ? 'group-hover:text-brand' : ''}`}
           >
             {notification.title}
           </h3>
           <div className="flex items-center gap-2 shrink-0">
-            {isUnread && <IconDot className="h-2 w-2 text-brand-end animate-pulse" />}
+            {isUnread && <IconDot className="h-2 w-2 text-brand animate-pulse" />}
             <span className="text-xs text-zinc-500">
               {formatDistanceToNow(
                 typeof notification.createdAt === 'string' ? new Date(notification.createdAt) : notification.createdAt,
@@ -194,10 +198,10 @@ export default function NotificationCard({
               <p className="text-xs text-zinc-400 line-clamp-1 mt-1">작가: {parsedData.artists.join(', ')}</p>
             )}
           </div>
-          {parsedData && (
+          {parsedData && parsedData.mangaId && parsedData.previewImageURL && (
             <img
               alt={parsedData.mangaId.toString()}
-              className="rounded-md object-cover aspect-[3/4]"
+              className="rounded-md object-cover aspect-3/4"
               height={64}
               src={parsedData.previewImageURL}
               width={48}

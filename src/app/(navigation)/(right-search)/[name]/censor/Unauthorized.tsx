@@ -15,19 +15,19 @@ export default function Unauthorized() {
         </h2>
         <ul className="mb-8 space-y-3" role="list">
           <li className="flex justify-center items-center gap-3">
-            <span aria-hidden="true" className="text-brand-end mt-0.5">
+            <span aria-hidden="true" className="text-brand mt-0.5">
               ✓
             </span>
             <span className="text-zinc-300">태그, 작가, 캐릭터별 필터링</span>
           </li>
           <li className="flex justify-center items-center gap-3">
-            <span aria-hidden="true" className="text-brand-end mt-0.5">
+            <span aria-hidden="true" className="text-brand mt-0.5">
               ✓
             </span>
             <span className="text-zinc-300">썸네일 블러 처리 또는 완전히 숨기기</span>
           </li>
           <li className="flex justify-center items-center gap-3">
-            <span aria-hidden="true" className="text-brand-end mt-0.5">
+            <span aria-hidden="true" className="text-brand mt-0.5">
               ✓
             </span>
             <span className="text-zinc-300">모든 기기에서 설정 동기화</span>
@@ -37,7 +37,7 @@ export default function Unauthorized() {
         <p className="mt-4 text-sm text-zinc-500">
           계정이 없으신가요?{' '}
           <Link
-            className="text-zinc-300 underline hover:text-white transition"
+            className="text-zinc-300 underline hover:text-foreground transition"
             href={`/auth/signup?${SearchParamKey.REDIRECT}=${encodeURIComponent('/@/censor')}`}
           >
             회원가입

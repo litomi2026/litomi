@@ -54,14 +54,14 @@ export default function FilterButton() {
         className="relative px-3 py-2 h-full text-sm font-medium rounded-xl border-2 transition-all
           bg-zinc-900 border-zinc-700 text-zinc-400 hover:border-zinc-500
           focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-offset-2 focus:ring-offset-zinc-900
-          aria-pressed:bg-zinc-800 aria-pressed:border-brand-end/70 aria-pressed:text-zinc-100 aria-pressed:hover:border-brand-end"
+          aria-pressed:bg-zinc-800 aria-pressed:border-brand/70 aria-pressed:text-zinc-100 aria-pressed:hover:border-brand"
         onClick={() => setShowFilters(!showFilters)}
         ref={buttonRef}
         type="button"
       >
         필터
         {hasActiveFilters && (
-          <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[11px] font-bold bg-brand-end text-background rounded-full">
+          <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[11px] font-bold bg-brand text-background rounded-full">
             {activeFilterCount}
           </span>
         )}

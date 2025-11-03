@@ -128,7 +128,7 @@ function DisableConfirmation({ onSuccess, onCancel }: DisableConfirmationProps) 
       <OneTimeCodeInput defaultValue={defaultToken} />
       <div className="flex gap-3">
         <button
-          className="flex-1 rounded-lg bg-red-900 px-4 py-3 font-medium text-white transition
+          className="flex-1 rounded-lg bg-red-900 px-4 py-3 font-medium text-foreground transition
           hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-50"
           disabled={isDisabling}
           type="submit"
@@ -165,8 +165,8 @@ function RegenerateBackupCodesForm({ onCancel, onSuccess }: RegenerateBackupCode
       <OneTimeCodeInput defaultValue={defaultToken} />
       <div className="flex gap-3">
         <button
-          className="flex-1 rounded-lg bg-brand-end px-4 py-3 font-medium text-background transition
-          hover:bg-brand-end/90 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex-1 rounded-lg bg-brand px-4 py-3 font-medium text-background transition
+          hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-50"
           disabled={isRegenerating}
           type="submit"
         >

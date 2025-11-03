@@ -34,7 +34,7 @@ export default function RandomRefreshButton({ timer, className = '', isLoading =
   return (
     <button
       aria-disabled={isDisabled}
-      className={`bg-brand-end text-background font-semibold hover:bg-brand-end/90 active:bg-brand-end/95 aria-disabled:font-normal aria-disabled:text-zinc-800 aria-disabled:bg-brand-end/50 aria-disabled:pointer-events-none ${className}`}
+      className={`bg-brand text-background font-semibold hover:bg-brand/90 active:bg-brand/95 aria-disabled:font-normal aria-disabled:text-zinc-800 aria-disabled:bg-brand/50 aria-disabled:pointer-events-none ${className}`}
       onClick={handleClick}
       title={showLoading ? '로딩 중...' : cooldown > 0 ? `잠시 후에 시도해주세요` : '새로고침'}
     >

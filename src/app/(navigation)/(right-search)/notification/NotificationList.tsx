@@ -262,7 +262,7 @@ function EmptyState({ filter }: { filter: NotificationFilter | null }) {
     <div className="flex-1 flex flex-col items-center justify-center p-8">
       <div className="relative">
         {content.icon}
-        <div className="absolute inset-0 bg-linear-to-t from-brand-end/10 to-transparent rounded-full blur-3xl" />
+        <div className="absolute inset-0 bg-linear-to-t from-brand/10 to-transparent rounded-full blur-3xl" />
       </div>
       <h3 className="text-lg font-medium text-zinc-300 mb-2">{content.title}</h3>
       <p className="text-sm text-zinc-500 text-center max-w-xs">{content.description}</p>
@@ -270,7 +270,7 @@ function EmptyState({ filter }: { filter: NotificationFilter | null }) {
         <div className="mt-4 flex items-center gap-2">
           <a
             aria-label="푸시 알림 설정으로 이동"
-            className="px-3 py-1.5 rounded-md text-xs font-semibold bg-brand-end text-background hover:opacity-90 transition"
+            className="px-3 py-1.5 rounded-md text-xs font-semibold bg-brand text-background hover:opacity-90 transition"
             href={`/@${username}/settings#push`}
           >
             푸시 알림 켜기
@@ -305,7 +305,7 @@ function FilterButton({
     <button
       aria-pressed={active}
       className="relative px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1 whitespace-nowrap
-      aria-pressed:bg-brand-end aria-pressed:text-background aria-pressed:font-bold
+      aria-pressed:bg-brand aria-pressed:text-background aria-pressed:font-bold
       bg-zinc-800/50 hover:bg-zinc-700/50 hover:text-zinc-200
       disabled:opacity-50"
       disabled={disabled}

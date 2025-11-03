@@ -74,7 +74,7 @@ export default async function Page({ params }: PageProps<'/manga/[id]/detail'>) 
 function EmptyState() {
   return (
     <div className="flex flex-col items-center justify-center flex-1 py-16 p-4 text-center">
-      <Book className="size-8 mb-4 text-brand-end" role="img" />
+      <Book className="size-8 mb-4 text-brand" role="img" />
       <h3 className="text-lg font-semibold text-zinc-200 mb-2">이 작품에 대한 글이 없어요</h3>
       <p className="text-sm text-zinc-500 mb-6 max-w-sm">첫 번째로 이 작품에 대해 이야기해보세요!</p>
     </div>

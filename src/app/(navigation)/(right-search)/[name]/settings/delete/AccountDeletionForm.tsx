@@ -87,7 +87,7 @@ export default function AccountDeletionForm({ loginId }: Readonly<Props>) {
               취소
             </button>
             <button
-              className="flex-1 px-4 py-3 bg-red-900 hover:bg-red-800 text-white rounded-lg font-medium transition flex items-center justify-center gap-2"
+              className="flex-1 px-4 py-3 bg-red-900 hover:bg-red-800 text-foreground rounded-lg font-medium transition flex items-center justify-center gap-2"
               onClick={() => setStep(DeletionStep.CONFIRM)}
               type="button"
             >
@@ -132,7 +132,7 @@ export default function AccountDeletionForm({ loginId }: Readonly<Props>) {
             </button>
             <button
               className="flex-1 px-4 py-3 bg-red-900 hover:bg-red-800 disabled:bg-zinc-700 
-                  text-white rounded-lg font-medium transition 
+                  text-foreground rounded-lg font-medium transition 
                   flex items-center justify-center gap-2"
               disabled={!isConfirmTextValid || isPending}
               onClick={() => setStep(DeletionStep.FINAL)}
@@ -182,7 +182,7 @@ export default function AccountDeletionForm({ loginId }: Readonly<Props>) {
             </button>
             <button
               className="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 disabled:bg-zinc-700 
-                  text-white rounded-lg font-medium transition 
+                  text-foreground rounded-lg font-medium transition 
                   flex items-center justify-center gap-2"
               disabled={!password || isPending}
               type="submit"

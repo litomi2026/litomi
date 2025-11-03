@@ -79,7 +79,7 @@ export default function KeywordSubscriptionButton() {
     <button
       aria-pressed={isSubscribed}
       className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-xl transition border-2 bg-zinc-900 border-zinc-700 hover:border-zinc-500 
-      disabled:opacity-50 aria-pressed:bg-zinc-800 aria-pressed:border-brand-end/70 aria-pressed:text-zinc-100 aria-pressed:hover:border-brand-end"
+      disabled:opacity-50 aria-pressed:bg-zinc-800 aria-pressed:border-brand/70 aria-pressed:text-zinc-100 aria-pressed:hover:border-brand"
       disabled={isPending}
       onClick={handleToggleSubscription}
       title={isSubscribed ? '키워드 알림 설정 보기' : '이 검색 조건으로 알림 받기'}
@@ -88,7 +88,7 @@ export default function KeywordSubscriptionButton() {
       {isPending ? (
         <IconSpinner className="size-4 animate-spin" />
       ) : isSubscribed ? (
-        <BellRing className="size-4 text-brand-end" />
+        <BellRing className="size-4 text-brand" />
       ) : (
         <Bell className="size-4" />
       )}

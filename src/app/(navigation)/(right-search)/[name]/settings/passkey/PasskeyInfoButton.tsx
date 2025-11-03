@@ -20,16 +20,16 @@ export default function PasskeyInfoButton() {
       <Modal onClose={() => setShowInfoModal(false)} open={showInfoModal} showCloseButton>
         <div className="w-[90vw] max-w-xs sm:max-w-sm rounded-2xl bg-zinc-900 p-6 sm:p-8">
           <div className="mb-6 text-center">
-            <div className="mx-auto mb-4 h-16 w-16 rounded-2xl bg-brand-end/10 flex items-center justify-center">
-              <Fingerprint className="h-8 w-8 text-brand-end" />
+            <div className="mx-auto mb-4 h-16 w-16 rounded-2xl bg-brand/10 flex items-center justify-center">
+              <Fingerprint className="h-8 w-8 text-brand" />
             </div>
             <h3 className="text-xl sm:text-2xl font-bold mb-2">패스키란?</h3>
             <p className="text-sm text-zinc-400">더 안전한 로그인 방법</p>
           </div>
           <div className="space-y-4 mb-6">
             <div className="flex gap-3">
-              <div className="mt-1 h-5 w-5 rounded-full bg-brand-end/20 flex items-center justify-center shrink-0">
-                <span className="text-xs font-bold text-brand-end">1</span>
+              <div className="mt-1 h-5 w-5 rounded-full bg-brand/20 flex items-center justify-center shrink-0">
+                <span className="text-xs font-bold text-brand">1</span>
               </div>
               <div>
                 <p className="font-medium mb-1">피싱 공격 차단</p>
@@ -37,8 +37,8 @@ export default function PasskeyInfoButton() {
               </div>
             </div>
             <div className="flex gap-3">
-              <div className="mt-1 h-5 w-5 rounded-full bg-brand-end/20 flex items-center justify-center shrink-0">
-                <span className="text-xs font-bold text-brand-end">2</span>
+              <div className="mt-1 h-5 w-5 rounded-full bg-brand/20 flex items-center justify-center shrink-0">
+                <span className="text-xs font-bold text-brand">2</span>
               </div>
               <div>
                 <p className="font-medium mb-1">간편한 생체 인증</p>
@@ -46,8 +46,8 @@ export default function PasskeyInfoButton() {
               </div>
             </div>
             <div className="flex gap-3">
-              <div className="mt-1 h-5 w-5 rounded-full bg-brand-end/20 flex items-center justify-center shrink-0">
-                <span className="text-xs font-bold text-brand-end">3</span>
+              <div className="mt-1 h-5 w-5 rounded-full bg-brand/20 flex items-center justify-center shrink-0">
+                <span className="text-xs font-bold text-brand">3</span>
               </div>
               <div>
                 <p className="font-medium mb-1">비밀번호 불필요</p>

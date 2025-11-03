@@ -35,8 +35,8 @@ export default function LibrarySidebarLink({
   return (
     <Link
       aria-current={isActive}
-      className="flex text-sm items-center gap-3 p-2 lg:px-3 rounded-lg border border-transparent transition hover:bg-zinc-800/50 text-zinc-400 hover:text-white
-      aria-current:bg-zinc-800 aria-current:text-white aria-current:border-zinc-700"
+      className="flex text-sm items-center gap-3 p-2 lg:px-3 rounded-lg border border-transparent transition hover:bg-zinc-800/50 text-zinc-400 hover:text-foreground
+      aria-current:bg-zinc-800 aria-current:text-foreground aria-current:border-zinc-700"
       href={href}
       onClick={onClick}
       prefetch={false}
@@ -61,7 +61,7 @@ export default function LibrarySidebarLink({
         </div>
         {description && <p className="text-xs text-zinc-500 wrap-break-word">{description}</p>}
       </div>
-      {showActiveIndicator && isActive && <div className="w-1 h-8 bg-brand-end rounded-full hidden lg:block" />}
+      {showActiveIndicator && isActive && <div className="w-1 h-8 bg-brand rounded-full hidden lg:block" />}
     </Link>
   )
 }

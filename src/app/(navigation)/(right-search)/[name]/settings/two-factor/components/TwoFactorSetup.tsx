@@ -65,7 +65,7 @@ export default function TwoFactorSetup({ setupData, onSuccess }: Props) {
         </label>
         <OneTimeCodeInput defaultValue={defaultToken} />
         <button
-          className="w-full rounded-lg bg-brand-end px-4 py-3 font-medium text-background hover:bg-brand-end/90 disabled:cursor-not-allowed disabled:opacity-50 transition"
+          className="w-full rounded-lg bg-brand px-4 py-3 font-medium text-background hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-50 transition"
           disabled={isVerifying}
           title={isVerifying ? '코드 확인 중' : '6자리 코드를 입력하세요'}
           type="submit"

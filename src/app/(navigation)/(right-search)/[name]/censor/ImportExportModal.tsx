@@ -48,7 +48,7 @@ function ImportExportModal({ open, onClose, censorships }: Readonly<Props>) {
       toast.success(`${items?.length ?? 0}개 규칙을 추가했어요`)
       setImportText('')
       onClose()
-      queryClient.invalidateQueries({ queryKey: QueryKeys.censorships })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.censorship })
     },
   })
 
@@ -161,7 +161,7 @@ function ImportExportModal({ open, onClose, censorships }: Readonly<Props>) {
         <div className="flex border-b-2 border-zinc-800 shrink-0">
           <button
             aria-pressed={activeTab === 'export'}
-            className="flex-1 px-4 py-3 font-medium transition border-b-2 border-transparent hover:bg-zinc-800 text-zinc-300 aria-pressed:bg-zinc-800 aria-pressed:border-brand-end aria-pressed:text-zinc-100"
+            className="flex-1 px-4 py-3 font-medium transition border-b-2 border-transparent hover:bg-zinc-800 text-zinc-300 aria-pressed:bg-zinc-800 aria-pressed:border-brand aria-pressed:text-zinc-100"
             onClick={() => setActiveTab('export')}
             type="button"
           >
@@ -169,7 +169,7 @@ function ImportExportModal({ open, onClose, censorships }: Readonly<Props>) {
           </button>
           <button
             aria-pressed={activeTab === 'import'}
-            className="flex-1 px-4 py-3 font-medium transition border-b-2 border-transparent hover:bg-zinc-800 text-zinc-300 aria-pressed:bg-zinc-800 aria-pressed:border-brand-end aria-pressed:text-zinc-100"
+            className="flex-1 px-4 py-3 font-medium transition border-b-2 border-transparent hover:bg-zinc-800 text-zinc-300 aria-pressed:bg-zinc-800 aria-pressed:border-brand aria-pressed:text-zinc-100"
             onClick={() => setActiveTab('import')}
             type="button"
           >
@@ -190,7 +190,7 @@ function ImportExportModal({ open, onClose, censorships }: Readonly<Props>) {
                   <div className="grid sm:grid-cols-2 gap-2">
                     <button
                       aria-pressed={exportFormat === 'json'}
-                      className="p-3 rounded-lg border-2 transition aria-pressed:bg-zinc-700 aria-pressed:border-brand-end aria-pressed:text-zinc-100 aria-pressed:hover:bg-zinc-700 aria-pressed:hover:text-zinc-300"
+                      className="p-3 rounded-lg border-2 transition aria-pressed:bg-zinc-700 aria-pressed:border-brand aria-pressed:text-zinc-100 aria-pressed:hover:bg-zinc-700 aria-pressed:hover:text-zinc-300"
                       onClick={() => setExportFormat('json')}
                     >
                       <div className="font-medium">JSON</div>
@@ -198,7 +198,7 @@ function ImportExportModal({ open, onClose, censorships }: Readonly<Props>) {
                     </button>
                     <button
                       aria-pressed={exportFormat === 'csv'}
-                      className="p-3 rounded-lg border-2 transition aria-pressed:bg-zinc-700 aria-pressed:border-brand-end aria-pressed:text-zinc-100 aria-pressed:hover:bg-zinc-700 aria-pressed:hover:text-zinc-300"
+                      className="p-3 rounded-lg border-2 transition aria-pressed:bg-zinc-700 aria-pressed:border-brand aria-pressed:text-zinc-100 aria-pressed:hover:bg-zinc-700 aria-pressed:hover:text-zinc-300"
                       onClick={() => setExportFormat('csv')}
                     >
                       <div className="font-medium">CSV</div>
@@ -228,7 +228,7 @@ function ImportExportModal({ open, onClose, censorships }: Readonly<Props>) {
         <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-zinc-900 border-t-2 border-zinc-800 shrink-0">
           {activeTab === 'export' ? (
             <button
-              className="w-full px-4 py-3 text-zinc-900 font-semibold bg-brand-end hover:bg-brand-end/90 disabled:bg-zinc-700 disabled:text-zinc-500 rounded-lg transition flex items-center justify-center gap-2"
+              className="w-full px-4 py-3 text-zinc-900 font-semibold bg-brand hover:bg-brand/90 disabled:bg-zinc-700 disabled:text-zinc-500 rounded-lg transition flex items-center justify-center gap-2"
               disabled={censorships.length === 0}
               onClick={handleExport}
             >
@@ -237,7 +237,7 @@ function ImportExportModal({ open, onClose, censorships }: Readonly<Props>) {
             </button>
           ) : (
             <button
-              className="w-full px-4 py-3 text-zinc-900 font-semibold bg-brand-end hover:bg-brand-end/90 disabled:bg-zinc-700 disabled:text-zinc-500 rounded-lg transition flex items-center justify-center gap-2"
+              className="w-full px-4 py-3 text-zinc-900 font-semibold bg-brand hover:bg-brand/90 disabled:bg-zinc-700 disabled:text-zinc-500 rounded-lg transition flex items-center justify-center gap-2"
               disabled={!importText.trim() || isPending}
               onClick={handleImport}
               type="button"

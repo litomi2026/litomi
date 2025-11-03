@@ -151,7 +151,7 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
               aria-invalid={Boolean(nameError)}
               autoCapitalize="off"
               className="w-full text-base px-3 py-2 rounded-lg bg-zinc-800 border border-zinc-700 placeholder-zinc-500 
-                focus:outline-none focus:ring-2 focus:ring-brand-end/50 focus:border-transparent 
+                focus:outline-none focus:ring-2 focus:ring-brand/50 focus:border-transparent 
                 aria-invalid:ring-2 aria-invalid:ring-red-500 disabled:opacity-50 transition"
               defaultValue={editingCriteria?.name}
               disabled={isPending}
@@ -186,7 +186,7 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
                       autoCapitalize="off"
                       autoComplete="off"
                       className="flex-1 text-base px-3 py-2 rounded-lg bg-zinc-800 border border-zinc-700 placeholder-zinc-500 
-                        focus:outline-none focus:ring-2 focus:ring-brand-end/50 focus:border-transparent 
+                        focus:outline-none focus:ring-2 focus:ring-brand/50 focus:border-transparent 
                         disabled:opacity-50 transition"
                       defaultValue={editingCriteria?.conditions[index]?.value}
                       disabled={isPending}
@@ -212,7 +212,7 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
             </div>
 
             <button
-              className="inline-flex items-center gap-2 px-3 py-2 text-sm text-brand-end hover:bg-zinc-800/50 
+              className="inline-flex items-center gap-2 px-3 py-2 text-sm text-brand hover:bg-zinc-800/50 
                 rounded-lg disabled:opacity-50 transition"
               disabled={isPending || conditionCount >= 10}
               onClick={handleAddCondition}
@@ -244,8 +244,8 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
               취소
             </button>
             <button
-              className="flex items-center justify-center flex-1 px-4 py-2.5 bg-brand-end hover:bg-brand-end/90 
-              text-background font-medium rounded-lg transition focus:outline-none focus:ring-2 focus:ring-brand-end/50
+              className="flex items-center justify-center flex-1 px-4 py-2.5 bg-brand hover:bg-brand/90 
+              text-background font-medium rounded-lg transition focus:outline-none focus:ring-2 focus:ring-brand/50
               disabled:opacity-50"
               disabled={isPending}
               type="submit"

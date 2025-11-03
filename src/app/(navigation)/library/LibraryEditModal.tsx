@@ -191,7 +191,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
               </div>
               <Toggle
                 aria-label="서재 공개 설정"
-                className="w-12 peer-checked:bg-brand-end/80"
+                className="w-12 peer-checked:bg-brand/80"
                 defaultChecked={isPublic}
                 disabled={isPending}
                 name="is-public"
@@ -212,8 +212,8 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
             취소
           </button>
           <button
-            className="flex-1 h-10 px-4 rounded-lg bg-brand-end text-background font-semibold
-              hover:bg-brand-end/90 transition disabled:opacity-50 flex items-center justify-center gap-2"
+            className="flex-1 h-10 px-4 rounded-lg bg-brand text-background font-semibold
+              hover:bg-brand/90 transition disabled:opacity-50 flex items-center justify-center gap-2"
             disabled={isPending}
             type="submit"
           >

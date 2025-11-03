@@ -114,7 +114,7 @@ export default function MangaImportModal() {
           </label>
           <textarea
             className="w-full min-h-32 max-h-96 px-3 py-2 bg-zinc-800 border-2 border-zinc-700 rounded-lg transition font-mono
-            text-zinc-100 placeholder-zinc-500 focus:border-brand-end focus:outline-none"
+            text-zinc-100 placeholder-zinc-500 focus:border-brand focus:outline-none"
             disabled={isImporting}
             onChange={(e) => setInputText(e.target.value)}
             onKeyDown={(e) => {
@@ -131,7 +131,7 @@ export default function MangaImportModal() {
         <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-zinc-900 border-t-2 border-zinc-800 shrink-0">
           <button
             className="flex items-center justify-center gap-2 w-full px-4 py-3 text-background font-medium 
-              bg-brand-end rounded-lg transition hover:bg-brand-end/90
+              bg-brand rounded-lg transition hover:bg-brand/90
               disabled:bg-zinc-700 disabled:text-zinc-500 disabled:cursor-not-allowed"
             disabled={isImporting || mangaIds.length === 0 || !libraryId}
             type="submit"

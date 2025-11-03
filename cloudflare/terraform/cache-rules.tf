@@ -5,7 +5,6 @@ locals {
 
   ttl_30d_path_equals = [
     "/",
-    "/auth/login",
     "/auth/signup",
     "/deterrence",
     "/doc/privacy",
@@ -27,7 +26,11 @@ locals {
   ]
 
   ttl_30d_path_prefixes = [
+    "/auth/login",
+    "/apple-icon.",
     "/favicon.",
+    "/icon.",
+    "/image/logo.",
     "/manga/",
     "/posts/",
     "/web-app-manifest",

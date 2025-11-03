@@ -4,7 +4,7 @@
   --color-background: #0a0a0a;
   --color-foreground: #ededed;
   --color-brand-start: #46cdfc;
-  --color-brand-end: #f5bcff;
+  --color-brand: #f5bcff;
 
   --animate-fade-in: fade-in 1s ease-out;
   --animate-fade-in-fast: fade-in 0.5s ease-out;
@@ -111,13 +111,13 @@
 }
 
 @utility bg-brand-gradient {
-  background-image: linear-gradient(to right, var(--color-brand-start), var(--color-brand-end));
+  background-image: linear-gradient(to right, var(--color-brand-start), var(--color-brand));
 }
 
 @utility border-brand-gradient {
   background-image:
     linear-gradient(var(--color-background), var(--color-background)),
-    linear-gradient(to right, var(--color-brand-start), var(--color-brand-end));
+    linear-gradient(to right, var(--color-brand-start), var(--color-brand));
   background-origin: border-box;
   background-clip: content-box, border-box;
   border-color: transparent;
@@ -135,7 +135,7 @@
   --color-background: #ffffff;
   --color-foreground: #0a0a0a;
   --color-brand-start: #3b82f6;
-  --color-brand-end: #8b5cf6;
+  --color-brand: #8b5cf6;
   --color-zinc-50: #18181b;
   --color-zinc-100: #27272a;
   --color-zinc-200: #3f3f46;
@@ -198,7 +198,7 @@
   --color-background: #0a0014;
   --color-foreground: #00ff9f;
   --color-brand-start: #ff00ff;
-  --color-brand-end: #00ffff;
+  --color-brand: #00ffff;
   --color-zinc-50: #f7f7fc;
   --color-zinc-100: #e8e8f8;
   --color-zinc-200: #d1d1f0;
@@ -215,7 +215,7 @@
   --color-background: #2b1810;
   --color-foreground: #f4e4c1;
   --color-brand-start: #ff6b35;
-  --color-brand-end: #f7931e;
+  --color-brand: #f7931e;
   --color-zinc-50: #faf8f5;
   --color-zinc-100: #f0ebe3;
   --color-zinc-200: #e0d5c7;

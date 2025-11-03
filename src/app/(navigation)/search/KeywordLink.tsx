@@ -47,7 +47,7 @@ export default function KeywordLink({
       ref={linkRef}
       title={keyword}
     >
-      <span aria-current={index < 3} className="text-xs font-bold aria-current:text-brand-end">
+      <span aria-current={index < 3} className="text-xs font-bold aria-current:text-brand">
         {index + 1}
       </span>
       <span className={`truncate min-w-0 ${textClassName}`}>{keyword}</span>

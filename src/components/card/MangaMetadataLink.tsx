@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { memo } from 'react'
 
 import { useSearchFilter } from '@/components/card/useSearchFilter'
 
@@ -14,9 +13,7 @@ type Props = {
   i?: number
 }
 
-export default memo(MangaMetadataLink)
-
-function MangaMetadataLink({ value, label, filterType, i = 0 }: Props) {
+export default function MangaMetadataLink({ value, label, filterType, i = 0 }: Props) {
   const { href, isActive } = useSearchFilter(`${filterType}:${value}`)
 
   return (
@@ -24,7 +21,7 @@ function MangaMetadataLink({ value, label, filterType, i = 0 }: Props) {
       {i > 0 && <span className="pr-1">,</span>}
       <Link
         aria-current={isActive}
-        className="hover:underline focus:underline aria-current:text-brand-end aria-current:font-semibold"
+        className="hover:underline focus:underline aria-current:text-brand aria-current:font-semibold"
         href={href}
         prefetch={false}
       >

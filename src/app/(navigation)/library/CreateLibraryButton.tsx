@@ -117,7 +117,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
                   <button
                     aria-pressed={selectedIcon === icon}
                     className="p-3 rounded-lg border-2 text-2xl transition flex items-center justify-center
-                      aria-pressed:bg-zinc-700 aria-pressed:border-brand-end aria-pressed:hover:bg-zinc-700
+                      aria-pressed:bg-zinc-700 aria-pressed:border-brand aria-pressed:hover:bg-zinc-700
                       border-zinc-700 hover:bg-zinc-800 disabled:opacity-50"
                     disabled={isPending}
                     key={icon}
@@ -135,7 +135,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
                 {DEFAULT_COLORS.map((color) => (
                   <button
                     aria-pressed={selectedColor === color}
-                    className="h-12 rounded-lg border-2 border-background transition aria-pressed:ring-2 aria-pressed:ring-brand-end
+                    className="h-12 rounded-lg border-2 border-background transition aria-pressed:ring-2 aria-pressed:ring-brand
                       disabled:opacity-50"
                     disabled={isPending}
                     key={color}
@@ -203,7 +203,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
                   <Toggle
                     aria-label="서재 공개 설정"
                     checked={isPublic}
-                    className="w-12 peer-checked:bg-brand-end/80"
+                    className="w-12 peer-checked:bg-brand/80"
                     disabled={isPending}
                     name="is-public"
                     onToggle={setIsPublic}
@@ -228,7 +228,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
               취소
             </button>
             <button
-              className="flex-1 px-4 py-3 text-background font-semibold bg-brand-end hover:bg-brand-end/90 disabled:bg-zinc-700 disabled:text-zinc-500 rounded-lg transition flex items-center justify-center gap-2"
+              className="flex-1 px-4 py-3 text-background font-semibold bg-brand hover:bg-brand/90 disabled:bg-zinc-700 disabled:text-zinc-500 rounded-lg transition flex items-center justify-center gap-2"
               disabled={isPending}
               type="submit"
             >

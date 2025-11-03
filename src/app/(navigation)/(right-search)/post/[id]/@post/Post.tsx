@@ -65,8 +65,8 @@ export default function Post({ post }: Readonly<Props>) {
             {
               Icon: MessageCircle,
               content: post.commentCount ?? 0,
-              iconClassName: 'group-hover:bg-brand-end/20',
-              textClassName: 'hover:text-brand-end',
+              iconClassName: 'group-hover:bg-brand/20',
+              textClassName: 'hover:text-brand',
             },
             {
               Icon: Repeat,

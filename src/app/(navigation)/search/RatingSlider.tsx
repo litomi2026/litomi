@@ -125,7 +125,7 @@ function RatingSlider({ minValue, maxValue, onMinChange, onMaxChange }: Readonly
             <button
               aria-pressed={minValue === preset.min && maxValue === preset.max}
               className="px-3 py-1 text-xs rounded-lg border transition bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-600 hover:text-zinc-300
-                aria-pressed:bg-zinc-700 aria-pressed:border-brand-end aria-pressed:text-zinc-100"
+                aria-pressed:bg-zinc-700 aria-pressed:border-brand aria-pressed:text-zinc-100"
               key={preset.label}
               onClick={() => handlePresetClick(preset)}
               type="button"
@@ -137,7 +137,7 @@ function RatingSlider({ minValue, maxValue, onMinChange, onMaxChange }: Readonly
         <div className="flex items-center gap-2 text-sm">
           <Star
             aria-current={Boolean(minValue || maxValue)}
-            className="size-4 aria-current:fill-brand-end aria-current:text-brand-end"
+            className="size-4 aria-current:fill-brand aria-current:text-brand"
           />
           <span className="font-medium tabular-nums">
             {minVal.toFixed(1)} ~ {maxVal.toFixed(1)}
@@ -149,7 +149,7 @@ function RatingSlider({ minValue, maxValue, onMinChange, onMaxChange }: Readonly
       <div className="relative h-8 mx-4 flex items-center cursor-pointer" onClick={handleTrackClick} ref={sliderRef}>
         <div className="absolute w-full h-2 bg-zinc-800 rounded-full" />
         <div
-          className="absolute h-2 bg-gradient-to-r from-brand-start to-brand-end rounded-full"
+          className="absolute h-2 bg-gradient-to-r from-brand-start to-brand rounded-full"
           style={{
             left: `${minPos}%`,
             right: `${100 - maxPos}%`,
@@ -171,8 +171,8 @@ function RatingSlider({ minValue, maxValue, onMinChange, onMaxChange }: Readonly
           onPointerDown={(e) => handlePointerDown(e, 'min')}
           style={{ left: `${minPos}%` }}
         >
-          <div className="w-full h-full bg-zinc-800 border-2 border-brand-end rounded-full shadow-lg">
-            <Star className="w-3 h-3 fill-brand-end text-brand-end m-auto mt-1" />
+          <div className="w-full h-full bg-zinc-800 border-2 border-brand rounded-full shadow-lg">
+            <Star className="w-3 h-3 fill-brand text-brand m-auto mt-1" />
           </div>
         </div>
         <div
@@ -181,8 +181,8 @@ function RatingSlider({ minValue, maxValue, onMinChange, onMaxChange }: Readonly
           onPointerDown={(e) => handlePointerDown(e, 'max')}
           style={{ left: `${maxPos}%` }}
         >
-          <div className="w-full h-full bg-zinc-800 border-2 border-brand-end rounded-full shadow-lg">
-            <Star className="w-3 h-3 fill-brand-end text-brand-end m-auto mt-1" />
+          <div className="w-full h-full bg-zinc-800 border-2 border-brand rounded-full shadow-lg">
+            <Star className="w-3 h-3 fill-brand text-brand m-auto mt-1" />
           </div>
         </div>
       </div>

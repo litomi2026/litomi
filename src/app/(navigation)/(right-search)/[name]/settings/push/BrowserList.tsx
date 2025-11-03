@@ -71,7 +71,7 @@ export default function BrowserList({ webPushes }: Props) {
           <div
             className={`flex items-center justify-between p-4 rounded-xl border transition-all ${
               isCurrentDevice
-                ? 'bg-linear-to-r from-zinc-800/50 to-zinc-800/30 border-brand-end/20'
+                ? 'bg-linear-to-r from-zinc-800/50 to-zinc-800/30 border-brand/20'
                 : 'bg-zinc-800/30 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-800/50'
             }`}
             key={webPush.id}
@@ -79,18 +79,18 @@ export default function BrowserList({ webPushes }: Props) {
             <div className="flex items-center gap-3.5">
               {isMobile ? (
                 <Smartphone
-                  className={`w-4 h-4 p-2 rounded-lg box-content ${isCurrentDevice ? 'text-brand-end bg-brand-end/10' : 'text-zinc-400 bg-zinc-800/50'}`}
+                  className={`w-4 h-4 p-2 rounded-lg box-content ${isCurrentDevice ? 'text-brand bg-brand/10' : 'text-zinc-400 bg-zinc-800/50'}`}
                 />
               ) : (
                 <Monitor
-                  className={`w-4 h-4 p-2 rounded-lg box-content ${isCurrentDevice ? 'text-brand-end bg-brand-end/10' : 'text-zinc-400 bg-zinc-800/50'}`}
+                  className={`w-4 h-4 p-2 rounded-lg box-content ${isCurrentDevice ? 'text-brand bg-brand/10' : 'text-zinc-400 bg-zinc-800/50'}`}
                 />
               )}
               <div>
                 <div className="text-sm text-zinc-200 flex items-center gap-2">
                   <span className="font-medium">{formatDeviceInfo(webPush.userAgent)}</span>
                   {isCurrentDevice && (
-                    <span className="text-[10px] whitespace-nowrap font-medium text-brand-end bg-brand-end/10 px-1.5 rounded-full border border-brand-end/20">
+                    <span className="text-[10px] whitespace-nowrap font-medium text-brand bg-brand/10 px-1.5 rounded-full border border-brand/20">
                       현재
                     </span>
                   )}

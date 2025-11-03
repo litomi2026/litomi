@@ -1,6 +1,6 @@
 export type NotificationData = {
-  url: string
+  url?: string
   artists?: string[]
-  previewImageURL: string
-  mangaId: number
+  previewImageURL?: string
+  mangaId?: number
 }

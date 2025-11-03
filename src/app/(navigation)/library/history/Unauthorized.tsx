@@ -26,7 +26,7 @@ export default function Unauthorized() {
           },
         ]}
         description="계정을 만들고 읽은 작품을 자동으로 기록하세요"
-        icon={<LockKeyhole className="size-12 text-brand-end" />}
+        icon={<LockKeyhole className="size-12 text-brand" />}
         title="감상 기록은 로그인이 필요해요"
       >
         <div className="flex flex-col w-full items-center gap-3">

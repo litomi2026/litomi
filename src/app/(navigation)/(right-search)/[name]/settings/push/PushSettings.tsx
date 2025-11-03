@@ -18,10 +18,10 @@ export default async function PushSettings({ userId }: Props) {
 
   return (
     <div className="space-y-8 sm:space-y-12 max-w-2xl mx-auto">
-      <div className="relative bg-linear-to-br from-zinc-800/80 to-zinc-900/80 rounded-2xl p-4 sm:p-5 border border-zinc-700/50 hover:border-brand-end/30 transition-all overflow-hidden">
-        <div className="absolute inset-0 bg-linear-to-tr from-brand-start/5 via-transparent to-brand-end/5 pointer-events-none" />
+      <div className="relative bg-linear-to-br from-zinc-800/80 to-zinc-900/80 rounded-2xl p-4 sm:p-5 border border-zinc-700/50 hover:border-brand/30 transition-all overflow-hidden">
+        <div className="absolute inset-0 bg-linear-to-tr from-brand-start/5 via-transparent to-brand/5 pointer-events-none" />
         <div className="flex items-center gap-4 flex-1">
-          <Bell className="w-5 text-brand-end p-2.5 bg-brand-end/10 rounded-xl border border-brand-end/20 box-content" />
+          <Bell className="w-5 text-brand p-2.5 bg-brand/10 rounded-xl border border-brand/20 box-content" />
           <div className="flex-1">
             <div className="flex-1 flex items-center justify-between gap-1">
               <h3 className="text-lg font-semibold text-zinc-100">브라우저 푸시</h3>
@@ -30,7 +30,7 @@ export default async function PushSettings({ userId }: Props) {
             <p className="text-xs text-zinc-500">
               <span className="hidden sm:inline">최신 브라우저에서 사용 가능 • </span>
               <a
-                className="inline-flex items-center gap-1 text-brand-end/70 hover:text-brand-end transition-colors font-medium"
+                className="inline-flex items-center gap-1 text-brand/70 hover:text-brand transition-colors font-medium"
                 href="https://caniuse.com/push-api"
                 rel="noopener noreferrer"
                 target="_blank"

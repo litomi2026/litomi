@@ -28,7 +28,7 @@ export default function MangaMetadataListWithLink({ filterType, items }: Props) 
             <span className="inline">
               {links.map((link, index) => (
                 <a
-                  className="inline p-1 py-0.5 rounded text-zinc-400 hover:text-brand-end hover:bg-brand-end/10 hover:underline transition"
+                  className="inline p-1 py-0.5 rounded text-zinc-400 hover:text-brand hover:bg-brand/10 hover:underline transition"
                   href={link.value}
                   key={index}
                   rel="noopener"
