@@ -109,7 +109,6 @@ class KomiClient {
   }
 
   private convertKomiToManga(komiManga: KomiManga, numericId: number, locale: Locale): Manga {
-    console.log('👀 - KomiClient - convertKomiToManga - komiManga:', komiManga)
     const { title, artist, group, category, language, tags, images, pages, rating, viewCount, createdAt } = komiManga
 
     return {

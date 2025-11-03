@@ -12,6 +12,7 @@ import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 import { metricInfo, MetricParam, periodLabels, PeriodParam } from '../../../common'
 import { getRankingData } from './query'
 
+export const dynamic = 'force-static'
 export const revalidate = 43200 // 12 hours
 
 const mangasRankingSchema = z.object({

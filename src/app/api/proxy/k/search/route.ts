@@ -76,7 +76,7 @@ export async function GET(request: Request) {
 
   try {
     const revalidate = params.nextId ? sec('30 days') : 0
-    const searchedMangas = await kHentaiClient.searchMangas(params, locale, revalidate)
+    const searchedMangas = await kHentaiClient.searchMangas(params, locale ?? Locale.KO, revalidate)
     const hasManga = searchedMangas.length > 0
     let nextCursor = null
 
