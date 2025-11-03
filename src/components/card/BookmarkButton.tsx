@@ -42,7 +42,7 @@ export default function BookmarkButton({ manga, className }: Props) {
           <div className="flex items-center justify-between gap-2 w-full">
             <span>북마크를 추가했어요</span>
             <button
-              className="text-brand hover:underline text-sm font-bold"
+              className="hover:underline text-sm font-bold"
               onClick={() => {
                 toast.dismiss()
                 openLibraryModal(mangaId)
