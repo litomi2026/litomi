@@ -180,7 +180,7 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
       {/* Backdrop */}
       <div
         aria-hidden={!show}
-        className="fixed inset-0 z-50 bg-black/50 transition hidden opacity-100 sm:block aria-hidden:opacity-0 aria-hidden:pointer-events-none"
+        className="fixed inset-0 z-50 bg-background/50 transition hidden opacity-100 sm:block aria-hidden:opacity-0 aria-hidden:pointer-events-none"
         onClick={onClose}
       />
 

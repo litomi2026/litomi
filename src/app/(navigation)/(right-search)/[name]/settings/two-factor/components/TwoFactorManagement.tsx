@@ -128,7 +128,7 @@ function DisableConfirmation({ onSuccess, onCancel }: DisableConfirmationProps) 
       <OneTimeCodeInput defaultValue={defaultToken} />
       <div className="flex gap-3">
         <button
-          className="flex-1 rounded-lg bg-red-900 px-4 py-3 font-medium text-white transition
+          className="flex-1 rounded-lg bg-red-900 px-4 py-3 font-medium text-foreground transition
           hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-50"
           disabled={isDisabling}
           type="submit"

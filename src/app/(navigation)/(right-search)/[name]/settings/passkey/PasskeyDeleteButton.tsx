@@ -77,7 +77,7 @@ export default function PasskeyDeleteButton({ id, className, onCancel, open, onO
             <form action={dispatchAction} className="flex-1">
               <input name="credential-id" type="hidden" value={id} />
               <button
-                className="flex items-center justify-center w-full h-10 px-4 rounded-lg bg-red-600 text-white font-medium disabled:opacity-70 relative"
+                className="flex items-center justify-center w-full h-10 px-4 rounded-lg bg-red-600 text-foreground font-medium disabled:opacity-70 relative"
                 disabled={isPending}
                 type="submit"
               >

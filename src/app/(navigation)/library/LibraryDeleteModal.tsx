@@ -52,7 +52,7 @@ export default function LibraryDeleteModal({ libraryId, libraryName, itemCount, 
         </div>
         <div className="grid md:flex gap-3">
           <button
-            className="flex-1 flex items-center justify-center gap-2 p-2 rounded-lg bg-red-700 text-white font-medium 
+            className="flex-1 flex items-center justify-center gap-2 p-2 rounded-lg bg-red-700 text-foreground font-medium 
               hover:bg-red-700 transition-colors disabled:opacity-50 relative"
             disabled={isPending}
             onClick={() => dispatchAction(libraryId)}

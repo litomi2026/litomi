@@ -14,8 +14,8 @@ export default function PeriodLink({ value }: { value: PeriodParam }) {
   return (
     <Link
       aria-current={period === value}
-      className="p-2 px-4 rounded-lg text-sm font-medium transition text-zinc-400 hover:text-white hover:bg-zinc-900
-      aria-current:bg-zinc-900 aria-current:text-white aria-current:pointer-events-none"
+      className="p-2 px-4 rounded-lg text-sm font-medium transition text-zinc-400 hover:text-foreground hover:bg-zinc-900
+      aria-current:bg-zinc-900 aria-current:text-foreground aria-current:pointer-events-none"
       href={`/ranking/${metric || DEFAULT_METRIC}/${value || DEFAULT_PERIOD}`}
     >
       <LinkPending className="text-foreground w-6 h-5">{label}</LinkPending>

@@ -90,7 +90,7 @@ export default function RealtimeRanking() {
                           href={`/search?query=${item.page}`}
                           prefetch={false}
                         >
-                          <p className="text-sm font-medium text-white line-clamp-1">{item.page}</p>
+                          <p className="text-sm font-medium text-foreground line-clamp-1">{item.page}</p>
                         </Link>
                         <a
                           className="text-xs p-2 -m-2 text-zinc-400 shrink-0 whitespace-nowrap hover:underline flex items-center gap-1"

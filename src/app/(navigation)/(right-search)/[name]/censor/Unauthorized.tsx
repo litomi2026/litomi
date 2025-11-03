@@ -37,7 +37,7 @@ export default function Unauthorized() {
         <p className="mt-4 text-sm text-zinc-500">
           계정이 없으신가요?{' '}
           <Link
-            className="text-zinc-300 underline hover:text-white transition"
+            className="text-zinc-300 underline hover:text-foreground transition"
             href={`/auth/signup?${SearchParamKey.REDIRECT}=${encodeURIComponent('/@/censor')}`}
           >
             회원가입

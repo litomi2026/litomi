@@ -173,7 +173,7 @@ export default function NotificationCard({
         <div className="flex items-start justify-between gap-4">
           <h3
             className={`font-medium line-clamp-1 transition ${
-              isUnread ? 'text-white' : 'text-zinc-300'
+              isUnread ? 'text-foreground' : 'text-zinc-300'
             } ${mangaViewerURL ? 'group-hover:text-brand-end' : ''}`}
           >
             {notification.title}
@@ -197,7 +197,7 @@ export default function NotificationCard({
           {parsedData && (
             <img
               alt={parsedData.mangaId.toString()}
-              className="rounded-md object-cover aspect-[3/4]"
+              className="rounded-md object-cover aspect-3/4"
               height={64}
               src={parsedData.previewImageURL}
               width={48}
