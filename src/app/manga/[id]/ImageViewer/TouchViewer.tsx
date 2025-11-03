@@ -43,6 +43,7 @@ type LastPageProps = {
   manga: {
     id: number
   }
+  isHidden?: boolean
 }
 
 type Props = {
@@ -443,11 +444,11 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
   )
 }
 
-function LastPage({ manga }: LastPageProps) {
+function LastPage({ manga, isHidden = false }: LastPageProps) {
   const { id } = manga
 
   return (
-    <li className="flex flex-col items-center justify-center gap-4 p-4">
+    <li aria-hidden={isHidden} className="flex flex-col items-center justify-center gap-4 p-4 aria-hidden:hidden">
       <RatingInput className="select-text" mangaId={id} />
       <div className="grid grid-cols-2 items-center gap-2 text-sm font-medium text-foreground">
         <Link
@@ -504,7 +505,7 @@ function TouchViewerItem({ offset, manga, pageView, readingDirection }: TouchVie
   }
 
   if (imageIndex === images.length) {
-    return <LastPage manga={manga} />
+    return <LastPage isHidden={offset !== 0} manga={manga} />
   }
 
   const isRTL = readingDirection === 'rtl'

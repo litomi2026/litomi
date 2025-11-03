@@ -1,11 +1,13 @@
 'use client'
 
 import { ChevronRight } from 'lucide-react'
+import { ReadonlyURLSearchParams } from 'next/navigation'
 import { ComponentProps, PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { twMerge } from 'tailwind-merge'
 
 import KeywordLink from './KeywordLink'
+import UpdateFromSearchParams from './UpdateFromSearchParams'
 import useTrendingKeywordsQuery from './useTrendingKeywordsQuery'
 
 const ROTATION_INTERVAL = 5000
@@ -14,6 +16,7 @@ const SCROLL_MOMENTUM_DELAY = 1000 // NOTE: 스크롤 모멘텀을 방지하기 
 export default function TrendingKeywords() {
   const { data } = useTrendingKeywordsQuery()
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [searchParams, setSearchParams] = useState<ReadonlyURLSearchParams>()
   const trendingKeywords = data && data.keywords.length > 0 ? data.keywords : [{ keyword: 'language:korean' }]
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const scrollContainerDesktopRef = useRef<HTMLDivElement>(null)
@@ -23,6 +26,7 @@ export default function TrendingKeywords() {
   const isProgrammaticScrollRef = useRef(false)
   const trendingKeywordCount = trendingKeywords.length
   const { ref: lastRef, inView: isLastKeywordInView } = useInView()
+  const view = searchParams?.get('view')
 
   function scrollRight() {
     const container = scrollContainerDesktopRef.current
@@ -171,6 +175,7 @@ export default function TrendingKeywords() {
 
   return (
     <>
+      <UpdateFromSearchParams onUpdate={setSearchParams} />
       {/* Mobile */}
       <div className="relative grid gap-2 sm:hidden">
         <div className="flex items-center justify-between text-zinc-500 text-xs">
@@ -200,6 +205,7 @@ export default function TrendingKeywords() {
               onBlur={handleInteractionEnd}
               onClick={() => handleClick(i)}
               onFocus={() => handleFocus(i)}
+              view={view}
             />
           ))}
         </div>
@@ -240,6 +246,7 @@ export default function TrendingKeywords() {
               keyword={keyword}
               linkRef={i === trendingKeywordCount - 1 ? lastRef : undefined}
               textClassName="truncate max-w-[50svw] sm:max-w-[25svw]"
+              view={view}
             />
           ))}
         </div>

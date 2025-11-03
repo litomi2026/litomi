@@ -4,34 +4,42 @@ import { Ref } from 'react'
 import LinkPending from '@/components/LinkPending'
 
 type Props = {
-  keyword: string
+  ariaCurrent?: boolean
+  className?: string
   index: number
+  keyword: string
+  linkRef?: Ref<HTMLAnchorElement>
   onClick?: () => void
   onFocus?: () => void
   onBlur?: () => void
-  ariaCurrent?: boolean
-  className?: string
   textClassName?: string
-  linkRef?: Ref<HTMLAnchorElement>
+  view?: string | null
 }
 
 export default function KeywordLink({
   keyword,
-  linkRef,
+  view,
   index,
-  onClick,
-  onFocus,
-  onBlur,
+  linkRef,
   ariaCurrent,
   className = '',
   textClassName = '',
+  onClick,
+  onFocus,
+  onBlur,
 }: Props) {
+  const searchParams = new URLSearchParams({ query: keyword })
+
+  if (view) {
+    searchParams.set('view', view)
+  }
+
   return (
     <Link
       aria-current={ariaCurrent}
       className={`flex items-center justify-center gap-1 relative text-xs px-2.5 py-1 rounded-full shrink-0 transition overflow-hidden bg-zinc-800 text-zinc-400  
       hover:text-foreground hover:bg-zinc-700 ${className}`}
-      href={`/search?${new URLSearchParams({ query: keyword })}`}
+      href={`/search?${new URLSearchParams(searchParams)}`}
       onBlur={onBlur}
       onClick={onClick}
       onFocus={onFocus}

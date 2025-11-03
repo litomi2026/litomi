@@ -49,7 +49,7 @@ export default function MangaCardDonation() {
 
   return (
     <MangaCardSkeleton className="aspect-auto">
-      <div className="flex flex-col items-center gap-6 p-6 text-center" ref={cardRef}>
+      <div className="flex flex-col items-center gap-6 p-4 sm:p-6 text-center" ref={cardRef}>
         <div className="flex flex-col items-center gap-3">
           <div className="relative">
             <div className="absolute inset-0 rounded-full bg-brand-end/10 animate-pulse-ring" />
@@ -57,7 +57,7 @@ export default function MangaCardDonation() {
               <Heart className="size-6 fill-current text-brand-end animate-heartbeat" />
             </div>
           </div>
-          <h3 className="text-lg font-semibold text-zinc-100">리토미를 함께 키워주세요</h3>
+          <h3 className="text-lg font-semibold text-foreground">리토미를 함께 키워주세요</h3>
         </div>
         <p className="text-sm text-zinc-400 leading-relaxed">
           매달 십 몇 만 원의 서버 비용이 발생하는데, 유해 광고 없이 서비스를 운영하기 위해 여러분의 도움이 필요해요
@@ -67,7 +67,7 @@ export default function MangaCardDonation() {
             <span className="text-xs text-zinc-500 uppercase tracking-wider font-medium">소셜</span>
             <div className="flex flex-col gap-2">
               <a
-                className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition-colors text-sm font-medium"
+                className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition text-sm font-medium"
                 href="https://x.com/litomi_in"
                 onClick={() => handleSocialClick('x_twitter')}
                 rel="noopener"
@@ -77,7 +77,7 @@ export default function MangaCardDonation() {
                 <span>@litomi_in 팔로우</span>
               </a>
               <a
-                className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition-colors text-sm font-medium"
+                className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition text-sm font-medium"
                 href="https://discord.gg/xTrbQaxpyD"
                 onClick={() => handleSocialClick('discord')}
                 rel="noopener"
@@ -87,7 +87,7 @@ export default function MangaCardDonation() {
                 <span>Discord 서버 참여</span>
               </a>
               <a
-                className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition-colors text-sm font-medium"
+                className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition text-sm font-medium"
                 href="https://github.com/gwak2837/litomi"
                 onClick={() => handleSocialClick('github')}
                 rel="noopener"
@@ -102,7 +102,7 @@ export default function MangaCardDonation() {
             <span className="text-xs text-zinc-500 uppercase tracking-wider font-medium">후원</span>
             <div className="grid grid-cols-2 gap-2">
               <a
-                className="py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition-colors text-sm font-medium text-center"
+                className="p-3 py-2 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition text-sm font-medium text-center"
                 href="https://patreon.com/litomi"
                 onClick={() => handleDonationClick('patreon')}
                 rel="noopener"
@@ -111,7 +111,7 @@ export default function MangaCardDonation() {
                 Patreon
               </a>
               <a
-                className="py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition-colors text-sm font-medium text-center"
+                className="p-3 py-2 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition text-sm font-medium text-center"
                 href="https://ko-fi.com/litomi"
                 onClick={() => handleDonationClick('ko-fi')}
                 rel="noopener"
@@ -120,7 +120,7 @@ export default function MangaCardDonation() {
                 Ko-fi
               </a>
               <a
-                className="col-span-2 py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition-colors text-sm font-medium text-center"
+                className="py-2 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition text-sm font-medium text-center"
                 href="https://opencollective.com/litomi"
                 onClick={() => handleDonationClick('open_collective')}
                 rel="noopener"
@@ -128,13 +128,26 @@ export default function MangaCardDonation() {
               >
                 open collective
               </a>
+              <a
+                className="flex items-center justify-center bg-[#FFDD00] rounded-lg overflow-hidden"
+                href="https://www.buymeacoffee.com/litomi"
+                onClick={() => handleDonationClick('buy_me_a_coffee')}
+                rel="noopener"
+                target="_blank"
+              >
+                <img
+                  alt="Buy me a coffee"
+                  className="max-h-9"
+                  src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
+                />
+              </a>
             </div>
           </div>
           <div className="flex flex-col gap-2">
             <span className="text-xs text-zinc-500 uppercase tracking-wider font-medium">제휴</span>
             <div className="grid grid-cols-2 gap-2">
               <a
-                className="col-span-2 py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition-colors text-sm font-medium text-center"
+                className="col-span-2 py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition text-sm font-medium text-center"
                 href="https://velog.io/@gwak2837/coupang-partners-samdasoo"
                 onClick={() => handleDonationClick('coupang_partners')}
                 rel="noopener"
