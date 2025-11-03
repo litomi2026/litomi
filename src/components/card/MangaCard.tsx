@@ -17,6 +17,7 @@ import MangaMetadataLink from './MangaMetadataLink'
 import MangaMetadataList from './MangaMetadataList'
 import MangaMetadataListWithLink from './MangaMetadataListWithLink'
 import MangaTagList from './MangaTagList'
+import MangaTitle from './MangaTitle'
 import SearchFromHereButton from './SearchFromHereButton'
 
 type Props = {
@@ -66,7 +67,10 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
               target="_blank"
             >
               <h4 className="line-clamp-3 font-bold text-base leading-5 min-w-0 wrap-break-word break-all">
-                {title} <ExternalLink className="size-3 ml-1 text-zinc-400 inline-block" />
+                <Suspense>
+                  <MangaTitle title={title} />
+                </Suspense>
+                <ExternalLink className="size-3 ml-1 text-zinc-400 inline-block" />
               </h4>
             </a>
             {languages && languages.length > 0 && (

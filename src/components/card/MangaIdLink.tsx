@@ -1,7 +1,6 @@
 'use client'
 
 import { ExternalLink } from 'lucide-react'
-import { memo } from 'react'
 
 import { useSearchFilter } from '@/components/card/useSearchFilter'
 
@@ -10,9 +9,7 @@ type Props = {
   viewerLink: string
 }
 
-export default memo(MangaIdLink)
-
-function MangaIdLink({ id, viewerLink }: Props) {
+export default function MangaIdLink({ id, viewerLink }: Props) {
   const { isActive } = useSearchFilter(`id:${id}`)
 
   return (
