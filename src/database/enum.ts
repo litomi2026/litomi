@@ -91,6 +91,7 @@ export enum NotificationType {
   NEW_MANGA = 0,
   BOOKMARK_UPDATE = 1,
   CRAWL_HISTORY = 2,
+  TEST = 3,
 }
 
 export enum PostType {

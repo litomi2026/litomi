@@ -4,8 +4,9 @@ import { captureException } from '@sentry/nextjs'
 import { and, eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 
+import { NotificationType } from '@/database/enum'
 import { db } from '@/database/supabase/drizzle'
-import { pushSettingsTable, webPushTable } from '@/database/supabase/schema'
+import { notificationTable, pushSettingsTable, webPushTable } from '@/database/supabase/schema'
 import { WebPushService } from '@/lib/notification/WebPushService'
 import { badRequest, conflict, created, internalServerError, ok, unauthorized } from '@/utils/action-response'
 import { validateUserIdFromCookie } from '@/utils/cookie'
@@ -92,12 +93,23 @@ export async function testNotification(data: Record<string, unknown>) {
   const notificationService = WebPushService.getInstance()
 
   try {
+    // Send web push notification
     await notificationService.sendTestWebPushToEndpoint(userId, endpoint, {
       title: '테스트 알림',
       body: message,
       icon: '/icon.png',
       badge: '/badge.png',
       data: { url: 'https://litomi.in' },
+    })
+
+    // Create a test notification record in the database
+    await db.insert(notificationTable).values({
+      userId,
+      type: NotificationType.TEST,
+      title: '테스트 알림',
+      body: message,
+      data: JSON.stringify({ url: 'https://litomi.in', isTest: true }),
+      sentAt: new Date(),
     })
 
     return ok('현재 브라우저에 테스트 알림을 보냈어요')
