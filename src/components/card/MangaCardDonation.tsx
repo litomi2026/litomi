@@ -102,7 +102,7 @@ export default function MangaCardDonation() {
             <span className="text-xs text-zinc-500 uppercase tracking-wider font-medium">후원</span>
             <div className="grid grid-cols-2 gap-2">
               <a
-                className="py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition-colors text-sm font-medium text-center"
+                className="p-3 py-2 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition-colors text-sm font-medium text-center"
                 href="https://patreon.com/litomi"
                 onClick={() => handleDonationClick('patreon')}
                 rel="noopener"
@@ -111,7 +111,7 @@ export default function MangaCardDonation() {
                 Patreon
               </a>
               <a
-                className="py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition-colors text-sm font-medium text-center"
+                className="p-3 py-2 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition-colors text-sm font-medium text-center"
                 href="https://ko-fi.com/litomi"
                 onClick={() => handleDonationClick('ko-fi')}
                 rel="noopener"
@@ -120,13 +120,26 @@ export default function MangaCardDonation() {
                 Ko-fi
               </a>
               <a
-                className="col-span-2 py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition-colors text-sm font-medium text-center"
+                className="p-1 py-2 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition-colors text-sm font-medium text-center"
                 href="https://opencollective.com/litomi"
                 onClick={() => handleDonationClick('open_collective')}
                 rel="noopener"
                 target="_blank"
               >
                 open collective
+              </a>
+              <a
+                className="flex items-center justify-center bg-[#FFDD00] rounded-lg overflow-hidden"
+                href="https://www.buymeacoffee.com/litomi"
+                onClick={() => handleDonationClick('buy_me_a_coffee')}
+                rel="noopener"
+                target="_blank"
+              >
+                <img
+                  alt="Buy me a coffee"
+                  className="max-h-9"
+                  src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
+                />
               </a>
             </div>
           </div>
