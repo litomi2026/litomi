@@ -29,7 +29,7 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Read
   const [response, dispatchAction, isPending] = useActionResponse({
     action: updateCensorships,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QueryKeys.censorships })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.censorship })
       toast.success('검열 규칙을 수정했어요')
       onEditCompleted()
     },
@@ -45,7 +45,7 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Read
   }, [value, level, onEditCompleted])
 
   return (
-    <form action={dispatchAction} className="p-4 bg-zinc-800 rounded-lg border-2 border-brand-end">
+    <form action={dispatchAction} className="p-4 bg-zinc-800 rounded-lg border-2 border-brand">
       <input name="id" type="hidden" value={id} />
       <input name="key" type="hidden" value={key} />
       <div className="space-y-3">
@@ -76,7 +76,7 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Read
               return (
                 <button
                   aria-pressed={editLevel === levelNum}
-                  className="flex-1 px-3 py-2 rounded border-2 transition bg-zinc-700 hover:bg-zinc-600 aria-pressed:bg-zinc-600 aria-pressed:border-brand-end"
+                  className="flex-1 px-3 py-2 rounded border-2 transition bg-zinc-700 hover:bg-zinc-600 aria-pressed:bg-zinc-600 aria-pressed:border-brand"
                   key={level}
                   onClick={() => setEditLevel(levelNum)}
                   type="button"
@@ -97,7 +97,7 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Read
             취소
           </button>
           <button
-            className="flex-1 px-3 py-2 font-semibold bg-brand-end/80 text-background hover:bg-brand-end/90 rounded transition flex items-center justify-center gap-1 disabled:opacity-50"
+            className="flex-1 px-3 py-2 font-semibold bg-brand/80 text-background hover:bg-brand/90 rounded transition flex items-center justify-center gap-1 disabled:opacity-50"
             disabled={isPending || !editValue.trim() || (editValue === value && editLevel === level)}
             type="submit"
           >

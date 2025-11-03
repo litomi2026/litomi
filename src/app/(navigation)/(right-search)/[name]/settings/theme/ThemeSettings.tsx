@@ -43,7 +43,7 @@ export default function ThemeSettings() {
           <button
             aria-pressed={isSelected}
             className="flex items-center gap-4 p-4 rounded-lg border-2 transition text-left border-zinc-700 hover:border-zinc-600 hover:bg-zinc-800/30
-            aria-pressed:border-brand-end aria-pressed:bg-zinc-800/50"
+            aria-pressed:border-brand aria-pressed:bg-zinc-800/50"
             key={value}
             onClick={() => setTheme(value)}
             type="button"
@@ -58,7 +58,7 @@ export default function ThemeSettings() {
               <div className="font-medium">{label}</div>
               <div className="text-sm text-zinc-400">{description}</div>
             </div>
-            {isSelected && <Check className="size-5 text-brand-end shrink-0" />}
+            {isSelected && <Check className="size-5 text-brand shrink-0" />}
           </button>
         )
       })}

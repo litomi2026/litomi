@@ -75,7 +75,7 @@ export default function PushSettingsForm({ initialSettings }: Props) {
       >
         <Toggle
           aria-label="방해 금지 시간 활성화"
-          className="w-12 sm:w-14 peer-checked:bg-brand-end/80"
+          className="w-12 sm:w-14 peer-checked:bg-brand/80"
           defaultChecked={defaultQuietEnabled}
           name="quietEnabled"
         />
@@ -111,7 +111,7 @@ export default function PushSettingsForm({ initialSettings }: Props) {
       <ToggleSection description="여러 업데이트를 모아서 알림" title="스마트 알림">
         <Toggle
           aria-label="스마트 알림 활성화"
-          className="w-12 sm:w-14 peer-checked:bg-brand-end/80"
+          className="w-12 sm:w-14 peer-checked:bg-brand/80"
           defaultChecked={defaultBatchEnabled}
           name="batchEnabled"
         />
@@ -132,9 +132,9 @@ export default function PushSettingsForm({ initialSettings }: Props) {
         />
       </ToggleSection>
       <button
-        className="px-4 py-2.5 mt-2 relative bg-brand-end font-medium text-background rounded-lg transition text-sm
-        hover:bg-brand-end/90 disabled:opacity-50
-        focus:outline-none focus:ring-2 focus:ring-brand-end/50 focus:ring-offset-2 focus:ring-offset-zinc-900
+        className="px-4 py-2.5 mt-2 relative bg-brand font-medium text-background rounded-lg transition text-sm
+        hover:bg-brand/90 disabled:opacity-50
+        focus:outline-none focus:ring-2 focus:ring-brand/50 focus:ring-offset-2 focus:ring-offset-zinc-900
         w-full sm:w-auto sm:px-6"
         disabled={isPending}
         type="submit"

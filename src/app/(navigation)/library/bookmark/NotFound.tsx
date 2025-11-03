@@ -25,11 +25,11 @@ export default function NotFound() {
           },
         ]}
         description="좋아하는 작품을 북마크하고 언제든 다시 찾아보세요"
-        icon={<Bookmark className="size-12 text-brand-end" />}
+        icon={<Bookmark className="size-12 text-brand" />}
         title="북마크가 비어 있어요"
       >
         <Link
-          className="px-6 py-3 rounded-2xl bg-brand-end font-semibold text-background hover:opacity-80 transition"
+          className="px-6 py-3 rounded-2xl bg-brand font-semibold text-background hover:opacity-80 transition"
           href="/new/1"
         >
           작품 둘러보기

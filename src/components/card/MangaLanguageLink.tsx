@@ -60,7 +60,7 @@ export default function MangaLanguageLink({ language, className = '' }: Readonly
     <Link
       aria-current={isActive}
       aria-label={`Filter by ${language}`}
-      className={`group relative px-1.5 py-0.5 text-xs font-medium rounded-md bg-zinc-700 transition aria-current:ring-2 aria-current:ring-brand-end aria-current:bg-zinc-700 ${className}`}
+      className={`group relative px-1.5 py-0.5 text-xs font-medium rounded-md bg-zinc-700 transition aria-current:ring-2 aria-current:ring-brand aria-current:bg-zinc-700 ${className}`}
       href={href}
       prefetch={false}
       title={`${language} 작품 보기`}

@@ -46,7 +46,7 @@ export default function PasskeyRegisterButton() {
 
   return (
     <button
-      className="flex items-center gap-2 group rounded-full border-brand-end/70 bg-brand-end/5 border-2 px-5 py-2.5 text-sm font-medium transition disabled:opacity-50"
+      className="flex items-center gap-2 group rounded-full border-brand/70 bg-brand/5 border-2 px-5 py-2.5 text-sm font-medium transition disabled:opacity-50"
       disabled={isPending}
       onClick={handleRegisterPasskey}
     >

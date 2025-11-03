@@ -59,7 +59,7 @@ export default function CensorshipCard({
       aria-selected={isSelected}
       className={`p-4 bg-zinc-800 rounded-lg border-2 transition relative ${
         isDeleting ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-zinc-700'
-      } aria-selected:border-brand-end aria-selected:bg-zinc-700`}
+      } aria-selected:border-brand aria-selected:bg-zinc-700`}
       onClick={isDeleting ? undefined : onToggleSelect}
     >
       {/* Deleting overlay with spinner */}
@@ -72,7 +72,7 @@ export default function CensorshipCard({
       <div className="flex items-start gap-3">
         <div
           aria-checked={isSelected}
-          className="w-5 h-5 rounded border-2 mt-0.5 flex items-center justify-center transition border-zinc-600 aria-checked:bg-brand-end aria-checked:border-brand-end"
+          className="w-5 h-5 rounded border-2 mt-0.5 flex items-center justify-center transition border-zinc-600 aria-checked:bg-brand aria-checked:border-brand"
           role="checkbox"
         >
           {isSelected && <Check className="size-3 text-background" />}

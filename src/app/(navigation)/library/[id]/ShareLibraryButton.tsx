@@ -75,7 +75,7 @@ export default function ShareLibraryButton({ className = '', library }: Readonly
                   value={shareUrl}
                 />
                 <button
-                  className="px-4 py-2 rounded-lg bg-brand-end text-background hover:bg-brand-end/90 transition font-semibold flex items-center gap-2 whitespace-nowrap"
+                  className="px-4 py-2 rounded-lg bg-brand text-background hover:bg-brand/90 transition font-semibold flex items-center gap-2 whitespace-nowrap"
                   onClick={handleCopyLink}
                   type="button"
                 >

@@ -161,7 +161,7 @@ function StarRating({ rating }: { rating: number }) {
   return Array.from({ length: 5 }).map((_, i) => (
     <Star
       aria-current={i < rating}
-      className="size-3 aria-current:fill-brand-end aria-current:text-brand-end fill-background text-background"
+      className="size-3 aria-current:fill-brand aria-current:text-brand fill-background text-background"
       key={i}
     />
   ))

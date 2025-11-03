@@ -23,7 +23,7 @@ function SelectableMangaCard({ index, manga }: Readonly<Props>) {
   return (
     <div
       aria-selected={isSelected}
-      className="relative select-none cursor-pointer aria-selected:ring-2 aria-selected:ring-brand-end rounded-xl overflow-hidden"
+      className="relative select-none cursor-pointer aria-selected:ring-2 aria-selected:ring-brand rounded-xl overflow-hidden"
       onClick={() => toggleSelection(manga.id)}
     >
       <CensoredManga className="pointer-events-none" mangaId={manga.id} />

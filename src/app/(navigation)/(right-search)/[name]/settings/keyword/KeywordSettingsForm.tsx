@@ -56,11 +56,11 @@ export default function KeywordSettingsForm({ initialCriteria: criteria }: Props
             },
           ]}
           description="관심있는 시리즈와 태그를 놓치지 않도록 알려드릴게요"
-          icon={<CaseSensitive className="size-12 text-brand-end" />}
+          icon={<CaseSensitive className="size-12 text-brand" />}
           title="키워드 알림 시작하기"
         >
           <button
-            className="px-6 py-3 rounded-2xl bg-brand-end text-background font-semibold hover:opacity-90 transition"
+            className="px-6 py-3 rounded-2xl bg-brand text-background font-semibold hover:opacity-90 transition"
             onClick={handleCreateClick}
             type="button"
           >
@@ -77,7 +77,7 @@ export default function KeywordSettingsForm({ initialCriteria: criteria }: Props
               </p>
             </div>
             <button
-              className="inline-flex items-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 px-3 py-2 sm:px-4 text-xs sm:text-sm font-medium text-zinc-100 focus:outline-none focus:ring-2 focus:ring-brand-end/50 focus:ring-offset-2 transition-all self-start sm:self-auto"
+              className="inline-flex items-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 px-3 py-2 sm:px-4 text-xs sm:text-sm font-medium text-zinc-100 focus:outline-none focus:ring-2 focus:ring-brand/50 focus:ring-offset-2 transition-all self-start sm:self-auto"
               onClick={handleCreateClick}
             >
               <IconPlus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />새 조건

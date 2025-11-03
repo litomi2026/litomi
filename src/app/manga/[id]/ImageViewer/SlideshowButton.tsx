@@ -121,7 +121,7 @@ function SlideshowButton({ className = '', maxImageIndex, offset, onIntervalChan
             <strong>반복</strong>
             <Toggle
               aria-label="슬라이드쇼 반복"
-              className="w-14 peer-checked:bg-brand-end/80"
+              className="w-14 peer-checked:bg-brand/80"
               defaultChecked={isChecked}
               onToggle={setIsChecked}
             />

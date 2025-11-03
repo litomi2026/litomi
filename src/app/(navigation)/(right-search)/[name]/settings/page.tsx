@@ -36,7 +36,7 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
   const languageSelector = (
     <CollapsibleSection
       description="이 기기에서 사용할 언어를 선택하세요"
-      icon={<Languages className="size-5 shrink-0 text-brand-end" />}
+      icon={<Languages className="size-5 shrink-0 text-brand" />}
       id="language"
       title="언어"
     >
@@ -47,7 +47,7 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
   const themeSelector = (
     <CollapsibleSection
       description="원하는 색상 테마를 선택하세요"
-      icon={<Palette className="size-5 shrink-0 text-brand-end" />}
+      icon={<Palette className="size-5 shrink-0 text-brand" />}
       id="theme"
       title="테마"
     >
@@ -81,7 +81,7 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
       {themeSelector}
       <CollapsibleSection
         description="관심 키워드를 등록하여 새로운 작품 알림을 받아보세요"
-        icon={<CaseSensitive className="size-5 shrink-0 text-brand-end" />}
+        icon={<CaseSensitive className="size-5 shrink-0 text-brand" />}
         id="keyword"
         title="키워드 알림"
       >
@@ -93,7 +93,7 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
       </CollapsibleSection>
       <CollapsibleSection
         description="새로운 업데이트를 실시간으로 받아보세요"
-        icon={<IconBell className="size-5 shrink-0 text-brand-end" />}
+        icon={<IconBell className="size-5 shrink-0 text-brand" />}
         id="push"
         title="푸시 알림"
       >

@@ -58,7 +58,7 @@ export default function LibrarySidebar({
           description={info.description}
           href="/library"
           icon={<LibraryBig className="size-4 text-background" />}
-          iconBackground="linear-gradient(to bottom right, var(--color-brand-start), var(--color-brand-end))"
+          iconBackground="linear-gradient(to bottom right, var(--color-brand-start), var(--color-brand))"
           onClick={onClick}
           title={info.title}
         />
@@ -67,7 +67,7 @@ export default function LibrarySidebar({
           description={historyCount !== undefined ? `${formatNumber(historyCount, 'ko')}개 작품` : '최근 읽은 작품'}
           href="/library/history"
           icon={<Clock className="size-4 text-background" />}
-          iconBackground="var(--color-brand-end)"
+          iconBackground="var(--color-brand)"
           onClick={onClick}
           title="감상 기록"
         />
@@ -75,7 +75,7 @@ export default function LibrarySidebar({
           description={bookmarkCount !== undefined ? `${formatNumber(bookmarkCount, 'ko')}개 작품` : '즐겨찾기한 작품'}
           href="/library/bookmark"
           icon={<Bookmark className="size-4 text-background" />}
-          iconBackground="var(--color-brand-end)"
+          iconBackground="var(--color-brand)"
           onClick={onClick}
           title="북마크"
         />
@@ -83,7 +83,7 @@ export default function LibrarySidebar({
           description={ratingCount !== undefined ? `${formatNumber(ratingCount, 'ko')}개 작품` : '평가한 작품'}
           href="/library/rating"
           icon={<Star className="size-4 text-background" />}
-          iconBackground="var(--color-brand-end)"
+          iconBackground="var(--color-brand)"
           onClick={onClick}
           title="평가"
         />

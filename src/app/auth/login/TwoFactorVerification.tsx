@@ -92,7 +92,7 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
               <span className="ml-2 text-sm text-zinc-400">이 브라우저 신뢰 (30일)</span>
               <Toggle
                 aria-label="브라우저 신뢰하기"
-                className="w-10 peer-checked:bg-brand-end/80"
+                className="w-10 peer-checked:bg-brand/80"
                 defaultChecked={defaultTrustBrowser === 'on'}
                 disabled={isPending || isBackupCode}
                 name="trustBrowser"
@@ -100,8 +100,8 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
             </label>
           </div>
           <button
-            className="flex w-full items-center justify-center rounded-lg bg-brand-end px-4 py-3 font-semibold text-background transition 
-            hover:bg-brand-end/90 disabled:opacity-50"
+            className="flex w-full items-center justify-center rounded-lg bg-brand px-4 py-3 font-semibold text-background transition 
+            hover:bg-brand/90 disabled:opacity-50"
             disabled={isPending}
             type="submit"
           >

@@ -63,15 +63,15 @@ export function getDeviceInfo(deviceType: string) {
   switch (deviceType) {
     case 'cross-platform':
       return {
-        icon: <IconUSB className="size-6 text-brand-end" />,
+        icon: <IconUSB className="size-6 text-brand" />,
         label: '외부 보안키',
-        bgColor: 'bg-brand-end/10',
+        bgColor: 'bg-brand/10',
       }
     case 'platform':
       return {
-        icon: <IconSmartphone className="size-6 text-brand-end" />,
+        icon: <IconSmartphone className="size-6 text-brand" />,
         label: '내장 인증',
-        bgColor: 'bg-brand-end/10',
+        bgColor: 'bg-brand/10',
       }
     default:
       return {

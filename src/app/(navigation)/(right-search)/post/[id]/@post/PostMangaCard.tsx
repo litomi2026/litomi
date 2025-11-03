@@ -24,7 +24,7 @@ export default function PostMangaCard({ mangaId }: Props) {
       )}
       <div className="flex flex-col gap-2 min-w-0 flex-1">
         <div className="flex items-start gap-2">
-          <MessageCircle className="size-5 text-brand-end shrink-0 mt-0.5" />
+          <MessageCircle className="size-5 text-brand shrink-0 mt-0.5" />
           <h3 className="font-bold text-base leading-tight line-clamp-2 wrap-break-word break-all">{manga?.title}</h3>
         </div>
         <span className="text-sm text-zinc-400">작품 보기</span>

@@ -389,8 +389,8 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
             초기화
           </button>
           <button
-            className="flex items-center justify-center flex-1 mb-safe px-3 py-2 bg-brand-end text-background font-medium rounded-lg transition
-                focus:outline-none focus:ring-2 focus:ring-brand-end/50 hover:bg-brand-end/90 disabled:opacity-50"
+            className="flex items-center justify-center flex-1 mb-safe px-3 py-2 bg-brand text-background font-medium rounded-lg transition
+                focus:outline-none focus:ring-2 focus:ring-brand/50 hover:bg-brand/90 disabled:opacity-50"
             disabled={isPending}
             type="submit"
           >

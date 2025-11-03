@@ -49,7 +49,7 @@ function CensorshipCreationBar() {
       setShowSuggestions(false)
       resetSelection()
       inputRef.current?.blur()
-      queryClient.invalidateQueries({ queryKey: QueryKeys.censorships })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.censorship })
     },
   })
 
@@ -205,7 +205,7 @@ function CensorshipCreationBar() {
           autoCapitalize="off"
           autoComplete="off"
           className="w-full pl-4 pr-20 sm:pr-12 py-3 bg-zinc-800/70 rounded-lg border-2 border-zinc-700 outline-none transition
-          focus:border-brand-end focus:bg-zinc-800 placeholder:text-zinc-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          focus:border-brand focus:bg-zinc-800 placeholder:text-zinc-500 disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={isSubmitting}
           name="censorships"
           onBlur={handleBlur}

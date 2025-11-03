@@ -133,7 +133,7 @@ function renderHighlightedText(text: string, searchTerm: string) {
   return (
     <>
       {beforeMatch}
-      <span className="text-brand-end">{matchedText}</span>
+      <span className="text-brand">{matchedText}</span>
       {afterMatch}
     </>
   )

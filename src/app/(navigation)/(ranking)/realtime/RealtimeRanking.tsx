@@ -44,7 +44,7 @@ export default function RealtimeRanking() {
               </p>
             </div>
             <div className="flex size-20 items-center justify-center rounded-full bg-zinc-700/50">
-              <Users className="size-10 text-brand-end" />
+              <Users className="size-10 text-brand" />
             </div>
           </div>
           <div className="mt-4 text-xs text-zinc-500">
@@ -102,7 +102,7 @@ export default function RealtimeRanking() {
                       </div>
                     </td>
                     <td className="p-4 py-3 text-right">
-                      <span className="text-sm font-semibold text-brand-end">{item.activeUsers.toLocaleString()}</span>
+                      <span className="text-sm font-semibold text-brand">{item.activeUsers.toLocaleString()}</span>
                     </td>
                   </tr>
                 ))}

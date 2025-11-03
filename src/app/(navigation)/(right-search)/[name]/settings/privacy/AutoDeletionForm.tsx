@@ -42,7 +42,7 @@ export default function AutoDeletionForm({ autoDeletionDays }: Props) {
             <label
               aria-selected={selectedDays === option.value}
               className="relative flex items-center gap-3 px-4 py-3 rounded-lg border cursor-pointer transition border-zinc-800 hover:border-zinc-700 text-zinc-300
-                aria-selected:border-brand-end aria-selected:bg-brand-end/10 aria-selected:text-zinc-100"
+                aria-selected:border-brand aria-selected:bg-brand/10 aria-selected:text-zinc-100"
               key={option.value}
             >
               <input
@@ -57,7 +57,7 @@ export default function AutoDeletionForm({ autoDeletionDays }: Props) {
                 <div className="font-medium text-sm">{option.label}</div>
                 {option.value > 0 && <div className="text-xs text-zinc-500 mt-0.5">{option.value}일 후 자동 삭제</div>}
               </div>
-              {selectedDays === option.value && <div className="w-2 h-2 rounded-full bg-brand-end" />}
+              {selectedDays === option.value && <div className="w-2 h-2 rounded-full bg-brand" />}
             </label>
           ))}
         </div>
@@ -70,9 +70,9 @@ export default function AutoDeletionForm({ autoDeletionDays }: Props) {
         )}
       </div>
       <button
-        className="p-2 relative bg-brand-end font-medium text-background rounded-lg transition text-sm w-full
-          hover:bg-brand-end/90 disabled:opacity-50
-          focus:outline-none focus:ring-2 focus:ring-brand-end/50 focus:ring-offset-2 focus:ring-offset-zinc-900"
+        className="p-2 relative bg-brand font-medium text-background rounded-lg transition text-sm w-full
+          hover:bg-brand/90 disabled:opacity-50
+          focus:outline-none focus:ring-2 focus:ring-brand/50 focus:ring-offset-2 focus:ring-offset-zinc-900"
         disabled={isPending}
         type="submit"
       >

@@ -265,7 +265,7 @@ export default function RatingInput({ mangaId, className = '', onClick }: Props)
             <Star
               aria-current={value <= displayRating}
               aria-pressed={hoveredRating > 0 && value === displayRating}
-              className="size-10 sm:size-12 transition text-zinc-600 aria-current:fill-brand-end aria-current:text-brand-end aria-pressed:scale-125 aria-pressed:rotate-12"
+              className="size-10 sm:size-12 transition text-zinc-600 aria-current:fill-brand aria-current:text-brand aria-pressed:scale-125 aria-pressed:rotate-12"
             />
           </button>
         ))}
@@ -274,7 +274,7 @@ export default function RatingInput({ mangaId, className = '', onClick }: Props)
         <div className="grid gap-1 min-h-16">
           <div
             aria-current={displayRating > 0}
-            className="text-2xl sm:text-3xl font-bold text-zinc-500 aria-current:text-brand-end transition"
+            className="text-2xl sm:text-3xl font-bold text-zinc-500 aria-current:text-brand transition"
           >
             {displayRating}.0
             <span className="text-base sm:text-lg ml-2 text-zinc-400">/ 5.0</span>

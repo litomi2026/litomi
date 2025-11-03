@@ -25,11 +25,11 @@ export default function NotFound() {
           },
         ]}
         description="작품을 읽으면 자동으로 기록이 남아요"
-        icon={<Clock className="size-12 text-brand-end" />}
+        icon={<Clock className="size-12 text-brand" />}
         title="아직 읽은 작품이 없어요"
       >
         <Link
-          className="px-6 py-3 rounded-2xl bg-brand-end font-semibold text-background hover:opacity-80 transition"
+          className="px-6 py-3 rounded-2xl bg-brand font-semibold text-background hover:opacity-80 transition"
           href="/new/1"
         >
           작품 둘러보기

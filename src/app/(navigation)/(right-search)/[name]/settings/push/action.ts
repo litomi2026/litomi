@@ -93,7 +93,6 @@ export async function testNotification(data: Record<string, unknown>) {
   const notificationService = WebPushService.getInstance()
 
   try {
-    // Send web push notification
     await notificationService.sendTestWebPushToEndpoint(userId, endpoint, {
       title: '테스트 알림',
       body: message,
@@ -102,14 +101,12 @@ export async function testNotification(data: Record<string, unknown>) {
       data: { url: 'https://litomi.in' },
     })
 
-    // Create a test notification record in the database
-    // Test notifications don't need manga-specific data
     await db.insert(notificationTable).values({
       userId,
       type: NotificationType.TEST,
       title: '테스트 알림',
       body: message,
-      data: null, // No data needed for test notifications
+      data: null,
       sentAt: new Date(),
     })
 

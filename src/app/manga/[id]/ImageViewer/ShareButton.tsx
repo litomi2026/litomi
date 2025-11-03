@@ -80,7 +80,7 @@ export default function ShareButton({ manga, ...props }: Props) {
             <>
               <button
                 aria-label="기기 공유"
-                className="flex justify-center items-center gap-2 text-sm font-semibold rounded-xl p-3 w-full transition bg-zinc-800 hover:bg-zinc-700 active:scale-95"
+                className="flex justify-center items-center gap-2 text-sm font-semibold rounded-xl p-3 w-full transition bg-zinc-800 hover:bg-zinc-700 active:scale-98"
                 onClick={handleNativeShare}
                 type="button"
               >

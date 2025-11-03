@@ -50,12 +50,12 @@ export default function HistoryPageClient({ initialData }: Props) {
                       <CensoredManga mangaId={mangaId} />
                       <MangaCard className="h-full rounded-b-xs" index={index} manga={manga} />
                       <div className="absolute bottom-0 left-0 right-0 from-black/80 to-transparent pointer-events-none">
-                        <div className="text-xs bg-brand-end/80 mx-auto w-fit px-2 py-0.5 mb-1 rounded text-background opacity-0 transition group-hover:opacity-100">
+                        <div className="text-xs bg-brand/80 mx-auto w-fit px-2 py-0.5 mb-1 rounded text-background opacity-0 transition group-hover:opacity-100">
                           {lastPage}/{manga.count ?? 0}p
                         </div>
                         <div className="h-1 bg-zinc-800 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-brand-end"
+                            className="h-full bg-brand"
                             style={{ width: `${(lastPage / (manga.count ?? 1)) * 100}%` }}
                           />
                         </div>

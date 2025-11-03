@@ -26,7 +26,7 @@ export default function useCensorshipsMapQuery() {
   const userId = me?.id
 
   return useQuery({
-    queryKey: QueryKeys.censorships,
+    queryKey: QueryKeys.censorship,
     queryFn: fetchCensorshipsMap,
     enabled: Boolean(userId),
   })

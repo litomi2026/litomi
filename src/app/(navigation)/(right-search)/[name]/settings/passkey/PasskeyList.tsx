@@ -32,7 +32,7 @@ export default function PasskeyList({ passkeys }: Readonly<Props>) {
           },
         ]}
         description="패스키로 비밀번호 없이 안전하게 로그인하세요"
-        icon={<Fingerprint className="size-12 text-brand-end" />}
+        icon={<Fingerprint className="size-12 text-brand" />}
         title="아직 패스키가 없어요"
       >
         <PasskeyRegisterButton />

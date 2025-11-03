@@ -37,11 +37,11 @@ export default function TwoFactorOnboarding({ onSuccess }: Props) {
         },
       ]}
       description="인증 앱을 통해 계정을 이중으로 보호하세요"
-      icon={<RectangleEllipsis className="size-12 text-brand-end" />}
+      icon={<RectangleEllipsis className="size-12 text-brand" />}
       title="2단계 인증이 꺼져있어요"
     >
       <button
-        className="px-6 py-3 rounded-2xl bg-brand-end font-semibold text-background hover:opacity-80 transition disabled:cursor-not-allowed disabled:opacity-50"
+        className="px-6 py-3 rounded-2xl bg-brand font-semibold text-background hover:opacity-80 transition disabled:cursor-not-allowed disabled:opacity-50"
         disabled={isSettingUp}
         onClick={() => setupAction()}
       >

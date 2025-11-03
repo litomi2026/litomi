@@ -307,7 +307,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
                   <Toggle
                     aria-label="최근 검색 자동 저장"
                     checked={isEnabled}
-                    className="w-10 peer-checked:bg-brand-end/80"
+                    className="w-10 peer-checked:bg-brand/80"
                     onToggle={toggleEnabled}
                   />
                 </label>
