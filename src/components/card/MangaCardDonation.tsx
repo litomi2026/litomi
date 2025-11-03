@@ -49,7 +49,7 @@ export default function MangaCardDonation() {
 
   return (
     <MangaCardSkeleton className="aspect-auto">
-      <div className="flex flex-col items-center gap-6 p-6 text-center" ref={cardRef}>
+      <div className="flex flex-col items-center gap-6 p-4 sm:p-6 text-center" ref={cardRef}>
         <div className="flex flex-col items-center gap-3">
           <div className="relative">
             <div className="absolute inset-0 rounded-full bg-brand-end/10 animate-pulse-ring" />
@@ -120,7 +120,7 @@ export default function MangaCardDonation() {
                 Ko-fi
               </a>
               <a
-                className="p-1 py-2 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition text-sm font-medium text-center"
+                className="py-2 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition text-sm font-medium text-center"
                 href="https://opencollective.com/litomi"
                 onClick={() => handleDonationClick('open_collective')}
                 rel="noopener"
