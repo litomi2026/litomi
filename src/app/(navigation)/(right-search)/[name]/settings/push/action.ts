@@ -103,17 +103,13 @@ export async function testNotification(data: Record<string, unknown>) {
     })
 
     // Create a test notification record in the database
+    // Test notifications don't need manga-specific data
     await db.insert(notificationTable).values({
       userId,
       type: NotificationType.TEST,
       title: '테스트 알림',
       body: message,
-      data: JSON.stringify({
-        url: 'https://litomi.in',
-        mangaId: 0, // Test notification doesn't have a real manga ID
-        previewImageURL: '/image/logo.webp', // Use the logo as preview image for test notifications
-        isTest: true,
-      }),
+      data: null, // No data needed for test notifications
       sentAt: new Date(),
     })
 

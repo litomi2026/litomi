@@ -100,6 +100,8 @@ export default function NotificationCard({
         return <IconBookmark className="w-5" />
       case NotificationType.NEW_MANGA:
         return <IconBook className="w-5" />
+      case NotificationType.TEST:
+        return <IconBell className="w-5" />
       default:
         return <IconBell className="w-5" />
     }
@@ -144,7 +146,7 @@ export default function NotificationCard({
             <button
               className="p-1.5 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 transition"
               onClick={(e) => {
-                e.stopPropagation()
+                e.preventDefault()
                 onMarkAsRead(notification.id)
               }}
               title="읽음 표시"
@@ -156,7 +158,7 @@ export default function NotificationCard({
             <button
               className="p-1.5 rounded-lg bg-zinc-800/80 hover:bg-red-900 hover:text-red-400 transition"
               onClick={(e) => {
-                e.stopPropagation()
+                e.preventDefault()
                 onDelete(notification.id)
               }}
               title="삭제"
@@ -194,7 +196,7 @@ export default function NotificationCard({
               <p className="text-xs text-zinc-400 line-clamp-1 mt-1">작가: {parsedData.artists.join(', ')}</p>
             )}
           </div>
-          {parsedData && (
+          {parsedData && parsedData.mangaId && parsedData.previewImageURL && (
             <img
               alt={parsedData.mangaId.toString()}
               className="rounded-md object-cover aspect-3/4"
