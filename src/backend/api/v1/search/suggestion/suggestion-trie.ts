@@ -5,10 +5,10 @@ import { getAllGroupsWithLabels } from '@/translation/group'
 import { getAllLanguagesWithLabels, translateLanguage } from '@/translation/language'
 import { getAllSeriesWithLabels } from '@/translation/series'
 import tagCategoryTranslations from '@/translation/tag-category.json'
-import tagMaleFemaleTranslations from '@/translation/tag-male-female.json'
 import tagMixedTranslations from '@/translation/tag-mixed.json'
 import tagOtherTranslations from '@/translation/tag-other.json'
-import tagTranslations from '@/translation/tag.json'
+import tagSingleSexTranslations from '@/translation/tag-single-sex.json'
+import tagUnisexTranslations from '@/translation/tag-unisex.json'
 import { getAllTypesWithLabels } from '@/translation/type'
 
 import SuggestionTrie, { SuggestionItem } from './trie'
@@ -211,7 +211,7 @@ function insertWithWordVariants(trie: SuggestionTrie, key: string, suggestion: S
   })
 
   // Add male/female tags
-  Object.entries(tagMaleFemaleTranslations).forEach(([tag, translations]) => {
+  Object.entries(tagUnisexTranslations).forEach(([tag, translations]) => {
     ;['female', 'male'].forEach((category) => {
       const value = `${category}:${tag}`
       const labels = getLabels(tag, { [tag]: translations }, category)
@@ -255,7 +255,7 @@ function insertWithWordVariants(trie: SuggestionTrie, key: string, suggestion: S
   })
 
   // Add special tag translations
-  Object.entries(tagTranslations).forEach(([fullTag, translations]) => {
+  Object.entries(tagSingleSexTranslations).forEach(([fullTag, translations]) => {
     const [category, tag] = fullTag.includes(':') ? fullTag.split(':') : ['', fullTag]
 
     if (category && tag) {
