@@ -56,8 +56,20 @@ export default async function Page() {
           <li>iOS Safari 16</li>
         </ul>
         <h3 className="mt-6 text-center">시행일 2025-10-20</h3>
-        {VERCEL_DEPLOYMENT_ID && <h4 className="mt-6 text-center">배포 ID {VERCEL_DEPLOYMENT_ID}</h4>}
-        {VERCEL_GIT_COMMIT_SHA && <h4 className="mt-6 text-center">커밋 해시 {VERCEL_GIT_COMMIT_SHA}</h4>}
+        <div className="flex flex-col items-center gap-2 text-xs text-center text-zinc-600">
+          {VERCEL_DEPLOYMENT_ID && (
+            <>
+              <h4>배포 ID</h4>
+              <p className="wrap-break-word">{VERCEL_DEPLOYMENT_ID}</p>
+            </>
+          )}
+          {VERCEL_GIT_COMMIT_SHA && (
+            <>
+              <h4>커밋 해시</h4>
+              <p className="wrap-break-word">{VERCEL_GIT_COMMIT_SHA.slice(0, 10)}</p>
+            </>
+          )}
+        </div>
       </div>
     </div>
   )
