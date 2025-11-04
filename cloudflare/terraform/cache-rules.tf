@@ -11,17 +11,14 @@ locals {
     "/doc/terms",
     "/manga",
     "/new",
-    "/notification",
     "/offline.html",
     "/posts",
     "/realtime",
     "/search",
     "/404",
-    "/@",
   ]
 
   ttl_30d_extension_equals = [
-    "json",
     "webmanifest",
   ]
 
@@ -30,11 +27,13 @@ locals {
     "/apple-icon.",
     "/favicon.",
     "/icon.",
-    "/image/logo.",
+    "/image/",
     "/manga/",
+    "/notification",
+    "/og-image.",
     "/posts/",
     "/web-app-manifest",
-    "/@/",
+    "/@",
   ]
 
   ttl_day_path_prefixes = [
