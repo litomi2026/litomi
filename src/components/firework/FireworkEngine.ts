@@ -599,15 +599,15 @@ class FireworkEngine {
   }
 
   private handleKeydown = (event: KeyboardEvent) => {
-    const key = event.key.toLowerCase()
+    const code = event.code
 
-    if (key === 'p') {
+    if (code === 'Space') {
       this.togglePause()
-    } else if (key === 'o') {
+    } else if (code === 'KeyO') {
       this.toggleMenu(undefined, true)
-    } else if (key === 'escape') {
+    } else if (code === 'Escape') {
       this.toggleMenu(false, true)
-    } else if (key === 's') {
+    } else if (code === 'KeyM') {
       this.toggleSound(!this.soundEnabled)
     }
   }
