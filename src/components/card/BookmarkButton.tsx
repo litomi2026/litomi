@@ -42,7 +42,7 @@ export default function BookmarkButton({ manga, className }: Props) {
           <div className="flex items-center justify-between gap-2 w-full">
             <span>북마크를 추가했어요</span>
             <button
-              className="text-brand hover:underline text-sm font-bold"
+              className="hover:underline text-sm font-bold"
               onClick={() => {
                 toast.dismiss()
                 openLibraryModal(mangaId)
@@ -85,13 +85,15 @@ export default function BookmarkButton({ manga, className }: Props) {
     shouldSetResponse: false,
   })
 
-  function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
+  function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
+    e.stopPropagation()
+
     if (!me) {
-      event.preventDefault()
-      toast.warning(
+      e.preventDefault()
+      const toastId = toast.warning(
         <div className="flex gap-2 items-center">
           <div>로그인이 필요해요</div>
-          <LoginPageLink>로그인하기</LoginPageLink>
+          <LoginPageLink onClick={() => toast.dismiss(toastId)}>로그인하기</LoginPageLink>
         </div>,
       )
     }
