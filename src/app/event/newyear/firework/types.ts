@@ -8,4 +8,5 @@ export interface FireworkConfig {
   shell: string
   size: string
   skyLighting: string
+  soundEnabled?: boolean
 }

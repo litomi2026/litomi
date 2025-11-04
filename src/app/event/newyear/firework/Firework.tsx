@@ -63,6 +63,9 @@ export default function Firework({ config: initialConfig, className = '' }: Fire
       .then(() => {
         setIsLoading(false)
         engine.togglePause(false)
+        if (config.soundEnabled) {
+          engine.toggleSound(true)
+        }
       })
       .catch((error: Error) => {
         console.error('Failed to initialize firework engine:', error)
@@ -508,7 +511,7 @@ const helpContent = {
   },
 }
 
-function getDefaultConfig({ autoLaunch, quality }: FireworkConfig) {
+function getDefaultConfig({ autoLaunch, quality, soundEnabled }: FireworkConfig) {
   if (typeof window !== 'undefined') {
     try {
       const saved = sessionStorage.getItem('cm_fireworks_data')
@@ -525,6 +528,7 @@ function getDefaultConfig({ autoLaunch, quality }: FireworkConfig) {
             hideControls: false,
             longExposure: false,
             scaleFactor: data.scaleFactor || 1.0,
+            soundEnabled,
           }
         }
       }
@@ -542,5 +546,6 @@ function getDefaultConfig({ autoLaunch, quality }: FireworkConfig) {
     hideControls: false,
     longExposure: false,
     scaleFactor: 1.0,
+    soundEnabled,
   }
 }
