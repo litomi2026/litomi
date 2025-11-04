@@ -4,16 +4,16 @@ import { MangaTag } from '@/types/manga'
 
 import { Multilingual, normalizeValue } from './common'
 import tagCategoryJSON from './tag-category.json'
-import tagMaleFemaleMixedJSON from './tag-male-female.json'
 import tagMixedJSON from './tag-mixed.json'
 import tagOtherJSON from './tag-other.json'
-import tagTranslationJSON from './tag.json'
+import tagSingleSexJSON from './tag-single-sex.json'
+import tagUnisexTranslations from './tag-unisex.json'
 
-const TAG_MALE_FEMALE_MIXEDTRANSLATION: Record<string, Multilingual | undefined> = tagMaleFemaleMixedJSON
-const TAG_OTHER_TRANSLATION: Record<string, Multilingual | undefined> = tagOtherJSON
-const TAG_MIXED_TRANSLATION: Record<string, Multilingual | undefined> = tagMixedJSON
 const TAG_CATEGORY_TRANSLATION: Record<string, Multilingual | undefined> = tagCategoryJSON
-const TAG_TRANSLATION: Record<string, Multilingual | undefined> = tagTranslationJSON
+const TAG_MIXED_TRANSLATION: Record<string, Multilingual | undefined> = tagMixedJSON
+const TAG_OTHER_TRANSLATION: Record<string, Multilingual | undefined> = tagOtherJSON
+const TAG_SINGLE_SEX_TRANSLATION: Record<string, Multilingual | undefined> = tagSingleSexJSON
+const TAG_UNISEX_TRANSLATION: Record<string, Multilingual | undefined> = tagUnisexTranslations
 
 export function translateTag(categoryFallback: string, value: string, locale: keyof Multilingual): MangaTag {
   const normalizedValue = normalizeValue(value)
@@ -35,7 +35,7 @@ function findTranslation(
   translation: Multilingual | null
   category: string
 } {
-  const translation = TAG_TRANSLATION[`${category}:${normalizedValue}`]
+  const translation = TAG_SINGLE_SEX_TRANSLATION[`${category}:${normalizedValue}`]
   if (translation) {
     return {
       translation,
@@ -51,7 +51,7 @@ function findTranslation(
     }
   }
 
-  const maleFemaleMixedTranslation = TAG_MALE_FEMALE_MIXEDTRANSLATION[normalizedValue]
+  const maleFemaleMixedTranslation = TAG_UNISEX_TRANSLATION[normalizedValue]
   if (maleFemaleMixedTranslation) {
     return {
       translation: maleFemaleMixedTranslation,
