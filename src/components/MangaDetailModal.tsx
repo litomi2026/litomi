@@ -91,8 +91,7 @@ export function MangaDetailModal() {
       ? description.slice(0, MAX_MANGA_DESCRIPTION_LENGTH) + '...'
       : description
 
-  const commonButtonStyle =
-    'flex-1 bg-zinc-900 rounded-lg p-1 px-2 border-2 h-full w-full transition disabled:bg-zinc-800 disabled:pointer-events-none disabled:text-zinc-500 disabled:cursor-not-allowed hover:bg-zinc-800 active:bg-zinc-900 active:border-zinc-700'
+  const commonButtonStyle = 'flex-1 bg-zinc-900 rounded-lg p-1 px-2 border-2 h-full w-full'
 
   // NOTE: 페이지 이동 시 모달 닫기
   useEffect(() => {
