@@ -105,7 +105,7 @@ export default function NewYearCountdown({ onCountdownComplete, onCountingDown }
   }
 
   return (
-    <div className="fixed top-1/4 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+    <div className="fixed top-1/4 left-1/2 -translate-x-1/2 z-20">
       <div className="text-center">
         <div className="font-['Russo_One',arial,sans-serif] text-2xl md:text-3xl lg:text-4xl font-bold text-white/80 mb-6 drop-shadow-[0_0_10px_rgba(255,255,255,0.6)]">
           새해 카운트다운
