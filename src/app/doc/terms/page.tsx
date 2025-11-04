@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 
 import { CANONICAL_URL, defaultOpenGraph, SHORT_NAME } from '@/constants'
+import { VERCEL_DEPLOYMENT_ID, VERCEL_GIT_COMMIT_SHA } from '@/constants/env'
 
 export const metadata: Metadata = {
   title: '이용약관',
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
 export default async function Page() {
   return (
     <div className="p-4 md:p-16 [&_h2]:text-xl [&_h2]:font-semibold [&_ul]:list-disc [&_ul]:list-inside">
-      <div className="max-w-prose mx-auto">
+      <div className="max-w-prose mx-auto pb-safe px-safe">
         <h1 className="text-3xl font-bold mb-6">이용약관</h1>
         <h2 className="mb-3">제 1 조 (목적)</h2>
         <p className="mb-4">
@@ -55,6 +56,8 @@ export default async function Page() {
           <li>iOS Safari 16</li>
         </ul>
         <h3 className="mt-6 text-center">시행일 2025-10-20</h3>
+        {VERCEL_DEPLOYMENT_ID && <h4 className="mt-6 text-center">배포 ID {VERCEL_DEPLOYMENT_ID}</h4>}
+        {VERCEL_GIT_COMMIT_SHA && <h4 className="mt-6 text-center">커밋 해시 {VERCEL_GIT_COMMIT_SHA}</h4>}
       </div>
     </div>
   )
