@@ -477,7 +477,7 @@ function TouchAreaOverlay({ showController }: TouchAreaOverlayProps) {
     <div
       aria-hidden={!showController}
       aria-orientation={isHorizontal ? 'horizontal' : 'vertical'}
-      className="absolute inset-0 z-10 pointer-events-none flex transition-opacity text-foreground text-xs font-medium aria-hidden:opacity-0 aria-[orientation=vertical]:flex-col"
+      className="absolute inset-0 z-10 pointer-events-none flex transition text-foreground text-xs font-medium aria-hidden:opacity-0 aria-[orientation=vertical]:flex-col"
     >
       <div className="flex-1 flex items-center justify-center">
         <span className="px-4 py-2 rounded-full bg-background/80 border border-foreground/40">

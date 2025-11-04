@@ -27,7 +27,7 @@ export default function SoundButton({ engineRef, isLoading }: Props) {
   return (
     <button
       aria-label={soundEnabled ? 'Sound On' : 'Sound Off'}
-      className="flex h-[50px] w-[50px] cursor-default select-none opacity-[0.16] transition-opacity duration-300 hover:opacity-[0.32]"
+      className="flex h-[50px] w-[50px] cursor-default select-none opacity-[0.16] transition duration-300 hover:opacity-[0.32]"
       onClick={handleToggleSound}
       type="button"
     >

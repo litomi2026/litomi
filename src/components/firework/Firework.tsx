@@ -126,10 +126,7 @@ export default function Firework({ config: initialConfig, className = '' }: Fire
       )}
 
       {/* Canvas Container */}
-      <div
-        className={`h-full w-full transition-all duration-300 ${menuOpen ? 'blur-md' : ''}`}
-        ref={canvasContainerRef}
-      >
+      <div className={`h-full w-full transition ${menuOpen ? 'blur-md' : ''}`} ref={canvasContainerRef}>
         <canvas
           className="absolute mix-blend-lighten transform-[translateZ(0)]"
           id="trails-canvas"
@@ -140,15 +137,14 @@ export default function Firework({ config: initialConfig, className = '' }: Fire
 
       {/* Controls */}
       <div
-        className={`absolute left-0 right-0 top-0 flex justify-between pb-[50px] transition-all duration-300 ${
-          menuOpen || config.hideControls ? 'pointer-events-none invisible opacity-0' : ''
-        }`}
+        aria-hidden={menuOpen || config.hideControls}
+        className="absolute left-0 right-0 top-0 flex justify-between pb-[50px] transition aria-hidden:pointer-events-none aria-hidden:invisible aria-hidden:opacity-0"
       >
         <PauseButton engineRef={engineRef} isLoading={isLoading} />
         <SoundButton engineRef={engineRef} isLoading={isLoading} />
         <button
           aria-label="Settings"
-          className="flex h-[50px] w-[50px] cursor-default select-none opacity-[0.16] transition-opacity duration-300 hover:opacity-[0.32]"
+          className="flex h-[50px] w-[50px] cursor-default select-none opacity-[0.16] transition hover:opacity-[0.32]"
           onClick={() => handleToggleMenu(!menuOpen)}
           type="button"
         >
@@ -160,11 +156,11 @@ export default function Firework({ config: initialConfig, className = '' }: Fire
 
       {/* Settings Menu */}
       {menuOpen && (
-        <div className="absolute inset-0 bg-[rgba(0,0,0,0.42)] transition-all duration-300">
-          <div className="absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-300">
+        <div className="absolute inset-0 bg-[rgba(0,0,0,0.42)] transition">
+          <div className="absolute inset-0 flex flex-col items-center justify-center transition">
             <button
               aria-label="Close"
-              className="absolute right-0 top-0 flex h-[50px] w-[50px] cursor-default select-none opacity-50 transition-opacity duration-300 hover:opacity-75"
+              className="absolute right-0 top-0 flex h-[50px] w-[50px] cursor-default select-none opacity-50 transition hover:opacity-75"
               onClick={() => handleToggleMenu(false)}
               type="button"
             >
@@ -181,11 +177,11 @@ export default function Firework({ config: initialConfig, className = '' }: Fire
             </div>
 
             <form
-              className="w-full max-w-[400px] overflow-auto px-[10px] transition-opacity duration-300"
+              className="w-full max-w-[400px] overflow-auto px-[10px] transition"
               style={{ opacity: helpTopic ? 0.12 : 1 }}
             >
               {/* Shell Type */}
-              <div className="my-[16px] flex items-center transition-opacity duration-300">
+              <div className="my-[16px] flex items-center transition">
                 <label
                   className="block w-1/2 select-none pr-[12px] text-right font-['Russo_One',arial,sans-serif] uppercase tracking-[0.06em] text-white/50 cursor-pointer"
                   onClick={() => setHelpTopic('shellType')}
@@ -236,7 +232,7 @@ export default function Firework({ config: initialConfig, className = '' }: Fire
                 </select>
               </div>
               {/* Shell Size */}
-              <div className="my-[16px] flex items-center transition-opacity duration-300">
+              <div className="my-[16px] flex items-center transition">
                 <label
                   className="block w-1/2 select-none pr-[12px] text-right font-['Russo_One',arial,sans-serif] uppercase tracking-[0.06em] text-white/50 cursor-pointer"
                   onClick={() => setHelpTopic('shellSize')}
@@ -269,7 +265,7 @@ export default function Firework({ config: initialConfig, className = '' }: Fire
                 </select>
               </div>
               {/* Quality */}
-              <div className="my-[16px] flex items-center transition-opacity duration-300">
+              <div className="my-[16px] flex items-center transition">
                 <label
                   className="block w-1/2 select-none pr-[12px] text-right font-['Russo_One',arial,sans-serif] uppercase tracking-[0.06em] text-white/50 cursor-pointer"
                   onClick={() => setHelpTopic('quality')}
@@ -293,7 +289,7 @@ export default function Firework({ config: initialConfig, className = '' }: Fire
                 </select>
               </div>
               {/* Sky Lighting */}
-              <div className="my-[16px] flex items-center transition-opacity duration-300">
+              <div className="my-[16px] flex items-center transition">
                 <label
                   className="block w-1/2 select-none pr-[12px] text-right font-['Russo_One',arial,sans-serif] uppercase tracking-[0.06em] text-white/50 cursor-pointer"
                   onClick={() => setHelpTopic('skyLighting')}
@@ -317,7 +313,7 @@ export default function Firework({ config: initialConfig, className = '' }: Fire
                 </select>
               </div>
               {/* Scale */}
-              <div className="my-[16px] flex items-center transition-opacity duration-300">
+              <div className="my-[16px] flex items-center transition">
                 <label
                   className="block w-1/2 select-none pr-[12px] text-right font-['Russo_One',arial,sans-serif] uppercase tracking-[0.06em] text-white/50 cursor-pointer"
                   onClick={() => setHelpTopic('scaleFactor')}
@@ -353,7 +349,7 @@ export default function Firework({ config: initialConfig, className = '' }: Fire
                 </select>
               </div>
               {/* Checkboxes */}
-              <div className="my-[16px] flex items-center transition-opacity duration-300">
+              <div className="my-[16px] flex items-center transition">
                 <label
                   className="block w-1/2 select-none pr-[12px] text-right font-['Russo_One',arial,sans-serif] uppercase tracking-[0.06em] text-white/50 cursor-pointer"
                   onClick={() => setHelpTopic('autoLaunch')}
@@ -367,10 +363,7 @@ export default function Firework({ config: initialConfig, className = '' }: Fire
                   type="checkbox"
                 />
               </div>
-              <div
-                className="my-[16px] flex items-center transition-opacity duration-300"
-                style={{ opacity: config.autoLaunch ? 1 : 0.32 }}
-              >
+              <div className="my-[16px] flex items-center transition" style={{ opacity: config.autoLaunch ? 1 : 0.32 }}>
                 <label
                   className="block w-1/2 select-none pr-[12px] text-right font-['Russo_One',arial,sans-serif] uppercase tracking-[0.06em] text-white/50 cursor-pointer"
                   onClick={() => setHelpTopic('finaleMode')}
@@ -385,7 +378,7 @@ export default function Firework({ config: initialConfig, className = '' }: Fire
                   type="checkbox"
                 />
               </div>
-              <div className="my-[16px] flex items-center transition-opacity duration-300">
+              <div className="my-[16px] flex items-center transition">
                 <label
                   className="block w-1/2 select-none pr-[12px] text-right font-['Russo_One',arial,sans-serif] uppercase tracking-[0.06em] text-white/50 cursor-pointer"
                   onClick={() => setHelpTopic('hideControls')}
@@ -399,7 +392,7 @@ export default function Firework({ config: initialConfig, className = '' }: Fire
                   type="checkbox"
                 />
               </div>
-              <div className="my-[16px] flex items-center transition-opacity duration-300">
+              <div className="my-[16px] flex items-center transition">
                 <label
                   className="block w-1/2 select-none pr-[12px] text-right font-['Russo_One',arial,sans-serif] uppercase tracking-[0.06em] text-white/50 cursor-pointer"
                   onClick={() => setHelpTopic('fullscreen')}
@@ -413,7 +406,7 @@ export default function Firework({ config: initialConfig, className = '' }: Fire
                   type="checkbox"
                 />
               </div>
-              <div className="my-[16px] flex items-center transition-opacity duration-300">
+              <div className="my-[16px] flex items-center transition">
                 <label
                   className="block w-1/2 select-none pr-[12px] text-right font-['Russo_One',arial,sans-serif] uppercase tracking-[0.06em] text-white/50 cursor-pointer"
                   onClick={() => setHelpTopic('longExposure')}
@@ -431,7 +424,7 @@ export default function Firework({ config: initialConfig, className = '' }: Fire
             <div className="mb-2.5 mt-auto pt-1.5 text-[0.8em] tracking-[0.06em] text-white/50 opacity-75">
               Passionately built by{' '}
               <a
-                className="text-white/50 no-underline transition-all duration-300 hover:text-white/75 hover:underline"
+                className="text-white/50 no-underline transition hover:text-white/75 hover:underline"
                 href="https://cmiller.tech/"
                 rel="noopener noreferrer"
                 target="_blank"
@@ -448,7 +441,7 @@ export default function Firework({ config: initialConfig, className = '' }: Fire
       {helpTopic && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/40 opacity-100" onClick={() => setHelpTopic(null)} />
-          <div className="relative m-2.5 flex max-h-[calc(100vh-100px)] w-full max-w-[400px] flex-col items-center rounded-[0.3em] bg-[rgba(0,0,0,0.4)] p-5 scale-100 opacity-100 transition-all duration-400 ease-out lg:max-w-[500px] lg:text-[1.25rem]">
+          <div className="relative m-2.5 flex max-h-[calc(100vh-100px)] w-full max-w-[400px] flex-col items-center rounded-[0.3em] bg-[rgba(0,0,0,0.4)] p-5 scale-100 opacity-100 transition lg:max-w-[500px] lg:text-[1.25rem]">
             <div className="text-center font-['Russo_One',arial,sans-serif] text-[1.75em] uppercase tracking-[0.06em] text-white/50">
               {helpContent[helpTopic as keyof typeof helpContent]?.header}
             </div>
@@ -459,7 +452,7 @@ export default function Firework({ config: initialConfig, className = '' }: Fire
               {helpContent[helpTopic as keyof typeof helpContent]?.body}
             </div>
             <button
-              className="mt-[0.36em] shrink-0 rounded-[2px] border-none bg-white/25 px-[0.75em] py-[0.25em] font-['Russo_One',arial,sans-serif] text-[1em] uppercase tracking-[0.06em] text-white/50 outline-none transition-all duration-300 hover:bg-[#09f] hover:text-white"
+              className="mt-[0.36em] shrink-0 rounded-[2px] border-none bg-white/25 px-[0.75em] py-[0.25em] font-['Russo_One',arial,sans-serif] text-[1em] uppercase tracking-[0.06em] text-white/50 outline-none transition hover:bg-[#09f] hover:text-white"
               onClick={() => setHelpTopic(null)}
               type="button"
             >
