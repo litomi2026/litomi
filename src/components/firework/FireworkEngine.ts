@@ -43,6 +43,7 @@ interface EngineOptions {
   onConfigUpdate?: (config: FireworkConfig) => void
   onMenuToggle?: (menuOpen: boolean) => void
   onPauseToggle?: (paused: boolean) => void
+  onSoundToggle?: (enabled: boolean) => void
   trailsCanvas: HTMLCanvasElement
 }
 
@@ -161,6 +162,10 @@ interface StarInstance {
 }
 
 class FireworkEngine {
+  public onMenuToggle?: (menuOpen: boolean) => void
+  public onPauseToggle?: (paused: boolean) => void
+  public onSoundToggle?: (enabled: boolean) => void
+
   private animationFrameId: number | null = null
   private autoLaunchTime = 0
   private BurstFlash!: BurstFlashCollection
@@ -181,8 +186,6 @@ class FireworkEngine {
   private lastFrameTime = 0
   private mainStage: Stage
   private menuOpen = false
-  private onMenuToggle?: (menuOpen: boolean) => void
-  private onPauseToggle?: (paused: boolean) => void
   private paused = true
   private quality = QUALITY_NORMAL
   private seqSmallBarrageLastCalled = Date.now()
@@ -224,7 +227,7 @@ class FireworkEngine {
     this.config = options.config
     this.onMenuToggle = options.onMenuToggle
     this.onPauseToggle = options.onPauseToggle
-
+    this.onSoundToggle = options.onSoundToggle
     this.COLOR_CODES = Object.values(COLOR)
     this.COLOR_CODES_W_INVIS = [...this.COLOR_CODES, INVISIBLE]
     this.COLOR_TUPLES = {}
@@ -288,7 +291,7 @@ class FireworkEngine {
     }
   }
 
-  togglePause(paused?: boolean, notifyCallback = false) {
+  togglePause(paused?: boolean) {
     const newPaused = paused !== undefined ? paused : !this.paused
     this.paused = newPaused
     if (!newPaused && !this.animationFrameId) {
@@ -302,8 +305,7 @@ class FireworkEngine {
     } else {
       this.soundManager.pauseAll()
     }
-    // Notify React component only when change originates from engine
-    if (notifyCallback && this.onPauseToggle) {
+    if (this.onPauseToggle) {
       this.onPauseToggle(newPaused)
     }
   }
@@ -311,11 +313,13 @@ class FireworkEngine {
   toggleSound(enabled: boolean) {
     const wasEnabled = this.soundEnabled
     this.soundEnabled = enabled
-
     if (enabled && !wasEnabled && this.isRunning()) {
       this.soundManager.resumeAll()
     } else if (!enabled && wasEnabled) {
       this.soundManager.pauseAll()
+    }
+    if (this.onSoundToggle) {
+      this.onSoundToggle(enabled)
     }
   }
 
@@ -597,17 +601,14 @@ class FireworkEngine {
   private handleKeydown = (event: KeyboardEvent) => {
     const key = event.key.toLowerCase()
 
-    // P - toggle pause
     if (key === 'p') {
-      this.togglePause(undefined, true)
-    }
-    // O - toggle menu
-    else if (key === 'o') {
+      this.togglePause()
+    } else if (key === 'o') {
       this.toggleMenu(undefined, true)
-    }
-    // Esc - close menu
-    else if (key === 'escape') {
+    } else if (key === 'escape') {
       this.toggleMenu(false, true)
+    } else if (key === 's') {
+      this.toggleSound(!this.soundEnabled)
     }
   }
 

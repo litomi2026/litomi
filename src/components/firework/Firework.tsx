@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from 'react'
 
 import { FireworkEngine } from './FireworkEngine'
+import PauseButton from './FireworkPauseButton'
+import SoundButton from './FireworkSoundButton'
 import { FireworkConfig } from './types'
 
 interface FireworkProps {
@@ -12,8 +14,6 @@ interface FireworkProps {
 
 export default function Firework({ config: initialConfig, className = '' }: FireworkProps) {
   const [isLoading, setIsLoading] = useState(true)
-  const [isPaused, setIsPaused] = useState(true)
-  const [soundEnabled, setSoundEnabled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [helpTopic, setHelpTopic] = useState<string | null>(null)
@@ -36,22 +36,6 @@ export default function Firework({ config: initialConfig, className = '' }: Fire
     }
   }
 
-  function handleTogglePause() {
-    if (engineRef.current) {
-      const newPausedState = !isPaused
-      setIsPaused(newPausedState)
-      engineRef.current.togglePause(newPausedState)
-    }
-  }
-
-  function handleToggleSound() {
-    const newSoundState = !soundEnabled
-    setSoundEnabled(newSoundState)
-    if (engineRef.current) {
-      engineRef.current.toggleSound(newSoundState)
-    }
-  }
-
   function handleToggleMenu(open: boolean) {
     setMenuOpen(open)
     if (engineRef.current) {
@@ -68,7 +52,6 @@ export default function Firework({ config: initialConfig, className = '' }: Fire
       trailsCanvas: trailsCanvasRef.current,
       mainCanvas: mainCanvasRef.current,
       config,
-      onPauseToggle: (paused) => setIsPaused(paused),
       onMenuToggle: (menuOpen) => setMenuOpen(menuOpen),
     })
 
@@ -79,18 +62,19 @@ export default function Firework({ config: initialConfig, className = '' }: Fire
       .init()
       .then(() => {
         setIsLoading(false)
-        setIsPaused(false)
+        engine.togglePause(false)
       })
       .catch((error: Error) => {
         console.error('Failed to initialize firework engine:', error)
         setIsLoading(false)
-        setIsPaused(false)
+        engine.togglePause(false)
       })
 
     return () => {
       engine.destroy()
     }
-  }, [config])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     if (engineRef.current) {
@@ -160,32 +144,8 @@ export default function Firework({ config: initialConfig, className = '' }: Fire
           menuOpen || config.hideControls ? 'pointer-events-none invisible opacity-0' : ''
         }`}
       >
-        <button
-          aria-label={isPaused ? 'Play' : 'Pause'}
-          className="flex h-[50px] w-[50px] cursor-default select-none opacity-[0.16] transition-opacity duration-300 hover:opacity-[0.32]"
-          onClick={handleTogglePause}
-          type="button"
-        >
-          <svg className="m-auto" fill="white" height="24" width="24">
-            {isPaused ? <path d="M8 5v14l11-7z" /> : <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />}
-          </svg>
-        </button>
-
-        <button
-          aria-label={soundEnabled ? 'Sound On' : 'Sound Off'}
-          className="flex h-[50px] w-[50px] cursor-default select-none opacity-[0.16] transition-opacity duration-300 hover:opacity-[0.32]"
-          onClick={handleToggleSound}
-          type="button"
-        >
-          <svg className="m-auto" fill="white" height="24" width="24">
-            {soundEnabled ? (
-              <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
-            ) : (
-              <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z" />
-            )}
-          </svg>
-        </button>
-
+        <PauseButton engineRef={engineRef} isLoading={isLoading} />
+        <SoundButton engineRef={engineRef} isLoading={isLoading} />
         <button
           aria-label="Settings"
           className="flex h-[50px] w-[50px] cursor-default select-none opacity-[0.16] transition-opacity duration-300 hover:opacity-[0.32]"
