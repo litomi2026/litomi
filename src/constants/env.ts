@@ -26,6 +26,8 @@ export const UPSTASH_KV_REST_API_URL = process.env.UPSTASH_KV_REST_API_URL ?? ''
 export const UPSTASH_KV_REST_API_TOKEN = process.env.UPSTASH_KV_REST_API_TOKEN ?? ''
 export const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY ?? ''
 export const VERCEL_ANALYTICS = process.env.VERCEL_ANALYTICS ?? ''
+export const VERCEL_DEPLOYMENT_ID = process.env.VERCEL_DEPLOYMENT_ID ?? ''
+export const VERCEL_GIT_COMMIT_SHA = process.env.VERCEL_GIT_COMMIT_SHA ?? ''
 export const VERCEL_SPEED_INSIGHTS = process.env.VERCEL_SPEED_INSIGHTS ?? ''
 
 // Cloud Run

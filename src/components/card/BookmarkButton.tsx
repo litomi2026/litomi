@@ -40,7 +40,7 @@ export default function BookmarkButton({ manga, className }: Props) {
       if (isBookmarked) {
         toast.success(
           <div className="flex items-center justify-between gap-2 w-full">
-            <span>북마크를 추가했어요</span>
+            <span>북마크에 추가했어요</span>
             <button
               className="hover:underline text-sm font-bold"
               onClick={() => {
@@ -54,7 +54,7 @@ export default function BookmarkButton({ manga, className }: Props) {
           { duration: 5000 },
         )
       } else {
-        toast.success('북마크를 삭제했어요')
+        toast.info('작품을 북마크에서 삭제했어요')
       }
 
       queryClient.setQueryData<GETV1BookmarkResponse>(QueryKeys.bookmarks, (oldBookmarks) => {
@@ -103,7 +103,10 @@ export default function BookmarkButton({ manga, className }: Props) {
     <form action={dispatchAction} className="flex-1">
       <input name="mangaId" type="hidden" value={mangaId} />
       <button
-        className={twMerge('flex justify-center items-center gap-1', className)}
+        className={twMerge(
+          'flex justify-center items-center gap-1 transition disabled:bg-zinc-800 disabled:text-zinc-500 disabled:cursor-not-allowed hover:bg-zinc-800 active:bg-zinc-900 active:border-zinc-700',
+          className,
+        )}
         disabled={isPending}
         onClick={handleClick}
         type="submit"

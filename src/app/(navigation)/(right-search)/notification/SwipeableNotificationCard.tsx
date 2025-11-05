@@ -64,12 +64,12 @@ export default function SwipeableWrapper({ notification, onDelete, onMarkAsRead,
   return (
     <div className="relative overflow-hidden">
       <div className="absolute inset-0 flex items-center justify-between px-4">
-        <div className={`flex items-center gap-2 transition-opacity ${swipeX > 40 ? 'opacity-100' : 'opacity-0'}`}>
+        <div className={`flex items-center gap-2 transition ${swipeX > 40 ? 'opacity-100' : 'opacity-0'}`}>
           <div className="p-2 rounded-lg bg-green-600/20">
             <span className="text-xs font-medium text-green-400">읽음</span>
           </div>
         </div>
-        <div className={`flex items-center gap-2 transition-opacity ${swipeX < -40 ? 'opacity-100' : 'opacity-0'}`}>
+        <div className={`flex items-center gap-2 transition ${swipeX < -40 ? 'opacity-100' : 'opacity-0'}`}>
           <div className="p-2 rounded-lg bg-red-600/20">
             <span className="text-xs font-medium text-red-400">삭제</span>
           </div>
