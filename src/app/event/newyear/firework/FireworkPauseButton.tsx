@@ -25,7 +25,7 @@ export default function PauseButton({ engineRef, isLoading }: Props) {
   return (
     <button
       aria-label={isPaused ? 'Play' : 'Pause'}
-      className="flex h-[50px] w-[50px] cursor-default select-none opacity-[0.16] transition duration-300 hover:opacity-[0.32]"
+      className="flex h-[50px] w-[50px] cursor-default select-none opacity-[0.16] transition lg:hover:opacity-[0.32]"
       onClick={handleTogglePause}
       type="button"
     >
