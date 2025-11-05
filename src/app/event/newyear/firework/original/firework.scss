@@ -1,0 +1,392 @@
+$small-bp: 640px;
+$large-bp: 840px;
+
+$ui-opacity: 0.5;
+$ui-color: rgba(#fff, $ui-opacity);
+$font: 'Russo One', arial, sans-serif;
+$letter-spacing: 0.06em;
+
+* {
+  position: relative;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+html {
+  background-color: #000;
+}
+
+body {
+  overflow: hidden;
+  color: $ui-color;
+  font-family: $font;
+  line-height: 1.25;
+  letter-spacing: $letter-spacing;
+}
+
+// Utils
+// -------
+
+.hide {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.remove {
+  display: none !important;
+}
+
+.blur {
+  filter: blur(12px);
+}
+
+.container {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loading-init {
+  width: 100%;
+  align-self: center;
+  text-align: center;
+  text-transform: uppercase;
+
+  &__header {
+    font-size: 2.2em;
+  }
+
+  &__status {
+    margin-top: 1em;
+    font-size: 0.8em;
+    opacity: 0.75;
+  }
+}
+
+.stage-container {
+  // Keep menu blur contained
+  overflow: hidden;
+  // Let border width add to size
+  box-sizing: initial;
+  border: 1px solid #222;
+  // Allow border to be hidden when fullscreen
+  margin: -1px;
+
+  // no need for border on small screens, especially since it causes horizontal scrolling on iOS.
+  @media (max-width: $large-bp) {
+    border: none;
+    margin: 0;
+  }
+}
+
+.canvas-container {
+  width: 100%;
+  height: 100%;
+  transition: filter 0.3s;
+
+  canvas {
+    position: absolute;
+    // Use lighten blend mode so the sky can be shown lighting up behind the canvases.
+    mix-blend-mode: lighten;
+    // Chrome mobile always places <canvas> elements on their own composite layer, but Chrome
+    // on desktop doesn't, so we'll force it. Compositing makes sense since the canvas elements,
+    // but not all UI, redraws each frame.
+    transform: translateZ(0);
+  }
+}
+
+.controls {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  padding-bottom: 50px;
+  display: flex;
+  justify-content: space-between;
+  transition:
+    opacity 0.3s,
+    visibility 0.3s;
+
+  @media (min-width: $large-bp) {
+    visibility: visible;
+
+    &.hide:hover {
+      opacity: 1;
+    }
+  }
+}
+
+.menu {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.42);
+  transition:
+    opacity 0.3s,
+    visibility 0.3s;
+
+  &__inner-wrap {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    transition: opacity 0.3s;
+  }
+
+  &__header {
+    margin-top: auto;
+    margin-bottom: 8px;
+    padding-top: 16px;
+    font-size: 2em;
+    text-transform: uppercase;
+  }
+
+  &__subheader {
+    margin-bottom: auto;
+    padding-bottom: 12px;
+    font-size: 0.86em;
+    opacity: 0.8;
+  }
+
+  form {
+    width: 100%;
+    max-width: 400px;
+    padding: 0 10px;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .form-option {
+    display: flex;
+    align-items: center;
+    margin: 16px 0;
+    transition: opacity 0.3s;
+
+    label {
+      display: block;
+      width: 50%;
+      padding-right: 12px;
+      text-align: right;
+      text-transform: uppercase;
+      user-select: none;
+    }
+
+    &--select {
+      select {
+        display: block;
+        width: 50%;
+        height: 30px;
+        font-size: 1rem;
+        font-family: $font;
+        color: $ui-color;
+        letter-spacing: $letter-spacing;
+        background-color: transparent;
+        border: 1px solid $ui-color;
+
+        option {
+          background-color: black;
+        }
+      }
+    }
+
+    &--checkbox {
+      input {
+        display: block;
+        width: 26px;
+        height: 26px;
+        margin: 0;
+        opacity: $ui-opacity;
+      }
+    }
+
+    @media (max-width: $large-bp) {
+      select,
+      input {
+        outline: none;
+      }
+    }
+  }
+}
+
+.close-menu-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.btn {
+  $size: 50px;
+  opacity: 0.16;
+  width: $size;
+  height: $size;
+  display: flex;
+  user-select: none;
+  cursor: default;
+  transition: opacity 0.3s;
+
+  &--bright {
+    opacity: 0.5;
+  }
+
+  @media (min-width: $large-bp) {
+    &:hover {
+      opacity: 0.32;
+    }
+
+    &--bright:hover {
+      opacity: 0.75;
+    }
+  }
+
+  svg {
+    display: block;
+    margin: auto;
+  }
+}
+
+.credits {
+  margin-top: auto;
+  margin-bottom: 10px;
+  padding-top: 6px;
+  font-size: 0.8em;
+  opacity: 0.75;
+
+  a {
+    color: $ui-color;
+    text-decoration: none;
+
+    &:hover,
+    &:active {
+      color: rgba(white, 0.75);
+      text-decoration: underline;
+    }
+  }
+}
+
+.help-modal {
+  $self: &;
+  $duration-in: 0.4s;
+  $duration-out: 0.25s;
+  $curve-in: ease-out;
+  $curve-out: ease-in;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  visibility: hidden;
+  transition-property: visibility;
+  transition-duration: $duration-out;
+
+  &__overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    opacity: 0;
+    transition-property: opacity;
+    transition-timing-function: $curve-out;
+    transition-duration: $duration-out;
+  }
+
+  &__dialog {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 400px;
+    max-height: calc(100vh - 100px);
+    margin: 10px;
+    padding: 20px;
+    border-radius: 0.3em;
+    background-color: rgba(#000, 0.4);
+    opacity: 0;
+    transform: scale(0.9, 0.9);
+    transition-property: opacity, transform;
+    transition-timing-function: $curve-out;
+    transition-duration: $duration-out;
+
+    @media (min-width: $large-bp) {
+      font-size: 1.25rem;
+      max-width: 500px;
+    }
+  }
+
+  &__header {
+    font-size: 1.75em;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  &__body {
+    $separator-color: rgba(#fff, 0.25);
+
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 1em 0;
+    padding: 1em 0;
+    border-top: 1px solid $separator-color;
+    border-bottom: 1px solid $separator-color;
+    line-height: 1.5;
+    color: rgba(#fff, 0.75);
+  }
+
+  // These styles can be adopted as a standard button style if needed.
+  &__close-btn {
+    flex-shrink: 0;
+    outline: none;
+    border: none;
+    border-radius: 2px;
+    padding: 0.25em 0.75em;
+    margin-top: 0.36em;
+    font-family: $font;
+    font-size: 1em;
+    color: $ui-color;
+    text-transform: uppercase;
+    letter-spacing: $letter-spacing;
+    background-color: rgba(#fff, 0.25);
+    transition:
+      color 0.3s,
+      background-color 0.3s;
+
+    &:hover,
+    &:active,
+    &:focus {
+      color: #fff;
+      background-color: #09f;
+    }
+  }
+
+  &.active {
+    visibility: visible;
+    transition-duration: $duration-in;
+
+    #{$self}__overlay {
+      opacity: 1;
+      transition-timing-function: $curve-in;
+      transition-duration: $duration-in;
+    }
+
+    #{$self}__dialog {
+      opacity: 1;
+      transform: scale(1, 1);
+      transition-timing-function: $curve-in;
+      transition-duration: $duration-in;
+    }
+  }
+}

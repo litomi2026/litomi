@@ -12,7 +12,6 @@ interface FireworkProps {
   config: FireworkConfig
 }
 
-// https://codepen.io/MillerTime/pen/XgpNwb
 export default function Firework({ config: initialConfig, className = '' }: FireworkProps) {
   const [isLoading, setIsLoading] = useState(true)
   const [menuOpen, setMenuOpen] = useState(false)
