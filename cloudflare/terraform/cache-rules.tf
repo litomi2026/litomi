@@ -29,6 +29,7 @@ locals {
     "/icon.",
     "/image/",
     "/manga/",
+    "/nye",
     "/notification",
     "/og-image.",
     "/posts/",
