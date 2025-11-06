@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 import { FireworkEngine } from './FireworkEngine'
 import PauseButton from './FireworkPauseButton'
@@ -118,19 +119,22 @@ export default function Firework({ config: initialConfig, className = '' }: Fire
   }, [])
 
   return (
-    <div className={`relative overflow-hidden border border-neutral-800 bg-black ${className}`} ref={stageContainerRef}>
+    <div className={twMerge('relative overflow-hidden bg-black', className)} ref={stageContainerRef}>
       {/* Loading Screen */}
       {isLoading && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black">
-          <div className="text-center uppercase tracking-[0.06em] text-white/50">
-            <div className="text-[2.2em] font-['Russo_One',arial,sans-serif]">Loading</div>
-            <div className="mt-[1em] text-[0.8em] opacity-75">Assembling Shells</div>
+          <div className="text-center uppercase text-white/50">
+            <div className="text-4xl">Loading</div>
+            <div className="mt-4 text-sm opacity-75">Assembling Shells</div>
           </div>
         </div>
       )}
-
       {/* Canvas Container */}
-      <div className={`h-full w-full transition ${menuOpen ? 'blur-md' : ''}`} ref={canvasContainerRef}>
+      <div
+        aria-current={!menuOpen}
+        className="h-full w-full transition blur aria-current:blur-none"
+        ref={canvasContainerRef}
+      >
         <canvas
           className="absolute mix-blend-lighten transform-[translateZ(0)]"
           id="trails-canvas"
@@ -138,17 +142,16 @@ export default function Firework({ config: initialConfig, className = '' }: Fire
         />
         <canvas className="absolute mix-blend-lighten transform-[translateZ(0)]" id="main-canvas" ref={mainCanvasRef} />
       </div>
-
       {/* Controls */}
       <div
         aria-hidden={menuOpen || config.hideControls}
-        className="absolute left-0 right-0 top-0 flex justify-between pb-[50px] transition aria-hidden:pointer-events-none aria-hidden:invisible aria-hidden:opacity-0"
+        className="absolute left-0 right-0 top-0 z-50 flex justify-between pb-12 transition aria-hidden:pointer-events-none aria-hidden:invisible aria-hidden:opacity-0 lg:aria-hidden:hover:visible lg:aria-hidden:hover:opacity-100"
       >
         <PauseButton engineRef={engineRef} isLoading={isLoading} />
         <SoundButton engineRef={engineRef} isLoading={isLoading} />
         <button
           aria-label="Settings"
-          className="flex h-[50px] w-[50px] cursor-default select-none opacity-[0.16] transition hover:opacity-[0.32]"
+          className="flex size-12 cursor-default select-none opacity-[0.16] transition lg:hover:opacity-[0.32]"
           onClick={() => handleToggleMenu(!menuOpen)}
           type="button"
         >
@@ -160,11 +163,11 @@ export default function Firework({ config: initialConfig, className = '' }: Fire
 
       {/* Settings Menu */}
       {menuOpen && (
-        <div className="absolute inset-0 bg-[rgba(0,0,0,0.42)] transition">
-          <div className="absolute inset-0 flex flex-col items-center justify-center transition">
+        <div className="absolute inset-0 z-40 bg-black/40">
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
             <button
               aria-label="Close"
-              className="absolute right-0 top-0 flex h-[50px] w-[50px] cursor-default select-none opacity-50 transition hover:opacity-75"
+              className="absolute right-0 top-0 flex size-12 select-none opacity-50 transition lg:hover:opacity-75"
               onClick={() => handleToggleMenu(false)}
               type="button"
             >
@@ -172,28 +175,22 @@ export default function Firework({ config: initialConfig, className = '' }: Fire
                 <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
               </svg>
             </button>
-
-            <div className="mb-[8px] mt-auto pt-[16px] font-['Russo_One',arial,sans-serif] text-[2em] uppercase tracking-[0.06em] text-white/50">
-              Settings
-            </div>
-            <div className="mb-auto pb-[12px] text-[0.86em] tracking-[0.06em] text-white/50 opacity-80">
-              For more info, click any label.
-            </div>
-
+            <div className="mb-2 mt-auto pt-4 text-3xl text-white/50">설정</div>
+            <div className="mb-auto pb-3 text-sm text-white/50 opacity-80">자세한 정보는 라벨을 클릭하세요</div>
             <form
-              className="w-full max-w-[400px] overflow-auto px-[10px] transition"
-              style={{ opacity: helpTopic ? 0.12 : 1 }}
+              className="w-full max-w-[400px] overflow-auto px-2.5 transition"
+              style={{ opacity: helpTopic ? 0.12 : 1, WebkitOverflowScrolling: 'touch' }}
             >
               {/* Shell Type */}
-              <div className="my-[16px] flex items-center transition">
+              <div className="my-4 flex items-center">
                 <label
-                  className="block w-1/2 select-none pr-[12px] text-right font-['Russo_One',arial,sans-serif] uppercase tracking-[0.06em] text-white/50 cursor-pointer"
+                  className="w-1/2 select-none pr-3 text-right uppercase text-white/50 cursor-pointer"
                   onClick={() => setHelpTopic('shellType')}
                 >
                   Shell Type
                 </label>
                 <select
-                  className="block h-[30px] w-1/2 border border-white/50 bg-transparent font-['Russo_One',arial,sans-serif] text-[1rem] tracking-[0.06em] text-white/50 outline-none"
+                  className="h-[30px] w-1/2 border border-white/50 bg-transparent text-base text-white/50"
                   onChange={(e) => setConfig({ ...config, shell: e.target.value })}
                   value={config.shell}
                 >
@@ -236,15 +233,15 @@ export default function Firework({ config: initialConfig, className = '' }: Fire
                 </select>
               </div>
               {/* Shell Size */}
-              <div className="my-[16px] flex items-center transition">
+              <div className="my-4 flex items-center">
                 <label
-                  className="block w-1/2 select-none pr-[12px] text-right font-['Russo_One',arial,sans-serif] uppercase tracking-[0.06em] text-white/50 cursor-pointer"
+                  className="w-1/2 select-none pr-3 text-right uppercase text-white/50 cursor-pointer"
                   onClick={() => setHelpTopic('shellSize')}
                 >
                   Shell Size
                 </label>
                 <select
-                  className="block h-[30px] w-1/2 border border-white/50 bg-transparent font-['Russo_One',arial,sans-serif] text-[1rem] tracking-[0.06em] text-white/50 outline-none"
+                  className="h-[30px] w-1/2 border border-white/50 bg-transparent text-base text-white/50"
                   onChange={(e) => setConfig({ ...config, size: e.target.value })}
                   value={config.size}
                 >
@@ -269,15 +266,15 @@ export default function Firework({ config: initialConfig, className = '' }: Fire
                 </select>
               </div>
               {/* Quality */}
-              <div className="my-[16px] flex items-center transition">
+              <div className="my-4 flex items-center">
                 <label
-                  className="block w-1/2 select-none pr-[12px] text-right font-['Russo_One',arial,sans-serif] uppercase tracking-[0.06em] text-white/50 cursor-pointer"
+                  className="w-1/2 select-none pr-3 text-right uppercase text-white/50 cursor-pointer"
                   onClick={() => setHelpTopic('quality')}
                 >
                   Quality
                 </label>
                 <select
-                  className="block h-[30px] w-1/2 border border-white/50 bg-transparent font-['Russo_One',arial,sans-serif] text-[1rem] tracking-[0.06em] text-white/50 outline-none"
+                  className="h-[30px] w-1/2 border border-white/50 bg-transparent text-base text-white/50"
                   onChange={(e) => setConfig({ ...config, quality: e.target.value })}
                   value={config.quality}
                 >
@@ -293,15 +290,15 @@ export default function Firework({ config: initialConfig, className = '' }: Fire
                 </select>
               </div>
               {/* Sky Lighting */}
-              <div className="my-[16px] flex items-center transition">
+              <div className="my-4 flex items-center">
                 <label
-                  className="block w-1/2 select-none pr-[12px] text-right font-['Russo_One',arial,sans-serif] uppercase tracking-[0.06em] text-white/50 cursor-pointer"
+                  className="w-1/2 select-none pr-3 text-right uppercase text-white/50 cursor-pointer"
                   onClick={() => setHelpTopic('skyLighting')}
                 >
                   Sky Lighting
                 </label>
                 <select
-                  className="block h-[30px] w-1/2 border border-white/50 bg-transparent font-['Russo_One',arial,sans-serif] text-[1rem] tracking-[0.06em] text-white/50 outline-none"
+                  className="h-[30px] w-1/2 border border-white/50 bg-transparent text-base text-white/50"
                   onChange={(e) => setConfig({ ...config, skyLighting: e.target.value })}
                   value={config.skyLighting}
                 >
@@ -317,15 +314,15 @@ export default function Firework({ config: initialConfig, className = '' }: Fire
                 </select>
               </div>
               {/* Scale */}
-              <div className="my-[16px] flex items-center transition">
+              <div className="my-4 flex items-center">
                 <label
-                  className="block w-1/2 select-none pr-[12px] text-right font-['Russo_One',arial,sans-serif] uppercase tracking-[0.06em] text-white/50 cursor-pointer"
+                  className="w-1/2 select-none pr-3 text-right uppercase text-white/50 cursor-pointer"
                   onClick={() => setHelpTopic('scaleFactor')}
                 >
                   Scale
                 </label>
                 <select
-                  className="block h-[30px] w-1/2 border border-white/50 bg-transparent font-['Russo_One',arial,sans-serif] text-[1rem] tracking-[0.06em] text-white/50 outline-none"
+                  className="h-[30px] w-1/2 border border-white/50 bg-transparent text-base text-white/50"
                   onChange={(e) => setConfig({ ...config, scaleFactor: parseFloat(e.target.value) })}
                   value={config.scaleFactor.toFixed(2)}
                 >
@@ -353,84 +350,84 @@ export default function Firework({ config: initialConfig, className = '' }: Fire
                 </select>
               </div>
               {/* Checkboxes */}
-              <div className="my-[16px] flex items-center transition">
+              <div className="my-4 flex items-center">
                 <label
-                  className="block w-1/2 select-none pr-[12px] text-right font-['Russo_One',arial,sans-serif] uppercase tracking-[0.06em] text-white/50 cursor-pointer"
+                  className="w-1/2 select-none pr-3 text-right uppercase text-white/50 cursor-pointer"
                   onClick={() => setHelpTopic('autoLaunch')}
                 >
                   Auto Fire
                 </label>
                 <input
                   checked={config.autoLaunch}
-                  className="m-0 block h-[26px] w-[26px] opacity-50 outline-none"
+                  className="h-[26px] w-[26px] opacity-50"
                   onChange={(e) => setConfig({ ...config, autoLaunch: e.target.checked })}
                   type="checkbox"
                 />
               </div>
-              <div className="my-[16px] flex items-center transition" style={{ opacity: config.autoLaunch ? 1 : 0.32 }}>
+              <div className="my-4 flex items-center transition" style={{ opacity: config.autoLaunch ? 1 : 0.32 }}>
                 <label
-                  className="block w-1/2 select-none pr-[12px] text-right font-['Russo_One',arial,sans-serif] uppercase tracking-[0.06em] text-white/50 cursor-pointer"
+                  className="w-1/2 select-none pr-3 text-right uppercase text-white/50 cursor-pointer"
                   onClick={() => setHelpTopic('finaleMode')}
                 >
                   Finale Mode
                 </label>
                 <input
                   checked={config.finale}
-                  className="m-0 block h-[26px] w-[26px] opacity-50 outline-none"
+                  className="h-[26px] w-[26px] opacity-50"
                   disabled={!config.autoLaunch}
                   onChange={(e) => setConfig({ ...config, finale: e.target.checked })}
                   type="checkbox"
                 />
               </div>
-              <div className="my-[16px] flex items-center transition">
+              <div className="my-4 flex items-center">
                 <label
-                  className="block w-1/2 select-none pr-[12px] text-right font-['Russo_One',arial,sans-serif] uppercase tracking-[0.06em] text-white/50 cursor-pointer"
+                  className="w-1/2 select-none pr-3 text-right uppercase text-white/50 cursor-pointer"
                   onClick={() => setHelpTopic('hideControls')}
                 >
                   Hide Controls
                 </label>
                 <input
                   checked={config.hideControls}
-                  className="m-0 block h-[26px] w-[26px] opacity-50 outline-none"
+                  className="h-[26px] w-[26px] opacity-50"
                   onChange={(e) => setConfig({ ...config, hideControls: e.target.checked })}
                   type="checkbox"
                 />
               </div>
-              <div className="my-[16px] flex items-center transition">
+              <div className="my-4 flex items-center">
                 <label
-                  className="block w-1/2 select-none pr-[12px] text-right font-['Russo_One',arial,sans-serif] uppercase tracking-[0.06em] text-white/50 cursor-pointer"
+                  className="w-1/2 select-none pr-3 text-right uppercase text-white/50 cursor-pointer"
                   onClick={() => setHelpTopic('fullscreen')}
                 >
                   Fullscreen
                 </label>
                 <input
                   checked={isFullscreen}
-                  className="m-0 block h-[26px] w-[26px] opacity-50 outline-none"
+                  className="h-[26px] w-[26px] opacity-50"
                   onChange={toggleFullscreen}
                   type="checkbox"
                 />
               </div>
-              <div className="my-[16px] flex items-center transition">
+              <div className="my-4 flex items-center">
                 <label
-                  className="block w-1/2 select-none pr-[12px] text-right font-['Russo_One',arial,sans-serif] uppercase tracking-[0.06em] text-white/50 cursor-pointer"
+                  className="w-1/2 select-none pr-3 text-right uppercase text-white/50 cursor-pointer"
                   onClick={() => setHelpTopic('longExposure')}
                 >
                   Open Shutter
                 </label>
                 <input
                   checked={config.longExposure}
-                  className="m-0 block h-[26px] w-[26px] opacity-50 outline-none"
+                  className="h-[26px] w-[26px] opacity-50"
                   onChange={(e) => setConfig({ ...config, longExposure: e.target.checked })}
                   type="checkbox"
                 />
               </div>
             </form>
-            <div className="mb-2.5 mt-auto pt-1.5 text-[0.8em] tracking-[0.06em] text-white/50 opacity-75">
+            <div className="mb-2.5 mt-auto pt-1.5 text-[0.8em] text-white/50 opacity-75">
               Passionately built by{' '}
               <a
-                className="text-white/50 no-underline transition hover:text-white/75 hover:underline"
+                className="text-white/50 no-underline transition lg:hover:text-white/75 lg:hover:underline"
                 href="https://cmiller.tech/"
-                rel="noopener noreferrer"
+                rel="noopener"
                 target="_blank"
               >
                 Caleb Miller
@@ -440,27 +437,26 @@ export default function Firework({ config: initialConfig, className = '' }: Fire
           </div>
         </div>
       )}
-
       {/* Help Modal */}
       {helpTopic && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/40 opacity-100" onClick={() => setHelpTopic(null)} />
-          <div className="relative m-2.5 flex max-h-[calc(100vh-100px)] w-full max-w-[400px] flex-col items-center rounded-[0.3em] bg-[rgba(0,0,0,0.4)] p-5 scale-100 opacity-100 transition lg:max-w-[500px] lg:text-[1.25rem]">
-            <div className="text-center font-['Russo_One',arial,sans-serif] text-[1.75em] uppercase tracking-[0.06em] text-white/50">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setHelpTopic(null)} />
+          <div className="relative m-2.5 flex max-h-[calc(100vh-100px)] w-full max-w-[400px] flex-col items-center rounded bg-black/40 p-5 lg:max-w-[500px] lg:text-xl">
+            <div className="text-center text-3xl uppercase text-white/50">
               {helpContent[helpTopic as keyof typeof helpContent]?.header}
             </div>
             <div
-              className="my-[1em] overflow-y-auto border-b border-t border-white/25 py-[1em] leading-normal text-white/75"
+              className="my-4 overflow-y-auto border-b border-t border-white/25 py-4 text-white/75"
               style={{ WebkitOverflowScrolling: 'touch' }}
             >
               {helpContent[helpTopic as keyof typeof helpContent]?.body}
             </div>
             <button
-              className="mt-[0.36em] shrink-0 rounded-[2px] border-none bg-white/25 px-[0.75em] py-[0.25em] font-['Russo_One',arial,sans-serif] text-[1em] uppercase tracking-[0.06em] text-white/50 outline-none transition hover:bg-[#09f] hover:text-white"
+              className="mt-4 shrink-0 rounded bg-brand p-3 py-1 text-background text-sm font-bold"
               onClick={() => setHelpTopic(null)}
               type="button"
             >
-              Close
+              닫기
             </button>
           </div>
         </div>

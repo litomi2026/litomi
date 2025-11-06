@@ -49,7 +49,7 @@ export default function useMatchedCensorships({ manga, censorshipsMap }: Readonl
       const tagMatches = censorshipsMap.get(`${tagKey}:${tag.value}`)
 
       if (tagMatches && tagMatches.level !== CensorshipLevel.NONE) {
-        matchedLabels.push(tag.label)
+        matchedLabels.push(tag.label.split(':')[1])
         highest = Math.max(highest, tagMatches.level)
       }
     }
@@ -59,7 +59,7 @@ export default function useMatchedCensorships({ manga, censorshipsMap }: Readonl
       const artistMatches = censorshipsMap.get(artistKey)
 
       if (artistMatches && artistMatches.level !== CensorshipLevel.NONE) {
-        matchedLabels.push(`작가:${artist.label}`)
+        matchedLabels.push(artist.label)
         highest = Math.max(highest, artistMatches.level)
       }
     }
@@ -69,7 +69,7 @@ export default function useMatchedCensorships({ manga, censorshipsMap }: Readonl
       const characterMatches = censorshipsMap.get(characterKey)
 
       if (characterMatches && characterMatches.level !== CensorshipLevel.NONE) {
-        matchedLabels.push(`캐릭터:${character.label}`)
+        matchedLabels.push(character.label)
         highest = Math.max(highest, characterMatches.level)
       }
     }
@@ -79,7 +79,7 @@ export default function useMatchedCensorships({ manga, censorshipsMap }: Readonl
       const groupMatches = censorshipsMap.get(groupKey)
 
       if (groupMatches && groupMatches.level !== CensorshipLevel.NONE) {
-        matchedLabels.push(`그룹:${g.label}`)
+        matchedLabels.push(g.label)
         highest = Math.max(highest, groupMatches.level)
       }
     }
@@ -89,7 +89,7 @@ export default function useMatchedCensorships({ manga, censorshipsMap }: Readonl
       const seriesMatches = censorshipsMap.get(seriesKey)
 
       if (seriesMatches && seriesMatches.level !== CensorshipLevel.NONE) {
-        matchedLabels.push(`시리즈:${s.label}`)
+        matchedLabels.push(s.label)
         highest = Math.max(highest, seriesMatches.level)
       }
     }
@@ -99,7 +99,7 @@ export default function useMatchedCensorships({ manga, censorshipsMap }: Readonl
       const languageMatches = censorshipsMap.get(languageKey)
 
       if (languageMatches && languageMatches.level !== CensorshipLevel.NONE) {
-        matchedLabels.push(`${language.label}`)
+        matchedLabels.push(language.label)
         highest = Math.max(highest, languageMatches.level)
       }
     }
