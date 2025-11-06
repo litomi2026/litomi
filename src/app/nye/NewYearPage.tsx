@@ -2,8 +2,8 @@
 
 import { Suspense, useState } from 'react'
 
-import Firework from '@/app/event/newyear/firework/Firework'
-import NewYearCountdown from '@/app/event/newyear/NewYearCountdown'
+import Firework from '@/app/nye/firework/Firework'
+import NewYearCountdown from '@/app/nye/NewYearCountdown'
 
 export default function NewYearPage() {
   const [isCountingDown, setIsCountingDown] = useState(true)
