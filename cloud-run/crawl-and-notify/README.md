@@ -11,7 +11,9 @@ cp cloud-run/crawl-and-notify/.env.template cloud-run/.env
 Edit the `.env` file with your actual values.
 
 ```zsh
-./cloud-run/crawl-and-notify/setup.sh
+cd cloud-run/crawl-and-notify
+export $(grep -v '^#' .env | xargs)
+./setup.sh
 ```
 
 Only execute once.
