@@ -100,7 +100,12 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
           </div>
           <MangaDetailButton className={`${topButtonClassName} hover:underline`} manga={manga} />
           <div className="flex gap-1">
-            <Link aria-label="리뷰 보기" className={topButtonClassName} href={`/manga/${manga.id}/detail`}>
+            <Link
+              aria-label="리뷰 보기"
+              className={topButtonClassName}
+              href={`/manga/${manga.id}/detail`}
+              prefetch={false}
+            >
               <MessageCircle className="size-6" />
             </Link>
             <ShareButton className={topButtonClassName} manga={manga} />
