@@ -1,13 +1,14 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'next/navigation'
 
-import { GETNotificationResponse } from '@/app/api/notification/route'
+import { GETNotificationResponse } from '@/backend/api/v1/notification'
+import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
 import useMeQuery from '@/query/useMeQuery'
 import { handleResponseError } from '@/utils/react-query-error'
 
 export async function fetchNotifications(searchParams: URLSearchParams) {
-  const response = await fetch(`/api/notification?${searchParams}`)
+  const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/notification?${searchParams}`)
   return handleResponseError<GETNotificationResponse>(response)
 }
 

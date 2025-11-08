@@ -38,7 +38,7 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           <SelectableLink href="/search" Icon={IconSearch}>
             검색
           </SelectableLink>
-          <SelectableLink href="/library" Icon={IconLibraryBig}>
+          <SelectableLink href="/library" Icon={IconLibraryBig} prefetch={false}>
             서재
           </SelectableLink>
           <SelectableLink
@@ -54,7 +54,7 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
             </SelectableLink>
             <NotificationCount />
           </div>
-          <SelectableLink className="hidden sm:block" href="/library/bookmark" Icon={IconBookmark}>
+          <SelectableLink className="hidden sm:block" href="/library/bookmark" Icon={IconBookmark} prefetch={false}>
             북마크
           </SelectableLink>
           <SelectableLink className="hidden sm:block" href="/posts/recommand" hrefMatch="/post" Icon={IconPost}>

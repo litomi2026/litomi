@@ -80,7 +80,7 @@ export default function PostCard({ post, isThread, className = '', ...props }: R
             </div>
             <MoreHorizontal className="size-5 text-zinc-600" />
           </div>
-          <Link className="child" href={`/post/${post.id}`}>
+          <Link className="child" href={`/post/${post.id}`} prefetch={false}>
             <p className="min-w-0 whitespace-pre-wrap break-all line-clamp-6">{post.content}</p>
           </Link>
           {imageURLs && <PostImages className="max-h-[512px] overflow-hidden border rounded-2xl" urls={imageURLs} />}
