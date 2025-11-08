@@ -40,6 +40,7 @@ function PageNavigation({ className = '', currentPage, totalPages, hrefPrefix = 
           aria-label="첫 페이지"
           className={`hidden sm:flex ${commonClassName}`}
           href={`${hrefPrefix}${1}${hrefSuffix}`}
+          prefetch={false}
         >
           <LinkPending className="size-5">
             <ChevronFirst />
@@ -51,6 +52,7 @@ function PageNavigation({ className = '', currentPage, totalPages, hrefPrefix = 
           aria-label={`이전 ${VISIBLE_PAGES} 페이지`}
           className={`flex ${commonClassName}`}
           href={`${hrefPrefix}${Math.max(1, currentPage - VISIBLE_PAGES)}${hrefSuffix}`}
+          prefetch={false}
         >
           <LinkPending className="size-5">
             <ChevronsLeft />
@@ -62,6 +64,7 @@ function PageNavigation({ className = '', currentPage, totalPages, hrefPrefix = 
         aria-label="이전 페이지"
         className={`flex ${commonClassName}`}
         href={`${hrefPrefix}${Math.max(1, currentPage - 1)}${hrefSuffix}`}
+        prefetch={false}
       >
         <LinkPending className="size-5">
           <ChevronLeft />
@@ -84,6 +87,7 @@ function PageNavigation({ className = '', currentPage, totalPages, hrefPrefix = 
           aria-label="다음 페이지"
           className={`flex ${commonClassName}`}
           href={`${hrefPrefix}${Math.min(currentPage + 1, totalPages)}${hrefSuffix}`}
+          prefetch={false}
         >
           <LinkPending className="size-5">
             <ChevronRight />
@@ -94,6 +98,7 @@ function PageNavigation({ className = '', currentPage, totalPages, hrefPrefix = 
             aria-label={`다음 ${VISIBLE_PAGES} 페이지 `}
             className={`flex ${commonClassName}`}
             href={`${hrefPrefix}${Math.min(currentPage + VISIBLE_PAGES, totalPages)}${hrefSuffix}`}
+            prefetch={false}
           >
             <LinkPending className="size-5">
               <ChevronsRight />
@@ -106,6 +111,7 @@ function PageNavigation({ className = '', currentPage, totalPages, hrefPrefix = 
             aria-label="마지막 페이지"
             className={`hidden sm:flex ${commonClassName}`}
             href={`${hrefPrefix}${totalPages}${hrefSuffix}`}
+            prefetch={false}
           >
             <LinkPending className="size-5">
               <ChevronLast />
