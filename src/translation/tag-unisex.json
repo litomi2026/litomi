@@ -50,7 +50,7 @@
   "bandages": { "en": "bandages", "ko": "붕대" },
   "bandaid": { "en": "bandaid", "ko": "반창고" },
   "bathroom": { "en": "bathroom", "ko": "화장실", "ja": "バスルーム", "zh-CN": "浴室" },
-  "bdsm": { "en": "BDSM" },
+  "bdsm": { "en": "BDSM", "ko": "BDSM", "ja": "BDSM", "zh-CN": "BDSM", "zh-TW": "BDSM" },
   "beach": { "en": "beach", "ko": "해변", "ja": "ビーチ", "zh-CN": "海滩" },
   "bear": { "en": "bear", "ko": "곰", "ja": "熊", "zh-CN": "熊", "zh-TW": "熊" },
   "beard": { "en": "beard", "ko": "수염", "ja": "ひげ", "zh-CN": "胡子", "zh-TW": "鬍子" },
@@ -653,7 +653,7 @@
   "trampling": { "en": "trampling", "ko": "밟기" },
   "transformation": { "en": "transformation", "ko": "변신", "ja": "変身", "zh-CN": "变身" },
   "transparent_clothing": { "en": "transparent clothing", "ko": "투명 옷" },
-  "tribadism": { "en": "tribadism", "ko": "밴대질", "ja": "貝合わせ", "zh-CN": "阴户摩擦", "zh-TW": "陰戶摩擦" },
+  "tribadism": { "en": "tribadism", "ko": ["보빔", "밴대질"], "ja": "貝合わせ", "zh-CN": "阴户摩擦", "zh-TW": "陰戶摩擦" },
   "triple_anal": { "en": "triple anal", "ko": "항문에 3개 박힘", "ja": "トリプルアナル", "zh-CN": "三重肛交" },
   "triple_penetration": {
     "en": "triple penetration",
