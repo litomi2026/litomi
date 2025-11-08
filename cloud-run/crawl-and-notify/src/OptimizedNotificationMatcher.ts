@@ -61,8 +61,8 @@ export class OptimizedNotificationMatcher {
    * Algorithm:
    * 1. Extract and normalize all values from manga metadata
    * 2. Query database for all conditions that match any of these values
-   * 3. Count total conditions per criteria to ensure ALL conditions match
-   * 4. Return only criteria where ALL conditions are satisfied
+   * 3. Check that ALL included conditions match AND NO excluded conditions match
+   * 4. Return only criteria where conditions are satisfied
    *
    * @param metadataList - Array of manga metadata to match
    * @returns Map<mangaId, Array<{userId, criteriaId, criteriaName}>>
@@ -110,6 +110,7 @@ export class OptimizedNotificationMatcher {
         criteriaId: notificationConditionTable.criteriaId,
         conditionType: notificationConditionTable.type,
         conditionValue: notificationConditionTable.value,
+        isExcluded: notificationConditionTable.isExcluded,
         userId: notificationCriteriaTable.userId,
         criteriaName: notificationCriteriaTable.name,
       })
@@ -137,13 +138,24 @@ export class OptimizedNotificationMatcher {
     const criteriaConditionCounts = await db
       .select({
         criteriaId: notificationConditionTable.criteriaId,
+        isExcluded: notificationConditionTable.isExcluded,
         conditionCount: count(),
       })
       .from(notificationConditionTable)
       .where(inArray(notificationConditionTable.criteriaId, criteriaIds))
-      .groupBy(notificationConditionTable.criteriaId)
+      .groupBy(notificationConditionTable.criteriaId, notificationConditionTable.isExcluded)
 
-    const conditionCountMap = new Map(criteriaConditionCounts.map((cc) => [cc.criteriaId, cc.conditionCount]))
+    // Separate counts for included and excluded conditions
+    const includedCountMap = new Map<number, number>()
+    const excludedCountMap = new Map<number, number>()
+
+    for (const cc of criteriaConditionCounts) {
+      if (cc.isExcluded) {
+        excludedCountMap.set(cc.criteriaId, cc.conditionCount)
+      } else {
+        includedCountMap.set(cc.criteriaId, cc.conditionCount)
+      }
+    }
 
     // Step 5: Build criteria -> conditions mapping
     const criteriaConditionsMap = new Map<
@@ -151,8 +163,9 @@ export class OptimizedNotificationMatcher {
       {
         userId: number
         criteriaName: string
-        conditions: Map<string, NotificationConditionType>
-        requiredCount: number
+        includedConditions: Map<string, NotificationConditionType>
+        excludedConditions: Map<string, NotificationConditionType>
+        requiredIncludedCount: number
       }
     >()
 
@@ -161,34 +174,54 @@ export class OptimizedNotificationMatcher {
         criteriaConditionsMap.set(mc.criteriaId, {
           userId: mc.userId,
           criteriaName: mc.criteriaName,
-          conditions: new Map(),
-          requiredCount: conditionCountMap.get(mc.criteriaId) || 0,
+          includedConditions: new Map(),
+          excludedConditions: new Map(),
+          requiredIncludedCount: includedCountMap.get(mc.criteriaId) || 0,
         })
       }
 
       const criteria = criteriaConditionsMap.get(mc.criteriaId)!
-      criteria.conditions.set(mc.conditionValue, mc.conditionType)
+      if (mc.isExcluded) {
+        criteria.excludedConditions.set(mc.conditionValue, mc.conditionType)
+      } else {
+        criteria.includedConditions.set(mc.conditionValue, mc.conditionType)
+      }
     }
 
-    // Step 6: Check which manga match which criteria (ALL conditions must match)
+    // Step 6: Check which manga match which criteria (included and excluded conditions)
+    //
     const result = new Map<number, Array<{ userId: number; criteriaId: number; criteriaName: string }>>()
 
     for (const [mangaId, mangaValues] of mangaValueMaps) {
       const matches: { userId: number; criteriaId: number; criteriaName: string }[] = []
 
       for (const [criteriaId, criteriaData] of criteriaConditionsMap) {
-        let matchedCount = 0
+        let includedMatchCount = 0
+        let hasExcludedMatch = false
 
-        // Check each condition of this criteria
-        for (const [conditionValue, conditionType] of criteriaData.conditions) {
+        // Check included conditions
+        for (const [conditionValue, conditionType] of criteriaData.includedConditions) {
           const mangaTypeValues = mangaValues.get(conditionType)
           if (mangaTypeValues && mangaTypeValues.has(conditionValue)) {
-            matchedCount++
+            includedMatchCount++
           }
         }
 
-        // All conditions must match
-        if (matchedCount === criteriaData.requiredCount && criteriaData.requiredCount > 0) {
+        // Check excluded conditions - if any match, skip this criteria
+        for (const [conditionValue, conditionType] of criteriaData.excludedConditions) {
+          const mangaTypeValues = mangaValues.get(conditionType)
+          if (mangaTypeValues && mangaTypeValues.has(conditionValue)) {
+            hasExcludedMatch = true
+            break
+          }
+        }
+
+        // All included conditions must match AND no excluded conditions must match
+        if (
+          !hasExcludedMatch &&
+          includedMatchCount === criteriaData.requiredIncludedCount &&
+          criteriaData.requiredIncludedCount > 0
+        ) {
           matches.push({
             userId: criteriaData.userId,
             criteriaId,
