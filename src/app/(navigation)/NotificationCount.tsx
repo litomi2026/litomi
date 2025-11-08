@@ -2,6 +2,8 @@
 
 import { useQuery } from '@tanstack/react-query'
 
+import { GETUnreadCountResponse } from '@/backend/api/v1/notification/unread-count'
+import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
 import useMeQuery from '@/query/useMeQuery'
 
@@ -25,9 +27,9 @@ export default function NotificationCount() {
 function useNotificationUnreadCountQuery() {
   const { data: me } = useMeQuery()
 
-  return useQuery({
+  return useQuery<GETUnreadCountResponse>({
     queryKey: QueryKeys.notificationUnreadCount,
-    queryFn: () => fetch('/api/notification/unread-count').then((res) => res.json()),
-    enabled: !!me,
+    queryFn: () => fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/notification/unread-count`).then((res) => res.json()),
+    enabled: Boolean(me),
   })
 }
