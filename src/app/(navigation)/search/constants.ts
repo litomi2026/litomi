@@ -7,7 +7,6 @@ export const SEARCH_SUGGESTIONS = [
   { value: 'id:', label: '품번' },
   { value: 'type:', label: '종류' },
   ...DEFAULT_SUGGESTIONS,
-  { value: 'uploader:', label: '업로더' },
 ]
 
 export type SearchSuggestion = (typeof SEARCH_SUGGESTIONS)[number]

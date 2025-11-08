@@ -138,6 +138,28 @@ function processTranslation(
     },
   })
 
+  // Add uploader suggestions
+  suggestionTrie.insert('uploader', {
+    value: 'uploader:',
+    labels: {
+      ko: '업로더',
+      en: 'uploader',
+      ja: 'アップローダー',
+      'zh-CN': '上传者',
+      'zh-TW': '上傳者',
+    },
+  })
+  suggestionTrie.insert('업로더', {
+    value: 'uploader:',
+    labels: {
+      ko: '업로더',
+      en: 'uploader',
+      ja: 'アップローダー',
+      'zh-CN': '上传者',
+      'zh-TW': '上傳者',
+    },
+  })
+
   for (const { value, label } of getAllLanguagesWithLabels('ko')) {
     const koLabel = getFirstTranslation(label)
     const enLabel = getFirstTranslation(translateLanguage(value, 'en'))
