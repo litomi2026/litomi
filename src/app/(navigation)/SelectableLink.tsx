@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ComponentProps, memo, ReactNode } from 'react'
+import { ComponentProps, ReactNode } from 'react'
 
 import LinkPending from '@/components/LinkPending'
 
@@ -12,14 +12,13 @@ type Props = ComponentProps<typeof Link> & {
   hrefMatch?: string
 }
 
-export default memo(SelectableLink)
-
-function SelectableLink({ className = '', Icon, children, href, hrefMatch }: Props) {
+export default function SelectableLink({ className = '', Icon, children, href, hrefMatch, ...props }: Props) {
   const pathname = usePathname()
   const isSelected = hrefMatch ? pathname.includes(hrefMatch) : pathname === href.toString()
 
   return (
     <Link
+      {...props}
       aria-current={pathname === href.toString() ? 'page' : undefined}
       aria-selected={isSelected}
       className={`callout-none group flex p-1 aria-selected:font-bold aria-[current=page]:pointer-events-none sm:block sm:p-0 ${className}`}
