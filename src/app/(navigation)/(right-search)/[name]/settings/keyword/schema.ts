@@ -8,6 +8,7 @@ export const conditionSchema = z.object({
     .min(1)
     .max(100)
     .transform((val) => val.trim().toLowerCase().replace(/\s+/g, '_')),
+  isExcluded: z.boolean().optional().default(false),
 })
 
 export const createCriteriaSchema = z.object({

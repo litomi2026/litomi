@@ -28,10 +28,11 @@ export const notificationConditionTable = pgTable(
       .notNull(),
     type: smallint().notNull(), // 1=series, 2=character, 3=tag, 4=artist, 5=group, 6=language, etc.
     value: varchar({ length: 100 }).notNull(), // big_breasts, sole_female, etc.
+    isExcluded: boolean('is_excluded').notNull().default(false), // true = exclude this condition from matches
   },
   (table) => [
     index('idx_notification_condition_criteria').on(table.criteriaId),
-    index('idx_notification_condition_type_value').on(table.type, table.value),
+    index('idx_notification_condition_type_value').on(table.type, table.value, table.isExcluded),
     unique('idx_notification_condition_unique').on(table.criteriaId, table.type, table.value),
   ],
 ).enableRLS()
