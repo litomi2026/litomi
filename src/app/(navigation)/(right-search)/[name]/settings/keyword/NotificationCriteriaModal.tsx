@@ -5,16 +5,14 @@ import { toast } from 'sonner'
 
 import IconPlus from '@/components/icons/IconPlus'
 import IconSpinner from '@/components/icons/IconSpinner'
-import IconTrash from '@/components/icons/IconTrash'
 import IconX from '@/components/icons/IconX'
-import CustomSelect from '@/components/ui/CustomSelect'
 import Modal from '@/components/ui/Modal'
-import { NotificationConditionType, NotificationConditionTypeNames } from '@/database/enum'
 import useActionResponse, { getFieldError } from '@/hook/useActionResponse'
 
 import type { NotificationCriteria } from './types'
 
 import { createNotificationCriteria, updateNotificationCriteria } from './actions'
+import ConditionInput from './ConditionInput'
 
 interface Props {
   editingCriteria: NotificationCriteria | null
@@ -26,25 +24,26 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
   const formRef = useRef<HTMLFormElement>(null)
   const [conditionCount, setConditionCount] = useState(editingCriteria?.conditions.length || 1)
   const nameId = useId()
+  const labelClassName = 'block text-sm font-medium text-zinc-300 mb-1'
 
   const processAndSubmit = async (formData: FormData) => {
     const conditionCountFromForm = parseInt(formData.get('conditionCount')?.toString() || '1')
-
-    // Collect conditions from form elements
     const conditions = []
+
     for (let i = 0; i < conditionCountFromForm; i++) {
       const type = formData.get(`condition-type-${i}`)
       const value = formData.get(`condition-value-${i}`)
+      const isExcluded = formData.get(`condition-excluded-${i}`) === 'on'
 
       if (type && value && value.toString().trim()) {
         conditions.push({
           type: parseInt(type.toString()),
           value: value.toString().trim(),
+          isExcluded,
         })
       }
     }
 
-    // Create new FormData with processed conditions
     const processedData = new FormData()
     processedData.append('name', formData.get('name') ?? '')
     processedData.append('conditions', JSON.stringify(conditions))
@@ -142,11 +141,13 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
         </div>
 
         {/* Scrollable content area */}
-        <div className="flex-1 flex flex-col p-4 gap-4 overflow-y-auto [&_label]:block [&_label]:text-sm [&_label]:font-medium [&_label]:text-zinc-300 [&_label]:mb-1">
+        <div className="flex-1 flex flex-col p-4 gap-4 overflow-y-auto">
           <input name="conditionCount" type="hidden" value={conditionCount} />
           <p className="text-sm text-zinc-500 -mt-2">관심있는 작품을 놓치지 않도록 알림 조건을 설정하세요</p>
           <div>
-            <label htmlFor={nameId}>알림 이름</label>
+            <label className={labelClassName} htmlFor={nameId}>
+              알림 이름
+            </label>
             <input
               aria-invalid={Boolean(nameError)}
               autoCapitalize="off"
@@ -164,53 +165,22 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
             {nameError && <p className="mt-1 text-xs text-red-400">{nameError}</p>}
           </div>
           <div className="flex-1 space-y-3">
-            <label>매칭 조건</label>
-            <p className="text-xs text-zinc-500">설정한 모든 조건이 일치하는 작품만 알림을 받아요</p>
+            <label className={labelClassName}>매칭 조건</label>
+            <p className="text-xs text-zinc-500">
+              포함 조건은 모두 만족해야 하고, 제외 조건이 하나라도 있으면 알림을 받지 않아요
+            </p>
             <div className="space-y-2">
               {Array.from({ length: conditionCount }, (_, index) => (
-                <div className="flex flex-col sm:flex-row gap-2" key={index}>
-                  <CustomSelect
-                    className="sm:w-40"
-                    defaultValue={(
-                      editingCriteria?.conditions[index]?.type || NotificationConditionType.SERIES
-                    ).toString()}
-                    disabled={isPending}
-                    name={`condition-type-${index}`}
-                    options={Object.entries(NotificationConditionTypeNames).map(([value, label]) => ({
-                      value,
-                      label,
-                    }))}
-                  />
-                  <div className="flex gap-2 flex-1">
-                    <input
-                      autoCapitalize="off"
-                      autoComplete="off"
-                      className="flex-1 text-base px-3 py-2 rounded-lg bg-zinc-800 border border-zinc-700 placeholder-zinc-500 
-                        focus:outline-none focus:ring-2 focus:ring-brand/50 focus:border-transparent 
-                        disabled:opacity-50 transition"
-                      defaultValue={editingCriteria?.conditions[index]?.value}
-                      disabled={isPending}
-                      name={`condition-value-${index}`}
-                      placeholder="검색어 입력 (공백은 _로)"
-                      required
-                      type="text"
-                    />
-                    {conditionCount > 1 && (
-                      <button
-                        className="px-2.5 py-2 rounded-lg text-zinc-500 hover:text-red-400 hover:bg-red-900/10 
-                          disabled:opacity-50 transition-all"
-                        disabled={isPending}
-                        onClick={() => handleRemoveCondition(index)}
-                        type="button"
-                      >
-                        <IconTrash className="h-4 w-4" />
-                      </button>
-                    )}
-                  </div>
-                </div>
+                <ConditionInput
+                  index={index}
+                  initialCondition={editingCriteria?.conditions[index]}
+                  isPending={isPending}
+                  key={index}
+                  onRemove={() => handleRemoveCondition(index)}
+                  showRemoveButton={conditionCount > 1}
+                />
               ))}
             </div>
-
             <button
               className="inline-flex items-center gap-2 px-3 py-2 text-sm text-brand hover:bg-zinc-800/50 
                 rounded-lg disabled:opacity-50 transition"

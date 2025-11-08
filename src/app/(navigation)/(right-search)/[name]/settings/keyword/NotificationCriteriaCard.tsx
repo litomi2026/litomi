@@ -147,21 +147,29 @@ export default function NotificationCriteriaCard({ criterion, onEdit }: Notifica
               <p className="text-xs sm:text-sm text-zinc-500">마지막 {getRelativeTime(criterion.lastMatchedAt)}</p>
             )}
           </div>
-          <div className="flex flex-wrap gap-2 mt-3">
+          <div className="flex flex-wrap gap-1.5 mt-3">
             {criterion.conditions.map((condition, index) => (
               <span
-                className="inline-flex flex-wrap items-center gap-1.5 whitespace-nowrap rounded-lg bg-zinc-800/50 px-2.5 py-1.5 text-xs font-medium"
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs transition-colors ${
+                  condition.isExcluded ? 'bg-zinc-900 border border-zinc-700 opacity-60' : 'bg-zinc-800'
+                }`}
                 key={index}
+                title={`${condition.isExcluded ? '제외' : '포함'}: ${CONDITION_TYPE_LABELS[condition.type]} - ${condition.value}`}
               >
-                <span className="text-zinc-300">{CONDITION_TYPE_LABELS[condition.type]}</span>
-                <span className="text-zinc-400 break-all">{condition.value}</span>
+                {condition.isExcluded && (
+                  <svg aria-hidden="true" className="w-2.5 h-2.5 text-zinc-400" fill="none" viewBox="0 0 8 8">
+                    <path d="M1 4h6" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5" />
+                  </svg>
+                )}
+                <span className="font-medium text-zinc-300">{CONDITION_TYPE_LABELS[condition.type]}</span>
+                <span className="text-zinc-400 max-w-[120px] truncate">{condition.value}</span>
               </span>
             ))}
           </div>
         </div>
       </div>
       {criterion.isActive && (
-        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-brand/80 to-transparent opacity-0 group-hover/card:opacity-100 transition" />
+        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r from-transparent via-brand/80 to-transparent opacity-0 group-hover/card:opacity-100 transition" />
       )}
     </div>
   )
