@@ -14,6 +14,14 @@ export type Multilingual = {
   'zh-TW'?: string
 }
 
+export type MultilingualMultiLabels = {
+  en: string | string[]
+  ko?: string | string[]
+  ja?: string | string[]
+  'zh-CN'?: string | string[]
+  'zh-TW'?: string | string[]
+}
+
 export function normalizeValue(name: string): string {
   return name.trim().toLowerCase().replace(/\s+/g, '_')
 }

@@ -1,6 +1,7 @@
 import { KOREAN_TO_ENGLISH_QUERY_KEYS } from '@/app/(navigation)/search/constants'
 import { getAllArtistsWithLabels } from '@/translation/artist'
 import { getAllCharactersWithLabels } from '@/translation/character'
+import { Locale } from '@/translation/common'
 import { getAllGroupsWithLabels } from '@/translation/group'
 import { getAllLanguagesWithLabels, translateLanguage } from '@/translation/language'
 import { getAllSeriesWithLabels } from '@/translation/series'
@@ -13,49 +14,35 @@ import { getAllTypesWithLabels } from '@/translation/type'
 
 import SuggestionTrie, { SuggestionItem } from './trie'
 
-// Initialize the Trie with all suggestions
 export const suggestionTrie = new SuggestionTrie()
 
-// Helper function to get label translations
-function getLabels(
-  key: string,
-  translations: Record<string, { en?: string; ko?: string; ja?: string; 'zh-CN'?: string; 'zh-TW'?: string }>,
-  category?: string,
-): SuggestionItem['labels'] {
-  const translation = translations[key] || {}
+type Translation = {
+  en?: string | string[]
+  ko?: string | string[]
+  ja?: string | string[]
+  'zh-CN'?: string | string[]
+  'zh-TW'?: string | string[]
+}
 
-  // For categories
-  if (!category) {
-    return {
-      ko: translation.ko || translation.en || key,
-      en: translation.en || key,
-      ja: translation.ja,
-      'zh-CN': translation['zh-CN'],
-      'zh-TW': translation['zh-TW'],
-    }
-  }
+function getFirstTranslation<T>(translations: T): T extends string[] ? T[number] : T {
+  return (Array.isArray(translations) ? translations[0] : translations) as T extends string[] ? T[number] : T
+}
 
-  // For tags with categories
+function getLabels(key: string, translations: Record<string, Translation>, category: string): SuggestionItem['labels'] {
   const categoryTranslation = tagCategoryTranslations[category as keyof typeof tagCategoryTranslations] || {}
+  const tagTranslation = translations[key] || {}
 
-  // Get the tag label, fallback to English name or the key itself
-  const getTagLabel = (locale: string) => {
-    if (locale === 'ko' && translation.ko) return translation.ko
-    if (locale === 'en' && translation.en) return translation.en
-    if (locale === 'ja' && translation.ja) return translation.ja
-    if (locale === 'zh-CN' && translation['zh-CN']) return translation['zh-CN']
-    if (locale === 'zh-TW' && translation['zh-TW']) return translation['zh-TW']
-
-    // Fallback to English name or key, converted to uppercase for special cases like BDSM
-    return translation.en || (key.includes('bdsm') ? key.toUpperCase() : key)
+  const getLabel = (locale: Locale) => {
+    const tagLabel = getFirstTranslation(tagTranslation[locale])
+    return `${categoryTranslation[locale] || category}:${tagLabel || key}`
   }
 
   return {
-    ko: `${categoryTranslation.ko || category}:${getTagLabel('ko')}`,
-    en: `${categoryTranslation.en || category}:${getTagLabel('en')}`,
-    ja: categoryTranslation.ja ? `${categoryTranslation.ja}:${getTagLabel('ja')}` : undefined,
-    'zh-CN': categoryTranslation['zh-CN'] ? `${categoryTranslation['zh-CN']}:${getTagLabel('zh-CN')}` : undefined,
-    'zh-TW': categoryTranslation['zh-TW'] ? `${categoryTranslation['zh-TW']}:${getTagLabel('zh-TW')}` : undefined,
+    ko: getLabel(Locale.KO),
+    en: getLabel(Locale.EN),
+    ja: getLabel(Locale.JA),
+    'zh-CN': getLabel(Locale.ZH_CN),
+    'zh-TW': getLabel(Locale.ZH_TW),
   }
 }
 
@@ -66,7 +53,6 @@ function insertTranslationWords(trie: SuggestionTrie, translatedText: string, su
   for (const word of words) {
     const trimmedWord = word.trim()
     if (trimmedWord && trimmedWord.length > 2) {
-      // Only insert words longer than 2 characters to avoid noise
       trie.insert(trimmedWord.toLowerCase(), suggestion)
     }
   }
@@ -75,48 +61,60 @@ function insertTranslationWords(trie: SuggestionTrie, translatedText: string, su
 function insertWithWordVariants(trie: SuggestionTrie, key: string, suggestion: SuggestionItem) {
   trie.insert(key, suggestion)
 
-  // If the key contains underscores, also insert words after each underscore
   if (key.includes('_')) {
     const parts = key.split('_')
     for (let i = 1; i < parts.length; i++) {
       const word = parts[i]
       if (word && word.length > 2) {
-        // Only insert words longer than 2 characters to avoid noise
         trie.insert(word, suggestion)
       }
     }
   }
 }
 
-// Initialize suggestions on module load
+function processTranslation(
+  trie: SuggestionTrie,
+  translation: string | string[],
+  originalTag: string,
+  suggestion: SuggestionItem,
+) {
+  const translations = Array.isArray(translation) ? translation : [translation]
+
+  for (const text of translations) {
+    if (text && text !== originalTag) {
+      insertTranslationWords(trie, text, suggestion)
+    }
+  }
+}
+
 ;(() => {
-  // Add category suggestions
-  Object.entries(tagCategoryTranslations).forEach(([category, translations]) => {
+  for (const [category, translations] of Object.entries(tagCategoryTranslations)) {
     const categoryValue = `${category}:`
+
     const labels: SuggestionItem['labels'] = {
-      ko: `${translations.ko}`,
-      en: `${translations.en}`,
-      ja: translations.ja ? `${translations.ja}` : undefined,
-      'zh-CN': translations['zh-CN'] ? `${translations['zh-CN']}` : undefined,
-      'zh-TW': translations['zh-TW'] ? `${translations['zh-TW']}` : undefined,
+      ko: translations.ko,
+      en: translations.en,
+      ja: translations.ja,
+      'zh-CN': translations['zh-CN'],
+      'zh-TW': translations['zh-TW'],
     }
 
-    // Insert for both the category name and its translations
     suggestionTrie.insert(category, { value: categoryValue, labels })
     suggestionTrie.insert(categoryValue, { value: categoryValue, labels })
-    Object.values(translations).forEach((translation) => {
+
+    for (const translation of Object.values(translations)) {
       if (typeof translation === 'string') {
         suggestionTrie.insert(translation.toLowerCase(), { value: categoryValue, labels })
       }
-    })
+    }
 
     // Also insert Korean shortcuts
-    Object.entries(KOREAN_TO_ENGLISH_QUERY_KEYS).forEach(([korean, english]) => {
+    for (const [korean, english] of Object.entries(KOREAN_TO_ENGLISH_QUERY_KEYS)) {
       if (english === category) {
         suggestionTrie.insert(korean, { value: categoryValue, labels })
       }
-    })
-  })
+    }
+  }
 
   // Add language suggestions
   suggestionTrie.insert('language', {
@@ -140,11 +138,35 @@ function insertWithWordVariants(trie: SuggestionTrie, key: string, suggestion: S
     },
   })
 
-  getAllLanguagesWithLabels('ko').forEach(({ value, label: koLabel }) => {
-    const enLabel = translateLanguage(value, 'en')
-    const jaLabel = translateLanguage(value, 'ja')
-    const zhCNLabel = translateLanguage(value, 'zh-CN')
-    const zhTWLabel = translateLanguage(value, 'zh-TW')
+  // Add uploader suggestions
+  suggestionTrie.insert('uploader', {
+    value: 'uploader:',
+    labels: {
+      ko: '업로더',
+      en: 'uploader',
+      ja: 'アップローダー',
+      'zh-CN': '上传者',
+      'zh-TW': '上傳者',
+    },
+  })
+  suggestionTrie.insert('업로더', {
+    value: 'uploader:',
+    labels: {
+      ko: '업로더',
+      en: 'uploader',
+      ja: 'アップローダー',
+      'zh-CN': '上传者',
+      'zh-TW': '上傳者',
+    },
+  })
+
+  for (const { value, label } of getAllLanguagesWithLabels('ko')) {
+    const koLabel = getFirstTranslation(label)
+    const enLabel = getFirstTranslation(translateLanguage(value, 'en'))
+    const jaLabel = getFirstTranslation(translateLanguage(value, 'ja'))
+    const zhCNLabel = getFirstTranslation(translateLanguage(value, 'zh-CN'))
+    const zhTWLabel = getFirstTranslation(translateLanguage(value, 'zh-TW'))
+
     const suggestion: SuggestionItem = {
       value: `language:${value}`,
       labels: {
@@ -164,7 +186,7 @@ function insertWithWordVariants(trie: SuggestionTrie, key: string, suggestion: S
     if (enLabel !== value && enLabel !== koLabel) {
       suggestionTrie.insert(enLabel, suggestion)
     }
-  })
+  }
 
   // Add type suggestions
   suggestionTrie.insert('type', {
@@ -189,8 +211,7 @@ function insertWithWordVariants(trie: SuggestionTrie, key: string, suggestion: S
   })
 
   // Add all types with their translations
-  const allTypes = getAllTypesWithLabels()
-  allTypes.forEach((typeItem) => {
+  for (const typeItem of getAllTypesWithLabels()) {
     // Insert for the full value (e.g., "type:manga")
     suggestionTrie.insert(typeItem.value, typeItem)
 
@@ -199,7 +220,7 @@ function insertWithWordVariants(trie: SuggestionTrie, key: string, suggestion: S
     suggestionTrie.insert(typeKey, typeItem)
 
     // Insert for each translation
-    Object.entries(typeItem.labels).forEach(([_locale, label]) => {
+    for (const label of Object.values(typeItem.labels)) {
       if (label) {
         // Extract just the type name from the label (e.g., "종류:망가" -> "망가")
         const typeName = label.split(':')[1]
@@ -207,55 +228,49 @@ function insertWithWordVariants(trie: SuggestionTrie, key: string, suggestion: S
           suggestionTrie.insert(typeName.toLowerCase(), typeItem)
         }
       }
-    })
-  })
+    }
+  }
 
   // Add male/female tags
-  Object.entries(tagUnisexTranslations).forEach(([tag, translations]) => {
-    ;['female', 'male'].forEach((category) => {
+  for (const [tag, translations] of Object.entries(tagUnisexTranslations)) {
+    for (const category of ['female', 'male']) {
       const value = `${category}:${tag}`
       const labels = getLabels(tag, { [tag]: translations }, category)
       suggestionTrie.insert(value, { value, labels })
       insertWithWordVariants(suggestionTrie, tag, { value, labels })
 
-      Object.values(translations).forEach((translation) => {
-        if (typeof translation === 'string' && translation !== tag) {
-          insertTranslationWords(suggestionTrie, translation, { value, labels })
-        }
-      })
-    })
-  })
+      for (const translation of Object.values(translations)) {
+        processTranslation(suggestionTrie, translation, tag, { value, labels })
+      }
+    }
+  }
 
   // Add mixed tags
-  Object.entries(tagMixedTranslations).forEach(([tag, translations]) => {
+  for (const [tag, translations] of Object.entries(tagMixedTranslations)) {
     const value = `mixed:${tag}`
     const labels = getLabels(tag, { [tag]: translations }, 'mixed')
     suggestionTrie.insert(value, { value, labels })
     insertWithWordVariants(suggestionTrie, tag, { value, labels })
 
-    Object.values(translations).forEach((translation) => {
-      if (typeof translation === 'string' && translation !== tag) {
-        insertTranslationWords(suggestionTrie, translation, { value, labels })
-      }
-    })
-  })
+    for (const translation of Object.values(translations)) {
+      processTranslation(suggestionTrie, translation, tag, { value, labels })
+    }
+  }
 
   // Add other tags
-  Object.entries(tagOtherTranslations).forEach(([tag, translations]) => {
+  for (const [tag, translations] of Object.entries(tagOtherTranslations)) {
     const value = `other:${tag}`
     const labels = getLabels(tag, { [tag]: translations }, 'other')
     suggestionTrie.insert(value, { value, labels })
     insertWithWordVariants(suggestionTrie, tag, { value, labels })
 
-    Object.values(translations).forEach((translation) => {
-      if (typeof translation === 'string' && translation !== tag) {
-        insertTranslationWords(suggestionTrie, translation, { value, labels })
-      }
-    })
-  })
+    for (const translation of Object.values(translations)) {
+      processTranslation(suggestionTrie, translation, tag, { value, labels })
+    }
+  }
 
   // Add special tag translations
-  Object.entries(tagSingleSexTranslations).forEach(([fullTag, translations]) => {
+  for (const [fullTag, translations] of Object.entries(tagSingleSexTranslations)) {
     const [category, tag] = fullTag.includes(':') ? fullTag.split(':') : ['', fullTag]
 
     if (category && tag) {
@@ -263,13 +278,11 @@ function insertWithWordVariants(trie: SuggestionTrie, key: string, suggestion: S
       suggestionTrie.insert(fullTag, { value: fullTag, labels })
       insertWithWordVariants(suggestionTrie, tag, { value: fullTag, labels })
 
-      Object.values(translations).forEach((translation) => {
-        if (typeof translation === 'string' && translation !== tag) {
-          insertTranslationWords(suggestionTrie, translation, { value: fullTag, labels })
-        }
-      })
+      for (const translation of Object.values(translations)) {
+        processTranslation(suggestionTrie, translation, tag, { value: fullTag, labels })
+      }
     }
-  })
+  }
 
   // Add series suggestions
   suggestionTrie.insert('series', {
@@ -294,13 +307,12 @@ function insertWithWordVariants(trie: SuggestionTrie, key: string, suggestion: S
   })
 
   // Add all series with their translations
-  const allSeries = getAllSeriesWithLabels()
-  allSeries.forEach((seriesItem) => {
+  for (const seriesItem of getAllSeriesWithLabels()) {
     suggestionTrie.insert(seriesItem.value, seriesItem)
     const seriesKey = seriesItem.value.replace(/^series:/, '')
     insertWithWordVariants(suggestionTrie, seriesKey, seriesItem)
 
-    Object.entries(seriesItem.labels).forEach(([_locale, label]) => {
+    for (const label of Object.values(seriesItem.labels)) {
       if (label) {
         // Extract just the series name from the label (e.g., "시리즈:동방 프로젝트" -> "동방 프로젝트")
         const seriesName = label.split(':')[1]
@@ -308,8 +320,8 @@ function insertWithWordVariants(trie: SuggestionTrie, key: string, suggestion: S
           insertTranslationWords(suggestionTrie, seriesName, seriesItem)
         }
       }
-    })
-  })
+    }
+  }
 
   // Add character suggestions
   suggestionTrie.insert('character', {
@@ -334,13 +346,12 @@ function insertWithWordVariants(trie: SuggestionTrie, key: string, suggestion: S
   })
 
   // Add all characters with their translations
-  const allCharacters = getAllCharactersWithLabels()
-  allCharacters.forEach((characterItem) => {
+  for (const characterItem of getAllCharactersWithLabels()) {
     suggestionTrie.insert(characterItem.value, characterItem)
     const characterKey = characterItem.value.replace(/^character:/, '')
     insertWithWordVariants(suggestionTrie, characterKey, characterItem)
 
-    Object.entries(characterItem.labels).forEach(([_locale, label]) => {
+    for (const label of Object.values(characterItem.labels)) {
       if (label) {
         // Extract just the character name from the label (e.g., "캐릭터:키요스미 아키라" -> "키요스미 아키라")
         const characterName = label.split(':')[1]
@@ -348,8 +359,8 @@ function insertWithWordVariants(trie: SuggestionTrie, key: string, suggestion: S
           insertTranslationWords(suggestionTrie, characterName, characterItem)
         }
       }
-    })
-  })
+    }
+  }
 
   // Add artist suggestions
   suggestionTrie.insert('artist', {
@@ -374,13 +385,12 @@ function insertWithWordVariants(trie: SuggestionTrie, key: string, suggestion: S
   })
 
   // Add all artists with their translations
-  const allArtists = getAllArtistsWithLabels()
-  allArtists.forEach((artistItem) => {
+  for (const artistItem of getAllArtistsWithLabels()) {
     suggestionTrie.insert(artistItem.value, artistItem)
     const artistKey = artistItem.value.replace(/^artist:/, '')
     insertWithWordVariants(suggestionTrie, artistKey, artistItem)
 
-    Object.entries(artistItem.labels).forEach(([_locale, label]) => {
+    for (const label of Object.values(artistItem.labels)) {
       if (label) {
         // Extract just the artist name from the label (e.g., "작가:아티스트명" -> "아티스트명")
         const artistName = label.split(':')[1]
@@ -388,8 +398,8 @@ function insertWithWordVariants(trie: SuggestionTrie, key: string, suggestion: S
           insertTranslationWords(suggestionTrie, artistName, artistItem)
         }
       }
-    })
-  })
+    }
+  }
 
   // Add group suggestions
   suggestionTrie.insert('group', {
@@ -414,13 +424,12 @@ function insertWithWordVariants(trie: SuggestionTrie, key: string, suggestion: S
   })
 
   // Add all groups with their translations
-  const allGroups = getAllGroupsWithLabels()
-  allGroups.forEach((groupItem) => {
+  for (const groupItem of getAllGroupsWithLabels()) {
     suggestionTrie.insert(groupItem.value, groupItem)
     const groupKey = groupItem.value.replace(/^group:/, '')
     insertWithWordVariants(suggestionTrie, groupKey, groupItem)
 
-    Object.entries(groupItem.labels).forEach(([_locale, label]) => {
+    for (const label of Object.values(groupItem.labels)) {
       if (label) {
         // Extract just the group name from the label (e.g., "그룹:그룹명" -> "그룹명")
         const groupName = label.split(':')[1]
@@ -428,6 +437,6 @@ function insertWithWordVariants(trie: SuggestionTrie, key: string, suggestion: S
           insertTranslationWords(suggestionTrie, groupName, groupItem)
         }
       }
-    })
-  })
+    }
+  }
 })()

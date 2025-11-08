@@ -64,6 +64,7 @@ export async function createNotificationCriteria(formData: FormData) {
         criteriaId: criteria.id,
         type: condition.type,
         value: condition.value,
+        isExcluded: condition.isExcluded,
       }))
 
       await tx.insert(notificationConditionTable).values(conditionValues)
@@ -199,6 +200,7 @@ export async function updateNotificationCriteria(formData: FormData) {
           criteriaId: criteriaId,
           type: condition.type,
           value: condition.value, // Already normalized in schema
+          isExcluded: condition.isExcluded,
         }))
 
         await tx.insert(notificationConditionTable).values(conditionValues)

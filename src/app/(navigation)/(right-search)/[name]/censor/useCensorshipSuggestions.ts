@@ -2,10 +2,11 @@
 
 import { useMemo, useRef, useState } from 'react'
 
-import { BLIND_TAG_VALUE_TO_LABEL, BLIND_TAG_VALUES, DEFAULT_SUGGESTIONS } from '@/constants/json'
+import { DEFAULT_SUGGESTIONS } from '@/constants/json'
 import { MAX_SEARCH_SUGGESTIONS, SUGGESTION_DEBOUNCE_MS } from '@/constants/policy'
 import useDebouncedValue from '@/hook/useDebouncedValue'
 
+import { BLIND_TAG_SUGGESTIONS, CENSORSHIP_PREFIX_SET } from './constants'
 import useCensorshipSuggestionsQuery from './useCensorshipSuggestionsQuery'
 
 export type CensorshipSuggestion = {
@@ -14,24 +15,6 @@ export type CensorshipSuggestion = {
 }
 
 const INITIAL_SELECTED_INDEX = -1
-
-const BLIND_TAG_SUGGESTIONS = BLIND_TAG_VALUES.map((value) => ({
-  value,
-  label: BLIND_TAG_VALUE_TO_LABEL[value],
-}))
-
-const CENSORSHIP_PREFIX_SET = new Set([
-  'artist:',
-  'character:',
-  'female:',
-  'group:',
-  'language:',
-  'male:',
-  'mixed:',
-  'other:',
-  'series:',
-  'type:',
-])
 
 type Props = {
   inputValue: string
@@ -149,7 +132,6 @@ export default function useCensorshipSuggestions({ inputValue, cursorPosition }:
   return {
     suggestions,
     selectedIndex,
-    setSelectedIndex,
     resetSelection: () => setSelectedIndex(INITIAL_SELECTED_INDEX),
     navigateSelection,
     selectSuggestion,

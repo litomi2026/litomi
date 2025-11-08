@@ -7,6 +7,7 @@ export type NotificationCriteria = {
   conditions: {
     type: number
     value: string
+    isExcluded?: boolean
   }[]
   matchCount: number
   lastMatchedAt: Date | null

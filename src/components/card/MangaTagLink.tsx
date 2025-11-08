@@ -42,19 +42,15 @@ export default function MangaTagLink({ category, value, label }: Props) {
   )
 }
 
-function checkIfLightCensored(
-  category: string,
-  value: string,
-  censorshipsMap: Map<string, CensorshipItem> | undefined,
-) {
-  if (!censorshipsMap) {
+function checkIfLightCensored(category: string, value: string, censorships: Map<string, CensorshipItem> | undefined) {
+  if (!censorships) {
     return false
   }
 
-  const tagCategoryKey = mapTagCategoryToCensorshipKey(category)
-  const categoryMatches = censorshipsMap.get(`${tagCategoryKey}:${value}`)
+  const categoryKey = mapTagCategoryToCensorshipKey(category)
+  const matched = censorships.get(`${categoryKey}:${value}`) || censorships.get(`${CensorshipKey.TAG}:${value}`)
 
-  return categoryMatches && categoryMatches?.level === CensorshipLevel.LIGHT
+  return matched && matched?.level === CensorshipLevel.LIGHT
 }
 
 function mapTagCategoryToCensorshipKey(category: string) {

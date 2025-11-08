@@ -1,7 +1,7 @@
 'use client'
 
 import { useQueryClient } from '@tanstack/react-query'
-import { memo, useCallback, useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import SuggestionDropdown from '@/app/(navigation)/search/SuggestionDropdown'
@@ -14,23 +14,10 @@ import { CensorshipKey, CensorshipLevel } from '@/database/enum'
 import useActionResponse from '@/hook/useActionResponse'
 
 import { addCensorships } from './action'
+import { TYPE_PATTERNS } from './constants'
 import useCensorshipSuggestions, { type CensorshipSuggestion } from './useCensorshipSuggestions'
 
-const TYPE_PATTERNS: Record<string, CensorshipKey> = {
-  'artist:': CensorshipKey.ARTIST,
-  'group:': CensorshipKey.GROUP,
-  'series:': CensorshipKey.SERIES,
-  'character:': CensorshipKey.CHARACTER,
-  'female:': CensorshipKey.TAG_CATEGORY_FEMALE,
-  'male:': CensorshipKey.TAG_CATEGORY_MALE,
-  'mixed:': CensorshipKey.TAG_CATEGORY_MIXED,
-  'other:': CensorshipKey.TAG_CATEGORY_OTHER,
-  'language:': CensorshipKey.LANGUAGE,
-}
-
-export default memo(CensorshipCreationBar)
-
-function CensorshipCreationBar() {
+export default function CensorshipCreationBar() {
   const [showHelp, setShowHelp] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [inputValue, setInputValue] = useState('')
@@ -56,7 +43,6 @@ function CensorshipCreationBar() {
   const {
     suggestions,
     selectedIndex,
-    setSelectedIndex,
     resetSelection,
     navigateSelection,
     selectSuggestion,

@@ -11,7 +11,7 @@ type CriteriaWithConditions = {
   isActive: boolean
   createdAt: Date
   updatedAt: Date
-  conditions: Array<{ type: number; value: string }>
+  conditions: { type: number; value: string; isExcluded?: boolean }[]
   matchCount: number
   lastMatchedAt: Date | null
 }
@@ -34,6 +34,7 @@ async function getUserCriteria(userId: number) {
       criteriaLastMatchedAt: notificationCriteriaTable.lastMatchedAt,
       conditionType: notificationConditionTable.type,
       conditionValue: notificationConditionTable.value,
+      conditionIsExcluded: notificationConditionTable.isExcluded,
     })
     .from(notificationCriteriaTable)
     .innerJoin(notificationConditionTable, eq(notificationCriteriaTable.id, notificationConditionTable.criteriaId))
@@ -58,12 +59,13 @@ async function getUserCriteria(userId: number) {
       })
     }
 
-    // With INNER JOIN, conditions are guaranteed to exist
     const criteria = criteriaMap.get(criteriaId)
+
     if (criteria) {
       criteria.conditions.push({
         type: row.conditionType,
         value: row.conditionValue,
+        isExcluded: row.conditionIsExcluded,
       })
     }
   }
