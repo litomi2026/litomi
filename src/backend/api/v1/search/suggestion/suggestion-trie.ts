@@ -11,6 +11,7 @@ import tagOtherTranslations from '@/translation/tag-other.json'
 import tagSingleSexTranslations from '@/translation/tag-single-sex.json'
 import tagUnisexTranslations from '@/translation/tag-unisex.json'
 import { getAllTypesWithLabels } from '@/translation/type'
+import 'server-only'
 
 import SuggestionTrie, { SuggestionItem } from './trie'
 

@@ -2,6 +2,7 @@ import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { deleteCookie } from 'hono/cookie'
 import { HTTPException } from 'hono/http-exception'
+import 'server-only'
 
 import { Env } from '@/backend'
 import { getUserId } from '@/backend/utils/auth'

@@ -1,6 +1,7 @@
 import { zValidator } from '@hono/zod-validator'
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
+import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
@@ -39,7 +40,7 @@ suggestionRoutes.get('/', zValidator('query', querySchema), async (c) => {
     swr: sec('1 day'),
   })
 
-  return c.json(suggestions, { headers: { 'Cache-Control': cacheControl } })
+  return c.json<GETSearchSuggestionsResponse>(suggestions, { headers: { 'Cache-Control': cacheControl } })
 })
 
 export default suggestionRoutes

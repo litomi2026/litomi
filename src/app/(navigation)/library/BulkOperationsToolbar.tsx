@@ -62,7 +62,7 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId, per
     action: bulkCopyToLibrary,
     onSuccess: (copiedCount, [{ toLibraryId, mangaIds }]) => {
       const alreadyExistsCount = mangaIds.length - copiedCount
-      const extraMessage = alreadyExistsCount > 0 ? ` (중복: ${alreadyExistsCount}개)` : ''
+      const extraMessage = alreadyExistsCount > 0 ? ` (실패: ${alreadyExistsCount}개)` : ''
       toast.success(`${copiedCount}개 작품을 복사했어요${extraMessage}`)
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraries })
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItems(toLibraryId) })
@@ -75,7 +75,7 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId, per
     action: bulkMoveToLibrary,
     onSuccess: (movedCount, [{ fromLibraryId, toLibraryId, mangaIds }]) => {
       const alreadyExistsCount = mangaIds.length - movedCount
-      const extraMessage = alreadyExistsCount > 0 ? ` (중복: ${alreadyExistsCount}개)` : ''
+      const extraMessage = alreadyExistsCount > 0 ? ` (실패: ${alreadyExistsCount}개)` : ''
       toast.success(`${movedCount}개 작품을 이동했어요${extraMessage}`)
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraries })
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItems(fromLibraryId) })

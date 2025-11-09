@@ -1,6 +1,7 @@
 import { and, count, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
+import 'server-only'
 
 import { Env } from '@/backend'
 import { getUserId } from '@/backend/utils/auth'
@@ -29,7 +30,7 @@ unreadCountRoutes.get('/', async (c) => {
     maxAge: 10,
   })
 
-  return c.json(unreadCount, { headers: { 'Cache-Control': cacheControl } })
+  return c.json<GETUnreadCountResponse>(unreadCount, { headers: { 'Cache-Control': cacheControl } })
 })
 
 export default unreadCountRoutes

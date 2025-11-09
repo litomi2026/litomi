@@ -1,5 +1,6 @@
 import { zValidator } from '@hono/zod-validator'
 import { Hono } from 'hono'
+import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
@@ -55,7 +56,7 @@ trendingRoutes.get('/', zValidator('query', querySchema), async (c) => {
     swr: cacheMaxAge,
   })
 
-  return c.json(response, { headers: { 'Cache-Control': cacheControl } })
+  return c.json<GETTrendingKeywordsResponse>(response, { headers: { 'Cache-Control': cacheControl } })
 })
 
 export default trendingRoutes

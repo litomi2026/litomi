@@ -4,4 +4,3 @@ export enum PostFilter {
   RECOMMAND = '2',
   USER = '3',
 }
-

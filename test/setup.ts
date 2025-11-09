@@ -11,9 +11,11 @@ mock.module('server-only', () => ({
   // Empty module - this prevents the error from being thrown
 }))
 
-// Mock Next.js unstable_cache to prevent cache-related errors in tests
+// Mock Next.js cache functions to prevent cache-related errors in tests
 mock.module('next/cache', () => ({
-  unstable_cache: <T extends (...args: unknown[]) => unknown>(fn: T) => fn, // Return the function directly without caching in tests
+  unstable_cache: <T extends (...args: unknown[]) => unknown>(fn: T) => fn,
+  revalidatePath: () => {},
+  revalidateTag: () => {},
 }))
 
 // Create a new window instance

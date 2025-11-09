@@ -2,6 +2,7 @@ import { zValidator } from '@hono/zod-validator'
 import { and, desc, eq, lt, or } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
+import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
@@ -97,7 +98,7 @@ itemsRoutes.get('/', zValidator('param', paramsSchema), zValidator('query', quer
     maxAge: 3,
   })
 
-  return c.json(result, { headers: { 'Cache-Control': cacheControl } })
+  return c.json<GETLibraryItemsResponse>(result, { headers: { 'Cache-Control': cacheControl } })
 })
 
 export default itemsRoutes

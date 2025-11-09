@@ -7,6 +7,7 @@ import { getUserId } from '@/backend/utils/auth'
 import { db } from '@/database/supabase/drizzle'
 import { libraryItemTable, libraryTable } from '@/database/supabase/schema'
 import { intToHexColor } from '@/utils/color'
+import 'server-only'
 
 import itemsRoutes from './[id]'
 
@@ -45,7 +46,7 @@ libraryRoutes.get('/', async (c) => {
 
   const librariesWithHexColors = libraries.map((lib) => ({ ...lib, color: intToHexColor(lib.color) }))
 
-  return c.json(librariesWithHexColors satisfies GETLibraryResponse)
+  return c.json<GETLibraryResponse>(librariesWithHexColors)
 })
 
 libraryRoutes.route('/:id', itemsRoutes)
