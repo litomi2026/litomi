@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-import { GETLibraryResponse } from '@/app/api/library/route'
+import { GETLibraryResponse } from '@/backend/api/v1/library'
 import IconPlus from '@/components/icons/IconPlus'
 import IconSpinner from '@/components/icons/IconSpinner'
 import IconX from '@/components/icons/IconX'

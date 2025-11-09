@@ -5,17 +5,6 @@ locals {
 
   ttl_30d_path_equals = [
     "/",
-    "/auth/signup",
-    "/deterrence",
-    "/doc/privacy",
-    "/doc/terms",
-    "/manga",
-    "/new",
-    "/offline.html",
-    "/posts",
-    "/realtime",
-    "/search",
-    "/404",
   ]
 
   ttl_30d_extension_equals = [
@@ -24,17 +13,26 @@ locals {
 
   ttl_30d_path_prefixes = [
     "/auth/login",
+    "/auth/signup",
     "/apple-icon.",
+    "/deterrence",
+    "/doc/privacy",
+    "/doc/terms",
     "/favicon.",
     "/icon.",
     "/image/",
-    "/manga/",
+    "/manga",
     "/nye",
     "/notification",
+    "/offline.html",
     "/og-image.",
     "/posts/",
+    "/realtime",
+    "/search",
     "/web-app-manifest",
+    "/404",
     "/@",
+    "/_next/image",
   ]
 
   ttl_day_path_prefixes = [

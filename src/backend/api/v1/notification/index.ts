@@ -6,6 +6,7 @@ import { z } from 'zod'
 
 import { Env } from '@/backend'
 import { getUserId } from '@/backend/utils/auth'
+import { NOTIFICATION_PER_PAGE } from '@/constants/policy'
 import { createCacheControl } from '@/crawler/proxy-utils'
 import { NotificationType } from '@/database/enum'
 import { db } from '@/database/supabase/drizzle'
@@ -15,9 +16,8 @@ import { NotificationFilter } from './types'
 import unreadCountRoutes from './unread-count'
 
 const querySchema = z.object({
-  limit: z.coerce.number().int().positive().max(20).default(20),
   nextId: z.coerce.number().optional(),
-  filter: z.array(z.enum(NotificationFilter)).optional(),
+  filter: z.union([z.enum(NotificationFilter), z.array(z.enum(NotificationFilter))]).optional(),
 })
 
 export type GETNotificationResponse = {
@@ -44,18 +44,19 @@ notificationRoutes.get('/', zValidator('query', querySchema), async (c) => {
     throw new HTTPException(401)
   }
 
-  const { limit, nextId, filter: filters } = c.req.valid('query')
+  const { nextId, filter = [] } = c.req.valid('query')
+  const filters = Array.isArray(filter) ? filter : [filter]
   const conditions = [eq(notificationTable.userId, userId)]
 
   if (nextId) {
     conditions.push(lt(notificationTable.id, nextId))
   }
 
-  if (filters?.includes(NotificationFilter.UNREAD)) {
+  if (filters.includes(NotificationFilter.UNREAD)) {
     conditions.push(eq(notificationTable.read, false))
   }
 
-  if (filters?.includes(NotificationFilter.NEW_MANGA)) {
+  if (filters.includes(NotificationFilter.NEW_MANGA)) {
     conditions.push(eq(notificationTable.type, NotificationType.NEW_MANGA))
   }
 
@@ -64,11 +65,11 @@ notificationRoutes.get('/', zValidator('query', querySchema), async (c) => {
     .from(notificationTable)
     .where(and(...conditions))
     .orderBy(desc(notificationTable.id))
-    .limit(limit + 1)
+    .limit(NOTIFICATION_PER_PAGE + 1)
 
   const result: GETNotificationResponse = {
-    notifications: results.slice(0, limit),
-    hasNextPage: results.length > limit,
+    notifications: results.slice(0, NOTIFICATION_PER_PAGE),
+    hasNextPage: results.length > NOTIFICATION_PER_PAGE,
   }
 
   const cacheControl = createCacheControl({
