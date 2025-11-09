@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react'
 
-import { GETLibraryItemsResponse } from '@/app/api/library/[id]/route'
+import { GETLibraryItemsResponse } from '@/backend/api/v1/library/[id]'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'

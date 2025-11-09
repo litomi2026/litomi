@@ -1,12 +1,14 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { GETLibraryResponse } from '@/app/api/library/route'
+import { GETLibraryResponse } from '@/backend/api/v1/library'
+import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
 import useMeQuery from '@/query/useMeQuery'
 import { handleResponseError } from '@/utils/react-query-error'
 
 export async function fetchLibraries() {
-  const response = await fetch('/api/library')
+  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/library`
+  const response = await fetch(url, { credentials: 'include' })
   return handleResponseError<GETLibraryResponse>(response)
 }
 
