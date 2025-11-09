@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { ReactNode, useEffect, useMemo, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 
-import { PostFilter } from '@/app/api/post/types'
+import { PostFilter } from '@/backend/api/v1/post'
 import CloudProviderStatus from '@/components/CloudProviderStatus'
 import PostCard, { PostSkeleton } from '@/components/post/PostCard'
 import RetryGuidance from '@/components/RetryGuidance'
