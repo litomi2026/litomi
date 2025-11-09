@@ -6,6 +6,7 @@ import { z } from 'zod'
 
 import { Env } from '@/backend'
 import { getUserId } from '@/backend/utils/auth'
+import { NOTIFICATION_PER_PAGE } from '@/constants/policy'
 import { createCacheControl } from '@/crawler/proxy-utils'
 import { NotificationType } from '@/database/enum'
 import { db } from '@/database/supabase/drizzle'
@@ -15,7 +16,6 @@ import { NotificationFilter } from './types'
 import unreadCountRoutes from './unread-count'
 
 const querySchema = z.object({
-  limit: z.coerce.number().int().positive().max(20).default(20),
   nextId: z.coerce.number().optional(),
   filter: z.array(z.enum(NotificationFilter)).optional(),
 })
@@ -44,7 +44,7 @@ notificationRoutes.get('/', zValidator('query', querySchema), async (c) => {
     throw new HTTPException(401)
   }
 
-  const { limit, nextId, filter: filters } = c.req.valid('query')
+  const { nextId, filter: filters } = c.req.valid('query')
   const conditions = [eq(notificationTable.userId, userId)]
 
   if (nextId) {
@@ -64,11 +64,11 @@ notificationRoutes.get('/', zValidator('query', querySchema), async (c) => {
     .from(notificationTable)
     .where(and(...conditions))
     .orderBy(desc(notificationTable.id))
-    .limit(limit + 1)
+    .limit(NOTIFICATION_PER_PAGE + 1)
 
   const result: GETNotificationResponse = {
-    notifications: results.slice(0, limit),
-    hasNextPage: results.length > limit,
+    notifications: results.slice(0, NOTIFICATION_PER_PAGE),
+    hasNextPage: results.length > NOTIFICATION_PER_PAGE,
   }
 
   const cacheControl = createCacheControl({

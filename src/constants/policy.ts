@@ -28,6 +28,7 @@ export const BOOKMARKS_PER_PAGE = 20
 export const CENSORSHIPS_PER_PAGE = 10
 export const LIBRARIES_PER_PAGE = 20
 export const TOP_MANGA_PER_PAGE = 20
+export const NOTIFICATION_PER_PAGE = 20
 export const READING_HISTORY_PER_PAGE = 20
 export const RATING_PER_PAGE = 20
 export const LIBRARY_ITEMS_PER_PAGE = 20
