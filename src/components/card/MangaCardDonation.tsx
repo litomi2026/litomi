@@ -143,20 +143,6 @@ export default function MangaCardDonation() {
               </a>
             </div>
           </div>
-          <div className="flex flex-col gap-2">
-            <span className="text-xs text-zinc-500 uppercase tracking-wider font-medium">제휴</span>
-            <div className="grid grid-cols-2 gap-2">
-              <a
-                className="col-span-2 py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition text-sm font-medium text-center"
-                href="https://velog.io/@gwak2837/coupang-partners-samdasoo"
-                onClick={() => handleDonationClick('coupang_partners')}
-                rel="noopener"
-                target="_blank"
-              >
-                쿠팡 파트너스
-              </a>
-            </div>
-          </div>
         </div>
         <p className="text-xs text-zinc-500">참여해주신다면 감사하겠습니다 🙇</p>
       </div>

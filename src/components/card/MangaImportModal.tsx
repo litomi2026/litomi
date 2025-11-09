@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 import { create } from 'zustand'
 
 import { bulkCopyToLibrary } from '@/app/(navigation)/library/action-library-item'
-import { MAX_LIBRARY_ITEMS_PER_LIBRARY } from '@/constants/policy'
+import { MAX_ITEMS_PER_LIBRARY } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import useActionResponse from '@/hook/useActionResponse'
 import useDebouncedValue from '@/hook/useDebouncedValue'
@@ -76,8 +76,8 @@ export default function MangaImportModal() {
       return
     }
 
-    if (mangaIds.length > MAX_LIBRARY_ITEMS_PER_LIBRARY) {
-      toast.warning(`한 번에 최대 ${MAX_LIBRARY_ITEMS_PER_LIBRARY}개까지 가져올 수 있어요`)
+    if (mangaIds.length > MAX_ITEMS_PER_LIBRARY) {
+      toast.warning(`한 번에 최대 ${MAX_ITEMS_PER_LIBRARY}개까지 가져올 수 있어요`)
       return
     }
 
