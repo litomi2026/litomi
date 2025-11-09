@@ -1,11 +1,11 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 
-import { GETPostsResponse } from '@/app/api/post/route'
-import { PostFilter } from '@/app/api/post/types'
+import { GETV1PostResponse, PostFilter } from '@/backend/api/v1/post'
+import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
 
 export default function usePostsInfiniteQuery(filter: PostFilter, mangaId?: number, username?: string) {
-  return useInfiniteQuery<GETPostsResponse>({
+  return useInfiniteQuery<GETV1PostResponse>({
     queryKey: QueryKeys.posts(filter, mangaId, username),
     queryFn: async ({ pageParam }) => {
       const searchParams = new URLSearchParams({ filter })
@@ -20,7 +20,8 @@ export default function usePostsInfiniteQuery(filter: PostFilter, mangaId?: numb
         searchParams.set('username', username)
       }
 
-      const response = await fetch(`/api/post?${searchParams}`)
+      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/post?${searchParams}`
+      const response = await fetch(url, { credentials: 'include' })
 
       if (!response.ok) {
         throw new Error(`${response.status} ${response.statusText}: ${await response.text()}`)
