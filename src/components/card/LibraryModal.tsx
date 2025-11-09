@@ -32,7 +32,7 @@ const useLibraryModalStore = create<LibraryModalStore>()((set) => ({
 
 export default function LibraryModal() {
   const { isOpen, mangaId, setIsOpen, setMangaId } = useLibraryModalStore()
-  const { data: libraries } = useLibrariesQuery()
+  const { data: libraries } = useLibrariesQuery({ enabled: isOpen })
   const queryClient = useQueryClient()
   const [selectedLibraryIds, setSelectedLibraryIds] = useState<Set<number>>(new Set())
 
