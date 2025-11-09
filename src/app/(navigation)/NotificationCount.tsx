@@ -6,6 +6,7 @@ import { GETUnreadCountResponse } from '@/backend/api/v1/notification/unread-cou
 import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
 import useMeQuery from '@/query/useMeQuery'
+import { handleResponseError } from '@/utils/react-query-error'
 
 export default function NotificationCount() {
   const { data: unreadCount } = useNotificationUnreadCountQuery()
@@ -24,12 +25,18 @@ export default function NotificationCount() {
   )
 }
 
+async function fetchUnreadCount() {
+  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/notification/unread-count`
+  const response = await fetch(url, { credentials: 'include' })
+  return handleResponseError<GETUnreadCountResponse>(response)
+}
+
 function useNotificationUnreadCountQuery() {
   const { data: me } = useMeQuery()
 
   return useQuery<GETUnreadCountResponse>({
     queryKey: QueryKeys.notificationUnreadCount,
-    queryFn: () => fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/notification/unread-count`).then((res) => res.json()),
+    queryFn: fetchUnreadCount,
     enabled: Boolean(me),
   })
 }

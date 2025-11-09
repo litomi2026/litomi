@@ -8,7 +8,8 @@ import useMeQuery from '@/query/useMeQuery'
 import { handleResponseError } from '@/utils/react-query-error'
 
 export async function fetchNotifications(searchParams: URLSearchParams) {
-  const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/notification?${searchParams}`)
+  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/notification?${searchParams}`
+  const response = await fetch(url, { credentials: 'include' })
   return handleResponseError<GETNotificationResponse>(response)
 }
 
