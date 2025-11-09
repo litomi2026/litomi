@@ -29,7 +29,7 @@ unreadCountRoutes.get('/', async (c) => {
     maxAge: 10,
   })
 
-  return c.json(unreadCount, { headers: { 'Cache-Control': cacheControl } })
+  return c.json<GETUnreadCountResponse>(unreadCount, { headers: { 'Cache-Control': cacheControl } })
 })
 
 export default unreadCountRoutes

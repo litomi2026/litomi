@@ -77,7 +77,7 @@ notificationRoutes.get('/', zValidator('query', querySchema), async (c) => {
     maxAge: 3,
   })
 
-  return c.json(result, { headers: { 'Cache-Control': cacheControl } })
+  return c.json<GETNotificationResponse>(result, { headers: { 'Cache-Control': cacheControl } })
 })
 
 notificationRoutes.route('/unread-count', unreadCountRoutes)

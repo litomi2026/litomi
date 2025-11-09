@@ -45,7 +45,7 @@ libraryRoutes.get('/', async (c) => {
 
   const librariesWithHexColors = libraries.map((lib) => ({ ...lib, color: intToHexColor(lib.color) }))
 
-  return c.json(librariesWithHexColors satisfies GETLibraryResponse)
+  return c.json<GETLibraryResponse>(librariesWithHexColors)
 })
 
 libraryRoutes.route('/:id', itemsRoutes)

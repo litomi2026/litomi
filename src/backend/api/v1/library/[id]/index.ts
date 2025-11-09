@@ -97,7 +97,7 @@ itemsRoutes.get('/', zValidator('param', paramsSchema), zValidator('query', quer
     maxAge: 3,
   })
 
-  return c.json(result, { headers: { 'Cache-Control': cacheControl } })
+  return c.json<GETLibraryItemsResponse>(result, { headers: { 'Cache-Control': cacheControl } })
 })
 
 export default itemsRoutes

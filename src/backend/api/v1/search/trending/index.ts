@@ -55,7 +55,7 @@ trendingRoutes.get('/', zValidator('query', querySchema), async (c) => {
     swr: cacheMaxAge,
   })
 
-  return c.json(response, { headers: { 'Cache-Control': cacheControl } })
+  return c.json<GETTrendingKeywordsResponse>(response, { headers: { 'Cache-Control': cacheControl } })
 })
 
 export default trendingRoutes
