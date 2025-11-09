@@ -17,7 +17,7 @@ import unreadCountRoutes from './unread-count'
 
 const querySchema = z.object({
   nextId: z.coerce.number().optional(),
-  filter: z.array(z.enum(NotificationFilter)).optional(),
+  filter: z.union([z.enum(NotificationFilter), z.array(z.enum(NotificationFilter))]).optional(),
 })
 
 export type GETNotificationResponse = {
@@ -44,18 +44,19 @@ notificationRoutes.get('/', zValidator('query', querySchema), async (c) => {
     throw new HTTPException(401)
   }
 
-  const { nextId, filter: filters } = c.req.valid('query')
+  const { nextId, filter = [] } = c.req.valid('query')
+  const filters = Array.isArray(filter) ? filter : [filter]
   const conditions = [eq(notificationTable.userId, userId)]
 
   if (nextId) {
     conditions.push(lt(notificationTable.id, nextId))
   }
 
-  if (filters?.includes(NotificationFilter.UNREAD)) {
+  if (filters.includes(NotificationFilter.UNREAD)) {
     conditions.push(eq(notificationTable.read, false))
   }
 
-  if (filters?.includes(NotificationFilter.NEW_MANGA)) {
+  if (filters.includes(NotificationFilter.NEW_MANGA)) {
     conditions.push(eq(notificationTable.type, NotificationType.NEW_MANGA))
   }
 
