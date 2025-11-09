@@ -6,6 +6,7 @@
     "dev": "bun tools/checkEnvVars.ts && next dev",
     "dev:backend": "bun run --conditions=react-server --hot src/backend/index.ts",
     "dev:prod": "bun tools/checkEnvVars.ts && env-cmd -f .env.production next dev",
+    "dev:backend:prod": "bun run --conditions=react-server --env-file=.env.production --hot src/backend/index.ts",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

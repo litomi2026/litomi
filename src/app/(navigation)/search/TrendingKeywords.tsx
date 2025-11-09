@@ -17,7 +17,7 @@ export default function TrendingKeywords() {
   const { data } = useTrendingKeywordsQuery()
   const [currentIndex, setCurrentIndex] = useState(0)
   const [searchParams, setSearchParams] = useState<ReadonlyURLSearchParams>()
-  const trendingKeywords = data && data.keywords.length > 0 ? data.keywords : [{ keyword: 'language:korean' }]
+  const trendingKeywords = data?.keywords.length ? data.keywords : [{ value: 'language:korean', label: '한국어' }]
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const scrollContainerDesktopRef = useRef<HTMLDivElement>(null)
   const rotationTimerRef = useRef<NodeJS.Timeout | null>(null)
@@ -195,13 +195,13 @@ export default function TrendingKeywords() {
           onTouchStart={handleTouchStart}
           ref={scrollContainerRef}
         >
-          {trendingKeywords.map(({ keyword }, i) => (
+          {trendingKeywords.map(({ label, value }, i) => (
             <KeywordLink
               ariaCurrent={currentIndex === i}
               className="max-w-full snap-center aria-current:bg-zinc-700 aria-current:text-zinc-100"
               index={i}
-              key={keyword}
-              keyword={keyword}
+              key={value}
+              keyword={{ label, value }}
               onBlur={handleInteractionEnd}
               onClick={() => handleClick(i)}
               onFocus={() => handleFocus(i)}
@@ -211,12 +211,12 @@ export default function TrendingKeywords() {
         </div>
         <div className="px-3">
           <div className="flex gap-0.5 justify-center overflow-x-auto max-w-full">
-            {trendingKeywords.map(({ keyword }, i) => (
+            {trendingKeywords.map(({ value }, i) => (
               <button
                 aria-current={currentIndex === i}
                 aria-label={`Keyword ${i + 1}`}
                 className="rounded-full transition-all shrink-0 size-1.5 bg-zinc-600 hover:bg-zinc-500 aria-current:w-6 aria-current:bg-zinc-400"
-                key={keyword}
+                key={value}
                 onClick={() => handleClick(i)}
               />
             ))}
@@ -239,11 +239,11 @@ export default function TrendingKeywords() {
           <ChevronRight className="size-4" strokeWidth={2.5} />
         </ScrollingButton>
         <div className="relative flex gap-2 overflow-x-auto scrollbar-hidden" ref={scrollContainerDesktopRef}>
-          {trendingKeywords.map(({ keyword }, i) => (
+          {trendingKeywords.map(({ label, value }, i) => (
             <KeywordLink
               index={i}
-              key={keyword}
-              keyword={keyword}
+              key={value}
+              keyword={{ label, value }}
               linkRef={i === trendingKeywordCount - 1 ? lastRef : undefined}
               textClassName="truncate max-w-[50svw] sm:max-w-[25svw]"
               view={view}

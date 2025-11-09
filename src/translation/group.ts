@@ -1,6 +1,7 @@
 import 'server-only'
 
-import { Multilingual, normalizeValue, translateValue } from './common'
+import { translateCategory } from './category'
+import { Locale, Multilingual, normalizeValue, translateValue } from './common'
 import groupTranslationJSON from './group.json'
 
 const GROUP_TRANSLATION: Record<string, Multilingual> = groupTranslationJSON
@@ -12,11 +13,11 @@ export function getAllGroupsWithLabels() {
   return Object.entries(GROUP_TRANSLATION).map(([key, translations]) => ({
     value: `group:${key}`,
     labels: {
-      ko: `그룹:${translations.ko || translations.en || key.replace(/_/g, ' ')}`,
-      en: `group:${translations.en || key.replace(/_/g, ' ')}`,
-      ja: `グループ:${translations.ja || translations.en || key.replace(/_/g, ' ')}`,
-      'zh-CN': `团体:${translations['zh-CN'] || translations.en || key.replace(/_/g, ' ')}`,
-      'zh-TW': `團體:${translations['zh-TW'] || translations.en || key.replace(/_/g, ' ')}`,
+      en: `${translateCategory('group', Locale.EN)}:${translations.en}`,
+      ko: `${translateCategory('group', Locale.KO)}:${translations.ko || translations.en}`,
+      ja: `${translateCategory('group', Locale.JA)}:${translations.ja || translations.en}`,
+      'zh-CN': `${translateCategory('group', Locale.ZH_CN)}:${translations['zh-CN'] || translations.en}`,
+      'zh-TW': `${translateCategory('group', Locale.ZH_TW)}:${translations['zh-TW'] || translations.en}`,
     },
   }))
 }

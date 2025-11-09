@@ -25,5 +25,5 @@ export const QueryKeys = {
   searchSuggestions: (query: string, locale: string) => ['search', 'suggestions', locale, query],
   posts: (filter: PostFilter, mangaId?: number, username?: string) => ['posts', filter, { mangaId, username }],
   realtimeAnalytics: ['realtime-analytics'],
-  trendingKeywords: ['trending-keywords'],
+  trendingKeywords: (locale: string) => ['trending-keywords', locale],
 }

@@ -15,8 +15,8 @@ import { suggestionTrie } from './suggestion-trie'
 const suggestionRoutes = new Hono<Env>()
 
 const querySchema = z.object({
+  locale: z.enum(Locale).default(Locale.KO),
   query: z.string().trim().min(2).max(200),
-  locale: z.enum(Locale).optional(),
 })
 
 export type GETSearchSuggestionsResponse = {
@@ -25,7 +25,7 @@ export type GETSearchSuggestionsResponse = {
 }[]
 
 suggestionRoutes.get('/', zValidator('query', querySchema), async (c) => {
-  const { query, locale } = c.req.valid('query')
+  const { locale, query } = c.req.valid('query')
 
   if (queryBlacklist.some((regex) => regex.test(query))) {
     throw new HTTPException(400)

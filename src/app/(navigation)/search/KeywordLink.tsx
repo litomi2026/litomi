@@ -7,7 +7,10 @@ type Props = {
   ariaCurrent?: boolean
   className?: string
   index: number
-  keyword: string
+  keyword: {
+    label: string
+    value: string
+  }
   linkRef?: Ref<HTMLAnchorElement>
   onClick?: () => void
   onFocus?: () => void
@@ -17,7 +20,7 @@ type Props = {
 }
 
 export default function KeywordLink({
-  keyword,
+  keyword: { label, value },
   view,
   index,
   linkRef,
@@ -28,7 +31,7 @@ export default function KeywordLink({
   onFocus,
   onBlur,
 }: Props) {
-  const searchParams = new URLSearchParams({ query: keyword })
+  const searchParams = new URLSearchParams({ query: value })
 
   if (view) {
     searchParams.set('view', view)
@@ -45,12 +48,12 @@ export default function KeywordLink({
       onFocus={onFocus}
       prefetch={false}
       ref={linkRef}
-      title={keyword}
+      title={label}
     >
       <span aria-current={index < 3} className="text-xs font-bold aria-current:text-brand">
         {index + 1}
       </span>
-      <span className={`truncate min-w-0 ${textClassName}`}>{keyword}</span>
+      <span className={`truncate min-w-0 ${textClassName}`}>{label}</span>
       <LinkPending
         className="size-4"
         wrapperClassName="absolute inset-0 flex items-center justify-center animate-fade-in bg-zinc-800"
