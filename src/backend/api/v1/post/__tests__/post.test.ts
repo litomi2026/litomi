@@ -4,7 +4,7 @@ import { contextStorage } from 'hono/context-storage'
 
 import type { Env } from '@/backend'
 
-import postRoutes, { type Post } from '../post'
+import postRoutes, { type Post } from '..'
 
 let shouldThrowDatabaseError = false
 const mockPosts: Post[] = []

@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 
-import { PostFilter } from '@/backend/api/v1/post'
+import { PostFilter } from '@/backend/api/v1/post/constant'
 
 import PostList from './PostList'
 import { PostFilterParams, postFilterSchema } from './schema'

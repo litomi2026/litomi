@@ -1,5 +1,6 @@
 import { zValidator } from '@hono/zod-validator'
 import { Hono } from 'hono'
+import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
@@ -10,12 +11,7 @@ import { createCacheControl } from '@/crawler/proxy-utils'
 import selectPosts from '@/sql/selectPosts'
 import { sec } from '@/utils/date'
 
-export enum PostFilter {
-  FOLLOWING = '0',
-  MANGA = '1',
-  RECOMMAND = '2',
-  USER = '3',
-}
+import { PostFilter } from './constant'
 
 const querySchema = z.object({
   cursor: z.coerce.number().int().positive().optional(),

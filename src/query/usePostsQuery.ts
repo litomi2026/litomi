@@ -1,6 +1,7 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 
-import { GETV1PostResponse, PostFilter } from '@/backend/api/v1/post'
+import { GETV1PostResponse } from '@/backend/api/v1/post'
+import { PostFilter } from '@/backend/api/v1/post/constant'
 import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
 

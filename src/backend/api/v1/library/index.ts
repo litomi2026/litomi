@@ -7,6 +7,7 @@ import { getUserId } from '@/backend/utils/auth'
 import { db } from '@/database/supabase/drizzle'
 import { libraryItemTable, libraryTable } from '@/database/supabase/schema'
 import { intToHexColor } from '@/utils/color'
+import 'server-only'
 
 import itemsRoutes from './[id]'
 

@@ -6,7 +6,7 @@ import TextareaAutosize from 'react-textarea-autosize'
 import { toast } from 'sonner'
 
 import { createPost } from '@/app/(navigation)/(right-search)/posts/action'
-import { PostFilter } from '@/backend/api/v1/post'
+import { PostFilter } from '@/backend/api/v1/post/constant'
 import { MAX_POST_CONTENT_LENGTH } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import useActionResponse, { getFormField } from '@/hook/useActionResponse'
