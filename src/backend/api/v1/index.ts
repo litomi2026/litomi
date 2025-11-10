@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 
 import { Env } from '@/backend'
 
+import analyticsRoutes from './analytics'
 import bookmarkRoutes from './bookmark'
 import censorshipRoutes from './censorship'
 import libraryRoutes from './library'
@@ -13,6 +14,7 @@ import searchRoutes from './search'
 
 const v1Routes = new Hono<Env>()
 
+v1Routes.route('/analytics', analyticsRoutes)
 v1Routes.route('/bookmark', bookmarkRoutes)
 v1Routes.route('/censorship', censorshipRoutes)
 v1Routes.route('/library', libraryRoutes)

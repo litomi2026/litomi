@@ -6,6 +6,7 @@ import ms from 'ms'
 import Link from 'next/link'
 
 import IconSpinner from '@/components/icons/IconSpinner'
+import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { REALTIME_PAGE_VIEW_MIN_THRESHOLD } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 
@@ -121,7 +122,7 @@ export default function RealtimeRanking() {
 }
 
 async function fetchRealtimeAnalytics(): Promise<RealtimeData> {
-  const response = await fetch('/api/analytics/realtime')
+  const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/analytics/realtime`)
   if (!response.ok) {
     throw new Error('Failed to fetch analytics data')
   }

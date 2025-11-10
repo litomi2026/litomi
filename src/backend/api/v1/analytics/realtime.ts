@@ -1,0 +1,96 @@
+import { BetaAnalyticsDataClient } from '@google-analytics/data'
+import { Hono } from 'hono'
+import { HTTPException } from 'hono/http-exception'
+import 'server-only'
+
+import { Env } from '@/backend'
+import { SHORT_NAME } from '@/constants'
+import { GA_PROPERTY_ID, GA_SERVICE_ACCOUNT_EMAIL, GA_SERVICE_ACCOUNT_KEY } from '@/constants/env'
+import { REALTIME_PAGE_VIEW_MIN_THRESHOLD } from '@/constants/policy'
+import { createCacheControl } from '@/crawler/proxy-utils'
+
+export type GETV1AnalyticsRealtimeResponse = {
+  totalActiveUsers: number
+  pageRanking: PageRanking[]
+  timestamp: Date
+}
+
+export type PageRanking = {
+  page: string
+  activeUsers: number
+}
+
+let analyticsClient: BetaAnalyticsDataClient | null = null
+
+const realtimeRoutes = new Hono<Env>()
+
+realtimeRoutes.get('/', async (c) => {
+  if (!GA_SERVICE_ACCOUNT_EMAIL || !GA_SERVICE_ACCOUNT_KEY || !GA_PROPERTY_ID) {
+    throw new HTTPException(503, { message: 'Service Unavailable' })
+  }
+
+  const client = getAnalyticsClient()
+
+  const [[totalActiveUsersResponse], [pageViewRankingResponse]] = await Promise.all([
+    client.runRealtimeReport({
+      property: `properties/${GA_PROPERTY_ID}`,
+      metrics: [{ name: 'activeUsers' }],
+    }),
+    client.runRealtimeReport({
+      property: `properties/${GA_PROPERTY_ID}`,
+      metrics: [{ name: 'screenPageViews' }],
+      dimensions: [{ name: 'unifiedScreenName' }],
+      dimensionFilter: {
+        filter: {
+          fieldName: 'unifiedScreenName',
+          stringFilter: { value: `- ${SHORT_NAME}`, matchType: 'ENDS_WITH' },
+        },
+      },
+      metricFilter: {
+        filter: {
+          fieldName: 'screenPageViews',
+          numericFilter: { operation: 'GREATER_THAN', value: { int64Value: REALTIME_PAGE_VIEW_MIN_THRESHOLD } },
+        },
+      },
+      orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }],
+      limit: 20,
+    }),
+  ])
+
+  const totalActiveUsers = parseInt(totalActiveUsersResponse.rows?.[0]?.metricValues?.[0]?.value ?? '0', 10)
+
+  const pageRanking: PageRanking[] =
+    pageViewRankingResponse.rows?.map((row) => ({
+      page: row.dimensionValues?.[0]?.value?.replace(` - ${SHORT_NAME}`, '') ?? '(알 수 없음)',
+      activeUsers: parseInt(row.metricValues?.[0]?.value ?? '0', 10),
+    })) ?? []
+
+  const response: GETV1AnalyticsRealtimeResponse = {
+    totalActiveUsers,
+    pageRanking,
+    timestamp: new Date(),
+  }
+
+  const cacheControl = createCacheControl({
+    public: true,
+    maxAge: 30,
+    sMaxAge: 30,
+    swr: 30,
+  })
+
+  return c.json(response, { headers: { 'Cache-Control': cacheControl } })
+})
+
+function getAnalyticsClient() {
+  if (!analyticsClient) {
+    analyticsClient = new BetaAnalyticsDataClient({
+      credentials: {
+        client_email: GA_SERVICE_ACCOUNT_EMAIL,
+        private_key: GA_SERVICE_ACCOUNT_KEY,
+      },
+    })
+  }
+  return analyticsClient
+}
+
+export default realtimeRoutes
