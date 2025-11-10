@@ -1,12 +1,12 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 
-import { GETRatingsResponse } from '@/app/api/rating/route'
+import { RatingSort } from '@/backend/api/v1/library/enum'
+import { GETV1RatingsResponse } from '@/backend/api/v1/library/rating'
+import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
 import { handleResponseError } from '@/utils/react-query-error'
 
-export type RatingSortOption = 'created-desc' | 'rating-asc' | 'rating-desc' | 'updated-desc'
-
-export async function fetchRatingsPaginated(cursor: string | null, sort: RatingSortOption) {
+export async function fetchRatingsPaginated(cursor: string | null, sort: RatingSort) {
   const searchParams = new URLSearchParams()
 
   if (cursor) {
@@ -17,13 +17,14 @@ export async function fetchRatingsPaginated(cursor: string | null, sort: RatingS
     searchParams.set('sort', sort)
   }
 
-  const response = await fetch(`/api/rating?${searchParams}`)
-  return handleResponseError<GETRatingsResponse>(response)
+  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/library/rating?${searchParams}`
+  const response = await fetch(url, { credentials: 'include' })
+  return handleResponseError<GETV1RatingsResponse>(response)
 }
 
 export default function useRatingInfiniteQuery(
-  initialData?: GETRatingsResponse,
-  sort: RatingSortOption = 'updated-desc',
+  initialData?: GETV1RatingsResponse,
+  sort: RatingSort = RatingSort.UPDATED_DESC,
 ) {
   return useInfiniteQuery({
     queryKey: QueryKeys.infiniteRatings(sort),

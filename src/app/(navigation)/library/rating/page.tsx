@@ -2,6 +2,7 @@ import { desc, eq } from 'drizzle-orm'
 import { Metadata } from 'next'
 import { z } from 'zod'
 
+import { RatingSort } from '@/backend/api/v1/library/enum'
 import { encodeRatingCursor } from '@/common/cursor'
 import { generateOpenGraphMetadata } from '@/constants'
 import { RATING_PER_PAGE } from '@/constants/policy'
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
 }
 
 const searchParamsSchema = z.object({
-  sort: z.enum(['rating-desc', 'rating-asc', 'updated-desc', 'created-desc']).default('updated-desc'),
+  sort: z.enum(RatingSort).default(RatingSort.UPDATED_DESC),
 })
 
 export default async function RatingPage({ searchParams }: PageProps<'/library/rating'>) {
@@ -58,24 +59,24 @@ export default async function RatingPage({ searchParams }: PageProps<'/library/r
   let ratings
 
   switch (sort) {
-    case 'created-desc':
+    case RatingSort.CREATED_DESC:
       ratings = await baseQuery.orderBy(desc(userRatingTable.createdAt), desc(userRatingTable.mangaId))
       break
-    case 'rating-asc':
+    case RatingSort.RATING_ASC:
       ratings = await baseQuery.orderBy(
         userRatingTable.rating,
         desc(userRatingTable.updatedAt),
         desc(userRatingTable.mangaId),
       )
       break
-    case 'rating-desc':
+    case RatingSort.RATING_DESC:
       ratings = await baseQuery.orderBy(
         desc(userRatingTable.rating),
         desc(userRatingTable.updatedAt),
         desc(userRatingTable.mangaId),
       )
       break
-    case 'updated-desc':
+    case RatingSort.UPDATED_DESC:
     default:
       ratings = await baseQuery.orderBy(desc(userRatingTable.updatedAt), desc(userRatingTable.mangaId))
       break
@@ -104,14 +105,14 @@ export default async function RatingPage({ searchParams }: PageProps<'/library/r
     const { rating, createdAt, updatedAt, mangaId } = initialRatings[initialRatings.length - 1]
 
     switch (sort) {
-      case 'created-desc':
+      case RatingSort.CREATED_DESC:
         nextCursor = encodeRatingCursor(rating, createdAt, mangaId)
         break
-      case 'rating-asc':
-      case 'rating-desc':
+      case RatingSort.RATING_ASC:
+      case RatingSort.RATING_DESC:
         nextCursor = encodeRatingCursor(rating, updatedAt, mangaId)
         break
-      case 'updated-desc':
+      case RatingSort.UPDATED_DESC:
       default:
         nextCursor = encodeRatingCursor(rating, updatedAt, mangaId)
         break

@@ -72,6 +72,22 @@ libraryHistoryRoutes.get('/', zValidator('query', querySchema), async (c) => {
     .limit(limit + 1)
 
   const rows = await query
+
+  const cacheControl = decodedCursor
+    ? createCacheControl({
+        private: true,
+        maxAge: sec('1 hour'),
+      })
+    : createCacheControl({
+        private: true,
+        maxAge: 3,
+      })
+
+  if (rows.length === 0) {
+    const result = { items: [], nextCursor: null }
+    return c.json<GETV1ReadingHistoryResponse>(result, { headers: { 'Cache-Control': cacheControl } })
+  }
+
   const hasNextPage = rows.length > limit
   const items = hasNextPage ? rows.slice(0, limit) : rows
   const lastItem = items[items.length - 1]
@@ -84,16 +100,6 @@ libraryHistoryRoutes.get('/', zValidator('query', querySchema), async (c) => {
     })),
     nextCursor: hasNextPage ? encodeReadingHistoryCursor(lastItem.updatedAt.getTime(), lastItem.mangaId) : null,
   }
-
-  const cacheControl = decodedCursor
-    ? createCacheControl({
-        private: true,
-        maxAge: sec('1 hour'),
-      })
-    : createCacheControl({
-        private: true,
-        maxAge: 3,
-      })
 
   return c.json(result, { headers: { 'Cache-Control': cacheControl } })
 })

@@ -11,6 +11,7 @@ import 'server-only'
 
 import itemsRoutes from './[id]'
 import libraryHistoryRoutes from './history'
+import libraryRatingRoutes from './rating'
 
 export type GETLibraryResponse = {
   id: number
@@ -50,7 +51,8 @@ libraryRoutes.get('/', async (c) => {
   return c.json<GETLibraryResponse>(librariesWithHexColors)
 })
 
-libraryRoutes.route('/:id', itemsRoutes)
 libraryRoutes.route('/history', libraryHistoryRoutes)
+libraryRoutes.route('/rating', libraryRatingRoutes)
+libraryRoutes.route('/:id', itemsRoutes)
 
 export default libraryRoutes
