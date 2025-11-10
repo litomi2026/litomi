@@ -1,23 +1,18 @@
-import { ImgHTMLAttributes, memo } from 'react'
+import { ComponentPropsWithRef } from 'react'
 
 const INITIAL_DISPLAYED_IMAGE = 5
 
-type Props = ImgHTMLAttributes<HTMLImageElement> & {
+interface Props extends ComponentPropsWithRef<'img'> {
   imageIndex?: number
-  imageRef?: (node?: Element | null) => void
 }
 
-export default memo(MangaImage)
-
-function MangaImage({ imageIndex = 0, imageRef, src, ...props }: Readonly<Props>) {
+export default function MangaImage({ imageIndex = 0, ...props }: Props) {
   return (
     <img
       alt={`manga-image-${imageIndex + 1}`}
-      draggable={false}
       fetchPriority={imageIndex < INITIAL_DISPLAYED_IMAGE ? 'high' : undefined}
-      ref={imageRef}
-      src={src}
       {...props}
+      draggable={false}
     />
   )
 }

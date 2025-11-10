@@ -8,7 +8,6 @@ import { MangaIdSearchParam } from '@/app/manga/[id]/common'
 import BookmarkButton from '@/components/card/BookmarkButton'
 import IconSpinner from '@/components/icons/IconSpinner'
 import MangaImage from '@/components/MangaImage'
-import { useImageStatus } from '@/hook/useImageStatus'
 import { Manga } from '@/types/manga'
 
 import RatingInput from './RatingInput'
@@ -149,8 +148,6 @@ function ScrollViewerRowItem({ index, manga, pageView, readingDirection, style }
   const nextImageIndex = firstImageIndex + 1
   const firstImage = images[firstImageIndex]
   const nextImage = images[nextImageIndex]
-  const firstImageStatus = useImageStatus()
-  const nextImageStatus = useImageStatus()
 
   const { ref: inViewRef, inView } = useInView({
     threshold: 0,
@@ -166,29 +163,14 @@ function ScrollViewerRowItem({ index, manga, pageView, readingDirection, style }
   const first = (
     <picture>
       <source media={`(min-width: ${firstImage?.thumbnail?.width ?? 0}px)`} srcSet={firstImage?.original?.url} />
-      <MangaImage
-        aria-invalid={firstImageStatus.error}
-        fetchPriority="high"
-        imageIndex={firstImageIndex}
-        imageRef={inViewRef}
-        onError={firstImageStatus.handleError}
-        onLoad={firstImageStatus.handleSuccess}
-        src={firstImage?.thumbnail?.url}
-      />
+      <MangaImage fetchPriority="high" imageIndex={firstImageIndex} ref={inViewRef} src={firstImage?.thumbnail?.url} />
     </picture>
   )
 
   const second = isDoublePage && nextImageIndex < images.length && (
     <picture>
       <source media={`(min-width: ${nextImage?.thumbnail?.width ?? 0}px)`} srcSet={nextImage?.original?.url} />
-      <MangaImage
-        aria-invalid={nextImageStatus.error}
-        fetchPriority="high"
-        imageIndex={nextImageIndex}
-        onError={nextImageStatus.handleError}
-        onLoad={nextImageStatus.handleSuccess}
-        src={nextImage?.thumbnail?.url}
-      />
+      <MangaImage fetchPriority="high" imageIndex={nextImageIndex} src={nextImage?.thumbnail?.url} />
     </picture>
   )
 
