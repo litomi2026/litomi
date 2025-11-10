@@ -1,5 +1,5 @@
 import { zValidator } from '@hono/zod-validator'
-import { and, desc, eq, lt, or } from 'drizzle-orm'
+import { and, desc, eq, lt, or, SQL } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
 import 'server-only'
@@ -46,20 +46,10 @@ readingHistoryRoutes.get('/', zValidator('query', querySchema), async (c) => {
     throw new HTTPException(400)
   }
 
-  let query = db
-    .select({
-      mangaId: readingHistoryTable.mangaId,
-      lastPage: readingHistoryTable.lastPage,
-      updatedAt: readingHistoryTable.updatedAt,
-    })
-    .from(readingHistoryTable)
-    .where(eq(readingHistoryTable.userId, userId))
-    .orderBy(desc(readingHistoryTable.updatedAt), desc(readingHistoryTable.mangaId))
-    .limit(limit + 1)
-    .$dynamic()
+  const conditions: (SQL | undefined)[] = [eq(readingHistoryTable.userId, userId)]
 
   if (decodedCursor) {
-    query = query.where(
+    conditions.push(
       or(
         lt(readingHistoryTable.updatedAt, new Date(decodedCursor.timestamp)),
         and(
@@ -69,6 +59,17 @@ readingHistoryRoutes.get('/', zValidator('query', querySchema), async (c) => {
       ),
     )
   }
+
+  const query = db
+    .select({
+      mangaId: readingHistoryTable.mangaId,
+      lastPage: readingHistoryTable.lastPage,
+      updatedAt: readingHistoryTable.updatedAt,
+    })
+    .from(readingHistoryTable)
+    .where(and(...conditions))
+    .orderBy(desc(readingHistoryTable.updatedAt), desc(readingHistoryTable.mangaId))
+    .limit(limit + 1)
 
   const rows = await query
   const hasNextPage = rows.length > limit
