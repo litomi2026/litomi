@@ -30,9 +30,9 @@ export type ReadingHistoryItem = {
   updatedAt: number
 }
 
-const readingHistoryRoutes = new Hono<Env>()
+const libraryHistoryRoutes = new Hono<Env>()
 
-readingHistoryRoutes.get('/', zValidator('query', querySchema), async (c) => {
+libraryHistoryRoutes.get('/', zValidator('query', querySchema), async (c) => {
   const userId = getUserId()
 
   if (!userId) {
@@ -98,4 +98,4 @@ readingHistoryRoutes.get('/', zValidator('query', querySchema), async (c) => {
   return c.json(result, { headers: { 'Cache-Control': cacheControl } })
 })
 
-export default readingHistoryRoutes
+export default libraryHistoryRoutes

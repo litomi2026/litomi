@@ -1,6 +1,6 @@
 'use client'
 
-import { GETV1ReadingHistoryResponse } from '@/backend/api/v1/reading-history'
+import { GETV1ReadingHistoryResponse } from '@/backend/api/v1/library/history'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'

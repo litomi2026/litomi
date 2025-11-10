@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 
-import { GETV1ReadingHistoryResponse } from '@/backend/api/v1/reading-history'
+import { GETV1ReadingHistoryResponse } from '@/backend/api/v1/library/history'
 import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
 import { handleResponseError } from '@/utils/react-query-error'
@@ -12,7 +12,7 @@ export async function fetchReadingHistoryPaginated(cursor: string | null) {
     params.set('cursor', cursor)
   }
 
-  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/reading-history?${params}`
+  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/library/history?${params}`
   const response = await fetch(url, { credentials: 'include' })
   return handleResponseError<GETV1ReadingHistoryResponse>(response)
 }

@@ -10,6 +10,7 @@ import { intToHexColor } from '@/utils/color'
 import 'server-only'
 
 import itemsRoutes from './[id]'
+import libraryHistoryRoutes from './history'
 
 export type GETLibraryResponse = {
   id: number
@@ -50,5 +51,6 @@ libraryRoutes.get('/', async (c) => {
 })
 
 libraryRoutes.route('/:id', itemsRoutes)
+libraryRoutes.route('/history', libraryHistoryRoutes)
 
 export default libraryRoutes
