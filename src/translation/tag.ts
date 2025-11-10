@@ -19,7 +19,7 @@ export function translateTag(categoryFallback: string, value: string, locale: ke
   const normalizedValue = normalizeValue(value)
   const { translation, category } = findTranslation(normalizedValue, categoryFallback)
   const translatedCategory = translateTagCategory(category, locale)
-  const localeValue = translation?.[locale] || translation?.en
+  const localeValue = translation?.[locale] ?? translation?.en
   const translatedValue = (Array.isArray(localeValue) ? localeValue[0] : localeValue) || normalizedValue
 
   return {
@@ -76,6 +76,6 @@ function findTranslation(
 
 function translateTagCategory(category: string, locale: keyof Multilingual): string {
   const translation = TAG_CATEGORY_TRANSLATION[category]
-  const localeValue = translation?.[locale] || translation?.en
-  return Array.isArray(localeValue) ? localeValue[0] : localeValue || category
+  const localeValue = translation?.[locale] ?? translation?.en
+  return Array.isArray(localeValue) ? localeValue[0] : (localeValue ?? category)
 }

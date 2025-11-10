@@ -2,8 +2,9 @@ import 'server-only'
 
 import { getCharacterSponsors } from '@/sponsor'
 
+import { translateCategory } from './category'
 import characterTranslationJSON from './character.json'
-import { Multilingual, normalizeValue, translateValue } from './common'
+import { Locale, Multilingual, normalizeValue, translateValue } from './common'
 
 const CHARACTER_TRANSLATION: Record<string, Multilingual> = characterTranslationJSON
 
@@ -14,11 +15,11 @@ export function getAllCharactersWithLabels() {
   return Object.entries(CHARACTER_TRANSLATION).map(([key, translations]) => ({
     value: `character:${key}`,
     labels: {
-      ko: `캐릭터:${translations.ko || translations.en || key.replace(/_/g, ' ')}`,
-      en: `character:${translations.en || key.replace(/_/g, ' ')}`,
-      ja: `キャラクター:${translations.ja || translations.en || key.replace(/_/g, ' ')}`,
-      'zh-CN': `角色:${translations['zh-CN'] || translations.en || key.replace(/_/g, ' ')}`,
-      'zh-TW': `角色:${translations['zh-TW'] || translations.en || key.replace(/_/g, ' ')}`,
+      en: `${translateCategory('character', Locale.EN)}:${translations.en}`,
+      ko: `${translateCategory('character', Locale.KO)}:${translations.ko || translations.en}`,
+      ja: `${translateCategory('character', Locale.JA)}:${translations.ja || translations.en}`,
+      'zh-CN': `${translateCategory('character', Locale.ZH_CN)}:${translations['zh-CN'] || translations.en}`,
+      'zh-TW': `${translateCategory('character', Locale.ZH_TW)}:${translations['zh-TW'] || translations.en}`,
     },
   }))
 }

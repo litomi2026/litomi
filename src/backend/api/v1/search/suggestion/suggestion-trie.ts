@@ -1,5 +1,6 @@
 import { KOREAN_TO_ENGLISH_QUERY_KEYS } from '@/app/(navigation)/search/constants'
 import { getAllArtistsWithLabels } from '@/translation/artist'
+import { translateCategory } from '@/translation/category'
 import { getAllCharactersWithLabels } from '@/translation/character'
 import { Locale } from '@/translation/common'
 import { getAllGroupsWithLabels } from '@/translation/group'
@@ -89,6 +90,93 @@ function processTranslation(
 }
 
 ;(() => {
+  // Add language suggestions
+  const languageLabels = {
+    ko: translateCategory('language', Locale.KO),
+    en: translateCategory('language', Locale.EN),
+    ja: translateCategory('language', Locale.JA),
+    'zh-CN': translateCategory('language', Locale.ZH_CN),
+    'zh-TW': translateCategory('language', Locale.ZH_TW),
+  }
+
+  suggestionTrie.insert('language', {
+    value: 'language:',
+    labels: languageLabels,
+  })
+
+  suggestionTrie.insert('언어', {
+    value: 'language:',
+    labels: languageLabels,
+  })
+
+  for (const { value, label } of getAllLanguagesWithLabels('ko')) {
+    const koLabel = getFirstTranslation(label)
+    const enLabel = getFirstTranslation(translateLanguage(value, 'en'))
+    const jaLabel = getFirstTranslation(translateLanguage(value, 'ja'))
+    const zhCNLabel = getFirstTranslation(translateLanguage(value, 'zh-CN'))
+    const zhTWLabel = getFirstTranslation(translateLanguage(value, 'zh-TW'))
+
+    const suggestion: SuggestionItem = {
+      value: `language:${value}`,
+      labels: {
+        ko: `${translateCategory('language', Locale.KO)}:${koLabel}`,
+        en: `${translateCategory('language', Locale.EN)}:${enLabel}`,
+        ja: `${translateCategory('language', Locale.JA)}:${jaLabel}`,
+        'zh-CN': `${translateCategory('language', Locale.ZH_CN)}:${zhCNLabel}`,
+        'zh-TW': `${translateCategory('language', Locale.ZH_TW)}:${zhTWLabel}`,
+      },
+    }
+
+    suggestionTrie.insert(`language:${value}`, suggestion)
+    suggestionTrie.insert(value, suggestion)
+    if (koLabel !== value) {
+      suggestionTrie.insert(koLabel, suggestion)
+    }
+    if (enLabel !== value && enLabel !== koLabel) {
+      suggestionTrie.insert(enLabel, suggestion)
+    }
+  }
+
+  // Add type suggestions
+  const typeLabels = {
+    ko: translateCategory('type', Locale.KO),
+    en: translateCategory('type', Locale.EN),
+    ja: translateCategory('type', Locale.JA),
+    'zh-CN': translateCategory('type', Locale.ZH_CN),
+    'zh-TW': translateCategory('type', Locale.ZH_TW),
+  }
+
+  suggestionTrie.insert('type', {
+    value: 'type:',
+    labels: typeLabels,
+  })
+
+  suggestionTrie.insert('종류', {
+    value: 'type:',
+    labels: typeLabels,
+  })
+
+  // Add all types with their translations
+  for (const typeItem of getAllTypesWithLabels()) {
+    // Insert for the full value (e.g., "type:manga")
+    suggestionTrie.insert(typeItem.value, typeItem)
+
+    // Extract the type key from "type:key"
+    const typeKey = typeItem.value.replace(/^type:/, '')
+    suggestionTrie.insert(typeKey, typeItem)
+
+    // Insert for each translation
+    for (const label of Object.values(typeItem.labels)) {
+      if (label) {
+        // Extract just the type name from the label (e.g., "종류:망가" -> "망가")
+        const typeName = label.split(':')[1]
+        if (typeName) {
+          suggestionTrie.insert(typeName.toLowerCase(), typeItem)
+        }
+      }
+    }
+  }
+
   for (const [category, translations] of Object.entries(tagCategoryTranslations)) {
     const categoryValue = `${category}:`
 
@@ -113,121 +201,6 @@ function processTranslation(
     for (const [korean, english] of Object.entries(KOREAN_TO_ENGLISH_QUERY_KEYS)) {
       if (english === category) {
         suggestionTrie.insert(korean, { value: categoryValue, labels })
-      }
-    }
-  }
-
-  // Add language suggestions
-  suggestionTrie.insert('language', {
-    value: 'language:',
-    labels: {
-      ko: '언어',
-      en: 'language',
-      ja: '言語',
-      'zh-CN': '语言',
-      'zh-TW': '語言',
-    },
-  })
-  suggestionTrie.insert('언어', {
-    value: 'language:',
-    labels: {
-      ko: '언어',
-      en: 'language',
-      ja: '言語',
-      'zh-CN': '语言',
-      'zh-TW': '語言',
-    },
-  })
-
-  // Add uploader suggestions
-  suggestionTrie.insert('uploader', {
-    value: 'uploader:',
-    labels: {
-      ko: '업로더',
-      en: 'uploader',
-      ja: 'アップローダー',
-      'zh-CN': '上传者',
-      'zh-TW': '上傳者',
-    },
-  })
-  suggestionTrie.insert('업로더', {
-    value: 'uploader:',
-    labels: {
-      ko: '업로더',
-      en: 'uploader',
-      ja: 'アップローダー',
-      'zh-CN': '上传者',
-      'zh-TW': '上傳者',
-    },
-  })
-
-  for (const { value, label } of getAllLanguagesWithLabels('ko')) {
-    const koLabel = getFirstTranslation(label)
-    const enLabel = getFirstTranslation(translateLanguage(value, 'en'))
-    const jaLabel = getFirstTranslation(translateLanguage(value, 'ja'))
-    const zhCNLabel = getFirstTranslation(translateLanguage(value, 'zh-CN'))
-    const zhTWLabel = getFirstTranslation(translateLanguage(value, 'zh-TW'))
-
-    const suggestion: SuggestionItem = {
-      value: `language:${value}`,
-      labels: {
-        ko: `언어:${koLabel}`,
-        en: `language:${enLabel}`,
-        ja: `言語:${jaLabel}`,
-        'zh-CN': `语言:${zhCNLabel}`,
-        'zh-TW': `語言:${zhTWLabel}`,
-      },
-    }
-
-    suggestionTrie.insert(`language:${value}`, suggestion)
-    suggestionTrie.insert(value, suggestion)
-    if (koLabel !== value) {
-      suggestionTrie.insert(koLabel, suggestion)
-    }
-    if (enLabel !== value && enLabel !== koLabel) {
-      suggestionTrie.insert(enLabel, suggestion)
-    }
-  }
-
-  // Add type suggestions
-  suggestionTrie.insert('type', {
-    value: 'type:',
-    labels: {
-      ko: '종류',
-      en: 'type',
-      ja: 'タイプ',
-      'zh-CN': '类型',
-      'zh-TW': '類型',
-    },
-  })
-  suggestionTrie.insert('종류', {
-    value: 'type:',
-    labels: {
-      ko: '종류',
-      en: 'type',
-      ja: 'タイプ',
-      'zh-CN': '类型',
-      'zh-TW': '類型',
-    },
-  })
-
-  // Add all types with their translations
-  for (const typeItem of getAllTypesWithLabels()) {
-    // Insert for the full value (e.g., "type:manga")
-    suggestionTrie.insert(typeItem.value, typeItem)
-
-    // Extract the type key from "type:key"
-    const typeKey = typeItem.value.replace(/^type:/, '')
-    suggestionTrie.insert(typeKey, typeItem)
-
-    // Insert for each translation
-    for (const label of Object.values(typeItem.labels)) {
-      if (label) {
-        // Extract just the type name from the label (e.g., "종류:망가" -> "망가")
-        const typeName = label.split(':')[1]
-        if (typeName) {
-          suggestionTrie.insert(typeName.toLowerCase(), typeItem)
-        }
       }
     }
   }
@@ -286,25 +259,22 @@ function processTranslation(
   }
 
   // Add series suggestions
+  const seriesLabels = {
+    ko: translateCategory('series', Locale.KO),
+    en: translateCategory('series', Locale.EN),
+    ja: translateCategory('series', Locale.JA),
+    'zh-CN': translateCategory('series', Locale.ZH_CN),
+    'zh-TW': translateCategory('series', Locale.ZH_TW),
+  }
+
   suggestionTrie.insert('series', {
     value: 'series:',
-    labels: {
-      ko: '시리즈',
-      en: 'series',
-      ja: 'シリーズ',
-      'zh-CN': '系列',
-      'zh-TW': '系列',
-    },
+    labels: seriesLabels,
   })
+
   suggestionTrie.insert('시리즈', {
     value: 'series:',
-    labels: {
-      ko: '시리즈',
-      en: 'series',
-      ja: 'シリーズ',
-      'zh-CN': '系列',
-      'zh-TW': '系列',
-    },
+    labels: seriesLabels,
   })
 
   // Add all series with their translations
@@ -325,25 +295,22 @@ function processTranslation(
   }
 
   // Add character suggestions
+  const characterLabels = {
+    ko: translateCategory('character', Locale.KO),
+    en: translateCategory('character', Locale.EN),
+    ja: translateCategory('character', Locale.JA),
+    'zh-CN': translateCategory('character', Locale.ZH_CN),
+    'zh-TW': translateCategory('character', Locale.ZH_TW),
+  }
+
   suggestionTrie.insert('character', {
     value: 'character:',
-    labels: {
-      ko: '캐릭터',
-      en: 'character',
-      ja: 'キャラクター',
-      'zh-CN': '角色',
-      'zh-TW': '角色',
-    },
+    labels: characterLabels,
   })
+
   suggestionTrie.insert('캐릭터', {
     value: 'character:',
-    labels: {
-      ko: '캐릭터',
-      en: 'character',
-      ja: 'キャラクター',
-      'zh-CN': '角色',
-      'zh-TW': '角色',
-    },
+    labels: characterLabels,
   })
 
   // Add all characters with their translations
@@ -364,25 +331,22 @@ function processTranslation(
   }
 
   // Add artist suggestions
+  const artistLabels = {
+    ko: translateCategory('artist', Locale.KO),
+    en: translateCategory('artist', Locale.EN),
+    ja: translateCategory('artist', Locale.JA),
+    'zh-CN': translateCategory('artist', Locale.ZH_CN),
+    'zh-TW': translateCategory('artist', Locale.ZH_TW),
+  }
+
   suggestionTrie.insert('artist', {
     value: 'artist:',
-    labels: {
-      ko: '작가',
-      en: 'artist',
-      ja: 'アーティスト',
-      'zh-CN': '艺术家',
-      'zh-TW': '藝術家',
-    },
+    labels: artistLabels,
   })
+
   suggestionTrie.insert('작가', {
     value: 'artist:',
-    labels: {
-      ko: '작가',
-      en: 'artist',
-      ja: 'アーティスト',
-      'zh-CN': '艺术家',
-      'zh-TW': '藝術家',
-    },
+    labels: artistLabels,
   })
 
   // Add all artists with their translations
@@ -403,25 +367,22 @@ function processTranslation(
   }
 
   // Add group suggestions
+  const groupLabels = {
+    ko: translateCategory('group', Locale.KO),
+    en: translateCategory('group', Locale.EN),
+    ja: translateCategory('group', Locale.JA),
+    'zh-CN': translateCategory('group', Locale.ZH_CN),
+    'zh-TW': translateCategory('group', Locale.ZH_TW),
+  }
+
   suggestionTrie.insert('group', {
     value: 'group:',
-    labels: {
-      ko: '그룹:',
-      en: 'group:',
-      ja: 'グループ:',
-      'zh-CN': '团体:',
-      'zh-TW': '團體:',
-    },
+    labels: groupLabels,
   })
+
   suggestionTrie.insert('그룹', {
     value: 'group:',
-    labels: {
-      ko: '그룹:',
-      en: 'group:',
-      ja: 'グループ:',
-      'zh-CN': '团体:',
-      'zh-TW': '團體:',
-    },
+    labels: groupLabels,
   })
 
   // Add all groups with their translations
@@ -440,4 +401,23 @@ function processTranslation(
       }
     }
   }
+
+  // Add uploader suggestions
+  const uploaderLabels = {
+    ko: translateCategory('uploader', Locale.KO),
+    en: translateCategory('uploader', Locale.EN),
+    ja: translateCategory('uploader', Locale.JA),
+    'zh-CN': translateCategory('uploader', Locale.ZH_CN),
+    'zh-TW': translateCategory('uploader', Locale.ZH_TW),
+  }
+
+  suggestionTrie.insert('uploader', {
+    value: 'uploader:',
+    labels: uploaderLabels,
+  })
+
+  suggestionTrie.insert('업로더', {
+    value: 'uploader:',
+    labels: uploaderLabels,
+  })
 })()

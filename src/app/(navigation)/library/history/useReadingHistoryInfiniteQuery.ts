@@ -1,26 +1,26 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 
-import { GETReadingHistoryResponse } from '@/app/api/reading-history/route'
+import { GETV1ReadingHistoryResponse } from '@/backend/api/v1/library/history'
+import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
 import { handleResponseError } from '@/utils/react-query-error'
 
-export async function fetchReadingHistoryPaginated(cursor: { updatedAt: number; mangaId: number } | null) {
-  const searchParams = new URLSearchParams()
+export async function fetchReadingHistoryPaginated(cursor: string | null) {
+  const params = new URLSearchParams()
 
   if (cursor) {
-    const encodedCursor = Buffer.from(JSON.stringify(cursor)).toString('base64')
-    searchParams.append('cursor', encodedCursor)
+    params.set('cursor', cursor)
   }
 
-  const response = await fetch(`/api/reading-history?${searchParams}`)
-  return handleResponseError<GETReadingHistoryResponse>(response)
+  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/library/history?${params}`
+  const response = await fetch(url, { credentials: 'include' })
+  return handleResponseError<GETV1ReadingHistoryResponse>(response)
 }
 
-export default function useReadingHistoryInfiniteQuery(initialData?: GETReadingHistoryResponse) {
-  return useInfiniteQuery<GETReadingHistoryResponse, Error>({
+export default function useReadingHistoryInfiniteQuery(initialData?: GETV1ReadingHistoryResponse) {
+  return useInfiniteQuery<GETV1ReadingHistoryResponse, Error>({
     queryKey: QueryKeys.infiniteReadingHistory,
-    queryFn: ({ pageParam }) =>
-      fetchReadingHistoryPaginated(pageParam as { updatedAt: number; mangaId: number } | null),
+    queryFn: ({ pageParam }) => fetchReadingHistoryPaginated(pageParam as string | null),
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialData: initialData && {
       pages: [initialData],

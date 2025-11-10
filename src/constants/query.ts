@@ -1,5 +1,5 @@
-import { RatingSortOption } from '@/app/(navigation)/library/rating/useRatingInfiniteQuery'
 import { MangaResponseScope } from '@/app/api/proxy/manga/[id]/types'
+import { RatingSort } from '@/backend/api/v1/library/enum'
 import { PostFilter } from '@/backend/api/v1/post/constant'
 
 export const QueryKeys = {
@@ -7,7 +7,7 @@ export const QueryKeys = {
   bookmarks: ['me', 'bookmarks'],
   infiniteBookmarks: ['me', 'bookmarks', 'infinite'],
   infiniteReadingHistory: ['me', 'readingHistory', 'infinite'],
-  infiniteRatings: (sort: RatingSortOption) => ['me', 'ratings', 'infinite', sort],
+  infiniteRatings: (sort: RatingSort) => ['me', 'ratings', 'infinite', sort],
   censorship: ['me', 'censorships'],
   infiniteCensorships: ['me', 'censorships', 'infinite'],
   passkeys: ['me', 'passkeys'],
@@ -25,5 +25,5 @@ export const QueryKeys = {
   searchSuggestions: (query: string, locale: string) => ['search', 'suggestions', locale, query],
   posts: (filter: PostFilter, mangaId?: number, username?: string) => ['posts', filter, { mangaId, username }],
   realtimeAnalytics: ['realtime-analytics'],
-  trendingKeywords: ['trending-keywords'],
+  trendingKeywords: (locale: string) => ['trending-keywords', locale],
 }

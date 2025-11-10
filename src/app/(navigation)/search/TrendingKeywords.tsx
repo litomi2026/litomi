@@ -6,6 +6,9 @@ import { ComponentProps, PropsWithChildren, useCallback, useEffect, useRef, useS
 import { useInView } from 'react-intersection-observer'
 import { twMerge } from 'tailwind-merge'
 
+import useLocaleFromCookie from '@/hook/useLocaleFromCookie'
+import { Locale } from '@/translation/common'
+
 import KeywordLink from './KeywordLink'
 import UpdateFromSearchParams from './UpdateFromSearchParams'
 import useTrendingKeywordsQuery from './useTrendingKeywordsQuery'
@@ -17,7 +20,8 @@ export default function TrendingKeywords() {
   const { data } = useTrendingKeywordsQuery()
   const [currentIndex, setCurrentIndex] = useState(0)
   const [searchParams, setSearchParams] = useState<ReadonlyURLSearchParams>()
-  const trendingKeywords = data && data.keywords.length > 0 ? data.keywords : [{ keyword: 'language:korean' }]
+  const locale = useLocaleFromCookie()
+  const trendingKeywords = data?.keywords.length ? data.keywords : getDefaultKeywords(locale)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const scrollContainerDesktopRef = useRef<HTMLDivElement>(null)
   const rotationTimerRef = useRef<NodeJS.Timeout | null>(null)
@@ -195,13 +199,13 @@ export default function TrendingKeywords() {
           onTouchStart={handleTouchStart}
           ref={scrollContainerRef}
         >
-          {trendingKeywords.map(({ keyword }, i) => (
+          {trendingKeywords.map(({ label, value }, i) => (
             <KeywordLink
               ariaCurrent={currentIndex === i}
               className="max-w-full snap-center aria-current:bg-zinc-700 aria-current:text-zinc-100"
               index={i}
-              key={keyword}
-              keyword={keyword}
+              key={value}
+              keyword={{ label, value }}
               onBlur={handleInteractionEnd}
               onClick={() => handleClick(i)}
               onFocus={() => handleFocus(i)}
@@ -211,12 +215,12 @@ export default function TrendingKeywords() {
         </div>
         <div className="px-3">
           <div className="flex gap-0.5 justify-center overflow-x-auto max-w-full">
-            {trendingKeywords.map(({ keyword }, i) => (
+            {trendingKeywords.map(({ value }, i) => (
               <button
                 aria-current={currentIndex === i}
                 aria-label={`Keyword ${i + 1}`}
                 className="rounded-full transition-all shrink-0 size-1.5 bg-zinc-600 hover:bg-zinc-500 aria-current:w-6 aria-current:bg-zinc-400"
-                key={keyword}
+                key={value}
                 onClick={() => handleClick(i)}
               />
             ))}
@@ -239,11 +243,11 @@ export default function TrendingKeywords() {
           <ChevronRight className="size-4" strokeWidth={2.5} />
         </ScrollingButton>
         <div className="relative flex gap-2 overflow-x-auto scrollbar-hidden" ref={scrollContainerDesktopRef}>
-          {trendingKeywords.map(({ keyword }, i) => (
+          {trendingKeywords.map(({ label, value }, i) => (
             <KeywordLink
               index={i}
-              key={keyword}
-              keyword={keyword}
+              key={value}
+              keyword={{ label, value }}
               linkRef={i === trendingKeywordCount - 1 ? lastRef : undefined}
               textClassName="truncate max-w-[50svw] sm:max-w-[25svw]"
               view={view}
@@ -253,6 +257,23 @@ export default function TrendingKeywords() {
       </div>
     </>
   )
+}
+
+function getDefaultKeywords(locale: string) {
+  switch (locale) {
+    case Locale.EN:
+      return [{ value: 'language:english', label: 'English' }]
+    case Locale.JA:
+      return [{ value: 'language:japanese', label: '日本語' }]
+    case Locale.KO:
+      return [{ value: 'language:korean', label: '한국어' }]
+    case Locale.ZH_CN:
+      return [{ value: 'language:chinese', label: '简体中文' }]
+    case Locale.ZH_TW:
+      return [{ value: 'language:chinese', label: '繁體中文' }]
+    default:
+      return []
+  }
 }
 
 function ScrollingButton({ children, ...props }: PropsWithChildren<ComponentProps<'button'>>) {

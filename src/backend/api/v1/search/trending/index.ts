@@ -5,7 +5,16 @@ import { z } from 'zod'
 
 import { Env } from '@/backend'
 import { createCacheControl } from '@/crawler/proxy-utils'
-import { TrendingKeyword, trendingKeywordsService } from '@/services/TrendingKeywordsService'
+import { trendingKeywordsService } from '@/services/TrendingKeywordsService'
+import { translateArtistList } from '@/translation/artist'
+import { translateCategory } from '@/translation/category'
+import { translateCharacterList } from '@/translation/character'
+import { Locale, normalizeValue } from '@/translation/common'
+import { translateGroupList } from '@/translation/group'
+import { translateLanguage } from '@/translation/language'
+import { translateSeriesList } from '@/translation/series'
+import { translateTag } from '@/translation/tag'
+import { translateType } from '@/translation/type'
 import { sec } from '@/utils/date'
 
 enum TrendingType {
@@ -16,18 +25,80 @@ enum TrendingType {
 
 const querySchema = z.object({
   limit: z.coerce.number().int().positive().max(10).default(10),
+  locale: z.enum(Locale).default(Locale.KO),
   type: z.enum(TrendingType).default(TrendingType.REALTIME),
 })
 
 export type GETTrendingKeywordsResponse = {
-  keywords: TrendingKeyword[]
+  keywords: {
+    value: string
+    label: string
+  }[]
   updatedAt: Date
 }
 
 const trendingRoutes = new Hono<Env>()
 
+function translateSearchQuery(category: string, value: string, locale: Locale): string {
+  switch (category) {
+    case 'artist': {
+      const artistLabel = translateArtistList([value], locale)
+      return `${translateCategory(category, locale)}:${artistLabel?.[0].label || value}`
+    }
+    case 'character': {
+      const characterLabel = translateCharacterList([value], locale)
+      return `${translateCategory(category, locale)}:${characterLabel?.[0].label || value}`
+    }
+    case 'female':
+    case 'male':
+    case 'mixed':
+    case 'other': {
+      return translateTag(category, value, locale).label
+    }
+    case 'group': {
+      const groupLabel = translateGroupList([value], locale)
+      return `${translateCategory(category, locale)}:${groupLabel?.[0].label || value}`
+    }
+    case 'language': {
+      return translateLanguage(normalizeValue(value), locale)
+    }
+    case 'series': {
+      const seriesLabel = translateSeriesList([value], locale)
+      return `${translateCategory(category, locale)}:${seriesLabel}`
+    }
+    case 'type': {
+      const typeObj = translateType(value, locale)
+      return `${translateCategory(category, locale)}:${typeObj?.label || value}`
+    }
+    case 'uploader': {
+      return `${translateCategory(category, locale)}:${value.replace(/_/g, ' ')}`
+    }
+    default:
+      return value
+  }
+}
+
+function translateTrendingKeyword(keyword: string, locale: Locale): string {
+  if (!keyword.includes(':')) {
+    return keyword
+  }
+
+  return keyword
+    .split(' ')
+    .map((word) => {
+      if (!word.includes(':')) {
+        return word
+      }
+      const colonIndex = word.indexOf(':')
+      const category = word.slice(0, colonIndex)
+      const value = word.slice(colonIndex + 1)
+      return translateSearchQuery(category, value, locale)
+    })
+    .join(', ')
+}
+
 trendingRoutes.get('/', zValidator('query', querySchema), async (c) => {
-  const { limit, type } = c.req.valid('query')
+  const { limit, locale, type } = c.req.valid('query')
 
   const { keywords = [], cacheMaxAge } = {
     [TrendingType.DAILY]: {
@@ -45,7 +116,10 @@ trendingRoutes.get('/', zValidator('query', querySchema), async (c) => {
   }[type]
 
   const response: GETTrendingKeywordsResponse = {
-    keywords,
+    keywords: keywords.map(({ keyword }) => ({
+      value: keyword,
+      label: translateTrendingKeyword(keyword, locale),
+    })),
     updatedAt: new Date(),
   }
 

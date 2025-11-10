@@ -37,5 +37,5 @@ export function translateValue(
     return normalizedValue.replace(/_/g, ' ')
   }
 
-  return translation[locale] || translation.en || normalizedValue.replace(/_/g, ' ')
+  return translation[locale] ?? translation.en ?? normalizedValue.replace(/_/g, ' ')
 }

@@ -3,7 +3,8 @@ import 'server-only'
 import { getArtistSponsors } from '@/sponsor'
 
 import artistTranslationJSON from './artist.json'
-import { Multilingual, normalizeValue, translateValue } from './common'
+import { translateCategory } from './category'
+import { Locale, Multilingual, normalizeValue, translateValue } from './common'
 
 const ARTIST_TRANSLATION: Record<string, Multilingual> = artistTranslationJSON
 
@@ -14,11 +15,11 @@ export function getAllArtistsWithLabels() {
   return Object.entries(ARTIST_TRANSLATION).map(([key, translations]) => ({
     value: `artist:${key}`,
     labels: {
-      ko: `작가:${translations.ko || translations.en || key.replace(/_/g, ' ')}`,
-      en: `artist:${translations.en || key.replace(/_/g, ' ')}`,
-      ja: `アーティスト:${translations.ja || translations.en || key.replace(/_/g, ' ')}`,
-      'zh-CN': `艺术家:${translations['zh-CN'] || translations.en || key.replace(/_/g, ' ')}`,
-      'zh-TW': `藝術家:${translations['zh-TW'] || translations.en || key.replace(/_/g, ' ')}`,
+      en: `${translateCategory('artist', Locale.EN)}:${translations.en}`,
+      ko: `${translateCategory('artist', Locale.KO)}:${translations.ko || translations.en}`,
+      ja: `${translateCategory('artist', Locale.JA)}:${translations.ja || translations.en}`,
+      'zh-CN': `${translateCategory('artist', Locale.ZH_CN)}:${translations['zh-CN'] || translations.en}`,
+      'zh-TW': `${translateCategory('artist', Locale.ZH_TW)}:${translations['zh-TW'] || translations.en}`,
     },
   }))
 }

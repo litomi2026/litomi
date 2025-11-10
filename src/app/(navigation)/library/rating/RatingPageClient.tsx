@@ -3,7 +3,8 @@
 import { Star } from 'lucide-react'
 import { useState } from 'react'
 
-import { GETRatingsResponse } from '@/app/api/rating/route'
+import { RatingSort } from '@/backend/api/v1/library/enum'
+import { GETV1RatingsResponse } from '@/backend/api/v1/library/rating'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
@@ -14,18 +15,18 @@ import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 import { useLibrarySelectionStore } from '../[id]/librarySelection'
 import CensoredManga from '../CensoredManga'
 import SelectableMangaCard from '../SelectableMangaCard'
-import useRatingInfiniteQuery, { RatingSortOption } from './useRatingInfiniteQuery'
+import useRatingInfiniteQuery from './useRatingInfiniteQuery'
 
 type Props = {
-  initialData?: GETRatingsResponse
-  initialSort?: RatingSortOption
+  initialData?: GETV1RatingsResponse
+  initialSort?: RatingSort
 }
 
-const SORT_OPTIONS: { value: RatingSortOption; label: string }[] = [
-  { value: 'updated-desc', label: '최근 수정순' },
-  { value: 'created-desc', label: '최근 추가순' },
-  { value: 'rating-desc', label: '평점 높은순' },
-  { value: 'rating-asc', label: '평점 낮은순' },
+const SORT_OPTIONS: { value: RatingSort; label: string }[] = [
+  { value: RatingSort.UPDATED_DESC, label: '최근 수정순' },
+  { value: RatingSort.CREATED_DESC, label: '최근 추가순' },
+  { value: RatingSort.RATING_DESC, label: '평점 높은순' },
+  { value: RatingSort.RATING_ASC, label: '평점 낮은순' },
 ]
 
 type MangaListProps = {
@@ -36,13 +37,13 @@ type MangaListProps = {
   isFetchingNextPage?: boolean
 }
 
-export default function RatingPageClient({ initialData, initialSort = 'updated-desc' }: Props) {
-  const [sort, setSort] = useState<RatingSortOption>(initialSort)
+export default function RatingPageClient({ initialData, initialSort = RatingSort.UPDATED_DESC }: Props) {
+  const [sort, setSort] = useState<RatingSort>(initialSort)
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } = useRatingInfiniteQuery(initialData, sort)
   const ratingItems = data.pages.flatMap((page) => page.items)
   const isSelectionMode = useLibrarySelectionStore((state) => state.isSelectionMode)
   const exitSelectionMode = useLibrarySelectionStore((state) => state.exitSelectionMode)
-  const shouldGroupByRating = sort === 'rating-desc' || sort === 'rating-asc'
+  const shouldGroupByRating = sort === RatingSort.RATING_DESC || sort === RatingSort.RATING_ASC
 
   const infiniteScrollTriggerRef = useInfiniteScrollObserver({
     hasNextPage,
@@ -52,7 +53,7 @@ export default function RatingPageClient({ initialData, initialSort = 'updated-d
 
   const { mangaMap } = useMangaListCachedQuery({ mangaIds: ratingItems.map((item) => item.mangaId) })
 
-  const handleSortChange = async (newSort: RatingSortOption) => {
+  const handleSortChange = async (newSort: RatingSort) => {
     if (newSort !== sort) {
       exitSelectionMode()
       setSort(newSort)
@@ -75,7 +76,7 @@ export default function RatingPageClient({ initialData, initialSort = 'updated-d
   })
 
   const sortedGroups = Array.from(groupedRatings.entries()).sort(([aRating], [bRating]) => {
-    if (sort === 'rating-asc') {
+    if (sort === RatingSort.RATING_ASC) {
       return aRating - bRating
     }
     return bRating - aRating
@@ -86,7 +87,7 @@ export default function RatingPageClient({ initialData, initialSort = 'updated-d
       <div className="px-4 py-2">
         <select
           className="bg-zinc-900 text-sm px-3 py-1.5 rounded border border-zinc-800 focus:border-zinc-600 outline-none"
-          onChange={(e) => handleSortChange(e.target.value as RatingSortOption)}
+          onChange={(e) => handleSortChange(e.target.value as RatingSort)}
           value={sort}
         >
           {SORT_OPTIONS.map((option) => (

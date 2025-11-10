@@ -1,6 +1,7 @@
 import { desc, eq } from 'drizzle-orm'
 import { Metadata } from 'next'
 
+import { encodeReadingHistoryCursor } from '@/common/cursor'
 import { generateOpenGraphMetadata } from '@/constants'
 import { READING_HISTORY_PER_PAGE } from '@/constants/policy'
 import { db } from '@/database/supabase/drizzle'
@@ -51,15 +52,18 @@ export default async function HistoryPage() {
     history.pop()
   }
 
-  const initialHistory = history.map((h) => ({
+  const items = history.map((h) => ({
     mangaId: h.mangaId,
     lastPage: h.lastPage,
     updatedAt: h.updatedAt.getTime(),
   }))
 
+  const lastItem = items[items.length - 1]
+  const nextCursor = hasNextPage ? encodeReadingHistoryCursor(lastItem.updatedAt, lastItem.mangaId) : null
+
   const initialData = {
-    items: initialHistory,
-    nextCursor: hasNextPage ? initialHistory[initialHistory.length - 1] : null,
+    items,
+    nextCursor,
   }
 
   return (

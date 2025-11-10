@@ -5,7 +5,6 @@ import { cors } from 'hono/cors'
 import { csrf } from 'hono/csrf'
 import { etag } from 'hono/etag'
 import { ipRestriction } from 'hono/ip-restriction'
-import { languageDetector } from 'hono/language'
 import { logger } from 'hono/logger'
 import { requestId } from 'hono/request-id'
 import { secureHeaders } from 'hono/secure-headers'
@@ -37,15 +36,16 @@ app.use(timing())
 app.use('/api/*', auth)
 app.use('/api/*', etag())
 
-app.use(
-  languageDetector({
-    lookupQueryString: 'locale',
-    lookupCookie: 'locale',
-    supportedLanguages: ['en', 'ko', 'ja', 'zh-CN', 'zh-TW'],
-    fallbackLanguage: 'ko',
-    caches: false,
-  }),
-)
+// NOTE: 쿠키와 헤더는 Cloudflare 캐시 키가 아니기에 현재는 search param 값만 사용 가능함
+// app.use(
+//   languageDetector({
+//     lookupQueryString: 'locale',
+//     lookupCookie: 'locale',
+//     supportedLanguages: ['en', 'ko', 'ja', 'zh-CN', 'zh-TW'],
+//     fallbackLanguage: 'ko',
+//     caches: false,
+//   }),
+// )
 
 app.route('/', appRoutes)
 

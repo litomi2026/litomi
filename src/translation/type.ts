@@ -1,22 +1,20 @@
 import 'server-only'
 
-import { Multilingual, normalizeValue, translateValue } from './common'
+import { translateCategory } from './category'
+import { Locale, Multilingual, normalizeValue, translateValue } from './common'
 import typeTranslationJSON from './type.json'
 
 const TYPE_TRANSLATION: Record<string, Multilingual> = typeTranslationJSON
 
-/**
- * Get all types with their translations as value/label pairs for search suggestions
- */
 export function getAllTypesWithLabels() {
   return Object.entries(TYPE_TRANSLATION).map(([key, translations]) => ({
     value: `type:${key}`,
     labels: {
-      ko: `종류:${translations.ko || translations.en || key.replace(/_/g, ' ')}`,
-      en: `type:${translations.en || key.replace(/_/g, ' ')}`,
-      ja: translations.ja ? `タイプ:${translations.ja}` : undefined,
-      'zh-CN': translations['zh-CN'] ? `类型:${translations['zh-CN']}` : undefined,
-      'zh-TW': translations['zh-TW'] ? `類型:${translations['zh-TW']}` : undefined,
+      en: `${translateCategory('type', Locale.EN)}:${translations.en}`,
+      ko: `${translateCategory('type', Locale.KO)}:${translations.ko || translations.en}`,
+      ja: `${translateCategory('type', Locale.JA)}:${translations.ja || translations.en}`,
+      'zh-CN': `${translateCategory('type', Locale.ZH_CN)}:${translations['zh-CN'] || translations.en}`,
+      'zh-TW': `${translateCategory('type', Locale.ZH_TW)}:${translations['zh-TW'] || translations.en}`,
     },
   }))
 }

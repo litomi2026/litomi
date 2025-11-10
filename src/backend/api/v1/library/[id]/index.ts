@@ -1,5 +1,5 @@
 import { zValidator } from '@hono/zod-validator'
-import { and, desc, eq, lt, or } from 'drizzle-orm'
+import { and, desc, eq, lt, or, SQL } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
 import 'server-only'
@@ -53,28 +53,25 @@ itemsRoutes.get('/', zValidator('param', paramsSchema), zValidator('query', quer
     throw new HTTPException(404)
   }
 
-  let query = db
-    .select({ mangaId: libraryItemTable.mangaId, createdAt: libraryItemTable.createdAt })
-    .from(libraryItemTable)
-    .orderBy(desc(libraryItemTable.createdAt), desc(libraryItemTable.mangaId))
-    .limit(LIBRARY_ITEMS_PER_PAGE + 1)
-    .$dynamic()
+  const conditions: (SQL | undefined)[] = [eq(libraryItemTable.libraryId, libraryId)]
 
   if (cursorData) {
     const { timestamp: cursorTimestamp, mangaId: cursorMangaId } = cursorData
 
-    query = query.where(
-      and(
-        eq(libraryItemTable.libraryId, libraryId),
-        or(
-          lt(libraryItemTable.createdAt, new Date(cursorTimestamp)),
-          and(eq(libraryItemTable.createdAt, new Date(cursorTimestamp)), lt(libraryItemTable.mangaId, cursorMangaId)),
-        ),
+    conditions.push(
+      or(
+        lt(libraryItemTable.createdAt, new Date(cursorTimestamp)),
+        and(eq(libraryItemTable.createdAt, new Date(cursorTimestamp)), lt(libraryItemTable.mangaId, cursorMangaId)),
       ),
     )
-  } else {
-    query = query.where(eq(libraryItemTable.libraryId, libraryId))
   }
+
+  const query = db
+    .select({ mangaId: libraryItemTable.mangaId, createdAt: libraryItemTable.createdAt })
+    .from(libraryItemTable)
+    .where(and(...conditions))
+    .orderBy(desc(libraryItemTable.createdAt), desc(libraryItemTable.mangaId))
+    .limit(LIBRARY_ITEMS_PER_PAGE + 1)
 
   const fetchedItems = await query
   const hasNextPage = fetchedItems.length > LIBRARY_ITEMS_PER_PAGE

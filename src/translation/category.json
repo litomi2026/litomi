@@ -1,0 +1,51 @@
+{
+  "artist": {
+    "en": "artist",
+    "ko": "작가",
+    "ja": "作家",
+    "zh-CN": "艺术家",
+    "zh-TW": "藝術家"
+  },
+  "character": {
+    "en": "character",
+    "ko": "캐릭터",
+    "ja": "キャラクター",
+    "zh-CN": "角色",
+    "zh-TW": "角色"
+  },
+  "group": {
+    "en": "group",
+    "ko": "그룹",
+    "ja": "サークル",
+    "zh-CN": "团体",
+    "zh-TW": "團體"
+  },
+  "language": {
+    "en": "language",
+    "ko": "언어",
+    "ja": "言語",
+    "zh-CN": "语言",
+    "zh-TW": "語言"
+  },
+  "series": {
+    "en": "series",
+    "ko": "시리즈",
+    "ja": "シリーズ",
+    "zh-CN": "系列",
+    "zh-TW": "系列"
+  },
+  "uploader": {
+    "en": "uploader",
+    "ko": "업로더",
+    "ja": "投稿者",
+    "zh-CN": "上传者",
+    "zh-TW": "上傳者"
+  },
+  "type": {
+    "en": "type",
+    "ko": "종류",
+    "ja": "種類",
+    "zh-CN": "类型",
+    "zh-TW": "類型"
+  }
+}

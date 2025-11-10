@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test'
 import { Hono } from 'hono'
 import { contextStorage } from 'hono/context-storage'
+import { languageDetector } from 'hono/language'
 
 import type { Env } from '@/backend'
 
@@ -8,6 +9,14 @@ import suggestionRoutes, { type GETSearchSuggestionsResponse } from '..'
 
 const app = new Hono<Env>()
 app.use('*', contextStorage())
+app.use(
+  '*',
+  languageDetector({
+    lookupQueryString: 'locale',
+    supportedLanguages: ['en', 'ko', 'ja', 'zh-CN', 'zh-TW'],
+    fallbackLanguage: 'ko',
+  }),
+)
 app.route('/', suggestionRoutes)
 
 describe('GET /api/v1/search/suggestions', () => {
@@ -428,7 +437,7 @@ describe('GET /api/v1/search/suggestions', () => {
     })
 
     test('유효하지 않은 로케일인 경우 400 에러를 반환한다', async () => {
-      const response = await app.request('/?query=test&locale=invalid')
+      const response = await createRequest('test', 'invalid')
 
       expect(response.status).toBe(400)
     })
@@ -448,7 +457,7 @@ describe('GET /api/v1/search/suggestions', () => {
         const response = await createRequest(query)
 
         expect(response.status).toBe(200)
-        expect((await response.json()) as GETSearchSuggestionsResponse).toBeArray()
+        expect(await response.json()).toBeArray()
       }
     })
 
@@ -466,7 +475,7 @@ describe('GET /api/v1/search/suggestions', () => {
 
     test('검색 결과가 없는 경우 빈 배열을 반환한다', async () => {
       const response = await createRequest('zzzznonexistent')
-      const data = (await response.json()) as GETSearchSuggestionsResponse
+      const data = await response.json()
 
       expect(response.status).toBe(200)
       expect(data).toEqual([])
@@ -474,7 +483,7 @@ describe('GET /api/v1/search/suggestions', () => {
 
     test('공백이 포함된 검색어를 처리한다', async () => {
       const response = await createRequest('big breasts')
-      const data = (await response.json()) as GETSearchSuggestionsResponse
+      const data = await response.json()
 
       expect(response.status).toBe(200)
       expect(data).toBeArray()
@@ -490,7 +499,7 @@ describe('GET /api/v1/search/suggestions', () => {
 
     test('결과는 최대 10개까지만 반환된다', async () => {
       const response = await createRequest('fe')
-      const data = (await response.json()) as GETSearchSuggestionsResponse
+      const data = await response.json()
 
       expect(response.status).toBe(200)
       expect(data.length).toBeLessThanOrEqual(10)

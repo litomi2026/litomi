@@ -1,11 +1,11 @@
 export type SuggestionItem = {
   value: string
   labels: {
-    ko: string
     en: string
-    ja?: string
-    'zh-CN'?: string
-    'zh-TW'?: string
+    ko?: string | null
+    ja?: string | null
+    'zh-CN'?: string | null
+    'zh-TW'?: string | null
   }
 }
 
