@@ -6,6 +6,9 @@ import { ComponentProps, PropsWithChildren, useCallback, useEffect, useRef, useS
 import { useInView } from 'react-intersection-observer'
 import { twMerge } from 'tailwind-merge'
 
+import useLocaleFromCookie from '@/hook/useLocaleFromCookie'
+import { Locale } from '@/translation/common'
+
 import KeywordLink from './KeywordLink'
 import UpdateFromSearchParams from './UpdateFromSearchParams'
 import useTrendingKeywordsQuery from './useTrendingKeywordsQuery'
@@ -17,7 +20,8 @@ export default function TrendingKeywords() {
   const { data } = useTrendingKeywordsQuery()
   const [currentIndex, setCurrentIndex] = useState(0)
   const [searchParams, setSearchParams] = useState<ReadonlyURLSearchParams>()
-  const trendingKeywords = data?.keywords.length ? data.keywords : [{ value: 'language:korean', label: '한국어' }]
+  const locale = useLocaleFromCookie()
+  const trendingKeywords = data?.keywords.length ? data.keywords : getDefaultKeywords(locale)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const scrollContainerDesktopRef = useRef<HTMLDivElement>(null)
   const rotationTimerRef = useRef<NodeJS.Timeout | null>(null)
@@ -253,6 +257,23 @@ export default function TrendingKeywords() {
       </div>
     </>
   )
+}
+
+function getDefaultKeywords(locale: string) {
+  switch (locale) {
+    case Locale.EN:
+      return [{ value: 'language:english', label: 'English' }]
+    case Locale.JA:
+      return [{ value: 'language:japanese', label: '日本語' }]
+    case Locale.KO:
+      return [{ value: 'language:korean', label: '한국어' }]
+    case Locale.ZH_CN:
+      return [{ value: 'language:chinese', label: '简体中文' }]
+    case Locale.ZH_TW:
+      return [{ value: 'language:chinese', label: '繁體中文' }]
+    default:
+      return []
+  }
 }
 
 function ScrollingButton({ children, ...props }: PropsWithChildren<ComponentProps<'button'>>) {
