@@ -74,6 +74,21 @@ export function decodeRatingCursor(cursor: string) {
   return validation.data
 }
 
+export function decodeReadingHistoryCursor(cursor: string) {
+  const [timestamp, mangaId] = cursor.split('-')
+
+  const validation = DefaultCursorSchema.safeParse({
+    timestamp,
+    mangaId,
+  })
+
+  if (!validation.success) {
+    return null
+  }
+
+  return validation.data
+}
+
 export function encodeBookmarkCursor(timestamp: number, mangaId: number) {
   return `${timestamp}-${mangaId}`
 }
@@ -88,4 +103,8 @@ export function encodeLibraryIdCursor(timestamp: number, mangaId: number) {
 
 export function encodeRatingCursor(rating: number, timestamp: number, mangaId: number) {
   return `${rating}-${timestamp}-${mangaId}`
+}
+
+export function encodeReadingHistoryCursor(timestamp: number, mangaId: number) {
+  return `${timestamp}-${mangaId}`
 }

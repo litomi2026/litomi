@@ -1,6 +1,6 @@
 'use client'
 
-import { GETReadingHistoryResponse } from '@/app/api/reading-history/route'
+import { GETV1ReadingHistoryResponse } from '@/backend/api/v1/reading-history'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
@@ -14,7 +14,7 @@ import useReadingHistoryInfiniteQuery from './useReadingHistoryInfiniteQuery'
 import { DATE_GROUP_LABELS, groupHistoryByDate } from './utils'
 
 type Props = {
-  initialData?: GETReadingHistoryResponse
+  initialData?: GETV1ReadingHistoryResponse
 }
 
 export default function HistoryPageClient({ initialData }: Props) {

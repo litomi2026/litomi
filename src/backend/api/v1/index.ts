@@ -9,6 +9,7 @@ import mangaRoutes from './manga/[id]/history'
 import meRoutes from './me'
 import notificationRoutes from './notification'
 import postRoutes from './post'
+import readingHistoryRoutes from './reading-history'
 import searchRoutes from './search'
 
 const v1Routes = new Hono<Env>()
@@ -20,6 +21,7 @@ v1Routes.route('/manga', mangaRoutes)
 v1Routes.route('/me', meRoutes)
 v1Routes.route('/notification', notificationRoutes)
 v1Routes.route('/post', postRoutes)
+v1Routes.route('/reading-history', readingHistoryRoutes)
 v1Routes.route('/search', searchRoutes)
 
 export default v1Routes
