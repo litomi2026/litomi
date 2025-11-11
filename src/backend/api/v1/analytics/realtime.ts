@@ -83,18 +83,10 @@ realtimeRoutes.get('/', async (c) => {
 
 function getAnalyticsClient() {
   if (!analyticsClient) {
-    const privateKey = GA_SERVICE_ACCOUNT_KEY
-
-    // Debug: Log key format info
-    console.log('Private key length:', privateKey.length)
-    console.log('Has \\n:', privateKey.includes('\\n'))
-    console.log('Has real newline:', privateKey.includes('\n'))
-    console.log('First 100 chars:', privateKey.substring(0, 100))
-
     analyticsClient = new BetaAnalyticsDataClient({
       credentials: {
         client_email: GA_SERVICE_ACCOUNT_EMAIL,
-        private_key: privateKey,
+        private_key: GA_SERVICE_ACCOUNT_KEY,
       },
       fallback: 'rest',
     })
