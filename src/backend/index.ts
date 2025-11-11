@@ -9,6 +9,7 @@ import { logger } from 'hono/logger'
 import { requestId } from 'hono/request-id'
 import { secureHeaders } from 'hono/secure-headers'
 import { timing } from 'hono/timing'
+import { createServer } from 'node:http2'
 
 import { CORS_ORIGIN } from '@/constants/env'
 
@@ -52,6 +53,7 @@ app.route('/', appRoutes)
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
   ...app,
+  createServer,
   port: Number(process.env.PORT ?? 8080),
   hostname: process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost',
 }

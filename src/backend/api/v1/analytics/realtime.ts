@@ -88,6 +88,7 @@ function getAnalyticsClient() {
         client_email: GA_SERVICE_ACCOUNT_EMAIL,
         private_key: GA_SERVICE_ACCOUNT_KEY,
       },
+      fallback: 'rest',
     })
   }
   return analyticsClient
