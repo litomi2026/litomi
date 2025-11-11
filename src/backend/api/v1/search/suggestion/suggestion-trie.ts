@@ -54,7 +54,8 @@ function insertTranslationWords(trie: SuggestionTrie, translatedText: string, su
 
   for (const word of words) {
     const trimmedWord = word.trim()
-    if (trimmedWord && trimmedWord.length > 2) {
+    const minLength = isAlphanumericWord(trimmedWord) ? 3 : 2
+    if (trimmedWord && trimmedWord.length >= minLength) {
       trie.insert(trimmedWord.toLowerCase(), suggestion)
     }
   }
@@ -67,11 +68,17 @@ function insertWithWordVariants(trie: SuggestionTrie, key: string, suggestion: S
     const parts = key.split('_')
     for (let i = 1; i < parts.length; i++) {
       const word = parts[i]
-      if (word && word.length > 2) {
+      const minLength = isAlphanumericWord(word) ? 3 : 2
+      if (word && word.length >= minLength) {
         trie.insert(word, suggestion)
       }
     }
   }
+}
+
+function isAlphanumericWord(word: string): boolean {
+  const asciiLetters = word.match(/[a-zA-Z0-9]/g)?.length || 0
+  return asciiLetters > word.length / 2
 }
 
 function processTranslation(

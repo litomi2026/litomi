@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react'
 
-import { MAX_SEARCH_SUGGESTIONS } from '@/constants/policy'
+import { MAX_SEARCH_SUGGESTIONS, MIN_SUGGESTION_QUERY_LENGTH } from '@/constants/policy'
 import useDebouncedValue from '@/hook/useDebouncedValue'
 
-import { MIN_SUGGESTION_QUERY_LENGTH, SEARCH_SUGGESTIONS } from './constants'
+import { SEARCH_SUGGESTIONS } from './constants'
 import useSearchSuggestionsQuery from './useSearchSuggestionsQuery'
 
 const DEBOUNCE_MS = 300
