@@ -3,14 +3,12 @@ import { z } from 'zod'
 
 import { MAX_SEARCH_QUERY_LENGTH } from '@/constants/policy'
 import { Locale } from '@/translation/common'
-import { View } from '@/utils/param'
 
 import { Sort } from './types'
 
 export const GETProxyKSearchSchema = z
   .object({
     query: z.string().trim().max(MAX_SEARCH_QUERY_LENGTH).optional(),
-    view: z.enum(View).default(View.CARD),
     sort: z.enum(Sort).optional(),
     'min-rating': z.coerce.number().int().min(0).max(500).optional(),
     'max-rating': z.coerce.number().int().min(0).max(500).optional(),
