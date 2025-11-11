@@ -1,5 +1,6 @@
 'use client'
 
+import { useSearchParams } from 'next/navigation'
 import { Fragment, useMemo } from 'react'
 
 import { useSearchQuery } from '@/app/(navigation)/search/useSearchQuery'
@@ -9,20 +10,23 @@ import MangaCardDonation from '@/components/card/MangaCardDonation'
 import MangaCardImage from '@/components/card/MangaCardImage'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import { View } from '@/utils/param'
+import { ResponseError } from '@/utils/react-query-error'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 import RandomRefreshButton from '../(top-navigation)/RandomRefreshButton'
+import Error400 from './Error400'
 
 const DONATION_CARD_INTERVAL = 20
 
-type Props = {
-  view: View
-  sort?: Sort
-}
+export default function SearchResult() {
+  const searchParams = useSearchParams()
+  const viewFromQuery = searchParams.get('view')
+  const view = viewFromQuery === View.IMAGE ? View.IMAGE : View.CARD
+  const isRandomSort = searchParams.get('sort') === Sort.RANDOM
 
-export default function SearchResults({ view, sort }: Props) {
-  const isRandomSort = sort === Sort.RANDOM
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage, refetch, isRefetching } = useSearchQuery()
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage, refetch, isRefetching, error } =
+    useSearchQuery()
+
   const mangas = useMemo(() => data?.pages.flatMap((page) => page.mangas) ?? [], [data])
 
   const loadMoreRef = useInfiniteScrollObserver({
@@ -32,14 +36,11 @@ export default function SearchResults({ view, sort }: Props) {
   })
 
   if (isLoading) {
-    const skeletonCount = view === View.IMAGE ? 12 : 6
-    return (
-      <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2 grow`}>
-        {Array.from({ length: skeletonCount }).map((_, i) => (
-          <MangaCardSkeleton key={i} />
-        ))}
-      </ul>
-    )
+    return <SearchResultLoading view={view} />
+  }
+
+  if (error && error instanceof ResponseError && error.status === 400) {
+    return <Error400 message={error.message} />
   }
 
   if (mangas.length === 0 && !isFetchingNextPage) {
@@ -85,5 +86,16 @@ export default function SearchResults({ view, sort }: Props) {
         <div className="w-full py-4 flex justify-center" ref={loadMoreRef} />
       )}
     </>
+  )
+}
+
+export function SearchResultLoading({ view }: { view: View }) {
+  const skeletonCount = view === View.IMAGE ? 12 : 6
+  return (
+    <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[view]} gap-2 grow`}>
+      {Array.from({ length: skeletonCount }).map((_, i) => (
+        <MangaCardSkeleton key={i} />
+      ))}
+    </ul>
   )
 }
