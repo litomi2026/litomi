@@ -1,23 +1,25 @@
-import { ImgHTMLAttributes, memo } from 'react'
+'use client'
+
+import { ComponentPropsWithRef, useState } from 'react'
 
 const INITIAL_DISPLAYED_IMAGE = 5
 
-type Props = ImgHTMLAttributes<HTMLImageElement> & {
+interface Props extends ComponentPropsWithRef<'img'> {
   imageIndex?: number
-  imageRef?: (node?: Element | null) => void
+  src?: string
 }
 
-export default memo(MangaImage)
+export default function MangaImage({ imageIndex = 0, src, ...props }: Props) {
+  const [fallbackMap, setFallbackMap] = useState(new Map<number, string>())
 
-function MangaImage({ imageIndex = 0, imageRef, src, ...props }: Readonly<Props>) {
   return (
     <img
       alt={`manga-image-${imageIndex + 1}`}
-      draggable={false}
       fetchPriority={imageIndex < INITIAL_DISPLAYED_IMAGE ? 'high' : undefined}
-      ref={imageRef}
-      src={src}
+      onError={() => setFallbackMap((prev) => new Map(prev).set(imageIndex, src?.replace(/\.avif$/, '.webp') ?? ''))} // NOTE: 간혹 avif 이미지가 404인 경우가 있어서
+      src={fallbackMap.get(imageIndex) || src}
       {...props}
+      draggable={false}
     />
   )
 }

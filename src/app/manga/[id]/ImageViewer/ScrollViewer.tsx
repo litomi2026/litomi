@@ -1,6 +1,6 @@
 import { MessageCircle } from 'lucide-react'
 import Link from 'next/link'
-import { CSSProperties, useEffect } from 'react'
+import { CSSProperties, useEffect, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { List, RowComponentProps, useDynamicRowHeight, useListRef } from 'react-window'
 
@@ -8,7 +8,6 @@ import { MangaIdSearchParam } from '@/app/manga/[id]/common'
 import BookmarkButton from '@/components/card/BookmarkButton'
 import IconSpinner from '@/components/icons/IconSpinner'
 import MangaImage from '@/components/MangaImage'
-import { useImageStatus } from '@/hook/useImageStatus'
 import { Manga } from '@/types/manga'
 
 import RatingInput from './RatingInput'
@@ -47,6 +46,8 @@ type RowProps = {
   pageView: PageView
   readingDirection: ReadingDirection
   screenFit: ScreenFit
+  fallbackMap: Map<number, string>
+  setFallbackMap: React.Dispatch<React.SetStateAction<Map<number, string>>>
 }
 
 export default function ScrollViewer({ manga, onClick, pageView, readingDirection, screenFit }: Props) {
@@ -60,6 +61,7 @@ export default function ScrollViewer({ manga, onClick, pageView, readingDirectio
   const totalItemCount = imagePageCount + 1 // +1 for rating page
   const rowHeight = useDynamicRowHeight({ defaultRowHeight: window.innerHeight })
   const dynamicStyle = { '--image-width': `${imageWidth}%` } as CSSProperties
+  const [fallbackMap, setFallbackMap] = useState(new Map<number, string>())
 
   // NOTE: page 파라미터가 있으면 초기 페이지를 변경함
   useEffect(() => {
@@ -97,7 +99,7 @@ export default function ScrollViewer({ manga, onClick, pageView, readingDirectio
         rowComponent={ScrollViewerRow}
         rowCount={totalItemCount}
         rowHeight={rowHeight}
-        rowProps={{ manga, pageView, readingDirection, screenFit }}
+        rowProps={{ manga, pageView, readingDirection, screenFit, fallbackMap, setFallbackMap }}
       />
     </div>
   )
@@ -140,7 +142,15 @@ function ScrollViewerRow({ index, style, manga, pageView, ...rest }: RowComponen
   return <ScrollViewerRowItem index={index} manga={manga} pageView={pageView} style={style} {...rest} />
 }
 
-function ScrollViewerRowItem({ index, manga, pageView, readingDirection, style }: RowComponentProps<RowProps>) {
+function ScrollViewerRowItem({
+  index,
+  manga,
+  pageView,
+  readingDirection,
+  style,
+  fallbackMap,
+  setFallbackMap,
+}: RowComponentProps<RowProps>) {
   const navigateToImageIndex = useImageIndexStore((state) => state.navigateToImageIndex)
   const { images = [] } = manga
   const isDoublePage = pageView === 'double'
@@ -149,8 +159,6 @@ function ScrollViewerRowItem({ index, manga, pageView, readingDirection, style }
   const nextImageIndex = firstImageIndex + 1
   const firstImage = images[firstImageIndex]
   const nextImage = images[nextImageIndex]
-  const firstImageStatus = useImageStatus()
-  const nextImageStatus = useImageStatus()
 
   const { ref: inViewRef, inView } = useInView({
     threshold: 0,
@@ -165,14 +173,20 @@ function ScrollViewerRowItem({ index, manga, pageView, readingDirection, style }
 
   const first = (
     <picture>
-      <source media={`(min-width: ${firstImage?.thumbnail?.width ?? 0}px)`} srcSet={firstImage?.original?.url} />
+      <source
+        media={`(min-width: ${firstImage?.thumbnail?.width ?? 0}px)`}
+        srcSet={fallbackMap.get(firstImageIndex) ?? firstImage?.original?.url}
+      />
       <MangaImage
-        aria-invalid={firstImageStatus.error}
         fetchPriority="high"
         imageIndex={firstImageIndex}
-        imageRef={inViewRef}
-        onError={firstImageStatus.handleError}
-        onLoad={firstImageStatus.handleSuccess}
+        onError={() =>
+          setFallbackMap((prev) =>
+            // NOTE: 간혹 avif 이미지가 404인 경우가 있어서
+            new Map(prev).set(firstImageIndex, firstImage?.original?.url?.replace(/\.avif$/, '.webp') ?? ''),
+          )
+        }
+        ref={inViewRef}
         src={firstImage?.thumbnail?.url}
       />
     </picture>
@@ -180,13 +194,19 @@ function ScrollViewerRowItem({ index, manga, pageView, readingDirection, style }
 
   const second = isDoublePage && nextImageIndex < images.length && (
     <picture>
-      <source media={`(min-width: ${nextImage?.thumbnail?.width ?? 0}px)`} srcSet={nextImage?.original?.url} />
+      <source
+        media={`(min-width: ${nextImage?.thumbnail?.width ?? 0}px)`}
+        srcSet={fallbackMap.get(nextImageIndex) ?? nextImage?.original?.url}
+      />
       <MangaImage
-        aria-invalid={nextImageStatus.error}
         fetchPriority="high"
         imageIndex={nextImageIndex}
-        onError={nextImageStatus.handleError}
-        onLoad={nextImageStatus.handleSuccess}
+        onError={() =>
+          setFallbackMap((prev) =>
+            // NOTE: 간혹 avif 이미지가 404인 경우가 있어서
+            new Map(prev).set(nextImageIndex, nextImage?.original?.url?.replace(/\.avif$/, '.webp') ?? ''),
+          )
+        }
         src={nextImage?.thumbnail?.url}
       />
     </picture>
