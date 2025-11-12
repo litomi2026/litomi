@@ -35,7 +35,7 @@ export default function MangaTagLink({ category, value, label }: Props) {
       className={`rounded px-1 text-foreground transition break-all hover:underline focus:underline active:opacity-80 aria-current:ring-2 aria-current:ring-brand aria-invalid:line-through aria-invalid:opacity-70 ${tagColor}`}
       href={href}
       prefetch={false}
-      title={isCensored ? '검열됨' : label}
+      title={isCensored ? '검열됨' : value}
     >
       <MangaTagLabel>{label}</MangaTagLabel>
     </Link>
