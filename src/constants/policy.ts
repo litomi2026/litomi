@@ -22,6 +22,7 @@ export const MAX_THUMBNAIL_IMAGES = 4
 export const MAX_TRUSTED_DEVICES_PER_USER = 5
 export const MANGA_INITIAL_LINES = 1
 export const TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT = 6
+export const DONATION_CARD_INTERVAL = 20
 export const MIN_SUGGESTION_QUERY_LENGTH = 2
 export const SUGGESTION_DEBOUNCE_MS = 500
 export const BOOKMARKS_PER_PAGE = 20
@@ -40,7 +41,7 @@ export const REALTIME_PAGE_VIEW_MIN_THRESHOLD = 10
 
 // NOTE: 꾸준히 올려줘야 함
 export const MAX_MANGA_ID = 10_000_000
-export const TOTAL_HIYOBI_PAGES = 7736
+export const TOTAL_HIYOBI_PAGES = 7800
 
 export const LOGIN_ID_PATTERN = '^[a-zA-Z][a-zA-Z0-9_]*$'
 export const PASSWORD_PATTERN = '^(?=.*[A-Za-z])(?=.*[0-9]).+$'

@@ -8,7 +8,7 @@ export function formatDate(timestamp: number | string) {
   })
 }
 
-export function formatNumber(num: number | string | undefined, defaultValue: string) {
+export function formatNumber(num: number | string | null | undefined, defaultValue: string) {
   if (!num) return defaultValue
   return Number(num).toLocaleString('ko-KR')
 }

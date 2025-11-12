@@ -124,5 +124,3 @@ export const KOREAN_TO_ENGLISH_QUERY_KEYS: Record<string, string> = {
   시리즈: 'series',
   종류: 'type',
 }
-
-export const MIN_SUGGESTION_QUERY_LENGTH = 2

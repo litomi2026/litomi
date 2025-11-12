@@ -1,5 +1,4 @@
 import { Locale } from '@/translation/common'
-import { View } from '@/utils/param'
 
 export enum Sort {
   RANDOM = 'random',
@@ -9,7 +8,6 @@ export enum Sort {
 
 export type GETProxyKSearchRequest = {
   query?: string
-  view?: View
   sort?: Sort
   'min-rating'?: number
   'max-rating'?: number

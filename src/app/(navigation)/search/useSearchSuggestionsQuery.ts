@@ -4,11 +4,10 @@ import type { GETSearchSuggestionsResponse } from '@/backend/api/v1/search/sugge
 
 import { queryBlacklist } from '@/backend/api/v1/search/suggestion/constant'
 import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
+import { MIN_SUGGESTION_QUERY_LENGTH } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import useLocaleFromCookie from '@/hook/useLocaleFromCookie'
 import { handleResponseError } from '@/utils/react-query-error'
-
-import { MIN_SUGGESTION_QUERY_LENGTH } from './constants'
 
 type Params = {
   query: string

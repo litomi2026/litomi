@@ -272,7 +272,7 @@ function getDefaultKeywords(locale: string) {
     case Locale.ZH_TW:
       return [{ value: 'language:chinese', label: '繁體中文' }]
     default:
-      return []
+      return [{ value: 'language:korean', label: '한국어' }]
   }
 }
 
