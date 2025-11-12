@@ -18,18 +18,18 @@ type Props = {
 export default function CTAButton({ className = '' }: Props) {
   const period = getPeriod()
 
-  if (period === Period.NEW_YEAR) {
+  if (period === Period.CHRISTMAS) {
     return (
-      <Link className={twMerge('flex justify-center items-center gap-2 rounded', className)} href="/nye">
-        <PartyPopper className="size-5" /> 새해 카운트다운
+      <Link className={twMerge('flex justify-center items-center gap-2 rounded', className)} href="/">
+        <CandyCane className="size-5" /> 메리 크리스마스
       </Link>
     )
   }
 
-  if (period === Period.CHRISTMAS) {
+  if (period === Period.NEW_YEAR) {
     return (
-      <Link className={twMerge('flex justify-center items-center gap-2 rounded', className)} href="/christmas">
-        <CandyCane className="size-5" /> 메리 크리스마스
+      <Link className={twMerge('flex justify-center items-center gap-2 rounded', className)} href="/nye">
+        <PartyPopper className="size-5" /> 새해 카운트다운
       </Link>
     )
   }
@@ -51,12 +51,12 @@ function getPeriod() {
   const month = now.getMonth() + 1
   const day = now.getDate()
 
-  if ((month === 12 && day >= 26) || (month === 1 && day <= 1)) {
-    return Period.NEW_YEAR
+  if (month === 12 && day >= 24 && day < 26) {
+    return Period.CHRISTMAS
   }
 
-  if (month === 12 && day >= 24 && day <= 26) {
-    return Period.CHRISTMAS
+  if ((month === 12 && day >= 26) || (month === 1 && day <= 1)) {
+    return Period.NEW_YEAR
   }
 
   return null
