@@ -1,7 +1,8 @@
 import Link from 'next/link'
 
-import LogoDiscord from '@/components/icons/LogoDiscord'
 import SEOText from '@/components/SEOText'
+
+import CTAButton from './CTAButton'
 
 export default function Home() {
   const linkClassName = 'border-2 rounded-lg w-60 py-2 font-semibold'
@@ -42,14 +43,7 @@ export default function Home() {
         <Link className={`${linkClassName} rounded`} href="/deterrence">
           19세 미만 나가기
         </Link>
-        <a
-          className={`${linkClassName} flex justify-center items-center gap-2 rounded`}
-          href="https://discord.gg/xTrbQaxpyD"
-          target="_blank"
-        >
-          <LogoDiscord className="size-6 text-[#5865F2]" />
-          Discord
-        </a>
+        <CTAButton className={linkClassName} />
       </div>
       <SEOText className="sr-only" />
     </main>
