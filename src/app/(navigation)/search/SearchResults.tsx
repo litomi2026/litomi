@@ -1,5 +1,6 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { useSearchParams } from 'next/navigation'
 import { Fragment, useMemo } from 'react'
 
@@ -8,15 +9,15 @@ import { Sort } from '@/app/api/proxy/k/search/types'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import MangaCardDonation from '@/components/card/MangaCardDonation'
 import MangaCardImage from '@/components/card/MangaCardImage'
+import { DONATION_CARD_INTERVAL } from '@/constants/policy'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import { View } from '@/utils/param'
 import { ResponseError } from '@/utils/react-query-error'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 import RandomRefreshButton from '../(top-navigation)/RandomRefreshButton'
-import Error400 from './Error400'
 
-const DONATION_CARD_INTERVAL = 20
+const Error400 = dynamic(() => import('./Error400'))
 
 export default function SearchResult() {
   const searchParams = useSearchParams()
