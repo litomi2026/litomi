@@ -25,7 +25,7 @@ type MangaListFetchParams = {
 type MangaResult = Error | Manga | null | undefined
 
 export async function fetchMangaFromMultiSources({ id, locale }: MangaFetchParams) {
-  const revalidate = sec('30 days')
+  const revalidate = sec('60 days')
 
   const [hiyobiManga, hiyobiImages, kHentaiManga, harpiManga, /* komiManga, */ hitomiManga, hentaiPawImages] =
     await Promise.all([
@@ -71,7 +71,7 @@ export async function fetchMangaFromMultiSources({ id, locale }: MangaFetchParam
  * @param ids - 10개 이하의 고유한 만화 ID 배열
  */
 export async function fetchMangasFromMultiSources({ ids, locale }: MangaListFetchParams) {
-  const revalidate = sec('30 days')
+  const revalidate = sec('60 days')
   const harpiMangas = await harpiClient.searchMangas({ ids }, locale, revalidate).catch((error) => new Error(error))
   const mangaMap: Record<number, Manga> = {}
   const remainingIds = []

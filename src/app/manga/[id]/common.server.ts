@@ -4,8 +4,8 @@ import 'server-only'
 
 import { litomiClient } from '@/crawler/litomi'
 
-const getMangaFromNextjsCache = (id: number) =>
-  unstable_cache(
+function getMangaFromNextjsCache(id: number) {
+  return unstable_cache(
     async (id: number) => {
       try {
         return await litomiClient.getManga(id)
@@ -16,5 +16,6 @@ const getMangaFromNextjsCache = (id: number) =>
     ['manga'],
     { tags: ['manga', 'litomi', `manga:${id}`] },
   )(id)
+}
 
-export const getManga = cache((id: number) => getMangaFromNextjsCache(id))
+export const getManga = cache(getMangaFromNextjsCache)
