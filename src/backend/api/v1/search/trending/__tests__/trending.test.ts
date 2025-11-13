@@ -5,7 +5,9 @@ import { contextStorage } from 'hono/context-storage'
 import type { Env } from '@/backend'
 import type { TrendingKeyword } from '@/services/TrendingKeywordsService'
 
-import trendingRoutes, { type GETTrendingKeywordsResponse } from '..'
+import trendingGetRoutes, { type GETTrendingKeywordsResponse } from '../GET'
+import trendingRoutes from '../index'
+import trendingPostRoutes, { type POSTV1SearchTrendingResponse } from '../POST'
 
 mock.module('@/database/redis', () => ({
   redisClient: {
@@ -172,6 +174,98 @@ describe('GET /api/v1/search/trending', () => {
 
       expect(responses.every((r) => r.status === 200)).toBe(true)
       expect(data.every((d) => d.keywords && d.updatedAt)).toBe(true)
+    })
+  })
+})
+
+describe('POST /api/v1/search/trending', () => {
+  // Create a new test app without conflicting mocks
+  const trackSearchMock = mock(() => Promise.resolve())
+  
+  // Override the mock for POST tests
+  mock.module('@/services/TrendingKeywordsService', () => ({
+    trendingKeywordsService: {
+      trackSearch: trackSearchMock,
+      // Add other methods as mocks to avoid issues
+      getTrendingRealtime: mock(() => Promise.resolve([])),
+      getTrendingDaily: mock(() => Promise.resolve([])),
+      getTrendingHistorical: mock(() => Promise.resolve([])),
+    },
+  }))
+  
+  const app = new Hono<Env>().use(contextStorage()).route('/', trendingPostRoutes)
+
+  describe('성공', () => {
+    test('단일 키워드를 추적할 수 있다', async () => {
+      const res = await app.request('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ keywords: ['test keyword'] }),
+      })
+      const data = await res.json<POSTV1SearchTrendingResponse>()
+
+      expect(res.status).toBe(200)
+      expect(data.success).toBe(true)
+      expect(data.tracked).toBe(1)
+    })
+
+    test('여러 키워드를 한번에 추적할 수 있다', async () => {
+      const res = await app.request('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ keywords: ['keyword1', 'keyword2', 'keyword3'] }),
+      })
+      const data = await res.json<POSTV1SearchTrendingResponse>()
+
+      expect(res.status).toBe(200)
+      expect(data.success).toBe(true)
+      expect(data.tracked).toBe(3)
+    })
+  })
+
+  describe('실패', () => {
+    test('keywords가 빈 배열이면 400 에러를 반환한다', async () => {
+      const res = await app.request('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ keywords: [] }),
+      })
+
+      expect(res.status).toBe(400)
+    })
+
+    test('keywords가 없으면 400 에러를 반환한다', async () => {
+      const res = await app.request('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      })
+
+      expect(res.status).toBe(400)
+    })
+
+    test('keywords가 10개를 초과하면 400 에러를 반환한다', async () => {
+      const res = await app.request('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          keywords: Array.from({ length: 11 }, (_, i) => `keyword${i}`)
+        }),
+      })
+
+      expect(res.status).toBe(400)
+    })
+
+    test('keyword가 100자를 초과하면 400 에러를 반환한다', async () => {
+      const res = await app.request('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          keywords: ['a'.repeat(101)]
+        }),
+      })
+
+      expect(res.status).toBe(400)
     })
   })
 })
