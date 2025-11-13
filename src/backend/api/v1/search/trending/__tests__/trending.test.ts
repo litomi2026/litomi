@@ -5,7 +5,7 @@ import { contextStorage } from 'hono/context-storage'
 import type { Env } from '@/backend'
 import type { TrendingKeyword } from '@/services/TrendingKeywordsService'
 
-import trendingGetRoutes, { type GETTrendingKeywordsResponse } from '../GET'
+import { type GETTrendingKeywordsResponse } from '../GET'
 import trendingRoutes from '../index'
 import trendingPostRoutes, { type POSTV1SearchTrendingResponse } from '../POST'
 
@@ -181,7 +181,7 @@ describe('GET /api/v1/search/trending', () => {
 describe('POST /api/v1/search/trending', () => {
   // Create a new test app without conflicting mocks
   const trackSearchMock = mock(() => Promise.resolve())
-  
+
   // Override the mock for POST tests
   mock.module('@/services/TrendingKeywordsService', () => ({
     trendingKeywordsService: {
@@ -192,7 +192,7 @@ describe('POST /api/v1/search/trending', () => {
       getTrendingHistorical: mock(() => Promise.resolve([])),
     },
   }))
-  
+
   const app = new Hono<Env>().use(contextStorage()).route('/', trendingPostRoutes)
 
   describe('성공', () => {
@@ -202,7 +202,7 @@ describe('POST /api/v1/search/trending', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ keywords: ['test keyword'] }),
       })
-      const data = await res.json<POSTV1SearchTrendingResponse>()
+      const data = (await res.json()) as POSTV1SearchTrendingResponse
 
       expect(res.status).toBe(200)
       expect(data.success).toBe(true)
@@ -215,7 +215,7 @@ describe('POST /api/v1/search/trending', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ keywords: ['keyword1', 'keyword2', 'keyword3'] }),
       })
-      const data = await res.json<POSTV1SearchTrendingResponse>()
+      const data = (await res.json()) as POSTV1SearchTrendingResponse
 
       expect(res.status).toBe(200)
       expect(data.success).toBe(true)
@@ -248,8 +248,8 @@ describe('POST /api/v1/search/trending', () => {
       const res = await app.request('/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          keywords: Array.from({ length: 11 }, (_, i) => `keyword${i}`)
+        body: JSON.stringify({
+          keywords: Array.from({ length: 11 }, (_, i) => `keyword${i}`),
         }),
       })
 
@@ -260,8 +260,8 @@ describe('POST /api/v1/search/trending', () => {
       const res = await app.request('/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          keywords: ['a'.repeat(101)]
+        body: JSON.stringify({
+          keywords: ['a'.repeat(101)],
         }),
       })
 

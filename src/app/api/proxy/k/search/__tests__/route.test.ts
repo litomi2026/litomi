@@ -13,6 +13,13 @@ describe('GET /api/proxy/k/search', () => {
     global.fetch = mock(async (url: string | Request | URL, init?: RequestInit) => {
       const urlString = typeof url === 'string' ? url : url instanceof URL ? url.toString() : (url as Request).url
 
+      if (urlString.includes('/api/v1/search/trending')) {
+        return new Response(JSON.stringify({ success: true, tracked: 1 }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        })
+      }
+
       if (urlString.includes('k-hentai.org/ajax/search')) {
         const searchParams = new URLSearchParams(urlString.split('?')[1])
         const sort = searchParams.get('sort')
