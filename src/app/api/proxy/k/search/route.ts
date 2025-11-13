@@ -113,7 +113,7 @@ export async function GET(request: Request) {
       skip
 
     if (query && !hasOtherFilters && hasManga) {
-      if (chance(0.1)) {
+      if (chance(0.2)) {
         trendingKeywordsRedisService.trackSearch(query).catch(console.error)
       }
     }
