@@ -4,7 +4,6 @@ import { hentKorClient } from '@/crawler/hentkor'
 import { hitomiClient } from '@/crawler/hitomi/hitomi'
 import { hiyobiClient } from '@/crawler/hiyobi'
 import { kHentaiClient } from '@/crawler/k-hentai'
-import { komiClient } from '@/crawler/komi/komi'
 import { MangaSource } from '@/database/enum'
 import { Locale } from '@/translation/common'
 import { Manga, MangaError } from '@/types/manga'
@@ -28,20 +27,20 @@ type MangaResult = Error | Manga | null | undefined
 export async function fetchMangaFromMultiSources({ id, locale }: MangaFetchParams) {
   const revalidate = sec('30 days')
 
-  const [hiyobiManga, hiyobiImages, kHentaiManga, harpiManga, komiManga, hitomiManga, hentaiPawImages] =
+  const [hiyobiManga, hiyobiImages, kHentaiManga, harpiManga, /* komiManga, */ hitomiManga, hentaiPawImages] =
     await Promise.all([
       hiyobiClient.fetchManga({ id, locale, revalidate }).catch(Error),
       hiyobiClient.fetchMangaImages({ id }).catch(() => null),
       kHentaiClient.fetchManga({ id, locale }).catch(Error),
       harpiClient.fetchManga({ id, locale, revalidate }).catch(Error),
-      komiClient.fetchManga({ id, locale, revalidate }).catch(Error),
+      // komiClient.fetchManga({ id, locale, revalidate }).catch(Error),
       hitomiClient.fetchManga({ id, locale }).catch(Error),
       hentaiPawClient.fetchMangaImages({ id, revalidate }).catch(() => null),
     ])
 
   const sources: MangaResult[] = [
     harpiManga,
-    komiManga,
+    //  komiManga,
     kHentaiManga,
     hiyobiManga,
     createHentaiPawManga(id, hentaiPawImages),
@@ -95,20 +94,21 @@ export async function fetchMangasFromMultiSources({ ids, locale }: MangaListFetc
     return mangaMap
   }
 
-  const [hiyobiMangas, hiyobiImages, kHentaiMangas, komiMangas, hitomiMangas, hentaiPawImages] = await Promise.all([
-    Promise.all(remainingIds.map((id) => hiyobiClient.fetchManga({ id, locale, revalidate }).catch(Error))),
-    Promise.all(remainingIds.map((id) => hiyobiClient.fetchMangaImages({ id }).catch(() => null))),
-    Promise.all(remainingIds.map((id) => kHentaiClient.fetchManga({ id, locale }).catch(Error))),
-    Promise.all(remainingIds.map((id) => komiClient.fetchManga({ id, locale, revalidate }).catch(Error))),
-    Promise.all(remainingIds.map((id) => hitomiClient.fetchManga({ id, locale }).catch(Error))),
-    Promise.all(remainingIds.map((id) => hentaiPawClient.fetchMangaImages({ id, revalidate }).catch(() => null))),
-  ])
+  const [hiyobiMangas, hiyobiImages, kHentaiMangas, /* komiMangas, */ hitomiMangas, hentaiPawImages] =
+    await Promise.all([
+      Promise.all(remainingIds.map((id) => hiyobiClient.fetchManga({ id, locale, revalidate }).catch(Error))),
+      Promise.all(remainingIds.map((id) => hiyobiClient.fetchMangaImages({ id }).catch(() => null))),
+      Promise.all(remainingIds.map((id) => kHentaiClient.fetchManga({ id, locale }).catch(Error))),
+      // Promise.all(remainingIds.map((id) => komiClient.fetchManga({ id, locale, revalidate }).catch(Error))),
+      Promise.all(remainingIds.map((id) => hitomiClient.fetchManga({ id, locale }).catch(Error))),
+      Promise.all(remainingIds.map((id) => hentaiPawClient.fetchMangaImages({ id, revalidate }).catch(() => null))),
+    ])
 
   for (let i = 0; i < remainingIds.length; i++) {
     const id = remainingIds[i]
 
     const sources: MangaResult[] = [
-      komiMangas[i],
+      // komiMangas[i],
       hiyobiMangas[i],
       kHentaiMangas[i],
       createHentaiPawManga(id, hentaiPawImages[i]),
