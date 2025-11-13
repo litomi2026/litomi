@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 
-import { type GETTrendingKeywordsResponse } from '@/backend/api/v1/search/trending'
+import { type GETTrendingKeywordsResponse } from '@/backend/api/v1/search/trending/GET'
 import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
 import useLocaleFromCookie from '@/hook/useLocaleFromCookie'
