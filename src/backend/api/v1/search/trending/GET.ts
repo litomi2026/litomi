@@ -64,7 +64,7 @@ function translateSearchQuery(category: string, value: string, locale: Locale): 
     }
     case 'series': {
       const seriesLabel = translateSeriesList([value], locale)
-      return `${translateCategory(category, locale)}:${seriesLabel}`
+      return `${translateCategory(category, locale)}:${seriesLabel?.[0].label || value}`
     }
     case 'type': {
       const typeObj = translateType(value, locale)
