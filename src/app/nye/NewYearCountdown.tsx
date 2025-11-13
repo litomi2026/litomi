@@ -1,5 +1,6 @@
 'use client'
 
+import ms from 'ms'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
@@ -29,9 +30,8 @@ export default function NewYearCountdown({ onCountdownComplete, onCountingDown }
       const currentYear = now.getFullYear()
       const newYear = dday ? new Date(dday) : new Date(currentYear + 1, 0, 1, 0, 0, 0)
       const difference = newYear.getTime() - now.getTime()
-      const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000
 
-      if (difference > sevenDaysInMs) {
+      if (difference > ms('7 days')) {
         setShowCountdown(false)
         onCountingDown?.(false)
         return null
@@ -47,8 +47,7 @@ export default function NewYearCountdown({ onCountdownComplete, onCountingDown }
         }
 
         // 새해가 되면 5분간 축하 메시지 표시
-        const fiveMinutesInMs = 5 * 60 * 1000
-        if (Math.abs(difference) < fiveMinutesInMs) {
+        if (Math.abs(difference) < ms('5 minutes')) {
           setIsNewYear(true)
           onCountingDown?.(false)
         } else {
@@ -62,9 +61,9 @@ export default function NewYearCountdown({ onCountdownComplete, onCountingDown }
       onCountingDown?.(true)
 
       return {
-        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-        minutes: Math.floor((difference / 1000 / 60) % 60),
+        days: Math.floor(difference / ms('1 day')),
+        hours: Math.floor((difference / ms('1 hour')) % 24),
+        minutes: Math.floor((difference / ms('1 minute')) % 60),
         seconds: Math.floor((difference / 1000) % 60),
       }
     }
@@ -72,7 +71,7 @@ export default function NewYearCountdown({ onCountdownComplete, onCountingDown }
     const timer = setInterval(() => {
       const time = calculateTimeLeft()
       setTimeLeft(time)
-    }, 900)
+    }, 1000)
 
     // 초기 계산
     const time = calculateTimeLeft()

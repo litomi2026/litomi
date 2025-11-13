@@ -1,8 +1,9 @@
 import { GETProxyKSearchSchema } from '@/app/api/proxy/k/search/schema'
+import { POSTV1SearchTrendingBody } from '@/backend/api/v1/search/trending/POST'
+import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { BLACKLISTED_MANGA_IDS, MAX_KHENTAI_SEARCH_QUERY_LENGTH } from '@/constants/policy'
 import { encodeCategories, kHentaiClient, KHentaiMangaSearchOptions } from '@/crawler/k-hentai'
 import { createCacheControlHeaders, handleRouteError } from '@/crawler/proxy-utils'
-import { trendingKeywordsRedisService } from '@/services/TrendingKeywordsRedisService'
 import { Locale } from '@/translation/common'
 import { Manga } from '@/types/manga'
 import { sec } from '@/utils/date'
@@ -113,8 +114,8 @@ export async function GET(request: Request) {
       skip
 
     if (query && !hasOtherFilters && hasManga) {
-      if (chance(0.1)) {
-        trendingKeywordsRedisService.trackSearch(query).catch(console.error)
+      if (chance(0.2)) {
+        postSearchKeyword(query)
       }
     }
 
@@ -197,4 +198,18 @@ function getKHentaiLanguageFilter(locale: Locale) {
     [Locale.ZH_CN]: 'language:chinese',
     [Locale.ZH_TW]: 'language:chinese',
   }[locale]
+}
+
+function postSearchKeyword(keyword: string) {
+  try {
+    const body: POSTV1SearchTrendingBody = { keywords: [keyword] }
+
+    fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/search/trending`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+  } catch (error) {
+    console.error('trackSearchKeyword:', error)
+  }
 }
