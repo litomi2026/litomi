@@ -2,7 +2,7 @@
 
 import { MessageCircle } from 'lucide-react'
 import Link from 'next/link'
-import { useCallback, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 import BookmarkButton from '@/components/card/BookmarkButton'
 import IconSpinner from '@/components/icons/IconSpinner'
@@ -94,147 +94,142 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
   })
 
   // 포인터 시작 시 좌표, 현재 밝기 기록 및 포인터 ID 등록
-  const handlePointerDown = useCallback(
-    (e: React.PointerEvent) => {
-      initialBrightnessRef.current = getBrightness()
-      swipeDetectedRef.current = false
-      activePointers.current.add(e.pointerId)
+  function handlePointerDown(e: React.PointerEvent) {
+    if (pinchZoomDetectedRef.current || getZoomLevel() > DEFAULT_ZOOM) return
 
-      const isEdgeSwipe = e.clientX < SCREEN_EDGE_THRESHOLD || e.clientX > window.innerWidth - SCREEN_EDGE_THRESHOLD
-      if (isEdgeSwipe) return
+    const isEdgeSwipe = e.clientX < SCREEN_EDGE_THRESHOLD || e.clientX > window.innerWidth - SCREEN_EDGE_THRESHOLD
+    if (isEdgeSwipe) return
 
-      pointerStartRef.current = { x: e.clientX, y: e.clientY }
-    },
-    [getBrightness],
-  )
+    initialBrightnessRef.current = getBrightness()
+    swipeDetectedRef.current = false
+    activePointers.current.add(e.pointerId)
+    pointerStartRef.current = { x: e.clientX, y: e.clientY }
+  }
 
   // 포인터 이동 시: 세로 스와이프 감지 시 밝기 업데이트, 핀치 줌(멀티 터치) 중이면 밝기 조절 방지
-  const handlePointerMove = useCallback(
-    (e: React.PointerEvent) => {
-      if (!pointerStartRef.current) return
+  function handlePointerMove(e: React.PointerEvent) {
+    if (!pointerStartRef.current) return
 
-      const isPinchZooming = activePointers.current.size > 1
-      if (isPinchZooming) return
+    const isPinchZooming = activePointers.current.size > 1
+    if (isPinchZooming) return
 
-      const isVerticalScrollable = ulRef.current && ulRef.current.scrollHeight > ulRef.current.clientHeight
-      if (isVerticalScrollable) return
+    const isVerticalScrollable = ulRef.current && ulRef.current.scrollHeight > ulRef.current.clientHeight
+    if (isVerticalScrollable) return
 
-      const diffX = e.clientX - pointerStartRef.current.x
-      const diffY = e.clientY - pointerStartRef.current.y
-      const isVerticalSwipe = Math.abs(diffY) > VERTICAL_SWIPE_THRESHOLD && Math.abs(diffY) > Math.abs(diffX)
-      if (!isVerticalSwipe) return
+    const diffX = e.clientX - pointerStartRef.current.x
+    const diffY = e.clientY - pointerStartRef.current.y
+    const isVerticalSwipe = Math.abs(diffY) > VERTICAL_SWIPE_THRESHOLD && Math.abs(diffY) > Math.abs(diffX)
+    if (!isVerticalSwipe) return
 
-      swipeDetectedRef.current = true
-      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
-      const deltaBrightness = (diffY / (rect.height / 2)) * 90
-      const newBrightness = initialBrightnessRef.current - deltaBrightness
-      if (newBrightness < 10 || newBrightness > 100) return
+    swipeDetectedRef.current = true
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+    const deltaBrightness = (diffY / (rect.height / 2)) * 90
+    const newBrightness = initialBrightnessRef.current - deltaBrightness
+    if (newBrightness < 10 || newBrightness > 100) return
 
-      setBrightness(newBrightness)
-    },
-    [setBrightness],
-  )
+    setBrightness(newBrightness)
+  }
 
   // 포인터 종료 시: 포인터 ID 제거 및 스와이프/페이지 전환 처리
-  const handlePointerUp = useCallback(
-    (e: React.PointerEvent) => {
-      activePointers.current.delete(e.pointerId)
+  function handlePointerUp(e: React.PointerEvent) {
+    if (!pointerStartRef.current) return
 
-      if (!pointerStartRef.current) return
+    activePointers.current.delete(e.pointerId)
 
-      const isHorizontalScrollable = ulRef.current && ulRef.current.scrollHeight < ulRef.current.clientHeight
-      if (isHorizontalScrollable) return
+    const isHorizontalScrollable = ulRef.current && ulRef.current.scrollHeight < ulRef.current.clientHeight
+    if (isHorizontalScrollable) return
 
-      // 세로 스와이프가 감지되었으면 페이지 전환 없이 종료
-      const diffX = e.clientX - pointerStartRef.current.x
-      const diffY = e.clientY - pointerStartRef.current.y
-      const isVerticalSwipe = Math.abs(diffY) > VERTICAL_SWIPE_THRESHOLD && Math.abs(diffY) > Math.abs(diffX)
-      if (isVerticalSwipe) {
-        pointerStartRef.current = null
-        return
-      }
+    // 세로 스와이프가 감지되었으면 페이지 전환 없이 종료
+    const diffX = e.clientX - pointerStartRef.current.x
+    const diffY = e.clientY - pointerStartRef.current.y
+    const isVerticalSwipe = Math.abs(diffY) > VERTICAL_SWIPE_THRESHOLD && Math.abs(diffY) > Math.abs(diffX)
 
-      if (Math.abs(diffX) > HORIZONTAL_SWIPE_THRESHOLD) {
-        swipeDetectedRef.current = true
-        const touchOrientation = getTouchOrientation()
-        const isReversed = touchOrientation === 'horizontal-reverse' || touchOrientation === 'vertical-reverse'
+    if (isVerticalSwipe) {
+      pointerStartRef.current = null
+      return
+    }
 
-        if (diffX > 0) {
-          if (isReversed) {
-            nextPage()
-          } else {
-            prevPage()
-          }
+    if (Math.abs(diffX) > HORIZONTAL_SWIPE_THRESHOLD) {
+      swipeDetectedRef.current = true
+      const touchOrientation = getTouchOrientation()
+      const isReversed = touchOrientation === 'horizontal-reverse' || touchOrientation === 'vertical-reverse'
+
+      if (diffX > 0) {
+        if (isReversed) {
+          nextPage()
         } else {
-          if (isReversed) {
-            prevPage()
-          } else {
-            nextPage()
-          }
+          prevPage()
+        }
+      } else {
+        if (isReversed) {
+          prevPage()
+        } else {
+          nextPage()
         }
       }
+    }
 
-      pointerStartRef.current = null
-    },
-    [getTouchOrientation, nextPage, prevPage],
-  )
+    pointerStartRef.current = null
+  }
 
   // 포인터 캔슬 시 포인터 ID 제거
-  const handlePointerCancel = useCallback((e: React.PointerEvent) => {
+  function handlePointerCancel(e: React.PointerEvent) {
     activePointers.current.delete(e.pointerId)
-  }, [])
+  }
 
   // 클릭 이벤트: 스와이프 미발생 시 처리
-  const handleClick = useCallback(
-    (e: React.MouseEvent) => {
-      if (swipeDetectedRef.current) {
-        swipeDetectedRef.current = false
-        return
-      }
+  function handleClick(e: React.MouseEvent) {
+    if (pinchZoomDetectedRef.current || getZoomLevel() > DEFAULT_ZOOM) {
+      onClick()
+      return
+    }
 
-      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
-      const touchOrientation = getTouchOrientation()
+    if (swipeDetectedRef.current) {
+      swipeDetectedRef.current = false
+      return
+    }
 
-      if (touchOrientation === 'horizontal') {
-        const clickX = e.clientX - rect.left
-        if (clickX < rect.width * EDGE_CLICK_THRESHOLD) {
-          prevPage()
-        } else if (clickX > rect.width * (1 - EDGE_CLICK_THRESHOLD)) {
-          nextPage()
-        } else {
-          onClick()
-        }
-      } else if (touchOrientation === 'horizontal-reverse') {
-        const clickX = e.clientX - rect.left
-        if (clickX < rect.width * EDGE_CLICK_THRESHOLD) {
-          nextPage()
-        } else if (clickX > rect.width * (1 - EDGE_CLICK_THRESHOLD)) {
-          prevPage()
-        } else {
-          onClick()
-        }
-      } else if (touchOrientation === 'vertical') {
-        const clickY = e.clientY - rect.top
-        if (clickY < rect.height * EDGE_CLICK_THRESHOLD) {
-          prevPage()
-        } else if (clickY > rect.height * (1 - EDGE_CLICK_THRESHOLD)) {
-          nextPage()
-        } else {
-          onClick()
-        }
-      } else if (touchOrientation === 'vertical-reverse') {
-        const clickY = e.clientY - rect.top
-        if (clickY < rect.height * EDGE_CLICK_THRESHOLD) {
-          nextPage()
-        } else if (clickY > rect.height * (1 - EDGE_CLICK_THRESHOLD)) {
-          prevPage()
-        } else {
-          onClick()
-        }
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+    const touchOrientation = getTouchOrientation()
+
+    if (touchOrientation === 'horizontal') {
+      const clickX = e.clientX - rect.left
+      if (clickX < rect.width * EDGE_CLICK_THRESHOLD) {
+        prevPage()
+      } else if (clickX > rect.width * (1 - EDGE_CLICK_THRESHOLD)) {
+        nextPage()
+      } else {
+        onClick()
       }
-    },
-    [getTouchOrientation, nextPage, onClick, prevPage],
-  )
+    } else if (touchOrientation === 'horizontal-reverse') {
+      const clickX = e.clientX - rect.left
+      if (clickX < rect.width * EDGE_CLICK_THRESHOLD) {
+        nextPage()
+      } else if (clickX > rect.width * (1 - EDGE_CLICK_THRESHOLD)) {
+        prevPage()
+      } else {
+        onClick()
+      }
+    } else if (touchOrientation === 'vertical') {
+      const clickY = e.clientY - rect.top
+      if (clickY < rect.height * EDGE_CLICK_THRESHOLD) {
+        prevPage()
+      } else if (clickY > rect.height * (1 - EDGE_CLICK_THRESHOLD)) {
+        nextPage()
+      } else {
+        onClick()
+      }
+    } else if (touchOrientation === 'vertical-reverse') {
+      const clickY = e.clientY - rect.top
+      if (clickY < rect.height * EDGE_CLICK_THRESHOLD) {
+        nextPage()
+      } else if (clickY > rect.height * (1 - EDGE_CLICK_THRESHOLD)) {
+        prevPage()
+      } else {
+        onClick()
+      }
+    }
+  }
 
   // NOTE: 이미지 스크롤 가능할 때 페이지 변경 시 스크롤 위치를 자연스럽게 설정함
   useEffect(() => {
@@ -414,7 +409,9 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
 
   return (
     <>
-      <TouchAreaOverlay showController={showController} />
+      {!pinchZoomDetectedRef.current && zoomLevel === DEFAULT_ZOOM && (
+        <TouchAreaOverlay showController={showController} />
+      )}
       <ul
         className={`h-dvh touch-pinch-zoom origin-top-left select-none overscroll-none [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:pb-safe [&_img]:border [&_img]:border-background ${screenFitStyle[screenFit]}`}
         onClick={handleClick}
