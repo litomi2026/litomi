@@ -76,10 +76,8 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
   const setImageIndex = useImageIndexStore((state) => state.setImageIndex)
   const currentIndex = useImageIndexStore((state) => state.imageIndex)
   const zoomLevel = useZoomStore((state) => state.zoomLevel)
-  const zoomOrigin = useZoomStore((state) => state.zoomOrigin)
   const getZoomLevel = useZoomStore((state) => state.getZoomLevel)
   const setZoomLevel = useZoomStore((state) => state.setZoomLevel)
-  const setZoomOrigin = useZoomStore((state) => state.setZoomOrigin)
   const resetZoom = useZoomStore((state) => state.resetZoom)
   const pointerStartRef = useRef<{ x: number; y: number } | null>(null)
   const initialBrightnessRef = useRef(100)
@@ -293,38 +291,22 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
   // NOTE: metakey + scroll 시 이미지 확대/축소함
   useEffect(() => {
     function handleWheel(event: WheelEvent) {
-      const { deltaY, metaKey, clientX, clientY } = event
+      const { deltaY, metaKey } = event
+      const ul = ulRef.current
 
-      if (!metaKey) {
+      if (!metaKey || !ul) {
         return
       }
-
-      const ul = ulRef.current
-      if (!ul) return
 
       event.preventDefault()
-      const rect = ul.getBoundingClientRect()
-      const mouseX = clientX - rect.left
-      const mouseY = clientY - rect.top
-      const originX = (mouseX / rect.width) * 100
-      const originY = (mouseY / rect.height) * 100
-      setZoomOrigin({ x: `${originX.toFixed(2)}%`, y: `${originY.toFixed(2)}%` })
-
+      const currentZoom = getZoomLevel()
       const zoomDelta = -deltaY * ZOOM_SPEED
-      const zoomLevel = getZoomLevel()
-      const newZoom = zoomLevel * (1 + zoomDelta)
-
-      // Store will handle clamping
-      if (newZoom === zoomLevel) {
-        return
-      }
-
-      setZoomLevel(newZoom)
+      setZoomLevel(currentZoom * (1 + zoomDelta))
     }
 
     window.addEventListener('wheel', handleWheel, { passive: false })
     return () => window.removeEventListener('wheel', handleWheel)
-  }, [setZoomLevel, setZoomOrigin, getZoomLevel])
+  }, [setZoomLevel, getZoomLevel])
 
   // NOTE: 이미지 스크롤 가능할 때 페이지 변경 시 스크롤 위치를 자연스럽게 설정함
   useEffect(() => {
@@ -407,17 +389,14 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
     <>
       <TouchAreaOverlay showController={showController} />
       <ul
-        className={`h-dvh touch-pinch-zoom select-none overscroll-none [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:pb-safe [&_img]:border [&_img]:border-background ${screenFitStyle[screenFit]}`}
+        className={`h-dvh touch-pinch-zoom origin-top-left select-none overscroll-none [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:pb-safe [&_img]:border [&_img]:border-background ${screenFitStyle[screenFit]}`}
         onClick={handleClick}
         onPointerCancel={handlePointerCancel}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         ref={ulRef}
-        style={{
-          transform: `scale(${zoomLevel.toFixed(2)})`,
-          transformOrigin: `${zoomOrigin.x} ${zoomOrigin.y}`,
-        }}
+        style={{ transform: `scale(${zoomLevel.toFixed(2)})` }}
       >
         {images.length === 0 ? (
           <li className="flex items-center justify-center h-full animate-fade-in">
