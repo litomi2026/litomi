@@ -86,6 +86,7 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
   const ulRef = useRef<HTMLUListElement>(null)
   const throttleRef = useRef(false)
   const previousIndexRef = useRef(currentIndex)
+  const pinchZoomDetectedRef = useRef(false)
 
   const { prevPage, nextPage } = useImageNavigation({
     maxIndex: images.length,
@@ -235,6 +236,65 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
     [getTouchOrientation, nextPage, onClick, prevPage],
   )
 
+  // NOTE: 이미지 스크롤 가능할 때 페이지 변경 시 스크롤 위치를 자연스럽게 설정함
+  useEffect(() => {
+    const ul = ulRef.current
+    if (!ul) return
+
+    const isVerticallyScrollable = ul.scrollHeight > ul.clientHeight
+    const isHorizontallyScrollable = ul.scrollWidth > ul.clientWidth
+    if (!isVerticallyScrollable && !isHorizontallyScrollable) return
+
+    const isNavigatingBackward = currentIndex < previousIndexRef.current
+    const touchOrientation = getTouchOrientation()
+    previousIndexRef.current = currentIndex
+
+    if (isNavigatingBackward) {
+      if (touchOrientation === 'vertical') {
+        ul.scrollTo({ top: ul.scrollHeight - ul.clientHeight, left: 0, behavior: 'instant' })
+      } else if (touchOrientation === 'vertical-reverse') {
+        ul.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+      } else if (touchOrientation === 'horizontal-reverse') {
+        ul.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+      } else {
+        ul.scrollTo({ top: 0, left: ul.scrollWidth - ul.clientWidth, behavior: 'instant' })
+      }
+    } else {
+      if (touchOrientation === 'vertical-reverse') {
+        ul.scrollTo({ top: ul.scrollHeight - ul.clientHeight, left: 0, behavior: 'instant' })
+      } else if (touchOrientation === 'horizontal-reverse') {
+        ul.scrollTo({ top: 0, left: ul.scrollWidth - ul.clientWidth, behavior: 'instant' })
+      } else {
+        ul.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+      }
+    }
+  }, [currentIndex, getTouchOrientation])
+
+  // NOTE: 페이지 전환 시 스크롤 관성을 방지함
+  useEffect(() => {
+    const ul = ulRef.current
+    if (!ul) return
+
+    ul.style.overflow = 'hidden'
+
+    setTimeout(() => {
+      ul.style.overflow = 'auto'
+    }, 500)
+  }, [currentIndex])
+
+  // NOTE: page 파라미터가 있으면 초기 페이지를 변경함
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const pageStr = params.get(MangaIdSearchParam.PAGE) ?? ''
+    const parsedPage = parseInt(pageStr, 10)
+
+    if (isNaN(parsedPage)) {
+      return
+    }
+
+    setImageIndex(Math.max(0, Math.min(parsedPage - 1, images.length)))
+  }, [images.length, setImageIndex])
+
   // NOTE: 마우스 휠 또는 터치패드 스와이프 시 페이지를 전환함
   useEffect(() => {
     function handleWheel({ deltaX, deltaY, ctrlKey, metaKey }: WheelEvent) {
@@ -242,7 +302,7 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
         return
       }
 
-      if (getZoomLevel() > DEFAULT_ZOOM) {
+      if (getZoomLevel() > DEFAULT_ZOOM || pinchZoomDetectedRef.current) {
         return
       }
 
@@ -308,52 +368,6 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
     return () => window.removeEventListener('wheel', handleWheel)
   }, [setZoomLevel, getZoomLevel])
 
-  // NOTE: 이미지 스크롤 가능할 때 페이지 변경 시 스크롤 위치를 자연스럽게 설정함
-  useEffect(() => {
-    const ul = ulRef.current
-    if (!ul) return
-
-    const isVerticallyScrollable = ul.scrollHeight > ul.clientHeight
-    const isHorizontallyScrollable = ul.scrollWidth > ul.clientWidth
-    if (!isVerticallyScrollable && !isHorizontallyScrollable) return
-
-    const isNavigatingBackward = currentIndex < previousIndexRef.current
-    const touchOrientation = getTouchOrientation()
-    previousIndexRef.current = currentIndex
-
-    if (isNavigatingBackward) {
-      if (touchOrientation === 'vertical') {
-        ul.scrollTo({ top: ul.scrollHeight - ul.clientHeight, left: 0, behavior: 'instant' })
-      } else if (touchOrientation === 'vertical-reverse') {
-        ul.scrollTo({ top: 0, left: 0, behavior: 'instant' })
-      } else if (touchOrientation === 'horizontal-reverse') {
-        ul.scrollTo({ top: 0, left: 0, behavior: 'instant' })
-      } else {
-        ul.scrollTo({ top: 0, left: ul.scrollWidth - ul.clientWidth, behavior: 'instant' })
-      }
-    } else {
-      if (touchOrientation === 'vertical-reverse') {
-        ul.scrollTo({ top: ul.scrollHeight - ul.clientHeight, left: 0, behavior: 'instant' })
-      } else if (touchOrientation === 'horizontal-reverse') {
-        ul.scrollTo({ top: 0, left: ul.scrollWidth - ul.clientWidth, behavior: 'instant' })
-      } else {
-        ul.scrollTo({ top: 0, left: 0, behavior: 'instant' })
-      }
-    }
-  }, [currentIndex, getTouchOrientation])
-
-  // NOTE: 페이지 전환 시 스크롤 관성을 방지함
-  useEffect(() => {
-    const ul = ulRef.current
-    if (!ul) return
-
-    ul.style.overflow = 'hidden'
-
-    setTimeout(() => {
-      ul.style.overflow = 'auto'
-    }, 500)
-  }, [currentIndex])
-
   // NOTE: ctrl/cmd + 0 키로 줌 리셋
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -372,18 +386,31 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [resetZoom])
 
-  // NOTE: page 파라미터가 있으면 초기 페이지를 변경함
+  // NOTE: 브라우저 기본 핀치 줌 감지
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const pageStr = params.get(MangaIdSearchParam.PAGE) ?? ''
-    const parsedPage = parseInt(pageStr, 10)
+    const handleViewportChange = () => {
+      if (!window.visualViewport) {
+        return
+      }
 
-    if (isNaN(parsedPage)) {
-      return
+      const scale = window.visualViewport.scale
+
+      if (scale > 1) {
+        pinchZoomDetectedRef.current = true
+      } else {
+        pinchZoomDetectedRef.current = false
+      }
     }
 
-    setImageIndex(Math.max(0, Math.min(parsedPage - 1, images.length)))
-  }, [images.length, setImageIndex])
+    // Visual Viewport 이벤트 리스너 등록
+    window.visualViewport?.addEventListener('resize', handleViewportChange)
+    window.visualViewport?.addEventListener('scroll', handleViewportChange)
+
+    return () => {
+      window.visualViewport?.removeEventListener('resize', handleViewportChange)
+      window.visualViewport?.removeEventListener('scroll', handleViewportChange)
+    }
+  }, [])
 
   return (
     <>
@@ -451,7 +478,7 @@ function TouchAreaOverlay({ showController }: TouchAreaOverlayProps) {
     <div
       aria-hidden={!showController}
       aria-orientation={isHorizontal ? 'horizontal' : 'vertical'}
-      className="absolute inset-0 z-10 pointer-events-none flex transition text-foreground text-xs font-medium aria-hidden:opacity-0 aria-[orientation=vertical]:flex-col"
+      className="fixed inset-0 z-10 pointer-events-none flex transition text-foreground text-xs font-medium aria-hidden:opacity-0 aria-[orientation=vertical]:flex-col"
     >
       <div className="flex-1 flex items-center justify-center">
         <span className="px-4 py-2 rounded-full bg-background/80 border border-foreground/40">
