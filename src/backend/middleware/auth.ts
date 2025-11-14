@@ -10,36 +10,78 @@ import { Env } from '..'
 
 export const auth = createMiddleware<Env>(async (c, next) => {
   const accessToken = getCookie(c, CookieKey.ACCESS_TOKEN)
-  const validAccessToken = await verifyJWT(accessToken ?? '', JWTType.ACCESS).catch(() => null)
-  const loginUserId = validAccessToken?.sub
-
-  // at 유효 -> 통과
-  if (loginUserId) {
-    c.set('userId', Number(loginUserId))
-    return await next()
-  }
-
   const refreshToken = getCookie(c, CookieKey.REFRESH_TOKEN)
 
-  // at 만료 및 rt 없음 -> at 쿠키 삭제
-  if (!refreshToken) {
-    deleteCookie(c, CookieKey.ACCESS_TOKEN, { domain: COOKIE_DOMAIN })
-    return await next()
+  // null: 토큰 만료/무효, undefined: 토큰 없음
+  const atPayload = accessToken ? await verifyJWT(accessToken, JWTType.ACCESS).catch(() => null) : undefined
+  const rtPayload = refreshToken ? await verifyJWT(refreshToken, JWTType.REFRESH).catch(() => null) : undefined
+
+  const validATUserId = atPayload?.sub
+  const isATExpired = atPayload === null
+  const isATMissing = atPayload === undefined
+  const validRTUserId = rtPayload?.sub
+  const isRTExpired = rtPayload === null
+  const isRTMissing = rtPayload === undefined
+
+  if (validATUserId) {
+    // AT 유효, RT 유효 -> next()
+    if (validRTUserId) {
+      c.set('userId', Number(validATUserId))
+      return await next()
+    }
+    // AT 유효, RT 만료/무효 -> RT 삭제
+    if (isRTExpired) {
+      c.set('userId', Number(validATUserId))
+      deleteCookie(c, CookieKey.REFRESH_TOKEN, { domain: COOKIE_DOMAIN })
+      return await next()
+    }
+    // AT 유효, RT 없음 -> next()
+    if (isRTMissing) {
+      c.set('userId', Number(validATUserId))
+      return await next()
+    }
   }
 
-  const validRefreshToken = await verifyJWT(refreshToken, JWTType.REFRESH).catch(() => null)
-  const userId = validRefreshToken?.sub
-
-  // at 만료 및 rt 만료 -> at, rt 쿠키 삭제
-  if (!userId) {
-    deleteCookie(c, CookieKey.ACCESS_TOKEN, { domain: COOKIE_DOMAIN })
-    deleteCookie(c, CookieKey.REFRESH_TOKEN, { domain: COOKIE_DOMAIN })
-    return await next()
+  if (isATExpired) {
+    // AT 만료/무효, RT 유효 -> AT 갱신
+    if (validRTUserId) {
+      const { key, value, options } = await getAccessTokenCookieConfig(validRTUserId)
+      setCookie(c, key, value, options)
+      c.set('userId', Number(validRTUserId))
+      return await next()
+    }
+    // AT 만료/무효, RT 만료/무효 -> AT, RT 삭제
+    if (isRTExpired) {
+      deleteCookie(c, CookieKey.ACCESS_TOKEN, { domain: COOKIE_DOMAIN })
+      deleteCookie(c, CookieKey.REFRESH_TOKEN, { domain: COOKIE_DOMAIN })
+      return await next()
+    }
+    // AT 만료/무효, RT 없음 -> AT 삭제
+    if (isRTMissing) {
+      deleteCookie(c, CookieKey.ACCESS_TOKEN, { domain: COOKIE_DOMAIN })
+      return await next()
+    }
   }
 
-  // at 만료 및 rt 유효 -> at 재발급
-  const { key, value, options } = await getAccessTokenCookieConfig(userId)
-  setCookie(c, key, value, options)
-  c.set('userId', Number(userId))
+  if (isATMissing) {
+    // AT 없음, RT 유효 -> AT 갱신
+    if (validRTUserId) {
+      const { key, value, options } = await getAccessTokenCookieConfig(validRTUserId)
+      setCookie(c, key, value, options)
+      c.set('userId', Number(validRTUserId))
+      return await next()
+    }
+    // AT 없음, RT 만료/무효 -> RT 삭제
+    if (isRTExpired) {
+      deleteCookie(c, CookieKey.REFRESH_TOKEN, { domain: COOKIE_DOMAIN })
+      return await next()
+    }
+    // AT 없음, RT 없음 -> next()
+    if (isRTMissing) {
+      return await next()
+    }
+  }
+
+  // 도달하지 않아야 함
   return await next()
 })
