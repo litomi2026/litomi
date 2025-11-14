@@ -89,7 +89,7 @@ class TrendingKeywordsService {
       if (!exists) {
         const aggregations = Array.from({ length: this.HOURLY_AGGREGATION_WINDOW })
         const keys = aggregations.map((_, i) => `${this.HOURLY_KEY}:${hourWindow - i}`)
-        const weights = aggregations.map((_, i) => 1 - i / aggregations.length)
+        const weights = aggregations.map((_, i) => 1 / (i + 1))
         await redisClient.zunionstore(aggregateKey, keys.length, keys, { weights })
       }
 
