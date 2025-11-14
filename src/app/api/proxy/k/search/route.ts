@@ -114,7 +114,7 @@ export async function GET(request: Request) {
       skip
 
     if (query && !hasOtherFilters && hasManga) {
-      if (chance(0.2)) {
+      if (chance(0.5)) {
         postSearchKeyword(query)
       }
     }

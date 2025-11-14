@@ -2,7 +2,7 @@
 
 import { MessageCircle } from 'lucide-react'
 import Link from 'next/link'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 
 import BookmarkButton from '@/components/card/BookmarkButton'
 import IconSpinner from '@/components/icons/IconSpinner'
@@ -18,6 +18,7 @@ import { PageView } from './store/pageView'
 import { ReadingDirection } from './store/readingDirection'
 import { ScreenFit } from './store/screenFit'
 import { useTouchOrientationStore } from './store/touchOrientation'
+import { DEFAULT_ZOOM, useZoomStore } from './store/zoom'
 import useImageNavigation from './useImageNavigation'
 
 const HORIZONTAL_SWIPE_THRESHOLD = 50 // 가로 스와이프 임계값 (px)
@@ -28,8 +29,6 @@ const SCROLL_THRESHOLD = 1
 const SCROLL_THROTTLE = 500
 const SCREEN_EDGE_THRESHOLD = 40 // 브라우저 제스처 감지를 위한 화면 가장자리 임계값 (px)
 const ZOOM_SPEED = 0.002
-const MAX_ZOOM = 10
-const DEFAULT_ZOOM = 1
 
 const screenFitStyle = {
   width:
@@ -76,8 +75,12 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
   const setBrightness = useBrightnessStore((state) => state.setBrightness)
   const setImageIndex = useImageIndexStore((state) => state.setImageIndex)
   const currentIndex = useImageIndexStore((state) => state.imageIndex)
-  const [zoomLevel, setZoomLevel] = useState(DEFAULT_ZOOM)
-  const [zoomOrigin, setZoomOrigin] = useState({ x: '50%', y: '50%' })
+  const zoomLevel = useZoomStore((state) => state.zoomLevel)
+  const zoomOrigin = useZoomStore((state) => state.zoomOrigin)
+  const getZoomLevel = useZoomStore((state) => state.getZoomLevel)
+  const setZoomLevel = useZoomStore((state) => state.setZoomLevel)
+  const setZoomOrigin = useZoomStore((state) => state.setZoomOrigin)
+  const resetZoom = useZoomStore((state) => state.resetZoom)
   const pointerStartRef = useRef<{ x: number; y: number } | null>(null)
   const initialBrightnessRef = useRef(100)
   const swipeDetectedRef = useRef(false)
@@ -241,6 +244,10 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
         return
       }
 
+      if (getZoomLevel() > DEFAULT_ZOOM) {
+        return
+      }
+
       throttleRef.current = true
       setTimeout(() => {
         throttleRef.current = false
@@ -278,9 +285,10 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
         }
       }
     }
+
     window.addEventListener('wheel', handleWheel, { passive: true })
     return () => window.removeEventListener('wheel', handleWheel)
-  }, [nextPage, prevPage])
+  }, [nextPage, prevPage, getZoomLevel])
 
   // NOTE: metakey + scroll 시 이미지 확대/축소함
   useEffect(() => {
@@ -296,39 +304,27 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
 
       event.preventDefault()
       const rect = ul.getBoundingClientRect()
-      const oldScrollLeft = ul.scrollLeft
-      const oldScrollTop = ul.scrollTop
       const mouseX = clientX - rect.left
       const mouseY = clientY - rect.top
-      const contentX = (mouseX + oldScrollLeft) / zoomLevel
-      const contentY = (mouseY + oldScrollTop) / zoomLevel
       const originX = (mouseX / rect.width) * 100
       const originY = (mouseY / rect.height) * 100
       setZoomOrigin({ x: `${originX.toFixed(2)}%`, y: `${originY.toFixed(2)}%` })
 
       const zoomDelta = -deltaY * ZOOM_SPEED
+      const zoomLevel = getZoomLevel()
       const newZoom = zoomLevel * (1 + zoomDelta)
-      const clampedZoom = Math.min(Math.max(1, newZoom), MAX_ZOOM)
 
-      if (clampedZoom === zoomLevel) {
+      // Store will handle clamping
+      if (newZoom === zoomLevel) {
         return
       }
 
-      const newScrollLeft = contentX * clampedZoom - mouseX
-      const newScrollTop = contentY * clampedZoom - mouseY
-      setZoomLevel(clampedZoom)
-
-      requestAnimationFrame(() => {
-        if (ul) {
-          ul.scrollLeft = Math.max(0, newScrollLeft)
-          ul.scrollTop = Math.max(0, newScrollTop)
-        }
-      })
+      setZoomLevel(newZoom)
     }
 
     window.addEventListener('wheel', handleWheel, { passive: false })
     return () => window.removeEventListener('wheel', handleWheel)
-  }, [zoomLevel])
+  }, [setZoomLevel, setZoomOrigin, getZoomLevel])
 
   // NOTE: 이미지 스크롤 가능할 때 페이지 변경 시 스크롤 위치를 자연스럽게 설정함
   useEffect(() => {
@@ -380,8 +376,7 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === '0') {
-        setZoomLevel(DEFAULT_ZOOM)
-        setZoomOrigin({ x: '50%', y: '50%' })
+        resetZoom()
 
         const ul = ulRef.current
         if (ul) {
@@ -393,7 +388,7 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [])
+  }, [resetZoom])
 
   // NOTE: page 파라미터가 있으면 초기 페이지를 변경함
   useEffect(() => {
