@@ -31,11 +31,13 @@ export const auth = createMiddleware<Env>(async (c, next) => {
     }
     // AT 유효, RT 만료/무효 -> RT 삭제
     if (isRTExpired) {
+      c.set('userId', Number(validATUserId))
       deleteCookie(c, CookieKey.REFRESH_TOKEN, { domain: COOKIE_DOMAIN })
       return await next()
     }
     // AT 유효, RT 없음 -> next()
     if (isRTMissing) {
+      c.set('userId', Number(validATUserId))
       return await next()
     }
   }
