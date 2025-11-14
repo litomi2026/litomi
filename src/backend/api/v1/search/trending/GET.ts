@@ -18,7 +18,7 @@ import { translateType } from '@/translation/type'
 import { sec } from '@/utils/date'
 
 enum TrendingType {
-  REALTIME = 'realtime',
+  HOURLY = 'hourly',
   DAILY = 'daily',
   WEEKLY = 'weekly',
 }
@@ -26,7 +26,7 @@ enum TrendingType {
 const querySchema = z.object({
   limit: z.coerce.number().int().positive().max(10).default(10),
   locale: z.enum(Locale).default(Locale.KO),
-  type: z.enum(TrendingType).default(TrendingType.REALTIME),
+  type: z.enum(TrendingType).default(TrendingType.HOURLY),
 })
 
 export type GETTrendingKeywordsResponse = {
@@ -103,15 +103,15 @@ trendingRoutes.get('/', zValidator('query', querySchema), async (c) => {
   const { keywords = [], cacheMaxAge } = {
     [TrendingType.DAILY]: {
       // keywords: await trendingKeywordsService.getTrendingDaily(limit),
-      cacheMaxAge: sec('1 hour'),
+      cacheMaxAge: sec('1 day'),
     },
-    [TrendingType.REALTIME]: {
-      keywords: await trendingKeywordsService.getTrendingRealtime(limit),
-      cacheMaxAge: sec('10 minutes'),
+    [TrendingType.HOURLY]: {
+      keywords: await trendingKeywordsService.getTrendingHourly(limit),
+      cacheMaxAge: sec('1 hour'),
     },
     [TrendingType.WEEKLY]: {
       // keywords: await trendingKeywordsService.getTrendingHistorical(7, limit),
-      cacheMaxAge: sec('1 day'),
+      cacheMaxAge: sec('1 week'),
     },
   }[type]
 
@@ -125,9 +125,9 @@ trendingRoutes.get('/', zValidator('query', querySchema), async (c) => {
 
   const cacheControl = createCacheControl({
     public: true,
-    maxAge: cacheMaxAge,
+    maxAge: 3,
     sMaxAge: cacheMaxAge,
-    swr: cacheMaxAge,
+    swr: Math.floor(cacheMaxAge / 2),
   })
 
   return c.json<GETTrendingKeywordsResponse>(response, { headers: { 'Cache-Control': cacheControl } })
