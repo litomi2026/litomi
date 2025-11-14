@@ -67,13 +67,10 @@ const mockKeywords: TrendingKeyword[] = [
 
 mock.module('@/services/TrendingKeywordsService', () => ({
   trendingKeywordsService: {
-    getTrendingRealtime: mock(async (limit: number) => {
+    getTrendingHourly: mock(async (limit: number) => {
       return mockKeywords.slice(0, limit)
     }),
     getTrendingDaily: mock(async (limit: number) => {
-      return mockKeywords.slice(0, limit)
-    }),
-    getTrendingHistorical: mock(async (_: number, limit: number) => {
       return mockKeywords.slice(0, limit)
     }),
   },
@@ -91,7 +88,7 @@ describe('GET /api/v1/search/trending', () => {
   }
 
   describe('성공', () => {
-    test('type 파라미터 없이 요청하면 기본값 realtime을 사용한다', async () => {
+    test('type 파라미터 없이 요청하면 기본값 hourly를 사용한다', async () => {
       const response = await createRequest()
       const data = (await response.json()) as GETTrendingKeywordsResponse
 
@@ -100,8 +97,8 @@ describe('GET /api/v1/search/trending', () => {
       expect(data.updatedAt).toBeDefined()
     })
 
-    test('type=realtime으로 요청하면 실시간 트렌딩을 반환한다', async () => {
-      const response = await createRequest('realtime')
+    test('type=hourly로 요청하면 시간별 트렌딩을 반환한다', async () => {
+      const response = await createRequest('hourly')
       const data = (await response.json()) as GETTrendingKeywordsResponse
 
       expect(response.status).toBe(200)
@@ -137,37 +134,37 @@ describe('GET /api/v1/search/trending', () => {
   })
 
   describe('캐시 헤더', () => {
-    test('realtime 응답에 10분 캐시 헤더가 포함되어 있다', async () => {
-      const response = await createRequest('realtime')
+    test('hourly 응답에 1시간 캐시 헤더가 포함되어 있다', async () => {
+      const response = await createRequest('hourly')
 
       expect(response.status).toBe(200)
       expect(response.headers.get('cache-control')).toBeDefined()
       expect(response.headers.get('cache-control')).toContain('public')
-      expect(response.headers.get('cache-control')).toContain('max-age=600')
+      expect(response.headers.get('cache-control')).toContain('s-maxage=3600')
     })
 
-    test('daily 응답에 1시간 캐시 헤더가 포함되어 있다', async () => {
+    test('daily 응답에 1일 캐시 헤더가 포함되어 있다', async () => {
       const response = await createRequest('daily')
 
       expect(response.status).toBe(200)
       expect(response.headers.get('cache-control')).toBeDefined()
       expect(response.headers.get('cache-control')).toContain('public')
-      expect(response.headers.get('cache-control')).toContain('max-age=3600')
+      expect(response.headers.get('cache-control')).toContain('s-maxage=86400')
     })
 
-    test('weekly 응답에 1일 캐시 헤더가 포함되어 있다', async () => {
+    test('weekly 응답에 1주 캐시 헤더가 포함되어 있다', async () => {
       const response = await createRequest('weekly')
 
       expect(response.status).toBe(200)
       expect(response.headers.get('cache-control')).toBeDefined()
       expect(response.headers.get('cache-control')).toContain('public')
-      expect(response.headers.get('cache-control')).toContain('max-age=86400')
+      expect(response.headers.get('cache-control')).toContain('s-maxage=604800')
     })
   })
 
   describe('동시 요청', () => {
     test('동시에 여러 type의 요청을 처리할 수 있다', async () => {
-      const types = ['realtime', 'daily', 'weekly']
+      const types = ['hourly', 'daily', 'weekly']
       const promises = types.map((type) => createRequest(type))
       const responses = await Promise.all(promises)
       const data = await Promise.all(responses.map((r) => r.json()))
@@ -187,9 +184,8 @@ describe('POST /api/v1/search/trending', () => {
     trendingKeywordsService: {
       trackSearch: trackSearchMock,
       // Add other methods as mocks to avoid issues
-      getTrendingRealtime: mock(() => Promise.resolve([])),
+      getTrendingHourly: mock(() => Promise.resolve([])),
       getTrendingDaily: mock(() => Promise.resolve([])),
-      getTrendingHistorical: mock(() => Promise.resolve([])),
     },
   }))
 
