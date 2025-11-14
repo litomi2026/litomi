@@ -397,7 +397,6 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
       }
     }
 
-    // Visual Viewport 이벤트 리스너 등록
     window.visualViewport?.addEventListener('resize', handleViewportChange)
     window.visualViewport?.addEventListener('scroll', handleViewportChange)
 
