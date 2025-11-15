@@ -2,7 +2,7 @@
 
 import { MessageCircle } from 'lucide-react'
 import Link from 'next/link'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 
 import BookmarkButton from '@/components/card/BookmarkButton'
 import IconSpinner from '@/components/icons/IconSpinner'
@@ -18,6 +18,7 @@ import { PageView } from './store/pageView'
 import { ReadingDirection } from './store/readingDirection'
 import { ScreenFit } from './store/screenFit'
 import { useTouchOrientationStore } from './store/touchOrientation'
+import { DEFAULT_ZOOM, useZoomStore } from './store/zoom'
 import useImageNavigation from './useImageNavigation'
 
 const HORIZONTAL_SWIPE_THRESHOLD = 50 // 가로 스와이프 임계값 (px)
@@ -28,8 +29,6 @@ const SCROLL_THRESHOLD = 1
 const SCROLL_THROTTLE = 500
 const SCREEN_EDGE_THRESHOLD = 40 // 브라우저 제스처 감지를 위한 화면 가장자리 임계값 (px)
 const ZOOM_SPEED = 0.002
-const MAX_ZOOM = 10
-const DEFAULT_ZOOM = 1
 
 const screenFitStyle = {
   width:
@@ -76,8 +75,10 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
   const setBrightness = useBrightnessStore((state) => state.setBrightness)
   const setImageIndex = useImageIndexStore((state) => state.setImageIndex)
   const currentIndex = useImageIndexStore((state) => state.imageIndex)
-  const [zoomLevel, setZoomLevel] = useState(DEFAULT_ZOOM)
-  const [zoomOrigin, setZoomOrigin] = useState({ x: '50%', y: '50%' })
+  const zoomLevel = useZoomStore((state) => state.zoomLevel)
+  const getZoomLevel = useZoomStore((state) => state.getZoomLevel)
+  const setZoomLevel = useZoomStore((state) => state.setZoomLevel)
+  const resetZoom = useZoomStore((state) => state.resetZoom)
   const pointerStartRef = useRef<{ x: number; y: number } | null>(null)
   const initialBrightnessRef = useRef(100)
   const swipeDetectedRef = useRef(false)
@@ -85,6 +86,7 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
   const ulRef = useRef<HTMLUListElement>(null)
   const throttleRef = useRef(false)
   const previousIndexRef = useRef(currentIndex)
+  const pinchZoomDetectedRef = useRef(false)
 
   const { prevPage, nextPage } = useImageNavigation({
     maxIndex: images.length,
@@ -92,243 +94,142 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
   })
 
   // 포인터 시작 시 좌표, 현재 밝기 기록 및 포인터 ID 등록
-  const handlePointerDown = useCallback(
-    (e: React.PointerEvent) => {
-      initialBrightnessRef.current = getBrightness()
-      swipeDetectedRef.current = false
-      activePointers.current.add(e.pointerId)
+  function handlePointerDown(e: React.PointerEvent) {
+    if (pinchZoomDetectedRef.current || getZoomLevel() > DEFAULT_ZOOM) return
 
-      const isEdgeSwipe = e.clientX < SCREEN_EDGE_THRESHOLD || e.clientX > window.innerWidth - SCREEN_EDGE_THRESHOLD
-      if (isEdgeSwipe) return
+    const isEdgeSwipe = e.clientX < SCREEN_EDGE_THRESHOLD || e.clientX > window.innerWidth - SCREEN_EDGE_THRESHOLD
+    if (isEdgeSwipe) return
 
-      pointerStartRef.current = { x: e.clientX, y: e.clientY }
-    },
-    [getBrightness],
-  )
+    initialBrightnessRef.current = getBrightness()
+    swipeDetectedRef.current = false
+    activePointers.current.add(e.pointerId)
+    pointerStartRef.current = { x: e.clientX, y: e.clientY }
+  }
 
   // 포인터 이동 시: 세로 스와이프 감지 시 밝기 업데이트, 핀치 줌(멀티 터치) 중이면 밝기 조절 방지
-  const handlePointerMove = useCallback(
-    (e: React.PointerEvent) => {
-      if (!pointerStartRef.current) return
+  function handlePointerMove(e: React.PointerEvent) {
+    if (!pointerStartRef.current) return
 
-      const isPinchZooming = activePointers.current.size > 1
-      if (isPinchZooming) return
+    const isPinchZooming = activePointers.current.size > 1
+    if (isPinchZooming) return
 
-      const isVerticalScrollable = ulRef.current && ulRef.current.scrollHeight > ulRef.current.clientHeight
-      if (isVerticalScrollable) return
+    const isVerticalScrollable = ulRef.current && ulRef.current.scrollHeight > ulRef.current.clientHeight
+    if (isVerticalScrollable) return
 
-      const diffX = e.clientX - pointerStartRef.current.x
-      const diffY = e.clientY - pointerStartRef.current.y
-      const isVerticalSwipe = Math.abs(diffY) > VERTICAL_SWIPE_THRESHOLD && Math.abs(diffY) > Math.abs(diffX)
-      if (!isVerticalSwipe) return
+    const diffX = e.clientX - pointerStartRef.current.x
+    const diffY = e.clientY - pointerStartRef.current.y
+    const isVerticalSwipe = Math.abs(diffY) > VERTICAL_SWIPE_THRESHOLD && Math.abs(diffY) > Math.abs(diffX)
+    if (!isVerticalSwipe) return
 
-      swipeDetectedRef.current = true
-      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
-      const deltaBrightness = (diffY / (rect.height / 2)) * 90
-      const newBrightness = initialBrightnessRef.current - deltaBrightness
-      if (newBrightness < 10 || newBrightness > 100) return
+    swipeDetectedRef.current = true
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+    const deltaBrightness = (diffY / (rect.height / 2)) * 90
+    const newBrightness = initialBrightnessRef.current - deltaBrightness
+    if (newBrightness < 10 || newBrightness > 100) return
 
-      setBrightness(newBrightness)
-    },
-    [setBrightness],
-  )
+    setBrightness(newBrightness)
+  }
 
   // 포인터 종료 시: 포인터 ID 제거 및 스와이프/페이지 전환 처리
-  const handlePointerUp = useCallback(
-    (e: React.PointerEvent) => {
-      activePointers.current.delete(e.pointerId)
+  function handlePointerUp(e: React.PointerEvent) {
+    if (!pointerStartRef.current) return
 
-      if (!pointerStartRef.current) return
-
-      const isHorizontalScrollable = ulRef.current && ulRef.current.scrollHeight < ulRef.current.clientHeight
-      if (isHorizontalScrollable) return
-
-      // 세로 스와이프가 감지되었으면 페이지 전환 없이 종료
-      const diffX = e.clientX - pointerStartRef.current.x
-      const diffY = e.clientY - pointerStartRef.current.y
-      const isVerticalSwipe = Math.abs(diffY) > VERTICAL_SWIPE_THRESHOLD && Math.abs(diffY) > Math.abs(diffX)
-      if (isVerticalSwipe) {
-        pointerStartRef.current = null
-        return
-      }
-
-      if (Math.abs(diffX) > HORIZONTAL_SWIPE_THRESHOLD) {
-        swipeDetectedRef.current = true
-        const touchOrientation = getTouchOrientation()
-        const isReversed = touchOrientation === 'horizontal-reverse' || touchOrientation === 'vertical-reverse'
-
-        if (diffX > 0) {
-          if (isReversed) {
-            nextPage()
-          } else {
-            prevPage()
-          }
-        } else {
-          if (isReversed) {
-            prevPage()
-          } else {
-            nextPage()
-          }
-        }
-      }
-
-      pointerStartRef.current = null
-    },
-    [getTouchOrientation, nextPage, prevPage],
-  )
-
-  // 포인터 캔슬 시 포인터 ID 제거
-  const handlePointerCancel = useCallback((e: React.PointerEvent) => {
     activePointers.current.delete(e.pointerId)
-  }, [])
 
-  // 클릭 이벤트: 스와이프 미발생 시 처리
-  const handleClick = useCallback(
-    (e: React.MouseEvent) => {
-      if (swipeDetectedRef.current) {
-        swipeDetectedRef.current = false
-        return
-      }
+    const isHorizontalScrollable = ulRef.current && ulRef.current.scrollHeight < ulRef.current.clientHeight
+    if (isHorizontalScrollable) return
 
-      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+    // 세로 스와이프가 감지되었으면 페이지 전환 없이 종료
+    const diffX = e.clientX - pointerStartRef.current.x
+    const diffY = e.clientY - pointerStartRef.current.y
+    const isVerticalSwipe = Math.abs(diffY) > VERTICAL_SWIPE_THRESHOLD && Math.abs(diffY) > Math.abs(diffX)
+
+    if (isVerticalSwipe) {
+      pointerStartRef.current = null
+      return
+    }
+
+    if (Math.abs(diffX) > HORIZONTAL_SWIPE_THRESHOLD) {
+      swipeDetectedRef.current = true
       const touchOrientation = getTouchOrientation()
+      const isReversed = touchOrientation === 'horizontal-reverse' || touchOrientation === 'vertical-reverse'
 
-      if (touchOrientation === 'horizontal') {
-        const clickX = e.clientX - rect.left
-        if (clickX < rect.width * EDGE_CLICK_THRESHOLD) {
-          prevPage()
-        } else if (clickX > rect.width * (1 - EDGE_CLICK_THRESHOLD)) {
+      if (diffX > 0) {
+        if (isReversed) {
           nextPage()
         } else {
-          onClick()
-        }
-      } else if (touchOrientation === 'horizontal-reverse') {
-        const clickX = e.clientX - rect.left
-        if (clickX < rect.width * EDGE_CLICK_THRESHOLD) {
-          nextPage()
-        } else if (clickX > rect.width * (1 - EDGE_CLICK_THRESHOLD)) {
-          prevPage()
-        } else {
-          onClick()
-        }
-      } else if (touchOrientation === 'vertical') {
-        const clickY = e.clientY - rect.top
-        if (clickY < rect.height * EDGE_CLICK_THRESHOLD) {
-          prevPage()
-        } else if (clickY > rect.height * (1 - EDGE_CLICK_THRESHOLD)) {
-          nextPage()
-        } else {
-          onClick()
-        }
-      } else if (touchOrientation === 'vertical-reverse') {
-        const clickY = e.clientY - rect.top
-        if (clickY < rect.height * EDGE_CLICK_THRESHOLD) {
-          nextPage()
-        } else if (clickY > rect.height * (1 - EDGE_CLICK_THRESHOLD)) {
-          prevPage()
-        } else {
-          onClick()
-        }
-      }
-    },
-    [getTouchOrientation, nextPage, onClick, prevPage],
-  )
-
-  // NOTE: 마우스 휠 또는 터치패드 스와이프 시 페이지를 전환함
-  useEffect(() => {
-    function handleWheel({ deltaX, deltaY, ctrlKey, metaKey }: WheelEvent) {
-      if (ctrlKey || metaKey || throttleRef.current) {
-        return
-      }
-
-      throttleRef.current = true
-      setTimeout(() => {
-        throttleRef.current = false
-      }, SCROLL_THROTTLE)
-
-      const ul = ulRef.current
-      if (!ul) return
-
-      const isVerticallyScrollable = ul.scrollHeight > ul.clientHeight
-      const isHorizontallyScrollable = ul.scrollWidth > ul.clientWidth
-      const atTop = ul.scrollTop <= 0
-      const atBottom = ul.scrollTop + ul.clientHeight >= ul.scrollHeight - 1
-      const atLeft = ul.scrollLeft <= 0
-      const atRight = ul.scrollLeft + ul.clientWidth >= ul.scrollWidth - 1
-
-      if (Math.abs(deltaY) >= Math.abs(deltaX)) {
-        if (isVerticallyScrollable && !((deltaY > 0 && atBottom) || (deltaY < 0 && atTop))) {
-          return
-        }
-
-        if (deltaY > SCROLL_THRESHOLD) {
-          nextPage()
-        } else if (deltaY < -SCROLL_THRESHOLD) {
           prevPage()
         }
       } else {
-        if (isHorizontallyScrollable && !((deltaX > 0 && atRight) || (deltaX < 0 && atLeft))) {
-          return
-        }
-
-        if (deltaX > SCROLL_THRESHOLD) {
-          nextPage()
-        } else if (deltaX < -SCROLL_THRESHOLD) {
+        if (isReversed) {
           prevPage()
+        } else {
+          nextPage()
         }
       }
     }
-    window.addEventListener('wheel', handleWheel, { passive: true })
-    return () => window.removeEventListener('wheel', handleWheel)
-  }, [nextPage, prevPage])
 
-  // NOTE: metakey + scroll 시 이미지 확대/축소함
-  useEffect(() => {
-    function handleWheel(event: WheelEvent) {
-      const { deltaY, metaKey, clientX, clientY } = event
+    pointerStartRef.current = null
+  }
 
-      if (!metaKey) {
-        return
-      }
+  // 포인터 캔슬 시 포인터 ID 제거
+  function handlePointerCancel(e: React.PointerEvent) {
+    activePointers.current.delete(e.pointerId)
+  }
 
-      const ul = ulRef.current
-      if (!ul) return
-
-      event.preventDefault()
-      const rect = ul.getBoundingClientRect()
-      const oldScrollLeft = ul.scrollLeft
-      const oldScrollTop = ul.scrollTop
-      const mouseX = clientX - rect.left
-      const mouseY = clientY - rect.top
-      const contentX = (mouseX + oldScrollLeft) / zoomLevel
-      const contentY = (mouseY + oldScrollTop) / zoomLevel
-      const originX = (mouseX / rect.width) * 100
-      const originY = (mouseY / rect.height) * 100
-      setZoomOrigin({ x: `${originX.toFixed(2)}%`, y: `${originY.toFixed(2)}%` })
-
-      const zoomDelta = -deltaY * ZOOM_SPEED
-      const newZoom = zoomLevel * (1 + zoomDelta)
-      const clampedZoom = Math.min(Math.max(1, newZoom), MAX_ZOOM)
-
-      if (clampedZoom === zoomLevel) {
-        return
-      }
-
-      const newScrollLeft = contentX * clampedZoom - mouseX
-      const newScrollTop = contentY * clampedZoom - mouseY
-      setZoomLevel(clampedZoom)
-
-      requestAnimationFrame(() => {
-        if (ul) {
-          ul.scrollLeft = Math.max(0, newScrollLeft)
-          ul.scrollTop = Math.max(0, newScrollTop)
-        }
-      })
+  // 클릭 이벤트: 스와이프 미발생 시 처리
+  function handleClick(e: React.MouseEvent) {
+    if (pinchZoomDetectedRef.current || getZoomLevel() > DEFAULT_ZOOM) {
+      onClick()
+      return
     }
 
-    window.addEventListener('wheel', handleWheel, { passive: false })
-    return () => window.removeEventListener('wheel', handleWheel)
-  }, [zoomLevel])
+    if (swipeDetectedRef.current) {
+      swipeDetectedRef.current = false
+      return
+    }
+
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+    const touchOrientation = getTouchOrientation()
+
+    if (touchOrientation === 'horizontal') {
+      const clickX = e.clientX - rect.left
+      if (clickX < rect.width * EDGE_CLICK_THRESHOLD) {
+        prevPage()
+      } else if (clickX > rect.width * (1 - EDGE_CLICK_THRESHOLD)) {
+        nextPage()
+      } else {
+        onClick()
+      }
+    } else if (touchOrientation === 'horizontal-reverse') {
+      const clickX = e.clientX - rect.left
+      if (clickX < rect.width * EDGE_CLICK_THRESHOLD) {
+        nextPage()
+      } else if (clickX > rect.width * (1 - EDGE_CLICK_THRESHOLD)) {
+        prevPage()
+      } else {
+        onClick()
+      }
+    } else if (touchOrientation === 'vertical') {
+      const clickY = e.clientY - rect.top
+      if (clickY < rect.height * EDGE_CLICK_THRESHOLD) {
+        prevPage()
+      } else if (clickY > rect.height * (1 - EDGE_CLICK_THRESHOLD)) {
+        nextPage()
+      } else {
+        onClick()
+      }
+    } else if (touchOrientation === 'vertical-reverse') {
+      const clickY = e.clientY - rect.top
+      if (clickY < rect.height * EDGE_CLICK_THRESHOLD) {
+        nextPage()
+      } else if (clickY > rect.height * (1 - EDGE_CLICK_THRESHOLD)) {
+        prevPage()
+      } else {
+        onClick()
+      }
+    }
+  }
 
   // NOTE: 이미지 스크롤 가능할 때 페이지 변경 시 스크롤 위치를 자연스럽게 설정함
   useEffect(() => {
@@ -376,25 +277,6 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
     }, 500)
   }, [currentIndex])
 
-  // NOTE: ctrl/cmd + 0 키로 줌 리셋
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === '0') {
-        setZoomLevel(DEFAULT_ZOOM)
-        setZoomOrigin({ x: '50%', y: '50%' })
-
-        const ul = ulRef.current
-        if (ul) {
-          ul.scrollLeft = 0
-          ul.scrollTop = 0
-        }
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [])
-
   // NOTE: page 파라미터가 있으면 초기 페이지를 변경함
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -408,21 +290,136 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
     setImageIndex(Math.max(0, Math.min(parsedPage - 1, images.length)))
   }, [images.length, setImageIndex])
 
+  // NOTE: 마우스 휠 또는 터치패드 스와이프 시 페이지를 전환함
+  useEffect(() => {
+    function handleWheel({ deltaX, deltaY, ctrlKey, metaKey }: WheelEvent) {
+      if (ctrlKey || metaKey || throttleRef.current) {
+        return
+      }
+
+      if (getZoomLevel() > DEFAULT_ZOOM || pinchZoomDetectedRef.current) {
+        return
+      }
+
+      throttleRef.current = true
+      setTimeout(() => {
+        throttleRef.current = false
+      }, SCROLL_THROTTLE)
+
+      const ul = ulRef.current
+      if (!ul) return
+
+      const isVerticallyScrollable = ul.scrollHeight > ul.clientHeight
+      const isHorizontallyScrollable = ul.scrollWidth > ul.clientWidth
+      const atTop = ul.scrollTop <= 0
+      const atBottom = ul.scrollTop + ul.clientHeight >= ul.scrollHeight - 1
+      const atLeft = ul.scrollLeft <= 0
+      const atRight = ul.scrollLeft + ul.clientWidth >= ul.scrollWidth - 1
+
+      if (Math.abs(deltaY) >= Math.abs(deltaX)) {
+        if (isVerticallyScrollable && !((deltaY > 0 && atBottom) || (deltaY < 0 && atTop))) {
+          return
+        }
+
+        if (deltaY > SCROLL_THRESHOLD) {
+          nextPage()
+        } else if (deltaY < -SCROLL_THRESHOLD) {
+          prevPage()
+        }
+      } else {
+        if (isHorizontallyScrollable && !((deltaX > 0 && atRight) || (deltaX < 0 && atLeft))) {
+          return
+        }
+
+        if (deltaX > SCROLL_THRESHOLD) {
+          nextPage()
+        } else if (deltaX < -SCROLL_THRESHOLD) {
+          prevPage()
+        }
+      }
+    }
+
+    window.addEventListener('wheel', handleWheel, { passive: true })
+    return () => window.removeEventListener('wheel', handleWheel)
+  }, [nextPage, prevPage, getZoomLevel])
+
+  // NOTE: metakey + scroll 시 이미지 확대/축소함
+  useEffect(() => {
+    function handleWheel(event: WheelEvent) {
+      const { deltaY, metaKey } = event
+      const ul = ulRef.current
+
+      if (!metaKey || !ul) {
+        return
+      }
+
+      event.preventDefault()
+      const currentZoom = getZoomLevel()
+      const zoomDelta = -deltaY * ZOOM_SPEED
+      setZoomLevel(currentZoom * (1 + zoomDelta))
+    }
+
+    window.addEventListener('wheel', handleWheel, { passive: false })
+    return () => window.removeEventListener('wheel', handleWheel)
+  }, [setZoomLevel, getZoomLevel])
+
+  // NOTE: ctrl/cmd + 0 키로 줌 리셋
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === '0') {
+        resetZoom()
+
+        const ul = ulRef.current
+        if (ul) {
+          ul.scrollLeft = 0
+          ul.scrollTop = 0
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [resetZoom])
+
+  // NOTE: 브라우저 기본 핀치 줌 감지
+  useEffect(() => {
+    const handleViewportChange = () => {
+      if (!window.visualViewport) {
+        return
+      }
+
+      const scale = window.visualViewport.scale
+
+      if (scale > 1) {
+        pinchZoomDetectedRef.current = true
+      } else {
+        pinchZoomDetectedRef.current = false
+      }
+    }
+
+    window.visualViewport?.addEventListener('resize', handleViewportChange)
+    window.visualViewport?.addEventListener('scroll', handleViewportChange)
+
+    return () => {
+      window.visualViewport?.removeEventListener('resize', handleViewportChange)
+      window.visualViewport?.removeEventListener('scroll', handleViewportChange)
+    }
+  }, [])
+
   return (
     <>
-      <TouchAreaOverlay showController={showController} />
+      {!pinchZoomDetectedRef.current && zoomLevel === DEFAULT_ZOOM && (
+        <TouchAreaOverlay showController={showController} />
+      )}
       <ul
-        className={`h-dvh touch-pinch-zoom select-none overscroll-none [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:pb-safe [&_img]:border [&_img]:border-background ${screenFitStyle[screenFit]}`}
+        className={`h-dvh touch-pinch-zoom origin-top-left select-none overscroll-none [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:pb-safe [&_img]:border [&_img]:border-background ${screenFitStyle[screenFit]}`}
         onClick={handleClick}
         onPointerCancel={handlePointerCancel}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         ref={ulRef}
-        style={{
-          transform: `scale(${zoomLevel.toFixed(2)})`,
-          transformOrigin: `${zoomOrigin.x} ${zoomOrigin.y}`,
-        }}
+        style={{ transform: `scale(${zoomLevel.toFixed(2)})` }}
       >
         {images.length === 0 ? (
           <li className="flex items-center justify-center h-full animate-fade-in">
@@ -477,7 +474,7 @@ function TouchAreaOverlay({ showController }: TouchAreaOverlayProps) {
     <div
       aria-hidden={!showController}
       aria-orientation={isHorizontal ? 'horizontal' : 'vertical'}
-      className="absolute inset-0 z-10 pointer-events-none flex transition text-foreground text-xs font-medium aria-hidden:opacity-0 aria-[orientation=vertical]:flex-col"
+      className="fixed inset-0 z-10 pointer-events-none flex transition text-foreground text-xs font-medium aria-hidden:opacity-0 aria-[orientation=vertical]:flex-col"
     >
       <div className="flex-1 flex items-center justify-center">
         <span className="px-4 py-2 rounded-full bg-background/80 border border-foreground/40">
