@@ -49,9 +49,17 @@ export const BACKUP_CODE_PATTERN = '^[A-Z0-9\\-]*$'
 
 export const BLACKLISTED_MANGA_IDS = [
   2533746, // eun
+  2643174, // Various Celebrità Fake [AI Generated]
+  2648793, // Various Celebrità Fake [AI Generated]
+  2653601, // Various Celebrità Fake [AI Generated]
   2697490, // EMMA WATSON [AI Generated]
+  2701687, // Various Celebrità Fake [AI Generated]
+  2704313, // Various Celebrità Fake [AI Generated]
+  2706268, // Various Celebrità Fake [AI Generated]
   2726866, // Various Celebrità Fake [AI Generated]
+  2730390, // Various Celebrità Fake [AI Generated]
   2806315, // Various Celebrità Fake [AI Generated]
+  2806316, // Various Celebrità Fake [AI Generated]
   2808132, // ffxiv slut fakes
   2840933, // Various Celebrità Fake [AI Generated]
   2905292, // 张元英之财阀的快乐裸着表演 [AI Generated]
@@ -91,13 +99,6 @@ export const BLACKLISTED_MANGA_IDS = [
   3638124, // 悍妇
   3638128, // 李情深
   3638133, // 悍妇
-
-  2806316, // Various Celebrità Fake [AI Generated]
-  2648793, // Various Celebrità Fake [AI Generated]
-  2643174, // Various Celebrità Fake [AI Generated]
-  2730390, // Various Celebrità Fake [AI Generated]
-  2701687, // Various Celebrità Fake [AI Generated]
-  2653601, // Various Celebrità Fake [AI Generated]
-  2704313, // Various Celebrità Fake [AI Generated]
-  2706268, // Various Celebrità Fake [AI Generated]
+  3640303, // 凡青一 [AI Generated]
+  3640308, // 凡青一 [AI Generated]
 ]
