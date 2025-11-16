@@ -60,7 +60,7 @@ export default function ViewControlPanel({ screenFit }: Readonly<Props>) {
   }, [zoomLevel])
 
   return (
-    <div className="fixed sm:absolute bottom-20 sm:bottom-full inset-x-4 sm:inset-x-auto sm:mb-2 sm:left-1/2 sm:-translate-x-1/2 z-30 sm:w-[calc(100vw-2rem)] max-w-sm">
+    <div className="fixed sm:absolute bottom-20 sm:bottom-full inset-x-4 sm:inset-x-auto sm:mb-2 left-1/2 -translate-x-1/2 z-30 w-[calc(100vw-2rem)] max-w-sm">
       <div className="bg-zinc-900/95 border border-zinc-700 rounded-xl shadow-xl p-3 sm:p-4">
         <div className="grid gap-3 sm:gap-4">
           {/* Brightness Control */}
