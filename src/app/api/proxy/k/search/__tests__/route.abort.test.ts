@@ -25,7 +25,7 @@ describe('GET /api/proxy/k/search - 클라이언트 연결 끊김 테스트', ()
 
     if (response.status === 499) {
       const text = await response.text()
-      expect(text).toContain('disconnected')
+      expect(text).toContain('Client Closed Request')
     }
   })
 })
