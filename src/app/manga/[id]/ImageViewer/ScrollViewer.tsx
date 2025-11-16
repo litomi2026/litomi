@@ -11,12 +11,14 @@ import MangaImage from '@/components/MangaImage'
 import { Manga } from '@/types/manga'
 
 import RatingInput from './RatingInput'
+import { useBrightnessStore } from './store/brightness'
 import { useImageIndexStore } from './store/imageIndex'
 import { useImageWidthStore } from './store/imageWidth'
 import { PageView } from './store/pageView'
 import { ReadingDirection } from './store/readingDirection'
 import { ScreenFit } from './store/screenFit'
 import { useVirtualScrollStore } from './store/virtualizer'
+import { useZoomStore } from './store/zoom'
 
 const screenFitStyle: Record<ScreenFit, string> = {
   width:
@@ -53,15 +55,22 @@ type RowProps = {
 export default function ScrollViewer({ manga, onClick, pageView, readingDirection, screenFit }: Props) {
   const { images = [] } = manga
   const listRef = useListRef(null)
+  const brightness = useBrightnessStore((state) => state.brightness)
   const imageWidth = useImageWidthStore((state) => state.imageWidth)
+  const zoomLevel = useZoomStore((state) => state.zoomLevel)
   const setListRef = useVirtualScrollStore((state) => state.setListRef)
   const scrollToRow = useVirtualScrollStore((state) => state.scrollToRow)
   const isDoublePage = pageView === 'double'
   const imagePageCount = isDoublePage ? Math.ceil(images.length / 2) : images.length
   const totalItemCount = imagePageCount + 1 // +1 for rating page
   const rowHeight = useDynamicRowHeight({ defaultRowHeight: window.innerHeight })
-  const dynamicStyle = { '--image-width': `${imageWidth}%` } as CSSProperties
   const [fallbackMap, setFallbackMap] = useState(new Map<number, string>())
+
+  const dynamicStyle = {
+    '--image-width': `${imageWidth}%`,
+    filter: `brightness(${brightness}%)`,
+    transform: `scale(${zoomLevel})`,
+  } as CSSProperties
 
   // NOTE: page 파라미터가 있으면 초기 페이지를 변경함
   useEffect(() => {

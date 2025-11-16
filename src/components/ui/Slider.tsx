@@ -1,4 +1,4 @@
-import { HTMLAttributes, memo, useEffect, useRef, useState } from 'react'
+import { HTMLAttributes, useEffect, useRef, useState } from 'react'
 
 type Props = HTMLAttributes<HTMLDivElement> & {
   className?: string
@@ -10,9 +10,7 @@ type Props = HTMLAttributes<HTMLDivElement> & {
   value?: number
 }
 
-export default memo(Slider)
-
-function Slider({
+export default function Slider({
   value: controlledValue,
   onChange,
   onValueCommit,
@@ -21,7 +19,7 @@ function Slider({
   step = 1,
   className = '',
   ...rest
-}: Readonly<Props>) {
+}: Props) {
   const [value, setValue] = useState<number>(controlledValue !== undefined ? controlledValue : min)
   const sliderRef = useRef<HTMLDivElement>(null)
 

@@ -86,7 +86,6 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
   const ulRef = useRef<HTMLUListElement>(null)
   const throttleRef = useRef(false)
   const previousIndexRef = useRef(currentIndex)
-  const pinchZoomDetectedRef = useRef(false)
 
   const { prevPage, nextPage } = useImageNavigation({
     maxIndex: images.length,
@@ -95,8 +94,6 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
 
   // 포인터 시작 시 좌표, 현재 밝기 기록 및 포인터 ID 등록
   function handlePointerDown(e: React.PointerEvent) {
-    if (pinchZoomDetectedRef.current || getZoomLevel() > DEFAULT_ZOOM) return
-
     const isEdgeSwipe = e.clientX < SCREEN_EDGE_THRESHOLD || e.clientX > window.innerWidth - SCREEN_EDGE_THRESHOLD
     if (isEdgeSwipe) return
 
@@ -110,8 +107,11 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
   function handlePointerMove(e: React.PointerEvent) {
     if (!pointerStartRef.current) return
 
-    const isPinchZooming = activePointers.current.size > 1
-    if (isPinchZooming) return
+    // 줌 상태일 때는 밝기 조절 방지
+    if (getZoomLevel() > DEFAULT_ZOOM) return
+
+    const isPinching = activePointers.current.size > 1
+    if (isPinching) return
 
     const isVerticalScrollable = ulRef.current && ulRef.current.scrollHeight > ulRef.current.clientHeight
     if (isVerticalScrollable) return
@@ -132,14 +132,19 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
 
   // 포인터 종료 시: 포인터 ID 제거 및 스와이프/페이지 전환 처리
   function handlePointerUp(e: React.PointerEvent) {
-    if (!pointerStartRef.current) return
-
     activePointers.current.delete(e.pointerId)
+
+    // 줌 상태일 때는 스와이프로 페이지 넘기기 방지
+    if (getZoomLevel() > DEFAULT_ZOOM) {
+      pointerStartRef.current = null
+      return
+    }
 
     const isHorizontalScrollable = ulRef.current && ulRef.current.scrollHeight < ulRef.current.clientHeight
     if (isHorizontalScrollable) return
 
     // 세로 스와이프가 감지되었으면 페이지 전환 없이 종료
+    if (!pointerStartRef.current) return
     const diffX = e.clientX - pointerStartRef.current.x
     const diffY = e.clientY - pointerStartRef.current.y
     const isVerticalSwipe = Math.abs(diffY) > VERTICAL_SWIPE_THRESHOLD && Math.abs(diffY) > Math.abs(diffX)
@@ -179,13 +184,14 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
 
   // 클릭 이벤트: 스와이프 미발생 시 처리
   function handleClick(e: React.MouseEvent) {
-    if (pinchZoomDetectedRef.current || getZoomLevel() > DEFAULT_ZOOM) {
-      onClick()
+    if (swipeDetectedRef.current) {
+      swipeDetectedRef.current = false
       return
     }
 
-    if (swipeDetectedRef.current) {
-      swipeDetectedRef.current = false
+    // 줌 상태일 때는 onClick만 실행
+    if (getZoomLevel() > DEFAULT_ZOOM) {
+      onClick()
       return
     }
 
@@ -297,7 +303,7 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
         return
       }
 
-      if (getZoomLevel() > DEFAULT_ZOOM || pinchZoomDetectedRef.current) {
+      if (getZoomLevel() > DEFAULT_ZOOM) {
         return
       }
 
@@ -381,36 +387,9 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [resetZoom])
 
-  // NOTE: 브라우저 기본 핀치 줌 감지
-  useEffect(() => {
-    const handleViewportChange = () => {
-      if (!window.visualViewport) {
-        return
-      }
-
-      const scale = window.visualViewport.scale
-
-      if (scale > 1) {
-        pinchZoomDetectedRef.current = true
-      } else {
-        pinchZoomDetectedRef.current = false
-      }
-    }
-
-    window.visualViewport?.addEventListener('resize', handleViewportChange)
-    window.visualViewport?.addEventListener('scroll', handleViewportChange)
-
-    return () => {
-      window.visualViewport?.removeEventListener('resize', handleViewportChange)
-      window.visualViewport?.removeEventListener('scroll', handleViewportChange)
-    }
-  }, [])
-
   return (
     <>
-      {!pinchZoomDetectedRef.current && zoomLevel === DEFAULT_ZOOM && (
-        <TouchAreaOverlay showController={showController} />
-      )}
+      {zoomLevel === DEFAULT_ZOOM && <TouchAreaOverlay showController={showController} />}
       <ul
         className={`h-dvh touch-pinch-zoom origin-top-left select-none overscroll-none [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:pb-safe [&_img]:border [&_img]:border-background ${screenFitStyle[screenFit]}`}
         onClick={handleClick}
