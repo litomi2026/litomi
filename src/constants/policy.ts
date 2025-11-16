@@ -48,12 +48,56 @@ export const PASSWORD_PATTERN = '^(?=.*[A-Za-z])(?=.*[0-9]).+$'
 export const BACKUP_CODE_PATTERN = '^[A-Z0-9\\-]*$'
 
 export const BLACKLISTED_MANGA_IDS = [
+  2533746, // eun
+  2697490, // EMMA WATSON [AI Generated]
+  2726866, // Various Celebrità Fake [AI Generated]
+  2806315, // Various Celebrità Fake [AI Generated]
+  2808132, // ffxiv slut fakes
+  2840933, // Various Celebrità Fake [AI Generated]
   2905292, // 张元英之财阀的快乐裸着表演 [AI Generated]
   2910760, // 张元英之财阀的快乐裸着表演 [AI Generated]
+  2961989, // 韩书静[AI Generated]
+  2972503, // Ai generated deepfakes
+  3046732, // Various Celebrità Fake [AI Generated]
+  3049568, // Various Celebrità Fake [AI Generated]
+  3085567, // Various Celebrità Fake [AI Generated]
+  3126327, // [AI Generated]
   3210070, // 美女迪丽热巴和网红们的私密照[AI Generated]
+  3238607, // Various Celebrità Fake [AI Generated]
+  3244525, // Various Celebrità Fake [AI Generated]
+  3285228, // Various Celebrità Fake [AI Generated]
   3309543, // won
   3316020, // won 2
+  3321467, // Various Celebrità Fake [AI Generated]
+  3336264, // Various Celebrità Fake [AI Generated]
   3343193, // 美女网红明星原图去衣合集[AI Generated]
   3358108, // Various Celebrità Fake [AI Generated]
+  3443970, // Flexible Summer Glau [Faceswap Fake] [AI Generated]
+  3461364, // 澄澄汁
+  3461373, // 澄澄汁
+  3465500, // 澄澄汁
+  3465503, // 澄澄汁
+  3470143, // 自用
+  3470147, // 秀儿
+  3470294, // 秀儿
+  3550045, // AI retouching laboratory 6 -remove clothing [AI Generated]
   3581879, // AI Jennifer Love Hewett
+  3608418, // 自用
+  3608422, // 自用
+  3614486, // 自用
+  3614490, // 自用
+  3622379, // 全网露出收集大全
+  3638123, // 李情深
+  3638124, // 悍妇
+  3638128, // 李情深
+  3638133, // 悍妇
+
+  2806316, // Various Celebrità Fake [AI Generated]
+  2648793, // Various Celebrità Fake [AI Generated]
+  2643174, // Various Celebrità Fake [AI Generated]
+  2730390, // Various Celebrità Fake [AI Generated]
+  2701687, // Various Celebrità Fake [AI Generated]
+  2653601, // Various Celebrità Fake [AI Generated]
+  2704313, // Various Celebrità Fake [AI Generated]
+  2706268, // Various Celebrità Fake [AI Generated]
 ]
