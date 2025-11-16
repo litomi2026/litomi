@@ -261,10 +261,10 @@ class KHentaiClient {
   }
 
   async fetchRandomKoreanMangas({ locale, revalidate }: { locale: Locale; revalidate?: number }) {
-    return this.searchMangas({ search: 'language:korean', sort: 'random' }, locale, revalidate)
+    return this.searchMangas({ search: 'language:korean', sort: 'random' }, locale, { next: { revalidate } })
   }
 
-  async searchMangas(params: KHentaiMangaSearchOptions = {}, locale: Locale, revalidate?: number) {
+  async searchMangas(params: KHentaiMangaSearchOptions = {}, locale: Locale, options?: RequestInit) {
     const kebabCaseParams = Object.entries(params)
       .filter(([key, value]) => key !== 'offset' && value !== undefined)
       .map(([key, value]) => [convertCamelCaseToKebabCase(key), value])
@@ -272,9 +272,7 @@ class KHentaiClient {
     const searchParams = new URLSearchParams(kebabCaseParams)
     searchParams.sort()
 
-    const kHentaiMangas = await this.client.fetch<KHentaiManga[]>(`/ajax/search?${searchParams}`, {
-      next: { revalidate },
-    })
+    const kHentaiMangas = await this.client.fetch<KHentaiManga[]>(`/ajax/search?${searchParams}`, options)
 
     const mangas = kHentaiMangas
       .filter((manga) => manga.archived === 1)

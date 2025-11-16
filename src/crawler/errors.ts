@@ -106,7 +106,7 @@ export function isRetryableError(error: unknown): boolean {
   }
 
   if (error instanceof Error) {
-    if (error.name === 'TimeoutError') {
+    if (error.name === 'TimeoutError' || error.name === 'AbortError') {
       return false
     }
 

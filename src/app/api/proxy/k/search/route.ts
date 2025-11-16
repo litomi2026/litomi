@@ -19,6 +19,7 @@ export type GETProxyKSearchResponse = {
 }
 
 export async function GET(request: Request) {
+  const requestSignal = request.signal
   const url = new URL(request.url)
   const searchParams = Object.fromEntries(url.searchParams)
   const validation = GETProxyKSearchSchema.safeParse(searchParams)
@@ -76,8 +77,13 @@ export async function GET(request: Request) {
   }
 
   try {
+    if (requestSignal?.aborted) {
+      return new Response('Client Closed Request', { status: 499 })
+    }
+
     const revalidate = params.nextId ? sec('30 days') : 0
-    const searchedMangas = await kHentaiClient.searchMangas(params, locale ?? Locale.KO, revalidate)
+    const options = { next: { revalidate }, signal: requestSignal }
+    const searchedMangas = await kHentaiClient.searchMangas(params, locale ?? Locale.KO, options)
     const hasManga = searchedMangas.length > 0
     let nextCursor = null
 
@@ -115,7 +121,7 @@ export async function GET(request: Request) {
 
     if (query && !hasOtherFilters && hasManga) {
       if (chance(0.5)) {
-        postSearchKeyword(query)
+        postSearchKeyword(query, requestSignal)
       }
     }
 
@@ -200,16 +206,18 @@ function getKHentaiLanguageFilter(locale: Locale) {
   }[locale]
 }
 
-function postSearchKeyword(keyword: string) {
-  try {
-    const body: POSTV1SearchTrendingBody = { keywords: [keyword] }
+function postSearchKeyword(keyword: string, signal?: AbortSignal) {
+  const body: POSTV1SearchTrendingBody = { keywords: [keyword] }
 
-    fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/search/trending`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    })
-  } catch (error) {
-    console.error('trackSearchKeyword:', error)
-  }
+  fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/search/trending`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+    signal,
+  }).catch((error) => {
+    if (error instanceof Error && error.name === 'AbortError') {
+      return
+    }
+    console.error('trackSearchKeyword error:', error?.message || error)
+  })
 }

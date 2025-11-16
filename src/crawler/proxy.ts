@@ -41,7 +41,7 @@ export class ProxyClient {
 
       if (this.config.requestTimeout) {
         const timeoutSignal = AbortSignal.timeout(this.config.requestTimeout)
-        signal = options.signal ? AbortSignal.any([options.signal, timeoutSignal]) : timeoutSignal
+        signal = options.signal ? abortSignalAny([options.signal, timeoutSignal]) : timeoutSignal
       } else {
         signal = options.signal
       }
@@ -79,4 +79,23 @@ export class ProxyClient {
 
     return this.circuitBreaker ? this.circuitBreaker.execute(wrappedWithRetry) : wrappedWithRetry()
   }
+}
+
+function abortSignalAny(signals: AbortSignal[]): AbortSignal {
+  if ('any' in AbortSignal && typeof AbortSignal.any === 'function') {
+    return AbortSignal.any(signals)
+  }
+
+  const controller = new AbortController()
+
+  for (const signal of signals) {
+    if (signal.aborted) {
+      controller.abort(signal.reason)
+      return controller.signal
+    }
+
+    signal.addEventListener('abort', () => controller.abort(signal.reason), { once: true })
+  }
+
+  return controller.signal
 }

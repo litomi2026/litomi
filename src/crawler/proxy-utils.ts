@@ -117,6 +117,10 @@ export async function createHealthCheckHandler(
 }
 
 export function handleRouteError(error: unknown, request: Request) {
+  if (error instanceof Error && error.message === 'Network connection lost.') {
+    return new Response('Client Closed Request', { status: 499 })
+  }
+
   console.error(error)
   const normalizedError = normalizeError(error)
 
