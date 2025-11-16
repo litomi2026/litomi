@@ -25,6 +25,7 @@ export enum SearchParamKey {
 export enum SessionStorageKey {
   // zustand
   CONTROLLER_BRIGHTNESS = 'controller/brightness',
+  CONTROLLER_ZOOM = 'controller/zoom',
 }
 
 export const SessionStorageKeyMap = {

@@ -3,7 +3,7 @@
 import { ArrowLeft, ArrowRight, MessageCircle } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import BackButton from '@/components/BackButton'
 import { type Manga } from '@/types/manga'
@@ -16,7 +16,6 @@ import ResumeReadingToast from './ResumeReadingToast'
 import ShareButton from './ShareButton'
 import SlideshowButton from './SlideshowButton'
 import { useImageIndexStore } from './store/imageIndex'
-import { useImageWidthStore } from './store/imageWidth'
 import { useNavigationModeStore } from './store/navigationMode'
 import { usePageViewStore } from './store/pageView'
 import { useReadingDirectionStore } from './store/readingDirection'
@@ -25,6 +24,7 @@ import { orientations, useTouchOrientationStore } from './store/touchOrientation
 import { useVirtualScrollStore } from './store/virtualizer'
 import ThumbnailStrip from './ThumbnailStrip'
 import TouchViewer from './TouchViewer'
+import ViewControlPanel from './ViewControlPanel'
 
 const ScrollViewer = dynamic(() => import('./ScrollViewer'))
 
@@ -35,11 +35,12 @@ type Props = {
 export default function ImageViewer({ manga }: Readonly<Props>) {
   const [showController, setShowController] = useState(false)
   const [showThumbnails, setShowThumbnails] = useState(false)
+  const [showViewControl, setShowViewControl] = useState(false)
+  const viewControlRef = useRef<HTMLDivElement>(null)
   const { navMode, setNavMode } = useNavigationModeStore()
   const { screenFit, setScreenFit } = useScreenFitStore()
   const { touchOrientation, setTouchOrientation } = useTouchOrientationStore()
   const { pageView, setPageView } = usePageViewStore()
-  const { imageWidth, cycleImageWidth } = useImageWidthStore()
   const { readingDirection, toggleReadingDirection } = useReadingDirectionStore()
   const correctImageIndex = useImageIndexStore((state) => state.correctImageIndex)
   const setImageIndex = useImageIndexStore((state) => state.setImageIndex)
@@ -83,6 +84,22 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
       setImageIndex(0)
     }
   }, [setImageIndex])
+
+  // NOTE: 컨트롤 팝업 외부 클릭 시 닫기
+  useEffect(() => {
+    if (!showViewControl) {
+      return
+    }
+
+    function handleClickOutside(e: MouseEvent) {
+      if (viewControlRef.current && !viewControlRef.current.contains(e.target as Node)) {
+        setShowViewControl(false)
+      }
+    }
+
+    document.addEventListener('click', handleClickOutside)
+    return () => document.removeEventListener('click', handleClickOutside)
+  }, [showViewControl])
 
   return (
     <div className="relative">
@@ -183,10 +200,16 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
                 </button>
               </>
             )}
-            {!isTouchMode && (screenFit === 'width' || screenFit === 'all') && (
-              <button className={bottomButtonClassName} onClick={cycleImageWidth}>
-                너비 {imageWidth}%
-              </button>
+            {!isTouchMode && (
+              <div className="relative" ref={viewControlRef}>
+                <button
+                  className={`${bottomButtonClassName} flex items-center justify-center gap-1`}
+                  onClick={() => setShowViewControl((prev) => !prev)}
+                >
+                  보기 조절
+                </button>
+                {showViewControl && <ViewControlPanel screenFit={screenFit} />}
+              </div>
             )}
             <SlideshowButton
               className={bottomButtonClassName}
