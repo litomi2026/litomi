@@ -42,7 +42,7 @@
   },
   "no_penetration": { "en": "no penetration", "ko": "삽입 없음" },
   "non-h_imageset": { "en": "non-h imageset", "ko": "건전 이미지셋", "ja": "非Hイメージセット", "zh-CN": "非H图集" },
-  "non-nude": { "en": "non-nude", "ko": "누드 아님", "ja": "ヌーディティなし", "zh-CN": "无裸体" },
+  "non-nude": { "en": "non-nude", "ko": "나체 아님", "ja": "ヌーディティなし", "zh-CN": "无裸体" },
   "novel": { "en": "novel", "ko": "소설", "ja": "小説", "zh-CN": "小说" },
   "nudity_only": { "en": "nudity only", "ko": "나체만 나옴" },
   "object_insertion_only": {

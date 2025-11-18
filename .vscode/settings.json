@@ -11,6 +11,7 @@
     "**/out": true
   },
   "turboConsoleLog.logMessagePrefix": "👀",
+  "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
   "[svg]": { "editor.defaultFormatter": "jock.svg" },
   "[terraform]": { "editor.defaultFormatter": "hashicorp.terraform" }
 }

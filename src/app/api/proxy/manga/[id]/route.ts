@@ -32,7 +32,6 @@ const METADATA_FIELDS = [
 ] as const
 
 export async function GET(request: Request, { params }: RouteProps<Params>) {
-  const requestSignal = request.signal
   const { searchParams } = new URL(request.url)
 
   const validation = GETProxyMangaIdSchema.safeParse({
@@ -64,7 +63,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
   }
 
   try {
-    if (requestSignal?.aborted) {
+    if (request.signal?.aborted) {
       return new Response('Client Closed Request', { status: 499 })
     }
 

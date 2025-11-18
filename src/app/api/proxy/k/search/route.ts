@@ -1,3 +1,5 @@
+import { waitUntil } from '@vercel/functions'
+
 import { GETProxyKSearchSchema } from '@/app/api/proxy/k/search/schema'
 import { POSTV1SearchTrendingBody } from '@/backend/api/v1/search/trending/POST'
 import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
@@ -120,8 +122,8 @@ export async function GET(request: Request) {
       skip
 
     if (query && !hasOtherFilters && hasManga) {
-      if (chance(0.5)) {
-        postSearchKeyword(query, requestSignal)
+      if (chance(0.2)) {
+        waitUntil(postSearchKeyword(query, requestSignal))
       }
     }
 
@@ -206,18 +208,20 @@ function getKHentaiLanguageFilter(locale: Locale) {
   }[locale]
 }
 
-function postSearchKeyword(keyword: string, signal?: AbortSignal) {
+async function postSearchKeyword(keyword: string, signal?: AbortSignal) {
   const body: POSTV1SearchTrendingBody = { keywords: [keyword] }
 
-  fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/search/trending`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-    signal,
-  }).catch((error) => {
+  try {
+    return await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/search/trending`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal,
+    })
+  } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') {
       return
     }
-    console.error('trackSearchKeyword error:', error?.message || error)
-  })
+    console.error('trackSearchKeyword error:', error instanceof Error ? error.message : String(error))
+  }
 }
