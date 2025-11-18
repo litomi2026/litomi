@@ -31,6 +31,10 @@ export async function GET(request: Request) {
   const validIds = uniqueIds.filter((id) => !BLACKLISTED_MANGA_IDS.includes(id))
 
   try {
+    if (request.signal?.aborted) {
+      return new Response('Client Closed Request', { status: 499 })
+    }
+
     const fetchedMangas = await fetchMangasFromMultiSources({ ids: validIds, locale })
     const mangaMap: GETProxyMangaResponse = { ...fetchedMangas }
     const mangas = Object.values(fetchedMangas)
