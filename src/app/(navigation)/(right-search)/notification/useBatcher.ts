@@ -38,19 +38,18 @@ export default function useBatcher<T>({ batchDelay, onBatchStart }: Options<T>) 
     [batchDelay, flushBatch],
   )
 
-  const cleanup = useCallback(() => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current)
-      timerRef.current = null
-    }
-    flushBatch()
-  }, [flushBatch])
-
   useEffect(() => {
+    const pendingSet = pendingRef.current
+
     return () => {
-      cleanup()
+      if (timerRef.current) {
+        clearTimeout(timerRef.current)
+        timerRef.current = null
+      }
+
+      pendingSet.clear()
     }
-  }, [cleanup])
+  }, [])
 
   return { addToQueue }
 }
