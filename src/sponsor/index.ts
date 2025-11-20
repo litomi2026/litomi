@@ -16,6 +16,11 @@ export type KeywordPromotion = {
   probability?: number
 }
 
+type KeywordData = {
+  promotions: Record<string, KeywordPromotion>
+  keywords: Record<string, string>
+}
+
 type Sponsor = {
   label: string
   value: string
@@ -23,7 +28,7 @@ type Sponsor = {
 
 const ARTIST_SPONSORS: Record<string, Sponsor[]> = artistSponsorsJSON
 const CHARACTER_SPONSORS: Record<string, Sponsor[]> = characterSponsorsJSON
-const KEYWORDS: Record<string, KeywordPromotion> = keywordsJSON
+const KEYWORD_DATA: KeywordData = keywordsJSON
 
 export function getArtistSponsors(artistValue: string): Sponsor[] | undefined {
   return ARTIST_SPONSORS[artistValue]
@@ -40,9 +45,11 @@ export function getKeywordPromotion(query: string | undefined): KeywordPromotion
 
   const lowerQuery = query.toLowerCase()
 
-  for (const [keyword, promotion] of Object.entries(KEYWORDS)) {
+  for (const [keyword, promotionId] of Object.entries(KEYWORD_DATA.keywords)) {
     if (lowerQuery.includes(keyword)) {
-      if (!promotion.probability || chance(promotion.probability)) {
+      const promotion = KEYWORD_DATA.promotions[promotionId]
+
+      if (promotion && (!promotion.probability || chance(promotion.probability))) {
         return promotion
       }
     }

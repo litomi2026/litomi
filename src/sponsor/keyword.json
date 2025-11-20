@@ -1,11 +1,37 @@
 {
-  "bdsm": {
-    "id": "bdsm",
-    "url": "https://bdsm.vercel.app/",
-    "title": "BDSM 지식 테스트",
-    "description": "안전하고 건전한 BDSM 플레이를 위한 지식 학습 공간",
-    "badge": "추천",
-    "position": 5,
-    "probability": 1
+  "_comment": "promotions: 프로모션 데이터 정의, keywords: 키워드→프로모션ID 매핑",
+  "promotions": {
+    "bdsm-test": {
+      "id": "bdsm-test",
+      "url": "https://bdsm.vercel.app/",
+      "title": "BDSM 지식 테스트",
+      "description": "안전하고 건전한 BDSM 플레이를 위한 지식 학습 공간",
+      "badge": "추천",
+      "position": 5,
+      "probability": 1
+    }
+  },
+  "keywords": {
+    "bdsm": "bdsm-test",
+    "bondage": "bdsm-test",
+    "slave": "bdsm-test",
+    "collar": "bdsm-test",
+    "shibari": "bdsm-test",
+    "femdom": "bdsm-test",
+    "smalldom": "bdsm-test",
+    "spanking": "bdsm-test",
+    "whip": "bdsm-test",
+    "gag": "bdsm-test",
+    "leash": "bdsm-test",
+    "chastity_belt": "bdsm-test",
+    "harness": "bdsm-test",
+    "pillory": "bdsm-test",
+    "blindfold": "bdsm-test",
+    "nose_hook": "bdsm-test",
+    "cbt": "bdsm-test",
+    "orgasm_denial": "bdsm-test",
+    "cock_ring": "bdsm-test",
+    "petplay": "bdsm-test",
+    "forniphilia": "bdsm-test"
   }
 }
