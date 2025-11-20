@@ -79,6 +79,11 @@ function translateSearchQuery(category: string, value: string, locale: Locale): 
 }
 
 function translateTrendingKeyword(keyword: string, locale: Locale): string {
+  if (typeof keyword !== 'string') {
+    console.error('translateTrendingKeyword: keyword is not a string', locale, JSON.stringify(keyword))
+    return ''
+  }
+
   if (!keyword.includes(':')) {
     return keyword
   }
