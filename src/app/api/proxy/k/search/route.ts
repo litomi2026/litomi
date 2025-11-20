@@ -89,23 +89,6 @@ export async function GET(request: Request) {
     const hasManga = searchedMangas.length > 0
     let nextCursor = null
 
-    if (hasManga) {
-      const lastManga = searchedMangas[searchedMangas.length - 1]
-      if (sort === 'popular') {
-        nextCursor = `${lastManga.viewCount}-${lastManga.id}`
-      } else {
-        nextCursor = lastManga.id.toString()
-      }
-    }
-
-    const filteredMangas = searchedMangas.filter((manga) => !BLACKLISTED_MANGA_IDS.includes(manga.id))
-    const mangas = filterMangasByMinusPrefix(filteredMangas, query)
-
-    const response: GETProxyKSearchResponse = {
-      mangas,
-      nextCursor,
-    }
-
     const hasOtherFilters =
       sort ||
       minView ||
@@ -125,6 +108,23 @@ export async function GET(request: Request) {
       if (chance(0.2)) {
         waitUntil(postSearchKeyword(query, requestSignal))
       }
+    }
+
+    if (hasManga) {
+      const lastManga = searchedMangas[searchedMangas.length - 1]
+      if (sort === 'popular') {
+        nextCursor = `${lastManga.viewCount}-${lastManga.id}`
+      } else {
+        nextCursor = lastManga.id.toString()
+      }
+    }
+
+    const filteredMangas = searchedMangas.filter((manga) => !BLACKLISTED_MANGA_IDS.includes(manga.id))
+    const mangas = filterMangasByMinusPrefix(filteredMangas, query)
+
+    const response: GETProxyKSearchResponse = {
+      mangas,
+      nextCursor,
     }
 
     return Response.json(response, { headers: getCacheControlHeader(params) })
