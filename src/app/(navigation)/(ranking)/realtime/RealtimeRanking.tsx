@@ -103,7 +103,9 @@ export default function RealtimeRanking() {
                       </div>
                     </td>
                     <td className="p-4 py-3 text-right">
-                      <span className="text-sm font-semibold text-brand">{item.activeUsers.toLocaleString()}</span>
+                      <span className="text-sm font-semibold text-brand tabular-nums">
+                        {item.activeUsers.toLocaleString()}
+                      </span>
                     </td>
                   </tr>
                 ))}
