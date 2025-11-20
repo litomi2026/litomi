@@ -6,6 +6,7 @@ import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { BLACKLISTED_MANGA_IDS, MAX_KHENTAI_SEARCH_QUERY_LENGTH } from '@/constants/policy'
 import { encodeCategories, kHentaiClient, KHentaiMangaSearchOptions } from '@/crawler/k-hentai'
 import { createCacheControlHeaders, handleRouteError } from '@/crawler/proxy-utils'
+import { getKeywordPromotion, type KeywordPromotion } from '@/sponsor'
 import { Locale } from '@/translation/common'
 import { Manga } from '@/types/manga'
 import { sec } from '@/utils/date'
@@ -18,6 +19,7 @@ export const runtime = 'edge'
 export type GETProxyKSearchResponse = {
   mangas: Manga[]
   nextCursor: string | null
+  promotion?: KeywordPromotion
 }
 
 export async function GET(request: Request) {
@@ -121,10 +123,12 @@ export async function GET(request: Request) {
 
     const filteredMangas = searchedMangas.filter((manga) => !BLACKLISTED_MANGA_IDS.includes(manga.id))
     const mangas = filterMangasByMinusPrefix(filteredMangas, query)
+    const promotion = !nextId ? getKeywordPromotion(query) : null
 
     const response: GETProxyKSearchResponse = {
       mangas,
       nextCursor,
+      ...(promotion && { promotion }),
     }
 
     return Response.json(response, { headers: getCacheControlHeader(params) })

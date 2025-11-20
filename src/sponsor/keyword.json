@@ -1,0 +1,11 @@
+{
+  "bdsm": {
+    "id": "bdsm",
+    "url": "https://bdsm.vercel.app/",
+    "title": "BDSM 지식 테스트",
+    "description": "안전하고 건전한 BDSM 플레이를 위한 지식 학습 공간",
+    "badge": "추천",
+    "position": 5,
+    "probability": 1
+  }
+}

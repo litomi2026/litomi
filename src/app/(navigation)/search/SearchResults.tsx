@@ -9,6 +9,7 @@ import { Sort } from '@/app/api/proxy/k/search/types'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import MangaCardDonation from '@/components/card/MangaCardDonation'
 import MangaCardImage from '@/components/card/MangaCardImage'
+import MangaCardPromotion from '@/components/card/MangaCardPromotion'
 import { DONATION_CARD_INTERVAL } from '@/constants/policy'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import { View } from '@/utils/param'
@@ -29,6 +30,7 @@ export default function SearchResult() {
     useSearchQuery()
 
   const mangas = useMemo(() => data?.pages.flatMap((page) => page.mangas) ?? [], [data])
+  const promotion = useMemo(() => data?.pages[0]?.promotion, [data])
 
   const loadMoreRef = useInfiniteScrollObserver({
     hasNextPage,
@@ -66,6 +68,7 @@ export default function SearchResult() {
             </li>
           ) : (
             <Fragment key={manga.id}>
+              {promotion && i === (promotion.position ?? 0) && <MangaCardPromotion promotion={promotion} />}
               <MangaCard index={i} manga={manga} showSearchFromNextButton />
               {i % DONATION_CARD_INTERVAL === DONATION_CARD_INTERVAL - 1 && <MangaCardDonation />}
             </Fragment>
