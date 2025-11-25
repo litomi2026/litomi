@@ -1,9 +1,9 @@
 import { ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
 import Link from 'next/link'
-import { memo } from 'react'
 
 import LinkPending from './LinkPending'
 import NavigationJump from './NavigationJump'
+import ScrollToTopEffect from './ScrollToTopEffect'
 
 const VISIBLE_PAGES = 9
 
@@ -15,9 +15,13 @@ type Props = {
   hrefSuffix?: string
 }
 
-export default memo(PageNavigation)
-
-function PageNavigation({ className = '', currentPage, totalPages, hrefPrefix = '', hrefSuffix = '' }: Props) {
+export default function PageNavigation({
+  className = '',
+  currentPage,
+  totalPages,
+  hrefPrefix = '',
+  hrefSuffix = '',
+}: Props) {
   let startPage = Math.max(1, currentPage - Math.floor(VISIBLE_PAGES / 2))
   let endPage = startPage + VISIBLE_PAGES - 1
 
@@ -35,6 +39,7 @@ function PageNavigation({ className = '', currentPage, totalPages, hrefPrefix = 
     <nav
       className={`flex flex-wrap justify-center items-center gap-2 w-fit mx-auto font-bold tabular-nums text-lg md:text-xl ${className}`}
     >
+      <ScrollToTopEffect />
       {currentPage > VISIBLE_PAGES / 2 && (
         <Link
           aria-label="첫 페이지"
