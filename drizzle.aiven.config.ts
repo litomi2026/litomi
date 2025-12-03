@@ -11,4 +11,5 @@ export default defineConfig({
     url: process.env.AIVEN_POSTGRES_URL ?? '',
     ssl: process.env.AIVEN_CERTIFICATE ? { ca: process.env.AIVEN_CERTIFICATE, rejectUnauthorized: true } : 'prefer',
   },
+  strict: true,
 })
