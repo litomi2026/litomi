@@ -15,4 +15,5 @@ export default defineConfig({
       ? { ca: process.env.SUPABASE_CERTIFICATE, rejectUnauthorized: true }
       : 'prefer',
   },
+  strict: true,
 })
