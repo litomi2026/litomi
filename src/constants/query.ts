@@ -18,6 +18,9 @@ export const QueryKeys = {
   libraryItems: (libraryId: number) => ['me', 'library', libraryId],
   userRating: (mangaId: number) => ['me', 'rating', mangaId],
   readingHistory: (mangaId: number) => ['me', 'readingHistory', mangaId],
+  points: ['me', 'points'],
+  pointsExpansion: ['me', 'points', 'expansion'],
+  pointsTransactions: ['me', 'points', 'transactions'],
 
   manga: (id: number, scope: MangaResponseScope | null) => ['manga', id, scope],
   mangaCard: (id: number) => ['mangaCard', id],
