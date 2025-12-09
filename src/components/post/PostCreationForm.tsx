@@ -73,13 +73,13 @@ export default function PostCreationForm({
 
     if (content.length < 2) {
       e.preventDefault()
-      toast.warning('내용을 2자 이상 입력해주세요')
+      toast.warning('내용을 2자 이상 입력해 주세요')
       return
     }
 
     if (content.length > MAX_POST_CONTENT_LENGTH) {
       e.preventDefault()
-      toast.warning(`내용은 ${MAX_POST_CONTENT_LENGTH}자 이하로 입력해주세요`)
+      toast.warning(`내용은 ${MAX_POST_CONTENT_LENGTH}자 이하로 입력해 주세요`)
       return
     }
   }

@@ -1,6 +1,6 @@
 import { MessageCircle } from 'lucide-react'
 import Link from 'next/link'
-import { CSSProperties, useEffect, useState } from 'react'
+import { CSSProperties, useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { List, RowComponentProps, useDynamicRowHeight, useListRef } from 'react-window'
 
@@ -48,8 +48,6 @@ type RowProps = {
   pageView: PageView
   readingDirection: ReadingDirection
   screenFit: ScreenFit
-  fallbackMap: Map<number, string>
-  setFallbackMap: React.Dispatch<React.SetStateAction<Map<number, string>>>
 }
 
 export default function ScrollViewer({ manga, onClick, pageView, readingDirection, screenFit }: Props) {
@@ -64,7 +62,6 @@ export default function ScrollViewer({ manga, onClick, pageView, readingDirectio
   const imagePageCount = isDoublePage ? Math.ceil(images.length / 2) : images.length
   const totalItemCount = imagePageCount + 1 // +1 for rating page
   const rowHeight = useDynamicRowHeight({ defaultRowHeight: window.innerHeight })
-  const [fallbackMap, setFallbackMap] = useState(new Map<number, string>())
 
   const dynamicStyle = {
     '--image-width': `${imageWidth}%`,
@@ -108,7 +105,7 @@ export default function ScrollViewer({ manga, onClick, pageView, readingDirectio
         rowComponent={ScrollViewerRow}
         rowCount={totalItemCount}
         rowHeight={rowHeight}
-        rowProps={{ manga, pageView, readingDirection, screenFit, fallbackMap, setFallbackMap }}
+        rowProps={{ manga, pageView, readingDirection, screenFit }}
       />
     </div>
   )
@@ -151,15 +148,7 @@ function ScrollViewerRow({ index, style, manga, pageView, ...rest }: RowComponen
   return <ScrollViewerRowItem index={index} manga={manga} pageView={pageView} style={style} {...rest} />
 }
 
-function ScrollViewerRowItem({
-  index,
-  manga,
-  pageView,
-  readingDirection,
-  style,
-  fallbackMap,
-  setFallbackMap,
-}: RowComponentProps<RowProps>) {
+function ScrollViewerRowItem({ index, manga, pageView, readingDirection, style }: RowComponentProps<RowProps>) {
   const navigateToImageIndex = useImageIndexStore((state) => state.navigateToImageIndex)
   const { images = [] } = manga
   const isDoublePage = pageView === 'double'
@@ -182,19 +171,11 @@ function ScrollViewerRowItem({
 
   const first = (
     <picture>
-      <source
-        media={`(min-width: ${firstImage?.thumbnail?.width ?? 0}px)`}
-        srcSet={fallbackMap.get(firstImageIndex) ?? firstImage?.original?.url}
-      />
+      <source media={`(min-width: ${firstImage?.thumbnail?.width ?? 0}px)`} srcSet={firstImage?.original?.url} />
       <MangaImage
         fetchPriority="high"
         imageIndex={firstImageIndex}
-        onError={() =>
-          setFallbackMap((prev) =>
-            // NOTE: 간혹 avif 이미지가 404인 경우가 있어서
-            new Map(prev).set(firstImageIndex, firstImage?.original?.url?.replace(/\.avif$/, '.webp') ?? ''),
-          )
-        }
+        mangaId={manga.id}
         ref={inViewRef}
         src={firstImage?.thumbnail?.url}
       />
@@ -203,21 +184,8 @@ function ScrollViewerRowItem({
 
   const second = isDoublePage && nextImageIndex < images.length && (
     <picture>
-      <source
-        media={`(min-width: ${nextImage?.thumbnail?.width ?? 0}px)`}
-        srcSet={fallbackMap.get(nextImageIndex) ?? nextImage?.original?.url}
-      />
-      <MangaImage
-        fetchPriority="high"
-        imageIndex={nextImageIndex}
-        onError={() =>
-          setFallbackMap((prev) =>
-            // NOTE: 간혹 avif 이미지가 404인 경우가 있어서
-            new Map(prev).set(nextImageIndex, nextImage?.original?.url?.replace(/\.avif$/, '.webp') ?? ''),
-          )
-        }
-        src={nextImage?.thumbnail?.url}
-      />
+      <source media={`(min-width: ${nextImage?.thumbnail?.width ?? 0}px)`} srcSet={nextImage?.original?.url} />
+      <MangaImage fetchPriority="high" imageIndex={nextImageIndex} mangaId={manga.id} src={nextImage?.thumbnail?.url} />
     </picture>
   )
 

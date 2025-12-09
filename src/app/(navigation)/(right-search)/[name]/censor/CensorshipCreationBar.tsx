@@ -59,7 +59,7 @@ export default function CensorshipCreationBar() {
     e.preventDefault()
 
     if (!inputValue?.trim()) {
-      toast.warning('검열할 키워드를 입력해주세요')
+      toast.warning('검열할 키워드를 입력해 주세요')
       return
     }
 
@@ -69,7 +69,7 @@ export default function CensorshipCreationBar() {
       .filter(Boolean)
 
     if (items.length === 0) {
-      toast.warning('검열할 키워드를 입력해주세요')
+      toast.warning('검열할 키워드를 입력해 주세요')
       return
     }
 
@@ -199,7 +199,7 @@ export default function CensorshipCreationBar() {
           onFocus={handleFocus}
           onKeyDown={handleKeyDown}
           onSelect={updateCursorPosition}
-          placeholder="검열할 키워드를 입력해주세요"
+          placeholder="검열할 키워드를 입력해 주세요"
           ref={inputRef}
           type="text"
           value={inputValue}

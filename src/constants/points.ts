@@ -1,0 +1,32 @@
+import ms from 'ms'
+
+export const POINT_CONSTANTS = {
+  AD_CLICK_REWARD: 10,
+  LIBRARY_EXPANSION_PRICE: 200,
+  LIBRARY_EXPANSION_AMOUNT: 1,
+  LIBRARY_MAX_EXPANSION: 30,
+  HISTORY_EXPANSION_PRICE: 300,
+  HISTORY_EXPANSION_AMOUNT: 100,
+  HISTORY_MAX_EXPANSION: 5000,
+  BADGE_PRICE: 500,
+  THEME_PRICE: 300,
+  USER_COOLDOWN_MS: ms('1 minute'),
+  AD_SLOT_COOLDOWN_MS: ms('5 minutes'),
+  DAILY_EARN_LIMIT: 100,
+  TOKEN_EXPIRY_MS: ms('10 minutes'),
+} as const
+
+export const TRANSACTION_TYPE = {
+  AD_CLICK: 1,
+  SHOP_PURCHASE: 2,
+} as const
+
+export const EXPANSION_TYPE = {
+  LIBRARY: 1,
+  READING_HISTORY: 2,
+} as const
+
+export const ITEM_TYPE = {
+  BADGE: 1,
+  THEME: 2,
+} as const

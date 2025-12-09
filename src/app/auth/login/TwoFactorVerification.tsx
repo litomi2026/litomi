@@ -61,7 +61,7 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
           </div>
           <h1 className="text-2xl font-bold text-zinc-100">2단계 인증</h1>
           <p className="mt-2 text-sm text-zinc-400">
-            {isBackupCode ? '복구 코드를 입력해주세요' : '인증 앱의 6자리 코드를 입력해주세요'}
+            {isBackupCode ? '복구 코드를 입력해 주세요' : '인증 앱의 6자리 코드를 입력해 주세요'}
           </p>
         </div>
         <form action={dispatchAction} className="grid gap-4">

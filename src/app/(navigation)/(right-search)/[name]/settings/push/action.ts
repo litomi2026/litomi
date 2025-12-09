@@ -147,7 +147,7 @@ export async function updatePushSettings(formData: FormData) {
   const userId = await validateUserIdFromCookie()
 
   if (!userId) {
-    return unauthorized('로그인이 필요합니다')
+    return unauthorized('로그인이 필요해요')
   }
 
   const validation = updatePushSettingsSchema.safeParse({

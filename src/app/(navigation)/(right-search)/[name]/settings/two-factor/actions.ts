@@ -7,8 +7,9 @@ import { authenticator } from 'otplib'
 import { z } from 'zod'
 
 import { TOTP_ISSUER } from '@/constants'
+import { twoFactorBackupCodeTable, twoFactorTable } from '@/database/supabase/2fa-schema'
 import { db } from '@/database/supabase/drizzle'
-import { twoFactorBackupCodeTable, twoFactorTable, userTable } from '@/database/supabase/schema'
+import { userTable } from '@/database/supabase/schema'
 import { badRequest, forbidden, internalServerError, noContent, ok, unauthorized } from '@/utils/action-response'
 import { validateUserIdFromCookie } from '@/utils/cookie'
 import {

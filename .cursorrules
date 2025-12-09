@@ -1,0 +1,587 @@
+# Cursor Rules for Shabangnet
+
+## Tech Stack
+
+- Next.js 16 (App Router)
+- React 19
+- TypeScript 5
+- Tailwind CSS 4
+- Drizzle ORM
+- TanStack Query
+- Radix UI
+
+---
+
+## Design Principles
+
+Design with the principles of minimalist aesthetic, intuitive interfaces, and functional beauty as a senior designer's perspective. Follow Apple's design philosophy:
+
+### Core Principles
+
+1. **Clarity** - Text is legible at every size, icons are precise and lucid, adornments are subtle and appropriate. Focus on functionality drives design.
+
+2. **Deference** - Fluid motion and crisp interface help users understand and interact with content while never competing with it.
+
+3. **Depth** - Visual layers and realistic motion convey hierarchy, impart vitality, and facilitate understanding.
+
+### Visual Guidelines
+
+- **Whitespace**: Embrace generous whitespace. Let content breathe.
+- **Typography**: Use clean, readable fonts with clear hierarchy.
+- **Colors**: Use a restrained color palette. Primary colors should be purposeful, not decorative.
+- **Animations**: Subtle, meaningful transitions that enhance UX without distraction.
+- **Consistency**: Maintain visual harmony across all components and pages.
+
+### Implementation
+
+- Prefer simple, flat UI over complex gradients or shadows
+- Use consistent spacing (Tailwind's spacing scale)
+- Ensure sufficient contrast for accessibility
+- Design mobile-first, then enhance for larger screens
+
+---
+
+## Korean UX Writing
+
+### Use Friendly ~요 Style
+
+- **Use ~해요체 (friendly polite style) instead of ~합니다체 (formal style)** for all user-facing text.
+- This creates a warmer, more approachable tone while maintaining politeness.
+
+| ❌ ~니다/~습니다 (딱딱함) | ✅ ~요 (친근함)   |
+| ------------------------- | ----------------- |
+| 로그인이 필요합니다       | 로그인이 필요해요 |
+| 저장되었습니다            | 저장됐어요        |
+| 삭제에 실패했습니다       | 삭제에 실패했어요 |
+| 데이터가 없습니다         | 데이터가 없어요   |
+| 적용됩니다                | 적용돼요          |
+| 새 탭에서 열립니다        | 새 탭에서 열려요  |
+| 확인해주세요              | 확인해 주세요     |
+
+### Natural Contractions
+
+- Use natural Korean contractions for a conversational feel.
+
+```tsx
+// ❌ Bad - overly formal
+toast.success('저장되었습니다')
+toast.error('삭제에 실패하였습니다')
+
+// ✅ Good - natural and friendly
+toast.success('저장됐어요')
+toast.error('삭제에 실패했어요')
+```
+
+### Consistent Tone
+
+- **Maintain consistent tone across all UI elements**: toasts, error messages, descriptions, placeholders, and button labels.
+- Avoid mixing formal and casual styles within the same feature or page.
+
+```tsx
+// ❌ Bad - inconsistent tone
+<h2>로그인이 필요합니다</h2>      // formal
+<p>로그인해서 확인해보세요!</p>   // casual
+
+// ✅ Good - consistent friendly tone
+<h2>로그인이 필요해요</h2>
+<p>로그인해서 확인해 보세요!</p>
+```
+
+---
+
+## Code Style
+
+### TypeScript
+
+- **Never use `any` type.** Use `unknown` and narrow the type, or define proper interfaces/types.
+- Prefer type inference where possible, but be explicit for function parameters and return types.
+- Use strict TypeScript configuration.
+
+```typescript
+// ❌ Bad
+function process(data: any) {
+  return data.value
+}
+
+// ✅ Good
+interface Data {
+  value: string
+}
+
+function process(data: Data): string {
+  return data.value
+}
+
+// ✅ Also good - use unknown and narrow
+function process(data: unknown): string {
+  if (typeof data === 'object' && data !== null && 'value' in data) {
+    return String((data as { value: unknown }).value)
+  }
+  throw new Error('Invalid data')
+}
+```
+
+### Time Calculations
+
+- **Use `ms()` or `sec()` functions for time calculations.** Never use magic numbers for time values.
+- `ms()` returns milliseconds, `sec()` returns seconds. Both accept human-readable strings like `'1h'`, `'30m'`, `'7d'`.
+
+```typescript
+// ❌ Bad - magic numbers for time
+const TOKEN_EXPIRY = 3600000 // What is this? 1 hour in ms
+const SESSION_TIMEOUT = 1800 // 30 minutes in seconds?
+const LOCK_DURATION = 900000 // Hard to understand
+
+// ✅ Good - use ms() for milliseconds
+import ms from 'ms'
+
+const TOKEN_EXPIRY = ms('1h')
+const COOKIE_MAX_AGE = ms('7d')
+const RATE_LIMIT_WINDOW = ms('15m')
+
+// ✅ Good - use sec() for seconds
+import { sec } from '@/utils/sec'
+
+const SESSION_TIMEOUT = sec('30m')
+const LOCK_DURATION = sec('15m')
+const MFA_CODE_EXPIRY = sec('5m')
+```
+
+### File Structure
+
+- **Do not create barrel files (index.ts that re-exports).** Import directly from the source file.
+
+```typescript
+// ❌ Bad - barrel file
+// src/components/index.ts
+export * from './Button'
+export * from './Input'
+export * from './Modal'
+
+// ❌ Bad - importing from barrel
+import { Button, Input } from '@/components'
+
+// ✅ Good - direct imports
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+```
+
+### Colocation
+
+- **Keep non-reusable logic close to where it's used.** Types, utilities, and constants used only in a specific component or page should be defined in that file or the same folder.
+
+```typescript
+// ❌ Bad - separating non-reusable types into a separate file
+// src/types/order-form.ts
+export interface OrderFormData {
+  productId: string
+  quantity: number
+}
+
+// src/app/orders/page.tsx
+import { OrderFormData } from '@/types/order-form'
+
+// ✅ Good - define types used only in this page within the same file
+// src/app/orders/page.tsx
+interface OrderFormData {
+  productId: string
+  quantity: number
+}
+
+export default function OrdersPage() {
+  // ...
+}
+```
+
+```typescript
+// ❌ Bad - separating single-use utilities into lib folder
+// src/lib/utils/format-order-id.ts
+export function formatOrderId(id: string): string {
+  return `ORD-${id.toUpperCase()}`
+}
+
+// ✅ Good - define within the component file
+// src/components/orders/order-table.tsx
+function formatOrderId(id: string): string {
+  return `ORD-${id.toUpperCase()}`
+}
+
+export function OrderTable() {
+  // uses formatOrderId
+}
+```
+
+- Only move to shared folders (`lib/`, `utils/`, `types/`) when reused across multiple files.
+
+### File Size & Feature-based Splitting
+
+- **When a file becomes too large (500+ lines), split by feature/topic** while still keeping logic close to where it's called.
+- Group related functions into feature-specific files within the same directory.
+
+```typescript
+// ❌ Bad - one massive actions.ts file with 1000+ lines
+// src/actions/actions.ts
+export async function createOrder() {
+  /* ... */
+}
+export async function updateOrder() {
+  /* ... */
+}
+export async function deleteOrder() {
+  /* ... */
+}
+export async function sendEmail() {
+  /* ... */
+}
+export async function setupMFA() {
+  /* ... */
+}
+export async function validateTOTP() {
+  /* ... */
+}
+// ... 50 more functions
+
+// ✅ Good - split by feature/topic into separate files
+// src/actions/orders.ts
+export async function createOrder() {
+  /* ... */
+}
+export async function updateOrder() {
+  /* ... */
+}
+export async function deleteOrder() {
+  /* ... */
+}
+
+// src/actions/email.ts
+export async function sendEmail() {
+  /* ... */
+}
+export async function testEmailConnection() {
+  /* ... */
+}
+
+// src/actions/mfa.ts
+export async function setupMFA() {
+  /* ... */
+}
+export async function validateTOTP() {
+  /* ... */
+}
+```
+
+- Keep the split files in the same directory to maintain proximity to the feature area.
+- Name files descriptively by their feature domain.
+
+---
+
+## HTML/CSS Patterns
+
+### Prefer HTML over JavaScript
+
+Use native HTML features instead of JavaScript where possible. HTML handles validation, form submission, and accessibility better than custom JS implementations.
+
+### Form Submission
+
+- **Use `<form>` with `onSubmit`** instead of button `onClick` for form handling.
+- **Use `FormData`** to get form values instead of controlled state where possible.
+- **Use `form` attribute** to associate inputs with forms (for nested form patterns).
+
+```tsx
+// ❌ Bad - Button onClick with controlled state
+function AddItemForm() {
+  const [value, setValue] = useState('')
+
+  function handleAdd() {
+    if (!value.trim()) return
+    onAdd(value.trim())
+    setValue('')
+  }
+
+  return (
+    <div>
+      <Input value={value} onChange={(e) => setValue(e.target.value)} />
+      <Button onClick={handleAdd}>추가</Button>
+    </div>
+  )
+}
+
+// ✅ Good - Native form with FormData
+function AddItemForm() {
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const data = new FormData(e.currentTarget)
+    const value = String(data.get('item')).trim()
+    onAdd(value)
+    e.currentTarget.reset()
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <Input name="item" required />
+      <Button type="submit">추가</Button>
+    </form>
+  )
+}
+```
+
+### HTML Validation
+
+- **Use HTML `required` attribute** instead of JS validation for empty checks.
+- Let browser handle basic validation, use JS only for complex rules.
+
+```tsx
+// ❌ Bad - JS validation for empty check
+<Button disabled={!name || !email || isSaving} onClick={handleSave}>
+  저장
+</Button>
+
+// ✅ Good - HTML required + form submission
+<form onSubmit={handleSave}>
+  <Input name="name" required />
+  <Input name="email" type="email" required />
+  <Button type="submit" disabled={isSaving}>저장</Button>
+</form>
+```
+
+### Conditional Styling with Attributes
+
+- **Use `aria-*` or `data-*` attributes with Tailwind variants** instead of conditional className.
+- This provides cleaner code and better accessibility.
+- Use `aria-disabled`, `aria-selected`, `aria-checked`, `data-state`, etc.
+
+```tsx
+// ❌ Bad - Conditional className with template literals
+<div className={`card ${!enabled ? 'opacity-50' : ''}`}>
+
+<div className={`item ${isActive ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600'}`}>
+
+// ✅ Good - aria/data attributes with Tailwind variants
+<div aria-disabled={!enabled} className="card aria-disabled:opacity-50">
+
+<div aria-selected={isActive} className="item aria-selected:bg-blue-500 aria-selected:text-white bg-gray-100 text-gray-600">
+
+<div data-state={status} className="item data-[state=active]:bg-blue-500 data-[state=pending]:bg-yellow-500">
+```
+
+### HTML id/name Naming
+
+- **Use kebab-case for HTML `id` and `name` attributes** instead of camelCase.
+- This includes FormData keys since they derive from `name` attributes.
+
+```tsx
+// ❌ Bad - camelCase
+<Label htmlFor="userName">이름</Label>
+<Input id="userName" name="userName" />
+formData.append('mallId', value)
+
+// ✅ Good - kebab-case
+<Label htmlFor="user-name">이름</Label>
+<Input id="user-name" name="user-name" />
+formData.append('mall-id', value)
+```
+
+### Avoid Wrapper Functions
+
+- **Call props directly** instead of creating pass-through wrapper functions.
+
+```tsx
+// ❌ Bad - Unnecessary wrapper function
+function handleDelete(id: string) {
+  onDelete(id)
+}
+
+<button onClick={() => handleDelete(item.id)}>삭제</button>
+
+// ✅ Good - Direct prop call
+<button onClick={() => onDelete(item.id)}>삭제</button>
+```
+
+### Expandable/Collapsible UI
+
+- **Use `<details>` and `<summary>`** instead of JavaScript state for toggle/accordion UI.
+- Browser handles open/close natively with built-in accessibility.
+- Use `group` and `group-open:` for styling and animations.
+
+```tsx
+// ❌ Bad - JavaScript state for toggle
+const [isOpen, setIsOpen] = useState(false)
+
+<div>
+  <button onClick={() => setIsOpen(!isOpen)}>
+    {isOpen ? <ChevronDown /> : <ChevronRight />}
+    Toggle
+  </button>
+  {isOpen && <div>Content</div>}
+</div>
+
+// ✅ Good - Native HTML details/summary
+<details className="group">
+  <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+    <ChevronRight className="transition-transform group-open:rotate-90" />
+    Toggle
+  </summary>
+  <div>Content</div>
+</details>
+```
+
+---
+
+## API Patterns
+
+### Server Actions vs API Routes
+
+- **Use Server Actions (`"use server"`) for mutations** - creating, updating, or deleting data.
+- **Use GET API Routes for data fetching** that requires user interaction or real-time data.
+
+```typescript
+// ✅ Good - Server Action for mutations
+// src/actions/orders.ts
+'use server'
+
+export async function createOrder(data: CreateOrderInput) {
+  // Create order in database
+  return { success: true, orderId: '...' }
+}
+
+export async function updateOrderStatus(orderId: string, status: string) {
+  // Update order status
+  return { success: true }
+}
+
+export async function deleteOrder(orderId: string) {
+  // Delete order
+  return { success: true }
+}
+```
+
+```typescript
+// ✅ Good - GET Route for data fetching with query params
+// src/app/api/orders/route.ts
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url)
+  const status = searchParams.get('status')
+  const page = searchParams.get('page')
+
+  // Fetch and return orders
+  return Response.json({ orders, total })
+}
+```
+
+```typescript
+// ❌ Bad - Using POST API Route for mutations
+// src/app/api/orders/create/route.ts
+export async function POST(request: Request) {
+  const data = await request.json()
+  // This should be a Server Action instead
+}
+
+// ❌ Bad - Using Server Action for complex data fetching with caching needs
+// This is better suited for a GET route with proper caching headers
+```
+
+### When to Use Which
+
+| Use Case                          | Pattern       |
+| --------------------------------- | ------------- |
+| Create/Update/Delete data         | Server Action |
+| Form submissions                  | Server Action |
+| User authentication actions       | Server Action |
+| List data with filters/pagination | GET API Route |
+| Search with query parameters      | GET API Route |
+| Data that needs HTTP caching      | GET API Route |
+| Real-time data fetching           | GET API Route |
+
+### Calling Server Actions from Client
+
+- **Do NOT use React Query's `useMutation`** for mutations. Use Server Actions with React hooks instead.
+- **For form submissions**: Use `useActionState` hook.
+- **For button clicks (non-form mutations)**: Use `useTransition` hook.
+
+```tsx
+// ❌ Bad - Using useMutation for mutations
+import { useMutation } from '@tanstack/react-query'
+import { createOrder } from '@/actions/orders'
+
+function OrderForm() {
+  const mutation = useMutation({
+    mutationFn: createOrder,
+    onSuccess: () => {
+      // ...
+    },
+  })
+
+  return <form onSubmit={() => mutation.mutate(data)}>...</form>
+}
+```
+
+```tsx
+// ✅ Good - Using useActionState for form submissions
+'use client'
+
+import { useActionState } from 'react'
+import { createOrder } from '@/actions/orders'
+
+function OrderForm() {
+  const [state, formAction, isPending] = useActionState(createOrder, null)
+
+  return (
+    <form action={formAction}>
+      <input name="productId" />
+      <input name="quantity" type="number" />
+      <button type="submit" disabled={isPending}>
+        {isPending ? '처리 중...' : '주문하기'}
+      </button>
+      {state?.error && <p className="text-red-500">{state.error}</p>}
+    </form>
+  )
+}
+```
+
+```tsx
+// ✅ Good - Using useTransition for button clicks (non-form mutations)
+'use client'
+
+import { useTransition } from 'react'
+import { deleteOrder } from '@/actions/orders'
+
+function DeleteOrderButton({ orderId }: { orderId: string }) {
+  const [isPending, startTransition] = useTransition()
+
+  const handleDelete = () => {
+    startTransition(async () => {
+      const result = await deleteOrder(orderId)
+      if (result.success) {
+        // Handle success (e.g., show toast, refresh data)
+      }
+    })
+  }
+
+  return (
+    <button onClick={handleDelete} disabled={isPending}>
+      {isPending ? '삭제 중...' : '삭제'}
+    </button>
+  )
+}
+```
+
+### When to Use Which Hook
+
+| Use Case                    | Hook             |
+| --------------------------- | ---------------- |
+| Form with multiple inputs   | `useActionState` |
+| Login/Register forms        | `useActionState` |
+| Search forms                | `useActionState` |
+| Single button action        | `useTransition`  |
+| Delete/Toggle actions       | `useTransition`  |
+| Actions triggered by events | `useTransition`  |
+
+---
+
+## Security
+
+### Rate Limiting
+
+- **IP-based rate limiting is managed at the infrastructure level** (e.g., CDN, load balancer, reverse proxy).
+- Do NOT implement IP-based rate limiting in application code.
+- For user-specific rate limiting (e.g., login attempts), use email/account-based tracking instead of IP.

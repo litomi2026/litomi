@@ -36,7 +36,7 @@ export default function PasskeyLoginButton({ loginId, disabled, onSuccess, turns
 
   async function handlePasskeyLogin() {
     if (!loginId) {
-      toast.error('로그인 아이디를 입력해주세요')
+      toast.error('로그인 아이디를 입력해 주세요')
       return
     }
 

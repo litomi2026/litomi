@@ -329,7 +329,7 @@ function getEmptyContent(filter: NotificationFilter | null) {
       return {
         icon: <Check className="mb-4 size-12 text-zinc-600/50" />,
         title: '모든 알림을 확인했어요',
-        description: '새로운 알림이 도착하면 여기에 표시됩니다',
+        description: '새로운 알림이 도착하면 여기에 표시돼요',
       }
     default:
       return {

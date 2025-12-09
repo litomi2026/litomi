@@ -83,7 +83,7 @@ export default function SignupForm() {
       toast.warning('비밀번호가 일치하지 않아요')
     } else if (loginId === password) {
       e.preventDefault()
-      toast.warning('아이디와 비밀번호를 다르게 입력해주세요')
+      toast.warning('아이디와 비밀번호를 다르게 입력해 주세요')
     }
   }
 

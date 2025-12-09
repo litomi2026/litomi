@@ -64,7 +64,7 @@ export default function PostCard({ post, isThread, className = '', ...props }: R
                 aria-disabled={!author}
                 className="min-w-0 overflow-hidden font-semibold aria-disabled:text-zinc-500"
               >
-                {author?.nickname ?? '탈퇴한 사용자입니다'}
+                {author?.nickname ?? '탈퇴한 사용자예요'}
               </div>
               <div className="flex min-w-0 items-center gap-1 text-zinc-400">
                 {author && (

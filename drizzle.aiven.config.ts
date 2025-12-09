@@ -5,7 +5,7 @@ import { defineConfig } from 'drizzle-kit'
 
 export default defineConfig({
   out: './drizzle/aiven',
-  schema: './src/database/aiven/schema.ts',
+  schema: './src/database/aiven',
   dialect: 'postgresql',
   dbCredentials: {
     url: process.env.AIVEN_POSTGRES_URL ?? '',

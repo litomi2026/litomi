@@ -5,7 +5,7 @@ import { defineConfig } from 'drizzle-kit'
 
 export default defineConfig({
   out: './drizzle/neon',
-  schema: './src/database/neon/schema.ts',
+  schema: './src/database/neon',
   dialect: 'postgresql',
   dbCredentials: { url: process.env.NEON_DATABASE_URL_UNPOOLED ?? '' },
 })

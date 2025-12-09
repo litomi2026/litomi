@@ -48,7 +48,10 @@ export async function fetchMangaFromMultiSources({ id, locale }: MangaFetchParam
     return null
   }
 
-  const validMangas = sources.filter((source): source is Manga => !(source instanceof Error))
+  const validMangas = sources
+    .filter((source): source is Manga => !(source instanceof Error))
+    .filter((manga) => manga.id === id)
+
   const errors = sources.filter((source): source is Error => source instanceof Error)
 
   if (validMangas.length === 0) {

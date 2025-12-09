@@ -32,7 +32,7 @@ export default function SearchFromHereButton({ mangaId, className = '' }: Readon
       className={`flex justify-center items-center gap-1 ${className}`}
       disabled={isDisabled}
       onClick={handleSearchFromHere}
-      title={isDefaultSort ? '이 작품부터 검색 결과를 다시 불러옵니다' : '기본순 정렬일 때만 사용할 수 있어요'}
+      title={isDefaultSort ? '이 작품부터 검색 결과를 다시 불러와요' : '기본순 정렬일 때만 사용할 수 있어요'}
       type="button"
     >
       {isPending ? <IconSpinner className="w-4" /> : <IconSearch className="w-4 shrink-0" />}

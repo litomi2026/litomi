@@ -1,12 +1,13 @@
 'use server'
 
+import { captureException } from '@sentry/nextjs'
 import { and, eq, exists, inArray, sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 
 import { MAX_ITEMS_PER_LIBRARY } from '@/constants/policy'
 import { db } from '@/database/supabase/drizzle'
 import { libraryItemTable, libraryTable } from '@/database/supabase/schema'
-import { badRequest, forbidden, ok, unauthorized } from '@/utils/action-response'
+import { badRequest, forbidden, internalServerError, ok, unauthorized } from '@/utils/action-response'
 import { validateUserIdFromCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 
@@ -27,7 +28,8 @@ export async function addMangaToLibraries(data: { mangaId: number; libraryIds: n
 
   const { mangaId, libraryIds } = validation.data
 
-  const result = await db.execute<{ libraryId: number }>(sql`
+  try {
+    const result = await db.execute<{ libraryId: number }>(sql`
     INSERT INTO ${libraryItemTable} (library_id, manga_id)
     SELECT ${libraryTable.id}, ${mangaId}
     FROM ${libraryTable}
@@ -44,15 +46,19 @@ export async function addMangaToLibraries(data: { mangaId: number; libraryIds: n
     RETURNING ${libraryItemTable.libraryId}
   `)
 
-  if (result.length === 0) {
-    return forbidden('작품을 추가할 수 없어요')
-  }
+    if (result.length === 0) {
+      return forbidden('작품을 추가할 수 없어요')
+    }
 
-  for (const { libraryId } of result) {
-    revalidatePath(`/library/${libraryId}`, 'page')
-  }
+    for (const { libraryId } of result) {
+      revalidatePath(`/library/${libraryId}`, 'page')
+    }
 
-  return ok(result.length)
+    return ok(result.length)
+  } catch (error) {
+    captureException(error)
+    return internalServerError('서재에 작품을 추가하지 못했어요')
+  }
 }
 
 export async function bulkCopyToLibrary(data: { toLibraryId: number; mangaIds: number[] }) {
@@ -73,7 +79,8 @@ export async function bulkCopyToLibrary(data: { toLibraryId: number; mangaIds: n
 
   const { toLibraryId, mangaIds } = validation.data
 
-  const result = await db.execute<{ mangaId: number }>(sql`
+  try {
+    const result = await db.execute<{ mangaId: number }>(sql`
     WITH library_status AS (
       SELECT 
         ${MAX_ITEMS_PER_LIBRARY} - COUNT(${libraryItemTable.mangaId}) AS available_slots
@@ -101,12 +108,16 @@ export async function bulkCopyToLibrary(data: { toLibraryId: number; mangaIds: n
     RETURNING ${libraryItemTable.mangaId}
   `)
 
-  if (result.length === 0) {
-    return forbidden('작품을 추가할 수 없어요')
-  }
+    if (result.length === 0) {
+      return forbidden('작품을 추가할 수 없어요')
+    }
 
-  revalidatePath(`/library/${data.toLibraryId}`, 'page')
-  return ok(result.length)
+    revalidatePath(`/library/${data.toLibraryId}`, 'page')
+    return ok(result.length)
+  } catch (error) {
+    captureException(error)
+    return internalServerError('서재에 작품을 복사하지 못했어요')
+  }
 }
 
 export async function bulkMoveToLibrary(data: { fromLibraryId: number; toLibraryId: number; mangaIds: number[] }) {
@@ -128,7 +139,8 @@ export async function bulkMoveToLibrary(data: { fromLibraryId: number; toLibrary
 
   const { fromLibraryId, toLibraryId, mangaIds } = validation.data
 
-  const result = await db.execute<{ mangaId: number }>(sql`
+  try {
+    const result = await db.execute<{ mangaId: number }>(sql`
     WITH target_library_check AS (
       SELECT 
         ${MAX_ITEMS_PER_LIBRARY} - COUNT(${libraryItemTable.mangaId}) AS available_slots
@@ -168,13 +180,17 @@ export async function bulkMoveToLibrary(data: { fromLibraryId: number; toLibrary
     RETURNING ${libraryItemTable.mangaId}
   `)
 
-  if (result.length === 0) {
-    return forbidden('작품을 이동할 수 없어요')
-  }
+    if (result.length === 0) {
+      return forbidden('작품을 이동할 수 없어요')
+    }
 
-  revalidatePath(`/library/${data.fromLibraryId}`, 'page')
-  revalidatePath(`/library/${data.toLibraryId}`, 'page')
-  return ok(result.length)
+    revalidatePath(`/library/${data.fromLibraryId}`, 'page')
+    revalidatePath(`/library/${data.toLibraryId}`, 'page')
+    return ok(result.length)
+  } catch (error) {
+    captureException(error)
+    return internalServerError('서재에 작품을 이동하지 못했어요')
+  }
 }
 
 export async function bulkRemoveFromLibrary(data: { libraryId: number; mangaIds: number[] }) {
@@ -195,26 +211,31 @@ export async function bulkRemoveFromLibrary(data: { libraryId: number; mangaIds:
 
   const { libraryId, mangaIds } = validation.data
 
-  const result = await db
-    .delete(libraryItemTable)
-    .where(
-      and(
-        eq(libraryItemTable.libraryId, libraryId),
-        inArray(libraryItemTable.mangaId, mangaIds),
-        exists(
-          db
-            .select()
-            .from(libraryTable)
-            .where(and(eq(libraryTable.id, libraryId), eq(libraryTable.userId, userId))),
+  try {
+    const result = await db
+      .delete(libraryItemTable)
+      .where(
+        and(
+          eq(libraryItemTable.libraryId, libraryId),
+          inArray(libraryItemTable.mangaId, mangaIds),
+          exists(
+            db
+              .select()
+              .from(libraryTable)
+              .where(and(eq(libraryTable.id, libraryId), eq(libraryTable.userId, userId))),
+          ),
         ),
-      ),
-    )
-    .returning({ mangaId: libraryItemTable.mangaId })
+      )
+      .returning({ mangaId: libraryItemTable.mangaId })
 
-  if (result.length === 0) {
-    return forbidden('작품을 삭제할 수 없어요')
+    if (result.length === 0) {
+      return forbidden('작품을 삭제할 수 없어요')
+    }
+
+    revalidatePath(`/library/${libraryId}`, 'page')
+    return ok(result.length)
+  } catch (error) {
+    captureException(error)
+    return internalServerError('서재에서 작품을 삭제하지 못했어요')
   }
-
-  revalidatePath(`/library/${libraryId}`, 'page')
-  return ok(result.length)
 }

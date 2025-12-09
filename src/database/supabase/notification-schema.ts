@@ -1,4 +1,5 @@
 import { bigint, boolean, index, integer, pgTable, smallint, timestamp, unique, varchar } from 'drizzle-orm/pg-core'
+import 'server-only'
 
 import { userTable } from './schema'
 

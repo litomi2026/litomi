@@ -18,6 +18,7 @@ export default function PostMangaCard({ mangaId }: Props) {
       <MangaImage
         alt={manga?.title}
         className="w-20 h-28 object-cover rounded border-2 border-zinc-700 shrink-0"
+        mangaId={mangaId}
         src={thumbnailUrl}
       />
       <div className="flex flex-col gap-2 min-w-0 flex-1">

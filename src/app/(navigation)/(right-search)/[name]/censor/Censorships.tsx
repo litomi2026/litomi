@@ -176,7 +176,7 @@ export default function Censorships() {
           <div className="text-center py-12">
             <IconFilter className="w-12 h-12 mx-auto mb-4 text-zinc-600" />
             <p className="text-zinc-400">
-              {searchQuery || filterKey !== null ? '검색 결과가 없습니다' : '아직 검열 규칙이 없습니다'}
+              {searchQuery || filterKey !== null ? '검색 결과가 없어요' : '아직 검열 규칙이 없어요'}
             </p>
             {!searchQuery && filterKey === null && (
               <p className="text-zinc-500 text-sm mt-2">위의 입력창에 검열할 키워드를 입력하세요</p>

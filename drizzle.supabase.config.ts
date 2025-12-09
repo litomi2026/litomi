@@ -7,7 +7,7 @@ console.log('👀 - POSTGRES_URL_DIRECT:', process.env.POSTGRES_URL_DIRECT)
 
 export default defineConfig({
   out: './drizzle/supabase',
-  schema: './src/database/supabase/schema.ts',
+  schema: './src/database/supabase',
   dialect: 'postgresql',
   dbCredentials: {
     url: process.env.POSTGRES_URL_DIRECT ?? '',

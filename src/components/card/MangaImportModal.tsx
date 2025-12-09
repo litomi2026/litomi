@@ -67,12 +67,12 @@ export default function MangaImportModal() {
     e?.preventDefault()
 
     if (!libraryId) {
-      toast.warning('서재를 선택해주세요')
+      toast.warning('서재를 선택해 주세요')
       return
     }
 
     if (mangaIds.length === 0) {
-      toast.warning('유효한 작품 ID를 입력해주세요')
+      toast.warning('유효한 작품 ID를 입력해 주세요')
       return
     }
 

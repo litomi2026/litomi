@@ -42,7 +42,7 @@ export function PreviewStep({ importMode, isVisible, previewData, setImportMode 
             <ImportModeOption
               colorScheme="blue"
               currentMode={importMode}
-              description="현재 북마크를 유지하면서 새로운 북마크를 추가합니다"
+              description="현재 북마크를 유지하면서 새로운 북마크를 추가해요"
               mode="merge"
               onChange={setImportMode}
               showBadge
@@ -51,7 +51,7 @@ export function PreviewStep({ importMode, isVisible, previewData, setImportMode 
             <ImportModeOption
               colorScheme="orange"
               currentMode={importMode}
-              description="현재 북마크를 모두 삭제하고 새로운 북마크로 교체합니다"
+              description="현재 북마크를 모두 삭제하고 새로운 북마크로 교체해요"
               mode="replace"
               onChange={setImportMode}
               showWarning

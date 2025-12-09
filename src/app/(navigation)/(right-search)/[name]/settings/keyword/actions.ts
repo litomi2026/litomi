@@ -122,14 +122,14 @@ export async function toggleNotificationCriteria(formData: FormData) {
   const userId = await validateUserIdFromCookie()
 
   if (!userId) {
-    return unauthorized('로그인이 필요합니다')
+    return unauthorized('로그인이 필요해요')
   }
 
   const criteriaId = formData.get('id')
   const isActive = formData.get('isActive') === 'true'
 
   if (!criteriaId) {
-    return badRequest({ id: '기준 ID가 필요합니다' })
+    return badRequest({ id: '기준 ID가 필요해요' })
   }
 
   try {

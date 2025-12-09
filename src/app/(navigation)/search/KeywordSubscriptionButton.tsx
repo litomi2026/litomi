@@ -43,12 +43,12 @@ export default function KeywordSubscriptionButton() {
     }
 
     if (!me) {
-      toast.warning('로그인 후 이용해주세요')
+      toast.warning('로그인 후 이용해 주세요')
       return
     }
 
     if (!query.suggestedName) {
-      toast.warning('검색어를 입력해주세요')
+      toast.warning('검색어를 입력해 주세요')
       return
     }
 

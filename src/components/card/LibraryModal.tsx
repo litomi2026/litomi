@@ -159,7 +159,7 @@ export default function LibraryModal() {
             >
               {isPending ? <IconSpinner className="size-5" /> : <IconPlus className="size-5" />}
               <span>
-                {selectedLibraryIds.size > 0 ? `${selectedLibraryIds.size}개 서재에 추가` : '서재를 선택해주세요'}
+                {selectedLibraryIds.size > 0 ? `${selectedLibraryIds.size}개 서재에 추가` : '서재를 선택해 주세요'}
               </span>
             </button>
             <button

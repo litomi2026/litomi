@@ -32,7 +32,7 @@ export default function Post({ post }: Readonly<Props>) {
             </Squircle>
             <div>
               <div aria-disabled={!author} className="font-semibold aria-disabled:text-zinc-500">
-                {author?.nickname ?? '탈퇴한 사용자입니다'}
+                {author?.nickname ?? '탈퇴한 사용자예요'}
               </div>
               {author && <div className="text-zinc-500">@{author.name}</div>}
             </div>

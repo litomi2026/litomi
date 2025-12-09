@@ -72,7 +72,7 @@ export async function addCensorships(formData: FormData) {
   } catch (error) {
     if (error instanceof Error) {
       if (['foreign key', 'value too long', 'duplicate key'].some((message) => error.message.includes(message))) {
-        return badRequest('입력을 확인해주세요', formData)
+        return badRequest('입력을 확인해 주세요', formData)
       }
     }
 
@@ -110,7 +110,7 @@ export async function deleteCensorships(formData: FormData) {
   } catch (error) {
     if (error instanceof Error) {
       if (['foreign key', 'constraint'].some((message) => error.message.includes(message))) {
-        return badRequest('입력을 확인해주세요', formData)
+        return badRequest('입력을 확인해 주세요', formData)
       }
     }
 
@@ -170,7 +170,7 @@ export async function updateCensorships(formData: FormData) {
   } catch (error) {
     if (error instanceof Error) {
       if (['foreign key', 'constraint', 'invalid input'].some((message) => error.message.includes(message))) {
-        return badRequest('입력을 확인해주세요', formData)
+        return badRequest('입력을 확인해 주세요', formData)
       }
     }
 
