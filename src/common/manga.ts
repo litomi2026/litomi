@@ -27,17 +27,34 @@ type MangaResult = Error | Manga | null | undefined
 export async function fetchMangaFromMultiSources({ id, locale }: MangaFetchParams) {
   const revalidate = sec('60 days')
 
-  const [hiyobiManga, hiyobiImages, kHentaiManga, harpiManga, hitomiManga, hentaiPawImages] = await Promise.all([
-    hiyobiClient.fetchManga({ id, locale, revalidate }).catch(Error),
-    hiyobiClient.fetchMangaImages({ id }).catch(() => null),
-    kHentaiClient.fetchManga({ id, locale }).catch(Error),
-    harpiClient.fetchManga({ id, locale, revalidate }).catch(Error),
-    hitomiClient.fetchManga({ id, locale }).catch(Error),
-    hentaiPawClient.fetchMangaImages({ id, revalidate }).catch(() => null),
+  const [hiyobiManga, hiyobiImages, kHentaiManga /* harpiManga, */, hitomiManga, hentaiPawImages] = await Promise.all([
+    hiyobiClient.fetchManga({ id, locale, revalidate }).catch((e) => {
+      console.error(e instanceof Error ? e.message : String(e))
+      return Error(e)
+    }),
+    hiyobiClient.fetchMangaImages({ id }).catch(() => {
+      return null
+    }),
+    kHentaiClient.fetchManga({ id, locale }).catch((e) => {
+      console.error(e instanceof Error ? e.message : String(e))
+      return Error(e)
+    }),
+    // harpiClient.fetchManga({ id, locale, revalidate }).catch((e) => {
+    //   console.error(e instanceof Error ? e.message : String(e))
+    //   return Error(e)
+    // }),
+    hitomiClient.fetchManga({ id, locale }).catch((e) => {
+      console.error(e instanceof Error ? e.message : String(e))
+      return Error(e)
+    }),
+    hentaiPawClient.fetchMangaImages({ id, revalidate }).catch((e) => {
+      console.error(e instanceof Error ? e.message : String(e))
+      return null
+    }),
   ])
 
   const sources: MangaResult[] = [
-    harpiManga,
+    // harpiManga,
     kHentaiManga,
     hiyobiManga,
     createHentaiPawManga(id, hentaiPawImages),

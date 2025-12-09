@@ -72,9 +72,9 @@ export default function PointsPageClient() {
           리보란?
         </summary>
         <ul className="px-3 pb-3 space-y-1 list-disc list-inside marker:text-zinc-600">
-          <li>리보는 서버 운영 비용을 지원하는 데 사용돼요</li>
           <li>광고 클릭 시 10 리보가 적립돼요</li>
-          <li>적립된 리보로 서버 자원을 구매할 수 있어요</li>
+          <li>적립된 리보로 내 공간을 확장할 수 있어요</li>
+          <li>광고 수익은 서버 운영비 제외 후 전액 작가 후원에 사용돼요</li>
         </ul>
       </details>
     </div>

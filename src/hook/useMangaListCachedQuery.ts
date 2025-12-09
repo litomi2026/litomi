@@ -1,14 +1,15 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import ms from 'ms'
-import { useEffect, useMemo, useState } from 'react'
+'use client'
 
-import { GETProxyMangaResponse } from '@/app/api/proxy/manga/route'
-import { MAX_HARPI_MANGA_BATCH_SIZE } from '@/constants/policy'
+import { useQueries } from '@tanstack/react-query'
+import ms from 'ms'
+import pLimit from 'p-limit'
+import { useMemo } from 'react'
+
 import { QueryKeys } from '@/constants/query'
 import { Manga } from '@/types/manga'
 import { handleResponseError } from '@/utils/react-query-error'
 
-interface UseMangaBatchWithCacheOptions {
+interface Options {
   /**
    * Custom garbage collection time for individual manga cache
    * @default 2 hours
@@ -25,102 +26,55 @@ interface UseMangaBatchWithCacheOptions {
   staleTime?: number
 }
 
+const MAX_CONCURRENT_REQUESTS = 2
+const limit = pLimit(MAX_CONCURRENT_REQUESTS)
+
 /**
- * Hook to fetch manga in batches while caching individual manga data.
- * This provides efficient batch fetching with cross-page manga data sharing.
+ * Hook to fetch manga data with individual caching and rate-limited parallel requests.
+ * Each manga is cached independently for maximum CDN cache hit rate.
  *
  * @example
  * ```tsx
- * const { mangaMap, isLoading } = useMangaBatchWithCache({ mangaIds: [1, 2, 3, 4, 5] })
+ * const { mangaMap, isLoading } = useMangaListCachedQuery({ mangaIds: [1, 2, 3, 4, 5] })
  * ```
  */
 export default function useMangaListCachedQuery({
   mangaIds,
   staleTime = ms('1 hour'),
   gcTime = ms('2 hours'),
-}: UseMangaBatchWithCacheOptions) {
-  const queryClient = useQueryClient()
-  const [batchTrigger, setBatchTrigger] = useState(0)
+}: Options) {
+  const uniqueMangaIds = useMemo(() => Array.from(new Set(mangaIds)), [mangaIds])
 
-  const { uncachedIds, cachedMap, hasMoreBatches } = useMemo(() => {
-    const uniqueMangaIds = new Set(mangaIds)
-    const cachedMap = new Map<number, Manga>()
-    const allUncachedIds = []
-    const now = Date.now()
-
-    for (const id of uniqueMangaIds) {
-      const queryState = queryClient.getQueryState<Manga>(QueryKeys.mangaCard(id))
-      const data = queryState?.data
-
-      if (data && now - queryState.dataUpdatedAt <= staleTime) {
-        cachedMap.set(id, data)
-      } else {
-        allUncachedIds.push(id)
-      }
-    }
-
-    const uncachedIds = allUncachedIds.slice(0, MAX_HARPI_MANGA_BATCH_SIZE)
-    const hasMoreBatches = allUncachedIds.length > uncachedIds.length
-
-    return { uncachedIds, cachedMap, hasMoreBatches }
-    // batchTrigger is intentionally included to force re-evaluation after each batch is cached
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mangaIds, queryClient, staleTime, batchTrigger])
-
-  const { data, isLoading, isFetching } = useQuery<GETProxyMangaResponse>({
-    queryKey: ['manga-batch', uncachedIds],
-    queryFn: async () => {
-      const searchParams = new URLSearchParams()
-
-      for (const id of uncachedIds) {
-        searchParams.append('id', id.toString())
-      }
-
-      const response = await fetch(`/api/proxy/manga?${searchParams}`)
-      const data = await handleResponseError<GETProxyMangaResponse>(response)
-
-      for (const id of uncachedIds) {
-        const manga = data[id]
-
-        if (manga) {
-          queryClient.setQueryDefaults(QueryKeys.mangaCard(id), { staleTime, gcTime })
-          queryClient.setQueryData(QueryKeys.mangaCard(id), manga)
-        }
-      }
-
-      return data
-    },
-    enabled: uncachedIds.length > 0,
-    staleTime: 0, // Always refetch batch queries
-    gcTime: 0, // Don't keep batch query results
+  const queries = useQueries({
+    queries: uniqueMangaIds.map((id) => ({
+      queryKey: QueryKeys.mangaCard(id),
+      queryFn: () =>
+        limit(async () => {
+          const response = await fetch(`/api/proxy/manga/${id}`)
+          return handleResponseError<Manga>(response)
+        }),
+      staleTime,
+      gcTime,
+    })),
   })
 
-  useEffect(() => {
-    // Only trigger next batch when:
-    // 1. Current query is not fetching
-    // 2. Current batch has data (meaning it's cached)
-    // 3. There are more batches to fetch
-    if (!isFetching && data && hasMoreBatches) {
-      setBatchTrigger((prev) => prev + 1)
-    }
-  }, [isFetching, data, hasMoreBatches])
-
   const mangaMap = useMemo(() => {
-    if (!data) {
-      return cachedMap
-    }
+    const map = new Map<number, Manga>()
 
-    const map = new Map(cachedMap)
+    for (let i = 0; i < uniqueMangaIds.length; i++) {
+      const id = uniqueMangaIds[i]
+      const query = queries[i]
 
-    for (const id of uncachedIds) {
-      const manga = data[id]
-      if (manga) {
-        map.set(id, manga)
+      if (query.data) {
+        map.set(id, query.data)
       }
     }
 
     return map
-  }, [cachedMap, data, uncachedIds])
+  }, [uniqueMangaIds, queries])
+
+  const isLoading = queries.some((query) => query.isLoading)
+  const isFetching = queries.some((query) => query.isFetching)
 
   return {
     mangaMap,
