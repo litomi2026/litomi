@@ -224,6 +224,3 @@ export const userRatingTable = pgTable(
   },
   (table) => [primaryKey({ columns: [table.userId, table.mangaId] })],
 ).enableRLS()
-
-export { trustedBrowserTable, twoFactorBackupCodeTable, twoFactorTable } from './2fa-schema'
-export { mangaSeenTable, notificationConditionTable, notificationCriteriaTable } from './notification-schema'
