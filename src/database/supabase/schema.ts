@@ -12,6 +12,7 @@ import {
   unique,
   varchar,
 } from 'drizzle-orm/pg-core'
+import 'server-only'
 
 import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/constants/policy'
 
