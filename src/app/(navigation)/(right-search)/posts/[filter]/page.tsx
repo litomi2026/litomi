@@ -37,7 +37,7 @@ const emptyStateConfig = {
   },
   [PostFilterParams.RECOMMAND]: {
     title: '추천 포스트가 없어요',
-    description: '잠시 후 다시 확인해주세요',
+    description: '잠시 후 다시 확인해 주세요',
     icon: '🎯',
   },
 }

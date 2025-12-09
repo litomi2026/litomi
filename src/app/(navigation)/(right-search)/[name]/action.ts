@@ -39,7 +39,7 @@ export default async function editProfile(formData: FormData) {
   const { name, nickname, imageURL } = validation.data
 
   if (!name && !nickname && !imageURL) {
-    return badRequest('수정할 정보를 입력해주세요', formData)
+    return badRequest('수정할 정보를 입력해 주세요', formData)
   }
 
   try {

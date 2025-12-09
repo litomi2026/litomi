@@ -70,7 +70,7 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
 
     if (name === me.name && nickname === me.nickname && imageURL === (me.imageURL ?? '')) {
       e.preventDefault()
-      toast.warning('수정할 정보를 입력해주세요')
+      toast.warning('수정할 정보를 입력해 주세요')
     }
   }
 

@@ -127,7 +127,7 @@ export async function verifyTwoFactorLogin(formData: FormData) {
       }
 
       if (!verified) {
-        return badRequest('인증 코드를 확인해주세요', formData)
+        return badRequest('인증 코드를 확인해 주세요', formData)
       }
 
       const [cookieStore, [user]] = await Promise.all([

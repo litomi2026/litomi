@@ -55,7 +55,7 @@ export default function AccountDeletionForm({ loginId }: Readonly<Props>) {
     },
   })
 
-  const expectedConfirmText = `${loginId} 계정을 삭제합니다`
+  const expectedConfirmText = `${loginId} 계정을 삭제해요`
   const isConfirmTextValid = confirmText === expectedConfirmText
 
   return (
@@ -110,7 +110,7 @@ export default function AccountDeletionForm({ loginId }: Readonly<Props>) {
                   placeholder-zinc-500"
               disabled={isPending}
               onChange={(e) => setConfirmText(e.target.value)}
-              placeholder="위 문구를 입력해주세요"
+              placeholder="위 문구를 입력해 주세요"
               type="text"
               value={confirmText}
             />

@@ -41,6 +41,54 @@ Design with the principles of minimalist aesthetic, intuitive interfaces, and fu
 
 ---
 
+## Korean UX Writing
+
+### Use Friendly ~요 Style
+
+- **Use ~해요체 (friendly polite style) instead of ~합니다체 (formal style)** for all user-facing text.
+- This creates a warmer, more approachable tone while maintaining politeness.
+
+| ❌ ~니다/~습니다 (딱딱함) | ✅ ~요 (친근함) |
+| ------------------------- | --------------- |
+| 로그인이 필요합니다       | 로그인이 필요해요 |
+| 저장되었습니다            | 저장됐어요 |
+| 삭제에 실패했습니다       | 삭제에 실패했어요 |
+| 데이터가 없습니다         | 데이터가 없어요 |
+| 적용됩니다                | 적용돼요 |
+| 새 탭에서 열립니다        | 새 탭에서 열려요 |
+| 확인해주세요              | 확인해 주세요 |
+
+### Natural Contractions
+
+- Use natural Korean contractions for a conversational feel.
+
+```tsx
+// ❌ Bad - overly formal
+toast.success('저장되었습니다')
+toast.error('삭제에 실패하였습니다')
+
+// ✅ Good - natural and friendly
+toast.success('저장됐어요')
+toast.error('삭제에 실패했어요')
+```
+
+### Consistent Tone
+
+- **Maintain consistent tone across all UI elements**: toasts, error messages, descriptions, placeholders, and button labels.
+- Avoid mixing formal and casual styles within the same feature or page.
+
+```tsx
+// ❌ Bad - inconsistent tone
+<h2>로그인이 필요합니다</h2>      // formal
+<p>로그인해서 확인해보세요!</p>   // casual
+
+// ✅ Good - consistent friendly tone
+<h2>로그인이 필요해요</h2>
+<p>로그인해서 확인해 보세요!</p>
+```
+
+---
+
 ## Code Style
 
 ### TypeScript

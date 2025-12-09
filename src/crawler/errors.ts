@@ -47,7 +47,7 @@ export class NetworkError extends ProxyError {
   readonly isRetryable = true
   readonly statusCode = 503
 
-  constructor(message = '네트워크 연결을 확인해주세요', context?: Record<string, unknown>) {
+  constructor(message = '네트워크 연결을 확인해 주세요', context?: Record<string, unknown>) {
     super(message, context)
   }
 }
