@@ -33,27 +33,38 @@ export default function RewardedAdSection() {
       </div>
 
       {/* 광고 영역 */}
-      <div className="relative">
+      <div className="flex flex-wrap justify-center gap-4">
         <LazyAdSlot
           adSlotId={AD_SLOTS.REWARDED.id}
-          className="mx-auto"
           height={AD_SLOTS.REWARDED.height}
           onAdClick={handleAdClick}
           width={AD_SLOTS.REWARDED.width}
           zoneId={AD_SLOTS.REWARDED.zoneId}
         />
-        <div className="mt-2 flex items-center justify-center gap-2 text-xs h-5">
-          {lastEarned ? (
-            <>
-              <Gift className="size-3 text-green-400" />
-              <span className="text-green-400 animate-fade-in">+{lastEarned} 리보 적립 완료!</span>
-            </>
-          ) : (
-            <>
-              <MousePointerClick className="size-3 text-zinc-500" />
-              <span className="text-zinc-500">광고를 클릭하여 리보 적립</span>
-            </>
-          )}
+        <LazyAdSlot
+          adSlotId={AD_SLOTS.REWARDED_2.id}
+          height={AD_SLOTS.REWARDED_2.height}
+          onAdClick={handleAdClick}
+          width={AD_SLOTS.REWARDED_2.width}
+          zoneId={AD_SLOTS.REWARDED_2.zoneId}
+        />
+      </div>
+
+      {/* CLS 방지: 두 상태 모두 렌더링하고 visibility로 전환 */}
+      <div className="relative h-5">
+        <div
+          aria-hidden={!!lastEarned}
+          className="absolute inset-0 flex items-center justify-center gap-2 text-xs transition-opacity aria-hidden:opacity-0"
+        >
+          <MousePointerClick className="size-3 text-zinc-500" />
+          <span className="text-zinc-500">광고를 클릭하여 리보 적립</span>
+        </div>
+        <div
+          aria-hidden={!lastEarned}
+          className="absolute inset-0 flex items-center justify-center gap-2 text-xs transition-opacity aria-hidden:opacity-0"
+        >
+          <Gift className="size-3 text-green-400" />
+          <span className="text-green-400">+{lastEarned ?? 0} 리보 적립 완료!</span>
         </div>
       </div>
 

@@ -21,7 +21,7 @@ export default function PointsPageClient() {
   const { data: points, isLoading } = usePointsQuery()
 
   return (
-    <div className="flex flex-col grow gap-4 p-4 max-w-prose mx-auto w-full md:p-8 md:gap-6">
+    <div className="flex flex-col grow gap-4 p-4 max-w-3xl mx-auto w-full md:p-8 md:gap-6">
       {/* 리보 잔액 */}
       <div className="bg-linear-to-br from-amber-500/20 to-orange-600/20 rounded-xl p-4 border border-amber-500/30">
         <div className="flex items-center justify-between">
