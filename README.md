@@ -101,4 +101,3 @@ docker run -e PORT=4000 -p 4000:4000 --rm litomi-backend:latest
 #### 프록시
 
 - 외부 API 장애 시 일시적 장애는 exponentialBackoff 방식으로 대응하고, 지속적 장애는 CircuitBreaker 방식으로 대응함
-- edge 환경에 배포함
