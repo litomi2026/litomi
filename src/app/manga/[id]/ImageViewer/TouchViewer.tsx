@@ -271,18 +271,6 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
     }
   }, [currentIndex, getTouchOrientation])
 
-  // NOTE: 페이지 전환 시 스크롤 관성을 방지함
-  useEffect(() => {
-    const ul = ulRef.current
-    if (!ul) return
-
-    ul.style.overflow = 'hidden'
-
-    setTimeout(() => {
-      ul.style.overflow = 'auto'
-    }, 500)
-  }, [currentIndex])
-
   // NOTE: page 파라미터가 있으면 초기 페이지를 변경함
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
