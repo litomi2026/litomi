@@ -1,4 +1,5 @@
-import { bigint, boolean, index, pgTable, smallint, timestamp, varchar } from 'drizzle-orm/pg-core'
+import { sql } from 'drizzle-orm'
+import { bigint, boolean, index, pgTable, smallint, timestamp, uniqueIndex, varchar } from 'drizzle-orm/pg-core'
 import 'server-only'
 
 import { userTable } from './schema'
@@ -20,6 +21,9 @@ export const adImpressionTokenTable = pgTable(
   (table) => [
     index('idx_ad_impression_token_user').on(table.userId),
     index('idx_ad_impression_token_token').on(table.token),
+    uniqueIndex('idx_ad_token_unique_pending')
+      .on(table.userId, table.adSlotId)
+      .where(sql`${table.isUsed} = false`),
   ],
 ).enableRLS()
 

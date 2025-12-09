@@ -9,6 +9,7 @@ import libraryRoutes from './library'
 import mangaRoutes from './manga/[id]/history'
 import meRoutes from './me'
 import notificationRoutes from './notification'
+import pointsRoutes from './points'
 import postRoutes from './post'
 import searchRoutes from './search'
 
@@ -21,6 +22,7 @@ v1Routes.route('/library', libraryRoutes)
 v1Routes.route('/manga', mangaRoutes)
 v1Routes.route('/me', meRoutes)
 v1Routes.route('/notification', notificationRoutes)
+v1Routes.route('/points', pointsRoutes)
 v1Routes.route('/post', postRoutes)
 v1Routes.route('/search', searchRoutes)
 

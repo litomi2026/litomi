@@ -48,15 +48,15 @@ Design with the principles of minimalist aesthetic, intuitive interfaces, and fu
 - **Use ~해요체 (friendly polite style) instead of ~합니다체 (formal style)** for all user-facing text.
 - This creates a warmer, more approachable tone while maintaining politeness.
 
-| ❌ ~니다/~습니다 (딱딱함) | ✅ ~요 (친근함) |
-| ------------------------- | --------------- |
+| ❌ ~니다/~습니다 (딱딱함) | ✅ ~요 (친근함)   |
+| ------------------------- | ----------------- |
 | 로그인이 필요합니다       | 로그인이 필요해요 |
-| 저장되었습니다            | 저장됐어요 |
+| 저장되었습니다            | 저장됐어요        |
 | 삭제에 실패했습니다       | 삭제에 실패했어요 |
-| 데이터가 없습니다         | 데이터가 없어요 |
-| 적용됩니다                | 적용돼요 |
-| 새 탭에서 열립니다        | 새 탭에서 열려요 |
-| 확인해주세요              | 확인해 주세요 |
+| 데이터가 없습니다         | 데이터가 없어요   |
+| 적용됩니다                | 적용돼요          |
+| 새 탭에서 열립니다        | 새 탭에서 열려요  |
+| 확인해주세요              | 확인해 주세요     |
 
 ### Natural Contractions
 
