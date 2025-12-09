@@ -112,7 +112,7 @@ export default function PointsShop({ balance }: Props) {
 
   return (
     <div className="space-y-3">
-      <p className="text-sm text-zinc-400 mb-4">리보로 서버 자원을 구매하세요. 구매한 확장은 영구적으로 적용돼요.</p>
+      <p className="text-sm text-zinc-400 mb-4">리보로 내 공간을 확장해 보세요.</p>
 
       {shopItems.map((item) => {
         const canAfford = balance >= item.price

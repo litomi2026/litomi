@@ -1,6 +1,6 @@
 'use client'
 
-import { ChevronRight, Gift, MousePointerClick } from 'lucide-react'
+import { ChevronRight, Gift, Heart, MousePointerClick } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -20,6 +20,18 @@ export default function RewardedAdSection() {
 
   return (
     <div className="space-y-4">
+      {/* 작가 후원 안내 */}
+      <div className="flex items-start gap-3 p-4 bg-linear-to-r from-pink-500/10 to-rose-500/10 rounded-lg border border-pink-500/20">
+        <Heart className="size-5 text-pink-400 shrink-0 mt-0.5" />
+        <div>
+          <h3 className="font-medium text-zinc-200 mb-1">광고 수익은 작가에게 돌아가요</h3>
+          <p className="text-sm text-zinc-400">
+            광고로 발생한 수익금은 서버 운영비를 제하고 전부 작가에게 후원할 예정이에요. 광고 클릭 한 번이 좋아하는 작품의
+            창작자를 응원하는 방법이 돼요.
+          </p>
+        </div>
+      </div>
+
       {/* 설명 */}
       <div className="flex items-start gap-3 p-4 bg-zinc-800/50 rounded-lg">
         <Gift className="size-5 text-amber-400 shrink-0 mt-0.5" />
@@ -27,7 +39,7 @@ export default function RewardedAdSection() {
           <h3 className="font-medium text-zinc-200 mb-1">광고를 클릭하고 리보를 받으세요!</h3>
           <p className="text-sm text-zinc-400">
             아래 광고를 클릭하면 <span className="text-amber-400 font-semibold">10 리보</span>가 적립돼요. 적립된 리보로
-            서버 자원(내서재 확장, 감상 기록 확장 등)을 구매할 수 있어요.
+            내 공간을 확장할 수 있어요.
           </p>
         </div>
       </div>
