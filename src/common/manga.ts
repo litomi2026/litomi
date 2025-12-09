@@ -1,3 +1,4 @@
+import { NotFoundError } from '@/crawler/errors'
 import { harpiClient } from '@/crawler/harpi/harpi'
 import { hentaiPawClient } from '@/crawler/hentai-paw'
 import { hentKorClient } from '@/crawler/hentkor'
@@ -28,29 +29,12 @@ export async function fetchMangaFromMultiSources({ id, locale }: MangaFetchParam
   const revalidate = sec('60 days')
 
   const [hiyobiManga, hiyobiImages, kHentaiManga /* harpiManga, */, hitomiManga, hentaiPawImages] = await Promise.all([
-    hiyobiClient.fetchManga({ id, locale, revalidate }).catch((e) => {
-      console.error(e instanceof Error ? e.message : String(e))
-      return Error(e)
-    }),
-    hiyobiClient.fetchMangaImages({ id }).catch(() => {
-      return null
-    }),
-    kHentaiClient.fetchManga({ id, locale }).catch((e) => {
-      console.error(e instanceof Error ? e.message : String(e))
-      return Error(e)
-    }),
-    // harpiClient.fetchManga({ id, locale, revalidate }).catch((e) => {
-    //   console.error(e instanceof Error ? e.message : String(e))
-    //   return Error(e)
-    // }),
-    hitomiClient.fetchManga({ id, locale }).catch((e) => {
-      console.error(e instanceof Error ? e.message : String(e))
-      return Error(e)
-    }),
-    hentaiPawClient.fetchMangaImages({ id, revalidate }).catch((e) => {
-      console.error(e instanceof Error ? e.message : String(e))
-      return null
-    }),
+    hiyobiClient.fetchManga({ id, locale, revalidate }).catch(catchError),
+    hiyobiClient.fetchMangaImages({ id }).catch(() => null),
+    kHentaiClient.fetchManga({ id, locale }).catch(catchError),
+    // harpiClient.fetchManga({ id, locale, revalidate }).catch(catchError),
+    hitomiClient.fetchManga({ id, locale }).catch(catchError),
+    hentaiPawClient.fetchMangaImages({ id, revalidate }).catch(() => null),
   ])
 
   const sources: MangaResult[] = [
@@ -72,6 +56,10 @@ export async function fetchMangaFromMultiSources({ id, locale }: MangaFetchParam
   const errors = sources.filter((source): source is Error => source instanceof Error)
 
   if (validMangas.length === 0) {
+    if (errors.length > 0 && errors.every((e) => e instanceof NotFoundError)) {
+      return null
+    }
+
     return createErrorManga(id, errors[0])
   }
 
@@ -163,6 +151,13 @@ export async function fetchMangasFromMultiSources({ ids, locale }: MangaListFetc
   }
 
   return mangaMap
+}
+
+function catchError(e: unknown): Error {
+  if (!(e instanceof NotFoundError)) {
+    console.error(e instanceof Error ? e.message : String(e))
+  }
+  return e instanceof Error ? e : new Error(String(e))
 }
 
 function createErrorManga(id: number, error: Error): MangaError {
