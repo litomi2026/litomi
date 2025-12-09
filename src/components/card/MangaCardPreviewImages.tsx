@@ -66,6 +66,7 @@ function MangaCardPreviewImages({ className, manga, mangaIndex = 0, href }: Read
             imageIndex={imageIndex}
             key={imageIndex}
             loading={imageIndex >= 1 ? 'lazy' : undefined}
+            mangaId={manga.id}
             src={images[imageIndex]?.thumbnail?.url ?? images[imageIndex]?.original?.url}
           />
         ))}

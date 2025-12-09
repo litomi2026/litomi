@@ -153,7 +153,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
         aria-current:opacity-100 aria-current:pointer-events-auto"
       >
         <div className="p-3 grid gap-1.5 select-none">
-          {showThumbnails && hasThumbnails && <ThumbnailStrip images={thumbnailImages} />}
+          {showThumbnails && hasThumbnails && <ThumbnailStrip images={thumbnailImages} mangaId={manga.id} />}
           <ImageSlider maxImageIndex={imageCount} />
           <div className="font-semibold whitespace-nowrap flex-wrap justify-center text-sm flex gap-2 text-background">
             <button className={bottomButtonClassName} onClick={() => setNavMode(isTouchMode ? 'scroll' : 'touch')}>

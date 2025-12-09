@@ -13,11 +13,12 @@ import { useVirtualScrollStore } from './store/virtualizer'
 
 type Props = {
   images: (ImageVariant | undefined)[]
+  mangaId: number
 }
 
 export default memo(ThumbnailStrip)
 
-function ThumbnailStrip({ images }: Props) {
+function ThumbnailStrip({ images, mangaId }: Props) {
   const { imageIndex, getImageIndex, navigateToImageIndex } = useImageIndexStore()
   const pageView = usePageViewStore((state) => state.pageView)
   const scrollToRow = useVirtualScrollStore((state) => state.scrollToRow)
@@ -107,6 +108,7 @@ function ThumbnailStrip({ images }: Props) {
                   className="w-full h-full object-cover"
                   fetchPriority={i > imageIndex - 3 && i <= imageIndex + 3 ? undefined : 'low'}
                   imageIndex={i}
+                  mangaId={mangaId}
                   src={image.url}
                 />
               ) : (

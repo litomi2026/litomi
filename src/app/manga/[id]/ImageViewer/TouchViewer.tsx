@@ -492,6 +492,7 @@ function TouchViewerItem({ offset, manga, pageView, readingDirection }: TouchVie
     <MangaImage
       fetchPriority={offset < IMAGE_FETCH_PRIORITY_THRESHOLD ? 'high' : 'low'}
       imageIndex={imageIndex}
+      mangaId={manga.id}
       src={images[imageIndex]?.original?.url}
     />
   )
@@ -500,6 +501,7 @@ function TouchViewerItem({ offset, manga, pageView, readingDirection }: TouchVie
     <MangaImage
       fetchPriority={offset < IMAGE_FETCH_PRIORITY_THRESHOLD ? 'high' : 'low'}
       imageIndex={nextImageIndex}
+      mangaId={manga.id}
       src={images[nextImageIndex]?.original?.url}
     />
   )
