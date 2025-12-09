@@ -1,9 +1,9 @@
 'use client'
 
-import { useQueries } from '@tanstack/react-query'
+import { useQueries, useQueryClient } from '@tanstack/react-query'
 import ms from 'ms'
 import pLimit from 'p-limit'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 
 import { QueryKeys } from '@/constants/query'
 import { Manga } from '@/types/manga'
@@ -44,6 +44,25 @@ export default function useMangaListCachedQuery({
   gcTime = ms('2 hours'),
 }: Options) {
   const uniqueMangaIds = useMemo(() => Array.from(new Set(mangaIds)), [mangaIds])
+  const queryClient = useQueryClient()
+  const cleanupTimersRef = useRef<Array<ReturnType<typeof setTimeout>>>([])
+
+  // NOTE: 타이머 정리
+  useEffect(() => {
+    return () => {
+      for (const timer of cleanupTimersRef.current) {
+        clearTimeout(timer)
+      }
+      cleanupTimersRef.current = []
+    }
+  }, [])
+
+  function scheduleErrorCacheCleanup(queryKey: ReturnType<typeof QueryKeys.mangaCard>) {
+    const timer = setTimeout(() => {
+      queryClient.removeQueries({ queryKey, exact: true })
+    }, ms('1 minute'))
+    cleanupTimersRef.current.push(timer)
+  }
 
   const queries = useQueries({
     queries: uniqueMangaIds.map((id) => ({
@@ -55,6 +74,14 @@ export default function useMangaListCachedQuery({
         }),
       staleTime,
       gcTime,
+      onSuccess: (data: Manga) => {
+        if (isErrorManga(data)) {
+          scheduleErrorCacheCleanup(QueryKeys.mangaCard(id))
+        }
+      },
+      onError: () => {
+        scheduleErrorCacheCleanup(QueryKeys.mangaCard(id))
+      },
     })),
   })
 
@@ -81,4 +108,8 @@ export default function useMangaListCachedQuery({
     isLoading,
     isFetching,
   }
+}
+
+function isErrorManga(manga: Manga): manga is Manga & { isError: true } {
+  return 'isError' in manga && Boolean((manga as { isError?: boolean }).isError)
 }

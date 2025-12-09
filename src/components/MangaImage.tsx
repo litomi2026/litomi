@@ -10,17 +10,17 @@ interface Props extends ComponentPropsWithRef<'img'> {
   src?: string
 }
 
-export default function MangaImage({ imageIndex = 0, mangaId, src, ...props }: Props) {
-  const [fallbackIndex, setFallbackIndex] = useState(-1)
-  const fallbacks = getFallbacks(mangaId, imageIndex)
-  const currentSrc = fallbackIndex === -1 ? src : fallbacks[fallbackIndex]
-  const hasMoreFallbacks = fallbackIndex < fallbacks.length - 1
+export default function MangaImage({ imageIndex = 0, mangaId, src = '/', ...props }: Props) {
+  const [imageVarientIndex, setImageVarientIndex] = useState(0)
+  const imageVarients = [src, ...getFallbacks(mangaId, imageIndex)]
+  const currentSrc = imageVarientIndex === -1 ? src : imageVarients[imageVarientIndex]
+  const hasMoreFallbacks = imageVarientIndex < imageVarients.length
 
   return (
     <img
       alt={`manga-image-${imageIndex + 1}`}
       fetchPriority={imageIndex < INITIAL_DISPLAYED_IMAGE ? 'high' : undefined}
-      onError={() => hasMoreFallbacks && setFallbackIndex((prev) => prev + 1)}
+      onError={() => hasMoreFallbacks && setImageVarientIndex((prev) => prev + 1)}
       src={currentSrc}
       {...props}
       draggable={false}
@@ -29,13 +29,9 @@ export default function MangaImage({ imageIndex = 0, mangaId, src, ...props }: P
 }
 
 function getFallbacks(mangaId: number | undefined, imageIndex: number): string[] {
-  const fallbacks: string[] = []
-
-  if (mangaId) {
-    fallbacks.push(`https://soujpa.in/start/${mangaId}/${mangaId}_${imageIndex}.avif`)
-    fallbacks.push(`https://soujpa.in/start/${mangaId}/${mangaId}_${imageIndex}.webp`)
-    fallbacks.push(`https://cdn.hentkor.net/pages/${mangaId}/${imageIndex + 1}.avif`)
-  }
-
-  return fallbacks
+  return [
+    `https://soujpa.in/start/${mangaId}/${mangaId}_${imageIndex}.avif`,
+    `https://soujpa.in/start/${mangaId}/${mangaId}_${imageIndex}.webp`,
+    `https://cdn.hentkor.net/pages/${mangaId}/${imageIndex + 1}.avif`,
+  ]
 }

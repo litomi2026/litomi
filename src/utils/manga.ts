@@ -39,6 +39,7 @@ export function mergeMangas(mangas: Manga[]): Manga {
     tags: sortLabeledValues(getNonEmptyArray(mergedData.tags)),
     related: getNonEmptyArray(mergedData.related),
     sources: mangas.map((manga) => manga.source).filter(checkDefined),
+    images: getFirstImagesWithOriginal(mangas),
   })
 }
 
@@ -121,6 +122,25 @@ function deleteUndefinedValues<T extends Record<string, unknown>>(object: T): T 
   }
 
   return object
+}
+
+function getFirstImagesWithOriginal(mangas: Manga[]) {
+  // Prefer images that have original URLs (actual image data)
+  for (const manga of mangas) {
+    const images = manga.images
+    if (images && images.length > 0 && images[0]?.original?.url) {
+      return images
+    }
+  }
+
+  // Fallback to first non-empty images (might only have thumbnails)
+  for (const manga of mangas) {
+    if (manga.images && manga.images.length > 0) {
+      return manga.images
+    }
+  }
+
+  return undefined
 }
 
 /**
