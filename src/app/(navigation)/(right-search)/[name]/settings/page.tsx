@@ -2,6 +2,7 @@ import { ErrorBoundary } from '@suspensive/react'
 import {
   CalendarMinus,
   CaseSensitive,
+  Download,
   Fingerprint,
   Key,
   Languages,
@@ -18,6 +19,7 @@ import { getUserIdFromCookie } from '@/utils/cookie'
 import { getUsernameFromParam } from '@/utils/param'
 
 import { getMe } from '../common'
+import DataExportSection from './data/DataExportSection'
 import AccountDeletionForm from './delete/AccountDeletionForm'
 import Forbidden from './Forbidden'
 import InternalServerError from './InternalServerError'
@@ -67,8 +69,8 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
       </>
     )
   }
-
-  const [me, { name }] = await Promise.all([getMe(userId), params])
+  const { name } = await params
+  const me = await getMe(userId)
   const usernameFromParam = getUsernameFromParam(name)
 
   if (me.name !== usernameFromParam) {
@@ -100,6 +102,18 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
         <ErrorBoundary fallback={InternalServerError}>
           <Suspense fallback={<LoadingFallback />}>
             <PushSettings userId={userId} />
+          </Suspense>
+        </ErrorBoundary>
+      </CollapsibleSection>
+      <CollapsibleSection
+        description="내 데이터를 백업할 수 있어요"
+        icon={<Download className="size-5 shrink-0" />}
+        id="data"
+        title="데이터 내보내기"
+      >
+        <ErrorBoundary fallback={InternalServerError}>
+          <Suspense fallback={<LoadingFallback />}>
+            <DataExportSection userId={userId} />
           </Suspense>
         </ErrorBoundary>
       </CollapsibleSection>

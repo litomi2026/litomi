@@ -13,7 +13,6 @@ import useActionResponse from '@/hook/useActionResponse'
 import amplitude from '@/lib/amplitude/lazy'
 
 import { deleteAccount } from './actions'
-import ExportDataSection from './ExportDataSection'
 
 const CONSEQUENCES = [
   '모든 북마크가 삭제돼요',
@@ -37,7 +36,6 @@ export default function AccountDeletionForm({ loginId }: Readonly<Props>) {
   const [step, setStep] = useState<DeletionStep>(DeletionStep.INITIAL)
   const [confirmText, setConfirmText] = useState('')
   const [password, setPassword] = useState('')
-  const [hasExportedData, setHasExportedData] = useState(false)
   const queryClient = useQueryClient()
 
   const [_, dispatchAction, isPending] = useActionResponse({
@@ -77,7 +75,6 @@ export default function AccountDeletionForm({ loginId }: Readonly<Props>) {
               ))}
             </ul>
           </div>
-          <ExportDataSection hasExported={hasExportedData} onExportComplete={() => setHasExportedData(true)} />
           <div className="flex gap-3">
             <button
               className="flex-1 px-4 py-3 bg-zinc-800 hover:bg-zinc-700 rounded-lg font-medium transition"

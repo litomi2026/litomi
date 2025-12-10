@@ -3,7 +3,6 @@ import Link from 'next/link'
 import IconFlame from '@/components/icons/IconFlame'
 import LogoDiscord from '@/components/icons/LogoDiscord'
 import LogoGitHub from '@/components/icons/LogoGitHub'
-import LogoX from '@/components/icons/LogoX'
 import InstallPrompt from '@/components/InstallPrompt'
 import LinkPending from '@/components/LinkPending'
 import ScrollButtons from '@/components/ScrollButtons'
@@ -64,13 +63,6 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
             target="_blank"
           >
             <LogoDiscord className="size-3" /> Discord
-          </a>
-          <a
-            className="inline-flex items-center gap-0.5 hover:underline"
-            href="https://x.com/litomi_in"
-            target="_blank"
-          >
-            <LogoX className="size-3" /> @litomi_in
           </a>
         </div>
       </footer>

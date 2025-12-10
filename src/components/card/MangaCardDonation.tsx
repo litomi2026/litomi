@@ -7,8 +7,6 @@ import { usePathname } from 'next/navigation'
 import useGAViewEvent from '@/hook/useGAViewEvent'
 
 import LogoDiscord from '../icons/LogoDiscord'
-import LogoGitHub from '../icons/LogoGitHub'
-import LogoX from '../icons/LogoX'
 import { MangaCardSkeleton } from './MangaCard'
 
 export default function MangaCardDonation() {
@@ -68,16 +66,6 @@ export default function MangaCardDonation() {
             <div className="flex flex-col gap-2">
               <a
                 className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition text-sm font-medium"
-                href="https://x.com/litomi_in"
-                onClick={() => handleSocialClick('x_twitter')}
-                rel="noopener"
-                target="_blank"
-              >
-                <LogoX className="size-4" />
-                <span>@litomi_in 팔로우</span>
-              </a>
-              <a
-                className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition text-sm font-medium"
                 href="https://discord.gg/xTrbQaxpyD"
                 onClick={() => handleSocialClick('discord')}
                 rel="noopener"
@@ -85,16 +73,6 @@ export default function MangaCardDonation() {
               >
                 <LogoDiscord className="size-4" />
                 <span>Discord 서버 참여</span>
-              </a>
-              <a
-                className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 transition text-sm font-medium"
-                href="https://github.com/gwak2837/litomi"
-                onClick={() => handleSocialClick('github')}
-                rel="noopener"
-                target="_blank"
-              >
-                <LogoGitHub className="size-4" />
-                <span>GitHub star</span>
               </a>
             </div>
           </div>
