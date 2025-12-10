@@ -9,7 +9,7 @@ import { z } from 'zod'
 import { COOKIE_DOMAIN } from '@/constants'
 import { CookieKey } from '@/constants/storage'
 import { db } from '@/database/supabase/drizzle'
-import { bookmarkTable, userCensorshipTable, userTable } from '@/database/supabase/schema'
+import { userTable } from '@/database/supabase/schema'
 import { passwordSchema } from '@/database/zod'
 import { badRequest, internalServerError, ok, unauthorized } from '@/utils/action-response'
 import { validateUserIdFromCookie } from '@/utils/cookie'
@@ -58,63 +58,5 @@ export async function deleteAccount(formData: FormData) {
   } catch (error) {
     captureException(error)
     return internalServerError('계정 삭제 중 오류가 발생했어요', formData)
-  }
-}
-
-export async function exportUserData() {
-  const userId = await validateUserIdFromCookie()
-
-  if (!userId) {
-    return unauthorized('로그인 정보가 없거나 만료됐어요')
-  }
-
-  try {
-    const [user] = await db
-      .select({
-        createdAt: userTable.createdAt,
-        loginId: userTable.loginId,
-        name: userTable.name,
-        nickname: userTable.nickname,
-        imageURL: userTable.imageURL,
-      })
-      .from(userTable)
-      .where(eq(userTable.id, userId))
-
-    if (!user) {
-      return unauthorized('사용자를 찾을 수 없어요')
-    }
-
-    const bookmarks = await db
-      .select({
-        mangaId: bookmarkTable.mangaId,
-        createdAt: bookmarkTable.createdAt,
-      })
-      .from(bookmarkTable)
-      .where(eq(bookmarkTable.userId, userId))
-
-    const censorships = await db
-      .select({
-        key: userCensorshipTable.key,
-        value: userCensorshipTable.value,
-        level: userCensorshipTable.level,
-        createdAt: userCensorshipTable.createdAt,
-      })
-      .from(userCensorshipTable)
-      .where(eq(userCensorshipTable.userId, userId))
-
-    const exportData = {
-      exportedAt: new Date().toISOString(),
-      user,
-      bookmarks: bookmarks.map((bookmark) => ({
-        mangaId: bookmark.mangaId,
-        createdAt: bookmark.createdAt,
-      })),
-      censorships,
-    }
-
-    return ok(JSON.stringify(exportData, null, 2))
-  } catch (error) {
-    captureException(error)
-    return internalServerError('데이터 내보내기 중 오류가 발생했어요')
   }
 }
