@@ -28,48 +28,65 @@ type MangaResult = Error | Manga | null | undefined
 export async function fetchMangaFromMultiSources({ id, locale }: MangaFetchParams) {
   const revalidate = sec('60 days')
 
-  const [hiyobiManga, hiyobiImages, kHentaiManga /* harpiManga, */, hitomiManga, hentaiPawImages] = await Promise.all([
-    hiyobiClient.fetchManga({ id, locale, revalidate }).catch(catchError),
-    hiyobiClient.fetchMangaImages({ id }).catch(() => null),
-    kHentaiClient.fetchManga({ id, locale }).catch(catchError),
-    // harpiClient.fetchManga({ id, locale, revalidate }).catch(catchError),
-    hitomiClient.fetchManga({ id, locale }).catch(catchError),
-    hentaiPawClient.fetchMangaImages({ id, revalidate }).catch(() => null),
-  ])
+  const sources = [
+    // 1. hiyobi (한국어 작품만 지원)
+    async () => {
+      const manga = await hiyobiClient.fetchManga({ id, locale, revalidate })
+      if (!manga) {
+        return null
+      }
 
-  const sources: MangaResult[] = [
-    // harpiManga,
-    kHentaiManga,
-    hiyobiManga,
-    createHentaiPawManga(id, hentaiPawImages),
-    hitomiManga,
-  ].filter(checkDefined)
+      const images = await hiyobiClient.fetchMangaImages({ id })
+      if (!images || images.length === 0) {
+        return null
+      }
 
-  if (sources.length === 0) {
+      manga.images = images.map((url) => ({ original: { url } }))
+      return manga
+    },
+
+    // 2. hitomi (한국어 작품만 이미지 지원, 나머지 작품은 이미지 없음)
+    async () => {
+      const manga = await hitomiClient.fetchManga({ id, locale })
+      const hasKorean = manga?.languages?.some((l) => l.value === 'korean')
+      return hasKorean ? manga : null
+    },
+
+    // 3. kHentai
+    () => kHentaiClient.fetchManga({ id, locale }),
+
+    // 4. hentaiPaw
+    async () => {
+      const images = await hentaiPawClient.fetchMangaImages({ id, revalidate })
+      return createHentaiPawManga(id, images)
+    },
+  ]
+
+  let lastError: Error | null = null
+  let notFoundCount = 0
+
+  for (const fetchSource of sources) {
+    try {
+      const manga = await fetchSource()
+      if (manga && manga.id === id) {
+        return mergeMangas([manga])
+      }
+    } catch (e) {
+      if (e instanceof NotFoundError) {
+        notFoundCount++
+      } else {
+        console.error(e instanceof Error ? e.message : String(e))
+        lastError = e instanceof Error ? e : new Error(String(e))
+      }
+    }
+  }
+
+  if (notFoundCount === sources.length) {
     return null
   }
 
-  const validMangas = sources
-    .filter((source): source is Manga => !(source instanceof Error))
-    .filter((manga) => manga.id === id)
-
-  const errors = sources.filter((source): source is Error => source instanceof Error)
-
-  if (validMangas.length === 0) {
-    if (errors.length > 0 && errors.every((e) => e instanceof NotFoundError)) {
-      return null
-    }
-
-    return createErrorManga(id, errors[0])
-  }
-
-  const validHiyobiManga = validMangas.find((manga) => manga.source === MangaSource.HIYOBI)
-
-  if (validHiyobiManga && hiyobiImages) {
-    validHiyobiManga.images = hiyobiImages.map((image) => ({ original: { url: image } }))
-  }
-
-  return mergeMangas(validMangas)
+  // 5. hentkor
+  return createErrorManga(id, lastError ?? new Error('모든 소스에서 찾을 수 없어요'))
 }
 
 /**
@@ -151,13 +168,6 @@ export async function fetchMangasFromMultiSources({ ids, locale }: MangaListFetc
   }
 
   return mangaMap
-}
-
-function catchError(e: unknown): Error {
-  if (!(e instanceof NotFoundError)) {
-    console.error(e instanceof Error ? e.message : String(e))
-  }
-  return e instanceof Error ? e : new Error(String(e))
 }
 
 function createErrorManga(id: number, error: Error): MangaError {
