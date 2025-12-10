@@ -11,14 +11,7 @@ type Props = {
   id?: string
 }
 
-export default function CollapsibleSection({
-  icon,
-  title,
-  description,
-  variant = 'default',
-  children,
-  id,
-}: Readonly<Props>) {
+export default function CollapsibleSection({ icon, title, description, variant, children, id }: Props) {
   const borderColor = variant === 'danger' ? 'border-red-900/50' : 'border-zinc-800'
   const titleColor = variant === 'danger' ? 'text-red-500' : ''
   const contentBorderColor = variant === 'danger' ? 'border-red-900/50' : 'border-zinc-800'
