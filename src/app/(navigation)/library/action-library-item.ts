@@ -102,7 +102,7 @@ export async function addMangaToLibraries(data: { mangaId: number; libraryIds: n
         return notFound('서재를 찾을 수 없어요')
       }
       if (error.message === LibraryItemError.NO_VALID_LIBRARIES) {
-        return forbidden('작품을 추가할 수 없어요')
+        return forbidden('이미 모든 서재에 있거나 서재가 가득 찼어요')
       }
     }
     captureException(error)
@@ -187,7 +187,7 @@ export async function bulkCopyToLibrary(data: { toLibraryId: number; mangaIds: n
         return forbidden('서재가 가득 찼어요')
       }
       if (error.message === LibraryItemError.NO_NEW_MANGA) {
-        return forbidden('작품을 추가할 수 없어요')
+        return forbidden('이미 서재에 있는 작품이에요')
       }
     }
     captureException(error)
@@ -292,8 +292,11 @@ export async function bulkMoveToLibrary(data: { fromLibraryId: number; toLibrary
       if (error.message === LibraryItemError.LIBRARY_FULL) {
         return forbidden('대상 서재가 가득 찼어요')
       }
-      if (error.message === LibraryItemError.NO_SOURCE_ITEMS || error.message === LibraryItemError.NO_MOVABLE_ITEMS) {
-        return forbidden('작품을 이동할 수 없어요')
+      if (error.message === LibraryItemError.NO_SOURCE_ITEMS) {
+        return forbidden('이동할 작품을 찾을 수 없어요')
+      }
+      if (error.message === LibraryItemError.NO_MOVABLE_ITEMS) {
+        return forbidden('이미 대상 서재에 있는 작품이에요')
       }
     }
     captureException(error)
@@ -337,7 +340,7 @@ export async function bulkRemoveFromLibrary(data: { libraryId: number; mangaIds:
       .returning({ mangaId: libraryItemTable.mangaId })
 
     if (result.length === 0) {
-      return forbidden('작품을 삭제할 수 없어요')
+      return forbidden('삭제할 작품을 찾을 수 없어요')
     }
 
     revalidatePath(`/library/${libraryId}`, 'page')

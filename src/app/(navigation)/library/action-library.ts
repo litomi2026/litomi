@@ -9,7 +9,15 @@ import { MAX_LIBRARIES_PER_USER } from '@/constants/policy'
 import { db } from '@/database/supabase/drizzle'
 import { userExpansionTable } from '@/database/supabase/points-schema'
 import { libraryTable } from '@/database/supabase/schema'
-import { badRequest, created, internalServerError, notFound, ok, unauthorized } from '@/utils/action-response'
+import {
+  badRequest,
+  created,
+  forbidden,
+  internalServerError,
+  notFound,
+  ok,
+  unauthorized,
+} from '@/utils/action-response'
 import { hexColorToInt } from '@/utils/color'
 import { validateUserIdFromCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
@@ -80,6 +88,9 @@ export async function createLibrary(formData: FormData) {
     revalidatePath('/library', 'layout')
     return created(newLibraryId)
   } catch (error) {
+    if (error instanceof Error && error.message === 'LIMIT_REACHED') {
+      return forbidden('서재 개수 제한에 도달했어요')
+    }
     captureException(error)
     return internalServerError('서재를 생성하지 못했어요')
   }
