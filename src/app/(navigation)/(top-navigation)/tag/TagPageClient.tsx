@@ -51,6 +51,7 @@ export default function TagPageClient() {
             className={`px-5 py-2.5 text-sm font-medium transition border-b-2 border-transparent text-zinc-400 hover:text-zinc-200 ${TAB_COLORS[cat]}`}
             href={`/tag?category=${cat}`}
             key={cat}
+            prefetch={false}
           >
             {CATEGORY_LABELS[cat]}
           </Link>
