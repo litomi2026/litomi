@@ -90,7 +90,7 @@ export default function TagPageClient() {
                 className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm transition ${TAG_COLORS[category]}`}
                 href={`/search?query=${encodeURIComponent(value)}`}
                 prefetch={false}
-                title={label}
+                title={value}
               >
                 <span>{label.split(':')[1] || label}</span>
                 <span className="tabular-nums text-xs opacity-60">{formatNumber(count)}</span>
