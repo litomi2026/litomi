@@ -59,12 +59,9 @@ export default function TagPageClient() {
 
       {/* 태그 개수 정보 */}
       {data && (
-        <p className="text-center text-sm text-zinc-400">
-          {CATEGORY_LABELS[category]} 태그{' '}
-          <span className="tabular-nums">
-            {data.pagination.total.toLocaleString()}개 중 {((page - 1) * data.pagination.limit + 1).toLocaleString()}-
-            {Math.min(page * data.pagination.limit, data.pagination.total).toLocaleString()}
-          </span>
+        <p className="text-center text-sm text-zinc-400 tabular-nums">
+          {formatNumber(data.pagination.total)}개 중 {((page - 1) * data.pagination.limit + 1).toLocaleString()}-
+          {Math.min(page * data.pagination.limit, data.pagination.total).toLocaleString()}
         </p>
       )}
 
