@@ -1,12 +1,9 @@
 import Link from 'next/link'
 
 import IconFlame from '@/components/icons/IconFlame'
-import LogoDiscord from '@/components/icons/LogoDiscord'
-import LogoGitHub from '@/components/icons/LogoGitHub'
 import InstallPrompt from '@/components/InstallPrompt'
 import LinkPending from '@/components/LinkPending'
 import ScrollButtons from '@/components/ScrollButtons'
-import SourceTooltip from '@/components/tooltip/SourceTooltip'
 import { SHORT_NAME } from '@/constants'
 
 import { DEFAULT_METRIC, DEFAULT_PERIOD } from '../(ranking)/common'
@@ -31,9 +28,6 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
         <NewMangaLink />
         <RandomMangaLink timer={20} />
       </div>
-      <div className="flex justify-center whitespace-nowrap">
-        <SourceTooltip />
-      </div>
       <main className="flex flex-col grow gap-2">{children}</main>
       <footer className="text-center grid gap-2 p-4 text-sm">
         <InstallPrompt />
@@ -48,22 +42,6 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           <Link className="hover:underline" href="/deterrence">
             사용자 연령 제한 규정
           </Link>
-        </div>
-        <div className="flex justify-center gap-2 gap-y-1 flex-wrap text-xs">
-          <a
-            className="inline-flex items-center gap-1 hover:underline"
-            href="https://github.com/gwak2837/litomi"
-            target="_blank"
-          >
-            <LogoGitHub className="size-3" /> GitHub
-          </a>
-          <a
-            className="inline-flex items-center gap-1 hover:underline"
-            href="https://discord.gg/xTrbQaxpyD"
-            target="_blank"
-          >
-            <LogoDiscord className="size-3" /> Discord
-          </a>
         </div>
       </footer>
       <ScrollButtons />

@@ -12,6 +12,7 @@ import notificationRoutes from './notification'
 import pointsRoutes from './points'
 import postRoutes from './post'
 import searchRoutes from './search'
+import tagRoutes from './tag'
 
 const v1Routes = new Hono<Env>()
 
@@ -25,5 +26,6 @@ v1Routes.route('/notification', notificationRoutes)
 v1Routes.route('/points', pointsRoutes)
 v1Routes.route('/post', postRoutes)
 v1Routes.route('/search', searchRoutes)
+v1Routes.route('/tag', tagRoutes)
 
 export default v1Routes

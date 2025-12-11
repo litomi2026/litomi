@@ -29,4 +29,5 @@ export const QueryKeys = {
   posts: (filter: PostFilter, mangaId?: number, username?: string) => ['posts', filter, { mangaId, username }],
   realtimeAnalytics: ['realtime-analytics'],
   trendingKeywords: (locale: string) => ['trending-keywords', locale],
+  tag: (category: string, page: number, locale: string) => ['tag', category, page, locale],
 }
