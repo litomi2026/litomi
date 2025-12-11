@@ -85,9 +85,9 @@ export default function DataExportSectionClient({ counts }: Readonly<Props>) {
             return (
               <button
                 aria-pressed={isChecked}
-                className="flex items-center gap-2 p-2 rounded-lg border-2 transition-all text-left
+                className="flex items-center gap-2 p-3 rounded-lg border-2 transition text-left
                   border-zinc-700 bg-zinc-800/30 hover:border-zinc-600
-                  aria-pressed:border-brand aria-pressed:bg-brand/10 aria-pressed:hover:border-brand"
+                  aria-pressed:border-brand aria-pressed:bg-brand/10"
                 key={type}
                 onClick={() => toggleType(type)}
                 type="button"

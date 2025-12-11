@@ -75,7 +75,6 @@ export async function fetchMangaFromMultiSources({ id, locale }: MangaFetchParam
       if (e instanceof NotFoundError) {
         notFoundCount++
       } else {
-        console.error(e instanceof Error ? e.message : String(e))
         lastError = e instanceof Error ? e : new Error(String(e))
       }
     }
@@ -171,6 +170,7 @@ export async function fetchMangasFromMultiSources({ ids, locale }: MangaListFetc
 }
 
 function createErrorManga(id: number, error: Error): MangaError {
+  console.error(error.message)
   return {
     id,
     title: `${error.message}\n${error.cause ?? ''}`,
