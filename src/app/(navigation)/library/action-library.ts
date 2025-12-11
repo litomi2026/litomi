@@ -1,7 +1,7 @@
 'use server'
 
 import { captureException } from '@sentry/nextjs'
-import { and, count, eq, sum } from 'drizzle-orm'
+import { and, eq, sum } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 
 import { EXPANSION_TYPE, POINT_CONSTANTS } from '@/constants/points'
@@ -39,9 +39,9 @@ export async function createLibrary(formData: FormData) {
 
   try {
     const newLibraryId = await db.transaction(async (tx) => {
-      // 1. 현재 라이브러리 개수 조회 (FOR UPDATE 락으로 동시성 보장)
-      const [libraryCount] = await tx
-        .select({ count: count() })
+      // 1. 현재 라이브러리 조회 (FOR UPDATE 락으로 동시성 보장)
+      const userLibraries = await tx
+        .select({ id: libraryTable.id })
         .from(libraryTable)
         .where(eq(libraryTable.userId, userId))
         .for('update')
@@ -57,7 +57,7 @@ export async function createLibrary(formData: FormData) {
       const userLibraryLimit = Math.min(MAX_LIBRARIES_PER_USER + extra, POINT_CONSTANTS.LIBRARY_MAX_EXPANSION)
 
       // 4. 제한 체크
-      if (libraryCount.count >= userLibraryLimit) {
+      if (userLibraries.length >= userLibraryLimit) {
         throw new Error('LIMIT_REACHED')
       }
 
