@@ -4,7 +4,6 @@ import IconFlame from '@/components/icons/IconFlame'
 import InstallPrompt from '@/components/InstallPrompt'
 import LinkPending from '@/components/LinkPending'
 import ScrollButtons from '@/components/ScrollButtons'
-import SourceTooltip from '@/components/tooltip/SourceTooltip'
 import { SHORT_NAME } from '@/constants'
 
 import { DEFAULT_METRIC, DEFAULT_PERIOD } from '../(ranking)/common'
@@ -28,9 +27,6 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
         </Link>
         <NewMangaLink />
         <RandomMangaLink timer={20} />
-      </div>
-      <div className="flex justify-center whitespace-nowrap">
-        <SourceTooltip />
       </div>
       <main className="flex flex-col grow gap-2">{children}</main>
       <footer className="text-center grid gap-2 p-4 text-sm">

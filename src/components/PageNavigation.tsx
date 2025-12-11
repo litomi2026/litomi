@@ -123,7 +123,9 @@ export default function PageNavigation({
             </LinkPending>
           </Link>
         )}
-        <NavigationJump hrefPrefix={hrefPrefix} hrefSuffix={hrefSuffix} totalPages={totalPages} />
+        {totalPages > VISIBLE_PAGES * 2 && (
+          <NavigationJump hrefPrefix={hrefPrefix} hrefSuffix={hrefSuffix} totalPages={totalPages} />
+        )}
       </div>
     </nav>
   )

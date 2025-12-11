@@ -8,6 +8,7 @@ import { useEffect } from 'react'
 import useMeQuery from '@/query/useMeQuery'
 
 import IconPost from './icons/IconPost'
+import IconTag from './icons/IconTag'
 import LinkPending from './LinkPending'
 
 type MenuLinkProps = {
@@ -101,6 +102,12 @@ export default function MobileNavigationMenu({ onClose }: Readonly<Props>) {
             }
             isActive={pathname === '/library/rating'}
             title="평가"
+          />
+          <MenuLink
+            href="/tag"
+            icon={<IconTag className="w-5" selected={pathname.includes('/tag')} />}
+            isActive={pathname.includes('/tag')}
+            title="태그"
           />
           <MenuLink
             href={`/@${username}/settings`}

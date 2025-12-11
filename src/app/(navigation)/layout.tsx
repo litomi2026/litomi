@@ -8,6 +8,7 @@ import IconLibraryBig from '@/components/icons/IconLibraryBig'
 import IconLogo from '@/components/icons/IconLogo'
 import IconPost from '@/components/icons/IconPost'
 import IconSearch from '@/components/icons/IconSearch'
+import IconTag from '@/components/icons/IconTag'
 import SEOText from '@/components/SEOText'
 
 import { DEFAULT_METRIC, DEFAULT_PERIOD } from './(ranking)/common'
@@ -59,6 +60,9 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           </SelectableLink>
           <SelectableLink className="hidden sm:block" href="/posts/recommand" hrefMatch="/post" Icon={IconPost}>
             이야기
+          </SelectableLink>
+          <SelectableLink className="hidden sm:block" href="/tag" Icon={IconTag}>
+            태그
           </SelectableLink>
           <ProfileLink className="hidden sm:block" />
           <PublishButton className="hidden mx-auto my-4 sm:block xl:mx-0" />
