@@ -24,6 +24,7 @@ type RowData = {
   onLoadMore: () => void
   hasNextPage: boolean
   isFetchingNextPage: boolean
+  hasError: boolean
 }
 
 type WebtoonCardProps = {
@@ -86,16 +87,16 @@ export default function WebtoonListPage() {
       )
     }
 
-    if (error) {
-      return (
-        <div className="flex flex-col items-center justify-center h-full gap-2">
-          <p className="text-zinc-500">웹툰 목록을 불러올 수 없어요</p>
-          <p className="text-zinc-600 text-sm">{error?.message}</p>
-        </div>
-      )
-    }
-
     if (items.length === 0) {
+      if (error) {
+        return (
+          <div className="flex flex-col items-center justify-center h-full gap-2">
+            <p className="text-zinc-500">웹툰 목록을 불러올 수 없어요</p>
+            <p className="text-zinc-600 text-sm">{error?.message}</p>
+          </div>
+        )
+      }
+
       return (
         <div className="flex flex-col items-center justify-center h-full gap-2">
           <p className="text-zinc-500">웹툰이 없어요</p>
@@ -124,6 +125,7 @@ export default function WebtoonListPage() {
             onLoadMore: handleLoadMore,
             hasNextPage,
             isFetchingNextPage,
+            hasError: Boolean(error),
           }}
         />
       </div>
@@ -255,6 +257,7 @@ function WebtoonRow({
   onLoadMore,
   hasNextPage,
   isFetchingNextPage,
+  hasError,
 }: RowComponentProps<RowData>) {
   const totalRows = Math.ceil(items.length / columns)
   const isLoadMoreRow = index === totalRows
@@ -262,9 +265,17 @@ function WebtoonRow({
   // Load more row
   if (isLoadMoreRow) {
     return (
-      <div className="flex justify-center items-center" style={style}>
+      <div className="flex flex-col justify-center items-center gap-2" style={style}>
         {isFetchingNextPage ? (
           <IconSpinner className="size-6" />
+        ) : hasError ? (
+          <button
+            className="text-sm text-zinc-400 hover:text-zinc-200 transition-colors px-4 py-2"
+            onClick={onLoadMore}
+            type="button"
+          >
+            불러오기 실패 · 다시 시도
+          </button>
         ) : hasNextPage ? (
           <LoadMoreTrigger onLoadMore={onLoadMore} />
         ) : null}

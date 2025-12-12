@@ -269,7 +269,7 @@ function createToonkorConfig(domain: string): ProxyClientConfig {
       backoffMultiplier: 2,
       jitter: true,
     },
-    requestTimeout: ms('10 seconds'),
+    requestTimeout: ms('20 seconds'),
     defaultHeaders: {
       accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
       'user-agent':
