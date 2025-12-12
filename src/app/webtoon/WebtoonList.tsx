@@ -3,7 +3,7 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { List, RowComponentProps, useListRef } from 'react-window'
 
 import IconSpinner from '@/components/icons/IconSpinner'
@@ -44,6 +44,8 @@ export default function WebtoonListPage() {
   const containerRef = useRef<HTMLDivElement>(null)
   const listRef = useListRef(null)
   const [containerWidth, setContainerWidth] = useState(0)
+  const columns = getColumnCount(containerWidth)
+  const rowHeight = getRowHeight(containerWidth, columns)
 
   const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage } = useWebtoonListInfiniteQuery({
     provider,
@@ -51,7 +53,16 @@ export default function WebtoonListPage() {
   })
 
   const items = useMemo(() => data?.pages.flatMap((page) => page.items) ?? [], [data])
+  const rowCount = Math.ceil(items.length / columns) + 1 // +1 for load more row
+  const showList = !isLoading && items.length > 0 && containerWidth > 0
 
+  function handleLoadMore() {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage()
+    }
+  }
+
+  // NOTE: 컨테이너 너비 측정
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
@@ -68,70 +79,6 @@ export default function WebtoonListPage() {
     return () => observer.disconnect()
   }, [isLoading])
 
-  const columns = getColumnCount(containerWidth)
-  const rowCount = Math.ceil(items.length / columns) + 1 // +1 for load more row
-  const rowHeight = getRowHeight(containerWidth, columns)
-
-  const handleLoadMore = useCallback(() => {
-    if (hasNextPage && !isFetchingNextPage) {
-      fetchNextPage()
-    }
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage])
-
-  const renderContent = () => {
-    if (isLoading) {
-      return (
-        <div className="flex items-center justify-center h-full">
-          <IconSpinner className="size-8" />
-        </div>
-      )
-    }
-
-    if (items.length === 0) {
-      if (error) {
-        return (
-          <div className="flex flex-col items-center justify-center h-full gap-2">
-            <p className="text-zinc-500">웹툰 목록을 불러올 수 없어요</p>
-            <p className="text-zinc-600 text-sm">{error?.message}</p>
-          </div>
-        )
-      }
-
-      return (
-        <div className="flex flex-col items-center justify-center h-full gap-2">
-          <p className="text-zinc-500">웹툰이 없어요</p>
-        </div>
-      )
-    }
-
-    if (containerWidth === 0) {
-      return null
-    }
-
-    return (
-      <div className="h-full">
-        <List
-          className="px-3 py-4"
-          listRef={listRef}
-          overscanCount={3}
-          rowComponent={WebtoonRow}
-          rowCount={rowCount}
-          rowHeight={rowHeight}
-          rowProps={{
-            items,
-            columns,
-            provider,
-            domain,
-            onLoadMore: handleLoadMore,
-            hasNextPage,
-            isFetchingNextPage,
-            hasError: Boolean(error),
-          }}
-        />
-      </div>
-    )
-  }
-
   return (
     <div className="h-dvh flex flex-col bg-zinc-950 overflow-hidden" ref={containerRef}>
       <header className="shrink-0 bg-zinc-950/80 backdrop-blur-lg border-b border-zinc-800">
@@ -140,7 +87,49 @@ export default function WebtoonListPage() {
         </div>
       </header>
 
-      <main className="flex-1 max-w-6xl mx-auto w-full overflow-hidden">{renderContent()}</main>
+      <main className="flex-1 max-w-6xl mx-auto w-full overflow-hidden">
+        {isLoading && (
+          <div className="flex items-center justify-center h-full">
+            <IconSpinner className="size-8" />
+          </div>
+        )}
+
+        {!isLoading && items.length === 0 && error && (
+          <div className="flex flex-col items-center justify-center h-full gap-2">
+            <p className="text-zinc-500">웹툰 목록을 불러올 수 없어요</p>
+            <p className="text-zinc-600 text-sm">{error?.message}</p>
+          </div>
+        )}
+
+        {!isLoading && items.length === 0 && !error && (
+          <div className="flex flex-col items-center justify-center h-full gap-2">
+            <p className="text-zinc-500">웹툰이 없어요</p>
+          </div>
+        )}
+
+        {showList && (
+          <div className="h-full">
+            <List
+              className="pt-3"
+              listRef={listRef}
+              overscanCount={3}
+              rowComponent={WebtoonRow}
+              rowCount={rowCount}
+              rowHeight={rowHeight}
+              rowProps={{
+                items,
+                columns,
+                provider,
+                domain,
+                onLoadMore: handleLoadMore,
+                hasNextPage,
+                isFetchingNextPage,
+                hasError: Boolean(error),
+              }}
+            />
+          </div>
+        )}
+      </main>
     </div>
   )
 }
@@ -265,7 +254,7 @@ function WebtoonRow({
   // Load more row
   if (isLoadMoreRow) {
     return (
-      <div className="flex flex-col justify-center items-center gap-2" style={style}>
+      <div className="flex flex-col justify-center items-center gap-2 px-3" style={style}>
         {isFetchingNextPage ? (
           <IconSpinner className="size-6" />
         ) : hasError ? (
@@ -287,7 +276,10 @@ function WebtoonRow({
   const rowItems = items.slice(startIndex, startIndex + columns)
 
   return (
-    <div className="grid gap-3" style={{ ...style, gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
+    <div
+      className="grid gap-3 px-3 pb-3"
+      style={{ ...style, height: 'auto', gridTemplateColumns: `repeat(${columns}, 1fr)` }}
+    >
       {rowItems.map((item) => (
         <WebtoonCard domain={domain} item={item} key={item.path} provider={provider} />
       ))}
