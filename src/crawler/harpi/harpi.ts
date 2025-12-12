@@ -1,4 +1,7 @@
+import initCycleTLS, { CycleTLSClient } from 'cycletls'
 import ms from 'ms'
+import os from 'os'
+import path from 'path'
 
 import { GETHarpiSearchRequest, HarpiSearchSchema } from '@/app/api/proxy/harpi/search/schema'
 import { HARPI_TAG_MAP } from '@/crawler/harpi/tag'
@@ -13,8 +16,7 @@ import { translateType } from '@/translation/type'
 import { Manga, MangaTag } from '@/types/manga'
 import { uniqBy } from '@/utils/array'
 
-import { ProxyClient, ProxyClientConfig } from '../proxy'
-import { isUpstreamServerError } from '../proxy-utils'
+import { UpstreamServerError } from '../errors'
 
 type HarpiListResponse = {
   alert: string
@@ -61,57 +63,39 @@ const HARPI_MANGA_TYPE_MAP: Record<string, string> = {
   이미지모음: 'image_set',
 }
 
-const HARPI_CONFIG: ProxyClientConfig = {
-  baseURL: 'https://harpi.in',
-  circuitBreaker: {
-    failureThreshold: 5,
-    successThreshold: 3,
-    timeout: ms('10 minutes'),
-    shouldCountAsFailure: isUpstreamServerError,
-  },
-  retry: {
-    maxRetries: 2,
-    initialDelay: ms('1 second'),
-    maxDelay: ms('5 seconds'),
-    backoffMultiplier: 2,
-    jitter: true,
-  },
-  requestTimeout: ms('5 seconds'),
-  defaultHeaders: {
-    Accept: 'application/json, text/plain, */*',
-    'Accept-Encoding': 'gzip, deflate, br, zstd',
-    'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
-    'Cache-Control': 'no-cache',
-    Origin: 'https://harpi.in',
-    Pragma: 'no-cache',
-    Referer: 'https://harpi.in/',
-    'Sec-CH-UA': '"Chromium";v="130", "Google Chrome";v="130", "Not?A_Brand";v="99"',
-    'Sec-CH-UA-Mobile': '?0',
-    'Sec-CH-UA-Platform': '"macOS"',
-    'Sec-Fetch-Dest': 'empty',
-    'Sec-Fetch-Mode': 'cors',
-    'Sec-Fetch-Site': 'same-origin',
-    'user-agent':
-      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
-    'User-Agent':
-      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
-  },
+const HARPI_BASE_URL = 'https://harpi.in'
+const REQUEST_TIMEOUT = ms('10 seconds')
+
+// Chrome 131 User-Agent
+const USER_AGENT =
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
+
+// Chrome 131 JA3 fingerprint
+const CHROME_JA3 =
+  '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-13-18-51-45-43-27-17513-21,29-23-24,0'
+
+const DEFAULT_HEADERS = {
+  Accept: 'application/json, text/plain, */*',
+  'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+  Origin: 'https://harpi.in',
+  Referer: 'https://harpi.in/',
+  'Sec-CH-UA': '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
+  'Sec-CH-UA-Mobile': '?0',
+  'Sec-CH-UA-Platform': '"Windows"',
+  'Sec-Fetch-Dest': 'empty',
+  'Sec-Fetch-Mode': 'cors',
+  'Sec-Fetch-Site': 'same-origin',
 }
 
 class HarpiClient {
-  private readonly client: ProxyClient
+  private cycleTLSClient: CycleTLSClient | null = null
+  private initPromise: Promise<CycleTLSClient> | null = null
 
-  constructor() {
-    this.client = new ProxyClient(HARPI_CONFIG)
-  }
-
-  async fetchManga({ id, revalidate, locale }: MangaFetchParams): Promise<Manga | null> {
+  async fetchManga({ id, locale }: MangaFetchParams): Promise<Manga | null> {
     const validatedParams = HarpiSearchSchema.parse({ ids: [id] })
     const searchParams = this.buildSearchParams(validatedParams)
 
-    const response = await this.client.fetch<HarpiListResponse>(`/animation/list?${searchParams}`, {
-      next: { revalidate },
-    })
+    const response = await this.fetch<HarpiListResponse>(`/animation/list?${searchParams}`)
 
     if (response.data.length === 0) {
       return null
@@ -120,10 +104,8 @@ class HarpiClient {
     return this.convertHarpiToManga(response.data[0], locale)
   }
 
-  async fetchMangaByHarpiId({ id, revalidate, locale }: MangaFetchParams): Promise<Manga> {
-    const response = await this.client.fetch<{ data: HarpiManga }>(`/animation/${id}`, {
-      next: { revalidate },
-    })
+  async fetchMangaByHarpiId({ id, locale }: MangaFetchParams): Promise<Manga> {
+    const response = await this.fetch<{ data: HarpiManga }>(`/animation/${id}`)
 
     return this.convertHarpiToManga(response.data, locale)
   }
@@ -132,13 +114,11 @@ class HarpiClient {
     return Array.from({ length: count }, (_, i) => `https://soujpa.in/start/${id}/${id}_${i}.avif`)
   }
 
-  async searchMangas(params: Partial<GETHarpiSearchRequest> = {}, locale: Locale, revalidate?: number) {
+  async searchMangas(params: Partial<GETHarpiSearchRequest> = {}, locale: Locale) {
     const validatedParams = HarpiSearchSchema.parse(params)
     const searchParams = this.buildSearchParams(validatedParams)
 
-    const response = await this.client.fetch<HarpiListResponse>(`/animation/list?${searchParams}`, {
-      next: { revalidate },
-    })
+    const response = await this.fetch<HarpiListResponse>(`/animation/list?${searchParams}`)
 
     if (response.data.length === 0) {
       return null
@@ -315,6 +295,66 @@ class HarpiClient {
       bookmarkCount: bookmarks,
       source: MangaSource.HARPI,
     }
+  }
+
+  private async fetch<T>(path: string): Promise<T> {
+    const client = await this.getClient()
+    const url = `${HARPI_BASE_URL}${path}`
+
+    const response = await client(
+      url,
+      {
+        headers: DEFAULT_HEADERS,
+        ja3: CHROME_JA3,
+        userAgent: USER_AGENT,
+        timeout: REQUEST_TIMEOUT,
+      },
+      'get',
+    )
+
+    if (response.status !== 200) {
+      throw new UpstreamServerError(`HTTP ${response.status}`, response.status, {
+        url,
+        body: response.data,
+      })
+    }
+
+    // cycletls returns data as string or object
+    const data = typeof response.data === 'string' ? JSON.parse(response.data) : response.data
+    return data as T
+  }
+
+  private async getClient(): Promise<CycleTLSClient> {
+    if (this.cycleTLSClient) {
+      return this.cycleTLSClient
+    }
+
+    if (!this.initPromise) {
+      // Determine correct executable path based on platform and architecture
+      const platform = os.platform()
+      const arch = os.arch()
+      let executableName = 'index'
+
+      if (platform === 'darwin') {
+        executableName = arch === 'arm64' ? 'index-mac-arm64' : 'index-mac'
+      } else if (platform === 'linux') {
+        executableName = arch === 'arm64' ? 'index-arm64' : 'index-arm'
+      } else if (platform === 'win32') {
+        executableName = 'index.exe'
+      } else if (platform === 'freebsd') {
+        executableName = 'index-freebsd'
+      }
+
+      // Use process.cwd() for Next.js/Turbopack compatibility
+      const executablePath = path.join(process.cwd(), 'node_modules', 'cycletls', 'dist', executableName)
+
+      this.initPromise = initCycleTLS({ executablePath }).then((client) => {
+        this.cycleTLSClient = client
+        return client
+      })
+    }
+
+    return this.initPromise
   }
 
   /**

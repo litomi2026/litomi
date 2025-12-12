@@ -57,6 +57,7 @@
     "botid": "^1.5.10",
     "caniuse-lite": "^1.0.30001760",
     "country-flag-icons": "^1.6.4",
+    "cycletls": "^2.0.5",
     "dayjs": "^1.11.19",
     "drizzle-orm": "^0.44.7",
     "hono": "^4.10.8",

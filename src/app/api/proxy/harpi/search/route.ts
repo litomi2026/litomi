@@ -5,7 +5,7 @@ import { Manga } from '@/types/manga'
 
 import { HarpiSearchSchema } from './schema'
 
-export const runtime = 'edge'
+// NOTE: cycletls 사용을 위해 Node.js 런타임 필요 (Edge Runtime 제거)
 const maxAge = 300
 
 const commaJoinedParams = ['authors', 'groups', 'series', 'characters', 'tags', 'tagsExclude', 'ids']

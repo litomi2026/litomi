@@ -2,7 +2,7 @@ import { harpiClient } from '@/crawler/harpi/harpi'
 import { createCacheControl, createHealthCheckHandler } from '@/crawler/proxy-utils'
 import { Locale } from '@/translation/common'
 
-export const runtime = 'edge'
+// NOTE: cycletls 사용을 위해 Node.js 런타임 필요 (Edge Runtime 제거)
 const maxAge = 5
 
 export async function GET() {
@@ -10,8 +10,7 @@ export async function GET() {
     'harpi',
     {
       search: async () => Boolean(await harpiClient.searchMangas({}, Locale.KO)),
-      manga: async () =>
-        Boolean(await harpiClient.fetchMangaByHarpiId({ id: '67e5a1b843721660bba361b2', locale: Locale.KO })), // 조회수 1위 망가
+      manga: async () => Boolean(await harpiClient.fetchManga({ id: 3675388, locale: Locale.KO })), // 최신 망가 ID
     },
     {
       headers: {
