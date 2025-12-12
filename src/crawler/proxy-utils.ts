@@ -6,6 +6,7 @@ export type ApiResponse<T = unknown> = T & {
   error?: {
     code: string
     message: string
+    isRetryable: boolean
   }
 }
 
@@ -143,6 +144,7 @@ export function handleRouteError(error: unknown, request: Request) {
     error: {
       code: normalizedError.errorCode,
       message: normalizedError.message,
+      isRetryable: normalizedError.isRetryable,
     },
   }
 

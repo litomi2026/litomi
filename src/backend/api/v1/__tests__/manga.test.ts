@@ -4,6 +4,8 @@ import { contextStorage } from 'hono/context-storage'
 
 import type { Env } from '@/backend'
 
+import { MAX_MANGA_ID } from '@/constants/policy'
+
 import mangaRoutes from '../manga/[id]/history'
 
 let shouldThrowDatabaseError = false
@@ -237,12 +239,12 @@ describe('GET /api/v1/manga/:id/history', () => {
       currentUserId = 1
       mockReadingHistory.set('1', 1)
 
-      // When - MAX_MANGA_ID(10000000)는 허용
-      const validResponse = await app.request('/10000000/history', {}, { userId: 1 })
+      // When - MAX_MANGA_ID는 허용
+      const validResponse = await app.request(`/${MAX_MANGA_ID}/history`, {}, { userId: 1 })
       expect(validResponse.status).toBe(200)
 
       // When - MAX_MANGA_ID + 1은 거부
-      const invalidResponse = await app.request('/10000001/history', {}, { userId: 1 })
+      const invalidResponse = await app.request(`/${MAX_MANGA_ID + 1}/history`, {}, { userId: 1 })
       expect(invalidResponse.status).toBe(400)
     })
   })

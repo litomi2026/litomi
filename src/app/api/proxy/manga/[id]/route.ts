@@ -1,5 +1,5 @@
 import { fetchMangaFromMultiSources } from '@/common/manga'
-import { BLACKLISTED_MANGA_IDS } from '@/constants/policy'
+import { BLACKLISTED_MANGA_IDS, LAST_VERIFIED_MANGA_ID } from '@/constants/policy'
 import { createCacheControlHeaders, handleRouteError } from '@/crawler/proxy-utils'
 import { Locale } from '@/translation/common'
 import { Manga } from '@/types/manga'
@@ -70,14 +70,16 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
     const manga = await fetchMangaFromMultiSources({ id, locale })
 
     if (!manga) {
+      const isPermanentlyMissing = id <= LAST_VERIFIED_MANGA_ID
+
       const notFoundHeaders = createCacheControlHeaders({
         vercel: {
-          maxAge: sec('10 minutes'),
+          maxAge: isPermanentlyMissing ? sec('30 days') : sec('10 minutes'),
         },
         browser: {
           public: true,
           maxAge: 3,
-          sMaxAge: sec('1 hour'),
+          sMaxAge: isPermanentlyMissing ? sec('30 days') : sec('1 hour'),
           swr: sec('10 minutes'),
         },
       })
@@ -87,10 +89,13 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
 
     if ('isError' in manga) {
       const errorHeaders = createCacheControlHeaders({
+        vercel: {
+          maxAge: 3,
+        },
         browser: {
           public: true,
           maxAge: 3,
-          sMaxAge: sec('10 seconds'),
+          sMaxAge: 10,
         },
       })
 

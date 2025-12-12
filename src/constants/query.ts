@@ -30,4 +30,7 @@ export const QueryKeys = {
   realtimeAnalytics: ['realtime-analytics'],
   trendingKeywords: (locale: string) => ['trending-keywords', locale],
   tag: (category: string, page: number, locale: string) => ['tag', category, page, locale],
+  webtoonEpisode: (provider: string, domain: string, path: string) => ['webtoon', 'episode', provider, domain, path],
+  webtoonList: (provider: string, domain: string) => ['webtoon', 'list', provider, domain],
+  webtoonSeries: (provider: string, domain: string, path: string) => ['webtoon', 'series', provider, domain, path],
 }

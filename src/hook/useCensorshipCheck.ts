@@ -11,7 +11,7 @@ type Params = {
 }
 
 export default function useMatchedCensorships({ manga, censorshipsMap }: Readonly<Params>) {
-  const { artists, characters, group, series, tags, languages, uploader } = manga
+  const { artists, characters, group, series, tags, languages, uploader, type } = manga
 
   return useMemo(() => {
     let highest = CensorshipLevel.LIGHT
@@ -114,6 +114,16 @@ export default function useMatchedCensorships({ manga, censorshipsMap }: Readonl
       }
     }
 
+    if (type) {
+      const typeKey = `${CensorshipKey.TYPE}:${type.value}`
+      const typeMatches = censorshipsMap.get(typeKey)
+
+      if (typeMatches && typeMatches.level !== CensorshipLevel.NONE) {
+        matchedLabels.push(type.label)
+        highest = Math.max(highest, typeMatches.level)
+      }
+    }
+
     if (matchedLabels.length === 0) {
       return {}
     }
@@ -122,7 +132,7 @@ export default function useMatchedCensorships({ manga, censorshipsMap }: Readonl
       censoringReasons: Array.from(new Set(matchedLabels)),
       highestCensorshipLevel: highest,
     }
-  }, [artists, censorshipsMap, characters, group, series, tags, languages, uploader])
+  }, [artists, censorshipsMap, characters, group, series, tags, languages, uploader, type])
 }
 
 function mapTagCategoryToCensorshipKey(category: string) {

@@ -34,6 +34,15 @@ export class ProxyClient {
   }
 
   async fetch<T>(path: string, options: RequestInit = {}, raw = false): Promise<T> {
+    const { data } = await this.fetchWithRedirect<T>(path, { ...options, redirect: options.redirect || 'manual' }, raw)
+    return data
+  }
+
+  async fetchWithRedirect<T>(
+    path: string,
+    options: RequestInit = {},
+    raw = false,
+  ): Promise<{ data: T; finalUrl: string }> {
     const url = `${this.config.baseURL}${path}`
 
     const execute = async () => {
@@ -54,7 +63,7 @@ export class ProxyClient {
           ...this.config.defaultHeaders,
           ...options.headers,
         },
-        redirect: options.redirect || 'manual',
+        redirect: options.redirect || 'follow',
       })
 
       if (response.status === 404) {
@@ -72,7 +81,8 @@ export class ProxyClient {
         })
       }
 
-      return raw ? ((await response.text()) as T) : ((await response.json()) as T)
+      const data = raw ? ((await response.text()) as T) : ((await response.json()) as T)
+      return { data, finalUrl: response.url }
     }
 
     const wrappedWithRetry = this.config.retry ? () => retryWithBackoff(execute, this.config.retry, { url }) : execute
