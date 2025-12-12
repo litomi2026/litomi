@@ -10,6 +10,7 @@ export enum CensorshipKey {
   TAG_CATEGORY_OTHER = 9,
   LANGUAGE = 10,
   UPLOADER = 11,
+  TYPE = 12,
 }
 
 export enum CensorshipLevel {

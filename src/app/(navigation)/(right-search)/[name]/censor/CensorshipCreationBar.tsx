@@ -280,6 +280,10 @@ export default function CensorshipCreationBar() {
                 <p>
                   • 언어: <code className="text-zinc-300">language:chinese</code>
                 </p>
+                <p>
+                  • 타입: <code className="text-zinc-300">type:western</code>,{' '}
+                  <code className="text-zinc-300">type:misc</code>
+                </p>
               </div>
               <div>
                 <p className="font-medium text-zinc-300 mb-1">태그 카테고리</p>
