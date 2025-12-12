@@ -248,7 +248,7 @@ function WebtoonCard({ item, provider, domain }: WebtoonCardProps) {
 
   return (
     <Link
-      className="flex flex-col overflow-hidden rounded-lg bg-zinc-900 hover:bg-zinc-800 transition-colors"
+      className="flex flex-col overflow-hidden rounded-lg bg-zinc-900 hover:bg-zinc-800 transition text-zinc-100 visited:text-zinc-500"
       href={`/webtoon/series?provider=${provider}&domain=${domain}&path=${encodeURIComponent(seriesPath)}`}
     >
       {/* 썸네일 */}
@@ -278,7 +278,7 @@ function WebtoonCard({ item, provider, domain }: WebtoonCardProps) {
 
       {/* 정보 */}
       <div className="p-2 flex flex-col gap-0.5">
-        <h3 className="text-sm font-medium text-zinc-100 truncate">{item.title}</h3>
+        <h3 className="text-sm font-medium truncate">{item.title}</h3>
         {item.genre && <p className="text-xs text-zinc-500 truncate">{item.genre}</p>}
         {item.likes !== undefined && (
           <p className="text-xs text-zinc-600">

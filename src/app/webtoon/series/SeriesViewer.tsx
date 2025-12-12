@@ -64,10 +64,10 @@ function EpisodeList({ series, provider, domain }: EpisodeListProps) {
         {series.episodes.map((episode) => (
           <li key={episode.path}>
             <Link
-              className="flex items-center justify-between px-4 py-3 hover:bg-zinc-900/50 active:bg-zinc-900 transition-colors"
+              className="flex items-center justify-between px-4 py-3 hover:bg-zinc-900/50 active:bg-zinc-900 transition text-zinc-200 visited:text-zinc-500"
               href={`/webtoon/episode?provider=${provider}&domain=${domain}&path=${encodeURIComponent(episode.path.replace(/^\//, ''))}`}
             >
-              <span className="text-sm text-zinc-200 truncate">{episode.title}</span>
+              <span className="text-sm truncate">{episode.title}</span>
               {episode.publishedAt && (
                 <span className="text-xs text-zinc-600 shrink-0 ml-2">{formatDate(episode.publishedAt)}</span>
               )}
