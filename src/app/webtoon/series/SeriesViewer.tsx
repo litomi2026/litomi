@@ -109,7 +109,7 @@ function SeriesHeader({ series }: { series: WebtoonSeries }) {
           {/* 썸네일 */}
           {series.thumbnail && (
             <div className="rounded-lg overflow-hidden shadow-xl">
-              <img alt={series.title} className="w-full" src={series.thumbnail} />
+              <img alt={series.title} className="w-[480px] h-[240px] object-cover" src={series.thumbnail} />
             </div>
           )}
 

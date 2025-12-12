@@ -1,5 +1,11 @@
+import { Suspense } from 'react'
+
 import WebtoonListPage from './WebtoonList'
 
 export default function WebtoonPage() {
-  return <WebtoonListPage />
+  return (
+    <Suspense>
+      <WebtoonListPage />
+    </Suspense>
+  )
 }
