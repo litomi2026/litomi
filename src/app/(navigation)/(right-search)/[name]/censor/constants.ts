@@ -13,7 +13,7 @@ export const CENSORSHIP_KEY_LABELS: Record<CensorshipKey, string> = {
   [CensorshipKey.TAG_CATEGORY_OTHER]: '기타 태그',
   [CensorshipKey.LANGUAGE]: '언어',
   [CensorshipKey.UPLOADER]: '업로더',
-  [CensorshipKey.TYPE]: '타입',
+  [CensorshipKey.TYPE]: '종류',
 }
 
 export const TYPE_PATTERNS: Record<string, CensorshipKey> = {
