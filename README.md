@@ -77,7 +77,7 @@ docker run -e PORT=4000 -p 4000:4000 --rm litomi-backend:latest
 
 #### 배포
 
-- 인도 도메인: https://litomi.in
+- Vercel: https://litomi.in
 - Netlify: https://litomi.netlify.app
 - Fly.io: https://litomi.fly.dev
 - Render: https://litomi.onrender.com
@@ -87,7 +87,6 @@ docker run -e PORT=4000 -p 4000:4000 --rm litomi-backend:latest
 
 - SonarQube: https://sonarcloud.io/summary/overall?id=gwak2837_litomi&branch=main
 - Discord: https://discord.gg/xTrbQaxpyD
-- X: https://x.com/litomi_in
 
 ## 고민
 
