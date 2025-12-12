@@ -24,7 +24,8 @@ export type ToonkorParams = {
 export const TOONKOR_DOMAIN_PATTERN = /^tkor\d+\.com$/
 
 class ToonkorClient implements WebtoonCrawler<ToonkorParams> {
-  private clientCache = new Map<string, ProxyClient>()
+  private client: ProxyClient | null = null
+  private currentDomain: string | null = null
 
   /**
    * 에피소드 데이터를 가져와요.
@@ -41,9 +42,10 @@ class ToonkorClient implements WebtoonCrawler<ToonkorParams> {
    */
   async fetchList({ domain, revalidate }: ToonkorParams): Promise<WebtoonList> {
     const client = this.getClient(domain)
-    const html = await client.fetch<string>('/웹툰', { next: { revalidate } }, true)
-
-    return { items: this.extractListItems(html, domain) }
+    const { data: html, finalUrl } = await client.fetchWithRedirect<string>('/웹툰', { next: { revalidate } }, true)
+    const finalDomain = new URL(finalUrl).hostname
+    this.updateDomain(finalDomain)
+    return { items: this.extractListItems(html, finalDomain) }
   }
 
   /**
@@ -52,9 +54,16 @@ class ToonkorClient implements WebtoonCrawler<ToonkorParams> {
   async fetchSeries({ domain, path, revalidate }: ToonkorParams): Promise<WebtoonSeries> {
     const client = this.getClient(domain)
     const normalizedPath = path.startsWith('/') ? path : `/${path}`
-    const html = await client.fetch<string>(normalizedPath, { next: { revalidate } }, true)
 
-    return this.extractSeriesInfo(html, domain, path)
+    const { data: html, finalUrl } = await client.fetchWithRedirect<string>(
+      normalizedPath,
+      { next: { revalidate } },
+      true,
+    )
+
+    const finalDomain = new URL(finalUrl).hostname
+    this.updateDomain(finalDomain)
+    return this.extractSeriesInfo(html, finalDomain, path)
   }
 
   /**
@@ -234,22 +243,31 @@ class ToonkorClient implements WebtoonCrawler<ToonkorParams> {
   private async fetchEpisodeImages({ domain, path, revalidate }: ToonkorParams): Promise<string[]> {
     const client = this.getClient(domain)
     const normalizedPath = path.startsWith('/') ? path : `/${path}`
-    const html = await client.fetch<string>(normalizedPath, { next: { revalidate } }, true)
+
+    const { data: html, finalUrl } = await client.fetchWithRedirect<string>(
+      normalizedPath,
+      { next: { revalidate } },
+      true,
+    )
+
+    this.updateDomain(new URL(finalUrl).hostname)
     return this.extractImageUrls(html, path)
   }
 
-  /**
-   * 도메인별 ProxyClient를 가져와요. (캐싱됨)
-   */
   private getClient(domain: string): ProxyClient {
-    let client = this.clientCache.get(domain)
-
-    if (!client) {
-      client = new ProxyClient(createToonkorConfig(domain))
-      this.clientCache.set(domain, client)
+    if (!this.client || this.currentDomain !== domain) {
+      this.client = new ProxyClient(createToonkorConfig(domain))
+      this.currentDomain = domain
     }
 
-    return client
+    return this.client
+  }
+
+  private updateDomain(domain: string) {
+    if (this.currentDomain !== domain) {
+      this.client = new ProxyClient(createToonkorConfig(domain))
+      this.currentDomain = domain
+    }
   }
 }
 

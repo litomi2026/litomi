@@ -7,6 +7,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { List, RowComponentProps, useListRef } from 'react-window'
 
 import IconSpinner from '@/components/icons/IconSpinner'
+import CustomSelect from '@/components/ui/CustomSelect'
 import { QueryKeys } from '@/constants/query'
 import { WebtoonList, WebtoonListItem } from '@/crawler/webtoon/types'
 import { handleResponseError } from '@/utils/react-query-error'
@@ -37,6 +38,8 @@ const GAP = 12
 const PADDING_X = 12
 const INFO_HEIGHT = 72
 
+const PROVIDER_OPTIONS = [{ label: '툰코', value: 'toonkor' }] as const
+
 export default function WebtoonListPage() {
   const searchParams = useSearchParams()
   const provider = searchParams.get('provider') ?? ''
@@ -46,6 +49,7 @@ export default function WebtoonListPage() {
   const [containerWidth, setContainerWidth] = useState(0)
   const columns = getColumnCount(containerWidth)
   const rowHeight = getRowHeight(containerWidth, columns)
+  const hasParams = provider && domain
 
   const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage } = useWebtoonListInfiniteQuery({
     provider,
@@ -78,6 +82,57 @@ export default function WebtoonListPage() {
     observer.observe(container)
     return () => observer.disconnect()
   }, [isLoading])
+
+  if (!hasParams) {
+    return (
+      <div className="h-dvh flex flex-col bg-zinc-950" ref={containerRef}>
+        <header className="shrink-0 bg-zinc-950/80 backdrop-blur-lg border-b border-zinc-800">
+          <div className="max-w-6xl mx-auto px-4 py-4">
+            <h1 className="text-lg font-bold text-white">웹툰</h1>
+          </div>
+        </header>
+
+        <main className="flex-1 flex items-center justify-center p-4">
+          <form action="/webtoon" className="w-full max-w-sm flex flex-col gap-4" method="get">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm text-zinc-400" htmlFor="provider">
+                제공자
+              </label>
+              <CustomSelect
+                defaultValue={provider || 'toonkor'}
+                id="provider"
+                name="provider"
+                options={PROVIDER_OPTIONS}
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-sm text-zinc-400" htmlFor="domain">
+                도메인
+              </label>
+              <input
+                className="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2.5 text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-zinc-700"
+                defaultValue={domain || 'tkor079.com'}
+                id="domain"
+                name="domain"
+                placeholder="tkor079.com"
+                required
+                type="text"
+              />
+              <p className="text-xs text-zinc-600">현재 접속 가능한 도메인을 입력해 주세요</p>
+            </div>
+
+            <button
+              className="mt-2 bg-zinc-100 text-zinc-900 font-medium rounded-lg px-4 py-2.5 hover:bg-white transition-colors"
+              type="submit"
+            >
+              불러오기
+            </button>
+          </form>
+        </main>
+      </div>
+    )
+  }
 
   return (
     <div className="h-dvh flex flex-col bg-zinc-950 overflow-hidden" ref={containerRef}>
