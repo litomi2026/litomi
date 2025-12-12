@@ -1,4 +1,4 @@
-import { NotFoundError } from '@/crawler/errors'
+import { AllSourcesFailedError, NotFoundError } from '@/crawler/errors'
 import { harpiClient } from '@/crawler/harpi/harpi'
 import { hentaiPawClient } from '@/crawler/hentai-paw'
 import { hentKorClient } from '@/crawler/hentkor'
@@ -85,7 +85,7 @@ export async function fetchMangaFromMultiSources({ id, locale }: MangaFetchParam
   }
 
   // 5. hentkor
-  return createErrorManga(id, lastError ?? new Error('모든 소스에서 찾을 수 없어요'))
+  return createErrorManga(id, lastError ?? new AllSourcesFailedError())
 }
 
 /**
@@ -170,7 +170,9 @@ export async function fetchMangasFromMultiSources({ ids, locale }: MangaListFetc
 }
 
 function createErrorManga(id: number, error: Error): MangaError {
-  console.error(error.message)
+  if (!(error instanceof AllSourcesFailedError)) {
+    console.error(error.message)
+  }
   return {
     id,
     title: `${error.message}\n${error.cause ?? ''}`,

@@ -22,6 +22,16 @@ export abstract class ProxyError extends Error {
   }
 }
 
+export class AllSourcesFailedError extends ProxyError {
+  readonly errorCode = 'ALL_SOURCES_FAILED'
+  readonly isRetryable = false
+  readonly statusCode = 404
+
+  constructor(context?: Record<string, unknown>) {
+    super('모든 소스에서 찾을 수 없어요', context)
+  }
+}
+
 export class CircuitBreakerError extends ProxyError {
   readonly errorCode = 'CIRCUIT_BREAKER_OPEN'
   readonly isRetryable = false
