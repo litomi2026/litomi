@@ -6,7 +6,7 @@ export class ResponseError extends Error {
     message: string,
     public readonly code: string,
     public readonly status: number,
-    public readonly details?: unknown,
+    public readonly isRetryable: boolean,
   ) {
     super(message)
     this.name = 'ResponseError'
@@ -19,6 +19,7 @@ export async function handleResponseError<T>(response: Response) {
       (await response.text()) || '오류가 발생했어요.',
       response.statusText || 'UNKNOWN_ERROR',
       response.status,
+      response.status >= 500,
     )
   }
 
@@ -29,6 +30,7 @@ export async function handleResponseError<T>(response: Response) {
       data.error.message || '오류가 발생했어요.',
       data.error.code || 'UNKNOWN_ERROR',
       response.status,
+      data.error.isRetryable,
     )
   }
 
@@ -36,18 +38,18 @@ export async function handleResponseError<T>(response: Response) {
 }
 
 export function shouldRetryError(error: unknown, failureCount: number, maxRetries = 3): boolean {
-  // Don't retry if we've exceeded max retries
-  if (failureCount >= maxRetries) return false
+  if (failureCount >= maxRetries) {
+    return false
+  }
 
-  // Never retry validation errors (4xx)
-  if (error instanceof ResponseError && error.status >= 400 && error.status < 500) return false
+  if (!(error instanceof Error)) {
+    return false
+  }
 
-  // Never retry non-error objects
-  if (!(error instanceof Error)) return false
+  if (error instanceof ResponseError) {
+    return error.isRetryable
+  }
 
-  // Retry network errors and 5xx errors
-  const isNetworkError = error.message.includes('fetch') || error.message.includes('network')
-  const isServerError = error instanceof ResponseError && error.status >= 500
-
-  return isNetworkError || isServerError
+  const message = error.message.toLowerCase()
+  return message.includes('fetch') || message.includes('network')
 }

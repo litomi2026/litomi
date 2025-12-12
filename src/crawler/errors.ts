@@ -17,6 +17,7 @@ export abstract class ProxyError extends Error {
       error: this.errorCode,
       message: this.message,
       statusCode: this.statusCode,
+      isRetryable: this.isRetryable,
       context: this.context,
     }
   }
@@ -44,7 +45,7 @@ export class CircuitBreakerError extends ProxyError {
 
 export class InternalError extends ProxyError {
   readonly errorCode = 'INTERNAL_ERROR'
-  readonly isRetryable = false
+  readonly isRetryable = true
   readonly statusCode = 500
 
   constructor(message = '알 수 없는 오류가 발생했어요', context?: Record<string, unknown>) {
