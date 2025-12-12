@@ -89,10 +89,13 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
 
     if ('isError' in manga) {
       const errorHeaders = createCacheControlHeaders({
+        vercel: {
+          maxAge: 3,
+        },
         browser: {
           public: true,
           maxAge: 3,
-          sMaxAge: sec('10 seconds'),
+          sMaxAge: 10,
         },
       })
 

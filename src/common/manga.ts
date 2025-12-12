@@ -68,9 +68,13 @@ export async function fetchMangaFromMultiSources({ id, locale }: MangaFetchParam
   for (const fetchSource of sources) {
     try {
       const manga = await fetchSource()
-      if (manga && manga.id === id) {
-        return mergeMangas([manga])
+
+      if (!manga || manga.id !== id) {
+        notFoundCount++
+        continue
       }
+
+      return mergeMangas([manga])
     } catch (e) {
       if (e instanceof NotFoundError) {
         notFoundCount++

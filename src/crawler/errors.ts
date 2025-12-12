@@ -29,7 +29,7 @@ export class AllSourcesFailedError extends ProxyError {
   readonly statusCode = 404
 
   constructor(context?: Record<string, unknown>) {
-    super('모든 소스에서 찾을 수 없어요', context)
+    super('모든 소스에서 불러올 수 없어요', context)
   }
 }
 
