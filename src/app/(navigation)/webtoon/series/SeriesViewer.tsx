@@ -60,7 +60,7 @@ function EpisodeList({ series, provider, domain }: EpisodeListProps) {
         <h2 className="text-sm font-medium text-zinc-300">에피소드</h2>
       </div>
 
-      <ul className="divide-y divide-zinc-800/50">
+      <ul className="divide-y divide-zinc-800/50 pb-4">
         {series.episodes.map((episode) => (
           <li key={episode.path}>
             <Link
