@@ -46,7 +46,7 @@ export default function SeriesViewer() {
   }
 
   return (
-    <div className="min-h-dvh bg-zinc-950">
+    <div className="min-h-dvh bg-zinc-950 px-safe">
       <SeriesHeader series={series} />
       <EpisodeList domain={domain} provider={provider} series={series} />
     </div>
@@ -55,7 +55,7 @@ export default function SeriesViewer() {
 
 function EpisodeList({ series, provider, domain }: EpisodeListProps) {
   return (
-    <section className="max-w-3xl mx-auto">
+    <section className="max-w-3xl mx-auto pb-safe">
       <div className="px-4 py-3 border-b border-zinc-800">
         <h2 className="text-sm font-medium text-zinc-300">에피소드</h2>
       </div>
@@ -94,7 +94,7 @@ function formatDate(dateStr: string): string {
 
 function SeriesHeader({ series }: { series: WebtoonSeries }) {
   return (
-    <header className="relative">
+    <header className="relative pt-safe">
       {/* 배경 블러 이미지 */}
       {series.thumbnail && (
         <div className="absolute inset-0 overflow-hidden">

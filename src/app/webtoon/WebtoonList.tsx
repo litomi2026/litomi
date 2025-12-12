@@ -85,7 +85,7 @@ export default function WebtoonListPage() {
 
   if (!hasParams) {
     return (
-      <div className="h-dvh flex flex-col bg-zinc-950" ref={containerRef}>
+      <div className="h-dvh flex flex-col bg-zinc-950 pt-safe pb-safe px-safe" ref={containerRef}>
         <header className="shrink-0 bg-zinc-950/80 backdrop-blur-lg border-b border-zinc-800">
           <div className="max-w-6xl mx-auto px-4 py-4">
             <h1 className="text-lg font-bold text-white">웹툰</h1>
@@ -135,7 +135,7 @@ export default function WebtoonListPage() {
   }
 
   return (
-    <div className="h-dvh flex flex-col bg-zinc-950 overflow-hidden" ref={containerRef}>
+    <div className="h-dvh flex flex-col bg-zinc-950 overflow-hidden pt-safe px-safe" ref={containerRef}>
       <header className="shrink-0 bg-zinc-950/80 backdrop-blur-lg border-b border-zinc-800">
         <div className="max-w-6xl mx-auto px-4 py-4">
           <h1 className="text-lg font-bold text-white">웹툰</h1>
@@ -223,7 +223,7 @@ function LoadMoreTrigger({ onLoadMore }: { onLoadMore: () => void }) {
     return () => observer.disconnect()
   }, [onLoadMore])
 
-  return <div className="h-8" ref={ref} />
+  return <div className="h-8 pb-safe" ref={ref} />
 }
 
 function useWebtoonListInfiniteQuery({ provider, domain }: ListQueryParams) {
