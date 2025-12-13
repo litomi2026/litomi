@@ -85,7 +85,7 @@ export default function WebtoonListPage() {
 
   if (!hasParams) {
     return (
-      <div className="h-dvh flex flex-col bg-zinc-950" ref={containerRef}>
+      <div className="h-dvh flex flex-col bg-zinc-950 pt-safe pb-safe px-safe" ref={containerRef}>
         <header className="shrink-0 bg-zinc-950/80 backdrop-blur-lg border-b border-zinc-800">
           <div className="max-w-6xl mx-auto px-4 py-4">
             <h1 className="text-lg font-bold text-white">웹툰</h1>
@@ -135,7 +135,7 @@ export default function WebtoonListPage() {
   }
 
   return (
-    <div className="h-dvh flex flex-col bg-zinc-950 overflow-hidden" ref={containerRef}>
+    <div className="h-dvh flex flex-col bg-zinc-950 overflow-hidden pt-safe px-safe" ref={containerRef}>
       <header className="shrink-0 bg-zinc-950/80 backdrop-blur-lg border-b border-zinc-800">
         <div className="max-w-6xl mx-auto px-4 py-4">
           <h1 className="text-lg font-bold text-white">웹툰</h1>
@@ -223,7 +223,7 @@ function LoadMoreTrigger({ onLoadMore }: { onLoadMore: () => void }) {
     return () => observer.disconnect()
   }, [onLoadMore])
 
-  return <div className="h-8" ref={ref} />
+  return <div className="h-8 pb-safe" ref={ref} />
 }
 
 function useWebtoonListInfiniteQuery({ provider, domain }: ListQueryParams) {
@@ -248,8 +248,9 @@ function WebtoonCard({ item, provider, domain }: WebtoonCardProps) {
 
   return (
     <Link
-      className="flex flex-col overflow-hidden rounded-lg bg-zinc-900 hover:bg-zinc-800 transition-colors"
+      className="flex flex-col overflow-hidden rounded-lg bg-zinc-900 hover:bg-zinc-800 transition text-zinc-100 visited:text-zinc-500"
       href={`/webtoon/series?provider=${provider}&domain=${domain}&path=${encodeURIComponent(seriesPath)}`}
+      prefetch={false}
     >
       {/* 썸네일 */}
       <div className="relative aspect-3/4 bg-zinc-800 overflow-hidden">
@@ -278,7 +279,7 @@ function WebtoonCard({ item, provider, domain }: WebtoonCardProps) {
 
       {/* 정보 */}
       <div className="p-2 flex flex-col gap-0.5">
-        <h3 className="text-sm font-medium text-zinc-100 truncate">{item.title}</h3>
+        <h3 className="text-sm font-medium truncate">{item.title}</h3>
         {item.genre && <p className="text-xs text-zinc-500 truncate">{item.genre}</p>}
         {item.likes !== undefined && (
           <p className="text-xs text-zinc-600">

@@ -77,7 +77,8 @@ docker run -e PORT=4000 -p 4000:4000 --rm litomi-backend:latest
 
 #### 배포
 
-- Vercel: https://litomi.in
+- Cloudflare: https://litomi.in
+- Vercel: https://litomi.vercel.app
 - Netlify: https://litomi.netlify.app
 - Fly.io: https://litomi.fly.dev
 - Render: https://litomi.onrender.com

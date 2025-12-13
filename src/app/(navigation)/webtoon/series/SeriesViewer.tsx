@@ -46,7 +46,7 @@ export default function SeriesViewer() {
   }
 
   return (
-    <div className="min-h-dvh bg-zinc-950">
+    <div className="min-h-dvh bg-zinc-950 px-safe">
       <SeriesHeader series={series} />
       <EpisodeList domain={domain} provider={provider} series={series} />
     </div>
@@ -55,19 +55,20 @@ export default function SeriesViewer() {
 
 function EpisodeList({ series, provider, domain }: EpisodeListProps) {
   return (
-    <section className="max-w-3xl mx-auto">
+    <section className="max-w-3xl mx-auto pb-safe">
       <div className="px-4 py-3 border-b border-zinc-800">
         <h2 className="text-sm font-medium text-zinc-300">에피소드</h2>
       </div>
 
-      <ul className="divide-y divide-zinc-800/50">
+      <ul className="divide-y divide-zinc-800/50 pb-4">
         {series.episodes.map((episode) => (
           <li key={episode.path}>
             <Link
-              className="flex items-center justify-between px-4 py-3 hover:bg-zinc-900/50 active:bg-zinc-900 transition-colors"
+              className="flex items-center justify-between px-4 py-3 hover:bg-zinc-900/50 active:bg-zinc-900 transition text-zinc-200 visited:text-zinc-500"
               href={`/webtoon/episode?provider=${provider}&domain=${domain}&path=${encodeURIComponent(episode.path.replace(/^\//, ''))}`}
+              prefetch={false}
             >
-              <span className="text-sm text-zinc-200 truncate">{episode.title}</span>
+              <span className="text-sm truncate">{episode.title}</span>
               {episode.publishedAt && (
                 <span className="text-xs text-zinc-600 shrink-0 ml-2">{formatDate(episode.publishedAt)}</span>
               )}
@@ -94,7 +95,7 @@ function formatDate(dateStr: string): string {
 
 function SeriesHeader({ series }: { series: WebtoonSeries }) {
   return (
-    <header className="relative">
+    <header className="relative pt-safe">
       {/* 배경 블러 이미지 */}
       {series.thumbnail && (
         <div className="absolute inset-0 overflow-hidden">
