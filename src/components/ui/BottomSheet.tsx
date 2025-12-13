@@ -37,26 +37,20 @@ export default function BottomSheet({ isOpen, onClose, children, title }: Props)
   }
 
   return (
-    <div className="fixed inset-0 z-50">
-      {/* 백드롭 */}
-      <div aria-hidden className="absolute inset-0 bg-black/60 animate-[fade-in_0.2s_ease-out]" onClick={onClose} />
-
-      {/* 시트 */}
+    <div className="absolute inset-0 z-50">
+      <div aria-hidden className="absolute inset-0 bg-black/80 animate-fade-in-fast" onClick={onClose} />
       <div
         className="absolute bottom-0 left-0 right-0 bg-zinc-900 rounded-t-2xl pb-safe animate-[slide-up_0.25s_ease-out]"
         role="dialog"
       >
-        {/* 핸들 */}
         <div className="flex justify-center py-3">
           <div className="w-10 h-1 bg-zinc-600 rounded-full" />
         </div>
-
         {title && (
           <div className="px-4 pb-2">
             <h2 className="text-sm font-medium text-zinc-400">{title}</h2>
           </div>
         )}
-
         <div className="px-2 pb-4">{children}</div>
       </div>
     </div>
