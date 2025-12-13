@@ -10,7 +10,10 @@ import BackButton from '@/components/BackButton'
 import PostCreationForm from '@/components/post/PostCreationForm'
 import { CANONICAL_URL, defaultOpenGraph, SHORT_NAME } from '@/constants'
 
+import AlsoViewedSection from './AlsoViewedSection'
 import PublicLibrarySection from './PublicLibrarySection'
+import RatingDistributionSection from './RatingDistributionSection'
+import RecommendedByUsersSection from './RecommendedByUsersSection'
 import RelatedMangaSection from './RelatedMangaSection'
 
 export async function generateMetadata({ params }: PageProps<'/manga/[id]/detail'>): Promise<Metadata> {
@@ -50,9 +53,12 @@ export default async function Page({ params }: PageProps<'/manga/[id]/detail'>) 
         />
         <h2 className="text-xl font-bold">작품 상세</h2>
       </div>
-      <div className="flex flex-col flex-1 h-full w-full max-w-screen-sm mx-auto pt-16 overflow-hidden">
+      <div className="flex flex-col flex-1 pt-16">
         <RelatedMangaSection mangaId={id} />
         <PublicLibrarySection mangaId={id} />
+        <RecommendedByUsersSection mangaId={id} />
+        <AlsoViewedSection mangaId={id} />
+        <RatingDistributionSection mangaId={id} />
         <div className="border-b-2">
           <RatingInput className="p-4 py-8" mangaId={id} />
         </div>
