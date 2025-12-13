@@ -131,6 +131,8 @@ function getPeriodStart(period: PeriodParam): Date | null {
   switch (period) {
     case PeriodParam.DAY:
       return new Date(now.getTime() - ms('1 day'))
+    case PeriodParam.HALF:
+      return new Date(now.getTime() - ms('0.5 year'))
     case PeriodParam.MONTH:
       return new Date(now.getTime() - ms('30 days'))
     case PeriodParam.QUARTER:
@@ -138,8 +140,6 @@ function getPeriodStart(period: PeriodParam): Date | null {
     case PeriodParam.WEEK:
       return new Date(now.getTime() - ms('1 week'))
     // TODO: 지금은 데이터가 부족해서 추후 추가하기
-    // case PeriodParam.HALF:
-    //   return new Date(now.getTime() - ms('0.5 year'))
     // case PeriodParam.YEAR:
     //   return new Date(now.getTime() - ms('1 year'))
     default:

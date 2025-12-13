@@ -5,12 +5,10 @@ import { hentKorClient } from '@/crawler/hentkor'
 import { hitomiClient } from '@/crawler/hitomi/hitomi'
 import { hiyobiClient } from '@/crawler/hiyobi'
 import { kHentaiClient } from '@/crawler/k-hentai'
-import { MangaSource } from '@/database/enum'
+import { MangaSource, tagCategoryNameToInt } from '@/database/enum'
 import { Locale } from '@/translation/common'
 import { Manga, MangaError } from '@/types/manga'
 import { sec } from '@/utils/date'
-import { mergeMangas } from '@/utils/manga'
-import { checkDefined } from '@/utils/type'
 
 type MangaFetchParams = {
   id: number
@@ -22,8 +20,6 @@ type MangaListFetchParams = {
   locale: Locale
   revalidate?: number
 }
-
-type MangaResult = Error | Manga | null | undefined
 
 export async function fetchMangaFromMultiSources({ id, locale }: MangaFetchParams) {
   const revalidate = sec('60 days')
@@ -74,7 +70,7 @@ export async function fetchMangaFromMultiSources({ id, locale }: MangaFetchParam
         continue
       }
 
-      return mergeMangas([manga])
+      return normalizeManga(manga)
     } catch (e) {
       if (e instanceof NotFoundError) {
         notFoundCount++
@@ -97,77 +93,97 @@ export async function fetchMangaFromMultiSources({ id, locale }: MangaFetchParam
  */
 export async function fetchMangasFromMultiSources({ ids, locale }: MangaListFetchParams) {
   const revalidate = sec('60 days')
-  const harpiMangas = await harpiClient.searchMangas({ ids }, locale, revalidate).catch((error) => new Error(error))
   const mangaMap: Record<number, Manga> = {}
-  const remainingIds = []
+  let remainingIds = [...ids]
 
-  if (harpiMangas) {
-    for (const id of ids) {
-      const harpiManga = findHarpiManga(harpiMangas, id)
+  async function trySource(fetcher: (id: number) => Promise<Manga | null>) {
+    const results = await Promise.all(remainingIds.map(fetcher))
 
-      if (harpiManga) {
-        mangaMap[id] = mergeMangas([harpiManga])
-      } else {
-        remainingIds.push(id)
+    for (let i = 0; i < remainingIds.length; i++) {
+      const manga = results[i]
+      if (manga) {
+        mangaMap[remainingIds[i]] = normalizeManga(manga)
       }
     }
-  } else {
-    remainingIds.push(...ids)
+
+    remainingIds = remainingIds.filter((id) => !mangaMap[id])
+  }
+
+  // 1. harpi
+  const harpiMangas = await harpiClient.searchMangas({ ids }, locale, revalidate).catch(() => null)
+  if (harpiMangas) {
+    for (const id of ids) {
+      const manga = findHarpiManga(harpiMangas, id)
+      if (manga) {
+        mangaMap[id] = normalizeManga(manga)
+      }
+    }
+    remainingIds = remainingIds.filter((id) => !mangaMap[id])
   }
 
   if (remainingIds.length === 0) {
     return mangaMap
   }
 
-  const [hiyobiMangas, hiyobiImages, kHentaiMangas, hitomiMangas, hentaiPawImages] = await Promise.all([
-    Promise.all(remainingIds.map((id) => hiyobiClient.fetchManga({ id, locale, revalidate }).catch(Error))),
-    Promise.all(remainingIds.map((id) => hiyobiClient.fetchMangaImages({ id }).catch(() => null))),
-    Promise.all(remainingIds.map((id) => kHentaiClient.fetchManga({ id, locale }).catch(Error))),
-    Promise.all(remainingIds.map((id) => hitomiClient.fetchManga({ id, locale }).catch(Error))),
-    Promise.all(remainingIds.map((id) => hentaiPawClient.fetchMangaImages({ id, revalidate }).catch(() => null))),
-  ])
-
-  for (let i = 0; i < remainingIds.length; i++) {
-    const id = remainingIds[i]
-
-    const sources: MangaResult[] = [
-      hiyobiMangas[i],
-      kHentaiMangas[i],
-      createHentaiPawManga(id, hentaiPawImages[i]),
-      hitomiMangas[i],
-    ].filter(checkDefined)
-
-    if (sources.length === 0) {
-      mangaMap[id] = {
-        id,
-        title: '해당 작품을 찾을 수 없어요',
-        images: [],
+  // 2. hiyobi
+  await trySource(async (id) => {
+    try {
+      const manga = await hiyobiClient.fetchManga({ id, locale, revalidate })
+      if (!manga) {
+        return null
       }
-      continue
+
+      const images = await hiyobiClient.fetchMangaImages({ id })
+      if (!images || images.length === 0) {
+        return null
+      }
+
+      manga.images = images.map((url) => ({ original: { url } }))
+      return manga
+    } catch {
+      return null
     }
+  })
 
-    const validMangas = sources.filter((source): source is Manga => !(source instanceof Error))
-    const errors = sources.filter((source): source is Error => source instanceof Error)
+  if (remainingIds.length === 0) {
+    return mangaMap
+  }
 
-    if (validMangas.length === 0) {
-      mangaMap[id] = createErrorManga(id, errors[0])
-      continue
+  // 3. hitomi (한국어만)
+  await trySource(async (id) => {
+    try {
+      const manga = await hitomiClient.fetchManga({ id, locale })
+      const hasKorean = manga?.languages?.some((l) => l.value === 'korean')
+      return hasKorean ? manga : null
+    } catch {
+      return null
     }
+  })
 
-    const validHiyobiManga = validMangas.find((manga) => manga.source === MangaSource.HIYOBI)
-    const validHentaiPawManga = validMangas.find((manga) => manga.source === MangaSource.HENTAIPAW)
-    const validHiyobiImages = hiyobiImages[i]
-    const validHentaiPawImages = hentaiPawImages[i]
+  if (remainingIds.length === 0) {
+    return mangaMap
+  }
 
-    if (validHiyobiManga && validHiyobiImages) {
-      validHiyobiManga.images = validHiyobiImages.map((image) => ({ original: { url: image } }))
+  // 4. kHentai
+  await trySource((id) => kHentaiClient.fetchManga({ id, locale }).catch(() => null))
+
+  if (remainingIds.length === 0) {
+    return mangaMap
+  }
+
+  // 5. hentaiPaw
+  await trySource(async (id) => {
+    const images = await hentaiPawClient.fetchMangaImages({ id, revalidate }).catch(() => null)
+    return createHentaiPawManga(id, images)
+  })
+
+  // 찾지 못한 ID는 hentkor fallback 이미지 제공
+  for (const id of remainingIds) {
+    mangaMap[id] = {
+      id,
+      title: '해당 작품을 찾을 수 없어요',
+      images: hentKorClient.fetchMangaImages(id, 100).map((url) => ({ original: { url } })),
     }
-
-    if (validHentaiPawManga && validHentaiPawImages) {
-      validHentaiPawManga.images = validHentaiPawImages.map((image) => ({ original: { url: image } }))
-    }
-
-    mangaMap[id] = mergeMangas(validMangas)
   }
 
   return mangaMap
@@ -205,4 +221,23 @@ function findHarpiManga(harpiMangas: Error | Manga[] | null, id: number) {
   }
 
   return harpiMangas.find((manga) => manga.id === id)
+}
+
+function normalizeManga(manga: Manga): Manga {
+  if (manga.tags) {
+    manga.tags.sort((a, b) => {
+      if (a.category === b.category) {
+        return a.label.localeCompare(b.label)
+      }
+      return tagCategoryNameToInt[a.category] - tagCategoryNameToInt[b.category]
+    })
+  }
+
+  for (const key in manga) {
+    if (manga[key as keyof Manga] === undefined) {
+      delete manga[key as keyof Manga]
+    }
+  }
+
+  return manga
 }

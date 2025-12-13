@@ -14,7 +14,7 @@ export enum PeriodParam {
   WEEK = 'week',
   MONTH = 'month',
   QUARTER = 'quarter',
-  // HALF = 'half',
+  HALF = 'half',
   // YEAR = 'year',
   // ALL = 'all',
 }
@@ -40,7 +40,7 @@ export const periodLabels: Record<string, string> = {
   [PeriodParam.WEEK]: '주간',
   [PeriodParam.MONTH]: '월간',
   [PeriodParam.QUARTER]: '분기',
-  // [PeriodParam.HALF]: '반기',
+  [PeriodParam.HALF]: '반기',
   // [PeriodParam.YEAR]: '연간',
   // [PeriodParam.ALL]: '전체',
 }
