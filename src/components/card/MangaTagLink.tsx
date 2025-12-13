@@ -1,11 +1,8 @@
 'use client'
 
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
-import { CensorshipItem } from '@/backend/api/v1/censorship'
-import { useSearchFilter } from '@/components/card/useSearchFilter'
-import { CensorshipKey, CensorshipLevel } from '@/database/enum'
-import useCensorshipsMapQuery from '@/query/useCensorshipsMapQuery'
+import useLongPress from '@/hook/useLongPress'
 
 import MangaTagLabel from './MangaTagLabel'
 
@@ -20,50 +17,34 @@ type Props = {
   category: string
   value: string
   label: string
+  href: string
+  isActive: boolean
+  isCensored: boolean
+  onLongPress?: () => void
 }
 
-export default function MangaTagLink({ category, value, label }: Props) {
+export default function MangaTagLink({ category, value, label, href, isActive, isCensored, onLongPress }: Props) {
+  const router = useRouter()
   const tagColor = tagStyles[category] ?? 'bg-zinc-900'
-  const { href, isActive } = useSearchFilter(`${category}:${value}`)
-  const { data: censorshipsMap } = useCensorshipsMapQuery()
-  const isCensored = checkIfLightCensored(category, value, censorshipsMap)
+
+  const longPressHandlers = useLongPress({
+    onLongPress: () => onLongPress?.(),
+    onClick: () => {
+      console.log('👀 - MangaTagLink - href:', href)
+      router.push(href)
+    },
+  })
 
   return (
-    <Link
-      aria-current={isActive}
-      aria-invalid={isCensored}
-      className={`rounded px-1 text-foreground transition break-all hover:underline focus:underline active:opacity-80 aria-current:ring-2 aria-current:ring-brand aria-invalid:line-through aria-invalid:opacity-70 ${tagColor}`}
-      href={href}
-      prefetch={false}
+    <span
+      aria-current={isActive || undefined}
+      className={`rounded px-1 text-foreground transition break-all select-none cursor-pointer hover:underline focus:underline active:opacity-80 aria-current:ring-2 aria-current:ring-brand data-censored:line-through data-censored:opacity-70 ${tagColor}`}
+      data-censored={isCensored || undefined}
+      role="link"
       title={isCensored ? '검열됨' : value}
+      {...longPressHandlers}
     >
       <MangaTagLabel>{label}</MangaTagLabel>
-    </Link>
+    </span>
   )
-}
-
-function checkIfLightCensored(category: string, value: string, censorships: Map<string, CensorshipItem> | undefined) {
-  if (!censorships) {
-    return false
-  }
-
-  const categoryKey = mapTagCategoryToCensorshipKey(category)
-  const matched = censorships.get(`${categoryKey}:${value}`) || censorships.get(`${CensorshipKey.TAG}:${value}`)
-
-  return matched && matched?.level === CensorshipLevel.LIGHT
-}
-
-function mapTagCategoryToCensorshipKey(category: string) {
-  switch (category) {
-    case 'female':
-      return CensorshipKey.TAG_CATEGORY_FEMALE
-    case 'male':
-      return CensorshipKey.TAG_CATEGORY_MALE
-    case 'mixed':
-      return CensorshipKey.TAG_CATEGORY_MIXED
-    case 'other':
-      return CensorshipKey.TAG_CATEGORY_OTHER
-    default:
-      return ''
-  }
 }

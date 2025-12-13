@@ -9,6 +9,8 @@ import { QueryKeys } from '@/constants/query'
 import amplitude from '@/lib/amplitude/lazy'
 import { handleResponseError, ResponseError } from '@/utils/react-query-error'
 
+let isAnalyticsInitialized = false
+
 export async function fetchMe() {
   try {
     const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/me`, { credentials: 'include' })
@@ -35,7 +37,8 @@ export default function useMeQuery() {
   const userId = result.data?.id
 
   useEffect(() => {
-    if (userId) {
+    if (userId && !isAnalyticsInitialized) {
+      isAnalyticsInitialized = true
       amplitude.setUserId(userId)
       sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: userId })
     }

@@ -11,6 +11,7 @@
   --animate-loading-bar: loading-bar 10s cubic-bezier(0.3, 0.7, 0.5, 1);
   --animate-heartbeat: heartbeat 1.5s ease-in-out infinite;
   --animate-pulse-ring: pulse-ring 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  --animate-slide-up: slide-up 0.2s ease-out;
 
   @keyframes fade-in {
     0% {
@@ -70,6 +71,15 @@
     100% {
       transform: scale(1.3);
       opacity: 0;
+    }
+  }
+
+  @keyframes slide-up {
+    0% {
+      transform: translateY(100%);
+    }
+    100% {
+      transform: translateY(0);
     }
   }
 }
