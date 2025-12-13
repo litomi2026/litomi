@@ -4,13 +4,12 @@ import { notFound } from 'next/navigation'
 
 import PostList from '@/app/(navigation)/(right-search)/posts/[filter]/PostList'
 import RatingInput from '@/app/manga/[id]/ImageViewer/RatingInput'
+import { mangaSchema } from '@/app/manga/[id]/schema'
 import { PostFilter } from '@/backend/api/v1/post/constant'
 import BackButton from '@/components/BackButton'
 import PostCreationForm from '@/components/post/PostCreationForm'
 import { CANONICAL_URL, defaultOpenGraph, SHORT_NAME } from '@/constants'
 
-import { getManga } from '../common.server'
-import { mangaSchema } from '../schema'
 import PublicLibrarySection from './PublicLibrarySection'
 import RelatedMangaSection from './RelatedMangaSection'
 
@@ -41,7 +40,6 @@ export default async function Page({ params }: PageProps<'/manga/[id]/detail'>) 
   }
 
   const { id } = validation.data
-  const manga = await getManga(id)
 
   return (
     <>
@@ -52,8 +50,8 @@ export default async function Page({ params }: PageProps<'/manga/[id]/detail'>) 
         />
         <h2 className="text-xl font-bold">작품 상세</h2>
       </div>
-      <div className="flex flex-col flex-1 h-full max-w-screen-sm mx-auto pt-16">
-        <RelatedMangaSection initialRelatedIds={manga?.related} mangaId={id} />
+      <div className="flex flex-col flex-1 h-full w-full max-w-screen-sm mx-auto pt-16 overflow-hidden">
+        <RelatedMangaSection mangaId={id} />
         <PublicLibrarySection mangaId={id} />
         <div className="border-b-2">
           <RatingInput className="p-4 py-8" mangaId={id} />

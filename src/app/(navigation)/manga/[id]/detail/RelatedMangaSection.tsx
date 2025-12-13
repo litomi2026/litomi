@@ -2,23 +2,21 @@
 
 import { Link2 } from 'lucide-react'
 
+import { useMangaQuery } from '@/app/manga/[id]/useMangaQuery'
 import MangaCardImage from '@/components/card/MangaCardImage'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { checkDefined } from '@/utils/type'
 
-import { useMangaQuery } from '../useMangaQuery'
-
 type Props = {
   mangaId: number
-  initialRelatedIds?: number[]
 }
 
-export default function RelatedMangaSection({ mangaId, initialRelatedIds }: Props) {
+export default function RelatedMangaSection({ mangaId }: Props) {
   const { data: manga } = useMangaQuery(mangaId)
-  const relatedIds = manga?.related ?? initialRelatedIds ?? []
+  const relatedIds = manga?.related ?? []
   const { mangaMap } = useMangaListCachedQuery({ mangaIds: relatedIds })
 
-  if (initialRelatedIds && relatedIds.length === 0) {
+  if (relatedIds.length === 0) {
     return null
   }
 
