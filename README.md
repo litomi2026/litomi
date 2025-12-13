@@ -73,22 +73,6 @@ docker build . -t litomi-backend
 docker run -e PORT=4000 -p 4000:4000 --rm litomi-backend:latest
 ```
 
-## 링크
-
-#### 배포
-
-- Cloudflare: https://litomi.in
-- Vercel: https://litomi.vercel.app
-- Netlify: https://litomi.netlify.app
-- Fly.io: https://litomi.fly.dev
-- Render: https://litomi.onrender.com
-- sherpa.io: https://litomi.sherpa.software
-
-#### 기타
-
-- SonarQube: https://sonarcloud.io/summary/overall?id=gwak2837_litomi&branch=main
-- Discord: https://discord.gg/xTrbQaxpyD
-
 ## 고민
 
 #### 비용
