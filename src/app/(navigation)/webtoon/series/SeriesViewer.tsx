@@ -66,6 +66,7 @@ function EpisodeList({ series, provider, domain }: EpisodeListProps) {
             <Link
               className="flex items-center justify-between px-4 py-3 hover:bg-zinc-900/50 active:bg-zinc-900 transition text-zinc-200 visited:text-zinc-500"
               href={`/webtoon/episode?provider=${provider}&domain=${domain}&path=${encodeURIComponent(episode.path.replace(/^\//, ''))}`}
+              prefetch={false}
             >
               <span className="text-sm truncate">{episode.title}</span>
               {episode.publishedAt && (

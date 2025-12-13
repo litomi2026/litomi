@@ -250,6 +250,7 @@ function WebtoonCard({ item, provider, domain }: WebtoonCardProps) {
     <Link
       className="flex flex-col overflow-hidden rounded-lg bg-zinc-900 hover:bg-zinc-800 transition text-zinc-100 visited:text-zinc-500"
       href={`/webtoon/series?provider=${provider}&domain=${domain}&path=${encodeURIComponent(seriesPath)}`}
+      prefetch={false}
     >
       {/* 썸네일 */}
       <div className="relative aspect-3/4 bg-zinc-800 overflow-hidden">
