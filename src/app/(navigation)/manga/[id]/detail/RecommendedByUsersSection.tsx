@@ -1,7 +1,12 @@
+import { and, count, desc, ne, sql } from 'drizzle-orm'
 import { Heart } from 'lucide-react'
+import { unstable_cache } from 'next/cache'
+
+import { db } from '@/database/supabase/drizzle'
+import { userRatingTable } from '@/database/supabase/schema'
+import { sec } from '@/utils/date'
 
 import MangaCardList from './MangaCardList'
-import { getRecommendedByUsers } from './queries.server'
 
 type Props = {
   mangaId: number
@@ -23,3 +28,33 @@ export default async function RecommendedByUsersSection({ mangaId }: Props) {
     </div>
   )
 }
+
+const getRecommendedByUsers = unstable_cache(
+  async (mangaId: number): Promise<number[]> => {
+    const result = await db
+      .select({
+        mangaId: userRatingTable.mangaId,
+        score: count(),
+      })
+      .from(userRatingTable)
+      .where(
+        and(
+          sql`${userRatingTable.userId} IN (
+            SELECT ${userRatingTable.userId}
+            FROM ${userRatingTable}
+            WHERE ${userRatingTable.mangaId} = ${mangaId}
+              AND ${userRatingTable.rating} >= 4
+          )`,
+          ne(userRatingTable.mangaId, mangaId),
+          sql`${userRatingTable.rating} >= 4`,
+        ),
+      )
+      .groupBy(userRatingTable.mangaId)
+      .orderBy(({ score }) => desc(score))
+      .limit(10)
+
+    return result.map((r) => r.mangaId)
+  },
+  ['recommended-by-users'],
+  { tags: ['recommended-by-users'], revalidate: sec('1 week') },
+)
