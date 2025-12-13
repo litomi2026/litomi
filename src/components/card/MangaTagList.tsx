@@ -59,7 +59,9 @@ export default function MangaTagList({ className = '', tags }: Readonly<Props>) 
 }
 
 function checkIfLightCensored(category: string, value: string, censorships: Map<string, CensorshipItem> | undefined) {
-  if (!censorships) return false
+  if (!censorships) {
+    return false
+  }
 
   const categoryKey = mapTagCategoryToCensorshipKey(category)
   const matched = censorships.get(`${categoryKey}:${value}`) || censorships.get(`${CensorshipKey.TAG}:${value}`)
@@ -74,9 +76,7 @@ function getSearchFilter(filterPattern: string, query: string, searchParams: URL
 
   const newQuery = isActive
     ? query.replace(wordBoundaryRegex, '').replace(/\s+/g, ' ').trim()
-    : query
-      ? `${query} ${filterPattern}`
-      : filterPattern
+    : [query, filterPattern].filter(Boolean).join(' ')
 
   const newSearchParams = new URLSearchParams(searchParams)
   newSearchParams.set('query', newQuery)
