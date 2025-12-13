@@ -1,5 +1,5 @@
 import { and, count, desc, ne, sql } from 'drizzle-orm'
-import { Heart } from 'lucide-react'
+import { Star } from 'lucide-react'
 import { unstable_cache } from 'next/cache'
 
 import { db } from '@/database/supabase/drizzle'
@@ -22,7 +22,7 @@ export default async function RecommendedByUsersSection({ mangaId }: Props) {
   return (
     <div className="border-b-2 p-4">
       <h3 className="text-sm font-semibold text-zinc-400 mb-3 flex items-center gap-2">
-        <Heart className="size-4" />이 작품과 함께 좋아한 작품
+        <Star className="size-4" />이 작품과 함께 좋아한 작품
       </h3>
       <MangaCardList mangaIds={recommendedIds} />
     </div>

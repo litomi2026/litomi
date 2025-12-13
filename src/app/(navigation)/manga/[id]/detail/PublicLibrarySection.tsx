@@ -69,5 +69,5 @@ const getPublicLibraries = unstable_cache(
       .orderBy(({ itemCount }) => [desc(itemCount), desc(libraryTable.createdAt)])
       .limit(10),
   ['public-libraries'],
-  { tags: ['public-libraries'], revalidate: sec('1 day') },
+  { tags: ['public-libraries'], revalidate: sec('1 week') },
 )

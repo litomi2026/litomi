@@ -1,4 +1,4 @@
-import { avg, count, desc, gt, gte } from 'drizzle-orm'
+import { avg, count, desc, gte, sql } from 'drizzle-orm'
 import ms from 'ms'
 
 import { TOP_MANGA_PER_PAGE } from '@/constants/policy'
@@ -61,7 +61,7 @@ export async function getRankingData(metric: MetricParam, period: PeriodParam) {
     //     .orderBy(({ score }) => desc(score))
     //     .limit(MANGA_TOP_PER_PAGE)
     //     .$dynamic()
-
+    //
     //   if (periodStart) {
     //     query = query.where(and(isNotNull(postTable.mangaId), gte(postTable.createdAt, periodStart)))
     //   }
@@ -69,17 +69,23 @@ export async function getRankingData(metric: MetricParam, period: PeriodParam) {
     // }
 
     case MetricParam.RATING: {
+      // 베이지안 평균 (Weighted Rating)
+      // WR = (v / (v + m)) * R + (m / (v + m)) * C
+      const m = 1 // 가중치를 위한 최소 투표 수
+      const C = 3.0 // 전체 평균 평점 (보정값)
+      const v = sql<number>`${count(userRatingTable.userId)}::numeric`
+      const R = avg(userRatingTable.rating)
+      const weightedRating = sql<number>`(${v} / (${v} + ${m})) * ${R} + (${m} / (${v} + ${m})) * ${C}`
+
       query = db
         .select({
           mangaId: userRatingTable.mangaId,
-          averageRating: avg(userRatingTable.rating),
+          averageRating: R,
           ratingCount: count(userRatingTable.userId),
         })
         .from(userRatingTable)
-        .where(gt(userRatingTable.rating, 1))
         .groupBy(userRatingTable.mangaId)
-        // .having(({ ratingCount }) => gt(ratingCount, 1)) // TODO: 지금은 데이터가 부족해서 추후 추가하기
-        .orderBy(({ averageRating, ratingCount }) => [desc(averageRating), desc(ratingCount)])
+        .orderBy(desc(weightedRating))
         .limit(TOP_MANGA_PER_PAGE)
         .$dynamic()
 
