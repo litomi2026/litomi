@@ -23,6 +23,7 @@ export default function SelectableLink({ className = '', Icon, children, href, h
       aria-selected={isSelected}
       className={`callout-none group flex p-1 aria-selected:font-bold aria-[current=page]:pointer-events-none sm:block sm:p-0 ${className}`}
       href={href}
+      prefetch={false}
     >
       <div
         className="flex items-center gap-5 w-fit mx-auto p-3 rounded-full transition 2xl:m-0 relative
