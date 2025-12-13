@@ -29,6 +29,7 @@ locals {
     "/posts/",
     "/realtime",
     "/search",
+    "/tag",
     "/web-app-manifest",
     "/404",
     "/@",
