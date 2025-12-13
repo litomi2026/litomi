@@ -75,19 +75,11 @@ export default function useLongPress({
     reset()
   }
 
-  function handleContextMenu(e: React.MouseEvent) {
-    // 터치일 때만 컨텍스트 메뉴 차단, 마우스 우클릭은 기본 동작 유지
-    if (pointerTypeRef.current === 'touch') {
-      e.preventDefault()
-    }
-  }
-
   return {
     onPointerDown: handlePointerDown,
     onPointerUp: handlePointerUp,
     onPointerMove: handlePointerMove,
     onPointerLeave: handlePointerLeave,
     onPointerCancel: handlePointerLeave,
-    onContextMenu: handleContextMenu,
   }
 }
