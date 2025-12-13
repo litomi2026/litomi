@@ -33,6 +33,7 @@ export default function MangaTagList({ className = '', tags }: Readonly<Props>) 
           return (
             <MangaTagLink
               category={tag.category}
+              disabled={selectedTag !== null}
               href={href}
               isActive={isActive}
               isCensored={isCensored}

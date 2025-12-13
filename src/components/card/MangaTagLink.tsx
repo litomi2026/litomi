@@ -21,18 +21,26 @@ type Props = {
   isActive: boolean
   isCensored: boolean
   onLongPress?: () => void
+  disabled?: boolean
 }
 
-export default function MangaTagLink({ category, value, label, href, isActive, isCensored, onLongPress }: Props) {
+export default function MangaTagLink({
+  category,
+  value,
+  label,
+  href,
+  isActive,
+  isCensored,
+  onLongPress,
+  disabled,
+}: Props) {
   const router = useRouter()
   const tagColor = tagStyles[category] ?? 'bg-zinc-900'
 
   const longPressHandlers = useLongPress({
     onLongPress: () => onLongPress?.(),
-    onClick: () => {
-      console.log('👀 - MangaTagLink - href:', href)
-      router.push(href)
-    },
+    onClick: () => router.push(href),
+    disabled,
   })
 
   return (
