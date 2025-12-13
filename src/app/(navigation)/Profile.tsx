@@ -34,6 +34,7 @@ export default function Profile() {
         className="flex justify-center items-center gap-3 p-2 group rounded-full pointer-events-auto sm:pointer-events-none 2xl:pl-3"
         href={`/@${name}`}
         onClick={(e) => e.stopPropagation()}
+        prefetch={false}
       >
         <Squircle className="w-8 shrink-0 sm:w-10 fill-zinc-600" src={imageURL}>
           {nickname.slice(0, 2)}

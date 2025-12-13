@@ -82,6 +82,7 @@ export default function PageNavigation({
           className={`flex ${commonClassName}`}
           href={`${hrefPrefix}${page}${hrefSuffix}`}
           key={page}
+          prefetch={false}
         >
           <LinkPending className="size-5">{page}</LinkPending>
         </Link>

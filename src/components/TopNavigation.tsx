@@ -25,7 +25,7 @@ export default function TopNavigation({ children, className, onMenuClick }: Read
         >
           <Menu className="size-9 p-2" />
         </button>
-        <Link className="group p-2 focus:outline-none sm:hidden" href="/">
+        <Link className="group p-2 focus:outline-none sm:hidden" href="/" prefetch={false}>
           <IconLogo className="size-6" priority />
         </Link>
         <div className="w-12" />

@@ -122,6 +122,7 @@ function LastPage({ manga, style }: LastPageProps) {
           <Link
             className="flex items-center gap-2 p-4 py-2 border border-foreground/20 rounded-lg hover:bg-foreground/10 transition"
             href={`/manga/${id}/detail`}
+            prefetch={false}
           >
             <MessageCircle className="size-4" />
             작품 후기

@@ -33,7 +33,11 @@ export default function Unauthorized() {
           <LoginButton>로그인하기</LoginButton>
           <p className="text-sm text-zinc-500">
             처음이신가요?{' '}
-            <Link className="text-zinc-300 underline hover:text-zinc-100 transition-colors" href="/auth/signup">
+            <Link
+              className="text-zinc-300 underline hover:text-zinc-100 transition-colors"
+              href="/auth/signup"
+              prefetch={false}
+            >
               회원가입
             </Link>
           </p>

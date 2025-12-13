@@ -186,22 +186,18 @@ Monitor job performance in the Cloud Console:
 ### Common Issues
 
 1. **"Missing required environment variables"**
-
    - Ensure all required environment variables are set in your `.env` file
    - Verify the deployment script is reading the correct `.env` file
 
 2. **"Failed to build/push Docker image"**
-
    - Run `gcloud auth configure-docker asia-northeast1-docker.pkg.dev`
    - Ensure Docker buildx is configured: `docker buildx create --use`
 
 3. **"Cloud Scheduler job failed to create"**
-
    - Enable the Cloud Scheduler API: `gcloud services enable cloudscheduler.googleapis.com`
    - Ensure App Engine is created in your project
 
 4. **Database connection errors**
-
    - Verify `NEON_DATABASE_URL` is correct and includes SSL mode
    - Check database allows connections from Cloud Run
 

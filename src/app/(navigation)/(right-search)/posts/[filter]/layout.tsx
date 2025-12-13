@@ -28,11 +28,11 @@ export default async function Layout({ params, children }: LayoutProps<'/posts/[
           className="grid grid-cols-2 items-center text-center text-zinc-400 [&_a]:p-4 [&_a]:transition [&_a]:relative [&_a]:aria-selected:font-bold [&_a]:aria-selected:text-foreground
            sm:[&_a]:bg-background/50 sm:[&_a]:hover:bg-foreground/10"
         >
-          <Link aria-selected={isRecommand} href="recommand">
+          <Link aria-selected={isRecommand} href="recommand" prefetch={false}>
             추천
             <div aria-selected={isRecommand} className={barClassName} />
           </Link>
-          <Link aria-selected={isFollowing} href="following">
+          <Link aria-selected={isFollowing} href="following" prefetch={false}>
             팔로우 중
             <div aria-selected={isFollowing} className={barClassName} />
           </Link>

@@ -30,6 +30,7 @@ export default function ReferredPostCard({ referredPost }: Readonly<Props>) {
     <Link
       className={`grid min-w-0 cursor-pointer overflow-hidden rounded-2xl border-2 transition border-zinc-600 hover:bg-zinc-900`}
       href={`/post/${id}`}
+      prefetch={false}
     >
       <div className="grid gap-1 p-3">
         <div className="flex min-w-0 justify-between gap-1">

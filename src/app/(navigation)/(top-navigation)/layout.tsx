@@ -19,6 +19,7 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
         <Link
           className="flex items-center gap-2 p-2 px-3 rounded-xl transition border-2 text-foreground hover:bg-zinc-900"
           href={`/ranking/${DEFAULT_METRIC}/${DEFAULT_PERIOD}`}
+          prefetch={false}
         >
           <LinkPending className="size-5">
             <IconFlame className="size-5" />
@@ -33,13 +34,13 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
         <InstallPrompt />
         <p>ⓒ 2025. {SHORT_NAME}. All rights reserved.</p>
         <div className="flex justify-center gap-2 gap-y-1 flex-wrap text-xs">
-          <Link className="hover:underline" href="/doc/terms">
+          <Link className="hover:underline" href="/doc/terms" prefetch={false}>
             이용약관
           </Link>
-          <Link className="hover:underline" href="/doc/privacy">
+          <Link className="hover:underline" href="/doc/privacy" prefetch={false}>
             개인정보처리방침
           </Link>
-          <Link className="hover:underline" href="/deterrence">
+          <Link className="hover:underline" href="/deterrence" prefetch={false}>
             사용자 연령 제한 규정
           </Link>
         </div>

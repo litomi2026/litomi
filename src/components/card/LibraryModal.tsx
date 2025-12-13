@@ -117,6 +117,7 @@ export default function LibraryModal() {
                 transition font-semibold text-background"
                 href="/library"
                 onClick={handleClose}
+                prefetch={false}
               >
                 <IconPlus className="w-5" />
                 <span>서재 만들기</span>

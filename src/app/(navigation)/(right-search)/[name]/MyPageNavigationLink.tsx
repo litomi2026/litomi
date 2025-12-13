@@ -19,6 +19,7 @@ export default function MyPageNavigationLink({ href, label }: Readonly<Props>) {
       className="aria-current:font-bold aria-current:text-foreground"
       href={href}
       key={href}
+      prefetch={false}
     >
       <LinkPending className="size-6">{label}</LinkPending>
       <span

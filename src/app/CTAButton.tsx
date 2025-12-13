@@ -20,7 +20,7 @@ export default function CTAButton({ className = '' }: Props) {
 
   if (period === Period.CHRISTMAS) {
     return (
-      <Link className={twMerge('flex justify-center items-center gap-2 rounded', className)} href="/">
+      <Link className={twMerge('flex justify-center items-center gap-2 rounded', className)} href="/" prefetch={false}>
         <CandyCane className="size-5" /> 메리 크리스마스
       </Link>
     )
@@ -28,7 +28,11 @@ export default function CTAButton({ className = '' }: Props) {
 
   if (period === Period.NEW_YEAR) {
     return (
-      <Link className={twMerge('flex justify-center items-center gap-2 rounded', className)} href="/nye">
+      <Link
+        className={twMerge('flex justify-center items-center gap-2 rounded', className)}
+        href="/nye"
+        prefetch={false}
+      >
         <PartyPopper className="size-5" /> 새해 카운트다운
       </Link>
     )

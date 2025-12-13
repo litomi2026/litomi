@@ -177,6 +177,7 @@ export function MangaDetailModal() {
               <Link
                 className="hover:underline focus:underline"
                 href={`/search?to=${Math.ceil(new Date(date).getTime() / 1000) + 60}`}
+                prefetch={false}
               >
                 <MangaMetadataLabel>{dayjs(date).format('YYYY-MM-DD HH:mm')}</MangaMetadataLabel>
               </Link>

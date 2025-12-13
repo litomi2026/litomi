@@ -16,6 +16,7 @@ export default function NewMangaLink() {
       className="flex items-center gap-2 p-2 px-3 rounded-xl transition border-2 text-foreground hover:bg-zinc-900
       aria-current:bg-brand aria-current:text-background aria-current:font-semibold aria-current:pointer-events-none"
       href={`/new/1`}
+      prefetch={false}
     >
       <LinkPending className="size-5">
         <Rabbit className="size-5" />

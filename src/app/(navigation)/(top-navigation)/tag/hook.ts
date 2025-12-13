@@ -37,4 +37,3 @@ async function fetchTags(category: CategoryParam, page: number, locale: string) 
   const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/tag?${searchParams}`)
   return handleResponseError<GETV1TagResponse>(response)
 }
-

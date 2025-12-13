@@ -19,6 +19,7 @@ export default function LoginPageLink({ className = '', children, ...props }: Re
 
   return (
     <Link
+      prefetch={false}
       {...props}
       className={`font-bold text-xs ${className}`}
       href={`/auth/login?${SearchParamKey.REDIRECT}=${encodeURIComponent(fullPath)}`}

@@ -21,6 +21,7 @@ export default function MetricLink({ value }: Props) {
       className="flex items-center gap-2 p-2 px-4 rounded-lg text-sm font-medium transition text-zinc-400 hover:text-foreground hover:bg-zinc-900
       aria-current:bg-zinc-900 aria-current:text-foreground aria-current:pointer-events-none"
       href={`/ranking/${value}/${period || DEFAULT_PERIOD}`}
+      prefetch={false}
     >
       <LinkPending className="size-4 text-foreground">
         <info.icon className="size-4" />

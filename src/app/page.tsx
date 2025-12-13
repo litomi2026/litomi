@@ -37,10 +37,11 @@ export default function Home() {
         <Link
           className={`${linkClassName} bg-brand-gradient relative text-background before:absolute before:inset-0 before:rounded-lg before:border-2 before:border-foreground/40`}
           href="/new/1"
+          prefetch={false}
         >
           19세 이상 성인입니다
         </Link>
-        <Link className={`${linkClassName} rounded`} href="/deterrence">
+        <Link className={`${linkClassName} rounded`} href="/deterrence" prefetch={false}>
           19세 미만 나가기
         </Link>
         <CTAButton className={linkClassName} />

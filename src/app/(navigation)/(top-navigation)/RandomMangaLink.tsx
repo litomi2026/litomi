@@ -18,7 +18,7 @@ export default function RandomMangaLink({ timer }: Props) {
 
   if (!isRandomPage) {
     return (
-      <Link className={`hover:bg-zinc-900 active:bg-background ${className}`} href="/random">
+      <Link className={`hover:bg-zinc-900 active:bg-background ${className}`} href="/random" prefetch={false}>
         <Dices className="size-5" />
         <span className="min-w-9 text-center">랜덤</span>
       </Link>

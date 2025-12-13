@@ -29,6 +29,7 @@ export default async function PublicLibrarySection({ mangaId }: Props) {
             <Link
               className="flex flex-col gap-1 h-full p-3 bg-zinc-900 rounded-lg transition border-2 border-transparent hover:border-zinc-600"
               href={`/library/${library.id}`}
+              prefetch={false}
             >
               <div className="flex items-center gap-2">
                 {library.icon && (

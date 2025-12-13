@@ -21,7 +21,7 @@ export default async function Page() {
   return (
     <main className="flex justify-center items-center h-dvh p-4">
       <div className="grid gap-3 text-center ">
-        <Link className="flex items-center gap-2 w-fit mx-auto" href="/">
+        <Link className="flex items-center gap-2 w-fit mx-auto" href="/" prefetch={false}>
           <IconLogo className="w-6" priority />
           <h1 className="font-bold text-2xl">{SHORT_NAME}</h1>
         </Link>

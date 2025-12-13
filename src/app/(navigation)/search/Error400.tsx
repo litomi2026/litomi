@@ -29,12 +29,14 @@ export default function Error400({ message }: Readonly<Props>) {
         <Link
           className="rounded-full bg-zinc-800 px-6 py-2 text-sm font-medium transition hover:bg-zinc-700"
           href="/search"
+          prefetch={false}
         >
           검색 다시하기
         </Link>
         <Link
           className="rounded-full px-6 py-2 text-sm font-medium text-zinc-400 transition hover:text-zinc-300"
           href="/"
+          prefetch={false}
         >
           홈으로
         </Link>

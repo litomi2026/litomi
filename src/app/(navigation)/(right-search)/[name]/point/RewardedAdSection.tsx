@@ -26,8 +26,8 @@ export default function RewardedAdSection() {
         <div>
           <h3 className="font-medium text-zinc-200 mb-1">광고 수익은 작가에게 돌아가요</h3>
           <p className="text-sm text-zinc-400">
-            광고로 발생한 수익금은 서버 운영비를 제하고 전부 작가에게 후원할 예정이에요. 광고 클릭 한 번이 좋아하는 작품의
-            창작자를 응원하는 방법이 돼요.
+            광고로 발생한 수익금은 서버 운영비를 제하고 전부 작가에게 후원할 예정이에요. 광고 클릭 한 번이 좋아하는
+            작품의 창작자를 응원하는 방법이 돼요.
           </p>
         </div>
       </div>

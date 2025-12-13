@@ -210,19 +210,16 @@ CREATE INDEX idx_library_item_created_at ON library_item(created_at);
 ### Design Principles Applied
 
 1. **Minimalist Aesthetic**
-
    - Clean, uncluttered interface
    - Focus on content over chrome
    - Consistent dark theme
 
 2. **Simple and Readable Code**
-
    - Clear component separation
    - Reusable patterns
    - No excessive abstraction
 
 3. **Functional Beauty**
-
    - Every element serves a purpose
    - Smooth transitions
    - Clear visual hierarchy
@@ -230,19 +227,16 @@ CREATE INDEX idx_library_item_created_at ON library_item(created_at);
 ### Technical Decisions
 
 1. **Database**
-
    - Used `bigint` for IDs to match user table
    - Composite primary key for library_item
    - Row Level Security (RLS) enabled
 
 2. **State Management**
-
    - Zustand for global selection state
    - React Query for data fetching
    - Local state for UI interactions
 
 3. **Component Architecture**
-
    - Reused existing manga card components
    - Created wrapper components for selection
    - Separate mobile/desktop layouts
@@ -294,17 +288,14 @@ CREATE INDEX idx_library_item_created_at ON library_item(created_at);
 ### Future Enhancements
 
 1. **Advanced Search**
-
    - Full-text search across manga metadata
    - Filter by tags, artists, series
 
 2. **Sharing Features**
-
    - Public library URLs
    - Social sharing integration
 
 3. **Smart Features**
-
    - Auto-categorization suggestions
    - Reading progress tracking
    - Personalized recommendations
