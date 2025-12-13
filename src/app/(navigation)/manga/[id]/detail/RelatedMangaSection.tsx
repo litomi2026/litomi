@@ -3,9 +3,8 @@
 import { Link2 } from 'lucide-react'
 
 import { useMangaQuery } from '@/app/manga/[id]/useMangaQuery'
-import MangaCardImage from '@/components/card/MangaCardImage'
-import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
-import { checkDefined } from '@/utils/type'
+
+import MangaCardList from './MangaCardList'
 
 type Props = {
   mangaId: number
@@ -14,39 +13,18 @@ type Props = {
 export default function RelatedMangaSection({ mangaId }: Props) {
   const { data: manga } = useMangaQuery(mangaId)
   const relatedIds = manga?.related ?? []
-  const { mangaMap } = useMangaListCachedQuery({ mangaIds: relatedIds })
 
   if (relatedIds.length === 0) {
     return null
-  }
-
-  const relatedMangas = relatedIds.map((id) => mangaMap.get(id)).filter(checkDefined)
-
-  for (const manga of relatedMangas) {
-    manga.images = manga.images?.slice(0, 1)
   }
 
   return (
     <div className="border-b-2 p-4">
       <h3 className="text-sm font-semibold text-zinc-400 mb-3 flex items-center gap-2">
         <Link2 className="size-4" />
-        연관 작품
+        이런 작품 찾으세요?
       </h3>
-      <ul className="flex gap-2 overflow-x-auto scrollbar-hidden snap-x snap-mandatory">
-        {relatedMangas.length > 0
-          ? relatedMangas.map((manga, index) => (
-              <li className="shrink-0 w-32 h-48 snap-start" key={manga.id}>
-                <MangaCardImage
-                  className="flex items-center justify-center h-full bg-zinc-900 rounded-lg transition border-2 hover:border-zinc-600"
-                  manga={manga}
-                  mangaIndex={index}
-                />
-              </li>
-            ))
-          : Array.from({ length: 5 }).map((_, i) => (
-              <div className="shrink-0 w-32 h-48 rounded-lg bg-zinc-800 animate-pulse" key={i} />
-            ))}
-      </ul>
+      <MangaCardList mangaIds={relatedIds} />
     </div>
   )
 }

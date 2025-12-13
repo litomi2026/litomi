@@ -55,9 +55,9 @@ export default async function Page({ params }: PageProps<'/manga/[id]/detail'>) 
       </div>
       <div className="flex flex-col flex-1 pt-16">
         <RelatedMangaSection mangaId={id} />
-        <PublicLibrarySection mangaId={id} />
         <RecommendedByUsersSection mangaId={id} />
         <AlsoViewedSection mangaId={id} />
+        <PublicLibrarySection mangaId={id} />
         <RatingDistributionSection mangaId={id} />
         <div className="border-b-2">
           <RatingInput className="p-4 py-8" mangaId={id} />
