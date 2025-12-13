@@ -23,6 +23,7 @@ export default function ViewSliderLink() {
           className="flex items-center relative rounded px-3 py-1 aria-current:font-bold aria-current:text-foreground aria-current:pointer-events-none"
           href={layout}
           key={label}
+          prefetch={false}
         >
           {index === 0 && isValidLayout(currentLayout) && (
             <div

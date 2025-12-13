@@ -9,6 +9,7 @@ export default function NotFound() {
         <Link
           className="bg-zinc-700 rounded-full font-semibold hover:bg-zinc-600 active:bg-zinc-700 px-4 py-2 transition"
           href="../posts/recommand"
+          prefetch={false}
         >
           목록으로 가기
         </Link>

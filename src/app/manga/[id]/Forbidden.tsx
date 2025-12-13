@@ -38,12 +38,14 @@ export default function Forbidden() {
           <Link
             className="flex items-center justify-center flex-1 px-6 py-3 bg-zinc-900/50 hover:bg-zinc-800/50 backdrop-blur-sm border border-zinc-800 hover:border-zinc-700 rounded-lg text-zinc-300 font-medium transition"
             href="/new/1"
+            prefetch={false}
           >
             신작 페이지
           </Link>
           <Link
             className="flex items-center justify-center flex-1 px-6 py-3 bg-linear-to-r from-zinc-800 to-zinc-700 hover:from-zinc-700 hover:to-zinc-600 rounded-lg text-zinc-100 font-medium transition hover:shadow-lg hover:shadow-zinc-900/50"
             href="/"
+            prefetch={false}
           >
             홈으로 가기
           </Link>
@@ -54,6 +56,7 @@ export default function Forbidden() {
             <Link
               className="text-zinc-500 hover:text-zinc-400 underline underline-offset-2 transition-colors"
               href="/doc/terms"
+              prefetch={false}
             >
               이용약관
             </Link>

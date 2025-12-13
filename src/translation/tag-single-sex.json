@@ -44,7 +44,12 @@
   "female:loli": { "en": "young girl", "ko": "로리", "ja": "ロリ", "zh-CN": "萝莉", "zh-TW": "蘿莉" },
   "female:lolicon": { "en": "young girl", "ko": "로리콘", "ja": "ロリ", "zh-CN": "萝莉", "zh-TW": "蘿莉" },
   "female:low_lolicon": { "en": "young girl", "ko": "약간 로리콘" },
-  "female:male_on_dickgirl": { "en": "male on dickgirl", "ko": "남자가 딕걸을", "ja": "男性×ふたなり", "zh-CN": "男性×扶她" },
+  "female:male_on_dickgirl": {
+    "en": "male on dickgirl",
+    "ko": "남자가 딕걸을",
+    "ja": "男性×ふたなり",
+    "zh-CN": "男性×扶她"
+  },
   "female:mecha_girl": { "en": "mecha girl", "ko": "메카 소녀" },
   "female:miko": { "en": "shrine maiden", "ko": "무녀", "ja": "巫女", "zh-CN": "巫女" },
   "female:milf": { "en": "milf", "ko": "따먹고픈 애엄마", "ja": "熟女", "zh-CN": "熟女", "zh-TW": "熟女" },

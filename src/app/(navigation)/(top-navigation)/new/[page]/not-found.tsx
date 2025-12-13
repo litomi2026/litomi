@@ -9,6 +9,7 @@ export default function NotFound() {
         <Link
           className="bg-zinc-700 text-sm hover:bg-zinc-600 font-semibold active:bg-zinc-700 rounded-full px-4 py-2 transition ease-in-out"
           href="/new/1"
+          prefetch={false}
         >
           홈으로
         </Link>

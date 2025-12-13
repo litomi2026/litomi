@@ -292,19 +292,16 @@ async function testCloudflareBypass(url: string) {
 ## Additional Evasion Techniques
 
 1. **Request Timing**
-
    - Random delays between requests (2-10 seconds)
    - Realistic browsing patterns
    - Don't request too many pages too quickly
 
 2. **Session Management**
-
    - Maintain cookies across requests
    - Use the same "session" for related requests
    - Store and reuse cf_clearance cookies
 
 3. **IP Rotation**
-
    - Use residential proxies
    - Rotate IPs every 10-20 requests
    - Avoid datacenter IPs

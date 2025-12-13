@@ -49,6 +49,7 @@ export default function Post({ post }: Readonly<Props>) {
           <Link
             className="flex gap-3 rounded-lg border-2 border-zinc-700 bg-zinc-800/50 p-3 transition hover:bg-zinc-800 hover:border-zinc-600"
             href={`/manga/${post.mangaId}`}
+            prefetch={false}
           >
             <PostMangaCard mangaId={post.mangaId} />
           </Link>

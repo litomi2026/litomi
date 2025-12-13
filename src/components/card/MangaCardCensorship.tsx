@@ -72,6 +72,7 @@ export default function MangaCardCensorship({ manga }: Props) {
         aria-hidden={isBlurDisabled}
         className="text-foreground text-center font-semibold flex flex-wrap gap-1 justify-center pointer-events-auto transition hover:underline aria-hidden:opacity-0 aria-hidden:pointer-events-none"
         href={`/@${myName}/censor`}
+        prefetch={false}
       >
         {censoringReasons.join(', ')} 작품 검열
       </Link>

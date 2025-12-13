@@ -13,6 +13,7 @@ export default function Forbidden({ loginUsername }: Readonly<Props>) {
         <Link
           className="inline-block px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg font-medium transition"
           href={`/@${loginUsername}/settings`}
+          prefetch={false}
         >
           내 설정으로 가기
         </Link>

@@ -100,7 +100,7 @@ export function MangaDetailModal() {
 
   return (
     <Modal onClose={close} open={isOpen} showCloseButton showDragButton>
-      <div className="bg-zinc-900 min-w-3xs w-screen max-w-prose rounded-xl p-4 pt-8 shadow-xl border grid gap-4 text-sm overflow-y-auto max-h-[calc(100vh-var(--safe-area-bottom))] md:text-base">
+      <div className="relative overflow-hidden overflow-y-auto bg-zinc-900 min-w-3xs w-screen max-w-prose rounded-xl p-4 pt-8 shadow-xl border grid gap-4 text-sm max-h-[calc(100vh-var(--safe-area-bottom))] md:text-base">
         <h2 className="font-bold text-lg md:text-xl">{title}</h2>
         {description && (
           <div className="bg-zinc-800/30 rounded-lg p-3">
@@ -177,6 +177,7 @@ export function MangaDetailModal() {
               <Link
                 className="hover:underline focus:underline"
                 href={`/search?to=${Math.ceil(new Date(date).getTime() / 1000) + 60}`}
+                prefetch={false}
               >
                 <MangaMetadataLabel>{dayjs(date).format('YYYY-MM-DD HH:mm')}</MangaMetadataLabel>
               </Link>

@@ -47,23 +47,6 @@ export default function useMangaListCachedQuery({
   const queryClient = useQueryClient()
   const cleanupTimersRef = useRef<Array<ReturnType<typeof setTimeout>>>([])
 
-  // NOTE: 타이머 정리
-  useEffect(() => {
-    return () => {
-      for (const timer of cleanupTimersRef.current) {
-        clearTimeout(timer)
-      }
-      cleanupTimersRef.current = []
-    }
-  }, [])
-
-  function scheduleErrorCacheCleanup(queryKey: ReturnType<typeof QueryKeys.mangaCard>) {
-    const timer = setTimeout(() => {
-      queryClient.removeQueries({ queryKey, exact: true })
-    }, ms('1 minute'))
-    cleanupTimersRef.current.push(timer)
-  }
-
   const queries = useQueries({
     queries: uniqueMangaIds.map((id) => ({
       queryKey: QueryKeys.mangaCard(id),
@@ -102,6 +85,23 @@ export default function useMangaListCachedQuery({
 
   const isLoading = queries.some((query) => query.isLoading)
   const isFetching = queries.some((query) => query.isFetching)
+
+  function scheduleErrorCacheCleanup(queryKey: ReturnType<typeof QueryKeys.mangaCard>) {
+    const timer = setTimeout(() => {
+      queryClient.removeQueries({ queryKey, exact: true })
+    }, ms('1 minute'))
+    cleanupTimersRef.current.push(timer)
+  }
+
+  // NOTE: 타이머 정리
+  useEffect(() => {
+    return () => {
+      for (const timer of cleanupTimersRef.current) {
+        clearTimeout(timer)
+      }
+      cleanupTimersRef.current = []
+    }
+  }, [])
 
   return {
     mangaMap,

@@ -39,6 +39,7 @@ export default function Unauthorized() {
           <Link
             className="text-zinc-300 underline hover:text-foreground transition"
             href={`/auth/signup?${SearchParamKey.REDIRECT}=${encodeURIComponent('/@/censor')}`}
+            prefetch={false}
           >
             회원가입
           </Link>

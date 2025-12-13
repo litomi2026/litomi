@@ -31,6 +31,7 @@ export default function NotFound() {
         <Link
           className="px-6 py-3 rounded-2xl bg-brand font-semibold text-background hover:opacity-80 transition"
           href="/new/1"
+          prefetch={false}
         >
           작품 둘러보기
         </Link>

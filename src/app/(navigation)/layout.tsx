@@ -30,7 +30,7 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
       >
         <AutoHideNavigation selector="[data-navigation-header]" />
         <nav className="grid grid-cols-4 select-none whitespace-nowrap overflow-y-auto scrollbar-hidden sm:grid-cols-none sm:gap-2 xl:text-xl xl:leading-6">
-          <Link className="p-2 w-fit mx-auto hidden sm:block 2xl:m-0" href="/">
+          <Link className="p-2 w-fit mx-auto hidden sm:block 2xl:m-0" href="/" prefetch={false}>
             <IconLogo className="w-8" priority />
           </Link>
           <SelectableLink href="/new/1" Icon={IconHome}>
@@ -70,7 +70,7 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
         <Profile />
       </header>
       <div className="hidden shrink-0 sm:block sm:w-20 2xl:w-3xs" />
-      <div className="flex flex-col grow">
+      <div className="flex flex-col grow min-w-0">
         {children}
         <p className="h-0 overflow-hidden tracking-widest invisible">
           <SEOText />

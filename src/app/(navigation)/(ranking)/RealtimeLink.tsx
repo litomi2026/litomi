@@ -16,6 +16,7 @@ export default function RealtimeLink() {
       className="flex items-center gap-2 p-2 px-4 rounded-lg text-sm font-medium transition text-zinc-400 hover:text-foreground hover:bg-zinc-900
       aria-current:bg-zinc-900 aria-current:text-foreground aria-current:pointer-events-none"
       href="/realtime"
+      prefetch={false}
     >
       <LinkPending className="size-4 text-foreground">
         <Activity className="size-4" />

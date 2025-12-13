@@ -93,7 +93,7 @@ function ErrorState({ error, retry }: { error: Error; retry: () => void }) {
 
       <div className="mt-6 text-xs text-zinc-600">
         문제가 지속되면{' '}
-        <Link className="underline hover:text-zinc-400" href="/posts/all">
+        <Link className="underline hover:text-zinc-400" href="/posts/all" prefetch={false}>
           다른 글을 확인해보세요
         </Link>
       </div>

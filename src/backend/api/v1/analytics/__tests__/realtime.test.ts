@@ -10,7 +10,7 @@ describe('GET /api/v1/analytics/realtime', () => {
     it('환경 변수가 없으면 503 에러를 반환한다', async () => {
       if (!GA_SERVICE_ACCOUNT_EMAIL || !GA_SERVICE_ACCOUNT_KEY || !GA_PROPERTY_ID) {
         const req = new Request('http://localhost/api/v1/analytics/realtime')
-        
+
         try {
           await realtimeRoutes.fetch(req)
         } catch (error) {

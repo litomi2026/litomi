@@ -133,6 +133,7 @@ function MenuLink({ href, icon, title, description, isActive }: MenuLinkProps) {
       className="flex items-center gap-4 p-3 rounded-lg transition hover:bg-zinc-800/50 border border-transparent
         aria-[current=page]:bg-zinc-800 aria-[current=page]:border-zinc-700"
       href={href}
+      prefetch={false}
     >
       <div className="shrink-0">
         <LinkPending className="size-5">{icon}</LinkPending>
