@@ -18,6 +18,11 @@ mock.module('next/cache', () => ({
   revalidateTag: () => {},
 }))
 
+// Mock @vercel/functions to prevent errors in test environment
+mock.module('@vercel/functions', () => ({
+  waitUntil: () => {},
+}))
+
 // Create a new window instance
 const window = new Window({
   url: 'http://localhost:3000',
