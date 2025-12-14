@@ -5,12 +5,17 @@ import { Manga } from '@/types/manga'
 import { GET } from '../route'
 import { mockKHentaiMangas } from './mock'
 
+// Store original fetch at beforeEach time, not module load time
+let originalFetch: typeof fetch
+
 describe('GET /api/proxy/k/search', () => {
   const baseUrl = 'http://localhost:3000/api/proxy/k/search'
-  const originalFetch = global.fetch
 
   beforeEach(() => {
-    global.fetch = mock(async (url: string | Request | URL, init?: RequestInit) => {
+    // Capture original fetch AFTER test/setup.ts's beforeAll has run
+    originalFetch = globalThis.fetch
+
+    globalThis.fetch = mock(async (url: string | Request | URL, init?: RequestInit) => {
       const urlString = typeof url === 'string' ? url : url instanceof URL ? url.toString() : (url as Request).url
 
       if (urlString.includes('/api/v1/search/trending')) {
@@ -52,12 +57,13 @@ describe('GET /api/proxy/k/search', () => {
         })
       }
 
+      // Fallback to original fetch for unmatched URLs
       return originalFetch(url, init)
     }) as unknown as typeof fetch
   })
 
   afterEach(() => {
-    global.fetch = originalFetch
+    globalThis.fetch = originalFetch
   })
 
   describe('성공', () => {
