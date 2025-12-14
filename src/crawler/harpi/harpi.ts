@@ -76,18 +76,25 @@ const USER_AGENT =
 const CHROME_JA3 =
   '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-13-18-51-45-43-27-17513-21,29-23-24,0'
 
+// NOTE: Prefer lowercase header keys (HTTP/2 behavior) to reduce fingerprint drift.
 const DEFAULT_HEADERS = {
-  Accept: 'application/json, text/plain, */*',
-  'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
-  Origin: 'https://harpi.in',
-  Referer: 'https://harpi.in/',
-  'Sec-CH-UA': '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
-  'Sec-CH-UA-Mobile': '?0',
-  'Sec-CH-UA-Platform': '"Windows"',
-  'Sec-Fetch-Dest': 'empty',
-  'Sec-Fetch-Mode': 'cors',
-  'Sec-Fetch-Site': 'same-origin',
-}
+  accept: 'application/json, text/plain, */*',
+  'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+  // Browsers typically send this; it can affect bot detection heuristics.
+  'accept-encoding': 'gzip, deflate, br',
+  origin: 'https://harpi.in',
+  referer: 'https://harpi.in/',
+  'sec-ch-ua': '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
+  'sec-ch-ua-mobile': '?0',
+  'sec-ch-ua-platform': '"Windows"',
+  'sec-fetch-dest': 'empty',
+  'sec-fetch-mode': 'cors',
+  'sec-fetch-site': 'same-origin',
+  // Chrome sometimes adds this header (esp. in HTTP/2); harmless if ignored.
+  priority: 'u=1, i',
+} as const
+
+const DEFAULT_HEADER_ORDER = Object.keys(DEFAULT_HEADERS)
 
 class HarpiClient {
   private cycleTLSClient: CycleTLSClient | null = null
@@ -303,17 +310,46 @@ class HarpiClient {
       url,
       {
         headers: DEFAULT_HEADERS,
+        headerOrder: DEFAULT_HEADER_ORDER,
+        orderAsProvided: true,
         ja3: CHROME_JA3,
         userAgent: USER_AGENT,
+        proxy: process.env.HARPI_PROXY_URL || undefined,
         timeout: REQUEST_TIMEOUT,
       },
       'get',
     )
 
     if (response.status !== 200) {
+      const bodyPreview = (() => {
+        try {
+          const raw =
+            typeof response.data === 'string'
+              ? response.data
+              : response.data
+                ? JSON.stringify(response.data)
+                : ''
+          return raw.replace(/\s+/g, ' ').slice(0, 600)
+        } catch {
+          return ''
+        }
+      })()
+
+      // NOTE: console.log may be stripped in production; keep this as error for Vercel logs.
+      console.error('[harpi] Upstream error', {
+        status: response.status,
+        url,
+        finalUrl: response.finalUrl,
+        cfRay: response.headers?.['cf-ray'] ?? response.headers?.['CF-RAY'],
+        server: response.headers?.server ?? response.headers?.Server,
+        bodyPreview,
+      })
+
       throw new UpstreamServerError(`HTTP ${response.status}`, response.status, {
         url,
         body: response.data,
+        headers: response.headers,
+        finalUrl: response.finalUrl,
       })
     }
 

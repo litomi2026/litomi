@@ -85,8 +85,13 @@ export async function createHealthCheckHandler(
   serviceName: string,
   checks?: Record<string, () => Promise<boolean>>,
   init?: ResponseInit,
+  options?: { debug?: boolean },
 ) {
-  const healthChecks: Record<string, { status: 'healthy' | 'unhealthy'; error?: string }> = {}
+  const debug = options?.debug ?? false
+  const healthChecks: Record<
+    string,
+    { status: 'healthy' | 'unhealthy'; error?: string; details?: Record<string, unknown> }
+  > = {}
 
   if (checks) {
     await Promise.all(
@@ -95,9 +100,34 @@ export async function createHealthCheckHandler(
           const isHealthy = await check()
           healthChecks[name] = { status: isHealthy ? 'healthy' : 'unhealthy' }
         } catch (error) {
+          const details: Record<string, unknown> | undefined = debug
+            ? {
+                name: error instanceof Error ? error.name : typeof error,
+                ...(error instanceof UpstreamServerError
+                  ? {
+                      url: error.context?.url,
+                      finalUrl: error.context?.finalUrl,
+                      retryAfter: error.retryAfter,
+                      cfRay: (error.context?.headers as Record<string, unknown> | undefined)?.['cf-ray'],
+                      bodyPreview: (() => {
+                        const body = error.context?.body
+                        if (!body) return undefined
+                        try {
+                          const raw = typeof body === 'string' ? body : JSON.stringify(body)
+                          return raw.replace(/\s+/g, ' ').slice(0, 600)
+                        } catch {
+                          return undefined
+                        }
+                      })(),
+                    }
+                  : {}),
+              }
+            : undefined
+
           healthChecks[name] = {
             status: 'unhealthy',
             error: error instanceof Error ? error.message : 'Unknown error',
+            ...(details ? { details } : {}),
           }
         }
       }),

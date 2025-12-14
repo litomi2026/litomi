@@ -6,7 +6,10 @@ import { Locale } from '@/translation/common'
 export const runtime = 'nodejs'
 const maxAge = 5
 
-export async function GET() {
+export async function GET(request: Request) {
+  const url = new URL(request.url)
+  const debug = url.searchParams.get('debug') === '1'
+
   return createHealthCheckHandler(
     'harpi',
     {
@@ -22,5 +25,6 @@ export async function GET() {
         }),
       },
     },
+    { debug },
   )
 }
