@@ -110,7 +110,7 @@ export async function fetchMangasFromMultiSources({ ids, locale }: MangaListFetc
   }
 
   // 1. harpi
-  const harpiMangas = await harpiClient.searchMangas({ ids }, locale, revalidate).catch(() => null)
+  const harpiMangas = await harpiClient.searchMangas({ ids }, locale).catch(() => null)
   if (harpiMangas) {
     for (const id of ids) {
       const manga = findHarpiManga(harpiMangas, id)
