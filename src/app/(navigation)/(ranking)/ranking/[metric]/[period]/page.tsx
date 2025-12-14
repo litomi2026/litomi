@@ -2,10 +2,10 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import z from 'zod'
 
-import { fetchMangasFromMultiSources } from '@/common/manga'
 import MangaCard from '@/components/card/MangaCard'
 import MangaCardDonation from '@/components/card/MangaCardDonation'
 import { generateOpenGraphMetadata } from '@/constants'
+import { fetchMangaListFromMultiSources } from '@/services/MangaListService'
 import { Locale } from '@/translation/common'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
@@ -71,8 +71,8 @@ export default async function Page({ params }: PageProps<'/ranking/[metric]/[per
   const ids = rankings.map((ranking) => ranking.mangaId)
 
   const [mangasMap1, mangasMap2] = await Promise.all([
-    fetchMangasFromMultiSources({ ids: ids.slice(0, 10), locale }),
-    fetchMangasFromMultiSources({ ids: ids.slice(10, 20), locale }),
+    fetchMangaListFromMultiSources({ ids: ids.slice(0, 10), locale }),
+    fetchMangaListFromMultiSources({ ids: ids.slice(10, 20), locale }),
   ])
 
   return (

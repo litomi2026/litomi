@@ -110,10 +110,6 @@ class HarpiClient {
     return this.convertHarpiToManga(response.data, locale)
   }
 
-  fetchMangaImages(id: number, count: number): string[] {
-    return Array.from({ length: count }, (_, i) => `https://soujpa.in/start/${id}/${id}_${i}.avif`)
-  }
-
   async searchMangas(params: Partial<GETHarpiSearchRequest> = {}, locale: Locale) {
     const validatedParams = HarpiSearchSchema.parse(params)
     const searchParams = this.buildSearchParams(validatedParams)
