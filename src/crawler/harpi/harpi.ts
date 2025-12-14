@@ -1,4 +1,5 @@
 import initCycleTLS, { CycleTLSClient } from 'cycletls'
+import fs from 'fs'
 import ms from 'ms'
 import os from 'os'
 import path from 'path'
@@ -65,6 +66,7 @@ const HARPI_MANGA_TYPE_MAP: Record<string, string> = {
 
 const HARPI_BASE_URL = 'https://harpi.in'
 const REQUEST_TIMEOUT = ms('10 seconds')
+const CYCLETLS_INIT_TIMEOUT = ms('5 seconds')
 
 // Chrome 131 User-Agent
 const USER_AGENT =
@@ -326,6 +328,22 @@ class HarpiClient {
     }
 
     if (!this.initPromise) {
+      const withTimeout = async <T>(promise: Promise<T>, timeoutMs: number, errorMessage: string): Promise<T> => {
+        let timeoutId: ReturnType<typeof setTimeout> | undefined
+        try {
+          return await Promise.race([
+            promise,
+            new Promise<T>((_, reject) => {
+              timeoutId = setTimeout(() => reject(new Error(errorMessage)), timeoutMs)
+            }),
+          ])
+        } finally {
+          if (timeoutId) {
+            clearTimeout(timeoutId)
+          }
+        }
+      }
+
       // Determine correct executable path based on platform and architecture
       const platform = os.platform()
       const arch = os.arch()
@@ -334,7 +352,18 @@ class HarpiClient {
       if (platform === 'darwin') {
         executableName = arch === 'arm64' ? 'index-mac-arm64' : 'index-mac'
       } else if (platform === 'linux') {
-        executableName = arch === 'arm64' ? 'index-arm64' : 'index-arm'
+        // Vercel Serverless Functions commonly run on Linux x64 (arch === 'x64')
+        // cycletls provides:
+        // - index        : linux x64
+        // - index-arm    : linux arm (32-bit)
+        // - index-arm64  : linux arm64
+        if (arch === 'arm64') {
+          executableName = 'index-arm64'
+        } else if (arch.startsWith('arm')) {
+          executableName = 'index-arm'
+        } else {
+          executableName = 'index'
+        }
       } else if (platform === 'win32') {
         executableName = 'index.exe'
       } else if (platform === 'freebsd') {
@@ -344,9 +373,23 @@ class HarpiClient {
       // Use process.cwd() for Next.js/Turbopack compatibility
       const executablePath = path.join(process.cwd(), 'node_modules', 'cycletls', 'dist', executableName)
 
-      this.initPromise = initCycleTLS({ executablePath }).then((client) => {
-        this.cycleTLSClient = client
-        return client
+      if (!fs.existsSync(executablePath)) {
+        // NOTE: console.log may be stripped in production builds; use warn/error for debugging.
+        console.error('[harpi] CycleTLS executable not found', { platform, arch, executableName, executablePath })
+        throw new Error(`CycleTLS executable not found: ${executableName} (${platform}/${arch})`)
+      }
+
+      this.initPromise = withTimeout(
+        initCycleTLS({ executablePath }).then((client) => {
+          this.cycleTLSClient = client
+          return client
+        }),
+        CYCLETLS_INIT_TIMEOUT,
+        `CycleTLS init timed out after ${CYCLETLS_INIT_TIMEOUT}ms (${platform}/${arch}, ${executableName})`,
+      ).catch((error) => {
+        // Allow retry on next request if init failed
+        this.initPromise = null
+        throw error
       })
     }
 

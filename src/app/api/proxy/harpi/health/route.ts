@@ -3,6 +3,7 @@ import { createCacheControl, createHealthCheckHandler } from '@/crawler/proxy-ut
 import { Locale } from '@/translation/common'
 
 // NOTE: cycletls 사용을 위해 Node.js 런타임 필요 (Edge Runtime 제거)
+export const runtime = 'nodejs'
 const maxAge = 5
 
 export async function GET() {
