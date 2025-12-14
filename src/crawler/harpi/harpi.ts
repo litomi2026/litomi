@@ -3,6 +3,7 @@ import fs from 'fs'
 import ms from 'ms'
 import os from 'os'
 import path from 'path'
+import { brotliDecompressSync, gunzipSync, inflateSync } from 'zlib'
 
 import { GETHarpiSearchRequest, HarpiSearchSchema } from '@/app/api/proxy/harpi/search/schema'
 import { HARPI_TAG_MAP } from '@/crawler/harpi/tag'
@@ -321,40 +322,45 @@ class HarpiClient {
     )
 
     if (response.status !== 200) {
-      const bodyPreview = (() => {
-        try {
-          const raw =
-            typeof response.data === 'string'
-              ? response.data
-              : response.data
-                ? JSON.stringify(response.data)
-                : ''
-          return raw.replace(/\s+/g, ' ').slice(0, 600)
-        } catch {
-          return ''
-        }
-      })()
+      const headers = (response.headers ?? {}) as Record<string, unknown>
+      const contentEncoding = getHeaderValue(headers, 'content-encoding')
+      const contentType = getHeaderValue(headers, 'content-type')
+      const cfRay = getHeaderValue(headers, 'cf-ray')
+      const server = getHeaderValue(headers, 'server')
+
+      const decodedBody = decodeResponseBody(response.data, contentEncoding) ?? ''
+      const bodyPreview = decodedBody.replace(/\s+/g, ' ').slice(0, 600)
 
       // NOTE: console.log may be stripped in production; keep this as error for Vercel logs.
       console.error('[harpi] Upstream error', {
         status: response.status,
         url,
         finalUrl: response.finalUrl,
-        cfRay: response.headers?.['cf-ray'] ?? response.headers?.['CF-RAY'],
-        server: response.headers?.server ?? response.headers?.Server,
+        cfRay,
+        server,
+        contentEncoding,
+        contentType,
         bodyPreview,
       })
 
       throw new UpstreamServerError(`HTTP ${response.status}`, response.status, {
         url,
         body: response.data,
-        headers: response.headers,
+        bodyTextPreview: bodyPreview,
+        headers,
         finalUrl: response.finalUrl,
+        contentEncoding,
+        contentType,
       })
     }
 
-    // cycletls returns data as string or object
-    const data = typeof response.data === 'string' ? JSON.parse(response.data) : response.data
+    // cycletls returns data as string | object | Buffer
+    const data =
+      typeof response.data === 'string'
+        ? JSON.parse(response.data)
+        : Buffer.isBuffer(response.data)
+          ? JSON.parse(decodeResponseBody(response.data, getHeaderValue(response.headers as Record<string, unknown>, 'content-encoding')) ?? '{}')
+          : response.data
     return data as T
   }
 
@@ -484,6 +490,77 @@ class HarpiClient {
       return a.localeCompare(b, undefined, { numeric: true })
     })
   }
+}
+
+function decodeResponseBody(data: unknown, contentEncoding?: string): string | undefined {
+  if (typeof data === 'string') return data
+  if (!data) return undefined
+
+  const decodeBuffer = (buf: Buffer) => {
+    const encoding = (contentEncoding ?? '').toLowerCase()
+    let out = buf
+
+    // Prefer declared encoding
+    try {
+      if (encoding.includes('br')) out = brotliDecompressSync(out)
+      else if (encoding.includes('gzip')) out = gunzipSync(out)
+      else if (encoding.includes('deflate')) out = inflateSync(out)
+    } catch {
+      // Best-effort fallback when header is missing/incorrect
+      const fns = [brotliDecompressSync, gunzipSync, inflateSync] as const
+      for (const fn of fns) {
+        try {
+          out = fn(buf)
+          break
+        } catch {
+          // keep trying
+        }
+      }
+    }
+
+    try {
+      return out.toString('utf8')
+    } catch {
+      return undefined
+    }
+  }
+
+  if (Buffer.isBuffer(data)) {
+    return decodeBuffer(data)
+  }
+
+  // Handle Buffer-like JSON structure (e.g. when serialized)
+  if (typeof data === 'object' && (data as { type?: unknown }).type === 'Buffer' && Array.isArray((data as { data?: unknown }).data)) {
+    return decodeBuffer(Buffer.from((data as { data: number[] }).data))
+  }
+
+  try {
+    return JSON.stringify(data)
+  } catch {
+    return String(data)
+  }
+}
+
+function getHeaderValue(headers: Record<string, unknown> | undefined, name: string): string | undefined {
+  if (!headers) return undefined
+  const target = name.toLowerCase()
+
+  for (const [key, value] of Object.entries(headers)) {
+    if (key.toLowerCase() !== target) continue
+
+    if (Array.isArray(value)) {
+      const first = value[0]
+      if (typeof first === 'string') return first
+      if (first === null || first === undefined) return undefined
+      return String(first)
+    }
+
+    if (typeof value === 'string') return value
+    if (value === null || value === undefined) return undefined
+    return String(value)
+  }
+
+  return undefined
 }
 
 // Singleton instance

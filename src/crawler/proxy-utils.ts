@@ -108,17 +108,25 @@ export async function createHealthCheckHandler(
                       url: error.context?.url,
                       finalUrl: error.context?.finalUrl,
                       retryAfter: error.retryAfter,
-                      cfRay: (error.context?.headers as Record<string, unknown> | undefined)?.['cf-ray'],
-                      bodyPreview: (() => {
-                        const body = error.context?.body
-                        if (!body) return undefined
-                        try {
-                          const raw = typeof body === 'string' ? body : JSON.stringify(body)
-                          return raw.replace(/\s+/g, ' ').slice(0, 600)
-                        } catch {
-                          return undefined
-                        }
-                      })(),
+                      server: getHeaderValue(error.context?.headers as Record<string, unknown> | undefined, 'server'),
+                      cfRay: getHeaderValue(error.context?.headers as Record<string, unknown> | undefined, 'cf-ray'),
+                      contentEncoding: getHeaderValue(
+                        error.context?.headers as Record<string, unknown> | undefined,
+                        'content-encoding',
+                      ),
+                      contentType: getHeaderValue(error.context?.headers as Record<string, unknown> | undefined, 'content-type'),
+                      bodyPreview:
+                        (error.context?.bodyTextPreview as string | undefined) ??
+                        (() => {
+                          const body = error.context?.body
+                          if (!body) return undefined
+                          try {
+                            const raw = typeof body === 'string' ? body : JSON.stringify(body)
+                            return raw.replace(/\s+/g, ' ').slice(0, 600)
+                          } catch {
+                            return undefined
+                          }
+                        })(),
                     }
                   : {}),
               }
@@ -200,4 +208,26 @@ export function isUpstreamServerError(error: unknown): boolean {
   }
 
   return false
+}
+
+function getHeaderValue(headers: Record<string, unknown> | undefined, name: string): string | undefined {
+  if (!headers) return undefined
+  const target = name.toLowerCase()
+
+  for (const [key, value] of Object.entries(headers)) {
+    if (key.toLowerCase() !== target) continue
+
+    if (Array.isArray(value)) {
+      const first = value[0]
+      if (typeof first === 'string') return first
+      if (first === null || first === undefined) return undefined
+      return String(first)
+    }
+
+    if (typeof value === 'string') return value
+    if (value === null || value === undefined) return undefined
+    return String(value)
+  }
+
+  return undefined
 }
