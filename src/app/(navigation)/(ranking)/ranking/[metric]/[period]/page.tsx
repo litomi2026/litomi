@@ -2,15 +2,11 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import z from 'zod'
 
-import { fetchMangasFromMultiSources } from '@/common/manga'
-import MangaCard from '@/components/card/MangaCard'
-import MangaCardDonation from '@/components/card/MangaCardDonation'
 import { generateOpenGraphMetadata } from '@/constants'
-import { Locale } from '@/translation/common'
-import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 import { metricInfo, MetricParam, periodLabels, PeriodParam } from '../../../common'
 import { getRankingData } from './query'
+import RankingList from './RankingList'
 
 export const dynamic = 'force-static'
 export const revalidate = 43200 // 12 hours
@@ -67,20 +63,5 @@ export default async function Page({ params }: PageProps<'/ranking/[metric]/[per
     notFound()
   }
 
-  const locale = Locale.KO
-  const ids = rankings.map((ranking) => ranking.mangaId)
-
-  const [mangasMap1, mangasMap2] = await Promise.all([
-    fetchMangasFromMultiSources({ ids: ids.slice(0, 10), locale }),
-    fetchMangasFromMultiSources({ ids: ids.slice(10, 20), locale }),
-  ])
-
-  return (
-    <ul className={`grid ${MANGA_LIST_GRID_COLUMNS.card} gap-2 p-2`}>
-      {rankings.map((ranking, i) => (
-        <MangaCard index={i} key={ranking.mangaId} manga={mangasMap1[ranking.mangaId] || mangasMap2[ranking.mangaId]} />
-      ))}
-      <MangaCardDonation />
-    </ul>
-  )
+  return <RankingList rankings={rankings} />
 }

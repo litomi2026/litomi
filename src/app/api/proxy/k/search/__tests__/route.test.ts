@@ -1,63 +1,73 @@
-import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
+import { afterEach, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test'
 
+import { kHentaiClient } from '@/crawler/k-hentai'
+import { MangaSource } from '@/database/enum'
 import { Manga } from '@/types/manga'
 
 import { GET } from '../route'
 import { mockKHentaiMangas } from './mock'
 
+// Convert mock k-hentai response to Manga format (simulating kHentaiClient.searchMangas)
+function convertToManga(raw: (typeof mockKHentaiMangas)[number]): Manga {
+  return {
+    id: raw.id,
+    title: raw.title,
+    images: [{ thumbnail: { url: raw.thumb } }],
+    date: new Date(raw.posted * 1000).toISOString(),
+    artists: [],
+    characters: [],
+    group: [],
+    series: [],
+    tags: raw.tags
+      .filter(({ tag }) => ['female', 'male', 'mixed', 'other'].includes(tag[0]))
+      .map(({ tag: [category, value] }) => ({ category, value, label: value })),
+    type: { value: 'doujinshi', label: '동인지' },
+    languages: [],
+    count: raw.filecount,
+    rating: raw.rating / 100,
+    viewCount: raw.views,
+    uploader: raw.uploader,
+    filesize: raw.filesize,
+    torrentCount: raw.torrentcount,
+    source: MangaSource.K_HENTAI,
+  }
+}
+
 describe('GET /api/proxy/k/search', () => {
   const baseUrl = 'http://localhost:3000/api/proxy/k/search'
-  const originalFetch = global.fetch
 
   beforeEach(() => {
-    global.fetch = mock(async (url: string | Request | URL, init?: RequestInit) => {
-      const urlString = typeof url === 'string' ? url : url instanceof URL ? url.toString() : (url as Request).url
+    // Mock kHentaiClient.searchMangas directly for stable testing
+    spyOn(kHentaiClient, 'searchMangas').mockImplementation(async (params = {}) => {
+      let result = [...mockKHentaiMangas]
 
-      if (urlString.includes('/api/v1/search/trending')) {
-        return new Response(JSON.stringify({ success: true, tracked: 1 }), {
-          status: 200,
-          headers: { 'Content-Type': 'application/json' },
-        })
+      if (params.sort === 'id_asc') {
+        result = result.sort((a, b) => a.id - b.id)
+      } else if (params.sort === 'popular') {
+        result = result.sort((a, b) => b.views - a.views || b.id - a.id)
+      } else if (params.sort === 'random') {
+        result = result.sort(() => Math.random() - 0.5)
       }
 
-      if (urlString.includes('k-hentai.org/ajax/search')) {
-        const searchParams = new URLSearchParams(urlString.split('?')[1])
-        const sort = searchParams.get('sort')
-        const nextId = searchParams.get('next-id')
-        const nextViews = searchParams.get('next-views')
-        const nextViewsId = searchParams.get('next-views-id')
-
-        let result = [...mockKHentaiMangas]
-
-        if (sort === 'id_asc') {
-          result = result.sort((a, b) => a.id - b.id)
-        } else if (sort === 'popular') {
-          result = result.sort((a, b) => b.views - a.views || b.id - a.id)
-        } else if (sort === 'random') {
-          result = result.sort(() => Math.random() - 0.5)
-        }
-
-        if (nextId) {
-          const nextIdNum = parseInt(nextId)
-          result = result.filter((m) => m.id > nextIdNum)
-        } else if (nextViews && nextViewsId) {
-          const viewsNum = parseInt(nextViews)
-          const idNum = parseInt(nextViewsId)
-          result = result.filter((m) => m.views < viewsNum || (m.views === viewsNum && m.id > idNum))
-        }
-
-        return new Response(JSON.stringify(result), {
-          status: 200,
-          headers: { 'Content-Type': 'application/json' },
-        })
+      if (params.nextId) {
+        const nextIdNum = parseInt(params.nextId)
+        result = result.filter((m) => m.id > nextIdNum)
+      } else if (params.nextViews && params.nextViewsId) {
+        const viewsNum = parseInt(params.nextViews)
+        const idNum = parseInt(params.nextViewsId)
+        result = result.filter((m) => m.views < viewsNum || (m.views === viewsNum && m.id > idNum))
       }
 
-      return originalFetch(url, init)
-    }) as unknown as typeof fetch
+      if (params.offset) {
+        result = result.slice(Number(params.offset))
+      }
+
+      return result.map(convertToManga)
+    })
   })
 
   afterEach(() => {
-    global.fetch = originalFetch
+    mock.restore()
   })
 
   describe('성공', () => {
