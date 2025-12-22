@@ -4,8 +4,8 @@ import { Check, Copy } from 'lucide-react'
 import { toast } from 'sonner'
 
 import IconSpinner from '@/components/icons/IconSpinner'
-import useActionResponse, { getFormField } from '@/hook/useActionResponse'
 import useClipboard from '@/hook/useClipboard'
+import useServerAction, { getFormField } from '@/hook/useServerAction'
 
 import type { TwoFactorSetupData } from '../types'
 
@@ -21,7 +21,7 @@ export default function TwoFactorSetup({ setupData, onSuccess }: Props) {
   const { copy, copied } = useClipboard()
   const { qrCode, secret } = setupData
 
-  const [response, verifyAction, isVerifying] = useActionResponse({
+  const [response, verifyAction, isVerifying] = useServerAction({
     action: verifyAndEnableTwoFactor,
     onSuccess: (backupcodes) => {
       onSuccess(backupcodes)

@@ -4,7 +4,7 @@ import { ChartNoAxesColumn, Heart, MessageCircle, Repeat } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { toggleLikingPost } from '@/app/(navigation)/(right-search)/posts/action'
-import useActionResponse from '@/hook/useActionResponse'
+import useServerAction from '@/hook/useServerAction'
 import useMeQuery from '@/query/useMeQuery'
 
 import IconLogout from '../icons/IconLogout'
@@ -29,7 +29,7 @@ export default function PostActionButtons({
 }: Props) {
   const { data: me } = useMeQuery()
 
-  const [_, dispatchAction, isPending] = useActionResponse({
+  const [_, dispatchAction, isPending] = useServerAction({
     action: toggleLikingPost,
     onSuccess: ({ liked }) => {
       if (liked) {

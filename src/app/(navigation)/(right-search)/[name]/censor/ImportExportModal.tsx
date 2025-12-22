@@ -10,7 +10,7 @@ import { IconUpload } from '@/components/icons/IconUpload'
 import IconX from '@/components/icons/IconX'
 import Modal from '@/components/ui/Modal'
 import { QueryKeys } from '@/constants/query'
-import useActionResponse from '@/hook/useActionResponse'
+import useServerAction from '@/hook/useServerAction'
 import { downloadBlob } from '@/utils/download'
 
 import { addCensorships } from './action'
@@ -42,7 +42,7 @@ function ImportExportModal({ open, onClose, censorships }: Readonly<Props>) {
   const [importText, setImportText] = useState('')
   const queryClient = useQueryClient()
 
-  const [_, dispatchAddAction, isPending] = useActionResponse({
+  const [_, dispatchAddAction, isPending] = useServerAction({
     action: addCensorships,
     onSuccess: (items) => {
       toast.success(`${items?.length ?? 0}개 규칙을 추가했어요`)

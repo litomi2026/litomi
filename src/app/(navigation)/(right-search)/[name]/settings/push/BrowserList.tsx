@@ -6,7 +6,7 @@ import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
-import useActionResponse from '@/hook/useActionResponse'
+import useServerAction from '@/hook/useServerAction'
 import { getUsernameFromParam } from '@/utils/param'
 import { formatDeviceInfo } from '@/utils/push-device'
 
@@ -28,7 +28,7 @@ export default function BrowserList({ webPushes }: Props) {
   const { name } = useParams<Params>()
   const username = getUsernameFromParam(name)
 
-  const [_, dispatchRemoveDevice] = useActionResponse({
+  const [_, dispatchRemoveDevice] = useServerAction({
     action: removeDevice,
     onSuccess: (data) => {
       toast.success(data)

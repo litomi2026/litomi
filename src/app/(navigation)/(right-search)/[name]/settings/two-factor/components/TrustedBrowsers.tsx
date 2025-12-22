@@ -6,7 +6,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 
 import IconSpinner from '@/components/icons/IconSpinner'
-import useActionResponse from '@/hook/useActionResponse'
+import useServerAction from '@/hook/useServerAction'
 import { formatDistanceToNow } from '@/utils/date'
 
 import { revokeAllTrustedBrowsers, revokeTrustedBrowser } from '../action-trusted-browser'
@@ -27,7 +27,7 @@ type TrustedBrowser = {
 export default function TrustedBrowsers({ trustedBrowsers }: Props) {
   const [browsers, setBrowsers] = useState<TrustedBrowser[]>(trustedBrowsers)
 
-  const [, dispatchRevokeSingle, isRevokingSingle] = useActionResponse({
+  const [, dispatchRevokeSingle, isRevokingSingle] = useServerAction({
     action: revokeTrustedBrowser,
     onSuccess: (_, [formData]) => {
       const trustedBrowserId = Number(formData.get('trustedBrowserId'))
@@ -36,7 +36,7 @@ export default function TrustedBrowsers({ trustedBrowsers }: Props) {
     },
   })
 
-  const [, dispatchRevokeAll, isRevokingAll] = useActionResponse({
+  const [, dispatchRevokeAll, isRevokingAll] = useServerAction({
     action: revokeAllTrustedBrowsers,
     onSuccess: () => {
       setBrowsers([])

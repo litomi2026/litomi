@@ -9,7 +9,7 @@ import { toast } from 'sonner'
 import IconSpinner from '@/components/icons/IconSpinner'
 import IconTrash from '@/components/icons/IconTrash'
 import { QueryKeys } from '@/constants/query'
-import useActionResponse from '@/hook/useActionResponse'
+import useServerAction from '@/hook/useServerAction'
 import amplitude from '@/lib/amplitude/lazy'
 
 import { deleteAccount } from './actions'
@@ -38,7 +38,7 @@ export default function AccountDeletionForm({ loginId }: Readonly<Props>) {
   const [password, setPassword] = useState('')
   const queryClient = useQueryClient()
 
-  const [_, dispatchAction, isPending] = useActionResponse({
+  const [_, dispatchAction, isPending] = useServerAction({
     action: deleteAccount,
     onError: () => {
       setStep(DeletionStep.INITIAL)

@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 import { GETV1MangaIdRatingResponse } from '@/backend/api/v1/manga/[id]/rating'
 import LoginPageLink from '@/components/LoginPageLink'
 import { QueryKeys } from '@/constants/query'
-import useActionResponse from '@/hook/useActionResponse'
+import useServerAction from '@/hook/useServerAction'
 import useMeQuery from '@/query/useMeQuery'
 
 import { saveRating } from '../actions'
@@ -38,7 +38,7 @@ export default function RatingInput({ mangaId, className = '', onClick }: Props)
   const gestureDirection = useRef<'horizontal' | 'vertical' | null>(null)
   const displayRating = hoveredRating || rating
 
-  const [, dispatchAction, isPending] = useActionResponse({
+  const [, dispatchAction, isPending] = useServerAction({
     action: saveRating,
     onSuccess: (_, [{ rating }]) => {
       setJustSaved(true)

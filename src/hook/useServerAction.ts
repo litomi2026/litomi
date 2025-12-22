@@ -53,7 +53,7 @@ export function getFormField<T extends ActionResponse>(response: T | undefined, 
   }
 }
 
-export default function useActionResponse<T extends ActionResponse, TActionArgs extends unknown[]>({
+export default function useServerAction<T extends ActionResponse, TActionArgs extends unknown[]>({
   action,
   onSuccess,
   onError,

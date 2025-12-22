@@ -6,7 +6,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 
 import { QueryKeys } from '@/constants/query'
-import useActionResponse from '@/hook/useActionResponse'
+import useServerAction from '@/hook/useServerAction'
 
 import { testNotification } from './action'
 import { getCurrentBrowserEndpoint } from './common'
@@ -19,7 +19,7 @@ export default function PushTestButton({ endpoints }: Props) {
   const [hasTestedOnce, setHasTestedOnce] = useState(false)
   const queryClient = useQueryClient()
 
-  const [_, dispatchTestNotification, isPending] = useActionResponse({
+  const [_, dispatchTestNotification, isPending] = useServerAction({
     action: testNotification,
     onSuccess: (data) => {
       toast.success(data)

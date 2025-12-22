@@ -9,7 +9,7 @@ import { createPost } from '@/app/(navigation)/(right-search)/posts/action'
 import { PostFilter } from '@/backend/api/v1/post/constant'
 import { MAX_POST_CONTENT_LENGTH } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
-import useActionResponse, { getFormField } from '@/hook/useActionResponse'
+import useServerAction, { getFormField } from '@/hook/useServerAction'
 import useMeQuery from '@/query/useMeQuery'
 
 import IconSpinner from '../icons/IconSpinner'
@@ -43,7 +43,7 @@ export default function PostCreationForm({
   const { data: me } = useMeQuery()
   const queryClient = useQueryClient()
 
-  const [response, dispatchAction, isPending] = useActionResponse({
+  const [response, dispatchAction, isPending] = useServerAction({
     action: createPost,
     onError: ({ error }) => {
       if (typeof error !== 'string') {

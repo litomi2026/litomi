@@ -8,7 +8,7 @@ import { create } from 'zustand'
 
 import { addMangaToLibraries } from '@/app/(navigation)/library/action-library-item'
 import { QueryKeys } from '@/constants/query'
-import useActionResponse from '@/hook/useActionResponse'
+import useServerAction from '@/hook/useServerAction'
 
 import IconPlus from '../icons/IconPlus'
 import IconSpinner from '../icons/IconSpinner'
@@ -36,7 +36,7 @@ export default function LibraryModal() {
   const queryClient = useQueryClient()
   const [selectedLibraryIds, setSelectedLibraryIds] = useState<Set<number>>(new Set())
 
-  const [, dispatchAddToLibraries, isPending] = useActionResponse({
+  const [, dispatchAddToLibraries, isPending] = useServerAction({
     action: addMangaToLibraries,
     onSuccess: (successCount, [{ libraryIds }]) => {
       if (successCount === 0) {

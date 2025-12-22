@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-import useActionResponse from '@/hook/useActionResponse'
+import useServerAction from '@/hook/useServerAction'
 
 import { updateAutoDeletionSettings } from './action'
 
@@ -23,7 +23,7 @@ const dayOptions = [
 export default function AutoDeletionForm({ autoDeletionDays }: Props) {
   const [selectedDays, setSelectedDays] = useState(autoDeletionDays)
 
-  const [, dispatchAction, isPending] = useActionResponse({
+  const [, dispatchAction, isPending] = useServerAction({
     action: updateAutoDeletionSettings,
     onSuccess: () => {
       toast.success('자동 삭제 설정이 반영됐어요')

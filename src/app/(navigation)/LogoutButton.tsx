@@ -8,13 +8,13 @@ import { toast } from 'sonner'
 import logout from '@/app/auth/logout/action'
 import { NEXT_PUBLIC_GA_ID } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
-import useActionResponse from '@/hook/useActionResponse'
+import useServerAction from '@/hook/useServerAction'
 import amplitude from '@/lib/amplitude/lazy'
 
 export default function LogoutButton() {
   const queryClient = useQueryClient()
 
-  const [_, dispatchAction, isPending] = useActionResponse({
+  const [_, dispatchAction, isPending] = useServerAction({
     action: logout,
     onSuccess: ({ loginId }) => {
       toast.success(`${loginId} 계정에서 로그아웃했어요`)

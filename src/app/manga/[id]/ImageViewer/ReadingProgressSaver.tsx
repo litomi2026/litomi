@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef } from 'react'
 import { toast } from 'sonner'
 
 import { SessionStorageKeyMap } from '@/constants/storage'
-import useActionResponse from '@/hook/useActionResponse'
+import useServerAction from '@/hook/useServerAction'
 import useMeQuery from '@/query/useMeQuery'
 
 import { saveReadingProgress } from '../actions'
@@ -21,7 +21,7 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const lastSavedPageRef = useRef<number | null>(null)
 
-  const [_, dispatchAction, isSaving] = useActionResponse({
+  const [_, dispatchAction, isSaving] = useServerAction({
     action: saveReadingProgress,
     shouldSetResponse: false,
     silentNetworkError: true,

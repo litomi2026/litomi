@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 
 import Toggle from '@/components/ui/Toggle'
 import { NotificationConditionType } from '@/database/enum'
-import useActionResponse from '@/hook/useActionResponse'
+import useServerAction from '@/hook/useServerAction'
 
 import type { NotificationCriteria } from './types'
 
@@ -28,7 +28,7 @@ const CONDITION_TYPE_LABELS: Record<number, string> = {
 }
 
 export default function NotificationCriteriaCard({ criterion, onEdit }: NotificationCriteriaCardProps) {
-  const [, dispatchToggle, isToggling] = useActionResponse({
+  const [, dispatchToggle, isToggling] = useServerAction({
     action: toggleNotificationCriteria,
     onSuccess: (data) => {
       toast.success(data.isActive ? '알림을 활성화했어요' : '알림을 비활성화했어요')
@@ -36,7 +36,7 @@ export default function NotificationCriteriaCard({ criterion, onEdit }: Notifica
     shouldSetResponse: false,
   })
 
-  const [, dispatchDelete, isDeleting] = useActionResponse({
+  const [, dispatchDelete, isDeleting] = useServerAction({
     action: deleteNotificationCriteria,
     onSuccess: () => {
       toast.success('알림 기준을 삭제했어요')

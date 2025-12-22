@@ -9,7 +9,7 @@ import IconX from '@/components/icons/IconX'
 import Modal from '@/components/ui/Modal'
 import Toggle from '@/components/ui/Toggle'
 import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/constants/policy'
-import useActionResponse, { getFieldError, getFormField } from '@/hook/useActionResponse'
+import useServerAction, { getFieldError, getFormField } from '@/hook/useServerAction'
 
 import { updateLibrary } from './action-library'
 
@@ -33,7 +33,7 @@ type Props = {
 export default function LibraryEditModal({ library, open, onOpenChange }: Readonly<Props>) {
   const formRef = useRef<HTMLFormElement>(null)
 
-  const [response, dispatchAction, isPending] = useActionResponse({
+  const [response, dispatchAction, isPending] = useServerAction({
     action: updateLibrary,
     onError: ({ error }) => {
       if (typeof error !== 'string') {

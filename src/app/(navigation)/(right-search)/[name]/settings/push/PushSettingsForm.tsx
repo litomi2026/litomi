@@ -7,7 +7,7 @@ import { toast } from 'sonner'
 
 import CustomSelect from '@/components/ui/CustomSelect'
 import Toggle from '@/components/ui/Toggle'
-import useActionResponse, { getFormField } from '@/hook/useActionResponse'
+import useServerAction, { getFormField } from '@/hook/useServerAction'
 import { getUsernameFromParam } from '@/utils/param'
 import { getTimezoneOffsetHours, localToUtcHour, utcToLocalHour } from '@/utils/timezone'
 
@@ -52,7 +52,7 @@ export default function PushSettingsForm({ initialSettings }: Props) {
     return updatePushSettings(formData)
   }
 
-  const [response, dispatchAction, isPending] = useActionResponse({
+  const [response, dispatchAction, isPending] = useServerAction({
     action: handleSubmit,
     onSuccess: (data) => {
       toast.success(data)

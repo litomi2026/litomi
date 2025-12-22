@@ -1,6 +1,6 @@
 import { KeyRound, RectangleEllipsis, ShieldCheck, Smartphone } from 'lucide-react'
 
-import useActionResponse from '@/hook/useActionResponse'
+import useServerAction from '@/hook/useServerAction'
 
 import Onboarding from '../../Onboarding'
 import { setupTwoFactor } from '../actions'
@@ -11,7 +11,7 @@ type Props = {
 }
 
 export default function TwoFactorOnboarding({ onSuccess }: Props) {
-  const [_, setupAction, isSettingUp] = useActionResponse({
+  const [_, setupAction, isSettingUp] = useServerAction({
     action: setupTwoFactor,
     onSuccess,
     shouldSetResponse: false,

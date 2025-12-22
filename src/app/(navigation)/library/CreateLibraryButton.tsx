@@ -12,7 +12,7 @@ import Modal from '@/components/ui/Modal'
 import Toggle from '@/components/ui/Toggle'
 import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
-import useActionResponse from '@/hook/useActionResponse'
+import useServerAction from '@/hook/useServerAction'
 
 import { createLibrary } from './action-library'
 
@@ -48,7 +48,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
     setIsPublic(false)
   }
 
-  const [formErrors, dispatchAction, isPending] = useActionResponse({
+  const [formErrors, dispatchAction, isPending] = useServerAction({
     action: createLibrary,
     onSuccess: (newLibraryId, [formData]) => {
       queryClient.setQueryData<GETLibraryResponse>(QueryKeys.libraries, (oldLibraries) => {

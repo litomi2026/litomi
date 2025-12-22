@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 
 import { QueryKeys } from '@/constants/query'
-import useActionResponse from '@/hook/useActionResponse'
+import useServerAction from '@/hook/useServerAction'
 
 import type { BookmarkExportData, ImportState } from './types'
 
@@ -14,7 +14,7 @@ export function useBookmarkImport() {
   const [previewData, setPreviewData] = useState<BookmarkExportData | null>(null)
   const queryClient = useQueryClient()
 
-  const [importResult, dispatchAction] = useActionResponse({
+  const [importResult, dispatchAction] = useServerAction({
     action: importBookmarks,
     onError: () => {
       setImportState('preview')

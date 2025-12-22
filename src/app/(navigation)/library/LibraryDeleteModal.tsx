@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 import IconSpinner from '@/components/icons/IconSpinner'
 import IconTrash from '@/components/icons/IconTrash'
 import Modal from '@/components/ui/Modal'
-import useActionResponse from '@/hook/useActionResponse'
+import useServerAction from '@/hook/useServerAction'
 
 import { deleteLibrary } from './action-library'
 
@@ -21,7 +21,7 @@ type Props = {
 export default function LibraryDeleteModal({ libraryId, libraryName, itemCount, open, onOpenChange }: Readonly<Props>) {
   const router = useRouter()
 
-  const [_, dispatchAction, isPending] = useActionResponse({
+  const [_, dispatchAction, isPending] = useServerAction({
     action: deleteLibrary,
     onSuccess: () => {
       toast.success('서재가 삭제됐어요')

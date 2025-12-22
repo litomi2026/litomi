@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 import { useLibrarySelectionStore } from '@/app/(navigation)/library/[id]/librarySelection'
 import Modal from '@/components/ui/Modal'
 import { QueryKeys } from '@/constants/query'
-import useActionResponse from '@/hook/useActionResponse'
+import useServerAction from '@/hook/useServerAction'
 
 import type { BulkOperationPermissions } from './bulkOperationPermissions'
 
@@ -47,7 +47,7 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId, per
     setShowModal(true)
   }
 
-  const [, dispatchDeletingAction, isDeleting] = useActionResponse({
+  const [, dispatchDeletingAction, isDeleting] = useServerAction({
     action: bulkRemoveFromLibrary,
     onSuccess: (deletedCount, [{ libraryId }]) => {
       toast.success(`${deletedCount}개 작품을 제거했어요`)
@@ -58,7 +58,7 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId, per
     shouldSetResponse: false,
   })
 
-  const [, dispatchCopyingAction, isCopying] = useActionResponse({
+  const [, dispatchCopyingAction, isCopying] = useServerAction({
     action: bulkCopyToLibrary,
     onSuccess: (copiedCount, [{ toLibraryId, mangaIds }]) => {
       const alreadyExistsCount = mangaIds.length - copiedCount
@@ -71,7 +71,7 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId, per
     shouldSetResponse: false,
   })
 
-  const [_, dispatchMovingAction, isMoving] = useActionResponse({
+  const [_, dispatchMovingAction, isMoving] = useServerAction({
     action: bulkMoveToLibrary,
     onSuccess: (movedCount, [{ fromLibraryId, toLibraryId, mangaIds }]) => {
       const alreadyExistsCount = mangaIds.length - movedCount
