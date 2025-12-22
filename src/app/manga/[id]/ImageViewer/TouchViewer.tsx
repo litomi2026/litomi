@@ -1,16 +1,14 @@
 'use client'
 
-import { MessageCircle } from 'lucide-react'
-import Link from 'next/link'
 import { useEffect, useRef } from 'react'
 
-import BookmarkButton from '@/components/card/BookmarkButton'
 import IconSpinner from '@/components/icons/IconSpinner'
 import MangaImage from '@/components/MangaImage'
 import { TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT } from '@/constants/policy'
 import { ImageWithVariants, Manga } from '@/types/manga'
 
 import { MangaIdSearchParam } from '../common'
+import LastPageActions from './LastPageActions'
 import RatingInput from './RatingInput'
 import { useBrightnessStore } from './store/brightness'
 import { useImageIndexStore } from './store/imageIndex'
@@ -414,21 +412,7 @@ function LastPage({ manga, isHidden = false }: LastPageProps) {
   return (
     <li aria-hidden={isHidden} className="flex flex-col items-center justify-center gap-4 p-4 aria-hidden:hidden">
       <RatingInput className="select-text" mangaId={id} />
-      <div className="grid grid-cols-2 items-center gap-2 text-sm font-medium text-foreground">
-        <Link
-          className="flex items-center gap-2 p-4 py-2 border border-foreground/20 rounded-lg hover:bg-foreground/10 transition"
-          href={`/manga/${id}/detail`}
-          onClick={(e) => e.stopPropagation()}
-          prefetch={false}
-        >
-          <MessageCircle className="size-4" />
-          작품 후기
-        </Link>
-        <BookmarkButton
-          className="p-4 w-full py-2 border border-foreground/20 rounded-lg hover:bg-foreground/10 transition"
-          manga={manga}
-        />
-      </div>
+      <LastPageActions manga={manga} />
     </li>
   )
 }
