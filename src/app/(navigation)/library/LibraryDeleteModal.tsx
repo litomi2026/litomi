@@ -1,11 +1,16 @@
 'use client'
 
+import { type InfiniteData, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+
+import type { GETLibraryResponse } from '@/backend/api/v1/library'
+import type { GETV1LibraryListResponse } from '@/backend/api/v1/library/list'
 
 import IconSpinner from '@/components/icons/IconSpinner'
 import IconTrash from '@/components/icons/IconTrash'
 import Modal from '@/components/ui/Modal'
+import { QueryKeys } from '@/constants/query'
 import useServerAction from '@/hook/useServerAction'
 
 import { deleteLibrary } from './action-library'
@@ -20,10 +25,39 @@ type Props = {
 
 export default function LibraryDeleteModal({ libraryId, libraryName, itemCount, open, onOpenChange }: Readonly<Props>) {
   const router = useRouter()
+  const queryClient = useQueryClient()
 
   const [_, dispatchAction, isPending] = useServerAction({
     action: deleteLibrary,
-    onSuccess: () => {
+    onSuccess: (deletedLibraryId) => {
+      queryClient.setQueryData<GETLibraryResponse>(QueryKeys.libraries, (oldLibraries) => {
+        if (!oldLibraries) {
+          return oldLibraries
+        }
+
+        return oldLibraries.filter((lib) => lib.id !== deletedLibraryId)
+      })
+
+      queryClient.setQueriesData<InfiniteData<GETV1LibraryListResponse, string | null>>(
+        { queryKey: QueryKeys.infiniteLibraryListBase },
+        (oldData) => {
+          if (!oldData) {
+            return oldData
+          }
+
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              libraries: page.libraries.filter((lib) => lib.id !== deletedLibraryId),
+            })),
+          }
+        },
+      )
+
+      queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryListBase })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryMangasBase })
+
       toast.success('서재가 삭제됐어요')
       onOpenChange(false)
       router.push('/library')

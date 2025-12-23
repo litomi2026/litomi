@@ -52,6 +52,8 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId, per
     onSuccess: (deletedCount, [{ libraryId }]) => {
       toast.success(`${deletedCount}개 작품을 제거했어요`)
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraries })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryListBase })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryMangasBase })
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItems(libraryId) })
       exitSelectionMode()
     },
@@ -65,6 +67,8 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId, per
       const extraMessage = alreadyExistsCount > 0 ? ` (실패: ${alreadyExistsCount}개)` : ''
       toast.success(`${copiedCount}개 작품을 복사했어요${extraMessage}`)
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraries })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryListBase })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryMangasBase })
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItems(toLibraryId) })
       exitSelectionMode()
     },
@@ -78,6 +82,8 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId, per
       const extraMessage = alreadyExistsCount > 0 ? ` (실패: ${alreadyExistsCount}개)` : ''
       toast.success(`${movedCount}개 작품을 이동했어요${extraMessage}`)
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraries })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryListBase })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryMangasBase })
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItems(fromLibraryId) })
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItems(toLibraryId) })
       exitSelectionMode()

@@ -1,8 +1,10 @@
 'use client'
 
-import { useQueryClient } from '@tanstack/react-query'
+import { type InfiniteData, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
+
+import type { GETV1LibraryListResponse } from '@/backend/api/v1/library/list'
 
 import { GETLibraryResponse } from '@/backend/api/v1/library'
 import IconPlus from '@/components/icons/IconPlus'
@@ -13,6 +15,7 @@ import Toggle from '@/components/ui/Toggle'
 import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import useServerAction from '@/hook/useServerAction'
+import useMeQuery from '@/query/useMeQuery'
 
 import { createLibrary } from './action-library'
 
@@ -39,6 +42,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
   const [selectedIcon, setSelectedIcon] = useState(DEFAULT_ICONS[0])
   const [isPublic, setIsPublic] = useState(true)
   const queryClient = useQueryClient()
+  const { data: me } = useMeQuery()
   const nameInputRef = useRef<HTMLInputElement>(null)
 
   function handleClose() {
@@ -64,6 +68,48 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
 
         return oldLibraries ? [...oldLibraries, newLibrary] : [newLibrary]
       })
+
+      const meId = me?.id
+
+      if (meId) {
+        queryClient.setQueryData<InfiniteData<GETV1LibraryListResponse, string | null>>(
+          QueryKeys.infiniteLibraryList(meId),
+          (oldData) => {
+            if (!oldData) {
+              return oldData
+            }
+
+            const now = Date.now()
+
+            const newItem = {
+              id: newLibraryId,
+              userId: meId,
+              name: formData.get('name')?.toString() ?? '',
+              description: (formData.get('description')?.toString() ?? '').trim() || null,
+              color: formData.get('color')?.toString() ?? null,
+              icon: formData.get('icon')?.toString() ?? null,
+              isPublic: formData.get('is-public')?.toString() === 'on',
+              itemCount: 0,
+              createdAt: now,
+            }
+
+            const [firstPage, ...restPages] = oldData.pages
+
+            if (!firstPage) {
+              return oldData
+            }
+
+            const nextFirstPage = {
+              ...firstPage,
+              libraries: [newItem, ...firstPage.libraries.filter((lib) => lib.id !== newItem.id)],
+            }
+
+            return { ...oldData, pages: [nextFirstPage, ...restPages] }
+          },
+        )
+      }
+
+      queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryListBase })
 
       toast.success('서재를 생성했어요')
       handleClose()
