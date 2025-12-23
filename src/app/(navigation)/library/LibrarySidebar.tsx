@@ -1,9 +1,22 @@
+'use client'
+
+import type { RefObject } from 'react'
+
 import { Bookmark, Clock, Globe, LibraryBig, Lock, Star } from 'lucide-react'
 
 import { formatNumber } from '@/utils/format'
 
 import CreateLibraryButton from './CreateLibraryButton'
 import LibrarySidebarLink from './LibrarySidebarLink'
+
+type PaginationProps = {
+  hasNextPage?: boolean
+  isFetchingNextPage?: boolean
+  isFetchNextPageError?: boolean
+  isPending?: boolean
+  infiniteScrollTriggerRef?: RefObject<HTMLDivElement | null>
+  onRetryNextPage?: () => void
+}
 
 type Props = {
   libraries: {
@@ -22,6 +35,7 @@ type Props = {
   bookmarkCount?: number
   historyCount?: number
   ratingCount?: number
+  pagination?: PaginationProps
 }
 
 export default function LibrarySidebar({
@@ -32,8 +46,12 @@ export default function LibrarySidebar({
   bookmarkCount,
   historyCount,
   ratingCount,
+  pagination,
 }: Props) {
   const mangaCount = libraries.reduce((sum, lib) => sum + lib.itemCount, 0)
+  const ownerLibraries = userId ? libraries.filter((lib) => lib.userId === userId) : []
+  const publicLibraries = userId ? libraries.filter((lib) => lib.userId !== userId) : libraries
+  const showLibrariesSkeleton = Boolean(pagination?.isPending) && libraries.length === 0
 
   const info = userId
     ? {
@@ -64,7 +82,7 @@ export default function LibrarySidebar({
         />
         <div className="h-px bg-zinc-800 my-1" />
         <LibrarySidebarLink
-          description={historyCount !== undefined ? `${formatNumber(historyCount, 'ko')}개 작품` : '최근 읽은 작품'}
+          description={historyCount !== undefined ? `${formatNumber(historyCount, 'ko')}개 작품` : '...'}
           href="/library/history"
           icon={<Clock className="size-4 text-background" />}
           iconBackground="var(--color-brand)"
@@ -72,7 +90,7 @@ export default function LibrarySidebar({
           title="감상 기록"
         />
         <LibrarySidebarLink
-          description={bookmarkCount !== undefined ? `${formatNumber(bookmarkCount, 'ko')}개 작품` : '즐겨찾기한 작품'}
+          description={bookmarkCount !== undefined ? `${formatNumber(bookmarkCount, 'ko')}개 작품` : '...'}
           href="/library/bookmark"
           icon={<Bookmark className="size-4 text-background" />}
           iconBackground="var(--color-brand)"
@@ -80,41 +98,101 @@ export default function LibrarySidebar({
           title="북마크"
         />
         <LibrarySidebarLink
-          description={ratingCount !== undefined ? `${formatNumber(ratingCount, 'ko')}개 작품` : '평가한 작품'}
+          description={ratingCount !== undefined ? `${formatNumber(ratingCount, 'ko')}개 작품` : '...'}
           href="/library/rating"
           icon={<Star className="size-4 text-background" />}
           iconBackground="var(--color-brand)"
           onClick={onClick}
           title="평가"
         />
-        {libraries.length > 0 && <div className="h-px bg-zinc-800 my-1" />}
-        {libraries.map((library) => (
-          <LibrarySidebarLink
-            badge={
-              !library.isPublic ? (
-                <Lock className="size-3 text-zinc-500 shrink-0" />
-              ) : library.userId !== userId ? (
-                <Globe className="size-3 text-zinc-500 shrink-0" />
-              ) : null
-            }
-            description={`${formatNumber(library.itemCount)}개`}
-            href={`/library/${library.id}`}
-            icon={
-              <>
-                <span className="text-sm sm:hidden lg:inline">{library.icon || '📚'}</span>
-                <span className="text-sm hidden sm:inline lg:hidden text-foreground font-semibold">
-                  {library.name.slice(0, 1)}
-                </span>
-              </>
-            }
-            iconBackground={library.color || 'rgb(113 113 122)'}
-            key={library.id}
-            onClick={onClick}
-            showActiveIndicator
-            title={library.name}
-          />
-        ))}
+        {(libraries.length > 0 || showLibrariesSkeleton) && <div className="h-px bg-zinc-800 my-1" />}
+        {showLibrariesSkeleton ? (
+          <div className="grid gap-2 px-1">
+            <LibrarySidebarSkeleton length={6} />
+          </div>
+        ) : (
+          <>
+            {ownerLibraries.map((library) => (
+              <LibrarySidebarLink
+                badge={
+                  !library.isPublic ? (
+                    <Lock className="size-3 text-zinc-500 shrink-0" />
+                  ) : library.userId !== userId ? (
+                    <Globe className="size-3 text-zinc-500 shrink-0" />
+                  ) : null
+                }
+                description={`${formatNumber(library.itemCount)}개`}
+                href={`/library/${library.id}`}
+                icon={
+                  <>
+                    <span className="text-sm sm:hidden lg:inline">{library.icon || '📚'}</span>
+                    <span className="text-sm hidden sm:inline lg:hidden text-foreground font-semibold">
+                      {library.name.slice(0, 1)}
+                    </span>
+                  </>
+                }
+                iconBackground={library.color || 'rgb(113 113 122)'}
+                key={library.id}
+                onClick={onClick}
+                showActiveIndicator
+                title={library.name}
+              />
+            ))}
+            {ownerLibraries.length > 0 && publicLibraries.length > 0 && <div className="h-px bg-zinc-800 my-1" />}
+            {publicLibraries.map((library) => (
+              <LibrarySidebarLink
+                badge={
+                  !library.isPublic ? (
+                    <Lock className="size-3 text-zinc-500 shrink-0" />
+                  ) : library.userId !== userId ? (
+                    <Globe className="size-3 text-zinc-500 shrink-0" />
+                  ) : null
+                }
+                description={`${formatNumber(library.itemCount)}개`}
+                href={`/library/${library.id}`}
+                icon={
+                  <>
+                    <span className="text-sm sm:hidden lg:inline">{library.icon || '📚'}</span>
+                    <span className="text-sm hidden sm:inline lg:hidden text-foreground font-semibold">
+                      {library.name.slice(0, 1)}
+                    </span>
+                  </>
+                }
+                iconBackground={library.color || 'rgb(113 113 122)'}
+                key={library.id}
+                onClick={onClick}
+                showActiveIndicator
+                title={library.name}
+              />
+            ))}
+          </>
+        )}
+        {pagination?.isFetchingNextPage && (
+          <div className="text-xs text-zinc-500">
+            <LibrarySidebarSkeleton length={2} />
+          </div>
+        )}
+        {pagination?.hasNextPage && <div className="w-full p-2" ref={pagination.infiniteScrollTriggerRef} />}
+        {pagination?.isFetchNextPageError && pagination.onRetryNextPage && (
+          <button
+            className="w-full text-left px-3 py-2 text-xs text-zinc-400 hover:text-foreground hover:bg-zinc-800/50 rounded-lg transition"
+            onClick={pagination.onRetryNextPage}
+            type="button"
+          >
+            다시 시도해요
+          </button>
+        )}
       </div>
     </aside>
+  )
+}
+
+function LibrarySidebarSkeleton({ length = 6 }: { length?: number }) {
+  return (
+    <div className="grid gap-2 px-1">
+      {Array.from({ length }).map((_, i) => (
+        <div className="h-12 rounded-lg bg-zinc-800/40 animate-pulse" key={i} />
+      ))}
+    </div>
   )
 }

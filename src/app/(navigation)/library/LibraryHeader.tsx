@@ -2,8 +2,8 @@
 
 import { Edit, Menu, X } from 'lucide-react'
 import dynamic from 'next/dynamic'
-import { useParams, usePathname } from 'next/navigation'
-import { useCallback, useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
+import { type RefObject, useCallback, useEffect, useState } from 'react'
 
 import MangaImportButton from '@/components/card/MangaImportButton'
 import MangaImportModal from '@/components/card/MangaImportModal'
@@ -14,12 +14,9 @@ import ShareLibraryButton from './[id]/ShareLibraryButton'
 import { getBulkOperationPermissions } from './bulkOperationPermissions'
 import LibraryManagementMenu from './LibraryManagementMenu'
 import LibrarySidebar from './LibrarySidebar'
+import useCurrentLibraryMeta from './useCurrentLibraryMeta'
 
 const BulkOperationsToolbar = dynamic(() => import('./BulkOperationsToolbar'))
-
-type Params = {
-  id: string
-}
 
 type Props = {
   libraries: {
@@ -36,14 +33,30 @@ type Props = {
   bookmarkCount?: number
   historyCount?: number
   ratingCount?: number
+  sidebarPagination?: SidebarPagination
 }
 
-export default function LibraryHeader({ libraries, userId, bookmarkCount, historyCount, ratingCount }: Props) {
+type SidebarPagination = {
+  hasNextPage?: boolean
+  isFetchingNextPage?: boolean
+  isFetchNextPageError?: boolean
+  isPending?: boolean
+  infiniteScrollTriggerRef?: RefObject<HTMLDivElement | null>
+  onRetryNextPage?: () => void
+}
+
+export default function LibraryHeader({
+  libraries,
+  userId,
+  bookmarkCount,
+  historyCount,
+  ratingCount,
+  sidebarPagination,
+}: Props) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const pathname = usePathname()
-  const { id: libraryId } = useParams<Params>()
   const { enterSelectionMode, exitSelectionMode, isSelectionMode } = useLibrarySelectionStore()
-  const currentLibrary = libraryId ? libraries.find((lib) => lib.id === Number(libraryId)) : null
+  const { libraryId, currentLibrary } = useCurrentLibraryMeta({ libraries, userId })
   const isOwner = currentLibrary?.userId === userId
   const isGuest = !userId
   const isEmpty = currentLibrary?.itemCount === 0
@@ -194,6 +207,7 @@ export default function LibraryHeader({ libraries, userId, bookmarkCount, histor
               historyCount={historyCount}
               libraries={libraries}
               onClick={closeDrawer}
+              pagination={sidebarPagination}
               ratingCount={ratingCount}
               userId={userId}
             />
