@@ -4,7 +4,6 @@ import type { ReactNode } from 'react'
 
 import { useMemo } from 'react'
 
-import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMeQuery from '@/query/useMeQuery'
 
 import LibraryHeader from './LibraryHeader'
@@ -57,17 +56,10 @@ export default function LibraryNavigation({ children }: Readonly<Props>) {
     return Array.from(map.values())
   }, [data])
 
-  const infiniteScrollTriggerRef = useInfiniteScrollObserver({
-    hasNextPage: hasNextPage && !isFetchNextPageError,
-    isFetchingNextPage,
-    fetchNextPage,
-  })
-
   const sidebarPagination = {
     hasNextPage,
     isFetchingNextPage,
     isFetchNextPageError,
-    infiniteScrollTriggerRef,
     isPending: isMePending || isLibrariesPending,
     onRetryNextPage: () => fetchNextPage(),
   }

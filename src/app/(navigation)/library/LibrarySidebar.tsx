@@ -1,9 +1,9 @@
 'use client'
 
-import type { RefObject } from 'react'
-
 import { Bookmark, Clock, Globe, LibraryBig, Lock, Star } from 'lucide-react'
+import { type RefObject, useRef } from 'react'
 
+import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import { formatNumber } from '@/utils/format'
 
 import CreateLibraryButton from './CreateLibraryButton'
@@ -14,7 +14,6 @@ type PaginationProps = {
   isFetchingNextPage?: boolean
   isFetchNextPageError?: boolean
   isPending?: boolean
-  infiniteScrollTriggerRef?: RefObject<HTMLDivElement | null>
   onRetryNextPage?: () => void
 }
 
@@ -36,6 +35,7 @@ type Props = {
   historyCount?: number
   ratingCount?: number
   pagination?: PaginationProps
+  scrollContainerRef?: RefObject<Element | null>
 }
 
 export default function LibrarySidebar({
@@ -47,11 +47,20 @@ export default function LibrarySidebar({
   historyCount,
   ratingCount,
   pagination,
+  scrollContainerRef,
 }: Props) {
+  const asideRef = useRef<HTMLElement>(null)
   const mangaCount = libraries.reduce((sum, lib) => sum + lib.itemCount, 0)
   const ownerLibraries = userId ? libraries.filter((lib) => lib.userId === userId) : []
   const publicLibraries = userId ? libraries.filter((lib) => lib.userId !== userId) : libraries
   const showLibrariesSkeleton = Boolean(pagination?.isPending) && libraries.length === 0
+
+  const infiniteScrollTriggerRef = useInfiniteScrollObserver({
+    hasNextPage: pagination?.hasNextPage && !pagination?.isFetchNextPageError,
+    isFetchingNextPage: pagination?.isFetchingNextPage,
+    fetchNextPage: pagination?.onRetryNextPage ?? noop,
+    rootRef: scrollContainerRef ?? asideRef,
+  })
 
   const info = userId
     ? {
@@ -66,7 +75,7 @@ export default function LibrarySidebar({
       }
 
   return (
-    <aside className={`border-r ${className}`}>
+    <aside className={`border-r ${className}`} ref={asideRef}>
       <div className="grid gap-2 p-2 lg:p-3 lg:gap-3">
         <div className="flex items-center justify-center lg:justify-between">
           <h2 className="text-sm font-medium text-zinc-400 hidden lg:block">{info.headerTitle}</h2>
@@ -172,7 +181,7 @@ export default function LibrarySidebar({
             <LibrarySidebarSkeleton length={2} />
           </div>
         )}
-        {pagination?.hasNextPage && <div className="w-full p-2" ref={pagination.infiniteScrollTriggerRef} />}
+        {pagination?.hasNextPage && <div className="w-full p-2" ref={infiniteScrollTriggerRef} />}
         {pagination?.isFetchNextPageError && pagination.onRetryNextPage && (
           <button
             className="w-full text-left px-3 py-2 text-xs text-zinc-400 hover:text-foreground hover:bg-zinc-800/50 rounded-lg transition"
@@ -196,3 +205,5 @@ function LibrarySidebarSkeleton({ length = 6 }: { length?: number }) {
     </div>
   )
 }
+
+function noop() {}

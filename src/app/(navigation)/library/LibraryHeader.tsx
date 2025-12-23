@@ -3,7 +3,7 @@
 import { Edit, Menu, X } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { usePathname } from 'next/navigation'
-import { type RefObject, useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import MangaImportButton from '@/components/card/MangaImportButton'
 import MangaImportModal from '@/components/card/MangaImportModal'
@@ -41,7 +41,6 @@ type SidebarPagination = {
   isFetchingNextPage?: boolean
   isFetchNextPageError?: boolean
   isPending?: boolean
-  infiniteScrollTriggerRef?: RefObject<HTMLDivElement | null>
   onRetryNextPage?: () => void
 }
 
@@ -54,6 +53,7 @@ export default function LibraryHeader({
   sidebarPagination,
 }: Props) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const drawerScrollContainerRef = useRef<HTMLDivElement>(null)
   const pathname = usePathname()
   const { enterSelectionMode, exitSelectionMode, isSelectionMode } = useLibrarySelectionStore()
   const { libraryId, currentLibrary } = useCurrentLibraryMeta({ libraries, userId })
@@ -189,7 +189,10 @@ export default function LibraryHeader({
       {isDrawerOpen && (
         <>
           <div className="fixed inset-0 z-50 bg-background/50 animate-fade-in-fast sm:hidden" onClick={closeDrawer} />
-          <div className="fixed top-0 left-0 z-50 h-full w-3xs bg-background border-r shadow-xl animate-fade-in-fast sm:hidden overflow-y-auto">
+          <div
+            className="fixed top-0 left-0 z-50 h-full w-3xs bg-background border-r shadow-xl animate-fade-in-fast sm:hidden overflow-y-auto"
+            ref={drawerScrollContainerRef}
+          >
             <div className="sticky top-0 bg-background flex items-center justify-between p-4 border-b border-zinc-800">
               <h2 className="text-lg font-medium">{isGuest ? '공개 서재' : '서재'}</h2>
               <button
@@ -209,6 +212,7 @@ export default function LibraryHeader({
               onClick={closeDrawer}
               pagination={sidebarPagination}
               ratingCount={ratingCount}
+              scrollContainerRef={drawerScrollContainerRef}
               userId={userId}
             />
           </div>

@@ -5,6 +5,7 @@ locals {
 
   ttl_30d_path_equals = [
     "/",
+    "/library",
   ]
 
   ttl_30d_extension_equals = [
