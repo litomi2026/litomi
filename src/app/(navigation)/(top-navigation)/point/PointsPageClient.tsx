@@ -3,6 +3,8 @@
 import { Gift, HelpCircle, History, ShoppingBag, TrendingUp } from 'lucide-react'
 import { useState } from 'react'
 
+import useMeQuery from '@/query/useMeQuery'
+
 import PointsShop from './PointsShop'
 import RewardedAdSection from './RewardedAdSection'
 import TransactionHistory from './TransactionHistory'
@@ -18,17 +20,24 @@ const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
 
 export default function PointsPageClient() {
   const [activeTab, setActiveTab] = useState<Tab>('earn')
-  const { data: points, isLoading } = usePointsQuery()
+  const { data: me, isLoading: isMeLoading } = useMeQuery()
+  const isLoggedIn = Boolean(me)
+
+  const { data: points, isLoading: isPointsLoading } = usePointsQuery({ enabled: isLoggedIn })
+  const isLoading = isMeLoading || (isLoggedIn && isPointsLoading)
 
   return (
     <div className="flex flex-col grow gap-4 p-4 max-w-3xl mx-auto w-full md:p-8 md:gap-6">
       {/* 리보 잔액 */}
-      <div className="bg-linear-to-br from-amber-500/20 to-orange-600/20 rounded-xl p-4 border border-amber-500/30">
+      <div
+        aria-disabled={!isLoggedIn}
+        className="bg-linear-to-br from-amber-500/20 to-orange-600/20 rounded-xl p-4 border border-amber-500/30 aria-disabled:opacity-80"
+      >
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-zinc-400 mb-1">내 리보</p>
             <p className="text-3xl font-bold text-amber-400">
-              {isLoading ? '...' : (points?.balance.toLocaleString() ?? 0)}
+              {isLoggedIn ? (isLoading ? '...' : (points?.balance.toLocaleString() ?? 0)) : '—'}
               <span className="text-lg ml-1">리보</span>
             </p>
           </div>
@@ -36,10 +45,13 @@ export default function PointsPageClient() {
             <TrendingUp className="size-6 text-amber-400" />
           </div>
         </div>
-        <div className="mt-3 pt-3 border-t border-amber-500/20 flex gap-4 text-xs text-zinc-400">
-          <span>총 적립: {isLoading ? '...' : (points?.totalEarned.toLocaleString() ?? 0)} 리보</span>
-          <span>총 사용: {isLoading ? '...' : (points?.totalSpent.toLocaleString() ?? 0)} 리보</span>
+        <div className="mt-3 pt-3 border-t border-amber-500/20 flex flex-col gap-1 text-xs text-zinc-400 sm:flex-row sm:gap-4">
+          <span>
+            총 적립: {isLoggedIn ? (isLoading ? '...' : (points?.totalEarned.toLocaleString() ?? 0)) : '—'} 리보
+          </span>
+          <span>총 사용: {isLoggedIn ? (isLoading ? '...' : (points?.totalSpent.toLocaleString() ?? 0)) : '—'} 리보</span>
         </div>
+        {!isLoggedIn && <p className="mt-2 text-xs text-zinc-500">로그인하면 리보 잔액과 내역을 확인할 수 있어요</p>}
       </div>
 
       {/* 탭 네비게이션 */}
@@ -60,9 +72,9 @@ export default function PointsPageClient() {
 
       {/* 탭 콘텐츠 */}
       <div className="min-h-[200px]" role="tabpanel">
-        {activeTab === 'earn' && <RewardedAdSection />}
-        {activeTab === 'shop' && <PointsShop balance={points?.balance ?? 0} />}
-        {activeTab === 'history' && <TransactionHistory />}
+        {activeTab === 'earn' && <RewardedAdSection rewardEnabled={isLoggedIn} />}
+        {activeTab === 'shop' && <PointsShop balance={isLoggedIn ? (points?.balance ?? 0) : 0} enabled={isLoggedIn} />}
+        {activeTab === 'history' && <TransactionHistory enabled={isLoggedIn} />}
       </div>
 
       {/* 안내 문구 */}
@@ -80,3 +92,5 @@ export default function PointsPageClient() {
     </div>
   )
 }
+
+

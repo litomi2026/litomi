@@ -6,6 +6,7 @@ import IconFlame from '@/components/icons/IconFlame'
 import IconHome from '@/components/icons/IconHome'
 import IconLibraryBig from '@/components/icons/IconLibraryBig'
 import IconLogo from '@/components/icons/IconLogo'
+import IconPiggyBank from '@/components/icons/IconPiggyBank'
 import IconPost from '@/components/icons/IconPost'
 import IconSearch from '@/components/icons/IconSearch'
 import IconTag from '@/components/icons/IconTag'
@@ -63,6 +64,9 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           </SelectableLink>
           <SelectableLink className="hidden sm:block" href="/tag" Icon={IconTag}>
             태그
+          </SelectableLink>
+          <SelectableLink className="hidden sm:block" href="/point" Icon={IconPiggyBank}>
+            리보
           </SelectableLink>
           <ProfileLink className="hidden sm:block" />
           <PublishButton className="hidden mx-auto my-4 sm:block xl:mx-0" />

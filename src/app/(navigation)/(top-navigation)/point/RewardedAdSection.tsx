@@ -7,13 +7,25 @@ import { toast } from 'sonner'
 import { AD_SLOTS } from '@/components/ads/constants'
 import LazyAdSlot from '@/components/ads/LazyAdSlot'
 
-export default function RewardedAdSection() {
+type Props = {
+  rewardEnabled: boolean
+}
+
+export default function RewardedAdSection({ rewardEnabled }: Props) {
   const [lastEarned, setLastEarned] = useState<number | null>(null)
 
-  function handleAdClick(result: { success: boolean; earned?: number; error?: string }) {
+  function handleAdClick(result: { success: boolean; earned?: number; error?: string; requiresLogin?: boolean }) {
+    if (result.requiresLogin) {
+      toast('로그인하면 리보가 적립돼요')
+      return
+    }
+
     if (result.success && result.earned) {
       setLastEarned(result.earned)
-    } else if (result.error) {
+      return
+    }
+
+    if (result.error) {
       toast.error(result.error)
     }
   }
@@ -26,8 +38,8 @@ export default function RewardedAdSection() {
         <div>
           <h3 className="font-medium text-zinc-200 mb-1">광고 수익은 작가에게 돌아가요</h3>
           <p className="text-sm text-zinc-400">
-            광고로 발생한 수익금은 서버 운영비를 제하고 전부 작가에게 후원할 예정이에요. 광고 클릭 한 번이 좋아하는
-            작품의 창작자를 응원하는 방법이 돼요.
+            광고로 발생한 수익금은 서버 운영비를 제하고 전부 작가에게 후원할 예정이에요. 광고 클릭 한 번이 좋아하는 작품의 창작자를
+            응원하는 방법이 돼요.
           </p>
         </div>
       </div>
@@ -38,9 +50,10 @@ export default function RewardedAdSection() {
         <div>
           <h3 className="font-medium text-zinc-200 mb-1">광고를 클릭하고 리보를 받으세요!</h3>
           <p className="text-sm text-zinc-400">
-            아래 광고를 클릭하면 <span className="text-amber-400 font-semibold">10 리보</span>가 적립돼요. 적립된 리보로
-            내 공간을 확장할 수 있어요.
+            아래 광고를 클릭하면 <span className="text-amber-400 font-semibold">10 리보</span>가 적립돼요. 적립된 리보로 내 공간을
+            확장할 수 있어요.
           </p>
+          {!rewardEnabled && <p className="mt-1 text-xs text-zinc-500">로그인하면 클릭 시 리보가 적립돼요</p>}
         </div>
       </div>
 
@@ -50,6 +63,7 @@ export default function RewardedAdSection() {
           adSlotId={AD_SLOTS.REWARDED.id}
           height={AD_SLOTS.REWARDED.height}
           onAdClick={handleAdClick}
+          rewardEnabled={rewardEnabled}
           width={AD_SLOTS.REWARDED.width}
           zoneId={AD_SLOTS.REWARDED.zoneId}
         />
@@ -57,6 +71,7 @@ export default function RewardedAdSection() {
           adSlotId={AD_SLOTS.REWARDED_2.id}
           height={AD_SLOTS.REWARDED_2.height}
           onAdClick={handleAdClick}
+          rewardEnabled={rewardEnabled}
           width={AD_SLOTS.REWARDED_2.width}
           zoneId={AD_SLOTS.REWARDED_2.zoneId}
         />
@@ -96,3 +111,5 @@ export default function RewardedAdSection() {
     </div>
   )
 }
+
+
