@@ -352,13 +352,13 @@ function AdBlockedMessage({ height, width }: { height: number; width: number }) 
     >
       <ShieldOff className="size-8 text-zinc-500" />
       <div className="space-y-1">
-        <p className="text-sm font-medium text-zinc-300">광고 차단기가 감지됐어요</p>
+        <p className="text-sm font-medium text-zinc-300">광고가 차단되고 있어요</p>
         <p className="text-xs text-zinc-500">
-          광고 수익은 서버 운영에 사용돼요.
-          <br />이 사이트를 화이트리스트에 추가해 주세요.
+          광고 수익은 서버 운영과 작가 후원에 사용돼요.
+          <br />이 사이트를 화이트리스트에 추가해 주시면 큰 도움이 돼요.
         </p>
       </div>
-      <div className="text-xs text-zinc-600">광고 차단기를 비활성화하면 리보를 적립할 수 있어요</div>
+      <div className="text-xs text-zinc-600">광고가 보이면 클릭해서 리보를 적립할 수 있어요</div>
     </div>
   )
 }
