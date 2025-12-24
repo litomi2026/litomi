@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark'
+import type { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark/get'
+
 import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
 import { handleResponseError } from '@/utils/react-query-error'

@@ -17,6 +17,7 @@ type ExpansionInfo = {
 type ExpansionResponse = {
   library: ExpansionInfo
   history: ExpansionInfo
+  bookmark: ExpansionInfo
 }
 
 type PointsResponse = {
