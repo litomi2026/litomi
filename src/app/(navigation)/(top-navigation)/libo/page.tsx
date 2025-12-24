@@ -14,5 +14,3 @@ export const metadata: Metadata = {
 export default function PointsPage() {
   return <PointsPageClient />
 }
-
-

@@ -5,6 +5,7 @@ import { useState } from 'react'
 
 import useMeQuery from '@/query/useMeQuery'
 
+import { LIBO_PAGE_LAYOUT } from './constant'
 import PointsShop from './PointsShop'
 import RewardedAdSection from './RewardedAdSection'
 import TransactionHistory from './TransactionHistory'
@@ -27,7 +28,7 @@ export default function PointsPageClient() {
   const isLoading = isMeLoading || (isLoggedIn && isPointsLoading)
 
   return (
-    <div className="flex flex-col grow gap-4 p-4 max-w-3xl mx-auto w-full md:p-8 md:gap-6">
+    <div className={LIBO_PAGE_LAYOUT.container}>
       {/* 리보 잔액 */}
       <div
         aria-disabled={!isLoggedIn}
@@ -49,7 +50,9 @@ export default function PointsPageClient() {
           <span>
             총 적립: {isLoggedIn ? (isLoading ? '...' : (points?.totalEarned.toLocaleString() ?? 0)) : '—'} 리보
           </span>
-          <span>총 사용: {isLoggedIn ? (isLoading ? '...' : (points?.totalSpent.toLocaleString() ?? 0)) : '—'} 리보</span>
+          <span>
+            총 사용: {isLoggedIn ? (isLoading ? '...' : (points?.totalSpent.toLocaleString() ?? 0)) : '—'} 리보
+          </span>
         </div>
         {!isLoggedIn && <p className="mt-2 text-xs text-zinc-500">로그인하면 리보 잔액과 내역을 확인할 수 있어요</p>}
       </div>
@@ -71,26 +74,44 @@ export default function PointsPageClient() {
       </div>
 
       {/* 탭 콘텐츠 */}
-      <div className="min-h-[200px]" role="tabpanel">
-        {activeTab === 'earn' && <RewardedAdSection rewardEnabled={isLoggedIn} />}
-        {activeTab === 'shop' && <PointsShop balance={isLoggedIn ? (points?.balance ?? 0) : 0} enabled={isLoggedIn} />}
-        {activeTab === 'history' && <TransactionHistory enabled={isLoggedIn} />}
+      <div className={LIBO_PAGE_LAYOUT.panelReserved}>
+        <div aria-hidden={activeTab !== 'earn'} hidden={activeTab !== 'earn'} role="tabpanel">
+          <RewardedAdSection rewardEnabled={isLoggedIn} />
+        </div>
+        <div aria-hidden={activeTab !== 'shop'} hidden={activeTab !== 'shop'} role="tabpanel">
+          <PointsShop balance={isLoggedIn ? (points?.balance ?? 0) : 0} enabled={isLoggedIn} />
+        </div>
+        <div aria-hidden={activeTab !== 'history'} hidden={activeTab !== 'history'} role="tabpanel">
+          <TransactionHistory enabled={isLoggedIn} />
+        </div>
       </div>
 
       {/* 안내 문구 */}
       <details className="group text-xs text-zinc-500 bg-zinc-800/30 rounded-lg">
         <summary className="cursor-pointer list-none p-3 flex items-center gap-2 [&::-webkit-details-marker]:hidden">
           <HelpCircle className="size-4 transition-transform group-open:rotate-180" />
-          리보란?
+          안내
         </summary>
-        <ul className="px-3 pb-3 space-y-1 list-disc list-inside marker:text-zinc-600">
-          <li>광고 클릭 시 10 리보가 적립돼요</li>
-          <li>적립된 리보로 내 공간을 확장할 수 있어요</li>
-          <li>광고 수익은 서버 운영비 제외 후 전액 작가 후원에 사용돼요</li>
-        </ul>
+        <div className="px-3 pb-3 space-y-4">
+          <div className="space-y-1">
+            <p className="text-zinc-400 font-medium">리보란?</p>
+            <ul className="space-y-1 list-disc list-inside marker:text-zinc-600">
+              <li>광고 클릭 시 10 리보가 적립돼요</li>
+              <li>적립된 리보로 내 공간을 확장할 수 있어요</li>
+              <li>광고 수익은 서버 운영비 제외 후 전액 작가 후원에 사용돼요</li>
+            </ul>
+          </div>
+          <div className="space-y-1">
+            <p className="text-zinc-400 font-medium">적립 주의사항</p>
+            <ul className="space-y-1 list-disc list-inside marker:text-zinc-600">
+              <li>광고 클릭 시 새 탭에서 광고 페이지가 열려요</li>
+              <li>같은 유저: 1분 후 다시 적립 가능</li>
+              <li>같은 광고: 5분 후 다시 클릭 가능</li>
+              <li>하루 최대 100 리보 (10회) 적립 가능</li>
+            </ul>
+          </div>
+        </div>
       </details>
     </div>
   )
 }
-
-

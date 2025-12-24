@@ -1,6 +1,6 @@
 'use client'
 
-import { ChevronRight, Gift, Heart, MousePointerClick } from 'lucide-react'
+import { Gift, Heart, MousePointerClick } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -38,8 +38,8 @@ export default function RewardedAdSection({ rewardEnabled }: Props) {
         <div>
           <h3 className="font-medium text-zinc-200 mb-1">광고 수익은 작가에게 돌아가요</h3>
           <p className="text-sm text-zinc-400">
-            광고로 발생한 수익금은 서버 운영비를 제하고 전부 작가에게 후원할 예정이에요. 광고 클릭 한 번이 좋아하는 작품의 창작자를
-            응원하는 방법이 돼요.
+            광고로 발생한 수익금은 서버 운영비를 제하고 전부 작가에게 후원할 예정이에요. 광고 클릭 한 번이 좋아하는
+            작품의 창작자를 응원하는 방법이 돼요.
           </p>
         </div>
       </div>
@@ -50,8 +50,8 @@ export default function RewardedAdSection({ rewardEnabled }: Props) {
         <div>
           <h3 className="font-medium text-zinc-200 mb-1">광고를 클릭하고 리보를 받으세요!</h3>
           <p className="text-sm text-zinc-400">
-            아래 광고를 클릭하면 <span className="text-amber-400 font-semibold">10 리보</span>가 적립돼요. 적립된 리보로 내 공간을
-            확장할 수 있어요.
+            아래 광고를 클릭하면 <span className="text-amber-400 font-semibold">10 리보</span>가 적립돼요. 적립된 리보로
+            내 공간을 확장할 수 있어요.
           </p>
           {!rewardEnabled && <p className="mt-1 text-xs text-zinc-500">로그인하면 클릭 시 리보가 적립돼요</p>}
         </div>
@@ -94,22 +94,6 @@ export default function RewardedAdSection({ rewardEnabled }: Props) {
           <span className="text-green-400">+{lastEarned ?? 0} 리보 적립 완료!</span>
         </div>
       </div>
-
-      {/* 주의사항 */}
-      <details className="text-xs text-zinc-500 group">
-        <summary className="cursor-pointer list-none flex items-center gap-1 hover:text-zinc-400 transition [&::-webkit-details-marker]:hidden">
-          <ChevronRight className="size-3 transition-transform group-open:rotate-90" />
-          주의사항
-        </summary>
-        <div className="mt-2 space-y-1 pl-4">
-          <p>• 광고 클릭 시 새 탭에서 광고 페이지가 열려요</p>
-          <p>• 같은 유저: 1분 후 다시 적립 가능</p>
-          <p>• 같은 광고: 5분 후 다시 클릭 가능</p>
-          <p>• 하루 최대 100 리보 (10회) 적립 가능</p>
-        </div>
-      </details>
     </div>
   )
 }
-
-
