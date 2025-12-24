@@ -8,6 +8,7 @@ import IconSpinner from '@/components/icons/IconSpinner'
 import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { POINT_CONSTANTS } from '@/constants/points'
 import { QueryKeys } from '@/constants/query'
+import { formatNumber } from '@/utils/format'
 
 import { useExpansionQuery } from './usePointsQuery'
 
@@ -42,7 +43,7 @@ export default function PointsShop({ balance, enabled }: Props) {
   const spendPoints = useSpendPoints()
   const displayExpansion = enabled ? expansion : undefined
 
-  const handlePurchase = (item: ShopItem) => {
+  function handlePurchase(item: ShopItem) {
     if (!enabled || spendPoints.isPending) {
       return
     }
@@ -52,19 +53,19 @@ export default function PointsShop({ balance, enabled }: Props) {
       return
     }
 
-    spendPoints.mutate(
-      { type: item.type, itemId: item.itemId },
-      {
-        onSuccess: (data) => {
-          toast.success('구매 완료!', {
-            description: `${item.name} - 잔액: ${data.balance.toLocaleString()} 리보`,
-          })
-        },
-        onError: (err) => {
-          toast.error(err.error || '구매에 실패했어요')
-        },
+    const variables = {
+      type: item.type,
+      itemId: item.itemId,
+    }
+
+    spendPoints.mutate(variables, {
+      onSuccess: (data) => {
+        toast.success('구매 완료!', { description: `${item.name} - 잔액: ${formatNumber(data.balance)} 리보` })
       },
-    )
+      onError: (err) => {
+        toast.error(err.error || '구매에 실패했어요')
+      },
+    })
   }
 
   if (enabled && isLoading) {
@@ -79,7 +80,7 @@ export default function PointsShop({ balance, enabled }: Props) {
     {
       id: 'library-expansion',
       type: 'library',
-      name: '내서재 확장',
+      name: '내 서재 확장',
       description: `+${POINT_CONSTANTS.LIBRARY_EXPANSION_AMOUNT}개 (현재: ${displayExpansion?.library.current ?? 5}/${displayExpansion?.library.max ?? 30}개)`,
       price: POINT_CONSTANTS.LIBRARY_EXPANSION_PRICE,
       icon: <FolderPlus className="size-5" />,

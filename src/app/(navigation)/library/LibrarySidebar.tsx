@@ -4,6 +4,7 @@ import { Bookmark, Clock, Globe, LibraryBig, Lock, Star } from 'lucide-react'
 import { type RefObject, useRef } from 'react'
 
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
+import useLocaleFromCookie from '@/hook/useLocaleFromCookie'
 import { formatNumber } from '@/utils/format'
 
 import CreateLibraryButton from './CreateLibraryButton'
@@ -54,6 +55,7 @@ export default function LibrarySidebar({
   const ownerLibraries = userId ? libraries.filter((lib) => lib.userId === userId) : []
   const publicLibraries = userId ? libraries.filter((lib) => lib.userId !== userId) : libraries
   const showLibrariesSkeleton = Boolean(pagination?.isPending) && libraries.length === 0
+  const locale = useLocaleFromCookie()
 
   const infiniteScrollTriggerRef = useInfiniteScrollObserver({
     hasNextPage: pagination?.hasNextPage && !pagination?.isFetchNextPageError,
@@ -66,12 +68,12 @@ export default function LibrarySidebar({
     ? {
         headerTitle: '서재',
         title: '모든 서재',
-        description: `${libraries.length}개 서재 · ${formatNumber(mangaCount, 'ko')}개`,
+        description: `${libraries.length}개 서재 · ${formatNumber(mangaCount, locale)}개`,
       }
     : {
         headerTitle: '공개 서재',
         title: '모든 공개 서재',
-        description: `${formatNumber(mangaCount, 'ko')}개`,
+        description: `${formatNumber(mangaCount, locale)}개`,
       }
 
   return (
@@ -91,7 +93,7 @@ export default function LibrarySidebar({
         />
         <div className="h-px bg-zinc-800 my-1" />
         <LibrarySidebarLink
-          description={historyCount !== undefined ? `${formatNumber(historyCount, 'ko')}개 작품` : '...'}
+          description={historyCount !== undefined ? `${formatNumber(historyCount, locale)}개 작품` : '...'}
           href="/library/history"
           icon={<Clock className="size-4 text-background" />}
           iconBackground="var(--color-brand)"
@@ -99,7 +101,7 @@ export default function LibrarySidebar({
           title="감상 기록"
         />
         <LibrarySidebarLink
-          description={bookmarkCount !== undefined ? `${formatNumber(bookmarkCount, 'ko')}개 작품` : '...'}
+          description={bookmarkCount !== undefined ? `${formatNumber(bookmarkCount, locale)}개 작품` : '...'}
           href="/library/bookmark"
           icon={<Bookmark className="size-4 text-background" />}
           iconBackground="var(--color-brand)"
@@ -107,7 +109,7 @@ export default function LibrarySidebar({
           title="북마크"
         />
         <LibrarySidebarLink
-          description={ratingCount !== undefined ? `${formatNumber(ratingCount, 'ko')}개 작품` : '...'}
+          description={ratingCount !== undefined ? `${formatNumber(ratingCount, locale)}개 작품` : '...'}
           href="/library/rating"
           icon={<Star className="size-4 text-background" />}
           iconBackground="var(--color-brand)"

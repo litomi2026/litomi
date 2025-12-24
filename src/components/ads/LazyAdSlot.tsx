@@ -4,6 +4,7 @@ import { ShieldOff } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
 import { AD_BLOCK_CHECK_DELAY_MS, JUICY_ADS_EVENT } from './constants'
+import { useCooldown } from './useCooldown'
 import { useEarnPoints } from './useEarnPoints'
 import { useRequestToken } from './useRequestToken'
 
@@ -44,8 +45,6 @@ export default function LazyAdSlot({
   const [isAdBlocked, setIsAdBlocked] = useState(false)
   const [token, setToken] = useState<string | null>(null)
   const [dailyRemaining, setDailyRemaining] = useState<number | null>(null)
-  const [cooldownUntil, setCooldownUntil] = useState<number | null>(null)
-  const [now, setNow] = useState(() => Date.now())
   const requestToken = useRequestToken(adSlotId)
   const earnPoints = useEarnPoints()
   const isLoading = requestToken.isPending || earnPoints.isPending
@@ -53,8 +52,14 @@ export default function LazyAdSlot({
   const canEarn = rewardEnabled && token !== null && !isLoading && !isAdBlocked
   const shouldDimAd = rewardEnabled && !canEarn
 
-  const cooldownRemainingSeconds =
-    cooldownUntil !== null ? Math.max(0, Math.ceil((cooldownUntil - now) / 1000)) : (apiError?.remainingSeconds ?? null)
+  const {
+    until: cooldownUntil,
+    remainingSeconds: cooldownSecondsFromHook,
+    clear: clearCooldown,
+    startFromRemainingSeconds,
+  } = useCooldown()
+
+  const cooldownRemainingSeconds = cooldownSecondsFromHook ?? apiError?.remainingSeconds ?? null
 
   function handleRefresh() {
     if (!rewardEnabled || isLoading || isAdBlocked) {
@@ -65,32 +70,15 @@ export default function LazyAdSlot({
       onSuccess: (data) => {
         setToken(data.token)
         setDailyRemaining(data.dailyRemaining)
-        setCooldownUntil(null)
+        clearCooldown()
       },
       onError: (err) => {
         setToken(null)
         if (err.remainingSeconds != null) {
-          setCooldownUntil(Date.now() + (err.remainingSeconds + 1) * 1000)
+          startFromRemainingSeconds(err.remainingSeconds)
         }
       },
     })
-  }
-
-  function requestJuicyAdsRender() {
-    // NOTE: jads.js 는 로드 시점에만 GA(...)를 한 번 돌려요.
-    // SPA(탭/페이지 전환)에서 새로 생긴 슬롯(<ins id={zoneId}>)은 자동으로 채워지지 않아서,
-    // 슬롯 마운트 시점에 GA(adsbyjuicy)를 다시 호출해줘야 해요.
-    try {
-      if (typeof window.GA === 'function') {
-        window.GA(window.adsbyjuicy ?? [])
-        return
-      }
-      if (typeof window.Fe === 'function') {
-        window.Fe()
-      }
-    } catch {
-      // ignore
-    }
   }
 
   // NOTE: JuicyAds 스크립트가 로드되기 전에 adzone을 등록해야 함
@@ -138,40 +126,27 @@ export default function LazyAdSlot({
     }
   }, [])
 
-  // NOTE: 스크립트가 준비되면, 현재 슬롯을 다시 채우도록 GA(...)를 호출
+  // NOTE: 스크립트가 준비되면, 현재 슬롯을 다시 채우도록 jads.js의 GA(...)를 호출
   useEffect(() => {
     if (!isScriptLoaded || isAdBlocked) {
       return
     }
 
-    requestJuicyAdsRender()
+    // NOTE: jads.js 는 로드 시점에만 GA(...)를 한 번 돌려요.
+    // SPA(탭/페이지 전환)에서 새로 생긴 슬롯(<ins id={zoneId}>)은 자동으로 채워지지 않아서,
+    // 슬롯 마운트 시점에 GA(adsbyjuicy)를 다시 호출해줘야 해요.
+    try {
+      if (typeof window.GA === 'function') {
+        window.GA(window.adsbyjuicy ?? [])
+        return
+      }
+      if (typeof window.Fe === 'function') {
+        window.Fe()
+      }
+    } catch {
+      // ignore
+    }
   }, [isScriptLoaded, zoneId, isAdBlocked])
-
-  // NOTE: 쿨다운 카운트다운 렌더링(1초 간격)
-  useEffect(() => {
-    if (cooldownUntil === null) {
-      return
-    }
-
-    const intervalId = setInterval(() => setNow(Date.now()), 1000)
-    return () => clearInterval(intervalId)
-  }, [cooldownUntil])
-
-  // NOTE: 쿨다운 종료 시 자동으로 토큰 재요청 트리거
-  useEffect(() => {
-    if (cooldownUntil === null) {
-      return
-    }
-
-    const delayMs = cooldownUntil - Date.now() + 50
-    if (delayMs <= 0) {
-      setCooldownUntil(null)
-      return
-    }
-
-    const timeoutId = setTimeout(() => setCooldownUntil(null), delayMs)
-    return () => clearTimeout(timeoutId)
-  }, [cooldownUntil])
 
   // NOTE: 토큰이 없으면(또는 클릭 후 소진되면) 자동으로 토큰을 다시 준비
   useEffect(() => {
@@ -183,7 +158,7 @@ export default function LazyAdSlot({
       return
     }
 
-    if (cooldownUntil !== null && Date.now() < cooldownUntil) {
+    if (cooldownUntil !== null) {
       return
     }
 
@@ -195,25 +170,33 @@ export default function LazyAdSlot({
       onSuccess: (data) => {
         setToken(data.token)
         setDailyRemaining(data.dailyRemaining)
-        setCooldownUntil(null)
+        clearCooldown()
       },
       onError: (err) => {
         setToken(null)
         if (err.remainingSeconds != null) {
-          setCooldownUntil(Date.now() + (err.remainingSeconds + 1) * 1000)
+          startFromRemainingSeconds(err.remainingSeconds)
         }
       },
     })
-  }, [rewardEnabled, isAdBlocked, isScriptLoaded, token, cooldownUntil, requestToken])
+  }, [
+    rewardEnabled,
+    isAdBlocked,
+    isScriptLoaded,
+    token,
+    cooldownUntil,
+    requestToken,
+    clearCooldown,
+    startFromRemainingSeconds,
+  ])
 
   // NOTE: 광고 컨텐츠 로드 감지 (MutationObserver)
   useEffect(() => {
-    if (!isScriptLoaded || isAdBlocked) {
+    const slotElement = slotRef.current
+
+    if (!isScriptLoaded || isAdBlocked || !slotElement) {
       return
     }
-
-    const slotElement = slotRef.current
-    if (!slotElement) return
 
     let isMounted = true
 
@@ -271,7 +254,7 @@ export default function LazyAdSlot({
           onAdClick?.({ success: true, earned: data.earned })
           setToken(null)
           setDailyRemaining(data.dailyRemaining)
-          setCooldownUntil(null)
+          clearCooldown()
         },
         onError: (err) => {
           onAdClick?.({ success: false, error: err.error })
@@ -285,7 +268,7 @@ export default function LazyAdSlot({
     return () => {
       window.removeEventListener('blur', handleWindowBlur)
     }
-  }, [rewardEnabled, token, isLoading, isAdBlocked, earnPoints, onAdClick])
+  }, [rewardEnabled, token, isLoading, isAdBlocked, earnPoints, onAdClick, clearCooldown])
 
   return (
     <div

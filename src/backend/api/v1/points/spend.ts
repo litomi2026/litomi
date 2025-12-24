@@ -30,7 +30,7 @@ const PRICES: Record<SpendType, number> = {
 }
 
 const DESCRIPTIONS: Record<SpendType, string> = {
-  library: '내서재 확장 (+1개)',
+  library: '내 서재 확장 (+1개)',
   history: '감상 기록 확장 (+100개)',
   badge: '프로필 뱃지 구매',
   theme: '커스텀 테마 구매',
