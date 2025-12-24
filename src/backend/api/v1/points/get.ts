@@ -2,6 +2,7 @@ import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 
 import { Env } from '@/backend'
+import { createCacheControl } from '@/crawler/proxy-utils'
 import { db } from '@/database/supabase/drizzle'
 import { userPointsTable } from '@/database/supabase/points-schema'
 
@@ -31,11 +32,18 @@ route.get('/', async (c) => {
     })
   }
 
-  return c.json({
+  const response = {
     balance: points.balance,
     totalEarned: points.totalEarned,
     totalSpent: points.totalSpent,
+  }
+
+  const cacheControl = createCacheControl({
+    private: true,
+    maxAge: 3,
   })
+
+  return c.json(response, { headers: { 'Cache-Control': cacheControl } })
 })
 
 export default route

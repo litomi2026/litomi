@@ -4,6 +4,7 @@ import { Hono } from 'hono'
 import { Env } from '@/backend'
 import { EXPANSION_TYPE, POINT_CONSTANTS } from '@/constants/points'
 import { MAX_LIBRARIES_PER_USER, MAX_READING_HISTORY_PER_USER } from '@/constants/policy'
+import { createCacheControl } from '@/crawler/proxy-utils'
 import { db } from '@/database/supabase/drizzle'
 import { userExpansionTable } from '@/database/supabase/points-schema'
 
@@ -30,7 +31,7 @@ route.get('/', async (c) => {
   const libraryExtra = Number(libraryExpansion?.totalAmount ?? 0)
   const historyExtra = Number(historyExpansion?.totalAmount ?? 0)
 
-  return c.json({
+  const response = {
     library: {
       base: MAX_LIBRARIES_PER_USER,
       extra: libraryExtra,
@@ -49,7 +50,14 @@ route.get('/', async (c) => {
       price: POINT_CONSTANTS.HISTORY_EXPANSION_PRICE,
       unit: POINT_CONSTANTS.HISTORY_EXPANSION_AMOUNT,
     },
+  }
+
+  const cacheControl = createCacheControl({
+    private: true,
+    maxAge: 3,
   })
+
+  return c.json(response, { headers: { 'Cache-Control': cacheControl } })
 })
 
 export default route
