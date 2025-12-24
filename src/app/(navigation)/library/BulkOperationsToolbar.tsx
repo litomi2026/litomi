@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 import { useLibrarySelectionStore } from '@/app/(navigation)/library/[id]/librarySelection'
 import Modal from '@/components/ui/Modal'
 import { QueryKeys } from '@/constants/query'
-import useActionResponse from '@/hook/useActionResponse'
+import useServerAction from '@/hook/useServerAction'
 
 import type { BulkOperationPermissions } from './bulkOperationPermissions'
 
@@ -47,37 +47,43 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId, per
     setShowModal(true)
   }
 
-  const [, dispatchDeletingAction, isDeleting] = useActionResponse({
+  const [, dispatchDeletingAction, isDeleting] = useServerAction({
     action: bulkRemoveFromLibrary,
     onSuccess: (deletedCount, [{ libraryId }]) => {
       toast.success(`${deletedCount}개 작품을 제거했어요`)
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraries })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryListBase })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryMangasBase })
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItems(libraryId) })
       exitSelectionMode()
     },
     shouldSetResponse: false,
   })
 
-  const [, dispatchCopyingAction, isCopying] = useActionResponse({
+  const [, dispatchCopyingAction, isCopying] = useServerAction({
     action: bulkCopyToLibrary,
     onSuccess: (copiedCount, [{ toLibraryId, mangaIds }]) => {
       const alreadyExistsCount = mangaIds.length - copiedCount
       const extraMessage = alreadyExistsCount > 0 ? ` (실패: ${alreadyExistsCount}개)` : ''
       toast.success(`${copiedCount}개 작품을 복사했어요${extraMessage}`)
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraries })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryListBase })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryMangasBase })
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItems(toLibraryId) })
       exitSelectionMode()
     },
     shouldSetResponse: false,
   })
 
-  const [_, dispatchMovingAction, isMoving] = useActionResponse({
+  const [_, dispatchMovingAction, isMoving] = useServerAction({
     action: bulkMoveToLibrary,
     onSuccess: (movedCount, [{ fromLibraryId, toLibraryId, mangaIds }]) => {
       const alreadyExistsCount = mangaIds.length - movedCount
       const extraMessage = alreadyExistsCount > 0 ? ` (실패: ${alreadyExistsCount}개)` : ''
       toast.success(`${movedCount}개 작품을 이동했어요${extraMessage}`)
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraries })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryListBase })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryMangasBase })
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItems(fromLibraryId) })
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItems(toLibraryId) })
       exitSelectionMode()

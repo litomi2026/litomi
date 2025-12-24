@@ -12,8 +12,8 @@ import IconSpinner from '@/components/icons/IconSpinner'
 import CustomSelect from '@/components/ui/CustomSelect'
 import { QueryKeys } from '@/constants/query'
 import { CensorshipKey } from '@/database/enum'
-import useActionResponse from '@/hook/useActionResponse'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
+import useServerAction from '@/hook/useServerAction'
 import useCensorshipsInfiniteQuery from '@/query/useCensorshipInfiniteQuery'
 
 import { deleteCensorships } from './action'
@@ -34,7 +34,7 @@ export default function Censorships() {
   const [deletingIds, setDeletingIds] = useState(new Set<number>())
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } = useCensorshipsInfiniteQuery()
 
-  const [__, dispatchDeleteAction] = useActionResponse({
+  const [__, dispatchDeleteAction] = useServerAction({
     action: deleteCensorships,
     onSuccess: (deletedIds) => {
       queryClient.invalidateQueries({ queryKey: QueryKeys.censorship })

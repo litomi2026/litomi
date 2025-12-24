@@ -1,15 +1,20 @@
 'use client'
 
+import { type InfiniteData, useQueryClient } from '@tanstack/react-query'
 import { Check } from 'lucide-react'
 import { useRef } from 'react'
 import { toast } from 'sonner'
+
+import type { GETLibraryResponse } from '@/backend/api/v1/library'
+import type { GETV1LibraryListResponse } from '@/backend/api/v1/library/list'
 
 import IconSpinner from '@/components/icons/IconSpinner'
 import IconX from '@/components/icons/IconX'
 import Modal from '@/components/ui/Modal'
 import Toggle from '@/components/ui/Toggle'
 import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/constants/policy'
-import useActionResponse, { getFieldError, getFormField } from '@/hook/useActionResponse'
+import { QueryKeys } from '@/constants/query'
+import useServerAction, { getFieldError, getFormField } from '@/hook/useServerAction'
 
 import { updateLibrary } from './action-library'
 
@@ -32,15 +37,66 @@ type Props = {
 
 export default function LibraryEditModal({ library, open, onOpenChange }: Readonly<Props>) {
   const formRef = useRef<HTMLFormElement>(null)
+  const queryClient = useQueryClient()
 
-  const [response, dispatchAction, isPending] = useActionResponse({
+  const [response, dispatchAction, isPending] = useServerAction({
     action: updateLibrary,
     onError: ({ error }) => {
       if (typeof error !== 'string') {
         toast.error(error.libraryId || error.name || error.description || error.color || error.icon)
       }
     },
-    onSuccess: () => {
+    onSuccess: (updatedLibraryId, [formData]) => {
+      const nextName = (formData.get('name')?.toString() ?? '').trim()
+      const nextDescription = (formData.get('description')?.toString() ?? '').trim() || null
+      const nextColor = formData.get('color')?.toString() ?? null
+      const nextIcon = formData.get('icon')?.toString() ?? null
+      const nextIsPublic = formData.get('is-public')?.toString() === 'on'
+
+      queryClient.setQueryData<GETLibraryResponse>(QueryKeys.libraries, (oldLibraries) => {
+        return oldLibraries?.map((lib) =>
+          lib.id === updatedLibraryId
+            ? {
+                ...lib,
+                name: nextName || lib.name,
+                color: nextColor,
+                icon: nextIcon,
+              }
+            : lib,
+        )
+      })
+
+      queryClient.setQueriesData<InfiniteData<GETV1LibraryListResponse, string | null>>(
+        { queryKey: QueryKeys.infiniteLibraryListBase },
+        (oldData) => {
+          if (!oldData) {
+            return oldData
+          }
+
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              libraries: page.libraries.map((lib) =>
+                lib.id === updatedLibraryId
+                  ? {
+                      ...lib,
+                      name: nextName || lib.name,
+                      description: nextDescription,
+                      color: nextColor,
+                      icon: nextIcon,
+                      isPublic: nextIsPublic,
+                    }
+                  : lib,
+              ),
+            })),
+          }
+        },
+      )
+
+      queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryListBase })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryMangasBase })
+
       toast.success('서재가 수정됐어요')
       onOpenChange(false)
     },

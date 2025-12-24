@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 
 import Toggle from '@/components/ui/Toggle'
 import { NEXT_PUBLIC_VAPID_PUBLIC_KEY } from '@/constants/env'
-import useActionResponse from '@/hook/useActionResponse'
+import useServerAction from '@/hook/useServerAction'
 import { checkIOSDevice, checkIOSSafari, urlBase64ToUint8Array } from '@/utils/browser'
 import { getUsernameFromParam } from '@/utils/param'
 
@@ -36,7 +36,7 @@ export default function PushSubscriptionToggle({ endpoints }: Readonly<Props>) {
     }
   }, [endpoints])
 
-  const [_, dispatchSubscriptionAction] = useActionResponse({
+  const [_, dispatchSubscriptionAction] = useServerAction({
     action: subscribeToNotifications,
     onSuccess: (data) => {
       setIsSubscribed(true)
@@ -45,7 +45,7 @@ export default function PushSubscriptionToggle({ endpoints }: Readonly<Props>) {
     shouldSetResponse: false,
   })
 
-  const [__, dispatchUnsubscriptionAction] = useActionResponse({
+  const [__, dispatchUnsubscriptionAction] = useServerAction({
     action: unsubscribeFromNotifications,
     onSuccess: (data) => {
       setIsSubscribed(false)

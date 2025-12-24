@@ -11,7 +11,7 @@ import IconX from '@/components/icons/IconX'
 import { BLIND_TAG_VALUES } from '@/constants/json'
 import { QueryKeys } from '@/constants/query'
 import { CensorshipKey, CensorshipLevel } from '@/database/enum'
-import useActionResponse from '@/hook/useActionResponse'
+import useServerAction from '@/hook/useServerAction'
 
 import { addCensorships } from './action'
 import { TYPE_PATTERNS } from './constants'
@@ -27,7 +27,7 @@ export default function CensorshipCreationBar() {
   const suggestionsRef = useRef<HTMLDivElement>(null)
   const queryClient = useQueryClient()
 
-  const [_, dispatchAddAction, isSubmitting] = useActionResponse({
+  const [_, dispatchAddAction, isSubmitting] = useServerAction({
     action: addCensorships,
     onSuccess: (items) => {
       toast.success(`${items?.length ?? 0}개의 검열 규칙을 추가했어요`)

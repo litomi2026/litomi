@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 
 import IconSpinner from '@/components/icons/IconSpinner'
-import useActionResponse, { getFormField } from '@/hook/useActionResponse'
+import useServerAction, { getFormField } from '@/hook/useServerAction'
 
 import type { TwoFactorStatus } from '../types'
 
@@ -113,7 +113,7 @@ export default function TwoFactorManagement({ onBackupCodesChange, onStatusChang
 }
 
 function DisableConfirmation({ onSuccess, onCancel }: DisableConfirmationProps) {
-  const [response, disableAction, isDisabling] = useActionResponse({
+  const [response, disableAction, isDisabling] = useServerAction({
     action: removeTwoFactor,
     onSuccess,
   })
@@ -148,7 +148,7 @@ function DisableConfirmation({ onSuccess, onCancel }: DisableConfirmationProps) 
 }
 
 function RegenerateBackupCodesForm({ onCancel, onSuccess }: RegenerateBackupCodesFormProps) {
-  const [response, regenerateAction, isRegenerating] = useActionResponse({
+  const [response, regenerateAction, isRegenerating] = useServerAction({
     action: regenerateBackupCodes,
     onSuccess,
   })

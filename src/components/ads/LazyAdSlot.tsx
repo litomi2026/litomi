@@ -1,32 +1,22 @@
 'use client'
 
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { ShieldOff } from 'lucide-react'
-import Script from 'next/script'
 import { useEffect, useRef, useState } from 'react'
 
-import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
-import { QueryKeys } from '@/constants/query'
-
-import { AD_BLOCK_CHECK_DELAY_MS, JUICY_ADS_SCRIPT_URL } from './constants'
+import { AD_BLOCK_CHECK_DELAY_MS, JUICY_ADS_EVENT } from './constants'
+import { useEarnPoints } from './useEarnPoints'
+import { useRequestToken } from './useRequestToken'
 
 declare global {
   interface Window {
+    __juicyAdsError?: boolean
+    __juicyAdsLoaded?: boolean
     adsbyjuicy?: { adzone: number }[]
+
+    // NOTE: JuicyAds 스크립트( jads.js )가 전역에 노출하는 함수들 (non-strict global assignment)
+    Fe?: () => void
+    GA?: (queue: unknown) => void
   }
-}
-
-type APIError = {
-  error: string
-  code?: string
-  remainingSeconds?: number
-}
-
-type EarnResponse = {
-  success: boolean
-  balance: number
-  earned: number
-  dailyRemaining: number
 }
 
 type Props = {
@@ -35,31 +25,39 @@ type Props = {
   width: number
   height: number
   className?: string
-  onAdClick?: (result: { success: boolean; earned?: number; error?: string }) => void
+  rewardEnabled?: boolean
+  onAdClick?: (result: { success: boolean; earned?: number; error?: string; requiresLogin?: boolean }) => void
 }
 
-type TokenResponse = {
-  token: string
-  expiresAt: string
-  dailyRemaining: number
-}
-
-export default function LazyAdSlot({ zoneId, adSlotId, width, height, className = '', onAdClick }: Props) {
-  const adElementRef = useRef<HTMLDivElement>(null)
+export default function LazyAdSlot({
+  zoneId,
+  adSlotId,
+  width,
+  height,
+  className = '',
+  rewardEnabled = true,
+  onAdClick,
+}: Props) {
   const isHoveringRef = useRef(false)
+  const slotRef = useRef<HTMLDivElement>(null)
   const [isScriptLoaded, setIsScriptLoaded] = useState(false)
   const [isAdBlocked, setIsAdBlocked] = useState(false)
   const [token, setToken] = useState<string | null>(null)
   const [dailyRemaining, setDailyRemaining] = useState<number | null>(null)
-
+  const [cooldownUntil, setCooldownUntil] = useState<number | null>(null)
+  const [now, setNow] = useState(() => Date.now())
   const requestToken = useRequestToken(adSlotId)
   const earnPoints = useEarnPoints()
   const isLoading = requestToken.isPending || earnPoints.isPending
   const apiError = requestToken.error ?? earnPoints.error ?? null
-  const canClick = token && !isLoading && !isAdBlocked
+  const canEarn = rewardEnabled && token !== null && !isLoading && !isAdBlocked
+  const shouldDimAd = rewardEnabled && !canEarn
+
+  const cooldownRemainingSeconds =
+    cooldownUntil !== null ? Math.max(0, Math.ceil((cooldownUntil - now) / 1000)) : (apiError?.remainingSeconds ?? null)
 
   function handleRefresh() {
-    if (isLoading || isAdBlocked) {
+    if (!rewardEnabled || isLoading || isAdBlocked) {
       return
     }
 
@@ -67,31 +65,146 @@ export default function LazyAdSlot({ zoneId, adSlotId, width, height, className 
       onSuccess: (data) => {
         setToken(data.token)
         setDailyRemaining(data.dailyRemaining)
+        setCooldownUntil(null)
+      },
+      onError: (err) => {
+        setToken(null)
+        if (err.remainingSeconds != null) {
+          setCooldownUntil(Date.now() + (err.remainingSeconds + 1) * 1000)
+        }
       },
     })
   }
 
-  function handleScriptLoad() {
-    setIsScriptLoaded(true)
-
-    requestToken.mutate(undefined, {
-      onSuccess: (data) => {
-        setToken(data.token)
-        setDailyRemaining(data.dailyRemaining)
-      },
-    })
-  }
-
-  function handleScriptError() {
-    setIsAdBlocked(true)
-    setIsScriptLoaded(true)
+  function requestJuicyAdsRender() {
+    // NOTE: jads.js 는 로드 시점에만 GA(...)를 한 번 돌려요.
+    // SPA(탭/페이지 전환)에서 새로 생긴 슬롯(<ins id={zoneId}>)은 자동으로 채워지지 않아서,
+    // 슬롯 마운트 시점에 GA(adsbyjuicy)를 다시 호출해줘야 해요.
+    try {
+      if (typeof window.GA === 'function') {
+        window.GA(window.adsbyjuicy ?? [])
+        return
+      }
+      if (typeof window.Fe === 'function') {
+        window.Fe()
+      }
+    } catch {
+      // ignore
+    }
   }
 
   // NOTE: JuicyAds 스크립트가 로드되기 전에 adzone을 등록해야 함
   useEffect(() => {
     window.adsbyjuicy = window.adsbyjuicy || []
+    // NOTE: 탭 전환 등으로 슬롯이 재마운트되면, JuicyAds는 "push"를 트리거로 다시 렌더링하는 경우가 있어요.
+    // 중복 방지로 push를 막으면 새로 생긴 <ins id={zoneId}>에 광고가 안 뜨고, 아래의 "차단기 감지" 타임아웃이 오탐을 만들 수 있어요.
     window.adsbyjuicy.push({ adzone: zoneId })
+
+    // NOTE: 배열 객체는 유지하면서(=push가 스크립트에 의해 패치됐을 수 있음), 길이만 제한해요.
+    const MAX_QUEUE_SIZE = 50
+    if (window.adsbyjuicy.length > MAX_QUEUE_SIZE) {
+      window.adsbyjuicy.splice(0, window.adsbyjuicy.length - MAX_QUEUE_SIZE)
+    }
   }, [zoneId])
+
+  // NOTE: JuicyAds 스크립트 로드 상태 구독(상위에서 <Script> 1회 로드)
+  useEffect(() => {
+    if (window.__juicyAdsError) {
+      setIsAdBlocked(true)
+      setIsScriptLoaded(true)
+      return
+    }
+
+    if (window.__juicyAdsLoaded) {
+      setIsScriptLoaded(true)
+      return
+    }
+
+    function handleLoaded() {
+      setIsScriptLoaded(true)
+    }
+
+    function handleError() {
+      setIsAdBlocked(true)
+      setIsScriptLoaded(true)
+    }
+
+    window.addEventListener(JUICY_ADS_EVENT.LOADED, handleLoaded)
+    window.addEventListener(JUICY_ADS_EVENT.ERROR, handleError)
+
+    return () => {
+      window.removeEventListener(JUICY_ADS_EVENT.LOADED, handleLoaded)
+      window.removeEventListener(JUICY_ADS_EVENT.ERROR, handleError)
+    }
+  }, [])
+
+  // NOTE: 스크립트가 준비되면, 현재 슬롯을 다시 채우도록 GA(...)를 호출
+  useEffect(() => {
+    if (!isScriptLoaded || isAdBlocked) {
+      return
+    }
+
+    requestJuicyAdsRender()
+  }, [isScriptLoaded, zoneId, isAdBlocked])
+
+  // NOTE: 쿨다운 카운트다운 렌더링(1초 간격)
+  useEffect(() => {
+    if (cooldownUntil === null) {
+      return
+    }
+
+    const intervalId = setInterval(() => setNow(Date.now()), 1000)
+    return () => clearInterval(intervalId)
+  }, [cooldownUntil])
+
+  // NOTE: 쿨다운 종료 시 자동으로 토큰 재요청 트리거
+  useEffect(() => {
+    if (cooldownUntil === null) {
+      return
+    }
+
+    const delayMs = cooldownUntil - Date.now() + 50
+    if (delayMs <= 0) {
+      setCooldownUntil(null)
+      return
+    }
+
+    const timeoutId = setTimeout(() => setCooldownUntil(null), delayMs)
+    return () => clearTimeout(timeoutId)
+  }, [cooldownUntil])
+
+  // NOTE: 토큰이 없으면(또는 클릭 후 소진되면) 자동으로 토큰을 다시 준비
+  useEffect(() => {
+    if (!rewardEnabled || isAdBlocked || !isScriptLoaded) {
+      return
+    }
+
+    if (token !== null) {
+      return
+    }
+
+    if (cooldownUntil !== null && Date.now() < cooldownUntil) {
+      return
+    }
+
+    if (requestToken.isPending) {
+      return
+    }
+
+    requestToken.mutate(undefined, {
+      onSuccess: (data) => {
+        setToken(data.token)
+        setDailyRemaining(data.dailyRemaining)
+        setCooldownUntil(null)
+      },
+      onError: (err) => {
+        setToken(null)
+        if (err.remainingSeconds != null) {
+          setCooldownUntil(Date.now() + (err.remainingSeconds + 1) * 1000)
+        }
+      },
+    })
+  }, [rewardEnabled, isAdBlocked, isScriptLoaded, token, cooldownUntil, requestToken])
 
   // NOTE: 광고 컨텐츠 로드 감지 (MutationObserver)
   useEffect(() => {
@@ -99,24 +212,20 @@ export default function LazyAdSlot({ zoneId, adSlotId, width, height, className 
       return
     }
 
-    const insElement = document.getElementById(String(zoneId))
-
-    if (!insElement) {
-      return
-    }
+    const slotElement = slotRef.current
+    if (!slotElement) return
 
     let isMounted = true
 
-    const observer = new MutationObserver((mutations) => {
-      for (const mutation of mutations) {
-        if (mutation.addedNodes.length > 0) {
-          observer.disconnect()
-          return
-        }
+    const observer = new MutationObserver(() => {
+      // jads.js 는 <ins>를 <iframe>로 "교체"해요. (ins 내부가 아니라 slot 컨테이너에 iframe이 생김)
+      const hasIframe = Boolean(slotElement.querySelector('iframe'))
+      if (hasIframe) {
+        observer.disconnect()
       }
     })
 
-    observer.observe(insElement, { childList: true, subtree: true })
+    observer.observe(slotElement, { childList: true, subtree: true })
 
     // 타임아웃 - 광고가 로드되지 않으면 차단됨
     const timeoutId = setTimeout(() => {
@@ -124,9 +233,9 @@ export default function LazyAdSlot({ zoneId, adSlotId, width, height, className 
         return
       }
 
-      const hasAdContent = insElement.querySelector('iframe, img, a')
+      const hasIframe = Boolean(slotElement.querySelector('iframe'))
 
-      if (!hasAdContent) {
+      if (!hasIframe) {
         setIsAdBlocked(true)
         setToken(null)
       }
@@ -144,7 +253,16 @@ export default function LazyAdSlot({ zoneId, adSlotId, width, height, className 
   // NOTE: window blur 이벤트로 iframe 클릭 감지
   useEffect(() => {
     function handleWindowBlur() {
-      if (!isHoveringRef.current || !token || isLoading || isAdBlocked) {
+      if (!isHoveringRef.current || isLoading || isAdBlocked) {
+        return
+      }
+
+      if (!rewardEnabled) {
+        onAdClick?.({ success: false, requiresLogin: true })
+        return
+      }
+
+      if (!token) {
         return
       }
 
@@ -153,6 +271,7 @@ export default function LazyAdSlot({ zoneId, adSlotId, width, height, className 
           onAdClick?.({ success: true, earned: data.earned })
           setToken(null)
           setDailyRemaining(data.dailyRemaining)
+          setCooldownUntil(null)
         },
         onError: (err) => {
           onAdClick?.({ success: false, error: err.error })
@@ -166,30 +285,23 @@ export default function LazyAdSlot({ zoneId, adSlotId, width, height, className 
     return () => {
       window.removeEventListener('blur', handleWindowBlur)
     }
-  }, [token, isLoading, isAdBlocked, earnPoints, onAdClick])
+  }, [rewardEnabled, token, isLoading, isAdBlocked, earnPoints, onAdClick])
 
   return (
     <div
       className={`flex flex-col items-center justify-center ${className}`}
       style={{ width: `min(${width}px, 100%)`, minHeight: height }}
     >
-      <Script
-        data-cfasync="false"
-        id="juicy-ads"
-        onError={handleScriptError}
-        onLoad={handleScriptLoad}
-        src={JUICY_ADS_SCRIPT_URL}
-        strategy="afterInteractive"
-      />
       {isAdBlocked ? (
         <AdBlockedMessage height={height} width={width} />
       ) : (
         <div className="relative w-full flex flex-col items-center gap-2 z-0">
           <div
-            className={`relative cursor-pointer transition-opacity ${canClick ? 'opacity-100' : 'opacity-60'}`}
-            onMouseEnter={() => (isHoveringRef.current = true)}
-            onMouseLeave={() => (isHoveringRef.current = false)}
-            ref={adElementRef}
+            className={`relative cursor-pointer transition-opacity ${shouldDimAd ? 'opacity-60' : 'opacity-100'}`}
+            onPointerDown={() => (isHoveringRef.current = true)}
+            onPointerEnter={() => (isHoveringRef.current = true)}
+            onPointerLeave={() => (isHoveringRef.current = false)}
+            ref={slotRef}
             style={{ width: `min(${width}px, 100%)`, height }}
           >
             <ins
@@ -206,11 +318,11 @@ export default function LazyAdSlot({ zoneId, adSlotId, width, height, className 
           </div>
           {/* CLS 방지: 항상 고정 높이 유지 */}
           <div className="text-xs h-5 flex items-center justify-center">
-            {apiError ? (
+            {rewardEnabled && apiError ? (
               <div className="text-center">
                 <span className="text-amber-500">
                   {apiError.error}
-                  {apiError.remainingSeconds != null && ` (${apiError.remainingSeconds}초)`}
+                  {cooldownRemainingSeconds != null && ` (${cooldownRemainingSeconds}초)`}
                 </span>
                 {!apiError.error.includes('한도') && !apiError.error.includes('잠시 후') && (
                   <button className="ml-2 text-blue-400 hover:underline" disabled={isLoading} onClick={handleRefresh}>
@@ -218,7 +330,7 @@ export default function LazyAdSlot({ zoneId, adSlotId, width, height, className 
                   </button>
                 )}
               </div>
-            ) : dailyRemaining !== null ? (
+            ) : rewardEnabled && dailyRemaining !== null ? (
               dailyRemaining > 0 ? (
                 <span className="text-zinc-500">오늘 남은 적립: {dailyRemaining} 리보</span>
               ) : (
@@ -249,51 +361,4 @@ function AdBlockedMessage({ height, width }: { height: number; width: number }) 
       <div className="text-xs text-zinc-600">광고 차단기를 비활성화하면 리보를 적립할 수 있어요</div>
     </div>
   )
-}
-
-function useEarnPoints() {
-  const queryClient = useQueryClient()
-
-  return useMutation<EarnResponse, APIError, string>({
-    mutationFn: async (token) => {
-      const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/points/earn`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ token }),
-      })
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw data
-      }
-
-      return data
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QueryKeys.points })
-      queryClient.invalidateQueries({ queryKey: QueryKeys.pointsTransactions })
-    },
-  })
-}
-
-function useRequestToken(adSlotId: string) {
-  return useMutation<TokenResponse, APIError>({
-    mutationFn: async () => {
-      const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/points/token`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ adSlotId }),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw data
-      }
-
-      return data
-    },
-  })
 }

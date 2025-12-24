@@ -1,6 +1,6 @@
 'use client'
 
-import { Bookmark, History, Settings, Star, X } from 'lucide-react'
+import { Bookmark, History, PiggyBank, Settings, Star, X } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect } from 'react'
@@ -108,6 +108,17 @@ export default function MobileNavigationMenu({ onClose }: Readonly<Props>) {
             icon={<IconTag className="w-5" selected={pathname.includes('/tag')} />}
             isActive={pathname.includes('/tag')}
             title="태그"
+          />
+          <MenuLink
+            href="/libo"
+            icon={
+              <PiggyBank
+                aria-current={pathname === '/libo' ? 'page' : undefined}
+                className="size-5 aria-current:fill-foreground"
+              />
+            }
+            isActive={pathname === '/libo'}
+            title="리보"
           />
           <MenuLink
             href={`/@${username}/settings`}

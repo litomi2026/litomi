@@ -8,7 +8,7 @@ import IconEye from '@/components/icons/IconEye'
 import IconEyeOff from '@/components/icons/IconEyeOff'
 import IconSpinner from '@/components/icons/IconSpinner'
 import { PASSWORD_PATTERN } from '@/constants/policy'
-import useActionResponse, { getFieldError, getFormField } from '@/hook/useActionResponse'
+import useServerAction, { getFieldError, getFormField } from '@/hook/useServerAction'
 
 import { changePassword } from './action'
 
@@ -29,7 +29,7 @@ export default function PasswordChangeForm({ userId }: Readonly<Props>) {
     setPasswordStrength(strength)
   }, [])
 
-  const [response, dispatchAction, isPending] = useActionResponse({
+  const [response, dispatchAction, isPending] = useServerAction({
     action: changePassword,
     onSuccess: (data) => {
       toast.success(data)

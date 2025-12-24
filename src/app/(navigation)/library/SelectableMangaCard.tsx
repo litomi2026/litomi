@@ -1,7 +1,6 @@
 'use client'
 
 import { Check } from 'lucide-react'
-import { memo } from 'react'
 
 import MangaCard from '@/components/card/MangaCard'
 import { Manga } from '@/types/manga'
@@ -14,9 +13,7 @@ type Props = {
   manga: Manga
 }
 
-export default memo(SelectableMangaCard)
-
-function SelectableMangaCard({ index, manga }: Readonly<Props>) {
+export default function SelectableMangaCard({ index, manga }: Readonly<Props>) {
   const { selectedItems, toggleSelection } = useLibrarySelectionStore()
   const isSelected = selectedItems.has(manga.id)
 

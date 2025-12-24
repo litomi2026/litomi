@@ -14,7 +14,7 @@ import { NEXT_PUBLIC_GA_ID } from '@/constants/env'
 import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
-import useActionResponse, { getFieldError, getFormField } from '@/hook/useActionResponse'
+import useServerAction, { getFieldError, getFormField } from '@/hook/useServerAction'
 import amplitude from '@/lib/amplitude/lazy'
 import { sanitizeRedirect } from '@/utils'
 
@@ -54,7 +54,7 @@ export default function SignupForm() {
     [queryClient, router],
   )
 
-  const [response, dispatchAction, pending] = useActionResponse({
+  const [response, dispatchAction, pending] = useServerAction({
     action: signup,
     onError: () => {
       turnstileRef.current?.reset()

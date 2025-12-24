@@ -9,7 +9,7 @@ import IconKey from '@/components/icons/IconKey'
 import IconSpinner from '@/components/icons/IconSpinner'
 import Toggle from '@/components/ui/Toggle'
 import { BACKUP_CODE_PATTERN } from '@/constants/policy'
-import useActionResponse, { getFormField } from '@/hook/useActionResponse'
+import useServerAction, { getFormField } from '@/hook/useServerAction'
 import { PKCEChallenge } from '@/utils/pkce-browser'
 
 import { verifyTwoFactorLogin } from './action-2fa'
@@ -34,7 +34,7 @@ interface Props {
 export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallenge, twoFactorData }: Props) {
   const [isBackupCode, setIsBackupCode] = useState(false)
 
-  const [response, dispatchAction, isPending] = useActionResponse({
+  const [response, dispatchAction, isPending] = useServerAction({
     action: verifyTwoFactorLogin,
     onSuccess: (data) => {
       if (data.isBackupCode) {

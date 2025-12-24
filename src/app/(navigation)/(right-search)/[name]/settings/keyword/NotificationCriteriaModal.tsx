@@ -7,7 +7,7 @@ import IconPlus from '@/components/icons/IconPlus'
 import IconSpinner from '@/components/icons/IconSpinner'
 import IconX from '@/components/icons/IconX'
 import Modal from '@/components/ui/Modal'
-import useActionResponse, { getFieldError } from '@/hook/useActionResponse'
+import useServerAction, { getFieldError } from '@/hook/useServerAction'
 
 import type { NotificationCriteria } from './types'
 
@@ -57,7 +57,7 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
     }
   }
 
-  const [response, dispatchAction, isPending] = useActionResponse({
+  const [response, dispatchAction, isPending] = useServerAction({
     action: processAndSubmit,
     onSuccess: (data) => {
       toast.success(data)

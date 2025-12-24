@@ -5,7 +5,7 @@ import { toast } from 'sonner'
 
 import { QueryKeys } from '@/constants/query'
 import { CensorshipKey, CensorshipLevel } from '@/database/enum'
-import useActionResponse from '@/hook/useActionResponse'
+import useServerAction from '@/hook/useServerAction'
 
 import { updateCensorships } from './action'
 import { CENSORSHIP_LEVEL_LABELS } from './constants'
@@ -26,7 +26,7 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Read
   const [editValue, setEditValue] = useState(value)
   const [editLevel, setEditLevel] = useState(level)
 
-  const [response, dispatchAction, isPending] = useActionResponse({
+  const [response, dispatchAction, isPending] = useServerAction({
     action: updateCensorships,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QueryKeys.censorship })

@@ -11,7 +11,7 @@ import { twMerge } from 'tailwind-merge'
 import toggleBookmark from '@/app/(navigation)/library/bookmark/action'
 import { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark'
 import { QueryKeys } from '@/constants/query'
-import useActionResponse from '@/hook/useActionResponse'
+import useServerAction from '@/hook/useServerAction'
 import useBookmarksQuery from '@/query/useBookmarksQuery'
 import useMeQuery from '@/query/useMeQuery'
 
@@ -32,7 +32,7 @@ export default function BookmarkButton({ manga, className }: Props) {
   const queryClient = useQueryClient()
   const { open: openLibraryModal } = useLibraryModal()
 
-  const [_, dispatchAction, isPending] = useActionResponse({
+  const [_, dispatchAction, isPending] = useServerAction({
     action: toggleBookmark,
     onSuccess: ({ mangaId, createdAt }) => {
       const isBookmarked = Boolean(createdAt)

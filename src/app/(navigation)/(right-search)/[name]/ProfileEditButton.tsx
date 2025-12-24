@@ -11,7 +11,7 @@ import { toast } from 'sonner'
 import IconX from '@/components/icons/IconX'
 import Modal from '@/components/ui/Modal'
 import { QueryKeys } from '@/constants/query'
-import useActionResponse, { getFieldError } from '@/hook/useActionResponse'
+import useServerAction, { getFieldError } from '@/hook/useServerAction'
 
 import editProfile from './action'
 
@@ -38,7 +38,7 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
   const defaultProfileImageURL = me.imageURL ?? ''
   const [profileImageURL, setProfileImageURL] = useState(defaultProfileImageURL)
 
-  const [response, dispatchAction, isPending] = useActionResponse({
+  const [response, dispatchAction, isPending] = useServerAction({
     action: editProfile,
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: QueryKeys.me, exact: true })

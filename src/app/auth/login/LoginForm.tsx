@@ -18,7 +18,7 @@ import { NEXT_PUBLIC_GA_ID } from '@/constants/env'
 import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
-import useActionResponse, { getFieldError, getFormField } from '@/hook/useActionResponse'
+import useServerAction, { getFieldError, getFormField } from '@/hook/useServerAction'
 import amplitude from '@/lib/amplitude/lazy'
 import { sanitizeRedirect } from '@/utils'
 import { generatePKCEChallenge, PKCEChallenge } from '@/utils/pkce-browser'
@@ -62,7 +62,7 @@ export default function LoginForm() {
     passwordInput.value = ''
   }
 
-  const [_, dispatchMigration] = useActionResponse({
+  const [_, dispatchMigration] = useServerAction({
     action: migrateReadingHistory,
     shouldSetResponse: false,
     onSuccess: clearMigratedHistory,
@@ -92,7 +92,7 @@ export default function LoginForm() {
     router.replace(redirectURL)
   }
 
-  const [response, dispatchAction, isPending] = useActionResponse({
+  const [response, dispatchAction, isPending] = useServerAction({
     action: login,
     onError: () => {
       turnstileRef.current?.reset()

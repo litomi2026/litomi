@@ -6,7 +6,7 @@ import IconShield from '@/components/icons/IconShield'
 import IconSpinner from '@/components/icons/IconSpinner'
 import IconTrash from '@/components/icons/IconTrash'
 import Modal from '@/components/ui/Modal'
-import useActionResponse from '@/hook/useActionResponse'
+import useServerAction from '@/hook/useServerAction'
 
 import { deleteCredential } from './action-delete'
 
@@ -35,7 +35,7 @@ export default function PasskeyDeleteButton({ id, className, onCancel, open, onO
     onCancel?.()
   }
 
-  const [_, dispatchAction, isPending] = useActionResponse({
+  const [_, dispatchAction, isPending] = useServerAction({
     action: deleteCredential,
     onSuccess: (data) => {
       toast.success(data)

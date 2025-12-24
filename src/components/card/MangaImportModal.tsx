@@ -10,8 +10,8 @@ import { create } from 'zustand'
 import { bulkCopyToLibrary } from '@/app/(navigation)/library/action-library-item'
 import { MAX_ITEMS_PER_LIBRARY } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
-import useActionResponse from '@/hook/useActionResponse'
 import useDebouncedValue from '@/hook/useDebouncedValue'
+import useServerAction from '@/hook/useServerAction'
 
 import IconSpinner from '../icons/IconSpinner'
 import IconX from '../icons/IconX'
@@ -40,7 +40,7 @@ export default function MangaImportModal() {
   const { libraryId, setLibraryId } = useImportMangaModalStore()
   const queryClient = useQueryClient()
 
-  const [, dispatchBulkImport, isImporting] = useActionResponse({
+  const [, dispatchBulkImport, isImporting] = useServerAction({
     action: bulkCopyToLibrary,
     onSuccess: (successCount, [{ mangaIds, toLibraryId }]) => {
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItems(toLibraryId) })

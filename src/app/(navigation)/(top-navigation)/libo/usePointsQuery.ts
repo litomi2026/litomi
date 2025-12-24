@@ -25,22 +25,28 @@ type PointsResponse = {
   totalSpent: number
 }
 
-export function useExpansionQuery() {
+type QueryOptions = {
+  enabled?: boolean
+}
+
+export function useExpansionQuery({ enabled = true }: QueryOptions = {}) {
   return useQuery<ExpansionResponse>({
     queryKey: QueryKeys.pointsExpansion,
     queryFn: async () => {
       const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/points/expansion`, { credentials: 'include' })
       return handleResponseError<ExpansionResponse>(response)
     },
+    enabled,
   })
 }
 
-export function usePointsQuery() {
+export function usePointsQuery({ enabled = true }: QueryOptions = {}) {
   return useQuery<PointsResponse>({
     queryKey: QueryKeys.points,
     queryFn: async () => {
       const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/points`, { credentials: 'include' })
       return handleResponseError<PointsResponse>(response)
     },
+    enabled,
   })
 }

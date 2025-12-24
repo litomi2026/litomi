@@ -1,15 +1,13 @@
-import { MessageCircle } from 'lucide-react'
-import Link from 'next/link'
 import { CSSProperties, useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { List, RowComponentProps, useDynamicRowHeight, useListRef } from 'react-window'
 
 import { MangaIdSearchParam } from '@/app/manga/[id]/common'
-import BookmarkButton from '@/components/card/BookmarkButton'
 import IconSpinner from '@/components/icons/IconSpinner'
 import MangaImage from '@/components/MangaImage'
 import { Manga } from '@/types/manga'
 
+import LastPageActions from './LastPageActions'
 import RatingInput from './RatingInput'
 import { useBrightnessStore } from './store/brightness'
 import { useImageIndexStore } from './store/imageIndex'
@@ -118,20 +116,7 @@ function LastPage({ manga, style }: LastPageProps) {
     <li className="h-full pb-safe px-safe" style={style}>
       <div className="flex flex-col items-center gap-4 p-4 py-12">
         <RatingInput className="flex-1" mangaId={id} />
-        <div className="grid grid-cols-2 items-center gap-2 text-sm font-medium text-foreground">
-          <Link
-            className="flex items-center gap-2 p-4 py-2 border border-foreground/20 rounded-lg hover:bg-foreground/10 transition"
-            href={`/manga/${id}/detail`}
-            prefetch={false}
-          >
-            <MessageCircle className="size-4" />
-            작품 후기
-          </Link>
-          <BookmarkButton
-            className="p-4 w-full py-2 border border-foreground/20 rounded-lg hover:bg-foreground/10 transition"
-            manga={manga}
-          />
-        </div>
+        <LastPageActions manga={manga} />
       </div>
     </li>
   )

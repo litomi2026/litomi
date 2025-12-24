@@ -7,6 +7,10 @@ import IconSpinner from '@/components/icons/IconSpinner'
 import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
 
+type Props = {
+  enabled: boolean
+}
+
 type Transaction = {
   id: number
   type: 'earn' | 'spend'
@@ -21,7 +25,7 @@ type TransactionsResponse = {
   nextCursor: number | null
 }
 
-export default function TransactionHistory() {
+export default function TransactionHistory({ enabled }: Props) {
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } = useInfiniteQuery<TransactionsResponse>({
     queryKey: QueryKeys.pointsTransactions,
     queryFn: async ({ pageParam }) => {
@@ -36,7 +40,16 @@ export default function TransactionHistory() {
     },
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialPageParam: null as number | null,
+    enabled,
   })
+
+  if (!enabled) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-zinc-500">로그인하면 거래 내역을 확인할 수 있어요</p>
+      </div>
+    )
+  }
 
   if (isLoading) {
     return (

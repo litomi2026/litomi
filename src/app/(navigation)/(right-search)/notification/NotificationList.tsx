@@ -13,8 +13,8 @@ import IconFilter from '@/components/icons/IconFilter'
 import IconSpinner from '@/components/icons/IconSpinner'
 import IconTrash from '@/components/icons/IconTrash'
 import { QueryKeys } from '@/constants/query'
-import useActionResponse from '@/hook/useActionResponse'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
+import useServerAction from '@/hook/useServerAction'
 import useMeQuery from '@/query/useMeQuery'
 
 import { deleteNotifications, markAsRead } from './action'
@@ -55,7 +55,7 @@ export default function NotificationList() {
     fetchNextPage,
   })
 
-  const [, dispatchMarkAsRead, isMarkAsReadPending] = useActionResponse({
+  const [, dispatchMarkAsRead, isMarkAsReadPending] = useServerAction({
     action: markAsRead,
     onSuccess: () => {
       setSelectedIds(new Set())
@@ -66,7 +66,7 @@ export default function NotificationList() {
     shouldSetResponse: false,
   })
 
-  const [, dispatchDeleteNotifications, isDeleteNotificationsPending] = useActionResponse({
+  const [, dispatchDeleteNotifications, isDeleteNotificationsPending] = useServerAction({
     action: deleteNotifications,
     onSuccess: (data) => {
       toast.success(data)

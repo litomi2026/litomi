@@ -13,6 +13,7 @@ import { useExpansionQuery } from './usePointsQuery'
 
 type Props = {
   balance: number
+  enabled: boolean
 }
 
 type ShopItem = {
@@ -36,12 +37,13 @@ type SpendResponse = {
   spent: number
 }
 
-export default function PointsShop({ balance }: Props) {
-  const { data: expansion, isLoading } = useExpansionQuery()
+export default function PointsShop({ balance, enabled }: Props) {
+  const { data: expansion, isLoading } = useExpansionQuery({ enabled })
   const spendPoints = useSpendPoints()
+  const displayExpansion = enabled ? expansion : undefined
 
   const handlePurchase = (item: ShopItem) => {
-    if (spendPoints.isPending) {
+    if (!enabled || spendPoints.isPending) {
       return
     }
 
@@ -65,7 +67,7 @@ export default function PointsShop({ balance }: Props) {
     )
   }
 
-  if (isLoading) {
+  if (enabled && isLoading) {
     return (
       <div className="flex items-center justify-center py-8">
         <IconSpinner className="size-6" />
@@ -78,7 +80,7 @@ export default function PointsShop({ balance }: Props) {
       id: 'library-expansion',
       type: 'library',
       name: '내서재 확장',
-      description: `+${POINT_CONSTANTS.LIBRARY_EXPANSION_AMOUNT}개 (현재: ${expansion?.library.current ?? 5}/${expansion?.library.max ?? 30}개)`,
+      description: `+${POINT_CONSTANTS.LIBRARY_EXPANSION_AMOUNT}개 (현재: ${displayExpansion?.library.current ?? 5}/${displayExpansion?.library.max ?? 30}개)`,
       price: POINT_CONSTANTS.LIBRARY_EXPANSION_PRICE,
       icon: <FolderPlus className="size-5" />,
     },
@@ -86,40 +88,25 @@ export default function PointsShop({ balance }: Props) {
       id: 'history-expansion',
       type: 'history',
       name: '감상 기록 확장',
-      description: `+${POINT_CONSTANTS.HISTORY_EXPANSION_AMOUNT}개 (현재: ${expansion?.history.current ?? 500}/${expansion?.history.max ?? 5000}개)`,
+      description: `+${POINT_CONSTANTS.HISTORY_EXPANSION_AMOUNT}개 (현재: ${displayExpansion?.history.current ?? 500}/${displayExpansion?.history.max ?? 5000}개)`,
       price: POINT_CONSTANTS.HISTORY_EXPANSION_PRICE,
       icon: <BookOpen className="size-5" />,
     },
-    // {
-    //   id: 'badge-supporter',
-    //   type: 'badge',
-    //   name: '서포터 뱃지',
-    //   description: '프로필에 특별한 서포터 뱃지가 표시돼요',
-    //   price: POINT_CONSTANTS.BADGE_PRICE,
-    //   icon: <Award className="size-5" />,
-    //   itemId: 'supporter',
-    // },
-    // {
-    //   id: 'theme-custom',
-    //   type: 'theme',
-    //   name: '커스텀 테마',
-    //   description: '추가 색상 테마를 사용할 수 있어요',
-    //   price: POINT_CONSTANTS.THEME_PRICE,
-    //   icon: <Palette className="size-5" />,
-    //   itemId: 'custom',
-    // },
   ]
 
   return (
-    <div className="space-y-3">
+    <div aria-disabled={!enabled} className="space-y-3 aria-disabled:opacity-80">
       <p className="text-sm text-zinc-400 mb-4">리보로 내 공간을 확장해 보세요.</p>
+      {!enabled && <p className="text-xs text-zinc-500">로그인하면 상점을 이용할 수 있어요</p>}
 
       {shopItems.map((item) => {
         const canAfford = balance >= item.price
         const isPurchasing = spendPoints.isPending && spendPoints.variables?.type === item.type
         const isMaxed =
-          (item.type === 'library' && !expansion?.library.canExpand) ||
-          (item.type === 'history' && !expansion?.history.canExpand)
+          enabled &&
+          ((item.type === 'library' && !displayExpansion?.library.canExpand) ||
+            (item.type === 'history' && !displayExpansion?.history.canExpand))
+        const isDisabled = !enabled || isMaxed || !canAfford || spendPoints.isPending
 
         return (
           <div
@@ -144,9 +131,9 @@ export default function PointsShop({ balance }: Props) {
                 {item.price.toLocaleString()} 리보
               </p>
               <button
-                aria-disabled={isMaxed || !canAfford}
+                aria-disabled={isDisabled}
                 className="mt-1 px-3 py-1 text-xs font-medium rounded-md transition bg-amber-500 text-zinc-900 hover:bg-amber-400 aria-disabled:bg-zinc-700 aria-disabled:text-zinc-400 aria-disabled:cursor-not-allowed aria-disabled:hover:bg-zinc-700"
-                disabled={!canAfford || spendPoints.isPending || isMaxed}
+                disabled={isDisabled}
                 onClick={() => handlePurchase(item)}
               >
                 {isPurchasing ? <IconSpinner className="size-3 mx-2" /> : isMaxed ? '최대' : '구매'}

@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 import IconSpinner from '@/components/icons/IconSpinner'
-import useActionResponse from '@/hook/useActionResponse'
+import useServerAction from '@/hook/useServerAction'
 import useMeQuery from '@/query/useMeQuery'
 
 import { subscribeToKeyword } from './action-keyword'
@@ -19,7 +19,7 @@ export default function KeywordSubscriptionButton() {
   const { data: me } = useMeQuery()
   const [query, setQuery] = useState<ParsedSearchQuery | null>(null)
 
-  const [_, dispatchAction, isPending] = useActionResponse({
+  const [_, dispatchAction, isPending] = useServerAction({
     action: subscribeToKeyword,
     onError: (response) => {
       if (response.status === 409) {

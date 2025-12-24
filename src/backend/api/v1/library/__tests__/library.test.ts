@@ -39,6 +39,52 @@ describe('GET /api/v1/library', () => {
   })
 })
 
+describe('GET /api/v1/library/list', () => {
+  const createRequest = (cursor?: string) => {
+    const params = cursor ? `?cursor=${encodeURIComponent(cursor)}` : ''
+    return app.request(`/list${params}`)
+  }
+
+  test('유효하지 않은 cursor를 사용하면 400 에러를 반환한다', async () => {
+    const response = await createRequest('invalid-cursor')
+
+    expect(response.status).toBe(400)
+  })
+})
+
+describe('GET /api/v1/library/manga', () => {
+  const createRequest = (cursor?: string) => {
+    const params = cursor ? `?cursor=${encodeURIComponent(cursor)}` : ''
+    return app.request(`/manga${params}`)
+  }
+
+  test('유효하지 않은 cursor를 사용하면 400 에러를 반환한다', async () => {
+    const response = await createRequest('invalid-cursor')
+
+    expect(response.status).toBe(400)
+  })
+})
+
+describe('GET /api/v1/library/summary', () => {
+  test('userId가 없으면 401 에러를 반환한다', async () => {
+    const response = await app.request('/summary')
+
+    expect(response.status).toBe(401)
+  })
+})
+
+describe('GET /api/v1/library/:id/meta', () => {
+  const createRequest = (libraryId: number | string) => {
+    return app.request(`/${libraryId}/meta`)
+  }
+
+  test('유효하지 않은 libraryId를 사용하면 400 에러를 반환한다', async () => {
+    const response = await createRequest('invalid')
+
+    expect(response.status).toBe(400)
+  })
+})
+
 describe('GET /api/v1/library/:id', () => {
   const createRequest = (libraryId: number | string, cursor?: string) => {
     const params = cursor ? `?cursor=${encodeURIComponent(cursor)}` : ''

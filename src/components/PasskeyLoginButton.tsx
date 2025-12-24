@@ -8,7 +8,7 @@ import {
   getAuthenticationOptions,
   verifyAuthentication,
 } from '@/app/(navigation)/(right-search)/[name]/settings/passkey/action-auth'
-import useActionResponse from '@/hook/useActionResponse'
+import useServerAction from '@/hook/useServerAction'
 
 import IconSpinner from './icons/IconSpinner'
 
@@ -28,7 +28,7 @@ type User = {
 }
 
 export default function PasskeyLoginButton({ loginId, disabled, onSuccess, turnstileToken }: Props) {
-  const [_, dispatchAction, isPending] = useActionResponse({
+  const [_, dispatchAction, isPending] = useServerAction({
     action: verifyAuthentication,
     onSuccess,
     shouldSetResponse: false,
