@@ -11,6 +11,18 @@ import { bookmarkTable, userTable } from '@/database/supabase/schema'
 
 import { getBookmarkLimit } from './limit'
 
+export type POSTV1BookmarkToggleErrorResponse = {
+  error: string
+}
+
+export type POSTV1BookmarkToggleResponse = POSTV1BookmarkToggleErrorResponse | POSTV1BookmarkToggleSuccessResponse
+
+export type POSTV1BookmarkToggleSuccessResponse = {
+  success: true
+  mangaId: number
+  createdAt: string | null
+}
+
 const toggleSchema = z.object({
   mangaId: z.coerce.number().int().positive(),
 })
@@ -21,7 +33,7 @@ route.post('/', zValidator('json', toggleSchema), async (c) => {
   const userId = getUserId()
 
   if (!userId) {
-    return c.json({ error: '로그인이 필요해요' }, 401)
+    return c.json<POSTV1BookmarkToggleErrorResponse>({ error: '로그인이 필요해요' }, 401)
   }
 
   const { mangaId } = c.req.valid('json')
@@ -63,20 +75,23 @@ route.post('/', zValidator('json', toggleSchema), async (c) => {
       return { createdAt }
     })
 
-    return c.json({
+    return c.json<POSTV1BookmarkToggleSuccessResponse>({
       success: true,
       mangaId,
-      createdAt,
+      createdAt: createdAt ? createdAt.toISOString() : null,
     })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'UNKNOWN_ERROR'
 
     if (message === 'BOOKMARK_LIMIT_REACHED') {
-      return c.json({ error: '북마크 저장 한도에 도달했어요. 리보로 확장할 수 있어요' }, 403)
+      return c.json<POSTV1BookmarkToggleErrorResponse>(
+        { error: '북마크 저장 한도에 도달했어요. 리보로 확장할 수 있어요' },
+        403,
+      )
     }
 
     console.error(error)
-    return c.json({ error: '북마크 처리에 실패했어요' }, 500)
+    return c.json<POSTV1BookmarkToggleErrorResponse>({ error: '북마크 처리에 실패했어요' }, 500)
   }
 })
 

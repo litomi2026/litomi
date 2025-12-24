@@ -11,6 +11,18 @@ import { bookmarkTable, userTable } from '@/database/supabase/schema'
 
 import { getBookmarkLimit } from './limit'
 
+export type POSTV1BookmarkImportErrorResponse = {
+  error: string
+}
+
+export type POSTV1BookmarkImportResponse = POSTV1BookmarkImportErrorResponse | POSTV1BookmarkImportSuccessResponse
+
+export type POSTV1BookmarkImportSuccessResponse = {
+  success: true
+  imported: number
+  skipped: number
+}
+
 const importSchema = z.object({
   mode: z.enum(['merge', 'replace']),
   bookmarks: z
@@ -29,7 +41,7 @@ route.post('/', zValidator('json', importSchema), async (c) => {
   const userId = getUserId()
 
   if (!userId) {
-    return c.json({ error: '로그인이 필요해요' }, 401)
+    return c.json<POSTV1BookmarkImportErrorResponse>({ error: '로그인이 필요해요' }, 401)
   }
 
   const { bookmarks, mode } = c.req.valid('json')
@@ -94,7 +106,7 @@ route.post('/', zValidator('json', importSchema), async (c) => {
       }
     })
 
-    return c.json({
+    return c.json<POSTV1BookmarkImportSuccessResponse>({
       success: true,
       imported,
       skipped,
@@ -103,18 +115,27 @@ route.post('/', zValidator('json', importSchema), async (c) => {
     const message = error instanceof Error ? error.message : 'UNKNOWN_ERROR'
 
     if (message === 'IMPORT_LIMIT_REACHED_REPLACE') {
-      return c.json({ error: '북마크 저장 한도에 도달했어요. 리보로 확장할 수 있어요' }, 403)
+      return c.json<POSTV1BookmarkImportErrorResponse>(
+        { error: '북마크 저장 한도에 도달했어요. 리보로 확장할 수 있어요' },
+        403,
+      )
     }
     if (message === 'IMPORT_LIMIT_REACHED_MERGE') {
-      return c.json({ error: '북마크 저장 한도에 도달했어요. 리보로 확장할 수 있어요' }, 403)
+      return c.json<POSTV1BookmarkImportErrorResponse>(
+        { error: '북마크 저장 한도에 도달했어요. 리보로 확장할 수 있어요' },
+        403,
+      )
     }
     if (message.startsWith('IMPORT_NOT_ENOUGH_SLOTS:')) {
       const availableSlots = Number(message.split(':')[1] ?? 0)
-      return c.json({ error: `최대 ${availableSlots.toLocaleString()}개만 추가로 가져올 수 있어요` }, 403)
+      return c.json<POSTV1BookmarkImportErrorResponse>(
+        { error: `최대 ${availableSlots.toLocaleString()}개만 추가로 가져올 수 있어요` },
+        403,
+      )
     }
 
     console.error(error)
-    return c.json({ error: '북마크 가져오기에 실패했어요' }, 500)
+    return c.json<POSTV1BookmarkImportErrorResponse>({ error: '북마크 가져오기에 실패했어요' }, 500)
   }
 })
 
