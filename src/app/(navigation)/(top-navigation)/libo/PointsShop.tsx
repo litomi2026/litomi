@@ -1,7 +1,7 @@
 'use client'
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { BookOpen, FolderPlus } from 'lucide-react'
+import { Bookmark, BookOpen, FolderPlus } from 'lucide-react'
 import { toast } from 'sonner'
 
 import IconSpinner from '@/components/icons/IconSpinner'
@@ -19,7 +19,7 @@ type Props = {
 
 type ShopItem = {
   id: string
-  type: 'badge' | 'history' | 'library' | 'theme'
+  type: 'badge' | 'bookmark' | 'history' | 'library' | 'theme'
   name: string
   description: string
   price: number
@@ -78,6 +78,24 @@ export default function PointsShop({ balance, enabled }: Props) {
 
   const shopItems: ShopItem[] = [
     {
+      id: 'bookmark-expansion-small',
+      type: 'bookmark',
+      itemId: 'small',
+      name: '북마크 확장 (소)',
+      description: `+${POINT_CONSTANTS.BOOKMARK_EXPANSION_SMALL_AMOUNT}개 (현재: ${displayExpansion?.bookmark.current ?? 500}/${displayExpansion?.bookmark.max ?? 5000}개)`,
+      price: POINT_CONSTANTS.BOOKMARK_EXPANSION_SMALL_PRICE,
+      icon: <Bookmark className="size-5" />,
+    },
+    {
+      id: 'bookmark-expansion-large',
+      type: 'bookmark',
+      itemId: 'large',
+      name: '북마크 확장 (대)',
+      description: `+${POINT_CONSTANTS.BOOKMARK_EXPANSION_LARGE_AMOUNT}개 (현재: ${displayExpansion?.bookmark.current ?? 500}/${displayExpansion?.bookmark.max ?? 5000}개)`,
+      price: POINT_CONSTANTS.BOOKMARK_EXPANSION_LARGE_PRICE,
+      icon: <Bookmark className="size-5" />,
+    },
+    {
       id: 'library-expansion',
       type: 'library',
       name: '내 서재 확장',
@@ -102,11 +120,34 @@ export default function PointsShop({ balance, enabled }: Props) {
 
       {shopItems.map((item) => {
         const canAfford = balance >= item.price
-        const isPurchasing = spendPoints.isPending && spendPoints.variables?.type === item.type
-        const isMaxed =
-          enabled &&
-          ((item.type === 'library' && !displayExpansion?.library.canExpand) ||
-            (item.type === 'history' && !displayExpansion?.history.canExpand))
+
+        const isPurchasing =
+          spendPoints.isPending &&
+          spendPoints.variables?.type === item.type &&
+          spendPoints.variables?.itemId === item.itemId
+
+        let unit = 0
+        let expansionInfo
+
+        switch (item.type) {
+          case 'bookmark':
+            unit =
+              item.itemId === 'large'
+                ? POINT_CONSTANTS.BOOKMARK_EXPANSION_LARGE_AMOUNT
+                : POINT_CONSTANTS.BOOKMARK_EXPANSION_SMALL_AMOUNT
+            expansionInfo = displayExpansion?.bookmark
+            break
+          case 'history':
+            unit = POINT_CONSTANTS.HISTORY_EXPANSION_AMOUNT
+            expansionInfo = displayExpansion?.history
+            break
+          case 'library':
+            unit = POINT_CONSTANTS.LIBRARY_EXPANSION_AMOUNT
+            expansionInfo = displayExpansion?.library
+            break
+        }
+
+        const isMaxed = enabled && expansionInfo ? expansionInfo.current + unit > expansionInfo.max : false
         const isDisabled = !enabled || isMaxed || !canAfford || spendPoints.isPending
 
         return (
