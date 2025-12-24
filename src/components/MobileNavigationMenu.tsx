@@ -110,14 +110,14 @@ export default function MobileNavigationMenu({ onClose }: Readonly<Props>) {
             title="태그"
           />
           <MenuLink
-            href="/point"
+            href="/libo"
             icon={
               <PiggyBank
-                aria-current={pathname === '/point' ? 'page' : undefined}
+                aria-current={pathname === '/libo' ? 'page' : undefined}
                 className="size-5 aria-current:fill-foreground"
               />
             }
-            isActive={pathname === '/point'}
+            isActive={pathname === '/libo'}
             title="리보"
           />
           <MenuLink

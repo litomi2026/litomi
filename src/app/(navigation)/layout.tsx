@@ -65,7 +65,7 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           <SelectableLink className="hidden sm:block" href="/tag" Icon={IconTag}>
             태그
           </SelectableLink>
-          <SelectableLink className="hidden sm:block" href="/point" Icon={IconPiggyBank}>
+          <SelectableLink className="hidden sm:block" href="/libo" Icon={IconPiggyBank}>
             리보
           </SelectableLink>
           <ProfileLink className="hidden sm:block" />
