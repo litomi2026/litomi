@@ -306,11 +306,9 @@ export default function LazyAdSlot({
     }
 
     function handleVisibilityChange() {
-      if (document.visibilityState !== 'hidden') {
-        return
+      if (document.visibilityState === 'hidden') {
+        handleConfirmedAdNavigation()
       }
-
-      handleConfirmedAdNavigation()
     }
 
     // NOTE: focus는 버블링되지 않지만 캡처링은 되므로(= true) iframe focus를 더 안정적으로 잡아요.
