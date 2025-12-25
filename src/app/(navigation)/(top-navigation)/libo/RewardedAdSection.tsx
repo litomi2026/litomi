@@ -44,19 +44,6 @@ export default function RewardedAdSection({ rewardEnabled }: Props) {
         </div>
       </div>
 
-      {/* 설명 */}
-      <div className="flex items-start gap-3 p-4 bg-zinc-800/50 rounded-lg">
-        <Gift className="size-5 text-amber-400 shrink-0 mt-0.5" />
-        <div>
-          <h3 className="font-medium text-zinc-200 mb-1">광고를 클릭하고 리보를 받으세요!</h3>
-          <p className="text-sm text-zinc-400">
-            아래 광고를 클릭하면 <span className="text-amber-400 font-semibold">10 리보</span>가 적립돼요. 적립된 리보로
-            내 공간을 확장할 수 있어요.
-          </p>
-          {!rewardEnabled && <p className="mt-1 text-xs text-zinc-500">로그인하면 클릭 시 리보가 적립돼요</p>}
-        </div>
-      </div>
-
       {/* 광고 영역 */}
       <div className="flex flex-wrap justify-center gap-4">
         <LazyAdSlot

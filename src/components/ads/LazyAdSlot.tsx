@@ -134,7 +134,7 @@ export default function LazyAdSlot({
 
     // NOTE: jads.js 는 로드 시점에만 GA(...)를 한 번 돌려요.
     // SPA(탭/페이지 전환)에서 새로 생긴 슬롯(<ins id={zoneId}>)은 자동으로 채워지지 않아서,
-    // 슬롯 마운트 시점에 GA(adsbyjuicy)를 다시 호출해줘야 해요.
+    // 슬롯 마운트 시점에 GA(또는 Fe)를 다시 호출해줘야 해요.
     try {
       if (typeof window.GA === 'function') {
         window.GA(window.adsbyjuicy ?? [])
@@ -236,16 +236,12 @@ export default function LazyAdSlot({
   // NOTE: window blur 이벤트로 iframe 클릭 감지
   useEffect(() => {
     function handleWindowBlur() {
-      if (!isHoveringRef.current || isLoading || isAdBlocked) {
+      if (!isHoveringRef.current || isLoading || isAdBlocked || !token) {
         return
       }
 
       if (!rewardEnabled) {
         onAdClick?.({ success: false, requiresLogin: true })
-        return
-      }
-
-      if (!token) {
         return
       }
 

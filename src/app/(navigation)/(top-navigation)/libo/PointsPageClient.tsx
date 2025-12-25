@@ -48,13 +48,13 @@ export default function PointsPageClient() {
         </div>
         <div className="mt-3 pt-3 border-t border-amber-500/20 flex flex-col gap-1 text-xs text-zinc-400 sm:flex-row sm:gap-4">
           <span>
-            총 적립: {isLoggedIn ? (isLoading ? '...' : (points?.totalEarned.toLocaleString() ?? 0)) : '—'} 리보
+            총 적립: {isLoading ? '...' : isLoggedIn ? (points?.totalEarned.toLocaleString() ?? 0) : '—'} 리보
           </span>
-          <span>
-            총 사용: {isLoggedIn ? (isLoading ? '...' : (points?.totalSpent.toLocaleString() ?? 0)) : '—'} 리보
-          </span>
+          <span>총 사용: {isLoading ? '...' : isLoggedIn ? (points?.totalSpent.toLocaleString() ?? 0) : '—'} 리보</span>
         </div>
-        {!isLoggedIn && <p className="mt-2 text-xs text-zinc-500">로그인하면 리보 잔액과 내역을 확인할 수 있어요</p>}
+        {!isLoggedIn && !isLoading && (
+          <p className="mt-2 text-xs text-zinc-500">로그인하면 리보 잔액과 내역을 확인할 수 있어요</p>
+        )}
       </div>
 
       {/* 탭 네비게이션 */}
