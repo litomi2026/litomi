@@ -71,7 +71,7 @@ export async function getRankingData(metric: MetricParam, period: PeriodParam) {
     case MetricParam.RATING: {
       // 베이지안 평균 (Weighted Rating)
       // WR = (v / (v + m)) * R + (m / (v + m)) * C
-      const m = 1 // 가중치를 위한 최소 투표 수
+      const m = 5 // 가중치를 위한 최소 투표 수
       const C = 3.0 // 전체 평균 평점 (보정값)
       const v = sql<number>`${count(userRatingTable.userId)}::numeric`
       const R = avg(userRatingTable.rating)
