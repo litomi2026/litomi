@@ -6,6 +6,8 @@ import { ArrowDownLeft, ArrowUpRight } from 'lucide-react'
 import IconSpinner from '@/components/icons/IconSpinner'
 import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
+import { formatDistanceToNow, formatLocalDate } from '@/utils/date'
+import { formatNumber } from '@/utils/format'
 
 type Props = {
   enabled: boolean
@@ -70,16 +72,6 @@ export default function TransactionHistory({ enabled }: Props) {
     )
   }
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('ko-KR', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-  }
-
   return (
     <div className="space-y-2">
       {transactions.map((tx) => (
@@ -99,7 +91,9 @@ export default function TransactionHistory({ enabled }: Props) {
             <p className="text-sm text-zinc-300 truncate">
               {tx.description || (tx.type === 'earn' ? '리보 적립' : '리보 사용')}
             </p>
-            <p className="text-xs text-zinc-500">{formatDate(tx.createdAt)}</p>
+            <p className="text-xs text-zinc-500" title={new Date(tx.createdAt).toLocaleString()}>
+              {formatDistanceToNow(new Date(tx.createdAt))}
+            </p>
           </div>
 
           <div className="text-right shrink-0">
@@ -107,7 +101,9 @@ export default function TransactionHistory({ enabled }: Props) {
               {tx.type === 'earn' ? '+' : ''}
               {tx.amount.toLocaleString()} 리보
             </p>
-            <p className="text-xs text-zinc-500">잔액 {tx.balanceAfter.toLocaleString()} 리보</p>
+            <p className="text-xs text-zinc-500" title={tx.balanceAfter.toLocaleString()}>
+              잔액 {formatNumber(tx.balanceAfter)} 리보
+            </p>
           </div>
         </div>
       ))}

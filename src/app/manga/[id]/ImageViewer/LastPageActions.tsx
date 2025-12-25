@@ -36,7 +36,7 @@ export default function LastPageActions({ manga }: Readonly<Props>) {
   }
 
   return (
-    <div className="w-full max-w-sm space-y-2">
+    <div className="w-full max-w-sm space-y-2 text-sm font-medium">
       <button
         className="flex items-center justify-center gap-2 w-full p-4 py-2 rounded-lg bg-foreground text-background hover:bg-foreground/90 active:bg-foreground/80 transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-500"
         onClick={handleOpenLibraryModal}
@@ -45,7 +45,7 @@ export default function LastPageActions({ manga }: Readonly<Props>) {
         <LibraryBig className="size-4" />
         <span>서재에 추가</span>
       </button>
-      <div className="grid grid-cols-2 items-center gap-2 text-sm font-medium text-foreground">
+      <div className="grid grid-cols-2 items-center gap-2 text-foreground">
         <Link
           className="flex justify-center items-center gap-2 p-4 py-2 border border-foreground/20 rounded-lg hover:bg-foreground/10 transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-500"
           href={`/manga/${mangaId}/detail`}

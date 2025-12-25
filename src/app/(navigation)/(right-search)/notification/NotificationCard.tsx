@@ -184,11 +184,7 @@ export default function NotificationCard({
           </h3>
           <div className="flex items-center gap-2 shrink-0">
             {isUnread && <IconDot className="h-2 w-2 text-brand animate-pulse" />}
-            <span className="text-xs text-zinc-500">
-              {formatDistanceToNow(
-                typeof notification.createdAt === 'string' ? new Date(notification.createdAt) : notification.createdAt,
-              )}
-            </span>
+            <span className="text-xs text-zinc-500">{formatDistanceToNow(new Date(notification.createdAt))}</span>
           </div>
         </div>
         <div className="flex justify-between gap-2 mt-1">

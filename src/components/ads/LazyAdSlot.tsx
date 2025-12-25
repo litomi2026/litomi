@@ -247,27 +247,36 @@ export default function LazyAdSlot({
       return
     }
 
-    function handleSlotFocusIn(event: FocusEvent) {
+    function handleSlotFocus(event: FocusEvent) {
       const target = event.target
       if (!(target instanceof HTMLIFrameElement)) {
         return
       }
+
       lastAdIframeFocusAtRef.current = Date.now()
     }
 
     function handleConfirmedAdNavigation() {
+      const now = Date.now()
+      const lastFocusedAt = lastAdIframeFocusAtRef.current
+
       if (isAdBlocked) {
         return
       }
 
-      const lastFocusedAt = lastAdIframeFocusAtRef.current
-      if (lastFocusedAt === null) {
-        return
-      }
+      const safeSlotElement = slotElement!
+      const activeElement = document.activeElement
+      const activeIsIframeInThisSlot =
+        activeElement instanceof HTMLIFrameElement && safeSlotElement.contains(activeElement)
 
-      const now = Date.now()
-      if (now - lastFocusedAt > AD_IFRAME_FOCUS_TO_BLUR_GRACE_MS) {
-        return
+      if (lastFocusedAt === null) {
+        if (!activeIsIframeInThisSlot) {
+          return
+        }
+      } else if (now - lastFocusedAt > AD_IFRAME_FOCUS_TO_BLUR_GRACE_MS) {
+        if (!activeIsIframeInThisSlot) {
+          return
+        }
       }
 
       // blur + hidden 연속 발생 등으로 중복 처리되지 않게 먼저 소진해요.
@@ -308,19 +317,22 @@ export default function LazyAdSlot({
       if (document.visibilityState !== 'hidden') {
         return
       }
+
       handleConfirmedAdNavigation()
     }
 
-    slotElement.addEventListener('focusin', handleSlotFocusIn)
+    // NOTE: focusin은 환경에 따라 iframe에서 안정적으로 올라오지 않는 경우가 있어요.
+    // focus는 버블링되지 않지만 캡처링은 되므로(= true) iframe focus를 더 안정적으로 잡아요.
+    slotElement.addEventListener('focus', handleSlotFocus, true)
     window.addEventListener('blur', handleWindowBlur)
     document.addEventListener('visibilitychange', handleVisibilityChange)
 
     return () => {
-      slotElement.removeEventListener('focusin', handleSlotFocusIn)
+      slotElement.removeEventListener('focus', handleSlotFocus, true)
       window.removeEventListener('blur', handleWindowBlur)
       document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
-  }, [isAdBlocked, rewardEnabled, token, earnPoints, clearCooldown, onAdClick])
+  }, [zoneId, adSlotId, isAdBlocked, rewardEnabled, token, isLoading, earnPoints, clearCooldown, onAdClick])
 
   return (
     <div
