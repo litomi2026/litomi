@@ -6,7 +6,7 @@ import { ArrowDownLeft, ArrowUpRight } from 'lucide-react'
 import IconSpinner from '@/components/icons/IconSpinner'
 import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
-import { formatDistanceToNow, formatLocalDate } from '@/utils/date'
+import { formatDistanceToNow } from '@/utils/date'
 import { formatNumber } from '@/utils/format'
 
 type Props = {

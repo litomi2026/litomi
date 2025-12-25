@@ -4,7 +4,7 @@ import { ShieldOff } from 'lucide-react'
 import ms from 'ms'
 import { useEffect, useRef, useState } from 'react'
 
-import { AD_BLOCK_CHECK_DELAY_MS, JUICY_ADS_EVENT } from './constants'
+import { JUICY_ADS_EVENT } from './constants'
 import { useCooldown } from './useCooldown'
 import { useEarnPoints } from './useEarnPoints'
 import { useRequestToken } from './useRequestToken'
@@ -21,6 +21,13 @@ declare global {
   }
 }
 
+export type AdClickResult = {
+  success: boolean
+  earned?: number
+  error?: string
+  requiresLogin?: boolean
+}
+
 type Props = {
   zoneId: number
   adSlotId: string
@@ -28,7 +35,7 @@ type Props = {
   height: number
   className?: string
   rewardEnabled?: boolean
-  onAdClick?: (result: { success: boolean; earned?: number; error?: string; requiresLogin?: boolean }) => void
+  onAdClick?: (result: AdClickResult) => void
 }
 
 const AD_IFRAME_FOCUS_TO_BLUR_GRACE_MS = ms('400ms')
@@ -89,17 +96,17 @@ export default function LazyAdSlot({
   useEffect(() => {
     window.adsbyjuicy = window.adsbyjuicy || []
     // NOTE: 탭 전환 등으로 슬롯이 재마운트되면, JuicyAds는 "push"를 트리거로 다시 렌더링하는 경우가 있어요.
-    // 중복 방지로 push를 막으면 새로 생긴 <ins id={zoneId}>에 광고가 안 뜨고, 아래의 "차단기 감지" 타임아웃이 오탐을 만들 수 있어요.
+    // push를 막으면 새로 생긴 <ins id={zoneId}>에 광고가 표시되지 않을 수 있어요.
     window.adsbyjuicy.push({ adzone: zoneId })
 
-    // NOTE: 배열 객체는 유지하면서(=push가 스크립트에 의해 패치됐을 수 있음), 길이만 제한해요.
+    // NOTE: 배열 객체는 유지하면서(=push가 스크립트에 의해 패치됐을 수 있음) 길이만 제한해요.
     const MAX_QUEUE_SIZE = 50
     if (window.adsbyjuicy.length > MAX_QUEUE_SIZE) {
       window.adsbyjuicy.splice(0, window.adsbyjuicy.length - MAX_QUEUE_SIZE)
     }
   }, [zoneId])
 
-  // NOTE: JuicyAds 스크립트 로드 상태 구독(상위에서 <Script> 1회 로드)
+  // NOTE: JuicyAds 스크립트 로드 상태 구독
   useEffect(() => {
     if (window.__juicyAdsError) {
       setIsAdBlocked(true)
@@ -154,26 +161,18 @@ export default function LazyAdSlot({
 
   // NOTE: 토큰이 없으면(또는 클릭 후 소진되면) 자동으로 토큰을 다시 준비
   useEffect(() => {
-    if (!rewardEnabled || isAdBlocked || !isScriptLoaded) {
-      return
-    }
+    const isAdReady = rewardEnabled && !isAdBlocked && isScriptLoaded
+    const needsToken = token === null && cooldownUntil === null
+    const isRequesting = requestToken.isPending
 
-    if (token !== null) {
-      return
-    }
-
-    if (cooldownUntil !== null) {
-      return
-    }
-
-    if (requestToken.isPending) {
+    if (!isAdReady || !needsToken || isRequesting) {
       return
     }
 
     requestToken.mutate(undefined, {
-      onSuccess: (data) => {
-        setToken(data.token)
-        setDailyRemaining(data.dailyRemaining)
+      onSuccess: ({ token, dailyRemaining }) => {
+        setToken(token)
+        setDailyRemaining(dailyRemaining)
         clearCooldown()
       },
       onError: (err) => {
@@ -194,7 +193,7 @@ export default function LazyAdSlot({
     startFromRemainingSeconds,
   ])
 
-  // NOTE: 광고 컨텐츠 로드 감지 (MutationObserver)
+  // NOTE: MutationObserver로 광고 컨텐츠 로드 감지
   useEffect(() => {
     const slotElement = slotRef.current
 
@@ -205,7 +204,7 @@ export default function LazyAdSlot({
     let isMounted = true
 
     const observer = new MutationObserver(() => {
-      // jads.js 는 <ins>를 <iframe>로 "교체"해요. (ins 내부가 아니라 slot 컨테이너에 iframe이 생김)
+      // NOTE: JuicyAds 스크립트는 <ins>를 <iframe>로 "교체"해요. (ins 내부가 아니라 slot 컨테이너에 iframe이 생김)
       const hasIframe = Boolean(slotElement.querySelector('iframe'))
       if (hasIframe) {
         observer.disconnect()
@@ -214,7 +213,7 @@ export default function LazyAdSlot({
 
     observer.observe(slotElement, { childList: true, subtree: true })
 
-    // 타임아웃 - 광고가 로드되지 않으면 차단됨
+    // NOTE: 광고가 로드되지 않으면 차단됨
     const timeoutId = setTimeout(() => {
       if (!isMounted) {
         return
@@ -228,7 +227,7 @@ export default function LazyAdSlot({
       }
 
       observer.disconnect()
-    }, AD_BLOCK_CHECK_DELAY_MS)
+    }, ms('10 seconds'))
 
     return () => {
       isMounted = false
@@ -237,8 +236,7 @@ export default function LazyAdSlot({
     }
   }, [isScriptLoaded, isAdBlocked, zoneId])
 
-  // NOTE: 오탐 최소화(=미탐 허용)
-  // - "새 탭/외부 이동"으로 인한 blur/hidden만 클릭으로 인정해요.
+  // NOTE: "새 탭/외부 이동"으로 인한 blur/hidden만 클릭으로 인정해요.
   // - 단, 직전 400ms 내에 이 슬롯의 광고 iframe이 포커스된 경우만 허용해요.
   // - 대신 iOS Safari/Android WebView에서 iframe focus 이벤트가 덜 잡히면 미탐이 늘 수 있어요
   useEffect(() => {
@@ -248,26 +246,20 @@ export default function LazyAdSlot({
     }
 
     function handleSlotFocus(event: FocusEvent) {
-      const target = event.target
-      if (!(target instanceof HTMLIFrameElement)) {
-        return
+      if (event.target instanceof HTMLIFrameElement) {
+        lastAdIframeFocusAtRef.current = Date.now()
       }
-
-      lastAdIframeFocusAtRef.current = Date.now()
     }
 
     function handleConfirmedAdNavigation() {
-      const now = Date.now()
-      const lastFocusedAt = lastAdIframeFocusAtRef.current
-
-      if (isAdBlocked) {
+      if (isAdBlocked || !slotElement) {
         return
       }
 
-      const safeSlotElement = slotElement!
+      const now = Date.now()
+      const lastFocusedAt = lastAdIframeFocusAtRef.current
       const activeElement = document.activeElement
-      const activeIsIframeInThisSlot =
-        activeElement instanceof HTMLIFrameElement && safeSlotElement.contains(activeElement)
+      const activeIsIframeInThisSlot = activeElement instanceof HTMLIFrameElement && slotElement.contains(activeElement)
 
       if (lastFocusedAt === null) {
         if (!activeIsIframeInThisSlot) {
@@ -294,10 +286,10 @@ export default function LazyAdSlot({
       isHandlingAdClickRef.current = true
 
       earnPoints.mutate(token, {
-        onSuccess: (data) => {
-          onAdClick?.({ success: true, earned: data.earned })
+        onSuccess: ({ earned, dailyRemaining }) => {
+          onAdClick?.({ success: true, earned })
           setToken(null)
-          setDailyRemaining(data.dailyRemaining)
+          setDailyRemaining(dailyRemaining)
           clearCooldown()
           isHandlingAdClickRef.current = false
         },
@@ -321,8 +313,7 @@ export default function LazyAdSlot({
       handleConfirmedAdNavigation()
     }
 
-    // NOTE: focusin은 환경에 따라 iframe에서 안정적으로 올라오지 않는 경우가 있어요.
-    // focus는 버블링되지 않지만 캡처링은 되므로(= true) iframe focus를 더 안정적으로 잡아요.
+    // NOTE: focus는 버블링되지 않지만 캡처링은 되므로(= true) iframe focus를 더 안정적으로 잡아요.
     slotElement.addEventListener('focus', handleSlotFocus, true)
     window.addEventListener('blur', handleWindowBlur)
     document.addEventListener('visibilitychange', handleVisibilityChange)
@@ -343,18 +334,14 @@ export default function LazyAdSlot({
       {isAdBlocked ? (
         <AdBlockedMessage height={height} width={width} />
       ) : (
-        <div className="relative w-full flex flex-col items-center gap-2 z-0">
+        <>
           <div
-            className={`relative cursor-pointer transition-opacity ${shouldDimAd ? 'opacity-60' : 'opacity-100'}`}
+            aria-disabled={shouldDimAd}
+            className="relative cursor-pointer z-0 transition aria-disabled:opacity-60 aria-disabled:cursor-not-allowed"
             ref={slotRef}
             style={{ width: `min(${width}px, 100%)`, height }}
           >
-            <ins
-              data-height={height}
-              data-width={width}
-              id={String(zoneId)}
-              style={{ display: 'block', width: '100%', height: '100%' }}
-            />
+            <ins className="block w-full h-full" data-height={height} data-width={width} id={String(zoneId)} />
             {isLoading && (
               <div className="absolute inset-0 bg-zinc-900/50 flex items-center justify-center animate-fade-in">
                 <div className="size-5 border-2 border-zinc-500 border-t-transparent rounded-full animate-spin" />
@@ -383,7 +370,7 @@ export default function LazyAdSlot({
               )
             ) : null}
           </div>
-        </div>
+        </>
       )}
     </div>
   )

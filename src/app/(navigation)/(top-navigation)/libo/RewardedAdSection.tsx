@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 
 import { AD_SLOTS } from '@/components/ads/constants'
-import LazyAdSlot from '@/components/ads/LazyAdSlot'
+import LazyAdSlot, { type AdClickResult } from '@/components/ads/LazyAdSlot'
 
 type Props = {
   rewardEnabled: boolean
@@ -14,20 +14,22 @@ type Props = {
 export default function RewardedAdSection({ rewardEnabled }: Props) {
   const [lastEarned, setLastEarned] = useState<number | null>(null)
 
-  function handleAdClick(result: { success: boolean; earned?: number; error?: string; requiresLogin?: boolean }) {
+  function handleAdClick(result: AdClickResult) {
     if (result.requiresLogin) {
       toast('로그인하면 리보가 적립돼요')
       return
     }
 
-    if (result.success && result.earned) {
-      setLastEarned(result.earned)
+    if (result.error) {
+      toast.error(result.error)
       return
     }
 
-    if (result.error) {
-      toast.error(result.error)
+    if (!result.success || result.earned == null) {
+      return
     }
+
+    setLastEarned(result.earned)
   }
 
   return (
