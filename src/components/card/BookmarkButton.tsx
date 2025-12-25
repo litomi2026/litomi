@@ -2,16 +2,20 @@
 
 import { captureException } from '@sentry/nextjs'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
-import { useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Bookmark } from 'lucide-react'
 import { useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
-import toggleBookmark from '@/app/(navigation)/library/bookmark/action'
-import { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark'
+import type { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark/get'
+import type {
+  POSTV1BookmarkToggleErrorResponse,
+  POSTV1BookmarkToggleSuccessResponse,
+} from '@/backend/api/v1/bookmark/toggle'
+
+import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
-import useServerAction from '@/hook/useServerAction'
 import useBookmarksQuery from '@/query/useBookmarksQuery'
 import useMeQuery from '@/query/useMeQuery'
 
@@ -32,9 +36,29 @@ export default function BookmarkButton({ manga, className }: Props) {
   const queryClient = useQueryClient()
   const { open: openLibraryModal } = useLibraryModal()
 
-  const [_, dispatchAction, isPending] = useServerAction({
-    action: toggleBookmark,
-    onSuccess: ({ mangaId, createdAt }) => {
+  const toggleMutation = useMutation<{ createdAt: string | null }, unknown, number>({
+    mutationFn: async (mangaId) => {
+      const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/bookmark/toggle`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ mangaId }),
+      })
+
+      const data = (await response.json()) as unknown
+
+      if (!response.ok) {
+        const errorData = data as POSTV1BookmarkToggleErrorResponse
+        throw {
+          status: response.status,
+          error: errorData.error || '북마크 처리에 실패했어요',
+        }
+      }
+
+      const successData = data as POSTV1BookmarkToggleSuccessResponse
+      return { createdAt: successData.createdAt }
+    },
+    onSuccess: ({ createdAt }) => {
       const isBookmarked = Boolean(createdAt)
 
       if (isBookmarked) {
@@ -47,6 +71,7 @@ export default function BookmarkButton({ manga, className }: Props) {
                 toast.dismiss()
                 openLibraryModal(mangaId)
               }}
+              type="button"
             >
               [서재에도 추가하기]
             </button>
@@ -58,63 +83,94 @@ export default function BookmarkButton({ manga, className }: Props) {
       }
 
       queryClient.setQueryData<GETV1BookmarkResponse>(QueryKeys.bookmarks, (oldBookmarks) => {
-        const newBookmark = { mangaId, createdAt: createdAt ? new Date(createdAt).getTime() : 0 }
+        if (!createdAt) {
+          if (!oldBookmarks) {
+            return oldBookmarks
+          }
+
+          return {
+            bookmarks: oldBookmarks.bookmarks.filter((bookmark) => bookmark.mangaId !== mangaId),
+            nextCursor: oldBookmarks.nextCursor,
+          }
+        }
+
+        const newBookmark = { mangaId, createdAt: new Date(createdAt).getTime() }
 
         if (!oldBookmarks) {
           return {
             bookmarks: [newBookmark],
             nextCursor: null,
           }
-        } else if (isBookmarked) {
-          return {
-            bookmarks: [newBookmark, ...oldBookmarks.bookmarks],
-            nextCursor: null,
-          }
-        } else {
-          return {
-            bookmarks: oldBookmarks.bookmarks.filter((bookmark) => bookmark.mangaId !== mangaId),
-            nextCursor: null,
-          }
+        }
+
+        return {
+          bookmarks: [newBookmark, ...oldBookmarks.bookmarks.filter((bookmark) => bookmark.mangaId !== mangaId)],
+          nextCursor: oldBookmarks.nextCursor,
         }
       })
 
-      if (isBookmarked) {
-        queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteBookmarks })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteBookmarks })
+    },
+    onError: (error) => {
+      const apiError = error as { status?: number; error?: string }
+
+      if (typeof apiError.status === 'number' && typeof apiError.error === 'string') {
+        if (apiError.status >= 400 && apiError.status < 500) {
+          toast.warning(apiError.error)
+        } else {
+          toast.error(apiError.error)
+        }
+
+        if (apiError.status === 401) {
+          queryClient.setQueriesData({ queryKey: QueryKeys.me }, () => null)
+        }
+        return
+      }
+
+      if (error instanceof Error) {
+        if (!navigator.onLine) {
+          toast.error('네트워크 연결을 확인해 주세요')
+        } else {
+          toast.error('요청 처리 중 오류가 발생했어요')
+        }
       }
     },
-    shouldSetResponse: false,
   })
 
-  function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
+  function handleToggleClick(e: React.MouseEvent<HTMLButtonElement>) {
     e.stopPropagation()
 
     if (!me) {
-      e.preventDefault()
       const toastId = toast.warning(
         <div className="flex gap-2 items-center">
           <div>로그인이 필요해요</div>
           <LoginPageLink onClick={() => toast.dismiss(toastId)}>로그인하기</LoginPageLink>
         </div>,
       )
+      return
     }
+    if (toggleMutation.isPending) {
+      return
+    }
+
+    toggleMutation.mutate(mangaId)
   }
 
   return (
-    <form action={dispatchAction} className="flex-1">
-      <input name="mangaId" type="hidden" value={mangaId} />
+    <div className="flex-1">
       <button
         className={twMerge(
           'flex justify-center items-center gap-1 transition disabled:bg-zinc-800 disabled:text-zinc-500 disabled:cursor-not-allowed hover:bg-zinc-800 active:bg-zinc-900 active:border-zinc-700',
           className,
         )}
-        disabled={isPending}
-        onClick={handleClick}
-        type="submit"
+        disabled={toggleMutation.isPending}
+        onClick={handleToggleClick}
+        type="button"
       >
         <Bookmark className="size-4" fill={isIconSelected ? 'currentColor' : 'none'} />
         <span>북마크</span>
       </button>
-    </form>
+    </div>
   )
 }
 

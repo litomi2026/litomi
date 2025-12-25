@@ -1,8 +1,7 @@
 import IconBookmark from '@/components/icons/IconBookmark'
 
-import { ImportMode } from './action'
 import { ImportModeOption } from './ImportModeOption'
-import { BookmarkExportData } from './types'
+import { BookmarkExportData, ImportMode } from './types'
 
 type Props = {
   importMode: ImportMode

@@ -4,9 +4,9 @@ import { type InfiniteData, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
+import type { GETLibraryResponse } from '@/backend/api/v1/library/get'
 import type { GETV1LibraryListResponse } from '@/backend/api/v1/library/list'
 
-import { GETLibraryResponse } from '@/backend/api/v1/library'
 import IconPlus from '@/components/icons/IconPlus'
 import IconSpinner from '@/components/icons/IconSpinner'
 import IconX from '@/components/icons/IconX'

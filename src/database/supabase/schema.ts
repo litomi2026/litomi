@@ -26,7 +26,7 @@ export const userTable = pgTable('user', {
   passwordHash: text('password_hash').notNull(),
   nickname: varchar({ length: 32 }).notNull(),
   imageURL: varchar('image_url', { length: 256 }),
-  autoDeletionDays: smallint('auto_deletion_days').notNull().default(365), // 0 = disabled
+  autoDeletionDays: smallint('auto_deletion_days').notNull().default(180), // 0 = disabled
 }).enableRLS()
 
 export const bookmarkTable = pgTable(

@@ -5,6 +5,7 @@ import { z } from 'zod'
 
 import { Env } from '@/backend'
 import { TRANSACTION_TYPE } from '@/constants/points'
+import { createCacheControl } from '@/crawler/proxy-utils'
 import { db } from '@/database/supabase/drizzle'
 import { pointTransactionTable } from '@/database/supabase/points-schema'
 
@@ -58,10 +59,17 @@ route.get('/', zValidator('query', querySchema), async (c) => {
     createdAt: t.createdAt.toISOString(),
   }))
 
-  return c.json({
+  const response = {
     items,
     nextCursor: hasMore ? transactions[transactions.length - 1].id : null,
+  }
+
+  const cacheControl = createCacheControl({
+    private: true,
+    maxAge: 3,
   })
+
+  return c.json(response, { headers: { 'Cache-Control': cacheControl } })
 })
 
 export default route

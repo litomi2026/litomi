@@ -10,8 +10,6 @@
 - TanStack Query
 - Radix UI
 
----
-
 ## Design Principles
 
 Design with the principles of minimalist aesthetic, intuitive interfaces, and functional beauty as a senior designer's perspective. Follow Apple's design philosophy:
@@ -38,8 +36,6 @@ Design with the principles of minimalist aesthetic, intuitive interfaces, and fu
 - Use consistent spacing (Tailwind's spacing scale)
 - Ensure sufficient contrast for accessibility
 - Design mobile-first, then enhance for larger screens
-
----
 
 ## Korean UX Writing
 
@@ -86,8 +82,6 @@ toast.error('삭제에 실패했어요')
 <h2>로그인이 필요해요</h2>
 <p>로그인해서 확인해 보세요!</p>
 ```
-
----
 
 ## Code Style
 
@@ -273,57 +267,11 @@ export async function validateTOTP() {
 - Keep the split files in the same directory to maintain proximity to the feature area.
 - Name files descriptively by their feature domain.
 
----
-
 ## HTML/CSS Patterns
 
 ### Prefer HTML over JavaScript
 
 Use native HTML features instead of JavaScript where possible. HTML handles validation, form submission, and accessibility better than custom JS implementations.
-
-### Form Submission
-
-- **Use `<form>` with `onSubmit`** instead of button `onClick` for form handling.
-- **Use `FormData`** to get form values instead of controlled state where possible.
-- **Use `form` attribute** to associate inputs with forms (for nested form patterns).
-
-```tsx
-// ❌ Bad - Button onClick with controlled state
-function AddItemForm() {
-  const [value, setValue] = useState('')
-
-  function handleAdd() {
-    if (!value.trim()) return
-    onAdd(value.trim())
-    setValue('')
-  }
-
-  return (
-    <div>
-      <Input value={value} onChange={(e) => setValue(e.target.value)} />
-      <Button onClick={handleAdd}>추가</Button>
-    </div>
-  )
-}
-
-// ✅ Good - Native form with FormData
-function AddItemForm() {
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    const data = new FormData(e.currentTarget)
-    const value = String(data.get('item')).trim()
-    onAdd(value)
-    e.currentTarget.reset()
-  }
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <Input name="item" required />
-      <Button type="submit">추가</Button>
-    </form>
-  )
-}
-```
 
 ### HTML Validation
 
@@ -424,159 +372,6 @@ const [isOpen, setIsOpen] = useState(false)
   <div>Content</div>
 </details>
 ```
-
----
-
-## API Patterns
-
-### Server Actions vs API Routes
-
-- **Use Server Actions (`"use server"`) for mutations** - creating, updating, or deleting data.
-- **Use GET API Routes for data fetching** that requires user interaction or real-time data.
-
-```typescript
-// ✅ Good - Server Action for mutations
-// src/actions/orders.ts
-'use server'
-
-export async function createOrder(data: CreateOrderInput) {
-  // Create order in database
-  return { success: true, orderId: '...' }
-}
-
-export async function updateOrderStatus(orderId: string, status: string) {
-  // Update order status
-  return { success: true }
-}
-
-export async function deleteOrder(orderId: string) {
-  // Delete order
-  return { success: true }
-}
-```
-
-```typescript
-// ✅ Good - GET Route for data fetching with query params
-// src/app/api/orders/route.ts
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url)
-  const status = searchParams.get('status')
-  const page = searchParams.get('page')
-
-  // Fetch and return orders
-  return Response.json({ orders, total })
-}
-```
-
-```typescript
-// ❌ Bad - Using POST API Route for mutations
-// src/app/api/orders/create/route.ts
-export async function POST(request: Request) {
-  const data = await request.json()
-  // This should be a Server Action instead
-}
-
-// ❌ Bad - Using Server Action for complex data fetching with caching needs
-// This is better suited for a GET route with proper caching headers
-```
-
-### When to Use Which
-
-| Use Case                          | Pattern       |
-| --------------------------------- | ------------- |
-| Create/Update/Delete data         | Server Action |
-| Form submissions                  | Server Action |
-| User authentication actions       | Server Action |
-| List data with filters/pagination | GET API Route |
-| Search with query parameters      | GET API Route |
-| Data that needs HTTP caching      | GET API Route |
-| Real-time data fetching           | GET API Route |
-
-### Calling Server Actions from Client
-
-- **Do NOT use React Query's `useMutation`** for mutations. Use Server Actions with React hooks instead.
-- **For form submissions**: Use `useActionState` hook.
-- **For button clicks (non-form mutations)**: Use `useTransition` hook.
-
-```tsx
-// ❌ Bad - Using useMutation for mutations
-import { useMutation } from '@tanstack/react-query'
-import { createOrder } from '@/actions/orders'
-
-function OrderForm() {
-  const mutation = useMutation({
-    mutationFn: createOrder,
-    onSuccess: () => {
-      // ...
-    },
-  })
-
-  return <form onSubmit={() => mutation.mutate(data)}>...</form>
-}
-```
-
-```tsx
-// ✅ Good - Using useActionState for form submissions
-'use client'
-
-import { useActionState } from 'react'
-import { createOrder } from '@/actions/orders'
-
-function OrderForm() {
-  const [state, formAction, isPending] = useActionState(createOrder, null)
-
-  return (
-    <form action={formAction}>
-      <input name="productId" />
-      <input name="quantity" type="number" />
-      <button type="submit" disabled={isPending}>
-        {isPending ? '처리 중...' : '주문하기'}
-      </button>
-      {state?.error && <p className="text-red-500">{state.error}</p>}
-    </form>
-  )
-}
-```
-
-```tsx
-// ✅ Good - Using useTransition for button clicks (non-form mutations)
-'use client'
-
-import { useTransition } from 'react'
-import { deleteOrder } from '@/actions/orders'
-
-function DeleteOrderButton({ orderId }: { orderId: string }) {
-  const [isPending, startTransition] = useTransition()
-
-  const handleDelete = () => {
-    startTransition(async () => {
-      const result = await deleteOrder(orderId)
-      if (result.success) {
-        // Handle success (e.g., show toast, refresh data)
-      }
-    })
-  }
-
-  return (
-    <button onClick={handleDelete} disabled={isPending}>
-      {isPending ? '삭제 중...' : '삭제'}
-    </button>
-  )
-}
-```
-
-### When to Use Which Hook
-
-| Use Case                    | Hook             |
-| --------------------------- | ---------------- |
-| Form with multiple inputs   | `useActionState` |
-| Login/Register forms        | `useActionState` |
-| Search forms                | `useActionState` |
-| Single button action        | `useTransition`  |
-| Delete/Toggle actions       | `useTransition`  |
-| Actions triggered by events | `useTransition`  |
-
----
 
 ## Security
 

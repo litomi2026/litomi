@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { GETLibraryResponse } from '@/backend/api/v1/library'
+import type { GETLibraryResponse } from '@/backend/api/v1/library/get'
+
 import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
 import useMeQuery from '@/query/useMeQuery'

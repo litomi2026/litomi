@@ -1,5 +1,5 @@
-import { ImportResult } from './action'
 import { ResultCard } from './ResultCard'
+import { ImportResult } from './types'
 
 type Props = {
   importResult: ImportResult

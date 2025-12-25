@@ -1,4 +1,4 @@
-import { ImportMode } from './action'
+import { ImportMode } from './types'
 
 const colors = {
   blue: {
@@ -73,7 +73,7 @@ export function ImportModeOption({
           {isSelected && showBadge && colorScheme === 'blue' && (
             <span
               aria-hidden
-              className={`text-xs bg-gradient-to-r ${colorClasses.badge} whitespace-nowrap text-foreground px-3 py-1.5 rounded-full font-medium shadow-md ${colorClasses.badgeShadow}`}
+              className={`text-xs bg-linear-to-r ${colorClasses.badge} whitespace-nowrap text-foreground px-3 py-1.5 rounded-full font-medium shadow-md ${colorClasses.badgeShadow}`}
             >
               권장
             </span>

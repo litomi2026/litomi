@@ -1,6 +1,7 @@
 'use client'
 
-import { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark'
+import type { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark/get'
+
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'

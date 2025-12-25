@@ -26,9 +26,9 @@ export type GETV1BookmarkResponse = {
   nextCursor: string | null
 }
 
-const bookmarkRoutes = new Hono<Env>()
+const route = new Hono<Env>()
 
-bookmarkRoutes.get('/', zValidator('query', querySchema), async (c) => {
+route.get('/', zValidator('query', querySchema), async (c) => {
   const userId = getUserId()
 
   if (!userId) {
@@ -58,17 +58,12 @@ bookmarkRoutes.get('/', zValidator('query', querySchema), async (c) => {
     cursorTime,
   })
 
-  const cacheControl = createCacheControl({
-    private: true,
-    maxAge: 3,
-  })
-
   const hasNextPage = limit ? bookmarkRows.length > limit : false
   const bookmarks = hasNextPage ? bookmarkRows.slice(0, limit) : bookmarkRows
   const lastBookmark = bookmarks[bookmarks.length - 1]
   const nextCursor = hasNextPage ? encodeBookmarkCursor(lastBookmark.createdAt.getTime(), lastBookmark.mangaId) : null
 
-  const result = {
+  const response = {
     bookmarks: bookmarks.map(({ mangaId, createdAt }) => ({
       mangaId,
       createdAt: createdAt.getTime(),
@@ -76,7 +71,12 @@ bookmarkRoutes.get('/', zValidator('query', querySchema), async (c) => {
     nextCursor,
   }
 
-  return c.json<GETV1BookmarkResponse>(result, { headers: { 'Cache-Control': cacheControl } })
+  const cacheControl = createCacheControl({
+    private: true,
+    maxAge: 3,
+  })
+
+  return c.json<GETV1BookmarkResponse>(response, { headers: { 'Cache-Control': cacheControl } })
 })
 
-export default bookmarkRoutes
+export default route

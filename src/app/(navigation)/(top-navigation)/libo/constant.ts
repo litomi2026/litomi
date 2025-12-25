@@ -4,5 +4,3 @@ export const LIBO_PAGE_LAYOUT = {
   tabsReserved: 'h-11',
   panelReserved: 'min-h-[200px]',
 } as const
-
-
