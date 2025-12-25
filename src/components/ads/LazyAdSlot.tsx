@@ -1,6 +1,7 @@
 'use client'
 
 import { ShieldOff } from 'lucide-react'
+import ms from 'ms'
 import { useEffect, useRef, useState } from 'react'
 
 import { AD_BLOCK_CHECK_DELAY_MS, JUICY_ADS_EVENT } from './constants'
@@ -30,6 +31,8 @@ type Props = {
   onAdClick?: (result: { success: boolean; earned?: number; error?: string; requiresLogin?: boolean }) => void
 }
 
+const AD_IFRAME_FOCUS_TO_BLUR_GRACE_MS = ms('400ms')
+
 export default function LazyAdSlot({
   zoneId,
   adSlotId,
@@ -39,8 +42,9 @@ export default function LazyAdSlot({
   rewardEnabled = true,
   onAdClick,
 }: Props) {
-  const isHoveringRef = useRef(false)
   const slotRef = useRef<HTMLDivElement>(null)
+  const lastAdIframeFocusAtRef = useRef<number | null>(null)
+  const isHandlingAdClickRef = useRef(false)
   const [isScriptLoaded, setIsScriptLoaded] = useState(false)
   const [isAdBlocked, setIsAdBlocked] = useState(false)
   const [token, setToken] = useState<string | null>(null)
@@ -233,17 +237,52 @@ export default function LazyAdSlot({
     }
   }, [isScriptLoaded, isAdBlocked, zoneId])
 
-  // NOTE: window blur 이벤트로 iframe 클릭 감지
+  // NOTE: 오탐 최소화(=미탐 허용)
+  // - "새 탭/외부 이동"으로 인한 blur/hidden만 클릭으로 인정해요.
+  // - 단, 직전 400ms 내에 이 슬롯의 광고 iframe이 포커스된 경우만 허용해요.
+  // - 대신 iOS Safari/Android WebView에서 iframe focus 이벤트가 덜 잡히면 미탐이 늘 수 있어요
   useEffect(() => {
-    function handleWindowBlur() {
-      if (!isHoveringRef.current || isLoading || isAdBlocked || !token) {
+    const slotElement = slotRef.current
+    if (!slotElement) {
+      return
+    }
+
+    function handleSlotFocusIn(event: FocusEvent) {
+      const target = event.target
+      if (!(target instanceof HTMLIFrameElement)) {
         return
       }
+      lastAdIframeFocusAtRef.current = Date.now()
+    }
+
+    function handleConfirmedAdNavigation() {
+      if (isAdBlocked) {
+        return
+      }
+
+      const lastFocusedAt = lastAdIframeFocusAtRef.current
+      if (lastFocusedAt === null) {
+        return
+      }
+
+      const now = Date.now()
+      if (now - lastFocusedAt > AD_IFRAME_FOCUS_TO_BLUR_GRACE_MS) {
+        return
+      }
+
+      // blur + hidden 연속 발생 등으로 중복 처리되지 않게 먼저 소진해요.
+      lastAdIframeFocusAtRef.current = null
 
       if (!rewardEnabled) {
         onAdClick?.({ success: false, requiresLogin: true })
         return
       }
+
+      if (isHandlingAdClickRef.current || token === null) {
+        return
+      }
+
+      isHandlingAdClickRef.current = true
 
       earnPoints.mutate(token, {
         onSuccess: (data) => {
@@ -251,25 +290,43 @@ export default function LazyAdSlot({
           setToken(null)
           setDailyRemaining(data.dailyRemaining)
           clearCooldown()
+          isHandlingAdClickRef.current = false
         },
         onError: (err) => {
           onAdClick?.({ success: false, error: err.error })
           setToken(null)
+          isHandlingAdClickRef.current = false
         },
       })
     }
 
+    function handleWindowBlur() {
+      handleConfirmedAdNavigation()
+    }
+
+    function handleVisibilityChange() {
+      if (document.visibilityState !== 'hidden') {
+        return
+      }
+      handleConfirmedAdNavigation()
+    }
+
+    slotElement.addEventListener('focusin', handleSlotFocusIn)
     window.addEventListener('blur', handleWindowBlur)
+    document.addEventListener('visibilitychange', handleVisibilityChange)
 
     return () => {
+      slotElement.removeEventListener('focusin', handleSlotFocusIn)
       window.removeEventListener('blur', handleWindowBlur)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
-  }, [rewardEnabled, token, isLoading, isAdBlocked, earnPoints, onAdClick, clearCooldown])
+  }, [isAdBlocked, rewardEnabled, token, earnPoints, clearCooldown, onAdClick])
 
   return (
     <div
       className={`flex flex-col items-center justify-center ${className}`}
       style={{ width: `min(${width}px, 100%)`, minHeight: height }}
+      title={`zoneId: ${zoneId}, adSlotId: ${adSlotId}`}
     >
       {isAdBlocked ? (
         <AdBlockedMessage height={height} width={width} />
@@ -277,9 +334,6 @@ export default function LazyAdSlot({
         <div className="relative w-full flex flex-col items-center gap-2 z-0">
           <div
             className={`relative cursor-pointer transition-opacity ${shouldDimAd ? 'opacity-60' : 'opacity-100'}`}
-            onPointerDown={() => (isHoveringRef.current = true)}
-            onPointerEnter={() => (isHoveringRef.current = true)}
-            onPointerLeave={() => (isHoveringRef.current = false)}
             ref={slotRef}
             style={{ width: `min(${width}px, 100%)`, height }}
           >
@@ -301,7 +355,7 @@ export default function LazyAdSlot({
               <div className="text-center">
                 <span className="text-amber-500">
                   {apiError.error}
-                  {cooldownRemainingSeconds != null && ` (${cooldownRemainingSeconds}초)`}
+                  {cooldownRemainingSeconds && ` (${cooldownRemainingSeconds}초)`}
                 </span>
                 {!apiError.error.includes('한도') && !apiError.error.includes('잠시 후') && (
                   <button className="ml-2 text-blue-400 hover:underline" disabled={isLoading} onClick={handleRefresh}>
