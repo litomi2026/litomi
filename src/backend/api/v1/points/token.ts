@@ -29,7 +29,7 @@ route.post('/', zValidator('json', requestSchema), async (c) => {
   todayStart.setHours(0, 0, 0, 0)
 
   const todayTransactions = await db
-    .select({ amount: pointTransactionTable.amount })
+    .select({ id: pointTransactionTable.id })
     .from(pointTransactionTable)
     .where(
       and(
@@ -38,63 +38,36 @@ route.post('/', zValidator('json', requestSchema), async (c) => {
         gt(pointTransactionTable.createdAt, todayStart),
       ),
     )
+    .limit(POINT_CONSTANTS.DAILY_EARN_LIMIT_COUNT)
 
-  const todayEarned = todayTransactions.reduce((sum, t) => sum + t.amount, 0)
+  const todayEarnCount = todayTransactions.length
 
-  if (todayEarned >= POINT_CONSTANTS.DAILY_EARN_LIMIT) {
+  if (todayEarnCount >= POINT_CONSTANTS.DAILY_EARN_LIMIT_COUNT) {
     return c.json({ error: '오늘의 적립 한도에 도달했어요', code: 'DAILY_LIMIT_REACHED' }, 429)
   }
 
-  // 2. 유저 쿨다운 체크 (마지막 적립으로부터 1분)
-  const userCooldownTime = new Date(now.getTime() - POINT_CONSTANTS.USER_COOLDOWN_MS)
-
-  const [lastUserEarn] = await db
-    .select({ createdAt: pointTransactionTable.createdAt })
-    .from(pointTransactionTable)
-    .where(
-      and(
-        eq(pointTransactionTable.userId, userId),
-        eq(pointTransactionTable.type, TRANSACTION_TYPE.AD_CLICK),
-        gt(pointTransactionTable.createdAt, userCooldownTime),
-      ),
-    )
-    .orderBy(desc(pointTransactionTable.createdAt))
-    .limit(1)
-
-  if (lastUserEarn) {
-    const remainingMs = POINT_CONSTANTS.USER_COOLDOWN_MS - (now.getTime() - lastUserEarn.createdAt.getTime())
-    return c.json(
-      {
-        error: '잠시 후 다시 시도해 주세요',
-        code: 'USER_COOLDOWN',
-        remainingSeconds: Math.ceil(remainingMs / 1000),
-      },
-      429,
-    )
-  }
-
-  // 3. 광고 슬롯 쿨다운 체크 (같은 광고 5분)
+  // 2. 광고 슬롯 쿨다운 체크 (같은 광고 1분)
   const adSlotCooldownTime = new Date(now.getTime() - POINT_CONSTANTS.AD_SLOT_COOLDOWN_MS)
 
   const [lastAdSlotToken] = await db
-    .select({ createdAt: adImpressionTokenTable.createdAt })
+    .select({ usedAt: adImpressionTokenTable.usedAt })
     .from(adImpressionTokenTable)
     .where(
       and(
         eq(adImpressionTokenTable.userId, userId),
         eq(adImpressionTokenTable.adSlotId, adSlotId),
         eq(adImpressionTokenTable.isUsed, true),
-        gt(adImpressionTokenTable.createdAt, adSlotCooldownTime),
+        gt(adImpressionTokenTable.usedAt, adSlotCooldownTime),
       ),
     )
-    .orderBy(desc(adImpressionTokenTable.createdAt))
+    .orderBy(desc(adImpressionTokenTable.usedAt))
     .limit(1)
 
-  if (lastAdSlotToken) {
-    const remainingMs = POINT_CONSTANTS.AD_SLOT_COOLDOWN_MS - (now.getTime() - lastAdSlotToken.createdAt.getTime())
+  if (lastAdSlotToken?.usedAt) {
+    const remainingMs = POINT_CONSTANTS.AD_SLOT_COOLDOWN_MS - (now.getTime() - lastAdSlotToken.usedAt.getTime())
     return c.json(
       {
-        error: '같은 광고는 잠시 후 다시 클릭할 수 있어요',
+        error: '같은 광고는 잠시 후 다시 적립할 수 있어요',
         code: 'AD_SLOT_COOLDOWN',
         remainingSeconds: Math.ceil(remainingMs / 1000),
       },
@@ -102,7 +75,7 @@ route.post('/', zValidator('json', requestSchema), async (c) => {
     )
   }
 
-  // 4. 토큰 생성 또는 기존 토큰 반환 (INSERT ... ON CONFLICT DO UPDATE RETURNING)
+  // 3. 토큰 생성 또는 기존 토큰 반환 (INSERT ... ON CONFLICT DO UPDATE RETURNING)
   const newToken = generateToken()
   const expiresAt = new Date(now.getTime() + POINT_CONSTANTS.TOKEN_EXPIRY_MS)
 
@@ -131,7 +104,7 @@ route.post('/', zValidator('json', requestSchema), async (c) => {
   return c.json({
     token: result.token,
     expiresAt: result.expiresAt.toISOString(),
-    dailyRemaining: POINT_CONSTANTS.DAILY_EARN_LIMIT - todayEarned,
+    dailyRemaining: (POINT_CONSTANTS.DAILY_EARN_LIMIT_COUNT - todayEarnCount) * POINT_CONSTANTS.AD_CLICK_REWARD,
   })
 })
 

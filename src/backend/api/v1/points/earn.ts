@@ -1,5 +1,5 @@
 import { zValidator } from '@hono/zod-validator'
-import { and, eq, gt, sql } from 'drizzle-orm'
+import { and, desc, eq, gt, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { z } from 'zod'
 
@@ -20,6 +20,7 @@ const errorResponses: Record<string, { error: string; status: number }> = {
   TOKEN_ALREADY_USED: { error: '이미 사용된 토큰이에요', status: 400 },
   TOKEN_EXPIRED: { error: '토큰이 만료됐어요', status: 400 },
   DAILY_LIMIT_REACHED: { error: '오늘의 적립 한도에 도달했어요', status: 429 },
+  AD_SLOT_COOLDOWN: { error: '같은 광고는 잠시 후 다시 적립할 수 있어요', status: 429 },
 }
 
 route.post('/', zValidator('json', requestSchema), async (c) => {
@@ -60,12 +61,25 @@ route.post('/', zValidator('json', requestSchema), async (c) => {
         throw new Error('TOKEN_EXPIRED')
       }
 
-      // 5. 일일 한도 재검증
+      // 5. 유저 포인트 레코드 락(없으면 생성)
+      await tx.insert(userPointsTable).values({ userId }).onConflictDoNothing()
+
+      const [points] = await tx
+        .select({ balance: userPointsTable.balance })
+        .from(userPointsTable)
+        .where(eq(userPointsTable.userId, userId))
+        .for('update')
+
+      if (!points) {
+        throw new Error('POINTS_NOT_FOUND')
+      }
+
+      // 6. 일일 한도 재검증 (하루 최대 10번)
       const todayStart = new Date()
       todayStart.setHours(0, 0, 0, 0)
 
       const todayTransactions = await tx
-        .select({ amount: pointTransactionTable.amount })
+        .select({ id: pointTransactionTable.id })
         .from(pointTransactionTable)
         .where(
           and(
@@ -74,14 +88,39 @@ route.post('/', zValidator('json', requestSchema), async (c) => {
             gt(pointTransactionTable.createdAt, todayStart),
           ),
         )
+        .limit(POINT_CONSTANTS.DAILY_EARN_LIMIT_COUNT)
 
-      const todayEarned = todayTransactions.reduce((sum, t) => sum + t.amount, 0)
+      const todayEarnCount = todayTransactions.length
 
-      if (todayEarned >= POINT_CONSTANTS.DAILY_EARN_LIMIT) {
+      if (todayEarnCount >= POINT_CONSTANTS.DAILY_EARN_LIMIT_COUNT) {
         throw new Error('DAILY_LIMIT_REACHED')
       }
 
-      // 6. 토큰을 사용됨으로 표시
+      // 7. 같은 광고 쿨다운 체크 (1분)
+      const adSlotCooldownTime = new Date(now.getTime() - POINT_CONSTANTS.AD_SLOT_COOLDOWN_MS)
+      const [lastAdSlotEarn] = await tx
+        .select({ usedAt: adImpressionTokenTable.usedAt })
+        .from(adImpressionTokenTable)
+        .where(
+          and(
+            eq(adImpressionTokenTable.userId, userId),
+            eq(adImpressionTokenTable.adSlotId, tokenRecord.adSlotId),
+            eq(adImpressionTokenTable.isUsed, true),
+            gt(adImpressionTokenTable.usedAt, adSlotCooldownTime),
+          ),
+        )
+        .orderBy(desc(adImpressionTokenTable.usedAt))
+        .limit(1)
+
+      if (lastAdSlotEarn?.usedAt) {
+        const remainingMs = POINT_CONSTANTS.AD_SLOT_COOLDOWN_MS - (now.getTime() - lastAdSlotEarn.usedAt.getTime())
+        const error = Object.assign(new Error('AD_SLOT_COOLDOWN'), {
+          remainingSeconds: Math.ceil(remainingMs / 1000),
+        })
+        throw error
+      }
+
+      // 8. 토큰을 사용됨으로 표시
       await tx
         .update(adImpressionTokenTable)
         .set({
@@ -90,38 +129,19 @@ route.post('/', zValidator('json', requestSchema), async (c) => {
         })
         .where(eq(adImpressionTokenTable.id, tokenRecord.id))
 
-      // 7. 포인트 적립
+      // 9. 포인트 적립
       const amount = POINT_CONSTANTS.AD_CLICK_REWARD
-
-      const [existingPoints] = await tx
-        .select()
-        .from(userPointsTable)
-        .where(eq(userPointsTable.userId, userId))
-        .for('update')
-
-      let newBalance: number
-
-      if (existingPoints) {
-        newBalance = existingPoints.balance + amount
-        await tx
-          .update(userPointsTable)
-          .set({
-            balance: newBalance,
-            totalEarned: sql`${userPointsTable.totalEarned} + ${amount}`,
-            updatedAt: now,
-          })
-          .where(eq(userPointsTable.userId, userId))
-      } else {
-        newBalance = amount
-        await tx.insert(userPointsTable).values({
-          userId,
+      const newBalance = points.balance + amount
+      await tx
+        .update(userPointsTable)
+        .set({
           balance: newBalance,
-          totalEarned: amount,
-          totalSpent: 0,
+          totalEarned: sql`${userPointsTable.totalEarned} + ${amount}`,
+          updatedAt: now,
         })
-      }
+        .where(eq(userPointsTable.userId, userId))
 
-      // 8. 거래 내역 기록
+      // 10. 거래 내역 기록
       await tx.insert(pointTransactionTable).values({
         userId,
         type: TRANSACTION_TYPE.AD_CLICK,
@@ -133,7 +153,7 @@ route.post('/', zValidator('json', requestSchema), async (c) => {
       return {
         balance: newBalance,
         earned: amount,
-        dailyRemaining: POINT_CONSTANTS.DAILY_EARN_LIMIT - todayEarned - amount,
+        dailyRemaining: (POINT_CONSTANTS.DAILY_EARN_LIMIT_COUNT - todayEarnCount - 1) * POINT_CONSTANTS.AD_CLICK_REWARD,
       }
     })
 
@@ -148,7 +168,18 @@ route.post('/', zValidator('json', requestSchema), async (c) => {
     const response = errorResponses[message]
 
     if (response) {
-      return c.json({ error: response.error, code: message }, response.status as 400 | 403 | 429)
+      const remainingSeconds =
+        typeof error === 'object' &&
+        error !== null &&
+        'remainingSeconds' in error &&
+        typeof (error as { remainingSeconds: unknown }).remainingSeconds === 'number'
+          ? (error as { remainingSeconds: number }).remainingSeconds
+          : undefined
+
+      return c.json(
+        { error: response.error, code: message, ...(remainingSeconds != null ? { remainingSeconds } : {}) },
+        response.status as 400 | 403 | 429,
+      )
     }
 
     return c.json({ error: '포인트 적립에 실패했어요' }, 500)

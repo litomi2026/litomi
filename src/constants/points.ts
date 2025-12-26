@@ -15,9 +15,8 @@ export const POINT_CONSTANTS = {
   BOOKMARK_MAX_EXPANSION: 5000,
   BADGE_PRICE: 500,
   THEME_PRICE: 300,
-  USER_COOLDOWN_MS: ms('1 minute'),
-  AD_SLOT_COOLDOWN_MS: ms('5 minutes'),
-  DAILY_EARN_LIMIT: 100,
+  AD_SLOT_COOLDOWN_MS: ms('1 minute'),
+  DAILY_EARN_LIMIT_COUNT: 10,
   TOKEN_EXPIRY_MS: ms('10 minutes'),
 } as const
 
