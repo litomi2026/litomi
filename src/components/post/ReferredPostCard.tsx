@@ -2,13 +2,15 @@ import dayjs from 'dayjs'
 import { MoreHorizontal } from 'lucide-react'
 import Link from 'next/link'
 
+import { formatDistanceToNow } from '@/utils/date'
+
 import Squircle from '../ui/Squircle'
 import PostImages from './PostImages'
 
 export type ReferredPost = {
   id: number
-  createdAt: Date
-  updatedAt?: Date
+  createdAt: string
+  updatedAt?: string
   content?: string | null
   imageURLs?: string[] | null
   author?: {
@@ -51,8 +53,8 @@ export default function ReferredPostCard({ referredPost }: Readonly<Props>) {
                   <span>·</span>
                 </>
               )}
-              <div className="shrink-0 text-xs overflow-hidden">
-                {dayjs(createdAt).format('YYYY-MM-DD HH:mm')}
+              <div className="shrink-0 text-xs overflow-hidden" title={dayjs(createdAt).format('YYYY-MM-DD HH:mm')}>
+                {formatDistanceToNow(new Date(createdAt))}
                 {updatedAt && <span> (수정됨)</span>}
               </div>
             </div>

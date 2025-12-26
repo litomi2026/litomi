@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import ms, { StringValue } from 'ms'
 
 export function formatDistanceToNow(date: Date): string {
@@ -13,8 +14,7 @@ export function formatDistanceToNow(date: Date): string {
   if (hours < 24) return `${hours}시간 전`
   if (days < 7) return `${days}일 전`
   if (days < 30) return `${Math.floor(days / 7)}주 전`
-  if (days < 365) return `${Math.floor(days / 30)}달 전`
-  return `${Math.floor(days / 365)}년 전`
+  return dayjs(date).format('YYYY-MM-DD HH:mm')
 }
 
 export function formatLocalDate(date: Date) {
