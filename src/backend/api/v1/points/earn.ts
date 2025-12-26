@@ -1,6 +1,7 @@
 import { zValidator } from '@hono/zod-validator'
 import { and, desc, eq, gt, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { HTTPException } from 'hono/http-exception'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
@@ -14,7 +15,7 @@ const requestSchema = z.object({
   token: z.string().length(64),
 })
 
-const errorResponses: Record<string, { error: string; status: number }> = {
+const errorResponses: Record<string, { error: string; status: 400 | 403 | 429 }> = {
   INVALID_TOKEN: { error: '유효하지 않은 토큰이에요', status: 400 },
   TOKEN_OWNER_MISMATCH: { error: '토큰 소유자가 일치하지 않아요', status: 403 },
   TOKEN_ALREADY_USED: { error: '이미 사용된 토큰이에요', status: 400 },
@@ -27,7 +28,7 @@ route.post('/', zValidator('json', requestSchema), async (c) => {
   const userId = c.get('userId')
 
   if (!userId) {
-    return c.json({ error: 'Unauthorized' }, 401)
+    throw new HTTPException(401)
   }
 
   const { token } = c.req.valid('json')
@@ -176,13 +177,16 @@ route.post('/', zValidator('json', requestSchema), async (c) => {
           ? (error as { remainingSeconds: number }).remainingSeconds
           : undefined
 
-      return c.json(
-        { error: response.error, code: message, ...(remainingSeconds != null ? { remainingSeconds } : {}) },
-        response.status as 400 | 403 | 429,
-      )
+      if (remainingSeconds != null) {
+        throw new HTTPException(response.status, {
+          res: c.text(response.error, response.status, { 'Retry-After': String(remainingSeconds) }),
+        })
+      }
+
+      throw new HTTPException(response.status, { message: response.error })
     }
 
-    return c.json({ error: '포인트 적립에 실패했어요' }, 500)
+    throw new HTTPException(500, { message: '포인트 적립에 실패했어요' })
   }
 })
 

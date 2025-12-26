@@ -1,6 +1,7 @@
 import { zValidator } from '@hono/zod-validator'
 import { and, desc, eq, gt } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { HTTPException } from 'hono/http-exception'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
@@ -18,7 +19,7 @@ route.post('/', zValidator('json', requestSchema), async (c) => {
   const userId = c.get('userId')
 
   if (!userId) {
-    return c.json({ error: 'Unauthorized' }, 401)
+    throw new HTTPException(401)
   }
 
   const { adSlotId } = c.req.valid('json')
@@ -43,7 +44,7 @@ route.post('/', zValidator('json', requestSchema), async (c) => {
   const todayEarnCount = todayTransactions.length
 
   if (todayEarnCount >= POINT_CONSTANTS.DAILY_EARN_LIMIT_COUNT) {
-    return c.json({ error: '오늘의 적립 한도에 도달했어요', code: 'DAILY_LIMIT_REACHED' }, 429)
+    throw new HTTPException(429, { message: '오늘의 적립 한도에 도달했어요' })
   }
 
   // 2. 광고 슬롯 쿨다운 체크 (같은 광고 1분)
@@ -65,14 +66,10 @@ route.post('/', zValidator('json', requestSchema), async (c) => {
 
   if (lastAdSlotToken?.usedAt) {
     const remainingMs = POINT_CONSTANTS.AD_SLOT_COOLDOWN_MS - (now.getTime() - lastAdSlotToken.usedAt.getTime())
-    return c.json(
-      {
-        error: '같은 광고는 잠시 후 다시 적립할 수 있어요',
-        code: 'AD_SLOT_COOLDOWN',
-        remainingSeconds: Math.ceil(remainingMs / 1000),
-      },
-      429,
-    )
+    const remainingSeconds = Math.ceil(remainingMs / 1000)
+    throw new HTTPException(429, {
+      res: c.text('같은 광고는 잠시 후 다시 적립할 수 있어요', 429, { 'Retry-After': String(remainingSeconds) }),
+    })
   }
 
   // 3. 토큰 생성 또는 기존 토큰 반환 (INSERT ... ON CONFLICT DO UPDATE RETURNING)
@@ -98,7 +95,7 @@ route.post('/', zValidator('json', requestSchema), async (c) => {
     })
 
   if (!result) {
-    return c.json({ error: '토큰 생성에 실패했어요', code: 'TOKEN_CREATE_FAILED' }, 500)
+    throw new HTTPException(500, { message: '토큰 생성에 실패했어요' })
   }
 
   return c.json({

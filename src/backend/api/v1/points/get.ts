@@ -1,5 +1,6 @@
 import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { HTTPException } from 'hono/http-exception'
 
 import { Env } from '@/backend'
 import { createCacheControl } from '@/crawler/proxy-utils'
@@ -18,7 +19,7 @@ route.get('/', async (c) => {
   const userId = c.get('userId')
 
   if (!userId) {
-    return c.json({ error: 'Unauthorized' }, 401)
+    throw new HTTPException(401)
   }
 
   const [points] = await db

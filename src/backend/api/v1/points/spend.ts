@@ -1,6 +1,7 @@
 import { zValidator } from '@hono/zod-validator'
 import { and, eq, sql, sum } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { HTTPException } from 'hono/http-exception'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
@@ -42,7 +43,7 @@ route.post('/', zValidator('json', spendSchema), async (c) => {
   const userId = c.get('userId')
 
   if (!userId) {
-    return c.json({ error: errorResponses.UNAUTHORIZED.error }, errorResponses.UNAUTHORIZED.status)
+    throw new HTTPException(errorResponses.UNAUTHORIZED.status, { message: errorResponses.UNAUTHORIZED.error })
   }
 
   const { type, itemId } = c.req.valid('json')
@@ -144,10 +145,10 @@ route.post('/', zValidator('json', spendSchema), async (c) => {
     const response = errorResponses[message]
 
     if (response) {
-      return c.json({ error: response.error }, response.status)
+      throw new HTTPException(response.status, { message: response.error })
     }
 
-    return c.json({ error: '포인트 사용에 실패했어요' }, 500)
+    throw new HTTPException(500, { message: '포인트 사용에 실패했어요' })
   }
 })
 
