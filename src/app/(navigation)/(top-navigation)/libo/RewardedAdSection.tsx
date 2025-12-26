@@ -6,12 +6,11 @@ import { toast } from 'sonner'
 
 import { AD_SLOTS } from '@/components/ads/constants'
 import LazyAdSlot, { type AdClickResult } from '@/components/ads/LazyAdSlot'
+import useMeQuery from '@/query/useMeQuery'
 
-type Props = {
-  rewardEnabled: boolean
-}
-
-export default function RewardedAdSection({ rewardEnabled }: Props) {
+export default function RewardedAdSection() {
+  const { data: me } = useMeQuery()
+  const rewardEnabled = Boolean(me)
   const [lastEarned, setLastEarned] = useState<number | null>(null)
 
   function handleAdClick(result: AdClickResult) {

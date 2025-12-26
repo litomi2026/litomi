@@ -1,51 +1,25 @@
 'use client'
 
-import { useInfiniteQuery } from '@tanstack/react-query'
 import { ArrowDownLeft, ArrowUpRight } from 'lucide-react'
 
 import IconSpinner from '@/components/icons/IconSpinner'
-import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
-import { QueryKeys } from '@/constants/query'
+import useMeQuery from '@/query/useMeQuery'
 import { formatDistanceToNow } from '@/utils/date'
 import { formatNumber } from '@/utils/format'
 
-type Props = {
-  enabled: boolean
-}
+import { useTransactionsQuery } from './useTransactionsQuery'
 
-type Transaction = {
-  id: number
-  type: 'earn' | 'spend'
-  amount: number
-  balanceAfter: number
-  description: string | null
-  createdAt: string
-}
+export default function TransactionHistory() {
+  const { data: me } = useMeQuery()
+  const isLoggedIn = Boolean(me)
 
-type TransactionsResponse = {
-  items: Transaction[]
-  nextCursor: number | null
-}
-
-export default function TransactionHistory({ enabled }: Props) {
-  const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } = useInfiniteQuery<TransactionsResponse>({
-    queryKey: QueryKeys.pointsTransactions,
-    queryFn: async ({ pageParam }) => {
-      const params = pageParam ? `?cursor=${pageParam}` : ''
-      const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/points/transactions${params}`, {
-        credentials: 'include',
-      })
-      if (!response.ok) {
-        throw new Error('Failed to fetch transactions')
-      }
-      return response.json()
-    },
-    getNextPageParam: (lastPage) => lastPage.nextCursor,
-    initialPageParam: null as number | null,
-    enabled,
+  const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } = useTransactionsQuery({
+    enabled: isLoggedIn,
   })
 
-  if (!enabled) {
+  const transactions = data?.pages.flatMap((page) => page.items) ?? []
+
+  if (!isLoggedIn) {
     return (
       <div className="text-center py-8">
         <p className="text-zinc-500">로그인하면 거래 내역을 확인할 수 있어요</p>
@@ -60,8 +34,6 @@ export default function TransactionHistory({ enabled }: Props) {
       </div>
     )
   }
-
-  const transactions = data?.pages.flatMap((page) => page.items) ?? []
 
   if (transactions.length === 0) {
     return (

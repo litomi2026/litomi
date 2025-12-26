@@ -8,6 +8,22 @@ import { createCacheControl } from '@/crawler/proxy-utils'
 import { db } from '@/database/supabase/drizzle'
 import { userExpansionTable } from '@/database/supabase/points-schema'
 
+export type ExpansionInfo = {
+  base: number
+  extra: number
+  current: number
+  max: number
+  canExpand: boolean
+  price: number
+  unit: number
+}
+
+export type GETV1PointExpansionResponse = {
+  library: ExpansionInfo
+  history: ExpansionInfo
+  bookmark: ExpansionInfo
+}
+
 const route = new Hono<Env>()
 
 route.get('/', async (c) => {
@@ -68,7 +84,7 @@ route.get('/', async (c) => {
     maxAge: 3,
   })
 
-  return c.json(response, { headers: { 'Cache-Control': cacheControl } })
+  return c.json<GETV1PointExpansionResponse>(response, { headers: { 'Cache-Control': cacheControl } })
 })
 
 export default route

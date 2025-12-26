@@ -9,6 +9,20 @@ import { createCacheControl } from '@/crawler/proxy-utils'
 import { db } from '@/database/supabase/drizzle'
 import { pointTransactionTable } from '@/database/supabase/points-schema'
 
+export type GETV1PointTransactionResponse = {
+  items: Transaction[]
+  nextCursor: number | null
+}
+
+export type Transaction = {
+  id: number
+  type: 'earn' | 'spend'
+  amount: number
+  balanceAfter: number
+  description: string | null
+  createdAt: string
+}
+
 const route = new Hono<Env>()
 
 const PER_PAGE = 20
@@ -50,7 +64,7 @@ route.get('/', zValidator('query', querySchema), async (c) => {
     transactions.pop()
   }
 
-  const items = transactions.map((t) => ({
+  const items: Transaction[] = transactions.map((t) => ({
     id: t.id,
     type: t.type === TRANSACTION_TYPE.AD_CLICK ? 'earn' : 'spend',
     amount: t.amount,
@@ -69,7 +83,7 @@ route.get('/', zValidator('query', querySchema), async (c) => {
     maxAge: 3,
   })
 
-  return c.json(response, { headers: { 'Cache-Control': cacheControl } })
+  return c.json<GETV1PointTransactionResponse>(response, { headers: { 'Cache-Control': cacheControl } })
 })
 
 export default route

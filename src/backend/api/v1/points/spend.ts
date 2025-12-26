@@ -21,7 +21,13 @@ const spendSchema = z.object({
   itemId: z.string().optional(),
 })
 
-type SpendType = z.infer<typeof spendSchema>['type']
+export type POSTV1PointSpendRequest = z.infer<typeof spendSchema>
+
+export type POSTV1PointSpendResponse = {
+  success: boolean
+  balance: number
+  spent: number
+}
 
 const errorResponses: Record<string, { error: string; status: 400 | 401 | 403 | 500 }> = {
   UNAUTHORIZED: { error: '로그인이 필요해요', status: 401 },
@@ -128,7 +134,7 @@ route.post('/', zValidator('json', spendSchema), async (c) => {
       return { balance: newBalance, spent: price }
     })
 
-    return c.json({
+    return c.json<POSTV1PointSpendResponse>({
       success: true,
       balance: result.balance,
       spent: result.spent,
@@ -151,14 +157,9 @@ function getExpansionConfig({
   type,
   itemId,
 }: {
-  type: Extract<SpendType, 'bookmark' | 'history' | 'library'>
+  type: Extract<POSTV1PointSpendRequest['type'], 'bookmark' | 'history' | 'library'>
   itemId?: string
-}): {
-  expansionType: (typeof EXPANSION_TYPE)[keyof typeof EXPANSION_TYPE]
-  baseLimit: number
-  maxExpansion: number
-  expansionAmount: number
-} {
+}) {
   if (type === 'library') {
     return {
       expansionType: EXPANSION_TYPE.LIBRARY,
@@ -200,7 +201,7 @@ function getExpansionConfig({
   throw new Error('INVALID_BOOKMARK_PACK')
 }
 
-function getSpendMeta({ type, itemId }: { type: SpendType; itemId?: string }): { price: number; description: string } {
+function getSpendMeta({ type, itemId }: { type: POSTV1PointSpendRequest['type']; itemId?: string }) {
   if (type === 'library') {
     return { price: POINT_CONSTANTS.LIBRARY_EXPANSION_PRICE, description: '내 서재 확장 (+1개)' }
   }
