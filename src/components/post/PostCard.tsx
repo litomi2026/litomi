@@ -12,8 +12,8 @@ import ReferredPostCard, { ReferredPost } from './ReferredPostCard'
 
 export type Post = {
   id: number
-  createdAt: string
-  updatedAt?: string
+  createdAt: Date
+  updatedAt?: Date
   content?: string | null
   imageURLs?: string[] | null
   mangaId?: number | null

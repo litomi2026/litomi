@@ -9,8 +9,8 @@ import PostImages from './PostImages'
 
 export type ReferredPost = {
   id: number
-  createdAt: string
-  updatedAt?: string
+  createdAt: Date
+  updatedAt?: Date
   content?: string | null
   imageURLs?: string[] | null
   author?: {

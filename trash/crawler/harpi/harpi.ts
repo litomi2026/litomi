@@ -1,7 +1,5 @@
 import ms from 'ms'
 
-import { GETHarpiSearchRequest, HarpiSearchSchema } from '@/app/api/proxy/harpi/search/schema'
-import { HARPI_TAG_MAP } from '@/crawler/harpi/tag'
 import { MangaSource, tagCategoryNameToInt } from '@/database/enum'
 import { translateArtistList } from '@/translation/artist'
 import { translateCharacterList } from '@/translation/character'
@@ -13,8 +11,10 @@ import { translateType } from '@/translation/type'
 import { Manga, MangaTag } from '@/types/manga'
 import { uniqBy } from '@/utils/array'
 
-import { ProxyClient, ProxyClientConfig } from '../proxy'
-import { isUpstreamServerError } from '../proxy-utils'
+import { ProxyClient, ProxyClientConfig } from '../../../src/crawler/proxy'
+import { isUpstreamServerError } from '../../../src/crawler/proxy-utils'
+import { GETHarpiSearchRequest, HarpiSearchSchema } from '../../api/harpi/search/schema'
+import { HARPI_TAG_MAP } from './tag'
 
 type HarpiListResponse = {
   alert: string
