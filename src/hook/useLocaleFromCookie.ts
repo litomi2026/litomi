@@ -9,7 +9,7 @@ export default function useLocaleFromCookie() {
   return locale.current
 }
 
-function parseLocale(locale: string | undefined): Locale {
+function parseLocale(locale: string | undefined): '' | Locale {
   switch (locale) {
     case Locale.EN:
       return Locale.EN
@@ -22,6 +22,6 @@ function parseLocale(locale: string | undefined): Locale {
     case Locale.ZH_TW:
       return Locale.ZH_TW
     default:
-      return Locale.KO
+      return ''
   }
 }

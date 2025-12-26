@@ -1,5 +1,3 @@
-import ms from 'ms'
-
 export const JUICY_ADS_SCRIPT_URL = 'https://poweredby.jads.co/js/jads.js'
 
 export const AD_SLOTS = {
@@ -24,7 +22,6 @@ export const AD_SLOTS = {
 } as const
 
 export const AD_LOAD_DELAY_MS = 100
-export const AD_BLOCK_CHECK_DELAY_MS = ms('10 seconds')
 
 export const JUICY_ADS_EVENT = {
   LOADED: 'juicy-ads:loaded',

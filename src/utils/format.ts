@@ -6,7 +6,7 @@ const BILLION = 1000000000
 const TEN_THOUSAND = 10000
 const HUNDRED_MILLION = 100000000
 
-export function formatNumber(num: number, locale: Locale = 'ko'): string {
+export function formatNumber(num: number, locale: '' | Locale = 'ko'): string {
   if (num < THOUSAND) {
     return num.toString()
   }

@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 
 import { AD_SLOTS } from '@/components/ads/constants'
-import LazyAdSlot from '@/components/ads/LazyAdSlot'
+import LazyAdSlot, { type AdClickResult } from '@/components/ads/LazyAdSlot'
 
 type Props = {
   rewardEnabled: boolean
@@ -14,20 +14,22 @@ type Props = {
 export default function RewardedAdSection({ rewardEnabled }: Props) {
   const [lastEarned, setLastEarned] = useState<number | null>(null)
 
-  function handleAdClick(result: { success: boolean; earned?: number; error?: string; requiresLogin?: boolean }) {
+  function handleAdClick(result: AdClickResult) {
     if (result.requiresLogin) {
       toast('로그인하면 리보가 적립돼요')
       return
     }
 
-    if (result.success && result.earned) {
-      setLastEarned(result.earned)
+    if (result.error) {
+      toast.error(result.error)
       return
     }
 
-    if (result.error) {
-      toast.error(result.error)
+    if (!result.success || result.earned == null) {
+      return
     }
+
+    setLastEarned(result.earned)
   }
 
   return (
@@ -41,19 +43,6 @@ export default function RewardedAdSection({ rewardEnabled }: Props) {
             광고로 발생한 수익금은 서버 운영비를 제하고 전부 작가에게 후원할 예정이에요. 광고 클릭 한 번이 좋아하는
             작품의 창작자를 응원하는 방법이 돼요.
           </p>
-        </div>
-      </div>
-
-      {/* 설명 */}
-      <div className="flex items-start gap-3 p-4 bg-zinc-800/50 rounded-lg">
-        <Gift className="size-5 text-amber-400 shrink-0 mt-0.5" />
-        <div>
-          <h3 className="font-medium text-zinc-200 mb-1">광고를 클릭하고 리보를 받으세요!</h3>
-          <p className="text-sm text-zinc-400">
-            아래 광고를 클릭하면 <span className="text-amber-400 font-semibold">10 리보</span>가 적립돼요. 적립된 리보로
-            내 공간을 확장할 수 있어요.
-          </p>
-          {!rewardEnabled && <p className="mt-1 text-xs text-zinc-500">로그인하면 클릭 시 리보가 적립돼요</p>}
         </div>
       </div>
 
