@@ -59,23 +59,6 @@ export function encryptTOTPSecret(secret: string): string {
 }
 
 /**
- * Generate multiple backup codes
- */
-export async function generateBackupCodes(count: number = 10): Promise<{ codes: string[]; hashedCodes: string[] }> {
-  const codes: string[] = []
-  const hashedCodes: string[] = []
-
-  for (let i = 0; i < count; i++) {
-    const code = generateBackupCode()
-    codes.push(code)
-    const hashedCode = await hash(code.replace('-', ''), SALT_ROUNDS)
-    hashedCodes.push(hashedCode)
-  }
-
-  return { codes, hashedCodes }
-}
-
-/**
  * Generate a QR code for the TOTP secret
  */
 export async function generateQRCode(keyURI: string): Promise<string> {
@@ -84,18 +67,6 @@ export async function generateQRCode(keyURI: string): Promise<string> {
   } catch (error) {
     console.error('generateQRCode:', error)
     throw new Error('QR 코드 생성에 실패했어요')
-  }
-}
-
-/**
- * Verify a backup code
- */
-export async function verifyBackupCode(inputCode: string, hashedCode: string): Promise<boolean> {
-  try {
-    const normalizedCode = inputCode.replace('-', '')
-    return await compare(normalizedCode, hashedCode)
-  } catch {
-    return false
   }
 }
 
@@ -109,16 +80,4 @@ export function verifyTOTPToken(token: string, secret: string): boolean {
   } catch {
     return false
   }
-}
-
-/**
- * Generate a single backup code in the format of XXXX-XXXX
- */
-function generateBackupCode(): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-  let code = ''
-  for (let i = 0; i < 8; i++) {
-    code += chars[crypto.randomInt(0, chars.length)]
-  }
-  return `${code.slice(0, 4)}-${code.slice(4)}`
 }

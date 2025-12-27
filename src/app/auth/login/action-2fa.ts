@@ -15,7 +15,8 @@ import { flattenZodFieldErrors } from '@/utils/form-error'
 import { verifyPKCEChallenge } from '@/utils/pkce-server'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
 import { createTrustedBrowserToken, insertTrustedBrowser, setTrustedBrowserCookie } from '@/utils/trusted-browser'
-import { decryptTOTPSecret, verifyBackupCode, verifyTOTPToken } from '@/utils/two-factor'
+import { decryptTOTPSecret, verifyTOTPToken } from '@/utils/two-factor'
+import { verifyBackupCode } from '@/utils/two-factor-backup-code'
 
 const verifyTwoFactorSchema = z.object({
   codeVerifier: z.string(),
