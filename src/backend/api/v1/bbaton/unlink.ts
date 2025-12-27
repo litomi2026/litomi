@@ -1,6 +1,6 @@
 import { zValidator } from '@hono/zod-validator'
-import { compare } from 'bcrypt'
-import { and, eq, isNull } from 'drizzle-orm'
+// import { compare } from 'bcrypt'
+import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { deleteCookie } from 'hono/cookie'
 import { HTTPException } from 'hono/http-exception'
@@ -13,10 +13,9 @@ import { COOKIE_DOMAIN } from '@/constants'
 import { CookieKey } from '@/constants/storage'
 import { bbatonVerificationTable } from '@/database/supabase/bbaton'
 import { db } from '@/database/supabase/drizzle'
-import { twoFactorTable } from '@/database/supabase/two-factor'
 import { userTable } from '@/database/supabase/user'
 import { passwordSchema } from '@/database/zod'
-import { decryptTOTPSecret, verifyTOTPToken } from '@/utils/two-factor'
+// import { decryptTOTPSecret, verifyTOTPToken } from '@/utils/two-factor'
 
 export type POSTV1BBatonUnlinkResponse = { ok: true }
 
@@ -45,29 +44,29 @@ route.post('/', zValidator('json', schema), async (c) => {
     throw new HTTPException(401, { message: '비밀번호가 일치하지 않아요' })
   }
 
-  const isValidPassword = await compare(password, user.passwordHash).catch(() => false)
+  // const isValidPassword = await compare(password, user.passwordHash).catch(() => false)
 
-  if (!isValidPassword) {
-    throw new HTTPException(401, { message: '비밀번호가 일치하지 않아요' })
-  }
+  // if (!isValidPassword) {
+  //   throw new HTTPException(401, { message: '비밀번호가 일치하지 않아요' })
+  // }
 
-  const [twoFactor] = await db
-    .select({ secret: twoFactorTable.secret })
-    .from(twoFactorTable)
-    .where(and(eq(twoFactorTable.userId, userId), isNull(twoFactorTable.expiresAt)))
+  // const [twoFactor] = await db
+  //   .select({ secret: twoFactorTable.secret })
+  //   .from(twoFactorTable)
+  //   .where(and(eq(twoFactorTable.userId, userId), isNull(twoFactorTable.expiresAt)))
 
-  if (twoFactor) {
-    if (!token) {
-      throw new HTTPException(400, { message: '2단계 인증 코드가 필요해요' })
-    }
+  // if (twoFactor) {
+  //   if (!token) {
+  //     throw new HTTPException(400, { message: '2단계 인증 코드가 필요해요' })
+  //   }
 
-    const secret = decryptTOTPSecret(twoFactor.secret)
-    const isValidToken = verifyTOTPToken(token, secret)
+  //   const secret = decryptTOTPSecret(twoFactor.secret)
+  //   const isValidToken = verifyTOTPToken(token, secret)
 
-    if (!isValidToken) {
-      throw new HTTPException(400, { message: '잘못된 인증 코드예요' })
-    }
-  }
+  //   if (!isValidToken) {
+  //     throw new HTTPException(400, { message: '잘못된 인증 코드예요' })
+  //   }
+  // }
 
   await db.delete(bbatonVerificationTable).where(eq(bbatonVerificationTable.userId, userId))
 
