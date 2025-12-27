@@ -13,7 +13,7 @@ import {
   userExpansionTable,
   userItemTable,
   userPointsTable,
-} from '@/database/supabase/points-schema'
+} from '@/database/supabase/points'
 
 const route = new Hono<Env>()
 

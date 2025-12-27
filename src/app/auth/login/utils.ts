@@ -3,8 +3,8 @@ import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adap
 
 import { COOKIE_DOMAIN } from '@/constants'
 import { CookieKey } from '@/constants/storage'
-import { trustedBrowserTable } from '@/database/supabase/2fa-schema'
 import { db } from '@/database/supabase/drizzle'
+import { trustedBrowserTable } from '@/database/supabase/two-factor'
 import { JWTType, verifyJWT } from '@/utils/jwt'
 import { TrustedBrowserPayload } from '@/utils/trusted-browser'
 

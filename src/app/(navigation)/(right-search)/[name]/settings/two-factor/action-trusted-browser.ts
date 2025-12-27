@@ -4,8 +4,8 @@ import { captureException } from '@sentry/nextjs'
 import { and, eq } from 'drizzle-orm'
 import { z } from 'zod'
 
-import { trustedBrowserTable } from '@/database/supabase/2fa-schema'
 import { db } from '@/database/supabase/drizzle'
+import { trustedBrowserTable } from '@/database/supabase/two-factor'
 import { badRequest, internalServerError, noContent, unauthorized } from '@/utils/action-response'
 import { validateUserIdFromCookie } from '@/utils/cookie'
 

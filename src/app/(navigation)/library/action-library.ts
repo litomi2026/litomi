@@ -7,7 +7,7 @@ import { revalidatePath } from 'next/cache'
 import { EXPANSION_TYPE, POINT_CONSTANTS } from '@/constants/points'
 import { MAX_LIBRARIES_PER_USER } from '@/constants/policy'
 import { db } from '@/database/supabase/drizzle'
-import { userExpansionTable } from '@/database/supabase/points-schema'
+import { userExpansionTable } from '@/database/supabase/points'
 import { libraryTable } from '@/database/supabase/schema'
 import {
   badRequest,

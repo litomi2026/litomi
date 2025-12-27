@@ -8,7 +8,7 @@ import { Env } from '@/backend'
 import { TRANSACTION_TYPE } from '@/constants/points'
 import { createCacheControl } from '@/crawler/proxy-utils'
 import { db } from '@/database/supabase/drizzle'
-import { pointTransactionTable } from '@/database/supabase/points-schema'
+import { pointTransactionTable } from '@/database/supabase/points'
 
 export type GETV1PointTransactionResponse = {
   items: Transaction[]

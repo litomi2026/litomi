@@ -7,7 +7,7 @@ import { z } from 'zod'
 import { Env } from '@/backend'
 import { POINT_CONSTANTS, TRANSACTION_TYPE } from '@/constants/points'
 import { db } from '@/database/supabase/drizzle'
-import { adImpressionTokenTable, pointTransactionTable } from '@/database/supabase/points-schema'
+import { adImpressionTokenTable, pointTransactionTable } from '@/database/supabase/points'
 
 const route = new Hono<Env>()
 

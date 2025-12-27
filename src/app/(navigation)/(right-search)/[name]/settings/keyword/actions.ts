@@ -6,7 +6,7 @@ import { revalidatePath } from 'next/cache'
 
 import { MAX_CRITERIA_PER_USER } from '@/constants/policy'
 import { db } from '@/database/supabase/drizzle'
-import { notificationConditionTable, notificationCriteriaTable } from '@/database/supabase/notification-schema'
+import { notificationConditionTable, notificationCriteriaTable } from '@/database/supabase/notification'
 import {
   badRequest,
   created,

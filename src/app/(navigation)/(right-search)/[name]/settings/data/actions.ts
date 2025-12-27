@@ -5,16 +5,11 @@ import { compare } from 'bcrypt'
 import { eq, inArray } from 'drizzle-orm'
 import { z } from 'zod'
 
+import { bookmarkTable, readingHistoryTable, userRatingTable } from '@/database/supabase/activity'
+import { userCensorshipTable } from '@/database/supabase/censorship'
 import { db } from '@/database/supabase/drizzle'
-import {
-  bookmarkTable,
-  libraryItemTable,
-  libraryTable,
-  readingHistoryTable,
-  userCensorshipTable,
-  userRatingTable,
-  userTable,
-} from '@/database/supabase/schema'
+import { libraryItemTable, libraryTable } from '@/database/supabase/library'
+import { userTable } from '@/database/supabase/user'
 import { passwordSchema } from '@/database/zod'
 import { badRequest, internalServerError, ok, unauthorized } from '@/utils/action-response'
 import { validateUserIdFromCookie } from '@/utils/cookie'

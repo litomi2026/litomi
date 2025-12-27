@@ -5,7 +5,7 @@ import { HTTPException } from 'hono/http-exception'
 import { Env } from '@/backend'
 import { createCacheControl } from '@/crawler/proxy-utils'
 import { db } from '@/database/supabase/drizzle'
-import { userPointsTable } from '@/database/supabase/points-schema'
+import { userPointsTable } from '@/database/supabase/points'
 
 export type GETV1PointsResponse = {
   balance: number

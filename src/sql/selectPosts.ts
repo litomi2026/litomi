@@ -3,7 +3,8 @@ import { alias } from 'drizzle-orm/pg-core'
 
 import { PostFilter } from '@/backend/api/v1/post/constant'
 import { db } from '@/database/supabase/drizzle'
-import { postLikeTable, postTable, userTable } from '@/database/supabase/schema'
+import { postLikeTable, postTable } from '@/database/supabase/post'
+import { userTable } from '@/database/supabase/user'
 
 type Params = {
   limit?: number

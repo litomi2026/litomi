@@ -7,7 +7,7 @@ import { z } from 'zod'
 
 import { isPostgresError } from '@/database/error'
 import { db } from '@/database/supabase/drizzle'
-import { userTable } from '@/database/supabase/schema'
+import { userTable } from '@/database/supabase/user'
 import { imageURLSchema, nameSchema, nicknameSchema } from '@/database/zod'
 import { badRequest, conflict, internalServerError, ok, seeOther, unauthorized } from '@/utils/action-response'
 import { validateUserIdFromCookie } from '@/utils/cookie'
