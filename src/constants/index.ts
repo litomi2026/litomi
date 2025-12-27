@@ -56,7 +56,7 @@ export function generateOpenGraphMetadata({ title, description, images, url }: P
 }
 
 function getCanonicalUrl(): string {
-  const raw = process.env.NEXT_PUBLIC_CANONICAL_URL
+  const raw = process.env.NEXT_PUBLIC_CANONICAL_URL || process.env.CORS_ORIGIN
   const value = raw?.trim()
 
   if (!value) {

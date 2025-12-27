@@ -3,7 +3,7 @@ import { authenticator } from 'otplib'
 import QRCode from 'qrcode'
 
 import { TOTP_ISSUER } from '@/constants'
-import { env } from '@/env/server.next'
+import { env } from '@/env/server.common'
 
 const { TOTP_ENCRYPTION_KEY } = env
 
