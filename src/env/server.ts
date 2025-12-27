@@ -3,6 +3,8 @@ import { vercel } from '@t3-oss/env-core/presets-zod'
 import 'server-only'
 import { z } from 'zod'
 
+const skipValidation = process.env.SKIP_ENV_VALIDATION === 'true'
+
 export const env = createEnv({
   server: {
     AMPLITUDE_API_KEY: z.string().min(1).optional(),
@@ -22,5 +24,6 @@ export const env = createEnv({
   },
   extends: [vercel()],
   runtimeEnv: process.env,
+  skipValidation,
   emptyStringAsUndefined: true,
 })

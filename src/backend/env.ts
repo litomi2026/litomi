@@ -1,6 +1,8 @@
 import { createEnv } from '@t3-oss/env-core'
 import { z } from 'zod'
 
+const skipValidation = process.env.SKIP_ENV_VALIDATION === 'true'
+
 export const env = createEnv({
   server: {
     AIVEN_CERTIFICATE: z.string().min(1).optional(),
@@ -14,5 +16,6 @@ export const env = createEnv({
     JWT_SECRET_BBATON_ATTEMPT: z.string().min(1),
   },
   runtimeEnv: process.env,
+  skipValidation,
   emptyStringAsUndefined: true,
 })
