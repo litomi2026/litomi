@@ -6,10 +6,12 @@ import { LogOut } from 'lucide-react'
 import { toast } from 'sonner'
 
 import logout from '@/app/auth/logout/action'
-import { NEXT_PUBLIC_GA_ID } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
+import { env } from '@/env/client'
 import useServerAction from '@/hook/useServerAction'
-import amplitude from '@/lib/amplitude/lazy'
+import amplitude from '@/lib/amplitude/browser'
+
+const { NEXT_PUBLIC_GA_ID } = env
 
 export default function LogoutButton() {
   const queryClient = useQueryClient()
@@ -20,8 +22,10 @@ export default function LogoutButton() {
       toast.success(`${loginId} 계정에서 로그아웃했어요`)
       amplitude.track('logout')
       amplitude.reset()
-      sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: null })
-      sendGAEvent('event', 'logout')
+      if (NEXT_PUBLIC_GA_ID) {
+        sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: null })
+        sendGAEvent('event', 'logout')
+      }
       queryClient.setQueryData(QueryKeys.me, null)
 
       queryClient.removeQueries({

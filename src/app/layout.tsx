@@ -3,6 +3,7 @@ import './globals.css'
 import type { Metadata, Viewport } from 'next'
 
 import { GoogleAnalytics } from '@next/third-parties/google'
+import dynamic from 'next/dynamic'
 import localFont from 'next/font/local'
 import { ReactNode } from 'react'
 import { Toaster } from 'sonner'
@@ -20,12 +21,16 @@ import {
   SHORT_NAME,
   THEME_COLOR,
 } from '@/constants'
-import { NEXT_PUBLIC_GA_ID } from '@/constants/env'
+import { env } from '@/env/client'
+import { env as serverEnv } from '@/env/server'
 
 import QueryProvider from '../components/QueryProvider'
 
+const { NEXT_PUBLIC_GA_ID } = env
+const { AMPLITUDE_API_KEY } = serverEnv
+
 // NOTE: 사용하지 않을 수 있어서 dynamic import
-// const Amplitude = dynamic(() => import('@/lib/amplitude/Amplitude'))
+const Amplitude = dynamic(() => import('@/lib/amplitude/Amplitude'))
 
 const PretendardVariable = localFont({
   src: '../fonts/PretendardVariable.400-700.3713.woff2',
@@ -108,7 +113,7 @@ export default function RootLayout({ children }: Readonly<Props>) {
         <HiyobiPing />
         <Toaster duration={3000} position="top-center" richColors theme="system" />
         {NEXT_PUBLIC_GA_ID && <GoogleAnalytics gaId={NEXT_PUBLIC_GA_ID} />}
-        {/* {AMPLITUDE_API_KEY && <Amplitude apiKey={AMPLITUDE_API_KEY} />} */}
+        {AMPLITUDE_API_KEY && <Amplitude apiKey={AMPLITUDE_API_KEY} />}
       </body>
     </html>
   )

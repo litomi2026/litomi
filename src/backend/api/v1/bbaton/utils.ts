@@ -3,19 +3,16 @@ import type { JWTPayload } from 'jose'
 import { jwtVerify, SignJWT } from 'jose'
 
 import { env } from '@/backend/env'
-import { CANONICAL_URL } from '@/constants'
 import { CookieKey } from '@/constants/storage'
 import { sec } from '@/utils/date'
 
-const { BBATON_CLIENT_ID, JWT_SECRET_BBATON_ATTEMPT } = env
+const { BBATON_CLIENT_ID, JWT_SECRET_BBATON_ATTEMPT, CORS_ORIGIN } = env
 
 type BBatonAttemptTokenPayload = JWTPayload & {
   userId: string
 }
 
 export const BBATON_ATTEMPT_TTL_SECONDS = sec('10 minutes')
-
-const issuer = new URL(CANONICAL_URL).hostname
 
 export function buildAuthorizeUrl(): string {
   const redirectURI = getBBatonRedirectURI()
@@ -34,7 +31,7 @@ export function generateAttemptId(): string {
 }
 
 export function getBBatonRedirectURI(): string {
-  const url = new URL('/oauth/bbaton/callback', CANONICAL_URL)
+  const url = new URL('/oauth/bbaton/callback', CORS_ORIGIN)
   return url.toString()
 }
 
@@ -42,6 +39,8 @@ export function parseBirthYear(value: string): number {
   const parsed = Number.parseInt(value, 10)
   return Number.isFinite(parsed) ? parsed : 0
 }
+
+const issuer = new URL(CORS_ORIGIN).hostname
 
 export async function signBBatonAttemptToken(userId: number): Promise<string> {
   const payload: BBatonAttemptTokenPayload = {

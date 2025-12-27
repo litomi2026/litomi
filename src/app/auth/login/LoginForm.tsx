@@ -14,17 +14,19 @@ import IconX from '@/components/icons/IconX'
 import PasskeyLoginButton from '@/components/PasskeyLoginButton'
 import { clearMigratedHistory, getLocalReadingHistory } from '@/components/ReadingHistoryMigrator'
 import TurnstileWidget from '@/components/TurnstileWidget'
-import { NEXT_PUBLIC_GA_ID } from '@/constants/env'
 import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
+import { env } from '@/env/client'
 import useServerAction, { getFieldError, getFormField } from '@/hook/useServerAction'
-import amplitude from '@/lib/amplitude/lazy'
+import amplitude from '@/lib/amplitude/browser'
 import { sanitizeRedirect } from '@/utils'
 import { generatePKCEChallenge, PKCEChallenge } from '@/utils/pkce-browser'
 
 import login from './action'
 import TwoFactorVerification from './TwoFactorVerification'
+
+const { NEXT_PUBLIC_GA_ID } = env
 
 type TwoFactorData = {
   fingerprint: string
@@ -74,8 +76,10 @@ export default function LoginForm() {
     if (id) {
       amplitude.setUserId(id)
       amplitude.track('login', { loginId, lastLoginAt, lastLogoutAt })
-      sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: id })
-      sendGAEvent('event', 'login', { loginId, lastLoginAt, lastLogoutAt })
+      if (NEXT_PUBLIC_GA_ID) {
+        sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: id })
+        sendGAEvent('event', 'login', { loginId, lastLoginAt, lastLogoutAt })
+      }
     }
 
     const localHistory = getLocalReadingHistory()
