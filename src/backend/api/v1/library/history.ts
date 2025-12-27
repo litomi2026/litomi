@@ -10,8 +10,8 @@ import { getUserId } from '@/backend/utils/auth'
 import { decodeReadingHistoryCursor, encodeReadingHistoryCursor } from '@/common/cursor'
 import { READING_HISTORY_PER_PAGE } from '@/constants/policy'
 import { createCacheControl } from '@/crawler/proxy-utils'
+import { readingHistoryTable } from '@/database/supabase/activity'
 import { db } from '@/database/supabase/drizzle'
-import { readingHistoryTable } from '@/database/supabase/schema'
 import { sec } from '@/utils/date'
 
 const querySchema = z.object({

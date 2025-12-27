@@ -1,4 +1,14 @@
-import { AnyPgColumn, bigint, index, integer, pgTable, primaryKey, smallint, timestamp, varchar } from 'drizzle-orm/pg-core'
+import {
+  AnyPgColumn,
+  bigint,
+  index,
+  integer,
+  pgTable,
+  primaryKey,
+  smallint,
+  timestamp,
+  varchar,
+} from 'drizzle-orm/pg-core'
 import 'server-only'
 
 import { userTable } from './user'
@@ -39,5 +49,3 @@ export const postLikeTable = pgTable(
   },
   (table) => [primaryKey({ columns: [table.userId, table.postId] }), index('idx_post_like_post_id').on(table.postId)],
 ).enableRLS()
-
-

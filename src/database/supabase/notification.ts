@@ -1,4 +1,15 @@
-import { bigint, boolean, index, integer, pgTable, smallint, text, timestamp, unique, varchar } from 'drizzle-orm/pg-core'
+import {
+  bigint,
+  boolean,
+  index,
+  integer,
+  pgTable,
+  smallint,
+  text,
+  timestamp,
+  unique,
+  varchar,
+} from 'drizzle-orm/pg-core'
 import 'server-only'
 
 import { userTable } from './user'
@@ -92,5 +103,3 @@ export const mangaSeenTable = pgTable('manga_seen', {
   mangaId: integer('manga_id').primaryKey(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 }).enableRLS()
-
-

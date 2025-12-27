@@ -25,5 +25,3 @@ export const bbatonVerificationTable = pgTable(
     index('idx_bbaton_verification_verified_at').on(table.verifiedAt.desc()),
   ],
 ).enableRLS()
-
-

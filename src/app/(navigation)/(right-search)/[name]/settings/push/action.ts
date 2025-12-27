@@ -6,7 +6,7 @@ import { revalidatePath } from 'next/cache'
 
 import { NotificationType } from '@/database/enum'
 import { db } from '@/database/supabase/drizzle'
-import { notificationTable, pushSettingsTable, webPushTable } from '@/database/supabase/schema'
+import { notificationTable, pushSettingsTable, webPushTable } from '@/database/supabase/notification'
 import { WebPushService } from '@/lib/notification/WebPushService'
 import { badRequest, conflict, created, internalServerError, ok, unauthorized } from '@/utils/action-response'
 import { validateUserIdFromCookie } from '@/utils/cookie'

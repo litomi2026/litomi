@@ -9,8 +9,8 @@ import { Env } from '@/backend'
 import { getUserId } from '@/backend/utils/auth'
 import { MAX_MANGA_ID } from '@/constants/policy'
 import { createCacheControl } from '@/crawler/proxy-utils'
+import { userRatingTable } from '@/database/supabase/activity'
 import { db } from '@/database/supabase/drizzle'
-import { userRatingTable } from '@/database/supabase/schema'
 
 const paramSchema = z.object({
   id: z.coerce.number().int().positive().max(MAX_MANGA_ID),

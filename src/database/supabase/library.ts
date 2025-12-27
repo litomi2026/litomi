@@ -36,5 +36,3 @@ export const libraryItemTable = pgTable(
     index('idx_library_item_created_at').on(table.createdAt.desc()),
   ],
 ).enableRLS()
-
-

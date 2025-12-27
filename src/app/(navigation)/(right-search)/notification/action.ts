@@ -4,7 +4,7 @@ import { captureException } from '@sentry/nextjs'
 import { and, eq, inArray } from 'drizzle-orm'
 
 import { db } from '@/database/supabase/drizzle'
-import { notificationTable } from '@/database/supabase/schema'
+import { notificationTable } from '@/database/supabase/notification'
 import { badRequest, internalServerError, ok, unauthorized } from '@/utils/action-response'
 import { validateUserIdFromCookie } from '@/utils/cookie'
 

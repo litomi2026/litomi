@@ -3,7 +3,7 @@ import { desc, eq } from 'drizzle-orm'
 
 import { decodeDeviceType } from '@/database/enum'
 import { db } from '@/database/supabase/drizzle'
-import { credentialTable } from '@/database/supabase/schema'
+import { credentialTable } from '@/database/supabase/passkey'
 
 import PasskeyList from './PasskeyList'
 import { getTruncatedId } from './utils'

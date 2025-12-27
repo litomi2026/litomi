@@ -7,7 +7,7 @@ import { Env } from '@/backend'
 import { getUserId } from '@/backend/utils/auth'
 import { createCacheControl } from '@/crawler/proxy-utils'
 import { db } from '@/database/supabase/drizzle'
-import { libraryItemTable, libraryTable } from '@/database/supabase/schema'
+import { libraryItemTable, libraryTable } from '@/database/supabase/library'
 import { intToHexColor } from '@/utils/color'
 
 export type GETLibraryResponse = {

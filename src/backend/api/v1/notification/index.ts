@@ -11,7 +11,7 @@ import { NOTIFICATION_PER_PAGE } from '@/constants/policy'
 import { createCacheControl } from '@/crawler/proxy-utils'
 import { NotificationType } from '@/database/enum'
 import { db } from '@/database/supabase/drizzle'
-import { notificationTable } from '@/database/supabase/schema'
+import { notificationTable } from '@/database/supabase/notification'
 
 import { NotificationFilter } from './types'
 import unreadCountRoutes from './unread-count'

@@ -82,5 +82,3 @@ export const userItemTable = pgTable(
   },
   (table) => [index('idx_user_item_user_type').on(table.userId, table.type)],
 ).enableRLS()
-
-

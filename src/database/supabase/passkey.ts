@@ -23,5 +23,3 @@ export const credentialTable = pgTable(
     unique('idx_credential_credential_id').on(table.credentialId),
   ],
 ).enableRLS()
-
-

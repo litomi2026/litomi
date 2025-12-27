@@ -3,7 +3,9 @@ import { type InferInsertModel } from 'drizzle-orm'
 import { type PgTable } from 'drizzle-orm/pg-core'
 import { drizzle } from 'drizzle-orm/postgres-js'
 
-import { bookmarkTable, libraryItemTable, libraryTable, userTable } from '@/database/supabase/schema'
+import { bookmarkTable } from '@/database/supabase/activity'
+import { libraryItemTable, libraryTable } from '@/database/supabase/library'
+import { userTable } from '@/database/supabase/user'
 
 export interface SeedOptions {
   batchSize: number

@@ -6,8 +6,8 @@ import 'server-only'
 import { Env } from '@/backend'
 import { getUserId } from '@/backend/utils/auth'
 import { createCacheControl } from '@/crawler/proxy-utils'
+import { bookmarkTable, readingHistoryTable, userRatingTable } from '@/database/supabase/activity'
 import { db } from '@/database/supabase/drizzle'
-import { bookmarkTable, readingHistoryTable, userRatingTable } from '@/database/supabase/schema'
 import { sec } from '@/utils/date'
 
 export type GETV1LibrarySummaryResponse = {

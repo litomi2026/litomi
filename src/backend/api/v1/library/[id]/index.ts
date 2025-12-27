@@ -11,7 +11,7 @@ import { decodeLibraryIdCursor, encodeLibraryIdCursor } from '@/common/cursor'
 import { LIBRARY_ITEMS_PER_PAGE } from '@/constants/policy'
 import { createCacheControl } from '@/crawler/proxy-utils'
 import { db } from '@/database/supabase/drizzle'
-import { libraryItemTable, libraryTable } from '@/database/supabase/schema'
+import { libraryItemTable, libraryTable } from '@/database/supabase/library'
 
 const paramsSchema = z.object({
   id: z.coerce.number().int().positive(),

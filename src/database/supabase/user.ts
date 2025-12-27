@@ -13,5 +13,3 @@ export const userTable = pgTable('user', {
   imageURL: varchar('image_url', { length: 256 }),
   autoDeletionDays: smallint('auto_deletion_days').notNull().default(180), // 0 = disabled
 }).enableRLS()
-
-

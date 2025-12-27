@@ -7,8 +7,9 @@ import { z } from 'zod'
 
 import { Env } from '@/backend'
 import { getUserId } from '@/backend/utils/auth'
+import { bookmarkTable } from '@/database/supabase/activity'
 import { db } from '@/database/supabase/drizzle'
-import { bookmarkTable, userTable } from '@/database/supabase/schema'
+import { userTable } from '@/database/supabase/user'
 
 import { getBookmarkLimit } from './limit'
 

@@ -8,12 +8,7 @@ import { Env } from '@/backend'
 import { EXPANSION_TYPE, ITEM_TYPE, POINT_CONSTANTS, TRANSACTION_TYPE } from '@/constants/points'
 import { MAX_BOOKMARKS_PER_USER, MAX_LIBRARIES_PER_USER, MAX_READING_HISTORY_PER_USER } from '@/constants/policy'
 import { db } from '@/database/supabase/drizzle'
-import {
-  pointTransactionTable,
-  userExpansionTable,
-  userItemTable,
-  userPointsTable,
-} from '@/database/supabase/points'
+import { pointTransactionTable, userExpansionTable, userItemTable, userPointsTable } from '@/database/supabase/points'
 
 const route = new Hono<Env>()
 

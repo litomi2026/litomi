@@ -6,7 +6,7 @@ import { z } from 'zod'
 
 import { generateOpenGraphMetadata } from '@/constants'
 import { db } from '@/database/supabase/drizzle'
-import { libraryTable } from '@/database/supabase/schema'
+import { libraryTable } from '@/database/supabase/library'
 import { getUserIdFromCookie } from '@/utils/cookie'
 
 import LibraryItems from './LibraryItems'

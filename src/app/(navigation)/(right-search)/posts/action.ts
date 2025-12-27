@@ -8,7 +8,7 @@ import { z } from 'zod'
 import { MAX_POST_CONTENT_LENGTH } from '@/constants/policy'
 import { PostType } from '@/database/enum'
 import { db } from '@/database/supabase/drizzle'
-import { postLikeTable, postTable } from '@/database/supabase/schema'
+import { postLikeTable, postTable } from '@/database/supabase/post'
 import {
   badRequest,
   created,

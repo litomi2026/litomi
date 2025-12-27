@@ -17,5 +17,3 @@ export const userCensorshipTable = pgTable(
   },
   (table) => [index('idx_user_censorship_user_id').on(table.userId)],
 ).enableRLS()
-
-

@@ -7,7 +7,7 @@ import { Env } from '@/backend'
 import { getUserId } from '@/backend/utils/auth'
 import { createCacheControl } from '@/crawler/proxy-utils'
 import { db } from '@/database/supabase/drizzle'
-import { notificationTable } from '@/database/supabase/schema'
+import { notificationTable } from '@/database/supabase/notification'
 
 export type GETUnreadCountResponse = number
 

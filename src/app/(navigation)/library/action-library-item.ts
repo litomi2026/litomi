@@ -6,7 +6,7 @@ import { revalidatePath } from 'next/cache'
 
 import { MAX_ITEMS_PER_LIBRARY } from '@/constants/policy'
 import { db } from '@/database/supabase/drizzle'
-import { libraryItemTable, libraryTable } from '@/database/supabase/schema'
+import { libraryItemTable, libraryTable } from '@/database/supabase/library'
 import { badRequest, forbidden, internalServerError, notFound, ok, unauthorized } from '@/utils/action-response'
 import { validateUserIdFromCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
