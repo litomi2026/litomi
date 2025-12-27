@@ -9,20 +9,18 @@ import { POINT_CONSTANTS, TRANSACTION_TYPE } from '@/constants/points'
 import { db } from '@/database/supabase/drizzle'
 import { adImpressionTokenTable, pointTransactionTable, userPointsTable } from '@/database/supabase/points'
 
+export type POSTV1PointEarnResponse = {
+  success: true
+  balance: number
+  earned: number
+  dailyRemaining: number
+}
+
 const route = new Hono<Env>()
 
 const requestSchema = z.object({
   token: z.string().length(64),
 })
-
-const errorResponses: Record<string, { error: string; status: 400 | 403 | 429 }> = {
-  INVALID_TOKEN: { error: '유효하지 않은 토큰이에요', status: 400 },
-  TOKEN_OWNER_MISMATCH: { error: '토큰 소유자가 일치하지 않아요', status: 403 },
-  TOKEN_ALREADY_USED: { error: '이미 사용된 토큰이에요', status: 400 },
-  TOKEN_EXPIRED: { error: '토큰이 만료됐어요', status: 400 },
-  DAILY_LIMIT_REACHED: { error: '오늘의 적립 한도에 도달했어요', status: 429 },
-  AD_SLOT_COOLDOWN: { error: '같은 광고는 잠시 후 다시 적립할 수 있어요', status: 429 },
-}
 
 route.post('/', zValidator('json', requestSchema), async (c) => {
   const userId = c.get('userId')
@@ -44,22 +42,22 @@ route.post('/', zValidator('json', requestSchema), async (c) => {
         .for('update')
 
       if (!tokenRecord) {
-        throw new Error('INVALID_TOKEN')
+        throw new HTTPException(400, { message: '유효하지 않은 토큰이에요' })
       }
 
       // 2. 토큰 소유자 검증
       if (tokenRecord.userId !== userId) {
-        throw new Error('TOKEN_OWNER_MISMATCH')
+        throw new HTTPException(403, { message: '토큰 소유자가 일치하지 않아요' })
       }
 
       // 3. 이미 사용된 토큰인지 확인
       if (tokenRecord.isUsed) {
-        throw new Error('TOKEN_ALREADY_USED')
+        throw new HTTPException(400, { message: '이미 사용된 토큰이에요' })
       }
 
       // 4. 토큰 만료 확인
       if (tokenRecord.expiresAt < now) {
-        throw new Error('TOKEN_EXPIRED')
+        throw new HTTPException(400, { message: '토큰이 만료됐어요' })
       }
 
       // 5. 유저 포인트 레코드 락(없으면 생성)
@@ -72,7 +70,7 @@ route.post('/', zValidator('json', requestSchema), async (c) => {
         .for('update')
 
       if (!points) {
-        throw new Error('POINTS_NOT_FOUND')
+        throw new HTTPException(500, { message: '포인트 적립에 실패했어요' })
       }
 
       // 6. 일일 한도 재검증 (하루 최대 10번)
@@ -94,7 +92,7 @@ route.post('/', zValidator('json', requestSchema), async (c) => {
       const todayEarnCount = todayTransactions.length
 
       if (todayEarnCount >= POINT_CONSTANTS.DAILY_EARN_LIMIT_COUNT) {
-        throw new Error('DAILY_LIMIT_REACHED')
+        throw new HTTPException(429, { message: '오늘의 적립 한도에 도달했어요' })
       }
 
       // 7. 같은 광고 쿨다운 체크 (1분)
@@ -115,10 +113,10 @@ route.post('/', zValidator('json', requestSchema), async (c) => {
 
       if (lastAdSlotEarn?.usedAt) {
         const remainingMs = POINT_CONSTANTS.AD_SLOT_COOLDOWN_MS - (now.getTime() - lastAdSlotEarn.usedAt.getTime())
-        const error = Object.assign(new Error('AD_SLOT_COOLDOWN'), {
-          remainingSeconds: Math.ceil(remainingMs / 1000),
+        const remainingSeconds = Math.ceil(remainingMs / 1000)
+        throw new HTTPException(429, {
+          res: c.text('같은 광고는 잠시 후 다시 적립할 수 있어요', 429, { 'Retry-After': String(remainingSeconds) }),
         })
-        throw error
       }
 
       // 8. 토큰을 사용됨으로 표시
@@ -158,32 +156,15 @@ route.post('/', zValidator('json', requestSchema), async (c) => {
       }
     })
 
-    return c.json({
+    return c.json<POSTV1PointEarnResponse>({
       success: true,
       balance: result.balance,
       earned: result.earned,
       dailyRemaining: result.dailyRemaining,
     })
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error'
-    const response = errorResponses[message]
-
-    if (response) {
-      const remainingSeconds =
-        typeof error === 'object' &&
-        error !== null &&
-        'remainingSeconds' in error &&
-        typeof (error as { remainingSeconds: unknown }).remainingSeconds === 'number'
-          ? (error as { remainingSeconds: number }).remainingSeconds
-          : undefined
-
-      if (remainingSeconds != null) {
-        throw new HTTPException(response.status, {
-          res: c.text(response.error, response.status, { 'Retry-After': String(remainingSeconds) }),
-        })
-      }
-
-      throw new HTTPException(response.status, { message: response.error })
+    if (error instanceof HTTPException) {
+      throw error
     }
 
     throw new HTTPException(500, { message: '포인트 적립에 실패했어요' })

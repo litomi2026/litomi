@@ -9,6 +9,12 @@ import { POINT_CONSTANTS, TRANSACTION_TYPE } from '@/constants/points'
 import { db } from '@/database/supabase/drizzle'
 import { adImpressionTokenTable, pointTransactionTable } from '@/database/supabase/points'
 
+export type POSTV1PointTokenResponse = {
+  token: string
+  expiresAt: string
+  dailyRemaining: number
+}
+
 const route = new Hono<Env>()
 
 const requestSchema = z.object({
@@ -98,7 +104,7 @@ route.post('/', zValidator('json', requestSchema), async (c) => {
     throw new HTTPException(500, { message: '토큰 생성에 실패했어요' })
   }
 
-  return c.json({
+  return c.json<POSTV1PointTokenResponse>({
     token: result.token,
     expiresAt: result.expiresAt.toISOString(),
     dailyRemaining: (POINT_CONSTANTS.DAILY_EARN_LIMIT_COUNT - todayEarnCount) * POINT_CONSTANTS.AD_CLICK_REWARD,

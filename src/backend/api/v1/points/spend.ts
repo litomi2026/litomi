@@ -25,20 +25,11 @@ export type POSTV1PointSpendResponse = {
   spent: number
 }
 
-const errorResponses: Record<string, { error: string; status: 400 | 401 | 403 | 500 }> = {
-  UNAUTHORIZED: { error: '로그인이 필요해요', status: 401 },
-  INSUFFICIENT_POINTS: { error: '리보가 부족해요', status: 400 },
-  MAX_EXPANSION_REACHED: { error: '최대 확장에 도달했어요', status: 400 },
-  ITEM_ID_REQUIRED: { error: '아이템을 선택해 주세요', status: 400 },
-  INVALID_BOOKMARK_PACK: { error: '잘못된 상품이에요', status: 400 },
-  ITEM_ALREADY_OWNED: { error: '이미 보유한 아이템이에요', status: 400 },
-}
-
 route.post('/', zValidator('json', spendSchema), async (c) => {
   const userId = c.get('userId')
 
   if (!userId) {
-    throw new HTTPException(errorResponses.UNAUTHORIZED.status, { message: errorResponses.UNAUTHORIZED.error })
+    throw new HTTPException(401, { message: '로그인이 필요해요' })
   }
 
   const { type, itemId } = c.req.valid('json')
@@ -54,7 +45,7 @@ route.post('/', zValidator('json', spendSchema), async (c) => {
         .for('update')
 
       if (!points || points.balance < price) {
-        throw new Error('INSUFFICIENT_POINTS')
+        throw new HTTPException(400, { message: '리보가 부족해요' })
       }
 
       // 확장 타입인 경우 최대치 확인
@@ -70,7 +61,7 @@ route.post('/', zValidator('json', spendSchema), async (c) => {
         const currentTotal = baseLimit + Number(expansion?.totalAmount ?? 0)
 
         if (currentTotal + expansionAmount > maxExpansion) {
-          throw new Error('MAX_EXPANSION_REACHED')
+          throw new HTTPException(400, { message: '최대 확장에 도달했어요' })
         }
 
         // 확장 레코드 추가
@@ -84,7 +75,7 @@ route.post('/', zValidator('json', spendSchema), async (c) => {
       // 아이템 타입인 경우 아이템 추가
       if (type === 'badge' || type === 'theme') {
         if (!itemId) {
-          throw new Error('ITEM_ID_REQUIRED')
+          throw new HTTPException(400, { message: '아이템을 선택해 주세요' })
         }
 
         const itemType = type === 'badge' ? ITEM_TYPE.BADGE : ITEM_TYPE.THEME
@@ -96,7 +87,7 @@ route.post('/', zValidator('json', spendSchema), async (c) => {
           .where(eq(userItemTable.userId, userId))
 
         if (existingItem) {
-          throw new Error('ITEM_ALREADY_OWNED')
+          throw new HTTPException(400, { message: '이미 보유한 아이템이에요' })
         }
 
         // 아이템 추가
@@ -136,11 +127,8 @@ route.post('/', zValidator('json', spendSchema), async (c) => {
       spent: result.spent,
     })
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'UNKNOWN_ERROR'
-    const response = errorResponses[message]
-
-    if (response) {
-      throw new HTTPException(response.status, { message: response.error })
+    if (error instanceof HTTPException) {
+      throw error
     }
 
     throw new HTTPException(500, { message: '포인트 사용에 실패했어요' })
@@ -174,7 +162,7 @@ function getExpansionConfig({
   }
 
   if (!itemId) {
-    throw new Error('ITEM_ID_REQUIRED')
+    throw new HTTPException(400, { message: '아이템을 선택해 주세요' })
   }
 
   if (itemId === 'small') {
@@ -194,7 +182,7 @@ function getExpansionConfig({
     }
   }
 
-  throw new Error('INVALID_BOOKMARK_PACK')
+  throw new HTTPException(400, { message: '잘못된 상품이에요' })
 }
 
 function getSpendMeta({ type, itemId }: { type: POSTV1PointSpendRequest['type']; itemId?: string }) {
@@ -206,7 +194,7 @@ function getSpendMeta({ type, itemId }: { type: POSTV1PointSpendRequest['type'];
   }
   if (type === 'bookmark') {
     if (!itemId) {
-      throw new Error('ITEM_ID_REQUIRED')
+      throw new HTTPException(400, { message: '아이템을 선택해 주세요' })
     }
     if (itemId === 'small') {
       return {
@@ -220,7 +208,7 @@ function getSpendMeta({ type, itemId }: { type: POSTV1PointSpendRequest['type'];
         description: `북마크 확장 (+${POINT_CONSTANTS.BOOKMARK_EXPANSION_LARGE_AMOUNT}개)`,
       }
     }
-    throw new Error('INVALID_BOOKMARK_PACK')
+    throw new HTTPException(400, { message: '잘못된 상품이에요' })
   }
   if (type === 'badge') {
     return { price: POINT_CONSTANTS.BADGE_PRICE, description: '프로필 뱃지 구매' }
