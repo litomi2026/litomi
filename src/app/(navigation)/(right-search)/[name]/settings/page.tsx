@@ -120,10 +120,10 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
         </ErrorBoundary>
       </CollapsibleSection>
       <CollapsibleSection
-        description="비바톤으로 성인 인증 상태를 저장할 수 있어요"
+        description="비바톤에서 익명으로 성인 여부를 인증해요"
         icon={<ShieldCheck className="size-5 shrink-0" />}
         id="adult"
-        title="성인 인증"
+        title="익명 성인인증"
       >
         <ErrorBoundary fallback={InternalServerError}>
           <Suspense fallback={<LoadingFallback />}>
