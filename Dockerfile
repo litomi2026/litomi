@@ -21,8 +21,9 @@ RUN bun build --compile \
 FROM gcr.io/distroless/base-nossl-debian12:nonroot
 
 ENV NODE_ENV=production
-WORKDIR /home
+WORKDIR /app
 
 COPY --chown=nonroot:nonroot --from=builder /app/litomi-backend ./
+COPY --chown=nonroot:nonroot --from=builder /app/node_modules/bcrypt/prebuilds/linux-x64 ./node_modules/bcrypt/prebuilds/linux-x64
 
 ENTRYPOINT [ "./litomi-backend" ]
