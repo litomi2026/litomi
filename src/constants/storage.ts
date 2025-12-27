@@ -3,6 +3,7 @@ export enum CookieKey {
   REFRESH_TOKEN = 'rt',
   TRUSTED_BROWSER_TOKEN = 'tbt',
   LOCALE = 'locale',
+  BBATON_ATTEMPT_ID = 'bbai',
 }
 
 export enum LocalStorageKey {
