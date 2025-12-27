@@ -1,3 +1,6 @@
+import './src/env/client'
+import './src/env/server'
+
 import type { NextConfig } from 'next'
 
 import withBundleAnalyzer from '@next/bundle-analyzer'
@@ -59,7 +62,10 @@ const nextConfig: NextConfig = {
   ],
   poweredByHeader: false,
   reactCompiler: true,
-  ...(process.env.BUILD_OUTPUT === 'standalone' && { output: 'standalone' }),
+  ...(process.env.BUILD_OUTPUT === 'standalone' && {
+    output: 'standalone',
+    transpilePackages: ['@t3-oss/env-nextjs', '@t3-oss/env-core'],
+  }),
   ...(process.env.NODE_ENV === 'production' && { compiler: { removeConsole: { exclude: ['error', 'warn'] } } }),
 }
 

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'bun:test'
+import { describe, expect, it } from 'bun:test'
 import { HTTPException } from 'hono/http-exception'
 
 import { env } from '@/backend/env'
