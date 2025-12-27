@@ -2,7 +2,9 @@ import { HTTPException } from 'hono/http-exception'
 import 'server-only'
 import { z } from 'zod'
 
-import { BBATON_CLIENT_ID, BBATON_CLIENT_SECRET } from '@/constants/env'
+import { env } from '@/backend/env'
+
+const { BBATON_CLIENT_ID, BBATON_CLIENT_SECRET } = env
 
 type BBatonProfile = {
   userId: string

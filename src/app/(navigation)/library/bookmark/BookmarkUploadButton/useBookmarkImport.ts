@@ -4,10 +4,12 @@ import { toast } from 'sonner'
 
 import type { POSTV1BookmarkImportResponse } from '@/backend/api/v1/bookmark/import'
 
-import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
+import { env } from '@/env/client'
 
 import type { BookmarkExportData, ImportMode, ImportResult, ImportState } from './types'
+
+const { NEXT_PUBLIC_BACKEND_URL } = env
 
 export function useBookmarkImport() {
   const [importMode, setImportMode] = useState<ImportMode>('merge')

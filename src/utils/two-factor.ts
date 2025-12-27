@@ -4,7 +4,9 @@ import { authenticator } from 'otplib'
 import QRCode from 'qrcode'
 
 import { SALT_ROUNDS, TOTP_ISSUER } from '@/constants'
-import { TOTP_ENCRYPTION_KEY } from '@/constants/env'
+import { env } from '@/env/server'
+
+const { TOTP_ENCRYPTION_KEY } = env
 
 const TOTP_CONFIG = {
   issuer: TOTP_ISSUER,

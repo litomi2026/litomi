@@ -1,9 +1,11 @@
 import { Metadata } from 'next'
 
 import { CANONICAL_URL, defaultOpenGraph, SHORT_NAME } from '@/constants'
-import { VERCEL_DEPLOYMENT_ID, VERCEL_GIT_COMMIT_SHA } from '@/constants/env'
+import { env } from '@/env/server'
 
 import Header1 from './Header1'
+
+const { VERCEL_DEPLOYMENT_ID, VERCEL_GIT_COMMIT_SHA } = env
 
 export const metadata: Metadata = {
   title: '이용약관',

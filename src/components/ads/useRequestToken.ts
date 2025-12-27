@@ -2,7 +2,9 @@
 
 import { useMutation } from '@tanstack/react-query'
 
-import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
+import { env } from '@/env/client'
+
+const { NEXT_PUBLIC_BACKEND_URL } = env
 
 type RewardedAdsAPIError = {
   error: string

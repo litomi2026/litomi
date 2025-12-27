@@ -1,9 +1,11 @@
 import { beforeEach, describe, expect, it } from 'bun:test'
 import { HTTPException } from 'hono/http-exception'
 
-import { GA_PROPERTY_ID, GA_SERVICE_ACCOUNT_EMAIL, GA_SERVICE_ACCOUNT_KEY } from '@/constants/env'
+import { env } from '@/backend/env'
 
 import realtimeRoutes from '../realtime'
+
+const { GA_PROPERTY_ID, GA_SERVICE_ACCOUNT_EMAIL, GA_SERVICE_ACCOUNT_KEY } = env
 
 describe('GET /api/v1/analytics/realtime', () => {
   describe('환경 변수 확인', () => {

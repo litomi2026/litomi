@@ -1,10 +1,12 @@
-import { OpenGraph } from 'next/dist/lib/metadata/types/opengraph-types'
-import { Twitter } from 'next/dist/lib/metadata/types/twitter-types'
+import type { OpenGraph } from 'next/dist/lib/metadata/types/opengraph-types'
+import type { Twitter } from 'next/dist/lib/metadata/types/twitter-types'
 
-import { CORS_ORIGIN, NEXT_PUBLIC_CANONICAL_URL } from './env'
+import { env } from '@/env/client'
+
+const { NEXT_PUBLIC_CANONICAL_URL } = env
 
 export const APPLICATION_NAME = '리토미 - 만화 웹 뷰어'
-export const CANONICAL_URL = NEXT_PUBLIC_CANONICAL_URL || CORS_ORIGIN || 'https://litomi.in'
+export const CANONICAL_URL = NEXT_PUBLIC_CANONICAL_URL || 'https://litomi.in'
 export const SALT_ROUNDS = 12
 export const SHORT_NAME = '리토미'
 export const THEME_COLOR = '#0a0a0a'

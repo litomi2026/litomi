@@ -10,10 +10,12 @@ import { requestId } from 'hono/request-id'
 import { secureHeaders } from 'hono/secure-headers'
 import { timing } from 'hono/timing'
 
-import { CORS_ORIGIN } from '@/constants/env'
+import { env } from '@/backend/env'
 
 import appRoutes from './app'
 import { auth } from './middleware/auth'
+
+const { CORS_ORIGIN } = env
 
 export type Env = {
   Variables: {

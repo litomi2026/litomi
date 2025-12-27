@@ -7,6 +7,17 @@ import { mock } from 'bun:test'
 // Setup DOM environment using happy-dom
 import { Window } from 'happy-dom'
 
+process.env.SKIP_ENV_VALIDATION = 'true'
+process.env.JWT_SECRET_ACCESS_TOKEN ??= 'test-jwt-access'
+process.env.JWT_SECRET_REFRESH_TOKEN ??= 'test-jwt-refresh'
+process.env.JWT_SECRET_TRUSTED_DEVICE ??= 'test-jwt-trusted'
+process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ??= 'test-vapid-public'
+process.env.TOTP_ENCRYPTION_KEY ??= '0'.repeat(64)
+process.env.TURNSTILE_SECRET_KEY ??= 'test-turnstile-secret'
+process.env.UPSTASH_KV_REST_API_TOKEN ??= 'test-upstash-token'
+process.env.UPSTASH_KV_REST_API_URL ??= 'https://example.com'
+process.env.VAPID_PRIVATE_KEY ??= 'test-vapid-private'
+
 mock.module('server-only', () => ({
   // Empty module - this prevents the error from being thrown
 }))

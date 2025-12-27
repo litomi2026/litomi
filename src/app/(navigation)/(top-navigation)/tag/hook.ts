@@ -4,9 +4,11 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
 import type { GETV1TagResponse } from '@/backend/api/v1/tag'
 
-import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
+import { env } from '@/env/client'
 import { handleResponseError } from '@/utils/react-query-error'
+
+const { NEXT_PUBLIC_BACKEND_URL } = env
 
 export type CategoryParam = 'female' | 'male' | 'mixed' | 'other'
 

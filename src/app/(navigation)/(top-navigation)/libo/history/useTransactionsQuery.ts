@@ -2,8 +2,10 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 
 import type { GETV1PointTransactionResponse } from '@/backend/api/v1/points/transactions'
 
-import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
+import { env } from '@/env/client'
+
+const { NEXT_PUBLIC_BACKEND_URL } = env
 
 type QueryOptions = {
   enabled?: boolean

@@ -3,10 +3,12 @@ import type { JWTPayload } from 'jose'
 import { jwtVerify, SignJWT } from 'jose'
 
 import { CANONICAL_URL } from '@/constants'
-import { JWT_SECRET_ACCESS_TOKEN, JWT_SECRET_REFRESH_TOKEN, JWT_SECRET_TRUSTED_DEVICE } from '@/constants/env'
 import { CookieKey } from '@/constants/storage'
+import { env } from '@/env/server'
 
 import { sec } from './date'
+
+const { JWT_SECRET_ACCESS_TOKEN, JWT_SECRET_REFRESH_TOKEN, JWT_SECRET_TRUSTED_DEVICE } = env
 
 const url = new URL(CANONICAL_URL)
 

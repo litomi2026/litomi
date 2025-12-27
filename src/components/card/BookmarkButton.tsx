@@ -11,13 +11,15 @@ import { twMerge } from 'tailwind-merge'
 import type { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark/get'
 import type { POSTV1BookmarkToggleResponse } from '@/backend/api/v1/bookmark/toggle'
 
-import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
+import { env } from '@/env/client'
 import useBookmarksQuery from '@/query/useBookmarksQuery'
 import useMeQuery from '@/query/useMeQuery'
 
 import LoginPageLink from '../LoginPageLink'
 import { useLibraryModal } from './LibraryModal'
+
+const { NEXT_PUBLIC_BACKEND_URL } = env
 
 type Props = {
   manga: { id: number }

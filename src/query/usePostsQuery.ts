@@ -2,8 +2,10 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 
 import { GETV1PostResponse } from '@/backend/api/v1/post'
 import { PostFilter } from '@/backend/api/v1/post/constant'
-import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
+import { env } from '@/env/client'
+
+const { NEXT_PUBLIC_BACKEND_URL } = env
 
 export default function usePostsInfiniteQuery(filter: PostFilter, mangaId?: number, username?: string) {
   return useInfiniteQuery<GETV1PostResponse>({

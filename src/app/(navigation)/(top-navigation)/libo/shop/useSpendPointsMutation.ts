@@ -4,8 +4,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import type { POSTV1PointSpendRequest, POSTV1PointSpendResponse } from '@/backend/api/v1/points/spend'
 
-import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
+import { env } from '@/env/client'
+
+const { NEXT_PUBLIC_BACKEND_URL } = env
 
 export function useSpendPointsMutation() {
   const queryClient = useQueryClient()

@@ -2,10 +2,10 @@ import { waitUntil } from '@vercel/functions'
 
 import { GETProxyKSearchSchema } from '@/app/api/proxy/k/search/schema'
 import { POSTV1SearchTrendingBody } from '@/backend/api/v1/search/trending/POST'
-import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { BLACKLISTED_MANGA_IDS, MAX_KHENTAI_SEARCH_QUERY_LENGTH } from '@/constants/policy'
 import { encodeCategories, kHentaiClient, KHentaiMangaSearchOptions } from '@/crawler/k-hentai'
 import { createCacheControlHeaders, handleRouteError } from '@/crawler/proxy-utils'
+import { env } from '@/env/client'
 import { getKeywordPromotion, type KeywordPromotion } from '@/sponsor'
 import { Locale } from '@/translation/common'
 import { Manga } from '@/types/manga'
@@ -13,6 +13,8 @@ import { sec } from '@/utils/date'
 import { chance } from '@/utils/random-edge'
 
 import { convertToKHentaiKey, filterMangasByMinusPrefix } from './utils'
+
+const { NEXT_PUBLIC_BACKEND_URL } = env
 
 export const runtime = 'edge'
 

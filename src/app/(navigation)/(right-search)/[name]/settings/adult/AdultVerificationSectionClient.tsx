@@ -10,10 +10,11 @@ import { toast } from 'sonner'
 import { POSTV1BBatonAttemptResponse } from '@/backend/api/v1/bbaton/attempt'
 import { POSTV1BBatonUnlinkResponse } from '@/backend/api/v1/bbaton/unlink'
 import { BBATON_ADULT_VERIFICATION_CHANNEL_NAME, BBATON_POPUP_WINDOW_NAME } from '@/constants/bbaton'
-import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
+import { env } from '@/env/client'
 import BBatonButton from '@/svg/BBatonButton'
 import { formatDistanceToNow } from '@/utils/date'
 
+const { NEXT_PUBLIC_BACKEND_URL } = env
 const POPUP_CLOSE_GRACE_MS = ms('800ms')
 const POPUP_MONITOR_INTERVAL_MS = ms('500ms')
 

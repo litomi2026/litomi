@@ -2,7 +2,7 @@ import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 import 'server-only'
 
-import { POSTGRES_URL, SUPABASE_CERTIFICATE } from '@/constants/env'
+import { env } from '@/env/server'
 
 import * as activitySchema from './activity'
 import * as bbatonSchema from './bbaton'
@@ -14,6 +14,8 @@ import * as pointsSchema from './points'
 import * as postSchema from './post'
 import * as twoFactorSchema from './two-factor'
 import * as userSchema from './user'
+
+const { POSTGRES_URL, SUPABASE_CERTIFICATE } = env
 
 const supabaseClient = postgres(POSTGRES_URL, {
   prepare: false,

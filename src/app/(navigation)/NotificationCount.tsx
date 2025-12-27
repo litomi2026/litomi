@@ -3,10 +3,12 @@
 import { useQuery } from '@tanstack/react-query'
 
 import { GETUnreadCountResponse } from '@/backend/api/v1/notification/unread-count'
-import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
+import { env } from '@/env/client'
 import useMeQuery from '@/query/useMeQuery'
 import { handleResponseError } from '@/utils/react-query-error'
+
+const { NEXT_PUBLIC_BACKEND_URL } = env
 
 export default function NotificationCount() {
   const { data: unreadCount } = useNotificationUnreadCountQuery()

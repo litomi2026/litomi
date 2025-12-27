@@ -2,9 +2,11 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 
 import { RatingSort } from '@/backend/api/v1/library/enum'
 import { GETV1RatingsResponse } from '@/backend/api/v1/library/rating'
-import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
+import { env } from '@/env/client'
 import { handleResponseError } from '@/utils/react-query-error'
+
+const { NEXT_PUBLIC_BACKEND_URL } = env
 
 export async function fetchRatingsPaginated(cursor: string | null, sort: RatingSort) {
   const searchParams = new URLSearchParams()

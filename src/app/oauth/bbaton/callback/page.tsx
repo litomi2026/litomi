@@ -5,7 +5,9 @@ import { useEffect, useRef, useState } from 'react'
 
 import { POSTV1BBatonCompleteResponse } from '@/backend/api/v1/bbaton/complete'
 import { BBATON_ADULT_VERIFICATION_CHANNEL_NAME } from '@/constants/bbaton'
-import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
+import { env } from '@/env/client'
+
+const { NEXT_PUBLIC_BACKEND_URL } = env
 
 type ApiError = {
   status?: number

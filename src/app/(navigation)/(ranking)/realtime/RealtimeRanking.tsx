@@ -6,11 +6,13 @@ import ms from 'ms'
 import Link from 'next/link'
 
 import IconSpinner from '@/components/icons/IconSpinner'
-import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { REALTIME_PAGE_VIEW_MIN_THRESHOLD } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
+import { env } from '@/env/client'
 
 import { useRealtimeStore } from './store'
+
+const { NEXT_PUBLIC_BACKEND_URL } = env
 
 interface PageRankingItem {
   activeUsers: number

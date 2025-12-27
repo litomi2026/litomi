@@ -2,10 +2,12 @@ import type { JWTPayload } from 'jose'
 
 import { jwtVerify, SignJWT } from 'jose'
 
+import { env } from '@/backend/env'
 import { CANONICAL_URL } from '@/constants'
-import { BBATON_CLIENT_ID, JWT_SECRET_BBATON_ATTEMPT } from '@/constants/env'
 import { CookieKey } from '@/constants/storage'
 import { sec } from '@/utils/date'
+
+const { BBATON_CLIENT_ID, JWT_SECRET_BBATON_ATTEMPT } = env
 
 type BBatonAttemptTokenPayload = JWTPayload & {
   userId: string

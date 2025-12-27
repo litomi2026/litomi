@@ -4,11 +4,13 @@ import { useQuery } from '@tanstack/react-query'
 
 import type { GETSearchSuggestionsResponse } from '@/backend/api/v1/search/suggestion'
 
-import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { MIN_SUGGESTION_QUERY_LENGTH } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
+import { env } from '@/env/client'
 import useLocaleFromCookie from '@/hook/useLocaleFromCookie'
 import { handleResponseError } from '@/utils/react-query-error'
+
+const { NEXT_PUBLIC_BACKEND_URL } = env
 
 type Params = {
   query: string
