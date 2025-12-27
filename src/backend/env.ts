@@ -5,8 +5,6 @@ const skipValidation = process.env.SKIP_ENV_VALIDATION === 'true'
 
 export const env = createEnv({
   server: {
-    AIVEN_CERTIFICATE: z.string().min(1).optional(),
-    AIVEN_POSTGRES_URL: z.url(),
     BBATON_CLIENT_ID: z.string().min(1),
     BBATON_CLIENT_SECRET: z.string().min(1),
     CORS_ORIGIN: z.string().min(1),
