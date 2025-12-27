@@ -1,9 +1,8 @@
-import { compare, hash } from 'bcrypt'
 import crypto from 'crypto'
 import { authenticator } from 'otplib'
 import QRCode from 'qrcode'
 
-import { SALT_ROUNDS, TOTP_ISSUER } from '@/constants'
+import { TOTP_ISSUER } from '@/constants'
 import { env } from '@/env/server.next'
 
 const { TOTP_ENCRYPTION_KEY } = env

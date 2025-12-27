@@ -1,7 +1,7 @@
 'use server'
 
 import { captureException } from '@sentry/nextjs'
-import { hash } from 'bcrypt'
+import { hash } from 'bcryptjs'
 import { cookies, headers } from 'next/headers'
 import { z } from 'zod'
 

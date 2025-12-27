@@ -1,7 +1,7 @@
 'use server'
 
 import { captureException } from '@sentry/nextjs'
-import { compare } from 'bcrypt'
+import { compare } from 'bcryptjs'
 import { eq, inArray } from 'drizzle-orm'
 import { z } from 'zod'
 

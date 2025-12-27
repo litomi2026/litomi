@@ -1,5 +1,5 @@
 import { zValidator } from '@hono/zod-validator'
-// import { compare } from 'bcrypt'
+import { compare } from 'bcryptjs'
 import { and, eq, isNull } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { deleteCookie } from 'hono/cookie'
@@ -45,11 +45,11 @@ route.post('/', zValidator('json', schema), async (c) => {
     throw new HTTPException(401, { message: '비밀번호가 일치하지 않아요' })
   }
 
-  // const isValidPassword = await compare(password, user.passwordHash).catch(() => false)
+  const isValidPassword = await compare(password, user.passwordHash).catch(() => false)
 
-  // if (!isValidPassword) {
-  //   throw new HTTPException(401, { message: '비밀번호가 일치하지 않아요' })
-  // }
+  if (!isValidPassword) {
+    throw new HTTPException(401, { message: '비밀번호가 일치하지 않아요' })
+  }
 
   const [twoFactor] = await db
     .select({ secret: twoFactorTable.secret })
