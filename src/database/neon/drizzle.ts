@@ -3,7 +3,7 @@ import { drizzle } from 'drizzle-orm/neon-http'
 import 'server-only'
 import ws from 'ws'
 
-import { env } from '@/env/server'
+import { env } from '@/env/server.next'
 
 import * as schema from './schema'
 

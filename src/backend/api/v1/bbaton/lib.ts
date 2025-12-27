@@ -2,7 +2,7 @@ import { HTTPException } from 'hono/http-exception'
 import 'server-only'
 import { z } from 'zod'
 
-import { env } from '@/backend/env'
+import { env } from '@/env/server.hono'
 
 const { BBATON_CLIENT_ID, BBATON_CLIENT_SECRET } = env
 

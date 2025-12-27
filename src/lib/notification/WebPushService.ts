@@ -4,7 +4,7 @@ import webpush, { PushSubscription } from 'web-push'
 import { CANONICAL_URL } from '@/constants'
 import { db } from '@/database/supabase/drizzle'
 import { pushSettingsTable, webPushTable } from '@/database/supabase/notification'
-import { env } from '@/env/server'
+import { env } from '@/env/server.next'
 
 const { NEXT_PUBLIC_VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY } = env
 

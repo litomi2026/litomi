@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 
 import { CANONICAL_URL, defaultOpenGraph, SHORT_NAME } from '@/constants'
-import { env } from '@/env/server'
+import { env } from '@/env/server.next'
 
 import Header1 from './Header1'
 

@@ -2,8 +2,8 @@ import type { JWTPayload } from 'jose'
 
 import { jwtVerify, SignJWT } from 'jose'
 
-import { env } from '@/backend/env'
 import { CookieKey } from '@/constants/storage'
+import { env } from '@/env/server.hono'
 import { sec } from '@/utils/date'
 
 const { BBATON_CLIENT_ID, JWT_SECRET_BBATON_ATTEMPT, CORS_ORIGIN } = env

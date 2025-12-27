@@ -1,6 +1,6 @@
 import { Redis } from '@upstash/redis'
 
-import { env } from '@/env/server'
+import { env } from '@/env/server.next'
 
 const { UPSTASH_KV_REST_API_TOKEN, UPSTASH_KV_REST_API_URL } = env
 

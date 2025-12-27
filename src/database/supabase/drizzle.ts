@@ -2,7 +2,7 @@ import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 import 'server-only'
 
-import { env } from '@/env/server'
+import { env } from '@/env/server.next'
 
 import * as activitySchema from './activity'
 import * as bbatonSchema from './bbaton'

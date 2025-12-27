@@ -6,8 +6,6 @@ const skipValidation = process.env.SKIP_ENV_VALIDATION === 'true'
 
 export const env = createEnv({
   server: {
-    AIVEN_CERTIFICATE: z.string().min(1).optional(),
-    AIVEN_POSTGRES_URL: z.url(),
     AMPLITUDE_API_KEY: z.string().min(1).optional(),
     JWT_SECRET_ACCESS_TOKEN: z.string().min(1),
     JWT_SECRET_REFRESH_TOKEN: z.string().min(1),

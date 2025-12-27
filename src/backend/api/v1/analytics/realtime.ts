@@ -4,10 +4,10 @@ import { HTTPException } from 'hono/http-exception'
 import 'server-only'
 
 import { Env } from '@/backend'
-import { env } from '@/backend/env'
 import { SHORT_NAME } from '@/constants'
 import { REALTIME_PAGE_VIEW_MIN_THRESHOLD } from '@/constants/policy'
 import { createCacheControl } from '@/crawler/proxy-utils'
+import { env } from '@/env/server.hono'
 
 const { GA_PROPERTY_ID, GA_SERVICE_ACCOUNT_EMAIL, GA_SERVICE_ACCOUNT_KEY } = env
 

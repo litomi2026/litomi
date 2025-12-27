@@ -22,7 +22,7 @@ import {
   THEME_COLOR,
 } from '@/constants'
 import { env } from '@/env/client'
-import { env as serverEnv } from '@/env/server'
+import { env as serverEnv } from '@/env/server.next'
 
 import QueryProvider from '../components/QueryProvider'
 

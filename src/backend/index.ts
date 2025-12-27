@@ -10,7 +10,7 @@ import { requestId } from 'hono/request-id'
 import { secureHeaders } from 'hono/secure-headers'
 import { timing } from 'hono/timing'
 
-import { env } from '@/backend/env'
+import { env } from '@/env/server.hono'
 
 import appRoutes from './app'
 import { auth } from './middleware/auth'
