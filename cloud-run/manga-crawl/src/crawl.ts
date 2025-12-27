@@ -68,7 +68,7 @@ export async function crawlMangas() {
         searchParams.nextId = nextId
       }
 
-      const searchResults = await kHentaiClient.searchMangas(searchParams)
+      const searchResults = await kHentaiClient.searchMangas(searchParams, 'ko')
 
       if (!searchResults || searchResults.length === 0) {
         log.info('No more mangas to crawl. Reached the end.')
@@ -563,7 +563,7 @@ async function crawlMangaWithRetry(id: number, retries = CONFIG.MAX_RETRIES): Pr
       if (attempt > 1) {
         log.info(`Fetching manga #${id} (attempt ${attempt}/${retries})...`)
       }
-      const result = await fetchMangaFromMultiSources(id)
+      const result = await fetchMangaFromMultiSources({ id, locale: 'ko' })
 
       if (!result) {
         log.warn(`No data found for manga #${id}`)

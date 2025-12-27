@@ -4,7 +4,7 @@ import { jwtVerify, SignJWT } from 'jose'
 
 import { CANONICAL_URL } from '@/constants'
 import { CookieKey } from '@/constants/storage'
-import { env } from '@/env/server.next'
+import { env } from '@/env/server.common'
 
 import { sec } from './date'
 
