@@ -1,12 +1,19 @@
+import type { JWTPayload } from 'jose'
+
+import { jwtVerify, SignJWT } from 'jose'
+
 import { CANONICAL_URL } from '@/constants'
-import { BBATON_CLIENT_ID } from '@/constants/env'
+import { BBATON_CLIENT_ID, JWT_SECRET_BBATON_ATTEMPT } from '@/constants/env'
+import { CookieKey } from '@/constants/storage'
 import { sec } from '@/utils/date'
 
-export type BBatonAttempt = {
-  userId: number
+type BBatonAttemptTokenPayload = JWTPayload & {
+  userId: string
 }
 
 export const BBATON_ATTEMPT_TTL_SECONDS = sec('10 minutes')
+
+const issuer = new URL(CANONICAL_URL).hostname
 
 export function buildAuthorizeUrl(): string {
   const redirectURI = getBBatonRedirectURI()
@@ -24,10 +31,6 @@ export function generateAttemptId(): string {
   return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('')
 }
 
-export function getAttemptKey(attemptId: string): string {
-  return `bbaton:attempt:${attemptId}`
-}
-
 export function getBBatonRedirectURI(): string {
   const url = new URL('/oauth/bbaton/callback', CANONICAL_URL)
   return url.toString()
@@ -36,4 +39,41 @@ export function getBBatonRedirectURI(): string {
 export function parseBirthYear(value: string): number {
   const parsed = Number.parseInt(value, 10)
   return Number.isFinite(parsed) ? parsed : 0
+}
+
+export async function signBBatonAttemptToken(userId: number): Promise<string> {
+  const payload: BBatonAttemptTokenPayload = {
+    userId: String(userId),
+    jti: generateAttemptId(),
+  }
+
+  return await new SignJWT(payload)
+    .setProtectedHeader({ alg: 'HS256', typ: CookieKey.BBATON_ATTEMPT_ID })
+    .setIssuer(issuer)
+    .setIssuedAt()
+    .setExpirationTime(Math.floor(Date.now() / 1000) + BBATON_ATTEMPT_TTL_SECONDS)
+    .sign(new TextEncoder().encode(JWT_SECRET_BBATON_ATTEMPT))
+}
+
+export async function verifyBBatonAttemptToken(token: string): Promise<{ userId: number } | null> {
+  try {
+    const { payload } = await jwtVerify<BBatonAttemptTokenPayload>(
+      token,
+      new TextEncoder().encode(JWT_SECRET_BBATON_ATTEMPT),
+      {
+        algorithms: ['HS256'],
+        issuer,
+        typ: CookieKey.BBATON_ATTEMPT_ID,
+      },
+    )
+
+    const userId = Number.parseInt(payload.userId, 10)
+    if (!Number.isFinite(userId)) {
+      return null
+    }
+
+    return { userId }
+  } catch {
+    return null
+  }
 }

@@ -89,6 +89,7 @@ export async function setTrustedBrowserCookie(cookieStore: ReadonlyRequestCookie
     domain: COOKIE_DOMAIN,
     httpOnly: true,
     maxAge: sec(`${TRUSTED_DEVICE_EXPIRY_DAYS} days`),
+    path: '/auth/login',
     sameSite: 'strict',
     secure: true,
   })

@@ -22,17 +22,29 @@ export async function checkTrustedBrowser(
   const tokenData = await verifyTrustedBrowserToken(token)
 
   if (!tokenData) {
-    cookieStore.delete({ name: CookieKey.TRUSTED_BROWSER_TOKEN, domain: COOKIE_DOMAIN })
+    cookieStore.delete({
+      name: CookieKey.TRUSTED_BROWSER_TOKEN,
+      domain: COOKIE_DOMAIN,
+      path: '/auth/login',
+    })
     return false
   }
 
   if (tokenData.fingerprint !== expectedFingerprint) {
-    cookieStore.delete({ name: CookieKey.TRUSTED_BROWSER_TOKEN, domain: COOKIE_DOMAIN })
+    cookieStore.delete({
+      name: CookieKey.TRUSTED_BROWSER_TOKEN,
+      domain: COOKIE_DOMAIN,
+      path: '/auth/login',
+    })
     return false
   }
 
   if (tokenData.userId !== expectedUserId) {
-    cookieStore.delete({ name: CookieKey.TRUSTED_BROWSER_TOKEN, domain: COOKIE_DOMAIN })
+    cookieStore.delete({
+      name: CookieKey.TRUSTED_BROWSER_TOKEN,
+      domain: COOKIE_DOMAIN,
+      path: '/auth/login',
+    })
     return false
   }
 
@@ -49,7 +61,11 @@ export async function checkTrustedBrowser(
     .returning({ id: trustedBrowserTable.id })
 
   if (!browser) {
-    cookieStore.delete({ name: CookieKey.TRUSTED_BROWSER_TOKEN, domain: COOKIE_DOMAIN })
+    cookieStore.delete({
+      name: CookieKey.TRUSTED_BROWSER_TOKEN,
+      domain: COOKIE_DOMAIN,
+      path: '/auth/login',
+    })
     return false
   }
 

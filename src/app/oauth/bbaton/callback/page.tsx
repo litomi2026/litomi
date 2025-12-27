@@ -1,7 +1,7 @@
 'use client'
 
 import { useMutation } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { POSTV1BBatonCompleteResponse } from '@/backend/api/v1/bbaton/complete'
 import { BBATON_ADULT_VERIFICATION_CHANNEL_NAME } from '@/constants/bbaton'
@@ -22,6 +22,7 @@ type CallbackState = { type: 'error'; message: string } | { type: 'loading' } | 
 
 export default function BBatonCallbackPage() {
   const [state, setState] = useState<CallbackState>({ type: 'loading' })
+  const didRunRef = useRef(false)
 
   const completeMutation = useMutation<POSTV1BBatonCompleteResponse, unknown, { code: string }>({
     mutationFn: async ({ code }) => {
@@ -55,6 +56,11 @@ export default function BBatonCallbackPage() {
   })
 
   useEffect(() => {
+    if (didRunRef.current) {
+      return
+    }
+    didRunRef.current = true
+
     const params = new URLSearchParams(window.location.search)
     const code = params.get('code')
     const error = params.get('error') ?? params.get('error_description')
@@ -109,6 +115,9 @@ function getErrorMessage(error: unknown): string {
   const apiError = error as ApiError
 
   if (typeof apiError?.error === 'string' && apiError.error.length > 0) {
+    if (apiError.status === 409) {
+      return `${apiError.error} 기존 계정에서 연동을 해제한 뒤 다시 시도해 주세요.`
+    }
     return apiError.error
   }
 

@@ -34,3 +34,4 @@ export const VERCEL_SPEED_INSIGHTS = process.env.VERCEL_SPEED_INSIGHTS ?? ''
 
 // Cloud Run
 export const CORS_ORIGIN = process.env.CORS_ORIGIN ?? ''
+export const JWT_SECRET_BBATON_ATTEMPT = process.env.JWT_SECRET_BBATON_ATTEMPT ?? ''
