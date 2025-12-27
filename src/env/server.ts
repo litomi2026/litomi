@@ -1,6 +1,5 @@
 import { createEnv } from '@t3-oss/env-core'
 import { vercel } from '@t3-oss/env-core/presets-zod'
-import 'server-only'
 import { z } from 'zod'
 
 const skipValidation = process.env.SKIP_ENV_VALIDATION === 'true'
