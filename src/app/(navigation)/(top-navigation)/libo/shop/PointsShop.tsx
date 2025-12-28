@@ -103,8 +103,11 @@ export default function PointsShop() {
 
   return (
     <div aria-disabled={!isLoggedIn} className="space-y-3 aria-disabled:opacity-80">
-      <p className="text-sm text-zinc-400 mb-4">리보로 내 공간을 확장해 보세요.</p>
-      {!isLoggedIn && <p className="text-xs text-zinc-500">로그인하면 상점을 이용할 수 있어요</p>}
+      {isLoggedIn ? (
+        <p className="text-sm leading-5 text-zinc-400 mb-4">리보로 내 공간을 확장해 보세요</p>
+      ) : (
+        <p className="text-xs leading-5 text-zinc-500 mb-4">로그인하면 상점을 이용할 수 있어요</p>
+      )}
 
       {shopItems.map((item) => {
         const canAfford = balance >= item.price

@@ -10,6 +10,7 @@ export async function parseRewardedAdsErrorResponse(response: Response) {
 
 function getRetryAfterSeconds(response: Response) {
   const retryAfter = response.headers.get('Retry-After')
+
   if (!retryAfter) {
     return undefined
   }

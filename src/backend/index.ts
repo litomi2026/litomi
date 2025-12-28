@@ -27,7 +27,15 @@ export type Env = {
 
 const app = new Hono<Env>()
 
-app.use('*', cors({ origin: [CORS_ORIGIN, 'http://localhost:3000'], credentials: true }))
+app.use(
+  '*',
+  cors({
+    origin: [CORS_ORIGIN, 'http://localhost:3000'],
+    credentials: true,
+    exposeHeaders: ['Retry-After'],
+  }),
+)
+
 app.use('*', ipRestriction(getConnInfo, { denyList: [] }))
 app.use('*', requestId())
 app.use(compress())
