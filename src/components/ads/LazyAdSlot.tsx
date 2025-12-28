@@ -4,6 +4,8 @@ import { ShieldOff } from 'lucide-react'
 import ms from 'ms'
 import { useEffect, useRef, useState } from 'react'
 
+import { formatDistanceFromNow } from '@/utils/date'
+
 import { JUICY_ADS_EVENT } from './constants'
 import { useCooldown } from './useCooldown'
 import { useEarnPoints } from './useEarnPoints'
@@ -62,15 +64,8 @@ export default function LazyAdSlot({
   const apiError = requestToken.error ?? earnPoints.error ?? null
   const canEarn = rewardEnabled && token !== null && !isLoading && !isAdBlocked
   const shouldDimAd = rewardEnabled && !canEarn
-
-  const {
-    until: cooldownUntil,
-    remainingSeconds: cooldownSecondsFromHook,
-    clear: clearCooldown,
-    startFromRemainingSeconds,
-  } = useCooldown()
-
-  const cooldownRemainingSeconds = cooldownSecondsFromHook ?? apiError?.remainingSeconds ?? null
+  const { until: cooldownUntil, clear: clearCooldown, startFromRemainingSeconds } = useCooldown()
+  const cooldownLabel = cooldownUntil ? formatDistanceFromNow(new Date(cooldownUntil)) : null
 
   function handleRefresh() {
     if (!rewardEnabled || isLoading || isAdBlocked) {
@@ -352,7 +347,7 @@ export default function LazyAdSlot({
               <div className="text-center">
                 <span className="text-amber-500">
                   {apiError.error}
-                  {cooldownRemainingSeconds && ` (${cooldownRemainingSeconds}초)`}
+                  <span className="tabular-nums">{cooldownLabel && ` (${cooldownLabel})`}</span>
                 </span>
                 {!apiError.error.includes('한도') && !apiError.error.includes('잠시 후') && (
                   <button className="ml-2 text-blue-400 hover:underline" disabled={isLoading} onClick={handleRefresh}>
