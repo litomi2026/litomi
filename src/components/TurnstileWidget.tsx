@@ -4,9 +4,11 @@ import { Turnstile, TurnstileInstance } from '@marsidev/react-turnstile'
 import { Ref } from 'react'
 import { toast } from 'sonner'
 
-import { NEXT_PUBLIC_TURNSTILE_SITE_KEY } from '@/constants/env'
+import { env } from '@/env/client'
 
 import IconSpinner from './icons/IconSpinner'
+
+const { NEXT_PUBLIC_TURNSTILE_SITE_KEY } = env
 
 interface Props {
   className?: string

@@ -2,8 +2,8 @@ import { and, eq, isNull, sql } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 
 import { CookieKey } from '@/constants/storage'
-import { trustedBrowserTable, twoFactorBackupCodeTable, twoFactorTable } from '@/database/supabase/2fa-schema'
 import { db } from '@/database/supabase/drizzle'
+import { trustedBrowserTable, twoFactorBackupCodeTable, twoFactorTable } from '@/database/supabase/two-factor'
 import { JWTType, verifyJWT } from '@/utils/jwt'
 import { TrustedBrowserPayload } from '@/utils/trusted-browser'
 

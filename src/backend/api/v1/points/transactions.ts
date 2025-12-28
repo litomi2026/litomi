@@ -1,13 +1,28 @@
 import { zValidator } from '@hono/zod-validator'
 import { and, desc, eq, lt } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { HTTPException } from 'hono/http-exception'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
 import { TRANSACTION_TYPE } from '@/constants/points'
 import { createCacheControl } from '@/crawler/proxy-utils'
 import { db } from '@/database/supabase/drizzle'
-import { pointTransactionTable } from '@/database/supabase/points-schema'
+import { pointTransactionTable } from '@/database/supabase/points'
+
+export type GETV1PointTransactionResponse = {
+  items: Transaction[]
+  nextCursor: number | null
+}
+
+export type Transaction = {
+  id: number
+  type: 'earn' | 'spend'
+  amount: number
+  balanceAfter: number
+  description: string | null
+  createdAt: string
+}
 
 const route = new Hono<Env>()
 
@@ -21,7 +36,7 @@ route.get('/', zValidator('query', querySchema), async (c) => {
   const userId = c.get('userId')
 
   if (!userId) {
-    return c.json({ error: 'Unauthorized' }, 401)
+    throw new HTTPException(401)
   }
 
   const { cursor } = c.req.valid('query')
@@ -50,7 +65,7 @@ route.get('/', zValidator('query', querySchema), async (c) => {
     transactions.pop()
   }
 
-  const items = transactions.map((t) => ({
+  const items: Transaction[] = transactions.map((t) => ({
     id: t.id,
     type: t.type === TRANSACTION_TYPE.AD_CLICK ? 'earn' : 'spend',
     amount: t.amount,
@@ -69,7 +84,7 @@ route.get('/', zValidator('query', querySchema), async (c) => {
     maxAge: 3,
   })
 
-  return c.json(response, { headers: { 'Cache-Control': cacheControl } })
+  return c.json<GETV1PointTransactionResponse>(response, { headers: { 'Cache-Control': cacheControl } })
 })
 
 export default route

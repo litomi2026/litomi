@@ -2,7 +2,7 @@ import { eq } from 'drizzle-orm'
 import { cache } from 'react'
 
 import { db } from '@/database/supabase/drizzle'
-import { userTable } from '@/database/supabase/schema'
+import { userTable } from '@/database/supabase/user'
 
 export const getMe = cache(async (userId: number) => {
   const [user] = await db

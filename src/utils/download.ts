@@ -1,4 +1,6 @@
-import { NEXT_PUBLIC_CORS_PROXY_URL } from '@/constants/env'
+import { env } from '@/env/client'
+
+const { NEXT_PUBLIC_CORS_PROXY_URL } = env
 
 export function downloadBlob(blob: Blob, filename: string) {
   const blobURL = URL.createObjectURL(blob)

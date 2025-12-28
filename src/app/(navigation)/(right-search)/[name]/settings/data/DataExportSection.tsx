@@ -1,13 +1,9 @@
 import { eq } from 'drizzle-orm'
 
+import { bookmarkTable, readingHistoryTable, userRatingTable } from '@/database/supabase/activity'
+import { userCensorshipTable } from '@/database/supabase/censorship'
 import { db } from '@/database/supabase/drizzle'
-import {
-  bookmarkTable,
-  libraryTable,
-  readingHistoryTable,
-  userCensorshipTable,
-  userRatingTable,
-} from '@/database/supabase/schema'
+import { libraryTable } from '@/database/supabase/library'
 
 import DataExportSectionClient from './DataExportSectionClient'
 

@@ -1,24 +1,19 @@
 import { zValidator } from '@hono/zod-validator'
 import { count, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { HTTPException } from 'hono/http-exception'
 import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
 import { getUserId } from '@/backend/utils/auth'
+import { bookmarkTable } from '@/database/supabase/activity'
 import { db } from '@/database/supabase/drizzle'
-import { bookmarkTable, userTable } from '@/database/supabase/schema'
+import { userTable } from '@/database/supabase/user'
 
 import { getBookmarkLimit } from './limit'
 
-export type POSTV1BookmarkImportErrorResponse = {
-  error: string
-}
-
-export type POSTV1BookmarkImportResponse = POSTV1BookmarkImportErrorResponse | POSTV1BookmarkImportSuccessResponse
-
-export type POSTV1BookmarkImportSuccessResponse = {
-  success: true
+export type POSTV1BookmarkImportResponse = {
   imported: number
   skipped: number
 }
@@ -41,7 +36,7 @@ route.post('/', zValidator('json', importSchema), async (c) => {
   const userId = getUserId()
 
   if (!userId) {
-    return c.json<POSTV1BookmarkImportErrorResponse>({ error: '로그인이 필요해요' }, 401)
+    throw new HTTPException(401)
   }
 
   const { bookmarks, mode } = c.req.valid('json')
@@ -106,8 +101,7 @@ route.post('/', zValidator('json', importSchema), async (c) => {
       }
     })
 
-    return c.json<POSTV1BookmarkImportSuccessResponse>({
-      success: true,
+    return c.json<POSTV1BookmarkImportResponse>({
       imported,
       skipped,
     })
@@ -115,27 +109,18 @@ route.post('/', zValidator('json', importSchema), async (c) => {
     const message = error instanceof Error ? error.message : 'UNKNOWN_ERROR'
 
     if (message === 'IMPORT_LIMIT_REACHED_REPLACE') {
-      return c.json<POSTV1BookmarkImportErrorResponse>(
-        { error: '북마크 저장 한도에 도달했어요. 리보로 확장할 수 있어요' },
-        403,
-      )
+      throw new HTTPException(403, { message: '북마크 저장 한도에 도달했어요. 리보로 확장할 수 있어요' })
     }
     if (message === 'IMPORT_LIMIT_REACHED_MERGE') {
-      return c.json<POSTV1BookmarkImportErrorResponse>(
-        { error: '북마크 저장 한도에 도달했어요. 리보로 확장할 수 있어요' },
-        403,
-      )
+      throw new HTTPException(403, { message: '북마크 저장 한도에 도달했어요. 리보로 확장할 수 있어요' })
     }
     if (message.startsWith('IMPORT_NOT_ENOUGH_SLOTS:')) {
       const availableSlots = Number(message.split(':')[1] ?? 0)
-      return c.json<POSTV1BookmarkImportErrorResponse>(
-        { error: `최대 ${availableSlots.toLocaleString()}개만 추가로 가져올 수 있어요` },
-        403,
-      )
+      throw new HTTPException(403, { message: `최대 ${availableSlots.toLocaleString()}개만 추가로 가져올 수 있어요` })
     }
 
     console.error(error)
-    return c.json<POSTV1BookmarkImportErrorResponse>({ error: '북마크 가져오기에 실패했어요' }, 500)
+    throw new HTTPException(500, { message: '북마크 가져오기에 실패했어요' })
   }
 })
 

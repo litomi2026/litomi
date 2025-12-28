@@ -1,52 +1,24 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
+import type { GETV1PointsResponse } from '@/backend/api/v1/points/get'
+
 import { QueryKeys } from '@/constants/query'
+import { env } from '@/env/client'
 import { handleResponseError } from '@/utils/react-query-error'
 
-type ExpansionInfo = {
-  base: number
-  extra: number
-  current: number
-  max: number
-  canExpand: boolean
-  price: number
-  unit: number
-}
-
-type ExpansionResponse = {
-  library: ExpansionInfo
-  history: ExpansionInfo
-  bookmark: ExpansionInfo
-}
-
-type PointsResponse = {
-  balance: number
-  totalEarned: number
-  totalSpent: number
-}
+const { NEXT_PUBLIC_BACKEND_URL } = env
 
 type QueryOptions = {
   enabled?: boolean
 }
 
-export function useExpansionQuery({ enabled = true }: QueryOptions = {}) {
-  return useQuery<ExpansionResponse>({
-    queryKey: QueryKeys.pointsExpansion,
-    queryFn: async () => {
-      const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/points/expansion`, { credentials: 'include' })
-      return handleResponseError<ExpansionResponse>(response)
-    },
-    enabled,
-  })
-}
-
 export function usePointsQuery({ enabled = true }: QueryOptions = {}) {
-  return useQuery<PointsResponse>({
+  return useQuery({
     queryKey: QueryKeys.points,
     queryFn: async () => {
-      const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/points`, { credentials: 'include' })
-      return handleResponseError<PointsResponse>(response)
+      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/points`
+      const response = await fetch(url, { credentials: 'include' })
+      return handleResponseError<GETV1PointsResponse>(response)
     },
     enabled,
   })

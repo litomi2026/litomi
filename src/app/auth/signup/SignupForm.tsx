@@ -10,15 +10,17 @@ import { toast } from 'sonner'
 
 import IconSpinner from '@/components/icons/IconSpinner'
 import TurnstileWidget from '@/components/TurnstileWidget'
-import { NEXT_PUBLIC_GA_ID } from '@/constants/env'
 import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
+import { env } from '@/env/client'
 import useServerAction, { getFieldError, getFormField } from '@/hook/useServerAction'
-import amplitude from '@/lib/amplitude/lazy'
+import amplitude from '@/lib/amplitude/browser'
 import { sanitizeRedirect } from '@/utils'
 
 import signup from './action'
+
+const { NEXT_PUBLIC_GA_ID } = env
 
 type SignupData = {
   userId: number
@@ -40,8 +42,10 @@ export default function SignupForm() {
       if (userId) {
         amplitude.setUserId(userId)
         amplitude.track('signup', { loginId, nickname })
-        sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: userId })
-        sendGAEvent('event', 'signup', { loginId, nickname })
+        if (NEXT_PUBLIC_GA_ID) {
+          sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: userId })
+          sendGAEvent('event', 'signup', { loginId, nickname })
+        }
       }
 
       await queryClient.invalidateQueries({ queryKey: QueryKeys.me, type: 'all' })

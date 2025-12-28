@@ -8,8 +8,8 @@ import { userAgent as getUserAgent } from 'next/server'
 import { COOKIE_DOMAIN } from '@/constants'
 import { MAX_TRUSTED_DEVICES_PER_USER } from '@/constants/policy'
 import { CookieKey } from '@/constants/storage'
-import { trustedBrowserTable } from '@/database/supabase/2fa-schema'
 import { db } from '@/database/supabase/drizzle'
+import { trustedBrowserTable } from '@/database/supabase/two-factor'
 import { sec } from '@/utils/date'
 import { JWTType, signJWT } from '@/utils/jwt'
 
@@ -89,6 +89,7 @@ export async function setTrustedBrowserCookie(cookieStore: ReadonlyRequestCookie
     domain: COOKIE_DOMAIN,
     httpOnly: true,
     maxAge: sec(`${TRUSTED_DEVICE_EXPIRY_DAYS} days`),
+    path: '/auth/login',
     sameSite: 'strict',
     secure: true,
   })

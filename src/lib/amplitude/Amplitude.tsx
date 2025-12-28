@@ -3,7 +3,7 @@
 import { LogLevel } from '@amplitude/analytics-browser/lib/esm/types'
 import { useEffect } from 'react'
 
-import amplitude from '@/lib/amplitude/lazy'
+import amplitude from '@/lib/amplitude/browser'
 
 type Props = {
   apiKey: string

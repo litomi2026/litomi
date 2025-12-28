@@ -1,24 +1,19 @@
 import { zValidator } from '@hono/zod-validator'
 import { and, count, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { HTTPException } from 'hono/http-exception'
 import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
 import { getUserId } from '@/backend/utils/auth'
+import { bookmarkTable } from '@/database/supabase/activity'
 import { db } from '@/database/supabase/drizzle'
-import { bookmarkTable, userTable } from '@/database/supabase/schema'
+import { userTable } from '@/database/supabase/user'
 
 import { getBookmarkLimit } from './limit'
 
-export type POSTV1BookmarkToggleErrorResponse = {
-  error: string
-}
-
-export type POSTV1BookmarkToggleResponse = POSTV1BookmarkToggleErrorResponse | POSTV1BookmarkToggleSuccessResponse
-
-export type POSTV1BookmarkToggleSuccessResponse = {
-  success: true
+export type POSTV1BookmarkToggleResponse = {
   mangaId: number
   createdAt: string | null
 }
@@ -33,7 +28,7 @@ route.post('/', zValidator('json', toggleSchema), async (c) => {
   const userId = getUserId()
 
   if (!userId) {
-    return c.json<POSTV1BookmarkToggleErrorResponse>({ error: '로그인이 필요해요' }, 401)
+    throw new HTTPException(401)
   }
 
   const { mangaId } = c.req.valid('json')
@@ -75,8 +70,7 @@ route.post('/', zValidator('json', toggleSchema), async (c) => {
       return { createdAt }
     })
 
-    return c.json<POSTV1BookmarkToggleSuccessResponse>({
-      success: true,
+    return c.json<POSTV1BookmarkToggleResponse>({
       mangaId,
       createdAt: createdAt ? createdAt.toISOString() : null,
     })
@@ -84,14 +78,11 @@ route.post('/', zValidator('json', toggleSchema), async (c) => {
     const message = error instanceof Error ? error.message : 'UNKNOWN_ERROR'
 
     if (message === 'BOOKMARK_LIMIT_REACHED') {
-      return c.json<POSTV1BookmarkToggleErrorResponse>(
-        { error: '북마크 저장 한도에 도달했어요. 리보로 확장할 수 있어요' },
-        403,
-      )
+      throw new HTTPException(403, { message: '북마크 저장 한도에 도달했어요. 리보로 확장할 수 있어요' })
     }
 
     console.error(error)
-    return c.json<POSTV1BookmarkToggleErrorResponse>({ error: '북마크 처리에 실패했어요' }, 500)
+    throw new HTTPException(500, { message: '북마크 처리에 실패했어요' })
   }
 })
 

@@ -1,7 +1,7 @@
 import { sql } from 'drizzle-orm'
 
 import { db } from '@/database/supabase/drizzle'
-import { userTable } from '@/database/supabase/schema'
+import { userTable } from '@/database/supabase/user'
 
 type Params = {
   loginId?: string

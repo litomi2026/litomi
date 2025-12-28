@@ -1,21 +1,16 @@
 'use client'
 
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Bookmark, BookOpen, FolderPlus } from 'lucide-react'
 import { toast } from 'sonner'
 
 import IconSpinner from '@/components/icons/IconSpinner'
-import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { POINT_CONSTANTS } from '@/constants/points'
-import { QueryKeys } from '@/constants/query'
+import useMeQuery from '@/query/useMeQuery'
 import { formatNumber } from '@/utils/format'
 
-import { useExpansionQuery } from './usePointsQuery'
-
-type Props = {
-  balance: number
-  enabled: boolean
-}
+import { usePointsQuery } from '../usePointsQuery'
+import { useExpansionQuery } from './useExpansionQuery'
+import { useSpendPointsMutation } from './useSpendPointsMutation'
 
 type ShopItem = {
   id: string
@@ -27,24 +22,62 @@ type ShopItem = {
   itemId?: string
 }
 
-type SpendRequest = {
-  type: ShopItem['type']
-  itemId?: string
-}
+export default function PointsShop() {
+  const { data: me } = useMeQuery()
+  const isLoggedIn = Boolean(me)
+  const { data: points } = usePointsQuery({ enabled: isLoggedIn })
+  const { data: expansion, isLoading } = useExpansionQuery({ enabled: isLoggedIn })
+  const spendPoints = useSpendPointsMutation()
+  const displayExpansion = isLoggedIn ? expansion : undefined
+  const balance = points?.balance ?? 0
 
-type SpendResponse = {
-  success: boolean
-  balance: number
-  spent: number
-}
+  if (isLoggedIn && isLoading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <IconSpinner className="size-6" />
+      </div>
+    )
+  }
 
-export default function PointsShop({ balance, enabled }: Props) {
-  const { data: expansion, isLoading } = useExpansionQuery({ enabled })
-  const spendPoints = useSpendPoints()
-  const displayExpansion = enabled ? expansion : undefined
+  const shopItems: ShopItem[] = [
+    {
+      id: 'bookmark-expansion-small',
+      type: 'bookmark',
+      itemId: 'small',
+      name: '북마크 확장',
+      description: `+${POINT_CONSTANTS.BOOKMARK_EXPANSION_SMALL_AMOUNT}개 (현재: ${displayExpansion?.bookmark.current ?? 500}/${displayExpansion?.bookmark.max ?? 5000}개)`,
+      price: POINT_CONSTANTS.BOOKMARK_EXPANSION_SMALL_PRICE,
+      icon: <Bookmark className="size-5" />,
+    },
+    {
+      id: 'bookmark-expansion-large',
+      type: 'bookmark',
+      itemId: 'large',
+      name: '북마크 확장',
+      description: `+${POINT_CONSTANTS.BOOKMARK_EXPANSION_LARGE_AMOUNT}개 (현재: ${displayExpansion?.bookmark.current ?? 500}/${displayExpansion?.bookmark.max ?? 5000}개)`,
+      price: POINT_CONSTANTS.BOOKMARK_EXPANSION_LARGE_PRICE,
+      icon: <Bookmark className="size-5" />,
+    },
+    {
+      id: 'library-expansion',
+      type: 'library',
+      name: '내 서재 확장',
+      description: `+${POINT_CONSTANTS.LIBRARY_EXPANSION_AMOUNT}개 (현재: ${displayExpansion?.library.current ?? 5}/${displayExpansion?.library.max ?? 30}개)`,
+      price: POINT_CONSTANTS.LIBRARY_EXPANSION_PRICE,
+      icon: <FolderPlus className="size-5" />,
+    },
+    {
+      id: 'history-expansion',
+      type: 'history',
+      name: '감상 기록 확장',
+      description: `+${POINT_CONSTANTS.HISTORY_EXPANSION_AMOUNT}개 (현재: ${displayExpansion?.history.current ?? 500}/${displayExpansion?.history.max ?? 5000}개)`,
+      price: POINT_CONSTANTS.HISTORY_EXPANSION_PRICE,
+      icon: <BookOpen className="size-5" />,
+    },
+  ]
 
   function handlePurchase(item: ShopItem) {
-    if (!enabled || spendPoints.isPending) {
+    if (!isLoggedIn || spendPoints.isPending) {
       return
     }
 
@@ -68,55 +101,13 @@ export default function PointsShop({ balance, enabled }: Props) {
     })
   }
 
-  if (enabled && isLoading) {
-    return (
-      <div className="flex items-center justify-center py-8">
-        <IconSpinner className="size-6" />
-      </div>
-    )
-  }
-
-  const shopItems: ShopItem[] = [
-    {
-      id: 'bookmark-expansion-small',
-      type: 'bookmark',
-      itemId: 'small',
-      name: '북마크 확장 (소)',
-      description: `+${POINT_CONSTANTS.BOOKMARK_EXPANSION_SMALL_AMOUNT}개 (현재: ${displayExpansion?.bookmark.current ?? 500}/${displayExpansion?.bookmark.max ?? 5000}개)`,
-      price: POINT_CONSTANTS.BOOKMARK_EXPANSION_SMALL_PRICE,
-      icon: <Bookmark className="size-5" />,
-    },
-    {
-      id: 'bookmark-expansion-large',
-      type: 'bookmark',
-      itemId: 'large',
-      name: '북마크 확장 (대)',
-      description: `+${POINT_CONSTANTS.BOOKMARK_EXPANSION_LARGE_AMOUNT}개 (현재: ${displayExpansion?.bookmark.current ?? 500}/${displayExpansion?.bookmark.max ?? 5000}개)`,
-      price: POINT_CONSTANTS.BOOKMARK_EXPANSION_LARGE_PRICE,
-      icon: <Bookmark className="size-5" />,
-    },
-    {
-      id: 'library-expansion',
-      type: 'library',
-      name: '내 서재 확장',
-      description: `+${POINT_CONSTANTS.LIBRARY_EXPANSION_AMOUNT}개 (현재: ${displayExpansion?.library.current ?? 5}/${displayExpansion?.library.max ?? 30}개)`,
-      price: POINT_CONSTANTS.LIBRARY_EXPANSION_PRICE,
-      icon: <FolderPlus className="size-5" />,
-    },
-    {
-      id: 'history-expansion',
-      type: 'history',
-      name: '감상 기록 확장',
-      description: `+${POINT_CONSTANTS.HISTORY_EXPANSION_AMOUNT}개 (현재: ${displayExpansion?.history.current ?? 500}/${displayExpansion?.history.max ?? 5000}개)`,
-      price: POINT_CONSTANTS.HISTORY_EXPANSION_PRICE,
-      icon: <BookOpen className="size-5" />,
-    },
-  ]
-
   return (
-    <div aria-disabled={!enabled} className="space-y-3 aria-disabled:opacity-80">
-      <p className="text-sm text-zinc-400 mb-4">리보로 내 공간을 확장해 보세요.</p>
-      {!enabled && <p className="text-xs text-zinc-500">로그인하면 상점을 이용할 수 있어요</p>}
+    <div aria-disabled={!isLoggedIn} className="space-y-3 aria-disabled:opacity-80">
+      {isLoggedIn ? (
+        <p className="text-sm leading-5 text-zinc-400 mb-4">리보로 내 공간을 확장해 보세요</p>
+      ) : (
+        <p className="text-xs leading-5 text-zinc-500 mb-4">로그인하면 상점을 이용할 수 있어요</p>
+      )}
 
       {shopItems.map((item) => {
         const canAfford = balance >= item.price
@@ -147,8 +138,8 @@ export default function PointsShop({ balance, enabled }: Props) {
             break
         }
 
-        const isMaxed = enabled && expansionInfo ? expansionInfo.current + unit > expansionInfo.max : false
-        const isDisabled = !enabled || isMaxed || !canAfford || spendPoints.isPending
+        const isMaxed = isLoggedIn && expansionInfo ? expansionInfo.current + unit > expansionInfo.max : false
+        const isDisabled = !isLoggedIn || isMaxed || !canAfford || spendPoints.isPending
 
         return (
           <div
@@ -186,27 +177,4 @@ export default function PointsShop({ balance, enabled }: Props) {
       })}
     </div>
   )
-}
-
-function useSpendPoints() {
-  const queryClient = useQueryClient()
-
-  return useMutation<SpendResponse, { error: string }, SpendRequest>({
-    mutationFn: async ({ type, itemId }) => {
-      const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/points/spend`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ type, itemId }),
-      })
-      const data = await response.json()
-      if (!response.ok) throw data
-      return data
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QueryKeys.points })
-      queryClient.invalidateQueries({ queryKey: QueryKeys.pointsExpansion })
-      queryClient.invalidateQueries({ queryKey: QueryKeys.pointsTransactions })
-    },
-  })
 }

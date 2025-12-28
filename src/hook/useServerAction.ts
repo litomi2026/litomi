@@ -3,7 +3,7 @@ import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
 
 import { QueryKeys } from '@/constants/query'
-import amplitude from '@/lib/amplitude/lazy'
+import amplitude from '@/lib/amplitude/browser'
 import { ActionResponse, ErrorResponse, SuccessResponse } from '@/utils/action-response'
 
 /**

@@ -7,18 +7,13 @@ import { authenticator } from 'otplib'
 import { z } from 'zod'
 
 import { TOTP_ISSUER } from '@/constants'
-import { twoFactorBackupCodeTable, twoFactorTable } from '@/database/supabase/2fa-schema'
 import { db } from '@/database/supabase/drizzle'
-import { userTable } from '@/database/supabase/schema'
+import { twoFactorBackupCodeTable, twoFactorTable } from '@/database/supabase/two-factor'
+import { userTable } from '@/database/supabase/user'
 import { badRequest, forbidden, internalServerError, noContent, ok, unauthorized } from '@/utils/action-response'
 import { validateUserIdFromCookie } from '@/utils/cookie'
-import {
-  decryptTOTPSecret,
-  encryptTOTPSecret,
-  generateBackupCodes,
-  generateQRCode,
-  verifyTOTPToken,
-} from '@/utils/two-factor'
+import { decryptTOTPSecret, encryptTOTPSecret, generateQRCode, verifyTOTPToken } from '@/utils/two-factor'
+import { generateBackupCodes } from '@/utils/two-factor-backup-code'
 
 const tokenSchema = z.object({
   token: z.string().length(6).regex(/^\d+$/),

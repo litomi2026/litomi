@@ -10,7 +10,7 @@ import IconSpinner from '@/components/icons/IconSpinner'
 import IconTrash from '@/components/icons/IconTrash'
 import { QueryKeys } from '@/constants/query'
 import useServerAction from '@/hook/useServerAction'
-import amplitude from '@/lib/amplitude/lazy'
+import amplitude from '@/lib/amplitude/browser'
 
 import { deleteAccount } from './actions'
 

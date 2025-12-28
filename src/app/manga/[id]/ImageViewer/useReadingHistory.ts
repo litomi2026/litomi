@@ -3,11 +3,13 @@
 import { useQuery } from '@tanstack/react-query'
 
 import { GETV1MangaIdHistoryResponse } from '@/backend/api/v1/manga/[id]/history'
-import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
 import { SessionStorageKeyMap } from '@/constants/storage'
+import { env } from '@/env/client'
 import useMeQuery from '@/query/useMeQuery'
 import { handleResponseError } from '@/utils/react-query-error'
+
+const { NEXT_PUBLIC_BACKEND_URL } = env
 
 export default function useReadingHistory(mangaId: number) {
   const { data: me, isLoading: isMeLoading } = useMeQuery()

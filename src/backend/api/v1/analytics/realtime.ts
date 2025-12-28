@@ -5,9 +5,11 @@ import 'server-only'
 
 import { Env } from '@/backend'
 import { SHORT_NAME } from '@/constants'
-import { GA_PROPERTY_ID, GA_SERVICE_ACCOUNT_EMAIL, GA_SERVICE_ACCOUNT_KEY } from '@/constants/env'
 import { REALTIME_PAGE_VIEW_MIN_THRESHOLD } from '@/constants/policy'
 import { createCacheControl } from '@/crawler/proxy-utils'
+import { env } from '@/env/server.hono'
+
+const { GA_PROPERTY_ID, GA_SERVICE_ACCOUNT_EMAIL, GA_SERVICE_ACCOUNT_KEY } = env
 
 export type GETV1AnalyticsRealtimeResponse = {
   totalActiveUsers: number

@@ -1,6 +1,8 @@
 import * as amplitude from '@amplitude/analytics-node'
 
-import { AMPLITUDE_API_KEY } from '@/constants/env'
+import { env } from '@/env/server.next'
+
+const { AMPLITUDE_API_KEY } = env
 
 // Initialize Amplitude once
 let isInitialized = false

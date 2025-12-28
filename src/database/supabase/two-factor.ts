@@ -1,7 +1,7 @@
 import { bigint, pgTable, primaryKey, text, timestamp, unique } from 'drizzle-orm/pg-core'
 import 'server-only'
 
-import { userTable } from './schema'
+import { userTable } from './user'
 
 export const twoFactorTable = pgTable('two_factor', {
   userId: bigint('user_id', { mode: 'number' })

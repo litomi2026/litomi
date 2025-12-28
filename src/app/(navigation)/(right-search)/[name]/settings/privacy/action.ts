@@ -5,7 +5,7 @@ import { eq } from 'drizzle-orm'
 import { z } from 'zod'
 
 import { db } from '@/database/supabase/drizzle'
-import { userTable } from '@/database/supabase/schema'
+import { userTable } from '@/database/supabase/user'
 import { badRequest, internalServerError, ok, unauthorized } from '@/utils/action-response'
 import { validateUserIdFromCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'

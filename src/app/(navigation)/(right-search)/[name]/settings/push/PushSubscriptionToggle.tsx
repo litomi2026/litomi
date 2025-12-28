@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 import Toggle from '@/components/ui/Toggle'
-import { NEXT_PUBLIC_VAPID_PUBLIC_KEY } from '@/constants/env'
+import { env } from '@/env/client'
 import useServerAction from '@/hook/useServerAction'
 import { checkIOSDevice, checkIOSSafari, urlBase64ToUint8Array } from '@/utils/browser'
 import { getUsernameFromParam } from '@/utils/param'
@@ -13,6 +13,8 @@ import { getUsernameFromParam } from '@/utils/param'
 import { Params } from '../../common'
 import { subscribeToNotifications, unsubscribeFromNotifications } from './action'
 import { getCurrentBrowserEndpoint } from './common'
+
+const { NEXT_PUBLIC_VAPID_PUBLIC_KEY } = env
 
 type Props = {
   endpoints: string[]

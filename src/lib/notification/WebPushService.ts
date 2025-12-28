@@ -2,9 +2,11 @@ import { and, eq, inArray } from 'drizzle-orm'
 import webpush, { PushSubscription } from 'web-push'
 
 import { CANONICAL_URL } from '@/constants'
-import { NEXT_PUBLIC_VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY } from '@/constants/env'
 import { db } from '@/database/supabase/drizzle'
-import { pushSettingsTable, webPushTable } from '@/database/supabase/schema'
+import { pushSettingsTable, webPushTable } from '@/database/supabase/notification'
+import { env } from '@/env/server.next'
+
+const { NEXT_PUBLIC_VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY } = env
 
 webpush.setVapidDetails(CANONICAL_URL.replace('http://', 'https://'), NEXT_PUBLIC_VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY)
 

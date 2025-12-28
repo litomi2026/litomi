@@ -21,9 +21,13 @@ import {
   SHORT_NAME,
   THEME_COLOR,
 } from '@/constants'
-import { AMPLITUDE_API_KEY, NEXT_PUBLIC_GA_ID } from '@/constants/env'
+import { env } from '@/env/client'
+import { env as serverEnv } from '@/env/server.next'
 
 import QueryProvider from '../components/QueryProvider'
+
+const { NEXT_PUBLIC_GA_ID } = env
+const { AMPLITUDE_API_KEY } = serverEnv
 
 // NOTE: 사용하지 않을 수 있어서 dynamic import
 const Amplitude = dynamic(() => import('@/lib/amplitude/Amplitude'))
@@ -108,8 +112,8 @@ export default function RootLayout({ children }: Readonly<Props>) {
         <ServiceWorkerRegistrar />
         <HiyobiPing />
         <Toaster duration={3000} position="top-center" richColors theme="system" />
-        {AMPLITUDE_API_KEY && <Amplitude apiKey={AMPLITUDE_API_KEY} />}
         {NEXT_PUBLIC_GA_ID && <GoogleAnalytics gaId={NEXT_PUBLIC_GA_ID} />}
+        {AMPLITUDE_API_KEY && <Amplitude apiKey={AMPLITUDE_API_KEY} />}
       </body>
     </html>
   )

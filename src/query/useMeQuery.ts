@@ -4,10 +4,12 @@ import ms from 'ms'
 import { useEffect } from 'react'
 
 import { GETV1MeResponse } from '@/backend/api/v1/me'
-import { NEXT_PUBLIC_BACKEND_URL, NEXT_PUBLIC_GA_ID } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
-import amplitude from '@/lib/amplitude/lazy'
+import { env } from '@/env/client'
+import amplitude from '@/lib/amplitude/browser'
 import { handleResponseError, ResponseError } from '@/utils/react-query-error'
+
+const { NEXT_PUBLIC_BACKEND_URL, NEXT_PUBLIC_GA_ID } = env
 
 let isAnalyticsInitialized = false
 
@@ -40,7 +42,9 @@ export default function useMeQuery() {
     if (userId && !isAnalyticsInitialized) {
       isAnalyticsInitialized = true
       amplitude.setUserId(userId)
-      sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: userId })
+      if (NEXT_PUBLIC_GA_ID) {
+        sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: userId })
+      }
     }
   }, [userId])
 

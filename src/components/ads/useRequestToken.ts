@@ -2,7 +2,13 @@
 
 import { useMutation } from '@tanstack/react-query'
 
-import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
+import type { POSTV1PointTokenResponse } from '@/backend/api/v1/points/token'
+
+import { env } from '@/env/client'
+
+import { parseRewardedAdsErrorResponse } from './util'
+
+const { NEXT_PUBLIC_BACKEND_URL } = env
 
 type RewardedAdsAPIError = {
   error: string
@@ -10,14 +16,8 @@ type RewardedAdsAPIError = {
   remainingSeconds?: number
 }
 
-type RewardedAdsTokenResponse = {
-  token: string
-  expiresAt: string
-  dailyRemaining: number
-}
-
 export function useRequestToken(adSlotId: string) {
-  return useMutation<RewardedAdsTokenResponse, RewardedAdsAPIError>({
+  return useMutation<POSTV1PointTokenResponse, RewardedAdsAPIError>({
     mutationFn: async () => {
       const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/points/token`, {
         method: 'POST',
@@ -26,13 +26,11 @@ export function useRequestToken(adSlotId: string) {
         body: JSON.stringify({ adSlotId }),
       })
 
-      const data = (await response.json()) as unknown
-
       if (!response.ok) {
-        throw data as RewardedAdsAPIError
+        throw await parseRewardedAdsErrorResponse(response)
       }
 
-      return data as RewardedAdsTokenResponse
+      return (await response.json()) as POSTV1PointTokenResponse
     },
   })
 }

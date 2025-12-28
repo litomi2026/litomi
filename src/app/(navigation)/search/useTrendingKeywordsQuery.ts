@@ -3,10 +3,12 @@
 import { useQuery } from '@tanstack/react-query'
 
 import { type GETTrendingKeywordsResponse } from '@/backend/api/v1/search/trending/GET'
-import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
+import { env } from '@/env/client'
 import useLocaleFromCookie from '@/hook/useLocaleFromCookie'
 import { handleResponseError } from '@/utils/react-query-error'
+
+const { NEXT_PUBLIC_BACKEND_URL } = env
 
 type Params = {
   locale: string

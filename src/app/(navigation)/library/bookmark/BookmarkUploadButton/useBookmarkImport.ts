@@ -2,15 +2,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-import type {
-  POSTV1BookmarkImportErrorResponse,
-  POSTV1BookmarkImportSuccessResponse,
-} from '@/backend/api/v1/bookmark/import'
+import type { POSTV1BookmarkImportResponse } from '@/backend/api/v1/bookmark/import'
 
-import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
+import { env } from '@/env/client'
 
 import type { BookmarkExportData, ImportMode, ImportResult, ImportState } from './types'
+
+const { NEXT_PUBLIC_BACKEND_URL } = env
 
 export function useBookmarkImport() {
   const [importMode, setImportMode] = useState<ImportMode>('merge')
@@ -30,17 +29,15 @@ export function useBookmarkImport() {
         body: JSON.stringify({ mode, bookmarks }),
       })
 
-      const data = (await response.json()) as unknown
-
       if (!response.ok) {
-        const errorData = data as POSTV1BookmarkImportErrorResponse
+        const message = await response.text().catch(() => '')
         throw {
           status: response.status,
-          error: errorData.error || '북마크 가져오기에 실패했어요',
+          error: message || '북마크 가져오기에 실패했어요',
         }
       }
 
-      const successData = data as POSTV1BookmarkImportSuccessResponse
+      const successData = (await response.json()) as POSTV1BookmarkImportResponse
       return {
         imported: successData.imported,
         skipped: successData.skipped,

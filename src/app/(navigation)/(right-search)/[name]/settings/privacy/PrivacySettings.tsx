@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm'
 
 import { db } from '@/database/supabase/drizzle'
-import { userTable } from '@/database/supabase/schema'
+import { userTable } from '@/database/supabase/user'
 
 import AutoDeletionForm from './AutoDeletionForm'
 

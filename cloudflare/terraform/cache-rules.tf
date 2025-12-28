@@ -6,6 +6,7 @@ locals {
   ttl_30d_path_equals = [
     "/",
     "/library",
+    "/@",
   ]
 
   ttl_30d_extension_equals = [
@@ -33,7 +34,7 @@ locals {
     "/tag",
     "/web-app-manifest",
     "/404",
-    "/@",
+    "/@/",
     "/_next/image",
   ]
 
@@ -51,6 +52,7 @@ locals {
 
   bypass_cache_path_prefixes = [
     "/.well-known/",
+    "/@",
     "/cdn-cgi/challenge-platform/",
   ]
 

@@ -5,9 +5,11 @@ import { useParams } from 'next/navigation'
 
 import type { GETV1LibraryMetaResponse } from '@/backend/api/v1/library/meta'
 
-import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
+import { env } from '@/env/client'
 import { handleResponseError } from '@/utils/react-query-error'
+
+const { NEXT_PUBLIC_BACKEND_URL } = env
 
 type Options = {
   libraries: GETV1LibraryMetaResponse[]

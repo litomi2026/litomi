@@ -2,10 +2,12 @@ import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 import 'server-only'
 
-import { AIVEN_CERTIFICATE, AIVEN_POSTGRES_URL } from '@/constants/env'
+import { env } from '@/env/server.common'
 import { sec } from '@/utils/date'
 
 import * as schema from './schema'
+
+const { AIVEN_CERTIFICATE, AIVEN_POSTGRES_URL } = env
 
 const aivenClient = postgres(AIVEN_POSTGRES_URL, {
   max: 3,

@@ -249,7 +249,6 @@ function SearchForm({ className = '' }: Readonly<Props>) {
           <input
             aria-autocomplete="list"
             aria-controls="search-suggestions"
-            aria-label="검색어 입력"
             autoCapitalize="off"
             autoComplete="off"
             className="bg-transparent px-3 py-2 pr-8 text-foreground min-w-0 w-full placeholder-zinc-500 text-base

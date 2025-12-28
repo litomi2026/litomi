@@ -2,8 +2,8 @@ import { and, count, desc, ne, sql } from 'drizzle-orm'
 import { Eye } from 'lucide-react'
 import { unstable_cache } from 'next/cache'
 
+import { readingHistoryTable } from '@/database/supabase/activity'
 import { db } from '@/database/supabase/drizzle'
-import { readingHistoryTable } from '@/database/supabase/schema'
 import { sec } from '@/utils/date'
 
 import MangaCardList from './MangaCardList'

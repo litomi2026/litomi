@@ -8,6 +8,7 @@ import {
   Languages,
   Palette,
   RectangleEllipsis,
+  ShieldCheck,
   Trash2,
 } from 'lucide-react'
 import { Suspense } from 'react'
@@ -19,6 +20,7 @@ import { getUserIdFromCookie } from '@/utils/cookie'
 import { getUsernameFromParam } from '@/utils/param'
 
 import { getMe } from '../common'
+import AdultVerificationSection from './adult/AdultVerificationSection'
 import DataExportSection from './data/DataExportSection'
 import AccountDeletionForm from './delete/AccountDeletionForm'
 import Forbidden from './Forbidden'
@@ -114,6 +116,18 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
         <ErrorBoundary fallback={InternalServerError}>
           <Suspense fallback={<LoadingFallback />}>
             <DataExportSection userId={userId} />
+          </Suspense>
+        </ErrorBoundary>
+      </CollapsibleSection>
+      <CollapsibleSection
+        description="비바톤에서 익명으로 성인 여부를 인증해요"
+        icon={<ShieldCheck className="size-5 shrink-0" />}
+        id="adult"
+        title="익명 성인인증"
+      >
+        <ErrorBoundary fallback={InternalServerError}>
+          <Suspense fallback={<LoadingFallback />}>
+            <AdultVerificationSection userId={userId} />
           </Suspense>
         </ErrorBoundary>
       </CollapsibleSection>

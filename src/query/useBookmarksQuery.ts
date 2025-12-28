@@ -2,11 +2,13 @@ import { useQuery } from '@tanstack/react-query'
 
 import type { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark/get'
 
-import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
+import { env } from '@/env/client'
 import { handleResponseError } from '@/utils/react-query-error'
 
 import useMeQuery from './useMeQuery'
+
+const { NEXT_PUBLIC_BACKEND_URL } = env
 
 export async function fetchBookmarks() {
   const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/bookmark`

@@ -1,12 +1,29 @@
 import { eq, sum } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { HTTPException } from 'hono/http-exception'
 
 import { Env } from '@/backend'
 import { EXPANSION_TYPE, POINT_CONSTANTS } from '@/constants/points'
 import { MAX_BOOKMARKS_PER_USER, MAX_LIBRARIES_PER_USER, MAX_READING_HISTORY_PER_USER } from '@/constants/policy'
 import { createCacheControl } from '@/crawler/proxy-utils'
 import { db } from '@/database/supabase/drizzle'
-import { userExpansionTable } from '@/database/supabase/points-schema'
+import { userExpansionTable } from '@/database/supabase/points'
+
+export type ExpansionInfo = {
+  base: number
+  extra: number
+  current: number
+  max: number
+  canExpand: boolean
+  price: number
+  unit: number
+}
+
+export type GETV1PointExpansionResponse = {
+  library: ExpansionInfo
+  history: ExpansionInfo
+  bookmark: ExpansionInfo
+}
 
 const route = new Hono<Env>()
 
@@ -14,7 +31,7 @@ route.get('/', async (c) => {
   const userId = c.get('userId')
 
   if (!userId) {
-    return c.json({ error: 'Unauthorized' }, 401)
+    throw new HTTPException(401)
   }
 
   const expansions = await db
@@ -68,7 +85,7 @@ route.get('/', async (c) => {
     maxAge: 3,
   })
 
-  return c.json(response, { headers: { 'Cache-Control': cacheControl } })
+  return c.json<GETV1PointExpansionResponse>(response, { headers: { 'Cache-Control': cacheControl } })
 })
 
 export default route

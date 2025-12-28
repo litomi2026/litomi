@@ -1,18 +1,15 @@
 'use client'
 
-import { Gift, Heart, MousePointerClick } from 'lucide-react'
-import { useState } from 'react'
+import { Heart, MousePointerClick } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { AD_SLOTS } from '@/components/ads/constants'
 import LazyAdSlot, { type AdClickResult } from '@/components/ads/LazyAdSlot'
+import useMeQuery from '@/query/useMeQuery'
 
-type Props = {
-  rewardEnabled: boolean
-}
-
-export default function RewardedAdSection({ rewardEnabled }: Props) {
-  const [lastEarned, setLastEarned] = useState<number | null>(null)
+export default function RewardedAdSection() {
+  const { data: me } = useMeQuery()
+  const rewardEnabled = Boolean(me)
 
   function handleAdClick(result: AdClickResult) {
     if (result.requiresLogin) {
@@ -29,7 +26,7 @@ export default function RewardedAdSection({ rewardEnabled }: Props) {
       return
     }
 
-    setLastEarned(result.earned)
+    toast.success(`${result.earned} 리보 적립됐어요`)
   }
 
   return (
@@ -67,21 +64,9 @@ export default function RewardedAdSection({ rewardEnabled }: Props) {
       </div>
 
       {/* CLS 방지: 두 상태 모두 렌더링하고 visibility로 전환 */}
-      <div className="relative h-5">
-        <div
-          aria-hidden={!!lastEarned}
-          className="absolute inset-0 flex items-center justify-center gap-2 text-xs transition-opacity aria-hidden:opacity-0"
-        >
-          <MousePointerClick className="size-3 text-zinc-500" />
-          <span className="text-zinc-500">광고를 클릭하여 리보 적립</span>
-        </div>
-        <div
-          aria-hidden={!lastEarned}
-          className="absolute inset-0 flex items-center justify-center gap-2 text-xs transition-opacity aria-hidden:opacity-0"
-        >
-          <Gift className="size-3 text-green-400" />
-          <span className="text-green-400">+{lastEarned ?? 0} 리보 적립 완료!</span>
-        </div>
+      <div className="relative h-5 flex items-center justify-center gap-2 text-xs">
+        <MousePointerClick className="size-3 text-zinc-500" />
+        <span className="text-zinc-500">광고를 클릭하여 리보 적립</span>
       </div>
     </div>
   )

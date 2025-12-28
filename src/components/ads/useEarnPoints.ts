@@ -2,8 +2,14 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
+import type { POSTV1PointEarnResponse } from '@/backend/api/v1/points/earn'
+
 import { QueryKeys } from '@/constants/query'
+import { env } from '@/env/client'
+
+import { parseRewardedAdsErrorResponse } from './util'
+
+const { NEXT_PUBLIC_BACKEND_URL } = env
 
 type RewardedAdsAPIError = {
   error: string
@@ -11,17 +17,10 @@ type RewardedAdsAPIError = {
   remainingSeconds?: number
 }
 
-type RewardedAdsEarnResponse = {
-  success: boolean
-  balance: number
-  earned: number
-  dailyRemaining: number
-}
-
 export function useEarnPoints() {
   const queryClient = useQueryClient()
 
-  return useMutation<RewardedAdsEarnResponse, RewardedAdsAPIError, string>({
+  return useMutation<POSTV1PointEarnResponse, RewardedAdsAPIError, string>({
     mutationFn: async (token) => {
       const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/points/earn`, {
         method: 'POST',
@@ -29,13 +28,12 @@ export function useEarnPoints() {
         credentials: 'include',
         body: JSON.stringify({ token }),
       })
-      const data = (await response.json()) as unknown
 
       if (!response.ok) {
-        throw data as RewardedAdsAPIError
+        throw await parseRewardedAdsErrorResponse(response)
       }
 
-      return data as RewardedAdsEarnResponse
+      return (await response.json()) as POSTV1PointEarnResponse
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QueryKeys.points })

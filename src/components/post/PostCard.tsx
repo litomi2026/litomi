@@ -3,6 +3,8 @@ import { MoreHorizontal } from 'lucide-react'
 import Link from 'next/link'
 import { ComponentProps } from 'react'
 
+import { formatDistanceToNow } from '@/utils/date'
+
 import Squircle from '../ui/Squircle'
 import PostActionButtons from './PostActionButtons'
 import PostImages from './PostImages'
@@ -73,8 +75,11 @@ export default function PostCard({ post, isThread, className = '', ...props }: R
                     <span>·</span>
                   </>
                 )}
-                <div className="shrink-0 text-xs overflow-hidden">
-                  {dayjs(post.createdAt).format('YYYY-MM-DD HH:mm')}
+                <div
+                  className="shrink-0 text-xs overflow-hidden"
+                  title={dayjs(post.createdAt).format('YYYY-MM-DD HH:mm')}
+                >
+                  {formatDistanceToNow(new Date(post.createdAt))}
                 </div>
               </div>
             </div>

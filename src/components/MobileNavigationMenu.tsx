@@ -113,11 +113,11 @@ export default function MobileNavigationMenu({ onClose }: Readonly<Props>) {
             href="/libo"
             icon={
               <PiggyBank
-                aria-current={pathname === '/libo' ? 'page' : undefined}
+                aria-current={pathname.startsWith('/libo') ? 'page' : undefined}
                 className="size-5 aria-current:fill-foreground"
               />
             }
-            isActive={pathname === '/libo'}
+            isActive={pathname.startsWith('/libo')}
             title="리보"
           />
           <MenuLink

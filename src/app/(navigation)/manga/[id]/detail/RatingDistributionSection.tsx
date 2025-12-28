@@ -2,8 +2,8 @@ import { count, eq } from 'drizzle-orm'
 import { BarChart3, Star } from 'lucide-react'
 import { unstable_cache } from 'next/cache'
 
+import { userRatingTable } from '@/database/supabase/activity'
 import { db } from '@/database/supabase/drizzle'
-import { userRatingTable } from '@/database/supabase/schema'
 import { sec } from '@/utils/date'
 
 type Props = {

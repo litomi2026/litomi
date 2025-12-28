@@ -1,8 +1,7 @@
-import { sql } from 'drizzle-orm'
-import { bigint, boolean, index, pgTable, smallint, timestamp, uniqueIndex, varchar } from 'drizzle-orm/pg-core'
+import { bigint, index, pgTable, smallint, timestamp, uniqueIndex, varchar } from 'drizzle-orm/pg-core'
 import 'server-only'
 
-import { userTable } from './schema'
+import { userTable } from './user'
 
 export const adImpressionTokenTable = pgTable(
   'ad_impression_token',
@@ -14,16 +13,13 @@ export const adImpressionTokenTable = pgTable(
     token: varchar('token', { length: 64 }).notNull().unique(),
     adSlotId: varchar('ad_slot_id', { length: 50 }).notNull(),
     createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
-    usedAt: timestamp('used_at', { precision: 3, withTimezone: true }),
-    isUsed: boolean('is_used').notNull().default(false),
+    lastEarnedAt: timestamp('last_earned_at', { precision: 3, withTimezone: true }),
     expiresAt: timestamp('expires_at', { precision: 3, withTimezone: true }).notNull(),
   },
   (table) => [
     index('idx_ad_impression_token_user').on(table.userId),
     index('idx_ad_impression_token_token').on(table.token),
-    uniqueIndex('idx_ad_token_unique_pending')
-      .on(table.userId, table.adSlotId)
-      .where(sql`${table.isUsed} = false`),
+    uniqueIndex('idx_ad_token_unique_user_ad_slot').on(table.userId, table.adSlotId),
   ],
 ).enableRLS()
 

@@ -6,16 +6,17 @@ import { cookies, headers } from 'next/headers'
 import { z } from 'zod'
 
 import { BACKUP_CODE_PATTERN } from '@/constants/policy'
-import { twoFactorBackupCodeTable, twoFactorTable } from '@/database/supabase/2fa-schema'
 import { db } from '@/database/supabase/drizzle'
-import { userTable } from '@/database/supabase/schema'
+import { twoFactorBackupCodeTable, twoFactorTable } from '@/database/supabase/two-factor'
+import { userTable } from '@/database/supabase/user'
 import { badRequest, internalServerError, ok, tooManyRequests, unauthorized } from '@/utils/action-response'
 import { getAccessTokenCookieConfig, setRefreshTokenCookie } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 import { verifyPKCEChallenge } from '@/utils/pkce-server'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
 import { createTrustedBrowserToken, insertTrustedBrowser, setTrustedBrowserCookie } from '@/utils/trusted-browser'
-import { decryptTOTPSecret, verifyBackupCode, verifyTOTPToken } from '@/utils/two-factor'
+import { decryptTOTPSecret, verifyTOTPToken } from '@/utils/two-factor'
+import { verifyBackupCode } from '@/utils/two-factor-backup-code'
 
 const verifyTwoFactorSchema = z.object({
   codeVerifier: z.string(),

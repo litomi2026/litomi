@@ -1,9 +1,11 @@
 import ms from 'ms'
 import 'server-only'
 
-import { TURNSTILE_SECRET_KEY } from '@/constants/env'
+import { env } from '@/env/server.next'
 
 import { sleep } from './time'
+
+const { TURNSTILE_SECRET_KEY } = env
 
 export interface TurnstileVerifyResponse {
   action?: string

@@ -3,7 +3,7 @@ import { desc, eq } from 'drizzle-orm'
 import { encodeLibraryIdCursor } from '@/common/cursor'
 import { LIBRARY_ITEMS_PER_PAGE } from '@/constants/policy'
 import { db } from '@/database/supabase/drizzle'
-import { libraryItemTable } from '@/database/supabase/schema'
+import { libraryItemTable } from '@/database/supabase/library'
 
 import LibraryItemsClient from './LibraryItemsClient'
 

@@ -3,7 +3,7 @@ import { and, eq, sum } from 'drizzle-orm'
 import { EXPANSION_TYPE, POINT_CONSTANTS } from '@/constants/points'
 import { MAX_BOOKMARKS_PER_USER } from '@/constants/policy'
 import { db } from '@/database/supabase/drizzle'
-import { userExpansionTable } from '@/database/supabase/points-schema'
+import { userExpansionTable } from '@/database/supabase/points'
 
 export type BookmarkTx = Parameters<Parameters<typeof db.transaction>[0]>[0]
 

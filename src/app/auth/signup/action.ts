@@ -1,13 +1,13 @@
 'use server'
 
 import { captureException } from '@sentry/nextjs'
-import { hash } from 'bcrypt'
+import { hash } from 'bcryptjs'
 import { cookies, headers } from 'next/headers'
 import { z } from 'zod'
 
 import { SALT_ROUNDS } from '@/constants'
 import { db } from '@/database/supabase/drizzle'
-import { userTable } from '@/database/supabase/schema'
+import { userTable } from '@/database/supabase/user'
 import { loginIdSchema, nicknameSchema, passwordSchema } from '@/database/zod'
 import { badRequest, conflict, created, internalServerError, tooManyRequests } from '@/utils/action-response'
 import { getAccessTokenCookieConfig } from '@/utils/cookie'

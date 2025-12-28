@@ -9,18 +9,17 @@ import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
 import type { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark/get'
-import type {
-  POSTV1BookmarkToggleErrorResponse,
-  POSTV1BookmarkToggleSuccessResponse,
-} from '@/backend/api/v1/bookmark/toggle'
+import type { POSTV1BookmarkToggleResponse } from '@/backend/api/v1/bookmark/toggle'
 
-import { NEXT_PUBLIC_BACKEND_URL } from '@/constants/env'
 import { QueryKeys } from '@/constants/query'
+import { env } from '@/env/client'
 import useBookmarksQuery from '@/query/useBookmarksQuery'
 import useMeQuery from '@/query/useMeQuery'
 
 import LoginPageLink from '../LoginPageLink'
 import { useLibraryModal } from './LibraryModal'
+
+const { NEXT_PUBLIC_BACKEND_URL } = env
 
 type Props = {
   manga: { id: number }
@@ -45,17 +44,15 @@ export default function BookmarkButton({ manga, className }: Props) {
         body: JSON.stringify({ mangaId }),
       })
 
-      const data = (await response.json()) as unknown
-
       if (!response.ok) {
-        const errorData = data as POSTV1BookmarkToggleErrorResponse
+        const message = await response.text().catch(() => '')
         throw {
           status: response.status,
-          error: errorData.error || '북마크 처리에 실패했어요',
+          error: message || '북마크 처리에 실패했어요',
         }
       }
 
-      const successData = data as POSTV1BookmarkToggleSuccessResponse
+      const successData = (await response.json()) as POSTV1BookmarkToggleResponse
       return { createdAt: successData.createdAt }
     },
     onSuccess: ({ createdAt }) => {
