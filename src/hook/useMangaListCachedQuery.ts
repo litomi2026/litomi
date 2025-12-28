@@ -53,10 +53,13 @@ export default function useMangaListCachedQuery({
       queryKey: QueryKeys.mangaCard(id),
       queryFn: () =>
         limit(async () => {
-          const { data, response } = await fetchWithErrorHandling<Manga>(`/api/proxy/manga/${id}`)
+          const url = `/api/proxy/manga/${id}`
+          const { data, response } = await fetchWithErrorHandling<Manga>(url)
+
           if (isDegradedResponse(response.headers)) {
             scheduleErrorCacheCleanup(QueryKeys.mangaCard(id))
           }
+
           return data
         }),
       staleTime,

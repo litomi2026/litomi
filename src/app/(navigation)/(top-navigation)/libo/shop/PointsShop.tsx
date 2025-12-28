@@ -7,7 +7,6 @@ import IconSpinner from '@/components/icons/IconSpinner'
 import { POINT_CONSTANTS } from '@/constants/points'
 import useMeQuery from '@/query/useMeQuery'
 import { formatNumber } from '@/utils/format'
-import { ProblemDetailsError } from '@/utils/react-query-error'
 
 import { usePointsQuery } from '../usePointsQuery'
 import { useExpansionQuery } from './useExpansionQuery'
@@ -97,11 +96,7 @@ export default function PointsShop() {
         toast.success('구매 완료!', { description: `${item.name} - 잔액: ${formatNumber(data.balance)} 리보` })
       },
       onError: (err) => {
-        if (err instanceof ProblemDetailsError) {
-          toast.error(err.message || '구매에 실패했어요')
-          return
-        }
-        toast.error('구매에 실패했어요')
+        toast.error(err.message || '구매에 실패했어요')
       },
     })
   }
