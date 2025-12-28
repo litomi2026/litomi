@@ -1,7 +1,8 @@
 import { zValidator } from '@hono/zod-validator'
-import { and, desc, eq, gt } from 'drizzle-orm'
+import { and, eq, gt, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
+import ms from 'ms'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
@@ -16,6 +17,7 @@ export type POSTV1PointTokenResponse = {
 }
 
 const route = new Hono<Env>()
+const SECOND_MS = ms('1 second')
 
 const requestSchema = z.object({
   adSlotId: z.string().min(1).max(50),
@@ -50,37 +52,22 @@ route.post('/', zValidator('json', requestSchema), async (c) => {
   const todayEarnCount = todayTransactions.length
 
   if (todayEarnCount >= POINT_CONSTANTS.DAILY_EARN_LIMIT_COUNT) {
-    throw new HTTPException(429, { message: '오늘의 적립 한도에 도달했어요' })
-  }
+    const tomorrowStart = new Date(todayStart)
+    tomorrowStart.setDate(tomorrowStart.getDate() + 1)
+    const remainingMs = Math.max(0, tomorrowStart.getTime() - now.getTime())
+    const remainingSeconds = Math.max(1, Math.ceil(remainingMs / SECOND_MS))
 
-  // 2. 광고 슬롯 쿨다운 체크 (같은 광고 1분)
-  const adSlotCooldownTime = new Date(now.getTime() - POINT_CONSTANTS.AD_SLOT_COOLDOWN_MS)
-
-  const [lastAdSlotToken] = await db
-    .select({ usedAt: adImpressionTokenTable.usedAt })
-    .from(adImpressionTokenTable)
-    .where(
-      and(
-        eq(adImpressionTokenTable.userId, userId),
-        eq(adImpressionTokenTable.adSlotId, adSlotId),
-        eq(adImpressionTokenTable.isUsed, true),
-        gt(adImpressionTokenTable.usedAt, adSlotCooldownTime),
-      ),
-    )
-    .orderBy(desc(adImpressionTokenTable.usedAt))
-    .limit(1)
-
-  if (lastAdSlotToken?.usedAt) {
-    const remainingMs = POINT_CONSTANTS.AD_SLOT_COOLDOWN_MS - (now.getTime() - lastAdSlotToken.usedAt.getTime())
-    const remainingSeconds = Math.ceil(remainingMs / 1000)
     throw new HTTPException(429, {
-      res: c.text('같은 광고는 잠시 후 다시 적립할 수 있어요', 429, { 'Retry-After': String(remainingSeconds) }),
+      res: c.text('오늘의 적립 한도에 도달했어요', 429, { 'Retry-After': String(remainingSeconds) }),
     })
   }
 
-  // 3. 토큰 생성 또는 기존 토큰 반환 (INSERT ... ON CONFLICT DO UPDATE RETURNING)
-  const newToken = generateToken()
   const expiresAt = new Date(now.getTime() + POINT_CONSTANTS.TOKEN_EXPIRY_MS)
+  const adSlotCooldownTime = new Date(now.getTime() - POINT_CONSTANTS.AD_SLOT_COOLDOWN_MS)
+  const newToken = generateToken()
+  const nowIso = now.toISOString()
+  const expiresAtIso = expiresAt.toISOString()
+  const adSlotCooldownTimeIso = adSlotCooldownTime.toISOString()
 
   const [result] = await db
     .insert(adImpressionTokenTable)
@@ -92,16 +79,38 @@ route.post('/', zValidator('json', requestSchema), async (c) => {
     })
     .onConflictDoUpdate({
       target: [adImpressionTokenTable.userId, adImpressionTokenTable.adSlotId],
-      targetWhere: eq(adImpressionTokenTable.isUsed, false),
-      set: { expiresAt },
+      set: {
+        token: sql`CASE
+          WHEN ${adImpressionTokenTable.lastEarnedAt} IS NOT NULL AND ${adImpressionTokenTable.lastEarnedAt} > ${adSlotCooldownTimeIso}
+            THEN ${adImpressionTokenTable.token}
+          WHEN ${adImpressionTokenTable.expiresAt} < ${nowIso}
+            THEN ${sql.raw(`excluded.${adImpressionTokenTable.token.name}`)}
+          ELSE ${adImpressionTokenTable.token}
+        END`,
+        expiresAt: sql`CASE
+          WHEN ${adImpressionTokenTable.lastEarnedAt} IS NOT NULL AND ${adImpressionTokenTable.lastEarnedAt} > ${adSlotCooldownTimeIso}
+            THEN ${adImpressionTokenTable.expiresAt}
+          ELSE ${expiresAtIso}
+        END`,
+      },
     })
     .returning({
       token: adImpressionTokenTable.token,
       expiresAt: adImpressionTokenTable.expiresAt,
+      lastEarnedAt: adImpressionTokenTable.lastEarnedAt,
     })
 
   if (!result) {
     throw new HTTPException(500, { message: '토큰 생성에 실패했어요' })
+  }
+
+  if (result.lastEarnedAt && result.lastEarnedAt > adSlotCooldownTime) {
+    const remainingMs = POINT_CONSTANTS.AD_SLOT_COOLDOWN_MS - (now.getTime() - result.lastEarnedAt.getTime())
+    const remainingSeconds = Math.max(1, Math.ceil(remainingMs / SECOND_MS))
+
+    throw new HTTPException(429, {
+      res: c.text('같은 광고는 잠시 후 다시 적립할 수 있어요', 429, { 'Retry-After': String(remainingSeconds) }),
+    })
   }
 
   return c.json<POSTV1PointTokenResponse>({

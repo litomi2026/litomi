@@ -1,7 +1,8 @@
 import { zValidator } from '@hono/zod-validator'
-import { and, desc, eq, gt, sql } from 'drizzle-orm'
+import { and, eq, gt, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
+import ms from 'ms'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
@@ -17,6 +18,7 @@ export type POSTV1PointEarnResponse = {
 }
 
 const route = new Hono<Env>()
+const SECOND_MS = ms('1 second')
 
 const requestSchema = z.object({
   token: z.string().length(64),
@@ -50,12 +52,7 @@ route.post('/', zValidator('json', requestSchema), async (c) => {
         throw new HTTPException(403, { message: '토큰 소유자가 일치하지 않아요' })
       }
 
-      // 3. 이미 사용된 토큰인지 확인
-      if (tokenRecord.isUsed) {
-        throw new HTTPException(400, { message: '이미 사용된 토큰이에요' })
-      }
-
-      // 4. 토큰 만료 확인
+      // 3. 토큰 만료 확인
       if (tokenRecord.expiresAt < now) {
         throw new HTTPException(400, { message: '토큰이 만료됐어요' })
       }
@@ -96,35 +93,27 @@ route.post('/', zValidator('json', requestSchema), async (c) => {
       }
 
       // 7. 같은 광고 쿨다운 체크 (1분)
-      const adSlotCooldownTime = new Date(now.getTime() - POINT_CONSTANTS.AD_SLOT_COOLDOWN_MS)
-      const [lastAdSlotEarn] = await tx
-        .select({ usedAt: adImpressionTokenTable.usedAt })
-        .from(adImpressionTokenTable)
-        .where(
-          and(
-            eq(adImpressionTokenTable.userId, userId),
-            eq(adImpressionTokenTable.adSlotId, tokenRecord.adSlotId),
-            eq(adImpressionTokenTable.isUsed, true),
-            gt(adImpressionTokenTable.usedAt, adSlotCooldownTime),
-          ),
-        )
-        .orderBy(desc(adImpressionTokenTable.usedAt))
-        .limit(1)
+      if (tokenRecord.lastEarnedAt) {
+        const adSlotCooldownTime = new Date(now.getTime() - POINT_CONSTANTS.AD_SLOT_COOLDOWN_MS)
 
-      if (lastAdSlotEarn?.usedAt) {
-        const remainingMs = POINT_CONSTANTS.AD_SLOT_COOLDOWN_MS - (now.getTime() - lastAdSlotEarn.usedAt.getTime())
-        const remainingSeconds = Math.ceil(remainingMs / 1000)
-        throw new HTTPException(429, {
-          res: c.text('같은 광고는 잠시 후 다시 적립할 수 있어요', 429, { 'Retry-After': String(remainingSeconds) }),
-        })
+        if (tokenRecord.lastEarnedAt > adSlotCooldownTime) {
+          const remainingMs = POINT_CONSTANTS.AD_SLOT_COOLDOWN_MS - (now.getTime() - tokenRecord.lastEarnedAt.getTime())
+          const remainingSeconds = Math.max(1, Math.ceil(remainingMs / SECOND_MS))
+          throw new HTTPException(429, {
+            res: c.text('같은 광고는 잠시 후 다시 적립할 수 있어요', 429, { 'Retry-After': String(remainingSeconds) }),
+          })
+        }
       }
 
-      // 8. 토큰을 사용됨으로 표시
+      // 8. 토큰 로테이션 + 마지막 적립 시간 기록
+      const rotatedToken = generateToken()
+      const rotatedTokenExpiresAt = new Date(now.getTime() + POINT_CONSTANTS.TOKEN_EXPIRY_MS)
       await tx
         .update(adImpressionTokenTable)
         .set({
-          isUsed: true,
-          usedAt: now,
+          token: rotatedToken,
+          expiresAt: rotatedTokenExpiresAt,
+          lastEarnedAt: now,
         })
         .where(eq(adImpressionTokenTable.id, tokenRecord.id))
 
@@ -172,3 +161,9 @@ route.post('/', zValidator('json', requestSchema), async (c) => {
 })
 
 export default route
+
+function generateToken(): string {
+  const array = new Uint8Array(32)
+  crypto.getRandomValues(array)
+  return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('')
+}
