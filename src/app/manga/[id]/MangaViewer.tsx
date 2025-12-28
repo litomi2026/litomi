@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic'
 
-import { Manga, MangaError } from '@/types/manga'
+import { Manga } from '@/types/manga'
 
 import ImageViewer from './ImageViewer/ImageViewer'
 import { useMangaQuery } from './useMangaQuery'
@@ -30,10 +30,7 @@ export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
   return <ImageViewer manga={manga} />
 }
 
-function prepareManga(
-  data: Manga | MangaError | undefined,
-  initialManga: Manga | null | undefined,
-): Manga | null | undefined {
+function prepareManga(data: Manga | undefined, initialManga: Manga | null | undefined): Manga | null | undefined {
   if (!data && !initialManga) {
     return null
   }
@@ -45,17 +42,6 @@ function prepareManga(
 
   if (!data?.images || data?.images.length === 0) {
     return initialManga ?? data
-  }
-
-  const isError = data && 'isError' in data
-
-  if (isError) {
-    return {
-      ...initialManga,
-      id: data.id,
-      title: initialManga?.title || data.title,
-      images: data.images,
-    }
   }
 
   return initialManga ? { ...initialManga, ...data } : data

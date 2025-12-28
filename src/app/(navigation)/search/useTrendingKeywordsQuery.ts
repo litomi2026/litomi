@@ -6,7 +6,7 @@ import { type GETTrendingKeywordsResponse } from '@/backend/api/v1/search/trendi
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import useLocaleFromCookie from '@/hook/useLocaleFromCookie'
-import { handleResponseError } from '@/utils/react-query-error'
+import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
 
@@ -21,8 +21,9 @@ export async function fetchTrendingKeywords({ locale }: Params) {
     params.set('locale', locale)
   }
 
-  const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/search/trending?${params}`)
-  return handleResponseError<GETTrendingKeywordsResponse>(response)
+  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/search/trending?${params}`
+  const { data } = await fetchWithErrorHandling<GETTrendingKeywordsResponse>(url)
+  return data
 }
 
 export default function useTrendingKeywordsQuery() {

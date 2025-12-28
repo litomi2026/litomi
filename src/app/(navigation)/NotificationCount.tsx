@@ -6,7 +6,7 @@ import { GETUnreadCountResponse } from '@/backend/api/v1/notification/unread-cou
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import useMeQuery from '@/query/useMeQuery'
-import { handleResponseError } from '@/utils/react-query-error'
+import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
 
@@ -29,8 +29,8 @@ export default function NotificationCount() {
 
 async function fetchUnreadCount() {
   const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/notification/unread-count`
-  const response = await fetch(url, { credentials: 'include' })
-  return handleResponseError<GETUnreadCountResponse>(response)
+  const { data } = await fetchWithErrorHandling<GETUnreadCountResponse>(url, { credentials: 'include' })
+  return data
 }
 
 function useNotificationUnreadCountQuery() {

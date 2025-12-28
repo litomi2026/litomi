@@ -1,13 +1,21 @@
 import { captureException } from '@sentry/nextjs'
 
+import {
+  createProblemTypeUrl,
+  getStatusTitle,
+  PROBLEM_CONTENT_TYPE,
+  type ProblemDetails,
+} from '@/utils/problem-details'
+
 import { normalizeError, UpstreamServerError } from './errors'
 
-export type ApiResponse<T = unknown> = T & {
-  error?: {
-    code: string
-    message: string
-    isRetryable: boolean
-  }
+export type CreateProblemDetailsResponseOptions = {
+  code: string
+  detail?: string
+  headers?: HeadersInit
+  instance?: string
+  status: number
+  title?: string
 }
 
 type CacheControlHeaders = {
@@ -117,9 +125,31 @@ export async function createHealthCheckHandler(
   )
 }
 
+export function createProblemDetailsResponse(request: Request, options: CreateProblemDetailsResponseOptions): Response {
+  const url = new URL(request.url)
+  const instance = options.instance ?? url.pathname + url.search
+
+  const problem: ProblemDetails = {
+    type: createProblemTypeUrl(url.origin, options.code),
+    title: options.title ?? getStatusTitle(options.status),
+    status: options.status,
+    detail: options.detail,
+    instance,
+  }
+
+  const headers = new Headers(options.headers)
+  headers.set('Content-Type', PROBLEM_CONTENT_TYPE)
+
+  return new Response(JSON.stringify(problem), { status: options.status, headers })
+}
+
 export function handleRouteError(error: unknown, request: Request) {
   if (error instanceof Error && error.message === 'Network connection lost.') {
-    return new Response('Client Closed Request', { status: 499 })
+    return createProblemDetailsResponse(request, {
+      status: 499,
+      code: 'client-closed-request',
+      detail: '요청이 취소됐어요',
+    })
   }
 
   console.error(error)
@@ -140,16 +170,18 @@ export function handleRouteError(error: unknown, request: Request) {
     })
   }
 
-  const response: ApiResponse = {
-    error: {
-      code: normalizedError.errorCode,
-      message: normalizedError.message,
-      isRetryable: normalizedError.isRetryable,
-    },
+  const headers = new Headers({ 'X-Error-Code': normalizedError.errorCode })
+
+  if (normalizedError instanceof UpstreamServerError && normalizedError.retryAfter) {
+    headers.set('Retry-After', normalizedError.retryAfter)
   }
 
-  const headers = new Headers({ 'X-Error-Code': normalizedError.errorCode })
-  return Response.json(response, { status: normalizedError.statusCode, headers })
+  return createProblemDetailsResponse(request, {
+    status: normalizedError.statusCode,
+    code: normalizedError.errorCode,
+    detail: normalizedError.message,
+    headers,
+  })
 }
 
 export function isUpstreamServer4XXError(error: unknown): boolean {

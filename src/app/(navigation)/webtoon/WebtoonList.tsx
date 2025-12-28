@@ -10,7 +10,7 @@ import IconSpinner from '@/components/icons/IconSpinner'
 import CustomSelect from '@/components/ui/CustomSelect'
 import { QueryKeys } from '@/constants/query'
 import { WebtoonList, WebtoonListItem } from '@/crawler/webtoon/types'
-import { handleResponseError } from '@/utils/react-query-error'
+import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 type ListQueryParams = {
   provider: string
@@ -234,8 +234,8 @@ function useWebtoonListInfiniteQuery({ provider, domain }: ListQueryParams) {
       if (pageParam) {
         params.set('cursor', pageParam as string)
       }
-      const response = await fetch(`/api/proxy/webtoon/${provider}?${params}`)
-      return handleResponseError<WebtoonList>(response)
+      const { data } = await fetchWithErrorHandling<WebtoonList>(`/api/proxy/webtoon/${provider}?${params}`)
+      return data
     },
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialPageParam: undefined,

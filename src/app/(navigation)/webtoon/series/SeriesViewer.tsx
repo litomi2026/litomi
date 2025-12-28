@@ -7,7 +7,7 @@ import { useSearchParams } from 'next/navigation'
 import IconSpinner from '@/components/icons/IconSpinner'
 import { QueryKeys } from '@/constants/query'
 import { WebtoonSeries } from '@/crawler/webtoon/types'
-import { handleResponseError } from '@/utils/react-query-error'
+import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 type EpisodeListProps = {
   series: WebtoonSeries
@@ -144,8 +144,8 @@ function useSeriesQuery({ provider, domain, path }: SeriesQueryParams) {
     queryKey: QueryKeys.webtoonSeries(provider, domain, path),
     queryFn: async () => {
       const params = new URLSearchParams({ domain, path })
-      const response = await fetch(`/api/proxy/webtoon/${provider}/series?${params}`)
-      return handleResponseError<WebtoonSeries>(response)
+      const { data } = await fetchWithErrorHandling<WebtoonSeries>(`/api/proxy/webtoon/${provider}/series?${params}`)
+      return data
     },
     enabled: Boolean(provider && domain && path),
   })

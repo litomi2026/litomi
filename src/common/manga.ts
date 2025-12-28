@@ -85,9 +85,11 @@ function createErrorManga(id: number, error: Error): MangaError {
   if (!(error instanceof AllSourcesFailedError)) {
     console.error(error.message)
   }
+
   return {
     id,
-    title: `${error.message}\n${error.cause ?? ''}`,
+    // NOTE: degraded 응답은 헤더로만 신호하고, 본문에는 민감한 오류 정보를 넣지 않음
+    title: `${error.name}: ${error.message}`,
     images: hentKorClient.fetchMangaImages(id, 100).map((image) => ({ original: { url: image } })),
     isError: true,
   }

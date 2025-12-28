@@ -1,9 +1,11 @@
 import { GETProxyKImageSchema } from '@/app/api/proxy/k/image/schema'
 import { kHentaiClient } from '@/crawler/k-hentai'
-import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
+import { createCacheControl, createProblemDetailsResponse, handleRouteError } from '@/crawler/proxy-utils'
+import { sec } from '@/utils/date'
 
 export const runtime = 'edge'
-const maxAge = 43200 // 12 hours
+const maxAge = sec('12 hours')
+const swr = sec('5 minutes')
 
 export async function GET(request: Request) {
   const url = new URL(request.url)
@@ -11,7 +13,11 @@ export async function GET(request: Request) {
   const validation = GETProxyKImageSchema.safeParse(searchParams)
 
   if (!validation.success) {
-    return new Response('Bad Request', { status: 400 })
+    return createProblemDetailsResponse(request, {
+      status: 400,
+      code: 'bad-request',
+      detail: '잘못된 요청이에요',
+    })
   }
 
   const { id } = validation.data
@@ -23,9 +29,9 @@ export async function GET(request: Request) {
       headers: {
         'Cache-Control': createCacheControl({
           public: true,
-          maxAge: maxAge - 300,
-          sMaxAge: maxAge - 300,
-          swr: 300,
+          maxAge: maxAge - swr,
+          sMaxAge: maxAge - swr,
+          swr,
         }),
       },
     })

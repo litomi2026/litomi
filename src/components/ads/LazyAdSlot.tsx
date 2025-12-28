@@ -5,6 +5,7 @@ import ms from 'ms'
 import { useEffect, useRef, useState } from 'react'
 
 import { formatDistanceFromNow } from '@/utils/date'
+import { ProblemDetailsError } from '@/utils/react-query-error'
 
 import { JUICY_ADS_EVENT } from './constants'
 import { useCooldown } from './useCooldown'
@@ -80,8 +81,8 @@ export default function LazyAdSlot({
       },
       onError: (err) => {
         setToken(null)
-        if (err.remainingSeconds != null) {
-          startFromRemainingSeconds(err.remainingSeconds)
+        if (err instanceof ProblemDetailsError && err.retryAfterSeconds != null) {
+          startFromRemainingSeconds(err.retryAfterSeconds)
         }
       },
     })
@@ -172,8 +173,8 @@ export default function LazyAdSlot({
       },
       onError: (err) => {
         setToken(null)
-        if (err.remainingSeconds != null) {
-          startFromRemainingSeconds(err.remainingSeconds)
+        if (err instanceof ProblemDetailsError && err.retryAfterSeconds != null) {
+          startFromRemainingSeconds(err.retryAfterSeconds)
         }
       },
     })
@@ -289,7 +290,8 @@ export default function LazyAdSlot({
           isHandlingAdClickRef.current = false
         },
         onError: (err) => {
-          onAdClick?.({ success: false, error: err.error })
+          const message = err instanceof ProblemDetailsError ? err.message : '요청 처리 중 오류가 발생했어요'
+          onAdClick?.({ success: false, error: message })
           setToken(null)
           isHandlingAdClickRef.current = false
         },
@@ -346,14 +348,16 @@ export default function LazyAdSlot({
             {rewardEnabled && apiError ? (
               <div className="text-center">
                 <span className="text-amber-500">
-                  {apiError.error}
+                  {apiError instanceof ProblemDetailsError ? apiError.message : '오류가 발생했어요'}
                   <span className="tabular-nums">{cooldownLabel && ` (${cooldownLabel})`}</span>
                 </span>
-                {!apiError.error.includes('한도') && !apiError.error.includes('잠시 후') && (
-                  <button className="ml-2 text-blue-400 hover:underline" disabled={isLoading} onClick={handleRefresh}>
-                    다시 시도
-                  </button>
-                )}
+                {apiError instanceof ProblemDetailsError &&
+                  !apiError.message.includes('한도') &&
+                  !apiError.message.includes('잠시 후') && (
+                    <button className="ml-2 text-blue-400 hover:underline" disabled={isLoading} onClick={handleRefresh}>
+                      다시 시도
+                    </button>
+                  )}
               </div>
             ) : rewardEnabled && dailyRemaining !== null ? (
               dailyRemaining > 0 ? (

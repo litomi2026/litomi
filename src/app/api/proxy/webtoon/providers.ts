@@ -1,6 +1,7 @@
 import 'server-only'
 import { z } from 'zod'
 
+import { BadRequestError } from '@/crawler/errors'
 import { TOONKOR_DOMAIN_PATTERN, toonkorClient, type ToonkorParams } from '@/crawler/toonkor/toonkor'
 import { WebtoonCrawler, WebtoonEpisode, WebtoonList, WebtoonSeries } from '@/crawler/webtoon/types'
 import { sec } from '@/utils/date'
@@ -62,7 +63,7 @@ export async function fetchWebtoonEpisode(
   // 스키마 검증
   const validation = provider.schema.safeParse(params)
   if (!validation.success) {
-    throw new Error(validation.error.message || '잘못된 요청이에요.')
+    throw new BadRequestError(getFirstIssueMessage(validation.error.issues))
   }
 
   // 크롤러 호출
@@ -89,7 +90,7 @@ export async function fetchWebtoonList(
   // 스키마 검증 (domain만 필요)
   const validation = listSchema.safeParse(params)
   if (!validation.success) {
-    throw new Error(validation.error.message || '잘못된 요청이에요.')
+    throw new BadRequestError(getFirstIssueMessage(validation.error.issues))
   }
 
   // 크롤러 호출 (path는 크롤러 내부에서 고정)
@@ -107,7 +108,7 @@ export async function fetchWebtoonSeries(
   // 스키마 검증
   const validation = provider.schema.safeParse(params)
   if (!validation.success) {
-    throw new Error(validation.error.message || '잘못된 요청이에요.')
+    throw new BadRequestError(getFirstIssueMessage(validation.error.issues))
   }
 
   // 크롤러 호출
@@ -117,4 +118,9 @@ export async function fetchWebtoonSeries(
 
 export function isValidProvider(name: string): name is WebtoonProviderName {
   return name in webtoonProviders
+}
+
+function getFirstIssueMessage(issues: z.ZodIssue[]): string {
+  const message = issues[0]?.message
+  return message && message.length > 0 ? message : '잘못된 요청이에요'
 }

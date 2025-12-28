@@ -5,7 +5,7 @@ import type { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark/get'
 import { BOOKMARKS_PER_PAGE } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
-import { handleResponseError } from '@/utils/react-query-error'
+import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
 
@@ -17,8 +17,8 @@ export async function fetchPaginatedBookmarks(cursor: string | null) {
   }
 
   const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/bookmark?${params}`
-  const response = await fetch(url, { credentials: 'include' })
-  return handleResponseError<GETV1BookmarkResponse>(response)
+  const { data } = await fetchWithErrorHandling<GETV1BookmarkResponse>(url, { credentials: 'include' })
+  return data
 }
 
 export default function useBookmarkIdsInfiniteQuery(initialData?: GETV1BookmarkResponse) {

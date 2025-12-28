@@ -1,5 +1,5 @@
 import { hiyobiClient } from '@/crawler/hiyobi'
-import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
+import { createCacheControl, createProblemDetailsResponse, handleRouteError } from '@/crawler/proxy-utils'
 import { Locale } from '@/translation/common'
 import { RouteProps } from '@/types/nextjs'
 import { sec } from '@/utils/date'
@@ -16,7 +16,11 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
   const validation = GETProxyHiyobiIdSchema.safeParse(await params)
 
   if (!validation.success) {
-    return new Response('Bad Request', { status: 400 })
+    return createProblemDetailsResponse(request, {
+      status: 400,
+      code: 'bad-request',
+      detail: '잘못된 요청이에요',
+    })
   }
 
   const { id } = validation.data
@@ -25,7 +29,11 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
     const manga = await hiyobiClient.fetchManga({ id, locale: Locale.KO })
 
     if (!manga) {
-      return new Response('Not Found', { status: 404 })
+      return createProblemDetailsResponse(request, {
+        status: 404,
+        code: 'not-found',
+        detail: '요청하신 작품을 찾을 수 없어요',
+      })
     }
 
     return Response.json(manga, {

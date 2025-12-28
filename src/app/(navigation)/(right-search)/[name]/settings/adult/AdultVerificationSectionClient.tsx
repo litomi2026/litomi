@@ -13,6 +13,7 @@ import { BBATON_ADULT_VERIFICATION_CHANNEL_NAME, BBATON_POPUP_WINDOW_NAME } from
 import { env } from '@/env/client'
 import BBatonButton from '@/svg/BBatonButton'
 import { formatDistanceToNow } from '@/utils/date'
+import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
 const POPUP_CLOSE_GRACE_MS = ms('800ms')
@@ -55,17 +56,14 @@ export default function AdultVerificationSectionClient({ initialVerification, is
 
   const verifyMutation = useMutation<BroadcastResult, unknown, void>({
     mutationFn: async () => {
-      const attemptRes = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/bbaton/attempt`, {
+      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/bbaton/attempt`
+
+      const { data } = await fetchWithErrorHandling<POSTV1BBatonAttemptResponse>(url, {
         method: 'POST',
         credentials: 'include',
       })
 
-      if (!attemptRes.ok) {
-        const message = await attemptRes.text().catch(() => '')
-        throw { status: attemptRes.status, error: message }
-      }
-
-      const { authorizeUrl } = (await attemptRes.json()) as POSTV1BBatonAttemptResponse
+      const { authorizeUrl } = data
       const channel = new BroadcastChannel(BBATON_ADULT_VERIFICATION_CHANNEL_NAME)
       const popup = window.open(authorizeUrl, BBATON_POPUP_WINDOW_NAME, 'width=420,height=580')
 
@@ -137,14 +135,18 @@ export default function AdultVerificationSectionClient({ initialVerification, is
       router.refresh()
     },
     onError: (error) => {
-      const apiError = error as ApiError
-
-      if (apiError.status === 401) {
+      if (error instanceof ProblemDetailsError && error.status === 401) {
         toast.warning('로그인이 필요해요')
         router.refresh()
         return
       }
 
+      if (error instanceof ProblemDetailsError) {
+        toast.error(error.message || '인증을 시작하지 못했어요. 잠시 후 다시 시도해 주세요.')
+        return
+      }
+
+      const apiError = error as ApiError
       if (typeof apiError.error === 'string' && apiError.error.length > 0) {
         toast.error(apiError.error)
         return
@@ -165,19 +167,16 @@ export default function AdultVerificationSectionClient({ initialVerification, is
 
   const unlinkMutation = useMutation<POSTV1BBatonUnlinkResponse, unknown, { password: string; token?: string }>({
     mutationFn: async ({ password, token }) => {
-      const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/bbaton/unlink`, {
+      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/bbaton/unlink`
+
+      const { data } = await fetchWithErrorHandling<POSTV1BBatonUnlinkResponse>(url, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password, ...(token ? { token } : {}) }),
       })
 
-      if (!response.ok) {
-        const message = await response.text().catch(() => '')
-        throw { status: response.status, error: message }
-      }
-
-      return (await response.json()) as POSTV1BBatonUnlinkResponse
+      return data
     },
     onSuccess: () => {
       toast.success('연동이 해제됐어요')
@@ -185,14 +184,18 @@ export default function AdultVerificationSectionClient({ initialVerification, is
       router.refresh()
     },
     onError: (error) => {
-      const apiError = error as ApiError
-
-      if (apiError.status === 401 && (!apiError.error || apiError.error.length === 0)) {
+      if (error instanceof ProblemDetailsError && error.status === 401) {
         toast.warning('로그인이 필요해요')
         router.refresh()
         return
       }
 
+      if (error instanceof ProblemDetailsError) {
+        toast.error(error.message || '연동을 해제하지 못했어요. 잠시 후 다시 시도해 주세요.')
+        return
+      }
+
+      const apiError = error as ApiError
       if (typeof apiError.error === 'string' && apiError.error.length > 0) {
         toast.error(apiError.error)
         return

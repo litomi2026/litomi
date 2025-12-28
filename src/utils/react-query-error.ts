@@ -1,40 +1,91 @@
-import { ApiResponse } from '@/crawler/proxy-utils'
+import { createProblemTypeUrl, getStatusTitle, isProblemDetails, type ProblemDetails } from './problem-details'
 
-// NOTE: 응답의 error 객체를 처리하는 클래스
-export class ResponseError extends Error {
+export class ProblemDetailsError extends Error {
+  readonly name = 'ProblemDetailsError'
+
+  get isRetryable(): boolean {
+    return this.status >= 500 || this.status === 429
+  }
+
+  get retryAfterSeconds(): number | undefined {
+    const value = this.response?.headers?.get('Retry-After')
+    if (!value) {
+      return undefined
+    }
+
+    // 1) delta-seconds (e.g. "120")
+    const seconds = Number(value)
+    if (Number.isFinite(seconds) && seconds > 0) {
+      return seconds
+    }
+
+    // 2) HTTP-date (e.g. "Wed, 21 Oct 2015 07:28:00 GMT")
+    const timeMs = Date.parse(value)
+    if (!Number.isFinite(timeMs)) {
+      return undefined
+    }
+
+    const diffSeconds = Math.ceil((timeMs - Date.now()) / 1000)
+    return diffSeconds > 0 ? diffSeconds : undefined
+  }
+
+  get status(): number {
+    return this.problem.status
+  }
+
+  get type(): string {
+    return this.problem.type
+  }
+
   constructor(
-    message: string,
-    public readonly code: string,
-    public readonly status: number,
-    public readonly isRetryable: boolean,
+    public readonly problem: ProblemDetails,
+    public readonly response?: Response,
   ) {
-    super(message)
-    this.name = 'ResponseError'
+    super(problem.detail ?? problem.title)
   }
 }
 
-export async function handleResponseError<T>(response: Response) {
-  if (!response.ok) {
-    throw new ResponseError(
-      (await response.text()) || '오류가 발생했어요.',
-      response.statusText || 'UNKNOWN_ERROR',
-      response.status,
-      response.status >= 500,
-    )
+export async function fetchWithErrorHandling<T>(
+  input: string | Request | URL,
+  init?: RequestInit,
+): Promise<{ data: T; response: Response }> {
+  try {
+    const response = await fetch(input, init)
+
+    if (!response.ok) {
+      const problem = await parseProblemDetailsFromResponse(response, input)
+      throw new ProblemDetailsError(problem, response)
+    }
+
+    if (response.status === 204 || response.status === 205) {
+      return { data: undefined as T, response }
+    }
+
+    const data = (await response.json()) as T
+    return { data, response }
+  } catch (error) {
+    if (error instanceof ProblemDetailsError) {
+      throw error
+    }
+
+    const origin = getOriginFromInput(input)
+
+    const problem: ProblemDetails = {
+      type: origin ? createProblemTypeUrl(origin, 'client-network-error') : 'about:blank',
+      title: getStatusTitle(503),
+      status: 503,
+      detail: '네트워크 연결을 확인해 주세요',
+    }
+
+    if (error instanceof Error && error.name === 'AbortError') {
+      problem.type = origin ? createProblemTypeUrl(origin, 'client-aborted') : 'about:blank'
+      problem.title = getStatusTitle(499)
+      problem.status = 499
+      problem.detail = '요청이 취소됐어요'
+    }
+
+    throw new ProblemDetailsError(problem)
   }
-
-  const data = (await response.json()) as ApiResponse<T>
-
-  if (data.error) {
-    throw new ResponseError(
-      data.error.message || '오류가 발생했어요.',
-      data.error.code || 'UNKNOWN_ERROR',
-      response.status,
-      data.error.isRetryable,
-    )
-  }
-
-  return data
 }
 
 export function shouldRetryError(error: unknown, failureCount: number, maxRetries = 3): boolean {
@@ -42,14 +93,71 @@ export function shouldRetryError(error: unknown, failureCount: number, maxRetrie
     return false
   }
 
+  if (error instanceof ProblemDetailsError) {
+    return error.isRetryable
+  }
+
   if (!(error instanceof Error)) {
     return false
   }
 
-  if (error instanceof ResponseError) {
-    return error.isRetryable
-  }
-
   const message = error.message.toLowerCase()
   return message.includes('fetch') || message.includes('network')
+}
+
+function getBrowserOrigin(): string | null {
+  if (typeof window === 'undefined') {
+    return null
+  }
+  return window.location?.origin ?? null
+}
+
+function getOriginFromInput(input: string | Request | URL): string | null {
+  if (input instanceof URL) {
+    return input.origin
+  }
+
+  if (input instanceof Request) {
+    try {
+      return new URL(input.url).origin
+    } catch {
+      return getBrowserOrigin()
+    }
+  }
+
+  if (typeof input === 'string') {
+    try {
+      return new URL(input).origin
+    } catch {
+      return getBrowserOrigin()
+    }
+  }
+
+  return getBrowserOrigin()
+}
+
+async function parseProblemDetailsFromResponse(
+  response: Response,
+  input: string | Request | URL,
+): Promise<ProblemDetails> {
+  const origin = getOriginFromInput(input)
+
+  const maybeJson = await response
+    .clone()
+    .json()
+    .catch(() => undefined)
+
+  if (isProblemDetails(maybeJson)) {
+    return maybeJson
+  }
+
+  const text = await response.text().catch(() => '')
+  const title = getStatusTitle(response.status)
+
+  return {
+    type: origin ? createProblemTypeUrl(origin, `http-${response.status}`) : 'about:blank',
+    title,
+    status: response.status,
+    detail: text || title,
+  }
 }

@@ -1,11 +1,12 @@
 import { fetchMangaFromMultiSources } from '@/common/manga'
 import { BLACKLISTED_MANGA_IDS, LAST_VERIFIED_MANGA_ID } from '@/constants/policy'
-import { createCacheControlHeaders, handleRouteError } from '@/crawler/proxy-utils'
+import { createCacheControlHeaders, createProblemDetailsResponse, handleRouteError } from '@/crawler/proxy-utils'
 import { Locale } from '@/translation/common'
 import { Manga } from '@/types/manga'
 import { RouteProps } from '@/types/nextjs'
 import { calculateOptimalCacheDuration } from '@/utils/cache-control'
 import { sec } from '@/utils/date'
+import { DEGRADED_HEADER, DEGRADED_REASON_HEADER } from '@/utils/degraded-response'
 
 import { GETProxyMangaIdSchema } from './schema'
 import { MangaResponseScope } from './types'
@@ -41,7 +42,11 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
   })
 
   if (!validation.success) {
-    return new Response('Bad Request', { status: 400 })
+    return createProblemDetailsResponse(request, {
+      status: 400,
+      code: 'bad-request',
+      detail: '잘못된 요청이에요',
+    })
   }
 
   const { id, scope, locale } = validation.data
@@ -59,12 +64,21 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       },
     })
 
-    return new Response('Forbidden', { status: 403, headers: forbiddenHeaders })
+    return createProblemDetailsResponse(request, {
+      status: 403,
+      code: 'forbidden',
+      detail: '요청하신 작품은 접근할 수 없어요',
+      headers: forbiddenHeaders,
+    })
   }
 
   try {
     if (request.signal?.aborted) {
-      return new Response('Client Closed Request', { status: 499 })
+      return createProblemDetailsResponse(request, {
+        status: 499,
+        code: 'client-closed-request',
+        detail: '요청이 취소됐어요',
+      })
     }
 
     const manga = await fetchMangaFromMultiSources({ id, locale })
@@ -84,7 +98,12 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
         },
       })
 
-      return new Response('Not Found', { status: 404, headers: notFoundHeaders })
+      return createProblemDetailsResponse(request, {
+        status: 404,
+        code: 'not-found',
+        detail: '요청하신 작품을 찾을 수 없어요',
+        headers: notFoundHeaders,
+      })
     }
 
     if ('isError' in manga) {
@@ -98,8 +117,12 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
           sMaxAge: 10,
         },
       })
+      const headers = new Headers(errorHeaders)
+      headers.set(DEGRADED_HEADER, '1')
+      headers.set(DEGRADED_REASON_HEADER, 'IMAGES_ONLY')
 
-      return Response.json(manga, { headers: errorHeaders })
+      const { isError: _isError, ...mangaWithoutIsError } = manga as Manga & { isError?: boolean }
+      return Response.json(mangaWithoutIsError, { headers })
     }
 
     // NOTE: 첫번쨰 이미지만 확인함

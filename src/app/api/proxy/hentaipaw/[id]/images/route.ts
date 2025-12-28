@@ -1,10 +1,11 @@
 import { hentaiPawClient } from '@/crawler/hentai-paw'
-import { createCacheControl, handleRouteError } from '@/crawler/proxy-utils'
+import { createCacheControl, createProblemDetailsResponse, handleRouteError } from '@/crawler/proxy-utils'
+import { sec } from '@/utils/date'
 
 import { GETProxyHentaiPawImagesSchema } from './schema'
 
 export const runtime = 'edge'
-const maxAge = 43200 // 12 hours
+const maxAge = sec('12 hours')
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -14,7 +15,11 @@ export async function GET(request: Request) {
   })
 
   if (!validation.success) {
-    return new Response('Bad Request', { status: 400 })
+    return createProblemDetailsResponse(request, {
+      status: 400,
+      code: 'bad-request',
+      detail: '잘못된 요청이에요',
+    })
   }
 
   const { id } = validation.data

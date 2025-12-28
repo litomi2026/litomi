@@ -7,7 +7,8 @@ import { useEffect, useMemo, useRef } from 'react'
 
 import { QueryKeys } from '@/constants/query'
 import { Manga } from '@/types/manga'
-import { handleResponseError } from '@/utils/react-query-error'
+import { isDegradedResponse } from '@/utils/degraded-response'
+import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 interface Options {
   /**
@@ -52,16 +53,14 @@ export default function useMangaListCachedQuery({
       queryKey: QueryKeys.mangaCard(id),
       queryFn: () =>
         limit(async () => {
-          const response = await fetch(`/api/proxy/manga/${id}`)
-          return handleResponseError<Manga>(response)
+          const { data, response } = await fetchWithErrorHandling<Manga>(`/api/proxy/manga/${id}`)
+          if (isDegradedResponse(response.headers)) {
+            scheduleErrorCacheCleanup(QueryKeys.mangaCard(id))
+          }
+          return data
         }),
       staleTime,
       gcTime,
-      onSuccess: (data: Manga) => {
-        if (isErrorManga(data)) {
-          scheduleErrorCacheCleanup(QueryKeys.mangaCard(id))
-        }
-      },
       onError: () => {
         scheduleErrorCacheCleanup(QueryKeys.mangaCard(id))
       },
@@ -108,8 +107,4 @@ export default function useMangaListCachedQuery({
     isLoading,
     isFetching,
   }
-}
-
-function isErrorManga(manga: Manga): manga is Manga & { isError: true } {
-  return 'isError' in manga && Boolean((manga as { isError?: boolean }).isError)
 }

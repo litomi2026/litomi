@@ -4,7 +4,7 @@ import type { GETV1LibrarySummaryResponse } from '@/backend/api/v1/library/summa
 
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
-import { handleResponseError } from '@/utils/react-query-error'
+import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
 
@@ -14,8 +14,8 @@ type Options = {
 
 export async function fetchLibrarySummary() {
   const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/library/summary`
-  const response = await fetch(url, { credentials: 'include' })
-  return handleResponseError<GETV1LibrarySummaryResponse>(response)
+  const { data } = await fetchWithErrorHandling<GETV1LibrarySummaryResponse>(url, { credentials: 'include' })
+  return data
 }
 
 export default function useLibrarySummaryQuery({ userId }: Options) {

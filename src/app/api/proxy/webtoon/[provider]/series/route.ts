@@ -1,4 +1,4 @@
-import { createCacheControlHeaders, handleRouteError } from '@/crawler/proxy-utils'
+import { createCacheControlHeaders, createProblemDetailsResponse, handleRouteError } from '@/crawler/proxy-utils'
 import { RouteProps } from '@/types/nextjs'
 import { sec } from '@/utils/date'
 
@@ -14,14 +14,22 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
   const { provider } = await params
 
   if (!isValidProvider(provider)) {
-    return new Response('Unknown provider', { status: 400 })
+    return createProblemDetailsResponse(request, {
+      status: 400,
+      code: 'unknown-provider',
+      detail: '지원하지 않는 제공자예요',
+    })
   }
 
   const { searchParams } = new URL(request.url)
 
   try {
     if (request.signal?.aborted) {
-      return new Response('Client Closed Request', { status: 499 })
+      return createProblemDetailsResponse(request, {
+        status: 499,
+        code: 'client-closed-request',
+        detail: '요청이 취소됐어요',
+      })
     }
 
     const series = await fetchWebtoonSeries(provider, searchParams)
