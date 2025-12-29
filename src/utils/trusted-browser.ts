@@ -10,7 +10,7 @@ import { MAX_TRUSTED_DEVICES_PER_USER } from '@/constants/policy'
 import { CookieKey } from '@/constants/storage'
 import { db } from '@/database/supabase/drizzle'
 import { trustedBrowserTable } from '@/database/supabase/two-factor'
-import { sec } from '@/utils/date'
+import { sec } from '@/utils/format/date'
 import { JWTType, signJWT } from '@/utils/jwt'
 
 const TRUSTED_DEVICE_EXPIRY_DAYS = 30

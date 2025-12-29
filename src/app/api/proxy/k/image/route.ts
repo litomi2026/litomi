@@ -2,7 +2,7 @@ import { GETProxyKImageSchema } from '@/app/api/proxy/k/image/schema'
 import { kHentaiClient } from '@/crawler/k-hentai'
 import { createProblemDetailsResponse, handleRouteError } from '@/crawler/proxy-utils'
 import { createCacheControl } from '@/utils/cache-control'
-import { sec } from '@/utils/date'
+import { sec } from '@/utils/format/date'
 
 export const runtime = 'edge'
 const maxAge = sec('12 hours')

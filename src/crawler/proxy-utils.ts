@@ -2,7 +2,7 @@ import { captureException } from '@sentry/nextjs'
 
 import { CANONICAL_URL } from '@/constants'
 import { type CacheControlOptions, createCacheControl } from '@/utils/cache-control'
-import { sec } from '@/utils/date'
+import { sec } from '@/utils/format/date'
 import {
   createProblemTypeUrl,
   getStatusTitle,

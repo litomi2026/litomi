@@ -8,7 +8,7 @@ import { ReferredPost } from '@/components/post/ReferredPostCard'
 import { POST_PER_PAGE } from '@/constants/policy'
 import selectPosts from '@/sql/selectPosts'
 import { createCacheControl } from '@/utils/cache-control'
-import { sec } from '@/utils/date'
+import { sec } from '@/utils/format/date'
 
 import { PostFilter } from './constant'
 

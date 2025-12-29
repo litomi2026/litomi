@@ -6,7 +6,7 @@ import { CANONICAL_URL } from '@/constants'
 import { CookieKey } from '@/constants/storage'
 import { env } from '@/env/server.common'
 
-import { sec } from './date'
+import { sec } from './format/date'
 
 const { JWT_SECRET_ACCESS_TOKEN, JWT_SECRET_REFRESH_TOKEN, JWT_SECRET_TRUSTED_DEVICE } = env
 

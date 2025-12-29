@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { db } from '@/database/supabase/drizzle'
 import { libraryItemTable, libraryTable } from '@/database/supabase/library'
 import { intToHexColor } from '@/utils/color'
-import { sec } from '@/utils/date'
+import { sec } from '@/utils/format/date'
 
 type Props = {
   mangaId: number

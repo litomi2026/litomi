@@ -4,7 +4,7 @@ import { ShieldOff } from 'lucide-react'
 import ms from 'ms'
 import { useEffect, useRef, useState } from 'react'
 
-import { formatDistanceFromNow } from '@/utils/date'
+import { formatDistanceFromNow } from '@/utils/format/date'
 import { ProblemDetailsError } from '@/utils/react-query-error'
 
 import { JUICY_ADS_EVENT } from './constants'

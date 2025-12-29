@@ -1,7 +1,7 @@
 import { hentaiPawClient } from '@/crawler/hentai-paw'
 import { createProblemDetailsResponse, handleRouteError } from '@/crawler/proxy-utils'
 import { createCacheControl } from '@/utils/cache-control'
-import { sec } from '@/utils/date'
+import { sec } from '@/utils/format/date'
 
 import { GETProxyHentaiPawImagesSchema } from './schema'
 

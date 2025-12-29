@@ -7,7 +7,7 @@ import { createPortal } from 'react-dom'
 import IconSpinner from '@/components/icons/IconSpinner'
 import IconX from '@/components/icons/IconX'
 import CustomSelect from '@/components/ui/CustomSelect'
-import { formatLocalDate } from '@/utils/date'
+import { formatLocalDate } from '@/utils/format/date'
 
 import type { FilterKey, FilterState } from './constants'
 

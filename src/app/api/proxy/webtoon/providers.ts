@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { BadRequestError } from '@/crawler/errors'
 import { TOONKOR_DOMAIN_PATTERN, toonkorClient, type ToonkorParams } from '@/crawler/toonkor/toonkor'
 import { WebtoonCrawler, WebtoonEpisode, WebtoonList, WebtoonSeries } from '@/crawler/webtoon/types'
-import { sec } from '@/utils/date'
+import { sec } from '@/utils/format/date'
 
 /**
  * Webtoon Provider 설정

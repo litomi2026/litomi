@@ -10,7 +10,7 @@ import { createErrorManga } from '@/constants/json'
 import { TOTAL_HIYOBI_PAGES } from '@/constants/policy'
 import { hiyobiClient } from '@/crawler/hiyobi'
 import { Locale } from '@/translation/common'
-import { sec } from '@/utils/date'
+import { sec } from '@/utils/format/date'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 export const metadata: Metadata = {

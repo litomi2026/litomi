@@ -12,7 +12,7 @@ import { POSTV1BBatonUnlinkResponse } from '@/backend/api/v1/bbaton/unlink'
 import { BBATON_ADULT_VERIFICATION_CHANNEL_NAME, BBATON_POPUP_WINDOW_NAME } from '@/constants/bbaton'
 import { env } from '@/env/client'
 import BBatonButton from '@/svg/BBatonButton'
-import { formatDistanceToNow } from '@/utils/date'
+import { formatDistanceToNow } from '@/utils/format/date'
 import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env

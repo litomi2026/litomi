@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import { MoreHorizontal } from 'lucide-react'
 import Link from 'next/link'
 
-import { formatDistanceToNow } from '@/utils/date'
+import { formatDistanceToNow } from '@/utils/format/date'
 
 import Squircle from '../ui/Squircle'
 import PostImages from './PostImages'

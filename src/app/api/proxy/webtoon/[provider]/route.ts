@@ -1,7 +1,7 @@
 import { createCacheControlHeaders, createProblemDetailsResponse, handleRouteError } from '@/crawler/proxy-utils'
 import { WebtoonList } from '@/crawler/webtoon/types'
 import { RouteProps } from '@/types/nextjs'
-import { sec } from '@/utils/date'
+import { sec } from '@/utils/format/date'
 
 import { fetchWebtoonList, isValidProvider } from '../providers'
 

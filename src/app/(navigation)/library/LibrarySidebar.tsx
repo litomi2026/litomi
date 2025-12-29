@@ -5,7 +5,7 @@ import { type RefObject, useRef } from 'react'
 
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useLocaleFromCookie from '@/hook/useLocaleFromCookie'
-import { formatNumber } from '@/utils/format'
+import { formatNumber } from '@/utils/format/number'
 
 import CreateLibraryButton from './CreateLibraryButton'
 import LibrarySidebarLink from './LibrarySidebarLink'

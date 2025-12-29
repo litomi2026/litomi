@@ -3,7 +3,7 @@ import { MoreHorizontal } from 'lucide-react'
 import Link from 'next/link'
 import { ComponentProps } from 'react'
 
-import { formatDistanceToNow } from '@/utils/date'
+import { formatDistanceToNow } from '@/utils/format/date'
 
 import Squircle from '../ui/Squircle'
 import PostActionButtons from './PostActionButtons'

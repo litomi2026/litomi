@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 
-import { formatNumber } from '../format'
+import { formatNumber } from '../format/number'
 
 describe('formatNumber', () => {
   describe('English formatting (en)', () => {

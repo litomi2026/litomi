@@ -11,7 +11,7 @@ import { READING_HISTORY_PER_PAGE } from '@/constants/policy'
 import { readingHistoryTable } from '@/database/supabase/activity'
 import { db } from '@/database/supabase/drizzle'
 import { createCacheControl } from '@/utils/cache-control'
-import { sec } from '@/utils/date'
+import { sec } from '@/utils/format/date'
 
 const querySchema = z.object({
   cursor: z.string().optional(),

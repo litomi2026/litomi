@@ -8,8 +8,8 @@ import {
 } from '@/crawler/proxy-utils'
 import { Locale } from '@/translation/common'
 import { RouteProps } from '@/types/nextjs'
-import { sec } from '@/utils/date'
 import { DEGRADED_HEADER, DEGRADED_REASON_HEADER } from '@/utils/degraded-response'
+import { sec } from '@/utils/format/date'
 
 import { GETProxyMangaIdSchema } from './schema'
 

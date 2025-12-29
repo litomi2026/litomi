@@ -4,7 +4,7 @@ import { cookies } from 'next/headers'
 import { COOKIE_DOMAIN } from '@/constants'
 import { CookieKey } from '@/constants/storage'
 
-import { sec } from './date'
+import { sec } from './format/date'
 import { JWTType, signJWT, verifyJWT } from './jwt'
 
 type CookieStore = Awaited<ReturnType<typeof cookies>>

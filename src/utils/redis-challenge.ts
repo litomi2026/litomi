@@ -3,7 +3,7 @@
 import { ChallengeType } from '@/database/enum'
 import { redisClient } from '@/database/redis'
 
-import { sec } from './date'
+import { sec } from './format/date'
 
 /**
  * Get and delete a challenge atomically

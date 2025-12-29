@@ -7,7 +7,7 @@ import { kHentaiClient } from '@/crawler/k-hentai'
 import { tagCategoryNameToInt } from '@/database/enum'
 import { Locale } from '@/translation/common'
 import { Manga, MangaError } from '@/types/manga'
-import { sec } from '@/utils/date'
+import { sec } from '@/utils/format/date'
 
 type MangaFetchParams = {
   id: number

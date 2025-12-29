@@ -14,7 +14,7 @@ import IconTrash from '@/components/icons/IconTrash'
 import LinkPending from '@/components/LinkPending'
 import { NotificationType } from '@/database/enum'
 import { NotificationData } from '@/database/type'
-import { formatDistanceToNow } from '@/utils/date'
+import { formatDistanceToNow } from '@/utils/format/date'
 
 const AUTO_MARK_AS_READ_DELAY = 2000
 

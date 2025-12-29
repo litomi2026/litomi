@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 import IconSpinner from '@/components/icons/IconSpinner'
 import { POINT_CONSTANTS } from '@/constants/points'
 import useMeQuery from '@/query/useMeQuery'
-import { formatNumber } from '@/utils/format'
+import { formatNumber } from '@/utils/format/number'
 
 import { usePointsQuery } from '../usePointsQuery'
 import { useExpansionQuery } from './useExpansionQuery'
