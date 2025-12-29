@@ -4,7 +4,7 @@ import { Heart, MousePointerClick } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { AD_SLOTS } from '@/components/ads/constants'
-import LazyAdSlot, { type AdClickResult } from '@/components/ads/LazyAdSlot'
+import JuicyAdsSlot, { type AdClickResult } from '@/components/ads/JuicyAdsSlot'
 import useMeQuery from '@/query/useMeQuery'
 
 export default function RewardedAdSection() {
@@ -45,7 +45,7 @@ export default function RewardedAdSection() {
 
       {/* 광고 영역 */}
       <div className="flex flex-wrap justify-center gap-4">
-        <LazyAdSlot
+        <JuicyAdsSlot
           adSlotId={AD_SLOTS.REWARDED.id}
           height={AD_SLOTS.REWARDED.height}
           onAdClick={handleAdClick}
@@ -53,7 +53,7 @@ export default function RewardedAdSection() {
           width={AD_SLOTS.REWARDED.width}
           zoneId={AD_SLOTS.REWARDED.zoneId}
         />
-        <LazyAdSlot
+        <JuicyAdsSlot
           adSlotId={AD_SLOTS.REWARDED_2.id}
           height={AD_SLOTS.REWARDED_2.height}
           onAdClick={handleAdClick}
