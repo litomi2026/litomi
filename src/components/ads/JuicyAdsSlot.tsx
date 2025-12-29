@@ -43,7 +43,7 @@ type Props = {
 
 const AD_IFRAME_FOCUS_TO_BLUR_GRACE_MS = ms('400ms')
 
-export default function LazyAdSlot({
+export default function JuicyAdsSlot({
   zoneId,
   adSlotId,
   width,
