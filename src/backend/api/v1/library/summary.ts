@@ -4,9 +4,9 @@ import 'server-only'
 
 import { Env } from '@/backend'
 import { problemResponse } from '@/backend/utils/problem'
-import { createCacheControl } from '@/crawler/proxy-utils'
 import { bookmarkTable, readingHistoryTable, userRatingTable } from '@/database/supabase/activity'
 import { db } from '@/database/supabase/drizzle'
+import { createCacheControl } from '@/utils/cache-control'
 import { sec } from '@/utils/date'
 
 export type GETV1LibrarySummaryResponse = {

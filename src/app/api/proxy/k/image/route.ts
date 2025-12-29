@@ -1,6 +1,7 @@
 import { GETProxyKImageSchema } from '@/app/api/proxy/k/image/schema'
 import { kHentaiClient } from '@/crawler/k-hentai'
-import { createCacheControl, createProblemDetailsResponse, handleRouteError } from '@/crawler/proxy-utils'
+import { createProblemDetailsResponse, handleRouteError } from '@/crawler/proxy-utils'
+import { createCacheControl } from '@/utils/cache-control'
 import { sec } from '@/utils/date'
 
 export const runtime = 'edge'

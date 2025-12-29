@@ -6,9 +6,9 @@ import { Env } from '@/backend'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { TRANSACTION_TYPE } from '@/constants/points'
-import { createCacheControl } from '@/crawler/proxy-utils'
 import { db } from '@/database/supabase/drizzle'
 import { pointTransactionTable } from '@/database/supabase/points'
+import { createCacheControl } from '@/utils/cache-control'
 
 export type GETV1PointTransactionResponse = {
   items: Transaction[]

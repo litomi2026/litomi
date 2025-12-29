@@ -4,11 +4,11 @@ import { Hono } from 'hono'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
-import { createCacheControl } from '@/crawler/proxy-utils'
 import { aivenDB } from '@/database/aiven/drizzle'
 import { mangaTagTable, tagTable } from '@/database/aiven/schema'
 import { Locale } from '@/translation/common'
 import { translateTag } from '@/translation/tag'
+import { createCacheControl } from '@/utils/cache-control'
 import { sec } from '@/utils/date'
 
 const TAGS_PER_PAGE = 100

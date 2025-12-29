@@ -6,8 +6,8 @@ import { Env } from '@/backend'
 import { problemResponse } from '@/backend/utils/problem'
 import { SHORT_NAME } from '@/constants'
 import { REALTIME_PAGE_VIEW_MIN_THRESHOLD } from '@/constants/policy'
-import { createCacheControl } from '@/crawler/proxy-utils'
 import { env } from '@/env/server.hono'
+import { createCacheControl } from '@/utils/cache-control'
 
 const { GA_PROPERTY_ID, GA_SERVICE_ACCOUNT_EMAIL, GA_SERVICE_ACCOUNT_KEY } = env
 

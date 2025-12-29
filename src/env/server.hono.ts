@@ -1,4 +1,5 @@
 import { createEnv } from '@t3-oss/env-core'
+import 'server-only'
 import { z } from 'zod'
 
 const skipValidation = process.env.SKIP_ENV_VALIDATION === 'true'

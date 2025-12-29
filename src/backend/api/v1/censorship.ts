@@ -8,10 +8,10 @@ import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { encodeCensorshipCursor } from '@/common/cursor'
 import { CENSORSHIPS_PER_PAGE } from '@/constants/policy'
-import { createCacheControl } from '@/crawler/proxy-utils'
 import { CensorshipKey, CensorshipLevel } from '@/database/enum'
 import { userCensorshipTable } from '@/database/supabase/censorship'
 import { db } from '@/database/supabase/drizzle'
+import { createCacheControl } from '@/utils/cache-control'
 
 const querySchema = z.object({
   cursor: z.coerce.number().int().positive().optional(),

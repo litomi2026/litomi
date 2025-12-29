@@ -4,9 +4,9 @@ import 'server-only'
 
 import { Env } from '@/backend'
 import { problemResponse } from '@/backend/utils/problem'
-import { createCacheControl } from '@/crawler/proxy-utils'
 import { db } from '@/database/supabase/drizzle'
 import { notificationTable } from '@/database/supabase/notification'
+import { createCacheControl } from '@/utils/cache-control'
 
 export type GETUnreadCountResponse = number
 

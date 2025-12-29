@@ -4,7 +4,6 @@ import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
-import { createCacheControl } from '@/crawler/proxy-utils'
 import { trendingKeywordsService } from '@/services/TrendingKeywordsService'
 import { translateArtistList } from '@/translation/artist'
 import { translateCategory } from '@/translation/category'
@@ -15,6 +14,7 @@ import { translateLanguage } from '@/translation/language'
 import { translateSeriesList } from '@/translation/series'
 import { translateTag } from '@/translation/tag'
 import { translateType } from '@/translation/type'
+import { createCacheControl } from '@/utils/cache-control'
 import { sec } from '@/utils/date'
 
 enum TrendingType {

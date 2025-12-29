@@ -7,8 +7,8 @@ import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { decodeBookmarkCursor, encodeBookmarkCursor } from '@/common/cursor'
 import { BOOKMARKS_PER_PAGE } from '@/constants/policy'
-import { createCacheControl } from '@/crawler/proxy-utils'
 import selectBookmarks from '@/sql/selectBookmarks'
+import { createCacheControl } from '@/utils/cache-control'
 
 const querySchema = z.object({
   cursor: z.string().optional(),

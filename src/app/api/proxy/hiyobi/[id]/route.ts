@@ -1,7 +1,8 @@
 import { hiyobiClient } from '@/crawler/hiyobi'
-import { createCacheControl, createProblemDetailsResponse, handleRouteError } from '@/crawler/proxy-utils'
+import { createProblemDetailsResponse, handleRouteError } from '@/crawler/proxy-utils'
 import { Locale } from '@/translation/common'
 import { RouteProps } from '@/types/nextjs'
+import { createCacheControl } from '@/utils/cache-control'
 import { sec } from '@/utils/date'
 
 import { GETProxyHiyobiIdSchema } from './schema'

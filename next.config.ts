@@ -7,7 +7,7 @@ import withBundleAnalyzer from '@next/bundle-analyzer'
 import { withSentryConfig } from '@sentry/nextjs'
 import { withBotId } from 'botid/next/config'
 
-import { createCacheControl } from '@/crawler/proxy-utils'
+import { createCacheControl } from '@/utils/cache-control'
 import { sec } from '@/utils/date'
 
 const cspHeader = `

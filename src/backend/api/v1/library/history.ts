@@ -8,9 +8,9 @@ import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { decodeReadingHistoryCursor, encodeReadingHistoryCursor } from '@/common/cursor'
 import { READING_HISTORY_PER_PAGE } from '@/constants/policy'
-import { createCacheControl } from '@/crawler/proxy-utils'
 import { readingHistoryTable } from '@/database/supabase/activity'
 import { db } from '@/database/supabase/drizzle'
+import { createCacheControl } from '@/utils/cache-control'
 import { sec } from '@/utils/date'
 
 const querySchema = z.object({

@@ -4,9 +4,9 @@ import 'server-only'
 
 import { Env } from '@/backend'
 import { problemResponse } from '@/backend/utils/problem'
-import { createCacheControl } from '@/crawler/proxy-utils'
 import { db } from '@/database/supabase/drizzle'
 import { libraryItemTable, libraryTable } from '@/database/supabase/library'
+import { createCacheControl } from '@/utils/cache-control'
 import { intToHexColor } from '@/utils/color'
 
 export type GETLibraryResponse = {

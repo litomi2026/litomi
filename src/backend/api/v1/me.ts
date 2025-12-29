@@ -6,9 +6,9 @@ import 'server-only'
 import { Env } from '@/backend'
 import { problemResponse } from '@/backend/utils/problem'
 import { CookieKey } from '@/constants/storage'
-import { createCacheControl } from '@/crawler/proxy-utils'
 import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/user'
+import { createCacheControl } from '@/utils/cache-control'
 
 export type GETV1MeResponse = {
   id: number

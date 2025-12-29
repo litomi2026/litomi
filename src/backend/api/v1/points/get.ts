@@ -3,9 +3,9 @@ import { Hono } from 'hono'
 
 import { Env } from '@/backend'
 import { problemResponse } from '@/backend/utils/problem'
-import { createCacheControl } from '@/crawler/proxy-utils'
 import { db } from '@/database/supabase/drizzle'
 import { userPointsTable } from '@/database/supabase/points'
+import { createCacheControl } from '@/utils/cache-control'
 
 export type GETV1PointsResponse = {
   balance: number

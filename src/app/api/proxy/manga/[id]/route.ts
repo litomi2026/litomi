@@ -1,10 +1,14 @@
 import { fetchMangaFromMultiSources } from '@/common/manga'
 import { BLACKLISTED_MANGA_IDS, LAST_VERIFIED_MANGA_ID } from '@/constants/policy'
-import { createCacheControlHeaders, createProblemDetailsResponse, handleRouteError } from '@/crawler/proxy-utils'
+import {
+  calculateOptimalCacheDuration,
+  createCacheControlHeaders,
+  createProblemDetailsResponse,
+  handleRouteError,
+} from '@/crawler/proxy-utils'
 import { Locale } from '@/translation/common'
 import { Manga } from '@/types/manga'
 import { RouteProps } from '@/types/nextjs'
-import { calculateOptimalCacheDuration } from '@/utils/cache-control'
 import { sec } from '@/utils/date'
 import { DEGRADED_HEADER, DEGRADED_REASON_HEADER } from '@/utils/degraded-response'
 

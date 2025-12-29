@@ -1,7 +1,8 @@
 import { kHentaiClient } from '@/crawler/k-hentai'
-import { createCacheControl, createProblemDetailsResponse, handleRouteError } from '@/crawler/proxy-utils'
+import { createProblemDetailsResponse, handleRouteError } from '@/crawler/proxy-utils'
 import { Locale } from '@/translation/common'
 import { RouteProps } from '@/types/nextjs'
+import { createCacheControl } from '@/utils/cache-control'
 
 import { GETProxyKIdSchema } from './schema'
 
