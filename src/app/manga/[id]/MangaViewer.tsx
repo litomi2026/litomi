@@ -2,10 +2,10 @@
 
 import dynamic from 'next/dynamic'
 
-import { Manga } from '@/types/manga'
+import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
+import { type Manga } from '@/types/manga'
 
 import ImageViewer from './ImageViewer/ImageViewer'
-import { useMangaQuery } from './useMangaQuery'
 import usePageMetadata from './usePageMetadata'
 
 const NotFound = dynamic(() => import('./not-found'))
@@ -16,7 +16,9 @@ type Props = {
 }
 
 export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
-  const { data } = useMangaQuery(id, initialManga)
+  const shouldFetch = !(initialManga?.images?.length ?? 0 > 0)
+  const { mangaMap } = useMangaListCachedQuery({ mangaIds: shouldFetch ? [id] : [] }) // TODO: 모든 작품 이미지를 R2 저장소로 자동 관리할 떄 지우기
+  const data = mangaMap.get(id) ?? (shouldFetch && !initialManga ? { id, title: '불러오는 중' } : undefined)
   const manga = prepareManga(data, initialManga)
   const metadata = prepareMetadata(manga)
 

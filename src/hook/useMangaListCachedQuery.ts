@@ -50,14 +50,14 @@ export default function useMangaListCachedQuery({
 
   const queries = useQueries({
     queries: uniqueMangaIds.map((id) => ({
-      queryKey: QueryKeys.mangaCard(id),
+      queryKey: QueryKeys.manga(id),
       queryFn: () =>
         limit(async () => {
           const url = `/api/proxy/manga/${id}`
           const { data, response } = await fetchWithErrorHandling<Manga>(url)
 
           if (isDegradedResponse(response.headers)) {
-            scheduleErrorCacheCleanup(QueryKeys.mangaCard(id))
+            scheduleErrorCacheCleanup(QueryKeys.manga(id))
           }
 
           return data
@@ -65,7 +65,7 @@ export default function useMangaListCachedQuery({
       staleTime,
       gcTime,
       onError: () => {
-        scheduleErrorCacheCleanup(QueryKeys.mangaCard(id))
+        scheduleErrorCacheCleanup(QueryKeys.manga(id))
       },
     })),
   })
@@ -88,7 +88,7 @@ export default function useMangaListCachedQuery({
   const isLoading = queries.some((query) => query.isLoading)
   const isFetching = queries.some((query) => query.isFetching)
 
-  function scheduleErrorCacheCleanup(queryKey: ReturnType<typeof QueryKeys.mangaCard>) {
+  function scheduleErrorCacheCleanup(queryKey: ReturnType<typeof QueryKeys.manga>) {
     const timer = setTimeout(() => {
       queryClient.removeQueries({ queryKey, exact: true })
     }, ms('1 minute'))

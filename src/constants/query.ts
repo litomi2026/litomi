@@ -1,4 +1,3 @@
-import { MangaResponseScope } from '@/app/api/proxy/manga/[id]/types'
 import { RatingSort } from '@/backend/api/v1/library/enum'
 import { PostFilter } from '@/backend/api/v1/post/constant'
 
@@ -28,8 +27,7 @@ export const QueryKeys = {
   pointsExpansion: ['me', 'points', 'expansion'],
   pointsTransactions: ['me', 'points', 'transactions'],
 
-  manga: (id: number, scope: MangaResponseScope | null) => ['manga', id, scope],
-  mangaCard: (id: number) => ['mangaCard', id],
+  manga: (id: number) => ['manga', id],
   search: (searchParams: URLSearchParams, locale: string) => ['search', locale, Object.fromEntries(searchParams)],
   searchSuggestions: (query: string, locale: string) => ['search', 'suggestions', locale, query],
   posts: (filter: PostFilter, mangaId?: number, username?: string) => ['posts', filter, { mangaId, username }],

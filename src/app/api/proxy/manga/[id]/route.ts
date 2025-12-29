@@ -7,13 +7,11 @@ import {
   handleRouteError,
 } from '@/crawler/proxy-utils'
 import { Locale } from '@/translation/common'
-import { Manga } from '@/types/manga'
 import { RouteProps } from '@/types/nextjs'
 import { sec } from '@/utils/date'
 import { DEGRADED_HEADER, DEGRADED_REASON_HEADER } from '@/utils/degraded-response'
 
 import { GETProxyMangaIdSchema } from './schema'
-import { MangaResponseScope } from './types'
 
 export const runtime = 'edge'
 
@@ -21,27 +19,11 @@ type Params = {
   id: string
 }
 
-const METADATA_FIELDS = [
-  'artists',
-  'characters',
-  'count',
-  'date',
-  'description',
-  'group',
-  'languages',
-  'lines',
-  'series',
-  'tags',
-  'title',
-  'type',
-] as const
-
 export async function GET(request: Request, { params }: RouteProps<Params>) {
   const { searchParams } = new URL(request.url)
 
   const validation = GETProxyMangaIdSchema.safeParse({
     id: (await params).id,
-    scope: searchParams.get('scope'),
     locale: searchParams.get('locale') ?? Locale.KO,
   })
 
@@ -53,7 +35,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
     })
   }
 
-  const { id, scope, locale } = validation.data
+  const { id, locale } = validation.data
 
   if (BLACKLISTED_MANGA_IDS.includes(id)) {
     const forbiddenHeaders = createCacheControlHeaders({
@@ -121,11 +103,12 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
           sMaxAge: 10,
         },
       })
+
       const headers = new Headers(errorHeaders)
       headers.set(DEGRADED_HEADER, '1')
       headers.set(DEGRADED_REASON_HEADER, 'IMAGES_ONLY')
 
-      const { isError: _isError, ...mangaWithoutIsError } = manga as Manga & { isError?: boolean }
+      const { isError: _, ...mangaWithoutIsError } = manga
       return Response.json(mangaWithoutIsError, { headers })
     }
 
@@ -146,26 +129,8 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       },
     })
 
-    const result = getMangaResponseData(manga, scope)
-    return Response.json(result, { headers: successHeaders })
+    return Response.json(manga, { headers: successHeaders })
   } catch (error) {
     return handleRouteError(error, request)
-  }
-}
-
-function getMangaResponseData(manga: Manga, scope: MangaResponseScope | null) {
-  switch (scope) {
-    case MangaResponseScope.EXCLUDE_METADATA: {
-      for (const field of METADATA_FIELDS) {
-        delete manga[field]
-      }
-      return manga
-    }
-
-    case MangaResponseScope.IMAGE:
-      return { images: manga.images }
-
-    default:
-      return manga
   }
 }
