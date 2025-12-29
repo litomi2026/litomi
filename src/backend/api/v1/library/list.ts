@@ -1,17 +1,16 @@
-import { zValidator } from '@hono/zod-validator'
 import { and, desc, eq, lt, ne, or, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { HTTPException } from 'hono/http-exception'
 import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
-import { getUserId } from '@/backend/utils/auth'
+import { problemResponse } from '@/backend/utils/problem'
+import { zProblemValidator } from '@/backend/utils/validator'
 import { decodeLibraryListCursor, encodeLibraryListCursor } from '@/common/cursor'
 import { LIBRARIES_PER_PAGE } from '@/constants/policy'
-import { createCacheControl } from '@/crawler/proxy-utils'
 import { db } from '@/database/supabase/drizzle'
 import { libraryItemTable, libraryTable } from '@/database/supabase/library'
+import { createCacheControl } from '@/utils/cache-control'
 import { intToHexColor } from '@/utils/color'
 import { sec } from '@/utils/date'
 
@@ -39,14 +38,14 @@ export type LibraryListItem = {
 
 const libraryListRoutes = new Hono<Env>()
 
-libraryListRoutes.get('/', zValidator('query', querySchema), async (c) => {
-  const userId = getUserId()
+libraryListRoutes.get('/', zProblemValidator('query', querySchema), async (c) => {
+  const userId = c.get('userId')
   const { cursor, limit } = c.req.valid('query')
 
   const decodedCursor = cursor ? decodeLibraryListCursor(cursor) : null
 
   if (cursor && !decodedCursor) {
-    throw new HTTPException(400)
+    return problemResponse(c, { status: 400, detail: '잘못된 커서예요' })
   }
 
   const itemCountExpr = sql<number>`
@@ -119,46 +118,52 @@ libraryListRoutes.get('/', zValidator('query', querySchema), async (c) => {
     query = query.orderBy(desc(itemCountExpr), desc(libraryTable.createdAt), desc(libraryTable.id))
   }
 
-  const rows = await query
+  try {
+    const rows = await query
 
-  const cacheControl = createCacheControl({
-    private: true,
-    maxAge: cursor ? sec('1 minute') : sec('3s'),
-  })
+    const cacheControl = createCacheControl({
+      private: true,
+      maxAge: cursor ? sec('1 minute') : sec('3s'),
+    })
 
-  if (rows.length === 0) {
-    const result: GETV1LibraryListResponse = { libraries: [], nextCursor: null }
-    return c.json(result, { headers: { 'Cache-Control': cacheControl } })
+    if (rows.length === 0) {
+      const result: GETV1LibraryListResponse = { libraries: [], nextCursor: null }
+      return c.json(result, { headers: { 'Cache-Control': cacheControl } })
+    }
+
+    const hasNextPage = rows.length > limit
+    const pageRows = hasNextPage ? rows.slice(0, limit) : rows
+    const lastRow = pageRows[pageRows.length - 1]
+
+    const libraries: LibraryListItem[] = pageRows.map((row) => ({
+      id: row.id,
+      userId: row.userId,
+      name: row.name,
+      description: row.description,
+      color: intToHexColor(row.color),
+      icon: row.icon,
+      isPublic: row.isPublic,
+      createdAt: row.createdAt.getTime(),
+      itemCount: row.itemCount,
+    }))
+
+    const nextCursor =
+      hasNextPage && lastRow
+        ? encodeLibraryListCursor(
+            userId && lastRow.userId === userId ? 1 : 0,
+            lastRow.itemCount,
+            lastRow.createdAt.getTime(),
+            lastRow.id,
+          )
+        : null
+
+    const result = { libraries, nextCursor }
+
+    return c.json<GETV1LibraryListResponse>(result, { headers: { 'Cache-Control': cacheControl } })
+  } catch (error) {
+    console.error(error)
+    return problemResponse(c, { status: 500, detail: '서재 목록을 불러오지 못했어요' })
   }
-
-  const hasNextPage = rows.length > limit
-  const pageRows = hasNextPage ? rows.slice(0, limit) : rows
-  const lastRow = pageRows[pageRows.length - 1]
-
-  const libraries: LibraryListItem[] = pageRows.map((row) => ({
-    id: row.id,
-    userId: row.userId,
-    name: row.name,
-    description: row.description,
-    color: intToHexColor(row.color),
-    icon: row.icon,
-    isPublic: row.isPublic,
-    createdAt: row.createdAt.getTime(),
-    itemCount: row.itemCount,
-  }))
-
-  const nextCursor =
-    hasNextPage && lastRow
-      ? encodeLibraryListCursor(
-          userId && lastRow.userId === userId ? 1 : 0,
-          lastRow.itemCount,
-          lastRow.createdAt.getTime(),
-          lastRow.id,
-        )
-      : null
-
-  const result: GETV1LibraryListResponse = { libraries, nextCursor }
-  return c.json(result, { headers: { 'Cache-Control': cacheControl } })
 })
 
 export default libraryListRoutes

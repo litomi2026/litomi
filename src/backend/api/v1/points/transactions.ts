@@ -1,14 +1,14 @@
-import { zValidator } from '@hono/zod-validator'
 import { and, desc, eq, lt } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { HTTPException } from 'hono/http-exception'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { problemResponse } from '@/backend/utils/problem'
+import { zProblemValidator } from '@/backend/utils/validator'
 import { TRANSACTION_TYPE } from '@/constants/points'
-import { createCacheControl } from '@/crawler/proxy-utils'
 import { db } from '@/database/supabase/drizzle'
 import { pointTransactionTable } from '@/database/supabase/points'
+import { createCacheControl } from '@/utils/cache-control'
 
 export type GETV1PointTransactionResponse = {
   items: Transaction[]
@@ -32,11 +32,11 @@ const querySchema = z.object({
   cursor: z.coerce.number().int().positive().optional(),
 })
 
-route.get('/', zValidator('query', querySchema), async (c) => {
+route.get('/', zProblemValidator('query', querySchema), async (c) => {
   const userId = c.get('userId')
 
   if (!userId) {
-    throw new HTTPException(401)
+    return problemResponse(c, { status: 401 })
   }
 
   const { cursor } = c.req.valid('query')
@@ -45,46 +45,51 @@ route.get('/', zValidator('query', querySchema), async (c) => {
     ? and(eq(pointTransactionTable.userId, userId), lt(pointTransactionTable.id, cursor))
     : eq(pointTransactionTable.userId, userId)
 
-  const transactions = await db
-    .select({
-      id: pointTransactionTable.id,
-      type: pointTransactionTable.type,
-      amount: pointTransactionTable.amount,
-      balanceAfter: pointTransactionTable.balanceAfter,
-      description: pointTransactionTable.description,
-      createdAt: pointTransactionTable.createdAt,
+  try {
+    const transactions = await db
+      .select({
+        id: pointTransactionTable.id,
+        type: pointTransactionTable.type,
+        amount: pointTransactionTable.amount,
+        balanceAfter: pointTransactionTable.balanceAfter,
+        description: pointTransactionTable.description,
+        createdAt: pointTransactionTable.createdAt,
+      })
+      .from(pointTransactionTable)
+      .where(whereConditions)
+      .orderBy(desc(pointTransactionTable.id))
+      .limit(PER_PAGE + 1)
+
+    const hasMore = transactions.length > PER_PAGE
+
+    if (hasMore) {
+      transactions.pop()
+    }
+
+    const items: Transaction[] = transactions.map((t) => ({
+      id: t.id,
+      type: t.type === TRANSACTION_TYPE.AD_CLICK ? 'earn' : 'spend',
+      amount: t.amount,
+      balanceAfter: t.balanceAfter,
+      description: t.description,
+      createdAt: t.createdAt.toISOString(),
+    }))
+
+    const response = {
+      items,
+      nextCursor: hasMore ? transactions[transactions.length - 1].id : null,
+    }
+
+    const cacheControl = createCacheControl({
+      private: true,
+      maxAge: 3,
     })
-    .from(pointTransactionTable)
-    .where(whereConditions)
-    .orderBy(desc(pointTransactionTable.id))
-    .limit(PER_PAGE + 1)
 
-  const hasMore = transactions.length > PER_PAGE
-
-  if (hasMore) {
-    transactions.pop()
+    return c.json<GETV1PointTransactionResponse>(response, { headers: { 'Cache-Control': cacheControl } })
+  } catch (error) {
+    console.error(error)
+    return problemResponse(c, { status: 500, detail: '거래 내역을 불러오지 못했어요' })
   }
-
-  const items: Transaction[] = transactions.map((t) => ({
-    id: t.id,
-    type: t.type === TRANSACTION_TYPE.AD_CLICK ? 'earn' : 'spend',
-    amount: t.amount,
-    balanceAfter: t.balanceAfter,
-    description: t.description,
-    createdAt: t.createdAt.toISOString(),
-  }))
-
-  const response = {
-    items,
-    nextCursor: hasMore ? transactions[transactions.length - 1].id : null,
-  }
-
-  const cacheControl = createCacheControl({
-    private: true,
-    maxAge: 3,
-  })
-
-  return c.json<GETV1PointTransactionResponse>(response, { headers: { 'Cache-Control': cacheControl } })
 })
 
 export default route

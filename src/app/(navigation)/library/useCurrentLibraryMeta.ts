@@ -7,7 +7,7 @@ import type { GETV1LibraryMetaResponse } from '@/backend/api/v1/library/meta'
 
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
-import { handleResponseError } from '@/utils/react-query-error'
+import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
 
@@ -26,13 +26,15 @@ export default function useCurrentLibraryMeta({ libraries, userId }: Options) {
     queryKey: QueryKeys.libraryMeta(parsedLibraryId, userId),
     queryFn: async () => {
       const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/library/${parsedLibraryId}/meta`
-      const response = await fetch(url, { credentials: 'include' })
-
-      if (response.status === 404) {
-        return null
+      try {
+        const { data } = await fetchWithErrorHandling<GETV1LibraryMetaResponse>(url, { credentials: 'include' })
+        return data
+      } catch (error) {
+        if (error instanceof ProblemDetailsError && error.status === 404) {
+          return null
+        }
+        throw error
       }
-
-      return await handleResponseError<GETV1LibraryMetaResponse>(response)
     },
     enabled: Boolean(parsedLibraryId) && !currentLibraryFromList,
   })

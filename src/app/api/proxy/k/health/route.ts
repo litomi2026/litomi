@@ -1,6 +1,7 @@
 import { kHentaiClient } from '@/crawler/k-hentai'
-import { createCacheControl, createHealthCheckHandler } from '@/crawler/proxy-utils'
+import { createHealthCheckHandler } from '@/crawler/proxy-utils'
 import { Locale } from '@/translation/common'
+import { createCacheControl } from '@/utils/cache-control'
 
 export const runtime = 'edge'
 const maxAge = 5

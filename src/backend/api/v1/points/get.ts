@@ -1,11 +1,11 @@
 import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { HTTPException } from 'hono/http-exception'
 
 import { Env } from '@/backend'
-import { createCacheControl } from '@/crawler/proxy-utils'
+import { problemResponse } from '@/backend/utils/problem'
 import { db } from '@/database/supabase/drizzle'
 import { userPointsTable } from '@/database/supabase/points'
+import { createCacheControl } from '@/utils/cache-control'
 
 export type GETV1PointsResponse = {
   balance: number
@@ -19,40 +19,45 @@ route.get('/', async (c) => {
   const userId = c.get('userId')
 
   if (!userId) {
-    throw new HTTPException(401)
+    return problemResponse(c, { status: 401 })
   }
 
-  const [points] = await db
-    .select({
-      balance: userPointsTable.balance,
-      totalEarned: userPointsTable.totalEarned,
-      totalSpent: userPointsTable.totalSpent,
+  try {
+    const [points] = await db
+      .select({
+        balance: userPointsTable.balance,
+        totalEarned: userPointsTable.totalEarned,
+        totalSpent: userPointsTable.totalSpent,
+      })
+      .from(userPointsTable)
+      .where(eq(userPointsTable.userId, userId))
+
+    const cacheControl = createCacheControl({
+      private: true,
+      maxAge: 3,
     })
-    .from(userPointsTable)
-    .where(eq(userPointsTable.userId, userId))
 
-  const cacheControl = createCacheControl({
-    private: true,
-    maxAge: 3,
-  })
+    if (!points) {
+      const response = {
+        balance: 0,
+        totalEarned: 0,
+        totalSpent: 0,
+      }
 
-  if (!points) {
+      return c.json<GETV1PointsResponse>(response, { headers: { 'Cache-Control': cacheControl } })
+    }
+
     const response = {
-      balance: 0,
-      totalEarned: 0,
-      totalSpent: 0,
+      balance: points.balance,
+      totalEarned: points.totalEarned,
+      totalSpent: points.totalSpent,
     }
 
     return c.json<GETV1PointsResponse>(response, { headers: { 'Cache-Control': cacheControl } })
+  } catch (error) {
+    console.error(error)
+    return problemResponse(c, { status: 500, detail: '포인트 조회에 실패했어요' })
   }
-
-  const response = {
-    balance: points.balance,
-    totalEarned: points.totalEarned,
-    totalSpent: points.totalSpent,
-  }
-
-  return c.json<GETV1PointsResponse>(response, { headers: { 'Cache-Control': cacheControl } })
 })
 
 export default route

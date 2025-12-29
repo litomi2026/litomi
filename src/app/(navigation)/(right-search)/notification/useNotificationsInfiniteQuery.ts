@@ -5,14 +5,14 @@ import { GETNotificationResponse } from '@/backend/api/v1/notification'
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import useMeQuery from '@/query/useMeQuery'
-import { handleResponseError } from '@/utils/react-query-error'
+import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
 
 export async function fetchNotifications(searchParams: URLSearchParams) {
   const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/notification?${searchParams}`
-  const response = await fetch(url, { credentials: 'include' })
-  return handleResponseError<GETNotificationResponse>(response)
+  const { data } = await fetchWithErrorHandling<GETNotificationResponse>(url, { credentials: 'include' })
+  return data
 }
 
 export default function useNotificationInfiniteQuery() {
@@ -22,15 +22,17 @@ export default function useNotificationInfiniteQuery() {
   return useInfiniteQuery<GETNotificationResponse, Error>({
     queryKey: QueryKeys.notifications(searchParams),
     queryFn: ({ pageParam }) => {
-      const queryParams = new URLSearchParams()
+      const params = new URLSearchParams()
+
       if (pageParam) {
-        queryParams.set('nextId', pageParam.toString())
+        params.set('nextId', pageParam.toString())
       }
-      const filters = searchParams.getAll('filter')
-      for (const filter of filters) {
-        queryParams.append('filter', filter)
+
+      for (const filter of searchParams.getAll('filter')) {
+        params.append('filter', filter)
       }
-      return fetchNotifications(queryParams)
+
+      return fetchNotifications(params)
     },
     getNextPageParam: ({ hasNextPage, notifications }) =>
       hasNextPage ? notifications[notifications.length - 1]?.id.toString() : null,

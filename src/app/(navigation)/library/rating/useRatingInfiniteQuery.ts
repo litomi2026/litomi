@@ -4,7 +4,7 @@ import { RatingSort } from '@/backend/api/v1/library/enum'
 import { GETV1RatingsResponse } from '@/backend/api/v1/library/rating'
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
-import { handleResponseError } from '@/utils/react-query-error'
+import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
 
@@ -20,8 +20,8 @@ export async function fetchRatingsPaginated(cursor: string | null, sort: RatingS
   }
 
   const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/library/rating?${searchParams}`
-  const response = await fetch(url, { credentials: 'include' })
-  return handleResponseError<GETV1RatingsResponse>(response)
+  const { data } = await fetchWithErrorHandling<GETV1RatingsResponse>(url, { credentials: 'include' })
+  return data
 }
 
 export default function useRatingInfiniteQuery(

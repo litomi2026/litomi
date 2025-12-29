@@ -24,7 +24,7 @@ export abstract class ProxyError extends Error {
 }
 
 export class AllSourcesFailedError extends ProxyError {
-  readonly errorCode = 'ALL_SOURCES_FAILED'
+  readonly errorCode = 'all-sources-failed'
   readonly isRetryable = false
   readonly statusCode = 404
 
@@ -33,8 +33,18 @@ export class AllSourcesFailedError extends ProxyError {
   }
 }
 
+export class BadRequestError extends ProxyError {
+  readonly errorCode = 'bad-request'
+  readonly isRetryable = false
+  readonly statusCode = 400
+
+  constructor(message = '잘못된 요청이에요', context?: Record<string, unknown>) {
+    super(message, context)
+  }
+}
+
 export class CircuitBreakerError extends ProxyError {
-  readonly errorCode = 'CIRCUIT_BREAKER_OPEN'
+  readonly errorCode = 'circuit-breaker-open'
   readonly isRetryable = false
   readonly statusCode = 503
 
@@ -44,7 +54,7 @@ export class CircuitBreakerError extends ProxyError {
 }
 
 export class InternalError extends ProxyError {
-  readonly errorCode = 'INTERNAL_ERROR'
+  readonly errorCode = 'internal-error'
   readonly isRetryable = true
   readonly statusCode = 500
 
@@ -54,7 +64,7 @@ export class InternalError extends ProxyError {
 }
 
 export class NetworkError extends ProxyError {
-  readonly errorCode = 'NETWORK_ERROR'
+  readonly errorCode = 'upstream-network-error'
   readonly isRetryable = true
   readonly statusCode = 503
 
@@ -64,7 +74,7 @@ export class NetworkError extends ProxyError {
 }
 
 export class NotFoundError extends ProxyError {
-  readonly errorCode = 'NOT_FOUND'
+  readonly errorCode = 'not-found'
   readonly isRetryable = false
   readonly statusCode = 404
 
@@ -74,7 +84,7 @@ export class NotFoundError extends ProxyError {
 }
 
 export class ParseError extends ProxyError {
-  readonly errorCode = 'PARSE_ERROR'
+  readonly errorCode = 'parse-error'
   readonly isRetryable = false
   readonly statusCode = 502
 
@@ -84,7 +94,7 @@ export class ParseError extends ProxyError {
 }
 
 export class TimeoutError extends ProxyError {
-  readonly errorCode = 'REQUEST_TIMEOUT'
+  readonly errorCode = 'request-timeout'
   readonly isRetryable = true
   readonly statusCode = 408
 
@@ -94,7 +104,7 @@ export class TimeoutError extends ProxyError {
 }
 
 export class UpstreamServerError extends ProxyError {
-  readonly errorCode = 'UPSTREAM_ERROR'
+  readonly errorCode = 'upstream-error'
   readonly isRetryable: boolean
   readonly retryAfter: string | null
   readonly statusCode: number
@@ -145,7 +155,7 @@ export function normalizeError(error: unknown, defaultMessage = '알 수 없는 
     const message = error.message.toLowerCase()
 
     if (error.name === 'AbortError' || message.includes('timeout')) {
-      return new TimeoutError(error.message)
+      return new TimeoutError()
     }
 
     if (
@@ -155,10 +165,10 @@ export function normalizeError(error: unknown, defaultMessage = '알 수 없는 
       message.includes('econnrefused') ||
       message.includes('socket hang up')
     ) {
-      return new NetworkError(error.message)
+      return new NetworkError()
     }
 
-    return new InternalError(error.message || defaultMessage)
+    return new InternalError(defaultMessage)
   }
 
   return new InternalError(defaultMessage)

@@ -8,7 +8,7 @@ import IconSpinner from '@/components/icons/IconSpinner'
 import { QueryKeys } from '@/constants/query'
 import { WebtoonEpisode } from '@/crawler/webtoon/types'
 import { Manga } from '@/types/manga'
-import { handleResponseError } from '@/utils/react-query-error'
+import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 type EpisodeQueryParams = {
   provider: string
@@ -58,9 +58,8 @@ function useEpisodeQuery({ provider, domain, path }: EpisodeQueryParams) {
     queryKey: QueryKeys.webtoonEpisode(provider, domain, path),
     queryFn: async () => {
       const params = new URLSearchParams({ domain, path })
-      const response = await fetch(`/api/proxy/webtoon/${provider}/episode?${params}`)
-      const episode = await handleResponseError<WebtoonEpisode>(response)
-      return createMangaFromEpisode(episode)
+      const { data } = await fetchWithErrorHandling<WebtoonEpisode>(`/api/proxy/webtoon/${provider}/episode?${params}`)
+      return createMangaFromEpisode(data)
     },
     enabled: Boolean(provider && domain && path),
   })

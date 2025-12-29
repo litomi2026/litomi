@@ -1,17 +1,16 @@
-import { zValidator } from '@hono/zod-validator'
 import { and, desc, eq, lt, or } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { HTTPException } from 'hono/http-exception'
 import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
-import { getUserId } from '@/backend/utils/auth'
+import { problemResponse } from '@/backend/utils/problem'
+import { zProblemValidator } from '@/backend/utils/validator'
 import { decodeLibraryIdCursor, encodeLibraryIdCursor } from '@/common/cursor'
 import { LIBRARY_ITEMS_PER_PAGE } from '@/constants/policy'
-import { createCacheControl } from '@/crawler/proxy-utils'
 import { db } from '@/database/supabase/drizzle'
 import { libraryItemTable, libraryTable } from '@/database/supabase/library'
+import { createCacheControl } from '@/utils/cache-control'
 import { intToHexColor } from '@/utils/color'
 import { sec } from '@/utils/date'
 
@@ -38,14 +37,14 @@ export type LibraryMangaItem = {
 
 const libraryMangaRoutes = new Hono<Env>()
 
-libraryMangaRoutes.get('/', zValidator('query', querySchema), async (c) => {
-  const userId = getUserId()
+libraryMangaRoutes.get('/', zProblemValidator('query', querySchema), async (c) => {
+  const userId = c.get('userId')
   const { cursor, limit } = c.req.valid('query')
 
   const decodedCursor = cursor ? decodeLibraryIdCursor(cursor) : null
 
   if (cursor && !decodedCursor) {
-    throw new HTTPException(400)
+    return problemResponse(c, { status: 400, detail: '잘못된 커서예요' })
   }
 
   const baseConditions = []
@@ -102,37 +101,45 @@ libraryMangaRoutes.get('/', zValidator('query', querySchema), async (c) => {
   }
 
   query = query.orderBy(desc(perManga.createdAt), desc(perManga.mangaId))
-  const rows = await query
 
-  const cacheControl = createCacheControl({
-    private: true,
-    maxAge: cursor ? sec('1 minute') : 3,
-  })
+  try {
+    const rows = await query
 
-  if (rows.length === 0) {
-    const result: GETV1LibraryMangaResponse = { items: [], nextCursor: null }
-    return c.json(result, { headers: { 'Cache-Control': cacheControl } })
+    const cacheControl = createCacheControl({
+      private: true,
+      maxAge: cursor ? sec('1 minute') : 3,
+    })
+
+    if (rows.length === 0) {
+      const result = { items: [], nextCursor: null }
+      return c.json<GETV1LibraryMangaResponse>(result, { headers: { 'Cache-Control': cacheControl } })
+    }
+
+    const hasNextPage = rows.length > limit
+    const pageRows = hasNextPage ? rows.slice(0, limit) : rows
+    const lastRow = pageRows[pageRows.length - 1]
+
+    const items: LibraryMangaItem[] = pageRows.map((row) => ({
+      mangaId: row.mangaId,
+      createdAt: row.createdAt.getTime(),
+      library: {
+        id: row.libraryId,
+        name: row.libraryName,
+        color: intToHexColor(row.libraryColor),
+        icon: row.libraryIcon,
+      },
+    }))
+
+    const nextCursor =
+      hasNextPage && lastRow ? encodeLibraryIdCursor(lastRow.createdAt.getTime(), lastRow.mangaId) : null
+
+    const result = { items, nextCursor }
+
+    return c.json<GETV1LibraryMangaResponse>(result, { headers: { 'Cache-Control': cacheControl } })
+  } catch (error) {
+    console.error(error)
+    return problemResponse(c, { status: 500, detail: '서재 작품 목록을 불러오지 못했어요' })
   }
-
-  const hasNextPage = rows.length > limit
-  const pageRows = hasNextPage ? rows.slice(0, limit) : rows
-  const lastRow = pageRows[pageRows.length - 1]
-
-  const items: LibraryMangaItem[] = pageRows.map((row) => ({
-    mangaId: row.mangaId,
-    createdAt: row.createdAt.getTime(),
-    library: {
-      id: row.libraryId,
-      name: row.libraryName,
-      color: intToHexColor(row.libraryColor),
-      icon: row.libraryIcon,
-    },
-  }))
-
-  const nextCursor = hasNextPage && lastRow ? encodeLibraryIdCursor(lastRow.createdAt.getTime(), lastRow.mangaId) : null
-
-  const result: GETV1LibraryMangaResponse = { items, nextCursor }
-  return c.json(result, { headers: { 'Cache-Control': cacheControl } })
 })
 
 export default libraryMangaRoutes

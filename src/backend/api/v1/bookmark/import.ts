@@ -1,12 +1,11 @@
-import { zValidator } from '@hono/zod-validator'
 import { count, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { HTTPException } from 'hono/http-exception'
 import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
-import { getUserId } from '@/backend/utils/auth'
+import { problemResponse } from '@/backend/utils/problem'
+import { zProblemValidator } from '@/backend/utils/validator'
 import { bookmarkTable } from '@/database/supabase/activity'
 import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/user'
@@ -32,11 +31,11 @@ const importSchema = z.object({
 
 const route = new Hono<Env>()
 
-route.post('/', zValidator('json', importSchema), async (c) => {
-  const userId = getUserId()
+route.post('/', zProblemValidator('json', importSchema), async (c) => {
+  const userId = c.get('userId')
 
   if (!userId) {
-    throw new HTTPException(401)
+    return problemResponse(c, { status: 401 })
   }
 
   const { bookmarks, mode } = c.req.valid('json')
@@ -109,18 +108,27 @@ route.post('/', zValidator('json', importSchema), async (c) => {
     const message = error instanceof Error ? error.message : 'UNKNOWN_ERROR'
 
     if (message === 'IMPORT_LIMIT_REACHED_REPLACE') {
-      throw new HTTPException(403, { message: '북마크 저장 한도에 도달했어요. 리보로 확장할 수 있어요' })
+      return problemResponse(c, {
+        status: 403,
+        detail: '북마크 저장 한도에 도달했어요. 리보로 확장할 수 있어요',
+      })
     }
     if (message === 'IMPORT_LIMIT_REACHED_MERGE') {
-      throw new HTTPException(403, { message: '북마크 저장 한도에 도달했어요. 리보로 확장할 수 있어요' })
+      return problemResponse(c, {
+        status: 403,
+        detail: '북마크 저장 한도에 도달했어요. 리보로 확장할 수 있어요',
+      })
     }
     if (message.startsWith('IMPORT_NOT_ENOUGH_SLOTS:')) {
       const availableSlots = Number(message.split(':')[1] ?? 0)
-      throw new HTTPException(403, { message: `최대 ${availableSlots.toLocaleString()}개만 추가로 가져올 수 있어요` })
+      return problemResponse(c, {
+        status: 403,
+        detail: `최대 ${availableSlots.toLocaleString()}개만 추가로 가져올 수 있어요`,
+      })
     }
 
     console.error(error)
-    throw new HTTPException(500, { message: '북마크 가져오기에 실패했어요' })
+    return problemResponse(c, { status: 500, detail: '북마크 가져오기에 실패했어요' })
   }
 })
 

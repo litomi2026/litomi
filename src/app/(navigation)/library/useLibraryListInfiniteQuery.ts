@@ -4,7 +4,7 @@ import type { GETV1LibraryListResponse } from '@/backend/api/v1/library/list'
 
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
-import { handleResponseError } from '@/utils/react-query-error'
+import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
 
@@ -21,8 +21,8 @@ export async function fetchLibraryList(cursor: string | null) {
   }
 
   const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/library/list?${params}`
-  const response = await fetch(url, { credentials: 'include' })
-  return handleResponseError<GETV1LibraryListResponse>(response)
+  const { data } = await fetchWithErrorHandling<GETV1LibraryListResponse>(url, { credentials: 'include' })
+  return data
 }
 
 export default function useLibraryListInfiniteQuery({ enabled = true, userId }: Options) {

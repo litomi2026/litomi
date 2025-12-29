@@ -1,13 +1,31 @@
 'use client'
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import ms from 'ms'
 import { PropsWithChildren } from 'react'
 
-import { shouldRetryError } from '@/utils/react-query-error'
+import { QueryKeys } from '@/constants/query'
+import amplitude from '@/lib/amplitude/browser'
+import { ProblemDetailsError, shouldRetryError } from '@/utils/react-query-error'
 
 const queryClient = new QueryClient({
+  queryCache: new QueryCache({
+    onError: (error) => {
+      if (error instanceof ProblemDetailsError && error.status === 401) {
+        queryClient.setQueriesData({ queryKey: QueryKeys.me }, () => null)
+        amplitude.reset()
+      }
+    },
+  }),
+  mutationCache: new MutationCache({
+    onError: (error) => {
+      if (error instanceof ProblemDetailsError && error.status === 401) {
+        queryClient.setQueriesData({ queryKey: QueryKeys.me }, () => null)
+        amplitude.reset()
+      }
+    },
+  }),
   defaultOptions: {
     queries: {
       staleTime: ms('10 minutes'),

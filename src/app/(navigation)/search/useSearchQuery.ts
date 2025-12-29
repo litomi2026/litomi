@@ -5,14 +5,9 @@ import { GETProxyKSearchResponse } from '@/app/api/proxy/k/search/route'
 import { QueryKeys } from '@/constants/query'
 import useLocaleFromCookie from '@/hook/useLocaleFromCookie'
 import { whitelistSearchParams } from '@/utils/param'
-import { handleResponseError } from '@/utils/react-query-error'
+import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import { SEARCH_PAGE_SEARCH_PARAMS } from './constants'
-
-export async function searchMangas(searchParams: URLSearchParams) {
-  const response = await fetch(`/api/proxy/k/search?${searchParams}`)
-  return handleResponseError<GETProxyKSearchResponse>(response)
-}
 
 export function useSearchQuery() {
   const searchParams = useSearchParams()
@@ -21,7 +16,7 @@ export function useSearchQuery() {
 
   return useInfiniteQuery<GETProxyKSearchResponse, Error>({
     queryKey: QueryKeys.search(whitelisted, locale),
-    queryFn: ({ pageParam }) => {
+    queryFn: async ({ pageParam }) => {
       const searchParamsWithCursor = new URLSearchParams(whitelisted)
 
       if (pageParam) {
@@ -40,7 +35,9 @@ export function useSearchQuery() {
         searchParamsWithCursor.set('locale', locale)
       }
 
-      return searchMangas(searchParamsWithCursor)
+      const url = `/api/proxy/k/search?${searchParamsWithCursor}`
+      const { data } = await fetchWithErrorHandling<GETProxyKSearchResponse>(url)
+      return data
     },
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialPageParam: undefined,

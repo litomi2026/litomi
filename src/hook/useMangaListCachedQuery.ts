@@ -7,7 +7,8 @@ import { useEffect, useMemo, useRef } from 'react'
 
 import { QueryKeys } from '@/constants/query'
 import { Manga } from '@/types/manga'
-import { handleResponseError } from '@/utils/react-query-error'
+import { isDegradedResponse } from '@/utils/degraded-response'
+import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 interface Options {
   /**
@@ -49,21 +50,22 @@ export default function useMangaListCachedQuery({
 
   const queries = useQueries({
     queries: uniqueMangaIds.map((id) => ({
-      queryKey: QueryKeys.mangaCard(id),
+      queryKey: QueryKeys.manga(id),
       queryFn: () =>
         limit(async () => {
-          const response = await fetch(`/api/proxy/manga/${id}`)
-          return handleResponseError<Manga>(response)
+          const url = `/api/proxy/manga/${id}`
+          const { data, response } = await fetchWithErrorHandling<Manga>(url)
+
+          if (isDegradedResponse(response.headers)) {
+            scheduleErrorCacheCleanup(QueryKeys.manga(id))
+          }
+
+          return data
         }),
       staleTime,
       gcTime,
-      onSuccess: (data: Manga) => {
-        if (isErrorManga(data)) {
-          scheduleErrorCacheCleanup(QueryKeys.mangaCard(id))
-        }
-      },
       onError: () => {
-        scheduleErrorCacheCleanup(QueryKeys.mangaCard(id))
+        scheduleErrorCacheCleanup(QueryKeys.manga(id))
       },
     })),
   })
@@ -86,7 +88,7 @@ export default function useMangaListCachedQuery({
   const isLoading = queries.some((query) => query.isLoading)
   const isFetching = queries.some((query) => query.isFetching)
 
-  function scheduleErrorCacheCleanup(queryKey: ReturnType<typeof QueryKeys.mangaCard>) {
+  function scheduleErrorCacheCleanup(queryKey: ReturnType<typeof QueryKeys.manga>) {
     const timer = setTimeout(() => {
       queryClient.removeQueries({ queryKey, exact: true })
     }, ms('1 minute'))
@@ -108,8 +110,4 @@ export default function useMangaListCachedQuery({
     isLoading,
     isFetching,
   }
-}
-
-function isErrorManga(manga: Manga): manga is Manga & { isError: true } {
-  return 'isError' in manga && Boolean((manga as { isError?: boolean }).isError)
 }

@@ -1,12 +1,11 @@
-import { zValidator } from '@hono/zod-validator'
 import { and, count, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { HTTPException } from 'hono/http-exception'
 import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
-import { getUserId } from '@/backend/utils/auth'
+import { problemResponse } from '@/backend/utils/problem'
+import { zProblemValidator } from '@/backend/utils/validator'
 import { bookmarkTable } from '@/database/supabase/activity'
 import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/user'
@@ -24,11 +23,11 @@ const toggleSchema = z.object({
 
 const route = new Hono<Env>()
 
-route.post('/', zValidator('json', toggleSchema), async (c) => {
-  const userId = getUserId()
+route.post('/', zProblemValidator('json', toggleSchema), async (c) => {
+  const userId = c.get('userId')
 
   if (!userId) {
-    throw new HTTPException(401)
+    return problemResponse(c, { status: 401 })
   }
 
   const { mangaId } = c.req.valid('json')
@@ -78,11 +77,14 @@ route.post('/', zValidator('json', toggleSchema), async (c) => {
     const message = error instanceof Error ? error.message : 'UNKNOWN_ERROR'
 
     if (message === 'BOOKMARK_LIMIT_REACHED') {
-      throw new HTTPException(403, { message: '북마크 저장 한도에 도달했어요. 리보로 확장할 수 있어요' })
+      return problemResponse(c, {
+        status: 403,
+        detail: '북마크 저장 한도에 도달했어요. 리보로 확장할 수 있어요.',
+      })
     }
 
     console.error(error)
-    throw new HTTPException(500, { message: '북마크 처리에 실패했어요' })
+    return problemResponse(c, { status: 500, detail: '북마크 처리에 실패했어요' })
   }
 })
 

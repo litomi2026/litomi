@@ -1,12 +1,11 @@
-import { zValidator } from '@hono/zod-validator'
 import { Hono } from 'hono'
 import { deleteCookie, getCookie } from 'hono/cookie'
-import { HTTPException } from 'hono/http-exception'
 import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
-import { getUserId } from '@/backend/utils/auth'
+import { problemResponse } from '@/backend/utils/problem'
+import { zProblemValidator } from '@/backend/utils/validator'
 import { COOKIE_DOMAIN } from '@/constants'
 import { CookieKey } from '@/constants/storage'
 import { isPostgresError } from '@/database/error'
@@ -24,15 +23,18 @@ const completeSchema = z.object({
 
 const route = new Hono<Env>()
 
-route.post('/', zValidator('json', completeSchema), async (c) => {
-  const userId = getUserId()
+route.post('/', zProblemValidator('json', completeSchema), async (c) => {
+  const userId = c.get('userId')
   if (!userId) {
-    throw new HTTPException(401)
+    return problemResponse(c, { status: 401 })
   }
 
   const attemptToken = getCookie(c, CookieKey.BBATON_ATTEMPT_ID)
   if (!attemptToken) {
-    throw new HTTPException(400, { message: '인증 시도가 만료됐어요. 다시 시도해 주세요.' })
+    return problemResponse(c, {
+      status: 400,
+      detail: '인증 시도가 만료됐어요. 다시 시도해 주세요.',
+    })
   }
 
   const { code } = c.req.valid('json')
@@ -40,7 +42,10 @@ route.post('/', zValidator('json', completeSchema), async (c) => {
   try {
     const attempt = await verifyBBatonAttemptToken(attemptToken)
     if (!attempt || attempt.userId !== userId) {
-      throw new HTTPException(400, { message: '인증 시도가 만료됐어요. 다시 시도해 주세요.' })
+      return problemResponse(c, {
+        status: 400,
+        detail: '인증 시도가 만료됐어요. 다시 시도해 주세요.',
+      })
     }
 
     const redirectURI = getBBatonRedirectURI()
@@ -50,21 +55,11 @@ route.post('/', zValidator('json', completeSchema), async (c) => {
     const birthYear = parseBirthYear(profile.birthYear)
     const student = profile.student === 'Y'
 
-    await db
-      .insert(bbatonVerificationTable)
-      .values({
-        userId,
-        bbatonUserId: profile.userId,
-        adultFlag: profile.adultFlag === 'Y',
-        birthYear,
-        gender: profile.gender,
-        income: profile.income,
-        student,
-        verifiedAt: now,
-      })
-      .onConflictDoUpdate({
-        target: [bbatonVerificationTable.userId],
-        set: {
+    try {
+      await db
+        .insert(bbatonVerificationTable)
+        .values({
+          userId,
           bbatonUserId: profile.userId,
           adultFlag: profile.adultFlag === 'Y',
           birthYear,
@@ -72,25 +67,39 @@ route.post('/', zValidator('json', completeSchema), async (c) => {
           income: profile.income,
           student,
           verifiedAt: now,
-        },
-      })
-      .catch((error) => {
-        if (isDuplicateBBatonUserId(error)) {
-          throw new HTTPException(409, { message: '이미 다른 계정에 연결된 비바톤 계정이에요.' })
-        }
+        })
+        .onConflictDoUpdate({
+          target: [bbatonVerificationTable.userId],
+          set: {
+            bbatonUserId: profile.userId,
+            adultFlag: profile.adultFlag === 'Y',
+            birthYear,
+            gender: profile.gender,
+            income: profile.income,
+            student,
+            verifiedAt: now,
+          },
+        })
+    } catch (error) {
+      if (isDuplicateBBatonUserId(error)) {
+        return problemResponse(c, { status: 409, detail: '해당 비바톤 계정이 이미 다른 리토미 계정에 연결되어 있어요' })
+      }
 
-        console.error('bbaton verification upsert failed:', error)
-        throw new HTTPException(500, { message: '인증 정보를 저장하지 못했어요. 잠시 후 다시 시도해 주세요.' })
-      })
+      console.error(error)
+
+      return problemResponse(c, { status: 500, detail: '비바톤 인증 정보를 저장하지 못했어요' })
+    }
 
     return c.json<POSTV1BBatonCompleteResponse>({ adultFlag: profile.adultFlag })
   } catch (error) {
-    if (error instanceof HTTPException) {
-      throw error
+    console.error(error)
+    const message = error instanceof Error ? error.message : ''
+
+    if (message.startsWith('BBATON_')) {
+      return problemResponse(c, { status: 502, detail: '비바톤 인증에 실패했어요' })
     }
 
-    console.error('bbaton complete unexpected error:', error)
-    throw new HTTPException(500, { message: '인증에 실패했어요. 다시 시도해 주세요.' })
+    return problemResponse(c, { status: 500, detail: '비바톤 인증 정보를 저장하지 못했어요' })
   } finally {
     deleteCookie(c, CookieKey.BBATON_ATTEMPT_ID, { domain: COOKIE_DOMAIN, path: '/api/v1/bbaton' })
   }

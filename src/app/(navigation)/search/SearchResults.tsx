@@ -13,7 +13,7 @@ import MangaCardPromotion from '@/components/card/MangaCardPromotion'
 import { DONATION_CARD_INTERVAL } from '@/constants/policy'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import { View } from '@/utils/param'
-import { ResponseError } from '@/utils/react-query-error'
+import { ProblemDetailsError } from '@/utils/react-query-error'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 import RandomRefreshButton from '../(top-navigation)/RandomRefreshButton'
@@ -42,7 +42,7 @@ export default function SearchResult() {
     return <SearchResultLoading view={view} />
   }
 
-  if (error && error instanceof ResponseError && error.status === 400) {
+  if (error && error instanceof ProblemDetailsError && error.status === 400) {
     return <Error400 message={error.message} />
   }
 

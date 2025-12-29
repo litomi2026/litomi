@@ -4,7 +4,7 @@ import type { GETV1LibraryMangaResponse } from '@/backend/api/v1/library/manga'
 
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
-import { handleResponseError } from '@/utils/react-query-error'
+import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
 
@@ -21,8 +21,8 @@ export async function fetchAllLibraryMangas(cursor: string | null) {
   }
 
   const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/library/manga?${params}`
-  const response = await fetch(url, { credentials: 'include' })
-  return handleResponseError<GETV1LibraryMangaResponse>(response)
+  const { data } = await fetchWithErrorHandling<GETV1LibraryMangaResponse>(url, { credentials: 'include' })
+  return data
 }
 
 export default function useAllLibraryMangaInfiniteQuery({ userId, enabled = true }: Options) {

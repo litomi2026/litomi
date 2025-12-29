@@ -1,42 +1,45 @@
-import { CANONICAL_URL } from '@/constants'
-
-import { sec } from './date'
-
-export function calculateOptimalCacheDuration(images: string[]): number {
-  const now = Math.floor(Date.now() / 1000)
-  let nearestExpiration
-
-  for (const imageUrl of images) {
-    const expiration = extractExpirationFromURL(imageUrl)
-    if (expiration && expiration > now) {
-      if (!nearestExpiration || expiration < nearestExpiration) {
-        nearestExpiration = expiration
-      }
-    }
-  }
-
-  if (!nearestExpiration) {
-    return sec('30 days')
-  }
-
-  // Apply a small buffer (5 minutes) for:
-  // - Clock skew between servers
-  // - Request processing time
-  // - User's actual image loading time
-  const buffer = sec('5 minutes')
-
-  return nearestExpiration - buffer - now
+export type CacheControlOptions = {
+  public?: boolean
+  private?: boolean
+  maxAge?: number
+  sMaxAge?: number
+  swr?: number
+  mustRevalidate?: boolean
+  noCache?: boolean
+  noStore?: boolean
 }
 
-function extractExpirationFromURL(imageUrl: string): number | null {
-  try {
-    const url = new URL(imageUrl, CANONICAL_URL)
-    const expires = url.searchParams.get('expires')
-    if (expires && /^\d+$/.test(expires)) {
-      return parseInt(expires, 10)
-    }
-  } catch {
-    // Not a valid URL
+/**
+ * - Origin 서버 요청 주기: s-maxage ~ (s-maxage + swr)
+ * - 최대 캐싱 데이터 수명: s-maxage + maxage + min(swr, maxage)
+ */
+export function createCacheControl(options: CacheControlOptions): string {
+  const parts: string[] = []
+
+  if (options.public && !options.private) {
+    parts.push('public')
   }
-  return null
+  if (options.private && !options.public) {
+    parts.push('private')
+  }
+  if (options.noCache) {
+    parts.push('no-cache')
+  }
+  if (options.noStore) {
+    parts.push('no-store')
+  }
+  if (options.mustRevalidate) {
+    parts.push('must-revalidate')
+  }
+  if (options.maxAge !== undefined) {
+    parts.push(`max-age=${options.maxAge}`)
+  }
+  if (options.sMaxAge !== undefined && !options.private) {
+    parts.push(`s-maxage=${options.sMaxAge}`)
+  }
+  if (options.swr !== undefined && !options.mustRevalidate) {
+    parts.push(`stale-while-revalidate=${options.swr}`)
+  }
+
+  return parts.join(', ')
 }

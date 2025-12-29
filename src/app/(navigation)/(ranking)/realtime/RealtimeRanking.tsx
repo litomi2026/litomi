@@ -9,6 +9,7 @@ import IconSpinner from '@/components/icons/IconSpinner'
 import { REALTIME_PAGE_VIEW_MIN_THRESHOLD } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
+import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import { useRealtimeStore } from './store'
 
@@ -126,9 +127,7 @@ export default function RealtimeRanking() {
 }
 
 async function fetchRealtimeAnalytics(): Promise<RealtimeData> {
-  const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/analytics/realtime`)
-  if (!response.ok) {
-    throw new Error('Failed to fetch analytics data')
-  }
-  return response.json()
+  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/analytics/realtime`
+  const { data } = await fetchWithErrorHandling<RealtimeData>(url)
+  return data
 }

@@ -3,7 +3,7 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import { GETV1CensorshipResponse } from '@/backend/api/v1/censorship'
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
-import { handleResponseError } from '@/utils/react-query-error'
+import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import useMeQuery from './useMeQuery'
 
@@ -21,8 +21,8 @@ export async function fetchPaginatedCensorships({ pageParam }: Params) {
   }
 
   const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/censorship?${params}`
-  const response = await fetch(url, { credentials: 'include' })
-  return handleResponseError<GETV1CensorshipResponse>(response)
+  const { data } = await fetchWithErrorHandling<GETV1CensorshipResponse>(url, { credentials: 'include' })
+  return data
 }
 
 export default function useCensorshipsInfiniteQuery() {

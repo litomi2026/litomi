@@ -4,7 +4,7 @@ import { hentKorClient } from '@/crawler/hentkor'
 import { hitomiClient } from '@/crawler/hitomi/hitomi'
 import { hiyobiClient } from '@/crawler/hiyobi'
 import { kHentaiClient } from '@/crawler/k-hentai'
-import { MangaSource, tagCategoryNameToInt } from '@/database/enum'
+import { tagCategoryNameToInt } from '@/database/enum'
 import { Locale } from '@/translation/common'
 import { Manga, MangaError } from '@/types/manga'
 import { sec } from '@/utils/date'
@@ -31,6 +31,7 @@ export async function fetchMangaFromMultiSources({ id, locale }: MangaFetchParam
       }
 
       manga.images = images.map((url) => ({ original: { url } }))
+
       return manga
     },
 
@@ -46,8 +47,26 @@ export async function fetchMangaFromMultiSources({ id, locale }: MangaFetchParam
 
     // 4. hentaiPaw
     async () => {
+      const manga = await hentaiPawClient.fetchManga({ id, revalidate })
+      if (!manga) {
+        return null
+      }
+
       const images = await hentaiPawClient.fetchMangaImages({ id, revalidate })
-      return createHentaiPawManga(id, images)
+      if (!images || images.length === 0) {
+        return null
+      }
+
+      const coverThumbnail = manga.images?.[0]?.thumbnail
+
+      manga.images = images.map((url, i) => {
+        if (i === 0 && coverThumbnail) {
+          return { original: { url }, thumbnail: coverThumbnail }
+        }
+        return { original: { url } }
+      })
+
+      return manga
     },
   ]
 
@@ -85,25 +104,12 @@ function createErrorManga(id: number, error: Error): MangaError {
   if (!(error instanceof AllSourcesFailedError)) {
     console.error(error.message)
   }
+
   return {
     id,
-    title: `${error.message}\n${error.cause ?? ''}`,
+    title: `${error.message}`,
     images: hentKorClient.fetchMangaImages(id, 100).map((image) => ({ original: { url: image } })),
     isError: true,
-  }
-}
-
-function createHentaiPawManga(id: number, images?: string[] | null): Manga | null {
-  if (!images || images.length === 0) {
-    return null
-  }
-
-  return {
-    id,
-    title: id.toString(),
-    images: images.map((image) => ({ original: { url: image } })),
-    source: MangaSource.HENTAIPAW,
-    count: images.length,
   }
 }
 

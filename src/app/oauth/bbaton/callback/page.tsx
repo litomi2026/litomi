@@ -6,13 +6,9 @@ import { useEffect, useRef, useState } from 'react'
 import { POSTV1BBatonCompleteResponse } from '@/backend/api/v1/bbaton/complete'
 import { BBATON_ADULT_VERIFICATION_CHANNEL_NAME } from '@/constants/bbaton'
 import { env } from '@/env/client'
+import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
-
-type ApiError = {
-  status?: number
-  error?: string
-}
 
 type BroadcastResult = {
   at: number
@@ -28,22 +24,16 @@ export default function BBatonCallbackPage() {
 
   const completeMutation = useMutation<POSTV1BBatonCompleteResponse, unknown, { code: string }>({
     mutationFn: async ({ code }) => {
-      const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/bbaton/complete`, {
+      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/bbaton/complete`
+
+      const { data } = await fetchWithErrorHandling<POSTV1BBatonCompleteResponse>(url, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code }),
       })
 
-      if (!response.ok) {
-        const message = await response.text().catch(() => '')
-        throw {
-          status: response.status,
-          error: message || '인증에 실패했어요. 원래 화면에서 다시 시도해 주세요.',
-        } satisfies ApiError
-      }
-
-      return await response.json()
+      return data
     },
     onSuccess: ({ adultFlag }) => {
       broadcastResult({ at: Date.now(), adultFlag })
@@ -114,13 +104,11 @@ function broadcastResult(result: BroadcastResult) {
 }
 
 function getErrorMessage(error: unknown): string {
-  const apiError = error as ApiError
-
-  if (typeof apiError?.error === 'string' && apiError.error.length > 0) {
-    if (apiError.status === 409) {
-      return `${apiError.error} 기존 계정에서 연동을 해제한 뒤 다시 시도해 주세요.`
+  if (error instanceof ProblemDetailsError) {
+    if (error.status === 409) {
+      return `${error.message} 기존 계정에서 연동을 해제한 뒤 다시 시도해 주세요.`
     }
-    return apiError.error
+    return error.message
   }
 
   if (error instanceof Error) {

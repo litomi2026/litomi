@@ -4,7 +4,7 @@ import type { GETV1PointExpansionResponse } from '@/backend/api/v1/points/expans
 
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
-import { handleResponseError } from '@/utils/react-query-error'
+import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
 
@@ -17,8 +17,8 @@ export function useExpansionQuery({ enabled = true }: QueryOptions = {}) {
     queryKey: QueryKeys.pointsExpansion,
     queryFn: async () => {
       const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/points/expansion`
-      const response = await fetch(url, { credentials: 'include' })
-      return handleResponseError<GETV1PointExpansionResponse>(response)
+      const { data } = await fetchWithErrorHandling<GETV1PointExpansionResponse>(url, { credentials: 'include' })
+      return data
     },
     enabled,
   })

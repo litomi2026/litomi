@@ -6,6 +6,7 @@ import type { POSTV1BookmarkImportResponse } from '@/backend/api/v1/bookmark/imp
 
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
+import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
 
 import type { BookmarkExportData, ImportMode, ImportResult, ImportState } from './types'
 
@@ -22,25 +23,18 @@ export function useBookmarkImport() {
     { mode: ImportMode; bookmarks: BookmarkExportData['bookmarks'] }
   >({
     mutationFn: async ({ mode, bookmarks }) => {
-      const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/bookmark/import`, {
+      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/bookmark/import`
+
+      const { data } = await fetchWithErrorHandling<POSTV1BookmarkImportResponse>(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ mode, bookmarks }),
       })
 
-      if (!response.ok) {
-        const message = await response.text().catch(() => '')
-        throw {
-          status: response.status,
-          error: message || '북마크 가져오기에 실패했어요',
-        }
-      }
-
-      const successData = (await response.json()) as POSTV1BookmarkImportResponse
       return {
-        imported: successData.imported,
-        skipped: successData.skipped,
+        imported: data.imported,
+        skipped: data.skipped,
       }
     },
     onSuccess: () => {
@@ -48,17 +42,11 @@ export function useBookmarkImport() {
       queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteBookmarks })
     },
     onError: (error) => {
-      const apiError = error as { status?: number; error?: string }
-
-      if (typeof apiError.status === 'number' && typeof apiError.error === 'string') {
-        if (apiError.status >= 400 && apiError.status < 500) {
-          toast.warning(apiError.error)
+      if (error instanceof ProblemDetailsError) {
+        if (error.status >= 400 && error.status < 500) {
+          toast.warning(error.message)
         } else {
-          toast.error(apiError.error)
-        }
-
-        if (apiError.status === 401) {
-          queryClient.setQueriesData({ queryKey: QueryKeys.me }, () => null)
+          toast.error(error.message)
         }
         return
       }

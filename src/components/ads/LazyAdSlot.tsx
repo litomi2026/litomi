@@ -4,6 +4,9 @@ import { ShieldOff } from 'lucide-react'
 import ms from 'ms'
 import { useEffect, useRef, useState } from 'react'
 
+import { formatDistanceFromNow } from '@/utils/date'
+import { ProblemDetailsError } from '@/utils/react-query-error'
+
 import { JUICY_ADS_EVENT } from './constants'
 import { useCooldown } from './useCooldown'
 import { useEarnPoints } from './useEarnPoints'
@@ -62,15 +65,8 @@ export default function LazyAdSlot({
   const apiError = requestToken.error ?? earnPoints.error ?? null
   const canEarn = rewardEnabled && token !== null && !isLoading && !isAdBlocked
   const shouldDimAd = rewardEnabled && !canEarn
-
-  const {
-    until: cooldownUntil,
-    remainingSeconds: cooldownSecondsFromHook,
-    clear: clearCooldown,
-    startFromRemainingSeconds,
-  } = useCooldown()
-
-  const cooldownRemainingSeconds = cooldownSecondsFromHook ?? apiError?.remainingSeconds ?? null
+  const { until: cooldownUntil, clear: clearCooldown, startFromRemainingSeconds } = useCooldown()
+  const cooldownLabel = cooldownUntil ? formatDistanceFromNow(new Date(cooldownUntil)) : null
 
   function handleRefresh() {
     if (!rewardEnabled || isLoading || isAdBlocked) {
@@ -85,8 +81,8 @@ export default function LazyAdSlot({
       },
       onError: (err) => {
         setToken(null)
-        if (err.remainingSeconds != null) {
-          startFromRemainingSeconds(err.remainingSeconds)
+        if (err instanceof ProblemDetailsError && err.retryAfterSeconds != null) {
+          startFromRemainingSeconds(err.retryAfterSeconds)
         }
       },
     })
@@ -177,8 +173,8 @@ export default function LazyAdSlot({
       },
       onError: (err) => {
         setToken(null)
-        if (err.remainingSeconds != null) {
-          startFromRemainingSeconds(err.remainingSeconds)
+        if (err instanceof ProblemDetailsError && err.retryAfterSeconds != null) {
+          startFromRemainingSeconds(err.retryAfterSeconds)
         }
       },
     })
@@ -294,7 +290,8 @@ export default function LazyAdSlot({
           isHandlingAdClickRef.current = false
         },
         onError: (err) => {
-          onAdClick?.({ success: false, error: err.error })
+          const message = err instanceof ProblemDetailsError ? err.message : '요청 처리 중 오류가 발생했어요'
+          onAdClick?.({ success: false, error: message })
           setToken(null)
           isHandlingAdClickRef.current = false
         },
@@ -351,14 +348,16 @@ export default function LazyAdSlot({
             {rewardEnabled && apiError ? (
               <div className="text-center">
                 <span className="text-amber-500">
-                  {apiError.error}
-                  {cooldownRemainingSeconds && ` (${cooldownRemainingSeconds}초)`}
+                  {apiError instanceof ProblemDetailsError ? apiError.message : '오류가 발생했어요'}
+                  <span className="tabular-nums">{cooldownLabel && ` (${cooldownLabel})`}</span>
                 </span>
-                {!apiError.error.includes('한도') && !apiError.error.includes('잠시 후') && (
-                  <button className="ml-2 text-blue-400 hover:underline" disabled={isLoading} onClick={handleRefresh}>
-                    다시 시도
-                  </button>
-                )}
+                {apiError instanceof ProblemDetailsError &&
+                  !apiError.message.includes('한도') &&
+                  !apiError.message.includes('잠시 후') && (
+                    <button className="ml-2 text-blue-400 hover:underline" disabled={isLoading} onClick={handleRefresh}>
+                      다시 시도
+                    </button>
+                  )}
               </div>
             ) : rewardEnabled && dailyRemaining !== null ? (
               dailyRemaining > 0 ? (

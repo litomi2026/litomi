@@ -1,6 +1,36 @@
 import dayjs from 'dayjs'
 import ms, { StringValue } from 'ms'
 
+export function formatDistanceFromNow(date: Date): string {
+  const nowMs = Date.now()
+  const diffMs = date.getTime() - nowMs
+
+  if (diffMs <= 0) {
+    return ''
+  }
+
+  const SECOND_MS = ms('1s')
+  const MINUTE_MS = ms('1m')
+  const HOUR_MS = ms('1h')
+  const DAY_MS = ms('1d')
+
+  const seconds = Math.floor(diffMs / SECOND_MS)
+  if (seconds <= 0) return ''
+  if (seconds <= 60) return `${seconds}초`
+
+  const minutes = Math.floor(diffMs / MINUTE_MS)
+  if (minutes < 60) return `${minutes}분 남음`
+
+  const hours = Math.floor(diffMs / HOUR_MS)
+  if (hours < 24) return `${hours}시간 남음`
+
+  const days = Math.floor(diffMs / DAY_MS)
+  if (days < 7) return `${days}일 남음`
+  if (days < 30) return `${Math.floor(days / 7)}주 남음`
+
+  return dayjs(date).format('YYYY-MM-DD HH:mm')
+}
+
 export function formatDistanceToNow(date: Date): string {
   const now = new Date()
   const diff = now.getTime() - date.getTime()

@@ -3,7 +3,7 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import { GETLibraryItemsResponse } from '@/backend/api/v1/library/[id]'
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
-import { handleResponseError } from '@/utils/react-query-error'
+import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
 
@@ -20,8 +20,8 @@ export async function fetchLibraryItems(libraryId: number, cursor: string | null
   }
 
   const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/library/${libraryId}?${params}`
-  const response = await fetch(url, { credentials: 'include' })
-  return handleResponseError<GETLibraryItemsResponse>(response)
+  const { data } = await fetchWithErrorHandling<GETLibraryItemsResponse>(url, { credentials: 'include' })
+  return data
 }
 
 export default function useLibraryItemsInfiniteQuery({ libraryId, initialItems }: Options) {

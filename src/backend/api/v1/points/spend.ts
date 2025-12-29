@@ -1,14 +1,15 @@
-import { zValidator } from '@hono/zod-validator'
 import { and, eq, sql, sum } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { HTTPException } from 'hono/http-exception'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
-import { EXPANSION_TYPE, ITEM_TYPE, POINT_CONSTANTS, TRANSACTION_TYPE } from '@/constants/points'
-import { MAX_BOOKMARKS_PER_USER, MAX_LIBRARIES_PER_USER, MAX_READING_HISTORY_PER_USER } from '@/constants/policy'
+import { problemResponse } from '@/backend/utils/problem'
+import { zProblemValidator } from '@/backend/utils/validator'
+import { ITEM_TYPE, TRANSACTION_TYPE } from '@/constants/points'
 import { db } from '@/database/supabase/drizzle'
 import { pointTransactionTable, userExpansionTable, userItemTable, userPointsTable } from '@/database/supabase/points'
+
+import { getExpansionConfig, getSpendMeta, isBookmarkItemId } from './util'
 
 const route = new Hono<Env>()
 
@@ -20,23 +21,68 @@ const spendSchema = z.object({
 export type POSTV1PointSpendRequest = z.infer<typeof spendSchema>
 
 export type POSTV1PointSpendResponse = {
-  success: boolean
   balance: number
   spent: number
 }
 
-route.post('/', zValidator('json', spendSchema), async (c) => {
+route.post('/', zProblemValidator('json', spendSchema), async (c) => {
   const userId = c.get('userId')
 
   if (!userId) {
-    throw new HTTPException(401, { message: '로그인이 필요해요' })
+    return problemResponse(c, { status: 401 })
   }
 
-  const { type, itemId } = c.req.valid('json')
-  const { price, description } = getSpendMeta({ type, itemId })
+  type TransactionResult = { ok: false; status: number; detail?: string } | { ok: true; balance: number; spent: number }
 
   try {
-    const result = await db.transaction(async (tx) => {
+    const { type, itemId } = c.req.valid('json')
+    let spendMeta
+    let expansionConfig: ReturnType<typeof getExpansionConfig> | null = null
+    let purchaseItem: { type: (typeof ITEM_TYPE)[keyof typeof ITEM_TYPE]; itemId: string } | null = null
+
+    switch (type) {
+      case 'badge':
+      case 'theme': {
+        const selectedItemId = itemId?.trim()
+        if (!selectedItemId) {
+          return problemResponse(c, { status: 400, detail: '아이템을 선택해 주세요' })
+        }
+
+        spendMeta = getSpendMeta({ type })
+        purchaseItem = {
+          type: type === 'badge' ? ITEM_TYPE.BADGE : ITEM_TYPE.THEME,
+          itemId: selectedItemId,
+        }
+        break
+      }
+      case 'bookmark': {
+        if (!isBookmarkItemId(itemId)) {
+          return problemResponse(c, {
+            status: 400,
+            detail: itemId ? '잘못된 상품이에요' : '아이템을 선택해 주세요',
+          })
+        }
+
+        spendMeta = getSpendMeta({ type, itemId })
+        expansionConfig = getExpansionConfig({ type, itemId })
+        break
+      }
+      case 'history': {
+        spendMeta = getSpendMeta({ type })
+        expansionConfig = getExpansionConfig({ type })
+        break
+      }
+      case 'library': {
+        spendMeta = getSpendMeta({ type })
+        expansionConfig = getExpansionConfig({ type })
+        break
+      }
+      default: {
+        return problemResponse(c, { status: 400, detail: '잘못된 요청이에요' })
+      }
+    }
+
+    const result: TransactionResult = await db.transaction(async (tx) => {
       // 현재 포인트 확인
       const [points] = await tx
         .select({ balance: userPointsTable.balance })
@@ -44,13 +90,13 @@ route.post('/', zValidator('json', spendSchema), async (c) => {
         .where(eq(userPointsTable.userId, userId))
         .for('update')
 
-      if (!points || points.balance < price) {
-        throw new HTTPException(400, { message: '리보가 부족해요' })
+      if (!points || points.balance < spendMeta.price) {
+        return { ok: false, status: 400, detail: '리보가 부족해요' }
       }
 
       // 확장 타입인 경우 최대치 확인
-      if (type === 'library' || type === 'history' || type === 'bookmark') {
-        const { baseLimit, expansionAmount, expansionType, maxExpansion } = getExpansionConfig({ type, itemId })
+      if (expansionConfig) {
+        const { baseLimit, expansionAmount, expansionType, maxExpansion } = expansionConfig
 
         // 현재 확장량 조회 (타입별)
         const [expansion] = await tx
@@ -61,7 +107,7 @@ route.post('/', zValidator('json', spendSchema), async (c) => {
         const currentTotal = baseLimit + Number(expansion?.totalAmount ?? 0)
 
         if (currentTotal + expansionAmount > maxExpansion) {
-          throw new HTTPException(400, { message: '최대 확장에 도달했어요' })
+          return { ok: false, status: 400, detail: '최대 확장에 도달했어요' }
         }
 
         // 확장 레코드 추가
@@ -73,13 +119,7 @@ route.post('/', zValidator('json', spendSchema), async (c) => {
       }
 
       // 아이템 타입인 경우 아이템 추가
-      if (type === 'badge' || type === 'theme') {
-        if (!itemId) {
-          throw new HTTPException(400, { message: '아이템을 선택해 주세요' })
-        }
-
-        const itemType = type === 'badge' ? ITEM_TYPE.BADGE : ITEM_TYPE.THEME
-
+      if (purchaseItem) {
         // 이미 보유한 아이템인지 확인
         const [existingItem] = await tx
           .select({ id: userItemTable.id })
@@ -87,24 +127,24 @@ route.post('/', zValidator('json', spendSchema), async (c) => {
           .where(eq(userItemTable.userId, userId))
 
         if (existingItem) {
-          throw new HTTPException(400, { message: '이미 보유한 아이템이에요' })
+          return { ok: false, status: 400, detail: '이미 보유한 아이템이에요' }
         }
 
         // 아이템 추가
         await tx.insert(userItemTable).values({
           userId,
-          type: itemType,
-          itemId,
+          type: purchaseItem.type,
+          itemId: purchaseItem.itemId,
         })
       }
 
       // 포인트 차감
-      const newBalance = points.balance - price
+      const newBalance = points.balance - spendMeta.price
       await tx
         .update(userPointsTable)
         .set({
           balance: newBalance,
-          totalSpent: sql`${userPointsTable.totalSpent} + ${price}`,
+          totalSpent: sql`${userPointsTable.totalSpent} + ${spendMeta.price}`,
           updatedAt: new Date(),
         })
         .where(eq(userPointsTable.userId, userId))
@@ -113,106 +153,26 @@ route.post('/', zValidator('json', spendSchema), async (c) => {
       await tx.insert(pointTransactionTable).values({
         userId,
         type: TRANSACTION_TYPE.SHOP_PURCHASE,
-        amount: -price,
+        amount: -spendMeta.price,
         balanceAfter: newBalance,
-        description,
+        description: spendMeta.description,
       })
 
-      return { balance: newBalance, spent: price }
+      return { ok: true, balance: newBalance, spent: spendMeta.price }
     })
 
+    if (!result.ok) {
+      return problemResponse(c, { status: result.status, detail: result.detail })
+    }
+
     return c.json<POSTV1PointSpendResponse>({
-      success: true,
       balance: result.balance,
       spent: result.spent,
     })
   } catch (error) {
-    if (error instanceof HTTPException) {
-      throw error
-    }
-
-    throw new HTTPException(500, { message: '포인트 사용에 실패했어요' })
+    console.error(error)
+    return problemResponse(c, { status: 500, detail: '포인트 사용에 실패했어요' })
   }
 })
 
 export default route
-
-function getExpansionConfig({
-  type,
-  itemId,
-}: {
-  type: Extract<POSTV1PointSpendRequest['type'], 'bookmark' | 'history' | 'library'>
-  itemId?: string
-}) {
-  if (type === 'library') {
-    return {
-      expansionType: EXPANSION_TYPE.LIBRARY,
-      baseLimit: MAX_LIBRARIES_PER_USER,
-      maxExpansion: POINT_CONSTANTS.LIBRARY_MAX_EXPANSION,
-      expansionAmount: POINT_CONSTANTS.LIBRARY_EXPANSION_AMOUNT,
-    }
-  }
-  if (type === 'history') {
-    return {
-      expansionType: EXPANSION_TYPE.READING_HISTORY,
-      baseLimit: MAX_READING_HISTORY_PER_USER,
-      maxExpansion: POINT_CONSTANTS.HISTORY_MAX_EXPANSION,
-      expansionAmount: POINT_CONSTANTS.HISTORY_EXPANSION_AMOUNT,
-    }
-  }
-
-  if (!itemId) {
-    throw new HTTPException(400, { message: '아이템을 선택해 주세요' })
-  }
-
-  if (itemId === 'small') {
-    return {
-      expansionType: EXPANSION_TYPE.BOOKMARK,
-      baseLimit: MAX_BOOKMARKS_PER_USER,
-      maxExpansion: POINT_CONSTANTS.BOOKMARK_MAX_EXPANSION,
-      expansionAmount: POINT_CONSTANTS.BOOKMARK_EXPANSION_SMALL_AMOUNT,
-    }
-  }
-  if (itemId === 'large') {
-    return {
-      expansionType: EXPANSION_TYPE.BOOKMARK,
-      baseLimit: MAX_BOOKMARKS_PER_USER,
-      maxExpansion: POINT_CONSTANTS.BOOKMARK_MAX_EXPANSION,
-      expansionAmount: POINT_CONSTANTS.BOOKMARK_EXPANSION_LARGE_AMOUNT,
-    }
-  }
-
-  throw new HTTPException(400, { message: '잘못된 상품이에요' })
-}
-
-function getSpendMeta({ type, itemId }: { type: POSTV1PointSpendRequest['type']; itemId?: string }) {
-  if (type === 'library') {
-    return { price: POINT_CONSTANTS.LIBRARY_EXPANSION_PRICE, description: '내 서재 확장 (+1개)' }
-  }
-  if (type === 'history') {
-    return { price: POINT_CONSTANTS.HISTORY_EXPANSION_PRICE, description: '감상 기록 확장 (+100개)' }
-  }
-  if (type === 'bookmark') {
-    if (!itemId) {
-      throw new HTTPException(400, { message: '아이템을 선택해 주세요' })
-    }
-    if (itemId === 'small') {
-      return {
-        price: POINT_CONSTANTS.BOOKMARK_EXPANSION_SMALL_PRICE,
-        description: `북마크 확장 (+${POINT_CONSTANTS.BOOKMARK_EXPANSION_SMALL_AMOUNT}개)`,
-      }
-    }
-    if (itemId === 'large') {
-      return {
-        price: POINT_CONSTANTS.BOOKMARK_EXPANSION_LARGE_PRICE,
-        description: `북마크 확장 (+${POINT_CONSTANTS.BOOKMARK_EXPANSION_LARGE_AMOUNT}개)`,
-      }
-    }
-    throw new HTTPException(400, { message: '잘못된 상품이에요' })
-  }
-  if (type === 'badge') {
-    return { price: POINT_CONSTANTS.BADGE_PRICE, description: '프로필 뱃지 구매' }
-  }
-
-  return { price: POINT_CONSTANTS.THEME_PRICE, description: '커스텀 테마 구매' }
-}

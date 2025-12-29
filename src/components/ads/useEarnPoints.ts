@@ -6,34 +6,25 @@ import type { POSTV1PointEarnResponse } from '@/backend/api/v1/points/earn'
 
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
-
-import { parseRewardedAdsErrorResponse } from './util'
+import { fetchWithErrorHandling, type ProblemDetailsError } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
-
-type RewardedAdsAPIError = {
-  error: string
-  code?: string
-  remainingSeconds?: number
-}
 
 export function useEarnPoints() {
   const queryClient = useQueryClient()
 
-  return useMutation<POSTV1PointEarnResponse, RewardedAdsAPIError, string>({
+  return useMutation<POSTV1PointEarnResponse, ProblemDetailsError, string>({
     mutationFn: async (token) => {
-      const response = await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/points/earn`, {
+      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/points/earn`
+
+      const { data } = await fetchWithErrorHandling<POSTV1PointEarnResponse>(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ token }),
       })
 
-      if (!response.ok) {
-        throw await parseRewardedAdsErrorResponse(response)
-      }
-
-      return (await response.json()) as POSTV1PointEarnResponse
+      return data
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QueryKeys.points })

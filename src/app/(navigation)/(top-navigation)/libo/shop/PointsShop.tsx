@@ -96,7 +96,7 @@ export default function PointsShop() {
         toast.success('구매 완료!', { description: `${item.name} - 잔액: ${formatNumber(data.balance)} 리보` })
       },
       onError: (err) => {
-        toast.error(err.error || '구매에 실패했어요')
+        toast.error(err.message || '구매에 실패했어요')
       },
     })
   }

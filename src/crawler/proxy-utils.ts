@@ -1,13 +1,24 @@
 import { captureException } from '@sentry/nextjs'
 
+import { CANONICAL_URL } from '@/constants'
+import { type CacheControlOptions, createCacheControl } from '@/utils/cache-control'
+import { sec } from '@/utils/date'
+import {
+  createProblemTypeUrl,
+  getStatusTitle,
+  PROBLEM_CONTENT_TYPE,
+  type ProblemDetails,
+} from '@/utils/problem-details'
+
 import { normalizeError, UpstreamServerError } from './errors'
 
-export type ApiResponse<T = unknown> = T & {
-  error?: {
-    code: string
-    message: string
-    isRetryable: boolean
-  }
+export type CreateProblemDetailsResponseOptions = {
+  code: string
+  detail?: string
+  headers?: HeadersInit
+  instance?: string
+  status: number
+  title?: string
 }
 
 type CacheControlHeaders = {
@@ -16,50 +27,30 @@ type CacheControlHeaders = {
   browser?: CacheControlOptions
 }
 
-type CacheControlOptions = {
-  public?: boolean
-  private?: boolean
-  maxAge?: number
-  sMaxAge?: number
-  swr?: number
-  mustRevalidate?: boolean
-  noCache?: boolean
-  noStore?: boolean
-}
+export function calculateOptimalCacheDuration(images: string[]): number {
+  const now = Math.floor(Date.now() / 1000)
+  let nearestExpiration
 
-/**
- * - Origin 서버 요청 주기: s-maxage ~ (s-maxage + swr)
- * - 최대 캐싱 데이터 수명: s-maxage + maxage + min(swr, maxage)
- */
-export function createCacheControl(options: CacheControlOptions): string {
-  const parts: string[] = []
-
-  if (options.public && !options.private) {
-    parts.push('public')
-  }
-  if (options.private && !options.public) {
-    parts.push('private')
-  }
-  if (options.noCache) {
-    parts.push('no-cache')
-  }
-  if (options.noStore) {
-    parts.push('no-store')
-  }
-  if (options.mustRevalidate) {
-    parts.push('must-revalidate')
-  }
-  if (options.maxAge !== undefined) {
-    parts.push(`max-age=${options.maxAge}`)
-  }
-  if (options.sMaxAge !== undefined && !options.private) {
-    parts.push(`s-maxage=${options.sMaxAge}`)
-  }
-  if (options.swr !== undefined && !options.mustRevalidate) {
-    parts.push(`stale-while-revalidate=${options.swr}`)
+  for (const imageUrl of images) {
+    const expiration = extractExpirationFromURL(imageUrl)
+    if (expiration && expiration > now) {
+      if (!nearestExpiration || expiration < nearestExpiration) {
+        nearestExpiration = expiration
+      }
+    }
   }
 
-  return parts.join(', ')
+  if (!nearestExpiration) {
+    return sec('30 days')
+  }
+
+  // Apply a small buffer (5 minutes) for:
+  // - Clock skew between servers
+  // - Request processing time
+  // - User's actual image loading time
+  const buffer = sec('5 minutes')
+
+  return nearestExpiration - buffer - now
 }
 
 /**
@@ -117,9 +108,31 @@ export async function createHealthCheckHandler(
   )
 }
 
+export function createProblemDetailsResponse(request: Request, options: CreateProblemDetailsResponseOptions): Response {
+  const url = new URL(request.url)
+  const instance = options.instance ?? url.pathname + url.search
+
+  const problem: ProblemDetails = {
+    type: createProblemTypeUrl(url.origin, options.code),
+    title: options.title ?? getStatusTitle(options.status),
+    status: options.status,
+    detail: options.detail,
+    instance,
+  }
+
+  const headers = new Headers(options.headers)
+  headers.set('Content-Type', PROBLEM_CONTENT_TYPE)
+
+  return new Response(JSON.stringify(problem), { status: options.status, headers })
+}
+
 export function handleRouteError(error: unknown, request: Request) {
   if (error instanceof Error && error.message === 'Network connection lost.') {
-    return new Response('Client Closed Request', { status: 499 })
+    return createProblemDetailsResponse(request, {
+      status: 499,
+      code: 'client-closed-request',
+      detail: '요청이 취소됐어요',
+    })
   }
 
   console.error(error)
@@ -140,16 +153,18 @@ export function handleRouteError(error: unknown, request: Request) {
     })
   }
 
-  const response: ApiResponse = {
-    error: {
-      code: normalizedError.errorCode,
-      message: normalizedError.message,
-      isRetryable: normalizedError.isRetryable,
-    },
+  const headers = new Headers({ 'X-Error-Code': normalizedError.errorCode })
+
+  if (normalizedError instanceof UpstreamServerError && normalizedError.retryAfter) {
+    headers.set('Retry-After', normalizedError.retryAfter)
   }
 
-  const headers = new Headers({ 'X-Error-Code': normalizedError.errorCode })
-  return Response.json(response, { status: normalizedError.statusCode, headers })
+  return createProblemDetailsResponse(request, {
+    status: normalizedError.statusCode,
+    code: normalizedError.errorCode,
+    detail: normalizedError.message,
+    headers,
+  })
 }
 
 export function isUpstreamServer4XXError(error: unknown): boolean {
@@ -170,4 +185,17 @@ export function isUpstreamServerError(error: unknown): boolean {
   }
 
   return false
+}
+
+function extractExpirationFromURL(imageUrl: string): number | null {
+  try {
+    const url = new URL(imageUrl, CANONICAL_URL)
+    const expires = url.searchParams.get('expires')
+    if (expires && /^\d+$/.test(expires)) {
+      return parseInt(expires, 10)
+    }
+  } catch {
+    // Not a valid URL
+  }
+  return null
 }
