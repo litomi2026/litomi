@@ -15,7 +15,7 @@ import { translateSeriesList } from '@/translation/series'
 import { translateTag } from '@/translation/tag'
 import { translateType } from '@/translation/type'
 import { createCacheControl } from '@/utils/cache-control'
-import { sec } from '@/utils/date'
+import { sec } from '@/utils/format/date'
 
 enum TrendingType {
   HOURLY = 'hourly',

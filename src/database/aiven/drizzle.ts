@@ -3,7 +3,7 @@ import postgres from 'postgres'
 import 'server-only'
 
 import { env } from '@/env/server.common'
-import { sec } from '@/utils/date'
+import { sec } from '@/utils/format/date'
 
 import * as schema from './schema'
 

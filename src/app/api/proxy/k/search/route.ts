@@ -9,7 +9,7 @@ import { env } from '@/env/client'
 import { getKeywordPromotion, type KeywordPromotion } from '@/sponsor'
 import { Locale } from '@/translation/common'
 import { Manga } from '@/types/manga'
-import { sec } from '@/utils/date'
+import { sec } from '@/utils/format/date'
 import { chance } from '@/utils/random-edge'
 
 import { convertToKHentaiKey, filterMangasByMinusPrefix } from './utils'

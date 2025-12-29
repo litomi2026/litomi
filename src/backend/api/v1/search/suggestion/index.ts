@@ -7,7 +7,7 @@ import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { Locale } from '@/translation/common'
 import { createCacheControl } from '@/utils/cache-control'
-import { sec } from '@/utils/date'
+import { sec } from '@/utils/format/date'
 
 import { queryBlacklist } from './constant'
 import { suggestionTrie } from './suggestion-trie'

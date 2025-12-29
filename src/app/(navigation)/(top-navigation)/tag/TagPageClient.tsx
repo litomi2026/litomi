@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation'
 import IconSpinner from '@/components/icons/IconSpinner'
 import PageNavigation from '@/components/PageNavigation'
 import useLocaleFromCookie from '@/hook/useLocaleFromCookie'
-import { formatNumber } from '@/utils/format'
+import { formatNumber } from '@/utils/format/number'
 
 import { CategoryParam, useTagQuery } from './hook'
 

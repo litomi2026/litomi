@@ -7,7 +7,7 @@ import { toast } from 'sonner'
 
 import IconSpinner from '@/components/icons/IconSpinner'
 import useServerAction from '@/hook/useServerAction'
-import { formatDistanceToNow } from '@/utils/date'
+import { formatDistanceToNow } from '@/utils/format/date'
 
 import { revokeAllTrustedBrowsers, revokeTrustedBrowser } from '../action-trusted-browser'
 

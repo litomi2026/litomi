@@ -7,6 +7,7 @@ import LinkPending from '../LinkPending'
 import MangaImage from '../MangaImage'
 import MangaCardCensorship from './MangaCardCensorship'
 import MangaCardPreviewImages from './MangaCardPreviewImages'
+import MangaTorrentBadge from './MangaTorrentBadge'
 
 type Props = {
   manga: Manga
@@ -28,7 +29,7 @@ export default function MangaCardImage({ manga, mangaIndex, className = '' }: Re
           manga={manga}
           mangaIndex={mangaIndex}
         />
-      ) : images.length > 0 ? (
+      ) : images.length === 1 ? (
         <Link
           className="flex overflow-x-auto h-fit snap-x snap-mandatory select-none scrollbar-hidden relative"
           href={href}
@@ -46,7 +47,8 @@ export default function MangaCardImage({ manga, mangaIndex, className = '' }: Re
         </Link>
       ) : null}
       <MangaCardCensorship manga={manga} />
-      <div className="absolute bottom-1 right-1 px-1 font-medium text-sm bg-background rounded">
+      <MangaTorrentBadge className="absolute bottom-1 left-1 z-10 font-semibold text-xs" manga={manga} />
+      <div className="absolute bottom-1 right-1 z-10 px-1 font-medium text-sm bg-background rounded">
         {count ?? images.length}p
       </div>
     </div>

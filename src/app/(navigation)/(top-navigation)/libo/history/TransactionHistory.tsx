@@ -4,8 +4,8 @@ import { ArrowDownLeft, ArrowUpRight } from 'lucide-react'
 
 import IconSpinner from '@/components/icons/IconSpinner'
 import useMeQuery from '@/query/useMeQuery'
-import { formatDistanceToNow } from '@/utils/date'
-import { formatNumber } from '@/utils/format'
+import { formatDistanceToNow } from '@/utils/format/date'
+import { formatNumber } from '@/utils/format/number'
 
 import { useTransactionsQuery } from './useTransactionsQuery'
 

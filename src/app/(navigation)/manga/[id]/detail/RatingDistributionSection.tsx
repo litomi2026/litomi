@@ -4,7 +4,7 @@ import { unstable_cache } from 'next/cache'
 
 import { userRatingTable } from '@/database/supabase/activity'
 import { db } from '@/database/supabase/drizzle'
-import { sec } from '@/utils/date'
+import { sec } from '@/utils/format/date'
 
 type Props = {
   mangaId: number

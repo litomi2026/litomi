@@ -8,7 +8,7 @@ import { withSentryConfig } from '@sentry/nextjs'
 import { withBotId } from 'botid/next/config'
 
 import { createCacheControl } from '@/utils/cache-control'
-import { sec } from '@/utils/date'
+import { sec } from '@/utils/format/date'
 
 const cspHeader = `
   default-src 'self';

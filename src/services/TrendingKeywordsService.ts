@@ -2,7 +2,7 @@ import ms from 'ms'
 import 'server-only'
 
 import { redisClient } from '@/database/redis'
-import { sec } from '@/utils/date'
+import { sec } from '@/utils/format/date'
 
 export interface TrendingKeyword {
   keyword: string

@@ -5,7 +5,7 @@ import { ReadonlyURLSearchParams } from 'next/navigation'
 import { useCallback, useRef, useState } from 'react'
 
 import useMounted from '@/hook/useMounted'
-import { formatLocalDate } from '@/utils/date'
+import { formatLocalDate } from '@/utils/format/date'
 
 import type { FilterState } from './constants'
 

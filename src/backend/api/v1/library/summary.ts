@@ -7,7 +7,7 @@ import { problemResponse } from '@/backend/utils/problem'
 import { bookmarkTable, readingHistoryTable, userRatingTable } from '@/database/supabase/activity'
 import { db } from '@/database/supabase/drizzle'
 import { createCacheControl } from '@/utils/cache-control'
-import { sec } from '@/utils/date'
+import { sec } from '@/utils/format/date'
 
 export type GETV1LibrarySummaryResponse = {
   bookmarkCount: number

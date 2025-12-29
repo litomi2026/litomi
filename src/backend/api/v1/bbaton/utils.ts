@@ -4,7 +4,7 @@ import { jwtVerify, SignJWT } from 'jose'
 
 import { CookieKey } from '@/constants/storage'
 import { env } from '@/env/server.hono'
-import { sec } from '@/utils/date'
+import { sec } from '@/utils/format/date'
 
 const { BBATON_CLIENT_ID, JWT_SECRET_BBATON_ATTEMPT, CORS_ORIGIN } = env
 

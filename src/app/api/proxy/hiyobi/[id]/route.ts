@@ -3,7 +3,7 @@ import { createProblemDetailsResponse, handleRouteError } from '@/crawler/proxy-
 import { Locale } from '@/translation/common'
 import { RouteProps } from '@/types/nextjs'
 import { createCacheControl } from '@/utils/cache-control'
-import { sec } from '@/utils/date'
+import { sec } from '@/utils/format/date'
 
 import { GETProxyHiyobiIdSchema } from './schema'
 

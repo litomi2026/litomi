@@ -4,7 +4,7 @@ export class ProblemDetailsError extends Error {
   readonly name = 'ProblemDetailsError'
 
   get isRetryable(): boolean {
-    return this.status >= 500 || this.status === 429
+    return this.status === 408 || this.status === 429 || this.status >= 500
   }
 
   get retryAfterSeconds(): number | undefined {

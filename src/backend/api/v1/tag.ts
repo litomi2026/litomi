@@ -9,7 +9,7 @@ import { mangaTagTable, tagTable } from '@/database/aiven/schema'
 import { Locale } from '@/translation/common'
 import { translateTag } from '@/translation/tag'
 import { createCacheControl } from '@/utils/cache-control'
-import { sec } from '@/utils/date'
+import { sec } from '@/utils/format/date'
 
 const TAGS_PER_PAGE = 100
 

@@ -4,7 +4,7 @@ import crypto from 'crypto'
 
 import { redisClient } from '@/database/redis'
 
-import { sec } from './date'
+import { sec } from './format/date'
 
 interface AuthChallenge {
   authorizationCode: string

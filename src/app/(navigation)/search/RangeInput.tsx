@@ -1,4 +1,4 @@
-import { formatLocalDate } from '@/utils/date'
+import { formatLocalDate } from '@/utils/format/date'
 
 type BaseProps = {
   label: string

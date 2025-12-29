@@ -29,6 +29,7 @@ function convertToManga(raw: (typeof mockKHentaiMangas)[number]): Manga {
     uploader: raw.uploader,
     filesize: raw.filesize,
     torrentCount: raw.torrentcount,
+    torrents: raw.torrents,
     source: MangaSource.K_HENTAI,
   }
 }
@@ -82,6 +83,29 @@ describe('GET /api/proxy/k/search', () => {
 
       expect(response.status).toBe(200)
       expect(data.mangas).toHaveLength(5)
+    })
+
+    test('토렌트 정보가 있으면 응답에 포함해야 한다', async () => {
+      const searchParams = new URLSearchParams({
+        query: 'test',
+      })
+
+      const request = new Request(`${baseUrl}?${searchParams}`)
+      const response = await GET(request)
+      const data = await response.json()
+
+      expect(response.status).toBe(200)
+
+      const manga = data.mangas.find((m: Manga) => m.id === 1)
+      expect(manga?.torrentCount).toBe(2)
+      expect(manga?.torrents).toHaveLength(2)
+      expect(manga?.torrents?.[0]).toMatchObject({
+        hash: expect.any(String),
+        name: expect.any(String),
+        added: expect.any(Number),
+        fsize: expect.any(Number),
+        tsize: expect.any(Number),
+      })
     })
 
     test('제외할 태그가 있는 만화를 필터링해야 한다', async () => {
