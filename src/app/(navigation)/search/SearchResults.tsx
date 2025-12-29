@@ -19,6 +19,7 @@ import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 import RandomRefreshButton from '../(top-navigation)/RandomRefreshButton'
 
 const Error400 = dynamic(() => import('./Error400'))
+const SearchResultError = dynamic(() => import('./SearchResultError'))
 
 export default function SearchResult() {
   const searchParams = useSearchParams()
@@ -42,11 +43,17 @@ export default function SearchResult() {
     return <SearchResultLoading view={view} />
   }
 
-  if (error && error instanceof ProblemDetailsError && error.status === 400) {
-    return <Error400 message={error.message} />
+  if (error) {
+    if (error instanceof ProblemDetailsError && error.status === 400) {
+      return <Error400 message={error.message} />
+    }
+
+    if (mangas.length === 0 && !isFetchingNextPage) {
+      return <SearchResultError error={error} isRetrying={isRefetching} onRetry={refetch} />
+    }
   }
 
-  if (mangas.length === 0 && !isFetchingNextPage) {
+  if (!error && mangas.length === 0 && !isFetchingNextPage) {
     return (
       <div className="flex flex-col grow justify-center items-center">
         <p className="text-zinc-500">검색 결과가 없습니다.</p>
@@ -76,6 +83,17 @@ export default function SearchResult() {
         )}
         {isFetchingNextPage && <MangaCardSkeleton />}
       </ul>
+      {error && mangas.length > 0 && (
+        <div className="w-full py-4 flex justify-center">
+          <button
+            className="text-sm text-zinc-400 hover:text-zinc-200 transition-colors px-4 py-2"
+            onClick={() => (hasNextPage ? fetchNextPage() : refetch())}
+            type="button"
+          >
+            불러오기 실패 · 다시 시도
+          </button>
+        </div>
+      )}
       {isRandomSort ? (
         <RandomRefreshButton
           className="flex gap-1 items-center border-2 px-3 p-2 rounded-xl transition mx-auto"
