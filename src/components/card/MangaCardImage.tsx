@@ -28,7 +28,7 @@ export default function MangaCardImage({ manga, mangaIndex, className = '' }: Re
           manga={manga}
           mangaIndex={mangaIndex}
         />
-      ) : images.length > 0 ? (
+      ) : images.length === 1 ? (
         <Link
           className="flex overflow-x-auto h-fit snap-x snap-mandatory select-none scrollbar-hidden relative"
           href={href}

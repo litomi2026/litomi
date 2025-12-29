@@ -2,7 +2,7 @@
 
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
-import { memo, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { MAX_THUMBNAIL_IMAGES } from '@/constants/policy'
 import { Manga } from '@/types/manga'
@@ -17,9 +17,7 @@ type Props = {
   href: string
 }
 
-export default memo(MangaCardPreviewImages)
-
-function MangaCardPreviewImages({ className, manga, mangaIndex = 0, href }: Readonly<Props>) {
+export default function MangaCardPreviewImages({ className, manga, mangaIndex = 0, href }: Readonly<Props>) {
   const { images = [] } = manga
   const sliderRef = useRef<HTMLAnchorElement>(null)
   const [activeIndex, setActiveIndex] = useState(0)
