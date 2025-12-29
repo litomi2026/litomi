@@ -1,12 +1,11 @@
-import { zValidator } from '@hono/zod-validator'
 import { and, desc, eq, lt } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { HTTPException } from 'hono/http-exception'
 import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
-import { getUserId } from '@/backend/utils/auth'
+import { problemResponse } from '@/backend/utils/problem'
+import { zProblemValidator } from '@/backend/utils/validator'
 import { NOTIFICATION_PER_PAGE } from '@/constants/policy'
 import { createCacheControl } from '@/crawler/proxy-utils'
 import { NotificationType } from '@/database/enum'
@@ -38,47 +37,52 @@ export type GETNotificationResponse = {
 
 const notificationRoutes = new Hono<Env>()
 
-notificationRoutes.get('/', zValidator('query', querySchema), async (c) => {
-  const userId = getUserId()
+notificationRoutes.get('/', zProblemValidator('query', querySchema), async (c) => {
+  const userId = c.get('userId')
 
   if (!userId) {
-    throw new HTTPException(401)
+    return problemResponse(c, { status: 401 })
   }
 
-  const { nextId, filter = [] } = c.req.valid('query')
-  const filters = Array.isArray(filter) ? filter : [filter]
-  const conditions = [eq(notificationTable.userId, userId)]
+  try {
+    const { nextId, filter = [] } = c.req.valid('query')
+    const filters = Array.isArray(filter) ? filter : [filter]
+    const conditions = [eq(notificationTable.userId, userId)]
 
-  if (nextId) {
-    conditions.push(lt(notificationTable.id, nextId))
+    if (nextId) {
+      conditions.push(lt(notificationTable.id, nextId))
+    }
+
+    if (filters.includes(NotificationFilter.UNREAD)) {
+      conditions.push(eq(notificationTable.read, false))
+    }
+
+    if (filters.includes(NotificationFilter.NEW_MANGA)) {
+      conditions.push(eq(notificationTable.type, NotificationType.NEW_MANGA))
+    }
+
+    const results = await db
+      .select()
+      .from(notificationTable)
+      .where(and(...conditions))
+      .orderBy(desc(notificationTable.id))
+      .limit(NOTIFICATION_PER_PAGE + 1)
+
+    const result: GETNotificationResponse = {
+      notifications: results.slice(0, NOTIFICATION_PER_PAGE),
+      hasNextPage: results.length > NOTIFICATION_PER_PAGE,
+    }
+
+    const cacheControl = createCacheControl({
+      private: true,
+      maxAge: 3,
+    })
+
+    return c.json<GETNotificationResponse>(result, { headers: { 'Cache-Control': cacheControl } })
+  } catch (error) {
+    console.error(error)
+    return problemResponse(c, { status: 500, detail: '알림을 불러오지 못했어요' })
   }
-
-  if (filters.includes(NotificationFilter.UNREAD)) {
-    conditions.push(eq(notificationTable.read, false))
-  }
-
-  if (filters.includes(NotificationFilter.NEW_MANGA)) {
-    conditions.push(eq(notificationTable.type, NotificationType.NEW_MANGA))
-  }
-
-  const results = await db
-    .select()
-    .from(notificationTable)
-    .where(and(...conditions))
-    .orderBy(desc(notificationTable.id))
-    .limit(NOTIFICATION_PER_PAGE + 1)
-
-  const result: GETNotificationResponse = {
-    notifications: results.slice(0, NOTIFICATION_PER_PAGE),
-    hasNextPage: results.length > NOTIFICATION_PER_PAGE,
-  }
-
-  const cacheControl = createCacheControl({
-    private: true,
-    maxAge: 3,
-  })
-
-  return c.json<GETNotificationResponse>(result, { headers: { 'Cache-Control': cacheControl } })
 })
 
 notificationRoutes.route('/unread-count', unreadCountRoutes)

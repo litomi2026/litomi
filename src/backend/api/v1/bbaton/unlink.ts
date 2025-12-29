@@ -1,14 +1,13 @@
-import { zValidator } from '@hono/zod-validator'
 import { compare } from 'bcryptjs'
 import { and, eq, isNull } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { deleteCookie } from 'hono/cookie'
-import { HTTPException } from 'hono/http-exception'
 import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
-import { getUserId } from '@/backend/utils/auth'
+import { problemResponse } from '@/backend/utils/problem'
+import { zProblemValidator } from '@/backend/utils/validator'
 import { COOKIE_DOMAIN } from '@/constants'
 import { CookieKey } from '@/constants/storage'
 import { bbatonVerificationTable } from '@/database/supabase/bbaton'
@@ -27,53 +26,58 @@ const schema = z.object({
 
 const route = new Hono<Env>()
 
-route.post('/', zValidator('json', schema), async (c) => {
-  const userId = getUserId()
+route.post('/', zProblemValidator('json', schema), async (c) => {
+  const userId = c.get('userId')
 
   if (!userId) {
-    throw new HTTPException(401, { message: '로그인이 필요해요' })
+    return problemResponse(c, { status: 401 })
   }
 
-  const { password, token } = c.req.valid('json')
+  try {
+    const { password, token } = c.req.valid('json')
 
-  const [user] = await db
-    .select({ passwordHash: userTable.passwordHash })
-    .from(userTable)
-    .where(eq(userTable.id, userId))
+    const [user] = await db
+      .select({ passwordHash: userTable.passwordHash })
+      .from(userTable)
+      .where(eq(userTable.id, userId))
 
-  if (!user) {
-    throw new HTTPException(401, { message: '비밀번호가 일치하지 않아요' })
-  }
-
-  const isValidPassword = await compare(password, user.passwordHash).catch(() => false)
-
-  if (!isValidPassword) {
-    throw new HTTPException(401, { message: '비밀번호가 일치하지 않아요' })
-  }
-
-  const [twoFactor] = await db
-    .select({ secret: twoFactorTable.secret })
-    .from(twoFactorTable)
-    .where(and(eq(twoFactorTable.userId, userId), isNull(twoFactorTable.expiresAt)))
-
-  if (twoFactor) {
-    if (!token) {
-      throw new HTTPException(400, { message: '2단계 인증 코드가 필요해요' })
+    if (!user) {
+      return problemResponse(c, { status: 401, detail: '비밀번호가 일치하지 않아요' })
     }
 
-    const secret = decryptTOTPSecret(twoFactor.secret)
-    const isValidToken = verifyTOTPToken(token, secret)
+    const isValidPassword = await compare(password, user.passwordHash).catch(() => false)
 
-    if (!isValidToken) {
-      throw new HTTPException(400, { message: '잘못된 인증 코드예요' })
+    if (!isValidPassword) {
+      return problemResponse(c, { status: 401, detail: '비밀번호가 일치하지 않아요' })
     }
+
+    const [twoFactor] = await db
+      .select({ secret: twoFactorTable.secret })
+      .from(twoFactorTable)
+      .where(and(eq(twoFactorTable.userId, userId), isNull(twoFactorTable.expiresAt)))
+
+    if (twoFactor) {
+      if (!token) {
+        return problemResponse(c, { status: 400, detail: '2단계 인증 코드가 필요해요' })
+      }
+
+      const secret = decryptTOTPSecret(twoFactor.secret)
+      const isValidToken = verifyTOTPToken(token, secret)
+
+      if (!isValidToken) {
+        return problemResponse(c, { status: 400, detail: '잘못된 인증 코드예요' })
+      }
+    }
+
+    await db.delete(bbatonVerificationTable).where(eq(bbatonVerificationTable.userId, userId))
+
+    deleteCookie(c, CookieKey.BBATON_ATTEMPT_ID, { domain: COOKIE_DOMAIN, path: '/api/v1/bbaton' })
+
+    return c.json<POSTV1BBatonUnlinkResponse>({ ok: true })
+  } catch (error) {
+    console.error(error)
+    return problemResponse(c, { status: 500, detail: '비바톤 계정 연결을 해제하지 못했어요.' })
   }
-
-  await db.delete(bbatonVerificationTable).where(eq(bbatonVerificationTable.userId, userId))
-
-  deleteCookie(c, CookieKey.BBATON_ATTEMPT_ID, { domain: COOKIE_DOMAIN, path: '/api/v1/bbaton' })
-
-  return c.json<POSTV1BBatonUnlinkResponse>({ ok: true })
 })
 
 export default route

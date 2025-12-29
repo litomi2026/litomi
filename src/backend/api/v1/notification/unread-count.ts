@@ -1,10 +1,9 @@
 import { and, count, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { HTTPException } from 'hono/http-exception'
 import 'server-only'
 
 import { Env } from '@/backend'
-import { getUserId } from '@/backend/utils/auth'
+import { problemResponse } from '@/backend/utils/problem'
 import { createCacheControl } from '@/crawler/proxy-utils'
 import { db } from '@/database/supabase/drizzle'
 import { notificationTable } from '@/database/supabase/notification'
@@ -14,23 +13,28 @@ export type GETUnreadCountResponse = number
 const unreadCountRoutes = new Hono<Env>()
 
 unreadCountRoutes.get('/', async (c) => {
-  const userId = getUserId()
+  const userId = c.get('userId')
 
   if (!userId) {
-    throw new HTTPException(401)
+    return problemResponse(c, { status: 401 })
   }
 
-  const [{ count: unreadCount }] = await db
-    .select({ count: count(notificationTable.id) })
-    .from(notificationTable)
-    .where(and(eq(notificationTable.userId, userId), eq(notificationTable.read, false)))
+  try {
+    const [{ count: unreadCount }] = await db
+      .select({ count: count(notificationTable.id) })
+      .from(notificationTable)
+      .where(and(eq(notificationTable.userId, userId), eq(notificationTable.read, false)))
 
-  const cacheControl = createCacheControl({
-    private: true,
-    maxAge: 10,
-  })
+    const cacheControl = createCacheControl({
+      private: true,
+      maxAge: 10,
+    })
 
-  return c.json<GETUnreadCountResponse>(unreadCount, { headers: { 'Cache-Control': cacheControl } })
+    return c.json<GETUnreadCountResponse>(unreadCount, { headers: { 'Cache-Control': cacheControl } })
+  } catch (error) {
+    console.error(error)
+    return problemResponse(c, { status: 500, detail: '알림을 불러오지 못했어요' })
+  }
 })
 
 export default unreadCountRoutes

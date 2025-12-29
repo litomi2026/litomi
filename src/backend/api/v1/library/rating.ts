@@ -1,12 +1,11 @@
-import { zValidator } from '@hono/zod-validator'
 import { and, desc, eq, gt, lt, or, SQL } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { HTTPException } from 'hono/http-exception'
 import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
-import { getUserId } from '@/backend/utils/auth'
+import { problemResponse } from '@/backend/utils/problem'
+import { zProblemValidator } from '@/backend/utils/validator'
 import { decodeRatingCursor, encodeRatingCursor } from '@/common/cursor'
 import { RATING_PER_PAGE } from '@/constants/policy'
 import { createCacheControl } from '@/crawler/proxy-utils'
@@ -36,18 +35,18 @@ export type RatingItem = {
 
 const libraryRatingRoutes = new Hono<Env>()
 
-libraryRatingRoutes.get('/', zValidator('query', querySchema), async (c) => {
-  const userId = getUserId()
+libraryRatingRoutes.get('/', zProblemValidator('query', querySchema), async (c) => {
+  const userId = c.get('userId')
 
   if (!userId) {
-    throw new HTTPException(401)
+    return problemResponse(c, { status: 401 })
   }
 
   const { cursor, limit, sort } = c.req.valid('query')
   const decodedCursor = cursor ? decodeRatingCursor(cursor) : null
 
   if (cursor && !decodedCursor) {
-    throw new HTTPException(400)
+    return problemResponse(c, { status: 400, detail: '잘못된 커서예요' })
   }
 
   const conditions: (SQL | undefined)[] = [eq(userRatingTable.userId, userId)]
@@ -132,44 +131,49 @@ libraryRatingRoutes.get('/', zValidator('query', querySchema), async (c) => {
       break
   }
 
-  const rows = await query
+  try {
+    const rows = await query
 
-  const cacheControl = decodedCursor
-    ? createCacheControl({
-        private: true,
-        maxAge: sec('1 hour'),
-      })
-    : createCacheControl({
-        private: true,
-        maxAge: 3,
-      })
+    const cacheControl = decodedCursor
+      ? createCacheControl({
+          private: true,
+          maxAge: sec('1 hour'),
+        })
+      : createCacheControl({
+          private: true,
+          maxAge: 3,
+        })
 
-  if (rows.length === 0) {
-    const result = { items: [], nextCursor: null }
+    if (rows.length === 0) {
+      const result = { items: [], nextCursor: null }
+      return c.json<GETV1RatingsResponse>(result, { headers: { 'Cache-Control': cacheControl } })
+    }
+
+    const hasNextPage = rows.length > limit
+    const items = hasNextPage ? rows.slice(0, limit) : rows
+    const lastItem = items[items.length - 1]
+    let nextCursor: string | null = null
+
+    if (hasNextPage && lastItem) {
+      const { rating, createdAt, updatedAt, mangaId } = lastItem
+      nextCursor = getNextCursor(sort, rating, createdAt, updatedAt, mangaId)
+    }
+
+    const result = {
+      items: items.map((row) => ({
+        mangaId: row.mangaId,
+        rating: row.rating,
+        createdAt: row.createdAt.getTime(),
+        updatedAt: row.updatedAt.getTime(),
+      })),
+      nextCursor,
+    }
+
     return c.json<GETV1RatingsResponse>(result, { headers: { 'Cache-Control': cacheControl } })
+  } catch (error) {
+    console.error(error)
+    return problemResponse(c, { status: 500, detail: '평점 목록을 불러오지 못했어요' })
   }
-
-  const hasNextPage = rows.length > limit
-  const items = hasNextPage ? rows.slice(0, limit) : rows
-  const lastItem = items[items.length - 1]
-  let nextCursor: string | null = null
-
-  if (hasNextPage && lastItem) {
-    const { rating, createdAt, updatedAt, mangaId } = lastItem
-    nextCursor = getNextCursor(sort, rating, createdAt, updatedAt, mangaId)
-  }
-
-  const result: GETV1RatingsResponse = {
-    items: items.map((row) => ({
-      mangaId: row.mangaId,
-      rating: row.rating,
-      createdAt: row.createdAt.getTime(),
-      updatedAt: row.updatedAt.getTime(),
-    })),
-    nextCursor,
-  }
-
-  return c.json(result, { headers: { 'Cache-Control': cacheControl } })
 })
 
 function getNextCursor(sort: RatingSort, rating: number, createdAt: Date, updatedAt: Date, mangaId: number) {

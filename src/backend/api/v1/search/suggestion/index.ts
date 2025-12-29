@@ -1,10 +1,10 @@
-import { zValidator } from '@hono/zod-validator'
 import { Hono } from 'hono'
-import { HTTPException } from 'hono/http-exception'
 import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { problemResponse } from '@/backend/utils/problem'
+import { zProblemValidator } from '@/backend/utils/validator'
 import { createCacheControl } from '@/crawler/proxy-utils'
 import { Locale } from '@/translation/common'
 import { sec } from '@/utils/date'
@@ -24,11 +24,11 @@ export type GETSearchSuggestionsResponse = {
   value: string
 }[]
 
-suggestionRoutes.get('/', zValidator('query', querySchema), async (c) => {
+suggestionRoutes.get('/', zProblemValidator('query', querySchema), async (c) => {
   const { locale, query } = c.req.valid('query')
 
   if (queryBlacklist.some((regex) => regex.test(query))) {
-    throw new HTTPException(400)
+    return problemResponse(c, { status: 400 })
   }
 
   const suggestions = suggestionTrie.search(query, locale)

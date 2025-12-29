@@ -1,4 +1,3 @@
-import { zValidator } from '@hono/zod-validator'
 import { and, eq, gt, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
@@ -6,6 +5,8 @@ import ms from 'ms'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { problemResponse } from '@/backend/utils/problem'
+import { zProblemValidator } from '@/backend/utils/validator'
 import { POINT_CONSTANTS, TRANSACTION_TYPE } from '@/constants/points'
 import { db } from '@/database/supabase/drizzle'
 import { adImpressionTokenTable, pointTransactionTable, userPointsTable } from '@/database/supabase/points'
@@ -24,11 +25,11 @@ const requestSchema = z.object({
   token: z.string().length(64),
 })
 
-route.post('/', zValidator('json', requestSchema), async (c) => {
+route.post('/', zProblemValidator('json', requestSchema), async (c) => {
   const userId = c.get('userId')
 
   if (!userId) {
-    throw new HTTPException(401)
+    return problemResponse(c, { status: 401 })
   }
 
   const { token } = c.req.valid('json')
@@ -100,7 +101,9 @@ route.post('/', zValidator('json', requestSchema), async (c) => {
           const remainingMs = POINT_CONSTANTS.AD_SLOT_COOLDOWN_MS - (now.getTime() - tokenRecord.lastEarnedAt.getTime())
           const remainingSeconds = Math.max(1, Math.ceil(remainingMs / SECOND_MS))
           throw new HTTPException(429, {
-            res: c.text('같은 광고는 잠시 후 다시 적립할 수 있어요', 429, { 'Retry-After': String(remainingSeconds) }),
+            res: c.text('같은 광고는 잠시 후 다시 적립할 수 있어요', 429, {
+              'Retry-After': String(remainingSeconds),
+            }),
           })
         }
       }
@@ -153,10 +156,23 @@ route.post('/', zValidator('json', requestSchema), async (c) => {
     })
   } catch (error) {
     if (error instanceof HTTPException) {
-      throw error
+      const status = error.status
+      const res = error.getResponse()
+      const retryAfter = res.headers.get('Retry-After')
+      const detail = await res
+        .clone()
+        .text()
+        .catch(() => '')
+
+      return problemResponse(c, {
+        status,
+        detail: detail || (error.message && error.message !== 'HTTP Exception' ? error.message : undefined),
+        headers: retryAfter ? { 'Retry-After': retryAfter } : undefined,
+      })
     }
 
-    throw new HTTPException(500, { message: '포인트 적립에 실패했어요' })
+    console.error(error)
+    return problemResponse(c, { status: 500, detail: '포인트 적립에 실패했어요' })
   }
 })
 

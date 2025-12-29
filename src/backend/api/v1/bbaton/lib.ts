@@ -1,4 +1,3 @@
-import { HTTPException } from 'hono/http-exception'
 import 'server-only'
 import { z } from 'zod'
 
@@ -50,13 +49,13 @@ export async function exchangeAuthorizationCode({ code, redirectURI }: Params): 
 
   if (!response.ok) {
     console.error('bbaton token exchange failed:', response.status, json)
-    throw new HTTPException(502, { message: '인증에 실패했어요. 다시 시도해 주세요.' })
+    throw new Error('BBATON_TOKEN_EXCHANGE_FAILED')
   }
 
   const parsed = tokenSchema.safeParse(json)
   if (!parsed.success) {
     console.error('bbaton token response invalid:', parsed.error)
-    throw new HTTPException(502, { message: '인증에 실패했어요. 다시 시도해 주세요.' })
+    throw new Error('BBATON_TOKEN_RESPONSE_INVALID')
   }
 
   return { accessToken: parsed.data.access_token }
@@ -83,13 +82,13 @@ export async function fetchBBatonProfile(accessToken: string): Promise<BBatonPro
 
   if (!response.ok) {
     console.error('bbaton user profile request failed:', response.status, json)
-    throw new HTTPException(502, { message: '인증에 실패했어요. 다시 시도해 주세요.' })
+    throw new Error('BBATON_PROFILE_REQUEST_FAILED')
   }
 
   const parsed = schema.safeParse(json)
   if (!parsed.success) {
     console.error('bbaton profile response invalid:', parsed.error)
-    throw new HTTPException(502, { message: '인증에 실패했어요. 다시 시도해 주세요.' })
+    throw new Error('BBATON_PROFILE_RESPONSE_INVALID')
   }
 
   const { user_id, adult_flag, birth_year, gender, income, student } = parsed.data

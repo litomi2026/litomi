@@ -4,7 +4,6 @@ import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
-import { getUserId } from '@/backend/utils/auth'
 import { ReferredPost } from '@/components/post/ReferredPostCard'
 import { POST_PER_PAGE } from '@/constants/policy'
 import { createCacheControl } from '@/crawler/proxy-utils'
@@ -48,7 +47,7 @@ const postRoutes = new Hono<Env>()
 
 postRoutes.get('/', zValidator('query', querySchema), async (c) => {
   const { cursor, limit, mangaId, filter, username } = c.req.valid('query')
-  const currentUserId = getUserId()
+  const currentUserId = c.get('userId')
 
   const postRows = await selectPosts({
     limit: limit + 1,

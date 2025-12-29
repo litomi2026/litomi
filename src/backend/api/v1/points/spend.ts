@@ -1,10 +1,11 @@
-import { zValidator } from '@hono/zod-validator'
 import { and, eq, sql, sum } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { problemResponse } from '@/backend/utils/problem'
+import { zProblemValidator } from '@/backend/utils/validator'
 import { EXPANSION_TYPE, ITEM_TYPE, POINT_CONSTANTS, TRANSACTION_TYPE } from '@/constants/points'
 import { MAX_BOOKMARKS_PER_USER, MAX_LIBRARIES_PER_USER, MAX_READING_HISTORY_PER_USER } from '@/constants/policy'
 import { db } from '@/database/supabase/drizzle'
@@ -25,17 +26,17 @@ export type POSTV1PointSpendResponse = {
   spent: number
 }
 
-route.post('/', zValidator('json', spendSchema), async (c) => {
+route.post('/', zProblemValidator('json', spendSchema), async (c) => {
   const userId = c.get('userId')
 
   if (!userId) {
-    throw new HTTPException(401, { message: '로그인이 필요해요' })
+    return problemResponse(c, { status: 401 })
   }
 
-  const { type, itemId } = c.req.valid('json')
-  const { price, description } = getSpendMeta({ type, itemId })
-
   try {
+    const { type, itemId } = c.req.valid('json')
+    const { price, description } = getSpendMeta({ type, itemId })
+
     const result = await db.transaction(async (tx) => {
       // 현재 포인트 확인
       const [points] = await tx
@@ -128,10 +129,23 @@ route.post('/', zValidator('json', spendSchema), async (c) => {
     })
   } catch (error) {
     if (error instanceof HTTPException) {
-      throw error
+      const status = error.status
+      const res = error.getResponse()
+      const retryAfter = res.headers.get('Retry-After')
+      const detail = await res
+        .clone()
+        .text()
+        .catch(() => '')
+
+      return problemResponse(c, {
+        status,
+        detail: detail || (error.message && error.message !== 'HTTP Exception' ? error.message : undefined),
+        headers: retryAfter ? { 'Retry-After': retryAfter } : undefined,
+      })
     }
 
-    throw new HTTPException(500, { message: '포인트 사용에 실패했어요' })
+    console.error(error)
+    return problemResponse(c, { status: 500, detail: '포인트 사용에 실패했어요' })
   }
 })
 
