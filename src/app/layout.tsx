@@ -9,6 +9,7 @@ import { ReactNode } from 'react'
 import { Toaster } from 'sonner'
 
 import LibraryModal from '@/components/card/LibraryModal'
+import MangaTorrentModal from '@/components/card/MangaTorrentModal'
 import HiyobiPing from '@/components/HiyobiPing'
 import { MangaDetailModal } from '@/components/MangaDetailModal'
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar'
@@ -108,6 +109,7 @@ export default function RootLayout({ children }: Readonly<Props>) {
           {children}
           <LibraryModal />
           <MangaDetailModal />
+          <MangaTorrentModal />
         </QueryProvider>
         <ServiceWorkerRegistrar />
         <HiyobiPing />

@@ -45,6 +45,7 @@ export type Manga = {
   sources?: MangaSource[]
   tags?: MangaTag[]
   torrentCount?: number
+  torrents?: MangaTorrent[]
   type?: LabeledValue
   uploader?: string
   viewCount?: number
@@ -59,4 +60,12 @@ export type MangaError = Manga & {
 
 export type MangaTag = LabeledValue & {
   category: string
+}
+
+export type MangaTorrent = {
+  added: number
+  fsize: number
+  hash: string
+  name: string
+  tsize: number
 }

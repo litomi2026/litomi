@@ -144,6 +144,7 @@ interface KHentaiMangaCommon {
   title_jpn: string
   token: string
   torrentcount: number
+  torrents?: Torrent[]
   updated: number
   uploader: string
   views: number
@@ -318,6 +319,7 @@ class KHentaiClient {
       uploader,
       filesize,
       torrentCount: torrentcount,
+      torrents: manga.torrents,
       source: MangaSource.K_HENTAI,
     }
   }
