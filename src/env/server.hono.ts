@@ -13,7 +13,6 @@ export const env = createEnv({
     GA_SERVICE_ACCOUNT_EMAIL: z.string().min(1).optional(),
     GA_SERVICE_ACCOUNT_KEY: z.string().min(1).optional(),
     JWT_SECRET_BBATON_ATTEMPT: z.string().min(1),
-    TURNSTILE_SECRET_KEY: z.string().min(1),
   },
   runtimeEnv: process.env,
   skipValidation,

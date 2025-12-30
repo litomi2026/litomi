@@ -1,7 +1,7 @@
 import ms from 'ms'
 import 'server-only'
 
-import { env } from '@/env/server.next'
+import { env } from '@/env/server.common'
 
 import { sleep } from './time'
 
