@@ -1573,7 +1573,7 @@
   ],
   "aoi_mikan": [
     {
-      "label": "aoimikan.com",
+      "label": "Blog",
       "value": "http://aoimikan.com/"
     }
   ],
@@ -3637,7 +3637,7 @@
   ],
   "chaccu": [
     {
-      "label": "nemurinosono.jorougumo.com",
+      "label": "Jorougumo",
       "value": "http://nemurinosono.jorougumo.com/"
     }
   ],
@@ -16541,12 +16541,6 @@
       "value": "https://www.pixiv.net/users/71440"
     }
   ],
-  "minato_akira": [
-    {
-      "label": "saisaido.fc2web.com",
-      "value": "http://saisaido.fc2web.com/"
-    }
-  ],
   "minato_fumi": [
     {
       "label": "Fanbox",
@@ -21239,12 +21233,6 @@
       "value": "https://www.pixiv.net/users/201389"
     }
   ],
-  "oohashi_takayuki": [
-    {
-      "label": "team-caf.com",
-      "value": "http://team-caf.com/"
-    }
-  ],
   "oohira_sunset": [
     {
       "label": "Fantia",
@@ -25535,12 +25523,6 @@
       "value": "https://www.pixiv.net/users/1216130"
     }
   ],
-  "shimuu": [
-    {
-      "label": "hakujira.com",
-      "value": "http://www.hakujira.com/"
-    }
-  ],
   "shin-kun": [
     {
       "label": "Pixiv",
@@ -27493,7 +27475,7 @@
   ],
   "taira_kosaka": [
     {
-      "label": "blog.hirusuta.com",
+      "label": "Blog",
       "value": "http://blog.hirusuta.com/"
     }
   ],
@@ -28719,12 +28701,6 @@
     {
       "label": "Fantia",
       "value": "https://fantia.jp/adbe76a70b"
-    }
-  ],
-  "the_seiji": [
-    {
-      "label": "theseiji-hp.com",
-      "value": "https://www.theseiji-hp.com/"
     }
   ],
   "the-sinner": [
@@ -30647,12 +30623,6 @@
       "value": "https://www.pixiv.net/users/26814"
     }
   ],
-  "velfro": [
-    {
-      "label": "fujinomiya-millenium.com",
-      "value": "http://www.fujinomiya-millenium.com/cg/"
-    }
-  ],
   "velzhe": [
     {
       "label": "Fantia",
@@ -31841,12 +31811,6 @@
       "value": "https://skeb.jp/@yoban"
     }
   ],
-  "yocchi": [
-    {
-      "label": "tomoshibiya.jimdo.com",
-      "value": "http://tomoshibiya.jimdo.com/"
-    }
-  ],
   "yodare": [
     {
       "label": "Pixiv",
@@ -32391,12 +32355,6 @@
     {
       "label": "Pixiv",
       "value": "https://www.pixiv.net/stacc/user_jhue2744"
-    }
-  ],
-  "yukimino_yukio": [
-    {
-      "label": "yukimino.com",
-      "value": "http://yukimino.com/"
     }
   ],
   "yukimochi": [
@@ -33019,8 +32977,8 @@
   ],
   "zuizui": [
     {
-      "label": "weibo.com",
-      "value": "https://passport.weibo.com/visitor/visitor?entry=miniblog&a=enter&url=https%3A%2F%2Fwww.weibo.com%2Fn%2F%25E6%259E%25A0%25E6%259E%25A0__&domain=weibo.com&ua=litomi-sponsor-redirect-resolver%2F1.0&_rand=1767101183474&sudaref="
+      "label": "Weibo",
+      "value": "https://www.weibo.com/n/%E6%9E%A0%E6%9E%A0__"
     }
   ],
   "zukiki": [

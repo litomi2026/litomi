@@ -16,6 +16,8 @@ type Props = {
   items: MangaMetadataWithLink[]
 }
 
+const MAX_LABEL_LENGTH = 8
+
 export default function MangaMetadataListWithLink({ filterType, items }: Props) {
   return (
     <ul className="break-all">
@@ -33,9 +35,12 @@ export default function MangaMetadataListWithLink({ filterType, items }: Props) 
                   key={index}
                   rel="noopener"
                   target="_blank"
-                  title={`${label}의 ${link.label} 후원하기`}
+                  title={`${label || value}의 ${link.label} 후원하기`}
                 >
-                  <span className="text-xs font-medium">{link.label}</span>
+                  <span className="text-xs font-medium">
+                    {link.label.slice(0, MAX_LABEL_LENGTH)}
+                    {link.label.length > MAX_LABEL_LENGTH ? '..' : ''}
+                  </span>
                   <ExternalLink className="inline size-3 shrink-0 ml-0.5" />
                 </a>
               ))}
