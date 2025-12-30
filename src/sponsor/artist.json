@@ -19,7 +19,7 @@
   ],
   "218": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://kalavinka218.fanbox.cc/"
     }
   ],
@@ -49,7 +49,7 @@
   ],
   "7010": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://pxbw1kml.fanbox.cc/"
     }
   ],
@@ -67,7 +67,7 @@
   ],
   "108_gou": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://sliceslime.fanbox.cc/"
     }
   ],
@@ -89,6 +89,12 @@
       "value": "https://www.pixiv.net/users/7251"
     }
   ],
+  "200x_zoom": [
+    {
+      "label": "ndemotte.jugem.jp",
+      "value": "https://ndemotte.jugem.jp/"
+    }
+  ],
   "2gou": [
     {
       "label": "Skeb 404",
@@ -103,7 +109,7 @@
   ],
   "3000_krw": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://san00krw.fanbox.cc/"
     }
   ],
@@ -115,7 +121,7 @@
   ],
   "3huro": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://sanhuro.fanbox.cc/"
     }
   ],
@@ -133,7 +139,7 @@
   ],
   "5t": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://min-5tminute.fanbox.cc/"
     }
   ],
@@ -145,13 +151,13 @@
   ],
   "6u": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://n95yh5jb.fanbox.cc/"
     }
   ],
   "71er": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://l71er.fanbox.cc/"
     }
   ],
@@ -193,7 +199,7 @@
   ],
   "9chibiru": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://chibiru9.fanbox.cc/"
     }
   ],
@@ -205,7 +211,7 @@
   ],
   "a_toshi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://yukimushi.fanbox.cc/"
     }
   ],
@@ -223,7 +229,7 @@
   ],
   "a-teru_haito": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://jsazlotd.fanbox.cc/"
     }
   ],
@@ -271,7 +277,7 @@
   ],
   "abekawa": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://abekawa.fanbox.cc/"
     }
   ],
@@ -361,7 +367,7 @@
   ],
   "afuro": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://farismoe.fanbox.cc/"
     }
   ],
@@ -385,19 +391,19 @@
   ],
   "agata": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://agatar18.fanbox.cc/"
     }
   ],
   "agetama": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://rrrr-barb36.fanbox.cc/"
     }
   ],
   "ago": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://hatomame.fanbox.cc/"
     }
   ],
@@ -415,7 +421,7 @@
   ],
   "ahedtra": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://ahedtra.fanbox.cc/"
     }
   ],
@@ -427,7 +433,7 @@
   ],
   "ahobaka": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://ea7qk8h3.fanbox.cc/"
     }
   ],
@@ -439,7 +445,7 @@
   ],
   "ahorobo": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://tg8xc95p.fanbox.cc/"
     }
   ],
@@ -451,7 +457,7 @@
   ],
   "aiaiaiar": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://hahd4451.fanbox.cc/"
     }
   ],
@@ -463,7 +469,7 @@
   ],
   "aianchor": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://aianchor.fanbox.cc/"
     }
   ],
@@ -505,7 +511,7 @@
   ],
   "aikawa_monako": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://aikawamonako.fanbox.cc/"
     }
   ],
@@ -517,19 +523,19 @@
   ],
   "aikawa_tatsuki": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://aikawa-tatsuki.fanbox.cc/"
     }
   ],
   "aimaitei_umami": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://aimaitei.fanbox.cc/"
     }
   ],
   "aimitsu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://fbsuzcij.fanbox.cc/"
     }
   ],
@@ -541,19 +547,19 @@
   ],
   "ainaryumu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://ainaryumu.fanbox.cc/"
     }
   ],
   "ainose_rin": [
     {
-      "label": "ainoserin.blog.fc2.com",
+      "label": "FC2",
       "value": "http://ainoserin.blog.fc2.com/"
     }
   ],
   "airandou": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://airandou.fanbox.cc/"
     }
   ],
@@ -601,7 +607,7 @@
   ],
   "aizawa_hiroshi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://ylbb0sl8.fanbox.cc/"
     }
   ],
@@ -613,13 +619,13 @@
   ],
   "aizawa_yang": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://yang3.fanbox.cc/"
     }
   ],
   "ajino_hiraki": [
     {
-      "label": "tegaki.pipa.jp",
+      "label": "TegakiPipa",
       "value": "http://tegaki.pipa.jp/552470"
     }
   ],
@@ -649,7 +655,7 @@
   ],
   "akadama": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://redking.fanbox.cc/"
     }
   ],
@@ -661,7 +667,7 @@
   ],
   "akagi_asahito": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://a88ga27v.fanbox.cc/"
     }
   ],
@@ -697,7 +703,7 @@
   ],
   "akaishi_shiroishi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://akaishi.fanbox.cc/"
     }
   ],
@@ -709,13 +715,13 @@
   ],
   "akanagi_youto": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://wrp8xz0g.fanbox.cc/"
     }
   ],
   "akane_souichi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://kirikine.fanbox.cc/"
     }
   ],
@@ -733,7 +739,7 @@
   ],
   "akao": [
     {
-      "label": "instagram.com",
+      "label": "Instagram",
       "value": "https://www.instagram.com/fayyowork/"
     }
   ],
@@ -751,7 +757,7 @@
   ],
   "akasa_tanu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://akasatanu512.fanbox.cc/"
     }
   ],
@@ -769,7 +775,7 @@
   ],
   "akatsuki_katsuie": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://a-win2-house.fanbox.cc/"
     }
   ],
@@ -799,7 +805,7 @@
   ],
   "akazawa_red": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://akzw.fanbox.cc/"
     }
   ],
@@ -817,7 +823,7 @@
   ],
   "akechi_shizuku": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://c143z3ra.fanbox.cc/"
     }
   ],
@@ -859,7 +865,7 @@
   ],
   "akikusa_peperon": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://akikusapepe.fanbox.cc/"
     }
   ],
@@ -871,7 +877,7 @@
   ],
   "akinaie": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://akinaie.fanbox.cc/"
     }
   ],
@@ -895,7 +901,7 @@
   ],
   "akino_sora": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://akinosora.fanbox.cc/"
     }
   ],
@@ -943,13 +949,13 @@
   ],
   "akitsuki_karasu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://karasu-akitsuki.fanbox.cc/"
     }
   ],
   "akiya_akira": [
     {
-      "label": "nijie.info",
+      "label": "Nijie",
       "value": "https://nijie.info/members.php?id=20060"
     }
   ],
@@ -985,13 +991,13 @@
   ],
   "akoko.": [
     {
-      "label": "pyonpyororin2.blog.fc2.com",
+      "label": "FC2",
       "value": "http://pyonpyororin2.blog63.fc2.com/"
     }
   ],
   "akure_ekuto": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://ecter00.fanbox.cc/"
     }
   ],
@@ -1039,7 +1045,7 @@
   ],
   "almondman": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://almondnuts1117.fanbox.cc/"
     }
   ],
@@ -1057,7 +1063,7 @@
   ],
   "alpha_beta": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://prn770to.fanbox.cc/"
     }
   ],
@@ -1087,25 +1093,25 @@
   ],
   "amagasa_ikuta": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://manymanyrain.fanbox.cc/"
     }
   ],
   "amagi_michihito": [
     {
-      "label": "erogamescape.dyndns.org",
+      "label": "Erogamescape",
       "value": "https://erogamescape.dyndns.org/~ap2/ero/toukei_kaiseki/creater.php?creater=5068"
     }
   ],
   "amagi_shino": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://amagishino.fanbox.cc/"
     }
   ],
   "amakawa_akito": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://wd23dc21.fanbox.cc/"
     }
   ],
@@ -1129,7 +1135,7 @@
   ],
   "amama": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://vzagvhz5.fanbox.cc/"
     }
   ],
@@ -1147,31 +1153,31 @@
   ],
   "amamiya_mizuki": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://rainwaterserver.fanbox.cc/"
     }
   ],
   "amanagi_seiji": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://ins-mode.fanbox.cc/"
     }
   ],
   "amane": [
     {
-      "label": "amanett.blog.fc2.com",
+      "label": "FC2",
       "value": "http://amanett.blog42.fc2.com/"
     }
   ],
   "amane_hasuhito": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://hasu666amane.fanbox.cc/"
     }
   ],
   "amane_ruri": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://amaineiro.fanbox.cc/"
     }
   ],
@@ -1183,7 +1189,7 @@
   ],
   "amano_chiharu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://ahhbuc34.fanbox.cc/"
     }
   ],
@@ -1195,7 +1201,7 @@
   ],
   "amano_kazumi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://amanoissui.fanbox.cc/"
     }
   ],
@@ -1213,7 +1219,7 @@
   ],
   "amatake_akewo": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://amatake.fanbox.cc/"
     }
   ],
@@ -1231,7 +1237,7 @@
   ],
   "amayu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://ekl2x3m7.fanbox.cc/"
     }
   ],
@@ -1285,19 +1291,19 @@
   ],
   "amesawa_pane": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://manzanaringopai.fanbox.cc/"
     }
   ],
   "ameto_yuki": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://ametoyuki.fanbox.cc/"
     }
   ],
   "ameya": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://ameya530.fanbox.cc/"
     }
   ],
@@ -1333,7 +1339,7 @@
   ],
   "amou_mari": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://mariamo.fanbox.cc/"
     }
   ],
@@ -1345,7 +1351,7 @@
   ],
   "an_necoco": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://annecoco.fanbox.cc/"
     }
   ],
@@ -1369,19 +1375,19 @@
   ],
   "andojing": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://andojing.fanbox.cc/"
     }
   ],
   "andoryu": [
     {
-      "label": "instagram.com",
+      "label": "Instagram",
       "value": "https://www.instagram.com/Andychull/"
     }
   ],
   "andou_hiroyuki": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://nukonukopaizuri.fanbox.cc/"
     }
   ],
@@ -1417,7 +1423,7 @@
   ],
   "aningay": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://aningay.fanbox.cc/"
     }
   ],
@@ -1429,7 +1435,7 @@
   ],
   "ankoku_emu_shougun": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://ankokuemushougun.fanbox.cc/"
     }
   ],
@@ -1441,13 +1447,13 @@
   ],
   "anma": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/140395"
     }
   ],
   "anmitsu_sou": [
     {
-      "label": "erogamescape.dyndns.org",
+      "label": "Erogamescape",
       "value": "http://erogamescape.dyndns.org/~ap2/ero/toukei_kaiseki/creater.php?creater=984"
     }
   ],
@@ -1471,7 +1477,7 @@
   ],
   "anoshabu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/190158"
     }
   ],
@@ -1513,7 +1519,7 @@
   ],
   "ao_madousi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2080799"
     }
   ],
@@ -1525,7 +1531,7 @@
   ],
   "aobe_mahito": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3454012"
     }
   ],
@@ -1555,7 +1561,7 @@
   ],
   "aoi_manabu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4973"
     }
   ],
@@ -1585,7 +1591,7 @@
   ],
   "aoi_tiduru": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/9169975"
     }
   ],
@@ -1597,7 +1603,7 @@
   ],
   "aoin": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/537853"
     }
   ],
@@ -1609,7 +1615,7 @@
   ],
   "aoiro_ichigou": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/46198"
     }
   ],
@@ -1651,7 +1657,7 @@
   ],
   "aono_ribbon": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/215798"
     }
   ],
@@ -1675,7 +1681,7 @@
   ],
   "aotsu_umihito": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/244908"
     }
   ],
@@ -1687,7 +1693,7 @@
   ],
   "aoume_kaito": [
     {
-      "label": "itigomark.blog.fc2.com",
+      "label": "FC2",
       "value": "http://itigomark.blog.fc2.com/"
     }
   ],
@@ -1717,31 +1723,31 @@
   ],
   "apoidea": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/810446"
     }
   ],
   "aporon": [
     {
-      "label": "nijie.info",
+      "label": "Nijie",
       "value": "https://nijie.info/members.php?id=59182"
     }
   ],
   "apple13": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/5950276"
     }
   ],
   "appyalpie": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/27769733"
     }
   ],
   "aqu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/15849803"
     }
   ],
@@ -1783,7 +1789,7 @@
   ],
   "arai_satoshi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/70911"
     }
   ],
@@ -1825,13 +1831,13 @@
   ],
   "araki_kanao": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/80890"
     }
   ],
   "araki_kyouya": [
     {
-      "label": "mangaupdates.com",
+      "label": "MangaUpdates",
       "value": "https://www.mangaupdates.com/author/hy58o6w"
     }
   ],
@@ -1855,7 +1861,7 @@
   ],
   "aranmaru": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/367218"
     }
   ],
@@ -1921,13 +1927,13 @@
   ],
   "arekusa_mahone": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/476409"
     }
   ],
   "aria_pikapo": [
     {
-      "label": "baraag.net",
+      "label": "Baraag",
       "value": "https://baraag.net/web/accounts/109160069576008398"
     }
   ],
@@ -1951,7 +1957,7 @@
   ],
   "ariichi_kyuu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1453828"
     }
   ],
@@ -1981,13 +1987,13 @@
   ],
   "arima_kouichi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2512926"
     }
   ],
   "arima_natsubon": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/237789"
     }
   ],
@@ -1999,7 +2005,7 @@
   ],
   "arimura_daikon": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/15583732"
     }
   ],
@@ -2083,7 +2089,7 @@
   ],
   "arqa": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2689691"
     }
   ],
@@ -2095,7 +2101,7 @@
   ],
   "art_jam": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1264529"
     }
   ],
@@ -2137,7 +2143,7 @@
   ],
   "aruva": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/34944"
     }
   ],
@@ -2155,7 +2161,7 @@
   ],
   "asaga_aoi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/233417"
     }
   ],
@@ -2173,7 +2179,7 @@
   ],
   "asai_makoto": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/19517340"
     }
   ],
@@ -2209,7 +2215,7 @@
   ],
   "asami_yurumu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/8029230"
     }
   ],
@@ -2227,7 +2233,7 @@
   ],
   "asane_ken": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/28856947"
     }
   ],
@@ -2257,7 +2263,7 @@
   ],
   "asazuki_norito": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2119505"
     }
   ],
@@ -2281,13 +2287,13 @@
   ],
   "ashimoto_yoika": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4165481"
     }
   ],
   "ashina_mellow": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2098321"
     }
   ],
@@ -2299,7 +2305,7 @@
   ],
   "ashiomi_masato": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/47617"
     }
   ],
@@ -2317,7 +2323,7 @@
   ],
   "ashling": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3553366"
     }
   ],
@@ -2341,7 +2347,7 @@
   ],
   "asterisk": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/944707"
     }
   ],
@@ -2371,7 +2377,7 @@
   ],
   "asya": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/811920"
     }
   ],
@@ -2395,7 +2401,7 @@
   ],
   "atelier30": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/52819016"
     }
   ],
@@ -2479,7 +2485,7 @@
   ],
   "aweida": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/18295877"
     }
   ],
@@ -2497,7 +2503,7 @@
   ],
   "aya_shobon": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/144540"
     }
   ],
@@ -2509,25 +2515,25 @@
   ],
   "ayakase_chiyoko": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/302306"
     }
   ],
   "ayakase_riberi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/302306"
     }
   ],
   "ayakawa_riku": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1029432"
     }
   ],
   "ayama_yuiya": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/355185"
     }
   ],
@@ -2557,7 +2563,7 @@
   ],
   "ayanakitori": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/41547311"
     }
   ],
@@ -2569,19 +2575,19 @@
   ],
   "ayano_rena": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/31385"
     }
   ],
   "ayase_hazuki": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/6770"
     }
   ],
   "ayaswan": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1043550"
     }
   ],
@@ -2605,25 +2611,25 @@
   ],
   "ayukisa": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/244101"
     }
   ],
   "ayuma_sayu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2473967"
     }
   ],
   "ayumi_tooru": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/5745"
     }
   ],
   "ayuya": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/174739"
     }
   ],
@@ -2635,7 +2641,7 @@
   ],
   "azlight": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/17460136"
     }
   ],
@@ -2647,19 +2653,19 @@
   ],
   "azuki_kurenai": [
     {
-      "label": "mangaupdates.com",
+      "label": "MangaUpdates",
       "value": "http://www.mangaupdates.com/authors.html?id=1924"
     }
   ],
   "azuki_yui": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/14237574"
     }
   ],
   "azukiko": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4098752"
     }
   ],
@@ -2725,7 +2731,7 @@
   ],
   "baby_stick": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/45198184"
     }
   ],
@@ -2767,7 +2773,7 @@
   ],
   "bakko": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/962766"
     }
   ],
@@ -2797,7 +2803,7 @@
   ],
   "bang5410": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/21137928"
     }
   ],
@@ -2845,7 +2851,7 @@
   ],
   "beauty_hair": [
     {
-      "label": "mangaupdates.com",
+      "label": "MangaUpdates",
       "value": "http://www.mangaupdates.com/authors.html?id=9825"
     }
   ],
@@ -2869,13 +2875,13 @@
   ],
   "bee_doushi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/9347101"
     }
   ],
   "beijuu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/5062519"
     }
   ],
@@ -2905,13 +2911,13 @@
   ],
   "beni_shake": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/552160"
     }
   ],
   "benimura_karu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/551096"
     }
   ],
@@ -2953,19 +2959,19 @@
   ],
   "bifidus": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1446203"
     }
   ],
   "big_star": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/64997938"
     }
   ],
   "big.g": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/5522477"
     }
   ],
@@ -2995,13 +3001,13 @@
   ],
   "binto": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/8756779"
     }
   ],
   "bionics_nattou": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/11127783"
     }
   ],
@@ -3031,7 +3037,7 @@
   ],
   "bitibiti": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2468295"
     }
   ],
@@ -3049,7 +3055,7 @@
   ],
   "biwamaro": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/95619311"
     }
   ],
@@ -3073,7 +3079,7 @@
   ],
   "black_olive": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/148516"
     }
   ],
@@ -3091,7 +3097,7 @@
   ],
   "blackheart": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/416120"
     }
   ],
@@ -3103,7 +3109,7 @@
   ],
   "blanchat": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/13561315"
     }
   ],
@@ -3127,7 +3133,7 @@
   ],
   "blvefo9": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2484671"
     }
   ],
@@ -3139,7 +3145,7 @@
   ],
   "boca": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/8273818"
     }
   ],
@@ -3151,7 +3157,7 @@
   ],
   "bodoyama": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/58102537"
     }
   ],
@@ -3163,7 +3169,7 @@
   ],
   "bokuno": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/22315"
     }
   ],
@@ -3181,7 +3187,7 @@
   ],
   "bone_hiko": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/11511609"
     }
   ],
@@ -3199,7 +3205,7 @@
   ],
   "bonten": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4067971"
     }
   ],
@@ -3235,7 +3241,7 @@
   ],
   "borusiti": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/12251053"
     }
   ],
@@ -3277,7 +3283,7 @@
   ],
   "bouhatei": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/32358762"
     }
   ],
@@ -3289,13 +3295,13 @@
   ],
   "bouningen": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/30451219"
     }
   ],
   "bouto": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3373"
     }
   ],
@@ -3361,7 +3367,7 @@
   ],
   "bu-nong": [
     {
-      "label": "blog.naver.com",
+      "label": "Naver",
       "value": "https://blog.naver.com/xldkfmfks"
     }
   ],
@@ -3391,13 +3397,13 @@
   ],
   "buggycart": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1813353"
     }
   ],
   "bujidearu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3678533"
     }
   ],
@@ -3409,7 +3415,7 @@
   ],
   "bungaro": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/12314713"
     }
   ],
@@ -3445,7 +3451,7 @@
   ],
   "butcha-u": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1319954"
     }
   ],
@@ -3469,7 +3475,7 @@
   ],
   "buuta": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/652196"
     }
   ],
@@ -3493,7 +3499,7 @@
   ],
   "c-kyuu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/5294339"
     }
   ],
@@ -3505,13 +3511,13 @@
   ],
   "c.r": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/125757"
     }
   ],
   "c.u.wa": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1939795"
     }
   ],
@@ -3535,7 +3541,7 @@
   ],
   "calamitail": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/10183321"
     }
   ],
@@ -3547,7 +3553,7 @@
   ],
   "calipur": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3992667"
     }
   ],
@@ -3601,25 +3607,25 @@
   ],
   "carnelian": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/60274"
     }
   ],
   "caruta": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2392466"
     }
   ],
   "cccpo": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/667829"
     }
   ],
   "cementite": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3708792"
     }
   ],
@@ -3661,19 +3667,19 @@
   ],
   "chagama_teishoku": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/17095023"
     }
   ],
   "chaigidhiell": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1055208"
     }
   ],
   "cham22": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/16456081"
     }
   ],
@@ -3691,13 +3697,13 @@
   ],
   "chano_mina": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/8819017"
     }
   ],
   "chapa_kari": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1238753"
     }
   ],
@@ -3733,7 +3739,7 @@
   ],
   "chatsune": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/766937"
     }
   ],
@@ -3775,13 +3781,13 @@
   ],
   "chiba_tetsutarou": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/644131"
     }
   ],
   "chiba_toshirou": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1226571"
     }
   ],
@@ -3793,19 +3799,19 @@
   ],
   "chibinon": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/802482"
     }
   ],
   "chichiyasu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/9910504"
     }
   ],
   "chicke_iii": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/9752301"
     }
   ],
@@ -3817,7 +3823,7 @@
   ],
   "chieko": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/167156"
     }
   ],
@@ -3853,7 +3859,7 @@
   ],
   "chiji_komari": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/60240"
     }
   ],
@@ -3877,19 +3883,19 @@
   ],
   "chilt": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/906313"
     }
   ],
   "chimosaku": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/42317"
     }
   ],
   "chimple_hotter": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/21241471"
     }
   ],
@@ -3913,7 +3919,7 @@
   ],
   "chinzurena": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/130023"
     }
   ],
@@ -3937,7 +3943,7 @@
   ],
   "chirorian": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/5750"
     }
   ],
@@ -3949,13 +3955,13 @@
   ],
   "chise": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/13306288"
     }
   ],
   "chiune": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/16020562"
     }
   ],
@@ -3967,13 +3973,13 @@
   ],
   "chobipero": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/465635"
     }
   ],
   "chobonolly": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/53390419"
     }
   ],
@@ -4027,7 +4033,7 @@
   ],
   "chuchumi": [
     {
-      "label": "8318486996332.gumroad.com",
+      "label": "Gumroad",
       "value": "https://8318486996332.gumroad.com/"
     }
   ],
@@ -4087,7 +4093,7 @@
   ],
   "clearite": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/617959"
     }
   ],
@@ -4147,7 +4153,7 @@
   ],
   "cocoyama": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/47669"
     }
   ],
@@ -4165,19 +4171,19 @@
   ],
   "coin_rand": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/36501"
     }
   ],
   "comaku": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/10629698"
     }
   ],
   "comichi_pota": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/13352270"
     }
   ],
@@ -4231,7 +4237,7 @@
   ],
   "cpt.lovers": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/27091507"
     }
   ],
@@ -4255,13 +4261,13 @@
   ],
   "cresc-dol": [
     {
-      "label": "dic.nicovideo.jp",
+      "label": "Niconico",
       "value": "https://dic.nicovideo.jp/id/1924404"
     }
   ],
   "cromachina": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/5818586"
     }
   ],
@@ -4291,7 +4297,7 @@
   ],
   "cru": [
     {
-      "label": "baraag.net",
+      "label": "Baraag",
       "value": "https://baraag.net/web/accounts/108716125207501087"
     }
   ],
@@ -4363,7 +4369,7 @@
   ],
   "cuzukago": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/97513742"
     }
   ],
@@ -4375,7 +4381,7 @@
   ],
   "cyrano": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3558413"
     }
   ],
@@ -4399,7 +4405,7 @@
   ],
   "daiaru": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/711526"
     }
   ],
@@ -4411,13 +4417,13 @@
   ],
   "daigo": [
     {
-      "label": "dlsite.com",
+      "label": "DLsite",
       "value": "https://www.dlsite.com/maniax/circle/profile/=/maker_id/RG20393.html"
     }
   ],
   "daimong": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/58187811"
     }
   ],
@@ -4429,7 +4435,7 @@
   ],
   "daisaku": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4213608"
     }
   ],
@@ -4441,7 +4447,7 @@
   ],
   "dallim": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/93852117"
     }
   ],
@@ -4471,7 +4477,7 @@
   ],
   "danchino": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4078950"
     }
   ],
@@ -4483,13 +4489,13 @@
   ],
   "dangan": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2754"
     }
   ],
   "dangorou": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2704525"
     }
   ],
@@ -4537,13 +4543,13 @@
   ],
   "darkness_yuma": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1823775"
     }
   ],
   "darong": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/48972878"
     }
   ],
@@ -4561,13 +4567,13 @@
   ],
   "daruton": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1214950"
     }
   ],
   "date_naoto": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4621145"
     }
   ],
@@ -4579,7 +4585,7 @@
   ],
   "dawy": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/173866"
     }
   ],
@@ -4591,7 +4597,7 @@
   ],
   "ddangbi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/9639655"
     }
   ],
@@ -4609,7 +4615,7 @@
   ],
   "dead_people": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/44793"
     }
   ],
@@ -4621,13 +4627,13 @@
   ],
   "deadmimicked": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/8528904"
     }
   ],
   "deadnoodles": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4077126"
     }
   ],
@@ -4651,19 +4657,19 @@
   ],
   "decho": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/12265676"
     }
   ],
   "decko": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/18185"
     }
   ],
   "dedalo": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/37627796"
     }
   ],
@@ -4687,7 +4693,7 @@
   ],
   "dekochin_hammer": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1244747"
     }
   ],
@@ -4699,13 +4705,13 @@
   ],
   "demio": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3586778"
     }
   ],
   "den_meka": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1205556"
     }
   ],
@@ -4717,7 +4723,7 @@
   ],
   "denchi": [
     {
-      "label": "instagram.com",
+      "label": "Instagram",
       "value": "https://www.instagram.com/110sato/"
     }
   ],
@@ -4783,7 +4789,7 @@
   ],
   "diathorn": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/12318078"
     }
   ],
@@ -4819,7 +4825,7 @@
   ],
   "diru": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2596030"
     }
   ],
@@ -4837,7 +4843,7 @@
   ],
   "ditama_bow": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/29388636"
     }
   ],
@@ -4849,7 +4855,7 @@
   ],
   "diuda": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/72649813"
     }
   ],
@@ -4867,7 +4873,7 @@
   ],
   "dobato": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/5954"
     }
   ],
@@ -4885,7 +4891,7 @@
   ],
   "doctor_masube": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/11434630"
     }
   ],
@@ -4897,7 +4903,7 @@
   ],
   "dodemoiee": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/32836760"
     }
   ],
@@ -4909,7 +4915,7 @@
   ],
   "doi_sakazaki": [
     {
-      "label": "tenkla.blog.fc2.com",
+      "label": "FC2",
       "value": "http://tenkla.blog.fc2.com/"
     }
   ],
@@ -4933,7 +4939,7 @@
   ],
   "doko_tetora": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/120048"
     }
   ],
@@ -4945,7 +4951,7 @@
   ],
   "doku_denpa": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/676755"
     }
   ],
@@ -4969,13 +4975,13 @@
   ],
   "donaora889": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/45941796"
     }
   ],
   "donson": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/154927"
     }
   ],
@@ -5005,19 +5011,19 @@
   ],
   "doskoinpo": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2960920"
     }
   ],
   "dotsuco": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/16999149"
     }
   ],
   "double_deck": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/131502"
     }
   ],
@@ -5053,7 +5059,7 @@
   ],
   "dqnguy": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/55522245"
     }
   ],
@@ -5077,19 +5083,19 @@
   ],
   "drifter": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/12771796"
     }
   ],
   "drill_jill": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/332552"
     }
   ],
   "drops": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/6161604"
     }
   ],
@@ -5125,7 +5131,7 @@
   ],
   "dvdraw": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/6632944"
     }
   ],
@@ -5149,7 +5155,7 @@
   ],
   "e-note": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2173332"
     }
   ],
@@ -5161,7 +5167,7 @@
   ],
   "eba": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/324356"
     }
   ],
@@ -5233,19 +5239,19 @@
   ],
   "edge_garam": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/64660371"
     }
   ],
   "edo_shigezu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/388458"
     }
   ],
   "egaki_numa": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/59099240"
     }
   ],
@@ -5263,13 +5269,13 @@
   ],
   "eggutarto": [
     {
-      "label": "instagram.com",
+      "label": "Instagram",
       "value": "https://www.instagram.com/uid/4050731001"
     }
   ],
   "eguchi_jaws": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/150928"
     }
   ],
@@ -5281,19 +5287,19 @@
   ],
   "ehohin": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/6652224"
     }
   ],
   "eigetu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2247"
     }
   ],
   "eightman": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/174449"
     }
   ],
@@ -5305,7 +5311,7 @@
   ],
   "eikichi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2815847"
     }
   ],
@@ -5341,13 +5347,13 @@
   ],
   "eixin": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/10338"
     }
   ],
   "eizan": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1830438"
     }
   ],
@@ -5389,7 +5395,7 @@
   ],
   "elsi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/35061767"
     }
   ],
@@ -5413,7 +5419,7 @@
   ],
   "emons": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3236213"
     }
   ],
@@ -5449,7 +5455,7 @@
   ],
   "endou_okito": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/938544"
     }
   ],
@@ -5467,13 +5473,13 @@
   ],
   "enikuma": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/22373205"
     }
   ],
   "enma": [
     {
-      "label": "dmm.co.jp",
+      "label": "DMM",
       "value": "https://www.dmm.co.jp/dc/doujin/-/list/=/article=maker/id=213539"
     }
   ],
@@ -5485,13 +5491,13 @@
   ],
   "ennorei": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/34873"
     }
   ],
   "eno_yukimi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/9998"
     }
   ],
@@ -5509,7 +5515,7 @@
   ],
   "enomoto_hidehira": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1117490"
     }
   ],
@@ -5527,13 +5533,13 @@
   ],
   "enoughmin": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/48460"
     }
   ],
   "enrike": [
     {
-      "label": "instagram.com",
+      "label": "Instagram",
       "value": "https://www.instagram.com/kikillokikillo/"
     }
   ],
@@ -5551,7 +5557,7 @@
   ],
   "epuko": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3945401"
     }
   ],
@@ -5563,13 +5569,13 @@
   ],
   "erect_sawaru": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/374953"
     }
   ],
   "ereere": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/12474236"
     }
   ],
@@ -5593,7 +5599,7 @@
   ],
   "eromame": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/46983"
     }
   ],
@@ -5605,7 +5611,7 @@
   ],
   "erutasuku": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/188239"
     }
   ],
@@ -5635,7 +5641,7 @@
   ],
   "ettone": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1447473"
     }
   ],
@@ -5659,13 +5665,13 @@
   ],
   "evs": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/12818862"
     }
   ],
   "exabyte": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/31854641"
     }
   ],
@@ -5689,7 +5695,7 @@
   ],
   "facominn": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3737865"
     }
   ],
@@ -5719,7 +5725,7 @@
   ],
   "fataaa": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/29647900"
     }
   ],
@@ -5755,7 +5761,7 @@
   ],
   "firstw1": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/5024742"
     }
   ],
@@ -5767,7 +5773,7 @@
   ],
   "flanvia": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3267576"
     }
   ],
@@ -5779,7 +5785,7 @@
   ],
   "flasso": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1695367"
     }
   ],
@@ -5797,7 +5803,7 @@
   ],
   "fon": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/36002084"
     }
   ],
@@ -5839,13 +5845,13 @@
   ],
   "frunbell": [
     {
-      "label": "ec.toranoana.jp",
+      "label": "Toranoana",
       "value": "https://ec.toranoana.jp/tora_r/ec/cot/circle/2UPA0B6P8V7LdD6Td687/all/"
     }
   ],
   "fu-ta": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2744600"
     }
   ],
@@ -5863,7 +5869,7 @@
   ],
   "fuetakishi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/427676"
     }
   ],
@@ -5899,7 +5905,7 @@
   ],
   "fujima_takuya": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/22526"
     }
   ],
@@ -5911,7 +5917,7 @@
   ],
   "fujimon": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/65430"
     }
   ],
@@ -5923,13 +5929,13 @@
   ],
   "fujimoto_hideaki": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/769978"
     }
   ],
   "fujimura_marina": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/43753"
     }
   ],
@@ -5965,7 +5971,7 @@
   ],
   "fujisaki_makoto": [
     {
-      "label": "mangaupdates.com",
+      "label": "MangaUpdates",
       "value": "http://www.mangaupdates.com/authors.html?id=2812"
     }
   ],
@@ -5995,13 +6001,13 @@
   ],
   "fujiyama_takashi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/142307"
     }
   ],
   "fujizarashi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/64025899"
     }
   ],
@@ -6013,19 +6019,19 @@
   ],
   "fukami_otoha": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/166999"
     }
   ],
   "fukemachi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/129822"
     }
   ],
   "fukiko": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/5893974"
     }
   ],
@@ -6043,19 +6049,19 @@
   ],
   "fukuhara_takaya": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/10701441"
     }
   ],
   "fukuinu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/37574662"
     }
   ],
   "fukumaaya": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/12859"
     }
   ],
@@ -6073,25 +6079,25 @@
   ],
   "fukurokouji": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/26712"
     }
   ],
   "fukuroumori": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/132878"
     }
   ],
   "fukuyama_naoto": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1526412"
     }
   ],
   "fumi_miyabi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1383128"
     }
   ],
@@ -6103,13 +6109,13 @@
   ],
   "fumihiro": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/418850"
     }
   ],
   "fumika": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/188222"
     }
   ],
@@ -6121,13 +6127,13 @@
   ],
   "fumizuki_misoka": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/166078"
     }
   ],
   "fummy": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/197012"
     }
   ],
@@ -6139,13 +6145,13 @@
   ],
   "funakura": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/110400"
     }
   ],
   "funamushi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3436958"
     }
   ],
@@ -6163,7 +6169,7 @@
   ],
   "furari": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/5527"
     }
   ],
@@ -6199,7 +6205,7 @@
   ],
   "furyouhin": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3808736"
     }
   ],
@@ -6241,7 +6247,7 @@
   ],
   "futagomu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/65418673"
     }
   ],
@@ -6265,7 +6271,7 @@
   ],
   "futatsuki_hisame": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/17131"
     }
   ],
@@ -6295,7 +6301,7 @@
   ],
   "fuusen_club": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/527647"
     }
   ],
@@ -6319,7 +6325,7 @@
   ],
   "fuyube_rion": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/32726"
     }
   ],
@@ -6355,7 +6361,7 @@
   ],
   "gabyonuno": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/6870853"
     }
   ],
@@ -6373,7 +6379,7 @@
   ],
   "gairou": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1339827"
     }
   ],
@@ -6385,13 +6391,13 @@
   ],
   "gaku": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/55559514"
     }
   ],
   "gall": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/151689"
     }
   ],
@@ -6421,19 +6427,19 @@
   ],
   "gar": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/6654506"
     }
   ],
   "gara_ayuri": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/6794656"
     }
   ],
   "garagara_tarou": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/42456131"
     }
   ],
@@ -6445,7 +6451,7 @@
   ],
   "garou_damenade": [
     {
-      "label": "dmm.co.jp",
+      "label": "DMM",
       "value": "https://www.dmm.co.jp/dc/doujin/-/list/=/article=maker/id=74521"
     }
   ],
@@ -6463,7 +6469,7 @@
   ],
   "gattiii": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/9470189"
     }
   ],
@@ -6487,25 +6493,25 @@
   ],
   "gelatomusume": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/72240703"
     }
   ],
   "gelmaga": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4665812"
     }
   ],
   "gemba": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/9965434"
     }
   ],
   "gemuo": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/280180"
     }
   ],
@@ -6565,7 +6571,7 @@
   ],
   "gero": [
     {
-      "label": "hitoridenka.web.fc2.com",
+      "label": "FC2",
       "value": "http://hitoridenka.web.fc2.com/"
     }
   ],
@@ -6583,7 +6589,7 @@
   ],
   "getsuyou_yasumi.": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/598979"
     }
   ],
@@ -6607,13 +6613,13 @@
   ],
   "gibuchoko": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/745461"
     }
   ],
   "gigokku": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/68337"
     }
   ],
@@ -6625,7 +6631,7 @@
   ],
   "ginga_azuma": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1249904"
     }
   ],
@@ -6667,13 +6673,13 @@
   ],
   "gisyo": [
     {
-      "label": "dlsite.com",
+      "label": "DLsite",
       "value": "https://www.dlsite.com/maniax/circle/profile/=/maker_id/RG08937.html"
     }
   ],
   "giuniu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/265292"
     }
   ],
@@ -6691,13 +6697,13 @@
   ],
   "go-it": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2753847"
     }
   ],
   "goban": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4779"
     }
   ],
@@ -6733,25 +6739,25 @@
   ],
   "gogocherry": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/527684"
     }
   ],
   "gokubuto_mayuge": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/8019"
     }
   ],
   "golden": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/8607687"
     }
   ],
   "goma_gorilla": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/12546111"
     }
   ],
@@ -6763,7 +6769,7 @@
   ],
   "gomashi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1724011"
     }
   ],
@@ -6799,7 +6805,7 @@
   ],
   "gonza": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3318218"
     }
   ],
@@ -6811,13 +6817,13 @@
   ],
   "gorani": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/70665145"
     }
   ],
   "gorgeous_mushroom": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/11187954"
     }
   ],
@@ -6871,7 +6877,7 @@
   ],
   "gotoh_juan": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/180510"
     }
   ],
@@ -6913,19 +6919,19 @@
   ],
   "grand": [
     {
-      "label": "deep.fc2.com",
+      "label": "FC2",
       "value": "http://www.deep.fc2.com/"
     }
   ],
   "great_mosu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/6271779"
     }
   ],
   "greatm8": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/26008127"
     }
   ],
@@ -6943,7 +6949,7 @@
   ],
   "grifon": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1289225"
     }
   ],
@@ -6955,7 +6961,7 @@
   ],
   "grimgrim": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/23197974"
     }
   ],
@@ -6991,7 +6997,7 @@
   ],
   "gura_nyuutou": [
     {
-      "label": "mujin-ti.net",
+      "label": "MujinTi",
       "value": "http://www.mujin-ti.net/guranyuutou.htm"
     }
   ],
@@ -7051,7 +7057,7 @@
   ],
   "haba_hirokazu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/8252"
     }
   ],
@@ -7081,7 +7087,7 @@
   ],
   "hachimiya": [
     {
-      "label": "tegaki.pipa.jp",
+      "label": "TegakiPipa",
       "value": "http://tegaki.pipa.jp/569581/"
     }
   ],
@@ -7105,7 +7111,7 @@
   ],
   "hadumi_rio": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/583192"
     }
   ],
@@ -7117,7 +7123,7 @@
   ],
   "hagakure_kurage": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/11514404"
     }
   ],
@@ -7141,7 +7147,7 @@
   ],
   "hagiwara_yutarou": [
     {
-      "label": "dlsite.com",
+      "label": "DLsite",
       "value": "https://www.dlsite.com/books/author/=/author_id/AJ001927"
     }
   ],
@@ -7153,7 +7159,7 @@
   ],
   "hagiyoshi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3697778"
     }
   ],
@@ -7225,7 +7231,7 @@
   ],
   "hajika": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3000591"
     }
   ],
@@ -7261,13 +7267,13 @@
   ],
   "hako_roku": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/7331523"
     }
   ],
   "hakojima_akane": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/430052"
     }
   ],
@@ -7345,7 +7351,7 @@
   ],
   "hamao": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/11036"
     }
   ],
@@ -7363,7 +7369,7 @@
   ],
   "hame_dragon": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/43564119"
     }
   ],
@@ -7375,13 +7381,13 @@
   ],
   "hammer": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/34904"
     }
   ],
   "hamon_ai": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/255391"
     }
   ],
@@ -7417,7 +7423,7 @@
   ],
   "hanamiya_natsuka": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4218982"
     }
   ],
@@ -7513,7 +7519,7 @@
   ],
   "hansharu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/6207"
     }
   ],
@@ -7531,13 +7537,13 @@
   ],
   "happamushi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/6315605"
     }
   ],
   "happening18": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/86107566"
     }
   ],
@@ -7549,7 +7555,7 @@
   ],
   "harada": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/370905"
     }
   ],
@@ -7567,7 +7573,7 @@
   ],
   "harasaki": [
     {
-      "label": "instagram.com",
+      "label": "Instagram",
       "value": "https://www.instagram.com/harasaki09/"
     }
   ],
@@ -7585,13 +7591,13 @@
   ],
   "haregama_shiina": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/20106541"
     }
   ],
   "harenochiame": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/24601"
     }
   ],
@@ -7609,7 +7615,7 @@
   ],
   "harino646": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1569160"
     }
   ],
@@ -7621,7 +7627,7 @@
   ],
   "haruharu": [
     {
-      "label": "sketch.pixiv.net",
+      "label": "Pixiv",
       "value": "https://sketch.pixiv.net/@ogayan50"
     }
   ],
@@ -7669,7 +7675,7 @@
   ],
   "harurun": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/58022"
     }
   ],
@@ -7711,13 +7717,13 @@
   ],
   "hase_tsubura": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/435583"
     }
   ],
   "hasegawa_keita": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/135864"
     }
   ],
@@ -7729,7 +7735,7 @@
   ],
   "hashiguchi_takashi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/29352153"
     }
   ],
@@ -7759,7 +7765,7 @@
   ],
   "hasune": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3494650"
     }
   ],
@@ -7771,37 +7777,37 @@
   ],
   "hatimoto": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/188666"
     }
   ],
   "hatoba_akane": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/44674969"
     }
   ],
   "hatomugi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/96581"
     }
   ],
   "hatomugi_munmun": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/11367"
     }
   ],
   "hatori_piyoko": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1863425"
     }
   ],
   "hatoya_mameshichi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/478854"
     }
   ],
@@ -7813,7 +7819,7 @@
   ],
   "hattori_masaki": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/49413"
     }
   ],
@@ -7825,19 +7831,19 @@
   ],
   "haun": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/380194"
     }
   ],
   "hawa": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/129484"
     }
   ],
   "hayakawa_akari": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3792353"
     }
   ],
@@ -7849,7 +7855,7 @@
   ],
   "hayake": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/269183"
     }
   ],
@@ -7879,13 +7885,13 @@
   ],
   "hazardous": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/45591862"
     }
   ],
   "hazuki_hikaru": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/11833485"
     }
   ],
@@ -7915,7 +7921,7 @@
   ],
   "hechimabushi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/14589352"
     }
   ],
@@ -7939,7 +7945,7 @@
   ],
   "heitai_gensui": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1182456"
     }
   ],
@@ -7951,7 +7957,7 @@
   ],
   "hekicha": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/25311"
     }
   ],
@@ -7963,7 +7969,7 @@
   ],
   "hemachi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/35664357"
     }
   ],
@@ -7993,13 +7999,13 @@
   ],
   "hentaib": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1092867"
     }
   ],
   "hentaix": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/6045039"
     }
   ],
@@ -8017,7 +8023,7 @@
   ],
   "herio": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/341823"
     }
   ],
@@ -8029,7 +8035,7 @@
   ],
   "herokey": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/433229"
     }
   ],
@@ -8053,7 +8059,7 @@
   ],
   "hg_chagawa": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/277615"
     }
   ],
@@ -8065,25 +8071,25 @@
   ],
   "hida_tatsuo": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/215012"
     }
   ],
   "hidaka_ryou": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/276337"
     }
   ],
   "hidaka_toworu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/152002"
     }
   ],
   "hidari_kagetora": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/6199"
     }
   ],
@@ -8101,7 +8107,7 @@
   ],
   "hidemaru": [
     {
-      "label": "myanimelist.net",
+      "label": "MyAnimeList",
       "value": "https://myanimelist.net/people/3317"
     }
   ],
@@ -8137,7 +8143,7 @@
   ],
   "higata_akatsuki": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/51076"
     }
   ],
@@ -8155,7 +8161,7 @@
   ],
   "higuchi_isami": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2138642"
     }
   ],
@@ -8197,25 +8203,25 @@
   ],
   "hijikawa": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2153142"
     }
   ],
   "hijiki_senpai": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2279137"
     }
   ],
   "hijiri_tsukasa": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/28737"
     }
   ],
   "hikabe_sakuho": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/15168"
     }
   ],
@@ -8239,7 +8245,7 @@
   ],
   "hikka": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/97174"
     }
   ],
@@ -8281,7 +8287,7 @@
   ],
   "himeno_komomo": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/836500"
     }
   ],
@@ -8323,7 +8329,7 @@
   ],
   "hinahara_emi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3945401"
     }
   ],
@@ -8389,7 +8395,7 @@
   ],
   "hinoshita_akame": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/5306274"
     }
   ],
@@ -8407,7 +8413,7 @@
   ],
   "hira_taira": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1231956"
     }
   ],
@@ -8437,7 +8443,7 @@
   ],
   "hiramaru_akira": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/58753531"
     }
   ],
@@ -8461,7 +8467,7 @@
   ],
   "hirano_kawajuu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/40920"
     }
   ],
@@ -8485,7 +8491,7 @@
   ],
   "hirayan": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/6477152"
     }
   ],
@@ -8521,7 +8527,7 @@
   ],
   "hiro.": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/14380893"
     }
   ],
@@ -8563,7 +8569,7 @@
   ],
   "hiroshiki": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/8778368"
     }
   ],
@@ -8587,13 +8593,13 @@
   ],
   "hiru_okita": [
     {
-      "label": "dmm.co.jp",
+      "label": "DMM",
       "value": "http://www.dmm.co.jp/dc/book/-/list/=/article=author/id=240817/media=comic"
     }
   ],
   "hirunagi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/19585163"
     }
   ],
@@ -8605,7 +8611,7 @@
   ],
   "hiryouman": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/29172231"
     }
   ],
@@ -8617,7 +8623,7 @@
   ],
   "hisahiko": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/465458"
     }
   ],
@@ -8629,7 +8635,7 @@
   ],
   "hisama_kumako": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/209679"
     }
   ],
@@ -8641,7 +8647,7 @@
   ],
   "hisano": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/17422240"
     }
   ],
@@ -8653,7 +8659,7 @@
   ],
   "hisayakiq": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/51241"
     }
   ],
@@ -8725,13 +8731,13 @@
   ],
   "hitsuji_hako": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1163637"
     }
   ],
   "hitsuji_takako": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1150581"
     }
   ],
@@ -8749,7 +8755,7 @@
   ],
   "hiura_r": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/5772729"
     }
   ],
@@ -8791,25 +8797,25 @@
   ],
   "hizaka": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/99472"
     }
   ],
   "hizaki_ryuuta": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/5508"
     }
   ],
   "hizuki_akira": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/68900"
     }
   ],
   "hmongt": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/894200"
     }
   ],
@@ -8821,7 +8827,7 @@
   ],
   "homing": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/300643"
     }
   ],
@@ -8839,7 +8845,7 @@
   ],
   "homura_subaru": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4520"
     }
   ],
@@ -8869,7 +8875,7 @@
   ],
   "hoono_yurumu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/573402"
     }
   ],
@@ -8911,7 +8917,7 @@
   ],
   "horitomo": [
     {
-      "label": "tentaclen.blog.fc2.com",
+      "label": "FC2",
       "value": "http://tentaclen.blog.fc2.com/"
     }
   ],
@@ -8935,7 +8941,7 @@
   ],
   "horori": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/84665652"
     }
   ],
@@ -8959,7 +8965,7 @@
   ],
   "hoshii_nasake": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/54419549"
     }
   ],
@@ -8995,13 +9001,13 @@
   ],
   "hosizora_mikoto": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/458455"
     }
   ],
   "hota.": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3309"
     }
   ],
@@ -9025,7 +9031,7 @@
   ],
   "hotsaurus": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4264289"
     }
   ],
@@ -9055,13 +9061,13 @@
   ],
   "hozmi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/56415"
     }
   ],
   "hozumi_kenji": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/707597"
     }
   ],
@@ -9073,13 +9079,13 @@
   ],
   "hr555": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3266935"
     }
   ],
   "hroz": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4748"
     }
   ],
@@ -9139,13 +9145,13 @@
   ],
   "huracan": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1154867"
     }
   ],
   "huuten": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3190160"
     }
   ],
@@ -9157,7 +9163,7 @@
   ],
   "hxxg": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1193139"
     }
   ],
@@ -9181,13 +9187,13 @@
   ],
   "hyocorou": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/21637188"
     }
   ],
   "hyouga.": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4895843"
     }
   ],
@@ -9223,13 +9229,13 @@
   ],
   "ia1010": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/8200813"
     }
   ],
   "iapoc": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/6094855"
     }
   ],
@@ -9253,25 +9259,25 @@
   ],
   "ibukichi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/14871"
     }
   ],
   "ice_keki": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/10715960"
     }
   ],
   "ice_reizou": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/7843004"
     }
   ],
   "ichifuji_nitaka": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/11622"
     }
   ],
@@ -9283,13 +9289,13 @@
   ],
   "ichigo_mark": [
     {
-      "label": "itigomark.blog.fc2.com",
+      "label": "FC2",
       "value": "http://itigomark.blog.fc2.com/"
     }
   ],
   "ichihara_hikari_z": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/7344"
     }
   ],
@@ -9343,7 +9349,7 @@
   ],
   "ichio": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/18121"
     }
   ],
@@ -9391,7 +9397,7 @@
   ],
   "ifpark": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/15002"
     }
   ],
@@ -9421,7 +9427,7 @@
   ],
   "igedoaha": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4061186"
     }
   ],
@@ -9433,7 +9439,7 @@
   ],
   "igumox": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/55128"
     }
   ],
@@ -9451,7 +9457,7 @@
   ],
   "ikanomaru": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/262700"
     }
   ],
@@ -9463,7 +9469,7 @@
   ],
   "ikeda_usao": [
     {
-      "label": "mangaupdates.com",
+      "label": "MangaUpdates",
       "value": "https://www.mangaupdates.com/author/szv01yl"
     }
   ],
@@ -9475,7 +9481,7 @@
   ],
   "ikelag": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/10246839"
     }
   ],
@@ -9493,7 +9499,7 @@
   ],
   "iketatsu_shizuru": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2977887"
     }
   ],
@@ -9559,7 +9565,7 @@
   ],
   "ikuta_takanon": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/8530"
     }
   ],
@@ -9571,7 +9577,7 @@
   ],
   "ikuya_daikokudou": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/464765"
     }
   ],
@@ -9583,7 +9589,7 @@
   ],
   "imagawa_akira": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/996028"
     }
   ],
@@ -9595,13 +9601,13 @@
   ],
   "imanaka_koutarou": [
     {
-      "label": "erogamescape.dyndns.org",
+      "label": "Erogamescape",
       "value": "http://erogamescape.dyndns.org/~ap2/ero/toukei_kaiseki/creater.php?creater=3274"
     }
   ],
   "imazon": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/10456344"
     }
   ],
@@ -9619,19 +9625,19 @@
   ],
   "imozuka_panikuru": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/28352488"
     }
   ],
   "inaba_fuyuki": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/10304"
     }
   ],
   "inagita": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/25022620"
     }
   ],
@@ -9661,7 +9667,7 @@
   ],
   "inari_kinzou": [
     {
-      "label": "mangaupdates.com",
+      "label": "MangaUpdates",
       "value": "https://www.mangaupdates.com/author/mux3o8b"
     }
   ],
@@ -9673,7 +9679,7 @@
   ],
   "inato_serere": [
     {
-      "label": "instagram.com",
+      "label": "Instagram",
       "value": "https://www.instagram.com/inato_serere/"
     }
   ],
@@ -9709,7 +9715,7 @@
   ],
   "indozou": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/390501"
     }
   ],
@@ -9751,7 +9757,7 @@
   ],
   "inono": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/156714"
     }
   ],
@@ -9769,13 +9775,13 @@
   ],
   "inoue_mitan": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/518026"
     }
   ],
   "inoue_takuya": [
     {
-      "label": "erogamescape.dyndns.org",
+      "label": "Erogamescape",
       "value": "http://erogamescape.dyndns.org/~ap2/ero/toukei_kaiseki/creater.php?creater=1151"
     }
   ],
@@ -9787,13 +9793,13 @@
   ],
   "interstellar": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4912"
     }
   ],
   "inuboshi": [
     {
-      "label": "dlsite.com",
+      "label": "DLsite",
       "value": "https://www.dlsite.com/books/author/=/author_id/AJ002493"
     }
   ],
@@ -9811,7 +9817,7 @@
   ],
   "inui_sekihiko": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/495400"
     }
   ],
@@ -9823,7 +9829,7 @@
   ],
   "inukai_mofu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/34673258"
     }
   ],
@@ -9835,13 +9841,13 @@
   ],
   "inumatori": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3205404"
     }
   ],
   "inumimi_moeta": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/60135"
     }
   ],
@@ -9871,25 +9877,25 @@
   ],
   "inyucchi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/915777"
     }
   ],
   "ippachi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1918050"
     }
   ],
   "ippo": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/24489"
     }
   ],
   "ippongui": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/177996"
     }
   ],
@@ -9949,7 +9955,7 @@
   ],
   "isegawa_yasutaka": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/274594"
     }
   ],
@@ -10009,7 +10015,7 @@
   ],
   "ishikkoro": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/46141"
     }
   ],
@@ -10045,7 +10051,7 @@
   ],
   "isorashi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/89823303"
     }
   ],
@@ -10069,13 +10075,13 @@
   ],
   "isuwie": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/29610865"
     }
   ],
   "isya": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/423024"
     }
   ],
@@ -10087,7 +10093,7 @@
   ],
   "itano_chiharu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/34234850"
     }
   ],
@@ -10111,13 +10117,13 @@
   ],
   "itose_ikuto": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/109010"
     }
   ],
   "itou_ei": [
     {
-      "label": "dlsite.com",
+      "label": "DLsite",
       "value": "https://www.dlsite.com/books/author/=/author_id/AJ001689"
     }
   ],
@@ -10153,7 +10159,7 @@
   ],
   "itsutsuse": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/8415301"
     }
   ],
@@ -10189,7 +10195,7 @@
   ],
   "iwasaki_takashi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/342347"
     }
   ],
@@ -10225,7 +10231,7 @@
   ],
   "izumi_kyouta": [
     {
-      "label": "mujin-ti.net",
+      "label": "MujinTi",
       "value": "http://www.mujin-ti.net/izumikyouta.htm"
     }
   ],
@@ -10237,13 +10243,13 @@
   ],
   "izumi_makoto": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/43105"
     }
   ],
   "izumi_masashi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/314867"
     }
   ],
@@ -10267,13 +10273,13 @@
   ],
   "izumi_yuhina": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1852636"
     }
   ],
   "izumi_yukiru": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/144720"
     }
   ],
@@ -10285,7 +10291,7 @@
   ],
   "izumiya_otoha": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/974405"
     }
   ],
@@ -10303,7 +10309,7 @@
   ],
   "j-kisarazu": [
     {
-      "label": "deviantart.com",
+      "label": "DeviantArt",
       "value": "https://www.deviantart.com/j-kisarazu"
     }
   ],
@@ -10321,7 +10327,7 @@
   ],
   "jackasss": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/8487"
     }
   ],
@@ -10357,7 +10363,7 @@
   ],
   "jajala": [
     {
-      "label": "areaoutlaw.h.fc2.com",
+      "label": "FC2",
       "value": "http://areaoutlaw.h.fc2.com/"
     }
   ],
@@ -10369,7 +10375,7 @@
   ],
   "jakelian": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/7262570"
     }
   ],
@@ -10399,7 +10405,7 @@
   ],
   "james_hotate": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/11651"
     }
   ],
@@ -10417,13 +10423,13 @@
   ],
   "jema": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/232274"
     }
   ],
   "jet_yowatari": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/356431"
     }
   ],
@@ -10447,7 +10453,7 @@
   ],
   "jingai_modoki": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/5362"
     }
   ],
@@ -10471,7 +10477,7 @@
   ],
   "jinmu_hirohito": [
     {
-      "label": "melonbooks.co.jp",
+      "label": "Melonbooks",
       "value": "https://www.melonbooks.co.jp/circle/index.php?circle_id=99001262"
     }
   ],
@@ -10513,7 +10519,7 @@
   ],
   "jiyu2": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/12403"
     }
   ],
@@ -10525,7 +10531,7 @@
   ],
   "jjune": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2662142"
     }
   ],
@@ -10561,7 +10567,7 @@
   ],
   "jorin": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/764758"
     }
   ],
@@ -10573,7 +10579,7 @@
   ],
   "jouyama_yui": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/109402"
     }
   ],
@@ -10621,7 +10627,7 @@
   ],
   "juna": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/66655"
     }
   ],
@@ -10633,13 +10639,13 @@
   ],
   "juubaori_mashumaro": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/131795"
     }
   ],
   "juurouta": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/740471"
     }
   ],
@@ -10669,7 +10675,7 @@
   ],
   "jyuuji": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/6758"
     }
   ],
@@ -10711,7 +10717,7 @@
   ],
   "kabotyausagi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1175726"
     }
   ],
@@ -10735,7 +10741,7 @@
   ],
   "kaduki": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1154748"
     }
   ],
@@ -10747,7 +10753,7 @@
   ],
   "kaenuco": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/6993449"
     }
   ],
@@ -10759,7 +10765,7 @@
   ],
   "kagami_uekusa": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/633563"
     }
   ],
@@ -10771,7 +10777,7 @@
   ],
   "kagawa_tomonobu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/76687474"
     }
   ],
@@ -10789,7 +10795,7 @@
   ],
   "kagehito": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2499"
     }
   ],
@@ -10807,7 +10813,7 @@
   ],
   "kagesaki_yuna": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/627145"
     }
   ],
@@ -10873,7 +10879,7 @@
   ],
   "kagura_yutakamaru": [
     {
-      "label": "mangaupdates.com",
+      "label": "MangaUpdates",
       "value": "http://www.mangaupdates.com/authors.html?id=5944"
     }
   ],
@@ -10927,7 +10933,7 @@
   ],
   "kaiga": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/117753"
     }
   ],
@@ -10945,7 +10951,7 @@
   ],
   "kaiou": [
     {
-      "label": "coolier.net",
+      "label": "Coolier",
       "value": "https://coolier.net/oekaki_02/070.htm"
     }
   ],
@@ -10987,7 +10993,7 @@
   ],
   "kajiking": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2313835"
     }
   ],
@@ -10999,13 +11005,13 @@
   ],
   "kajiura": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/24003"
     }
   ],
   "kakenari": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/15038344"
     }
   ],
@@ -11023,7 +11029,7 @@
   ],
   "kakino_nashiko": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/22319362"
     }
   ],
@@ -11035,7 +11041,7 @@
   ],
   "kakitsubata_kanae": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/5679"
     }
   ],
@@ -11059,7 +11065,7 @@
   ],
   "kakuntekun": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4432303"
     }
   ],
@@ -11149,19 +11155,19 @@
   ],
   "kamino_ryu-ya": [
     {
-      "label": "ec.toranoana.jp",
+      "label": "Toranoana",
       "value": "https://ec.toranoana.jp/tora_r/ec/cot/circle/LUPAFA6P8U73d16Qd687/all"
     }
   ],
   "kaminosaki": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/973130"
     }
   ],
   "kamirenjaku_sanpei": [
     {
-      "label": "melonbooks.co.jp",
+      "label": "Melonbooks",
       "value": "https://www.melonbooks.co.jp/circle/index.php?circle_id=36576"
     }
   ],
@@ -11173,7 +11179,7 @@
   ],
   "kamisyakujii_yubeshi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/283710"
     }
   ],
@@ -11185,7 +11191,7 @@
   ],
   "kamitake": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1646523"
     }
   ],
@@ -11197,7 +11203,7 @@
   ],
   "kamitsuki_manmaru": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/418337"
     }
   ],
@@ -11239,13 +11245,13 @@
   ],
   "kamotama": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/76456"
     }
   ],
   "kamushi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1573277"
     }
   ],
@@ -11257,7 +11263,7 @@
   ],
   "kaname_aomame": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/5677755"
     }
   ],
@@ -11293,7 +11299,7 @@
   ],
   "kandagawa_gufu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2292"
     }
   ],
@@ -11317,13 +11323,13 @@
   ],
   "kaneko_naoya": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3265379"
     }
   ],
   "kaneko_toshiaki": [
     {
-      "label": "melonbooks.co.jp",
+      "label": "Melonbooks",
       "value": "https://www.melonbooks.co.jp/search/search.php?name=%E3%81%8B%E3%81%AD%E3%81%93%E3%81%A8%E3%81%97%E3%81%82%E3%81%8D&text_type=author"
     }
   ],
@@ -11359,7 +11365,7 @@
   ],
   "kaniguruma": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/56072812"
     }
   ],
@@ -11377,7 +11383,7 @@
   ],
   "kanimura_ebio": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/22064721"
     }
   ],
@@ -11395,7 +11401,7 @@
   ],
   "kanju": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/10552397"
     }
   ],
@@ -11437,13 +11443,13 @@
   ],
   "kanno_takanori": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/297721"
     }
   ],
   "kano": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/44458"
     }
   ],
@@ -11467,7 +11473,7 @@
   ],
   "kantamaki_yui": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/70723"
     }
   ],
@@ -11485,19 +11491,19 @@
   ],
   "kantori": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/640546"
     }
   ],
   "kanzaki": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/12107"
     }
   ],
   "kanzarin": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/31133701"
     }
   ],
@@ -11533,13 +11539,13 @@
   ],
   "karakari": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/58020524"
     }
   ],
   "karasuma_amiru": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/193027"
     }
   ],
@@ -11563,7 +11569,7 @@
   ],
   "karateka_value": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/11681"
     }
   ],
@@ -11587,19 +11593,19 @@
   ],
   "karube_guri": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/21008273"
     }
   ],
   "karuto": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/168740"
     }
   ],
   "kasabuta": [
     {
-      "label": "tegaki.pipa.jp",
+      "label": "TegakiPipa",
       "value": "http://tegaki.pipa.jp/559954/"
     }
   ],
@@ -11629,13 +11635,13 @@
   ],
   "kashi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/124630"
     }
   ],
   "kasi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/124630"
     }
   ],
@@ -11665,13 +11671,13 @@
   ],
   "kasugano_tobari": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2990501"
     }
   ],
   "kasukabe_akira": [
     {
-      "label": "instagram.com",
+      "label": "Instagram",
       "value": "https://www.instagram.com/a_caskabe/"
     }
   ],
@@ -11695,13 +11701,13 @@
   ],
   "katakura_ako": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2418"
     }
   ],
   "kataokasan": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/84325201"
     }
   ],
@@ -11725,7 +11731,7 @@
   ],
   "katou_chakichi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/316309"
     }
   ],
@@ -11737,7 +11743,7 @@
   ],
   "katou_teppei": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/579709"
     }
   ],
@@ -11749,7 +11755,7 @@
   ],
   "katsudansou": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1082547"
     }
   ],
@@ -11773,7 +11779,7 @@
   ],
   "katsuto": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/5378667"
     }
   ],
@@ -11809,13 +11815,13 @@
   ],
   "kawahagi_sakana": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2087091"
     }
   ],
   "kawahara_shin": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1247"
     }
   ],
@@ -11827,7 +11833,7 @@
   ],
   "kawaisaw": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1028934"
     }
   ],
@@ -11845,7 +11851,7 @@
   ],
   "kawakit": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/61997845"
     }
   ],
@@ -11893,13 +11899,13 @@
   ],
   "kawasemi_makiko": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/111750"
     }
   ],
   "kawayabug": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/35279138"
     }
   ],
@@ -11929,13 +11935,13 @@
   ],
   "kayumidome": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3966868"
     }
   ],
   "kazabuki_poni": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/226386"
     }
   ],
@@ -11947,7 +11953,7 @@
   ],
   "kazakura": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/11600"
     }
   ],
@@ -11977,13 +11983,13 @@
   ],
   "kazuma_muramasa": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/660335"
     }
   ],
   "kazumi_yoshiyuki": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/8690"
     }
   ],
@@ -12001,7 +12007,7 @@
   ],
   "kazuwo_daisuke": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/924671"
     }
   ],
@@ -12013,19 +12019,19 @@
   ],
   "kcccc": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/28084938"
     }
   ],
   "kechin": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/5893974"
     }
   ],
   "kedama_keito": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/294167"
     }
   ],
@@ -12067,13 +12073,13 @@
   ],
   "kemoribbon": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1934168"
     }
   ],
   "kemukemuke": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/910500"
     }
   ],
@@ -12127,7 +12133,7 @@
   ],
   "kentarou": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/51019"
     }
   ],
@@ -12163,7 +12169,7 @@
   ],
   "ketsune": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/22999223"
     }
   ],
@@ -12175,7 +12181,7 @@
   ],
   "keyfanjun": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/998678"
     }
   ],
@@ -12223,13 +12229,13 @@
   ],
   "kibii_mocha": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/5033468"
     }
   ],
   "kichirock": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/63642"
     }
   ],
@@ -12241,7 +12247,7 @@
   ],
   "kido_keiji": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/612764"
     }
   ],
@@ -12283,13 +12289,13 @@
   ],
   "kiken_shisou": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1054517"
     }
   ],
   "kikimetal": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/17877593"
     }
   ],
@@ -12307,7 +12313,7 @@
   ],
   "kikuichi_monji": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/824331"
     }
   ],
@@ -12319,7 +12325,7 @@
   ],
   "kikunyi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1072320"
     }
   ],
@@ -12337,7 +12343,7 @@
   ],
   "kiliu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/243990"
     }
   ],
@@ -12361,13 +12367,13 @@
   ],
   "kimjunho": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1634286"
     }
   ],
   "kimura_neito": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2722068"
     }
   ],
@@ -12391,13 +12397,13 @@
   ],
   "kindatsu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/274961"
     }
   ],
   "kingbang": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2035711"
     }
   ],
@@ -12415,7 +12421,7 @@
   ],
   "kinkoumori": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/21567170"
     }
   ],
@@ -12445,19 +12451,19 @@
   ],
   "kinokomushi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1218811"
     }
   ],
   "kinomiki": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/453646"
     }
   ],
   "kinoshita_jiroh": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/327835"
     }
   ],
@@ -12505,7 +12511,7 @@
   ],
   "kirieppa": [
     {
-      "label": "tinami.com",
+      "label": "Tinami",
       "value": "https://www.tinami.com/creator/profile/1788"
     }
   ],
@@ -12517,7 +12523,7 @@
   ],
   "kirii_nao": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1871124"
     }
   ],
@@ -12547,7 +12553,7 @@
   ],
   "kirino_kyousuke": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/15264516"
     }
   ],
@@ -12595,13 +12601,13 @@
   ],
   "kirsi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/784729"
     }
   ],
   "kiryu_manzoku": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/11099975"
     }
   ],
@@ -12643,7 +12649,7 @@
   ],
   "kise_itsuki": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/28988148"
     }
   ],
@@ -12655,13 +12661,13 @@
   ],
   "kishi_kaisei": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2271"
     }
   ],
   "kishi_nisen": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/202579"
     }
   ],
@@ -12673,13 +12679,13 @@
   ],
   "kishimasa": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/101418"
     }
   ],
   "kishimen": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3195645"
     }
   ],
@@ -12745,7 +12751,7 @@
   ],
   "kitoen": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/415431"
     }
   ],
@@ -12811,7 +12817,7 @@
   ],
   "kizaru": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/338111"
     }
   ],
@@ -12841,7 +12847,7 @@
   ],
   "kkam-sang": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/12812028"
     }
   ],
@@ -12877,7 +12883,7 @@
   ],
   "kobaji": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4328506"
     }
   ],
@@ -12895,13 +12901,13 @@
   ],
   "kobato": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/20444067"
     }
   ],
   "kobato_neneko": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/82787039"
     }
   ],
@@ -12913,19 +12919,19 @@
   ],
   "kobayashi_tetsuya": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/48532"
     }
   ],
   "kobinbin": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/18641488"
     }
   ],
   "kobiyuun": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/6932"
     }
   ],
@@ -12961,7 +12967,7 @@
   ],
   "kogawa_masayoshi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/28268431"
     }
   ],
@@ -12979,7 +12985,7 @@
   ],
   "koharu_nanakusa": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/22753182"
     }
   ],
@@ -13015,13 +13021,13 @@
   ],
   "koizumi_amane": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/314171"
     }
   ],
   "koizumi_hitsuji": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/23251"
     }
   ],
@@ -13039,19 +13045,19 @@
   ],
   "kojima_saya": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/349398"
     }
   ],
   "kojima_video": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/5853550"
     }
   ],
   "kojirou": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/61725040"
     }
   ],
@@ -13075,7 +13081,7 @@
   ],
   "kokemozuku": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4484560"
     }
   ],
@@ -13087,7 +13093,7 @@
   ],
   "kokonoe_yomogi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/613344"
     }
   ],
@@ -13129,7 +13135,7 @@
   ],
   "komagata": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/701825"
     }
   ],
@@ -13153,7 +13159,7 @@
   ],
   "komezawa": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2960603"
     }
   ],
@@ -13171,7 +13177,7 @@
   ],
   "komine_tsubasa": [
     {
-      "label": "geocities.jp",
+      "label": "Geocities",
       "value": "http://www.geocities.jp/konplanning/index.html"
     }
   ],
@@ -13213,7 +13219,7 @@
   ],
   "konayama_kata": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/98608"
     }
   ],
@@ -13225,7 +13231,7 @@
   ],
   "konchiki": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/9586023"
     }
   ],
@@ -13237,13 +13243,13 @@
   ],
   "kondom": [
     {
-      "label": "mangaupdates.com",
+      "label": "MangaUpdates",
       "value": "http://www.mangaupdates.com/authors.html?id=2139"
     }
   ],
   "konka": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/5561441"
     }
   ],
@@ -13267,25 +13273,25 @@
   ],
   "konohana": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2223613"
     }
   ],
   "konshin": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/36300"
     }
   ],
   "koohii_koucha_maru": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/12631668"
     }
   ],
   "kook": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2168536"
     }
   ],
@@ -13315,7 +13321,7 @@
   ],
   "korisu": [
     {
-      "label": "eggof.web.fc2.com",
+      "label": "FC2",
       "value": "http://eggof.web.fc2.com/"
     }
   ],
@@ -13333,7 +13339,7 @@
   ],
   "kortoon": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/68946830"
     }
   ],
@@ -13357,7 +13363,7 @@
   ],
   "koshiriro": [
     {
-      "label": "reijipttan.web.fc2.com",
+      "label": "FC2",
       "value": "http://reijipttan.web.fc2.com/"
     }
   ],
@@ -13369,7 +13375,7 @@
   ],
   "kosuke_haruhito": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/16037"
     }
   ],
@@ -13387,7 +13393,7 @@
   ],
   "kotaru": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/188360"
     }
   ],
@@ -13399,7 +13405,7 @@
   ],
   "kotengu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/205445"
     }
   ],
@@ -13453,7 +13459,7 @@
   ],
   "kotou": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/69757"
     }
   ],
@@ -13483,7 +13489,7 @@
   ],
   "kouguchi_moto": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/31928"
     }
   ],
@@ -13513,7 +13519,7 @@
   ],
   "koumo": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/148008"
     }
   ],
@@ -13525,7 +13531,7 @@
   ],
   "kousaka_donten": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/10519"
     }
   ],
@@ -13567,7 +13573,7 @@
   ],
   "koutarosu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3136511"
     }
   ],
@@ -13645,25 +13651,25 @@
   ],
   "kronosaurs": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/443062"
     }
   ],
   "ku-ba": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/154980"
     }
   ],
   "kubikiri": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/39468901"
     }
   ],
   "kuboken": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4694917"
     }
   ],
@@ -13675,7 +13681,7 @@
   ],
   "kudou_maimu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/14187268"
     }
   ],
@@ -13705,13 +13711,13 @@
   ],
   "kuguri_oimo": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1998"
     }
   ],
   "kuja": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/56480341"
     }
   ],
@@ -13729,13 +13735,13 @@
   ],
   "kuma_ashi_s": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/69744710"
     }
   ],
   "kumacchi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/6339"
     }
   ],
@@ -13837,19 +13843,19 @@
   ],
   "kumoemon": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1513714"
     }
   ],
   "kumoi_takashi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/14083"
     }
   ],
   "kunabishi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1419450"
     }
   ],
@@ -13867,7 +13873,7 @@
   ],
   "kunifuto": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3322590"
     }
   ],
@@ -13945,19 +13951,19 @@
   ],
   "kurarome": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/34740285"
     }
   ],
   "kurata_muto": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4023913"
     }
   ],
   "kuratsuka_riko": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/9248"
     }
   ],
@@ -13975,7 +13981,7 @@
   ],
   "kurei_daisuke": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2392317"
     }
   ],
@@ -13993,7 +13999,7 @@
   ],
   "kureura_keita": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/76430"
     }
   ],
@@ -14029,7 +14035,7 @@
   ],
   "kuriyuzu_kuryuu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/285568"
     }
   ],
@@ -14095,7 +14101,7 @@
   ],
   "kuroishi_ringo": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/952388"
     }
   ],
@@ -14107,7 +14113,7 @@
   ],
   "kuroiwa_menou": [
     {
-      "label": "melonbooks.co.jp",
+      "label": "Melonbooks",
       "value": "https://www.melonbooks.co.jp/search/search.php?name=%E9%BB%92%E5%B2%A9%E7%91%AA%E7%91%99"
     }
   ],
@@ -14125,7 +14131,7 @@
   ],
   "kurokawa_izumi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/10948563"
     }
   ],
@@ -14197,13 +14203,13 @@
   ],
   "kurona": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2812"
     }
   ],
   "kuronezumiinu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/15524378"
     }
   ],
@@ -14215,7 +14221,7 @@
   ],
   "kuronyan": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/10860"
     }
   ],
@@ -14239,7 +14245,7 @@
   ],
   "kurosaki_bunta": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/193473"
     }
   ],
@@ -14299,7 +14305,7 @@
   ],
   "kurotane": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/10759063"
     }
   ],
@@ -14329,7 +14335,7 @@
   ],
   "kurutsuki": [
     {
-      "label": "dlsite.com",
+      "label": "DLsite",
       "value": "https://www.dlsite.com/maniax/circle/profile/=/maker_id/RG37308.html"
     }
   ],
@@ -14347,7 +14353,7 @@
   ],
   "kusatsu_terunyo": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1432744"
     }
   ],
@@ -14407,7 +14413,7 @@
   ],
   "kuzirazio": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2308899"
     }
   ],
@@ -14425,7 +14431,7 @@
   ],
   "kyo1": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3289"
     }
   ],
@@ -14449,13 +14455,13 @@
   ],
   "kyou_no_gohan": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3608135"
     }
   ],
   "kyougoku_touya": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/26424"
     }
   ],
@@ -14473,7 +14479,7 @@
   ],
   "kyuunosuke": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/958515"
     }
   ],
@@ -14491,7 +14497,7 @@
   ],
   "lakilolom": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/5261554"
     }
   ],
@@ -14515,7 +14521,7 @@
   ],
   "landolt_tamaki": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/226254"
     }
   ],
@@ -14527,7 +14533,7 @@
   ],
   "lassie": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/73415"
     }
   ],
@@ -14557,7 +14563,7 @@
   ],
   "leafy": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/8304622"
     }
   ],
@@ -14587,7 +14593,7 @@
   ],
   "lemontea": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1894328"
     }
   ],
@@ -14599,7 +14605,7 @@
   ],
   "lengsediaokafei": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/10783995"
     }
   ],
@@ -14611,7 +14617,7 @@
   ],
   "leonardo_16sei": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/287998"
     }
   ],
@@ -14635,19 +14641,19 @@
   ],
   "leroi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/8200647"
     }
   ],
   "lestart": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/17919012"
     }
   ],
   "letdie": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/20143135"
     }
   ],
@@ -14659,7 +14665,7 @@
   ],
   "lewis_mclaren": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/747536"
     }
   ],
@@ -14695,7 +14701,7 @@
   ],
   "lilish": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/48905"
     }
   ],
@@ -14737,13 +14743,13 @@
   ],
   "llm": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3029615"
     }
   ],
   "lo.c": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/907509"
     }
   ],
@@ -14773,7 +14779,7 @@
   ],
   "loliconder": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3217762"
     }
   ],
@@ -14785,13 +14791,13 @@
   ],
   "lollipopcon": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3670374"
     }
   ],
   "lolwi_shinshi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/6357272"
     }
   ],
@@ -14809,13 +14815,13 @@
   ],
   "love-saber": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/10699066"
     }
   ],
   "lsc5": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/24833027"
     }
   ],
@@ -14827,19 +14833,19 @@
   ],
   "lucky_cat": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/60699646"
     }
   ],
   "lunaluku": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/216501"
     }
   ],
   "lung": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/59265703"
     }
   ],
@@ -14857,7 +14863,7 @@
   ],
   "luv_p": [
     {
-      "label": "blog.naver.com",
+      "label": "Naver",
       "value": "https://blog.naver.com/sting6617"
     }
   ],
@@ -14869,7 +14875,7 @@
   ],
   "luxuria": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2072715"
     }
   ],
@@ -14887,7 +14893,7 @@
   ],
   "m.vv": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1601715"
     }
   ],
@@ -14905,13 +14911,13 @@
   ],
   "ma-sa": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/810377"
     }
   ],
   "mabanna": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/10577069"
     }
   ],
@@ -14935,7 +14941,7 @@
   ],
   "macaroni_and_cheese": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1742821"
     }
   ],
@@ -14953,7 +14959,7 @@
   ],
   "machino_henmaru": [
     {
-      "label": "dlsite.com",
+      "label": "DLsite",
       "value": "https://www.dlsite.com/maniax/circle/profile/=/maker_id/RG03160.html"
     }
   ],
@@ -14965,7 +14971,7 @@
   ],
   "macop": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/358071"
     }
   ],
@@ -14983,7 +14989,7 @@
   ],
   "madara_mada": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2583800"
     }
   ],
@@ -15025,7 +15031,7 @@
   ],
   "mafuyu_hemp": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/677316"
     }
   ],
@@ -15037,7 +15043,7 @@
   ],
   "magaki_ryouta": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/13894"
     }
   ],
@@ -15067,13 +15073,13 @@
   ],
   "magukappu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/75567"
     }
   ],
   "maguro_shining": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/17546064"
     }
   ],
@@ -15115,7 +15121,7 @@
   ],
   "majirou": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/13194"
     }
   ],
@@ -15151,7 +15157,7 @@
   ],
   "maki_tatsuki": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/10156825"
     }
   ],
@@ -15163,7 +15169,7 @@
   ],
   "makibe_kataru": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4505740"
     }
   ],
@@ -15175,7 +15181,7 @@
   ],
   "makinaru": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2645792"
     }
   ],
@@ -15211,13 +15217,13 @@
   ],
   "makiya": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/647475"
     }
   ],
   "makki": [
     {
-      "label": "instagram.com",
+      "label": "Instagram",
       "value": "https://www.instagram.com/makkishoujo/"
     }
   ],
@@ -15229,25 +15235,25 @@
   ],
   "makoushi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/284757"
     }
   ],
   "makunouchi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1114974"
     }
   ],
   "makura_no_doushi": [
     {
-      "label": "mangaupdates.com",
+      "label": "MangaUpdates",
       "value": "https://www.mangaupdates.com/author/z6e7283"
     }
   ],
   "makuro": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/52006"
     }
   ],
@@ -15283,7 +15289,7 @@
   ],
   "mame_denkyuu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/138129"
     }
   ],
@@ -15301,7 +15307,7 @@
   ],
   "mameojitan": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1297967"
     }
   ],
@@ -15349,7 +15355,7 @@
   ],
   "manarou": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/12048993"
     }
   ],
@@ -15361,7 +15367,7 @@
   ],
   "manekineko": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4832919"
     }
   ],
@@ -15415,7 +15421,7 @@
   ],
   "manyuu_kaeru_tasuke_sansei": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/5822696"
     }
   ],
@@ -15457,7 +15463,7 @@
   ],
   "marimofu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/21825522"
     }
   ],
@@ -15469,19 +15475,19 @@
   ],
   "maririn": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/256070"
     }
   ],
   "marisayaka": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4959616"
     }
   ],
   "marneko": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/351846"
     }
   ],
@@ -15493,7 +15499,7 @@
   ],
   "marotix": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/38012835"
     }
   ],
@@ -15511,7 +15517,7 @@
   ],
   "maru_mary": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1775989"
     }
   ],
@@ -15535,7 +15541,7 @@
   ],
   "marugari_santarou": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4620115"
     }
   ],
@@ -15571,25 +15577,25 @@
   ],
   "marui_shiro": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2258616"
     }
   ],
   "marurumi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/449187"
     }
   ],
   "maruta": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/14333563"
     }
   ],
   "maruto": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3483"
     }
   ],
@@ -15601,7 +15607,7 @@
   ],
   "masaharu": [
     {
-      "label": "erogamescape.dyndns.org",
+      "label": "Erogamescape",
       "value": "http://erogamescape.dyndns.org/~ap2/ero/toukei_kaiseki/creater.php?creater=128"
     }
   ],
@@ -15631,7 +15637,7 @@
   ],
   "masha": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/28296"
     }
   ],
@@ -15643,7 +15649,7 @@
   ],
   "mashimaru": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/607750"
     }
   ],
@@ -15655,13 +15661,13 @@
   ],
   "mashio": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/326502"
     }
   ],
   "mashiro_shirako": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/16541647"
     }
   ],
@@ -15673,7 +15679,7 @@
   ],
   "massigura": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1795154"
     }
   ],
@@ -15697,13 +15703,13 @@
   ],
   "matai": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3678533"
     }
   ],
   "mataro": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1864423"
     }
   ],
@@ -15721,7 +15727,7 @@
   ],
   "matou": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/162948"
     }
   ],
@@ -15751,7 +15757,7 @@
   ],
   "matsumoto_drill_kenkyuujo": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/8690"
     }
   ],
@@ -15769,7 +15775,7 @@
   ],
   "matsunami_rumi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/23943"
     }
   ],
@@ -15787,7 +15793,7 @@
   ],
   "matsuriuta": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/35248423"
     }
   ],
@@ -15817,19 +15823,19 @@
   ],
   "matsuzou": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3575213"
     }
   ],
   "mattari_yufi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/749002"
     }
   ],
   "maumen": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/658062"
     }
   ],
@@ -15847,7 +15853,7 @@
   ],
   "mayonnaise.": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/5117528"
     }
   ],
@@ -15877,13 +15883,13 @@
   ],
   "mebae": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/43614"
     }
   ],
   "mebata_shun": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/18567"
     }
   ],
@@ -15907,13 +15913,13 @@
   ],
   "megi": [
     {
-      "label": "blog.naver.com",
+      "label": "Naver",
       "value": "http://blog.naver.com/boyung0707"
     }
   ],
   "meguri_tugumi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/68298325"
     }
   ],
@@ -15925,7 +15931,7 @@
   ],
   "meido_sushi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3126352"
     }
   ],
@@ -15937,7 +15943,7 @@
   ],
   "meisansan": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/82285051"
     }
   ],
@@ -15961,7 +15967,7 @@
   ],
   "memeno_kei": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4645286"
     }
   ],
@@ -15973,7 +15979,7 @@
   ],
   "mennsuke": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/6150188"
     }
   ],
@@ -15985,13 +15991,13 @@
   ],
   "menosuke": [
     {
-      "label": "dlsite.com",
+      "label": "DLsite",
       "value": "https://www.dlsite.com/maniax/circle/profile/=/maker_id/RG08210.html"
     }
   ],
   "ment": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/52122"
     }
   ],
@@ -16009,7 +16015,7 @@
   ],
   "meriibe": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/393430"
     }
   ],
@@ -16033,13 +16039,13 @@
   ],
   "metako": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2993761"
     }
   ],
   "metal_owl": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1899477"
     }
   ],
@@ -16057,7 +16063,7 @@
   ],
   "mezashi_gohan": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/827593"
     }
   ],
@@ -16135,7 +16141,7 @@
   ],
   "midorinocha": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/80830"
     }
   ],
@@ -16153,19 +16159,19 @@
   ],
   "migihiza": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1852094"
     }
   ],
   "miginer": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/43890795"
     }
   ],
   "miginohito_mitsuru": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3802947"
     }
   ],
@@ -16183,7 +16189,7 @@
   ],
   "migumigu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/612901"
     }
   ],
@@ -16219,13 +16225,13 @@
   ],
   "mikaduchi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2689509"
     }
   ],
   "mikaduki_neko": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/573106"
     }
   ],
@@ -16279,7 +16285,7 @@
   ],
   "mikanuji": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/9146337"
     }
   ],
@@ -16333,13 +16339,13 @@
   ],
   "mikomune": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/402965"
     }
   ],
   "mikoto_kei": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3649884"
     }
   ],
@@ -16357,13 +16363,13 @@
   ],
   "mikuni_atsuko": [
     {
-      "label": "saikodiary.blog.fc2.com",
+      "label": "FC2",
       "value": "http://saikodiary.blog.fc2.com/"
     }
   ],
   "mikuni_mizuki": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/432033"
     }
   ],
@@ -16405,13 +16411,13 @@
   ],
   "milssak": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/7744816"
     }
   ],
   "mimamui": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/6888331"
     }
   ],
@@ -16423,7 +16429,7 @@
   ],
   "mimizu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1401679"
     }
   ],
@@ -16435,13 +16441,13 @@
   ],
   "mimofu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/136956"
     }
   ],
   "mimonel": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/112519"
     }
   ],
@@ -16459,13 +16465,13 @@
   ],
   "mimura_zaja": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1424135"
     }
   ],
   "mimyo": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/8142510"
     }
   ],
@@ -16501,7 +16507,7 @@
   ],
   "minakami_rinka": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/860868"
     }
   ],
@@ -16543,7 +16549,7 @@
   ],
   "minamikaze_rema": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4946298"
     }
   ],
@@ -16555,13 +16561,13 @@
   ],
   "minamoto_jin": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/5939"
     }
   ],
   "minamura_haruki": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/6098"
     }
   ],
@@ -16585,19 +16591,19 @@
   ],
   "minato_fumi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4510"
     }
   ],
   "minato_yoshihiro": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/729280"
     }
   ],
   "minatsuki_alumi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/166485"
     }
   ],
@@ -16645,7 +16651,7 @@
   ],
   "mino_inomi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2276379"
     }
   ],
@@ -16693,7 +16699,7 @@
   ],
   "mirei": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/746841"
     }
   ],
@@ -16711,7 +16717,7 @@
   ],
   "mirino": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1044"
     }
   ],
@@ -16729,7 +16735,7 @@
   ],
   "mirun": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/11529329"
     }
   ],
@@ -16753,7 +16759,7 @@
   ],
   "misakana": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/161400"
     }
   ],
@@ -16765,7 +16771,7 @@
   ],
   "misaki_yukihiro": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/936084"
     }
   ],
@@ -16777,13 +16783,13 @@
   ],
   "misaoka": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/290106"
     }
   ],
   "mishima_hiroji": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/5413"
     }
   ],
@@ -16813,7 +16819,7 @@
   ],
   "miss_black": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/39020"
     }
   ],
@@ -16843,7 +16849,7 @@
   ],
   "mitarashi_kousei": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/9873"
     }
   ],
@@ -16855,13 +16861,13 @@
   ],
   "mitsu_king": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/30290158"
     }
   ],
   "mitsuashi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/6434912"
     }
   ],
@@ -16951,19 +16957,19 @@
   ],
   "miwerjooggetser": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1176892"
     }
   ],
   "miya9": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/110090"
     }
   ],
   "miyabe_kiwi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/26904758"
     }
   ],
@@ -16975,7 +16981,7 @@
   ],
   "miyabikawa_sakura": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/13674"
     }
   ],
@@ -16987,7 +16993,7 @@
   ],
   "miyahara_ayumu": [
     {
-      "label": "mujin-ti.net",
+      "label": "MujinTi",
       "value": "http://www.mujin-ti.net/miyahara-ayumu.htm"
     }
   ],
@@ -16999,19 +17005,19 @@
   ],
   "miyai_sen": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/135200"
     }
   ],
   "miyakawa_hajime": [
     {
-      "label": "mangaupdates.com",
+      "label": "MangaUpdates",
       "value": "http://www.mangaupdates.com/authors.html?id=4751"
     }
   ],
   "miyako_no_gohan": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3608135"
     }
   ],
@@ -17035,7 +17041,7 @@
   ],
   "miyamoto_yuu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2996366"
     }
   ],
@@ -17053,13 +17059,13 @@
   ],
   "miyasaka_miyu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/839617"
     }
   ],
   "miyasaka_naco": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/5168395"
     }
   ],
@@ -17089,7 +17095,7 @@
   ],
   "miyasu_risa": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/110271"
     }
   ],
@@ -17125,13 +17131,13 @@
   ],
   "mizukami_ranmaru": [
     {
-      "label": "myanimelist.net",
+      "label": "MyAnimeList",
       "value": "https://myanimelist.net/people/7033"
     }
   ],
   "mizuki_eimu": [
     {
-      "label": "dlsite.com",
+      "label": "DLsite",
       "value": "https://www.dlsite.com/maniax/circle/profile/=/maker_id/RG23318.html"
     }
   ],
@@ -17155,19 +17161,19 @@
   ],
   "mizuki_makoto": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/154858"
     }
   ],
   "mizumizuni": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/7026506"
     }
   ],
   "mizumori_omizu": [
     {
-      "label": "seiga.nicovideo.jp",
+      "label": "Niconico",
       "value": "https://seiga.nicovideo.jp/user/illust/37085331"
     }
   ],
@@ -17209,13 +17215,13 @@
   ],
   "mizushina_minato": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/8201149"
     }
   ],
   "mizutani_rin": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2227375"
     }
   ],
@@ -17227,7 +17233,7 @@
   ],
   "mizutenka": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/16691553"
     }
   ],
@@ -17257,7 +17263,7 @@
   ],
   "mobhunter": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/74183096"
     }
   ],
@@ -17305,7 +17311,7 @@
   ],
   "mochizuki_nana": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/5530735"
     }
   ],
@@ -17353,7 +17359,7 @@
   ],
   "mogiri": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/16440"
     }
   ],
@@ -17365,7 +17371,7 @@
   ],
   "mohe": [
     {
-      "label": "lofter.com",
+      "label": "Lofter",
       "value": "https://www.lofter.com/mentionredirect.do?blogId=517162209"
     }
   ],
@@ -17389,7 +17395,7 @@
   ],
   "mokataki": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2306317"
     }
   ],
@@ -17401,13 +17407,13 @@
   ],
   "mokko_ritchie": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3448287"
     }
   ],
   "mokkouyou_bond": [
     {
-      "label": "myanimelist.net",
+      "label": "MyAnimeList",
       "value": "https://myanimelist.net/people/15031"
     }
   ],
@@ -17443,7 +17449,7 @@
   ],
   "mokuseirokku": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1994389"
     }
   ],
@@ -17467,13 +17473,13 @@
   ],
   "molokonomi": [
     {
-      "label": "dlsite.com",
+      "label": "DLsite",
       "value": "https://www.dlsite.com/books/author/=/author_id/AJ012360"
     }
   ],
   "momendoufu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/28985451"
     }
   ],
@@ -17485,7 +17491,7 @@
   ],
   "momihige": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/31687009"
     }
   ],
@@ -17497,7 +17503,7 @@
   ],
   "momiyama": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/34887"
     }
   ],
@@ -17509,7 +17515,7 @@
   ],
   "momo_no_kanzume": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/223817"
     }
   ],
@@ -17521,7 +17527,7 @@
   ],
   "momoduki_suzu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/30847381"
     }
   ],
@@ -17551,7 +17557,7 @@
   ],
   "momono_yuuca": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1813958"
     }
   ],
@@ -17563,7 +17569,7 @@
   ],
   "momose_an": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3984968"
     }
   ],
@@ -17599,7 +17605,7 @@
   ],
   "monikano": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/242010"
     }
   ],
@@ -17641,7 +17647,7 @@
   ],
   "moo_yoshio": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/798995"
     }
   ],
@@ -17665,13 +17671,13 @@
   ],
   "moonjunk": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1954126"
     }
   ],
   "mori_airi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4503245"
     }
   ],
@@ -17695,7 +17701,7 @@
   ],
   "mori_takuya": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/184021"
     }
   ],
@@ -17725,7 +17731,7 @@
   ],
   "morikawa_saburou": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3733770"
     }
   ],
@@ -17743,19 +17749,19 @@
   ],
   "morimiya_masayuki": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2547837"
     }
   ],
   "morinaga_milk": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/35388520"
     }
   ],
   "morino_bambi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1120945"
     }
   ],
@@ -17803,7 +17809,7 @@
   ],
   "morochin-san": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4949"
     }
   ],
@@ -17881,19 +17887,19 @@
   ],
   "motomiya_mitsuki": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/316240"
     }
   ],
   "motomushi": [
     {
-      "label": "massara.x.fc2.com",
+      "label": "FC2",
       "value": "http://massara.x.fc2.com/"
     }
   ],
   "motoyon": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/448586"
     }
   ],
@@ -17905,7 +17911,7 @@
   ],
   "mou": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/44698"
     }
   ],
@@ -17923,7 +17929,7 @@
   ],
   "moyori": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/18554167"
     }
   ],
@@ -17965,7 +17971,7 @@
   ],
   "muchabou": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/178359"
     }
   ],
@@ -17995,7 +18001,7 @@
   ],
   "muchipan": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/16376915"
     }
   ],
@@ -18019,25 +18025,25 @@
   ],
   "mujina": [
     {
-      "label": "instagram.com",
+      "label": "Instagram",
       "value": "https://www.instagram.com/nora_nemumuq/"
     }
   ],
   "muk": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4234383"
     }
   ],
   "mukai_kiyoharu": [
     {
-      "label": "tinami.com",
+      "label": "Tinami",
       "value": "https://www.tinami.com/creator/profile/8430"
     }
   ],
   "mukaibi_aoi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/32577"
     }
   ],
@@ -18055,7 +18061,7 @@
   ],
   "mumumu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/4576"
     }
   ],
@@ -18067,7 +18073,7 @@
   ],
   "mundo": [
     {
-      "label": "nicovideo.jp",
+      "label": "Niconico",
       "value": "https://www.nicovideo.jp/user/10344516"
     }
   ],
@@ -18109,7 +18115,7 @@
   ],
   "muramurabito": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/15914334"
     }
   ],
@@ -18139,7 +18145,7 @@
   ],
   "murasakio": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/589135"
     }
   ],
@@ -18187,7 +18193,7 @@
   ],
   "muronaga_chaashuu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/828559"
     }
   ],
@@ -18211,7 +18217,7 @@
   ],
   "musha_sabu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2526989"
     }
   ],
@@ -18229,7 +18235,7 @@
   ],
   "muska": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/88630"
     }
   ],
@@ -18241,7 +18247,7 @@
   ],
   "mussyu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/18087677"
     }
   ],
@@ -18271,7 +18277,7 @@
   ],
   "mutenkabutsu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/44747778"
     }
   ],
@@ -18301,7 +18307,7 @@
   ],
   "mutsuki_ginji": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/216"
     }
   ],
@@ -18337,7 +18343,7 @@
   ],
   "myouga": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/429935"
     }
   ],
@@ -18373,13 +18379,13 @@
   ],
   "nada_shio": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/24520680"
     }
   ],
   "nadadekoko": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/384705"
     }
   ],
@@ -18391,7 +18397,7 @@
   ],
   "nafutan": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/529953"
     }
   ],
@@ -18415,7 +18421,7 @@
   ],
   "nagana_sayui": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/5351"
     }
   ],
@@ -18451,7 +18457,7 @@
   ],
   "nagashima_chosuke": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/46821903"
     }
   ],
@@ -18475,7 +18481,7 @@
   ],
   "nagata_tsubasa": [
     {
-      "label": "mangaupdates.com",
+      "label": "MangaUpdates",
       "value": "https://www.mangaupdates.com/author/mit5s1a"
     }
   ],
@@ -18487,7 +18493,7 @@
   ],
   "nagayama_yuunon": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/149587"
     }
   ],
@@ -18511,7 +18517,7 @@
   ],
   "nagian": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/79280"
     }
   ],
@@ -18535,13 +18541,13 @@
   ],
   "nagiyama": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/62628"
     }
   ],
   "naglfar": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/384409"
     }
   ],
@@ -18571,13 +18577,13 @@
   ],
   "naitou_kirara": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3454616"
     }
   ],
   "najimi_shin": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3425"
     }
   ],
@@ -18595,7 +18601,7 @@
   ],
   "nakada_rumi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/96432"
     }
   ],
@@ -18607,7 +18613,7 @@
   ],
   "nakagami_takashi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/15573"
     }
   ],
@@ -18667,19 +18673,19 @@
   ],
   "nakamura_kumarin": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/1352988"
     }
   ],
   "nakamura_kuzuyu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/18182250"
     }
   ],
   "nakamura_mizumo": [
     {
-      "label": "myanimelist.net",
+      "label": "MyAnimeList",
       "value": "https://myanimelist.net/people/22987"
     }
   ],
@@ -18715,7 +18721,7 @@
   ],
   "nakamura_zeus": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/25378991"
     }
   ],
@@ -18751,7 +18757,7 @@
   ],
   "nakata_shunpei": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/12282136"
     }
   ],
@@ -18775,7 +18781,7 @@
   ],
   "nako_mameta": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/15171384"
     }
   ],
@@ -18829,13 +18835,13 @@
   ],
   "nameco": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/26590"
     }
   ],
   "namekata_fumiaki": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2346"
     }
   ],
@@ -18853,7 +18859,7 @@
   ],
   "namidame": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/54091"
     }
   ],
@@ -18883,13 +18889,13 @@
   ],
   "nanae": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2411940"
     }
   ],
   "nanagami_you": [
     {
-      "label": "mangaupdates.com",
+      "label": "MangaUpdates",
       "value": "https://www.mangaupdates.com/author/vf31o0m"
     }
   ],
@@ -18907,7 +18913,7 @@
   ],
   "nanahara_fuyuki": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/286217"
     }
   ],
@@ -18937,7 +18943,7 @@
   ],
   "nanahoshi_tento": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3535410"
     }
   ],
@@ -18955,7 +18961,7 @@
   ],
   "nanakagi_satoshi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/30395"
     }
   ],
@@ -18967,13 +18973,13 @@
   ],
   "nanakusa_amane": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/21834632"
     }
   ],
   "nanamatsu_kenji": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/536099"
     }
   ],
@@ -18985,7 +18991,7 @@
   ],
   "nanamiya_rin": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2515081"
     }
   ],
@@ -18997,7 +19003,7 @@
   ],
   "nanamoto": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/435548"
     }
   ],
@@ -19009,13 +19015,13 @@
   ],
   "nanao_yukiji": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/81493"
     }
   ],
   "nanaroba_hana": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/30174"
     }
   ],
@@ -19033,7 +19039,7 @@
   ],
   "nanase_meruchi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/20618"
     }
   ],
@@ -19135,19 +19141,19 @@
   ],
   "nanotsuki": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/33289"
     }
   ],
   "nanpuu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/86539"
     }
   ],
   "nanquanzl": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2179929"
     }
   ],
@@ -19165,19 +19171,19 @@
   ],
   "nantomo_anison": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/254212"
     }
   ],
   "nao_takami": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/23219680"
     }
   ],
   "naoharu": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/103836"
     }
   ],
@@ -19189,7 +19195,7 @@
   ],
   "naop": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/52233"
     }
   ],
@@ -19219,7 +19225,7 @@
   ],
   "naruhodo": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/35411"
     }
   ],
@@ -19237,7 +19243,7 @@
   ],
   "narumi_cristear_note": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/2977061"
     }
   ],
@@ -19261,13 +19267,13 @@
   ],
   "naruse_hirofumi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/226615"
     }
   ],
   "naruse_mamoru": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/474903"
     }
   ],
@@ -19279,13 +19285,13 @@
   ],
   "narynn": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/3624793"
     }
   ],
   "nase": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/237953"
     }
   ],
@@ -19315,7 +19321,7 @@
   ],
   "natin": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/493753"
     }
   ],
@@ -19333,7 +19339,7 @@
   ],
   "natsuhiko": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/8977"
     }
   ],
@@ -19345,7 +19351,7 @@
   ],
   "natsuki_gumi": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/39321000"
     }
   ],
@@ -19363,7 +19369,7 @@
   ],
   "natsume_eri": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/276310"
     }
   ],
@@ -19381,7 +19387,7 @@
   ],
   "natsume_yochiki": [
     {
-      "label": "Pixiv",
+      "label": "Fanbox",
       "value": "https://www.pixiv.net/fanbox/creator/66979543"
     }
   ],
@@ -22297,7 +22303,7 @@
   ],
   "pon": [
     {
-      "label": "coolier.net",
+      "label": "Coolier",
       "value": "https://coolier.net/oekaki_05/bbsnote.cgi"
     }
   ],
@@ -22729,7 +22735,7 @@
   ],
   "ra-men": [
     {
-      "label": "geocities.jp",
+      "label": "Geocities",
       "value": "http://www.geocities.jp/kou_o_alternative"
     }
   ],
@@ -22753,7 +22759,7 @@
   ],
   "radio": [
     {
-      "label": "coolier.net",
+      "label": "Coolier",
       "value": "https://coolier.net/oekaki_06/bbsnote.cgi"
     }
   ],
@@ -22897,7 +22903,7 @@
   ],
   "rano": [
     {
-      "label": "dic.nicovideo.jp",
+      "label": "Niconico",
       "value": "https://dic.nicovideo.jp/u/20220108"
     }
   ],
@@ -23143,7 +23149,7 @@
   ],
   "rihitozoire": [
     {
-      "label": "sketch.pixiv.net",
+      "label": "Pixiv",
       "value": "https://sketch.pixiv.net/@vinushka-2"
     }
   ],
@@ -24349,7 +24355,7 @@
   ],
   "sano_takashi": [
     {
-      "label": "animenewsnetwork.com",
+      "label": "AnimeNewsNetwork",
       "value": "https://www.animenewsnetwork.com/encyclopedia/people.php?id=12880"
     }
   ],
@@ -24895,7 +24901,7 @@
   ],
   "sen": [
     {
-      "label": "coolier.net",
+      "label": "Coolier",
       "value": "https://coolier.net/oekaki_05/bbsnote.cgi"
     }
   ],
@@ -24985,7 +24991,7 @@
   ],
   "sensouji_kinoto": [
     {
-      "label": "geocities.jp",
+      "label": "Geocities",
       "value": "http://www.geocities.jp/sensoujikinoto/"
     }
   ],
@@ -25771,7 +25777,7 @@
   ],
   "shinozuka_yuuji": [
     {
-      "label": "book.dmm.co.jp",
+      "label": "DMM",
       "value": "https://book.dmm.co.jp/list/?author=239378"
     }
   ],
@@ -25909,7 +25915,7 @@
   ],
   "shirataki_shun": [
     {
-      "label": "animenewsnetwork.com",
+      "label": "AnimeNewsNetwork",
       "value": "https://www.animenewsnetwork.com/encyclopedia/people.php?id=86651"
     }
   ],
@@ -26125,7 +26131,7 @@
   ],
   "shizuka": [
     {
-      "label": "lofter.com",
+      "label": "Lofter",
       "value": "https://www.lofter.com/mentionredirect.do?blogId=819065844"
     }
   ],
@@ -26809,7 +26815,7 @@
   ],
   "sugar_picola": [
     {
-      "label": "amazon.co.jp",
+      "label": "Amazon",
       "value": "http://www.amazon.co.jp/gp/search?field-keywords=%E3%81%97%E3%82%85%E3%81%8C%E3%83%BC%E3%83%94%E3%82%B3%E3%83%A9"
     }
   ],
@@ -27019,7 +27025,7 @@
   ],
   "sunagimo": [
     {
-      "label": "nicovideo.jp",
+      "label": "Niconico",
       "value": "https://www.nicovideo.jp/user/26326074"
     }
   ],
@@ -27061,7 +27067,7 @@
   ],
   "suppai": [
     {
-      "label": "deviantart.com",
+      "label": "DeviantArt",
       "value": "https://www.deviantart.com/suppai"
     }
   ],
@@ -27595,7 +27601,7 @@
   ],
   "takaaki_aki": [
     {
-      "label": "nicovideo.jp",
+      "label": "Niconico",
       "value": "https://www.nicovideo.jp/user/1246558"
     }
   ],
@@ -27931,7 +27937,7 @@
   ],
   "takemori_shintarou": [
     {
-      "label": "nicovideo.jp",
+      "label": "Niconico",
       "value": "https://www.nicovideo.jp/user/17901362"
     }
   ],
@@ -28039,7 +28045,7 @@
   ],
   "takorina_gahaku": [
     {
-      "label": "geocities.co.jp",
+      "label": "Geocities",
       "value": "http://www.geocities.co.jp/AnimeComic/4988"
     }
   ],
@@ -28801,7 +28807,7 @@
   ],
   "ti": [
     {
-      "label": "dic.nicovideo.jp",
+      "label": "Niconico",
       "value": "https://dic.nicovideo.jp/a/ti(%E7%B5%B5%E5%B8%AB)"
     }
   ],
@@ -31555,7 +31561,7 @@
   ],
   "yamatogawa": [
     {
-      "label": "amazon.co.jp",
+      "label": "Amazon",
       "value": "http://www.amazon.co.jp/gp/search/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=%E5%A4%A7%E5%92%8C%E5%B7%9D"
     }
   ],
