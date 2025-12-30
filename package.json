@@ -5,8 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "dev:prod": "env-cmd -f .env.production next dev",
-    "dev:backend": "kill -KILL -- $(lsof -t -iTCP:8080 -sTCP:LISTEN) && bun run --conditions=react-server --env-file=.env.development --hot src/backend/index.ts",
-    "dev:backend:prod": "kill -KILL -- $(lsof -t -iTCP:8080 -sTCP:LISTEN) && bun run --conditions=react-server --env-file=.env.production --hot src/backend/index.ts",
+    "kill:backend": "pids=\"$(lsof -t -iTCP:8080 -sTCP:LISTEN 2>/dev/null || true)\"; if [ -n \"$pids\" ]; then kill -KILL -- $pids; fi;",
+    "dev:backend": "bun run kill:backend && bun run --conditions=react-server --env-file=.env.development --hot src/backend/index.ts",
+    "dev:backend:prod": "bun run kill:backend && bun run --conditions=react-server --env-file=.env.production --hot src/backend/index.ts",
     "build": "next build",
     "build:backend": "docker build -t litomi-backend-local .",
     "start": "next start",

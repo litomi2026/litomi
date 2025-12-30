@@ -8,6 +8,7 @@ import getPointsRoute from './get'
 import spendRoute from './spend'
 import tokenRoute from './token'
 import transactionsRoute from './transactions'
+import turnstileRoute from './turnstile'
 
 const pointsRoutes = new Hono<Env>()
 
@@ -16,6 +17,7 @@ pointsRoutes.route('/earn', earnRoute)
 pointsRoutes.route('/expansion', expansionRoute)
 pointsRoutes.route('/spend', spendRoute)
 pointsRoutes.route('/token', tokenRoute)
+pointsRoutes.route('/turnstile', turnstileRoute)
 pointsRoutes.route('/transactions', transactionsRoute)
 
 export default pointsRoutes
