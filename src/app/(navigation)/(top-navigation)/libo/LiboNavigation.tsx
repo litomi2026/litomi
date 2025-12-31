@@ -88,31 +88,6 @@ export default function LiboNavigation({ children }: Props) {
       <div className={LIBO_PAGE_LAYOUT.panelReserved} role="tabpanel">
         {children}
       </div>
-
-      {/* 안내 문구 */}
-      <details className="text-xs text-zinc-500 rounded-xl bg-white/4 border border-white/7">
-        <summary className="cursor-pointer list-none p-3 flex items-center gap-2 text-zinc-300 [&::-webkit-details-marker]:hidden">
-          <HelpCircle className="size-4 text-zinc-400" />
-          <span className="font-medium">안내</span>
-        </summary>
-        <div className="px-3 pb-3 space-y-4">
-          <div className="space-y-1">
-            <p className="text-zinc-400 font-medium">리보란?</p>
-            <ul className="space-y-1 list-disc list-inside marker:text-zinc-600">
-              <li>광고 클릭 시 10 리보가 적립돼요</li>
-              <li>적립된 리보로 내 공간을 확장할 수 있어요</li>
-            </ul>
-          </div>
-          <div className="space-y-1">
-            <p className="text-zinc-400 font-medium">적립 주의사항</p>
-            <ul className="space-y-1 list-disc list-inside marker:text-zinc-600">
-              <li>광고 클릭 시 새 탭에서 광고 페이지가 열려요</li>
-              <li>같은 광고: 1분 후 다시 클릭 가능</li>
-              <li>하루 최대 100 리보 (10회) 적립 가능</li>
-            </ul>
-          </div>
-        </div>
-      </details>
     </div>
   )
 }
