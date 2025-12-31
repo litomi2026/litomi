@@ -23,5 +23,3 @@ describe('getAllCharactersWithLabels', () => {
     expect(aerith?.labels.ko).toBe('캐릭터:에어리스 게인즈버러')
   })
 })
-
-
