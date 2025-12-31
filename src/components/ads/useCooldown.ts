@@ -10,7 +10,6 @@ const CLEAR_FUDGE_MS = ms('50ms')
 type Cooldown = {
   until: number | null
   remainingSeconds: number | null
-  start: (seconds: number) => void
   startFromRemainingSeconds: (remainingSeconds: number) => void
   clear: () => void
 }
@@ -75,7 +74,6 @@ export function useCooldown(): Cooldown {
   return {
     until,
     remainingSeconds,
-    start,
     startFromRemainingSeconds,
     clear,
   }

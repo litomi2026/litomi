@@ -9,7 +9,7 @@ import { fetchWithErrorHandling, type ProblemDetailsError } from '@/utils/react-
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
 
-export function useRequestToken(adSlotId: string) {
+export function useRequestTokenMutation(adSlotId: string) {
   return useMutation<POSTV1PointTokenResponse, ProblemDetailsError>({
     mutationFn: async () => {
       const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/points/token`

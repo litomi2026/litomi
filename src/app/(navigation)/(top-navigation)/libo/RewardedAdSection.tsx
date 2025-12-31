@@ -7,11 +7,13 @@ import ms from 'ms'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
+import type { GETV1MeResponse } from '@/backend/api/v1/me'
 import type { POSTV1PointTurnstileResponse } from '@/backend/api/v1/points/turnstile'
+import type { AdClickResult } from '@/components/ads/types'
 
-import { GETV1MeResponse } from '@/backend/api/v1/me'
+import AdsterraBanner300x250 from '@/components/ads/AdsterraBanner300x250'
 import { AD_SLOTS } from '@/components/ads/constants'
-import JuicyAdsSlot, { type AdClickResult } from '@/components/ads/JuicyAdsSlot'
+import JuicyAdsSlot from '@/components/ads/JuicyAdsSlot'
 import TurnstileWidget from '@/components/TurnstileWidget'
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
@@ -104,7 +106,7 @@ export default function RewardedAdSection() {
   return (
     <div className="space-y-4">
       {/* 광고 영역 */}
-      <div className="flex flex-wrap justify-center gap-4">
+      <div className="flex flex-wrap justify-center gap-x-4 gap-y-2">
         <JuicyAdsSlot
           adSlotId={AD_SLOTS.REWARDED.id}
           height={AD_SLOTS.REWARDED.height}
@@ -121,6 +123,7 @@ export default function RewardedAdSection() {
           width={AD_SLOTS.REWARDED_2.width}
           zoneId={AD_SLOTS.REWARDED_2.zoneId}
         />
+        <AdsterraBanner300x250 adSlotId="rewarded-ad-adsterra" onAdClick={handleAdClick} rewardEnabled={false} />
       </div>
 
       {/* CLS 방지: 두 상태 모두 렌더링하고 visibility로 전환 */}

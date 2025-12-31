@@ -10,7 +10,7 @@ import { fetchWithErrorHandling, type ProblemDetailsError } from '@/utils/react-
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
 
-export function useEarnPoints() {
+export function useEarnPointMutation() {
   const queryClient = useQueryClient()
 
   return useMutation<POSTV1PointEarnResponse, ProblemDetailsError, string>({

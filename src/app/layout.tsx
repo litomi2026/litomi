@@ -102,6 +102,7 @@ export default function RootLayout({ children }: Readonly<Props>) {
       <head>
         <meta content={SHORT_NAME} name="apple-mobile-web-app-title" />
         <meta content="f9b44ff18cfe0010c3c2eeab98eb7a9c" name="juicyads-site-verification" />
+        <meta content="c8c42155770cd0c29a31f02c8a926ed2" name="6a97888e-site-verification" />
       </head>
       <body className={`${PretendardVariable.className} antialiased h-full`}>
         <ThemeProvider />

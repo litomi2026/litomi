@@ -1,16 +1,17 @@
 'use client'
 
-import { ShieldOff } from 'lucide-react'
-import ms from 'ms'
 import { useEffect, useRef, useState } from 'react'
 
 import { formatDistanceFromNow } from '@/utils/format/date'
-import { ProblemDetailsError } from '@/utils/react-query-error'
 
+import type { AdClickResult } from './types'
+
+import AdBlockedMessage from './AdBlockedMessage'
 import { JUICY_ADS_EVENT } from './constants'
-import { useCooldown } from './useCooldown'
-import { useEarnPoints } from './useEarnPoints'
-import { useRequestToken } from './useRequestToken'
+import RewardedAdFooter from './RewardedAdFooter'
+import { useAdIframeClickEffect } from './useAdIframeClickEffect'
+import { useAdIframeLoadEffect } from './useAdIframeLoadEffect'
+import { useRewardedAd } from './useRewardedAd'
 
 declare global {
   interface Window {
@@ -24,12 +25,6 @@ declare global {
   }
 }
 
-export type AdClickResult = {
-  success: boolean
-  earned?: number
-  error?: string
-}
-
 type Props = {
   zoneId: number
   adSlotId: string
@@ -39,8 +34,6 @@ type Props = {
   rewardEnabled?: boolean
   onAdClick?: (result: AdClickResult) => void
 }
-
-const AD_IFRAME_FOCUS_TO_BLUR_GRACE_MS = ms('400ms')
 
 export default function JuicyAdsSlot({
   zoneId,
@@ -52,40 +45,19 @@ export default function JuicyAdsSlot({
   onAdClick,
 }: Props) {
   const slotRef = useRef<HTMLDivElement>(null)
-  const lastAdIframeFocusAtRef = useRef<number | null>(null)
-  const isHandlingAdClickRef = useRef(false)
   const [isScriptLoaded, setIsScriptLoaded] = useState(false)
   const [isAdBlocked, setIsAdBlocked] = useState(false)
-  const [token, setToken] = useState<string | null>(null)
-  const [dailyRemaining, setDailyRemaining] = useState<number | null>(null)
-  const requestToken = useRequestToken(adSlotId)
-  const earnPoints = useEarnPoints()
-  const isLoading = requestToken.isPending || earnPoints.isPending
-  const apiError = requestToken.error ?? earnPoints.error ?? null
-  const canEarn = rewardEnabled && token !== null && !isLoading && !isAdBlocked
-  const shouldDimAd = rewardEnabled && !canEarn
-  const { until: cooldownUntil, clear: clearCooldown, startFromRemainingSeconds } = useCooldown()
-  const cooldownLabel = cooldownUntil ? formatDistanceFromNow(new Date(cooldownUntil)) : null
 
-  function handleRefresh() {
-    if (!rewardEnabled || isLoading || isAdBlocked) {
-      return
-    }
-
-    requestToken.mutate(undefined, {
-      onSuccess: (data) => {
-        setToken(data.token)
-        setDailyRemaining(data.dailyRemaining)
-        clearCooldown()
-      },
-      onError: (err) => {
-        setToken(null)
-        if (err instanceof ProblemDetailsError && err.retryAfterSeconds != null) {
-          startFromRemainingSeconds(err.retryAfterSeconds)
-        }
-      },
+  const { dailyRemaining, isLoading, apiError, shouldDimAd, cooldownUntil, refreshToken, handleConfirmedNavigation } =
+    useRewardedAd({
+      adSlotId,
+      rewardEnabled,
+      adReady: isScriptLoaded,
+      adBlocked: isAdBlocked,
+      onAdClick,
     })
-  }
+
+  const cooldownLabel = cooldownUntil ? formatDistanceFromNow(new Date(cooldownUntil)) : null
 
   // NOTE: JuicyAds 스크립트가 로드되기 전에 adzone을 등록해야 함
   useEffect(() => {
@@ -154,170 +126,19 @@ export default function JuicyAdsSlot({
     }
   }, [isScriptLoaded, zoneId, isAdBlocked])
 
-  // NOTE: 토큰이 없으면(또는 클릭 후 소진되면) 자동으로 토큰을 다시 준비
-  useEffect(() => {
-    const isAdReady = rewardEnabled && !isAdBlocked && isScriptLoaded
-    const needsToken = token === null && cooldownUntil === null
-    const isRequesting = requestToken.isPending
+  useAdIframeLoadEffect({
+    enabled: isScriptLoaded && !isAdBlocked,
+    containerRef: slotRef,
+    onBlocked: () => {
+      setIsAdBlocked(true)
+    },
+  })
 
-    if (!isAdReady || !needsToken || isRequesting) {
-      return
-    }
-
-    requestToken.mutate(undefined, {
-      onSuccess: ({ token, dailyRemaining }) => {
-        setToken(token)
-        setDailyRemaining(dailyRemaining)
-        clearCooldown()
-      },
-      onError: (err) => {
-        setToken(null)
-        if (err instanceof ProblemDetailsError && err.retryAfterSeconds != null) {
-          startFromRemainingSeconds(err.retryAfterSeconds)
-        }
-      },
-    })
-  }, [
-    rewardEnabled,
-    isAdBlocked,
-    isScriptLoaded,
-    token,
-    cooldownUntil,
-    requestToken,
-    clearCooldown,
-    startFromRemainingSeconds,
-  ])
-
-  // NOTE: MutationObserver로 광고 컨텐츠 로드 감지
-  useEffect(() => {
-    const slotElement = slotRef.current
-
-    if (!isScriptLoaded || isAdBlocked || !slotElement) {
-      return
-    }
-
-    let isMounted = true
-
-    const observer = new MutationObserver(() => {
-      // NOTE: JuicyAds 스크립트는 <ins>를 <iframe>로 "교체"해요. (ins 내부가 아니라 slot 컨테이너에 iframe이 생김)
-      const hasIframe = Boolean(slotElement.querySelector('iframe'))
-      if (hasIframe) {
-        observer.disconnect()
-      }
-    })
-
-    observer.observe(slotElement, { childList: true, subtree: true })
-
-    // NOTE: 광고가 로드되지 않으면 차단됨
-    const timeoutId = setTimeout(() => {
-      if (!isMounted) {
-        return
-      }
-
-      const hasIframe = Boolean(slotElement.querySelector('iframe'))
-
-      if (!hasIframe) {
-        setIsAdBlocked(true)
-        setToken(null)
-      }
-
-      observer.disconnect()
-    }, ms('10 seconds'))
-
-    return () => {
-      isMounted = false
-      observer.disconnect()
-      clearTimeout(timeoutId)
-    }
-  }, [isScriptLoaded, isAdBlocked, zoneId])
-
-  // NOTE: "새 탭/외부 이동"으로 인한 blur/hidden만 클릭으로 인정해요.
-  // - 단, 직전 400ms 내에 이 슬롯의 광고 iframe이 포커스된 경우만 허용해요.
-  // - 대신 iOS Safari/Android WebView에서 iframe focus 이벤트가 덜 잡히면 미탐이 늘 수 있어요
-  useEffect(() => {
-    const slotElement = slotRef.current
-    if (!slotElement) {
-      return
-    }
-
-    function handleSlotFocus(event: FocusEvent) {
-      if (event.target instanceof HTMLIFrameElement) {
-        lastAdIframeFocusAtRef.current = Date.now()
-      }
-    }
-
-    function handleConfirmedAdNavigation() {
-      if (isAdBlocked || !slotElement) {
-        return
-      }
-
-      const now = Date.now()
-      const lastFocusedAt = lastAdIframeFocusAtRef.current
-      const activeElement = document.activeElement
-      const activeIsIframeInThisSlot = activeElement instanceof HTMLIFrameElement && slotElement.contains(activeElement)
-
-      if (lastFocusedAt === null) {
-        if (!activeIsIframeInThisSlot) {
-          return
-        }
-      } else if (now - lastFocusedAt > AD_IFRAME_FOCUS_TO_BLUR_GRACE_MS) {
-        if (!activeIsIframeInThisSlot) {
-          return
-        }
-      }
-
-      // blur + hidden 연속 발생 등으로 중복 처리되지 않게 먼저 소진해요.
-      lastAdIframeFocusAtRef.current = null
-
-      if (!rewardEnabled) {
-        onAdClick?.({ success: false })
-        return
-      }
-
-      if (isHandlingAdClickRef.current || token === null) {
-        return
-      }
-
-      isHandlingAdClickRef.current = true
-
-      earnPoints.mutate(token, {
-        onSuccess: ({ earned, dailyRemaining }) => {
-          onAdClick?.({ success: true, earned })
-          setToken(null)
-          setDailyRemaining(dailyRemaining)
-          clearCooldown()
-          isHandlingAdClickRef.current = false
-        },
-        onError: (err) => {
-          const message = err instanceof ProblemDetailsError ? err.message : '요청 처리 중 오류가 발생했어요'
-          onAdClick?.({ success: false, error: message })
-          setToken(null)
-          isHandlingAdClickRef.current = false
-        },
-      })
-    }
-
-    function handleWindowBlur() {
-      handleConfirmedAdNavigation()
-    }
-
-    function handleVisibilityChange() {
-      if (document.visibilityState === 'hidden') {
-        handleConfirmedAdNavigation()
-      }
-    }
-
-    // NOTE: focus는 버블링되지 않지만 캡처링은 되므로(= true) iframe focus를 더 안정적으로 잡아요.
-    slotElement.addEventListener('focus', handleSlotFocus, true)
-    window.addEventListener('blur', handleWindowBlur)
-    document.addEventListener('visibilitychange', handleVisibilityChange)
-
-    return () => {
-      slotElement.removeEventListener('focus', handleSlotFocus, true)
-      window.removeEventListener('blur', handleWindowBlur)
-      document.removeEventListener('visibilitychange', handleVisibilityChange)
-    }
-  }, [zoneId, adSlotId, isAdBlocked, rewardEnabled, token, isLoading, earnPoints, clearCooldown, onAdClick])
+  useAdIframeClickEffect({
+    enabled: !isAdBlocked,
+    containerRef: slotRef,
+    onConfirmedNavigation: handleConfirmedNavigation,
+  })
 
   return (
     <div
@@ -342,48 +163,14 @@ export default function JuicyAdsSlot({
           )}
         </div>
       )}
-      <div className="text-xs h-5 flex items-center justify-center">
-        {rewardEnabled && apiError ? (
-          <div className="text-center">
-            <span className="text-amber-500">
-              {apiError instanceof ProblemDetailsError ? apiError.message : '오류가 발생했어요'}
-              <span className="tabular-nums">{cooldownLabel && ` (${cooldownLabel})`}</span>
-            </span>
-            {apiError instanceof ProblemDetailsError &&
-              !apiError.message.includes('한도') &&
-              !apiError.message.includes('잠시 후') && (
-                <button className="ml-2 text-zinc-300 underline" disabled={isLoading} onClick={handleRefresh}>
-                  다시 시도
-                </button>
-              )}
-          </div>
-        ) : rewardEnabled && dailyRemaining !== null ? (
-          dailyRemaining > 0 ? (
-            <span className="text-zinc-500">오늘 남은 적립: {dailyRemaining} 리보</span>
-          ) : (
-            <span className="text-amber-500">오늘의 적립 한도에 도달했어요</span>
-          )
-        ) : null}
-      </div>
-    </div>
-  )
-}
-
-function AdBlockedMessage({ height, width }: { height: number; width: number }) {
-  return (
-    <div
-      className="flex flex-col items-center justify-center gap-3 p-4 rounded-xl border text-center bg-white/4 border-white/7"
-      style={{ width: `min(${width}px, 100%)`, minHeight: height }}
-    >
-      <ShieldOff className="size-8 text-zinc-500" />
-      <div className="space-y-1">
-        <p className="text-sm font-medium text-zinc-300">광고가 차단되고 있어요</p>
-        <p className="text-xs text-zinc-500">
-          광고 수익은 서버 운영과 작가 후원에 사용돼요.
-          <br />이 사이트의 광고를 허용해 주시면 큰 도움이 돼요.
-        </p>
-      </div>
-      <div className="text-xs text-zinc-600">광고가 보이면 클릭해서 리보를 적립할 수 있어요</div>
+      <RewardedAdFooter
+        apiError={apiError}
+        cooldownLabel={cooldownLabel}
+        dailyRemaining={dailyRemaining}
+        isLoading={isLoading}
+        onRetry={refreshToken}
+        rewardEnabled={rewardEnabled}
+      />
     </div>
   )
 }

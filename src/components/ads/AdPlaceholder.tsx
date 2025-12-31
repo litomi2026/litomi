@@ -4,10 +4,6 @@ type Props = {
   className?: string
 }
 
-/**
- * CLS 방지를 위한 광고 플레이스홀더
- * 광고가 로드되기 전에 공간을 미리 확보합니다
- */
 export default function AdPlaceholder({ width, height, className = '' }: Props) {
   return (
     <div
