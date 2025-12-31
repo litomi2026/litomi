@@ -15,7 +15,7 @@ export async function fetchPointsTurnstile() {
     const { data } = await fetchWithErrorHandling<GETV1PointTurnstileResponse>(url, { credentials: 'include' })
     return data
   } catch (error) {
-    if (error instanceof ProblemDetailsError && error.status === 401) {
+    if (error instanceof ProblemDetailsError && (error.status === 401 || error.status === 403)) {
       return { verified: false } as const
     }
     throw error
