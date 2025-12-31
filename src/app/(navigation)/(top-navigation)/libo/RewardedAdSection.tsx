@@ -114,8 +114,12 @@ export default function RewardedAdSection() {
           <span className="ml-auto text-xs text-zinc-500">자세히</span>
         </summary>
         <div className="px-4 pb-4 text-sm text-zinc-400">
-          광고로 발생한 수익금은 서버 운영비를 제하고 전부 작가에게 후원할 예정이에요. 광고 클릭 한 번이 좋아하는 작품의
-          창작자를 응원하는 방법이 돼요.
+          광고 수익은 서버 운영비를 제외하고 모두 작가 후원에 사용할 예정이에요. 광고를 한 번 봐주시면 좋아하는 작품의
+          창작자를 응원하는 데 도움이 돼요. 광고는 앞으로도{' '}
+          <code className="inline-flex items-center whitespace-nowrap rounded-md bg-white/6 px-1.5 py-0.5 font-mono text-xs text-zinc-200 ring-1 ring-white/10">
+            /libo
+          </code>{' '}
+          페이지에서만 노출할 거예요.
         </div>
       </details>
 
