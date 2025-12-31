@@ -28,7 +28,6 @@ export type AdClickResult = {
   success: boolean
   earned?: number
   error?: string
-  requiresLogin?: boolean
 }
 
 type Props = {
@@ -271,7 +270,7 @@ export default function JuicyAdsSlot({
       lastAdIframeFocusAtRef.current = null
 
       if (!rewardEnabled) {
-        onAdClick?.({ success: false, requiresLogin: true })
+        onAdClick?.({ success: false })
         return
       }
 
