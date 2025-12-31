@@ -13,7 +13,7 @@ import type { AdClickResult } from '@/components/ads/types'
 
 import AdsterraBanner300x250 from '@/components/ads/adsterra/AdsterraBanner300x250'
 import AdsterraNativeBanner from '@/components/ads/adsterra/AdsterraNativeBanner'
-import { AD_SLOTS } from '@/components/ads/constants'
+import { AD_SLOTS } from '@/components/ads/juicy-ads/constants'
 import JuicyAdsSlot from '@/components/ads/juicy-ads/JuicyAdsSlot'
 import PlugRushBannerRectangle300x250 from '@/components/ads/plugrush/PlugRushBannerRectangle300x250'
 import PlugRushNativeAd from '@/components/ads/plugrush/PlugRushNativeAd'
@@ -107,7 +107,7 @@ export default function RewardedAdSection() {
   }, [pointsTurnstile.data, queryClient])
 
   return (
-    <div className="space-y-4">
+    <div className="grid gap-4">
       {/* 작가 후원 안내 (상시 노출, 컴팩트) */}
       <details className="rounded-xl bg-white/4 border border-white/7">
         <summary className="cursor-pointer list-none px-4 py-3 flex items-center gap-2 text-sm text-zinc-200 [&::-webkit-details-marker]:hidden">

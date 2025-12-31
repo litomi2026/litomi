@@ -3,7 +3,7 @@
 import Script from 'next/script'
 import { useEffect, useState } from 'react'
 
-import { JUICY_ADS_EVENT } from '../constants'
+import { JUICY_ADS_EVENT } from './constants'
 
 declare global {
   interface Window {

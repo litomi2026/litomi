@@ -1,6 +1,6 @@
 'use client'
 
-import { HelpCircle, History, PiggyBank, ShoppingBag, TrendingUp } from 'lucide-react'
+import { History, PiggyBank, ShoppingBag, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { type ReactNode } from 'react'
