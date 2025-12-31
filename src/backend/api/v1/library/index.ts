@@ -4,7 +4,7 @@ import 'server-only'
 import { Env } from '@/backend'
 
 import itemsRoutes from './[id]'
-import getLibraryRoute from './get'
+import libraryGetRoutes from './get'
 import libraryHistoryRoutes from './history'
 import libraryListRoutes from './list'
 import libraryMangaRoutes from './manga'
@@ -14,7 +14,7 @@ import librarySummaryRoutes from './summary'
 
 const libraryRoutes = new Hono<Env>()
 
-libraryRoutes.route('/', getLibraryRoute)
+libraryRoutes.route('/', libraryGetRoutes)
 libraryRoutes.route('/list', libraryListRoutes)
 libraryRoutes.route('/history', libraryHistoryRoutes)
 libraryRoutes.route('/manga', libraryMangaRoutes)
