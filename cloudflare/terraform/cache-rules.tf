@@ -23,6 +23,7 @@ locals {
     "/favicon.",
     "/icon.",
     "/image/",
+    "/libo",
     "/manga",
     "/nye",
     "/notification",
