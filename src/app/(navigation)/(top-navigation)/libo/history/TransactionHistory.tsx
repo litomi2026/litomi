@@ -46,19 +46,12 @@ export default function TransactionHistory() {
   return (
     <div className="space-y-2">
       {transactions.map((tx) => (
-        <div
-          className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.035] border border-white/[0.07]"
-          key={tx.id}
-        >
+        <div className="flex items-center gap-3 p-3 rounded-xl bg-white/4 border border-white/7" key={tx.id}>
           <div
-            className="size-8 rounded-full flex items-center justify-center shrink-0 bg-white/[0.055] border border-white/[0.07] text-zinc-200 data-[type=earn]:text-emerald-400 data-[type=spend]:text-rose-400"
+            className="size-8 rounded-full flex items-center justify-center shrink-0 bg-white/5 border border-white/7 text-zinc-200 data-[type=earn]:text-emerald-400 data-[type=spend]:text-rose-400"
             data-type={tx.type}
           >
-            {tx.type === 'earn' ? (
-              <ArrowDownLeft className="size-4" />
-            ) : (
-              <ArrowUpRight className="size-4" />
-            )}
+            {tx.type === 'earn' ? <ArrowDownLeft className="size-4" /> : <ArrowUpRight className="size-4" />}
           </div>
 
           <div className="flex-1 min-w-0">
@@ -71,7 +64,10 @@ export default function TransactionHistory() {
           </div>
 
           <div className="text-right shrink-0">
-            <p className="font-medium text-zinc-200 data-[type=earn]:text-emerald-400 data-[type=spend]:text-rose-400" data-type={tx.type}>
+            <p
+              className="font-medium text-zinc-200 data-[type=earn]:text-emerald-400 data-[type=spend]:text-rose-400"
+              data-type={tx.type}
+            >
               {tx.type === 'earn' ? '+' : ''}
               {tx.amount.toLocaleString()} 리보
             </p>
@@ -84,7 +80,7 @@ export default function TransactionHistory() {
 
       {hasNextPage && (
         <button
-          className="w-full py-2 text-sm font-medium rounded-xl bg-white/[0.035] border border-white/[0.07] text-zinc-300 hover:bg-white/[0.055] disabled:opacity-60 disabled:cursor-not-allowed transition"
+          className="w-full py-2 text-sm font-medium rounded-xl bg-white/4 border border-white/7 text-zinc-300 hover:bg-white/5 disabled:opacity-60 disabled:cursor-not-allowed transition"
           disabled={isFetchingNextPage}
           onClick={() => fetchNextPage()}
         >

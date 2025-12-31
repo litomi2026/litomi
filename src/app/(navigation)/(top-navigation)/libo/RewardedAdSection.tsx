@@ -9,6 +9,7 @@ import { toast } from 'sonner'
 
 import type { POSTV1PointTurnstileResponse } from '@/backend/api/v1/points/turnstile'
 
+import { GETV1MeResponse } from '@/backend/api/v1/me'
 import { AD_SLOTS } from '@/components/ads/constants'
 import JuicyAdsSlot, { type AdClickResult } from '@/components/ads/JuicyAdsSlot'
 import TurnstileWidget from '@/components/TurnstileWidget'
@@ -76,6 +77,13 @@ export default function RewardedAdSection() {
     toast.success(`${result.earned} 리보 적립됐어요`)
   }
 
+  function handleTurnstileTokenChange(token: string) {
+    setTurnstileToken(token)
+    if (token) {
+      verifyTurnstile.mutate(token)
+    }
+  }
+
   // NOTE: 보안 검증 토큰 만료 시 쿼리 캐시 무효화
   useEffect(() => {
     if (pointsTurnstile.data?.verified !== true) {
@@ -118,17 +126,11 @@ export default function RewardedAdSection() {
       {/* CLS 방지: 두 상태 모두 렌더링하고 visibility로 전환 */}
       <div className="relative h-5 flex items-center justify-center gap-2 text-xs">
         <MousePointerClick className="size-3 text-zinc-500" />
-        <span className="text-zinc-500">
-          {!me
-            ? '로그인 후 광고를 클릭하면 리보가 적립돼요'
-            : !isVerified
-              ? '보안 검증 후 광고를 클릭하면 리보가 적립돼요'
-              : '광고를 클릭하면 리보가 적립돼요'}
-        </span>
+        <span className="text-zinc-500">{getRewardedAdStatus(me, isVerified)}</span>
       </div>
 
       {/* 작가 후원 안내 (상시 노출, 컴팩트) */}
-      <details className="rounded-xl bg-white/[0.035] border border-white/[0.07]">
+      <details className="rounded-xl bg-white/4 border border-white/7">
         <summary className="cursor-pointer list-none px-4 py-3 flex items-center gap-2 text-sm text-zinc-200 [&::-webkit-details-marker]:hidden">
           <Heart className="size-4 text-zinc-400" />
           <span className="font-medium">광고 수익은 작가에게 돌아가요</span>
@@ -142,10 +144,7 @@ export default function RewardedAdSection() {
 
       {/* Cloudflare 보안 검증 */}
       {me && (
-        <div
-          className="p-4 rounded-xl bg-white/[0.035] border border-white/[0.07] space-y-3"
-          ref={verificationSectionRef}
-        >
+        <div className="p-4 rounded-xl bg-white/4 border border-white/7 space-y-3" ref={verificationSectionRef}>
           <div className="flex items-start gap-3">
             <ShieldCheck className="size-5 text-zinc-300 shrink-0 mt-0.5" />
             <div>
@@ -156,20 +155,36 @@ export default function RewardedAdSection() {
             </div>
           </div>
           <TurnstileWidget
-            onTokenChange={(token) => {
-              setTurnstileToken(token)
-              if (token) {
-                verifyTurnstile.mutate(token)
-              }
-            }}
+            onTokenChange={handleTurnstileTokenChange}
             options={{ action: 'points-earn' }}
             token={turnstileToken}
             turnstileRef={turnstileRef}
           />
-          {verifyTurnstile.isPending && <p className="text-xs text-center text-zinc-500">인증을 확인하고 있어요…</p>}
-          {!verifyTurnstile.isPending && isVerified && <p className="text-xs text-center text-zinc-500">인증됐어요</p>}
+          <p className="text-xs text-center text-zinc-500">
+            {getTurnstileStatus(isVerified, verifyTurnstile.isPending)}
+          </p>
         </div>
       )}
     </div>
   )
+}
+
+function getRewardedAdStatus(me: GETV1MeResponse | null | undefined, isVerified: boolean) {
+  if (!me) {
+    return '로그인 후 광고를 클릭하면 리보가 적립돼요'
+  }
+  if (!isVerified) {
+    return '보안 검증 후 광고를 클릭하면 리보가 적립돼요'
+  }
+  return '광고를 클릭하면 리보가 적립돼요'
+}
+
+function getTurnstileStatus(isVerified: boolean, isPending: boolean) {
+  if (isVerified) {
+    return '인증됐어요'
+  }
+  if (isPending) {
+    return '인증을 확인하고 있어요…'
+  }
+  return '인증을 확인해 주세요'
 }
