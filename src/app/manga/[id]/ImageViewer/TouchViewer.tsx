@@ -238,11 +238,15 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
   // NOTE: 이미지 스크롤 가능할 때 페이지 변경 시 스크롤 위치를 자연스럽게 설정함
   useEffect(() => {
     const ul = ulRef.current
-    if (!ul) return
+    if (!ul) {
+      return
+    }
 
     const isVerticallyScrollable = ul.scrollHeight > ul.clientHeight
     const isHorizontallyScrollable = ul.scrollWidth > ul.clientWidth
-    if (!isVerticallyScrollable && !isHorizontallyScrollable) return
+    if (!isVerticallyScrollable && !isHorizontallyScrollable) {
+      return
+    }
 
     const isNavigatingBackward = currentIndex < previousIndexRef.current
     const touchOrientation = getTouchOrientation()
@@ -299,7 +303,9 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
       }, SCROLL_THROTTLE)
 
       const ul = ulRef.current
-      if (!ul) return
+      if (!ul) {
+        return
+      }
 
       const isVerticallyScrollable = ul.scrollHeight > ul.clientHeight
       const isHorizontallyScrollable = ul.scrollWidth > ul.clientWidth

@@ -41,6 +41,7 @@ export default function MangaCardImage({ manga, mangaIndex, className = '' }: Re
           />
           <MangaImage
             fetchPriority={mangaIndex < 4 ? 'high' : undefined}
+            kind="thumbnail"
             mangaId={manga.id}
             src={images[0]?.thumbnail?.url ?? images[0]?.original?.url}
           />

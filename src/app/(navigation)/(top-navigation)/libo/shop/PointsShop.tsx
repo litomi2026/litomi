@@ -156,14 +156,14 @@ export default function PointsShop() {
             <button
               aria-disabled={isDisabled}
               aria-selected={isSelected}
-              className="w-full text-left flex items-center gap-4 p-4 rounded-xl border bg-white/[0.035] border-white/[0.07] hover:bg-white/5.5 aria-selected:bg-white/5 aria-selected:border-white/10 aria-disabled:opacity-60 aria-disabled:hover:bg-white/[0.035] aria-disabled:cursor-not-allowed transition"
+              className="w-full text-left flex items-center gap-4 p-4 rounded-xl border bg-white/4 border-white/7 hover:bg-white/5.5 aria-selected:bg-white/5 aria-selected:border-white/10 aria-disabled:opacity-60 aria-disabled:hover:bg-white/4 aria-disabled:cursor-not-allowed transition"
               disabled={isDisabled}
               key={item.id}
               onClick={() => setSelectedItemId(item.id)}
               role="option"
               type="button"
             >
-              <div className="size-10 rounded-lg flex items-center justify-center shrink-0 bg-white/5.5 border border-white/[0.07] text-zinc-200">
+              <div className="size-10 rounded-lg flex items-center justify-center shrink-0 bg-white/5.5 border border-white/7 text-zinc-200">
                 {item.icon}
               </div>
 
@@ -190,7 +190,7 @@ export default function PointsShop() {
 
       {/* 단일 구매 바 (애플식) */}
       <div className="sticky bottom-0 pb-safe">
-        <div className="rounded-xl bg-white/[0.035] border border-white/[0.07] p-3 flex items-center gap-3">
+        <div className="rounded-xl bg-white/4 border border-white/7 p-3 flex items-center gap-3">
           <div className="min-w-0">
             <p className="text-sm font-medium text-zinc-200 truncate">
               {selectedItem ? selectedItem.name : '상품을 선택해 주세요'}

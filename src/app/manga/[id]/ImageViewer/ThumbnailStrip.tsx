@@ -108,6 +108,7 @@ function ThumbnailStrip({ images, mangaId }: Props) {
                   className="w-full h-full object-cover"
                   fetchPriority={i > imageIndex - 3 && i <= imageIndex + 3 ? undefined : 'low'}
                   imageIndex={i}
+                  kind="thumbnail"
                   mangaId={mangaId}
                   src={image.url}
                 />

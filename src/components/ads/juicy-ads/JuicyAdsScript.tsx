@@ -3,7 +3,7 @@
 import Script from 'next/script'
 import { useEffect, useState } from 'react'
 
-import { JUICY_ADS_EVENT, JUICY_ADS_SCRIPT_URL } from './constants'
+import { JUICY_ADS_EVENT } from '../constants'
 
 declare global {
   interface Window {
@@ -48,7 +48,7 @@ export default function JuicyAdsScript() {
           window.__juicyAdsLoaded = true
           window.dispatchEvent(new Event(JUICY_ADS_EVENT.LOADED))
         }}
-        src={JUICY_ADS_SCRIPT_URL}
+        src="https://poweredby.jads.co/js/jads.js"
         strategy="afterInteractive"
       />
     </>

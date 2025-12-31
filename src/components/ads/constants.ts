@@ -1,5 +1,3 @@
-export const JUICY_ADS_SCRIPT_URL = 'https://poweredby.jads.co/js/jads.js'
-
 export const AD_SLOTS = {
   DETAIL_PAGE: {
     id: 'detail-page-ad',
@@ -20,8 +18,6 @@ export const AD_SLOTS = {
     height: 250,
   },
 } as const
-
-export const AD_LOAD_DELAY_MS = 100
 
 export const JUICY_ADS_EVENT = {
   LOADED: 'juicy-ads:loaded',

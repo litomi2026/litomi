@@ -20,6 +20,7 @@ export default function PostMangaCard({ mangaId }: Props) {
       <MangaImage
         alt={title}
         className="w-20 h-28 object-cover rounded border-2 border-zinc-700 shrink-0"
+        kind="thumbnail"
         mangaId={mangaId}
         src={thumbnailUrl}
       />

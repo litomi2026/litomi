@@ -163,7 +163,7 @@ function ScrollViewerRowItem({ index, manga, pageView, readingDirection, style }
         imageIndex={firstImageIndex}
         mangaId={manga.id}
         ref={inViewRef}
-        src={firstImage?.thumbnail?.url}
+        src={firstImage?.thumbnail?.url ?? firstImage?.original?.url}
       />
     </picture>
   )
@@ -171,7 +171,12 @@ function ScrollViewerRowItem({ index, manga, pageView, readingDirection, style }
   const second = isDoublePage && nextImageIndex < images.length && (
     <picture>
       <source media={`(min-width: ${nextImage?.thumbnail?.width ?? 0}px)`} srcSet={nextImage?.original?.url} />
-      <MangaImage fetchPriority="high" imageIndex={nextImageIndex} mangaId={manga.id} src={nextImage?.thumbnail?.url} />
+      <MangaImage
+        fetchPriority="high"
+        imageIndex={nextImageIndex}
+        mangaId={manga.id}
+        src={nextImage?.thumbnail?.url ?? nextImage?.original?.url}
+      />
     </picture>
   )
 

@@ -63,6 +63,7 @@ export default function MangaCardPreviewImages({ className, manga, mangaIndex = 
             fetchPriority={mangaIndex < 4 && imageIndex < 1 ? 'high' : undefined}
             imageIndex={imageIndex}
             key={imageIndex}
+            kind="thumbnail"
             loading={imageIndex >= 1 ? 'lazy' : undefined}
             mangaId={manga.id}
             src={images[imageIndex]?.thumbnail?.url ?? images[imageIndex]?.original?.url}

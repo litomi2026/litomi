@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-import JuicyAdsScript from '@/components/ads/JuicyAdsScript'
+import JuicyAdsScript from '@/components/ads/juicy-ads/JuicyAdsScript'
 import IconBell from '@/components/icons/IconBell'
 import IconBookmark from '@/components/icons/IconBookmark'
 import IconFlame from '@/components/icons/IconFlame'

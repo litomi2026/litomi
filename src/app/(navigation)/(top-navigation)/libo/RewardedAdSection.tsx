@@ -7,10 +7,14 @@ import ms from 'ms'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
+import type { GETV1MeResponse } from '@/backend/api/v1/me'
 import type { POSTV1PointTurnstileResponse } from '@/backend/api/v1/points/turnstile'
+import type { AdClickResult } from '@/components/ads/types'
 
+import AdsterraBanner300x250 from '@/components/ads/adsterra/AdsterraBanner300x250'
+import AdsterraNativeBanner from '@/components/ads/adsterra/AdsterraNativeBanner'
 import { AD_SLOTS } from '@/components/ads/constants'
-import JuicyAdsSlot, { type AdClickResult } from '@/components/ads/JuicyAdsSlot'
+import JuicyAdsSlot from '@/components/ads/juicy-ads/JuicyAdsSlot'
 import TurnstileWidget from '@/components/TurnstileWidget'
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
@@ -76,6 +80,13 @@ export default function RewardedAdSection() {
     toast.success(`${result.earned} 리보 적립됐어요`)
   }
 
+  function handleTurnstileTokenChange(token: string) {
+    setTurnstileToken(token)
+    if (token) {
+      verifyTurnstile.mutate(token)
+    }
+  }
+
   // NOTE: 보안 검증 토큰 만료 시 쿼리 캐시 무효화
   useEffect(() => {
     if (pointsTurnstile.data?.verified !== true) {
@@ -95,8 +106,25 @@ export default function RewardedAdSection() {
 
   return (
     <div className="space-y-4">
+      {/* 작가 후원 안내 (상시 노출, 컴팩트) */}
+      <details className="rounded-xl bg-white/4 border border-white/7">
+        <summary className="cursor-pointer list-none px-4 py-3 flex items-center gap-2 text-sm text-zinc-200 [&::-webkit-details-marker]:hidden">
+          <Heart className="size-4 text-zinc-400" />
+          <span className="font-medium">광고 수익은 작가에게 돌아가요</span>
+          <span className="ml-auto text-xs text-zinc-500">자세히</span>
+        </summary>
+        <div className="px-4 pb-4 text-sm text-zinc-400">
+          광고 수익은 서버 운영비를 제외하고 모두 작가 후원에 사용할 예정이에요. 광고를 한 번 봐주시면 좋아하는 작품의
+          창작자를 응원하는 데 도움이 돼요. 광고는 앞으로도{' '}
+          <code className="inline-flex items-center whitespace-nowrap rounded-md bg-white/6 px-1.5 py-0.5 font-mono text-xs text-zinc-200 ring-1 ring-white/10">
+            /libo
+          </code>{' '}
+          페이지에서만 노출할 거예요.
+        </div>
+      </details>
+
       {/* 광고 영역 */}
-      <div className="flex flex-wrap justify-center gap-4">
+      <div className="flex flex-wrap justify-center gap-x-4 gap-y-2">
         <JuicyAdsSlot
           adSlotId={AD_SLOTS.REWARDED.id}
           height={AD_SLOTS.REWARDED.height}
@@ -118,34 +146,17 @@ export default function RewardedAdSection() {
       {/* CLS 방지: 두 상태 모두 렌더링하고 visibility로 전환 */}
       <div className="relative h-5 flex items-center justify-center gap-2 text-xs">
         <MousePointerClick className="size-3 text-zinc-500" />
-        <span className="text-zinc-500">
-          {!me
-            ? '로그인 후 광고를 클릭하면 리보가 적립돼요'
-            : !isVerified
-              ? '보안 검증 후 광고를 클릭하면 리보가 적립돼요'
-              : '광고를 클릭하면 리보가 적립돼요'}
-        </span>
+        <span className="text-zinc-500">{getRewardedAdStatus(me, isVerified)}</span>
       </div>
 
-      {/* 작가 후원 안내 (상시 노출, 컴팩트) */}
-      <details className="rounded-xl bg-white/[0.035] border border-white/[0.07]">
-        <summary className="cursor-pointer list-none px-4 py-3 flex items-center gap-2 text-sm text-zinc-200 [&::-webkit-details-marker]:hidden">
-          <Heart className="size-4 text-zinc-400" />
-          <span className="font-medium">광고 수익은 작가에게 돌아가요</span>
-          <span className="ml-auto text-xs text-zinc-500">자세히</span>
-        </summary>
-        <div className="px-4 pb-4 text-sm text-zinc-400">
-          광고로 발생한 수익금은 서버 운영비를 제하고 전부 작가에게 후원할 예정이에요. 광고 클릭 한 번이 좋아하는 작품의
-          창작자를 응원하는 방법이 돼요.
-        </div>
-      </details>
+      {/* AdsterraBanner300x250 */}
+      <div className="flex flex-wrap justify-center gap-x-4 gap-y-2">
+        <AdsterraBanner300x250 adSlotId="rewarded-ad-adsterra" onAdClick={handleAdClick} rewardEnabled={false} />
+      </div>
 
       {/* Cloudflare 보안 검증 */}
       {me && (
-        <div
-          className="p-4 rounded-xl bg-white/[0.035] border border-white/[0.07] space-y-3"
-          ref={verificationSectionRef}
-        >
+        <div className="p-4 rounded-xl bg-white/4 border border-white/7 space-y-3" ref={verificationSectionRef}>
           <div className="flex items-start gap-3">
             <ShieldCheck className="size-5 text-zinc-300 shrink-0 mt-0.5" />
             <div>
@@ -156,20 +167,39 @@ export default function RewardedAdSection() {
             </div>
           </div>
           <TurnstileWidget
-            onTokenChange={(token) => {
-              setTurnstileToken(token)
-              if (token) {
-                verifyTurnstile.mutate(token)
-              }
-            }}
+            onTokenChange={handleTurnstileTokenChange}
             options={{ action: 'points-earn' }}
             token={turnstileToken}
             turnstileRef={turnstileRef}
           />
-          {verifyTurnstile.isPending && <p className="text-xs text-center text-zinc-500">인증을 확인하고 있어요…</p>}
-          {!verifyTurnstile.isPending && isVerified && <p className="text-xs text-center text-zinc-500">인증됐어요</p>}
+          <p className="text-xs text-center text-zinc-500">
+            {getTurnstileStatus(isVerified, verifyTurnstile.isPending)}
+          </p>
         </div>
       )}
+
+      {/* NativeBanner */}
+      <AdsterraNativeBanner className="w-full max-w-5xl mx-auto" />
     </div>
   )
+}
+
+function getRewardedAdStatus(me: GETV1MeResponse | null | undefined, isVerified: boolean) {
+  if (!me) {
+    return '로그인 후 광고를 클릭하면 리보가 적립돼요'
+  }
+  if (!isVerified) {
+    return '보안 검증 후 광고를 클릭하면 리보가 적립돼요'
+  }
+  return '상단 광고를 클릭하면 리보가 적립돼요'
+}
+
+function getTurnstileStatus(isVerified: boolean, isPending: boolean) {
+  if (isVerified) {
+    return '인증됐어요'
+  }
+  if (isPending) {
+    return '인증을 확인하고 있어요…'
+  }
+  return '인증을 확인해 주세요'
 }
