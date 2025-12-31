@@ -12,7 +12,7 @@ import { CookieKey } from '@/constants/storage'
 import { db } from '@/database/supabase/drizzle'
 import { adImpressionTokenTable, pointTransactionTable, userPointsTable } from '@/database/supabase/points'
 
-import { verifyPointsTurnstileToken } from './turnstile-cookie'
+import { verifyPointsTurnstileToken } from './util-turnstile-cookie'
 
 export type POSTV1PointEarnResponse = {
   balance: number

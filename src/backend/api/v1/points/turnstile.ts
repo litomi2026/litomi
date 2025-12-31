@@ -10,9 +10,14 @@ import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { COOKIE_DOMAIN } from '@/constants'
 import { CookieKey } from '@/constants/storage'
+import { createCacheControl } from '@/utils/cache-control'
 import TurnstileValidator from '@/utils/turnstile'
 
-import { POINTS_TURNSTILE_TTL_SECONDS, signPointsTurnstileToken, verifyPointsTurnstileToken } from './turnstile-cookie'
+import {
+  POINTS_TURNSTILE_TTL_SECONDS,
+  signPointsTurnstileToken,
+  verifyPointsTurnstileToken,
+} from './util-turnstile-cookie'
 
 export type GETV1PointTurnstileResponse = { verified: false } | { verified: true; expiresInSeconds: number }
 
@@ -51,10 +56,17 @@ route.get('/', async (c) => {
   const remainingMs = verified.expiresAt.getTime() - Date.now()
   const expiresInSeconds = Math.max(0, Math.ceil(remainingMs / SECOND_MS))
 
-  return c.json<GETV1PointTurnstileResponse>({
+  const response = {
     verified: true,
     expiresInSeconds,
+  }
+
+  const cacheControl = createCacheControl({
+    private: true,
+    maxAge: 3,
   })
+
+  return c.json<GETV1PointTurnstileResponse>(response, { headers: { 'Cache-Control': cacheControl } })
 })
 
 route.post('/', zProblemValidator('json', requestSchema), async (c) => {

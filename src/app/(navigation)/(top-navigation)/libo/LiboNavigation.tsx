@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { type ReactNode } from 'react'
 
+import LinkPending from '@/components/LinkPending'
 import useMeQuery from '@/query/useMeQuery'
 
 import { LIBO_PAGE_LAYOUT } from './constant'
@@ -77,7 +78,7 @@ export default function LiboNavigation({ children }: Props) {
             prefetch={false}
             role="tab"
           >
-            {tab.icon}
+            <LinkPending className="size-4">{tab.icon}</LinkPending>
             {tab.label}
           </Link>
         ))}
