@@ -3,6 +3,7 @@
 import { TurnstileInstance } from '@marsidev/react-turnstile'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Heart, MousePointerClick, ShieldCheck } from 'lucide-react'
+import ms from 'ms'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -59,7 +60,7 @@ export default function RewardedAdSection() {
 
     if (!isVerified) {
       toast.warning('보안 검증을 완료해 주세요')
-      verificationSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      verificationSectionRef.current?.scrollIntoView({ block: 'center' })
       return
     }
 
@@ -81,7 +82,7 @@ export default function RewardedAdSection() {
       return
     }
 
-    const timeoutMs = Math.max(0, pointsTurnstile.data.expiresInSeconds * 1000)
+    const timeoutMs = Math.max(0, pointsTurnstile.data.expiresInSeconds * ms('1s'))
 
     const timeoutId = setTimeout(() => {
       queryClient.invalidateQueries({ queryKey: QueryKeys.pointsTurnstile })
@@ -94,18 +95,6 @@ export default function RewardedAdSection() {
 
   return (
     <div className="space-y-4">
-      {/* 작가 후원 안내 */}
-      <div className="flex items-start gap-3 p-4 bg-linear-to-r from-pink-500/10 to-rose-500/10 rounded-lg border border-pink-500/20">
-        <Heart className="size-5 text-pink-400 shrink-0 mt-0.5" />
-        <div>
-          <h3 className="font-medium text-zinc-200 mb-1">광고 수익은 작가에게 돌아가요</h3>
-          <p className="text-sm text-zinc-400">
-            광고로 발생한 수익금은 서버 운영비를 제하고 전부 작가에게 후원할 예정이에요. 광고 클릭 한 번이 좋아하는
-            작품의 창작자를 응원하는 방법이 돼요.
-          </p>
-        </div>
-      </div>
-
       {/* 광고 영역 */}
       <div className="flex flex-wrap justify-center gap-4">
         <JuicyAdsSlot
@@ -134,13 +123,29 @@ export default function RewardedAdSection() {
             ? '로그인 후 광고를 클릭하면 리보가 적립돼요'
             : !isVerified
               ? '보안 검증 후 광고를 클릭하면 리보가 적립돼요'
-              : '광고를 클릭하여 리보 적립'}
+              : '광고를 클릭하면 리보가 적립돼요'}
         </span>
       </div>
 
+      {/* 작가 후원 안내 (상시 노출, 컴팩트) */}
+      <details className="rounded-xl bg-white/[0.035] border border-white/[0.07]">
+        <summary className="cursor-pointer list-none px-4 py-3 flex items-center gap-2 text-sm text-zinc-200 [&::-webkit-details-marker]:hidden">
+          <Heart className="size-4 text-zinc-400" />
+          <span className="font-medium">광고 수익은 작가에게 돌아가요</span>
+          <span className="ml-auto text-xs text-zinc-500">자세히</span>
+        </summary>
+        <div className="px-4 pb-4 text-sm text-zinc-400">
+          광고로 발생한 수익금은 서버 운영비를 제하고 전부 작가에게 후원할 예정이에요. 광고 클릭 한 번이 좋아하는 작품의
+          창작자를 응원하는 방법이 돼요.
+        </div>
+      </details>
+
       {/* Cloudflare 보안 검증 */}
       {me && (
-        <div className="p-4 bg-zinc-900/40 rounded-lg border border-zinc-700 space-y-3" ref={verificationSectionRef}>
+        <div
+          className="p-4 rounded-xl bg-white/[0.035] border border-white/[0.07] space-y-3"
+          ref={verificationSectionRef}
+        >
           <div className="flex items-start gap-3">
             <ShieldCheck className="size-5 text-zinc-300 shrink-0 mt-0.5" />
             <div>
@@ -161,9 +166,8 @@ export default function RewardedAdSection() {
             token={turnstileToken}
             turnstileRef={turnstileRef}
           />
-          <p className="text-xs text-center text-zinc-500">
-            {verifyTurnstile.isPending ? '인증을 확인하고 있어요…' : '인증을 확인했어요'}
-          </p>
+          {verifyTurnstile.isPending && <p className="text-xs text-center text-zinc-500">인증을 확인하고 있어요…</p>}
+          {!verifyTurnstile.isPending && isVerified && <p className="text-xs text-center text-zinc-500">인증됐어요</p>}
         </div>
       )}
     </div>

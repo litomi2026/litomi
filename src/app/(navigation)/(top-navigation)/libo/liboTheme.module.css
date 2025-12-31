@@ -1,0 +1,13 @@
+.heroCard {
+  background:
+    radial-gradient(120% 120% at 18% 28%, color-mix(in oklab, var(--color-brand) 26%, transparent) 0%, transparent 56%),
+    radial-gradient(100% 90% at 82% 12%, color-mix(in oklab, var(--color-brand) 18%, transparent) 0%, transparent 60%),
+    radial-gradient(110% 100% at 70% 92%, color-mix(in oklab, var(--color-brand) 12%, transparent) 0%, transparent 65%),
+    rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 1px 0 rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}

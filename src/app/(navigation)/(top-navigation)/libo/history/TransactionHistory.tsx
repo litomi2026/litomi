@@ -2,7 +2,6 @@
 
 import { ArrowDownLeft, ArrowUpRight } from 'lucide-react'
 
-import IconSpinner from '@/components/icons/IconSpinner'
 import useMeQuery from '@/query/useMeQuery'
 import { formatDistanceToNow } from '@/utils/format/date'
 import { formatNumber } from '@/utils/format/number'
@@ -30,7 +29,7 @@ export default function TransactionHistory() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-8">
-        <IconSpinner className="size-6" />
+        <p className="text-sm text-zinc-400">불러오는 중이에요</p>
       </div>
     )
   }
@@ -39,7 +38,7 @@ export default function TransactionHistory() {
     return (
       <div className="text-center py-8">
         <p className="text-zinc-500">거래 내역이 없어요</p>
-        <p className="text-sm text-zinc-600 mt-1">광고를 클릭하여 리보를 적립해보세요!</p>
+        <p className="text-sm text-zinc-600 mt-1">광고를 클릭해서 리보를 적립해 보세요</p>
       </div>
     )
   }
@@ -47,15 +46,18 @@ export default function TransactionHistory() {
   return (
     <div className="space-y-2">
       {transactions.map((tx) => (
-        <div className="flex items-center gap-3 p-3 bg-zinc-800/30 rounded-lg" key={tx.id}>
+        <div
+          className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.035] border border-white/[0.07]"
+          key={tx.id}
+        >
           <div
-            className={`size-8 rounded-full flex items-center justify-center shrink-0
-            ${tx.type === 'earn' ? 'bg-green-500/20' : 'bg-red-500/20'}`}
+            className="size-8 rounded-full flex items-center justify-center shrink-0 bg-white/[0.055] border border-white/[0.07] text-zinc-200 data-[type=earn]:text-emerald-400 data-[type=spend]:text-rose-400"
+            data-type={tx.type}
           >
             {tx.type === 'earn' ? (
-              <ArrowDownLeft className="size-4 text-green-400" />
+              <ArrowDownLeft className="size-4" />
             ) : (
-              <ArrowUpRight className="size-4 text-red-400" />
+              <ArrowUpRight className="size-4" />
             )}
           </div>
 
@@ -69,7 +71,7 @@ export default function TransactionHistory() {
           </div>
 
           <div className="text-right shrink-0">
-            <p className={`font-medium ${tx.type === 'earn' ? 'text-green-400' : 'text-red-400'}`}>
+            <p className="font-medium text-zinc-200 data-[type=earn]:text-emerald-400 data-[type=spend]:text-rose-400" data-type={tx.type}>
               {tx.type === 'earn' ? '+' : ''}
               {tx.amount.toLocaleString()} 리보
             </p>
@@ -82,11 +84,11 @@ export default function TransactionHistory() {
 
       {hasNextPage && (
         <button
-          className="w-full py-2 text-sm text-zinc-400 hover:text-zinc-300 transition"
+          className="w-full py-2 text-sm font-medium rounded-xl bg-white/[0.035] border border-white/[0.07] text-zinc-300 hover:bg-white/[0.055] disabled:opacity-60 disabled:cursor-not-allowed transition"
           disabled={isFetchingNextPage}
           onClick={() => fetchNextPage()}
         >
-          {isFetchingNextPage ? <IconSpinner className="size-4 mx-auto" /> : '더 보기'}
+          {isFetchingNextPage ? '불러오는 중…' : '더 보기'}
         </button>
       )}
     </div>

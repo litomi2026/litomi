@@ -8,6 +8,7 @@ import { type ReactNode } from 'react'
 import useMeQuery from '@/query/useMeQuery'
 
 import { LIBO_PAGE_LAYOUT } from './constant'
+import styles from './liboTheme.module.css'
 import { usePointsQuery } from './usePointsQuery'
 
 type Tab = 'earn' | 'history' | 'shop'
@@ -36,40 +37,41 @@ export default function LiboNavigation({ children }: Props) {
   return (
     <div className={LIBO_PAGE_LAYOUT.container}>
       {/* 리보 잔액 */}
-      <div
-        aria-disabled={!isLoggedIn}
-        className="bg-linear-to-br from-amber-500/20 to-orange-600/20 rounded-xl p-4 border border-amber-500/30 aria-disabled:opacity-80"
-      >
+      <div aria-disabled={!isLoggedIn} className={`${styles.heroCard} rounded-2xl p-4 aria-disabled:opacity-80`}>
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-zinc-400 mb-1">내 리보</p>
-            <p className="text-3xl font-bold text-amber-400">
+            <p className="text-sm text-zinc-300 mb-1">내 리보</p>
+            <p className="text-3xl font-semibold tracking-tight text-zinc-50 tabular-nums">
               {isLoggedIn ? (isLoading ? '...' : balance.toLocaleString()) : '—'}
-              <span className="text-lg ml-1">리보</span>
+              <span className="text-base font-medium text-zinc-300 ml-1">리보</span>
             </p>
           </div>
-          <div className="size-12 rounded-full bg-amber-500/20 flex items-center justify-center">
-            <TrendingUp className="size-6 text-amber-400" />
+          <div className="size-12 rounded-full bg-white/7.5 border border-white/[0.07] flex items-center justify-center">
+            <TrendingUp className="size-6 text-zinc-200" />
           </div>
         </div>
-        <div className="mt-3 pt-3 border-t border-amber-500/20 flex gap-1 text-xs text-zinc-400">
+        <div className="mt-4 pt-3 border-t border-white/[0.07] flex flex-wrap gap-x-3 gap-y-1 text-xs text-zinc-400">
           {!isLoggedIn && !isLoading ? (
-            <p className="text-xs text-zinc-500">로그인하면 리보 잔액과 내역을 확인할 수 있어요</p>
+            <p className="text-zinc-400/90">로그인하면 리보 잔액과 내역을 확인할 수 있어요</p>
           ) : (
             <>
-              <span>총 적립: {isLoading ? '...' : isLoggedIn ? totalEarned.toLocaleString() : '—'} 리보</span>
-              <span>총 사용: {isLoading ? '...' : isLoggedIn ? totalSpent.toLocaleString() : '—'} 리보</span>
+              <span>총 적립 {isLoading ? '...' : isLoggedIn ? totalEarned.toLocaleString() : '—'} 리보</span>
+              <span>총 사용 {isLoading ? '...' : isLoggedIn ? totalSpent.toLocaleString() : '—'} 리보</span>
             </>
           )}
         </div>
       </div>
 
       {/* 탭 네비게이션 */}
-      <div aria-label="리보 탭" className="flex gap-1 p-1 bg-zinc-800/50 rounded-lg" role="tablist">
+      <div
+        aria-label="리보 탭"
+        className="flex gap-1 p-1 rounded-xl bg-white/[0.035] border border-white/[0.07] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
+        role="tablist"
+      >
         {TABS.map((tab) => (
           <Link
             aria-selected={activeTab === tab.id}
-            className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-md text-sm font-medium transition-all text-zinc-400 hover:text-zinc-300 hover:bg-zinc-700/50 aria-selected:bg-zinc-700 aria-selected:text-white aria-selected:pointer-events-none"
+            className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-medium text-white/70 hover:bg-white/4 hover:text-white/90 aria-selected:bg-white/5 aria-selected:text-white/90 aria-selected:shadow-[inset_0_-2px_0_var(--color-brand),inset_0_0_0_1px_rgba(255,255,255,0.08)] aria-selected:pointer-events-none transition"
             href={tab.href}
             key={tab.id}
             prefetch={false}
@@ -87,10 +89,10 @@ export default function LiboNavigation({ children }: Props) {
       </div>
 
       {/* 안내 문구 */}
-      <details className="group text-xs text-zinc-500 bg-zinc-800/30 rounded-lg">
-        <summary className="cursor-pointer list-none p-3 flex items-center gap-2 [&::-webkit-details-marker]:hidden">
-          <HelpCircle className="size-4 transition-transform group-open:rotate-180" />
-          안내
+      <details className="text-xs text-zinc-500 rounded-xl bg-white/[0.035] border border-white/[0.07]">
+        <summary className="cursor-pointer list-none p-3 flex items-center gap-2 text-zinc-300 [&::-webkit-details-marker]:hidden">
+          <HelpCircle className="size-4 text-zinc-400" />
+          <span className="font-medium">안내</span>
         </summary>
         <div className="px-3 pb-3 space-y-4">
           <div className="space-y-1">
@@ -98,7 +100,6 @@ export default function LiboNavigation({ children }: Props) {
             <ul className="space-y-1 list-disc list-inside marker:text-zinc-600">
               <li>광고 클릭 시 10 리보가 적립돼요</li>
               <li>적립된 리보로 내 공간을 확장할 수 있어요</li>
-              <li>광고 수익은 서버 운영비 제외 후 전액 작가 후원에 사용돼요</li>
             </ul>
           </div>
           <div className="space-y-1">
