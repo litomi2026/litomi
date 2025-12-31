@@ -5,8 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "dev:prod": "env-cmd -f .env.production next dev",
-    "dev:backend": "kill -KILL -- $(lsof -t -iTCP:8080 -sTCP:LISTEN) && bun run --conditions=react-server --env-file=.env.development --hot src/backend/index.ts",
-    "dev:backend:prod": "kill -KILL -- $(lsof -t -iTCP:8080 -sTCP:LISTEN) && bun run --conditions=react-server --env-file=.env.production --hot src/backend/index.ts",
+    "kill:backend": "pids=\"$(lsof -t -iTCP:8080 -sTCP:LISTEN 2>/dev/null || true)\"; if [ -n \"$pids\" ]; then kill -KILL -- $pids; fi;",
+    "dev:backend": "bun run kill:backend && bun run --conditions=react-server --env-file=.env.development --hot src/backend/index.ts",
+    "dev:backend:prod": "bun run kill:backend && bun run --conditions=react-server --env-file=.env.production --hot src/backend/index.ts",
     "build": "next build",
     "build:backend": "docker build -t litomi-backend-local .",
     "start": "next start",
@@ -35,7 +36,11 @@
     "test:performance:setup": "docker compose -p litomi-performance -f docker-compose.performance.yml up -d --wait",
     "test:performance:cleanup": "docker compose -p litomi-performance -f docker-compose.performance.yml down -v",
     "test:performance": "bun run test:performance:cleanup; bun run test:performance:setup && bun run test:performance:run; bun run test:performance:cleanup",
-    "notify": "bun --conditions=react-server cloud-run/crawl-and-notify/src/index.ts"
+    "notify": "bun --conditions=react-server cloud-run/crawl-and-notify/src/index.ts",
+    "sponsor:generate": "bun tools/generateSponsors.ts",
+    "sponsor:labels": "bun tools/listSponsorLabels.ts",
+    "sponsor:normalize-labels": "bun tools/normalizeSponsorLabels.ts",
+    "sponsor:resolve-redirects": "bun tools/resolveSponsorRedirects.ts"
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^2.32.1",

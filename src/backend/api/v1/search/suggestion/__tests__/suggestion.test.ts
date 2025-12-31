@@ -281,8 +281,8 @@ describe('GET /api/v1/search/suggestions', () => {
         expect(data.some((item) => item.value === 'character:aerith_gainsborough')).toBe(true)
       })
 
-      test('"게인브루그" 값을 검색했을 때 aerith_gainsborough를 반환한다 (번역된 단어)', async () => {
-        const response = await createRequest('게인브루그')
+      test('"게인즈버러" 값을 검색했을 때 aerith_gainsborough를 반환한다 (번역된 단어)', async () => {
+        const response = await createRequest('게인즈버러')
         const data = (await response.json()) as GETSearchSuggestionsResponse
 
         expect(response.status).toBe(200)

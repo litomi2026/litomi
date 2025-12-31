@@ -13,6 +13,7 @@ export const env = createEnv({
     POSTGRES_URL: z.url(),
     SUPABASE_CERTIFICATE: z.string().min(1).optional(),
     TOTP_ENCRYPTION_KEY: z.string().regex(/^[0-9a-f]{64}$/i, 'TOTP_ENCRYPTION_KEY must be a 64-character hex string'),
+    TURNSTILE_SECRET_KEY: z.string().min(1),
     UPSTASH_KV_REST_API_TOKEN: z.string().min(1),
     UPSTASH_KV_REST_API_URL: z.url(),
   },

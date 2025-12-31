@@ -28,7 +28,6 @@ export type AdClickResult = {
   success: boolean
   earned?: number
   error?: string
-  requiresLogin?: boolean
 }
 
 type Props = {
@@ -271,7 +270,7 @@ export default function JuicyAdsSlot({
       lastAdIframeFocusAtRef.current = null
 
       if (!rewardEnabled) {
-        onAdClick?.({ success: false, requiresLogin: true })
+        onAdClick?.({ success: false })
         return
       }
 
@@ -329,46 +328,43 @@ export default function JuicyAdsSlot({
       {isAdBlocked ? (
         <AdBlockedMessage height={height} width={width} />
       ) : (
-        <>
-          <div
-            aria-disabled={shouldDimAd}
-            className="relative cursor-pointer z-0 transition aria-disabled:opacity-60 aria-disabled:cursor-not-allowed"
-            ref={slotRef}
-            style={{ width: `min(${width}px, 100%)`, height }}
-          >
-            <ins className="block w-full h-full" data-height={height} data-width={width} id={String(zoneId)} />
-            {isLoading && (
-              <div className="absolute inset-0 bg-zinc-900/50 flex items-center justify-center animate-fade-in">
-                <div className="size-5 border-2 border-zinc-500 border-t-transparent rounded-full animate-spin" />
-              </div>
-            )}
-          </div>
-          {/* CLS 방지: 항상 고정 높이 유지 */}
-          <div className="text-xs h-5 flex items-center justify-center">
-            {rewardEnabled && apiError ? (
-              <div className="text-center">
-                <span className="text-amber-500">
-                  {apiError instanceof ProblemDetailsError ? apiError.message : '오류가 발생했어요'}
-                  <span className="tabular-nums">{cooldownLabel && ` (${cooldownLabel})`}</span>
-                </span>
-                {apiError instanceof ProblemDetailsError &&
-                  !apiError.message.includes('한도') &&
-                  !apiError.message.includes('잠시 후') && (
-                    <button className="ml-2 text-blue-400 hover:underline" disabled={isLoading} onClick={handleRefresh}>
-                      다시 시도
-                    </button>
-                  )}
-              </div>
-            ) : rewardEnabled && dailyRemaining !== null ? (
-              dailyRemaining > 0 ? (
-                <span className="text-zinc-500">오늘 남은 적립: {dailyRemaining} 리보</span>
-              ) : (
-                <span className="text-amber-500">오늘의 적립 한도에 도달했어요</span>
-              )
-            ) : null}
-          </div>
-        </>
+        <div
+          aria-disabled={shouldDimAd}
+          className="relative cursor-pointer z-0 rounded-xl border overflow-hidden bg-white/4 border-white/7 aria-disabled:opacity-60 aria-disabled:cursor-not-allowed"
+          ref={slotRef}
+          style={{ width: `min(${width}px, 100%)`, height }}
+        >
+          <ins className="block w-full h-full" data-height={height} data-width={width} id={String(zoneId)} />
+          {isLoading && (
+            <div className="absolute inset-0 bg-zinc-950/40 flex items-center justify-center">
+              <span className="text-xs font-medium text-zinc-200">불러오는 중이에요…</span>
+            </div>
+          )}
+        </div>
       )}
+      <div className="text-xs h-5 flex items-center justify-center">
+        {rewardEnabled && apiError ? (
+          <div className="text-center">
+            <span className="text-amber-500">
+              {apiError instanceof ProblemDetailsError ? apiError.message : '오류가 발생했어요'}
+              <span className="tabular-nums">{cooldownLabel && ` (${cooldownLabel})`}</span>
+            </span>
+            {apiError instanceof ProblemDetailsError &&
+              !apiError.message.includes('한도') &&
+              !apiError.message.includes('잠시 후') && (
+                <button className="ml-2 text-zinc-300 underline" disabled={isLoading} onClick={handleRefresh}>
+                  다시 시도
+                </button>
+              )}
+          </div>
+        ) : rewardEnabled && dailyRemaining !== null ? (
+          dailyRemaining > 0 ? (
+            <span className="text-zinc-500">오늘 남은 적립: {dailyRemaining} 리보</span>
+          ) : (
+            <span className="text-amber-500">오늘의 적립 한도에 도달했어요</span>
+          )
+        ) : null}
+      </div>
     </div>
   )
 }
@@ -376,7 +372,7 @@ export default function JuicyAdsSlot({
 function AdBlockedMessage({ height, width }: { height: number; width: number }) {
   return (
     <div
-      className="flex flex-col items-center justify-center gap-3 p-4 bg-zinc-800/50 rounded-lg border border-zinc-700 text-center"
+      className="flex flex-col items-center justify-center gap-3 p-4 rounded-xl border text-center bg-white/4 border-white/7"
       style={{ width: `min(${width}px, 100%)`, minHeight: height }}
     >
       <ShieldOff className="size-8 text-zinc-500" />
@@ -384,7 +380,7 @@ function AdBlockedMessage({ height, width }: { height: number; width: number }) 
         <p className="text-sm font-medium text-zinc-300">광고가 차단되고 있어요</p>
         <p className="text-xs text-zinc-500">
           광고 수익은 서버 운영과 작가 후원에 사용돼요.
-          <br />이 사이트를 화이트리스트에 추가해 주시면 큰 도움이 돼요.
+          <br />이 사이트의 광고를 허용해 주시면 큰 도움이 돼요.
         </p>
       </div>
       <div className="text-xs text-zinc-600">광고가 보이면 클릭해서 리보를 적립할 수 있어요</div>

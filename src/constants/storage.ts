@@ -4,6 +4,7 @@ export enum CookieKey {
   TRUSTED_BROWSER_TOKEN = 'tbt',
   LOCALE = 'locale',
   BBATON_ATTEMPT_ID = 'bbai',
+  POINTS_TURNSTILE = 'ptt',
 }
 
 export enum LocalStorageKey {

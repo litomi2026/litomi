@@ -25,6 +25,7 @@ export const QueryKeys = {
   readingHistory: (mangaId: number) => ['me', 'readingHistory', mangaId],
   points: ['me', 'points'],
   pointsExpansion: ['me', 'points', 'expansion'],
+  pointsTurnstile: ['me', 'points', 'turnstile'],
   pointsTransactions: ['me', 'points', 'transactions'],
 
   manga: (id: number) => ['manga', id],

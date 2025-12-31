@@ -1,13 +1,18 @@
 import { and, eq, gt, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
+import { deleteCookie, getCookie } from 'hono/cookie'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
+import { COOKIE_DOMAIN } from '@/constants'
 import { POINT_CONSTANTS, TRANSACTION_TYPE } from '@/constants/points'
+import { CookieKey } from '@/constants/storage'
 import { db } from '@/database/supabase/drizzle'
 import { adImpressionTokenTable, pointTransactionTable, userPointsTable } from '@/database/supabase/points'
+
+import { verifyPointsTurnstileToken } from './util-turnstile-cookie'
 
 export type POSTV1PointEarnResponse = {
   balance: number
@@ -30,6 +35,27 @@ route.post('/', zProblemValidator('json', requestSchema), async (c) => {
 
   if (!userId) {
     return problemResponse(c, { status: 401 })
+  }
+
+  const turnstileCookie = getCookie(c, CookieKey.POINTS_TURNSTILE)
+
+  if (!turnstileCookie) {
+    return problemResponse(c, {
+      status: 403,
+      code: 'turnstile-required',
+      detail: '보안 검증을 완료해 주세요',
+    })
+  }
+
+  const verified = await verifyPointsTurnstileToken(turnstileCookie)
+
+  if (!verified || verified.userId !== userId) {
+    deleteCookie(c, CookieKey.POINTS_TURNSTILE, { domain: COOKIE_DOMAIN, path: '/api/v1/points' })
+    return problemResponse(c, {
+      status: 403,
+      code: 'turnstile-required',
+      detail: '보안 검증을 완료해 주세요',
+    })
   }
 
   const { token } = c.req.valid('json')
