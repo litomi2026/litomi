@@ -17,9 +17,9 @@ export type GETLibraryResponse = {
   itemCount: number
 }[]
 
-const getLibraryRoute = new Hono<Env>()
+const route = new Hono<Env>()
 
-getLibraryRoute.get('/', async (c) => {
+route.get('/', async (c) => {
   const userId = c.get('userId')
 
   if (!userId) {
@@ -57,4 +57,4 @@ getLibraryRoute.get('/', async (c) => {
   }
 })
 
-export default getLibraryRoute
+export default route

@@ -19,7 +19,7 @@ import {
   verifyPointsTurnstileToken,
 } from './util-turnstile-cookie'
 
-export type GETV1PointTurnstileResponse = { verified: false } | { verified: true; expiresInSeconds: number }
+export type GETV1PointTurnstileResponse = { verified: true; expiresInSeconds: number }
 
 export type POSTV1PointTurnstileResponse = { verified: true; expiresInSeconds: number }
 
@@ -43,23 +43,27 @@ route.get('/', async (c) => {
   const cookieValue = getCookie(c, CookieKey.POINTS_TURNSTILE)
 
   if (!cookieValue) {
-    return c.json<GETV1PointTurnstileResponse>({ verified: false })
+    return problemResponse(c, {
+      status: 403,
+      code: 'turnstile-required',
+      detail: '보안 검증을 완료해 주세요',
+    })
   }
 
   const verified = await verifyPointsTurnstileToken(cookieValue)
 
   if (!verified || verified.userId !== userId) {
     deleteCookie(c, CookieKey.POINTS_TURNSTILE, { domain: COOKIE_DOMAIN, path: '/api/v1/points' })
-    return c.json<GETV1PointTurnstileResponse>({ verified: false })
+    return problemResponse(c, {
+      status: 403,
+      code: 'turnstile-required',
+      detail: '보안 검증을 완료해 주세요',
+    })
   }
 
   const remainingMs = verified.expiresAt.getTime() - Date.now()
   const expiresInSeconds = Math.max(0, Math.ceil(remainingMs / SECOND_MS))
-
-  const response = {
-    verified: true,
-    expiresInSeconds,
-  }
+  const response: GETV1PointTurnstileResponse = { verified: true, expiresInSeconds }
 
   const cacheControl = createCacheControl({
     private: true,

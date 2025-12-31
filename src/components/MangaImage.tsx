@@ -29,6 +29,10 @@ export default function MangaImage({ imageIndex = 0, mangaId, src = '/', ...prop
 }
 
 function getFallbacks(mangaId: number | undefined, imageIndex: number): string[] {
+  if (mangaId === undefined) {
+    return []
+  }
+
   return [
     `https://soujpa.in/start/${mangaId}/${mangaId}_${imageIndex}.avif`,
     `https://soujpa.in/start/${mangaId}/${mangaId}_${imageIndex}.webp`,
