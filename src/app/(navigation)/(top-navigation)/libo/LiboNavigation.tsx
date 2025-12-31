@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { type ReactNode } from 'react'
 
-import AdsterraNativeBanner from '@/components/ads/AdsterraNativeBanner'
 import LinkPending from '@/components/LinkPending'
 import useMeQuery from '@/query/useMeQuery'
 
@@ -114,9 +113,6 @@ export default function LiboNavigation({ children }: Props) {
           </div>
         </div>
       </details>
-
-      {/* NativeBanner */}
-      <AdsterraNativeBanner className="w-full max-w-5xl mx-auto" />
     </div>
   )
 }

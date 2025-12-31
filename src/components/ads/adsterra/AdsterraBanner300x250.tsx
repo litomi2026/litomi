@@ -4,14 +4,14 @@ import { useEffect, useRef, useState } from 'react'
 
 import { formatDistanceFromNow } from '@/utils/format/date'
 
-import type { AdClickResult } from './types'
+import type { AdClickResult } from '../types'
 
-import AdBlockedMessage from './AdBlockedMessage'
-import AdPlaceholder from './AdPlaceholder'
-import RewardedAdFooter from './RewardedAdFooter'
-import { useAdIframeClickEffect } from './useAdIframeClickEffect'
-import { useAdIframeLoadEffect } from './useAdIframeLoadEffect'
-import { useRewardedAd } from './useRewardedAd'
+import AdBlockedMessage from '../AdBlockedMessage'
+import AdPlaceholder from '../AdPlaceholder'
+import RewardedAdFooter from '../RewardedAdFooter'
+import { useAdIframeClickEffect } from '../useAdIframeClickEffect'
+import { useAdIframeLoadEffect } from '../useAdIframeLoadEffect'
+import { useRewardedAd } from '../useRewardedAd'
 
 type AtOptions = {
   key: string

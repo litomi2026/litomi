@@ -52,7 +52,7 @@ export default function AdsterraNativeBanner({ className = '' }: Props) {
 
   return (
     <div className={className} ref={wrapperRef}>
-      <div id={CONTAINER_ID} />
+      <div className="aspect-736/229" id={CONTAINER_ID} />
     </div>
   )
 }
