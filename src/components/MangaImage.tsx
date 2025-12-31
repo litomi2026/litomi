@@ -38,7 +38,6 @@ function getFallbacks(mangaId: number, imageIndex: number): string[] {
     `https://soujpa.in/start/${mangaId}/${mangaId}_${imageIndex}.avif`,
     `https://soujpa.in/start/${mangaId}/${mangaId}_${imageIndex}.webp`,
     `https://cdn.hentkor.net/pages/${mangaId}/${imageIndex + 1}.avif`,
-    `https://cdn.imagedeliveries.com/${mangaId}/thumbnails/cover.webp`,
     '/image/fallback.svg',
   ]
 }
