@@ -107,8 +107,7 @@ export default function LiboNavigation({ children }: Props) {
             <p className="text-zinc-400 font-medium">적립 주의사항</p>
             <ul className="space-y-1 list-disc list-inside marker:text-zinc-600">
               <li>광고 클릭 시 새 탭에서 광고 페이지가 열려요</li>
-              <li>같은 유저: 1분 후 다시 적립 가능</li>
-              <li>같은 광고: 5분 후 다시 클릭 가능</li>
+              <li>같은 광고: 1분 후 다시 클릭 가능</li>
               <li>하루 최대 100 리보 (10회) 적립 가능</li>
             </ul>
           </div>
