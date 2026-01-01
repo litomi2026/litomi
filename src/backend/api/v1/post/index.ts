@@ -3,6 +3,7 @@ import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { privateCacheControl } from '@/backend/utils/cache-control'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { ReferredPost } from '@/components/post/ReferredPostCard'
 import { POST_PER_PAGE } from '@/constants/policy'
@@ -63,10 +64,7 @@ postRoutes.get('/', zProblemValidator('query', querySchema), async (c) => {
         private: true,
         maxAge: sec('1 hour'),
       })
-    : createCacheControl({
-        private: true,
-        maxAge: 3,
-      })
+    : privateCacheControl
 
   const hasNextPage = postRows.length > limit
   const posts = hasNextPage ? postRows.slice(0, limit) : postRows

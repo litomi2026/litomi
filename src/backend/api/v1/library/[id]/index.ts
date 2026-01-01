@@ -4,13 +4,13 @@ import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { decodeLibraryIdCursor, encodeLibraryIdCursor } from '@/common/cursor'
 import { LIBRARY_ITEMS_PER_PAGE } from '@/constants/policy'
 import { db } from '@/database/supabase/drizzle'
 import { libraryItemTable, libraryTable } from '@/database/supabase/library'
-import { createCacheControl } from '@/utils/cache-control'
 
 const paramsSchema = z.object({
   id: z.coerce.number().int().positive(),
@@ -89,13 +89,7 @@ itemsRoutes.get('/', zProblemValidator('param', paramsSchema), zProblemValidator
       items,
       nextCursor,
     }
-
-    const cacheControl = createCacheControl({
-      private: true,
-      maxAge: 3,
-    })
-
-    return c.json<GETLibraryItemsResponse>(result, { headers: { 'Cache-Control': cacheControl } })
+    return c.json<GETLibraryItemsResponse>(result, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '서재 작품을 불러오지 못했어요' })

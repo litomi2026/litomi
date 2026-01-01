@@ -4,6 +4,7 @@ import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { encodeCensorshipCursor } from '@/common/cursor'
@@ -11,7 +12,6 @@ import { CENSORSHIPS_PER_PAGE } from '@/constants/policy'
 import { CensorshipKey, CensorshipLevel } from '@/database/enum'
 import { userCensorshipTable } from '@/database/supabase/censorship'
 import { db } from '@/database/supabase/drizzle'
-import { createCacheControl } from '@/utils/cache-control'
 
 const querySchema = z.object({
   cursor: z.coerce.number().int().positive().optional(),
@@ -56,11 +56,6 @@ censorshipRoutes.get('/', zProblemValidator('query', querySchema), async (c) => 
       .orderBy(desc(userCensorshipTable.id))
       .limit(limit + 1)
 
-    const cacheControl = createCacheControl({
-      private: true,
-      maxAge: 3,
-    })
-
     const hasNextPage = limit ? censorshipRows.length > limit : false
     const censorships = hasNextPage ? censorshipRows.slice(0, limit) : censorshipRows
     const lastCensorship = censorships[censorships.length - 1]
@@ -71,7 +66,7 @@ censorshipRoutes.get('/', zProblemValidator('query', querySchema), async (c) => 
       nextCursor,
     }
 
-    return c.json<GETV1CensorshipResponse>(result, { headers: { 'Cache-Control': cacheControl } })
+    return c.json<GETV1CensorshipResponse>(result, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '검열 설정을 불러오지 못했어요' })

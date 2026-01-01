@@ -4,13 +4,12 @@ import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { db } from '@/database/supabase/drizzle'
 import { libraryItemTable, libraryTable } from '@/database/supabase/library'
-import { createCacheControl } from '@/utils/cache-control'
 import { intToHexColor } from '@/utils/color'
-import { sec } from '@/utils/format/date'
 
 const paramsSchema = z.object({
   id: z.coerce.number().int().positive(),
@@ -64,10 +63,7 @@ libraryMetaRoutes.get('/', zProblemValidator('param', paramsSchema), async (c) =
       isPublic: library.isPublic,
       itemCount: library.itemCount,
     }
-
-    const cacheControl = createCacheControl({ private: true, maxAge: sec('3s') })
-
-    return c.json<GETV1LibraryMetaResponse>(result, { headers: { 'Cache-Control': cacheControl } })
+    return c.json<GETV1LibraryMetaResponse>(result, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '서재 정보를 불러오지 못했어요' })

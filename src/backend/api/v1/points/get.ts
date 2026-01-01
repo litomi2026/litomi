@@ -2,10 +2,10 @@ import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 
 import { Env } from '@/backend'
+import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
 import { db } from '@/database/supabase/drizzle'
 import { userPointsTable } from '@/database/supabase/points'
-import { createCacheControl } from '@/utils/cache-control'
 
 export type GETV1PointsResponse = {
   balance: number
@@ -32,11 +32,6 @@ route.get('/', async (c) => {
       .from(userPointsTable)
       .where(eq(userPointsTable.userId, userId))
 
-    const cacheControl = createCacheControl({
-      private: true,
-      maxAge: 3,
-    })
-
     if (!points) {
       const response = {
         balance: 0,
@@ -44,7 +39,7 @@ route.get('/', async (c) => {
         totalSpent: 0,
       }
 
-      return c.json<GETV1PointsResponse>(response, { headers: { 'Cache-Control': cacheControl } })
+      return c.json<GETV1PointsResponse>(response, { headers: { 'Cache-Control': privateCacheControl } })
     }
 
     const response = {
@@ -53,7 +48,7 @@ route.get('/', async (c) => {
       totalSpent: points.totalSpent,
     }
 
-    return c.json<GETV1PointsResponse>(response, { headers: { 'Cache-Control': cacheControl } })
+    return c.json<GETV1PointsResponse>(response, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '포인트 조회에 실패했어요' })

@@ -4,6 +4,7 @@ import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { decodeLibraryListCursor, encodeLibraryListCursor } from '@/common/cursor'
@@ -121,10 +122,7 @@ libraryListRoutes.get('/', zProblemValidator('query', querySchema), async (c) =>
   try {
     const rows = await query
 
-    const cacheControl = createCacheControl({
-      private: true,
-      maxAge: cursor ? sec('1 minute') : sec('3s'),
-    })
+    const cacheControl = cursor ? createCacheControl({ private: true, maxAge: sec('1 minute') }) : privateCacheControl
 
     if (rows.length === 0) {
       const result: GETV1LibraryListResponse = { libraries: [], nextCursor: null }

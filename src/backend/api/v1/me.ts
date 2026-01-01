@@ -4,11 +4,11 @@ import { deleteCookie } from 'hono/cookie'
 import 'server-only'
 
 import { Env } from '@/backend'
+import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
 import { CookieKey } from '@/constants/storage'
 import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/user'
-import { createCacheControl } from '@/utils/cache-control'
 
 export type GETV1MeResponse = {
   id: number
@@ -44,13 +44,7 @@ meRoutes.get('/', async (c) => {
       deleteCookie(c, CookieKey.REFRESH_TOKEN)
       return problemResponse(c, { status: 404, detail: '사용자 정보를 찾을 수 없어요' })
     }
-
-    const cacheControl = createCacheControl({
-      private: true,
-      maxAge: 3,
-    })
-
-    return c.json<GETV1MeResponse>(user, { headers: { 'Cache-Control': cacheControl } })
+    return c.json<GETV1MeResponse>(user, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '사용자 정보를 불러오지 못했어요' })

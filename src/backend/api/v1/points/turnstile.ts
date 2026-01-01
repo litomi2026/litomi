@@ -6,11 +6,11 @@ import ms from 'ms'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { COOKIE_DOMAIN } from '@/constants'
 import { CookieKey } from '@/constants/storage'
-import { createCacheControl } from '@/utils/cache-control'
 import TurnstileValidator from '@/utils/turnstile'
 
 import {
@@ -65,12 +65,7 @@ route.get('/', async (c) => {
   const expiresInSeconds = Math.max(0, Math.ceil(remainingMs / SECOND_MS))
   const response: GETV1PointTurnstileResponse = { verified: true, expiresInSeconds }
 
-  const cacheControl = createCacheControl({
-    private: true,
-    maxAge: 3,
-  })
-
-  return c.json<GETV1PointTurnstileResponse>(response, { headers: { 'Cache-Control': cacheControl } })
+  return c.json<GETV1PointTurnstileResponse>(response, { headers: { 'Cache-Control': privateCacheControl } })
 })
 
 route.post('/', zProblemValidator('json', requestSchema), async (c) => {

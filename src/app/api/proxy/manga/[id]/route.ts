@@ -85,7 +85,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       })
 
       return createProblemDetailsResponse(request, {
-        status: 404,
+        status: isPermanentlyMissing ? 410 : 404,
         code: 'not-found',
         detail: '요청하신 작품을 찾을 수 없어요',
         headers: notFoundHeaders,
