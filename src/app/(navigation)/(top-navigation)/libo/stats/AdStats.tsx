@@ -88,7 +88,7 @@ export default function AdStats() {
   function applyRange(range: AppliedRange) {
     const result = validateRange(range.startDate, range.finishDate)
     if (!result.ok) {
-      toast.error(result.message)
+      toast.warning(result.message)
       return
     }
     setAppliedRange(range)

@@ -130,7 +130,7 @@ function ImportExportModal({ open, onClose, censorships }: Readonly<Props>) {
 
       dispatchAddAction(formData)
     } catch {
-      toast.error('올바른 JSON 형식이 아니에요')
+      toast.warning('올바른 JSON 형식이 아니에요')
     }
   }
 
