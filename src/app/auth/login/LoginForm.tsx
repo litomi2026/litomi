@@ -183,7 +183,7 @@ export default function LoginForm() {
               required
             />
             <button onClick={resetId} tabIndex={-1} type="button">
-              <X className="w-3.5" />
+              <X className="size-3.5" />
             </button>
           </div>
           {loginIdError && <p className="mt-1 text-xs text-red-500">{loginIdError}</p>}
@@ -205,7 +205,7 @@ export default function LoginForm() {
               type="password"
             />
             <button onClick={resetPassword} tabIndex={-1} type="button">
-              <X className="w-3.5" />
+              <X className="size-3.5" />
             </button>
           </div>
           {passwordError && <p className="mt-1 text-xs text-red-500">{passwordError}</p>}
