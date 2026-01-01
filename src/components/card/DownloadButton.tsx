@@ -25,7 +25,7 @@ export default memo(DownloadButton)
 
 export function DownloadButtonError({ error, reset }: Readonly<ErrorBoundaryFallbackProps>) {
   useEffect(() => {
-    toast.error(error instanceof Error ? error.message : '다운로드에 실패했어요')
+    toast.error('다운로드 중 오류가 발생했어요')
   }, [error])
 
   return (

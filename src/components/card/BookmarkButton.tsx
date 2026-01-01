@@ -4,6 +4,7 @@ import { captureException } from '@sentry/nextjs'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Bookmark } from 'lucide-react'
+import ms from 'ms'
 import { useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
@@ -13,11 +14,11 @@ import type { POSTV1BookmarkToggleResponse } from '@/backend/api/v1/bookmark/tog
 
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
+import { showLoginRequiredToast } from '@/lib/toast'
 import useBookmarksQuery from '@/query/useBookmarksQuery'
 import useMeQuery from '@/query/useMeQuery'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
-import LoginPageLink from '../LoginPageLink'
 import { useLibraryModal } from './LibraryModal'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
@@ -51,15 +52,16 @@ export default function BookmarkButton({ manga, className }: Props) {
     },
     onSuccess: ({ createdAt }) => {
       const isBookmarked = Boolean(createdAt)
+      const toastId = `bookmark-toggle-${mangaId}`
 
       if (isBookmarked) {
         toast.success(
           <div className="flex items-center justify-between gap-2 w-full">
             <span>북마크에 추가했어요</span>
             <button
-              className="hover:underline text-sm font-bold"
+              className="hover:underline text-xs font-bold"
               onClick={() => {
-                toast.dismiss()
+                toast.dismiss(toastId)
                 openLibraryModal(mangaId)
               }}
               type="button"
@@ -67,10 +69,10 @@ export default function BookmarkButton({ manga, className }: Props) {
               [서재에도 추가하기]
             </button>
           </div>,
-          { duration: 5000 },
+          { duration: ms('5 seconds'), id: toastId },
         )
       } else {
-        toast.info('작품을 북마크에서 삭제했어요')
+        toast.success('북마크에서 삭제했어요', { id: toastId })
       }
 
       queryClient.setQueryData<GETV1BookmarkResponse>(QueryKeys.bookmarks, (oldBookmarks) => {
@@ -108,12 +110,7 @@ export default function BookmarkButton({ manga, className }: Props) {
     e.stopPropagation()
 
     if (!me) {
-      const toastId = toast.warning(
-        <div className="flex gap-2 items-center">
-          <div>로그인이 필요해요</div>
-          <LoginPageLink onClick={() => toast.dismiss(toastId)}>로그인하기</LoginPageLink>
-        </div>,
-      )
+      showLoginRequiredToast()
       return
     }
     if (toggleMutation.isPending) {
