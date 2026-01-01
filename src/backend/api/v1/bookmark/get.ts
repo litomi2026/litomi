@@ -3,12 +3,12 @@ import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { decodeBookmarkCursor, encodeBookmarkCursor } from '@/common/cursor'
 import { BOOKMARKS_PER_PAGE } from '@/constants/policy'
 import selectBookmarks from '@/sql/selectBookmarks'
-import { createCacheControl } from '@/utils/cache-control'
 
 const querySchema = z.object({
   cursor: z.string().optional(),
@@ -70,13 +70,7 @@ route.get('/', zProblemValidator('query', querySchema), async (c) => {
       })),
       nextCursor,
     }
-
-    const cacheControl = createCacheControl({
-      private: true,
-      maxAge: 3,
-    })
-
-    return c.json<GETV1BookmarkResponse>(response, { headers: { 'Cache-Control': cacheControl } })
+    return c.json<GETV1BookmarkResponse>(response, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '북마크를 불러오지 못했어요' })

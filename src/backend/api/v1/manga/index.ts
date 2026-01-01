@@ -11,5 +11,3 @@ mangaRoutes.route('/', mangaHistoryRoutes)
 mangaRoutes.route('/', mangaRatingRoutes)
 
 export default mangaRoutes
-
-

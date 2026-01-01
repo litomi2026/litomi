@@ -4,6 +4,7 @@ import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { decodeLibraryIdCursor, encodeLibraryIdCursor } from '@/common/cursor'
@@ -105,10 +106,7 @@ libraryMangaRoutes.get('/', zProblemValidator('query', querySchema), async (c) =
   try {
     const rows = await query
 
-    const cacheControl = createCacheControl({
-      private: true,
-      maxAge: cursor ? sec('1 minute') : 3,
-    })
+    const cacheControl = cursor ? createCacheControl({ private: true, maxAge: sec('1 minute') }) : privateCacheControl
 
     if (rows.length === 0) {
       const result = { items: [], nextCursor: null }

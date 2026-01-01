@@ -2,6 +2,7 @@ import { eq, sum } from 'drizzle-orm'
 import { Hono } from 'hono'
 
 import { Env } from '@/backend'
+import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
 import { EXPANSION_TYPE, POINT_CONSTANTS } from '@/constants/points'
 import {
@@ -12,7 +13,6 @@ import {
 } from '@/constants/policy'
 import { db } from '@/database/supabase/drizzle'
 import { userExpansionTable } from '@/database/supabase/points'
-import { createCacheControl } from '@/utils/cache-control'
 
 export type ExpansionInfo = {
   base: number
@@ -98,12 +98,7 @@ route.get('/', async (c) => {
       },
     }
 
-    const cacheControl = createCacheControl({
-      private: true,
-      maxAge: 3,
-    })
-
-    return c.json<GETV1PointExpansionResponse>(response, { headers: { 'Cache-Control': cacheControl } })
+    return c.json<GETV1PointExpansionResponse>(response, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '확장 정보를 불러오지 못했어요' })

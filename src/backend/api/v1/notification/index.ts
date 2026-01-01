@@ -4,13 +4,13 @@ import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { NOTIFICATION_PER_PAGE } from '@/constants/policy'
 import { NotificationType } from '@/database/enum'
 import { db } from '@/database/supabase/drizzle'
 import { notificationTable } from '@/database/supabase/notification'
-import { createCacheControl } from '@/utils/cache-control'
 
 import { NotificationFilter } from './types'
 import unreadCountRoutes from './unread-count'
@@ -72,13 +72,7 @@ notificationRoutes.get('/', zProblemValidator('query', querySchema), async (c) =
       notifications: results.slice(0, NOTIFICATION_PER_PAGE),
       hasNextPage: results.length > NOTIFICATION_PER_PAGE,
     }
-
-    const cacheControl = createCacheControl({
-      private: true,
-      maxAge: 3,
-    })
-
-    return c.json<GETNotificationResponse>(result, { headers: { 'Cache-Control': cacheControl } })
+    return c.json<GETNotificationResponse>(result, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '알림을 불러오지 못했어요' })

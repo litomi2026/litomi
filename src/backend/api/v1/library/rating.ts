@@ -4,6 +4,7 @@ import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { decodeRatingCursor, encodeRatingCursor } from '@/common/cursor'
@@ -139,10 +140,7 @@ libraryRatingRoutes.get('/', zProblemValidator('query', querySchema), async (c) 
           private: true,
           maxAge: sec('1 hour'),
         })
-      : createCacheControl({
-          private: true,
-          maxAge: 3,
-        })
+      : privateCacheControl
 
     if (rows.length === 0) {
       const result = { items: [], nextCursor: null }

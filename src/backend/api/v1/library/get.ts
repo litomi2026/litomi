@@ -3,10 +3,10 @@ import { Hono } from 'hono'
 import 'server-only'
 
 import { Env } from '@/backend'
+import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
 import { db } from '@/database/supabase/drizzle'
 import { libraryItemTable, libraryTable } from '@/database/supabase/library'
-import { createCacheControl } from '@/utils/cache-control'
 import { intToHexColor } from '@/utils/color'
 
 export type GETLibraryResponse = {
@@ -44,13 +44,7 @@ route.get('/', async (c) => {
       .orderBy(libraryTable.id)
 
     const librariesWithHexColors = libraries.map((lib) => ({ ...lib, color: intToHexColor(lib.color) }))
-
-    const cacheControl = createCacheControl({
-      private: true,
-      maxAge: 3,
-    })
-
-    return c.json<GETLibraryResponse>(librariesWithHexColors, { headers: { 'Cache-Control': cacheControl } })
+    return c.json<GETLibraryResponse>(librariesWithHexColors, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '서재를 불러오지 못했어요' })

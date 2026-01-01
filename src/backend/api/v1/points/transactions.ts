@@ -3,12 +3,12 @@ import { Hono } from 'hono'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { TRANSACTION_TYPE } from '@/constants/points'
 import { db } from '@/database/supabase/drizzle'
 import { pointTransactionTable } from '@/database/supabase/points'
-import { createCacheControl } from '@/utils/cache-control'
 
 export type GETV1PointTransactionResponse = {
   items: Transaction[]
@@ -79,13 +79,7 @@ route.get('/', zProblemValidator('query', querySchema), async (c) => {
       items,
       nextCursor: hasMore ? transactions[transactions.length - 1].id : null,
     }
-
-    const cacheControl = createCacheControl({
-      private: true,
-      maxAge: 3,
-    })
-
-    return c.json<GETV1PointTransactionResponse>(response, { headers: { 'Cache-Control': cacheControl } })
+    return c.json<GETV1PointTransactionResponse>(response, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
     return problemResponse(c, { status: 500, detail: '거래 내역을 불러오지 못했어요' })
