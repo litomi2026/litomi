@@ -1,11 +1,10 @@
 'use client'
 
+import { X } from 'lucide-react'
 import { type MouseEvent, type ReactNode, type TouchEvent, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 
 import useMounted from '@/hook/useMounted'
-
-import IconX from '../icons/IconX'
 
 type Props = {
   children: ReactNode
@@ -121,7 +120,7 @@ export default function Modal({
         >
           {showCloseButton && (
             <button aria-label="닫기" onClick={closeModal}>
-              <IconX className="absolute right-2 top-2 z-60 w-8 cursor-pointer rounded-full bg-zinc-700/50 p-1" />
+              <X className="absolute right-2 top-2 z-60 w-8 cursor-pointer rounded-full bg-zinc-700/50 p-1" />
             </button>
           )}
           <div

@@ -81,9 +81,8 @@ export function useRewardedAd({ adSlotId, rewardEnabled, adReady, adBlocked, onA
         clearCooldown()
         isHandlingAdClickRef.current = false
       },
-      onError: (err) => {
-        const message = err instanceof ProblemDetailsError ? err.message : '요청 처리 중 오류가 발생했어요'
-        onAdClick?.({ success: false, error: message })
+      onError: () => {
+        onAdClick?.({ success: false })
         setToken(null)
         isHandlingAdClickRef.current = false
       },

@@ -1,6 +1,6 @@
+import { X } from 'lucide-react'
 import Link from 'next/link'
 
-import IconX from '@/components/icons/IconX'
 import LoginButton from '@/components/LoginButton'
 import { SearchParamKey } from '@/constants/storage'
 
@@ -8,7 +8,7 @@ export default function Unauthorized() {
   return (
     <div className="flex flex-col flex-1 items-center px-4 py-8">
       <div className="text-center max-w-2xl mx-auto">
-        <IconX className="mb-6 w-16 h-16 mx-auto text-zinc-600" />
+        <X className="mb-6 w-16 h-16 mx-auto text-zinc-600" />
         <h2 className="text-zinc-400 text-base md:text-lg mb-8 leading-relaxed">
           보고 싶지 않은 작품을 필터링해서, <br className="sm:hidden" />
           편안한 탐색 환경을 만들어보세요

@@ -4,13 +4,13 @@ import FingerprintJS from '@fingerprintjs/fingerprintjs'
 import { TurnstileInstance } from '@marsidev/react-turnstile'
 import { sendGAEvent } from '@next/third-parties/google'
 import { useQueryClient } from '@tanstack/react-query'
+import { X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import { migrateReadingHistory } from '@/app/manga/[id]/actions'
 import IconSpinner from '@/components/icons/IconSpinner'
-import IconX from '@/components/icons/IconX'
 import PasskeyLoginButton from '@/components/PasskeyLoginButton'
 import { clearMigratedHistory, getLocalReadingHistory } from '@/components/ReadingHistoryMigrator'
 import TurnstileWidget from '@/components/TurnstileWidget'
@@ -183,7 +183,7 @@ export default function LoginForm() {
               required
             />
             <button onClick={resetId} tabIndex={-1} type="button">
-              <IconX className="w-3.5" />
+              <X className="size-3.5" />
             </button>
           </div>
           {loginIdError && <p className="mt-1 text-xs text-red-500">{loginIdError}</p>}
@@ -205,7 +205,7 @@ export default function LoginForm() {
               type="password"
             />
             <button onClick={resetPassword} tabIndex={-1} type="button">
-              <IconX className="w-3.5" />
+              <X className="size-3.5" />
             </button>
           </div>
           {passwordError && <p className="mt-1 text-xs text-red-500">{passwordError}</p>}

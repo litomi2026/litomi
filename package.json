@@ -40,7 +40,10 @@
     "sponsor:generate": "bun tools/generateSponsors.ts",
     "sponsor:labels": "bun tools/listSponsorLabels.ts",
     "sponsor:normalize-labels": "bun tools/normalizeSponsorLabels.ts",
-    "sponsor:resolve-redirects": "bun tools/resolveSponsorRedirects.ts"
+    "sponsor:resolve-redirects": "bun tools/resolveSponsorRedirects.ts",
+    "sponsor:fill-fanbox": "bun tools/fillArtistFanboxSponsors.ts",
+    "sponsor:fill-x": "bun tools/fillArtistXSponsors.ts",
+    "sponsor:fill-skeb": "bun tools/fillArtistSkebSponsors.ts"
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^2.32.1",

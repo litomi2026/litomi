@@ -1,7 +1,7 @@
 'use client'
 
 import dayjs from 'dayjs'
-import { Copy, ExternalLink, Magnet } from 'lucide-react'
+import { Copy, ExternalLink, Magnet, X } from 'lucide-react'
 import ms from 'ms'
 import { usePathname } from 'next/navigation'
 import { useEffect, useMemo, useRef } from 'react'
@@ -10,7 +10,6 @@ import { create } from 'zustand'
 
 import type { Manga, MangaTorrent } from '@/types/manga'
 
-import IconX from '@/components/icons/IconX'
 import Modal from '@/components/ui/Modal'
 import useClipboard from '@/hook/useClipboard'
 import { formatBytes } from '@/utils/format/byte'
@@ -156,7 +155,7 @@ export default function MangaTorrentModal() {
           title="닫기"
           type="button"
         >
-          <IconX className="w-6 h-6 sm:w-5 sm:h-5" />
+          <X className="w-6 h-6 sm:w-5 sm:h-5" />
         </button>
       </div>
 

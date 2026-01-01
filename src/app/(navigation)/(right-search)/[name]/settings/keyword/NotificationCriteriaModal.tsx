@@ -1,11 +1,11 @@
 'use client'
 
+import { X } from 'lucide-react'
 import { useEffect, useId, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import IconPlus from '@/components/icons/IconPlus'
 import IconSpinner from '@/components/icons/IconSpinner'
-import IconX from '@/components/icons/IconX'
 import Modal from '@/components/ui/Modal'
 import useServerAction, { getFieldError } from '@/hook/useServerAction'
 
@@ -136,7 +136,7 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
             onClick={onClose}
             type="button"
           >
-            <IconX className="w-6 h-6 sm:w-5 sm:h-5" />
+            <X className="w-6 h-6 sm:w-5 sm:h-5" />
           </button>
         </div>
 

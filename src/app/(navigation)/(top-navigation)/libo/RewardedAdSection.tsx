@@ -51,8 +51,7 @@ export default function RewardedAdSection() {
       setTurnstileToken('')
       queryClient.invalidateQueries({ queryKey: QueryKeys.pointsTurnstile })
     },
-    onError: (err) => {
-      toast.error(err.message)
+    onError: () => {
       setTurnstileToken('')
       turnstileRef.current?.reset()
     },
@@ -70,12 +69,7 @@ export default function RewardedAdSection() {
       return
     }
 
-    if (result.error) {
-      toast.error(result.error)
-      return
-    }
-
-    if (!result.success || result.earned == null) {
+    if (result.error || !result.success || result.earned == null) {
       return
     }
 

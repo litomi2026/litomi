@@ -1,12 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { toast } from 'sonner'
 
 import type { POSTV1BookmarkImportResponse } from '@/backend/api/v1/bookmark/import'
 
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
-import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
+import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import type { BookmarkExportData, ImportMode, ImportResult, ImportState } from './types'
 
@@ -40,24 +39,6 @@ export function useBookmarkImport() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QueryKeys.bookmarks })
       queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteBookmarks })
-    },
-    onError: (error) => {
-      if (error instanceof ProblemDetailsError) {
-        if (error.status >= 400 && error.status < 500) {
-          toast.warning(error.message)
-        } else {
-          toast.error(error.message)
-        }
-        return
-      }
-
-      if (error instanceof Error) {
-        if (!navigator.onLine) {
-          toast.error('네트워크 연결을 확인해 주세요')
-        } else {
-          toast.error('요청 처리 중 오류가 발생했어요')
-        }
-      }
     },
   })
 

@@ -1,7 +1,6 @@
-import { ShieldOff } from 'lucide-react'
+import { ShieldOff, X } from 'lucide-react'
 
 import IconInfo from '@/components/icons/IconInfo'
-import IconX from '@/components/icons/IconX'
 
 import { DEFAULT_CENSORED_TAGS } from './constants'
 
@@ -14,7 +13,7 @@ export default function DefaultCensorshipInfo() {
             <IconInfo className="w-4 text-zinc-400 mt-0.5 shrink-0" />
             <span className="text-zinc-300">기본 검열 규칙이 적용되어 있어요</span>
           </div>
-          <IconX className="w-4 text-zinc-400 transition rotate-45 group-open:rotate-0" />
+          <X className="w-4 text-zinc-400 transition rotate-45 group-open:rotate-0" />
         </summary>
         <div className="px-4 pb-4 text-sm text-zinc-400">
           <p className="mb-2">

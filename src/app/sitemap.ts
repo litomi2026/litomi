@@ -86,6 +86,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: PRIORITY_LEVELS.LEGAL,
     },
     {
+      url: `${CANONICAL_URL}/doc/dmca`,
+      lastModified,
+      changeFrequency: 'yearly',
+      priority: PRIORITY_LEVELS.LEGAL,
+    },
+    {
       url: `${CANONICAL_URL}/deterrence`,
       lastModified,
       changeFrequency: 'yearly',

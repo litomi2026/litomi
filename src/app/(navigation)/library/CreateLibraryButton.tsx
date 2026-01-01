@@ -1,6 +1,7 @@
 'use client'
 
 import { type InfiniteData, useQueryClient } from '@tanstack/react-query'
+import { X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -9,7 +10,6 @@ import type { GETV1LibraryListResponse } from '@/backend/api/v1/library/list'
 
 import IconPlus from '@/components/icons/IconPlus'
 import IconSpinner from '@/components/icons/IconSpinner'
-import IconX from '@/components/icons/IconX'
 import Modal from '@/components/ui/Modal'
 import Toggle from '@/components/ui/Toggle'
 import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/constants/policy'
@@ -144,7 +144,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
           <div className="flex items-center justify-between p-4 bg-zinc-900 border-b-2 border-zinc-800 shrink-0">
             <h2 className="text-xl font-bold text-zinc-100">서재 만들기</h2>
             <button className="p-2 -m-1 rounded-lg hover:bg-zinc-800 transition" onClick={handleClose} type="button">
-              <IconX className="size-5" />
+              <X className="size-5" />
             </button>
           </div>
           <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 min-h-0 relative">
