@@ -1,6 +1,6 @@
 'use client'
 
-import { Bookmark, BookOpen, LibraryBig } from 'lucide-react'
+import { Bookmark, BookOpen, LibraryBig, Star } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -14,7 +14,7 @@ import { useSpendPointsMutation } from './useSpendPointsMutation'
 
 type ShopItem = {
   id: string
-  type: 'badge' | 'bookmark' | 'history' | 'library' | 'theme'
+  type: 'badge' | 'bookmark' | 'history' | 'library' | 'rating' | 'theme'
   name: string
   description: string
   price: number
@@ -75,6 +75,14 @@ export default function PointsShop() {
       price: POINT_CONSTANTS.HISTORY_EXPANSION_PRICE,
       icon: <BookOpen className="size-5" />,
     },
+    {
+      id: 'rating-expansion',
+      type: 'rating',
+      name: '평가 확장',
+      description: `+${POINT_CONSTANTS.RATING_EXPANSION_AMOUNT}개 (현재: ${displayExpansion?.rating.current ?? 200}/${displayExpansion?.rating.max ?? 5000}개)`,
+      price: POINT_CONSTANTS.RATING_EXPANSION_PRICE,
+      icon: <Star className="size-5" />,
+    },
   ]
 
   function handlePurchase(item: ShopItem) {
@@ -121,6 +129,10 @@ export default function PointsShop() {
       case 'library':
         unit = POINT_CONSTANTS.LIBRARY_EXPANSION_AMOUNT
         expansionInfo = displayExpansion?.library
+        break
+      case 'rating':
+        unit = POINT_CONSTANTS.RATING_EXPANSION_AMOUNT
+        expansionInfo = displayExpansion?.rating
         break
     }
 
