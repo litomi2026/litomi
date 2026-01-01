@@ -14,7 +14,7 @@ import { getExpansionConfig, getSpendMeta, isBookmarkItemId } from './util'
 const route = new Hono<Env>()
 
 const spendSchema = z.object({
-  type: z.enum(['library', 'history', 'bookmark', 'badge', 'theme']),
+  type: z.enum(['library', 'history', 'rating', 'bookmark', 'badge', 'theme']),
   itemId: z.string().optional(),
 })
 
@@ -73,6 +73,11 @@ route.post('/', zProblemValidator('json', spendSchema), async (c) => {
         break
       }
       case 'library': {
+        spendMeta = getSpendMeta({ type })
+        expansionConfig = getExpansionConfig({ type })
+        break
+      }
+      case 'rating': {
         spendMeta = getSpendMeta({ type })
         expansionConfig = getExpansionConfig({ type })
         break

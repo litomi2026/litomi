@@ -4,7 +4,12 @@ import { Hono } from 'hono'
 import { Env } from '@/backend'
 import { problemResponse } from '@/backend/utils/problem'
 import { EXPANSION_TYPE, POINT_CONSTANTS } from '@/constants/points'
-import { MAX_BOOKMARKS_PER_USER, MAX_LIBRARIES_PER_USER, MAX_READING_HISTORY_PER_USER } from '@/constants/policy'
+import {
+  MAX_BOOKMARKS_PER_USER,
+  MAX_LIBRARIES_PER_USER,
+  MAX_RATINGS_PER_USER,
+  MAX_READING_HISTORY_PER_USER,
+} from '@/constants/policy'
 import { db } from '@/database/supabase/drizzle'
 import { userExpansionTable } from '@/database/supabase/points'
 import { createCacheControl } from '@/utils/cache-control'
@@ -22,6 +27,7 @@ export type ExpansionInfo = {
 export type GETV1PointExpansionResponse = {
   library: ExpansionInfo
   history: ExpansionInfo
+  rating: ExpansionInfo
   bookmark: ExpansionInfo
 }
 
@@ -46,9 +52,11 @@ route.get('/', async (c) => {
 
     const libraryExpansion = expansions.find((e) => e.type === EXPANSION_TYPE.LIBRARY)
     const historyExpansion = expansions.find((e) => e.type === EXPANSION_TYPE.READING_HISTORY)
+    const ratingExpansion = expansions.find((e) => e.type === EXPANSION_TYPE.RATING)
     const bookmarkExpansion = expansions.find((e) => e.type === EXPANSION_TYPE.BOOKMARK)
     const libraryExtra = Number(libraryExpansion?.totalAmount ?? 0)
     const historyExtra = Number(historyExpansion?.totalAmount ?? 0)
+    const ratingExtra = Number(ratingExpansion?.totalAmount ?? 0)
     const bookmarkExtra = Number(bookmarkExpansion?.totalAmount ?? 0)
 
     const response = {
@@ -69,6 +77,15 @@ route.get('/', async (c) => {
         canExpand: MAX_READING_HISTORY_PER_USER + historyExtra < POINT_CONSTANTS.HISTORY_MAX_EXPANSION,
         price: POINT_CONSTANTS.HISTORY_EXPANSION_PRICE,
         unit: POINT_CONSTANTS.HISTORY_EXPANSION_AMOUNT,
+      },
+      rating: {
+        base: MAX_RATINGS_PER_USER,
+        extra: ratingExtra,
+        current: MAX_RATINGS_PER_USER + ratingExtra,
+        max: POINT_CONSTANTS.RATING_MAX_EXPANSION,
+        canExpand: MAX_RATINGS_PER_USER + ratingExtra < POINT_CONSTANTS.RATING_MAX_EXPANSION,
+        price: POINT_CONSTANTS.RATING_EXPANSION_PRICE,
+        unit: POINT_CONSTANTS.RATING_EXPANSION_AMOUNT,
       },
       bookmark: {
         base: MAX_BOOKMARKS_PER_USER,

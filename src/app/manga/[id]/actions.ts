@@ -6,7 +6,7 @@ import { z } from 'zod'
 
 import { EXPANSION_TYPE, POINT_CONSTANTS } from '@/constants/points'
 import { MAX_READING_HISTORY_PER_USER } from '@/constants/policy'
-import { readingHistoryTable, userRatingTable } from '@/database/supabase/activity'
+import { readingHistoryTable } from '@/database/supabase/activity'
 import { db } from '@/database/supabase/drizzle'
 import { userExpansionTable } from '@/database/supabase/points'
 import { badRequest, internalServerError, ok, unauthorized } from '@/utils/action-response'
@@ -145,54 +145,5 @@ export async function migrateReadingHistory(data: ReadingHistoryItem[]) {
   } catch (error) {
     captureException(error)
     return internalServerError('읽기 기록 동기화 중 오류가 발생했어요')
-  }
-}
-
-const saveRatingSchema = z.object({
-  mangaId: z.number().int().positive(),
-  rating: z.number().int().min(0).max(5),
-})
-
-export async function saveRating(data: { mangaId: number; rating: number }) {
-  const userId = await validateUserIdFromCookie()
-
-  if (!userId) {
-    return unauthorized('로그인 정보가 없거나 만료됐어요')
-  }
-
-  const validation = saveRatingSchema.safeParse(data)
-
-  if (!validation.success) {
-    return badRequest(flattenZodFieldErrors(validation.error))
-  }
-
-  const { mangaId, rating } = validation.data
-
-  try {
-    if (rating === 0) {
-      await db
-        .delete(userRatingTable)
-        .where(sql`${userRatingTable.userId} = ${userId} AND ${userRatingTable.mangaId} = ${mangaId}`)
-    } else {
-      await db
-        .insert(userRatingTable)
-        .values({
-          userId,
-          mangaId,
-          rating,
-        })
-        .onConflictDoUpdate({
-          target: [userRatingTable.userId, userRatingTable.mangaId],
-          set: {
-            rating,
-            updatedAt: new Date(),
-          },
-        })
-    }
-
-    return ok(true)
-  } catch (error) {
-    captureException(error)
-    return internalServerError('평가 저장 중 오류가 발생했어요')
   }
 }

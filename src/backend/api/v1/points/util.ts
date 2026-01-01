@@ -1,9 +1,18 @@
 import { EXPANSION_TYPE, POINT_CONSTANTS } from '@/constants/points'
-import { MAX_BOOKMARKS_PER_USER, MAX_LIBRARIES_PER_USER, MAX_READING_HISTORY_PER_USER } from '@/constants/policy'
+import {
+  MAX_BOOKMARKS_PER_USER,
+  MAX_LIBRARIES_PER_USER,
+  MAX_RATINGS_PER_USER,
+  MAX_READING_HISTORY_PER_USER,
+} from '@/constants/policy'
 
 type BookmarkItemId = 'large' | 'small'
 
-type ExpansionParams = { type: 'bookmark'; itemId: BookmarkItemId } | { type: 'history' } | { type: 'library' }
+type ExpansionParams =
+  | { type: 'bookmark'; itemId: BookmarkItemId }
+  | { type: 'history' }
+  | { type: 'library' }
+  | { type: 'rating' }
 
 type SpendParams = ExpansionParams | { type: 'badge' | 'theme' }
 
@@ -23,6 +32,15 @@ export function getExpansionConfig(params: ExpansionParams) {
       baseLimit: MAX_READING_HISTORY_PER_USER,
       maxExpansion: POINT_CONSTANTS.HISTORY_MAX_EXPANSION,
       expansionAmount: POINT_CONSTANTS.HISTORY_EXPANSION_AMOUNT,
+    }
+  }
+
+  if (params.type === 'rating') {
+    return {
+      expansionType: EXPANSION_TYPE.RATING,
+      baseLimit: MAX_RATINGS_PER_USER,
+      maxExpansion: POINT_CONSTANTS.RATING_MAX_EXPANSION,
+      expansionAmount: POINT_CONSTANTS.RATING_EXPANSION_AMOUNT,
     }
   }
 
@@ -59,6 +77,14 @@ export function getSpendMeta(params: SpendParams) {
       type,
       price: POINT_CONSTANTS.HISTORY_EXPANSION_PRICE,
       description: '감상 기록 확장 (+100개)',
+    }
+  }
+
+  if (type === 'rating') {
+    return {
+      type,
+      price: POINT_CONSTANTS.RATING_EXPANSION_PRICE,
+      description: '평가 확장 (+100개)',
     }
   }
 

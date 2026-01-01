@@ -28,22 +28,19 @@ export default function MangaMetadataListWithLink({ filterType, items }: Props) 
           </Suspense>
           {links && (
             <span className="inline">
-              {links.map((link, index) => (
-                <a
-                  className="inline p-1 py-0.5 rounded text-zinc-400 hover:text-brand hover:bg-brand/10 hover:underline transition"
-                  href={link.value}
-                  key={index}
-                  rel="noopener"
-                  target="_blank"
-                  title={`${label || value}의 ${link.label} 후원하기`}
-                >
-                  <span className="text-xs font-medium">
-                    {link.label.slice(0, MAX_LABEL_LENGTH)}
-                    {link.label.length > MAX_LABEL_LENGTH ? '..' : ''}
-                  </span>
-                  <ExternalLink className="inline size-3 shrink-0 ml-0.5" />
-                </a>
-              ))}
+              <a
+                className="inline p-1 py-0.5 rounded text-zinc-400 hover:text-brand hover:bg-brand/10 hover:underline transition"
+                href={links[0].value}
+                rel="noopener"
+                target="_blank"
+                title={`${label || value}의 ${links[0].label} 후원하기`}
+              >
+                <span className="text-xs font-medium">
+                  {links[0].label.slice(0, MAX_LABEL_LENGTH)}
+                  {links[0].label.length > MAX_LABEL_LENGTH ? '..' : ''}
+                </span>
+                <ExternalLink className="inline size-3 shrink-0 ml-0.5" />
+              </a>
             </span>
           )}
         </li>
