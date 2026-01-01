@@ -1,9 +1,9 @@
-import { zValidator } from '@hono/zod-validator'
 import { count, desc, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { zProblemValidator } from '@/backend/utils/validator'
 import { aivenDB } from '@/database/aiven/drizzle'
 import { mangaTagTable, tagTable } from '@/database/aiven/schema'
 import { Locale } from '@/translation/common'
@@ -48,7 +48,7 @@ type TagItem = {
 
 const tagRoutes = new Hono<Env>()
 
-tagRoutes.get('/', zValidator('query', querySchema), async (c) => {
+tagRoutes.get('/', zProblemValidator('query', querySchema), async (c) => {
   const { category, page, limit, locale } = c.req.valid('query')
   const categoryNumber = categoryToNumber[category]
   const offset = (page - 1) * limit

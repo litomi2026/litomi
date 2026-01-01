@@ -1,4 +1,3 @@
-import { zValidator } from '@hono/zod-validator'
 import { sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { timeout } from 'hono/timeout'
@@ -7,6 +6,7 @@ import ms from 'ms'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { zProblemValidator } from '@/backend/utils/validator'
 import { db } from '@/database/supabase/drizzle'
 
 import apiRoutes from './api'
@@ -20,7 +20,7 @@ const schema = z.object({
   age: z.coerce.number().optional(),
 })
 
-appRoutes.get('/', zValidator('query', schema), (c) => {
+appRoutes.get('/', zProblemValidator('query', schema), (c) => {
   const { name, age } = c.req.valid('query')
 
   startTime(c, 'bar')

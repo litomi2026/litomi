@@ -1,9 +1,9 @@
-import { zValidator } from '@hono/zod-validator'
 import { Hono } from 'hono'
 import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { zProblemValidator } from '@/backend/utils/validator'
 import { ReferredPost } from '@/components/post/ReferredPostCard'
 import { POST_PER_PAGE } from '@/constants/policy'
 import selectPosts from '@/sql/selectPosts'
@@ -45,7 +45,7 @@ export type Post = {
 
 const postRoutes = new Hono<Env>()
 
-postRoutes.get('/', zValidator('query', querySchema), async (c) => {
+postRoutes.get('/', zProblemValidator('query', querySchema), async (c) => {
   const { cursor, limit, mangaId, filter, username } = c.req.valid('query')
   const currentUserId = c.get('userId')
 
