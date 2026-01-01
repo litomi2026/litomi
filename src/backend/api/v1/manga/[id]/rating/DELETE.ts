@@ -9,51 +9,37 @@ import { zProblemValidator } from '@/backend/utils/validator'
 import { MAX_MANGA_ID } from '@/constants/policy'
 import { userRatingTable } from '@/database/supabase/activity'
 import { db } from '@/database/supabase/drizzle'
-import { createCacheControl } from '@/utils/cache-control'
 
 const paramSchema = z.object({
   id: z.coerce.number().int().positive().max(MAX_MANGA_ID),
 })
 
-export type GETV1MangaIdRatingResponse = {
-  rating: number
-  updatedAt: Date
-} | null
+const route = new Hono<Env>()
 
-const mangaRoutes = new Hono<Env>()
-
-mangaRoutes.get('/:id/history', zProblemValidator('param', paramSchema), async (c) => {
+route.delete('/:id/rating', zProblemValidator('param', paramSchema), async (c) => {
   const userId = c.get('userId')
 
   if (!userId) {
     return problemResponse(c, { status: 401 })
   }
 
+  const { id: mangaId } = c.req.valid('param')
+
   try {
-    const { id: mangaId } = c.req.valid('param')
-
-    const [rating] = await db
-      .select({
-        rating: userRatingTable.rating,
-        updatedAt: userRatingTable.updatedAt,
-      })
-      .from(userRatingTable)
+    const deleted = await db
+      .delete(userRatingTable)
       .where(and(eq(userRatingTable.userId, userId), eq(userRatingTable.mangaId, mangaId)))
+      .returning({ mangaId: userRatingTable.mangaId })
 
-    const cacheControl = createCacheControl({
-      private: true,
-      maxAge: 3,
-    })
-
-    if (!rating) {
+    if (deleted.length === 0) {
       return problemResponse(c, { status: 404, detail: '평점이 없어요' })
     }
 
-    return c.json<GETV1MangaIdRatingResponse>(rating, { headers: { 'Cache-Control': cacheControl } })
+    return c.body(null, 204)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '평점을 불러오지 못했어요' })
+    return problemResponse(c, { status: 500, detail: '평가 삭제에 실패했어요' })
   }
 })
 
-export default mangaRoutes
+export default route
