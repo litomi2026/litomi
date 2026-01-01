@@ -14,12 +14,10 @@ locals {
   ]
 
   ttl_30d_path_prefixes = [
-    "/auth/login",
-    "/auth/signup",
+    "/auth/",
     "/apple-icon.",
     "/deterrence",
-    "/doc/privacy",
-    "/doc/terms",
+    "/doc/",
     "/favicon.",
     "/icon.",
     "/image/",
