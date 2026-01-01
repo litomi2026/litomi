@@ -7,7 +7,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
-import type { POSTV1MangaIdReportResponse } from '@/backend/api/v1/manga/[id]/report/POST'
+import type { POSTV1MangaIdReportBody, POSTV1MangaIdReportResponse } from '@/backend/api/v1/manga/[id]/report/POST'
 
 import LoginPageLink from '@/components/LoginPageLink'
 import Dialog from '@/components/ui/Dialog'
@@ -42,14 +42,14 @@ export default function MangaReportButton({ mangaId, variant = 'icon', className
   const { data: me } = useMeQuery()
   const [open, setOpen] = useState(false)
 
-  const reportMutation = useMutation<POSTV1MangaIdReportResponse, unknown, MangaReportReason>({
-    mutationFn: async (reason) => {
+  const reportMutation = useMutation<POSTV1MangaIdReportResponse, unknown, POSTV1MangaIdReportBody>({
+    mutationFn: async (body) => {
       const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/manga/${mangaId}/report`
       const { data } = await fetchWithErrorHandling<POSTV1MangaIdReportResponse>(url, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reason }),
+        body: JSON.stringify(body),
       })
       return data
     },
@@ -62,17 +62,6 @@ export default function MangaReportButton({ mangaId, variant = 'icon', className
       setOpen(false)
     },
     onError: (error) => {
-      if (error instanceof ProblemDetailsError && error.status === 401) {
-        const toastId = toast.warning(
-          <div className="flex gap-2 items-center">
-            <div>로그인이 필요해요</div>
-            <LoginPageLink onClick={() => toast.dismiss(toastId)}>로그인하기</LoginPageLink>
-          </div>,
-        )
-        setOpen(false)
-        return
-      }
-
       if (error instanceof ProblemDetailsError && error.status === 403) {
         const settingsHref = me?.name ? `/@${me.name}/settings#adult` : '/@/settings#adult'
         toast.warning(
@@ -85,16 +74,7 @@ export default function MangaReportButton({ mangaId, variant = 'icon', className
             )}
           </div>,
         )
-        setOpen(false)
-        return
       }
-
-      if (error instanceof ProblemDetailsError) {
-        toast.error(error.message || '요청 처리 중 오류가 발생했어요')
-        return
-      }
-
-      toast.error('요청 처리 중 오류가 발생했어요')
     },
   })
 
@@ -140,12 +120,12 @@ export default function MangaReportButton({ mangaId, variant = 'icon', className
               <ReasonButton
                 disabled={reportMutation.isPending}
                 label="실존 인물 딥페이크 같아요"
-                onClick={() => reportMutation.mutate(MangaReportReason.DEEPFAKE)}
+                onClick={() => reportMutation.mutate({ reason: MangaReportReason.DEEPFAKE })}
               />
               <ReasonButton
                 disabled={reportMutation.isPending}
                 label="미성년자로 보이는 실존 인물이 나와요"
-                onClick={() => reportMutation.mutate(MangaReportReason.REAL_PERSON_MINOR)}
+                onClick={() => reportMutation.mutate({ reason: MangaReportReason.REAL_PERSON_MINOR })}
               />
             </div>
             <div className="grid gap-1 p-3 py-2 text-xs text-zinc-500">
