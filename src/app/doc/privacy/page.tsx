@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import Link from 'next/link'
 
 import { CANONICAL_URL, defaultOpenGraph, SHORT_NAME } from '@/constants'
 
@@ -26,10 +27,18 @@ export default async function Page() {
           <li>접속 기록 및 쿠키, 기기 정보 등 Google Analytics를 통해 수집되는 정보</li>
           <li>FCP, LCP, CLS, TBT, TTI 등의 Web Vitals 정보</li>
         </ul>
-        <p className="mb-2">다음 항목은 수집하지 않습니다.</p>
+        <p className="mb-2">다음 항목은 일반적인 서비스 이용 과정에서는 수집하지 않습니다.</p>
         <ul className="mb-6">
           <li>이름, 이메일 주소, 연락처, 성별, 나이 등 개인을 조금이라도 식별할 수 있는 정보</li>
         </ul>
+        <p className="mb-6 text-sm text-zinc-400">
+          단,{' '}
+          <Link className="underline underline-offset-2" href="/doc/dmca" prefetch={false}>
+            저작권/DMCA 신고 및 이의제기
+          </Link>
+          를 제출하는 경우에는 처리에 필요한 범위에서 제출하신 정보(이름, 이메일, 연락처, 주소 등)가 수집·보관될 수
+          있습니다.
+        </p>
         <h2 className="mb-3">2. 개인정보 수집 및 이용 목적</h2>
         <p className="mb-2">수집한 개인정보는 다음의 목적을 위해 사용됩니다.</p>
         <ul className="mb-6">

@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import Link from 'next/link'
 
 import { CANONICAL_URL, defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { env } from '@/env/server.next'
@@ -54,6 +55,15 @@ export default async function Page() {
           <li>Samsung Internet 25</li>
           <li>iOS Safari 16</li>
         </ul>
+        <h2 className="mb-2">제 6 조 (저작권 침해 신고 및 처리)</h2>
+        <p className="mb-4">
+          본 서비스는 저작권 침해 신고를 접수하고 처리하기 위한 절차를 운영합니다. 권리자 또는 적법한 대리인은{' '}
+          <Link className="underline underline-offset-2" href="/doc/dmca" prefetch={false}>
+            저작권/DMCA 신고 페이지
+          </Link>
+          를 통해 통지를 제출할 수 있으며, 유효한 통지가 접수되면 해당 콘텐츠에 대한 접근이 제한될 수 있습니다. 라이선스
+          또는 권한이 있다고 주장하는 경우에도 동일 페이지에서 이의제기(카운터 노티스)를 제출할 수 있습니다.
+        </p>
         <h3 className="mt-6 text-center">시행일 2025-10-20</h3>
         <div className="flex flex-col items-center gap-2 text-xs text-center text-zinc-600">
           {VERCEL_DEPLOYMENT_ID && (

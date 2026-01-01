@@ -8,6 +8,7 @@ import { mangaSchema } from '@/app/manga/[id]/schema'
 import { PostFilter } from '@/backend/api/v1/post/constant'
 import BackButton from '@/components/BackButton'
 import PostCreationForm from '@/components/post/PostCreationForm'
+import MangaReportButton from '@/components/report/MangaReportButton'
 import { CANONICAL_URL, defaultOpenGraph, SHORT_NAME } from '@/constants'
 
 import AlsoViewedSection from './AlsoViewedSection'
@@ -46,7 +47,7 @@ export default async function Page({ params }: PageProps<'/manga/[id]/detail'>) 
 
   return (
     <>
-      <div className="fixed top-0 w-full z-20 flex items-center gap-4 bg-background/90 backdrop-blur border-b-2 p-4">
+      <div className="fixed top-0 w-full z-20 flex items-center gap-4 bg-background/90 backdrop-blur border-b-2 p-4 sm:max-w-[calc(100vw-5rem)] 2xl:max-w-7xl">
         <BackButton
           className="hover:bg-zinc-500/20 focus-visible:outline-zinc-500 rounded-full p-2 -m-2 transition"
           fallbackUrl={`/manga/${id}`}
