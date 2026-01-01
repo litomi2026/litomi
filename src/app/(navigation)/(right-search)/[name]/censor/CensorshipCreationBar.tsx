@@ -1,13 +1,13 @@
 'use client'
 
 import { useQueryClient } from '@tanstack/react-query'
+import { X } from 'lucide-react'
 import { useCallback, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import SuggestionDropdown from '@/app/(navigation)/search/SuggestionDropdown'
 import IconInfo from '@/components/icons/IconInfo'
 import IconSpinner from '@/components/icons/IconSpinner'
-import IconX from '@/components/icons/IconX'
 import { BLIND_TAG_VALUES } from '@/constants/json'
 import { QueryKeys } from '@/constants/query'
 import { CensorshipKey, CensorshipLevel } from '@/database/enum'
@@ -250,7 +250,7 @@ export default function CensorshipCreationBar() {
                 onClick={() => setShowHelp(false)}
                 type="button"
               >
-                <IconX className="w-3" />
+                <X className="w-3" />
               </button>
             </div>
             <div className="space-y-2 text-zinc-400">

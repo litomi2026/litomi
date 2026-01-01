@@ -1,11 +1,11 @@
 'use client'
 
+import { X } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
 import { Dispatch, FormEvent, RefObject, SetStateAction, useCallback, useEffect, useState, useTransition } from 'react'
 import { createPortal } from 'react-dom'
 
 import IconSpinner from '@/components/icons/IconSpinner'
-import IconX from '@/components/icons/IconX'
 import CustomSelect from '@/components/ui/CustomSelect'
 import { formatLocalDate } from '@/utils/format/date'
 
@@ -200,7 +200,7 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
             onClick={onClose}
             type="button"
           >
-            <IconX className="w-6 h-6 sm:w-5 sm:h-5" />
+            <X className="w-6 h-6 sm:w-5 sm:h-5" />
           </button>
         </div>
         <div

@@ -1,10 +1,10 @@
 'use client'
 
+import { X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useTransition } from 'react'
 
 import IconSpinner from '@/components/icons/IconSpinner'
-import IconX from '@/components/icons/IconX'
 
 import { FILTER_KEYS } from './constants'
 import { formatDate, formatNumber } from './utils'
@@ -116,7 +116,7 @@ export default function ActiveFilters({ filters }: Readonly<Props>) {
               onClick={config.onRemove}
               type="button"
             >
-              <IconX className="size-3" />
+              <X className="size-3" />
             </button>
           </div>
         ))}

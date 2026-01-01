@@ -1,7 +1,7 @@
 'use client'
 
 import { type InfiniteData, useQueryClient } from '@tanstack/react-query'
-import { Check } from 'lucide-react'
+import { Check, X } from 'lucide-react'
 import { useRef } from 'react'
 import { toast } from 'sonner'
 
@@ -9,7 +9,6 @@ import type { GETLibraryResponse } from '@/backend/api/v1/library/get'
 import type { GETV1LibraryListResponse } from '@/backend/api/v1/library/list'
 
 import IconSpinner from '@/components/icons/IconSpinner'
-import IconX from '@/components/icons/IconX'
 import Modal from '@/components/ui/Modal'
 import Toggle from '@/components/ui/Toggle'
 import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/constants/policy'
@@ -143,7 +142,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
             onClick={() => onOpenChange(false)}
             type="button"
           >
-            <IconX className="w-5 text-zinc-400" />
+            <X className="w-5 text-zinc-400" />
           </button>
         </div>
 

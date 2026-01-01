@@ -1,6 +1,7 @@
 'use client'
 
 import { useQueryClient } from '@tanstack/react-query'
+import { X } from 'lucide-react'
 import Link from 'next/link'
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
@@ -12,7 +13,6 @@ import useServerAction from '@/hook/useServerAction'
 
 import IconPlus from '../icons/IconPlus'
 import IconSpinner from '../icons/IconSpinner'
-import IconX from '../icons/IconX'
 import Modal from '../ui/Modal'
 import useLibrariesQuery from './useLibrariesQuery'
 
@@ -105,7 +105,7 @@ export default function LibraryModal() {
             title="닫기"
             type="button"
           >
-            <IconX className="w-6 h-6 sm:w-5 sm:h-5" />
+            <X className="w-6 h-6 sm:w-5 sm:h-5" />
           </button>
         </div>
         <div className="flex flex-col gap-4 flex-1 overflow-y-auto p-4">

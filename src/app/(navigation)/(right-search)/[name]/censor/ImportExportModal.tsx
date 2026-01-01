@@ -1,13 +1,12 @@
 'use client'
 
 import { useQueryClient } from '@tanstack/react-query'
-import { Download } from 'lucide-react'
+import { Download, X } from 'lucide-react'
 import { memo, useState } from 'react'
 import { toast } from 'sonner'
 
 import { CensorshipItem } from '@/backend/api/v1/censorship'
 import { IconUpload } from '@/components/icons/IconUpload'
-import IconX from '@/components/icons/IconX'
 import Modal from '@/components/ui/Modal'
 import { QueryKeys } from '@/constants/query'
 import useServerAction from '@/hook/useServerAction'
@@ -153,7 +152,7 @@ function ImportExportModal({ open, onClose, censorships }: Readonly<Props>) {
             onClick={onClose}
             type="button"
           >
-            <IconX className="w-5 text-zinc-400" />
+            <X className="w-5 text-zinc-400" />
           </button>
         </div>
 

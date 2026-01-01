@@ -3,12 +3,11 @@
 import { captureException } from '@sentry/nextjs'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import { useQueryClient } from '@tanstack/react-query'
-import { SquarePen } from 'lucide-react'
+import { SquarePen, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { FormEvent, use, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
-import IconX from '@/components/icons/IconX'
 import Modal from '@/components/ui/Modal'
 import { QueryKeys } from '@/constants/query'
 import useServerAction, { getFieldError } from '@/hook/useServerAction'
@@ -104,7 +103,7 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
                 onClick={handleClose}
                 type="button"
               >
-                <IconX className="w-5" />
+                <X className="w-5" />
               </button>
               <h2 className="text-lg font-semibold">프로필 수정</h2>
             </div>
