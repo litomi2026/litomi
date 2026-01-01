@@ -13,6 +13,7 @@ import * as notificationSchema from './notification'
 import * as passkeySchema from './passkey'
 import * as pointsSchema from './points'
 import * as postSchema from './post'
+import * as reportSchema from './report'
 import * as twoFactorSchema from './two-factor'
 import * as userSchema from './user'
 
@@ -35,6 +36,7 @@ export const db = drizzle({
     ...passkeySchema,
     ...pointsSchema,
     ...postSchema,
+    ...reportSchema,
     ...twoFactorSchema,
     ...userSchema,
   },
