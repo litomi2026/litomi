@@ -53,6 +53,9 @@ export default async function Page({ params }: PageProps<'/manga/[id]/detail'>) 
           fallbackUrl={`/manga/${id}`}
         />
         <h2 className="text-xl font-bold">작품 상세</h2>
+        <div className="ml-auto">
+          <MangaReportButton mangaId={id} />
+        </div>
       </div>
       <div className="flex flex-col flex-1 pt-16">
         <RelatedMangaSection mangaId={id} />
