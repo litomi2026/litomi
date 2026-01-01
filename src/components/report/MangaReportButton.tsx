@@ -59,7 +59,6 @@ export default function MangaReportButton({ mangaId, variant = 'icon', className
       } else {
         toast.success('신고가 접수됐어요')
       }
-      setOpen(false)
     },
     onError: (error) => {
       if (error instanceof ProblemDetailsError && error.status === 403) {
@@ -76,6 +75,7 @@ export default function MangaReportButton({ mangaId, variant = 'icon', className
         )
       }
     },
+    onSettled: () => setOpen(false),
   })
 
   function openDialog(e: React.MouseEvent<HTMLButtonElement>) {
