@@ -1,17 +1,13 @@
 'use client'
 
-import { useQueryClient } from '@tanstack/react-query'
 import { Star, X } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-import { GETV1MangaIdRatingResponse } from '@/backend/api/v1/manga/[id]/rating'
 import LoginPageLink from '@/components/LoginPageLink'
-import { QueryKeys } from '@/constants/query'
-import useServerAction from '@/hook/useServerAction'
 import useMeQuery from '@/query/useMeQuery'
 
-import { saveRating } from '../actions'
+import { useSaveRatingMutation } from './useSaveRatingMutation'
 import { useUserRatingQuery } from './useUserRatingQuery'
 
 type Props = {
@@ -27,9 +23,9 @@ const VERTICAL_THRESHOLD = 10
 const DIRECTION_DETERMINATION_THRESHOLD = 15
 
 export default function RatingInput({ mangaId, className = '', onClick }: Props) {
-  const queryClient = useQueryClient()
   const { data: existingRating } = useUserRatingQuery(mangaId)
   const { data: me } = useMeQuery()
+  const { mutate: saveRating, isPending } = useSaveRatingMutation()
   const [rating, setRating] = useState(0)
   const [hoveredRating, setHoveredRating] = useState(0)
   const [justSaved, setJustSaved] = useState(false)
@@ -37,28 +33,6 @@ export default function RatingInput({ mangaId, className = '', onClick }: Props)
   const initialPointerPos = useRef<{ x: number; y: number } | null>(null)
   const gestureDirection = useRef<'horizontal' | 'vertical' | null>(null)
   const displayRating = hoveredRating || rating
-
-  const [, dispatchAction, isPending] = useServerAction({
-    action: saveRating,
-    onSuccess: (_, [{ rating }]) => {
-      setJustSaved(true)
-      setTimeout(() => setJustSaved(false), 1000)
-
-      if (rating === 0) {
-        queryClient.setQueryData<GETV1MangaIdRatingResponse>(QueryKeys.userRating(mangaId), null)
-        toast.info('평가를 취소했어요')
-      } else {
-        const newRating = {
-          rating,
-          updatedAt: new Date(),
-        }
-
-        queryClient.setQueryData<GETV1MangaIdRatingResponse>(QueryKeys.userRating(mangaId), newRating)
-        toast.success(`${rating}점으로 평가했어요`)
-      }
-    },
-    shouldSetResponse: false,
-  })
 
   const handleRating = useCallback(
     (value: number, force = false) => {
@@ -76,10 +50,29 @@ export default function RatingInput({ mangaId, className = '', onClick }: Props)
         return
       }
 
+      const previousRating = rating
       setRating(value)
-      dispatchAction({ mangaId, rating: value })
+
+      const variables = {
+        mangaId,
+        rating: value,
+      }
+
+      saveRating(variables, {
+        onSuccess: (result) => {
+          setJustSaved(true)
+          setTimeout(() => setJustSaved(false), 1000)
+
+          if (!result) {
+            toast.info('평가를 취소했어요')
+          } else {
+            toast.success(`${result.rating}점으로 평가했어요`)
+          }
+        },
+        onError: () => setRating(previousRating),
+      })
     },
-    [me, rating, mangaId, dispatchAction],
+    [me, rating, mangaId, saveRating],
   )
 
   const getRatingFromPosition = useCallback((clientX: number) => {
