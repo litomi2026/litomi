@@ -35,7 +35,11 @@ mangaRoutes.get('/:id/history', zProblemValidator('param', paramSchema), async (
       .where(and(eq(readingHistoryTable.userId, userId), eq(readingHistoryTable.mangaId, mangaId)))
 
     if (!history) {
-      return problemResponse(c, { status: 404, detail: '감상 기록이 없어요' })
+      return problemResponse(c, {
+        status: 404,
+        detail: '감상 기록이 없어요',
+        headers: { 'Cache-Control': privateCacheControl },
+      })
     }
 
     return c.json<GETV1MangaIdHistoryResponse>(history.lastPage, { headers: { 'Cache-Control': privateCacheControl } })

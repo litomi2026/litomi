@@ -50,7 +50,11 @@ itemsRoutes.get('/', zProblemValidator('param', paramsSchema), zProblemValidator
       )
 
     if (!library) {
-      return problemResponse(c, { status: 404, detail: '서재를 찾을 수 없어요' })
+      return problemResponse(c, {
+        status: 404,
+        detail: '서재를 찾을 수 없어요',
+        headers: { 'Cache-Control': privateCacheControl },
+      })
     }
 
     const conditions: (SQL | undefined)[] = [eq(libraryItemTable.libraryId, libraryId)]

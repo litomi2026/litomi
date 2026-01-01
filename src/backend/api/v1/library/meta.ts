@@ -50,7 +50,11 @@ libraryMetaRoutes.get('/', zProblemValidator('param', paramsSchema), async (c) =
       )
 
     if (!library) {
-      return problemResponse(c, { status: 404, detail: '서재를 찾을 수 없어요' })
+      return problemResponse(c, {
+        status: 404,
+        detail: '서재를 찾을 수 없어요',
+        headers: { 'Cache-Control': privateCacheControl },
+      })
     }
 
     const result = {

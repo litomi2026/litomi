@@ -41,7 +41,11 @@ route.get('/:id/rating', zProblemValidator('param', paramSchema), async (c) => {
       .where(and(eq(userRatingTable.userId, userId), eq(userRatingTable.mangaId, mangaId)))
 
     if (!rating) {
-      return problemResponse(c, { status: 404, detail: '평점이 없어요' })
+      return problemResponse(c, {
+        status: 404,
+        detail: '평점이 없어요',
+        headers: { 'Cache-Control': privateCacheControl },
+      })
     }
 
     const result: GETV1MangaIdRatingResponse = {
