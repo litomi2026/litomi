@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 
 import { Env } from '@/backend'
 
+import adsterraRoutes from './adsterra'
 import analyticsRoutes from './analytics'
 import bbatonRoutes from './bbaton'
 import bookmarkRoutes from './bookmark'
@@ -17,6 +18,7 @@ import tagRoutes from './tag'
 
 const v1Routes = new Hono<Env>()
 
+v1Routes.route('/adsterra', adsterraRoutes)
 v1Routes.route('/analytics', analyticsRoutes)
 v1Routes.route('/bbaton', bbatonRoutes)
 v1Routes.route('/bookmark', bookmarkRoutes)

@@ -1,9 +1,9 @@
-import { zValidator } from '@hono/zod-validator'
 import { Hono } from 'hono'
 import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { zProblemValidator } from '@/backend/utils/validator'
 import { trendingKeywordsService } from '@/services/TrendingKeywordsService'
 import { translateArtistList } from '@/translation/artist'
 import { translateCategory } from '@/translation/category'
@@ -102,7 +102,7 @@ function translateTrendingKeyword(keyword: string, locale: Locale): string {
     .join(', ')
 }
 
-trendingRoutes.get('/', zValidator('query', querySchema), async (c) => {
+trendingRoutes.get('/', zProblemValidator('query', querySchema), async (c) => {
   const { limit, locale, type } = c.req.valid('query')
 
   const { keywords = [], cacheMaxAge } = {

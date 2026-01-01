@@ -1,9 +1,9 @@
-import { zValidator } from '@hono/zod-validator'
 import { Hono } from 'hono'
 import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { zProblemValidator } from '@/backend/utils/validator'
 import { trendingKeywordsService } from '@/services/TrendingKeywordsService'
 
 const bodySchema = z.object({
@@ -19,7 +19,7 @@ export type POSTV1SearchTrendingResponse = {
 
 const trendingPostRoutes = new Hono<Env>()
 
-trendingPostRoutes.post('/', zValidator('json', bodySchema), async (c) => {
+trendingPostRoutes.post('/', zProblemValidator('json', bodySchema), async (c) => {
   const { keywords } = c.req.valid('json')
 
   await Promise.all(keywords.map((keyword) => trendingKeywordsService.trackSearch(keyword)))

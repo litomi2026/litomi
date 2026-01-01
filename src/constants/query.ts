@@ -27,6 +27,7 @@ export const QueryKeys = {
   pointsExpansion: ['me', 'points', 'expansion'],
   pointsTurnstile: ['me', 'points', 'turnstile'],
   pointsTransactions: ['me', 'points', 'transactions'],
+  adsterraStats: (startDate: string, finishDate: string) => ['adsterra', 'stats', startDate, finishDate],
 
   manga: (id: number) => ['manga', id],
   search: (searchParams: URLSearchParams, locale: string) => ['search', locale, Object.fromEntries(searchParams)],
