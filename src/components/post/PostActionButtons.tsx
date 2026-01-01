@@ -5,10 +5,10 @@ import { toast } from 'sonner'
 
 import { toggleLikingPost } from '@/app/(navigation)/(right-search)/posts/action'
 import useServerAction from '@/hook/useServerAction'
+import { showLoginRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
 
 import IconLogout from '../icons/IconLogout'
-import LoginPageLink from '../LoginPageLink'
 
 type Props = {
   postId: number
@@ -42,12 +42,7 @@ export default function PostActionButtons({
 
   function handleLike() {
     if (!me) {
-      toast.warning(
-        <div className="flex gap-2 items-center">
-          <div>로그인이 필요해요</div>
-          <LoginPageLink>로그인하기</LoginPageLink>
-        </div>,
-      )
+      showLoginRequiredToast()
       return
     }
 

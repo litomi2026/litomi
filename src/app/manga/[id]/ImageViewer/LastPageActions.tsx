@@ -2,12 +2,11 @@
 
 import { LibraryBig, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
-import { toast } from 'sonner'
 
 import BookmarkButton from '@/components/card/BookmarkButton'
 import { useLibraryModal } from '@/components/card/LibraryModal'
-import LoginPageLink from '@/components/LoginPageLink'
 import MangaReportButton from '@/components/report/MangaReportButton'
+import { showLoginRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
 
 type Props = {
@@ -24,12 +23,7 @@ export default function LastPageActions({ manga }: Readonly<Props>) {
 
     if (!me) {
       e.preventDefault()
-      const toastId = toast.warning(
-        <div className="flex gap-2 items-center">
-          <div>로그인이 필요해요</div>
-          <LoginPageLink onClick={() => toast.dismiss(toastId)}>로그인하기</LoginPageLink>
-        </div>,
-      )
+      showLoginRequiredToast()
       return
     }
 

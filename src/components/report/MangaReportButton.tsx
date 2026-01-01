@@ -9,10 +9,10 @@ import { twMerge } from 'tailwind-merge'
 
 import type { POSTV1MangaIdReportBody, POSTV1MangaIdReportResponse } from '@/backend/api/v1/manga/[id]/report/POST'
 
-import LoginPageLink from '@/components/LoginPageLink'
 import Dialog from '@/components/ui/Dialog'
 import DialogHeader from '@/components/ui/DialogHeader'
 import { env } from '@/env/client'
+import { showLoginRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
 import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
 
@@ -53,9 +53,12 @@ export default function MangaReportButton({ mangaId, variant = 'icon', className
       })
       return data
     },
+    meta: {
+      suppressGlobalErrorToastForStatuses: [403],
+    },
     onSuccess: (data) => {
       if (data.duplicated) {
-        toast.warning('이미 신고했어요')
+        toast.info('이미 신고했어요')
       } else {
         toast.success('신고가 접수됐어요')
       }
@@ -82,12 +85,7 @@ export default function MangaReportButton({ mangaId, variant = 'icon', className
     e.stopPropagation()
 
     if (!me) {
-      const toastId = toast.warning(
-        <div className="flex gap-2 items-center">
-          <div>로그인이 필요해요</div>
-          <LoginPageLink onClick={() => toast.dismiss(toastId)}>로그인하기</LoginPageLink>
-        </div>,
-      )
+      showLoginRequiredToast()
       return
     }
 
