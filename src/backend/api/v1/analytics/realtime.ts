@@ -27,10 +27,6 @@ let analyticsClient: BetaAnalyticsDataClient | null = null
 const realtimeRoutes = new Hono<Env>()
 
 realtimeRoutes.get('/', async (c) => {
-  if (!GA_SERVICE_ACCOUNT_EMAIL || !GA_SERVICE_ACCOUNT_KEY || !GA_PROPERTY_ID) {
-    return problemResponse(c, { status: 503 })
-  }
-
   try {
     const client = getAnalyticsClient()
 
