@@ -15,7 +15,7 @@ import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import useBookmarksQuery from '@/query/useBookmarksQuery'
 import useMeQuery from '@/query/useMeQuery'
-import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
+import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import LoginPageLink from '../LoginPageLink'
 import { useLibraryModal } from './LibraryModal'
@@ -101,24 +101,6 @@ export default function BookmarkButton({ manga, className }: Props) {
       })
 
       queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteBookmarks })
-    },
-    onError: (error) => {
-      if (error instanceof ProblemDetailsError) {
-        if (error.status >= 400 && error.status < 500) {
-          toast.warning(error.message)
-        } else {
-          toast.error(error.message)
-        }
-        return
-      }
-
-      if (error instanceof Error) {
-        if (!navigator.onLine) {
-          toast.error('네트워크 연결을 확인해 주세요')
-        } else {
-          toast.error('요청 처리 중 오류가 발생했어요')
-        }
-      }
     },
   })
 

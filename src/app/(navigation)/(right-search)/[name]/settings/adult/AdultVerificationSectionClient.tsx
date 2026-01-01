@@ -19,11 +19,6 @@ const { NEXT_PUBLIC_BACKEND_URL } = env
 const POPUP_CLOSE_GRACE_MS = ms('800ms')
 const POPUP_MONITOR_INTERVAL_MS = ms('500ms')
 
-type ApiError = {
-  status?: number
-  error?: string
-}
-
 type BroadcastResult = {
   at: number
   adultFlag?: 'N' | 'Y'
@@ -136,32 +131,8 @@ export default function AdultVerificationSectionClient({ initialVerification, is
     },
     onError: (error) => {
       if (error instanceof ProblemDetailsError && error.status === 401) {
-        toast.warning('로그인이 필요해요')
         router.refresh()
-        return
       }
-
-      if (error instanceof ProblemDetailsError) {
-        toast.error(error.message || '인증을 시작하지 못했어요. 잠시 후 다시 시도해 주세요.')
-        return
-      }
-
-      const apiError = error as ApiError
-      if (typeof apiError.error === 'string' && apiError.error.length > 0) {
-        toast.error(apiError.error)
-        return
-      }
-
-      if (error instanceof Error) {
-        if (!navigator.onLine) {
-          toast.error('네트워크 연결을 확인해 주세요')
-        } else {
-          toast.error('요청 처리 중 오류가 발생했어요')
-        }
-        return
-      }
-
-      toast.error('인증을 시작하지 못했어요. 잠시 후 다시 시도해 주세요.')
     },
   })
 
@@ -185,23 +156,8 @@ export default function AdultVerificationSectionClient({ initialVerification, is
     },
     onError: (error) => {
       if (error instanceof ProblemDetailsError && error.status === 401) {
-        toast.warning('로그인이 필요해요')
         router.refresh()
-        return
       }
-
-      if (error instanceof ProblemDetailsError) {
-        toast.error(error.message || '연동을 해제하지 못했어요. 잠시 후 다시 시도해 주세요.')
-        return
-      }
-
-      const apiError = error as ApiError
-      if (typeof apiError.error === 'string' && apiError.error.length > 0) {
-        toast.error(apiError.error)
-        return
-      }
-
-      toast.error('연동을 해제하지 못했어요. 잠시 후 다시 시도해 주세요.')
     },
   })
 
