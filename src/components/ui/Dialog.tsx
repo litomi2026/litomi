@@ -132,68 +132,6 @@ export default function Dialog({
     }
   }, [state])
 
-  // NOTE: 닫힘 애니메이션이 끝난 뒤 `dialog.close()`로 top-layer에서 실제로 제거해요
-  useEffect(() => {
-    const dialog = dialogRef.current
-    const panel = panelRef.current
-    if (!dialog || !panel) {
-      return
-    }
-
-    if (state !== 'closing') {
-      return
-    }
-
-    if (!hasEnteredOpenStateRef.current) {
-      if (dialog.open) {
-        dialog.close()
-      }
-
-      setState('closed')
-
-      const lastActive = lastActiveElementRef.current
-      lastActiveElementRef.current = null
-      if (lastActive?.isConnected) {
-        lastActive.focus()
-      }
-
-      return
-    }
-
-    function handleTransitionEnd(event: TransitionEvent) {
-      if (transitionEndHandledRef.current) {
-        return
-      }
-
-      if (event.target !== panel) {
-        return
-      }
-
-      if (event.propertyName !== 'opacity' && event.propertyName !== 'transform') {
-        return
-      }
-
-      transitionEndHandledRef.current = true
-      const dialogEl = dialogRef.current
-      if (dialogEl?.open) {
-        dialogEl.close()
-      }
-
-      setState('closed')
-
-      const lastActive = lastActiveElementRef.current
-      lastActiveElementRef.current = null
-      if (lastActive?.isConnected) {
-        lastActive.focus()
-      }
-    }
-
-    panel.addEventListener('transitionend', handleTransitionEnd)
-    return () => {
-      panel.removeEventListener('transitionend', handleTransitionEnd)
-    }
-  }, [state])
-
   // NOTE: ESC로 닫힐 때 기본 close를 막고, 닫힘 트랜지션이 돌게 해요
   useEffect(() => {
     const dialog = dialogRef.current
@@ -211,6 +149,52 @@ export default function Dialog({
       dialog.removeEventListener('cancel', handleCancel)
     }
   }, [requestClose])
+
+  // NOTE: 닫힘 애니메이션이 끝난 뒤 `dialog.close()`로 top-layer에서 실제로 제거해요
+  useEffect(() => {
+    const dialog = dialogRef.current
+    const panel = panelRef.current
+
+    if (!dialog || !panel || state !== 'closing') {
+      return
+    }
+
+    function finalizeClose(dialogEl: HTMLDialogElement | null) {
+      if (dialogEl?.open) {
+        dialogEl.close()
+      }
+
+      setState('closed')
+
+      const lastActive = lastActiveElementRef.current
+      lastActiveElementRef.current = null
+      if (lastActive?.isConnected) {
+        lastActive.focus()
+      }
+    }
+
+    if (!hasEnteredOpenStateRef.current) {
+      finalizeClose(dialog)
+      return
+    }
+
+    function handleTransitionEnd(event: TransitionEvent) {
+      if (transitionEndHandledRef.current) {
+        return
+      }
+
+      if (event.target !== panel || (event.propertyName !== 'opacity' && event.propertyName !== 'transform')) {
+        return
+      }
+
+      transitionEndHandledRef.current = true
+
+      finalizeClose(dialogRef.current)
+    }
+
+    panel.addEventListener('transitionend', handleTransitionEnd)
+    return () => panel.removeEventListener('transitionend', handleTransitionEnd)
+  }, [state])
 
   // NOTE: 언마운트 시 requestAnimationFrame을 정리해요
   useEffect(() => {
