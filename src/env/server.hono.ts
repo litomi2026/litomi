@@ -6,6 +6,7 @@ const skipValidation = process.env.SKIP_ENV_VALIDATION === 'true'
 
 export const env = createEnv({
   server: {
+    ADSTERRA_API_KEY: z.string().min(1),
     BBATON_CLIENT_ID: z.string().min(1),
     BBATON_CLIENT_SECRET: z.string().min(1),
     CORS_ORIGIN: z.string().min(1),

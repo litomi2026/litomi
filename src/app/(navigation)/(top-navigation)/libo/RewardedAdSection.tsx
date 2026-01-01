@@ -151,11 +151,6 @@ export default function RewardedAdSection() {
         <span className="text-zinc-500">{getRewardedAdStatus(me, isVerified)}</span>
       </div>
 
-      <div className="flex flex-wrap justify-center gap-x-4 gap-y-2">
-        <AdsterraBanner300x250 adSlotId="rewarded-ad-adsterra" onAdClick={handleAdClick} rewardEnabled={false} />
-        <PlugRushBannerRectangle300x250 />
-      </div>
-
       {/* 안내 문구 */}
       <details className="text-xs text-zinc-500 rounded-xl bg-white/4 border border-white/7">
         <summary className="cursor-pointer list-none p-3 flex items-center gap-2 text-zinc-300 [&::-webkit-details-marker]:hidden">
@@ -204,6 +199,11 @@ export default function RewardedAdSection() {
           </p>
         </div>
       )}
+
+      <div className="flex flex-wrap justify-center gap-x-4 gap-y-2">
+        <AdsterraBanner300x250 adSlotId="rewarded-ad-adsterra" onAdClick={handleAdClick} rewardEnabled={false} />
+        <PlugRushBannerRectangle300x250 />
+      </div>
 
       {/* NativeBanner */}
       <AdsterraNativeBanner className="w-full max-w-5xl mx-auto" />

@@ -1,6 +1,6 @@
 'use client'
 
-import { History, PiggyBank, ShoppingBag, TrendingUp } from 'lucide-react'
+import { ChevronRight, History, PiggyBank, ShoppingBag, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { type ReactNode } from 'react'
@@ -47,17 +47,29 @@ export default function LiboNavigation({ children }: Props) {
               <span className="text-base font-medium text-zinc-300 ml-1">리보</span>
             </p>
           </div>
-          <div className="size-12 rounded-full bg-white/7.5 border border-white/7 flex items-center justify-center">
+          <div className="size-12 rounded-full bg-white/7 border border-white/7 flex items-center justify-center">
             <TrendingUp className="size-6 text-zinc-200" />
           </div>
         </div>
-        <div className="mt-4 pt-3 border-t border-white/7 flex flex-wrap gap-x-3 gap-y-1 text-xs text-zinc-400">
+        <div className="mt-4 pt-3 border-t border-white/7 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs text-zinc-400">
           {!isLoggedIn && !isLoading ? (
             <p className="text-zinc-400/90">로그인하면 리보 잔액과 내역을 확인할 수 있어요</p>
           ) : (
             <>
-              <span>총 적립 {isLoading ? '...' : isLoggedIn ? totalEarned.toLocaleString() : '—'} 리보</span>
-              <span>총 사용 {isLoading ? '...' : isLoggedIn ? totalSpent.toLocaleString() : '—'} 리보</span>
+              <div className="flex gap-3">
+                <span>총 적립 {isLoading ? '...' : isLoggedIn ? totalEarned.toLocaleString() : '—'} 리보</span>
+                <span>총 사용 {isLoading ? '...' : isLoggedIn ? totalSpent.toLocaleString() : '—'} 리보</span>
+              </div>
+              {isLoggedIn && (
+                <Link
+                  className="inline-flex items-center gap-1 text-zinc-300/80 hover:text-zinc-100 transition"
+                  href="/libo/stats"
+                  prefetch={false}
+                >
+                  광고 수익 통계
+                  <ChevronRight className="size-3 text-zinc-500" />
+                </Link>
+              )}
             </>
           )}
         </div>
@@ -92,12 +104,15 @@ export default function LiboNavigation({ children }: Props) {
   )
 }
 
-function getActiveTab(pathname: string): Tab {
+function getActiveTab(pathname: string): Tab | null {
   if (pathname.startsWith('/libo/shop')) {
     return 'shop'
   }
   if (pathname.startsWith('/libo/history')) {
     return 'history'
   }
-  return 'earn'
+  if (pathname === '/libo') {
+    return 'earn'
+  }
+  return null
 }
