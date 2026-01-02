@@ -6,14 +6,26 @@ import type { Env } from '@/backend'
 
 import notificationRoutes, { type GETNotificationResponse } from '..'
 
-const app = new Hono<Env>()
+type TestEnv = Env & {
+  Bindings: {
+    userId?: number
+  }
+}
+
+const app = new Hono<TestEnv>()
 app.use('*', contextStorage())
+app.use('*', async (c, next) => {
+  if (c.env.userId) {
+    c.set('userId', c.env.userId)
+  }
+  await next()
+})
 app.route('/', notificationRoutes)
 
 describe('GET /api/v1/notification', () => {
-  const createRequest = (params?: string) => {
+  const createRequest = (params?: string, env?: { userId?: number }) => {
     const queryString = params ? `?${params}` : ''
-    return app.request(`/${queryString}`)
+    return app.request(`/${queryString}`, {}, env ?? {})
   }
 
   describe('인증', () => {
@@ -75,13 +87,13 @@ describe('GET /api/v1/notification', () => {
 
   describe('실패', () => {
     test('유효하지 않은 nextId를 사용하면 400 에러를 반환한다', async () => {
-      const response = await createRequest('nextId=invalid')
+      const response = await createRequest('nextId=invalid', { userId: 1 })
 
       expect(response.status).toBe(400)
     })
 
     test('유효하지 않은 필터를 사용하면 400 에러를 반환한다', async () => {
-      const response = await createRequest('filter=invalid')
+      const response = await createRequest('filter=invalid', { userId: 1 })
 
       expect(response.status).toBe(400)
     })
@@ -103,7 +115,7 @@ describe('GET /api/v1/notification', () => {
 describe('GET /api/v1/notification/unread-count', () => {
   describe('인증', () => {
     test('userId가 없으면 401 에러를 반환한다', async () => {
-      const response = await app.request('/unread-count')
+      const response = await app.request('/unread-count', {}, {})
 
       expect(response.status).toBe(401)
     })
@@ -112,7 +124,7 @@ describe('GET /api/v1/notification/unread-count', () => {
   describe('성공', () => {
     test.skip('읽지 않은 알림 개수를 반환한다', async () => {
       // 실제 DB 연결이 필요한 테스트
-      const response = await app.request('/unread-count')
+      const response = await app.request('/unread-count', {}, { userId: 1 })
       const data = await response.json()
 
       expect(response.status).toBe(200)
@@ -123,7 +135,7 @@ describe('GET /api/v1/notification/unread-count', () => {
   describe('캐시 헤더', () => {
     test.skip('응답에 private 캐시 헤더가 포함되어 있다', async () => {
       // 실제 인증이 필요한 테스트
-      const response = await app.request('/unread-count')
+      const response = await app.request('/unread-count', {}, { userId: 1 })
 
       expect(response.status).toBe(200)
       expect(response.headers.get('cache-control')).toBeDefined()

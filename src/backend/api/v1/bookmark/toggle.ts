@@ -27,7 +27,6 @@ const route = new Hono<Env>()
 
 route.post('/', requireAuth, requireAdult, zProblemValidator('json', toggleSchema), async (c) => {
   const userId = c.get('userId')!
-
   const { mangaId } = c.req.valid('json')
 
   try {

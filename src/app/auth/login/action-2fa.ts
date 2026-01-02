@@ -6,11 +6,12 @@ import { cookies, headers } from 'next/headers'
 import { z } from 'zod'
 
 import { BACKUP_CODE_PATTERN } from '@/constants/policy'
+import { bbatonVerificationTable } from '@/database/supabase/bbaton'
 import { db } from '@/database/supabase/drizzle'
 import { twoFactorBackupCodeTable, twoFactorTable } from '@/database/supabase/two-factor'
 import { userTable } from '@/database/supabase/user'
 import { badRequest, internalServerError, ok, tooManyRequests, unauthorized } from '@/utils/action-response'
-import { getAccessTokenCookieConfig, setRefreshTokenCookie } from '@/utils/cookie'
+import { getAccessTokenCookieConfig, getRefreshTokenCookieConfig } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 import { verifyPKCEChallenge } from '@/utils/pkce-server'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
@@ -176,10 +177,23 @@ export async function verifyTwoFactorLogin(formData: FormData) {
         // })
       }
 
-      await Promise.all([
-        getAccessTokenCookieConfig(userId).then(({ key, value, options }) => cookieStore.set(key, value, options)),
-        remember && setRefreshTokenCookie(cookieStore, userId),
-      ])
+      const [verification] = await tx
+        .select({ adultFlag: bbatonVerificationTable.adultFlag })
+        .from(bbatonVerificationTable)
+        .where(eq(bbatonVerificationTable.userId, userId))
+
+      const tokenClaims = {
+        userId,
+        adult: verification?.adultFlag === true,
+      }
+
+      const accessTokenCookie = await getAccessTokenCookieConfig(tokenClaims)
+      cookieStore.set(accessTokenCookie.key, accessTokenCookie.value, accessTokenCookie.options)
+
+      if (remember) {
+        const refreshTokenCookie = await getRefreshTokenCookieConfig(tokenClaims)
+        cookieStore.set(refreshTokenCookie.key, refreshTokenCookie.value, refreshTokenCookie.options)
+      }
 
       await twoFactorLimiter.reward(String(userId))
 
