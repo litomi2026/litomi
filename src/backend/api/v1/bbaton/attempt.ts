@@ -3,6 +3,7 @@ import { setCookie } from 'hono/cookie'
 import 'server-only'
 
 import { Env } from '@/backend'
+import { requireAuth } from '@/backend/middleware/require-auth'
 import { problemResponse } from '@/backend/utils/problem'
 import { COOKIE_DOMAIN } from '@/constants'
 import { CookieKey } from '@/constants/storage'
@@ -16,12 +17,8 @@ export type POSTV1BBatonAttemptResponse = {
 
 const route = new Hono<Env>()
 
-route.post('/', async (c) => {
-  const userId = c.get('userId')
-
-  if (!userId) {
-    return problemResponse(c, { status: 401 })
-  }
+route.post('/', requireAuth, async (c) => {
+  const userId = c.get('userId')!
 
   try {
     const attemptToken = await signBBatonAttemptToken(userId)

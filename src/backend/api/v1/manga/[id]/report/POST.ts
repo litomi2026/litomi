@@ -1,15 +1,16 @@
-import { eq, lt } from 'drizzle-orm'
+import { lt } from 'drizzle-orm'
 import { Hono } from 'hono'
 import ms from 'ms'
 import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { requireAdult } from '@/backend/middleware/adult'
+import { requireAuth } from '@/backend/middleware/require-auth'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { MAX_MANGA_ID } from '@/constants/policy'
 import { isPostgresError } from '@/database/error'
-import { bbatonVerificationTable } from '@/database/supabase/bbaton'
 import { db } from '@/database/supabase/drizzle'
 import { mangaReportTable } from '@/database/supabase/report'
 
@@ -39,14 +40,12 @@ const route = new Hono<Env>()
 
 route.post(
   '/:id/report',
+  requireAuth,
+  requireAdult,
   zProblemValidator('param', paramSchema),
   zProblemValidator('json', postBodySchema),
   async (c) => {
-    const userId = c.get('userId')
-
-    if (!userId) {
-      return problemResponse(c, { status: 401 })
-    }
+    const userId = c.get('userId')!
 
     const { id: mangaId } = c.req.valid('param')
     const { reason } = c.req.valid('json')
@@ -54,15 +53,6 @@ route.post(
     const cutoff = new Date(now.getTime() - REPORT_DEDUPE_TTL_MS)
 
     try {
-      const [verification] = await db
-        .select({ userId: bbatonVerificationTable.userId })
-        .from(bbatonVerificationTable)
-        .where(eq(bbatonVerificationTable.userId, userId))
-
-      if (!verification) {
-        return problemResponse(c, { status: 403, detail: '비바톤 인증이 필요해요' })
-      }
-
       const [written] = await db
         .insert(mangaReportTable)
         .values({ userId, mangaId, reason, reportedAt: now })

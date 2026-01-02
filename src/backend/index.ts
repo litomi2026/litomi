@@ -22,6 +22,7 @@ export type Env = {
   Variables: {
     requestId: string
     userId?: number
+    isAdult?: boolean
   }
 }
 

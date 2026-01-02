@@ -4,6 +4,8 @@ import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { requireAdult } from '@/backend/middleware/adult'
+import { requireAuth } from '@/backend/middleware/require-auth'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { bookmarkTable } from '@/database/supabase/activity'
@@ -31,12 +33,8 @@ const importSchema = z.object({
 
 const route = new Hono<Env>()
 
-route.post('/', zProblemValidator('json', importSchema), async (c) => {
-  const userId = c.get('userId')
-
-  if (!userId) {
-    return problemResponse(c, { status: 401 })
-  }
+route.post('/', requireAuth, requireAdult, zProblemValidator('json', importSchema), async (c) => {
+  const userId = c.get('userId')!
 
   const { bookmarks, mode } = c.req.valid('json')
 
