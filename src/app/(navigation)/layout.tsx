@@ -32,7 +32,7 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           <SelectableLink href="/search" icon={<Search />}>
             검색
           </SelectableLink>
-          <SelectableLink href="/library" icon={<LibraryBig />}>
+          <SelectableLink href="/library" icon={<LibraryBig />} selectedIconStyle="fill">
             서재
           </SelectableLink>
           <SelectableLink
