@@ -24,6 +24,8 @@ import useMeQuery from '@/query/useMeQuery'
 import usePointsTurnstileQuery from '@/query/usePointsTurnstileQuery'
 import { fetchWithErrorHandling, type ProblemDetailsError } from '@/utils/react-query-error'
 
+import { runWhenDocumentVisible } from './util'
+
 const { NEXT_PUBLIC_BACKEND_URL } = env
 
 export default function RewardedAdSection() {
@@ -59,13 +61,17 @@ export default function RewardedAdSection() {
 
   function handleAdClick(result: AdClickResult) {
     if (!me) {
-      toast.warning('로그인하면 리보가 적립돼요')
+      runWhenDocumentVisible(() => {
+        toast.warning('로그인하면 리보가 적립돼요')
+      })
       return
     }
 
     if (!isVerified) {
-      toast.warning('보안 검증을 완료해 주세요')
-      verificationSectionRef.current?.scrollIntoView({ block: 'center' })
+      runWhenDocumentVisible(() => {
+        toast.warning('보안 검증을 완료해 주세요')
+        verificationSectionRef.current?.scrollIntoView({ block: 'center' })
+      })
       return
     }
 
@@ -73,7 +79,9 @@ export default function RewardedAdSection() {
       return
     }
 
-    toast.success(`${result.earned} 리보 적립됐어요`)
+    runWhenDocumentVisible(() => {
+      toast.success(`${result.earned} 리보 적립됐어요`)
+    })
   }
 
   function handleTurnstileTokenChange(token: string) {
