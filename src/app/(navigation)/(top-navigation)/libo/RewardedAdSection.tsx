@@ -109,7 +109,7 @@ export default function RewardedAdSection() {
   }, [pointsTurnstile.data, queryClient])
 
   return (
-    <div className="grid gap-4">
+    <div className="flex flex-col gap-4">
       {/* 작가 후원 안내 (상시 노출, 컴팩트) */}
       <details className="rounded-xl bg-white/4 border border-white/7">
         <summary className="cursor-pointer list-none px-4 py-3 flex items-center gap-2 text-sm text-zinc-200 [&::-webkit-details-marker]:hidden">
