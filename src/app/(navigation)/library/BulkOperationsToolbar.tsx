@@ -1,12 +1,13 @@
 'use client'
 
 import { useQueryClient } from '@tanstack/react-query'
-import { Copy, FolderInput, Trash2, X } from 'lucide-react'
+import { Copy, FolderInput, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
 import { useLibrarySelectionStore } from '@/app/(navigation)/library/[id]/librarySelection'
-import Modal from '@/components/ui/Modal'
+import Dialog from '@/components/ui/Dialog'
+import DialogHeader from '@/components/ui/DialogHeader'
 import { QueryKeys } from '@/constants/query'
 import useServerAction from '@/hook/useServerAction'
 
@@ -172,21 +173,9 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId, per
           )}
         </div>
       </div>
-      <Modal
-        className="fixed inset-0 z-50 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2
-          flex flex-col overflow-hidden
-          bg-zinc-900 sm:w-full sm:max-w-md sm:max-h-[calc(100dvh-4rem)] sm:border-2 sm:rounded-xl sm:-translate-y-1/2"
-        onClose={handleClose}
-        open={showModal}
-      >
+      <Dialog onClose={handleClose} open={showModal}>
         <div className="flex flex-col h-full min-h-0">
-          {/* Header */}
-          <div className="flex items-center justify-between p-4 bg-zinc-900 border-b-2 shrink-0">
-            <h2 className="text-xl font-bold text-zinc-100">{operation === 'move' ? '서재로 이동' : '서재에 복사'}</h2>
-            <button className="p-2 rounded-lg hover:bg-zinc-800 transition -m-1" onClick={handleClose} type="button">
-              <X className="size-5" />
-            </button>
-          </div>
+          <DialogHeader onClose={handleClose} title={operation === 'move' ? '서재로 이동' : '서재에 복사'} />
 
           {/* Content - scrollable */}
           <div className="flex-1 overflow-y-auto p-4 min-h-0">
@@ -234,7 +223,7 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId, per
             </button>
           </div>
         </div>
-      </Modal>
+      </Dialog>
     </>
   )
 }

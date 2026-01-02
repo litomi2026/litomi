@@ -1,7 +1,7 @@
 'use client'
 
 import { type InfiniteData, useQueryClient } from '@tanstack/react-query'
-import { Check, X } from 'lucide-react'
+import { Check } from 'lucide-react'
 import { useRef } from 'react'
 import { toast } from 'sonner'
 
@@ -9,7 +9,8 @@ import type { GETLibraryResponse } from '@/backend/api/v1/library/get'
 import type { GETV1LibraryListResponse } from '@/backend/api/v1/library/list'
 
 import IconSpinner from '@/components/icons/IconSpinner'
-import Modal from '@/components/ui/Modal'
+import Dialog from '@/components/ui/Dialog'
+import DialogHeader from '@/components/ui/DialogHeader'
 import Toggle from '@/components/ui/Toggle'
 import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
@@ -124,27 +125,11 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
   }
 
   return (
-    <Modal
-      className="fixed inset-0 z-50 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2
-        sm:w-full sm:max-w-md sm:max-h-[calc(100dvh-4rem)] 
-        bg-zinc-900 sm:border sm:border-zinc-800 sm:rounded-xl flex flex-col overflow-hidden"
-      onClose={() => onOpenChange(false)}
-      open={open}
-    >
+    <Dialog onClose={() => onOpenChange(false)} open={open}>
       <form action={dispatchAction} className="flex flex-col h-full min-h-0" ref={formRef}>
         <input name="library-id" type="hidden" value={library.id} />
 
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 bg-zinc-900 border-b border-zinc-800 shrink-0">
-          <h2 className="text-xl font-bold text-zinc-100">서재 수정</h2>
-          <button
-            className="p-2 hover:bg-zinc-800 rounded-lg transition"
-            onClick={() => onOpenChange(false)}
-            type="button"
-          >
-            <X className="w-5 text-zinc-400" />
-          </button>
-        </div>
+        <DialogHeader onClose={() => onOpenChange(false)} title="서재 수정" />
 
         {/* Content - scrollable */}
         <div className="flex-1 overflow-y-auto min-h-0">
@@ -277,6 +262,6 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
           </button>
         </div>
       </form>
-    </Modal>
+    </Dialog>
   )
 }

@@ -23,12 +23,15 @@ export default function DialogHeader({
 }: Props) {
   return (
     <div
-      className={twMerge('flex items-center justify-between px-4 py-3 border-b border-zinc-800 shrink-0', className)}
+      className={twMerge(
+        'flex items-center justify-between p-4 bg-zinc-900 border-b-2 border-zinc-800 shrink-0',
+        className,
+      )}
     >
-      <h2 className={twMerge('text-base font-semibold text-zinc-100', titleClassName)}>{title}</h2>
+      <h2 className={twMerge('text-xl font-bold text-zinc-100', titleClassName)}>{title}</h2>
       <button
         aria-label={closeButtonLabel}
-        className={twMerge('p-2 -mr-2 rounded-lg hover:bg-zinc-800 transition', closeButtonClassName)}
+        className={twMerge('p-2 -m-1 rounded-lg hover:bg-zinc-800 transition', closeButtonClassName)}
         onClick={onClose}
         type="button"
       >

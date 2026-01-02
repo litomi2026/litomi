@@ -1,7 +1,6 @@
 'use client'
 
 import { type InfiniteData, useQueryClient } from '@tanstack/react-query'
-import { X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -10,7 +9,8 @@ import type { GETV1LibraryListResponse } from '@/backend/api/v1/library/list'
 
 import IconPlus from '@/components/icons/IconPlus'
 import IconSpinner from '@/components/icons/IconSpinner'
-import Modal from '@/components/ui/Modal'
+import Dialog from '@/components/ui/Dialog'
+import DialogHeader from '@/components/ui/DialogHeader'
 import Toggle from '@/components/ui/Toggle'
 import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
@@ -134,19 +134,9 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
         <IconPlus className="w-5 h-5" />
         <span className="font-medium sm:hidden">서재 만들기</span>
       </button>
-      <Modal
-        className="fixed inset-0 z-50 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 flex flex-col overflow-hidden
-          bg-zinc-900 sm:w-full sm:max-w-lg sm:max-h-[calc(100dvh-4rem)] sm:border-2 sm:border-zinc-700 sm:rounded-xl sm:-translate-y-1/2"
-        onClose={handleClose}
-        open={isModalOpen}
-      >
+      <Dialog onClose={handleClose} open={isModalOpen}>
         <form action={dispatchAction} className="flex flex-col h-full min-h-0">
-          <div className="flex items-center justify-between p-4 bg-zinc-900 border-b-2 border-zinc-800 shrink-0">
-            <h2 className="text-xl font-bold text-zinc-100">서재 만들기</h2>
-            <button className="p-2 -m-1 rounded-lg hover:bg-zinc-800 transition" onClick={handleClose} type="button">
-              <X className="size-5" />
-            </button>
-          </div>
+          <DialogHeader onClose={handleClose} title="서재 만들기" />
           <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 min-h-0 relative">
             <div className="flex items-center justify-center p-4">
               <div
@@ -283,7 +273,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
             </button>
           </div>
         </form>
-      </Modal>
+      </Dialog>
     </>
   )
 }
