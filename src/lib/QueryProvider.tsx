@@ -1,5 +1,6 @@
 'use client'
 
+import { sendGAEvent } from '@next/third-parties/google'
 import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import ms from 'ms'
@@ -7,9 +8,12 @@ import { PropsWithChildren } from 'react'
 import { toast } from 'sonner'
 
 import { QueryKeys } from '@/constants/query'
+import { env } from '@/env/client'
 import amplitude from '@/lib/amplitude/browser'
 import { showAdultVerificationRequiredToast, showLoginRequiredToast } from '@/lib/toast'
 import { ProblemDetailsError, shouldRetryError } from '@/utils/react-query-error'
+
+const { NEXT_PUBLIC_GA_ID } = env
 
 function getCachedUsername(queryClient: QueryClient): string | undefined {
   const me = queryClient.getQueryData(QueryKeys.me)
@@ -43,6 +47,9 @@ const queryClient = new QueryClient({
       if (error instanceof ProblemDetailsError && error.status === 401) {
         queryClient.setQueriesData({ queryKey: QueryKeys.me }, () => null)
         amplitude.reset()
+        if (NEXT_PUBLIC_GA_ID) {
+          sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: null })
+        }
       }
     },
   }),
@@ -52,6 +59,9 @@ const queryClient = new QueryClient({
         if (error.status === 401) {
           queryClient.setQueriesData({ queryKey: QueryKeys.me }, () => null)
           amplitude.reset()
+          if (NEXT_PUBLIC_GA_ID) {
+            sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: null })
+          }
           showLoginRequiredToast()
           return
         }
