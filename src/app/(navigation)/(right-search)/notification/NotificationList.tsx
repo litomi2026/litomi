@@ -7,6 +7,7 @@ import { ReactNode, useCallback, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
 import { NotificationFilter } from '@/backend/api/v1/notification/types'
+import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import { QueryKeys } from '@/constants/query'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useServerAction from '@/hook/useServerAction'
@@ -39,13 +40,17 @@ export default function NotificationList() {
   const [selectionMode, setSelectionMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
   const { data: me, isLoading: isMeLoading } = useMeQuery()
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useNotificationInfiniteQuery()
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError, isLoading } =
+    useNotificationInfiniteQuery()
+
   const notifications = useMemo(() => data?.pages.flatMap((page) => page.notifications) ?? [], [data])
   const groupedNotifications = groupNotificationsByDate(notifications)
   const queryClient = useQueryClient()
+  const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
 
   const loadMoreRef = useInfiniteScrollObserver({
-    hasNextPage,
+    hasNextPage: canAutoLoadMore,
     isFetchingNextPage,
     fetchNextPage,
   })
@@ -243,7 +248,11 @@ export default function NotificationList() {
             </div>
           ))}
           <div className="w-full py-4 flex justify-center" ref={loadMoreRef}>
-            {isFetchingNextPage && <Loader2 className="size-5 shrink-0 animate-spin text-zinc-600" />}
+            {isFetchingNextPage ? (
+              <Loader2 className="size-5 shrink-0 animate-spin text-zinc-600" />
+            ) : isFetchNextPageError ? (
+              <LoadMoreRetryButton containerClassName="" onRetry={fetchNextPage} />
+            ) : null}
           </div>
         </div>
       )}

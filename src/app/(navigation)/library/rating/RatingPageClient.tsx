@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { RatingSort } from '@/backend/api/v1/library/enum'
 import { GETV1RatingsResponse } from '@/backend/api/v1/library/rating'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
+import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { Manga } from '@/types/manga'
@@ -39,14 +40,17 @@ type MangaListProps = {
 
 export default function RatingPageClient({ initialData, initialSort = RatingSort.UPDATED_DESC }: Props) {
   const [sort, setSort] = useState<RatingSort>(initialSort)
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } = useRatingInfiniteQuery(initialData, sort)
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError, refetch } =
+    useRatingInfiniteQuery(initialData, sort)
+
   const ratingItems = data.pages.flatMap((page) => page.items)
   const isSelectionMode = useLibrarySelectionStore((state) => state.isSelectionMode)
   const exitSelectionMode = useLibrarySelectionStore((state) => state.exitSelectionMode)
   const shouldGroupByRating = sort === RatingSort.RATING_DESC || sort === RatingSort.RATING_ASC
+  const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
 
   const infiniteScrollTriggerRef = useInfiniteScrollObserver({
-    hasNextPage,
+    hasNextPage: canAutoLoadMore,
     isFetchingNextPage,
     fetchNextPage,
   })
@@ -127,7 +131,8 @@ export default function RatingPageClient({ initialData, initialSort = RatingSort
           ratingItems={ratingItems}
         />
       )}
-      {hasNextPage && <div className="w-full p-2" ref={infiniteScrollTriggerRef} />}
+      {canAutoLoadMore && <div className="w-full p-2" ref={infiniteScrollTriggerRef} />}
+      {isFetchNextPageError && <LoadMoreRetryButton onRetry={fetchNextPage} />}
     </>
   )
 }

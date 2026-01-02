@@ -4,6 +4,7 @@ import { useMemo } from 'react'
 
 import { GETLibraryItemsResponse } from '@/backend/api/v1/library/[id]'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
+import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import useLibraryItemsInfiniteQuery from '@/query/useLibraryItemsInfiniteQuery'
@@ -31,15 +32,17 @@ export default function LibraryItemsClient({ library, initialItems }: Readonly<P
     fetchNextPage: fetchMoreItems,
     hasNextPage: hasMoreItemsToLoad,
     isFetchingNextPage: isLoadingMoreItems,
+    isFetchNextPageError: isFetchMoreItemsError,
   } = useLibraryItemsInfiniteQuery({
     libraryId,
     initialItems,
   })
 
   const items = useMemo(() => itemsData?.pages.flatMap((page) => page.items) ?? [], [itemsData])
+  const canAutoLoadMore = Boolean(hasMoreItemsToLoad) && !isFetchMoreItemsError
 
   const infiniteScrollTriggerRef = useInfiniteScrollObserver({
-    hasNextPage: hasMoreItemsToLoad,
+    hasNextPage: canAutoLoadMore,
     isFetchingNextPage: isLoadingMoreItems,
     fetchNextPage: fetchMoreItems,
   })
@@ -67,6 +70,7 @@ export default function LibraryItemsClient({ library, initialItems }: Readonly<P
       })}
       {isLoadingMoreItems && <MangaCardSkeleton />}
       <div className="w-full p-4" ref={infiniteScrollTriggerRef} />
+      {isFetchMoreItemsError && <LoadMoreRetryButton onRetry={fetchMoreItems} />}
     </ul>
   )
 }

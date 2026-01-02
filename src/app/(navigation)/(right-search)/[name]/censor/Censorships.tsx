@@ -7,6 +7,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
 import CustomSelect from '@/components/ui/CustomSelect'
+import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import { QueryKeys } from '@/constants/query'
 import { CensorshipKey } from '@/database/enum'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
@@ -29,7 +30,11 @@ export default function Censorships() {
   const [filterKey, setFilterKey] = useState<CensorshipKey | null>(null)
   const [selectedIds, setSelectedIds] = useState(new Set<number>())
   const [deletingIds, setDeletingIds] = useState(new Set<number>())
-  const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } = useCensorshipsInfiniteQuery()
+
+  const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage, isFetchNextPageError } =
+    useCensorshipsInfiniteQuery()
+
+  const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
 
   const [__, dispatchDeleteAction] = useServerAction({
     action: deleteCensorships,
@@ -42,7 +47,7 @@ export default function Censorships() {
   })
 
   const loadMoreRef = useInfiniteScrollObserver({
-    hasNextPage,
+    hasNextPage: canAutoLoadMore,
     isFetchingNextPage,
     fetchNextPage,
   })
@@ -194,10 +199,13 @@ export default function Censorships() {
                 }}
               />
             ))}
-            {hasNextPage && (
+            {canAutoLoadMore && (
               <div className="py-4" ref={loadMoreRef}>
                 {isFetchingNextPage ? <CensorshipCardSkeleton /> : <div className="h-1" />}
               </div>
+            )}
+            {isFetchNextPageError && (
+              <LoadMoreRetryButton containerClassName="py-4 flex justify-center" onRetry={fetchNextPage} />
             )}
           </div>
         )}

@@ -10,6 +10,7 @@ import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import MangaCardDonation from '@/components/card/MangaCardDonation'
 import MangaCardImage from '@/components/card/MangaCardImage'
 import MangaCardPromotion from '@/components/card/MangaCardPromotion'
+import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import { DONATION_CARD_INTERVAL } from '@/constants/policy'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import { View } from '@/utils/param'
@@ -27,14 +28,24 @@ export default function SearchResult() {
   const view = viewFromQuery === View.IMAGE ? View.IMAGE : View.CARD
   const isRandomSort = searchParams.get('sort') === Sort.RANDOM
 
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage, refetch, isRefetching, error } =
-    useSearchQuery()
+  const {
+    data,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isFetchNextPageError,
+    isRefetchError,
+    refetch,
+    isRefetching,
+    error,
+  } = useSearchQuery()
 
   const mangas = useMemo(() => data?.pages.flatMap((page) => page.mangas) ?? [], [data])
   const promotion = useMemo(() => data?.pages[0]?.promotion, [data])
 
   const loadMoreRef = useInfiniteScrollObserver({
-    hasNextPage,
+    hasNextPage: Boolean(hasNextPage) && !isFetchNextPageError,
     isFetchingNextPage,
     fetchNextPage,
   })
@@ -83,16 +94,8 @@ export default function SearchResult() {
         )}
         {isFetchingNextPage && <MangaCardSkeleton />}
       </ul>
-      {error && mangas.length > 0 && (
-        <div className="w-full py-4 flex justify-center">
-          <button
-            className="text-sm text-zinc-400 hover:text-zinc-200 transition-colors px-4 py-2"
-            onClick={() => (hasNextPage ? fetchNextPage() : refetch())}
-            type="button"
-          >
-            불러오기 실패 · 다시 시도
-          </button>
-        </div>
+      {mangas.length > 0 && (isFetchNextPageError || isRefetchError) && (
+        <LoadMoreRetryButton onRetry={isFetchNextPageError ? fetchNextPage : refetch} />
       )}
       {isRandomSort ? (
         <RandomRefreshButton

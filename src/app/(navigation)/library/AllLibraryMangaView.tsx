@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useMemo } from 'react'
 
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
+import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import useMeQuery from '@/query/useMeQuery'
@@ -58,8 +59,10 @@ export default function AllLibraryMangaView() {
     return Array.from(map.values())
   }, [data])
 
+  const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
+
   const infiniteScrollTriggerRef = useInfiniteScrollObserver({
-    hasNextPage: hasNextPage && !isFetchNextPageError,
+    hasNextPage: canAutoLoadMore,
     isFetchingNextPage,
     fetchNextPage,
   })
@@ -126,20 +129,8 @@ export default function AllLibraryMangaView() {
         })}
         {isFetchingNextPage && <MangaCardSkeleton />}
       </ul>
-      {hasNextPage && <div className="w-full p-2" ref={infiniteScrollTriggerRef} />}
-      {isFetchNextPageError && (
-        <div className="flex justify-center p-2">
-          <button
-            className="text-xs text-zinc-400 hover:text-foreground px-3 py-2 rounded-md hover:bg-zinc-800 transition"
-            onClick={() => {
-              void fetchNextPage()
-            }}
-            type="button"
-          >
-            다시 시도해요
-          </button>
-        </div>
-      )}
+      {canAutoLoadMore && <div className="w-full p-2" ref={infiniteScrollTriggerRef} />}
+      {isFetchNextPageError && <LoadMoreRetryButton onRetry={fetchNextPage} />}
     </>
   )
 }
