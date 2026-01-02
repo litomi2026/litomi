@@ -22,5 +22,3 @@ export const mangaReportTable = pgTable(
     index('idx_manga_report_reason_reported_at').on(table.reason, table.reportedAt.desc()),
   ],
 ).enableRLS()
-
-

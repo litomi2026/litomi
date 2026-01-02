@@ -1,10 +1,16 @@
+import type { Context } from 'hono'
 import type { JWTPayload } from 'jose'
 
+import { getCookie, setCookie } from 'hono/cookie'
 import { jwtVerify, SignJWT } from 'jose'
+
+import type { Env } from '@/backend'
 
 import { CookieKey } from '@/constants/storage'
 import { env } from '@/env/server.hono'
+import { getAccessTokenCookieConfig, getRefreshTokenCookieConfig } from '@/utils/cookie'
 import { sec } from '@/utils/format/date'
+import { JWTType, verifyJWT } from '@/utils/jwt'
 
 const { BBATON_CLIENT_ID, JWT_SECRET_BBATON_ATTEMPT, CORS_ORIGIN } = env
 
@@ -41,6 +47,29 @@ export function parseBirthYear(value: string): number {
 }
 
 const issuer = new URL(CORS_ORIGIN).hostname
+
+type ReissueAuthCookiesClaims = {
+  userId: number
+  adult: boolean
+}
+
+export async function reissueAuthCookies(c: Context<Env>, { userId, adult }: ReissueAuthCookiesClaims): Promise<void> {
+  const { key: atKey, value: atValue, options: atOptions } = await getAccessTokenCookieConfig({ userId, adult })
+  setCookie(c, atKey, atValue, atOptions)
+
+  const refreshToken = getCookie(c, CookieKey.REFRESH_TOKEN)
+  if (!refreshToken) {
+    return
+  }
+
+  const rtPayload = await verifyJWT(refreshToken, JWTType.REFRESH).catch(() => null)
+  if (rtPayload?.sub !== String(userId)) {
+    return
+  }
+
+  const { key: rtKey, value: rtValue, options: rtOptions } = await getRefreshTokenCookieConfig({ userId, adult })
+  setCookie(c, rtKey, rtValue, rtOptions)
+}
 
 export async function signBBatonAttemptToken(userId: number): Promise<string> {
   const payload: BBatonAttemptTokenPayload = {

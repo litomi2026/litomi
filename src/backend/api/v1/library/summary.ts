@@ -3,6 +3,8 @@ import { Hono } from 'hono'
 import 'server-only'
 
 import { Env } from '@/backend'
+import { requireAdult } from '@/backend/middleware/adult'
+import { requireAuth } from '@/backend/middleware/require-auth'
 import { problemResponse } from '@/backend/utils/problem'
 import { bookmarkTable, readingHistoryTable, userRatingTable } from '@/database/supabase/activity'
 import { db } from '@/database/supabase/drizzle'
@@ -17,12 +19,8 @@ export type GETV1LibrarySummaryResponse = {
 
 const librarySummaryRoutes = new Hono<Env>()
 
-librarySummaryRoutes.get('/', async (c) => {
-  const userId = c.get('userId')
-
-  if (!userId) {
-    return problemResponse(c, { status: 401 })
-  }
+librarySummaryRoutes.get('/', requireAuth, requireAdult, async (c) => {
+  const userId = c.get('userId')!
 
   try {
     const [counts] = await db.execute<GETV1LibrarySummaryResponse>(sql`

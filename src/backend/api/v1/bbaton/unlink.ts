@@ -1,7 +1,7 @@
 import { compare } from 'bcryptjs'
 import { and, eq, isNull } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { deleteCookie, getCookie, setCookie } from 'hono/cookie'
+import { deleteCookie } from 'hono/cookie'
 import 'server-only'
 import { z } from 'zod'
 
@@ -16,9 +16,9 @@ import { db } from '@/database/supabase/drizzle'
 import { twoFactorTable } from '@/database/supabase/two-factor'
 import { userTable } from '@/database/supabase/user'
 import { passwordSchema } from '@/database/zod'
-import { getAccessTokenCookieConfig, getRefreshTokenCookieConfig } from '@/utils/cookie'
-import { JWTType, verifyJWT } from '@/utils/jwt'
 import { decryptTOTPSecret, verifyTOTPToken } from '@/utils/two-factor'
+
+import { reissueAuthCookies } from './utils'
 
 export type POSTV1BBatonUnlinkResponse = { ok: true }
 
@@ -70,6 +70,7 @@ route.post('/', requireAuth, zProblemValidator('json', schema), async (c) => {
     await db.delete(bbatonVerificationTable).where(eq(bbatonVerificationTable.userId, userId))
 
     deleteCookie(c, CookieKey.BBATON_ATTEMPT_ID, { domain: COOKIE_DOMAIN, path: '/api/v1/bbaton' })
+    await reissueAuthCookies(c, { userId, adult: false })
 
     return c.json<POSTV1BBatonUnlinkResponse>({ ok: true })
   } catch (error) {

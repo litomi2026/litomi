@@ -1,4 +1,15 @@
-import { boolean, index, integer, pgEnum, pgTable, primaryKey, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core'
+import {
+  boolean,
+  index,
+  integer,
+  pgEnum,
+  pgTable,
+  primaryKey,
+  text,
+  timestamp,
+  uuid,
+  varchar,
+} from 'drizzle-orm/pg-core'
 import 'server-only'
 
 export const dmcaReporterRoleEnum = pgEnum('dmca_reporter_role', ['COPYRIGHT_OWNER', 'AUTHORIZED_AGENT'])
@@ -79,5 +90,3 @@ export const dmcaCounterTargetTable = pgTable(
     index('idx_dmca_counter_target_manga_id').on(table.mangaId),
   ],
 ).enableRLS()
-
-

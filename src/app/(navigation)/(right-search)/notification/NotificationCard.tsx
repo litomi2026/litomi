@@ -177,7 +177,9 @@ export default function NotificationCard({
             {notification.title}
           </h3>
           <div className="flex items-center gap-2 shrink-0">
-            {isUnread && <Circle className="size-2 shrink-0 text-brand animate-pulse" fill="currentColor" stroke="none" />}
+            {isUnread && (
+              <Circle className="size-2 shrink-0 text-brand animate-pulse" fill="currentColor" stroke="none" />
+            )}
             <span className="text-xs text-zinc-500">{formatDistanceToNow(new Date(notification.createdAt))}</span>
           </div>
         </div>

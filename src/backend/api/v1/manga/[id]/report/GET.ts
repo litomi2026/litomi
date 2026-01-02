@@ -5,6 +5,8 @@ import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { requireAdult } from '@/backend/middleware/adult'
+import { requireAuth } from '@/backend/middleware/require-auth'
 import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
@@ -24,12 +26,8 @@ const REPORT_DEDUPE_TTL_MS = ms('30 days')
 
 const route = new Hono<Env>()
 
-route.get('/:id/report', zProblemValidator('param', paramSchema), async (c) => {
-  const userId = c.get('userId')
-
-  if (!userId) {
-    return problemResponse(c, { status: 401 })
-  }
+route.get('/:id/report', requireAuth, requireAdult, zProblemValidator('param', paramSchema), async (c) => {
+  const userId = c.get('userId')!
 
   const { id: mangaId } = c.req.valid('param')
 

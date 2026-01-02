@@ -4,6 +4,8 @@ import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { requireAdult } from '@/backend/middleware/adult'
+import { requireAuth } from '@/backend/middleware/require-auth'
 import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
@@ -19,12 +21,8 @@ export type GETV1MangaIdHistoryResponse = number | null
 
 const mangaRoutes = new Hono<Env>()
 
-mangaRoutes.get('/:id/history', zProblemValidator('param', paramSchema), async (c) => {
-  const userId = c.get('userId')
-
-  if (!userId) {
-    return problemResponse(c, { status: 401 })
-  }
+mangaRoutes.get('/:id/history', requireAuth, requireAdult, zProblemValidator('param', paramSchema), async (c) => {
+  const userId = c.get('userId')!
 
   try {
     const { id: mangaId } = c.req.valid('param')

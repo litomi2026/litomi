@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { deleteCookie, getCookie, setCookie } from 'hono/cookie'
+import { deleteCookie, getCookie } from 'hono/cookie'
 import 'server-only'
 import { z } from 'zod'
 
@@ -12,11 +12,9 @@ import { CookieKey } from '@/constants/storage'
 import { isPostgresError } from '@/database/error'
 import { bbatonVerificationTable } from '@/database/supabase/bbaton'
 import { db } from '@/database/supabase/drizzle'
-import { getAccessTokenCookieConfig, getRefreshTokenCookieConfig } from '@/utils/cookie'
-import { JWTType, verifyJWT } from '@/utils/jwt'
 
 import { exchangeAuthorizationCode, fetchBBatonProfile } from './lib'
-import { getBBatonRedirectURI, parseBirthYear, verifyBBatonAttemptToken } from './utils'
+import { getBBatonRedirectURI, parseBirthYear, reissueAuthCookies, verifyBBatonAttemptToken } from './utils'
 
 export type POSTV1BBatonCompleteResponse = { adultFlag: 'N' | 'Y' }
 
@@ -88,6 +86,9 @@ route.post('/', requireAuth, zProblemValidator('json', completeSchema), async (c
 
       return problemResponse(c, { status: 500, detail: '비바톤 인증 정보를 저장하지 못했어요' })
     }
+
+    const adult = profile.adultFlag === 'Y'
+    await reissueAuthCookies(c, { userId, adult })
 
     return c.json<POSTV1BBatonCompleteResponse>({ adultFlag: profile.adultFlag })
   } catch (error) {
