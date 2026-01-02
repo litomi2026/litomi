@@ -44,14 +44,14 @@ export default function BookmarkUploadButton() {
         const data = JSON.parse(e.target.result)
 
         if (!validateBookmarkData(data)) {
-          toast.error('잘못된 파일 형식이에요')
+          toast.warning('잘못된 파일 형식이에요')
           return
         }
 
         handleFileLoad(data)
       } catch (error) {
         console.error('File parse error:', error)
-        toast.error('파일을 읽을 수 없어요')
+        toast.warning('파일을 읽을 수 없어요')
       }
     }
 

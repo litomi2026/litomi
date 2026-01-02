@@ -36,7 +36,7 @@ export default function PasskeyLoginButton({ loginId, disabled, onSuccess, turns
 
   async function handlePasskeyLogin() {
     if (!loginId) {
-      toast.error('로그인 아이디를 입력해 주세요')
+      toast.warning('로그인 아이디를 입력해 주세요')
       return
     }
 
@@ -44,7 +44,11 @@ export default function PasskeyLoginButton({ loginId, disabled, onSuccess, turns
       const optionsResult = await getAuthenticationOptions(loginId)
 
       if (!optionsResult.ok) {
-        toast.error(optionsResult.error)
+        if (optionsResult.status >= 500) {
+          toast.error('패스키 인증 중 오류가 발생했어요')
+        } else {
+          toast.warning(optionsResult.error)
+        }
         return
       }
 

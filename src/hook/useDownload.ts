@@ -37,7 +37,13 @@ export function useDownload({ manga }: Props) {
         await downloadImage(imageURL, filename)
         toast.success('다운로드가 완료됐어요')
       } catch (error) {
-        toast.error(error instanceof Error ? error.message : '다운로드에 실패했어요')
+        if (error instanceof Error && error.name === 'AbortError') {
+          toast.info('다운로드가 취소됐어요')
+        } else if (navigator.onLine === false) {
+          toast.error('네트워크 연결을 확인해 주세요')
+        } else {
+          toast.error('다운로드에 실패했어요')
+        }
       } finally {
         setIsDownloading(false)
       }
@@ -73,7 +79,13 @@ export function useDownload({ manga }: Props) {
 
       toast.success('다운로드가 완료됐어요')
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : '다운로드에 실패했어요')
+      if (error instanceof Error && error.name === 'AbortError') {
+        toast.info('다운로드가 취소됐어요')
+      } else if (navigator.onLine === false) {
+        toast.error('네트워크 연결을 확인해 주세요')
+      } else {
+        toast.error('다운로드에 실패했어요')
+      }
     } finally {
       setIsDownloading(false)
       setDownloadedCount(0)

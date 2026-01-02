@@ -10,10 +10,10 @@ import { PostFilter } from '@/backend/api/v1/post/constant'
 import { MAX_POST_CONTENT_LENGTH } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import useServerAction, { getFormField } from '@/hook/useServerAction'
+import { showLoginRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
 
 import IconSpinner from '../icons/IconSpinner'
-import LoginPageLink from '../LoginPageLink'
 import Squircle from '../ui/Squircle'
 import PostGeolocationButton from './button/PostGeolocationButton'
 
@@ -62,12 +62,7 @@ export default function PostCreationForm({
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     if (!me) {
       e.preventDefault()
-      toast.warning(
-        <div className="flex gap-2 items-center">
-          <div>로그인이 필요해요</div>
-          <LoginPageLink>로그인하기</LoginPageLink>
-        </div>,
-      )
+      showLoginRequiredToast()
       return
     }
 
@@ -86,12 +81,7 @@ export default function PostCreationForm({
 
   function handleClick() {
     if (!me) {
-      toast.warning(
-        <div className="flex gap-2 items-center">
-          <div>로그인이 필요해요</div>
-          <LoginPageLink>로그인하기</LoginPageLink>
-        </div>,
-      )
+      showLoginRequiredToast()
       return
     }
   }

@@ -23,7 +23,11 @@ export default function PasskeyRegisterButton() {
       const optionsResult = await getRegistrationOptions()
 
       if (!optionsResult.ok) {
-        toast.error(optionsResult.error)
+        if (optionsResult.status >= 500) {
+          toast.error('패스키 등록 중 오류가 발생했어요')
+        } else {
+          toast.warning(optionsResult.error)
+        }
         return
       }
 
@@ -32,11 +36,11 @@ export default function PasskeyRegisterButton() {
     } catch (error) {
       if (error instanceof Error) {
         if (error.name === 'NotAllowedError') {
-          toast.error('패스키 등록이 취소됐어요')
+          toast.info('패스키 등록이 취소됐어요')
         } else if (error.name === 'InvalidStateError') {
-          toast.error('이미 등록된 패스키가 있어요')
+          toast.info('이미 등록된 패스키가 있어요')
         } else if (error.name === 'NotSupportedError') {
-          toast.error('이 브라우저는 패스키를 지원하지 않아요')
+          toast.warning('이 브라우저는 패스키를 지원하지 않아요')
         } else {
           toast.error('패스키 등록 중 오류가 발생했어요')
         }

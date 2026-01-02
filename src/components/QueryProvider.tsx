@@ -6,12 +6,10 @@ import ms from 'ms'
 import { PropsWithChildren } from 'react'
 import { toast } from 'sonner'
 
-import LoginPageLink from '@/components/LoginPageLink'
 import { QueryKeys } from '@/constants/query'
 import amplitude from '@/lib/amplitude/browser'
+import { showLoginRequiredToast } from '@/lib/toast'
 import { ProblemDetailsError, shouldRetryError } from '@/utils/react-query-error'
-
-const LOGIN_REQUIRED_TOAST_ID = 'login-required'
 
 const queryClient = new QueryClient({
   queryCache: new QueryCache({
@@ -23,26 +21,24 @@ const queryClient = new QueryClient({
     },
   }),
   mutationCache: new MutationCache({
-    onError: (error) => {
+    onError: (error, _variables, _onMutateResult, mutation) => {
       if (error instanceof ProblemDetailsError) {
         if (error.status === 401) {
           queryClient.setQueriesData({ queryKey: QueryKeys.me }, () => null)
           amplitude.reset()
 
-          toast.warning(
-            <div className="flex gap-2 items-center">
-              <div>로그인이 필요해요</div>
-              <LoginPageLink onClick={() => toast.dismiss(LOGIN_REQUIRED_TOAST_ID)}>로그인하기</LoginPageLink>
-            </div>,
-            { duration: ms('10 seconds'), id: LOGIN_REQUIRED_TOAST_ID },
-          )
+          showLoginRequiredToast()
+          return
+        }
+
+        if (mutation.meta?.suppressGlobalErrorToastForStatuses?.includes(error.status)) {
           return
         }
 
         if (error.status >= 500) {
           toast.error(error.message || '요청 처리 중 오류가 발생했어요')
         } else if (error.status >= 400) {
-          toast.warning(error.message)
+          toast.warning(error.message || '요청을 처리할 수 없어요')
         }
         return
       }

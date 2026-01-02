@@ -45,7 +45,7 @@ export default function DataExportSectionClient({ counts }: Readonly<Props>) {
     e.preventDefault()
 
     if (selected.size === 0) {
-      toast.error('내보낼 데이터를 선택해 주세요')
+      toast.warning('내보낼 데이터를 선택해 주세요')
       return
     }
 
@@ -65,7 +65,12 @@ export default function DataExportSectionClient({ counts }: Readonly<Props>) {
       if (!result.ok) {
         const errorMessage =
           typeof result.error === 'string' ? result.error : Object.values(result.error as object).join(', ')
-        toast.error(errorMessage)
+
+        if (result.status >= 500) {
+          toast.error('요청을 처리할 수 없어요')
+        } else {
+          toast.warning(errorMessage || '요청을 처리할 수 없어요')
+        }
         return
       }
 

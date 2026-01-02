@@ -4,7 +4,7 @@ import { Star, X } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-import LoginPageLink from '@/components/LoginPageLink'
+import { showLoginRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
 
 import { useSaveRatingMutation } from './useSaveRatingMutation'
@@ -37,12 +37,7 @@ export default function RatingInput({ mangaId, className = '', onClick }: Props)
   const handleRating = useCallback(
     (value: number, force = false) => {
       if (!me) {
-        toast.warning(
-          <div className="flex gap-2 items-center">
-            <div>로그인이 필요해요</div>
-            <LoginPageLink>로그인하기</LoginPageLink>
-          </div>,
-        )
+        showLoginRequiredToast()
         return
       }
 

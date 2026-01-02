@@ -1,10 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { toast } from 'sonner'
 
-import LoginPageLink from '@/components/LoginPageLink'
 import Modal from '@/components/ui/Modal'
+import { showLoginRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
 
 type Props = {
@@ -20,12 +19,7 @@ export default function FollowButton({ leader }: Readonly<Props>) {
 
   function handleButtonClick() {
     if (!me) {
-      toast.warning(
-        <div className="flex gap-2 items-center">
-          <div>로그인이 필요해요</div>
-          <LoginPageLink>로그인하기</LoginPageLink>
-        </div>,
-      )
+      showLoginRequiredToast()
       return
     }
 

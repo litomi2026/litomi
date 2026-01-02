@@ -4,6 +4,7 @@ import { toast } from 'sonner'
 
 import { QueryKeys } from '@/constants/query'
 import amplitude from '@/lib/amplitude/browser'
+import { showLoginRequiredToast } from '@/lib/toast'
 import { ActionResponse, ErrorResponse, SuccessResponse } from '@/utils/action-response'
 
 /**
@@ -77,6 +78,13 @@ export default function useServerAction<T extends ActionResponse, TActionArgs ex
           if (response.status === 401) {
             queryClient.setQueriesData({ queryKey: QueryKeys.me }, () => null)
             amplitude.reset()
+            showLoginRequiredToast()
+
+            if (onError) {
+              onError(response as Extract<T, { ok: false }>)
+            }
+
+            return
           }
 
           const error = response.error as T extends ErrorResponse<infer E> ? E : never
@@ -85,7 +93,7 @@ export default function useServerAction<T extends ActionResponse, TActionArgs ex
             if (response.status >= 400 && response.status < 500) {
               toast.warning(error)
             } else {
-              toast.error(error)
+              toast.error('요청 처리 중 오류가 발생했어요')
             }
           } else if (Array.isArray(error)) {
             const firstError = error.find((err) => err !== undefined)
@@ -94,7 +102,7 @@ export default function useServerAction<T extends ActionResponse, TActionArgs ex
               if (response.status >= 400 && response.status < 500) {
                 toast.warning(firstError)
               } else {
-                toast.error(firstError)
+                toast.error('요청 처리 중 오류가 발생했어요')
               }
             }
           }
