@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import type { GETV1MeResponse } from '@/backend/api/v1/me'
-import type { POSTV1PointTurnstileResponse } from '@/backend/api/v1/points/turnstile'
+import type { POSTV1PointTurnstileResponse } from '@/backend/api/v1/points/turnstile/POST'
 import type { AdClickResult } from '@/components/ads/types'
 
 import AdsterraBanner300x250 from '@/components/ads/adsterra/AdsterraBanner300x250'

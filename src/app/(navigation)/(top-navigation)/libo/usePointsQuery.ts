@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 
-import type { GETV1PointsResponse } from '@/backend/api/v1/points/get'
+import type { GETV1PointsResponse } from '@/backend/api/v1/points/GET'
 
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
