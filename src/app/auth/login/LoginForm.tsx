@@ -5,14 +5,17 @@ import { TurnstileInstance } from '@marsidev/react-turnstile'
 import { sendGAEvent } from '@next/third-parties/google'
 import { useQueryClient } from '@tanstack/react-query'
 import { Loader2, X } from 'lucide-react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import { migrateReadingHistory } from '@/app/manga/[id]/actions'
+import IconLogo from '@/components/icons/LogoLitomi'
 import PasskeyLoginButton from '@/components/PasskeyLoginButton'
 import { clearMigratedHistory, getLocalReadingHistory } from '@/components/ReadingHistoryMigrator'
 import TurnstileWidget from '@/components/TurnstileWidget'
+import Toggle from '@/components/ui/Toggle'
 import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
@@ -52,14 +55,19 @@ export default function LoginForm() {
   const pkceChallengeRef = useRef<PKCEChallenge>(null)
 
   function resetId() {
-    const loginIdInput = formRef.current?.loginId as HTMLInputElement
-    if (!loginIdInput) return
+    const loginIdInput = formRef.current?.elements.namedItem('login-id')
+    if (!(loginIdInput instanceof HTMLInputElement)) {
+      return
+    }
     loginIdInput.value = ''
+    setCurrentLoginId('')
   }
 
   function resetPassword() {
-    const passwordInput = formRef.current?.password as HTMLInputElement
-    if (!passwordInput) return
+    const passwordInput = formRef.current?.elements.namedItem('password')
+    if (!(passwordInput instanceof HTMLInputElement)) {
+      return
+    }
     passwordInput.value = ''
   }
 
@@ -114,9 +122,9 @@ export default function LoginForm() {
     },
   })
 
-  const loginIdError = getFieldError(response, 'loginId')
+  const loginIdError = getFieldError(response, 'login-id')
   const passwordError = getFieldError(response, 'password')
-  const defaultLoginId = getFormField(response, 'loginId')
+  const defaultLoginId = getFormField(response, 'login-id')
   const defaultPassword = getFormField(response, 'password')
   const defaultRemember = getFormField(response, 'remember')
 
@@ -127,139 +135,182 @@ export default function LoginForm() {
     ])
 
     pkceChallengeRef.current = pkceChallenge
-    formData.append('codeChallenge', pkceChallenge.codeChallenge)
+    formData.append('code-challenge', pkceChallenge.codeChallenge)
     formData.append('fingerprint', fingerprint.visitorId)
     dispatchAction(formData)
   }
 
-  if (twoFactorData && pkceChallengeRef.current) {
-    return (
-      <TwoFactorVerification
-        onCancel={() => {
-          setTwoFactorData(null)
-          pkceChallengeRef.current = null
-          turnstileRef.current?.reset()
-          setTurnstileToken('')
-        }}
-        onSuccess={handleLoginSuccess}
-        pkceChallenge={pkceChallengeRef.current}
-        twoFactorData={twoFactorData}
-      />
-    )
-  }
+  const passkeyLoginId = currentLoginId || (typeof defaultLoginId === 'string' ? defaultLoginId : '')
+  const isTwoFactorRequired = Boolean(twoFactorData && pkceChallengeRef.current)
 
   return (
-    <form
-      action={dispatchLoginAction}
-      className="grid gap-5 
-      [&_label]:block [&_label]:mb-1.5 [&_label]:text-sm [&_label]:font-medium [&_label]:text-zinc-300 [&_label]:leading-7
-      [&_input]:w-full [&_input]:rounded-md [&_input]:bg-zinc-800 [&_input]:border [&_input]:border-zinc-600 
-      [&_input]:px-3 [&_input]:py-2 [&_input]:placeholder-zinc-500 [&_input]:focus:outline-none [&_input]:focus:ring-2 [&_input]:focus:ring-zinc-500 
-      [&_input]:focus:border-transparent [&_input]:disabled:bg-zinc-700 [&_input]:disabled:text-zinc-400 [&_input]:disabled:border-zinc-500 [&_input]:disabled:cursor-not-allowed
-      [&_input]:aria-invalid:border-red-700 [&_input]:aria-invalid:focus:ring-red-700 [&_input]:aria-invalid:placeholder-red-700"
-      ref={formRef}
-    >
-      <div
-        className="grid gap-4 [&_button]:absolute [&_button]:top-1/2 [&_button]:right-2 [&_button]:-translate-y-1/2
-          [&_button]:rounded-full [&_button]:p-1 [&_button]:bg-zinc-700 [&_button]:text-zinc-400 [&_button]:hover:bg-zinc-600"
-      >
-        <div>
-          <label htmlFor="loginId">아이디</label>
-          <div className="relative">
-            <input
-              aria-invalid={!!loginIdError}
-              autoCapitalize="off"
-              autoFocus
-              defaultValue={defaultLoginId}
-              disabled={isPending}
-              id="loginId"
-              maxLength={32}
-              minLength={2}
-              name="loginId"
-              onChange={(e) => setCurrentLoginId(e.target.value)}
-              pattern={LOGIN_ID_PATTERN}
-              placeholder="아이디를 입력하세요"
-              required
-            />
-            <button onClick={resetId} tabIndex={-1} type="button">
-              <X className="size-3.5" />
+    <div className="grid gap-6 sm:gap-7">
+      <Link className="w-fit mx-auto" href="/" prefetch={false}>
+        <IconLogo className="w-9" priority />
+      </Link>
+
+      {isTwoFactorRequired ? (
+        <TwoFactorVerification
+          onCancel={() => {
+            setTwoFactorData(null)
+            pkceChallengeRef.current = null
+            turnstileRef.current?.reset()
+            setTurnstileToken('')
+          }}
+          onSuccess={handleLoginSuccess}
+          pkceChallenge={pkceChallengeRef.current!}
+          twoFactorData={twoFactorData!}
+        />
+      ) : (
+        <>
+          <div className="text-center">
+            <h2 className="text-2xl font-semibold tracking-tight text-zinc-50">로그인</h2>
+            <p className="mt-2 text-sm text-zinc-400">아이디와 비밀번호로 계속해요</p>
+          </div>
+
+          <form action={dispatchLoginAction} className="grid gap-5" ref={formRef}>
+            <div className="grid gap-4">
+              <div>
+                <label className="block mb-1.5 text-sm font-medium text-zinc-300" htmlFor="login-id">
+                  아이디
+                </label>
+                <div className="relative">
+                  <input
+                    aria-invalid={!!loginIdError}
+                    autoCapitalize="off"
+                    autoComplete="username"
+                    autoFocus
+                    className="w-full rounded-xl bg-white/4 border border-white/7 px-3 py-2.5 text-zinc-50 placeholder:text-zinc-500 transition
+                      focus:outline-none focus:ring-2 focus:ring-white/12 focus:border-transparent
+                      disabled:opacity-60 disabled:cursor-not-allowed
+                      aria-invalid:border-red-600/50 aria-invalid:focus:ring-red-600/30"
+                    defaultValue={defaultLoginId}
+                    disabled={isPending}
+                    id="login-id"
+                    maxLength={32}
+                    minLength={2}
+                    name="login-id"
+                    onChange={(e) => setCurrentLoginId(e.target.value)}
+                    pattern={LOGIN_ID_PATTERN}
+                    placeholder="아이디"
+                    required
+                  />
+                  <button
+                    aria-label="아이디 지우기"
+                    className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1.5 bg-white/5 border border-white/7 text-zinc-400 hover:text-zinc-200 hover:bg-white/7 transition"
+                    onClick={resetId}
+                    type="button"
+                  >
+                    <X className="size-3.5" />
+                  </button>
+                </div>
+                {loginIdError && <p className="mt-1 text-xs text-red-400">{loginIdError}</p>}
+              </div>
+
+              <div>
+                <label className="block mb-1.5 text-sm font-medium text-zinc-300" htmlFor="password">
+                  비밀번호
+                </label>
+                <div className="relative">
+                  <input
+                    aria-invalid={!!passwordError}
+                    autoComplete="current-password"
+                    className="w-full rounded-xl bg-white/4 border border-white/7 px-3 py-2.5 text-zinc-50 placeholder:text-zinc-500 transition
+                      focus:outline-none focus:ring-2 focus:ring-white/12 focus:border-transparent
+                      disabled:opacity-60 disabled:cursor-not-allowed
+                      aria-invalid:border-red-600/50 aria-invalid:focus:ring-red-600/30"
+                    defaultValue={defaultPassword}
+                    disabled={isPending}
+                    id="password"
+                    maxLength={64}
+                    minLength={8}
+                    name="password"
+                    pattern={PASSWORD_PATTERN}
+                    placeholder="비밀번호"
+                    required
+                    type="password"
+                  />
+                  <button
+                    aria-label="비밀번호 지우기"
+                    className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1.5 bg-white/5 border border-white/7 text-zinc-400 hover:text-zinc-200 hover:bg-white/7 transition"
+                    onClick={resetPassword}
+                    type="button"
+                  >
+                    <X className="size-3.5" />
+                  </button>
+                </div>
+                {passwordError && <p className="mt-1 text-xs text-red-400">{passwordError}</p>}
+              </div>
+
+              <div className="flex justify-end">
+                <div className="flex items-center gap-2">
+                  <label className="text-sm text-zinc-400 select-none cursor-pointer" htmlFor="remember">
+                    로그인 유지(30일)
+                  </label>
+                  <Toggle
+                    aria-label="로그인 유지"
+                    className="w-10 bg-white/6 border-transparent shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-1px_0_rgba(0,0,0,0.28)] after:bg-white after:border-white/20 transition
+                      peer-checked:bg-brand/65 peer-checked:border-transparent
+                      peer-checked:shadow-[inset_0_1px_0_rgba(255,255,255,0.18),inset_0_-1px_0_rgba(0,0,0,0.18)]
+                      peer-focus-visible:ring-white/20 peer-focus-visible:ring-offset-0"
+                    defaultChecked={defaultRemember === 'on'}
+                    disabled={isPending}
+                    id="remember"
+                    name="remember"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <button
+              aria-disabled={isPending || !turnstileToken}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/7 bg-white/5 px-4 py-3 text-sm font-medium text-white/90
+                shadow-[inset_0_-2px_0_var(--color-brand),inset_0_1px_0_rgba(255,255,255,0.06)] transition
+                hover:bg-white/7 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/15
+                aria-disabled:opacity-50 aria-disabled:pointer-events-none"
+              disabled={isPending || !turnstileToken}
+              type="submit"
+            >
+              {isPending ? <Loader2 className="size-5 animate-spin" /> : null}
+              {isPending ? '로그인 중...' : '로그인'}
             </button>
-          </div>
-          {loginIdError && <p className="mt-1 text-xs text-red-500">{loginIdError}</p>}
-        </div>
-        <div>
-          <label htmlFor="password">비밀번호</label>
-          <div className="relative">
-            <input
-              aria-invalid={!!passwordError}
-              defaultValue={defaultPassword}
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-white/7" />
+              </div>
+              <div className="flex justify-center text-sm">
+                <span className="relative z-10 px-4 bg-transparent text-zinc-500">또는</span>
+              </div>
+            </div>
+
+            <PasskeyLoginButton
               disabled={isPending}
-              id="password"
-              maxLength={64}
-              minLength={8}
-              name="password"
-              pattern={PASSWORD_PATTERN}
-              placeholder="비밀번호를 입력하세요"
-              required
-              type="password"
+              loginId={passkeyLoginId}
+              onSuccess={handleLoginSuccess}
+              turnstileToken={turnstileToken}
             />
-            <button onClick={resetPassword} tabIndex={-1} type="button">
-              <X className="size-3.5" />
-            </button>
-          </div>
-          {passwordError && <p className="mt-1 text-xs text-red-500">{passwordError}</p>}
-        </div>
-        <label className="flex! w-fit ml-auto items-center gap-2 cursor-pointer" htmlFor="remember">
-          <input
-            className="hidden peer"
-            defaultChecked={defaultRemember === 'on'}
-            disabled={isPending}
-            id="remember"
-            name="remember"
-            type="checkbox"
-          />
-          <span className="text-sm text-zinc-400 select-none transition peer-checked:text-foreground">
-            로그인 유지 (30일)
-          </span>
-          <div className="relative transition peer-checked:[&>span]:translate-x-full peer-checked:[&>div]:bg-brand-gradient peer-active:[&>div]:ring-2">
-            <div className="w-10 h-6 bg-zinc-600 ring-zinc-500 rounded-full transition" />
-            <span className="absolute left-1 top-1 w-4 h-4 bg-foreground border border-zinc-300 rounded-full transform transition" />
-          </div>
-        </label>
-      </div>
-      <button
-        className="group border-2 border-brand-gradient font-medium rounded-xl focus:outline-none focus:ring-3 focus:ring-zinc-500
-        disabled:border-zinc-500 disabled:pointer-events-none disabled:text-zinc-500"
-        disabled={isPending || !turnstileToken}
-        type="submit"
-      >
-        <div
-          className="p-2 flex justify-center bg-zinc-900 rounded-xl hover:bg-zinc-800 transition active:bg-zinc-900 
-          group-disabled:bg-zinc-800 group-disabled:cursor-not-allowed"
-        >
-          {isPending ? <Loader2 className="size-6 p-0.5 animate-spin" /> : '로그인'}
-        </div>
-      </button>
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-zinc-700" />
-        </div>
-        <div className="flex justify-center text-sm">
-          <span className="relative z-10 px-4 bg-zinc-900 text-zinc-500">또는</span>
-        </div>
-      </div>
-      <PasskeyLoginButton
-        disabled={isPending}
-        loginId={currentLoginId}
-        onSuccess={handleLoginSuccess}
-        turnstileToken={turnstileToken}
-      />
-      <TurnstileWidget
-        onTokenChange={setTurnstileToken}
-        options={{ action: 'login' }}
-        token={turnstileToken}
-        turnstileRef={turnstileRef}
-      />
-    </form>
+
+            <TurnstileWidget
+              onTokenChange={setTurnstileToken}
+              options={{ action: 'login' }}
+              token={turnstileToken}
+              turnstileRef={turnstileRef}
+            />
+          </form>
+
+          <p className="text-center flex flex-wrap gap-1 justify-center text-xs text-zinc-400">
+            처음이신가요?
+            <Link
+              className="underline underline-offset-4 hover:text-zinc-200 transition"
+              href="/auth/signup"
+              prefetch={false}
+            >
+              회원가입
+            </Link>
+          </p>
+        </>
+      )}
+    </div>
   )
 }

@@ -20,35 +20,38 @@ import { decryptTOTPSecret, verifyTOTPToken } from '@/utils/two-factor'
 import { verifyBackupCode } from '@/utils/two-factor-backup-code'
 
 const verifyTwoFactorSchema = z.object({
-  codeVerifier: z.string(),
+  'code-verifier': z.string(),
   fingerprint: z.string(),
   remember: z.literal('on').nullable(),
-  authorizationCode: z.string(),
+  'authorization-code': z.string(),
   token: z.union([z.string().length(6).regex(/^\d+$/), z.string().length(9).regex(new RegExp(BACKUP_CODE_PATTERN))]),
-  trustBrowser: z.literal('on').nullable(),
+  'trust-browser': z.literal('on').nullable(),
 })
 
 const twoFactorLimiter = new RateLimiter(RateLimitPresets.strict())
 
 export async function verifyTwoFactorLogin(formData: FormData) {
   const validation = verifyTwoFactorSchema.safeParse({
-    codeVerifier: formData.get('codeVerifier'),
+    'code-verifier': formData.get('code-verifier'),
     fingerprint: formData.get('fingerprint'),
-    authorizationCode: formData.get('authorizationCode'),
+    'authorization-code': formData.get('authorization-code'),
     remember: formData.get('remember'),
     token: formData.get('token'),
-    trustBrowser: formData.get('trustBrowser'),
+    'trust-browser': formData.get('trust-browser'),
   })
 
   if (!validation.success) {
     return badRequest(flattenZodFieldErrors(validation.error), formData)
   }
 
-  const { codeVerifier, fingerprint, remember, authorizationCode, token, trustBrowser } = validation.data
+  const { fingerprint, remember, token } = validation.data
+  const codeVerifier = validation.data['code-verifier']
+  const authorizationCode = validation.data['authorization-code']
+  const trustBrowser = validation.data['trust-browser']
   const challengeData = await verifyPKCEChallenge(authorizationCode, codeVerifier, fingerprint)
 
   if (!challengeData.valid) {
-    return unauthorized('세션이 만료됐어요. 새로고침 후 시도해주세요.', formData)
+    return unauthorized('세션이 만료됐어요. 새로고침 후 시도해 주세요.', formData)
   }
 
   const { userId } = challengeData
@@ -63,7 +66,7 @@ export async function verifyTwoFactorLogin(formData: FormData) {
     //   details: { failedAttempts: limit },
     // })
 
-    return tooManyRequests(`너무 많은 인증 시도가 있었어요. ${minutes}분 후에 다시 시도해주세요.`)
+    return tooManyRequests(`너무 많은 인증 시도가 있었어요. ${minutes}분 후에 다시 시도해 주세요.`)
   }
 
   try {
@@ -74,7 +77,7 @@ export async function verifyTwoFactorLogin(formData: FormData) {
         .where(and(eq(twoFactorTable.userId, userId), isNull(twoFactorTable.expiresAt)))
 
       if (!twoFactor) {
-        return unauthorized('세션이 만료됐어요. 새로고침 후 시도해주세요.', formData)
+        return unauthorized('세션이 만료됐어요. 새로고침 후 시도해 주세요.', formData)
       }
 
       let verified = false
@@ -88,7 +91,7 @@ export async function verifyTwoFactorLogin(formData: FormData) {
           verified = verifyTOTPToken(token, secret)
         } catch (decryptError) {
           console.error('Failed to decrypt TOTP secret. It might be due to key mismatch:', decryptError)
-          return badRequest('2단계 인증에 문제가 있어요. 관리자에게 문의해주세요.', formData)
+          return badRequest('2단계 인증에 문제가 있어요. 관리자에게 문의해 주세요.', formData)
         }
       }
       // Backup code

@@ -21,10 +21,10 @@ import TurnstileValidator, { getTurnstileToken } from '@/utils/turnstile'
 import { checkTrustedBrowser } from './utils'
 
 const loginSchema = z.object({
-  loginId: loginIdSchema,
+  'login-id': loginIdSchema,
   password: passwordSchema,
   remember: z.literal('on').nullable(),
-  codeChallenge: z.string(),
+  'code-challenge': z.string(),
   fingerprint: z.string(),
 })
 
@@ -53,10 +53,10 @@ export default async function login(formData: FormData) {
   }
 
   const validation = loginSchema.safeParse({
-    loginId: formData.get('loginId'),
+    'login-id': formData.get('login-id'),
     password: formData.get('password'),
     remember: formData.get('remember'),
-    codeChallenge: formData.get('codeChallenge'),
+    'code-challenge': formData.get('code-challenge'),
     fingerprint: formData.get('fingerprint'),
   })
 
@@ -64,12 +64,14 @@ export default async function login(formData: FormData) {
     return badRequest(flattenZodFieldErrors(validation.error), formData)
   }
 
-  const { loginId, password, remember, codeChallenge, fingerprint } = validation.data
+  const { password, remember, fingerprint } = validation.data
+  const loginId = validation.data['login-id']
+  const codeChallenge = validation.data['code-challenge']
   const { allowed, retryAfter } = await loginLimiter.check(loginId)
 
   if (!allowed) {
     const minutes = retryAfter ? Math.ceil(retryAfter / 60) : 1
-    return tooManyRequests(`너무 많은 로그인 시도가 있었어요. ${minutes}분 후에 다시 시도해주세요.`)
+    return tooManyRequests(`너무 많은 로그인 시도가 있었어요. ${minutes}분 후에 다시 시도해 주세요.`)
   }
 
   try {
