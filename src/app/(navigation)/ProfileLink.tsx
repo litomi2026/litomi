@@ -1,6 +1,7 @@
 'use client'
 
-import IconProfile from '@/components/icons/IconProfile'
+import { User } from 'lucide-react'
+
 import useMeQuery from '@/query/useMeQuery'
 
 import SelectableLink from './SelectableLink'
@@ -14,7 +15,7 @@ export default function ProfileLink({ className }: Readonly<Props>) {
   const name = me?.name ?? ''
 
   return (
-    <SelectableLink className={className} href={`/@${name}`} Icon={IconProfile}>
+    <SelectableLink className={className} href={`/@${name}`} icon={<User />}>
       내 리토미
     </SelectableLink>
   )
