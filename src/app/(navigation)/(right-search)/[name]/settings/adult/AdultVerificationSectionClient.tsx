@@ -3,7 +3,6 @@
 import { useMutation } from '@tanstack/react-query'
 import { ChevronDown } from 'lucide-react'
 import ms from 'ms'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { FormEvent, useMemo, useRef } from 'react'
 import { toast } from 'sonner'
@@ -221,15 +220,6 @@ export default function AdultVerificationSectionClient({ initialVerification, is
           성인 콘텐츠를 안전하게 제공하기 위해 <span className="text-zinc-200">성인 여부 확인</span>이 필요할 수 있어요.
         </p>
 
-        <div className="rounded-lg border border-zinc-800/80 bg-zinc-950/20 p-3">
-          <div className="text-xs font-medium text-zinc-300">진행 전에 확인해 주세요</div>
-          <ul className="mt-2 text-sm text-zinc-400 list-disc list-inside space-y-1">
-            <li>인증 시도는 10분 동안만 유효해요. 시간이 지나면 다시 시작해 주세요.</li>
-            <li>리토미는 비바톤 로그인 정보(아이디/비밀번호)를 받지 않아요.</li>
-            <li>인증 상태는 계정에 저장돼요. 다른 기기에서도 로그인하면 동일하게 적용돼요.</li>
-          </ul>
-        </div>
-
         <div className="grid gap-2">
           <details className="group">
             <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
@@ -244,9 +234,7 @@ export default function AdultVerificationSectionClient({ initialVerification, is
                 조치가 요구될 수 있어요. 이에 불필요하게 많은 개인정보를 받기보다는,{' '}
                 <span className="text-zinc-200">성인인지 아닌지</span>를 확인하는 방식으로 접근을 제한하려고 해요.
               </p>
-              <p className="text-xs text-zinc-500">
-                로그인한 상태에서 북마크/평점/서재처럼 저장·제출이 필요한 기능은 성인 인증이 필요해요.
-              </p>
+              <p className="text-xs text-zinc-500">북마크/평점/서재 등 사용자 상호작용 기능은 성인 인증이 필요해요.</p>
             </div>
           </details>
 
@@ -275,8 +263,8 @@ export default function AdultVerificationSectionClient({ initialVerification, is
             </summary>
             <div className="mt-2 rounded-lg border border-zinc-800/80 bg-zinc-950/20 p-3 space-y-2">
               <p className="text-sm text-zinc-400">
-                비바톤 인증을 완료하면 인증 상태를 유지하기 위해 <span className="text-zinc-200">아래 정보</span>만
-                저장해요. 저장된 인증 정보는 프로필이나 공개 화면에 표시되지 않아요.
+                비바톤 인증을 완료하면 인증 상태를 유지하기 위해 <span className="text-zinc-200">아래 정보</span>를
+                저장해요. 저장된 정보는 프로필이나 공개 화면에 표시되지 않아요.
               </p>
               <ul className="text-sm text-zinc-400 list-disc list-inside space-y-1">
                 <li>비바톤 사용자 ID(연동 식별용)</li>
@@ -327,33 +315,26 @@ export default function AdultVerificationSectionClient({ initialVerification, is
                 이 정보는 2025-12-15 기준으로 작성된 요약이에요. 법적 효력을 갖는 유권해석이 아니며, 구체적인 적용은
                 상황에 따라 달라질 수 있어요.
               </p>
-              <div className="text-sm text-zinc-400">관련 내용: 청소년 보호법(청소년유해매체물 표시 및 포장)</div>
               <div className="flex flex-wrap gap-x-3 gap-y-2 text-xs text-zinc-500">
                 <a
                   className="underline underline-offset-2 hover:text-zinc-300"
-                  href="https://www.easylaw.go.kr"
+                  href="https://easylaw.go.kr/CSP/CnpClsMain.laf?csmSeq=718&ccfNo=2&cciNo=2&cnpClsNo=3"
                   rel="noreferrer"
                   target="_blank"
                 >
-                  법제처 찾기 쉬운 생활법령정보
+                  법제처 찾기 쉬운 생활법령정보 (청소년유해매체물)
+                </a>
+                <a
+                  className="underline underline-offset-2 hover:text-zinc-300"
+                  href="https://bauth.bbaton.com"
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  비바톤 인증 페이지
                 </a>
               </div>
             </div>
           </details>
-        </div>
-
-        <div className="flex flex-wrap gap-x-3 gap-y-2 text-xs text-zinc-500">
-          <Link className="underline underline-offset-2 hover:text-zinc-300" href="/doc/privacy" prefetch={false}>
-            개인정보 처리방침
-          </Link>
-          <a
-            className="underline underline-offset-2 hover:text-zinc-300"
-            href="https://bauth.bbaton.com"
-            rel="noreferrer"
-            target="_blank"
-          >
-            비바톤 인증 페이지
-          </a>
         </div>
       </div>
 
