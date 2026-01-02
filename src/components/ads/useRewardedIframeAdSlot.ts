@@ -66,6 +66,7 @@ export function useRewardedIframeAdSlot({
   const isLoading = requestToken.isPending || earnPoints.isPending
   const apiError = requestToken.error ?? earnPoints.error ?? null
   const onResultRef = useLatestRef(onResult)
+  const tokenRef = useLatestRef(token)
 
   const { until: cooldownUntil, clear: clearCooldown, startFromRemainingSeconds } = useCooldown()
 
@@ -226,6 +227,46 @@ export function useRewardedIframeAdSlot({
     const armedUntilRef = { current: null as number | null }
     let armTimeoutId: ReturnType<typeof setTimeout> | null = null
 
+    function handleWindowBlur() {
+      const armedUntil = armedUntilRef.current
+      if (armedUntil === null) {
+        return
+      }
+
+      const nowMs = Date.now()
+      if (nowMs > armedUntil) {
+        disarm()
+        return
+      }
+
+      const active = document.activeElement
+      const activeIsIframe = active instanceof HTMLIFrameElement
+      const activeInsideContainer = active instanceof Element ? safeContainer.contains(active) : false
+
+      // NOTE: 일부 브라우저/광고는 새 창(팝업)으로 열리면서 visibilitychange(hidden)가 발생하지 않을 수 있어요.
+      // 이 경우 window.blur + activeElement=iframe(슬롯 내부)로 클릭아웃을 확인해요.
+      if (!activeIsIframe || !activeInsideContainer) {
+        return
+      }
+
+      disarm()
+
+      if (!rewardEnabled) {
+        onResultRef.current?.({ success: false })
+        return
+      }
+
+      if (tokenRef.current === null) {
+        return
+      }
+
+      if (isHandlingClaimRef.current || hasPendingClickOut) {
+        return
+      }
+
+      setHasPendingClickOut(true)
+    }
+
     function disarm() {
       armedUntilRef.current = null
       if (armTimeoutId) {
@@ -233,12 +274,14 @@ export function useRewardedIframeAdSlot({
         armTimeoutId = null
       }
       document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('blur', handleWindowBlur)
     }
 
     function arm(nowMs: number) {
       disarm()
       armedUntilRef.current = nowMs + confirmWindowMs
       document.addEventListener('visibilitychange', handleVisibilityChange)
+      window.addEventListener('blur', handleWindowBlur)
       armTimeoutId = setTimeout(disarm, confirmWindowMs)
     }
 
@@ -294,6 +337,10 @@ export function useRewardedIframeAdSlot({
         return
       }
 
+      if (tokenRef.current === null) {
+        return
+      }
+
       if (isHandlingClaimRef.current || hasPendingClickOut) {
         return
       }
@@ -305,12 +352,48 @@ export function useRewardedIframeAdSlot({
       handlePointerDown(event.target)
     }
 
+    function handleFallbackBlur() {
+      // NOTE: 일부 환경에서는 iframe 내부 클릭이 부모 문서의 pointerdown/focus로 잡히지 않고,
+      // visibilitychange(hidden)도 안 오는데 window.blur만 발생해요.
+      // 이 경우를 위해 "비-armed" 상태에서도(=Attempt 신호 없음) blur+activeElement=iframe이면 click-out으로 인정해요.
+      // 단, visibilityState가 visible인 경우에만(=alt-tab류 오탐 감소) 처리해요.
+      if (armedUntilRef.current !== null) {
+        return
+      }
+      if (document.visibilityState !== 'visible') {
+        return
+      }
+
+      const active = document.activeElement
+      const activeIsIframe = active instanceof HTMLIFrameElement
+      const activeInsideContainer = active instanceof Element ? safeContainer.contains(active) : false
+
+      if (!activeIsIframe || !activeInsideContainer) {
+        return
+      }
+
+      if (!rewardEnabled) {
+        onResultRef.current?.({ success: false })
+        return
+      }
+      if (tokenRef.current === null) {
+        return
+      }
+      if (isHandlingClaimRef.current || hasPendingClickOut) {
+        return
+      }
+
+      setHasPendingClickOut(true)
+    }
+
     safeContainer.addEventListener('focus', handleSlotFocus, true)
     safeContainer.addEventListener('pointerdown', handlePointerDownEvent, true)
+    window.addEventListener('blur', handleFallbackBlur)
 
     return () => {
       safeContainer.removeEventListener('focus', handleSlotFocus, true)
       safeContainer.removeEventListener('pointerdown', handlePointerDownEvent, true)
+      window.removeEventListener('blur', handleFallbackBlur)
       disarm()
     }
   }, [
@@ -323,6 +406,7 @@ export function useRewardedIframeAdSlot({
     pointerFocusWindowMs,
     rewardEnabled,
     scriptLoaded,
+    tokenRef,
   ])
 
   // ===== Claim (on return) =====
@@ -335,9 +419,14 @@ export function useRewardedIframeAdSlot({
       if (!hasPendingClickOut) {
         return
       }
+
       if (document.visibilityState !== 'visible') {
         return
       }
+      if (!document.hasFocus()) {
+        return
+      }
+
       if (!rewardEnabled || isAdBlocked || !isAdReady) {
         setHasPendingClickOut(false)
         return
@@ -374,8 +463,16 @@ export function useRewardedIframeAdSlot({
       tryClaim()
     }
 
+    function handleWindowFocus() {
+      tryClaim()
+    }
+
     document.addEventListener('visibilitychange', handleVisibilityChange)
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('focus', handleWindowFocus)
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('focus', handleWindowFocus)
+    }
   }, [
     clearCooldown,
     earnPoints,
