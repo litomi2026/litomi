@@ -33,8 +33,13 @@ export function showAdultVerificationRequiredToast(options: AdultVerificationToa
     <div className="flex flex-wrap gap-x-2 gap-y-1 items-center">
       <div>성인인증이 필요해요</div>
       {options.username && (
-        <Link className="font-bold text-xs underline underline-offset-2" href={settingsHref} prefetch={false}>
-          비바톤 익명 성인인증하기
+        <Link
+          className="font-bold text-xs underline underline-offset-2"
+          href={settingsHref}
+          onClick={() => toast.dismiss(ADULT_VERIFICATION_REQUIRED_TOAST_ID)}
+          prefetch={false}
+        >
+          익명으로 성인인증하기
         </Link>
       )}
     </div>,

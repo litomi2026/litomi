@@ -144,6 +144,40 @@ import_rulesets() {
     fi
 }
 
+# Function to import managed transforms (managed headers)
+import_managed_transforms() {
+    echo ""
+    echo "🧩 Checking for managed transforms..."
+
+    if terraform state show "cloudflare_managed_transforms.managed_transforms" &>/dev/null 2>&1; then
+        echo "✓ Managed transforms already imported"
+        return 0
+    fi
+
+    echo "📝 Importing managed transforms..."
+
+    # Provider import ID format can differ by resource; try a few common patterns.
+    # For managed transforms (managed_headers endpoint), the ID is typically derived from the zone.
+    declare -a import_candidates=(
+        "$ZONE_ID"
+        "zones/$ZONE_ID"
+        "$ZONE_ID/managed_headers"
+        "zones/$ZONE_ID/managed_headers"
+    )
+
+    for import_id in "${import_candidates[@]}"; do
+        if terraform import cloudflare_managed_transforms.managed_transforms "$import_id" >/dev/null 2>&1; then
+            echo "✅ Imported managed transforms (ID: $import_id)"
+            return 0
+        fi
+    done
+
+    echo "⚠️  Could not import managed transforms automatically."
+    echo "   Try manually:"
+    echo "   terraform import cloudflare_managed_transforms.managed_transforms \"$ZONE_ID\""
+    return 1
+}
+
 # Main execution
 echo "🔄 Starting auto-import process..."
 echo ""
@@ -159,6 +193,9 @@ import_dns_records
 
 # Import rulesets
 import_rulesets
+
+# Import managed transforms
+import_managed_transforms
 
 echo ""
 echo "✅ Auto-import complete!"
