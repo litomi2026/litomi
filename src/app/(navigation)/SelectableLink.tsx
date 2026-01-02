@@ -18,7 +18,7 @@ type Props = ComponentProps<typeof Link> & {
 export default function SelectableLink({
   className = '',
   icon,
-  iconClassName = 'size-6 shrink-0',
+  iconClassName = 'text-foreground size-6 shrink-0',
   selectedIconStyle = 'stroke',
   children,
   href,
@@ -49,7 +49,12 @@ export default function SelectableLink({
         <LinkPending className={iconClassName}>
           <span
             aria-hidden
-            className={twMerge(iconClassName, '[&_svg]:size-full [&_svg]:shrink-0', selectedIconClassName)}
+            className={twMerge(
+              'inline-flex items-center justify-center',
+              iconClassName,
+              '[&_svg]:size-full [&_svg]:shrink-0',
+              selectedIconClassName,
+            )}
           >
             {icon}
           </span>
