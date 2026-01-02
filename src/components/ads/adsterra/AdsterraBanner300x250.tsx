@@ -9,9 +9,7 @@ import type { AdClickResult } from '../types'
 import AdBlockedMessage from '../AdBlockedMessage'
 import AdPlaceholder from '../AdPlaceholder'
 import RewardedAdFooter from '../RewardedAdFooter'
-import { useAdIframeClickEffect } from '../useAdIframeClickEffect'
-import { useAdIframeLoadEffect } from '../useAdIframeLoadEffect'
-import { useRewardedAd } from '../useRewardedAd'
+import { useRewardedIframeAdSlot } from '../useRewardedIframeAdSlot'
 
 type AtOptions = {
   key: string
@@ -40,16 +38,17 @@ type Props = {
 
 export default function AdsterraBanner300x250({ adSlotId, className = '', rewardEnabled = false, onAdClick }: Props) {
   const slotRef = useRef<HTMLDivElement>(null)
-  const [hasIframe, setHasIframe] = useState(false)
-  const [isAdBlocked, setIsAdBlocked] = useState(false)
+  const [isScriptLoaded, setIsScriptLoaded] = useState(false)
+  const [isScriptError, setIsScriptError] = useState(false)
 
-  const { dailyRemaining, isLoading, apiError, shouldDimAd, cooldownUntil, refreshToken, handleConfirmedNavigation } =
-    useRewardedAd({
+  const { dailyRemaining, isLoading, apiError, shouldDimAd, cooldownUntil, refresh, isAdBlocked, isAdReady } =
+    useRewardedIframeAdSlot({
       adSlotId,
       rewardEnabled,
-      adReady: hasIframe,
-      adBlocked: isAdBlocked,
-      onAdClick,
+      scriptLoaded: isScriptLoaded,
+      scriptFailed: isScriptError,
+      containerRef: slotRef,
+      onResult: onAdClick,
     })
 
   const cooldownLabel = cooldownUntil ? formatDistanceFromNow(new Date(cooldownUntil)) : null
@@ -60,6 +59,10 @@ export default function AdsterraBanner300x250({ adSlotId, className = '', reward
     if (!slot) {
       return
     }
+
+    let isMounted = true
+    setIsScriptLoaded(false)
+    setIsScriptError(false)
 
     // NOTE: 재마운트/재시도 시 중복 생성 방지
     slot.innerHTML = ''
@@ -75,25 +78,24 @@ export default function AdsterraBanner300x250({ adSlotId, className = '', reward
     const script = document.createElement('script')
     script.src = `https://www.highperformanceformat.com/${AD_KEY}/invoke.js`
     script.async = false
+    script.addEventListener('load', () => {
+      if (isMounted) {
+        setIsScriptLoaded(true)
+      }
+    })
+    script.addEventListener('error', () => {
+      if (isMounted) {
+        setIsScriptError(true)
+        setIsScriptLoaded(true)
+      }
+    })
     slot.appendChild(script)
 
     return () => {
+      isMounted = false
       slot.innerHTML = ''
     }
   }, [])
-
-  useAdIframeLoadEffect({
-    enabled: !isAdBlocked,
-    containerRef: slotRef,
-    onLoaded: () => setHasIframe(true),
-    onBlocked: () => setIsAdBlocked(true),
-  })
-
-  useAdIframeClickEffect({
-    enabled: !isAdBlocked,
-    containerRef: slotRef,
-    onConfirmedNavigation: handleConfirmedNavigation,
-  })
 
   return (
     <div
@@ -109,7 +111,7 @@ export default function AdsterraBanner300x250({ adSlotId, className = '', reward
           className="relative cursor-pointer z-0 rounded-xl border overflow-hidden bg-white/4 border-white/7 aria-disabled:opacity-60 aria-disabled:cursor-not-allowed"
           style={{ width: `min(${AD_WIDTH}px, 100%)`, height: AD_HEIGHT }}
         >
-          {!hasIframe && <AdPlaceholder className="rounded-none" height={AD_HEIGHT} width={AD_WIDTH} />}
+          {!isAdReady && <AdPlaceholder className="rounded-none" height={AD_HEIGHT} width={AD_WIDTH} />}
           <div className="absolute inset-0" ref={slotRef} />
           {isLoading && (
             <div className="absolute inset-0 bg-zinc-950/40 flex items-center justify-center">
@@ -123,7 +125,7 @@ export default function AdsterraBanner300x250({ adSlotId, className = '', reward
         cooldownLabel={cooldownLabel}
         dailyRemaining={dailyRemaining}
         isLoading={isLoading}
-        onRetry={refreshToken}
+        onRetry={refresh}
         rewardEnabled={rewardEnabled}
       />
     </div>
