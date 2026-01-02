@@ -1,6 +1,8 @@
-import { Bell, Bookmark, FileText, Flame, House, LibraryBig, PiggyBank, Search, Tag } from 'lucide-react'
+import { Bookmark, FileText, Flame, LibraryBig, PiggyBank, Search, Tag } from 'lucide-react'
 import Link from 'next/link'
 
+import IconBell from '@/components/icons/IconBell'
+import IconHome from '@/components/icons/IconHome'
 import IconLogo from '@/components/icons/LogoLitomi'
 import SEOText from '@/components/SEOText'
 
@@ -26,7 +28,7 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           <Link className="p-2 w-fit mx-auto hidden sm:block 2xl:m-0" href="/" prefetch={false}>
             <IconLogo className="w-8" priority />
           </Link>
-          <SelectableLink href="/new/1" icon={<House />} selectedIconStyle="fill-soft">
+          <SelectableLink href="/new/1" icon={<IconHome />} selectedIconStyle="fill">
             홈
           </SelectableLink>
           <SelectableLink href="/search" icon={<Search />}>
@@ -44,7 +46,7 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
             인기
           </SelectableLink>
           <div className="relative">
-            <SelectableLink href="/notification" icon={<Bell />} selectedIconStyle="fill">
+            <SelectableLink href="/notification" icon={<IconBell />} selectedIconStyle="fill">
               알림
             </SelectableLink>
             <NotificationCount />

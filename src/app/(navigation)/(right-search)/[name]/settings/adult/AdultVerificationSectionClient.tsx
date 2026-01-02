@@ -199,7 +199,7 @@ export default function AdultVerificationSectionClient({ initialVerification, is
         {verifiedAtLabel && (
           <div className="flex items-center justify-between gap-3">
             <div className="text-sm text-zinc-400">마지막 인증</div>
-            <div className="text-sm text-zinc-200" title={verifiedAt?.toLocaleString() ?? ''}>
+            <div className="text-sm text-zinc-200" title={verifiedAt?.toLocaleString()}>
               {verifiedAtLabel}
             </div>
           </div>

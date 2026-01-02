@@ -23,5 +23,8 @@ export function useRequestTokenMutation(adSlotId: string) {
 
       return data
     },
+    meta: {
+      suppressGlobalErrorToastForStatuses: [429],
+    },
   })
 }

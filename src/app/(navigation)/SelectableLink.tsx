@@ -68,7 +68,7 @@ export default function SelectableLink({
 function getSelectedIconClassName(selectedIconStyle: 'fill-soft' | 'fill' | 'stroke') {
   switch (selectedIconStyle) {
     case 'fill':
-      return '[&_svg]:fill-current'
+      return '[&_svg]:fill-current [&_[data-icon-variant=solid]]:opacity-100 [&_[data-icon-variant=outline]]:opacity-0'
     case 'fill-soft':
       return '[&_svg]:fill-current [&_svg]:[fill-opacity:0.3]'
     case 'stroke':

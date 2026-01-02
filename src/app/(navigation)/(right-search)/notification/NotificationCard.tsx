@@ -1,10 +1,11 @@
 'use client'
 
-import { Bell, Book, Bookmark, Check, Circle, Eye, Trash2 } from 'lucide-react'
+import { Book, Bookmark, Check, Circle, Eye, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 
+import IconBell from '@/components/icons/IconBell'
 import LinkPending from '@/components/LinkPending'
 import { NotificationType } from '@/database/enum'
 import { NotificationData } from '@/database/type'
@@ -62,9 +63,9 @@ export default function NotificationCard({
       case NotificationType.NEW_MANGA:
         return <Book className="size-5 shrink-0" />
       case NotificationType.TEST:
-        return <Bell className="size-5 shrink-0" />
+        return <IconBell className="size-5 shrink-0" />
       default:
-        return <Bell className="size-5 shrink-0" />
+        return <IconBell className="size-5 shrink-0" />
     }
   }
 

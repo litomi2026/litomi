@@ -1,9 +1,10 @@
 'use client'
 
 import dayjs from 'dayjs'
-import { Bell, BellOff, Edit3, Trash2 } from 'lucide-react'
+import { BellOff, Edit3, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 
+import IconBell from '@/components/icons/IconBell'
 import Toggle from '@/components/ui/Toggle'
 import { NotificationConditionType } from '@/database/enum'
 import useServerAction from '@/hook/useServerAction'
@@ -99,7 +100,11 @@ export default function NotificationCriteriaCard({ criterion, onEdit }: Notifica
           aria-selected={criterion.isActive}
           className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl aria-selected:bg-brand/10 bg-zinc-800/50 flex items-center justify-center transition"
         >
-          {criterion.isActive ? <Bell className="h-5 w-5 text-brand" /> : <BellOff className="h-5 w-5 text-zinc-500" />}
+          {criterion.isActive ? (
+            <IconBell className="h-5 w-5 text-brand" />
+          ) : (
+            <BellOff className="h-5 w-5 text-zinc-500" />
+          )}
         </div>
 
         <div className="flex-1 min-w-0">

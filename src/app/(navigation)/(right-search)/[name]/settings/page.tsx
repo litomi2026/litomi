@@ -1,6 +1,5 @@
 import { ErrorBoundary } from '@suspensive/react'
 import {
-  Bell,
   CalendarMinus,
   CaseSensitive,
   Download,
@@ -15,6 +14,7 @@ import {
 } from 'lucide-react'
 import { Suspense } from 'react'
 
+import IconBell from '@/components/icons/IconBell'
 import CollapsibleSection from '@/components/ui/CollapsibleSection'
 import { getUserIdFromCookie } from '@/utils/cookie'
 import { getUsernameFromParam } from '@/utils/param'
@@ -97,7 +97,7 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
       </CollapsibleSection>
       <CollapsibleSection
         description="새로운 업데이트를 실시간으로 받아보세요"
-        icon={<Bell className="size-5 shrink-0 text-brand" />}
+        icon={<IconBell className="size-5 shrink-0 text-brand" />}
         id="push"
         title="푸시 알림"
       >

@@ -1,12 +1,13 @@
 'use client'
 
 import { useQueryClient } from '@tanstack/react-query'
-import { Bell, Book, Check, Filter, Loader2, Trash2 } from 'lucide-react'
+import { Book, Check, Filter, Loader2, Trash2 } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ReactNode, useCallback, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
 import { NotificationFilter } from '@/backend/api/v1/notification/types'
+import IconBell from '@/components/icons/IconBell'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import { QueryKeys } from '@/constants/query'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
@@ -341,7 +342,7 @@ function getEmptyContent(filter: NotificationFilter | null) {
       }
     default:
       return {
-        icon: <Bell className="mb-4 size-12 text-zinc-600/50" />,
+        icon: <IconBell className="mb-4 size-12 text-zinc-600/50" />,
         title: '아직 알림이 없어요',
         description: (
           <>

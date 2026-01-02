@@ -1,6 +1,7 @@
 import { eq } from 'drizzle-orm'
-import { Bell, Settings, Smartphone } from 'lucide-react'
+import { Settings, Smartphone } from 'lucide-react'
 
+import IconBell from '@/components/icons/IconBell'
 import { db } from '@/database/supabase/drizzle'
 import { pushSettingsTable, webPushTable } from '@/database/supabase/notification'
 
@@ -21,7 +22,7 @@ export default async function PushSettings({ userId }: Props) {
       <div className="relative bg-linear-to-br from-zinc-800/80 to-zinc-900/80 rounded-2xl p-4 sm:p-5 border border-zinc-700/50 hover:border-brand/30 transition-all overflow-hidden">
         <div className="absolute inset-0 bg-linear-to-tr from-brand-start/5 via-transparent to-brand/5 pointer-events-none" />
         <div className="flex items-center gap-4 flex-1">
-          <Bell className="size-5 shrink-0 text-brand p-2.5 bg-brand/10 rounded-xl border border-brand/20 box-content" />
+          <IconBell className="size-5 shrink-0 text-brand p-2.5 bg-brand/10 rounded-xl border border-brand/20 box-content" />
           <div className="flex-1">
             <div className="flex-1 flex items-center justify-between gap-1">
               <h3 className="text-lg font-semibold text-zinc-100">브라우저 푸시</h3>
