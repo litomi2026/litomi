@@ -15,7 +15,7 @@ export default function ProfileLink({ className }: Readonly<Props>) {
   const name = me?.name ?? ''
 
   return (
-    <SelectableLink className={className} href={`/@${name}`} icon={<User />}>
+    <SelectableLink className={className} href={`/@${name}`} icon={<User />} selectedIconStyle="fill">
       내 리토미
     </SelectableLink>
   )

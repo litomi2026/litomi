@@ -3,6 +3,7 @@
 import { Loader2 } from 'lucide-react'
 import { useLinkStatus } from 'next/link'
 import { ReactNode, useEffect, useState } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 import { LINK_PENDING_DELAY } from '@/constants/policy'
 
@@ -33,8 +34,8 @@ export default function LinkPending({ children, className, wrapperClassName }: P
 
   if (showSpinner) {
     return (
-      <div className={wrapperClassName}>
-        <Loader2 className={`animate-spin ${className ?? ''}`} />
+      <div className={wrapperClassName ?? twMerge(className, 'flex items-center justify-center')}>
+        <Loader2 className={twMerge('animate-spin', className)} />
       </div>
     )
   }
