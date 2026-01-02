@@ -8,8 +8,34 @@ import { toast } from 'sonner'
 
 import { QueryKeys } from '@/constants/query'
 import amplitude from '@/lib/amplitude/browser'
-import { showLoginRequiredToast } from '@/lib/toast'
+import { showAdultVerificationRequiredToast, showLoginRequiredToast } from '@/lib/toast'
 import { ProblemDetailsError, shouldRetryError } from '@/utils/react-query-error'
+
+function getCachedUsername(queryClient: QueryClient): string | undefined {
+  const me = queryClient.getQueryData(QueryKeys.me)
+  if (!me || typeof me !== 'object') {
+    return undefined
+  }
+  if (!('name' in me)) {
+    return undefined
+  }
+  const name = me.name
+  return typeof name === 'string' && name.length > 0 ? name : undefined
+}
+
+function isAdultVerificationRequiredProblem(typeUrl: string): boolean {
+  const suffix = '/problems/adult-verification-required'
+
+  if (typeUrl.endsWith(suffix)) {
+    return true
+  }
+
+  try {
+    return new URL(typeUrl).pathname === suffix
+  } catch {
+    return false
+  }
+}
 
 const queryClient = new QueryClient({
   queryCache: new QueryCache({
@@ -26,8 +52,12 @@ const queryClient = new QueryClient({
         if (error.status === 401) {
           queryClient.setQueriesData({ queryKey: QueryKeys.me }, () => null)
           amplitude.reset()
-
           showLoginRequiredToast()
+          return
+        }
+
+        if (error.status === 403 && isAdultVerificationRequiredProblem(error.type)) {
+          showAdultVerificationRequiredToast({ username: getCachedUsername(queryClient) })
           return
         }
 
