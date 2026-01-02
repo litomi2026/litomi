@@ -96,7 +96,7 @@ export default async function signup(formData: FormData) {
 
     const { id: userId } = result
     const cookieStore = await cookies()
-    const { key, value, options } = await getAccessTokenCookieConfig(userId)
+    const { key, value, options } = await getAccessTokenCookieConfig({ userId, adult: false })
     cookieStore.set(key, value, options)
 
     return created({

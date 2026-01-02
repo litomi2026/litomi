@@ -22,22 +22,27 @@ export const auth = createMiddleware<Env>(async (c, next) => {
   const validRTUserId = rtPayload?.sub
   const isRTExpired = rtPayload === null
   const isRTMissing = rtPayload === undefined
+  const atAdult = atPayload?.adult === true
+  const rtAdult = rtPayload?.adult === true
 
   if (validATUserId) {
     // AT 유효, RT 유효 -> next()
     if (validRTUserId) {
       c.set('userId', Number(validATUserId))
+      c.set('isAdult', atAdult)
       return await next()
     }
     // AT 유효, RT 만료/무효 -> RT 삭제
     if (isRTExpired) {
       c.set('userId', Number(validATUserId))
+      c.set('isAdult', atAdult)
       deleteCookie(c, CookieKey.REFRESH_TOKEN, { domain: COOKIE_DOMAIN })
       return await next()
     }
     // AT 유효, RT 없음 -> next()
     if (isRTMissing) {
       c.set('userId', Number(validATUserId))
+      c.set('isAdult', atAdult)
       return await next()
     }
   }
@@ -45,9 +50,10 @@ export const auth = createMiddleware<Env>(async (c, next) => {
   if (isATExpired) {
     // AT 만료/무효, RT 유효 -> AT 갱신
     if (validRTUserId) {
-      const { key, value, options } = await getAccessTokenCookieConfig(validRTUserId)
+      const { key, value, options } = await getAccessTokenCookieConfig({ userId: validRTUserId, adult: rtAdult })
       setCookie(c, key, value, options)
       c.set('userId', Number(validRTUserId))
+      c.set('isAdult', rtAdult)
       return await next()
     }
     // AT 만료/무효, RT 만료/무효 -> AT, RT 삭제
@@ -66,9 +72,10 @@ export const auth = createMiddleware<Env>(async (c, next) => {
   if (isATMissing) {
     // AT 없음, RT 유효 -> AT 갱신
     if (validRTUserId) {
-      const { key, value, options } = await getAccessTokenCookieConfig(validRTUserId)
+      const { key, value, options } = await getAccessTokenCookieConfig({ userId: validRTUserId, adult: rtAdult })
       setCookie(c, key, value, options)
       c.set('userId', Number(validRTUserId))
+      c.set('isAdult', rtAdult)
       return await next()
     }
     // AT 없음, RT 만료/무효 -> RT 삭제

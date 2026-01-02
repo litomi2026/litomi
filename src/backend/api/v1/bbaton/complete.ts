@@ -1,9 +1,10 @@
 import { Hono } from 'hono'
-import { deleteCookie, getCookie } from 'hono/cookie'
+import { deleteCookie, getCookie, setCookie } from 'hono/cookie'
 import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { requireAuth } from '@/backend/middleware/require-auth'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { COOKIE_DOMAIN } from '@/constants'
@@ -11,6 +12,8 @@ import { CookieKey } from '@/constants/storage'
 import { isPostgresError } from '@/database/error'
 import { bbatonVerificationTable } from '@/database/supabase/bbaton'
 import { db } from '@/database/supabase/drizzle'
+import { getAccessTokenCookieConfig, getRefreshTokenCookieConfig } from '@/utils/cookie'
+import { JWTType, verifyJWT } from '@/utils/jwt'
 
 import { exchangeAuthorizationCode, fetchBBatonProfile } from './lib'
 import { getBBatonRedirectURI, parseBirthYear, verifyBBatonAttemptToken } from './utils'
@@ -23,12 +26,7 @@ const completeSchema = z.object({
 
 const route = new Hono<Env>()
 
-route.post('/', zProblemValidator('json', completeSchema), async (c) => {
-  const userId = c.get('userId')
-  if (!userId) {
-    return problemResponse(c, { status: 401 })
-  }
-
+route.post('/', requireAuth, zProblemValidator('json', completeSchema), async (c) => {
   const attemptToken = getCookie(c, CookieKey.BBATON_ATTEMPT_ID)
   if (!attemptToken) {
     return problemResponse(c, {
@@ -37,7 +35,7 @@ route.post('/', zProblemValidator('json', completeSchema), async (c) => {
     })
   }
 
-  const { code } = c.req.valid('json')
+  const userId = c.get('userId')!
 
   try {
     const attempt = await verifyBBatonAttemptToken(attemptToken)
@@ -48,6 +46,7 @@ route.post('/', zProblemValidator('json', completeSchema), async (c) => {
       })
     }
 
+    const { code } = c.req.valid('json')
     const redirectURI = getBBatonRedirectURI()
     const { accessToken } = await exchangeAuthorizationCode({ code, redirectURI })
     const profile = await fetchBBatonProfile(accessToken)

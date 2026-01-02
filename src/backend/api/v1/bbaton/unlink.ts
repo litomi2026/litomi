@@ -1,11 +1,12 @@
 import { compare } from 'bcryptjs'
 import { and, eq, isNull } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { deleteCookie } from 'hono/cookie'
+import { deleteCookie, getCookie, setCookie } from 'hono/cookie'
 import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { requireAuth } from '@/backend/middleware/require-auth'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { COOKIE_DOMAIN } from '@/constants'
@@ -15,6 +16,8 @@ import { db } from '@/database/supabase/drizzle'
 import { twoFactorTable } from '@/database/supabase/two-factor'
 import { userTable } from '@/database/supabase/user'
 import { passwordSchema } from '@/database/zod'
+import { getAccessTokenCookieConfig, getRefreshTokenCookieConfig } from '@/utils/cookie'
+import { JWTType, verifyJWT } from '@/utils/jwt'
 import { decryptTOTPSecret, verifyTOTPToken } from '@/utils/two-factor'
 
 export type POSTV1BBatonUnlinkResponse = { ok: true }
@@ -26,16 +29,10 @@ const schema = z.object({
 
 const route = new Hono<Env>()
 
-route.post('/', zProblemValidator('json', schema), async (c) => {
-  const userId = c.get('userId')
-
-  if (!userId) {
-    return problemResponse(c, { status: 401 })
-  }
+route.post('/', requireAuth, zProblemValidator('json', schema), async (c) => {
+  const userId = c.get('userId')!
 
   try {
-    const { password, token } = c.req.valid('json')
-
     const [user] = await db
       .select({ passwordHash: userTable.passwordHash })
       .from(userTable)
@@ -45,6 +42,7 @@ route.post('/', zProblemValidator('json', schema), async (c) => {
       return problemResponse(c, { status: 401, detail: '비밀번호가 일치하지 않아요' })
     }
 
+    const { password, token } = c.req.valid('json')
     const isValidPassword = await compare(password, user.passwordHash).catch(() => false)
 
     if (!isValidPassword) {

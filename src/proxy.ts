@@ -55,6 +55,7 @@ export async function proxy({ nextUrl, method, cookies }: NextRequest) {
 
   const validRefreshToken = await verifyJWT(refreshToken, JWTType.REFRESH).catch(() => null)
   const userId = validRefreshToken?.sub
+  const adult = validRefreshToken?.adult === true
 
   // at 만료 및 rt 만료 -> at, rt 쿠키 삭제
   if (!userId) {
@@ -66,7 +67,7 @@ export async function proxy({ nextUrl, method, cookies }: NextRequest) {
 
   // at 만료 및 rt 유효 -> at 재발급
   const response = NextResponse.next()
-  const { key, value, options } = await getAccessTokenCookieConfig(userId)
+  const { key, value, options } = await getAccessTokenCookieConfig({ userId, adult })
   response.cookies.set(key, value, options)
   return response
 }

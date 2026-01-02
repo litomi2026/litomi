@@ -7,10 +7,15 @@ import { CookieKey } from '@/constants/storage'
 import { sec } from './format/date'
 import { JWTType, signJWT, verifyJWT } from './jwt'
 
+type AuthTokenClaims = {
+  userId: number | string
+  adult: boolean
+}
+
 type CookieStore = Awaited<ReturnType<typeof cookies>>
 
-export async function getAccessTokenCookieConfig(userId: number | string) {
-  const cookieValue = await signJWT({ sub: String(userId) }, JWTType.ACCESS)
+export async function getAccessTokenCookieConfig({ userId, adult }: AuthTokenClaims) {
+  const cookieValue = await signJWT({ sub: String(userId), adult }, JWTType.ACCESS)
 
   return {
     key: CookieKey.ACCESS_TOKEN,
@@ -25,6 +30,22 @@ export async function getAccessTokenCookieConfig(userId: number | string) {
   } as const
 }
 
+export async function getRefreshTokenCookieConfig({ userId, adult }: AuthTokenClaims) {
+  const cookieValue = await signJWT({ sub: String(userId), adult }, JWTType.REFRESH)
+
+  return {
+    key: CookieKey.REFRESH_TOKEN,
+    value: cookieValue,
+    options: {
+      domain: COOKIE_DOMAIN,
+      httpOnly: true,
+      maxAge: sec('30 days'),
+      sameSite: 'strict',
+      secure: true,
+    },
+  } as const
+}
+
 /**
  * For server component
  */
@@ -33,16 +54,9 @@ export async function getUserIdFromCookie() {
   return (await verifyAccessToken(cookieStore)) ?? null
 }
 
-export async function setRefreshTokenCookie(cookieStore: ReadonlyRequestCookies, userId: number | string) {
-  const cookieValue = await signJWT({ sub: String(userId) }, JWTType.REFRESH)
-
-  cookieStore.set(CookieKey.REFRESH_TOKEN, cookieValue, {
-    domain: COOKIE_DOMAIN,
-    httpOnly: true,
-    maxAge: sec('30 days'),
-    sameSite: 'strict',
-    secure: true,
-  })
+export async function setRefreshTokenCookie(cookieStore: ReadonlyRequestCookies, claims: AuthTokenClaims) {
+  const { key, value, options } = await getRefreshTokenCookieConfig(claims)
+  cookieStore.set(key, value, options)
 }
 
 /**
