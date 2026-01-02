@@ -8,6 +8,7 @@ import localFont from 'next/font/local'
 import { ReactNode } from 'react'
 import { Toaster } from 'sonner'
 
+import NewYearToastNudge from '@/app/nye/NewYearToastNudge'
 import LibraryModal from '@/components/card/LibraryModal'
 import MangaTorrentModal from '@/components/card/MangaTorrentModal'
 import HiyobiPing from '@/components/HiyobiPing'
@@ -114,6 +115,7 @@ export default function RootLayout({ children }: Readonly<Props>) {
         </QueryProvider>
         <ServiceWorkerRegistrar />
         <HiyobiPing />
+        <NewYearToastNudge />
         <Toaster duration={3000} position="top-center" richColors theme="system" />
         {NEXT_PUBLIC_GA_ID && <GoogleAnalytics gaId={NEXT_PUBLIC_GA_ID} />}
         {AMPLITUDE_API_KEY && <Amplitude apiKey={AMPLITUDE_API_KEY} />}

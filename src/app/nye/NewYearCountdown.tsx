@@ -2,7 +2,7 @@
 
 import ms from 'ms'
 import { useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 interface NewYearCountdownProps {
   onCountdownComplete?: () => void
@@ -22,14 +22,20 @@ export default function NewYearCountdown({ onCountdownComplete, onCountingDown }
   const [showCountdown, setShowCountdown] = useState(false)
   const [hasTriggeredComplete, setHasTriggeredComplete] = useState(false)
   const searchParams = useSearchParams()
-  const dday = Number(searchParams.get('dday') ?? 0) * 1000
+  const dday = Number(searchParams.get('dday') ?? 0) * ms('1s')
+
+  const targetTimeMs = useMemo(() => {
+    if (dday) {
+      return dday
+    }
+    const now = new Date()
+    return new Date(now.getFullYear() + 1, 0, 1, 0, 0, 0).getTime()
+  }, [dday])
 
   useEffect(() => {
     const calculateTimeLeft = (): TimeLeft | null => {
-      const now = new Date()
-      const currentYear = now.getFullYear()
-      const newYear = dday ? new Date(dday) : new Date(currentYear + 1, 0, 1, 0, 0, 0)
-      const difference = newYear.getTime() - now.getTime()
+      const nowMs = Date.now()
+      const difference = targetTimeMs - nowMs
 
       if (difference > ms('7 days')) {
         setShowCountdown(false)
@@ -64,21 +70,21 @@ export default function NewYearCountdown({ onCountdownComplete, onCountingDown }
         days: Math.floor(difference / ms('1 day')),
         hours: Math.floor((difference / ms('1 hour')) % 24),
         minutes: Math.floor((difference / ms('1 minute')) % 60),
-        seconds: Math.floor((difference / 1000) % 60),
+        seconds: Math.floor((difference / ms('1 second')) % 60),
       }
     }
 
     const timer = setInterval(() => {
       const time = calculateTimeLeft()
       setTimeLeft(time)
-    }, 1000)
+    }, ms('1 second'))
 
     // 초기 계산
     const time = calculateTimeLeft()
     setTimeLeft(time)
 
     return () => clearInterval(timer)
-  }, [dday, hasTriggeredComplete, onCountdownComplete, onCountingDown])
+  }, [targetTimeMs, hasTriggeredComplete, onCountdownComplete, onCountingDown])
 
   if (!showCountdown) {
     return null
