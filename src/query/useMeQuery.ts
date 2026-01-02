@@ -11,8 +11,6 @@ import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query
 
 const { NEXT_PUBLIC_BACKEND_URL, NEXT_PUBLIC_GA_ID } = env
 
-let isAnalyticsInitialized = false
-
 export async function fetchMe() {
   try {
     const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/me`
@@ -21,7 +19,6 @@ export async function fetchMe() {
   } catch (error) {
     if (error instanceof ProblemDetailsError && error.status === 401) {
       amplitude.reset()
-      return null
     }
     throw error
   }
@@ -41,8 +38,7 @@ export default function useMeQuery() {
   const userId = result.data?.id
 
   useEffect(() => {
-    if (userId && !isAnalyticsInitialized) {
-      isAnalyticsInitialized = true
+    if (userId) {
       amplitude.setUserId(userId)
       if (NEXT_PUBLIC_GA_ID) {
         sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: userId })

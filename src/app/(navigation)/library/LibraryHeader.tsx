@@ -132,7 +132,7 @@ export default function LibraryHeader({
         <div className="flex items-center gap-3">
           <button
             aria-label="library-menu"
-            className="p-1.5 -m-1.5 hover:bg-zinc-800 rounded-lg transition sm:hidden"
+            className="p-3 -mx-2 hover:bg-zinc-800 rounded-lg transition sm:hidden"
             onClick={openDrawer}
             type="button"
           >

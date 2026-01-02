@@ -88,6 +88,7 @@ const queryClient = new QueryClient({
       gcTime: ms('20 minutes'),
       retry: (failureCount, error) => shouldRetryError(error, failureCount),
       retryDelay: (attemptIndex) => Math.min(100 * 2 ** attemptIndex, 5000),
+      retryOnMount: false,
     },
   },
 })

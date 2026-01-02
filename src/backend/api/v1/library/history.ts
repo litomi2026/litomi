@@ -36,7 +36,6 @@ const libraryHistoryRoutes = new Hono<Env>()
 
 libraryHistoryRoutes.get('/', requireAuth, requireAdult, zProblemValidator('query', querySchema), async (c) => {
   const userId = c.get('userId')!
-
   const { cursor, limit } = c.req.valid('query')
   const decodedCursor = cursor ? decodeReadingHistoryCursor(cursor) : null
 

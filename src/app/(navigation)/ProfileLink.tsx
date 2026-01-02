@@ -13,9 +13,10 @@ type Props = {
 export default function ProfileLink({ className }: Readonly<Props>) {
   const { data: me } = useMeQuery()
   const name = me?.name ?? ''
+  const href = `/@${name}`
 
   return (
-    <SelectableLink className={className} href={`/@${name}`} icon={<User />} selectedIconStyle="fill">
+    <SelectableLink className={className} href={href} hrefMatch={href} icon={<User />} selectedIconStyle="fill">
       내 리토미
     </SelectableLink>
   )
