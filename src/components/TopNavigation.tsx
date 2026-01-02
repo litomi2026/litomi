@@ -5,7 +5,7 @@ import type { ReactNode } from 'react'
 import { Menu } from 'lucide-react'
 import Link from 'next/link'
 
-import IconLogo from './icons/IconLogo'
+import IconLogo from './icons/LogoLitomi'
 
 type Props = {
   children?: ReactNode

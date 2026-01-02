@@ -137,7 +137,7 @@ export default function NotificationList() {
             <FilterButton
               active={filter === NotificationFilter.NEW_MANGA}
               disabled={isMarkAsReadPending || isDeleteNotificationsPending}
-              icon={<Book className="w-5" />}
+              icon={<Book className="size-5 shrink-0" />}
               onClick={() => router.replace(`?filter=${NotificationFilter.NEW_MANGA}`)}
             >
               <span className="hidden sm:inline">신규</span>
@@ -193,7 +193,7 @@ export default function NotificationList() {
                 onClick={() => setSelectionMode(true)}
                 title="선택 모드"
               >
-                <Filter className="w-5" />
+                <Filter className="size-5 shrink-0" />
               </button>
             )}
           </div>
@@ -201,7 +201,7 @@ export default function NotificationList() {
       </div>
       {isLoading || isMeLoading ? (
         <div className="flex-1 flex items-center justify-center animate-fade-in [animation-delay:0.3s] [animation-fill-mode:both]">
-          <Loader2 className="w-10 text-zinc-600 animate-spin sm:w-12" />
+          <Loader2 className="size-10 shrink-0 text-zinc-600 animate-spin sm:size-12" />
         </div>
       ) : !me ? (
         <Unauthorized />
@@ -243,7 +243,7 @@ export default function NotificationList() {
             </div>
           ))}
           <div className="w-full py-4 flex justify-center" ref={loadMoreRef}>
-            {isFetchingNextPage && <Loader2 className="h-5 w-5 animate-spin text-zinc-600" />}
+            {isFetchingNextPage && <Loader2 className="size-5 shrink-0 animate-spin text-zinc-600" />}
           </div>
         </div>
       )}

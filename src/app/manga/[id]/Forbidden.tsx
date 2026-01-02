@@ -13,7 +13,7 @@ export default function Forbidden() {
             <div className="relative group">
               <div className="absolute -inset-4 bg-linear-to-r from-red-900/20 to-orange-900/20 rounded-full blur-xl group-hover:blur-2xl transition opacity-0 group-hover:opacity-100" />
               <div className="relative p-6 bg-zinc-900/50 backdrop-blur-sm rounded-full border border-zinc-800/50">
-                <Shield className="w-16 h-16 text-zinc-500 transition group-hover:text-zinc-400" />
+                <Shield className="size-16 shrink-0 text-zinc-500 transition group-hover:text-zinc-400" />
               </div>
             </div>
           </div>

@@ -91,9 +91,9 @@ export default function PasswordChangeForm({ userId }: Readonly<Props>) {
             type="button"
           >
             {showCurrentPassword ? (
-              <EyeOff className="w-5 text-zinc-400" />
+              <EyeOff className="size-5 shrink-0 text-zinc-400" />
             ) : (
-              <Eye className="w-5 text-zinc-400" />
+              <Eye className="size-5 shrink-0 text-zinc-400" />
             )}
           </button>
         </div>
@@ -123,7 +123,11 @@ export default function PasswordChangeForm({ userId }: Readonly<Props>) {
             tabIndex={-1}
             type="button"
           >
-            {showNewPassword ? <EyeOff className="w-5 text-zinc-400" /> : <Eye className="w-5 text-zinc-400" />}
+            {showNewPassword ? (
+              <EyeOff className="size-5 shrink-0 text-zinc-400" />
+            ) : (
+              <Eye className="size-5 shrink-0 text-zinc-400" />
+            )}
           </button>
         </div>
         {newPasswordError ? (
@@ -172,9 +176,9 @@ export default function PasswordChangeForm({ userId }: Readonly<Props>) {
             type="button"
           >
             {showConfirmPassword ? (
-              <EyeOff className="w-5 text-zinc-400" />
+              <EyeOff className="size-5 shrink-0 text-zinc-400" />
             ) : (
-              <Eye className="w-5 text-zinc-400" />
+              <Eye className="size-5 shrink-0 text-zinc-400" />
             )}
           </button>
         </div>

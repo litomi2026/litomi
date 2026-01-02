@@ -45,7 +45,7 @@ export default function PasskeyDeleteButton({ id, className, onCancel, open, onO
     <>
       {!isControlled && (
         <button aria-label="패스키 삭제" className={className} onClick={() => setIsOpen(true)} type="button">
-          <Trash2 className="w-5" />
+          <Trash2 className="size-5 shrink-0" />
         </button>
       )}
       <Modal
@@ -56,7 +56,7 @@ export default function PasskeyDeleteButton({ id, className, onCancel, open, onO
         <div className="p-5 relative">
           <div className="flex flex-col items-center text-center mb-5">
             <div className="mb-3 h-12 w-12 rounded-xl bg-zinc-800 flex items-center justify-center">
-              <Shield className="h-6 w-6 text-red-500" />
+              <Shield className="size-6 shrink-0 text-red-500" />
             </div>
             <h2 className="text-lg font-semibold text-zinc-100 mb-1">패스키 삭제</h2>
             <p className="text-sm text-zinc-500">

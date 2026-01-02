@@ -72,12 +72,12 @@ export default function ShareLibraryButton({ className = '', library }: Readonly
                 >
                   {isCopied ? (
                     <>
-                      <Check className="w-4 h-4" />
+                      <Check className="size-4 shrink-0" />
                       <span>완료</span>
                     </>
                   ) : (
                     <>
-                      <Copy className="w-4 h-4" />
+                      <Copy className="size-4 shrink-0" />
                       <span>복사</span>
                     </>
                   )}

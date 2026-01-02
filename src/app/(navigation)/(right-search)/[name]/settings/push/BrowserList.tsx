@@ -55,7 +55,7 @@ export default function BrowserList({ webPushes }: Props) {
   if (webPushes.length === 0) {
     return (
       <div className="text-center py-3 text-sm text-zinc-500">
-        <Monitor className="w-8 h-8 mx-auto mb-2 opacity-30" />
+        <Monitor className="size-8 shrink-0 mx-auto mb-2 opacity-30" />
         등록된 브라우저가 없어요
       </div>
     )
@@ -79,11 +79,11 @@ export default function BrowserList({ webPushes }: Props) {
             <div className="flex items-center gap-3.5">
               {isMobile ? (
                 <Smartphone
-                  className={`w-4 h-4 p-2 rounded-lg box-content ${isCurrentDevice ? 'text-brand bg-brand/10' : 'text-zinc-400 bg-zinc-800/50'}`}
+                  className={`size-4 p-2 rounded-lg box-content ${isCurrentDevice ? 'text-brand bg-brand/10' : 'text-zinc-400 bg-zinc-800/50'}`}
                 />
               ) : (
                 <Monitor
-                  className={`w-4 h-4 p-2 rounded-lg box-content ${isCurrentDevice ? 'text-brand bg-brand/10' : 'text-zinc-400 bg-zinc-800/50'}`}
+                  className={`size-4 p-2 rounded-lg box-content ${isCurrentDevice ? 'text-brand bg-brand/10' : 'text-zinc-400 bg-zinc-800/50'}`}
                 />
               )}
               <div>
@@ -115,7 +115,7 @@ export default function BrowserList({ webPushes }: Props) {
                 onClick={() => handleRemoveDevice(webPush.id)}
                 type="button"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="size-4 shrink-0" />
               </button>
             )}
           </div>

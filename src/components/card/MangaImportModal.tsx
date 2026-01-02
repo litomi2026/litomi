@@ -100,7 +100,7 @@ export default function MangaImportModal() {
             title="닫기"
             type="button"
           >
-            <X className="w-6 h-6 sm:w-5 sm:h-5" />
+            <X className="size-6 shrink-0 sm:size-5" />
           </button>
         </div>
         <div className="flex-1 overflow-y-auto p-4 space-y-4">

@@ -68,7 +68,7 @@ export default function ConditionInput({ index, initialCondition, isPending, onR
             onClick={onRemove}
             type="button"
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className="size-4 shrink-0" />
           </button>
         )}
       </div>

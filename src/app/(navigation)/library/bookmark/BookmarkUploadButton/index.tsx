@@ -80,7 +80,7 @@ export default function BookmarkUploadButton() {
         onClick={handleButtonClick}
         type="button"
       >
-        <Upload className="w-5" />
+        <Upload className="size-5 shrink-0" />
         <span className="hidden sm:block">북마크 업로드</span>
       </button>
       <Modal className="pointer-coarse:top-12" onClose={handleClose} open={isOpened} showCloseButton showDragButton>

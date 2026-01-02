@@ -103,7 +103,7 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
                 onClick={handleClose}
                 type="button"
               >
-                <X className="w-5" />
+                <X className="size-5 shrink-0" />
               </button>
               <h2 className="text-lg font-semibold">프로필 수정</h2>
             </div>

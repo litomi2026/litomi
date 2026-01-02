@@ -43,7 +43,7 @@ export default function UserProfileView({ user }: Readonly<Props>) {
               {user.imageURL ? (
                 <img alt="Profile Image" className="object-cover bg-zinc-900 aspect-square w-32" src={user.imageURL} />
               ) : (
-                <User className="w-2/3 text-zinc-700" />
+                <User className="size-2/3 shrink-0 text-zinc-700" />
               )}
             </div>
             <div className="ml-4">

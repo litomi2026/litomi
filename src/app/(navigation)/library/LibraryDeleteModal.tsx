@@ -72,7 +72,7 @@ export default function LibraryDeleteModal({ libraryId, libraryName, itemCount, 
       <div className="p-5 relative">
         <div className="flex flex-col items-center text-center mb-5">
           <div className="mb-3 h-12 w-12 rounded-xl bg-zinc-800 flex items-center justify-center">
-            <Trash2 className="h-6 w-6 text-red-500" />
+            <Trash2 className="size-6 shrink-0 text-red-500" />
           </div>
           <h2 className="text-lg font-semibold text-zinc-100 mb-1">서재 삭제</h2>
           <p className="text-sm text-zinc-400 mb-3 break-all">"{libraryName}" 서재를 삭제할까요?</p>

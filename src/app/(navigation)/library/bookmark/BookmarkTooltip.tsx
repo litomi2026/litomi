@@ -7,7 +7,7 @@ export default function BookmarkTooltip() {
     <TooltipPopover position="bottom-left" type="tooltip">
       <div className="flex items-center gap-1">
         <p className="text-xs md:text-sm">북마크 반영이 안 돼요!</p>
-        <Info className="w-3 md:w-4" />
+        <Info className="size-3 shrink-0 md:size-4" />
       </div>
       <div className="rounded-xl border-2 border-zinc-700 bg-background min-w-3xs p-3 text-sm">
         <p>

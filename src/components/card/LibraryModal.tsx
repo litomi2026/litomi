@@ -103,7 +103,7 @@ export default function LibraryModal() {
             title="닫기"
             type="button"
           >
-            <X className="w-6 h-6 sm:w-5 sm:h-5" />
+            <X className="size-6 shrink-0 sm:size-5" />
           </button>
         </div>
         <div className="flex flex-col gap-4 flex-1 overflow-y-auto p-4">
@@ -117,7 +117,7 @@ export default function LibraryModal() {
                 onClick={handleClose}
                 prefetch={false}
               >
-                <Plus className="w-5" />
+                <Plus className="size-5 shrink-0" />
                 <span>서재 만들기</span>
               </Link>
             </div>

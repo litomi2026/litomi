@@ -11,7 +11,7 @@ export default function SourceTooltip({ disabled }: Readonly<Props>) {
     <TooltipPopover disabled={disabled} position="bottom" type="tooltip">
       <div aria-disabled={disabled} className="flex items-center gap-1 aria-disabled:text-zinc-600">
         <p className="text-xs md:text-sm">이미지가 안 보여요!</p>
-        <Info className="w-3 md:w-4" />
+        <Info className="size-3 shrink-0 md:size-4" />
       </div>
       <HiyobiTooltip />
     </TooltipPopover>

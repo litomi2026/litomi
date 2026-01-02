@@ -56,7 +56,7 @@ export default function SuggestionDropdown<T extends SuggestionItem = Suggestion
         {header}
         {isLoading && suggestions.length === 0 && (
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="w-5 text-zinc-400 animate-spin" />
+            <Loader2 className="size-5 text-zinc-400 animate-spin" />
           </div>
         )}
         <div aria-busy={isFetching} className="transition aria-busy:opacity-60 text-sm font-medium">

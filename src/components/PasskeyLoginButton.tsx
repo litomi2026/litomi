@@ -73,7 +73,7 @@ export default function PasskeyLoginButton({ loginId, disabled, onSuccess, turns
       title="패스키로 로그인"
       type="button"
     >
-      {isPending ? <Loader2 className="w-5 animate-spin" /> : <Fingerprint className="w-5" />}
+      {isPending ? <Loader2 className="size-5 shrink-0 animate-spin" /> : <Fingerprint className="size-5 shrink-0" />}
       <span className="font-medium">패스키로 로그인</span>
     </button>
   )

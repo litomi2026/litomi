@@ -287,7 +287,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
           disabled={isSearching}
           type="submit"
         >
-          {isSearching ? <Loader2 className="w-5 mx-1 animate-spin" /> : <span className="block min-w-7">검색</span>}
+          {isSearching ? <Loader2 className="size-5 shrink-0 mx-1 animate-spin" /> : <span className="block min-w-7">검색</span>}
         </button>
       </form>
       <SuggestionDropdown

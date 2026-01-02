@@ -142,7 +142,7 @@ export default function PostCreationForm({
                 {buttonText}
                 {isPending && (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <Loader2 className="w-4 text-zinc-900 animate-spin" />
+                    <Loader2 className="size-4 text-zinc-900 animate-spin" />
                   </div>
                 )}
               </button>

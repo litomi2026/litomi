@@ -61,7 +61,7 @@ export default function AccountDeletionForm({ loginId }: Readonly<Props>) {
         <div className="space-y-6">
           <div className="bg-red-950/20 border-2 border-red-900/50 rounded-xl p-6">
             <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <AlertTriangle className="w-5 text-red-500" />
+              <AlertTriangle className="size-5 shrink-0 text-red-500" />
               계정 삭제 시 다음 내용이 영구 삭제돼요
             </h2>
             <ul className="space-y-3">
@@ -184,12 +184,12 @@ export default function AccountDeletionForm({ loginId }: Readonly<Props>) {
             >
               {isPending ? (
                 <>
-                  <Loader2 className="w-4 animate-spin" />
+                  <Loader2 className="size-4 animate-spin" />
                   삭제 중...
                 </>
               ) : (
                 <>
-                  <Trash2 className="w-4" />
+                  <Trash2 className="size-4 shrink-0" />
                   계정 영구 삭제
                 </>
               )}

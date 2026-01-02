@@ -78,7 +78,7 @@ function LanguageBadgeContent({ language }: { language: string }) {
     <>
       <Loader2
         aria-hidden={!pending}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition aria-hidden:opacity-0 text-foreground p-0.5 w-5 h-5 animate-spin"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition aria-hidden:opacity-0 text-foreground p-0.5 size-5 shrink-0 animate-spin"
       />
       <span aria-hidden={pending} className="flex items-center gap-1 aria-hidden:opacity-0 transition">
         <span className="text-base leading-none [&>svg]:size-[1em]">{flag}</span>

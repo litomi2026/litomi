@@ -130,7 +130,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
         title="서재 만들기"
         type="button"
       >
-        <Plus className="w-5 h-5" />
+        <Plus className="size-5 shrink-0" />
         <span className="font-medium sm:hidden">서재 만들기</span>
       </button>
       <Dialog onClose={handleClose} open={isModalOpen}>
@@ -267,7 +267,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
               disabled={isPending}
               type="submit"
             >
-              {isPending ? <Loader2 className="w-5 animate-spin" /> : <Plus className="w-5" />}
+              {isPending ? <Loader2 className="size-5 shrink-0 animate-spin" /> : <Plus className="size-5 shrink-0" />}
               <span>생성하기</span>
             </button>
           </div>

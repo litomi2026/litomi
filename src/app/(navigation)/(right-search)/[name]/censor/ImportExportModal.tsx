@@ -151,7 +151,7 @@ function ImportExportModal({ open, onClose, censorships }: Readonly<Props>) {
             onClick={onClose}
             type="button"
           >
-            <X className="w-5 text-zinc-400" />
+            <X className="size-5 text-zinc-400" />
           </button>
         </div>
 
@@ -247,7 +247,7 @@ function ImportExportModal({ open, onClose, censorships }: Readonly<Props>) {
                 </>
               ) : (
                 <>
-                  <Upload className="w-5 h-5" />
+                  <Upload className="size-5" />
                   <span>가져오기</span>
                 </>
               )}

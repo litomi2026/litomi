@@ -31,7 +31,7 @@ export default function PostGeolocationButton({ disabled, onLocationChange }: Re
   return (
     <PostBaseButton disabled={disabled} onClick={handleClick}>
       <input className="hidden" disabled={disabled} />
-      <MapPin className="w-5" />
+      <MapPin className="size-5 shrink-0" />
     </PostBaseButton>
   )
 }

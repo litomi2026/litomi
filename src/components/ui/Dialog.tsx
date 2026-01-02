@@ -218,7 +218,7 @@ export default function Dialog({
     >
       {showCloseButton && (
         <button aria-label={closeButtonLabel} onClick={closeModal} type="button">
-          <X className="absolute right-2 top-2 z-60 w-8 cursor-pointer rounded-full bg-zinc-700/50 p-1" />
+          <X className="absolute right-2 top-2 z-60 size-8 cursor-pointer rounded-full bg-zinc-700/50 p-1" />
         </button>
       )}
 

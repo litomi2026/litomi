@@ -78,7 +78,7 @@ export default function KeywordSettingsForm({ initialCriteria: criteria }: Props
               className="inline-flex items-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 px-3 py-2 sm:px-4 text-xs sm:text-sm font-medium text-zinc-100 focus:outline-none focus:ring-2 focus:ring-brand/50 focus:ring-offset-2 transition-all self-start sm:self-auto"
               onClick={handleCreateClick}
             >
-              <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />새 조건
+              <Plus className="size-3.5 shrink-0 sm:size-4" />새 조건
             </button>
           </div>
           <div className="flex flex-col gap-2 sm:gap-3">

@@ -209,7 +209,7 @@ export default function CensorshipCreationBar() {
             title="도움말"
             type="button"
           >
-            <Info className="w-4" />
+            <Info className="size-4 shrink-0" />
           </button>
           <button
             className="p-2 rounded hover:bg-zinc-800 disabled:bg-transparent transition"
@@ -217,7 +217,7 @@ export default function CensorshipCreationBar() {
             title="검열 추가 (Enter)"
             type="submit"
           >
-            {isSubmitting ? <Loader2 className="w-4 animate-spin" /> : '등록'}
+            {isSubmitting ? <Loader2 className="size-4 shrink-0 animate-spin" /> : '등록'}
           </button>
         </div>
       </form>
@@ -248,7 +248,7 @@ export default function CensorshipCreationBar() {
                 onClick={() => setShowHelp(false)}
                 type="button"
               >
-                <X className="w-3" />
+                <X className="size-3 shrink-0" />
               </button>
             </div>
             <div className="space-y-2 text-zinc-400">

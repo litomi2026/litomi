@@ -20,7 +20,7 @@ export default function PublishButton({ className = '' }: Readonly<Props>) {
         [&_button]:rounded-full [&_button]:disabled:opacity-50 [&_button]:transition [&_button]:border-2 [&_button]:border-zinc-600 ${className}`}
       >
         <button className="p-3 2xl:hidden" onClick={() => setIsOpened(true)}>
-          <Pen aria-label="글쓰기" className="w-6 text-foreground" />
+          <Pen aria-label="글쓰기" className="size-6 shrink-0 text-foreground" />
         </button>
         <button className="w-11/12 p-4 hidden 2xl:block" onClick={() => setIsOpened(true)}>
           게시하기
