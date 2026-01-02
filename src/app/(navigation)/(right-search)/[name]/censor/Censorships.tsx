@@ -1,14 +1,11 @@
 'use client'
 
 import { useQueryClient } from '@tanstack/react-query'
-import { MoreHorizontal } from 'lucide-react'
+import { Filter, Loader2, MoreHorizontal, Search } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { useCallback, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
-import IconFilter from '@/components/icons/IconFilter'
-import IconSearch from '@/components/icons/IconSearch'
-import IconSpinner from '@/components/icons/IconSpinner'
 import CustomSelect from '@/components/ui/CustomSelect'
 import { QueryKeys } from '@/constants/query'
 import { CensorshipKey } from '@/database/enum'
@@ -110,7 +107,7 @@ export default function Censorships() {
           {/* Search and Filter - Always visible */}
           <div className="flex gap-2 my-4">
             <div className="flex-1 relative">
-              <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 text-zinc-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 text-zinc-400" />
               <input
                 className="w-full pl-10 pr-4 py-2 bg-zinc-800 rounded-lg border-2 focus:border-zinc-600 outline-none transition disabled:opacity-50"
                 disabled={isLoading || isDeleting}
@@ -152,7 +149,7 @@ export default function Censorships() {
                   disabled={isDeleting}
                   onClick={handleBulkDelete}
                 >
-                  {isDeleting ? <IconSpinner className="w-3" /> : '삭제'}
+                  {isDeleting ? <Loader2 className="w-3 animate-spin" /> : '삭제'}
                 </button>
               </div>
             </div>
@@ -174,7 +171,7 @@ export default function Censorships() {
           </div>
         ) : filteredCensorships.length === 0 ? (
           <div className="text-center py-12">
-            <IconFilter className="w-12 h-12 mx-auto mb-4 text-zinc-600" />
+            <Filter className="w-12 h-12 mx-auto mb-4 text-zinc-600" />
             <p className="text-zinc-400">
               {searchQuery || filterKey !== null ? '검색 결과가 없어요' : '아직 검열 규칙이 없어요'}
             </p>

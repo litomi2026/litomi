@@ -1,9 +1,7 @@
 import dayjs from 'dayjs'
-import { Calendar } from 'lucide-react'
+import { Calendar, User } from 'lucide-react'
 import Image from 'next/image'
 import { Suspense } from 'react'
-
-import IconProfile from '@/components/icons/IconProfile'
 
 import MyPageButtons from './MyPageButtons'
 
@@ -45,7 +43,7 @@ export default function UserProfileView({ user }: Readonly<Props>) {
               {user.imageURL ? (
                 <img alt="Profile Image" className="object-cover bg-zinc-900 aspect-square w-32" src={user.imageURL} />
               ) : (
-                <IconProfile className="w-2/3 text-zinc-700" />
+                <User className="w-2/3 text-zinc-700" />
               )}
             </div>
             <div className="ml-4">

@@ -1,5 +1,4 @@
-import IconKey from '@/components/icons/IconKey'
-import IconShield from '@/components/icons/IconShield'
+import { Key, Shield } from 'lucide-react'
 
 import { Passkey } from './common'
 import PasskeyDeleteButton from './PasskeyDeleteButton'
@@ -34,7 +33,7 @@ export default function PasskeyCard({ passkey }: Readonly<Props>) {
               {label}
               {deviceType === 'platform' && (
                 <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand/10 text-xs">
-                  <IconShield className="size-3 text-brand" />
+                  <Shield className="size-3 text-brand" />
                   <span className="text-brand font-medium">보안</span>
                 </span>
               )}
@@ -73,7 +72,7 @@ export default function PasskeyCard({ passkey }: Readonly<Props>) {
               </span>
             )}
             <span className="hidden sm:flex items-center gap-1">
-              <IconKey className="size-3" />
+              <Key className="size-3" />
               {credentialId}
             </span>
           </div>

@@ -1,8 +1,7 @@
 'use client'
 
+import { Trash2 } from 'lucide-react'
 import { useState } from 'react'
-
-import IconTrash from '@/components/icons/IconTrash'
 
 import PasskeyDeleteButton from './PasskeyDeleteButton'
 
@@ -47,7 +46,7 @@ export default function PasskeyMobileDeleteWrapper({ children, id }: Readonly<Pr
     <div className="relative overflow-hidden touch-manipulation">
       <div className="absolute inset-y-px right-px w-24 rounded-e-2xl bg-red-800 flex items-center justify-center sm:hidden">
         <button aria-label="패스키 삭제" className="p-4" onClick={() => setShowConfirmModal(true)} type="button">
-          <IconTrash className="w-5" />
+          <Trash2 className="w-5" />
         </button>
       </div>
       <div

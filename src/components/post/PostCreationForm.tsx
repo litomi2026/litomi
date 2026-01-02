@@ -1,6 +1,7 @@
 'use client'
 
 import { useQueryClient } from '@tanstack/react-query'
+import { Loader2 } from 'lucide-react'
 import { useState } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
 import { toast } from 'sonner'
@@ -13,7 +14,6 @@ import useServerAction, { getFormField } from '@/hook/useServerAction'
 import { showLoginRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
 
-import IconSpinner from '../icons/IconSpinner'
 import Squircle from '../ui/Squircle'
 import PostGeolocationButton from './button/PostGeolocationButton'
 
@@ -142,7 +142,7 @@ export default function PostCreationForm({
                 {buttonText}
                 {isPending && (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <IconSpinner className="w-4 text-zinc-900" />
+                    <Loader2 className="w-4 text-zinc-900 animate-spin" />
                   </div>
                 )}
               </button>

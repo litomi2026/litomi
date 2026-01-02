@@ -1,6 +1,7 @@
 'use client'
 
-import IconTrash from '@/components/icons/IconTrash'
+import { Trash2 } from 'lucide-react'
+
 import CustomSelect from '@/components/ui/CustomSelect'
 import { NotificationConditionType, NotificationConditionTypeNames } from '@/database/enum'
 
@@ -67,7 +68,7 @@ export default function ConditionInput({ index, initialCondition, isPending, onR
             onClick={onRemove}
             type="button"
           >
-            <IconTrash className="h-4 w-4" />
+            <Trash2 className="h-4 w-4" />
           </button>
         )}
       </div>

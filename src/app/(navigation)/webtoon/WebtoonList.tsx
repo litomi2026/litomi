@@ -1,12 +1,12 @@
 'use client'
 
 import { useInfiniteQuery } from '@tanstack/react-query'
+import { Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { List, RowComponentProps, useListRef } from 'react-window'
 
-import IconSpinner from '@/components/icons/IconSpinner'
 import CustomSelect from '@/components/ui/CustomSelect'
 import { QueryKeys } from '@/constants/query'
 import { WebtoonList, WebtoonListItem } from '@/crawler/webtoon/types'
@@ -145,7 +145,7 @@ export default function WebtoonListPage() {
       <main className="flex-1 max-w-6xl mx-auto w-full overflow-hidden">
         {isLoading && (
           <div className="flex items-center justify-center h-full">
-            <IconSpinner className="size-8" />
+            <Loader2 className="size-8 animate-spin" />
           </div>
         )}
 
@@ -312,7 +312,7 @@ function WebtoonRow({
     return (
       <div className="flex flex-col justify-center items-center gap-2 px-3" style={style}>
         {isFetchingNextPage ? (
-          <IconSpinner className="size-6" />
+          <Loader2 className="size-6 animate-spin" />
         ) : hasError ? (
           <button
             className="text-sm text-zinc-400 hover:text-zinc-200 transition-colors px-4 py-2"

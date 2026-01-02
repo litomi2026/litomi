@@ -1,11 +1,10 @@
 'use client'
 
+import { Eye, EyeOff } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 
-import IconEye from '@/components/icons/IconEye'
-import IconEyeOff from '@/components/icons/IconEyeOff'
 import { CensorshipLevel } from '@/database/enum'
 import useMatchedCensorships from '@/hook/useCensorshipCheck'
 import useLocaleFromCookie from '@/hook/useLocaleFromCookie'
@@ -66,7 +65,7 @@ export default function MangaCardCensorship({ manga }: Props) {
         title={isBlurDisabled ? '검열 적용' : '검열 임시 해제'}
         type="button"
       >
-        {isBlurDisabled ? <IconEye className="size-5" /> : <IconEyeOff className="size-5" />}
+        {isBlurDisabled ? <Eye className="size-5" /> : <EyeOff className="size-5" />}
       </button>
       <Link
         aria-hidden={isBlurDisabled}

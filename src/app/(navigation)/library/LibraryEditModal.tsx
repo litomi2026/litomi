@@ -1,14 +1,13 @@
 'use client'
 
 import { type InfiniteData, useQueryClient } from '@tanstack/react-query'
-import { Check } from 'lucide-react'
+import { Check, Loader2 } from 'lucide-react'
 import { useRef } from 'react'
 import { toast } from 'sonner'
 
 import type { GETLibraryResponse } from '@/backend/api/v1/library/get'
 import type { GETV1LibraryListResponse } from '@/backend/api/v1/library/list'
 
-import IconSpinner from '@/components/icons/IconSpinner'
 import Dialog from '@/components/ui/Dialog'
 import DialogHeader from '@/components/ui/DialogHeader'
 import Toggle from '@/components/ui/Toggle'
@@ -257,7 +256,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
             disabled={isPending}
             type="submit"
           >
-            {isPending ? <IconSpinner className="size-4" /> : <Check className="size-4" />}
+            {isPending ? <Loader2 className="size-4 animate-spin" /> : <Check className="size-4" />}
             <span>수정하기</span>
           </button>
         </div>

@@ -1,10 +1,9 @@
 'use client'
 
-import { Bookmark, Check, Clock, Download, Library, ShieldCheck, Star } from 'lucide-react'
+import { Bookmark, Check, Clock, Download, Library, Loader2, ShieldCheck, Star } from 'lucide-react'
 import { type ReactNode, useState, useTransition } from 'react'
 import { toast } from 'sonner'
 
-import IconSpinner from '@/components/icons/IconSpinner'
 import { downloadBlob } from '@/utils/download'
 
 import { type DataCounts, exportUserData } from './actions'
@@ -138,7 +137,7 @@ export default function DataExportSectionClient({ counts }: Readonly<Props>) {
         disabled={isPending}
         type="submit"
       >
-        {isPending ? <IconSpinner className="size-4" /> : <Download className="size-4" />}
+        {isPending ? <Loader2 className="size-4 animate-spin" /> : <Download className="size-4" />}
         다운로드
       </button>
     </form>

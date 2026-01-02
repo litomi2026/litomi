@@ -1,11 +1,9 @@
 'use client'
 
-import { X } from 'lucide-react'
+import { Loader2, Plus, X } from 'lucide-react'
 import { useEffect, useId, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-import IconPlus from '@/components/icons/IconPlus'
-import IconSpinner from '@/components/icons/IconSpinner'
 import Modal from '@/components/ui/Modal'
 import useServerAction, { getFieldError } from '@/hook/useServerAction'
 
@@ -188,7 +186,7 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
               onClick={handleAddCondition}
               type="button"
             >
-              <IconPlus className="h-4 w-4" />
+              <Plus className="h-4 w-4" />
               조건 추가
             </button>
 
@@ -220,7 +218,7 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
               disabled={isPending}
               type="submit"
             >
-              {isPending ? <IconSpinner className="w-5 h-5" /> : editingCriteria ? '저장' : '만들기'}
+              {isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : editingCriteria ? '저장' : '만들기'}
             </button>
           </div>
         </div>

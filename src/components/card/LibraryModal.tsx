@@ -1,7 +1,7 @@
 'use client'
 
 import { useQueryClient } from '@tanstack/react-query'
-import { X } from 'lucide-react'
+import { Loader2, Plus, X } from 'lucide-react'
 import Link from 'next/link'
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
@@ -11,8 +11,6 @@ import { addMangaToLibraries } from '@/app/(navigation)/library/action-library-i
 import { QueryKeys } from '@/constants/query'
 import useServerAction from '@/hook/useServerAction'
 
-import IconPlus from '../icons/IconPlus'
-import IconSpinner from '../icons/IconSpinner'
 import Modal from '../ui/Modal'
 import useLibrariesQuery from './useLibrariesQuery'
 
@@ -119,7 +117,7 @@ export default function LibraryModal() {
                 onClick={handleClose}
                 prefetch={false}
               >
-                <IconPlus className="w-5" />
+                <Plus className="w-5" />
                 <span>서재 만들기</span>
               </Link>
             </div>
@@ -158,7 +156,7 @@ export default function LibraryModal() {
               disabled={isPending || selectedLibraryIds.size === 0}
               type="submit"
             >
-              {isPending ? <IconSpinner className="size-5" /> : <IconPlus className="size-5" />}
+              {isPending ? <Loader2 className="size-5 animate-spin" /> : <Plus className="size-5" />}
               <span>
                 {selectedLibraryIds.size > 0 ? `${selectedLibraryIds.size}개 서재에 추가` : '서재를 선택해 주세요'}
               </span>

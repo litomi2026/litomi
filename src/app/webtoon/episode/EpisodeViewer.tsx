@@ -1,10 +1,10 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
+import { Loader2 } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 
 import ImageViewer from '@/app/manga/[id]/ImageViewer/ImageViewer'
-import IconSpinner from '@/components/icons/IconSpinner'
 import { QueryKeys } from '@/constants/query'
 import { WebtoonEpisode } from '@/crawler/webtoon/types'
 import { Manga } from '@/types/manga'
@@ -26,7 +26,7 @@ export default function EpisodeViewer() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-dvh">
-        <IconSpinner className="size-8" />
+        <Loader2 className="size-8 animate-spin" />
       </div>
     )
   }

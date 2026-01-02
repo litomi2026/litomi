@@ -1,14 +1,13 @@
 'use client'
 
 import { type InfiniteData, useQueryClient } from '@tanstack/react-query'
+import { Loader2, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
 import type { GETLibraryResponse } from '@/backend/api/v1/library/get'
 import type { GETV1LibraryListResponse } from '@/backend/api/v1/library/list'
 
-import IconSpinner from '@/components/icons/IconSpinner'
-import IconTrash from '@/components/icons/IconTrash'
 import Modal from '@/components/ui/Modal'
 import { QueryKeys } from '@/constants/query'
 import useServerAction from '@/hook/useServerAction'
@@ -73,7 +72,7 @@ export default function LibraryDeleteModal({ libraryId, libraryName, itemCount, 
       <div className="p-5 relative">
         <div className="flex flex-col items-center text-center mb-5">
           <div className="mb-3 h-12 w-12 rounded-xl bg-zinc-800 flex items-center justify-center">
-            <IconTrash className="h-6 w-6 text-red-500" />
+            <Trash2 className="h-6 w-6 text-red-500" />
           </div>
           <h2 className="text-lg font-semibold text-zinc-100 mb-1">서재 삭제</h2>
           <p className="text-sm text-zinc-400 mb-3 break-all">"{libraryName}" 서재를 삭제할까요?</p>
@@ -92,7 +91,7 @@ export default function LibraryDeleteModal({ libraryId, libraryName, itemCount, 
             onClick={() => dispatchAction(libraryId)}
             type="button"
           >
-            {isPending ? <IconSpinner className="size-4" /> : <IconTrash className="size-4" />} 삭제
+            {isPending ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />} 삭제
           </button>
           <button
             className="flex-1 p-2 rounded-lg bg-zinc-800 text-zinc-300 font-medium 

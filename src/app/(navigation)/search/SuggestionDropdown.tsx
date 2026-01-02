@@ -1,6 +1,5 @@
+import { Loader2 } from 'lucide-react'
 import { ReactNode, RefObject, useEffect } from 'react'
-
-import IconSpinner from '@/components/icons/IconSpinner'
 
 export type SuggestionItem = {
   value: string
@@ -57,7 +56,7 @@ export default function SuggestionDropdown<T extends SuggestionItem = Suggestion
         {header}
         {isLoading && suggestions.length === 0 && (
           <div className="flex items-center justify-center py-8">
-            <IconSpinner className="w-5 text-zinc-400" />
+            <Loader2 className="w-5 text-zinc-400 animate-spin" />
           </div>
         )}
         <div aria-busy={isFetching} className="transition aria-busy:opacity-60 text-sm font-medium">

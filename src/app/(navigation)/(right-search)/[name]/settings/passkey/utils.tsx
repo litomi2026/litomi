@@ -1,14 +1,5 @@
 import { AuthenticatorTransportFuture } from '@simplewebauthn/server'
-import { Fingerprint, SquareAsterisk } from 'lucide-react'
-
-import IconBluetooth from '@/components/icons/IconBluetooth'
-import IconCable from '@/components/icons/IconCable'
-import IconChip from '@/components/icons/IconChip'
-import IconKey from '@/components/icons/IconKey'
-import IconNFC from '@/components/icons/IconNFC'
-import IconSmartCard from '@/components/icons/IconSmartCard'
-import IconSmartphone from '@/components/icons/IconSmartphone'
-import IconUSB from '@/components/icons/IconUSB'
+import { Bluetooth, Cable, Cpu, CreditCard, Fingerprint, Key, Nfc, Smartphone, SquareAsterisk, Usb } from 'lucide-react'
 
 export function generateFakeCredentials(loginId: string): Array<{
   id: string
@@ -63,19 +54,19 @@ export function getDeviceInfo(deviceType: string) {
   switch (deviceType) {
     case 'cross-platform':
       return {
-        icon: <IconUSB className="size-6 text-brand" />,
+        icon: <Usb className="size-6 text-brand" />,
         label: '외부 보안키',
         bgColor: 'bg-brand/10',
       }
     case 'platform':
       return {
-        icon: <IconSmartphone className="size-6 text-brand" />,
+        icon: <Smartphone className="size-6 text-brand" />,
         label: '내장 인증',
         bgColor: 'bg-brand/10',
       }
     default:
       return {
-        icon: <IconKey className="size-6 text-zinc-400" />,
+        icon: <Key className="size-6 text-zinc-400" />,
         label: '알 수 없는 인증',
         bgColor: 'bg-zinc-800',
       }
@@ -117,19 +108,19 @@ export function getRelativeTime(date: Date): string {
 export function getTransportIcon(transport: AuthenticatorTransportFuture) {
   switch (transport) {
     case 'ble':
-      return <IconBluetooth className="size-3" />
+      return <Bluetooth className="size-3" />
     case 'cable':
-      return <IconCable className="size-3" />
+      return <Cable className="size-3" />
     case 'hybrid':
-      return <IconSmartphone className="size-3" />
+      return <Smartphone className="size-3" />
     case 'internal':
-      return <IconChip className="size-3" />
+      return <Cpu className="size-3" />
     case 'nfc':
-      return <IconNFC className="size-3" />
+      return <Nfc className="size-3" />
     case 'smart-card':
-      return <IconSmartCard className="size-3" />
+      return <CreditCard className="size-3" />
     case 'usb':
-      return <IconUSB className="size-3" />
+      return <Usb className="size-3" />
     default:
       return null
   }
@@ -174,7 +165,7 @@ export function getUserVerificationMethod(deviceType: string) {
       }
     default:
       return {
-        icon: <IconKey className="size-3" />,
+        icon: <Key className="size-3" />,
         label: '알 수 없는 인증',
       }
   }

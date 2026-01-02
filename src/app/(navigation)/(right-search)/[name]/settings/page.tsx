@@ -1,11 +1,13 @@
 import { ErrorBoundary } from '@suspensive/react'
 import {
+  Bell,
   CalendarMinus,
   CaseSensitive,
   Download,
   Fingerprint,
   Key,
   Languages,
+  Loader2,
   Palette,
   RectangleEllipsis,
   ShieldCheck,
@@ -13,8 +15,6 @@ import {
 } from 'lucide-react'
 import { Suspense } from 'react'
 
-import IconBell from '@/components/icons/IconBell'
-import IconSpinner from '@/components/icons/IconSpinner'
 import CollapsibleSection from '@/components/ui/CollapsibleSection'
 import { getUserIdFromCookie } from '@/utils/cookie'
 import { getUsernameFromParam } from '@/utils/param'
@@ -97,7 +97,7 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
       </CollapsibleSection>
       <CollapsibleSection
         description="새로운 업데이트를 실시간으로 받아보세요"
-        icon={<IconBell className="size-5 shrink-0 text-brand" />}
+        icon={<Bell className="size-5 shrink-0 text-brand" />}
         id="push"
         title="푸시 알림"
       >
@@ -195,7 +195,7 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
 function LoadingFallback() {
   return (
     <div className="animate-fade-in [animation-delay:0.5s] [animation-fill-mode:both]">
-      <IconSpinner className="size-5 mx-auto" />
+      <Loader2 className="size-5 mx-auto animate-spin" />
     </div>
   )
 }

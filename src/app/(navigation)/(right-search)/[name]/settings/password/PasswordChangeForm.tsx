@@ -1,12 +1,10 @@
 'use client'
 
+import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { ChangeEvent, FormEvent, useCallback, useState } from 'react'
 import { toast } from 'sonner'
 
-import IconEye from '@/components/icons/IconEye'
-import IconEyeOff from '@/components/icons/IconEyeOff'
-import IconSpinner from '@/components/icons/IconSpinner'
 import { PASSWORD_PATTERN } from '@/constants/policy'
 import useServerAction, { getFieldError, getFormField } from '@/hook/useServerAction'
 
@@ -93,9 +91,9 @@ export default function PasswordChangeForm({ userId }: Readonly<Props>) {
             type="button"
           >
             {showCurrentPassword ? (
-              <IconEyeOff className="w-5 text-zinc-400" />
+              <EyeOff className="w-5 text-zinc-400" />
             ) : (
-              <IconEye className="w-5 text-zinc-400" />
+              <Eye className="w-5 text-zinc-400" />
             )}
           </button>
         </div>
@@ -125,7 +123,7 @@ export default function PasswordChangeForm({ userId }: Readonly<Props>) {
             tabIndex={-1}
             type="button"
           >
-            {showNewPassword ? <IconEyeOff className="w-5 text-zinc-400" /> : <IconEye className="w-5 text-zinc-400" />}
+            {showNewPassword ? <EyeOff className="w-5 text-zinc-400" /> : <Eye className="w-5 text-zinc-400" />}
           </button>
         </div>
         {newPasswordError ? (
@@ -174,9 +172,9 @@ export default function PasswordChangeForm({ userId }: Readonly<Props>) {
             type="button"
           >
             {showConfirmPassword ? (
-              <IconEyeOff className="w-5 text-zinc-400" />
+              <EyeOff className="w-5 text-zinc-400" />
             ) : (
-              <IconEye className="w-5 text-zinc-400" />
+              <Eye className="w-5 text-zinc-400" />
             )}
           </button>
         </div>
@@ -193,7 +191,7 @@ export default function PasswordChangeForm({ userId }: Readonly<Props>) {
           className="p-2 flex justify-center bg-zinc-900 rounded-xl hover:bg-zinc-800 transition active:bg-zinc-900 
           group-disabled:bg-zinc-800 group-disabled:cursor-not-allowed"
         >
-          {isPending ? <IconSpinner className="text-zinc-500 size-6 p-0.5" /> : '비밀번호 변경'}
+          {isPending ? <Loader2 className="text-zinc-500 size-6 p-0.5 animate-spin" /> : '비밀번호 변경'}
         </div>
       </button>
     </form>

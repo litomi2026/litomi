@@ -1,11 +1,10 @@
 'use client'
 
 import dayjs from 'dayjs'
-import { Monitor, Smartphone, Tablet, Trash2 } from 'lucide-react'
+import { Loader2, Monitor, Smartphone, Tablet, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-import IconSpinner from '@/components/icons/IconSpinner'
 import useServerAction from '@/hook/useServerAction'
 import { formatDistanceToNow } from '@/utils/format/date'
 
@@ -70,7 +69,7 @@ export default function TrustedBrowsers({ trustedBrowsers }: Props) {
               disabled={isRevokingAll}
               type="submit"
             >
-              {isRevokingAll ? <IconSpinner className="size-4" /> : '모두 제거'}
+              {isRevokingAll ? <Loader2 className="size-4 animate-spin" /> : '모두 제거'}
             </button>
           </form>
         )}
@@ -132,7 +131,7 @@ export default function TrustedBrowsers({ trustedBrowsers }: Props) {
                     title="제거"
                     type="submit"
                   >
-                    {isRevokingSingle ? <IconSpinner className="size-4" /> : <Trash2 className="size-4" />}
+                    {isRevokingSingle ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
                   </button>
                 </form>
               </div>

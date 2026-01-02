@@ -1,10 +1,8 @@
 'use client'
 
+import { Loader2, Search } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useTransition } from 'react'
-
-import IconSearch from '../icons/IconSearch'
-import IconSpinner from '../icons/IconSpinner'
 
 type Props = {
   mangaId: number
@@ -35,7 +33,7 @@ export default function SearchFromHereButton({ mangaId, className = '' }: Readon
       title={isDefaultSort ? '이 작품부터 검색 결과를 다시 불러와요' : '기본순 정렬일 때만 사용할 수 있어요'}
       type="button"
     >
-      {isPending ? <IconSpinner className="w-4" /> : <IconSearch className="w-4 shrink-0" />}
+      {isPending ? <Loader2 className="w-4 animate-spin" /> : <Search className="w-4 shrink-0" />}
       <span className="text-sm font-medium whitespace-nowrap">
         <span>여기부터</span>
         <span className="hidden sm:inline"> 재검색</span>

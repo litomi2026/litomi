@@ -1,13 +1,11 @@
 'use client'
 
 import { useQueryClient } from '@tanstack/react-query'
-import { AlertTriangle, Check, Trash2 } from 'lucide-react'
+import { AlertTriangle, Check, Loader2, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-import IconSpinner from '@/components/icons/IconSpinner'
-import IconTrash from '@/components/icons/IconTrash'
 import { QueryKeys } from '@/constants/query'
 import useServerAction from '@/hook/useServerAction'
 import amplitude from '@/lib/amplitude/browser'
@@ -186,12 +184,12 @@ export default function AccountDeletionForm({ loginId }: Readonly<Props>) {
             >
               {isPending ? (
                 <>
-                  <IconSpinner className="w-4" />
+                  <Loader2 className="w-4 animate-spin" />
                   삭제 중...
                 </>
               ) : (
                 <>
-                  <IconTrash className="w-4" />
+                  <Trash2 className="w-4" />
                   계정 영구 삭제
                 </>
               )}

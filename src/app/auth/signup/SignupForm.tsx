@@ -3,12 +3,11 @@
 import { TurnstileInstance } from '@marsidev/react-turnstile'
 import { sendGAEvent } from '@next/third-parties/google'
 import { useQueryClient } from '@tanstack/react-query'
-import { Info } from 'lucide-react'
+import { Info, Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { FormEvent, useCallback, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-import IconSpinner from '@/components/icons/IconSpinner'
 import TurnstileWidget from '@/components/TurnstileWidget'
 import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
@@ -215,7 +214,7 @@ export default function SignupForm() {
         type="submit"
       >
         <div className="p-2 flex justify-center bg-zinc-900 cursor-pointer rounded-xl hover:bg-zinc-800 transition active:bg-zinc-900 group-disabled:bg-zinc-800 group-disabled:cursor-not-allowed">
-          {pending ? <IconSpinner className="text-zinc-500 size-6 p-0.5" /> : '회원가입'}
+          {pending ? <Loader2 className="text-zinc-500 size-6 p-0.5 animate-spin" /> : '회원가입'}
         </div>
       </button>
       <TurnstileWidget

@@ -4,13 +4,12 @@ import FingerprintJS from '@fingerprintjs/fingerprintjs'
 import { TurnstileInstance } from '@marsidev/react-turnstile'
 import { sendGAEvent } from '@next/third-parties/google'
 import { useQueryClient } from '@tanstack/react-query'
-import { X } from 'lucide-react'
+import { Loader2, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import { migrateReadingHistory } from '@/app/manga/[id]/actions'
-import IconSpinner from '@/components/icons/IconSpinner'
 import PasskeyLoginButton from '@/components/PasskeyLoginButton'
 import { clearMigratedHistory, getLocalReadingHistory } from '@/components/ReadingHistoryMigrator'
 import TurnstileWidget from '@/components/TurnstileWidget'
@@ -238,7 +237,7 @@ export default function LoginForm() {
           className="p-2 flex justify-center bg-zinc-900 rounded-xl hover:bg-zinc-800 transition active:bg-zinc-900 
           group-disabled:bg-zinc-800 group-disabled:cursor-not-allowed"
         >
-          {isPending ? <IconSpinner className="size-6 p-0.5" /> : '로그인'}
+          {isPending ? <Loader2 className="size-6 p-0.5 animate-spin" /> : '로그인'}
         </div>
       </button>
       <div className="relative">

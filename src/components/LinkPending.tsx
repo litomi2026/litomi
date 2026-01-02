@@ -1,11 +1,10 @@
 'use client'
 
+import { Loader2 } from 'lucide-react'
 import { useLinkStatus } from 'next/link'
 import { ReactNode, useEffect, useState } from 'react'
 
 import { LINK_PENDING_DELAY } from '@/constants/policy'
-
-import IconSpinner from './icons/IconSpinner'
 
 type Props = {
   children?: ReactNode
@@ -35,7 +34,7 @@ export default function LinkPending({ children, className, wrapperClassName }: P
   if (showSpinner) {
     return (
       <div className={wrapperClassName}>
-        <IconSpinner className={className} />
+        <Loader2 className={`animate-spin ${className ?? ''}`} />
       </div>
     )
   }

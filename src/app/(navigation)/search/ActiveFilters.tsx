@@ -1,10 +1,8 @@
 'use client'
 
-import { X } from 'lucide-react'
+import { Loader2, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useTransition } from 'react'
-
-import IconSpinner from '@/components/icons/IconSpinner'
 
 import { FILTER_KEYS } from './constants'
 import { formatDate, formatNumber } from './utils'
@@ -151,7 +149,7 @@ export function ClearAllFilters() {
     >
       {isPending ? (
         <>
-          <IconSpinner className="size-4" />
+          <Loader2 className="size-4 animate-spin" />
           <span>제거 중</span>
         </>
       ) : (

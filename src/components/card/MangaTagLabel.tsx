@@ -1,9 +1,8 @@
 'use client'
 
+import { Loader2 } from 'lucide-react'
 import { useLinkStatus } from 'next/link'
 import { PropsWithChildren } from 'react'
-
-import IconSpinner from '../icons/IconSpinner'
 
 export default function MangaTagLabel({ children }: PropsWithChildren) {
   const { pending } = useLinkStatus()
@@ -11,9 +10,9 @@ export default function MangaTagLabel({ children }: PropsWithChildren) {
   return (
     <span className="relative">
       {pending && (
-        <IconSpinner
+        <Loader2
           aria-hidden={!pending}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition aria-hidden:opacity-0 text-foreground p-0.5 w-5"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition aria-hidden:opacity-0 text-foreground p-0.5 w-5 animate-spin"
         />
       )}
       <span aria-hidden={pending} className="aria-hidden:opacity-0 transition">

@@ -1,9 +1,8 @@
 'use client'
 
+import { Maximize } from 'lucide-react'
 import { ComponentProps, memo } from 'react'
 import { toast } from 'sonner'
-
-import { IconMaximize } from '@/components/icons/IconImageViewer'
 
 export default memo(FullscreenButton)
 
@@ -22,7 +21,7 @@ function FullscreenButton(props: ComponentProps<'button'>) {
 
   return (
     <button aria-label="전체화면" onClick={toggleFullScreen} {...props}>
-      <IconMaximize className="size-6" />
+      <Maximize className="size-6" />
     </button>
   )
 }

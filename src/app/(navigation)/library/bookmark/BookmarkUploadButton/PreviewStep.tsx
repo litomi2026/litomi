@@ -1,4 +1,4 @@
-import IconBookmark from '@/components/icons/IconBookmark'
+import { Bookmark } from 'lucide-react'
 
 import { ImportModeOption } from './ImportModeOption'
 import { BookmarkExportData, ImportMode } from './types'
@@ -20,7 +20,7 @@ export function PreviewStep({ importMode, isVisible, previewData, setImportMode 
         <div className="bg-linear-to-br from-blue-600/10 to-blue-500/5 rounded-2xl p-5 border border-blue-600/20">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-linear-to-br from-blue-600 to-blue-500 flex items-center justify-center shadow-lg shadow-blue-600/20">
-              <IconBookmark className="w-6 h-6 text-foreground" />
+              <Bookmark className="w-6 h-6 text-foreground" />
             </div>
             <div className="flex-1">
               <p className="font-semibold text-lg text-foreground">

@@ -1,13 +1,11 @@
 'use client'
 
 import { useQueryClient } from '@tanstack/react-query'
-import { X } from 'lucide-react'
+import { Info, Loader2, X } from 'lucide-react'
 import { useCallback, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import SuggestionDropdown from '@/app/(navigation)/search/SuggestionDropdown'
-import IconInfo from '@/components/icons/IconInfo'
-import IconSpinner from '@/components/icons/IconSpinner'
 import { BLIND_TAG_VALUES } from '@/constants/json'
 import { QueryKeys } from '@/constants/query'
 import { CensorshipKey, CensorshipLevel } from '@/database/enum'
@@ -211,7 +209,7 @@ export default function CensorshipCreationBar() {
             title="도움말"
             type="button"
           >
-            <IconInfo className="w-4" />
+            <Info className="w-4" />
           </button>
           <button
             className="p-2 rounded hover:bg-zinc-800 disabled:bg-transparent transition"
@@ -219,7 +217,7 @@ export default function CensorshipCreationBar() {
             title="검열 추가 (Enter)"
             type="submit"
           >
-            {isSubmitting ? <IconSpinner className="w-4" /> : '등록'}
+            {isSubmitting ? <Loader2 className="w-4 animate-spin" /> : '등록'}
           </button>
         </div>
       </form>

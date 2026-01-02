@@ -1,6 +1,5 @@
+import { MapPin } from 'lucide-react'
 import { toast } from 'sonner'
-
-import IconMapPin from '@/components/icons/IconMapPin'
 
 import PostBaseButton from './PostBaseButton'
 
@@ -32,7 +31,7 @@ export default function PostGeolocationButton({ disabled, onLocationChange }: Re
   return (
     <PostBaseButton disabled={disabled} onClick={handleClick}>
       <input className="hidden" disabled={disabled} />
-      <IconMapPin className="w-5" />
+      <MapPin className="w-5" />
     </PostBaseButton>
   )
 }

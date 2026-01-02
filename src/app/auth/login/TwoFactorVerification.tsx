@@ -1,12 +1,10 @@
 'use client'
 
-import { RectangleEllipsis } from 'lucide-react'
+import { Key, Loader2, RectangleEllipsis } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
 import OneTimeCodeInput from '@/app/(navigation)/(right-search)/[name]/settings/two-factor/components/OneTimeCodeInput'
-import IconKey from '@/components/icons/IconKey'
-import IconSpinner from '@/components/icons/IconSpinner'
 import Toggle from '@/components/ui/Toggle'
 import { BACKUP_CODE_PATTERN } from '@/constants/policy'
 import useServerAction, { getFormField } from '@/hook/useServerAction'
@@ -107,7 +105,7 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
           >
             {isPending ? (
               <>
-                <IconSpinner className="mr-2 size-5" />
+                <Loader2 className="mr-2 size-5 animate-spin" />
                 확인 중...
               </>
             ) : (
@@ -121,7 +119,7 @@ export default function TwoFactorVerification({ onCancel, onSuccess, pkceChallen
               onClick={() => setIsBackupCode(!isBackupCode)}
               type="button"
             >
-              <IconKey className="mr-1 size-4" />
+              <Key className="mr-1 size-4" />
               {isBackupCode ? '인증 코드 사용' : '복구 코드 사용'}
             </button>
 

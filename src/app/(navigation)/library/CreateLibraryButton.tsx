@@ -1,14 +1,13 @@
 'use client'
 
 import { type InfiniteData, useQueryClient } from '@tanstack/react-query'
+import { Loader2, Plus } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import type { GETLibraryResponse } from '@/backend/api/v1/library/get'
 import type { GETV1LibraryListResponse } from '@/backend/api/v1/library/list'
 
-import IconPlus from '@/components/icons/IconPlus'
-import IconSpinner from '@/components/icons/IconSpinner'
 import Dialog from '@/components/ui/Dialog'
 import DialogHeader from '@/components/ui/DialogHeader'
 import Toggle from '@/components/ui/Toggle'
@@ -131,7 +130,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
         title="서재 만들기"
         type="button"
       >
-        <IconPlus className="w-5 h-5" />
+        <Plus className="w-5 h-5" />
         <span className="font-medium sm:hidden">서재 만들기</span>
       </button>
       <Dialog onClose={handleClose} open={isModalOpen}>
@@ -268,7 +267,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
               disabled={isPending}
               type="submit"
             >
-              {isPending ? <IconSpinner className="w-5" /> : <IconPlus className="w-5" />}
+              {isPending ? <Loader2 className="w-5 animate-spin" /> : <Plus className="w-5" />}
               <span>생성하기</span>
             </button>
           </div>

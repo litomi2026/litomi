@@ -1,7 +1,7 @@
 'use client'
 
 import { startAuthentication } from '@simplewebauthn/browser'
-import { Fingerprint } from 'lucide-react'
+import { Fingerprint, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 import {
@@ -9,8 +9,6 @@ import {
   verifyAuthentication,
 } from '@/app/(navigation)/(right-search)/[name]/settings/passkey/action-auth'
 import useServerAction from '@/hook/useServerAction'
-
-import IconSpinner from './icons/IconSpinner'
 
 type Props = {
   disabled?: boolean
@@ -75,7 +73,7 @@ export default function PasskeyLoginButton({ loginId, disabled, onSuccess, turns
       title="패스키로 로그인"
       type="button"
     >
-      {isPending ? <IconSpinner className="w-5" /> : <Fingerprint className="w-5" />}
+      {isPending ? <Loader2 className="w-5 animate-spin" /> : <Fingerprint className="w-5" />}
       <span className="font-medium">패스키로 로그인</span>
     </button>
   )

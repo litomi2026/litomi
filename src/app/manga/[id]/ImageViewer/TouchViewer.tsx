@@ -1,8 +1,8 @@
 'use client'
 
+import { Loader2 } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 
-import IconSpinner from '@/components/icons/IconSpinner'
 import MangaImage from '@/components/MangaImage'
 import { TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT } from '@/constants/policy'
 import { ImageWithVariants, Manga } from '@/types/manga'
@@ -394,7 +394,7 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
       >
         {images.length === 0 ? (
           <li className="flex items-center justify-center h-full animate-fade-in">
-            <IconSpinner className="size-8" />
+            <Loader2 className="size-8 animate-spin" />
           </li>
         ) : (
           Array.from({ length: TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT }).map((_, offset) => (
