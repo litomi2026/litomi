@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react'
 
-import { GETLibraryItemsResponse } from '@/backend/api/v1/library/[id]'
+import { GETLibraryItemsResponse } from '@/backend/api/v1/library/[id]/GET'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'

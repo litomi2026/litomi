@@ -5,7 +5,7 @@ import { contextStorage } from 'hono/context-storage'
 import type { Env } from '@/backend'
 
 import libraryRoutes from '..'
-import { type GETLibraryItemsResponse } from '../[id]'
+import { type GETLibraryItemsResponse } from '../[id]/GET'
 import { type GETLibraryResponse } from '../GET'
 
 const app = new Hono<Env>()

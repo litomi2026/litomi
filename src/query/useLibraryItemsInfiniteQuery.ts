@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 
-import { GETLibraryItemsResponse } from '@/backend/api/v1/library/[id]'
+import { GETLibraryItemsResponse } from '@/backend/api/v1/library/[id]/GET'
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'

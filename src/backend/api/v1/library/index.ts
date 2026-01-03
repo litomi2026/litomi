@@ -3,7 +3,7 @@ import 'server-only'
 
 import { Env } from '@/backend'
 
-import itemsRoutes from './[id]'
+import itemsRoutes from './[id]/GET'
 import libraryGetRoutes from './GET'
 import libraryHistoryRoutes from './history'
 import libraryListRoutes from './list'
