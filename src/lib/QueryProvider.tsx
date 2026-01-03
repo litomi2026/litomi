@@ -11,7 +11,7 @@ import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import amplitude from '@/lib/amplitude/browser'
 import { showAdultVerificationRequiredToast, showLoginRequiredToast } from '@/lib/toast'
-import { ProblemDetailsError, shouldRetryError } from '@/utils/react-query-error'
+import { ProblemDetailsError } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_GA_ID } = env
 
@@ -39,6 +39,23 @@ function isAdultVerificationRequiredProblem(typeUrl: string): boolean {
   } catch {
     return false
   }
+}
+
+function shouldRetryError(error: unknown, failureCount: number, maxRetries = 3): boolean {
+  if (failureCount >= maxRetries) {
+    return false
+  }
+
+  if (error instanceof ProblemDetailsError) {
+    return error.isRetryable
+  }
+
+  if (!(error instanceof Error)) {
+    return false
+  }
+
+  const message = error.message.toLowerCase()
+  return message.includes('fetch') || message.includes('network')
 }
 
 const queryClient = new QueryClient({
@@ -97,7 +114,15 @@ const queryClient = new QueryClient({
       staleTime: ms('10 minutes'),
       gcTime: ms('20 minutes'),
       retry: (failureCount, error) => shouldRetryError(error, failureCount),
-      retryDelay: (attemptIndex) => Math.min(100 * 2 ** attemptIndex, 5000),
+      retryDelay: (attemptIndex, error) => {
+        if (error instanceof ProblemDetailsError) {
+          const retryAfterSeconds = error.retryAfterSeconds
+          if (retryAfterSeconds) {
+            return retryAfterSeconds * ms('1s')
+          }
+        }
+        return Math.min(100 * 2 ** attemptIndex, ms('5s'))
+      },
       retryOnMount: false,
     },
   },
