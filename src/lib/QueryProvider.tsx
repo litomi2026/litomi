@@ -61,11 +61,25 @@ function shouldRetryError(error: unknown, failureCount: number, maxRetries = 3):
 const queryClient = new QueryClient({
   queryCache: new QueryCache({
     onError: (error) => {
-      if (error instanceof ProblemDetailsError && error.status === 401) {
-        queryClient.setQueriesData({ queryKey: QueryKeys.me }, () => null)
-        amplitude.reset()
-        if (NEXT_PUBLIC_GA_ID) {
-          sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: null })
+      if (error instanceof ProblemDetailsError) {
+        if (error.status === 401) {
+          queryClient.setQueriesData({ queryKey: QueryKeys.me }, () => null)
+          amplitude.reset()
+          if (NEXT_PUBLIC_GA_ID) {
+            sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: null })
+          }
+          showLoginRequiredToast()
+          return
+        }
+
+        if (error.status === 403 && isAdultVerificationRequiredProblem(error.type)) {
+          showAdultVerificationRequiredToast({ username: getCachedUsername(queryClient) })
+          return
+        }
+
+        if (error.status >= 400) {
+          toast.warning(error.message || '요청을 처리할 수 없어요')
+          return
         }
       }
     },

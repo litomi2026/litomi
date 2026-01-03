@@ -6,7 +6,6 @@ import ms from 'ms'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
-import { requireAdult } from '@/backend/middleware/adult'
 import { requireAuth } from '@/backend/middleware/require-auth'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
@@ -27,7 +26,7 @@ const requestSchema = z.object({
   token: z.string().min(1).max(2048),
 })
 
-route.post('/', requireAuth, requireAdult, zProblemValidator('json', requestSchema), async (c) => {
+route.post('/', requireAuth, zProblemValidator('json', requestSchema), async (c) => {
   const userId = c.get('userId')!
 
   const { token } = c.req.valid('json')

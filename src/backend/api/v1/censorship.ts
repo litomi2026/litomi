@@ -4,7 +4,6 @@ import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
-import { requireAdult } from '@/backend/middleware/adult'
 import { requireAuth } from '@/backend/middleware/require-auth'
 import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
@@ -35,7 +34,7 @@ export type GETV1CensorshipResponse = {
 
 const censorshipRoutes = new Hono<Env>()
 
-censorshipRoutes.get('/', requireAuth, requireAdult, zProblemValidator('query', querySchema), async (c) => {
+censorshipRoutes.get('/', requireAuth, zProblemValidator('query', querySchema), async (c) => {
   const userId = c.get('userId')!
 
   try {

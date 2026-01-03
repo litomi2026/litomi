@@ -67,6 +67,7 @@ libraryMetaRoutes.get('/', zProblemValidator('param', paramsSchema), async (c) =
       isPublic: library.isPublic,
       itemCount: library.itemCount,
     }
+
     return c.json<GETV1LibraryMetaResponse>(result, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)

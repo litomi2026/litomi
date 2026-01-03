@@ -2,7 +2,6 @@ import { Hono } from 'hono'
 import { deleteCookie, getCookie } from 'hono/cookie'
 
 import { Env } from '@/backend'
-import { requireAdult } from '@/backend/middleware/adult'
 import { requireAuth } from '@/backend/middleware/require-auth'
 import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
@@ -15,7 +14,7 @@ export type GETV1PointTurnstileResponse = { verified: true; expiresInSeconds: nu
 
 const route = new Hono<Env>()
 
-route.get('/', requireAuth, requireAdult, async (c) => {
+route.get('/', requireAuth, async (c) => {
   const userId = c.get('userId')!
 
   const cookieValue = getCookie(c, CookieKey.POINTS_TURNSTILE)

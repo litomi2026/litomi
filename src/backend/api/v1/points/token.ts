@@ -4,7 +4,6 @@ import { deleteCookie, getCookie } from 'hono/cookie'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
-import { requireAdult } from '@/backend/middleware/adult'
 import { requireAuth } from '@/backend/middleware/require-auth'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
@@ -28,7 +27,7 @@ const requestSchema = z.object({
   adSlotId: z.string().min(1).max(50),
 })
 
-route.post('/', requireAuth, requireAdult, zProblemValidator('json', requestSchema), async (c) => {
+route.post('/', requireAuth, zProblemValidator('json', requestSchema), async (c) => {
   const userId = c.get('userId')!
 
   const turnstileCookie = getCookie(c, CookieKey.POINTS_TURNSTILE)
