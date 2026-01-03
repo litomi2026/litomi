@@ -85,7 +85,7 @@ export async function signBBatonAttemptToken(userId: number): Promise<string> {
     .sign(new TextEncoder().encode(JWT_SECRET_BBATON_ATTEMPT))
 }
 
-export async function verifyBBatonAttemptToken(token: string): Promise<{ userId: number } | null> {
+export async function verifyBBatonAttemptToken(token: string) {
   try {
     const { payload } = await jwtVerify<BBatonAttemptTokenPayload>(
       token,
@@ -102,7 +102,13 @@ export async function verifyBBatonAttemptToken(token: string): Promise<{ userId:
       return null
     }
 
-    return { userId }
+    const issuedAt = typeof payload.iat === 'number' ? payload.iat : null
+    const expiresAt = typeof payload.exp === 'number' ? payload.exp : null
+    if (!issuedAt || !expiresAt) {
+      return null
+    }
+
+    return { userId, issuedAt, expiresAt }
   } catch {
     return null
   }

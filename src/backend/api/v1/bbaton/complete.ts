@@ -14,9 +14,8 @@ import { bbatonVerificationTable } from '@/database/supabase/bbaton'
 import { db } from '@/database/supabase/drizzle'
 
 import { exchangeAuthorizationCode, fetchBBatonProfile } from './lib'
+import { checkBBatonRateLimit } from './rate-limit'
 import { getBBatonRedirectURI, parseBirthYear, reissueAuthCookies, verifyBBatonAttemptToken } from './utils'
-
-export type POSTV1BBatonCompleteResponse = { adultFlag: 'N' | 'Y' }
 
 const completeSchema = z.object({
   code: z.string().min(1).max(2048),
@@ -36,6 +35,15 @@ route.post('/', requireAuth, zProblemValidator('json', completeSchema), async (c
   const userId = c.get('userId')!
 
   try {
+    const rateLimit = await checkBBatonRateLimit('complete', userId)
+    if (!rateLimit.allowed) {
+      const minutes = Math.max(1, Math.ceil(rateLimit.retryAfterSeconds / 60))
+      return problemResponse(c, {
+        status: 429,
+        detail: `너무 많은 인증 시도가 있었어요. ${minutes}분 후에 다시 시도해 주세요.`,
+      })
+    }
+
     const attempt = await verifyBBatonAttemptToken(attemptToken)
     if (!attempt || attempt.userId !== userId) {
       return problemResponse(c, {
@@ -90,7 +98,7 @@ route.post('/', requireAuth, zProblemValidator('json', completeSchema), async (c
     const adult = profile.adultFlag === 'Y'
     await reissueAuthCookies(c, { userId, adult })
 
-    return c.json<POSTV1BBatonCompleteResponse>({ adultFlag: profile.adultFlag })
+    return c.body(null, 204)
   } catch (error) {
     console.error(error)
     const message = error instanceof Error ? error.message : ''

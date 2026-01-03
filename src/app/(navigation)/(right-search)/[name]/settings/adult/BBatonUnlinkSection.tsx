@@ -68,8 +68,8 @@ export default function BBatonUnlinkSection({ isTwoFactorEnabled }: Props) {
 
         <div className="mt-2 rounded-xl border border-zinc-800 bg-zinc-900/20 p-4 space-y-3">
           <p className="text-sm text-zinc-400">
-            연동을 해제하면 인증 정보가 삭제되고 <span className="text-zinc-300">미인증</span> 상태로 돌아가요. 성인 콘텐츠
-            이용이 제한될 수 있어요.
+            연동을 해제하면 인증 정보가 삭제되고 <span className="text-zinc-300">미인증</span> 상태로 돌아가요. 성인
+            콘텐츠 이용이 제한될 수 있어요.
           </p>
 
           <form className="grid gap-3" onSubmit={handleUnlinkSubmit} ref={unlinkFormRef}>
@@ -121,5 +121,3 @@ export default function BBatonUnlinkSection({ isTwoFactorEnabled }: Props) {
     </div>
   )
 }
-
-
