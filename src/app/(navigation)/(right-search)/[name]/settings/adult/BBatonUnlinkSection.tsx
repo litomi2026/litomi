@@ -10,6 +10,8 @@ import { POSTV1BBatonUnlinkResponse } from '@/backend/api/v1/bbaton/unlink'
 import { env } from '@/env/client'
 import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
 
+import OneTimeCodeInput from '../two-factor/components/OneTimeCodeInput'
+
 const { NEXT_PUBLIC_BACKEND_URL } = env
 
 type Props = {
@@ -51,7 +53,8 @@ export default function BBatonUnlinkSection({ isTwoFactorEnabled }: Props) {
     const formData = new FormData(e.currentTarget)
     const password = String(formData.get('password') ?? '')
     const token = formData.get('token')
-    const tokenValue = typeof token === 'string' && token.length > 0 ? token : undefined
+    const tokenDigits = typeof token === 'string' ? token.replace(/[^0-9]/g, '') : ''
+    const tokenValue = tokenDigits.length > 0 ? tokenDigits : undefined
 
     unlinkMutation.mutate({ password, token: tokenValue })
   }
@@ -94,16 +97,10 @@ export default function BBatonUnlinkSection({ isTwoFactorEnabled }: Props) {
                 <label className="text-sm text-zinc-300" htmlFor="bbaton-unlink-token">
                   2단계 인증 코드
                 </label>
-                <input
+                <OneTimeCodeInput
                   className="w-full rounded-md bg-zinc-800 border border-zinc-600 px-3 py-2 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:border-transparent disabled:bg-zinc-700 disabled:text-zinc-400"
                   disabled={unlinkMutation.isPending}
                   id="bbaton-unlink-token"
-                  inputMode="numeric"
-                  name="token"
-                  pattern="\\d{6}"
-                  placeholder="6자리 코드"
-                  required
-                  type="text"
                 />
               </div>
             )}

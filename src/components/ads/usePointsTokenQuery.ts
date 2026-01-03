@@ -39,8 +39,6 @@ export function usePointsTokenQuery({ adSlotId, enabled }: Options) {
       }
       return shouldRetryError(error, failureCount)
     },
-    meta: {
-      suppressGlobalErrorToastForStatuses: [403, 429],
-    },
+    meta: { suppressGlobalErrorToastForStatuses: [403, 429] },
   })
 }

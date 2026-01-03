@@ -69,6 +69,7 @@ notificationRoutes.get('/', requireAuth, zProblemValidator('query', querySchema)
       notifications: results.slice(0, NOTIFICATION_PER_PAGE),
       hasNextPage: results.length > NOTIFICATION_PER_PAGE,
     }
+
     return c.json<GETNotificationResponse>(result, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
