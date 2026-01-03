@@ -12,6 +12,12 @@ import { usePointsQuery } from '../usePointsQuery'
 import { useExpansionQuery } from './useExpansionQuery'
 import { useSpendPointsMutation } from './useSpendPointsMutation'
 
+type EnrichedShopItem = ShopItem & {
+  canAfford: boolean
+  affordState: 'affordable' | 'unaffordable' | 'unknown'
+  isMaxed: boolean
+}
+
 type ShopItem = {
   id: string
   type: 'badge' | 'bookmark' | 'history' | 'library' | 'rating' | 'theme'
@@ -26,18 +32,19 @@ export default function PointsShop() {
   const { data: me } = useMeQuery()
   const isLoggedIn = Boolean(me)
   const { data: points } = usePointsQuery({ enabled: isLoggedIn })
-  const { data: expansion, isLoading } = useExpansionQuery({ enabled: isLoggedIn })
+  const { data: expansion } = useExpansionQuery({ enabled: isLoggedIn })
   const spendPoints = useSpendPointsMutation()
   const displayExpansion = isLoggedIn ? expansion : undefined
-  const balance = points?.balance ?? 0
+  const balance = points?.balance ?? null
   const [selectedItemId, setSelectedItemId] = useState<string>('bookmark-expansion-small')
 
-  if (isLoggedIn && isLoading) {
-    return (
-      <div className="flex items-center justify-center py-8">
-        <p className="text-sm text-zinc-400">불러오는 중이에요</p>
-      </div>
-    )
+  const unknown = '—'
+  const isDataReady = me != null && points != null && expansion != null
+
+  function formatCurrentMax(current?: number, max?: number, unit: string = '개') {
+    const currentText = current == null ? unknown : formatNumber(current)
+    const maxText = max == null ? unknown : formatNumber(max)
+    return `${currentText}/${maxText}${unit}`
   }
 
   const shopItems: ShopItem[] = [
@@ -46,7 +53,7 @@ export default function PointsShop() {
       type: 'bookmark',
       itemId: 'small',
       name: '북마크 확장',
-      description: `+${POINT_CONSTANTS.BOOKMARK_EXPANSION_SMALL_AMOUNT}개 (현재: ${displayExpansion?.bookmark.current ?? 500}/${displayExpansion?.bookmark.max ?? 5000}개)`,
+      description: `+${POINT_CONSTANTS.BOOKMARK_EXPANSION_SMALL_AMOUNT}개 (현재: ${formatCurrentMax(displayExpansion?.bookmark.current, displayExpansion?.bookmark.max)})`,
       price: POINT_CONSTANTS.BOOKMARK_EXPANSION_SMALL_PRICE,
       icon: <Bookmark className="size-5" />,
     },
@@ -55,7 +62,7 @@ export default function PointsShop() {
       type: 'bookmark',
       itemId: 'large',
       name: '북마크 확장',
-      description: `+${POINT_CONSTANTS.BOOKMARK_EXPANSION_LARGE_AMOUNT}개 (현재: ${displayExpansion?.bookmark.current ?? 500}/${displayExpansion?.bookmark.max ?? 5000}개)`,
+      description: `+${POINT_CONSTANTS.BOOKMARK_EXPANSION_LARGE_AMOUNT}개 (현재: ${formatCurrentMax(displayExpansion?.bookmark.current, displayExpansion?.bookmark.max)})`,
       price: POINT_CONSTANTS.BOOKMARK_EXPANSION_LARGE_PRICE,
       icon: <Bookmark className="size-5" />,
     },
@@ -63,7 +70,7 @@ export default function PointsShop() {
       id: 'library-expansion',
       type: 'library',
       name: '내 서재 확장',
-      description: `+${POINT_CONSTANTS.LIBRARY_EXPANSION_AMOUNT}개 (현재: ${displayExpansion?.library.current ?? 5}/${displayExpansion?.library.max ?? 30}개)`,
+      description: `+${POINT_CONSTANTS.LIBRARY_EXPANSION_AMOUNT}개 (현재: ${formatCurrentMax(displayExpansion?.library.current, displayExpansion?.library.max)})`,
       price: POINT_CONSTANTS.LIBRARY_EXPANSION_PRICE,
       icon: <LibraryBig className="size-5" />,
     },
@@ -71,7 +78,7 @@ export default function PointsShop() {
       id: 'history-expansion',
       type: 'history',
       name: '감상 기록 확장',
-      description: `+${POINT_CONSTANTS.HISTORY_EXPANSION_AMOUNT}개 (현재: ${displayExpansion?.history.current ?? 500}/${displayExpansion?.history.max ?? 5000}개)`,
+      description: `+${POINT_CONSTANTS.HISTORY_EXPANSION_AMOUNT}개 (현재: ${formatCurrentMax(displayExpansion?.history.current, displayExpansion?.history.max)})`,
       price: POINT_CONSTANTS.HISTORY_EXPANSION_PRICE,
       icon: <BookOpen className="size-5" />,
     },
@@ -79,14 +86,14 @@ export default function PointsShop() {
       id: 'rating-expansion',
       type: 'rating',
       name: '평가 확장',
-      description: `+${POINT_CONSTANTS.RATING_EXPANSION_AMOUNT}개 (현재: ${displayExpansion?.rating.current ?? 200}/${displayExpansion?.rating.max ?? 5000}개)`,
+      description: `+${POINT_CONSTANTS.RATING_EXPANSION_AMOUNT}개 (현재: ${formatCurrentMax(displayExpansion?.rating.current, displayExpansion?.rating.max)})`,
       price: POINT_CONSTANTS.RATING_EXPANSION_PRICE,
       icon: <Star className="size-5" />,
     },
   ]
 
   function handlePurchase(item: ShopItem) {
-    if (!isLoggedIn || spendPoints.isPending) {
+    if (!isDataReady || spendPoints.isPending || balance == null) {
       return
     }
 
@@ -107,9 +114,9 @@ export default function PointsShop() {
     })
   }
 
-  const enrichedItems = shopItems.map((item) => {
+  const enrichedItems: EnrichedShopItem[] = shopItems.map((item) => {
     let unit = 0
-    let expansionInfo
+    let expansionInfo: { current: number; max: number } | undefined
 
     switch (item.type) {
       case 'bookmark':
@@ -133,12 +140,15 @@ export default function PointsShop() {
         break
     }
 
-    const canAfford = balance >= item.price
+    const affordState: EnrichedShopItem['affordState'] =
+      balance == null ? 'unknown' : balance >= item.price ? 'affordable' : 'unaffordable'
+    const canAfford = affordState === 'affordable'
     const isMaxed = isLoggedIn && expansionInfo ? expansionInfo.current + unit > expansionInfo.max : false
 
     return {
       ...item,
       canAfford,
+      affordState,
       isMaxed,
     }
   })
@@ -146,15 +156,19 @@ export default function PointsShop() {
   const selectedItem = enrichedItems.find((item) => item.id === selectedItemId) ?? null
   const isPurchasing = Boolean(spendPoints.isPending)
   const purchaseDisabled =
-    !isLoggedIn || selectedItem === null || selectedItem.isMaxed || !selectedItem.canAfford || isPurchasing
+    !isDataReady || selectedItem === null || selectedItem.isMaxed || !selectedItem.canAfford || isPurchasing
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    if (!selectedItem) {
+      return
+    }
+    handlePurchase(selectedItem)
+  }
 
   return (
-    <div aria-disabled={!isLoggedIn} className="space-y-4 aria-disabled:opacity-80">
-      {isLoggedIn ? (
-        <p className="text-sm leading-5 text-zinc-400">리보로 내 공간을 확장해 보세요</p>
-      ) : (
-        <p className="text-xs leading-5 text-zinc-500">로그인하면 상점을 이용할 수 있어요</p>
-      )}
+    <div className="space-y-4">
+      <p className="text-sm leading-5 text-zinc-400">리보로 내 공간을 확장해 보세요</p>
 
       <div className="space-y-2" role="listbox">
         {enrichedItems.map((item) => {
@@ -188,8 +202,8 @@ export default function PointsShop() {
 
               <div className="shrink-0 flex items-center gap-3">
                 <p
-                  aria-disabled={!item.canAfford}
-                  className="text-right font-semibold text-zinc-200 aria-disabled:text-zinc-500 tabular-nums"
+                  className="text-right font-semibold text-zinc-200 tabular-nums data-[afford=unaffordable]:text-zinc-500"
+                  data-afford={item.affordState}
                 >
                   {item.price.toLocaleString()} 리보
                 </p>
@@ -208,7 +222,10 @@ export default function PointsShop() {
 
       {/* 단일 구매 바 (애플식) */}
       <div className="sticky bottom-0 pb-safe">
-        <div className="rounded-xl bg-white/4 border border-white/7 p-3 flex items-center gap-3">
+        <form
+          className="rounded-xl bg-white/4 border border-white/7 p-3 flex items-center gap-3"
+          onSubmit={handleSubmit}
+        >
           <div className="min-w-0">
             <p className="text-sm font-medium text-zinc-200 truncate">
               {selectedItem ? selectedItem.name : '상품을 선택해 주세요'}
@@ -221,17 +238,11 @@ export default function PointsShop() {
           <button
             className="ml-auto inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold text-zinc-950 bg-brand disabled:bg-zinc-800 disabled:text-zinc-400 disabled:cursor-not-allowed transition"
             disabled={purchaseDisabled}
-            onClick={() => {
-              if (!selectedItem) {
-                return
-              }
-              handlePurchase(selectedItem)
-            }}
-            type="button"
+            type="submit"
           >
             {isPurchasing ? '처리 중…' : selectedItem?.isMaxed ? '최대' : '구매'}
           </button>
-        </div>
+        </form>
       </div>
     </div>
   )
