@@ -27,6 +27,7 @@ export const QueryKeys = {
   pointsExpansion: ['me', 'points', 'expansion'],
   pointsTurnstile: ['me', 'points', 'turnstile'],
   pointsTransactions: ['me', 'points', 'transactions'],
+  pointsToken: (adSlotId: string) => ['me', 'points', 'token', adSlotId],
   adsterraStats: (startDate: string, finishDate: string) => ['adsterra', 'stats', startDate, finishDate],
 
   manga: (id: number) => ['manga', id],

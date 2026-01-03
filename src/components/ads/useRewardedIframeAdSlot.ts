@@ -1,8 +1,12 @@
 'use client'
 
+import { useQueryClient } from '@tanstack/react-query'
 import ms from 'ms'
 import { type RefObject, useCallback, useEffect, useRef, useState } from 'react'
 
+import type { POSTV1PointTokenResponse } from '@/backend/api/v1/points/token'
+
+import { QueryKeys } from '@/constants/query'
 import { useLatestRef } from '@/hook/useLatestRef'
 import { ProblemDetailsError } from '@/utils/react-query-error'
 
@@ -10,7 +14,7 @@ import type { AdClickResult } from './types'
 
 import { useCooldown } from './useCooldown'
 import { useEarnPointMutation } from './useEarnPointMutation'
-import { useRequestTokenMutation } from './useRequestTokenMutation'
+import { usePointsTokenQuery } from './usePointsTokenQuery'
 
 type Options = {
   adSlotId: string
@@ -53,23 +57,29 @@ export function useRewardedIframeAdSlot({
   confirmWindowMs = DEFAULT_CONFIRM_WINDOW_MS,
   pointerFocusWindowMs = DEFAULT_POINTER_FOCUS_WINDOW_MS,
 }: Options): Return {
-  const requestToken = useRequestTokenMutation(adSlotId)
-  const earnPoints = useEarnPointMutation()
-  const isHandlingClaimRef = useRef(false)
   const [hasPendingClickOut, setHasPendingClickOut] = useState(false)
-
   const [isAdReady, setIsAdReady] = useState(false)
   const [isAdBlocked, setIsAdBlocked] = useState(false)
-  const [token, setToken] = useState<string | null>(null)
-  const [dailyRemaining, setDailyRemaining] = useState<number | null>(null)
-
-  const isLoading = requestToken.isPending || earnPoints.isPending
-  const apiError = requestToken.error ?? earnPoints.error ?? null
+  const isHandlingClaimRef = useRef(false)
+  const prevCooldownUntilRef = useRef<number | null>(null)
+  const queryClient = useQueryClient()
+  const earnPoints = useEarnPointMutation()
   const onResultRef = useLatestRef(onResult)
-  const tokenRef = useLatestRef(token)
-
+  const tokenQueryEnabled = rewardEnabled && isAdReady && !isAdBlocked
   const { until: cooldownUntil, clear: clearCooldown, startFromRemainingSeconds } = useCooldown()
 
+  const {
+    data: tokenData,
+    error: tokenError,
+    isFetching: isTokenFetching,
+    refetch: refetchToken,
+  } = usePointsTokenQuery({ adSlotId, enabled: tokenQueryEnabled })
+
+  const token = tokenQueryEnabled ? (tokenData?.token ? tokenData.token : null) : null
+  const dailyRemaining = tokenQueryEnabled ? (tokenData?.dailyRemaining ?? null) : null
+  const isLoading = (tokenQueryEnabled && isTokenFetching) || earnPoints.isPending
+  const apiError = (tokenQueryEnabled ? tokenError : null) ?? earnPoints.error ?? null
+  const tokenRef = useLatestRef(token)
   const canEarn = rewardEnabled && isAdReady && token !== null && !isLoading && !isAdBlocked
   const shouldDimAd = rewardEnabled && !canEarn
 
@@ -135,81 +145,116 @@ export function useRewardedIframeAdSlot({
     }
   }, [containerRef, isAdBlocked, loadTimeoutMs, scriptFailed, scriptLoaded])
 
-  // NOTE: 광고가 차단되면 토큰을 소진(무효화)해요
+  // NOTE: 광고가 차단되면 리워드 상태를 비워요
   useEffect(() => {
     if (isAdBlocked) {
-      setToken(null)
       setHasPendingClickOut(false)
       isHandlingClaimRef.current = false
+      clearCooldown()
+      queryClient.removeQueries({ queryKey: QueryKeys.pointsToken(adSlotId) })
     }
-  }, [isAdBlocked])
+  }, [adSlotId, clearCooldown, isAdBlocked, queryClient])
 
   // NOTE: 보상 조건이 꺼지면(로그아웃/검증 만료 등) 리워드 상태를 비워요
   useEffect(() => {
     if (rewardEnabled) {
       return
     }
-    setToken(null)
-    setDailyRemaining(null)
     clearCooldown()
     setHasPendingClickOut(false)
     isHandlingClaimRef.current = false
-  }, [clearCooldown, rewardEnabled])
+    queryClient.removeQueries({ queryKey: QueryKeys.pointsToken(adSlotId) })
+  }, [adSlotId, clearCooldown, queryClient, rewardEnabled])
 
   // ===== Token (slot policy) =====
   const refresh = useCallback(() => {
-    if (!rewardEnabled || isLoading || isAdBlocked || !isAdReady) {
+    if (!tokenQueryEnabled || earnPoints.isPending) {
       return
     }
+    clearCooldown()
+    refetchToken()
+  }, [clearCooldown, earnPoints.isPending, refetchToken, tokenQueryEnabled])
 
-    requestToken.mutate(undefined, {
-      onSuccess: (data) => {
-        setToken(data.token)
-        setDailyRemaining(data.dailyRemaining)
-        clearCooldown()
-      },
-      onError: (err) => {
-        setToken(null)
-        if (err instanceof ProblemDetailsError && err.retryAfterSeconds != null) {
-          startFromRemainingSeconds(err.retryAfterSeconds)
-        }
-      },
-    })
-  }, [clearCooldown, isAdBlocked, isAdReady, isLoading, requestToken, rewardEnabled, startFromRemainingSeconds])
-
-  // NOTE: 토큰이 없으면(또는 클릭 후 소진되면) 자동으로 토큰을 다시 준비해요
+  // NOTE: 429(Retry-After) 응답이면 쿨다운을 시작하고, 종료 시 자동으로 다시 요청해요
   useEffect(() => {
-    const isReadyForToken = rewardEnabled && isAdReady && !isAdBlocked
-    const needsToken = token === null && cooldownUntil === null
-    const isRequesting = requestToken.isPending
-
-    if (!isReadyForToken || !needsToken || isRequesting) {
+    if (!tokenQueryEnabled) {
       return
     }
 
-    requestToken.mutate(undefined, {
-      onSuccess: ({ token, dailyRemaining }) => {
-        setToken(token)
-        setDailyRemaining(dailyRemaining)
-        clearCooldown()
-      },
-      onError: (err) => {
-        setToken(null)
-        if (err instanceof ProblemDetailsError && err.retryAfterSeconds != null) {
-          startFromRemainingSeconds(err.retryAfterSeconds)
-        }
-      },
-    })
-  }, [
-    clearCooldown,
-    cooldownUntil,
-    isAdBlocked,
-    isAdReady,
-    requestToken,
-    rewardEnabled,
-    startFromRemainingSeconds,
-    token,
-  ])
+    const error = tokenError
+    if (!(error instanceof ProblemDetailsError)) {
+      return
+    }
+
+    const retryAfterSeconds = error.retryAfterSeconds
+    if (error.status !== 429 || retryAfterSeconds == null) {
+      return
+    }
+
+    startFromRemainingSeconds(retryAfterSeconds)
+  }, [startFromRemainingSeconds, tokenError, tokenQueryEnabled])
+
+  useEffect(() => {
+    const prevCooldownUntil = prevCooldownUntilRef.current
+    prevCooldownUntilRef.current = cooldownUntil
+
+    if (!tokenQueryEnabled || isTokenFetching) {
+      return
+    }
+
+    // NOTE: 쿨다운이 끝난 시점(= until: number -> null)에서만 자동 재요청해요
+    if (prevCooldownUntil === null || cooldownUntil !== null) {
+      return
+    }
+
+    const error = tokenError
+    if (!(error instanceof ProblemDetailsError)) {
+      return
+    }
+
+    const retryAfterSeconds = error.retryAfterSeconds
+    if (error.status !== 429 || retryAfterSeconds == null) {
+      return
+    }
+
+    refetchToken()
+  }, [cooldownUntil, isTokenFetching, refetchToken, tokenError, tokenQueryEnabled])
+
+  // NOTE: 토큰이 준비되면 쿨다운(에러 상태)을 해제해요
+  useEffect(() => {
+    if (!tokenQueryEnabled) {
+      return
+    }
+    if (tokenData?.token) {
+      clearCooldown()
+    }
+  }, [clearCooldown, tokenData, tokenQueryEnabled])
+
+  // NOTE: 토큰이 만료되기 전에 자동으로 새 토큰을 준비해요
+  useEffect(() => {
+    if (!tokenQueryEnabled) {
+      return
+    }
+
+    const expiresAt = tokenData?.expiresAt
+    if (!expiresAt) {
+      return
+    }
+
+    const expiresAtMs = Date.parse(expiresAt)
+    if (!Number.isFinite(expiresAtMs)) {
+      return
+    }
+
+    const REFRESH_FUDGE_MS = ms('5 seconds')
+    const delayMs = Math.max(0, expiresAtMs - Date.now() - REFRESH_FUDGE_MS)
+
+    const timeoutId = setTimeout(() => {
+      queryClient.invalidateQueries({ queryKey: QueryKeys.pointsToken(adSlotId) })
+    }, delayMs)
+
+    return () => clearTimeout(timeoutId)
+  }, [adSlotId, queryClient, tokenData?.expiresAt, tokenQueryEnabled])
 
   // ===== Click-out detection (Attempt → Arm → Confirm) =====
   useEffect(() => {
@@ -441,16 +486,25 @@ export function useRewardedIframeAdSlot({
       earnPoints.mutate(token, {
         onSuccess: ({ earned, dailyRemaining }) => {
           onResultRef.current?.({ success: true, earned })
-          setToken(null)
-          setDailyRemaining(dailyRemaining)
           clearCooldown()
+          queryClient.setQueryData<POSTV1PointTokenResponse>(QueryKeys.pointsToken(adSlotId), (prev) => {
+            return prev ? { ...prev, token: '', dailyRemaining } : prev
+          })
+          if (tokenQueryEnabled) {
+            refetchToken()
+          }
           isHandlingClaimRef.current = false
         },
         onError: (err) => {
           onResultRef.current?.({ success: false })
-          setToken(null)
           if (err instanceof ProblemDetailsError && err.retryAfterSeconds != null) {
             startFromRemainingSeconds(err.retryAfterSeconds)
+          }
+          queryClient.setQueryData<POSTV1PointTokenResponse>(QueryKeys.pointsToken(adSlotId), (prev) => {
+            return prev ? { ...prev, token: '' } : prev
+          })
+          if (tokenQueryEnabled) {
+            refetchToken()
           }
           isHandlingClaimRef.current = false
         },
@@ -481,9 +535,13 @@ export function useRewardedIframeAdSlot({
     isAdReady,
     isLoading,
     onResultRef,
+    queryClient,
+    refetchToken,
     rewardEnabled,
     startFromRemainingSeconds,
     token,
+    tokenQueryEnabled,
+    adSlotId,
   ])
 
   return {

@@ -30,5 +30,8 @@ export function useEarnPointMutation() {
       queryClient.invalidateQueries({ queryKey: QueryKeys.points })
       queryClient.invalidateQueries({ queryKey: QueryKeys.pointsTransactions })
     },
+    meta: {
+      suppressGlobalErrorToastForStatuses: [403],
+    },
   })
 }

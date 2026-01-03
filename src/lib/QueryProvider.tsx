@@ -29,19 +29,7 @@ export function isAdultVerificationRequiredProblem(typeUrl: string): boolean {
   }
 }
 
-function getCachedUsername(queryClient: QueryClient): string | undefined {
-  const me = queryClient.getQueryData(QueryKeys.me)
-  if (!me || typeof me !== 'object') {
-    return undefined
-  }
-  if (!('name' in me)) {
-    return undefined
-  }
-  const name = me.name
-  return typeof name === 'string' && name.length > 0 ? name : undefined
-}
-
-function shouldRetryError(error: unknown, failureCount: number, maxRetries = 3): boolean {
+export function shouldRetryError(error: unknown, failureCount: number, maxRetries = 3): boolean {
   if (failureCount >= maxRetries) {
     return false
   }
@@ -58,9 +46,21 @@ function shouldRetryError(error: unknown, failureCount: number, maxRetries = 3):
   return message.includes('fetch') || message.includes('network')
 }
 
+function getCachedUsername(queryClient: QueryClient): string | undefined {
+  const me = queryClient.getQueryData(QueryKeys.me)
+  if (!me || typeof me !== 'object') {
+    return undefined
+  }
+  if (!('name' in me)) {
+    return undefined
+  }
+  const name = me.name
+  return typeof name === 'string' && name.length > 0 ? name : undefined
+}
+
 const queryClient = new QueryClient({
   queryCache: new QueryCache({
-    onError: (error) => {
+    onError: (error, query) => {
       if (error instanceof ProblemDetailsError) {
         if (error.status === 401) {
           queryClient.setQueriesData({ queryKey: QueryKeys.me }, () => null)
@@ -74,6 +74,10 @@ const queryClient = new QueryClient({
 
         if (error.status === 403 && isAdultVerificationRequiredProblem(error.type)) {
           showAdultVerificationRequiredToast({ username: getCachedUsername(queryClient) })
+          return
+        }
+
+        if (query.meta?.suppressGlobalErrorToastForStatuses?.includes(error.status)) {
           return
         }
 

@@ -11,6 +11,12 @@ declare module '@tanstack/query-core' {
        */
       suppressGlobalErrorToastForStatuses?: readonly number[]
     }
+    queryMeta: {
+      /**
+       * Prevents the global `QueryCache.onError` handler from showing a toast for matching HTTP statuses.
+       */
+      suppressGlobalErrorToastForStatuses?: readonly number[]
+    }
   }
 }
 
