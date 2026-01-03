@@ -135,7 +135,7 @@ const queryClient = new QueryClient({
             return retryAfterSeconds * ms('1s')
           }
         }
-        return Math.min(100 * 2 ** attemptIndex, ms('5s'))
+        return Math.min(ms('1s') * 2 ** attemptIndex, ms('5s'))
       },
       retryOnMount: false,
     },

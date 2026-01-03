@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react'
 
-import { GETLibraryItemsResponse } from '@/backend/api/v1/library/[id]/GET'
+import { GETLibraryItemsResponse } from '@/backend/api/v1/library/[id]/item/GET'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
@@ -23,9 +23,10 @@ type Props = {
   isOwner: boolean
 }
 
-export default function LibraryItemsClient({ library, initialItems }: Readonly<Props>) {
+export default function LibraryItemsClient({ library, initialItems, isOwner }: Readonly<Props>) {
   const { id: libraryId, name: libraryName } = library
   const { isSelectionMode } = useLibrarySelectionStore()
+  const scope = isOwner ? 'me' : 'public'
 
   const {
     data: itemsData,
@@ -33,10 +34,7 @@ export default function LibraryItemsClient({ library, initialItems }: Readonly<P
     hasNextPage: hasMoreItemsToLoad,
     isFetchingNextPage: isLoadingMoreItems,
     isFetchNextPageError: isFetchMoreItemsError,
-  } = useLibraryItemsInfiniteQuery({
-    libraryId,
-    initialItems,
-  })
+  } = useLibraryItemsInfiniteQuery({ libraryId, initialItems, scope })
 
   const items = useMemo(() => itemsData?.pages.flatMap((page) => page.items) ?? [], [itemsData])
   const canAutoLoadMore = Boolean(hasMoreItemsToLoad) && !isFetchMoreItemsError

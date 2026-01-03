@@ -5,7 +5,7 @@ import { contextStorage } from 'hono/context-storage'
 import type { Env } from '@/backend'
 
 import libraryRoutes from '..'
-import { type GETLibraryItemsResponse } from '../[id]/GET'
+import { type GETLibraryItemsResponse } from '../[id]/item/GET'
 
 const app = new Hono<Env>()
 app.use('*', contextStorage())
@@ -23,8 +23,12 @@ describe('GET /api/v1/library?scope=me', () => {
 
 describe('GET /api/v1/library', () => {
   const createRequest = (cursor?: string) => {
-    const params = cursor ? `?cursor=${encodeURIComponent(cursor)}` : ''
-    return app.request(`/${params}`)
+    const searchParams = new URLSearchParams()
+    searchParams.set('scope', 'public')
+    if (cursor) {
+      searchParams.set('cursor', cursor)
+    }
+    return app.request(`/?${searchParams}`)
   }
 
   test('유효하지 않은 cursor를 사용하면 400 에러를 반환한다', async () => {
@@ -36,8 +40,12 @@ describe('GET /api/v1/library', () => {
 
 describe('GET /api/v1/library/manga', () => {
   const createRequest = (cursor?: string) => {
-    const params = cursor ? `?cursor=${encodeURIComponent(cursor)}` : ''
-    return app.request(`/manga${params}`)
+    const searchParams = new URLSearchParams()
+    searchParams.set('scope', 'public')
+    if (cursor) {
+      searchParams.set('cursor', cursor)
+    }
+    return app.request(`/manga?${searchParams}`)
   }
 
   test('유효하지 않은 cursor를 사용하면 400 에러를 반환한다', async () => {
@@ -55,9 +63,9 @@ describe('GET /api/v1/library/summary', () => {
   })
 })
 
-describe('GET /api/v1/library/:id/meta', () => {
+describe('GET /api/v1/library/:id', () => {
   const createRequest = (libraryId: number | string) => {
-    return app.request(`/${libraryId}/meta`)
+    return app.request(`/${libraryId}?scope=public`)
   }
 
   test('유효하지 않은 libraryId를 사용하면 400 에러를 반환한다', async () => {
@@ -67,10 +75,14 @@ describe('GET /api/v1/library/:id/meta', () => {
   })
 })
 
-describe('GET /api/v1/library/:id', () => {
+describe('GET /api/v1/library/:id/item', () => {
   const createRequest = (libraryId: number | string, cursor?: string) => {
-    const params = cursor ? `?cursor=${encodeURIComponent(cursor)}` : ''
-    return app.request(`/${libraryId}${params}`)
+    const searchParams = new URLSearchParams()
+    searchParams.set('scope', 'public')
+    if (cursor) {
+      searchParams.set('cursor', cursor)
+    }
+    return app.request(`/${libraryId}/item?${searchParams}`)
   }
 
   describe('파라미터 검증', () => {
@@ -94,18 +106,18 @@ describe('GET /api/v1/library/:id', () => {
   })
 
   describe('권한 검증', () => {
-    test.skip('존재하지 않는 라이브러리를 요청하면 빈 배열을 반환한다', async () => {
+    test.skip('존재하지 않는 라이브러리를 요청하면 404 에러를 반환한다', async () => {
       // 실제 DB 연결이 필요한 테스트
       const response = await createRequest(999999)
 
-      expect(response.status).toBe(200)
+      expect(response.status).toBe(404)
     })
 
-    test.skip('비공개 라이브러리를 다른 사용자가 요청하면 빈 배열을 반환한다', async () => {
+    test.skip('비공개 라이브러리를 다른 사용자가 요청하면 404 에러를 반환한다', async () => {
       // 실제 인증 및 DB 연결이 필요한 테스트
       const response = await createRequest(1)
 
-      expect(response.status).toBe(200)
+      expect(response.status).toBe(404)
     })
   })
 

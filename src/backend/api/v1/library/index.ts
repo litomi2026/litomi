@@ -3,11 +3,11 @@ import 'server-only'
 
 import { Env } from '@/backend'
 
-import itemsRoutes from './[id]/GET'
+import libraryIdRoutes from './[id]/GET'
+import libraryItemRoutes from './[id]/item/GET'
 import libraryGetRoutes from './GET'
 import libraryHistoryRoutes from './history'
 import libraryMangaRoutes from './manga'
-import libraryMetaRoutes from './meta'
 import libraryRatingRoutes from './rating'
 import librarySummaryRoutes from './summary'
 
@@ -18,7 +18,7 @@ libraryRoutes.route('/history', libraryHistoryRoutes)
 libraryRoutes.route('/manga', libraryMangaRoutes)
 libraryRoutes.route('/rating', libraryRatingRoutes)
 libraryRoutes.route('/summary', librarySummaryRoutes)
-libraryRoutes.route('/:id/meta', libraryMetaRoutes)
-libraryRoutes.route('/:id', itemsRoutes)
+libraryRoutes.route('/:id', libraryIdRoutes)
+libraryRoutes.route('/:id/item', libraryItemRoutes)
 
 export default libraryRoutes

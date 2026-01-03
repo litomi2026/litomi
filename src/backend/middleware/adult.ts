@@ -6,7 +6,7 @@ import type { Env } from '..'
 
 export const requireAdult = createMiddleware<Env>(async (c, next) => {
   // https://developers.cloudflare.com/fundamentals/reference/http-request-headers/#cf-ipcountry
-  const country = c.req.header('CF-IPCountry')?.trim().toUpperCase()
+  const country = c.req.header('CF-IPCountry')?.trim().toUpperCase() ?? 'KR'
   if (country !== 'KR') {
     return await next()
   }

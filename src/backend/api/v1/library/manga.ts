@@ -18,7 +18,7 @@ import { sec } from '@/utils/format/date'
 const querySchema = z.object({
   cursor: z.string().optional(),
   limit: z.coerce.number().int().positive().max(LIBRARY_ITEMS_PER_PAGE).default(LIBRARY_ITEMS_PER_PAGE),
-  scope: z.enum(['public', 'me']).default('public'),
+  scope: z.enum(['public', 'me']),
 })
 
 export type GETV1LibraryMangaResponse = {
