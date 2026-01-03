@@ -72,7 +72,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
 
   const { isCursorHidden, registerActivity } = useAutoHideCursor({
     enabled: !showController,
-    idleDelayMs: ms('5 seconds'),
+    idleDelayMs: ms('3 seconds'),
   })
 
   // NOTE: 스크롤 방지

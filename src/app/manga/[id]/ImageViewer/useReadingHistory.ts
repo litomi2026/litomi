@@ -26,6 +26,9 @@ export default function useReadingHistory(mangaId: number) {
         return stored ? parseInt(stored, 10) : null
       }
     },
+    meta: {
+      suppressGlobalErrorToastForStatuses: [404],
+    },
     enabled: Boolean(mangaId) && !isMeLoading,
   })
 
