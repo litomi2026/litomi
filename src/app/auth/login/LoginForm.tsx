@@ -4,10 +4,10 @@ import FingerprintJS from '@fingerprintjs/fingerprintjs'
 import { TurnstileInstance } from '@marsidev/react-turnstile'
 import { sendGAEvent } from '@next/third-parties/google'
 import { useQueryClient } from '@tanstack/react-query'
-import { Loader2, X } from 'lucide-react'
+import { Eye, EyeOff, Loader2, X } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useRef, useState } from 'react'
+import { MouseEvent, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import { migrateReadingHistory } from '@/app/manga/[id]/actions'
@@ -47,6 +47,7 @@ type User = {
 export default function LoginForm() {
   const router = useRouter()
   const formRef = useRef<HTMLFormElement>(null)
+  const passwordInputRef = useRef<HTMLInputElement | null>(null)
   const turnstileRef = useRef<TurnstileInstance>(null)
   const queryClient = useQueryClient()
   const [currentLoginId, setCurrentLoginId] = useState('')
@@ -59,16 +60,27 @@ export default function LoginForm() {
     if (!(loginIdInput instanceof HTMLInputElement)) {
       return
     }
+
     loginIdInput.value = ''
     setCurrentLoginId('')
+    loginIdInput.focus()
   }
 
-  function resetPassword() {
-    const passwordInput = formRef.current?.elements.namedItem('password')
-    if (!(passwordInput instanceof HTMLInputElement)) {
+  function togglePasswordVisibility(e: MouseEvent<HTMLButtonElement>) {
+    const input = passwordInputRef.current
+    if (!input) {
       return
     }
-    passwordInput.value = ''
+
+    const nextVisible = input.type === 'password'
+    input.type = nextVisible ? 'text' : 'password'
+
+    if (nextVisible) {
+      e.currentTarget.setAttribute('aria-pressed', 'true')
+    } else {
+      e.currentTarget.removeAttribute('aria-pressed')
+    }
+    input.focus()
   }
 
   const [_, dispatchMigration] = useServerAction({
@@ -174,13 +186,13 @@ export default function LoginForm() {
                 <label className="block mb-1.5 text-sm font-medium text-zinc-300" htmlFor="login-id">
                   아이디
                 </label>
-                <div className="relative">
+                <div className="relative group">
                   <input
                     aria-invalid={!!loginIdError}
                     autoCapitalize="off"
                     autoComplete="username"
                     autoFocus
-                    className="w-full rounded-xl bg-white/4 border border-white/7 px-3 py-2.5 text-zinc-50 placeholder:text-zinc-500 transition
+                    className="w-full rounded-xl bg-white/4 border border-white/7 pl-3 pr-10 py-2.5 text-zinc-50 placeholder:text-zinc-500 transition
                       focus:outline-none focus:ring-2 focus:ring-white/12 focus:border-transparent
                       disabled:opacity-60 disabled:cursor-not-allowed
                       aria-invalid:border-red-600/50 aria-invalid:focus:ring-red-600/30"
@@ -197,8 +209,14 @@ export default function LoginForm() {
                   />
                   <button
                     aria-label="아이디 지우기"
-                    className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1.5 bg-white/5 border border-white/7 text-zinc-400 hover:text-zinc-200 hover:bg-white/7 transition"
+                    className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1.5 bg-white/5 border border-white/7 text-zinc-400 hover:text-zinc-200 hover:bg-white/7 transition
+                      opacity-0 pointer-events-none
+                      group-has-[input:focus:not(:placeholder-shown)]:opacity-100 group-has-[input:focus:not(:placeholder-shown)]:pointer-events-auto
+                      disabled:opacity-50 disabled:pointer-events-none"
+                    disabled={isPending}
                     onClick={resetId}
+                    onMouseDown={(e) => e.preventDefault()}
+                    tabIndex={-1}
                     type="button"
                   >
                     <X className="size-3.5" />
@@ -211,11 +229,11 @@ export default function LoginForm() {
                 <label className="block mb-1.5 text-sm font-medium text-zinc-300" htmlFor="password">
                   비밀번호
                 </label>
-                <div className="relative">
+                <div className="relative group">
                   <input
                     aria-invalid={!!passwordError}
                     autoComplete="current-password"
-                    className="w-full rounded-xl bg-white/4 border border-white/7 px-3 py-2.5 text-zinc-50 placeholder:text-zinc-500 transition
+                    className="w-full rounded-xl bg-white/4 border border-white/7 pl-3 pr-10 py-2.5 text-zinc-50 placeholder:text-zinc-500 transition
                       focus:outline-none focus:ring-2 focus:ring-white/12 focus:border-transparent
                       disabled:opacity-60 disabled:cursor-not-allowed
                       aria-invalid:border-red-600/50 aria-invalid:focus:ring-red-600/30"
@@ -227,16 +245,25 @@ export default function LoginForm() {
                     name="password"
                     pattern={PASSWORD_PATTERN}
                     placeholder="비밀번호"
+                    ref={passwordInputRef}
                     required
                     type="password"
                   />
                   <button
-                    aria-label="비밀번호 지우기"
-                    className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1.5 bg-white/5 border border-white/7 text-zinc-400 hover:text-zinc-200 hover:bg-white/7 transition"
-                    onClick={resetPassword}
+                    aria-label="비밀번호 표시"
+                    className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1.5 bg-white/5 border border-white/7 text-zinc-400 hover:text-zinc-200 hover:bg-white/7 transition
+                      opacity-0 pointer-events-none
+                      group-has-[input:focus:not(:placeholder-shown)]:opacity-100 group-has-[input:focus:not(:placeholder-shown)]:pointer-events-auto
+                      aria-pressed:[&_.eye-icon]:hidden aria-pressed:[&_.eye-off-icon]:block
+                      disabled:opacity-50 disabled:pointer-events-none"
+                    disabled={isPending}
+                    onClick={togglePasswordVisibility}
+                    onMouseDown={(e) => e.preventDefault()}
+                    tabIndex={-1}
                     type="button"
                   >
-                    <X className="size-3.5" />
+                    <Eye className="eye-icon size-3.5" />
+                    <EyeOff className="eye-off-icon size-3.5 hidden" />
                   </button>
                 </div>
                 {passwordError && <p className="mt-1 text-xs text-red-400">{passwordError}</p>}
@@ -245,7 +272,7 @@ export default function LoginForm() {
               <div className="flex justify-end">
                 <div className="flex items-center gap-2">
                   <label className="text-sm text-zinc-400 select-none cursor-pointer" htmlFor="remember">
-                    로그인 유지(30일)
+                    로그인 유지 (30일)
                   </label>
                   <Toggle
                     aria-label="로그인 유지"

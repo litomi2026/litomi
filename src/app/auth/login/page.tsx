@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 
-import styles from './authTheme.module.css'
+import styles from '../authTheme.module.css'
 import LoginForm from './LoginForm'
 
 export const metadata: Metadata = {

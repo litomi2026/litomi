@@ -2,7 +2,8 @@
   background:
     radial-gradient(120% 120% at 14% 18%, color-mix(in oklab, var(--color-brand) 14%, transparent) 0%, transparent 62%),
     radial-gradient(110% 100% at 86% 10%, color-mix(in oklab, var(--color-brand) 10%, transparent) 0%, transparent 60%),
-    radial-gradient(90% 90% at 60% 110%, rgba(255, 255, 255, 0.035) 0%, transparent 58%), #050507;
+    radial-gradient(90% 90% at 60% 110%, rgba(255, 255, 255, 0.035) 0%, transparent 58%),
+    #050507;
 }
 
 .card {
@@ -17,3 +18,5 @@
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
+
+
