@@ -197,7 +197,9 @@ export default function RewardedAdSection() {
             <ShieldCheck className="size-5 text-zinc-300 shrink-0 mt-0.5" />
             <div>
               <h3 className="font-medium text-zinc-200 mb-1">리보 적립 전에 보안 검증이 필요해요</h3>
-              <p className="text-sm text-zinc-400">Cloudflare 보안 검증을 완료하면 2분 동안 리보를 적립할 수 있어요.</p>
+              <p className="text-xs text-zinc-400">
+                Cloudflare 보안 검증을 완료하면 광고를 클릭할 때 리보가 적립돼요. 2분마다 자동으로 다시 검증해요.
+              </p>
             </div>
           </div>
           <TurnstileWidget

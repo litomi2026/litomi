@@ -1,6 +1,6 @@
 'use client'
 
-import { Bookmark, BookOpen, LibraryBig, Star } from 'lucide-react'
+import { Bookmark, BookOpen, Check, LibraryBig, Star } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -165,7 +165,9 @@ export default function PointsShop() {
             <button
               aria-disabled={isDisabled}
               aria-selected={isSelected}
-              className="w-full text-left flex items-center gap-4 p-4 rounded-xl border bg-white/4 border-white/7 hover:bg-white/5.5 aria-selected:bg-white/5 aria-selected:border-white/10 aria-disabled:opacity-60 aria-disabled:hover:bg-white/4 aria-disabled:cursor-not-allowed transition"
+              className="w-full text-left flex items-center gap-4 p-4 rounded-xl border bg-white/4 border-white/7 transition 
+                hover:bg-white/5.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/15 focus-visible:ring-offset-0 
+                aria-selected:bg-brand/8 aria-selected:hover:bg-brand/10 aria-disabled:opacity-60 aria-disabled:hover:bg-white/4 aria-disabled:cursor-not-allowed"
               disabled={isDisabled}
               key={item.id}
               onClick={() => setSelectedItemId(item.id)}
@@ -184,13 +186,20 @@ export default function PointsShop() {
                 <p className="text-sm text-zinc-500 truncate">{item.description}</p>
               </div>
 
-              <div className="text-right shrink-0">
+              <div className="shrink-0 flex items-center gap-3">
                 <p
                   aria-disabled={!item.canAfford}
-                  className="font-semibold text-zinc-200 aria-disabled:text-zinc-500 tabular-nums"
+                  className="text-right font-semibold text-zinc-200 aria-disabled:text-zinc-500 tabular-nums"
                 >
                   {item.price.toLocaleString()} 리보
                 </p>
+                <span
+                  aria-hidden="true"
+                  aria-selected={isSelected}
+                  className="inline-flex size-6 items-center justify-center rounded-full bg-brand/12 text-brand opacity-0 aria-selected:opacity-100 transition-opacity"
+                >
+                  <Check className="size-4" />
+                </span>
               </div>
             </button>
           )
