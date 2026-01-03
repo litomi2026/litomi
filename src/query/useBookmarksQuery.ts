@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 
-import type { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark/get'
+import type { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark/GET'
 
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'

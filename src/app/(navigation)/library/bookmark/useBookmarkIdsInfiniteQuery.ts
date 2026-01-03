@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 
-import type { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark/get'
+import type { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark/GET'
 
 import { BOOKMARKS_PER_PAGE } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'

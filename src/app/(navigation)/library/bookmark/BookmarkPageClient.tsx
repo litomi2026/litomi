@@ -1,6 +1,6 @@
 'use client'
 
-import type { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark/get'
+import type { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark/GET'
 
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'

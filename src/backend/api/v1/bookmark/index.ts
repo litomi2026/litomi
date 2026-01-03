@@ -3,7 +3,7 @@ import 'server-only'
 
 import { Env } from '@/backend'
 
-import getBookmarksRoute from './get'
+import getBookmarksRoute from './GET'
 import importBookmarksRoute from './import'
 import toggleBookmarkRoute from './toggle'
 
