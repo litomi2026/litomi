@@ -15,19 +15,7 @@ import { ProblemDetailsError } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_GA_ID } = env
 
-function getCachedUsername(queryClient: QueryClient): string | undefined {
-  const me = queryClient.getQueryData(QueryKeys.me)
-  if (!me || typeof me !== 'object') {
-    return undefined
-  }
-  if (!('name' in me)) {
-    return undefined
-  }
-  const name = me.name
-  return typeof name === 'string' && name.length > 0 ? name : undefined
-}
-
-function isAdultVerificationRequiredProblem(typeUrl: string): boolean {
+export function isAdultVerificationRequiredProblem(typeUrl: string): boolean {
   const suffix = '/problems/adult-verification-required'
 
   if (typeUrl.endsWith(suffix)) {
@@ -39,6 +27,18 @@ function isAdultVerificationRequiredProblem(typeUrl: string): boolean {
   } catch {
     return false
   }
+}
+
+function getCachedUsername(queryClient: QueryClient): string | undefined {
+  const me = queryClient.getQueryData(QueryKeys.me)
+  if (!me || typeof me !== 'object') {
+    return undefined
+  }
+  if (!('name' in me)) {
+    return undefined
+  }
+  const name = me.name
+  return typeof name === 'string' && name.length > 0 ? name : undefined
 }
 
 function shouldRetryError(error: unknown, failureCount: number, maxRetries = 3): boolean {

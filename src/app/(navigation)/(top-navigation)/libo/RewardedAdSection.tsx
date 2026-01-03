@@ -20,9 +20,10 @@ import PlugRushNativeAd from '@/components/ads/plugrush/PlugRushNativeAd'
 import TurnstileWidget from '@/components/TurnstileWidget'
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
+import { isAdultVerificationRequiredProblem } from '@/lib/QueryProvider'
 import useMeQuery from '@/query/useMeQuery'
 import usePointsTurnstileQuery from '@/query/usePointsTurnstileQuery'
-import { fetchWithErrorHandling, type ProblemDetailsError } from '@/utils/react-query-error'
+import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
 
 import { runWhenDocumentVisible } from './util'
 
@@ -53,9 +54,20 @@ export default function RewardedAdSection() {
       setTurnstileToken('')
       queryClient.invalidateQueries({ queryKey: QueryKeys.pointsTurnstile })
     },
-    onError: () => {
+    onError: (error) => {
       setTurnstileToken('')
-      turnstileRef.current?.reset()
+
+      if (error.status === 403 && isAdultVerificationRequiredProblem(error.type)) {
+        return
+      }
+
+      if (error.status === 401) {
+        return
+      }
+
+      if (error.status >= 400 && error.status < 500) {
+        turnstileRef.current?.reset()
+      }
     },
   })
 
