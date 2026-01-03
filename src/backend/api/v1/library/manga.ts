@@ -18,6 +18,7 @@ import { sec } from '@/utils/format/date'
 const querySchema = z.object({
   cursor: z.string().optional(),
   limit: z.coerce.number().int().positive().max(LIBRARY_ITEMS_PER_PAGE).default(LIBRARY_ITEMS_PER_PAGE),
+  scope: z.enum(['public', 'me']).default('public'),
 })
 
 export type GETV1LibraryMangaResponse = {
@@ -39,8 +40,14 @@ export type LibraryMangaItem = {
 const libraryMangaRoutes = new Hono<Env>()
 
 libraryMangaRoutes.get('/', zProblemValidator('query', querySchema), async (c) => {
+  const { cursor, limit, scope } = c.req.valid('query')
   const userId = c.get('userId')
-  const { cursor, limit } = c.req.valid('query')
+
+  if (scope === 'me') {
+    if (!userId) {
+      return problemResponse(c, { status: 401, detail: '로그인 정보가 없거나 만료됐어요' })
+    }
+  }
 
   const decodedCursor = cursor ? decodeLibraryIdCursor(cursor) : null
 
@@ -50,8 +57,8 @@ libraryMangaRoutes.get('/', zProblemValidator('query', querySchema), async (c) =
 
   const baseConditions = []
 
-  if (userId) {
-    baseConditions.push(eq(libraryTable.userId, userId))
+  if (scope === 'me') {
+    baseConditions.push(eq(libraryTable.userId, userId!))
   } else {
     baseConditions.push(eq(libraryTable.isPublic, true))
   }
@@ -106,7 +113,14 @@ libraryMangaRoutes.get('/', zProblemValidator('query', querySchema), async (c) =
   try {
     const rows = await query
 
-    const cacheControl = cursor ? createCacheControl({ private: true, maxAge: sec('1 minute') }) : privateCacheControl
+    const sharedCacheControl = createCacheControl({
+      public: true,
+      maxAge: 3,
+      sMaxAge: sec('1 day'),
+      swr: sec('10 minutes'),
+    })
+
+    const cacheControl = scope === 'public' ? sharedCacheControl : privateCacheControl
 
     if (rows.length === 0) {
       const result = { items: [], nextCursor: null }

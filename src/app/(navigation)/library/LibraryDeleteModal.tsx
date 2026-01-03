@@ -5,8 +5,7 @@ import { Loader2, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
-import type { GETLibraryResponse } from '@/backend/api/v1/library/GET'
-import type { GETV1LibraryListResponse } from '@/backend/api/v1/library/list'
+import type { GETV1LibraryListResponse, LibraryListItem } from '@/backend/api/v1/library/GET'
 
 import Modal from '@/components/ui/Modal'
 import { QueryKeys } from '@/constants/query'
@@ -29,7 +28,7 @@ export default function LibraryDeleteModal({ libraryId, libraryName, itemCount, 
   const [_, dispatchAction, isPending] = useServerAction({
     action: deleteLibrary,
     onSuccess: (deletedLibraryId) => {
-      queryClient.setQueryData<GETLibraryResponse>(QueryKeys.libraries, (oldLibraries) => {
+      queryClient.setQueryData<LibraryListItem[]>(QueryKeys.libraries, (oldLibraries) => {
         if (!oldLibraries) {
           return oldLibraries
         }

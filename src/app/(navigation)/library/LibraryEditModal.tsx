@@ -5,8 +5,7 @@ import { Check, Loader2 } from 'lucide-react'
 import { useRef } from 'react'
 import { toast } from 'sonner'
 
-import type { GETLibraryResponse } from '@/backend/api/v1/library/GET'
-import type { GETV1LibraryListResponse } from '@/backend/api/v1/library/list'
+import type { GETV1LibraryListResponse, LibraryListItem } from '@/backend/api/v1/library/GET'
 
 import Dialog from '@/components/ui/Dialog'
 import DialogHeader from '@/components/ui/DialogHeader'
@@ -52,14 +51,16 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
       const nextIcon = formData.get('icon')?.toString() ?? null
       const nextIsPublic = formData.get('is-public')?.toString() === 'on'
 
-      queryClient.setQueryData<GETLibraryResponse>(QueryKeys.libraries, (oldLibraries) => {
+      queryClient.setQueryData<LibraryListItem[]>(QueryKeys.libraries, (oldLibraries) => {
         return oldLibraries?.map((lib) =>
           lib.id === updatedLibraryId
             ? {
                 ...lib,
                 name: nextName || lib.name,
+                description: nextDescription,
                 color: nextColor,
                 icon: nextIcon,
+                isPublic: nextIsPublic,
               }
             : lib,
         )

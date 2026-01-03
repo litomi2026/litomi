@@ -13,8 +13,9 @@ interface Options {
   userId: number | null
 }
 
-export async function fetchAllLibraryMangas(cursor: string | null) {
+export async function fetchAllLibraryMangas({ cursor, userId }: { cursor: string | null; userId: number | null }) {
   const params = new URLSearchParams()
+  params.set('scope', userId ? 'me' : 'public')
 
   if (cursor) {
     params.set('cursor', cursor)
@@ -28,7 +29,7 @@ export async function fetchAllLibraryMangas(cursor: string | null) {
 export default function useAllLibraryMangaInfiniteQuery({ userId, enabled = true }: Options) {
   return useInfiniteQuery({
     queryKey: QueryKeys.infiniteLibraryMangas(userId),
-    queryFn: ({ pageParam }) => fetchAllLibraryMangas(pageParam),
+    queryFn: ({ pageParam }) => fetchAllLibraryMangas({ cursor: pageParam, userId }),
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialPageParam: '',
     enabled,

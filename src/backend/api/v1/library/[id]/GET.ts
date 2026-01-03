@@ -38,26 +38,10 @@ itemsRoutes.get('/', zProblemValidator('param', paramsSchema), zProblemValidator
   }
 
   try {
-    const [library] = await db
-      .select({
-        id: libraryTable.id,
-        userId: libraryTable.userId,
-        isPublic: libraryTable.isPublic,
-      })
-      .from(libraryTable)
-      .where(
-        and(eq(libraryTable.id, libraryId), or(eq(libraryTable.userId, userId ?? 0), eq(libraryTable.isPublic, true))),
-      )
-
-    if (!library) {
-      return problemResponse(c, {
-        status: 404,
-        detail: '서재를 찾을 수 없어요',
-        headers: { 'Cache-Control': privateCacheControl },
-      })
-    }
-
-    const conditions: (SQL | undefined)[] = [eq(libraryItemTable.libraryId, libraryId)]
+    const conditions: (SQL | undefined)[] = [
+      eq(libraryItemTable.libraryId, libraryId),
+      or(eq(libraryTable.userId, userId ?? 0), eq(libraryTable.isPublic, true)),
+    ]
 
     if (cursorData) {
       const { timestamp: cursorTimestamp, mangaId: cursorMangaId } = cursorData
@@ -73,6 +57,7 @@ itemsRoutes.get('/', zProblemValidator('param', paramsSchema), zProblemValidator
     const query = db
       .select({ mangaId: libraryItemTable.mangaId, createdAt: libraryItemTable.createdAt })
       .from(libraryItemTable)
+      .innerJoin(libraryTable, eq(libraryItemTable.libraryId, libraryTable.id))
       .where(and(...conditions))
       .orderBy(desc(libraryItemTable.createdAt), desc(libraryItemTable.mangaId))
       .limit(LIBRARY_ITEMS_PER_PAGE + 1)

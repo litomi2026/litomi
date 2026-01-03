@@ -5,8 +5,7 @@ import { Loader2, Plus } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-import type { GETLibraryResponse } from '@/backend/api/v1/library/GET'
-import type { GETV1LibraryListResponse } from '@/backend/api/v1/library/list'
+import type { GETV1LibraryListResponse, LibraryListItem } from '@/backend/api/v1/library/GET'
 
 import Dialog from '@/components/ui/Dialog'
 import DialogHeader from '@/components/ui/DialogHeader'
@@ -54,21 +53,28 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
   const [formErrors, dispatchAction, isPending] = useServerAction({
     action: createLibrary,
     onSuccess: (newLibraryId, [formData]) => {
-      queryClient.setQueryData<GETLibraryResponse>(QueryKeys.libraries, (oldLibraries) => {
-        const newLibrary = {
+      const meId = me?.id
+      const now = Date.now()
+
+      queryClient.setQueryData<LibraryListItem[]>(QueryKeys.libraries, (oldLibraries) => {
+        if (!meId) {
+          return oldLibraries
+        }
+
+        const newLibrary: LibraryListItem = {
           id: newLibraryId,
+          userId: meId,
           name: formData.get('name')?.toString() ?? '',
-          description: formData.get('description')?.toString(),
+          description: (formData.get('description')?.toString() ?? '').trim() || null,
           color: formData.get('color')?.toString() ?? null,
           icon: formData.get('icon')?.toString() ?? null,
           isPublic: formData.get('is-public')?.toString() === 'on',
+          createdAt: now,
           itemCount: 0,
         }
 
-        return oldLibraries ? [...oldLibraries, newLibrary] : [newLibrary]
+        return oldLibraries ? [...oldLibraries.filter((lib) => lib.id !== newLibrary.id), newLibrary] : [newLibrary]
       })
-
-      const meId = me?.id
 
       if (meId) {
         queryClient.setQueryData<InfiniteData<GETV1LibraryListResponse, string | null>>(
@@ -77,8 +83,6 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
             if (!oldData) {
               return oldData
             }
-
-            const now = Date.now()
 
             const newItem = {
               id: newLibraryId,

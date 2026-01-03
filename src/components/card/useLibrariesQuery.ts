@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 
-import type { GETLibraryResponse } from '@/backend/api/v1/library/GET'
+import type { GETV1LibraryListResponse } from '@/backend/api/v1/library/GET'
 
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
@@ -14,9 +14,12 @@ type Options = {
 }
 
 export async function fetchLibraries() {
-  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/library`
-  const { data } = await fetchWithErrorHandling<GETLibraryResponse>(url, { credentials: 'include' })
-  return data
+  const params = new URLSearchParams()
+  params.set('scope', 'me')
+
+  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/library?${params}`
+  const { data } = await fetchWithErrorHandling<GETV1LibraryListResponse>(url, { credentials: 'include' })
+  return data.libraries
 }
 
 export default function useLibrariesQuery({ enabled = true }: Options = {}) {
