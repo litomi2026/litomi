@@ -5,7 +5,7 @@ import { Loader2, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
-import type { GETLibraryResponse } from '@/backend/api/v1/library/get'
+import type { GETLibraryResponse } from '@/backend/api/v1/library/GET'
 import type { GETV1LibraryListResponse } from '@/backend/api/v1/library/list'
 
 import Modal from '@/components/ui/Modal'

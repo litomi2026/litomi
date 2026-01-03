@@ -4,7 +4,7 @@ import 'server-only'
 import { Env } from '@/backend'
 
 import itemsRoutes from './[id]'
-import libraryGetRoutes from './get'
+import libraryGetRoutes from './GET'
 import libraryHistoryRoutes from './history'
 import libraryListRoutes from './list'
 import libraryMangaRoutes from './manga'

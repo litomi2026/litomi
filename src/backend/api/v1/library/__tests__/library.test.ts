@@ -6,7 +6,7 @@ import type { Env } from '@/backend'
 
 import libraryRoutes from '..'
 import { type GETLibraryItemsResponse } from '../[id]'
-import { type GETLibraryResponse } from '../get'
+import { type GETLibraryResponse } from '../GET'
 
 const app = new Hono<Env>()
 app.use('*', contextStorage())

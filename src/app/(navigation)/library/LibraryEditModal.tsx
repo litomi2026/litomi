@@ -5,7 +5,7 @@ import { Check, Loader2 } from 'lucide-react'
 import { useRef } from 'react'
 import { toast } from 'sonner'
 
-import type { GETLibraryResponse } from '@/backend/api/v1/library/get'
+import type { GETLibraryResponse } from '@/backend/api/v1/library/GET'
 import type { GETV1LibraryListResponse } from '@/backend/api/v1/library/list'
 
 import Dialog from '@/components/ui/Dialog'
