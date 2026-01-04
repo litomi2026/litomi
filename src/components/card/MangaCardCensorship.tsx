@@ -7,10 +7,10 @@ import { useEffect, useRef, useState } from 'react'
 
 import { CensorshipLevel } from '@/database/enum'
 import useMatchedCensorships from '@/hook/useCensorshipCheck'
-import useLocaleFromCookie from '@/hook/useLocaleFromCookie'
 import useCensorshipsMapQuery from '@/query/useCensorshipsMapQuery'
 import useMeQuery from '@/query/useMeQuery'
 import { Manga } from '@/types/manga'
+import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
 
 const MangaCardCensorshipChildren = dynamic(() => import('./MangaCardCensorshipChildren'))
 
@@ -27,7 +27,7 @@ export default function MangaCardCensorship({ manga }: Props) {
   const { censoringReasons, highestCensorshipLevel } = useMatchedCensorships({ manga, censorshipsMap })
   const ref = useRef<HTMLDivElement>(null)
   const [isBlurDisabled, setIsBlurDisabled] = useState(false)
-  const locale = useLocaleFromCookie() || navigator.language || 'ko'
+  const locale = getLocaleFromCookie() || navigator.language || 'ko'
   const childrenDay = getChildrenDayForLocale(locale)
   const isChildrenDay = checkChildrenDay(childrenDay)
   const shouldCensorChildren = isChildrenDay && manga.tags?.some((tag) => CHILDREN_TAGS.has(tag.value))

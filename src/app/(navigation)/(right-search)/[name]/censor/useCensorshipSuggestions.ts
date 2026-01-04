@@ -1,12 +1,11 @@
 'use client'
 
-import { useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { DEFAULT_SUGGESTIONS } from '@/constants/json'
-import { MAX_SEARCH_SUGGESTIONS, SUGGESTION_DEBOUNCE_MS } from '@/constants/policy'
+import { SUGGESTION_DEBOUNCE_MS } from '@/constants/policy'
 import useDebouncedValue from '@/hook/useDebouncedValue'
 
-import { BLIND_TAG_SUGGESTIONS, CENSORSHIP_PREFIX_SET } from './constants'
 import useCensorshipSuggestionsQuery from './useCensorshipSuggestionsQuery'
 
 export type CensorshipSuggestion = {
@@ -25,7 +24,9 @@ export default function useCensorshipSuggestions({ inputValue, cursorPosition }:
   const [selectedIndex, setSelectedIndex] = useState(INITIAL_SELECTED_INDEX)
 
   const currentWord = useMemo(() => {
-    if (!inputValue) return { word: '', start: 0, end: 0 }
+    if (!inputValue) {
+      return { word: '', start: 0, end: 0 }
+    }
 
     const lastComma = inputValue.lastIndexOf(',', cursorPosition - 1)
     const nextComma = inputValue.indexOf(',', cursorPosition)
@@ -46,72 +47,17 @@ export default function useCensorshipSuggestions({ inputValue, cursorPosition }:
     delay: SUGGESTION_DEBOUNCE_MS,
   })
 
-  const { data: apiSuggestions = [], isLoading, isFetching } = useCensorshipSuggestionsQuery({ query: debouncedWord })
-  const cachedSuggestionsRef = useRef(DEFAULT_SUGGESTIONS)
+  const {
+    data: suggestions = DEFAULT_SUGGESTIONS,
+    isLoading,
+    isFetching,
+  } = useCensorshipSuggestionsQuery({ query: debouncedWord })
 
-  const suggestions = useMemo(() => {
-    if (!debouncedWord) {
-      return DEFAULT_SUGGESTIONS
-    }
-
-    const seenValues = new Set<string>()
-    const results: CensorshipSuggestion[] = []
-
-    const matchesSearch = (s: CensorshipSuggestion): boolean => {
-      if (s.value.includes(debouncedWord)) return true
-      return s.label.includes(debouncedWord)
-    }
-
-    // Helper for adding unique suggestions - O(1) per check
-    const addUnique = (suggestion: CensorshipSuggestion): boolean => {
-      if (seenValues.has(suggestion.value)) return false
-      if (results.length >= MAX_SEARCH_SUGGESTIONS) return false
-
-      seenValues.add(suggestion.value)
-      results.push(suggestion)
-      return true
-    }
-
-    // Helper to check if value has censorship prefix - O(k) where k is prefix length (max 10)
-    const hasCensorshipPrefix = (value: string): boolean => {
-      const colonIndex = value.indexOf(':')
-      if (colonIndex === -1) return false
-      return CENSORSHIP_PREFIX_SET.has(value.slice(0, colonIndex + 1))
-    }
-
-    // 1. Add matching blind tags first (priority) - O(b) where b = blind tags count
-    for (const blindTag of BLIND_TAG_SUGGESTIONS) {
-      if (matchesSearch(blindTag)) {
-        if (!addUnique(blindTag)) break // Stop if we hit the limit
-      }
-    }
-
-    // 2. Filter and add API suggestions - O(a) where a = api suggestions count
-    if (results.length < MAX_SEARCH_SUGGESTIONS) {
-      for (const suggestion of apiSuggestions) {
-        // Quick rejection checks before expensive operations
-        if (!matchesSearch(suggestion)) continue
-
-        // Check if it's a valid censorship suggestion
-        const hasPrefix = hasCensorshipPrefix(suggestion.value)
-        const isTag = !hasPrefix && !suggestion.value.includes(':') && suggestion.label.includes(':')
-
-        if (hasPrefix || isTag) {
-          if (!addUnique(suggestion)) break // Stop if we hit the limit
-        }
-      }
-    }
-
-    if (results.length > 0) {
-      cachedSuggestionsRef.current = results
-    }
-
-    return cachedSuggestionsRef.current
-  }, [debouncedWord, apiSuggestions])
-
-  const navigateSelection = (direction: 'down' | 'up') => {
+  function navigateSelection(direction: 'down' | 'up') {
     const len = suggestions.length
-    if (len === 0) return
+    if (len === 0) {
+      return
+    }
 
     setSelectedIndex((prev) => {
       if (direction === 'down') {
@@ -122,7 +68,7 @@ export default function useCensorshipSuggestions({ inputValue, cursorPosition }:
     })
   }
 
-  const selectSuggestion = (suggestion: CensorshipSuggestion): string => {
+  function selectSuggestion(suggestion: CensorshipSuggestion): string {
     const before = inputValue.slice(0, currentWord.start)
     const after = inputValue.slice(currentWord.end)
     const needsSpace = before.length > 0 && !before.endsWith(' ')

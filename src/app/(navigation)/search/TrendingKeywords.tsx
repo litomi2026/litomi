@@ -6,8 +6,8 @@ import { ComponentProps, PropsWithChildren, useCallback, useEffect, useRef, useS
 import { useInView } from 'react-intersection-observer'
 import { twMerge } from 'tailwind-merge'
 
-import useLocaleFromCookie from '@/hook/useLocaleFromCookie'
 import { Locale } from '@/translation/common'
+import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
 
 import KeywordLink from './KeywordLink'
 import UpdateFromSearchParams from './UpdateFromSearchParams'
@@ -20,7 +20,7 @@ export default function TrendingKeywords() {
   const { data } = useTrendingKeywordsQuery()
   const [currentIndex, setCurrentIndex] = useState(0)
   const [searchParams, setSearchParams] = useState<ReadonlyURLSearchParams>()
-  const locale = useLocaleFromCookie()
+  const locale = getLocaleFromCookie()
   const trendingKeywords = data?.keywords.length ? data.keywords : getDefaultKeywords(locale)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const scrollContainerDesktopRef = useRef<HTMLDivElement>(null)
@@ -43,6 +43,34 @@ export default function TrendingKeywords() {
     }
   }
 
+  const scrollToKeyword = useCallback((index: number) => {
+    const container = scrollContainerRef.current
+    if (!container) {
+      return
+    }
+
+    const keywordElement = container.children[index] as HTMLElement | undefined
+    if (!keywordElement) {
+      return
+    }
+
+    isProgrammaticScrollRef.current = true
+
+    const elementLeft = keywordElement.offsetLeft
+    const elementWidth = keywordElement.offsetWidth
+    const containerWidth = container.offsetWidth
+    const targetScrollLeft = elementLeft - containerWidth / 2 + elementWidth / 2
+
+    container.scrollTo({
+      left: targetScrollLeft,
+      behavior: 'smooth',
+    })
+
+    setTimeout(() => {
+      isProgrammaticScrollRef.current = false
+    }, SCROLL_MOMENTUM_DELAY)
+  }, [])
+
   const rotateToNext = useCallback(() => {
     if (isUserInteractingRef.current || trendingKeywordCount === 1) {
       return
@@ -53,7 +81,7 @@ export default function TrendingKeywords() {
       scrollToKeyword(nextIndex)
       return nextIndex
     })
-  }, [trendingKeywordCount])
+  }, [scrollToKeyword, trendingKeywordCount])
 
   const startRotation = useCallback(() => {
     if (rotationTimerRef.current) {
@@ -131,31 +159,6 @@ export default function TrendingKeywords() {
     setCurrentIndex(index)
     scrollToKeyword(index)
     setTimeout(handleInteractionEnd, ROTATION_INTERVAL)
-  }
-
-  function scrollToKeyword(index: number) {
-    if (scrollContainerRef.current) {
-      const container = scrollContainerRef.current
-      const keywordElement = container.children[index] as HTMLElement
-
-      if (keywordElement) {
-        isProgrammaticScrollRef.current = true
-
-        const elementLeft = keywordElement.offsetLeft
-        const elementWidth = keywordElement.offsetWidth
-        const containerWidth = container.offsetWidth
-        const targetScrollLeft = elementLeft - containerWidth / 2 + elementWidth / 2
-
-        container.scrollTo({
-          left: targetScrollLeft,
-          behavior: 'smooth',
-        })
-
-        setTimeout(() => {
-          isProgrammaticScrollRef.current = false
-        }, SCROLL_MOMENTUM_DELAY)
-      }
-    }
   }
 
   function handleFocus(index: number) {

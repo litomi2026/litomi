@@ -1,12 +1,12 @@
+'use client'
+
 import Cookies from 'js-cookie'
-import { useRef } from 'react'
 
 import { CookieKey } from '@/constants/storage'
 import { Locale } from '@/translation/common'
 
-export default function useLocaleFromCookie() {
-  const locale = useRef(parseLocale(Cookies.get(CookieKey.LOCALE)))
-  return locale.current
+export function getLocaleFromCookie(): '' | Locale {
+  return parseLocale(Cookies.get(CookieKey.LOCALE))
 }
 
 function parseLocale(locale: string | undefined): '' | Locale {

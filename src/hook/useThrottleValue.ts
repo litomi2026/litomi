@@ -8,32 +8,68 @@ import { useEffect, useRef, useState } from 'react'
  * @returns      throttled 값
  */
 export function useThrottleValue<T>(value: T, delay: number): T {
-  // 실제로 컴포넌트에 제공될 throttled 값
   const [throttledValue, setThrottledValue] = useState<T>(value)
+  const lastExecutionTimeRef = useRef(0)
+  const latestValueRef = useRef<T>(value)
+  const previousValueRef = useRef<T>(value)
+  const isFirstEffectRef = useRef(true)
+  const throttleTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
-  // 마지막 업데이트 시각을 기억
-  const lastExecutedRef = useRef<number>(Date.now())
-
-  // 시간/의존성 변화에 따라 throttle 로직 수행
   useEffect(() => {
-    const now = Date.now()
-    const timeSinceLast = now - lastExecutedRef.current
+    latestValueRef.current = value
+    previousValueRef.current = value
 
-    if (timeSinceLast >= delay) {
-      // 지정 간격이 지났다면 즉시 업데이트
+    // delay가 유효하지 않거나 0 이하라면 throttle 없이 즉시 동기화해요.
+    if (!Number.isFinite(delay) || delay <= 0) {
+      clearTimeout(throttleTimerRef.current)
+      throttleTimerRef.current = undefined
+      lastExecutionTimeRef.current = 0
       setThrottledValue(value)
-      lastExecutedRef.current = now
-    } else {
-      // 아직 간격이 남았다면 남은 시간만큼 지연 후 업데이트
-      const timeoutId = window.setTimeout(() => {
-        setThrottledValue(value)
-        lastExecutedRef.current = Date.now()
-      }, delay - timeSinceLast)
-
-      // value/delay가 바뀌거나 컴포넌트 unmount 시 타이머 정리
-      return () => clearTimeout(timeoutId)
+      return
     }
-  }, [value, delay])
+
+    // 첫 effect 실행(마운트 직후)에는 throttle window를 시작하지 않아요.
+    // (마운트 직후 빠르게 값이 바뀌는 케이스에서 첫 변화가 지연되지 않도록)
+    if (isFirstEffectRef.current) {
+      isFirstEffectRef.current = false
+      if (value === previousValueRef.current) {
+        return
+      }
+    }
+
+    const now = Date.now()
+    const lastExecutionTime = lastExecutionTimeRef.current
+
+    // 첫 값 변화는 즉시 반영(leading)해요.
+    if (lastExecutionTime === 0) {
+      clearTimeout(throttleTimerRef.current)
+      throttleTimerRef.current = undefined
+      lastExecutionTimeRef.current = now
+      setThrottledValue(value)
+      return
+    }
+
+    const nextAllowedTime = lastExecutionTime + delay
+
+    // throttle window 밖이면 즉시 반영해요.
+    if (now >= nextAllowedTime) {
+      clearTimeout(throttleTimerRef.current)
+      throttleTimerRef.current = undefined
+      lastExecutionTimeRef.current = now
+      setThrottledValue(value)
+      return
+    }
+
+    // window 안이면 마지막 값(trailing)을 window 끝에 한 번 반영해요.
+    clearTimeout(throttleTimerRef.current)
+    throttleTimerRef.current = setTimeout(() => {
+      throttleTimerRef.current = undefined
+      lastExecutionTimeRef.current = Date.now()
+      setThrottledValue(latestValueRef.current)
+    }, nextAllowedTime - now)
+
+    return () => clearTimeout(throttleTimerRef.current)
+  }, [delay, value])
 
   return throttledValue
 }

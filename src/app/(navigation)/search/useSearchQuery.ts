@@ -3,7 +3,7 @@ import { useSearchParams } from 'next/navigation'
 
 import { GETProxyKSearchResponse } from '@/app/api/proxy/k/search/route'
 import { QueryKeys } from '@/constants/query'
-import useLocaleFromCookie from '@/hook/useLocaleFromCookie'
+import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
 import { whitelistSearchParams } from '@/utils/param'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
@@ -12,7 +12,7 @@ import { SEARCH_PAGE_SEARCH_PARAMS } from './constants'
 export function useSearchQuery() {
   const searchParams = useSearchParams()
   const whitelisted = whitelistSearchParams(searchParams, SEARCH_PAGE_SEARCH_PARAMS)
-  const locale = useLocaleFromCookie()
+  const locale = getLocaleFromCookie()
 
   return useInfiniteQuery<GETProxyKSearchResponse, Error>({
     queryKey: QueryKeys.search(whitelisted, locale),

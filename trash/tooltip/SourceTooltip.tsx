@@ -1,6 +1,6 @@
 import { Info } from 'lucide-react'
 
-import TooltipPopover from '../ui/TooltipPopover'
+import TooltipPopover from '../../src/components/ui/TooltipPopover'
 
 type Props = {
   disabled?: boolean

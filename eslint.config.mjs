@@ -1,22 +1,18 @@
 // @ts-check
 
-import { FlatCompat } from '@eslint/eslintrc'
 import js from '@eslint/js'
+import nextCoreWebVitals from 'eslint-config-next/core-web-vitals'
+import nextTypescript from 'eslint-config-next/typescript'
 import eslintConfigPrettier from 'eslint-config-prettier'
 import perfectionist from 'eslint-plugin-perfectionist'
 import { defineConfig } from 'eslint/config'
-import globals from 'globals'
-
-const compat = new FlatCompat({
-  baseDirectory: import.meta.dirname,
-})
 
 export default defineConfig([
-  { files: ['**/*.{js,mjs,ts,tsx}'], plugins: { js }, extends: ['js/recommended'] },
-  { files: ['**/*.{js,mjs,ts,tsx}'], languageOptions: { globals: { ...globals.browser, ...globals.node } } },
+  js.configs.recommended,
+  ...nextCoreWebVitals,
+  ...nextTypescript,
+  { ignores: ['trash/**'] },
   perfectionist.configs['recommended-natural'],
-  ...compat.config({ extends: ['next/core-web-vitals', 'next/typescript'] }),
-  { ignores: ['.next'] },
   {
     rules: {
       '@next/next/no-img-element': 'off',
@@ -36,6 +32,9 @@ export default defineConfig([
       'perfectionist/sort-object-types': 'off',
       'perfectionist/sort-objects': 'off',
       'perfectionist/sort-union-types': ['error', { groups: ['keyword', 'literal', 'named', 'operator'] }],
+
+      // NOTE: Next 16 + React 19 introduces new react-hooks recommended rules.
+      'react-hooks/set-state-in-effect': 'off',
       'react/no-unescaped-entities': 'off',
     },
   },
