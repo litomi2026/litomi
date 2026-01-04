@@ -96,7 +96,7 @@ export default function AdultVerificationSectionClient({ initialVerification, is
         }
 
         setNeedsManualRefresh(true)
-        toast.warning('인증이 완료됐는지 확인하려면 상태 새로고침을 눌러 주세요.')
+        toast.warning('인증 완료 여부를 확인하려면 상태 새로고침을 눌러 주세요')
       }
 
       window.addEventListener('focus', onFocus)
