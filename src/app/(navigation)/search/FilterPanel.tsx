@@ -389,7 +389,7 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
           </button>
           <button
             className="flex items-center justify-center flex-1 mb-safe px-3 py-2 bg-brand text-background font-medium rounded-lg transition
-                focus:outline-none focus:ring-2 focus:ring-brand/50 hover:bg-brand/90 disabled:opacity-50"
+              focus:outline-none focus:ring-2 focus:ring-brand/50 hover:bg-brand/90 active:bg-brand/90 disabled:cursor-wait"
             disabled={isPending}
             type="submit"
           >
