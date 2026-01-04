@@ -15,7 +15,8 @@ import MangaMetadataLink from '@/components/card/MangaMetadataLink'
 import MangaMetadataList from '@/components/card/MangaMetadataList'
 import MangaMetadataListWithLink from '@/components/card/MangaMetadataListWithLink'
 import MangaTagList from '@/components/card/MangaTagList'
-import Modal from '@/components/ui/Modal'
+import Dialog from '@/components/ui/Dialog'
+import DialogHeader from '@/components/ui/DialogHeader'
 import { MANGA_INITIAL_LINES, MAX_MANGA_DESCRIPTION_LENGTH } from '@/constants/policy'
 import { Manga } from '@/types/manga'
 
@@ -49,9 +50,6 @@ export const useMangaDetailModal = () => {
     },
     close: () => {
       setIsOpen(false)
-      setTimeout(() => {
-        setParams()
-      }, 300)
     },
   }
 }
@@ -60,7 +58,7 @@ export function MangaDetailModal() {
   const [showFullDescription, setShowFullDescription] = useState(false)
   const [showAllLines, setShowAllLines] = useState(false)
   const pathname = usePathname()
-  const { isOpen, params } = useMangaDetailModalStore()
+  const { isOpen, params, setParams } = useMangaDetailModalStore()
   const { close } = useMangaDetailModal()
   const { manga = {} as Manga, children } = params
 
@@ -99,133 +97,158 @@ export function MangaDetailModal() {
   }, [pathname, close])
 
   return (
-    <Modal onClose={close} open={isOpen} showCloseButton showDragButton>
-      <div className="relative overflow-hidden overflow-y-auto bg-zinc-900 min-w-3xs w-screen max-w-prose rounded-xl p-4 pt-8 shadow-xl border grid gap-4 text-sm max-h-[calc(100vh-var(--safe-area-bottom))] md:text-base">
-        <h2 className="font-bold text-lg md:text-xl">{title}</h2>
-        {description && (
-          <div className="bg-zinc-800/30 rounded-lg p-3">
-            <p className="text-zinc-300 leading-relaxed">
-              {displayDescription}
-              {shouldTruncateDescription && (
-                <button
-                  className="ml-1 text-brand font-medium hover:underline transition text-sm"
-                  onClick={() => setShowFullDescription(!showFullDescription)}
-                  type="button"
-                >
-                  {showFullDescription ? '간략히' : '더보기'}
-                </button>
-              )}
-            </p>
-          </div>
-        )}
-        <div className="grid gap-2 [&_strong]:whitespace-nowrap">
-          <div className="flex gap-2">
-            <strong>품번</strong>
-            <Suspense>
-              <MangaMetadataLink filterType="id" value={id?.toString() ?? ''} />
-            </Suspense>
-          </div>
-          {languages && languages.length > 0 && (
-            <div className="flex gap-2">
-              <strong>언어</strong>
-              <MangaMetadataList filterType="language" labeledValues={languages} />
+    <Dialog ariaLabel="작품 정보" onAfterClose={() => setParams()} onClose={close} open={isOpen}>
+      <div className="flex flex-1 flex-col min-h-0 text-sm md:text-base">
+        <DialogHeader onClose={close} title={title} titleClassName="line-clamp-1 break-all" />
+
+        <div className="flex-1 min-h-0 overflow-y-auto p-4 flex flex-col gap-4">
+          {description && (
+            <div className="bg-zinc-800/30 rounded-lg p-3">
+              <p className="text-zinc-300 leading-relaxed">
+                {displayDescription}
+                {shouldTruncateDescription && (
+                  <button
+                    className="ml-1 text-brand font-medium hover:underline transition text-sm"
+                    onClick={() => setShowFullDescription(!showFullDescription)}
+                    type="button"
+                  >
+                    {showFullDescription ? '간략히' : '더보기'}
+                  </button>
+                )}
+              </p>
             </div>
           )}
-          {type && (
-            <div className="flex gap-2">
-              <strong>종류</strong>
-              <Suspense>
-                <MangaMetadataLink filterType="type" label={type.label} value={type.value} />
-              </Suspense>
+
+          <div className="grid gap-2 [&_strong]:whitespace-nowrap">
+            <div className="flex gap-2 min-w-0">
+              <strong>품번</strong>
+              <div className="min-w-0 flex-1">
+                <Suspense>
+                  <MangaMetadataLink filterType="id" value={id?.toString() ?? ''} />
+                </Suspense>
+              </div>
             </div>
-          )}
-          {artists && artists.length > 0 && (
-            <div className="flex gap-2">
-              <strong>작가</strong>
-              <MangaMetadataListWithLink filterType="artist" items={artists} />
-            </div>
-          )}
-          {group && group.length > 0 && (
-            <div className="flex gap-2">
-              <strong>그룹</strong>
-              <MangaMetadataList filterType="group" labeledValues={group} />
-            </div>
-          )}
-          {series && series.length > 0 && (
-            <div className="flex gap-2">
-              <strong>시리즈</strong>
-              <MangaMetadataList filterType="series" labeledValues={series} />
-            </div>
-          )}
-          {characters && characters.length > 0 && (
-            <div className="flex gap-2">
-              <strong>캐릭터</strong>
-              <MangaMetadataListWithLink filterType="character" items={characters} />
-            </div>
-          )}
-          {uploader && (
-            <div className="flex gap-2">
-              <strong>업로더</strong>
-              <Suspense>
-                <MangaMetadataLink filterType="uploader" value={uploader} />
-              </Suspense>
-            </div>
-          )}
-          {date && (
-            <div className="flex gap-2">
-              <strong>날짜</strong>
-              <Link
-                className="hover:underline focus:underline"
-                href={`/search?to=${Math.ceil(new Date(date).getTime() / 1000) + 60}`}
-                prefetch={false}
-              >
-                <MangaMetadataLabel>{dayjs(date).format('YYYY-MM-DD HH:mm')}</MangaMetadataLabel>
-              </Link>
-            </div>
-          )}
-          {tags && tags.length > 0 && (
-            <Suspense>
-              <MangaTagList className="font-medium" tags={tags} />
-            </Suspense>
-          )}
-          <MangaCardStats manga={manga} />
-        </div>
-        {lines && lines.length > 0 && (
-          <div className="border-t border-zinc-800 pt-3">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-zinc-400 text-sm font-medium">대사 미리보기</span>
-              {hasMoreLines && (
-                <button
-                  className="text-brand font-medium group-hover:underline transition text-xs"
-                  onClick={() => setShowAllLines(!showAllLines)}
-                  type="button"
-                >
-                  {showAllLines ? `접기` : `더보기 (+${lines.length - MANGA_INITIAL_LINES})`}
-                </button>
-              )}
-            </div>
-            <div className="space-y-2">
-              {displayLines?.map((line, index) => (
-                <div className="flex gap-2 text-zinc-300 text-sm" key={index}>
-                  <span className="text-zinc-600 text-lg select-none">&ldquo;</span>
-                  <span className="italic flex-1">{line}</span>
+            {languages && languages.length > 0 && (
+              <div className="flex gap-2 min-w-0">
+                <strong>언어</strong>
+                <div className="min-w-0 flex-1">
+                  <MangaMetadataList filterType="language" labeledValues={languages} />
                 </div>
-              ))}
-            </div>
+              </div>
+            )}
+            {type && (
+              <div className="flex gap-2 min-w-0">
+                <strong>종류</strong>
+                <div className="min-w-0 flex-1">
+                  <Suspense>
+                    <MangaMetadataLink filterType="type" label={type.label} value={type.value} />
+                  </Suspense>
+                </div>
+              </div>
+            )}
+            {artists && artists.length > 0 && (
+              <div className="flex gap-2 min-w-0">
+                <strong>작가</strong>
+                <div className="min-w-0 flex-1">
+                  <MangaMetadataListWithLink filterType="artist" items={artists} />
+                </div>
+              </div>
+            )}
+            {group && group.length > 0 && (
+              <div className="flex gap-2 min-w-0">
+                <strong>그룹</strong>
+                <div className="min-w-0 flex-1">
+                  <MangaMetadataList filterType="group" labeledValues={group} />
+                </div>
+              </div>
+            )}
+            {series && series.length > 0 && (
+              <div className="flex gap-2 min-w-0">
+                <strong>시리즈</strong>
+                <div className="min-w-0 flex-1">
+                  <MangaMetadataList filterType="series" labeledValues={series} />
+                </div>
+              </div>
+            )}
+            {characters && characters.length > 0 && (
+              <div className="flex gap-2 min-w-0">
+                <strong>캐릭터</strong>
+                <div className="min-w-0 flex-1">
+                  <MangaMetadataListWithLink filterType="character" items={characters} />
+                </div>
+              </div>
+            )}
+            {uploader && (
+              <div className="flex gap-2 min-w-0">
+                <strong>업로더</strong>
+                <div className="min-w-0 flex-1">
+                  <Suspense>
+                    <MangaMetadataLink filterType="uploader" value={uploader} />
+                  </Suspense>
+                </div>
+              </div>
+            )}
+            {date && (
+              <div className="flex gap-2 min-w-0">
+                <strong>날짜</strong>
+                <div className="min-w-0 flex-1">
+                  <Link
+                    className="hover:underline focus:underline break-all"
+                    href={`/search?to=${Math.ceil(new Date(date).getTime() / 1000) + 60}`}
+                    prefetch={false}
+                  >
+                    <MangaMetadataLabel>{dayjs(date).format('YYYY-MM-DD HH:mm')}</MangaMetadataLabel>
+                  </Link>
+                </div>
+              </div>
+            )}
+            {tags && tags.length > 0 && (
+              <Suspense>
+                <MangaTagList className="font-medium" tags={tags} />
+              </Suspense>
+            )}
+            <MangaCardStats manga={manga} />
           </div>
-        )}
-        <div className="flex gap-2 text-sm">
-          <ErrorBoundary fallback={BookmarkButtonError}>
-            <BookmarkButton className={commonButtonStyle} manga={manga} />
-          </ErrorBoundary>
-          {isDownloadable && (
-            <ErrorBoundary fallback={DownloadButtonError}>
-              <DownloadButton className={commonButtonStyle} manga={manga} />
-            </ErrorBoundary>
+
+          {lines && lines.length > 0 && (
+            <div className="border-t border-zinc-800 pt-3">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-zinc-400 text-sm font-medium">대사 미리보기</span>
+                {hasMoreLines && (
+                  <button
+                    className="text-brand font-medium group-hover:underline transition text-xs"
+                    onClick={() => setShowAllLines(!showAllLines)}
+                    type="button"
+                  >
+                    {showAllLines ? `접기` : `더보기 (+${lines.length - MANGA_INITIAL_LINES})`}
+                  </button>
+                )}
+              </div>
+              <div className="space-y-2">
+                {displayLines?.map((line, index) => (
+                  <div className="flex gap-2 text-zinc-300 text-sm" key={index}>
+                    <span className="text-zinc-600 text-lg select-none">&ldquo;</span>
+                    <span className="italic flex-1">{line}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
+
+          <div className="flex gap-2 text-sm">
+            <ErrorBoundary fallback={BookmarkButtonError}>
+              <BookmarkButton className={commonButtonStyle} manga={manga} />
+            </ErrorBoundary>
+            {isDownloadable && (
+              <ErrorBoundary fallback={DownloadButtonError}>
+                <DownloadButton className={commonButtonStyle} manga={manga} />
+              </ErrorBoundary>
+            )}
+          </div>
+
+          {children}
         </div>
-        {children}
       </div>
-    </Modal>
+    </Dialog>
   )
 }

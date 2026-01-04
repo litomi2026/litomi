@@ -5,7 +5,7 @@ import { type ReactNode } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 type Props = {
-  title: ReactNode
+  title?: ReactNode
   onClose: () => void
   className?: string
   titleClassName?: string
@@ -28,7 +28,7 @@ export default function DialogHeader({
         className,
       )}
     >
-      <h2 className={twMerge('text-xl font-bold text-zinc-100', titleClassName)}>{title}</h2>
+      <h2 className={twMerge('text-xl font-bold text-zinc-100 line-clamp-1 break-all', titleClassName)}>{title}</h2>
       <button
         aria-label={closeButtonLabel}
         className={twMerge('p-2 -m-1 rounded-lg hover:bg-zinc-800 transition', closeButtonClassName)}

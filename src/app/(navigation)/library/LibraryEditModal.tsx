@@ -125,7 +125,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
   }
 
   return (
-    <Dialog onClose={() => onOpenChange(false)} open={open}>
+    <Dialog ariaLabel="서재 수정" onClose={() => onOpenChange(false)} open={open}>
       <form action={dispatchAction} className="flex flex-1 flex-col min-h-0" ref={formRef}>
         <input name="library-id" type="hidden" value={library.id} />
 

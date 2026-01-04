@@ -46,7 +46,7 @@ export default function ShareLibraryButton({ className = '', library }: Readonly
       >
         <Share2 className="size-5" />
       </button>
-      <Dialog onClose={handleClose} open={isModalOpen}>
+      <Dialog ariaLabel="서재 공유" onClose={handleClose} open={isModalOpen}>
         <div className="flex flex-1 flex-col min-h-0">
           <DialogHeader onClose={handleClose} title="서재 공유" />
           <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 min-h-0">

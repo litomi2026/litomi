@@ -1,12 +1,13 @@
 'use client'
 
 import { useQueryClient } from '@tanstack/react-query'
-import { Download, Upload, X } from 'lucide-react'
+import { Download, Upload } from 'lucide-react'
 import { memo, useState } from 'react'
 import { toast } from 'sonner'
 
 import { CensorshipItem } from '@/backend/api/v1/censorship'
-import Modal from '@/components/ui/Modal'
+import Dialog from '@/components/ui/Dialog'
+import DialogHeader from '@/components/ui/DialogHeader'
 import { QueryKeys } from '@/constants/query'
 import useServerAction from '@/hook/useServerAction'
 import { downloadBlob } from '@/utils/download'
@@ -134,26 +135,9 @@ function ImportExportModal({ open, onClose, censorships }: Readonly<Props>) {
   }
 
   return (
-    <Modal
-      className="fixed inset-0 z-70 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2
-        sm:w-full sm:max-w-2xl sm:max-h-[calc(100dvh-4rem)] 
-        bg-zinc-900 sm:border-2 sm:border-zinc-700 sm:rounded-xl flex flex-col overflow-hidden"
-      onClose={onClose}
-      open={open}
-    >
-      <div className="flex flex-col h-full min-h-0">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 bg-zinc-900 border-b-2 border-zinc-800 shrink-0">
-          <h2 className="text-xl font-bold text-zinc-100">규칙 가져오기/내보내기</h2>
-          <button
-            className="p-2 hover:bg-zinc-800 rounded-lg transition disabled:opacity-50"
-            disabled={isPending}
-            onClick={onClose}
-            type="button"
-          >
-            <X className="size-5 text-zinc-400" />
-          </button>
-        </div>
+    <Dialog ariaLabel="규칙 가져오기/내보내기" className="sm:max-w-2xl" onClose={onClose} open={open}>
+      <div className="flex flex-1 flex-col min-h-0">
+        <DialogHeader onClose={onClose} title="규칙 가져오기/내보내기" />
 
         {/* Tab Navigation */}
         <div className="flex border-b-2 border-zinc-800 shrink-0">
@@ -190,6 +174,7 @@ function ImportExportModal({ open, onClose, censorships }: Readonly<Props>) {
                       aria-pressed={exportFormat === 'json'}
                       className="p-3 rounded-lg border-2 transition aria-pressed:bg-zinc-700 aria-pressed:border-brand aria-pressed:text-zinc-100 aria-pressed:hover:bg-zinc-700 aria-pressed:hover:text-zinc-300"
                       onClick={() => setExportFormat('json')}
+                      type="button"
                     >
                       <div className="font-medium">JSON</div>
                       <div className="text-xs text-zinc-400">프로그램 간 호환용</div>
@@ -198,6 +183,7 @@ function ImportExportModal({ open, onClose, censorships }: Readonly<Props>) {
                       aria-pressed={exportFormat === 'csv'}
                       className="p-3 rounded-lg border-2 transition aria-pressed:bg-zinc-700 aria-pressed:border-brand aria-pressed:text-zinc-100 aria-pressed:hover:bg-zinc-700 aria-pressed:hover:text-zinc-300"
                       onClick={() => setExportFormat('csv')}
+                      type="button"
                     >
                       <div className="font-medium">CSV</div>
                       <div className="text-xs text-zinc-400">엑셀 편집용</div>
@@ -229,6 +215,7 @@ function ImportExportModal({ open, onClose, censorships }: Readonly<Props>) {
               className="w-full px-4 py-3 text-zinc-900 font-semibold bg-brand hover:bg-brand/90 disabled:bg-zinc-700 disabled:text-zinc-500 rounded-lg transition flex items-center justify-center gap-2"
               disabled={censorships.length === 0}
               onClick={handleExport}
+              type="button"
             >
               <Download className="size-5" />
               <span>내보내기</span>
@@ -255,6 +242,6 @@ function ImportExportModal({ open, onClose, censorships }: Readonly<Props>) {
           )}
         </div>
       </div>
-    </Modal>
+    </Dialog>
   )
 }

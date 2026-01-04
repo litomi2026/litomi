@@ -137,7 +137,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
         <Plus className="size-5 shrink-0" />
         <span className="font-medium sm:hidden">서재 만들기</span>
       </button>
-      <Dialog onClose={handleClose} open={isModalOpen}>
+      <Dialog ariaLabel="서재 만들기" onClose={handleClose} open={isModalOpen}>
         <form action={dispatchAction} className="flex flex-1 flex-col min-h-0">
           <DialogHeader onClose={handleClose} title="서재 만들기" />
           <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 min-h-0 relative">

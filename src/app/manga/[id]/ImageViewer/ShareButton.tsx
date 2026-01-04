@@ -7,7 +7,8 @@ import LogoFacebook from '@/components/icons/LogoFacebook'
 import LogoLine from '@/components/icons/LogoLine'
 import LogoTelegram from '@/components/icons/LogoTelegram'
 import LogoX from '@/components/icons/LogoX'
-import Modal from '@/components/ui/Modal'
+import Dialog from '@/components/ui/Dialog'
+import DialogHeader from '@/components/ui/DialogHeader'
 import { Manga } from '@/types/manga'
 
 type CopyStatus = 'error' | 'idle' | 'success'
@@ -71,69 +72,72 @@ export default function ShareButton({ manga, ...props }: Props) {
       <button aria-label="공유하기" onClick={() => setIsOpened(true)} {...props}>
         <Share2 className="size-6" />
       </button>
-      <Modal onClose={() => setIsOpened(false)} open={isOpened} showCloseButton showDragButton>
-        <div className="flex flex-col gap-4 p-4 sm:p-6 border-2 bg-zinc-900 rounded-2xl min-w-3xs max-w-prose">
-          <h2 className="text-lg sm:text-xl text-center font-semibold pt-2">공유하기</h2>
+      <Dialog ariaLabel="공유하기" onClose={() => setIsOpened(false)} open={isOpened}>
+        <div className="flex flex-1 flex-col min-h-0">
+          <DialogHeader onClose={() => setIsOpened(false)} title="공유하기" />
 
-          {supportsNativeShare && (
-            <>
-              <button
-                aria-label="기기 공유"
-                className="flex justify-center items-center gap-2 text-sm font-semibold rounded-xl p-3 w-full transition bg-zinc-800 hover:bg-zinc-700 active:scale-98"
-                onClick={handleNativeShare}
-                type="button"
-              >
-                <Share2 className="size-5" />
-                기기 공유
-              </button>
-              <div className="flex items-center gap-3">
-                <div className="flex-1 border-t border-zinc-700" />
-                <span className="text-xs text-zinc-500">또는</span>
-                <div className="flex-1 border-t border-zinc-700" />
-              </div>
-            </>
-          )}
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-            {sharePlatforms.map((platform) => {
-              const Icon = platform.icon
-              const sharingText = getSharingText(manga, platform.name.toLowerCase(), currentUrl)
-              return (
+          <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-4 p-4 sm:p-6">
+            {supportsNativeShare && (
+              <>
                 <button
-                  aria-label={`${platform.name}에 공유하기`}
-                  className={`flex flex-col items-center justify-center gap-2 p-2 sm:p-4 rounded-xl ${platform.color} ${platform.hoverColor} transition active:scale-95 touch-manipulation`}
-                  key={platform.name}
-                  onClick={() => platform.action(currentUrl, sharingText)}
+                  aria-label="기기 공유"
+                  className="flex justify-center items-center gap-2 text-sm font-semibold rounded-xl p-3 w-full transition bg-zinc-800 hover:bg-zinc-700 active:scale-98"
+                  onClick={handleNativeShare}
                   type="button"
                 >
-                  <Icon className="size-6 sm:size-7" />
-                  <span className="text-xs font-medium">{platform.name}</span>
+                  <Share2 className="size-5" />
+                  기기 공유
                 </button>
-              )
-            })}
-          </div>
-          <div className="flex flex-col gap-2">
-            <div className="text-sm text-center min-h-5">
-              {copyStatus === 'success' ? (
-                <p className="text-green-400 font-medium">✓ 링크가 복사되었어요</p>
-              ) : copyStatus === 'error' ? (
-                <p className="text-red-400 font-medium">✗ 복사에 실패했어요</p>
-              ) : (
-                <p className="text-zinc-500">링크 복사</p>
-              )}
+                <div className="flex items-center gap-3">
+                  <div className="flex-1 border-t border-zinc-700" />
+                  <span className="text-xs text-zinc-500">또는</span>
+                  <div className="flex-1 border-t border-zinc-700" />
+                </div>
+              </>
+            )}
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+              {sharePlatforms.map((platform) => {
+                const Icon = platform.icon
+                const sharingText = getSharingText(manga, platform.name.toLowerCase(), currentUrl)
+                return (
+                  <button
+                    aria-label={`${platform.name}에 공유하기`}
+                    className={`flex flex-col items-center justify-center gap-2 p-2 sm:p-4 rounded-xl ${platform.color} ${platform.hoverColor} transition active:scale-95 touch-manipulation`}
+                    key={platform.name}
+                    onClick={() => platform.action(currentUrl, sharingText)}
+                    type="button"
+                  >
+                    <Icon className="size-6 sm:size-7" />
+                    <span className="text-xs font-medium">{platform.name}</span>
+                  </button>
+                )
+              })}
             </div>
-            <button
-              aria-label="링크 복사하기"
-              className="flex justify-center items-center gap-2 text-sm font-semibold rounded-xl p-3 w-full transition border-2 border-zinc-700 hover:bg-zinc-800 hover:border-zinc-600 active:scale-95 touch-manipulation"
-              onClick={handleCopy}
-              type="button"
-            >
-              <Link className="size-5" />
-              링크 복사하기
-            </button>
+
+            <div className="flex flex-col gap-2">
+              <div className="text-sm text-center min-h-5">
+                {copyStatus === 'success' ? (
+                  <p className="text-green-400 font-medium">✓ 링크가 복사되었어요</p>
+                ) : copyStatus === 'error' ? (
+                  <p className="text-red-400 font-medium">✗ 복사에 실패했어요</p>
+                ) : (
+                  <p className="text-zinc-500">링크 복사</p>
+                )}
+              </div>
+              <button
+                aria-label="링크 복사하기"
+                className="flex justify-center items-center gap-2 text-sm font-semibold rounded-xl p-3 w-full transition border-2 border-zinc-700 hover:bg-zinc-800 hover:border-zinc-600 active:scale-95 touch-manipulation"
+                onClick={handleCopy}
+                type="button"
+              >
+                <Link className="size-5" />
+                링크 복사하기
+              </button>
+            </div>
           </div>
         </div>
-      </Modal>
+      </Dialog>
     </>
   )
 }

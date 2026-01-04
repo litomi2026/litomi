@@ -1,6 +1,5 @@
 'use client'
 
-import { X } from 'lucide-react'
 import { type MouseEvent, type ReactNode, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
@@ -9,22 +8,13 @@ type DialogState = 'closed' | 'closing' | 'open' | 'opening'
 type Props = {
   open: boolean
   onClose: () => void
+  onAfterClose?: () => void
   children: ReactNode
   className?: string
-  showCloseButton?: boolean
-  closeButtonLabel?: string
-  ariaLabel?: string
+  ariaLabel: string
 }
 
-export default function Dialog({
-  open,
-  onClose,
-  children,
-  className = '',
-  showCloseButton = false,
-  closeButtonLabel = '닫기',
-  ariaLabel,
-}: Props) {
+export default function Dialog({ open, onClose, onAfterClose, children, className = '', ariaLabel }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const rafRef = useRef<number | null>(null)
@@ -47,11 +37,6 @@ export default function Dialog({
     setState('closing')
     onClose()
   }, [onClose, state])
-
-  function closeModal(e: MouseEvent) {
-    e.stopPropagation()
-    requestClose()
-  }
 
   function handleClick(e: MouseEvent) {
     e.stopPropagation()
@@ -130,7 +115,7 @@ export default function Dialog({
         bodyStyleRestoreRef.current = null
       }
     }
-  }, [state])
+  }, [onAfterClose, state])
 
   // NOTE: ESC로 닫힐 때 기본 close를 막고, 닫힘 트랜지션이 돌게 해요
   useEffect(() => {
@@ -171,6 +156,8 @@ export default function Dialog({
       if (lastActive?.isConnected) {
         lastActive.focus()
       }
+
+      onAfterClose?.()
     }
 
     if (!hasEnteredOpenStateRef.current) {
@@ -194,7 +181,7 @@ export default function Dialog({
 
     panel.addEventListener('transitionend', handleTransitionEnd)
     return () => panel.removeEventListener('transitionend', handleTransitionEnd)
-  }, [state])
+  }, [onAfterClose, state])
 
   // NOTE: 언마운트 시 requestAnimationFrame을 정리해요
   useEffect(() => {
@@ -216,12 +203,6 @@ export default function Dialog({
       onClick={handleClick}
       ref={dialogRef}
     >
-      {showCloseButton && (
-        <button aria-label={closeButtonLabel} onClick={closeModal} type="button">
-          <X className="absolute right-2 top-2 z-60 size-8 cursor-pointer rounded-full bg-zinc-700/50 p-1" />
-        </button>
-      )}
-
       <div
         className={twMerge(
           'flex w-dvw h-dvh flex-col overflow-hidden bg-zinc-900 transition scale-98 opacity-0 group-data-[state=open]:scale-100 group-data-[state=open]:opacity-100 max-sm:pb-safe sm:max-w-prose sm:h-auto sm:max-h-[calc(100dvh-4rem)] sm:w-full sm:rounded-xl sm:border-2 sm:border-zinc-800',

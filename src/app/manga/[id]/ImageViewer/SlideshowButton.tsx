@@ -3,7 +3,8 @@
 import { memo, useEffect, useId, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-import Modal from '@/components/ui/Modal'
+import Dialog from '@/components/ui/Dialog'
+import DialogHeader from '@/components/ui/DialogHeader'
 import Toggle from '@/components/ui/Toggle'
 
 import { useImageIndexStore } from './store/imageIndex'
@@ -87,46 +88,41 @@ function SlideshowButton({ className = '', maxImageIndex, offset, onIntervalChan
       >
         {slideshowInterval > 0 ? '중지' : '슬라이드쇼'}
       </button>
-      <Modal
-        className="pointer-coarse:top-12"
-        onClose={() => setIsOpened(false)}
-        open={isOpened}
-        showCloseButton
-        showDragButton
-      >
-        <form
-          className="bg-zinc-900 min-w-3xs w-screen max-w-xs rounded-xl p-4 pt-8 shadow-xl border"
-          onSubmit={handleSubmit}
-        >
-          <h2 className="font-bold text-xl text-center">슬라이드쇼</h2>
-          <div className="grid grid-cols-[auto_1fr] items-center gap-4 mt-6 whitespace-nowrap [&_h4]:font-semibold">
-            <label htmlFor={intervalInputId}>주기</label>
-            <div className="flex items-center gap-2">
-              <input
-                className="border-2 w-16 text-foreground rounded-lg px-2 py-0.5 border-zinc-700 focus:outline-none focus:ring-2 focus:ring-zinc-500"
-                defaultValue={10}
-                disabled={!isOpened}
-                id={intervalInputId}
-                max={999}
-                min={1}
-                name="interval"
-                onKeyDown={(e) => e.stopPropagation()}
-                pattern="[0-9]*"
-                ref={inputRef}
-                required
-                type="number"
+      <Dialog ariaLabel="슬라이드쇼" className="sm:max-w-sm" onClose={() => setIsOpened(false)} open={isOpened}>
+        <form className="flex flex-1 flex-col min-h-0" onSubmit={handleSubmit}>
+          <DialogHeader onClose={() => setIsOpened(false)} title="슬라이드쇼" />
+
+          <div className="flex-1 min-h-0 overflow-y-auto p-4">
+            <div className="grid grid-cols-[auto_1fr] items-center gap-4 whitespace-nowrap [&_h4]:font-semibold">
+              <label htmlFor={intervalInputId}>주기</label>
+              <div className="flex items-center gap-2">
+                <input
+                  className="border-2 w-16 text-foreground rounded-lg px-2 py-0.5 border-zinc-700 focus:outline-none focus:ring-2 focus:ring-zinc-500"
+                  defaultValue={10}
+                  disabled={!isOpened}
+                  id={intervalInputId}
+                  max={999}
+                  min={1}
+                  name="interval"
+                  onKeyDown={(e) => e.stopPropagation()}
+                  pattern="[0-9]*"
+                  ref={inputRef}
+                  required
+                  type="number"
+                />
+                <span>초</span>
+              </div>
+              <strong>반복</strong>
+              <Toggle
+                aria-label="슬라이드쇼 반복"
+                className="w-14 peer-checked:bg-brand/80"
+                defaultChecked={isChecked}
+                onToggle={setIsChecked}
               />
-              <span>초</span>
             </div>
-            <strong>반복</strong>
-            <Toggle
-              aria-label="슬라이드쇼 반복"
-              className="w-14 peer-checked:bg-brand/80"
-              defaultChecked={isChecked}
-              onToggle={setIsChecked}
-            />
           </div>
-          <div className="grid gap-2 pt-6 text-sm [&_button]:hover:bg-zinc-800 [&_button]:active:bg-zinc-900 [&_button]:rounded-full [&_button]:transition">
+
+          <div className="grid gap-2 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] border-t border-zinc-800 bg-zinc-900 text-sm [&_button]:hover:bg-zinc-800 [&_button]:active:bg-zinc-900 [&_button]:rounded-full [&_button]:transition">
             <button className="border-2 p-2 font-bold text-foreground transition border-zinc-700" type="submit">
               시작
             </button>
@@ -135,7 +131,7 @@ function SlideshowButton({ className = '', maxImageIndex, offset, onIntervalChan
             </button>
           </div>
         </form>
-      </Modal>
+      </Dialog>
     </>
   )
 }
