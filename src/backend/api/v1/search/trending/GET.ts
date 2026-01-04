@@ -39,42 +39,100 @@ export type GETTrendingKeywordsResponse = {
 
 const trendingRoutes = new Hono<Env>()
 
+type ParsedCategoryToken = {
+  isExcluded: boolean
+  category: string
+  value: string
+}
+
+function formatPlainText(text: string): string {
+  return text.replace(/_/g, ' ')
+}
+
+function normalizeCategory(rawCategory: string): string {
+  const normalized = normalizeValue(rawCategory.replace(/^-+/, ''))
+
+  if (normalized === 'parody') {
+    return 'series'
+  }
+
+  return normalized
+}
+
+function parseCategoryToken(token: string): ParsedCategoryToken | null {
+  const trimmed = token.trim()
+  if (!trimmed) {
+    return null
+  }
+
+  const isExcluded = trimmed.startsWith('-')
+  const withoutPrefix = isExcluded ? trimmed.replace(/^-+/, '') : trimmed
+  const colonIndex = withoutPrefix.indexOf(':')
+
+  if (colonIndex <= 0) {
+    return null
+  }
+
+  const category = withoutPrefix.slice(0, colonIndex)
+  const value = withoutPrefix.slice(colonIndex + 1)
+
+  return { isExcluded, category, value }
+}
+
 function translateSearchQuery(category: string, value: string, locale: Locale): string {
-  switch (category) {
+  const normalizedCategory = normalizeCategory(category)
+  const trimmedValue = value.trim()
+
+  if (!trimmedValue) {
+    switch (normalizedCategory) {
+      case 'female':
+      case 'male':
+      case 'mixed':
+      case 'other': {
+        const tagLabel = translateTag(normalizedCategory, '', locale).label
+        return tagLabel.endsWith(':') ? tagLabel.slice(0, -1) : tagLabel
+      }
+      default: {
+        return translateCategory(normalizedCategory, locale)
+      }
+    }
+  }
+
+  switch (normalizedCategory) {
     case 'artist': {
-      const artistLabel = translateArtistList([value], locale)
-      return `${translateCategory(category, locale)}:${artistLabel?.[0].label || value}`
+      const artistLabel = translateArtistList([trimmedValue], locale)
+      return `${translateCategory(normalizedCategory, locale)}:${artistLabel?.[0].label || formatPlainText(trimmedValue)}`
     }
     case 'character': {
-      const characterLabel = translateCharacterList([value], locale)
-      return `${translateCategory(category, locale)}:${characterLabel?.[0].label || value}`
+      const characterLabel = translateCharacterList([trimmedValue], locale)
+      return `${translateCategory(normalizedCategory, locale)}:${characterLabel?.[0].label || formatPlainText(trimmedValue)}`
     }
     case 'female':
     case 'male':
     case 'mixed':
     case 'other': {
-      return translateTag(category, value, locale).label
+      return translateTag(normalizedCategory, trimmedValue, locale).label
     }
     case 'group': {
-      const groupLabel = translateGroupList([value], locale)
-      return `${translateCategory(category, locale)}:${groupLabel?.[0].label || value}`
+      const groupLabel = translateGroupList([trimmedValue], locale)
+      return `${translateCategory(normalizedCategory, locale)}:${groupLabel?.[0].label || formatPlainText(trimmedValue)}`
     }
     case 'language': {
-      return translateLanguage(normalizeValue(value), locale)
+      return translateLanguage(normalizeValue(trimmedValue), locale)
     }
     case 'series': {
-      const seriesLabel = translateSeriesList([value], locale)
-      return `${translateCategory(category, locale)}:${seriesLabel?.[0].label || value}`
+      const seriesLabel = translateSeriesList([trimmedValue], locale)
+      return `${translateCategory(normalizedCategory, locale)}:${seriesLabel?.[0].label || formatPlainText(trimmedValue)}`
     }
     case 'type': {
-      const typeObj = translateType(value, locale)
-      return `${translateCategory(category, locale)}:${typeObj?.label || value}`
+      const typeObj = translateType(trimmedValue, locale)
+      return `${translateCategory(normalizedCategory, locale)}:${typeObj?.label || formatPlainText(trimmedValue)}`
     }
     case 'uploader': {
-      return `${translateCategory(category, locale)}:${value.replace(/_/g, ' ')}`
+      return `${translateCategory(normalizedCategory, locale)}:${formatPlainText(trimmedValue)}`
     }
     default:
-      return value
+      return `${translateCategory(normalizedCategory, locale)}:${formatPlainText(trimmedValue)}`
   }
 }
 
@@ -84,22 +142,43 @@ function translateTrendingKeyword(keyword: string, locale: Locale): string {
     return ''
   }
 
-  if (!keyword.includes(':')) {
-    return keyword
+  const trimmed = keyword.trim()
+  if (!trimmed) {
+    return ''
   }
 
-  return keyword
-    .split(' ')
-    .map((word) => {
-      if (!word.includes(':')) {
-        return word
-      }
-      const colonIndex = word.indexOf(':')
-      const category = word.slice(0, colonIndex)
-      const value = word.slice(colonIndex + 1)
-      return translateSearchQuery(category, value, locale)
-    })
-    .join(', ')
+  if (!trimmed.includes(':')) {
+    return formatPlainText(trimmed)
+  }
+
+  const parts = trimmed.split(/\s+/).filter(Boolean)
+  const segments: string[] = []
+  let plainBuffer: string[] = []
+
+  function flushPlainBuffer() {
+    if (plainBuffer.length === 0) {
+      return
+    }
+    segments.push(formatPlainText(plainBuffer.join(' ')))
+    plainBuffer = []
+  }
+
+  for (const part of parts) {
+    const parsed = parseCategoryToken(part)
+    if (!parsed) {
+      plainBuffer.push(part)
+      continue
+    }
+
+    flushPlainBuffer()
+
+    const translated = translateSearchQuery(parsed.category, parsed.value, locale)
+    segments.push(parsed.isExcluded ? `-${translated}` : translated)
+  }
+
+  flushPlainBuffer()
+
+  return segments.join(', ')
 }
 
 trendingRoutes.get('/', zProblemValidator('query', querySchema), async (c) => {
