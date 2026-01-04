@@ -32,6 +32,7 @@ export default defineConfig([
       'perfectionist/sort-object-types': 'off',
       'perfectionist/sort-objects': 'off',
       'perfectionist/sort-union-types': ['error', { groups: ['keyword', 'literal', 'named', 'operator'] }],
+
       // NOTE: Next 16 + React 19 introduces new react-hooks recommended rules.
       'react-hooks/set-state-in-effect': 'off',
       'react/no-unescaped-entities': 'off',
