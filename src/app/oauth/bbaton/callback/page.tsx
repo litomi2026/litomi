@@ -3,6 +3,7 @@
 import { useMutation } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
 
+import { LocalStorageKey } from '@/constants/storage'
 import { env } from '@/env/client'
 import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
 
@@ -27,6 +28,16 @@ export default function BBatonCallbackPage() {
     },
     onSuccess: () => {
       setState({ type: 'success' })
+
+      try {
+        localStorage.setItem(
+          LocalStorageKey.BBATON_ADULT_VERIFICATION_SIGNAL,
+          JSON.stringify({ type: 'complete', at: Date.now() }),
+        )
+      } catch {
+        // ignore
+      }
+
       window.close()
     },
     onError: (error) => {

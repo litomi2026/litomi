@@ -18,6 +18,7 @@ export enum LocalStorageKey {
   RECENT_SEARCHES = 'recent-searches',
   RECENT_SEARCHES_ENABLED = 'recent-searches-enabled',
   THEME = 'theme',
+  BBATON_ADULT_VERIFICATION_SIGNAL = 'bbaton/adult-verification/signal',
 }
 
 export enum SearchParamKey {

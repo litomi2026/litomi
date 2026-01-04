@@ -68,7 +68,6 @@ const queryClient = new QueryClient({
           if (NEXT_PUBLIC_GA_ID) {
             sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: null })
           }
-          showLoginRequiredToast()
           return
         }
 
@@ -77,13 +76,18 @@ const queryClient = new QueryClient({
           return
         }
 
+        if (query.meta?.suppressGlobalErrorToastForError) {
+          return
+        }
+
         if (query.meta?.suppressGlobalErrorToastForStatuses?.includes(error.status)) {
           return
         }
 
-        if (error.status >= 400) {
+        if (error.status >= 500) {
+          toast.error(error.message || '요청 처리 중 오류가 발생했어요')
+        } else if (error.status >= 400) {
           toast.warning(error.message || '요청을 처리할 수 없어요')
-          return
         }
       }
     },
