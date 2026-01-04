@@ -3,7 +3,7 @@
 import { Edit, Menu, X } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { usePathname } from 'next/navigation'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import MangaImportButton from '@/components/card/MangaImportButton'
 import MangaImportModal from '@/components/card/MangaImportModal'
@@ -72,20 +72,13 @@ export default function LibraryHeader({
     currentLibraryId,
   })
 
-  const closeDrawer = useCallback(() => {
-    setIsDrawerOpen(false)
-    document.body.style.overflow = ''
-  }, [])
+  function openDrawer() {
+    setIsDrawerOpen(true)
+  }
 
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        closeDrawer()
-        document.removeEventListener('keydown', handleKeyDown)
-      }
-    },
-    [closeDrawer],
-  )
+  function closeDrawer() {
+    setIsDrawerOpen(false)
+  }
 
   function getHeaderTitle() {
     if (pathname === '/library/history') {
@@ -103,12 +96,6 @@ export default function LibraryHeader({
     return isGuest ? '공개 서재 둘러보기' : '모든 서재'
   }
 
-  function openDrawer() {
-    setIsDrawerOpen(true)
-    document.body.style.overflow = 'hidden'
-    document.addEventListener('keydown', handleKeyDown)
-  }
-
   function handleSelectionModeChange() {
     if (isSelectionMode) {
       exitSelectionMode()
@@ -117,7 +104,30 @@ export default function LibraryHeader({
     }
   }
 
-  // NOTE: 서재 변경 시 선택 모드 종료하기
+  // NOTE: ESC 키를 눌렀을 때 드로어를 닫아요
+  useEffect(() => {
+    if (!isDrawerOpen) {
+      return
+    }
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setIsDrawerOpen(false)
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = previousOverflow
+    }
+  }, [isDrawerOpen])
+
+  // NOTE: 서재 변경 시 선택 모드를 종료해요
   useEffect(() => {
     exitSelectionMode()
   }, [libraryId, exitSelectionMode])
