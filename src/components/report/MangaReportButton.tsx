@@ -95,7 +95,7 @@ export default function MangaReportButton({ mangaId, variant = 'icon', className
       </button>
 
       <Dialog ariaLabel="작품 신고" onClose={() => setOpen(false)} open={open}>
-        <div className="flex flex-col h-full min-h-0">
+        <div className="flex flex-1 flex-col min-h-0">
           <DialogHeader onClose={() => setOpen(false)} title="작품 신고" />
           <div className="flex-1 min-h-0 overflow-y-auto p-2">
             <div className="space-y-1">

@@ -8,7 +8,8 @@ import { useRouter } from 'next/navigation'
 import { FormEvent, use, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
-import Modal from '@/components/ui/Modal'
+import Dialog from '@/components/ui/Dialog'
+import DialogHeader from '@/components/ui/DialogHeader'
 import { QueryKeys } from '@/constants/query'
 import useServerAction, { getFieldError } from '@/hook/useServerAction'
 
@@ -79,36 +80,16 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
         className="flex items-center gap-3 text-sm font-semibold rounded-full p-2 transition whitespace-nowrap md:px-3 md:py-2
         hover:bg-zinc-800 active:bg-zinc-900 disabled:text-zinc-500 disabled:bg-zinc-800 disabled:pointer-events-none aria-hidden:hidden"
         onClick={() => setShowModal(true)}
+        type="button"
       >
         <SquarePen className="size-5 shrink-0" />
         <span className="min-w-0 hidden md:block">프로필 수정</span>
       </button>
-      <Modal
-        className="w-full h-full md:w-auto md:h-auto"
-        dragButtonClassName="hidden md:flex"
-        onClose={handleClose}
-        open={showModal}
-        showDragButton
-      >
-        <form
-          action={dispatchAction}
-          className="w-full h-full flex flex-col bg-background md:bg-zinc-900 md:border-2 md:rounded-xl md:max-w-2xl"
-          onSubmit={handleSubmit}
-        >
-          <header className="flex items-center justify-between p-4 border-b border-zinc-800 shrink-0">
-            <div className="flex items-center gap-4">
-              <button
-                aria-label="닫기"
-                className="p-2 rounded-full hover:bg-zinc-800 active:bg-zinc-900"
-                onClick={handleClose}
-                type="button"
-              >
-                <X className="size-5 shrink-0" />
-              </button>
-              <h2 className="text-lg font-semibold">프로필 수정</h2>
-            </div>
-          </header>
-          <div className="flex-1 overflow-y-auto">
+      <Dialog ariaLabel="프로필 수정" className="sm:max-w-2xl" onClose={handleClose} open={showModal}>
+        <form action={dispatchAction} className="flex flex-1 flex-col min-h-0" onSubmit={handleSubmit}>
+          <DialogHeader onClose={handleClose} title="프로필 수정" />
+
+          <div className="flex-1 overflow-y-auto min-h-0">
             <div className="relative">
               <div className="h-32 bg-linear-to-b from-zinc-800 to-zinc-900" />
               <div className="absolute bottom-0 left-4 transform translate-y-1/2">
@@ -207,6 +188,7 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
               </p>
             </div>
           </div>
+
           <footer className="shrink-0 px-safe pb-safe border-t border-zinc-800 bg-zinc-900/50">
             <div className="flex items-center justify-between p-4">
               <button
@@ -226,7 +208,7 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
             </div>
           </footer>
         </form>
-      </Modal>
+      </Dialog>
     </>
   )
 }

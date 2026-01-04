@@ -10,6 +10,8 @@ import { withBotId } from 'botid/next/config'
 import { createCacheControl } from '@/utils/cache-control'
 import { sec } from '@/utils/format/date'
 
+const isProduction = process.env.NODE_ENV === 'production'
+
 const cspHeader = `
   default-src 'self';
   script-src 'self' 'unsafe-inline' https:;
@@ -19,7 +21,7 @@ const cspHeader = `
   connect-src 'self' https: http:;
   frame-src 'self' https:;
   frame-ancestors 'none';
-  upgrade-insecure-requests;
+  ${isProduction ? 'upgrade-insecure-requests;' : ''}
 `
 
 const cacheControlHeaders = [
@@ -90,7 +92,7 @@ const nextConfig: NextConfig = {
     output: 'standalone',
     transpilePackages: ['@t3-oss/env-nextjs', '@t3-oss/env-core'],
   }),
-  ...(process.env.NODE_ENV === 'production' && { compiler: { removeConsole: { exclude: ['error', 'warn'] } } }),
+  ...(isProduction && { compiler: { removeConsole: { exclude: ['error', 'warn'] } } }),
 }
 
 const withBotIdConfig = withBotId(nextConfig)
@@ -122,7 +124,11 @@ export default withSentryConfig(withAnalyzer, {
   // tunnelRoute: "/monitoring",
 
   // Automatically tree-shake Sentry logger statements to reduce bundle size
-  disableLogger: true,
+  webpack: {
+    treeshake: {
+      removeDebugLogging: true,
+    },
+  },
 
   // Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers.)
   // See the following for more information:

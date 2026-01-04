@@ -60,10 +60,12 @@ mock.module('@/database/supabase/drizzle', () => ({
 }))
 
 const mockKeywords: TrendingKeyword[] = [
-  { keyword: 'test1', score: 100 },
-  { keyword: 'test2', score: 80 },
-  { keyword: 'test3', score: 60 },
+  { keyword: '-male:big_ass', score: 100 },
+  { keyword: 'blue archive -male:big_ass', score: 80 },
+  { keyword: 'male:big_ass', score: 60 },
 ]
+
+const trackSearchMock = mock(() => Promise.resolve())
 
 mock.module('@/services/TrendingKeywordsService', () => ({
   trendingKeywordsService: {
@@ -73,6 +75,7 @@ mock.module('@/services/TrendingKeywordsService', () => ({
     getTrendingDaily: mock(async (limit: number) => {
       return mockKeywords.slice(0, limit)
     }),
+    trackSearch: trackSearchMock,
   },
   TrendingKeyword: {},
 }))
@@ -122,6 +125,22 @@ describe('GET /api/v1/search/trending', () => {
       expect(response.status).toBe(200)
       expect(data.keywords).toBeArray()
       expect(data.keywords.length).toBeLessThanOrEqual(10)
+    })
+
+    test('제외 토큰(-category:value)은 -를 유지하고 번역된 라벨로 표시한다', async () => {
+      const response = await createRequest('hourly')
+      const data = (await response.json()) as GETTrendingKeywordsResponse
+
+      const excluded = data.keywords.find((k) => k.value === '-male:big_ass')
+      expect(excluded?.label).toBe('-남:큰 엉덩이')
+    })
+
+    test('일반 단어 + 제외 토큰이 섞인 검색어는 일반 단어는 묶고, 필터는 번역해서 표시한다', async () => {
+      const response = await createRequest('hourly')
+      const data = (await response.json()) as GETTrendingKeywordsResponse
+
+      const mixed = data.keywords.find((k) => k.value === 'blue archive -male:big_ass')
+      expect(mixed?.label).toBe('blue archive, -남:큰 엉덩이')
     })
   })
 
@@ -176,19 +195,6 @@ describe('GET /api/v1/search/trending', () => {
 })
 
 describe('POST /api/v1/search/trending', () => {
-  // Create a new test app without conflicting mocks
-  const trackSearchMock = mock(() => Promise.resolve())
-
-  // Override the mock for POST tests
-  mock.module('@/services/TrendingKeywordsService', () => ({
-    trendingKeywordsService: {
-      trackSearch: trackSearchMock,
-      // Add other methods as mocks to avoid issues
-      getTrendingHourly: mock(() => Promise.resolve([])),
-      getTrendingDaily: mock(() => Promise.resolve([])),
-    },
-  }))
-
   const app = new Hono<Env>().use(contextStorage()).route('/', trendingPostRoutes)
 
   describe('성공', () => {

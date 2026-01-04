@@ -1,13 +1,11 @@
 'use client'
 
-import ms from 'ms'
 import Link from 'next/link'
 import { toast } from 'sonner'
 
 import LoginPageLink from '@/components/LoginPageLink'
 
 export const LOGIN_REQUIRED_TOAST_ID = 'login-required'
-export const LOGIN_REQUIRED_TOAST_DURATION = ms('10 seconds')
 
 export function showLoginRequiredToast() {
   toast.warning(
@@ -15,12 +13,11 @@ export function showLoginRequiredToast() {
       <div>로그인이 필요해요</div>
       <LoginPageLink onClick={() => toast.dismiss(LOGIN_REQUIRED_TOAST_ID)}>로그인하기</LoginPageLink>
     </div>,
-    { duration: LOGIN_REQUIRED_TOAST_DURATION, id: LOGIN_REQUIRED_TOAST_ID },
+    { id: LOGIN_REQUIRED_TOAST_ID },
   )
 }
 
 export const ADULT_VERIFICATION_REQUIRED_TOAST_ID = 'adult-verification-required'
-export const ADULT_VERIFICATION_REQUIRED_TOAST_DURATION = ms('10 seconds')
 
 type AdultVerificationToastOptions = {
   username?: string
@@ -43,6 +40,6 @@ export function showAdultVerificationRequiredToast(options: AdultVerificationToa
         </Link>
       )}
     </div>,
-    { duration: ADULT_VERIFICATION_REQUIRED_TOAST_DURATION, id: ADULT_VERIFICATION_REQUIRED_TOAST_ID },
+    { id: ADULT_VERIFICATION_REQUIRED_TOAST_ID },
   )
 }
