@@ -12,9 +12,18 @@ type Props = {
   children: ReactNode
   className?: string
   ariaLabel: string
+  unmountOnClose?: boolean
 }
 
-export default function Dialog({ open, onClose, onAfterClose, children, className = '', ariaLabel }: Props) {
+export default function Dialog({
+  open,
+  onClose,
+  onAfterClose,
+  children,
+  className = '',
+  ariaLabel,
+  unmountOnClose = false,
+}: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const rafRef = useRef<number | null>(null)
@@ -193,6 +202,8 @@ export default function Dialog({ open, onClose, onAfterClose, children, classNam
     }
   }, [])
 
+  const shouldRenderChildren = !unmountOnClose || open || state !== 'closed'
+
   return (
     <dialog
       aria-label={ariaLabel}
@@ -211,7 +222,7 @@ export default function Dialog({ open, onClose, onAfterClose, children, classNam
         onClick={(e) => e.stopPropagation()}
         ref={panelRef}
       >
-        {children}
+        {shouldRenderChildren ? children : null}
       </div>
     </dialog>
   )
