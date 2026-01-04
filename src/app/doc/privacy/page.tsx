@@ -107,9 +107,7 @@ export default async function Page() {
                 적립·사용 내역, 남용 방지를 위한 검증/제한 상태
               </li>
             </ul>
-            <p className="text-sm leading-relaxed text-zinc-300">
-              다음 항목은 일반적인 서비스 이용 과정에서는 수집하지 않습니다.
-            </p>
+            <p className="text-sm leading-relaxed text-zinc-300">다음 항목은 서비스 이용 과정에서 수집하지 않습니다.</p>
             <ul className="list-disc list-inside space-y-2 text-sm text-zinc-300 marker:text-zinc-600">
               <li>실명, 이메일 주소, 연락처, 거주지, 국적 등 개인을 식별할 수 있는 정보</li>
             </ul>
