@@ -4,6 +4,7 @@ import { deleteCookie } from 'hono/cookie'
 import 'server-only'
 
 import { Env } from '@/backend'
+import { requireAuth } from '@/backend/middleware/require-auth'
 import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
 import { CookieKey } from '@/constants/storage'
@@ -20,12 +21,8 @@ export type GETV1MeResponse = {
 
 const meRoutes = new Hono<Env>()
 
-meRoutes.get('/', async (c) => {
-  const userId = c.get('userId')
-
-  if (!userId) {
-    return problemResponse(c, { status: 401 })
-  }
+meRoutes.get('/', requireAuth, async (c) => {
+  const userId = c.get('userId')!
 
   try {
     const [user] = await db

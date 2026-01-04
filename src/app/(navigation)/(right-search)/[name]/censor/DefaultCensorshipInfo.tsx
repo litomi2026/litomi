@@ -1,6 +1,4 @@
-import { ShieldOff, X } from 'lucide-react'
-
-import IconInfo from '@/components/icons/IconInfo'
+import { Info, ShieldOff, X } from 'lucide-react'
 
 import { DEFAULT_CENSORED_TAGS } from './constants'
 
@@ -10,10 +8,10 @@ export default function DefaultCensorshipInfo() {
       <details className="group bg-zinc-800/50 rounded-lg border-2 border-zinc-700 overflow-hidden">
         <summary className="w-full px-4 py-3 flex items-center justify-between hover:bg-zinc-800/70 transition cursor-pointer list-none">
           <div className="flex items-start gap-2 text-sm">
-            <IconInfo className="w-4 text-zinc-400 mt-0.5 shrink-0" />
+            <Info className="size-4 text-zinc-400 mt-0.5 shrink-0" />
             <span className="text-zinc-300">기본 검열 규칙이 적용되어 있어요</span>
           </div>
-          <X className="w-4 text-zinc-400 transition rotate-45 group-open:rotate-0" />
+          <X className="size-4 text-zinc-400 transition rotate-45 group-open:rotate-0" />
         </summary>
         <div className="px-4 pb-4 text-sm text-zinc-400">
           <p className="mb-2">
@@ -29,7 +27,7 @@ export default function DefaultCensorshipInfo() {
             ))}
           </ul>
           <p className="text-xs pt-2 flex items-start gap-1.5">
-            <ShieldOff className="w-3 h-3 text-zinc-400 mt-0.5 shrink-0" />
+            <ShieldOff className="size-3 text-zinc-400 mt-0.5 shrink-0" />
             <span>
               <span className="text-zinc-300">기본 검열 해제:</span> 기본 검열을 해제하려면 우선 해당 태그를 추가한 후{' '}
               <span className="text-green-500 font-medium">해제</span>로 변경해주세요

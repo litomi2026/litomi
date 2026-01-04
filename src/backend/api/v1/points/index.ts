@@ -4,7 +4,7 @@ import { Env } from '@/backend'
 
 import earnRoute from './earn'
 import expansionRoute from './expansion'
-import getPointsRoute from './get'
+import getPointsRoute from './GET'
 import spendRoute from './spend'
 import tokenRoute from './token'
 import transactionsRoute from './transactions'

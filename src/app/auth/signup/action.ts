@@ -18,7 +18,7 @@ import TurnstileValidator, { getTurnstileToken } from '@/utils/turnstile'
 
 const signupSchema = z
   .object({
-    loginId: loginIdSchema,
+    'login-id': loginIdSchema,
     password: passwordSchema,
     'password-confirm': z.string(),
     nickname: nicknameSchema,
@@ -27,7 +27,7 @@ const signupSchema = z
     error: '비밀번호와 비밀번호 확인 값이 일치하지 않아요',
     path: ['password-confirm'],
   })
-  .refine((data) => data.loginId !== data.password, {
+  .refine((data) => data['login-id'] !== data.password, {
     error: '아이디와 비밀번호는 같을 수 없어요',
     path: ['password'],
   })
@@ -60,11 +60,11 @@ export default async function signup(formData: FormData) {
 
   if (!allowed) {
     const minutes = retryAfter ? Math.ceil(retryAfter / 60) : 1
-    return tooManyRequests(`너무 많은 회원가입 시도가 있었어요. ${minutes}분 후에 다시 시도해주세요.`, formData)
+    return tooManyRequests(`너무 많은 회원가입 시도가 있었어요. ${minutes}분 후에 다시 시도해 주세요.`, formData)
   }
 
   const validation = signupSchema.safeParse({
-    loginId: formData.get('loginId'),
+    'login-id': formData.get('login-id'),
     password: formData.get('password'),
     'password-confirm': formData.get('password-confirm'),
     nickname: formData.get('nickname') || generateRandomNickname(),
@@ -74,7 +74,8 @@ export default async function signup(formData: FormData) {
     return badRequest(flattenZodFieldErrors(validation.error), formData)
   }
 
-  const { loginId, password, nickname } = validation.data
+  const { password, nickname } = validation.data
+  const loginId = validation.data['login-id']
   const passwordHash = await hash(password, SALT_ROUNDS)
 
   try {
@@ -91,12 +92,12 @@ export default async function signup(formData: FormData) {
       .returning({ id: userTable.id })
 
     if (!result) {
-      return conflict({ loginId: '이미 사용 중인 아이디예요' }, formData)
+      return conflict({ 'login-id': '이미 사용 중인 아이디예요' }, formData)
     }
 
     const { id: userId } = result
     const cookieStore = await cookies()
-    const { key, value, options } = await getAccessTokenCookieConfig(userId)
+    const { key, value, options } = await getAccessTokenCookieConfig({ userId, adult: false })
     cookieStore.set(key, value, options)
 
     return created({

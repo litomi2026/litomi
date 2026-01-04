@@ -1,10 +1,10 @@
 'use client'
 
 import dayjs from 'dayjs'
+import { Loader2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-import IconSpinner from '@/components/icons/IconSpinner'
 import useServerAction, { getFormField } from '@/hook/useServerAction'
 
 import type { TwoFactorStatus } from '../types'
@@ -133,7 +133,7 @@ function DisableConfirmation({ onSuccess, onCancel }: DisableConfirmationProps) 
           disabled={isDisabling}
           type="submit"
         >
-          {isDisabling ? <IconSpinner className="size-4 mx-auto" /> : '비활성화'}
+          {isDisabling ? <Loader2 className="size-4 mx-auto animate-spin" /> : '비활성화'}
         </button>
         <button
           className="flex-1 rounded-lg bg-zinc-800 px-4 py-3 font-medium text-zinc-100 transition
@@ -170,7 +170,7 @@ function RegenerateBackupCodesForm({ onCancel, onSuccess }: RegenerateBackupCode
           disabled={isRegenerating}
           type="submit"
         >
-          {isRegenerating ? <IconSpinner className="size-4 mx-auto" /> : '재생성'}
+          {isRegenerating ? <Loader2 className="size-4 mx-auto animate-spin" /> : '재생성'}
         </button>
         <button
           className="flex-1 rounded-lg bg-zinc-800 px-4 py-3 font-medium text-zinc-100 transition

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import ms from 'ms'
 
-import type { GETV1PointTurnstileResponse } from '@/backend/api/v1/points/turnstile'
+import type { GETV1PointTurnstileResponse } from '@/backend/api/v1/points/turnstile/GET'
 
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'

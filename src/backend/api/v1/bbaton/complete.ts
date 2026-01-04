@@ -4,6 +4,7 @@ import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { requireAuth } from '@/backend/middleware/require-auth'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { COOKIE_DOMAIN } from '@/constants'
@@ -13,9 +14,8 @@ import { bbatonVerificationTable } from '@/database/supabase/bbaton'
 import { db } from '@/database/supabase/drizzle'
 
 import { exchangeAuthorizationCode, fetchBBatonProfile } from './lib'
-import { getBBatonRedirectURI, parseBirthYear, verifyBBatonAttemptToken } from './utils'
-
-export type POSTV1BBatonCompleteResponse = { adultFlag: 'N' | 'Y' }
+import { checkBBatonRateLimit } from './rate-limit'
+import { getBBatonRedirectURI, parseBirthYear, reissueAuthCookies, verifyBBatonAttemptToken } from './utils'
 
 const completeSchema = z.object({
   code: z.string().min(1).max(2048),
@@ -23,12 +23,7 @@ const completeSchema = z.object({
 
 const route = new Hono<Env>()
 
-route.post('/', zProblemValidator('json', completeSchema), async (c) => {
-  const userId = c.get('userId')
-  if (!userId) {
-    return problemResponse(c, { status: 401 })
-  }
-
+route.post('/', requireAuth, zProblemValidator('json', completeSchema), async (c) => {
   const attemptToken = getCookie(c, CookieKey.BBATON_ATTEMPT_ID)
   if (!attemptToken) {
     return problemResponse(c, {
@@ -37,9 +32,18 @@ route.post('/', zProblemValidator('json', completeSchema), async (c) => {
     })
   }
 
-  const { code } = c.req.valid('json')
+  const userId = c.get('userId')!
 
   try {
+    const rateLimit = await checkBBatonRateLimit('complete', userId)
+    if (!rateLimit.allowed) {
+      const minutes = Math.max(1, Math.ceil(rateLimit.retryAfterSeconds / 60))
+      return problemResponse(c, {
+        status: 429,
+        detail: `너무 많은 인증 시도가 있었어요. ${minutes}분 후에 다시 시도해 주세요.`,
+      })
+    }
+
     const attempt = await verifyBBatonAttemptToken(attemptToken)
     if (!attempt || attempt.userId !== userId) {
       return problemResponse(c, {
@@ -48,6 +52,7 @@ route.post('/', zProblemValidator('json', completeSchema), async (c) => {
       })
     }
 
+    const { code } = c.req.valid('json')
     const redirectURI = getBBatonRedirectURI()
     const { accessToken } = await exchangeAuthorizationCode({ code, redirectURI })
     const profile = await fetchBBatonProfile(accessToken)
@@ -90,7 +95,10 @@ route.post('/', zProblemValidator('json', completeSchema), async (c) => {
       return problemResponse(c, { status: 500, detail: '비바톤 인증 정보를 저장하지 못했어요' })
     }
 
-    return c.json<POSTV1BBatonCompleteResponse>({ adultFlag: profile.adultFlag })
+    const adult = profile.adultFlag === 'Y'
+    await reissueAuthCookies(c, { userId, adult })
+
+    return c.body(null, 204)
   } catch (error) {
     console.error(error)
     const message = error instanceof Error ? error.message : ''

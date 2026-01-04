@@ -4,6 +4,8 @@ import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { requireAdult } from '@/backend/middleware/adult'
+import { requireAuth } from '@/backend/middleware/require-auth'
 import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
@@ -32,13 +34,8 @@ export type ReadingHistoryItem = {
 
 const libraryHistoryRoutes = new Hono<Env>()
 
-libraryHistoryRoutes.get('/', zProblemValidator('query', querySchema), async (c) => {
-  const userId = c.get('userId')
-
-  if (!userId) {
-    return problemResponse(c, { status: 401 })
-  }
-
+libraryHistoryRoutes.get('/', requireAuth, requireAdult, zProblemValidator('query', querySchema), async (c) => {
+  const userId = c.get('userId')!
   const { cursor, limit } = c.req.valid('query')
   const decodedCursor = cursor ? decodeReadingHistoryCursor(cursor) : null
 

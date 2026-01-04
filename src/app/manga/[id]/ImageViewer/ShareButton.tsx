@@ -1,9 +1,8 @@
 'use client'
 
-import { Link } from 'lucide-react'
+import { Link, Share2 } from 'lucide-react'
 import { ComponentProps, useEffect, useState } from 'react'
 
-import IconLogout from '@/components/icons/IconLogout'
 import LogoFacebook from '@/components/icons/LogoFacebook'
 import LogoLine from '@/components/icons/LogoLine'
 import LogoTelegram from '@/components/icons/LogoTelegram'
@@ -70,7 +69,7 @@ export default function ShareButton({ manga, ...props }: Props) {
   return (
     <>
       <button aria-label="공유하기" onClick={() => setIsOpened(true)} {...props}>
-        <IconLogout className="size-6 rotate-270" />
+        <Share2 className="size-6" />
       </button>
       <Modal onClose={() => setIsOpened(false)} open={isOpened} showCloseButton showDragButton>
         <div className="flex flex-col gap-4 p-4 sm:p-6 border-2 bg-zinc-900 rounded-2xl min-w-3xs max-w-prose">
@@ -84,7 +83,7 @@ export default function ShareButton({ manga, ...props }: Props) {
                 onClick={handleNativeShare}
                 type="button"
               >
-                <IconLogout className="size-5 rotate-270" />
+                <Share2 className="size-5" />
                 기기 공유
               </button>
               <div className="flex items-center gap-3">

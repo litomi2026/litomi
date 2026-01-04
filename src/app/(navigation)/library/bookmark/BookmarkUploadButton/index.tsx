@@ -1,9 +1,9 @@
 'use client'
 
+import { Upload } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-import { IconUpload } from '@/components/icons/IconUpload'
 import Modal from '@/components/ui/Modal'
 
 import { CompleteStep } from './CompleteStep'
@@ -80,7 +80,7 @@ export default function BookmarkUploadButton() {
         onClick={handleButtonClick}
         type="button"
       >
-        <IconUpload className="w-5" />
+        <Upload className="size-5 shrink-0" />
         <span className="hidden sm:block">북마크 업로드</span>
       </button>
       <Modal className="pointer-coarse:top-12" onClose={handleClose} open={isOpened} showCloseButton showDragButton>

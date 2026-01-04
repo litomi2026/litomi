@@ -1,15 +1,9 @@
+import { Bookmark, FileText, Flame, LibraryBig, PiggyBank, Search, Tag } from 'lucide-react'
 import Link from 'next/link'
 
 import IconBell from '@/components/icons/IconBell'
-import IconBookmark from '@/components/icons/IconBookmark'
-import IconFlame from '@/components/icons/IconFlame'
 import IconHome from '@/components/icons/IconHome'
-import IconLibraryBig from '@/components/icons/IconLibraryBig'
-import IconLogo from '@/components/icons/IconLogo'
-import IconPiggyBank from '@/components/icons/IconPiggyBank'
-import IconPost from '@/components/icons/IconPost'
-import IconSearch from '@/components/icons/IconSearch'
-import IconTag from '@/components/icons/IconTag'
+import IconLogo from '@/components/icons/LogoLitomi'
 import SEOText from '@/components/SEOText'
 
 import { DEFAULT_METRIC, DEFAULT_PERIOD } from './(ranking)/common'
@@ -34,38 +28,56 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           <Link className="p-2 w-fit mx-auto hidden sm:block 2xl:m-0" href="/" prefetch={false}>
             <IconLogo className="w-8" priority />
           </Link>
-          <SelectableLink href="/new/1" Icon={IconHome}>
+          <SelectableLink href="/new/1" icon={<IconHome />} selectedIconStyle="fill">
             홈
           </SelectableLink>
-          <SelectableLink href="/search" Icon={IconSearch}>
+          <SelectableLink href="/search" icon={<Search />}>
             검색
           </SelectableLink>
-          <SelectableLink href="/library" Icon={IconLibraryBig} prefetch={false}>
+          <SelectableLink href="/library" icon={<LibraryBig />} selectedIconStyle="fill">
             서재
           </SelectableLink>
           <SelectableLink
             className="hidden sm:block"
             href={`/ranking/${DEFAULT_METRIC}/${DEFAULT_PERIOD}`}
-            Icon={IconFlame}
+            icon={<Flame />}
+            selectedIconStyle="fill"
           >
             인기
           </SelectableLink>
           <div className="relative">
-            <SelectableLink href="/notification" Icon={IconBell}>
+            <SelectableLink href="/notification" icon={<IconBell />} selectedIconStyle="fill">
               알림
             </SelectableLink>
             <NotificationCount />
           </div>
-          <SelectableLink className="hidden sm:block" href="/library/bookmark" Icon={IconBookmark} prefetch={false}>
+          <SelectableLink
+            className="hidden sm:block"
+            href="/library/bookmark"
+            icon={<Bookmark />}
+            selectedIconStyle="fill"
+          >
             북마크
           </SelectableLink>
-          <SelectableLink className="hidden sm:block" href="/posts/recommand" hrefMatch="/post" Icon={IconPost}>
+          <SelectableLink
+            className="hidden sm:block"
+            href="/posts/recommand"
+            hrefMatch="/post"
+            icon={<FileText />}
+            selectedIconStyle="fill-soft"
+          >
             이야기
           </SelectableLink>
-          <SelectableLink className="hidden sm:block" href="/tag" Icon={IconTag}>
+          <SelectableLink className="hidden sm:block" href="/tag" icon={<Tag />} selectedIconStyle="fill-soft">
             태그
           </SelectableLink>
-          <SelectableLink className="hidden sm:block" href="/libo" hrefMatch="/libo" Icon={IconPiggyBank}>
+          <SelectableLink
+            className="hidden sm:block"
+            href="/libo"
+            hrefMatch="/libo"
+            icon={<PiggyBank />}
+            selectedIconStyle="fill-soft"
+          >
             리보
           </SelectableLink>
           <ProfileLink className="hidden sm:block" />

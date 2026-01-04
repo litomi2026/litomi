@@ -1,13 +1,14 @@
 'use client'
 
 import { useInfiniteQuery } from '@tanstack/react-query'
+import { Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { List, RowComponentProps, useListRef } from 'react-window'
 
-import IconSpinner from '@/components/icons/IconSpinner'
 import CustomSelect from '@/components/ui/CustomSelect'
+import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import { QueryKeys } from '@/constants/query'
 import { WebtoonList, WebtoonListItem } from '@/crawler/webtoon/types'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
@@ -51,10 +52,8 @@ export default function WebtoonListPage() {
   const rowHeight = getRowHeight(containerWidth, columns)
   const hasParams = provider && domain
 
-  const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage } = useWebtoonListInfiniteQuery({
-    provider,
-    domain,
-  })
+  const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError } =
+    useWebtoonListInfiniteQuery({ provider, domain })
 
   const items = useMemo(() => data?.pages.flatMap((page) => page.items) ?? [], [data])
   const rowCount = Math.ceil(items.length / columns) + 1 // +1 for load more row
@@ -145,7 +144,7 @@ export default function WebtoonListPage() {
       <main className="flex-1 max-w-6xl mx-auto w-full overflow-hidden">
         {isLoading && (
           <div className="flex items-center justify-center h-full">
-            <IconSpinner className="size-8" />
+            <Loader2 className="size-8 animate-spin" />
           </div>
         )}
 
@@ -179,7 +178,7 @@ export default function WebtoonListPage() {
                 onLoadMore: handleLoadMore,
                 hasNextPage,
                 isFetchingNextPage,
-                hasError: Boolean(error),
+                hasError: isFetchNextPageError,
               }}
             />
           </div>
@@ -312,15 +311,9 @@ function WebtoonRow({
     return (
       <div className="flex flex-col justify-center items-center gap-2 px-3" style={style}>
         {isFetchingNextPage ? (
-          <IconSpinner className="size-6" />
+          <Loader2 className="size-6 animate-spin" />
         ) : hasError ? (
-          <button
-            className="text-sm text-zinc-400 hover:text-zinc-200 transition-colors px-4 py-2"
-            onClick={onLoadMore}
-            type="button"
-          >
-            불러오기 실패 · 다시 시도
-          </button>
+          <LoadMoreRetryButton onRetry={onLoadMore} />
         ) : hasNextPage ? (
           <LoadMoreTrigger onLoadMore={onLoadMore} />
         ) : null}

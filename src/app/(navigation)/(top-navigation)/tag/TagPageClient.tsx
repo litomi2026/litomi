@@ -1,9 +1,9 @@
 'use client'
 
+import { Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 
-import IconSpinner from '@/components/icons/IconSpinner'
 import PageNavigation from '@/components/PageNavigation'
 import useLocaleFromCookie from '@/hook/useLocaleFromCookie'
 import { formatNumber } from '@/utils/format/number'
@@ -69,7 +69,7 @@ export default function TagPageClient() {
       {/* 초기 로딩 상태 */}
       {isLoading && !data && (
         <div className="flex justify-center items-center py-20">
-          <IconSpinner className="size-8 text-zinc-400" />
+          <Loader2 className="size-8 text-zinc-400 animate-spin" />
         </div>
       )}
 

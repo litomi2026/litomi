@@ -9,7 +9,7 @@ import { useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
-import type { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark/get'
+import type { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark/GET'
 import type { POSTV1BookmarkToggleResponse } from '@/backend/api/v1/bookmark/toggle'
 
 import { QueryKeys } from '@/constants/query'

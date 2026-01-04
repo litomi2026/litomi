@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import type { GETV1MeResponse } from '@/backend/api/v1/me'
-import type { POSTV1PointTurnstileResponse } from '@/backend/api/v1/points/turnstile'
+import type { POSTV1PointTurnstileResponse } from '@/backend/api/v1/points/turnstile/POST'
 import type { AdClickResult } from '@/components/ads/types'
 
 import AdsterraBanner300x250 from '@/components/ads/adsterra/AdsterraBanner300x250'
@@ -20,9 +20,12 @@ import PlugRushNativeAd from '@/components/ads/plugrush/PlugRushNativeAd'
 import TurnstileWidget from '@/components/TurnstileWidget'
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
+import { isAdultVerificationRequiredProblem } from '@/lib/QueryProvider'
 import useMeQuery from '@/query/useMeQuery'
 import usePointsTurnstileQuery from '@/query/usePointsTurnstileQuery'
-import { fetchWithErrorHandling, type ProblemDetailsError } from '@/utils/react-query-error'
+import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
+
+import { runWhenDocumentVisible } from './util'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
 
@@ -51,21 +54,36 @@ export default function RewardedAdSection() {
       setTurnstileToken('')
       queryClient.invalidateQueries({ queryKey: QueryKeys.pointsTurnstile })
     },
-    onError: () => {
+    onError: (error) => {
       setTurnstileToken('')
-      turnstileRef.current?.reset()
+
+      if (error.status === 403 && isAdultVerificationRequiredProblem(error.type)) {
+        return
+      }
+
+      if (error.status === 401) {
+        return
+      }
+
+      if (error.status >= 400 && error.status < 500) {
+        turnstileRef.current?.reset()
+      }
     },
   })
 
   function handleAdClick(result: AdClickResult) {
     if (!me) {
-      toast.warning('로그인하면 리보가 적립돼요')
+      runWhenDocumentVisible(() => {
+        toast.warning('로그인하면 리보가 적립돼요')
+      })
       return
     }
 
     if (!isVerified) {
-      toast.warning('보안 검증을 완료해 주세요')
-      verificationSectionRef.current?.scrollIntoView({ block: 'center' })
+      runWhenDocumentVisible(() => {
+        toast.warning('보안 검증을 완료해 주세요')
+        verificationSectionRef.current?.scrollIntoView({ block: 'center' })
+      })
       return
     }
 
@@ -73,7 +91,9 @@ export default function RewardedAdSection() {
       return
     }
 
-    toast.success(`${result.earned} 리보 적립됐어요`)
+    runWhenDocumentVisible(() => {
+      toast.success(`${result.earned} 리보 적립됐어요`)
+    })
   }
 
   function handleTurnstileTokenChange(token: string) {
@@ -101,7 +121,7 @@ export default function RewardedAdSection() {
   }, [pointsTurnstile.data, queryClient])
 
   return (
-    <div className="grid gap-4">
+    <div className="flex flex-col gap-4">
       {/* 작가 후원 안내 (상시 노출, 컴팩트) */}
       <details className="rounded-xl bg-white/4 border border-white/7">
         <summary className="cursor-pointer list-none px-4 py-3 flex items-center gap-2 text-sm text-zinc-200 [&::-webkit-details-marker]:hidden">
@@ -177,8 +197,8 @@ export default function RewardedAdSection() {
             <ShieldCheck className="size-5 text-zinc-300 shrink-0 mt-0.5" />
             <div>
               <h3 className="font-medium text-zinc-200 mb-1">리보 적립 전에 보안 검증이 필요해요</h3>
-              <p className="text-sm text-zinc-400">
-                Cloudflare 보안 검증을 완료하면 10분 동안 리보를 적립할 수 있어요.
+              <p className="text-xs text-zinc-400">
+                Cloudflare 보안 검증을 완료하면 광고를 클릭할 때 리보가 적립돼요. 2분마다 자동으로 다시 검증해요.
               </p>
             </div>
           </div>

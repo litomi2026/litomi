@@ -33,6 +33,18 @@ const cacheControlHeaders = [
   },
 ]
 
+const bbatonCallbackCspHeader = `
+  default-src 'self';
+  script-src 'self' 'unsafe-inline';
+  style-src 'self' 'unsafe-inline';
+  img-src 'self' blob: data: https:;
+  object-src 'none';
+  connect-src 'self' https: http:;
+  frame-src 'self' https:;
+  frame-ancestors 'none';
+  upgrade-insecure-requests;
+`
+
 const nextConfig: NextConfig = {
   headers: async () => [
     {
@@ -48,6 +60,18 @@ const nextConfig: NextConfig = {
         {
           key: 'Content-Security-Policy',
           value: cspHeader.replace(/\s{2,}/g, ' ').trim(),
+        },
+      ],
+    },
+    {
+      source: '/oauth/bbaton/callback',
+      headers: [
+        { key: 'Cache-Control', value: 'no-store' },
+        { key: 'Referrer-Policy', value: 'no-referrer' },
+        { key: 'X-Robots-Tag', value: 'noindex, nofollow' },
+        {
+          key: 'Content-Security-Policy',
+          value: bbatonCallbackCspHeader.replace(/\s{2,}/g, ' ').trim(),
         },
       ],
     },

@@ -1,16 +1,11 @@
 'use client'
 
-import { Check } from 'lucide-react'
+import { Book, Bookmark, Check, Circle, Eye, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 
 import IconBell from '@/components/icons/IconBell'
-import IconBook from '@/components/icons/IconBook'
-import IconBookmark from '@/components/icons/IconBookmark'
-import IconDot from '@/components/icons/IconDot'
-import IconEye from '@/components/icons/IconEye'
-import IconTrash from '@/components/icons/IconTrash'
 import LinkPending from '@/components/LinkPending'
 import { NotificationType } from '@/database/enum'
 import { NotificationData } from '@/database/type'
@@ -64,13 +59,13 @@ export default function NotificationCard({
   function getNotificationIcon() {
     switch (notification.type) {
       case NotificationType.BOOKMARK_UPDATE:
-        return <IconBookmark className="w-5" />
+        return <Bookmark className="size-5 shrink-0" />
       case NotificationType.NEW_MANGA:
-        return <IconBook className="w-5" />
+        return <Book className="size-5 shrink-0" />
       case NotificationType.TEST:
-        return <IconBell className="w-5" />
+        return <IconBell className="size-5 shrink-0" />
       default:
-        return <IconBell className="w-5" />
+        return <IconBell className="size-5 shrink-0" />
     }
   }
 
@@ -153,7 +148,7 @@ export default function NotificationCard({
               }}
               title="읽음 표시"
             >
-              <IconEye className="w-3.5 h-3.5 text-zinc-400" />
+              <Eye className="size-3.5 shrink-0 text-zinc-400" />
             </button>
           )}
           {onDelete && (
@@ -165,7 +160,7 @@ export default function NotificationCard({
               }}
               title="삭제"
             >
-              <IconTrash className="w-3.5 h-3.5 text-zinc-400" />
+              <Trash2 className="size-3.5 shrink-0 text-zinc-400" />
             </button>
           )}
         </div>
@@ -183,7 +178,9 @@ export default function NotificationCard({
             {notification.title}
           </h3>
           <div className="flex items-center gap-2 shrink-0">
-            {isUnread && <IconDot className="h-2 w-2 text-brand animate-pulse" />}
+            {isUnread && (
+              <Circle className="size-2 shrink-0 text-brand animate-pulse" fill="currentColor" stroke="none" />
+            )}
             <span className="text-xs text-zinc-500">{formatDistanceToNow(new Date(notification.createdAt))}</span>
           </div>
         </div>

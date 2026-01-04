@@ -8,9 +8,7 @@ import type { AdClickResult } from '../types'
 
 import AdBlockedMessage from '../AdBlockedMessage'
 import RewardedAdFooter from '../RewardedAdFooter'
-import { useAdIframeClickEffect } from '../useAdIframeClickEffect'
-import { useAdIframeLoadEffect } from '../useAdIframeLoadEffect'
-import { useRewardedAd } from '../useRewardedAd'
+import { useRewardedIframeAdSlot } from '../useRewardedIframeAdSlot'
 import { JUICY_ADS_EVENT } from './constants'
 
 declare global {
@@ -46,15 +44,16 @@ export default function JuicyAdsSlot({
 }: Props) {
   const slotRef = useRef<HTMLDivElement>(null)
   const [isScriptLoaded, setIsScriptLoaded] = useState(false)
-  const [isAdBlocked, setIsAdBlocked] = useState(false)
+  const [isScriptError, setIsScriptError] = useState(false)
 
-  const { dailyRemaining, isLoading, apiError, shouldDimAd, cooldownUntil, refreshToken, handleConfirmedNavigation } =
-    useRewardedAd({
+  const { dailyRemaining, isLoading, apiError, shouldDimAd, cooldownUntil, refresh, isAdBlocked } =
+    useRewardedIframeAdSlot({
       adSlotId,
       rewardEnabled,
-      adReady: isScriptLoaded,
-      adBlocked: isAdBlocked,
-      onAdClick,
+      scriptLoaded: isScriptLoaded,
+      scriptFailed: isScriptError,
+      containerRef: slotRef,
+      onResult: onAdClick,
     })
 
   const cooldownLabel = cooldownUntil ? formatDistanceFromNow(new Date(cooldownUntil)) : null
@@ -76,7 +75,7 @@ export default function JuicyAdsSlot({
   // NOTE: JuicyAds 스크립트 로드 상태 구독
   useEffect(() => {
     if (window.__juicyAdsError) {
-      setIsAdBlocked(true)
+      setIsScriptError(true)
       setIsScriptLoaded(true)
       return
     }
@@ -91,7 +90,7 @@ export default function JuicyAdsSlot({
     }
 
     function handleError() {
-      setIsAdBlocked(true)
+      setIsScriptError(true)
       setIsScriptLoaded(true)
     }
 
@@ -106,7 +105,7 @@ export default function JuicyAdsSlot({
 
   // NOTE: 스크립트가 준비되면, 현재 슬롯을 다시 채우도록 jads.js의 GA(...)를 호출
   useEffect(() => {
-    if (!isScriptLoaded || isAdBlocked) {
+    if (!isScriptLoaded || isScriptError) {
       return
     }
 
@@ -124,21 +123,7 @@ export default function JuicyAdsSlot({
     } catch {
       // ignore
     }
-  }, [isScriptLoaded, zoneId, isAdBlocked])
-
-  useAdIframeLoadEffect({
-    enabled: isScriptLoaded && !isAdBlocked,
-    containerRef: slotRef,
-    onBlocked: () => {
-      setIsAdBlocked(true)
-    },
-  })
-
-  useAdIframeClickEffect({
-    enabled: !isAdBlocked,
-    containerRef: slotRef,
-    onConfirmedNavigation: handleConfirmedNavigation,
-  })
+  }, [isScriptLoaded, isScriptError, zoneId])
 
   return (
     <div
@@ -168,7 +153,7 @@ export default function JuicyAdsSlot({
         cooldownLabel={cooldownLabel}
         dailyRemaining={dailyRemaining}
         isLoading={isLoading}
-        onRetry={refreshToken}
+        onRetry={refresh}
         rewardEnabled={rewardEnabled}
       />
     </div>

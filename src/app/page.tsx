@@ -1,5 +1,6 @@
 import Link from 'next/link'
 
+import LinkPending from '@/components/LinkPending'
 import SEOText from '@/components/SEOText'
 
 import CTAButton from './CTAButton'
@@ -37,9 +38,12 @@ export default function Home() {
         <Link
           className={`${linkClassName} bg-brand-gradient relative text-background before:absolute before:inset-0 before:rounded-lg before:border-2 before:border-foreground/40`}
           href="/new/1"
-          prefetch={false}
         >
           19세 이상 성인입니다
+          <LinkPending
+            className="size-5 text-foreground"
+            wrapperClassName="absolute inset-0 flex items-center justify-center rounded-md bg-background/50 animate-fade-in-fast"
+          />
         </Link>
         <Link className={`${linkClassName} rounded`} href="/deterrence" prefetch={false}>
           19세 미만 나가기

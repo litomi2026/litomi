@@ -1,9 +1,8 @@
 'use client'
 
 import dayjs from 'dayjs'
-import { ChevronRight, RefreshCw } from 'lucide-react'
+import { RefreshCw } from 'lucide-react'
 import ms from 'ms'
-import Link from 'next/link'
 import { useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -135,8 +134,8 @@ export default function AdStats() {
   }
 
   return (
-    <div className="space-y-4">
-      <header className="space-y-1">
+    <div className="flex flex-col gap-4 p-2">
+      <header className="flex flex-col gap-1">
         <h1 className="text-lg font-semibold tracking-tight text-zinc-100">광고 수익 통계</h1>
         <p className="text-sm text-zinc-400">
           Adsterra에서 제공하는 통계를 보여줘요. 정산 확정 전에는 실제 지급액과 다를 수 있어요.
@@ -162,14 +161,6 @@ export default function AdStats() {
               최근 {days}일
             </button>
           ))}
-          <Link
-            className="ml-auto inline-flex items-center gap-1 text-xs text-zinc-400 hover:text-zinc-200 transition"
-            href="/libo"
-            prefetch={false}
-          >
-            리보로 돌아가기
-            <ChevronRight className="size-3 text-zinc-600" />
-          </Link>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto] items-end">
@@ -337,7 +328,7 @@ export default function AdStats() {
       )}
 
       <div className="text-xs text-zinc-600">
-        <p>조회는 내부 기준으로 처리돼요. 값은 참고용이고, 실제 정산 금액과 다를 수 있어요.</p>
+        <p>광고 수익 통계는 참고용이고 실제 정산 금액과 다를 수 있어요</p>
       </div>
     </div>
   )

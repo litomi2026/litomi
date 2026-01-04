@@ -218,13 +218,13 @@ export default function Dialog({
     >
       {showCloseButton && (
         <button aria-label={closeButtonLabel} onClick={closeModal} type="button">
-          <X className="absolute right-2 top-2 z-60 w-8 cursor-pointer rounded-full bg-zinc-700/50 p-1" />
+          <X className="absolute right-2 top-2 z-60 size-8 cursor-pointer rounded-full bg-zinc-700/50 p-1" />
         </button>
       )}
 
       <div
         className={twMerge(
-          'w-dvw h-dvh overflow-hidden bg-zinc-900 transition scale-98 opacity-0 group-data-[state=open]:scale-100 group-data-[state=open]:opacity-100 max-sm:pb-safe sm:max-w-prose sm:h-auto sm:max-h-[calc(100dvh-4rem)] sm:w-full sm:rounded-xl sm:border-2 sm:border-zinc-800',
+          'w-dvw h-dvh overflow-hidden bg-zinc-900 transition scale-98 opacity-0 group-data-[state=open]:scale-100 group-data-[state=open]:opacity-100 max-sm:pb-safe sm:max-w-prose sm:h-full sm:max-h-[calc(100dvh-4rem)] sm:w-full sm:rounded-xl sm:border-2 sm:border-zinc-800',
           className,
         )}
         onClick={(e) => e.stopPropagation()}

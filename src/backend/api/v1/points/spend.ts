@@ -3,6 +3,7 @@ import { Hono } from 'hono'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { requireAuth } from '@/backend/middleware/require-auth'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { ITEM_TYPE, TRANSACTION_TYPE } from '@/constants/points'
@@ -25,12 +26,8 @@ export type POSTV1PointSpendResponse = {
   spent: number
 }
 
-route.post('/', zProblemValidator('json', spendSchema), async (c) => {
-  const userId = c.get('userId')
-
-  if (!userId) {
-    return problemResponse(c, { status: 401 })
-  }
+route.post('/', requireAuth, zProblemValidator('json', spendSchema), async (c) => {
+  const userId = c.get('userId')!
 
   type TransactionResult = { ok: false; status: number; detail?: string } | { ok: true; balance: number; spent: number }
 

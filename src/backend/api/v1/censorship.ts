@@ -4,6 +4,7 @@ import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { requireAuth } from '@/backend/middleware/require-auth'
 import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
@@ -33,12 +34,8 @@ export type GETV1CensorshipResponse = {
 
 const censorshipRoutes = new Hono<Env>()
 
-censorshipRoutes.get('/', zProblemValidator('query', querySchema), async (c) => {
-  const userId = c.get('userId')
-
-  if (!userId) {
-    return problemResponse(c, { status: 401 })
-  }
+censorshipRoutes.get('/', requireAuth, zProblemValidator('query', querySchema), async (c) => {
+  const userId = c.get('userId')!
 
   try {
     const { cursor, limit } = c.req.valid('query')

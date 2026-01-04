@@ -1,7 +1,7 @@
 import { RenderOptions, render as rtlRender } from '@testing-library/react'
 import { ReactElement, ReactNode } from 'react'
 
-import QueryProvider from '@/components/QueryProvider'
+import QueryProvider from '@/lib/QueryProvider'
 
 // Create a custom render function that includes all providers
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type

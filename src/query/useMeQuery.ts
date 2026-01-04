@@ -7,24 +7,14 @@ import { GETV1MeResponse } from '@/backend/api/v1/me'
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import amplitude from '@/lib/amplitude/browser'
-import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
+import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL, NEXT_PUBLIC_GA_ID } = env
 
-let isAnalyticsInitialized = false
-
 export async function fetchMe() {
-  try {
-    const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/me`
-    const { data } = await fetchWithErrorHandling<GETV1MeResponse>(url, { credentials: 'include' })
-    return data
-  } catch (error) {
-    if (error instanceof ProblemDetailsError && error.status === 401) {
-      amplitude.reset()
-      return null
-    }
-    throw error
-  }
+  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/me`
+  const { data } = await fetchWithErrorHandling<GETV1MeResponse>(url, { credentials: 'include' })
+  return data
 }
 
 export default function useMeQuery() {
@@ -41,8 +31,7 @@ export default function useMeQuery() {
   const userId = result.data?.id
 
   useEffect(() => {
-    if (userId && !isAnalyticsInitialized) {
-      isAnalyticsInitialized = true
+    if (userId) {
       amplitude.setUserId(userId)
       if (NEXT_PUBLIC_GA_ID) {
         sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: userId })

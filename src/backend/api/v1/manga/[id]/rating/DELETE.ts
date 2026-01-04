@@ -4,6 +4,7 @@ import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { requireAuth } from '@/backend/middleware/require-auth'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { MAX_MANGA_ID } from '@/constants/policy'
@@ -16,12 +17,8 @@ const paramSchema = z.object({
 
 const route = new Hono<Env>()
 
-route.delete('/:id/rating', zProblemValidator('param', paramSchema), async (c) => {
-  const userId = c.get('userId')
-
-  if (!userId) {
-    return problemResponse(c, { status: 401 })
-  }
+route.delete('/:id/rating', requireAuth, zProblemValidator('param', paramSchema), async (c) => {
+  const userId = c.get('userId')!
 
   const { id: mangaId } = c.req.valid('param')
 

@@ -1,18 +1,20 @@
 'use client'
 
+import { sendGAEvent } from '@next/third-parties/google'
 import { useQueryClient } from '@tanstack/react-query'
-import { AlertTriangle, Check, Trash2 } from 'lucide-react'
+import { AlertTriangle, Check, Loader2, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-import IconSpinner from '@/components/icons/IconSpinner'
-import IconTrash from '@/components/icons/IconTrash'
 import { QueryKeys } from '@/constants/query'
+import { env } from '@/env/client'
 import useServerAction from '@/hook/useServerAction'
 import amplitude from '@/lib/amplitude/browser'
 
 import { deleteAccount } from './actions'
+
+const { NEXT_PUBLIC_GA_ID } = env
 
 const CONSEQUENCES = [
   '모든 북마크가 삭제돼요',
@@ -48,6 +50,9 @@ export default function AccountDeletionForm({ loginId }: Readonly<Props>) {
     onSuccess: () => {
       toast.success('계정이 삭제됐어요. 이용해 주셔서 감사합니다!')
       amplitude.reset()
+      if (NEXT_PUBLIC_GA_ID) {
+        sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: null })
+      }
       queryClient.setQueriesData({ queryKey: QueryKeys.me }, () => null)
       router.push('/')
     },
@@ -63,7 +68,7 @@ export default function AccountDeletionForm({ loginId }: Readonly<Props>) {
         <div className="space-y-6">
           <div className="bg-red-950/20 border-2 border-red-900/50 rounded-xl p-6">
             <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <AlertTriangle className="w-5 text-red-500" />
+              <AlertTriangle className="size-5 shrink-0 text-red-500" />
               계정 삭제 시 다음 내용이 영구 삭제돼요
             </h2>
             <ul className="space-y-3">
@@ -186,12 +191,12 @@ export default function AccountDeletionForm({ loginId }: Readonly<Props>) {
             >
               {isPending ? (
                 <>
-                  <IconSpinner className="w-4" />
+                  <Loader2 className="size-4 animate-spin" />
                   삭제 중...
                 </>
               ) : (
                 <>
-                  <IconTrash className="w-4" />
+                  <Trash2 className="size-4 shrink-0" />
                   계정 영구 삭제
                 </>
               )}

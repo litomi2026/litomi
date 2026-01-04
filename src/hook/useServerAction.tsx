@@ -1,11 +1,15 @@
+import { sendGAEvent } from '@next/third-parties/google'
 import { useQueryClient } from '@tanstack/react-query'
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
 
 import { QueryKeys } from '@/constants/query'
+import { env } from '@/env/client'
 import amplitude from '@/lib/amplitude/browser'
 import { showLoginRequiredToast } from '@/lib/toast'
 import { ActionResponse, ErrorResponse, SuccessResponse } from '@/utils/action-response'
+
+const { NEXT_PUBLIC_GA_ID } = env
 
 /**
  * Props for useActionResponse hook
@@ -78,6 +82,9 @@ export default function useServerAction<T extends ActionResponse, TActionArgs ex
           if (response.status === 401) {
             queryClient.setQueriesData({ queryKey: QueryKeys.me }, () => null)
             amplitude.reset()
+            if (NEXT_PUBLIC_GA_ID) {
+              sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: null })
+            }
             showLoginRequiredToast()
 
             if (onError) {

@@ -1,6 +1,6 @@
+import { Flame } from 'lucide-react'
 import Link from 'next/link'
 
-import IconFlame from '@/components/icons/IconFlame'
 import InstallPrompt from '@/components/InstallPrompt'
 import LinkPending from '@/components/LinkPending'
 import ScrollButtons from '@/components/ScrollButtons'
@@ -22,7 +22,7 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           prefetch={false}
         >
           <LinkPending className="size-5">
-            <IconFlame className="size-5" />
+            <Flame className="size-5" />
           </LinkPending>{' '}
           인기
         </Link>

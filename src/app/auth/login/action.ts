@@ -6,12 +6,13 @@ import { and, eq, isNull } from 'drizzle-orm'
 import { cookies, headers } from 'next/headers'
 import { z } from 'zod'
 
+import { bbatonVerificationTable } from '@/database/supabase/bbaton'
 import { db } from '@/database/supabase/drizzle'
 import { twoFactorTable } from '@/database/supabase/two-factor'
 import { userTable } from '@/database/supabase/user'
 import { loginIdSchema, passwordSchema } from '@/database/zod'
 import { badRequest, internalServerError, ok, tooManyRequests, unauthorized } from '@/utils/action-response'
-import { getAccessTokenCookieConfig, setRefreshTokenCookie } from '@/utils/cookie'
+import { getAccessTokenCookieConfig, getRefreshTokenCookieConfig } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 import { initiatePKCEChallenge } from '@/utils/pkce-server'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
@@ -20,10 +21,10 @@ import TurnstileValidator, { getTurnstileToken } from '@/utils/turnstile'
 import { checkTrustedBrowser } from './utils'
 
 const loginSchema = z.object({
-  loginId: loginIdSchema,
+  'login-id': loginIdSchema,
   password: passwordSchema,
   remember: z.literal('on').nullable(),
-  codeChallenge: z.string(),
+  'code-challenge': z.string(),
   fingerprint: z.string(),
 })
 
@@ -52,10 +53,10 @@ export default async function login(formData: FormData) {
   }
 
   const validation = loginSchema.safeParse({
-    loginId: formData.get('loginId'),
+    'login-id': formData.get('login-id'),
     password: formData.get('password'),
     remember: formData.get('remember'),
-    codeChallenge: formData.get('codeChallenge'),
+    'code-challenge': formData.get('code-challenge'),
     fingerprint: formData.get('fingerprint'),
   })
 
@@ -63,12 +64,14 @@ export default async function login(formData: FormData) {
     return badRequest(flattenZodFieldErrors(validation.error), formData)
   }
 
-  const { loginId, password, remember, codeChallenge, fingerprint } = validation.data
+  const { password, remember, fingerprint } = validation.data
+  const loginId = validation.data['login-id']
+  const codeChallenge = validation.data['code-challenge']
   const { allowed, retryAfter } = await loginLimiter.check(loginId)
 
   if (!allowed) {
     const minutes = retryAfter ? Math.ceil(retryAfter / 60) : 1
-    return tooManyRequests(`너무 많은 로그인 시도가 있었어요. ${minutes}분 후에 다시 시도해주세요.`)
+    return tooManyRequests(`너무 많은 로그인 시도가 있었어요. ${minutes}분 후에 다시 시도해 주세요.`)
   }
 
   try {
@@ -108,12 +111,27 @@ export default async function login(formData: FormData) {
       }
     }
 
-    await Promise.all([
+    const [[verification]] = await Promise.all([
+      db
+        .select({ adultFlag: bbatonVerificationTable.adultFlag })
+        .from(bbatonVerificationTable)
+        .where(eq(bbatonVerificationTable.userId, id)),
       db.update(userTable).set({ loginAt: new Date() }).where(eq(userTable.id, id)),
       loginLimiter.reward(loginId),
-      getAccessTokenCookieConfig(id).then(({ key, value, options }) => cookieStore.set(key, value, options)),
-      remember && setRefreshTokenCookie(cookieStore, id),
     ])
+
+    const tokenClaims = {
+      userId: id,
+      adult: verification?.adultFlag === true,
+    }
+
+    const accessTokenCookie = await getAccessTokenCookieConfig(tokenClaims)
+    cookieStore.set(accessTokenCookie.key, accessTokenCookie.value, accessTokenCookie.options)
+
+    if (remember) {
+      const refreshTokenCookie = await getRefreshTokenCookieConfig(tokenClaims)
+      cookieStore.set(refreshTokenCookie.key, refreshTokenCookie.value, refreshTokenCookie.options)
+    }
 
     return ok({
       id,

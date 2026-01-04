@@ -1,8 +1,8 @@
 'use client'
 
+import { MoreHorizontal } from 'lucide-react'
 import Link from 'next/link'
 
-import IconMore from '@/components/icons/IconMore'
 import Squircle from '@/components/ui/Squircle'
 import TooltipPopover from '@/components/ui/TooltipPopover'
 import useMeQuery from '@/query/useMeQuery'
@@ -43,7 +43,7 @@ export default function Profile() {
           <div className="leading-5 break-all line-clamp-1">{nickname}</div>
           <div className="overflow-hidden text-zinc-400 leading-5">@{name}</div>
         </div>
-        <IconMore className="shrink-0 hidden w-11 p-3 2xl:block" />
+        <MoreHorizontal className="shrink-0 hidden size-11 p-3 2xl:block" />
       </Link>
       <div className="p-4 -ml-2 min-w-40 mb-2 rounded-2xl border-2 border-zinc-700 transition bg-zinc-900">
         <LogoutButton />

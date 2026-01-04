@@ -1,11 +1,11 @@
 'use client'
 
+import { Loader2 } from 'lucide-react'
 import { useLinkStatus } from 'next/link'
 import { ReactNode, useEffect, useState } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 import { LINK_PENDING_DELAY } from '@/constants/policy'
-
-import IconSpinner from './icons/IconSpinner'
 
 type Props = {
   children?: ReactNode
@@ -34,8 +34,8 @@ export default function LinkPending({ children, className, wrapperClassName }: P
 
   if (showSpinner) {
     return (
-      <div className={wrapperClassName}>
-        <IconSpinner className={className} />
+      <div className={wrapperClassName ?? twMerge(className, 'flex items-center justify-center')}>
+        <Loader2 className={twMerge('animate-spin', className)} />
       </div>
     )
   }

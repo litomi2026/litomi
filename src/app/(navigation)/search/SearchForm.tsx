@@ -1,10 +1,9 @@
 'use client'
 
-import { Clock, X, X as XIcon } from 'lucide-react'
+import { Clock, Loader2, X, X as XIcon } from 'lucide-react'
 import { ReadonlyURLSearchParams, usePathname, useRouter } from 'next/navigation'
 import { FormEvent, memo, useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react'
 
-import IconSpinner from '@/components/icons/IconSpinner'
 import Toggle from '@/components/ui/Toggle'
 import { MAX_SEARCH_QUERY_LENGTH } from '@/constants/policy'
 
@@ -288,7 +287,11 @@ function SearchForm({ className = '' }: Readonly<Props>) {
           disabled={isSearching}
           type="submit"
         >
-          {isSearching ? <IconSpinner className="w-5 mx-1" /> : <span className="block min-w-7">검색</span>}
+          {isSearching ? (
+            <Loader2 className="size-5 shrink-0 mx-1 animate-spin" />
+          ) : (
+            <span className="block min-w-7">검색</span>
+          )}
         </button>
       </form>
       <SuggestionDropdown

@@ -1,32 +1,36 @@
 'use client'
 
-import { Bookmark, History, PiggyBank, Settings, Star, X } from 'lucide-react'
+import { Bookmark, FileText, History, PiggyBank, Settings, Star, Tag, X } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useEffect } from 'react'
+import { ReactNode, useEffect, useRef } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 import useMeQuery from '@/query/useMeQuery'
 
-import IconPost from './icons/IconPost'
-import IconTag from './icons/IconTag'
 import LinkPending from './LinkPending'
 
-type MenuLinkProps = {
+type MobileMenuLinkProps = {
   href: string
-  icon: React.ReactNode
+  hrefMatch?: string
+  icon: ReactNode
   title: string
-  description?: string
-  isActive: boolean
+  selectedIconStyle?: SelectedIconStyle
+  pathname: string
+  onClose: () => void
 }
 
 type Props = {
   onClose: () => void
 }
 
+type SelectedIconStyle = 'fill-soft' | 'fill' | 'stroke'
+
 export default function MobileNavigationMenu({ onClose }: Readonly<Props>) {
   const pathname = usePathname()
   const { data: me } = useMeQuery()
   const username = me?.name ?? ''
+  const initialPathnameRef = useRef(pathname)
 
   // NOTE: 메뉴가 열릴 때 body 스크롤을 방지함
   useEffect(() => {
@@ -44,6 +48,13 @@ export default function MobileNavigationMenu({ onClose }: Readonly<Props>) {
       document.removeEventListener('keydown', handleKeyDown)
     }
   }, [onClose])
+
+  // NOTE: 페이지 이동 시 자동으로 닫힘
+  useEffect(() => {
+    if (pathname !== initialPathnameRef.current) {
+      onClose()
+    }
+  }, [onClose, pathname])
 
   return (
     <>
@@ -64,71 +75,63 @@ export default function MobileNavigationMenu({ onClose }: Readonly<Props>) {
           </button>
         </div>
         <div className="flex flex-col gap-1 p-3 pb-safe">
-          <MenuLink
+          <MobileMenuLink
             href="/posts/recommand"
-            icon={<IconPost className="w-5" selected={pathname.includes('/post')} />}
-            isActive={pathname.includes('/post')}
+            hrefMatch="/post"
+            icon={<FileText />}
+            onClose={onClose}
+            pathname={pathname}
+            selectedIconStyle="fill-soft"
             title="이야기"
           />
-          <MenuLink
+          <MobileMenuLink
             href="/library/history"
-            icon={
-              <History
-                aria-current={pathname.includes('/library/history') ? 'page' : undefined}
-                className="size-5 aria-current:fill-foreground"
-              />
-            }
-            isActive={pathname === '/library/history'}
+            icon={<History />}
+            onClose={onClose}
+            pathname={pathname}
+            selectedIconStyle="fill-soft"
             title="감상 기록"
           />
-          <MenuLink
+          <MobileMenuLink
             href="/library/bookmark"
-            icon={
-              <Bookmark
-                aria-current={pathname.includes('/library/bookmark') ? 'page' : undefined}
-                className="size-5 aria-current:fill-foreground"
-              />
-            }
-            isActive={pathname === '/library/bookmark'}
+            icon={<Bookmark />}
+            onClose={onClose}
+            pathname={pathname}
+            selectedIconStyle="fill"
             title="북마크"
           />
-          <MenuLink
+          <MobileMenuLink
             href="/library/rating"
-            icon={
-              <Star
-                aria-current={pathname.includes('/library/rating') ? 'page' : undefined}
-                className="size-5 aria-current:fill-foreground"
-              />
-            }
-            isActive={pathname === '/library/rating'}
+            icon={<Star />}
+            onClose={onClose}
+            pathname={pathname}
+            selectedIconStyle="fill"
             title="평가"
           />
-          <MenuLink
+          <MobileMenuLink
             href="/tag"
-            icon={<IconTag className="w-5" selected={pathname.includes('/tag')} />}
-            isActive={pathname.includes('/tag')}
+            hrefMatch="/tag"
+            icon={<Tag />}
+            onClose={onClose}
+            pathname={pathname}
+            selectedIconStyle="fill-soft"
             title="태그"
           />
-          <MenuLink
+          <MobileMenuLink
             href="/libo"
-            icon={
-              <PiggyBank
-                aria-current={pathname.startsWith('/libo') ? 'page' : undefined}
-                className="size-5 aria-current:fill-foreground"
-              />
-            }
-            isActive={pathname.startsWith('/libo')}
+            hrefMatch="/libo"
+            icon={<PiggyBank />}
+            onClose={onClose}
+            pathname={pathname}
+            selectedIconStyle="fill-soft"
             title="리보"
           />
-          <MenuLink
+          <MobileMenuLink
             href={`/@${username}/settings`}
-            icon={
-              <Settings
-                aria-current={pathname.includes(`/@${username}/settings`) ? 'page' : undefined}
-                className="size-5 aria-current:fill-foreground"
-              />
-            }
-            isActive={pathname === `/@${username}/settings`}
+            icon={<Settings />}
+            onClose={onClose}
+            pathname={pathname}
+            selectedIconStyle="fill-soft"
             title="설정"
           />
         </div>
@@ -137,21 +140,57 @@ export default function MobileNavigationMenu({ onClose }: Readonly<Props>) {
   )
 }
 
-function MenuLink({ href, icon, title, description, isActive }: MenuLinkProps) {
+function getSelectedIconClassName(selectedIconStyle: SelectedIconStyle) {
+  switch (selectedIconStyle) {
+    case 'fill':
+      return '[&_svg]:fill-current'
+    case 'fill-soft':
+      return '[&_svg]:fill-current [&_svg]:[fill-opacity:0.3]'
+    case 'stroke':
+      return '[&_svg]:stroke-3'
+    default:
+      return ''
+  }
+}
+
+function MobileMenuLink({
+  href,
+  hrefMatch,
+  icon,
+  title,
+  selectedIconStyle = 'stroke',
+  pathname,
+  onClose,
+}: MobileMenuLinkProps) {
+  const isSelected = hrefMatch ? pathname.includes(hrefMatch) : pathname === href
+  const isSamePath = pathname === href
+  const selectedIconClassName = isSelected ? getSelectedIconClassName(selectedIconStyle) : ''
+  const iconClassName = 'size-4 shrink-0 text-zinc-400 aria-current:text-foreground'
+
   return (
     <Link
-      aria-current={isActive ? 'page' : undefined}
+      aria-current={isSelected ? 'page' : undefined}
       className="flex items-center gap-4 p-3 rounded-lg transition hover:bg-zinc-800/50 border border-transparent
         aria-[current=page]:bg-zinc-800 aria-[current=page]:border-zinc-700"
       href={href}
+      onClick={() => isSamePath && onClose()}
       prefetch={false}
     >
-      <div className="shrink-0">
-        <LinkPending className="size-5">{icon}</LinkPending>
-      </div>
+      <LinkPending className={iconClassName}>
+        <span
+          aria-hidden
+          className={twMerge(
+            'inline-flex items-center justify-center',
+            iconClassName,
+            '[&_svg]:size-full [&_svg]:shrink-0',
+            selectedIconClassName,
+          )}
+        >
+          {icon}
+        </span>
+      </LinkPending>
       <div className="flex-1 min-w-0">
         <h3 className="font-semibold text-base leading-tight">{title}</h3>
-        {description && <p className="text-sm text-zinc-400 leading-tight mt-0.5">{description}</p>}
       </div>
     </Link>
   )

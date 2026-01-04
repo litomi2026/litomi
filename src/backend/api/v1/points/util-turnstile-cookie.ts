@@ -13,8 +13,7 @@ type PointsTurnstileTokenPayload = JWTPayload & {
 
 const { JWT_SECRET_TRUSTED_DEVICE } = env
 const issuer = new URL(CANONICAL_URL).hostname
-
-export const POINTS_TURNSTILE_TTL_SECONDS = sec('10 minutes')
+export const POINTS_TURNSTILE_TTL_SECONDS = sec('2 minutes')
 
 export async function signPointsTurnstileToken(userId: number): Promise<string> {
   const payload: PointsTurnstileTokenPayload = {

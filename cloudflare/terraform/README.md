@@ -63,6 +63,7 @@ terraform apply
    - Zone → Cache Purge → Edit
    - Zone → Page Rules → Edit
    - Zone → Zone Settings → Edit
+   - Zone → Managed headers → Edit
    - Zone → DNS → Edit
 5. Add zone resources:
    - Include → Specific zone → Your domain

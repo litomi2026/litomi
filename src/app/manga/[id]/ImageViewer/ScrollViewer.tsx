@@ -1,9 +1,9 @@
+import { Loader2 } from 'lucide-react'
 import { CSSProperties, useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { List, RowComponentProps, useDynamicRowHeight, useListRef } from 'react-window'
 
 import { MangaIdSearchParam } from '@/app/manga/[id]/common'
-import IconSpinner from '@/components/icons/IconSpinner'
 import MangaImage from '@/components/MangaImage'
 import { Manga } from '@/types/manga'
 
@@ -89,7 +89,7 @@ export default function ScrollViewer({ manga, onClick, pageView, readingDirectio
   if (images.length === 0) {
     return (
       <div className="flex items-center justify-center h-dvh animate-fade-in" onClick={onClick}>
-        <IconSpinner className="size-8" />
+        <Loader2 className="size-8 animate-spin" />
       </div>
     )
   }

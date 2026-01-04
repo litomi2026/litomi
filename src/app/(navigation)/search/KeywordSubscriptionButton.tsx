@@ -1,11 +1,11 @@
 'use client'
 
-import { Bell, BellRing } from 'lucide-react'
+import { BellRing, Loader2 } from 'lucide-react'
 import { ReadonlyURLSearchParams, useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
-import IconSpinner from '@/components/icons/IconSpinner'
+import IconBell from '@/components/icons/IconBell'
 import useServerAction from '@/hook/useServerAction'
 import useMeQuery from '@/query/useMeQuery'
 
@@ -86,11 +86,11 @@ export default function KeywordSubscriptionButton() {
     >
       <UpdateFromSearchParams onUpdate={updateQuery} />
       {isPending ? (
-        <IconSpinner className="size-4 animate-spin" />
+        <Loader2 className="size-4 animate-spin" />
       ) : isSubscribed ? (
         <BellRing className="size-4 text-brand" />
       ) : (
-        <Bell className="size-4" />
+        <IconBell className="size-4" />
       )}
       <span>{isSubscribed ? '설정 보기' : '키워드 알림'}</span>
     </button>

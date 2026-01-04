@@ -3,18 +3,10 @@
 import { useMutation } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
 
-import { POSTV1BBatonCompleteResponse } from '@/backend/api/v1/bbaton/complete'
-import { BBATON_ADULT_VERIFICATION_CHANNEL_NAME } from '@/constants/bbaton'
 import { env } from '@/env/client'
 import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
-
-type BroadcastResult = {
-  at: number
-  adultFlag?: 'N' | 'Y'
-  error?: string
-}
 
 type CallbackState = { type: 'error'; message: string } | { type: 'loading' } | { type: 'success' }
 
@@ -22,27 +14,23 @@ export default function BBatonCallbackPage() {
   const [state, setState] = useState<CallbackState>({ type: 'loading' })
   const didRunRef = useRef(false)
 
-  const completeMutation = useMutation<POSTV1BBatonCompleteResponse, unknown, { code: string }>({
+  const completeMutation = useMutation<void, unknown, { code: string }>({
     mutationFn: async ({ code }) => {
       const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/bbaton/complete`
 
-      const { data } = await fetchWithErrorHandling<POSTV1BBatonCompleteResponse>(url, {
+      await fetchWithErrorHandling<void>(url, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code }),
       })
-
-      return data
     },
-    onSuccess: ({ adultFlag }) => {
-      broadcastResult({ at: Date.now(), adultFlag })
+    onSuccess: () => {
       setState({ type: 'success' })
       window.close()
     },
     onError: (error) => {
       const message = getErrorMessage(error)
-      broadcastResult({ at: Date.now(), error: message })
       setState({ type: 'error', message })
     },
   })
@@ -57,13 +45,16 @@ export default function BBatonCallbackPage() {
     const code = params.get('code')
     const error = params.get('error') ?? params.get('error_description')
 
+    if (window.location.search) {
+      window.history.replaceState(null, '', window.location.pathname)
+    }
+
     if (!code) {
       const message = error
         ? '인증을 완료하지 못했어요. 다시 시도해 주세요.'
         : '인증 코드를 찾을 수 없어요. 다시 시도해 주세요.'
 
       setState({ type: 'error', message })
-      broadcastResult({ at: Date.now(), error: message })
       return
     }
 
@@ -91,16 +82,6 @@ export default function BBatonCallbackPage() {
       </div>
     </main>
   )
-}
-
-function broadcastResult(result: BroadcastResult) {
-  try {
-    const channel = new BroadcastChannel(BBATON_ADULT_VERIFICATION_CHANNEL_NAME)
-    channel.postMessage(result)
-    channel.close()
-  } catch {
-    // ignore
-  }
 }
 
 function getErrorMessage(error: unknown): string {

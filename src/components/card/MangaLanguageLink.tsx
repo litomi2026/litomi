@@ -1,11 +1,10 @@
 'use client'
 
 import { CN, DE, ES, FR, HU, IT, JP, KR, NL, PT, RU, TH, US, VN } from 'country-flag-icons/react/3x2'
-import { Globe, Meh, Pencil } from 'lucide-react'
+import { Globe, Loader2, Meh, Pencil } from 'lucide-react'
 import Link, { useLinkStatus } from 'next/link'
 import { ReactNode } from 'react'
 
-import IconSpinner from '../icons/IconSpinner'
 import { useSearchFilter } from './useSearchFilter'
 
 type Props = {
@@ -77,9 +76,9 @@ function LanguageBadgeContent({ language }: { language: string }) {
 
   return (
     <>
-      <IconSpinner
+      <Loader2
         aria-hidden={!pending}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition aria-hidden:opacity-0 text-foreground p-0.5 w-5 h-5"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition aria-hidden:opacity-0 text-foreground p-0.5 size-5 shrink-0 animate-spin"
       />
       <span aria-hidden={pending} className="flex items-center gap-1 aria-hidden:opacity-0 transition">
         <span className="text-base leading-none [&>svg]:size-[1em]">{flag}</span>

@@ -1,12 +1,11 @@
 'use client'
 
+import { LogIn } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ReactNode } from 'react'
 
 import { SearchParamKey } from '@/constants/storage'
-
-import IconLogin from './icons/IconLogin'
 
 type Props = {
   children: ReactNode
@@ -22,7 +21,7 @@ export default function LoginButton({ children }: Readonly<Props>) {
       href={`/auth/login?${SearchParamKey.REDIRECT}=${encodeURIComponent(pathname)}`}
       prefetch={false}
     >
-      <IconLogin className="size-5" />
+      <LogIn className="size-5" />
       {children}
     </Link>
   )

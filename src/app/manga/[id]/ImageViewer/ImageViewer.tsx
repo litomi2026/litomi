@@ -1,6 +1,7 @@
 'use client'
 
 import { ArrowLeft, ArrowRight, MessageCircle } from 'lucide-react'
+import ms from 'ms'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -24,6 +25,7 @@ import { orientations, useTouchOrientationStore } from './store/touchOrientation
 import { useVirtualScrollStore } from './store/virtualizer'
 import ThumbnailStrip from './ThumbnailStrip'
 import TouchViewer from './TouchViewer'
+import useAutoHideCursor from './useAutoHideCursor'
 import ViewControlPanel from './ViewControlPanel'
 
 const ScrollViewer = dynamic(() => import('./ScrollViewer'))
@@ -68,6 +70,11 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
     [setImageIndex, isDoublePage, scrollToRow],
   )
 
+  const { isCursorHidden, registerActivity } = useAutoHideCursor({
+    enabled: !showController,
+    idleDelayMs: ms('3 seconds'),
+  })
+
   // NOTE: 스크롤 방지
   useEffect(() => {
     document.documentElement.style.overscrollBehavior = 'none'
@@ -102,7 +109,13 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
   }, [showViewControl])
 
   return (
-    <div className="relative">
+    <div
+      className="relative data-[cursor-hidden=true]:cursor-none"
+      data-cursor-hidden={isCursorHidden ? 'true' : 'false'}
+      onPointerDown={registerActivity}
+      onPointerMove={registerActivity}
+      onWheel={registerActivity}
+    >
       <ResumeReadingToast manga={manga} />
       <ReadingProgressSaver mangaId={manga.id} />
       <div

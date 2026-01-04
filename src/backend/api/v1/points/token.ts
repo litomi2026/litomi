@@ -1,10 +1,10 @@
 import { and, eq, gt, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { deleteCookie, getCookie } from 'hono/cookie'
-import ms from 'ms'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { requireAuth } from '@/backend/middleware/require-auth'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { COOKIE_DOMAIN } from '@/constants'
@@ -22,18 +22,13 @@ export type POSTV1PointTokenResponse = {
 }
 
 const route = new Hono<Env>()
-const SECOND_MS = ms('1 second')
 
 const requestSchema = z.object({
   adSlotId: z.string().min(1).max(50),
 })
 
-route.post('/', zProblemValidator('json', requestSchema), async (c) => {
-  const userId = c.get('userId')
-
-  if (!userId) {
-    return problemResponse(c, { status: 401 })
-  }
+route.post('/', requireAuth, zProblemValidator('json', requestSchema), async (c) => {
+  const userId = c.get('userId')!
 
   const turnstileCookie = getCookie(c, CookieKey.POINTS_TURNSTILE)
 
@@ -82,7 +77,7 @@ route.post('/', zProblemValidator('json', requestSchema), async (c) => {
       const tomorrowStart = new Date(todayStart)
       tomorrowStart.setDate(tomorrowStart.getDate() + 1)
       const remainingMs = Math.max(0, tomorrowStart.getTime() - now.getTime())
-      const remainingSeconds = Math.max(1, Math.ceil(remainingMs / SECOND_MS))
+      const remainingSeconds = Math.max(1, Math.ceil(remainingMs / 1000))
 
       return problemResponse(c, {
         status: 429,
@@ -135,7 +130,7 @@ route.post('/', zProblemValidator('json', requestSchema), async (c) => {
 
     if (result.lastEarnedAt && result.lastEarnedAt > adSlotCooldownTime) {
       const remainingMs = POINT_CONSTANTS.AD_SLOT_COOLDOWN_MS - (now.getTime() - result.lastEarnedAt.getTime())
-      const remainingSeconds = Math.max(1, Math.ceil(remainingMs / SECOND_MS))
+      const remainingSeconds = Math.max(1, Math.ceil(remainingMs / 1000))
 
       return problemResponse(c, {
         status: 429,

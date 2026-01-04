@@ -6,6 +6,7 @@ import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { requireAuth } from '@/backend/middleware/require-auth'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { COOKIE_DOMAIN } from '@/constants'
@@ -17,6 +18,8 @@ import { userTable } from '@/database/supabase/user'
 import { passwordSchema } from '@/database/zod'
 import { decryptTOTPSecret, verifyTOTPToken } from '@/utils/two-factor'
 
+import { reissueAuthCookies } from './utils'
+
 export type POSTV1BBatonUnlinkResponse = { ok: true }
 
 const schema = z.object({
@@ -26,16 +29,10 @@ const schema = z.object({
 
 const route = new Hono<Env>()
 
-route.post('/', zProblemValidator('json', schema), async (c) => {
-  const userId = c.get('userId')
-
-  if (!userId) {
-    return problemResponse(c, { status: 401 })
-  }
+route.post('/', requireAuth, zProblemValidator('json', schema), async (c) => {
+  const userId = c.get('userId')!
 
   try {
-    const { password, token } = c.req.valid('json')
-
     const [user] = await db
       .select({ passwordHash: userTable.passwordHash })
       .from(userTable)
@@ -45,6 +42,7 @@ route.post('/', zProblemValidator('json', schema), async (c) => {
       return problemResponse(c, { status: 401, detail: '비밀번호가 일치하지 않아요' })
     }
 
+    const { password, token } = c.req.valid('json')
     const isValidPassword = await compare(password, user.passwordHash).catch(() => false)
 
     if (!isValidPassword) {
@@ -72,6 +70,7 @@ route.post('/', zProblemValidator('json', schema), async (c) => {
     await db.delete(bbatonVerificationTable).where(eq(bbatonVerificationTable.userId, userId))
 
     deleteCookie(c, CookieKey.BBATON_ATTEMPT_ID, { domain: COOKIE_DOMAIN, path: '/api/v1/bbaton' })
+    await reissueAuthCookies(c, { userId, adult: false })
 
     return c.json<POSTV1BBatonUnlinkResponse>({ ok: true })
   } catch (error) {

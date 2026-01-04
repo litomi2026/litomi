@@ -14,7 +14,7 @@ import DialogHeader from '@/components/ui/DialogHeader'
 import { env } from '@/env/client'
 import { showLoginRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
-import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
+import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
 
@@ -45,37 +45,21 @@ export default function MangaReportButton({ mangaId, variant = 'icon', className
   const reportMutation = useMutation<POSTV1MangaIdReportResponse, unknown, POSTV1MangaIdReportBody>({
     mutationFn: async (body) => {
       const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/manga/${mangaId}/report`
+
       const { data } = await fetchWithErrorHandling<POSTV1MangaIdReportResponse>(url, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       })
+
       return data
-    },
-    meta: {
-      suppressGlobalErrorToastForStatuses: [403],
     },
     onSuccess: (data) => {
       if (data.duplicated) {
         toast.info('이미 신고했어요')
       } else {
         toast.success('신고가 접수됐어요')
-      }
-    },
-    onError: (error) => {
-      if (error instanceof ProblemDetailsError && error.status === 403) {
-        const settingsHref = me?.name ? `/@${me.name}/settings#adult` : '/@/settings#adult'
-        toast.warning(
-          <div className="flex flex-wrap gap-x-2 gap-y-1 items-center">
-            <div>비바톤 인증이 필요해요</div>
-            {me?.name && (
-              <Link className="font-bold text-xs underline underline-offset-2" href={settingsHref} prefetch={false}>
-                인증하러 가기
-              </Link>
-            )}
-          </div>,
-        )
       }
     },
     onSettled: () => setOpen(false),
@@ -111,9 +95,9 @@ export default function MangaReportButton({ mangaId, variant = 'icon', className
       </button>
 
       <Dialog ariaLabel="작품 신고" onClose={() => setOpen(false)} open={open}>
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full min-h-0">
           <DialogHeader onClose={() => setOpen(false)} title="작품 신고" />
-          <div className="flex-1 overflow-y-auto p-2">
+          <div className="flex-1 min-h-0 overflow-y-auto p-2">
             <div className="space-y-1">
               <ReasonButton
                 disabled={reportMutation.isPending}

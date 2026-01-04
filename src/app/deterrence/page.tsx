@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 
-import IconLogo from '@/components/icons/IconLogo'
+import IconLogo from '@/components/icons/LogoLitomi'
 import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 
 export const metadata: Metadata = {

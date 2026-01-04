@@ -1,7 +1,7 @@
 'use client'
 
 import { useQueryClient } from '@tanstack/react-query'
-import { UploadCloud, X } from 'lucide-react'
+import { Loader2, UploadCloud, X } from 'lucide-react'
 import ms from 'ms'
 import { FormEvent, useMemo, useState } from 'react'
 import { toast } from 'sonner'
@@ -13,7 +13,6 @@ import { QueryKeys } from '@/constants/query'
 import useDebouncedValue from '@/hook/useDebouncedValue'
 import useServerAction from '@/hook/useServerAction'
 
-import IconSpinner from '../icons/IconSpinner'
 import Modal from '../ui/Modal'
 
 type ImportMangaModalStore = {
@@ -101,7 +100,7 @@ export default function MangaImportModal() {
             title="닫기"
             type="button"
           >
-            <X className="w-6 h-6 sm:w-5 sm:h-5" />
+            <X className="size-6 shrink-0 sm:size-5" />
           </button>
         </div>
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -137,7 +136,7 @@ export default function MangaImportModal() {
           >
             {isImporting ? (
               <>
-                <IconSpinner className="size-5" />
+                <Loader2 className="size-5 animate-spin" />
                 <span>가져오는 중</span>
               </>
             ) : (

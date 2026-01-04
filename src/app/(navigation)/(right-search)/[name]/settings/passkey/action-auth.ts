@@ -12,6 +12,7 @@ import { z } from 'zod'
 
 import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID } from '@/constants'
 import { ChallengeType } from '@/database/enum'
+import { bbatonVerificationTable } from '@/database/supabase/bbaton'
 import { db } from '@/database/supabase/drizzle'
 import { credentialTable } from '@/database/supabase/passkey'
 import { userTable } from '@/database/supabase/user'
@@ -172,8 +173,14 @@ export async function verifyAuthentication(body: unknown, turnstileToken: string
       const newCounter =
         authenticationInfo.credentialDeviceType === 'singleDevice' ? authenticationInfo.newCounter : credential.counter
 
-      const [[user]] = await Promise.all([
-        tx.update(userTable).set({ loginAt: new Date() }).where(eq(userTable.id, credential.userId)).returning({
+      const now = new Date()
+
+      const [verification, [user]] = await Promise.all([
+        tx
+          .select({ adultFlag: bbatonVerificationTable.adultFlag })
+          .from(bbatonVerificationTable)
+          .where(eq(bbatonVerificationTable.userId, credential.userId)),
+        tx.update(userTable).set({ loginAt: now }).where(eq(userTable.id, credential.userId)).returning({
           id: userTable.id,
           loginId: userTable.loginId,
           name: userTable.name,
@@ -184,15 +191,19 @@ export async function verifyAuthentication(body: unknown, turnstileToken: string
           .update(credentialTable)
           .set({
             counter: newCounter,
-            lastUsedAt: new Date(),
+            lastUsedAt: now,
           })
           .where(eq(credentialTable.credentialId, validatedData.id)),
-        cookies().then((cookieStore) =>
-          getAccessTokenCookieConfig(credential.userId).then(({ key, value, options }) =>
-            cookieStore.set(key, value, options),
-          ),
-        ),
       ])
+
+      const tokenClaims = {
+        userId: credential.userId,
+        adult: verification[0]?.adultFlag === true,
+      }
+
+      const { key, value, options } = await getAccessTokenCookieConfig(tokenClaims)
+      const cookieStore = await cookies()
+      cookieStore.set(key, value, options)
 
       return ok(user)
     })

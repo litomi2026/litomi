@@ -4,6 +4,7 @@ import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { requireAuth } from '@/backend/middleware/require-auth'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { EXPANSION_TYPE, POINT_CONSTANTS } from '@/constants/points'
@@ -37,14 +38,11 @@ const route = new Hono<Env>()
 
 route.put(
   '/:id/rating',
+  requireAuth,
   zProblemValidator('param', paramSchema),
   zProblemValidator('json', putBodySchema),
   async (c) => {
-    const userId = c.get('userId')
-
-    if (!userId) {
-      return problemResponse(c, { status: 401 })
-    }
+    const userId = c.get('userId')!
 
     const { id: mangaId } = c.req.valid('param')
     const { rating } = c.req.valid('json')

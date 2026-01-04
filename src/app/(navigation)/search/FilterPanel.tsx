@@ -1,11 +1,10 @@
 'use client'
 
-import { X } from 'lucide-react'
+import { Loader2, X } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
 import { Dispatch, FormEvent, RefObject, SetStateAction, useCallback, useEffect, useState, useTransition } from 'react'
 import { createPortal } from 'react-dom'
 
-import IconSpinner from '@/components/icons/IconSpinner'
 import CustomSelect from '@/components/ui/CustomSelect'
 import { formatLocalDate } from '@/utils/format/date'
 
@@ -200,7 +199,7 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
             onClick={onClose}
             type="button"
           >
-            <X className="w-6 h-6 sm:w-5 sm:h-5" />
+            <X className="size-6 shrink-0 sm:size-5" />
           </button>
         </div>
         <div
@@ -394,7 +393,7 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
             disabled={isPending}
             type="submit"
           >
-            {isPending ? <IconSpinner className="size-5" /> : '적용'}
+            {isPending ? <Loader2 className="size-5 animate-spin" /> : '적용'}
           </button>
         </div>
       </form>

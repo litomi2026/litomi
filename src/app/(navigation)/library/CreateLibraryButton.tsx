@@ -1,16 +1,14 @@
 'use client'
 
 import { type InfiniteData, useQueryClient } from '@tanstack/react-query'
-import { X } from 'lucide-react'
+import { Loader2, Plus } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-import type { GETLibraryResponse } from '@/backend/api/v1/library/get'
-import type { GETV1LibraryListResponse } from '@/backend/api/v1/library/list'
+import type { GETV1LibraryListResponse, LibraryListItem } from '@/backend/api/v1/library/GET'
 
-import IconPlus from '@/components/icons/IconPlus'
-import IconSpinner from '@/components/icons/IconSpinner'
-import Modal from '@/components/ui/Modal'
+import Dialog from '@/components/ui/Dialog'
+import DialogHeader from '@/components/ui/DialogHeader'
 import Toggle from '@/components/ui/Toggle'
 import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
@@ -55,21 +53,28 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
   const [formErrors, dispatchAction, isPending] = useServerAction({
     action: createLibrary,
     onSuccess: (newLibraryId, [formData]) => {
-      queryClient.setQueryData<GETLibraryResponse>(QueryKeys.libraries, (oldLibraries) => {
-        const newLibrary = {
+      const meId = me?.id
+      const now = Date.now()
+
+      queryClient.setQueryData<LibraryListItem[]>(QueryKeys.libraries, (oldLibraries) => {
+        if (!meId) {
+          return oldLibraries
+        }
+
+        const newLibrary: LibraryListItem = {
           id: newLibraryId,
+          userId: meId,
           name: formData.get('name')?.toString() ?? '',
-          description: formData.get('description')?.toString(),
+          description: (formData.get('description')?.toString() ?? '').trim() || null,
           color: formData.get('color')?.toString() ?? null,
           icon: formData.get('icon')?.toString() ?? null,
           isPublic: formData.get('is-public')?.toString() === 'on',
+          createdAt: now,
           itemCount: 0,
         }
 
-        return oldLibraries ? [...oldLibraries, newLibrary] : [newLibrary]
+        return oldLibraries ? [...oldLibraries.filter((lib) => lib.id !== newLibrary.id), newLibrary] : [newLibrary]
       })
-
-      const meId = me?.id
 
       if (meId) {
         queryClient.setQueryData<InfiniteData<GETV1LibraryListResponse, string | null>>(
@@ -78,8 +83,6 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
             if (!oldData) {
               return oldData
             }
-
-            const now = Date.now()
 
             const newItem = {
               id: newLibraryId,
@@ -131,22 +134,12 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
         title="서재 만들기"
         type="button"
       >
-        <IconPlus className="w-5 h-5" />
+        <Plus className="size-5 shrink-0" />
         <span className="font-medium sm:hidden">서재 만들기</span>
       </button>
-      <Modal
-        className="fixed inset-0 z-50 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 flex flex-col overflow-hidden
-          bg-zinc-900 sm:w-full sm:max-w-lg sm:max-h-[calc(100dvh-4rem)] sm:border-2 sm:border-zinc-700 sm:rounded-xl sm:-translate-y-1/2"
-        onClose={handleClose}
-        open={isModalOpen}
-      >
+      <Dialog onClose={handleClose} open={isModalOpen}>
         <form action={dispatchAction} className="flex flex-col h-full min-h-0">
-          <div className="flex items-center justify-between p-4 bg-zinc-900 border-b-2 border-zinc-800 shrink-0">
-            <h2 className="text-xl font-bold text-zinc-100">서재 만들기</h2>
-            <button className="p-2 -m-1 rounded-lg hover:bg-zinc-800 transition" onClick={handleClose} type="button">
-              <X className="size-5" />
-            </button>
-          </div>
+          <DialogHeader onClose={handleClose} title="서재 만들기" />
           <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 min-h-0 relative">
             <div className="flex items-center justify-center p-4">
               <div
@@ -278,12 +271,12 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
               disabled={isPending}
               type="submit"
             >
-              {isPending ? <IconSpinner className="w-5" /> : <IconPlus className="w-5" />}
+              {isPending ? <Loader2 className="size-5 shrink-0 animate-spin" /> : <Plus className="size-5 shrink-0" />}
               <span>생성하기</span>
             </button>
           </div>
         </form>
-      </Modal>
+      </Dialog>
     </>
   )
 }

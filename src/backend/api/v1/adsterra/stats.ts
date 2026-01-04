@@ -3,6 +3,7 @@ import ms from 'ms'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { requireAuth } from '@/backend/middleware/require-auth'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { env } from '@/env/server.hono'
@@ -55,12 +56,7 @@ export type GETV1AdsterraStatsResponse = z.infer<typeof adsterraStatsResponseSch
 
 const route = new Hono<Env>()
 
-route.get('/stats', zProblemValidator('query', querySchema, { detail: '날짜 범위를 확인해 주세요' }), async (c) => {
-  const userId = c.get('userId')
-  if (!userId) {
-    return problemResponse(c, { status: 401 })
-  }
-
+route.get('/stats', requireAuth, zProblemValidator('query', querySchema), async (c) => {
   const { start_date, finish_date } = c.req.valid('query')
   const url = new URL('https://api3.adsterratools.com/publisher/stats.json')
   url.searchParams.set('start_date', start_date)

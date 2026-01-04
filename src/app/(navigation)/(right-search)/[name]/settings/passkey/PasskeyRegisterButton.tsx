@@ -1,10 +1,9 @@
 'use client'
 
 import { startRegistration } from '@simplewebauthn/browser'
+import { Loader2, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 
-import IconPlus from '@/components/icons/IconPlus'
-import IconSpinner from '@/components/icons/IconSpinner'
 import useServerAction from '@/hook/useServerAction'
 
 import { getRegistrationOptions, verifyRegistration } from './action-register'
@@ -54,7 +53,7 @@ export default function PasskeyRegisterButton() {
       disabled={isPending}
       onClick={handleRegisterPasskey}
     >
-      {isPending ? <IconSpinner className="size-4" /> : <IconPlus className="size-4" />}
+      {isPending ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
       패스키 추가
     </button>
   )

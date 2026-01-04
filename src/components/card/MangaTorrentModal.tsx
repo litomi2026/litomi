@@ -155,7 +155,7 @@ export default function MangaTorrentModal() {
           title="닫기"
           type="button"
         >
-          <X className="w-6 h-6 sm:w-5 sm:h-5" />
+          <X className="size-6 shrink-0 sm:size-5" />
         </button>
       </div>
 
@@ -167,8 +167,9 @@ export default function MangaTorrentModal() {
         ) : (
           <>
             <p className="text-xs text-zinc-500">
-              <span className="font-medium text-zinc-300">마그넷 열기</span>를 누르면 토렌트 앱이 실행될 수 있어요. 안
-              열리면 <span className="font-medium text-zinc-300">복사</span>로 마그넷 주소를 복사해 주세요
+              <span className="font-medium text-zinc-300">마그넷 열기</span>를 누르면 토렌트 앱이 실행될 수 있어요.
+              실행되지 않으면 <span className="font-medium text-zinc-300">복사</span> 버튼으로 마그넷 주소를 복사해
+              주세요
             </p>
             <ul className="grid gap-2">
               {torrents.map((torrent) => {

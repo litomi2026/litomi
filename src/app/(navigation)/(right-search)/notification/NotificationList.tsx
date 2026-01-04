@@ -1,17 +1,14 @@
 'use client'
 
 import { useQueryClient } from '@tanstack/react-query'
-import { Check } from 'lucide-react'
+import { Book, Check, Filter, Loader2, Trash2 } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ReactNode, useCallback, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
 import { NotificationFilter } from '@/backend/api/v1/notification/types'
 import IconBell from '@/components/icons/IconBell'
-import IconBook from '@/components/icons/IconBook'
-import IconFilter from '@/components/icons/IconFilter'
-import IconSpinner from '@/components/icons/IconSpinner'
-import IconTrash from '@/components/icons/IconTrash'
+import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import { QueryKeys } from '@/constants/query'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useServerAction from '@/hook/useServerAction'
@@ -44,13 +41,17 @@ export default function NotificationList() {
   const [selectionMode, setSelectionMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
   const { data: me, isLoading: isMeLoading } = useMeQuery()
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useNotificationInfiniteQuery()
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError, isLoading } =
+    useNotificationInfiniteQuery()
+
   const notifications = useMemo(() => data?.pages.flatMap((page) => page.notifications) ?? [], [data])
   const groupedNotifications = groupNotificationsByDate(notifications)
   const queryClient = useQueryClient()
+  const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
 
   const loadMoreRef = useInfiniteScrollObserver({
-    hasNextPage,
+    hasNextPage: canAutoLoadMore,
     isFetchingNextPage,
     fetchNextPage,
   })
@@ -142,7 +143,7 @@ export default function NotificationList() {
             <FilterButton
               active={filter === NotificationFilter.NEW_MANGA}
               disabled={isMarkAsReadPending || isDeleteNotificationsPending}
-              icon={<IconBook className="w-5" />}
+              icon={<Book className="size-5 shrink-0" />}
               onClick={() => router.replace(`?filter=${NotificationFilter.NEW_MANGA}`)}
             >
               <span className="hidden sm:inline">신규</span>
@@ -165,7 +166,7 @@ export default function NotificationList() {
                   disabled={selectedIds.size === 0 || isMarkAsReadPending || isDeleteNotificationsPending}
                   onClick={() => handleBatchAction('read')}
                 >
-                  {isMarkAsReadPending ? <IconSpinner className="size-5" /> : <Check className="size-5" />}
+                  {isMarkAsReadPending ? <Loader2 className="size-5 animate-spin" /> : <Check className="size-5" />}
                   <span className="hidden sm:inline">읽음</span>
                 </button>
                 <button
@@ -173,7 +174,11 @@ export default function NotificationList() {
                   disabled={selectedIds.size === 0 || isMarkAsReadPending || isDeleteNotificationsPending}
                   onClick={() => handleBatchAction('delete')}
                 >
-                  {isDeleteNotificationsPending ? <IconSpinner className="size-5" /> : <IconTrash className="size-5" />}
+                  {isDeleteNotificationsPending ? (
+                    <Loader2 className="size-5 animate-spin" />
+                  ) : (
+                    <Trash2 className="size-5" />
+                  )}
                   <span className="hidden sm:inline">삭제</span>
                 </button>
                 <button
@@ -194,7 +199,7 @@ export default function NotificationList() {
                 onClick={() => setSelectionMode(true)}
                 title="선택 모드"
               >
-                <IconFilter className="w-5" />
+                <Filter className="size-5 shrink-0" />
               </button>
             )}
           </div>
@@ -202,7 +207,7 @@ export default function NotificationList() {
       </div>
       {isLoading || isMeLoading ? (
         <div className="flex-1 flex items-center justify-center animate-fade-in [animation-delay:0.3s] [animation-fill-mode:both]">
-          <IconSpinner className="w-10 text-zinc-600 animate-spin sm:w-12" />
+          <Loader2 className="size-10 shrink-0 text-zinc-600 animate-spin sm:size-12" />
         </div>
       ) : !me ? (
         <Unauthorized />
@@ -244,7 +249,11 @@ export default function NotificationList() {
             </div>
           ))}
           <div className="w-full py-4 flex justify-center" ref={loadMoreRef}>
-            {isFetchingNextPage && <IconSpinner className="h-5 w-5 animate-spin text-zinc-600" />}
+            {isFetchingNextPage ? (
+              <Loader2 className="size-5 shrink-0 animate-spin text-zinc-600" />
+            ) : isFetchNextPageError ? (
+              <LoadMoreRetryButton containerClassName="" onRetry={fetchNextPage} />
+            ) : null}
           </div>
         </div>
       )}
@@ -321,7 +330,7 @@ function getEmptyContent(filter: NotificationFilter | null) {
   switch (filter) {
     case NotificationFilter.NEW_MANGA:
       return {
-        icon: <IconBook className="mb-4 size-12 text-zinc-600/50" />,
+        icon: <Book className="mb-4 size-12 text-zinc-600/50" />,
         title: '신규 작품 알림이 없어요',
         description: '새로운 작품이 추가되면 알려드릴게요',
       }

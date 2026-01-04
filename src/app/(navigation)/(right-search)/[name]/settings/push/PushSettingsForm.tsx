@@ -70,7 +70,7 @@ export default function PushSettingsForm({ initialSettings }: Props) {
       <input name="username" type="hidden" value={getUsernameFromParam(username)} />
       <ToggleSection
         description={<span suppressHydrationWarning>{`설정한 시간에는 알림을 보내지 않아요 (${timezoneInfo})`}</span>}
-        icon={<Moon className="w-4 h-4 text-zinc-400" />}
+        icon={<Moon className="size-4 shrink-0 text-zinc-400" />}
         title="방해 금지 시간"
       >
         <Toggle
@@ -140,7 +140,7 @@ export default function PushSettingsForm({ initialSettings }: Props) {
         type="submit"
       >
         {isPending && (
-          <Loader2 className="w-4 h-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-spin" />
+          <Loader2 className="size-4 shrink-0 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-spin" />
         )}
         설정 저장
       </button>

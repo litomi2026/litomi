@@ -1,12 +1,11 @@
 'use client'
 
 import { useQueryClient } from '@tanstack/react-query'
-import { Download, X } from 'lucide-react'
+import { Download, Upload, X } from 'lucide-react'
 import { memo, useState } from 'react'
 import { toast } from 'sonner'
 
 import { CensorshipItem } from '@/backend/api/v1/censorship'
-import { IconUpload } from '@/components/icons/IconUpload'
 import Modal from '@/components/ui/Modal'
 import { QueryKeys } from '@/constants/query'
 import useServerAction from '@/hook/useServerAction'
@@ -152,7 +151,7 @@ function ImportExportModal({ open, onClose, censorships }: Readonly<Props>) {
             onClick={onClose}
             type="button"
           >
-            <X className="w-5 text-zinc-400" />
+            <X className="size-5 text-zinc-400" />
           </button>
         </div>
 
@@ -248,7 +247,7 @@ function ImportExportModal({ open, onClose, censorships }: Readonly<Props>) {
                 </>
               ) : (
                 <>
-                  <IconUpload className="w-5 h-5" />
+                  <Upload className="size-5" />
                   <span>가져오기</span>
                 </>
               )}

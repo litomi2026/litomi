@@ -6,11 +6,12 @@ import { cookies, headers } from 'next/headers'
 import { z } from 'zod'
 
 import { BACKUP_CODE_PATTERN } from '@/constants/policy'
+import { bbatonVerificationTable } from '@/database/supabase/bbaton'
 import { db } from '@/database/supabase/drizzle'
 import { twoFactorBackupCodeTable, twoFactorTable } from '@/database/supabase/two-factor'
 import { userTable } from '@/database/supabase/user'
 import { badRequest, internalServerError, ok, tooManyRequests, unauthorized } from '@/utils/action-response'
-import { getAccessTokenCookieConfig, setRefreshTokenCookie } from '@/utils/cookie'
+import { getAccessTokenCookieConfig, getRefreshTokenCookieConfig } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 import { verifyPKCEChallenge } from '@/utils/pkce-server'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
@@ -19,35 +20,38 @@ import { decryptTOTPSecret, verifyTOTPToken } from '@/utils/two-factor'
 import { verifyBackupCode } from '@/utils/two-factor-backup-code'
 
 const verifyTwoFactorSchema = z.object({
-  codeVerifier: z.string(),
+  'code-verifier': z.string(),
   fingerprint: z.string(),
   remember: z.literal('on').nullable(),
-  authorizationCode: z.string(),
+  'authorization-code': z.string(),
   token: z.union([z.string().length(6).regex(/^\d+$/), z.string().length(9).regex(new RegExp(BACKUP_CODE_PATTERN))]),
-  trustBrowser: z.literal('on').nullable(),
+  'trust-browser': z.literal('on').nullable(),
 })
 
 const twoFactorLimiter = new RateLimiter(RateLimitPresets.strict())
 
 export async function verifyTwoFactorLogin(formData: FormData) {
   const validation = verifyTwoFactorSchema.safeParse({
-    codeVerifier: formData.get('codeVerifier'),
+    'code-verifier': formData.get('code-verifier'),
     fingerprint: formData.get('fingerprint'),
-    authorizationCode: formData.get('authorizationCode'),
+    'authorization-code': formData.get('authorization-code'),
     remember: formData.get('remember'),
     token: formData.get('token'),
-    trustBrowser: formData.get('trustBrowser'),
+    'trust-browser': formData.get('trust-browser'),
   })
 
   if (!validation.success) {
     return badRequest(flattenZodFieldErrors(validation.error), formData)
   }
 
-  const { codeVerifier, fingerprint, remember, authorizationCode, token, trustBrowser } = validation.data
+  const { fingerprint, remember, token } = validation.data
+  const codeVerifier = validation.data['code-verifier']
+  const authorizationCode = validation.data['authorization-code']
+  const trustBrowser = validation.data['trust-browser']
   const challengeData = await verifyPKCEChallenge(authorizationCode, codeVerifier, fingerprint)
 
   if (!challengeData.valid) {
-    return unauthorized('세션이 만료됐어요. 새로고침 후 시도해주세요.', formData)
+    return unauthorized('세션이 만료됐어요. 새로고침 후 시도해 주세요.', formData)
   }
 
   const { userId } = challengeData
@@ -62,7 +66,7 @@ export async function verifyTwoFactorLogin(formData: FormData) {
     //   details: { failedAttempts: limit },
     // })
 
-    return tooManyRequests(`너무 많은 인증 시도가 있었어요. ${minutes}분 후에 다시 시도해주세요.`)
+    return tooManyRequests(`너무 많은 인증 시도가 있었어요. ${minutes}분 후에 다시 시도해 주세요.`)
   }
 
   try {
@@ -73,7 +77,7 @@ export async function verifyTwoFactorLogin(formData: FormData) {
         .where(and(eq(twoFactorTable.userId, userId), isNull(twoFactorTable.expiresAt)))
 
       if (!twoFactor) {
-        return unauthorized('세션이 만료됐어요. 새로고침 후 시도해주세요.', formData)
+        return unauthorized('세션이 만료됐어요. 새로고침 후 시도해 주세요.', formData)
       }
 
       let verified = false
@@ -87,7 +91,7 @@ export async function verifyTwoFactorLogin(formData: FormData) {
           verified = verifyTOTPToken(token, secret)
         } catch (decryptError) {
           console.error('Failed to decrypt TOTP secret. It might be due to key mismatch:', decryptError)
-          return badRequest('2단계 인증에 문제가 있어요. 관리자에게 문의해주세요.', formData)
+          return badRequest('2단계 인증에 문제가 있어요. 관리자에게 문의해 주세요.', formData)
         }
       }
       // Backup code
@@ -176,10 +180,23 @@ export async function verifyTwoFactorLogin(formData: FormData) {
         // })
       }
 
-      await Promise.all([
-        getAccessTokenCookieConfig(userId).then(({ key, value, options }) => cookieStore.set(key, value, options)),
-        remember && setRefreshTokenCookie(cookieStore, userId),
-      ])
+      const [verification] = await tx
+        .select({ adultFlag: bbatonVerificationTable.adultFlag })
+        .from(bbatonVerificationTable)
+        .where(eq(bbatonVerificationTable.userId, userId))
+
+      const tokenClaims = {
+        userId,
+        adult: verification?.adultFlag === true,
+      }
+
+      const accessTokenCookie = await getAccessTokenCookieConfig(tokenClaims)
+      cookieStore.set(accessTokenCookie.key, accessTokenCookie.value, accessTokenCookie.options)
+
+      if (remember) {
+        const refreshTokenCookie = await getRefreshTokenCookieConfig(tokenClaims)
+        cookieStore.set(refreshTokenCookie.key, refreshTokenCookie.value, refreshTokenCookie.options)
+      }
 
       await twoFactorLimiter.reward(String(userId))
 

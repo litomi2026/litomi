@@ -1,10 +1,11 @@
 'use client'
 
-import { Check, Copy, Share2, X } from 'lucide-react'
+import { Check, Copy, Share2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-import Modal from '@/components/ui/Modal'
+import Dialog from '@/components/ui/Dialog'
+import DialogHeader from '@/components/ui/DialogHeader'
 
 type Props = {
   className?: string
@@ -45,19 +46,9 @@ export default function ShareLibraryButton({ className = '', library }: Readonly
       >
         <Share2 className="size-5" />
       </button>
-      <Modal
-        className="fixed inset-0 z-50 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2
-          sm:w-full sm:max-w-prose sm:max-h-[calc(100dvh-4rem)] bg-zinc-900 sm:border-2 sm:border-zinc-700 sm:rounded-xl flex flex-col overflow-hidden"
-        onClose={handleClose}
-        open={isModalOpen}
-      >
+      <Dialog onClose={handleClose} open={isModalOpen}>
         <div className="flex flex-col h-full min-h-0">
-          <div className="flex items-center justify-between p-4 bg-zinc-900 border-b-2 border-zinc-800 shrink-0">
-            <h2 className="text-xl font-bold text-zinc-100">서재 공유</h2>
-            <button className="p-2 rounded-lg hover:bg-zinc-800 transition -m-1" onClick={handleClose} type="button">
-              <X className="size-5" />
-            </button>
-          </div>
+          <DialogHeader onClose={handleClose} title="서재 공유" />
           <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 min-h-0">
             <p className="text-sm text-zinc-400">이 서재는 링크를 통해 누구나 볼 수 있어요</p>
             <div className="p-4 bg-zinc-800/50 rounded-lg">
@@ -81,12 +72,12 @@ export default function ShareLibraryButton({ className = '', library }: Readonly
                 >
                   {isCopied ? (
                     <>
-                      <Check className="w-4 h-4" />
+                      <Check className="size-4 shrink-0" />
                       <span>완료</span>
                     </>
                   ) : (
                     <>
-                      <Copy className="w-4 h-4" />
+                      <Copy className="size-4 shrink-0" />
                       <span>복사</span>
                     </>
                   )}
@@ -95,7 +86,7 @@ export default function ShareLibraryButton({ className = '', library }: Readonly
             </div>
           </div>
         </div>
-      </Modal>
+      </Dialog>
     </>
   )
 }

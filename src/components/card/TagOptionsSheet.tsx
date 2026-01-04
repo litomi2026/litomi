@@ -1,15 +1,12 @@
 'use client'
 
 import { useQueryClient } from '@tanstack/react-query'
-import { Copy } from 'lucide-react'
+import { Copy, EyeOff, Loader2, Search } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useTransition } from 'react'
 import { toast } from 'sonner'
 
 import { addCensorships, deleteCensorships } from '@/app/(navigation)/(right-search)/[name]/censor/action'
-import IconEyeOff from '@/components/icons/IconEyeOff'
-import IconSearch from '@/components/icons/IconSearch'
-import IconSpinner from '@/components/icons/IconSpinner'
 import BottomSheet, { BottomSheetItem } from '@/components/ui/BottomSheet'
 import { QueryKeys } from '@/constants/query'
 import { CensorshipKey, CensorshipLevel } from '@/database/enum'
@@ -103,13 +100,17 @@ export default function TagOptionsSheet({ isOpen, onClose, category, value, labe
       </BottomSheetItem>
 
       <BottomSheetItem disabled={!isLoggedIn || isPending} onClick={handleToggleCensorship}>
-        {isPending ? <IconSpinner className="size-5 text-zinc-400" /> : <IconEyeOff className="size-5 text-zinc-400" />}
+        {isPending ? (
+          <Loader2 className="size-5 text-zinc-400 animate-spin" />
+        ) : (
+          <EyeOff className="size-5 text-zinc-400" />
+        )}
         <span>{isCensored ? '검열 해제' : '검열하기'}</span>
         {!isLoggedIn && <span className="text-xs text-zinc-500 ml-auto">로그인 필요</span>}
       </BottomSheetItem>
 
       <BottomSheetItem onClick={handleExcludeSearch}>
-        <IconSearch className="size-5 text-zinc-400" />
+        <Search className="size-5 text-zinc-400" />
         <span>이 태그 제외하고 검색</span>
       </BottomSheetItem>
     </BottomSheet>

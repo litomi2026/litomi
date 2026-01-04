@@ -84,7 +84,10 @@ function DownloadButton({ manga, className = '' }: Props) {
         />
       )}
       {/* Content */}
-      <Download aria-busy={isDownloading} className="w-4 text-foreground aria-busy:animate-pulse relative z-10" />
+      <Download
+        aria-busy={isDownloading}
+        className="size-4 shrink-0 text-foreground aria-busy:animate-pulse relative z-10"
+      />
       <span aria-busy={isDownloading} className="relative z-10 text-foreground aria-busy:font-mono aria-busy:text-xs">
         {getProgressText()}
       </span>

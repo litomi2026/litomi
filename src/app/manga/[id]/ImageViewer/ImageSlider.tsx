@@ -1,6 +1,6 @@
+import { Loader2 } from 'lucide-react'
 import { memo, useCallback } from 'react'
 
-import IconSpinner from '@/components/icons/IconSpinner'
 import Slider from '@/components/ui/Slider'
 
 import { useImageIndexStore } from './store/imageIndex'
@@ -38,7 +38,7 @@ function ImageSlider({ maxImageIndex }: Readonly<Props>) {
       </div>
       <div className="flex justify-center gap-1 text-xs">
         <span>{startPage === endPage ? startPage : `${startPage}-${endPage}`}</span>/
-        {maxPage > 0 ? <span>{maxPage}</span> : <IconSpinner className="size-4" />}
+        {maxPage > 0 ? <span>{maxPage}</span> : <Loader2 className="size-4 animate-spin" />}
       </div>
     </>
   )

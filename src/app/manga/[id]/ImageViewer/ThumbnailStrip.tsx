@@ -1,7 +1,7 @@
 'use client'
 
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { memo, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useInView } from 'react-intersection-observer'
 
 import MangaImage from '@/components/MangaImage'
@@ -16,9 +16,7 @@ type Props = {
   mangaId: number
 }
 
-export default memo(ThumbnailStrip)
-
-function ThumbnailStrip({ images, mangaId }: Props) {
+export default function ThumbnailStrip({ images, mangaId }: Props) {
   const { imageIndex, getImageIndex, navigateToImageIndex } = useImageIndexStore()
   const pageView = usePageViewStore((state) => state.pageView)
   const scrollToRow = useVirtualScrollStore((state) => state.scrollToRow)

@@ -88,23 +88,6 @@ export async function fetchWithErrorHandling<T>(
   }
 }
 
-export function shouldRetryError(error: unknown, failureCount: number, maxRetries = 3): boolean {
-  if (failureCount >= maxRetries) {
-    return false
-  }
-
-  if (error instanceof ProblemDetailsError) {
-    return error.isRetryable
-  }
-
-  if (!(error instanceof Error)) {
-    return false
-  }
-
-  const message = error.message.toLowerCase()
-  return message.includes('fetch') || message.includes('network')
-}
-
 function getBrowserOrigin(): string | null {
   if (typeof window === 'undefined') {
     return null

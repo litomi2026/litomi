@@ -1,11 +1,10 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { ExternalLink, Users } from 'lucide-react'
+import { ExternalLink, Loader2, Users } from 'lucide-react'
 import ms from 'ms'
 import Link from 'next/link'
 
-import IconSpinner from '@/components/icons/IconSpinner'
 import { REALTIME_PAGE_VIEW_MIN_THRESHOLD } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
@@ -44,7 +43,11 @@ export default function RealtimeRanking() {
             <div>
               <p className="text-sm text-zinc-400">현재 활성 사용자</p>
               <p className="mt-2 text-5xl font-bold animate-fade-in [animation-delay:0.5s] [animation-fill-mode:both]">
-                {isLoading ? <IconSpinner className="size-12 p-2" /> : (data?.totalActiveUsers.toLocaleString() ?? '-')}
+                {isLoading ? (
+                  <Loader2 className="size-12 p-2 animate-spin" />
+                ) : (
+                  (data?.totalActiveUsers.toLocaleString() ?? '-')
+                )}
               </p>
             </div>
             <div className="flex size-20 items-center justify-center rounded-full bg-zinc-700/50">

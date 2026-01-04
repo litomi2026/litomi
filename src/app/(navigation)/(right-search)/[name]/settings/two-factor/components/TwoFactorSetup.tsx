@@ -1,9 +1,8 @@
 'use client'
 
-import { Check, Copy } from 'lucide-react'
+import { Check, Copy, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 
-import IconSpinner from '@/components/icons/IconSpinner'
 import useClipboard from '@/hook/useClipboard'
 import useServerAction, { getFormField } from '@/hook/useServerAction'
 
@@ -72,7 +71,7 @@ export default function TwoFactorSetup({ setupData, onSuccess }: Props) {
         >
           {isVerifying ? (
             <span className="flex items-center justify-center">
-              <IconSpinner className="mr-2 size-5" />
+              <Loader2 className="mr-2 size-5 animate-spin" />
               코드 확인 중
             </span>
           ) : (

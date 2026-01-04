@@ -1,8 +1,9 @@
 'use client'
 
-import type { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark/get'
+import type { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark/GET'
 
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
+import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { View } from '@/utils/param'
@@ -17,12 +18,15 @@ type Props = {
 }
 
 export default function BookmarkPageClient({ initialData }: Props) {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useBookmarkIdsInfiniteQuery(initialData)
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError } =
+    useBookmarkIdsInfiniteQuery(initialData)
+
   const bookmarkIds = data.pages.flatMap((page) => page.bookmarks.map((bookmark) => bookmark.mangaId))
   const { isSelectionMode } = useLibrarySelectionStore()
+  const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
 
   const infiniteScrollTriggerRef = useInfiniteScrollObserver({
-    hasNextPage,
+    hasNextPage: canAutoLoadMore,
     isFetchingNextPage,
     fetchNextPage,
   })
@@ -43,7 +47,8 @@ export default function BookmarkPageClient({ initialData }: Props) {
         })}
         {isFetchingNextPage && <MangaCardSkeleton />}
       </ul>
-      {hasNextPage && <div className="w-full p-2" ref={infiniteScrollTriggerRef} />}
+      {canAutoLoadMore && <div className="w-full p-2" ref={infiniteScrollTriggerRef} />}
+      {isFetchNextPageError && <LoadMoreRetryButton onRetry={fetchNextPage} />}
     </>
   )
 }

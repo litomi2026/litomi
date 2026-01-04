@@ -1,15 +1,13 @@
 'use client'
 
 import { useQueryClient } from '@tanstack/react-query'
-import { MoreHorizontal } from 'lucide-react'
+import { Filter, Loader2, MoreHorizontal, Search } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { useCallback, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
-import IconFilter from '@/components/icons/IconFilter'
-import IconSearch from '@/components/icons/IconSearch'
-import IconSpinner from '@/components/icons/IconSpinner'
 import CustomSelect from '@/components/ui/CustomSelect'
+import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import { QueryKeys } from '@/constants/query'
 import { CensorshipKey } from '@/database/enum'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
@@ -32,7 +30,11 @@ export default function Censorships() {
   const [filterKey, setFilterKey] = useState<CensorshipKey | null>(null)
   const [selectedIds, setSelectedIds] = useState(new Set<number>())
   const [deletingIds, setDeletingIds] = useState(new Set<number>())
-  const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } = useCensorshipsInfiniteQuery()
+
+  const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage, isFetchNextPageError } =
+    useCensorshipsInfiniteQuery()
+
+  const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
 
   const [__, dispatchDeleteAction] = useServerAction({
     action: deleteCensorships,
@@ -45,7 +47,7 @@ export default function Censorships() {
   })
 
   const loadMoreRef = useInfiniteScrollObserver({
-    hasNextPage,
+    hasNextPage: canAutoLoadMore,
     isFetchingNextPage,
     fetchNextPage,
   })
@@ -99,7 +101,7 @@ export default function Censorships() {
                 onClick={() => setShowImportExportModal(true)}
                 title="가져오기/내보내기"
               >
-                <MoreHorizontal className="w-4" />
+                <MoreHorizontal className="size-4 shrink-0" />
               </button>
             </div>
           </div>
@@ -110,7 +112,7 @@ export default function Censorships() {
           {/* Search and Filter - Always visible */}
           <div className="flex gap-2 my-4">
             <div className="flex-1 relative">
-              <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 text-zinc-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 shrink-0 text-zinc-400" />
               <input
                 className="w-full pl-10 pr-4 py-2 bg-zinc-800 rounded-lg border-2 focus:border-zinc-600 outline-none transition disabled:opacity-50"
                 disabled={isLoading || isDeleting}
@@ -152,7 +154,7 @@ export default function Censorships() {
                   disabled={isDeleting}
                   onClick={handleBulkDelete}
                 >
-                  {isDeleting ? <IconSpinner className="w-3" /> : '삭제'}
+                  {isDeleting ? <Loader2 className="size-3 shrink-0 animate-spin" /> : '삭제'}
                 </button>
               </div>
             </div>
@@ -174,7 +176,7 @@ export default function Censorships() {
           </div>
         ) : filteredCensorships.length === 0 ? (
           <div className="text-center py-12">
-            <IconFilter className="w-12 h-12 mx-auto mb-4 text-zinc-600" />
+            <Filter className="size-12 shrink-0 mx-auto mb-4 text-zinc-600" />
             <p className="text-zinc-400">
               {searchQuery || filterKey !== null ? '검색 결과가 없어요' : '아직 검열 규칙이 없어요'}
             </p>
@@ -197,10 +199,13 @@ export default function Censorships() {
                 }}
               />
             ))}
-            {hasNextPage && (
+            {canAutoLoadMore && (
               <div className="py-4" ref={loadMoreRef}>
                 {isFetchingNextPage ? <CensorshipCardSkeleton /> : <div className="h-1" />}
               </div>
+            )}
+            {isFetchNextPageError && (
+              <LoadMoreRetryButton containerClassName="py-4 flex justify-center" onRetry={fetchNextPage} />
             )}
           </div>
         )}

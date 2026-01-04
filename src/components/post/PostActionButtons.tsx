@@ -1,14 +1,12 @@
 'use client'
 
-import { ChartNoAxesColumn, Heart, MessageCircle, Repeat } from 'lucide-react'
+import { ChartNoAxesColumn, Heart, MessageCircle, Repeat, Share2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { toggleLikingPost } from '@/app/(navigation)/(right-search)/posts/action'
 import useServerAction from '@/hook/useServerAction'
 import { showLoginRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
-
-import IconLogout from '../icons/IconLogout'
 
 type Props = {
   postId: number
@@ -79,7 +77,7 @@ export default function PostActionButtons({
         </div>
       </div>
       <div className="flex">
-        <IconLogout className="-rotate-90" />
+        <Share2 />
       </div>
     </div>
   )

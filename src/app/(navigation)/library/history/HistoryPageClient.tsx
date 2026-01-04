@@ -2,6 +2,7 @@
 
 import { GETV1ReadingHistoryResponse } from '@/backend/api/v1/library/history'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
+import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { View } from '@/utils/param'
@@ -18,12 +19,15 @@ type Props = {
 }
 
 export default function HistoryPageClient({ initialData }: Props) {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useReadingHistoryInfiniteQuery(initialData)
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError } =
+    useReadingHistoryInfiniteQuery(initialData)
+
   const historyItems = data.pages.flatMap((page) => page.items)
   const { isSelectionMode } = useLibrarySelectionStore()
+  const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
 
   const infiniteScrollTriggerRef = useInfiniteScrollObserver({
-    hasNextPage,
+    hasNextPage: canAutoLoadMore,
     isFetchingNextPage,
     fetchNextPage,
   })
@@ -75,7 +79,8 @@ export default function HistoryPageClient({ initialData }: Props) {
           </ul>
         )}
       </div>
-      {hasNextPage && <div className="w-full p-2" ref={infiniteScrollTriggerRef} />}
+      {canAutoLoadMore && <div className="w-full p-2" ref={infiniteScrollTriggerRef} />}
+      {isFetchNextPageError && <LoadMoreRetryButton onRetry={fetchNextPage} />}
     </>
   )
 }
