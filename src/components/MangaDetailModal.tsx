@@ -99,9 +99,9 @@ export function MangaDetailModal() {
   return (
     <Dialog ariaLabel="작품 정보" onAfterClose={() => setParams()} onClose={close} open={isOpen}>
       <div className="flex flex-1 flex-col min-h-0 text-sm md:text-base">
-        <DialogHeader onClose={close} title={title} titleClassName="line-clamp-1 break-all" />
-
+        <DialogHeader onClose={close} title="작품 정보" />
         <div className="flex-1 min-h-0 overflow-y-auto p-4 flex flex-col gap-4">
+          <h3 className="font-bold text-lg md:text-xl">{title}</h3>
           {description && (
             <div className="bg-zinc-800/30 rounded-lg p-3">
               <p className="text-zinc-300 leading-relaxed">
