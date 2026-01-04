@@ -53,7 +53,7 @@ export default function LoginForm() {
   const [currentLoginId, setCurrentLoginId] = useState('')
   const [turnstileToken, setTurnstileToken] = useState('')
   const [twoFactorData, setTwoFactorData] = useState<TwoFactorData | null>(null)
-  const pkceChallengeRef = useRef<PKCEChallenge>(null)
+  const [pkceChallenge, setPkceChallenge] = useState<PKCEChallenge | null>(null)
 
   function resetId() {
     const loginIdInput = formRef.current?.elements.namedItem('login-id')
@@ -91,6 +91,8 @@ export default function LoginForm() {
 
   async function handleLoginSuccess({ loginId, name, id, lastLoginAt, lastLogoutAt }: User) {
     toast.success(`${loginId} 계정으로 로그인했어요`)
+    setTwoFactorData(null)
+    setPkceChallenge(null)
 
     if (id) {
       amplitude.setUserId(id)
@@ -129,6 +131,7 @@ export default function LoginForm() {
           authorizationCode: data.authorizationCode,
         })
       } else {
+        setPkceChallenge(null)
         handleLoginSuccess(data)
       }
     },
@@ -146,14 +149,14 @@ export default function LoginForm() {
       FingerprintJS.load().then((fp) => fp.get()),
     ])
 
-    pkceChallengeRef.current = pkceChallenge
+    setPkceChallenge(pkceChallenge)
     formData.append('code-challenge', pkceChallenge.codeChallenge)
     formData.append('fingerprint', fingerprint.visitorId)
     dispatchAction(formData)
   }
 
   const passkeyLoginId = currentLoginId || (typeof defaultLoginId === 'string' ? defaultLoginId : '')
-  const isTwoFactorRequired = Boolean(twoFactorData && pkceChallengeRef.current)
+  const twoFactorPayload = twoFactorData && pkceChallenge ? { twoFactorData, pkceChallenge } : null
 
   return (
     <div className="grid gap-6 sm:gap-7">
@@ -161,17 +164,17 @@ export default function LoginForm() {
         <IconLogo className="w-9" priority />
       </Link>
 
-      {isTwoFactorRequired ? (
+      {twoFactorPayload ? (
         <TwoFactorVerification
           onCancel={() => {
             setTwoFactorData(null)
-            pkceChallengeRef.current = null
+            setPkceChallenge(null)
             turnstileRef.current?.reset()
             setTurnstileToken('')
           }}
           onSuccess={handleLoginSuccess}
-          pkceChallenge={pkceChallengeRef.current!}
-          twoFactorData={twoFactorData!}
+          pkceChallenge={twoFactorPayload.pkceChallenge}
+          twoFactorData={twoFactorPayload.twoFactorData}
         />
       ) : (
         <>

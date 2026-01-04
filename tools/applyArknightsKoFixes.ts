@@ -106,7 +106,7 @@ async function main() {
     status.updatedAt = nowIso()
   }
 
-  function bumpError(err: unknown) {
+  function _bumpError(err: unknown) {
     status.errorsCount = (status.errorsCount ?? 0) + 1
     status.lastError = String(err)
     status.updatedAt = nowIso()

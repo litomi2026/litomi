@@ -43,6 +43,34 @@ export default function TrendingKeywords() {
     }
   }
 
+  const scrollToKeyword = useCallback((index: number) => {
+    const container = scrollContainerRef.current
+    if (!container) {
+      return
+    }
+
+    const keywordElement = container.children[index] as HTMLElement | undefined
+    if (!keywordElement) {
+      return
+    }
+
+    isProgrammaticScrollRef.current = true
+
+    const elementLeft = keywordElement.offsetLeft
+    const elementWidth = keywordElement.offsetWidth
+    const containerWidth = container.offsetWidth
+    const targetScrollLeft = elementLeft - containerWidth / 2 + elementWidth / 2
+
+    container.scrollTo({
+      left: targetScrollLeft,
+      behavior: 'smooth',
+    })
+
+    setTimeout(() => {
+      isProgrammaticScrollRef.current = false
+    }, SCROLL_MOMENTUM_DELAY)
+  }, [])
+
   const rotateToNext = useCallback(() => {
     if (isUserInteractingRef.current || trendingKeywordCount === 1) {
       return
@@ -53,7 +81,7 @@ export default function TrendingKeywords() {
       scrollToKeyword(nextIndex)
       return nextIndex
     })
-  }, [trendingKeywordCount])
+  }, [scrollToKeyword, trendingKeywordCount])
 
   const startRotation = useCallback(() => {
     if (rotationTimerRef.current) {
@@ -131,31 +159,6 @@ export default function TrendingKeywords() {
     setCurrentIndex(index)
     scrollToKeyword(index)
     setTimeout(handleInteractionEnd, ROTATION_INTERVAL)
-  }
-
-  function scrollToKeyword(index: number) {
-    if (scrollContainerRef.current) {
-      const container = scrollContainerRef.current
-      const keywordElement = container.children[index] as HTMLElement
-
-      if (keywordElement) {
-        isProgrammaticScrollRef.current = true
-
-        const elementLeft = keywordElement.offsetLeft
-        const elementWidth = keywordElement.offsetWidth
-        const containerWidth = container.offsetWidth
-        const targetScrollLeft = elementLeft - containerWidth / 2 + elementWidth / 2
-
-        container.scrollTo({
-          left: targetScrollLeft,
-          behavior: 'smooth',
-        })
-
-        setTimeout(() => {
-          isProgrammaticScrollRef.current = false
-        }, SCROLL_MOMENTUM_DELAY)
-      }
-    }
   }
 
   function handleFocus(index: number) {
