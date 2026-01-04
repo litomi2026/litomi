@@ -33,6 +33,7 @@ export const QueryKeys = {
   manga: (id: number) => ['manga', id],
   search: (searchParams: URLSearchParams, locale: string) => ['search', locale, Object.fromEntries(searchParams)],
   searchSuggestions: (query: string, locale: string) => ['search', 'suggestions', locale, query],
+  censorshipSuggestions: (query: string, locale: string) => ['censorship', 'suggestions', locale, query],
   posts: (filter: PostFilter, mangaId?: number, username?: string) => ['posts', filter, { mangaId, username }],
   realtimeAnalytics: ['realtime-analytics'],
   trendingKeywords: (locale: string) => ['trending-keywords', locale],
