@@ -59,9 +59,9 @@ export default function PushSubscriptionToggle({ endpoints }: Readonly<Props>) {
   async function subscribeNotification() {
     if (!('Notification' in window)) {
       if (checkIOSSafari()) {
-        toast.warning('iOS Safari 환경에선 사이트를 홈 화면에 추가해야 알림을 받을 수 있어요')
+        toast.warning('iOS에서는 "홈 화면에 추가"한 뒤에 알림을 받을 수 있어요')
       } else if (checkIOSDevice()) {
-        toast.warning('iOS에서는 Safari를 통해 사이트를 홈 화면에 추가해야 알림을 받을 수 있어요')
+        toast.warning('iOS에서는 Safari로 열고 "홈 화면에 추가"해 주세요')
       } else {
         toast.warning('이 브라우저는 알림을 지원하지 않아요')
       }

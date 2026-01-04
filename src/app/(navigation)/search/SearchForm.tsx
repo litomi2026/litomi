@@ -30,8 +30,10 @@ function SearchForm({ className = '' }: Readonly<Props>) {
   const inputRef = useRef<HTMLInputElement>(null)
   const suggestionsRef = useRef<HTMLDivElement>(null)
   const currentWordInfo = useMemo(() => getWordAtCursor(keyword, cursorPosition), [keyword, cursorPosition])
-  const { recentSearches, isEnabled, saveRecentSearch, removeRecentSearch, toggleEnabled } = useRecentSearches()
   const beforeDeletedCharacter = useRef('')
+
+  const { recentSearches, isAutoSaveEnabled, saveRecentSearch, removeRecentSearch, setAutoSaveEnabled } =
+    useRecentSearches()
 
   const { selectedIndex, searchSuggestions, resetSelection, navigateSelection, isLoading, isFetching } =
     useSearchSuggestions({ keyword: currentWordInfo.word.replace(/^-/g, '') })
@@ -182,7 +184,10 @@ function SearchForm({ className = '' }: Readonly<Props>) {
       const translatedKeyword = translateKoreanToEnglish(convertedQuery)
       const finalQuery = translatedKeyword || convertedQuery
       params.set('query', finalQuery)
-      saveRecentSearch(finalQuery)
+
+      if (isAutoSaveEnabled) {
+        saveRecentSearch(finalQuery)
+      }
     } else {
       params.delete('query')
     }
@@ -308,48 +313,43 @@ function SearchForm({ className = '' }: Readonly<Props>) {
                   <span className="text-xs text-zinc-500">자동 저장</span>
                   <Toggle
                     aria-label="최근 검색 자동 저장"
-                    checked={isEnabled}
+                    checked={isAutoSaveEnabled}
                     className="w-10 peer-checked:bg-brand/80"
-                    onToggle={toggleEnabled}
+                    onToggle={setAutoSaveEnabled}
                   />
                 </label>
               </div>
-              {isEnabled && recentSearches.length === 0 && (
-                <div className="p-2.5 text-center text-sm text-zinc-500">최근 검색어가 여기에 표시됩니다</div>
+              {recentSearches.length === 0 && (
+                <div className="p-2.5 text-center text-sm text-zinc-500">
+                  {isAutoSaveEnabled ? '최근 검색어가 여기에 표시돼요' : '자동 저장이 꺼져 있어요'}
+                </div>
               )}
-              {!isEnabled && (
-                <div className="p-2.5 text-center text-sm text-zinc-500">최근 검색 저장이 비활성화되어 있습니다</div>
-              )}
-              {isEnabled &&
-                recentSearches.map((search) => (
-                  <div
-                    className="w-full flex items-center hover:bg-zinc-700/50 transition group"
-                    key={search.timestamp}
+              {recentSearches.map((search) => (
+                <div className="w-full flex items-center hover:bg-zinc-700/50 transition group" key={search.timestamp}>
+                  <button
+                    className="flex-1 p-4 py-2.5 text-left text-sm truncate"
+                    onClick={() => {
+                      setKeyword(search.query)
+                      setCursorPosition(search.query.length)
+                      inputRef.current?.focus()
+                    }}
+                    type="button"
                   >
-                    <button
-                      className="flex-1 p-4 py-2.5 text-left text-sm truncate"
-                      onClick={() => {
-                        setKeyword(search.query)
-                        setCursorPosition(search.query.length)
-                        inputRef.current?.focus()
-                      }}
-                      type="button"
-                    >
-                      {search.query}
-                    </button>
-                    <button
-                      aria-label={`${search.query} 삭제`}
-                      className="transition p-3 text-zinc-500 hover:text-red-400"
-                      onClick={() => {
-                        removeRecentSearch(search.query)
-                        inputRef.current?.focus()
-                      }}
-                      type="button"
-                    >
-                      <XIcon className="size-3" />
-                    </button>
-                  </div>
-                ))}
+                    {search.query}
+                  </button>
+                  <button
+                    aria-label={`${search.query} 삭제`}
+                    className="transition p-3 text-zinc-500 hover:text-red-400"
+                    onClick={() => {
+                      removeRecentSearch(search.query)
+                      inputRef.current?.focus()
+                    }}
+                    type="button"
+                  >
+                    <XIcon className="size-3" />
+                  </button>
+                </div>
+              ))}
             </div>
           )
         }

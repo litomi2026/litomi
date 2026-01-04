@@ -35,7 +35,9 @@ export default function LastPageActions({ manga }: Readonly<Props>) {
       <div className="grid grid-cols-2 items-center gap-2 text-foreground">
         <div className="col-span-2">
           <BookmarkButton
-            className="p-4 w-full py-2 rounded-lg bg-foreground text-background font-semibold hover:bg-foreground/90 active:bg-foreground/80 transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-500"
+            className="p-4 w-full py-2 rounded-lg bg-foreground text-background font-semibold hover:bg-foreground/90 active:bg-foreground/80 transition
+              disabled:bg-foreground/30 disabled:text-background/60 disabled:cursor-not-allowed disabled:hover:bg-foreground/30
+              focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-500"
             manga={manga}
           />
         </div>
