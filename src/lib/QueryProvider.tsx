@@ -76,6 +76,10 @@ const queryClient = new QueryClient({
           return
         }
 
+        if (query.meta?.suppressGlobalErrorToastForError) {
+          return
+        }
+
         if (query.meta?.suppressGlobalErrorToastForStatuses?.includes(error.status)) {
           return
         }
