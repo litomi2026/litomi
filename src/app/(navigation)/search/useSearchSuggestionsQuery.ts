@@ -6,7 +6,7 @@ import { queryBlacklist } from '@/backend/api/v1/search/suggestion/constant'
 import { MIN_SUGGESTION_QUERY_LENGTH } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
-import useLocaleFromCookie from '@/hook/useLocaleFromCookie'
+import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
@@ -33,7 +33,7 @@ export async function fetchSearchSuggestions({ query, locale }: Params) {
 }
 
 export default function useSearchSuggestionsQuery({ query }: Props) {
-  const locale = useLocaleFromCookie()
+  const locale = getLocaleFromCookie()
 
   return useQuery({
     queryKey: QueryKeys.searchSuggestions(query, locale),

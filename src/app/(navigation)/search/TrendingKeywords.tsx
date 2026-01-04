@@ -6,8 +6,8 @@ import { ComponentProps, PropsWithChildren, useCallback, useEffect, useRef, useS
 import { useInView } from 'react-intersection-observer'
 import { twMerge } from 'tailwind-merge'
 
-import useLocaleFromCookie from '@/hook/useLocaleFromCookie'
 import { Locale } from '@/translation/common'
+import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
 
 import KeywordLink from './KeywordLink'
 import UpdateFromSearchParams from './UpdateFromSearchParams'
@@ -20,7 +20,7 @@ export default function TrendingKeywords() {
   const { data } = useTrendingKeywordsQuery()
   const [currentIndex, setCurrentIndex] = useState(0)
   const [searchParams, setSearchParams] = useState<ReadonlyURLSearchParams>()
-  const locale = useLocaleFromCookie()
+  const locale = getLocaleFromCookie()
   const trendingKeywords = data?.keywords.length ? data.keywords : getDefaultKeywords(locale)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const scrollContainerDesktopRef = useRef<HTMLDivElement>(null)

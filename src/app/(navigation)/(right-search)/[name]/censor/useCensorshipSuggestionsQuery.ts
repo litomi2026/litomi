@@ -7,7 +7,7 @@ import type { GETSearchSuggestionsResponse } from '@/backend/api/v1/search/sugge
 import { MIN_SUGGESTION_QUERY_LENGTH } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
-import useLocaleFromCookie from '@/hook/useLocaleFromCookie'
+import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
@@ -34,7 +34,7 @@ export async function fetchCensorshipSuggestions({ query, locale }: Params) {
 }
 
 export default function useCensorshipSuggestionsQuery({ query }: Props) {
-  const locale = useLocaleFromCookie()
+  const locale = getLocaleFromCookie()
 
   return useQuery({
     queryKey: QueryKeys.searchSuggestions(query, locale),

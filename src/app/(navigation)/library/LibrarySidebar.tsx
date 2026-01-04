@@ -4,8 +4,8 @@ import { Bookmark, Clock, Globe, LibraryBig, Lock, Star } from 'lucide-react'
 import { type RefObject, useRef } from 'react'
 
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
-import useLocaleFromCookie from '@/hook/useLocaleFromCookie'
 import { formatNumber } from '@/utils/format/number'
+import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
 
 import CreateLibraryButton from './CreateLibraryButton'
 import LibrarySidebarLink from './LibrarySidebarLink'
@@ -55,7 +55,7 @@ export default function LibrarySidebar({
   const ownerLibraries = userId ? libraries.filter((lib) => lib.userId === userId) : []
   const publicLibraries = userId ? libraries.filter((lib) => lib.userId !== userId) : libraries
   const showLibrariesSkeleton = Boolean(pagination?.isPending) && libraries.length === 0
-  const locale = useLocaleFromCookie()
+  const locale = getLocaleFromCookie()
 
   const infiniteScrollTriggerRef = useInfiniteScrollObserver({
     hasNextPage: pagination?.hasNextPage && !pagination?.isFetchNextPageError,
