@@ -68,7 +68,6 @@ const queryClient = new QueryClient({
           if (NEXT_PUBLIC_GA_ID) {
             sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: null })
           }
-          showLoginRequiredToast()
           return
         }
 
