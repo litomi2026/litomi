@@ -50,76 +50,6 @@ export default function AdultVerificationSectionClient({ initialVerification, is
     return { label: '성인 아님', tone: 'red' }
   }, [initialVerification])
 
-  useEffect(() => {
-    return () => {
-      if (focusHandlerRef.current) {
-        window.removeEventListener('focus', focusHandlerRef.current)
-        focusHandlerRef.current = null
-      }
-    }
-  }, [])
-
-  useEffect(() => {
-    if (!pendingToast) {
-      return
-    }
-
-    const currentVerifiedAtMs =
-      initialVerification?.verifiedAt instanceof Date ? initialVerification.verifiedAt.getTime() : null
-    const updated =
-      currentVerifiedAtMs != null &&
-      (pendingToast.previousVerifiedAtMs == null || currentVerifiedAtMs > pendingToast.previousVerifiedAtMs)
-
-    if (!updated) {
-      // NOTE: storage 신호를 받으면 곧바로 router.refresh()가 실행돼요.
-      // refresh가 완료되어 서버 데이터가 갱신될 때까지 기다렸다가 토스트를 결정해요.
-      return
-    }
-
-    if (initialVerification?.adultFlag) {
-      toast.success('성인 인증이 완료됐어요')
-    } else {
-      toast.success('인증 결과가 저장됐어요', { description: '성인으로 확인되지 않았어요' })
-    }
-
-    setPendingToast(null)
-  }, [initialVerification, pendingToast])
-
-  useEffect(() => {
-    const onStorage = (event: StorageEvent) => {
-      if (event.key !== LocalStorageKey.BBATON_ADULT_VERIFICATION_SIGNAL) {
-        return
-      }
-
-      if (!event.newValue) {
-        return
-      }
-
-      const payload = safeParseJSON<{ type?: unknown; at?: unknown }>(event.newValue)
-      if (!payload || payload.type !== 'complete') {
-        return
-      }
-
-      // NOTE: 보안 판단은 서버(DB) 기준으로 하고, localStorage는 refresh 트리거로만 사용해요.
-      setNeedsManualRefresh(false)
-      setIsVerifyingUI(false)
-      isVerifyingRef.current = false
-
-      setPendingToast({ previousVerifiedAtMs: verifiedAtMs })
-
-      if (focusHandlerRef.current) {
-        window.removeEventListener('focus', focusHandlerRef.current)
-        focusHandlerRef.current = null
-      }
-
-      popupRef.current = null
-      router.refresh()
-    }
-
-    window.addEventListener('storage', onStorage)
-    return () => window.removeEventListener('storage', onStorage)
-  }, [router, verifiedAtMs])
-
   const verifyMutation = useMutation<POSTV1BBatonAttemptResponse, unknown, void>({
     mutationFn: async () => {
       const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/bbaton/attempt`
@@ -195,6 +125,77 @@ export default function AdultVerificationSectionClient({ initialVerification, is
   function refreshStatus() {
     router.refresh()
   }
+
+  // NOTE: 콜백 팝업이 localStorage에 완료 신호를 남기면, 모든 탭에서 storage 이벤트로 감지해 페이지를 새로고침해요
+  useEffect(() => {
+    const onStorage = (event: StorageEvent) => {
+      if (event.key !== LocalStorageKey.BBATON_ADULT_VERIFICATION_SIGNAL) {
+        return
+      }
+
+      if (!event.newValue) {
+        return
+      }
+
+      const payload = safeParseJSON<{ type?: unknown; at?: unknown }>(event.newValue)
+      if (!payload || payload.type !== 'complete') {
+        return
+      }
+
+      setNeedsManualRefresh(false)
+      setIsVerifyingUI(false)
+      isVerifyingRef.current = false
+
+      setPendingToast({ previousVerifiedAtMs: verifiedAtMs })
+
+      if (focusHandlerRef.current) {
+        window.removeEventListener('focus', focusHandlerRef.current)
+        focusHandlerRef.current = null
+      }
+
+      popupRef.current = null
+      router.refresh()
+    }
+
+    window.addEventListener('storage', onStorage)
+    return () => window.removeEventListener('storage', onStorage)
+  }, [router, verifiedAtMs])
+
+  // NOTE: refresh 후 서버에서 내려온 상태(성인/성인 아님)로 토스트를 결정해요
+  useEffect(() => {
+    if (!pendingToast) {
+      return
+    }
+
+    const currentVerifiedAtMs =
+      initialVerification?.verifiedAt instanceof Date ? initialVerification.verifiedAt.getTime() : null
+
+    const updated =
+      currentVerifiedAtMs != null &&
+      (pendingToast.previousVerifiedAtMs == null || currentVerifiedAtMs > pendingToast.previousVerifiedAtMs)
+
+    if (!updated) {
+      return
+    }
+
+    if (initialVerification?.adultFlag) {
+      toast.success('성인 인증이 완료됐어요')
+    } else {
+      toast.success('인증 결과가 저장됐어요', { description: '성인으로 확인되지 않았어요' })
+    }
+
+    setPendingToast(null)
+  }, [initialVerification, pendingToast])
+
+  // NOTE: 인증 플로우에서 등록한 focus 이벤트 핸들러가 남지 않도록 언마운트 시 정리해요
+  useEffect(() => {
+    return () => {
+      if (focusHandlerRef.current) {
+        window.removeEventListener('focus', focusHandlerRef.current)
+        focusHandlerRef.current = null
+      }
+    }
+  }, [])
 
   return (
     <div className="flex flex-col gap-4">
