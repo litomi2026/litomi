@@ -39,9 +39,9 @@ export default function RangeInput({
   className,
   ...props
 }: RangeInputProps) {
-  const inputClassName = `flex-1 w-full h-10 ${type === 'date' ? 'min-w-40' : 'min-w-0'}`
+  const inputClassName = `flex-1 w-full ${type === 'date' ? 'min-w-40' : 'min-w-0'}`
 
-  const getMinMaxProps = () => {
+  function getMinMaxProps() {
     if (type === 'number' && 'min' in props && 'max' in props) {
       return {
         minInput: {
