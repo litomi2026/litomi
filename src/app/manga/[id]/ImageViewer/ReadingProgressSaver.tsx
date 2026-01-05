@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef } from 'react'
 import { toast } from 'sonner'
 
 import { SessionStorageKeyMap } from '@/constants/storage'
+import { useLatestRef } from '@/hook/useLatestRef'
 import useServerAction from '@/hook/useServerAction'
 import useMeQuery from '@/query/useMeQuery'
 
@@ -19,7 +20,10 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
   const { data: me, isLoading } = useMeQuery()
   const imageIndex = useImageIndexStore((state) => state.imageIndex)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const lastSavedPageRef = useRef<number | null>(null)
+  const pendingPageRef = useRef<number | null>(null)
+  const lastSyncedAtRef = useRef<number | null>(null)
+  const lastSyncedPageRef = useRef<number | null>(null)
+  const hasStorageErrorToastShownRef = useRef(false)
 
   const [_, dispatchAction, isSaving] = useServerAction({
     action: saveReadingProgress,
@@ -27,60 +31,151 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
     silentNetworkError: true,
   })
 
-  const saveProgress = useCallback(
+  const writeSessionStorage = useCallback(
     (page: number) => {
-      if (lastSavedPageRef.current === page) {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current)
-          timeoutRef.current = null
+      try {
+        sessionStorage.setItem(SessionStorageKeyMap.readingHistory(mangaId), String(page))
+      } catch {
+        if (!hasStorageErrorToastShownRef.current) {
+          toast.warning('읽기 기록을 저장하지 못했어요')
+          hasStorageErrorToastShownRef.current = true
         }
-        return
-      }
-
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-        timeoutRef.current = null
-      }
-
-      if (isLoading) {
-        return
-      }
-
-      if (me) {
-        timeoutRef.current = setTimeout(() => {
-          lastSavedPageRef.current = page
-          dispatchAction(mangaId, page)
-          timeoutRef.current = null
-        }, ms('5 seconds'))
-      } else {
-        timeoutRef.current = setTimeout(() => {
-          lastSavedPageRef.current = page
-          try {
-            sessionStorage.setItem(SessionStorageKeyMap.readingHistory(mangaId), String(page))
-          } catch {
-            toast.warning('읽기 기록을 저장하지 못했어요')
-          }
-          timeoutRef.current = null
-        }, ms('1 second'))
       }
     },
-    [me, mangaId, dispatchAction, isLoading],
+    [mangaId],
   )
 
-  useEffect(() => {
-    if (imageIndex > 0 && !isSaving) {
-      saveProgress(imageIndex + 1)
-    }
-  }, [imageIndex, isSaving, saveProgress])
-
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-        timeoutRef.current = null
-      }
+  const clearTimer = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+      timeoutRef.current = null
     }
   }, [])
+
+  const sendNowIfPossible = useCallback(() => {
+    if (!me || isLoading) {
+      return
+    }
+
+    if (isSaving) {
+      return
+    }
+
+    const page = pendingPageRef.current
+    if (typeof page !== 'number') {
+      return
+    }
+
+    if (lastSyncedPageRef.current === page) {
+      clearTimer()
+      return
+    }
+
+    lastSyncedAtRef.current = Date.now()
+    lastSyncedPageRef.current = page
+    dispatchAction(mangaId, page)
+    clearTimer()
+  }, [me, isLoading, isSaving, dispatchAction, mangaId, clearTimer])
+
+  const scheduleSend = useCallback(() => {
+    if (!me || isLoading) {
+      return
+    }
+
+    const page = pendingPageRef.current
+    if (typeof page !== 'number') {
+      return
+    }
+
+    if (lastSyncedPageRef.current === page) {
+      clearTimer()
+      return
+    }
+
+    const now = Date.now()
+    const lastAt = lastSyncedAtRef.current
+    const nextAt = typeof lastAt === 'number' ? lastAt + ms('1 minute') : now
+    const delayMs = Math.max(0, nextAt - now)
+
+    if (delayMs === 0) {
+      sendNowIfPossible()
+      return
+    }
+
+    if (timeoutRef.current) {
+      return
+    }
+
+    timeoutRef.current = setTimeout(() => {
+      timeoutRef.current = null
+      sendNowIfPossible()
+    }, delayMs)
+  }, [me, isLoading, sendNowIfPossible, clearTimer])
+
+  const queueSave = useCallback(
+    (page: number) => {
+      // NOTE: 탭 단위 이어읽기를 위해 로컬 기록은 항상 최신으로 유지
+      writeSessionStorage(page)
+
+      if (isLoading || !me) {
+        return
+      }
+
+      pendingPageRef.current = page
+      scheduleSend()
+    },
+    [writeSessionStorage, isLoading, me, scheduleSend],
+  )
+
+  const flush = useCallback(() => {
+    clearTimer()
+    sendNowIfPossible()
+  }, [clearTimer, sendNowIfPossible])
+
+  const flushRef = useLatestRef(flush)
+
+  // NOTE: 페이지가 바뀌면 작품 감상 상태를 저장 큐에 넣어요
+  useEffect(() => {
+    if (imageIndex > 0) {
+      queueSave(imageIndex + 1)
+    }
+  }, [imageIndex, queueSave])
+
+  // NOTE: 뷰어를 떠날 때 마지막 작품 감상 상태를 flush하고 타이머를 정리해요
+  useEffect(() => {
+    return () => {
+      flush()
+      clearTimer()
+    }
+  }, [flush, clearTimer])
+
+  // NOTE: 서버 저장이 끝났을 때, 누적된 최신 페이지가 있으면 다음 저장을 스케줄해요
+  useEffect(() => {
+    if (!isSaving) {
+      scheduleSend()
+    }
+  }, [isSaving, scheduleSend])
+
+  // NOTE: 탭/페이지가 숨김·종료되는 시점에 작품 감상 상태를 flush해요
+  useEffect(() => {
+    function handlePageHide() {
+      flushRef.current()
+    }
+
+    function handleVisibilityChange() {
+      if (document.visibilityState === 'hidden') {
+        flushRef.current()
+      }
+    }
+
+    window.addEventListener('pagehide', handlePageHide)
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    return () => {
+      window.removeEventListener('pagehide', handlePageHide)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }, [flushRef])
 
   return null
 }
