@@ -139,7 +139,7 @@ export default function MangaTorrentModal() {
 
   return (
     <Dialog ariaLabel="토렌트" className="sm:max-w-prose" onAfterClose={clearManga} onClose={close} open={isOpen}>
-      <DialogHeader onClose={close} title={manga?.title ?? '토렌트'} />
+      <DialogHeader onClose={close} title={`[토렌트] ${manga?.title ?? ''}`} />
       <DialogBody className="space-y-2">
         {!manga ? null : torrentCount === 0 ? (
           <div className="text-center py-12">
@@ -149,10 +149,8 @@ export default function MangaTorrentModal() {
           <>
             <p className="text-xs text-zinc-500">
               <span className="font-medium text-zinc-300">마그넷 열기</span>를 누르면 토렌트 앱이 실행될 수 있어요.
-              실행되지 않으면 <span className="font-medium text-zinc-300">복사</span> 버튼으로 마그넷 주소를 복사해
-              주세요.
+              {torrentCount >= 10 && ` (토렌트 파일 ${torrentCount}개)`}
             </p>
-            <p className="text-xs text-zinc-500 -mt-1 line-clamp-1 break-all">토렌트 파일 {torrentCount}개</p>
             <ul className="grid gap-2">
               {torrents.map((torrent) => {
                 const magnet = createMagnetLink(torrent, manga.id)
