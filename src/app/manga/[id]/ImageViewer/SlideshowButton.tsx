@@ -104,7 +104,7 @@ export default function SlideshowButton({ className = '', maxImageIndex, offset,
       </button>
       <Dialog
         ariaLabel="슬라이드쇼"
-        className="rounded-xl border-2 h-auto max-w-sm sm:max-w-sm"
+        className="rounded-xl border-2 h-auto max-w-sm max-sm:p-0 sm:max-w-sm"
         onClose={() => setIsOpened(false)}
         open={isOpened}
       >
