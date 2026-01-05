@@ -15,6 +15,7 @@ import HiyobiPing from '@/components/HiyobiPing'
 import { MangaDetailModal } from '@/components/MangaDetailModal'
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar'
 import ThemeProvider from '@/components/ThemeProvider'
+import OverlayHost from '@/components/ui/OverlayHost'
 import {
   APPLICATION_NAME,
   CANONICAL_URL,
@@ -116,7 +117,9 @@ export default function RootLayout({ children }: Readonly<Props>) {
         <ServiceWorkerRegistrar />
         <HiyobiPing />
         <NewYearToastNudge />
-        <Toaster duration={3000} position="top-center" richColors theme="system" />
+        <OverlayHost>
+          <Toaster className="pointer-events-auto" duration={3000} position="top-center" richColors theme="system" />
+        </OverlayHost>
         {NEXT_PUBLIC_GA_ID && <GoogleAnalytics gaId={NEXT_PUBLIC_GA_ID} />}
         {AMPLITUDE_API_KEY && <Amplitude apiKey={AMPLITUDE_API_KEY} />}
       </body>

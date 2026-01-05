@@ -12,6 +12,8 @@ import {
 } from 'react'
 import { twMerge } from 'tailwind-merge'
 
+import { registerTopLayerPortalContainer, unregisterTopLayerPortalContainer } from '@/components/ui/topLayerPortal'
+
 type DialogState = 'closed' | 'closing' | 'open' | 'opening'
 
 type Props = {
@@ -32,6 +34,7 @@ export default function Dialog({ open, onClose, onAfterClose, children, classNam
   const hasEnteredOpenStateRef = useRef(false)
   const lastActiveElementRef = useRef<HTMLElement | null>(null)
   const bodyStyleRestoreRef = useRef<{ overflow: string; touchAction: string } | null>(null)
+  const hasRegisteredPortalContainerRef = useRef(false)
   const [state, setState] = useState<DialogState>('closed')
 
   const requestClose = useCallback(() => {
@@ -77,6 +80,11 @@ export default function Dialog({ open, onClose, onAfterClose, children, classNam
         dialog.showModal()
       }
 
+      if (!hasRegisteredPortalContainerRef.current) {
+        registerTopLayerPortalContainer(dialog)
+        hasRegisteredPortalContainerRef.current = true
+      }
+
       setState('opening')
 
       rafRef.current = window.requestAnimationFrame(() => {
@@ -88,6 +96,10 @@ export default function Dialog({ open, onClose, onAfterClose, children, classNam
     }
 
     if (!dialog.open) {
+      if (hasRegisteredPortalContainerRef.current) {
+        unregisterTopLayerPortalContainer(dialog)
+        hasRegisteredPortalContainerRef.current = false
+      }
       setState('closed')
       return
     }
@@ -159,6 +171,12 @@ export default function Dialog({ open, onClose, onAfterClose, children, classNam
         dialogEl.close()
       }
 
+      const portalContainer = dialogEl ?? dialogRef.current
+      if (hasRegisteredPortalContainerRef.current && portalContainer) {
+        unregisterTopLayerPortalContainer(portalContainer)
+        hasRegisteredPortalContainerRef.current = false
+      }
+
       setState('closed')
 
       const lastActive = lastActiveElementRef.current
@@ -193,12 +211,19 @@ export default function Dialog({ open, onClose, onAfterClose, children, classNam
     return () => panel.removeEventListener('transitionend', handleTransitionEnd)
   }, [onAfterClose, state])
 
-  // NOTE: 언마운트 시 requestAnimationFrame을 정리해요
+  // NOTE: 언마운트 시 requestAnimationFrame과 top-layer 컨테이너 등록을 정리해요
   useEffect(() => {
+    const dialog = dialogRef.current
+
     return () => {
       if (rafRef.current !== null) {
         window.cancelAnimationFrame(rafRef.current)
         rafRef.current = null
+      }
+
+      if (hasRegisteredPortalContainerRef.current && dialog) {
+        unregisterTopLayerPortalContainer(dialog)
+        hasRegisteredPortalContainerRef.current = false
       }
     }
   }, [])
