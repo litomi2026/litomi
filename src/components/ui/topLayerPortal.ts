@@ -40,7 +40,7 @@ export function unregisterTopLayerPortalContainer(el: HTMLElement) {
 }
 
 export function useTopLayerPortalContainer(): HTMLElement | null {
-  return useSyncExternalStore(subscribeTopLayerPortalContainer, getTopLayerPortalContainer)
+  return useSyncExternalStore(subscribeTopLayerPortalContainer, getTopLayerPortalContainer, () => null)
 }
 
 function emit() {
