@@ -373,6 +373,65 @@ const [isOpen, setIsOpen] = useState(false)
 </details>
 ```
 
+## Dialog (Modal) Pattern
+
+All modals must use the native `<dialog>`-based `Dialog` component and the standard composition components.
+
+### Standard Composition
+
+- **Always use**: `Dialog` + `DialogHeader` + `DialogBody` (+ `DialogFooter` when there are actions)
+- **Accessibility**: `Dialog` requires `ariaLabel` (no exceptions)
+- **Close button**: always render via `DialogHeader` (title is optional)
+
+### Standard Recipe (no form)
+
+```tsx
+<Dialog ariaLabel="공유하기" open={isOpen} onClose={close}>
+  <DialogHeader title="공유하기" onClose={close} />
+  <DialogBody>{/* scrollable content */}</DialogBody>
+  <DialogFooter className="flex gap-2">
+    <button type="button" onClick={close}>
+      취소
+    </button>
+    <button type="button">확인</button>
+  </DialogFooter>
+</Dialog>
+```
+
+### Form Recipe
+
+When you need submit semantics, make the `<form>` the direct child of `Dialog`.
+
+```tsx
+<Dialog ariaLabel="서재 만들기" open={open} onClose={onClose}>
+  <form className="flex flex-1 flex-col min-h-0" onSubmit={handleSubmit}>
+    <DialogHeader title="서재 만들기" onClose={onClose} />
+    <DialogBody>{/* inputs */}</DialogBody>
+    <DialogFooter className="flex gap-2">
+      <button type="button" onClick={onClose}>
+        취소
+      </button>
+      <button type="submit">저장</button>
+    </DialogFooter>
+  </form>
+</Dialog>
+```
+
+### Safe Area Rules (mobile)
+
+- **Do NOT** apply `px-safe` to `Dialog` itself (it insets header/footer borders)
+- **Horizontal safe area** is handled by `DialogHeader`/`DialogBody`/`DialogFooter` (mobile only)
+- **Bottom safe area** is handled by the `Dialog` panel (`max-sm:pb-safe`) — do not duplicate `pb-safe` in body/footer
+
+### Avoid Nested Wrappers
+
+- **Do NOT** create `overflow-y-auto` wrappers with inner `p-*` wrappers — use `DialogBody`
+- **Do NOT** wrap everything in `<div className="flex flex-1 flex-col min-h-0">` unless you truly need a grouping element (rare)
+
+### Cleanup After Close
+
+- Use `Dialog`’s `onAfterClose` for state cleanup after the close animation (avoid `setTimeout`)
+
 ## Security
 
 ### Rate Limiting

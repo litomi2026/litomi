@@ -12,7 +12,7 @@ export default function DialogBody({ children, className }: Props) {
   return (
     <div
       className={twMerge(
-        'flex-1 min-h-0 overflow-y-auto p-4 max-sm:pl-[calc(1rem+var(--safe-area-left))] max-sm:pr-[calc(1rem+var(--safe-area-right))]',
+        'flex-1 min-h-0 overflow-y-auto sm:p-4 pl-[calc(1rem+var(--safe-area-left))] pr-[calc(1rem+var(--safe-area-right))]',
         className,
       )}
     >
@@ -20,5 +20,3 @@ export default function DialogBody({ children, className }: Props) {
     </div>
   )
 }
-
-

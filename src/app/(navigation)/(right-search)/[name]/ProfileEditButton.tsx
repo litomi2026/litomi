@@ -3,7 +3,7 @@
 import { captureException } from '@sentry/nextjs'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import { useQueryClient } from '@tanstack/react-query'
-import { SquarePen, X } from 'lucide-react'
+import { SquarePen } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { FormEvent, use, useEffect, useState } from 'react'
 import { toast } from 'sonner'
@@ -90,8 +90,7 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
       <Dialog ariaLabel="프로필 수정" className="sm:max-w-2xl" onClose={handleClose} open={showModal}>
         <form action={dispatchAction} className="flex flex-1 flex-col min-h-0" onSubmit={handleSubmit}>
           <DialogHeader onClose={handleClose} title="프로필 수정" />
-
-          <DialogBody className="p-0">
+          <DialogBody className="p-0 sm:p-0">
             <div className="relative">
               <div className="h-32 bg-linear-to-b from-zinc-800 to-zinc-900" />
               <div className="absolute bottom-0 left-4 transform translate-y-1/2">
