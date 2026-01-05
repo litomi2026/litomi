@@ -1,6 +1,15 @@
 'use client'
 
-import { type MouseEvent, type ReactNode, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import {
+  type CSSProperties,
+  type MouseEvent,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react'
 import { twMerge } from 'tailwind-merge'
 
 type DialogState = 'closed' | 'closing' | 'open' | 'opening'
@@ -11,19 +20,11 @@ type Props = {
   onAfterClose?: () => void
   children: ReactNode
   className?: string
+  style?: CSSProperties
   ariaLabel: string
-  unmountOnClose?: boolean
 }
 
-export default function Dialog({
-  open,
-  onClose,
-  onAfterClose,
-  children,
-  className = '',
-  ariaLabel,
-  unmountOnClose = false,
-}: Props) {
+export default function Dialog({ open, onClose, onAfterClose, children, className = '', style, ariaLabel }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const rafRef = useRef<number | null>(null)
@@ -202,14 +203,11 @@ export default function Dialog({
     }
   }, [])
 
-  const shouldRenderChildren = !unmountOnClose || open || state !== 'closed'
-
   return (
     <dialog
       aria-label={ariaLabel}
-      className="fixed inset-0 m-0 h-dvh w-dvw max-h-none max-w-none p-0 border-0 bg-transparent text-foreground outline-none
-        data-[state=closed]:hidden group flex items-center justify-center
-        backdrop:bg-background/80 backdrop:transition backdrop:opacity-0 data-[state=open]:backdrop:opacity-100"
+      className="fixed inset-0 m-0 h-dvh w-dvw max-h-none max-w-none p-0 border-0 bg-transparent text-foreground outline-none group flex items-center justify-center 
+        data-[state=closed]:hidden backdrop:bg-background/80 backdrop:transition backdrop:opacity-0 data-[state=open]:backdrop:opacity-100"
       data-state={state}
       onClick={handleClick}
       ref={dialogRef}
@@ -221,8 +219,9 @@ export default function Dialog({
         )}
         onClick={(e) => e.stopPropagation()}
         ref={panelRef}
+        style={style}
       >
-        {shouldRenderChildren ? children : null}
+        {children}
       </div>
     </dialog>
   )

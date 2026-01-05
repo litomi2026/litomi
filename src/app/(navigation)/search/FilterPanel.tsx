@@ -1,11 +1,14 @@
 'use client'
 
-import { Loader2, X } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
 import { Dispatch, FormEvent, RefObject, SetStateAction, useCallback, useEffect, useState, useTransition } from 'react'
-import { createPortal } from 'react-dom'
 
 import CustomSelect from '@/components/ui/CustomSelect'
+import Dialog from '@/components/ui/Dialog'
+import DialogBody from '@/components/ui/DialogBody'
+import DialogFooter from '@/components/ui/DialogFooter'
+import DialogHeader from '@/components/ui/DialogHeader'
 import { formatLocalDate } from '@/utils/format/date'
 
 import type { FilterKey, FilterState } from './constants'
@@ -112,25 +115,6 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
         }
       : undefined
 
-  // NOTE: 모바일 환경에서 필터 활성화 시 body 스크롤을 방지함
-  useEffect(() => {
-    if (!show) {
-      return
-    }
-
-    const isMobile = window.matchMedia('(max-width: 640px)').matches
-
-    if (!isMobile) {
-      return
-    }
-
-    document.body.style.overflow = 'hidden'
-
-    return () => {
-      document.body.style.overflow = ''
-    }
-  }, [show])
-
   // NOTE: 화면 크기가 변경될 때 필터 레이아웃을 변경함
   useEffect(() => {
     if (!buttonRef.current) {
@@ -157,53 +141,24 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
     }
   }, [buttonRef])
 
-  // NOTE: ESC 키를 눌렀을 때 필터 패널을 닫음
-  useEffect(() => {
-    if (!show) return
-
-    const handleEscKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose()
-      }
-    }
-
-    document.addEventListener('keydown', handleEscKey)
-
-    return () => {
-      document.removeEventListener('keydown', handleEscKey)
-    }
-  }, [show, onClose])
-
-  return createPortal(
-    <>
-      {/* Backdrop */}
-      <div
-        aria-hidden={!show}
-        className="fixed inset-0 z-50 bg-background/50 transition hidden opacity-100 sm:block aria-hidden:opacity-0 aria-hidden:pointer-events-none"
-        onClick={onClose}
-      />
-
-      {/* Filter panel */}
-      <form
-        aria-hidden={!show}
-        className="fixed inset-0 z-50 overflow-y-auto bg-zinc-900 transition-all opacity-100 flex flex-col
-          sm:inset-auto sm:w-96 sm:max-w-[calc(100vw-2rem)] sm:max-h-[calc(100vh-8rem)] sm:border-2 sm:border-zinc-700 sm:rounded-xl sm:shadow-xl
-          aria-hidden:opacity-0 aria-hidden:pointer-events-none"
-        onSubmit={handleSubmit}
-        style={filterPanelStyle}
-      >
-        <div className="sticky top-0 flex items-center justify-between p-4 bg-zinc-900 border-b">
-          <h3 className="text-xl font-bold text-zinc-100 sm:text-lg">상세 필터</h3>
-          <button
-            className="p-2 -mr-2 rounded-lg hover:bg-zinc-800 transition sm:p-1 sm:mr-0"
-            onClick={onClose}
-            type="button"
-          >
-            <X className="size-6 shrink-0 sm:size-5" />
-          </button>
-        </div>
-        <div
-          className="p-4 flex flex-col gap-4 flex-1
+  return (
+    <Dialog
+      ariaLabel="상세 필터"
+      className="sm:fixed sm:inset-auto sm:w-96 sm:max-w-[calc(100vw-2rem)] sm:max-h-[calc(100dvh-8rem)] sm:border-zinc-700 sm:shadow-xl"
+      onClose={onClose}
+      open={show}
+      style={filterPanelStyle}
+    >
+      <form className="flex flex-1 flex-col min-h-0" onSubmit={handleSubmit}>
+        <DialogHeader
+          closeButtonClassName="sm:p-1"
+          closeButtonLabel="닫기"
+          onClose={onClose}
+          title="상세 필터"
+          titleClassName="sm:text-lg"
+        />
+        <DialogBody
+          className="flex flex-col gap-4
             [&_label]:block [&_label]:text-sm [&_label]:font-medium [&_label]:text-zinc-300 [&_label]:mb-1
             [&_input]:text-base [&_input]:px-3 [&_input]:py-2 [&_input]:rounded-lg
             [&_input]:bg-zinc-800 [&_input]:border [&_input]:border-zinc-700 [&_input]:placeholder-zinc-500 
@@ -374,12 +329,11 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
             />
             <p className="mt-1 text-xs text-zinc-500">처음 N개의 결과를 건너뛰어요</p>
           </div>
-        </div>
+        </DialogBody>
 
-        {/* Action buttons */}
-        <div className="sticky bottom-0 left-0 right-0 flex gap-2 bg-zinc-900 px-4 py-4 border-t">
+        <DialogFooter className="flex gap-2">
           <button
-            className="flex-1 mb-safe px-3 py-2 bg-zinc-800 text-zinc-300 font-medium rounded-lg transition
+            className="flex-1 px-3 py-2 bg-zinc-800 text-zinc-300 font-medium rounded-lg transition
               disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-zinc-400 hover:bg-zinc-700"
             disabled={isPending}
             onClick={clearFilters}
@@ -388,16 +342,15 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
             초기화
           </button>
           <button
-            className="flex items-center justify-center flex-1 mb-safe px-3 py-2 bg-brand text-background font-medium rounded-lg transition
+            className="flex items-center justify-center flex-1 px-3 py-2 bg-brand text-background font-medium rounded-lg transition
               focus:outline-none focus:ring-2 focus:ring-brand/50 hover:bg-brand/90 active:bg-brand/90 disabled:cursor-wait"
             disabled={isPending}
             type="submit"
           >
             {isPending ? <Loader2 className="size-5 animate-spin" /> : '적용'}
           </button>
-        </div>
+        </DialogFooter>
       </form>
-    </>,
-    document.body,
+    </Dialog>
   )
 }
