@@ -103,7 +103,7 @@ export default function MangaTorrentModal() {
 
       hasShownOpenHelpRef.current = true
       toast.info('토렌트 앱이 열리지 않나요?', {
-        description: '복사 버튼으로 마그넷 주소를 복사해 토렌트 앱에 붙여넣어 주세요',
+        description: '복사 버튼으로 마그넷 주소를 복사해 주세요',
       })
     }, ms('2 seconds'))
 
