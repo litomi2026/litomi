@@ -76,11 +76,11 @@ const queryClient = new QueryClient({
           return
         }
 
-        if (query.meta?.suppressGlobalErrorToastForError) {
-          return
-        }
+        const isToastEnabled =
+          query.meta?.enableGlobalErrorToast === true ||
+          query.meta?.enableGlobalErrorToastForStatuses?.includes(error.status) === true
 
-        if (query.meta?.suppressGlobalErrorToastForStatuses?.includes(error.status)) {
+        if (!isToastEnabled) {
           return
         }
 

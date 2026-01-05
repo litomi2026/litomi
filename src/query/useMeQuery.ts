@@ -26,7 +26,6 @@ export default function useMeQuery() {
     refetchOnMount: false,
     staleTime: ms('1 hour'),
     gcTime: ms('1 hour'),
-    meta: { suppressGlobalErrorToastForStatuses: [401] },
   })
 
   const userId = result.data?.id

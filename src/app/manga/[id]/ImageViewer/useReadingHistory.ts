@@ -27,7 +27,6 @@ export default function useReadingHistory(mangaId: number) {
       }
     },
     enabled: Boolean(mangaId) && !isMeLoading,
-    meta: { suppressGlobalErrorToastForError: true },
   })
 
   return { lastPage }

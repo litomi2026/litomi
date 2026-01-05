@@ -40,6 +40,5 @@ function useNotificationUnreadCountQuery() {
     queryKey: QueryKeys.notificationUnreadCount,
     queryFn: fetchUnreadCount,
     enabled: Boolean(me),
-    meta: { suppressGlobalErrorToastForError: true },
   })
 }
