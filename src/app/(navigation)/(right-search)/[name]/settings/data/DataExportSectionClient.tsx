@@ -104,7 +104,7 @@ export default function DataExportSectionClient({ counts }: Readonly<Props>) {
                 >
                   {isChecked && <Check className="size-3 text-brand" />}
                 </div>
-                <div className={`transition-colors ${isChecked ? 'text-brand' : 'text-zinc-400'}`}>
+                <div className={`transition ${isChecked ? 'text-brand' : 'text-zinc-400'}`}>
                   {DATA_CONFIG[type].icon}
                 </div>
                 <span className="flex-1 min-w-0 text-sm font-medium truncate">{DATA_CONFIG[type].label}</span>

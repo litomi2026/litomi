@@ -35,14 +35,17 @@ export default function LastPageActions({ manga }: Readonly<Props>) {
       <div className="grid grid-cols-2 items-center gap-2 text-foreground">
         <div className="col-span-2">
           <BookmarkButton
-            className="p-4 w-full py-2 rounded-lg bg-foreground text-background font-semibold hover:bg-foreground/90 active:bg-foreground/80 transition
-              disabled:bg-foreground/30 disabled:text-background/60 disabled:cursor-not-allowed disabled:hover:bg-foreground/30
-              focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-500"
+            className="w-full rounded-xl bg-foreground px-4 py-2.5 font-semibold text-background transition
+              hover:bg-foreground/90 active:bg-foreground/80
+              disabled:bg-foreground disabled:text-background disabled:opacity-50 disabled:pointer-events-none
+              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/15 focus-visible:ring-offset-0"
             manga={manga}
           />
         </div>
         <button
-          className="flex items-center justify-center gap-2 w-full p-4 py-2 border border-foreground/20 rounded-lg hover:bg-foreground/10 transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-500"
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-foreground/15 px-4 py-2.5 transition
+            hover:bg-foreground/10 active:bg-foreground/15
+            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/15 focus-visible:ring-offset-0"
           onClick={handleOpenLibraryModal}
           type="button"
         >
@@ -50,7 +53,9 @@ export default function LastPageActions({ manga }: Readonly<Props>) {
           <span>서재 추가</span>
         </button>
         <Link
-          className="flex justify-center items-center gap-2 p-4 py-2 border border-foreground/20 rounded-lg hover:bg-foreground/10 transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-500"
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-foreground/15 px-4 py-2.5 transition
+            hover:bg-foreground/10 active:bg-foreground/15
+            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/15 focus-visible:ring-offset-0"
           href={`/manga/${mangaId}/detail`}
           onClick={(e) => e.stopPropagation()}
           prefetch={false}

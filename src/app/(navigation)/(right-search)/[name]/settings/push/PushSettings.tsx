@@ -31,7 +31,7 @@ export default async function PushSettings({ userId }: Props) {
             <p className="text-xs text-zinc-500">
               <span className="hidden sm:inline">최신 브라우저에서 사용 가능 • </span>
               <a
-                className="inline-flex items-center gap-1 text-brand/70 hover:text-brand transition-colors font-medium"
+                className="inline-flex items-center gap-1 text-brand/70 hover:text-brand transition font-medium"
                 href="https://caniuse.com/push-api"
                 rel="noopener noreferrer"
                 target="_blank"

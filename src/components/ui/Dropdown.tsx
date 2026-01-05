@@ -93,7 +93,7 @@ export function DropdownItem({ children, onClick, className = '' }: DropdownItem
   return (
     <button
       className={`flex w-full items-center px-3 py-2 text-sm hover:bg-zinc-800 
-        transition-colors ${className}`}
+        transition ${className}`}
       onClick={handleClick}
       type="button"
     >

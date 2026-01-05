@@ -244,7 +244,7 @@ export default function CensorshipCreationBar() {
             <div className="flex items-center justify-between mb-2">
               <h3 className="font-medium text-zinc-300">입력 형식 가이드</h3>
               <button
-                className="p-1 rounded hover:bg-zinc-700/50 transition-colors"
+                className="p-1 rounded hover:bg-zinc-700/50 transition"
                 onClick={() => setShowHelp(false)}
                 type="button"
               >

@@ -87,7 +87,7 @@ export default function LibraryDeleteModal({ libraryId, libraryName, itemCount, 
       <DialogFooter className="flex gap-3">
         <button
           className="flex-1 flex items-center justify-center gap-2 h-10 rounded-lg bg-red-700 text-foreground font-medium 
-            hover:bg-red-700 transition-colors disabled:opacity-50 relative"
+            hover:bg-red-700 transition disabled:opacity-50 relative"
           disabled={isPending}
           onClick={() => dispatchAction(libraryId)}
           type="button"
@@ -96,7 +96,7 @@ export default function LibraryDeleteModal({ libraryId, libraryName, itemCount, 
         </button>
         <button
           className="flex-1 h-10 rounded-lg bg-zinc-800 text-zinc-300 font-medium 
-            hover:bg-zinc-700 transition-colors disabled:opacity-50"
+            hover:bg-zinc-700 transition disabled:opacity-50"
           disabled={isPending}
           onClick={() => onOpenChange(false)}
           type="button"

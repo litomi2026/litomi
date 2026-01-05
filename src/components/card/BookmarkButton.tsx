@@ -3,9 +3,9 @@
 import { captureException } from '@sentry/nextjs'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Bookmark } from 'lucide-react'
+import { Bookmark, Loader2 } from 'lucide-react'
 import ms from 'ms'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
@@ -36,6 +36,7 @@ export default function BookmarkButton({ manga, className }: Props) {
   const isIconSelected = bookmarkIds.has(mangaId)
   const queryClient = useQueryClient()
   const { open: openLibraryModal } = useLibraryModal()
+  const [isSpinnerVisible, setIsSpinnerVisible] = useState(false)
 
   const toggleMutation = useMutation<{ createdAt: string | null }, unknown, number>({
     mutationFn: async (mangaId) => {
@@ -120,9 +121,21 @@ export default function BookmarkButton({ manga, className }: Props) {
     toggleMutation.mutate(mangaId)
   }
 
+  // NOTE: 빠른 응답(짧은 pending)에서는 스피너가 깜빡이지 않게 약간 지연해서 보여줘요
+  useEffect(() => {
+    if (!toggleMutation.isPending) {
+      setIsSpinnerVisible(false)
+      return
+    }
+
+    const timeoutId = window.setTimeout(() => setIsSpinnerVisible(true), ms('200ms'))
+    return () => window.clearTimeout(timeoutId)
+  }, [toggleMutation.isPending])
+
   return (
     <div className="flex-1">
       <button
+        aria-busy={toggleMutation.isPending}
         className={twMerge(
           'flex justify-center items-center gap-1 transition disabled:bg-zinc-800 disabled:text-zinc-500 disabled:cursor-not-allowed hover:bg-zinc-800 active:bg-zinc-900 active:border-zinc-700',
           className,
@@ -131,7 +144,11 @@ export default function BookmarkButton({ manga, className }: Props) {
         onClick={handleToggleClick}
         type="button"
       >
-        <Bookmark className="size-4" fill={isIconSelected ? 'currentColor' : 'none'} />
+        {isSpinnerVisible ? (
+          <Loader2 className="size-4 animate-spin" />
+        ) : (
+          <Bookmark className="size-4" fill={isIconSelected ? 'currentColor' : 'none'} />
+        )}
         <span>북마크</span>
       </button>
     </div>

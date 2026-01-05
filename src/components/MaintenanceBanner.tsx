@@ -43,7 +43,7 @@ export default function MaintenanceBanner() {
         </div>
         <button
           aria-label="공지 닫기"
-          className="ml-4 shrink-0 p-1 rounded-md hover:bg-yellow-600/20 transition-colors"
+          className="ml-4 shrink-0 p-1 rounded-md hover:bg-yellow-600/20 transition"
           onClick={() => setIsVisible(false)}
         >
           <X className="h-4 w-4 text-yellow-500" />

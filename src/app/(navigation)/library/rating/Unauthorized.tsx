@@ -34,7 +34,7 @@ export default function Unauthorized() {
           <p className="text-sm text-zinc-500">
             처음이신가요?{' '}
             <Link
-              className="text-zinc-300 underline hover:text-zinc-100 transition-colors"
+              className="text-zinc-300 underline hover:text-zinc-100 transition"
               href="/auth/signup"
               prefetch={false}
             >

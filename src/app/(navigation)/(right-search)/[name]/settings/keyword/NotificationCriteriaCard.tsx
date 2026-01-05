@@ -155,7 +155,7 @@ export default function NotificationCriteriaCard({ criterion, onEdit }: Notifica
           <div className="flex flex-wrap gap-1.5 mt-3">
             {criterion.conditions.map((condition, index) => (
               <span
-                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs transition-colors ${
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs transition ${
                   condition.isExcluded ? 'bg-zinc-900 border border-zinc-700 opacity-60' : 'bg-zinc-800'
                 }`}
                 key={index}
