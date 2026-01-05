@@ -25,7 +25,7 @@ export default function RelatedMangaSection({ mangaId }: Props) {
         <Link2 className="size-4" />
         이런 작품 찾으세요?
       </h3>
-      <MangaCardList mangaIds={relatedIds} />
+      <MangaCardList mangaIds={relatedIds.toReversed()} />
     </div>
   )
 }

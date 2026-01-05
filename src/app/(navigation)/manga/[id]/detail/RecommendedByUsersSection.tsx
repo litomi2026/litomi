@@ -24,7 +24,7 @@ export default async function RecommendedByUsersSection({ mangaId }: Props) {
       <h3 className="text-sm font-semibold text-zinc-400 mb-3 flex items-center gap-2">
         <Star className="size-4" />이 작품과 함께 좋아한 작품
       </h3>
-      <MangaCardList mangaIds={recommendedIds} />
+      <MangaCardList mangaIds={recommendedIds.toReversed()} />
     </div>
   )
 }
