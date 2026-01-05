@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 
 import Dialog from '@/components/ui/Dialog'
+import DialogBody from '@/components/ui/DialogBody'
 import DialogHeader from '@/components/ui/DialogHeader'
 
 type Props = {
@@ -47,45 +48,43 @@ export default function ShareLibraryButton({ className = '', library }: Readonly
         <Share2 className="size-5" />
       </button>
       <Dialog ariaLabel="서재 공유" onClose={handleClose} open={isModalOpen}>
-        <div className="flex flex-1 flex-col min-h-0">
-          <DialogHeader onClose={handleClose} title="서재 공유" />
-          <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 min-h-0">
-            <p className="text-sm text-zinc-400">이 서재는 링크를 통해 누구나 볼 수 있어요</p>
-            <div className="p-4 bg-zinc-800/50 rounded-lg">
-              <h3 className="font-medium text-center line-clamp-1 break-all text-zinc-100" title={name}>
-                {name}
-              </h3>
-            </div>
-            <div className="grid gap-2">
-              <label className="block text-sm font-medium text-zinc-300">공유 링크</label>
-              <div className="flex gap-2">
-                <input
-                  className="flex-1 px-3 py-2 bg-zinc-800 rounded-lg border-2 border-zinc-700 text-sm text-zinc-100 cursor-text select-all outline-none focus:border-zinc-500 transition"
-                  onClick={(e) => e.currentTarget.select()}
-                  readOnly
-                  value={shareUrl}
-                />
-                <button
-                  className="px-4 py-2 rounded-lg bg-brand text-background hover:bg-brand/90 transition font-semibold flex items-center gap-2 whitespace-nowrap"
-                  onClick={handleCopyLink}
-                  type="button"
-                >
-                  {isCopied ? (
-                    <>
-                      <Check className="size-4 shrink-0" />
-                      <span>완료</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="size-4 shrink-0" />
-                      <span>복사</span>
-                    </>
-                  )}
-                </button>
-              </div>
+        <DialogHeader onClose={handleClose} title="서재 공유" />
+        <DialogBody className="flex flex-col gap-4">
+          <p className="text-sm text-zinc-400">이 서재는 링크를 통해 누구나 볼 수 있어요</p>
+          <div className="p-4 bg-zinc-800/50 rounded-lg">
+            <h3 className="font-medium text-center line-clamp-1 break-all text-zinc-100" title={name}>
+              {name}
+            </h3>
+          </div>
+          <div className="grid gap-2">
+            <label className="block text-sm font-medium text-zinc-300">공유 링크</label>
+            <div className="flex gap-2">
+              <input
+                className="flex-1 px-3 py-2 bg-zinc-800 rounded-lg border-2 border-zinc-700 text-sm text-zinc-100 cursor-text select-all outline-none focus:border-zinc-500 transition"
+                onClick={(e) => e.currentTarget.select()}
+                readOnly
+                value={shareUrl}
+              />
+              <button
+                className="px-4 py-2 rounded-lg bg-brand text-background hover:bg-brand/90 transition font-semibold flex items-center gap-2 whitespace-nowrap"
+                onClick={handleCopyLink}
+                type="button"
+              >
+                {isCopied ? (
+                  <>
+                    <Check className="size-4 shrink-0" />
+                    <span>완료</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="size-4 shrink-0" />
+                    <span>복사</span>
+                  </>
+                )}
+              </button>
             </div>
           </div>
-        </div>
+        </DialogBody>
       </Dialog>
     </>
   )

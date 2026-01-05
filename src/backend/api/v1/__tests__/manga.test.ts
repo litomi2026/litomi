@@ -79,7 +79,7 @@ describe('GET /api/v1/manga/:id/history', () => {
       expect(data).toBe(5)
     })
 
-    test('읽기 기록이 없는 경우 404 응답을 받는다', async () => {
+    test('읽기 기록이 없는 경우 204 응답을 받는다', async () => {
       // Given
       currentUserId = 1
       mockReadingHistory.set('1', null)
@@ -88,7 +88,7 @@ describe('GET /api/v1/manga/:id/history', () => {
       const response = await app.request('/123/history', {}, { userId: 1 })
 
       // Then
-      expect(response.status).toBe(404)
+      expect(response.status).toBe(204)
     })
 
     test('응답에 Cache-Control 헤더가 포함되어 있다', async () => {

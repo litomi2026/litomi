@@ -8,6 +8,8 @@ import { toast } from 'sonner'
 import type { GETV1LibraryListResponse, LibraryListItem } from '@/backend/api/v1/library/GET'
 
 import Dialog from '@/components/ui/Dialog'
+import DialogBody from '@/components/ui/DialogBody'
+import DialogFooter from '@/components/ui/DialogFooter'
 import DialogHeader from '@/components/ui/DialogHeader'
 import Toggle from '@/components/ui/Toggle'
 import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/constants/policy'
@@ -140,7 +142,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
       <Dialog ariaLabel="서재 만들기" onClose={handleClose} open={isModalOpen}>
         <form action={dispatchAction} className="flex flex-1 flex-col min-h-0">
           <DialogHeader onClose={handleClose} title="서재 만들기" />
-          <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 min-h-0 relative">
+          <DialogBody className="overflow-x-hidden flex flex-col gap-4 relative">
             <div className="flex items-center justify-center p-4">
               <div
                 className="size-20 rounded-2xl flex items-center justify-center text-3xl shadow-lg transition"
@@ -254,10 +256,10 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
             {/* Hidden inputs */}
             <input name="color" type="hidden" value={selectedColor} />
             <input name="icon" type="hidden" value={selectedIcon} />
-          </div>
+          </DialogBody>
 
           {/* Footer */}
-          <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-zinc-900 border-t-2 border-zinc-800 flex gap-2 shrink-0">
+          <DialogFooter className="border-t-2 border-zinc-800 flex gap-2">
             <button
               className="flex-1 px-4 py-3 text-zinc-300 font-medium bg-zinc-800 hover:bg-zinc-700 disabled:bg-zinc-700 disabled:text-zinc-500 rounded-lg transition"
               disabled={isPending}
@@ -274,7 +276,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
               {isPending ? <Loader2 className="size-5 shrink-0 animate-spin" /> : <Plus className="size-5 shrink-0" />}
               <span>생성하기</span>
             </button>
-          </div>
+          </DialogFooter>
         </form>
       </Dialog>
     </>

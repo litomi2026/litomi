@@ -16,27 +16,23 @@ const paramSchema = z.object({
   id: z.coerce.number().int().positive().max(MAX_MANGA_ID),
 })
 
-export type GETV1MangaIdHistoryResponse = number | null
+export type GETV1MangaIdHistoryResponse = number
 
-const mangaRoutes = new Hono<Env>()
+const route = new Hono<Env>()
 
-mangaRoutes.get('/:id/history', requireAuth, zProblemValidator('param', paramSchema), async (c) => {
+route.get('/:id/history', requireAuth, zProblemValidator('param', paramSchema), async (c) => {
   const userId = c.get('userId')!
 
-  try {
-    const { id: mangaId } = c.req.valid('param')
+  const { id: mangaId } = c.req.valid('param')
 
+  try {
     const [history] = await db
       .select({ lastPage: readingHistoryTable.lastPage })
       .from(readingHistoryTable)
       .where(and(eq(readingHistoryTable.userId, userId), eq(readingHistoryTable.mangaId, mangaId)))
 
     if (!history) {
-      return problemResponse(c, {
-        status: 404,
-        detail: '감상 기록이 없어요',
-        headers: { 'Cache-Control': privateCacheControl },
-      })
+      return new Response(null, { status: 204, headers: { 'Cache-Control': privateCacheControl } })
     }
 
     return c.json<GETV1MangaIdHistoryResponse>(history.lastPage, { headers: { 'Cache-Control': privateCacheControl } })
@@ -46,4 +42,4 @@ mangaRoutes.get('/:id/history', requireAuth, zProblemValidator('param', paramSch
   }
 })
 
-export default mangaRoutes
+export default route

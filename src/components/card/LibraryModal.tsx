@@ -8,10 +8,13 @@ import { toast } from 'sonner'
 import { create } from 'zustand'
 
 import { addMangaToLibraries } from '@/app/(navigation)/library/action-library-item'
+import Dialog from '@/components/ui/Dialog'
+import DialogBody from '@/components/ui/DialogBody'
+import DialogFooter from '@/components/ui/DialogFooter'
+import DialogHeader from '@/components/ui/DialogHeader'
 import { QueryKeys } from '@/constants/query'
 import useServerAction from '@/hook/useServerAction'
 
-import Modal from '../ui/Modal'
 import useLibrariesQuery from './useLibrariesQuery'
 
 type LibraryModalStore = {
@@ -60,13 +63,16 @@ export default function LibraryModal() {
         queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItems(id) })
       }
 
-      handleClose()
+      requestClose()
     },
     shouldSetResponse: false,
   })
 
-  function handleClose() {
+  function requestClose() {
     setIsOpen(false)
+  }
+
+  function handleAfterClose() {
     setMangaId(null)
     setSelectedLibraryIds(new Set())
   }
@@ -93,26 +99,17 @@ export default function LibraryModal() {
   }
 
   return (
-    <Modal
-      className="fixed inset-0 z-50 flex flex-col overflow-hidden bg-zinc-900 
-        sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2
-        sm:w-full sm:max-w-prose sm:max-h-[calc(100dvh-4rem)] sm:rounded-xl sm:border-2"
-      onClose={handleClose}
+    <Dialog
+      ariaLabel="서재에 추가"
+      className="sm:max-w-prose"
+      onAfterClose={handleAfterClose}
+      onClose={requestClose}
       open={isOpen}
     >
-      <form action={handleAddToLibraries} className="flex flex-col flex-1 min-h-0">
-        <div className="flex items-center justify-between p-4 bg-zinc-900 border-b-2 border-zinc-800 shrink-0">
-          <h2 className="text-xl font-bold text-zinc-100">서재에 추가</h2>
-          <button
-            className="p-2 -mr-2 rounded-lg hover:bg-zinc-800 transition sm:p-1.5 sm:-mr-1.5"
-            onClick={handleClose}
-            title="닫기"
-            type="button"
-          >
-            <X className="size-6 shrink-0 sm:size-5" />
-          </button>
-        </div>
-        <div className="flex flex-col gap-4 flex-1 overflow-y-auto p-4">
+      <form action={handleAddToLibraries} className="flex flex-1 flex-col min-h-0">
+        <DialogHeader onClose={requestClose} title="서재에 추가" />
+
+        <DialogBody className="flex flex-col gap-4">
           {isLibrariesPending ? (
             <div className="flex flex-1 items-center justify-center py-12">
               <div className="flex items-center gap-2 text-zinc-400">
@@ -136,9 +133,9 @@ export default function LibraryModal() {
               <p className="text-zinc-400 mb-6">아직 서재가 없어요</p>
               <Link
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand hover:bg-brand/90
-                transition font-semibold text-background"
+                  transition font-semibold text-background"
                 href="/library"
-                onClick={handleClose}
+                onClick={requestClose}
                 prefetch={false}
               >
                 <Plus className="size-5 shrink-0" />
@@ -171,12 +168,13 @@ export default function LibraryModal() {
               </label>
             ))
           )}
-        </div>
+        </DialogBody>
+
         {libraries && libraries.length > 0 && (
-          <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-zinc-900 border-t-2 border-zinc-800 shrink-0 space-y-2">
+          <DialogFooter className="border-t-2 border-zinc-800 space-y-2">
             <button
               className="flex items-center justify-center gap-2 w-full px-4 py-3 text-background font-medium bg-brand rounded-lg transition hover:bg-brand/90
-              disabled:bg-zinc-700 disabled:text-zinc-500"
+                disabled:bg-zinc-700 disabled:text-zinc-500"
               disabled={isPending || selectedLibraryIds.size === 0}
               type="submit"
             >
@@ -186,18 +184,18 @@ export default function LibraryModal() {
               </span>
             </button>
             <button
-              className="w-full px-4 py-3 text-zinc-300 font-medium bg-zinc-800 rounded-lg transitionhover:bg-zinc-700
-              disabled:bg-zinc-700 disabled:text-zinc-500"
+              className="w-full px-4 py-3 text-zinc-300 font-medium bg-zinc-800 rounded-lg transition hover:bg-zinc-700
+                disabled:bg-zinc-700 disabled:text-zinc-500"
               disabled={isPending}
-              onClick={handleClose}
+              onClick={requestClose}
               type="button"
             >
               취소
             </button>
-          </div>
+          </DialogFooter>
         )}
       </form>
-    </Modal>
+    </Dialog>
   )
 }
 

@@ -7,7 +7,10 @@ import { toast } from 'sonner'
 
 import type { GETV1LibraryListResponse, LibraryListItem } from '@/backend/api/v1/library/GET'
 
-import Modal from '@/components/ui/Modal'
+import Dialog from '@/components/ui/Dialog'
+import DialogBody from '@/components/ui/DialogBody'
+import DialogFooter from '@/components/ui/DialogFooter'
+import DialogHeader from '@/components/ui/DialogHeader'
 import { QueryKeys } from '@/constants/query'
 import useServerAction from '@/hook/useServerAction'
 
@@ -63,17 +66,14 @@ export default function LibraryDeleteModal({ libraryId, libraryName, itemCount, 
   })
 
   return (
-    <Modal
-      className="max-w-xs w-full rounded-xl bg-zinc-900 border border-zinc-800"
-      onClose={() => onOpenChange(false)}
-      open={open}
-    >
-      <div className="p-5 relative">
-        <div className="flex flex-col items-center text-center mb-5">
+    <Dialog ariaLabel="서재 삭제" className="sm:max-w-sm" onClose={() => onOpenChange(false)} open={open}>
+      <DialogHeader onClose={() => onOpenChange(false)} title="서재 삭제" />
+
+      <DialogBody className="p-5">
+        <div className="flex flex-col items-center text-center">
           <div className="mb-3 h-12 w-12 rounded-xl bg-zinc-800 flex items-center justify-center">
             <Trash2 className="size-6 shrink-0 text-red-500" />
           </div>
-          <h2 className="text-lg font-semibold text-zinc-100 mb-1">서재 삭제</h2>
           <p className="text-sm text-zinc-400 mb-3 break-all">"{libraryName}" 서재를 삭제할까요?</p>
           {itemCount > 0 && (
             <p className="text-sm text-red-400">
@@ -82,27 +82,28 @@ export default function LibraryDeleteModal({ libraryId, libraryName, itemCount, 
             </p>
           )}
         </div>
-        <div className="grid md:flex gap-3">
-          <button
-            className="flex-1 flex items-center justify-center gap-2 p-2 rounded-lg bg-red-700 text-foreground font-medium 
-              hover:bg-red-700 transition-colors disabled:opacity-50 relative"
-            disabled={isPending}
-            onClick={() => dispatchAction(libraryId)}
-            type="button"
-          >
-            {isPending ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />} 삭제
-          </button>
-          <button
-            className="flex-1 p-2 rounded-lg bg-zinc-800 text-zinc-300 font-medium 
-              hover:bg-zinc-700 transition-colors disabled:opacity-50"
-            disabled={isPending}
-            onClick={() => onOpenChange(false)}
-            type="button"
-          >
-            취소
-          </button>
-        </div>
-      </div>
-    </Modal>
+      </DialogBody>
+
+      <DialogFooter className="flex gap-3">
+        <button
+          className="flex-1 flex items-center justify-center gap-2 h-10 rounded-lg bg-red-700 text-foreground font-medium 
+            hover:bg-red-700 transition disabled:opacity-50 relative"
+          disabled={isPending}
+          onClick={() => dispatchAction(libraryId)}
+          type="button"
+        >
+          {isPending ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />} 삭제
+        </button>
+        <button
+          className="flex-1 h-10 rounded-lg bg-zinc-800 text-zinc-300 font-medium 
+            hover:bg-zinc-700 transition disabled:opacity-50"
+          disabled={isPending}
+          onClick={() => onOpenChange(false)}
+          type="button"
+        >
+          취소
+        </button>
+      </DialogFooter>
+    </Dialog>
   )
 }

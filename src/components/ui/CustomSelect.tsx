@@ -4,6 +4,8 @@ import { ChevronDown } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
+import { ensureOverlayRoot } from '@/components/ui/overlayRoot'
+
 interface CustomSelectProps {
   className?: string
   defaultValue?: string
@@ -36,6 +38,7 @@ export default function CustomSelect({
   const containerRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const portalContainer = ensureOverlayRoot()
 
   const isControlled = controlledValue !== undefined
   const value = isControlled ? controlledValue : internalValue
@@ -151,9 +154,10 @@ export default function CustomSelect({
         <ChevronDown aria-selected={isOpen} className="size-4 shrink-0 transition aria-selected:rotate-180" />
       </button>
       {isOpen &&
+        portalContainer &&
         createPortal(
           <div
-            className="fixed z-50 bg-zinc-800 border border-zinc-700 rounded-lg shadow-lg overflow-auto"
+            className="pointer-events-auto absolute z-50 bg-zinc-800 border border-zinc-700 rounded-lg shadow-lg overflow-auto"
             ref={dropdownRef}
             role="listbox"
             style={{
@@ -166,7 +170,7 @@ export default function CustomSelect({
             {options.map((option) => (
               <button
                 aria-selected={option.value === value}
-                className="w-full px-3 py-2 text-left text-zinc-100 hover:bg-zinc-700 transition
+                className="block w-full px-3 py-2 text-left text-zinc-100 hover:bg-zinc-700 transition
                 first:rounded-t-lg last:rounded-b-lg aria-selected:bg-zinc-700/50"
                 key={option.value}
                 onClick={(e) => {
@@ -180,7 +184,7 @@ export default function CustomSelect({
               </button>
             ))}
           </div>,
-          document.body,
+          portalContainer,
         )}
     </div>
   )

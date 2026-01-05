@@ -1,7 +1,18 @@
 'use client'
 
-import { type MouseEvent, type ReactNode, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import {
+  type CSSProperties,
+  type MouseEvent,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react'
 import { twMerge } from 'tailwind-merge'
+
+import { registerTopLayerPortalContainer, unregisterTopLayerPortalContainer } from '@/components/ui/topLayerPortal'
 
 type DialogState = 'closed' | 'closing' | 'open' | 'opening'
 
@@ -11,19 +22,11 @@ type Props = {
   onAfterClose?: () => void
   children: ReactNode
   className?: string
+  style?: CSSProperties
   ariaLabel: string
-  unmountOnClose?: boolean
 }
 
-export default function Dialog({
-  open,
-  onClose,
-  onAfterClose,
-  children,
-  className = '',
-  ariaLabel,
-  unmountOnClose = false,
-}: Props) {
+export default function Dialog({ open, onClose, onAfterClose, children, className = '', style, ariaLabel }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const rafRef = useRef<number | null>(null)
@@ -31,6 +34,7 @@ export default function Dialog({
   const hasEnteredOpenStateRef = useRef(false)
   const lastActiveElementRef = useRef<HTMLElement | null>(null)
   const bodyStyleRestoreRef = useRef<{ overflow: string; touchAction: string } | null>(null)
+  const hasRegisteredPortalContainerRef = useRef(false)
   const [state, setState] = useState<DialogState>('closed')
 
   const requestClose = useCallback(() => {
@@ -76,6 +80,11 @@ export default function Dialog({
         dialog.showModal()
       }
 
+      if (!hasRegisteredPortalContainerRef.current) {
+        registerTopLayerPortalContainer(dialog)
+        hasRegisteredPortalContainerRef.current = true
+      }
+
       setState('opening')
 
       rafRef.current = window.requestAnimationFrame(() => {
@@ -87,6 +96,10 @@ export default function Dialog({
     }
 
     if (!dialog.open) {
+      if (hasRegisteredPortalContainerRef.current) {
+        unregisterTopLayerPortalContainer(dialog)
+        hasRegisteredPortalContainerRef.current = false
+      }
       setState('closed')
       return
     }
@@ -158,6 +171,12 @@ export default function Dialog({
         dialogEl.close()
       }
 
+      const portalContainer = dialogEl ?? dialogRef.current
+      if (hasRegisteredPortalContainerRef.current && portalContainer) {
+        unregisterTopLayerPortalContainer(portalContainer)
+        hasRegisteredPortalContainerRef.current = false
+      }
+
       setState('closed')
 
       const lastActive = lastActiveElementRef.current
@@ -192,24 +211,28 @@ export default function Dialog({
     return () => panel.removeEventListener('transitionend', handleTransitionEnd)
   }, [onAfterClose, state])
 
-  // NOTE: 언마운트 시 requestAnimationFrame을 정리해요
+  // NOTE: 언마운트 시 requestAnimationFrame과 top-layer 컨테이너 등록을 정리해요
   useEffect(() => {
+    const dialog = dialogRef.current
+
     return () => {
       if (rafRef.current !== null) {
         window.cancelAnimationFrame(rafRef.current)
         rafRef.current = null
       }
+
+      if (hasRegisteredPortalContainerRef.current && dialog) {
+        unregisterTopLayerPortalContainer(dialog)
+        hasRegisteredPortalContainerRef.current = false
+      }
     }
   }, [])
-
-  const shouldRenderChildren = !unmountOnClose || open || state !== 'closed'
 
   return (
     <dialog
       aria-label={ariaLabel}
-      className="fixed inset-0 m-0 h-dvh w-dvw max-h-none max-w-none p-0 border-0 bg-transparent text-foreground outline-none
-        data-[state=closed]:hidden group flex items-center justify-center
-        backdrop:bg-background/80 backdrop:transition backdrop:opacity-0 data-[state=open]:backdrop:opacity-100"
+      className="fixed inset-0 m-0 h-dvh w-dvw max-h-none max-w-none p-0 border-0 bg-transparent text-foreground outline-none group flex items-center justify-center 
+        data-[state=closed]:hidden backdrop:bg-background/80 backdrop:transition backdrop:opacity-0 data-[state=open]:backdrop:opacity-100"
       data-state={state}
       onClick={handleClick}
       ref={dialogRef}
@@ -221,8 +244,9 @@ export default function Dialog({
         )}
         onClick={(e) => e.stopPropagation()}
         ref={panelRef}
+        style={style}
       >
-        {shouldRenderChildren ? children : null}
+        {children}
       </div>
     </dialog>
   )

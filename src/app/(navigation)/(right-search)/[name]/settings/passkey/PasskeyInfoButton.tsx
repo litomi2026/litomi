@@ -3,7 +3,9 @@
 import { Fingerprint, Info } from 'lucide-react'
 import { useState } from 'react'
 
-import Modal from '@/components/ui/Modal'
+import Dialog from '@/components/ui/Dialog'
+import DialogBody from '@/components/ui/DialogBody'
+import DialogHeader from '@/components/ui/DialogHeader'
 
 export default function PasskeyInfoButton() {
   const [showInfoModal, setShowInfoModal] = useState(false)
@@ -17,13 +19,14 @@ export default function PasskeyInfoButton() {
       >
         <Info className="size-5" />
       </button>
-      <Modal onClose={() => setShowInfoModal(false)} open={showInfoModal} showCloseButton>
-        <div className="w-[90vw] max-w-xs sm:max-w-sm rounded-2xl bg-zinc-900 p-6 sm:p-8">
+      <Dialog ariaLabel="패스키란?" className="sm:max-w-sm" onClose={() => setShowInfoModal(false)} open={showInfoModal}>
+        <DialogHeader onClose={() => setShowInfoModal(false)} title="패스키란?" />
+
+        <DialogBody className="p-6 sm:p-8">
           <div className="mb-6 text-center">
             <div className="mx-auto mb-4 h-16 w-16 rounded-2xl bg-brand/10 flex items-center justify-center">
               <Fingerprint className="h-8 w-8 text-brand" />
             </div>
-            <h3 className="text-xl sm:text-2xl font-bold mb-2">패스키란?</h3>
             <p className="text-sm text-zinc-400">더 안전한 로그인 방법</p>
           </div>
           <div className="space-y-4 mb-6">
@@ -58,11 +61,12 @@ export default function PasskeyInfoButton() {
           <button
             className="w-full rounded-full bg-zinc-800 py-3 text-sm font-medium transition hover:bg-zinc-700 touch-manipulation"
             onClick={() => setShowInfoModal(false)}
+            type="button"
           >
             알겠어요
           </button>
-        </div>
-      </Modal>
+        </DialogBody>
+      </Dialog>
     </>
   )
 }

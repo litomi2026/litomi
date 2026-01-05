@@ -24,7 +24,7 @@ export default function DialogHeader({
   return (
     <div
       className={twMerge(
-        'flex items-center justify-between p-4 bg-zinc-900 border-b-2 border-zinc-800 shrink-0',
+        'flex items-center justify-between p-4 bg-zinc-900 border-b-2 border-zinc-800 shrink-0 max-sm:pl-[calc(1rem+var(--safe-area-left))] max-sm:pr-[calc(1rem+var(--safe-area-right))]',
         className,
       )}
     >

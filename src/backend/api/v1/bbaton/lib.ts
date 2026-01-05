@@ -73,9 +73,7 @@ const schema = z.object({
 export async function fetchBBatonProfile(accessToken: string): Promise<BBatonProfile> {
   const response = await fetch('https://bapi.bbaton.com/v2/user/me', {
     method: 'GET',
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
+    headers: { Authorization: `Bearer ${accessToken}` },
   })
 
   const json = await response.json().catch(() => null)

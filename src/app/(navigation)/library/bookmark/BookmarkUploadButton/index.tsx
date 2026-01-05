@@ -4,7 +4,10 @@ import { Upload } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-import Modal from '@/components/ui/Modal'
+import Dialog from '@/components/ui/Dialog'
+import DialogBody from '@/components/ui/DialogBody'
+import DialogFooter from '@/components/ui/DialogFooter'
+import DialogHeader from '@/components/ui/DialogHeader'
 
 import { CompleteStep } from './CompleteStep'
 import { FileSelectStep } from './FileSelectStep'
@@ -83,20 +86,17 @@ export default function BookmarkUploadButton() {
         <Upload className="size-5 shrink-0" />
         <span className="hidden sm:block">북마크 업로드</span>
       </button>
-      <Modal className="pointer-coarse:top-12" onClose={handleClose} open={isOpened} showCloseButton showDragButton>
-        <div className="bg-zinc-900 w-screen max-w-lg max-h-dvh rounded-3xl border border-zinc-800/60 overflow-auto flex flex-col shadow-2xl">
-          <div className="p-5 pb-10 border-b border-zinc-800/40 bg-linear-to-b from-zinc-900 to-zinc-900/95">
-            <h2 className="text-xl font-bold text-center mb-3 text-foreground">북마크 업로드</h2>
+      <Dialog ariaLabel="북마크 업로드" className="sm:max-w-lg" onClose={handleClose} open={isOpened}>
+        <DialogHeader onClose={handleClose} title="북마크 업로드" />
+
+        <DialogBody className="p-0 overflow-y-hidden flex flex-col">
+          <div className="p-5 pb-10 border-b border-zinc-800/40 bg-linear-to-b from-zinc-900 to-zinc-900/95 shrink-0">
             <ProgressIndicator currentStep={STEP_MAP[importState]?.step || 1} />
           </div>
 
           {/* Content area with fixed height to prevent layout shift */}
           <div className="flex-1 overflow-y-auto py-60 relative">
-            <FileSelectStep
-              fileInputRef={fileInputRef}
-              isVisible={importState === 'idle'}
-              onFileSelect={handleFileSelect}
-            />
+            <FileSelectStep fileInputRef={fileInputRef} isVisible={importState === 'idle'} onFileSelect={handleFileSelect} />
             {previewData && (
               <PreviewStep
                 importMode={importMode}
@@ -108,15 +108,12 @@ export default function BookmarkUploadButton() {
             <ImportingStep isVisible={importState === 'importing'} />
             {importResult && <CompleteStep importResult={importResult} isVisible={importState === 'complete'} />}
           </div>
+        </DialogBody>
 
-          <FooterActions
-            importState={importState}
-            onClose={handleClose}
-            onImport={performImport}
-            onReset={handleReset}
-          />
-        </div>
-      </Modal>
+        <DialogFooter className="border-zinc-800/40 bg-zinc-900/95 p-6 font-semibold text-sm">
+          <FooterActions importState={importState} onClose={handleClose} onImport={performImport} onReset={handleReset} />
+        </DialogFooter>
+      </Dialog>
     </>
   )
 }

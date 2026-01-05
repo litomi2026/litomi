@@ -122,7 +122,7 @@ export default function WebtoonListPage() {
             </div>
 
             <button
-              className="mt-2 bg-zinc-100 text-zinc-900 font-medium rounded-lg px-4 py-2.5 hover:bg-white transition-colors"
+              className="mt-2 bg-zinc-100 text-zinc-900 font-medium rounded-lg px-4 py-2.5 hover:bg-white transition"
               type="submit"
             >
               불러오기

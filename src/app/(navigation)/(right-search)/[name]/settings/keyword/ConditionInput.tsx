@@ -30,12 +30,12 @@ export default function ConditionInput({ index, initialCondition, isPending, onR
           label,
         }))}
       />
-      <div className="flex gap-2 flex-1">
-        <div className="flex flex-1 gap-1 bg-zinc-800 border border-zinc-700 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-brand/50 focus-within:border-transparent transition">
+      <div className="flex gap-2 flex-1 min-w-0">
+        <div className="flex flex-1 min-w-0 gap-1 bg-zinc-800 border border-zinc-700 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-brand/50 focus-within:border-transparent transition">
           <input
             autoCapitalize="off"
             autoComplete="off"
-            className="flex-1 text-base px-3 py-2 bg-transparent placeholder-zinc-500 
+            className="min-w-0 flex-1 text-base px-3 py-2 bg-transparent placeholder-zinc-500 
               focus:outline-none disabled:opacity-50 transition"
             defaultValue={initialCondition?.value || ''}
             disabled={isPending}
@@ -45,7 +45,7 @@ export default function ConditionInput({ index, initialCondition, isPending, onR
             type="text"
           />
           <label
-            className="flex items-center px-3 text-xs font-medium transition border-l text-zinc-400 border-zinc-700 cursor-pointer hover:bg-zinc-700/50"
+            className="shrink-0 whitespace-nowrap flex items-center px-2.5 sm:px-3 text-xs font-medium transition-colors border-l border-zinc-700 cursor-pointer text-zinc-400 hover:bg-zinc-700/50 has-[input:checked]:bg-red-900/25 has-[input:checked]:text-red-300 has-[input:checked]:border-red-800/40 has-[input:checked]:hover:bg-red-900/35"
             htmlFor={`condition-excluded-${index}`}
             title="클릭하여 포함/제외 전환"
           >
@@ -58,7 +58,7 @@ export default function ConditionInput({ index, initialCondition, isPending, onR
               type="checkbox"
             />
             <span className="peer-checked:hidden">포함</span>
-            <span className="bg-red-900/30 text-red-400 peer-checked:inline hidden">제외</span>
+            <span className="peer-checked:inline hidden">제외</span>
           </label>
         </div>
         {showRemoveButton && (

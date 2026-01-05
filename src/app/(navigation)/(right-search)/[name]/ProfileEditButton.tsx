@@ -3,12 +3,14 @@
 import { captureException } from '@sentry/nextjs'
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import { useQueryClient } from '@tanstack/react-query'
-import { SquarePen, X } from 'lucide-react'
+import { SquarePen } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { FormEvent, use, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 import Dialog from '@/components/ui/Dialog'
+import DialogBody from '@/components/ui/DialogBody'
+import DialogFooter from '@/components/ui/DialogFooter'
 import DialogHeader from '@/components/ui/DialogHeader'
 import { QueryKeys } from '@/constants/query'
 import useServerAction, { getFieldError } from '@/hook/useServerAction'
@@ -88,8 +90,7 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
       <Dialog ariaLabel="프로필 수정" className="sm:max-w-2xl" onClose={handleClose} open={showModal}>
         <form action={dispatchAction} className="flex flex-1 flex-col min-h-0" onSubmit={handleSubmit}>
           <DialogHeader onClose={handleClose} title="프로필 수정" />
-
-          <div className="flex-1 overflow-y-auto min-h-0">
+          <DialogBody className="p-0 sm:p-0">
             <div className="relative">
               <div className="h-32 bg-linear-to-b from-zinc-800 to-zinc-900" />
               <div className="absolute bottom-0 left-4 transform translate-y-1/2">
@@ -187,10 +188,10 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
                 클라우드 비용 절감을 위해 서버 트래픽을 제한하고 있어 변경 사항이 반영되는데 최대 1분이 소요될 수 있어요
               </p>
             </div>
-          </div>
+          </DialogBody>
 
-          <footer className="shrink-0 px-safe pb-safe border-t border-zinc-800 bg-zinc-900/50">
-            <div className="flex items-center justify-between p-4">
+          <DialogFooter className="bg-zinc-900/50">
+            <div className="flex items-center justify-between">
               <button
                 className="px-4 py-2 text-sm font-medium text-zinc-400 hover:text-zinc-300"
                 onClick={() => setProfileImageURL(defaultProfileImageURL)}
@@ -206,7 +207,7 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
                 저장
               </button>
             </div>
-          </footer>
+          </DialogFooter>
         </form>
       </Dialog>
     </>

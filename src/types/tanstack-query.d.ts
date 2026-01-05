@@ -13,13 +13,15 @@ declare module '@tanstack/query-core' {
     }
     queryMeta: {
       /**
-       * Prevents the global `QueryCache.onError` handler from showing a toast for matching errors.
+       * Enables the global `QueryCache.onError` handler to show a toast for this query.
+       *
+       * Query toasts are opt-in because queries often run in the background.
        */
-      suppressGlobalErrorToastForError?: boolean
+      enableGlobalErrorToast?: boolean
       /**
-       * Prevents the global `QueryCache.onError` handler from showing a toast for matching HTTP statuses.
+       * Enables the global `QueryCache.onError` handler to show a toast only for matching HTTP statuses.
        */
-      suppressGlobalErrorToastForStatuses?: readonly number[]
+      enableGlobalErrorToastForStatuses?: readonly number[]
     }
   }
 }

@@ -84,7 +84,7 @@ function ErrorState({ error, retry }: { error: Error; retry: () => void }) {
       <RetryGuidance errorMessage={error.message} hasSystemIssues={hasSystemIssues} />
 
       <button
-        className="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors mt-4"
+        className="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition mt-4"
         onClick={retry}
       >
         <Repeat className="size-4" />

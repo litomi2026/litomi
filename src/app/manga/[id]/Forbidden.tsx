@@ -53,7 +53,7 @@ export default function Forbidden() {
           <p className="text-center text-xs text-zinc-600">
             제한 사유에 대한 문의는{' '}
             <Link
-              className="text-zinc-500 hover:text-zinc-400 underline underline-offset-2 transition-colors"
+              className="text-zinc-500 hover:text-zinc-400 underline underline-offset-2 transition"
               href="/doc/terms"
               prefetch={false}
             >
