@@ -7,6 +7,8 @@ import { toast } from 'sonner'
 
 import { useLibrarySelectionStore } from '@/app/(navigation)/library/[id]/librarySelection'
 import Dialog from '@/components/ui/Dialog'
+import DialogBody from '@/components/ui/DialogBody'
+import DialogFooter from '@/components/ui/DialogFooter'
 import DialogHeader from '@/components/ui/DialogHeader'
 import { QueryKeys } from '@/constants/query'
 import useServerAction from '@/hook/useServerAction'
@@ -178,55 +180,51 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId, per
         onClose={handleClose}
         open={showModal}
       >
-        <div className="flex flex-1 flex-col min-h-0">
-          <DialogHeader onClose={handleClose} title={operation === 'move' ? '서재로 이동' : '서재에 복사'} />
+        <DialogHeader onClose={handleClose} title={operation === 'move' ? '서재로 이동' : '서재에 복사'} />
 
-          {/* Content - scrollable */}
-          <div className="flex-1 overflow-y-auto p-4 min-h-0">
-            <p className="text-sm text-zinc-400 mb-4">
-              {selectedCount}개 작품을 {operation === 'move' ? '이동할' : '복사할'} 서재를 선택하세요
-            </p>
-            <div className="space-y-2">
-              {libraries.map((library) => (
-                <button
-                  className="w-full flex items-center gap-3 p-3 rounded-lg border-2
-                      hover:bg-zinc-800 hover:border-zinc-600 transition text-left 
-                      disabled:opacity-50"
-                  disabled={disabled}
-                  key={library.id}
-                  onClick={() => handleLibrarySelect(library.id)}
+        <DialogBody>
+          <p className="text-sm text-zinc-400 mb-4">
+            {selectedCount}개 작품을 {operation === 'move' ? '이동할' : '복사할'} 서재를 선택하세요
+          </p>
+          <div className="space-y-2">
+            {libraries.map((library) => (
+              <button
+                className="w-full flex items-center gap-3 p-3 rounded-lg border-2
+                  hover:bg-zinc-800 hover:border-zinc-600 transition text-left 
+                  disabled:opacity-50"
+                disabled={disabled}
+                key={library.id}
+                onClick={() => handleLibrarySelect(library.id)}
+              >
+                <div
+                  className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 shadow-sm"
+                  style={{ backgroundColor: library.color ?? '#3B82F6' }}
                 >
-                  <div
-                    className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 shadow-sm"
-                    style={{ backgroundColor: library.color ?? '#3B82F6' }}
-                  >
-                    <span className="text-lg">{library.icon || '📚'}</span>
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-medium text-zinc-100 line-clamp-1 break-all">{library.name}</h3>
-                    <p className="text-sm text-zinc-400">{library.itemCount}개 작품</p>
-                  </div>
-                </button>
-              ))}
-            </div>
-            {libraries.filter((lib) => lib.id !== currentLibraryId).length === 0 && (
-              <p className="text-center text-zinc-500 py-8">이동할 수 있는 다른 서재가 없어요</p>
-            )}
+                  <span className="text-lg">{library.icon || '📚'}</span>
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-medium text-zinc-100 line-clamp-1 break-all">{library.name}</h3>
+                  <p className="text-sm text-zinc-400">{library.itemCount}개 작품</p>
+                </div>
+              </button>
+            ))}
           </div>
+          {libraries.filter((lib) => lib.id !== currentLibraryId).length === 0 && (
+            <p className="text-center text-zinc-500 py-8">이동할 수 있는 다른 서재가 없어요</p>
+          )}
+        </DialogBody>
 
-          {/* Footer */}
-          <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-zinc-900 border-t-2 shrink-0">
-            <button
-              className="w-full px-4 py-3 text-zinc-300 font-medium bg-zinc-800 hover:bg-zinc-700
-                disabled:bg-zinc-700 disabled:text-zinc-500 rounded-lg transition"
-              disabled={disabled}
-              onClick={handleClose}
-              type="button"
-            >
-              취소
-            </button>
-          </div>
-        </div>
+        <DialogFooter className="border-t-2 border-zinc-800">
+          <button
+            className="w-full px-4 py-3 text-zinc-300 font-medium bg-zinc-800 hover:bg-zinc-700
+              disabled:bg-zinc-700 disabled:text-zinc-500 rounded-lg transition"
+            disabled={disabled}
+            onClick={handleClose}
+            type="button"
+          >
+            취소
+          </button>
+        </DialogFooter>
       </Dialog>
     </>
   )

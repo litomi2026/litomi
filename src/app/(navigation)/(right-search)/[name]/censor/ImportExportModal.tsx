@@ -7,6 +7,8 @@ import { toast } from 'sonner'
 
 import { CensorshipItem } from '@/backend/api/v1/censorship'
 import Dialog from '@/components/ui/Dialog'
+import DialogBody from '@/components/ui/DialogBody'
+import DialogFooter from '@/components/ui/DialogFooter'
 import DialogHeader from '@/components/ui/DialogHeader'
 import { QueryKeys } from '@/constants/query'
 import useServerAction from '@/hook/useServerAction'
@@ -136,112 +138,102 @@ function ImportExportModal({ open, onClose, censorships }: Readonly<Props>) {
 
   return (
     <Dialog ariaLabel="규칙 가져오기/내보내기" className="sm:max-w-2xl" onClose={onClose} open={open}>
-      <div className="flex flex-1 flex-col min-h-0">
-        <DialogHeader onClose={onClose} title="규칙 가져오기/내보내기" />
+      <DialogHeader onClose={onClose} title="규칙 가져오기/내보내기" />
 
-        {/* Tab Navigation */}
-        <div className="flex border-b-2 border-zinc-800 shrink-0">
-          <button
-            aria-pressed={activeTab === 'export'}
-            className="flex-1 px-4 py-3 font-medium transition border-b-2 border-transparent hover:bg-zinc-800 text-zinc-300 aria-pressed:bg-zinc-800 aria-pressed:border-brand aria-pressed:text-zinc-100"
-            onClick={() => setActiveTab('export')}
-            type="button"
-          >
-            내보내기
-          </button>
-          <button
-            aria-pressed={activeTab === 'import'}
-            className="flex-1 px-4 py-3 font-medium transition border-b-2 border-transparent hover:bg-zinc-800 text-zinc-300 aria-pressed:bg-zinc-800 aria-pressed:border-brand aria-pressed:text-zinc-100"
-            onClick={() => setActiveTab('import')}
-            type="button"
-          >
-            가져오기
-          </button>
-        </div>
-
-        {/* Content - scrollable */}
-        <div className="flex-1 overflow-y-auto min-h-0">
-          <div className="p-4">
-            {activeTab === 'export' ? (
-              <div className="space-y-4">
-                <div>
-                  <p className="text-sm text-zinc-400 mb-4">
-                    현재 {censorships.length}개의 검열 규칙을 파일로 내보낼 수 있어요
-                  </p>
-                  <label className="block text-sm font-medium text-zinc-300 mb-2">파일 형식</label>
-                  <div className="grid sm:grid-cols-2 gap-2">
-                    <button
-                      aria-pressed={exportFormat === 'json'}
-                      className="p-3 rounded-lg border-2 transition aria-pressed:bg-zinc-700 aria-pressed:border-brand aria-pressed:text-zinc-100 aria-pressed:hover:bg-zinc-700 aria-pressed:hover:text-zinc-300"
-                      onClick={() => setExportFormat('json')}
-                      type="button"
-                    >
-                      <div className="font-medium">JSON</div>
-                      <div className="text-xs text-zinc-400">프로그램 간 호환용</div>
-                    </button>
-                    <button
-                      aria-pressed={exportFormat === 'csv'}
-                      className="p-3 rounded-lg border-2 transition aria-pressed:bg-zinc-700 aria-pressed:border-brand aria-pressed:text-zinc-100 aria-pressed:hover:bg-zinc-700 aria-pressed:hover:text-zinc-300"
-                      onClick={() => setExportFormat('csv')}
-                      type="button"
-                    >
-                      <div className="font-medium">CSV</div>
-                      <div className="text-xs text-zinc-400">엑셀 편집용</div>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <div>
-                  <p className="text-sm text-zinc-400 mb-4">JSON 형식의 검열 규칙을 붙여넣어 가져올 수 있어요</p>
-                  <label className="block text-sm font-medium text-zinc-300 mb-2">JSON 데이터</label>
-                  <textarea
-                    className="w-full h-64 px-4 py-2 bg-zinc-800 rounded-lg border-2 border-zinc-700 focus:border-zinc-600 outline-none transition font-mono text-sm text-zinc-100 placeholder-zinc-500"
-                    onChange={(e) => setImportText(e.target.value)}
-                    placeholder={PLACEHOLDER_JSON}
-                    value={importText}
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-zinc-900 border-t-2 border-zinc-800 shrink-0">
-          {activeTab === 'export' ? (
-            <button
-              className="w-full px-4 py-3 text-zinc-900 font-semibold bg-brand hover:bg-brand/90 disabled:bg-zinc-700 disabled:text-zinc-500 rounded-lg transition flex items-center justify-center gap-2"
-              disabled={censorships.length === 0}
-              onClick={handleExport}
-              type="button"
-            >
-              <Download className="size-5" />
-              <span>내보내기</span>
-            </button>
-          ) : (
-            <button
-              className="w-full px-4 py-3 text-zinc-900 font-semibold bg-brand hover:bg-brand/90 disabled:bg-zinc-700 disabled:text-zinc-500 rounded-lg transition flex items-center justify-center gap-2"
-              disabled={!importText.trim() || isPending}
-              onClick={handleImport}
-              type="button"
-            >
-              {isPending ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-zinc-900 border-t-transparent rounded-full animate-spin" />
-                  <span>가져오는 중...</span>
-                </>
-              ) : (
-                <>
-                  <Upload className="size-5" />
-                  <span>가져오기</span>
-                </>
-              )}
-            </button>
-          )}
-        </div>
+      {/* Tab Navigation */}
+      <div className="flex border-b-2 border-zinc-800 shrink-0">
+        <button
+          aria-pressed={activeTab === 'export'}
+          className="flex-1 px-4 py-3 font-medium transition border-b-2 border-transparent hover:bg-zinc-800 text-zinc-300 aria-pressed:bg-zinc-800 aria-pressed:border-brand aria-pressed:text-zinc-100"
+          onClick={() => setActiveTab('export')}
+          type="button"
+        >
+          내보내기
+        </button>
+        <button
+          aria-pressed={activeTab === 'import'}
+          className="flex-1 px-4 py-3 font-medium transition border-b-2 border-transparent hover:bg-zinc-800 text-zinc-300 aria-pressed:bg-zinc-800 aria-pressed:border-brand aria-pressed:text-zinc-100"
+          onClick={() => setActiveTab('import')}
+          type="button"
+        >
+          가져오기
+        </button>
       </div>
+
+      <DialogBody className="space-y-4">
+        {activeTab === 'export' ? (
+          <>
+            <p className="text-sm text-zinc-400 mb-4">
+              현재 {censorships.length}개의 검열 규칙을 파일로 내보낼 수 있어요
+            </p>
+            <label className="block text-sm font-medium text-zinc-300 mb-2">파일 형식</label>
+            <div className="grid sm:grid-cols-2 gap-2">
+              <button
+                aria-pressed={exportFormat === 'json'}
+                className="p-3 rounded-lg border-2 transition aria-pressed:bg-zinc-700 aria-pressed:border-brand aria-pressed:text-zinc-100 aria-pressed:hover:bg-zinc-700 aria-pressed:hover:text-zinc-300"
+                onClick={() => setExportFormat('json')}
+                type="button"
+              >
+                <div className="font-medium">JSON</div>
+                <div className="text-xs text-zinc-400">프로그램 간 호환용</div>
+              </button>
+              <button
+                aria-pressed={exportFormat === 'csv'}
+                className="p-3 rounded-lg border-2 transition aria-pressed:bg-zinc-700 aria-pressed:border-brand aria-pressed:text-zinc-100 aria-pressed:hover:bg-zinc-700 aria-pressed:hover:text-zinc-300"
+                onClick={() => setExportFormat('csv')}
+                type="button"
+              >
+                <div className="font-medium">CSV</div>
+                <div className="text-xs text-zinc-400">엑셀 편집용</div>
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <p className="text-sm text-zinc-400 mb-4">JSON 형식의 검열 규칙을 붙여넣어 가져올 수 있어요</p>
+            <label className="block text-sm font-medium text-zinc-300 mb-2">JSON 데이터</label>
+            <textarea
+              className="w-full h-64 px-4 py-2 bg-zinc-800 rounded-lg border-2 border-zinc-700 focus:border-zinc-600 outline-none transition font-mono text-sm text-zinc-100 placeholder-zinc-500"
+              onChange={(e) => setImportText(e.target.value)}
+              placeholder={PLACEHOLDER_JSON}
+              value={importText}
+            />
+          </>
+        )}
+      </DialogBody>
+
+      <DialogFooter className="border-t-2 border-zinc-800">
+        {activeTab === 'export' ? (
+          <button
+            className="w-full px-4 py-3 text-zinc-900 font-semibold bg-brand hover:bg-brand/90 disabled:bg-zinc-700 disabled:text-zinc-500 rounded-lg transition flex items-center justify-center gap-2"
+            disabled={censorships.length === 0}
+            onClick={handleExport}
+            type="button"
+          >
+            <Download className="size-5" />
+            <span>내보내기</span>
+          </button>
+        ) : (
+          <button
+            className="w-full px-4 py-3 text-zinc-900 font-semibold bg-brand hover:bg-brand/90 disabled:bg-zinc-700 disabled:text-zinc-500 rounded-lg transition flex items-center justify-center gap-2"
+            disabled={!importText.trim() || isPending}
+            onClick={handleImport}
+            type="button"
+          >
+            {isPending ? (
+              <>
+                <div className="w-5 h-5 border-2 border-zinc-900 border-t-transparent rounded-full animate-spin" />
+                <span>가져오는 중...</span>
+              </>
+            ) : (
+              <>
+                <Upload className="size-5" />
+                <span>가져오기</span>
+              </>
+            )}
+          </button>
+        )}
+      </DialogFooter>
     </Dialog>
   )
 }

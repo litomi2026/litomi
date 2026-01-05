@@ -1,10 +1,13 @@
 'use client'
 
-import { Loader2, Plus, X } from 'lucide-react'
+import { Loader2, Plus } from 'lucide-react'
 import { useEffect, useId, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-import Modal from '@/components/ui/Modal'
+import Dialog from '@/components/ui/Dialog'
+import DialogBody from '@/components/ui/DialogBody'
+import DialogFooter from '@/components/ui/DialogFooter'
+import DialogHeader from '@/components/ui/DialogHeader'
 import useServerAction, { getFieldError } from '@/hook/useServerAction'
 
 import type { NotificationCriteria } from './types'
@@ -114,32 +117,21 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
   }, [editingCriteria, isOpen])
 
   return (
-    <Modal
-      className="w-full h-full sm:w-lg sm:h-auto sm:max-w-[calc(100vw-2rem)] sm:max-h-[calc(100vh-8rem)]"
+    <Dialog
+      ariaLabel={editingCriteria ? '알림 조건 수정' : '새 알림 만들기'}
+      className="sm:max-w-lg"
       onClose={onClose}
       open={isOpen}
     >
       <form
         action={dispatchAction}
-        className="flex flex-col h-full sm:max-h-[calc(100vh-8rem)] bg-zinc-900 overflow-hidden sm:border-2 sm:border-zinc-700 sm:rounded-xl"
+        className="flex flex-1 flex-col min-h-0"
         key={editingCriteria?.id || 'new'}
         ref={formRef}
       >
-        <div className="flex items-center justify-between p-4 border-b">
-          <h3 className="text-xl font-bold text-zinc-100 sm:text-lg">
-            {editingCriteria ? '알림 조건 수정' : '새 알림 만들기'}
-          </h3>
-          <button
-            className="p-2 -mr-2 rounded-lg hover:bg-zinc-800 transition sm:p-1 sm:mr-0"
-            onClick={onClose}
-            type="button"
-          >
-            <X className="size-6 shrink-0 sm:size-5" />
-          </button>
-        </div>
+        <DialogHeader onClose={onClose} title={editingCriteria ? '알림 조건 수정' : '새 알림 만들기'} />
 
-        {/* Scrollable content area */}
-        <div className="flex-1 flex flex-col p-4 gap-4 overflow-y-auto">
+        <DialogBody className="flex flex-col gap-4">
           <input name="conditionCount" type="hidden" value={conditionCount} />
           <p className="text-sm text-zinc-500 -mt-2">관심있는 작품을 놓치지 않도록 알림 조건을 설정하세요</p>
           <div>
@@ -199,30 +191,29 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
               </p>
             )}
           </div>
-        </div>
-        <div className="p-4 bg-zinc-900 border-t border-zinc-800">
-          <div className="flex gap-2 pb-safe px-safe">
-            <button
-              className="flex-1 px-4 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-medium rounded-lg
-              transition focus:outline-none focus:ring-2 focus:ring-zinc-400 disabled:opacity-50"
-              disabled={isPending}
-              onClick={onClose}
-              type="button"
-            >
-              취소
-            </button>
-            <button
-              className="flex items-center justify-center flex-1 px-4 py-2.5 bg-brand hover:bg-brand/90 
-              text-background font-medium rounded-lg transition focus:outline-none focus:ring-2 focus:ring-brand/50
-              disabled:opacity-50"
-              disabled={isPending}
-              type="submit"
-            >
-              {isPending ? <Loader2 className="size-5 shrink-0 animate-spin" /> : editingCriteria ? '저장' : '만들기'}
-            </button>
-          </div>
-        </div>
+        </DialogBody>
+
+        <DialogFooter className="flex gap-2">
+          <button
+            className="flex-1 px-4 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-medium rounded-lg
+                transition focus:outline-none focus:ring-2 focus:ring-zinc-400 disabled:opacity-50"
+            disabled={isPending}
+            onClick={onClose}
+            type="button"
+          >
+            취소
+          </button>
+          <button
+            className="flex items-center justify-center flex-1 px-4 py-2.5 bg-brand hover:bg-brand/90 
+                text-background font-medium rounded-lg transition focus:outline-none focus:ring-2 focus:ring-brand/50
+                disabled:opacity-50"
+            disabled={isPending}
+            type="submit"
+          >
+            {isPending ? <Loader2 className="size-5 shrink-0 animate-spin" /> : editingCriteria ? '저장' : '만들기'}
+          </button>
+        </DialogFooter>
       </form>
-    </Modal>
+    </Dialog>
   )
 }

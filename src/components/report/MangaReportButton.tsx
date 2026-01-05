@@ -10,6 +10,7 @@ import { twMerge } from 'tailwind-merge'
 import type { POSTV1MangaIdReportBody, POSTV1MangaIdReportResponse } from '@/backend/api/v1/manga/[id]/report/POST'
 
 import Dialog from '@/components/ui/Dialog'
+import DialogBody from '@/components/ui/DialogBody'
 import DialogHeader from '@/components/ui/DialogHeader'
 import { env } from '@/env/client'
 import { showLoginRequiredToast } from '@/lib/toast'
@@ -95,38 +96,36 @@ export default function MangaReportButton({ mangaId, variant = 'icon', className
       </button>
 
       <Dialog ariaLabel="작품 신고" onClose={() => setOpen(false)} open={open}>
-        <div className="flex flex-1 flex-col min-h-0">
-          <DialogHeader onClose={() => setOpen(false)} title="작품 신고" />
-          <div className="flex-1 min-h-0 overflow-y-auto p-2">
-            <div className="space-y-1">
-              <ReasonButton
-                disabled={reportMutation.isPending}
-                label="실존 인물 딥페이크 같아요"
-                onClick={() => reportMutation.mutate({ reason: MangaReportReason.DEEPFAKE })}
-              />
-              <ReasonButton
-                disabled={reportMutation.isPending}
-                label="미성년자로 보이는 실존 인물이 나와요"
-                onClick={() => reportMutation.mutate({ reason: MangaReportReason.REAL_PERSON_MINOR })}
-              />
-            </div>
-            <div className="grid gap-1 p-3 py-2 text-xs text-zinc-500">
-              <p>
-                <Link className="underline underline-offset-2" href={`/@${me?.name}/settings#adult`} prefetch={false}>
-                  비바톤 익명 인증
-                </Link>
-                을 완료한 사용자만 신고할 수 있어요
-              </p>
-              <p>
-                저작권/DMCA 신고는{' '}
-                <Link className="underline underline-offset-2" href="/doc/dmca" prefetch={false}>
-                  여기에서
-                </Link>{' '}
-                할 수 있어요
-              </p>
-            </div>
+        <DialogHeader onClose={() => setOpen(false)} title="작품 신고" />
+        <DialogBody className="p-2 space-y-2">
+          <div className="grid gap-1">
+            <ReasonButton
+              disabled={reportMutation.isPending}
+              label="실존 인물 딥페이크 같아요"
+              onClick={() => reportMutation.mutate({ reason: MangaReportReason.DEEPFAKE })}
+            />
+            <ReasonButton
+              disabled={reportMutation.isPending}
+              label="미성년자로 보이는 실존 인물이 나와요"
+              onClick={() => reportMutation.mutate({ reason: MangaReportReason.REAL_PERSON_MINOR })}
+            />
           </div>
-        </div>
+          <div className="grid gap-1 p-3 py-2 text-xs text-zinc-500">
+            <p>
+              <Link className="underline underline-offset-2" href={`/@${me?.name}/settings#adult`} prefetch={false}>
+                비바톤 익명 인증
+              </Link>
+              을 완료한 사용자만 신고할 수 있어요
+            </p>
+            <p>
+              저작권/DMCA 신고는{' '}
+              <Link className="underline underline-offset-2" href="/doc/dmca" prefetch={false}>
+                여기에서
+              </Link>{' '}
+              할 수 있어요
+            </p>
+          </div>
+        </DialogBody>
       </Dialog>
     </>
   )
