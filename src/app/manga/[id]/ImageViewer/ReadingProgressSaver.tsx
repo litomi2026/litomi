@@ -4,13 +4,16 @@ import ms from 'ms'
 import { useCallback, useEffect, useRef } from 'react'
 import { toast } from 'sonner'
 
+import type { POSTV1MangaIdHistoryBody } from '@/backend/api/v1/manga/[id]/history/POST'
+
 import { SessionStorageKeyMap } from '@/constants/storage'
+import { env } from '@/env/client'
 import { useLatestRef } from '@/hook/useLatestRef'
-import useServerAction from '@/hook/useServerAction'
 import useMeQuery from '@/query/useMeQuery'
 
-import { saveReadingProgress } from '../actions'
 import { useImageIndexStore } from './store/imageIndex'
+
+const { NEXT_PUBLIC_BACKEND_URL } = env
 
 type Props = {
   mangaId: number
@@ -20,16 +23,11 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
   const { data: me, isLoading } = useMeQuery()
   const imageIndex = useImageIndexStore((state) => state.imageIndex)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const isRequestPendingRef = useRef(false)
   const pendingPageRef = useRef<number | null>(null)
   const lastSyncedAtRef = useRef<number | null>(null)
   const lastSyncedPageRef = useRef<number | null>(null)
   const hasStorageErrorToastShownRef = useRef(false)
-
-  const [_, dispatchAction, isSaving] = useServerAction({
-    action: saveReadingProgress,
-    shouldSetResponse: false,
-    silentNetworkError: true,
-  })
 
   const writeSessionStorage = useCallback(
     (page: number) => {
@@ -52,30 +50,49 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
     }
   }, [])
 
-  const sendNowIfPossible = useCallback(() => {
-    if (!me || isLoading) {
-      return
-    }
+  const sendNowIfPossible = useCallback(
+    (options?: { keepalive?: boolean }) => {
+      if (!me || isLoading || isRequestPendingRef.current) {
+        return
+      }
 
-    if (isSaving) {
-      return
-    }
+      const page = pendingPageRef.current
+      if (typeof page !== 'number') {
+        return
+      }
 
-    const page = pendingPageRef.current
-    if (typeof page !== 'number') {
-      return
-    }
+      if (lastSyncedPageRef.current === page) {
+        clearTimer()
+        return
+      }
 
-    if (lastSyncedPageRef.current === page) {
+      lastSyncedAtRef.current = Date.now()
+      lastSyncedPageRef.current = page
       clearTimer()
-      return
-    }
 
-    lastSyncedAtRef.current = Date.now()
-    lastSyncedPageRef.current = page
-    dispatchAction(mangaId, page)
-    clearTimer()
-  }, [me, isLoading, isSaving, dispatchAction, mangaId, clearTimer])
+      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/manga/${mangaId}/history`
+      const keepalive = options?.keepalive ?? false
+
+      const body: POSTV1MangaIdHistoryBody = {
+        lastPage: page,
+      }
+
+      isRequestPendingRef.current = true
+
+      fetch(url, {
+        method: 'POST',
+        credentials: 'include',
+        keepalive,
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+        .catch(() => {})
+        .finally(() => {
+          isRequestPendingRef.current = false
+        })
+    },
+    [me, isLoading, mangaId, clearTimer],
+  )
 
   const scheduleSend = useCallback(() => {
     if (!me || isLoading) {
@@ -129,7 +146,7 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
 
   const flush = useCallback(() => {
     clearTimer()
-    sendNowIfPossible()
+    sendNowIfPossible({ keepalive: true })
   }, [clearTimer, sendNowIfPossible])
 
   const flushRef = useLatestRef(flush)
@@ -148,13 +165,6 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
       clearTimer()
     }
   }, [flush, clearTimer])
-
-  // NOTE: 서버 저장이 끝났을 때, 누적된 최신 페이지가 있으면 다음 저장을 스케줄해요
-  useEffect(() => {
-    if (!isSaving) {
-      scheduleSend()
-    }
-  }, [isSaving, scheduleSend])
 
   // NOTE: 탭/페이지가 숨김·종료되는 시점에 작품 감상 상태를 flush해요
   useEffect(() => {

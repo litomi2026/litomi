@@ -15,53 +15,6 @@ import { flattenZodFieldErrors } from '@/utils/form-error'
 
 type SessionDBTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0]
 
-const saveReadingProgressSchema = z.object({
-  mangaId: z.number().int().positive(),
-  page: z.number().int().positive(),
-})
-
-export async function saveReadingProgress(mangaId: number, page: number) {
-  const userId = await validateUserIdFromCookie()
-
-  if (!userId) {
-    return unauthorized('로그인 정보가 없거나 만료됐어요')
-  }
-
-  const validation = saveReadingProgressSchema.safeParse({ mangaId, page })
-
-  if (!validation.success) {
-    return badRequest(flattenZodFieldErrors(validation.error))
-  }
-
-  try {
-    await db.transaction(async (tx) => {
-      await tx
-        .insert(readingHistoryTable)
-        .values({
-          userId,
-          mangaId,
-          lastPage: page,
-          updatedAt: new Date(),
-        })
-        .onConflictDoUpdate({
-          target: [readingHistoryTable.userId, readingHistoryTable.mangaId],
-          set: {
-            lastPage: page,
-            updatedAt: new Date(),
-          },
-        })
-
-      const userHistoryLimit = await getUserHistoryLimitInTx(tx, userId)
-      await enforceHistoryLimit(tx, userId, userHistoryLimit)
-    })
-
-    return ok(true)
-  } catch (error) {
-    captureException(error)
-    return internalServerError('읽기 기록 저장 중 오류가 발생했어요')
-  }
-}
-
 async function enforceHistoryLimit(tx: SessionDBTransaction, userId: number, limit: number) {
   await tx.execute(sql`
     DELETE FROM ${readingHistoryTable}
