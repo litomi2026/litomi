@@ -5,6 +5,8 @@ import { useEffect, useId, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import Dialog from '@/components/ui/Dialog'
+import DialogBody from '@/components/ui/DialogBody'
+import DialogFooter from '@/components/ui/DialogFooter'
 import DialogHeader from '@/components/ui/DialogHeader'
 import Toggle from '@/components/ui/Toggle'
 
@@ -108,7 +110,7 @@ export default function SlideshowButton({ className = '', maxImageIndex, offset,
       >
         <form className="flex flex-1 flex-col min-h-0" onSubmit={handleSubmit}>
           <DialogHeader onClose={() => setIsOpened(false)} title="슬라이드쇼" />
-          <div className="flex-1 min-h-0 overflow-y-auto p-4">
+          <DialogBody>
             <div className="grid grid-cols-[auto_1fr] items-center gap-4 whitespace-nowrap [&_h4]:font-semibold">
               <label htmlFor={intervalInputId}>주기</label>
               <div className="flex items-center gap-2">
@@ -136,17 +138,15 @@ export default function SlideshowButton({ className = '', maxImageIndex, offset,
                 name="repeat"
               />
             </div>
-          </div>
-          <div className="pb-safe">
-            <div className="grid gap-2 p-4 border-t border-zinc-800 bg-zinc-900 text-sm [&_button]:hover:bg-zinc-800 [&_button]:active:bg-zinc-900 [&_button]:rounded-full [&_button]:transition">
-              <button className="border-2 p-2 font-bold text-foreground transition border-zinc-700" type="submit">
-                시작
-              </button>
-              <button className="p-2 text-zinc-500" onClick={() => setIsOpened(false)} type="button">
-                취소
-              </button>
-            </div>
-          </div>
+          </DialogBody>
+          <DialogFooter className="grid gap-2 text-sm [&_button]:hover:bg-zinc-800 [&_button]:active:bg-zinc-900 [&_button]:rounded-full [&_button]:transition">
+            <button className="border-2 p-2 font-bold text-foreground transition border-zinc-700" type="submit">
+              시작
+            </button>
+            <button className="p-2 text-zinc-500" onClick={() => setIsOpened(false)} type="button">
+              취소
+            </button>
+          </DialogFooter>
         </form>
       </Dialog>
     </>

@@ -8,12 +8,14 @@ import { toast } from 'sonner'
 import { create } from 'zustand'
 
 import { bulkCopyToLibrary } from '@/app/(navigation)/library/action-library-item'
+import Dialog from '@/components/ui/Dialog'
+import DialogBody from '@/components/ui/DialogBody'
+import DialogFooter from '@/components/ui/DialogFooter'
+import DialogHeader from '@/components/ui/DialogHeader'
 import { MAX_ITEMS_PER_LIBRARY } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import useDebouncedValue from '@/hook/useDebouncedValue'
 import useServerAction from '@/hook/useServerAction'
-
-import Modal from '../ui/Modal'
 
 type ImportMangaModalStore = {
   libraryId: number | null
@@ -83,27 +85,11 @@ export default function MangaImportModal() {
   }
 
   return (
-    <Modal
-      className="fixed inset-0 z-50 flex flex-col overflow-hidden bg-zinc-900 
-        sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2
-        sm:w-full sm:max-w-prose sm:max-h-[calc(100dvh-4rem)] sm:rounded-xl sm:border-2"
-      onClose={handleClose}
-      open={Boolean(libraryId)}
-    >
+    <Dialog ariaLabel="작품 가져오기" onClose={handleClose} open={Boolean(libraryId)}>
       <form className="flex flex-col flex-1 min-h-0" onSubmit={handleImport}>
-        <div className="flex items-center justify-between p-4 bg-zinc-900 border-b-2 border-zinc-800 shrink-0">
-          <h2 className="text-xl font-bold text-zinc-100">작품 가져오기</h2>
-          <button
-            className="p-2 -mr-2 rounded-lg hover:bg-zinc-800 transition sm:p-1.5 sm:-mr-1.5"
-            disabled={isImporting}
-            onClick={handleClose}
-            title="닫기"
-            type="button"
-          >
-            <X className="size-6 shrink-0 sm:size-5" />
-          </button>
-        </div>
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <DialogHeader onClose={handleClose} title="작품 가져오기" />
+
+        <DialogBody className="space-y-4">
           <label className="block text-sm font-medium text-zinc-300 mb-2">
             작품 ID 입력
             <span className="ml-2 text-xs text-zinc-500">
@@ -112,7 +98,7 @@ export default function MangaImportModal() {
           </label>
           <textarea
             className="w-full min-h-32 max-h-96 px-3 py-2 bg-zinc-800 border-2 border-zinc-700 rounded-lg transition font-mono
-            text-zinc-100 placeholder-zinc-500 focus:border-brand focus:outline-none"
+              text-zinc-100 placeholder-zinc-500 focus:border-brand focus:outline-none"
             disabled={isImporting}
             onChange={(e) => setInputText(e.target.value)}
             onKeyDown={(e) => {
@@ -125,8 +111,9 @@ export default function MangaImportModal() {
             placeholder={placeholder}
             value={inputText}
           />
-        </div>
-        <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-zinc-900 border-t-2 border-zinc-800 shrink-0">
+        </DialogBody>
+
+        <DialogFooter className="border-t-2 border-zinc-800">
           <button
             className="flex items-center justify-center gap-2 w-full px-4 py-3 text-background font-medium 
               bg-brand rounded-lg transition hover:bg-brand/90
@@ -146,9 +133,9 @@ export default function MangaImportModal() {
               </>
             )}
           </button>
-        </div>
+        </DialogFooter>
       </form>
-    </Modal>
+    </Dialog>
   )
 }
 
