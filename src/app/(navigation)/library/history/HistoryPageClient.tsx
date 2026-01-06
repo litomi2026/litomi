@@ -19,8 +19,9 @@ type Props = {
 }
 
 export default function HistoryPageClient({ initialData }: Props) {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError } =
-    useReadingHistoryInfiniteQuery(initialData)
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError } = useReadingHistoryInfiniteQuery(
+    { initialData },
+  )
 
   const historyItems = data.pages.flatMap((page) => page.items)
   const { isSelectionMode } = useLibrarySelectionStore()

@@ -7,6 +7,8 @@ import { GETV1MeResponse } from '@/backend/api/v1/me'
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import amplitude from '@/lib/amplitude/browser'
+import { showAdultVerificationRequiredToast } from '@/lib/toast'
+import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL, NEXT_PUBLIC_GA_ID } = env
@@ -28,8 +30,12 @@ export default function useMeQuery() {
     gcTime: ms('1 hour'),
   })
 
-  const userId = result.data?.id
+  const me = result.data
+  const userId = me?.id
+  const username = me?.name
+  const shouldShowToast = !canAccessAdultRestrictedAPIs(me)
 
+  // NOTE: 로그인 사용자의 경우 유저 아이디를 설정하고 GA 이벤트를 전송합니다.
   useEffect(() => {
     if (userId) {
       amplitude.setUserId(userId)
@@ -38,6 +44,13 @@ export default function useMeQuery() {
       }
     }
   }, [userId])
+
+  // NOTE: 성인인증이 필요한 경우 토스트를 표시합니다.
+  useEffect(() => {
+    if (shouldShowToast) {
+      showAdultVerificationRequiredToast({ username })
+    }
+  }, [username, shouldShowToast])
 
   return result
 }

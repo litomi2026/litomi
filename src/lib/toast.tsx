@@ -24,7 +24,7 @@ type AdultVerificationToastOptions = {
 }
 
 export function showAdultVerificationRequiredToast(options: AdultVerificationToastOptions = {}) {
-  const settingsHref = options.username ? `/@${options.username}/settings#adult` : '/@/settings#adult'
+  const settingsHref = `/@${options.username ?? ''}/settings#adult`
 
   toast.warning(
     <div className="flex flex-wrap gap-x-2 gap-y-1 items-center">

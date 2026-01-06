@@ -1,12 +1,15 @@
 'use client'
 
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { ChevronDown } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { FormEvent, useRef } from 'react'
 import { toast } from 'sonner'
 
+import type { GETV1MeResponse } from '@/backend/api/v1/me'
+
 import { POSTV1BBatonUnlinkResponse } from '@/backend/api/v1/bbaton/unlink'
+import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
 
@@ -20,6 +23,7 @@ type Props = {
 
 export default function BBatonUnlinkSection({ isTwoFactorEnabled }: Props) {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const unlinkFormRef = useRef<HTMLFormElement | null>(null)
 
   const unlinkMutation = useMutation<POSTV1BBatonUnlinkResponse, unknown, { password: string; token?: string }>({
@@ -36,6 +40,20 @@ export default function BBatonUnlinkSection({ isTwoFactorEnabled }: Props) {
       return data
     },
     onSuccess: () => {
+      queryClient.setQueryData<GETV1MeResponse | null>(QueryKeys.me, (previous) => {
+        if (!previous) {
+          return previous
+        }
+
+        return {
+          ...previous,
+          adultVerification: {
+            ...previous.adultVerification,
+            status: 'unverified',
+          },
+        }
+      })
+
       toast.success('연동이 해제됐어요')
       unlinkFormRef.current?.reset()
       router.refresh()

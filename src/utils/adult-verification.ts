@@ -12,13 +12,3 @@ export function canAccessAdultRestrictedAPIs(me: GETV1MeResponse | null | undefi
 
   return me.adultVerification?.status === 'adult'
 }
-
-export function isAdultVerificationBlocked(me: GETV1MeResponse | null | undefined): boolean {
-  if (!me) {
-    return false
-  }
-
-  return me.adultVerification?.required === true && me.adultVerification?.status !== 'adult'
-}
-
-
