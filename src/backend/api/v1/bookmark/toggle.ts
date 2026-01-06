@@ -75,7 +75,8 @@ route.post('/', requireAuth, zProblemValidator('json', toggleSchema), async (c) 
     if (message === 'BOOKMARK_LIMIT_REACHED') {
       return problemResponse(c, {
         status: 403,
-        detail: '북마크 저장 한도에 도달했어요. 리보로 확장할 수 있어요.',
+        code: 'libo-expansion-required',
+        detail: '북마크 저장 한도에 도달했어요',
       })
     }
 

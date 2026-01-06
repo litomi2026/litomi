@@ -29,6 +29,20 @@ export function isAdultVerificationRequiredProblem(typeUrl: string): boolean {
   }
 }
 
+export function isLiboExpansionRequiredProblem(typeUrl: string): boolean {
+  const suffix = '/problems/libo-expansion-required'
+
+  if (typeUrl.endsWith(suffix)) {
+    return true
+  }
+
+  try {
+    return new URL(typeUrl).pathname === suffix
+  } catch {
+    return false
+  }
+}
+
 export function shouldRetryError(error: unknown, failureCount: number, maxRetries = 3): boolean {
   if (failureCount >= maxRetries) {
     return false
@@ -84,6 +98,9 @@ const queryClient = new QueryClient({
         } else if (error.status === 403 && isAdultVerificationRequiredProblem(error.type)) {
           showAdultVerificationRequiredToast({ username: getCachedUsername(queryClient) })
           return
+        } else if (error.status === 403 && isLiboExpansionRequiredProblem(error.type)) {
+          showLiboExpansionRequiredToast(error.message)
+          return
         } else if (error.status >= 400) {
           toast.warning(error.message || '요청을 처리할 수 없어요')
         }
@@ -105,6 +122,11 @@ const queryClient = new QueryClient({
 
         if (error.status === 403 && isAdultVerificationRequiredProblem(error.type)) {
           showAdultVerificationRequiredToast({ username: getCachedUsername(queryClient) })
+          return
+        }
+
+        if (error.status === 403 && isLiboExpansionRequiredProblem(error.type)) {
+          showLiboExpansionRequiredToast(error.message)
           return
         }
 

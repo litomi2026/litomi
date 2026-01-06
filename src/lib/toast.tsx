@@ -43,3 +43,22 @@ export function showAdultVerificationRequiredToast(options: AdultVerificationToa
     { id: ADULT_VERIFICATION_REQUIRED_TOAST_ID },
   )
 }
+
+export const LIBO_EXPANSION_REQUIRED_TOAST_ID = 'libo-expansion-required'
+
+export function showLiboExpansionRequiredToast(message?: string) {
+  toast.warning(
+    <div className="flex flex-wrap gap-x-2 gap-y-1 items-center">
+      <div>{message ?? '저장 한도에 도달했어요'}</div>
+      <Link
+        className="font-bold text-xs underline underline-offset-2"
+        href="/libo/shop"
+        onClick={() => toast.dismiss(LIBO_EXPANSION_REQUIRED_TOAST_ID)}
+        prefetch={false}
+      >
+        리보로 확장하기
+      </Link>
+    </div>,
+    { id: LIBO_EXPANSION_REQUIRED_TOAST_ID },
+  )
+}
