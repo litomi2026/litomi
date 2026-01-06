@@ -187,11 +187,6 @@ function MeClientSync() {
   const { data: me } = useMeQuery()
   const userId = me?.id
   const username = me?.name
-
-  // NOTE: 접근 불가(로그인 X 포함) 상태가 확정되면 requireAdult 캐시는 항상 제거해요.
-  // - me === undefined: 아직 모르는 상태(로딩)라서 유지
-  // - me === null: 비로그인 -> 접근 불가 -> 제거
-  // - me 객체 + KR 미인증/성인아님 -> 접근 불가 -> 제거
   const shouldPurgeAdultQueries = me !== undefined && !canAccessAdultRestrictedAPIs(me)
 
   const shouldShowAdultVerificationToast =
@@ -207,7 +202,7 @@ function MeClientSync() {
     }
   }, [userId])
 
-  // NOTE: 성인인증이 필요한 경우(미인증) 토스트를 표시해요.
+  // NOTE: 성인인증이 필요한 경우 토스트를 표시해요.
   useEffect(() => {
     if (shouldShowAdultVerificationToast && username) {
       showAdultVerificationRequiredToast({ username })
