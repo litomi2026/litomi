@@ -88,7 +88,6 @@ const queryClient = new QueryClient({
       if (error instanceof ProblemDetailsError) {
         if (error.status === 401) {
           handleUnauthorizedError()
-          return
         }
 
         const isToastEnabled =
