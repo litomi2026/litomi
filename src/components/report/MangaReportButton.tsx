@@ -13,8 +13,9 @@ import Dialog from '@/components/ui/Dialog'
 import DialogBody from '@/components/ui/DialogBody'
 import DialogHeader from '@/components/ui/DialogHeader'
 import { env } from '@/env/client'
-import { showLoginRequiredToast } from '@/lib/toast'
+import { showAdultVerificationRequiredToast, showLoginRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
+import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
@@ -42,6 +43,7 @@ type ReasonButtonProps = {
 export default function MangaReportButton({ mangaId, variant = 'icon', className = '' }: Props) {
   const { data: me } = useMeQuery()
   const [open, setOpen] = useState(false)
+  const adultVerification = me?.adultVerification
 
   const reportMutation = useMutation<POSTV1MangaIdReportResponse, unknown, POSTV1MangaIdReportBody>({
     mutationFn: async (body) => {
@@ -71,6 +73,11 @@ export default function MangaReportButton({ mangaId, variant = 'icon', className
 
     if (!me) {
       showLoginRequiredToast()
+      return
+    }
+
+    if (!canAccessAdultRestrictedAPIs(me)) {
+      showAdultVerificationRequiredToast({ username: me.name })
       return
     }
 
@@ -111,12 +118,14 @@ export default function MangaReportButton({ mangaId, variant = 'icon', className
             />
           </div>
           <div className="grid gap-1 p-3 py-2 text-xs text-zinc-500">
-            <p>
-              <Link className="underline underline-offset-2" href={`/@${me?.name}/settings#adult`} prefetch={false}>
-                비바톤 익명 인증
-              </Link>
-              을 완료한 사용자만 신고할 수 있어요
-            </p>
+            {adultVerification?.required === true && (
+              <p>
+                <Link className="underline underline-offset-2" href={`/@${me?.name}/settings#adult`} prefetch={false}>
+                  비바톤 익명 인증
+                </Link>
+                을 완료한 사용자만 신고할 수 있어요
+              </p>
+            )}
             <p>
               저작권/DMCA 신고는{' '}
               <Link className="underline underline-offset-2" href="/doc/dmca" prefetch={false}>

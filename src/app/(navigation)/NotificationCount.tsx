@@ -6,6 +6,7 @@ import { GETUnreadCountResponse } from '@/backend/api/v1/notification/unread-cou
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import useMeQuery from '@/query/useMeQuery'
+import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
@@ -35,10 +36,12 @@ async function fetchUnreadCount() {
 
 function useNotificationUnreadCountQuery() {
   const { data: me } = useMeQuery()
+  const canAccess = canAccessAdultRestrictedAPIs(me)
 
   return useQuery<GETUnreadCountResponse>({
     queryKey: QueryKeys.notificationUnreadCount,
     queryFn: fetchUnreadCount,
-    enabled: Boolean(me),
+    enabled: canAccess,
+    meta: { requiresAdult: true },
   })
 }

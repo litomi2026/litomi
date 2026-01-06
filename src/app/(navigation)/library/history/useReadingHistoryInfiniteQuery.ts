@@ -7,6 +7,11 @@ import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
 
+type Options = {
+  initialData?: GETV1ReadingHistoryResponse
+  enabled?: boolean
+}
+
 export async function fetchReadingHistoryPaginated(cursor: string | null) {
   const params = new URLSearchParams()
 
@@ -19,7 +24,7 @@ export async function fetchReadingHistoryPaginated(cursor: string | null) {
   return data
 }
 
-export default function useReadingHistoryInfiniteQuery(initialData?: GETV1ReadingHistoryResponse) {
+export default function useReadingHistoryInfiniteQuery({ initialData, enabled = true }: Options = {}) {
   return useInfiniteQuery<GETV1ReadingHistoryResponse, Error>({
     queryKey: QueryKeys.infiniteReadingHistory,
     queryFn: ({ pageParam }) => fetchReadingHistoryPaginated(pageParam as string | null),
@@ -29,5 +34,7 @@ export default function useReadingHistoryInfiniteQuery(initialData?: GETV1Readin
       pageParams: [null],
     },
     initialPageParam: null,
+    enabled,
+    meta: { requiresAdult: true },
   })
 }

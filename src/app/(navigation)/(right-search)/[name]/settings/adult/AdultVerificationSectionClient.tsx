@@ -1,6 +1,7 @@
 'use client'
 
 import { useMutation } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
@@ -8,6 +9,7 @@ import { twMerge } from 'tailwind-merge'
 
 import { POSTV1BBatonAttemptResponse } from '@/backend/api/v1/bbaton/attempt'
 import { BBATON_POPUP_WINDOW_NAME } from '@/constants/bbaton'
+import { QueryKeys } from '@/constants/query'
 import { LocalStorageKey } from '@/constants/storage'
 import { env } from '@/env/client'
 import BBatonButton from '@/svg/BBatonButton'
@@ -33,6 +35,7 @@ export default function AdultVerificationSectionClient({ initialVerification, is
   const [isVerifyingUI, setIsVerifyingUI] = useState(false)
 
   const router = useRouter()
+  const queryClient = useQueryClient()
   const popupRef = useRef<Window | null>(null)
   const isVerifyingRef = useRef(false)
   const focusHandlerRef = useRef<(() => void) | null>(null)
@@ -123,6 +126,7 @@ export default function AdultVerificationSectionClient({ initialVerification, is
   }
 
   function refreshStatus() {
+    queryClient.invalidateQueries({ queryKey: QueryKeys.me, exact: true })
     router.refresh()
   }
 
@@ -154,6 +158,7 @@ export default function AdultVerificationSectionClient({ initialVerification, is
       }
 
       popupRef.current = null
+      queryClient.invalidateQueries({ queryKey: QueryKeys.me, exact: true })
       router.refresh()
     }
 

@@ -34,38 +34,42 @@ mock.module('@/database/supabase/drizzle', () => ({
   db: {
     select: () => ({
       from: () => ({
-        where: () => {
-          if (shouldThrowDatabaseError) {
-            return Promise.reject(new Error('Database connection failed'))
-          }
+        leftJoin: () => ({
+          where: () => {
+            if (shouldThrowDatabaseError) {
+              return Promise.reject(new Error('Database connection failed'))
+            }
 
-          if (currentUserId === 1) {
-            return Promise.resolve([
-              {
-                id: 1,
-                loginId: 'testuser1',
-                name: 'Test User 1',
-                nickname: 'Tester1',
-                imageURL: 'https://example.com/avatar1.jpg',
-              },
-            ])
-          }
-          if (currentUserId === 2) {
-            return Promise.resolve([
-              {
-                id: 2,
-                loginId: 'testuser2',
-                name: 'Test User 2',
-                nickname: 'Tester2',
-                imageURL: null,
-              },
-            ])
-          }
-          if (currentUserId === 999) {
+            if (currentUserId === 1) {
+              return Promise.resolve([
+                {
+                  id: 1,
+                  loginId: 'testuser1',
+                  name: 'Test User 1',
+                  nickname: 'Tester1',
+                  imageURL: 'https://example.com/avatar1.jpg',
+                  adultFlag: null,
+                },
+              ])
+            }
+            if (currentUserId === 2) {
+              return Promise.resolve([
+                {
+                  id: 2,
+                  loginId: 'testuser2',
+                  name: 'Test User 2',
+                  nickname: 'Tester2',
+                  imageURL: null,
+                  adultFlag: null,
+                },
+              ])
+            }
+            if (currentUserId === 999) {
+              return Promise.resolve([])
+            }
             return Promise.resolve([])
-          }
-          return Promise.resolve([])
-        },
+          },
+        }),
       }),
     }),
   },
@@ -98,6 +102,10 @@ describe('GET /api/v1/me', () => {
         name: 'Test User 1',
         nickname: 'Tester1',
         imageURL: 'https://example.com/avatar1.jpg',
+        adultVerification: {
+          required: true,
+          status: 'unverified',
+        },
       })
       expect(deletedCookies).toEqual([])
     })
@@ -114,6 +122,10 @@ describe('GET /api/v1/me', () => {
         name: 'Test User 2',
         nickname: 'Tester2',
         imageURL: null,
+        adultVerification: {
+          required: true,
+          status: 'unverified',
+        },
       })
       expect(deletedCookies).toEqual([])
     })

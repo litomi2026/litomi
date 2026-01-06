@@ -116,7 +116,11 @@ route.put(
       return c.json<PUTV1MangaIdRatingResponse>(result)
     } catch (error) {
       if (error instanceof Error && error.message === ErrorCode.RATING_LIMIT_REACHED) {
-        return problemResponse(c, { status: 403, detail: '평가 저장 한도에 도달했어요. 리보로 확장할 수 있어요.' })
+        return problemResponse(c, {
+          status: 403,
+          code: 'libo-expansion-required',
+          detail: '평가 저장 한도에 도달했어요',
+        })
       }
 
       if (error instanceof Error && error.message === ErrorCode.RATING_INSERT_FAILED) {

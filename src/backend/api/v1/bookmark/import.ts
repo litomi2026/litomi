@@ -108,13 +108,15 @@ route.post('/', requireAuth, requireAdult, zProblemValidator('json', importSchem
     if (message === 'IMPORT_LIMIT_REACHED_REPLACE') {
       return problemResponse(c, {
         status: 403,
-        detail: '북마크 저장 한도에 도달했어요. 리보로 확장할 수 있어요',
+        code: 'libo-expansion-required',
+        detail: '북마크 저장 한도에 도달했어요',
       })
     }
     if (message === 'IMPORT_LIMIT_REACHED_MERGE') {
       return problemResponse(c, {
         status: 403,
-        detail: '북마크 저장 한도에 도달했어요. 리보로 확장할 수 있어요',
+        code: 'libo-expansion-required',
+        detail: '북마크 저장 한도에 도달했어요',
       })
     }
     if (message.startsWith('IMPORT_NOT_ENOUGH_SLOTS:')) {
