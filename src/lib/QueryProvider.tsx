@@ -175,18 +175,46 @@ const queryClient = new QueryClient({
 export default function QueryProvider({ children }: PropsWithChildren) {
   return (
     <QueryClientProvider client={queryClient}>
-      <AdultGateCacheSync />
+      <MeClientSync />
       {children}
       <ReactQueryDevtools />
     </QueryClientProvider>
   )
 }
 
-function AdultGateCacheSync() {
+function MeClientSync() {
   const queryClient = useQueryClient()
   const { data: me } = useMeQuery()
-  const shouldPurgeAdultQueries = me && !canAccessAdultRestrictedAPIs(me)
+  const userId = me?.id
+  const username = me?.name
 
+  // NOTE: 접근 불가(로그인 X 포함) 상태가 확정되면 requireAdult 캐시는 항상 제거해요.
+  // - me === undefined: 아직 모르는 상태(로딩)라서 유지
+  // - me === null: 비로그인 -> 접근 불가 -> 제거
+  // - me 객체 + KR 미인증/성인아님 -> 접근 불가 -> 제거
+  const shouldPurgeAdultQueries = me !== undefined && !canAccessAdultRestrictedAPIs(me)
+
+  const shouldShowAdultVerificationToast =
+    me != null && me.adultVerification?.required === true && me.adultVerification.status === 'unverified'
+
+  // NOTE: 로그인 사용자의 경우 유저 아이디를 설정하고 GA 이벤트를 전송해요.
+  useEffect(() => {
+    if (userId) {
+      amplitude.setUserId(userId)
+      if (NEXT_PUBLIC_GA_ID) {
+        sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: userId })
+      }
+    }
+  }, [userId])
+
+  // NOTE: 성인인증이 필요한 경우(미인증) 토스트를 표시해요.
+  useEffect(() => {
+    if (shouldShowAdultVerificationToast && username) {
+      showAdultVerificationRequiredToast({ username })
+    }
+  }, [shouldShowAdultVerificationToast, username])
+
+  // NOTE: 성인 관련 API 접근 불가 시 requireAdult 캐시는 항상 제거해요.
   useEffect(() => {
     if (shouldPurgeAdultQueries) {
       queryClient.removeQueries({ predicate: (query) => query.meta?.requiresAdult === true })
