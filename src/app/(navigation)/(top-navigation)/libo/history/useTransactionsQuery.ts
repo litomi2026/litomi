@@ -33,5 +33,6 @@ export function useTransactionsQuery({ enabled = true }: QueryOptions = {}) {
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialPageParam: null,
     enabled,
+    meta: { requiresAdult: true },
   })
 }

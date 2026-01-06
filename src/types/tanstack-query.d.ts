@@ -22,6 +22,11 @@ declare module '@tanstack/query-core' {
        * Enables the global `QueryCache.onError` handler to show a toast only for matching HTTP statuses.
        */
       enableGlobalErrorToastForStatuses?: readonly number[]
+      /**
+       * Marks this query as requiring adult verification in KR. Useful for gating `enabled`
+       * and for removing cached data when the adult gate flips from allowed → blocked.
+       */
+      requiresAdult?: boolean
     }
   }
 }
