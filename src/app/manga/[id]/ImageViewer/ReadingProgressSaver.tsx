@@ -10,6 +10,7 @@ import { SessionStorageKeyMap } from '@/constants/storage'
 import { env } from '@/env/client'
 import { useLatestRef } from '@/hook/useLatestRef'
 import useMeQuery from '@/query/useMeQuery'
+import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
 
 import { useImageIndexStore } from './store/imageIndex'
 
@@ -134,7 +135,7 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
       // NOTE: 탭 단위 이어읽기를 위해 로컬 기록은 항상 최신으로 유지
       writeSessionStorage(page)
 
-      if (isLoading || !me) {
+      if (isLoading || !me || !canAccessAdultRestrictedAPIs(me)) {
         return
       }
 

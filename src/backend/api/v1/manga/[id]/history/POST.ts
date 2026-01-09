@@ -4,6 +4,7 @@ import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { requireAdult } from '@/backend/middleware/adult'
 import { requireAuth } from '@/backend/middleware/require-auth'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
@@ -31,6 +32,7 @@ const route = new Hono<Env>()
 route.post(
   '/:id/history',
   requireAuth,
+  requireAdult,
   zProblemValidator('param', paramSchema),
   zProblemValidator('json', postBodySchema),
   async (c) => {
