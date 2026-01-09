@@ -1,13 +1,16 @@
 import { desc, eq } from 'drizzle-orm'
 import { Metadata } from 'next'
+import { headers } from 'next/headers'
 
 import { encodeReadingHistoryCursor } from '@/common/cursor'
 import { generateOpenGraphMetadata } from '@/constants'
 import { READING_HISTORY_PER_PAGE } from '@/constants/policy'
 import { readingHistoryTable } from '@/database/supabase/activity'
 import { db } from '@/database/supabase/drizzle'
-import { getUserIdFromCookie } from '@/utils/cookie'
+import { userTable } from '@/database/supabase/user'
+import { getAccessTokenClaimsFromCookie } from '@/utils/cookie'
 
+import AdultVerificationRequired from './AdultVerificationRequired'
 import HistoryPageClient from './HistoryPageClient'
 import NotFound from './NotFound'
 import Unauthorized from './Unauthorized'
@@ -25,10 +28,19 @@ export const metadata: Metadata = {
 }
 
 export default async function HistoryPage() {
-  const userId = await getUserIdFromCookie()
+  const claims = await getAccessTokenClaimsFromCookie()
 
-  if (!userId) {
+  if (!claims) {
     return <Unauthorized />
+  }
+
+  const headersList = await headers()
+  const country = headersList.get('CF-IPCountry')?.trim().toUpperCase() ?? 'KR'
+  const isAdultVerificationRequired = country === 'KR'
+
+  if (isAdultVerificationRequired && claims.adult !== true) {
+    const [user] = await db.select({ name: userTable.name }).from(userTable).where(eq(userTable.id, claims.userId))
+    return <AdultVerificationRequired username={user?.name} />
   }
 
   const history = await db
@@ -38,7 +50,7 @@ export default async function HistoryPage() {
       updatedAt: readingHistoryTable.updatedAt,
     })
     .from(readingHistoryTable)
-    .where(eq(readingHistoryTable.userId, userId))
+    .where(eq(readingHistoryTable.userId, claims.userId))
     .orderBy(desc(readingHistoryTable.updatedAt), desc(readingHistoryTable.mangaId))
     .limit(READING_HISTORY_PER_PAGE + 1)
 
