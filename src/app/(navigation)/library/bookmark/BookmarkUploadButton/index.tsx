@@ -96,7 +96,11 @@ export default function BookmarkUploadButton() {
 
           {/* Content area with fixed height to prevent layout shift */}
           <div className="flex-1 overflow-y-auto py-60 relative">
-            <FileSelectStep fileInputRef={fileInputRef} isVisible={importState === 'idle'} onFileSelect={handleFileSelect} />
+            <FileSelectStep
+              fileInputRef={fileInputRef}
+              isVisible={importState === 'idle'}
+              onFileSelect={handleFileSelect}
+            />
             {previewData && (
               <PreviewStep
                 importMode={importMode}
@@ -111,7 +115,12 @@ export default function BookmarkUploadButton() {
         </DialogBody>
 
         <DialogFooter className="border-zinc-800/40 bg-zinc-900/95 p-6 font-semibold text-sm">
-          <FooterActions importState={importState} onClose={handleClose} onImport={performImport} onReset={handleReset} />
+          <FooterActions
+            importState={importState}
+            onClose={handleClose}
+            onImport={performImport}
+            onReset={handleReset}
+          />
         </DialogFooter>
       </Dialog>
     </>

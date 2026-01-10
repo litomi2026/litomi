@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { CensorshipItem, GETV1CensorshipResponse } from '@/backend/api/v1/censorship'
+import type { CensorshipItem, GETV1CensorshipResponse } from '@/backend/api/v1/censorship/GET'
+
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'

@@ -792,8 +792,10 @@ class FireworkEngine {
       baseURL: 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/329180/',
       ctx:
         typeof window !== 'undefined'
-          ? new (window.AudioContext ||
-              (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext)()
+          ? new (
+              window.AudioContext ||
+              (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext
+            )()
           : null,
       sources: {
         lift: {

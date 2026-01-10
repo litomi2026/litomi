@@ -1,21 +1,25 @@
 'use client'
 
-import { useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Download, Upload } from 'lucide-react'
-import { memo, useState } from 'react'
+import { useState } from 'react'
 import { toast } from 'sonner'
 
-import { CensorshipItem } from '@/backend/api/v1/censorship'
+import type { CensorshipItem } from '@/backend/api/v1/censorship/GET'
+import type { POSTV1CensorshipCreateResponse } from '@/backend/api/v1/censorship/POST'
+
 import Dialog from '@/components/ui/Dialog'
 import DialogBody from '@/components/ui/DialogBody'
 import DialogFooter from '@/components/ui/DialogFooter'
 import DialogHeader from '@/components/ui/DialogHeader'
 import { QueryKeys } from '@/constants/query'
-import useServerAction from '@/hook/useServerAction'
+import { env } from '@/env/client'
 import { downloadBlob } from '@/utils/download'
+import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
-import { addCensorships } from './action'
 import { CENSORSHIP_KEY_LABELS, CENSORSHIP_LEVEL_LABELS } from './constants'
+
+const { NEXT_PUBLIC_BACKEND_URL } = env
 
 const PLACEHOLDER_JSON = `[
   {
@@ -35,30 +39,37 @@ type Props = {
 
 type Tab = 'export' | 'import'
 
-export default memo(ImportExportModal)
-
-function ImportExportModal({ open, onClose, censorships }: Readonly<Props>) {
+export default function ImportExportModal({ open, onClose, censorships }: Readonly<Props>) {
   const [activeTab, setActiveTab] = useState<Tab>('export')
   const [exportFormat, setExportFormat] = useState<ExportFormat>('json')
   const [importText, setImportText] = useState('')
   const queryClient = useQueryClient()
 
-  const [_, dispatchAddAction, isPending] = useServerAction({
-    action: addCensorships,
-    onSuccess: (items) => {
-      toast.success(`${items?.length ?? 0}개 규칙을 추가했어요`)
+  const addMutation = useMutation({
+    mutationFn: async (items: { key: number; value: string; level: number }[]) => {
+      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/censorship`
+      const { data } = await fetchWithErrorHandling<POSTV1CensorshipCreateResponse>(url, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ items }),
+      })
+      return data.ids
+    },
+    onSuccess: (ids) => {
+      toast.success(`${ids.length}개 규칙을 추가했어요`)
       setImportText('')
       onClose()
       queryClient.invalidateQueries({ queryKey: QueryKeys.censorship })
     },
   })
 
-  const handleExport = () => {
-    try {
-      let content: string
-      let filename: string
-      let mimeType: string
+  function handleExport() {
+    let content: string
+    let filename: string
+    let mimeType: string
 
+    try {
       if (exportFormat === 'json') {
         const exportData = censorships.map((c) => ({
           key: c.key,
@@ -94,7 +105,7 @@ function ImportExportModal({ open, onClose, censorships }: Readonly<Props>) {
     }
   }
 
-  const handleImport = () => {
+  function handleImport() {
     try {
       const data = JSON.parse(importText)
 
@@ -102,7 +113,7 @@ function ImportExportModal({ open, onClose, censorships }: Readonly<Props>) {
         throw new Error('Invalid format')
       }
 
-      const formData = new FormData()
+      const items: { key: number; value: string; level: number }[] = []
 
       data.forEach((item) => {
         // Find key by label or use direct key
@@ -124,13 +135,11 @@ function ImportExportModal({ open, onClose, censorships }: Readonly<Props>) {
         }
 
         if (typeof key === 'number' && item.value && typeof level === 'number') {
-          formData.append('key', key.toString())
-          formData.append('value', item.value)
-          formData.append('level', level.toString())
+          items.push({ key, value: item.value, level })
         }
       })
 
-      dispatchAddAction(formData)
+      addMutation.mutate(items)
     } catch {
       toast.warning('올바른 JSON 형식이 아니에요')
     }
@@ -216,11 +225,11 @@ function ImportExportModal({ open, onClose, censorships }: Readonly<Props>) {
         ) : (
           <button
             className="w-full px-4 py-3 text-zinc-900 font-semibold bg-brand hover:bg-brand/90 disabled:bg-zinc-700 disabled:text-zinc-500 rounded-lg transition flex items-center justify-center gap-2"
-            disabled={!importText.trim() || isPending}
+            disabled={!importText.trim() || addMutation.isPending}
             onClick={handleImport}
             type="button"
           >
-            {isPending ? (
+            {addMutation.isPending ? (
               <>
                 <div className="w-5 h-5 border-2 border-zinc-900 border-t-transparent rounded-full animate-spin" />
                 <span>가져오는 중...</span>

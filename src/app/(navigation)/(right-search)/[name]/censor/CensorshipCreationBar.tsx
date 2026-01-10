@@ -1,19 +1,23 @@
 'use client'
 
-import { useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Info, Loader2, X } from 'lucide-react'
 import { useCallback, useRef, useState } from 'react'
 import { toast } from 'sonner'
+
+import type { POSTV1CensorshipCreateResponse } from '@/backend/api/v1/censorship/POST'
 
 import SuggestionDropdown from '@/app/(navigation)/search/SuggestionDropdown'
 import { BLIND_TAG_VALUES } from '@/constants/json'
 import { QueryKeys } from '@/constants/query'
 import { CensorshipKey, CensorshipLevel } from '@/database/enum'
-import useServerAction from '@/hook/useServerAction'
+import { env } from '@/env/client'
+import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
-import { addCensorships } from './action'
 import { TYPE_PATTERNS } from './constants'
 import useCensorshipSuggestions, { type CensorshipSuggestion } from './useCensorshipSuggestions'
+
+const { NEXT_PUBLIC_BACKEND_URL } = env
 
 export default function CensorshipCreationBar() {
   const [showHelp, setShowHelp] = useState(false)
@@ -25,10 +29,19 @@ export default function CensorshipCreationBar() {
   const suggestionsRef = useRef<HTMLDivElement>(null)
   const queryClient = useQueryClient()
 
-  const [_, dispatchAddAction, isSubmitting] = useServerAction({
-    action: addCensorships,
-    onSuccess: (items) => {
-      toast.success(`${items?.length ?? 0}개의 검열 규칙을 추가했어요`)
+  const addMutation = useMutation({
+    mutationFn: async (items: { key: CensorshipKey; value: string; level: CensorshipLevel }[]) => {
+      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/censorship`
+      const { data } = await fetchWithErrorHandling<POSTV1CensorshipCreateResponse>(url, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ items }),
+      })
+      return data.ids
+    },
+    onSuccess: (ids) => {
+      toast.success(`${ids.length}개의 검열 규칙을 추가했어요`)
       setInputValue('')
       setCursorPosition(0)
       setShowSuggestions(false)
@@ -71,16 +84,12 @@ export default function CensorshipCreationBar() {
       return
     }
 
-    const bulkFormData = new FormData()
-
-    for (const item of items) {
+    const payload = items.map((item) => {
       const { key, value } = detectTypeAndValue(item)
-      bulkFormData.append('key', key.toString())
-      bulkFormData.append('value', value)
-      bulkFormData.append('level', CensorshipLevel.LIGHT.toString())
-    }
+      return { key, value, level: CensorshipLevel.LIGHT }
+    })
 
-    dispatchAddAction(bulkFormData)
+    addMutation.mutate(payload)
   }
 
   const updateCursorPosition = useCallback(() => {
@@ -190,7 +199,7 @@ export default function CensorshipCreationBar() {
           autoComplete="off"
           className="w-full pl-4 pr-20 sm:pr-12 py-3 bg-zinc-800/70 rounded-lg border-2 border-zinc-700 outline-none transition
           focus:border-brand focus:bg-zinc-800 placeholder:text-zinc-500 disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled={isSubmitting}
+          disabled={addMutation.isPending}
           name="censorships"
           onBlur={handleBlur}
           onChange={handleInputChange}
@@ -213,11 +222,11 @@ export default function CensorshipCreationBar() {
           </button>
           <button
             className="p-2 rounded hover:bg-zinc-800 disabled:bg-transparent transition"
-            disabled={isSubmitting}
+            disabled={addMutation.isPending}
             title="검열 추가 (Enter)"
             type="submit"
           >
-            {isSubmitting ? <Loader2 className="size-4 shrink-0 animate-spin" /> : '등록'}
+            {addMutation.isPending ? <Loader2 className="size-4 shrink-0 animate-spin" /> : '등록'}
           </button>
         </div>
       </form>

@@ -1,6 +1,7 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 
-import { GETV1CensorshipResponse } from '@/backend/api/v1/censorship'
+import type { GETV1CensorshipResponse } from '@/backend/api/v1/censorship/GET'
+
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
