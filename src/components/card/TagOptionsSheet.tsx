@@ -93,10 +93,9 @@ export default function TagOptionsSheet({ isOpen, onClose, category, value, labe
   }
 
   function handleToggleCensorship() {
-    if (!isLoggedIn || toggleCensorshipMutation.isPending) {
-      return
+    if (isLoggedIn && !toggleCensorshipMutation.isPending) {
+      toggleCensorshipMutation.mutate()
     }
-    toggleCensorshipMutation.mutate()
   }
 
   return (
