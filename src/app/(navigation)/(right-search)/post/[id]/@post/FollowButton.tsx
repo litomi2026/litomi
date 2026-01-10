@@ -57,8 +57,8 @@ export default function FollowButton({ leader }: Readonly<Props>) {
               @<span>{leader.name}</span> 님을 언팔로우할까요?
             </h4>
             <p className="text-zinc-400">
-              이 사용자들의 게시물은 더 이상 추천 타임라인에 표시되지 않습니다. 이러한 사용자의 프로필은 게시물이 비공개로
-              설정되지 않는 한 계속 볼 수 있습니다.
+              이 사용자들의 게시물은 더 이상 추천 타임라인에 표시되지 않습니다. 이러한 사용자의 프로필은 게시물이
+              비공개로 설정되지 않는 한 계속 볼 수 있습니다.
             </p>
           </DialogBody>
 

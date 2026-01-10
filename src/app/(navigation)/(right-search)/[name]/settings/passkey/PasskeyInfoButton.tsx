@@ -19,7 +19,12 @@ export default function PasskeyInfoButton() {
       >
         <Info className="size-5" />
       </button>
-      <Dialog ariaLabel="패스키란?" className="sm:max-w-sm" onClose={() => setShowInfoModal(false)} open={showInfoModal}>
+      <Dialog
+        ariaLabel="패스키란?"
+        className="sm:max-w-sm"
+        onClose={() => setShowInfoModal(false)}
+        open={showInfoModal}
+      >
         <DialogHeader onClose={() => setShowInfoModal(false)} title="패스키란?" />
 
         <DialogBody className="p-6 sm:p-8">

@@ -3,7 +3,8 @@
 import { useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 
-import { CensorshipItem } from '@/backend/api/v1/censorship'
+import type { CensorshipItem } from '@/backend/api/v1/censorship/GET'
+
 import { CensorshipKey, CensorshipLevel } from '@/database/enum'
 import useCensorshipsMapQuery from '@/query/useCensorshipsMapQuery'
 import { MangaTag } from '@/types/manga'

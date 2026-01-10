@@ -1,18 +1,21 @@
 'use client'
 
-import { useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Copy, EyeOff, Loader2, Search } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useTransition } from 'react'
 import { toast } from 'sonner'
 
-import { addCensorships, deleteCensorships } from '@/app/(navigation)/(right-search)/[name]/censor/action'
+import type { DELETEV1CensorshipDeleteResponse } from '@/backend/api/v1/censorship/DELETE'
+import type { POSTV1CensorshipCreateResponse } from '@/backend/api/v1/censorship/POST'
+
 import BottomSheet, { BottomSheetItem } from '@/components/ui/BottomSheet'
 import { QueryKeys } from '@/constants/query'
 import { CensorshipKey, CensorshipLevel } from '@/database/enum'
+import { env } from '@/env/client'
 import useClipboard from '@/hook/useClipboard'
 import useCensorshipsMapQuery from '@/query/useCensorshipsMapQuery'
 import useMeQuery from '@/query/useMeQuery'
+import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 type Props = {
   isOpen: boolean
@@ -29,13 +32,14 @@ const TAG_CATEGORY_TO_CENSORSHIP_KEY: Record<string, CensorshipKey> = {
   other: CensorshipKey.TAG_CATEGORY_OTHER,
 }
 
+const { NEXT_PUBLIC_BACKEND_URL } = env
+
 export default function TagOptionsSheet({ isOpen, onClose, category, value, label }: Props) {
   const { copy } = useClipboard()
   const router = useRouter()
   const { data: me } = useMeQuery()
   const { data: censorshipsMap } = useCensorshipsMapQuery()
   const queryClient = useQueryClient()
-  const [isPending, startTransition] = useTransition()
 
   const isLoggedIn = Boolean(me)
   const censorshipKey = TAG_CATEGORY_TO_CENSORSHIP_KEY[category] ?? CensorshipKey.TAG
@@ -43,6 +47,35 @@ export default function TagOptionsSheet({ isOpen, onClose, category, value, labe
   const existingCensorship = censorshipsMap?.get(censorshipLookupKey)
   const isCensored = Boolean(existingCensorship)
   const fullTag = `${category}:${value}`
+
+  const toggleCensorshipMutation = useMutation({
+    mutationFn: async () => {
+      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/censorship`
+
+      if (isCensored && existingCensorship) {
+        await fetchWithErrorHandling<DELETEV1CensorshipDeleteResponse>(url, {
+          method: 'DELETE',
+          credentials: 'include',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ ids: [existingCensorship.id] }),
+        })
+        return false
+      }
+
+      await fetchWithErrorHandling<POSTV1CensorshipCreateResponse>(url, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ items: [{ key: censorshipKey, value, level: CensorshipLevel.LIGHT }] }),
+      })
+      return true
+    },
+    onSuccess: (censored) => {
+      toast.success(censored ? '검열을 추가했어요' : '검열을 해제했어요')
+      queryClient.invalidateQueries({ queryKey: QueryKeys.censorship })
+      onClose()
+    },
+  })
 
   function handleCopy() {
     copy(fullTag)
@@ -60,36 +93,9 @@ export default function TagOptionsSheet({ isOpen, onClose, category, value, labe
   }
 
   function handleToggleCensorship() {
-    startTransition(async () => {
-      if (isCensored && existingCensorship) {
-        const formData = new FormData()
-        formData.append('id', String(existingCensorship.id))
-        const result = await deleteCensorships(formData)
-
-        if (!result.ok) {
-          toast.error(typeof result.error === 'string' ? result.error : '검열 해제에 실패했어요')
-          return
-        }
-
-        toast.success('검열을 해제했어요')
-      } else {
-        const formData = new FormData()
-        formData.append('key', String(censorshipKey))
-        formData.append('value', value)
-        formData.append('level', String(CensorshipLevel.LIGHT))
-        const result = await addCensorships(formData)
-
-        if (!result.ok) {
-          toast.error(typeof result.error === 'string' ? result.error : '검열 추가에 실패했어요')
-          return
-        }
-
-        toast.success('검열을 추가했어요')
-      }
-
-      queryClient.invalidateQueries({ queryKey: QueryKeys.censorship })
-      onClose()
-    })
+    if (isLoggedIn && !toggleCensorshipMutation.isPending) {
+      toggleCensorshipMutation.mutate()
+    }
   }
 
   return (
@@ -99,8 +105,8 @@ export default function TagOptionsSheet({ isOpen, onClose, category, value, labe
         <span>태그 복사</span>
       </BottomSheetItem>
 
-      <BottomSheetItem disabled={!isLoggedIn || isPending} onClick={handleToggleCensorship}>
-        {isPending ? (
+      <BottomSheetItem disabled={!isLoggedIn || toggleCensorshipMutation.isPending} onClick={handleToggleCensorship}>
+        {toggleCensorshipMutation.isPending ? (
           <Loader2 className="size-5 text-zinc-400 animate-spin" />
         ) : (
           <EyeOff className="size-5 text-zinc-400" />

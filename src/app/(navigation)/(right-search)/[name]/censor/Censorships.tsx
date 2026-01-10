@@ -1,25 +1,29 @@
 'use client'
 
-import { useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Filter, Loader2, MoreHorizontal, Search } from 'lucide-react'
 import dynamic from 'next/dynamic'
-import { useCallback, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
+
+import type { DELETEV1CensorshipDeleteResponse } from '@/backend/api/v1/censorship/DELETE'
 
 import CustomSelect from '@/components/ui/CustomSelect'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import { QueryKeys } from '@/constants/query'
 import { CensorshipKey } from '@/database/enum'
+import { env } from '@/env/client'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
-import useServerAction from '@/hook/useServerAction'
 import useCensorshipsInfiniteQuery from '@/query/useCensorshipInfiniteQuery'
+import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
-import { deleteCensorships } from './action'
 import CensorshipCard, { CensorshipCardSkeleton } from './CensorshipCard'
 import CensorshipCreationBar from './CensorshipCreationBar'
 import CensorshipStats from './CensorshipStats'
 import { CENSORSHIP_KEY_LABELS } from './constants'
 import DefaultCensorshipInfo from './DefaultCensorshipInfo'
+
+const { NEXT_PUBLIC_BACKEND_URL } = env
 
 const ImportExportModal = dynamic(() => import('./ImportExportModal'))
 
@@ -36,12 +40,24 @@ export default function Censorships() {
 
   const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
 
-  const [__, dispatchDeleteAction] = useServerAction({
-    action: deleteCensorships,
-    onSuccess: (deletedIds) => {
+  const deleteMutation = useMutation({
+    mutationFn: async (ids: number[]) => {
+      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/censorship`
+      const { data } = await fetchWithErrorHandling<DELETEV1CensorshipDeleteResponse>(url, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ ids }),
+      })
+      return data.ids
+    },
+    onSuccess: (ids) => {
       queryClient.invalidateQueries({ queryKey: QueryKeys.censorship })
-      toast.success(`${deletedIds?.length ?? 0}개의 검열 규칙을 삭제했어요`)
+      toast.success(`${ids.length}개의 검열 규칙을 삭제했어요`)
       setSelectedIds(new Set())
+      setDeletingIds(new Set())
+    },
+    onError: () => {
       setDeletingIds(new Set())
     },
   })
@@ -62,30 +78,32 @@ export default function Censorships() {
     })
   }, [allCensorships, searchQuery, filterKey])
 
-  const handleCloseImportExportModal = useCallback(() => {
+  function handleCloseImportExportModal() {
     setShowImportExportModal(false)
-  }, [])
+  }
 
-  const handleToggleSelect = (id: number) => {
+  function handleToggleSelect(id: number) {
     const newSelectedIds = new Set(selectedIds)
+
     if (newSelectedIds.has(id)) {
       newSelectedIds.delete(id)
     } else {
       newSelectedIds.add(id)
     }
+
     setSelectedIds(newSelectedIds)
   }
 
-  const handleBulkDelete = () => {
-    if (selectedIds.size === 0) return
+  function handleBulkDelete() {
+    if (selectedIds.size === 0) {
+      return
+    }
 
     setDeletingIds(new Set(selectedIds))
-    const formData = new FormData()
-    selectedIds.forEach((id) => formData.append('id', id.toString()))
-    dispatchDeleteAction(formData)
+    deleteMutation.mutate(Array.from(selectedIds))
   }
 
-  const isDeleting = deletingIds.size > 0
+  const isDeleting = deleteMutation.isPending || deletingIds.size > 0
 
   return (
     <div className="flex-1 flex flex-col gap-4">

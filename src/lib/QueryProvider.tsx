@@ -191,7 +191,7 @@ function MeClientSync() {
   const shouldShowAdultVerificationToast =
     me != null && me.adultVerification?.required === true && me.adultVerification.status === 'unverified'
 
-  // NOTE: 로그인 사용자의 경우 유저 아이디를 설정하고 GA 이벤트를 전송해요.
+  // NOTE: 로그인 사용자의 경우 GA, Amplitude 아이디를 설정해요
   useEffect(() => {
     if (userId) {
       amplitude.setUserId(userId)
@@ -201,14 +201,14 @@ function MeClientSync() {
     }
   }, [userId])
 
-  // NOTE: 성인인증이 필요한 경우 토스트를 표시해요.
+  // NOTE: 성인인증이 필요한 경우 토스트를 표시해요
   useEffect(() => {
     if (shouldShowAdultVerificationToast && username) {
       showAdultVerificationRequiredToast({ username })
     }
   }, [shouldShowAdultVerificationToast, username])
 
-  // NOTE: 성인 관련 API 접근 불가 시 requireAdult 캐시는 항상 제거해요.
+  // NOTE: 성인 관련 API 접근 불가 시 requireAdult 캐시를 제거해요
   useEffect(() => {
     if (shouldPurgeAdultQueries) {
       queryClient.removeQueries({ predicate: (query) => query.meta?.requiresAdult === true })

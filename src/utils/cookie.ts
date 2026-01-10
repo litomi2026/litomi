@@ -1,3 +1,5 @@
+import type { JWTPayload } from 'jose'
+
 import { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies'
 import { cookies } from 'next/headers'
 
@@ -7,12 +9,42 @@ import { CookieKey } from '@/constants/storage'
 import { sec } from './format/date'
 import { JWTType, signJWT, verifyJWT } from './jwt'
 
+export type AccessTokenClaims = {
+  userId: number
+  adult: boolean
+}
+
+type AccessTokenPayload = JWTPayload & {
+  adult?: boolean
+}
+
 type AuthTokenClaims = {
   userId: number | string
   adult: boolean
 }
 
 type CookieStore = Awaited<ReturnType<typeof cookies>>
+
+export async function getAccessTokenClaimsFromCookie(): Promise<AccessTokenClaims | null> {
+  const cookieStore = await cookies()
+  const accessToken = cookieStore.get(CookieKey.ACCESS_TOKEN)?.value
+
+  if (!accessToken) {
+    return null
+  }
+
+  const payload = await verifyJWT<AccessTokenPayload>(accessToken, JWTType.ACCESS).catch(() => null)
+  const userId = payload?.sub ? Number(payload.sub) : null
+
+  if (!userId || !Number.isFinite(userId)) {
+    return null
+  }
+
+  return {
+    userId,
+    adult: payload?.adult === true,
+  }
+}
 
 export async function getAccessTokenCookieConfig({ userId, adult }: AuthTokenClaims) {
   const cookieValue = await signJWT({ sub: String(userId), adult }, JWTType.ACCESS)

@@ -19,14 +19,17 @@ beforeAll(() => {
 type TestEnv = Env & {
   Bindings: {
     userId?: number
+    isAdult?: boolean
   }
 }
 
 const app = new Hono<TestEnv>()
 app.use('*', contextStorage())
 app.use('*', async (c, next) => {
-  if (c.env.userId) {
-    c.set('userId', c.env.userId)
+  const userId = c.env.userId
+  if (typeof userId === 'number') {
+    c.set('userId', userId)
+    c.set('isAdult', c.env.isAdult ?? true)
   }
   await next()
 })
@@ -128,6 +131,22 @@ describe('GET /api/v1/manga/:id/history', () => {
 
       // Then
       expect(response.status).toBe(401)
+    })
+
+    test('성인 인증이 완료되지 않은 사용자(isAdult=false)는 403 응답을 받는다', async () => {
+      // Given
+      currentUserId = 1
+      mockReadingHistory.set('1', 5)
+
+      // When
+      const response = await app.request('/123/history', {}, { userId: 1, isAdult: false })
+
+      // Then
+      expect(response.status).toBe(403)
+      expect(response.headers.get('content-type')).toContain('application/problem+json')
+
+      const problem = await response.json()
+      expect(problem?.type).toContain('/problems/adult-verification-required')
     })
 
     test('유효하지 않은 manga ID는 400 응답을 받는다', async () => {
@@ -247,5 +266,18 @@ describe('GET /api/v1/manga/:id/history', () => {
       const invalidResponse = await app.request(`/${MAX_MANGA_ID + 1}/history`, {}, { userId: 1 })
       expect(invalidResponse.status).toBe(400)
     })
+  })
+})
+
+describe('POST /api/v1/manga/:id/history', () => {
+  test('인증되지 않은 사용자(userId 없음)는 401 응답을 받는다', async () => {
+    const response = await app.request('/123/history', { method: 'POST' }, {})
+    expect(response.status).toBe(401)
+  })
+
+  test('성인 인증이 완료되지 않은 사용자(isAdult=false)는 403 응답을 받는다', async () => {
+    const response = await app.request('/123/history', { method: 'POST' }, { userId: 1, isAdult: false })
+    expect(response.status).toBe(403)
+    expect(response.headers.get('content-type')).toContain('application/problem+json')
   })
 })

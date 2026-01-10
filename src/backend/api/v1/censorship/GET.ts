@@ -32,14 +32,13 @@ export type GETV1CensorshipResponse = {
   nextCursor: string | null
 }
 
-const censorshipRoutes = new Hono<Env>()
+const route = new Hono<Env>()
 
-censorshipRoutes.get('/', requireAuth, zProblemValidator('query', querySchema), async (c) => {
+route.get('/', requireAuth, zProblemValidator('query', querySchema), async (c) => {
   const userId = c.get('userId')!
+  const { cursor, limit } = c.req.valid('query')
 
   try {
-    const { cursor, limit } = c.req.valid('query')
-
     const censorshipRows = await db
       .select({
         id: userCensorshipTable.id,
@@ -70,4 +69,4 @@ censorshipRoutes.get('/', requireAuth, zProblemValidator('query', querySchema), 
   }
 })
 
-export default censorshipRoutes
+export default route

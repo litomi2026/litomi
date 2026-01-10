@@ -160,6 +160,11 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 ```
 
+### Database & Migrations
+
+- **Use `drizzle-kit push` as the primary workflow** (e.g. `pnpm db:push`) to sync schema to DB.
+- Drizzle schema files are organized by domain under `src/db/schema/*` and referenced explicitly from `drizzle.config.ts`.
+
 ### Colocation
 
 - **Keep non-reusable logic close to where it's used.** Types, utilities, and constants used only in a specific component or page should be defined in that file or the same folder.

@@ -8,6 +8,7 @@ import { QueryKeys } from '@/constants/query'
 import { SessionStorageKeyMap } from '@/constants/storage'
 import { env } from '@/env/client'
 import useMeQuery from '@/query/useMeQuery'
+import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
@@ -27,7 +28,7 @@ export default function useReadingHistory(mangaId: number) {
         }
       }
 
-      if (!me) {
+      if (!me || !canAccessAdultRestrictedAPIs(me)) {
         return null
       }
 
@@ -43,6 +44,7 @@ export default function useReadingHistory(mangaId: number) {
       return data
     },
     enabled: Boolean(mangaId) && !isMeLoading,
+    meta: { requiresAdult: true },
   })
 
   return { lastPage }

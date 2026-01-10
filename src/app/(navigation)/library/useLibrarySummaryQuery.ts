@@ -22,12 +22,11 @@ export async function fetchLibrarySummary() {
 
 export default function useLibrarySummaryQuery({ userId }: Options) {
   const { data: me } = useMeQuery()
-  const canAccess = canAccessAdultRestrictedAPIs(me)
 
   return useQuery({
     queryKey: QueryKeys.librarySummary(userId),
     queryFn: fetchLibrarySummary,
-    enabled: canAccess,
+    enabled: canAccessAdultRestrictedAPIs(me),
     meta: { requiresAdult: true },
   })
 }

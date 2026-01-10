@@ -175,11 +175,7 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId, per
           )}
         </div>
       </div>
-      <Dialog
-        ariaLabel={operation === 'move' ? '서재로 이동' : '서재에 복사'}
-        onClose={handleClose}
-        open={showModal}
-      >
+      <Dialog ariaLabel={operation === 'move' ? '서재로 이동' : '서재에 복사'} onClose={handleClose} open={showModal}>
         <DialogHeader onClose={handleClose} title={operation === 'move' ? '서재로 이동' : '서재에 복사'} />
 
         <DialogBody>
