@@ -26,6 +26,7 @@ function getCapacitorServerConfig(): CapacitorConfig['server'] | undefined {
 const config: CapacitorConfig = {
   appId: 'in.litomi.app',
   appName: '리토미',
+  webDir: 'www',
   server: getCapacitorServerConfig(),
 }
 
