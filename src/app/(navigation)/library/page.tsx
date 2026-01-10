@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 
 export default function LibraryPage() {
   return (
-    <main className="flex-1 flex">
+    <main className="flex-1">
       <AllLibraryMangaView />
     </main>
   )
