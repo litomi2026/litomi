@@ -60,10 +60,10 @@ export default function MobileNavigationMenu({ onClose }: Readonly<Props>) {
     <>
       <div className="fixed inset-0 z-60 bg-background/50 animate-fade-in-fast" onClick={onClose} />
       <nav
-        className="fixed top-0 left-0 z-60 h-full w-3xs bg-background border-r-2 shadow-xl animate-fade-in-fast overflow-y-auto"
+        className="fixed top-0 left-0 z-60 h-full w-3xs bg-background border-r-2 shadow-xl pt-safe animate-fade-in-fast overflow-y-auto"
         role="navigation"
       >
-        <div className="sticky top-0 bg-background flex items-center justify-between p-4 border-b-2 border-zinc-800">
+        <div className="sticky top-0 bg-background flex items-center justify-between p-4 pl-[max(1rem,var(--safe-area-left))] border-b-2 border-zinc-800">
           <h2 className="text-lg font-bold">메뉴</h2>
           <button
             aria-label="메뉴 닫기"
@@ -74,7 +74,7 @@ export default function MobileNavigationMenu({ onClose }: Readonly<Props>) {
             <X className="size-5" />
           </button>
         </div>
-        <div className="flex flex-col gap-1 p-3 pb-safe">
+        <div className="flex flex-col gap-1 p-3 pl-[max(0.75rem,var(--safe-area-left))] pb-safe">
           <MobileMenuLink
             href="/posts/recommand"
             hrefMatch="/post"

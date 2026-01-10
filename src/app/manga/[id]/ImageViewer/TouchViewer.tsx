@@ -33,7 +33,7 @@ const screenFitStyle = {
     'flex justify-center items-center touch-pan-y overflow-y-auto [&_li]:w-fit [&_li]:max-w-full [&_li]:h-full [&_img]:my-auto [&_img]:min-w-0 [&_img]:max-w-fit [&_img]:h-auto',
   height:
     'touch-pan-x overflow-x-auto [&_li]:items-center [&_li]:mx-auto [&_li]:w-fit [&_li]:h-full [&_img]:max-w-fit [&_img]:h-auto [&_img]:max-h-dvh',
-  all: '[&_li]:items-center [&_li]:mx-auto [&_img]:min-w-0 [&_li]:w-fit [&_li]:h-full [&_img]:max-h-dvh',
+  all: 'p-safe [&_li]:items-center [&_li]:mx-auto [&_img]:min-w-0 [&_li]:w-fit [&_li]:h-full [&_img]:max-h-dvh',
 }
 
 type LastPageProps = {
@@ -383,7 +383,7 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
     <>
       {zoomLevel === DEFAULT_ZOOM && <TouchAreaOverlay showController={showController} />}
       <ul
-        className={`h-dvh touch-pinch-zoom origin-top-left select-none overscroll-none [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:pb-safe [&_img]:border [&_img]:border-background ${screenFitStyle[screenFit]}`}
+        className={`h-dvh touch-pinch-zoom origin-top-left select-none overscroll-none [&_li]:flex [&_li]:aria-hidden:sr-only [&_img]:border [&_img]:border-background ${screenFitStyle[screenFit]}`}
         onClick={handleClick}
         onPointerCancel={handlePointerCancel}
         onPointerDown={handlePointerDown}

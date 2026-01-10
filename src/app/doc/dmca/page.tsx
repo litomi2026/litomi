@@ -173,24 +173,33 @@ export default async function Page({ searchParams }: PageProps<'/doc/dmca'>) {
   return (
     <div className="p-4 md:p-8">
       <div className="max-w-prose mx-auto pb-safe px-safe">
-        <div className="flex items-center justify-end gap-2 text-xs">
-          <span className="text-zinc-500">{t.languageLabel}</span>
+        <div className="flex items-center justify-between">
           <Link
-            aria-current={lang === 'ko' ? 'page' : undefined}
-            className="rounded-full border border-zinc-800 px-2 py-1 hover:bg-zinc-900"
-            href="/doc/dmca?lang=ko"
+            className="inline-flex text-xs text-zinc-400 hover:text-zinc-200 underline underline-offset-4"
+            href="/new/1"
             prefetch={false}
           >
-            한국어
+            ← 돌아가기
           </Link>
-          <Link
-            aria-current={lang === 'en' ? 'page' : undefined}
-            className="rounded-full border border-zinc-800 px-2 py-1 hover:bg-zinc-900"
-            href="/doc/dmca?lang=en"
-            prefetch={false}
-          >
-            English
-          </Link>
+          <div className="flex items-center justify-end gap-2 text-xs">
+            <span className="text-zinc-500">{t.languageLabel}</span>
+            <Link
+              aria-current={lang === 'ko' ? 'page' : undefined}
+              className="rounded-full border border-zinc-800 px-2 py-1 hover:bg-zinc-900"
+              href="/doc/dmca?lang=ko"
+              prefetch={false}
+            >
+              한국어
+            </Link>
+            <Link
+              aria-current={lang === 'en' ? 'page' : undefined}
+              className="rounded-full border border-zinc-800 px-2 py-1 hover:bg-zinc-900"
+              href="/doc/dmca?lang=en"
+              prefetch={false}
+            >
+              English
+            </Link>
+          </div>
         </div>
         <div className="mt-4 flex items-start justify-between gap-4">
           <div>
