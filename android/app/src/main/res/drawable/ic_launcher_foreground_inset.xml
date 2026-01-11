@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Adaptive icon safe zone:
+  - Viewport: 108dp
+  - Safe area: 72dp (center)
+  - Padding: 18dp each side
+-->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+  android:drawable="@mipmap/ic_launcher_foreground"
+  android:inset="18dp" />
+
+
