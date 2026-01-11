@@ -1,14 +1,44 @@
 apply plugin: 'com.android.application'
 
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('keystore.properties')
+
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
+def releaseStoreFile = keystoreProperties.getProperty('storeFile')
+def releaseStorePassword = keystoreProperties.getProperty('storePassword')
+def releaseKeyAlias = keystoreProperties.getProperty('keyAlias')
+def releaseKeyPassword = keystoreProperties.getProperty('keyPassword') ?: releaseStorePassword
+def hasReleaseSigning = releaseStoreFile && releaseStorePassword && releaseKeyAlias
+def isReleaseTaskRequested = gradle.startParameter.taskNames.any { it.toLowerCase().contains('release') }
+def overrideVersionName = project.findProperty('versionName')
+def overrideVersionCode = project.findProperty('versionCode')
+
+if (isReleaseTaskRequested && !hasReleaseSigning) {
+    throw new GradleException('릴리즈 서명 설정이 없어요. android/keystore.properties를 만들고(storeFile/storePassword/keyAlias) keystore 파일 경로를 확인해 주세요.')
+}
+
 android {
     namespace = "in.litomi.app"
     compileSdk = rootProject.ext.compileSdkVersion
+    signingConfigs {
+        release {
+            if (hasReleaseSigning) {
+                storeFile rootProject.file(releaseStoreFile)
+                storePassword releaseStorePassword
+                keyAlias releaseKeyAlias
+                keyPassword releaseKeyPassword
+            }
+        }
+    }
     defaultConfig {
         applicationId "in.litomi.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode overrideVersionCode ? Integer.parseInt(overrideVersionCode.toString()) : 1
+        versionName overrideVersionName ? overrideVersionName.toString() : "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -20,6 +50,9 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            if (hasReleaseSigning) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 }

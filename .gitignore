@@ -181,6 +181,10 @@ dist
 # Certificates
 certificates
 
+# Android signing
+android/keystore.properties
+android/keystore/
+
 # Playwright
 /test-results/
 /playwright-report/

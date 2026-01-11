@@ -1,7 +1,6 @@
-import { Flame } from 'lucide-react'
+import { Download, Flame } from 'lucide-react'
 import Link from 'next/link'
 
-import InstallPrompt from '@/components/InstallPrompt'
 import LinkPending from '@/components/LinkPending'
 import ScrollButtons from '@/components/ScrollButtons'
 import { SHORT_NAME } from '@/constants'
@@ -31,7 +30,15 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
       </div>
       <main className="flex flex-col grow gap-2">{children}</main>
       <footer className="text-center grid gap-2 p-4 text-sm">
-        <InstallPrompt />
+        <Link
+          className="mx-auto text-foreground rounded-full border-2 border-brand-gradient hover:brightness-125 active:brightness-75 transition"
+          href="/app"
+        >
+          <div className="flex items-center gap-2 px-3 py-2 text-sm font-semibold">
+            <Download className="size-5" />
+            <span>앱 설치/다운로드</span>
+          </div>
+        </Link>
         <p>ⓒ 2025. {SHORT_NAME}. All rights reserved.</p>
         <div className="flex justify-center gap-2 gap-y-1 flex-wrap text-xs">
           <Link className="hover:underline" href="/doc/terms" prefetch={false}>
