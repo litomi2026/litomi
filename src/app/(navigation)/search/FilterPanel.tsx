@@ -143,7 +143,7 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
 
   return (
     <Dialog
-      ariaLabel="상세 필터"
+      ariaLabel="상세 조건 설정"
       className="sm:fixed sm:inset-auto sm:w-96 sm:max-w-[calc(100vw-2rem)] sm:max-h-[calc(100dvh-8rem)] sm:border-zinc-700 sm:shadow-xl"
       onClose={onClose}
       open={show}
@@ -154,7 +154,7 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
           closeButtonClassName="sm:p-1"
           closeButtonLabel="닫기"
           onClose={onClose}
-          title="상세 필터"
+          title="상세 조건 설정"
           titleClassName="sm:text-lg"
         />
         <DialogBody

@@ -107,7 +107,7 @@ export default function ActiveFilters({ filters }: Readonly<Props>) {
               <span className="text-zinc-200">{config.value}</span>
             </span>
             <button
-              aria-label={`${config.label} 필터 제거`}
+              aria-label={`${config.label} 조건 제거`}
               className="flex items-center justify-center size-7 p-1.5 -m-2 transition
               text-zinc-500 hover:text-zinc-300 active:text-zinc-400 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isPending}
@@ -140,7 +140,7 @@ export function ClearAllFilters() {
 
   return (
     <button
-      aria-label="모든 필터 제거"
+      aria-label="모든 조건 제거"
       className="flex items-center gap-1.5 p-2 py-1 transition text-xs font-medium text-zinc-500 
       hover:text-zinc-300 active:text-zinc-400 disabled:opacity-50 disabled:cursor-not-allowed"
       disabled={isPending}

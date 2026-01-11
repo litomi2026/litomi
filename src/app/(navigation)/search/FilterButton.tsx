@@ -52,7 +52,7 @@ export default function FilterButton() {
       <UpdateFromSearchParams onUpdate={handleSearchParamUpdate} />
       <button
         aria-expanded={showFilters}
-        aria-label="상세 필터"
+        aria-label="상세 조건 설정"
         aria-pressed={hasActiveFilters}
         className="relative inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-xl border transition
           bg-zinc-900 border-zinc-700 text-zinc-400 hover:border-zinc-500
@@ -60,11 +60,11 @@ export default function FilterButton() {
           aria-pressed:bg-zinc-800 aria-pressed:border-brand/70 aria-pressed:text-zinc-100 aria-pressed:hover:border-brand"
         onClick={() => setShowFilters(!showFilters)}
         ref={buttonRef}
-        title="상세 필터"
+        title="상세 조건 설정"
         type="button"
       >
         <SlidersHorizontal aria-hidden className="size-4" />
-        <span className="md:hidden lg:inline">필터</span>
+        <span className="md:hidden lg:inline">조건</span>
         {hasActiveFilters && (
           <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[11px] font-bold bg-brand text-background rounded-full">
             {activeFilterCount}
