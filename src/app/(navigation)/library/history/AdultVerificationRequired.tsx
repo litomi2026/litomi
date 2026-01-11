@@ -40,7 +40,7 @@ export default function AdultVerificationRequired({ username }: Props) {
             href={settingsHref}
             prefetch={false}
           >
-            성인인증하기
+            익명으로 성인인증하기
           </Link>
         ) : (
           <p className="text-sm text-zinc-500">설정에서 익명 성인인증을 완료해 주세요</p>

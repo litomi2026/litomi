@@ -18,6 +18,8 @@ export default function KeywordSubscriptionButton() {
   const router = useRouter()
   const { data: me } = useMeQuery()
   const [query, setQuery] = useState<ParsedSearchQuery | null>(null)
+  const buttonTitle = isSubscribed ? '키워드 알림 설정을 확인해요' : '키워드 알림을 설정해요'
+  const buttonLabel = isSubscribed ? '설정 보기' : '키워드 알림'
 
   const [_, dispatchAction, isPending] = useServerAction({
     action: subscribeToKeyword,
@@ -77,12 +79,15 @@ export default function KeywordSubscriptionButton() {
 
   return (
     <button
+      aria-label={buttonTitle}
       aria-pressed={isSubscribed}
-      className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-xl transition border-2 bg-zinc-900 border-zinc-700 hover:border-zinc-500 
+      className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-xl transition border bg-zinc-900 border-zinc-700 text-zinc-400 hover:border-zinc-500
+      focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-offset-2 focus:ring-offset-zinc-900
       disabled:opacity-50 aria-pressed:bg-zinc-800 aria-pressed:border-brand/70 aria-pressed:text-zinc-100 aria-pressed:hover:border-brand"
       disabled={isPending}
       onClick={handleToggleSubscription}
-      title={isSubscribed ? '키워드 알림 설정 보기' : '이 검색 조건으로 알림 받기'}
+      title={buttonTitle}
+      type="button"
     >
       <UpdateFromSearchParams onUpdate={updateQuery} />
       {isPending ? (
@@ -92,7 +97,7 @@ export default function KeywordSubscriptionButton() {
       ) : (
         <IconBell className="size-4" />
       )}
-      <span>{isSubscribed ? '설정 보기' : '키워드 알림'}</span>
+      <span className="md:hidden lg:inline">{buttonLabel}</span>
     </button>
   )
 }
