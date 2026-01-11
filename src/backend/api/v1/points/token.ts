@@ -108,7 +108,7 @@ route.post('/', requireAuth, zProblemValidator('json', requestSchema), async (c)
               WHEN ${adImpressionTokenTable.lastEarnedAt} IS NOT NULL AND ${adImpressionTokenTable.lastEarnedAt} > ${adSlotCooldownTimeIso}
                 THEN ${adImpressionTokenTable.token}
               WHEN ${adImpressionTokenTable.expiresAt} < ${nowIso}
-                THEN ${sql.raw(`excluded.${adImpressionTokenTable.token.name}`)}
+                THEN ${sql`excluded.${sql.identifier(adImpressionTokenTable.token.name)}`}
               ELSE ${adImpressionTokenTable.token}
             END`,
           expiresAt: sql`CASE
