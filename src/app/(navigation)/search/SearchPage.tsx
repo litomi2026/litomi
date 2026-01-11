@@ -35,7 +35,7 @@ export default function SearchPage() {
       {hasActiveFilters ? (
         <div className="gap-2 pb-2 hidden sm:grid">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-medium text-zinc-400">적용된 필터</h3>
+            <h3 className="text-sm font-medium text-zinc-400">적용된 조건</h3>
             <ClearAllFilters />
           </div>
           <ActiveFilters filters={filters} />

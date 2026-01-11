@@ -50,9 +50,9 @@ route.patch('/', requireAuth, zProblemValidator('json', updateSchema), async (c)
       .onConflictDoUpdate({
         target: userCensorshipTable.id,
         set: {
-          key: sql.raw(`excluded.${userCensorshipTable.key.name}`),
-          value: sql.raw(`excluded.${userCensorshipTable.value.name}`),
-          level: sql.raw(`excluded.${userCensorshipTable.level.name}`),
+          key: sql`excluded.${sql.identifier(userCensorshipTable.key.name)}`,
+          value: sql`excluded.${sql.identifier(userCensorshipTable.value.name)}`,
+          level: sql`excluded.${sql.identifier(userCensorshipTable.level.name)}`,
         },
         setWhere: sql`${userCensorshipTable.userId} = ${userId}`,
       })

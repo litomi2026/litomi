@@ -9,9 +9,39 @@ export default function manifest(): MetadataRoute.Manifest {
     description: DESCRIPTION,
     start_url: '/',
     display: 'standalone',
+    display_override: ['window-controls-overlay', 'standalone'],
     background_color: THEME_COLOR,
     id: `${CANONICAL_URL}/`,
     theme_color: THEME_COLOR,
+    screenshots: [
+      {
+        src: '/image/search.webp',
+        sizes: '3680x2244',
+        type: 'image/webp',
+        form_factor: 'wide',
+        label: '데스크톱 화면이에요',
+      },
+      {
+        src: '/image/bookmark.webp',
+        sizes: '3680x2244',
+        type: 'image/webp',
+        form_factor: 'wide',
+        label: '데스크톱 화면이에요',
+      },
+      {
+        src: '/image/settings.webp',
+        sizes: '1226x2244',
+        type: 'image/webp',
+        form_factor: 'narrow',
+        label: '모바일 화면이에요',
+      },
+    ],
+    protocol_handlers: [
+      {
+        protocol: 'web+litomi',
+        url: '/?protocol=web+litomi&url=%s',
+      },
+    ],
     icons: [
       {
         src: '/web-app-manifest-144x144.png',
