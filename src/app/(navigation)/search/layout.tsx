@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 
 import ViewToggle from '@/components/ViewToggle'
 
+import AutoHideNavigation from '../AutoHideNavigation'
 import FilterButton from './FilterButton'
 import KeywordSubscriptionButton from './KeywordSubscriptionButton'
 import ScrollReset from './ScrollReset'
@@ -16,8 +17,10 @@ export default async function Layout({ children }: LayoutProps<'/search'>) {
       <h1 className="sr-only">작품 검색</h1>
       <header
         className="fixed top-0 z-20 w-full p-2 pt-[max(0.5rem,var(--safe-area-top))] pr-[max(0.5rem,calc(var(--safe-area-right)))] bg-background border-b-2 shadow-sm 
-          sm:max-w-[calc(100vw-5rem-var(--safe-area-left))] 2xl:max-w-7xl"
+          sm:max-w-[calc(100vw-5rem-var(--safe-area-left))] 2xl:max-w-7xl max-sm:aria-busy:opacity-50 transition"
+        data-search-header
       >
+        <AutoHideNavigation selector="[data-search-header]" />
         <div className="flex items-center justify-center flex-wrap gap-2 whitespace-nowrap md:justify-end">
           <SearchForm className="grow w-full min-w-0 md:w-auto" />
           <KeywordSubscriptionButton />
