@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">리토미</string>
+    <string name="title_activity_main">리토미</string>
+    <string name="package_name">in.litomi.app</string>
+    <string name="custom_url_scheme">in.litomi.app</string>
+</resources>

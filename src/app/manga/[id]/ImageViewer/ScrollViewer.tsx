@@ -21,7 +21,7 @@ import { useZoomStore } from './store/zoom'
 const screenFitStyle: Record<ScreenFit, string> = {
   width:
     '[&_li]:flex [&_li]:justify-center [&_li]:items-center [&_li]:w-[var(--image-width)]! [&_li]:left-1/2! [&_li]:-translate-x-1/2 [&_img]:max-w-full [&_img]:max-h-fit',
-  all: '[&_li]:flex [&_li]:justify-center [&_li]:items-center [&_li]:w-[var(--image-width)]! [&_li]:left-1/2! [&_li]:-translate-x-1/2 [&_img]:max-w-full [&_img]:max-h-dvh',
+  all: 'pt-safe px-safe [&_li]:flex [&_li]:justify-center [&_li]:items-center [&_li]:w-[var(--image-width)]! [&_li]:left-1/2! [&_li]:-translate-x-1/2 [&_img]:max-w-full [&_img]:max-h-dvh',
   height:
     '[&_li]:flex [&_li]:items-center [&_li]:w-fit! [&_li]:max-w-full [&_li]:left-1/2! [&_li]:-translate-x-1/2 [&_li]:overflow-x-auto [&_li]:overscroll-x-none [&_img]:w-auto [&_img]:max-w-fit [&_img]:h-dvh [&_img]:max-h-fit',
 }
@@ -113,8 +113,8 @@ function LastPage({ manga, style }: LastPageProps) {
   const { id } = manga
 
   return (
-    <li className="h-full pb-safe px-safe" style={style}>
-      <div className="flex flex-col items-center gap-4 p-4 py-12">
+    <li className="h-full" style={style}>
+      <div className="flex flex-col items-center gap-4">
         <RatingInput className="flex-1" mangaId={id} />
         <LastPageActions manga={manga} />
       </div>

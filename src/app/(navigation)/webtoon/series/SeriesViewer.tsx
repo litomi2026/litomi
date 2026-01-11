@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
 import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 import { QueryKeys } from '@/constants/query'
 import { WebtoonSeries } from '@/crawler/webtoon/types'
@@ -30,7 +30,7 @@ export default function SeriesViewer() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-dvh">
+      <div className="flex-1 flex items-center justify-center">
         <Loader2 className="size-8 animate-spin" />
       </div>
     )
@@ -38,7 +38,7 @@ export default function SeriesViewer() {
 
   if (error || !series) {
     return (
-      <div className="flex flex-col items-center justify-center h-dvh gap-2">
+      <div className="flex-1 flex flex-col items-center justify-center gap-2">
         <p className="text-zinc-500">시리즈 정보를 불러올 수 없어요</p>
         <p className="text-zinc-600 text-sm">{error?.message}</p>
       </div>
@@ -46,7 +46,7 @@ export default function SeriesViewer() {
   }
 
   return (
-    <div className="min-h-dvh bg-zinc-950 px-safe">
+    <div className="flex-1 bg-zinc-950">
       <SeriesHeader series={series} />
       <EpisodeList domain={domain} provider={provider} series={series} />
     </div>
@@ -55,7 +55,7 @@ export default function SeriesViewer() {
 
 function EpisodeList({ series, provider, domain }: EpisodeListProps) {
   return (
-    <section className="max-w-3xl mx-auto pb-safe">
+    <section className="max-w-3xl mx-auto">
       <div className="px-4 py-3 border-b border-zinc-800">
         <h2 className="text-sm font-medium text-zinc-300">에피소드</h2>
       </div>
@@ -94,11 +94,13 @@ function formatDate(dateStr: string): string {
 }
 
 function SeriesHeader({ series }: { series: WebtoonSeries }) {
+  const router = useRouter()
+
   return (
-    <header className="relative pt-safe">
+    <header className="relative">
       {/* 배경 블러 이미지 */}
       {series.thumbnail && (
-        <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden -top-(--safe-area-top)">
           <img alt="" className="w-full h-full object-cover blur-2xl opacity-30 scale-110" src={series.thumbnail} />
           <div className="absolute inset-0 bg-linear-to-b from-zinc-950/50 to-zinc-950" />
         </div>
@@ -106,6 +108,13 @@ function SeriesHeader({ series }: { series: WebtoonSeries }) {
 
       {/* 콘텐츠 */}
       <div className="relative px-4 pt-8 pb-6 max-w-3xl mx-auto">
+        <button
+          className="absolute top-2 left-4 z-10 text-xs text-zinc-400 hover:text-zinc-200 underline underline-offset-4"
+          onClick={() => router.back()}
+          type="button"
+        >
+          ← 돌아가기
+        </button>
         <div className="flex gap-4 flex-wrap">
           {/* 썸네일 */}
           {series.thumbnail && (
