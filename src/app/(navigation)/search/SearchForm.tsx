@@ -2,7 +2,7 @@
 
 import { Clock, Loader2, X, X as XIcon } from 'lucide-react'
 import { ReadonlyURLSearchParams, usePathname, useRouter } from 'next/navigation'
-import { FormEvent, memo, useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react'
+import { FormEvent, useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react'
 
 import Toggle from '@/components/ui/Toggle'
 import { MAX_SEARCH_QUERY_LENGTH } from '@/constants/policy'
@@ -18,9 +18,7 @@ type Props = {
   className?: string
 }
 
-export default memo(SearchForm)
-
-function SearchForm({ className = '' }: Readonly<Props>) {
+export default function SearchForm({ className = '' }: Props) {
   const router = useRouter()
   const pathname = usePathname()
   const [keyword, setKeyword] = useState('')
@@ -245,7 +243,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
     <div className={`relative ${className}`}>
       <UpdateFromSearchParams onUpdate={handleSearchParamUpdate} />
       <form
-        className="flex bg-zinc-900 border-2 border-zinc-700 rounded-xl text-zinc-400 overflow-hidden transition
+        className="flex bg-zinc-900 border border-zinc-700 rounded-xl text-zinc-400 overflow-hidden transition
         hover:border-zinc-500 focus-within:border-zinc-400"
         onSubmit={onSubmit}
       >
@@ -255,7 +253,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
             aria-controls="search-suggestions"
             autoCapitalize="off"
             autoComplete="off"
-            className="bg-transparent px-3 py-2 pr-8 text-foreground min-w-0 w-full placeholder-zinc-500 text-base
+            className="bg-transparent px-3 py-2 pr-8 text-foreground min-w-0 w-full placeholder-zinc-500 text-base leading-5
             focus:outline-none
             [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-cancel-button]:appearance-none
             [&::-ms-clear]:hidden [&::-ms-clear]:w-0 [&::-ms-clear]:h-0"
@@ -274,7 +272,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
           {keyword && (
             <button
               aria-label="검색어 지우기"
-              className="absolute right-0 top-0 bottom-0 p-2 shrink-0 transition text-zinc-500 
+              className="absolute right-0 top-0 bottom-0 p-1.5 shrink-0 transition text-zinc-500 
               hover:text-zinc-300 active:text-zinc-400"
               onClick={handleClear}
               type="button"
@@ -285,7 +283,7 @@ function SearchForm({ className = '' }: Readonly<Props>) {
         </div>
         <button
           aria-label="검색하기"
-          className="flex items-center justify-center p-2 px-4 shrink-0 font-medium rounded-l-none transition
+          className="flex items-center justify-center px-3 py-1.5 shrink-0 text-sm font-medium rounded-l-none transition
           aria-disabled:opacity-60 bg-zinc-800 text-zinc-200 
           active:bg-zinc-800 hover:bg-zinc-700 hover:text-foreground
           focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-inset"

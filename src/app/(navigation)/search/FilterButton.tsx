@@ -1,5 +1,6 @@
 'use client'
 
+import { SlidersHorizontal } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { ReadonlyURLSearchParams } from 'next/navigation'
 import { useCallback, useRef, useState } from 'react'
@@ -50,16 +51,20 @@ export default function FilterButton() {
     <div className="relative">
       <UpdateFromSearchParams onUpdate={handleSearchParamUpdate} />
       <button
+        aria-expanded={showFilters}
+        aria-label="상세 필터"
         aria-pressed={hasActiveFilters}
-        className="relative px-3 py-2 h-full text-sm font-medium rounded-xl border-2 transition-all
+        className="relative inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-xl border transition
           bg-zinc-900 border-zinc-700 text-zinc-400 hover:border-zinc-500
           focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-offset-2 focus:ring-offset-zinc-900
           aria-pressed:bg-zinc-800 aria-pressed:border-brand/70 aria-pressed:text-zinc-100 aria-pressed:hover:border-brand"
         onClick={() => setShowFilters(!showFilters)}
         ref={buttonRef}
+        title="상세 필터"
         type="button"
       >
-        필터
+        <SlidersHorizontal aria-hidden className="size-4" />
+        <span className="md:hidden lg:inline">필터</span>
         {hasActiveFilters && (
           <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[11px] font-bold bg-brand text-background rounded-full">
             {activeFilterCount}
