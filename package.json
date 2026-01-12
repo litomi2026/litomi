@@ -66,6 +66,7 @@
     "@google-analytics/data": "^5.2.1",
     "@hono/zod-validator": "^0.7.6",
     "@marsidev/react-turnstile": "^1.4.1",
+    "@mlc-ai/web-llm": "^0.2.80",
     "@neondatabase/serverless": "^1.0.2",
     "@next/third-parties": "16.1.1",
     "@sentry/nextjs": "10.32.1",
