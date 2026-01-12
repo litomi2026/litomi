@@ -12,7 +12,7 @@ export default function BackButton({ fallbackUrl, ...props }: Props) {
   const router = useRouter()
 
   function handleClick() {
-    if (window.history.length > 2) {
+    if (window.history.length > 1) {
       router.back()
     } else if (fallbackUrl) {
       router.replace(fallbackUrl)
