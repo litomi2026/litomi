@@ -14,7 +14,8 @@ const isProduction = process.env.NODE_ENV === 'production'
 
 const cspHeader = `
   default-src 'self';
-  script-src 'self' 'unsafe-inline' https:;
+  script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https:;
+  worker-src 'self' blob:;
   style-src 'self' 'unsafe-inline';
   img-src 'self' blob: data: https:;
   object-src 'none';

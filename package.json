@@ -1,6 +1,6 @@
 {
   "name": "litomi",
-  "version": "0.1.0",
+  "version": "1.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -60,12 +60,14 @@
     "@amplitude/analytics-client-common": "2.4.19",
     "@amplitude/analytics-node": "^1.5.29",
     "@capacitor/android": "^8.0.0",
+    "@capacitor/app": "^8.0.0",
     "@capacitor/core": "^8.0.0",
     "@capacitor/ios": "^8.0.0",
     "@fingerprintjs/fingerprintjs": "^5.0.1",
     "@google-analytics/data": "^5.2.1",
     "@hono/zod-validator": "^0.7.6",
     "@marsidev/react-turnstile": "^1.4.1",
+    "@mlc-ai/web-llm": "^0.2.80",
     "@neondatabase/serverless": "^1.0.2",
     "@next/third-parties": "16.1.1",
     "@sentry/nextjs": "10.32.1",
