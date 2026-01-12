@@ -39,7 +39,7 @@ type ChatMessage = {
 }
 
 const MAX_TURNS_FOR_CONTEXT = 30
-const DEFAULT_MAX_TOKENS = 1024
+const DEFAULT_MAX_TOKENS = 512
 const MIN_IOS_SAFARI_TEXT = 'iOS 18 / Safari 18 이상'
 
 export default function CharacterChatPageClient() {
