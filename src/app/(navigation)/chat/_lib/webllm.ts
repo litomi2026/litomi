@@ -14,29 +14,34 @@ export type WebLLMEngine = webllm.WebWorkerMLCEngine
 // We keep a small set of presets instead of exposing the full model list.
 export const MODEL_PRESETS = [
   {
-    key: 'default',
-    label: '3B · 약 2.3GB',
-    description: 'Hermes 3 (Llama 3.2 3B) · 캐릭터 롤플레이 밸런스가 좋아요',
-    modelId: 'Hermes-3-Llama-3.2-3B-q4f16_1-MLC',
+    label: '0.6B · 1.4GB',
+    description: 'Qwen3 0.6B(q4f16) · (모바일) 생각하는 캐릭터 채팅에 적합해요',
+    modelId: 'Qwen3-0.6B-q4f16_1-MLC',
+    mode: 'thinking',
   },
   {
-    key: 'ko',
-    label: '7B · 약 5.1GB',
-    description: 'Qwen2.5 7B · 한국어 답변 품질을 더 우선해요',
+    label: '1.5B · 1.6GB',
+    description: 'Qwen2.5 1.5B Instruct(q4f16) · (모바일) 캐릭터 채팅에 적합해요',
+    modelId: 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC',
+    mode: 'chat',
+  },
+  {
+    label: '7B · 5.1GB',
+    description: 'Qwen2.5 7B Instruct(q4f16) · (데스크탑) 캐릭터 채팅에 적합해요',
     modelId: 'Qwen2.5-7B-Instruct-q4f16_1-MLC',
+    mode: 'chat',
   },
   {
-    key: 'hq',
-    label: '8B · 약 4.9GB',
-    description: 'Hermes 3 (Llama 3.1 8B) · 더 자연스럽지만 설치/속도가 부담될 수 있어요',
-    modelId: 'Hermes-3-Llama-3.1-8B-q4f16_1-MLC',
+    label: '8B · 6.9GB',
+    description: 'Qwen3 8B Instruct(q4f32) · (데스크탑) 생각하는 캐릭터 채팅에 적합해요',
+    modelId: 'Qwen3-8B-q4f32_1-MLC',
+    mode: 'thinking',
   },
 ] as const
 
-export type ModelPresetKey = (typeof MODEL_PRESETS)[number]['key']
 export type SupportedModelId = (typeof MODEL_PRESETS)[number]['modelId']
 
-export const DEFAULT_MODEL_PRESET_KEY: ModelPresetKey = 'default'
+export const DEFAULT_MODEL_ID: SupportedModelId = MODEL_PRESETS[0].modelId
 
 let enginePromise: Promise<WebLLMEngine> | null = null
 

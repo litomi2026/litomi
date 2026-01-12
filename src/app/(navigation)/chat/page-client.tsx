@@ -1,7 +1,7 @@
 'use client'
 
-import { Bot, Cpu, Download, LockKeyhole, MessageCircle, Smartphone } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Bot, ChevronRight, Cpu, Download, LockKeyhole, MessageCircle, Smartphone } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import LoginButton from '@/components/LoginButton'
@@ -16,26 +16,30 @@ import { enqueueAppendMessages, enqueueCreateSession, useOutboxAutoFlush } from 
 import { useSingleTabLock } from './_lib/useSingleTabLock'
 import {
   createWebLLMEngine,
-  DEFAULT_MODEL_PRESET_KEY,
+  DEFAULT_MODEL_ID,
   deleteInstalledModel,
   hasInstalledModel,
   MODEL_PRESETS,
-  type ModelPresetKey,
+  type SupportedModelId,
   type WebLLMEngine,
 } from './_lib/webllm'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
 
-const MODEL_PRESET_STORAGE_KEY = 'litomi:character-chat:model-preset'
+const MODEL_ID_STORAGE_KEY = 'litomi:character-chat:model-id'
+const THINKING_ENABLED_STORAGE_KEY = 'litomi:character-chat:thinking-enabled'
 
 type ChatMessage = {
   id: string
   role: 'assistant' | 'user'
   content: string
+  debug?: {
+    think?: string
+  }
 }
 
 const MAX_TURNS_FOR_CONTEXT = 30
-const DEFAULT_MAX_TOKENS = 512
+const DEFAULT_MAX_TOKENS = 1024
 const MIN_IOS_SAFARI_TEXT = 'iOS 18 / Safari 18 이상'
 
 export default function CharacterChatPageClient() {
@@ -43,19 +47,21 @@ export default function CharacterChatPageClient() {
   const userId = me?.id
 
   const [characterKey, setCharacterKey] = useState(CHARACTERS[0]?.key ?? '')
-  const character = useMemo(() => CHARACTERS.find((c) => c.key === characterKey) ?? CHARACTERS[0], [characterKey])
+  const character = CHARACTERS.find((c) => c.key === characterKey) ?? CHARACTERS[0]
 
-  const [modelPresetKey, setModelPresetKey] = useState<ModelPresetKey>(() => {
-    if (typeof window === 'undefined') return DEFAULT_MODEL_PRESET_KEY
-    const saved = window.localStorage.getItem(MODEL_PRESET_STORAGE_KEY)
-    const found = MODEL_PRESETS.find((p) => p.key === saved)
-    return found?.key ?? DEFAULT_MODEL_PRESET_KEY
+  const [isThinkingEnabled, setIsThinkingEnabled] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return true
+    return window.localStorage.getItem(THINKING_ENABLED_STORAGE_KEY) !== 'false'
   })
-  const modelPreset = useMemo(
-    () => MODEL_PRESETS.find((p) => p.key === modelPresetKey) ?? MODEL_PRESETS[0],
-    [modelPresetKey],
-  )
-  const modelId = modelPreset.modelId
+
+  const [modelId, setModelId] = useState<SupportedModelId>(() => {
+    if (typeof window === 'undefined') return DEFAULT_MODEL_ID
+    const saved = window.localStorage.getItem(MODEL_ID_STORAGE_KEY)
+    const found = MODEL_PRESETS.find((p) => p.modelId === saved)
+    return found?.modelId ?? DEFAULT_MODEL_ID
+  })
+
+  const modelPreset = MODEL_PRESETS.find((p) => p.modelId === modelId) ?? MODEL_PRESETS[0]
 
   const [engine, setEngine] = useState<WebLLMEngine | null>(null)
   const [installState, setInstallState] = useState<
@@ -94,14 +100,10 @@ export default function CharacterChatPageClient() {
     },
   })
 
-  const refreshInstallState = useCallback(async () => {
-    const installed = await hasInstalledModel(modelId).catch(() => null)
-    if (installed === null) {
-      setInstallState({ kind: 'error', message: '모델 상태를 확인하지 못했어요' })
-      return
-    }
-    setInstallState(installed ? { kind: 'installed' } : { kind: 'not-installed' })
-  }, [modelId])
+  async function refreshInstallState() {
+    setInstallState({ kind: 'unknown' })
+    setInstallState(await getModelInstallState(modelId))
+  }
 
   useEffect(() => {
     if (!userId || tabLock.kind !== 'acquired') {
@@ -123,17 +125,33 @@ export default function CharacterChatPageClient() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return
-    window.localStorage.setItem(MODEL_PRESET_STORAGE_KEY, modelPresetKey)
-  }, [modelPresetKey])
+    window.localStorage.setItem(MODEL_ID_STORAGE_KEY, modelId)
+  }, [modelId])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    window.localStorage.setItem(THINKING_ENABLED_STORAGE_KEY, String(isThinkingEnabled))
+  }, [isThinkingEnabled])
 
   useEffect(() => {
     if (!userId || tabLock.kind !== 'acquired') return
     if (isWebGpuReady !== true) return
-    setInstallState({ kind: 'unknown' })
-    refreshInstallState()
-  }, [userId, tabLock.kind, isWebGpuReady, refreshInstallState])
 
-  const install = useCallback(async () => {
+    let cancelled = false
+
+    setInstallState({ kind: 'unknown' })
+    void (async () => {
+      const next = await getModelInstallState(modelId)
+      if (cancelled) return
+      setInstallState(next)
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [userId, tabLock.kind, isWebGpuReady, modelId])
+
+  async function install() {
     setInstallState({ kind: 'installing', progress: { progress: 0, timeElapsed: 0, text: '모델을 준비하고 있어요' } })
 
     try {
@@ -149,9 +167,9 @@ export default function CharacterChatPageClient() {
         message: error instanceof Error ? error.message : '모델을 설치하지 못했어요',
       })
     }
-  }, [modelId])
+  }
 
-  const ensureEngine = useCallback(async () => {
+  async function ensureEngine() {
     if (engine) {
       await engine.reload(modelId)
       return engine
@@ -163,17 +181,58 @@ export default function CharacterChatPageClient() {
     })
     setEngine(nextEngine)
     return nextEngine
-  }, [engine, modelId])
+  }
 
-  const removeInstalledModel = useCallback(async () => {
+  async function removeInstalledModel() {
     await deleteInstalledModel(modelId)
     await engine?.unload().catch(() => {})
     toast.success('모델을 삭제했어요')
     setEngine(null)
     await refreshInstallState()
-  }, [modelId, engine, refreshInstallState])
+  }
 
-  const send = useCallback(async () => {
+  function parseAssistantText(rawText: string): { visible: string; think: string } {
+    if (modelPreset.mode !== 'thinking') {
+      return { visible: rawText, think: '' }
+    }
+
+    const openTag = '<think>'
+    const closeTag = '</think>'
+
+    let cursor = 0
+    const visibleParts: string[] = []
+    const thinkParts: string[] = []
+
+    while (cursor < rawText.length) {
+      const openIndex = rawText.indexOf(openTag, cursor)
+      if (openIndex === -1) {
+        visibleParts.push(rawText.slice(cursor))
+        break
+      }
+
+      visibleParts.push(rawText.slice(cursor, openIndex))
+
+      const thinkStart = openIndex + openTag.length
+      const closeIndex = rawText.indexOf(closeTag, thinkStart)
+      if (closeIndex === -1) {
+        thinkParts.push(rawText.slice(thinkStart))
+        break
+      }
+
+      thinkParts.push(rawText.slice(thinkStart, closeIndex))
+      cursor = closeIndex + closeTag.length
+    }
+
+    return {
+      visible: visibleParts.join('').trimStart(),
+      think: thinkParts
+        .map((part) => part.trim())
+        .filter(Boolean)
+        .join('\n\n'),
+    }
+  }
+
+  async function send() {
     if (!character || !input.trim() || isGenerating) {
       return
     }
@@ -212,9 +271,14 @@ export default function CharacterChatPageClient() {
       const stream = await engine.chat.completions.create({
         messages: context,
         stream: true,
-        temperature: 0.4,
-        top_p: 0.9,
+        // NOTE: 반복 루프(같은 문장/구절 무한 반복)를 줄이기 위한 설정이에요.
+        temperature: modelPreset.mode === 'thinking' ? 0.25 : 0.4,
+        top_p: modelPreset.mode === 'thinking' ? 0.85 : 0.9,
         max_tokens: DEFAULT_MAX_TOKENS,
+        repetition_penalty: modelPreset.mode === 'thinking' ? 1.08 : 1.03,
+        frequency_penalty: modelPreset.mode === 'thinking' ? 0.2 : 0.1,
+        presence_penalty: modelPreset.mode === 'thinking' ? 0.1 : 0.0,
+        ...(modelPreset.mode === 'thinking' && !isThinkingEnabled && { extra_body: { enable_thinking: false } }),
       })
 
       let acc = ''
@@ -230,10 +294,22 @@ export default function CharacterChatPageClient() {
           break
         }
 
-        setMessages((prev) => prev.map((m) => (m.id === assistantId ? { ...m, content: acc } : m)))
+        const parsed = parseAssistantText(acc)
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === assistantId
+              ? { ...m, content: parsed.visible, debug: parsed.think ? { think: parsed.think } : undefined }
+              : m,
+          ),
+        )
       }
 
-      const finalMessages = [...messagesRef.current, userMessage, { ...assistantMessage, content: acc }]
+      const parsed = parseAssistantText(acc)
+      const assistantContent = parsed.visible
+      const hasAssistantContent = assistantContent.trim().length > 0
+      const finalMessages = hasAssistantContent
+        ? [...messagesRef.current, userMessage, { ...assistantMessage, content: assistantContent }]
+        : [...messagesRef.current, userMessage]
 
       await enqueueCreateSession({
         clientSessionId,
@@ -243,36 +319,44 @@ export default function CharacterChatPageClient() {
         modelId,
       })
 
+      if (!hasAssistantContent) {
+        setMessages((prev) => prev.filter((m) => m.id !== assistantId))
+      }
+
       await enqueueAppendMessages({
         clientSessionId,
         messages: [
           { clientMessageId: userMessage.id, role: 'user', content: userMessage.content },
-          { clientMessageId: assistantId, role: 'assistant', content: acc },
+          ...(hasAssistantContent
+            ? [{ clientMessageId: assistantId, role: 'assistant' as const, content: assistantContent }]
+            : []),
         ],
       })
 
       outbox.flush()
 
-      void maybeUpdateSummary({
-        engine,
-        allMessages: finalMessages,
-        currentSummary: summary,
-        summarizedUntilRef,
-        isSummarizingRef,
-        onUpdate: (next) => setSummary(next),
-      })
+      if (hasAssistantContent) {
+        void maybeUpdateSummary({
+          engine,
+          allMessages: finalMessages,
+          currentSummary: summary,
+          summarizedUntilRef,
+          isSummarizingRef,
+          onUpdate: (next) => setSummary(next),
+        })
+      }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : '응답을 생성하지 못했어요')
       setMessages((prev) => prev.filter((m) => m.id !== assistantId))
     } finally {
       setIsGenerating(false)
     }
-  }, [character, input, isGenerating, ensureEngine, summary, clientSessionId, outbox, modelId])
+  }
 
-  const stop = useCallback(() => {
+  function stop() {
     lastAssistantIdRef.current = null
     engine?.interruptGenerate()
-  }, [engine])
+  }
 
   if (isLoading) {
     return <div className="p-6 text-sm text-zinc-400">로딩 중이에요…</div>
@@ -391,14 +475,6 @@ export default function CharacterChatPageClient() {
           >
             새 채팅
           </button>
-          <a
-            className="text-xs text-zinc-400 underline hover:text-zinc-200 transition"
-            href={`${NEXT_PUBLIC_BACKEND_URL}/api/v1/me`}
-            rel="noreferrer"
-            target="_blank"
-          >
-            상태 확인
-          </a>
         </div>
       </header>
 
@@ -422,21 +498,37 @@ export default function CharacterChatPageClient() {
           </label>
           <select
             aria-disabled={messages.length > 0 || installState.kind === 'installing'}
-            className="bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-sm aria-disabled:opacity-50 aria-disabled:cursor-not-allowed"
+            className="bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-sm tabular-nums aria-disabled:opacity-50 aria-disabled:cursor-not-allowed"
             disabled={messages.length > 0 || installState.kind === 'installing'}
             id="model-preset"
             name="model-preset"
-            onChange={(e) => setModelPresetKey(e.target.value as ModelPresetKey)}
-            value={modelPresetKey}
+            onChange={(e) => setModelId(e.target.value as SupportedModelId)}
+            value={modelId}
           >
             {MODEL_PRESETS.map((p) => (
-              <option key={p.key} value={p.key}>
+              <option key={p.modelId} value={p.modelId}>
                 {p.label}
               </option>
             ))}
           </select>
           <p className="text-xs text-zinc-500">{modelPreset.description}</p>
           <p className="text-xs text-zinc-500">표기한 용량은 대략 필요한 GPU 메모리(VRAM)예요</p>
+          {modelPreset.mode === 'thinking' ? (
+            <p className="text-xs text-zinc-500">답변을 만들기 전에 잠깐 생각 중으로 표시될 수 있어요</p>
+          ) : null}
+          {modelPreset.mode === 'thinking' ? (
+            <label className="flex items-center justify-between gap-3 mt-1">
+              <span className="text-xs text-zinc-500">생각 과정 생성(고급)</span>
+              <input
+                checked={isThinkingEnabled}
+                className="size-4"
+                id="thinking-enabled"
+                name="thinking-enabled"
+                onChange={(e) => setIsThinkingEnabled(e.target.checked)}
+                type="checkbox"
+              />
+            </label>
+          ) : null}
           {messages.length > 0 ? (
             <p className="text-xs text-zinc-500">대화가 시작된 뒤에는 모델을 바꿀 수 없어요</p>
           ) : null}
@@ -465,7 +557,7 @@ export default function CharacterChatPageClient() {
                 style={{ width: `${installState.progress.progress * 100}%` }}
               />
             </div>
-            <p className="text-xs text-zinc-500">
+            <p className="text-xs text-zinc-500 tabular-nums">
               {(installState.progress.progress * 100).toFixed(1)}% · {Math.round(installState.progress.timeElapsed)}초
             </p>
           </div>
@@ -512,16 +604,45 @@ export default function CharacterChatPageClient() {
           {messages.length === 0 ? (
             <p className="text-sm text-zinc-500">메시지를 보내면 대화를 시작할 수 있어요</p>
           ) : (
-            messages.map((m) => (
-              <div
-                className="rounded-2xl px-3 py-2 border border-zinc-800/60 bg-zinc-950/60"
-                data-role={m.role}
-                key={m.id}
-              >
-                <p className="text-xs text-zinc-500 mb-1">{m.role === 'user' ? '나' : (character?.name ?? 'AI')}</p>
-                <p className="text-sm whitespace-pre-wrap wrap-break-word">{m.content}</p>
-              </div>
-            ))
+            messages.map((m) => {
+              const isCurrentAssistant = m.role === 'assistant' && m.id === lastAssistantIdRef.current
+              const showPlaceholder = isCurrentAssistant && isGenerating && m.content.trim().length === 0
+              const placeholderText = modelPreset.mode === 'thinking' ? '생각 중이에요…' : '답변을 만들고 있어요…'
+              const content = showPlaceholder ? placeholderText : m.content
+              const showDebugThink =
+                m.role === 'assistant' && modelPreset.mode === 'thinking' && Boolean(m.debug?.think?.trim())
+
+              return (
+                <div
+                  className="rounded-2xl px-3 py-2 border border-zinc-800/60 bg-zinc-950/60"
+                  data-role={m.role}
+                  key={m.id}
+                >
+                  <p className="text-xs text-zinc-500 mb-1">{m.role === 'user' ? '나' : (character?.name ?? 'AI')}</p>
+                  {showDebugThink && (
+                    <details className="group mt-2">
+                      <summary className="cursor-pointer list-none flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-300 transition select-none [&::-webkit-details-marker]:hidden">
+                        <ChevronRight className="size-4 transition-transform group-open:rotate-90" />
+                        생각 과정 보기
+                      </summary>
+                      <div className="mt-2 rounded-xl border border-zinc-800/60 bg-zinc-950/60 px-3 py-2">
+                        <div className="max-h-48 overflow-y-auto">
+                          <p className="text-xs text-zinc-300 whitespace-pre-wrap wrap-break-word leading-relaxed">
+                            {m.debug?.think}
+                          </p>
+                        </div>
+                      </div>
+                    </details>
+                  )}
+                  <p
+                    className="mt-2 text-sm whitespace-pre-wrap wrap-break-word data-[placeholder=true]:text-zinc-500 data-[placeholder=true]:animate-pulse"
+                    data-placeholder={showPlaceholder}
+                  >
+                    {content}
+                  </p>
+                </div>
+              )
+            })
           )}
         </div>
 
@@ -608,6 +729,16 @@ function buildSummaryPrompt(options: { currentSummary: string | null; newMessage
     { role: 'system' as const, content: system },
     { role: 'user' as const, content: user },
   ]
+}
+
+async function getModelInstallState(
+  modelId: SupportedModelId,
+): Promise<{ kind: 'error'; message: string } | { kind: 'installed' } | { kind: 'not-installed' }> {
+  const installed = await hasInstalledModel(modelId).catch(() => null)
+  if (installed === null) {
+    return { kind: 'error', message: '모델 상태를 확인하지 못했어요' }
+  }
+  return installed ? { kind: 'installed' } : { kind: 'not-installed' }
 }
 
 async function isWebGpuSupported(): Promise<boolean> {
