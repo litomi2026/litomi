@@ -2,8 +2,6 @@ import { generateOpenGraphMetadata } from '@/constants'
 
 import CharacterChatPageClient from './page-client'
 
-export const runtime = 'edge'
-
 export async function generateMetadata() {
   return {
     ...generateOpenGraphMetadata({
