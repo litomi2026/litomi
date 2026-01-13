@@ -29,24 +29,25 @@ const MIN_IOS_SAFARI_TEXT = 'iOS 18 / Safari 18 이상'
 
 const CHARACTERS = [arisCharacter, aruCharacter, yumiCharacter, shiyeonCharacter, neoCharacter] as const
 
+type InstallStateKind = 'error' | 'installed' | 'installing' | 'not-installed' | 'unknown'
+
 export default function CharacterChatPageClient() {
   const { data: me, isLoading } = useMeQuery()
   const userId = me?.id
-
   const [characterKey, setCharacterKey] = useState(CHARACTERS[0].key)
   const character = CHARACTERS.find((c) => c.key === characterKey)!
-
   const tabLock = useSingleTabLock({ channel: 'litomi:character-chat' })
   const runtime = useWebLLMRuntime({ enabled: Boolean(userId) && tabLock.kind === 'acquired' })
+  const modelSupportsThinking = runtime.modelPreset.supportsThinking
+  const chatModelMode = modelSupportsThinking && runtime.isThinkingEnabled ? 'thinking' : 'chat'
+  const chatInputDisabledReason = getChatInputDisabledReason(runtime.installState.kind)
+  const chatInputDisabled = chatInputDisabledReason !== null
 
   const outbox = useOutboxAutoFlush({
     enabled: Boolean(userId),
     backendUrl: NEXT_PUBLIC_BACKEND_URL,
     onUnauthorized: () => toast.warning('로그인 정보가 만료됐어요'),
   })
-
-  const modelSupportsThinking = runtime.modelPreset.supportsThinking
-  const chatModelMode = modelSupportsThinking && runtime.isThinkingEnabled ? 'thinking' : 'chat'
 
   const chat = useCharacterChatController({
     character,
@@ -57,24 +58,12 @@ export default function CharacterChatPageClient() {
     modelMode: chatModelMode,
     modelSupportsThinking,
     onOutboxFlush: outbox.flush,
+    resetEngine: runtime.resetEngine,
     resetChat: runtime.resetChat,
   })
 
-  const chatInputDisabledReason =
-    runtime.installState.kind === 'installed'
-      ? null
-      : runtime.installState.kind === 'not-installed'
-        ? '모델을 설치하면 대화를 시작할 수 있어요'
-        : runtime.installState.kind === 'installing'
-          ? '모델을 설치하고 있어요…'
-          : runtime.installState.kind === 'error'
-            ? '모델을 준비하지 못했어요. 위에서 다시 확인해 주세요'
-            : '모델 상태를 확인하고 있어요…'
-
-  const chatInputDisabled = chatInputDisabledReason !== null
-
   if (isLoading) {
-    return <div className="p-6 text-sm text-zinc-400">로딩 중이에요…</div>
+    return <div className="p-6 text-sm text-zinc-400">사용자 정보를 불러오고 있어요…</div>
   }
 
   if (!userId) {
@@ -87,7 +76,11 @@ export default function CharacterChatPageClient() {
               title: '내 기기에서 실행',
               description: '서버 비용 없이 내 GPU로 추론해요',
             },
-            { icon: <Download className="size-5" />, title: '모델 설치', description: '처음 한 번만 내려받으면 돼요' },
+            {
+              icon: <Download className="size-5" />,
+              title: '모델 설치',
+              description: '처음 한 번만 내려받으면 돼요',
+            },
             {
               icon: <MessageCircle className="size-5" />,
               title: '로그 저장',
@@ -222,4 +215,20 @@ export default function CharacterChatPageClient() {
       />
     </div>
   )
+}
+
+function getChatInputDisabledReason(kind: InstallStateKind): string | null {
+  switch (kind) {
+    case 'error':
+      return '모델을 준비하지 못했어요. 위에서 다시 확인해 주세요'
+    case 'installed':
+      return null
+    case 'installing':
+      return '모델을 설치하고 있어요…'
+    case 'not-installed':
+      return '모델을 설치하면 대화를 시작할 수 있어요'
+    case 'unknown':
+    default:
+      return '모델 상태를 확인하고 있어요…'
+  }
 }

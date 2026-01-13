@@ -197,15 +197,10 @@ export function ModelPanel({
 
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between gap-3">
-              <div className="flex flex-col gap-1">
-                <p className="text-xs text-zinc-400 font-medium">커스텀 모델</p>
-                <p className="text-xs text-zinc-500">
-                  MLC 가중치 + <span className="text-zinc-300">model_lib(wasm)</span>이 필요해요
-                </p>
-              </div>
+              <p className="text-xs text-zinc-400 font-medium">커스텀 모델</p>
               <button
                 aria-disabled={isAdvancedDisabled}
-                className="inline-flex text-sm items-center justify-center px-3 py-1.5 rounded-xl border border-white/7 hover:border-white/15 transition aria-disabled:opacity-50 aria-disabled:pointer-events-none text-zinc-200"
+                className="inline-flex text-sm items-center justify-center px-3 py-1.5 whitespace-nowrap rounded-xl border border-white/7 hover:border-white/15 transition aria-disabled:opacity-50 aria-disabled:pointer-events-none text-zinc-200"
                 onClick={() => setIsCustomModelDialogOpen(true)}
                 type="button"
               >

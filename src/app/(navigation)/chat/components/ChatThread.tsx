@@ -1,6 +1,6 @@
 'use client'
 
-import type { ReactNode } from 'react'
+import type { FormEvent, ReactNode } from 'react'
 
 import { ChevronRight } from 'lucide-react'
 
@@ -43,24 +43,24 @@ export function ChatThread({
   onStop,
   onSubmit,
 }: Props) {
+  const introText = getIntroText(chatInputDisabled, chatInputDisabledReason)
+  const placeholderText = getPlaceholderText({ isPreparingModel, isThinkingEnabled, modelMode })
+  const showContinueButton = canContinue && !isGenerating && !chatInputDisabled && input.trim().length === 0
+
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    onSubmit()
+  }
+
   return (
     <section className="rounded-2xl border border-white/7 bg-white/3 p-4 flex flex-col gap-3 min-h-[40vh] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
       <div className="flex flex-col gap-2">
         {messages.length === 0 ? (
-          <p className="text-sm text-zinc-500">
-            {chatInputDisabled
-              ? (chatInputDisabledReason ?? '모델을 준비하고 있어요…')
-              : '메시지를 보내면 대화를 시작할 수 있어요'}
-          </p>
+          <p className="text-sm text-zinc-500">{introText}</p>
         ) : (
           messages.map((m) => {
             const isCurrentAssistant = m.role === 'assistant' && m.id === currentAssistantId
             const showPlaceholder = isCurrentAssistant && isGenerating && m.content.trim().length === 0
-            const placeholderText = isPreparingModel
-              ? '모델을 준비하고 있어요…'
-              : modelMode === 'thinking' && isThinkingEnabled
-                ? '생각 중이에요…'
-                : '답변을 만들고 있어요…'
             const content = showPlaceholder ? placeholderText : m.content
             const showDebugThink =
               showThinkingTrace && m.role === 'assistant' && modelMode === 'thinking' && Boolean(m.debug?.think?.trim())
@@ -95,16 +95,10 @@ export function ChatThread({
         )}
       </div>
 
-      <form
-        className="mt-auto flex flex-col gap-2"
-        onSubmit={(e) => {
-          e.preventDefault()
-          onSubmit()
-        }}
-      >
+      <form className="mt-auto flex flex-col gap-2" onSubmit={handleSubmit}>
         <textarea
           aria-disabled={chatInputDisabled}
-          className="min-h-24 rounded-2xl border border-white/7 bg-white/2 px-3 py-2 text-sm aria-disabled:opacity-60 aria-disabled:cursor-not-allowed"
+          className="min-h-24 text-base rounded-2xl border border-white/7 bg-white/2 px-3 py-2 aria-disabled:opacity-60 aria-disabled:cursor-not-allowed"
           disabled={chatInputDisabled}
           id="message"
           name="message"
@@ -124,7 +118,7 @@ export function ChatThread({
             >
               중지
             </button>
-            {canContinue && !isGenerating && !chatInputDisabled && input.trim().length === 0 ? (
+            {showContinueButton ? (
               <button
                 className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl border border-white/7 hover:border-white/15 transition text-zinc-200"
                 onClick={onContinue}
@@ -146,6 +140,24 @@ export function ChatThread({
       </form>
     </section>
   )
+}
+
+function getIntroText(chatInputDisabled: boolean, chatInputDisabledReason: string | null): string {
+  if (chatInputDisabled) {
+    return chatInputDisabledReason ?? '모델을 준비하고 있어요…'
+  }
+  return '메시지를 보내면 대화를 시작할 수 있어요'
+}
+
+function getPlaceholderText(options: {
+  isPreparingModel: boolean
+  isThinkingEnabled: boolean
+  modelMode: 'chat' | 'thinking'
+}) {
+  const { isPreparingModel, isThinkingEnabled, modelMode } = options
+  if (isPreparingModel) return '모델을 준비하고 있어요…'
+  if (modelMode === 'thinking' && isThinkingEnabled) return '생각 중이에요…'
+  return '답변을 만들고 있어요…'
 }
 
 // NOTE: 메시지 렌더링이 "**굵게**" 정도만 필요하면 이 간단 파서로 충분해요.
