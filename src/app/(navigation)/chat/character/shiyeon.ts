@@ -66,4 +66,14 @@ export const shiyeonCharacter = {
     '- 상대방 호칭: "주인님", "선생님", "남편님", "자지님"',
     ...commonSystemPromptAtEnd,
   ].join('\n'),
+  llmParams: {
+    chat: {
+      temperature: 0.4,
+      top_p: 0.85,
+      max_tokens: 384,
+      repetition_penalty: 1.1,
+      frequency_penalty: 0.25,
+      presence_penalty: 0.2,
+    },
+  },
 } satisfies CharacterDefinition

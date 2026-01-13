@@ -21,6 +21,25 @@ const SUMMARY_MAX_TOKENS = 256
 const CHAT_REPLY_MAX_TOKENS = 512
 const THINKING_REPLY_MAX_TOKENS = 1024
 
+const DEFAULT_LLM_PARAMS = {
+  chat: {
+    temperature: 0.4,
+    top_p: 0.85,
+    max_tokens: CHAT_REPLY_MAX_TOKENS,
+    repetition_penalty: 1.1,
+    frequency_penalty: 0.25,
+    presence_penalty: 0.2,
+  },
+  thinking: {
+    temperature: 0.25,
+    top_p: 0.85,
+    max_tokens: THINKING_REPLY_MAX_TOKENS,
+    repetition_penalty: 1.08,
+    frequency_penalty: 0.2,
+    presence_penalty: 0.2,
+  },
+}
+
 export function useCharacterChatController(options: {
   character: CharacterDefinition
   engineRef: { current: WebLLMEngine | null }
@@ -257,16 +276,15 @@ export function useCharacterChatController(options: {
         summary: summaryRef.current,
       })
 
+      const llmParams = {
+        ...DEFAULT_LLM_PARAMS[modelMode],
+        ...character.llmParams?.[modelMode],
+      }
+
       const stream = await engine.chat.completions.create({
         messages: context,
         stream: true,
-        // NOTE: 반복 루프(같은 문장/구절 무한 반복)를 줄이기 위한 설정이에요.
-        temperature: modelMode === 'thinking' ? 0.25 : 0.4,
-        top_p: modelMode === 'thinking' ? 0.85 : 0.85,
-        max_tokens: modelMode === 'thinking' ? THINKING_REPLY_MAX_TOKENS : CHAT_REPLY_MAX_TOKENS,
-        repetition_penalty: modelMode === 'thinking' ? 1.08 : 1.1,
-        frequency_penalty: modelMode === 'thinking' ? 0.2 : 0.25,
-        presence_penalty: modelMode === 'thinking' ? 0.2 : 0.2,
+        ...llmParams,
         ...(modelSupportsThinking && { extra_body: { enable_thinking: modelMode === 'thinking' } }),
       })
 
