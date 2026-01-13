@@ -58,7 +58,6 @@ export default function CharacterChatPageClient() {
     modelMode: chatModelMode,
     modelSupportsThinking,
     onOutboxFlush: outbox.flush,
-    resetEngine: runtime.resetEngine,
     resetChat: runtime.resetChat,
   })
 

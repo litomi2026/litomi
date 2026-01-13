@@ -262,11 +262,11 @@ export function useCharacterChatController(options: {
         stream: true,
         // NOTE: 반복 루프(같은 문장/구절 무한 반복)를 줄이기 위한 설정이에요.
         temperature: modelMode === 'thinking' ? 0.25 : 0.4,
-        top_p: modelMode === 'thinking' ? 0.85 : 0.9,
+        top_p: modelMode === 'thinking' ? 0.85 : 0.85,
         max_tokens: modelMode === 'thinking' ? THINKING_REPLY_MAX_TOKENS : CHAT_REPLY_MAX_TOKENS,
-        repetition_penalty: modelMode === 'thinking' ? 1.08 : 1.03,
-        frequency_penalty: modelMode === 'thinking' ? 0.2 : 0.15,
-        presence_penalty: modelMode === 'thinking' ? 0.2 : 0.15,
+        repetition_penalty: modelMode === 'thinking' ? 1.08 : 1.1,
+        frequency_penalty: modelMode === 'thinking' ? 0.2 : 0.25,
+        presence_penalty: modelMode === 'thinking' ? 0.2 : 0.2,
         ...(modelSupportsThinking && { extra_body: { enable_thinking: modelMode === 'thinking' } }),
       })
 
