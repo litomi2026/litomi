@@ -1,12 +1,12 @@
 'use client'
 
-import type { CharacterDefinition } from '../domain/characters'
+import type { CharacterDefinition } from '../types/characterDefinition'
 
 type Props = {
   characterKey: string
   characters: readonly CharacterDefinition[]
   isLocked: boolean
-  selectedCharacter: CharacterDefinition | undefined
+  selectedCharacter: CharacterDefinition
   onChangeCharacterKey: (key: string) => void
 }
 
@@ -31,7 +31,7 @@ export function CharacterPanel({ characterKey, characters, isLocked, selectedCha
           </option>
         ))}
       </select>
-      <p className="text-xs text-zinc-500">{selectedCharacter?.description}</p>
+      <p className="text-xs text-zinc-500">{selectedCharacter.description}</p>
     </section>
   )
 }

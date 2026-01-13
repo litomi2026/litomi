@@ -4,9 +4,9 @@ import ms from 'ms'
 import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-import type { CharacterDefinition } from '../domain/characters'
-import type { ChatMessage } from '../domain/chatMessage'
-import type { SupportedModelId, WebLLMEngine } from '../lib/webllm'
+import type { ModelId, WebLLMEngine } from '../lib/webllm'
+import type { CharacterDefinition } from '../types/characterDefinition'
+import type { ChatMessage } from '../types/chatMessage'
 
 import { archiveChatMessages } from '../storage/indexeddb'
 import { enqueueAppendMessages, enqueueCreateSession } from '../storage/outbox'
@@ -22,11 +22,11 @@ const CHAT_REPLY_MAX_TOKENS = 512
 const THINKING_REPLY_MAX_TOKENS = 1024
 
 export function useCharacterChatController(options: {
-  character: CharacterDefinition | undefined
+  character: CharacterDefinition
   engineRef: { current: WebLLMEngine | null }
   ensureEngine: () => Promise<WebLLMEngine>
   interruptGenerate: () => void
-  modelId: SupportedModelId
+  modelId: ModelId
   modelMode: 'chat' | 'thinking'
   modelSupportsThinking: boolean
   onOutboxFlush: () => void
@@ -210,7 +210,6 @@ export function useCharacterChatController(options: {
   }
 
   async function send(overrideText?: string) {
-    if (!character) return
     if (isGeneratingRef.current) return
 
     markUserActivity()

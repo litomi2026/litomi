@@ -9,11 +9,15 @@ import { env } from '@/env/client'
 import useMeQuery from '@/query/useMeQuery'
 
 import Onboarding from '../(right-search)/[name]/settings/Onboarding'
+import { arisCharacter } from './character/aris'
+import { aruCharacter } from './character/aru'
+import { neoCharacter } from './character/neo'
+import { seoyoungCharacter } from './character/seoyoung'
+import { yumiCharacter } from './character/yumi'
 import { CharacterPanel } from './components/CharacterPanel'
 import { ChatHeader } from './components/ChatHeader'
 import { ChatThread } from './components/ChatThread'
 import { ModelPanel } from './components/ModelPanel'
-import { CHARACTERS } from './domain/characters'
 import { useCharacterChatController } from './hook/useCharacterChatController'
 import { useSingleTabLock } from './hook/useSingleTabLock'
 import { useWebLLMRuntime } from './hook/useWebLLMRuntime'
@@ -23,12 +27,14 @@ const { NEXT_PUBLIC_BACKEND_URL } = env
 
 const MIN_IOS_SAFARI_TEXT = 'iOS 18 / Safari 18 이상'
 
+const CHARACTERS = [arisCharacter, aruCharacter, yumiCharacter, seoyoungCharacter, neoCharacter] as const
+
 export default function CharacterChatPageClient() {
   const { data: me, isLoading } = useMeQuery()
   const userId = me?.id
 
-  const [characterKey, setCharacterKey] = useState(CHARACTERS[0]?.key ?? '')
-  const character = CHARACTERS.find((c) => c.key === characterKey) ?? CHARACTERS[0]
+  const [characterKey, setCharacterKey] = useState(CHARACTERS[0].key)
+  const character = CHARACTERS.find((c) => c.key === characterKey)!
 
   const tabLock = useSingleTabLock({ channel: 'litomi:character-chat' })
   const runtime = useWebLLMRuntime({ enabled: Boolean(userId) && tabLock.kind === 'acquired' })
@@ -167,6 +173,7 @@ export default function CharacterChatPageClient() {
       <ChatHeader onNewChat={chat.newChat} />
 
       <ModelPanel
+        customModels={runtime.customModels}
         installState={runtime.installState}
         isAutoModelEnabled={runtime.isAutoModelEnabled}
         isLocked={chat.isLocked}
@@ -174,12 +181,14 @@ export default function CharacterChatPageClient() {
         modelId={runtime.modelId}
         modelPreset={runtime.modelPreset}
         modelPresets={runtime.modelPresets}
+        onAddCustomModel={runtime.addCustomModel}
         onChangeAutoModelEnabled={runtime.setIsAutoModelEnabled}
         onChangeModelId={runtime.setModelId}
         onChangeThinkingEnabled={runtime.setIsThinkingEnabled}
         onChangeThinkingTraceVisible={runtime.setShowThinkingTrace}
         onInstall={runtime.install}
         onRefreshInstallState={runtime.refreshInstallState}
+        onRemoveCustomModel={runtime.removeCustomModel}
         onRemoveInstalledModel={() => runtime.removeInstalledModel().then(() => toast.success('모델을 삭제했어요'))}
         recommendedModelId={runtime.recommendedModelId}
         showThinkingTrace={runtime.showThinkingTrace}
@@ -195,7 +204,7 @@ export default function CharacterChatPageClient() {
 
       <ChatThread
         canContinue={chat.canContinue}
-        characterName={character?.name ?? 'AI'}
+        characterName={character.name}
         chatInputDisabled={chatInputDisabled}
         chatInputDisabledReason={chatInputDisabledReason}
         currentAssistantId={chat.currentAssistantId}

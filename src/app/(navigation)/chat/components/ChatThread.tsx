@@ -4,7 +4,7 @@ import type { ReactNode } from 'react'
 
 import { ChevronRight } from 'lucide-react'
 
-import type { ChatMessage } from '../domain/chatMessage'
+import type { ChatMessage } from '../types/chatMessage'
 
 type Props = {
   canContinue: boolean
