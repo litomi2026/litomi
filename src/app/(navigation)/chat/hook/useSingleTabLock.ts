@@ -1,13 +1,13 @@
 'use client'
 
 import ms from 'ms'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 
+type LockKind = 'acquired' | 'acquiring' | 'blocked'
 type LockState = { kind: 'acquired' } | { kind: 'acquiring' } | { kind: 'blocked'; retry: () => void }
 
 type Options = {
   channel: string
-  title: string
 }
 
 type StoredLock = {
@@ -18,49 +18,19 @@ type StoredLock = {
 const LOCK_TTL_MS = ms('10s')
 const HEARTBEAT_MS = ms('2s')
 
-export function useSingleTabLock({ channel, title }: Options): LockState {
-  const [state, setState] = useState<LockState>({ kind: 'acquiring' })
-  const ownerId = useMemo(() => crypto.randomUUID(), [])
+export function useSingleTabLock({ channel }: Options): LockState {
+  const [kind, setKind] = useState<LockKind>('acquiring')
+  const [ownerId] = useState(() => crypto.randomUUID())
 
-  const channelKey = useMemo(() => storageKey(channel), [channel])
-  const isOwnerRef = useRef(false)
-  const tryAcquireRef = useRef<() => void>(() => {})
-
-  const retry = useCallback(() => {
-    tryAcquireRef.current()
-  }, [])
-
-  const tryAcquire = useCallback(() => {
-    const nowMs = Date.now()
-    const current = parseLock(localStorage.getItem(channelKey))
-
-    if (current && !isExpired(current, nowMs) && current.ownerId !== ownerId) {
-      isOwnerRef.current = false
-      setState({ kind: 'blocked', retry })
-      return
-    }
-
-    const next: StoredLock = { ownerId, updatedAtMs: nowMs }
-    localStorage.setItem(channelKey, JSON.stringify(next))
-
-    const confirmed = parseLock(localStorage.getItem(channelKey))
-    if (confirmed?.ownerId === ownerId) {
-      isOwnerRef.current = true
-      setState({ kind: 'acquired' })
-      return
-    }
-
-    isOwnerRef.current = false
-    setState({ kind: 'blocked', retry })
-  }, [channelKey, ownerId, retry])
+  const channelKey = storageKey(channel)
 
   useEffect(() => {
-    tryAcquireRef.current = tryAcquire
-  }, [tryAcquire])
+    setKind(tryAcquireLock({ channelKey, ownerId }))
+  }, [channelKey, ownerId])
 
-  useEffect(() => {
-    tryAcquire()
-  }, [tryAcquire])
+  function retry() {
+    setKind(tryAcquireLock({ channelKey, ownerId }))
+  }
 
   useEffect(() => {
     function onStorage(event: StorageEvent) {
@@ -68,17 +38,17 @@ export function useSingleTabLock({ channel, title }: Options): LockState {
         return
       }
 
-      if (!isOwnerRef.current) {
-        tryAcquire()
+      if (kind !== 'acquired') {
+        setKind(tryAcquireLock({ channelKey, ownerId }))
       }
     }
 
     window.addEventListener('storage', onStorage)
     return () => window.removeEventListener('storage', onStorage)
-  }, [channelKey, tryAcquire])
+  }, [channelKey, kind, ownerId])
 
   useEffect(() => {
-    if (!isOwnerRef.current) {
+    if (kind !== 'acquired') {
       return
     }
 
@@ -103,9 +73,17 @@ export function useSingleTabLock({ channel, title }: Options): LockState {
       window.removeEventListener('beforeunload', release)
       release()
     }
-  }, [channelKey, ownerId, title])
+  }, [channelKey, kind, ownerId])
 
-  return state
+  if (kind === 'blocked') {
+    return { kind: 'blocked', retry }
+  }
+
+  if (kind === 'acquired') {
+    return { kind: 'acquired' }
+  }
+
+  return { kind: 'acquiring' }
 }
 
 function isExpired(lock: StoredLock, nowMs: number) {
@@ -130,4 +108,20 @@ function parseLock(raw: string | null): StoredLock | null {
 
 function storageKey(channel: string) {
   return `litomi:lock:${channel}`
+}
+
+function tryAcquireLock(options: { channelKey: string; ownerId: string }): LockKind {
+  const { channelKey, ownerId } = options
+  const nowMs = Date.now()
+  const current = parseLock(localStorage.getItem(channelKey))
+
+  if (current && !isExpired(current, nowMs) && current.ownerId !== ownerId) {
+    return 'blocked'
+  }
+
+  const next: StoredLock = { ownerId, updatedAtMs: nowMs }
+  localStorage.setItem(channelKey, JSON.stringify(next))
+
+  const confirmed = parseLock(localStorage.getItem(channelKey))
+  return confirmed?.ownerId === ownerId ? 'acquired' : 'blocked'
 }

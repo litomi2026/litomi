@@ -1,362 +1,77 @@
 'use client'
 
-import { Bot, ChevronRight, Cpu, Download, LockKeyhole, MessageCircle, Smartphone } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { Bot, Cpu, Download, LockKeyhole, MessageCircle, Smartphone } from 'lucide-react'
+import { useState } from 'react'
 import { toast } from 'sonner'
 
 import LoginButton from '@/components/LoginButton'
 import { env } from '@/env/client'
 import useMeQuery from '@/query/useMeQuery'
 
-import type { InitProgressReport } from './_lib/webllm'
-
 import Onboarding from '../(right-search)/[name]/settings/Onboarding'
-import { CHARACTERS } from './_lib/characters'
-import { enqueueAppendMessages, enqueueCreateSession, useOutboxAutoFlush } from './_lib/outbox'
-import { useSingleTabLock } from './_lib/useSingleTabLock'
-import {
-  createWebLLMEngine,
-  DEFAULT_MODEL_ID,
-  deleteInstalledModel,
-  hasInstalledModel,
-  MODEL_PRESETS,
-  type SupportedModelId,
-  type WebLLMEngine,
-} from './_lib/webllm'
+import { arisCharacter } from './character/aris'
+import { aruCharacter } from './character/aru'
+import { neoCharacter } from './character/neo'
+import { shiyeonCharacter } from './character/seoyoung'
+import { yumiCharacter } from './character/yumi'
+import { CharacterPanel } from './components/CharacterPanel'
+import { ChatHeader } from './components/ChatHeader'
+import { ChatThread } from './components/ChatThread'
+import { ModelPanel } from './components/ModelPanel'
+import { useCharacterChatController } from './hook/useCharacterChatController'
+import { useSingleTabLock } from './hook/useSingleTabLock'
+import { useWebLLMRuntime } from './hook/useWebLLMRuntime'
+import { useOutboxAutoFlush } from './storage/outbox'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
 
-const MODEL_ID_STORAGE_KEY = 'litomi:character-chat:model-id'
-const THINKING_ENABLED_STORAGE_KEY = 'litomi:character-chat:thinking-enabled'
-
-type ChatMessage = {
-  id: string
-  role: 'assistant' | 'user'
-  content: string
-  debug?: {
-    think?: string
-  }
-}
-
-const MAX_TURNS_FOR_CONTEXT = 30
-const DEFAULT_MAX_TOKENS = 512
 const MIN_IOS_SAFARI_TEXT = 'iOS 18 / Safari 18 이상'
+
+const CHARACTERS = [arisCharacter, aruCharacter, yumiCharacter, shiyeonCharacter, neoCharacter] as const
 
 export default function CharacterChatPageClient() {
   const { data: me, isLoading } = useMeQuery()
   const userId = me?.id
 
-  const [characterKey, setCharacterKey] = useState(CHARACTERS[0]?.key ?? '')
-  const character = CHARACTERS.find((c) => c.key === characterKey) ?? CHARACTERS[0]
+  const [characterKey, setCharacterKey] = useState(CHARACTERS[0].key)
+  const character = CHARACTERS.find((c) => c.key === characterKey)!
 
-  const [isThinkingEnabled, setIsThinkingEnabled] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return true
-    return window.localStorage.getItem(THINKING_ENABLED_STORAGE_KEY) !== 'false'
-  })
-
-  const [modelId, setModelId] = useState<SupportedModelId>(() => {
-    if (typeof window === 'undefined') return DEFAULT_MODEL_ID
-    const saved = window.localStorage.getItem(MODEL_ID_STORAGE_KEY)
-    const found = MODEL_PRESETS.find((p) => p.modelId === saved)
-    return found?.modelId ?? DEFAULT_MODEL_ID
-  })
-
-  const modelPreset = MODEL_PRESETS.find((p) => p.modelId === modelId) ?? MODEL_PRESETS[0]
-
-  const [engine, setEngine] = useState<WebLLMEngine | null>(null)
-  const [installState, setInstallState] = useState<
-    | { kind: 'error'; message: string }
-    | { kind: 'installed' }
-    | { kind: 'installing'; progress: InitProgressReport }
-    | { kind: 'not-installed' }
-    | { kind: 'unknown' }
-  >({ kind: 'unknown' })
-
-  const [isWebGpuReady, setIsWebGpuReady] = useState<boolean | null>(null)
-  const [messages, setMessages] = useState<ChatMessage[]>([])
-  const [input, setInput] = useState('')
-  const [isGenerating, setIsGenerating] = useState(false)
-  const [summary, setSummary] = useState<string | null>(null)
-  const summarizedUntilRef = useRef(0)
-  const isSummarizingRef = useRef(false)
-  const [clientSessionId, setClientSessionId] = useState(() => crypto.randomUUID())
-
-  const lastAssistantIdRef = useRef<string | null>(null)
-  const messagesRef = useRef<ChatMessage[]>(messages)
-  useEffect(() => {
-    messagesRef.current = messages
-  }, [messages])
-
-  const tabLock = useSingleTabLock({
-    channel: 'litomi:character-chat',
-    title: 'AI 채팅',
-  })
+  const tabLock = useSingleTabLock({ channel: 'litomi:character-chat' })
+  const runtime = useWebLLMRuntime({ enabled: Boolean(userId) && tabLock.kind === 'acquired' })
 
   const outbox = useOutboxAutoFlush({
     enabled: Boolean(userId),
     backendUrl: NEXT_PUBLIC_BACKEND_URL,
-    onUnauthorized: () => {
-      toast.warning('로그인 정보가 만료됐어요')
-    },
+    onUnauthorized: () => toast.warning('로그인 정보가 만료됐어요'),
   })
 
-  async function refreshInstallState() {
-    setInstallState({ kind: 'unknown' })
-    setInstallState(await getModelInstallState(modelId))
-  }
+  const modelSupportsThinking = runtime.modelPreset.supportsThinking
+  const chatModelMode = modelSupportsThinking && runtime.isThinkingEnabled ? 'thinking' : 'chat'
 
-  useEffect(() => {
-    if (!userId || tabLock.kind !== 'acquired') {
-      return
-    }
+  const chat = useCharacterChatController({
+    character,
+    engineRef: runtime.engineRef,
+    ensureEngine: runtime.ensureEngine,
+    interruptGenerate: runtime.interruptGenerate,
+    modelId: runtime.modelId,
+    modelMode: chatModelMode,
+    modelSupportsThinking,
+    onOutboxFlush: outbox.flush,
+    resetChat: runtime.resetChat,
+  })
 
-    const controller = new AbortController()
+  const chatInputDisabledReason =
+    runtime.installState.kind === 'installed'
+      ? null
+      : runtime.installState.kind === 'not-installed'
+        ? '모델을 설치하면 대화를 시작할 수 있어요'
+        : runtime.installState.kind === 'installing'
+          ? '모델을 설치하고 있어요…'
+          : runtime.installState.kind === 'error'
+            ? '모델을 준비하지 못했어요. 위에서 다시 확인해 주세요'
+            : '모델 상태를 확인하고 있어요…'
 
-    async function init() {
-      const supported = await isWebGpuSupported()
-      if (controller.signal.aborted) return
-      setIsWebGpuReady(supported)
-    }
-
-    init().catch(() => {})
-
-    return () => controller.abort()
-  }, [userId, tabLock.kind])
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    window.localStorage.setItem(MODEL_ID_STORAGE_KEY, modelId)
-  }, [modelId])
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    window.localStorage.setItem(THINKING_ENABLED_STORAGE_KEY, String(isThinkingEnabled))
-  }, [isThinkingEnabled])
-
-  useEffect(() => {
-    if (!userId || tabLock.kind !== 'acquired') return
-    if (isWebGpuReady !== true) return
-
-    let cancelled = false
-
-    setInstallState({ kind: 'unknown' })
-    void (async () => {
-      const next = await getModelInstallState(modelId)
-      if (cancelled) return
-      setInstallState(next)
-    })()
-
-    return () => {
-      cancelled = true
-    }
-  }, [userId, tabLock.kind, isWebGpuReady, modelId])
-
-  async function install() {
-    setInstallState({ kind: 'installing', progress: { progress: 0, timeElapsed: 0, text: '모델을 준비하고 있어요' } })
-
-    try {
-      const engine = await createWebLLMEngine({
-        modelId,
-        onProgress: (report) => setInstallState({ kind: 'installing', progress: report }),
-      })
-      setEngine(engine)
-      setInstallState({ kind: 'installed' })
-    } catch (error) {
-      setInstallState({
-        kind: 'error',
-        message: error instanceof Error ? error.message : '모델을 설치하지 못했어요',
-      })
-    }
-  }
-
-  async function ensureEngine() {
-    if (engine) {
-      await engine.reload(modelId)
-      return engine
-    }
-
-    const nextEngine = await createWebLLMEngine({
-      modelId,
-      onProgress: (report) => setInstallState({ kind: 'installing', progress: report }),
-    })
-    setEngine(nextEngine)
-    return nextEngine
-  }
-
-  async function removeInstalledModel() {
-    await deleteInstalledModel(modelId)
-    await engine?.unload().catch(() => {})
-    toast.success('모델을 삭제했어요')
-    setEngine(null)
-    await refreshInstallState()
-  }
-
-  function parseAssistantText(rawText: string): { visible: string; think: string } {
-    if (modelPreset.mode !== 'thinking') {
-      return { visible: rawText, think: '' }
-    }
-
-    const openTag = '<think>'
-    const closeTag = '</think>'
-
-    let cursor = 0
-    const visibleParts: string[] = []
-    const thinkParts: string[] = []
-
-    while (cursor < rawText.length) {
-      const openIndex = rawText.indexOf(openTag, cursor)
-      if (openIndex === -1) {
-        visibleParts.push(rawText.slice(cursor))
-        break
-      }
-
-      visibleParts.push(rawText.slice(cursor, openIndex))
-
-      const thinkStart = openIndex + openTag.length
-      const closeIndex = rawText.indexOf(closeTag, thinkStart)
-      if (closeIndex === -1) {
-        thinkParts.push(rawText.slice(thinkStart))
-        break
-      }
-
-      thinkParts.push(rawText.slice(thinkStart, closeIndex))
-      cursor = closeIndex + closeTag.length
-    }
-
-    return {
-      visible: visibleParts.join('').trimStart(),
-      think: thinkParts
-        .map((part) => part.trim())
-        .filter(Boolean)
-        .join('\n\n'),
-    }
-  }
-
-  async function send() {
-    if (!character || !input.trim() || isGenerating) {
-      return
-    }
-
-    const text = input.trim()
-    setInput('')
-
-    const userMessage: ChatMessage = {
-      id: crypto.randomUUID(),
-      role: 'user',
-      content: text,
-    }
-
-    const assistantId = crypto.randomUUID()
-    lastAssistantIdRef.current = assistantId
-
-    const assistantMessage: ChatMessage = {
-      id: assistantId,
-      role: 'assistant',
-      content: '',
-    }
-
-    setMessages((prev) => [...prev, userMessage, assistantMessage])
-    setIsGenerating(true)
-
-    try {
-      const engine = await ensureEngine()
-
-      const context = buildContext({
-        systemPrompt: character.systemPrompt,
-        messages: [...messagesRef.current, userMessage],
-        maxTurns: MAX_TURNS_FOR_CONTEXT,
-        summary,
-      })
-
-      const stream = await engine.chat.completions.create({
-        messages: context,
-        stream: true,
-        // NOTE: 반복 루프(같은 문장/구절 무한 반복)를 줄이기 위한 설정이에요.
-        temperature: modelPreset.mode === 'thinking' ? 0.25 : 0.4,
-        top_p: modelPreset.mode === 'thinking' ? 0.85 : 0.9,
-        max_tokens: DEFAULT_MAX_TOKENS,
-        repetition_penalty: modelPreset.mode === 'thinking' ? 1.08 : 1.03,
-        frequency_penalty: modelPreset.mode === 'thinking' ? 0.2 : 0.1,
-        presence_penalty: modelPreset.mode === 'thinking' ? 0.1 : 0.0,
-        ...(modelPreset.mode === 'thinking' && !isThinkingEnabled && { extra_body: { enable_thinking: false } }),
-      })
-
-      let acc = ''
-      for await (const chunk of stream) {
-        const delta = chunk.choices[0]?.delta?.content ?? ''
-        if (!delta) {
-          continue
-        }
-        acc += delta
-
-        const currentAssistantId = lastAssistantIdRef.current
-        if (currentAssistantId !== assistantId) {
-          break
-        }
-
-        const parsed = parseAssistantText(acc)
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === assistantId
-              ? { ...m, content: parsed.visible, debug: parsed.think ? { think: parsed.think } : undefined }
-              : m,
-          ),
-        )
-      }
-
-      const parsed = parseAssistantText(acc)
-      const assistantContent = parsed.visible
-      const hasAssistantContent = assistantContent.trim().length > 0
-      const finalMessages = hasAssistantContent
-        ? [...messagesRef.current, userMessage, { ...assistantMessage, content: assistantContent }]
-        : [...messagesRef.current, userMessage]
-
-      await enqueueCreateSession({
-        clientSessionId,
-        characterKey: character.key,
-        characterName: character.name,
-        systemPrompt: character.systemPrompt,
-        modelId,
-      })
-
-      if (!hasAssistantContent) {
-        setMessages((prev) => prev.filter((m) => m.id !== assistantId))
-      }
-
-      await enqueueAppendMessages({
-        clientSessionId,
-        messages: [
-          { clientMessageId: userMessage.id, role: 'user', content: userMessage.content },
-          ...(hasAssistantContent
-            ? [{ clientMessageId: assistantId, role: 'assistant' as const, content: assistantContent }]
-            : []),
-        ],
-      })
-
-      outbox.flush()
-
-      if (hasAssistantContent) {
-        void maybeUpdateSummary({
-          engine,
-          allMessages: finalMessages,
-          currentSummary: summary,
-          summarizedUntilRef,
-          isSummarizingRef,
-          onUpdate: (next) => setSummary(next),
-        })
-      }
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : '응답을 생성하지 못했어요')
-      setMessages((prev) => prev.filter((m) => m.id !== assistantId))
-    } finally {
-      setIsGenerating(false)
-    }
-  }
-
-  function stop() {
-    lastAssistantIdRef.current = null
-    engine?.interruptGenerate()
-  }
+  const chatInputDisabled = chatInputDisabledReason !== null
 
   if (isLoading) {
     return <div className="p-6 text-sm text-zinc-400">로딩 중이에요…</div>
@@ -421,7 +136,7 @@ export default function CharacterChatPageClient() {
     )
   }
 
-  if (isWebGpuReady === false) {
+  if (runtime.isWebGpuReady === false) {
     return (
       <div className="flex-1 flex items-center justify-center">
         <Onboarding
@@ -455,358 +170,56 @@ export default function CharacterChatPageClient() {
 
   return (
     <div className="flex flex-col gap-4 p-4 sm:p-6 max-w-3xl w-full">
-      <header className="flex items-start justify-between gap-3">
-        <div>
-          <h1 className="text-lg font-semibold">캐릭터 AI 채팅</h1>
-          <p className="text-sm text-zinc-400">모델은 내 기기에서 실행되고, 대화 기록은 계정에 저장돼요</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <button
-            className="text-xs text-zinc-400 underline hover:text-zinc-200 transition"
-            onClick={() => {
-              setMessages([])
-              setSummary(null)
-              summarizedUntilRef.current = 0
-              isSummarizingRef.current = false
-              setClientSessionId(crypto.randomUUID())
-              engine?.resetChat()
-            }}
-            type="button"
-          >
-            새 채팅
-          </button>
-        </div>
-      </header>
+      <ChatHeader onNewChat={chat.newChat} />
 
-      <section className="rounded-2xl border border-zinc-800/60 p-4 flex flex-col gap-3">
-        <div className="flex items-center justify-between gap-2">
-          <p className="text-sm font-medium">모델</p>
-          {installState.kind === 'installed' ? (
-            <button
-              className="text-sm text-zinc-300 underline hover:text-zinc-100 transition"
-              onClick={removeInstalledModel}
-              type="button"
-            >
-              삭제
-            </button>
-          ) : null}
-        </div>
+      <ModelPanel
+        customModels={runtime.customModels}
+        installState={runtime.installState}
+        isAutoModelEnabled={runtime.isAutoModelEnabled}
+        isLocked={chat.isLocked}
+        isThinkingEnabled={runtime.isThinkingEnabled}
+        modelId={runtime.modelId}
+        modelPreset={runtime.modelPreset}
+        modelPresets={runtime.modelPresets}
+        onAddCustomModel={runtime.addCustomModel}
+        onChangeAutoModelEnabled={runtime.setIsAutoModelEnabled}
+        onChangeModelId={runtime.setModelId}
+        onChangeThinkingEnabled={runtime.setIsThinkingEnabled}
+        onChangeThinkingTraceVisible={runtime.setShowThinkingTrace}
+        onInstall={runtime.install}
+        onRefreshInstallState={runtime.refreshInstallState}
+        onRemoveCustomModel={runtime.removeCustomModel}
+        onRemoveInstalledModel={() => runtime.removeInstalledModel().then(() => toast.success('모델을 삭제했어요'))}
+        recommendedModelId={runtime.recommendedModelId}
+        showThinkingTrace={runtime.showThinkingTrace}
+      />
 
-        <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium" htmlFor="model-preset">
-            모델 프리셋
-          </label>
-          <select
-            aria-disabled={messages.length > 0 || installState.kind === 'installing'}
-            className="bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-sm tabular-nums aria-disabled:opacity-50 aria-disabled:cursor-not-allowed"
-            disabled={messages.length > 0 || installState.kind === 'installing'}
-            id="model-preset"
-            name="model-preset"
-            onChange={(e) => setModelId(e.target.value as SupportedModelId)}
-            value={modelId}
-          >
-            {MODEL_PRESETS.map((p) => (
-              <option key={p.modelId} value={p.modelId}>
-                {p.label}
-              </option>
-            ))}
-          </select>
-          <p className="text-xs text-zinc-500">{modelPreset.description}</p>
-          <p className="text-xs text-zinc-500">표기한 용량은 대략 필요한 GPU 메모리(VRAM)예요</p>
-          {modelPreset.mode === 'thinking' ? (
-            <p className="text-xs text-zinc-500">답변을 만들기 전에 잠깐 생각 중으로 표시될 수 있어요</p>
-          ) : null}
-          {modelPreset.mode === 'thinking' ? (
-            <label className="flex items-center justify-between gap-3 mt-1">
-              <span className="text-xs text-zinc-500">생각 과정 생성(고급)</span>
-              <input
-                checked={isThinkingEnabled}
-                className="size-4"
-                id="thinking-enabled"
-                name="thinking-enabled"
-                onChange={(e) => setIsThinkingEnabled(e.target.checked)}
-                type="checkbox"
-              />
-            </label>
-          ) : null}
-          {messages.length > 0 ? (
-            <p className="text-xs text-zinc-500">대화가 시작된 뒤에는 모델을 바꿀 수 없어요</p>
-          ) : null}
-        </div>
+      <CharacterPanel
+        characterKey={characterKey}
+        characters={CHARACTERS}
+        isLocked={chat.isLocked}
+        onChangeCharacterKey={setCharacterKey}
+        selectedCharacter={character}
+      />
 
-        {installState.kind === 'unknown' ? (
-          <p className="text-sm text-zinc-500">모델 상태를 확인하고 있어요…</p>
-        ) : installState.kind === 'not-installed' ? (
-          <div className="flex items-center justify-between gap-3">
-            <p className="text-sm text-zinc-400">처음 한 번만 내려받으면 돼요</p>
-            <button
-              className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-zinc-100 text-zinc-900 hover:bg-white transition"
-              onClick={install}
-              type="button"
-            >
-              <Download className="size-4" />
-              설치하기
-            </button>
-          </div>
-        ) : installState.kind === 'installing' ? (
-          <div className="flex flex-col gap-2">
-            <p className="text-sm text-zinc-400">{installState.progress.text}</p>
-            <div className="h-2 rounded-full bg-zinc-900 overflow-hidden">
-              <div
-                className="h-2 bg-brand transition-[width] duration-200"
-                style={{ width: `${installState.progress.progress * 100}%` }}
-              />
-            </div>
-            <p className="text-xs text-zinc-500 tabular-nums">
-              {(installState.progress.progress * 100).toFixed(1)}% · {Math.round(installState.progress.timeElapsed)}초
-            </p>
-          </div>
-        ) : installState.kind === 'error' ? (
-          <div className="flex items-center justify-between gap-3">
-            <p className="text-sm text-red-300">{installState.message}</p>
-            <button
-              className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl border border-zinc-700/60 hover:border-zinc-500 transition"
-              onClick={refreshInstallState}
-              type="button"
-            >
-              다시 확인
-            </button>
-          </div>
-        ) : (
-          <p className="text-sm text-zinc-400">설치됐어요</p>
-        )}
-      </section>
-
-      <section className="rounded-2xl border border-zinc-800/60 p-4 flex flex-col gap-3">
-        <label className="text-sm font-medium" htmlFor="character">
-          캐릭터
-        </label>
-        <select
-          aria-disabled={messages.length > 0}
-          className="bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-sm aria-disabled:opacity-50 aria-disabled:cursor-not-allowed"
-          disabled={messages.length > 0}
-          id="character"
-          name="character"
-          onChange={(e) => setCharacterKey(e.target.value)}
-          value={characterKey}
-        >
-          {CHARACTERS.map((c) => (
-            <option key={c.key} value={c.key}>
-              {c.name}
-            </option>
-          ))}
-        </select>
-        <p className="text-xs text-zinc-500">{character?.description}</p>
-      </section>
-
-      <section className="rounded-2xl border border-zinc-800/60 p-4 flex flex-col gap-3 min-h-[40vh]">
-        <div className="flex flex-col gap-2">
-          {messages.length === 0 ? (
-            <p className="text-sm text-zinc-500">메시지를 보내면 대화를 시작할 수 있어요</p>
-          ) : (
-            messages.map((m) => {
-              const isCurrentAssistant = m.role === 'assistant' && m.id === lastAssistantIdRef.current
-              const showPlaceholder = isCurrentAssistant && isGenerating && m.content.trim().length === 0
-              const placeholderText = modelPreset.mode === 'thinking' ? '생각 중이에요…' : '답변을 만들고 있어요…'
-              const content = showPlaceholder ? placeholderText : m.content
-              const showDebugThink =
-                m.role === 'assistant' && modelPreset.mode === 'thinking' && Boolean(m.debug?.think?.trim())
-
-              return (
-                <div
-                  className="rounded-2xl px-3 py-2 border border-zinc-800/60 bg-zinc-950/60"
-                  data-role={m.role}
-                  key={m.id}
-                >
-                  <p className="text-xs text-zinc-500 mb-1">{m.role === 'user' ? '나' : (character?.name ?? 'AI')}</p>
-                  {showDebugThink && (
-                    <details className="group mt-2">
-                      <summary className="cursor-pointer list-none flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-300 transition select-none [&::-webkit-details-marker]:hidden">
-                        <ChevronRight className="size-4 transition-transform group-open:rotate-90" />
-                        생각 과정 보기
-                      </summary>
-                      <div className="mt-2 rounded-xl border border-zinc-800/60 bg-zinc-950/60 px-3 py-2">
-                        <div className="max-h-48 overflow-y-auto">
-                          <p className="text-xs text-zinc-300 whitespace-pre-wrap wrap-break-word leading-relaxed">
-                            {m.debug?.think}
-                          </p>
-                        </div>
-                      </div>
-                    </details>
-                  )}
-                  <p
-                    className="mt-2 text-sm whitespace-pre-wrap wrap-break-word data-[placeholder=true]:text-zinc-500 data-[placeholder=true]:animate-pulse"
-                    data-placeholder={showPlaceholder}
-                  >
-                    {content}
-                  </p>
-                </div>
-              )
-            })
-          )}
-        </div>
-
-        <form
-          className="mt-auto flex flex-col gap-2"
-          onSubmit={(e) => {
-            e.preventDefault()
-            send()
-          }}
-        >
-          <textarea
-            className="min-h-24 rounded-2xl border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm"
-            id="message"
-            name="message"
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="메시지를 입력해 주세요"
-            required
-            value={input}
-          />
-          <div className="flex items-center justify-between gap-2">
-            <button
-              aria-disabled={!isGenerating}
-              className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl border border-zinc-700/60 hover:border-zinc-500 transition"
-              onClick={stop}
-              type="button"
-            >
-              중지
-            </button>
-            <button
-              aria-disabled={isGenerating}
-              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-zinc-100 text-zinc-900 hover:bg-white transition"
-              type="submit"
-            >
-              보내기
-            </button>
-          </div>
-        </form>
-      </section>
+      <ChatThread
+        canContinue={chat.canContinue}
+        characterName={character.name}
+        chatInputDisabled={chatInputDisabled}
+        chatInputDisabledReason={chatInputDisabledReason}
+        currentAssistantId={chat.currentAssistantId}
+        input={chat.input}
+        isGenerating={chat.isGenerating}
+        isPreparingModel={chat.isPreparingModel}
+        isThinkingEnabled={runtime.isThinkingEnabled}
+        messages={chat.messages}
+        modelMode={chatModelMode}
+        onContinue={chat.continueReply}
+        onInputChange={chat.onInputChange}
+        onStop={chat.stop}
+        onSubmit={chat.send}
+        showThinkingTrace={runtime.showThinkingTrace}
+      />
     </div>
   )
-}
-
-function buildContext(options: {
-  systemPrompt: string
-  messages: ChatMessage[]
-  maxTurns: number
-  summary: string | null
-}) {
-  const { systemPrompt, messages, maxTurns, summary } = options
-
-  const recent = messages.slice(-maxTurns * 2)
-  const system = summary
-    ? `${systemPrompt}\n\n[이전 대화 요약]\n${summary}\n\n(요약을 참고해서 대화를 이어가 주세요.)`
-    : systemPrompt
-
-  return [{ role: 'system' as const, content: system }, ...recent.map((m) => ({ role: m.role, content: m.content }))]
-}
-
-function buildSummaryPrompt(options: { currentSummary: string | null; newMessages: ChatMessage[] }) {
-  const { currentSummary, newMessages } = options
-
-  const transcript = newMessages
-    .map((m) => {
-      const speaker = m.role === 'user' ? '사용자' : '어시스턴트'
-      return `${speaker}: ${m.content}`
-    })
-    .join('\n')
-
-  const system = [
-    '너는 대화 내용을 짧게 요약해서 "메모리"로 정리하는 역할이야.',
-    '반드시 한국어로 작성해.',
-    '길게 쓰지 말고, 다음 대화에서 도움이 될 핵심 정보만 남겨.',
-    '- 인물/호칭/관계(예: 선생님/아리스)',
-    '- 사용자의 목표/선호/금기',
-    '- 진행 중인 계획/약속/해야 할 일',
-    '형식은 8~12줄 이내의 불릿 리스트로 해.',
-  ].join('\n')
-
-  const user = currentSummary
-    ? `현재 메모리가 있어요:\n${currentSummary}\n\n아래 대화를 반영해서 메모리를 업데이트해 주세요:\n${transcript}`
-    : `아래 대화를 메모리로 요약해 주세요:\n${transcript}`
-
-  return [
-    { role: 'system' as const, content: system },
-    { role: 'user' as const, content: user },
-  ]
-}
-
-async function getModelInstallState(
-  modelId: SupportedModelId,
-): Promise<{ kind: 'error'; message: string } | { kind: 'installed' } | { kind: 'not-installed' }> {
-  const installed = await hasInstalledModel(modelId).catch(() => null)
-  if (installed === null) {
-    return { kind: 'error', message: '모델 상태를 확인하지 못했어요' }
-  }
-  return installed ? { kind: 'installed' } : { kind: 'not-installed' }
-}
-
-async function isWebGpuSupported(): Promise<boolean> {
-  if (typeof navigator === 'undefined') return false
-  if (!('gpu' in navigator)) return false
-  try {
-    const gpu = (navigator as { gpu?: unknown }).gpu
-    if (!gpu || typeof gpu !== 'object') return false
-    if (!('requestAdapter' in gpu)) return false
-    const requestAdapter = (gpu as { requestAdapter?: unknown }).requestAdapter
-    if (typeof requestAdapter !== 'function') return false
-
-    const adapter = await (gpu as { requestAdapter: () => Promise<unknown> }).requestAdapter()
-    return Boolean(adapter)
-  } catch {
-    return false
-  }
-}
-
-async function maybeUpdateSummary(options: {
-  engine: WebLLMEngine
-  allMessages: ChatMessage[]
-  currentSummary: string | null
-  summarizedUntilRef: { current: number }
-  isSummarizingRef: { current: boolean }
-  onUpdate: (summary: string) => void
-}) {
-  const { engine, allMessages, currentSummary, summarizedUntilRef, isSummarizingRef, onUpdate } = options
-
-  if (isSummarizingRef.current) {
-    return
-  }
-
-  const tailMessagesCount = MAX_TURNS_FOR_CONTEXT * 2
-  const boundary = Math.max(0, allMessages.length - tailMessagesCount)
-  const summarizedUntil = summarizedUntilRef.current
-
-  if (boundary <= summarizedUntil) {
-    return
-  }
-
-  const chunk = allMessages.slice(summarizedUntil, boundary)
-  if (chunk.length === 0) {
-    return
-  }
-
-  isSummarizingRef.current = true
-
-  try {
-    const prompt = buildSummaryPrompt({ currentSummary, newMessages: chunk })
-
-    const res = await engine.chat.completions.create({
-      messages: prompt,
-      temperature: 0.2,
-      top_p: 0.9,
-      max_tokens: DEFAULT_MAX_TOKENS,
-    })
-
-    const text = res.choices[0]?.message?.content?.trim()
-    if (!text) {
-      return
-    }
-
-    summarizedUntilRef.current = boundary
-    onUpdate(text)
-  } catch {
-    // NOTE: 요약 실패는 치명적이지 않아서 무시해요
-  } finally {
-    isSummarizingRef.current = false
-  }
 }

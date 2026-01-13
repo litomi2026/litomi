@@ -84,6 +84,20 @@ toast.error('삭제에 실패했어요')
 
 ## Code Style
 
+### React (Effects & React Compiler)
+
+- **Avoid unnecessary `useEffect`.** If you can compute something from props/state, compute it during render (don’t store redundant state + update it in an Effect). This avoids extra render passes and desync bugs. See: [React — You Might Not Need an Effect](https://react.dev/learn/you-might-not-need-an-effect).
+- **Put “user event” side effects in event handlers (or the setter that the event calls)**, not in Effects. Effects are best for “component is shown → sync with external system”.
+- **Use Effects only to synchronize with external systems**, e.g.:
+  - browser APIs (`localStorage`, `indexedDB`, `BroadcastChannel`, `navigator.*`)
+  - timers (`setInterval`, `requestIdleCallback`)
+  - subscriptions (`addEventListener`)
+  - network / WebSocket / workers / WebLLM engines
+- **React Compiler is enabled**: don’t add `useMemo`/`useCallback` by default.
+  - Prefer simple code first; add memoization only if it’s actually expensive, or when you need referential stability for an external library.
+  - React Compiler can often memoize expensive calculations for you, reducing the need for manual `useMemo`. See: [React — You Might Not Need an Effect](https://react.dev/learn/you-might-not-need-an-effect).
+- **Don’t store functions in state** (it complicates updates and dependencies). Return callbacks from hooks/components.
+
 ### TypeScript
 
 - **Never use `any` type.** Use `unknown` and narrow the type, or define proper interfaces/types.
