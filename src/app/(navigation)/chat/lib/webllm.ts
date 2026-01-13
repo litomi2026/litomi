@@ -15,27 +15,31 @@ export type WebLLMEngine = webllm.WebWorkerMLCEngine
 export const MODEL_PRESETS = [
   {
     label: '0.6B · 1.4GB',
-    description: 'Qwen3 0.6B(q4f16) · (모바일) 생각하는 캐릭터 채팅에 적합해요',
+    description: 'Qwen3 0.6B(q4f16) · 모바일에 적합해요',
     modelId: 'Qwen3-0.6B-q4f16_1-MLC',
-    mode: 'thinking',
+    supportsThinking: true,
+    requiredVramGb: 1.4,
   },
   {
     label: '1.5B · 1.6GB',
-    description: 'Qwen2.5 1.5B Instruct(q4f16) · (모바일) 캐릭터 채팅에 적합해요',
+    description: 'Qwen2.5 1.5B Instruct(q4f16) · 모바일에 적합해요',
     modelId: 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC',
-    mode: 'chat',
+    supportsThinking: false,
+    requiredVramGb: 1.6,
   },
   {
     label: '7B · 5.1GB',
-    description: 'Qwen2.5 7B Instruct(q4f16) · (데스크탑) 캐릭터 채팅에 적합해요',
+    description: 'Qwen2.5 7B Instruct(q4f16) · 데스크탑에 적합해요',
     modelId: 'Qwen2.5-7B-Instruct-q4f16_1-MLC',
-    mode: 'chat',
+    supportsThinking: false,
+    requiredVramGb: 5.1,
   },
   {
     label: '8B · 6.9GB',
-    description: 'Qwen3 8B Instruct(q4f32) · (데스크탑) 생각하는 캐릭터 채팅에 적합해요',
+    description: 'Qwen3 8B Instruct(q4f32) · 데스크탑에 적합해요',
     modelId: 'Qwen3-8B-q4f32_1-MLC',
-    mode: 'thinking',
+    supportsThinking: true,
+    requiredVramGb: 6.9,
   },
 ] as const
 

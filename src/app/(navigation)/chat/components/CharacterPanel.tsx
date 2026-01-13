@@ -12,13 +12,13 @@ type Props = {
 
 export function CharacterPanel({ characterKey, characters, isLocked, selectedCharacter, onChangeCharacterKey }: Props) {
   return (
-    <section className="rounded-2xl border border-zinc-800/60 p-4 flex flex-col gap-3">
+    <section className="rounded-2xl border border-white/7 bg-white/3 p-4 flex flex-col gap-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
       <label className="text-sm font-medium" htmlFor="character">
         캐릭터
       </label>
       <select
         aria-disabled={isLocked}
-        className="bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-sm aria-disabled:opacity-50 aria-disabled:cursor-not-allowed"
+        className="bg-white/2 border border-white/7 rounded-xl px-3 py-2 text-sm aria-disabled:opacity-50 aria-disabled:cursor-not-allowed"
         disabled={isLocked}
         id="character"
         name="character"

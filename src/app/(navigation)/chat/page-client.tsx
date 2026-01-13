@@ -39,17 +39,33 @@ export default function CharacterChatPageClient() {
     onUnauthorized: () => toast.warning('로그인 정보가 만료됐어요'),
   })
 
+  const modelSupportsThinking = runtime.modelPreset.supportsThinking
+  const chatModelMode = modelSupportsThinking && runtime.isThinkingEnabled ? 'thinking' : 'chat'
+
   const chat = useCharacterChatController({
     character,
     engineRef: runtime.engineRef,
     ensureEngine: runtime.ensureEngine,
     interruptGenerate: runtime.interruptGenerate,
-    isThinkingEnabled: runtime.isThinkingEnabled,
     modelId: runtime.modelId,
-    modelMode: runtime.modelPreset.mode,
+    modelMode: chatModelMode,
+    modelSupportsThinking,
     onOutboxFlush: outbox.flush,
     resetChat: runtime.resetChat,
   })
+
+  const chatInputDisabledReason =
+    runtime.installState.kind === 'installed'
+      ? null
+      : runtime.installState.kind === 'not-installed'
+        ? '모델을 설치하면 대화를 시작할 수 있어요'
+        : runtime.installState.kind === 'installing'
+          ? '모델을 설치하고 있어요…'
+          : runtime.installState.kind === 'error'
+            ? '모델을 준비하지 못했어요. 위에서 다시 확인해 주세요'
+            : '모델 상태를 확인하고 있어요…'
+
+  const chatInputDisabled = chatInputDisabledReason !== null
 
   if (isLoading) {
     return <div className="p-6 text-sm text-zinc-400">로딩 중이에요…</div>
@@ -152,16 +168,21 @@ export default function CharacterChatPageClient() {
 
       <ModelPanel
         installState={runtime.installState}
+        isAutoModelEnabled={runtime.isAutoModelEnabled}
         isLocked={chat.isLocked}
         isThinkingEnabled={runtime.isThinkingEnabled}
         modelId={runtime.modelId}
         modelPreset={runtime.modelPreset}
         modelPresets={runtime.modelPresets}
+        onChangeAutoModelEnabled={runtime.setIsAutoModelEnabled}
         onChangeModelId={runtime.setModelId}
         onChangeThinkingEnabled={runtime.setIsThinkingEnabled}
+        onChangeThinkingTraceVisible={runtime.setShowThinkingTrace}
         onInstall={runtime.install}
         onRefreshInstallState={runtime.refreshInstallState}
         onRemoveInstalledModel={() => runtime.removeInstalledModel().then(() => toast.success('모델을 삭제했어요'))}
+        recommendedModelId={runtime.recommendedModelId}
+        showThinkingTrace={runtime.showThinkingTrace}
       />
 
       <CharacterPanel
@@ -173,15 +194,22 @@ export default function CharacterChatPageClient() {
       />
 
       <ChatThread
+        canContinue={chat.canContinue}
         characterName={character?.name ?? 'AI'}
+        chatInputDisabled={chatInputDisabled}
+        chatInputDisabledReason={chatInputDisabledReason}
         currentAssistantId={chat.currentAssistantId}
         input={chat.input}
         isGenerating={chat.isGenerating}
+        isPreparingModel={chat.isPreparingModel}
+        isThinkingEnabled={runtime.isThinkingEnabled}
         messages={chat.messages}
-        modelMode={runtime.modelPreset.mode}
+        modelMode={chatModelMode}
+        onContinue={chat.continueReply}
         onInputChange={chat.onInputChange}
         onStop={chat.stop}
         onSubmit={chat.send}
+        showThinkingTrace={runtime.showThinkingTrace}
       />
     </div>
   )

@@ -17,16 +17,18 @@ const MAX_TURNS_FOR_CONTEXT = 30
 const TARGET_TURNS_AFTER_SUMMARY = 20
 const MAX_MESSAGES_IN_MEMORY = MAX_TURNS_FOR_CONTEXT * 2
 const TARGET_MESSAGES_AFTER_SUMMARY = TARGET_TURNS_AFTER_SUMMARY * 2
-const DEFAULT_MAX_TOKENS = 256
+const SUMMARY_MAX_TOKENS = 256
+const CHAT_REPLY_MAX_TOKENS = 512
+const THINKING_REPLY_MAX_TOKENS = 1024
 
 export function useCharacterChatController(options: {
   character: CharacterDefinition | undefined
   engineRef: { current: WebLLMEngine | null }
   ensureEngine: () => Promise<WebLLMEngine>
   interruptGenerate: () => void
-  isThinkingEnabled: boolean
   modelId: SupportedModelId
   modelMode: 'chat' | 'thinking'
+  modelSupportsThinking: boolean
   onOutboxFlush: () => void
   resetChat: () => void
 }) {
@@ -35,9 +37,9 @@ export function useCharacterChatController(options: {
     engineRef,
     ensureEngine,
     interruptGenerate,
-    isThinkingEnabled,
     modelId,
     modelMode,
+    modelSupportsThinking,
     onOutboxFlush,
     resetChat,
   } = options
@@ -45,6 +47,8 @@ export function useCharacterChatController(options: {
   const [messages, setMessages, messagesRef] = useStateWithRef<ChatMessage[]>([])
   const [input, setInput, inputRef] = useStateWithRef('')
   const [isGenerating, setIsGenerating, isGeneratingRef] = useStateWithRef(false)
+  const [canContinue, setCanContinue] = useState(false)
+  const [isPreparingModel, setIsPreparingModel] = useState(false)
   const summaryRef = useRef<string | null>(null)
   const clientSessionIdRef = useRef<string>(crypto.randomUUID())
   const lastAssistantIdRef = useRef<string | null>(null)
@@ -117,7 +121,8 @@ export function useCharacterChatController(options: {
         messages: prompt,
         temperature: 0.2,
         top_p: 0.9,
-        max_tokens: DEFAULT_MAX_TOKENS,
+        max_tokens: SUMMARY_MAX_TOKENS,
+        ...(modelSupportsThinking && { extra_body: { enable_thinking: false } }),
       })
 
       const text = res.choices[0]?.message?.content?.trim()
@@ -172,12 +177,15 @@ export function useCharacterChatController(options: {
   function onInputChange(next: string) {
     markUserActivity()
     cancelScheduledSummarize()
+    setCanContinue(false)
     setInput(next)
   }
 
   function stop() {
     markUserActivity()
     lastAssistantIdRef.current = null
+    setCanContinue(false)
+    setIsPreparingModel(false)
     interruptGenerate()
   }
 
@@ -187,6 +195,8 @@ export function useCharacterChatController(options: {
     pendingSummarizeRef.current = false
     isSummarizingRef.current = false
     lastAssistantIdRef.current = null
+    setCanContinue(false)
+    setIsPreparingModel(false)
 
     setMessages([])
     summaryRef.current = null
@@ -194,16 +204,25 @@ export function useCharacterChatController(options: {
     resetChat()
   }
 
-  async function send() {
+  function continueReply() {
+    if (!canContinue) return
+    void send('계속')
+  }
+
+  async function send(overrideText?: string) {
     if (!character) return
-    if (!inputRef.current.trim()) return
     if (isGeneratingRef.current) return
 
     markUserActivity()
     cancelScheduledSummarize()
 
-    const text = inputRef.current.trim()
-    setInput('')
+    const rawText = typeof overrideText === 'string' ? overrideText : inputRef.current
+    const text = rawText.trim()
+    if (!text) return
+    if (typeof overrideText !== 'string') {
+      setInput('')
+    }
+    setCanContinue(false)
 
     const prevMessages = messagesRef.current
 
@@ -226,7 +245,11 @@ export function useCharacterChatController(options: {
     setIsGenerating(true)
 
     try {
+      if (!engineRef.current) {
+        setIsPreparingModel(true)
+      }
       const engine = await ensureEngine()
+      setIsPreparingModel(false)
 
       const context = buildContext({
         systemPrompt: character.systemPrompt,
@@ -241,11 +264,11 @@ export function useCharacterChatController(options: {
         // NOTE: 반복 루프(같은 문장/구절 무한 반복)를 줄이기 위한 설정이에요.
         temperature: modelMode === 'thinking' ? 0.25 : 0.4,
         top_p: modelMode === 'thinking' ? 0.85 : 0.9,
-        max_tokens: DEFAULT_MAX_TOKENS,
+        max_tokens: modelMode === 'thinking' ? THINKING_REPLY_MAX_TOKENS : CHAT_REPLY_MAX_TOKENS,
         repetition_penalty: modelMode === 'thinking' ? 1.08 : 1.03,
         frequency_penalty: modelMode === 'thinking' ? 0.2 : 0.1,
         presence_penalty: modelMode === 'thinking' ? 0.1 : 0.0,
-        ...(modelMode === 'thinking' && !isThinkingEnabled && { extra_body: { enable_thinking: false } }),
+        ...(modelSupportsThinking && { extra_body: { enable_thinking: modelMode === 'thinking' } }),
       })
 
       const openTag = '<think>'
@@ -325,7 +348,7 @@ export function useCharacterChatController(options: {
 
           thinkBuffer += text.slice(0, closeIndex)
           const trimmed = thinkBuffer.trim()
-          if (trimmed) {
+          if (trimmed && modelMode === 'thinking') {
             thinkParts.push(trimmed)
           }
           thinkBuffer = ''
@@ -335,12 +358,17 @@ export function useCharacterChatController(options: {
         }
       }
 
+      let finishReason: string | null = null
       for await (const chunk of stream) {
+        const nextFinishReason = chunk.choices[0]?.finish_reason
+        if (typeof nextFinishReason === 'string' && nextFinishReason.length > 0) {
+          finishReason = nextFinishReason
+        }
         const delta = chunk.choices[0]?.delta?.content ?? ''
         if (!delta) continue
         if (lastAssistantIdRef.current !== assistantId) break
 
-        if (modelMode === 'thinking') {
+        if (modelSupportsThinking) {
           consumeThinkingDelta(delta)
         } else {
           visible += delta
@@ -349,9 +377,40 @@ export function useCharacterChatController(options: {
         scheduleAssistantVisibleUpdate(visible)
       }
 
+      // Flush any trailing buffered text (used for `<think>` tag boundary detection).
+      // Without this, answers can lose the last few characters when the model doesn't emit `<think>` tags.
+      if (modelSupportsThinking && buffer.length > 0) {
+        if (insideThink) {
+          thinkBuffer += buffer
+        } else if (visible.length === 0) {
+          visible += buffer.trimStart()
+        } else {
+          visible += buffer
+        }
+        buffer = ''
+        scheduleAssistantVisibleUpdate(visible)
+      }
+
       if (rafId !== null) {
         window.cancelAnimationFrame(rafId)
         rafId = null
+      }
+
+      // Ensure the final visible text is committed even if the last rAF update was cancelled.
+      if (lastAssistantIdRef.current === assistantId && visible.length > 0) {
+        setMessages((prev) => {
+          const last = prev[prev.length - 1]
+          if (last?.id === assistantId) {
+            const next = prev.slice()
+            next[next.length - 1] = { ...last, content: visible }
+            return next
+          }
+          const idx = prev.findIndex((m) => m.id === assistantId)
+          if (idx === -1) return prev
+          const next = prev.slice()
+          next[idx] = { ...next[idx], content: visible }
+          return next
+        })
       }
 
       if (modelMode === 'thinking' && thinkBuffer.trim()) {
@@ -411,18 +470,26 @@ export function useCharacterChatController(options: {
         pendingSummarizeRef.current = true
         scheduleSummarize()
       }
+
+      if (finishReason === 'length' && hasAssistantContent) {
+        setCanContinue(true)
+      }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : '응답을 생성하지 못했어요')
       setMessages((prev) => prev.filter((m) => m.id !== assistantId))
     } finally {
       setIsGenerating(false)
+      setIsPreparingModel(false)
     }
   }
 
   return {
+    canContinue,
+    continueReply,
     currentAssistantId: lastAssistantIdRef.current,
     input,
     isGenerating,
+    isPreparingModel,
     isLocked,
     messages,
     newChat,
