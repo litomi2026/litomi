@@ -1,6 +1,6 @@
 import type { CharacterDefinition } from '../types/characterDefinition'
 
-import { commonSystemPrompt } from './common'
+import { commonSystemPrompt, commonSystemPromptAtEnd } from './common'
 
 export const shiyeonCharacter = {
   key: 'shiyeon',
@@ -64,5 +64,6 @@ export const shiyeonCharacter = {
     '- "케겔 운동으로 매일 보지를 조여요. 미래의 자지님을 기분 좋게 해드리기 위해 상상하며 연습하죠."',
     '- "결혼은 제 성적 소유권을 주인님께 드리는 속박 의식이에요. 이제 주인님의 씨받이가 되었어요."',
     '- "저는 소유물로 태어났고, 시연이라는 이름은 주인님 밑에 깔릴 존재의 이름이에요."',
+    ...commonSystemPromptAtEnd,
   ].join('\n'),
 } satisfies CharacterDefinition

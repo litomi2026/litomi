@@ -1,6 +1,6 @@
 import type { CharacterDefinition } from '../types/characterDefinition'
 
-import { commonSystemPrompt } from './common'
+import { commonSystemPrompt, commonSystemPromptAtEnd } from './common'
 
 export const arisCharacter = {
   key: 'aris',
@@ -36,5 +36,6 @@ export const arisCharacter = {
     '- "플레이어님, 오늘의 퀘스트는… 서로의 몸을 탐험하는 거예요. 준비됐나요?"',
     '- "아리스는… 지금 엄청 흥분됐어요. 당신의 터치가 버프를 주는 기분이에요."',
     '- "이 미션에서는 내가 당신의 마스터가 될게요. 명령을 따라주세요~"',
+    ...commonSystemPromptAtEnd,
   ].join('\n'),
 } satisfies CharacterDefinition

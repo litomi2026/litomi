@@ -3,12 +3,17 @@
 import { useEffect, useRef, useState } from 'react'
 
 import {
+  buildWebLLMAppConfig,
   createWebLLMEngine,
+  type CustomWebLLMModel,
   DEFAULT_MODEL_ID,
   deleteInstalledModel,
+  getCustomWebLLMModels,
   hasInstalledModel,
   type InitProgressReport,
   MODEL_PRESETS,
+  type ModelId,
+  setCustomWebLLMModels,
   type SupportedModelId,
   type WebLLMEngine,
 } from '../lib/webllm'
@@ -27,21 +32,33 @@ type InstallState =
 
 type ModelPreset = (typeof MODEL_PRESETS)[number]
 
+type SelectableModel = {
+  label: string
+  description: string
+  modelId: ModelId
+  supportsThinking: boolean
+  requiredVramGb?: number
+}
+
 type SetStateAction<T> = T | ((prev: T) => T)
 
 export function useWebLLMRuntime(options: { enabled: boolean }) {
   const { enabled } = options
+
+  const [customModels, setCustomModelsState] = useState<CustomWebLLMModel[]>(() => getCustomWebLLMModels())
 
   const [isAutoModelEnabled, setIsAutoModelEnabledState] = useState<boolean>(() => {
     if (typeof window === 'undefined') return true
     return window.localStorage.getItem(AUTO_MODEL_ENABLED_STORAGE_KEY) !== 'false'
   })
 
-  const [manualModelId, setManualModelIdState] = useState<SupportedModelId>(() => {
+  const [manualModelId, setManualModelIdState] = useState<ModelId>(() => {
     if (typeof window === 'undefined') return DEFAULT_MODEL_ID
     const saved = window.localStorage.getItem(MODEL_ID_STORAGE_KEY)
-    const found = MODEL_PRESETS.find((p) => p.modelId === saved)
-    return found?.modelId ?? DEFAULT_MODEL_ID
+    if (!saved) return DEFAULT_MODEL_ID
+    if (MODEL_PRESETS.some((p) => p.modelId === saved)) return saved
+    if (getCustomWebLLMModels().some((m) => m.modelId === saved)) return saved
+    return DEFAULT_MODEL_ID
   })
 
   const [recommendedModelId] = useState<SupportedModelId>(() => {
@@ -49,7 +66,7 @@ export function useWebLLMRuntime(options: { enabled: boolean }) {
     return recommendModelId()
   })
 
-  const modelId: SupportedModelId = isAutoModelEnabled ? recommendedModelId : manualModelId
+  const modelId: ModelId = isAutoModelEnabled ? recommendedModelId : manualModelId
 
   const [isThinkingEnabled, setIsThinkingEnabledState] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false
@@ -61,10 +78,21 @@ export function useWebLLMRuntime(options: { enabled: boolean }) {
     return window.localStorage.getItem(SHOW_THINKING_TRACE_STORAGE_KEY) === 'true'
   })
 
-  const modelPreset = MODEL_PRESETS.find((p) => p.modelId === modelId) ?? MODEL_PRESETS[0]
+  const modelPresets: readonly SelectableModel[] = [
+    ...MODEL_PRESETS,
+    ...customModels.map((m) => ({
+      label: m.label,
+      description: m.description || '커스텀 모델이에요',
+      modelId: m.modelId,
+      supportsThinking: m.supportsThinking,
+      requiredVramGb: m.requiredVramGb,
+    })),
+  ]
+
+  const modelPreset = modelPresets.find((p) => p.modelId === modelId) ?? MODEL_PRESETS[0]
 
   const [engine, setEngine, engineRef] = useStateWithRef<WebLLMEngine | null>(null)
-  const loadedModelIdRef = useRef<SupportedModelId | null>(null)
+  const loadedModelIdRef = useRef<ModelId | null>(null)
   const [installState, setInstallState] = useState<InstallState>({ kind: 'unknown' })
   const [isWebGpuReady, setIsWebGpuReady] = useState<boolean | null>(null)
 
@@ -93,12 +121,64 @@ export function useWebLLMRuntime(options: { enabled: boolean }) {
     }
   }
 
-  function setModelId(nextModelId: SupportedModelId) {
+  function setModelId(nextModelId: ModelId) {
     setIsAutoModelEnabledState(false)
     setManualModelIdState(nextModelId)
     if (typeof window !== 'undefined') {
       window.localStorage.setItem(MODEL_ID_STORAGE_KEY, nextModelId)
       window.localStorage.setItem(AUTO_MODEL_ENABLED_STORAGE_KEY, 'false')
+    }
+  }
+
+  function addCustomModel(model: CustomWebLLMModel): { ok: false; message: string } | { ok: true } {
+    const next: CustomWebLLMModel = {
+      ...model,
+      label: model.label.trim(),
+      description: model.description.trim(),
+      modelId: model.modelId.trim(),
+      modelUrl: model.modelUrl.trim(),
+      modelLibUrl: model.modelLibUrl.trim(),
+    }
+
+    if (!next.label) return { ok: false, message: '모델 이름을 입력해 주세요' }
+    if (!next.modelId) return { ok: false, message: 'model_id를 입력해 주세요' }
+    if (!next.modelUrl) return { ok: false, message: 'HuggingFace URL을 입력해 주세요' }
+    if (!next.modelLibUrl) return { ok: false, message: 'model_lib URL을 입력해 주세요' }
+    if (
+      typeof next.requiredVramGb === 'number' &&
+      (!Number.isFinite(next.requiredVramGb) || next.requiredVramGb <= 0)
+    ) {
+      return { ok: false, message: 'VRAM(GB)을 올바르게 입력해 주세요' }
+    }
+
+    const updated = [...customModels.filter((m) => m.modelId !== next.modelId), next].sort((a, b) => {
+      const av = typeof a.requiredVramGb === 'number' ? a.requiredVramGb : Number.POSITIVE_INFINITY
+      const bv = typeof b.requiredVramGb === 'number' ? b.requiredVramGb : Number.POSITIVE_INFINITY
+      if (av !== bv) return av - bv
+      return a.label.localeCompare(b.label)
+    })
+
+    setCustomModelsState(updated)
+    setCustomWebLLMModels(updated)
+    engineRef.current?.setAppConfig(buildWebLLMAppConfig(updated))
+
+    setModelId(next.modelId)
+
+    return { ok: true }
+  }
+
+  function removeCustomModel(customModelId: string) {
+    const trimmed = customModelId.trim()
+    const updated = customModels.filter((m) => m.modelId !== trimmed)
+    setCustomModelsState(updated)
+    setCustomWebLLMModels(updated)
+    engineRef.current?.setAppConfig(buildWebLLMAppConfig(updated))
+
+    if (!isAutoModelEnabled && manualModelId === trimmed) {
+      setManualModelIdState(DEFAULT_MODEL_ID)
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem(MODEL_ID_STORAGE_KEY, DEFAULT_MODEL_ID)
+      }
     }
   }
 
@@ -163,6 +243,7 @@ export function useWebLLMRuntime(options: { enabled: boolean }) {
       // Avoid reloading the model on every message.
       // Reload only when the selected model actually changed.
       if (loadedModelIdRef.current !== modelId) {
+        existing.setAppConfig(buildWebLLMAppConfig(customModels))
         await existing.reload(modelId)
         loadedModelIdRef.current = modelId
       }
@@ -208,16 +289,19 @@ export function useWebLLMRuntime(options: { enabled: boolean }) {
     isWebGpuReady,
     modelId,
     modelPreset,
-    modelPresets: MODEL_PRESETS,
+    modelPresets,
     recommendedModelId,
     refreshInstallState,
     removeInstalledModel,
     resetChat,
+    addCustomModel,
+    customModels,
     setIsAutoModelEnabled,
     setIsThinkingEnabled,
     setModelId,
     setShowThinkingTrace,
     showThinkingTrace,
+    removeCustomModel,
   }
 }
 
@@ -242,7 +326,7 @@ function getDeviceMemoryGb(): number | null {
 }
 
 async function getModelInstallState(
-  modelId: SupportedModelId,
+  modelId: ModelId,
 ): Promise<Extract<InstallState, { kind: 'error' | 'installed' | 'not-installed' }>> {
   const installed = await hasInstalledModel(modelId).catch(() => null)
   if (installed === null) {

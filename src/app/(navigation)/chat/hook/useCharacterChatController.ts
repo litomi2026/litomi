@@ -265,8 +265,8 @@ export function useCharacterChatController(options: {
         top_p: modelMode === 'thinking' ? 0.85 : 0.9,
         max_tokens: modelMode === 'thinking' ? THINKING_REPLY_MAX_TOKENS : CHAT_REPLY_MAX_TOKENS,
         repetition_penalty: modelMode === 'thinking' ? 1.08 : 1.03,
-        frequency_penalty: modelMode === 'thinking' ? 0.2 : 0.1,
-        presence_penalty: modelMode === 'thinking' ? 0.1 : 0.0,
+        frequency_penalty: modelMode === 'thinking' ? 0.2 : 0.15,
+        presence_penalty: modelMode === 'thinking' ? 0.2 : 0.15,
         ...(modelSupportsThinking && { extra_body: { enable_thinking: modelMode === 'thinking' } }),
       })
 

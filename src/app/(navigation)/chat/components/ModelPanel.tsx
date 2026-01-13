@@ -1,10 +1,16 @@
 'use client'
 
 import { ChevronRight, Download, Trash2 } from 'lucide-react'
+import { type FormEvent, useRef, useState } from 'react'
+import { toast } from 'sonner'
 
+import Dialog from '@/components/ui/Dialog'
+import DialogBody from '@/components/ui/DialogBody'
+import DialogFooter from '@/components/ui/DialogFooter'
+import DialogHeader from '@/components/ui/DialogHeader'
 import Toggle from '@/components/ui/Toggle'
 
-import type { InitProgressReport, SupportedModelId } from '../lib/webllm'
+import type { CustomWebLLMModel, InitProgressReport, ModelId } from '../lib/webllm'
 
 type InstallState =
   | { kind: 'error'; message: string }
@@ -16,9 +22,9 @@ type InstallState =
 type ModelPreset = {
   label: string
   description: string
-  modelId: SupportedModelId
+  modelId: ModelId
   supportsThinking: boolean
-  requiredVramGb: number
+  requiredVramGb?: number
 }
 
 type Props = {
@@ -26,15 +32,18 @@ type Props = {
   isAutoModelEnabled: boolean
   isLocked: boolean
   isThinkingEnabled: boolean
-  modelId: SupportedModelId
+  modelId: ModelId
   modelPreset: ModelPreset
   modelPresets: readonly ModelPreset[]
-  recommendedModelId: SupportedModelId
+  recommendedModelId: ModelId
   showThinkingTrace: boolean
+  customModels: readonly CustomWebLLMModel[]
   onChangeAutoModelEnabled: (enabled: boolean) => void
-  onChangeModelId: (modelId: SupportedModelId) => void
+  onChangeModelId: (modelId: ModelId) => void
   onChangeThinkingEnabled: (enabled: boolean) => void
   onChangeThinkingTraceVisible: (enabled: boolean) => void
+  onAddCustomModel: (model: CustomWebLLMModel) => { ok: false; message: string } | { ok: true }
+  onRemoveCustomModel: (modelId: string) => void
   onInstall: () => void
   onRefreshInstallState: () => void
   onRemoveInstalledModel: () => void
@@ -50,10 +59,13 @@ export function ModelPanel({
   modelPresets,
   recommendedModelId,
   showThinkingTrace,
+  customModels,
   onChangeAutoModelEnabled,
   onChangeModelId,
   onChangeThinkingEnabled,
   onChangeThinkingTraceVisible,
+  onAddCustomModel,
+  onRemoveCustomModel,
   onInstall,
   onRefreshInstallState,
   onRemoveInstalledModel,
@@ -61,6 +73,66 @@ export function ModelPanel({
   const isAdvancedDisabled = isLocked || installState.kind === 'installing'
   const recommendedPreset = modelPresets.find((p) => p.modelId === recommendedModelId)
   const statusText = getInstallStatusText(installState)
+  const [isCustomModelDialogOpen, setIsCustomModelDialogOpen] = useState(false)
+  const addCustomModelFormRef = useRef<HTMLFormElement | null>(null)
+
+  function getText(fd: FormData, key: string): string {
+    return String(fd.get(key) ?? '')
+  }
+
+  function getOptionalNumber(fd: FormData, key: string): number | undefined {
+    const raw = getText(fd, key).trim()
+    if (!raw) {
+      return undefined
+    }
+
+    return Number(raw)
+  }
+
+  function normalizeHuggingFaceUrl(input: string): string {
+    const trimmed = input.trim()
+    if (!trimmed) {
+      return ''
+    }
+
+    if (trimmed.startsWith('https://') || trimmed.startsWith('http://')) {
+      return trimmed
+    }
+
+    const withoutDomain = trimmed.replace(/^huggingface\.co\//, '')
+    return `https://huggingface.co/${withoutDomain}`
+  }
+
+  function handleCustomModelSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const fd = new FormData(e.currentTarget)
+
+    const label = getText(fd, 'label')
+    const modelId = getText(fd, 'model-id')
+    const description = getText(fd, 'description')
+    const modelUrl = normalizeHuggingFaceUrl(getText(fd, 'model-url'))
+    const modelLibUrl = getText(fd, 'model-lib-url').trim()
+    const requiredVramGb = getOptionalNumber(fd, 'required-vram-gb')
+    const supportsThinking = fd.get('supports-thinking') === 'on'
+
+    const result = onAddCustomModel({
+      label,
+      description,
+      modelId,
+      modelUrl,
+      modelLibUrl,
+      requiredVramGb,
+      supportsThinking,
+    })
+
+    if (!result.ok) {
+      toast.error(result.message)
+      return
+    }
+
+    toast.success('커스텀 모델을 추가했어요')
+    setIsCustomModelDialogOpen(false)
+  }
 
   return (
     <section className="rounded-2xl border border-white/7 bg-white/3 p-4 flex flex-col gap-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
@@ -102,7 +174,7 @@ export function ModelPanel({
               disabled={isAdvancedDisabled || isAutoModelEnabled}
               id="model-preset"
               name="model-preset"
-              onChange={(e) => onChangeModelId(e.target.value as SupportedModelId)}
+              onChange={(e) => onChangeModelId(e.target.value)}
               value={modelId}
             >
               {modelPresets.map((p) => (
@@ -113,14 +185,63 @@ export function ModelPanel({
             </select>
             <p className="text-xs text-zinc-500">{modelPreset.description}</p>
             <p className="text-xs text-zinc-500">표기된 숫자는 "모델 파라미터 수 · 필요한 GPU 메모리(VRAM)"예요</p>
-            {!isAutoModelEnabled && recommendedPreset ? (
+            {!isAutoModelEnabled && recommendedPreset && (
               <p className="text-xs text-zinc-500">
-                추천: {recommendedPreset.label} (약 {recommendedPreset.requiredVramGb}GB)
+                추천: {recommendedPreset.label}
+                {typeof recommendedPreset.requiredVramGb === 'number' && (
+                  <> (약 {recommendedPreset.requiredVramGb}GB)</>
+                )}
               </p>
-            ) : null}
+            )}
           </div>
 
-          {modelPreset.supportsThinking ? (
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex flex-col gap-1">
+                <p className="text-xs text-zinc-400 font-medium">커스텀 모델</p>
+                <p className="text-xs text-zinc-500">
+                  MLC 가중치 + <span className="text-zinc-300">model_lib(wasm)</span>이 필요해요
+                </p>
+              </div>
+              <button
+                aria-disabled={isAdvancedDisabled}
+                className="inline-flex text-sm items-center justify-center px-3 py-1.5 rounded-xl border border-white/7 hover:border-white/15 transition aria-disabled:opacity-50 aria-disabled:pointer-events-none text-zinc-200"
+                onClick={() => setIsCustomModelDialogOpen(true)}
+                type="button"
+              >
+                추가하기
+              </button>
+            </div>
+
+            {customModels.length > 0 && (
+              <ul className="flex flex-col gap-2">
+                {customModels.map((m) => (
+                  <li
+                    className="flex items-center justify-between gap-3 rounded-xl border border-white/7 bg-white/2 px-3 py-2"
+                    key={m.modelId}
+                  >
+                    <div className="min-w-0 flex flex-col">
+                      <p className="text-sm text-zinc-200 truncate">{m.label}</p>
+                      <p className="text-xs text-zinc-500 truncate tabular-nums">{m.modelId}</p>
+                    </div>
+                    <button
+                      aria-disabled={isAdvancedDisabled}
+                      className="inline-flex items-center justify-center rounded-lg border border-white/7 hover:border-white/15 transition aria-disabled:opacity-50 aria-disabled:pointer-events-none p-2"
+                      onClick={() => {
+                        onRemoveCustomModel(m.modelId)
+                        toast.success('커스텀 모델을 삭제했어요')
+                      }}
+                      type="button"
+                    >
+                      <Trash2 className="size-4 text-zinc-400" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          {modelPreset.supportsThinking && (
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between gap-3">
                 <p className="text-xs text-zinc-400 font-medium">생각하기</p>
@@ -143,9 +264,9 @@ export function ModelPanel({
                 />
               </div>
             </div>
-          ) : null}
+          )}
 
-          {installState.kind === 'installed' ? (
+          {installState.kind === 'installed' && (
             <button
               aria-disabled={isAdvancedDisabled}
               className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl border border-white/7 hover:border-white/15 transition aria-disabled:opacity-50 aria-disabled:pointer-events-none text-zinc-200"
@@ -155,9 +276,132 @@ export function ModelPanel({
               <Trash2 className="size-4 text-zinc-400" />
               모델 삭제
             </button>
-          ) : null}
+          )}
         </div>
       </details>
+
+      <Dialog
+        ariaLabel="커스텀 모델 추가"
+        className="sm:max-w-lg"
+        onAfterClose={() => addCustomModelFormRef.current?.reset()}
+        onClose={() => setIsCustomModelDialogOpen(false)}
+        open={isCustomModelDialogOpen}
+      >
+        <form className="flex flex-1 flex-col min-h-0" onSubmit={handleCustomModelSubmit} ref={addCustomModelFormRef}>
+          <DialogHeader onClose={() => setIsCustomModelDialogOpen(false)} title="커스텀 모델 추가" />
+          <DialogBody className="flex flex-col gap-3 text-sm">
+            <p className="text-xs text-zinc-500">
+              HuggingFace 모델이라도 WebLLM은 <span className="text-zinc-300">MLC 포맷 가중치</span> +{' '}
+              <span className="text-zinc-300">model_lib(wasm)</span>이 필요해요
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div className="flex flex-col gap-1">
+                <label className="text-xs text-zinc-400 font-medium" htmlFor="custom-model-label">
+                  이름
+                </label>
+                <input
+                  className="bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm"
+                  id="custom-model-label"
+                  name="label"
+                  placeholder="예: 14B · 12GB"
+                  required
+                  type="text"
+                />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-xs text-zinc-400 font-medium" htmlFor="custom-model-vram">
+                  VRAM(GB) (선택)
+                </label>
+                <input
+                  className="bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm tabular-nums"
+                  id="custom-model-vram"
+                  min={0}
+                  name="required-vram-gb"
+                  placeholder="예: 12"
+                  step={0.1}
+                  type="number"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-zinc-400 font-medium" htmlFor="custom-model-id">
+                model_id
+              </label>
+              <input
+                className="bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm tabular-nums"
+                id="custom-model-id"
+                name="model-id"
+                placeholder="예: Qwen2.5-14B-Instruct-q4f16_1-MLC"
+                required
+                type="text"
+              />
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-zinc-400 font-medium" htmlFor="custom-model-description">
+                설명 (선택)
+              </label>
+              <input
+                className="bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm"
+                id="custom-model-description"
+                name="description"
+                placeholder="예: 캐릭터 롤플레이용"
+                type="text"
+              />
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-zinc-400 font-medium" htmlFor="custom-model-url">
+                HuggingFace URL (MLC 가중치)
+              </label>
+              <input
+                className="bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm tabular-nums"
+                id="custom-model-url"
+                name="model-url"
+                placeholder="예: https://huggingface.co/mlc-ai/..."
+                required
+                type="text"
+              />
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-zinc-400 font-medium" htmlFor="custom-model-lib-url">
+                model_lib URL (wasm)
+              </label>
+              <input
+                className="bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm tabular-nums"
+                id="custom-model-lib-url"
+                name="model-lib-url"
+                placeholder="예: https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/..."
+                required
+                type="text"
+              />
+            </div>
+
+            <label className="flex items-center gap-2 text-xs text-zinc-400">
+              <input className="accent-brand" name="supports-thinking" type="checkbox" />
+              생각하기 지원
+            </label>
+          </DialogBody>
+          <DialogFooter className="flex gap-2">
+            <button
+              className="flex-1 inline-flex items-center justify-center px-3 py-2 rounded-xl border border-zinc-700 hover:border-zinc-500 transition text-zinc-200"
+              onClick={() => setIsCustomModelDialogOpen(false)}
+              type="button"
+            >
+              취소
+            </button>
+            <button
+              className="flex-1 inline-flex items-center justify-center px-3 py-2 rounded-xl bg-zinc-100 text-zinc-900 hover:bg-white transition"
+              type="submit"
+            >
+              추가하기
+            </button>
+          </DialogFooter>
+        </form>
+      </Dialog>
 
       {installState.kind === 'unknown' ? (
         <p className="text-sm text-zinc-500">모델 상태를 확인하고 있어요…</p>
