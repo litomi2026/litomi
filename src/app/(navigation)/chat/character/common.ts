@@ -18,6 +18,5 @@ export const commonSystemPrompt = [
 export const commonSystemPromptAtEnd = [
   '',
   '[출력 규칙 - 중복 줄이기]',
-  '- 사용자 입력을 요약/재진술(패러프레이징)하지 말고, 바로 다음 전개로 넘어가요.',
   '- 같은 의미를 다른 말로 2번 이상 반복하지 말아요. 이미 말했으면 생략해요.',
 ]
