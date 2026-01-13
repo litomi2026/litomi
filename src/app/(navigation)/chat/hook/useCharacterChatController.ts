@@ -4,22 +4,28 @@ import ms from 'ms'
 import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-import type { ModelId, WebLLMEngine } from '../lib/webllm'
 import type { CharacterDefinition } from '../types/characterDefinition'
 import type { ChatMessage } from '../types/chatMessage'
 
+import { buildWebLLMAppConfig, type ModelId, type WebLLMEngine } from '../lib/webllm'
 import { archiveChatMessages } from '../storage/indexeddb'
 import { enqueueAppendMessages, enqueueCreateSession } from '../storage/outbox'
 
 type SetStateAction<T> = T | ((prev: T) => T)
 
-const MAX_TURNS_FOR_CONTEXT = 30
-const TARGET_TURNS_AFTER_SUMMARY = 20
-const MAX_MESSAGES_IN_MEMORY = MAX_TURNS_FOR_CONTEXT * 2
-const TARGET_MESSAGES_AFTER_SUMMARY = TARGET_TURNS_AFTER_SUMMARY * 2
 const SUMMARY_MAX_TOKENS = 256
 const CHAT_REPLY_MAX_TOKENS = 512
 const THINKING_REPLY_MAX_TOKENS = 1024
+
+// Token budgeting
+//
+// - Keep a completion buffer (1~2k tokens) so we don't bump into the context limit
+// - Keep prompt small for fast answers; "memory" comes from summary
+const COMPLETION_TOKEN_BUFFER = 1536
+const SYSTEM_PROMPT_TOKEN_BUDGET = 1024
+const DEFAULT_HISTORY_MAX_TOKENS = 4096
+const DEFAULT_HISTORY_TARGET_TOKENS_AFTER_SUMMARY = 3072
+const MIN_MESSAGES_TO_KEEP_AFTER_SUMMARY = 8
 
 const DEFAULT_LLM_PARAMS = {
   chat: {
@@ -76,8 +82,43 @@ export function useCharacterChatController(options: {
   const scheduledSummarizeIdRef = useRef<number | null>(null)
   const scheduleSummarizeRef = useRef<() => void>(() => {})
   const lastUserActivityAtRef = useRef<number>(Date.now())
+  const tokenBudgetRef = useRef<TokenBudget | null>(null)
 
   const isLocked = messages.length > 0
+
+  type TokenBudget = {
+    completionMaxTokens: number
+    contextWindowSize: number
+    hardMaxPromptTokens: number
+    historyMaxTokens: number
+    historyTargetTokensAfterSummary: number
+  }
+
+  function getTokenBudget(options: { completionMaxTokens: number }): TokenBudget {
+    const contextWindowSize = getModelContextWindowSize(modelId)
+    const completionMaxTokensRaw = options.completionMaxTokens
+    const completionMaxTokens =
+      typeof completionMaxTokensRaw === 'number' && Number.isFinite(completionMaxTokensRaw) && completionMaxTokensRaw > 0
+        ? Math.floor(completionMaxTokensRaw)
+        : CHAT_REPLY_MAX_TOKENS
+    const hardMaxPromptTokens = Math.max(512, contextWindowSize - (completionMaxTokens + COMPLETION_TOKEN_BUFFER))
+    const historyMaxTokens = Math.max(
+      512,
+      Math.min(DEFAULT_HISTORY_MAX_TOKENS, hardMaxPromptTokens - SYSTEM_PROMPT_TOKEN_BUDGET),
+    )
+    const historyTargetTokensAfterSummary = Math.max(
+      256,
+      Math.min(DEFAULT_HISTORY_TARGET_TOKENS_AFTER_SUMMARY, historyMaxTokens - 512),
+    )
+
+    return {
+      completionMaxTokens,
+      contextWindowSize,
+      hardMaxPromptTokens,
+      historyMaxTokens,
+      historyTargetTokensAfterSummary,
+    }
+  }
 
   function markUserActivity() {
     lastUserActivityAtRef.current = Date.now()
@@ -114,7 +155,14 @@ export function useCharacterChatController(options: {
     }
 
     const currentMessages = messagesRef.current
-    if (currentMessages.length < MAX_MESSAGES_IN_MEMORY) {
+    const budget = tokenBudgetRef.current
+    if (!budget) {
+      scheduleSummarizeRef.current()
+      return
+    }
+
+    const totalTokens = countHistoryTokens(currentMessages)
+    if (totalTokens <= budget.historyMaxTokens) {
       pendingSummarizeRef.current = false
       return
     }
@@ -125,8 +173,12 @@ export function useCharacterChatController(options: {
       return
     }
 
-    const pruneCount = currentMessages.length - TARGET_MESSAGES_AFTER_SUMMARY
-    const chunk = currentMessages.slice(0, pruneCount)
+    const pruneCount = pickPruneCountByTokenBudget({
+      messages: currentMessages,
+      minMessagesToKeep: MIN_MESSAGES_TO_KEEP_AFTER_SUMMARY,
+      targetTokensAfterSummary: budget.historyTargetTokensAfterSummary,
+    })
+    const chunk = pruneCount > 0 ? currentMessages.slice(0, pruneCount) : []
     if (chunk.length === 0) {
       pendingSummarizeRef.current = false
       return
@@ -269,21 +321,25 @@ export function useCharacterChatController(options: {
       const engine = await ensureEngine()
       setIsPreparingModel(false)
 
-      const context = buildContext({
-        systemPrompt: character.systemPrompt,
-        messages: [...prevMessages, userMessage],
-        maxTurns: MAX_TURNS_FOR_CONTEXT,
-        summary: summaryRef.current,
-      })
-
       const llmParams = {
         ...DEFAULT_LLM_PARAMS[modelMode],
         ...character.llmParams?.[modelMode],
       }
 
+      const budget = getTokenBudget({ completionMaxTokens: llmParams.max_tokens })
+      tokenBudgetRef.current = budget
+
+      const context = buildContext({
+        systemPrompt: character.systemPrompt,
+        messages: [...prevMessages, userMessage],
+        summary: summaryRef.current,
+        historyMaxTokens: budget.historyMaxTokens,
+      })
+
       const stream = await engine.chat.completions.create({
         messages: context,
         stream: true,
+        stream_options: { include_usage: true },
         ...llmParams,
         ...(modelSupportsThinking && { extra_body: { enable_thinking: modelMode === 'thinking' } }),
       })
@@ -376,7 +432,11 @@ export function useCharacterChatController(options: {
       }
 
       let finishReason: string | null = null
+      let finalUsage: { prompt_tokens: number; completion_tokens: number; total_tokens: number } | null = null
       for await (const chunk of stream) {
+        if (chunk.usage && typeof chunk.usage.prompt_tokens === 'number') {
+          finalUsage = chunk.usage
+        }
         const nextFinishReason = chunk.choices[0]?.finish_reason
         if (typeof nextFinishReason === 'string' && nextFinishReason.length > 0) {
           finishReason = nextFinishReason
@@ -437,9 +497,23 @@ export function useCharacterChatController(options: {
       const assistantContent = visible
       const assistantThink = thinkParts.filter(Boolean).join('\n\n')
       const hasAssistantContent = assistantContent.trim().length > 0
+
+      const userTokenCount = finalUsage?.prompt_tokens
+      const assistantTokenCount = finalUsage?.completion_tokens
+
+      const userMessageWithTokens =
+        typeof userTokenCount === 'number' && Number.isFinite(userTokenCount) && userTokenCount > 0
+          ? { ...userMessage, tokenCount: userTokenCount }
+          : userMessage
+
+      const assistantMessageWithTokens =
+        typeof assistantTokenCount === 'number' && Number.isFinite(assistantTokenCount) && assistantTokenCount > 0
+          ? { ...assistantMessage, content: assistantContent, tokenCount: assistantTokenCount }
+          : { ...assistantMessage, content: assistantContent }
+
       const finalMessages = hasAssistantContent
-        ? [...prevMessages, userMessage, { ...assistantMessage, content: assistantContent }]
-        : [...prevMessages, userMessage]
+        ? [...prevMessages, userMessageWithTokens, assistantMessageWithTokens]
+        : [...prevMessages, userMessageWithTokens]
 
       const sessionId = clientSessionIdRef.current
       await enqueueCreateSession({
@@ -450,23 +524,28 @@ export function useCharacterChatController(options: {
         modelId,
       })
 
-      if (!hasAssistantContent) {
-        setMessages((prev) => prev.filter((m) => m.id !== assistantId))
-      } else if (assistantThink) {
-        setMessages((prev) => {
-          const last = prev[prev.length - 1]
-          if (last?.id === assistantId) {
-            const next = prev.slice()
-            next[next.length - 1] = { ...last, debug: { think: assistantThink } }
+      setMessages((prev) => {
+        const filtered = hasAssistantContent ? prev : prev.filter((m) => m.id !== assistantId)
+
+        return filtered.map((m) => {
+          if (typeof userTokenCount === 'number' && Number.isFinite(userTokenCount) && userTokenCount > 0 && m.id === userMessage.id) {
+            return { ...m, tokenCount: userTokenCount }
+          }
+
+          if (hasAssistantContent && m.id === assistantId) {
+            const next: ChatMessage = { ...m }
+            if (typeof assistantTokenCount === 'number' && Number.isFinite(assistantTokenCount) && assistantTokenCount > 0) {
+              next.tokenCount = assistantTokenCount
+            }
+            if (assistantThink) {
+              next.debug = { ...next.debug, think: assistantThink }
+            }
             return next
           }
-          const idx = prev.findIndex((m) => m.id === assistantId)
-          if (idx === -1) return prev
-          const next = prev.slice()
-          next[idx] = { ...next[idx], debug: { think: assistantThink } }
-          return next
+
+          return m
         })
-      }
+      })
 
       const outboxMessages: { clientMessageId: string; role: 'assistant' | 'user'; content: string }[] = [
         { clientMessageId: userMessage.id, role: 'user', content: userMessage.content },
@@ -483,7 +562,7 @@ export function useCharacterChatController(options: {
 
       onOutboxFlush()
 
-      if (hasAssistantContent && finalMessages.length >= MAX_MESSAGES_IN_MEMORY) {
+      if (hasAssistantContent && countHistoryTokens(finalMessages) > budget.historyMaxTokens) {
         pendingSummarizeRef.current = true
         scheduleSummarize()
       }
@@ -519,12 +598,12 @@ export function useCharacterChatController(options: {
 function buildContext(options: {
   systemPrompt: string
   messages: ChatMessage[]
-  maxTurns: number
   summary: string | null
+  historyMaxTokens: number
 }) {
-  const { systemPrompt, messages, maxTurns, summary } = options
+  const { systemPrompt, messages, summary, historyMaxTokens } = options
 
-  const recent = messages.slice(-maxTurns * 2)
+  const recent = pickRecentMessagesByTokenBudget(messages, historyMaxTokens)
   const system = summary
     ? `${systemPrompt}\n\n[이전 대화 요약]\n${summary}\n\n(요약을 참고해서 대화를 이어가 주세요.)`
     : systemPrompt
@@ -560,6 +639,91 @@ function buildSummaryPrompt(options: { currentSummary: string | null; newMessage
     { role: 'system' as const, content: system },
     { role: 'user' as const, content: user },
   ]
+}
+
+function countHistoryTokens(messages: ChatMessage[]): number {
+  let total = 0
+  for (const m of messages) {
+    total += estimateMessageTokens(m)
+  }
+  return total
+}
+
+function estimateMessageTokens(message: ChatMessage): number {
+  const raw = message.tokenCount
+  if (typeof raw === 'number' && Number.isFinite(raw) && raw > 0) {
+    return Math.floor(raw)
+  }
+
+  // Conservative fallback: 1 token per character (good enough until we get real usage stats).
+  const trimmed = message.content.trim()
+  return Math.max(1, trimmed.length)
+}
+
+function getModelContextWindowSize(modelId: ModelId): number {
+  // WebLLM prebuilt models set `overrides.context_window_size` (typically 4096).
+  // Our built-in 30B preset also sets it explicitly (32768).
+  try {
+    const appConfig = buildWebLLMAppConfig()
+    const record = appConfig.model_list.find((m) => m.model_id === modelId)
+    const raw = record?.overrides?.context_window_size
+    if (typeof raw === 'number' && Number.isFinite(raw) && raw > 0) {
+      return Math.floor(raw)
+    }
+  } catch {
+    // ignore
+  }
+
+  return 4096
+}
+
+function pickPruneCountByTokenBudget(options: {
+  messages: ChatMessage[]
+  targetTokensAfterSummary: number
+  minMessagesToKeep: number
+}): number {
+  const { messages, targetTokensAfterSummary, minMessagesToKeep } = options
+  if (messages.length === 0) return 0
+
+  const totalTokens = countHistoryTokens(messages)
+  if (totalTokens <= targetTokensAfterSummary) return 0
+
+  const keepAtLeast = Math.max(0, Math.floor(minMessagesToKeep))
+  const maxPrune = Math.max(0, messages.length - keepAtLeast)
+  if (maxPrune === 0) return 0
+
+  let remaining = totalTokens
+  let pruneCount = 0
+  while (pruneCount < maxPrune && remaining > targetTokensAfterSummary) {
+    remaining -= estimateMessageTokens(messages[pruneCount])
+    pruneCount += 1
+  }
+  return pruneCount
+}
+
+function pickRecentMessagesByTokenBudget(messages: ChatMessage[], maxTokens: number): ChatMessage[] {
+  if (messages.length === 0) return []
+
+  const result: ChatMessage[] = []
+  let budget = Math.max(0, Math.floor(maxTokens))
+
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const m = messages[i]
+    const tokens = estimateMessageTokens(m)
+    if (result.length === 0) {
+      // Always keep the last message (should be the user's input).
+      result.push(m)
+      budget -= tokens
+      continue
+    }
+    if (budget - tokens < 0) {
+      break
+    }
+    result.push(m)
+    budget -= tokens
+  }
+
+  return result.reverse()
 }
 
 function useStateWithRef<T>(initial: T | (() => T)) {
