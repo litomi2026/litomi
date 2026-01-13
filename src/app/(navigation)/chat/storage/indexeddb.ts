@@ -1,7 +1,17 @@
-type DBStores = 'outbox' | 'sessionMap'
+type DBStores = 'archivedMessages' | 'outbox' | 'sessionMap'
 
 const DB_NAME = 'litomi-character-chat'
-const DB_VERSION = 1
+const DB_VERSION = 2
+
+export type ArchivedChatMessageRecord = {
+  id: string
+  clientSessionId: string
+  clientMessageId: string
+  role: 'assistant' | 'user'
+  content: string
+  createdAtMs: number
+  debugThink?: string
+}
 
 export type OutboxItem =
   | {
@@ -46,6 +56,19 @@ export type SessionMapRecord = {
 }
 
 let dbPromise: Promise<IDBDatabase> | null = null
+
+export async function archiveChatMessages(records: ArchivedChatMessageRecord[]) {
+  if (records.length === 0) {
+    return
+  }
+
+  const db = await getDB()
+  await runTx<void>(db, 'archivedMessages', 'readwrite', (store) => {
+    for (const record of records) {
+      store.put(record)
+    }
+  })
+}
 
 export async function deleteOutboxItem(id: string) {
   const db = await getDB()
@@ -112,6 +135,11 @@ function openDB(): Promise<IDBDatabase> {
 
     request.onupgradeneeded = () => {
       const db = request.result
+
+      if (!db.objectStoreNames.contains('archivedMessages')) {
+        const store = db.createObjectStore('archivedMessages', { keyPath: 'id' })
+        store.createIndex('clientSessionId', 'clientSessionId', { unique: false })
+      }
 
       if (!db.objectStoreNames.contains('outbox')) {
         db.createObjectStore('outbox', { keyPath: 'id' })
