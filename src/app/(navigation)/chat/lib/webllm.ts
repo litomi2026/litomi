@@ -116,32 +116,32 @@ function toModelRecord(model: CustomWebLLMModel): webllm.ModelRecord {
 // via WebLLM's `prebuiltAppConfig.model_list`.
 export const MODEL_PRESETS = [
   {
-    label: '0.6B · 1.4GB',
-    description: 'Qwen3 0.6B(q4f16) · 모바일에 적합해요',
-    modelId: 'Qwen3-0.6B-q4f16_1-MLC',
+    label: '0.6B · 모바일',
+    description: 'Qwen3 0.6B(q4f32) · VRAM 1.9GB',
+    modelId: 'Qwen3-0.6B-q4f32_1-MLC',
     supportsThinking: true,
-    requiredVramGb: 1.4,
+    requiredVramGb: 1.9,
   },
   {
-    label: '1.5B · 1.6GB',
-    description: 'Qwen2.5 1.5B Instruct(q4f16) · 모바일에 적합해요',
-    modelId: 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC',
+    label: '1.7B · 태블릿',
+    description: 'Qwen3 1.7B(q4f32) · VRAM 2.6GB',
+    modelId: 'Qwen3-1.7B-q4f32_1-MLC',
     supportsThinking: false,
-    requiredVramGb: 1.6,
+    requiredVramGb: 2.6,
   },
   {
-    label: '7B · 5.1GB',
-    description: 'Qwen2.5 7B Instruct(q4f16) · 데스크탑에 적합해요',
-    modelId: 'Qwen2.5-7B-Instruct-q4f16_1-MLC',
+    label: '4B · 노트북',
+    description: 'Qwen3 4B(q4f16) · VRAM 3.4GB',
+    modelId: 'Qwen3-4B-q4f16_1-MLC',
     supportsThinking: false,
-    requiredVramGb: 5.1,
+    requiredVramGb: 3.4,
   },
   {
-    label: '8B · 6.9GB',
-    description: 'Qwen3 8B Instruct(q4f32) · 데스크탑에 적합해요',
-    modelId: 'Qwen3-8B-q4f32_1-MLC',
+    label: '8B · 데스크탑',
+    description: 'Qwen3 8B(q4f16) · VRAM 5.7GB',
+    modelId: 'Qwen3-8B-q4f16_1-MLC',
     supportsThinking: true,
-    requiredVramGb: 6.9,
+    requiredVramGb: 5.7,
   },
 ] as const
 

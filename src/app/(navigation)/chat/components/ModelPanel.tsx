@@ -184,7 +184,6 @@ export function ModelPanel({
               ))}
             </select>
             <p className="text-xs text-zinc-500">{modelPreset.description}</p>
-            <p className="text-xs text-zinc-500">표기된 숫자는 "모델 파라미터 수 · 필요한 GPU 메모리(VRAM)"예요</p>
             {!isAutoModelEnabled && recommendedPreset && (
               <p className="text-xs text-zinc-500">
                 추천: {recommendedPreset.label}
