@@ -27,7 +27,7 @@ const CUSTOM_MODELS_STORAGE_KEY = 'litomi:character-chat:webllm-custom-models'
 // targets/variants without duplicating large weight artifacts.
 const BUILTIN_CUSTOM_MODELS: readonly CustomWebLLMModel[] = [
   {
-    label: '30B-A3B · 32k (cs2k)',
+    label: '30B · 데스트탑(GPU)',
     description: 'Qwen3 30B-A3B(q4f16_1) · ctx32k · cs2k',
     modelId: 'Qwen3-30B-A3B-q4f16_1-ctx32k_cs2k-MLC',
     modelUrl: 'https://huggingface.co/mlc-ai/Qwen3-30B-A3B-q4f16_1-MLC',
