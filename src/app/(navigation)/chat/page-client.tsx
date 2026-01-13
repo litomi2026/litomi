@@ -12,7 +12,7 @@ import Onboarding from '../(right-search)/[name]/settings/Onboarding'
 import { arisCharacter } from './character/aris'
 import { aruCharacter } from './character/aru'
 import { neoCharacter } from './character/neo'
-import { seoyoungCharacter } from './character/seoyoung'
+import { shiyeonCharacter } from './character/seoyoung'
 import { yumiCharacter } from './character/yumi'
 import { CharacterPanel } from './components/CharacterPanel'
 import { ChatHeader } from './components/ChatHeader'
@@ -27,7 +27,7 @@ const { NEXT_PUBLIC_BACKEND_URL } = env
 
 const MIN_IOS_SAFARI_TEXT = 'iOS 18 / Safari 18 이상'
 
-const CHARACTERS = [arisCharacter, aruCharacter, yumiCharacter, seoyoungCharacter, neoCharacter] as const
+const CHARACTERS = [arisCharacter, aruCharacter, yumiCharacter, shiyeonCharacter, neoCharacter] as const
 
 export default function CharacterChatPageClient() {
   const { data: me, isLoading } = useMeQuery()
