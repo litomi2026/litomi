@@ -5,12 +5,7 @@ import { toast } from 'sonner'
 
 import { env } from '@/env/client'
 
-import { arisCharacter } from './character/aris'
-import { aruCharacter } from './character/aru'
-import { buildCharacterDefinition } from './character/buildCharacterDefinition'
-import { neoCharacter } from './character/neo'
-import shiyeonJSON from './character/shiyeon.json'
-import { yumiCharacter } from './character/yumi'
+import { CHARACTERS } from './character/characters'
 import { CharacterPanel } from './components/CharacterPanel'
 import { ChatHeader } from './components/ChatHeader'
 import { ChatThread } from './components/ChatThread'
@@ -22,14 +17,6 @@ import { useOutboxAutoFlush } from './storage/outbox'
 type InstallStateKind = 'error' | 'installed' | 'installing' | 'not-installed' | 'unknown'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
-
-const CHARACTERS = [
-  arisCharacter,
-  aruCharacter,
-  yumiCharacter,
-  buildCharacterDefinition(shiyeonJSON),
-  neoCharacter,
-] as const
 
 type AIChatProps = {
   runtime: ReturnType<typeof useWebLLMRuntime>
