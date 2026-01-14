@@ -13,6 +13,7 @@ import {
   getCustomWebLLMModels,
   MODEL_PRESETS,
   type ModelId,
+  RESOLVED_MODEL_PRESETS,
   setCustomWebLLMModels,
   type SupportedModelId,
 } from '../storage/webllmModels'
@@ -58,7 +59,7 @@ export function useWebLLMRuntime() {
 
   const [recommendedModelId] = useState<SupportedModelId>(() => {
     if (typeof window === 'undefined') return DEFAULT_MODEL_ID
-    return recommendModelIdFromNavigator(MODEL_PRESETS) as SupportedModelId
+    return recommendModelIdFromNavigator(RESOLVED_MODEL_PRESETS) as SupportedModelId
   })
 
   const modelId: ModelId = isAutoModelEnabled ? recommendedModelId : manualModelId
@@ -76,7 +77,7 @@ export function useWebLLMRuntime() {
   })
 
   const modelPresets: readonly SelectableModel[] = [
-    ...MODEL_PRESETS,
+    ...RESOLVED_MODEL_PRESETS,
     ...customModels.map((m) => ({
       label: m.label,
       description: m.description || '커스텀 모델이에요',
@@ -86,7 +87,7 @@ export function useWebLLMRuntime() {
     })),
   ]
 
-  const modelPreset = modelPresets.find((p) => p.modelId === modelId) ?? MODEL_PRESETS[0]
+  const modelPreset = modelPresets.find((p) => p.modelId === modelId) ?? modelPresets[0]
 
   const [engine, setEngine, engineRef] = useStateWithRef<WebWorkerMLCEngine | null>(null)
   const loadedModelIdRef = useRef<ModelId | null>(null)

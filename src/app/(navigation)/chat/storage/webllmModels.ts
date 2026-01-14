@@ -1,5 +1,7 @@
 'use client'
 
+import { prebuiltAppConfig } from '@mlc-ai/web-llm'
+
 export type CustomWebLLMModel = {
   label: string
   description: string
@@ -13,60 +15,93 @@ export type CustomWebLLMModel = {
 
 export type ModelId = string
 
+export type ResolvedPreset = MinimalPreset & {
+  description: string
+  requiredVramGb: number
+}
+
 export type SupportedModelId = (typeof MODEL_PRESETS)[number]['modelId']
+
+type MinimalPreset = (typeof MODEL_PRESETS)[number]
+
+type RecordLike = {
+  vram_required_MB?: number
+  overrides?: { context_window_size?: number }
+}
 
 export const MODEL_PRESETS = [
   {
     label: '0.6B · 핸드폰',
-    description: 'Qwen3 0.6B(q4f32_1) · VRAM 1.9GB · Context 4k',
     modelId: 'Qwen3-0.6B-q4f32_1-MLC',
-    supportsThinking: true,
-    requiredVramGb: 1.9,
+    supportsThinking: false,
   },
   {
     label: '1.7B · 태블릿',
-    description: 'Qwen3 1.7B(q4f32_1) · VRAM 2.6GB · Context 4k',
-    modelId: 'Qwen3-1.7B-q4f32_1-MLC',
+    modelId: 'Qwen3-1.7B-q4f16_1-MLC',
     supportsThinking: false,
-    requiredVramGb: 2.6,
   },
   {
     label: '4B · 노트북',
-    description: 'Qwen3 4B(q4f16_1) · VRAM 3.4GB · Context 4k',
     modelId: 'Qwen3-4B-q4f16_1-MLC',
     supportsThinking: false,
-    requiredVramGb: 3.4,
   },
   {
     label: '8B · 데스크탑',
-    description: 'Qwen3 8B(q4f16_1) · VRAM 5.7GB · Context 4k',
     modelId: 'Qwen3-8B-q4f16_1-MLC',
     supportsThinking: true,
-    requiredVramGb: 5.7,
   },
   {
     label: '30B · 데스크탑(+GPU)',
-    description: 'Qwen3 30B-A3B(q4f16_1) · VRAM 16GB · Context 40k',
-    modelId: 'Qwen3-30B-A3B-q4f16_1-ctx40k_cs2k-MLC',
+    modelId: 'Qwen3-30B-A3B-q4f16_1-MLC',
     supportsThinking: true,
-    requiredVramGb: 16,
   },
 ] as const
 
-export const BUILTIN_CUSTOM_MODELS: readonly CustomWebLLMModel[] = [
+export const BUILTIN_CUSTOM_MODELS = [
   {
-    label: '30B · 데스트탑(+GPU)',
-    description: 'Qwen3 30B-A3B(q4f16_1) · VRAM 16GB · Context 40k',
-    modelId: 'Qwen3-30B-A3B-q4f16_1-ctx40k_cs2k-MLC',
+    modelId: 'Qwen3-30B-A3B-q4f16_1-MLC',
     modelUrl: 'https://huggingface.co/mlc-ai/Qwen3-30B-A3B-q4f16_1-MLC',
     modelLibUrl:
       'https://huggingface.co/gwak2837/webllm-model-libs/resolve/main/Qwen3-30B-A3B-q4f16_1-ctx40k_cs2k-webgpu.wasm',
+    requiredVramGb: 16,
     contextWindowSize: 40_960,
-    supportsThinking: true,
   },
 ] as const
 
 export const DEFAULT_MODEL_ID: SupportedModelId = MODEL_PRESETS[0].modelId
+
+const MODEL_PRESET_BY_ID = new Map(MODEL_PRESETS.map((p) => [p.modelId, p]))
+const PREBUILT_RECORD_BY_ID = new Map(prebuiltAppConfig.model_list.map((m) => [m.model_id, m]))
+
+const BUILTIN_RECORD_BY_ID = new Map<string, RecordLike>(
+  BUILTIN_CUSTOM_MODELS.map((m) => [
+    m.modelId,
+    {
+      vram_required_MB: m.requiredVramGb * 1024,
+      overrides: { context_window_size: m.contextWindowSize },
+    },
+  ]),
+)
+
+const RESOLVED_MODEL_PRESET_BY_ID = new Map(MODEL_PRESETS.map((p) => [p.modelId, resolveModelPreset(p)]))
+
+export const RESOLVED_MODEL_PRESETS = MODEL_PRESETS.map((p) => RESOLVED_MODEL_PRESET_BY_ID.get(p.modelId)!)
+
+export const BUILTIN_CUSTOM_MODELS_FULL = BUILTIN_CUSTOM_MODELS.map((m) => {
+  const preset = MODEL_PRESET_BY_ID.get(m.modelId)!
+  const resolved = RESOLVED_MODEL_PRESET_BY_ID.get(m.modelId)!
+
+  return {
+    label: preset.label,
+    description: resolved.description,
+    modelId: m.modelId,
+    modelUrl: m.modelUrl,
+    modelLibUrl: m.modelLibUrl,
+    requiredVramGb: m.requiredVramGb,
+    contextWindowSize: m.contextWindowSize,
+    supportsThinking: preset.supportsThinking,
+  }
+})
 
 const CUSTOM_MODELS_STORAGE_KEY = 'litomi:character-chat:webllm-custom-models'
 
@@ -159,4 +194,18 @@ function parseCustomModels(raw: unknown): CustomWebLLMModel[] {
   }
 
   return result
+}
+
+function resolveModelPreset(preset: MinimalPreset): ResolvedPreset {
+  const record = PREBUILT_RECORD_BY_ID.get(preset.modelId) ?? BUILTIN_RECORD_BY_ID.get(preset.modelId)!
+  const vramMb = record.vram_required_MB ?? 0
+  const vramGb = vramMb / 1024
+  const context = record.overrides?.context_window_size
+  const contextText = context ? `${context / 1024}k` : '?'
+
+  return {
+    ...preset,
+    requiredVramGb: vramGb,
+    description: `${preset.modelId.replaceAll('-', ' ')} · VRAM ${vramGb.toFixed(1)}GB · Context ${contextText}`,
+  }
 }

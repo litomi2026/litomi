@@ -148,14 +148,6 @@ export function ModelPanel({
               ))}
             </select>
             <p className="text-xs text-zinc-500">{modelPreset.description}</p>
-            {!isAutoModelEnabled && recommendedPreset && (
-              <p className="text-xs text-zinc-500">
-                추천: {recommendedPreset.label}
-                {typeof recommendedPreset.requiredVramGb === 'number' && (
-                  <> (약 {recommendedPreset.requiredVramGb}GB)</>
-                )}
-              </p>
-            )}
           </div>
 
           <div className="flex flex-col gap-2">

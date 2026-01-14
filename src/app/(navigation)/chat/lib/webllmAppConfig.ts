@@ -4,10 +4,10 @@ import { type AppConfig, type ModelRecord, prebuiltAppConfig } from '@mlc-ai/web
 
 import type { CustomWebLLMModel } from '../storage/webllmModels'
 
-import { BUILTIN_CUSTOM_MODELS, getCustomWebLLMModels, mergeCustomModels } from '../storage/webllmModels'
+import { BUILTIN_CUSTOM_MODELS_FULL, getCustomWebLLMModels, mergeCustomModels } from '../storage/webllmModels'
 
 export function buildWebLLMAppConfig(customModelsFromStorage = getCustomWebLLMModels()): AppConfig {
-  const customModels = mergeCustomModels([...BUILTIN_CUSTOM_MODELS, ...customModelsFromStorage])
+  const customModels = mergeCustomModels([...BUILTIN_CUSTOM_MODELS_FULL, ...customModelsFromStorage])
   const customIds = new Set(customModels.map((m) => m.modelId))
   const prebuilt = prebuiltAppConfig.model_list.filter((m) => !customIds.has(m.model_id))
   const custom = customModels.map(toModelRecord)
