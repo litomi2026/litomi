@@ -1,10 +1,12 @@
 'use client'
 
+import type { WebWorkerMLCEngine } from '@mlc-ai/web-llm'
+
 import ms from 'ms'
 import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-import type { ModelId, WebLLMEngine } from '../lib/webllm'
+import type { ModelId } from '../storage/webllmModels'
 import type { CharacterDefinition } from '../types/characterDefinition'
 import type { ChatMessage } from '../types/chatMessage'
 
@@ -18,7 +20,6 @@ import { useStateWithRef } from './useStateWithRef'
 const SUMMARY_MAX_TOKENS = 256
 const CHAT_REPLY_MAX_TOKENS = 512
 const THINKING_REPLY_MAX_TOKENS = 1024
-
 const MIN_MESSAGES_TO_KEEP_AFTER_SUMMARY = 8
 
 const DEFAULT_LLM_PARAMS = {
@@ -40,31 +41,31 @@ const DEFAULT_LLM_PARAMS = {
   },
 }
 
-export function useCharacterChatController(options: {
+type Options = {
   character: CharacterDefinition
-  engineRef: { current: WebLLMEngine | null }
-  ensureEngine: () => Promise<WebLLMEngine>
+  engineRef: { current: WebWorkerMLCEngine | null }
+  ensureEngine: () => Promise<WebWorkerMLCEngine>
   interruptGenerate: () => void
   modelId: ModelId
-  modelContextWindowSize: number
+  modelContextWindowSize?: number
   modelMode: 'chat' | 'thinking'
   modelSupportsThinking: boolean
   onOutboxFlush: () => void
   resetChat: () => void
-}) {
-  const {
-    character,
-    engineRef,
-    ensureEngine,
-    interruptGenerate,
-    modelId,
-    modelContextWindowSize,
-    modelMode,
-    modelSupportsThinking,
-    onOutboxFlush,
-    resetChat,
-  } = options
+}
 
+export function useCharacterChatController({
+  character,
+  engineRef,
+  ensureEngine,
+  interruptGenerate,
+  modelId,
+  modelContextWindowSize,
+  modelMode,
+  modelSupportsThinking,
+  onOutboxFlush,
+  resetChat,
+}: Options) {
   const [messages, setMessages, messagesRef] = useStateWithRef<ChatMessage[]>([])
   const [input, setInput, inputRef] = useStateWithRef('')
   const [isGenerating, setIsGenerating, isGeneratingRef] = useStateWithRef(false)

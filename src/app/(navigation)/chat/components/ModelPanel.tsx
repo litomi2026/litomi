@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 
 import Toggle from '@/components/ui/Toggle'
 
-import type { CustomWebLLMModel, ModelId } from '../lib/webllm'
+import type { CustomWebLLMModel, ModelId } from '../storage/webllmModels'
 
 import { normalizeHuggingFaceUrl } from '../util/huggingface'
 import { getModelInstallStatusText } from '../util/uiText'
