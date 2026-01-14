@@ -1,6 +1,7 @@
 {
   "3d": {
-    "en": "3D"
+    "en": "3D",
+    "ko": "3D"
   },
   "3d_imageset": {
     "en": "3D imageset",
@@ -21,7 +22,7 @@
     "en": "animated",
     "ko": "애니",
     "ja": "アニメーション",
-    "zh-CN": "动画"
+    "zh-CN": "动图"
   },
   "anthology": {
     "en": "anthology",
@@ -32,7 +33,8 @@
   },
   "artbook": {
     "en": "artbook",
-    "ko": "아트북"
+    "ko": "아트북",
+    "zh-CN": "画集"
   },
   "bathing_room": {
     "en": "bathing room",
@@ -48,13 +50,14 @@
   },
   "comic": {
     "en": "comic",
-    "ko": "코믹"
+    "ko": "코믹",
+    "zh-CN": "西方漫画"
   },
   "compilation": {
     "en": "compilation",
     "ko": "합본",
     "ja": "コンピレーション",
-    "zh-CN": "合集"
+    "zh-CN": "汇编"
   },
   "digital": {
     "en": "digital",
@@ -85,7 +88,8 @@
   },
   "goudoushi": {
     "en": "goudoushi",
-    "ko": "합동지"
+    "ko": "합동지",
+    "zh-CN": "合同志"
   },
   "how_to": {
     "en": "how to",
@@ -94,7 +98,8 @@
   "incomplete": {
     "en": "incomplete",
     "ko": "미완성",
-    "ja": "未完結"
+    "ja": "未完結",
+    "zh-CN": "缺页"
   },
   "kemoket": {
     "en": "furry convention",
@@ -190,7 +195,8 @@
   },
   "replaced": {
     "en": "replaced",
-    "ko": "교체됨"
+    "ko": "교체됨",
+    "zh-CN": "已替换"
   },
   "rewrite": {
     "en": "rewrite",
@@ -212,7 +218,8 @@
   },
   "sample": {
     "en": "sample",
-    "ko": "샘플"
+    "ko": "샘플",
+    "zh-CN": "样本"
   },
   "sketch_lines": {
     "en": "sketch lines",
@@ -222,7 +229,7 @@
     "en": "collection",
     "ko": "총집편",
     "ja": "総集編",
-    "zh-CN": "合集",
+    "zh-CN": "总集篇",
     "zh-TW": "合集"
   },
   "story_arc": {
@@ -246,7 +253,8 @@
   },
   "watermarked": {
     "en": "watermarked",
-    "ko": "워터마크"
+    "ko": "워터마크",
+    "zh-CN": "水印"
   },
   "western_cg": {
     "en": "western cg",

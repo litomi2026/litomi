@@ -1,7 +1,8 @@
 {
   "abortion": {
     "en": "abortion",
-    "ko": "낙태"
+    "ko": "낙태",
+    "zh-CN": "堕胎"
   },
   "absorption": {
     "en": "absorption",
@@ -43,12 +44,13 @@
     "en": "orgasm face",
     "ko": "아헤가오",
     "ja": "アヘ顔",
-    "zh-CN": "阿嘿颜",
+    "zh-CN": "阿黑颜",
     "zh-TW": "阿嘿顏"
   },
   "albino": {
     "en": "albino",
-    "ko": "알비노"
+    "ko": "알비노",
+    "zh-CN": "白化"
   },
   "alien": {
     "en": "alien",
@@ -65,7 +67,8 @@
   },
   "amputee": {
     "en": "amputee",
-    "ko": "절단"
+    "ko": "절단",
+    "zh-CN": "截肢"
   },
   "anal": {
     "en": "anal",
@@ -96,7 +99,8 @@
   },
   "analphagia": {
     "en": "analphagia",
-    "ko": "항문 섭취"
+    "ko": "항문 섭취",
+    "zh-CN": "肛门吞食"
   },
   "angel": {
     "en": "angel",
@@ -127,7 +131,8 @@
   },
   "anorexic": {
     "en": "anorexic",
-    "ko": "거식증"
+    "ko": "거식증",
+    "zh-CN": "瘦骨嶙峋"
   },
   "apparel_bukkake": {
     "en": "clothing bukkake",
@@ -161,25 +166,25 @@
   },
   "assjob": {
     "en": "assjob",
-    "ko": [
-      "엉덩이 비빔",
-      "스마타"
-    ],
+    "ko": ["엉덩이 비빔", "스마타"],
     "ja": "尻コキ",
-    "zh-CN": "臀部摩擦",
+    "zh-CN": "尻交",
     "zh-TW": "臀部摩擦"
   },
   "aunt": {
     "en": "aunt",
-    "ko": "숙모"
+    "ko": "숙모",
+    "zh-CN": "阿姨"
   },
   "autofellatio": {
     "en": "autofellatio",
-    "ko": "자체 펠라치오"
+    "ko": "자체 펠라치오",
+    "zh-CN": "自吹"
   },
   "autopaizuri": {
     "en": "autopaizuri",
-    "ko": "자체 파이즈리"
+    "ko": "자체 파이즈리",
+    "zh-CN": "自乳交"
   },
   "azuma_minatu": {
     "en": "azuma minatu",
@@ -189,7 +194,7 @@
     "en": "bald",
     "ko": "대머리",
     "ja": "ハゲ",
-    "zh-CN": "秃头",
+    "zh-CN": "秃顶",
     "zh-TW": "禿頭"
   },
   "ball_caressing": {
@@ -206,7 +211,7 @@
     "en": "ball job",
     "ko": "불알딸",
     "ja": "玉舐め",
-    "zh-CN": "睾丸服务"
+    "zh-CN": "球交"
   },
   "balls_expansion": {
     "en": "balls expansion",
@@ -214,11 +219,13 @@
   },
   "bandages": {
     "en": "bandages",
-    "ko": "붕대"
+    "ko": "붕대",
+    "zh-CN": "绷带"
   },
   "bandaid": {
     "en": "bandaid",
-    "ko": "반창고"
+    "ko": "반창고",
+    "zh-CN": "创可贴"
   },
   "bathroom": {
     "en": "bathroom",
@@ -230,7 +237,7 @@
     "en": "BDSM",
     "ko": "BDSM",
     "ja": "BDSM",
-    "zh-CN": "BDSM",
+    "zh-CN": "调教",
     "zh-TW": "BDSM"
   },
   "beach": {
@@ -267,7 +274,8 @@
   },
   "bestiality": {
     "en": "bestiality",
-    "ko": "수간성애"
+    "ko": "수간성애",
+    "zh-CN": "兽交"
   },
   "big_areolae": {
     "en": "big areolae",
@@ -349,7 +357,8 @@
   },
   "bisexual": {
     "en": "bisexual",
-    "ko": "양성애"
+    "ko": "양성애",
+    "zh-CN": "双性"
   },
   "bite_mark": {
     "en": "bite mark",
@@ -364,15 +373,18 @@
   },
   "blackmail": {
     "en": "blackmail",
-    "ko": "협박"
+    "ko": "협박",
+    "zh-CN": "勒索"
   },
   "blind": {
     "en": "blind",
-    "ko": "시각장애"
+    "ko": "시각장애",
+    "zh-CN": "失明"
   },
   "blindfold": {
     "en": "blindfold",
-    "ko": "눈가리개"
+    "ko": "눈가리개",
+    "zh-CN": "遮眼布"
   },
   "blonde_hair": {
     "en": "blonde hair",
@@ -383,13 +395,14 @@
   },
   "blood": {
     "en": "blood",
-    "ko": "피"
+    "ko": "피",
+    "zh-CN": "流血"
   },
   "bloomers": {
     "en": "bloomers",
     "ko": "체육복바지",
     "ja": "ブルマ",
-    "zh-CN": "灯笼裤"
+    "zh-CN": "布鲁马"
   },
   "blowjob": {
     "en": "blowjob",
@@ -429,13 +442,14 @@
   },
   "bodystocking": {
     "en": "bodystocking",
-    "ko": "바디스타킹"
+    "ko": "바디스타킹",
+    "zh-CN": "连身袜"
   },
   "bodysuit": {
     "en": "bodysuit",
     "ko": "바디슈트",
     "ja": "ボディスーツ",
-    "zh-CN": "紧身衣",
+    "zh-CN": "连体紧身衣",
     "zh-TW": "緊身衣"
   },
   "bondage": {
@@ -471,7 +485,7 @@
     "en": "bride",
     "ko": "신부",
     "ja": "花嫁",
-    "zh-CN": "新娘",
+    "zh-CN": "婚纱",
     "zh-TW": "新娘"
   },
   "brown_hair": {
@@ -489,7 +503,8 @@
   },
   "bull": {
     "en": "bull",
-    "ko": "황소"
+    "ko": "황소",
+    "zh-CN": "牛"
   },
   "bunny_suit": {
     "en": "bunny suit",
@@ -499,7 +514,8 @@
   },
   "burping": {
     "en": "burping",
-    "ko": "트림"
+    "ko": "트림",
+    "zh-CN": "打嗝"
   },
   "business_suit": {
     "en": "business suit",
@@ -524,11 +540,13 @@
   },
   "cannibalism": {
     "en": "cannibalism",
-    "ko": "식인"
+    "ko": "식인",
+    "zh-CN": "食人"
   },
   "cashier": {
     "en": "cashier",
-    "ko": "계산원"
+    "ko": "계산원",
+    "zh-CN": "收银员"
   },
   "cat": {
     "en": "cat",
@@ -539,11 +557,13 @@
   },
   "catfight": {
     "en": "catfight",
-    "ko": "계집 싸움"
+    "ko": "계집 싸움",
+    "zh-CN": "猫斗"
   },
   "cbt": {
     "en": "cbt",
-    "ko": "자지 고문"
+    "ko": "자지 고문",
+    "zh-CN": "虐屌"
   },
   "centaur": {
     "en": "centaur",
@@ -568,17 +588,19 @@
   },
   "cheating": {
     "en": "cheating",
-    "ko": "불륜"
+    "ko": "불륜",
+    "zh-CN": "出轨"
   },
   "cheerleader": {
     "en": "cheerleader",
     "ko": "치어리더",
     "ja": "チアリーダー",
-    "zh-CN": "啦啦队"
+    "zh-CN": "啦啦队员"
   },
   "chikan": {
     "en": "chikan",
-    "ko": "치한"
+    "ko": "치한",
+    "zh-CN": "痴汉"
   },
   "chinese_dress": {
     "en": "chinese dress",
@@ -586,15 +608,18 @@
   },
   "chloroform": {
     "en": "chloroform",
-    "ko": "클로로폼"
+    "ko": "클로로폼",
+    "zh-CN": "迷药"
   },
   "christmas": {
     "en": "christmas",
-    "ko": "크리스마스"
+    "ko": "크리스마스",
+    "zh-CN": "圣诞装"
   },
   "clamp": {
     "en": "clamp",
-    "ko": "클램프"
+    "ko": "클램프",
+    "zh-CN": "夹具"
   },
   "classroom": {
     "en": "classroom",
@@ -624,7 +649,8 @@
   },
   "clone": {
     "en": "clone",
-    "ko": "복제"
+    "ko": "복제",
+    "zh-CN": "克隆"
   },
   "closed_eyes": {
     "en": "closed eyes",
@@ -648,11 +674,13 @@
   },
   "clown": {
     "en": "clown",
-    "ko": "광대"
+    "ko": "광대",
+    "zh-CN": "小丑"
   },
   "coach": {
     "en": "coach",
-    "ko": "코치"
+    "ko": "코치",
+    "zh-CN": "教练"
   },
   "cock_ring": {
     "en": "cock ring",
@@ -660,15 +688,18 @@
   },
   "cockphagia": {
     "en": "cockphagia",
-    "ko": "자지 포식"
+    "ko": "자지 포식",
+    "zh-CN": "阴茎吞食"
   },
   "cockslapping": {
     "en": "cockslapping",
-    "ko": "자지 몽둥이"
+    "ko": "자지 몽둥이",
+    "zh-CN": "屌掴"
   },
   "collar": {
     "en": "collar",
-    "ko": "개목걸이"
+    "ko": "개목걸이",
+    "zh-CN": "项圈"
   },
   "comedy": {
     "en": "comedy",
@@ -683,7 +714,8 @@
   },
   "condom": {
     "en": "condom",
-    "ko": "콘돔"
+    "ko": "콘돔",
+    "zh-CN": "避孕套"
   },
   "confinement": {
     "en": "confinement",
@@ -715,7 +747,8 @@
   },
   "corset": {
     "en": "corset",
-    "ko": "코르셋"
+    "ko": "코르셋",
+    "zh-CN": "紧身内衣"
   },
   "cosplay": {
     "en": "cosplay",
@@ -725,27 +758,30 @@
   },
   "cosplaying": {
     "en": "cosplaying",
-    "ko": "코스프레"
+    "ko": "코스프레",
+    "zh-CN": "Cosplay"
   },
   "cousin": {
     "en": "cousin",
-    "ko": "사촌"
+    "ko": "사촌",
+    "zh-CN": "表姐妹"
   },
   "cow": {
     "en": "cow",
     "ko": "소",
     "ja": "牛",
-    "zh-CN": "奶牛"
+    "zh-CN": "牛"
   },
   "cowgirl": {
     "en": "cowgirl",
     "ko": "여성상위",
     "ja": "騎乗位",
-    "zh-CN": "女上位"
+    "zh-CN": "牛女孩"
   },
   "cowman": {
     "en": "cowman",
-    "ko": "카우맨"
+    "ko": "카우맨",
+    "zh-CN": "牛男"
   },
   "crotch_tattoo": {
     "en": "crotch tattoo",
@@ -753,7 +789,8 @@
   },
   "crown": {
     "en": "crown",
-    "ko": "왕관"
+    "ko": "왕관",
+    "zh-CN": "王冠"
   },
   "crying": {
     "en": "crying",
@@ -843,7 +880,8 @@
   },
   "demon": {
     "en": "demon",
-    "ko": "악마"
+    "ko": "악마",
+    "zh-CN": "恶魔"
   },
   "denki_anma": {
     "en": "denki anma",
@@ -855,11 +893,13 @@
   },
   "diaper": {
     "en": "diaper",
-    "ko": "기저귀"
+    "ko": "기저귀",
+    "zh-CN": "尿布"
   },
   "dicknipples": {
     "en": "dicknipples",
-    "ko": "젖꼭지에 자지"
+    "ko": "젖꼭지에 자지",
+    "zh-CN": "阴茎乳头"
   },
   "dinosaur": {
     "en": "dinosaur",
@@ -872,11 +912,12 @@
     "en": "dismantling",
     "ko": "해체",
     "ja": "解体",
-    "zh-CN": "解体"
+    "zh-CN": "拆解"
   },
   "dog": {
     "en": "dog",
-    "ko": "개"
+    "ko": "개",
+    "zh-CN": "狗"
   },
   "doggystyle": {
     "en": "doggystyle",
@@ -890,7 +931,8 @@
   },
   "dolphin": {
     "en": "dolphin",
-    "ko": "돌고래"
+    "ko": "돌고래",
+    "zh-CN": "海豚"
   },
   "domination_loss": {
     "en": "domination loss",
@@ -916,7 +958,8 @@
   },
   "dougi": {
     "en": "dogi",
-    "ko": "도복"
+    "ko": "도복",
+    "zh-CN": "练功服"
   },
   "dragon": {
     "en": "dragon",
@@ -939,11 +982,13 @@
   },
   "drugs": {
     "en": "drugs",
-    "ko": "약물"
+    "ko": "약물",
+    "zh-CN": "药物"
   },
   "drunk": {
     "en": "drunk",
-    "ko": "꽐라"
+    "ko": "꽐라",
+    "zh-CN": "醉酒"
   },
   "ear_fuck": {
     "en": "ear fuck",
@@ -957,11 +1002,13 @@
   },
   "eel": {
     "en": "eel",
-    "ko": "장어"
+    "ko": "장어",
+    "zh-CN": "鳗鱼"
   },
   "eggs": {
     "en": "eggs",
-    "ko": "알"
+    "ko": "알",
+    "zh-CN": "产卵"
   },
   "electric_shocks": {
     "en": "electric shocks",
@@ -973,7 +1020,7 @@
     "en": "elephant",
     "ko": "코끼리",
     "ja": "象",
-    "zh-CN": "大象"
+    "zh-CN": "象"
   },
   "elf": {
     "en": "elf",
@@ -994,13 +1041,14 @@
   },
   "enema": {
     "en": "enema",
-    "ko": "관장"
+    "ko": "관장",
+    "zh-CN": "灌肠"
   },
   "exhibitionism": {
     "en": "exhibitionism",
     "ko": "노출증",
     "ja": "露出",
-    "zh-CN": "暴露癖"
+    "zh-CN": "露阴癖"
   },
   "exposed_clothing": {
     "en": "exposed clothing",
@@ -1020,11 +1068,12 @@
     "en": "eye mask",
     "ko": "안대",
     "ja": "アイマスク",
-    "zh-CN": "眼罩"
+    "zh-CN": "眼部面具"
   },
   "eyepatch": {
     "en": "eyepatch",
-    "ko": "눈덮개"
+    "ko": "눈덮개",
+    "zh-CN": "眼罩"
   },
   "facesitting": {
     "en": "facesitting",
@@ -1058,11 +1107,13 @@
   },
   "farting": {
     "en": "farting",
-    "ko": "방귀"
+    "ko": "방귀",
+    "zh-CN": "放屁"
   },
   "father": {
     "en": "father",
-    "ko": "아빠"
+    "ko": "아빠",
+    "zh-CN": "父亲"
   },
   "females_only": {
     "en": "females only",
@@ -1072,7 +1123,7 @@
     "en": "femdom",
     "ko": "펨돔",
     "ja": "女王様",
-    "zh-CN": "女性支配"
+    "zh-CN": "女性主导"
   },
   "feminization": {
     "en": "feminization",
@@ -1084,13 +1135,13 @@
     "en": "filming",
     "ko": "촬영",
     "ja": "撮影",
-    "zh-CN": "拍摄"
+    "zh-CN": "摄像"
   },
   "fingering": {
     "en": "fingering",
     "ko": "손가락 삽입",
     "ja": "指マン",
-    "zh-CN": "指交"
+    "zh-CN": "指法"
   },
   "first_person_perspective": {
     "en": "first person perspective",
@@ -1100,11 +1151,13 @@
   },
   "fish": {
     "en": "fish",
-    "ko": "물고기"
+    "ko": "물고기",
+    "zh-CN": "鱼"
   },
   "fishnets": {
     "en": "fishnets",
-    "ko": "망사 스타킹"
+    "ko": "망사 스타킹",
+    "zh-CN": "渔网"
   },
   "fisting": {
     "en": "fisting",
@@ -1158,7 +1211,8 @@
   },
   "forniphilia": {
     "en": "forniphilia",
-    "ko": "인간 가구"
+    "ko": "인간 가구",
+    "zh-CN": "人体家具"
   },
   "fox": {
     "en": "fox",
@@ -1169,7 +1223,8 @@
   },
   "freckles": {
     "en": "freckles",
-    "ko": "주근깨"
+    "ko": "주근깨",
+    "zh-CN": "雀斑"
   },
   "frog": {
     "en": "frog",
@@ -1180,7 +1235,8 @@
   },
   "frottage": {
     "en": "frottage",
-    "ko": "꼬빔"
+    "ko": "꼬빔",
+    "zh-CN": "阴茎摩擦"
   },
   "full-packaged_futanari": {
     "en": "full-packaged futanari",
@@ -1194,12 +1250,13 @@
     "en": "traditional loincloth",
     "ko": "훈도시",
     "ja": "ふんどし",
-    "zh-CN": "兜裆布",
+    "zh-CN": "六尺褌",
     "zh-TW": "兜襠布"
   },
   "furry": {
     "en": "furry",
-    "ko": "퍼리"
+    "ko": "퍼리",
+    "zh-CN": "毛茸茸"
   },
   "futaket": {
     "en": "futanari convention",
@@ -1210,7 +1267,8 @@
   },
   "futanari": {
     "en": "futanari",
-    "ko": "후타나리"
+    "ko": "후타나리",
+    "zh-CN": "扶她"
   },
   "futanarization": {
     "en": "futanarization",
@@ -1218,7 +1276,8 @@
   },
   "gag": {
     "en": "gag",
-    "ko": "재갈"
+    "ko": "재갈",
+    "zh-CN": "口塞"
   },
   "game_sprite": {
     "en": "game sprite",
@@ -1241,7 +1300,7 @@
     "en": "gaping",
     "ko": "벌어짐",
     "ja": "開口",
-    "zh-CN": "张开"
+    "zh-CN": "敞口"
   },
   "garter_belt": {
     "en": "garter belt",
@@ -1283,7 +1342,8 @@
   },
   "giant": {
     "en": "giant",
-    "ko": "거인남"
+    "ko": "거인남",
+    "zh-CN": "巨人"
   },
   "giant_sperm": {
     "en": "giant sperm",
@@ -1293,7 +1353,7 @@
     "en": "giantess",
     "ko": "거인녀",
     "ja": "巨大娘",
-    "zh-CN": "巨大女性",
+    "zh-CN": "女巨人",
     "zh-TW": "巨大女性"
   },
   "gigantic_breasts": {
@@ -1304,7 +1364,8 @@
   },
   "gijinka": {
     "en": "gijinka",
-    "ko": "의인화"
+    "ko": "의인화",
+    "zh-CN": "拟人化"
   },
   "glasses": {
     "en": "glasses",
@@ -1335,20 +1396,20 @@
     "en": "goblin",
     "ko": "고블린",
     "ja": "ゴブリン",
-    "zh-CN": "哥布林"
+    "zh-CN": "地精"
   },
   "gokkun": {
     "en": "gokkun",
     "ko": "정액 꿀꺽",
     "ja": "ごっくん",
-    "zh-CN": "吞精",
+    "zh-CN": "饮精",
     "zh-TW": "吞精"
   },
   "gorilla": {
     "en": "gorilla",
     "ko": "고릴라",
     "ja": "ゴリラ",
-    "zh-CN": "大猩猩"
+    "zh-CN": "猩猩"
   },
   "gothic_lolita": {
     "en": "gothic lolita",
@@ -1365,21 +1426,24 @@
   },
   "grandfather": {
     "en": "grandfather",
-    "ko": "할아버지"
+    "ko": "할아버지",
+    "zh-CN": "祖父"
   },
   "grandmother": {
     "en": "grandmother",
-    "ko": "할머니"
+    "ko": "할머니",
+    "zh-CN": "祖母"
   },
   "growth": {
     "en": "growth",
     "ko": "성장",
     "ja": "成長",
-    "zh-CN": "成长"
+    "zh-CN": "巨大化"
   },
   "guro": {
     "en": "guro",
-    "ko": "잔인"
+    "ko": "잔인",
+    "zh-CN": "肢解"
   },
   "gyaru": {
     "en": "gyaru",
@@ -1389,7 +1453,8 @@
   },
   "gyaru-oh": {
     "en": "gyaru-oh",
-    "ko": "갸루남"
+    "ko": "갸루남",
+    "zh-CN": "非主流"
   },
   "gymshorts": {
     "en": "gym shorts",
@@ -1400,7 +1465,8 @@
   },
   "haigure": {
     "en": "haigure",
-    "ko": "헤이구어"
+    "ko": "헤이구어",
+    "zh-CN": "高叉装"
   },
   "hair_buns": {
     "en": "hair buns",
@@ -1411,11 +1477,13 @@
   },
   "hairjob": {
     "en": "hairjob",
-    "ko": "헤어잡"
+    "ko": "헤어잡",
+    "zh-CN": "发丝交"
   },
   "hairy": {
     "en": "hairy",
-    "ko": "털 많은"
+    "ko": "털 많은",
+    "zh-CN": "多毛"
   },
   "hairy_armpits": {
     "en": "hairy armpits",
@@ -1432,13 +1500,13 @@
     "en": "handicapped",
     "ko": "장애인",
     "ja": "障害者",
-    "zh-CN": "残疾人"
+    "zh-CN": "残疾"
   },
   "handjob": {
     "en": "handjob",
     "ko": "손으로 자극",
     "ja": "手コキ",
-    "zh-CN": "手交"
+    "zh-CN": "打手枪"
   },
   "hanging": {
     "en": "hanging",
@@ -1461,13 +1529,14 @@
   },
   "harness": {
     "en": "harness",
-    "ko": "하네스"
+    "ko": "하네스",
+    "zh-CN": "挽具"
   },
   "harpy": {
     "en": "harpy",
     "ko": "하피",
     "ja": "ハーピー",
-    "zh-CN": "鹰身女妖"
+    "zh-CN": "鸟人"
   },
   "hat": {
     "en": "hat",
@@ -1477,7 +1546,8 @@
   },
   "headless": {
     "en": "headless",
-    "ko": "머리가 없는"
+    "ko": "머리가 없는",
+    "zh-CN": "无头骑士"
   },
   "headphones": {
     "en": "headphones",
@@ -1485,7 +1555,8 @@
   },
   "heterochromia": {
     "en": "heterochromia",
-    "ko": "오드아이"
+    "ko": "오드아이",
+    "zh-CN": "异色瞳"
   },
   "hidden_sex": {
     "en": "hidden sex",
@@ -1501,11 +1572,13 @@
   },
   "hijab": {
     "en": "hijab",
-    "ko": "히잡"
+    "ko": "히잡",
+    "zh-CN": "头巾"
   },
   "hood": {
     "en": "hood",
-    "ko": "후드"
+    "ko": "후드",
+    "zh-CN": "帽兜"
   },
   "horns": {
     "en": "horns",
@@ -1564,21 +1637,23 @@
     "en": "humiliation",
     "ko": "굴욕",
     "ja": "屈辱",
-    "zh-CN": "羞辱"
+    "zh-CN": "屈辱"
   },
   "impregnation": {
     "en": "impregnation",
-    "ko": "수정 후 착상"
+    "ko": "수정 후 착상",
+    "zh-CN": "受孕"
   },
   "infantilism": {
     "en": "infantilism",
     "ko": "유아증",
     "ja": "幼児プレイ",
-    "zh-CN": "幼儿症"
+    "zh-CN": "幼稚型"
   },
   "inflation": {
     "en": "inflation",
-    "ko": "팽창"
+    "ko": "팽창",
+    "zh-CN": "腹部膨胀"
   },
   "insect": {
     "en": "insect",
@@ -1590,7 +1665,7 @@
     "en": "inseki",
     "ko": "친척",
     "ja": "因関",
-    "zh-CN": "因缘"
+    "zh-CN": "姻亲"
   },
   "internal_urination": {
     "en": "internal urination",
@@ -1623,7 +1698,8 @@
   },
   "kemonomimi": {
     "en": "kemonomimi",
-    "ko": "동물귀"
+    "ko": "동물귀",
+    "zh-CN": "兽耳"
   },
   "kigurumi_pajama": {
     "en": "kigurumi pajama",
@@ -1672,7 +1748,8 @@
   },
   "kunoichi": {
     "en": "kunoichi",
-    "ko": "쿠노이치"
+    "ko": "쿠노이치",
+    "zh-CN": "女忍装"
   },
   "lab_coat": {
     "en": "lab coat",
@@ -1682,7 +1759,7 @@
     "en": "lactation",
     "ko": "수유",
     "ja": "母乳",
-    "zh-CN": "哺乳"
+    "zh-CN": "母乳"
   },
   "large_insertions": {
     "en": "large insertions",
@@ -1696,7 +1773,7 @@
     "en": "latex",
     "ko": "라텍스",
     "ja": "ラテックス",
-    "zh-CN": "乳胶"
+    "zh-CN": "乳胶紧身衣"
   },
   "layer_cake": {
     "en": "layer cake",
@@ -1706,7 +1783,8 @@
   },
   "leash": {
     "en": "leash",
-    "ko": "목줄"
+    "ko": "목줄",
+    "zh-CN": "狗链"
   },
   "leg_lock": {
     "en": "leg lock",
@@ -1714,7 +1792,8 @@
   },
   "legjob": {
     "en": "legjob",
-    "ko": "다리 섹스"
+    "ko": "다리 섹스",
+    "zh-CN": "腿交"
   },
   "leotard": {
     "en": "leotard",
@@ -1727,7 +1806,7 @@
     "en": "lingerie",
     "ko": "속옷",
     "ja": "ランジェリー",
-    "zh-CN": "内衣",
+    "zh-CN": "情趣内衣",
     "zh-TW": "內衣"
   },
   "lipstick_mark": {
@@ -1779,11 +1858,12 @@
     "en": "machine",
     "ko": "기계",
     "ja": "機械",
-    "zh-CN": "机器"
+    "zh-CN": "机械奸"
   },
   "maggot": {
     "en": "maggot",
-    "ko": "구더기"
+    "ko": "구더기",
+    "zh-CN": "蛆"
   },
   "magical_girl": {
     "en": "magical girl",
@@ -1793,12 +1873,13 @@
     "en": "maid",
     "ko": "하녀",
     "ja": "メイド",
-    "zh-CN": "女仆",
+    "zh-CN": "女仆装",
     "zh-TW": "女僕"
   },
   "makeup": {
     "en": "makeup",
-    "ko": "화장"
+    "ko": "화장",
+    "zh-CN": "化妆"
   },
   "males_only": {
     "en": "males only",
@@ -1825,7 +1906,8 @@
   },
   "menstruation": {
     "en": "menstruation",
-    "ko": "생리"
+    "ko": "생리",
+    "zh-CN": "经血"
   },
   "mermaid": {
     "en": "mermaid",
@@ -1837,7 +1919,7 @@
     "en": "merman",
     "ko": "남자 인어",
     "ja": "人魚（男性）",
-    "zh-CN": "男性人鱼"
+    "zh-CN": "人鱼"
   },
   "mesugaki": {
     "en": "mesugaki",
@@ -1853,7 +1935,8 @@
   },
   "midget": {
     "en": "midget",
-    "ko": "난쟁이"
+    "ko": "난쟁이",
+    "zh-CN": "侏儒"
   },
   "military": {
     "en": "military",
@@ -1864,7 +1947,8 @@
   },
   "milking": {
     "en": "milking",
-    "ko": "착유"
+    "ko": "착유",
+    "zh-CN": "挤奶"
   },
   "mind_break": {
     "en": "mind break",
@@ -1879,7 +1963,8 @@
   },
   "miniguy": {
     "en": "miniguy",
-    "ko": "소인남"
+    "ko": "소인남",
+    "zh-CN": "迷你男孩"
   },
   "miniskirt": {
     "en": "miniskirt",
@@ -1891,7 +1976,7 @@
     "en": "minotaur",
     "ko": "미노타우로스",
     "ja": "ミノタウロス",
-    "zh-CN": "牛头怪"
+    "zh-CN": "牛头人"
   },
   "missionary": {
     "en": "missionary",
@@ -1903,15 +1988,17 @@
     "en": "monkey",
     "ko": "원숭이",
     "ja": "猿",
-    "zh-CN": "猴子"
+    "zh-CN": "猴"
   },
   "monoeye": {
     "en": "monoeye",
-    "ko": "외눈"
+    "ko": "외눈",
+    "zh-CN": "独眼"
   },
   "monster": {
     "en": "monster",
-    "ko": "괴물"
+    "ko": "괴물",
+    "zh-CN": "怪物"
   },
   "moral_degeneration": {
     "en": "moral degeneration",
@@ -1926,7 +2013,8 @@
   },
   "mouse": {
     "en": "mouse",
-    "ko": "쥐"
+    "ko": "쥐",
+    "zh-CN": "鼠"
   },
   "mouth_mask": {
     "en": "mouth mask",
@@ -1940,10 +2028,7 @@
   },
   "multiple_assjob": {
     "en": "multiple assjob",
-    "ko": [
-      "동시 엉덩이 비빔",
-      "동시 스마타"
-    ],
+    "ko": ["동시 엉덩이 비빔", "동시 스마타"],
     "ja": "複数の尻コキ",
     "zh-CN": "多重臀部摩擦"
   },
@@ -2029,7 +2114,8 @@
   },
   "nazi": {
     "en": "nazi",
-    "ko": "나치"
+    "ko": "나치",
+    "zh-CN": "纳粹军装"
   },
   "necklace": {
     "en": "necklace",
@@ -2041,13 +2127,13 @@
     "en": "necrophilia",
     "ko": "시체성애",
     "ja": "屍姦",
-    "zh-CN": "恋尸癖"
+    "zh-CN": "奸尸"
   },
   "netorare": {
     "en": "netorare",
     "ko": "네토라레",
     "ja": "寝取られ",
-    "zh-CN": "绿帽",
+    "zh-CN": "NTR",
     "zh-TW": "綠帽"
   },
   "netorase": {
@@ -2064,7 +2150,7 @@
     "en": "ninja",
     "ko": "닌자",
     "ja": "忍者",
-    "zh-CN": "忍者",
+    "zh-CN": "忍者装",
     "zh-TW": "忍者"
   },
   "nipple_birth": {
@@ -2121,14 +2207,14 @@
     "en": "nun",
     "ko": "수녀",
     "ja": "修道女",
-    "zh-CN": "修女",
+    "zh-CN": "修女服",
     "zh-TW": "修女"
   },
   "nurse": {
     "en": "nurse",
     "ko": "간호사",
     "ja": "ナース",
-    "zh-CN": "护士",
+    "zh-CN": "护士装",
     "zh-TW": "護士"
   },
   "octopus": {
@@ -2145,7 +2231,8 @@
   },
   "oil": {
     "en": "oil",
-    "ko": "오일"
+    "ko": "오일",
+    "zh-CN": "油"
   },
   "old_lady": {
     "en": "old lady",
@@ -2157,11 +2244,13 @@
   },
   "omorashi": {
     "en": "omorashi",
-    "ko": "오줌싸개"
+    "ko": "오줌싸개",
+    "zh-CN": "漏尿"
   },
   "onahole": {
     "en": "onahole",
-    "ko": "오나홀"
+    "ko": "오나홀",
+    "zh-CN": "飞机杯"
   },
   "oni": {
     "en": "demon",
@@ -2176,7 +2265,8 @@
   },
   "orc": {
     "en": "orc",
-    "ko": "오크"
+    "ko": "오크",
+    "zh-CN": "兽人"
   },
   "orgasm": {
     "en": "orgasm",
@@ -2225,17 +2315,19 @@
   },
   "pantyjob": {
     "en": "pantyjob",
-    "ko": "팬티딸"
+    "ko": "팬티딸",
+    "zh-CN": "内裤交"
   },
   "parasite": {
     "en": "parasite",
     "ko": "기생충",
     "ja": "寄生虫",
-    "zh-CN": "寄生虫"
+    "zh-CN": "寄生"
   },
   "pasties": {
     "en": "pasties",
-    "ko": "젖꼭지 패치"
+    "ko": "젖꼭지 패치",
+    "zh-CN": "乳贴"
   },
   "penis_birth": {
     "en": "penis birth",
@@ -2262,7 +2354,7 @@
     "en": "pet play",
     "ko": "동물 놀이",
     "ja": "ペットプレイ",
-    "zh-CN": "宠物扮演"
+    "zh-CN": "人宠"
   },
   "petrification": {
     "en": "petrification",
@@ -2284,11 +2376,13 @@
   },
   "piercing": {
     "en": "piercing",
-    "ko": "피어싱"
+    "ko": "피어싱",
+    "zh-CN": "穿孔"
   },
   "pig": {
     "en": "pig",
-    "ko": "돼지"
+    "ko": "돼지",
+    "zh-CN": "猪"
   },
   "pig_man": {
     "en": "pig man",
@@ -2296,13 +2390,14 @@
   },
   "pillory": {
     "en": "pillory",
-    "ko": "머리/팔 구속기"
+    "ko": "머리/팔 구속기",
+    "zh-CN": "枷具"
   },
   "pirate": {
     "en": "pirate",
     "ko": "해적",
     "ja": "海賊",
-    "zh-CN": "海盗",
+    "zh-CN": "海盗服",
     "zh-TW": "海盜"
   },
   "piss_drinking": {
@@ -2321,19 +2416,20 @@
     "en": "policeman",
     "ko": "경찰",
     "ja": "警官",
-    "zh-CN": "男警",
+    "zh-CN": "警服",
     "zh-TW": "男警"
   },
   "policewoman": {
     "en": "policewoman",
     "ko": "여경",
     "ja": "婦警",
-    "zh-CN": "女警",
+    "zh-CN": "警服",
     "zh-TW": "女警"
   },
   "ponygirl": {
     "en": "ponygirl",
-    "ko": "포니걸"
+    "ko": "포니걸",
+    "zh-CN": "小马女"
   },
   "ponytail": {
     "en": "ponytail",
@@ -2349,7 +2445,8 @@
   },
   "possession": {
     "en": "possession",
-    "ko": "빙의"
+    "ko": "빙의",
+    "zh-CN": "附身"
   },
   "pregnant": {
     "en": "pregnant",
@@ -2363,11 +2460,13 @@
   },
   "priest": {
     "en": "priest",
-    "ko": "사제"
+    "ko": "사제",
+    "zh-CN": "牧师服"
   },
   "prolapse": {
     "en": "prolapse",
-    "ko": "탈장"
+    "ko": "탈장",
+    "zh-CN": "脱垂"
   },
   "property_tag": {
     "en": "property tag",
@@ -2399,7 +2498,7 @@
     "en": "rabbit",
     "ko": "토끼",
     "ja": "うさぎ",
-    "zh-CN": "兔子",
+    "zh-CN": "兔",
     "zh-TW": "兔子"
   },
   "race_queen": {
@@ -2434,7 +2533,8 @@
   },
   "reptile": {
     "en": "reptile",
-    "ko": "파충류"
+    "ko": "파충류",
+    "zh-CN": "爬虫"
   },
   "retractable_penis": {
     "en": "retractable penis",
@@ -2461,7 +2561,8 @@
   },
   "ryona": {
     "en": "ryona",
-    "ko": "가학"
+    "ko": "가학",
+    "zh-CN": "凌虐"
   },
   "sad": {
     "en": "sad",
@@ -2471,11 +2572,13 @@
   },
   "saliva": {
     "en": "saliva",
-    "ko": "침"
+    "ko": "침",
+    "zh-CN": "唾液"
   },
   "scar": {
     "en": "scar",
-    "ko": "흉터"
+    "ko": "흉터",
+    "zh-CN": "瘢痕"
   },
   "scat": {
     "en": "scat",
@@ -2514,7 +2617,7 @@
     "en": "schoolgirl",
     "ko": "여학생",
     "ja": "女子高生",
-    "zh-CN": "女学生",
+    "zh-CN": "女生",
     "zh-TW": "女學生"
   },
   "schoolgirl_uniform": {
@@ -2527,7 +2630,8 @@
   },
   "selfcest": {
     "en": "selfcest",
-    "ko": "스스로 섹스"
+    "ko": "스스로 섹스",
+    "zh-CN": "自交"
   },
   "sex_toys": {
     "en": "sex toys",
@@ -2541,17 +2645,19 @@
   },
   "shibari": {
     "en": "shibari",
-    "ko": "밧줄 묶기"
+    "ko": "밧줄 묶기",
+    "zh-CN": "捆绑"
   },
   "shimaidon": {
     "en": "shimaidon",
-    "ko": "자매덮밥"
+    "ko": "자매덮밥",
+    "zh-CN": "姐妹丼"
   },
   "shimapan": {
     "en": "striped panties",
     "ko": "줄무늬 팬티",
     "ja": "しまぱん",
-    "zh-CN": "条纹内裤",
+    "zh-CN": "条纹胖次",
     "zh-TW": "條紋內褲"
   },
   "short_hair": {
@@ -2578,15 +2684,17 @@
     "en": "sleeping",
     "ko": "수면간",
     "ja": "睡眠姦",
-    "zh-CN": "睡眠玩弄"
+    "zh-CN": "睡觉"
   },
   "slime": {
     "en": "slime",
-    "ko": "슬라임"
+    "ko": "슬라임",
+    "zh-CN": "史莱姆"
   },
   "slug": {
     "en": "slug",
-    "ko": "민달팽이"
+    "ko": "민달팽이",
+    "zh-CN": "蛞蝓"
   },
   "small_breasts": {
     "en": "small breasts",
@@ -2598,19 +2706,23 @@
   },
   "smegma": {
     "en": "smegma",
-    "ko": "좆밥"
+    "ko": "좆밥",
+    "zh-CN": "阴垢"
   },
   "smell": {
     "en": "smell",
-    "ko": "냄새"
+    "ko": "냄새",
+    "zh-CN": "气味"
   },
   "smoking": {
     "en": "smoking",
-    "ko": "흡연"
+    "ko": "흡연",
+    "zh-CN": "吸烟"
   },
   "snuff": {
     "en": "snuff",
-    "ko": "살해"
+    "ko": "살해",
+    "zh-CN": "杀害"
   },
   "solo": {
     "en": "solo",
@@ -2636,14 +2748,14 @@
     "en": "speculum",
     "ko": "질경",
     "ja": "膣鏡",
-    "zh-CN": "阴道镜",
+    "zh-CN": "扩张器",
     "zh-TW": "膣鏡"
   },
   "squirting": {
     "en": "squirting",
     "ko": "분수",
     "ja": "潮吹き",
-    "zh-CN": "喷水"
+    "zh-CN": "潮吹"
   },
   "standing_sex": {
     "en": "standing sex",
@@ -2659,7 +2771,7 @@
     "en": "stockings",
     "ko": "스타킹",
     "ja": "ストッキング",
-    "zh-CN": "丝袜",
+    "zh-CN": "长筒袜",
     "zh-TW": "絲襪"
   },
   "stomach_deformation": {
@@ -2670,7 +2782,8 @@
   },
   "strap-on": {
     "en": "strap-on",
-    "ko": "스트랩온"
+    "ko": "스트랩온",
+    "zh-CN": "穿戴式阳具"
   },
   "stuck_in_wall": {
     "en": "stuck in wall",
@@ -2678,13 +2791,14 @@
   },
   "sumata": {
     "en": "sumata",
-    "ko": "스마타"
+    "ko": "스마타",
+    "zh-CN": "股间性交"
   },
   "sundress": {
     "en": "sundress",
     "ko": "여름 원피스",
     "ja": "サンドレス",
-    "zh-CN": "夏装连衣裙",
+    "zh-CN": "夏装",
     "zh-TW": "夏裝連衣裙"
   },
   "sunglasses": {
@@ -2715,7 +2829,8 @@
   },
   "swinging": {
     "en": "swinging",
-    "ko": "스윙 플레이"
+    "ko": "스윙 플레이",
+    "zh-CN": "换妻"
   },
   "tabi_socks": {
     "en": "tabi socks",
@@ -2742,11 +2857,13 @@
   },
   "tailjob": {
     "en": "tailjob",
-    "ko": "꼬리 작업"
+    "ko": "꼬리 작업",
+    "zh-CN": "尾交"
   },
   "tailphagia": {
     "en": "tailphagia",
-    "ko": "꼬리 포식"
+    "ko": "꼬리 포식",
+    "zh-CN": "尾巴吞食"
   },
   "tall": {
     "en": "tall",
@@ -2782,7 +2899,7 @@
     "en": "teacher",
     "ko": "선생님",
     "ja": "教師",
-    "zh-CN": "老师",
+    "zh-CN": "教师",
     "zh-TW": "老師"
   },
   "tentacles": {
@@ -2833,21 +2950,23 @@
     "en": "tiara",
     "ko": "티아라",
     "ja": "ティアラ",
-    "zh-CN": "头饰"
+    "zh-CN": "宝冠"
   },
   "tickling": {
     "en": "tickling",
-    "ko": "간지럼"
+    "ko": "간지럼",
+    "zh-CN": "挠痒"
   },
   "tiger": {
     "en": "tiger",
-    "ko": "호랑이"
+    "ko": "호랑이",
+    "zh-CN": "虎"
   },
   "tights": {
     "en": "tights",
     "ko": "타이츠",
     "ja": "タイツ",
-    "zh-CN": "紧身裤袜",
+    "zh-CN": "紧身服",
     "zh-TW": "緊身褲襪"
   },
   "time_stop": {
@@ -2867,11 +2986,12 @@
     "en": "toddlercon",
     "ko": "유아성애",
     "ja": "トドラーコン",
-    "zh-CN": "幼童控"
+    "zh-CN": "幼女"
   },
   "tomboy": {
     "en": "tomboy",
-    "ko": "사내스러운"
+    "ko": "사내스러운",
+    "zh-CN": "假小子"
   },
   "tooth_brushing": {
     "en": "tooth brushing",
@@ -2879,7 +2999,8 @@
   },
   "torture": {
     "en": "torture",
-    "ko": "고문"
+    "ko": "고문",
+    "zh-CN": "拷打"
   },
   "tracksuit": {
     "en": "tracksuit",
@@ -2896,7 +3017,8 @@
   },
   "trampling": {
     "en": "trampling",
-    "ko": "밟기"
+    "ko": "밟기",
+    "zh-CN": "践踏"
   },
   "transformation": {
     "en": "transformation",
@@ -2910,12 +3032,9 @@
   },
   "tribadism": {
     "en": "tribadism",
-    "ko": [
-      "보빔",
-      "밴대질"
-    ],
+    "ko": ["보빔", "밴대질"],
     "ja": "貝合わせ",
-    "zh-CN": "阴户摩擦",
+    "zh-CN": "贝合",
     "zh-TW": "陰戶摩擦"
   },
   "triple_anal": {
@@ -2936,15 +3055,18 @@
   },
   "tube": {
     "en": "tube",
-    "ko": "튜브"
+    "ko": "튜브",
+    "zh-CN": "插管"
   },
   "turtle": {
     "en": "turtle",
-    "ko": "거북이"
+    "ko": "거북이",
+    "zh-CN": "龟"
   },
   "tutor": {
     "en": "tutor",
-    "ko": "과외선생"
+    "ko": "과외선생",
+    "zh-CN": "家庭教师"
   },
   "twins": {
     "en": "twins",
@@ -2963,11 +3085,12 @@
     "en": "unbirth",
     "ko": "자궁회귀",
     "ja": "アンバース",
-    "zh-CN": "逆向分娩"
+    "zh-CN": "入阴"
   },
   "uncle": {
     "en": "uncle",
-    "ko": "삼촌"
+    "ko": "삼촌",
+    "zh-CN": "叔叔"
   },
   "underwater": {
     "en": "underwater",
@@ -2983,7 +3106,8 @@
   },
   "unicorn": {
     "en": "unicorn",
-    "ko": "유니콘"
+    "ko": "유니콘",
+    "zh-CN": "独角兽"
   },
   "uniform": {
     "en": "uniform",
@@ -3050,11 +3174,13 @@
   },
   "vomit": {
     "en": "vomit",
-    "ko": "구토"
+    "ko": "구토",
+    "zh-CN": "呕吐"
   },
   "vore": {
     "en": "vore",
-    "ko": "삼킴"
+    "ko": "삼킴",
+    "zh-CN": "吞食"
   },
   "voyeurism": {
     "en": "voyeurism",
@@ -3072,14 +3198,14 @@
     "en": "waiter",
     "ko": "종업원",
     "ja": "ウェイター",
-    "zh-CN": "服务员",
+    "zh-CN": "男侍者装",
     "zh-TW": "服務員"
   },
   "waitress": {
     "en": "waitress",
     "ko": "알바녀",
     "ja": "ウェイトレス",
-    "zh-CN": "服务员",
+    "zh-CN": "女侍者装",
     "zh-TW": "服務員"
   },
   "webtoon": {
@@ -3100,7 +3226,8 @@
   },
   "whip": {
     "en": "whip",
-    "ko": "채찍"
+    "ko": "채찍",
+    "zh-CN": "鞭打"
   },
   "white_hair": {
     "en": "white hair",
@@ -3111,7 +3238,8 @@
   },
   "widow": {
     "en": "widow",
-    "ko": "과부"
+    "ko": "과부",
+    "zh-CN": "寡妇"
   },
   "wings": {
     "en": "wings",
@@ -3124,7 +3252,7 @@
     "en": "witch",
     "ko": "마녀",
     "ja": "魔女",
-    "zh-CN": "女巫",
+    "zh-CN": "女巫装",
     "zh-TW": "女巫"
   },
   "wolf": {
@@ -3144,30 +3272,36 @@
     "en": "worm",
     "ko": "벌레",
     "ja": "虫",
-    "zh-CN": "虫子"
+    "zh-CN": "蠕虫"
   },
   "wormhole": {
     "en": "wormhole",
-    "ko": "차원문"
+    "ko": "차원문",
+    "zh-CN": "虫洞"
   },
   "wrestling": {
     "en": "wrestling",
-    "ko": "레슬링"
+    "ko": "레슬링",
+    "zh-CN": "摔角"
   },
   "x-ray": {
     "en": "x-ray",
-    "ko": "투시"
+    "ko": "투시",
+    "zh-CN": "透视"
   },
   "yandere": {
     "en": "yandere",
-    "ko": "얀데레"
+    "ko": "얀데레",
+    "zh-CN": "病娇"
   },
   "zebra": {
     "en": "zebra",
-    "ko": "얼룩말"
+    "ko": "얼룩말",
+    "zh-CN": "斑马"
   },
   "zombie": {
     "en": "zombie",
-    "ko": "좀비"
+    "ko": "좀비",
+    "zh-CN": "僵尸"
   }
 }
