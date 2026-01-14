@@ -7,7 +7,10 @@ interface Props extends Omit<ComponentProps<'input'>, 'onToggle'> {
 
 export default function Toggle({ className = '', title, onToggle, ...props }: Readonly<Props>) {
   return (
-    <label className="inline-flex cursor-pointer items-center" title={title}>
+    <label
+      className={twMerge('inline-flex items-center', props.disabled ? 'cursor-not-allowed' : 'cursor-pointer')}
+      title={title}
+    >
       <input {...props} className="sr-only peer" onChange={(e) => onToggle?.(e.target.checked)} type="checkbox" />
       <span
         className={twMerge(

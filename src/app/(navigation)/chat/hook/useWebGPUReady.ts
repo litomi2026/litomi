@@ -16,7 +16,7 @@ export function useWebGPUReady({ enabled }: Options) {
     void (async () => {
       const supported = await isWebGpuSupported()
       setIsWebGpuReady(supported)
-    })().catch(() => {})
+    })()
   }, [enabled])
 
   return isWebGpuReady
