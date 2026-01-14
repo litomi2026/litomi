@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react'
 
-export function useWebGPUReady(options: { enabled: boolean }) {
-  const { enabled } = options
+type Options = {
+  enabled: boolean
+}
+
+export function useWebGPUReady({ enabled }: Options) {
   const [isWebGpuReady, setIsWebGpuReady] = useState<boolean | null>(null)
 
   useEffect(() => {

@@ -1,5 +1,5 @@
 export type GetTokenBudgetOptions = {
-  contextWindowSize: number
+  contextWindowSize?: number
   completionMaxTokens: number
 }
 
@@ -43,7 +43,7 @@ export function getTokenBudget({ contextWindowSize, completionMaxTokens }: GetTo
   }
 }
 
-function clampInt(value: number, fallback: number): number {
+function clampInt(value: number | undefined, fallback: number): number {
   if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) return fallback
   return Math.floor(value)
 }

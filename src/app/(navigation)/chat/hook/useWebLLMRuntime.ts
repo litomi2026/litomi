@@ -1,24 +1,21 @@
 'use client'
 
+import type { InitProgressReport, WebWorkerMLCEngine } from '@mlc-ai/web-llm'
+
 import { useEffect, useRef, useState } from 'react'
 
+import { buildWebLLMAppConfig } from '../lib/webllmAppConfig'
+import { deleteInstalledModel, hasInstalledModel } from '../lib/webllmCache'
+import { createWebLLMEngine } from '../lib/webllmEngine'
 import {
-  buildWebLLMAppConfig,
-  createWebLLMEngine,
   type CustomWebLLMModel,
   DEFAULT_MODEL_ID,
-  deleteInstalledModel,
   getCustomWebLLMModels,
-  hasInstalledModel,
-  type InitProgressReport,
   MODEL_PRESETS,
   type ModelId,
+  RESOLVED_MODEL_PRESETS,
   setCustomWebLLMModels,
-  type SupportedModelId,
-  type WebLLMEngine,
-} from '../lib/webllm'
-import { recommendModelIdFromNavigator } from '../util/modelRecommendation'
-import { getModelContextWindowSizeFromAppConfig } from '../util/webllmAppConfig'
+} from '../storage/webllmModels'
 import { useStateWithRef } from './useStateWithRef'
 
 const MODEL_ID_STORAGE_KEY = 'litomi:character-chat:model-id'
@@ -58,13 +55,9 @@ export function useWebLLMRuntime() {
     return DEFAULT_MODEL_ID
   })
 
-  const [recommendedModelId] = useState<SupportedModelId>(() => {
-    if (typeof window === 'undefined') return DEFAULT_MODEL_ID
-    return recommendModelIdFromNavigator(MODEL_PRESETS) as SupportedModelId
-  })
-
-  const modelId: ModelId = isAutoModelEnabled ? recommendedModelId : manualModelId
-  const modelContextWindowSize = getModelContextWindowSizeFromAppConfig(buildWebLLMAppConfig(customModels), modelId)
+  const modelId: ModelId = isAutoModelEnabled ? DEFAULT_MODEL_ID : manualModelId
+  const model = buildWebLLMAppConfig(customModels).model_list.find((m) => m.model_id === modelId)
+  const modelContextWindowSize = model?.overrides?.context_window_size
 
   const [isThinkingEnabled, setIsThinkingEnabledState] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false
@@ -77,7 +70,7 @@ export function useWebLLMRuntime() {
   })
 
   const modelPresets: readonly SelectableModel[] = [
-    ...MODEL_PRESETS,
+    ...RESOLVED_MODEL_PRESETS,
     ...customModels.map((m) => ({
       label: m.label,
       description: m.description || '커스텀 모델이에요',
@@ -87,9 +80,9 @@ export function useWebLLMRuntime() {
     })),
   ]
 
-  const modelPreset = modelPresets.find((p) => p.modelId === modelId) ?? MODEL_PRESETS[0]
+  const modelPreset = modelPresets.find((p) => p.modelId === modelId) ?? modelPresets[0]
 
-  const [engine, setEngine, engineRef] = useStateWithRef<WebLLMEngine | null>(null)
+  const [engine, setEngine, engineRef] = useStateWithRef<WebWorkerMLCEngine | null>(null)
   const loadedModelIdRef = useRef<ModelId | null>(null)
   const [installState, setInstallState] = useState<InstallState>({ kind: 'unknown' })
 
@@ -202,6 +195,7 @@ export function useWebLLMRuntime() {
         modelId,
         onProgress: (report) => setInstallState({ kind: 'installing', progress: report }),
       })
+
       setEngine(nextEngine)
       loadedModelIdRef.current = modelId
       setInstallState({ kind: 'installed' })
@@ -231,6 +225,7 @@ export function useWebLLMRuntime() {
       modelId,
       onProgress: (report) => setInstallState({ kind: 'installing', progress: report }),
     })
+
     setEngine(nextEngine)
     loadedModelIdRef.current = modelId
     setInstallState({ kind: 'installed' })
@@ -266,7 +261,6 @@ export function useWebLLMRuntime() {
     modelContextWindowSize,
     modelPreset,
     modelPresets,
-    recommendedModelId,
     refreshInstallState,
     removeInstalledModel,
     resetChat,

@@ -31,19 +31,3 @@ export function getChatIntroText({ chatInputDisabled, chatInputDisabledReason }:
   }
   return '메시지를 보내면 대화를 시작할 수 있어요'
 }
-
-export function getModelInstallStatusText(kind: ModelInstallStateKind): string {
-  if (kind === 'installed') {
-    return '준비됐어요'
-  }
-  if (kind === 'installing') {
-    return '설치 중이에요'
-  }
-  if (kind === 'not-installed') {
-    return '설치가 필요해요'
-  }
-  if (kind === 'error') {
-    return '문제가 생겼어요'
-  }
-  return '모델 상태를 확인하고 있어요…'
-}

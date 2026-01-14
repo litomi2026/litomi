@@ -46,7 +46,7 @@ export default function AIChat() {
   })
 
   return (
-    <div className="flex flex-col gap-4 p-4 sm:p-6 max-w-3xl w-full">
+    <div className="flex flex-col gap-4 p-4 sm:p-6 max-w-3xl w-full mx-auto">
       <ChatHeader onNewChat={chat.newChat} />
 
       <ModelPanel
@@ -67,7 +67,6 @@ export default function AIChat() {
         onRefreshInstallState={runtime.refreshInstallState}
         onRemoveCustomModel={runtime.removeCustomModel}
         onRemoveInstalledModel={() => runtime.removeInstalledModel().then(() => toast.success('모델을 삭제했어요'))}
-        recommendedModelId={runtime.recommendedModelId}
         showThinkingTrace={runtime.showThinkingTrace}
       />
 
