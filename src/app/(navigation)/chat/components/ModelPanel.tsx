@@ -130,7 +130,7 @@ export function ModelPanel({
             </label>
             <div className="flex items-center gap-2">
               <CustomSelect
-                buttonClassName="text-sm"
+                buttonClassName="text-sm tabular-nums"
                 className="flex-1 min-w-0"
                 disabled={isAdvancedDisabled || isAutoModelEnabled}
                 id={modelPresetId}

@@ -29,7 +29,7 @@ export function CustomModelDialog({ open, onClose, onSubmit }: CustomModelDialog
         <DialogHeader onClose={onClose} title="커스텀 모델 추가" />
         <DialogBody className="flex flex-col gap-3 text-sm">
           <p className="text-xs text-zinc-500">
-            HuggingFace 모델이라도 WebLLM은 <span className="text-zinc-300">MLC 포맷 가중치</span> +{' '}
+            WebLLM은 <span className="text-zinc-300">MLC 포맷 가중치</span> +{' '}
             <span className="text-zinc-300">model_lib(wasm)</span>이 필요해요
           </p>
 
@@ -78,19 +78,6 @@ export function CustomModelDialog({ open, onClose, onSubmit }: CustomModelDialog
           </div>
 
           <div className="flex flex-col gap-1">
-            <label className="text-xs text-zinc-400 font-medium" htmlFor="custom-model-description">
-              설명 (선택)
-            </label>
-            <input
-              className="bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm"
-              id="custom-model-description"
-              name="description"
-              placeholder="예: 캐릭터 롤플레이용"
-              type="text"
-            />
-          </div>
-
-          <div className="flex flex-col gap-1">
             <label className="text-xs text-zinc-400 font-medium" htmlFor="custom-model-url">
               HuggingFace URL (MLC 가중치)
             </label>
@@ -114,6 +101,19 @@ export function CustomModelDialog({ open, onClose, onSubmit }: CustomModelDialog
               name="model-lib-url"
               placeholder="예: https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/..."
               required
+              type="text"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label className="text-xs text-zinc-400 font-medium" htmlFor="custom-model-description">
+              설명 (선택)
+            </label>
+            <input
+              className="bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm"
+              id="custom-model-description"
+              name="description"
+              placeholder="예: 캐릭터 롤플레이용"
               type="text"
             />
           </div>
