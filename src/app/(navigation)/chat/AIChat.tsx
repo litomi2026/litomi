@@ -46,7 +46,7 @@ export default function AIChat() {
   })
 
   return (
-    <div className="flex flex-col gap-4 p-4 sm:p-6 max-w-3xl w-full">
+    <div className="flex flex-col gap-4 p-4 sm:p-6 max-w-3xl w-full mx-auto">
       <ChatHeader onNewChat={chat.newChat} />
 
       <ModelPanel
