@@ -1,26 +1,121 @@
 {
-  "3d": { "en": "3D" },
-  "3d_imageset": { "en": "3D imageset", "ko": "3D 이미지" },
-  "ai_generated": { "en": "ai generated", "ko": "AI 생성", "ja": "AI生成", "zh-CN": "AI生成", "zh-TW": "AI生成" },
-  "already_uploaded": { "en": "already uploaded", "ko": "이미 업로드됨" },
-  "animated": { "en": "animated", "ko": "애니", "ja": "アニメーション", "zh-CN": "动画" },
-  "anthology": { "en": "anthology", "ko": "모음집", "ja": "アンソロジー", "zh-CN": "选集", "zh-TW": "選集" },
-  "artbook": { "en": "artbook", "ko": "아트북" },
-  "bathing_room": { "en": "bathing room", "ko": "욕실", "ja": "バスルーム", "zh-CN": "浴室" },
-  "caption": { "en": "caption", "ko": "자막", "ja": "キャプション", "zh-CN": "标题" },
-  "comic": { "en": "comic", "ko": "코믹" },
-  "compilation": { "en": "compilation", "ko": "합본", "ja": "コンピレーション", "zh-CN": "合集" },
-  "digital": { "en": "digital", "ko": "디지털" },
-  "extraneous_ads": { "en": "extraneous ads", "ko": "광고떡칠" },
-  "forbidden_content": { "en": "forbidden content", "ko": "금지된 작품", "ja": "禁制コンテンツ", "zh-CN": "禁制内容" },
-  "full_censorship": { "en": "full censorship", "ko": "완전검열", "ja": "完全検閲", "zh-CN": "完全审查" },
-  "full_color": { "en": "full color", "ko": "풀컬러", "ja": "フルカラー", "zh-CN": "全彩", "zh-TW": "全彩" },
-  "goudoushi": { "en": "goudoushi", "ko": "합동지" },
-  "how_to": { "en": "how to", "ko": "설명서" },
-  "incomplete": { "en": "incomplete", "ko": "미완성", "ja": "未完結" },
-  "kemoket": { "en": "furry convention", "ko": "케모켓(행사)", "ja": "ケモケット", "zh-CN": "兽展", "zh-TW": "獸展" },
-  "kouroumu": { "en": "kouroumu", "ko": "동방홍루몽(행사)", "ja": "紅楼夢", "zh-CN": "红楼梦", "zh-TW": "紅樓夢" },
-  "missing_cover": { "en": "missing cover", "ko": "표지 없음", "ja": "表紙なし", "zh-CN": "缺少封面" },
+  "3d": {
+    "en": "3D"
+  },
+  "3d_imageset": {
+    "en": "3D imageset",
+    "ko": "3D 이미지"
+  },
+  "ai_generated": {
+    "en": "ai generated",
+    "ko": "AI 생성",
+    "ja": "AI生成",
+    "zh-CN": "AI生成",
+    "zh-TW": "AI生成"
+  },
+  "already_uploaded": {
+    "en": "already uploaded",
+    "ko": "이미 업로드됨"
+  },
+  "animated": {
+    "en": "animated",
+    "ko": "애니",
+    "ja": "アニメーション",
+    "zh-CN": "动画"
+  },
+  "anthology": {
+    "en": "anthology",
+    "ko": "모음집",
+    "ja": "アンソロジー",
+    "zh-CN": "选集",
+    "zh-TW": "選集"
+  },
+  "artbook": {
+    "en": "artbook",
+    "ko": "아트북"
+  },
+  "bathing_room": {
+    "en": "bathing room",
+    "ko": "욕실",
+    "ja": "バスルーム",
+    "zh-CN": "浴室"
+  },
+  "caption": {
+    "en": "caption",
+    "ko": "자막",
+    "ja": "キャプション",
+    "zh-CN": "标题"
+  },
+  "comic": {
+    "en": "comic",
+    "ko": "코믹"
+  },
+  "compilation": {
+    "en": "compilation",
+    "ko": "합본",
+    "ja": "コンピレーション",
+    "zh-CN": "合集"
+  },
+  "digital": {
+    "en": "digital",
+    "ko": "디지털"
+  },
+  "extraneous_ads": {
+    "en": "extraneous ads",
+    "ko": "광고떡칠"
+  },
+  "forbidden_content": {
+    "en": "forbidden content",
+    "ko": "금지된 작품",
+    "ja": "禁制コンテンツ",
+    "zh-CN": "禁制内容"
+  },
+  "full_censorship": {
+    "en": "full censorship",
+    "ko": "완전검열",
+    "ja": "完全検閲",
+    "zh-CN": "完全审查"
+  },
+  "full_color": {
+    "en": "full color",
+    "ko": "풀컬러",
+    "ja": "フルカラー",
+    "zh-CN": "全彩",
+    "zh-TW": "全彩"
+  },
+  "goudoushi": {
+    "en": "goudoushi",
+    "ko": "합동지"
+  },
+  "how_to": {
+    "en": "how to",
+    "ko": "설명서"
+  },
+  "incomplete": {
+    "en": "incomplete",
+    "ko": "미완성",
+    "ja": "未完結"
+  },
+  "kemoket": {
+    "en": "furry convention",
+    "ko": "케모켓(행사)",
+    "ja": "ケモケット",
+    "zh-CN": "兽展",
+    "zh-TW": "獸展"
+  },
+  "kouroumu": {
+    "en": "kouroumu",
+    "ko": "동방홍루몽(행사)",
+    "ja": "紅楼夢",
+    "zh-CN": "红楼梦",
+    "zh-TW": "紅樓夢"
+  },
+  "missing_cover": {
+    "en": "missing cover",
+    "ko": "표지 없음",
+    "ja": "表紙なし",
+    "zh-CN": "缺少封面"
+  },
   "mosaic_censorship": {
     "en": "mosaic censorship",
     "ko": "모자이크 검열",
@@ -40,35 +135,138 @@
     "ja": "マルチワークシリーズ",
     "zh-CN": "多作品系列"
   },
-  "no_penetration": { "en": "no penetration", "ko": "삽입 없음" },
-  "non-h_imageset": { "en": "non-h imageset", "ko": "건전 이미지셋", "ja": "非Hイメージセット", "zh-CN": "非H图集" },
-  "non-nude": { "en": "non-nude", "ko": "나체 아님", "ja": "ヌーディティなし", "zh-CN": "无裸体" },
-  "novel": { "en": "novel", "ko": "소설", "ja": "小説", "zh-CN": "小说" },
-  "nudity_only": { "en": "nudity only", "ko": "나체만 나옴" },
+  "no_penetration": {
+    "en": "no penetration",
+    "ko": "삽입 없음"
+  },
+  "non-h_imageset": {
+    "en": "non-h imageset",
+    "ko": "건전 이미지셋",
+    "ja": "非Hイメージセット",
+    "zh-CN": "非H图集"
+  },
+  "non-nude": {
+    "en": "non-nude",
+    "ko": "나체 아님",
+    "ja": "ヌーディティなし",
+    "zh-CN": "无裸体"
+  },
+  "novel": {
+    "en": "novel",
+    "ko": "소설",
+    "ja": "小説",
+    "zh-CN": "小说"
+  },
+  "nudity_only": {
+    "en": "nudity only",
+    "ko": "나체만 나옴"
+  },
   "object_insertion_only": {
     "en": "object insertion only",
     "ko": "물건 삽입만",
     "ja": "オブジェクト挿入のみ",
     "zh-CN": "仅物体插入"
   },
-  "out_of_order": { "en": "out of order", "ko": "순서가 뒤바뀜" },
-  "pixel_art": { "en": "pixel art", "ko": "픽셀 아트", "ja": "ピクセルアート", "zh-CN": "像素画" },
-  "realporn": { "en": "real porn", "ko": "현실 음란물", "ja": "リアルポル" },
-  "redraw": { "en": "redraw", "ko": "다시 그림", "ja": "リドロー", "zh-CN": "重绘" },
-  "replaced": { "en": "replaced", "ko": "교체됨" },
-  "rewrite": { "en": "rewrite", "ko": "재작성", "ja": "リライト", "zh-CN": "重写" },
-  "rough_grammar": { "en": "rough grammar", "ko": "어색한 문법", "ja": "荒い文法", "zh-CN": "" },
-  "rough_translation": { "en": "rough translation", "ko": "어색한 번역", "ja": "荒い翻訳", "zh-CN": "翻译错误" },
-  "sample": { "en": "sample", "ko": "샘플" },
-  "sketch_lines": { "en": "sketch lines", "ko": "스케치" },
-  "soushuuhen": { "en": "collection", "ko": "총집편", "ja": "総集編", "zh-CN": "合集", "zh-TW": "合集" },
-  "story_arc": { "en": "story arc", "ko": "서사물" },
-  "themeless": { "en": "themeless", "ko": "주제 없음" },
-  "uncensored": { "en": "uncensored", "ko": "무검열", "ja": "無修正", "zh-CN": "无修正", "zh-TW": "無修正" },
-  "variant_set": { "en": "variant set", "ko": "여러 버전" },
-  "watermarked": { "en": "watermarked", "ko": "워터마크" },
-  "western_cg": { "en": "western cg", "ko": "서양 CG" },
-  "western_imageset": { "en": "western imageset", "ko": "서양 이미지셋" },
-  "western_non-h": { "en": "western non-h", "ko": "건전 서양물", "ja": "西洋非H", "zh-CN": "西方非H" },
-  "yukkuri": { "en": "yukkuri", "ko": "윳쿠리", "ja": "ゆっくり", "zh-CN": "悠悠", "zh-TW": "悠悠" }
+  "out_of_order": {
+    "en": "out of order",
+    "ko": "순서가 뒤바뀜"
+  },
+  "pixel_art": {
+    "en": "pixel art",
+    "ko": "픽셀 아트",
+    "ja": "ピクセルアート",
+    "zh-CN": "像素画"
+  },
+  "realporn": {
+    "en": "real porn",
+    "ko": "현실 음란물",
+    "ja": "リアルポル"
+  },
+  "redraw": {
+    "en": "redraw",
+    "ko": "다시 그림",
+    "ja": "リドロー",
+    "zh-CN": "重绘"
+  },
+  "replaced": {
+    "en": "replaced",
+    "ko": "교체됨"
+  },
+  "rewrite": {
+    "en": "rewrite",
+    "ko": "재작성",
+    "ja": "リライト",
+    "zh-CN": "重写"
+  },
+  "rough_grammar": {
+    "en": "rough grammar",
+    "ko": "어색한 문법",
+    "ja": "荒い文法",
+    "zh-CN": ""
+  },
+  "rough_translation": {
+    "en": "rough translation",
+    "ko": "어색한 번역",
+    "ja": "荒い翻訳",
+    "zh-CN": "翻译错误"
+  },
+  "sample": {
+    "en": "sample",
+    "ko": "샘플"
+  },
+  "sketch_lines": {
+    "en": "sketch lines",
+    "ko": "스케치"
+  },
+  "soushuuhen": {
+    "en": "collection",
+    "ko": "총집편",
+    "ja": "総集編",
+    "zh-CN": "合集",
+    "zh-TW": "合集"
+  },
+  "story_arc": {
+    "en": "story arc",
+    "ko": "서사물"
+  },
+  "themeless": {
+    "en": "themeless",
+    "ko": "주제 없음"
+  },
+  "uncensored": {
+    "en": "uncensored",
+    "ko": "무검열",
+    "ja": "無修正",
+    "zh-CN": "无修正",
+    "zh-TW": "無修正"
+  },
+  "variant_set": {
+    "en": "variant set",
+    "ko": "여러 버전"
+  },
+  "watermarked": {
+    "en": "watermarked",
+    "ko": "워터마크"
+  },
+  "western_cg": {
+    "en": "western cg",
+    "ko": "서양 CG"
+  },
+  "western_imageset": {
+    "en": "western imageset",
+    "ko": "서양 이미지셋"
+  },
+  "western_non-h": {
+    "en": "western non-h",
+    "ko": "건전 서양물",
+    "ja": "西洋非H",
+    "zh-CN": "西方非H"
+  },
+  "yukkuri": {
+    "en": "yukkuri",
+    "ko": "윳쿠리",
+    "ja": "ゆっくり",
+    "zh-CN": "悠悠",
+    "zh-TW": "悠悠"
+  }
 }
