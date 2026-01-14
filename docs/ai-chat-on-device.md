@@ -15,11 +15,9 @@
   - iOS Safari에서는 WebGPU가 꺼져 있을 수 있어요.
   - 설정 앱에서 `설정 > Safari > 고급 > 실험적 기능`에서 **WebGPU**를 켜고 다시 시도해 주세요.
 
-## 모델(단일 옵션)
+## 모델
 
-- **모델**: Llama 3.2 3B Instruct
-- **양자화**: `q4f16`
-- **컨텍스트**: `ctx16k`
+기본적으로는 **WebLLM 내장(prebuilt) 모델**을 쓰고, 필요하면 **커스텀 모델 프리셋**(예: Qwen3)을 추가해서 써요.
 
 브라우저에서 bf16 “원본” 그대로를 쓰는 건 메모리/지원 문제가 커서, **모델은 동일하지만 웹 배포용으로 q4f16로 변환**하는 게 일반적이에요.
 
@@ -35,12 +33,45 @@ WebLLM은 MLC LLM 아티팩트를 그대로 사용해요. 자세한 빌드 방�
 - **모델 디렉터리**(가중치 shard + `mlc-chat-config.json` + tokenizer 파일들)
 - **WASM 모델 라이브러리**(webgpu, ctx16k로 빌드된 `.wasm`)
 
+## (고급) Qwen3-30B-A3B(q4f16_1) WebGPU wasm 직접 빌드하기
+
+`mlc-ai/Qwen3-30B-A3B-q4f16_1-MLC`는 **MLC 포맷 가중치(=params_shard) + `mlc-chat-config.json`** 까지는 제공하지만,
+WebLLM이 바로 쓸 수 있는 **WebGPU용 `model_lib`(`*.wasm`)** 는 직접 만들어야 할 수 있어요.
+
+다만 지금은 이 repo에서 쓰는 Qwen3 프리셋 기준으로, **HuggingFace에 올린 원격 `*.wasm`을 그대로 쓰는 방식(권장)**도 지원해요. 이 경우 로컬 빌드는 선택이에요.
+
+이 repo에는 아래 스크립트를 추가해뒀어요:
+
+- `tools/mlc/build-webgpu-wasm-qwen3-30b-a3b.sh`
+
+### 요약 흐름
+
+- **1) `mlc_llm`을 소스에서 빌드**해요(WebGPU 컴파일은 소스 빌드가 필요해요).
+- **2) emsdk(emcc) 설치 + wasm runtime 준비**(`./web/prep_emcc_deps.sh`)를 해요.
+- **3) `mlc_llm compile --device webgpu`로 `*.wasm`을 뽑아요.**
+
+### 로컬에서 바로 써보기
+
+스크립트에 `COPY_TO_PUBLIC=1`을 주면 빌드 산출물을 `public/webllm-model-libs/`로 복사해요.
+그럼 `Next.js dev`에서 `/webllm-model-libs/<file>.wasm` URL로 접근 가능해요.
+
+- 폴더: `public/webllm-model-libs/` (바이너리는 git에 커밋하지 않아요)
+- 로컬 URL 예: `http://localhost:3000/webllm-model-libs/Qwen3-30B-A3B-q4f16_1-ctx40k_cs2k-webgpu.wasm`
+
+자세한 준비물/환경변수는 스크립트 상단 주석을 확인해 주세요.
+
+### 원격 wasm으로 쓰기(권장)
+
+- `modelLibUrl`에는 HuggingFace **다운로드 링크(`resolve/main/...`)**를 넣어야 해요.
+  - `blob/main/...`은 파일 보기 페이지라서 그대로 쓰면 로드가 실패해요.
+- 예: `https://huggingface.co/gwak2837/webllm-model-libs/resolve/main/Qwen3-30B-A3B-q4f16_1-ctx40k_cs2k-webgpu.wasm`
+
 ## 모델 아티팩트 호스팅(기본: WebLLM 내장)
 
 `chat.webllm.ai`처럼, **WebLLM 내장 `prebuiltAppConfig`**를 사용하면 모델 파일은 기본적으로
 HuggingFace(mlc-ai) + GitHub raw(binary-mlc-llm-libs)에서 다운로드돼요.
 
-클라이언트 코드는 `src/app/(navigation)/chat/_lib/webllm.ts`에서 `WEBLLM_MODEL_ID = 'Llama-3.2-3B-Instruct-q4f16_1-MLC'`만 지정해서 사용해요.
+클라이언트 코드는 `src/app/(navigation)/chat/lib/webllm.ts`에서 모델 프리셋을 관리해요.
 
 필요하면 나중에만 “자체 호스팅(R2)”으로 바꿀 수 있어요(현재는 R2 없이 동작하도록 구성했어요).
 
