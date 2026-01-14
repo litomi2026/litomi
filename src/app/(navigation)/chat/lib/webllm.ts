@@ -9,6 +9,7 @@ export type CustomWebLLMModel = {
   modelUrl: string
   modelLibUrl: string
   requiredVramGb?: number
+  contextWindowSize?: number
   supportsThinking: boolean
 }
 
@@ -20,12 +21,30 @@ export type WebLLMEngine = webllm.WebWorkerMLCEngine
 
 const CUSTOM_MODELS_STORAGE_KEY = 'litomi:character-chat:webllm-custom-models'
 
+// Built-in custom models (hardcoded presets).
+//
+// We keep weights and wasm libs in separate Hugging Face repos, to make it easy to publish multiple
+// targets/variants without duplicating large weight artifacts.
+const BUILTIN_CUSTOM_MODELS: readonly CustomWebLLMModel[] = [
+  {
+    label: '30B · 데스트탑(+GPU)',
+    description: 'Qwen3 30B-A3B(q4f16_1) · 컨텍스트 4만',
+    modelId: 'Qwen3-30B-A3B-q4f16_1-ctx40k_cs2k-MLC',
+    modelUrl: 'https://huggingface.co/mlc-ai/Qwen3-30B-A3B-q4f16_1-MLC',
+    modelLibUrl:
+      'https://huggingface.co/gwak2837/webllm-model-libs/resolve/main/Qwen3-30B-A3B-q4f16_1-ctx40k_cs2k-webgpu.wasm',
+    contextWindowSize: 40_960,
+    supportsThinking: true,
+  },
+] as const
+
 export function buildWebLLMAppConfig(
   customModels: readonly CustomWebLLMModel[] = getCustomWebLLMModels(),
 ): webllm.AppConfig {
-  const customIds = new Set(customModels.map((m) => m.modelId))
+  const merged = mergeCustomModels([...BUILTIN_CUSTOM_MODELS, ...customModels])
+  const customIds = new Set(merged.map((m) => m.modelId))
   const prebuilt = webllm.prebuiltAppConfig.model_list.filter((m) => !customIds.has(m.model_id))
-  const custom = customModels.map(toModelRecord)
+  const custom = merged.map(toModelRecord)
 
   return {
     ...webllm.prebuiltAppConfig,
@@ -59,6 +78,14 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
+function mergeCustomModels(models: readonly CustomWebLLMModel[]): CustomWebLLMModel[] {
+  const map = new Map<string, CustomWebLLMModel>()
+  for (const model of models) {
+    map.set(model.modelId, model)
+  }
+  return Array.from(map.values())
+}
+
 function parseCustomModels(raw: unknown): CustomWebLLMModel[] {
   if (!Array.isArray(raw)) return []
 
@@ -77,6 +104,11 @@ function parseCustomModels(raw: unknown): CustomWebLLMModel[] {
       typeof requiredVramGbRaw === 'number' && Number.isFinite(requiredVramGbRaw) && requiredVramGbRaw > 0
         ? requiredVramGbRaw
         : undefined
+    const contextWindowSizeRaw = item.contextWindowSize
+    const contextWindowSize =
+      typeof contextWindowSizeRaw === 'number' && Number.isFinite(contextWindowSizeRaw) && contextWindowSizeRaw > 0
+        ? Math.floor(contextWindowSizeRaw)
+        : undefined
     const supportsThinking = typeof item.supportsThinking === 'boolean' ? item.supportsThinking : false
 
     if (!label || !modelId || !modelUrl || !modelLibUrl) continue
@@ -88,6 +120,7 @@ function parseCustomModels(raw: unknown): CustomWebLLMModel[] {
       modelUrl,
       modelLibUrl,
       requiredVramGb,
+      contextWindowSize,
       supportsThinking,
     })
   }
@@ -105,6 +138,7 @@ function toModelRecord(model: CustomWebLLMModel): webllm.ModelRecord {
     model: model.modelUrl,
     model_id: model.modelId,
     model_lib: model.modelLibUrl,
+    ...(model.contextWindowSize ? { overrides: { context_window_size: model.contextWindowSize } } : {}),
     ...(vramMb ? { vram_required_MB: vramMb } : {}),
     low_resource_required: false,
   }
@@ -116,32 +150,39 @@ function toModelRecord(model: CustomWebLLMModel): webllm.ModelRecord {
 // via WebLLM's `prebuiltAppConfig.model_list`.
 export const MODEL_PRESETS = [
   {
-    label: '0.6B · 1.4GB',
-    description: 'Qwen3 0.6B(q4f16) · 모바일에 적합해요',
-    modelId: 'Qwen3-0.6B-q4f16_1-MLC',
+    label: '0.6B · 모바일',
+    description: 'Qwen3 0.6B(q4f32) · VRAM 1.9GB',
+    modelId: 'Qwen3-0.6B-q4f32_1-MLC',
     supportsThinking: true,
-    requiredVramGb: 1.4,
+    requiredVramGb: 1.9,
   },
   {
-    label: '1.5B · 1.6GB',
-    description: 'Qwen2.5 1.5B Instruct(q4f16) · 모바일에 적합해요',
-    modelId: 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC',
+    label: '1.7B · 태블릿',
+    description: 'Qwen3 1.7B(q4f32) · VRAM 2.6GB',
+    modelId: 'Qwen3-1.7B-q4f32_1-MLC',
     supportsThinking: false,
-    requiredVramGb: 1.6,
+    requiredVramGb: 2.6,
   },
   {
-    label: '7B · 5.1GB',
-    description: 'Qwen2.5 7B Instruct(q4f16) · 데스크탑에 적합해요',
-    modelId: 'Qwen2.5-7B-Instruct-q4f16_1-MLC',
+    label: '4B · 노트북',
+    description: 'Qwen3 4B(q4f16) · VRAM 3.4GB',
+    modelId: 'Qwen3-4B-q4f16_1-MLC',
     supportsThinking: false,
-    requiredVramGb: 5.1,
+    requiredVramGb: 3.4,
   },
   {
-    label: '8B · 6.9GB',
-    description: 'Qwen3 8B Instruct(q4f32) · 데스크탑에 적합해요',
-    modelId: 'Qwen3-8B-q4f32_1-MLC',
+    label: '8B · 데스크탑',
+    description: 'Qwen3 8B(q4f16) · VRAM 5.7GB',
+    modelId: 'Qwen3-8B-q4f16_1-MLC',
     supportsThinking: true,
-    requiredVramGb: 6.9,
+    requiredVramGb: 5.7,
+  },
+  {
+    label: '30B · 데스크탑(+GPU)',
+    description: 'Qwen3 30B-A3B(q4f16_1) · VRAM 16GB · 컨텍스트 4만',
+    modelId: 'Qwen3-30B-A3B-q4f16_1-ctx40k_cs2k-MLC',
+    supportsThinking: true,
+    requiredVramGb: 16,
   },
 ] as const
 
@@ -161,9 +202,19 @@ export async function createWebLLMEngine(options: {
   if (!enginePromise) {
     const worker = new Worker(new URL('./webllm-worker.ts', import.meta.url), { type: 'module' })
 
+    if (process.env.NODE_ENV !== 'production') {
+      worker.addEventListener('error', (event) => {
+        console.error('[webllm-worker] error', event)
+      })
+      worker.addEventListener('messageerror', (event) => {
+        console.error('[webllm-worker] messageerror', event)
+      })
+    }
+
     enginePromise = webllm.CreateWebWorkerMLCEngine(worker, options.modelId, {
       appConfig,
       initProgressCallback: options.onProgress,
+      ...(process.env.NODE_ENV !== 'production' ? { logLevel: 'DEBUG' } : {}),
     })
   }
 

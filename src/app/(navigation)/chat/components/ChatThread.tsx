@@ -1,10 +1,13 @@
 'use client'
 
-import type { ReactNode } from 'react'
+import type { FormEvent } from 'react'
 
 import { ChevronRight } from 'lucide-react'
 
 import type { ChatMessage } from '../types/chatMessage'
+
+import { renderBoldMarkdown } from '../util/renderBoldMarkdown'
+import { getAssistantPlaceholderText, getChatIntroText } from '../util/uiText'
 
 type Props = {
   canContinue: boolean
@@ -43,24 +46,24 @@ export function ChatThread({
   onStop,
   onSubmit,
 }: Props) {
+  const introText = getChatIntroText({ chatInputDisabled, chatInputDisabledReason })
+  const placeholderText = getAssistantPlaceholderText({ isPreparingModel, isThinkingEnabled, modelMode })
+  const showContinueButton = canContinue && !isGenerating && !chatInputDisabled && input.trim().length === 0
+
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    onSubmit()
+  }
+
   return (
     <section className="rounded-2xl border border-white/7 bg-white/3 p-4 flex flex-col gap-3 min-h-[40vh] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
       <div className="flex flex-col gap-2">
         {messages.length === 0 ? (
-          <p className="text-sm text-zinc-500">
-            {chatInputDisabled
-              ? (chatInputDisabledReason ?? '모델을 준비하고 있어요…')
-              : '메시지를 보내면 대화를 시작할 수 있어요'}
-          </p>
+          <p className="text-sm text-zinc-500">{introText}</p>
         ) : (
           messages.map((m) => {
             const isCurrentAssistant = m.role === 'assistant' && m.id === currentAssistantId
             const showPlaceholder = isCurrentAssistant && isGenerating && m.content.trim().length === 0
-            const placeholderText = isPreparingModel
-              ? '모델을 준비하고 있어요…'
-              : modelMode === 'thinking' && isThinkingEnabled
-                ? '생각 중이에요…'
-                : '답변을 만들고 있어요…'
             const content = showPlaceholder ? placeholderText : m.content
             const showDebugThink =
               showThinkingTrace && m.role === 'assistant' && modelMode === 'thinking' && Boolean(m.debug?.think?.trim())
@@ -95,16 +98,10 @@ export function ChatThread({
         )}
       </div>
 
-      <form
-        className="mt-auto flex flex-col gap-2"
-        onSubmit={(e) => {
-          e.preventDefault()
-          onSubmit()
-        }}
-      >
+      <form className="mt-auto flex flex-col gap-2" onSubmit={handleSubmit}>
         <textarea
           aria-disabled={chatInputDisabled}
-          className="min-h-24 rounded-2xl border border-white/7 bg-white/2 px-3 py-2 text-sm aria-disabled:opacity-60 aria-disabled:cursor-not-allowed"
+          className="min-h-24 text-base rounded-2xl border border-white/7 bg-white/2 px-3 py-2 aria-disabled:opacity-60 aria-disabled:cursor-not-allowed"
           disabled={chatInputDisabled}
           id="message"
           name="message"
@@ -124,7 +121,7 @@ export function ChatThread({
             >
               중지
             </button>
-            {canContinue && !isGenerating && !chatInputDisabled && input.trim().length === 0 ? (
+            {showContinueButton ? (
               <button
                 className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl border border-white/7 hover:border-white/15 transition text-zinc-200"
                 onClick={onContinue}
@@ -146,47 +143,4 @@ export function ChatThread({
       </form>
     </section>
   )
-}
-
-// NOTE: 메시지 렌더링이 "**굵게**" 정도만 필요하면 이 간단 파서로 충분해요.
-// NOTE: 링크/리스트/코드블록 등 Markdown 범위가 늘어나면 `react-markdown`(+ `remark-gfm`) 같은 라이브러리로 교체하는 게 더 유지보수하기 좋아요.
-function renderBoldMarkdown(text: string): ReactNode {
-  const nodes: ReactNode[] = []
-  let cursor = 0
-  let key = 0
-
-  while (cursor < text.length) {
-    const open = text.indexOf('**', cursor)
-    if (open === -1) {
-      nodes.push(text.slice(cursor))
-      break
-    }
-
-    const close = text.indexOf('**', open + 2)
-    if (close === -1) {
-      nodes.push(text.slice(cursor))
-      break
-    }
-
-    if (open > cursor) {
-      nodes.push(text.slice(cursor, open))
-    }
-
-    const boldText = text.slice(open + 2, close)
-    if (boldText.length === 0) {
-      // Preserve literals like "****"
-      nodes.push(text.slice(open, close + 2))
-    } else {
-      nodes.push(
-        <strong className="font-semibold" key={key}>
-          {boldText}
-        </strong>,
-      )
-      key += 1
-    }
-
-    cursor = close + 2
-  }
-
-  return nodes
 }

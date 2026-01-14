@@ -21,16 +21,15 @@ const HEARTBEAT_MS = ms('2s')
 export function useSingleTabLock({ channel }: Options): LockState {
   const [kind, setKind] = useState<LockKind>('acquiring')
   const [ownerId] = useState(() => crypto.randomUUID())
-
   const channelKey = storageKey(channel)
-
-  useEffect(() => {
-    setKind(tryAcquireLock({ channelKey, ownerId }))
-  }, [channelKey, ownerId])
 
   function retry() {
     setKind(tryAcquireLock({ channelKey, ownerId }))
   }
+
+  useEffect(() => {
+    setKind(tryAcquireLock({ channelKey, ownerId }))
+  }, [channelKey, ownerId])
 
   useEffect(() => {
     function onStorage(event: StorageEvent) {

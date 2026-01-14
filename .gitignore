@@ -195,3 +195,9 @@ bun.lockb
 
 # Cloudflare
 .wrangler
+
+# WebLLM custom model libs (local builds)
+/public/webllm-model-libs/*
+
+# MLC / MLC-LLM local tooling (never commit)
+/.mlc/

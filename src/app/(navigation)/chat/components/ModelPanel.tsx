@@ -12,6 +12,9 @@ import Toggle from '@/components/ui/Toggle'
 
 import type { CustomWebLLMModel, InitProgressReport, ModelId } from '../lib/webllm'
 
+import { normalizeHuggingFaceUrl } from '../util/huggingface'
+import { getModelInstallStatusText, type ModelInstallStateKind } from '../util/uiText'
+
 type InstallState =
   | { kind: 'error'; message: string }
   | { kind: 'installed' }
@@ -72,47 +75,21 @@ export function ModelPanel({
 }: Props) {
   const isAdvancedDisabled = isLocked || installState.kind === 'installing'
   const recommendedPreset = modelPresets.find((p) => p.modelId === recommendedModelId)
-  const statusText = getInstallStatusText(installState)
+  const statusText = getModelInstallStatusText(installState.kind satisfies ModelInstallStateKind)
   const [isCustomModelDialogOpen, setIsCustomModelDialogOpen] = useState(false)
   const addCustomModelFormRef = useRef<HTMLFormElement | null>(null)
-
-  function getText(fd: FormData, key: string): string {
-    return String(fd.get(key) ?? '')
-  }
-
-  function getOptionalNumber(fd: FormData, key: string): number | undefined {
-    const raw = getText(fd, key).trim()
-    if (!raw) {
-      return undefined
-    }
-
-    return Number(raw)
-  }
-
-  function normalizeHuggingFaceUrl(input: string): string {
-    const trimmed = input.trim()
-    if (!trimmed) {
-      return ''
-    }
-
-    if (trimmed.startsWith('https://') || trimmed.startsWith('http://')) {
-      return trimmed
-    }
-
-    const withoutDomain = trimmed.replace(/^huggingface\.co\//, '')
-    return `https://huggingface.co/${withoutDomain}`
-  }
 
   function handleCustomModelSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const fd = new FormData(e.currentTarget)
 
-    const label = getText(fd, 'label')
-    const modelId = getText(fd, 'model-id')
-    const description = getText(fd, 'description')
-    const modelUrl = normalizeHuggingFaceUrl(getText(fd, 'model-url'))
-    const modelLibUrl = getText(fd, 'model-lib-url').trim()
-    const requiredVramGb = getOptionalNumber(fd, 'required-vram-gb')
+    const label = String(fd.get('label'))
+    const modelId = String(fd.get('model-id'))
+    const description = String(fd.get('description'))
+    const modelUrl = normalizeHuggingFaceUrl(String(fd.get('model-url')))
+    const modelLibUrl = String(fd.get('model-lib-url')).trim()
+    const requiredVramGbRaw = String(fd.get('required-vram-gb')).trim()
+    const requiredVramGb = requiredVramGbRaw ? Number(requiredVramGbRaw) : undefined
     const supportsThinking = fd.get('supports-thinking') === 'on'
 
     const result = onAddCustomModel({
@@ -184,7 +161,6 @@ export function ModelPanel({
               ))}
             </select>
             <p className="text-xs text-zinc-500">{modelPreset.description}</p>
-            <p className="text-xs text-zinc-500">표기된 숫자는 "모델 파라미터 수 · 필요한 GPU 메모리(VRAM)"예요</p>
             {!isAutoModelEnabled && recommendedPreset && (
               <p className="text-xs text-zinc-500">
                 추천: {recommendedPreset.label}
@@ -197,15 +173,10 @@ export function ModelPanel({
 
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between gap-3">
-              <div className="flex flex-col gap-1">
-                <p className="text-xs text-zinc-400 font-medium">커스텀 모델</p>
-                <p className="text-xs text-zinc-500">
-                  MLC 가중치 + <span className="text-zinc-300">model_lib(wasm)</span>이 필요해요
-                </p>
-              </div>
+              <p className="text-xs text-zinc-400 font-medium">커스텀 모델</p>
               <button
                 aria-disabled={isAdvancedDisabled}
-                className="inline-flex text-sm items-center justify-center px-3 py-1.5 rounded-xl border border-white/7 hover:border-white/15 transition aria-disabled:opacity-50 aria-disabled:pointer-events-none text-zinc-200"
+                className="inline-flex text-sm items-center justify-center px-3 py-1.5 whitespace-nowrap rounded-xl border border-white/7 hover:border-white/15 transition aria-disabled:opacity-50 aria-disabled:pointer-events-none text-zinc-200"
                 onClick={() => setIsCustomModelDialogOpen(true)}
                 type="button"
               >
@@ -444,12 +415,4 @@ export function ModelPanel({
       ) : null}
     </section>
   )
-}
-
-function getInstallStatusText(state: InstallState): string {
-  if (state.kind === 'installed') return '준비됐어요'
-  if (state.kind === 'installing') return '설치 중이에요'
-  if (state.kind === 'not-installed') return '설치가 필요해요'
-  if (state.kind === 'error') return '문제가 생겼어요'
-  return '모델 상태를 확인하고 있어요…'
 }

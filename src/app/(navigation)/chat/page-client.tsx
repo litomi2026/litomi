@@ -1,80 +1,25 @@
 'use client'
 
 import { Bot, Cpu, Download, LockKeyhole, MessageCircle, Smartphone } from 'lucide-react'
-import { useState } from 'react'
-import { toast } from 'sonner'
 
 import LoginButton from '@/components/LoginButton'
-import { env } from '@/env/client'
 import useMeQuery from '@/query/useMeQuery'
 
 import Onboarding from '../(right-search)/[name]/settings/Onboarding'
-import { arisCharacter } from './character/aris'
-import { aruCharacter } from './character/aru'
-import { neoCharacter } from './character/neo'
-import { shiyeonCharacter } from './character/seoyoung'
-import { yumiCharacter } from './character/yumi'
-import { CharacterPanel } from './components/CharacterPanel'
-import { ChatHeader } from './components/ChatHeader'
-import { ChatThread } from './components/ChatThread'
-import { ModelPanel } from './components/ModelPanel'
-import { useCharacterChatController } from './hook/useCharacterChatController'
+import AIChat from './AIChat'
 import { useSingleTabLock } from './hook/useSingleTabLock'
-import { useWebLLMRuntime } from './hook/useWebLLMRuntime'
-import { useOutboxAutoFlush } from './storage/outbox'
-
-const { NEXT_PUBLIC_BACKEND_URL } = env
+import { useWebGPUReady } from './hook/useWebGPUReady'
 
 const MIN_IOS_SAFARI_TEXT = 'iOS 18 / Safari 18 이상'
-
-const CHARACTERS = [arisCharacter, aruCharacter, yumiCharacter, shiyeonCharacter, neoCharacter] as const
 
 export default function CharacterChatPageClient() {
   const { data: me, isLoading } = useMeQuery()
   const userId = me?.id
-
-  const [characterKey, setCharacterKey] = useState(CHARACTERS[0].key)
-  const character = CHARACTERS.find((c) => c.key === characterKey)!
-
   const tabLock = useSingleTabLock({ channel: 'litomi:character-chat' })
-  const runtime = useWebLLMRuntime({ enabled: Boolean(userId) && tabLock.kind === 'acquired' })
-
-  const outbox = useOutboxAutoFlush({
-    enabled: Boolean(userId),
-    backendUrl: NEXT_PUBLIC_BACKEND_URL,
-    onUnauthorized: () => toast.warning('로그인 정보가 만료됐어요'),
-  })
-
-  const modelSupportsThinking = runtime.modelPreset.supportsThinking
-  const chatModelMode = modelSupportsThinking && runtime.isThinkingEnabled ? 'thinking' : 'chat'
-
-  const chat = useCharacterChatController({
-    character,
-    engineRef: runtime.engineRef,
-    ensureEngine: runtime.ensureEngine,
-    interruptGenerate: runtime.interruptGenerate,
-    modelId: runtime.modelId,
-    modelMode: chatModelMode,
-    modelSupportsThinking,
-    onOutboxFlush: outbox.flush,
-    resetChat: runtime.resetChat,
-  })
-
-  const chatInputDisabledReason =
-    runtime.installState.kind === 'installed'
-      ? null
-      : runtime.installState.kind === 'not-installed'
-        ? '모델을 설치하면 대화를 시작할 수 있어요'
-        : runtime.installState.kind === 'installing'
-          ? '모델을 설치하고 있어요…'
-          : runtime.installState.kind === 'error'
-            ? '모델을 준비하지 못했어요. 위에서 다시 확인해 주세요'
-            : '모델 상태를 확인하고 있어요…'
-
-  const chatInputDisabled = chatInputDisabledReason !== null
+  const isWebGpuReady = useWebGPUReady({ enabled: Boolean(userId) && tabLock.kind === 'acquired' })
 
   if (isLoading) {
-    return <div className="p-6 text-sm text-zinc-400">로딩 중이에요…</div>
+    return <div className="p-6 text-sm text-zinc-400">사용자 정보를 불러오고 있어요…</div>
   }
 
   if (!userId) {
@@ -87,7 +32,11 @@ export default function CharacterChatPageClient() {
               title: '내 기기에서 실행',
               description: '서버 비용 없이 내 GPU로 추론해요',
             },
-            { icon: <Download className="size-5" />, title: '모델 설치', description: '처음 한 번만 내려받으면 돼요' },
+            {
+              icon: <Download className="size-5" />,
+              title: '모델 설치',
+              description: '처음 한 번만 내려받으면 돼요',
+            },
             {
               icon: <MessageCircle className="size-5" />,
               title: '로그 저장',
@@ -136,7 +85,11 @@ export default function CharacterChatPageClient() {
     )
   }
 
-  if (runtime.isWebGpuReady === false) {
+  if (isWebGpuReady === null) {
+    return <div className="p-6 text-sm text-zinc-400">WebGPU 지원 여부를 확인하고 있어요…</div>
+  }
+
+  if (isWebGpuReady === false) {
     return (
       <div className="flex-1 flex items-center justify-center">
         <Onboarding
@@ -168,58 +121,5 @@ export default function CharacterChatPageClient() {
     )
   }
 
-  return (
-    <div className="flex flex-col gap-4 p-4 sm:p-6 max-w-3xl w-full">
-      <ChatHeader onNewChat={chat.newChat} />
-
-      <ModelPanel
-        customModels={runtime.customModels}
-        installState={runtime.installState}
-        isAutoModelEnabled={runtime.isAutoModelEnabled}
-        isLocked={chat.isLocked}
-        isThinkingEnabled={runtime.isThinkingEnabled}
-        modelId={runtime.modelId}
-        modelPreset={runtime.modelPreset}
-        modelPresets={runtime.modelPresets}
-        onAddCustomModel={runtime.addCustomModel}
-        onChangeAutoModelEnabled={runtime.setIsAutoModelEnabled}
-        onChangeModelId={runtime.setModelId}
-        onChangeThinkingEnabled={runtime.setIsThinkingEnabled}
-        onChangeThinkingTraceVisible={runtime.setShowThinkingTrace}
-        onInstall={runtime.install}
-        onRefreshInstallState={runtime.refreshInstallState}
-        onRemoveCustomModel={runtime.removeCustomModel}
-        onRemoveInstalledModel={() => runtime.removeInstalledModel().then(() => toast.success('모델을 삭제했어요'))}
-        recommendedModelId={runtime.recommendedModelId}
-        showThinkingTrace={runtime.showThinkingTrace}
-      />
-
-      <CharacterPanel
-        characterKey={characterKey}
-        characters={CHARACTERS}
-        isLocked={chat.isLocked}
-        onChangeCharacterKey={setCharacterKey}
-        selectedCharacter={character}
-      />
-
-      <ChatThread
-        canContinue={chat.canContinue}
-        characterName={character.name}
-        chatInputDisabled={chatInputDisabled}
-        chatInputDisabledReason={chatInputDisabledReason}
-        currentAssistantId={chat.currentAssistantId}
-        input={chat.input}
-        isGenerating={chat.isGenerating}
-        isPreparingModel={chat.isPreparingModel}
-        isThinkingEnabled={runtime.isThinkingEnabled}
-        messages={chat.messages}
-        modelMode={chatModelMode}
-        onContinue={chat.continueReply}
-        onInputChange={chat.onInputChange}
-        onStop={chat.stop}
-        onSubmit={chat.send}
-        showThinkingTrace={runtime.showThinkingTrace}
-      />
-    </div>
-  )
+  return <AIChat />
 }

@@ -7,8 +7,12 @@ export async function generateMetadata() {
     ...generateOpenGraphMetadata({
       title: '캐릭터 AI 채팅',
       description: '내 기기에서 AI 모델을 내려받아 캐릭터와 채팅해요',
-      url: 'https://litomi.in/chat',
+      url: '/chat',
     }),
+    alternates: {
+      canonical: '/chat',
+      languages: { ko: '/chat' },
+    },
   }
 }
 

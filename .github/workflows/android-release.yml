@@ -123,6 +123,8 @@ jobs:
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: android-v${{ steps.version.outputs.version_name }}
+          target_commitish: ${{ github.sha }}
           generate_release_notes: true
           files: |
             dist/android/litomi.apk

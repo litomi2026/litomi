@@ -10,16 +10,35 @@ import type { ChatMessage } from '../types/chatMessage'
 
 import { archiveChatMessages } from '../storage/indexeddb'
 import { enqueueAppendMessages, enqueueCreateSession } from '../storage/outbox'
+import { buildContext, buildSummaryPrompt } from '../util/chatPrompts'
+import { countHistoryTokens, pickPruneCountByTokenBudget } from '../util/chatTokens'
+import { getTokenBudget, type TokenBudget } from '../util/tokenBudget'
+import { useStateWithRef } from './useStateWithRef'
 
-type SetStateAction<T> = T | ((prev: T) => T)
-
-const MAX_TURNS_FOR_CONTEXT = 30
-const TARGET_TURNS_AFTER_SUMMARY = 20
-const MAX_MESSAGES_IN_MEMORY = MAX_TURNS_FOR_CONTEXT * 2
-const TARGET_MESSAGES_AFTER_SUMMARY = TARGET_TURNS_AFTER_SUMMARY * 2
 const SUMMARY_MAX_TOKENS = 256
 const CHAT_REPLY_MAX_TOKENS = 512
 const THINKING_REPLY_MAX_TOKENS = 1024
+
+const MIN_MESSAGES_TO_KEEP_AFTER_SUMMARY = 8
+
+const DEFAULT_LLM_PARAMS = {
+  chat: {
+    temperature: 0.4,
+    top_p: 0.85,
+    max_tokens: CHAT_REPLY_MAX_TOKENS,
+    repetition_penalty: 1.1,
+    frequency_penalty: 0.25,
+    presence_penalty: 0.2,
+  },
+  thinking: {
+    temperature: 0.25,
+    top_p: 0.85,
+    max_tokens: THINKING_REPLY_MAX_TOKENS,
+    repetition_penalty: 1.08,
+    frequency_penalty: 0.2,
+    presence_penalty: 0.2,
+  },
+}
 
 export function useCharacterChatController(options: {
   character: CharacterDefinition
@@ -27,6 +46,7 @@ export function useCharacterChatController(options: {
   ensureEngine: () => Promise<WebLLMEngine>
   interruptGenerate: () => void
   modelId: ModelId
+  modelContextWindowSize: number
   modelMode: 'chat' | 'thinking'
   modelSupportsThinking: boolean
   onOutboxFlush: () => void
@@ -38,6 +58,7 @@ export function useCharacterChatController(options: {
     ensureEngine,
     interruptGenerate,
     modelId,
+    modelContextWindowSize,
     modelMode,
     modelSupportsThinking,
     onOutboxFlush,
@@ -57,6 +78,7 @@ export function useCharacterChatController(options: {
   const scheduledSummarizeIdRef = useRef<number | null>(null)
   const scheduleSummarizeRef = useRef<() => void>(() => {})
   const lastUserActivityAtRef = useRef<number>(Date.now())
+  const tokenBudgetRef = useRef<TokenBudget | null>(null)
 
   const isLocked = messages.length > 0
 
@@ -95,7 +117,14 @@ export function useCharacterChatController(options: {
     }
 
     const currentMessages = messagesRef.current
-    if (currentMessages.length < MAX_MESSAGES_IN_MEMORY) {
+    const budget = tokenBudgetRef.current
+    if (!budget) {
+      scheduleSummarizeRef.current()
+      return
+    }
+
+    const totalTokens = countHistoryTokens(currentMessages)
+    if (totalTokens <= budget.historyMaxTokens) {
       pendingSummarizeRef.current = false
       return
     }
@@ -106,8 +135,12 @@ export function useCharacterChatController(options: {
       return
     }
 
-    const pruneCount = currentMessages.length - TARGET_MESSAGES_AFTER_SUMMARY
-    const chunk = currentMessages.slice(0, pruneCount)
+    const pruneCount = pickPruneCountByTokenBudget({
+      messages: currentMessages,
+      minMessagesToKeep: MIN_MESSAGES_TO_KEEP_AFTER_SUMMARY,
+      targetTokensAfterSummary: budget.historyTargetTokensAfterSummary,
+    })
+    const chunk = pruneCount > 0 ? currentMessages.slice(0, pruneCount) : []
     if (chunk.length === 0) {
       pendingSummarizeRef.current = false
       return
@@ -250,23 +283,29 @@ export function useCharacterChatController(options: {
       const engine = await ensureEngine()
       setIsPreparingModel(false)
 
+      const llmParams = {
+        ...DEFAULT_LLM_PARAMS[modelMode],
+        ...character.llmParams?.[modelMode],
+      }
+
+      const budget = getTokenBudget({
+        contextWindowSize: modelContextWindowSize,
+        completionMaxTokens: typeof llmParams.max_tokens === 'number' ? llmParams.max_tokens : CHAT_REPLY_MAX_TOKENS,
+      })
+      tokenBudgetRef.current = budget
+
       const context = buildContext({
         systemPrompt: character.systemPrompt,
         messages: [...prevMessages, userMessage],
-        maxTurns: MAX_TURNS_FOR_CONTEXT,
         summary: summaryRef.current,
+        historyMaxTokens: budget.historyMaxTokens,
       })
 
       const stream = await engine.chat.completions.create({
         messages: context,
         stream: true,
-        // NOTE: 반복 루프(같은 문장/구절 무한 반복)를 줄이기 위한 설정이에요.
-        temperature: modelMode === 'thinking' ? 0.25 : 0.4,
-        top_p: modelMode === 'thinking' ? 0.85 : 0.9,
-        max_tokens: modelMode === 'thinking' ? THINKING_REPLY_MAX_TOKENS : CHAT_REPLY_MAX_TOKENS,
-        repetition_penalty: modelMode === 'thinking' ? 1.08 : 1.03,
-        frequency_penalty: modelMode === 'thinking' ? 0.2 : 0.15,
-        presence_penalty: modelMode === 'thinking' ? 0.2 : 0.15,
+        stream_options: { include_usage: true },
+        ...llmParams,
         ...(modelSupportsThinking && { extra_body: { enable_thinking: modelMode === 'thinking' } }),
       })
 
@@ -358,7 +397,11 @@ export function useCharacterChatController(options: {
       }
 
       let finishReason: string | null = null
+      let finalUsage: { prompt_tokens: number; completion_tokens: number; total_tokens: number } | null = null
       for await (const chunk of stream) {
+        if (chunk.usage && typeof chunk.usage.prompt_tokens === 'number') {
+          finalUsage = chunk.usage
+        }
         const nextFinishReason = chunk.choices[0]?.finish_reason
         if (typeof nextFinishReason === 'string' && nextFinishReason.length > 0) {
           finishReason = nextFinishReason
@@ -419,9 +462,23 @@ export function useCharacterChatController(options: {
       const assistantContent = visible
       const assistantThink = thinkParts.filter(Boolean).join('\n\n')
       const hasAssistantContent = assistantContent.trim().length > 0
+
+      const userTokenCount = finalUsage?.prompt_tokens
+      const assistantTokenCount = finalUsage?.completion_tokens
+
+      const userMessageWithTokens =
+        typeof userTokenCount === 'number' && Number.isFinite(userTokenCount) && userTokenCount > 0
+          ? { ...userMessage, tokenCount: userTokenCount }
+          : userMessage
+
+      const assistantMessageWithTokens =
+        typeof assistantTokenCount === 'number' && Number.isFinite(assistantTokenCount) && assistantTokenCount > 0
+          ? { ...assistantMessage, content: assistantContent, tokenCount: assistantTokenCount }
+          : { ...assistantMessage, content: assistantContent }
+
       const finalMessages = hasAssistantContent
-        ? [...prevMessages, userMessage, { ...assistantMessage, content: assistantContent }]
-        : [...prevMessages, userMessage]
+        ? [...prevMessages, userMessageWithTokens, assistantMessageWithTokens]
+        : [...prevMessages, userMessageWithTokens]
 
       const sessionId = clientSessionIdRef.current
       await enqueueCreateSession({
@@ -432,23 +489,37 @@ export function useCharacterChatController(options: {
         modelId,
       })
 
-      if (!hasAssistantContent) {
-        setMessages((prev) => prev.filter((m) => m.id !== assistantId))
-      } else if (assistantThink) {
-        setMessages((prev) => {
-          const last = prev[prev.length - 1]
-          if (last?.id === assistantId) {
-            const next = prev.slice()
-            next[next.length - 1] = { ...last, debug: { think: assistantThink } }
+      setMessages((prev) => {
+        const filtered = hasAssistantContent ? prev : prev.filter((m) => m.id !== assistantId)
+
+        return filtered.map((m) => {
+          if (
+            typeof userTokenCount === 'number' &&
+            Number.isFinite(userTokenCount) &&
+            userTokenCount > 0 &&
+            m.id === userMessage.id
+          ) {
+            return { ...m, tokenCount: userTokenCount }
+          }
+
+          if (hasAssistantContent && m.id === assistantId) {
+            const next: ChatMessage = { ...m }
+            if (
+              typeof assistantTokenCount === 'number' &&
+              Number.isFinite(assistantTokenCount) &&
+              assistantTokenCount > 0
+            ) {
+              next.tokenCount = assistantTokenCount
+            }
+            if (assistantThink) {
+              next.debug = { ...next.debug, think: assistantThink }
+            }
             return next
           }
-          const idx = prev.findIndex((m) => m.id === assistantId)
-          if (idx === -1) return prev
-          const next = prev.slice()
-          next[idx] = { ...next[idx], debug: { think: assistantThink } }
-          return next
+
+          return m
         })
-      }
+      })
 
       const outboxMessages: { clientMessageId: string; role: 'assistant' | 'user'; content: string }[] = [
         { clientMessageId: userMessage.id, role: 'user', content: userMessage.content },
@@ -465,7 +536,7 @@ export function useCharacterChatController(options: {
 
       onOutboxFlush()
 
-      if (hasAssistantContent && finalMessages.length >= MAX_MESSAGES_IN_MEMORY) {
+      if (hasAssistantContent && countHistoryTokens(finalMessages) > budget.historyMaxTokens) {
         pendingSummarizeRef.current = true
         scheduleSummarize()
       }
@@ -474,7 +545,10 @@ export function useCharacterChatController(options: {
         setCanContinue(true)
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : '응답을 생성하지 못했어요')
+      if (process.env.NODE_ENV !== 'production') {
+        console.error('[chat] failed to generate response', error)
+      }
+      toast.error('응답을 생성하지 못했어요')
       setMessages((prev) => prev.filter((m) => m.id !== assistantId))
     } finally {
       setIsGenerating(false)
@@ -496,65 +570,4 @@ export function useCharacterChatController(options: {
     send,
     stop,
   }
-}
-
-function buildContext(options: {
-  systemPrompt: string
-  messages: ChatMessage[]
-  maxTurns: number
-  summary: string | null
-}) {
-  const { systemPrompt, messages, maxTurns, summary } = options
-
-  const recent = messages.slice(-maxTurns * 2)
-  const system = summary
-    ? `${systemPrompt}\n\n[이전 대화 요약]\n${summary}\n\n(요약을 참고해서 대화를 이어가 주세요.)`
-    : systemPrompt
-
-  return [{ role: 'system' as const, content: system }, ...recent.map((m) => ({ role: m.role, content: m.content }))]
-}
-
-function buildSummaryPrompt(options: { currentSummary: string | null; newMessages: ChatMessage[] }) {
-  const { currentSummary, newMessages } = options
-
-  const transcript = newMessages
-    .map((m) => {
-      const speaker = m.role === 'user' ? '사용자' : '어시스턴트'
-      return `${speaker}: ${m.content}`
-    })
-    .join('\n')
-
-  const system = [
-    '너는 대화 내용을 짧게 요약해서 "메모리"로 정리하는 역할이야.',
-    '반드시 한국어로 작성해.',
-    '길게 쓰지 말고, 다음 대화에서 도움이 될 핵심 정보만 남겨.',
-    '- 인물/호칭/관계(예: 선생님/아리스)',
-    '- 사용자의 목표/선호/금기',
-    '- 진행 중인 계획/약속/해야 할 일',
-    '형식은 8~12줄 이내의 불릿 리스트로 해.',
-  ].join('\n')
-
-  const user = currentSummary
-    ? `현재 메모리가 있어요:\n${currentSummary}\n\n아래 대화를 반영해서 메모리를 업데이트해 주세요:\n${transcript}`
-    : `아래 대화를 메모리로 요약해 주세요:\n${transcript}`
-
-  return [
-    { role: 'system' as const, content: system },
-    { role: 'user' as const, content: user },
-  ]
-}
-
-function useStateWithRef<T>(initial: T | (() => T)) {
-  const [state, setState] = useState<T>(initial)
-  const ref = useRef(state)
-
-  function set(action: SetStateAction<T>) {
-    setState((prev) => {
-      const next = typeof action === 'function' ? (action as (p: T) => T)(prev) : action
-      ref.current = next
-      return next
-    })
-  }
-
-  return [state, set, ref] as const
 }
