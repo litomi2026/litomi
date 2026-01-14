@@ -39,6 +39,7 @@ const ArgsSchema = z.object({
   timeoutMs: z.coerce.number().int().positive().default(ms('20s')),
   normalizeKeys: z.boolean().default(true),
   addMissingFields: z.boolean().default(true),
+  addNewKeys: z.boolean().default(true),
   locales: z.string().optional(), // comma-separated locale codes (e.g. ko,ja,zh)
   overwriteLocales: z.string().default('en,ja,zh-CN,zh-TW'), // comma-separated SupportedLocale(s)
 })
@@ -49,6 +50,38 @@ type GitHubTreeResponse = {
   tree?: Array<{ path?: string; type?: string }>
 }
 
+function buildNewTranslationEntry(params: {
+  key: string
+  normalizeKeys: boolean
+  pupilMaps: Partial<Record<SupportedLocale, PupilTranslationMap>>
+  overwriteLocales: Set<SupportedLocale>
+}): Record<string, string> | null {
+  const { key, normalizeKeys, pupilMaps, overwriteLocales } = params
+
+  const entry: Record<string, string> = {}
+
+  // Always provide en (required by our translation types). Prefer Pupil en if available.
+  entry.en = getPupilValueForKey(pupilMaps, 'en', key, normalizeKeys) ?? deriveEnglishLabelFromKey(key)
+
+  for (const locale of SupportedLocales) {
+    if (locale === 'en') continue
+    const v = getPupilValueForKey(pupilMaps, locale, key, normalizeKeys)
+    if (!v) continue
+
+    // For ko: keep old behavior (fill blanks only) doesn't apply to brand-new entries.
+    // For en/ja/zh-* overwrite is handled elsewhere; here we just set what's available.
+    if (locale === 'ko' || overwriteLocales.has(locale)) {
+      entry[locale] = v
+    }
+  }
+
+  // If we only have derived en and no real Pupil values, skip (avoid noisy mass inserts).
+  const hasAnyPupilValue = Object.keys(entry).some((k) => k !== 'en')
+  if (!hasAnyPupilValue) return null
+
+  return entry
+}
+
 function computeInsertionIndent(jsonText: string, objectStart: number): string {
   // Uses the indentation of the line where the object starts as a baseline.
   const lineStart = jsonText.lastIndexOf('\n', objectStart)
@@ -56,6 +89,11 @@ function computeInsertionIndent(jsonText: string, objectStart: number): string {
   const afterNewline = jsonText.slice(lineStart + 1, objectStart)
   const m = afterNewline.match(/^\s*/)
   return (m?.[0] ?? '') + '  '
+}
+
+function deriveEnglishLabelFromKey(key: string): string {
+  const raw = key.includes(':') ? key.split(':').slice(1).join(':') : key
+  return raw.replace(/_/g, ' ')
 }
 
 async function fetchJson<T>(url: string, timeoutMs: number): Promise<T> {
@@ -130,6 +168,16 @@ function findObjectRangeForKey(jsonText: string, key: string): { start: number; 
   return null
 }
 
+function formatEntryObject(entry: Record<string, string>, baseIndent: string): string {
+  const keys = ['en', 'ko', 'ja', 'zh-CN', 'zh-TW'].filter((k) => k in entry)
+  const innerIndent = `${baseIndent}  `
+  const lines = keys.map((k, idx) => {
+    const comma = idx === keys.length - 1 ? '' : ','
+    return `${innerIndent}${JSON.stringify(k)}: ${JSON.stringify(entry[k]!)}${comma}`
+  })
+  return `{\n${lines.join('\n')}\n${baseIndent}}`
+}
+
 async function getAvailablePupilLocales(args: Args): Promise<PupilLocaleCode[]> {
   if (args.locales) {
     return args.locales
@@ -161,6 +209,46 @@ async function getPupilTranslations(args: Args, pupilLocale: PupilLocaleCode): P
     out[k] = cleaned
   }
   return out
+}
+
+function getPupilValueForKey(
+  pupilMaps: Partial<Record<SupportedLocale, PupilTranslationMap>>,
+  locale: SupportedLocale,
+  key: string,
+  normalizeKeys: boolean,
+): string | null {
+  const map = pupilMaps[locale]
+  if (!map) return null
+  const candidates = normalizeKeys ? [key, normalizeKey(key)] : [key]
+  for (const c of candidates) {
+    const v = map[c]
+    if (typeof v === 'string' && !isBlank(v)) return v
+  }
+  return null
+}
+
+function getTopLevelIndent(jsonText: string): string {
+  const m = jsonText.match(/\{\s*\n(\s*)"/)
+  return m?.[1] ?? '  '
+}
+
+function insertTopLevelKeyEntry(jsonText: string, key: string, entry: Record<string, string>): string | null {
+  const quotedKey = JSON.stringify(key)
+  if (jsonText.includes(`${quotedKey}:`)) return null
+
+  const end = jsonText.lastIndexOf('}')
+  if (end < 0) return null
+
+  const baseIndent = getTopLevelIndent(jsonText)
+  const entryObject = formatEntryObject(entry, baseIndent)
+  const entryLine = `${baseIndent}${quotedKey}: ${entryObject}`
+
+  const between = jsonText.slice(0, end)
+  const hasExistingEntries = /"\s*[^"]+"\s*:/.test(between)
+  const insertPrefix = hasExistingEntries ? ',\n' : '\n'
+
+  // Preserve trailing whitespace/newline after final brace.
+  return jsonText.slice(0, end) + insertPrefix + entryLine + '\n' + jsonText.slice(end)
 }
 
 function isBlank(value: string): boolean {
@@ -202,12 +290,35 @@ async function main() {
     pupilMaps[supported] = await getPupilTranslations(args, pupil)
   }
 
+  const pupilKeySet = new Set<string>()
+  for (const m of Object.values(pupilMaps)) {
+    if (!m) continue
+    for (const k of Object.keys(m)) pupilKeySet.add(k)
+  }
+
   const overwriteLocales = new Set(
     args.overwriteLocales
       .split(',')
       .map((s) => s.trim())
       .filter((s): s is SupportedLocale => SupportedLocales.has(s as SupportedLocale)),
   )
+
+  const existingKeysAll = new Set<string>()
+  const prefixedSuffixes = new Set<string>()
+  for (const p of targetFiles) {
+    const rel = path.relative(process.cwd(), p).replaceAll('\\', '/')
+    // user requested these 3 files be considered for redundancy checks
+    if (
+      rel.endsWith('src/translation/tag-mixed.json') ||
+      rel.endsWith('src/translation/tag-other.json') ||
+      rel.endsWith('src/translation/tag-single-sex.json')
+    ) {
+      for (const k of readTopLevelKeysFromJsonFile(p)) {
+        existingKeysAll.add(k)
+        if (k.includes(':')) prefixedSuffixes.add(k.split(':').slice(1).join(':'))
+      }
+    }
+  }
 
   let totalChangedFiles = 0
   let totalChangedFields = 0
@@ -283,6 +394,40 @@ async function main() {
       if (changedThisKey) changedKeys++
     }
 
+    if (args.addNewKeys) {
+      const rel = path.relative(process.cwd(), filePath).replaceAll('\\', '/')
+      const existingKeys = new Set(Object.keys(dict))
+      const candidates = [...pupilKeySet].filter((k) => !existingKeys.has(k))
+
+      for (const newKey of candidates) {
+        if (!shouldInsertNewKey(rel, newKey)) continue
+
+        const insertKey = normalizeKeyForLocalInsertion(newKey, args.normalizeKeys)
+        if (existingKeys.has(insertKey)) continue
+        if (existingKeysAll.has(insertKey)) continue
+        if (shouldSkipNewKeyDueToPrefixedVariant(rel, insertKey, prefixedSuffixes)) continue
+
+        const entry = buildNewTranslationEntry({
+          key: newKey,
+          normalizeKeys: args.normalizeKeys,
+          pupilMaps,
+          overwriteLocales,
+        })
+        if (!entry) continue
+
+        const inserted = insertTopLevelKeyEntry(nextText, insertKey, entry)
+        if (!inserted) continue
+
+        nextText = inserted
+        existingKeys.add(insertKey)
+        existingKeysAll.add(insertKey)
+        if (insertKey.includes(':')) prefixedSuffixes.add(insertKey.split(':').slice(1).join(':'))
+        changedKeys++
+        changedFields += Object.keys(entry).length
+        totalChangedFields += Object.keys(entry).length
+      }
+    }
+
     if (changedFields > 0) {
       totalChangedFiles++
       console.log(
@@ -316,6 +461,15 @@ function normalizeKey(key: string): string {
   return key.trim().toLowerCase().replace(/\s+/g, '_')
 }
 
+function normalizeKeyForLocalInsertion(key: string, normalizeKeys: boolean): string {
+  if (!normalizeKeys) return key
+  if (!key.includes(':')) return normalizeKey(key)
+
+  const [prefix, ...rest] = key.split(':')
+  const tail = rest.join(':')
+  return `${normalizeKey(prefix ?? '')}:${normalizeKey(tail)}`
+}
+
 function parseArgs(argv: string[]): Args {
   const raw: Record<string, unknown> = {}
   for (let i = 0; i < argv.length; i++) {
@@ -327,6 +481,7 @@ function parseArgs(argv: string[]): Args {
     if (key === 'write') raw.write = true
     else if (key === 'no-normalize-keys') raw.normalizeKeys = false
     else if (key === 'add-missing-fields') raw.addMissingFields = true
+    else if (key === 'no-add-new-keys') raw.addNewKeys = false
     else {
       const next = argv[i + 1]
       if (typeof next === 'string' && !next.startsWith('--')) {
@@ -439,6 +594,17 @@ function pickCurrentLocaleValue(entry: TranslationEntry, locale: SupportedLocale
   return null
 }
 
+function readTopLevelKeysFromJsonFile(absPath: string): string[] {
+  try {
+    const raw = fs.readFileSync(absPath, 'utf-8')
+    const parsed = JSON.parse(raw) as unknown
+    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return []
+    return Object.keys(parsed as Record<string, unknown>)
+  } catch {
+    return []
+  }
+}
+
 function resolveTargetFiles(args: Args): string[] {
   const requested = (
     args.files
@@ -455,6 +621,30 @@ function resolveTargetFiles(args: Args): string[] {
   }
 
   return requested.map((p) => path.join(process.cwd(), p))
+}
+
+function shouldInsertNewKey(relativeFilePath: string, key: string): boolean {
+  // Route new keys conservatively:
+  // - keys with ":" go to tag-single-sex
+  // - keys without ":" go to tag-unisex (works as a general fallback in translateTag)
+  if (relativeFilePath.endsWith('src/translation/tag-single-sex.json')) {
+    return key.includes(':')
+  }
+  if (relativeFilePath.endsWith('src/translation/tag-unisex.json')) {
+    return !key.includes(':')
+  }
+  return false
+}
+
+function shouldSkipNewKeyDueToPrefixedVariant(
+  relativeFilePath: string,
+  insertKey: string,
+  prefixedSuffixes: Set<string>,
+): boolean {
+  // If there is already a prefixed key like "female:<k>", don't insert "<k>" into tag-unisex.
+  if (!relativeFilePath.endsWith('src/translation/tag-unisex.json')) return false
+  if (insertKey.includes(':')) return false
+  return prefixedSuffixes.has(insertKey)
 }
 
 function stableSortKeys(obj: Record<string, unknown>): Record<string, unknown> {

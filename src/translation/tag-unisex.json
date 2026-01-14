@@ -1,4 +1,12 @@
 {
+  "35_machi": {
+    "en": "35 machi",
+    "ko": "machi"
+  },
+  "40010prototype": {
+    "en": "40010prototype",
+    "ko": "prototype"
+  },
   "abortion": {
     "en": "abortion",
     "ko": "낙태",
@@ -47,6 +55,15 @@
     "zh-CN": "阿黑颜",
     "zh-TW": "阿嘿顏"
   },
+  "aiue_oka": {
+    "en": "aiue oka",
+    "ko": "aiue oka",
+    "zh-CN": "爱上陆"
+  },
+  "aji_ponntarou": {
+    "en": "aji ponntarou",
+    "ko": "aji ponntarou"
+  },
   "albino": {
     "en": "albino",
     "ko": "알비노",
@@ -69,6 +86,14 @@
     "en": "amputee",
     "ko": "절단",
     "zh-CN": "截肢"
+  },
+  "amuai": {
+    "en": "amuai",
+    "ko": "amuai"
+  },
+  "anaglyph": {
+    "en": "anaglyph",
+    "ko": "anaglyph"
   },
   "anal": {
     "en": "anal",
@@ -101,6 +126,10 @@
     "en": "analphagia",
     "ko": "항문 섭취",
     "zh-CN": "肛门吞食"
+  },
+  "anegaoka_sanchoume": {
+    "en": "anegaoka sanchoume",
+    "ko": "anegaoka sanchoume"
   },
   "angel": {
     "en": "angel",
@@ -170,6 +199,10 @@
     "ja": "尻コキ",
     "zh-CN": "尻交",
     "zh-TW": "臀部摩擦"
+  },
+  "asuka_sakino": {
+    "en": "asuka sakino",
+    "ko": "asuka sakino"
   },
   "aunt": {
     "en": "aunt",
@@ -252,6 +285,11 @@
     "ja": "熊",
     "zh-CN": "熊",
     "zh-TW": "熊"
+  },
+  "bear_boy": {
+    "en": "bear boy",
+    "ko": "곰 소년",
+    "zh-CN": "狗熊男"
   },
   "beard": {
     "en": "beard",
@@ -355,10 +393,19 @@
     "ja": "ビキニ",
     "zh-CN": "比基尼"
   },
+  "birth": {
+    "en": "birth",
+    "ko": "출산",
+    "zh-CN": "出产"
+  },
   "bisexual": {
     "en": "bisexual",
     "ko": "양성애",
     "zh-CN": "双性"
+  },
+  "bitch": {
+    "en": "bitch",
+    "ko": "챙녀"
   },
   "bite_mark": {
     "en": "bite mark",
@@ -465,6 +512,10 @@
     "ja": "ブラ",
     "zh-CN": "胸罩"
   },
+  "braces": {
+    "en": "braces",
+    "zh-CN": "牙套"
+  },
   "brain_fuck": {
     "en": "brain fuck",
     "ko": "뇌 섹스"
@@ -524,6 +575,10 @@
     "zh-CN": "西装",
     "zh-TW": "西裝"
   },
+  "buta_hormone": {
+    "en": "buta hormone",
+    "ko": "buta hormone"
+  },
   "butler": {
     "en": "butler",
     "ko": "집사",
@@ -537,6 +592,23 @@
     "ja": "尻ピストン",
     "zh-CN": "屁股塞子",
     "zh-TW": "屁股塞子"
+  },
+  "c77": {
+    "en": "c77",
+    "ko": "c"
+  },
+  "c80": {
+    "en": "c80",
+    "ko": "코미케"
+  },
+  "c81": {
+    "en": "c81",
+    "ko": "C"
+  },
+  "camel": {
+    "en": "camel",
+    "ko": "낙타",
+    "zh-CN": "骆驼"
   },
   "cannibalism": {
     "en": "cannibalism",
@@ -582,6 +654,10 @@
     "ja": "子宮脱",
     "zh-CN": "子宫脱垂"
   },
+  "charmbite": {
+    "en": "charmbite",
+    "ko": "charmbite"
+  },
   "chastity_belt": {
     "en": "chastity belt",
     "ko": "정조대"
@@ -597,24 +673,64 @@
     "ja": "チアリーダー",
     "zh-CN": "啦啦队员"
   },
+  "chie_no_genseki_azuse": {
+    "en": "chie no genseki azuse",
+    "ko": "chie no genseki azuse"
+  },
   "chikan": {
     "en": "chikan",
     "ko": "치한",
     "zh-CN": "痴汉"
   },
+  "chill_chill_cherry": {
+    "en": "chill chill cherry",
+    "ko": "chill chill cherry"
+  },
   "chinese_dress": {
     "en": "chinese dress",
     "ko": "중국 의상"
+  },
+  "chitsu_kara_liver": {
+    "en": "chitsu kara liver",
+    "ko": "chitsu kara liver"
+  },
+  "chiyo_sakura": {
+    "en": "chiyo sakura",
+    "ko": "chiyo sakura"
+  },
+  "chloe_wichers": {
+    "en": "chloe wichers",
+    "ko": "chloe wichers"
   },
   "chloroform": {
     "en": "chloroform",
     "ko": "클로로폼",
     "zh-CN": "迷药"
   },
+  "chotto_dake_aruyo": {
+    "en": "chotto dake aruyo",
+    "ko": "chotto dake aruyo"
+  },
   "christmas": {
     "en": "christmas",
     "ko": "크리스마스",
     "zh-CN": "圣诞装"
+  },
+  "chunyujingshitian": {
+    "en": "chunyujingshitian",
+    "ko": "chunyujingshitian"
+  },
+  "chuu": {
+    "en": "chuu",
+    "ko": "chuu"
+  },
+  "chuuka_denenken": {
+    "en": "chuuka denenken",
+    "ko": "chuuka denenken"
+  },
+  "circle_rin": {
+    "en": "circle rin",
+    "ko": "circle rin"
   },
   "clamp": {
     "en": "clamp",
@@ -783,6 +899,11 @@
     "ko": "카우맨",
     "zh-CN": "牛男"
   },
+  "crab": {
+    "en": "crab",
+    "ko": "crab",
+    "zh-CN": "螃蟹"
+  },
   "crotch_tattoo": {
     "en": "crotch tattoo",
     "ko": "자궁문신"
@@ -878,6 +999,10 @@
     "ja": "処女喪失",
     "zh-CN": "破处"
   },
+  "dekairuka": {
+    "en": "dekairuka",
+    "ko": "dekairuka"
+  },
   "demon": {
     "en": "demon",
     "ko": "악마",
@@ -891,15 +1016,28 @@
     "en": "detached sleeves",
     "ko": "분리된 소매"
   },
+  "dhibi_shoten": {
+    "en": "dhibi shoten",
+    "ko": "dhibi shoten"
+  },
   "diaper": {
     "en": "diaper",
     "ko": "기저귀",
     "zh-CN": "尿布"
   },
+  "dick_growth": {
+    "en": "dick growth",
+    "ko": "자지 생김/커짐",
+    "zh-CN": "阴茎生长"
+  },
   "dicknipples": {
     "en": "dicknipples",
     "ko": "젖꼭지에 자지",
     "zh-CN": "阴茎乳头"
+  },
+  "dino_king": {
+    "en": "dino king",
+    "ko": "dino king"
   },
   "dinosaur": {
     "en": "dinosaur",
@@ -925,6 +1063,10 @@
     "ja": "後背位",
     "zh-CN": "后入式"
   },
+  "doku_doku_kinoko": {
+    "en": "doku doku kinoko",
+    "ko": "doku doku kinoko"
+  },
   "doll_joints": {
     "en": "doll joints",
     "ko": "인형 관절"
@@ -937,6 +1079,11 @@
   "domination_loss": {
     "en": "domination loss",
     "ko": "지배력 상실"
+  },
+  "donkey": {
+    "en": "donkey",
+    "ko": "당나귀",
+    "zh-CN": "驴"
   },
   "double_anal": {
     "en": "double anal",
@@ -960,6 +1107,10 @@
     "en": "dogi",
     "ko": "도복",
     "zh-CN": "练功服"
+  },
+  "draenei": {
+    "en": "draenei",
+    "zh-CN": "德莱尼"
   },
   "dragon": {
     "en": "dragon",
@@ -990,6 +1141,10 @@
     "ko": "꽐라",
     "zh-CN": "醉酒"
   },
+  "eagleheart": {
+    "en": "eagleheart",
+    "ko": "eagleheart"
+  },
   "ear_fuck": {
     "en": "ear fuck",
     "ko": "귀 섹스"
@@ -999,6 +1154,10 @@
     "ko": "귀걸이",
     "ja": "イヤリング",
     "zh-CN": "耳环"
+  },
+  "ecolon": {
+    "en": "ecolon",
+    "ko": "ecolon"
   },
   "eel": {
     "en": "eel",
@@ -1039,10 +1198,22 @@
     "en": "emotionless sex",
     "ko": "무표정 섹스"
   },
+  "endi": {
+    "en": "endi",
+    "ko": "endi"
+  },
   "enema": {
     "en": "enema",
     "ko": "관장",
     "zh-CN": "灌肠"
+  },
+  "erosheee": {
+    "en": "erosheee",
+    "ko": "erosheee"
+  },
+  "eruu": {
+    "en": "eruu",
+    "ko": "eruu"
   },
   "exhibitionism": {
     "en": "exhibitionism",
@@ -1074,6 +1245,10 @@
     "en": "eyepatch",
     "ko": "눈덮개",
     "zh-CN": "眼罩"
+  },
+  "eyo": {
+    "en": "eyo",
+    "ko": "eyo"
   },
   "facesitting": {
     "en": "facesitting",
@@ -1221,6 +1396,14 @@
     "zh-CN": "狐狸",
     "zh-TW": "狐狸"
   },
+  "frame": {
+    "en": "frame",
+    "ko": "frame"
+  },
+  "freak_studio": {
+    "en": "freak studio",
+    "ko": "freak studio"
+  },
   "freckles": {
     "en": "freckles",
     "ko": "주근깨",
@@ -1238,9 +1421,21 @@
     "ko": "꼬빔",
     "zh-CN": "阴茎摩擦"
   },
+  "fujikyuu": {
+    "en": "fujikyuu",
+    "ko": "fujikyuu"
+  },
+  "fujutsushi": {
+    "en": "fujutsushi",
+    "ko": "fujutsushi"
+  },
   "full-packaged_futanari": {
     "en": "full-packaged futanari",
     "ko": "불알 있는 후타나리"
+  },
+  "full_body_tattoo": {
+    "en": "full body tattoo",
+    "ko": "전신문신"
   },
   "full_tour": {
     "en": "full tour",
@@ -1252,6 +1447,10 @@
     "ja": "ふんどし",
     "zh-CN": "六尺褌",
     "zh-TW": "兜襠布"
+  },
+  "furindo": {
+    "en": "furindo",
+    "ko": "furindo"
   },
   "furry": {
     "en": "furry",
@@ -1269,6 +1468,14 @@
     "en": "futanari",
     "ko": "후타나리",
     "zh-CN": "扶她"
+  },
+  "futanari_on_futanari": {
+    "en": "futanari on futanari",
+    "ko": "후타나리×후타나리"
+  },
+  "futanari_on_male": {
+    "en": "futanari on male",
+    "ko": "후타나리가 남자를"
   },
   "futanarization": {
     "en": "futanarization",
@@ -1315,6 +1522,14 @@
     "ja": "ガスマスク",
     "zh-CN": "防毒面具"
   },
+  "gejiya": {
+    "en": "gejiya",
+    "ko": "gejiya"
+  },
+  "gekkan_shoujo_nozaki-kun": {
+    "en": "gekkan shoujo nozaki-kun",
+    "ko": "gekkan shoujo nozaki-kun"
+  },
   "gender_bender": {
     "en": "gender bender",
     "ko": "성 전환자"
@@ -1332,6 +1547,10 @@
   "genital_piercing": {
     "en": "genital piercing",
     "ko": "생식기 피어싱"
+  },
+  "genkaiten": {
+    "en": "genkaiten",
+    "ko": "genkaiten"
   },
   "ghost": {
     "en": "ghost",
@@ -1367,6 +1586,19 @@
     "ko": "의인화",
     "zh-CN": "拟人化"
   },
+  "gin_rei": {
+    "en": "gin rei",
+    "ko": "gin rei"
+  },
+  "giraffe_girl": {
+    "en": "giraffe girl",
+    "ko": "기린 소녀",
+    "zh-CN": "长颈鹿娘"
+  },
+  "girls_only": {
+    "en": "girls only",
+    "ko": "여자만 나옴"
+  },
   "glasses": {
     "en": "glasses",
     "ko": "안경",
@@ -1398,6 +1630,10 @@
     "ja": "ゴブリン",
     "zh-CN": "地精"
   },
+  "gogaek": {
+    "en": "gogaek",
+    "ko": "gogaek"
+  },
   "gokkun": {
     "en": "gokkun",
     "ko": "정액 꿀꺽",
@@ -1417,6 +1653,10 @@
     "ja": "ゴシックロリータ",
     "zh-CN": "哥特萝莉",
     "zh-TW": "哥德蘿莉"
+  },
+  "goza": {
+    "en": "goza",
+    "ko": "goza"
   },
   "granddaughter": {
     "en": "granddaughter",
@@ -1445,6 +1685,10 @@
     "ko": "잔인",
     "zh-CN": "肢解"
   },
+  "guys_only": {
+    "en": "guys only",
+    "ko": "남자만 나옴"
+  },
   "gyaru": {
     "en": "gyaru",
     "ko": "갸루",
@@ -1462,6 +1706,10 @@
     "ja": "ブルマ",
     "zh-CN": "运动短裤",
     "zh-TW": "運動短褲"
+  },
+  "hai-jinja": {
+    "en": "hai-jinja",
+    "ko": "hai-jinja"
   },
   "haigure": {
     "en": "haigure",
@@ -1492,9 +1740,25 @@
     "zh-CN": "腋毛",
     "zh-TW": "腋毛"
   },
+  "halftooth": {
+    "en": "halftooth",
+    "ko": "halftooth"
+  },
+  "halkrom": {
+    "en": "halkrom",
+    "ko": "halkrom"
+  },
   "halo": {
     "en": "halo",
     "ko": "헤일로"
+  },
+  "hana_circle": {
+    "en": "hana circle",
+    "ko": "hana circle"
+  },
+  "hanakanmuri": {
+    "en": "hanakanmuri",
+    "ko": "hanakanmuri"
   },
   "handicapped": {
     "en": "handicapped",
@@ -1538,11 +1802,19 @@
     "ja": "ハーピー",
     "zh-CN": "鸟人"
   },
+  "haruka_yume_mikan": {
+    "en": "haruka yume mikan",
+    "ko": "haruka yume mikan"
+  },
   "hat": {
     "en": "hat",
     "ko": "모자",
     "ja": "帽子",
     "zh-CN": "帽子"
+  },
+  "hawknuf": {
+    "en": "hawknuf",
+    "ko": "hawknuf"
   },
   "headless": {
     "en": "headless",
@@ -1552,6 +1824,14 @@
   "headphones": {
     "en": "headphones",
     "ko": "헤드폰"
+  },
+  "heihou_metoru": {
+    "en": "heihou metoru",
+    "ko": "heihou metoru"
+  },
+  "herng": {
+    "en": "herng",
+    "ko": "herng"
   },
   "heterochromia": {
     "en": "heterochromia",
@@ -1574,6 +1854,18 @@
     "en": "hijab",
     "ko": "히잡",
     "zh-CN": "头巾"
+  },
+  "hikaru_sofue": {
+    "en": "hikaru sofue",
+    "ko": "hikaru sofue"
+  },
+  "hitsuka": {
+    "en": "hitsuka",
+    "ko": "히츠카"
+  },
+  "hokkoru": {
+    "en": "hokkoru",
+    "ko": "hokkoru"
   },
   "hood": {
     "en": "hood",
@@ -1604,6 +1896,14 @@
     "en": "horse cock",
     "ko": "말 자지"
   },
+  "hoshino_ichiyoru": {
+    "en": "hoshino ichiyoru",
+    "ko": "hoshino ichiyoru"
+  },
+  "hosshiwa": {
+    "en": "hosshiwa",
+    "ko": "hosshiwa"
+  },
   "hotpants": {
     "en": "hotpants",
     "ko": "핫팬츠",
@@ -1625,6 +1925,10 @@
     "zh-CN": "巨根",
     "zh-TW": "巨根"
   },
+  "hui_c": {
+    "en": "hui c",
+    "ko": "hui c"
+  },
   "human_cattle": {
     "en": "human cattle",
     "ko": "인간 가축"
@@ -1633,11 +1937,31 @@
     "en": "human on furry",
     "ko": "사람이 퍼리를"
   },
+  "human_pet": {
+    "en": "human pet",
+    "ko": "인간펫"
+  },
   "humiliation": {
     "en": "humiliation",
     "ko": "굴욕",
     "ja": "屈辱",
     "zh-CN": "屈辱"
+  },
+  "hutamizu_kirin": {
+    "en": "hutamizu kirin",
+    "ko": "hutamizu kirin"
+  },
+  "ichinose_hajime": {
+    "en": "ichinose hajime",
+    "ko": "ichinose hajime"
+  },
+  "igarashi_yuuma": {
+    "en": "igarashi yuuma",
+    "ko": "igarashi yuuma"
+  },
+  "ikenaiko": {
+    "en": "ikenaiko",
+    "ko": "ikenaiko"
   },
   "impregnation": {
     "en": "impregnation",
@@ -1671,6 +1995,10 @@
     "en": "internal urination",
     "ko": "내부 배뇨"
   },
+  "inuguro_sansei": {
+    "en": "inuguro sansei",
+    "ko": "inuguro sansei"
+  },
   "inverted_nipples": {
     "en": "inverted nipples",
     "ko": "함몰 유두",
@@ -1684,17 +2012,94 @@
     "zh-CN": "透明",
     "zh-TW": "透明"
   },
+  "irariku": {
+    "en": "irariku",
+    "ko": "irariku"
+  },
+  "itumu": {
+    "en": "itumu",
+    "ko": "itumu"
+  },
+  "jaguchi": {
+    "en": "jaguchi",
+    "ko": "jaguchi"
+  },
+  "jeck": {
+    "en": "jeck",
+    "ko": "jeck"
+  },
+  "jiguzagazami": {
+    "en": "jiguzagazami",
+    "ko": "jiguzagazami"
+  },
+  "jingi": {
+    "en": "jingi",
+    "ko": "jingi"
+  },
   "josou_seme": {
     "en": "crossdressing top",
     "ko": "여장공",
     "ja": "女装攻め",
     "zh-CN": "女装攻"
   },
+  "juuwari": {
+    "en": "juuwari",
+    "ko": "juuwari"
+  },
+  "k-o": {
+    "en": "k-o",
+    "ko": "k-o"
+  },
+  "k_no_sousakubeya": {
+    "en": "k no sousakubeya",
+    "ko": "k no sousakubeya"
+  },
+  "kaibidou": {
+    "en": "kaibidou",
+    "ko": "kaibidou"
+  },
+  "kanata_mikoto": {
+    "en": "kanata mikoto",
+    "ko": "kanata mikoto"
+  },
+  "kangaroo": {
+    "en": "kangaroo",
+    "ko": "kangaroo",
+    "zh-CN": "袋鼠"
+  },
   "kappa": {
     "en": "kappa",
     "ko": "카파",
     "ja": "河童",
     "zh-CN": "河童"
+  },
+  "karakai_jouzu_no_moto_takagi-san": {
+    "en": "karakai jouzu no moto takagi-san",
+    "ko": "karakai jouzu no moto takagi-san"
+  },
+  "kari_suke": {
+    "en": "kari suke",
+    "ko": "kari suke"
+  },
+  "kasai_yukiha": {
+    "en": "kasai yukiha",
+    "ko": "카사이 유키하"
+  },
+  "kata_nashito": {
+    "en": "kata nashito",
+    "ko": "kata nashito"
+  },
+  "kawada": {
+    "en": "kawada",
+    "ko": "kawada"
+  },
+  "kawahagi_sakana": {
+    "en": "kawahagi sakana",
+    "ko": "kawahagi sakana"
+  },
+  "kawamura_denki": {
+    "en": "kawamura denki",
+    "ko": "kawamura denki"
   },
   "kemonomimi": {
     "en": "kemonomimi",
@@ -1711,11 +2116,23 @@
     "ja": "着物",
     "zh-CN": "和服"
   },
+  "kinami_megu": {
+    "en": "kinami megu",
+    "ko": "kinami megu"
+  },
   "kindergarten_uniform": {
     "en": "kindergarten uniform",
     "ko": "유치원복",
     "ja": "幼稚園制服",
     "zh-CN": "幼儿园制服"
+  },
+  "kinokko": {
+    "en": "kinokko",
+    "ko": "kinokko"
+  },
+  "kirita": {
+    "en": "kirita",
+    "ko": "kirita"
   },
   "kissing": {
     "en": "kissing",
@@ -1724,15 +2141,31 @@
     "zh-CN": "接吻",
     "zh-TW": "接吻"
   },
+  "kitakaze": {
+    "en": "kitakaze",
+    "ko": "kitakaze"
+  },
   "kitchen": {
     "en": "kitchen",
     "ko": "부엌",
     "ja": "キッチン",
     "zh-CN": "厨房"
   },
+  "kiyomiya_ryou": {
+    "en": "kiyomiya ryou",
+    "ko": "kiyomiya ryou"
+  },
   "kneepit_sex": {
     "en": "kneepit sex",
     "ko": "무릎 사이 섹스"
+  },
+  "kobamiso": {
+    "en": "kobamiso",
+    "ko": "kobamiso"
+  },
+  "koboshi": {
+    "en": "koboshi",
+    "ko": "koboshi"
   },
   "kodomo_doushi": {
     "en": "children doushi",
@@ -1746,10 +2179,50 @@
     "ja": "子供のみ",
     "zh-CN": "仅儿童"
   },
+  "komaruya": {
+    "en": "komaruya",
+    "ko": "komaruya"
+  },
+  "kozue": {
+    "en": "kozue",
+    "ko": "kozue"
+  },
+  "kudou_maimu": {
+    "en": "kudou maimu",
+    "ko": "kudou maimu"
+  },
+  "kunkun": {
+    "en": "kunkun",
+    "ko": "kunkun"
+  },
   "kunoichi": {
     "en": "kunoichi",
     "ko": "쿠노이치",
     "zh-CN": "女忍装"
+  },
+  "kuon_makoto": {
+    "en": "kuon makoto",
+    "ko": "kuon makoto"
+  },
+  "kurihara": {
+    "en": "kurihara",
+    "ko": "kurihara"
+  },
+  "kurubuso": {
+    "en": "kurubuso",
+    "ko": "kurubuso"
+  },
+  "kusoge": {
+    "en": "kusoge",
+    "ko": "kusoge"
+  },
+  "kyuujuukyuusuke": {
+    "en": "kyuujuukyuusuke",
+    "ko": "kyuujuukyuusuke"
+  },
+  "l_jiro": {
+    "en": "l jiro",
+    "ko": "l jiro"
   },
   "lab_coat": {
     "en": "lab coat",
@@ -1781,6 +2254,10 @@
     "ja": "レイヤーケーキ",
     "zh-CN": "层蛋糕"
   },
+  "le_fruit_de_la_grisaia": {
+    "en": "le fruit de la grisaia",
+    "ko": "le fruit de la grisaia"
+  },
   "leash": {
     "en": "leash",
     "ko": "목줄",
@@ -1795,12 +2272,20 @@
     "ko": "다리 섹스",
     "zh-CN": "腿交"
   },
+  "lenu_ohkoku": {
+    "en": "lenu ohkoku",
+    "ko": "lenu ohkoku"
+  },
   "leotard": {
     "en": "leotard",
     "ko": "레오타드",
     "ja": "レオタード",
     "zh-CN": "紧身衣",
     "zh-TW": "緊身衣"
+  },
+  "lillian_ljungstrom": {
+    "en": "lillian ljungstrom",
+    "ko": "lillian ljungstrom"
   },
   "lingerie": {
     "en": "lingerie",
@@ -1832,6 +2317,10 @@
     "en": "long tongue",
     "ko": "긴 혀"
   },
+  "lotuslotus": {
+    "en": "lotuslotus",
+    "ko": "lotuslotus"
+  },
   "low_bestiality": {
     "en": "low bestiality",
     "ko": "약한 수간성애"
@@ -1854,6 +2343,14 @@
     "en": "low smegma",
     "ko": "약한 좆밥"
   },
+  "ma-maikea": {
+    "en": "ma-maikea",
+    "ko": "ma-maikea"
+  },
+  "mabi_life": {
+    "en": "mabi life",
+    "ko": "mabi life"
+  },
   "machine": {
     "en": "machine",
     "ko": "기계",
@@ -1869,6 +2366,10 @@
     "en": "magical girl",
     "ko": "마법소녀"
   },
+  "mahaya": {
+    "en": "mahaya",
+    "ko": "mahaya"
+  },
   "maid": {
     "en": "maid",
     "ko": "하녀",
@@ -1881,11 +2382,23 @@
     "ko": "화장",
     "zh-CN": "化妆"
   },
+  "male_on_futanari": {
+    "en": "male on futanari",
+    "ko": "남자가 후타나리를"
+  },
   "males_only": {
     "en": "males only",
     "ko": "남자만 나옴",
     "ja": "男性のみ",
     "zh-CN": "仅限男性"
+  },
+  "marimoya": {
+    "en": "marimoya",
+    "ko": "marimoya"
+  },
+  "mashimaro_monster": {
+    "en": "mashimaro monster",
+    "ko": "mashimaro monster"
   },
   "masked_face": {
     "en": "masked face",
@@ -1904,6 +2417,19 @@
     "zh-CN": "成熟",
     "zh-TW": "成熟"
   },
+  "mecha_boy": {
+    "en": "mecha boy",
+    "ko": "메카 소년",
+    "zh-CN": "机男"
+  },
+  "meganekko": {
+    "en": "meganekko",
+    "ko": "안경 쓴"
+  },
+  "melonbooks": {
+    "en": "melonbooks",
+    "ko": "멜론북스"
+  },
   "menstruation": {
     "en": "menstruation",
     "ko": "생리",
@@ -1921,6 +2447,14 @@
     "ja": "人魚（男性）",
     "zh-CN": "人鱼"
   },
+  "meron_koubou": {
+    "en": "meron koubou",
+    "ko": "meron koubou"
+  },
+  "meruru": {
+    "en": "meruru",
+    "ko": "meruru"
+  },
   "mesugaki": {
     "en": "mesugaki",
     "ko": "메스가키"
@@ -1933,10 +2467,30 @@
     "en": "metal armor",
     "ko": "금속 갑옷"
   },
+  "meu": {
+    "en": "meu",
+    "ko": "meu"
+  },
+  "michihiko_shotamosuki": {
+    "en": "michihiko shotamosuki",
+    "ko": "michihiko shotamosuki"
+  },
   "midget": {
     "en": "midget",
     "ko": "난쟁이",
     "zh-CN": "侏儒"
+  },
+  "mikanchu": {
+    "en": "mikanchu",
+    "ko": "mikanchu"
+  },
+  "miko_hoshi": {
+    "en": "miko hoshi",
+    "ko": "miko hoshi"
+  },
+  "mikuru": {
+    "en": "mikuru",
+    "ko": "mikuru"
   },
   "military": {
     "en": "military",
@@ -1978,11 +2532,31 @@
     "ja": "ミノタウロス",
     "zh-CN": "牛头人"
   },
+  "misasagi_tasuku": {
+    "en": "misasagi tasuku",
+    "ko": "misasagi tasuku"
+  },
   "missionary": {
     "en": "missionary",
     "ko": "정상위",
     "ja": "正常位",
     "zh-CN": "传教士体位"
+  },
+  "misuteru": {
+    "en": "misuteru",
+    "ko": "misuteru"
+  },
+  "mofu_mofu_sheep": {
+    "en": "mofu mofu sheep",
+    "ko": "mofu mofu sheep"
+  },
+  "momoiro_ginga_dan": {
+    "en": "momoiro ginga dan",
+    "ko": "momoiro ginga dan"
+  },
+  "momomo_gasshuukoku": {
+    "en": "momomo gasshuukoku",
+    "ko": "momomo gasshuukoku"
   },
   "monkey": {
     "en": "monkey",
@@ -2004,6 +2578,10 @@
     "en": "moral degeneration",
     "ko": "정조 타락"
   },
+  "morimoto_haruna": {
+    "en": "morimoto haruna",
+    "ko": "morimoto haruna"
+  },
   "mother": {
     "en": "mother",
     "ko": "엄마",
@@ -2016,27 +2594,39 @@
     "ko": "쥐",
     "zh-CN": "鼠"
   },
+  "mousou_colosseum": {
+    "en": "mousou colosseum",
+    "ko": "mousou colosseum"
+  },
   "mouth_mask": {
     "en": "mouth mask",
     "ko": "입 마스크",
     "ja": "口マスク",
     "zh-CN": "口罩"
   },
+  "ms_confidential": {
+    "en": "ms confidential",
+    "ko": "ms confidential"
+  },
+  "mujin_hangetsuban_bakudan": {
+    "en": "mujin hangetsuban bakudan",
+    "ko": "mujin hangetsuban bakudan"
+  },
   "multimouth_blowjob": {
     "en": "multimouth blowjob",
     "ko": "동시 구강성교"
-  },
-  "multiple_assjob": {
-    "en": "multiple assjob",
-    "ko": ["동시 엉덩이 비빔", "동시 스마타"],
-    "ja": "複数の尻コキ",
-    "zh-CN": "多重臀部摩擦"
   },
   "multiple_arms": {
     "en": "multiple arms",
     "ko": "팔이 많음",
     "ja": "複数の腕",
     "zh-CN": "多重手臂"
+  },
+  "multiple_assjob": {
+    "en": "multiple assjob",
+    "ko": ["동시 엉덩이 비빔", "동시 스마타"],
+    "ja": "複数の尻コキ",
+    "zh-CN": "多重臀部摩擦"
   },
   "multiple_breasts": {
     "en": "multiple breasts",
@@ -2078,6 +2668,15 @@
     "ja": "複数の尾",
     "zh-CN": "多重尾巴"
   },
+  "multiple_vaginas": {
+    "en": "multiple vaginas",
+    "ko": "다수의 보지",
+    "zh-CN": "多阴道"
+  },
+  "murasa": {
+    "en": "murasa",
+    "ko": "murasa"
+  },
   "muscle": {
     "en": "muscle",
     "ko": "근육",
@@ -2097,12 +2696,24 @@
     "ja": "無言",
     "zh-CN": "哑巴"
   },
+  "mz_no_kobushi": {
+    "en": "mz no kobushi",
+    "ko": "mz no kobushi"
+  },
+  "nagisa_aya": {
+    "en": "nagisa aya",
+    "ko": "nagisa aya"
+  },
   "nakadashi": {
     "en": "creampie",
     "ko": "질내사정",
     "ja": "中出し",
     "zh-CN": "中出",
     "zh-TW": "中出"
+  },
+  "natsukake_yuu": {
+    "en": "natsukake yuu",
+    "ko": "natsukake yuu"
   },
   "navel_birth": {
     "en": "navel birth",
@@ -2117,6 +2728,10 @@
     "ko": "나치",
     "zh-CN": "纳粹军装"
   },
+  "ncp": {
+    "en": "ncp",
+    "ko": "ncp"
+  },
   "necklace": {
     "en": "necklace",
     "ko": "목걸이",
@@ -2129,6 +2744,10 @@
     "ja": "屍姦",
     "zh-CN": "奸尸"
   },
+  "nekoma_haruki": {
+    "en": "nekoma haruki",
+    "ko": "nekoma haruki"
+  },
   "netorare": {
     "en": "netorare",
     "ko": ["네토라레", "NTR"],
@@ -2140,11 +2759,19 @@
     "en": "netorase",
     "ko": "네토라세"
   },
+  "netsujou_no_kokatsu": {
+    "en": "netsujou no kokatsu",
+    "ko": "netsujou no kokatsu"
+  },
   "niece": {
     "en": "niece",
     "ko": "조카",
     "ja": "姪",
     "zh-CN": "侄女"
+  },
+  "nijiiro_gahou": {
+    "en": "nijiiro gahou",
+    "ko": "nijiiro gahou"
   },
   "ninja": {
     "en": "ninja",
@@ -2152,6 +2779,10 @@
     "ja": "忍者",
     "zh-CN": "忍者装",
     "zh-TW": "忍者"
+  },
+  "ninjin_ikka": {
+    "en": "ninjin ikka",
+    "ko": "ninjin ikka"
   },
   "nipple_birth": {
     "en": "nipple birth",
@@ -2189,6 +2820,14 @@
     "ja": "睾丸なし",
     "zh-CN": "无睾丸"
   },
+  "nora_to_toki_no_koubou": {
+    "en": "nora to toki no koubou",
+    "ko": "nora to toki no koubou"
+  },
+  "normal_danshaku": {
+    "en": "normal danshaku",
+    "ko": "normal danshaku"
+  },
   "nose_fuck": {
     "en": "nose fuck",
     "ko": "코 섹스",
@@ -2198,6 +2837,10 @@
   "nose_hook": {
     "en": "nose hook",
     "ko": "코뚜레"
+  },
+  "nozi": {
+    "en": "nozi",
+    "ko": "nozi"
   },
   "nudism": {
     "en": "nudism",
@@ -2217,6 +2860,10 @@
     "zh-CN": "护士装",
     "zh-TW": "護士"
   },
+  "nyoudou_summit": {
+    "en": "nyoudou summit",
+    "ko": "nyoudou summit"
+  },
   "octopus": {
     "en": "octopus",
     "ko": "문어",
@@ -2233,6 +2880,15 @@
     "en": "oil",
     "ko": "오일",
     "zh-CN": "油"
+  },
+  "okinawa_mikan": {
+    "en": "okinawa mikan",
+    "ko": "okinawa mikan"
+  },
+  "okyuuri": {
+    "en": "okyuuri",
+    "ko": "okyuuri",
+    "zh-CN": "おきゅうり"
   },
   "old_lady": {
     "en": "old lady",
@@ -2268,6 +2924,10 @@
     "ko": "오크",
     "zh-CN": "兽人"
   },
+  "ore_p_2-gou": {
+    "en": "ore p 2-gou",
+    "ko": "ore p -gou"
+  },
   "orgasm": {
     "en": "orgasm",
     "ko": "절정",
@@ -2278,9 +2938,22 @@
     "en": "orgasm denial",
     "ko": "절정 거부"
   },
+  "osake_renmei": {
+    "en": "osake renmei",
+    "ko": "osake renmei"
+  },
+  "ostrich": {
+    "en": "ostrich",
+    "ko": "타조",
+    "zh-CN": "鸵鸟"
+  },
   "otokofutanari": {
     "en": "otokofutanari",
     "ko": "후타나리 소년"
+  },
+  "ouroboros": {
+    "en": "ouroboros",
+    "ko": "ouroboros"
   },
   "outdoor": {
     "en": "outdoor",
@@ -2300,6 +2973,11 @@
     "ja": "パイズリ",
     "zh-CN": "乳交",
     "zh-TW": "乳交"
+  },
+  "panther": {
+    "en": "panther",
+    "ko": "panther",
+    "zh-CN": "豹"
   },
   "panties": {
     "en": "panties",
@@ -2328,6 +3006,10 @@
     "en": "pasties",
     "ko": "젖꼭지 패치",
     "zh-CN": "乳贴"
+  },
+  "pegasus": {
+    "en": "pegasus",
+    "ko": "페가수스"
   },
   "penis_birth": {
     "en": "penis birth",
@@ -2408,6 +3090,15 @@
     "en": "pixie cut",
     "ko": "픽시컷"
   },
+  "piyopiyo": {
+    "en": "piyopiyo",
+    "ko": "piyopiyo"
+  },
+  "plant_boy": {
+    "en": "plant boy",
+    "ko": "식물 소년",
+    "zh-CN": "植物男孩"
+  },
   "pole_dancing": {
     "en": "pole dancing",
     "ko": "봉춤"
@@ -2443,10 +3134,23 @@
     "ja": "プール",
     "zh-CN": "游泳池"
   },
+  "poor_grammar": {
+    "en": "poor grammar",
+    "ko": "맞춤법 파괴",
+    "zh-CN": "渣翻"
+  },
   "possession": {
     "en": "possession",
     "ko": "빙의",
     "zh-CN": "附身"
+  },
+  "potter": {
+    "en": "potter",
+    "ko": "potter"
+  },
+  "pottery_shin_sung-mo": {
+    "en": "pottery shin sung-mo",
+    "ko": "pottery shin sung-mo"
   },
   "pregnant": {
     "en": "pregnant",
@@ -2462,6 +3166,10 @@
     "en": "priest",
     "ko": "사제",
     "zh-CN": "牧师服"
+  },
+  "principal": {
+    "en": "principal",
+    "ko": "principal"
   },
   "prolapse": {
     "en": "prolapse",
@@ -2512,6 +3220,10 @@
     "zh-CN": "书包",
     "zh-TW": "書包"
   },
+  "rap": {
+    "en": "rap",
+    "ko": "rap"
+  },
   "rape": {
     "en": "rape",
     "ko": "강간",
@@ -2523,6 +3235,10 @@
     "ko": "리얼돌",
     "ja": "リアルドール",
     "zh-CN": "真人娃娃"
+  },
+  "rebaudio": {
+    "en": "rebaudio",
+    "ko": "rebaudio"
   },
   "red_hair": {
     "en": "red hair",
@@ -2546,11 +3262,28 @@
     "ja": "逆騎乗位",
     "zh-CN": "反向女上位"
   },
+  "reversible": {
+    "en": "reversible",
+    "ko": "reversible"
+  },
+  "rhinoceros": {
+    "en": "rhinoceros",
+    "ko": "코끼리",
+    "zh-CN": "犀牛"
+  },
+  "rim": {
+    "en": "rim",
+    "ko": "rim"
+  },
   "rimjob": {
     "en": "rimjob",
     "ko": "똥까시",
     "ja": "アナル舐め",
     "zh-CN": "舔肛"
+  },
+  "roboko": {
+    "en": "roboko",
+    "ko": "roboko"
   },
   "robot": {
     "en": "robot",
@@ -2564,16 +3297,54 @@
     "ko": "가학",
     "zh-CN": "凌虐"
   },
+  "s.bill": {
+    "en": "s.bill",
+    "ko": "s.bill"
+  },
   "sad": {
     "en": "sad",
     "ko": "슬픈",
     "ja": "悲しい",
     "zh-CN": "悲伤"
   },
+  "saeko": {
+    "en": "saeko",
+    "ko": "saeko"
+  },
+  "sajimoka_aca": {
+    "en": "sajimoka aca",
+    "ko": "sajimoka aca"
+  },
   "saliva": {
     "en": "saliva",
     "ko": "침",
     "zh-CN": "唾液"
+  },
+  "salmon_pink": {
+    "en": "salmon pink",
+    "ko": "salmon pink"
+  },
+  "sanba_so": {
+    "en": "sanba so",
+    "ko": "sanba so"
+  },
+  "sanjuroh": {
+    "en": "sanjuroh",
+    "ko": "sanjuroh"
+  },
+  "sanjuurou": {
+    "en": "sanjuurou",
+    "ko": "sanjuurou"
+  },
+  "sarashi": {
+    "en": "sarashi",
+    "ko": "가슴붕대",
+    "zh-CN": "缠胸布"
+  },
+  "scanmark": {
+    "en": "scanmark",
+    "ko": "워터마크",
+    "zh-CN": "扫描水印"
   },
   "scar": {
     "en": "scar",
@@ -2609,6 +3380,10 @@
     "ja": "制服",
     "zh-CN": "校服"
   },
+  "schoolboy": {
+    "en": "schoolboy",
+    "ko": "학생"
+  },
   "schoolboy_uniform": {
     "en": "schoolboy uniform",
     "ko": "남학생 교복"
@@ -2624,9 +3399,25 @@
     "en": "schoolgirl uniform",
     "ko": "여학생 교복"
   },
+  "screenshots": {
+    "en": "screenshots",
+    "ko": "스크린샷"
+  },
   "scrotal_lingerie": {
     "en": "scrotal lingerie",
     "ko": "음낭 속옷"
+  },
+  "seikan_nekoguruma": {
+    "en": "seikan nekoguruma",
+    "ko": "seikan nekoguruma"
+  },
+  "seinen_hormone": {
+    "en": "seinen hormone",
+    "ko": "seinen hormone"
+  },
+  "sekine_hajime": {
+    "en": "sekine hajime",
+    "zh-CN": "咳寝はじめ"
   },
   "selfcest": {
     "en": "selfcest",
@@ -2637,16 +3428,59 @@
     "en": "sex toys",
     "ko": "성인용품"
   },
+  "shapening": {
+    "en": "shapening",
+    "ko": "신체 성형됨",
+    "zh-CN": "平面化"
+  },
+  "shared_senses": {
+    "en": "shared senses",
+    "ko": "감각 공유",
+    "zh-CN": "感官共享"
+  },
+  "shark": {
+    "en": "shark",
+    "ko": "상어",
+    "zh-CN": "鲨"
+  },
+  "shark_boy": {
+    "en": "shark boy",
+    "ko": "상어 소년",
+    "zh-CN": "鲨男孩"
+  },
   "shaved_head": {
     "en": "shaved head",
     "ko": "삭발",
     "ja": "剃り頭",
     "zh-CN": "剃头"
   },
+  "sheep": {
+    "en": "sheep",
+    "ko": "양",
+    "zh-CN": "绵羊"
+  },
+  "sheep_boy": {
+    "en": "sheep boy",
+    "ko": "양 소녀",
+    "zh-CN": "羊男孩"
+  },
+  "sheep_girl": {
+    "en": "sheep girl",
+    "ko": "양 소녀",
+    "zh-CN": "羊女孩"
+  },
   "shibari": {
     "en": "shibari",
     "ko": "밧줄 묶기",
     "zh-CN": "捆绑"
+  },
+  "shibudaku_seisaku_iinkai": {
+    "en": "shibudaku seisaku iinkai",
+    "ko": "shibudaku seisaku iinkai"
+  },
+  "shikakui_kyomu": {
+    "en": "shikakui kyomu",
+    "ko": "shikakui kyomu"
   },
   "shimaidon": {
     "en": "shimaidon",
@@ -2660,6 +3494,30 @@
     "zh-CN": "条纹胖次",
     "zh-TW": "條紋內褲"
   },
+  "shimashimakokko": {
+    "en": "shimashimakokko",
+    "ko": "shimashimakokko"
+  },
+  "shin_koihime_musou": {
+    "en": "shin koihime musou",
+    "ko": "shin koihime musou"
+  },
+  "shinano_yuna": {
+    "en": "shinano yuna",
+    "ko": "shinano yuna"
+  },
+  "shippan": {
+    "en": "shippan",
+    "ko": "shippan"
+  },
+  "shiruko": {
+    "en": "shiruko",
+    "ko": "시루코"
+  },
+  "shizuki": {
+    "en": "shizuki",
+    "ko": "shizuki"
+  },
   "short_hair": {
     "en": "short hair",
     "ko": "짧은 머리",
@@ -2667,11 +3525,26 @@
     "zh-CN": "短发",
     "zh-TW": "短髮"
   },
+  "shrinking": {
+    "en": "shrinking",
+    "ko": "소인화",
+    "zh-CN": "缩小"
+  },
   "sixty-nine": {
     "en": "sixty-nine",
     "ko": "69자세",
     "ja": "69",
     "zh-CN": "69"
+  },
+  "skinsuit": {
+    "en": "skinsuit",
+    "ko": "달라붙는 옷",
+    "zh-CN": "人皮衣"
+  },
+  "skunk_girl": {
+    "en": "skunk girl",
+    "ko": "스컹크 소녀",
+    "zh-CN": "臭鼬娘"
   },
   "slave": {
     "en": "slave",
@@ -2690,6 +3563,11 @@
     "en": "slime",
     "ko": "슬라임",
     "zh-CN": "史莱姆"
+  },
+  "slime_boy": {
+    "en": "slime boy",
+    "ko": "슬라임 소년",
+    "zh-CN": "史莱姆男孩"
   },
   "slug": {
     "en": "slug",
@@ -2719,10 +3597,30 @@
     "ko": "흡연",
     "zh-CN": "吸烟"
   },
+  "snake": {
+    "en": "snake",
+    "ko": "뱀",
+    "zh-CN": "蛇"
+  },
+  "snake_boy": {
+    "en": "snake boy",
+    "ko": "뱀 소년",
+    "zh-CN": "蛇男"
+  },
+  "snake_girl": {
+    "en": "snake girl",
+    "ko": "뱀 소녀",
+    "zh-CN": "蛇女"
+  },
   "snuff": {
     "en": "snuff",
     "ko": "살해",
     "zh-CN": "杀害"
+  },
+  "sockjob": {
+    "en": "sockjob",
+    "ko": "양말딸",
+    "zh-CN": "袜交"
   },
   "solo": {
     "en": "solo",
@@ -2751,17 +3649,70 @@
     "zh-CN": "扩张器",
     "zh-TW": "膣鏡"
   },
+  "speed_rudoyu": {
+    "en": "speed rudoyu",
+    "ko": "speed rudoyu"
+  },
+  "spider": {
+    "en": "spider",
+    "ko": "거미",
+    "zh-CN": "蜘蛛"
+  },
+  "spring": {
+    "en": "spring",
+    "ko": "spring"
+  },
+  "squid_boy": {
+    "en": "squid boy",
+    "ko": "오징어 소년",
+    "zh-CN": "乌贼男"
+  },
+  "squid_girl": {
+    "en": "squid girl",
+    "ko": "오징어 소녀",
+    "zh-CN": "乌贼娘"
+  },
+  "squirrel_boy": {
+    "en": "squirrel boy",
+    "ko": "다람쥐 소년",
+    "zh-CN": "松鼠男"
+  },
+  "squirrel_girl": {
+    "en": "squirrel girl",
+    "ko": "다람쥐녀",
+    "zh-CN": "松鼠娘"
+  },
   "squirting": {
     "en": "squirting",
     "ko": "분수",
     "ja": "潮吹き",
     "zh-CN": "潮吹"
   },
+  "ssbbm": {
+    "en": "ssbbm",
+    "ko": "돼지남",
+    "zh-CN": "超级胖男人"
+  },
+  "ssbbw": {
+    "en": "ssbbw",
+    "ko": "돼지녀",
+    "zh-CN": "超级胖女人"
+  },
   "standing_sex": {
     "en": "standing sex",
     "ko": "입위",
     "ja": "立位",
     "zh-CN": "站立式"
+  },
+  "steward": {
+    "en": "steward",
+    "ko": "스튜어드",
+    "zh-CN": "男空乘服"
+  },
+  "stewardess": {
+    "en": "stewardess",
+    "ko": "스튜어디스",
+    "zh-CN": "空姐服"
   },
   "stirrup_legwear": {
     "en": "stirrup legwear",
@@ -2780,10 +3731,19 @@
     "ja": "腹部変形",
     "zh-CN": "腹部变形"
   },
+  "straitjacket": {
+    "en": "straitjacket",
+    "zh-CN": "拘束衣"
+  },
   "strap-on": {
     "en": "strap-on",
     "ko": "스트랩온",
     "zh-CN": "穿戴式阳具"
+  },
+  "stretching": {
+    "en": "stretching",
+    "ko": "스트레칭",
+    "zh-CN": "拉伸"
   },
   "stuck_in_wall": {
     "en": "stuck in wall",
@@ -2832,6 +3792,11 @@
     "ko": "스윙 플레이",
     "zh-CN": "换妻"
   },
+  "syringe": {
+    "en": "syringe",
+    "ko": "주사기",
+    "zh-CN": "注射器"
+  },
   "tabi_socks": {
     "en": "tabi socks",
     "ko": "타비(양말)"
@@ -2841,6 +3806,14 @@
     "ko": "모서리 자위",
     "ja": "テーブルオナニー",
     "zh-CN": "桌面自慰"
+  },
+  "tagata": {
+    "en": "tagata",
+    "ko": "tagata"
+  },
+  "taguchi_monyata": {
+    "en": "taguchi monyata",
+    "ko": "taguchi monyata"
   },
   "tail": {
     "en": "tail",
@@ -2864,6 +3837,22 @@
     "en": "tailphagia",
     "ko": "꼬리 포식",
     "zh-CN": "尾巴吞食"
+  },
+  "takakujyu": {
+    "en": "takakujyu",
+    "ko": "takakujyu"
+  },
+  "takemura_sessyu": {
+    "en": "takemura sessyu",
+    "ko": "takemura sessyu"
+  },
+  "takesho_ohmi": {
+    "en": "takesho ohmi",
+    "ko": "takesho ohmi"
+  },
+  "takoyaki_yoshi": {
+    "en": "takoyaki yoshi",
+    "ko": "takoyaki yoshi"
   },
   "tall": {
     "en": "tall",
@@ -2908,6 +3897,10 @@
     "ja": "触手",
     "zh-CN": "触手",
     "zh-TW": "觸手"
+  },
+  "thank": {
+    "en": "thank",
+    "ko": "thank"
   },
   "thick": {
     "en": "thick",
@@ -2957,6 +3950,10 @@
     "ko": "간지럼",
     "zh-CN": "挠痒"
   },
+  "tierra": {
+    "en": "tierra",
+    "ko": "tierra"
+  },
   "tiger": {
     "en": "tiger",
     "ko": "호랑이",
@@ -2993,9 +3990,17 @@
     "ko": "사내스러운",
     "zh-CN": "假小子"
   },
+  "tomobukiya": {
+    "en": "tomobukiya",
+    "ko": "tomobukiya"
+  },
   "tooth_brushing": {
     "en": "tooth brushing",
     "ko": "양치질"
+  },
+  "torabe_walk": {
+    "en": "torabe walk",
+    "ko": "torabe walk"
   },
   "torture": {
     "en": "torture",
@@ -3053,6 +4058,14 @@
     "en": "triple vaginal",
     "ko": "보지에 3개 박힘"
   },
+  "tsuki_inukoya": {
+    "en": "tsuki inukoya",
+    "ko": "tsuki inukoya"
+  },
+  "tsukimi_daifuku": {
+    "en": "tsukimi daifuku",
+    "ko": "tsukimi daifuku"
+  },
   "tube": {
     "en": "tube",
     "ko": "튜브",
@@ -3080,6 +4093,22 @@
     "ja": "ツインテール",
     "zh-CN": "双马尾",
     "zh-TW": "雙馬尾"
+  },
+  "ultimate_oniku": {
+    "en": "ultimate oniku",
+    "ko": "ultimate oniku"
+  },
+  "ultra_siccative_pu2": {
+    "en": "ultra siccative pu2",
+    "ko": "ultra siccative pu"
+  },
+  "umakuchi_shouyu": {
+    "en": "umakuchi shouyu",
+    "ko": "umakuchi shouyu"
+  },
+  "umani": {
+    "en": "umani",
+    "ko": "umani"
   },
   "unbirth": {
     "en": "unbirth",
@@ -3144,6 +4173,30 @@
     "ja": "放尿",
     "zh-CN": "排尿"
   },
+  "urushibara_koubou": {
+    "en": "urushibara koubou",
+    "ko": "urushibara koubou"
+  },
+  "urushibara_yasuhiro": {
+    "en": "urushibara yasuhiro",
+    "ko": "urushibara yasuhiro"
+  },
+  "utowa": {
+    "en": "utowa",
+    "ko": "utowa"
+  },
+  "utsumi_bobota": {
+    "en": "utsumi bobota",
+    "ko": "utsumi bobota"
+  },
+  "uurin": {
+    "en": "uurin",
+    "ko": "uurin"
+  },
+  "uzelrang": {
+    "en": "uzelrang",
+    "ko": "uzelrang"
+  },
   "vacbed": {
     "en": "vacuum bed",
     "ko": "진공 침대",
@@ -3171,6 +4224,10 @@
     "ja": "超ロングヘア",
     "zh-CN": "超长发",
     "zh-TW": "超長髮"
+  },
+  "villain": {
+    "en": "villain",
+    "ko": "villain"
   },
   "vomit": {
     "en": "vomit",
@@ -3224,6 +4281,11 @@
     "ja": "濡れた服",
     "zh-CN": "湿衣"
   },
+  "whale": {
+    "en": "whale",
+    "ko": "고래",
+    "zh-CN": "鲸"
+  },
   "whip": {
     "en": "whip",
     "ko": "채찍",
@@ -3240,6 +4302,16 @@
     "en": "widow",
     "ko": "과부",
     "zh-CN": "寡妇"
+  },
+  "widower": {
+    "en": "widower",
+    "ko": "홀아비",
+    "zh-CN": "鳏夫"
+  },
+  "wingjob": {
+    "en": "wingjob",
+    "ko": "날개로 자극",
+    "zh-CN": "翼交"
   },
   "wings": {
     "en": "wings",
@@ -3289,19 +4361,60 @@
     "ko": "투시",
     "zh-CN": "透视"
   },
+  "yamada_no_seikatsu_ga_daiichi": {
+    "en": "yamada no seikatsu ga daiichi",
+    "ko": "yamada no seikatsu ga daiichi"
+  },
+  "yamahata_rian": {
+    "en": "yamahata rian",
+    "ko": "yamahata rian",
+    "zh-CN": "山畑璃杏"
+  },
   "yandere": {
     "en": "yandere",
     "ko": "얀데레",
     "zh-CN": "病娇"
+  },
+  "yarubang": {
+    "en": "yarubang",
+    "ko": "yarubang"
+  },
+  "yatemiyou": {
+    "en": "yatemiyou",
+    "ko": "yatemiyou"
+  },
+  "yotsuba_chika": {
+    "en": "yotsuba chika",
+    "zh-CN": "四葉チカ"
+  },
+  "you-yu": {
+    "en": "you-yu",
+    "ko": "you-yu"
+  },
+  "yshtola": {
+    "en": "yshtola",
+    "ko": "yshtola"
+  },
+  "yuki_higasinakan": {
+    "en": "yuki higasinakan",
+    "ko": "yuki higasinakan"
   },
   "zebra": {
     "en": "zebra",
     "ko": "얼룩말",
     "zh-CN": "斑马"
   },
+  "zenten_ukemi_tomo_no_kai": {
+    "en": "zenten ukemi tomo no kai",
+    "ko": "zenten ukemi tomo no kai"
+  },
   "zombie": {
     "en": "zombie",
     "ko": "좀비",
     "zh-CN": "僵尸"
+  },
+  "zurojikaru": {
+    "en": "zurojikaru",
+    "ko": "zurojikaru"
   }
 }
