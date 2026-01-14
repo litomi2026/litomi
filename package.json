@@ -57,7 +57,9 @@
     "translation:pupil:enhance": "bun tools/enhanceTranslationsFromPupil.ts",
     "translation:pupil:enhance:write": "bun tools/enhanceTranslationsFromPupil.ts --write",
     "translation:tag:migrate-single-sex": "bun tools/migrateTagUnisexToSingleSex.ts",
-    "translation:tag:migrate-single-sex:write": "bun tools/migrateTagUnisexToSingleSex.ts --write"
+    "translation:tag:migrate-single-sex:write": "bun tools/migrateTagUnisexToSingleSex.ts --write",
+    "translation:tag:dedupe-unisex": "bun tools/dedupeTagUnisexBySingleSex.ts",
+    "translation:tag:dedupe-unisex:write": "bun tools/dedupeTagUnisexBySingleSex.ts --write"
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^2.33.1",

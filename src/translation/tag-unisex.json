@@ -881,12 +881,6 @@
     "ja": "牛",
     "zh-CN": "牛"
   },
-  "cowgirl": {
-    "en": "cowgirl",
-    "ko": "여성상위",
-    "ja": "騎乗位",
-    "zh-CN": "牛女孩"
-  },
   "cowman": {
     "en": "cowman",
     "ko": "카우맨",
@@ -1024,10 +1018,6 @@
     "en": "dicknipples",
     "ko": "젖꼭지에 자지",
     "zh-CN": "阴茎乳头"
-  },
-  "dino_king": {
-    "en": "dino king",
-    "ko": "dino king"
   },
   "dinosaur": {
     "en": "dinosaur",
@@ -1567,10 +1557,6 @@
   "gin_rei": {
     "en": "gin rei",
     "ko": "gin rei"
-  },
-  "girls_only": {
-    "en": "girls only",
-    "ko": "여자만 나옴"
   },
   "glasses": {
     "en": "glasses",
@@ -2710,12 +2696,6 @@
     "en": "netsujou no kokatsu",
     "ko": "netsujou no kokatsu"
   },
-  "niece": {
-    "en": "niece",
-    "ko": "조카",
-    "ja": "姪",
-    "zh-CN": "侄女"
-  },
   "nijiiro_gahou": {
     "en": "nijiiro gahou",
     "ko": "nijiiro gahou"
@@ -3036,25 +3016,6 @@
     "en": "pole dancing",
     "ko": "봉춤"
   },
-  "policeman": {
-    "en": "policeman",
-    "ko": "경찰",
-    "ja": "警官",
-    "zh-CN": "警服",
-    "zh-TW": "男警"
-  },
-  "policewoman": {
-    "en": "policewoman",
-    "ko": "여경",
-    "ja": "婦警",
-    "zh-CN": "警服",
-    "zh-TW": "女警"
-  },
-  "ponygirl": {
-    "en": "ponygirl",
-    "ko": "포니걸",
-    "zh-CN": "小马女"
-  },
   "ponytail": {
     "en": "ponytail",
     "ko": "포니테일",
@@ -3094,11 +3055,6 @@
   "prehensile_hair": {
     "en": "prehensile hair",
     "ko": "잡는 머리"
-  },
-  "priest": {
-    "en": "priest",
-    "ko": "사제",
-    "zh-CN": "牧师服"
   },
   "principal": {
     "en": "principal",
@@ -3141,10 +3097,6 @@
     "ja": "うさぎ",
     "zh-CN": "兔",
     "zh-TW": "兔子"
-  },
-  "race_queen": {
-    "en": "race queen",
-    "ko": "레이스퀸"
   },
   "randoseru": {
     "en": "randoseru",
@@ -3982,11 +3934,6 @@
     "ja": "アンバース",
     "zh-CN": "入阴"
   },
-  "uncle": {
-    "en": "uncle",
-    "ko": "삼촌",
-    "zh-CN": "叔叔"
-  },
   "underwater": {
     "en": "underwater",
     "ko": "수중",
@@ -4163,16 +4110,6 @@
     "ja": "白髪",
     "zh-CN": "白发",
     "zh-TW": "白髮"
-  },
-  "widow": {
-    "en": "widow",
-    "ko": "과부",
-    "zh-CN": "寡妇"
-  },
-  "widower": {
-    "en": "widower",
-    "ko": "홀아비",
-    "zh-CN": "鳏夫"
   },
   "wingjob": {
     "en": "wingjob",
