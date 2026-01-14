@@ -95,13 +95,12 @@ export async function flushOutbox({ backendUrl }: FlushOptions) {
   return { paused: false }
 }
 
-export function useOutboxAutoFlush(options: { enabled: boolean; backendUrl: string; onUnauthorized?: () => void }) {
-  const { enabled, backendUrl, onUnauthorized } = options
-
+export function useOutboxAutoFlush(options: { backendUrl: string; onUnauthorized?: () => void }) {
+  const { backendUrl, onUnauthorized } = options
   const isFlushingRef = useRef(false)
 
   const flush = useCallback(async () => {
-    if (!enabled || isFlushingRef.current) {
+    if (isFlushingRef.current) {
       return
     }
 
@@ -114,13 +113,9 @@ export function useOutboxAutoFlush(options: { enabled: boolean; backendUrl: stri
     } finally {
       isFlushingRef.current = false
     }
-  }, [enabled, backendUrl, onUnauthorized])
+  }, [backendUrl, onUnauthorized])
 
   useEffect(() => {
-    if (!enabled) {
-      return
-    }
-
     const intervalId = setInterval(() => {
       flush()
     }, FLUSH_INTERVAL_MS)
@@ -138,7 +133,7 @@ export function useOutboxAutoFlush(options: { enabled: boolean; backendUrl: stri
       clearInterval(intervalId)
       window.removeEventListener('online', handleOnline)
     }
-  }, [enabled, flush])
+  }, [flush])
 
   return { flush }
 }

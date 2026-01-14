@@ -27,7 +27,7 @@ const CUSTOM_MODELS_STORAGE_KEY = 'litomi:character-chat:webllm-custom-models'
 // targets/variants without duplicating large weight artifacts.
 const BUILTIN_CUSTOM_MODELS: readonly CustomWebLLMModel[] = [
   {
-    label: '30B · 데스트탑(GPU)',
+    label: '30B · 데스트탑(+GPU)',
     description: 'Qwen3 30B-A3B(q4f16_1) · 컨텍스트 4만',
     modelId: 'Qwen3-30B-A3B-q4f16_1-ctx40k_cs2k-MLC',
     modelUrl: 'https://huggingface.co/mlc-ai/Qwen3-30B-A3B-q4f16_1-MLC',
@@ -178,7 +178,7 @@ export const MODEL_PRESETS = [
     requiredVramGb: 5.7,
   },
   {
-    label: '30B · 데스크탑(GPU)',
+    label: '30B · 데스크탑(+GPU)',
     description: 'Qwen3 30B-A3B(q4f16_1) · VRAM 16GB · 컨텍스트 4만',
     modelId: 'Qwen3-30B-A3B-q4f16_1-ctx40k_cs2k-MLC',
     supportsThinking: true,
