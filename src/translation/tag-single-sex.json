@@ -6,16 +6,73 @@
     "zh-CN": "外星女孩",
     "zh-TW": "外星女孩"
   },
-  "female:ball-less_shemale": { "en": "ball-less shemale", "ko": "불알 없는 쉬메일" },
-  "female:bat_girl": { "en": "bat girl", "ko": "박쥐 소녀" },
-  "female:bbw": { "en": "bbw", "ko": "뚱뚱녀", "ja": "ぽっちゃり", "zh-CN": "丰满", "zh-TW": "豐滿" },
-  "female:bear_girl": { "en": "bear girl", "ko": "곰 소녀" },
-  "female:bee_girl": { "en": "bee girl", "ko": "벌 소녀", "ja": "蜂娘", "zh-CN": "蜜蜂女孩" },
-  "female:bird_girl": { "en": "bird girl", "ko": "새 소녀", "ja": "鳥娘", "zh-CN": "鸟女孩" },
-  "female:bunny_girl": { "en": "bunny girl", "ko": "바니걸" },
-  "female:catgirl": { "en": "catgirl", "ko": "캣걸" },
-  "female:crossdressing": { "en": "crossdressing", "ko": "남장", "ja": "男装", "zh-CN": "男装", "zh-TW": "男裝" },
-  "female:deer_girl": { "en": "deer girl", "ko": "사슴 소녀" },
+  "female:aunt": {
+    "en": "aunt",
+    "ko": "숙모",
+    "zh-CN": "阿姨"
+  },
+  "female:ball-less_shemale": {
+    "en": "ball-less shemale",
+    "ko": "불알 없는 쉬메일"
+  },
+  "female:bat_girl": {
+    "en": "bat girl",
+    "ko": "박쥐 소녀"
+  },
+  "female:bbw": {
+    "en": "bbw",
+    "ko": "뚱뚱녀",
+    "ja": "ぽっちゃり",
+    "zh-CN": "丰满",
+    "zh-TW": "豐滿"
+  },
+  "female:bear_girl": {
+    "en": "bear girl",
+    "ko": "곰 소녀"
+  },
+  "female:bee_girl": {
+    "en": "bee girl",
+    "ko": "벌 소녀",
+    "ja": "蜂娘",
+    "zh-CN": "蜜蜂女孩"
+  },
+  "female:bird_girl": {
+    "en": "bird girl",
+    "ko": "새 소녀",
+    "ja": "鳥娘",
+    "zh-CN": "鸟女孩"
+  },
+  "female:bunny_girl": {
+    "en": "bunny girl",
+    "ko": "바니걸"
+  },
+  "female:catgirl": {
+    "en": "catgirl",
+    "ko": "캣걸"
+  },
+  "female:cowgirl": {
+    "en": "cowgirl",
+    "ko": "여성상위",
+    "ja": "騎乗位",
+    "zh-CN": "牛女孩"
+  },
+  "female:crossdressing": {
+    "en": "crossdressing",
+    "ko": "남장",
+    "ja": "男装",
+    "zh-CN": "男装",
+    "zh-TW": "男裝"
+  },
+  "female:daughter": {
+    "en": "daughter",
+    "ko": "딸",
+    "ja": "娘",
+    "zh-CN": "女儿"
+  },
+  "female:deer_girl": {
+    "en": "deer girl",
+    "ko": "사슴 소녀"
+  },
   "female:demon_girl": {
     "en": "demon girl",
     "ko": "악마 소녀",
@@ -29,34 +86,173 @@
     "ja": "ふたなり×ふたなり",
     "zh-CN": "扶她×扶她"
   },
-  "female:dickgirl_on_female": { "en": "dickgirl on female", "ko": "딕걸이 여자를" },
-  "female:dickgirls_only": { "en": "dickgirls only", "ko": "딕걸만 나옴" },
-  "female:dog_girl": { "en": "dog girl", "ko": "개 소녀", "ja": "犬少女", "zh-CN": "狗女孩", "zh-TW": "狗女孩" },
-  "female:fox_girl": { "en": "fox girl", "ko": "여우 소녀", "ja": "狐少女", "zh-CN": "狐狸女孩", "zh-TW": "狐狸女孩" },
-  "female:frog_girl": { "en": "frog girl", "ko": "개구리 소녀" },
-  "female:group": { "en": "group", "ko": "단체", "ja": "グループ", "zh-CN": "群交", "zh-TW": "群交" },
-  "female:horse_girl": { "en": "horse girl", "ko": "말 소녀" },
-  "female:hyena_girl": { "en": "hyena girl", "ko": "하이에나 소녀", "ja": "ハイエナ娘", "zh-CN": "鬣狗女孩" },
-  "female:incest": { "en": "incest", "ko": "근친상간", "ja": "近親相姦", "zh-CN": "乱伦", "zh-TW": "亂倫" },
-  "female:insect_girl": { "en": "insect girl", "ko": "곤충 소녀" },
-  "female:lioness": { "en": "lioness", "ko": "암사자", "ja": "女王ライオン", "zh-CN": "女王狮子", "zh-TW": "女王獅子" },
-  "female:lizard_girl": { "en": "lizard girl", "ko": "도마뱀 소녀" },
-  "female:loli": { "en": "young girl", "ko": "로리", "ja": "ロリ", "zh-CN": "萝莉", "zh-TW": "蘿莉" },
-  "female:lolicon": { "en": "young girl", "ko": "로리콘", "ja": "ロリ", "zh-CN": "萝莉", "zh-TW": "蘿莉" },
-  "female:low_lolicon": { "en": "young girl", "ko": "약간 로리콘" },
+  "female:dickgirl_on_female": {
+    "en": "dickgirl on female",
+    "ko": "딕걸이 여자를"
+  },
+  "female:dickgirls_only": {
+    "en": "dickgirls only",
+    "ko": "딕걸만 나옴"
+  },
+  "female:dog_girl": {
+    "en": "dog girl",
+    "ko": "개 소녀",
+    "ja": "犬少女",
+    "zh-CN": "狗女孩",
+    "zh-TW": "狗女孩"
+  },
+  "female:females_only": {
+    "en": "females only",
+    "ko": "여자만 나옴"
+  },
+  "female:femdom": {
+    "en": "femdom",
+    "ko": "펨돔",
+    "ja": "女王様",
+    "zh-CN": "女性主导"
+  },
+  "female:fox_girl": {
+    "en": "fox girl",
+    "ko": "여우 소녀",
+    "ja": "狐少女",
+    "zh-CN": "狐狸女孩",
+    "zh-TW": "狐狸女孩"
+  },
+  "female:frog_girl": {
+    "en": "frog girl",
+    "ko": "개구리 소녀"
+  },
+  "female:giraffe_girl": {
+    "en": "giraffe girl",
+    "ko": "기린 소녀",
+    "zh-CN": "长颈鹿娘"
+  },
+  "female:girls_only": {
+    "en": "girls only",
+    "ko": "여자만 나옴"
+  },
+  "female:grandmother": {
+    "en": "grandmother",
+    "ko": "할머니",
+    "zh-CN": "祖母"
+  },
+  "female:group": {
+    "en": "group",
+    "ko": "단체",
+    "ja": "グループ",
+    "zh-CN": "群交",
+    "zh-TW": "群交"
+  },
+  "female:horse_girl": {
+    "en": "horse girl",
+    "ko": "말 소녀"
+  },
+  "female:hyena_girl": {
+    "en": "hyena girl",
+    "ko": "하이에나 소녀",
+    "ja": "ハイエナ娘",
+    "zh-CN": "鬣狗女孩"
+  },
+  "female:incest": {
+    "en": "incest",
+    "ko": "근친상간",
+    "ja": "近親相姦",
+    "zh-CN": "乱伦",
+    "zh-TW": "亂倫"
+  },
+  "female:insect_girl": {
+    "en": "insect girl",
+    "ko": "곤충 소녀"
+  },
+  "female:lioness": {
+    "en": "lioness",
+    "ko": "암사자",
+    "ja": "女王ライオン",
+    "zh-CN": "女王狮子",
+    "zh-TW": "女王獅子"
+  },
+  "female:lizard_girl": {
+    "en": "lizard girl",
+    "ko": "도마뱀 소녀"
+  },
+  "female:loli": {
+    "en": "young girl",
+    "ko": "로리",
+    "ja": "ロリ",
+    "zh-CN": "萝莉",
+    "zh-TW": "蘿莉"
+  },
+  "female:lolicon": {
+    "en": "young girl",
+    "ko": "로리콘",
+    "ja": "ロリ",
+    "zh-CN": "萝莉",
+    "zh-TW": "蘿莉"
+  },
+  "female:low_lolicon": {
+    "en": "young girl",
+    "ko": "약간 로리콘"
+  },
   "female:male_on_dickgirl": {
     "en": "male on dickgirl",
     "ko": "남자가 딕걸을",
     "ja": "男性×ふたなり",
     "zh-CN": "男性×扶她"
   },
-  "female:mecha_girl": { "en": "mecha girl", "ko": "메카 소녀" },
-  "female:miko": { "en": "shrine maiden", "ko": "무녀", "ja": "巫女", "zh-CN": "巫女" },
-  "female:milf": { "en": "milf", "ko": "따먹고픈 애엄마", "ja": "熟女", "zh-CN": "熟女", "zh-TW": "熟女" },
-  "female:minigirl": { "en": "minigirl", "ko": "소인녀" },
-  "female:monkey_girl": { "en": "monkey girl", "ko": "원숭이 소녀" },
-  "female:monster_girl": { "en": "monster girl", "ko": "괴물 소녀", "ja": "モンスター娘", "zh-CN": "怪物女孩" },
-  "female:mouse_girl": { "en": "mouse girl", "ko": "쥐 소녀", "ja": "ネズミ娘", "zh-CN": "老鼠女孩" },
+  "female:mecha_girl": {
+    "en": "mecha girl",
+    "ko": "메카 소녀"
+  },
+  "female:miko": {
+    "en": "shrine maiden",
+    "ko": "무녀",
+    "ja": "巫女",
+    "zh-CN": "巫女"
+  },
+  "female:milf": {
+    "en": "milf",
+    "ko": "따먹고픈 애엄마",
+    "ja": "熟女",
+    "zh-CN": "熟女",
+    "zh-TW": "熟女"
+  },
+  "female:minigirl": {
+    "en": "minigirl",
+    "ko": "소인녀"
+  },
+  "female:monkey_girl": {
+    "en": "monkey girl",
+    "ko": "원숭이 소녀"
+  },
+  "female:monster_girl": {
+    "en": "monster girl",
+    "ko": "괴물 소녀",
+    "ja": "モンスター娘",
+    "zh-CN": "怪物女孩"
+  },
+  "female:mother": {
+    "en": "mother",
+    "ko": "엄마",
+    "ja": "母親",
+    "zh-CN": "母亲",
+    "zh-TW": "母親"
+  },
+  "female:mouse_girl": {
+    "en": "mouse girl",
+    "ko": "쥐 소녀",
+    "ja": "ネズミ娘",
+    "zh-CN": "老鼠女孩"
+  },
+  "female:niece": {
+    "en": "niece",
+    "ko": "조카",
+    "ja": "姪",
+    "zh-CN": "侄女"
+  },
+  "female:old_lady": {
+    "en": "old lady",
+    "ko": "늙은 여자"
+  },
   "female:oppai_loli": {
     "en": "oppai loli",
     "ko": "거유 로리",
@@ -64,61 +260,474 @@
     "zh-CN": "巨乳萝莉",
     "zh-TW": "巨乳蘿莉"
   },
-  "female:oyakodon": { "en": "oyakodon", "ko": "모녀덮밥" },
-  "female:panda_girl": { "en": "panda girl", "ko": "판다 소녀" },
-  "female:pegging": { "en": "pegging", "ko": "남자에게 박는" },
-  "female:pig_girl": { "en": "pig girl", "ko": "돼지 소녀" },
-  "female:plant_girl": { "en": "plant girl", "ko": "식물 소녀" },
-  "female:prostitution": { "en": "prostitution", "ko": "창녀", "ja": "売春", "zh-CN": "卖淫", "zh-TW": "賣淫" },
-  "female:raccoon_girl": { "en": "raccoon girl", "ko": "너구리 소녀" },
-  "female:shark_girl": { "en": "shark girl", "ko": "상어 소녀" },
-  "female:shemale": { "en": "shemale", "ko": "쉬메일" },
-  "female:sister": { "en": "sister", "ko": "여동생/누나/언니", "ja": "妹", "zh-CN": "妹妹", "zh-TW": "妹妹" },
-  "female:slime_girl": { "en": "slime girl", "ko": "슬라임 소녀", "ja": "スライム娘", "zh-CN": "史莱姆女孩" },
-  "female:snail_girl": { "en": "snail girl", "ko": "달팽이 소녀" },
-  "female:smalldom": { "en": "smalldom", "ko": "꼬마 펨돔" },
-  "female:sole_dickgirl": { "en": "sole dickgirl", "ko": "단독 딕걸" },
-  "female:sole_female": { "en": "sole female", "ko": "단독 여성" },
-  "female:spider_girl": { "en": "spider girl", "ko": "거미 소녀", "ja": "ソロ", "zh-CN": "单人", "zh-TW": "單人" },
-  "female:tall_girl": { "en": "tall girl", "ko": "키 큰 소녀" },
-  "female:virginity": { "en": "virginity", "ko": "처녀성", "ja": "処女", "zh-CN": "处女" },
-  "female:wolf_girl": { "en": "wolf girl", "ko": "늑대 소녀", "ja": "狼少女", "zh-CN": "狼女孩", "zh-TW": "狼女孩" },
-  "female:yuri": { "en": "girls love", "ko": "백합", "ja": "百合", "zh-CN": "百合", "zh-TW": "百合" },
-  "male:bbm": { "en": "bbm", "ko": "뚱뚱남", "ja": "デブ", "zh-CN": "胖子", "zh-TW": "胖子" },
-  "male:bird_boy": { "en": "bird boy", "ko": "새 소년", "ja": "鳥少年", "zh-CN": "鸟男孩" },
-  "male:brother": { "en": "brother", "ko": "남동생/오빠/형", "ja": "弟", "zh-CN": "弟弟", "zh-TW": "弟弟" },
-  "male:bunny_boy": { "en": "bunny boy", "ko": "토끼 소년" },
-  "male:catboy": { "en": "catboy", "ko": "고양이 소년", "ja": "キャットボーイ", "zh-CN": "猫男孩", "zh-TW": "貓男孩" },
-  "male:crossdressing": { "en": "crossdressing", "ko": "여장", "ja": "女装", "zh-CN": "女装", "zh-TW": "女裝" },
-  "male:cuntboy": { "en": "cuntboy", "ko": "컨트보이" },
-  "male:deer_boy": { "en": "deer boy", "ko": "사슴 소년", "ja": "鹿少年", "zh-CN": "鹿男孩" },
-  "male:dickgirl_on_male": { "en": "dickgirl on male", "ko": "딕걸이 남자를" },
-  "male:dilf": { "en": "dilf", "ko": "따먹고픈 애아빠", "ja": "デルフ", "zh-CN": "德尔菲", "zh-TW": "德爾菲" },
-  "male:dog_boy": { "en": "dog boy", "ko": "개 소년" },
-  "male:fox_boy": { "en": "fox boy", "ko": "여우 소년", "ja": "狐少年", "zh-CN": "狐狸男孩", "zh-TW": "狐狸男孩" },
-  "male:frog_boy": { "en": "frog boy", "ko": "개구리 소년" },
-  "male:group": { "en": "group", "ko": "단체", "ja": "グループ", "zh-CN": "群交", "zh-TW": "群交" },
-  "male:horse_boy": { "en": "horse boy", "ko": "말 소년" },
-  "male:hyena_boy": { "en": "hyena boy", "ko": "하이에나 소년", "ja": "ハイエナ少年", "zh-CN": "鬣狗男孩" },
-  "male:incest": { "en": "incest", "ko": "근친상간", "ja": "近親相姦", "zh-CN": "乱伦", "zh-TW": "亂倫" },
-  "male:insect_boy": { "en": "insect boy", "ko": "곤충 소년" },
-  "male:lion": { "en": "lion", "ko": "사자", "ja": "ライオン", "zh-CN": "狮子", "zh-TW": "獅子" },
-  "male:low_shotacon": { "en": "low shotacon", "ko": "약간 쇼타콘", "ja": "軽度ショタ", "zh-CN": "轻度正太" },
-  "male:miko": { "en": "shrine maiden", "ko": "남자 무당", "ja": "巫男", "zh-CN": "巫男", "zh-TW": "巫男" },
-  "male:monkey_boy": { "en": "monkey boy", "ko": "원숭이 소년" },
-  "male:mouse_boy": { "en": "mouse boy", "ko": "쥐 소년" },
-  "male:oyakodon": { "en": "oyakodon", "ko": "부자덮밥" },
-  "male:panda_boy": { "en": "panda boy", "ko": "판다 소년" },
-  "male:pegging": { "en": "pegging", "ko": "여자처럼 박히는" },
-  "male:prostitution": { "en": "prostitution", "ko": "남창", "ja": "売春", "zh-CN": "卖淫", "zh-TW": "賣淫" },
-  "male:raccoon_boy": { "en": "raccoon boy", "ko": "너구리 소년", "ja": "アライグマ少年", "zh-CN": "浣熊男孩" },
-  "male:shota": { "en": "young boy", "ko": "쇼타", "ja": "ショタ", "zh-CN": "正太", "zh-TW": "正太" },
-  "male:shotacon": { "en": "young boy", "ko": "쇼타콘", "ja": "ショタ", "zh-CN": "正太", "zh-TW": "正太" },
-  "male:sole_male": { "en": "sole male", "ko": "단독 남성", "ja": "男性のみ", "zh-CN": "仅男性" },
-  "male:smalldom": { "en": "smalldom", "ko": "꼬마 멜돔" },
-  "male:tomgirl": { "en": "tomgirl", "ko": "보추" },
-  "male:virginity": { "en": "virginity", "ko": "동정", "ja": "処男", "zh-CN": "处男" },
-  "male:wolf_boy": { "en": "wolf boy", "ko": "늑대 소년" },
-  "male:yaoi": { "en": "boys love", "ko": "BL", "ja": "やおい", "zh-CN": "耽美", "zh-TW": "耽美" },
-  "mixed:oyakodon": { "en": "oyakodon", "ko": "부모자녀덮밥" }
+  "female:oyakodon": {
+    "en": "oyakodon",
+    "ko": "모녀덮밥"
+  },
+  "female:panda_girl": {
+    "en": "panda girl",
+    "ko": "판다 소녀"
+  },
+  "female:pegging": {
+    "en": "pegging",
+    "ko": "남자에게 박는"
+  },
+  "female:pig_girl": {
+    "en": "pig girl",
+    "ko": "돼지 소녀"
+  },
+  "female:plant_girl": {
+    "en": "plant girl",
+    "ko": "식물 소녀"
+  },
+  "female:policewoman": {
+    "en": "policewoman",
+    "ko": "여경",
+    "ja": "婦警",
+    "zh-CN": "警服",
+    "zh-TW": "女警"
+  },
+  "female:ponygirl": {
+    "en": "ponygirl",
+    "ko": "포니걸",
+    "zh-CN": "小马女"
+  },
+  "female:prostitution": {
+    "en": "prostitution",
+    "ko": "창녀",
+    "ja": "売春",
+    "zh-CN": "卖淫",
+    "zh-TW": "賣淫"
+  },
+  "female:raccoon_girl": {
+    "en": "raccoon girl",
+    "ko": "너구리 소녀"
+  },
+  "female:race_queen": {
+    "en": "race queen",
+    "ko": "레이스퀸"
+  },
+  "female:schoolgirl": {
+    "en": "schoolgirl",
+    "ko": "여학생",
+    "ja": "女子高生",
+    "zh-CN": "女生",
+    "zh-TW": "女學生"
+  },
+  "female:shark_girl": {
+    "en": "shark girl",
+    "ko": "상어 소녀"
+  },
+  "female:sheep_girl": {
+    "en": "sheep girl",
+    "ko": "양 소녀",
+    "zh-CN": "羊女孩"
+  },
+  "female:shemale": {
+    "en": "shemale",
+    "ko": "쉬메일"
+  },
+  "female:sister": {
+    "en": "sister",
+    "ko": "여동생/누나/언니",
+    "ja": "妹",
+    "zh-CN": "妹妹",
+    "zh-TW": "妹妹"
+  },
+  "female:skunk_girl": {
+    "en": "skunk girl",
+    "ko": "스컹크 소녀",
+    "zh-CN": "臭鼬娘"
+  },
+  "female:slime_girl": {
+    "en": "slime girl",
+    "ko": "슬라임 소녀",
+    "ja": "スライム娘",
+    "zh-CN": "史莱姆女孩"
+  },
+  "female:smalldom": {
+    "en": "smalldom",
+    "ko": "꼬마 펨돔"
+  },
+  "female:snail_girl": {
+    "en": "snail girl",
+    "ko": "달팽이 소녀"
+  },
+  "female:snake_girl": {
+    "en": "snake girl",
+    "ko": "뱀 소녀",
+    "zh-CN": "蛇女"
+  },
+  "female:sole_dickgirl": {
+    "en": "sole dickgirl",
+    "ko": "단독 딕걸"
+  },
+  "female:sole_female": {
+    "en": "sole female",
+    "ko": "단독 여성"
+  },
+  "female:spider_girl": {
+    "en": "spider girl",
+    "ko": "거미 소녀",
+    "ja": "ソロ",
+    "zh-CN": "单人",
+    "zh-TW": "單人"
+  },
+  "female:squid_girl": {
+    "en": "squid girl",
+    "ko": "오징어 소녀",
+    "zh-CN": "乌贼娘"
+  },
+  "female:squirrel_girl": {
+    "en": "squirrel girl",
+    "ko": "다람쥐녀",
+    "zh-CN": "松鼠娘"
+  },
+  "female:tall_girl": {
+    "en": "tall girl",
+    "ko": "키 큰 소녀"
+  },
+  "female:virginity": {
+    "en": "virginity",
+    "ko": "처녀성",
+    "ja": "処女",
+    "zh-CN": "处女"
+  },
+  "female:widow": {
+    "en": "widow",
+    "ko": "과부",
+    "zh-CN": "寡妇"
+  },
+  "female:wolf_girl": {
+    "en": "wolf girl",
+    "ko": "늑대 소녀",
+    "ja": "狼少女",
+    "zh-CN": "狼女孩",
+    "zh-TW": "狼女孩"
+  },
+  "female:yuri": {
+    "en": "girls love",
+    "ko": [
+      "백합",
+      "GL",
+      "보지x보지"
+    ],
+    "ja": "百合",
+    "zh-CN": "百合",
+    "zh-TW": "百合"
+  },
+  "male:bbm": {
+    "en": "bbm",
+    "ko": "뚱뚱남",
+    "ja": "デブ",
+    "zh-CN": "胖子",
+    "zh-TW": "胖子"
+  },
+  "male:bear_boy": {
+    "en": "bear boy",
+    "ko": "곰 소년",
+    "zh-CN": "狗熊男"
+  },
+  "male:bird_boy": {
+    "en": "bird boy",
+    "ko": "새 소년",
+    "ja": "鳥少年",
+    "zh-CN": "鸟男孩"
+  },
+  "male:brother": {
+    "en": "brother",
+    "ko": "남동생/오빠/형",
+    "ja": "弟",
+    "zh-CN": "弟弟",
+    "zh-TW": "弟弟"
+  },
+  "male:bunny_boy": {
+    "en": "bunny boy",
+    "ko": "토끼 소년"
+  },
+  "male:catboy": {
+    "en": "catboy",
+    "ko": "고양이 소년",
+    "ja": "キャットボーイ",
+    "zh-CN": "猫男孩",
+    "zh-TW": "貓男孩"
+  },
+  "male:crossdressing": {
+    "en": "crossdressing",
+    "ko": "여장",
+    "ja": "女装",
+    "zh-CN": "女装",
+    "zh-TW": "女裝"
+  },
+  "male:cuntboy": {
+    "en": "cuntboy",
+    "ko": "컨트보이"
+  },
+  "male:deer_boy": {
+    "en": "deer boy",
+    "ko": "사슴 소년",
+    "ja": "鹿少年",
+    "zh-CN": "鹿男孩"
+  },
+  "male:dickgirl_on_male": {
+    "en": "dickgirl on male",
+    "ko": "딕걸이 남자를"
+  },
+  "male:dilf": {
+    "en": "dilf",
+    "ko": "따먹고픈 애아빠",
+    "ja": "デルフ",
+    "zh-CN": "德尔菲",
+    "zh-TW": "德爾菲"
+  },
+  "male:dino_king": {
+    "en": "dino king",
+    "ko": "dino king"
+  },
+  "male:dog_boy": {
+    "en": "dog boy",
+    "ko": "개 소년"
+  },
+  "male:father": {
+    "en": "father",
+    "ko": "아빠",
+    "zh-CN": "父亲"
+  },
+  "male:fox_boy": {
+    "en": "fox boy",
+    "ko": "여우 소년",
+    "ja": "狐少年",
+    "zh-CN": "狐狸男孩",
+    "zh-TW": "狐狸男孩"
+  },
+  "male:frog_boy": {
+    "en": "frog boy",
+    "ko": "개구리 소년"
+  },
+  "male:grandfather": {
+    "en": "grandfather",
+    "ko": "할아버지",
+    "zh-CN": "祖父"
+  },
+  "male:group": {
+    "en": "group",
+    "ko": "단체",
+    "ja": "グループ",
+    "zh-CN": "群交",
+    "zh-TW": "群交"
+  },
+  "male:guys_only": {
+    "en": "guys only",
+    "ko": "남자만 나옴"
+  },
+  "male:horse_boy": {
+    "en": "horse boy",
+    "ko": "말 소년"
+  },
+  "male:hyena_boy": {
+    "en": "hyena boy",
+    "ko": "하이에나 소년",
+    "ja": "ハイエナ少年",
+    "zh-CN": "鬣狗男孩"
+  },
+  "male:incest": {
+    "en": "incest",
+    "ko": "근친상간",
+    "ja": "近親相姦",
+    "zh-CN": "乱伦",
+    "zh-TW": "亂倫"
+  },
+  "male:insect_boy": {
+    "en": "insect boy",
+    "ko": "곤충 소년"
+  },
+  "male:lion": {
+    "en": "lion",
+    "ko": "사자",
+    "ja": "ライオン",
+    "zh-CN": "狮子",
+    "zh-TW": "獅子"
+  },
+  "male:lizard_guy": {
+    "en": "lizard guy",
+    "ko": "도마뱀 남자"
+  },
+  "male:low_shotacon": {
+    "en": "low shotacon",
+    "ko": "약간 쇼타콘",
+    "ja": "軽度ショタ",
+    "zh-CN": "轻度正太"
+  },
+  "male:mecha_boy": {
+    "en": "mecha boy",
+    "ko": "메카 소년",
+    "zh-CN": "机男"
+  },
+  "male:miko": {
+    "en": "shrine maiden",
+    "ko": "남자 무당",
+    "ja": "巫男",
+    "zh-CN": "巫男",
+    "zh-TW": "巫男"
+  },
+  "male:miniguy": {
+    "en": "miniguy",
+    "ko": "소인남",
+    "zh-CN": "迷你男孩"
+  },
+  "male:monkey_boy": {
+    "en": "monkey boy",
+    "ko": "원숭이 소년"
+  },
+  "male:mouse_boy": {
+    "en": "mouse boy",
+    "ko": "쥐 소년"
+  },
+  "male:old_man": {
+    "en": "old man",
+    "ko": "늙은 남자"
+  },
+  "male:oyakodon": {
+    "en": "oyakodon",
+    "ko": "부자덮밥"
+  },
+  "male:panda_boy": {
+    "en": "panda boy",
+    "ko": "판다 소년"
+  },
+  "male:pegging": {
+    "en": "pegging",
+    "ko": "여자처럼 박히는"
+  },
+  "male:pig_man": {
+    "en": "pig man",
+    "ko": "돼지 남자"
+  },
+  "male:plant_boy": {
+    "en": "plant boy",
+    "ko": "식물 소년",
+    "zh-CN": "植物男孩"
+  },
+  "male:policeman": {
+    "en": "policeman",
+    "ko": "경찰",
+    "ja": "警官",
+    "zh-CN": "警服",
+    "zh-TW": "男警"
+  },
+  "male:priest": {
+    "en": "priest",
+    "ko": "사제",
+    "zh-CN": "牧师服"
+  },
+  "male:prostitution": {
+    "en": "prostitution",
+    "ko": "남창",
+    "ja": "売春",
+    "zh-CN": "卖淫",
+    "zh-TW": "賣淫"
+  },
+  "male:raccoon_boy": {
+    "en": "raccoon boy",
+    "ko": "너구리 소년",
+    "ja": "アライグマ少年",
+    "zh-CN": "浣熊男孩"
+  },
+  "male:schoolboy": {
+    "en": "schoolboy",
+    "ko": "학생"
+  },
+  "male:shark_boy": {
+    "en": "shark boy",
+    "ko": "상어 소년",
+    "zh-CN": "鲨男孩"
+  },
+  "male:sheep_boy": {
+    "en": "sheep boy",
+    "ko": "양 소녀",
+    "zh-CN": "羊男孩"
+  },
+  "male:shota": {
+    "en": "young boy",
+    "ko": "쇼타",
+    "ja": "ショタ",
+    "zh-CN": "正太",
+    "zh-TW": "正太"
+  },
+  "male:shotacon": {
+    "en": "young boy",
+    "ko": "쇼타콘",
+    "ja": "ショタ",
+    "zh-CN": "正太",
+    "zh-TW": "正太"
+  },
+  "male:slime_boy": {
+    "en": "slime boy",
+    "ko": "슬라임 소년",
+    "zh-CN": "史莱姆男孩"
+  },
+  "male:smalldom": {
+    "en": "smalldom",
+    "ko": "꼬마 멜돔"
+  },
+  "male:snake_boy": {
+    "en": "snake boy",
+    "ko": "뱀 소년",
+    "zh-CN": "蛇男"
+  },
+  "male:sole_male": {
+    "en": "sole male",
+    "ko": "단독 남성",
+    "ja": "男性のみ",
+    "zh-CN": "仅男性"
+  },
+  "male:squid_boy": {
+    "en": "squid boy",
+    "ko": "오징어 소년",
+    "zh-CN": "乌贼男"
+  },
+  "male:squirrel_boy": {
+    "en": "squirrel boy",
+    "ko": "다람쥐 소년",
+    "zh-CN": "松鼠男"
+  },
+  "male:tall_man": {
+    "en": "tall man",
+    "ko": "키 큰 남자"
+  },
+  "male:tomgirl": {
+    "en": "tomgirl",
+    "ko": "보추"
+  },
+  "male:uncle": {
+    "en": "uncle",
+    "ko": "삼촌",
+    "zh-CN": "叔叔"
+  },
+  "male:virginity": {
+    "en": "virginity",
+    "ko": "동정",
+    "ja": "処男",
+    "zh-CN": "处男"
+  },
+  "male:widower": {
+    "en": "widower",
+    "ko": "홀아비",
+    "zh-CN": "鳏夫"
+  },
+  "male:wolf_boy": {
+    "en": "wolf boy",
+    "ko": "늑대 소년"
+  },
+  "male:yaoi": {
+    "en": "boys love",
+    "ko": "BL",
+    "ja": "やおい",
+    "zh-CN": "耽美",
+    "zh-TW": "耽美"
+  },
+  "mixed:oyakodon": {
+    "en": "oyakodon",
+    "ko": "부모자녀덮밥"
+  }
 }

@@ -1,6 +1,7 @@
 ## 기술 설계: 브라우저(WebGPU) 온디바이스 이미지 생성
 
 ### 1) 설계 원칙
+
 - **런타임 선택(2안)**:
   - **A(표준)**: WebGPU + 표준 런타임 `onnxruntime-web`(ONNX 번들)
   - **B(고성능)**: TVM/MLC 계열의 **컴파일된 WebGPU 파이프라인**(사전 컴파일 아티팩트)
@@ -22,6 +23,7 @@ flowchart LR
 ```
 
 ### 3) 모듈 분리(권장)
+
 - **`webgpu/detect.ts`**
   - `navigator.gpu`/`requestAdapter()` 기반 지원 체크
   - `shader-f16` 지원 여부, limits 수집
@@ -42,6 +44,7 @@ flowchart LR
   - 중간 프리뷰 디코드 및 UI 전달
 
 ### 4) WebGPU 지원 확인(권장)
+
 - 최소 체크:
   - `navigator.gpu` 존재
   - `await navigator.gpu.requestAdapter()` 성공
@@ -50,6 +53,7 @@ flowchart LR
   - `adapter.limits` 로깅(진단용)
 
 ### 5) 미니 벤치(워밍업) 설계
+
 목표는 “정확한 성능 측정”이 아니라 **안전한 기본 프리셋 선택**입니다.
 
 - 실행 시점: 최초 진입 1회(또는 모델 설치 후 1회)
@@ -62,6 +66,7 @@ flowchart LR
   - `defaultStepsPreview`/`defaultStepsFinal`
 
 ### 6) 추론 파이프라인(개요)
+
 - 모델 번들 로드(ONNX sessions 준비)
 - text encoder → conditioning
 - 초기 latent 샘플링
@@ -71,17 +76,22 @@ flowchart LR
 - 최종 VAE decode
 
 ### 6.1) (옵션) SDXL Refiner 파이프라인
+
 Refiner는 품질을 올릴 수 있지만, **추가 용량/추가 시간**이 필요합니다.
+
 - 권장 UX: Base 완료 시점에 1차 결과를 보여주고, Refiner를 “추가로” 실행(진행률/취소 유지)
 - 권장 메모리 전략: Base UNet 세션을 dispose한 뒤 Refiner UNet 세션을 로드해 **동시 로드(2개) 없이 순차 실행**
 
 ### 7) 프리뷰(중간 결과) 전략
+
 프리뷰는 UX에 큰 영향을 주므로, 비용을 제한하면서 체감 개선을 노립니다.
+
 - 프리뷰 디코드는 **매 step이 아니라 N step마다**(예: 5/10/20/마지막)
 - 프리뷰 해상도는 동일(1024) 또는 디코드 비용이 크면 768/512로 다운(옵션)
 - 프리뷰 전송은 UI thread에 `ImageBitmap`/`Uint8ClampedArray` 등으로 전달
 
 ### 8) 오류 처리/복구
+
 - **WebGPU device lost**
   - 세션 dispose → adapter/device 재생성 → 재시도 안내
 - **OOM / out-of-memory**
@@ -93,8 +103,7 @@ Refiner는 품질을 올릴 수 있지만, **추가 용량/추가 시간**이 �
   - “Import로 불러오기” CTA 제공
 
 ### 9) 로컬 저장
+
 - 결과 이미지는 서버 업로드 없이 `canvas.toBlob()`/`FileSaver` 등으로 다운로드 제공
 - 파일명 규칙: `{modelId}_{timestamp}_{seed}.png` (예시)
 - (옵션) “생성 결과 자동 저장(OPFS)”가 켜져 있으면 OPFS에도 저장
-
-

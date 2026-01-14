@@ -28,7 +28,7 @@ const CUSTOM_MODELS_STORAGE_KEY = 'litomi:character-chat:webllm-custom-models'
 const BUILTIN_CUSTOM_MODELS: readonly CustomWebLLMModel[] = [
   {
     label: '30B · 데스트탑(+GPU)',
-    description: 'Qwen3 30B-A3B(q4f16_1) · 컨텍스트 4만',
+    description: 'Qwen3 30B-A3B(q4f16_1) · Context 4만',
     modelId: 'Qwen3-30B-A3B-q4f16_1-ctx40k_cs2k-MLC',
     modelUrl: 'https://huggingface.co/mlc-ai/Qwen3-30B-A3B-q4f16_1-MLC',
     modelLibUrl:
@@ -150,36 +150,36 @@ function toModelRecord(model: CustomWebLLMModel): webllm.ModelRecord {
 // via WebLLM's `prebuiltAppConfig.model_list`.
 export const MODEL_PRESETS = [
   {
-    label: '0.6B · 모바일',
-    description: 'Qwen3 0.6B(q4f32) · VRAM 1.9GB',
+    label: '0.6B · 핸드폰',
+    description: 'Qwen3 0.6B(q4f32_1) · VRAM 1.9GB · Context 4k',
     modelId: 'Qwen3-0.6B-q4f32_1-MLC',
     supportsThinking: true,
     requiredVramGb: 1.9,
   },
   {
     label: '1.7B · 태블릿',
-    description: 'Qwen3 1.7B(q4f32) · VRAM 2.6GB',
+    description: 'Qwen3 1.7B(q4f32_1) · VRAM 2.6GB · Context 4k',
     modelId: 'Qwen3-1.7B-q4f32_1-MLC',
     supportsThinking: false,
     requiredVramGb: 2.6,
   },
   {
     label: '4B · 노트북',
-    description: 'Qwen3 4B(q4f16) · VRAM 3.4GB',
+    description: 'Qwen3 4B(q4f16_1) · VRAM 3.4GB · Context 4k',
     modelId: 'Qwen3-4B-q4f16_1-MLC',
     supportsThinking: false,
     requiredVramGb: 3.4,
   },
   {
     label: '8B · 데스크탑',
-    description: 'Qwen3 8B(q4f16) · VRAM 5.7GB',
+    description: 'Qwen3 8B(q4f16_1) · VRAM 5.7GB · Context 4k',
     modelId: 'Qwen3-8B-q4f16_1-MLC',
     supportsThinking: true,
     requiredVramGb: 5.7,
   },
   {
     label: '30B · 데스크탑(+GPU)',
-    description: 'Qwen3 30B-A3B(q4f16_1) · VRAM 16GB · 컨텍스트 4만',
+    description: `Qwen3 30B-A3B(q4f16_1) · VRAM 16GB · Context 40k`,
     modelId: 'Qwen3-30B-A3B-q4f16_1-ctx40k_cs2k-MLC',
     supportsThinking: true,
     requiredVramGb: 16,
