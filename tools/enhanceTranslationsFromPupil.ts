@@ -40,6 +40,7 @@ const ArgsSchema = z.object({
   normalizeKeys: z.boolean().default(true),
   addMissingFields: z.boolean().default(true),
   addNewKeys: z.boolean().default(true),
+  sortKeys: z.boolean().default(true),
   locales: z.string().optional(), // comma-separated locale codes (e.g. ko,ja,zh)
   overwriteLocales: z.string().default('en,ja,zh-CN,zh-TW'), // comma-separated SupportedLocale(s)
 })
@@ -89,6 +90,31 @@ function computeInsertionIndent(jsonText: string, objectStart: number): string {
   const afterNewline = jsonText.slice(lineStart + 1, objectStart)
   const m = afterNewline.match(/^\s*/)
   return (m?.[0] ?? '') + '  '
+}
+
+function computeSingleSexPrefixFromKey(key: string): 'both' | 'female' | 'male' | null {
+  const raw = key.includes(':') ? key.split(':').slice(1).join(':') : key
+  const v = raw.toLowerCase()
+
+  const tokens = v.split(/[_\s-]+/g).filter(Boolean)
+  const femaleWords = new Set(['female', 'girl', 'girls', 'woman', 'women'])
+  const maleWords = new Set(['boy', 'boys', 'guy', 'guys', 'male', 'man', 'men'])
+
+  let femaleHit = tokens.some((t) => femaleWords.has(t))
+  let maleHit = tokens.some((t) => maleWords.has(t))
+
+  // handle compact forms like "catgirl" / "catboy"
+  if (!femaleHit && (v.endsWith('girl') || v.endsWith('woman') || v.endsWith('women') || v.endsWith('girls'))) {
+    femaleHit = true
+  }
+  if (!maleHit && (v.endsWith('boy') || v.endsWith('boys') || v.endsWith('guy') || v.endsWith('guys'))) {
+    maleHit = true
+  }
+
+  if (femaleHit && maleHit) return 'both'
+  if (femaleHit) return 'female'
+  if (maleHit) return 'male'
+  return null
 }
 
 function deriveEnglishLabelFromKey(key: string): string {
@@ -176,6 +202,15 @@ function formatEntryObject(entry: Record<string, string>, baseIndent: string): s
     return `${innerIndent}${JSON.stringify(k)}: ${JSON.stringify(entry[k]!)}${comma}`
   })
   return `{\n${lines.join('\n')}\n${baseIndent}}`
+}
+
+function formatSortedJson(jsonText: string): string {
+  const parsed = JSON.parse(jsonText) as unknown
+  if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+    return jsonText
+  }
+  const sorted = stableSortKeys(parsed as Record<string, unknown>)
+  return `${JSON.stringify(sorted, null, 2)}\n`
 }
 
 async function getAvailablePupilLocales(args: Args): Promise<PupilLocaleCode[]> {
@@ -402,7 +437,16 @@ async function main() {
       for (const newKey of candidates) {
         if (!shouldInsertNewKey(rel, newKey)) continue
 
-        const insertKey = normalizeKeyForLocalInsertion(newKey, args.normalizeKeys)
+        let insertKey = normalizeKeyForLocalInsertion(newKey, args.normalizeKeys)
+        if (rel.endsWith('src/translation/tag-single-sex.json') && !insertKey.includes(':')) {
+          const prefix = computeSingleSexPrefixFromKey(insertKey)
+          if (prefix === 'female' || prefix === 'male') {
+            insertKey = `${prefix}:${insertKey}`
+          } else {
+            continue
+          }
+        }
+
         if (existingKeys.has(insertKey)) continue
         if (existingKeysAll.has(insertKey)) continue
         if (shouldSkipNewKeyDueToPrefixedVariant(rel, insertKey, prefixedSuffixes)) continue
@@ -434,6 +478,9 @@ async function main() {
         `- ${path.relative(process.cwd(), filePath)}: updated ${changedFields} field(s) across ${changedKeys} key(s)`,
       )
       if (args.write) {
+        if (args.sortKeys) {
+          nextText = formatSortedJson(nextText)
+        }
         fs.writeFileSync(filePath, nextText, 'utf-8')
       }
     }
@@ -482,6 +529,7 @@ function parseArgs(argv: string[]): Args {
     else if (key === 'no-normalize-keys') raw.normalizeKeys = false
     else if (key === 'add-missing-fields') raw.addMissingFields = true
     else if (key === 'no-add-new-keys') raw.addNewKeys = false
+    else if (key === 'no-sort-keys') raw.sortKeys = false
     else {
       const next = argv[i + 1]
       if (typeof next === 'string' && !next.startsWith('--')) {
@@ -628,10 +676,17 @@ function shouldInsertNewKey(relativeFilePath: string, key: string): boolean {
   // - keys with ":" go to tag-single-sex
   // - keys without ":" go to tag-unisex (works as a general fallback in translateTag)
   if (relativeFilePath.endsWith('src/translation/tag-single-sex.json')) {
-    return key.includes(':')
+    return (
+      key.includes(':') ||
+      computeSingleSexPrefixFromKey(key) === 'female' ||
+      computeSingleSexPrefixFromKey(key) === 'male'
+    )
   }
   if (relativeFilePath.endsWith('src/translation/tag-unisex.json')) {
-    return !key.includes(':')
+    if (key.includes(':')) return false
+    const prefix = computeSingleSexPrefixFromKey(key)
+    if (prefix === 'female' || prefix === 'male') return false
+    return true
   }
   return false
 }

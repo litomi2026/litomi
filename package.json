@@ -55,7 +55,9 @@
     "sponsor:fill-x": "bun tools/fillArtistXSponsors.ts",
     "sponsor:fill-skeb": "bun tools/fillArtistSkebSponsors.ts",
     "translation:pupil:enhance": "bun tools/enhanceTranslationsFromPupil.ts",
-    "translation:pupil:enhance:write": "bun tools/enhanceTranslationsFromPupil.ts --write"
+    "translation:pupil:enhance:write": "bun tools/enhanceTranslationsFromPupil.ts --write",
+    "translation:tag:migrate-single-sex": "bun tools/migrateTagUnisexToSingleSex.ts",
+    "translation:tag:migrate-single-sex:write": "bun tools/migrateTagUnisexToSingleSex.ts --write"
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^2.33.1",
