@@ -1,4 +1,5 @@
-import { Download } from 'lucide-react'
+import { CheckCircle, Download, Loader2, TriangleAlert } from 'lucide-react'
+import { ReactNode } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 export type InstallState =
@@ -21,6 +22,7 @@ type ModelStatusViewModel = {
   progress: number
   actionDisabled: boolean
   tone: 'error' | 'muted' | 'neutral'
+  icon: ReactNode
 }
 
 export function ModelStatus({ installState, onInstall, onRefreshInstallState }: InstallStateRendererProps) {
@@ -28,12 +30,12 @@ export function ModelStatus({ installState, onInstall, onRefreshInstallState }: 
   const isUnknown = installState.kind === 'unknown'
   const isError = installState.kind === 'error'
 
-  const { actionDisabled, actionText, primaryText, progress, secondaryText, tone } =
+  const { actionDisabled, actionText, icon, primaryText, progress, secondaryText, tone } =
     getModelStatusViewModel(installState)
 
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
-      <div className="min-w-0 flex flex-col gap-2">
+    <div className="flex items-center gap-3 px-1">
+      <div className="flex-1 min-w-0 flex flex-col gap-2">
         <p
           className={twMerge(
             'min-w-0 text-sm tabular-nums truncate',
@@ -58,15 +60,15 @@ export function ModelStatus({ installState, onInstall, onRefreshInstallState }: 
       <button
         aria-disabled={actionDisabled}
         className={twMerge(
-          'inline-flex w-[92px] items-center justify-center gap-2 px-3 py-2 rounded-xl transition aria-disabled:border aria-disabled:border-white/7 aria-disabled:text-zinc-500 aria-disabled:opacity-60 aria-disabled:cursor-default',
+          'inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl transition aria-disabled:border-white/7 aria-disabled:text-zinc-500 aria-disabled:opacity-60 aria-disabled:cursor-default',
           isNotInstalled
-            ? 'bg-zinc-100 text-zinc-900 hover:bg-white'
-            : 'border border-white/7 hover:border-white/15 text-zinc-200',
+            ? 'border-white bg-zinc-100 text-zinc-900 hover:bg-white'
+            : 'border-white/7 hover:border-white/15 text-zinc-200',
         )}
         onClick={isNotInstalled ? onInstall : isError ? onRefreshInstallState : undefined}
         type="button"
       >
-        {isNotInstalled ? <Download className="size-4" /> : null}
+        {icon}
         {actionText}
       </button>
     </div>
@@ -83,6 +85,7 @@ function getModelStatusViewModel(installState: InstallState): ModelStatusViewMod
         progress: 0,
         actionDisabled: false,
         tone: 'error',
+        icon: <TriangleAlert className="size-4" />,
       }
     case 'installed':
       return {
@@ -92,15 +95,17 @@ function getModelStatusViewModel(installState: InstallState): ModelStatusViewMod
         progress: 1,
         actionDisabled: true,
         tone: 'muted',
+        icon: <CheckCircle className="size-4" />,
       }
     case 'installing':
       return {
         primaryText: installState.progress.text,
         secondaryText: `${(installState.progress.progress * 100).toFixed(0)}% · ${Math.round(installState.progress.timeElapsed)}초`,
-        actionText: '설치 중',
+        actionText: '설치',
         progress: installState.progress.progress,
         actionDisabled: true,
         tone: 'neutral',
+        icon: <Loader2 className="size-4 animate-spin" />,
       }
     case 'not-installed':
       return {
@@ -110,15 +115,17 @@ function getModelStatusViewModel(installState: InstallState): ModelStatusViewMod
         progress: 0,
         actionDisabled: false,
         tone: 'neutral',
+        icon: <Download className="size-4" />,
       }
     case 'unknown':
       return {
         primaryText: '모델 상태를 확인하고 있어요…',
-        secondaryText: '잠깐만 기다려 주세요',
-        actionText: '확인 중',
+        secondaryText: '...%',
+        actionText: '확인',
         progress: 0,
         actionDisabled: true,
         tone: 'muted',
+        icon: <Loader2 className="size-4 animate-spin" />,
       }
   }
 }

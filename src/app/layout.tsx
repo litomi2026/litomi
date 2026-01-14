@@ -66,7 +66,7 @@ export const metadata: Metadata = {
   description: DESCRIPTION,
   applicationName: SHORT_NAME,
   keywords:
-    '리토미, 망가, 만화, 웹툰, 동인지, 온라인 만화 뷰어, litomi, doujinshi, manga, comic, webtoon, artist cg, hentai',
+    '리토미, litomi, hitomi, 히토미, 웹 뷰어, 히토미 미러, 동인지, 망가, 만화, 웹툰, doujinshi, manga, comic, webtoon, hentai',
   referrer: 'same-origin',
   robots: {
     index: true,

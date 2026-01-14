@@ -99,9 +99,11 @@ export function ModelPanel({
 
   return (
     <section className="rounded-2xl border border-white/7 bg-white/3 p-4 flex flex-col gap-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex items-center justify-between gap-2 px-1">
         <p className="text-sm font-medium">AI 모델</p>
       </div>
+
+      <ModelStatus installState={installState} onInstall={onInstall} onRefreshInstallState={onRefreshInstallState} />
 
       <details className="group rounded-xl border border-white/7 bg-white/2">
         <summary className="cursor-pointer list-none px-3 py-2 flex items-center gap-2 text-sm text-zinc-300 [&::-webkit-details-marker]:hidden">
@@ -232,8 +234,6 @@ export function ModelPanel({
         onSubmit={handleCustomModelSubmit}
         open={isCustomModelDialogOpen}
       />
-
-      <ModelStatus installState={installState} onInstall={onInstall} onRefreshInstallState={onRefreshInstallState} />
     </section>
   )
 }
