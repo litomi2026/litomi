@@ -67,7 +67,6 @@ export default function AIChat() {
         onRefreshInstallState={runtime.refreshInstallState}
         onRemoveCustomModel={runtime.removeCustomModel}
         onRemoveInstalledModel={() => runtime.removeInstalledModel().then(() => toast.success('모델을 삭제했어요'))}
-        recommendedModelId={runtime.recommendedModelId}
         showThinkingTrace={runtime.showThinkingTrace}
       />
 

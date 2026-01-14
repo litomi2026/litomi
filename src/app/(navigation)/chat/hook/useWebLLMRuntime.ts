@@ -15,9 +15,7 @@ import {
   type ModelId,
   RESOLVED_MODEL_PRESETS,
   setCustomWebLLMModels,
-  type SupportedModelId,
 } from '../storage/webllmModels'
-import { recommendModelIdFromNavigator } from '../util/modelRecommendation'
 import { useStateWithRef } from './useStateWithRef'
 
 const MODEL_ID_STORAGE_KEY = 'litomi:character-chat:model-id'
@@ -57,12 +55,7 @@ export function useWebLLMRuntime() {
     return DEFAULT_MODEL_ID
   })
 
-  const [recommendedModelId] = useState<SupportedModelId>(() => {
-    if (typeof window === 'undefined') return DEFAULT_MODEL_ID
-    return recommendModelIdFromNavigator(RESOLVED_MODEL_PRESETS) as SupportedModelId
-  })
-
-  const modelId: ModelId = isAutoModelEnabled ? recommendedModelId : manualModelId
+  const modelId: ModelId = isAutoModelEnabled ? DEFAULT_MODEL_ID : manualModelId
   const model = buildWebLLMAppConfig(customModels).model_list.find((m) => m.model_id === modelId)
   const modelContextWindowSize = model?.overrides?.context_window_size
 
@@ -268,7 +261,6 @@ export function useWebLLMRuntime() {
     modelContextWindowSize,
     modelPreset,
     modelPresets,
-    recommendedModelId,
     refreshInstallState,
     removeInstalledModel,
     resetChat,
