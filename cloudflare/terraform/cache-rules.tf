@@ -5,6 +5,8 @@ locals {
 
   ttl_30d_path_equals = [
     "/",
+    "/app",
+    "/chat",
     "/library",
     "/@",
   ]

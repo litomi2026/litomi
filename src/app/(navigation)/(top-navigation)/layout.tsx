@@ -33,6 +33,7 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
         <Link
           className="mx-auto text-foreground rounded-full border-2 border-brand-gradient hover:brightness-125 active:brightness-75 transition"
           href="/app"
+          prefetch={false}
         >
           <div className="flex items-center gap-2 px-3 py-2 text-sm font-semibold">
             <Download className="size-5" />
