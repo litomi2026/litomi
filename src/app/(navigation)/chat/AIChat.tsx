@@ -18,11 +18,8 @@ type InstallStateKind = 'error' | 'installed' | 'installing' | 'not-installed' |
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
 
-type AIChatProps = {
-  runtime: ReturnType<typeof useWebLLMRuntime>
-}
-
-export default function AIChat({ runtime }: AIChatProps) {
+export default function AIChat() {
+  const runtime = useWebLLMRuntime()
   const [characterKey, setCharacterKey] = useState(CHARACTERS[0].key)
   const character = CHARACTERS.find((c) => c.key === characterKey)!
   const modelSupportsThinking = runtime.modelPreset.supportsThinking
@@ -41,6 +38,7 @@ export default function AIChat({ runtime }: AIChatProps) {
     ensureEngine: runtime.ensureEngine,
     interruptGenerate: runtime.interruptGenerate,
     modelId: runtime.modelId,
+    modelContextWindowSize: runtime.modelContextWindowSize,
     modelMode: chatModelMode,
     modelSupportsThinking,
     onOutboxFlush: outbox.flush,

@@ -1,10 +1,13 @@
 'use client'
 
-import type { FormEvent, ReactNode } from 'react'
+import type { FormEvent } from 'react'
 
 import { ChevronRight } from 'lucide-react'
 
 import type { ChatMessage } from '../types/chatMessage'
+
+import { renderBoldMarkdown } from '../util/renderBoldMarkdown'
+import { getAssistantPlaceholderText, getChatIntroText } from '../util/uiText'
 
 type Props = {
   canContinue: boolean
@@ -43,8 +46,8 @@ export function ChatThread({
   onStop,
   onSubmit,
 }: Props) {
-  const introText = getIntroText(chatInputDisabled, chatInputDisabledReason)
-  const placeholderText = getPlaceholderText({ isPreparingModel, isThinkingEnabled, modelMode })
+  const introText = getChatIntroText({ chatInputDisabled, chatInputDisabledReason })
+  const placeholderText = getAssistantPlaceholderText({ isPreparingModel, isThinkingEnabled, modelMode })
   const showContinueButton = canContinue && !isGenerating && !chatInputDisabled && input.trim().length === 0
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -140,65 +143,4 @@ export function ChatThread({
       </form>
     </section>
   )
-}
-
-function getIntroText(chatInputDisabled: boolean, chatInputDisabledReason: string | null): string {
-  if (chatInputDisabled) {
-    return chatInputDisabledReason ?? '모델을 준비하고 있어요…'
-  }
-  return '메시지를 보내면 대화를 시작할 수 있어요'
-}
-
-function getPlaceholderText(options: {
-  isPreparingModel: boolean
-  isThinkingEnabled: boolean
-  modelMode: 'chat' | 'thinking'
-}) {
-  const { isPreparingModel, isThinkingEnabled, modelMode } = options
-  if (isPreparingModel) return '모델을 준비하고 있어요…'
-  if (modelMode === 'thinking' && isThinkingEnabled) return '생각 중이에요…'
-  return '답변을 만들고 있어요…'
-}
-
-// NOTE: 메시지 렌더링이 "**굵게**" 정도만 필요하면 이 간단 파서로 충분해요.
-// NOTE: 링크/리스트/코드블록 등 Markdown 범위가 늘어나면 `react-markdown`(+ `remark-gfm`) 같은 라이브러리로 교체하는 게 더 유지보수하기 좋아요.
-function renderBoldMarkdown(text: string): ReactNode {
-  const nodes: ReactNode[] = []
-  let cursor = 0
-  let key = 0
-
-  while (cursor < text.length) {
-    const open = text.indexOf('**', cursor)
-    if (open === -1) {
-      nodes.push(text.slice(cursor))
-      break
-    }
-
-    const close = text.indexOf('**', open + 2)
-    if (close === -1) {
-      nodes.push(text.slice(cursor))
-      break
-    }
-
-    if (open > cursor) {
-      nodes.push(text.slice(cursor, open))
-    }
-
-    const boldText = text.slice(open + 2, close)
-    if (boldText.length === 0) {
-      // Preserve literals like "****"
-      nodes.push(text.slice(open, close + 2))
-    } else {
-      nodes.push(
-        <strong className="font-semibold" key={key}>
-          {boldText}
-        </strong>,
-      )
-      key += 1
-    }
-
-    cursor = close + 2
-  }
-
-  return nodes
 }

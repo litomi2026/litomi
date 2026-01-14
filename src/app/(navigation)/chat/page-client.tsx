@@ -8,7 +8,7 @@ import useMeQuery from '@/query/useMeQuery'
 import Onboarding from '../(right-search)/[name]/settings/Onboarding'
 import AIChat from './AIChat'
 import { useSingleTabLock } from './hook/useSingleTabLock'
-import { useWebLLMRuntime } from './hook/useWebLLMRuntime'
+import { useWebGPUReady } from './hook/useWebGPUReady'
 
 const MIN_IOS_SAFARI_TEXT = 'iOS 18 / Safari 18 이상'
 
@@ -16,7 +16,7 @@ export default function CharacterChatPageClient() {
   const { data: me, isLoading } = useMeQuery()
   const userId = me?.id
   const tabLock = useSingleTabLock({ channel: 'litomi:character-chat' })
-  const runtime = useWebLLMRuntime({ enabled: Boolean(userId) && tabLock.kind === 'acquired' })
+  const isWebGpuReady = useWebGPUReady({ enabled: Boolean(userId) && tabLock.kind === 'acquired' })
 
   if (isLoading) {
     return <div className="p-6 text-sm text-zinc-400">사용자 정보를 불러오고 있어요…</div>
@@ -85,7 +85,11 @@ export default function CharacterChatPageClient() {
     )
   }
 
-  if (runtime.isWebGpuReady === false) {
+  if (isWebGpuReady === null) {
+    return <div className="p-6 text-sm text-zinc-400">WebGPU 지원 여부를 확인하고 있어요…</div>
+  }
+
+  if (isWebGpuReady === false) {
     return (
       <div className="flex-1 flex items-center justify-center">
         <Onboarding
@@ -117,5 +121,5 @@ export default function CharacterChatPageClient() {
     )
   }
 
-  return <AIChat runtime={runtime} />
+  return <AIChat />
 }

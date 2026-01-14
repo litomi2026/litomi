@@ -17,6 +17,9 @@ import {
   type SupportedModelId,
   type WebLLMEngine,
 } from '../lib/webllm'
+import { recommendModelIdFromNavigator } from '../util/modelRecommendation'
+import { getModelContextWindowSizeFromAppConfig } from '../util/webllmAppConfig'
+import { useStateWithRef } from './useStateWithRef'
 
 const MODEL_ID_STORAGE_KEY = 'litomi:character-chat:model-id'
 const AUTO_MODEL_ENABLED_STORAGE_KEY = 'litomi:character-chat:auto-model-enabled'
@@ -30,8 +33,6 @@ type InstallState =
   | { kind: 'not-installed' }
   | { kind: 'unknown' }
 
-type ModelPreset = (typeof MODEL_PRESETS)[number]
-
 type SelectableModel = {
   label: string
   description: string
@@ -40,11 +41,7 @@ type SelectableModel = {
   requiredVramGb?: number
 }
 
-type SetStateAction<T> = T | ((prev: T) => T)
-
-export function useWebLLMRuntime(options: { enabled: boolean }) {
-  const { enabled } = options
-
+export function useWebLLMRuntime() {
   const [customModels, setCustomModelsState] = useState<CustomWebLLMModel[]>(() => getCustomWebLLMModels())
 
   const [isAutoModelEnabled, setIsAutoModelEnabledState] = useState<boolean>(() => {
@@ -63,10 +60,11 @@ export function useWebLLMRuntime(options: { enabled: boolean }) {
 
   const [recommendedModelId] = useState<SupportedModelId>(() => {
     if (typeof window === 'undefined') return DEFAULT_MODEL_ID
-    return recommendModelId()
+    return recommendModelIdFromNavigator(MODEL_PRESETS) as SupportedModelId
   })
 
   const modelId: ModelId = isAutoModelEnabled ? recommendedModelId : manualModelId
+  const modelContextWindowSize = getModelContextWindowSizeFromAppConfig(buildWebLLMAppConfig(customModels), modelId)
 
   const [isThinkingEnabled, setIsThinkingEnabledState] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false
@@ -94,25 +92,6 @@ export function useWebLLMRuntime(options: { enabled: boolean }) {
   const [engine, setEngine, engineRef] = useStateWithRef<WebLLMEngine | null>(null)
   const loadedModelIdRef = useRef<ModelId | null>(null)
   const [installState, setInstallState] = useState<InstallState>({ kind: 'unknown' })
-  const [isWebGpuReady, setIsWebGpuReady] = useState<boolean | null>(null)
-
-  useEffect(() => {
-    if (!enabled) {
-      return
-    }
-
-    const controller = new AbortController()
-
-    void (async () => {
-      const supported = await isWebGpuSupported()
-      if (controller.signal.aborted) {
-        return
-      }
-      setIsWebGpuReady(supported)
-    })().catch(() => {})
-
-    return () => controller.abort()
-  }, [enabled])
 
   function setIsAutoModelEnabled(nextEnabled: boolean) {
     setIsAutoModelEnabledState(nextEnabled)
@@ -202,9 +181,6 @@ export function useWebLLMRuntime(options: { enabled: boolean }) {
   }
 
   useEffect(() => {
-    if (!enabled) return
-    if (isWebGpuReady !== true) return
-
     let cancelled = false
     setInstallState({ kind: 'unknown' })
     void (async () => {
@@ -216,7 +192,7 @@ export function useWebLLMRuntime(options: { enabled: boolean }) {
     return () => {
       cancelled = true
     }
-  }, [enabled, isWebGpuReady, modelId])
+  }, [modelId])
 
   async function install() {
     setInstallState({ kind: 'installing', progress: { progress: 0, timeElapsed: 0, text: '모델을 준비하고 있어요' } })
@@ -286,8 +262,8 @@ export function useWebLLMRuntime(options: { enabled: boolean }) {
     interruptGenerate,
     isAutoModelEnabled,
     isThinkingEnabled,
-    isWebGpuReady,
     modelId,
+    modelContextWindowSize,
     modelPreset,
     modelPresets,
     recommendedModelId,
@@ -305,26 +281,6 @@ export function useWebLLMRuntime(options: { enabled: boolean }) {
   }
 }
 
-function estimateVramBudgetGb(): number {
-  const isMobile = isProbablyMobile()
-  const deviceMemoryGb = getDeviceMemoryGb()
-
-  if (deviceMemoryGb === null) {
-    return isMobile ? 1.4 : 5.1
-  }
-
-  return Math.max(1.4, deviceMemoryGb)
-}
-
-function getDeviceMemoryGb(): number | null {
-  if (typeof navigator === 'undefined') return null
-  const raw = (navigator as { deviceMemory?: unknown }).deviceMemory
-  if (typeof raw !== 'number' || !Number.isFinite(raw) || raw <= 0) {
-    return null
-  }
-  return raw
-}
-
 async function getModelInstallState(
   modelId: ModelId,
 ): Promise<Extract<InstallState, { kind: 'error' | 'installed' | 'not-installed' }>> {
@@ -333,73 +289,4 @@ async function getModelInstallState(
     return { kind: 'error', message: '모델 상태를 확인하지 못했어요' }
   }
   return installed ? { kind: 'installed' } : { kind: 'not-installed' }
-}
-
-function isProbablyMobile(): boolean {
-  if (typeof navigator === 'undefined') return false
-  const uad = (navigator as { userAgentData?: unknown }).userAgentData
-  if (uad && typeof uad === 'object' && 'mobile' in uad) {
-    const mobile = (uad as { mobile?: unknown }).mobile
-    if (typeof mobile === 'boolean') return mobile
-  }
-
-  const ua = navigator.userAgent
-  return /Android|iPhone|iPad|iPod/i.test(ua)
-}
-
-async function isWebGpuSupported(): Promise<boolean> {
-  try {
-    const adapter = await navigator.gpu.requestAdapter({ powerPreference: 'high-performance' })
-    if (!adapter) {
-      return false
-    }
-
-    const requiredFeatures: string[] = []
-    if (adapter.features.has('shader-f16')) {
-      requiredFeatures.push('shader-f16')
-    }
-
-    const device = await adapter.requestDevice({ requiredFeatures })
-    device.destroy()
-
-    return true
-  } catch {
-    return false
-  }
-}
-
-function pickLargestWithinBudget(presets: readonly ModelPreset[], budgetGb: number): ModelPreset | null {
-  let best: ModelPreset | null = null
-  for (const preset of presets) {
-    if (preset.requiredVramGb > budgetGb) continue
-    if (!best || preset.requiredVramGb > best.requiredVramGb) {
-      best = preset
-    }
-  }
-  return best
-}
-
-function recommendModelId(): SupportedModelId {
-  // NOTE:
-  // WebGPU does not expose real VRAM size for privacy reasons, so this is a heuristic.
-  // We pick the largest preset that should fit within the estimated budget.
-  const budgetGb = estimateVramBudgetGb()
-
-  const best = pickLargestWithinBudget(MODEL_PRESETS, budgetGb)
-  return (best ?? MODEL_PRESETS[0]).modelId
-}
-
-function useStateWithRef<T>(initial: T | (() => T)) {
-  const [state, setState] = useState<T>(initial)
-  const ref = useRef(state)
-
-  function set(action: SetStateAction<T>) {
-    setState((prev) => {
-      const next = typeof action === 'function' ? (action as (p: T) => T)(prev) : action
-      ref.current = next
-      return next
-    })
-  }
-
-  return [state, set, ref] as const
 }

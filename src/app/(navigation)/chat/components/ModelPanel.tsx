@@ -12,6 +12,9 @@ import Toggle from '@/components/ui/Toggle'
 
 import type { CustomWebLLMModel, InitProgressReport, ModelId } from '../lib/webllm'
 
+import { normalizeHuggingFaceUrl } from '../util/huggingface'
+import { getModelInstallStatusText, type ModelInstallStateKind } from '../util/uiText'
+
 type InstallState =
   | { kind: 'error'; message: string }
   | { kind: 'installed' }
@@ -72,47 +75,21 @@ export function ModelPanel({
 }: Props) {
   const isAdvancedDisabled = isLocked || installState.kind === 'installing'
   const recommendedPreset = modelPresets.find((p) => p.modelId === recommendedModelId)
-  const statusText = getInstallStatusText(installState)
+  const statusText = getModelInstallStatusText(installState.kind satisfies ModelInstallStateKind)
   const [isCustomModelDialogOpen, setIsCustomModelDialogOpen] = useState(false)
   const addCustomModelFormRef = useRef<HTMLFormElement | null>(null)
-
-  function getText(fd: FormData, key: string): string {
-    return String(fd.get(key) ?? '')
-  }
-
-  function getOptionalNumber(fd: FormData, key: string): number | undefined {
-    const raw = getText(fd, key).trim()
-    if (!raw) {
-      return undefined
-    }
-
-    return Number(raw)
-  }
-
-  function normalizeHuggingFaceUrl(input: string): string {
-    const trimmed = input.trim()
-    if (!trimmed) {
-      return ''
-    }
-
-    if (trimmed.startsWith('https://') || trimmed.startsWith('http://')) {
-      return trimmed
-    }
-
-    const withoutDomain = trimmed.replace(/^huggingface\.co\//, '')
-    return `https://huggingface.co/${withoutDomain}`
-  }
 
   function handleCustomModelSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const fd = new FormData(e.currentTarget)
 
-    const label = getText(fd, 'label')
-    const modelId = getText(fd, 'model-id')
-    const description = getText(fd, 'description')
-    const modelUrl = normalizeHuggingFaceUrl(getText(fd, 'model-url'))
-    const modelLibUrl = getText(fd, 'model-lib-url').trim()
-    const requiredVramGb = getOptionalNumber(fd, 'required-vram-gb')
+    const label = String(fd.get('label'))
+    const modelId = String(fd.get('model-id'))
+    const description = String(fd.get('description'))
+    const modelUrl = normalizeHuggingFaceUrl(String(fd.get('model-url')))
+    const modelLibUrl = String(fd.get('model-lib-url')).trim()
+    const requiredVramGbRaw = String(fd.get('required-vram-gb')).trim()
+    const requiredVramGb = requiredVramGbRaw ? Number(requiredVramGbRaw) : undefined
     const supportsThinking = fd.get('supports-thinking') === 'on'
 
     const result = onAddCustomModel({
@@ -438,12 +415,4 @@ export function ModelPanel({
       ) : null}
     </section>
   )
-}
-
-function getInstallStatusText(state: InstallState): string {
-  if (state.kind === 'installed') return '준비됐어요'
-  if (state.kind === 'installing') return '설치 중이에요'
-  if (state.kind === 'not-installed') return '설치가 필요해요'
-  if (state.kind === 'error') return '문제가 생겼어요'
-  return '모델 상태를 확인하고 있어요…'
 }

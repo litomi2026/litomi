@@ -4,27 +4,21 @@ import ms from 'ms'
 import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 
+import type { ModelId, WebLLMEngine } from '../lib/webllm'
 import type { CharacterDefinition } from '../types/characterDefinition'
 import type { ChatMessage } from '../types/chatMessage'
 
-import { buildWebLLMAppConfig, type ModelId, type WebLLMEngine } from '../lib/webllm'
 import { archiveChatMessages } from '../storage/indexeddb'
 import { enqueueAppendMessages, enqueueCreateSession } from '../storage/outbox'
-
-type SetStateAction<T> = T | ((prev: T) => T)
+import { buildContext, buildSummaryPrompt } from '../util/chatPrompts'
+import { countHistoryTokens, pickPruneCountByTokenBudget } from '../util/chatTokens'
+import { getTokenBudget, type TokenBudget } from '../util/tokenBudget'
+import { useStateWithRef } from './useStateWithRef'
 
 const SUMMARY_MAX_TOKENS = 256
 const CHAT_REPLY_MAX_TOKENS = 512
 const THINKING_REPLY_MAX_TOKENS = 1024
 
-// Token budgeting
-//
-// - Keep a completion buffer (1~2k tokens) so we don't bump into the context limit
-// - Keep prompt small for fast answers; "memory" comes from summary
-const COMPLETION_TOKEN_BUFFER = 1536
-const SYSTEM_PROMPT_TOKEN_BUDGET = 1024
-const DEFAULT_HISTORY_MAX_TOKENS = 30000
-const DEFAULT_HISTORY_TARGET_TOKENS_AFTER_SUMMARY = 20000
 const MIN_MESSAGES_TO_KEEP_AFTER_SUMMARY = 8
 
 const DEFAULT_LLM_PARAMS = {
@@ -52,6 +46,7 @@ export function useCharacterChatController(options: {
   ensureEngine: () => Promise<WebLLMEngine>
   interruptGenerate: () => void
   modelId: ModelId
+  modelContextWindowSize: number
   modelMode: 'chat' | 'thinking'
   modelSupportsThinking: boolean
   onOutboxFlush: () => void
@@ -63,6 +58,7 @@ export function useCharacterChatController(options: {
     ensureEngine,
     interruptGenerate,
     modelId,
+    modelContextWindowSize,
     modelMode,
     modelSupportsThinking,
     onOutboxFlush,
@@ -85,42 +81,6 @@ export function useCharacterChatController(options: {
   const tokenBudgetRef = useRef<TokenBudget | null>(null)
 
   const isLocked = messages.length > 0
-
-  type TokenBudget = {
-    completionMaxTokens: number
-    contextWindowSize: number
-    hardMaxPromptTokens: number
-    historyMaxTokens: number
-    historyTargetTokensAfterSummary: number
-  }
-
-  function getTokenBudget(options: { completionMaxTokens: number }): TokenBudget {
-    const contextWindowSize = getModelContextWindowSize(modelId)
-    const completionMaxTokensRaw = options.completionMaxTokens
-    const completionMaxTokens =
-      typeof completionMaxTokensRaw === 'number' &&
-      Number.isFinite(completionMaxTokensRaw) &&
-      completionMaxTokensRaw > 0
-        ? Math.floor(completionMaxTokensRaw)
-        : CHAT_REPLY_MAX_TOKENS
-    const hardMaxPromptTokens = Math.max(512, contextWindowSize - (completionMaxTokens + COMPLETION_TOKEN_BUFFER))
-    const historyMaxTokens = Math.max(
-      512,
-      Math.min(DEFAULT_HISTORY_MAX_TOKENS, hardMaxPromptTokens - SYSTEM_PROMPT_TOKEN_BUDGET),
-    )
-    const historyTargetTokensAfterSummary = Math.max(
-      256,
-      Math.min(DEFAULT_HISTORY_TARGET_TOKENS_AFTER_SUMMARY, historyMaxTokens - 512),
-    )
-
-    return {
-      completionMaxTokens,
-      contextWindowSize,
-      hardMaxPromptTokens,
-      historyMaxTokens,
-      historyTargetTokensAfterSummary,
-    }
-  }
 
   function markUserActivity() {
     lastUserActivityAtRef.current = Date.now()
@@ -328,7 +288,10 @@ export function useCharacterChatController(options: {
         ...character.llmParams?.[modelMode],
       }
 
-      const budget = getTokenBudget({ completionMaxTokens: llmParams.max_tokens })
+      const budget = getTokenBudget({
+        contextWindowSize: modelContextWindowSize,
+        completionMaxTokens: typeof llmParams.max_tokens === 'number' ? llmParams.max_tokens : CHAT_REPLY_MAX_TOKENS,
+      })
       tokenBudgetRef.current = budget
 
       const context = buildContext({
@@ -607,150 +570,4 @@ export function useCharacterChatController(options: {
     send,
     stop,
   }
-}
-
-function buildContext(options: {
-  systemPrompt: string
-  messages: ChatMessage[]
-  summary: string | null
-  historyMaxTokens: number
-}) {
-  const { systemPrompt, messages, summary, historyMaxTokens } = options
-
-  const recent = pickRecentMessagesByTokenBudget(messages, historyMaxTokens)
-  const system = summary
-    ? `${systemPrompt}\n\n[이전 대화 요약]\n${summary}\n\n(요약을 참고해서 대화를 이어가 주세요.)`
-    : systemPrompt
-
-  return [{ role: 'system' as const, content: system }, ...recent.map((m) => ({ role: m.role, content: m.content }))]
-}
-
-function buildSummaryPrompt(options: { currentSummary: string | null; newMessages: ChatMessage[] }) {
-  const { currentSummary, newMessages } = options
-
-  const transcript = newMessages
-    .map((m) => {
-      const speaker = m.role === 'user' ? '사용자' : '어시스턴트'
-      return `${speaker}: ${m.content}`
-    })
-    .join('\n')
-
-  const system = [
-    '너는 대화 내용을 짧게 요약해서 "메모리"로 정리하는 역할이야.',
-    '반드시 한국어로 작성해.',
-    '길게 쓰지 말고, 다음 대화에서 도움이 될 핵심 정보만 남겨.',
-    '- 인물/호칭/관계(예: 선생님/아리스)',
-    '- 사용자의 목표/선호/금기',
-    '- 진행 중인 계획/약속/해야 할 일',
-    '형식은 8~12줄 이내의 불릿 리스트로 해.',
-  ].join('\n')
-
-  const user = currentSummary
-    ? `현재 메모리가 있어요:\n${currentSummary}\n\n아래 대화를 반영해서 메모리를 업데이트해 주세요:\n${transcript}`
-    : `아래 대화를 메모리로 요약해 주세요:\n${transcript}`
-
-  return [
-    { role: 'system' as const, content: system },
-    { role: 'user' as const, content: user },
-  ]
-}
-
-function countHistoryTokens(messages: ChatMessage[]): number {
-  let total = 0
-  for (const m of messages) {
-    total += estimateMessageTokens(m)
-  }
-  return total
-}
-
-function estimateMessageTokens(message: ChatMessage): number {
-  const raw = message.tokenCount
-  if (typeof raw === 'number' && Number.isFinite(raw) && raw > 0) {
-    return Math.floor(raw)
-  }
-
-  // Conservative fallback: 1 token per character (good enough until we get real usage stats).
-  const trimmed = message.content.trim()
-  return Math.max(1, trimmed.length)
-}
-
-function getModelContextWindowSize(modelId: ModelId): number {
-  // WebLLM prebuilt models set `overrides.context_window_size` (typically 4096).
-  // Our built-in 30B preset also sets it explicitly (32768).
-  try {
-    const appConfig = buildWebLLMAppConfig()
-    const record = appConfig.model_list.find((m) => m.model_id === modelId)
-    const raw = record?.overrides?.context_window_size
-    if (typeof raw === 'number' && Number.isFinite(raw) && raw > 0) {
-      return Math.floor(raw)
-    }
-  } catch {
-    // ignore
-  }
-
-  return 4096
-}
-
-function pickPruneCountByTokenBudget(options: {
-  messages: ChatMessage[]
-  targetTokensAfterSummary: number
-  minMessagesToKeep: number
-}): number {
-  const { messages, targetTokensAfterSummary, minMessagesToKeep } = options
-  if (messages.length === 0) return 0
-
-  const totalTokens = countHistoryTokens(messages)
-  if (totalTokens <= targetTokensAfterSummary) return 0
-
-  const keepAtLeast = Math.max(0, Math.floor(minMessagesToKeep))
-  const maxPrune = Math.max(0, messages.length - keepAtLeast)
-  if (maxPrune === 0) return 0
-
-  let remaining = totalTokens
-  let pruneCount = 0
-  while (pruneCount < maxPrune && remaining > targetTokensAfterSummary) {
-    remaining -= estimateMessageTokens(messages[pruneCount])
-    pruneCount += 1
-  }
-  return pruneCount
-}
-
-function pickRecentMessagesByTokenBudget(messages: ChatMessage[], maxTokens: number): ChatMessage[] {
-  if (messages.length === 0) return []
-
-  const result: ChatMessage[] = []
-  let budget = Math.max(0, Math.floor(maxTokens))
-
-  for (let i = messages.length - 1; i >= 0; i--) {
-    const m = messages[i]
-    const tokens = estimateMessageTokens(m)
-    if (result.length === 0) {
-      // Always keep the last message (should be the user's input).
-      result.push(m)
-      budget -= tokens
-      continue
-    }
-    if (budget - tokens < 0) {
-      break
-    }
-    result.push(m)
-    budget -= tokens
-  }
-
-  return result.reverse()
-}
-
-function useStateWithRef<T>(initial: T | (() => T)) {
-  const [state, setState] = useState<T>(initial)
-  const ref = useRef(state)
-
-  function set(action: SetStateAction<T>) {
-    setState((prev) => {
-      const next = typeof action === 'function' ? (action as (p: T) => T)(prev) : action
-      ref.current = next
-      return next
-    })
-  }
-
-  return [state, set, ref] as const
 }
