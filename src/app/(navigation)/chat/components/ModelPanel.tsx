@@ -1,23 +1,17 @@
 'use client'
 
-import { ChevronRight, Download, Trash2 } from 'lucide-react'
+import { ChevronRight, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
 import Toggle from '@/components/ui/Toggle'
 
-import type { CustomWebLLMModel, InitProgressReport, ModelId } from '../lib/webllm'
+import type { CustomWebLLMModel, ModelId } from '../lib/webllm'
 
 import { normalizeHuggingFaceUrl } from '../util/huggingface'
 import { getModelInstallStatusText } from '../util/uiText'
 import { CustomModelDialog } from './CustomModelDialog'
-
-type InstallState =
-  | { kind: 'error'; message: string }
-  | { kind: 'installed' }
-  | { kind: 'installing'; progress: InitProgressReport }
-  | { kind: 'not-installed' }
-  | { kind: 'unknown' }
+import { type InstallState, ModelStatus } from './ModelStatus'
 
 type ModelPreset = {
   label: string
@@ -250,45 +244,7 @@ export function ModelPanel({
         open={isCustomModelDialogOpen}
       />
 
-      {installState.kind === 'unknown' ? (
-        <p className="text-sm text-zinc-500">모델 상태를 확인하고 있어요…</p>
-      ) : installState.kind === 'not-installed' ? (
-        <div className="flex items-center justify-between gap-3">
-          <p className="text-sm text-zinc-400">처음 한 번만 내려받으면 돼요</p>
-          <button
-            className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-zinc-100 text-zinc-900 hover:bg-white transition"
-            onClick={onInstall}
-            type="button"
-          >
-            <Download className="size-4" />
-            설치하기
-          </button>
-        </div>
-      ) : installState.kind === 'installing' ? (
-        <div className="flex flex-col gap-2">
-          <p className="text-sm text-zinc-400 tabular-nums">{installState.progress.text}</p>
-          <div className="h-2 rounded-full bg-white/7 overflow-hidden">
-            <div
-              className="h-2 bg-brand transition-[width] duration-200"
-              style={{ width: `${installState.progress.progress * 100}%` }}
-            />
-          </div>
-          <p className="text-xs text-zinc-500 tabular-nums">
-            {(installState.progress.progress * 100).toFixed(1)}% · {Math.round(installState.progress.timeElapsed)}초
-          </p>
-        </div>
-      ) : installState.kind === 'error' ? (
-        <div className="flex items-center justify-between gap-3">
-          <p className="text-sm text-red-300">{installState.message}</p>
-          <button
-            className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl border border-white/7 hover:border-white/15 transition"
-            onClick={onRefreshInstallState}
-            type="button"
-          >
-            다시 확인
-          </button>
-        </div>
-      ) : null}
+      <ModelStatus installState={installState} onInstall={onInstall} onRefreshInstallState={onRefreshInstallState} />
     </section>
   )
 }
