@@ -28,13 +28,13 @@ const CUSTOM_MODELS_STORAGE_KEY = 'litomi:character-chat:webllm-custom-models'
 const BUILTIN_CUSTOM_MODELS: readonly CustomWebLLMModel[] = [
   {
     label: '30B · 데스트탑(GPU)',
-    description: 'Qwen3 30B-A3B(q4f16_1) · ctx32k · cs2k',
-    modelId: 'Qwen3-30B-A3B-q4f16_1-ctx32k_cs2k-MLC',
+    description: 'Qwen3 30B-A3B(q4f16_1) · 컨텍스트 4만',
+    modelId: 'Qwen3-30B-A3B-q4f16_1-ctx40k_cs2k-MLC',
     modelUrl: 'https://huggingface.co/mlc-ai/Qwen3-30B-A3B-q4f16_1-MLC',
     modelLibUrl:
-      'https://huggingface.co/gwak2837/webllm-model-libs/resolve/main/Qwen3-30B-A3B-q4f16_1-ctx32k_cs2k-webgpu.wasm',
-    contextWindowSize: 32_768,
-    supportsThinking: false,
+      'https://huggingface.co/gwak2837/webllm-model-libs/resolve/main/Qwen3-30B-A3B-q4f16_1-ctx40k_cs2k-webgpu.wasm',
+    contextWindowSize: 40_960,
+    supportsThinking: true,
   },
 ] as const
 
@@ -179,10 +179,10 @@ export const MODEL_PRESETS = [
   },
   {
     label: '30B · 데스크탑(GPU)',
-    description: 'Qwen3 30B-A3B(q4f16_1) · ctx32k · cs2k',
-    modelId: 'Qwen3-30B-A3B-q4f16_1-ctx32k_cs2k-MLC',
-    supportsThinking: false,
-    requiredVramGb: 18,
+    description: 'Qwen3 30B-A3B(q4f16_1) · VRAM 16GB · 컨텍스트 4만',
+    modelId: 'Qwen3-30B-A3B-q4f16_1-ctx40k_cs2k-MLC',
+    supportsThinking: true,
+    requiredVramGb: 16,
   },
 ] as const
 
@@ -202,9 +202,19 @@ export async function createWebLLMEngine(options: {
   if (!enginePromise) {
     const worker = new Worker(new URL('./webllm-worker.ts', import.meta.url), { type: 'module' })
 
+    if (process.env.NODE_ENV !== 'production') {
+      worker.addEventListener('error', (event) => {
+        console.error('[webllm-worker] error', event)
+      })
+      worker.addEventListener('messageerror', (event) => {
+        console.error('[webllm-worker] messageerror', event)
+      })
+    }
+
     enginePromise = webllm.CreateWebWorkerMLCEngine(worker, options.modelId, {
       appConfig,
       initProgressCallback: options.onProgress,
+      ...(process.env.NODE_ENV !== 'production' ? { logLevel: 'DEBUG' } : {}),
     })
   }
 

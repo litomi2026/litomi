@@ -98,7 +98,9 @@ export function useCharacterChatController(options: {
     const contextWindowSize = getModelContextWindowSize(modelId)
     const completionMaxTokensRaw = options.completionMaxTokens
     const completionMaxTokens =
-      typeof completionMaxTokensRaw === 'number' && Number.isFinite(completionMaxTokensRaw) && completionMaxTokensRaw > 0
+      typeof completionMaxTokensRaw === 'number' &&
+      Number.isFinite(completionMaxTokensRaw) &&
+      completionMaxTokensRaw > 0
         ? Math.floor(completionMaxTokensRaw)
         : CHAT_REPLY_MAX_TOKENS
     const hardMaxPromptTokens = Math.max(512, contextWindowSize - (completionMaxTokens + COMPLETION_TOKEN_BUFFER))
@@ -528,13 +530,22 @@ export function useCharacterChatController(options: {
         const filtered = hasAssistantContent ? prev : prev.filter((m) => m.id !== assistantId)
 
         return filtered.map((m) => {
-          if (typeof userTokenCount === 'number' && Number.isFinite(userTokenCount) && userTokenCount > 0 && m.id === userMessage.id) {
+          if (
+            typeof userTokenCount === 'number' &&
+            Number.isFinite(userTokenCount) &&
+            userTokenCount > 0 &&
+            m.id === userMessage.id
+          ) {
             return { ...m, tokenCount: userTokenCount }
           }
 
           if (hasAssistantContent && m.id === assistantId) {
             const next: ChatMessage = { ...m }
-            if (typeof assistantTokenCount === 'number' && Number.isFinite(assistantTokenCount) && assistantTokenCount > 0) {
+            if (
+              typeof assistantTokenCount === 'number' &&
+              Number.isFinite(assistantTokenCount) &&
+              assistantTokenCount > 0
+            ) {
               next.tokenCount = assistantTokenCount
             }
             if (assistantThink) {
@@ -571,7 +582,10 @@ export function useCharacterChatController(options: {
         setCanContinue(true)
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : '응답을 생성하지 못했어요')
+      if (process.env.NODE_ENV !== 'production') {
+        console.error('[chat] failed to generate response', error)
+      }
+      toast.error('응답을 생성하지 못했어요')
       setMessages((prev) => prev.filter((m) => m.id !== assistantId))
     } finally {
       setIsGenerating(false)
