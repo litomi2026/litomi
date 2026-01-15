@@ -245,7 +245,7 @@ export function useWebLLMRuntime() {
   }
 
   function resetChat() {
-    void engineRef.current?.resetChat()
+    engineRef.current?.resetChat()
   }
 
   return {

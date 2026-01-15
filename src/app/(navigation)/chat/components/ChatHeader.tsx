@@ -19,7 +19,7 @@ export function ChatHeader({ onNewChat }: Props) {
           </button>
         </div>
         <p className="text-xs text-zinc-400">
-          로컬에서 실행되는 AI 모델로 검열 없이 자유롭게 대화하세요. 현재는 베타 버전이니 참고해 주세요.
+          내 기기에서 실행되는 AI와 검열 없이 자유롭게 대화하세요. 현재는 베타 버전이니 참고해 주세요.
         </p>
       </div>
     </header>
