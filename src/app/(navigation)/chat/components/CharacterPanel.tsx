@@ -14,7 +14,7 @@ type Props = {
 }
 
 export function CharacterPanel({ characterKey, characters, disabled, onChangeCharacterKey }: Props) {
-  const selectedCharacter = characters.find((c) => c.key === characterKey)!
+  const selectedCharacter = characters.find((c) => c.key === characterKey)
   const id = useId()
 
   return (
@@ -34,7 +34,7 @@ export function CharacterPanel({ characterKey, characters, disabled, onChangeCha
         }))}
         value={characterKey}
       />
-      <p className="text-xs text-zinc-500">{selectedCharacter.description}</p>
+      <p className="text-xs text-zinc-500">{selectedCharacter?.description ?? '.'}</p>
     </section>
   )
 }

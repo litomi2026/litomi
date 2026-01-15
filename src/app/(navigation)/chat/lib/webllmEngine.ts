@@ -22,14 +22,13 @@ export async function createWebLLMEngine({ modelId, onProgress }: Options) {
   if (!enginePromise) {
     const worker = new Worker(new URL('./webllm-worker.ts', import.meta.url), { type: 'module' })
 
-    if (process.env.NODE_ENV !== 'production') {
-      worker.addEventListener('error', (event) => {
-        console.error('[webllm-worker] error', event)
-      })
-      worker.addEventListener('messageerror', (event) => {
-        console.error('[webllm-worker] messageerror', event)
-      })
-    }
+    worker.addEventListener('error', (event) => {
+      console.error('[webllm-worker] error', event)
+    })
+
+    worker.addEventListener('messageerror', (event) => {
+      console.error('[webllm-worker] messageerror', event)
+    })
 
     enginePromise = CreateWebWorkerMLCEngine(worker, modelId, {
       appConfig,

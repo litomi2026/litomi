@@ -24,8 +24,12 @@ export function useWebGPUReady({ enabled }: Options) {
 
 async function isWebGpuSupported(): Promise<boolean> {
   try {
+    if (typeof navigator === 'undefined' || !navigator.gpu) {
+      return false
+    }
+
     const adapter = await navigator.gpu.requestAdapter({ powerPreference: 'high-performance' })
-    if (!adapter) {
+    if (!adapter || adapter.info.isFallbackAdapter) {
       return false
     }
 

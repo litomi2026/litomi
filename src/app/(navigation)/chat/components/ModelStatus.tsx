@@ -120,7 +120,7 @@ function getModelStatusViewModel(installState: InstallState): ModelStatusViewMod
     case 'unknown':
       return {
         primaryText: '모델 상태를 확인하고 있어요…',
-        secondaryText: '...%',
+        secondaryText: '--%',
         actionText: '확인',
         progress: 0,
         actionDisabled: true,

@@ -7,7 +7,12 @@ declare global {
 
   interface GPUAdapter {
     features: GPUSupportedFeatures
+    info: GPUAdapterInfo
     requestDevice(descriptor?: GPUDeviceDescriptor): Promise<GPUDevice>
+  }
+
+  interface GPUAdapterInfo {
+    isFallbackAdapter: boolean
   }
 
   interface GPUDevice {
