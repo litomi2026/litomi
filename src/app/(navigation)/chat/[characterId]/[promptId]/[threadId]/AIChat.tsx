@@ -1,27 +1,32 @@
 'use client'
 
-import { useState } from 'react'
+import Link from 'next/link'
 import { toast } from 'sonner'
 
 import { env } from '@/env/client'
 
-import { CHARACTERS } from './character/characters'
-import { CharacterPanel } from './components/CharacterPanel'
+import type { CharacterDefinition, CharacterPromptDefinition } from '../../../types/characterDefinition'
+
+import { useOutboxAutoFlush } from '../../../storage/outbox'
 import { ChatHeader } from './components/ChatHeader'
 import { ChatThread } from './components/ChatThread'
 import { ModelPanel } from './components/ModelPanel'
 import { useCharacterChatController } from './hook/useCharacterChatController'
 import { useWebLLMRuntime } from './hook/useWebLLMRuntime'
-import { useOutboxAutoFlush } from './storage/outbox'
 
 type InstallStateKind = 'error' | 'installed' | 'installing' | 'not-installed' | 'unknown'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
 
-export default function AIChat() {
+type Props = {
+  character: CharacterDefinition
+  prompt: CharacterPromptDefinition
+  sessionId?: string
+  onNewChat?: () => void
+}
+
+export default function AIChat({ character, prompt, sessionId, onNewChat }: Props) {
   const runtime = useWebLLMRuntime()
-  const [characterId, setCharacterId] = useState(CHARACTERS[0].id)
-  const character = CHARACTERS.find((c) => c.id === characterId)!
   const modelSupportsThinking = runtime.modelPreset.supportsThinking
   const chatModelMode = modelSupportsThinking && runtime.isThinkingEnabled ? 'thinking' : 'chat'
   const chatInputDisabledReason = getChatInputDisabledReason(runtime.installState.kind)
@@ -34,6 +39,8 @@ export default function AIChat() {
 
   const chat = useCharacterChatController({
     character,
+    prompt,
+    clientSessionId: sessionId,
     engineRef: runtime.engineRef,
     ensureEngine: runtime.ensureEngine,
     interruptGenerate: runtime.interruptGenerate,
@@ -45,9 +52,14 @@ export default function AIChat() {
     resetChat: runtime.resetChat,
   })
 
+  const handleNewChat = () => {
+    chat.newChat()
+    onNewChat?.()
+  }
+
   return (
     <div className="flex flex-col gap-4 p-4 sm:p-6 max-w-3xl w-full mx-auto">
-      <ChatHeader onNewChat={chat.newChat} />
+      <ChatHeader onNewChat={handleNewChat} />
 
       <ModelPanel
         customModels={runtime.customModels}
@@ -70,12 +82,34 @@ export default function AIChat() {
         showThinkingTrace={runtime.showThinkingTrace}
       />
 
-      <CharacterPanel
-        characterId={characterId}
-        characters={CHARACTERS}
-        disabled={chat.isLocked}
-        onChangeCharacterId={setCharacterId}
-      />
+      <section className="rounded-2xl border border-white/7 bg-white/3 p-4 flex flex-col gap-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex flex-col gap-1">
+            <p className="text-xs text-zinc-500">캐릭터</p>
+            <p className="text-sm font-medium text-zinc-100">{character.name}</p>
+            <p className="text-xs text-zinc-500">{character.description}</p>
+          </div>
+          <Link
+            className="text-xs text-zinc-400 underline hover:text-zinc-200 transition whitespace-nowrap"
+            href="/chat"
+          >
+            캐릭터 바꾸기
+          </Link>
+        </div>
+        <div className="border-t border-white/7 pt-3 flex items-start justify-between gap-3">
+          <div className="flex flex-col gap-1">
+            <p className="text-xs text-zinc-500">프롬프트</p>
+            <p className="text-sm font-medium text-zinc-100">{prompt.title}</p>
+            {prompt.description ? <p className="text-xs text-zinc-500">{prompt.description}</p> : null}
+          </div>
+          <Link
+            className="text-xs text-zinc-400 underline hover:text-zinc-200 transition whitespace-nowrap"
+            href={`/chat/${encodeURIComponent(character.id)}`}
+          >
+            프롬프트 바꾸기
+          </Link>
+        </div>
+      </section>
 
       <ChatThread
         canContinue={chat.canContinue}

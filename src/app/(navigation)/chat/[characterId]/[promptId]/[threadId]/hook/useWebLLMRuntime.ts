@@ -4,9 +4,9 @@ import type { InitProgressReport, WebWorkerMLCEngine } from '@mlc-ai/web-llm'
 
 import { useEffect, useRef, useState } from 'react'
 
-import { buildWebLLMAppConfig } from '../lib/webllmAppConfig'
-import { deleteInstalledModel, hasInstalledModel } from '../lib/webllmCache'
-import { createWebLLMEngine } from '../lib/webllmEngine'
+import { buildWebLLMAppConfig } from '../../../../lib/webllmAppConfig'
+import { deleteInstalledModel, hasInstalledModel } from '../../../../lib/webllmCache'
+import { createWebLLMEngine } from '../../../../lib/webllmEngine'
 import {
   type CustomWebLLMModel,
   DEFAULT_MODEL_ID,
@@ -15,7 +15,7 @@ import {
   type ModelId,
   RESOLVED_MODEL_PRESETS,
   setCustomWebLLMModels,
-} from '../storage/webllmModels'
+} from '../../../../storage/webllmModels'
 import { useStateWithRef } from './useStateWithRef'
 
 const MODEL_ID_STORAGE_KEY = 'litomi:character-chat:model-id'

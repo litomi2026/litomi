@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 
 import { generateOpenGraphMetadata } from '@/constants'
 
-import CharacterChatPageClient from './page-client'
+import CharacterList from './CharacterList'
 
 export const metadata: Metadata = {
   title: '캐릭터 AI 채팅',
@@ -19,5 +19,5 @@ export const metadata: Metadata = {
 }
 
 export default function Page() {
-  return <CharacterChatPageClient />
+  return <CharacterList />
 }

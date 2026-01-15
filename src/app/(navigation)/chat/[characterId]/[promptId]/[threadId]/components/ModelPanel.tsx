@@ -7,9 +7,9 @@ import { toast } from 'sonner'
 import CustomSelect from '@/components/ui/CustomSelect'
 import Toggle from '@/components/ui/Toggle'
 
-import type { CustomWebLLMModel, ModelId } from '../storage/webllmModels'
+import type { CustomWebLLMModel, ModelId } from '../../../../storage/webllmModels'
 
-import { normalizeHuggingFaceUrl } from '../util/huggingface'
+import { normalizeHuggingFaceUrl } from '../../../../util/huggingface'
 import { CustomModelDialog } from './CustomModelDialog'
 import { type InstallState, ModelStatus } from './ModelStatus'
 
