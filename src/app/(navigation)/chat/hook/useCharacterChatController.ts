@@ -484,7 +484,7 @@ export function useCharacterChatController({
       const sessionId = clientSessionIdRef.current
       await enqueueCreateSession({
         clientSessionId: sessionId,
-        characterKey: character.key,
+        characterId: character.id,
         characterName: character.name,
         systemPrompt: character.systemPrompt,
         modelId,

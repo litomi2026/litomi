@@ -7,14 +7,14 @@ import CustomSelect from '@/components/ui/CustomSelect'
 import type { CharacterDefinition } from '../types/characterDefinition'
 
 type Props = {
-  characterKey: string
+  characterId: string
   characters: readonly CharacterDefinition[]
   disabled: boolean
-  onChangeCharacterKey: (key: string) => void
+  onChangeCharacterId: (id: string) => void
 }
 
-export function CharacterPanel({ characterKey, characters, disabled, onChangeCharacterKey }: Props) {
-  const selectedCharacter = characters.find((c) => c.key === characterKey)
+export function CharacterPanel({ characterId, characters, disabled, onChangeCharacterId }: Props) {
+  const selectedCharacter = characters.find((c) => c.id === characterId)
   const id = useId()
 
   return (
@@ -27,12 +27,12 @@ export function CharacterPanel({ characterKey, characters, disabled, onChangeCha
         disabled={disabled}
         id={id}
         name="character"
-        onChange={(value) => onChangeCharacterKey(value)}
+        onChange={(value) => onChangeCharacterId(value)}
         options={characters.map((c) => ({
-          value: c.key,
+          value: c.id,
           label: c.name,
         }))}
-        value={characterKey}
+        value={characterId}
       />
       <p className="text-xs text-zinc-500">{selectedCharacter?.description ?? '.'}</p>
     </section>

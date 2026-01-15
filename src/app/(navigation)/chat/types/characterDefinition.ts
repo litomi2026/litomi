@@ -1,5 +1,5 @@
 export type CharacterDefinition = {
-  key: string
+  id: string
   name: string
   description: string
   systemPrompt: string

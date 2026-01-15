@@ -31,7 +31,7 @@ type EnqueueMessagesOptions = {
 
 type EnqueueSessionOptions = {
   clientSessionId: string
-  characterKey: string
+  characterId: string
   characterName?: string
   title?: string
   systemPrompt: string

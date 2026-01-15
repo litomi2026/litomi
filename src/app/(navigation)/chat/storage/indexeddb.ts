@@ -41,7 +41,7 @@ export type OutboxItem =
       lastError?: string
       payload: {
         clientSessionId: string
-        characterKey: string
+        characterId: string
         characterName?: string
         title?: string
         systemPrompt: string

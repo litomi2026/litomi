@@ -20,8 +20,8 @@ const { NEXT_PUBLIC_BACKEND_URL } = env
 
 export default function AIChat() {
   const runtime = useWebLLMRuntime()
-  const [characterKey, setCharacterKey] = useState(CHARACTERS[0].key)
-  const character = CHARACTERS.find((c) => c.key === characterKey)!
+  const [characterId, setCharacterId] = useState(CHARACTERS[0].id)
+  const character = CHARACTERS.find((c) => c.id === characterId)!
   const modelSupportsThinking = runtime.modelPreset.supportsThinking
   const chatModelMode = modelSupportsThinking && runtime.isThinkingEnabled ? 'thinking' : 'chat'
   const chatInputDisabledReason = getChatInputDisabledReason(runtime.installState.kind)
@@ -71,10 +71,10 @@ export default function AIChat() {
       />
 
       <CharacterPanel
-        characterKey={characterKey}
+        characterId={characterId}
         characters={CHARACTERS}
         disabled={chat.isLocked}
-        onChangeCharacterKey={setCharacterKey}
+        onChangeCharacterId={setCharacterId}
       />
 
       <ChatThread

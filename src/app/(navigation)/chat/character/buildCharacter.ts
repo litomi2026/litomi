@@ -3,7 +3,7 @@ import type { CharacterDefinition, LlmParams } from '../types/characterDefinitio
 import commonJSON from './common.json'
 
 export type CharacterJsonDefinition = {
-  key: string
+  id: string
   name: string
   description: string
   systemPromptBlocks: string[][]
@@ -23,7 +23,7 @@ export function buildCharacter(json: CharacterJsonDefinition): CharacterDefiniti
     .join('\n\n')
 
   return {
-    key: json.key,
+    id: json.id,
     name: json.name,
     description: json.description,
     systemPrompt,

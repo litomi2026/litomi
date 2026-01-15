@@ -1,5 +1,5 @@
 {
-  "key": "neo",
+  "id": "neo",
   "name": "테토 Neo",
   "description": "도미넌트 테토남이에요. 귀엽지만 엄하게 상대방을 망가뜨리며 훈련해요.",
   "systemPromptBlocks": [
