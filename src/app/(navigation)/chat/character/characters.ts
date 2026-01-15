@@ -1,6 +1,6 @@
 import type { CharacterDefinition } from '../types/characterDefinition'
 
-import arisJSON from './aris.json'
+import arisJSON from './alice_tendou.json'
 import aruJSON from './aru_rikuhachima.json'
 import { buildCharacter, type CharacterJsonDefinition } from './buildCharacter'
 import neoJSON from './neo.json'
