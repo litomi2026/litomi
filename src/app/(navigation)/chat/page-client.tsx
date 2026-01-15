@@ -105,7 +105,7 @@ export default function CharacterChatPageClient() {
               description: '설정에서 WebGPU를 켜야 할 수 있어요',
             },
           ]}
-          description={`이 기기에서는 WebGPU를 사용할 수 없어요. (지원: ${MIN_IOS_SAFARI_TEXT}) iOS Safari라면 설정 > Safari > 고급 > 실험적 기능에서 WebGPU를 켜고 다시 시도해 주세요`}
+          description={`이 기기에서는 WebGPU를 사용할 수 없어요. (지원: ${MIN_IOS_SAFARI_TEXT}) Chrome/Edge라면 설정 > 시스템에서 “가능한 경우 하드웨어 가속 사용”을 켜고 다시 시도해 주세요. iOS Safari라면 설정 > Safari > 고급 > 실험적 기능에서 WebGPU를 켜고 다시 시도해 주세요`}
           icon={<Cpu className="size-12 text-brand" />}
           title="이 기기에서는 AI 채팅을 지원하지 않아요"
         >

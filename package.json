@@ -155,6 +155,7 @@
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
     "prettier": "3.7.4",
+    "schema-dts": "^1.1.5",
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.51.0"

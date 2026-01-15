@@ -3,10 +3,12 @@
 import { ChevronDown } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { twMerge } from 'tailwind-merge'
 
 import { ensureOverlayRoot } from '@/components/ui/overlayRoot'
 
 interface CustomSelectProps {
+  buttonClassName?: string
   className?: string
   defaultValue?: string
   disabled?: boolean
@@ -23,6 +25,7 @@ interface Option {
 }
 
 export default function CustomSelect({
+  buttonClassName,
   className,
   defaultValue,
   disabled = false,
@@ -139,11 +142,14 @@ export default function CustomSelect({
       <button
         aria-expanded={isOpen}
         aria-haspopup="listbox"
-        className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100 text-left
-          hover:border-zinc-600 transition
-          focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:border-transparent
-          disabled:opacity-50 disabled:cursor-not-allowed
-          flex items-center justify-between gap-2"
+        className={twMerge(
+          'w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100 text-left',
+          'hover:border-zinc-600 transition',
+          'focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:border-transparent',
+          'disabled:opacity-50 disabled:cursor-not-allowed',
+          'flex items-center justify-between gap-2',
+          buttonClassName,
+        )}
         disabled={disabled}
         id={id}
         onClick={() => !disabled && setIsOpen(!isOpen)}
@@ -170,8 +176,11 @@ export default function CustomSelect({
             {options.map((option) => (
               <button
                 aria-selected={option.value === value}
-                className="block w-full px-3 py-2 text-left text-zinc-100 hover:bg-zinc-700 transition
-                first:rounded-t-lg last:rounded-b-lg aria-selected:bg-zinc-700/50"
+                className={twMerge(
+                  'block w-full px-3 py-2 text-left text-zinc-100 hover:bg-zinc-700 transition',
+                  'first:rounded-t-lg last:rounded-b-lg aria-selected:bg-zinc-700/50',
+                  buttonClassName,
+                )}
                 key={option.value}
                 onClick={(e) => {
                   e.preventDefault()

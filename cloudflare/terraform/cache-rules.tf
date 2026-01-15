@@ -5,6 +5,8 @@ locals {
 
   ttl_30d_path_equals = [
     "/",
+    "/app",
+    "/chat",
     "/library",
     "/@",
   ]
@@ -15,6 +17,7 @@ locals {
 
   ttl_30d_path_prefixes = [
     "/auth/",
+    "/app.",
     "/apple-icon.",
     "/deterrence",
     "/doc/",
