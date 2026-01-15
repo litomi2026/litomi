@@ -34,7 +34,7 @@ export function ModelStatus({ installState, onInstall, onRefreshInstallState }: 
     getModelStatusViewModel(installState)
 
   return (
-    <div className="flex items-center gap-3 px-1">
+    <div className="flex flex-col items-stretch gap-2 px-1 sm:flex-row sm:items-center">
       <div className="flex-1 min-w-0 flex flex-col gap-2">
         <p
           className={twMerge(
@@ -60,7 +60,7 @@ export function ModelStatus({ installState, onInstall, onRefreshInstallState }: 
       <button
         aria-disabled={actionDisabled}
         className={twMerge(
-          'inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl transition aria-disabled:border-white/7 aria-disabled:text-zinc-500 aria-disabled:opacity-60 aria-disabled:cursor-default',
+          'inline-flex w-full items-center justify-center gap-2 px-3 py-2 rounded-xl transition aria-disabled:border-white/7 aria-disabled:text-zinc-500 aria-disabled:opacity-60 aria-disabled:cursor-default sm:w-auto',
           isNotInstalled
             ? 'border-white bg-zinc-100 text-zinc-900 hover:bg-white'
             : 'border-white/7 hover:border-white/15 text-zinc-200',

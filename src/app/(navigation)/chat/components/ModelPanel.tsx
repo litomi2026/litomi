@@ -108,7 +108,7 @@ export function ModelPanel({
       <details className="group rounded-xl border border-white/7 bg-white/2">
         <summary className="cursor-pointer list-none px-3 py-2 flex items-center gap-2 text-sm text-zinc-300 [&::-webkit-details-marker]:hidden">
           <ChevronRight className="size-4 text-zinc-500 transition-transform group-open:rotate-90" />
-          <span className="font-medium">고급 설정</span>
+          <span className="font-medium">설정</span>
           {isLocked ? <span className="ml-auto text-xs text-zinc-500">대화를 시작하면 변경할 수 없어요</span> : null}
         </summary>
         <div className="px-3 pb-3 pt-1 flex flex-col gap-3">

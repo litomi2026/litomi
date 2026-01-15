@@ -1,6 +1,6 @@
 'use client'
 
-import type { FormEvent } from 'react'
+import type { FormEvent, KeyboardEvent } from 'react'
 
 import { ChevronRight } from 'lucide-react'
 
@@ -55,6 +55,16 @@ export function ChatThread({
     onSubmit()
   }
 
+  function handleKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault()
+      const form = e.currentTarget.closest('form')
+      if (form) {
+        form.requestSubmit()
+      }
+    }
+  }
+
   return (
     <section className="rounded-2xl border border-white/7 bg-white/3 p-4 flex flex-col gap-3 min-h-[40vh] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
       <div className="flex flex-col gap-2">
@@ -106,6 +116,7 @@ export function ChatThread({
           id="message"
           name="message"
           onChange={(e) => onInputChange(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder={chatInputDisabledReason ?? '메시지를 입력해 주세요'}
           required
           value={input}

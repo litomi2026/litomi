@@ -31,8 +31,13 @@ type RecordLike = {
 
 export const MODEL_PRESETS = [
   {
+    label: '0.5B · 구형 핸드폰',
+    modelId: 'Qwen2.5-0.5B-Instruct-q4f32_1-MLC',
+    supportsThinking: false,
+  },
+  {
     label: '0.6B · 핸드폰',
-    modelId: 'Qwen3-0.6B-q4f32_1-MLC',
+    modelId: 'Qwen3-0.6B-q4f16_1-MLC',
     supportsThinking: false,
   },
   {
