@@ -64,6 +64,7 @@ export default function AIChat({ character, prompt, threadId }: Props) {
 
       <ModelPanel
         customModels={runtime.customModels}
+        dev30BCtxLimit={runtime.dev30BCtxLimit}
         installState={runtime.installState}
         isAutoModelEnabled={runtime.isAutoModelEnabled}
         isLocked={chat.isLocked}
@@ -73,6 +74,7 @@ export default function AIChat({ character, prompt, threadId }: Props) {
         modelPresets={runtime.modelPresets}
         onAddCustomModel={runtime.addCustomModel}
         onChangeAutoModelEnabled={runtime.setIsAutoModelEnabled}
+        onChangeDev30BCtxLimit={runtime.setDev30BCtxLimit}
         onChangeModelId={runtime.setModelId}
         onChangeThinkingEnabled={runtime.setIsThinkingEnabled}
         onChangeThinkingTraceVisible={runtime.setShowThinkingTrace}

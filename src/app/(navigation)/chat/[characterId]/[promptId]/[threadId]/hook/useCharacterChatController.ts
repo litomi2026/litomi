@@ -31,16 +31,6 @@ type UsageChunk = {
   prompt_tokens: number
   completion_tokens: number
   total_tokens: number
-  extra?: UsageExtra
-}
-
-type UsageExtra = {
-  e2e_latency_s?: number
-  prefill_tokens_per_s?: number
-  decode_tokens_per_s?: number
-  time_to_first_token_s?: number
-  time_per_output_token_s?: number
-  latencyBreakdown?: unknown
 }
 
 function isAsyncIterable<T>(value: T): value is Extract<T, AsyncIterable<unknown>> {
@@ -339,7 +329,6 @@ export function useCharacterChatController({
         summary: summaryRef.current,
         historyMaxTokens: budget.historyMaxTokens,
       })
-      console.log('👀 - send - context:', context)
 
       const stream = await engine.chat.completions.create({
         messages: context,
@@ -355,6 +344,8 @@ export function useCharacterChatController({
       if (!isAsyncIterable(stream)) {
         throw new Error('Model streaming response was not iterable.')
       }
+
+      // NOTE: auto-reload on slow generation intentionally disabled.
 
       const openTag = '<think>'
       const closeTag = '</think>'
@@ -445,32 +436,35 @@ export function useCharacterChatController({
 
       let finishReason: string | null = null
       let finalUsage: UsageChunk | null = null
-      for await (const chunk of stream) {
-        const usage = chunk.usage as unknown
-        if (
-          isPlainObject(usage) &&
-          typeof usage.prompt_tokens === 'number' &&
-          typeof usage.completion_tokens === 'number'
-        ) {
-          finalUsage = usage as UsageChunk
-        }
-        const nextFinishReason = chunk.choices[0]?.finish_reason
-        if (typeof nextFinishReason === 'string' && nextFinishReason.length > 0) {
-          finishReason = nextFinishReason
-        }
-        const delta = chunk.choices[0]?.delta?.content ?? ''
-        if (!delta) continue
-        if (lastAssistantIdRef.current !== assistantId) break
+      try {
+        for await (const chunk of stream) {
+          const usage = chunk.usage as unknown
+          if (
+            isPlainObject(usage) &&
+            typeof usage.prompt_tokens === 'number' &&
+            typeof usage.completion_tokens === 'number'
+          ) {
+            finalUsage = usage as UsageChunk
+          }
+          const nextFinishReason = chunk.choices[0]?.finish_reason
+          if (typeof nextFinishReason === 'string' && nextFinishReason.length > 0) {
+            finishReason = nextFinishReason
+          }
+          const delta = chunk.choices[0]?.delta?.content ?? ''
+          if (!delta) continue
+          if (lastAssistantIdRef.current !== assistantId) break
 
-        if (modelSupportsThinking) {
-          consumeThinkingDelta(delta)
-        } else {
-          visible += delta
-        }
+          if (modelSupportsThinking) {
+            consumeThinkingDelta(delta)
+          } else {
+            visible += delta
+          }
 
-        scheduleAssistantVisibleUpdate(visible)
+          scheduleAssistantVisibleUpdate(visible)
+        }
+      } finally {
+        // no-op
       }
-      console.warn('👀 - send - finalUsage:', finalUsage)
 
       // Flush any trailing buffered text (used for `<think>` tag boundary detection).
       // Without this, answers can lose the last few characters when the model doesn't emit `<think>` tags.
@@ -518,35 +512,6 @@ export function useCharacterChatController({
 
       const userTokenCount = finalUsage?.prompt_tokens
       const assistantTokenCount = finalUsage?.completion_tokens
-      const usageExtra = finalUsage?.extra
-      if (usageExtra) {
-        console.warn('[webllm] usage.extra', {
-          modelId,
-          mode: modelMode,
-          prompt_tokens: finalUsage?.prompt_tokens,
-          completion_tokens: finalUsage?.completion_tokens,
-          total_tokens: finalUsage?.total_tokens,
-          prefill_tokens_per_s:
-            typeof usageExtra.prefill_tokens_per_s === 'number'
-              ? Number(usageExtra.prefill_tokens_per_s.toFixed(2))
-              : undefined,
-          decode_tokens_per_s:
-            typeof usageExtra.decode_tokens_per_s === 'number'
-              ? Number(usageExtra.decode_tokens_per_s.toFixed(2))
-              : undefined,
-          time_to_first_token_s:
-            typeof usageExtra.time_to_first_token_s === 'number'
-              ? Number(usageExtra.time_to_first_token_s.toFixed(3))
-              : undefined,
-          time_per_output_token_s:
-            typeof usageExtra.time_per_output_token_s === 'number'
-              ? Number(usageExtra.time_per_output_token_s.toFixed(4))
-              : undefined,
-          e2e_latency_s:
-            typeof usageExtra.e2e_latency_s === 'number' ? Number(usageExtra.e2e_latency_s.toFixed(3)) : undefined,
-          latencyBreakdown: usageExtra.latencyBreakdown,
-        })
-      }
 
       const userMessageWithTokens =
         typeof userTokenCount === 'number' && Number.isFinite(userTokenCount) && userTokenCount > 0
@@ -629,9 +594,7 @@ export function useCharacterChatController({
         setCanContinue(true)
       }
     } catch (error) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.error('[chat] failed to generate response', error)
-      }
+      console.error('[chat] failed to generate response', error)
 
       // Detect GPU device lost errors and show appropriate message
       const errorMessage = error instanceof Error ? error.message.toLowerCase() : ''
