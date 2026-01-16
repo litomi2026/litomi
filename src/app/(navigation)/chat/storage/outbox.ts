@@ -33,6 +33,8 @@ type EnqueueSessionOptions = {
   clientSessionId: string
   characterId: string
   characterName?: string
+  promptId: string
+  promptTitle?: string
   title?: string
   systemPrompt: string
   modelId: string

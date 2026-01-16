@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
 import { env } from '@/env/client'
@@ -21,11 +22,11 @@ const { NEXT_PUBLIC_BACKEND_URL } = env
 type Props = {
   character: CharacterDefinition
   prompt: CharacterPromptDefinition
-  sessionId?: string
-  onNewChat?: () => void
+  threadId?: string
 }
 
-export default function AIChat({ character, prompt, sessionId, onNewChat }: Props) {
+export default function AIChat({ character, prompt, threadId }: Props) {
+  const router = useRouter()
   const runtime = useWebLLMRuntime()
   const modelSupportsThinking = runtime.modelPreset.supportsThinking
   const chatModelMode = modelSupportsThinking && runtime.isThinkingEnabled ? 'thinking' : 'chat'
@@ -40,7 +41,7 @@ export default function AIChat({ character, prompt, sessionId, onNewChat }: Prop
   const chat = useCharacterChatController({
     character,
     prompt,
-    clientSessionId: sessionId,
+    clientSessionId: threadId,
     engineRef: runtime.engineRef,
     ensureEngine: runtime.ensureEngine,
     interruptGenerate: runtime.interruptGenerate,
@@ -52,9 +53,9 @@ export default function AIChat({ character, prompt, sessionId, onNewChat }: Prop
     resetChat: runtime.resetChat,
   })
 
-  const handleNewChat = () => {
+  function handleNewChat() {
     chat.newChat()
-    onNewChat?.()
+    router.push(`/chat/${character.id}/${prompt.id}/${crypto.randomUUID()}`)
   }
 
   return (
@@ -92,6 +93,7 @@ export default function AIChat({ character, prompt, sessionId, onNewChat }: Prop
           <Link
             className="text-xs text-zinc-400 underline hover:text-zinc-200 transition whitespace-nowrap"
             href="/chat"
+            prefetch={false}
           >
             캐릭터 바꾸기
           </Link>
@@ -104,7 +106,8 @@ export default function AIChat({ character, prompt, sessionId, onNewChat }: Prop
           </div>
           <Link
             className="text-xs text-zinc-400 underline hover:text-zinc-200 transition whitespace-nowrap"
-            href={`/chat/${encodeURIComponent(character.id)}`}
+            href={`/chat/${character.id}`}
+            prefetch={false}
           >
             프롬프트 바꾸기
           </Link>
