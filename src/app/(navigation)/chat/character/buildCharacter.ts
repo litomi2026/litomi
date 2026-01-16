@@ -1,11 +1,13 @@
-import type { CharacterDefinition, LlmParams } from '../types/characterDefinition'
+import type { CharacterDefinition, CharacterPromptDefinition, LlmParams } from '../types/characterDefinition'
 
 import commonJSON from './common.json'
 
-export type CharacterJsonDefinition = {
-  key: string
-  name: string
-  description: string
+export type CharacterJsonDefinition = CharacterJsonDefinitionExpanded | CharacterJsonDefinitionLegacy
+
+export type CharacterPromptJsonDefinition = {
+  id: string
+  title: string
+  description?: string
   systemPromptBlocks: string[][]
   llmParams?: {
     chat?: LlmParams
@@ -13,22 +15,72 @@ export type CharacterJsonDefinition = {
   }
 }
 
+type CharacterJsonBase = {
+  id: string
+  name: string
+  description: string
+  llmParams?: {
+    chat?: LlmParams
+    thinking?: LlmParams
+  }
+}
+
+type CharacterJsonDefinitionExpanded = CharacterJsonBase & {
+  prompts: CharacterPromptJsonDefinition[]
+  defaultPromptId?: string
+}
+
+type CharacterJsonDefinitionLegacy = CharacterJsonBase & {
+  systemPromptBlocks: string[][]
+}
+
 export function buildCharacter(json: CharacterJsonDefinition): CharacterDefinition {
+  const promptSource = hasPrompts(json)
+    ? json.prompts
+    : [
+        {
+          id: 'default',
+          title: '기본 성격',
+          systemPromptBlocks: json.systemPromptBlocks,
+        },
+      ]
+
+  const prompts = promptSource.map((prompt) => buildPrompt(prompt))
+
+  const defaultPromptId = hasPrompts(json)
+    ? (prompts.find((p) => p.id === json.defaultPromptId)?.id ?? prompts[0]?.id)
+    : prompts[0]?.id
+
+  return {
+    id: json.id,
+    name: json.name,
+    description: json.description,
+    prompts,
+    defaultPromptId,
+    llmParams: json.llmParams,
+  }
+}
+
+function buildPrompt(prompt: CharacterPromptJsonDefinition): CharacterPromptDefinition {
   const systemPrompt = [
     joinBlocks(commonJSON.commonSystemPromptBlocks),
-    joinBlocks(json.systemPromptBlocks),
+    joinBlocks(prompt.systemPromptBlocks),
     joinBlocks(commonJSON.commonSystemPromptAtEndBlocks),
   ]
     .filter((s) => s.trim().length > 0)
     .join('\n\n')
 
   return {
-    key: json.key,
-    name: json.name,
-    description: json.description,
+    id: prompt.id,
+    title: prompt.title,
+    description: prompt.description,
     systemPrompt,
-    llmParams: json.llmParams,
+    llmParams: prompt.llmParams,
   }
+}
+
+function hasPrompts(json: CharacterJsonDefinition): json is CharacterJsonDefinitionExpanded {
+  return 'prompts' in json
 }
 
 /**

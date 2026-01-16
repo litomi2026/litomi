@@ -7,6 +7,7 @@ import { env } from '@/env/server.common'
 import * as activitySchema from './activity'
 import * as bbatonSchema from './bbaton'
 import * as censorshipSchema from './censorship'
+import * as chatSchema from './chat'
 import * as dmcaSchema from './dmca'
 import * as librarySchema from './library'
 import * as notificationSchema from './notification'
@@ -29,6 +30,7 @@ export const db = drizzle({
   schema: {
     ...activitySchema,
     ...bbatonSchema,
+    ...chatSchema,
     ...censorshipSchema,
     ...dmcaSchema,
     ...librarySchema,

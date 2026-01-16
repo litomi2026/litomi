@@ -1,20 +1,20 @@
 'use client'
 
-import type { WebWorkerMLCEngine } from '@mlc-ai/web-llm'
+import type { ChatCompletionRequestBase, WebWorkerMLCEngine } from '@mlc-ai/web-llm'
 
 import ms from 'ms'
 import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-import type { ModelId } from '../storage/webllmModels'
-import type { CharacterDefinition } from '../types/characterDefinition'
-import type { ChatMessage } from '../types/chatMessage'
+import type { ModelId } from '../../../../storage/webllmModels'
+import type { CharacterDefinition, CharacterPromptDefinition } from '../../../../types/characterDefinition'
+import type { ChatMessage } from '../../../../types/chatMessage'
 
-import { archiveChatMessages } from '../storage/indexeddb'
-import { enqueueAppendMessages, enqueueCreateSession } from '../storage/outbox'
-import { buildContext, buildSummaryPrompt } from '../util/chatPrompts'
-import { countHistoryTokens, pickPruneCountByTokenBudget } from '../util/chatTokens'
-import { getTokenBudget, type TokenBudget } from '../util/tokenBudget'
+import { archiveChatMessages } from '../../../../storage/indexeddb'
+import { enqueueAppendMessages, enqueueCreateSession } from '../../../../storage/outbox'
+import { buildContext, buildSummaryPrompt } from '../../../../util/chatPrompts'
+import { countHistoryTokens, pickPruneCountByTokenBudget } from '../../../../util/chatTokens'
+import { getTokenBudget, type TokenBudget } from '../../../../util/tokenBudget'
 import { useStateWithRef } from './useStateWithRef'
 
 const SUMMARY_MAX_TOKENS = 256
@@ -22,14 +22,35 @@ const CHAT_REPLY_MAX_TOKENS = 512
 const THINKING_REPLY_MAX_TOKENS = 1024
 const MIN_MESSAGES_TO_KEEP_AFTER_SUMMARY = 8
 
-const DEFAULT_LLM_PARAMS = {
+type LlmParams = {
+  chat: Omit<ChatCompletionRequestBase, 'messages'>
+  thinking: Omit<ChatCompletionRequestBase, 'messages'>
+}
+
+type UsageChunk = {
+  prompt_tokens: number
+  completion_tokens: number
+  total_tokens: number
+}
+
+function isAsyncIterable<T>(value: T): value is Extract<T, AsyncIterable<unknown>> {
+  if (typeof value !== 'object' || value === null) return false
+  const record = value as Record<PropertyKey, unknown>
+  return typeof record[Symbol.asyncIterator] === 'function'
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+const DEFAULT_LLM_PARAMS: LlmParams = {
   chat: {
-    temperature: 0.4,
-    top_p: 0.85,
-    max_tokens: CHAT_REPLY_MAX_TOKENS,
-    repetition_penalty: 1.1,
-    frequency_penalty: 0.25,
-    presence_penalty: 0.2,
+    temperature: 0.5,
+    top_p: 0.5,
+    max_tokens: 320,
+    repetition_penalty: 1.05,
+    frequency_penalty: 0.5,
+    presence_penalty: 2,
   },
   thinking: {
     temperature: 0.25,
@@ -43,6 +64,8 @@ const DEFAULT_LLM_PARAMS = {
 
 type Options = {
   character: CharacterDefinition
+  prompt: CharacterPromptDefinition
+  clientSessionId?: string
   engineRef: { current: WebWorkerMLCEngine | null }
   ensureEngine: () => Promise<WebWorkerMLCEngine>
   interruptGenerate: () => void
@@ -56,6 +79,8 @@ type Options = {
 
 export function useCharacterChatController({
   character,
+  prompt,
+  clientSessionId,
   engineRef,
   ensureEngine,
   interruptGenerate,
@@ -72,7 +97,9 @@ export function useCharacterChatController({
   const [canContinue, setCanContinue] = useState(false)
   const [isPreparingModel, setIsPreparingModel] = useState(false)
   const summaryRef = useRef<string | null>(null)
-  const clientSessionIdRef = useRef<string>(crypto.randomUUID())
+  const clientSessionIdRef = useRef<string>(
+    clientSessionId && clientSessionId.length > 0 ? clientSessionId : crypto.randomUUID(),
+  )
   const lastAssistantIdRef = useRef<string | null>(null)
   const isSummarizingRef = useRef(false)
   const pendingSummarizeRef = useRef(false)
@@ -287,6 +314,7 @@ export function useCharacterChatController({
       const llmParams = {
         ...DEFAULT_LLM_PARAMS[modelMode],
         ...character.llmParams?.[modelMode],
+        ...prompt.llmParams?.[modelMode],
       }
 
       const budget = getTokenBudget({
@@ -296,8 +324,8 @@ export function useCharacterChatController({
       tokenBudgetRef.current = budget
 
       const context = buildContext({
-        systemPrompt: character.systemPrompt,
-        messages: [...prevMessages, userMessage],
+        systemPrompt: prompt.systemPrompt,
+        messages: [userMessage],
         summary: summaryRef.current,
         historyMaxTokens: budget.historyMaxTokens,
       })
@@ -307,8 +335,17 @@ export function useCharacterChatController({
         stream: true,
         stream_options: { include_usage: true },
         ...llmParams,
-        ...(modelSupportsThinking && { extra_body: { enable_thinking: modelMode === 'thinking' } }),
+        extra_body: {
+          enable_latency_breakdown: true,
+          ...(modelSupportsThinking && { enable_thinking: modelMode === 'thinking' }),
+        },
       })
+
+      if (!isAsyncIterable(stream)) {
+        throw new Error('Model streaming response was not iterable.')
+      }
+
+      // NOTE: auto-reload on slow generation intentionally disabled.
 
       const openTag = '<think>'
       const closeTag = '</think>'
@@ -398,26 +435,35 @@ export function useCharacterChatController({
       }
 
       let finishReason: string | null = null
-      let finalUsage: { prompt_tokens: number; completion_tokens: number; total_tokens: number } | null = null
-      for await (const chunk of stream) {
-        if (chunk.usage && typeof chunk.usage.prompt_tokens === 'number') {
-          finalUsage = chunk.usage
-        }
-        const nextFinishReason = chunk.choices[0]?.finish_reason
-        if (typeof nextFinishReason === 'string' && nextFinishReason.length > 0) {
-          finishReason = nextFinishReason
-        }
-        const delta = chunk.choices[0]?.delta?.content ?? ''
-        if (!delta) continue
-        if (lastAssistantIdRef.current !== assistantId) break
+      let finalUsage: UsageChunk | null = null
+      try {
+        for await (const chunk of stream) {
+          const usage = chunk.usage as unknown
+          if (
+            isPlainObject(usage) &&
+            typeof usage.prompt_tokens === 'number' &&
+            typeof usage.completion_tokens === 'number'
+          ) {
+            finalUsage = usage as UsageChunk
+          }
+          const nextFinishReason = chunk.choices[0]?.finish_reason
+          if (typeof nextFinishReason === 'string' && nextFinishReason.length > 0) {
+            finishReason = nextFinishReason
+          }
+          const delta = chunk.choices[0]?.delta?.content ?? ''
+          if (!delta) continue
+          if (lastAssistantIdRef.current !== assistantId) break
 
-        if (modelSupportsThinking) {
-          consumeThinkingDelta(delta)
-        } else {
-          visible += delta
-        }
+          if (modelSupportsThinking) {
+            consumeThinkingDelta(delta)
+          } else {
+            visible += delta
+          }
 
-        scheduleAssistantVisibleUpdate(visible)
+          scheduleAssistantVisibleUpdate(visible)
+        }
+      } finally {
+        // no-op
       }
 
       // Flush any trailing buffered text (used for `<think>` tag boundary detection).
@@ -484,9 +530,11 @@ export function useCharacterChatController({
       const sessionId = clientSessionIdRef.current
       await enqueueCreateSession({
         clientSessionId: sessionId,
-        characterKey: character.key,
+        characterId: character.id,
         characterName: character.name,
-        systemPrompt: character.systemPrompt,
+        promptId: prompt.id,
+        promptTitle: prompt.title,
+        systemPrompt: prompt.systemPrompt,
         modelId,
       })
 
@@ -546,10 +594,22 @@ export function useCharacterChatController({
         setCanContinue(true)
       }
     } catch (error) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.error('[chat] failed to generate response', error)
+      console.error('[chat] failed to generate response', error)
+
+      // Detect GPU device lost errors and show appropriate message
+      const errorMessage = error instanceof Error ? error.message.toLowerCase() : ''
+      const isGpuLost =
+        errorMessage.includes('device') ||
+        errorMessage.includes('gpu') ||
+        errorMessage.includes('context') ||
+        errorMessage.includes('lost')
+
+      if (isGpuLost) {
+        toast.error('GPU 연결이 끊겼어요. 다시 시도해 주세요')
+      } else {
+        toast.error('응답을 생성하지 못했어요')
       }
-      toast.error('응답을 생성하지 못했어요')
+
       setMessages((prev) => prev.filter((m) => m.id !== assistantId))
     } finally {
       setIsGenerating(false)

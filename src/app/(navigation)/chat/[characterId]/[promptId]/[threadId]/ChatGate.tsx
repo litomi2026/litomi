@@ -1,18 +1,23 @@
 'use client'
 
+import type { ReactNode } from 'react'
+
 import { Bot, Cpu, Download, LockKeyhole, MessageCircle, Smartphone } from 'lucide-react'
 
 import LoginButton from '@/components/LoginButton'
 import useMeQuery from '@/query/useMeQuery'
 
-import Onboarding from '../(right-search)/[name]/settings/Onboarding'
-import AIChat from './AIChat'
+import Onboarding from '../../../../(right-search)/[name]/settings/Onboarding'
 import { useSingleTabLock } from './hook/useSingleTabLock'
 import { useWebGPUReady } from './hook/useWebGPUReady'
 
 const MIN_IOS_SAFARI_TEXT = 'iOS 18 / Safari 18 이상'
 
-export default function CharacterChatPageClient() {
+type Props = {
+  children: ReactNode
+}
+
+export function ChatGate({ children }: Props) {
   const { data: me, isLoading } = useMeQuery()
   const userId = me?.id
   const tabLock = useSingleTabLock({ channel: 'litomi:character-chat' })
@@ -121,5 +126,5 @@ export default function CharacterChatPageClient() {
     )
   }
 
-  return <AIChat />
+  return children
 }

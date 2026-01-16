@@ -1,28 +1,4 @@
-import { useEffect, useState } from 'react'
-
-type Options = {
-  enabled: boolean
-}
-
-export function useWebGPUReady({ enabled }: Options) {
-  const [isWebGpuReady, setIsWebGpuReady] = useState<boolean | null>(null)
-
-  useEffect(() => {
-    if (!enabled) {
-      setIsWebGpuReady(null)
-      return
-    }
-
-    void (async () => {
-      const supported = await isWebGpuSupported()
-      setIsWebGpuReady(supported)
-    })()
-  }, [enabled])
-
-  return isWebGpuReady
-}
-
-async function isWebGpuSupported(): Promise<boolean> {
+export async function isWebGPUSupported(): Promise<boolean> {
   try {
     if (typeof navigator === 'undefined' || !navigator.gpu) {
       return false

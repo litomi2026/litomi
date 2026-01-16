@@ -12,8 +12,8 @@ const CHARACTER_TRANSLATION: Record<string, Multilingual> = characterTranslation
  * Get all characters with their translations as value/label pairs for search suggestions
  */
 export function getAllCharactersWithLabels() {
-  return Object.entries(CHARACTER_TRANSLATION).map(([key, translations]) => ({
-    value: `character:${key}`,
+  return Object.entries(CHARACTER_TRANSLATION).map(([characterId, translations]) => ({
+    value: `character:${characterId}`,
     labels: {
       en: `${translateCategory('character', Locale.EN)}:${translations.en}`,
       ko: `${translateCategory('character', Locale.KO)}:${translations.ko || translations.en}`,

@@ -17,8 +17,8 @@ export type TokenBudget = {
 // - Keep prompt small for fast answers; "memory" comes from summary
 const COMPLETION_TOKEN_BUFFER = 1536
 const SYSTEM_PROMPT_TOKEN_BUDGET = 1024
-const DEFAULT_HISTORY_MAX_TOKENS = 30000
-const DEFAULT_HISTORY_TARGET_TOKENS_AFTER_SUMMARY = 20000
+const DEFAULT_HISTORY_MAX_TOKENS = 4096
+const DEFAULT_HISTORY_TARGET_TOKENS_AFTER_SUMMARY = 1024
 
 export function getTokenBudget({ contextWindowSize, completionMaxTokens }: GetTokenBudgetOptions): TokenBudget {
   const safeContextWindowSize = clampInt(contextWindowSize, 4096)

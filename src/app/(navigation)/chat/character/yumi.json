@@ -1,5 +1,5 @@
 {
-  "key": "yumi",
+  "id": "yumi",
   "name": "유미",
   "description": "유교적 미인이에요. 전통적 예의와 순종을 가르쳐요.",
   "systemPromptBlocks": [

@@ -7,9 +7,9 @@ import { toast } from 'sonner'
 import CustomSelect from '@/components/ui/CustomSelect'
 import Toggle from '@/components/ui/Toggle'
 
-import type { CustomWebLLMModel, ModelId } from '../storage/webllmModels'
+import type { CustomWebLLMModel, ModelId } from '../../../../storage/webllmModels'
 
-import { normalizeHuggingFaceUrl } from '../util/huggingface'
+import { normalizeHuggingFaceUrl } from '../../../../util/huggingface'
 import { CustomModelDialog } from './CustomModelDialog'
 import { type InstallState, ModelStatus } from './ModelStatus'
 
@@ -24,6 +24,7 @@ type ModelPreset = {
 type Props = {
   installState: InstallState
   isAutoModelEnabled: boolean
+  dev30BCtxLimit: number | null
   isLocked: boolean
   isThinkingEnabled: boolean
   modelId: ModelId
@@ -32,6 +33,7 @@ type Props = {
   showThinkingTrace: boolean
   customModels: readonly CustomWebLLMModel[]
   onChangeAutoModelEnabled: (enabled: boolean) => void
+  onChangeDev30BCtxLimit: (limit: number | null) => void
   onChangeModelId: (modelId: ModelId) => void
   onChangeThinkingEnabled: (enabled: boolean) => void
   onChangeThinkingTraceVisible: (enabled: boolean) => void
@@ -45,6 +47,7 @@ type Props = {
 export function ModelPanel({
   installState,
   isAutoModelEnabled,
+  dev30BCtxLimit,
   isLocked,
   isThinkingEnabled,
   modelId,
@@ -53,6 +56,7 @@ export function ModelPanel({
   showThinkingTrace,
   customModels,
   onChangeAutoModelEnabled,
+  onChangeDev30BCtxLimit,
   onChangeModelId,
   onChangeThinkingEnabled,
   onChangeThinkingTraceVisible,
@@ -67,6 +71,9 @@ export function ModelPanel({
   const isAdvancedDisabled = isLocked || installState.kind === 'installing'
   const isThinkingDisabled = isAdvancedDisabled || !modelPreset.supportsThinking
   const isThinkingTraceDisabled = isAdvancedDisabled || !isThinkingEnabled || !modelPreset.supportsThinking
+  const is30B = modelId === 'Qwen3-30B-A3B-q4f16_1-MLC'
+  const isCtxLimitDisabled = isAdvancedDisabled || !is30B
+  const ctxLimitSelectId = useId()
 
   function handleCustomModelSubmit(fd: FormData) {
     const label = String(fd.get('label'))
@@ -184,6 +191,43 @@ export function ModelPanel({
                 onToggle={onChangeThinkingTraceVisible}
               />
             </label>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label
+              aria-disabled={isCtxLimitDisabled}
+              className="flex items-center justify-between gap-3 cursor-pointer select-none transition aria-disabled:cursor-not-allowed aria-disabled:opacity-60"
+            >
+              <div className="flex flex-col">
+                <p className="text-xs text-zinc-400 font-medium">30B 컨텍스트 제한(실험)</p>
+                <p className="text-xs text-zinc-500">느려지는 현상을 줄이기 위한 실험 옵션이에요</p>
+              </div>
+            </label>
+            <div className="flex items-center gap-2">
+              <label className="sr-only" htmlFor={ctxLimitSelectId}>
+                30B 컨텍스트 제한
+              </label>
+              <CustomSelect
+                buttonClassName="text-sm tabular-nums"
+                className="flex-1 min-w-0"
+                disabled={isCtxLimitDisabled}
+                id={ctxLimitSelectId}
+                name="dev-30b-ctx-limit"
+                onChange={(value) => {
+                  if (value === '8192') return onChangeDev30BCtxLimit(8192)
+                  if (value === '12288') return onChangeDev30BCtxLimit(12288)
+                  if (value === '16384') return onChangeDev30BCtxLimit(16384)
+                  onChangeDev30BCtxLimit(null)
+                }}
+                options={[
+                  { value: '', label: '기본값(40k)' },
+                  { value: '8192', label: '8k' },
+                  { value: '12288', label: '12k' },
+                  { value: '16384', label: '16k' },
+                ]}
+                value={dev30BCtxLimit ? String(dev30BCtxLimit) : ''}
+              />
+            </div>
           </div>
 
           <div className="flex flex-col gap-2">

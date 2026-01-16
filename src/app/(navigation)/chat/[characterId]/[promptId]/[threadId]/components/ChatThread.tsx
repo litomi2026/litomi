@@ -4,10 +4,10 @@ import type { FormEvent, KeyboardEvent } from 'react'
 
 import { ChevronRight } from 'lucide-react'
 
-import type { ChatMessage } from '../types/chatMessage'
+import type { ChatMessage } from '../../../../types/chatMessage'
 
-import { renderBoldMarkdown } from '../util/renderBoldMarkdown'
-import { getAssistantPlaceholderText, getChatIntroText } from '../util/uiText'
+import { renderBoldMarkdown } from '../../../../util/renderBoldMarkdown'
+import { getAssistantPlaceholderText, getChatIntroText } from '../../../../util/uiText'
 
 type Props = {
   canContinue: boolean

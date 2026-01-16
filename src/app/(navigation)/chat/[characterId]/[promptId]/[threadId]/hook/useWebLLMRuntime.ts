@@ -4,9 +4,9 @@ import type { InitProgressReport, WebWorkerMLCEngine } from '@mlc-ai/web-llm'
 
 import { useEffect, useRef, useState } from 'react'
 
-import { buildWebLLMAppConfig } from '../lib/webllmAppConfig'
-import { deleteInstalledModel, hasInstalledModel } from '../lib/webllmCache'
-import { createWebLLMEngine } from '../lib/webllmEngine'
+import { buildWebLLMAppConfig } from '../../../../lib/webllmAppConfig'
+import { deleteInstalledModel, hasInstalledModel } from '../../../../lib/webllmCache'
+import { createWebLLMEngine } from '../../../../lib/webllmEngine'
 import {
   type CustomWebLLMModel,
   DEFAULT_MODEL_ID,
@@ -15,13 +15,16 @@ import {
   type ModelId,
   RESOLVED_MODEL_PRESETS,
   setCustomWebLLMModels,
-} from '../storage/webllmModels'
+} from '../../../../storage/webllmModels'
 import { useStateWithRef } from './useStateWithRef'
 
 const MODEL_ID_STORAGE_KEY = 'litomi:character-chat:model-id'
 const AUTO_MODEL_ENABLED_STORAGE_KEY = 'litomi:character-chat:auto-model-enabled'
 const THINKING_ENABLED_STORAGE_KEY = 'litomi:character-chat:thinking-enabled'
 const SHOW_THINKING_TRACE_STORAGE_KEY = 'litomi:character-chat:show-thinking-trace'
+const DEV_30B_CTX_LIMIT_STORAGE_KEY = 'litomi:character-chat:dev-30b-ctx-limit'
+// Backward compat (old boolean toggle)
+const DEV_30B_CTX16K_STORAGE_KEY = 'litomi:character-chat:dev-30b-ctx16k'
 
 type InstallState =
   | { kind: 'error'; message: string }
@@ -67,6 +70,17 @@ export function useWebLLMRuntime() {
   const [showThinkingTrace, setShowThinkingTraceState] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false
     return window.localStorage.getItem(SHOW_THINKING_TRACE_STORAGE_KEY) === 'true'
+  })
+
+  const [dev30BCtxLimit, setDev30BCtxLimitState] = useState<number | null>(() => {
+    if (typeof window === 'undefined') return null
+    const raw = window.localStorage.getItem(DEV_30B_CTX_LIMIT_STORAGE_KEY)
+    if (raw && raw.length > 0) {
+      const v = Number(raw)
+      if (Number.isFinite(v) && v > 0) return Math.floor(v)
+    }
+    if (window.localStorage.getItem(DEV_30B_CTX16K_STORAGE_KEY) === 'true') return 16_384
+    return null
   })
 
   const modelPresets: readonly SelectableModel[] = [
@@ -168,6 +182,16 @@ export function useWebLLMRuntime() {
     }
   }
 
+  function setDev30BCtxLimit(nextLimit: number | null) {
+    setDev30BCtxLimitState(nextLimit)
+    if (typeof window === 'undefined') return
+    if (nextLimit === null) {
+      window.localStorage.removeItem(DEV_30B_CTX_LIMIT_STORAGE_KEY)
+    } else {
+      window.localStorage.setItem(DEV_30B_CTX_LIMIT_STORAGE_KEY, String(nextLimit))
+    }
+  }
+
   async function refreshInstallState() {
     setInstallState({ kind: 'unknown' })
     setInstallState(await getModelInstallState(modelId))
@@ -245,7 +269,7 @@ export function useWebLLMRuntime() {
   }
 
   function resetChat() {
-    void engineRef.current?.resetChat()
+    engineRef.current?.resetChat()
   }
 
   return {
@@ -256,6 +280,7 @@ export function useWebLLMRuntime() {
     installState,
     interruptGenerate,
     isAutoModelEnabled,
+    dev30BCtxLimit,
     isThinkingEnabled,
     modelId,
     modelContextWindowSize,
@@ -267,6 +292,7 @@ export function useWebLLMRuntime() {
     addCustomModel,
     customModels,
     setIsAutoModelEnabled,
+    setDev30BCtxLimit,
     setIsThinkingEnabled,
     setModelId,
     setShowThinkingTrace,

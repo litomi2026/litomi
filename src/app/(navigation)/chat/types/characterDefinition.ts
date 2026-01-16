@@ -1,7 +1,19 @@
 export type CharacterDefinition = {
-  key: string
+  id: string
   name: string
   description: string
+  prompts: CharacterPromptDefinition[]
+  defaultPromptId?: string
+  llmParams?: {
+    chat?: LlmParams
+    thinking?: LlmParams
+  }
+}
+
+export type CharacterPromptDefinition = {
+  id: string
+  title: string
+  description?: string
   systemPrompt: string
   llmParams?: {
     chat?: LlmParams
