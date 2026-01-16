@@ -20,7 +20,7 @@ export default function CharacterList() {
     <div className="flex flex-col gap-6 p-4 sm:p-6 max-w-4xl w-full mx-auto">
       <header className="flex flex-col gap-2">
         <h1 className="text-lg font-semibold">캐릭터 선택</h1>
-        <p className="text-sm text-zinc-400">대화할 캐릭터와 프롬프트를 골라 주세요</p>
+        <p className="text-sm text-zinc-400">대화할 캐릭터와 성격을 골라 주세요</p>
       </header>
 
       <div className="flex items-center gap-3">
@@ -55,7 +55,7 @@ export default function CharacterList() {
               <div className="flex flex-col gap-2">
                 <div className="flex items-start justify-between gap-3">
                   <p className="text-sm font-medium text-zinc-100">{character.name}</p>
-                  <span className="text-xs text-zinc-500 whitespace-nowrap">{`프롬프트 ${character.prompts.length}개`}</span>
+                  <span className="text-xs text-zinc-500 whitespace-nowrap">{`성격 ${character.prompts.length}개`}</span>
                 </div>
                 <p className="text-xs text-zinc-500">{character.description}</p>
               </div>

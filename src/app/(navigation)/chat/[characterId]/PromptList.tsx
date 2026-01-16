@@ -46,14 +46,14 @@ export default function PromptList({ characterId }: Props) {
 
       <div className="flex items-center gap-3">
         <label className="sr-only" htmlFor="prompt-search">
-          프롬프트 검색
+          성격 검색
         </label>
         <input
           className="w-full rounded-xl border border-white/7 bg-white/3 px-3 py-2 text-sm placeholder:text-zinc-500"
           id="prompt-search"
           name="prompt-search"
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="프롬프트 제목이나 설명으로 검색해요"
+          placeholder="성격 제목이나 설명으로 검색해요"
           type="search"
           value={query}
         />
@@ -62,7 +62,7 @@ export default function PromptList({ characterId }: Props) {
 
       {prompts.length === 0 ? (
         <div className="rounded-2xl border border-white/7 bg-white/3 p-4 text-sm text-zinc-400">
-          조건에 맞는 프롬프트가 없어요
+          조건에 맞는 성격이 없어요
         </div>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">

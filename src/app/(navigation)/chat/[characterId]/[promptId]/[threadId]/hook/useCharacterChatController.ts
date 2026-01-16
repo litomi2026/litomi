@@ -27,10 +27,30 @@ type LlmParams = {
   thinking: Omit<ChatCompletionRequestBase, 'messages'>
 }
 
+type UsageChunk = {
+  prompt_tokens: number
+  completion_tokens: number
+  total_tokens: number
+  extra?: UsageExtra
+}
+
+type UsageExtra = {
+  e2e_latency_s?: number
+  prefill_tokens_per_s?: number
+  decode_tokens_per_s?: number
+  time_to_first_token_s?: number
+  time_per_output_token_s?: number
+  latencyBreakdown?: unknown
+}
+
 function isAsyncIterable<T>(value: T): value is Extract<T, AsyncIterable<unknown>> {
   if (typeof value !== 'object' || value === null) return false
   const record = value as Record<PropertyKey, unknown>
   return typeof record[Symbol.asyncIterator] === 'function'
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
 const DEFAULT_LLM_PARAMS: LlmParams = {
@@ -326,7 +346,10 @@ export function useCharacterChatController({
         stream: true,
         stream_options: { include_usage: true },
         ...llmParams,
-        ...(modelSupportsThinking && { extra_body: { enable_thinking: modelMode === 'thinking' } }),
+        extra_body: {
+          enable_latency_breakdown: true,
+          ...(modelSupportsThinking && { enable_thinking: modelMode === 'thinking' }),
+        },
       })
 
       if (!isAsyncIterable(stream)) {
@@ -421,10 +444,15 @@ export function useCharacterChatController({
       }
 
       let finishReason: string | null = null
-      let finalUsage: { prompt_tokens: number; completion_tokens: number; total_tokens: number } | null = null
+      let finalUsage: UsageChunk | null = null
       for await (const chunk of stream) {
-        if (chunk.usage && typeof chunk.usage.prompt_tokens === 'number') {
-          finalUsage = chunk.usage
+        const usage = chunk.usage as unknown
+        if (
+          isPlainObject(usage) &&
+          typeof usage.prompt_tokens === 'number' &&
+          typeof usage.completion_tokens === 'number'
+        ) {
+          finalUsage = usage as UsageChunk
         }
         const nextFinishReason = chunk.choices[0]?.finish_reason
         if (typeof nextFinishReason === 'string' && nextFinishReason.length > 0) {
@@ -442,7 +470,7 @@ export function useCharacterChatController({
 
         scheduleAssistantVisibleUpdate(visible)
       }
-      console.log('👀 - send - finalUsage:', finalUsage)
+      console.warn('👀 - send - finalUsage:', finalUsage)
 
       // Flush any trailing buffered text (used for `<think>` tag boundary detection).
       // Without this, answers can lose the last few characters when the model doesn't emit `<think>` tags.
@@ -490,6 +518,35 @@ export function useCharacterChatController({
 
       const userTokenCount = finalUsage?.prompt_tokens
       const assistantTokenCount = finalUsage?.completion_tokens
+      const usageExtra = finalUsage?.extra
+      if (usageExtra) {
+        console.warn('[webllm] usage.extra', {
+          modelId,
+          mode: modelMode,
+          prompt_tokens: finalUsage?.prompt_tokens,
+          completion_tokens: finalUsage?.completion_tokens,
+          total_tokens: finalUsage?.total_tokens,
+          prefill_tokens_per_s:
+            typeof usageExtra.prefill_tokens_per_s === 'number'
+              ? Number(usageExtra.prefill_tokens_per_s.toFixed(2))
+              : undefined,
+          decode_tokens_per_s:
+            typeof usageExtra.decode_tokens_per_s === 'number'
+              ? Number(usageExtra.decode_tokens_per_s.toFixed(2))
+              : undefined,
+          time_to_first_token_s:
+            typeof usageExtra.time_to_first_token_s === 'number'
+              ? Number(usageExtra.time_to_first_token_s.toFixed(3))
+              : undefined,
+          time_per_output_token_s:
+            typeof usageExtra.time_per_output_token_s === 'number'
+              ? Number(usageExtra.time_per_output_token_s.toFixed(4))
+              : undefined,
+          e2e_latency_s:
+            typeof usageExtra.e2e_latency_s === 'number' ? Number(usageExtra.e2e_latency_s.toFixed(3)) : undefined,
+          latencyBreakdown: usageExtra.latencyBreakdown,
+        })
+      }
 
       const userMessageWithTokens =
         typeof userTokenCount === 'number' && Number.isFinite(userTokenCount) && userTokenCount > 0

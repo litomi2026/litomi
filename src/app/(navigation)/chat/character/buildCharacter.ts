@@ -40,7 +40,7 @@ export function buildCharacter(json: CharacterJsonDefinition): CharacterDefiniti
     : [
         {
           id: 'default',
-          title: '기본 프롬프트',
+          title: '기본 성격',
           systemPromptBlocks: json.systemPromptBlocks,
         },
       ]

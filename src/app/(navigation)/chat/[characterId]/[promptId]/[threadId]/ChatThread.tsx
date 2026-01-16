@@ -30,14 +30,14 @@ export default function ChatThread({ characterId, promptId, threadId }: Props) {
   if (!prompt) {
     return (
       <div className="flex flex-col gap-4 p-6 max-w-xl w-full mx-auto">
-        <h1 className="text-lg font-semibold">프롬프트를 찾지 못했어요</h1>
-        <p className="text-sm text-zinc-400">선택한 프롬프트가 목록에 없어요. 다시 골라 주세요.</p>
+        <h1 className="text-lg font-semibold">성격을 찾지 못했어요</h1>
+        <p className="text-sm text-zinc-400">선택한 성격이 목록에 없어요. 다시 골라 주세요.</p>
         <Link
           className="text-sm text-zinc-300 underline hover:text-white transition"
           href={`/chat/${character.id}`}
           prefetch={false}
         >
-          프롬프트 목록으로
+          성격 목록으로
         </Link>
       </div>
     )

@@ -100,7 +100,7 @@ export default function AIChat({ character, prompt, threadId }: Props) {
         </div>
         <div className="border-t border-white/7 pt-3 flex items-start justify-between gap-3">
           <div className="flex flex-col gap-1">
-            <p className="text-xs text-zinc-500">프롬프트</p>
+            <p className="text-xs text-zinc-500">성격</p>
             <p className="text-sm font-medium text-zinc-100">{prompt.title}</p>
             {prompt.description ? <p className="text-xs text-zinc-500">{prompt.description}</p> : null}
           </div>
@@ -109,7 +109,7 @@ export default function AIChat({ character, prompt, threadId }: Props) {
             href={`/chat/${character.id}`}
             prefetch={false}
           >
-            프롬프트 바꾸기
+            성격 바꾸기
           </Link>
         </div>
       </section>
