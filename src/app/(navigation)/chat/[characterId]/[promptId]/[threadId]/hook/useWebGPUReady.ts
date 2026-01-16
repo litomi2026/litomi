@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 
+import { isWebGPUSupported } from '@/app/(navigation)/chat/util/gpu'
+
 type Options = {
   enabled: boolean
 }
@@ -14,35 +16,10 @@ export function useWebGPUReady({ enabled }: Options) {
     }
 
     void (async () => {
-      const supported = await isWebGpuSupported()
+      const supported = await isWebGPUSupported()
       setIsWebGpuReady(supported)
     })()
   }, [enabled])
 
   return isWebGpuReady
-}
-
-async function isWebGpuSupported(): Promise<boolean> {
-  try {
-    if (typeof navigator === 'undefined' || !navigator.gpu) {
-      return false
-    }
-
-    const adapter = await navigator.gpu.requestAdapter({ powerPreference: 'high-performance' })
-    if (!adapter || adapter.info.isFallbackAdapter) {
-      return false
-    }
-
-    const requiredFeatures: string[] = []
-    if (adapter.features.has('shader-f16')) {
-      requiredFeatures.push('shader-f16')
-    }
-
-    const device = await adapter.requestDevice({ requiredFeatures })
-    device.destroy()
-
-    return true
-  } catch {
-    return false
-  }
 }

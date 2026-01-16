@@ -1,6 +1,6 @@
 'use client'
 
-import type { WebWorkerMLCEngine } from '@mlc-ai/web-llm'
+import type { ChatCompletionRequestBase, WebWorkerMLCEngine } from '@mlc-ai/web-llm'
 
 import ms from 'ms'
 import { useRef, useState } from 'react'
@@ -22,14 +22,19 @@ const CHAT_REPLY_MAX_TOKENS = 512
 const THINKING_REPLY_MAX_TOKENS = 1024
 const MIN_MESSAGES_TO_KEEP_AFTER_SUMMARY = 8
 
-const DEFAULT_LLM_PARAMS = {
+type LlmParams = {
+  chat: Omit<ChatCompletionRequestBase, 'messages'>
+  thinking: Omit<ChatCompletionRequestBase, 'messages'>
+}
+
+const DEFAULT_LLM_PARAMS: LlmParams = {
   chat: {
-    temperature: 0.4,
-    top_p: 0.85,
-    max_tokens: CHAT_REPLY_MAX_TOKENS,
-    repetition_penalty: 1.1,
-    frequency_penalty: 0.25,
-    presence_penalty: 0.2,
+    temperature: 0.5,
+    top_p: 0.5,
+    max_tokens: 320,
+    repetition_penalty: 1.05,
+    frequency_penalty: 0.5,
+    presence_penalty: 2,
   },
   thinking: {
     temperature: 0.25,
@@ -304,10 +309,11 @@ export function useCharacterChatController({
 
       const context = buildContext({
         systemPrompt: prompt.systemPrompt,
-        messages: [...prevMessages, userMessage],
+        messages: [userMessage],
         summary: summaryRef.current,
         historyMaxTokens: budget.historyMaxTokens,
       })
+      console.log('👀 - send - context:', context)
 
       const stream = await engine.chat.completions.create({
         messages: context,
@@ -426,6 +432,7 @@ export function useCharacterChatController({
 
         scheduleAssistantVisibleUpdate(visible)
       }
+      console.log('👀 - send - finalUsage:', finalUsage)
 
       // Flush any trailing buffered text (used for `<think>` tag boundary detection).
       // Without this, answers can lose the last few characters when the model doesn't emit `<think>` tags.
