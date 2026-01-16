@@ -27,6 +27,12 @@ type LlmParams = {
   thinking: Omit<ChatCompletionRequestBase, 'messages'>
 }
 
+function isAsyncIterable<T>(value: T): value is Extract<T, AsyncIterable<unknown>> {
+  if (typeof value !== 'object' || value === null) return false
+  const record = value as Record<PropertyKey, unknown>
+  return typeof record[Symbol.asyncIterator] === 'function'
+}
+
 const DEFAULT_LLM_PARAMS: LlmParams = {
   chat: {
     temperature: 0.5,
@@ -322,6 +328,10 @@ export function useCharacterChatController({
         ...llmParams,
         ...(modelSupportsThinking && { extra_body: { enable_thinking: modelMode === 'thinking' } }),
       })
+
+      if (!isAsyncIterable(stream)) {
+        throw new Error('Model streaming response was not iterable.')
+      }
 
       const openTag = '<think>'
       const closeTag = '</think>'
