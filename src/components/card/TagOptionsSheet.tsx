@@ -13,8 +13,10 @@ import { QueryKeys } from '@/constants/query'
 import { CensorshipKey, CensorshipLevel } from '@/database/enum'
 import { env } from '@/env/client'
 import useClipboard from '@/hook/useClipboard'
+import { showAdultVerificationRequiredToast } from '@/lib/toast'
 import useCensorshipsMapQuery from '@/query/useCensorshipsMapQuery'
 import useMeQuery from '@/query/useMeQuery'
+import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 type Props = {
@@ -38,6 +40,7 @@ export default function TagOptionsSheet({ isOpen, onClose, category, value, labe
   const { copy } = useClipboard()
   const router = useRouter()
   const { data: me } = useMeQuery()
+  const canAccess = canAccessAdultRestrictedAPIs(me)
   const { data: censorshipsMap } = useCensorshipsMapQuery()
   const queryClient = useQueryClient()
 
@@ -93,9 +96,15 @@ export default function TagOptionsSheet({ isOpen, onClose, category, value, labe
   }
 
   function handleToggleCensorship() {
-    if (isLoggedIn && !toggleCensorshipMutation.isPending) {
-      toggleCensorshipMutation.mutate()
+    if (!isLoggedIn || toggleCensorshipMutation.isPending) {
+      return
     }
+    if (!canAccess) {
+      showAdultVerificationRequiredToast({ username: me?.name })
+      return
+    }
+
+    toggleCensorshipMutation.mutate()
   }
 
   return (
@@ -105,7 +114,10 @@ export default function TagOptionsSheet({ isOpen, onClose, category, value, labe
         <span>태그 복사</span>
       </BottomSheetItem>
 
-      <BottomSheetItem disabled={!isLoggedIn || toggleCensorshipMutation.isPending} onClick={handleToggleCensorship}>
+      <BottomSheetItem
+        disabled={!isLoggedIn || !canAccess || toggleCensorshipMutation.isPending}
+        onClick={handleToggleCensorship}
+      >
         {toggleCensorshipMutation.isPending ? (
           <Loader2 className="size-5 text-zinc-400 animate-spin" />
         ) : (
@@ -113,6 +125,7 @@ export default function TagOptionsSheet({ isOpen, onClose, category, value, labe
         )}
         <span>{isCensored ? '검열 해제' : '검열하기'}</span>
         {!isLoggedIn && <span className="text-xs text-zinc-500 ml-auto">로그인 필요</span>}
+        {isLoggedIn && !canAccess && <span className="text-xs text-zinc-500 ml-auto">성인인증 필요</span>}
       </BottomSheetItem>
 
       <BottomSheetItem onClick={handleExcludeSearch}>

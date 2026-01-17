@@ -14,6 +14,9 @@ import DialogFooter from '@/components/ui/DialogFooter'
 import DialogHeader from '@/components/ui/DialogHeader'
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
+import { showAdultVerificationRequiredToast } from '@/lib/toast'
+import useMeQuery from '@/query/useMeQuery'
+import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
 import { downloadBlob } from '@/utils/download'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
@@ -44,6 +47,8 @@ export default function ImportExportModal({ open, onClose, censorships }: Readon
   const [exportFormat, setExportFormat] = useState<ExportFormat>('json')
   const [importText, setImportText] = useState('')
   const queryClient = useQueryClient()
+  const { data: me } = useMeQuery()
+  const canAccess = canAccessAdultRestrictedAPIs(me)
 
   const addMutation = useMutation({
     mutationFn: async (items: { key: number; value: string; level: number }[]) => {
@@ -106,6 +111,11 @@ export default function ImportExportModal({ open, onClose, censorships }: Readon
   }
 
   function handleImport() {
+    if (!canAccess) {
+      showAdultVerificationRequiredToast({ username: me?.name })
+      return
+    }
+
     try {
       const data = JSON.parse(importText)
 
@@ -225,7 +235,7 @@ export default function ImportExportModal({ open, onClose, censorships }: Readon
         ) : (
           <button
             className="w-full px-4 py-3 text-zinc-900 font-semibold bg-brand hover:bg-brand/90 disabled:bg-zinc-700 disabled:text-zinc-500 rounded-lg transition flex items-center justify-center gap-2"
-            disabled={!importText.trim() || addMutation.isPending}
+            disabled={!canAccess || !importText.trim() || addMutation.isPending}
             onClick={handleImport}
             type="button"
           >

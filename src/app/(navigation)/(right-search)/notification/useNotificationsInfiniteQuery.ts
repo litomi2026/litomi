@@ -1,10 +1,12 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'next/navigation'
 
-import { GETNotificationResponse } from '@/backend/api/v1/notification'
+import type { GETNotificationResponse } from '@/backend/api/v1/notification/GET'
+
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import useMeQuery from '@/query/useMeQuery'
+import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
@@ -18,6 +20,7 @@ export async function fetchNotifications(searchParams: URLSearchParams) {
 export default function useNotificationInfiniteQuery() {
   const searchParams = useSearchParams()
   const { data: me } = useMeQuery()
+  const canAccess = canAccessAdultRestrictedAPIs(me)
 
   return useInfiniteQuery<GETNotificationResponse, Error>({
     queryKey: QueryKeys.notifications(searchParams),
@@ -37,6 +40,7 @@ export default function useNotificationInfiniteQuery() {
     getNextPageParam: ({ hasNextPage, notifications }) =>
       hasNextPage ? notifications[notifications.length - 1]?.id.toString() : null,
     initialPageParam: undefined,
-    enabled: Boolean(me),
+    enabled: canAccess,
+    meta: { requiresAdult: true, enableGlobalErrorToastForStatuses: [403] },
   })
 }

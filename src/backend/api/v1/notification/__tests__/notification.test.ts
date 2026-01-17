@@ -4,11 +4,14 @@ import { contextStorage } from 'hono/context-storage'
 
 import type { Env } from '@/backend'
 
-import notificationRoutes, { type GETNotificationResponse } from '..'
+import type { GETNotificationResponse } from '../GET'
+
+import notificationRoutes from '..'
 
 type TestEnv = Env & {
   Bindings: {
     userId?: number
+    isAdult?: boolean
   }
 }
 
@@ -17,13 +20,14 @@ app.use('*', contextStorage())
 app.use('*', async (c, next) => {
   if (c.env.userId) {
     c.set('userId', c.env.userId)
+    c.set('isAdult', c.env.isAdult ?? true)
   }
   await next()
 })
 app.route('/', notificationRoutes)
 
 describe('GET /api/v1/notification', () => {
-  const createRequest = (params?: string, env?: { userId?: number }) => {
+  const createRequest = (params?: string, env?: { userId?: number; isAdult?: boolean }) => {
     const queryString = params ? `?${params}` : ''
     return app.request(`/${queryString}`, {}, env ?? {})
   }
@@ -33,6 +37,13 @@ describe('GET /api/v1/notification', () => {
       const response = await createRequest()
 
       expect(response.status).toBe(401)
+    })
+  })
+
+  describe('성인인증', () => {
+    test('성인 인증이 완료되지 않은 사용자(isAdult=false)는 403 응답을 받는다', async () => {
+      const response = await createRequest(undefined, { userId: 1, isAdult: false })
+      expect(response.status).toBe(403)
     })
   })
 
@@ -118,6 +129,13 @@ describe('GET /api/v1/notification/unread-count', () => {
       const response = await app.request('/unread-count', {}, {})
 
       expect(response.status).toBe(401)
+    })
+  })
+
+  describe('성인인증', () => {
+    test('성인 인증이 완료되지 않은 사용자(isAdult=false)는 403 응답을 받는다', async () => {
+      const response = await app.request('/unread-count', {}, { userId: 1, isAdult: false })
+      expect(response.status).toBe(403)
     })
   })
 

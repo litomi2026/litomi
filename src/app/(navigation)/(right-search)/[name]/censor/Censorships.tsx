@@ -15,6 +15,8 @@ import { CensorshipKey } from '@/database/enum'
 import { env } from '@/env/client'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useCensorshipsInfiniteQuery from '@/query/useCensorshipInfiniteQuery'
+import useMeQuery from '@/query/useMeQuery'
+import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import CensorshipCard, { CensorshipCardSkeleton } from './CensorshipCard'
@@ -34,6 +36,8 @@ export default function Censorships() {
   const [filterKey, setFilterKey] = useState<CensorshipKey | null>(null)
   const [selectedIds, setSelectedIds] = useState(new Set<number>())
   const [deletingIds, setDeletingIds] = useState(new Set<number>())
+  const { data: me } = useMeQuery()
+  const canAccess = canAccessAdultRestrictedAPIs(me)
 
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage, isFetchNextPageError } =
     useCensorshipsInfiniteQuery()
@@ -95,6 +99,9 @@ export default function Censorships() {
   }
 
   function handleBulkDelete() {
+    if (!canAccess) {
+      return
+    }
     if (selectedIds.size === 0) {
       return
     }
@@ -115,7 +122,7 @@ export default function Censorships() {
             <div className="flex gap-2">
               <button
                 className="px-3 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition border-2 disabled:opacity-50"
-                disabled={isLoading || isDeleting}
+                disabled={isLoading || isDeleting || !canAccess}
                 onClick={() => setShowImportExportModal(true)}
                 title="가져오기/내보내기"
               >
