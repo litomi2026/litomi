@@ -6,7 +6,7 @@ import ms from 'ms'
 import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-import type { ModelId } from '../../../../storage/webllmModels'
+import type { ModelId } from '../../../../lib/webllmModel'
 import type { CharacterDefinition, CharacterPromptDefinition } from '../../../../types/characterDefinition'
 import type { ChatMessage } from '../../../../types/chatMessage'
 
@@ -183,7 +183,7 @@ export function useCharacterChatController({
         temperature: 0.2,
         top_p: 0.9,
         max_tokens: SUMMARY_MAX_TOKENS,
-        ...(modelSupportsThinking && { extra_body: { enable_thinking: false } }),
+        extra_body: { enable_thinking: false },
       })
 
       const text = res.choices[0]?.message?.content?.trim()

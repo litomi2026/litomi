@@ -18,6 +18,7 @@ export enum LocalStorageKey {
   RECENT_SEARCHES = 'recent-searches',
   RECENT_SEARCHES_ENABLED = 'recent-searches-enabled',
   THEME = 'theme',
+  CHAT_WEBLLM_SETTINGS = 'chat/webllm-settings',
   BBATON_ADULT_VERIFICATION_SIGNAL = 'bbaton/adult-verification/signal',
 }
 

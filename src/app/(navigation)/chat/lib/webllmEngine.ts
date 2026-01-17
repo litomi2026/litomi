@@ -1,22 +1,23 @@
 'use client'
 
-import type { InitProgressReport, WebWorkerMLCEngine } from '@mlc-ai/web-llm'
+import {
+  type AppConfig,
+  CreateWebWorkerMLCEngine,
+  type InitProgressReport,
+  type WebWorkerMLCEngine,
+} from '@mlc-ai/web-llm'
 
-import { CreateWebWorkerMLCEngine } from '@mlc-ai/web-llm'
-
-import type { ModelId } from '../storage/webllmModels'
-
-import { buildWebLLMAppConfig } from './webllmAppConfig'
+import type { ModelId } from './webllmModel'
 
 type Options = {
   modelId: ModelId
+  appConfig: AppConfig
   onProgress?: (report: InitProgressReport) => void
 }
 
 let enginePromise: Promise<WebWorkerMLCEngine> | null = null
 
-export async function createWebLLMEngine({ modelId, onProgress }: Options) {
-  const appConfig = buildWebLLMAppConfig()
+export async function createWebLLMEngine({ modelId, appConfig, onProgress }: Options) {
   const isNew = !enginePromise
 
   if (!enginePromise) {
