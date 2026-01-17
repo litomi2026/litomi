@@ -15,6 +15,9 @@ import Toggle from '@/components/ui/Toggle'
 import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import useServerAction, { getFieldError, getFormField } from '@/hook/useServerAction'
+import { showAdultVerificationRequiredToast } from '@/lib/toast'
+import useMeQuery from '@/query/useMeQuery'
+import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
 
 import { updateLibrary } from './action-library'
 
@@ -38,6 +41,8 @@ type Props = {
 export default function LibraryEditModal({ library, open, onOpenChange }: Readonly<Props>) {
   const formRef = useRef<HTMLFormElement>(null)
   const queryClient = useQueryClient()
+  const { data: me } = useMeQuery()
+  const canAccess = canAccessAdultRestrictedAPIs(me)
 
   const [response, dispatchAction, isPending] = useServerAction({
     action: updateLibrary,
@@ -123,6 +128,17 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
     for (const button of buttons) {
       const buttonElement = button as HTMLButtonElement
       buttonElement.setAttribute('aria-pressed', buttonElement.dataset.icon === emoji ? 'true' : 'false')
+    }
+  }
+
+  function handleTogglePublic(next: boolean) {
+    if (next === false && !canAccess) {
+      showAdultVerificationRequiredToast({ username: me?.name })
+      const input = formRef.current?.querySelector<HTMLInputElement>('input[name="is-public"]')
+      
+      if (input) {
+        input.checked = true
+      }
     }
   }
 
@@ -233,6 +249,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
               defaultChecked={isPublic}
               disabled={isPending}
               name="is-public"
+              onToggle={handleTogglePublic}
             />
           </div>
         </DialogBody>

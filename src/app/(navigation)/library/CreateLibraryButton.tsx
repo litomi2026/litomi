@@ -15,7 +15,9 @@ import Toggle from '@/components/ui/Toggle'
 import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import useServerAction from '@/hook/useServerAction'
+import { showAdultVerificationRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
+import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
 
 import { createLibrary } from './action-library'
 
@@ -44,19 +46,12 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
   const queryClient = useQueryClient()
   const { data: me } = useMeQuery()
   const nameInputRef = useRef<HTMLInputElement>(null)
-
-  function handleClose() {
-    setIsModalOpen(false)
-    setSelectedColor(DEFAULT_COLORS[0])
-    setSelectedIcon(DEFAULT_ICONS[0])
-    setIsPublic(false)
-  }
+  const canAccess = canAccessAdultRestrictedAPIs(me)
 
   const [formErrors, dispatchAction, isPending] = useServerAction({
     action: createLibrary,
-    onSuccess: (newLibraryId, [formData]) => {
+    onSuccess: ({ id: newLibraryId, createdAt }, [formData]) => {
       const meId = me?.id
-      const now = Date.now()
 
       queryClient.setQueryData<LibraryListItem[]>(QueryKeys.libraries, (oldLibraries) => {
         if (!meId) {
@@ -71,7 +66,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
           color: formData.get('color')?.toString() ?? null,
           icon: formData.get('icon')?.toString() ?? null,
           isPublic: formData.get('is-public')?.toString() === 'on',
-          createdAt: now,
+          createdAt,
           itemCount: 0,
         }
 
@@ -95,7 +90,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
               icon: formData.get('icon')?.toString() ?? null,
               isPublic: formData.get('is-public')?.toString() === 'on',
               itemCount: 0,
-              createdAt: now,
+              createdAt,
             }
 
             const [firstPage, ...restPages] = oldData.pages
@@ -120,6 +115,22 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
       handleClose()
     },
   })
+
+  function handleClose() {
+    setIsModalOpen(false)
+    setSelectedColor(DEFAULT_COLORS[0])
+    setSelectedIcon(DEFAULT_ICONS[0])
+    setIsPublic(false)
+  }
+
+  function handleTogglePublic(next: boolean) {
+    if (next === false && !canAccess) {
+      showAdultVerificationRequiredToast({ username: me?.name })
+      return
+    }
+
+    setIsPublic(next)
+  }
 
   useEffect(() => {
     if (isModalOpen) {
@@ -247,7 +258,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
                     className="w-12 peer-checked:bg-brand/80"
                     disabled={isPending}
                     name="is-public"
-                    onToggle={setIsPublic}
+                    onToggle={handleTogglePublic}
                   />
                 </div>
               </label>
