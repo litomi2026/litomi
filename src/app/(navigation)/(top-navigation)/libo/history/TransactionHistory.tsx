@@ -1,10 +1,10 @@
 'use client'
 
 import { ArrowDownLeft, ArrowUpRight } from 'lucide-react'
-import Link from 'next/link'
 
-import { isAdultVerificationRequiredProblem } from '@/lib/QueryProvider'
+import AdultVerificationGate from '@/components/AdultVerificationGate'
 import useMeQuery from '@/query/useMeQuery'
+import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
 import { formatDistanceToNow } from '@/utils/format/date'
 import { formatNumber } from '@/utils/format/number'
 import { ProblemDetailsError } from '@/utils/react-query-error'
@@ -14,13 +14,13 @@ import { useTransactionsQuery } from './useTransactionsQuery'
 type TransactionErrorInfo = {
   title: string
   message: string
-  settingsHref?: string
 }
 
 export default function TransactionHistory() {
   const { data: me, isPending: isMePending } = useMeQuery()
   const isLoggedIn = Boolean(me)
   const isAuthReady = !isMePending
+  const canAccess = canAccessAdultRestrictedAPIs(me)
 
   const {
     data,
@@ -33,7 +33,7 @@ export default function TransactionHistory() {
     isFetchingNextPage,
     isFetchNextPageError,
     refetch,
-  } = useTransactionsQuery({ enabled: isAuthReady && isLoggedIn })
+  } = useTransactionsQuery({ enabled: isAuthReady && isLoggedIn && canAccess })
 
   const transactions = data?.pages.flatMap((page) => page.items) ?? []
   const isInitialError = isError && !data
@@ -46,6 +46,10 @@ export default function TransactionHistory() {
         <div className="text-center py-8">
           <p className="text-zinc-500">로그인하면 거래 내역을 확인할 수 있어요</p>
         </div>
+      )}
+
+      {isAuthReady && isLoggedIn && !canAccess && (
+        <AdultVerificationGate description="거래 내역을 보려면 익명 성인인증이 필요해요" title="성인인증이 필요해요" username={me?.name} />
       )}
 
       {isInitialError && (
@@ -125,14 +129,6 @@ export default function TransactionHistory() {
 
 function getTransactionErrorInfo(error: unknown, username?: string): TransactionErrorInfo {
   if (error instanceof ProblemDetailsError) {
-    if (error.status === 403 && isAdultVerificationRequiredProblem(error.type)) {
-      return {
-        title: '성인 인증이 필요해요',
-        message: '설정에서 익명 성인인증을 완료해 주세요',
-        settingsHref: username ? `/@${username}/settings/#adult` : undefined,
-      }
-    }
-
     if (error.status === 401) {
       return {
         title: '로그인이 필요해요',
@@ -175,15 +171,6 @@ function TransactionHistoryErrorBanner({
         </div>
 
         <div className="flex items-center justify-center gap-2">
-          {info.settingsHref && (
-            <Link
-              className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-xl bg-white/4 border border-white/7 text-zinc-300 hover:bg-white/5 transition"
-              href={info.settingsHref}
-              prefetch={false}
-            >
-              성인 인증하기
-            </Link>
-          )}
           <button
             aria-disabled={isRetrying}
             className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-xl bg-white/4 border border-white/7 text-zinc-300 hover:bg-white/5 aria-disabled:opacity-60 aria-disabled:cursor-not-allowed transition"
