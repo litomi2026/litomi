@@ -119,12 +119,7 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Read
           </button>
           <button
             className="flex-1 px-3 py-2 font-semibold bg-brand/80 text-background hover:bg-brand/90 rounded transition flex items-center justify-center gap-1 disabled:opacity-50"
-            disabled={
-              updateMutation.isPending ||
-              !canAccess ||
-              !editValue.trim() ||
-              (editValue === value && editLevel === level)
-            }
+            disabled={updateMutation.isPending || !editValue.trim() || (editValue === value && editLevel === level)}
             type="submit"
           >
             {updateMutation.isPending ? (

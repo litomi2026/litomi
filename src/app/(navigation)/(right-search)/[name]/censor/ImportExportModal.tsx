@@ -235,7 +235,7 @@ export default function ImportExportModal({ open, onClose, censorships }: Readon
         ) : (
           <button
             className="w-full px-4 py-3 text-zinc-900 font-semibold bg-brand hover:bg-brand/90 disabled:bg-zinc-700 disabled:text-zinc-500 rounded-lg transition flex items-center justify-center gap-2"
-            disabled={!canAccess || !importText.trim() || addMutation.isPending}
+            disabled={!importText.trim() || addMutation.isPending}
             onClick={handleImport}
             type="button"
           >

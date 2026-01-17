@@ -7,12 +7,14 @@ import { ReactNode, useCallback, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
 import { NotificationFilter } from '@/backend/api/v1/notification/types'
+import AdultVerificationGate from '@/components/AdultVerificationGate'
 import IconBell from '@/components/icons/IconBell'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import { QueryKeys } from '@/constants/query'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useServerAction from '@/hook/useServerAction'
 import useMeQuery from '@/query/useMeQuery'
+import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
 
 import { deleteNotifications, markAsRead } from './action'
 import { SearchParams } from './common'
@@ -41,6 +43,7 @@ export default function NotificationList() {
   const [selectionMode, setSelectionMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
   const { data: me, isLoading: isMeLoading } = useMeQuery()
+  const canAccess = canAccessAdultRestrictedAPIs(me)
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError, isLoading } =
     useNotificationInfiniteQuery()
@@ -211,6 +214,12 @@ export default function NotificationList() {
         </div>
       ) : !me ? (
         <Unauthorized />
+      ) : !canAccess ? (
+        <AdultVerificationGate
+          description="알림을 확인하려면 익명 성인인증이 필요해요"
+          title="성인인증이 필요해요"
+          username={me.name}
+        />
       ) : notifications.length === 0 ? (
         <EmptyState filter={filter} />
       ) : (

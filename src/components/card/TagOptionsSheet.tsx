@@ -114,10 +114,7 @@ export default function TagOptionsSheet({ isOpen, onClose, category, value, labe
         <span>태그 복사</span>
       </BottomSheetItem>
 
-      <BottomSheetItem
-        disabled={!isLoggedIn || !canAccess || toggleCensorshipMutation.isPending}
-        onClick={handleToggleCensorship}
-      >
+      <BottomSheetItem disabled={!isLoggedIn || toggleCensorshipMutation.isPending} onClick={handleToggleCensorship}>
         {toggleCensorshipMutation.isPending ? (
           <Loader2 className="size-5 text-zinc-400 animate-spin" />
         ) : (
