@@ -1,15 +1,15 @@
 'use client'
 
+import type { AppConfig } from '@mlc-ai/web-llm'
+
 import { deleteModelAllInfoInCache, hasModelInCache } from '@mlc-ai/web-llm'
 
-import type { ModelId } from '../storage/webllmModels'
+import type { ModelId } from './webllmModel'
 
-import { buildWebLLMAppConfig } from './webllmAppConfig'
-
-export async function deleteInstalledModel(modelId: ModelId): Promise<void> {
-  await deleteModelAllInfoInCache(modelId, buildWebLLMAppConfig())
+export async function deleteInstalledModel(modelId: ModelId, appConfig: AppConfig): Promise<void> {
+  await deleteModelAllInfoInCache(modelId, appConfig)
 }
 
-export async function hasInstalledModel(modelId: ModelId): Promise<boolean> {
-  return await hasModelInCache(modelId, buildWebLLMAppConfig())
+export async function hasInstalledModel(modelId: ModelId, appConfig: AppConfig): Promise<boolean> {
+  return await hasModelInCache(modelId, appConfig)
 }

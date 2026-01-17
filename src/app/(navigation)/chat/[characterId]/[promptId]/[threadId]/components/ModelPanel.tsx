@@ -7,7 +7,7 @@ import { toast } from 'sonner'
 import CustomSelect from '@/components/ui/CustomSelect'
 import Toggle from '@/components/ui/Toggle'
 
-import type { CustomWebLLMModel, ModelId } from '../../../../storage/webllmModels'
+import type { CustomWebLLMModel, ModelId } from '../../../../lib/webllmModel'
 
 import { normalizeHuggingFaceUrl } from '../../../../util/huggingface'
 import { CustomModelDialog } from './CustomModelDialog'
@@ -15,10 +15,11 @@ import { type InstallState, ModelStatus } from './ModelStatus'
 
 type ModelPreset = {
   label: string
-  description: string
+  descriptionName: string
   modelId: ModelId
   supportsThinking: boolean
   requiredVramGb?: number
+  contextWindowSize?: number
 }
 
 type Props = {
@@ -74,6 +75,7 @@ export function ModelPanel({
   const is30B = modelId === 'Qwen3-30B-A3B-q4f16_1-MLC'
   const isCtxLimitDisabled = isAdvancedDisabled || !is30B
   const ctxLimitSelectId = useId()
+  const metaText = buildMetaText(modelPreset)
 
   function handleCustomModelSubmit(fd: FormData) {
     const label = String(fd.get('label'))
@@ -161,7 +163,10 @@ export function ModelPanel({
                 <span className="sr-only">모델 삭제</span>
               </button>
             </div>
-            <p className="text-xs text-zinc-500">{modelPreset.description}</p>
+            <p className="text-xs text-zinc-500">
+              <span className="wrap-break-word truncate">{modelPreset.descriptionName}</span>
+              {metaText ? <span className="whitespace-nowrap">{` · ${metaText}`}</span> : null}
+            </p>
           </div>
 
           <div className="flex flex-col gap-2">
@@ -280,4 +285,26 @@ export function ModelPanel({
       />
     </section>
   )
+}
+
+function buildMetaText(args: { requiredVramGb?: number; contextWindowSize?: number }): string | null {
+  const parts: string[] = []
+
+  if (typeof args.requiredVramGb === 'number' && Number.isFinite(args.requiredVramGb) && args.requiredVramGb > 0) {
+    parts.push(`VRAM ${args.requiredVramGb.toFixed(1)}GB`)
+  }
+  if (
+    typeof args.contextWindowSize === 'number' &&
+    Number.isFinite(args.contextWindowSize) &&
+    args.contextWindowSize > 0
+  ) {
+    parts.push(`Context ${formatContextWindow(args.contextWindowSize)}`)
+  }
+
+  return parts.length > 0 ? parts.join(' · ') : null
+}
+
+function formatContextWindow(contextWindowSize: number): string {
+  const k = Math.round(contextWindowSize / 1024)
+  return `${k}k`
 }
