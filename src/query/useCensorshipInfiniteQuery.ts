@@ -36,5 +36,6 @@ export default function useCensorshipsInfiniteQuery() {
     enabled: Boolean(userId),
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialPageParam: undefined,
+    meta: { requiresAdult: true, enableGlobalErrorToastForStatuses: [403] },
   })
 }

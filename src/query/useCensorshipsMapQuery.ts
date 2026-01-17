@@ -31,5 +31,6 @@ export default function useCensorshipsMapQuery() {
     queryKey: QueryKeys.censorship,
     queryFn: fetchCensorshipsMap,
     enabled: Boolean(userId),
+    meta: { requiresAdult: true, enableGlobalErrorToastForStatuses: [403] },
   })
 }

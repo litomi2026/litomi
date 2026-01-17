@@ -4,7 +4,6 @@ import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
-import { requireAuth } from '@/backend/middleware/require-auth'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { MAX_CENSORSHIPS_PER_USER } from '@/constants/policy'
@@ -31,7 +30,7 @@ export type PATCHV1CensorshipUpdateResponse = { ids: number[] }
 
 const route = new Hono<Env>()
 
-route.patch('/', requireAuth, zProblemValidator('json', updateSchema), async (c) => {
+route.patch('/', zProblemValidator('json', updateSchema), async (c) => {
   const userId = c.get('userId')!
   const { items } = c.req.valid('json')
 

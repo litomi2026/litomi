@@ -4,7 +4,6 @@ import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
-import { requireAuth } from '@/backend/middleware/require-auth'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { MAX_CENSORSHIPS_PER_USER } from '@/constants/policy'
@@ -20,7 +19,7 @@ export type DELETEV1CensorshipDeleteResponse = { ids: number[] }
 
 const route = new Hono<Env>()
 
-route.delete('/', requireAuth, zProblemValidator('json', deleteSchema), async (c) => {
+route.delete('/', zProblemValidator('json', deleteSchema), async (c) => {
   const userId = c.get('userId')!
   const { ids } = c.req.valid('json')
 
