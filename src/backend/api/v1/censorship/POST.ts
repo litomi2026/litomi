@@ -4,7 +4,6 @@ import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
-import { requireAuth } from '@/backend/middleware/require-auth'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { MAX_CENSORSHIPS_PER_USER } from '@/constants/policy'
@@ -30,7 +29,7 @@ export type POSTV1CensorshipCreateResponse = { ids: number[] }
 
 const route = new Hono<Env>()
 
-route.post('/', requireAuth, zProblemValidator('json', createSchema), async (c) => {
+route.post('/', zProblemValidator('json', createSchema), async (c) => {
   const userId = c.get('userId')!
   const { items } = c.req.valid('json')
 

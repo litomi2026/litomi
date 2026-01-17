@@ -8,6 +8,9 @@ import type { PATCHV1CensorshipUpdateResponse } from '@/backend/api/v1/censorshi
 import { QueryKeys } from '@/constants/query'
 import { CensorshipKey, CensorshipLevel } from '@/database/enum'
 import { env } from '@/env/client'
+import { showAdultVerificationRequiredToast } from '@/lib/toast'
+import useMeQuery from '@/query/useMeQuery'
+import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import { CENSORSHIP_LEVEL_LABELS } from './constants'
@@ -30,6 +33,8 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Read
   const inputId = useId()
   const [editValue, setEditValue] = useState(value)
   const [editLevel, setEditLevel] = useState(level)
+  const { data: me } = useMeQuery()
+  const canAccess = canAccessAdultRestrictedAPIs(me)
 
   const updateMutation = useMutation({
     mutationFn: async (items: { id: number; key: CensorshipKey; value: string; level: CensorshipLevel }[]) => {
@@ -57,6 +62,12 @@ export default function CensorshipEditForm({ censorship, onEditCompleted }: Read
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+
+    if (!canAccess) {
+      showAdultVerificationRequiredToast({ username: me?.name })
+      return
+    }
+
     updateMutation.mutate([{ id, key, value: editValue, level: editLevel }])
   }
 

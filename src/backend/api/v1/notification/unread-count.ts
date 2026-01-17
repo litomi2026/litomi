@@ -3,8 +3,6 @@ import { Hono } from 'hono'
 import 'server-only'
 
 import { Env } from '@/backend'
-import { requireAdult } from '@/backend/middleware/adult'
-import { requireAuth } from '@/backend/middleware/require-auth'
 import { problemResponse } from '@/backend/utils/problem'
 import { db } from '@/database/supabase/drizzle'
 import { notificationTable } from '@/database/supabase/notification'
@@ -14,7 +12,7 @@ export type GETUnreadCountResponse = number
 
 const unreadCountRoutes = new Hono<Env>()
 
-unreadCountRoutes.get('/', requireAuth, requireAdult, async (c) => {
+unreadCountRoutes.get('/', async (c) => {
   const userId = c.get('userId')!
 
   try {

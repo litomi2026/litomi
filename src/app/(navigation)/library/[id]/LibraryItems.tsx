@@ -11,6 +11,7 @@ type Props = {
   library: {
     id: number
     name: string
+    isPublic: boolean
   }
   isOwner: boolean
 }

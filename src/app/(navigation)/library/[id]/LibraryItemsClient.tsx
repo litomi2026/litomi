@@ -8,6 +8,8 @@ import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import useLibraryItemsInfiniteQuery from '@/query/useLibraryItemsInfiniteQuery'
+import useMeQuery from '@/query/useMeQuery'
+import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
 import { View } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
@@ -18,15 +20,19 @@ type Props = {
   library: {
     id: number
     name: string
+    isPublic: boolean
   }
   initialItems: GETLibraryItemsResponse
   isOwner: boolean
 }
 
 export default function LibraryItemsClient({ library, initialItems, isOwner }: Readonly<Props>) {
-  const { id: libraryId, name: libraryName } = library
+  const { id: libraryId, name: libraryName, isPublic } = library
   const { isSelectionMode } = useLibrarySelectionStore()
   const scope = isOwner ? 'me' : 'public'
+  const { data: me } = useMeQuery()
+  const canAccess = canAccessAdultRestrictedAPIs(me)
+  const enabled = scope === 'public' || isPublic || canAccess
 
   const {
     data: itemsData,
@@ -34,7 +40,7 @@ export default function LibraryItemsClient({ library, initialItems, isOwner }: R
     hasNextPage: hasMoreItemsToLoad,
     isFetchingNextPage: isLoadingMoreItems,
     isFetchNextPageError: isFetchMoreItemsError,
-  } = useLibraryItemsInfiniteQuery({ libraryId, initialItems, scope })
+  } = useLibraryItemsInfiniteQuery({ libraryId, initialItems, scope, enabled })
 
   const items = useMemo(() => itemsData?.pages.flatMap((page) => page.items) ?? [], [itemsData])
   const canAutoLoadMore = Boolean(hasMoreItemsToLoad) && !isFetchMoreItemsError

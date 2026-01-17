@@ -42,6 +42,6 @@ function useNotificationUnreadCountQuery() {
     queryKey: QueryKeys.notificationUnreadCount,
     queryFn: fetchUnreadCount,
     enabled: canAccess,
-    meta: { requiresAdult: true },
+    meta: { requiresAdult: true, enableGlobalErrorToastForStatuses: [403] },
   })
 }

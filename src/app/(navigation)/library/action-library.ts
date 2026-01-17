@@ -46,7 +46,7 @@ export async function createLibrary(formData: FormData) {
   const { name, description, color, icon, isPublic } = validation.data
 
   try {
-    const newLibraryId = await db.transaction(async (tx) => {
+    const newLibrary = await db.transaction(async (tx) => {
       // 1. 현재 라이브러리 조회 (FOR UPDATE 락으로 동시성 보장)
       const userLibraries = await tx
         .select({ id: libraryTable.id })
@@ -80,13 +80,13 @@ export async function createLibrary(formData: FormData) {
           icon: icon || null,
           isPublic,
         })
-        .returning({ id: libraryTable.id })
+        .returning({ id: libraryTable.id, createdAt: libraryTable.createdAt })
 
-      return newLibrary.id
+      return newLibrary
     })
 
     revalidatePath('/library', 'layout')
-    return created(newLibraryId)
+    return created({ id: newLibrary.id, createdAt: newLibrary.createdAt.getTime() })
   } catch (error) {
     if (error instanceof Error && error.message === 'LIMIT_REACHED') {
       return forbidden('서재 개수 제한에 도달했어요')

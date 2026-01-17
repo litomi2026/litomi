@@ -12,6 +12,9 @@ import { BLIND_TAG_VALUES } from '@/constants/json'
 import { QueryKeys } from '@/constants/query'
 import { CensorshipKey, CensorshipLevel } from '@/database/enum'
 import { env } from '@/env/client'
+import { showAdultVerificationRequiredToast } from '@/lib/toast'
+import useMeQuery from '@/query/useMeQuery'
+import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import { TYPE_PATTERNS } from './constants'
@@ -28,6 +31,8 @@ export default function CensorshipCreationBar() {
   const inputRef = useRef<HTMLInputElement>(null)
   const suggestionsRef = useRef<HTMLDivElement>(null)
   const queryClient = useQueryClient()
+  const { data: me } = useMeQuery()
+  const canAccess = canAccessAdultRestrictedAPIs(me)
 
   const addMutation = useMutation({
     mutationFn: async (items: { key: CensorshipKey; value: string; level: CensorshipLevel }[]) => {
@@ -68,6 +73,11 @@ export default function CensorshipCreationBar() {
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+
+    if (!canAccess) {
+      showAdultVerificationRequiredToast({ username: me?.name })
+      return
+    }
 
     if (!inputValue?.trim()) {
       toast.warning('검열할 키워드를 입력해 주세요')

@@ -14,6 +14,9 @@ import DialogFooter from '@/components/ui/DialogFooter'
 import DialogHeader from '@/components/ui/DialogHeader'
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
+import { showAdultVerificationRequiredToast } from '@/lib/toast'
+import useMeQuery from '@/query/useMeQuery'
+import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
 import { downloadBlob } from '@/utils/download'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
@@ -44,6 +47,8 @@ export default function ImportExportModal({ open, onClose, censorships }: Readon
   const [exportFormat, setExportFormat] = useState<ExportFormat>('json')
   const [importText, setImportText] = useState('')
   const queryClient = useQueryClient()
+  const { data: me } = useMeQuery()
+  const canAccess = canAccessAdultRestrictedAPIs(me)
 
   const addMutation = useMutation({
     mutationFn: async (items: { key: number; value: string; level: number }[]) => {
@@ -106,6 +111,11 @@ export default function ImportExportModal({ open, onClose, censorships }: Readon
   }
 
   function handleImport() {
+    if (!canAccess) {
+      showAdultVerificationRequiredToast({ username: me?.name })
+      return
+    }
+
     try {
       const data = JSON.parse(importText)
 

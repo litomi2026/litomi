@@ -122,7 +122,6 @@ export default function RootLayout({ children }: Readonly<Props>) {
         <OverlayHost>
           <Toaster
             className="pointer-events-auto"
-            duration={3000}
             mobileOffset={{ top: 'max(1rem,var(--safe-area-top))' }}
             position="top-center"
             richColors

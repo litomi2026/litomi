@@ -8,13 +8,17 @@ import { toast } from 'sonner'
 
 import type { DELETEV1CensorshipDeleteResponse } from '@/backend/api/v1/censorship/DELETE'
 
+import AdultVerificationGate from '@/components/AdultVerificationGate'
 import CustomSelect from '@/components/ui/CustomSelect'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import { QueryKeys } from '@/constants/query'
 import { CensorshipKey } from '@/database/enum'
 import { env } from '@/env/client'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
+import { showAdultVerificationRequiredToast } from '@/lib/toast'
 import useCensorshipsInfiniteQuery from '@/query/useCensorshipInfiniteQuery'
+import useMeQuery from '@/query/useMeQuery'
+import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import CensorshipCard, { CensorshipCardSkeleton } from './CensorshipCard'
@@ -34,6 +38,8 @@ export default function Censorships() {
   const [filterKey, setFilterKey] = useState<CensorshipKey | null>(null)
   const [selectedIds, setSelectedIds] = useState(new Set<number>())
   const [deletingIds, setDeletingIds] = useState(new Set<number>())
+  const { data: me } = useMeQuery()
+  const canAccess = canAccessAdultRestrictedAPIs(me)
 
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage, isFetchNextPageError } =
     useCensorshipsInfiniteQuery()
@@ -78,8 +84,27 @@ export default function Censorships() {
     })
   }, [allCensorships, searchQuery, filterKey])
 
+  if (me != null && !canAccess) {
+    return (
+      <AdultVerificationGate
+        description="검열 설정을 사용하려면 익명 성인인증이 필요해요"
+        title="성인인증이 필요해요"
+        username={me.name}
+      />
+    )
+  }
+
   function handleCloseImportExportModal() {
     setShowImportExportModal(false)
+  }
+
+  function handleOpenImportExportModal() {
+    if (!canAccess) {
+      showAdultVerificationRequiredToast({ username: me?.name })
+      return
+    }
+
+    setShowImportExportModal(true)
   }
 
   function handleToggleSelect(id: number) {
@@ -95,6 +120,10 @@ export default function Censorships() {
   }
 
   function handleBulkDelete() {
+    if (!canAccess) {
+      showAdultVerificationRequiredToast({ username: me?.name })
+      return
+    }
     if (selectedIds.size === 0) {
       return
     }
@@ -116,7 +145,7 @@ export default function Censorships() {
               <button
                 className="px-3 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition border-2 disabled:opacity-50"
                 disabled={isLoading || isDeleting}
-                onClick={() => setShowImportExportModal(true)}
+                onClick={handleOpenImportExportModal}
                 title="가져오기/내보내기"
               >
                 <MoreHorizontal className="size-4 shrink-0" />

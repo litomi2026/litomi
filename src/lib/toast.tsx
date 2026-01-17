@@ -1,5 +1,6 @@
 'use client'
 
+import ms from 'ms'
 import Link from 'next/link'
 import { toast } from 'sonner'
 
@@ -40,7 +41,7 @@ export function showAdultVerificationRequiredToast(options: AdultVerificationToa
         </Link>
       )}
     </div>,
-    { id: ADULT_VERIFICATION_REQUIRED_TOAST_ID },
+    { id: ADULT_VERIFICATION_REQUIRED_TOAST_ID, duration: ms('5 seconds') },
   )
 }
 
@@ -59,6 +60,6 @@ export function showLiboExpansionRequiredToast(message?: string) {
         리보로 확장하기
       </Link>
     </div>,
-    { id: LIBO_EXPANSION_REQUIRED_TOAST_ID },
+    { id: LIBO_EXPANSION_REQUIRED_TOAST_ID, duration: ms('5 seconds') },
   )
 }
