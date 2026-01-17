@@ -58,7 +58,10 @@ routes.get('/', zProblemValidator('param', paramsSchema), zProblemValidator('que
         ? and(eq(libraryTable.id, libraryId), eq(libraryTable.isPublic, true))
         : and(eq(libraryTable.id, libraryId), eq(libraryTable.userId, userId!))
 
-    const [library] = await db.select({ id: libraryTable.id }).from(libraryTable).where(libraryConditions)
+    const [library] = await db
+      .select({ id: libraryTable.id, isPublic: libraryTable.isPublic })
+      .from(libraryTable)
+      .where(libraryConditions)
 
     if (!library) {
       return problemResponse(c, {
@@ -66,6 +69,21 @@ routes.get('/', zProblemValidator('param', paramsSchema), zProblemValidator('que
         detail: '서재를 찾을 수 없어요',
         headers: { 'Cache-Control': privateCacheControl },
       })
+    }
+
+    // NOTE: 비공개 서재(scope=me)는 KR에서 성인 인증이 필요해요.
+    if (scope === 'me' && library.isPublic === false) {
+      const country = c.req.header('CF-IPCountry')?.trim().toUpperCase() ?? 'KR'
+      const isAdult = c.get('isAdult') === true
+
+      if (country === 'KR' && !isAdult) {
+        return problemResponse(c, {
+          status: 403,
+          code: 'adult-verification-required',
+          detail: '성인 인증이 필요해요',
+          headers: { 'Cache-Control': privateCacheControl },
+        })
+      }
     }
 
     const conditions: (SQL | undefined)[] = [eq(libraryItemTable.libraryId, libraryId)]

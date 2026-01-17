@@ -78,6 +78,21 @@ routes.get('/', zProblemValidator('param', paramsSchema), zProblemValidator('que
       })
     }
 
+    // NOTE: 비공개 서재(scope=me)는 KR에서 성인 인증이 필요해요.
+    if (scope === 'me' && library.isPublic === false) {
+      const country = c.req.header('CF-IPCountry')?.trim().toUpperCase() ?? 'KR'
+      const isAdult = c.get('isAdult') === true
+
+      if (country === 'KR' && !isAdult) {
+        return problemResponse(c, {
+          status: 403,
+          code: 'adult-verification-required',
+          detail: '성인 인증이 필요해요',
+          headers: { 'Cache-Control': privateCacheControl },
+        })
+      }
+    }
+
     const result = {
       id: library.id,
       userId: library.userId,

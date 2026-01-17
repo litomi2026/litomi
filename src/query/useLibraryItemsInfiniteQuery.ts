@@ -14,6 +14,7 @@ interface FetchLibraryItemsOptions {
 }
 
 interface Options {
+  enabled?: boolean
   initialItems: GETLibraryItemsResponse
   libraryId: number
   scope: 'me' | 'public'
@@ -32,7 +33,7 @@ export async function fetchLibraryItems({ libraryId, cursor, scope }: FetchLibra
   return data
 }
 
-export default function useLibraryItemsInfiniteQuery({ libraryId, initialItems, scope }: Options) {
+export default function useLibraryItemsInfiniteQuery({ libraryId, initialItems, scope, enabled }: Options) {
   return useInfiniteQuery<GETLibraryItemsResponse>({
     queryKey: QueryKeys.libraryItems(libraryId),
     queryFn: async ({ pageParam }) => fetchLibraryItems({ libraryId, cursor: pageParam as string, scope }),
@@ -42,6 +43,7 @@ export default function useLibraryItemsInfiniteQuery({ libraryId, initialItems, 
       pages: [initialItems],
       pageParams: [null],
     },
-    enabled: Boolean(libraryId),
+    enabled: Boolean(libraryId) && enabled,
+    meta: { requiresAdult: true, enableGlobalErrorToastForStatuses: [403] },
   })
 }
