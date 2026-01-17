@@ -23,7 +23,7 @@ export default function AdultVerificationGate({
           </div>
           <div className="min-w-0">
             <h2 className="text-base font-semibold text-foreground">{title}</h2>
-            <p className="mt-1 text-sm text-zinc-400">{description}</p>
+            <p className="mt-1 text-sm text-zinc-400 whitespace-pre-line">{description}</p>
           </div>
         </div>
 
