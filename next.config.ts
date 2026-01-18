@@ -17,7 +17,7 @@ const cspHeader = `
   script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https:;
   worker-src 'self' blob:;
   style-src 'self' 'unsafe-inline';
-  img-src 'self' blob: data: https:;
+  img-src 'self' blob: data: https: http:;
   object-src 'none';
   connect-src 'self' https: http:;
   frame-src 'self' https:;
@@ -62,7 +62,7 @@ const nextConfig: NextConfig = {
         { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
         {
           key: 'Content-Security-Policy',
-          value: cspHeader.replace(/\s{2,}/g, ' ').trim(),
+          value: isProduction ? cspHeader.replace(/\s{2,}/g, ' ').trim() : '',
         },
       ],
     },

@@ -155,6 +155,22 @@ export default function RewardedAdSection() {
           width={AD_SLOTS.REWARDED_2.width}
           zoneId={AD_SLOTS.REWARDED_2.zoneId}
         />
+        <JuicyAdsSlot
+          adSlotId={AD_SLOTS.REWARDED_BANNER_300X100.id}
+          height={AD_SLOTS.REWARDED_BANNER_300X100.height}
+          onAdClick={handleAdClick}
+          rewardEnabled={rewardEnabled}
+          width={AD_SLOTS.REWARDED_BANNER_300X100.width}
+          zoneId={AD_SLOTS.REWARDED_BANNER_300X100.zoneId}
+        />
+        <JuicyAdsSlot
+          adSlotId={AD_SLOTS.REWARDED_BANNER_300X100_2.id}
+          height={AD_SLOTS.REWARDED_BANNER_300X100_2.height}
+          onAdClick={handleAdClick}
+          rewardEnabled={rewardEnabled}
+          width={AD_SLOTS.REWARDED_BANNER_300X100_2.width}
+          zoneId={AD_SLOTS.REWARDED_BANNER_300X100_2.zoneId}
+        />
       </div>
 
       {/* CLS 방지: 두 상태 모두 렌더링하고 visibility로 전환 */}
@@ -211,17 +227,6 @@ export default function RewardedAdSection() {
           </p>
         </div>
       )}
-
-      <div className="flex justify-center">
-        <JuicyAdsSlot
-          adSlotId={AD_SLOTS.REWARDED_WIDE.id}
-          height={AD_SLOTS.REWARDED_WIDE.height}
-          onAdClick={handleAdClick}
-          rewardEnabled={rewardEnabled}
-          width={AD_SLOTS.REWARDED_WIDE.width}
-          zoneId={AD_SLOTS.REWARDED_WIDE.zoneId}
-        />
-      </div>
 
       <div className="flex flex-wrap justify-center gap-x-4 gap-y-2">
         <AdsterraBanner300x250 adSlotId="rewarded-ad-adsterra" onAdClick={handleAdClick} rewardEnabled={false} />
