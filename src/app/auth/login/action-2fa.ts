@@ -88,7 +88,7 @@ export async function verifyTwoFactorLogin(formData: FormData) {
       if (token.length === 6) {
         try {
           const secret = decryptTOTPSecret(twoFactor.secret)
-          verified = verifyTOTPToken(token, secret)
+          verified = await verifyTOTPToken(token, secret)
         } catch (decryptError) {
           console.error('Failed to decrypt TOTP secret. It might be due to key mismatch:', decryptError)
           return badRequest('2단계 인증에 문제가 있어요. 관리자에게 문의해 주세요.', formData)

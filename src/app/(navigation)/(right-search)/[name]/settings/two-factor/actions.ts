@@ -3,7 +3,7 @@
 import { captureException } from '@sentry/nextjs'
 import { and, eq, gt, isNull, sql } from 'drizzle-orm'
 import ms from 'ms'
-import { authenticator } from 'otplib'
+import { generateSecret, generateURI } from 'otplib'
 import { z } from 'zod'
 
 import { TOTP_ISSUER } from '@/constants'
@@ -47,7 +47,7 @@ export async function regenerateBackupCodes(formData: FormData) {
 
       const secret = decryptTOTPSecret(twoFactor.secret)
 
-      if (!verifyTOTPToken(token, secret)) {
+      if (!(await verifyTOTPToken(token, secret))) {
         return badRequest('잘못된 인증 코드예요')
       }
 
@@ -105,7 +105,7 @@ export async function removeTwoFactor(formData: FormData) {
 
       const secret = decryptTOTPSecret(twoFactor.secret)
 
-      if (!verifyTOTPToken(token, secret)) {
+      if (!(await verifyTOTPToken(token, secret))) {
         return badRequest('잘못된 인증 코드예요')
       }
 
@@ -132,7 +132,7 @@ export async function setupTwoFactor() {
   }
 
   try {
-    const rawSecret = authenticator.generateSecret()
+    const rawSecret = generateSecret()
     const encryptedSecret = encryptTOTPSecret(rawSecret)
     const expiresAt = new Date(Date.now() + ms('5 minutes'))
     const expiresAtString = expiresAt.toISOString()
@@ -181,7 +181,12 @@ export async function setupTwoFactor() {
       return forbidden('2단계 인증을 설정할 수 없어요')
     }
 
-    const keyURI = authenticator.keyuri(loginId, TOTP_ISSUER, rawSecret)
+    const keyURI = generateURI({
+      issuer: TOTP_ISSUER,
+      label: loginId,
+      secret: rawSecret,
+    })
+
     const qrCodeDataURL = await generateQRCode(keyURI)
 
     return ok({
@@ -223,7 +228,7 @@ export async function verifyAndEnableTwoFactor(formData: FormData) {
 
       const secret = decryptTOTPSecret(setup.secret)
 
-      if (!verifyTOTPToken(token, secret)) {
+      if (!(await verifyTOTPToken(token, secret))) {
         return badRequest('잘못된 인증 코드예요')
       }
 

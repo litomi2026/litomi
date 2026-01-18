@@ -60,7 +60,7 @@ route.post('/', requireAuth, zProblemValidator('json', schema), async (c) => {
       }
 
       const secret = decryptTOTPSecret(twoFactor.secret)
-      const isValidToken = verifyTOTPToken(token, secret)
+      const isValidToken = await verifyTOTPToken(token, secret)
 
       if (!isValidToken) {
         return problemResponse(c, { status: 400, detail: '잘못된 인증 코드예요' })
