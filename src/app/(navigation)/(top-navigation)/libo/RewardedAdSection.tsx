@@ -15,8 +15,6 @@ import AdsterraBanner300x250 from '@/components/ads/adsterra/AdsterraBanner300x2
 import AdsterraNativeBanner from '@/components/ads/adsterra/AdsterraNativeBanner'
 import { AD_SLOTS } from '@/components/ads/juicy-ads/constants'
 import JuicyAdsSlot from '@/components/ads/juicy-ads/JuicyAdsSlot'
-import PlugRushBannerRectangle300x250 from '@/components/ads/plugrush/PlugRushBannerRectangle300x250'
-import PlugRushNativeAd from '@/components/ads/plugrush/PlugRushNativeAd'
 import TurnstileWidget from '@/components/TurnstileWidget'
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
@@ -214,14 +212,22 @@ export default function RewardedAdSection() {
         </div>
       )}
 
-      <div className="flex flex-wrap justify-center gap-x-4 gap-y-2">
-        <AdsterraBanner300x250 adSlotId="rewarded-ad-adsterra" onAdClick={handleAdClick} rewardEnabled={false} />
-        <PlugRushBannerRectangle300x250 />
+      <div className="flex justify-center">
+        <JuicyAdsSlot
+          adSlotId={AD_SLOTS.REWARDED_WIDE.id}
+          height={AD_SLOTS.REWARDED_WIDE.height}
+          onAdClick={handleAdClick}
+          rewardEnabled={rewardEnabled}
+          width={AD_SLOTS.REWARDED_WIDE.width}
+          zoneId={AD_SLOTS.REWARDED_WIDE.zoneId}
+        />
       </div>
 
-      {/* NativeBanner */}
+      <div className="flex flex-wrap justify-center gap-x-4 gap-y-2">
+        <AdsterraBanner300x250 adSlotId="rewarded-ad-adsterra" onAdClick={handleAdClick} rewardEnabled={false} />
+      </div>
+
       <AdsterraNativeBanner className="w-full max-w-5xl mx-auto" />
-      <PlugRushNativeAd className="w-full max-w-5xl mx-auto" />
     </div>
   )
 }
