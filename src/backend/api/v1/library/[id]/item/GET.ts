@@ -4,6 +4,7 @@ import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { adultVerificationRequiredResponse, shouldBlockAdultGate } from '@/backend/utils/adult-gate'
 import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
@@ -72,18 +73,8 @@ routes.get('/', zProblemValidator('param', paramsSchema), zProblemValidator('que
     }
 
     // NOTE: 비공개 서재(scope=me)는 KR에서 성인 인증이 필요해요.
-    if (scope === 'me' && library.isPublic === false) {
-      const country = c.req.header('CF-IPCountry')?.trim().toUpperCase() ?? 'KR'
-      const isAdult = c.get('isAdult') === true
-
-      if (country === 'KR' && !isAdult) {
-        return problemResponse(c, {
-          status: 403,
-          code: 'adult-verification-required',
-          detail: '성인 인증이 필요해요',
-          headers: { 'Cache-Control': privateCacheControl },
-        })
-      }
+    if (scope === 'me' && library.isPublic === false && shouldBlockAdultGate(c)) {
+      return adultVerificationRequiredResponse(c)
     }
 
     const conditions: (SQL | undefined)[] = [eq(libraryItemTable.libraryId, libraryId)]
