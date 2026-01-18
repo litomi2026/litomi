@@ -5,6 +5,12 @@ export const AD_SLOTS = {
     width: 300,
     height: 250,
   },
+  REWARDED_WIDE: {
+    id: 'rewarded-ad-wide',
+    zoneId: 1109437,
+    width: 632,
+    height: 190,
+  },
   REWARDED: {
     id: 'rewarded-ad',
     zoneId: 1106872,
