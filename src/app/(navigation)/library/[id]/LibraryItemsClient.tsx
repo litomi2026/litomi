@@ -3,6 +3,7 @@
 import { useMemo } from 'react'
 
 import { GETLibraryItemsResponse } from '@/backend/api/v1/library/[id]/item/GET'
+import AdultVerificationGate from '@/components/AdultVerificationGate'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
@@ -33,6 +34,7 @@ export default function LibraryItemsClient({ library, initialItems, isOwner }: R
   const { data: me } = useMeQuery()
   const canAccess = canAccessAdultRestrictedAPIs(me)
   const enabled = scope === 'public' || isPublic || canAccess
+  const shouldBlockPrivate = scope === 'me' && !isPublic && !canAccess
 
   const {
     data: itemsData,
@@ -43,7 +45,7 @@ export default function LibraryItemsClient({ library, initialItems, isOwner }: R
   } = useLibraryItemsInfiniteQuery({ libraryId, initialItems, scope, enabled })
 
   const items = useMemo(() => itemsData?.pages.flatMap((page) => page.items) ?? [], [itemsData])
-  const canAutoLoadMore = Boolean(hasMoreItemsToLoad) && !isFetchMoreItemsError
+  const canAutoLoadMore = !shouldBlockPrivate && hasMoreItemsToLoad && !isFetchMoreItemsError
 
   const infiniteScrollTriggerRef = useInfiniteScrollObserver({
     hasNextPage: canAutoLoadMore,
@@ -52,6 +54,16 @@ export default function LibraryItemsClient({ library, initialItems, isOwner }: R
   })
 
   const { mangaMap } = useMangaListCachedQuery({ mangaIds: items.map((item) => item.mangaId) })
+
+  if (shouldBlockPrivate) {
+    return (
+      <AdultVerificationGate
+        description={`비공개 서재를 보려면 익명 성인인증이 필요해요.\n또는 서재를 공개로 전환해 주세요.`}
+        title="성인인증이 필요해요"
+        username={me?.name}
+      />
+    )
+  }
 
   if (items.length === 0 && !isLoadingMoreItems) {
     return (
@@ -73,8 +85,8 @@ export default function LibraryItemsClient({ library, initialItems, isOwner }: R
         return <SelectableMangaCard index={index} key={mangaId} manga={manga} />
       })}
       {isLoadingMoreItems && <MangaCardSkeleton />}
-      <div className="w-full p-4" ref={infiniteScrollTriggerRef} />
-      {isFetchMoreItemsError && <LoadMoreRetryButton onRetry={fetchMoreItems} />}
+      {canAutoLoadMore && <div className="w-full p-4" ref={infiniteScrollTriggerRef} />}
+      {!shouldBlockPrivate && isFetchMoreItemsError && <LoadMoreRetryButton onRetry={fetchMoreItems} />}
     </ul>
   )
 }
