@@ -21,6 +21,35 @@ describe('GET /api/v1/library?scope=me', () => {
   })
 })
 
+describe('POST /api/v1/library', () => {
+  describe('인증', () => {
+    test('userId가 없으면 401 에러를 반환한다', async () => {
+      const response = await app.request('/', { method: 'POST' })
+      expect(response.status).toBe(401)
+    })
+  })
+
+  describe('요청 검증', () => {
+    const authedApp = new Hono<Env>()
+    authedApp.use('*', contextStorage())
+    authedApp.use('*', async (c, next) => {
+      c.set('userId', 1)
+      return await next()
+    })
+    authedApp.route('/', libraryRoutes)
+
+    test('유효하지 않은 body를 사용하면 400 에러를 반환한다', async () => {
+      const response = await authedApp.request('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      })
+
+      expect(response.status).toBe(400)
+    })
+  })
+})
+
 describe('GET /api/v1/library', () => {
   const createRequest = (cursor?: string) => {
     const searchParams = new URLSearchParams()

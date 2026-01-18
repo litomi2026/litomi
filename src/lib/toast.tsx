@@ -24,13 +24,13 @@ type AdultVerificationToastOptions = {
   username?: string
 }
 
-export function showAdultVerificationRequiredToast(options: AdultVerificationToastOptions = {}) {
-  const settingsHref = `/@${options.username ?? ''}/settings#adult`
+export function showAdultVerificationRequiredToast({ username }: AdultVerificationToastOptions = {}) {
+  const settingsHref = username ? `/@${username}/settings#adult` : null
 
   toast.warning(
     <div className="flex flex-wrap gap-x-2 gap-y-1 items-center">
       <div>성인인증이 필요해요</div>
-      {options.username && (
+      {settingsHref ? (
         <Link
           className="font-bold text-xs underline underline-offset-2"
           href={settingsHref}
@@ -39,6 +39,10 @@ export function showAdultVerificationRequiredToast(options: AdultVerificationToa
         >
           익명으로 성인인증하기
         </Link>
+      ) : (
+        <LoginPageLink onClick={() => toast.dismiss(ADULT_VERIFICATION_REQUIRED_TOAST_ID)}>
+          먼저 로그인하기
+        </LoginPageLink>
       )}
     </div>,
     { id: ADULT_VERIFICATION_REQUIRED_TOAST_ID, duration: ms('5 seconds') },

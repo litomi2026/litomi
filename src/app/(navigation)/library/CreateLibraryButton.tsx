@@ -1,11 +1,12 @@
 'use client'
 
-import { type InfiniteData, useQueryClient } from '@tanstack/react-query'
+import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Loader2, Plus } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { type FormEvent, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import type { GETV1LibraryListResponse, LibraryListItem } from '@/backend/api/v1/library/GET'
+import type { POSTV1LibraryResponse } from '@/backend/api/v1/library/POST'
 
 import Dialog from '@/components/ui/Dialog'
 import DialogBody from '@/components/ui/DialogBody'
@@ -14,12 +15,13 @@ import DialogHeader from '@/components/ui/DialogHeader'
 import Toggle from '@/components/ui/Toggle'
 import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
-import useServerAction from '@/hook/useServerAction'
-import { showAdultVerificationRequiredToast } from '@/lib/toast'
+import { env } from '@/env/client'
+import { showAdultVerificationRequiredToast, showLoginRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
 import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
+import { fetchWithErrorHandling, type ProblemDetailsError } from '@/utils/react-query-error'
 
-import { createLibrary } from './action-library'
+const { NEXT_PUBLIC_BACKEND_URL } = env
 
 const DEFAULT_COLORS = [
   '#3B82F6', // Blue
@@ -33,6 +35,14 @@ const DEFAULT_COLORS = [
 ]
 
 const DEFAULT_ICONS = ['📚', '❤️', '⭐', '📖', '🔖', '📌', '💾', '🗂️']
+
+type CreateLibraryPayload = {
+  name: string
+  description: string | null
+  color: string | null
+  icon: string | null
+  isPublic: boolean
+}
 
 type Props = {
   className?: string
@@ -48,24 +58,23 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
   const nameInputRef = useRef<HTMLInputElement>(null)
   const canAccess = canAccessAdultRestrictedAPIs(me)
 
-  const [formErrors, dispatchAction, isPending] = useServerAction({
-    action: createLibrary,
-    onSuccess: ({ id: newLibraryId, createdAt }, [formData]) => {
+  const createMutation = useMutation<POSTV1LibraryResponse, ProblemDetailsError, CreateLibraryPayload>({
+    mutationFn: createLibraryApi,
+    onSuccess: ({ id: newLibraryId, createdAt }, variables) => {
       const meId = me?.id
+      if (!meId) {
+        return
+      }
 
       queryClient.setQueryData<LibraryListItem[]>(QueryKeys.libraries, (oldLibraries) => {
-        if (!meId) {
-          return oldLibraries
-        }
-
         const newLibrary: LibraryListItem = {
           id: newLibraryId,
           userId: meId,
-          name: formData.get('name')?.toString() ?? '',
-          description: (formData.get('description')?.toString() ?? '').trim() || null,
-          color: formData.get('color')?.toString() ?? null,
-          icon: formData.get('icon')?.toString() ?? null,
-          isPublic: formData.get('is-public')?.toString() === 'on',
+          name: variables.name,
+          description: variables.description,
+          color: variables.color,
+          icon: variables.icon,
+          isPublic: variables.isPublic,
           createdAt,
           itemCount: 0,
         }
@@ -73,54 +82,59 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
         return oldLibraries ? [...oldLibraries.filter((lib) => lib.id !== newLibrary.id), newLibrary] : [newLibrary]
       })
 
-      if (meId) {
-        queryClient.setQueryData<InfiniteData<GETV1LibraryListResponse, string | null>>(
-          QueryKeys.infiniteLibraryList(meId),
-          (oldData) => {
-            if (!oldData) {
-              return oldData
-            }
+      queryClient.setQueryData<InfiniteData<GETV1LibraryListResponse, string | null>>(
+        QueryKeys.infiniteLibraryList(meId),
+        (oldData) => {
+          if (!oldData) {
+            return oldData
+          }
 
-            const newItem = {
-              id: newLibraryId,
-              userId: meId,
-              name: formData.get('name')?.toString() ?? '',
-              description: (formData.get('description')?.toString() ?? '').trim() || null,
-              color: formData.get('color')?.toString() ?? null,
-              icon: formData.get('icon')?.toString() ?? null,
-              isPublic: formData.get('is-public')?.toString() === 'on',
-              itemCount: 0,
-              createdAt,
-            }
+          const newItem = {
+            id: newLibraryId,
+            userId: meId,
+            name: variables.name,
+            description: variables.description,
+            color: variables.color,
+            icon: variables.icon,
+            isPublic: variables.isPublic,
+            itemCount: 0,
+            createdAt,
+          }
 
-            const [firstPage, ...restPages] = oldData.pages
+          const [firstPage, ...restPages] = oldData.pages
+          if (!firstPage) {
+            return oldData
+          }
 
-            if (!firstPage) {
-              return oldData
-            }
+          const nextFirstPage = {
+            ...firstPage,
+            libraries: [newItem, ...firstPage.libraries.filter((lib) => lib.id !== newItem.id)],
+          }
 
-            const nextFirstPage = {
-              ...firstPage,
-              libraries: [newItem, ...firstPage.libraries.filter((lib) => lib.id !== newItem.id)],
-            }
-
-            return { ...oldData, pages: [nextFirstPage, ...restPages] }
-          },
-        )
-      }
+          return { ...oldData, pages: [nextFirstPage, ...restPages] }
+        },
+      )
 
       queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryListBase })
-
       toast.success('서재를 생성했어요')
       handleClose()
     },
   })
 
+  const isPending = createMutation.isPending
+
   function handleClose() {
     setIsModalOpen(false)
     setSelectedColor(DEFAULT_COLORS[0])
     setSelectedIcon(DEFAULT_ICONS[0])
-    setIsPublic(false)
+  }
+
+  function handleOpen() {
+    setIsModalOpen(true)
+
+    if (!me?.id) {
+      showLoginRequiredToast()
+    }
   }
 
   function handleTogglePublic(next: boolean) {
@@ -130,6 +144,31 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
     }
 
     setIsPublic(next)
+  }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+
+    if (!event.currentTarget.reportValidity()) {
+      return
+    }
+
+    if (!me?.id) {
+      showLoginRequiredToast()
+      return
+    }
+
+    const formData = new FormData(event.currentTarget)
+    const name = formData.get('name')?.toString() ?? ''
+    const description = (formData.get('description')?.toString() ?? '').trim() || null
+
+    createMutation.mutate({
+      name,
+      description,
+      color: selectedColor ?? null,
+      icon: selectedIcon ?? null,
+      isPublic,
+    })
   }
 
   useEffect(() => {
@@ -143,7 +182,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
       <button
         className={`flex w-full items-center gap-3 p-3 bg-zinc-800/50 hover:bg-zinc-700/50 rounded-lg transition
           sm:rounded sm:p-1.5 sm:hover:bg-zinc-800 sm:w-auto ${className}`}
-        onClick={() => setIsModalOpen(true)}
+        onClick={handleOpen}
         title="서재 만들기"
         type="button"
       >
@@ -151,7 +190,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
         <span className="font-medium sm:hidden">서재 만들기</span>
       </button>
       <Dialog ariaLabel="서재 만들기" onClose={handleClose} open={isModalOpen}>
-        <form action={dispatchAction} className="flex flex-1 flex-col min-h-0">
+        <form className="flex flex-1 flex-col min-h-0" onSubmit={handleSubmit}>
           <DialogHeader onClose={handleClose} title="서재 만들기" />
           <DialogBody className="overflow-x-hidden flex flex-col gap-4 relative">
             <div className="flex items-center justify-center p-4">
@@ -217,9 +256,6 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
                 required
                 type="text"
               />
-              {formErrors && 'name' in formErrors && (
-                <p className="text-red-500 text-sm mt-1">{String(formErrors.name)}</p>
-              )}
             </div>
 
             {/* Description Input */}
@@ -236,9 +272,6 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
                 placeholder="달달한 순애만"
                 rows={3}
               />
-              {formErrors && 'description' in formErrors && (
-                <p className="text-red-500 text-sm mt-1">{String(formErrors.description)}</p>
-              )}
             </div>
 
             {/* Public Toggle */}
@@ -292,4 +325,15 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
       </Dialog>
     </>
   )
+}
+
+async function createLibraryApi(payload: CreateLibraryPayload): Promise<POSTV1LibraryResponse> {
+  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/library`
+  const { data } = await fetchWithErrorHandling<POSTV1LibraryResponse>(url, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  return data
 }

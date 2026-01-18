@@ -79,7 +79,6 @@ routes.get('/', zProblemValidator('param', paramsSchema), zProblemValidator('que
       })
     }
 
-    // NOTE: 비공개 서재(scope=me)는 KR에서 성인 인증이 필요해요.
     if (scope === 'me' && library.isPublic === false && shouldBlockAdultGate(c)) {
       return adultVerificationRequiredResponse(c)
     }
