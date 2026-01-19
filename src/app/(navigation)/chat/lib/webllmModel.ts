@@ -8,7 +8,7 @@ export type CustomWebLLMModel = {
   modelId: string
   modelUrl: string
   modelLibUrl: string
-  requiredVramGb?: number
+  requiredVramMb?: number
   contextWindowSize?: number
   supportsThinking: boolean
 }
@@ -19,7 +19,7 @@ export type ResolvedPreset = {
   label: string
   modelId: ModelId
   supportsThinking: boolean
-  requiredVramGb?: number
+  requiredVramMb?: number
   contextWindowSize?: number
 }
 
@@ -28,7 +28,7 @@ export type SupportedModelId = (typeof MODEL_PRESET_IDS)[number]
 type BuiltinCustomModelDef = {
   modelUrl: string
   modelLibUrl: string
-  requiredVramGb: number
+  requiredVramMb: number
   contextWindowSize: number
 }
 
@@ -66,15 +66,16 @@ const MODEL_PRESET_META = {
 export const BUILTIN_CUSTOM_MODELS_BY_ID: Record<ModelId, BuiltinCustomModelDef> = {
   'Qwen3-14B-q4f16_1-MLC': {
     modelUrl: 'https://huggingface.co/mlc-ai/Qwen3-14B-q4f16_1-MLC',
-    modelLibUrl: '',
-    requiredVramGb: 8,
+    modelLibUrl:
+      'https://huggingface.co/gwak2837/webllm-model-libs/resolve/main/Qwen3-14B-q4f16_1-ctx40k_cs2k-webgpu.wasm',
+    requiredVramMb: 7923,
     contextWindowSize: 40_960,
   },
   'Qwen3-30B-A3B-q4f16_1-MLC': {
     modelUrl: 'https://huggingface.co/mlc-ai/Qwen3-30B-A3B-q4f16_1-MLC',
     modelLibUrl:
       'https://huggingface.co/gwak2837/webllm-model-libs/resolve/main/Qwen3-30B-A3B-q4f16_1-ctx40k_cs2k-webgpu.wasm',
-    requiredVramGb: 16,
+    requiredVramMb: 16397,
     contextWindowSize: 40_960,
   },
 }
@@ -87,14 +88,14 @@ function resolveModelPreset(modelId: SupportedModelId): ResolvedPreset {
   const record = prebuiltAppConfig.model_list.find((m) => m.model_id === modelId)
 
   if (record) {
-    const vramGb = record.vram_required_MB ? record.vram_required_MB / 1024 : null
+    const vramMb = record.vram_required_MB
     const contextWindowSize = record.overrides?.context_window_size
 
     return {
       label: meta.label,
       modelId,
       supportsThinking: meta.supportsThinking,
-      ...(vramGb && { requiredVramGb: vramGb }),
+      ...(vramMb && { requiredVramMb: vramMb }),
       ...(contextWindowSize && { contextWindowSize }),
     }
   }
@@ -105,7 +106,7 @@ function resolveModelPreset(modelId: SupportedModelId): ResolvedPreset {
     label: meta.label,
     modelId,
     supportsThinking: meta.supportsThinking,
-    requiredVramGb: builtin.requiredVramGb,
+    requiredVramMb: builtin.requiredVramMb,
     contextWindowSize: builtin.contextWindowSize,
   }
 }

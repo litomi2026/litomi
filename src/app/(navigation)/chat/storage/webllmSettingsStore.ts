@@ -34,14 +34,14 @@ function normalizeCustomModel(model: CustomWebLLMModel): CustomWebLLMModel {
     modelId: model.modelId.trim(),
     modelUrl: model.modelUrl.trim(),
     modelLibUrl: model.modelLibUrl.trim(),
-    requiredVramGb: typeof model.requiredVramGb === 'number' ? model.requiredVramGb : undefined,
+    requiredVramMb: model.requiredVramMb,
   }
 }
 
 function sortCustomModels(models: readonly CustomWebLLMModel[]): CustomWebLLMModel[] {
   return [...models].sort((a, b) => {
-    const av = typeof a.requiredVramGb === 'number' ? a.requiredVramGb : Number.POSITIVE_INFINITY
-    const bv = typeof b.requiredVramGb === 'number' ? b.requiredVramGb : Number.POSITIVE_INFINITY
+    const av = a.requiredVramMb ?? Number.POSITIVE_INFINITY
+    const bv = b.requiredVramMb ?? Number.POSITIVE_INFINITY
     if (av !== bv) return av - bv
     return a.label.localeCompare(b.label)
   })
@@ -78,11 +78,8 @@ export const useWebLLMSettingsStore = create<WebLLMSettingsStore>()(
         if (!next.modelLibUrl) {
           return { ok: false, message: 'model_lib URL을 입력해 주세요' }
         }
-        if (
-          typeof next.requiredVramGb === 'number' &&
-          (!Number.isFinite(next.requiredVramGb) || next.requiredVramGb <= 0)
-        ) {
-          return { ok: false, message: 'VRAM(GB)을 올바르게 입력해 주세요' }
+        if (!next.requiredVramMb) {
+          return { ok: false, message: 'VRAM(MB)을 올바르게 입력해 주세요' }
         }
 
         const state = get()
