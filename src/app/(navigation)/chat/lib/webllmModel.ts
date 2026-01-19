@@ -38,28 +38,23 @@ type PresetMeta = {
 }
 
 export const MODEL_PRESET_IDS = [
-  'Qwen3-0.6B-q4f16_1-MLC',
-  'Qwen3-1.7B-q4f16_1-MLC',
   'Qwen3-4B-q4f16_1-MLC',
   'Qwen3-8B-q4f16_1-MLC',
+  'Qwen3-14B-q4f16_1-MLC',
   'Qwen3-30B-A3B-q4f16_1-MLC',
 ] as const
 
 const MODEL_PRESET_META = {
-  'Qwen3-0.6B-q4f16_1-MLC': {
-    label: '0.6B · 핸드폰',
-    supportsThinking: true,
-  },
-  'Qwen3-1.7B-q4f16_1-MLC': {
-    label: '1.7B · 태블릿',
-    supportsThinking: true,
-  },
   'Qwen3-4B-q4f16_1-MLC': {
-    label: '4B · 노트북',
+    label: '4B · 태블릿',
     supportsThinking: true,
   },
   'Qwen3-8B-q4f16_1-MLC': {
-    label: '8B · 데스크탑',
+    label: '8B · 노트북',
+    supportsThinking: true,
+  },
+  'Qwen3-14B-q4f16_1-MLC': {
+    label: '14B · 데스크탑',
     supportsThinking: true,
   },
   'Qwen3-30B-A3B-q4f16_1-MLC': {
@@ -69,6 +64,12 @@ const MODEL_PRESET_META = {
 } satisfies Record<SupportedModelId, PresetMeta>
 
 export const BUILTIN_CUSTOM_MODELS_BY_ID: Record<ModelId, BuiltinCustomModelDef> = {
+  'Qwen3-14B-q4f16_1-MLC': {
+    modelUrl: 'https://huggingface.co/mlc-ai/Qwen3-14B-q4f16_1-MLC',
+    modelLibUrl: '',
+    requiredVramGb: 8,
+    contextWindowSize: 40_960,
+  },
   'Qwen3-30B-A3B-q4f16_1-MLC': {
     modelUrl: 'https://huggingface.co/mlc-ai/Qwen3-30B-A3B-q4f16_1-MLC',
     modelLibUrl:

@@ -7,19 +7,21 @@ import { LocalStorageKey } from '@/constants/storage'
 
 import { type CustomWebLLMModel, DEFAULT_MODEL_ID, type ModelId } from '../lib/webllmModel'
 
+export type ContextWindowPercent = 10 | 100 | 25 | 50
+
 type WebLLMSettingsStore = {
   isAutoModelEnabled: boolean
   manualModelId: ModelId
   isThinkingEnabled: boolean
   showThinkingTrace: boolean
-  dev30BCtxLimit: number | null
+  contextWindowPercent: ContextWindowPercent
   customModels: CustomWebLLMModel[]
 
   setIsAutoModelEnabled: (enabled: boolean) => void
   setModelId: (modelId: ModelId) => void
   setIsThinkingEnabled: (enabled: boolean) => void
   setShowThinkingTrace: (enabled: boolean) => void
-  setDev30BCtxLimit: (limit: number | null) => void
+  setContextWindowPercent: (percent: ContextWindowPercent) => void
   addCustomModel: (model: CustomWebLLMModel) => { ok: false; message: string } | { ok: true }
   removeCustomModel: (modelId: string) => void
 }
@@ -52,14 +54,14 @@ export const useWebLLMSettingsStore = create<WebLLMSettingsStore>()(
       manualModelId: DEFAULT_MODEL_ID,
       isThinkingEnabled: false,
       showThinkingTrace: false,
-      dev30BCtxLimit: null,
+      contextWindowPercent: 100,
       customModels: [],
 
       setIsAutoModelEnabled: (enabled: boolean) => set({ isAutoModelEnabled: enabled }),
       setModelId: (modelId: ModelId) => set({ isAutoModelEnabled: false, manualModelId: modelId }),
       setIsThinkingEnabled: (enabled: boolean) => set({ isThinkingEnabled: enabled }),
       setShowThinkingTrace: (enabled: boolean) => set({ showThinkingTrace: enabled }),
-      setDev30BCtxLimit: (limit: number | null) => set({ dev30BCtxLimit: limit }),
+      setContextWindowPercent: (percent: ContextWindowPercent) => set({ contextWindowPercent: percent }),
 
       addCustomModel: (model: CustomWebLLMModel) => {
         const next = normalizeCustomModel(model)

@@ -33,7 +33,7 @@ function formatEnglishNumberOptimized(num: number): string {
         : value >= 10
           ? Math.floor(value * 10 + EPSILON) / 10
           : Math.floor(value * 100 + EPSILON) / 100
-    return numberFormatters.en.format(formatted) + 'K'
+    return numberFormatters.en.format(formatted) + 'k'
   }
 
   if (num < BILLION) {
