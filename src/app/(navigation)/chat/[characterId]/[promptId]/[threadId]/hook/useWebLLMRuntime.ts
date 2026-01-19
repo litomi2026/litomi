@@ -24,18 +24,18 @@ type SelectableModel = {
   descriptionName: string
   modelId: ModelId
   supportsThinking: boolean
-  requiredVramGb?: number
+  requiredVramMb?: number
   contextWindowSize?: number
 }
 
 export function useWebLLMRuntime() {
   const {
     customModels,
-    dev30BCtxLimit,
+    contextWindowPercent,
     isAutoModelEnabled,
     isThinkingEnabled,
     manualModelId,
-    setDev30BCtxLimit,
+    setContextWindowPercent,
     setIsAutoModelEnabled,
     setIsThinkingEnabled,
     setModelId,
@@ -46,7 +46,7 @@ export function useWebLLMRuntime() {
   } = useWebLLMSettingsStore()
 
   const recommendablePresets = RESOLVED_MODEL_PRESETS.flatMap((p) =>
-    typeof p.requiredVramGb === 'number' ? [{ modelId: p.modelId, requiredVramGb: p.requiredVramGb }] : [],
+    p.requiredVramMb ? [{ modelId: p.modelId, requiredVramGb: p.requiredVramMb / 1024 }] : [],
   )
 
   const recommendedModelId: ModelId =
@@ -61,14 +61,14 @@ export function useWebLLMRuntime() {
         modelId: m.modelId,
         modelUrl: m.modelUrl,
         modelLibUrl: m.modelLibUrl,
-        requiredVramGb: m.requiredVramGb,
+        requiredVramMb: m.requiredVramMb,
         contextWindowSize: m.contextWindowSize,
       })),
     [customModels],
   )
   const appConfig = useMemo(
-    () => buildWebLLMAppConfig({ customModels: engineCustomModels, dev30BCtxLimit }),
-    [engineCustomModels, dev30BCtxLimit],
+    () => buildWebLLMAppConfig({ customModels: engineCustomModels, contextWindowPercent }),
+    [engineCustomModels, contextWindowPercent],
   )
   const model = appConfig.model_list.find((m) => m.model_id === modelId)
   const modelContextWindowSize = model?.overrides?.context_window_size
@@ -79,7 +79,7 @@ export function useWebLLMRuntime() {
       descriptionName: p.modelId.replaceAll('-', ' '),
       modelId: p.modelId,
       supportsThinking: p.supportsThinking,
-      requiredVramGb: p.requiredVramGb,
+      requiredVramMb: p.requiredVramMb,
       contextWindowSize: p.contextWindowSize,
     })),
     ...customModels.map((m) => ({
@@ -87,7 +87,7 @@ export function useWebLLMRuntime() {
       descriptionName: m.description || '커스텀 모델이에요',
       modelId: m.modelId,
       supportsThinking: m.supportsThinking,
-      requiredVramGb: m.requiredVramGb,
+      requiredVramMb: m.requiredVramMb,
       contextWindowSize: m.contextWindowSize,
     })),
   ]
@@ -191,7 +191,7 @@ export function useWebLLMRuntime() {
     installState,
     interruptGenerate,
     isAutoModelEnabled,
-    dev30BCtxLimit,
+    contextWindowPercent,
     isThinkingEnabled,
     modelId,
     modelContextWindowSize,
@@ -203,7 +203,7 @@ export function useWebLLMRuntime() {
     addCustomModel,
     customModels,
     setIsAutoModelEnabled,
-    setDev30BCtxLimit,
+    setContextWindowPercent,
     setIsThinkingEnabled,
     setModelId,
     setShowThinkingTrace,

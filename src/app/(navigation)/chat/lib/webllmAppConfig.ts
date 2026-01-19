@@ -4,37 +4,73 @@ import { type AppConfig, type ModelRecord, prebuiltAppConfig } from '@mlc-ai/web
 
 import { BUILTIN_CUSTOM_MODELS_BY_ID, MODEL_PRESET_IDS } from './webllmModel'
 
-const MODEL_ID_30B = 'Qwen3-30B-A3B-q4f16_1-MLC'
+export type ContextWindowPercent = 10 | 100 | 25 | 50
 
 export type EngineModelInput = {
   modelId: string
   modelUrl: string
   modelLibUrl: string
-  requiredVramGb?: number
+  requiredVramMb?: number
   contextWindowSize?: number
 }
 
 type BuildWebLLMAppConfigArgs = {
   customModels: readonly EngineModelInput[]
-  dev30BCtxLimit: number | null
+  contextWindowPercent: ContextWindowPercent
 }
 
-export function buildWebLLMAppConfig({ customModels, dev30BCtxLimit }: BuildWebLLMAppConfigArgs): AppConfig {
+export function buildWebLLMAppConfig({ customModels, contextWindowPercent }: BuildWebLLMAppConfigArgs): AppConfig {
   const builtins: EngineModelInput[] = Object.entries(BUILTIN_CUSTOM_MODELS_BY_ID).map(([modelId, m]) => ({
     modelId,
     modelUrl: m.modelUrl,
     modelLibUrl: m.modelLibUrl,
-    requiredVramGb: m.requiredVramGb,
+    requiredVramMb: m.requiredVramMb,
     contextWindowSize: m.contextWindowSize,
   }))
 
   const merged = mergeModels([...builtins, ...customModels])
   const customIds = new Set(merged.map((m) => m.modelId))
   const presetIds = new Set<string>(MODEL_PRESET_IDS)
-  const prebuilt = prebuiltAppConfig.model_list.filter((m) => presetIds.has(m.model_id) && !customIds.has(m.model_id))
-  const custom = merged.map((m) => toModelRecord(m, dev30BCtxLimit))
+  const custom = merged.map((m) => toModelRecord(m, contextWindowPercent))
+
+  const prebuilt = prebuiltAppConfig.model_list
+    .filter((m) => presetIds.has(m.model_id) && !customIds.has(m.model_id))
+    .map((m) => applyContextWindowPercentToModelRecord(m, contextWindowPercent))
 
   return { ...prebuiltAppConfig, model_list: [...prebuilt, ...custom] }
+}
+
+export function computeContextWindowSizeFromPercent(
+  maxContextWindowSize: number,
+  contextWindowPercent: ContextWindowPercent,
+): number {
+  if (!Number.isFinite(maxContextWindowSize) || maxContextWindowSize <= 0) return 4096
+  if (contextWindowPercent === 100) return Math.floor(maxContextWindowSize)
+
+  const raw = Math.floor((maxContextWindowSize * contextWindowPercent) / 100)
+  const quant = 256
+  const rounded = Math.max(2048, Math.floor(raw / quant) * quant)
+  return Math.min(Math.floor(maxContextWindowSize), rounded)
+}
+
+function applyContextWindowPercentToModelRecord(
+  record: ModelRecord,
+  contextWindowPercent: ContextWindowPercent,
+): ModelRecord {
+  const maxContextWindowSize = record.overrides?.context_window_size
+  if (typeof maxContextWindowSize !== 'number' || !Number.isFinite(maxContextWindowSize) || maxContextWindowSize <= 0) {
+    return record
+  }
+
+  const next = computeContextWindowSizeFromPercent(maxContextWindowSize, contextWindowPercent)
+
+  return {
+    ...record,
+    overrides: {
+      ...record.overrides,
+      context_window_size: next,
+    },
+  }
 }
 
 function mergeModels(models: readonly EngineModelInput[]): EngineModelInput[] {
@@ -45,9 +81,13 @@ function mergeModels(models: readonly EngineModelInput[]): EngineModelInput[] {
   return Array.from(map.values())
 }
 
-function toModelRecord(model: EngineModelInput, dev30BCtxLimit: number | null): ModelRecord {
-  const vramMb = model.requiredVramGb ? model.requiredVramGb * 1024 : null
-  const contextWindowSize = dev30BCtxLimit && model.modelId === MODEL_ID_30B ? dev30BCtxLimit : model.contextWindowSize
+function toModelRecord(model: EngineModelInput, contextWindowPercent: ContextWindowPercent): ModelRecord {
+  const vramMb = typeof model.requiredVramMb === 'number' ? model.requiredVramMb : null
+  const maxContextWindowSize = model.contextWindowSize
+  const contextWindowSize =
+    typeof maxContextWindowSize === 'number'
+      ? computeContextWindowSizeFromPercent(maxContextWindowSize, contextWindowPercent)
+      : null
 
   return {
     model: model.modelUrl,

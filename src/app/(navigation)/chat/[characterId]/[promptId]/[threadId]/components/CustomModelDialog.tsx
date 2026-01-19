@@ -49,15 +49,15 @@ export function CustomModelDialog({ open, onClose, onSubmit }: CustomModelDialog
             </div>
             <div className="flex flex-col gap-1">
               <label className="text-xs text-zinc-400 font-medium" htmlFor="custom-model-vram">
-                VRAM(GB) (선택)
+                VRAM(MB) (선택)
               </label>
               <input
                 className="bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm tabular-nums"
                 id="custom-model-vram"
                 min={0}
-                name="required-vram-gb"
-                placeholder="예: 12"
-                step={0.1}
+                name="required-vram-mb"
+                placeholder="예: 8192"
+                step={1}
                 type="number"
               />
             </div>

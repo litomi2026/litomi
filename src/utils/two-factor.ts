@@ -1,5 +1,5 @@
 import crypto from 'crypto'
-import { authenticator } from 'otplib'
+import { verify } from 'otplib'
 import QRCode from 'qrcode'
 
 import { TOTP_ISSUER } from '@/constants'
@@ -72,10 +72,10 @@ export async function generateQRCode(keyURI: string): Promise<string> {
 /**
  * Verify a TOTP token
  */
-export function verifyTOTPToken(token: string, secret: string): boolean {
+export async function verifyTOTPToken(token: string, secret: string): Promise<boolean> {
   try {
-    authenticator.options = { window: 1 }
-    return authenticator.verify({ secret, token })
+    const result = await verify({ secret, token, epochTolerance: 30 })
+    return result.valid
   } catch {
     return false
   }

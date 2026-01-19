@@ -6,9 +6,13 @@ import { toast } from 'sonner'
 
 import CustomSelect from '@/components/ui/CustomSelect'
 import Toggle from '@/components/ui/Toggle'
+import { formatBytes } from '@/utils/format/byte'
+import { formatNumber } from '@/utils/format/number'
 
 import type { CustomWebLLMModel, ModelId } from '../../../../lib/webllmModel'
+import type { ContextWindowPercent } from '../../../../storage/webllmSettingsStore'
 
+import { computeContextWindowSizeFromPercent } from '../../../../lib/webllmAppConfig'
 import { normalizeHuggingFaceUrl } from '../../../../util/huggingface'
 import { CustomModelDialog } from './CustomModelDialog'
 import { type InstallState, ModelStatus } from './ModelStatus'
@@ -18,14 +22,14 @@ type ModelPreset = {
   descriptionName: string
   modelId: ModelId
   supportsThinking: boolean
-  requiredVramGb?: number
+  requiredVramMb?: number
   contextWindowSize?: number
 }
 
 type Props = {
   installState: InstallState
   isAutoModelEnabled: boolean
-  dev30BCtxLimit: number | null
+  contextWindowPercent: ContextWindowPercent
   isLocked: boolean
   isThinkingEnabled: boolean
   modelId: ModelId
@@ -34,7 +38,7 @@ type Props = {
   showThinkingTrace: boolean
   customModels: readonly CustomWebLLMModel[]
   onChangeAutoModelEnabled: (enabled: boolean) => void
-  onChangeDev30BCtxLimit: (limit: number | null) => void
+  onChangeContextWindowPercent: (percent: ContextWindowPercent) => void
   onChangeModelId: (modelId: ModelId) => void
   onChangeThinkingEnabled: (enabled: boolean) => void
   onChangeThinkingTraceVisible: (enabled: boolean) => void
@@ -48,7 +52,7 @@ type Props = {
 export function ModelPanel({
   installState,
   isAutoModelEnabled,
-  dev30BCtxLimit,
+  contextWindowPercent,
   isLocked,
   isThinkingEnabled,
   modelId,
@@ -57,7 +61,7 @@ export function ModelPanel({
   showThinkingTrace,
   customModels,
   onChangeAutoModelEnabled,
-  onChangeDev30BCtxLimit,
+  onChangeContextWindowPercent,
   onChangeModelId,
   onChangeThinkingEnabled,
   onChangeThinkingTraceVisible,
@@ -72,9 +76,9 @@ export function ModelPanel({
   const isAdvancedDisabled = isLocked || installState.kind === 'installing'
   const isThinkingDisabled = isAdvancedDisabled || !modelPreset.supportsThinking
   const isThinkingTraceDisabled = isAdvancedDisabled || !isThinkingEnabled || !modelPreset.supportsThinking
-  const is30B = modelId === 'Qwen3-30B-A3B-q4f16_1-MLC'
-  const isCtxLimitDisabled = isAdvancedDisabled || !is30B
-  const ctxLimitSelectId = useId()
+  const maxContextWindowSize = modelPreset.contextWindowSize
+  const isContextPercentDisabled = isAdvancedDisabled || typeof maxContextWindowSize !== 'number'
+  const contextPercentSelectId = useId()
   const metaText = buildMetaText(modelPreset)
 
   function handleCustomModelSubmit(fd: FormData) {
@@ -83,8 +87,8 @@ export function ModelPanel({
     const description = String(fd.get('description'))
     const modelUrl = normalizeHuggingFaceUrl(String(fd.get('model-url')))
     const modelLibUrl = String(fd.get('model-lib-url')).trim()
-    const requiredVramGbRaw = String(fd.get('required-vram-gb')).trim()
-    const requiredVramGb = requiredVramGbRaw ? Number(requiredVramGbRaw) : undefined
+    const requiredVramMbRaw = String(fd.get('required-vram-mb')).trim()
+    const requiredVramMb = requiredVramMbRaw ? Number(requiredVramMbRaw) : undefined
     const supportsThinking = fd.get('supports-thinking') === 'on'
 
     const result = onAddCustomModel({
@@ -93,7 +97,7 @@ export function ModelPanel({
       modelId,
       modelUrl,
       modelLibUrl,
-      requiredVramGb,
+      requiredVramMb,
       supportsThinking,
     })
 
@@ -163,9 +167,9 @@ export function ModelPanel({
                 <span className="sr-only">모델 삭제</span>
               </button>
             </div>
-            <p className="text-xs text-zinc-500">
-              <span className="wrap-break-word truncate">{modelPreset.descriptionName}</span>
-              {metaText ? <span className="whitespace-nowrap">{` · ${metaText}`}</span> : null}
+            <p className="flex min-w-0 text-xs text-zinc-500">
+              <span className="min-w-0 truncate">{modelPreset.descriptionName}</span>
+              {metaText && <span className="shrink-0 whitespace-nowrap">{` · ${metaText}`}</span>}
             </p>
           </div>
 
@@ -200,37 +204,24 @@ export function ModelPanel({
 
           <div className="flex flex-col gap-2">
             <label
-              aria-disabled={isCtxLimitDisabled}
+              aria-disabled={isContextPercentDisabled}
               className="flex items-center justify-between gap-3 cursor-pointer select-none transition aria-disabled:cursor-not-allowed aria-disabled:opacity-60"
             >
-              <div className="flex flex-col">
-                <p className="text-xs text-zinc-400 font-medium">30B 컨텍스트 제한(실험)</p>
-                <p className="text-xs text-zinc-500">느려지는 현상을 줄이기 위한 실험 옵션이에요</p>
-              </div>
+              <p className="text-xs text-zinc-400 font-medium">컨텍스트 크기</p>
             </label>
             <div className="flex items-center gap-2">
-              <label className="sr-only" htmlFor={ctxLimitSelectId}>
-                30B 컨텍스트 제한
+              <label className="sr-only" htmlFor={contextPercentSelectId}>
+                컨텍스트 크기
               </label>
               <CustomSelect
                 buttonClassName="text-sm tabular-nums"
                 className="flex-1 min-w-0"
-                disabled={isCtxLimitDisabled}
-                id={ctxLimitSelectId}
-                name="dev-30b-ctx-limit"
-                onChange={(value) => {
-                  if (value === '8192') return onChangeDev30BCtxLimit(8192)
-                  if (value === '12288') return onChangeDev30BCtxLimit(12288)
-                  if (value === '16384') return onChangeDev30BCtxLimit(16384)
-                  onChangeDev30BCtxLimit(null)
-                }}
-                options={[
-                  { value: '', label: '기본값(40k)' },
-                  { value: '8192', label: '8k' },
-                  { value: '12288', label: '12k' },
-                  { value: '16384', label: '16k' },
-                ]}
-                value={dev30BCtxLimit ? String(dev30BCtxLimit) : ''}
+                disabled={isContextPercentDisabled}
+                id={contextPercentSelectId}
+                name="context-window-percent"
+                onChange={(value) => onChangeContextWindowPercent(Number.parseInt(value, 10) as ContextWindowPercent)}
+                options={buildContextPercentOptions(maxContextWindowSize)}
+                value={String(contextWindowPercent)}
               />
             </div>
           </div>
@@ -287,24 +278,37 @@ export function ModelPanel({
   )
 }
 
-function buildMetaText(args: { requiredVramGb?: number; contextWindowSize?: number }): string | null {
+function buildContextPercentOptions(maxContextWindowSize?: number) {
+  if (typeof maxContextWindowSize !== 'number') {
+    return [{ value: '100', label: '100%' }]
+  }
+
+  const percents: readonly ContextWindowPercent[] = [100, 50, 25, 10]
+  const seen = new Set<number>()
+  const filteredRev: Array<{ value: string; label: string }> = []
+
+  for (let i = percents.length - 1; i >= 0; i -= 1) {
+    const percent = percents[i]
+    const computed = computeContextWindowSizeFromPercent(maxContextWindowSize, percent)
+    if (seen.has(computed)) continue
+    seen.add(computed)
+
+    const label = percent === 100 ? `${formatNumber(computed)} (기본)` : formatNumber(computed)
+    filteredRev.push({ value: String(percent), label })
+  }
+
+  return filteredRev
+}
+
+function buildMetaText(args: { requiredVramMb?: number; contextWindowSize?: number }): string | null {
   const parts: string[] = []
 
-  if (typeof args.requiredVramGb === 'number' && Number.isFinite(args.requiredVramGb) && args.requiredVramGb > 0) {
-    parts.push(`VRAM ${args.requiredVramGb.toFixed(1)}GB`)
+  if (args.requiredVramMb) {
+    parts.push(`VRAM ${formatBytes(args.requiredVramMb * 1_000_000)}`)
   }
-  if (
-    typeof args.contextWindowSize === 'number' &&
-    Number.isFinite(args.contextWindowSize) &&
-    args.contextWindowSize > 0
-  ) {
-    parts.push(`Context ${formatContextWindow(args.contextWindowSize)}`)
+  if (args.contextWindowSize) {
+    parts.push(`Context ${formatNumber(args.contextWindowSize)}`)
   }
 
   return parts.length > 0 ? parts.join(' · ') : null
-}
-
-function formatContextWindow(contextWindowSize: number): string {
-  const k = Math.round(contextWindowSize / 1024)
-  return `${k}k`
 }
