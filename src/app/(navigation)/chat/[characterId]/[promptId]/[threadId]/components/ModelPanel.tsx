@@ -293,7 +293,7 @@ function buildContextPercentOptions(maxContextWindowSize?: number) {
     if (seen.has(computed)) continue
     seen.add(computed)
 
-    const label = percent === 100 ? `${formatNumber(computed, 'en')} (기본)` : formatNumber(computed, 'en')
+    const label = percent === 100 ? `${formatNumber(computed)} (기본)` : formatNumber(computed)
     filteredRev.push({ value: String(percent), label })
   }
 
@@ -307,7 +307,7 @@ function buildMetaText(args: { requiredVramMb?: number; contextWindowSize?: numb
     parts.push(`VRAM ${formatBytes(args.requiredVramMb * 1_000_000)}`)
   }
   if (args.contextWindowSize) {
-    parts.push(`Context ${formatNumber(args.contextWindowSize, 'en')}`)
+    parts.push(`Context ${formatNumber(args.contextWindowSize)}`)
   }
 
   return parts.length > 0 ? parts.join(' · ') : null
