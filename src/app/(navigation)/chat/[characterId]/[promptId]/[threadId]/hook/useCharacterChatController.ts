@@ -50,7 +50,7 @@ const DEFAULT_LLM_PARAMS: LlmParams = {
     max_tokens: 320,
     repetition_penalty: 1.05,
     frequency_penalty: 0.5,
-    presence_penalty: 2,
+    presence_penalty: 1,
   },
   thinking: {
     temperature: 0.25,
