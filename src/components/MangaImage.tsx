@@ -36,6 +36,11 @@ export default function MangaImage({ imageIndex = 0, mangaId, src = '', kind = '
   function handleError(event: SyntheticEvent<HTMLImageElement, Event>) {
     onError?.(event)
 
+    // NOTE: Civitai 등 외부 이미지에서 fallback 로직을 실행하면 의도치 않은 이미지가 보일 수 있어요.
+    if (mangaId === 0) {
+      return
+    }
+
     setSourceIndex((prev) => {
       const current = resolveSrc(prev)
 

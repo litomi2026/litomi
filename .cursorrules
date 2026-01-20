@@ -9,38 +9,11 @@
 - Drizzle ORM
 - TanStack Query
 
-## Design Principles
-
-Design with the principles of minimalist aesthetic, intuitive interfaces, and functional beauty as a senior designer's perspective. Follow Apple's design philosophy:
-
-### Core Principles
-
-1. **Clarity** - Text is legible at every size, icons are precise and lucid, adornments are subtle and appropriate. Focus on functionality drives design.
-
-2. **Deference** - Fluid motion and crisp interface help users understand and interact with content while never competing with it.
-
-3. **Depth** - Visual layers and realistic motion convey hierarchy, impart vitality, and facilitate understanding.
-
-### Visual Guidelines
-
-- **Whitespace**: Embrace generous whitespace. Let content breathe.
-- **Typography**: Use clean, readable fonts with clear hierarchy.
-- **Colors**: Use a restrained color palette. Primary colors should be purposeful, not decorative.
-- **Animations**: Subtle, meaningful transitions that enhance UX without distraction.
-- **Consistency**: Maintain visual harmony across all components and pages.
-
-### Implementation
-
-- Prefer simple, flat UI over complex gradients or shadows
-- Use consistent spacing (Tailwind's spacing scale)
-- Ensure sufficient contrast for accessibility
-- Design mobile-first, then enhance for larger screens
-
 ## Korean UX Writing
 
 ### Use Friendly ~요 Style
 
-- **Use ~해요체 (friendly polite style) instead of ~합니다체 (formal style)** for all user-facing text.
+- **Use ~해요체 (friendly polite style) instead of ~합니다체 (formal style)** for user-facing text.
 - This creates a warmer, more approachable tone while maintaining politeness.
 
 | ❌ ~니다/~습니다 (딱딱함) | ✅ ~요 (친근함)   |
@@ -52,35 +25,6 @@ Design with the principles of minimalist aesthetic, intuitive interfaces, and fu
 | 적용됩니다                | 적용돼요          |
 | 새 탭에서 열립니다        | 새 탭에서 열려요  |
 | 확인해주세요              | 확인해 주세요     |
-
-### Natural Contractions
-
-- Use natural Korean contractions for a conversational feel.
-
-```tsx
-// ❌ Bad - overly formal
-toast.success('저장되었습니다')
-toast.error('삭제에 실패하였습니다')
-
-// ✅ Good - natural and friendly
-toast.success('저장됐어요')
-toast.error('삭제에 실패했어요')
-```
-
-### Consistent Tone
-
-- **Maintain consistent tone across all UI elements**: toasts, error messages, descriptions, placeholders, and button labels.
-- Avoid mixing formal and casual styles within the same feature or page.
-
-```tsx
-// ❌ Bad - inconsistent tone
-<h2>로그인이 필요합니다</h2>      // formal
-<p>로그인해서 확인해보세요!</p>   // casual
-
-// ✅ Good - consistent friendly tone
-<h2>로그인이 필요해요</h2>
-<p>로그인해서 확인해 보세요!</p>
-```
 
 ## Code Style
 
@@ -101,8 +45,9 @@ toast.error('삭제에 실패했어요')
 ### TypeScript
 
 - **Never use `any` type.** Use `unknown` and narrow the type, or define proper interfaces/types.
-- Prefer type inference where possible, but be explicit for function parameters and return types.
+- Prefer type inference where possible
 - Use strict TypeScript configuration.
+- Please trust server response type, don't guard type too much
 
 ```typescript
 // ❌ Bad
@@ -115,12 +60,12 @@ interface Data {
   value: string
 }
 
-function process(data: Data): string {
+function process(data: Data) {
   return data.value
 }
 
-// ✅ Also good - use unknown and narrow
-function process(data: unknown): string {
+// ⚠️ Also good, but don't use for our server response.
+function process(data: unknown) {
   if (typeof data === 'object' && data !== null && 'value' in data) {
     return String((data as { value: unknown }).value)
   }
@@ -131,7 +76,7 @@ function process(data: unknown): string {
 ### Time Calculations
 
 - **Use `ms()` or `sec()` functions for time calculations.** Never use magic numbers for time values.
-- `ms()` returns milliseconds, `sec()` returns seconds. Both accept human-readable strings like `'1h'`, `'30m'`, `'7d'`.
+- `ms()` returns milliseconds, `sec()` returns seconds. Both accept human-readable strings like `'1 hour'`, `'30 minutes'`, `'7 days'`.
 
 ```typescript
 // ❌ Bad - magic numbers for time
@@ -142,16 +87,16 @@ const LOCK_DURATION = 900000 // Hard to understand
 // ✅ Good - use ms() for milliseconds
 import ms from 'ms'
 
-const TOKEN_EXPIRY = ms('1h')
-const COOKIE_MAX_AGE = ms('7d')
-const RATE_LIMIT_WINDOW = ms('15m')
+const TOKEN_EXPIRY = ms('1 hour')
+const COOKIE_MAX_AGE = ms('7 days')
+const RATE_LIMIT_WINDOW = ms('15 minutes')
 
 // ✅ Good - use sec() for seconds
 import { sec } from '@/utils/sec'
 
-const SESSION_TIMEOUT = sec('30m')
-const LOCK_DURATION = sec('15m')
-const MFA_CODE_EXPIRY = sec('5m')
+const SESSION_TIMEOUT = sec('30 minutes')
+const LOCK_DURATION = sec('15 minutes')
+const MFA_CODE_EXPIRY = sec('5 minutes')
 ```
 
 ### File Structure
@@ -262,13 +207,13 @@ export default function OrdersPage() {
 ```typescript
 // ❌ Bad - separating single-use utilities into lib folder
 // src/lib/utils/format-order-id.ts
-export function formatOrderId(id: string): string {
+export function formatOrderId(id: string) {
   return `ORD-${id.toUpperCase()}`
 }
 
 // ✅ Good - define within the component file
 // src/components/orders/order-table.tsx
-function formatOrderId(id: string): string {
+function formatOrderId(id: string) {
   return `ORD-${id.toUpperCase()}`
 }
 
@@ -278,66 +223,6 @@ export function OrderTable() {
 ```
 
 - Only move to shared folders (`lib/`, `utils/`, `types/`) when reused across multiple files.
-
-### File Size & Feature-based Splitting
-
-- **When a file becomes too large (500+ lines), split by feature/topic** while still keeping logic close to where it's called.
-- Group related functions into feature-specific files within the same directory.
-
-```typescript
-// ❌ Bad - one massive actions.ts file with 1000+ lines
-// src/actions/actions.ts
-export async function createOrder() {
-  /* ... */
-}
-export async function updateOrder() {
-  /* ... */
-}
-export async function deleteOrder() {
-  /* ... */
-}
-export async function sendEmail() {
-  /* ... */
-}
-export async function setupMFA() {
-  /* ... */
-}
-export async function validateTOTP() {
-  /* ... */
-}
-// ... 50 more functions
-
-// ✅ Good - split by feature/topic into separate files
-// src/actions/orders.ts
-export async function createOrder() {
-  /* ... */
-}
-export async function updateOrder() {
-  /* ... */
-}
-export async function deleteOrder() {
-  /* ... */
-}
-
-// src/actions/email.ts
-export async function sendEmail() {
-  /* ... */
-}
-export async function testEmailConnection() {
-  /* ... */
-}
-
-// src/actions/mfa.ts
-export async function setupMFA() {
-  /* ... */
-}
-export async function validateTOTP() {
-  /* ... */
-}
-```
-
-- Keep the split files in the same directory to maintain proximity to the feature area.
-- Name files descriptively by their feature domain.
 
 ## HTML/CSS Patterns
 
@@ -488,21 +373,6 @@ When you need submit semantics, make the `<form>` the direct child of `Dialog`.
   </form>
 </Dialog>
 ```
-
-### Safe Area Rules (mobile)
-
-- **Do NOT** apply `px-safe` to `Dialog` itself (it insets header/footer borders)
-- **Horizontal safe area** is handled by `DialogHeader`/`DialogBody`/`DialogFooter` (mobile only)
-- **Bottom safe area** is handled by the `Dialog` panel (`max-sm:pb-safe`) — do not duplicate `pb-safe` in body/footer
-
-### Avoid Nested Wrappers
-
-- **Do NOT** create `overflow-y-auto` wrappers with inner `p-*` wrappers — use `DialogBody`
-- **Do NOT** wrap everything in `<div className="flex flex-1 flex-col min-h-0">` unless you truly need a grouping element (rare)
-
-### Cleanup After Close
-
-- Use `Dialog`’s `onAfterClose` for state cleanup after the close animation (avoid `setTimeout`)
 
 ## Security
 

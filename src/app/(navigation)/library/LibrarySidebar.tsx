@@ -51,11 +51,11 @@ export default function LibrarySidebar({
   scrollContainerRef,
 }: Props) {
   const asideRef = useRef<HTMLElement>(null)
-  const mangaCount = libraries.reduce((sum, lib) => sum + lib.itemCount, 0)
   const ownerLibraries = userId ? libraries.filter((lib) => lib.userId === userId) : []
   const publicLibraries = userId ? libraries.filter((lib) => lib.userId !== userId) : libraries
+  const publicMangaCount = publicLibraries.reduce((sum, lib) => sum + lib.itemCount, 0)
   const showLibrariesSkeleton = Boolean(pagination?.isPending) && libraries.length === 0
-  const locale = getLocaleFromCookie()
+  const locale = getLocaleFromCookie() || 'ko'
 
   const infiniteScrollTriggerRef = useInfiniteScrollObserver({
     hasNextPage: pagination?.hasNextPage && !pagination?.isFetchNextPageError,
@@ -64,32 +64,20 @@ export default function LibrarySidebar({
     rootRef: scrollContainerRef ?? asideRef,
   })
 
-  const info = userId
-    ? {
-        headerTitle: '서재',
-        title: '모든 서재',
-        description: `${libraries.length}개 서재 · ${formatNumber(mangaCount, locale)}개`,
-      }
-    : {
-        headerTitle: '공개 서재',
-        title: '모든 공개 서재',
-        description: `${formatNumber(mangaCount, locale)}개`,
-      }
-
   return (
     <aside className={`border-r ${className}`} ref={asideRef}>
       <div className="grid gap-2 p-2 lg:p-3 lg:gap-3">
         <div className="flex items-center justify-center lg:justify-between">
-          <h2 className="text-sm font-medium text-zinc-400 hidden lg:block">{info.headerTitle}</h2>
+          <h2 className="text-sm font-medium text-zinc-400 hidden lg:block">서재</h2>
           <CreateLibraryButton />
         </div>
         <LibrarySidebarLink
-          description={info.description}
+          description={`작품 ${formatNumber(publicMangaCount, locale)}개`}
           href="/library"
           icon={<LibraryBig className="size-4 text-background" />}
           iconBackground="linear-gradient(to bottom right, var(--color-brand-start), var(--color-brand))"
           onClick={onClick}
-          title={info.title}
+          title="공개 서재"
         />
         <div className="h-px bg-zinc-800 my-1" />
         <LibrarySidebarLink
