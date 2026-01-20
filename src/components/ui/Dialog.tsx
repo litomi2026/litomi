@@ -4,11 +4,13 @@ import {
   type CSSProperties,
   type MouseEvent,
   type ReactNode,
+  type TouchEvent,
   useCallback,
   useEffect,
   useLayoutEffect,
   useRef,
   useState,
+  type WheelEvent,
 } from 'react'
 import { twMerge } from 'tailwind-merge'
 
@@ -56,6 +58,10 @@ export default function Dialog({ open, onClose, onAfterClose, children, classNam
     if (e.target === e.currentTarget) {
       requestClose()
     }
+  }
+
+  function stopScrollEventPropagation(e: TouchEvent | WheelEvent) {
+    e.stopPropagation()
   }
 
   // NOTE: `open` 변경에 따라 dialog를 열고/닫아요
@@ -235,6 +241,8 @@ export default function Dialog({ open, onClose, onAfterClose, children, classNam
         data-[state=closed]:hidden backdrop:bg-background/80 backdrop:transition backdrop:opacity-0 data-[state=open]:backdrop:opacity-100"
       data-state={state}
       onClick={handleClick}
+      onTouchMoveCapture={stopScrollEventPropagation}
+      onWheelCapture={stopScrollEventPropagation}
       ref={dialogRef}
     >
       <div
@@ -243,6 +251,8 @@ export default function Dialog({ open, onClose, onAfterClose, children, classNam
           className,
         )}
         onClick={(e) => e.stopPropagation()}
+        onTouchMoveCapture={stopScrollEventPropagation}
+        onWheelCapture={stopScrollEventPropagation}
         ref={panelRef}
         style={style}
       >
