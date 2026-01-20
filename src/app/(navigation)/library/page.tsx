@@ -5,9 +5,9 @@ import { generateOpenGraphMetadata } from '@/constants'
 import AllLibraryMangaView from './AllLibraryMangaView'
 
 export const metadata: Metadata = {
-  title: '서재',
+  title: '공개 서재',
   ...generateOpenGraphMetadata({
-    title: '서재',
+    title: '공개 서재',
     url: '/library',
   }),
   alternates: {

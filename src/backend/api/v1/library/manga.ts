@@ -117,7 +117,7 @@ libraryMangaRoutes.get('/', zProblemValidator('query', querySchema), async (c) =
       public: true,
       maxAge: 3,
       sMaxAge: sec('1 day'),
-      swr: sec('10 minutes'),
+      swr: sec('1 hour'),
     })
 
     const cacheControl = scope === 'public' ? sharedCacheControl : privateCacheControl

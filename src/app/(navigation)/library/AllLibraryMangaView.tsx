@@ -8,12 +8,10 @@ import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
-import useMeQuery from '@/query/useMeQuery'
 import { View } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 import CensoredManga from './CensoredManga'
-import CreateLibraryButton from './CreateLibraryButton'
 import useAllLibraryMangaInfiniteQuery from './useAllLibraryMangaInfiniteQuery'
 
 type Library = {
@@ -30,9 +28,6 @@ type LibraryItem = {
 }
 
 export default function AllLibraryMangaView() {
-  const { data: me, isPending: isMePending } = useMeQuery()
-  const userId = me?.id ?? null
-
   const {
     data,
     fetchNextPage,
@@ -40,10 +35,7 @@ export default function AllLibraryMangaView() {
     isFetchingNextPage,
     isFetchNextPageError,
     isPending: isMangaPending,
-  } = useAllLibraryMangaInfiniteQuery({
-    enabled: !isMePending,
-    userId,
-  })
+  } = useAllLibraryMangaInfiniteQuery()
 
   const items = useMemo(() => {
     const map = new Map<number, LibraryItem>()
@@ -68,7 +60,7 @@ export default function AllLibraryMangaView() {
   })
 
   const { mangaMap } = useMangaListCachedQuery({ mangaIds: items.map((item) => item.mangaId) })
-  const isInitialLoading = items.length === 0 && (isMePending || isMangaPending)
+  const isInitialLoading = items.length === 0 && isMangaPending
 
   if (isInitialLoading) {
     return (
@@ -81,23 +73,9 @@ export default function AllLibraryMangaView() {
   }
 
   if (items.length === 0) {
-    if (userId) {
-      return (
-        <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
-          <h1 className="sr-only">모든 서재</h1>
-          <Library className="size-24 sm:size-32 mx-auto mb-4 sm:mb-6 text-zinc-700" />
-          <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">아직 서재가 없어요</h2>
-          <p className="text-sm sm:text-base text-zinc-500 mb-6 sm:mb-8">
-            서재를 만들어 작품을 체계적으로 관리해보세요
-          </p>
-          <CreateLibraryButton className="justify-center" />
-        </div>
-      )
-    }
-
     return (
       <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
-        <h1 className="sr-only">모든 서재</h1>
+        <h1 className="sr-only">공개 서재 둘러보기</h1>
         <Library className="size-24 sm:size-32 mx-auto mb-4 sm:mb-6 text-zinc-700" />
         <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">공개된 서재가 없어요</h2>
         <p className="text-sm sm:text-base text-zinc-500 mb-6 sm:mb-8">다른 사용자들이 공개한 서재가 아직 없어요</p>

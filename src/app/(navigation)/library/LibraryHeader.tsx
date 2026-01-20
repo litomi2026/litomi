@@ -58,7 +58,6 @@ export default function LibraryHeader({
   const { enterSelectionMode, exitSelectionMode, isSelectionMode } = useLibrarySelectionStore()
   const { libraryId, currentLibrary } = useCurrentLibraryMeta({ libraries, userId })
   const isOwner = currentLibrary?.userId === userId
-  const isGuest = !userId
   const isEmpty = currentLibrary?.itemCount === 0
   const isPublicLibrary = currentLibrary?.isPublic
   const currentLibraryId = currentLibrary?.id
@@ -90,10 +89,13 @@ export default function LibraryHeader({
     if (pathname === '/library/rating') {
       return '평가'
     }
+    if (pathname === '/library') {
+      return '공개 서재 둘러보기'
+    }
     if (currentLibrary) {
       return currentLibrary.name
     }
-    return isGuest ? '공개 서재 둘러보기' : '모든 서재'
+    return '서재'
   }
 
   function handleSelectionModeChange() {
@@ -204,7 +206,7 @@ export default function LibraryHeader({
             ref={drawerScrollContainerRef}
           >
             <div className="sticky top-0 bg-background flex items-center justify-between p-4 border-b border-zinc-800">
-              <h2 className="text-lg font-medium">{isGuest ? '공개 서재' : '서재'}</h2>
+              <h2 className="text-lg font-medium">{pathname === '/library' ? '공개 서재' : '서재'}</h2>
               <button
                 className="p-3 -m-2 hover:bg-zinc-800 rounded-lg transition"
                 onClick={closeDrawer}
