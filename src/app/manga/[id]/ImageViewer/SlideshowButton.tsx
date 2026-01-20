@@ -20,12 +20,12 @@ type Props = {
 }
 
 export default function SlideshowButton({ className = '', maxImageIndex, offset, onIntervalChange }: Readonly<Props>) {
-  const getImageIndex = useImageIndexStore((state) => state.getImageIndex)
+  const imageIndex = useImageIndexStore((state) => state.imageIndex)
   const [isRunning, setIsRunning] = useState(false)
   const [isOpened, setIsOpened] = useState(false)
   const intervalSecondsRef = useRef(10)
   const isRepeatingRef = useRef(false)
-  const intervalIdRef = useRef<number | null>(null)
+  const timeoutIdRef = useRef<number | null>(null)
   const intervalInputId = useId()
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -50,39 +50,40 @@ export default function SlideshowButton({ className = '', maxImageIndex, offset,
       return
     }
 
-    if (intervalIdRef.current) {
-      clearInterval(intervalIdRef.current)
-      intervalIdRef.current = null
+    // NOTE: 페이지 전환 시 타이머를 초기화하기 위해 imageIndex를 구독하고 변경될 때마다 타이머를 다시 예약해요.
+    if (timeoutIdRef.current) {
+      window.clearTimeout(timeoutIdRef.current)
+      timeoutIdRef.current = null
     }
 
-    intervalIdRef.current = window.setInterval(
+    timeoutIdRef.current = window.setTimeout(
       () => {
-        const imageIndex = getImageIndex()
+        timeoutIdRef.current = null
         const nextImageIndex = imageIndex + offset
 
         if (nextImageIndex <= maxImageIndex) {
           onIntervalChange?.(nextImageIndex)
-        } else if (isRepeatingRef.current) {
-          onIntervalChange?.(0)
-        } else {
-          toast.info('마지막 이미지예요')
-          setIsRunning(false)
-          if (intervalIdRef.current) {
-            clearInterval(intervalIdRef.current)
-            intervalIdRef.current = null
-          }
+          return
         }
+
+        if (isRepeatingRef.current) {
+          onIntervalChange?.(0)
+          return
+        }
+
+        toast.info('마지막 이미지예요')
+        setIsRunning(false)
       },
       ms(`${intervalSecondsRef.current}s`),
     )
 
     return () => {
-      if (intervalIdRef.current) {
-        clearInterval(intervalIdRef.current)
-        intervalIdRef.current = null
+      if (timeoutIdRef.current) {
+        window.clearTimeout(timeoutIdRef.current)
+        timeoutIdRef.current = null
       }
     }
-  }, [getImageIndex, isRunning, maxImageIndex, offset, onIntervalChange])
+  }, [imageIndex, isRunning, maxImageIndex, offset, onIntervalChange])
 
   return (
     <>
@@ -91,25 +92,25 @@ export default function SlideshowButton({ className = '', maxImageIndex, offset,
         onClick={() => {
           if (isRunning) {
             setIsRunning(false)
-            if (intervalIdRef.current) {
-              clearInterval(intervalIdRef.current)
-              intervalIdRef.current = null
+            if (timeoutIdRef.current) {
+              window.clearTimeout(timeoutIdRef.current)
+              timeoutIdRef.current = null
             }
             return
           }
           setIsOpened(true)
         }}
       >
-        {isRunning ? '중지' : '슬라이드쇼'}
+        {isRunning ? '중지' : '자동 넘기기'}
       </button>
       <Dialog
-        ariaLabel="슬라이드쇼"
+        ariaLabel="자동 넘기기"
         className="rounded-xl border-2 h-auto max-w-sm max-sm:p-0 sm:max-w-sm"
         onClose={() => setIsOpened(false)}
         open={isOpened}
       >
         <form className="flex flex-1 flex-col min-h-0" onSubmit={handleSubmit}>
-          <DialogHeader onClose={() => setIsOpened(false)} title="슬라이드쇼" />
+          <DialogHeader onClose={() => setIsOpened(false)} title="자동 넘기기" />
           <DialogBody>
             <div className="grid grid-cols-[auto_1fr] items-center gap-4 whitespace-nowrap [&_h4]:font-semibold">
               <label htmlFor={intervalInputId}>주기</label>
@@ -132,7 +133,7 @@ export default function SlideshowButton({ className = '', maxImageIndex, offset,
               </div>
               <strong>반복</strong>
               <Toggle
-                aria-label="슬라이드쇼 반복"
+                aria-label="자동 넘기기 반복"
                 className="w-14 peer-checked:bg-brand/80"
                 defaultChecked={false}
                 name="repeat"
