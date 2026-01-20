@@ -201,3 +201,4 @@ bun.lockb
 
 # MLC / MLC-LLM local tooling (never commit)
 /.mlc/
+tmp
