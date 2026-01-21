@@ -6,42 +6,41 @@ import { useEffect, useState } from 'react'
 
 const INITIAL_DISPLAYED_IMAGE = 5
 const FALLBACK_IMAGE_URL = '/image/fallback.svg'
-const THUMBNAIL_PLACEHOLDER_URL = '/image/thumbnail.avif'
 
 interface Props extends ComponentPropsWithRef<'img'> {
   imageIndex?: number
   kind?: 'original' | 'thumbnail'
+  /**
+   * @note 외부 이미지(mangaId=0)는 내부 fallback 체인을 돌리지 않아요.
+   */
   mangaId: number
   src?: string
 }
 
 export default function MangaImage({ imageIndex = 0, mangaId, src = '', kind = 'original', onError, ...props }: Props) {
   const [sourceIndex, setSourceIndex] = useState(0)
-  const hasSrc = Boolean(src)
-  const isPlaceholderOnly = !hasSrc && mangaId === 0
-  const maxIndex = isPlaceholderOnly ? 0 : getMaxSourceIndex(kind, hasSrc)
+  const currentSrc = resolveSrc(sourceIndex)
 
   function resolveSrc(index: number): string {
-    if (isPlaceholderOnly) {
-      return THUMBNAIL_PLACEHOLDER_URL
-    }
-    if (hasSrc && index === 0) {
+    if (src && index === 0) {
       return src
     }
-    return resolveFallbackSrc(kind, mangaId, index - (hasSrc ? 1 : 0))
+    if (mangaId === 0) {
+      return FALLBACK_IMAGE_URL
+    }
+    return resolveFallbackSrc(kind, mangaId, index - (src ? 1 : 0), imageIndex)
   }
-
-  const currentSrc = resolveSrc(sourceIndex)
 
   function handleError(event: SyntheticEvent<HTMLImageElement, Event>) {
     onError?.(event)
 
-    // NOTE: Civitai 등 외부 이미지에서 fallback 로직을 실행하면 의도치 않은 이미지가 보일 수 있어요.
     if (mangaId === 0) {
       return
     }
 
     setSourceIndex((prev) => {
+      const fallbackCount = kind === 'thumbnail' ? 6 : 4
+      const maxIndex = src ? fallbackCount : fallbackCount - 1
       const current = resolveSrc(prev)
 
       for (let next = prev + 1; next <= maxIndex; next += 1) {
@@ -72,34 +71,40 @@ export default function MangaImage({ imageIndex = 0, mangaId, src = '', kind = '
   )
 }
 
-function buildCoverThumbnailUrl(mangaId: number): string {
-  return `https://cdn.imagedeliveries.com/${mangaId}/thumbnails/cover.webp`
-}
-
-function buildHentkorFirstPageUrl(mangaId: number): string {
+function buildHentkorFirstPageURL(mangaId: number) {
   return `https://cdn.hentkor.net/pages/${mangaId}/1.avif`
 }
 
-function buildSoujpaStartUrl(mangaId: number, ext: 'avif' | 'webp'): string {
+function buildImageDeliveriesCoverThumbnailURL(mangaId: number) {
+  return `https://cdn.imagedeliveries.com/${mangaId}/thumbnails/cover.webp`
+}
+
+function buildImageDeliveriesNPageThumbnailURL(mangaId: number, imageIndex: number) {
+  return `https://cdn.imagedeliveries.com/${mangaId}/thumbnails/${imageIndex}.webp`
+}
+
+function buildSoujpaFirstPageURL(mangaId: number, ext: 'avif' | 'webp') {
   return `https://soujpa.in/start/${mangaId}/${mangaId}_0.${ext}`
 }
 
-function getMaxSourceIndex(kind: NonNullable<Props['kind']>, hasSrc: boolean): number {
-  const fallbackCount = kind === 'thumbnail' ? 5 : 4
-  return hasSrc ? fallbackCount : fallbackCount - 1
-}
-
-function resolveFallbackSrc(kind: NonNullable<Props['kind']>, mangaId: number, fallbackIndex: number): string {
+function resolveFallbackSrc(
+  kind: NonNullable<Props['kind']>,
+  mangaId: number,
+  fallbackIndex: number,
+  imageIndex: number,
+) {
   if (kind === 'thumbnail') {
     switch (fallbackIndex) {
       case 0:
-        return buildCoverThumbnailUrl(mangaId)
+        return buildImageDeliveriesNPageThumbnailURL(mangaId, imageIndex + 1)
       case 1:
-        return buildSoujpaStartUrl(mangaId, 'avif')
+        return buildImageDeliveriesCoverThumbnailURL(mangaId)
       case 2:
-        return buildSoujpaStartUrl(mangaId, 'webp')
+        return buildSoujpaFirstPageURL(mangaId, 'avif')
       case 3:
-        return buildHentkorFirstPageUrl(mangaId)
+        return buildSoujpaFirstPageURL(mangaId, 'webp')
+      case 4:
+        return buildHentkorFirstPageURL(mangaId)
       default:
         return FALLBACK_IMAGE_URL
     }
@@ -107,11 +112,11 @@ function resolveFallbackSrc(kind: NonNullable<Props['kind']>, mangaId: number, f
 
   switch (fallbackIndex) {
     case 0:
-      return buildSoujpaStartUrl(mangaId, 'avif')
+      return buildSoujpaFirstPageURL(mangaId, 'avif')
     case 1:
-      return buildSoujpaStartUrl(mangaId, 'webp')
+      return buildSoujpaFirstPageURL(mangaId, 'webp')
     case 2:
-      return buildHentkorFirstPageUrl(mangaId)
+      return buildHentkorFirstPageURL(mangaId)
     default:
       return FALLBACK_IMAGE_URL
   }
