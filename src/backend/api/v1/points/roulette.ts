@@ -32,19 +32,12 @@ export type POSTV1RouletteSpinResponse = {
 const route = new Hono<Env>()
 
 const requestSchema = z.object({
-  bet: z.coerce.number().int().positive(),
+  bet: z.coerce.number().int().min(ROULETTE_CONFIG.minBet).max(ROULETTE_CONFIG.maxBet).positive(),
 })
 
 route.post('/spin', requireAuth, zProblemValidator('json', requestSchema), async (c) => {
   const userId = c.get('userId')!
   const { bet } = c.req.valid('json')
-
-  if (bet < ROULETTE_CONFIG.minBet) {
-    return problemResponse(c, { status: 400, detail: `최소 배팅은 ${ROULETTE_CONFIG.minBet.toLocaleString()} 리보예요` })
-  }
-  if (bet > ROULETTE_CONFIG.maxBet) {
-    return problemResponse(c, { status: 400, detail: `최대 배팅은 ${ROULETTE_CONFIG.maxBet.toLocaleString()} 리보예요` })
-  }
 
   try {
     const result = await db.transaction(async (tx) => {
@@ -176,4 +169,3 @@ function randomInt(upperExclusive: number): number {
     }
   }
 }
-

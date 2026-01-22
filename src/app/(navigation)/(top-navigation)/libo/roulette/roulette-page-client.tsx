@@ -20,7 +20,7 @@ type WheelSlice = {
 export default function RoulettePageClient() {
   const { data: me, isLoading: isMeLoading } = useMeQuery()
   const isLoggedIn = Boolean(me && !isMeLoading)
-  const [bet, setBet] = useState<number>(ROULETTE_CONFIG.minBet)
+  const [displayBet, setDisplayBet] = useState<number>(ROULETTE_CONFIG.minBet)
   const spin = useRouletteSpinMutation()
   const [rotationDeg, setRotationDeg] = useState(0)
   const [phase, setPhase] = useState<SpinPhase>('idle')
@@ -129,7 +129,7 @@ export default function RoulettePageClient() {
             <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
               <p className="text-xs text-white/60">배팅</p>
               <p className="text-lg font-semibold tabular-nums text-white/90 drop-shadow-[0_8px_18px_rgba(0,0,0,0.7)]">
-                {formatNumber(bet)} <span className="text-sm font-medium text-white/70">리보</span>
+                {formatNumber(displayBet)} <span className="text-sm font-medium text-white/70">리보</span>
               </p>
               {phase !== 'idle' ? (
                 <p className="mt-1 text-xs text-white/70">{phase === 'loop' ? '돌리는 중…' : '멈추는 중…'}</p>
@@ -158,13 +158,26 @@ export default function RoulettePageClient() {
             className="space-y-3"
             onSubmit={(e) => {
               e.preventDefault()
+              const form = e.currentTarget
+              if (!form.reportValidity()) {
+                return
+              }
+
+              const formData = new FormData(form)
+              const betRaw = formData.get('bet')
+              const betValue = typeof betRaw === 'string' ? Number(betRaw) : NaN
+              if (!Number.isFinite(betValue)) {
+                return
+              }
+              setDisplayBet(betValue)
+
               stopTimer(revealTimerRef)
               setIsResultRevealed(false)
               setPhase('loop')
               startSpinLoop(loopTimerRef, setRotationDeg)
 
               spin.mutate(
-                { bet },
+                { bet: betValue },
                 {
                   onSuccess: (data) => {
                     stopSpinLoop(loopTimerRef)
@@ -200,17 +213,16 @@ export default function RoulettePageClient() {
               </label>
               <input
                 className="w-full rounded-xl bg-black/30 border border-white/10 px-3 py-2 text-zinc-100 outline-none focus:border-white/20"
+                defaultValue={ROULETTE_CONFIG.minBet}
                 disabled={phase !== 'idle'}
                 id="bet"
                 inputMode="numeric"
                 max={ROULETTE_CONFIG.maxBet}
                 min={ROULETTE_CONFIG.minBet}
                 name="bet"
-                onChange={(e) => setBet(Number(e.target.value))}
                 required
                 step={10}
                 type="number"
-                value={bet}
               />
               <p className="text-xs text-zinc-500">
                 최소 {formatNumber(ROULETTE_CONFIG.minBet)} 리보 · 최대 {formatNumber(ROULETTE_CONFIG.maxBet)} 리보
