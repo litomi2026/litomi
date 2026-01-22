@@ -1,6 +1,6 @@
 'use client'
 
-import { ChevronRight, History, PiggyBank, ShoppingBag, TrendingUp } from 'lucide-react'
+import { ChevronRight, Dice6, History, PiggyBank, ShoppingBag, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { type ReactNode } from 'react'
@@ -12,10 +12,11 @@ import { LIBO_PAGE_LAYOUT } from './constant'
 import styles from './liboTheme.module.css'
 import { usePointsQuery } from './usePointsQuery'
 
-type Tab = 'earn' | 'history' | 'shop'
+type Tab = 'earn' | 'history' | 'roulette' | 'shop'
 
 const TABS: { id: Tab; label: string; href: string; icon: ReactNode }[] = [
   { id: 'earn', label: '적립', href: '/libo', icon: <PiggyBank className="size-4" /> },
+  { id: 'roulette', label: '룰렛', href: '/libo/roulette', icon: <Dice6 className="size-4" /> },
   { id: 'shop', label: '상점', href: '/libo/shop', icon: <ShoppingBag className="size-4" /> },
   { id: 'history', label: '내역', href: '/libo/history', icon: <History className="size-4" /> },
 ]
@@ -91,7 +92,7 @@ export default function LiboNavigation({ children }: Props) {
             role="tab"
           >
             <LinkPending className="size-4">{tab.icon}</LinkPending>
-            {tab.label}
+            <span className="hidden sm:inline">{tab.label}</span>
           </Link>
         ))}
       </div>
@@ -107,6 +108,9 @@ export default function LiboNavigation({ children }: Props) {
 function getActiveTab(pathname: string): Tab | null {
   if (pathname.startsWith('/libo/shop')) {
     return 'shop'
+  }
+  if (pathname.startsWith('/libo/roulette')) {
+    return 'roulette'
   }
   if (pathname.startsWith('/libo/history')) {
     return 'history'

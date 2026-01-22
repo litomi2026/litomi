@@ -26,6 +26,8 @@ export const POINT_CONSTANTS = {
 export const TRANSACTION_TYPE = {
   AD_CLICK: 1,
   SHOP_PURCHASE: 2,
+  ROULETTE_BET: 3,
+  ROULETTE_PAYOUT: 4,
 } as const
 
 export const EXPANSION_TYPE = {

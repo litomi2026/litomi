@@ -101,18 +101,14 @@ export default function ThumbnailStrip({ images, mangaId }: Props) {
               onClick={() => handleThumbnailClick(i)}
               ref={i === 0 ? firstImageRef : i === images.length - 1 ? lastImageRef : undefined}
             >
-              {image ? (
-                <MangaImage
-                  className="w-full h-full object-cover"
-                  fetchPriority={i > imageIndex - 3 && i <= imageIndex + 3 ? undefined : 'low'}
-                  imageIndex={i}
-                  kind="thumbnail"
-                  mangaId={mangaId}
-                  src={image.url}
-                />
-              ) : (
-                <div className="w-full h-full bg-zinc-800" />
-              )}
+              <MangaImage
+                className="w-full h-full object-cover"
+                fetchPriority={i > imageIndex - 3 && i <= imageIndex + 3 ? undefined : 'low'}
+                imageIndex={i}
+                kind="thumbnail"
+                mangaId={mangaId}
+                src={image?.url}
+              />
               <span className="absolute bottom-0 left-1/2 -translate-x-1/2 rounded-t-lg bg-background/80 text-xs text-center p-2 py-0.5">
                 {i + 1}
               </span>

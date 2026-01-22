@@ -8,7 +8,6 @@ import { requireAuth } from '@/backend/middleware/require-auth'
 import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
-import { TRANSACTION_TYPE } from '@/constants/points'
 import { db } from '@/database/supabase/drizzle'
 import { pointTransactionTable } from '@/database/supabase/points'
 
@@ -66,7 +65,7 @@ route.get('/', requireAuth, requireAdult, zProblemValidator('query', querySchema
 
     const items: Transaction[] = transactions.map((t) => ({
       id: t.id,
-      type: t.type === TRANSACTION_TYPE.AD_CLICK ? 'earn' : 'spend',
+      type: t.amount > 0 ? 'earn' : 'spend',
       amount: t.amount,
       balanceAfter: t.balanceAfter,
       description: t.description,

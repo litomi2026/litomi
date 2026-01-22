@@ -50,7 +50,6 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
   const toggleController = useCallback(() => setShowController((prev) => !prev), [])
   const { images = [] } = manga
   const thumbnailImages = images.map((image) => image.thumbnail)
-  const hasThumbnails = thumbnailImages.filter(Boolean).length > 0
   const imageCount = images.length
   const maxImageIndex = imageCount - 1
   const isDoublePage = pageView === 'double'
@@ -166,7 +165,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
         aria-current:opacity-100 aria-current:pointer-events-auto"
       >
         <div className="p-3 grid gap-1.5 select-none">
-          {showThumbnails && hasThumbnails && <ThumbnailStrip images={thumbnailImages} mangaId={manga.id} />}
+          {showThumbnails && <ThumbnailStrip images={thumbnailImages} mangaId={manga.id} />}
           <ImageSlider maxImageIndex={imageCount} />
           <div className="font-semibold whitespace-nowrap flex-wrap justify-center text-sm flex gap-2 text-background">
             <button className={bottomButtonClassName} onClick={() => setNavMode(isTouchMode ? 'scroll' : 'touch')}>
@@ -231,10 +230,9 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
               onIntervalChange={handleIntervalChange}
             />
             <button
-              aria-disabled={!hasThumbnails}
-              className={`${bottomButtonClassName} flex items-center justify-center gap-1 aria-disabled:opacity-50 aria-disabled:cursor-not-allowed`}
-              onClick={() => hasThumbnails && setShowThumbnails((prev) => !prev)}
-              title={hasThumbnails ? '미리보기' : '썸네일이 없어요'}
+              className={`${bottomButtonClassName} flex items-center justify-center gap-1`}
+              onClick={() => setShowThumbnails((prev) => !prev)}
+              title="미리보기"
             >
               미리보기
             </button>
