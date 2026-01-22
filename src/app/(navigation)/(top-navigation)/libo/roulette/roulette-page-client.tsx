@@ -2,7 +2,7 @@
 
 import { RefObject, useEffect, useMemo, useRef, useState } from 'react'
 
-import { getRouletteRoiInfo, ROULETTE_CONFIG, type RouletteSegment } from '@/constants/roulette'
+import { ROULETTE_CONFIG, type RouletteSegment } from '@/constants/roulette'
 import useMeQuery from '@/query/useMeQuery'
 import { formatNumber } from '@/utils/format/number'
 
@@ -20,7 +20,6 @@ type WheelSlice = {
 export default function RoulettePageClient() {
   const { data: me, isLoading: isMeLoading } = useMeQuery()
   const isLoggedIn = Boolean(me && !isMeLoading)
-
   const [bet, setBet] = useState<number>(ROULETTE_CONFIG.minBet)
   const spin = useRouletteSpinMutation()
   const [rotationDeg, setRotationDeg] = useState(0)
@@ -28,8 +27,6 @@ export default function RoulettePageClient() {
   const [isResultRevealed, setIsResultRevealed] = useState(false)
   const loopTimerRef = useRef<number | null>(null)
   const revealTimerRef = useRef<number | null>(null)
-
-  const _roi = getRouletteRoiInfo(ROULETTE_CONFIG)
   const result = spin.data
 
   const wheelSlices = useMemo(() => {
@@ -97,29 +94,36 @@ export default function RoulettePageClient() {
               <div className="h-0 w-0 border-l-10 border-l-transparent border-r-10 border-r-transparent border-t-18 border-t-white/85 drop-shadow-[0_6px_12px_rgba(0,0,0,0.7)]" />
             </div>
 
-            <div
-              className="absolute inset-0 rounded-full border border-white/10 shadow-[0_30px_80px_rgba(0,0,0,0.6),inset_0_0_0_1px_rgba(255,255,255,0.08)]"
-              style={{
-                background: wheelBackground,
-                transform: `rotate(${rotationDeg}deg)`,
-                transition:
-                  phase === 'loop'
-                    ? 'transform 250ms linear'
-                    : phase === 'settle'
-                      ? 'transform 2600ms cubic-bezier(0.12, 0.9, 0.18, 1)'
-                      : 'transform 400ms ease-out',
-              }}
-            >
-              {/* Slice separators (overlay) */}
-              <div className="absolute inset-[10px] rounded-full bg-[repeating-conic-gradient(from_0deg,rgba(255,255,255,0.12)_0deg,rgba(255,255,255,0.12)_0.9deg,transparent_0.9deg,transparent_10deg)] opacity-70" />
+            {/* Outer mask ring */}
+            <div className="absolute inset-0 overflow-hidden rounded-full border border-white/10 bg-black shadow-[0_30px_80px_rgba(0,0,0,0.6),inset_0_0_0_1px_rgba(255,255,255,0.08)]">
+              {/* Inner spinning wheel (inset so color can't leak outside) */}
+              <div
+                className="absolute inset-[8px] rounded-full"
+                style={{
+                  background: wheelBackground,
+                  transform: `rotate(${rotationDeg}deg)`,
+                  transition:
+                    phase === 'loop'
+                      ? 'transform 250ms linear'
+                      : phase === 'settle'
+                        ? 'transform 2600ms cubic-bezier(0.12, 0.9, 0.18, 1)'
+                        : 'transform 400ms ease-out',
+                }}
+              >
+                {/* Slice separators (overlay) */}
+                <div className="absolute inset-[2px] rounded-full bg-[repeating-conic-gradient(from_0deg,rgba(255,255,255,0.12)_0deg,rgba(255,255,255,0.12)_0.9deg,transparent_0.9deg,transparent_10deg)] opacity-70" />
 
-              {/* Gloss + vignette */}
-              <div className="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(circle_at_30%_25%,rgba(255,255,255,0.20),transparent_35%),radial-gradient(circle_at_50%_60%,transparent_40%,rgba(0,0,0,0.55)_100%)]" />
-
-              {/* Center cap */}
-              <div className="absolute left-1/2 top-1/2 size-28 -translate-x-1/2 -translate-y-1/2 rounded-full bg-black/45 border border-white/12 shadow-[0_18px_40px_rgba(0,0,0,0.55),inset_0_0_0_1px_rgba(255,255,255,0.06)]" />
-              <div className="absolute left-1/2 top-1/2 size-12 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/10 border border-white/15" />
+                {/* Gloss + vignette */}
+                <div className="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(circle_at_30%_25%,rgba(255,255,255,0.20),transparent_35%),radial-gradient(circle_at_50%_60%,transparent_40%,rgba(0,0,0,0.55)_100%)]" />
+              </div>
             </div>
+
+            {/* Rim overlay (non-rotating) to hide AA seams */}
+            <div className="pointer-events-none absolute inset-0 rounded-full shadow-[inset_0_0_0_8px_rgba(0,0,0,0.32),inset_0_0_0_1px_rgba(255,255,255,0.12)]" />
+
+            {/* Center cap (non-rotating) */}
+            <div className="pointer-events-none absolute left-1/2 top-1/2 size-28 -translate-x-1/2 -translate-y-1/2 rounded-full bg-black/45 border border-white/12 shadow-[0_18px_40px_rgba(0,0,0,0.55),inset_0_0_0_1px_rgba(255,255,255,0.06)]" />
+            <div className="pointer-events-none absolute left-1/2 top-1/2 size-12 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/10 border border-white/15" />
 
             {/* Center text (doesn't rotate) */}
             <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
@@ -234,13 +238,20 @@ export default function RoulettePageClient() {
       {result && isResultRevealed && (
         <div className="rounded-2xl bg-white/4 border border-white/7 p-4">
           <p className="text-zinc-200 font-medium">결과</p>
-          <div className="mt-3 space-y-1 text-sm">
-            <p className="text-zinc-300">
-              <span className="text-zinc-500">도착</span> {result.landed.label} (
-              {formatMultiplier(result.landed.payoutMultiplierX100)})
-            </p>
-            <p className="text-zinc-300">
-              <span className="text-zinc-500">배팅</span> -{formatNumber(result.bet)} 리보
+          <div className="mt-3 space-y-1 text-sm tabular-nums">
+            <p className="flex items-center gap-1 text-zinc-300">
+              <span className="text-zinc-500">도착</span>{' '}
+              <span aria-hidden className="inline-flex items-center gap-1 align-middle">
+                <span
+                  className="size-3 rounded-sm border border-white/20"
+                  style={{ backgroundColor: getSliceColor(result.landed.id, 0) }}
+                />
+                <span
+                  className="size-3 rounded-sm border border-white/20"
+                  style={{ backgroundColor: getSliceColor(result.landed.id, 1) }}
+                />
+              </span>
+              {result.landed.label}
             </p>
             <p className="text-zinc-300">
               <span className="text-zinc-500">지급</span> +{formatNumber(result.payout)} 리보
