@@ -25,7 +25,7 @@ export function useRouletteSpinMutation() {
       return data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QueryKeys.points })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.points, exact: true })
       queryClient.invalidateQueries({ queryKey: QueryKeys.pointsTransactions })
     },
   })
