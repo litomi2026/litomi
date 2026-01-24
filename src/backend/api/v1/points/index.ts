@@ -2,7 +2,6 @@ import { Hono } from 'hono'
 
 import { Env } from '@/backend'
 
-import donateRoute from './donate'
 import donationsRoute from './donations'
 import earnRoute from './earn'
 import expansionRoute from './expansion'
@@ -16,7 +15,6 @@ import turnstileRoute from './turnstile'
 const pointsRoutes = new Hono<Env>()
 
 pointsRoutes.route('/', getPointsRoute)
-pointsRoutes.route('/donate', donateRoute)
 pointsRoutes.route('/donations', donationsRoute)
 pointsRoutes.route('/earn', earnRoute)
 pointsRoutes.route('/expansion', expansionRoute)
