@@ -117,7 +117,7 @@ export default function DonateButton({ manga, ...props }: Props) {
           <div className="flex items-center justify-between gap-2 w-full">
             <span>기부가 완료됐어요</span>
             <Link
-              className="text-xs font-semibold text-brand hover:underline"
+              className="text-xs font-semibold hover:underline"
               href={donationHref}
               onClick={() => toast.dismiss(toastId)}
               prefetch={false}
