@@ -7,11 +7,9 @@ import { Fragment, useMemo } from 'react'
 import { useSearchQuery } from '@/app/(navigation)/search/useSearchQuery'
 import { Sort } from '@/app/api/proxy/k/search/types'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
-import MangaCardDonation from '@/components/card/MangaCardDonation'
 import MangaCardImage from '@/components/card/MangaCardImage'
 import MangaCardPromotion from '@/components/card/MangaCardPromotion'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
-import { DONATION_CARD_INTERVAL } from '@/constants/policy'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import { View } from '@/utils/param'
 import { ProblemDetailsError } from '@/utils/react-query-error'
@@ -88,7 +86,6 @@ export default function SearchResult() {
             <Fragment key={manga.id}>
               {promotion && i === (promotion.position ?? 0) && <MangaCardPromotion promotion={promotion} />}
               <MangaCard index={i} manga={manga} showSearchFromNextButton />
-              {i % DONATION_CARD_INTERVAL === DONATION_CARD_INTERVAL - 1 && <MangaCardDonation />}
             </Fragment>
           ),
         )}
