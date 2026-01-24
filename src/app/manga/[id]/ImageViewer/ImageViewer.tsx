@@ -9,6 +9,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import BackButton from '@/components/BackButton'
 import { type Manga } from '@/types/manga'
 
+import DonateButton from './DonateButton'
 import FullscreenButton from './FullscreenButton'
 import ImageSlider from './ImageSlider'
 import MangaDetailButton from './MangaDetailButton'
@@ -137,6 +138,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
             >
               <MessageCircle className="size-6" />
             </Link>
+            <DonateButton className={topButtonClassName} manga={manga} />
             <ShareButton className={topButtonClassName} manga={manga} />
           </div>
         </div>

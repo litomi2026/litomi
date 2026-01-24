@@ -28,6 +28,7 @@ export const TRANSACTION_TYPE = {
   SHOP_PURCHASE: 2,
   ROULETTE_BET: 3,
   ROULETTE_PAYOUT: 4,
+  DONATION: 5,
 } as const
 
 export const EXPANSION_TYPE = {

@@ -20,7 +20,7 @@ type WheelSlice = {
 export default function RoulettePageClient() {
   const { data: me, isLoading: isMeLoading } = useMeQuery()
   const isLoggedIn = Boolean(me && !isMeLoading)
-  const [bet, setBet] = useState<number>(ROULETTE_CONFIG.minBet)
+  const [displayBet, setDisplayBet] = useState<number>(ROULETTE_CONFIG.minBet)
   const spin = useRouletteSpinMutation()
   const [rotationDeg, setRotationDeg] = useState(0)
   const [phase, setPhase] = useState<SpinPhase>('idle')
@@ -28,6 +28,7 @@ export default function RoulettePageClient() {
   const loopTimerRef = useRef<number | null>(null)
   const revealTimerRef = useRef<number | null>(null)
   const result = spin.data
+  const hasRevealedResult = Boolean(result && isResultRevealed)
 
   const wheelSlices = useMemo(() => {
     return buildWheelSlices(ROULETTE_CONFIG.segments, 36)
@@ -46,44 +47,36 @@ export default function RoulettePageClient() {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-2xl bg-white/4 border border-white/7 p-4">
-        <div className="flex items-start justify-between gap-4">
-          <div className="min-w-0">
-            <p className="text-zinc-200 font-medium">리보 룰렛</p>
-          </div>
-        </div>
-
-        <details className="group mt-3 rounded-xl bg-white/3 border border-white/7 px-3 py-2">
-          <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center justify-between">
-            <span className="text-sm text-zinc-300">배당표 보기</span>
-            <span className="text-xs text-zinc-500 group-open:hidden">열기</span>
-            <span className="text-xs text-zinc-500 hidden group-open:inline">닫기</span>
-          </summary>
-          <div className="mt-2 space-y-2">
-            {ROULETTE_CONFIG.segments.map((s) => (
-              <div className="flex items-center justify-between gap-3 text-sm" key={s.id}>
-                <div className="flex items-center gap-2 min-w-0">
-                  <span aria-hidden className="inline-flex items-center gap-1">
-                    <span
-                      className="size-3 rounded-sm border border-white/20"
-                      style={{ backgroundColor: getSliceColor(s.id, 0) }}
-                    />
-                    <span
-                      className="size-3 rounded-sm border border-white/20"
-                      style={{ backgroundColor: getSliceColor(s.id, 1) }}
-                    />
-                  </span>
-                  <span className="text-zinc-300 truncate">{s.label}</span>
-                </div>
-                <span className="tabular-nums text-zinc-400">{formatMultiplier(s.payoutMultiplierX100)}</span>
+      <details className="group rounded-xl bg-white/3 border border-white/7 p-4 py-3">
+        <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center justify-between">
+          <span className="text-sm text-zinc-300">룰렛 배당표 보기</span>
+          <span className="text-xs text-zinc-500 group-open:hidden">열기</span>
+          <span className="text-xs text-zinc-500 hidden group-open:inline">닫기</span>
+        </summary>
+        <div className="mt-2 space-y-2">
+          {ROULETTE_CONFIG.segments.map((s) => (
+            <div className="flex items-center justify-between gap-3 text-sm" key={s.id}>
+              <div className="flex items-center gap-2 min-w-0">
+                <span aria-hidden className="inline-flex items-center gap-1">
+                  <span
+                    className="size-3 rounded-sm border border-white/20"
+                    style={{ backgroundColor: getSliceColor(s.id, 0) }}
+                  />
+                  <span
+                    className="size-3 rounded-sm border border-white/20"
+                    style={{ backgroundColor: getSliceColor(s.id, 1) }}
+                  />
+                </span>
+                <span className="text-zinc-300 truncate">{s.label}</span>
               </div>
-            ))}
-            <p className="text-xs text-zinc-500">
-              배수는 “배팅 포함 지급” 기준이에요. 예를 들어 2배면 배팅 후에 배팅액의 2배가 지급돼요
-            </p>
-          </div>
-        </details>
-      </div>
+              <span className="tabular-nums text-zinc-400">{formatMultiplier(s.payoutMultiplierX100)}</span>
+            </div>
+          ))}
+          <p className="text-xs text-zinc-500">
+            배수는 “배팅 포함 지급” 기준이에요. 예를 들어 2배면 배팅 후에 배팅액의 2배가 지급돼요
+          </p>
+        </div>
+      </details>
 
       {/* 룰렛 휠 */}
       <div className="rounded-2xl bg-white/4 border border-white/7 p-4">
@@ -127,14 +120,26 @@ export default function RoulettePageClient() {
 
             {/* Center text (doesn't rotate) */}
             <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
-              <p className="text-xs text-white/60">배팅</p>
-              <p className="text-lg font-semibold tabular-nums text-white/90 drop-shadow-[0_8px_18px_rgba(0,0,0,0.7)]">
-                {formatNumber(bet)} <span className="text-sm font-medium text-white/70">리보</span>
-              </p>
-              {phase !== 'idle' ? (
-                <p className="mt-1 text-xs text-white/70">{phase === 'loop' ? '돌리는 중…' : '멈추는 중…'}</p>
+              {hasRevealedResult && result ? (
+                <>
+                  <p className="text-xs text-white/60">획득</p>
+                  <p
+                    className={`text-lg font-semibold tabular-nums drop-shadow-[0_8px_18px_rgba(0,0,0,0.7)] ${getSegmentTextClass(
+                      result.landed.id,
+                    )}`}
+                  >
+                    {result.payout > 0 ? '+' : ''}
+                    {formatNumber(result.payout)} <span className="text-sm font-medium text-white/70">리보</span>
+                  </p>
+                  <p className="mt-1 text-xs text-white/70">{result.landed.label}</p>
+                </>
               ) : (
-                <p className="mt-1 text-xs text-white/55">아래 버튼으로 돌릴 수 있어요</p>
+                <>
+                  <p className="text-xs text-white/60">배팅</p>
+                  <p className="text-lg font-semibold tabular-nums text-white/90 drop-shadow-[0_8px_18px_rgba(0,0,0,0.7)]">
+                    {formatNumber(displayBet)} <span className="text-sm font-medium text-white/70">리보</span>
+                  </p>
+                </>
               )}
             </div>
           </div>
@@ -143,7 +148,12 @@ export default function RoulettePageClient() {
         <div className="mt-3 text-center">
           {phase === 'loop' && <p className="text-sm text-zinc-400">돌리는 중…</p>}
           {phase === 'settle' && <p className="text-sm text-zinc-400">멈추는 중…</p>}
-          {phase === 'idle' && <p className="text-sm text-zinc-500">배팅하고 돌려보세요</p>}
+          {phase === 'idle' &&
+            (hasRevealedResult && result ? (
+              <p className="text-sm text-zinc-500">새 잔액 {formatNumber(result.balance)} 리보</p>
+            ) : (
+              <p className="text-sm text-zinc-500">배팅하고 돌려보세요</p>
+            ))}
         </div>
       </div>
 
@@ -158,13 +168,26 @@ export default function RoulettePageClient() {
             className="space-y-3"
             onSubmit={(e) => {
               e.preventDefault()
+              const form = e.currentTarget
+              if (!form.reportValidity()) {
+                return
+              }
+
+              const formData = new FormData(form)
+              const betRaw = formData.get('bet')
+              const betValue = typeof betRaw === 'string' ? Number(betRaw) : NaN
+              if (!Number.isFinite(betValue)) {
+                return
+              }
+              setDisplayBet(betValue)
+
               stopTimer(revealTimerRef)
               setIsResultRevealed(false)
               setPhase('loop')
               startSpinLoop(loopTimerRef, setRotationDeg)
 
               spin.mutate(
-                { bet },
+                { bet: betValue },
                 {
                   onSuccess: (data) => {
                     stopSpinLoop(loopTimerRef)
@@ -200,17 +223,16 @@ export default function RoulettePageClient() {
               </label>
               <input
                 className="w-full rounded-xl bg-black/30 border border-white/10 px-3 py-2 text-zinc-100 outline-none focus:border-white/20"
+                defaultValue={ROULETTE_CONFIG.minBet}
                 disabled={phase !== 'idle'}
                 id="bet"
                 inputMode="numeric"
                 max={ROULETTE_CONFIG.maxBet}
                 min={ROULETTE_CONFIG.minBet}
                 name="bet"
-                onChange={(e) => setBet(Number(e.target.value))}
                 required
                 step={10}
                 type="number"
-                value={bet}
               />
               <p className="text-xs text-zinc-500">
                 최소 {formatNumber(ROULETTE_CONFIG.minBet)} 리보 · 최대 {formatNumber(ROULETTE_CONFIG.maxBet)} 리보
@@ -235,37 +257,32 @@ export default function RoulettePageClient() {
         )}
       </div>
 
-      {result && isResultRevealed && (
-        <div className="rounded-2xl bg-white/4 border border-white/7 p-4">
-          <p className="text-zinc-200 font-medium">결과</p>
-          <div className="mt-3 space-y-1 text-sm tabular-nums">
-            <p className="flex items-center gap-1 text-zinc-300">
-              <span className="text-zinc-500">도착</span>{' '}
-              <span aria-hidden className="inline-flex items-center gap-1 align-middle">
-                <span
-                  className="size-3 rounded-sm border border-white/20"
-                  style={{ backgroundColor: getSliceColor(result.landed.id, 0) }}
-                />
-                <span
-                  className="size-3 rounded-sm border border-white/20"
-                  style={{ backgroundColor: getSliceColor(result.landed.id, 1) }}
-                />
-              </span>
-              {result.landed.label}
-            </p>
-            <p className="text-zinc-300">
-              <span className="text-zinc-500">지급</span> +{formatNumber(result.payout)} 리보
-            </p>
-            <p className="text-zinc-300">
-              <span className="text-zinc-500">손익</span>{' '}
-              <span className={result.net >= 0 ? 'text-emerald-400' : 'text-rose-400'}>
+      {hasRevealedResult && result && (
+        <div className="mb-3 rounded-xl bg-white/3 border border-white/8 px-3 py-2">
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-xs text-zinc-500">도착</p>
+              <p className="mt-0.5 flex items-center gap-1 text-sm text-zinc-200 font-medium">
+                <span aria-hidden className="inline-flex items-center gap-1 align-middle">
+                  <span
+                    className="size-3 rounded-sm border border-white/20"
+                    style={{ backgroundColor: getSliceColor(result.landed.id, 0) }}
+                  />
+                  <span
+                    className="size-3 rounded-sm border border-white/20"
+                    style={{ backgroundColor: getSliceColor(result.landed.id, 1) }}
+                  />
+                </span>
+                <span className="truncate">{result.landed.label}</span>
+              </p>
+            </div>
+            <div className="text-right tabular-nums">
+              <p className={result.net >= 0 ? 'text-emerald-400 font-semibold' : 'text-rose-400 font-semibold'}>
                 {result.net >= 0 ? '+' : ''}
                 {formatNumber(result.net)} 리보
-              </span>
-            </p>
-            <p className="text-zinc-300">
-              <span className="text-zinc-500">새 잔액</span> {formatNumber(result.balance)} 리보
-            </p>
+              </p>
+              <p className="mt-0.5 text-xs text-zinc-500">잔액 {formatNumber(result.balance)} 리보</p>
+            </div>
           </div>
         </div>
       )}
@@ -345,7 +362,7 @@ function formatMultiplier(payoutMultiplierX100: number): string {
   if (payoutMultiplierX100 % 100 === 0) {
     return `${payoutMultiplierX100 / 100}배`
   }
-  return `${(payoutMultiplierX100 / 100).toFixed(2)}배`
+  return `${(payoutMultiplierX100 / 100).toFixed(1)}배`
 }
 
 function getDesiredRotationWithin360({
@@ -366,6 +383,13 @@ function getSegmentColor(id: RouletteSegment['id']): string {
   if (id === 'double') return '#34D399' // emerald-400
   if (id === 'boost') return '#60A5FA' // blue-400
   return '#3F3F46' // zinc-700
+}
+
+function getSegmentTextClass(id: RouletteSegment['id']): string {
+  if (id === 'jackpot') return 'text-amber-300'
+  if (id === 'double') return 'text-emerald-400'
+  if (id === 'boost') return 'text-blue-400'
+  return 'text-zinc-300'
 }
 
 function getSliceColor(id: RouletteSegment['id'], index: number): string {

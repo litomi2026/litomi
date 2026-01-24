@@ -27,7 +27,7 @@ export const DEFAULT_METRIC = MetricParam.VIEW
 export const DEFAULT_PERIOD = PeriodParam.WEEK
 
 export const metricInfo: Record<string, { label: string; icon: ElementType }> = {
-  [MetricParam.VIEW]: { label: '조회수', icon: Eye },
+  [MetricParam.VIEW]: { label: '조회', icon: Eye },
   [MetricParam.BOOKMARK]: { label: '북마크', icon: Bookmark },
   [MetricParam.LIBRARY]: { label: '서재', icon: Library },
   [MetricParam.RATING]: { label: '별점', icon: Star },

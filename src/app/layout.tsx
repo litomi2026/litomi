@@ -120,13 +120,24 @@ export default function RootLayout({ children }: Readonly<Props>) {
         <HiyobiPing />
         <NewYearToastNudge />
         <OverlayHost>
-          <Toaster
-            className="pointer-events-auto"
-            mobileOffset={{ top: 'max(1rem,var(--safe-area-top))' }}
-            position="top-center"
-            richColors
-            theme="system"
-          />
+          <div className="hidden sm:block">
+            <Toaster
+              className="pointer-events-auto"
+              mobileOffset={{ top: 'max(1rem,var(--safe-area-top))' }}
+              position="top-center"
+              richColors
+              theme="system"
+            />
+          </div>
+          <div className="sm:hidden">
+            <Toaster
+              className="pointer-events-auto"
+              mobileOffset={{ bottom: 'max(1rem,var(--safe-area-bottom))' }}
+              position="bottom-center"
+              richColors
+              theme="system"
+            />
+          </div>
         </OverlayHost>
         {NEXT_PUBLIC_GA_ID && <GoogleAnalytics gaId={NEXT_PUBLIC_GA_ID} />}
         {AMPLITUDE_API_KEY && <Amplitude apiKey={AMPLITUDE_API_KEY} />}

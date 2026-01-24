@@ -1,7 +1,8 @@
 import AutoHideNavigation from '../AutoHideNavigation'
-import { metricInfo, MetricParam, periodLabels, PeriodParam } from './common'
+import { metricInfo, MetricParam } from './common'
+import DonationLink from './DonationLink'
 import MetricLink from './MetricLink'
-import PeriodLink from './PeriodLink'
+import PeriodNavigation from './PeriodNavigation'
 import RankingTitle from './RankingTitle'
 import RealtimeLink from './RealtimeLink'
 
@@ -21,13 +22,10 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           {Object.keys(metricInfo).map((value) => (
             <MetricLink key={value} value={value as MetricParam} />
           ))}
+          <DonationLink />
           <RealtimeLink />
         </nav>
-        <nav className="flex gap-1 overflow-x-auto scrollbar-hidden whitespace-nowrap overscroll-none">
-          {Object.keys(periodLabels).map((value) => (
-            <PeriodLink key={value} value={value as PeriodParam} />
-          ))}
-        </nav>
+        <PeriodNavigation />
       </header>
       {children}
     </main>

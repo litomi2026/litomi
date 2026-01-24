@@ -50,6 +50,46 @@ export const pointTransactionTable = pgTable(
   (table) => [index('idx_point_transaction_user_id').on(table.userId, table.createdAt.desc())],
 ).enableRLS()
 
+export const pointDonationTable = pgTable(
+  'point_donation',
+  {
+    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
+    userId: bigint('user_id', { mode: 'number' })
+      .references(() => userTable.id, { onDelete: 'cascade' })
+      .notNull(),
+    pointTransactionId: bigint('point_transaction_id', { mode: 'number' })
+      .references(() => pointTransactionTable.id, { onDelete: 'cascade' })
+      .notNull(),
+    deletedAt: timestamp('deleted_at', { precision: 3, withTimezone: true }),
+  },
+  (table) => [
+    index('idx_point_donation_user_id').on(table.userId, table.id.desc()),
+    uniqueIndex('idx_point_donation_unique_point_transaction').on(table.pointTransactionId),
+  ],
+).enableRLS()
+
+export const DONATION_RECIPIENT_TYPE = {
+  ARTIST: 1,
+  GROUP: 2,
+} as const
+
+export const pointDonationRecipientTable = pgTable(
+  'point_donation_recipient',
+  {
+    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
+    donationId: bigint('donation_id', { mode: 'number' })
+      .references(() => pointDonationTable.id, { onDelete: 'cascade' })
+      .notNull(),
+    recipientType: smallint('recipient_type').notNull(),
+    recipientValue: varchar('recipient_value', { length: 200 }).notNull(),
+    amount: bigint('amount', { mode: 'number' }).notNull(),
+  },
+  (table) => [
+    index('idx_point_donation_recipient_type_value').on(table.recipientType, table.recipientValue),
+    uniqueIndex('idx_point_donation_recipient_unique').on(table.donationId, table.recipientType, table.recipientValue),
+  ],
+).enableRLS()
+
 export const userExpansionTable = pgTable(
   'user_expansion',
   {

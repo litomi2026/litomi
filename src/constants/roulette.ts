@@ -43,9 +43,9 @@ export const ROULETTE_CONFIG: RouletteConfig = {
   maxPayoutMultiplierX100: 10_000,
   segments: [
     { id: 'jackpot', label: '잭팟', weight: 10, payoutMultiplierX100: 10_000 },
-    { id: 'double', label: '더블', weight: 2_500, payoutMultiplierX100: 200 },
-    { id: 'boost', label: '부스트', weight: 2_400, payoutMultiplierX100: 125 },
-    { id: 'lose', label: '꽝', weight: 5_090, payoutMultiplierX100: 0 },
+    { id: 'double', label: '더블', weight: 1_200, payoutMultiplierX100: 200 },
+    { id: 'boost', label: '부스트', weight: 4_300, payoutMultiplierX100: 120 },
+    { id: 'lose', label: '꽝', weight: 4_490, payoutMultiplierX100: 10 },
   ],
 }
 
