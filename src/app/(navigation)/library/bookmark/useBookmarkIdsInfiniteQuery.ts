@@ -31,5 +31,6 @@ export default function useBookmarkIdsInfiniteQuery(initialData?: GETV1BookmarkR
       pageParams: [null],
     },
     initialPageParam: null,
+    meta: { requiresAdult: true },
   })
 }

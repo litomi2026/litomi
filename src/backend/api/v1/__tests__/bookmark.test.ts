@@ -12,14 +12,17 @@ const mockBookmarks: Map<number, Array<{ mangaId: number; createdAt: Date }>> = 
 type TestEnv = Env & {
   Bindings: {
     userId?: number
+    isAdult?: boolean
   }
 }
 
 const app = new Hono<TestEnv>()
 app.use('*', contextStorage())
 app.use('*', async (c, next) => {
-  if (c.env.userId) {
-    c.set('userId', c.env.userId)
+  const userId = c.env.userId
+  if (typeof userId === 'number') {
+    c.set('userId', userId)
+    c.set('isAdult', c.env.isAdult ?? true)
   }
   await next()
 })
