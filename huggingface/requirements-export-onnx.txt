@@ -1,0 +1,6 @@
+numpy
+torch
+transformers
+onnx
+onnxscript
+onnxruntime
