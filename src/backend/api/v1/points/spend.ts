@@ -36,6 +36,7 @@ route.post('/', requireAuth, zProblemValidator('json', spendSchema), async (c) =
     let spendMeta
     let expansionConfig: ReturnType<typeof getExpansionConfig> | null = null
     let purchaseItem: { type: (typeof ITEM_TYPE)[keyof typeof ITEM_TYPE]; itemId: string } | null = null
+    let transactionType!: (typeof TRANSACTION_TYPE)[keyof typeof TRANSACTION_TYPE]
 
     switch (type) {
       case 'badge':
@@ -50,6 +51,7 @@ route.post('/', requireAuth, zProblemValidator('json', spendSchema), async (c) =
           type: type === 'badge' ? ITEM_TYPE.BADGE : ITEM_TYPE.THEME,
           itemId: selectedItemId,
         }
+        transactionType = type === 'badge' ? TRANSACTION_TYPE.BADGE_PURCHASE : TRANSACTION_TYPE.THEME_PURCHASE
         break
       }
       case 'bookmark': {
@@ -62,21 +64,26 @@ route.post('/', requireAuth, zProblemValidator('json', spendSchema), async (c) =
 
         spendMeta = getSpendMeta({ type, itemId })
         expansionConfig = getExpansionConfig({ type, itemId })
+        transactionType =
+          itemId === 'small' ? TRANSACTION_TYPE.BOOKMARK_EXPANSION_SMALL : TRANSACTION_TYPE.BOOKMARK_EXPANSION_LARGE
         break
       }
       case 'history': {
         spendMeta = getSpendMeta({ type })
         expansionConfig = getExpansionConfig({ type })
+        transactionType = TRANSACTION_TYPE.HISTORY_EXPANSION
         break
       }
       case 'library': {
         spendMeta = getSpendMeta({ type })
         expansionConfig = getExpansionConfig({ type })
+        transactionType = TRANSACTION_TYPE.LIBRARY_EXPANSION
         break
       }
       case 'rating': {
         spendMeta = getSpendMeta({ type })
         expansionConfig = getExpansionConfig({ type })
+        transactionType = TRANSACTION_TYPE.RATING_EXPANSION
         break
       }
       default: {
@@ -154,10 +161,9 @@ route.post('/', requireAuth, zProblemValidator('json', spendSchema), async (c) =
       // 거래 내역 기록
       await tx.insert(pointTransactionTable).values({
         userId,
-        type: TRANSACTION_TYPE.SHOP_PURCHASE,
+        type: transactionType,
         amount: -spendMeta.price,
         balanceAfter: newBalance,
-        description: spendMeta.description,
       })
 
       return { ok: true, balance: newBalance, spent: spendMeta.price }

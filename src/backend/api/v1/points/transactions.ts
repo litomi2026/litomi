@@ -8,6 +8,7 @@ import { requireAuth } from '@/backend/middleware/require-auth'
 import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
+import { POINT_CONSTANTS, TRANSACTION_TYPE } from '@/constants/points'
 import { db } from '@/database/supabase/drizzle'
 import { pointTransactionTable } from '@/database/supabase/points'
 
@@ -49,7 +50,6 @@ route.get('/', requireAuth, requireAdult, zProblemValidator('query', querySchema
         type: pointTransactionTable.type,
         amount: pointTransactionTable.amount,
         balanceAfter: pointTransactionTable.balanceAfter,
-        description: pointTransactionTable.description,
         createdAt: pointTransactionTable.createdAt,
       })
       .from(pointTransactionTable)
@@ -68,7 +68,7 @@ route.get('/', requireAuth, requireAdult, zProblemValidator('query', querySchema
       type: t.amount > 0 ? 'earn' : 'spend',
       amount: t.amount,
       balanceAfter: t.balanceAfter,
-      description: t.description,
+      description: getTransactionDescription({ amount: t.amount, transactionType: t.type }),
       createdAt: t.createdAt.toISOString(),
     }))
 
@@ -84,3 +84,37 @@ route.get('/', requireAuth, requireAdult, zProblemValidator('query', querySchema
 })
 
 export default route
+
+type TransactionDescriptionParams = {
+  transactionType: number
+  amount: number
+}
+
+function getTransactionDescription({ transactionType, amount }: TransactionDescriptionParams): string | null {
+  switch (transactionType) {
+    case TRANSACTION_TYPE.AD_CLICK:
+      return '광고 클릭'
+    case TRANSACTION_TYPE.BADGE_PURCHASE:
+      return '프로필 뱃지 구매'
+    case TRANSACTION_TYPE.BOOKMARK_EXPANSION_LARGE:
+      return `북마크 확장 (+${POINT_CONSTANTS.BOOKMARK_EXPANSION_LARGE_AMOUNT}개)`
+    case TRANSACTION_TYPE.BOOKMARK_EXPANSION_SMALL:
+      return `북마크 확장 (+${POINT_CONSTANTS.BOOKMARK_EXPANSION_SMALL_AMOUNT}개)`
+    case TRANSACTION_TYPE.DONATION:
+      return '기부'
+    case TRANSACTION_TYPE.HISTORY_EXPANSION:
+      return `감상 기록 확장 (+${POINT_CONSTANTS.HISTORY_EXPANSION_AMOUNT}개)`
+    case TRANSACTION_TYPE.LIBRARY_EXPANSION:
+      return `내 서재 확장 (+${POINT_CONSTANTS.LIBRARY_EXPANSION_AMOUNT}개)`
+    case TRANSACTION_TYPE.RATING_EXPANSION:
+      return `평가 확장 (+${POINT_CONSTANTS.RATING_EXPANSION_AMOUNT}개)`
+    case TRANSACTION_TYPE.ROULETTE_BET:
+      return `룰렛 배팅 (-${Math.abs(amount).toLocaleString()} 리보)`
+    case TRANSACTION_TYPE.ROULETTE_PAYOUT:
+      return `룰렛 당첨 (+${amount.toLocaleString()} 리보)`
+    case TRANSACTION_TYPE.THEME_PURCHASE:
+      return '커스텀 테마 구매'
+    default:
+      return null
+  }
+}

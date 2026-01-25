@@ -1,4 +1,4 @@
-import { and, desc, eq, inArray, isNull, lt, sum } from 'drizzle-orm'
+import { and, desc, eq, inArray, lt, sum } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { z } from 'zod'
 
@@ -93,17 +93,14 @@ route.get('/me', requireAuth, zProblemValidator('query', meQuerySchema), async (
   const { cursor } = c.req.valid('query')
 
   const whereConditions = cursor
-    ? and(
-        eq(pointDonationTable.userId, userId),
-        isNull(pointDonationTable.deletedAt),
-        lt(pointDonationTable.id, cursor),
-      )
-    : and(eq(pointDonationTable.userId, userId), isNull(pointDonationTable.deletedAt))
+    ? and(eq(pointDonationTable.userId, userId), lt(pointDonationTable.id, cursor))
+    : eq(pointDonationTable.userId, userId)
 
   try {
     const donations = await db
       .select({
         id: pointDonationTable.id,
+        pointTransactionId: pointDonationTable.pointTransactionId,
         totalAmount: pointTransactionTable.amount,
         createdAt: pointTransactionTable.createdAt,
       })
@@ -119,17 +116,17 @@ route.get('/me', requireAuth, zProblemValidator('query', meQuerySchema), async (
       donations.pop()
     }
 
-    const donationIds = donations.map((d) => d.id)
-    const recipients = donationIds.length
+    const transactionIds = donations.map((d) => d.pointTransactionId)
+    const recipients = transactionIds.length
       ? await db
           .select({
-            donationId: pointDonationRecipientTable.donationId,
+            pointTransactionId: pointDonationRecipientTable.pointTransactionId,
             recipientType: pointDonationRecipientTable.recipientType,
             recipientValue: pointDonationRecipientTable.recipientValue,
             amount: pointDonationRecipientTable.amount,
           })
           .from(pointDonationRecipientTable)
-          .where(inArray(pointDonationRecipientTable.donationId, donationIds))
+          .where(inArray(pointDonationRecipientTable.pointTransactionId, transactionIds))
       : []
 
     const artistValueSet = new Set<string>()
@@ -155,7 +152,7 @@ route.get('/me', requireAuth, zProblemValidator('query', meQuerySchema), async (
 
     const recipientMap = new Map<number, GETV1PointsDonationsMeRecipient[]>()
     for (const r of recipients) {
-      const list = recipientMap.get(r.donationId) ?? []
+      const list = recipientMap.get(r.pointTransactionId) ?? []
       const label =
         r.recipientType === DONATION_RECIPIENT_TYPE.ARTIST
           ? (artistLabelMap.get(r.recipientValue) ?? r.recipientValue)
@@ -166,14 +163,14 @@ route.get('/me', requireAuth, zProblemValidator('query', meQuerySchema), async (
         label,
         amount: r.amount,
       })
-      recipientMap.set(r.donationId, list)
+      recipientMap.set(r.pointTransactionId, list)
     }
 
     const items: GETV1PointsDonationsMeItem[] = donations.map((d) => ({
       id: d.id,
       totalAmount: -d.totalAmount,
       createdAt: d.createdAt.toISOString(),
-      recipients: recipientMap.get(d.id) ?? [],
+      recipients: recipientMap.get(d.pointTransactionId) ?? [],
     }))
 
     return c.json<GETV1PointsDonationsMeResponse>(
