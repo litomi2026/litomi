@@ -1,5 +1,6 @@
 'use client'
 
+import { Trash2 } from 'lucide-react'
 import Link from 'next/link'
 
 import type { GETV1PointsDonationsMeRecipient } from '@/backend/api/v1/points/donations/GET'
@@ -9,10 +10,12 @@ import { formatDistanceToNow, formatLocalDate } from '@/utils/format/date'
 import { formatNumber } from '@/utils/format/number'
 import { ProblemDetailsError } from '@/utils/react-query-error'
 
+import useDeleteDonationMutation from './useDeleteDonationMutation'
 import useMyDonationsInfiniteQuery from './useMyDonationsInfiniteQuery'
 
 export default function DonationsClient() {
   const { data, error, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useMyDonationsInfiniteQuery(true)
+  const deleteMutation = useDeleteDonationMutation()
   const items = data?.pages.flatMap((p) => p.items) ?? []
 
   const errorMessage =
@@ -55,11 +58,25 @@ export default function DonationsClient() {
                         {distanceLabel ? `${distanceLabel} · ${dateLabel}` : dateLabel}
                       </p>
                     </div>
-                    <div className="text-right">
-                      <p className="text-lg font-semibold text-foreground tabular-nums">
-                        {formatNumber(item.totalAmount)} 리보
-                      </p>
-                      <p className="text-xs text-zinc-500">대상 {item.recipients.length}곳</p>
+                    <div className="flex items-start gap-2">
+                      <div className="text-right">
+                        <p className="text-lg font-semibold text-foreground tabular-nums">
+                          {formatNumber(item.totalAmount)} 리보
+                        </p>
+                        <p className="text-xs text-zinc-500">대상 {item.recipients.length}곳</p>
+                      </div>
+                      <button
+                        aria-label="기부 내역 삭제"
+                        className="shrink-0 rounded-full p-2 text-zinc-500 transition hover:bg-zinc-900/60 hover:text-zinc-200"
+                        onClick={() => {
+                          const ok = window.confirm('기부 내역을 삭제할까요?\n포인트는 돌아오지 않아요.')
+                          if (!ok) return
+                          deleteMutation.mutate({ donationId: item.id })
+                        }}
+                        type="button"
+                      >
+                        <Trash2 className="size-4" />
+                      </button>
                     </div>
                   </div>
 

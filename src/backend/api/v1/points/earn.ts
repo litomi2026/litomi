@@ -163,7 +163,6 @@ route.post('/', requireAuth, zProblemValidator('json', requestSchema), async (c)
         type: TRANSACTION_TYPE.AD_CLICK,
         amount,
         balanceAfter: newBalance,
-        description: `광고 클릭 (${tokenRecord.adSlotId})`,
       })
 
       return {

@@ -91,7 +91,6 @@ route.post('/', requireAuth, zProblemValidator('json', createSchema), async (c) 
           type: TRANSACTION_TYPE.DONATION,
           amount: -totalAmount,
           balanceAfter: newBalance,
-          description: '기부',
         })
         .returning({ id: pointTransactionTable.id })
 
@@ -105,7 +104,7 @@ route.post('/', requireAuth, zProblemValidator('json', createSchema), async (c) 
 
       await tx.insert(pointDonationRecipientTable).values(
         distribution.map((d) => ({
-          donationId: donation.id,
+          pointTransactionId: transaction.id,
           recipientType: d.type === 'artist' ? DONATION_RECIPIENT_TYPE.ARTIST : DONATION_RECIPIENT_TYPE.GROUP,
           recipientValue: d.value,
           amount: d.amount,

@@ -70,7 +70,6 @@ route.post('/spin', requireAuth, zProblemValidator('json', requestSchema), async
         type: TRANSACTION_TYPE.ROULETTE_BET,
         amount: -bet,
         balanceAfter: balanceAfterBet,
-        description: `룰렛 배팅 (-${bet.toLocaleString()} 리보)`,
       })
 
       // 2) 결과 결정 (서버 RNG)
@@ -95,7 +94,6 @@ route.post('/spin', requireAuth, zProblemValidator('json', requestSchema), async
           type: TRANSACTION_TYPE.ROULETTE_PAYOUT,
           amount: payout,
           balanceAfter: balanceAfterPayout,
-          description: `룰렛 당첨 (+${payout.toLocaleString()} 리보)`,
         })
       }
 
