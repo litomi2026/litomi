@@ -374,3 +374,5 @@ tmp
 
 # Local OCR / embedding outputs (never commit)
 /search
+
+.open-next/

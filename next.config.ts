@@ -139,3 +139,8 @@ export default withSentryConfig(withAnalyzer, {
 
   telemetry: false,
 })
+
+// Enable calling `getCloudflareContext()` in `next dev`.
+// See https://opennext.js.org/cloudflare/bindings#local-access-to-bindings.
+import { initOpenNextCloudflareForDev } from '@opennextjs/cloudflare'
+initOpenNextCloudflareForDev()
