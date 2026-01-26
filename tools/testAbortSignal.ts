@@ -47,7 +47,7 @@ async function testDelayedAbort(delay: number) {
     console.log('Status:', response.status)
 
     // 응답 본문 읽기 시도
-    const data = await response.json()
+    const data = (await response.json()) as { mangas?: Array<unknown> }
     console.log('Mangas count:', data.mangas?.length || 0)
   } catch (error) {
     const duration = Date.now() - startTime

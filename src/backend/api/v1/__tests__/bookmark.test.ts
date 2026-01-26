@@ -9,6 +9,16 @@ import bookmarkRoutes from '../bookmark'
 let shouldThrowDatabaseError = false
 const mockBookmarks: Map<number, Array<{ mangaId: number; createdAt: Date }>> = new Map()
 
+type BookmarkItem = {
+  mangaId: number
+  createdAt: number
+}
+
+type BookmarkResponse = {
+  bookmarks: BookmarkItem[]
+  nextCursor: string | null
+}
+
 type TestEnv = Env & {
   Bindings: {
     userId?: number
@@ -100,7 +110,7 @@ describe('GET /api/v1/bookmark', () => {
       expect(response.status).toBe(200)
       expect(response.headers.get('content-type')).toContain('application/json')
 
-      const data = await response.json()
+      const data = (await response.json()) as BookmarkResponse
       expect(data.bookmarks).toHaveLength(3)
       expect(data.bookmarks[0].mangaId).toBe(100)
       expect(data.bookmarks[1].mangaId).toBe(200)
@@ -116,7 +126,7 @@ describe('GET /api/v1/bookmark', () => {
       const response = await app.request('/', {}, { userId: 1 })
 
       // Then
-      const data = await response.json()
+      const data = (await response.json()) as BookmarkResponse
       expect(response.status).toBe(200)
       expect(data.bookmarks).toHaveLength(0)
       expect(data.nextCursor).toBeNull()
@@ -137,7 +147,7 @@ describe('GET /api/v1/bookmark', () => {
 
       // Then
       expect(response.status).toBe(200)
-      const data = await response.json()
+      const data = (await response.json()) as BookmarkResponse
       expect(data.bookmarks).toHaveLength(3)
       expect(data.bookmarks[0].mangaId).toBe(100)
       expect(data.bookmarks[1].mangaId).toBe(200)
@@ -164,7 +174,7 @@ describe('GET /api/v1/bookmark', () => {
 
       // Then
       expect(response.status).toBe(200)
-      const data = await response.json()
+      const data = (await response.json()) as BookmarkResponse
       expect(data.bookmarks).toHaveLength(2)
       expect(data.bookmarks[0].mangaId).toBe(400)
       expect(data.bookmarks[1].mangaId).toBe(500)
@@ -245,7 +255,7 @@ describe('GET /api/v1/bookmark', () => {
       // Then
       expect(responses.every((r) => r.status === 200)).toBe(true)
 
-      const data = await Promise.all(responses.map((r) => r.json()))
+      const data = (await Promise.all(responses.map((r) => r.json()))) as BookmarkResponse[]
       expect(data.every((d) => d.bookmarks.length === 2)).toBe(true)
       expect(data.every((d) => d.bookmarks[0].mangaId === 100)).toBe(true)
     })
@@ -266,8 +276,8 @@ describe('GET /api/v1/bookmark', () => {
       expect(response1.status).toBe(200)
       expect(response2.status).toBe(200)
 
-      const data1 = await response1.json()
-      const data2 = await response2.json()
+      const data1 = (await response1.json()) as BookmarkResponse
+      const data2 = (await response2.json()) as BookmarkResponse
       expect(data1.bookmarks).toHaveLength(1)
       expect(data2.bookmarks).toHaveLength(2)
       expect(data1.bookmarks[0].mangaId).toBe(100)
@@ -288,7 +298,7 @@ describe('GET /api/v1/bookmark', () => {
 
       // Then
       expect(successResponse.status).toBe(200)
-      const data = await successResponse.json()
+      const data = (await successResponse.json()) as BookmarkResponse
       expect(data.bookmarks).toHaveLength(1)
       expect(data.bookmarks[0].mangaId).toBe(100)
     })
@@ -312,7 +322,7 @@ describe('GET /api/v1/bookmark', () => {
 
       // Then
       expect(response.status).toBe(200)
-      const data = await response.json()
+      const data = (await response.json()) as BookmarkResponse
       expect(data.bookmarks).toHaveLength(2)
       expect(data.bookmarks[0].mangaId).toBe(400)
       expect(data.bookmarks[1].mangaId).toBe(500)
@@ -345,7 +355,7 @@ describe('GET /api/v1/bookmark', () => {
 
       // Then
       expect(response.status).toBe(200)
-      const data = await response.json()
+      const data = (await response.json()) as BookmarkResponse
       expect(data.bookmarks[0].createdAt).toBe(testDate.getTime())
       expect(typeof data.bookmarks[0].createdAt).toBe('number')
     })

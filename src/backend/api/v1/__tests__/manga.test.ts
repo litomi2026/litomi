@@ -145,7 +145,7 @@ describe('GET /api/v1/manga/:id/history', () => {
       expect(response.status).toBe(403)
       expect(response.headers.get('content-type')).toContain('application/problem+json')
 
-      const problem = await response.json()
+      const problem = (await response.json()) as { type?: string }
       expect(problem?.type).toContain('/problems/adult-verification-required')
     })
 

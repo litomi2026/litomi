@@ -1,6 +1,12 @@
 import { writeFileSync } from 'fs'
 import { join } from 'path'
 
+type HarpiAttributesResponse = {
+  data: {
+    tags: Tag[]
+  }
+}
+
 type Tag = {
   id: string
   engStr: string
@@ -17,8 +23,8 @@ async function crawlHarpiTags() {
       referer: 'https://harpi.in/',
     },
   })
-  const data = await response.json()
-  const tagsMap = Object.fromEntries(data.data.tags.map((tag: Tag) => [tag.id, { ko: tag.korStr, en: tag.engStr }]))
+  const data = (await response.json()) as HarpiAttributesResponse
+  const tagsMap = Object.fromEntries(data.data.tags.map((tag) => [tag.id, { ko: tag.korStr, en: tag.engStr }]))
   const outputPath = join(process.cwd(), 'src', 'database', 'harpi-tag.json')
 
   writeFileSync(outputPath, JSON.stringify(tagsMap))

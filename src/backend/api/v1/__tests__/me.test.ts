@@ -10,6 +10,18 @@ let shouldThrowDatabaseError = false
 let deletedCookies: string[] = []
 let currentUserId: number | undefined
 
+type MeResponse = {
+  id: number
+  loginId: string
+  name: string
+  nickname: string
+  imageURL: string | null
+  adultVerification: {
+    required: boolean
+    status: 'unverified' | 'verified'
+  }
+}
+
 beforeAll(() => {
   spyOn(console, 'error').mockImplementation(() => {})
 })
@@ -188,7 +200,7 @@ describe('GET /api/v1/me', () => {
       const responses = await Promise.all(promises)
       expect(responses.every((r) => r.status === 200)).toBe(true)
 
-      const data = await Promise.all(responses.map((r) => r.json()))
+      const data = (await Promise.all(responses.map((r) => r.json()))) as MeResponse[]
       expect(data.every((d) => d.id === 1 && d.loginId === 'testuser1')).toBe(true)
       expect(deletedCookies).toEqual([])
     })
@@ -197,12 +209,12 @@ describe('GET /api/v1/me', () => {
       // Given - 사용자 1로 조회
       currentUserId = 1
       const response1 = await app.request('/', {}, { userId: 1 })
-      const data1 = await response1.json()
+      const data1 = (await response1.json()) as MeResponse
 
       // When - 사용자 2로 조회
       currentUserId = 2
       const response2 = await app.request('/', {}, { userId: 2 })
-      const data2 = await response2.json()
+      const data2 = (await response2.json()) as MeResponse
 
       // Then
       expect(response1.status).toBe(200)
@@ -225,7 +237,7 @@ describe('GET /api/v1/me', () => {
       const successResponse = await app.request('/', {}, { userId: 1 })
       expect(successResponse.status).toBe(200)
 
-      const data = await successResponse.json()
+      const data = (await successResponse.json()) as MeResponse
       expect(data.id).toBe(1)
       expect(data.loginId).toBe('testuser1')
     })
@@ -238,7 +250,7 @@ describe('GET /api/v1/me', () => {
 
       // When
       const response = await app.request('/', {}, { userId: 1 })
-      const data = await response.json()
+      const data = (await response.json()) as MeResponse
 
       // Then
       expect(response.status).toBe(200)

@@ -186,7 +186,7 @@ describe('GET /api/v1/search/trending', () => {
       const types = ['hourly', 'daily', 'weekly']
       const promises = types.map((type) => createRequest(type))
       const responses = await Promise.all(promises)
-      const data = await Promise.all(responses.map((r) => r.json()))
+      const data = (await Promise.all(responses.map((r) => r.json()))) as GETTrendingKeywordsResponse[]
 
       expect(responses.every((r) => r.status === 200)).toBe(true)
       expect(data.every((d) => d.keywords && d.updatedAt)).toBe(true)
