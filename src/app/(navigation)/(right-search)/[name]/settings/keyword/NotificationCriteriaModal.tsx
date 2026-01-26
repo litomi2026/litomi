@@ -83,13 +83,13 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
     for (let i = 0; i < conditionCount; i++) {
       if (i === index) continue
 
-      const typeSelect = form.elements.namedItem(`condition-type-${i}`) as HTMLSelectElement
-      const valueInput = form.elements.namedItem(`condition-value-${i}`) as HTMLInputElement
+      const typeField = form.elements.namedItem(`condition-type-${i}`)
+      const valueField = form.elements.namedItem(`condition-value-${i}`)
 
-      if (typeSelect && valueInput) {
+      if (typeField instanceof HTMLSelectElement && valueField instanceof HTMLInputElement) {
         conditions.push({
-          type: typeSelect.value,
-          value: valueInput.value,
+          type: typeField.value,
+          value: valueField.value,
         })
       }
     }
@@ -100,11 +100,11 @@ export default function NotificationCriteriaModal({ isOpen, onClose, editingCrit
     // Restore values after DOM updates
     setTimeout(() => {
       conditions.forEach((condition, newIndex) => {
-        const typeSelect = form.elements.namedItem(`condition-type-${newIndex}`) as HTMLSelectElement
-        const valueInput = form.elements.namedItem(`condition-value-${newIndex}`) as HTMLInputElement
+        const typeField = form.elements.namedItem(`condition-type-${newIndex}`)
+        const valueField = form.elements.namedItem(`condition-value-${newIndex}`)
 
-        if (typeSelect) typeSelect.value = condition.type
-        if (valueInput) valueInput.value = condition.value
+        if (typeField instanceof HTMLSelectElement) typeField.value = condition.type
+        if (valueField instanceof HTMLInputElement) valueField.value = condition.value
       })
     }, 0)
   }
