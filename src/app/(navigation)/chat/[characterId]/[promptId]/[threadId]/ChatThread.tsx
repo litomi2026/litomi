@@ -1,9 +1,11 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
 
 import { CHARACTERS } from '../../../character/characters'
-import AIChat from './AIChat'
+
+const AIChat = dynamic(() => import('./AIChat'), { ssr: false })
 
 type Props = {
   characterId: string
