@@ -32,20 +32,16 @@ type CORSOptions = {
 }
 
 export function applyCORSHeaders(request: Request, headers: Headers, options: CORSOptions = {}) {
-  const allowedOrigin = resolveProxyCORSOrigin(request.headers.get('origin'))
-
-  if (allowedOrigin) {
-    headers.set('Access-Control-Allow-Origin', allowedOrigin)
-    addVaryHeader(headers, 'Origin')
-  }
-
   const methods = options.methods?.length ? options.methods.join(', ') : 'GET, OPTIONS'
+  const allowedHeaders = request.headers.get('access-control-request-headers') ?? 'Content-Type, Authorization'
+
+  headers.set('Access-Control-Allow-Origin', 'https://litomi.in')
   headers.set('Access-Control-Allow-Methods', methods)
-  headers.set(
-    'Access-Control-Allow-Headers',
-    request.headers.get('access-control-request-headers') ?? 'Content-Type, Authorization',
-  )
-  headers.set('Access-Control-Max-Age', '86400')
+  headers.set('Access-Control-Allow-Headers', allowedHeaders)
+  headers.set('Access-Control-Max-Age', `${sec('30 days')}`)
+
+  addVaryHeader(headers, 'Origin')
+  addVaryHeader(headers, 'Access-Control-Request-Headers')
 }
 
 export function calculateOptimalCacheDuration(images: string[]): number {
@@ -249,27 +245,4 @@ function extractExpirationFromURL(imageUrl: string): number | null {
     // Not a valid URL
   }
   return null
-}
-
-function resolveProxyCORSOrigin(originHeader: string | null) {
-  if (!originHeader) {
-    return undefined
-  }
-
-  try {
-    const { hostname, protocol } = new URL(originHeader)
-    const host = hostname.toLowerCase()
-
-    if (host === 'localhost') {
-      return originHeader
-    }
-
-    if (protocol === 'https:' && (host === 'litomi.in' || host.endsWith('.litomi.in'))) {
-      return originHeader
-    }
-  } catch {
-    return undefined
-  }
-
-  return undefined
 }
