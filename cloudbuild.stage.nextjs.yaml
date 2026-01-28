@@ -23,6 +23,8 @@ steps:
       - 'NEXT_PUBLIC_TURNSTILE_SITE_KEY=$_NEXT_PUBLIC_TURNSTILE_SITE_KEY'
       - '--build-arg'
       - 'NEXT_PUBLIC_VAPID_PUBLIC_KEY=$_NEXT_PUBLIC_VAPID_PUBLIC_KEY'
+      - '--build-arg'
+      - 'POSTGRES_URL=$_POSTGRES_URL'
     id: Build
   - name: gcr.io/cloud-builders/docker
     args:
@@ -66,6 +68,7 @@ substitutions:
   _NEXT_PUBLIC_IOS_TESTFLIGHT_URL: ''
   _NEXT_PUBLIC_TURNSTILE_SITE_KEY: ''
   _NEXT_PUBLIC_VAPID_PUBLIC_KEY: ''
+  _POSTGRES_URL: ''
 tags:
   - gcp-cloud-build-deploy-cloud-run
   - gcp-cloud-build-deploy-cloud-run-managed
