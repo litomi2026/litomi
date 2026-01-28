@@ -27,6 +27,26 @@ type CacheControlHeaders = {
   browser?: CacheControlOptions
 }
 
+type CORSOptions = {
+  methods?: string[]
+}
+
+export function applyCORSHeaders(request: Request, headers: Headers, options: CORSOptions = {}) {
+  const allowedOrigin = resolveProxyCORSOrigin(request.headers.get('origin'))
+  if (allowedOrigin) {
+    headers.set('Access-Control-Allow-Origin', allowedOrigin)
+    addVaryHeader(headers, 'Origin')
+  }
+
+  const methods = options.methods?.length ? options.methods.join(', ') : 'GET, OPTIONS'
+  headers.set('Access-Control-Allow-Methods', methods)
+  headers.set(
+    'Access-Control-Allow-Headers',
+    request.headers.get('access-control-request-headers') ?? 'Content-Type, Authorization',
+  )
+  headers.set('Access-Control-Max-Age', '86400')
+}
+
 export function calculateOptimalCacheDuration(images: string[]): number {
   const now = Math.floor(Date.now() / 1000)
   let nearestExpiration
@@ -70,6 +90,12 @@ export function createCacheControlHeaders({ vercel, cloudflare, browser }: Cache
     headers['Cache-Control'] = createCacheControl(browser)
   }
   return headers
+}
+
+export function createCORSPreflightResponse(request: Request, options?: CORSOptions) {
+  const headers = new Headers()
+  applyCORSHeaders(request, headers, options)
+  return new Response(null, { status: 204, headers })
 }
 
 export async function createHealthCheckHandler(
@@ -187,6 +213,30 @@ export function isUpstreamServerError(error: unknown): boolean {
   return false
 }
 
+export function withCORS(request: Request, response: Response, options?: CORSOptions) {
+  applyCORSHeaders(request, response.headers, options)
+  return response
+}
+
+function addVaryHeader(headers: Headers, value: string) {
+  const existing = headers.get('Vary')
+  if (!existing) {
+    headers.set('Vary', value)
+    return
+  }
+
+  const parts = existing
+    .split(',')
+    .map((v) => v.trim())
+    .filter(Boolean)
+
+  if (parts.some((v) => v.toLowerCase() === value.toLowerCase())) {
+    return
+  }
+
+  headers.set('Vary', [...parts, value].join(', '))
+}
+
 function extractExpirationFromURL(imageUrl: string): number | null {
   try {
     const url = new URL(imageUrl, CANONICAL_URL)
@@ -198,4 +248,28 @@ function extractExpirationFromURL(imageUrl: string): number | null {
     // Not a valid URL
   }
   return null
+}
+
+function resolveProxyCORSOrigin(originHeader: string | null) {
+  if (!originHeader) {
+    return undefined
+  }
+
+  try {
+    const { hostname, protocol } = new URL(originHeader)
+    const host = hostname.toLowerCase()
+
+    if (host === 'localhost') {
+      return originHeader
+    }
+
+    // Allow same-site + subdomains (e.g. workers.litomi.in)
+    if (protocol === 'https:' && (host === 'litomi.in' || host.endsWith('.litomi.in'))) {
+      return originHeader
+    }
+  } catch {
+    return undefined
+  }
+
+  return undefined
 }

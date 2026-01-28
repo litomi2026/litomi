@@ -1,10 +1,13 @@
 import { fetchMangaFromMultiSources } from '@/common/manga'
 import { BLACKLISTED_MANGA_IDS, LAST_VERIFIED_MANGA_ID } from '@/constants/policy'
 import {
+  applyCORSHeaders,
   calculateOptimalCacheDuration,
   createCacheControlHeaders,
+  createCORSPreflightResponse,
   createProblemDetailsResponse,
   handleRouteError,
+  withCORS,
 } from '@/crawler/proxy-utils'
 import { Locale } from '@/translation/common'
 import { RouteProps } from '@/types/nextjs'
@@ -28,11 +31,14 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
   })
 
   if (!validation.success) {
-    return createProblemDetailsResponse(request, {
-      status: 400,
-      code: 'bad-request',
-      detail: '잘못된 요청이에요',
-    })
+    return withCORS(
+      request,
+      createProblemDetailsResponse(request, {
+        status: 400,
+        code: 'bad-request',
+        detail: '잘못된 요청이에요',
+      }),
+    )
   }
 
   const { id, locale } = validation.data
@@ -50,21 +56,27 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       },
     })
 
-    return createProblemDetailsResponse(request, {
-      status: 403,
-      code: 'forbidden',
-      detail: '요청하신 작품은 접근할 수 없어요',
-      headers: forbiddenHeaders,
-    })
+    return withCORS(
+      request,
+      createProblemDetailsResponse(request, {
+        status: 403,
+        code: 'forbidden',
+        detail: '요청하신 작품은 접근할 수 없어요',
+        headers: forbiddenHeaders,
+      }),
+    )
   }
 
   try {
     if (request.signal?.aborted) {
-      return createProblemDetailsResponse(request, {
-        status: 499,
-        code: 'client-closed-request',
-        detail: '요청이 취소됐어요',
-      })
+      return withCORS(
+        request,
+        createProblemDetailsResponse(request, {
+          status: 499,
+          code: 'client-closed-request',
+          detail: '요청이 취소됐어요',
+        }),
+      )
     }
 
     const manga = await fetchMangaFromMultiSources({ id, locale })
@@ -84,12 +96,15 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
         },
       })
 
-      return createProblemDetailsResponse(request, {
-        status: isPermanentlyMissing ? 410 : 404,
-        code: 'not-found',
-        detail: '요청하신 작품을 찾을 수 없어요',
-        headers: notFoundHeaders,
-      })
+      return withCORS(
+        request,
+        createProblemDetailsResponse(request, {
+          status: isPermanentlyMissing ? 410 : 404,
+          code: 'not-found',
+          detail: '요청하신 작품을 찾을 수 없어요',
+          headers: notFoundHeaders,
+        }),
+      )
     }
 
     if ('isError' in manga) {
@@ -105,6 +120,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       })
 
       const headers = new Headers(errorHeaders)
+      applyCORSHeaders(request, headers)
       headers.set(DEGRADED_HEADER, '1')
       headers.set(DEGRADED_REASON_HEADER, 'IMAGES_ONLY')
 
@@ -129,8 +145,14 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       },
     })
 
-    return Response.json(manga, { headers: successHeaders })
+    const headers = new Headers(successHeaders)
+    applyCORSHeaders(request, headers)
+    return Response.json(manga, { headers })
   } catch (error) {
-    return handleRouteError(error, request)
+    return withCORS(request, handleRouteError(error, request))
   }
+}
+
+export async function OPTIONS(request: Request) {
+  return createCORSPreflightResponse(request)
 }

@@ -4,7 +4,14 @@ import { GETProxyKSearchSchema } from '@/app/api/proxy/k/search/schema'
 import { POSTV1SearchTrendingBody } from '@/backend/api/v1/search/trending/POST'
 import { BLACKLISTED_MANGA_IDS, MAX_KHENTAI_SEARCH_QUERY_LENGTH } from '@/constants/policy'
 import { encodeCategories, kHentaiClient, KHentaiMangaSearchOptions } from '@/crawler/k-hentai'
-import { createCacheControlHeaders, createProblemDetailsResponse, handleRouteError } from '@/crawler/proxy-utils'
+import {
+  applyCORSHeaders,
+  createCacheControlHeaders,
+  createCORSPreflightResponse,
+  createProblemDetailsResponse,
+  handleRouteError,
+  withCORS,
+} from '@/crawler/proxy-utils'
 import { env } from '@/env/client'
 import { getKeywordPromotion, type KeywordPromotion } from '@/sponsor'
 import { Locale } from '@/translation/common'
@@ -31,11 +38,14 @@ export async function GET(request: Request) {
   const validation = GETProxyKSearchSchema.safeParse(searchParams)
 
   if (!validation.success) {
-    return createProblemDetailsResponse(request, {
-      status: 400,
-      code: 'bad-request',
-      detail: '잘못된 요청이에요',
-    })
+    return withCORS(
+      request,
+      createProblemDetailsResponse(request, {
+        status: 400,
+        code: 'bad-request',
+        detail: '잘못된 요청이에요',
+      }),
+    )
   }
 
   const {
@@ -64,11 +74,14 @@ export async function GET(request: Request) {
   const search = [languageFilter, baseSearch].filter(Boolean).join(' ')
 
   if (search && search.length > MAX_KHENTAI_SEARCH_QUERY_LENGTH) {
-    return createProblemDetailsResponse(request, {
-      status: 400,
-      code: 'query-too-long',
-      detail: '검색어가 너무 길어요',
-    })
+    return withCORS(
+      request,
+      createProblemDetailsResponse(request, {
+        status: 400,
+        code: 'query-too-long',
+        detail: '검색어가 너무 길어요',
+      }),
+    )
   }
 
   const params: KHentaiMangaSearchOptions = {
@@ -92,11 +105,14 @@ export async function GET(request: Request) {
 
   try {
     if (requestSignal?.aborted) {
-      return createProblemDetailsResponse(request, {
-        status: 499,
-        code: 'client-closed-request',
-        detail: '요청이 취소됐어요',
-      })
+      return withCORS(
+        request,
+        createProblemDetailsResponse(request, {
+          status: 499,
+          code: 'client-closed-request',
+          detail: '요청이 취소됐어요',
+        }),
+      )
     }
 
     const revalidate = params.nextId ? sec('30 days') : 0
@@ -145,10 +161,16 @@ export async function GET(request: Request) {
       ...(promotion && { promotion }),
     }
 
-    return Response.json(response, { headers: getCacheControlHeader(params) })
+    const headers = new Headers(getCacheControlHeader(params))
+    applyCORSHeaders(request, headers)
+    return Response.json(response, { headers })
   } catch (error) {
-    return handleRouteError(error, request)
+    return withCORS(request, handleRouteError(error, request))
   }
+}
+
+export async function OPTIONS(request: Request) {
+  return createCORSPreflightResponse(request)
 }
 
 function getCacheControlHeader(params: KHentaiMangaSearchOptions) {
