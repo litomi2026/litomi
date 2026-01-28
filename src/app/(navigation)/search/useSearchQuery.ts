@@ -3,11 +3,14 @@ import { useSearchParams } from 'next/navigation'
 
 import { GETProxyKSearchResponse } from '@/app/api/proxy/k/search/route'
 import { QueryKeys } from '@/constants/query'
+import { env } from '@/env/client'
 import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
 import { whitelistSearchParams } from '@/utils/param'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import { SEARCH_PAGE_SEARCH_PARAMS } from './constants'
+
+const { NEXT_PUBLIC_EXTERNAL_API_PROXY_URL } = env
 
 export function useSearchQuery() {
   const searchParams = useSearchParams()
@@ -35,7 +38,7 @@ export function useSearchQuery() {
         searchParamsWithCursor.set('locale', locale)
       }
 
-      const url = `/api/proxy/k/search?${searchParamsWithCursor}`
+      const url = `${NEXT_PUBLIC_EXTERNAL_API_PROXY_URL}/api/proxy/k/search?${searchParamsWithCursor}`
       const { data } = await fetchWithErrorHandling<GETProxyKSearchResponse>(url)
       return data
     },

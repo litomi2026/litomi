@@ -499,7 +499,7 @@ describe('GET /api/v1/search/suggestions', () => {
 
     test('결과는 최대 10개까지만 반환된다', async () => {
       const response = await createRequest('fe')
-      const data = await response.json()
+      const data = (await response.json()) as GETSearchSuggestionsResponse
 
       expect(response.status).toBe(200)
       expect(data.length).toBeLessThanOrEqual(10)

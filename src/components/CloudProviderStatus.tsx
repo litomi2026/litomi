@@ -1,5 +1,6 @@
 'use client'
 
+import ms from 'ms'
 import { useEffect, useState } from 'react'
 
 type ServiceStatus = 'degraded' | 'down' | 'none' | 'unknown'
@@ -8,6 +9,30 @@ interface StatusData {
   lastChecked: Date | null
   supabase: ServiceStatus
   vercel: ServiceStatus
+}
+
+type StatusPageResponse = {
+  status?: {
+    indicator?: string
+  }
+}
+
+function getStatusPageIndicator(data: unknown): string | undefined {
+  if (typeof data !== 'object' || data === null) return undefined
+  if (!('status' in data)) return undefined
+  const status = (data as { status?: unknown }).status
+  if (typeof status !== 'object' || status === null) return undefined
+  if (!('indicator' in status)) return undefined
+  const indicator = (status as { indicator?: unknown }).indicator
+  return typeof indicator === 'string' ? indicator : undefined
+}
+
+function toServiceStatus(indicator: string | undefined): ServiceStatus {
+  // statuspage.io style: none | minor | major | critical
+  if (indicator === 'none') return 'none'
+  if (indicator === 'minor' || indicator === 'major') return 'degraded'
+  if (indicator === 'critical') return 'down'
+  return 'unknown'
 }
 
 const STATUS_ENDPOINTS = {
@@ -45,16 +70,19 @@ export default function CloudProviderStatus({ onStatusUpdate }: CloudProviderSta
       try {
         const [supabaseRes, vercelRes] = await Promise.all([
           fetch(STATUS_ENDPOINTS.supabase, { cache: 'no-store' })
-            .then((res) => res.json())
+            .then((res) => res.json() as Promise<StatusPageResponse>)
             .catch(() => null),
           fetch(STATUS_ENDPOINTS.vercel, { cache: 'no-store' })
-            .then((res) => res.json())
+            .then((res) => res.json() as Promise<StatusPageResponse>)
             .catch(() => null),
         ])
 
+        const supabaseIndicator = getStatusPageIndicator(supabaseRes)
+        const vercelIndicator = getStatusPageIndicator(vercelRes)
+
         setStatus({
-          supabase: supabaseRes?.status?.indicator || 'unknown',
-          vercel: vercelRes?.status?.indicator || 'unknown',
+          supabase: toServiceStatus(supabaseIndicator),
+          vercel: toServiceStatus(vercelIndicator),
           lastChecked: new Date(),
         })
       } catch (error) {
@@ -63,7 +91,7 @@ export default function CloudProviderStatus({ onStatusUpdate }: CloudProviderSta
     }
 
     checkStatus()
-    const interval = setInterval(checkStatus, 30000)
+    const interval = setInterval(checkStatus, ms('30 seconds'))
 
     return () => clearInterval(interval)
   }, [])

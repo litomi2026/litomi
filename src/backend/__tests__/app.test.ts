@@ -2,6 +2,34 @@ import { beforeEach, describe, expect, mock, test } from 'bun:test'
 
 import appRoutes from '../app'
 
+type HealthResponse = {
+  status: 'ok'
+  timestamp: string
+}
+
+type ReadyErrorResponse = {
+  status: 'error'
+  timestamp: string
+  database?: undefined
+}
+
+type ReadyOkResponse = {
+  status: 'ready'
+  timestamp: string
+  database: {
+    connected: boolean
+    time: string
+    version: string
+  }
+}
+
+type ReadyResponse = ReadyErrorResponse | ReadyOkResponse
+
+type RootResponse = {
+  name?: string
+  age?: number
+}
+
 let shouldThrowDatabaseError = false
 let shouldReturnEmptyResult = false
 
@@ -46,7 +74,7 @@ describe('GET /', () => {
       expect(response.status).toBe(200)
       expect(response.headers.get('content-type')).toContain('application/json')
 
-      const data = await response.json()
+      const data = (await response.json()) as RootResponse
       expect(data.name).toBeUndefined()
       expect(data.age).toBeUndefined()
     })
@@ -55,7 +83,7 @@ describe('GET /', () => {
       const response = await appRoutes.request('/?name=홍길동')
       expect(response.status).toBe(200)
 
-      const data = await response.json()
+      const data = (await response.json()) as RootResponse
       expect(data.name).toBe('홍길동')
       expect(data.age).toBeUndefined()
     })
@@ -64,7 +92,7 @@ describe('GET /', () => {
       const response = await appRoutes.request('/?age=25')
       expect(response.status).toBe(200)
 
-      const data = await response.json()
+      const data = (await response.json()) as RootResponse
       expect(data.name).toBeUndefined()
       expect(data.age).toBe(25)
     })
@@ -73,7 +101,7 @@ describe('GET /', () => {
       const response = await appRoutes.request('/?name=김철수&age=30')
       expect(response.status).toBe(200)
 
-      const data = await response.json()
+      const data = (await response.json()) as RootResponse
       expect(data.name).toBe('김철수')
       expect(data.age).toBe(30)
     })
@@ -89,7 +117,7 @@ describe('GET /', () => {
       const response = await appRoutes.request('/?age=-5')
       expect(response.status).toBe(200)
 
-      const data = await response.json()
+      const data = (await response.json()) as RootResponse
       expect(data.age).toBe(-5)
     })
   })
@@ -99,7 +127,7 @@ describe('GET /', () => {
       // When
       const promises = Array.from({ length: 5 }, () => appRoutes.request('/?name=테스트&age=20'))
       const responses = await Promise.all(promises)
-      const data = await Promise.all(responses.map((r) => r.json()))
+      const data = (await Promise.all(responses.map((r) => r.json()))) as RootResponse[]
 
       // Then
       expect(responses.every((r) => r.status === 200)).toBe(true)
@@ -110,7 +138,7 @@ describe('GET /', () => {
       const response = await appRoutes.request('/?name=John%20Doe&age=25')
       expect(response.status).toBe(200)
 
-      const data = await response.json()
+      const data = (await response.json()) as RootResponse
       expect(data.name).toBe('John Doe')
       expect(data.age).toBe(25)
     })
@@ -123,7 +151,7 @@ describe('GET /health', () => {
     expect(response.status).toBe(200)
     expect(response.headers.get('content-type')).toContain('application/json')
 
-    const data = await response.json()
+    const data = (await response.json()) as HealthResponse
     expect(data.status).toBe('ok')
     expect(data.timestamp).toBeDefined()
     expect(new Date(data.timestamp)).toBeInstanceOf(Date)
@@ -134,13 +162,13 @@ describe('GET /health', () => {
     const responses = await Promise.all(promises)
     expect(responses.every((r) => r.status === 200)).toBe(true)
 
-    const data = await Promise.all(responses.map((r) => r.json()))
+    const data = (await Promise.all(responses.map((r) => r.json()))) as HealthResponse[]
     expect(data.every((d) => d.status === 'ok' && d.timestamp)).toBe(true)
   })
 
   test('응답에 타임스탬프가 포함되어 있다', async () => {
     const response = await appRoutes.request('/health')
-    const data = await response.json()
+    const data = (await response.json()) as HealthResponse
     expect(data.timestamp).toBeDefined()
 
     const timestamp = new Date(data.timestamp)
@@ -161,7 +189,7 @@ describe('GET /ready', () => {
       expect(response.status).toBe(200)
       expect(response.headers.get('content-type')).toContain('application/json')
 
-      const data = await response.json()
+      const data = (await response.json()) as ReadyOkResponse
       expect(data.status).toBe('ready')
       expect(data.database).toBeDefined()
       expect(data.database.connected).toBe(true)
@@ -173,7 +201,7 @@ describe('GET /ready', () => {
     test('데이터베이스 정보가 올바르게 반환된다', async () => {
       // When
       const response = await appRoutes.request('/ready')
-      const data = await response.json()
+      const data = (await response.json()) as ReadyOkResponse
 
       // Then
       expect(data.status).toBe('ready')
@@ -187,7 +215,7 @@ describe('GET /ready', () => {
       const responses = await Promise.all(promises)
       expect(responses.every((r) => r.status === 200)).toBe(true)
 
-      const data = await Promise.all(responses.map((r) => r.json()))
+      const data = (await Promise.all(responses.map((r) => r.json()))) as ReadyOkResponse[]
       expect(data.every((d) => d.status === 'ready' && d.database.connected === true)).toBe(true)
     })
   })
@@ -198,7 +226,7 @@ describe('GET /ready', () => {
       const response = await appRoutes.request('/ready')
       expect(response.status).toBe(503)
 
-      const data = await response.json()
+      const data = (await response.json()) as ReadyErrorResponse
       expect(data.status).toBe('error')
       expect(data.timestamp).toBeDefined()
       expect(data.database).toBeUndefined()
@@ -209,7 +237,7 @@ describe('GET /ready', () => {
       const response = await appRoutes.request('/ready')
       expect(response.status).toBe(503)
 
-      const data = await response.json()
+      const data = (await response.json()) as ReadyErrorResponse
       expect(data.status).toBe('error')
       expect(data.timestamp).toBeDefined()
       expect(data.database).toBeUndefined()
@@ -230,14 +258,14 @@ describe('GET /ready', () => {
       // Then
       expect(successResponse.status).toBe(200)
 
-      const data = await successResponse.json()
+      const data = (await successResponse.json()) as ReadyOkResponse
       expect(data.status).toBe('ready')
       expect(data.database.connected).toBe(true)
     })
 
     test('ready 응답에 타임스탬프가 포함되어 있다', async () => {
       const response = await appRoutes.request('/ready')
-      const data = await response.json()
+      const data = (await response.json()) as ReadyResponse
       expect(data.timestamp).toBeDefined()
 
       const timestamp = new Date(data.timestamp)

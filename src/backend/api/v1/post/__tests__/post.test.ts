@@ -29,6 +29,11 @@ beforeAll(() => {
   spyOn(console, 'error').mockImplementation(() => {})
 })
 
+type PostsResponse = {
+  posts: Post[]
+  nextCursor: number | null
+}
+
 interface SelectPostsParams {
   currentUserId?: number
   cursor?: number
@@ -126,7 +131,7 @@ describe('GET /api/v1/post', () => {
       expect(response.status).toBe(200)
       expect(response.headers.get('content-type')).toContain('application/json')
 
-      const data = await response.json()
+      const data = (await response.json()) as PostsResponse
       expect(data.posts).toHaveLength(3)
       expect(data.posts[0].id).toBe(3)
       expect(data.posts[1].id).toBe(2)
@@ -140,7 +145,7 @@ describe('GET /api/v1/post', () => {
 
       // Then
       expect(response.status).toBe(200)
-      const data = await response.json()
+      const data = (await response.json()) as PostsResponse
       expect(data.posts).toHaveLength(0)
       expect(data.nextCursor).toBeNull()
     })
@@ -166,7 +171,7 @@ describe('GET /api/v1/post', () => {
 
       // Then
       expect(response.status).toBe(200)
-      const data = await response.json()
+      const data = (await response.json()) as PostsResponse
       expect(data.posts).toHaveLength(3)
       expect(data.posts[0].id).toBe(5)
       expect(data.posts[1].id).toBe(4)
@@ -195,7 +200,7 @@ describe('GET /api/v1/post', () => {
 
       // Then
       expect(response.status).toBe(200)
-      const data = await response.json()
+      const data = (await response.json()) as PostsResponse
       expect(data.posts).toHaveLength(2)
       expect(data.posts[0].id).toBe(2)
       expect(data.posts[1].id).toBe(1)
@@ -245,7 +250,7 @@ describe('GET /api/v1/post', () => {
 
       // Then
       expect(response.status).toBe(200)
-      const data = await response.json()
+      const data = (await response.json()) as PostsResponse
       expect(data.posts).toHaveLength(2)
       expect(data.posts.every((p: Post) => p.mangaId === 100)).toBe(true)
     })
@@ -293,7 +298,7 @@ describe('GET /api/v1/post', () => {
 
       // Then
       expect(response.status).toBe(200)
-      const data = await response.json()
+      const data = (await response.json()) as PostsResponse
       expect(data.posts).toHaveLength(2)
       expect(data.posts.every((p: Post) => p.author?.name === 'user1')).toBe(true)
     })
@@ -425,7 +430,7 @@ describe('GET /api/v1/post', () => {
 
       // Then
       expect(response.status).toBe(200)
-      const data = await response.json()
+      const data = (await response.json()) as PostsResponse
       expect(data.posts).toHaveLength(3)
       expect(data.posts[0].id).toBe(7)
       expect(data.posts[1].id).toBe(6)
@@ -484,7 +489,7 @@ describe('GET /api/v1/post', () => {
 
       // Whdn
       const response = await app.request('/?mangaId=100&filter=1&username=user1')
-      const data = await response.json()
+      const data = (await response.json()) as PostsResponse
 
       // Then
       expect(response.status).toBe(200)

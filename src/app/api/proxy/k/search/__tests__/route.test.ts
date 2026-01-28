@@ -7,6 +7,11 @@ import { Manga } from '@/types/manga'
 import { GET } from '../route'
 import { mockKHentaiMangas } from './mock'
 
+type SearchResponse = {
+  mangas: Manga[]
+  nextCursor?: string | null
+}
+
 // Convert mock k-hentai response to Manga format (simulating kHentaiClient.searchMangas)
 function convertToManga(raw: (typeof mockKHentaiMangas)[number]): Manga {
   return {
@@ -79,7 +84,7 @@ describe('GET /api/proxy/k/search', () => {
 
       const request = new Request(`${baseUrl}?${searchParams}`)
       const response = await GET(request)
-      const data = await response.json()
+      const data = (await response.json()) as SearchResponse
 
       expect(response.status).toBe(200)
       expect(data.mangas).toHaveLength(5)
@@ -92,7 +97,7 @@ describe('GET /api/proxy/k/search', () => {
 
       const request = new Request(`${baseUrl}?${searchParams}`)
       const response = await GET(request)
-      const data = await response.json()
+      const data = (await response.json()) as SearchResponse
 
       expect(response.status).toBe(200)
 
@@ -115,7 +120,7 @@ describe('GET /api/proxy/k/search', () => {
 
       const request = new Request(`${baseUrl}?${searchParams}`)
       const response = await GET(request)
-      const data = await response.json()
+      const data = (await response.json()) as SearchResponse
 
       expect(response.status).toBe(200)
       expect(data.mangas).toHaveLength(3)
@@ -130,7 +135,7 @@ describe('GET /api/proxy/k/search', () => {
 
       const request = new Request(`${baseUrl}?${searchParams}`)
       const response = await GET(request)
-      const data = await response.json()
+      const data = (await response.json()) as SearchResponse
 
       expect(response.status).toBe(200)
       expect(data.mangas).toHaveLength(3)
@@ -141,7 +146,7 @@ describe('GET /api/proxy/k/search', () => {
     test('정렬 파라미터를 처리해야 한다', async () => {
       const request = new Request(`${baseUrl}?sort=id_asc`)
       const response = await GET(request)
-      const data = await response.json()
+      const data = (await response.json()) as SearchResponse
 
       expect(response.status).toBe(200)
       expect(data.mangas).toHaveLength(5)
@@ -152,7 +157,7 @@ describe('GET /api/proxy/k/search', () => {
     test('페이지네이션을 위한 next-id를 처리해야 한다', async () => {
       const request = new Request(`${baseUrl}?next-id=2`)
       const response = await GET(request)
-      const data = await response.json()
+      const data = (await response.json()) as SearchResponse
 
       expect(response.status).toBe(200)
       expect(data.mangas.every((m: Manga) => m.id > 2)).toBe(true)
@@ -162,7 +167,7 @@ describe('GET /api/proxy/k/search', () => {
     test('skip 파라미터를 사용한 오프셋 페이지네이션을 처리해야 한다', async () => {
       const request = new Request(`${baseUrl}?skip=2`)
       const response = await GET(request)
-      const data = await response.json()
+      const data = (await response.json()) as SearchResponse
 
       expect(response.status).toBe(200)
       expect(data.mangas).toHaveLength(3)
@@ -176,7 +181,7 @@ describe('GET /api/proxy/k/search', () => {
 
       const request = new Request(`${baseUrl}?${searchParams}`)
       const response = await GET(request)
-      const data = await response.json()
+      const data = (await response.json()) as SearchResponse
 
       expect(response.status).toBe(200)
       expect(data.mangas).toHaveLength(5)
@@ -191,7 +196,7 @@ describe('GET /api/proxy/k/search', () => {
 
       const request = new Request(`${baseUrl}?${searchParams}`)
       const response = await GET(request)
-      const data = await response.json()
+      const data = (await response.json()) as SearchResponse
 
       expect(response.status).toBe(200)
       expect(data.mangas).toHaveLength(5)
@@ -205,7 +210,7 @@ describe('GET /api/proxy/k/search', () => {
 
       const request = new Request(`${baseUrl}?${searchParams}`)
       const response = await GET(request)
-      const data = await response.json()
+      const data = (await response.json()) as SearchResponse
 
       expect(response.status).toBe(200)
       expect(data.mangas).toHaveLength(5)
@@ -222,7 +227,7 @@ describe('GET /api/proxy/k/search', () => {
 
       const request = new Request(`${baseUrl}?${searchParams}`)
       const response = await GET(request)
-      const data = await response.json()
+      const data = (await response.json()) as SearchResponse
 
       expect(response.status).toBe(200)
       expect(data.mangas).toHaveLength(3)
@@ -236,7 +241,7 @@ describe('GET /api/proxy/k/search', () => {
 
       const request = new Request(`${baseUrl}?${searchParams}`)
       const response = await GET(request)
-      const data = await response.json()
+      const data = (await response.json()) as SearchResponse
 
       expect(response.status).toBe(200)
       expect(data.mangas).toHaveLength(3)
@@ -251,7 +256,7 @@ describe('GET /api/proxy/k/search', () => {
 
       const request = new Request(`${baseUrl}?${searchParams}`)
       const response = await GET(request)
-      const data = await response.json()
+      const data = (await response.json()) as SearchResponse
 
       expect(response.status).toBe(200)
       expect(data.mangas).toHaveLength(2)
@@ -264,7 +269,7 @@ describe('GET /api/proxy/k/search', () => {
 
       const request = new Request(`${baseUrl}?${searchParams}`)
       const response = await GET(request)
-      const data = await response.json()
+      const data = (await response.json()) as SearchResponse
 
       expect(response.status).toBe(200)
       expect(data.mangas).toHaveLength(3)
@@ -274,7 +279,7 @@ describe('GET /api/proxy/k/search', () => {
     test('빈 쿼리를 처리해야 한다', async () => {
       const request = new Request(baseUrl)
       const response = await GET(request)
-      const data = await response.json()
+      const data = (await response.json()) as SearchResponse
 
       expect(response.status).toBe(200)
       expect(data.mangas).toHaveLength(5)
@@ -287,7 +292,7 @@ describe('GET /api/proxy/k/search', () => {
 
       const request = new Request(`${baseUrl}?${searchParams}`)
       const response = await GET(request)
-      const data = await response.json()
+      const data = (await response.json()) as SearchResponse
 
       expect(response.status).toBe(200)
       expect(data.mangas).toHaveLength(5)
@@ -300,7 +305,7 @@ describe('GET /api/proxy/k/search', () => {
 
       const request = new Request(`${baseUrl}?${searchParams}`)
       const response = await GET(request)
-      const data = await response.json()
+      const data = (await response.json()) as SearchResponse
 
       expect(response.status).toBe(200)
       expect(data.mangas).toHaveLength(3)
@@ -314,7 +319,7 @@ describe('GET /api/proxy/k/search', () => {
 
       const request = new Request(`${baseUrl}?${searchParams}`)
       const response = await GET(request)
-      const data = await response.json()
+      const data = (await response.json()) as SearchResponse
 
       expect(response.status).toBe(200)
       expect(data.mangas).toHaveLength(5)
@@ -332,7 +337,7 @@ describe('GET /api/proxy/k/search', () => {
 
       const request = new Request(`${baseUrl}?${searchParams}`)
       const response = await GET(request)
-      const data = await response.json()
+      const data = (await response.json()) as SearchResponse
 
       expect(response.status).toBe(200)
       // Results should be filtered based on views and id
