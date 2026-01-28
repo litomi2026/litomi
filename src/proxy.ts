@@ -23,7 +23,7 @@ export const config = {
   ],
 }
 
-export async function middleware({ nextUrl, method, cookies }: NextRequest) {
+export async function proxy({ nextUrl, method, cookies }: NextRequest) {
   const { pathname } = nextUrl
 
   if (

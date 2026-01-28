@@ -31,7 +31,7 @@ ENV NEXT_PUBLIC_VAPID_PUBLIC_KEY=$NEXT_PUBLIC_VAPID_PUBLIC_KEY
 ENV POSTGRES_URL=$POSTGRES_URL
 
 COPY . .
-RUN bun run build
+RUN bun run build && bun run strip:sourcemaps
 
 # Runtime stage
 FROM oven/bun:1.3-alpine AS runner
