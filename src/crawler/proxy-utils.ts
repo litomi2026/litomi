@@ -33,6 +33,7 @@ type CORSOptions = {
 
 export function applyCORSHeaders(request: Request, headers: Headers, options: CORSOptions = {}) {
   const allowedOrigin = resolveProxyCORSOrigin(request.headers.get('origin'))
+
   if (allowedOrigin) {
     headers.set('Access-Control-Allow-Origin', allowedOrigin)
     addVaryHeader(headers, 'Origin')
@@ -263,7 +264,6 @@ function resolveProxyCORSOrigin(originHeader: string | null) {
       return originHeader
     }
 
-    // Allow same-site + subdomains (e.g. workers.litomi.in)
     if (protocol === 'https:' && (host === 'litomi.in' || host.endsWith('.litomi.in'))) {
       return originHeader
     }
