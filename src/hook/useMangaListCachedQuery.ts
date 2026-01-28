@@ -6,9 +6,12 @@ import pLimit from 'p-limit'
 import { useEffect, useMemo, useRef } from 'react'
 
 import { QueryKeys } from '@/constants/query'
+import { env } from '@/env/client'
 import { Manga } from '@/types/manga'
 import { isDegradedResponse } from '@/utils/degraded-response'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
+
+const { NEXT_PUBLIC_EXTERNAL_API_PROXY_URL } = env
 
 interface Options {
   /**
@@ -53,7 +56,7 @@ export default function useMangaListCachedQuery({
       queryKey: QueryKeys.manga(id),
       queryFn: () =>
         limit(async () => {
-          const url = `/api/proxy/manga/${id}`
+          const url = `${NEXT_PUBLIC_EXTERNAL_API_PROXY_URL}/api/proxy/manga/${id}`
           const { data, response } = await fetchWithErrorHandling<Manga>(url)
 
           if (isDegradedResponse(response.headers)) {

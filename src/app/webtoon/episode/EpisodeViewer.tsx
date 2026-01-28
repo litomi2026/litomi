@@ -7,8 +7,11 @@ import { useSearchParams } from 'next/navigation'
 import ImageViewer from '@/app/manga/[id]/ImageViewer/ImageViewer'
 import { QueryKeys } from '@/constants/query'
 import { WebtoonEpisode } from '@/crawler/webtoon/types'
+import { env } from '@/env/client'
 import { Manga } from '@/types/manga'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
+
+const { NEXT_PUBLIC_EXTERNAL_API_PROXY_URL } = env
 
 type EpisodeQueryParams = {
   provider: string
@@ -58,7 +61,8 @@ function useEpisodeQuery({ provider, domain, path }: EpisodeQueryParams) {
     queryKey: QueryKeys.webtoonEpisode(provider, domain, path),
     queryFn: async () => {
       const params = new URLSearchParams({ domain, path })
-      const { data } = await fetchWithErrorHandling<WebtoonEpisode>(`/api/proxy/webtoon/${provider}/episode?${params}`)
+      const url = `${NEXT_PUBLIC_EXTERNAL_API_PROXY_URL}/api/proxy/webtoon/${provider}/episode?${params}`
+      const { data } = await fetchWithErrorHandling<WebtoonEpisode>(url)
       return createMangaFromEpisode(data)
     },
     enabled: Boolean(provider && domain && path),

@@ -11,7 +11,10 @@ import CustomSelect from '@/components/ui/CustomSelect'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import { QueryKeys } from '@/constants/query'
 import { WebtoonList, WebtoonListItem } from '@/crawler/webtoon/types'
+import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
+
+const { NEXT_PUBLIC_EXTERNAL_API_PROXY_URL } = env
 
 type ListQueryParams = {
   provider: string
@@ -233,7 +236,8 @@ function useWebtoonListInfiniteQuery({ provider, domain }: ListQueryParams) {
       if (pageParam) {
         params.set('cursor', pageParam as string)
       }
-      const { data } = await fetchWithErrorHandling<WebtoonList>(`/api/proxy/webtoon/${provider}?${params}`)
+      const url = `${NEXT_PUBLIC_EXTERNAL_API_PROXY_URL}/api/proxy/webtoon/${provider}?${params}`
+      const { data } = await fetchWithErrorHandling<WebtoonList>(url)
       return data
     },
     getNextPageParam: (lastPage) => lastPage.nextCursor,
