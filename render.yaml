@@ -1,42 +1,139 @@
-# Exported from Render on 2025-07-19T05:49:52Z
-services:
-  - type: web
-    name: litomi
-    runtime: node
-    repo: https://github.com/gwak2837/litomi
-    plan: free
-    envVars:
-      - key: SENTRY_PROJECT
-        fromService:
-          name: litomi
-          type: web
-          property: host
-      - key: SENTRY_ORG
-        sync: false
-      - key: SENTRY_AUTH_TOKEN
-        sync: false
-      - key: POSTGRES_URL_NON_POOLING
-        sync: false
-      - key: POSTGRES_URL
-        sync: false
-      - key: NEXT_PUBLIC_SENTRY_DSN
-        sync: false
-      - key: NEXT_PUBLIC_CORS_PROXY_URL
-        sync: false
-      - key: JWT_SECRET_REFRESH_TOKEN
-        sync: false
-      - key: JWT_SECRET_ACCESS_TOKEN
-        sync: false
-      - key: GTM_ID
-        sync: false
-      - key: NEXT_PUBLIC_GA_ID
-        sync: false
-      - key: AMPLITUDE_API_KEY
-        sync: false
-      - key: PORT
-        sync: false
-    region: singapore
-    buildCommand: bun install; bun run build
-    startCommand: bun run start
-    autoDeployTrigger: commit
+# Exported from Render on 2026-01-28T14:12:13Z
 version: '1'
+projects:
+  - name: litomi
+    environments:
+      - name: Production
+        services:
+          - type: web
+            name: litomi
+            runtime: node
+            repo: https://github.com/gwak2837/litomi
+            branch: main
+            plan: free
+            envVars:
+              - key: VAPID_PRIVATE_KEY
+                sync: false
+              - key: UPSTASH_KV_REST_API_URL
+                sync: false
+              - key: UPSTASH_KV_REST_API_TOKEN
+                sync: false
+              - key: TURNSTILE_SECRET_KEY
+                sync: false
+              - key: TOTP_ENCRYPTION_KEY
+                sync: false
+              - key: SUPABASE_CERTIFICATE
+                sync: false
+              - key: SENTRY_PROJECT
+                fromService:
+                  name: litomi
+                  type: web
+                  property: host
+              - key: SENTRY_ORG
+                sync: false
+              - key: SENTRY_AUTH_TOKEN
+                sync: false
+              - key: POSTGRES_URL
+                sync: false
+              - key: NEXT_PUBLIC_VERCEL_ENV
+                sync: false
+              - key: NEXT_PUBLIC_VAPID_PUBLIC_KEY
+                sync: false
+              - key: NEXT_PUBLIC_TURNSTILE_SITE_KEY
+                sync: false
+              - key: NEXT_PUBLIC_SENTRY_DSN
+                sync: false
+              - key: NEXT_PUBLIC_GA_ID
+                sync: false
+              - key: NEXT_PUBLIC_EXTERNAL_API_PROXY_URL
+                sync: false
+              - key: NEXT_PUBLIC_CORS_PROXY_URL
+                sync: false
+              - key: NEXT_PUBLIC_CANONICAL_URL
+                sync: false
+              - key: NEXT_PUBLIC_BACKEND_URL
+                sync: false
+              - key: JWT_SECRET_TRUSTED_DEVICE
+                sync: false
+              - key: JWT_SECRET_REFRESH_TOKEN
+                sync: false
+              - key: JWT_SECRET_ACCESS_TOKEN
+                sync: false
+              - key: GA_SERVICE_ACCOUNT_KEY
+                sync: false
+              - key: GA_SERVICE_ACCOUNT_EMAIL
+                sync: false
+              - key: GA_PROPERTY_ID
+                sync: false
+              - key: AMPLITUDE_API_KEY
+                sync: false
+              - key: AIVEN_POSTGRES_URL
+                sync: false
+              - key: AIVEN_CERTIFICATE
+                sync: false
+            region: singapore
+            buildCommand: bun install; bun run build
+            startCommand: bun run start
+            domains:
+              - render.litomi.in
+            autoDeployTrigger: commit
+
+      - name: Stage
+        services:
+          - type: web
+            name: litomi-stage
+            runtime: node
+            repo: https://github.com/gwak2837/litomi
+            branch: stage
+            plan: free
+            envVars:
+              - key: VAPID_PRIVATE_KEY
+                sync: false
+              - key: UPSTASH_KV_REST_API_URL
+                sync: false
+              - key: UPSTASH_KV_REST_API_TOKEN
+                sync: false
+              - key: TURNSTILE_SECRET_KEY
+                sync: false
+              - key: TOTP_ENCRYPTION_KEY
+                sync: false
+              - key: SUPABASE_CERTIFICATE
+                sync: false
+              - key: POSTGRES_URL
+                sync: false
+              - key: NEXT_PUBLIC_VERCEL_ENV
+                sync: false
+              - key: NEXT_PUBLIC_VAPID_PUBLIC_KEY
+                sync: false
+              - key: NEXT_PUBLIC_TURNSTILE_SITE_KEY
+                sync: false
+              - key: NEXT_PUBLIC_EXTERNAL_API_PROXY_URL
+                sync: false
+              - key: NEXT_PUBLIC_CORS_PROXY_URL
+                sync: false
+              - key: NEXT_PUBLIC_CANONICAL_URL
+                sync: false
+              - key: NEXT_PUBLIC_BACKEND_URL
+                sync: false
+              - key: JWT_SECRET_TRUSTED_DEVICE
+                sync: false
+              - key: JWT_SECRET_REFRESH_TOKEN
+                sync: false
+              - key: JWT_SECRET_ACCESS_TOKEN
+                sync: false
+              - key: GA_SERVICE_ACCOUNT_KEY
+                sync: false
+              - key: GA_SERVICE_ACCOUNT_EMAIL
+                sync: false
+              - key: GA_PROPERTY_ID
+                sync: false
+              - key: AIVEN_POSTGRES_URL
+                sync: false
+              - key: AIVEN_CERTIFICATE
+                sync: false
+              - key: PORT
+                sync: false
+            region: singapore
+            buildCommand: bun install; bun run build
+            startCommand: bun run start
+            autoDeployTrigger: commit

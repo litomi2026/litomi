@@ -27,6 +27,23 @@ type CacheControlHeaders = {
   browser?: CacheControlOptions
 }
 
+type CORSOptions = {
+  methods?: string[]
+}
+
+export function applyCORSHeaders(request: Request, headers: Headers, options: CORSOptions = {}) {
+  const methods = options.methods?.length ? options.methods.join(', ') : 'GET, OPTIONS'
+  const allowedHeaders = request.headers.get('access-control-request-headers') ?? 'Content-Type, Authorization'
+
+  headers.set('Access-Control-Allow-Origin', 'https://litomi.in')
+  headers.set('Access-Control-Allow-Methods', methods)
+  headers.set('Access-Control-Allow-Headers', allowedHeaders)
+  headers.set('Access-Control-Max-Age', `${sec('30 days')}`)
+
+  addVaryHeader(headers, 'Origin')
+  addVaryHeader(headers, 'Access-Control-Request-Headers')
+}
+
 export function calculateOptimalCacheDuration(images: string[]): number {
   const now = Math.floor(Date.now() / 1000)
   let nearestExpiration
@@ -70,6 +87,12 @@ export function createCacheControlHeaders({ vercel, cloudflare, browser }: Cache
     headers['Cache-Control'] = createCacheControl(browser)
   }
   return headers
+}
+
+export function createCORSPreflightResponse(request: Request, options?: CORSOptions) {
+  const headers = new Headers()
+  applyCORSHeaders(request, headers, options)
+  return new Response(null, { status: 204, headers })
 }
 
 export async function createHealthCheckHandler(
@@ -185,6 +208,30 @@ export function isUpstreamServerError(error: unknown): boolean {
   }
 
   return false
+}
+
+export function withCORS(request: Request, response: Response, options?: CORSOptions) {
+  applyCORSHeaders(request, response.headers, options)
+  return response
+}
+
+function addVaryHeader(headers: Headers, value: string) {
+  const existing = headers.get('Vary')
+  if (!existing) {
+    headers.set('Vary', value)
+    return
+  }
+
+  const parts = existing
+    .split(',')
+    .map((v) => v.trim())
+    .filter(Boolean)
+
+  if (parts.some((v) => v.toLowerCase() === value.toLowerCase())) {
+    return
+  }
+
+  headers.set('Vary', [...parts, value].join(', '))
 }
 
 function extractExpirationFromURL(imageUrl: string): number | null {
