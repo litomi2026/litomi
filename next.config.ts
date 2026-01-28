@@ -4,9 +4,7 @@ import './src/env/server.next'
 import type { NextConfig } from 'next'
 
 import withBundleAnalyzer from '@next/bundle-analyzer'
-import { initOpenNextCloudflareForDev } from '@opennextjs/cloudflare'
 import { withSentryConfig } from '@sentry/nextjs'
-import { withBotId } from 'botid/next/config'
 
 import { createCacheControl } from '@/utils/cache-control'
 import { sec } from '@/utils/format/date'
@@ -97,11 +95,9 @@ const nextConfig: NextConfig = {
   ...(isProduction && { compiler: { removeConsole: { exclude: ['error', 'warn'] } } }),
 }
 
-const withBotIdConfig = withBotId(nextConfig)
-
 const withAnalyzer = withBundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
-})(withBotIdConfig)
+})(nextConfig)
 
 export default withSentryConfig(withAnalyzer, {
   // For all available options, see:
@@ -140,9 +136,3 @@ export default withSentryConfig(withAnalyzer, {
 
   telemetry: false,
 })
-
-// Enable calling `getCloudflareContext()` in `next dev`.
-// See https://opennext.js.org/cloudflare/bindings#local-access-to-bindings.
-if (process.env.NODE_ENV === 'development') {
-  initOpenNextCloudflareForDev()
-}
