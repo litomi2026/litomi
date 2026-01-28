@@ -41,7 +41,7 @@
     "db:up": "docker compose down -v && docker compose up -d",
     "test:watch": "bun test --watch",
     "test:coverage": "bun test --coverage",
-    "notify": "bun --conditions=react-server cloud-run/crawl-and-notify/src/index.ts",
+    "notify": "bun --conditions=react-server cloud-run/crawl-and-notify/src/index.ts"
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^2.33.4",
