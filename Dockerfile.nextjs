@@ -19,7 +19,7 @@ ENV BUILD_OUTPUT=standalone
 ENV SKIP_ENV_VALIDATION=true
 
 COPY package.json bun.lock ./
-RUN bun install --frozen-lockfile
+RUN bun install --no-save --frozen-lockfile
 
 ENV NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL
 ENV NEXT_PUBLIC_CANONICAL_URL=$NEXT_PUBLIC_CANONICAL_URL
@@ -34,9 +34,7 @@ ENV SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN
 
 COPY . .
 RUN bun run build \
-  # Turbopack currently emits `sourceMappingURL` references in production bundles.
-  # Strip them (prevents browser `*.map` requests) and delete `.map` files (reduces leak risk).
-  && find .next -name '*.map' -delete \
+  # Strip `sourceMappingURL` references (prevents browser `*.map` requests).
   && find .next/static -type f -name '*.js' -exec sed -i -E '/^\/\/#[[:space:]]*sourceMappingURL=/d' {} + \
   && find .next/static -type f -name '*.css' -exec sed -i -E 's@/\*#[[:space:]]*sourceMappingURL=.*\*/@@g' {} +
 
@@ -47,14 +45,15 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN addgroup --system --gid 1001 nodejs \
-  && adduser --system --uid 1001 nextjs
+RUN groupadd --system --gid 1001 nodejs && \
+    useradd --system --uid 1001 --no-log-init -g nodejs nextjs
 
-COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 USER nextjs
 
 EXPOSE $PORT
-CMD ["bun", "server.js"]
+
+CMD ["bun", "./server.js"]
