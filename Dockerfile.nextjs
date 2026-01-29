@@ -39,7 +39,7 @@ ENV SENTRY_PROJECT=$SENTRY_PROJECT
 COPY . .
 RUN bun run build \
   # Strip `sourceMappingURL` references (prevents browser `*.map` requests).
-  && find .next/static -type f -name '*.js' -exec sed -i -E '/^\/\/#[[:space:]]*sourceMappingURL=/d' {} + \
+  && find .next/static -type f -name '*.js' -exec sed -i -E 's@//# sourceMappingURL=.*$@@g' {} + \
   && find .next/static -type f -name '*.css' -exec sed -i -E 's@/\*#[[:space:]]*sourceMappingURL=.*\*/@@g' {} +
 
 # Runtime stage
