@@ -4,5 +4,8 @@
     "src/app/api/**/*.ts": {
       "maxDuration": 20
     }
+  },
+  "git": {
+    "deploymentEnabled": false
   }
 }
