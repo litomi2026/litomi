@@ -2,11 +2,8 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 
 import { CANONICAL_URL, defaultOpenGraph, SHORT_NAME } from '@/constants'
-import { env } from '@/env/server.next'
 
 import Header1 from './Header1'
-
-const { VERCEL_DEPLOYMENT_ID, VERCEL_GIT_COMMIT_SHA } = env
 
 export const metadata: Metadata = {
   title: '이용약관',
@@ -236,20 +233,6 @@ export default async function Page() {
 
         <footer className="mt-10 border-t border-zinc-800 pt-6">
           <h3 className="text-center text-sm text-zinc-300">시행일 2026-01-04</h3>
-          <div className="mt-3 flex flex-col items-center gap-2 text-xs text-center text-zinc-500">
-            {VERCEL_DEPLOYMENT_ID && (
-              <>
-                <h4 className="text-zinc-400">배포 ID</h4>
-                <p className="wrap-break-word">{VERCEL_DEPLOYMENT_ID}</p>
-              </>
-            )}
-            {VERCEL_GIT_COMMIT_SHA && (
-              <>
-                <h4 className="text-zinc-400">커밋 해시</h4>
-                <p className="wrap-break-word">{VERCEL_GIT_COMMIT_SHA.slice(0, 10)}</p>
-              </>
-            )}
-          </div>
         </footer>
       </div>
     </div>

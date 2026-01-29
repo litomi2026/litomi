@@ -35,7 +35,7 @@ export function applyCORSHeaders(request: Request, headers: Headers, options: CO
   const methods = options.methods?.length ? options.methods.join(', ') : 'GET, OPTIONS'
   const allowedHeaders = request.headers.get('access-control-request-headers') ?? 'Content-Type, Authorization'
 
-  headers.set('Access-Control-Allow-Origin', 'https://litomi.in')
+  headers.set('Access-Control-Allow-Origin', CANONICAL_URL)
   headers.set('Access-Control-Allow-Methods', methods)
   headers.set('Access-Control-Allow-Headers', allowedHeaders)
   headers.set('Access-Control-Max-Age', `${sec('30 days')}`)
@@ -208,11 +208,6 @@ export function isUpstreamServerError(error: unknown): boolean {
   }
 
   return false
-}
-
-export function withCORS(request: Request, response: Response, options?: CORSOptions) {
-  applyCORSHeaders(request, response.headers, options)
-  return response
 }
 
 function addVaryHeader(headers: Headers, value: string) {

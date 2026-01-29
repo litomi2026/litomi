@@ -111,7 +111,7 @@ export default function AppInstallPage() {
             </ol>
           </section>
 
-          {NEXT_PUBLIC_IOS_TESTFLIGHT_URL ? (
+          {NEXT_PUBLIC_IOS_TESTFLIGHT_URL && (
             <section className="rounded-2xl border-2 border-zinc-800 bg-zinc-950/60 p-4" id="ios-help">
               <h2 className="text-base font-semibold">iOS 설치 방법 (TestFlight 베타)</h2>
               <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-zinc-300">
@@ -120,7 +120,7 @@ export default function AppInstallPage() {
                 <li>TestFlight에서 설치 버튼을 눌러요.</li>
               </ol>
             </section>
-          ) : null}
+          )}
         </main>
       </div>
     </div>

@@ -57,6 +57,10 @@ export type GETV1AdsterraStatsResponse = z.infer<typeof adsterraStatsResponseSch
 const route = new Hono<Env>()
 
 route.get('/stats', requireAuth, zProblemValidator('query', querySchema), async (c) => {
+  if (!ADSTERRA_API_KEY) {
+    return problemResponse(c, { status: 502, detail: '통계를 불러오지 못했어요' })
+  }
+
   const { start_date, finish_date } = c.req.valid('query')
   const url = new URL('https://api3.adsterratools.com/publisher/stats.json')
   url.searchParams.set('start_date', start_date)

@@ -1,0 +1,75 @@
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - '--no-cache'
+      - '-t'
+      - >-
+        $_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
+      - .
+      - '-f'
+      - Dockerfile.nextjs
+      - '--build-arg'
+      - 'NEXT_PUBLIC_BACKEND_URL=$_NEXT_PUBLIC_BACKEND_URL'
+      - '--build-arg'
+      - 'NEXT_PUBLIC_CANONICAL_URL=$_NEXT_PUBLIC_CANONICAL_URL'
+      - '--build-arg'
+      - 'NEXT_PUBLIC_CORS_PROXY_URL=$_NEXT_PUBLIC_CORS_PROXY_URL'
+      - '--build-arg'
+      - 'NEXT_PUBLIC_EXTERNAL_API_PROXY_URL=$_NEXT_PUBLIC_EXTERNAL_API_PROXY_URL'
+      - '--build-arg'
+      - 'NEXT_PUBLIC_IOS_TESTFLIGHT_URL=$_NEXT_PUBLIC_IOS_TESTFLIGHT_URL'
+      - '--build-arg'
+      - 'NEXT_PUBLIC_TURNSTILE_SITE_KEY=$_NEXT_PUBLIC_TURNSTILE_SITE_KEY'
+      - '--build-arg'
+      - 'NEXT_PUBLIC_VAPID_PUBLIC_KEY=$_NEXT_PUBLIC_VAPID_PUBLIC_KEY'
+      - '--build-arg'
+      - 'POSTGRES_URL=$_POSTGRES_URL'
+    id: Build
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - >-
+        $_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
+    id: Push
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    args:
+      - run
+      - services
+      - update
+      - $_SERVICE_NAME
+      - '--platform=managed'
+      - >-
+        --image=$_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
+      - >-
+        --labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID,gcb-trigger-id=$_TRIGGER_ID
+      - '--region=$_DEPLOY_REGION'
+      - '--quiet'
+    id: Deploy
+    entrypoint: gcloud
+images:
+  - >-
+    $_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
+options:
+  substitutionOption: ALLOW_LOOSE
+  logging: CLOUD_LOGGING_ONLY
+substitutions:
+  _AR_HOSTNAME: asia-east1-docker.pkg.dev
+  _AR_REPOSITORY: cloud-run-source-deploy
+  _AR_PROJECT_ID: litomi
+  _TRIGGER_ID: 42306dc0-4ffe-4072-8623-e5fa9e9af6e2
+  _PLATFORM: managed
+  _SERVICE_NAME: litomi-in-stage
+  _DEPLOY_REGION: asia-east1
+  _NEXT_PUBLIC_BACKEND_URL: ''
+  _NEXT_PUBLIC_CANONICAL_URL: ''
+  _NEXT_PUBLIC_CORS_PROXY_URL: ''
+  _NEXT_PUBLIC_EXTERNAL_API_PROXY_URL: ''
+  _NEXT_PUBLIC_IOS_TESTFLIGHT_URL: ''
+  _NEXT_PUBLIC_TURNSTILE_SITE_KEY: ''
+  _NEXT_PUBLIC_VAPID_PUBLIC_KEY: ''
+  _POSTGRES_URL: ''
+tags:
+  - gcp-cloud-build-deploy-cloud-run
+  - gcp-cloud-build-deploy-cloud-run-managed
+  - litomi-in-stage

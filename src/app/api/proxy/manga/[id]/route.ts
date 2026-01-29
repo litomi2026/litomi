@@ -7,7 +7,6 @@ import {
   createCORSPreflightResponse,
   createProblemDetailsResponse,
   handleRouteError,
-  withCORS,
 } from '@/crawler/proxy-utils'
 import { Locale } from '@/translation/common'
 import { RouteProps } from '@/types/nextjs'
@@ -31,14 +30,13 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
   })
 
   if (!validation.success) {
-    return withCORS(
-      request,
-      createProblemDetailsResponse(request, {
-        status: 400,
-        code: 'bad-request',
-        detail: '잘못된 요청이에요',
-      }),
-    )
+    const response = createProblemDetailsResponse(request, {
+      status: 400,
+      code: 'bad-request',
+      detail: '잘못된 요청이에요',
+    })
+    applyCORSHeaders(request, response.headers)
+    return response
   }
 
   const { id, locale } = validation.data
@@ -56,27 +54,25 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       },
     })
 
-    return withCORS(
-      request,
-      createProblemDetailsResponse(request, {
-        status: 403,
-        code: 'forbidden',
-        detail: '요청하신 작품은 접근할 수 없어요',
-        headers: forbiddenHeaders,
-      }),
-    )
+    const response = createProblemDetailsResponse(request, {
+      status: 403,
+      code: 'forbidden',
+      detail: '요청하신 작품은 접근할 수 없어요',
+      headers: forbiddenHeaders,
+    })
+    applyCORSHeaders(request, response.headers)
+    return response
   }
 
   try {
     if (request.signal?.aborted) {
-      return withCORS(
-        request,
-        createProblemDetailsResponse(request, {
-          status: 499,
-          code: 'client-closed-request',
-          detail: '요청이 취소됐어요',
-        }),
-      )
+      const response = createProblemDetailsResponse(request, {
+        status: 499,
+        code: 'client-closed-request',
+        detail: '요청이 취소됐어요',
+      })
+      applyCORSHeaders(request, response.headers)
+      return response
     }
 
     const manga = await fetchMangaFromMultiSources({ id, locale })
@@ -96,15 +92,14 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
         },
       })
 
-      return withCORS(
-        request,
-        createProblemDetailsResponse(request, {
-          status: isPermanentlyMissing ? 410 : 404,
-          code: 'not-found',
-          detail: '요청하신 작품을 찾을 수 없어요',
-          headers: notFoundHeaders,
-        }),
-      )
+      const response = createProblemDetailsResponse(request, {
+        status: isPermanentlyMissing ? 410 : 404,
+        code: 'not-found',
+        detail: '요청하신 작품을 찾을 수 없어요',
+        headers: notFoundHeaders,
+      })
+      applyCORSHeaders(request, response.headers)
+      return response
     }
 
     if ('isError' in manga) {
@@ -149,7 +144,9 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
     applyCORSHeaders(request, headers)
     return Response.json(manga, { headers })
   } catch (error) {
-    return withCORS(request, handleRouteError(error, request))
+    const response = handleRouteError(error, request)
+    applyCORSHeaders(request, response.headers)
+    return response
   }
 }
 

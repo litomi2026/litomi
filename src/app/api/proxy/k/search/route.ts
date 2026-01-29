@@ -10,7 +10,6 @@ import {
   createCORSPreflightResponse,
   createProblemDetailsResponse,
   handleRouteError,
-  withCORS,
 } from '@/crawler/proxy-utils'
 import { env } from '@/env/client'
 import { getKeywordPromotion, type KeywordPromotion } from '@/sponsor'
@@ -38,14 +37,13 @@ export async function GET(request: Request) {
   const validation = GETProxyKSearchSchema.safeParse(searchParams)
 
   if (!validation.success) {
-    return withCORS(
-      request,
-      createProblemDetailsResponse(request, {
-        status: 400,
-        code: 'bad-request',
-        detail: '잘못된 요청이에요',
-      }),
-    )
+    const response = createProblemDetailsResponse(request, {
+      status: 400,
+      code: 'bad-request',
+      detail: '잘못된 요청이에요',
+    })
+    applyCORSHeaders(request, response.headers)
+    return response
   }
 
   const {
@@ -74,14 +72,13 @@ export async function GET(request: Request) {
   const search = [languageFilter, baseSearch].filter(Boolean).join(' ')
 
   if (search && search.length > MAX_KHENTAI_SEARCH_QUERY_LENGTH) {
-    return withCORS(
-      request,
-      createProblemDetailsResponse(request, {
-        status: 400,
-        code: 'query-too-long',
-        detail: '검색어가 너무 길어요',
-      }),
-    )
+    const response = createProblemDetailsResponse(request, {
+      status: 400,
+      code: 'query-too-long',
+      detail: '검색어가 너무 길어요',
+    })
+    applyCORSHeaders(request, response.headers)
+    return response
   }
 
   const params: KHentaiMangaSearchOptions = {
@@ -105,14 +102,13 @@ export async function GET(request: Request) {
 
   try {
     if (requestSignal?.aborted) {
-      return withCORS(
-        request,
-        createProblemDetailsResponse(request, {
-          status: 499,
-          code: 'client-closed-request',
-          detail: '요청이 취소됐어요',
-        }),
-      )
+      const response = createProblemDetailsResponse(request, {
+        status: 499,
+        code: 'client-closed-request',
+        detail: '요청이 취소됐어요',
+      })
+      applyCORSHeaders(request, response.headers)
+      return response
     }
 
     const revalidate = params.nextId ? sec('30 days') : 0
@@ -165,7 +161,9 @@ export async function GET(request: Request) {
     applyCORSHeaders(request, headers)
     return Response.json(response, { headers })
   } catch (error) {
-    return withCORS(request, handleRouteError(error, request))
+    const response = handleRouteError(error, request)
+    applyCORSHeaders(request, response.headers)
+    return response
   }
 }
 
