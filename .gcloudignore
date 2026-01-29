@@ -1,9 +1,5 @@
 # Ignore files for Google Cloud Build
-.gcloudignore
 .git
-.gitignore
-*.md
-*.lock
 
 # Node/Bun
 node_modules/
@@ -31,20 +27,31 @@ e2e/
 *.swo
 *~
 
+# Mobile (Capacitor) - exists in this repo, not needed for Cloud Run images
+android/
+ios/
+www/
+
+# Local semantic search index (generated binaries) - exists in this repo
+data/index/
+data/model/
+
+# Infra / auxiliary projects - exist in this repo, not needed for Cloud Run images
+cloudflare/
+cloud-run/
+local-search/
+
 # Documentation
 docs/
-README.md
+*.md
 
 # Other unnecessary files
-public/
 trash/
 tools/
 fly.toml
 vercel.json
 render.yaml
 docker-compose.yml
-Dockerfile
-cloudbuild.yaml
 .prettierrc*
 .eslintrc*
 tsconfig.tsbuildinfo
