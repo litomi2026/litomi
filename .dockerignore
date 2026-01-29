@@ -1,3 +1,34 @@
 .git
 .next
+dist
 data
+
+# OS / editors
+.DS_Store
+.idea
+.vscode
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+bun-debug.log*
+
+# Tests / tooling caches
+playwright-report
+test-results
+.turbo
+.cache
+coverage
+
+# Mobile build artifacts
+android/.gradle
+android/.idea
+android/build
+android/app/build
+ios/Pods
+ios/build
+
+# Local env
+.env*
