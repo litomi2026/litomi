@@ -16,15 +16,21 @@ steps:
       - '--build-arg'
       - 'NEXT_PUBLIC_CORS_PROXY_URL=$_NEXT_PUBLIC_CORS_PROXY_URL'
       - '--build-arg'
+      - 'NEXT_PUBLIC_GA_ID=$_NEXT_PUBLIC_GA_ID'
+      - '--build-arg'
       - 'NEXT_PUBLIC_EXTERNAL_API_PROXY_URL=$_NEXT_PUBLIC_EXTERNAL_API_PROXY_URL'
       - '--build-arg'
       - 'NEXT_PUBLIC_IOS_TESTFLIGHT_URL=$_NEXT_PUBLIC_IOS_TESTFLIGHT_URL'
+      - '--build-arg'
+      - 'NEXT_PUBLIC_SENTRY_DSN=$_NEXT_PUBLIC_SENTRY_DSN'
       - '--build-arg'
       - 'NEXT_PUBLIC_TURNSTILE_SITE_KEY=$_NEXT_PUBLIC_TURNSTILE_SITE_KEY'
       - '--build-arg'
       - 'NEXT_PUBLIC_VAPID_PUBLIC_KEY=$_NEXT_PUBLIC_VAPID_PUBLIC_KEY'
       - '--build-arg'
       - 'POSTGRES_URL=$_POSTGRES_URL'
+      - '--build-arg'
+      - 'SENTRY_AUTH_TOKEN=$_SENTRY_AUTH_TOKEN'
     id: Build
   - name: gcr.io/cloud-builders/docker
     args:
@@ -54,22 +60,25 @@ options:
   substitutionOption: ALLOW_LOOSE
   logging: CLOUD_LOGGING_ONLY
 substitutions:
-  _AR_HOSTNAME: asia-east1-docker.pkg.dev
-  _AR_REPOSITORY: cloud-run-source-deploy
   _AR_PROJECT_ID: litomi
-  _TRIGGER_ID: 42306dc0-4ffe-4072-8623-e5fa9e9af6e2
   _PLATFORM: managed
-  _SERVICE_NAME: litomi-in-stage
+  _SERVICE_NAME: litomi-in
   _DEPLOY_REGION: asia-east1
+  _AR_HOSTNAME: asia-east1-docker.pkg.dev
+  _TRIGGER_ID: 3ca1aece-28a5-4cfb-bc1a-6c97498914b8
+  _AR_REPOSITORY: cloud-run-source-deploy
   _NEXT_PUBLIC_BACKEND_URL: ''
   _NEXT_PUBLIC_CANONICAL_URL: ''
   _NEXT_PUBLIC_CORS_PROXY_URL: ''
   _NEXT_PUBLIC_EXTERNAL_API_PROXY_URL: ''
+  _NEXT_PUBLIC_GA_ID: ''
   _NEXT_PUBLIC_IOS_TESTFLIGHT_URL: ''
+  _NEXT_PUBLIC_SENTRY_DSN: ''
   _NEXT_PUBLIC_TURNSTILE_SITE_KEY: ''
   _NEXT_PUBLIC_VAPID_PUBLIC_KEY: ''
   _POSTGRES_URL: ''
+  _SENTRY_AUTH_TOKEN: ''
 tags:
   - gcp-cloud-build-deploy-cloud-run
   - gcp-cloud-build-deploy-cloud-run-managed
-  - litomi-in-stage
+  - litomi-in
