@@ -10,6 +10,8 @@ steps:
       - '-f'
       - Dockerfile.nextjs
       - '--build-arg'
+      - 'CI=true'
+      - '--build-arg'
       - 'NEXT_PUBLIC_BACKEND_URL=$_NEXT_PUBLIC_BACKEND_URL'
       - '--build-arg'
       - 'NEXT_PUBLIC_CANONICAL_URL=$_NEXT_PUBLIC_CANONICAL_URL'
