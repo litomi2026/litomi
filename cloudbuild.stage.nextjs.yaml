@@ -25,6 +25,8 @@ steps:
       - 'NEXT_PUBLIC_VAPID_PUBLIC_KEY=$_NEXT_PUBLIC_VAPID_PUBLIC_KEY'
       - '--build-arg'
       - 'POSTGRES_URL=$_POSTGRES_URL'
+      - '--build-arg'
+      - 'SENTRY_AUTH_TOKEN=$_SENTRY_AUTH_TOKEN'
     id: Build
   - name: gcr.io/cloud-builders/docker
     args:
@@ -69,6 +71,7 @@ substitutions:
   _NEXT_PUBLIC_TURNSTILE_SITE_KEY: ''
   _NEXT_PUBLIC_VAPID_PUBLIC_KEY: ''
   _POSTGRES_URL: ''
+  _SENTRY_AUTH_TOKEN: ''
 tags:
   - gcp-cloud-build-deploy-cloud-run
   - gcp-cloud-build-deploy-cloud-run-managed

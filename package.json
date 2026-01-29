@@ -10,7 +10,6 @@
     "dev:backend": "bun run kill:backend && bun run --conditions=react-server --env-file=.env.development --hot src/backend/index.ts",
     "dev:backend:prod": "bun run kill:backend && bun run --conditions=react-server --env-file=.env.production --hot src/backend/index.ts",
     "build": "next build",
-    "strip:sourcemaps": "bun scripts/strip-sourcemap-references.ts",
     "build:backend": "docker build -t litomi-backend-local .",
     "start": "next start",
     "start:backend": "docker run --rm -p 8080:8080 --env-file .env.docker litomi-backend-local",
