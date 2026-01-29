@@ -1,5 +1,4 @@
-import './src/env/client'
-import './src/env/server.next'
+import './src/env/server.next.build'
 
 import type { NextConfig } from 'next'
 

@@ -14,7 +14,7 @@
     "start": "next start",
     "start:backend": "docker run --rm -p 8080:8080 --env-file .env.docker litomi-backend-local",
     "lint": "eslint --fix",
-    "analyze": "ANALYZE=true next build",
+    "analyze": "ANALYZE=true next build --webpack",
     "format": "prettier --write .",
     "type": "tsc --noEmit",
     "prepare": "husky",

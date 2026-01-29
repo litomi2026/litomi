@@ -31,6 +31,10 @@ steps:
       - 'POSTGRES_URL=$_POSTGRES_URL'
       - '--build-arg'
       - 'SENTRY_AUTH_TOKEN=$_SENTRY_AUTH_TOKEN'
+      - '--build-arg'
+      - 'SENTRY_ORG=$_SENTRY_ORG'
+      - '--build-arg'
+      - 'SENTRY_PROJECT=$_SENTRY_PROJECT'
     id: Build
   - name: gcr.io/cloud-builders/docker
     args:
@@ -78,6 +82,8 @@ substitutions:
   _NEXT_PUBLIC_VAPID_PUBLIC_KEY: ''
   _POSTGRES_URL: ''
   _SENTRY_AUTH_TOKEN: ''
+  _SENTRY_ORG: ''
+  _SENTRY_PROJECT: ''
 tags:
   - gcp-cloud-build-deploy-cloud-run
   - gcp-cloud-build-deploy-cloud-run-managed

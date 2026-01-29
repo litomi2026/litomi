@@ -1,29 +1,16 @@
-import { createEnv } from '@t3-oss/env-nextjs'
-import { z } from 'zod'
+export const env = {
+  // Local dev defaults
+  NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:8080',
+  NEXT_PUBLIC_CANONICAL_URL: process.env.NEXT_PUBLIC_CANONICAL_URL ?? 'http://localhost:3000',
 
-const skipValidation = process.env.SKIP_ENV_VALIDATION === 'true'
+  // Optional / feature toggles (empty by default)
+  NEXT_PUBLIC_CORS_PROXY_URL: process.env.NEXT_PUBLIC_CORS_PROXY_URL ?? '',
+  NEXT_PUBLIC_EXTERNAL_API_PROXY_URL: process.env.NEXT_PUBLIC_EXTERNAL_API_PROXY_URL ?? 'http://localhost:3000',
+  NEXT_PUBLIC_GA_ID: process.env.NEXT_PUBLIC_GA_ID ?? '',
+  NEXT_PUBLIC_IOS_TESTFLIGHT_URL: process.env.NEXT_PUBLIC_IOS_TESTFLIGHT_URL ?? '',
+  NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN ?? '',
 
-export const env = createEnv({
-  client: {
-    NEXT_PUBLIC_BACKEND_URL: z.url(),
-    NEXT_PUBLIC_CANONICAL_URL: z.url().optional(),
-    NEXT_PUBLIC_CORS_PROXY_URL: z.url().optional(),
-    NEXT_PUBLIC_EXTERNAL_API_PROXY_URL: z.url().optional().default(''),
-    NEXT_PUBLIC_GA_ID: z.string().min(1).optional(),
-    NEXT_PUBLIC_IOS_TESTFLIGHT_URL: z.url().optional(),
-    NEXT_PUBLIC_TURNSTILE_SITE_KEY: z.string().min(1),
-    NEXT_PUBLIC_VAPID_PUBLIC_KEY: z.string().min(1),
-  },
-  runtimeEnv: {
-    NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL,
-    NEXT_PUBLIC_CANONICAL_URL: process.env.NEXT_PUBLIC_CANONICAL_URL,
-    NEXT_PUBLIC_CORS_PROXY_URL: process.env.NEXT_PUBLIC_CORS_PROXY_URL,
-    NEXT_PUBLIC_EXTERNAL_API_PROXY_URL: process.env.NEXT_PUBLIC_EXTERNAL_API_PROXY_URL,
-    NEXT_PUBLIC_GA_ID: process.env.NEXT_PUBLIC_GA_ID,
-    NEXT_PUBLIC_IOS_TESTFLIGHT_URL: process.env.NEXT_PUBLIC_IOS_TESTFLIGHT_URL,
-    NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
-    NEXT_PUBLIC_VAPID_PUBLIC_KEY: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
-  },
-  skipValidation,
-  emptyStringAsUndefined: true,
-})
+  // Required for core features (provide safe local/test defaults)
+  NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? '1x00000000000000000000AA',
+  NEXT_PUBLIC_VAPID_PUBLIC_KEY: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? '123',
+} as const
