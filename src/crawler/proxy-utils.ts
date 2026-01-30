@@ -27,21 +27,8 @@ type CacheControlHeaders = {
   browser?: CacheControlOptions
 }
 
-type CORSOptions = {
-  methods?: string[]
-}
-
-export function applyCORSHeaders(request: Request, headers: Headers, options: CORSOptions = {}) {
-  const methods = options.methods?.length ? options.methods.join(', ') : 'GET, OPTIONS'
-  const allowedHeaders = request.headers.get('access-control-request-headers') ?? 'Content-Type, Authorization'
-
+export function applyCORSHeaders(_request: Request, headers: Headers) {
   headers.set('Access-Control-Allow-Origin', CANONICAL_URL)
-  headers.set('Access-Control-Allow-Methods', methods)
-  headers.set('Access-Control-Allow-Headers', allowedHeaders)
-  headers.set('Access-Control-Max-Age', `${sec('30 days')}`)
-
-  addVaryHeader(headers, 'Origin')
-  addVaryHeader(headers, 'Access-Control-Request-Headers')
 }
 
 export function calculateOptimalCacheDuration(images: string[]): number {
@@ -87,12 +74,6 @@ export function createCacheControlHeaders({ vercel, cloudflare, browser }: Cache
     headers['Cache-Control'] = createCacheControl(browser)
   }
   return headers
-}
-
-export function createCORSPreflightResponse(request: Request, options?: CORSOptions) {
-  const headers = new Headers()
-  applyCORSHeaders(request, headers, options)
-  return new Response(null, { status: 204, headers })
 }
 
 export async function createHealthCheckHandler(
@@ -208,25 +189,6 @@ export function isUpstreamServerError(error: unknown): boolean {
   }
 
   return false
-}
-
-function addVaryHeader(headers: Headers, value: string) {
-  const existing = headers.get('Vary')
-  if (!existing) {
-    headers.set('Vary', value)
-    return
-  }
-
-  const parts = existing
-    .split(',')
-    .map((v) => v.trim())
-    .filter(Boolean)
-
-  if (parts.some((v) => v.toLowerCase() === value.toLowerCase())) {
-    return
-  }
-
-  headers.set('Vary', [...parts, value].join(', '))
 }
 
 function extractExpirationFromURL(imageUrl: string): number | null {
