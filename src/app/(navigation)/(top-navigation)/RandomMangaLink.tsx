@@ -1,8 +1,11 @@
 'use client'
 
+import { useIsFetching, useQueryClient } from '@tanstack/react-query'
 import { Dices } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+
+import { QueryKeys } from '@/constants/query'
 
 import RandomRefreshButton from './RandomRefreshButton'
 
@@ -15,6 +18,8 @@ type Props = {
 export default function RandomMangaLink({ timer }: Props) {
   const pathname = usePathname()
   const isRandomPage = pathname === '/random'
+  const queryClient = useQueryClient()
+  const isFetchingRandom = useIsFetching({ queryKey: QueryKeys.proxyKRandom, exact: true }) > 0
 
   if (!isRandomPage) {
     return (
@@ -25,5 +30,12 @@ export default function RandomMangaLink({ timer }: Props) {
     )
   }
 
-  return <RandomRefreshButton className={className} timer={timer} />
+  return (
+    <RandomRefreshButton
+      className={className}
+      isLoading={isFetchingRandom}
+      onClick={() => queryClient.refetchQueries({ queryKey: QueryKeys.proxyKRandom, exact: true })}
+      timer={timer}
+    />
+  )
 }

@@ -20,9 +20,7 @@ export default function RandomRefreshButton({ timer, className = '', isLoading =
     if (onClick) {
       onClick()
     } else {
-      startTransition(() => {
-        router.refresh()
-      })
+      startTransition(() => router.refresh())
     }
     startTimer(timer)
   }

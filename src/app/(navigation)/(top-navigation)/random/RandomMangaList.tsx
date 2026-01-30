@@ -1,8 +1,6 @@
 'use client'
 
-import { Loader2 } from 'lucide-react'
-
-import MangaCard from '@/components/card/MangaCard'
+import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import MangaCardDonation from '@/components/card/MangaCardDonation'
 import { View } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
@@ -11,14 +9,19 @@ import RandomMangaLink from '../RandomMangaLink'
 import { useRandomMangaQuery } from './useRandomMangaQuery'
 
 export default function RandomMangaList() {
-  const { data, isLoading, error, refetch, isFetching } = useRandomMangaQuery()
+  const { data, isLoading, error } = useRandomMangaQuery()
   const mangas = data?.mangas ?? []
 
   if (isLoading) {
     return (
-      <div className="flex-1 flex items-center justify-center">
-        <Loader2 className="size-8 animate-spin" />
-      </div>
+      <ul className={`flex-1 grid ${MANGA_LIST_GRID_COLUMNS.card} gap-2`}>
+        <MangaCardSkeleton />
+        <MangaCardSkeleton />
+        <MangaCardSkeleton />
+        <MangaCardSkeleton />
+        <MangaCardSkeleton />
+        <MangaCardSkeleton />
+      </ul>
     )
   }
 
@@ -42,11 +45,6 @@ export default function RandomMangaList() {
       </div>
       <div className="flex justify-center items-center">
         <RandomMangaLink timer={20} />
-      </div>
-      <div aria-hidden={!isFetching} className="sr-only">
-        <button onClick={() => refetch()} type="button">
-          refresh
-        </button>
       </div>
     </>
   )

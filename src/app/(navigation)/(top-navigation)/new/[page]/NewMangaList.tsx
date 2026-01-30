@@ -1,11 +1,7 @@
 'use client'
 
-import { Loader2 } from 'lucide-react'
-
-import MangaCard from '@/components/card/MangaCard'
+import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import MangaCardDonation from '@/components/card/MangaCardDonation'
-import PageNavigation from '@/components/PageNavigation'
-import { TOTAL_HIYOBI_PAGES } from '@/constants/policy'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 import { useNewMangaQuery } from './useNewMangaQuery'
@@ -19,9 +15,14 @@ export default function NewMangaList({ page }: Props) {
 
   if (isLoading) {
     return (
-      <div className="flex-1 flex items-center justify-center">
-        <Loader2 className="size-8 animate-spin" />
-      </div>
+      <ul className={`flex-1 grid ${MANGA_LIST_GRID_COLUMNS.card} gap-2`}>
+        <MangaCardSkeleton />
+        <MangaCardSkeleton />
+        <MangaCardSkeleton />
+        <MangaCardSkeleton />
+        <MangaCardSkeleton />
+        <MangaCardSkeleton />
+      </ul>
     )
   }
 
@@ -34,16 +35,13 @@ export default function NewMangaList({ page }: Props) {
   }
 
   return (
-    <>
-      <div className="flex-1">
-        <ul className={`grid ${MANGA_LIST_GRID_COLUMNS.card} gap-2`}>
-          {mangas.map((manga, i) => (
-            <MangaCard index={i} key={manga.id} manga={manga} />
-          ))}
-          <MangaCardDonation />
-        </ul>
-      </div>
-      <PageNavigation className="py-4" currentPage={page} totalPages={TOTAL_HIYOBI_PAGES} />
-    </>
+    <div className="flex-1">
+      <ul className={`grid ${MANGA_LIST_GRID_COLUMNS.card} gap-2`}>
+        {mangas.map((manga, i) => (
+          <MangaCard index={i} key={manga.id} manga={manga} />
+        ))}
+        <MangaCardDonation />
+      </ul>
+    </div>
   )
 }
