@@ -169,9 +169,8 @@ function getCacheControlHeader(params: KHentaiMangaSearchOptions) {
       },
       browser: {
         public: true,
-        maxAge: 3,
-        sMaxAge: sec('40 seconds'),
-        swr: sec('10 seconds'),
+        maxAge: sec('20 seconds'),
+        sMaxAge: sec('30 seconds'),
       },
     })
   }
