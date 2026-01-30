@@ -1,33 +1,25 @@
 import { waitUntil } from '@vercel/functions'
 
-import { GETProxyKSearchSchema } from '@/app/api/proxy/k/search/schema'
-import { POSTV1SearchTrendingBody } from '@/backend/api/v1/search/trending/POST'
 import { BLACKLISTED_MANGA_IDS, MAX_KHENTAI_SEARCH_QUERY_LENGTH } from '@/constants/policy'
 import { encodeCategories, kHentaiClient, KHentaiMangaSearchOptions } from '@/crawler/k-hentai'
-import {
-  applyCORSHeaders,
-  createCacheControlHeaders,
-  createCORSPreflightResponse,
-  createProblemDetailsResponse,
-  handleRouteError,
-} from '@/crawler/proxy-utils'
+import { applyCORSHeaders, createCacheControlHeaders, createProblemDetailsResponse, handleRouteError } from '@/crawler/proxy-utils'
 import { env } from '@/env/client'
-import { getKeywordPromotion, type KeywordPromotion } from '@/sponsor'
+import { getKeywordPromotion } from '@/sponsor'
 import { Locale } from '@/translation/common'
-import { Manga } from '@/types/manga'
 import { sec } from '@/utils/format/date'
 import { chance } from '@/utils/random-edge'
 
+import type { GETProxyKSearchResponse } from './types'
+
+import { GETProxyKSearchSchema } from './schema'
 import { convertToKHentaiKey, filterMangasByMinusPrefix } from './utils'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
 
 export const runtime = 'edge'
 
-export type GETProxyKSearchResponse = {
-  mangas: Manga[]
-  nextCursor: string | null
-  promotion?: KeywordPromotion
+type PostSearchTrendingBody = {
+  keywords: string[]
 }
 
 export async function GET(request: Request) {
@@ -167,10 +159,6 @@ export async function GET(request: Request) {
   }
 }
 
-export async function OPTIONS(request: Request) {
-  return createCORSPreflightResponse(request)
-}
-
 function getCacheControlHeader(params: KHentaiMangaSearchOptions) {
   const { nextId, nextViews, sort } = params
 
@@ -247,7 +235,7 @@ function getKHentaiLanguageFilter(locale: Locale) {
 }
 
 async function postSearchKeyword(keyword: string, signal?: AbortSignal) {
-  const body: POSTV1SearchTrendingBody = { keywords: [keyword] }
+  const body: PostSearchTrendingBody = { keywords: [keyword] }
 
   try {
     return await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/search/trending`, {

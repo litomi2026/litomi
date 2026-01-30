@@ -1,4 +1,6 @@
-import { Locale } from '@/translation/common'
+import type { KeywordPromotion } from '@/sponsor'
+import type { Locale } from '@/translation/common'
+import type { Manga } from '@/types/manga'
 
 export enum Sort {
   RANDOM = 'random',
@@ -22,4 +24,10 @@ export type GETProxyKSearchRequest = {
   'next-views-id'?: number
   skip?: number
   locale?: Locale
+}
+
+export type GETProxyKSearchResponse = {
+  mangas: Manga[]
+  nextCursor: string | null
+  promotion?: KeywordPromotion
 }

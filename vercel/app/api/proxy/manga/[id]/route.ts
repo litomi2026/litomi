@@ -4,7 +4,6 @@ import {
   applyCORSHeaders,
   calculateOptimalCacheDuration,
   createCacheControlHeaders,
-  createCORSPreflightResponse,
   createProblemDetailsResponse,
   handleRouteError,
 } from '@/crawler/proxy-utils'
@@ -148,8 +147,4 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
     applyCORSHeaders(request, response.headers)
     return response
   }
-}
-
-export async function OPTIONS(request: Request) {
-  return createCORSPreflightResponse(request)
 }
