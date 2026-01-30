@@ -1,37 +1,37 @@
-import { createCacheControlHeaders, createProblemDetailsResponse, handleRouteError } from '@/crawler/proxy-utils'
-import { WebtoonList } from '@/crawler/webtoon/types'
-import { env } from '@/env/client'
-import { RouteProps } from '@/types/nextjs'
-import { sec } from '@/utils/format/date'
+import z from 'zod'
 
-import { fetchWebtoonList, isValidProvider } from '../providers'
+import { TOTAL_HIYOBI_PAGES } from '@/constants/policy'
+import { hiyobiClient } from '@/crawler/hiyobi'
+import { createCacheControlHeaders, createProblemDetailsResponse, handleRouteError } from '@/crawler/proxy-utils'
+import { env } from '@/env/client'
+import { Locale } from '@/translation/common'
+import { sec } from '@/utils/format/date'
 
 export const runtime = 'edge'
 
 const { NEXT_PUBLIC_CANONICAL_URL } = env
 
-const PAGE_SIZE = 50
+const GETProxyHiyobiNewSchema = z.object({
+  page: z.coerce.number().int().positive().max(TOTAL_HIYOBI_PAGES),
+  locale: z.enum(Locale).default(Locale.KO),
+})
 
-type Params = {
-  provider: string
-}
+export async function GET(request: Request) {
+  const url = new URL(request.url)
+  const searchParams = Object.fromEntries(url.searchParams)
+  const validation = GETProxyHiyobiNewSchema.safeParse(searchParams)
 
-export async function GET(request: Request, { params }: RouteProps<Params>) {
-  const { provider } = await params
-
-  if (!isValidProvider(provider)) {
+  if (!validation.success) {
     const response = createProblemDetailsResponse(request, {
       status: 400,
-      code: 'unknown-provider',
-      detail: '지원하지 않는 제공자예요',
+      code: 'bad-request',
+      detail: '잘못된 요청이에요',
     })
     response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
     return response
   }
 
-  const { searchParams } = new URL(request.url)
-  const cursor = searchParams.get('cursor')
-  const startIndex = cursor ? parseInt(cursor, 10) : 0
+  const { page, locale } = validation.data
 
   if (request.signal?.aborted) {
     const response = createProblemDetailsResponse(request, {
@@ -44,32 +44,25 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
   }
 
   try {
-    const fullList = await fetchWebtoonList(provider, searchParams)
-    const endIndex = startIndex + PAGE_SIZE
-    const paginatedItems = fullList.items.slice(startIndex, endIndex)
-    const hasMore = endIndex < fullList.items.length
-
-    const paginatedList: WebtoonList = {
-      items: paginatedItems,
-      nextCursor: hasMore ? String(endIndex) : undefined,
-    }
+    const mangas = await hiyobiClient.fetchMangas({ page, locale })
 
     const headers = new Headers(
       createCacheControlHeaders({
         vercel: {
-          maxAge: sec('30 days'),
+          maxAge: sec('30 minutes'),
         },
         browser: {
           public: true,
-          maxAge: sec('10 minutes'),
-          sMaxAge: sec('1 day'),
-          swr: sec('1 day'),
+          maxAge: 3,
+          sMaxAge: sec('3 hours'),
+          swr: sec('30 minutes'),
         },
       }),
     )
+
     headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
 
-    return Response.json(paginatedList, { headers })
+    return Response.json(mangas, { headers })
   } catch (error) {
     const response = handleRouteError(error, request)
     response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)

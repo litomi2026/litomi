@@ -2,7 +2,7 @@ import { waitUntil } from '@vercel/functions'
 
 import { BLACKLISTED_MANGA_IDS, MAX_KHENTAI_SEARCH_QUERY_LENGTH } from '@/constants/policy'
 import { encodeCategories, kHentaiClient, KHentaiMangaSearchOptions } from '@/crawler/k-hentai'
-import { applyCORSHeaders, createCacheControlHeaders, createProblemDetailsResponse, handleRouteError } from '@/crawler/proxy-utils'
+import { createCacheControlHeaders, createProblemDetailsResponse, handleRouteError } from '@/crawler/proxy-utils'
 import { env } from '@/env/client'
 import { getKeywordPromotion } from '@/sponsor'
 import { Locale } from '@/translation/common'
@@ -14,13 +14,13 @@ import type { GETProxyKSearchResponse } from './types'
 import { GETProxyKSearchSchema } from './schema'
 import { convertToKHentaiKey, filterMangasByMinusPrefix } from './utils'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+type POSTSearchTrendingBody = {
+  keywords: string[]
+}
 
 export const runtime = 'edge'
 
-type PostSearchTrendingBody = {
-  keywords: string[]
-}
+const { NEXT_PUBLIC_BACKEND_URL, NEXT_PUBLIC_CANONICAL_URL } = env
 
 export async function GET(request: Request) {
   const requestSignal = request.signal
@@ -34,7 +34,7 @@ export async function GET(request: Request) {
       code: 'bad-request',
       detail: '잘못된 요청이에요',
     })
-    applyCORSHeaders(request, response.headers)
+    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
     return response
   }
 
@@ -69,7 +69,7 @@ export async function GET(request: Request) {
       code: 'query-too-long',
       detail: '검색어가 너무 길어요',
     })
-    applyCORSHeaders(request, response.headers)
+    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
     return response
   }
 
@@ -92,17 +92,17 @@ export async function GET(request: Request) {
     uploader: query?.match(/\buploader:(\S+)/i)?.[1],
   }
 
-  try {
-    if (requestSignal?.aborted) {
-      const response = createProblemDetailsResponse(request, {
-        status: 499,
-        code: 'client-closed-request',
-        detail: '요청이 취소됐어요',
-      })
-      applyCORSHeaders(request, response.headers)
-      return response
-    }
+  if (requestSignal?.aborted) {
+    const response = createProblemDetailsResponse(request, {
+      status: 499,
+      code: 'client-closed-request',
+      detail: '요청이 취소됐어요',
+    })
+    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
+    return response
+  }
 
+  try {
     const revalidate = params.nextId ? sec('30 days') : 0
     const options = { next: { revalidate }, signal: requestSignal }
     const searchedMangas = await kHentaiClient.searchMangas(params, locale ?? Locale.KO, options)
@@ -150,11 +150,11 @@ export async function GET(request: Request) {
     }
 
     const headers = new Headers(getCacheControlHeader(params))
-    applyCORSHeaders(request, headers)
+    headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
     return Response.json(response, { headers })
   } catch (error) {
     const response = handleRouteError(error, request)
-    applyCORSHeaders(request, response.headers)
+    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
     return response
   }
 }
@@ -235,7 +235,7 @@ function getKHentaiLanguageFilter(locale: Locale) {
 }
 
 async function postSearchKeyword(keyword: string, signal?: AbortSignal) {
-  const body: PostSearchTrendingBody = { keywords: [keyword] }
+  const body: POSTSearchTrendingBody = { keywords: [keyword] }
 
   try {
     return await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/search/trending`, {

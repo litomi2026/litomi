@@ -1,15 +1,17 @@
 import {
-  applyCORSHeaders,
   createCacheControlHeaders,
   createProblemDetailsResponse,
   handleRouteError,
 } from '@/crawler/proxy-utils'
+import { env } from '@/env/client'
 import { RouteProps } from '@/types/nextjs'
 import { sec } from '@/utils/format/date'
 
 import { fetchWebtoonEpisode, isValidProvider } from '../../providers'
 
 export const runtime = 'edge'
+
+const { NEXT_PUBLIC_CANONICAL_URL } = env
 
 type Params = {
   provider: string
@@ -24,7 +26,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       code: 'unknown-provider',
       detail: '지원하지 않는 제공자예요',
     })
-    applyCORSHeaders(request, response.headers)
+    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
     return response
   }
 
@@ -37,7 +39,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
         code: 'client-closed-request',
         detail: '요청이 취소됐어요',
       })
-      applyCORSHeaders(request, response.headers)
+      response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
       return response
     }
 
@@ -56,12 +58,12 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
         },
       }),
     )
-    applyCORSHeaders(request, headers)
+    headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
 
     return Response.json(episode, { headers })
   } catch (error) {
     const response = handleRouteError(error, request)
-    applyCORSHeaders(request, response.headers)
+    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
     return response
   }
 }

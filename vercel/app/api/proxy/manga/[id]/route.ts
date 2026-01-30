@@ -1,12 +1,12 @@
 import { fetchMangaFromMultiSources } from '@/common/manga'
 import { BLACKLISTED_MANGA_IDS, LAST_VERIFIED_MANGA_ID } from '@/constants/policy'
 import {
-  applyCORSHeaders,
   calculateOptimalCacheDuration,
   createCacheControlHeaders,
   createProblemDetailsResponse,
   handleRouteError,
 } from '@/crawler/proxy-utils'
+import { env } from '@/env/client'
 import { Locale } from '@/translation/common'
 import { RouteProps } from '@/types/nextjs'
 import { DEGRADED_HEADER, DEGRADED_REASON_HEADER } from '@/utils/degraded-response'
@@ -15,6 +15,8 @@ import { sec } from '@/utils/format/date'
 import { GETProxyMangaIdSchema } from './schema'
 
 export const runtime = 'edge'
+
+const { NEXT_PUBLIC_CANONICAL_URL } = env
 
 type Params = {
   id: string
@@ -34,7 +36,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       code: 'bad-request',
       detail: '잘못된 요청이에요',
     })
-    applyCORSHeaders(request, response.headers)
+    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
     return response
   }
 
@@ -59,21 +61,21 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       detail: '요청하신 작품은 접근할 수 없어요',
       headers: forbiddenHeaders,
     })
-    applyCORSHeaders(request, response.headers)
+    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
+    return response
+  }
+
+  if (request.signal?.aborted) {
+    const response = createProblemDetailsResponse(request, {
+      status: 499,
+      code: 'client-closed-request',
+      detail: '요청이 취소됐어요',
+    })
+    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
     return response
   }
 
   try {
-    if (request.signal?.aborted) {
-      const response = createProblemDetailsResponse(request, {
-        status: 499,
-        code: 'client-closed-request',
-        detail: '요청이 취소됐어요',
-      })
-      applyCORSHeaders(request, response.headers)
-      return response
-    }
-
     const manga = await fetchMangaFromMultiSources({ id, locale })
 
     if (!manga) {
@@ -97,7 +99,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
         detail: '요청하신 작품을 찾을 수 없어요',
         headers: notFoundHeaders,
       })
-      applyCORSHeaders(request, response.headers)
+      response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
       return response
     }
 
@@ -114,7 +116,7 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
       })
 
       const headers = new Headers(errorHeaders)
-      applyCORSHeaders(request, headers)
+      headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
       headers.set(DEGRADED_HEADER, '1')
       headers.set(DEGRADED_REASON_HEADER, 'IMAGES_ONLY')
 
@@ -140,11 +142,11 @@ export async function GET(request: Request, { params }: RouteProps<Params>) {
     })
 
     const headers = new Headers(successHeaders)
-    applyCORSHeaders(request, headers)
+    headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
     return Response.json(manga, { headers })
   } catch (error) {
     const response = handleRouteError(error, request)
-    applyCORSHeaders(request, response.headers)
+    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
     return response
   }
 }
