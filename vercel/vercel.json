@@ -1,5 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "cd .. && bun install && cd vercel && bun install",
   "functions": {
     "app/api/**/*.ts": {
       "maxDuration": 20
