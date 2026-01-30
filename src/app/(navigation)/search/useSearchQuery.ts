@@ -1,7 +1,9 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'next/navigation'
 
-import { GETProxyKSearchResponse } from '@/app/api/proxy/k/search/route'
+import type { KeywordPromotion } from '@/sponsor'
+import type { Manga } from '@/types/manga'
+
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
@@ -11,6 +13,12 @@ import { fetchWithErrorHandling } from '@/utils/react-query-error'
 import { SEARCH_PAGE_SEARCH_PARAMS } from './constants'
 
 const { NEXT_PUBLIC_EXTERNAL_API_PROXY_URL } = env
+
+type GETProxyKSearchResponse = {
+  mangas: Manga[]
+  nextCursor: string | null
+  promotion?: KeywordPromotion
+}
 
 export function useSearchQuery() {
   const searchParams = useSearchParams()

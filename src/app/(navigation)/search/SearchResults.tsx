@@ -5,7 +5,6 @@ import { useSearchParams } from 'next/navigation'
 import { Fragment, useMemo } from 'react'
 
 import { useSearchQuery } from '@/app/(navigation)/search/useSearchQuery'
-import { Sort } from '@/app/api/proxy/k/search/types'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import MangaCardImage from '@/components/card/MangaCardImage'
 import MangaCardPromotion from '@/components/card/MangaCardPromotion'
@@ -24,7 +23,7 @@ export default function SearchResult() {
   const searchParams = useSearchParams()
   const viewFromQuery = searchParams.get('view')
   const view = viewFromQuery === View.IMAGE ? View.IMAGE : View.CARD
-  const isRandomSort = searchParams.get('sort') === Sort.RANDOM
+  const isRandomSort = searchParams.get('sort') === 'random'
 
   const {
     data,

@@ -5,7 +5,7 @@ export const env = {
 
   // Optional / feature toggles (empty by default)
   NEXT_PUBLIC_CORS_PROXY_URL: process.env.NEXT_PUBLIC_CORS_PROXY_URL ?? '',
-  NEXT_PUBLIC_EXTERNAL_API_PROXY_URL: process.env.NEXT_PUBLIC_EXTERNAL_API_PROXY_URL ?? 'http://localhost:3000',
+  NEXT_PUBLIC_EXTERNAL_API_PROXY_URL: process.env.NEXT_PUBLIC_EXTERNAL_API_PROXY_URL ?? 'http://localhost:3001',
   NEXT_PUBLIC_GA_ID: process.env.NEXT_PUBLIC_GA_ID ?? '',
   NEXT_PUBLIC_IOS_TESTFLIGHT_URL: process.env.NEXT_PUBLIC_IOS_TESTFLIGHT_URL ?? '',
   NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN ?? '',

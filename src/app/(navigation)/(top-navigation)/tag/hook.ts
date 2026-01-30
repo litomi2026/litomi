@@ -6,6 +6,7 @@ import type { GETV1TagResponse } from '@/backend/api/v1/tag'
 
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
+import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
@@ -15,10 +16,11 @@ export type CategoryParam = 'female' | 'male' | 'mixed' | 'other'
 type Params = {
   category: CategoryParam
   page: number
-  locale: string
 }
 
-export function useTagQuery({ category, page, locale }: Params) {
+export function useTagQuery({ category, page }: Params) {
+  const locale = getLocaleFromCookie()
+
   return useQuery({
     queryKey: QueryKeys.tag(category, page, locale),
     queryFn: () => fetchTags(category, page, locale),

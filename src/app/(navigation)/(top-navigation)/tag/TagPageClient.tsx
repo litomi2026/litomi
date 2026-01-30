@@ -6,7 +6,6 @@ import { useSearchParams } from 'next/navigation'
 
 import PageNavigation from '@/components/PageNavigation'
 import { formatNumber } from '@/utils/format/number'
-import { getLocaleFromCookie } from '@/utils/locale-from-cookie'
 
 import { CategoryParam, useTagQuery } from './hook'
 
@@ -35,11 +34,10 @@ const TAB_COLORS: Record<CategoryParam, string> = {
 
 export default function TagPageClient() {
   const searchParams = useSearchParams()
-  const locale = getLocaleFromCookie()
   const categoryParam = searchParams.get('category')
   const category = isValidCategory(categoryParam) ? categoryParam : 'female'
   const page = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10) || 1)
-  const { data, isLoading, isError, isFetching } = useTagQuery({ category, page, locale })
+  const { data, isLoading, isError, isFetching } = useTagQuery({ category, page })
 
   return (
     <div className="flex flex-col grow gap-6 p-4">

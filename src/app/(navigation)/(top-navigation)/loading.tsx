@@ -1,15 +1,9 @@
-import { MangaCardSkeleton } from '@/components/card/MangaCard'
-import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
+import { Loader2 } from 'lucide-react'
 
 export default function Loading() {
   return (
-    <ul className={`flex-1 grid ${MANGA_LIST_GRID_COLUMNS.card} gap-2`}>
-      <MangaCardSkeleton />
-      <MangaCardSkeleton />
-      <MangaCardSkeleton />
-      <MangaCardSkeleton />
-      <MangaCardSkeleton />
-      <MangaCardSkeleton />
-    </ul>
+    <div className="flex-1 flex items-center justify-center">
+      <Loader2 className="size-8 animate-spin" />
+    </div>
   )
 }

@@ -4,11 +4,14 @@ import type { NextConfig } from 'next'
 
 import withBundleAnalyzer from '@next/bundle-analyzer'
 import { withSentryConfig } from '@sentry/nextjs'
+import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 import { createCacheControl } from '@/utils/cache-control'
 import { sec } from '@/utils/format/date'
 
 const isProduction = process.env.NODE_ENV === 'production'
+const hasCacheStore = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
 
 const cspHeader = `
   default-src 'self';
@@ -87,11 +90,17 @@ const nextConfig: NextConfig = {
   ],
   poweredByHeader: false,
   reactCompiler: true,
+  ...(isProduction && {
+    compiler: { removeConsole: { exclude: ['error', 'warn'] } },
+  }),
   ...(process.env.BUILD_OUTPUT === 'standalone' && {
     output: 'standalone',
     transpilePackages: ['@t3-oss/env-nextjs', '@t3-oss/env-core'],
   }),
-  ...(isProduction && { compiler: { removeConsole: { exclude: ['error', 'warn'] } } }),
+  ...(hasCacheStore && {
+    cacheHandler: join(fileURLToPath(new URL('.', import.meta.url)), 'cache-handler.js'),
+    cacheMaxMemorySize: 0,
+  }),
 }
 
 const withAnalyzer = withBundleAnalyzer({

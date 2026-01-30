@@ -2,6 +2,7 @@
 FROM oven/bun:1.3 AS builder
 WORKDIR /app
 
+ARG CI
 ARG NEXT_PUBLIC_BACKEND_URL
 ARG NEXT_PUBLIC_CANONICAL_URL
 ARG NEXT_PUBLIC_CORS_PROXY_URL
@@ -15,6 +16,7 @@ ARG SENTRY_AUTH_TOKEN
 ARG SENTRY_ORG
 ARG SENTRY_PROJECT
 
+ENV CI=$CI
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV BUILD_OUTPUT=standalone
@@ -55,9 +57,10 @@ RUN adduser --system --uid 1001 nextjs
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/cache-handler.js ./cache-handler.js
 
 USER nextjs
 
 EXPOSE $PORT
 
-CMD ["bun", "./server.js"]
+CMD ["bun", "server.js"]

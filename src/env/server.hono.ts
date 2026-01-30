@@ -9,7 +9,7 @@ export const env = createEnv({
     BBATON_CLIENT_SECRET: z.string(),
     CORS_ORIGIN: z.string().default('http://localhost:3000'),
     GA_PROPERTY_ID: z.string().optional(),
-    GA_SERVICE_ACCOUNT_EMAIL: z.string().optional(),
+    GA_SERVICE_ACCOUNT_EMAIL: z.email().optional(),
     GA_SERVICE_ACCOUNT_KEY: z.string().optional(),
     JWT_SECRET_BBATON_ATTEMPT: z.string().default('bbaton_attempt_secret'),
   },

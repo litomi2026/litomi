@@ -60,10 +60,30 @@ import_dns_records() {
     # Define mappings: terraform_resource -> matching criteria
     # For TXT records with same name, we need to match by content pattern
     declare -a import_mappings=(
-        "cloudflare_dns_record.wildcard_a|*.litomi.in|A|"
-        "cloudflare_dns_record.root_a|litomi.in|A|"
+        # Root A Records
+        "cloudflare_dns_record.root_a[\"216.239.32.21\"]|litomi.in|A|216.239.32.21"
+        "cloudflare_dns_record.root_a[\"216.239.34.21\"]|litomi.in|A|216.239.34.21"
+        "cloudflare_dns_record.root_a[\"216.239.36.21\"]|litomi.in|A|216.239.36.21"
+        "cloudflare_dns_record.root_a[\"216.239.38.21\"]|litomi.in|A|216.239.38.21"
+        
+        # Root AAAA Records
+        "cloudflare_dns_record.root_aaaa[\"2001:4860:4802:32::15\"]|litomi.in|AAAA|2001:4860:4802:32::15"
+        "cloudflare_dns_record.root_aaaa[\"2001:4860:4802:34::15\"]|litomi.in|AAAA|2001:4860:4802:34::15"
+        "cloudflare_dns_record.root_aaaa[\"2001:4860:4802:36::15\"]|litomi.in|AAAA|2001:4860:4802:36::15"
+        "cloudflare_dns_record.root_aaaa[\"2001:4860:4802:38::15\"]|litomi.in|AAAA|2001:4860:4802:38::15"
+
+        # CNAME Records
         "cloudflare_dns_record.www_cname|www.litomi.in|CNAME|"
         "cloudflare_dns_record.r2_cname|r2.litomi.in|CNAME|"
+        "cloudflare_dns_record.stg_cname|stg.litomi.in|CNAME|"
+        "cloudflare_dns_record.api_cname|api.litomi.in|CNAME|"
+        "cloudflare_dns_record.api_stg_cname|api-stg.litomi.in|CNAME|"
+        "cloudflare_dns_record.render_cname|render.litomi.in|CNAME|"
+        "cloudflare_dns_record.render_stg_cname|render-stg.litomi.in|CNAME|"
+        "cloudflare_dns_record.vercel_cname|vercel.litomi.in|CNAME|"
+        "cloudflare_dns_record.vercel_stg_cname|vercel-stg.litomi.in|CNAME|"
+
+        # Other Records
         "cloudflare_dns_record.caa|litomi.in|CAA|"
         "cloudflare_dns_record.dmarc_txt|_dmarc.litomi.in|TXT|"
         "cloudflare_dns_record.domainkey_txt|*._domainkey.litomi.in|TXT|"
