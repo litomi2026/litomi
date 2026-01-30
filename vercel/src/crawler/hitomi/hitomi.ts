@@ -11,7 +11,6 @@ import { translateTag } from '@/translation/tag'
 import { translateType } from '@/translation/type'
 import { Manga } from '@/types/manga'
 
-import { harpiClient } from '../../../trash/crawler/harpi/harpi'
 import { NotFoundError, ParseError } from '../errors'
 import { ProxyClient, ProxyClientConfig } from '../proxy'
 import { isUpstreamServerError } from '../proxy-utils'
@@ -92,9 +91,11 @@ class HitomiClient {
     const seriesValues = parodys?.map(({ parody }) => parody)
     const languageValues = languages?.map(({ name }) => name) ?? [language]
 
-    // NOTE: hitomi 사이트 이미지는 referer 헤더가 없으면 못 보기에, hentkor에서 이미지 URL을 가져오도록 함
-    // const imageURLs = await Promise.all(gallery.files.map((file) => this.getImageURL(gallery.id, file)))
-    const imageURLs = harpiClient.fetchMangaImages(mangaId, gallery.files.length)
+    // NOTE: hitomi 사이트 이미지는 referer 헤더가 없으면 못 보기에, harpi에서 이미지 URL을 가져오도록 해요.
+    const imageURLs = Array.from(
+      { length: gallery.files.length },
+      (_, i) => `https://soujpa.in/start/${id}/${id}_${i}.avif`,
+    )
 
     return {
       id: mangaId,
