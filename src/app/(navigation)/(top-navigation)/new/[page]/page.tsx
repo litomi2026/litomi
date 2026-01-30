@@ -19,6 +19,10 @@ export const metadata: Metadata = {
   },
 }
 
+export async function generateStaticParams() {
+  return Array.from({ length: 10 }, (_, index) => ({ page: String(index + 1) }))
+}
+
 const mangasNewSchema = z.object({
   page: z.coerce.number().int().positive().max(TOTAL_HIYOBI_PAGES),
 })

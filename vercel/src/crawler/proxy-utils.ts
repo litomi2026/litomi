@@ -27,10 +27,6 @@ type CacheControlHeaders = {
   browser?: CacheControlOptions
 }
 
-export function applyCORSHeaders(_request: Request, headers: Headers) {
-  headers.set('Access-Control-Allow-Origin', CANONICAL_URL)
-}
-
 export function calculateOptimalCacheDuration(images: string[]): number {
   const now = Math.floor(Date.now() / 1000)
   let nearestExpiration
