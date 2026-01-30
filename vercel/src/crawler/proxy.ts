@@ -1,5 +1,6 @@
-import { CircuitBreaker, CircuitBreakerConfig } from './CircuitBreaker'
-import { NotFoundError, UpstreamServerError } from './errors'
+import { CircuitBreaker, type CircuitBreakerConfig } from '@/crawler/CircuitBreaker'
+import { NotFoundError, UpstreamServerError } from '@/crawler/errors'
+
 import { RetryConfig, retryWithBackoff } from './retry'
 
 export const PROXY_HEADERS = {

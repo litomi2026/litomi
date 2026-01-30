@@ -1,5 +1,8 @@
 import ms from 'ms'
 
+import { NotFoundError, ParseError } from '@/crawler/errors'
+import { ProxyClient, type ProxyClientConfig } from '@/crawler/proxy'
+import { isUpstreamServerError } from '@/crawler/proxy-utils'
 import { MangaSource } from '@/database/enum'
 import { translateArtistList } from '@/translation/artist'
 import { translateCharacterList } from '@/translation/character'
@@ -11,9 +14,6 @@ import { translateTag } from '@/translation/tag'
 import { translateType } from '@/translation/type'
 import { Manga } from '@/types/manga'
 
-import { NotFoundError, ParseError } from '../errors'
-import { ProxyClient, ProxyClientConfig } from '../proxy'
-import { isUpstreamServerError } from '../proxy-utils'
 import { HitomiFile, HitomiGallery, Tag } from './types'
 import { urlFromUrlFromHash } from './utils'
 

@@ -2,6 +2,9 @@ import ms from 'ms'
 
 import type { Manga } from '@/types/manga'
 
+import { NotFoundError, ParseError, UpstreamServerError } from '@/crawler/errors'
+import { ProxyClient, type ProxyClientConfig } from '@/crawler/proxy'
+import { isUpstreamServerError } from '@/crawler/proxy-utils'
 import { MangaSource, tagCategoryNameToInt } from '@/database/enum'
 import { translateArtistList } from '@/translation/artist'
 import { translateCharacterList } from '@/translation/character'
@@ -12,10 +15,6 @@ import { translateSeriesList } from '@/translation/series'
 import { translateTag } from '@/translation/tag'
 import { translateType } from '@/translation/type'
 import { convertCamelCaseToKebabCase } from '@/utils/param'
-
-import { NotFoundError, ParseError, UpstreamServerError } from './errors'
-import { ProxyClient, ProxyClientConfig } from './proxy'
-import { isUpstreamServerError } from './proxy-utils'
 
 const kHentaiTypeNumberToName: Record<number, string> = {
   1: 'doujinshi',

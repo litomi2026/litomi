@@ -3,9 +3,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["../src/*"]
+      "@/*": ["./src/*", "../src/*"]
     }
   },
-  "include": ["app/**/*.ts", "app/**/*.tsx", "instrumentation.ts"],
+  "include": ["src/app/**/*.ts", "src/app/**/*.tsx", "instrumentation.ts"],
   "exclude": ["node_modules", ".next"]
 }
