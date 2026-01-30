@@ -2,7 +2,7 @@ import 'server-only'
 import { z } from 'zod'
 
 import { BadRequestError } from '@/crawler/errors'
-import { TOONKOR_DOMAIN_PATTERN, toonkorClient, type ToonkorParams } from '@/crawler/toonkor/toonkor'
+import { TOONKOR_DOMAIN_PATTERN, toonkorClient, type ToonkorParams } from '@/crawler/toonkor'
 import { WebtoonCrawler, WebtoonEpisode, WebtoonList, WebtoonSeries } from '@/crawler/webtoon/types'
 import { sec } from '@/utils/format/date'
 

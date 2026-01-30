@@ -1,8 +1,6 @@
 import ms from 'ms'
 
 import { ParseError } from '@/crawler/errors'
-import { ProxyClient, ProxyClientConfig } from '@/crawler/proxy'
-import { isUpstreamServerError } from '@/crawler/proxy-utils'
 import {
   WebtoonCrawler,
   WebtoonEpisode,
@@ -11,6 +9,9 @@ import {
   WebtoonSeries,
   WebtoonSeriesEpisode,
 } from '@/crawler/webtoon/types'
+
+import { ProxyClient, ProxyClientConfig } from './proxy'
+import { isUpstreamServerError } from './proxy-utils'
 
 export type ToonkorParams = {
   /** toonkor 도메인 (e.g., 'tkor079.com') */
