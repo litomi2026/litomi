@@ -57,9 +57,10 @@ RUN adduser --system --uid 1001 nextjs
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/cache-handler.js ./cache-handler.js
 
 USER nextjs
 
 EXPOSE $PORT
 
-CMD ["bun", "./server.js"]
+CMD ["bun", "server.js"]
