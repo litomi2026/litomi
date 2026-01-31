@@ -28,6 +28,8 @@ steps:
       - '--build-arg'
       - 'CI=true'
       - '--build-arg'
+      - 'ENABLE_CACHE_HANDLER=$_ENABLE_CACHE_HANDLER'
+      - '--build-arg'
       - 'NEXT_PUBLIC_BACKEND_URL=$_NEXT_PUBLIC_BACKEND_URL'
       - '--build-arg'
       - 'NEXT_PUBLIC_CANONICAL_URL=$_NEXT_PUBLIC_CANONICAL_URL'
@@ -98,6 +100,7 @@ substitutions:
   _AR_HOSTNAME: asia-east1-docker.pkg.dev
   _TRIGGER_ID: 3ca1aece-28a5-4cfb-bc1a-6c97498914b8
   _AR_REPOSITORY: cloud-run-source-deploy
+  _ENABLE_CACHE_HANDLER: 'true'
   _NEXT_PUBLIC_BACKEND_URL: ''
   _NEXT_PUBLIC_CANONICAL_URL: ''
   _NEXT_PUBLIC_CORS_PROXY_URL: ''

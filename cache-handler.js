@@ -30,14 +30,23 @@ async function upstashPipeline(commands) {
 
 module.exports = class UpstashCacheHandler {
   constructor(options) {
-    console.log('Using UpstashCacheHandler')
     this.options = options
+    this.disabled = false
+
+    if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+      console.warn('⚠️ Upstash credentials missing in runtime. Cache disabled.')
+      this.disabled = true
+    } else {
+      console.log('✅ Upstash Cache Handler initialized.')
+    }
   }
 
   /**
    * @param {string} key
    */
   async get(key) {
+    if (this.disabled) return null
+
     try {
       const result = await upstashPipeline([['GET', key]])
       const value = result?.[0]?.result
@@ -65,6 +74,10 @@ module.exports = class UpstashCacheHandler {
    * @param {string} tag
    */
   async revalidateTag(tag) {
+    if (this.disabled) {
+      return
+    }
+
     const members = await upstashPipeline([['SMEMBERS', tagKey(tag)]])
     const keys = members?.[0]?.result
 
@@ -88,6 +101,10 @@ module.exports = class UpstashCacheHandler {
    * @param {{ tags?: string[] }} ctx
    */
   async set(key, data, ctx) {
+    if (this.disabled) {
+      return
+    }
+
     if (data == null) {
       await upstashPipeline([['DEL', key]])
       return

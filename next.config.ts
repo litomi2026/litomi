@@ -5,21 +5,11 @@ import type { NextConfig } from 'next'
 import withBundleAnalyzer from '@next/bundle-analyzer'
 import { withSentryConfig } from '@sentry/nextjs'
 import { join } from 'node:path'
-import { fileURLToPath } from 'node:url'
 
 import { createCacheControl } from '@/utils/cache-control'
 import { sec } from '@/utils/format/date'
 
 const isProduction = process.env.NODE_ENV === 'production'
-const hasCacheStore = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
-
-if (isProduction && !hasCacheStore) {
-  console.warn('⚠️ Upstash Redis credentials not found. Cache handler will be disabled.')
-}
-
-if (hasCacheStore) {
-  console.log('✅ Custom cache handler enabled.')
-}
 
 const cspHeader = `
   default-src 'self';
@@ -105,7 +95,7 @@ const nextConfig: NextConfig = {
     output: 'standalone',
     transpilePackages: ['@t3-oss/env-nextjs', '@t3-oss/env-core'],
   }),
-  ...(hasCacheStore && {
+  ...(process.env.ENABLE_CACHE_HANDLER === 'true' && {
     cacheHandler: join(process.cwd(), 'cache-handler.js'),
     cacheMaxMemorySize: 0,
   }),
