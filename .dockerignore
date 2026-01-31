@@ -23,12 +23,8 @@ test-results
 coverage
 
 # Mobile build artifacts
-android/.gradle
-android/.idea
-android/build
-android/app/build
-ios/Pods
-ios/build
+android
+ios
 
 # Local env
 .env*

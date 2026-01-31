@@ -26,6 +26,8 @@ steps:
       - '-f'
       - Dockerfile.nextjs
       - '--build-arg'
+      - 'ENABLE_CACHE_HANDLER=$_ENABLE_CACHE_HANDLER'
+      - '--build-arg'
       - 'NEXT_PUBLIC_BACKEND_URL=$_NEXT_PUBLIC_BACKEND_URL'
       - '--build-arg'
       - 'NEXT_PUBLIC_CANONICAL_URL=$_NEXT_PUBLIC_CANONICAL_URL'
@@ -86,6 +88,7 @@ substitutions:
   _PLATFORM: managed
   _SERVICE_NAME: litomi-in-stage
   _DEPLOY_REGION: asia-east1
+  _ENABLE_CACHE_HANDLER: 'false'
   _NEXT_PUBLIC_BACKEND_URL: ''
   _NEXT_PUBLIC_CANONICAL_URL: ''
   _NEXT_PUBLIC_CORS_PROXY_URL: ''
