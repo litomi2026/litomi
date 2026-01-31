@@ -55,6 +55,10 @@ steps:
       - 'SENTRY_ORG=$_SENTRY_ORG'
       - '--build-arg'
       - 'SENTRY_PROJECT=$_SENTRY_PROJECT'
+      - '--build-arg'
+      - 'UPSTASH_REDIS_REST_TOKEN=$_UPSTASH_REDIS_REST_TOKEN'
+      - '--build-arg'
+      - 'UPSTASH_REDIS_REST_URL=$_UPSTASH_REDIS_REST_URL'
     id: Build
     env:
       - DOCKER_BUILDKIT=1
@@ -100,7 +104,6 @@ substitutions:
   _AR_HOSTNAME: asia-east1-docker.pkg.dev
   _TRIGGER_ID: 3ca1aece-28a5-4cfb-bc1a-6c97498914b8
   _AR_REPOSITORY: cloud-run-source-deploy
-  _ENABLE_CACHE_HANDLER: 'true'
   _NEXT_PUBLIC_BACKEND_URL: ''
   _NEXT_PUBLIC_CANONICAL_URL: ''
   _NEXT_PUBLIC_CORS_PROXY_URL: ''
@@ -114,6 +117,8 @@ substitutions:
   _SENTRY_AUTH_TOKEN: ''
   _SENTRY_ORG: ''
   _SENTRY_PROJECT: ''
+  _UPSTASH_REDIS_REST_TOKEN: ''
+  _UPSTASH_REDIS_REST_URL: ''
 tags:
   - gcp-cloud-build-deploy-cloud-run
   - gcp-cloud-build-deploy-cloud-run-managed

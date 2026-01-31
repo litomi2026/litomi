@@ -88,7 +88,6 @@ substitutions:
   _PLATFORM: managed
   _SERVICE_NAME: litomi-in-stage
   _DEPLOY_REGION: asia-east1
-  _ENABLE_CACHE_HANDLER: 'false'
   _NEXT_PUBLIC_BACKEND_URL: ''
   _NEXT_PUBLIC_CANONICAL_URL: ''
   _NEXT_PUBLIC_CORS_PROXY_URL: ''
