@@ -6,7 +6,10 @@ steps:
       - >-
         docker pull
         $_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$REPO_NAME/$_SERVICE_NAME:latest
-        || exit 0
+        || true;
+        docker pull
+        $_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$REPO_NAME/$_SERVICE_NAME:buildcache
+        || true
     id: PullCache
   - name: gcr.io/cloud-builders/docker
     args:
@@ -20,12 +23,34 @@ steps:
       - '--cache-from'
       - >-
         $_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$REPO_NAME/$_SERVICE_NAME:latest
+      - '--cache-from'
+      - >-
+        $_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$REPO_NAME/$_SERVICE_NAME:buildcache
       - '--build-arg'
       - 'BUILDKIT_INLINE_CACHE=1'
       - '.'
       - '-f'
       - Dockerfile.hono
     id: Build
+    env:
+      - DOCKER_BUILDKIT=1
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - '--target'
+      - builder
+      - '-t'
+      - >-
+        $_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$REPO_NAME/$_SERVICE_NAME:buildcache
+      - '--cache-from'
+      - >-
+        $_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$REPO_NAME/$_SERVICE_NAME:buildcache
+      - '--build-arg'
+      - 'BUILDKIT_INLINE_CACHE=1'
+      - '.'
+      - '-f'
+      - Dockerfile.hono
+    id: BuildCacheImage
     env:
       - DOCKER_BUILDKIT=1
   - name: gcr.io/cloud-builders/docker
@@ -40,6 +65,12 @@ steps:
       - >-
         $_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$REPO_NAME/$_SERVICE_NAME:latest
     id: PushLatest
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - >-
+        $_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$REPO_NAME/$_SERVICE_NAME:buildcache
+    id: PushCacheImage
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
     args:
       - run
