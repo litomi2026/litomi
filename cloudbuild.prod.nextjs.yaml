@@ -68,6 +68,8 @@ steps:
       - >-
         $_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$REPO_NAME/$_SERVICE_NAME:latest
     id: PushLatest
+    waitFor:
+      - Build
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
     args:
       - run
@@ -83,6 +85,8 @@ steps:
       - '--quiet'
     id: Deploy
     entrypoint: gcloud
+    waitFor:
+      - PushCommit
 options:
   substitutionOption: ALLOW_LOOSE
   logging: CLOUD_LOGGING_ONLY
