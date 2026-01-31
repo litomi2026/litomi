@@ -112,12 +112,6 @@ docker compose up -d
 
 ### 3) 환경 변수 설정 (`.env.development`)
 
-레포에 `.env.template`가 있다면 다음처럼 시작해도 돼요:
-
-```bash
-cp -i .env.template .env.development
-```
-
 아래는 로컬 개발용 예시예요(필요에 따라 바꿔 주세요):
 
 ```bash
