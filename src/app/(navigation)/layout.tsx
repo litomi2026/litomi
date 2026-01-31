@@ -1,4 +1,4 @@
-import { Bookmark, Bot, FileText, Flame, LibraryBig, PiggyBank, Search, Tag } from 'lucide-react'
+import { Bookmark, Bot, Clover, FileText, Flame, LibraryBig, PiggyBank, Search, Tag } from 'lucide-react'
 import Link from 'next/link'
 
 import IconBell from '@/components/icons/IconBell'
@@ -73,6 +73,9 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           </SelectableLink>
           <SelectableLink className="hidden sm:block" href="/tag" icon={<Tag />} selectedIconStyle="fill-soft">
             태그
+          </SelectableLink>
+          <SelectableLink className="hidden sm:block" href="/fortune" hrefMatch="/fortune" icon={<Clover />}>
+            운세
           </SelectableLink>
           <SelectableLink
             className="hidden sm:block"

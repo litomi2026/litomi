@@ -13,6 +13,14 @@ import { sec } from '@/utils/format/date'
 const isProduction = process.env.NODE_ENV === 'production'
 const hasCacheStore = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
 
+if (isProduction && !hasCacheStore) {
+  console.warn('⚠️ Upstash Redis credentials not found. Cache handler will be disabled.')
+}
+
+if (hasCacheStore) {
+  console.log('✅ Custom cache handler enabled.')
+}
+
 const cspHeader = `
   default-src 'self';
   script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https:;
@@ -98,7 +106,7 @@ const nextConfig: NextConfig = {
     transpilePackages: ['@t3-oss/env-nextjs', '@t3-oss/env-core'],
   }),
   ...(hasCacheStore && {
-    cacheHandler: join(fileURLToPath(new URL('.', import.meta.url)), 'cache-handler.js'),
+    cacheHandler: join(process.cwd(), 'cache-handler.js'),
     cacheMaxMemorySize: 0,
   }),
 }

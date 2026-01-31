@@ -112,12 +112,6 @@ docker compose up -d
 
 ### 3) 환경 변수 설정 (`.env.development`)
 
-레포에 `.env.template`가 있다면 다음처럼 시작해도 돼요:
-
-```bash
-cp -i .env.template .env.development
-```
-
 아래는 로컬 개발용 예시예요(필요에 따라 바꿔 주세요):
 
 ```bash
@@ -161,14 +155,6 @@ JWT_SECRET_BBATON_ATTEMPT="dev-bbaton-attempt"
 # 64자 hex 문자열이 필요해요
 # bun run tools/generateEncryptionKey.ts
 TOTP_ENCRYPTION_KEY="0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
-
-# Optional
-# NEXT_PUBLIC_GA_ID=""
-# NEXT_PUBLIC_IOS_TESTFLIGHT_URL=""
-# AMPLITUDE_API_KEY=""
-# GA_PROPERTY_ID=""
-# GA_SERVICE_ACCOUNT_EMAIL=""
-# GA_SERVICE_ACCOUNT_KEY=""
 ```
 
 ### 4) DB 스키마 반영 (Drizzle)
