@@ -29,24 +29,30 @@ async function upstashPipeline(commands) {
 }
 
 module.exports = class UpstashCacheHandler {
+  constructor(options) {
+    console.log('Using UpstashCacheHandler')
+    this.options = options
+  }
+
   /**
    * @param {string} key
    */
   async get(key) {
-    const result = await upstashPipeline([['GET', key]])
-    const value = result?.[0]?.result
-
-    if (value == null) {
-      return null
-    }
-
-    if (typeof value !== 'string') {
-      return null
-    }
-
     try {
+      const result = await upstashPipeline([['GET', key]])
+      const value = result?.[0]?.result
+
+      if (value == null) {
+        return null
+      }
+
+      if (typeof value !== 'string') {
+        return null
+      }
+
       return JSON.parse(value)
-    } catch {
+    } catch (error) {
+      console.error('Cache get error:', error)
       return null
     }
   }
@@ -87,16 +93,20 @@ module.exports = class UpstashCacheHandler {
       return
     }
 
-    const payload = JSON.stringify(data)
-    /** @type {Array<[string, ...any[]]>} */
-    const commands = [['SET', key, payload]]
-    const tags = Array.isArray(ctx?.tags) ? ctx.tags : []
+    try {
+      const payload = JSON.stringify(data)
+      /** @type {Array<[string, ...any[]]>} */
+      const commands = [['SET', key, payload]]
+      const tags = Array.isArray(ctx?.tags) ? ctx.tags : []
 
-    for (const t of tags) {
-      if (!t) continue
-      commands.push(['SADD', tagKey(t), key])
+      for (const t of tags) {
+        if (!t) continue
+        commands.push(['SADD', tagKey(t), key])
+      }
+
+      await upstashPipeline(commands)
+    } catch (error) {
+      console.error('Cache set error:', error)
     }
-
-    await upstashPipeline(commands)
   }
 }
