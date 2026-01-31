@@ -32,3 +32,4 @@ ios/build
 
 # Local env
 .env*
+node_modules
