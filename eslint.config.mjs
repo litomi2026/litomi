@@ -1,6 +1,7 @@
 // @ts-check
 
 import js from '@eslint/js'
+import gitignore from 'eslint-config-flat-gitignore'
 import nextCoreWebVitals from 'eslint-config-next/core-web-vitals'
 import nextTypescript from 'eslint-config-next/typescript'
 import eslintConfigPrettier from 'eslint-config-prettier'
@@ -8,10 +9,11 @@ import perfectionist from 'eslint-plugin-perfectionist'
 import { defineConfig } from 'eslint/config'
 
 export default defineConfig([
+  gitignore(),
   js.configs.recommended,
   ...nextCoreWebVitals,
   ...nextTypescript,
-  { ignores: ['trash/**'] },
+  { ignores: ['android/**', 'ios/**', 'trash/**'] },
   perfectionist.configs['recommended-natural'],
   {
     rules: {

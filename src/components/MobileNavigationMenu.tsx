@@ -1,6 +1,6 @@
 'use client'
 
-import { Bookmark, Bot, FileText, History, PiggyBank, Settings, Star, Tag, X } from 'lucide-react'
+import { Bookmark, Bot, Clover, FileText, History, PiggyBank, Settings, Star, Tag, X } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ReactNode, useEffect, useRef } from 'react'
@@ -124,6 +124,14 @@ export default function MobileNavigationMenu({ onClose }: Readonly<Props>) {
             pathname={pathname}
             selectedIconStyle="fill-soft"
             title="태그"
+          />
+          <MobileMenuLink
+            href="/fortune"
+            hrefMatch="/fortune"
+            icon={<Clover />}
+            onClose={onClose}
+            pathname={pathname}
+            title="운세"
           />
           <MobileMenuLink
             href="/libo"
