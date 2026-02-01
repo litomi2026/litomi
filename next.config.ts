@@ -99,7 +99,7 @@ const nextConfig: NextConfig = {
     transpilePackages: ['@t3-oss/env-nextjs', '@t3-oss/env-core'],
   }),
   ...(process.env.REDIS_URL && {
-    cacheHandler: require.resolve('./cache-handler.mjs'),
+    cacheHandler: require.resolve('./cache-handler.js'),
     cacheMaxMemorySize: 0,
   }),
 }
