@@ -17,7 +17,44 @@ export default class NextCacheHandler extends RedisCacheHandler {
       return result
     }
 
-    return { ...result, value: reviveImageCacheValue(result.value) }
+    const revived = reviveImageCacheValue(result.value)
+    if (!revived) {
+      return null
+    }
+
+    // Guard against corrupted cache entries that break Next.js streaming:
+    // Next expects APP_PAGE/PAGES html to be a string (later wrapped into RenderResult.fromStatic).
+    // If it's an object/stream-like value, RenderResult.readable will return it "as-is",
+    // and Next will crash when trying to call `.pipeTo()` on it.
+    if (revived.kind === 'APP_PAGE' || revived.kind === 'PAGES') {
+      const html = revived.html
+      const htmlType = typeof html
+
+      if (htmlType !== 'string') {
+        if (process.env.NEXT_DEBUG_CACHE_HANDLER === '1') {
+          console.warn('[next-cache-handler] drop non-string html', {
+            key,
+            kind: revived.kind,
+            htmlType,
+          })
+        }
+        return null
+      }
+
+      // segmentData is used by PPR segment prefetch and must behave like a Map.
+      if (revived.segmentData && typeof revived.segmentData.get !== 'function') {
+        if (process.env.NEXT_DEBUG_CACHE_HANDLER === '1') {
+          console.warn('[next-cache-handler] drop invalid segmentData', {
+            key,
+            kind: revived.kind,
+            segmentDataType: typeof revived.segmentData,
+          })
+        }
+        return null
+      }
+    }
+
+    return { ...result, value: revived }
   }
 
   async set(key, value, context) {
@@ -78,7 +115,15 @@ function reviveImageCacheValue(value) {
     return { ...value, buffer: normalized }
   }
 
-  return value
+  // Unknown/unsupported buffer shape → treat as cache miss to avoid breaking
+  // Next's image streaming/piping pipeline.
+  if (process.env.NEXT_DEBUG_CACHE_HANDLER === '1') {
+    console.warn('[next-cache-handler] drop invalid IMAGE buffer', {
+      kind: value.kind,
+      bufferType: typeof buf,
+    })
+  }
+  return null
 }
 
 function serializeImageCacheValue(value) {
