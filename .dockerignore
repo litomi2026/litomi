@@ -28,4 +28,3 @@ ios
 
 # Local env
 .env*
-node_modules
