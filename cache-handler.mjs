@@ -53,7 +53,7 @@ CacheHandler.onCreation(async () => {
     // Create the `redis-stack` Handler if the client is available and connected.
     handler = createRedisHandler({
       client,
-      keyPrefix: process.env.COMMIT_SHA ?? 'local',
+      keyPrefix: `${process.env.COMMIT_SHA ?? 'local'}:`,
       timeoutMs: 1000,
     })
   } else {
