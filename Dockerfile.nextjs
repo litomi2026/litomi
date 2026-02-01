@@ -49,8 +49,7 @@ RUN COMMIT_SHA=$COMMIT_SHA \
   && find .next/static -type f -name '*.css' -exec sed -i -E 's@/\*#[[:space:]]*sourceMappingURL=.*\*/@@g' {} +
 
 # Runtime stage
-# Next.js standalone server expects Node.js Web Streams (ReadableStream#pipeTo).
-FROM node:24-alpine AS runner
+FROM oven/bun:1.3-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
@@ -67,4 +66,4 @@ USER nextjs
 
 EXPOSE $PORT
 
-CMD ["node", "server.js"]
+CMD ["bun", "server.js"]

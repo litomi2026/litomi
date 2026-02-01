@@ -6,6 +6,7 @@ export default class NextCacheHandler extends RedisCacheHandler {
     super({
       ...options,
       redis: process.env.REDIS_URL,
+      keyPrefix: process.env.COMMIT_SHA.slice(0, 8),
     })
   }
 
