@@ -4,13 +4,12 @@ import type { NextConfig } from 'next'
 
 import withBundleAnalyzer from '@next/bundle-analyzer'
 import { withSentryConfig } from '@sentry/nextjs'
-import { join } from 'node:path'
 
 import { createCacheControl } from '@/utils/cache-control'
 import { sec } from '@/utils/format/date'
 
 const isProduction = process.env.NODE_ENV === 'production'
-const isCacheHandlerEnabled = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+const commitSHA = process.env.COMMIT_SHA
 
 const cspHeader = `
   default-src 'self';
@@ -92,12 +91,15 @@ const nextConfig: NextConfig = {
   ...(isProduction && {
     compiler: { removeConsole: { exclude: ['error', 'warn'] } },
   }),
+  ...(commitSHA && {
+    generateBuildId: () => commitSHA,
+  }),
   ...(process.env.BUILD_OUTPUT === 'standalone' && {
     output: 'standalone',
     transpilePackages: ['@t3-oss/env-nextjs', '@t3-oss/env-core'],
   }),
-  ...(isCacheHandlerEnabled && {
-    cacheHandler: join(process.cwd(), 'cache-handler.js'),
+  ...(process.env.REDIS_URL && {
+    cacheHandler: require.resolve('./cache-handler.mjs'),
     cacheMaxMemorySize: 0,
   }),
 }

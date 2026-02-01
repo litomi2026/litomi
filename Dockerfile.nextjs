@@ -5,12 +5,12 @@ WORKDIR /app
 ENV BUILD_OUTPUT=standalone
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
-ENV SKIP_ENV_VALIDATION=true
 
 COPY package.json bun.lock ./
-RUN bun install --no-save --silent --frozen-lockfile
+RUN bun install --frozen-lockfile --no-save --silent
 
 ARG CI
+ARG COMMIT_SHA
 ARG NEXT_PUBLIC_BACKEND_URL
 ARG NEXT_PUBLIC_CANONICAL_URL
 ARG NEXT_PUBLIC_CORS_PROXY_URL
@@ -20,11 +20,10 @@ ARG NEXT_PUBLIC_IOS_TESTFLIGHT_URL
 ARG NEXT_PUBLIC_TURNSTILE_SITE_KEY
 ARG NEXT_PUBLIC_VAPID_PUBLIC_KEY
 ARG POSTGRES_URL
+ARG REDIS_URL
 ARG SENTRY_AUTH_TOKEN
 ARG SENTRY_ORG
 ARG SENTRY_PROJECT
-ARG UPSTASH_REDIS_REST_TOKEN
-ARG UPSTASH_REDIS_REST_URL
 
 ENV CI=$CI
 ENV NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL
@@ -38,12 +37,12 @@ ENV NEXT_PUBLIC_VAPID_PUBLIC_KEY=$NEXT_PUBLIC_VAPID_PUBLIC_KEY
 
 COPY . .
 
-RUN POSTGRES_URL=$POSTGRES_URL \
+RUN COMMIT_SHA=$COMMIT_SHA \
+    POSTGRES_URL=$POSTGRES_URL \
+    REDIS_URL=$REDIS_URL \
     SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN \
     SENTRY_ORG=$SENTRY_ORG \
     SENTRY_PROJECT=$SENTRY_PROJECT \
-    UPSTASH_REDIS_REST_TOKEN=$UPSTASH_REDIS_REST_TOKEN \
-    UPSTASH_REDIS_REST_URL=$UPSTASH_REDIS_REST_URL \
     bun run build \
   # Strip `sourceMappingURL` references (prevents browser `*.map` requests).
   && find .next/static -type f -name '*.js' -exec sed -i -E 's@//# sourceMappingURL=.*$@@g' {} + \
@@ -62,7 +61,6 @@ RUN adduser --system --uid 1001 nextjs
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/cache-handler.js ./cache-handler.js
 
 USER nextjs
 

@@ -112,12 +112,6 @@ Default ports:
 
 ### 3) Configure environment variables (`.env.development`)
 
-If the repo contains `.env.template`, you can start from it:
-
-```bash
-cp -i .env.template .env.development
-```
-
 Example for local development:
 
 ```bash

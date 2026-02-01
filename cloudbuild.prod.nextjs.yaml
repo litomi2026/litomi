@@ -28,6 +28,8 @@ steps:
       - '--build-arg'
       - 'CI=true'
       - '--build-arg'
+      - 'COMMIT_SHA=$COMMIT_SHA'
+      - '--build-arg'
       - 'ENABLE_CACHE_HANDLER=$_ENABLE_CACHE_HANDLER'
       - '--build-arg'
       - 'NEXT_PUBLIC_BACKEND_URL=$_NEXT_PUBLIC_BACKEND_URL'
@@ -50,15 +52,13 @@ steps:
       - '--build-arg'
       - 'POSTGRES_URL=$_POSTGRES_URL'
       - '--build-arg'
+      - 'REDIS_URL=$_REDIS_URL'
+      - '--build-arg'
       - 'SENTRY_AUTH_TOKEN=$_SENTRY_AUTH_TOKEN'
       - '--build-arg'
       - 'SENTRY_ORG=$_SENTRY_ORG'
       - '--build-arg'
       - 'SENTRY_PROJECT=$_SENTRY_PROJECT'
-      - '--build-arg'
-      - 'UPSTASH_REDIS_REST_TOKEN=$_UPSTASH_REDIS_REST_TOKEN'
-      - '--build-arg'
-      - 'UPSTASH_REDIS_REST_URL=$_UPSTASH_REDIS_REST_URL'
     id: Build
     env:
       - DOCKER_BUILDKIT=1
@@ -85,6 +85,8 @@ steps:
       - '--platform=managed'
       - >-
         --image=$_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
+      - >-
+        --update-env-vars=COMMIT_SHA=$COMMIT_SHA
       - >-
         --labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID,gcb-trigger-id=$_TRIGGER_ID
       - '--region=$_DEPLOY_REGION'
@@ -114,11 +116,10 @@ substitutions:
   _NEXT_PUBLIC_TURNSTILE_SITE_KEY: ''
   _NEXT_PUBLIC_VAPID_PUBLIC_KEY: ''
   _POSTGRES_URL: ''
+  _REDIS_URL: ''
   _SENTRY_AUTH_TOKEN: ''
   _SENTRY_ORG: ''
   _SENTRY_PROJECT: ''
-  _UPSTASH_REDIS_REST_TOKEN: ''
-  _UPSTASH_REDIS_REST_URL: ''
 tags:
   - gcp-cloud-build-deploy-cloud-run
   - gcp-cloud-build-deploy-cloud-run-managed
