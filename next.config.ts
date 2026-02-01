@@ -4,7 +4,6 @@ import type { NextConfig } from 'next'
 
 import withBundleAnalyzer from '@next/bundle-analyzer'
 import { withSentryConfig } from '@sentry/nextjs'
-import { join } from 'node:path'
 
 import { createCacheControl } from '@/utils/cache-control'
 import { sec } from '@/utils/format/date'
@@ -96,7 +95,7 @@ const nextConfig: NextConfig = {
     transpilePackages: ['@t3-oss/env-nextjs', '@t3-oss/env-core'],
   }),
   ...(process.env.REDIS_URL && {
-    cacheHandler: join(process.cwd(), 'cache-handler.js'),
+    cacheHandler: require.resolve('./cache-handler.mjs'),
     cacheMaxMemorySize: 0,
   }),
 }
