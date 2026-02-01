@@ -38,7 +38,7 @@ CacheHandler.onCreation(async () => {
       console.warn('Disconnecting the Redis client...')
       // Try to disconnect the client to stop it from reconnecting.
       client
-        .destroy()
+        .disconnect()
         .then(() => {
           console.info('Redis client disconnected.')
         })
