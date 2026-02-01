@@ -135,7 +135,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
     if (next === false && !canAccess) {
       showAdultVerificationRequiredToast({ username: me?.name })
       const input = formRef.current?.querySelector<HTMLInputElement>('input[name="is-public"]')
-      
+
       if (input) {
         input.checked = true
       }

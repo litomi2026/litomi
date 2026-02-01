@@ -1,8 +1,4 @@
-import {
-  createCacheControlHeaders,
-  createProblemDetailsResponse,
-  handleRouteError,
-} from '@/crawler/proxy-utils'
+import { createCacheControlHeaders, createProblemDetailsResponse, handleRouteError } from '@/crawler/proxy-utils'
 import { env } from '@/env/client'
 import { RouteProps } from '@/types/nextjs'
 import { sec } from '@/utils/format/date'

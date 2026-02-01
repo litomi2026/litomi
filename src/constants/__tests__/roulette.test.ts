@@ -10,4 +10,3 @@ describe('roulette config', () => {
     expect(expectedPayoutMultiplierX100).toBeLessThanOrEqual(ROULETTE_CONFIG.targetRoiX100)
   })
 })
-
