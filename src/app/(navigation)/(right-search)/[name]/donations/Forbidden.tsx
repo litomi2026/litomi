@@ -21,4 +21,3 @@ export default function Forbidden({ loginUsername }: Readonly<Props>) {
     </div>
   )
 }
-

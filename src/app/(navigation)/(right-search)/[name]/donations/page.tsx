@@ -22,4 +22,3 @@ export default async function Page({ params }: PageProps<'/[name]/donations'>) {
 
   return <DonationsClient />
 }
-

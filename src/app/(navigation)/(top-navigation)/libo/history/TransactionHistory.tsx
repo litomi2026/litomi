@@ -49,7 +49,11 @@ export default function TransactionHistory() {
       )}
 
       {isAuthReady && isLoggedIn && !canAccess && (
-        <AdultVerificationGate description="거래 내역을 보려면 익명 성인인증이 필요해요" title="성인인증이 필요해요" username={me?.name} />
+        <AdultVerificationGate
+          description="거래 내역을 보려면 익명 성인인증이 필요해요"
+          title="성인인증이 필요해요"
+          username={me?.name}
+        />
       )}
 
       {isInitialError && (

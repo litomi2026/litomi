@@ -18,7 +18,5 @@
       "6. 사용자의 질문에 1~2개의 문단으로 답변해요."
     ]
   ],
-  "commonSystemPromptAtEndBlocks": [
-    [""]
-  ]
+  "commonSystemPromptAtEndBlocks": [[""]]
 }

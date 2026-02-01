@@ -20,6 +20,7 @@ python -m venv .venv
 ```
 
 결과:
+
 - `data/model/bge-m3.onnx`
 - `data/model/tokenizer.json`
 
@@ -65,6 +66,7 @@ cargo run --manifest-path local-search/Cargo.toml --release -- \
 ```
 
 결과:
+
 - `data/index/doc_meta.sqlite`
 - `data/index/vectors.f32`
 
@@ -86,6 +88,7 @@ cargo run --manifest-path local-search/Cargo.toml --release -- \
 ```
 
 기본 바인딩/포트:
+
 - `127.0.0.1:17777` (충돌 시 17877까지 탐색)
 
 ### 6) 결과 확인(curl)
@@ -130,13 +133,15 @@ cargo build --release --manifest-path local-search/Cargo.toml
 ```
 
 바이너리 위치:
+
 - macOS: `local-search/target/release/litomi-local-search`
 - Windows: `local-search\\target\\release\\litomi-local-search.exe`
 
 `dist/local-search/`에 복사한 뒤 실행은:
+
 - macOS: `bash dist/local-search/scripts/run-macos.sh`
 - Windows: `powershell -ExecutionPolicy Bypass -File dist\\local-search\\scripts\\run-windows.ps1`
 
 onnxruntime 동적 로딩을 쓰는 경우:
-- `LITOMI_ORT_DYLIB` 환경변수로 dylib/dll 경로를 넘겨요(스크립트가 이를 읽어요).
 
+- `LITOMI_ORT_DYLIB` 환경변수로 dylib/dll 경로를 넘겨요(스크립트가 이를 읽어요).

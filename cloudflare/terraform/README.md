@@ -65,6 +65,7 @@ terraform apply
    - Zone → Zone Settings → Edit
    - Zone → Managed headers → Edit
    - Zone → DNS → Edit
+   - Zone → Single Redirect → Edit
 5. Add zone resources:
    - Include → Specific zone → Your domain
 
