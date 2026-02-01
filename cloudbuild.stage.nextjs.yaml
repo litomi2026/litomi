@@ -26,8 +26,6 @@ steps:
       - '-f'
       - Dockerfile.nextjs
       - '--build-arg'
-      - 'ENABLE_CACHE_HANDLER=$_ENABLE_CACHE_HANDLER'
-      - '--build-arg'
       - 'NEXT_PUBLIC_BACKEND_URL=$_NEXT_PUBLIC_BACKEND_URL'
       - '--build-arg'
       - 'NEXT_PUBLIC_CANONICAL_URL=$_NEXT_PUBLIC_CANONICAL_URL'
@@ -43,6 +41,8 @@ steps:
       - 'NEXT_PUBLIC_VAPID_PUBLIC_KEY=$_NEXT_PUBLIC_VAPID_PUBLIC_KEY'
       - '--build-arg'
       - 'POSTGRES_URL=$_POSTGRES_URL'
+      - '--build-arg'
+      - 'REDIS_URL=$_REDIS_URL'
     id: Build
     env:
       - DOCKER_BUILDKIT=1
@@ -96,6 +96,7 @@ substitutions:
   _NEXT_PUBLIC_TURNSTILE_SITE_KEY: ''
   _NEXT_PUBLIC_VAPID_PUBLIC_KEY: ''
   _POSTGRES_URL: ''
+  _REDIS_URL: ''
 tags:
   - gcp-cloud-build-deploy-cloud-run
   - gcp-cloud-build-deploy-cloud-run-managed
