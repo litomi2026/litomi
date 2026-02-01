@@ -28,6 +28,8 @@ steps:
       - '--build-arg'
       - 'CI=true'
       - '--build-arg'
+      - 'COMMIT_SHA=$COMMIT_SHA'
+      - '--build-arg'
       - 'ENABLE_CACHE_HANDLER=$_ENABLE_CACHE_HANDLER'
       - '--build-arg'
       - 'NEXT_PUBLIC_BACKEND_URL=$_NEXT_PUBLIC_BACKEND_URL'

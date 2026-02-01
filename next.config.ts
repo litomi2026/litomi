@@ -9,6 +9,7 @@ import { createCacheControl } from '@/utils/cache-control'
 import { sec } from '@/utils/format/date'
 
 const isProduction = process.env.NODE_ENV === 'production'
+const commitSHA = process.env.COMMIT_SHA
 
 const cspHeader = `
   default-src 'self';
@@ -89,6 +90,9 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   ...(isProduction && {
     compiler: { removeConsole: { exclude: ['error', 'warn'] } },
+  }),
+  ...(commitSHA && {
+    generateBuildId: () => commitSHA,
   }),
   ...(process.env.BUILD_OUTPUT === 'standalone' && {
     output: 'standalone',

@@ -8,9 +8,7 @@ CacheHandler.onCreation(async () => {
 
   try {
     // Create a Redis client.
-    client = createClient({
-      url: process.env.REDIS_URL ?? 'redis://localhost:6379',
-    })
+    client = createClient({ url: process.env.REDIS_URL })
 
     // Redis won't work without error handling. https://github.com/redis/node-redis?tab=readme-ov-file#events
     client.on('error', (error) => {
@@ -55,7 +53,7 @@ CacheHandler.onCreation(async () => {
     // Create the `redis-stack` Handler if the client is available and connected.
     handler = createRedisHandler({
       client,
-      keyPrefix: 'prefix:',
+      keyPrefix: process.env.COMMIT_SHA ?? 'local',
       timeoutMs: 1000,
     })
   } else {

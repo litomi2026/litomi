@@ -10,6 +10,7 @@ COPY package.json bun.lock ./
 RUN bun install --frozen-lockfile --no-save --silent
 
 ARG CI
+ARG COMMIT_SHA
 ARG NEXT_PUBLIC_BACKEND_URL
 ARG NEXT_PUBLIC_CANONICAL_URL
 ARG NEXT_PUBLIC_CORS_PROXY_URL
@@ -25,6 +26,7 @@ ARG SENTRY_ORG
 ARG SENTRY_PROJECT
 
 ENV CI=$CI
+ENV COMMIT_SHA=$COMMIT_SHA
 ENV NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL
 ENV NEXT_PUBLIC_CANONICAL_URL=$NEXT_PUBLIC_CANONICAL_URL
 ENV NEXT_PUBLIC_CORS_PROXY_URL=$NEXT_PUBLIC_CORS_PROXY_URL
@@ -57,9 +59,9 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/cache-handler.mjs ./cache-handler.mjs
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-# COPY --from=builder --chown=nextjs:nodejs /app/cache-handler.mjs ./cache-handler.mjs
 
 USER nextjs
 

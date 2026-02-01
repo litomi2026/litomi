@@ -26,6 +26,8 @@ steps:
       - '-f'
       - Dockerfile.nextjs
       - '--build-arg'
+      - 'COMMIT_SHA=$COMMIT_SHA'
+      - '--build-arg'
       - 'NEXT_PUBLIC_BACKEND_URL=$_NEXT_PUBLIC_BACKEND_URL'
       - '--build-arg'
       - 'NEXT_PUBLIC_CANONICAL_URL=$_NEXT_PUBLIC_CANONICAL_URL'
