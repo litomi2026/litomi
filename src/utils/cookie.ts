@@ -62,6 +62,20 @@ export async function getAccessTokenCookieConfig({ userId, adult }: AuthTokenCla
   } as const
 }
 
+export function getAuthHintCookieConfig({ maxAgeSeconds }: { maxAgeSeconds: number }) {
+  return {
+    key: CookieKey.AUTH_HINT,
+    value: '1',
+    options: {
+      domain: COOKIE_DOMAIN,
+      httpOnly: false,
+      maxAge: maxAgeSeconds,
+      sameSite: 'strict',
+      secure: true,
+    },
+  } as const
+}
+
 export async function getRefreshTokenCookieConfig({ userId, adult }: AuthTokenClaims) {
   const cookieValue = await signJWT({ sub: String(userId), adult }, JWTType.REFRESH)
 
@@ -101,6 +115,7 @@ export async function validateUserIdFromCookie() {
   if (!userId) {
     if (userId === null) {
       cookieStore.delete({ name: CookieKey.ACCESS_TOKEN, domain: COOKIE_DOMAIN })
+      cookieStore.delete({ name: CookieKey.AUTH_HINT, domain: COOKIE_DOMAIN })
     }
     return null
   }

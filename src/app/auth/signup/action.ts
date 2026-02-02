@@ -10,7 +10,7 @@ import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/user'
 import { loginIdSchema, nicknameSchema, passwordSchema } from '@/database/zod'
 import { badRequest, conflict, created, internalServerError, tooManyRequests } from '@/utils/action-response'
-import { getAccessTokenCookieConfig } from '@/utils/cookie'
+import { getAccessTokenCookieConfig, getAuthHintCookieConfig } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 import { generateRandomNickname, generateRandomProfileImage } from '@/utils/nickname'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
@@ -97,8 +97,11 @@ export default async function signup(formData: FormData) {
 
     const { id: userId } = result
     const cookieStore = await cookies()
-    const { key, value, options } = await getAccessTokenCookieConfig({ userId, adult: false })
-    cookieStore.set(key, value, options)
+    const accessTokenCookie = await getAccessTokenCookieConfig({ userId, adult: false })
+    const authHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: accessTokenCookie.options.maxAge })
+
+    cookieStore.set(accessTokenCookie.key, accessTokenCookie.value, accessTokenCookie.options)
+    cookieStore.set(authHintCookie.key, authHintCookie.value, authHintCookie.options)
 
     return created({
       userId,

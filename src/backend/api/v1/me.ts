@@ -7,6 +7,7 @@ import { Env } from '@/backend'
 import { requireAuth } from '@/backend/middleware/require-auth'
 import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
+import { COOKIE_DOMAIN } from '@/constants'
 import { CookieKey } from '@/constants/storage'
 import { bbatonVerificationTable } from '@/database/supabase/bbaton'
 import { db } from '@/database/supabase/drizzle'
@@ -46,8 +47,9 @@ meRoutes.get('/', requireAuth, async (c) => {
       .where(eq(userTable.id, userId))
 
     if (!user) {
-      deleteCookie(c, CookieKey.ACCESS_TOKEN)
-      deleteCookie(c, CookieKey.REFRESH_TOKEN)
+      deleteCookie(c, CookieKey.ACCESS_TOKEN, { domain: COOKIE_DOMAIN })
+      deleteCookie(c, CookieKey.REFRESH_TOKEN, { domain: COOKIE_DOMAIN })
+      deleteCookie(c, CookieKey.AUTH_HINT, { domain: COOKIE_DOMAIN })
       return problemResponse(c, { status: 404, detail: '사용자 정보를 찾을 수 없어요' })
     }
 

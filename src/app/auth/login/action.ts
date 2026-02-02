@@ -12,7 +12,7 @@ import { twoFactorTable } from '@/database/supabase/two-factor'
 import { userTable } from '@/database/supabase/user'
 import { loginIdSchema, passwordSchema } from '@/database/zod'
 import { badRequest, internalServerError, ok, tooManyRequests, unauthorized } from '@/utils/action-response'
-import { getAccessTokenCookieConfig, getRefreshTokenCookieConfig } from '@/utils/cookie'
+import { getAccessTokenCookieConfig, getAuthHintCookieConfig, getRefreshTokenCookieConfig } from '@/utils/cookie'
 import { flattenZodFieldErrors } from '@/utils/form-error'
 import { initiatePKCEChallenge } from '@/utils/pkce-server'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
@@ -126,11 +126,17 @@ export default async function login(formData: FormData) {
     }
 
     const accessTokenCookie = await getAccessTokenCookieConfig(tokenClaims)
+    const authHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: accessTokenCookie.options.maxAge })
+
     cookieStore.set(accessTokenCookie.key, accessTokenCookie.value, accessTokenCookie.options)
+    cookieStore.set(authHintCookie.key, authHintCookie.value, authHintCookie.options)
 
     if (remember) {
       const refreshTokenCookie = await getRefreshTokenCookieConfig(tokenClaims)
+      const longAuthHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: refreshTokenCookie.options.maxAge })
+
       cookieStore.set(refreshTokenCookie.key, refreshTokenCookie.value, refreshTokenCookie.options)
+      cookieStore.set(longAuthHintCookie.key, longAuthHintCookie.value, longAuthHintCookie.options)
     }
 
     return ok({

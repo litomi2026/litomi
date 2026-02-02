@@ -8,7 +8,7 @@ import type { Env } from '@/backend'
 
 import { CookieKey } from '@/constants/storage'
 import { env } from '@/env/server.hono'
-import { getAccessTokenCookieConfig, getRefreshTokenCookieConfig } from '@/utils/cookie'
+import { getAccessTokenCookieConfig, getAuthHintCookieConfig, getRefreshTokenCookieConfig } from '@/utils/cookie'
 import { sec } from '@/utils/format/date'
 import { JWTType, verifyJWT } from '@/utils/jwt'
 
@@ -55,7 +55,10 @@ type ReissueAuthCookiesClaims = {
 
 export async function reissueAuthCookies(c: Context<Env>, { userId, adult }: ReissueAuthCookiesClaims): Promise<void> {
   const { key: atKey, value: atValue, options: atOptions } = await getAccessTokenCookieConfig({ userId, adult })
+  const authHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: atOptions.maxAge })
+
   setCookie(c, atKey, atValue, atOptions)
+  setCookie(c, authHintCookie.key, authHintCookie.value, authHintCookie.options)
 
   const refreshToken = getCookie(c, CookieKey.REFRESH_TOKEN)
   if (!refreshToken) {
@@ -68,7 +71,10 @@ export async function reissueAuthCookies(c: Context<Env>, { userId, adult }: Rei
   }
 
   const { key: rtKey, value: rtValue, options: rtOptions } = await getRefreshTokenCookieConfig({ userId, adult })
+  const longAuthHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: rtOptions.maxAge })
+
   setCookie(c, rtKey, rtValue, rtOptions)
+  setCookie(c, longAuthHintCookie.key, longAuthHintCookie.value, longAuthHintCookie.options)
 }
 
 export async function signBBatonAttemptToken(userId: number): Promise<string> {
