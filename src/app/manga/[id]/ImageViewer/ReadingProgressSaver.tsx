@@ -11,6 +11,7 @@ import { env } from '@/env/client'
 import { useLatestRef } from '@/hook/useLatestRef'
 import useMeQuery from '@/query/useMeQuery'
 import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
+import { upsertReadingHistoryIndexEntry } from '@/utils/reading-history-index'
 
 import { useImageIndexStore } from './store/imageIndex'
 
@@ -70,6 +71,9 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
       lastSyncedAtRef.current = Date.now()
       lastSyncedPageRef.current = page
       clearTimer()
+
+      // NOTE: 뷰어 재진입 시 서버 호출 없이도 이어읽기가 가능하도록 최신 페이지를 인덱스에 반영해요
+      upsertReadingHistoryIndexEntry(me.id, mangaId, page)
 
       const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/manga/${mangaId}/history`
       const keepalive = options?.keepalive ?? false
