@@ -10,6 +10,7 @@ import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { decodeReadingHistoryCursor, encodeReadingHistoryCursor } from '@/common/cursor'
+import { POINT_CONSTANTS } from '@/constants/points'
 import { READING_HISTORY_PER_PAGE } from '@/constants/policy'
 import { readingHistoryTable } from '@/database/supabase/activity'
 import { db } from '@/database/supabase/drizzle'
@@ -18,7 +19,7 @@ import { sec } from '@/utils/format/date'
 
 const querySchema = z.object({
   cursor: z.string().optional(),
-  limit: z.coerce.number().int().positive().max(READING_HISTORY_PER_PAGE).default(READING_HISTORY_PER_PAGE),
+  limit: z.coerce.number().positive().max(POINT_CONSTANTS.HISTORY_MAX_EXPANSION).default(READING_HISTORY_PER_PAGE),
 })
 
 export type GETV1ReadingHistoryResponse = {

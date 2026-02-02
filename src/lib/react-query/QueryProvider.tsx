@@ -1,18 +1,18 @@
 'use client'
 
 import { sendGAEvent } from '@next/third-parties/google'
-import { MutationCache, QueryCache, QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query'
+import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import ms from 'ms'
-import { PropsWithChildren, useEffect } from 'react'
+import { PropsWithChildren } from 'react'
 import { toast } from 'sonner'
 
+import MeClientSync from '@/components/MeClientSync'
+import ReadingHistoryWarmup from '@/components/ReadingHistoryWarmup'
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import amplitude from '@/lib/amplitude/browser'
 import { showAdultVerificationRequiredToast, showLiboExpansionRequiredToast, showLoginRequiredToast } from '@/lib/toast'
-import useMeQuery from '@/query/useMeQuery'
-import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
 import { ProblemDetailsError } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_GA_ID } = env
@@ -175,45 +175,9 @@ export default function QueryProvider({ children }: PropsWithChildren) {
   return (
     <QueryClientProvider client={queryClient}>
       <MeClientSync />
+      <ReadingHistoryWarmup />
       {children}
       <ReactQueryDevtools />
     </QueryClientProvider>
   )
-}
-
-function MeClientSync() {
-  const queryClient = useQueryClient()
-  const { data: me } = useMeQuery()
-  const userId = me?.id
-  const username = me?.name
-  const shouldPurgeAdultQueries = me !== undefined && !canAccessAdultRestrictedAPIs(me)
-
-  const shouldShowAdultVerificationToast =
-    me != null && me.adultVerification?.required === true && me.adultVerification.status === 'unverified'
-
-  // NOTE: 로그인 사용자의 경우 GA, Amplitude 아이디를 설정해요
-  useEffect(() => {
-    if (userId) {
-      amplitude.setUserId(userId)
-      if (NEXT_PUBLIC_GA_ID) {
-        sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: userId })
-      }
-    }
-  }, [userId])
-
-  // NOTE: 성인인증이 필요한 경우 토스트를 표시해요
-  useEffect(() => {
-    if (shouldShowAdultVerificationToast && username) {
-      showAdultVerificationRequiredToast({ username })
-    }
-  }, [shouldShowAdultVerificationToast, username])
-
-  // NOTE: 성인 관련 API 접근 불가 시 requireAdult 캐시를 제거해요
-  useEffect(() => {
-    if (shouldPurgeAdultQueries) {
-      queryClient.removeQueries({ predicate: (query) => query.meta?.requiresAdult === true })
-    }
-  }, [queryClient, shouldPurgeAdultQueries])
-
-  return null
 }

@@ -27,8 +27,7 @@ import {
 } from '@/constants'
 import { env } from '@/env/client'
 import { env as serverEnv } from '@/env/server.next'
-
-import QueryProvider from '../lib/QueryProvider'
+import QueryProvider from '@/lib/react-query/QueryProvider'
 
 const { NEXT_PUBLIC_GA_ID } = env
 const { AMPLITUDE_API_KEY } = serverEnv

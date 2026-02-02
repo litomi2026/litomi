@@ -35,4 +35,5 @@ export enum SessionStorageKey {
 
 export const SessionStorageKeyMap = {
   readingHistory: (mangaId: number) => `reading-history-${mangaId}`,
+  readingHistoryIndex: (userId: number) => `reading-history-index-${userId}`,
 }

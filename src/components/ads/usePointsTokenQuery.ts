@@ -6,7 +6,7 @@ import type { POSTV1PointTokenResponse } from '@/backend/api/v1/points/token'
 
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
-import { shouldRetryError } from '@/lib/QueryProvider'
+import { shouldRetryError } from '@/lib/react-query/QueryProvider'
 import { fetchWithErrorHandling, ProblemDetailsError } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
