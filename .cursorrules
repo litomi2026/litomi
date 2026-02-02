@@ -8,6 +8,16 @@
 - Tailwind CSS 4
 - Drizzle ORM
 - TanStack Query
+- PostgreSQL 17
+
+## Infrastructure
+
+```
+사용자
+  └─ Cloudflare (CDN / WAF / Cache)
+       ├─ Cloud Run: Next.js (standalone, Serverless Container)
+       └─ Cloud Run: Hono (API)
+```
 
 ## Korean UX Writing
 

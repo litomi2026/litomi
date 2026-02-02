@@ -8,8 +8,7 @@ import { metricInfo, MetricParam, periodLabels, PeriodParam } from '../../../com
 import { getRankingData } from './query'
 import RankingList from './RankingList'
 
-export const dynamic = 'force-static'
-export const revalidate = 43200 // 12 hours
+export const dynamic = 'force-dynamic'
 
 const mangasRankingSchema = z.object({
   metric: z.enum(MetricParam),
@@ -37,16 +36,6 @@ export async function generateMetadata({ params }: PageProps<'/ranking/[metric]/
       languages: { ko: `/ranking/${metric}/${period}` },
     },
   }
-}
-
-export async function generateStaticParams() {
-  const params = []
-  for (const metric of Object.values(MetricParam)) {
-    for (const period of Object.values(PeriodParam)) {
-      params.push({ metric, period })
-    }
-  }
-  return params
 }
 
 export default async function Page({ params }: PageProps<'/ranking/[metric]/[period]'>) {

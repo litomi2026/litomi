@@ -5,7 +5,7 @@ locals {
 
   ttl_30d_path_equals = [
     "/",
-    "/app",
+    "/app", // app 으로 시작하는 것과 겹칠까봐
     "/chat",
     "/library",
     "/@",
@@ -16,9 +16,11 @@ locals {
   ]
 
   ttl_30d_path_prefixes = [
+    "/_next/image",
+    "/_not-found",
     "/auth/",
     "/app.",
-    "/apple-icon.",
+    "/apple-",
     "/deterrence",
     "/doc/",
     "/favicon.",
@@ -31,17 +33,20 @@ locals {
     "/offline.html",
     "/og-image.",
     "/posts/",
+    "/random",
     "/realtime",
     "/search",
     "/tag",
+    "/webtoon",
     "/web-app-manifest",
     "/404",
     "/@/",
-    "/_next/image",
   ]
 
   ttl_day_path_prefixes = [
     "/ranking/",
+    "/robots.txt",
+    "/sitemap.xml",
   ]
 
   ttl_3h_path_prefixes = [
@@ -49,7 +54,7 @@ locals {
   ]
 
   ttl_10s_path_equals = [
-    "/random",
+    "_________",
   ]
 
   bypass_cache_path_prefixes = [
