@@ -1,20 +1,18 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
-
-import type { GETV1MangaIdHistoryResponse } from '@/backend/api/v1/manga/[id]/history/GET'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useEffect } from 'react'
 
 import { QueryKeys } from '@/constants/query'
 import { SessionStorageKeyMap } from '@/constants/storage'
-import { env } from '@/env/client'
 import useMeQuery from '@/query/useMeQuery'
 import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
-import { fetchWithErrorHandling } from '@/utils/react-query-error'
-
-const { NEXT_PUBLIC_BACKEND_URL } = env
+import { READING_HISTORY_INDEX_UPDATED_EVENT, readReadingHistoryIndex } from '@/utils/reading-history-index'
 
 export default function useReadingHistory(mangaId: number) {
   const { data: me, isLoading: isMeLoading } = useMeQuery()
+  const queryClient = useQueryClient()
+  const userId = me?.id
 
   const { data: lastPage } = useQuery({
     queryKey: QueryKeys.readingHistory(mangaId),
@@ -32,20 +30,26 @@ export default function useReadingHistory(mangaId: number) {
         return null
       }
 
-      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/manga/${mangaId}/history`
-      const { data, response } = await fetchWithErrorHandling<GETV1MangaIdHistoryResponse>(url, {
-        credentials: 'include',
-      })
-
-      if (response.status === 204) {
-        return null
-      }
-
-      return data
+      const index = readReadingHistoryIndex(me.id)
+      return index.get(mangaId) ?? null
     },
     enabled: Boolean(mangaId) && !isMeLoading,
     meta: { requiresAdult: true },
   })
+
+  // NOTE: 전체 감상 기록을 얻으면 lastPage를 즉시 최신으로 맞춰요
+  useEffect(() => {
+    function handleIndexUpdated(event: Event) {
+      const detail = (event as CustomEvent<{ userId?: number }>).detail
+      if (!detail || detail.userId !== userId) {
+        return
+      }
+      queryClient.invalidateQueries({ queryKey: QueryKeys.readingHistory(mangaId) })
+    }
+
+    window.addEventListener(READING_HISTORY_INDEX_UPDATED_EVENT, handleIndexUpdated)
+    return () => window.removeEventListener(READING_HISTORY_INDEX_UPDATED_EVENT, handleIndexUpdated)
+  }, [mangaId, queryClient, userId])
 
   return { lastPage }
 }
