@@ -28,6 +28,7 @@ export default async function logout() {
     const cookieStore = await cookies()
     cookieStore.delete({ name: CookieKey.ACCESS_TOKEN, domain: COOKIE_DOMAIN })
     cookieStore.delete({ name: CookieKey.REFRESH_TOKEN, domain: COOKIE_DOMAIN })
+    cookieStore.delete({ name: CookieKey.AUTH_HINT, domain: COOKIE_DOMAIN })
 
     return ok(user)
   } catch (error) {

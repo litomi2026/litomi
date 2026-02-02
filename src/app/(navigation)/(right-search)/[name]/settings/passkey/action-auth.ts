@@ -17,7 +17,7 @@ import { db } from '@/database/supabase/drizzle'
 import { credentialTable } from '@/database/supabase/passkey'
 import { userTable } from '@/database/supabase/user'
 import { badRequest, forbidden, internalServerError, ok, tooManyRequests, unauthorized } from '@/utils/action-response'
-import { getAccessTokenCookieConfig } from '@/utils/cookie'
+import { getAccessTokenCookieConfig, getAuthHintCookieConfig } from '@/utils/cookie'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
 import { getAndDeleteChallenge, storeChallenge } from '@/utils/redis-challenge'
 import TurnstileValidator from '@/utils/turnstile'
@@ -201,9 +201,12 @@ export async function verifyAuthentication(body: unknown, turnstileToken: string
         adult: verification[0]?.adultFlag === true,
       }
 
-      const { key, value, options } = await getAccessTokenCookieConfig(tokenClaims)
       const cookieStore = await cookies()
-      cookieStore.set(key, value, options)
+      const accessTokenCookie = await getAccessTokenCookieConfig(tokenClaims)
+      const authHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: accessTokenCookie.options.maxAge })
+
+      cookieStore.set(accessTokenCookie.key, accessTokenCookie.value, accessTokenCookie.options)
+      cookieStore.set(authHintCookie.key, authHintCookie.value, authHintCookie.options)
 
       return ok(user)
     })

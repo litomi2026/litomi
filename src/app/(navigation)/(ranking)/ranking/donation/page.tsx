@@ -6,8 +6,7 @@ import { formatNumber } from '@/utils/format/number'
 
 import { getDonationRanking } from './query'
 
-export const dynamic = 'force-static'
-export const revalidate = 86400
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: '기부 랭킹',

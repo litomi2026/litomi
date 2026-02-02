@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 import { CookieKey } from './constants/storage'
-import { getAccessTokenCookieConfig } from './utils/cookie'
+import { getAccessTokenCookieConfig, getAuthHintCookieConfig } from './utils/cookie'
 import { JWTType, verifyJWT } from './utils/jwt'
 
 export const config = {
@@ -50,6 +50,7 @@ export async function proxy({ nextUrl, method, cookies }: NextRequest) {
   if (!refreshToken) {
     const response = NextResponse.next()
     response.cookies.delete(CookieKey.ACCESS_TOKEN)
+    response.cookies.delete(CookieKey.AUTH_HINT)
     return response
   }
 
@@ -62,12 +63,17 @@ export async function proxy({ nextUrl, method, cookies }: NextRequest) {
     const response = NextResponse.next()
     response.cookies.delete(CookieKey.ACCESS_TOKEN)
     response.cookies.delete(CookieKey.REFRESH_TOKEN)
+    response.cookies.delete(CookieKey.AUTH_HINT)
     return response
   }
 
   // at 만료 및 rt 유효 -> at 재발급
   const response = NextResponse.next()
   const { key, value, options } = await getAccessTokenCookieConfig({ userId, adult })
+  const authHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: options.maxAge })
+
   response.cookies.set(key, value, options)
+  response.cookies.set(authHintCookie.key, authHintCookie.value, authHintCookie.options)
+
   return response
 }

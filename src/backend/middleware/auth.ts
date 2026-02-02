@@ -1,9 +1,10 @@
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie'
 import { createMiddleware } from 'hono/factory'
+import ms from 'ms'
 
 import { COOKIE_DOMAIN } from '@/constants'
 import { CookieKey } from '@/constants/storage'
-import { getAccessTokenCookieConfig } from '@/utils/cookie'
+import { getAccessTokenCookieConfig, getAuthHintCookieConfig } from '@/utils/cookie'
 import { JWTType, verifyJWT } from '@/utils/jwt'
 
 import { Env } from '..'
@@ -51,7 +52,11 @@ export const auth = createMiddleware<Env>(async (c, next) => {
     // AT 만료/무효, RT 유효 -> AT 갱신
     if (validRTUserId) {
       const { key, value, options } = await getAccessTokenCookieConfig({ userId: validRTUserId, adult: rtAdult })
+      const authHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: Math.floor(ms('30 days') / 1000) })
+
       setCookie(c, key, value, options)
+      setCookie(c, authHintCookie.key, authHintCookie.value, authHintCookie.options)
+
       c.set('userId', Number(validRTUserId))
       c.set('isAdult', rtAdult)
       return await next()
@@ -60,11 +65,13 @@ export const auth = createMiddleware<Env>(async (c, next) => {
     if (isRTExpired) {
       deleteCookie(c, CookieKey.ACCESS_TOKEN, { domain: COOKIE_DOMAIN })
       deleteCookie(c, CookieKey.REFRESH_TOKEN, { domain: COOKIE_DOMAIN })
+      deleteCookie(c, CookieKey.AUTH_HINT, { domain: COOKIE_DOMAIN })
       return await next()
     }
     // AT 만료/무효, RT 없음 -> AT 삭제
     if (isRTMissing) {
       deleteCookie(c, CookieKey.ACCESS_TOKEN, { domain: COOKIE_DOMAIN })
+      deleteCookie(c, CookieKey.AUTH_HINT, { domain: COOKIE_DOMAIN })
       return await next()
     }
   }
@@ -73,7 +80,11 @@ export const auth = createMiddleware<Env>(async (c, next) => {
     // AT 없음, RT 유효 -> AT 갱신
     if (validRTUserId) {
       const { key, value, options } = await getAccessTokenCookieConfig({ userId: validRTUserId, adult: rtAdult })
+      const authHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: Math.floor(ms('30 days') / 1000) })
+
       setCookie(c, key, value, options)
+      setCookie(c, authHintCookie.key, authHintCookie.value, authHintCookie.options)
+
       c.set('userId', Number(validRTUserId))
       c.set('isAdult', rtAdult)
       return await next()
@@ -81,6 +92,7 @@ export const auth = createMiddleware<Env>(async (c, next) => {
     // AT 없음, RT 만료/무효 -> RT 삭제
     if (isRTExpired) {
       deleteCookie(c, CookieKey.REFRESH_TOKEN, { domain: COOKIE_DOMAIN })
+      deleteCookie(c, CookieKey.AUTH_HINT, { domain: COOKIE_DOMAIN })
       return await next()
     }
     // AT 없음, RT 없음 -> next()

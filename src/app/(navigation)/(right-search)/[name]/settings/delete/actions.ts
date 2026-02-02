@@ -54,6 +54,7 @@ export async function deleteAccount(formData: FormData) {
     const cookieStore = await cookies()
     cookieStore.delete({ name: CookieKey.ACCESS_TOKEN, domain: COOKIE_DOMAIN })
     cookieStore.delete({ name: CookieKey.REFRESH_TOKEN, domain: COOKIE_DOMAIN })
+    cookieStore.delete({ name: CookieKey.AUTH_HINT, domain: COOKIE_DOMAIN })
     return ok(`${user.loginId} 계정을 삭제했어요`)
   } catch (error) {
     captureException(error)

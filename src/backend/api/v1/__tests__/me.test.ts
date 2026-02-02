@@ -176,7 +176,7 @@ describe('GET /api/v1/me', () => {
 
       // Then
       expect(response.status).toBe(404)
-      expect(deletedCookies).toEqual(['at', 'rt'])
+      expect(deletedCookies).toEqual(['at', 'rt', 'ah'])
     })
 
     test('데이터베이스 연결 오류 시 500 응답을 반환한다', async () => {
