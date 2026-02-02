@@ -1,5 +1,6 @@
 import { Bookmark, Bot, Clover, FileText, Flame, LibraryBig, PiggyBank, Search, Tag } from 'lucide-react'
 import Link from 'next/link'
+import { Suspense } from 'react'
 
 import IconBell from '@/components/icons/IconBell'
 import IconHome from '@/components/icons/IconHome'
@@ -9,7 +10,7 @@ import SEOText from '@/components/SEOText'
 import { DEFAULT_METRIC, DEFAULT_PERIOD } from './(ranking)/common'
 import AutoHideNavigation from './AutoHideNavigation'
 import NotificationCount from './NotificationCount'
-import Profile from './Profile'
+import Profile, { ProfileSkeleton } from './Profile'
 import ProfileLink from './ProfileLink'
 import PublishButton from './PublishButton'
 import SelectableLink from './SelectableLink'
@@ -89,7 +90,9 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           <ProfileLink className="hidden sm:block" />
           <PublishButton className="hidden mx-auto my-4 sm:block xl:mx-0" />
         </nav>
-        <Profile />
+        <Suspense fallback={<ProfileSkeleton />}>
+          <Profile />
+        </Suspense>
       </header>
       <div className="hidden shrink-0 sm:block sm:w-20 2xl:w-3xs" />
       <div className="flex flex-col grow min-w-0">
