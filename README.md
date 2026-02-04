@@ -217,6 +217,8 @@ sudo docker run -d \
   tunnel run --token "eyJhI..."
 ```
 
+Cloudflare Tunnel token을 입력하세요.
+
 ## 기여하기
 
 기여는 언제든 환영해요.
