@@ -83,6 +83,10 @@ import_dns_records() {
         "cloudflare_dns_record.vercel_cname|vercel.litomi.in|CNAME|"
         "cloudflare_dns_record.vercel_stg_cname|vercel-stg.litomi.in|CNAME|"
 
+        # Self-host tunnel DNS
+        "cloudflare_dns_record.selfhost_app_cname|local.litomi.in|CNAME|"
+        "cloudflare_dns_record.selfhost_coolify_cname|coolify.litomi.in|CNAME|"
+
         # Other Records
         "cloudflare_dns_record.caa|litomi.in|CAA|"
         "cloudflare_dns_record.dmarc_txt|_dmarc.litomi.in|TXT|"

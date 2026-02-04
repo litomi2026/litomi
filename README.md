@@ -197,6 +197,26 @@ bun dev
   - [`cloud-run/manga-crawl/README.md`](cloud-run/manga-crawl/README.md)
   - [`cloud-run/crawl-and-notify/README.md`](cloud-run/crawl-and-notify/README.md)
 
+### 1) Ubuntu 서버에서 Coolify 설치
+
+```bash
+curl -fsSL https://cdn.coollabs.io/coolify/install.sh | sudo bash
+```
+
+설치 후 Coolify UI는 기본적으로 `http://<server-ip>:8000`에서 열려요.
+
+### 2) Ubuntu 서버에서 cloudflared 실행
+
+```bash
+sudo docker rm -f cloudflared 2>/dev/null || true; \
+sudo docker run -d \
+  --name cloudflared \
+  --restart unless-stopped \
+  --network host \
+  cloudflare/cloudflared:2026.1.2 \
+  tunnel run --token "eyJhI..."
+```
+
 ## 기여하기
 
 기여는 언제든 환영해요.

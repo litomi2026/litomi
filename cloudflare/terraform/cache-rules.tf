@@ -63,6 +63,10 @@ locals {
     "/cdn-cgi/challenge-platform/",
   ]
 
+  bypass_cache_hostnames = [
+    local.selfhost_coolify_hostname,
+  ]
+
   respect_origin_conditions = join(" or ", [
     for prefix in local.respect_origin_prefixes :
     "(starts_with(http.request.uri.path, \"${prefix}\"))"
@@ -101,6 +105,11 @@ locals {
   bypass_cache_conditions = join(" or ", [
     for prefix in local.bypass_cache_path_prefixes :
     "(starts_with(http.request.uri.path, \"${prefix}\"))"
+  ])
+
+  bypass_cache_host_conditions = join(" or ", [
+    for hostname in local.bypass_cache_hostnames :
+    "(http.host eq \"${hostname}\")"
   ])
 
   ttl_30d_expression = "${local.exact_path_conditions} or ${local.prefix_path_conditions} or (http.request.uri.path.extension in {${local.exact_extension_conditions}})"
@@ -248,8 +257,8 @@ resource "cloudflare_ruleset" "cache_rules" {
     {
       ref         = "bypass_cache"
       enabled     = true
-      description = "Bypass cache for paths"
-      expression  = local.bypass_cache_conditions
+      description = "Bypass cache for paths or hostnames"
+      expression  = "(${local.bypass_cache_conditions}) or (${local.bypass_cache_host_conditions})"
       action      = "set_cache_settings"
 
       action_parameters = {
