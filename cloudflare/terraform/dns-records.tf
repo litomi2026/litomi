@@ -43,7 +43,7 @@ resource "cloudflare_dns_record" "stg_cname" {
   zone_id = var.zone_id
   name    = "stg.litomi.in"
   type    = "CNAME"
-  content = "ghs.googlehosted.com"
+  content = "${cloudflare_zero_trust_tunnel_cloudflared.selfhost.id}.cfargotunnel.com"
   ttl     = 1
   proxied = true
 }
@@ -61,7 +61,7 @@ resource "cloudflare_dns_record" "api_stg_cname" {
   zone_id = var.zone_id
   name    = "api-stg.litomi.in"
   type    = "CNAME"
-  content = "ghs.googlehosted.com"
+  content = "${cloudflare_zero_trust_tunnel_cloudflared.selfhost.id}.cfargotunnel.com"
   ttl     = 1
   proxied = true
 }
