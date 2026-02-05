@@ -2,11 +2,9 @@ services:
   grafana:
     build:
       context: ./grafana
-      dockerfile: Dockerfile
     image: litomi-monitoring-grafana:local
     environment:
       GF_SERVER_ROOT_URL: https://${SERVICE_FQDN_GRAFANA}
-      GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
     volumes:
       - grafana-data:/var/lib/grafana
@@ -25,12 +23,7 @@ services:
   prometheus:
     build:
       context: ./prometheus
-      dockerfile: Dockerfile
     image: litomi-monitoring-prometheus:local
-    command:
-      - --config.file=/etc/prometheus/prometheus.yml
-      - --storage.tsdb.path=/prometheus
-      - --storage.tsdb.retention.time=15d
     volumes:
       - prometheus-data:/prometheus
     expose:
@@ -43,11 +36,7 @@ services:
   alertmanager:
     build:
       context: ./alertmanager
-      dockerfile: Dockerfile
     image: litomi-monitoring-alertmanager:local
-    command:
-      - --config.file=/etc/alertmanager/alertmanager.yml
-      - --storage.path=/alertmanager
     volumes:
       - alertmanager-data:/alertmanager
     expose:
@@ -71,7 +60,6 @@ services:
   blackbox-exporter:
     build:
       context: ./blackbox
-      dockerfile: Dockerfile
     image: litomi-monitoring-blackbox-exporter:local
     command:
       - --config.file=/etc/blackbox_exporter/blackbox.yml

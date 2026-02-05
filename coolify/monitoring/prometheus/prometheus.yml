@@ -8,28 +8,28 @@ rule_files:
 alerting:
   alertmanagers:
     - static_configs:
-        - targets: ["alertmanager:9093"]
+        - targets: ['alertmanager:9093']
 
 scrape_configs:
   - job_name: prometheus
     static_configs:
-      - targets: ["prometheus:9090"]
+      - targets: ['prometheus:9090']
 
   - job_name: node-exporter
     static_configs:
-      - targets: ["node-exporter:9100"]
+      - targets: ['node-exporter:9100']
 
   - job_name: cadvisor
     static_configs:
-      - targets: ["cadvisor:8080"]
+      - targets: ['cadvisor:8080']
 
   - job_name: traefik
     static_configs:
-      - targets: ["coolify-proxy:8082"]
+      - targets: ['coolify-proxy:8082']
 
   - job_name: blackbox-exporter
     static_configs:
-      - targets: ["blackbox-exporter:9115"]
+      - targets: ['blackbox-exporter:9115']
 
   # HTTP(S) 업타임 체크
   - job_name: blackbox-https
@@ -46,11 +46,9 @@ scrape_configs:
           - https://stg.litomi.in/
           - https://api-stg.litomi.in/
 
-          # Coolify health endpoint (200 OK)
+          # Operations
           - https://coolify.litomi.in/api/health
-
-          # Grafana (원하면 추가해요. Cloudflare Access를 붙이면 403일 수 있어서 module을 바꿔야 할 수 있어요)
-          # - https://grafana.litomi.in/
+          - https://grafana.litomi.in/
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
@@ -58,4 +56,3 @@ scrape_configs:
         target_label: instance
       - target_label: __address__
         replacement: blackbox-exporter:9115
-
