@@ -13,12 +13,29 @@
 ## Infrastructure
 
 ```
-사용자
-  └─ Cloudflare (cloudflare/terraform/)
-       ├─ Cloud Run: Next.js (src/)
-       ├─ Cloud Run: Hono (src/backend/)
-       └─ Vercel: Next.js (vercel/)
-  └─ Cloud Run: base-nossl-debian12 (cloud-run/crawl-and-notify/)
+사용자 (Web/PWA/앱)
+└─ Cloudflare (cloudflare/terraform/)
+   ├─ DNS (dns-records.tf)
+   │  ├─ Cloud Run (Next.js Web) (Dockerfile.nextjs, cloudbuild.*.nextjs.yaml)
+   │  ├─ Cloud Run (Hono API) (Dockerfile.hono, cloudbuild.*.hono.yaml)
+   │  ├─ Vercel (Next.js Edge API) (vercel/)
+   │  ├─ Render (Next.js Web) (render.yaml)
+   │  ├─ Cloudflare R2 (public.r2.dev)
+   │  └─ Cloudflare Tunnel → Coolify → Next.js Web + Hono API + Monitoring
+   ├─ Edge rules
+   │  ├─ cache-rules.tf (TTL/Bypass/Respect origin, R2 1y)
+   │  ├─ redirects.tf (www → apex)
+   │  ├─ managed-transforms.tf (headers)
+   │  └─ rate-limiting.tf (zone rate limit)
+   └─ Worker (cloudflare/worker/): 이미지 CORS 프록시 image.gwak2837.workers.dev
+
+배치 (Cloud Run Jobs) (cloud-run/)
+├─ manga-crawl: Cloud Scheduler → Job → Postgres(NEON_DATABASE_URL)
+└─ crawl-and-notify: (스케줄러 연결) Job → Postgres(POSTGRES_URL) + Web Push(VAPID)
+
+데이터/캐시
+├─ Postgres: POSTGRES_URL (Web/API/notify), NEON_DATABASE_URL (manga-crawl)
+└─ Redis: UPSTASH_KV_REST_* (KV), REDIS_URL (Next.js cache 등)
 ```
 
 ## Korean UX Writing
