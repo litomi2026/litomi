@@ -214,10 +214,14 @@ sudo docker run -d \
   --restart unless-stopped \
   --network host \
   cloudflare/cloudflared:2026.1.2 \
-  tunnel run --token "eyJhI..."
+  tunnel \
+  --no-autoupdate \
+  --protocol http2 \
+  run \
+  --token "eyJhI..."
 ```
 
-Cloudflare Tunnel 에서 주는 실제 token을 입력하세요.
+Cloudflare Tunnel 에서 주는 실제 token을 입력하세요. 로컬 네트워크 환경에서 QUIC(HTTP/3)을 지원하면 `--protocol http2` 는 제거해주세요.
 
 ## 기여하기
 
