@@ -1,0 +1,57 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - /etc/prometheus/alert_rules.yml
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ["alertmanager:9093"]
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ["prometheus:9090"]
+
+  - job_name: node-exporter
+    static_configs:
+      - targets: ["node-exporter:9100"]
+
+  - job_name: cadvisor
+    static_configs:
+      - targets: ["cadvisor:8080"]
+
+  - job_name: blackbox-exporter
+    static_configs:
+      - targets: ["blackbox-exporter:9115"]
+
+  # HTTP(S) 업타임 체크
+  - job_name: blackbox-https
+    scrape_interval: 30s
+    scrape_timeout: 10s
+    metrics_path: /probe
+    params:
+      module: [https_2xx_3xx]
+    static_configs:
+      - targets:
+          # Litomi self-host apps (Cloudflare Tunnel → localhost:80 → Traefik)
+          - https://local.litomi.in/
+          - https://api-local.litomi.in/
+          - https://stg.litomi.in/
+          - https://api-stg.litomi.in/
+
+          # Coolify health endpoint (200 OK)
+          - https://coolify.litomi.in/api/health
+
+          # Grafana (원하면 추가해요. Cloudflare Access를 붙이면 403일 수 있어서 module을 바꿔야 할 수 있어요)
+          # - https://grafana.litomi.in/
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+

@@ -1,0 +1,21 @@
+groups:
+  - name: uptime
+    rules:
+      - alert: ServiceDown
+        expr: probe_success == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "서비스 다운: {{ $labels.instance }}"
+          description: "HTTP probe 실패(2분 지속): {{ $labels.instance }}"
+
+      - alert: BlackboxExporterDown
+        expr: up{job="blackbox-exporter"} == 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "blackbox-exporter가 응답하지 않아요"
+          description: "blackbox-exporter가 2분 이상 down이에요"
+
