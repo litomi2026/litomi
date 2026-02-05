@@ -78,3 +78,22 @@ Grafana에서 **Dashboard ID `17346`**(Traefik Official Standalone Dashboard)을
 - 알림 룰: `prometheus/alert_rules.yml`
 - Alertmanager 설정: `alertmanager/alertmanager.yml`
 - Discord 브릿지 컨테이너: `docker-compose.yml`의 `alertmanager-discord`
+
+> 위 설정/룰 YAML 파일들은 이미지 빌드 시점에 포함돼요.  
+> 그래서 내용을 바꾸면 Coolify에서 `monitoring` 프로젝트를 **Redeploy(= rebuild)** 해야 반영돼요.
+
+### 기본 운영 알림(운영용 세트)
+
+`prometheus/alert_rules.yml`에는 업타임 알림 외에도 아래 “기본 운영 알림”이 포함돼요.
+
+- **디스크 여유 공간**: 15% 미만(warning, 30m), 5% 미만(critical, 15m)
+- **디스크 inode 여유**: 10% 미만(warning, 30m), 5% 미만(critical, 15m)
+- **메모리 여유(MemAvailable)**: 15% 미만(warning, 10m), 5% 미만(critical, 5m)
+- **스왑 여유**: 25% 미만(warning, 10m), 10% 미만(critical, 5m) (스왑이 있을 때만)
+- **OOM kill(호스트)**: 최근 10분 OOM kill 감지(critical)
+- **컨테이너 크래시루프**: 15분 동안 3회 이상 재시작 감지(critical)
+- **컨테이너 OOM**: 최근 10분 OOM 이벤트 감지(critical)
+- **Exporter down**: node-exporter / cAdvisor / blackbox-exporter down (warning)
+
+> “컨테이너 재시작” 알림은 배포/업데이트 때 스팸이 덜 오도록 **크래시루프(자주 재시작)** 기준으로 잡아놨어요.  
+> 한 번만 재시작해도 알림이 필요하면 `ContainerCrashLooping`의 조건을 낮춰서 운영 스타일에 맞게 조정하면 돼요.
