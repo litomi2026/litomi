@@ -58,8 +58,6 @@ Coolify 서버에서 `coolify-proxy`(Traefik) 설정에 아래 옵션을 추가�
   - `--metrics.prometheus=true`
   - `--metrics.prometheus.entrypoint=metrics`
 
-> 이 설정은 Traefik 컨테이너 내부에서만 열리도록(포트 publish 없이) 두고, Prometheus가 `coolify` 네트워크로 붙어서 `coolify-proxy:8082`를 스크랩하는 방식이에요.
-
 ### 2) Prometheus scrape
 
 이 레포의 `prometheus/prometheus.yml`에 `job_name: traefik`가 포함돼 있어요.
