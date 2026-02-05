@@ -22,27 +22,27 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "selfhost" {
     ingress = [
       {
         hostname = local.selfhost_app_hostname
-        service  = "http://localhost:80"
+        service  = "http://127.0.0.1:80"
       },
       {
         hostname = local.selfhost_api_hostname
-        service  = "http://localhost:80"
+        service  = "http://127.0.0.1:80"
       },
       {
         hostname = local.selfhost_stg_hostname
-        service  = "http://localhost:80"
+        service  = "http://127.0.0.1:80"
       },
       {
         hostname = local.selfhost_api_stg_hostname
-        service  = "http://localhost:80"
+        service  = "http://127.0.0.1:80"
       },
       {
         hostname = local.selfhost_coolify_hostname
-        service  = "http://localhost:80"
+        service  = "http://127.0.0.1:80"
       },
       {
         hostname = local.selfhost_grafana_hostname
-        service  = "http://localhost:80"
+        service  = "http://127.0.0.1:80"
       },
       {
         service = "http_status:404"
