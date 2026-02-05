@@ -14,9 +14,11 @@
 
 ```
 사용자
-  └─ Cloudflare (CDN / WAF / Cache)
-       ├─ Cloud Run: Next.js (standalone, Serverless Container)
-       └─ Cloud Run: Hono (API)
+  └─ Cloudflare (cloudflare/terraform/)
+       ├─ Cloud Run: Next.js (src/)
+       ├─ Cloud Run: Hono (src/backend/)
+       └─ Vercel: Next.js (vercel/)
+  └─ Cloud Run: base-nossl-debian12 (cloud-run/crawl-and-notify/)
 ```
 
 ## Korean UX Writing
