@@ -224,7 +224,7 @@ sudo docker run -d \
 
 Cloudflare Tunnel 에서 주는 실제 token을 입력하세요. 로컬 네트워크 환경에서 QUIC(HTTP/3)을 지원하면 `--protocol http2` 는 제거해주세요.
 
-#### (옵션) macOS 잠자기/깨움(OrbStack) 이후 자동 복구
+#### (옵션) macOS 잠자기/깨움 이후 자동 복구
 
 macOS에서 덮개를 닫았다가 열면 네트워크가 잠깐 끊기면서 cloudflared가 간헐적으로 재연결을 못 할 때가 있어요. 그때를 대비해서 `/ready` 가 실패하면 cloudflared 컨테이너를 자동 재시작하도록 타이머를 걸어둘 수 있어요.
 
