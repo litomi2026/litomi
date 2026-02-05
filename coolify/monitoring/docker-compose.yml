@@ -1,51 +1,56 @@
 services:
   grafana:
-    image: grafana/grafana-oss:latest
+    build:
+      context: ./grafana
+      dockerfile: Dockerfile
+    image: litomi-monitoring-grafana:local
     environment:
-      GF_SERVER_ROOT_URL: https://${GRAFANA_HOSTNAME}
+      GF_SERVER_ROOT_URL: https://${SERVICE_FQDN_GRAFANA}
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
     volumes:
       - grafana-data:/var/lib/grafana
-      - ./grafana/provisioning:/etc/grafana/provisioning:ro
     expose:
-      - "3000"
+      - '3000'
     networks:
       - monitoring
       - coolify
     labels:
       - traefik.enable=true
       - traefik.docker.network=coolify
-      - traefik.http.routers.grafana.rule=Host(`${GRAFANA_HOSTNAME}`)
+      - traefik.http.routers.grafana.rule=Host(`${SERVICE_FQDN_GRAFANA}`)
       - traefik.http.services.grafana.loadbalancer.server.port=3000
     restart: unless-stopped
 
   prometheus:
-    image: prom/prometheus:latest
+    build:
+      context: ./prometheus
+      dockerfile: Dockerfile
+    image: litomi-monitoring-prometheus:local
     command:
       - --config.file=/etc/prometheus/prometheus.yml
       - --storage.tsdb.path=/prometheus
       - --storage.tsdb.retention.time=15d
     volumes:
       - prometheus-data:/prometheus
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - ./prometheus/alert_rules.yml:/etc/prometheus/alert_rules.yml:ro
     expose:
-      - "9090"
+      - '9090'
     networks:
       - monitoring
     restart: unless-stopped
 
   alertmanager:
-    image: prom/alertmanager:latest
+    build:
+      context: ./alertmanager
+      dockerfile: Dockerfile
+    image: litomi-monitoring-alertmanager:local
     command:
       - --config.file=/etc/alertmanager/alertmanager.yml
       - --storage.path=/alertmanager
     volumes:
       - alertmanager-data:/alertmanager
-      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
     expose:
-      - "9093"
+      - '9093'
     networks:
       - monitoring
     restart: unless-stopped
@@ -57,19 +62,20 @@ services:
       DISCORD_USERNAME: ${DISCORD_USERNAME:-alertmanager}
       LISTEN_ADDRESS: 0.0.0.0:9094
     expose:
-      - "9094"
+      - '9094'
     networks:
       - monitoring
     restart: unless-stopped
 
   blackbox-exporter:
-    image: prom/blackbox-exporter:latest
+    build:
+      context: ./blackbox
+      dockerfile: Dockerfile
+    image: litomi-monitoring-blackbox-exporter:local
     command:
       - --config.file=/etc/blackbox_exporter/blackbox.yml
-    volumes:
-      - ./blackbox/blackbox.yml:/etc/blackbox_exporter/blackbox.yml:ro
     expose:
-      - "9115"
+      - '9115'
     networks:
       - monitoring
     restart: unless-stopped
@@ -85,7 +91,7 @@ services:
       - /sys:/host/sys:ro
       - /:/rootfs:ro
     expose:
-      - "9100"
+      - '9100'
     networks:
       - monitoring
     restart: unless-stopped
@@ -99,7 +105,7 @@ services:
       - /sys:/sys:ro
       - /var/lib/docker:/var/lib/docker:ro
     expose:
-      - "8080"
+      - '8080'
     networks:
       - monitoring
     restart: unless-stopped
@@ -113,4 +119,3 @@ networks:
   monitoring:
   coolify:
     external: true
-

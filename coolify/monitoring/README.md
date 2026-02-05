@@ -22,9 +22,8 @@ Coolify 위에서 Prometheus/Grafana 기반으로 **서버/컨테이너 상태 +
 
 ## 필요한 환경변수
 
-`env.template`를 참고해서 Coolify에 등록해 주세요.
+`.env.template`를 참고해서 Coolify에 등록해 주세요.
 
-- **`GRAFANA_HOSTNAME`**: 예) `grafana.litomi.in`
 - **`GRAFANA_ADMIN_PASSWORD`**: Grafana 관리자 비밀번호
 - **`DISCORD_WEBHOOK`**: Discord Webhook URL (예: `https://discord.com/api/webhooks/.../...`)
 - **`DISCORD_USERNAME`**: Discord에 표시될 봇 이름 (기본값: `alertmanager`)
