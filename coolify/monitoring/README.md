@@ -45,6 +45,34 @@ Prometheus 설정 파일의 `blackbox-https` job에서 `targets`를 수정하면
 - 파일: `prometheus/prometheus.yml`
 - 기본 예시: `local/api-local/stg/api-stg/coolify`
 
+## Traefik(= coolify-proxy) 요청 수/트래픽(메트릭) 보기
+
+요청 수(초당 요청, 상태코드, 지연시간, 바이트 등)를 보려면 **Traefik Prometheus metrics**를 켜야 해요.
+
+### 1) Traefik metrics 활성화
+
+Coolify 서버에서 `coolify-proxy`(Traefik) 설정에 아래 옵션을 추가해 주세요.
+
+- **추가할 flags**:
+  - `--entrypoints.metrics.address=:8082`
+  - `--metrics.prometheus=true`
+  - `--metrics.prometheus.entrypoint=metrics`
+
+> 이 설정은 Traefik 컨테이너 내부에서만 열리도록(포트 publish 없이) 두고, Prometheus가 `coolify` 네트워크로 붙어서 `coolify-proxy:8082`를 스크랩하는 방식이에요.
+
+### 2) Prometheus scrape
+
+이 레포의 `prometheus/prometheus.yml`에 `job_name: traefik`가 포함돼 있어요.
+
+정상 동작 확인은 Prometheus에서 아래 쿼리가 값이 나오는지 보면 돼요:
+
+- `traefik_entrypoint_requests_total`
+- `traefik_service_requests_total`
+
+### 3) Grafana 대시보드 Import
+
+Grafana에서 **Dashboard ID `17346`**(Traefik Official Standalone Dashboard)을 Import하면 요청 수/트래픽을 바로 볼 수 있어요.
+
 ## 알림(Discord)
 
 현재 알림은 **Alertmanager → (webhook) → alertmanager-discord → Discord** 흐름이에요.

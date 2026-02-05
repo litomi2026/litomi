@@ -23,6 +23,10 @@ scrape_configs:
     static_configs:
       - targets: ["cadvisor:8080"]
 
+  - job_name: traefik
+    static_configs:
+      - targets: ["coolify-proxy:8082"]
+
   - job_name: blackbox-exporter
     static_configs:
       - targets: ["blackbox-exporter:9115"]
