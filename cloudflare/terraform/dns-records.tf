@@ -188,3 +188,12 @@ resource "cloudflare_dns_record" "selfhost_api_cname" {
   ttl     = 1
   proxied = true
 }
+
+resource "cloudflare_dns_record" "selfhost_grafana_cname" {
+  zone_id = var.zone_id
+  name    = local.selfhost_grafana_hostname
+  type    = "CNAME"
+  content = "${cloudflare_zero_trust_tunnel_cloudflared.selfhost.id}.cfargotunnel.com"
+  ttl     = 1
+  proxied = true
+}

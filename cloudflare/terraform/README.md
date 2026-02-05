@@ -95,7 +95,11 @@ This repo can also manage a **self-host tunnel** for running Litomi/Coolify on y
 This stack always provisions a self-host tunnel with:
 
 - `local.<domain>` → `http://localhost:80`
-- `coolify.<domain>` → `http://localhost:8000`
+- `api-local.<domain>` → `http://localhost:80`
+- `stg.<domain>` → `http://localhost:80`
+- `api-stg.<domain>` → `http://localhost:80`
+- `coolify.<domain>` → `http://localhost:80`
+- `grafana.<domain>` → `http://localhost:80`
 
 After `terraform apply`, go to Cloudflare Zero Trust → Tunnels and copy the connector token.
 Then on the Ubuntu server run the scripts under `selfhost/`.
