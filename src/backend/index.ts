@@ -61,6 +61,6 @@ app.route('/', appRoutes)
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
   ...app,
-  port: Number(process.env.PORT ?? 8080),
+  port: Number(process.env.PORT ?? 3002),
   hostname: process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost',
 }

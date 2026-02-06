@@ -4,7 +4,7 @@ import { PostFilter } from '@/backend/api/v1/post/constant'
 import PostCreationForm from '@/components/post/PostCreationForm'
 import useMeQuery from '@/query/useMeQuery'
 
-import PostList from '../posts/[filter]/PostList'
+import PostList from '../posts/[filter]/MasonryPostList'
 import NotFound from './not-found'
 
 type Props = {

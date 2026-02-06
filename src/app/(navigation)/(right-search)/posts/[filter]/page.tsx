@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 
 import { PostFilter } from '@/backend/api/v1/post/constant'
 
-import PostList from './PostList'
+import PostList from './MasonryPostList'
 import { PostFilterParams, postFilterSchema } from './schema'
 
 export const dynamic = 'error'

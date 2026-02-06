@@ -37,7 +37,7 @@ type Props = ComponentProps<'li'> & {
   isThread?: boolean
 }
 
-export default function PostCard({ post, isThread, className = '', ...props }: Readonly<Props>) {
+export default function XPostCard({ post, isThread, className = '', ...props }: Readonly<Props>) {
   const author = post.author
   const referredPost = post.referredPost
   const imageURLs = post.imageURLs
@@ -103,6 +103,6 @@ export default function PostCard({ post, isThread, className = '', ...props }: R
   )
 }
 
-export function PostSkeleton() {
+export function XPostSkeleton() {
   return <div className="animate-fade-in bg-zinc-700 h-80 m-2 rounded-xl" />
 }

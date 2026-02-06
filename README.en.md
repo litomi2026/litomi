@@ -104,7 +104,7 @@ docker compose up -d
 Default ports:
 
 - Web: `3000`
-- Backend: `8080`
+- Backend: `3002`
 - Postgres: `5434`
 - Serverless Redis HTTP: `8079`
 
@@ -116,7 +116,7 @@ Example for local development:
 
 ```bash
 # --- Web (Next.js) ---
-NEXT_PUBLIC_BACKEND_URL="http://localhost:8080"
+NEXT_PUBLIC_BACKEND_URL="http://localhost:3002"
 NEXT_PUBLIC_CANONICAL_URL="http://localhost:3000"
 
 # Cloudflare Turnstile (replace with real keys if needed)
