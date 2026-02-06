@@ -104,7 +104,8 @@ docker compose up -d
 기본 포트:
 
 - Web: `3000`
-- Backend: `8080`
+- Proxy: `3001`
+- Backend: `3002`
 - Postgres: `5434`
 - Serverless Redis HTTP: `8079`
 
@@ -116,7 +117,7 @@ docker compose up -d
 
 ```bash
 # --- Web (Next.js) ---
-NEXT_PUBLIC_BACKEND_URL="http://localhost:8080"
+NEXT_PUBLIC_BACKEND_URL="http://localhost:3002"
 NEXT_PUBLIC_CANONICAL_URL="http://localhost:3000"
 
 # Cloudflare Turnstile (원하면 실제 키로 교체해 주세요)
