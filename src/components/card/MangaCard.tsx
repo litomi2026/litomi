@@ -145,7 +145,7 @@ export function MangaCardSkeleton({ children, className = '' }: { children?: Rea
   return (
     <li
       className={twMerge(
-        'animate-fade-in rounded-xl bg-zinc-900 border-2 aspect-3/4 w-full h-full flex flex-col justify-center items-center gap-1',
+        'animate-fade-in rounded-xl bg-zinc-900 border-2 aspect-5/7 w-full h-full flex flex-col justify-center items-center gap-1',
         className,
       )}
     >

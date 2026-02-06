@@ -1,25 +1,40 @@
 'use client'
 
 import { MessageCircle } from 'lucide-react'
+import { twMerge } from 'tailwind-merge'
 
 import MangaImage from '@/components/MangaImage'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 
 type Props = {
   mangaId: number
+  variant?: 'cover' | 'inline'
+  imageClassName?: string
 }
 
-export default function PostMangaCard({ mangaId }: Props) {
+export default function PostMangaCard({ mangaId, variant = 'inline', imageClassName = '' }: Props) {
   const { mangaMap } = useMangaListCachedQuery({ mangaIds: [mangaId] })
   const manga = mangaMap.get(mangaId)
   const title = manga?.title ?? '불러오는 중'
   const thumbnailUrl = manga?.images?.[0]?.thumbnail?.url ?? manga?.images?.[0]?.original?.url
 
+  if (variant === 'cover') {
+    return (
+      <MangaImage
+        alt={title}
+        className={twMerge('block w-full h-auto bg-zinc-900 aspect-[auto_5/7]', imageClassName)}
+        kind="thumbnail"
+        mangaId={mangaId}
+        src={thumbnailUrl}
+      />
+    )
+  }
+
   return (
     <>
       <MangaImage
         alt={title}
-        className="w-20 h-28 object-cover rounded border-2 border-zinc-700 shrink-0"
+        className={twMerge('aspect-5/7 object-cover rounded border-2 border-zinc-700 shrink-0', imageClassName)}
         kind="thumbnail"
         mangaId={mangaId}
         src={thumbnailUrl}
