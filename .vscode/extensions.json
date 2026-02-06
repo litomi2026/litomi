@@ -7,6 +7,7 @@
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
     "hashicorp.terraform",
-    "visualstudioexptteam.vscodeintellicode"
+    "visualstudioexptteam.vscodeintellicode",
+    "jock.svg"
   ]
 }

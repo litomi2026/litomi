@@ -3,7 +3,7 @@ global:
 
 route:
   receiver: discord
-  group_by: ["alertname", "instance"]
+  group_by: ['alertname', 'instance']
   group_wait: 30s
   group_interval: 5m
   repeat_interval: 3h
@@ -13,4 +13,3 @@ receivers:
     webhook_configs:
       - url: http://alertmanager-discord:9094
         send_resolved: true
-

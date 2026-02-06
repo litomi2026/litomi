@@ -7,12 +7,11 @@ import { useInView } from 'react-intersection-observer'
 
 import { PostFilter } from '@/backend/api/v1/post/constant'
 import CloudProviderStatus from '@/components/CloudProviderStatus'
-import { type Post, PostSkeleton } from '@/components/post/PostCard'
+import { type Post } from '@/components/post/XPostCard'
 import RetryGuidance from '@/components/RetryGuidance'
-import Squircle from '@/components/ui/Squircle'
 import usePostsInfiniteQuery from '@/query/usePostsQuery'
 
-import PostMangaCard from '../../post/[id]/@post/PostMangaCard'
+import PostCard, { PostSkeleton } from './PostCard'
 
 type Props = {
   filter: PostFilter
@@ -21,7 +20,7 @@ type Props = {
   NotFound: ReactNode
 }
 
-export default function PostList({ filter, mangaId, username, NotFound }: Readonly<Props>) {
+export default function MasonryPostList({ filter, mangaId, username, NotFound }: Readonly<Props>) {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, error, refetch } =
     usePostsInfiniteQuery(filter, mangaId, username)
 
@@ -46,8 +45,12 @@ export default function PostList({ filter, mangaId, username, NotFound }: Readon
 
   if (isLoading) {
     return (
-      <div className="p-4">
-        <PostListSkeleton />
+      <div className="p-2 md:p-4">
+        <div className="animate-fade-in grid grid-cols-1 gap-2 md:gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+          {[...Array(6)].map((_, i) => (
+            <PostSkeleton key={i} />
+          ))}
+        </div>
       </div>
     )
   }
@@ -61,13 +64,14 @@ export default function PostList({ filter, mangaId, username, NotFound }: Readon
   }
 
   return (
-    <div className="p-4">
-      <div className="grid grid-cols-1 gap-x-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4" role="feed">
+    <div className="p-2 md:p-4">
+      <div className="grid grid-cols-1 gap-x-2 md:gap-x-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4" role="feed">
         {masonryColumns.map((columnPosts, columnIndex) => (
-          <div className="flex flex-col gap-4" key={columnIndex}>
+          <div className="flex flex-col gap-2 md:gap-4" key={columnIndex}>
             {columnPosts.map((post) => (
-              <MasonryPostCard key={post.id} post={post} />
+              <PostCard key={post.id} post={post} />
             ))}
+            {isFetchingNextPage && <PostSkeleton />}
           </div>
         ))}
       </div>
@@ -78,9 +82,7 @@ export default function PostList({ filter, mangaId, username, NotFound }: Readon
           className="py-4"
           ref={ref}
           role="status"
-        >
-          {isFetchingNextPage && <PostSkeleton />}
-        </div>
+        />
       )}
 
       {!hasNextPage && allPosts.length > 0 && (
@@ -125,54 +127,6 @@ function ErrorState({ error, retry }: { error: Error; retry: () => void }) {
 
 function estimatePostCardWeight(post: Post) {
   return post.mangaId ? 3.3 : 1
-}
-
-function MasonryPostCard({ post }: { post: Post }) {
-  const author = post.author
-  const authorNickname = author?.nickname
-
-  return (
-    <article className="w-full overflow-hidden rounded-2xl border-2 bg-zinc-900 transition hover:bg-zinc-800/70 hover:border-zinc-700/70">
-      {post.mangaId && (
-        <div className="border-b-2 border-zinc-800">
-          <Link className="block" href={`/manga/${post.mangaId}`} prefetch={false}>
-            <PostMangaCard mangaId={post.mangaId} variant="cover" />
-          </Link>
-        </div>
-      )}
-
-      <div className="flex min-w-0 flex-col">
-        <Link className="block p-3" href={`/post/${post.id}`} prefetch={false}>
-          <p className="min-w-0 whitespace-pre-wrap break-all text-sm leading-relaxed line-clamp-4 text-zinc-100">
-            {post.content || <span className="text-zinc-400">삭제된 글이에요</span>}
-          </p>
-        </Link>
-
-        <Link
-          className="flex min-w-0 items-center gap-2 text-xs text-zinc-400 p-3 pt-0"
-          href={`/@${author?.name}`}
-          prefetch={false}
-        >
-          <Squircle className="w-6 shrink-0" src={author?.imageURL} textClassName="text-[10px] text-foreground">
-            {(authorNickname ?? '탈퇴').slice(0, 2)}
-          </Squircle>
-          <div className="min-w-0 flex-1 truncate" title={authorNickname}>
-            {authorNickname ?? <span className="text-zinc-400">탈퇴한 사용자예요</span>}
-          </div>
-        </Link>
-      </div>
-    </article>
-  )
-}
-
-function PostListSkeleton() {
-  return (
-    <div className="animate-fade-in grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-      {[...Array(6)].map((_, i) => (
-        <div className="aspect-5/7 w-full rounded-2xl border-2 bg-zinc-900" key={i} />
-      ))}
-    </div>
-  )
 }
 
 function splitIntoMasonryColumns<T>(items: readonly T[], columnCount: number, getItemWeight?: (item: T) => number) {

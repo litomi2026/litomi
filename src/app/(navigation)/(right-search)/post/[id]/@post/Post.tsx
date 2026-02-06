@@ -3,10 +3,10 @@ import { Bookmark, Heart, MessageCircle, MoreHorizontal, Repeat, Upload } from '
 import Link from 'next/link'
 
 import { PostFilter } from '@/backend/api/v1/post/constant'
-import { type Post } from '@/components/post/PostCard'
 import PostCreationForm from '@/components/post/PostCreationForm'
 import PostImages from '@/components/post/PostImages'
 import ReferredPostCard from '@/components/post/ReferredPostCard'
+import { type Post } from '@/components/post/XPostCard'
 import Squircle from '@/components/ui/Squircle'
 
 import FollowButton from './FollowButton'
