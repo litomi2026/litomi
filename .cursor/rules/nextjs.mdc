@@ -1,0 +1,155 @@
+---
+alwaysApply: false
+globs:
+  - '**/*.tsx'
+---
+
+## HTML/CSS Patterns
+
+### Prefer HTML over JavaScript
+
+Use native HTML features instead of JavaScript where possible. HTML handles validation, form submission, and accessibility better than custom JS implementations.
+
+### HTML Validation
+
+- **Use HTML `required` attribute** instead of JS validation for empty checks.
+- Let browser handle basic validation, use JS only for complex rules.
+
+```tsx
+// ❌ Bad - JS validation for empty check
+<Button disabled={!name || !email || isSaving} onClick={handleSave}>
+  저장
+</Button>
+
+// ✅ Good - HTML required + form submission
+<form onSubmit={handleSave}>
+  <Input name="name" required />
+  <Input name="email" type="email" required />
+  <Button type="submit" disabled={isSaving}>저장</Button>
+</form>
+```
+
+### Conditional Styling with Attributes
+
+- **Use `aria-*` or `data-*` attributes with Tailwind variants** instead of conditional className.
+- This provides cleaner code and better accessibility.
+- Use `aria-disabled`, `aria-selected`, `aria-checked`, `data-state`, etc.
+
+```tsx
+// ❌ Bad - Conditional className with template literals
+<div className={`card ${!enabled ? 'opacity-50' : ''}`}>
+
+<div className={`item ${isActive ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600'}`}>
+
+// ✅ Good - aria/data attributes with Tailwind variants
+<div aria-disabled={!enabled} className="card aria-disabled:opacity-50">
+
+<div aria-selected={isActive} className="item aria-selected:bg-blue-500 aria-selected:text-white bg-gray-100 text-gray-600">
+
+<div data-state={status} className="item data-[state=active]:bg-blue-500 data-[state=pending]:bg-yellow-500">
+```
+
+### HTML id/name Naming
+
+- **Use kebab-case for HTML `id` and `name` attributes** instead of camelCase.
+- This includes FormData keys since they derive from `name` attributes.
+
+```tsx
+// ❌ Bad - camelCase
+<Label htmlFor="userName">이름</Label>
+<Input id="userName" name="userName" />
+formData.append('mallId', value)
+
+// ✅ Good - kebab-case
+<Label htmlFor="user-name">이름</Label>
+<Input id="user-name" name="user-name" />
+formData.append('mall-id', value)
+```
+
+### Avoid Wrapper Functions
+
+- **Call props directly** instead of creating pass-through wrapper functions.
+
+```tsx
+// ❌ Bad - Unnecessary wrapper function
+function handleDelete(id: string) {
+  onDelete(id)
+}
+
+<button onClick={() => handleDelete(item.id)}>삭제</button>
+
+// ✅ Good - Direct prop call
+<button onClick={() => onDelete(item.id)}>삭제</button>
+```
+
+### Expandable/Collapsible UI
+
+- **Use `<details>` and `<summary>`** instead of JavaScript state for toggle/accordion UI.
+- Browser handles open/close natively with built-in accessibility.
+- Use `group` and `group-open:` for styling and animations.
+
+```tsx
+// ❌ Bad - JavaScript state for toggle
+const [isOpen, setIsOpen] = useState(false)
+
+<div>
+  <button onClick={() => setIsOpen(!isOpen)}>
+    {isOpen ? <ChevronDown /> : <ChevronRight />}
+    Toggle
+  </button>
+  {isOpen && <div>Content</div>}
+</div>
+
+// ✅ Good - Native HTML details/summary
+<details className="group">
+  <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+    <ChevronRight className="transition-transform group-open:rotate-90" />
+    Toggle
+  </summary>
+  <div>Content</div>
+</details>
+```
+
+## Dialog (Modal) Pattern
+
+All modals must use the native `<dialog>`-based `Dialog` component and the standard composition components.
+
+### Standard Composition
+
+- **Always use**: `Dialog` + `DialogHeader` + `DialogBody` (+ `DialogFooter` when there are actions)
+- **Accessibility**: `Dialog` requires `ariaLabel` (no exceptions)
+- **Close button**: always render via `DialogHeader` (title is optional)
+
+### Standard Recipe (no form)
+
+```tsx
+<Dialog ariaLabel="공유하기" open={isOpen} onClose={close}>
+  <DialogHeader title="공유하기" onClose={close} />
+  <DialogBody>{/* scrollable content */}</DialogBody>
+  <DialogFooter className="flex gap-2">
+    <button type="button" onClick={close}>
+      취소
+    </button>
+    <button type="button">확인</button>
+  </DialogFooter>
+</Dialog>
+```
+
+### Form Recipe
+
+When you need submit semantics, make the `<form>` the direct child of `Dialog`.
+
+```tsx
+<Dialog ariaLabel="서재 만들기" open={open} onClose={onClose}>
+  <form className="flex flex-1 flex-col min-h-0" onSubmit={handleSubmit}>
+    <DialogHeader title="서재 만들기" onClose={onClose} />
+    <DialogBody>{/* inputs */}</DialogBody>
+    <DialogFooter className="flex gap-2">
+      <button type="button" onClick={onClose}>
+        취소
+      </button>
+      <button type="submit">저장</button>
+    </DialogFooter>
+  </form>
+</Dialog>
+```

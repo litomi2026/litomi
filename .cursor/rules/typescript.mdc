@@ -1,0 +1,83 @@
+---
+alwaysApply: false
+description: TypeScript rules
+globs:
+  - '**/*.ts'
+  - '**/*.tsx'
+---
+
+## TypeScript
+
+- **Never use `any` type.** Use `unknown` and narrow the type, or define proper interfaces/types.
+- Prefer type inference where possible
+- Use strict TypeScript configuration.
+- Please trust server response type, don't guard type too much
+
+```typescript
+// ❌ Bad
+function process(data: any) {
+  return data.value
+}
+
+// ✅ Good
+interface Data {
+  value: string
+}
+
+function process(data: Data) {
+  return data.value
+}
+
+// ⚠️ Also good, but don't use for our server response.
+function process(data: unknown) {
+  if (typeof data === 'object' && data !== null && 'value' in data) {
+    return String((data as { value: unknown }).value)
+  }
+  throw new Error('Invalid data')
+}
+```
+
+## Time Calculations
+
+- **Use `ms()` or `sec()` functions for time calculations.** Never use magic numbers for time values.
+- `ms()` returns milliseconds, `sec()` returns seconds. Both accept human-readable strings like `'1 hour'`, `'30 minutes'`, `'7 days'`.
+
+```typescript
+// ❌ Bad - magic numbers for time
+const TOKEN_EXPIRY = 3600000 // What is this? 1 hour in ms
+const SESSION_TIMEOUT = 1800 // 30 minutes in seconds?
+const LOCK_DURATION = 900000 // Hard to understand
+
+// ✅ Good - use ms() for milliseconds
+import ms from 'ms'
+
+const TOKEN_EXPIRY = ms('1 hour')
+const COOKIE_MAX_AGE = ms('7 days')
+const RATE_LIMIT_WINDOW = ms('15 minutes')
+
+// ✅ Good - use sec() for seconds
+import { sec } from '@/utils/sec'
+
+const SESSION_TIMEOUT = sec('30 minutes')
+const LOCK_DURATION = sec('15 minutes')
+const MFA_CODE_EXPIRY = sec('5 minutes')
+```
+
+## File Structure
+
+- **Do not create barrel files (index.ts that re-exports).** Import directly from the source file.
+
+```typescript
+// ❌ Bad - barrel file
+// src/components/index.ts
+export * from './Button'
+export * from './Input'
+export * from './Modal'
+
+// ❌ Bad - importing from barrel
+import { Button, Input } from '@/components'
+
+// ✅ Good - direct imports
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+```
