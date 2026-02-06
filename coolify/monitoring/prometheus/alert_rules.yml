@@ -1,0 +1,181 @@
+groups:
+  - name: uptime
+    rules:
+      - alert: ServiceDown
+        expr: probe_success == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: '서비스 다운: {{ $labels.instance }}'
+          description: 'HTTP probe 실패(2분 지속): {{ $labels.instance }}'
+
+      - alert: BlackboxExporterDown
+        expr: up{job="blackbox-exporter"} == 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'blackbox-exporter가 응답하지 않아요'
+          description: 'blackbox-exporter가 2분 이상 down이에요 (instance={{ $labels.instance }})'
+
+  - name: exporters
+    rules:
+      - alert: NodeExporterDown
+        expr: up{job="node-exporter"} == 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'node-exporter가 응답하지 않아요'
+          description: '호스트 메트릭 수집이 2분 이상 멈췄어요 (instance={{ $labels.instance }})'
+
+      - alert: CadvisorDown
+        expr: up{job="cadvisor"} == 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'cAdvisor가 응답하지 않아요'
+          description: '컨테이너 메트릭 수집이 2분 이상 멈췄어요 (instance={{ $labels.instance }})'
+
+  - name: node-resources
+    rules:
+      - alert: DiskSpaceLowCritical
+        expr: |
+          (
+            node_filesystem_avail_bytes{fstype!~"tmpfs|fuse.lxcfs|overlay|squashfs|aufs|ramfs"} /
+            node_filesystem_size_bytes{fstype!~"tmpfs|fuse.lxcfs|overlay|squashfs|aufs|ramfs"}
+          ) < 0.05
+          and on(instance, device, mountpoint) (node_filesystem_readonly == 0)
+        for: 15m
+        labels:
+          severity: critical
+        annotations:
+          summary: '디스크 여유 공간이 너무 적어요 ({{ $labels.mountpoint }})'
+          description: '남은 비율={{ $value | humanizePercentage }} (instance={{ $labels.instance }}, device={{ $labels.device }})'
+
+      - alert: DiskSpaceLowWarning
+        expr: |
+          (
+            node_filesystem_avail_bytes{fstype!~"tmpfs|fuse.lxcfs|overlay|squashfs|aufs|ramfs"} /
+            node_filesystem_size_bytes{fstype!~"tmpfs|fuse.lxcfs|overlay|squashfs|aufs|ramfs"}
+          ) < 0.15
+          and
+          (
+            node_filesystem_avail_bytes{fstype!~"tmpfs|fuse.lxcfs|overlay|squashfs|aufs|ramfs"} /
+            node_filesystem_size_bytes{fstype!~"tmpfs|fuse.lxcfs|overlay|squashfs|aufs|ramfs"}
+          ) >= 0.05
+          and on(instance, device, mountpoint) (node_filesystem_readonly == 0)
+        for: 30m
+        labels:
+          severity: warning
+        annotations:
+          summary: '디스크 여유 공간이 부족해요 ({{ $labels.mountpoint }})'
+          description: '남은 비율={{ $value | humanizePercentage }} (instance={{ $labels.instance }}, device={{ $labels.device }})'
+
+      - alert: DiskInodesLowCritical
+        expr: |
+          (
+            node_filesystem_files_free{fstype!~"tmpfs|fuse.lxcfs|overlay|squashfs|aufs|ramfs"} /
+            node_filesystem_files{fstype!~"tmpfs|fuse.lxcfs|overlay|squashfs|aufs|ramfs"}
+          ) < 0.05
+          and on(instance, device, mountpoint) (node_filesystem_readonly == 0)
+        for: 15m
+        labels:
+          severity: critical
+        annotations:
+          summary: '디스크 inode 여유가 너무 적어요 ({{ $labels.mountpoint }})'
+          description: '남은 비율={{ $value | humanizePercentage }} (instance={{ $labels.instance }}, device={{ $labels.device }})'
+
+      - alert: DiskInodesLowWarning
+        expr: |
+          (
+            node_filesystem_files_free{fstype!~"tmpfs|fuse.lxcfs|overlay|squashfs|aufs|ramfs"} /
+            node_filesystem_files{fstype!~"tmpfs|fuse.lxcfs|overlay|squashfs|aufs|ramfs"}
+          ) < 0.10
+          and
+          (
+            node_filesystem_files_free{fstype!~"tmpfs|fuse.lxcfs|overlay|squashfs|aufs|ramfs"} /
+            node_filesystem_files{fstype!~"tmpfs|fuse.lxcfs|overlay|squashfs|aufs|ramfs"}
+          ) >= 0.05
+          and on(instance, device, mountpoint) (node_filesystem_readonly == 0)
+        for: 30m
+        labels:
+          severity: warning
+        annotations:
+          summary: '디스크 inode 여유가 부족해요 ({{ $labels.mountpoint }})'
+          description: '남은 비율={{ $value | humanizePercentage }} (instance={{ $labels.instance }}, device={{ $labels.device }})'
+
+      - alert: MemoryAvailableLowCritical
+        expr: (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) < 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: '메모리 여유가 거의 없어요'
+          description: '남은 비율={{ $value | humanizePercentage }} (instance={{ $labels.instance }})'
+
+      - alert: MemoryAvailableLowWarning
+        expr: |
+          (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) < 0.15
+          and
+          (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) >= 0.05
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: '메모리 여유가 적어요'
+          description: '남은 비율={{ $value | humanizePercentage }} (instance={{ $labels.instance }})'
+
+      - alert: SwapSpaceLowCritical
+        expr: |
+          (node_memory_SwapFree_bytes / node_memory_SwapTotal_bytes) < 0.10
+          and
+          node_memory_SwapTotal_bytes > 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: '스왑 여유가 거의 없어요'
+          description: '남은 비율={{ $value | humanizePercentage }} (instance={{ $labels.instance }})'
+
+      - alert: SwapSpaceLowWarning
+        expr: |
+          (node_memory_SwapFree_bytes / node_memory_SwapTotal_bytes) < 0.25
+          and
+          (node_memory_SwapFree_bytes / node_memory_SwapTotal_bytes) >= 0.10
+          and
+          node_memory_SwapTotal_bytes > 0
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: '스왑 사용량이 높아요'
+          description: '남은 비율={{ $value | humanizePercentage }} (instance={{ $labels.instance }})'
+
+      - alert: OomKillsDetected
+        expr: increase(node_vmstat_oom_kill[10m]) > 0
+        labels:
+          severity: critical
+        annotations:
+          summary: 'OOM Kill이 발생했어요'
+          description: '최근 10분 동안 OOM kill이 {{ $value }}회 발생했어요 (instance={{ $labels.instance }})'
+
+  - name: containers
+    rules:
+      - alert: ContainerCrashLooping
+        expr: changes(container_start_time_seconds[15m]) >= 3
+        labels:
+          severity: critical
+        annotations:
+          summary: '컨테이너가 자주 재시작해요'
+          description: '15분 동안 재시작이 {{ $value }}회 이상 감지됐어요 (instance={{ $labels.instance }}, name={{ $labels.name }}, image={{ $labels.image }})'
+
+      - alert: ContainerOomKilled
+        expr: increase(container_oom_events_total[10m]) > 0
+        labels:
+          severity: critical
+        annotations:
+          summary: '컨테이너 OOM이 발생했어요'
+          description: '최근 10분 동안 OOM이 {{ $value }}회 발생했어요 (instance={{ $labels.instance }}, name={{ $labels.name }}, image={{ $labels.image }})'

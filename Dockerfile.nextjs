@@ -5,8 +5,6 @@ WORKDIR /app
 ENV BUILD_OUTPUT=standalone
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
-ENV VERCEL_ENV=production
-ENV VERCEL_URL=litomi
 
 COPY package.json bun.lock ./
 RUN bun install --frozen-lockfile --no-save --silent
@@ -22,10 +20,10 @@ ARG NEXT_PUBLIC_IOS_TESTFLIGHT_URL
 ARG NEXT_PUBLIC_TURNSTILE_SITE_KEY
 ARG NEXT_PUBLIC_VAPID_PUBLIC_KEY
 ARG POSTGRES_URL
-ARG REDIS_URL
 ARG SENTRY_AUTH_TOKEN
 ARG SENTRY_ORG
 ARG SENTRY_PROJECT
+ARG SUPABASE_CERTIFICATE
 
 ENV CI=$CI
 ENV NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL
@@ -41,10 +39,10 @@ COPY . .
 
 RUN COMMIT_SHA=$COMMIT_SHA \
     POSTGRES_URL=$POSTGRES_URL \
-    REDIS_URL=$REDIS_URL \
     SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN \
     SENTRY_ORG=$SENTRY_ORG \
     SENTRY_PROJECT=$SENTRY_PROJECT \
+    SUPABASE_CERTIFICATE=$SUPABASE_CERTIFICATE \
     bun run build \
   # Strip `sourceMappingURL` references (prevents browser `*.map` requests).
   && find .next/static -type f -name '*.js' -exec sed -i -E 's@//# sourceMappingURL=.*$@@g' {} + \
@@ -56,6 +54,7 @@ WORKDIR /app
 
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
+ENV HOSTNAME=0.0.0.0
 ENV VERCEL_ENV=production
 ENV VERCEL_URL=litomi
 
@@ -67,7 +66,5 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 USER nextjs
-
-EXPOSE $PORT
 
 CMD ["bun", "server.js"]

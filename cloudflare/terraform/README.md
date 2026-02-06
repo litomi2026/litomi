@@ -66,8 +66,11 @@ terraform apply
    - Zone → Managed headers → Edit
    - Zone → DNS → Edit
    - Zone → Single Redirect → Edit
+   - Account → Cloudflare Tunnel → Edit (required for self-host tunnel provisioning)
 5. Add zone resources:
    - Include → Specific zone → Your domain
+6. Add account resources:
+   - Include → Specific account → Your account (or All accounts if you manage multiple)
 
 ### Finding Your Zone and Account IDs
 
@@ -84,6 +87,22 @@ After applying the configuration, Terraform provides:
 - `cache_ruleset_id` - The ID of the created cache ruleset
 - `cache_ruleset_name` - The name of the cache ruleset
 - `cache_rules_count` - Number of cache rules configured
+
+## 🖥️ Self-host (Coolify + Cloudflare Tunnel)
+
+This repo can also manage a **self-host tunnel** for running Litomi/Coolify on your own Linux server.
+
+This stack always provisions a self-host tunnel with:
+
+- `local.<domain>` → `http://localhost:80`
+- `api-local.<domain>` → `http://localhost:80`
+- `stg.<domain>` → `http://localhost:80`
+- `api-stg.<domain>` → `http://localhost:80`
+- `coolify.<domain>` → `http://localhost:80`
+- `grafana.<domain>` → `http://localhost:80`
+
+After `terraform apply`, go to Cloudflare Zero Trust → Tunnels and copy the connector token.
+Then on the Ubuntu server run the scripts under `selfhost/`.
 
 View outputs with:
 

@@ -1,0 +1,11 @@
+modules:
+  # 기본 업타임 체크(외부에서 접근 가능한지)
+  # - 2xx/3xx를 성공으로 보고, 리다이렉트는 따라가지 않아요(302도 성공 처리).
+  https_2xx_3xx:
+    prober: http
+    timeout: 10s
+    http:
+      method: GET
+      follow_redirects: false
+      preferred_ip_protocol: ip4
+      valid_status_codes: [200, 201, 202, 204, 301, 302, 303, 307, 308]

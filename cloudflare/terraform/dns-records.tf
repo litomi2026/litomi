@@ -43,7 +43,7 @@ resource "cloudflare_dns_record" "stg_cname" {
   zone_id = var.zone_id
   name    = "stg.litomi.in"
   type    = "CNAME"
-  content = "ghs.googlehosted.com"
+  content = "${cloudflare_zero_trust_tunnel_cloudflared.selfhost.id}.cfargotunnel.com"
   ttl     = 1
   proxied = true
 }
@@ -61,7 +61,7 @@ resource "cloudflare_dns_record" "api_stg_cname" {
   zone_id = var.zone_id
   name    = "api-stg.litomi.in"
   type    = "CNAME"
-  content = "ghs.googlehosted.com"
+  content = "${cloudflare_zero_trust_tunnel_cloudflared.selfhost.id}.cfargotunnel.com"
   ttl     = 1
   proxied = true
 }
@@ -159,4 +159,41 @@ resource "cloudflare_dns_record" "google_verification_txt" {
   content = "\"google-site-verification=E8dCRgQMvY3hE4oaZ-vsuhopmTS7qyQG-O5WIMdVenA\""
   ttl     = 3600
   proxied = false
+}
+
+# Self-host (Cloudflare Tunnel)
+resource "cloudflare_dns_record" "selfhost_app_cname" {
+  zone_id = var.zone_id
+  name    = local.selfhost_app_hostname
+  type    = "CNAME"
+  content = "${cloudflare_zero_trust_tunnel_cloudflared.selfhost.id}.cfargotunnel.com"
+  ttl     = 1
+  proxied = true
+}
+
+resource "cloudflare_dns_record" "selfhost_coolify_cname" {
+  zone_id = var.zone_id
+  name    = local.selfhost_coolify_hostname
+  type    = "CNAME"
+  content = "${cloudflare_zero_trust_tunnel_cloudflared.selfhost.id}.cfargotunnel.com"
+  ttl     = 1
+  proxied = true
+}
+
+resource "cloudflare_dns_record" "selfhost_api_cname" {
+  zone_id = var.zone_id
+  name    = local.selfhost_api_hostname
+  type    = "CNAME"
+  content = "${cloudflare_zero_trust_tunnel_cloudflared.selfhost.id}.cfargotunnel.com"
+  ttl     = 1
+  proxied = true
+}
+
+resource "cloudflare_dns_record" "selfhost_grafana_cname" {
+  zone_id = var.zone_id
+  name    = local.selfhost_grafana_hostname
+  type    = "CNAME"
+  content = "${cloudflare_zero_trust_tunnel_cloudflared.selfhost.id}.cfargotunnel.com"
+  ttl     = 1
+  proxied = true
 }

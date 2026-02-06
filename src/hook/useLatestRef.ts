@@ -1,11 +1,13 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useLayoutEffect, useRef } from 'react'
+
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
 export function useLatestRef<T>(value: T) {
   const ref = useRef(value)
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     ref.current = value
   }, [value])
 

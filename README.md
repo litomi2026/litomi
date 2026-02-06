@@ -197,6 +197,66 @@ bun dev
   - [`cloud-run/manga-crawl/README.md`](cloud-run/manga-crawl/README.md)
   - [`cloud-run/crawl-and-notify/README.md`](cloud-run/crawl-and-notify/README.md)
 
+### 1) Ubuntu 서버에서 Coolify 설치
+
+```bash
+curl -fsSL https://cdn.coollabs.io/coolify/install.sh | sudo bash
+```
+
+설치 후 Coolify UI는 기본적으로 `http://<server-ip>:8000`에서 열려요.
+
+### 2) Ubuntu 서버에서 cloudflared 실행
+
+```bash
+sudo docker rm -f cloudflared 2>/dev/null || true; \
+sudo docker run -d \
+  --name cloudflared \
+  --restart unless-stopped \
+  --network host \
+  cloudflare/cloudflared:2026.1.2 \
+  tunnel \
+  --no-autoupdate \
+  --protocol http2 \
+  --metrics 127.0.0.1:2000 \
+  run \
+  --token "eyJhI..."
+```
+
+Cloudflare Tunnel 에서 주는 실제 token을 입력하세요. 로컬 네트워크 환경에서 QUIC(HTTP/3)을 지원하면 `--protocol http2` 는 제거해주세요.
+
+#### (옵션) macOS 잠자기/깨움 이후 자동 복구
+
+macOS에서 덮개를 닫았다가 열면 네트워크가 잠깐 끊기면서 cloudflared가 간헐적으로 재연결을 못 할 때가 있어요. 그때를 대비해서 `/ready` 가 실패하면 cloudflared 컨테이너를 자동 재시작하도록 타이머를 걸어둘 수 있어요.
+
+```bash
+sudo tee /etc/systemd/system/cloudflared-watchdog.service >/dev/null <<'EOF'
+[Unit]
+Description=cloudflared watchdog (restart if disconnected)
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'curl -fsS http://127.0.0.1:2000/ready >/dev/null || docker restart cloudflared'
+EOF
+
+sudo tee /etc/systemd/system/cloudflared-watchdog.timer >/dev/null <<'EOF'
+[Unit]
+Description=Run cloudflared watchdog periodically
+
+[Timer]
+OnBootSec=45s
+OnUnitActiveSec=30s
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable --now cloudflared-watchdog.timer
+```
+
 ## 기여하기
 
 기여는 언제든 환영해요.
