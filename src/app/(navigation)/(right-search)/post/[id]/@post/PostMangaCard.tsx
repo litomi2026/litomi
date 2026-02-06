@@ -34,7 +34,7 @@ export default function PostMangaCard({ mangaId, variant = 'inline', imageClassN
     <>
       <MangaImage
         alt={title}
-        className={twMerge('aspect-5/7 object-cover rounded border-2 border-zinc-700 shrink-0', imageClassName)}
+        className={twMerge('w-20 aspect-5/7 object-cover rounded border-2 border-zinc-700 shrink-0', imageClassName)}
         kind="thumbnail"
         mangaId={mangaId}
         src={thumbnailUrl}
