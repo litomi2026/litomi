@@ -27,8 +27,9 @@ export default function PostList({ filter, mangaId, username, NotFound }: Readon
 
   const allPosts = useMemo(() => data?.pages.flatMap((page) => page.posts) ?? [], [data])
   const masonryColumnCount = useMasonryColumnCount()
+
   const masonryColumns = useMemo(
-    () => splitIntoMasonryColumns(allPosts, masonryColumnCount),
+    () => splitIntoMasonryColumns(allPosts, masonryColumnCount, estimatePostCardWeight),
     [allPosts, masonryColumnCount],
   )
 
@@ -122,6 +123,10 @@ function ErrorState({ error, retry }: { error: Error; retry: () => void }) {
   )
 }
 
+function estimatePostCardWeight(post: Post) {
+  return post.mangaId ? 3.3 : 1
+}
+
 function MasonryPostCard({ post }: { post: Post }) {
   const author = post.author
   const authorNickname = author?.nickname
@@ -161,36 +166,42 @@ function MasonryPostCard({ post }: { post: Post }) {
 }
 
 function PostListSkeleton() {
-  const masonryColumnCount = useMasonryColumnCount()
-  const skeletonColumns = useMemo(
-    () =>
-      splitIntoMasonryColumns(
-        [...Array(6)].map((_, i) => i),
-        masonryColumnCount,
-      ),
-    [masonryColumnCount],
-  )
-
   return (
-    <div className="animate-fade-in grid grid-cols-1 gap-x-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-      {skeletonColumns.map((columnIndexes, columnIndex) => (
-        <div className="flex flex-col gap-4" key={columnIndex}>
-          {columnIndexes.map((i) => (
-            <div className="aspect-5/7 w-full rounded-2xl border-2 bg-zinc-900" key={i} />
-          ))}
-        </div>
+    <div className="animate-fade-in grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+      {[...Array(6)].map((_, i) => (
+        <div className="aspect-5/7 w-full rounded-2xl border-2 bg-zinc-900" key={i} />
       ))}
     </div>
   )
 }
 
-function splitIntoMasonryColumns<T>(items: readonly T[], columnCount: number) {
+function splitIntoMasonryColumns<T>(items: readonly T[], columnCount: number, getItemWeight?: (item: T) => number) {
   const safeColumnCount = Math.max(1, columnCount)
   const columns: T[][] = Array.from({ length: safeColumnCount }, () => [])
 
-  items.forEach((item, index) => {
-    columns[index % safeColumnCount]?.push(item)
-  })
+  if (!getItemWeight) {
+    items.forEach((item, index) => {
+      columns[index % safeColumnCount]?.push(item)
+    })
+
+    return columns
+  }
+
+  const columnWeights = Array.from({ length: safeColumnCount }, () => 0)
+
+  for (const item of items) {
+    const itemWeight = Math.max(0, getItemWeight(item))
+
+    let targetColumn = 0
+    for (let i = 1; i < safeColumnCount; i++) {
+      if (columnWeights[i]! < columnWeights[targetColumn]!) {
+        targetColumn = i
+      }
+    }
+
+    columns[targetColumn]!.push(item)
+    columnWeights[targetColumn]! += itemWeight
+  }
 
   return columns
 }
