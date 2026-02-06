@@ -1,6 +1,6 @@
 import { ErrorBoundary } from '@suspensive/react'
 import { ExternalLink } from 'lucide-react'
-import { memo, ReactNode, Suspense } from 'react'
+import { ReactNode, Suspense } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import { Manga } from '@/types/manga'
@@ -27,22 +27,7 @@ type Props = {
   showSearchFromNextButton?: boolean
 }
 
-export default memo(MangaCard)
-
-export function MangaCardSkeleton({ children, className = '' }: { children?: ReactNode; className?: string }) {
-  return (
-    <li
-      className={twMerge(
-        'animate-fade-in rounded-xl bg-zinc-900 border-2 aspect-3/4 w-full h-full flex flex-col justify-center items-center gap-1',
-        className,
-      )}
-    >
-      {children}
-    </li>
-  )
-}
-
-function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton }: Readonly<Props>) {
+export default function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton }: Readonly<Props>) {
   const { id, artists, characters, date, group, series, images, tags, title, type, languages, uploader } = manga
   const isDownloadable = images?.[0]?.original?.url?.includes('soujpa.in')
   const viewerLink = getViewerLink(id)
@@ -152,6 +137,19 @@ function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton 
           </div>
         </div>
       </div>
+    </li>
+  )
+}
+
+export function MangaCardSkeleton({ children, className = '' }: { children?: ReactNode; className?: string }) {
+  return (
+    <li
+      className={twMerge(
+        'animate-fade-in rounded-xl bg-zinc-900 border-2 aspect-5/7 w-full h-full flex flex-col justify-center items-center gap-1',
+        className,
+      )}
+    >
+      {children}
     </li>
   )
 }

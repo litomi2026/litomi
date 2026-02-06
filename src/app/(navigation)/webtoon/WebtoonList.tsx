@@ -256,7 +256,7 @@ function WebtoonCard({ item, provider, domain }: WebtoonCardProps) {
       prefetch={false}
     >
       {/* 썸네일 */}
-      <div className="relative aspect-3/4 bg-zinc-800 overflow-hidden">
+      <div className="relative aspect-5/7 bg-zinc-800 overflow-hidden">
         {item.thumbnail ? (
           <img alt={item.title} className="w-full h-full object-cover" loading="lazy" src={item.thumbnail} />
         ) : (

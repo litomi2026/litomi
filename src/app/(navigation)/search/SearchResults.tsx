@@ -76,7 +76,7 @@ export default function SearchResult() {
           view === View.IMAGE ? (
             <li data-manga-card key={manga.id}>
               <MangaCardImage
-                className="bg-zinc-900 rounded-xl border-2 [&_img]:snap-start [&_img]:shrink-0 [&_img]:w-full [&_img]:object-cover [&_img]:aspect-3/4"
+                className="bg-zinc-900 rounded-xl border-2 [&_img]:snap-start [&_img]:shrink-0 [&_img]:w-full [&_img]:object-cover [&_img]:aspect-5/7"
                 manga={manga}
                 mangaIndex={i}
               />

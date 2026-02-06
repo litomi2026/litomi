@@ -7,9 +7,12 @@ import { useInView } from 'react-intersection-observer'
 
 import { PostFilter } from '@/backend/api/v1/post/constant'
 import CloudProviderStatus from '@/components/CloudProviderStatus'
-import PostCard, { PostSkeleton } from '@/components/post/PostCard'
+import { type Post, PostSkeleton } from '@/components/post/PostCard'
 import RetryGuidance from '@/components/RetryGuidance'
+import Squircle from '@/components/ui/Squircle'
 import usePostsInfiniteQuery from '@/query/usePostsQuery'
+
+import PostMangaCard from '../../post/[id]/@post/PostMangaCard'
 
 type Props = {
   filter: PostFilter
@@ -23,6 +26,12 @@ export default function PostList({ filter, mangaId, username, NotFound }: Readon
     usePostsInfiniteQuery(filter, mangaId, username)
 
   const allPosts = useMemo(() => data?.pages.flatMap((page) => page.posts) ?? [], [data])
+  const masonryColumnCount = useMasonryColumnCount()
+
+  const masonryColumns = useMemo(
+    () => splitIntoMasonryColumns(allPosts, masonryColumnCount, estimatePostCardWeight),
+    [allPosts, masonryColumnCount],
+  )
 
   const { ref, inView } = useInView({
     threshold: 0,
@@ -36,7 +45,11 @@ export default function PostList({ filter, mangaId, username, NotFound }: Readon
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage])
 
   if (isLoading) {
-    return <PostListSkeleton />
+    return (
+      <div className="p-4">
+        <PostListSkeleton />
+      </div>
+    )
   }
 
   if (isError) {
@@ -48,25 +61,34 @@ export default function PostList({ filter, mangaId, username, NotFound }: Readon
   }
 
   return (
-    <ul className="[&_li]:not-first:border-t-2 [&_li]:hover:bg-zinc-900/50 [&_li]:transition" role="feed">
-      {allPosts.map((post) => (
-        <PostCard key={post.id} post={post} role="article" />
-      ))}
+    <div className="p-4">
+      <div className="grid grid-cols-1 gap-x-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4" role="feed">
+        {masonryColumns.map((columnPosts, columnIndex) => (
+          <div className="flex flex-col gap-4" key={columnIndex}>
+            {columnPosts.map((post) => (
+              <MasonryPostCard key={post.id} post={post} />
+            ))}
+          </div>
+        ))}
+      </div>
+
       {hasNextPage && (
-        <li
+        <div
           aria-label={isFetchingNextPage ? '글을 가져오는 중' : '글을 더 가져오기'}
           className="py-4"
           ref={ref}
           role="status"
         >
           {isFetchingNextPage && <PostSkeleton />}
-        </li>
+        </div>
       )}
+
       {!hasNextPage && allPosts.length > 0 && (
-        <li className="py-8 text-center text-sm text-zinc-600">모든 글을 확인했어요</li>
+        <div className="py-8 text-center text-sm text-zinc-600">모든 글을 확인했어요</div>
       )}
+
       <div aria-hidden="true" className="h-20" />
-    </ul>
+    </div>
   )
 }
 
@@ -101,27 +123,107 @@ function ErrorState({ error, retry }: { error: Error; retry: () => void }) {
   )
 }
 
+function estimatePostCardWeight(post: Post) {
+  return post.mangaId ? 3.3 : 1
+}
+
+function MasonryPostCard({ post }: { post: Post }) {
+  const author = post.author
+  const authorNickname = author?.nickname
+
+  return (
+    <article className="w-full overflow-hidden rounded-2xl border-2 bg-zinc-900 transition hover:bg-zinc-800/70 hover:border-zinc-700/70">
+      {post.mangaId && (
+        <div className="border-b-2 border-zinc-800">
+          <Link className="block" href={`/manga/${post.mangaId}`} prefetch={false}>
+            <PostMangaCard mangaId={post.mangaId} variant="cover" />
+          </Link>
+        </div>
+      )}
+
+      <div className="flex min-w-0 flex-col">
+        <Link className="block p-3" href={`/post/${post.id}`} prefetch={false}>
+          <p className="min-w-0 whitespace-pre-wrap break-all text-sm leading-relaxed line-clamp-4 text-zinc-100">
+            {post.content || <span className="text-zinc-400">삭제된 글이에요</span>}
+          </p>
+        </Link>
+
+        <Link
+          className="flex min-w-0 items-center gap-2 text-xs text-zinc-400 p-3 pt-0"
+          href={`/@${author?.name}`}
+          prefetch={false}
+        >
+          <Squircle className="w-6 shrink-0" src={author?.imageURL} textClassName="text-[10px] text-foreground">
+            {(authorNickname ?? '탈퇴').slice(0, 2)}
+          </Squircle>
+          <div className="min-w-0 flex-1 truncate" title={authorNickname}>
+            {authorNickname ?? <span className="text-zinc-400">탈퇴한 사용자예요</span>}
+          </div>
+        </Link>
+      </div>
+    </article>
+  )
+}
+
 function PostListSkeleton() {
   return (
-    <ul className="animate-fade-in [&_li]:not-first:border-t-2 [&_li]:border-zinc-800">
-      {[...Array(2)].map((_, i) => (
-        <li key={i}>
-          <div className="grid min-w-0 grid-cols-[auto_1fr] gap-2 px-4 pb-2 pt-3">
-            <div className="size-10 bg-zinc-800 rounded-xl" />
-            <div className="grid gap-2">
-              <div className="flex items-center gap-2">
-                <div className="w-24 h-4 bg-zinc-800 rounded" />
-                <div className="w-32 h-3 bg-zinc-800/50 rounded" />
-              </div>
-              <div className="space-y-1">
-                <div className="w-full h-4 bg-zinc-800 rounded" />
-                <div className="w-3/4 h-4 bg-zinc-800 rounded" />
-              </div>
-              <div className="my-1 h-7 bg-zinc-800/50 rounded" />
-            </div>
-          </div>
-        </li>
+    <div className="animate-fade-in grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+      {[...Array(6)].map((_, i) => (
+        <div className="aspect-5/7 w-full rounded-2xl border-2 bg-zinc-900" key={i} />
       ))}
-    </ul>
+    </div>
   )
+}
+
+function splitIntoMasonryColumns<T>(items: readonly T[], columnCount: number, getItemWeight?: (item: T) => number) {
+  const safeColumnCount = Math.max(1, columnCount)
+  const columns: T[][] = Array.from({ length: safeColumnCount }, () => [])
+
+  if (!getItemWeight) {
+    items.forEach((item, index) => {
+      columns[index % safeColumnCount]?.push(item)
+    })
+
+    return columns
+  }
+
+  const columnWeights = Array.from({ length: safeColumnCount }, () => 0)
+
+  for (const item of items) {
+    const itemWeight = Math.max(0, getItemWeight(item))
+
+    let targetColumn = 0
+    for (let i = 1; i < safeColumnCount; i++) {
+      if (columnWeights[i]! < columnWeights[targetColumn]!) {
+        targetColumn = i
+      }
+    }
+
+    columns[targetColumn]!.push(item)
+    columnWeights[targetColumn]! += itemWeight
+  }
+
+  return columns
+}
+
+function useMasonryColumnCount() {
+  const [columnCount, setColumnCount] = useState(1)
+
+  useEffect(() => {
+    function compute() {
+      const width = window.innerWidth
+      if (width >= 1280) return 4 // xl
+      if (width >= 768) return 3 // md
+      if (width >= 640) return 2 // sm
+      return 1
+    }
+
+    const update = () => setColumnCount(compute())
+
+    update()
+    window.addEventListener('resize', update, { passive: true })
+    return () => window.removeEventListener('resize', update)
+  }, [])
+
+  return columnCount
 }
