@@ -86,7 +86,7 @@ sudo sh scripts/orbstack/import-images-k3s.sh
 ## 4) Argo CD 설치
 
 ```bash
-sh scripts/orbstack/install-argocd.sh
+sudo sh scripts/orbstack/install-argocd.sh
 ```
 
 Argo CD UI는(간단히) 포트포워딩으로 볼 수 있어요:
