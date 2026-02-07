@@ -22,7 +22,8 @@
 - **Ingress**: k3s 기본 `Traefik`
 - **Autoscaling**: `metrics-server` + `HPA`
 
-> Cloudflare Tunnel을 쓰면(이 레포 README 흐름 그대로) `litomi.in`, `api.litomi.in` DNS를 **Ubuntu VM의 `127.0.0.1:80`**로 붙일 수 있고, k3s Traefik가 그대로 받아서 라우팅해요.
+> Cloudflare Tunnel(connector = `cloudflared`)은 **k3s 클러스터 안에서(Argo CD로) 실행**하고, origin은 `traefik.kube-system.svc.cluster.local:80`로 붙여요.  
+> 그래서 Cloudflare → cloudflared → Traefik → Ingress 라우팅으로 동작해요.
 
 ---
 
@@ -92,10 +93,10 @@ sudo sh scripts/orbstack/install-argocd.sh
 Argo CD UI는(간단히) 포트포워딩으로 볼 수 있어요:
 
 ```bash
-kubectl -n argocd port-forward svc/argocd-server 8080:443
+kubectl -n argocd port-forward svc/argocd-server 3010:443
 ```
 
-그리고 브라우저에서 `https://localhost:8080`로 접속하면 돼요.
+그리고 브라우저에서 `https://localhost:3010`로 접속하면 돼요.
 
 초기 비밀번호:
 
@@ -116,6 +117,7 @@ sh scripts/orbstack/bootstrap-argocd-apps.sh
 생성되는 앱:
 
 - `platform-metrics-server`
+- `platform-cloudflared` (Cloudflare Tunnel connector)
 - `litomi-stg` (stage 브랜치, `stg.*` / `api-stg.*`)
 - `litomi-prod` (main 브랜치, `litomi.in` / `api.litomi.in`)
 
@@ -187,15 +189,10 @@ kubectl -n litomi-stg get pods,ingress,hpa
 
 ## 7) (선택) 도메인 연결(Cloudflare Tunnel)
 
-Cloudflare Tunnel은 **`127.0.0.1:80`(= k3s traefik ingress)** 로만 붙이면 돼요.
+Cloudflare Tunnel connector(`cloudflared`)는 **k3s 클러스터 안에서 Deployment로 실행**해요(Argo CD가 관리해요).
 
-> 전제: k3s 기본 traefik가 호스트의 `:80`을 점유하고 있어야 해요.  
-> 확인: `kubectl -n kube-system get svc traefik`
-
-- `<domain>` → `http://127.0.0.1:80`
-- `api.<domain>` → `http://127.0.0.1:80`
-
-k3s Traefik가 Ingress로 라우팅해요.
+- **Origin**: `http://traefik.kube-system.svc.cluster.local:80`
+  - Host 기반으로 Traefik Ingress가 라우팅해요.
 
 > 참고: `vercel.<domain>` / `vercel-stg.<domain>`는 **Cloudflare Tunnel 대상이 아니고** Vercel 쪽으로 연결되는 도메인이에요.
 
@@ -203,20 +200,29 @@ k3s Traefik가 Ingress로 라우팅해요.
 
 1. Cloudflare Zero Trust → **Tunnels** → **Create tunnel**
 2. Public Hostname 2개 추가
-   - `<domain>` → `http://127.0.0.1:80`
-   - `api.<domain>` → `http://127.0.0.1:80`
+   - `<domain>` → `http://traefik.kube-system.svc.cluster.local:80`
+   - `api.<domain>` → `http://traefik.kube-system.svc.cluster.local:80`
 3. Cloudflare가 DNS 레코드를 만들도록 하거나, 직접 CNAME을 추가해요
    - `<domain>` / `api.<domain>` → `<tunnel-id>.cfargotunnel.com` (proxied)
 4. “Install connector” 화면에서 **token**을 복사해요
-5. Ubuntu에서 cloudflared 실행:
+5. Ubuntu에서 tunnel token을 k3s에 Secret으로 저장:
 
 ```bash
-sh scripts/orbstack/run-cloudflared.sh "<TOKEN>"
+sh scripts/orbstack/set-cloudflared-token-secret.sh "<TOKEN>"
 ```
 
-정상 확인:
+6. Argo CD 앱(플랫폼 리소스) 적용:
 
 ```bash
+sh scripts/orbstack/bootstrap-argocd-apps.sh
+kubectl -n argocd get applications
+```
+
+정상 확인(클러스터):
+
+```bash
+kubectl -n cloudflared get pods
+kubectl -n cloudflared port-forward svc/cloudflared-metrics 2000:2000
 curl -fsS http://127.0.0.1:2000/ready
 ```
 
@@ -228,7 +234,7 @@ curl -fsS http://127.0.0.1:2000/ready
 그래도 IaC로 가려면:
 
 - `cloudflare/terraform/selfhost-tunnel.tf`에 이미
-  - `<domain>`, `api.<domain>` → `http://127.0.0.1:80`
+  - `<domain>`, `api.<domain>` → `http://traefik.kube-system.svc.cluster.local:80`
     설정이 들어 있어요.
 - `terraform apply` 후 Cloudflare Zero Trust에서 tunnel connector token을 복사하고,
-  Ubuntu에서 위 `run-cloudflared.sh`로 실행하면 돼요.
+  Ubuntu에서 위 `set-cloudflared-token-secret.sh`로 Secret을 넣으면 돼요.

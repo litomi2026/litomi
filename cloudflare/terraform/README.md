@@ -94,13 +94,14 @@ This repo can also manage a **self-host tunnel** for running Litomi/Coolify on y
 
 This stack always provisions a self-host tunnel with:
 
-- `<domain>` → `http://localhost:80`
-- `api.<domain>` → `http://localhost:80`
-- `stg.<domain>` → `http://localhost:80`
-- `api-stg.<domain>` → `http://localhost:80`
-- `grafana.<domain>` → `http://localhost:80`
+- `<domain>` → `http://traefik.kube-system.svc.cluster.local:80`
+- `api.<domain>` → `http://traefik.kube-system.svc.cluster.local:80`
+- `stg.<domain>` → `http://traefik.kube-system.svc.cluster.local:80`
+- `api-stg.<domain>` → `http://traefik.kube-system.svc.cluster.local:80`
+- `grafana.<domain>` → `http://traefik.kube-system.svc.cluster.local:80`
 
-After `terraform apply`, go to Cloudflare Zero Trust → Tunnels and copy the connector token. Then on the Ubuntu server run cloudflared.
+After `terraform apply`, go to Cloudflare Zero Trust → Tunnels and copy the connector token.  
+Then store it as a Kubernetes Secret and run `cloudflared` in k3s (see `k8s/platform/cloudflared/` and `scripts/orbstack/set-cloudflared-token-secret.sh`).
 
 View outputs with:
 

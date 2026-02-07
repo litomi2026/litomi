@@ -20,12 +20,12 @@ spec:
             - name: http
               containerPort: 80
           env:
-            - name: SRH_MODE
-              value: env
-            - name: SRH_TOKEN
-              value: local_dev_token
-            - name: SRH_CONNECTION_STRING
-              value: redis://redis:6379
+            - name: PORT
+              value: "80"
+          volumeMounts:
+            - name: srh-config
+              mountPath: /app/srh-config
+              readOnly: true
           readinessProbe:
             tcpSocket:
               port: 80
@@ -40,6 +40,10 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 2
             failureThreshold: 6
+      volumes:
+        - name: srh-config
+          configMap:
+            name: srh-config
 ---
 apiVersion: v1
 kind: Service
@@ -52,4 +56,13 @@ spec:
     - name: http
       port: 80
       targetPort: 80
-
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: srh-config
+data:
+  tokens.json: |
+    {
+      "local_dev_token": "redis://redis:6379"
+    }

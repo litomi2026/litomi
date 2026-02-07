@@ -10,6 +10,19 @@ if ! command -v docker >/dev/null 2>&1; then
   exit 1
 fi
 
+docker_cmd() {
+  if docker info >/dev/null 2>&1; then
+    docker "$@"
+    return 0
+  fi
+  if command -v sudo >/dev/null 2>&1; then
+    sudo docker "$@"
+    return 0
+  fi
+  echo "docker daemon is not accessible (and sudo is not available)." >&2
+  exit 1
+}
+
 DOMAIN="${DOMAIN:-litomi.in}"
 IMAGE_TAG="${IMAGE_TAG:-prod}"
 EXTERNAL_API_PROXY_URL="${EXTERNAL_API_PROXY_URL:-}"
@@ -54,7 +67,7 @@ echo "  NEXT_PUBLIC_EXTERNAL_API_PROXY_URL=${NEXT_PUBLIC_EXTERNAL_API_PROXY_URL}
 echo "  IMAGE_TAG=${IMAGE_TAG}"
 echo "  COMMIT_SHA=${COMMIT_SHA}"
 
-docker build \
+docker_cmd build \
   -t "litomi-web:${IMAGE_TAG}" \
   -f Dockerfile.nextjs \
   --build-arg "CI=true" \
@@ -65,7 +78,7 @@ docker build \
   --build-arg "POSTGRES_URL=${POSTGRES_URL}" \
   .
 
-docker build \
+docker_cmd build \
   -t "litomi-backend:${IMAGE_TAG}" \
   -f Dockerfile.hono \
   .

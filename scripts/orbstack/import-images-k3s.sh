@@ -6,6 +6,19 @@ if ! command -v docker >/dev/null 2>&1; then
   exit 1
 fi
 
+docker_cmd() {
+  if docker info >/dev/null 2>&1; then
+    docker "$@"
+    return 0
+  fi
+  if command -v sudo >/dev/null 2>&1; then
+    sudo docker "$@"
+    return 0
+  fi
+  echo "docker daemon is not accessible (and sudo is not available)." >&2
+  exit 1
+}
+
 if ! command -v k3s >/dev/null 2>&1; then
   echo "k3s not found. Install k3s first (scripts/orbstack/bootstrap-k3s.sh)."
   exit 1
@@ -19,7 +32,7 @@ import_image() {
   name="$1"
   tar="$TMP_DIR/$2"
   echo "Saving $name -> $tar"
-  docker save "$name" -o "$tar"
+  docker_cmd save "$name" -o "$tar"
   echo "Importing $tar into k3s containerd..."
   k3s ctr images import "$tar"
 }
