@@ -1,0 +1,42 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: litomi
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: local.litomi.in
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: litomi-web
+                port:
+                  number: 3000
+    - host: api-local.litomi.in
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: litomi-backend
+                port:
+                  number: 3002
+          - path: /health
+            pathType: Prefix
+            backend:
+              service:
+                name: litomi-backend
+                port:
+                  number: 3002
+          - path: /ready
+            pathType: Prefix
+            backend:
+              service:
+                name: litomi-backend
+                port:
+                  number: 3002
+

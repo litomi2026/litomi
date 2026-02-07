@@ -1,0 +1,63 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: platform-metrics-server
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/gwak2837/litomi.git
+    targetRevision: main
+    path: k8s/platform/metrics-server
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: litomi-prod
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/gwak2837/litomi.git
+    targetRevision: main
+    path: k8s/apps/litomi/overlays/prod
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: litomi
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: litomi-stg
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/gwak2837/litomi.git
+    targetRevision: stage
+    path: k8s/apps/litomi/overlays/stg
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: litomi-stg
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+

@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: litomi-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: litomi-web
+  template:
+    metadata:
+      labels:
+        app: litomi-web
+    spec:
+      containers:
+        - name: web
+          image: litomi-web:local
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: HOSTNAME
+              value: 0.0.0.0
+            - name: PORT
+              value: "3000"
+          envFrom:
+            - configMapRef:
+                name: litomi-public-env
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 12
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 6
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: litomi-web
+spec:
+  selector:
+    app: litomi-web
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+

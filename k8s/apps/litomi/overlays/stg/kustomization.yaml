@@ -1,0 +1,53 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: litomi-stg
+
+resources:
+  - ../../base
+  - ingress.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+patches:
+  # Base가 Namespace `litomi`를 만들도록 되어 있어서, staging에서는 이름만 바꿔서 재사용해요.
+  - target:
+      kind: Namespace
+      name: litomi
+    patch: |-
+      - op: replace
+        path: /metadata/name
+        value: litomi-stg
+
+configMapGenerator:
+  - name: litomi-public-env
+    literals:
+      - NEXT_PUBLIC_CANONICAL_URL=https://stg.litomi.in
+      - NEXT_PUBLIC_BACKEND_URL=https://api-stg.litomi.in
+      # Vercel edge proxy (managed outside k3s/Argo CD)
+      - NEXT_PUBLIC_EXTERNAL_API_PROXY_URL=https://vercel-stg.litomi.in
+      - NEXT_PUBLIC_CORS_PROXY_URL=
+      - NEXT_PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA
+      - NEXT_PUBLIC_VAPID_PUBLIC_KEY=123
+
+  - name: litomi-backend-env
+    literals:
+      - CORS_ORIGIN=https://stg.litomi.in
+
+      - POSTGRES_URL=postgresql://litomi:test_password@postgres:5432/litomi
+      - POSTGRES_URL_DIRECT=postgresql://litomi:test_password@postgres:5432/litomi
+      - POSTGRES_URL_NON_POOLING=postgresql://litomi:test_password@postgres:5432/litomi
+      - AIVEN_POSTGRES_URL=postgresql://litomi:test_password@postgres:5432/litomi
+
+      - UPSTASH_KV_REST_API_URL=http://srh:80
+      - UPSTASH_KV_REST_API_TOKEN=local_dev_token
+      - UPSTASH_REDIS_REST_URL=http://srh:80
+      - UPSTASH_REDIS_REST_TOKEN=local_dev_token
+
+images:
+  - name: litomi-web
+    newTag: stg
+  - name: litomi-backend
+    newTag: stg
+
