@@ -29,13 +29,20 @@ fi
 
 # Extract zone_id from terraform.tfvars
 ZONE_ID=$(grep "^zone_id" terraform.tfvars | cut -d'"' -f2)
+ACCOUNT_ID=$(grep "^account_id" terraform.tfvars | cut -d'"' -f2)
 
 if [ -z "$ZONE_ID" ]; then
     echo "❌ Could not extract zone_id from terraform.tfvars"
     exit 1
 fi
 
+if [ -z "$ACCOUNT_ID" ]; then
+    echo "❌ Could not extract account_id from terraform.tfvars"
+    exit 1
+fi
+
 echo "📡 Zone ID: $ZONE_ID"
+echo "👤 Account ID: $ACCOUNT_ID"
 echo ""
 
 # Function to import DNS records with better matching
@@ -117,7 +124,7 @@ import_dns_records() {
         fi
         
         if [ -n "$RECORD_ID" ]; then
-            echo "✅ Found record: $record_type $record_name (ID: $RECORD_ID)"
+            echo "✓ Found record: $record_type $record_name (ID: $RECORD_ID)"
             terraform import "$resource_name" "$ZONE_ID/$RECORD_ID" 2>/dev/null || echo "  ⚠️  Import failed or already exists"
         else
             echo "⏭️  No matching record found for $resource_name"
@@ -141,7 +148,7 @@ import_rulesets() {
         
         CACHE_ID=$(echo "$CACHE_RESPONSE" | jq -r '.result.id // empty')
         if [ -n "$CACHE_ID" ]; then
-            echo "✅ Importing cache ruleset (ID: $CACHE_ID)"
+            echo "✓ Importing cache ruleset (ID: $CACHE_ID)"
             terraform import cloudflare_ruleset.cache_rules "zones/$ZONE_ID/$CACHE_ID" 2>/dev/null || echo "  ⚠️  Already imported or doesn't exist"
         else
             echo "⏭️  No cache ruleset exists in Cloudflare"
@@ -159,10 +166,28 @@ import_rulesets() {
         
         RATE_ID=$(echo "$RATE_RESPONSE" | jq -r '.result.id // empty')
         if [ -n "$RATE_ID" ]; then
-            echo "✅ Importing rate limiting ruleset (ID: $RATE_ID)"
+            echo "✓ Importing rate limiting ruleset (ID: $RATE_ID)"
             terraform import cloudflare_ruleset.rate_limiting "zones/$ZONE_ID/$RATE_ID" 2>/dev/null || echo "  ⚠️  Already imported or doesn't exist"
         else
             echo "⏭️  No rate limiting ruleset exists in Cloudflare"
+        fi
+    fi
+
+    # Check redirect rules (e.g. www -> apex)
+    if terraform state show "cloudflare_ruleset.www_redirect" &>/dev/null 2>&1; then
+        echo "✓ Redirect rules already imported"
+    else
+        REDIRECT_RESPONSE=$(curl -s -X GET \
+            "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/rulesets/phases/http_request_dynamic_redirect/entrypoint" \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            -H "Content-Type: application/json")
+        
+        REDIRECT_ID=$(echo "$REDIRECT_RESPONSE" | jq -r '.result.id // empty')
+        if [ -n "$REDIRECT_ID" ]; then
+            echo "✓ Importing redirect ruleset (ID: $REDIRECT_ID)"
+            terraform import cloudflare_ruleset.www_redirect "zones/$ZONE_ID/$REDIRECT_ID" 2>/dev/null || echo "  ⚠️  Already imported or doesn't exist"
+        else
+            echo "⏭️  No redirect ruleset exists in Cloudflare"
         fi
     fi
 }
@@ -190,7 +215,7 @@ import_managed_transforms() {
 
     for import_id in "${import_candidates[@]}"; do
         if terraform import cloudflare_managed_transforms.managed_transforms "$import_id" >/dev/null 2>&1; then
-            echo "✅ Imported managed transforms (ID: $import_id)"
+            echo "✓ Imported managed transforms (ID: $import_id)"
             return 0
         fi
     done
@@ -198,6 +223,68 @@ import_managed_transforms() {
     echo "⚠️  Could not import managed transforms automatically."
     echo "   Try manually:"
     echo "   terraform import cloudflare_managed_transforms.managed_transforms \"$ZONE_ID\""
+    return 1
+}
+
+# Function to import Zero Trust tunnel (self-host)
+import_zero_trust_tunnel() {
+    echo ""
+    echo "🛡️  Checking for Zero Trust tunnel..."
+
+    if terraform state show "cloudflare_zero_trust_tunnel_cloudflared.selfhost" &>/dev/null 2>&1; then
+        echo "✓ Self-host tunnel already imported"
+        return 0
+    fi
+
+    # Try to read tunnel name from Terraform config (fallback to default)
+    local tunnel_name=""
+    if [ -f "selfhost-tunnel.tf" ]; then
+        tunnel_name=$(grep -E "selfhost_tunnel_name\\s*=" selfhost-tunnel.tf | head -1 | cut -d'"' -f2)
+    fi
+    if [ -z "$tunnel_name" ]; then
+        tunnel_name="litomi-selfhost"
+    fi
+
+    echo "🔎 Looking for tunnel named: $tunnel_name"
+
+    TUNNEL_RESPONSE=$(curl -s -X GET \
+        "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT_ID/cfd_tunnel?per_page=100" \
+        -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+        -H "Content-Type: application/json")
+
+    SUCCESS=$(echo "$TUNNEL_RESPONSE" | jq -r '.success')
+    if [ "$SUCCESS" != "true" ]; then
+        echo "❌ Failed to fetch tunnels"
+        return 1
+    fi
+
+    TUNNEL_ID=$(echo "$TUNNEL_RESPONSE" | jq -r --arg name "$tunnel_name" \
+        '.result[] | select(.name == $name) | .id' | head -1)
+
+    if [ -z "$TUNNEL_ID" ]; then
+        echo "⏭️  No existing tunnel found (Terraform will create one on apply)"
+        return 0
+    fi
+
+    echo "✓ Found tunnel: $tunnel_name (ID: $TUNNEL_ID)"
+
+    # Provider import ID formats can vary; try common patterns.
+    declare -a import_candidates=(
+        "$ACCOUNT_ID/$TUNNEL_ID"
+        "accounts/$ACCOUNT_ID/$TUNNEL_ID"
+        "accounts/$ACCOUNT_ID/cfd_tunnel/$TUNNEL_ID"
+        "$TUNNEL_ID"
+    )
+
+    for import_id in "${import_candidates[@]}"; do
+        if terraform import cloudflare_zero_trust_tunnel_cloudflared.selfhost "$import_id" >/dev/null 2>&1; then
+            echo "✓ Imported self-host tunnel (ID: $import_id)"
+            return 0
+        fi
+    done
+
+    echo "⚠️  Could not import self-host tunnel automatically."
+    echo "   Please import manually using the tunnel ID from Cloudflare Zero Trust dashboard."
     return 1
 }
 
@@ -220,6 +307,9 @@ import_rulesets
 # Import managed transforms
 import_managed_transforms
 
+# Import Zero Trust tunnel (if it already exists)
+import_zero_trust_tunnel
+
 echo ""
 echo "✅ Auto-import complete!"
 echo ""
@@ -228,7 +318,7 @@ echo ""
 echo "🔄 Syncing state metadata (marking sensitive fields)..."
 # This applies only metadata changes (sensitive field markings), no actual infrastructure changes
 terraform apply -auto-approve >/dev/null 2>&1
-echo "✅ State metadata synced"
+echo "✓ State metadata synced"
 echo ""
 
 echo "📊 Current Terraform state summary:"
@@ -246,7 +336,7 @@ echo ""
 echo "🔍 Verifying configuration..."
 PLAN_OUTPUT=$(terraform plan -detailed-exitcode 2>&1 || true)
 if echo "$PLAN_OUTPUT" | grep -q "No changes"; then
-    echo "✅ No changes needed - infrastructure matches configuration!"
+    echo "✓ No changes needed - infrastructure matches configuration!"
 else
     echo "📝 To see what changes are needed, run:"
     echo "   terraform plan"
