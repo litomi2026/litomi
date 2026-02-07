@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: litomi-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: litomi-backend
+  template:
+    metadata:
+      labels:
+        app: litomi-backend
+    spec:
+      containers:
+        - name: backend
+          image: litomi-backend:prod
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3002
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: PORT
+              value: "3002"
+          envFrom:
+            - configMapRef:
+                name: litomi-backend-env
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3002
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 12
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3002
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 6
+          resources:
+            requests:
+              cpu: 500m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: litomi-backend
+spec:
+  selector:
+    app: litomi-backend
+  ports:
+    - name: http
+      port: 3002
+      targetPort: 3002
+

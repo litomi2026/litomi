@@ -27,7 +27,6 @@ export const nextBuildEnv = createEnv({
     SENTRY_AUTH_TOKEN: z.string().optional(),
     SENTRY_ORG: z.string().optional(),
     SENTRY_PROJECT: z.string().optional(),
-    REDIS_URL: z.url().default('redis://localhost:6380'),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,
