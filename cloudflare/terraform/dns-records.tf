@@ -104,6 +104,24 @@ resource "cloudflare_dns_record" "render_stg_cname" {
   proxied = true
 }
 
+resource "cloudflare_dns_record" "proxy_cname" {
+  zone_id = var.zone_id
+  name    = "proxy.litomi.in"
+  type    = "CNAME"
+  content = "bc90fad8422c6ce5.vercel-dns-017.com"
+  ttl     = 1
+  proxied = true
+}
+
+resource "cloudflare_dns_record" "proxy_stg_cname" {
+  zone_id = var.zone_id
+  name    = "proxy-stg.litomi.in"
+  type    = "CNAME"
+  content = "bc90fad8422c6ce5.vercel-dns-017.com"
+  ttl     = 1
+  proxied = true
+}
+
 resource "cloudflare_dns_record" "vercel_cname" {
   zone_id = var.zone_id
   name    = "vercel.litomi.in"
