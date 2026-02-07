@@ -46,7 +46,7 @@ cd litomi
 ## 2) k3s 설치
 
 ```bash
-sh scripts/orbstack/bootstrap-k3s.sh
+sudo sh scripts/orbstack/bootstrap-k3s.sh
 ```
 
 설치 확인:
@@ -151,7 +151,7 @@ staging은 아래처럼 분리돼 있어요:
 - **Web**: `stg.<domain>`
 - **API**: `api-stg.<domain>`
 - **Argo CD Application**: `litomi-stg` (Git `stage` 브랜치 추적)
- - **External API Proxy(Vercel)**: `vercel-stg.<domain>` (`/api/proxy/*`)
+- **External API Proxy(Vercel)**: `vercel-stg.<domain>` (`/api/proxy/*`)
 
 ### 1) (중요) `stage` 브랜치에도 k8s 디렉토리가 있어야 해요
 
@@ -201,14 +201,14 @@ k3s Traefik가 Ingress로 라우팅해요.
 
 ### 방법 A) Cloudflare UI로 빠르게 붙이기(추천: 안전/빠름)
 
-1) Cloudflare Zero Trust → **Tunnels** → **Create tunnel**
-2) Public Hostname 2개 추가
+1. Cloudflare Zero Trust → **Tunnels** → **Create tunnel**
+2. Public Hostname 2개 추가
    - `<domain>` → `http://127.0.0.1:80`
    - `api.<domain>` → `http://127.0.0.1:80`
-3) Cloudflare가 DNS 레코드를 만들도록 하거나, 직접 CNAME을 추가해요
+3. Cloudflare가 DNS 레코드를 만들도록 하거나, 직접 CNAME을 추가해요
    - `<domain>` / `api.<domain>` → `<tunnel-id>.cfargotunnel.com` (proxied)
-4) “Install connector” 화면에서 **token**을 복사해요
-5) Ubuntu에서 cloudflared 실행:
+4. “Install connector” 화면에서 **token**을 복사해요
+5. Ubuntu에서 cloudflared 실행:
 
 ```bash
 sh scripts/orbstack/run-cloudflared.sh "<TOKEN>"
@@ -229,7 +229,6 @@ curl -fsS http://127.0.0.1:2000/ready
 
 - `cloudflare/terraform/selfhost-tunnel.tf`에 이미
   - `<domain>`, `api.<domain>` → `http://127.0.0.1:80`
-  설정이 들어 있어요.
+    설정이 들어 있어요.
 - `terraform apply` 후 Cloudflare Zero Trust에서 tunnel connector token을 복사하고,
   Ubuntu에서 위 `run-cloudflared.sh`로 실행하면 돼요.
-

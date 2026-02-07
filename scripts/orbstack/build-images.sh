@@ -1,15 +1,29 @@
 #!/usr/bin/env sh
 set -eu
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+cd "$REPO_ROOT"
+
 if ! command -v docker >/dev/null 2>&1; then
   echo "docker not found. Install Docker (or build images on another machine and push/import)."
   exit 1
 fi
 
-WEB_HOST="${WEB_HOST:-litomi.in}"
-API_HOST="${API_HOST:-api.litomi.in}"
+DOMAIN="${DOMAIN:-litomi.in}"
 IMAGE_TAG="${IMAGE_TAG:-prod}"
 EXTERNAL_API_PROXY_URL="${EXTERNAL_API_PROXY_URL:-}"
+
+case "${IMAGE_TAG}" in
+  stg)
+    WEB_HOST="${WEB_HOST:-stg.${DOMAIN}}"
+    API_HOST="${API_HOST:-api-stg.${DOMAIN}}"
+    ;;
+  *)
+    WEB_HOST="${WEB_HOST:-${DOMAIN}}"
+    API_HOST="${API_HOST:-api.${DOMAIN}}"
+    ;;
+esac
 
 if [ -z "${COMMIT_SHA:-}" ]; then
   if command -v git >/dev/null 2>&1; then
@@ -23,9 +37,9 @@ NEXT_PUBLIC_BACKEND_URL="https://${API_HOST}"
 
 if [ -z "${EXTERNAL_API_PROXY_URL}" ]; then
   if [ "${IMAGE_TAG}" = "stg" ]; then
-    EXTERNAL_API_PROXY_URL="https://vercel-stg.litomi.in"
+    EXTERNAL_API_PROXY_URL="https://vercel-stg.${DOMAIN}"
   else
-    EXTERNAL_API_PROXY_URL="https://vercel.litomi.in"
+    EXTERNAL_API_PROXY_URL="https://vercel.${DOMAIN}"
   fi
 fi
 

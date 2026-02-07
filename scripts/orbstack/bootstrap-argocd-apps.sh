@@ -1,6 +1,10 @@
 #!/usr/bin/env sh
 set -eu
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+cd "$REPO_ROOT"
+
 if ! command -v kubectl >/dev/null 2>&1; then
   echo "kubectl not found."
   exit 1

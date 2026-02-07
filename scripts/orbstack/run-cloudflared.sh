@@ -2,6 +2,7 @@
 set -eu
 
 TOKEN="${1:-${CLOUDFLARE_TUNNEL_TOKEN:-}}"
+IMAGE="${CLOUDFLARED_IMAGE:-cloudflare/cloudflared:2026.1.2}"
 if [ -z "${TOKEN}" ]; then
   echo "Usage:"
   echo "  sh scripts/orbstack/run-cloudflared.sh <CLOUDFLARE_TUNNEL_TOKEN>"
@@ -29,7 +30,7 @@ sudo docker run -d \
   --name cloudflared \
   --restart unless-stopped \
   --network host \
-  cloudflare/cloudflared:2026.1.2 \
+  "${IMAGE}" \
   tunnel \
   --no-autoupdate \
   --protocol http2 \

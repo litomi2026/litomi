@@ -14,4 +14,8 @@ sudo chown "$(id -u)":"$(id -g)" "$HOME/.kube/config"
 chmod 600 "$HOME/.kube/config"
 
 echo "k3s is ready. Try: kubectl get nodes"
+echo ""
+echo "If kubectl shows 'current-context is not set', try:"
+echo "  export KUBECONFIG=\"$HOME/.kube/config\""
+echo "  unset KUBECONFIG"
 
