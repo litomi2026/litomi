@@ -14,22 +14,22 @@
 
 ## 구성(요약)
 
-- **Web(Next.js)**: `local.litomi.in`
-- **API Domain(단일 호스트)**: `api-local.litomi.in`
+- **Web(Prod, main)**: `litomi.in`
+- **API Domain(Prod, main)**: `api.litomi.in`
   - `/api/v1/*` → `litomi-backend`(Hono)
 - **External API Proxy(Vercel)**: `vercel.litomi.in`
   - `/api/proxy/*` (Next.js Edge route handlers)
 - **Ingress**: k3s 기본 `Traefik`
 - **Autoscaling**: `metrics-server` + `HPA`
 
-> Cloudflare Tunnel을 쓰면(이 레포 README 흐름 그대로) `local.*`, `api-local.*` DNS를 **Ubuntu VM의 `127.0.0.1:80`**로 붙일 수 있고, k3s Traefik가 그대로 받아서 라우팅해요.
+> Cloudflare Tunnel을 쓰면(이 레포 README 흐름 그대로) `litomi.in`, `api.litomi.in` DNS를 **Ubuntu VM의 `127.0.0.1:80`**로 붙일 수 있고, k3s Traefik가 그대로 받아서 라우팅해요.
 
 ---
 
 ## 0) 준비물
 
 - OrbStack Ubuntu 머신(arm64)
-- `git`, `curl` 사용 가능
+- `git`, `curl`, `docker` 사용 가능
 - (권장) Cloudflare Tunnel + DNS를 이미 설정했거나, 설정할 계획
 
 ---
@@ -60,16 +60,20 @@ kubectl get pods -A | head
 
 ## 3) (필수) Litomi 이미지 빌드 + k3s(containerd)로 import
 
-이 구성은 기본적으로 `imagePullPolicy: IfNotPresent` + `IMAGE_TAG=local`(기본값) 태그를 써요.  
+이 구성은 기본적으로 `imagePullPolicy: IfNotPresent` + `IMAGE_TAG=prod`(기본값) 태그를 써요.  
 즉, **로컬에서 이미지를 빌드하고 k3s(containerd)에 import**해주면 바로 떠요.
 
 ### 3-1) 이미지 빌드
 
 ```bash
-sh scripts/orbstack/build-images.sh
+sudo sh scripts/orbstack/build-images.sh
 ```
 
 > `vercel/`(Edge proxy)은 **k3s에 올리지 않아요.** Vercel에서 따로 운영해요.
+
+#### Prod(main) 이미지 태그
+
+- **Prod(main, `litomi.in`)**: `IMAGE_TAG=prod` (기본값)
 
 ### 3-2) k3s로 import
 
@@ -112,7 +116,8 @@ sh scripts/orbstack/bootstrap-argocd-apps.sh
 생성되는 앱:
 
 - `platform-metrics-server`
-- `litomi-prod`
+- `litomi-stg` (stage 브랜치, `stg.*` / `api-stg.*`)
+- `litomi-prod` (main 브랜치, `litomi.in` / `api.litomi.in`)
 
 확인:
 
@@ -125,15 +130,15 @@ kubectl -n argocd get applications
 ## 6) 동작 확인
 
 ```bash
-kubectl -n litomi get pods
-kubectl -n litomi get ingress
+kubectl -n litomi-prod get pods
+kubectl -n litomi-prod get ingress
 ```
 
 HPA 확인:
 
 ```bash
-kubectl -n litomi get hpa
-kubectl top pods -n litomi
+kubectl -n litomi-prod get hpa
+kubectl top pods -n litomi-prod
 ```
 
 ---
@@ -187,8 +192,8 @@ Cloudflare Tunnel은 **`127.0.0.1:80`(= k3s traefik ingress)** 로만 붙이면 
 > 전제: k3s 기본 traefik가 호스트의 `:80`을 점유하고 있어야 해요.  
 > 확인: `kubectl -n kube-system get svc traefik`
 
-- `local.<domain>` → `http://127.0.0.1:80`
-- `api-local.<domain>` → `http://127.0.0.1:80`
+- `<domain>` → `http://127.0.0.1:80`
+- `api.<domain>` → `http://127.0.0.1:80`
 
 k3s Traefik가 Ingress로 라우팅해요.
 
@@ -198,10 +203,10 @@ k3s Traefik가 Ingress로 라우팅해요.
 
 1) Cloudflare Zero Trust → **Tunnels** → **Create tunnel**
 2) Public Hostname 2개 추가
-   - `local.<domain>` → `http://127.0.0.1:80`
-   - `api-local.<domain>` → `http://127.0.0.1:80`
+   - `<domain>` → `http://127.0.0.1:80`
+   - `api.<domain>` → `http://127.0.0.1:80`
 3) Cloudflare가 DNS 레코드를 만들도록 하거나, 직접 CNAME을 추가해요
-   - `local` / `api-local` → `<tunnel-id>.cfargotunnel.com` (proxied)
+   - `<domain>` / `api.<domain>` → `<tunnel-id>.cfargotunnel.com` (proxied)
 4) “Install connector” 화면에서 **token**을 복사해요
 5) Ubuntu에서 cloudflared 실행:
 
@@ -223,7 +228,7 @@ curl -fsS http://127.0.0.1:2000/ready
 그래도 IaC로 가려면:
 
 - `cloudflare/terraform/selfhost-tunnel.tf`에 이미
-  - `local.<domain>`, `api-local.<domain>` → `http://127.0.0.1:80`
+  - `<domain>`, `api.<domain>` → `http://127.0.0.1:80`
   설정이 들어 있어요.
 - `terraform apply` 후 Cloudflare Zero Trust에서 tunnel connector token을 복사하고,
   Ubuntu에서 위 `run-cloudflared.sh`로 실행하면 돼요.

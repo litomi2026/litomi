@@ -6,9 +6,9 @@ if ! command -v docker >/dev/null 2>&1; then
   exit 1
 fi
 
-WEB_HOST="${WEB_HOST:-local.litomi.in}"
-API_HOST="${API_HOST:-api-local.litomi.in}"
-IMAGE_TAG="${IMAGE_TAG:-local}"
+WEB_HOST="${WEB_HOST:-litomi.in}"
+API_HOST="${API_HOST:-api.litomi.in}"
+IMAGE_TAG="${IMAGE_TAG:-prod}"
 EXTERNAL_API_PROXY_URL="${EXTERNAL_API_PROXY_URL:-}"
 
 if [ -z "${COMMIT_SHA:-}" ]; then

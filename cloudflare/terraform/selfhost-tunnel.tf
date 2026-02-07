@@ -1,10 +1,10 @@
 locals {
-  selfhost_tunnel_name      = "litomi-selfhost"
-  selfhost_app_hostname     = "local.${var.domain}"
-  selfhost_api_hostname     = "api-local.${var.domain}"
-  selfhost_grafana_hostname = "grafana.${var.domain}"
-  selfhost_stg_hostname     = "stg.${var.domain}"
-  selfhost_api_stg_hostname = "api-stg.${var.domain}"
+  selfhost_tunnel_name       = "litomi-selfhost"
+  selfhost_prod_hostname     = var.domain
+  selfhost_prod_api_hostname = "api.${var.domain}"
+  selfhost_stg_hostname      = "stg.${var.domain}"
+  selfhost_stg_api_hostname  = "api-stg.${var.domain}"
+  selfhost_grafana_hostname  = "grafana.${var.domain}"
 }
 
 resource "cloudflare_zero_trust_tunnel_cloudflared" "selfhost" {
@@ -20,11 +20,11 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "selfhost" {
   config = {
     ingress = [
       {
-        hostname = local.selfhost_app_hostname
+        hostname = local.selfhost_prod_hostname
         service  = "http://127.0.0.1:80"
       },
       {
-        hostname = local.selfhost_api_hostname
+        hostname = local.selfhost_prod_api_hostname
         service  = "http://127.0.0.1:80"
       },
       {
@@ -32,7 +32,7 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "selfhost" {
         service  = "http://127.0.0.1:80"
       },
       {
-        hostname = local.selfhost_api_stg_hostname
+        hostname = local.selfhost_stg_api_hostname
         service  = "http://127.0.0.1:80"
       },
       {

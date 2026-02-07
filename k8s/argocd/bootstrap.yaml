@@ -18,6 +18,7 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -32,13 +33,14 @@ spec:
     path: k8s/apps/litomi/overlays/prod
   destination:
     server: https://kubernetes.default.svc
-    namespace: litomi
+    namespace: litomi-prod
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -60,4 +62,3 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-

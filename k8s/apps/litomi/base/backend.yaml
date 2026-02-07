@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: litomi-backend:local
+          image: litomi-backend:prod
           imagePullPolicy: IfNotPresent
           ports:
             - name: http

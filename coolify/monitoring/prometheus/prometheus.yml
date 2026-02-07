@@ -41,8 +41,6 @@ scrape_configs:
     static_configs:
       - targets:
           # Litomi self-host apps (Cloudflare Tunnel → localhost:80 → Traefik)
-          - https://local.litomi.in/
-          - https://api-local.litomi.in/
           - https://stg.litomi.in/
           - https://api-stg.litomi.in/
 

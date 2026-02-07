@@ -1,7 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-namespace: litomi
+namespace: litomi-prod
 
 resources:
   - ../../base
@@ -14,8 +14,8 @@ configMapGenerator:
   # Frontend에서 쓰는 public env
   - name: litomi-public-env
     literals:
-      - NEXT_PUBLIC_CANONICAL_URL=https://local.litomi.in
-      - NEXT_PUBLIC_BACKEND_URL=https://api-local.litomi.in
+      - NEXT_PUBLIC_CANONICAL_URL=https://litomi.in
+      - NEXT_PUBLIC_BACKEND_URL=https://api.litomi.in
       # Vercel edge proxy (managed outside k3s/Argo CD)
       - NEXT_PUBLIC_EXTERNAL_API_PROXY_URL=https://vercel.litomi.in
       - NEXT_PUBLIC_CORS_PROXY_URL=
@@ -25,7 +25,7 @@ configMapGenerator:
   # Backend(Hono) runtime env
   - name: litomi-backend-env
     literals:
-      - CORS_ORIGIN=https://local.litomi.in
+      - CORS_ORIGIN=https://litomi.in
 
       # DB (single local Postgres in cluster)
       - POSTGRES_URL=postgresql://litomi:test_password@postgres:5432/litomi
@@ -41,7 +41,16 @@ configMapGenerator:
 
 images:
   - name: litomi-web
-    newTag: local
+    newTag: prod
   - name: litomi-backend
-    newTag: local
+    newTag: prod
 
+patches:
+  # Base가 Namespace `litomi`를 만들도록 되어 있어서, prod에서는 이름만 바꿔서 재사용해요.
+  - target:
+      kind: Namespace
+      name: litomi
+    patch: |-
+      - op: replace
+        path: /metadata/name
+        value: litomi-prod

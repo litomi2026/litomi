@@ -94,8 +94,8 @@ This repo can also manage a **self-host tunnel** for running Litomi/Coolify on y
 
 This stack always provisions a self-host tunnel with:
 
-- `local.<domain>` → `http://localhost:80`
-- `api-local.<domain>` → `http://localhost:80`
+- `<domain>` → `http://localhost:80`
+- `api.<domain>` → `http://localhost:80`
 - `stg.<domain>` → `http://localhost:80`
 - `api-stg.<domain>` → `http://localhost:80`
 - `grafana.<domain>` → `http://localhost:80`

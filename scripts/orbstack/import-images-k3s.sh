@@ -12,7 +12,7 @@ if ! command -v k3s >/dev/null 2>&1; then
 fi
 
 TMP_DIR="${TMP_DIR:-/tmp/litomi-k3s-images}"
-IMAGE_TAG="${IMAGE_TAG:-local}"
+IMAGE_TAG="${IMAGE_TAG:-prod}"
 mkdir -p "$TMP_DIR"
 
 import_image() {

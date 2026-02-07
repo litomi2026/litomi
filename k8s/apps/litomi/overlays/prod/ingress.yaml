@@ -5,7 +5,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-    - host: local.litomi.in
+    - host: litomi.in
       http:
         paths:
           - path: /
@@ -15,7 +15,7 @@ spec:
                 name: litomi-web
                 port:
                   number: 3000
-    - host: api-local.litomi.in
+    - host: api.litomi.in
       http:
         paths:
           - path: /api

@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: web
-          image: litomi-web:local
+          image: litomi-web:prod
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
