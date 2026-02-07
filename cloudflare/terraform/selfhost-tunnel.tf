@@ -5,7 +5,6 @@ locals {
   selfhost_grafana_hostname = "grafana.${var.domain}"
   selfhost_stg_hostname     = "stg.${var.domain}"
   selfhost_api_stg_hostname = "api-stg.${var.domain}"
-  selfhost_coolify_hostname = "coolify.${var.domain}"
 }
 
 resource "cloudflare_zero_trust_tunnel_cloudflared" "selfhost" {
@@ -34,10 +33,6 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "selfhost" {
       },
       {
         hostname = local.selfhost_api_stg_hostname
-        service  = "http://127.0.0.1:80"
-      },
-      {
-        hostname = local.selfhost_coolify_hostname
         service  = "http://127.0.0.1:80"
       },
       {

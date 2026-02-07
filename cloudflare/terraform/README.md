@@ -98,11 +98,9 @@ This stack always provisions a self-host tunnel with:
 - `api-local.<domain>` → `http://localhost:80`
 - `stg.<domain>` → `http://localhost:80`
 - `api-stg.<domain>` → `http://localhost:80`
-- `coolify.<domain>` → `http://localhost:80`
 - `grafana.<domain>` → `http://localhost:80`
 
-After `terraform apply`, go to Cloudflare Zero Trust → Tunnels and copy the connector token.
-Then on the Ubuntu server run the scripts under `selfhost/`.
+After `terraform apply`, go to Cloudflare Zero Trust → Tunnels and copy the connector token. Then on the Ubuntu server run cloudflared.
 
 View outputs with:
 

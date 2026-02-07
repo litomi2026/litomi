@@ -171,15 +171,6 @@ resource "cloudflare_dns_record" "selfhost_app_cname" {
   proxied = true
 }
 
-resource "cloudflare_dns_record" "selfhost_coolify_cname" {
-  zone_id = var.zone_id
-  name    = local.selfhost_coolify_hostname
-  type    = "CNAME"
-  content = "${cloudflare_zero_trust_tunnel_cloudflared.selfhost.id}.cfargotunnel.com"
-  ttl     = 1
-  proxied = true
-}
-
 resource "cloudflare_dns_record" "selfhost_api_cname" {
   zone_id = var.zone_id
   name    = local.selfhost_api_hostname
