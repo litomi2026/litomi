@@ -66,7 +66,8 @@ terraform apply
    - Zone → Managed headers → Edit
    - Zone → DNS → Edit
    - Zone → Single Redirect → Edit
-   - Account → Cloudflare Tunnel → Edit (required for self-host tunnel provisioning)
+   - Account → Cloudflare Tunnel → Edit
+   - Account → Access: Apps and Policies → Edit
 5. Add zone resources:
    - Include → Specific zone → Your domain
 6. Add account resources:
@@ -98,7 +99,15 @@ This stack always provisions a self-host tunnel with:
 - `api.<domain>` → `http://traefik.kube-system.svc.cluster.local:80`
 - `stg.<domain>` → `http://traefik.kube-system.svc.cluster.local:80`
 - `api-stg.<domain>` → `http://traefik.kube-system.svc.cluster.local:80`
+- `argocd.<domain>` → `http://traefik.kube-system.svc.cluster.local:80`
 - `grafana.<domain>` → `http://traefik.kube-system.svc.cluster.local:80`
+
+## 🔐 Cloudflare Access (Zero Trust)
+
+This stack also protects **`argocd.<domain>`** with Cloudflare Access.
+
+- If `access_allowed_emails` is **empty**, it will allow **any authenticated identity** (still blocks anonymous users).
+- To restrict access, set `access_allowed_emails` in `terraform.tfvars`.
 
 After `terraform apply`, go to Cloudflare Zero Trust → Tunnels and copy the connector token.  
 Then store it as a Kubernetes Secret and run `cloudflared` in k3s (see `k8s/platform/cloudflared/` and `scripts/orbstack/set-cloudflared-token-secret.sh`).
