@@ -30,10 +30,10 @@ configMapGenerator:
 images:
   - name: litomi-web
     newName: ghcr.io/gwak2837/litomi-web
-    newTag: stg
+    newTag: stage
   - name: litomi-backend
     newName: ghcr.io/gwak2837/litomi-backend
-    newTag: stg
+    newTag: stage
 
 patches:
   # Base가 Namespace `litomi`를 만들도록 되어 있어서, staging에서는 이름만 바꿔서 재사용해요.
