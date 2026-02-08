@@ -20,13 +20,13 @@ spec:
             - name: http
               containerPort: 3002
           env:
-            - name: NODE_ENV
-              value: production
             - name: PORT
-              value: "3002"
+              value: '3002'
           envFrom:
             - configMapRef:
                 name: litomi-backend-env
+            - secretRef:
+                name: litomi-backend-secret
           readinessProbe:
             httpGet:
               path: /ready
@@ -46,10 +46,10 @@ spec:
           resources:
             requests:
               cpu: 500m
-              memory: 512Mi
-            limits:
-              cpu: "1"
               memory: 1Gi
+            limits:
+              cpu: 1
+              memory: 2Gi
 ---
 apiVersion: v1
 kind: Service
@@ -62,4 +62,3 @@ spec:
     - name: http
       port: 3002
       targetPort: 3002
-
