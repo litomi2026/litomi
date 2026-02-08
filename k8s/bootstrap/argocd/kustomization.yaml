@@ -13,6 +13,6 @@ resources:
   - namespace.yaml
   - https://raw.githubusercontent.com/argoproj/argo-cd/v3.3.0/manifests/ha/install.yaml
 
-patchesStrategicMerge:
+patches:
   # Cloudflare Tunnel/Ingress 뒤에서 HTTP로 쓰기 위해 server를 insecure 모드로 둬요.
-  - patches/argocd-cmd-params-cm.yaml
+  - path: patches/argocd-cmd-params-cm.yaml
