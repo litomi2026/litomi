@@ -7,7 +7,8 @@
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
     "hashicorp.terraform",
-    "visualstudioexptteam.vscodeintellicode",
-    "jock.svg"
+    "jock.svg",
+    "ms-azuretools.vscode-docker",
+    "visualstudioexptteam.vscodeintellicode"
   ]
 }

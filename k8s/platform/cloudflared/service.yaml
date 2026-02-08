@@ -9,4 +9,3 @@ spec:
     - name: metrics
       port: 2000
       targetPort: 2000
-

@@ -20,15 +20,15 @@ spec:
             - name: http
               containerPort: 3000
           env:
-            - name: NODE_ENV
-              value: production
-            - name: HOSTNAME
-              value: 0.0.0.0
             - name: PORT
-              value: "3000"
+              value: '3000'
           envFrom:
             - configMapRef:
                 name: litomi-public-env
+            - configMapRef:
+                name: litomi-common-env
+            - secretRef:
+                name: litomi-backend-secret
           readinessProbe:
             httpGet:
               path: /api/health
@@ -47,11 +47,11 @@ spec:
             failureThreshold: 6
           resources:
             requests:
-              cpu: 100m
-              memory: 256Mi
+              cpu: 1
+              memory: 2Gi
             limits:
-              cpu: "1"
-              memory: 512Mi
+              cpu: 2
+              memory: 4Gi
 ---
 apiVersion: v1
 kind: Service
@@ -64,4 +64,3 @@ spec:
     - name: http
       port: 3000
       targetPort: 3000
-

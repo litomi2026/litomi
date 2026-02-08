@@ -24,6 +24,7 @@ export const nextBuildEnv = createEnv({
 
     // Next.js server build requirements
     POSTGRES_URL: z.url().default('postgresql://test_user:test_password@localhost:5434/test_db'),
+    REDIS_URL: z.url().default('redis://redis:6380'),
     SENTRY_AUTH_TOKEN: z.string().optional(),
     SENTRY_ORG: z.string().optional(),
     SENTRY_PROJECT: z.string().optional(),

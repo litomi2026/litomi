@@ -82,6 +82,34 @@ sudo sh scripts/orbstack/build-images.sh
 sudo sh scripts/orbstack/import-images-k3s.sh
 ```
 
+### 3-3) (필수) Secret 준비 (Git에 저장하지 않아요)
+
+Litomi 배포에는 아래 Secret이 필요해요(민감값이라 Git에 커밋하지 않아요):
+
+- `postgres-secret` (Postgres용): `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`
+- `litomi-backend-secret` (Backend용): `POSTGRES_URL*`, `UPSTASH_*_TOKEN`
+
+템플릿:
+
+- `k8s/apps/litomi/overlays/postgres-secret.env.template`
+- `k8s/apps/litomi/overlays/litomi-backend-secret.env.template`
+
+Prod 예시:
+
+```bash
+cp k8s/apps/litomi/overlays/postgres-secret.env.template /tmp/postgres-secret.env
+cp k8s/apps/litomi/overlays/litomi-backend-secret.env.template /tmp/litomi-backend-secret.env
+# 파일을 열어서 CHANGE_ME / <...> 부분을 채워요.
+
+NAMESPACE=litomi-prod sh scripts/orbstack/set-litomi-postgres-secret.sh /tmp/postgres-secret.env
+NAMESPACE=litomi-prod sh scripts/orbstack/set-litomi-backend-secret.sh /tmp/litomi-backend-secret.env
+```
+
+staging도 똑같이 `NAMESPACE=litomi-stg`로 한 번 더 실행하면 돼요.
+
+> 참고: Secret 값이 바뀌면 backend는 자동으로 재시작되지 않을 수 있어요.  
+> 필요하면 `kubectl -n <ns> rollout restart deploy/litomi-backend` 해주면 돼요.
+
 ---
 
 ## 4) Argo CD 설치
