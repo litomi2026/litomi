@@ -59,10 +59,8 @@ sudo kubectl -n cloudflared create secret generic cloudflared-token \
 sudo kubectl create namespace litomi-stg --dry-run=client -o yaml | sudo kubectl apply -f -
 sudo kubectl create namespace litomi-prod --dry-run=client -o yaml | sudo kubectl apply -f -
 
-cp k8s/apps/litomi/secrets/backend-secret.env.template /tmp/litomi-backend-secret.stg.env
-cp k8s/apps/litomi/secrets/backend-secret.env.template /tmp/litomi-backend-secret.prod.env
-
-# 두 파일을 열어서 각각 값들을 채워주세요 (POSTGRES_URL 등)
+sudo vi /tmp/litomi-backend-secret.stg.env
+sudo vi /tmp/litomi-backend-secret.prod.env
 
 sudo kubectl -n litomi-stg create secret generic litomi-backend-secret \
   --from-env-file=/tmp/litomi-backend-secret.stg.env \
