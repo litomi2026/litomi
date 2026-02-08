@@ -1,15 +1,15 @@
-name: k8s image build & deploy (GitOps)
+name: Kubernetes image build & push
 
 on:
   push:
     branches: [main, stage]
-    # Prevent CI loop: this workflow will commit into k8s/ to bump image tags.
+    # Skip k8s-only changes to avoid rebuilding images for manifest-only commits.
     paths-ignore:
       - 'k8s/**'
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   packages: write
 
 concurrency:
@@ -17,81 +17,137 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-push-and-bump-k8s:
-    runs-on: ubuntu-latest
+  build-push-web:
+    if: ${{ github.ref_name == 'main' || github.ref_name == 'stage' }}
+    runs-on: ubuntu-24.04-arm
+    env:
+      OVERLAY_DIR: ${{ github.ref_name == 'main' && 'k8s/apps/litomi/overlays/prod' || github.ref_name == 'stage' && 'k8s/apps/litomi/overlays/stg' || '' }}
+      IMAGE_WEB: ghcr.io/${{ github.repository_owner }}/litomi-web
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - name: Set variables
-        id: vars
+      - name: Compute sha_short
+        id: sha
         shell: bash
-        run: |
-          set -euo pipefail
+        run: echo "sha_short=${GITHUB_SHA::12}" >> "$GITHUB_OUTPUT"
 
-          echo "sha=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
-          echo "sha_short=${GITHUB_SHA:0:12}" >> "$GITHUB_OUTPUT"
-
-          if [ "${GITHUB_REF_NAME}" = "main" ]; then
-            echo "overlay_dir=k8s/apps/litomi/overlays/prod" >> "$GITHUB_OUTPUT"
-            echo "env_name=prod" >> "$GITHUB_OUTPUT"
-          elif [ "${GITHUB_REF_NAME}" = "stage" ]; then
-            echo "overlay_dir=k8s/apps/litomi/overlays/stg" >> "$GITHUB_OUTPUT"
-            echo "env_name=stg" >> "$GITHUB_OUTPUT"
-          else
-            echo "Unsupported branch: ${GITHUB_REF_NAME}" >&2
-            exit 1
-          fi
-
-          echo "image_web=ghcr.io/${GITHUB_REPOSITORY_OWNER}/litomi-web" >> "$GITHUB_OUTPUT"
-          echo "image_backend=ghcr.io/${GITHUB_REPOSITORY_OWNER}/litomi-backend" >> "$GITHUB_OUTPUT"
-
-          image_web="ghcr.io/${GITHUB_REPOSITORY_OWNER}/litomi-web"
-          image_backend="ghcr.io/${GITHUB_REPOSITORY_OWNER}/litomi-backend"
-
-          # Tag strategy:
-          # - Deploy: immutable tag (= commit SHA)
-          # - Convenience: branch tag (main/stage) and latest (main only)
-          echo "tags_web<<EOF" >> "$GITHUB_OUTPUT"
-          echo "${image_web}:${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
-          echo "${image_web}:${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
-          if [ "${GITHUB_REF_NAME}" = "main" ]; then
-            echo "${image_web}:latest" >> "$GITHUB_OUTPUT"
-          fi
-          echo "EOF" >> "$GITHUB_OUTPUT"
-
-          echo "tags_backend<<EOF" >> "$GITHUB_OUTPUT"
-          echo "${image_backend}:${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
-          echo "${image_backend}:${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
-          if [ "${GITHUB_REF_NAME}" = "main" ]; then
-            echo "${image_backend}:latest" >> "$GITHUB_OUTPUT"
-          fi
-          echo "EOF" >> "$GITHUB_OUTPUT"
-
-      - name: Extract NEXT_PUBLIC_* build args from k8s overlay
+      - name: Load NEXT_PUBLIC_* build args from overlay public.env.kv
         id: public_env
         shell: bash
         run: |
           set -euo pipefail
+          file="${OVERLAY_DIR}/public.env.kv"
 
-          file="${{ steps.vars.outputs.overlay_dir }}/kustomization.yaml"
+          if [ ! -f "$file" ]; then
+            echo "public.env.kv not found: $file" >&2
+            exit 1
+          fi
+
+          if grep -nEv '^(#|[[:space:]]*$|NEXT_PUBLIC_[A-Z0-9_]+=.*)$' "$file"; then
+            echo "public.env.kv must contain only NEXT_PUBLIC_* assignments, blank lines, or comments." >&2
+            exit 1
+          fi
+
           tmp="$(mktemp)"
+          grep -E '^[[:space:]]*NEXT_PUBLIC_[A-Z0-9_]+=.*$' "$file" > "$tmp" || true
 
-          # NOTE: This expects `configMapGenerator.literals` lines like:
-          #   - NEXT_PUBLIC_BACKEND_URL=https://...
-          # We treat the overlay as the source of truth to avoid duplication in CI.
-          grep -E '^[[:space:]]*-[[:space:]]+NEXT_PUBLIC_[A-Z0-9_]+=.*$' "$file" \
-            | sed -E 's/^[[:space:]]*-[[:space:]]+//' \
-            > "$tmp"
+          if [ ! -s "$tmp" ]; then
+            echo "No NEXT_PUBLIC_* entries found in $file" >&2
+            exit 1
+          fi
 
           echo "build_args<<EOF" >> "$GITHUB_OUTPUT"
           cat "$tmp" >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
 
-      - name: Set up QEMU (multi-arch)
-        uses: docker/setup-qemu-action@v3
+      - name: Docker meta (web)
+        id: meta_web
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_WEB }}
+          tags: |
+            type=raw,value=${{ github.sha }}
+            type=ref,event=branch
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & push web image (main)
+        if: ${{ github.ref_name == 'main' }}
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.nextjs
+          platforms: linux/arm64
+          push: true
+          build-args: |
+            CI=true
+            COMMIT_SHA=${{ steps.sha.outputs.sha_short }}
+            ${{ steps.public_env.outputs.build_args }}
+          secrets: |
+            POSTGRES_URL=${{ secrets.POSTGRES_URL }}
+            REDIS_URL=${{ secrets.REDIS_URL }}
+            SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+            SENTRY_ORG=${{ secrets.SENTRY_ORG }}
+            SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT }}
+            SUPABASE_CERTIFICATE=${{ secrets.SUPABASE_CERTIFICATE }}
+          tags: ${{ steps.meta_web.outputs.tags }}
+          labels: ${{ steps.meta_web.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build & push web image (stage)
+        if: ${{ github.ref_name == 'stage' }}
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.nextjs
+          platforms: linux/arm64
+          push: true
+          build-args: |
+            CI=true
+            COMMIT_SHA=${{ steps.sha.outputs.sha_short }}
+            ${{ steps.public_env.outputs.build_args }}
+          secrets: |
+            POSTGRES_URL=${{ secrets.POSTGRES_URL }}
+            REDIS_URL=${{ secrets.REDIS_URL }}
+            SUPABASE_CERTIFICATE=${{ secrets.SUPABASE_CERTIFICATE }}
+          tags: ${{ steps.meta_web.outputs.tags }}
+          labels: ${{ steps.meta_web.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  build-push-backend:
+    if: ${{ github.ref_name == 'main' || github.ref_name == 'stage' }}
+    runs-on: ubuntu-24.04-arm
+    env:
+      IMAGE_BACKEND: ghcr.io/${{ github.repository_owner }}/litomi-backend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Docker meta (backend)
+        id: meta_backend
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_BACKEND }}
+          tags: |
+            type=raw,value=${{ github.sha }}
+            type=ref,event=branch
+            type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -110,53 +166,7 @@ jobs:
           file: Dockerfile.hono
           platforms: linux/arm64
           push: true
-          tags: |
-            ${{ steps.vars.outputs.tags_backend }}
-
-      - name: Build & push web image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: Dockerfile.nextjs
-          platforms: linux/arm64
-          push: true
-          build-args: |
-            CI=true
-            COMMIT_SHA=${{ steps.vars.outputs.sha_short }}
-            ${{ steps.public_env.outputs.build_args }}
-          tags: |
-            ${{ steps.vars.outputs.tags_web }}
-
-      - name: Bump k8s overlay image tags (GitOps)
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          file="${{ steps.vars.outputs.overlay_dir }}/kustomization.yaml"
-
-          # Replace both image tags under `images:` with the new immutable tag.
-          # (newName stays constant; only newTag changes per commit)
-          python3 - <<'PY'
-          import pathlib, re, sys
-
-          path = pathlib.Path("${{ steps.vars.outputs.overlay_dir }}/kustomization.yaml")
-          tag = "${{ steps.vars.outputs.sha }}"
-          s = path.read_text(encoding="utf-8")
-
-          # Update every `newTag: ...` line (there are exactly 2 in this file for litomi-web/litomi-backend).
-          s2, n = re.subn(r"^(\s*newTag:\s*).+$", r"\1" + tag, s, flags=re.M)
-          if n < 2:
-            print(f"Expected to update >= 2 newTag lines, but updated {n}", file=sys.stderr)
-            sys.exit(1)
-
-          path.write_text(s2, encoding="utf-8")
-          PY
-
-          git diff -- "$file"
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git add "$file"
-          git commit -m "chore(k8s): deploy ${{ steps.vars.outputs.env_name }} @ ${{ steps.vars.outputs.sha_short }} [skip ci]"
-          git push
+          tags: ${{ steps.meta_backend.outputs.tags }}
+          labels: ${{ steps.meta_backend.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

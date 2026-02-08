@@ -89,9 +89,9 @@ After applying the configuration, Terraform provides:
 - `cache_ruleset_name` - The name of the cache ruleset
 - `cache_rules_count` - Number of cache rules configured
 
-## 🖥️ Self-host (Coolify + Cloudflare Tunnel)
+## 🖥️ Self-host (Cloudflare Tunnel)
 
-This repo can also manage a **self-host tunnel** for running Litomi/Coolify on your own Linux server.
+This repo can also manage a **self-host tunnel** for running Litomi on your own Linux server.
 
 This stack always provisions a self-host tunnel with:
 
@@ -100,7 +100,6 @@ This stack always provisions a self-host tunnel with:
 - `stg.<domain>` → `http://traefik.kube-system.svc.cluster.local:80`
 - `api-stg.<domain>` → `http://traefik.kube-system.svc.cluster.local:80`
 - `argocd.<domain>` → `http://traefik.kube-system.svc.cluster.local:80`
-- `grafana.<domain>` → `http://traefik.kube-system.svc.cluster.local:80`
 
 ## 🔐 Cloudflare Access (Zero Trust)
 
@@ -108,9 +107,6 @@ This stack also protects **`argocd.<domain>`** with Cloudflare Access.
 
 - If `access_allowed_emails` is **empty**, it will allow **any authenticated identity** (still blocks anonymous users).
 - To restrict access, set `access_allowed_emails` in `terraform.tfvars`.
-
-After `terraform apply`, go to Cloudflare Zero Trust → Tunnels and copy the connector token.  
-Then store it as a Kubernetes Secret and run `cloudflared` in k3s (see `k8s/platform/cloudflared/` and `scripts/orbstack/set-cloudflared-token-secret.sh`).
 
 View outputs with:
 
