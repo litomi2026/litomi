@@ -3,15 +3,14 @@ kind: Kustomization
 
 # Argo CD 설치는 "처음 1번"만 kubectl로 부트스트랩하고,
 # 이후 앱/플랫폼 리소스는 Argo CD(Application)로 GitOps 관리하는 걸 권장해요.
-#
-# - 설치 번들: Multi-tenant + HA (프로덕션 권장)
-# - 버전: 태그로 고정해서 재현 가능하게 관리해요.
+# 단일 노드(k3s 1노드)에서는 HA 설치(manifests/ha/install.yaml)의
+# required podAntiAffinity 때문에 replica=2가 스케줄링되지 않을 수 있어요.
 
 namespace: argocd
 
 resources:
   - namespace.yaml
-  - https://raw.githubusercontent.com/argoproj/argo-cd/v3.3.0/manifests/ha/install.yaml
+  - https://raw.githubusercontent.com/argoproj/argo-cd/v3.3.0/manifests/install.yaml
 
 patches:
   # Cloudflare Tunnel/Ingress 뒤에서 HTTP로 쓰기 위해 server를 insecure 모드로 둬요.

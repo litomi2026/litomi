@@ -50,7 +50,7 @@ TOKEN='PASTE_YOUR_TUNNEL_TOKEN_HERE'
 
 sudo kubectl -n cloudflared create secret generic cloudflared-token \
   --from-literal=token="$TOKEN" \
-  --dry-run=client -o yaml | kubectl apply -f -
+  --dry-run=client -o yaml | sudo kubectl apply -f -
 ```
 
 #### Litomi 백엔드 환경변수 (`litomi-backend-secret`) - stg/prod 각각
