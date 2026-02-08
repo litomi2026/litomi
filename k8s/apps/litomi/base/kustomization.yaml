@@ -4,9 +4,7 @@ namespace: litomi
 
 resources:
   - namespace.yaml
-  - postgres.yaml
   - redis.yaml
-  - srh.yaml
   - backend.yaml
   - web.yaml
   - hpa-backend.yaml

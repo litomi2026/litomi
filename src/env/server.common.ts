@@ -10,6 +10,7 @@ export const env = createEnv({
     JWT_SECRET_REFRESH_TOKEN: z.string().default('456'),
     JWT_SECRET_TRUSTED_DEVICE: z.string().default('789'),
     POSTGRES_URL: z.string().default('postgresql://test_user:test_password@localhost:5434/test_db'),
+    REDIS_URL: z.url().default('redis://redis:6380'),
     SUPABASE_CERTIFICATE: z.string().optional(),
 
     TOTP_ENCRYPTION_KEY: z
