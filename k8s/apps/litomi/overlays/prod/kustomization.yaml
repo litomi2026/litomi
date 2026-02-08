@@ -26,13 +26,3 @@ images:
   - name: litomi-backend
     newName: ghcr.io/gwak2837/litomi-backend
     newTag: main
-
-patches:
-  # Base가 Namespace `litomi`를 만들도록 되어 있어서, prod에서는 이름만 바꿔서 재사용해요.
-  - target:
-      kind: Namespace
-      name: litomi
-    patch: |-
-      - op: replace
-        path: /metadata/name
-        value: litomi-prod

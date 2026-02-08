@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: litomi-stg
+spec:
+  project: litomi
+  source:
+    repoURL: https://github.com/gwak2837/litomi.git
+    targetRevision: main
+    path: k8s/apps/litomi/overlays/stg
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: litomi-stg
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

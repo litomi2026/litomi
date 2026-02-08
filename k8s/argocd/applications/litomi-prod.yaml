@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: litomi-prod
+spec:
+  project: litomi
+  source:
+    repoURL: https://github.com/gwak2837/litomi.git
+    targetRevision: main
+    path: k8s/apps/litomi/overlays/prod
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: litomi-prod
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
