@@ -1,6 +1,5 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-
 namespace: litomi-prod
 
 resources:
@@ -14,13 +13,15 @@ configMapGenerator:
   # Frontend에서 쓰는 public env
   - name: litomi-public-env
     literals:
-      - NEXT_PUBLIC_CANONICAL_URL=https://litomi.in
       - NEXT_PUBLIC_BACKEND_URL=https://api.litomi.in
-      # Vercel edge proxy (managed outside k3s/Argo CD)
+      - NEXT_PUBLIC_CANONICAL_URL=https://litomi.in
+      - NEXT_PUBLIC_CORS_PROXY_URL=https://image.gwak2837.workers.dev
       - NEXT_PUBLIC_EXTERNAL_API_PROXY_URL=https://vercel.litomi.in
-      - NEXT_PUBLIC_CORS_PROXY_URL=
-      - NEXT_PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA
-      - NEXT_PUBLIC_VAPID_PUBLIC_KEY=123
+      - NEXT_PUBLIC_GA_ID=G-9DQ11LVVNJ
+      - NEXT_PUBLIC_IOS_TESTFLIGHT_URL=
+      - NEXT_PUBLIC_SENTRY_DSN=https://40e7a8fce2e957f313b4bbe7b9c46a2e@o4506216356511744.ingest.us.sentry.io/4508939892097024
+      - NEXT_PUBLIC_TURNSTILE_SITE_KEY=0x4AAAAAAB0XpySA9SHK_Nuy
+      - NEXT_PUBLIC_VAPID_PUBLIC_KEY=BCQA2zloAhzL0J3hjB7RTBj9uoG3ZR6elL2kJlrbwZRKw5f4sap5g8AyUsnuDpU49fODsI8icA4o6mu42GmjD3A
 
   # Backend(Hono) runtime env
   - name: litomi-backend-env

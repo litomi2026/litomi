@@ -1,6 +1,5 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-
 namespace: litomi-stg
 
 resources:
@@ -10,26 +9,18 @@ resources:
 generatorOptions:
   disableNameSuffixHash: true
 
-patches:
-  # Base가 Namespace `litomi`를 만들도록 되어 있어서, staging에서는 이름만 바꿔서 재사용해요.
-  - target:
-      kind: Namespace
-      name: litomi
-    patch: |-
-      - op: replace
-        path: /metadata/name
-        value: litomi-stg
-
 configMapGenerator:
   - name: litomi-public-env
     literals:
-      - NEXT_PUBLIC_CANONICAL_URL=https://stg.litomi.in
       - NEXT_PUBLIC_BACKEND_URL=https://api-stg.litomi.in
-      # Vercel edge proxy (managed outside k3s/Argo CD)
+      - NEXT_PUBLIC_CANONICAL_URL=https://stg.litomi.in
+      - NEXT_PUBLIC_CORS_PROXY_URL=https://image.gwak2837.workers.dev
       - NEXT_PUBLIC_EXTERNAL_API_PROXY_URL=https://vercel-stg.litomi.in
-      - NEXT_PUBLIC_CORS_PROXY_URL=
-      - NEXT_PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA
-      - NEXT_PUBLIC_VAPID_PUBLIC_KEY=123
+      - NEXT_PUBLIC_GA_ID=
+      - NEXT_PUBLIC_IOS_TESTFLIGHT_URL=
+      - NEXT_PUBLIC_SENTRY_DSN=
+      - NEXT_PUBLIC_TURNSTILE_SITE_KEY=0x4AAAAAAB0XpySA9SHK_Nuy
+      - NEXT_PUBLIC_VAPID_PUBLIC_KEY=BCQA2zloAhzL0J3hjB7RTBj9uoG3ZR6elL2kJlrbwZRKw5f4sap5g8AyUsnuDpU49fODsI8icA4o6mu42GmjD3A
 
   - name: litomi-backend-env
     literals:
@@ -51,3 +42,12 @@ images:
   - name: litomi-backend
     newTag: stg
 
+patches:
+  # Base가 Namespace `litomi`를 만들도록 되어 있어서, staging에서는 이름만 바꿔서 재사용해요.
+  - target:
+      kind: Namespace
+      name: litomi
+    patch: |-
+      - op: replace
+        path: /metadata/name
+        value: litomi-stg
