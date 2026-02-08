@@ -19,15 +19,20 @@ configMapGenerator:
       - NEXT_PUBLIC_TURNSTILE_SITE_KEY=0x4AAAAAAB0XpySA9SHK_Nuy
       - NEXT_PUBLIC_VAPID_PUBLIC_KEY=BCQA2zloAhzL0J3hjB7RTBj9uoG3ZR6elL2kJlrbwZRKw5f4sap5g8AyUsnuDpU49fODsI8icA4o6mu42GmjD3A
 
+  - name: litomi-common-env
+    literals:
+      - REDIS_URL=redis://redis:6379
+
   - name: litomi-backend-env
     literals:
       - CORS_ORIGIN=https://litomi.in
-      - REDIS_URL=redis://redis:6379
 
 images:
   - name: litomi-web
+    newName: ghcr.io/gwak2837/litomi-web
     newTag: prod
   - name: litomi-backend
+    newName: ghcr.io/gwak2837/litomi-backend
     newTag: prod
 
 patches:

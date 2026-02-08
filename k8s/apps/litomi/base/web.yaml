@@ -25,6 +25,10 @@ spec:
           envFrom:
             - configMapRef:
                 name: litomi-public-env
+            - configMapRef:
+                name: litomi-common-env
+            - secretRef:
+                name: litomi-backend-secret
           readinessProbe:
             httpGet:
               path: /api/health
