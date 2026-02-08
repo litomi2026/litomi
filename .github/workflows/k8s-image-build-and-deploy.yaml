@@ -19,7 +19,7 @@ concurrency:
 jobs:
   build-push-and-bump-k8s:
     if: ${{ github.ref_name == 'main' || github.ref_name == 'stage' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     env:
       OVERLAY_DIR: ${{ github.ref_name == 'main' && 'k8s/apps/litomi/overlays/prod' || github.ref_name == 'stage' && 'k8s/apps/litomi/overlays/stg' || '' }}
       IMAGE_WEB: ghcr.io/${{ github.repository_owner }}/litomi-web
@@ -83,9 +83,6 @@ jobs:
             type=raw,value=${{ github.sha }}
             type=ref,event=branch
             type=raw,value=latest,enable={{is_default_branch}}
-
-      - name: Set up QEMU (multi-arch)
-        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
