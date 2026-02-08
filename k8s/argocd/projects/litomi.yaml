@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: litomi
+spec:
+  description: Litomi applications (prod/stg)
+  sourceRepos:
+    - https://github.com/gwak2837/litomi.git
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: litomi-stg
+    - server: https://kubernetes.default.svc
+      namespace: litomi-prod
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'

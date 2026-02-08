@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: platform-cloudflared
+spec:
+  project: platform
+  source:
+    repoURL: https://github.com/gwak2837/litomi.git
+    targetRevision: main
+    path: k8s/platform/cloudflared
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cloudflared
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
