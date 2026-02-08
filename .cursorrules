@@ -21,7 +21,7 @@
    │  ├─ Vercel (Next.js Edge API) (vercel/)
    │  ├─ Render (Next.js Web) (render.yaml)
    │  ├─ Cloudflare R2 (public.r2.dev)
-   │  └─ Cloudflare Tunnel → Coolify → Next.js Web + Hono API + Monitoring
+   │  └─ Cloudflare Tunnel → Next.js Web + Hono API + Monitoring
    ├─ Edge rules
    │  ├─ cache-rules.tf (TTL/Bypass/Respect origin, R2 1y)
    │  ├─ redirects.tf (www → apex)
