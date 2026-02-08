@@ -104,24 +104,6 @@ resource "cloudflare_dns_record" "render_stg_cname" {
   proxied = true
 }
 
-resource "cloudflare_dns_record" "proxy_cname" {
-  zone_id = var.zone_id
-  name    = "proxy.litomi.in"
-  type    = "CNAME"
-  content = "bc90fad8422c6ce5.vercel-dns-017.com"
-  ttl     = 1
-  proxied = true
-}
-
-resource "cloudflare_dns_record" "proxy_stg_cname" {
-  zone_id = var.zone_id
-  name    = "proxy-stg.litomi.in"
-  type    = "CNAME"
-  content = "bc90fad8422c6ce5.vercel-dns-017.com"
-  ttl     = 1
-  proxied = true
-}
-
 resource "cloudflare_dns_record" "vercel_cname" {
   zone_id = var.zone_id
   name    = "vercel.litomi.in"
@@ -140,9 +122,27 @@ resource "cloudflare_dns_record" "vercel_stg_cname" {
   proxied = true
 }
 
+resource "cloudflare_dns_record" "netlify_cname" {
+  zone_id = var.zone_id
+  name    = "netlify.litomi.in"
+  type    = "CNAME"
+  content = "litomi-proxy.netlify.app"
+  ttl     = 1
+  proxied = true
+}
+
 resource "cloudflare_dns_record" "selfhost_grafana_cname" {
   zone_id = var.zone_id
   name    = local.selfhost_grafana_hostname
+  type    = "CNAME"
+  content = "${cloudflare_zero_trust_tunnel_cloudflared.selfhost.id}.cfargotunnel.com"
+  ttl     = 1
+  proxied = true
+}
+
+resource "cloudflare_dns_record" "selfhost_argocd_cname" {
+  zone_id = var.zone_id
+  name    = local.selfhost_argocd_hostname
   type    = "CNAME"
   content = "${cloudflare_zero_trust_tunnel_cloudflared.selfhost.id}.cfargotunnel.com"
   ttl     = 1

@@ -65,6 +65,7 @@ locals {
 
   bypass_cache_hostnames = [
     local.selfhost_grafana_hostname,
+    local.selfhost_argocd_hostname,
   ]
 
   respect_origin_conditions = join(" or ", [

@@ -12,26 +12,19 @@ fi
 
 kubectl get ns argocd >/dev/null 2>&1 || kubectl create namespace argocd
 
-# NOTE: Using the upstream stable manifest keeps this script simple.
-#
-# IMPORTANT: Server-side apply avoids the 256KB annotation limit that can break client-side `kubectl apply`
-# for large CRDs (e.g. applicationsets.argoproj.io).
-#
-# If Argo CD was previously installed with client-side apply, server-side apply may hit field-manager conflicts.
-# `--force-conflicts` makes this script idempotent by taking ownership of the fields defined in the manifest.
+# https://argo-cd.readthedocs.io/en/stable/getting_started/#1-install-argo-cd
 kubectl apply \
+  -n argocd \
   --server-side \
   --force-conflicts \
-  --field-manager=litomi-orbstack-install-argocd \
-  -n argocd \
+  --field-manager=litomi-install-argocd \
   -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
 echo "Waiting for Argo CD server to be ready..."
 kubectl -n argocd rollout status deployment/argocd-server --timeout=10m
 
 echo "Argo CD installed."
-echo "To open UI: kubectl -n argocd port-forward svc/argocd-server 8080:443"
+echo "To open UI: kubectl -n argocd port-forward svc/argocd-server 3010:443"
 echo "Initial admin password:"
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 echo
-

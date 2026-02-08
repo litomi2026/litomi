@@ -92,6 +92,7 @@ import_dns_records() {
 
         # Self-host tunnel DNS
         "cloudflare_dns_record.selfhost_grafana_cname|grafana.litomi.in|CNAME|"
+        "cloudflare_dns_record.selfhost_argocd_cname|argocd.litomi.in|CNAME|"
 
         # Other Records
         "cloudflare_dns_record.caa|litomi.in|CAA|"

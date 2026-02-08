@@ -33,3 +33,9 @@ variable "rate_limit_timeout" {
   type        = number
   sensitive   = true
 }
+
+variable "access_allowed_emails" {
+  description = "Allowed emails for Cloudflare Access protected apps. Empty list means allow any authenticated identity."
+  type        = list(string)
+  default     = []
+}
