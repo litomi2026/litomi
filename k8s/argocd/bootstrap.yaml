@@ -45,6 +45,28 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
+  name: platform-argocd
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/gwak2837/litomi.git
+    targetRevision: main
+    path: k8s/platform/argocd
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
   name: litomi-prod
   namespace: argocd
 spec:

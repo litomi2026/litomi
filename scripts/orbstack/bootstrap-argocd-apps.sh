@@ -13,7 +13,7 @@ fi
 kubectl apply \
   --server-side \
   --force-conflicts \
-  --field-manager=litomi-orbstack-bootstrap-argocd-apps \
+  --field-manager=litomi-bootstrap-argocd-apps \
   -f k8s/argocd/bootstrap.yaml
-echo "Argo CD Applications applied. Check: kubectl -n argocd get applications"
 
+echo "Argo CD Applications applied. Check: kubectl -n argocd get applications"

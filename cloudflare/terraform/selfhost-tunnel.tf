@@ -5,6 +5,7 @@ locals {
   selfhost_prod_api_hostname = "api.${var.domain}"
   selfhost_stg_hostname      = "stg.${var.domain}"
   selfhost_stg_api_hostname  = "api-stg.${var.domain}"
+  selfhost_argocd_hostname   = "argocd.${var.domain}"
   selfhost_grafana_hostname  = "grafana.${var.domain}"
 }
 
@@ -34,6 +35,10 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "selfhost" {
       },
       {
         hostname = local.selfhost_stg_api_hostname
+        service  = local.selfhost_origin_service
+      },
+      {
+        hostname = local.selfhost_argocd_hostname
         service  = local.selfhost_origin_service
       },
       {
