@@ -106,7 +106,8 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Build & push web image
+      - name: Build & push web image (main)
+        if: ${{ github.ref_name == 'main' }}
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -123,6 +124,27 @@ jobs:
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
             SENTRY_ORG=${{ secrets.SENTRY_ORG }}
             SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT }}
+            SUPABASE_CERTIFICATE=${{ secrets.SUPABASE_CERTIFICATE }}
+          tags: ${{ steps.meta_web.outputs.tags }}
+          labels: ${{ steps.meta_web.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build & push web image (stage)
+        if: ${{ github.ref_name == 'stage' }}
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.nextjs
+          platforms: linux/arm64
+          push: true
+          build-args: |
+            CI=true
+            COMMIT_SHA=${{ steps.sha.outputs.sha_short }}
+            ${{ steps.public_env.outputs.build_args }}
+          secrets: |
+            POSTGRES_URL=${{ secrets.POSTGRES_URL }}
+            REDIS_URL=${{ secrets.REDIS_URL }}
             SUPABASE_CERTIFICATE=${{ secrets.SUPABASE_CERTIFICATE }}
           tags: ${{ steps.meta_web.outputs.tags }}
           labels: ${{ steps.meta_web.outputs.labels }}
