@@ -19,8 +19,8 @@ import * as twoFactorSchema from './two-factor'
 import * as userSchema from './user'
 
 const { POSTGRES_URL, SUPABASE_CERTIFICATE } = env
-
 console.log('👀 ~ SUPABASE_CERTIFICATE:', SUPABASE_CERTIFICATE)
+console.log('👀 ~ POSTGRES_URL:', POSTGRES_URL)
 
 const supabaseClient = postgres(POSTGRES_URL, {
   prepare: false,
