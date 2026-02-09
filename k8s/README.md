@@ -18,8 +18,10 @@ cd litomi
 ```zsh
 curl -sfL https://get.k3s.io | sudo sh -
 
-sudo kubectl wait --for=condition=Ready node --all --timeout=30s
-sudo kubectl wait --for=condition=available deployment/traefik -n kube-system --timeout=30s
+sudo kubectl wait --for=condition=Ready node --all --timeout=120s
+timeout 120s bash -c 'until sudo kubectl -n kube-system wait --for=condition=available deployment/traefik --timeout=5s 2>/dev/null; do sleep 2; done'
+
+# (확인)
 sudo kubectl get nodes
 sudo kubectl -n kube-system get deploy traefik
 ```
@@ -47,30 +49,48 @@ sudo kubectl -n argocd get secret argocd-initial-admin-secret \
 ```zsh
 sudo kubectl create namespace cloudflared --dry-run=client -o yaml | sudo kubectl apply -f -
 
-# TOKEN= 에 Cloudflare Tunnel token을 넣어주세요
-TOKEN='PASTE_YOUR_TUNNEL_TOKEN_HERE'
-
 sudo kubectl -n cloudflared create secret generic cloudflared-token \
-  --from-literal=token="$TOKEN" \
+  --from-literal=token="eyJh..." \
   --dry-run=client -o yaml | sudo kubectl apply -f -
 ```
 
-#### Litomi 백엔드 환경변수 (`litomi-backend-secret`) - stg/prod 각각
+#### 비밀 환경변수 (`litomi-backend-secret`) - stg/prod 각각
+
+**모범 사례: 여러 줄 값(인증서/키)은 `--from-file` 사용**
 
 ```zsh
 sudo kubectl create namespace litomi-stg --dry-run=client -o yaml | sudo kubectl apply -f -
 sudo kubectl create namespace litomi-prod --dry-run=client -o yaml | sudo kubectl apply -f -
 
-sudo vi /tmp/litomi-backend-secret.stg.env
 sudo vi /tmp/litomi-backend-secret.prod.env
+sudo vi /tmp/litomi-backend-secret.stg.env
+sudo vi /tmp/aiven.crt
+sudo vi /tmp/ga-key.pem
+sudo vi /tmp/supabase.crt
+
+sudo kubectl -n litomi-prod create secret generic litomi-backend-secret \
+  --from-env-file=/tmp/litomi-backend-secret.prod.env \
+  --dry-run=client -o yaml | sudo kubectl apply -f -
+
+sudo kubectl -n litomi-prod create secret generic litomi-backend-file \
+  --from-file=AIVEN_CERTIFICATE=/tmp/aiven.crt \
+  --from-file=GA_SERVICE_ACCOUNT_KEY=/tmp/ga-key.pem \
+  --from-file=SUPABASE_CERTIFICATE=/tmp/supabase.crt \
+  --dry-run=client -o yaml | sudo kubectl apply -f -
 
 sudo kubectl -n litomi-stg create secret generic litomi-backend-secret \
   --from-env-file=/tmp/litomi-backend-secret.stg.env \
   --dry-run=client -o yaml | sudo kubectl apply -f -
 
-sudo kubectl -n litomi-prod create secret generic litomi-backend-secret \
-  --from-env-file=/tmp/litomi-backend-secret.prod.env \
+sudo kubectl -n litomi-stg create secret generic litomi-backend-file \
+  --from-file=AIVEN_CERTIFICATE=/tmp/aiven.crt \
+  --from-file=GA_SERVICE_ACCOUNT_KEY=/tmp/ga-key.pem \
+  --from-file=SUPABASE_CERTIFICATE=/tmp/supabase.crt \
   --dry-run=client -o yaml | sudo kubectl apply -f -
+
+# (확인) 인증서가 올바른 PEM 형식으로 저장되었는지 확인
+sudo kubectl -n litomi-prod get secret litomi-backend-secret \
+  -o jsonpath='{.data.SUPABASE_CERTIFICATE}' | base64 -d | head -n 2
 ```
 
 ### 5) GitOps 시작 (root app-of-apps 적용)
