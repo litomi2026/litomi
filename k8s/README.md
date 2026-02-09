@@ -18,6 +18,8 @@ cd litomi
 ```zsh
 curl -sfL https://get.k3s.io | sudo sh -
 
+sudo kubectl wait --for=condition=Ready node --all --timeout=30s
+sudo kubectl wait --for=condition=available deployment/traefik -n kube-system --timeout=30s
 sudo kubectl get nodes
 sudo kubectl -n kube-system get deploy traefik
 ```
