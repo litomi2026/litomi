@@ -20,6 +20,8 @@ import * as userSchema from './user'
 
 const { POSTGRES_URL, SUPABASE_CERTIFICATE } = env
 
+console.log('👀 ~ SUPABASE_CERTIFICATE:', SUPABASE_CERTIFICATE)
+
 const supabaseClient = postgres(POSTGRES_URL, {
   prepare: false,
   ssl: SUPABASE_CERTIFICATE ? { ca: SUPABASE_CERTIFICATE, rejectUnauthorized: true } : 'prefer',
