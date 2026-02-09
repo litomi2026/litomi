@@ -11,6 +11,7 @@ spec:
       labels:
         app: litomi-web
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: web
           image: litomi-web:prod
@@ -49,6 +50,13 @@ spec:
             limits:
               cpu: 2
               memory: 4Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
 ---
 apiVersion: v1
 kind: Service

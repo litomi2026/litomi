@@ -11,6 +11,7 @@ spec:
       labels:
         app: litomi-backend
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: backend
           image: litomi-backend:prod
@@ -49,6 +50,13 @@ spec:
             limits:
               cpu: 1
               memory: 2Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
 ---
 apiVersion: v1
 kind: Service

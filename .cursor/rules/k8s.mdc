@@ -1,0 +1,26 @@
+---
+globs: k8s/**
+alwaysApply: false
+---
+
+## K8s manifest rules
+
+### Don’t override defaults (keep manifests clean)
+
+- **Do not explicitly set Kubernetes defaulted fields** unless you are intentionally changing behavior. Only declare what you want to differ.
+  - Example: `terminationGracePeriodSeconds` defaults to 30s → omit `30`. (Ref: Kubernetes API `PodSpec`, `pod-v1`)
+  - Example: Pod `restartPolicy` defaults to `Always` → omit it. (Ref: Kubernetes API `PodSpec`, `pod-v1`)
+  - Example: HPA `minReplicas` defaults to 1 → omit `1`. (Ref: Kubernetes API `HorizontalPodAutoscalerSpec`, `horizontal-pod-autoscaler-v2`)
+- **No exceptions for default values**: even for security / operational fields, do not set a field if you’re just repeating the default.
+- **Still be explicit for important non-default settings** (these usually _change_ defaults):
+  - **Security/permissions**: `securityContext`, `automountServiceAccountToken: false`, `seccompProfile`, etc.
+  - **Operational reliability**: `resources.requests/limits`, `PodDisruptionBudget`, HPA `behavior`, etc.
+  - **Context-dependent defaults**: `imagePullPolicy` defaults depend on tag/digest; be explicit when intent matters. (Ref: Kubernetes “Images” docs)
+
+### Leave evidence for important changes
+
+- For important config changes, **add a short comment explaining “why”** (link to official docs, an incident postmortem, a ticket, etc.).
+  - Prefer official references like:
+    - `https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/`
+    - `https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/horizontal-pod-autoscaler-v2/`
+    - `https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy`
