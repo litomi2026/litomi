@@ -18,10 +18,10 @@ cd litomi
 ```zsh
 curl -sfL https://get.k3s.io | sudo sh -
 
-sudo kubectl wait --for=condition=Ready node --all --timeout=120s
-timeout 120s bash -c 'until sudo kubectl -n kube-system wait --for=condition=available deployment/traefik --timeout=5s 2>/dev/null; do sleep 2; done'
+sudo kubectl wait --for=condition=Ready node --all --timeout=20s
+sudo kubectl -n kube-system wait --for=create deploy/traefik --timeout=20s
+sudo kubectl -n kube-system rollout status deploy/traefik --timeout=20s
 
-# (확인)
 sudo kubectl get nodes
 sudo kubectl -n kube-system get deploy traefik
 ```
@@ -32,7 +32,7 @@ CRD 크기 때문에 **server-side apply**를 권장해요.
 
 ```zsh
 sudo kubectl apply --server-side --force-conflicts -k k8s/bootstrap/argocd
-sudo kubectl -n argocd rollout status deploy/argocd-server
+sudo kubectl -n argocd rollout status deploy/argocd-server --timeout=120s
 ```
 
 #### (선택) 초기 admin 비밀번호 확인
@@ -97,8 +97,16 @@ sudo kubectl -n litomi-prod get secret litomi-backend-secret \
 
 ```zsh
 sudo kubectl apply -f k8s/bootstrap/root/root.yaml
+
+sudo kubectl -n argocd wait --for=jsonpath='{.status.sync.status}'=Synced applications.argoproj.io/root --timeout=60s
+sudo kubectl -n argocd wait --for=jsonpath='{.status.health.status}'=Healthy applications.argoproj.io/root --timeout=60s
+
 sudo kubectl -n argocd get applications.argoproj.io
 ```
+
+### 참고(근거)
+
+- [Kubernetes 프로덕션 환경 고려사항](https://kubernetes.io/ko/docs/setup/production-environment/)
 
 ### 6) 접속 확인 (stg/prod)
 

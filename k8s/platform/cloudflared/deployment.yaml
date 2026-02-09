@@ -61,7 +61,6 @@ spec:
               path: /ready
               port: 2000
             initialDelaySeconds: 10
-            periodSeconds: 10
             timeoutSeconds: 2
             failureThreshold: 1
           resources:
