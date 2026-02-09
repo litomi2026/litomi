@@ -34,8 +34,9 @@ spec:
           image: cloudflare/cloudflared:2026.1.2
           args:
             - tunnel
-            - --protocol
-            - http2
+            - --no-autoupdate
+            - --loglevel
+            - info
             - --metrics
             - 0.0.0.0:2000
             - run
@@ -70,7 +71,7 @@ spec:
             initialDelaySeconds: 10
             periodSeconds: 10
             timeoutSeconds: 2
-            failureThreshold: 6
+            failureThreshold: 5
           resources:
             requests:
               cpu: 20m
