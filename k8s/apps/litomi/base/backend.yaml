@@ -29,6 +29,8 @@ spec:
                 name: litomi-backend-env
             - secretRef:
                 name: litomi-backend-secret
+            - secretRef:
+                name: litomi-backend-file
           readinessProbe:
             httpGet:
               path: /ready
