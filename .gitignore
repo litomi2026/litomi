@@ -375,3 +375,4 @@ tmp
 data/model/
 
 .open-next/
+*.crt
