@@ -66,7 +66,8 @@ appRoutes.get('/ready', async (c) => {
       },
       timestamp: new Date(),
     })
-  } catch {
+  } catch (error) {
+    console.error(error)
     return c.json({ status: 'error', timestamp: new Date() }, 503)
   }
 })
