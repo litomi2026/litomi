@@ -104,10 +104,6 @@ sudo kubectl -n argocd wait --for=jsonpath='{.status.health.status}'=Healthy app
 sudo kubectl -n argocd get applications.argoproj.io
 ```
 
-### 참고(근거)
-
-- [Kubernetes 프로덕션 환경 고려사항](https://kubernetes.io/ko/docs/setup/production-environment/)
-
 ### 6) 접속 확인 (stg/prod)
 
 - **stg web**: `https://stg.litomi.in`
@@ -116,7 +112,22 @@ sudo kubectl -n argocd get applications.argoproj.io
 - **prod api**: `https://api.litomi.in/health`
 - **Argo CD**: `https://argocd.litomi.in`
 
-#### (디버그) Traefik 포트포워드로 Ingress 라우팅 확인
+### 참고
+
+- [Kubernetes 프로덕션 환경 고려사항](https://kubernetes.io/ko/docs/setup/production-environment/)
+- [HPA(수평 파드 오토스케일링)](https://kubernetes.io/ko/docs/tasks/run-application/horizontal-pod-autoscale/)
+- [컨테이너 리소스 관리(requests/limits)](https://kubernetes.io/ko/docs/concepts/configuration/manage-resources-containers/)
+- [리소스 메트릭 파이프라인(metrics-server 포함)](https://kubernetes.io/docs/tasks/debug/debug-cluster/resource-metrics-pipeline/)
+- [metrics-server(공식 SIGs 프로젝트)](https://github.com/kubernetes-sigs/metrics-server)
+- [Secret(비밀값)](https://kubernetes.io/ko/docs/concepts/configuration/secret/)
+- [Security Context(권한/보안 설정)](https://kubernetes.io/ko/docs/tasks/configure-pod-container/security-context/)
+- [ServiceAccount(서비스 계정)](https://kubernetes.io/ko/docs/concepts/security/service-accounts/)
+- [Argo CD Declarative Setup(공식 문서)](https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/)
+- [Argo CD AppProject(공식 문서)](https://argo-cd.readthedocs.io/en/stable/user-guide/projects/)
+
+## 디버그
+
+### Traefik 포트포워드로 Ingress 라우팅 확인
 
 ```zsh
 sudo kubectl -n kube-system port-forward svc/traefik 8080:80

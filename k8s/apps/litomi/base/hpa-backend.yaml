@@ -7,7 +7,6 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: litomi-backend
-  minReplicas: 1
   maxReplicas: 3
   metrics:
     - type: Resource
@@ -16,3 +15,17 @@ spec:
         target:
           type: Utilization
           averageUtilization: 70
+  behavior:
+    scaleUp:
+      policies:
+        - type: Percent
+          value: 100
+          periodSeconds: 60
+        - type: Pods
+          value: 2
+          periodSeconds: 60
+    scaleDown:
+      policies:
+        - type: Percent
+          value: 50
+          periodSeconds: 60
