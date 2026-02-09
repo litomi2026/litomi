@@ -3,7 +3,6 @@ kind: Deployment
 metadata:
   name: redis
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: redis
@@ -15,10 +14,6 @@ spec:
       containers:
         - name: redis
           image: redis:7-alpine
-          imagePullPolicy: IfNotPresent
-          ports:
-            - name: redis
-              containerPort: 6379
           readinessProbe:
             tcpSocket:
               port: 6379
@@ -30,7 +25,6 @@ spec:
             tcpSocket:
               port: 6379
             initialDelaySeconds: 10
-            periodSeconds: 10
             timeoutSeconds: 2
             failureThreshold: 6
 ---
@@ -39,10 +33,7 @@ kind: Service
 metadata:
   name: redis
 spec:
-  type: ClusterIP
   selector:
     app: redis
   ports:
-    - name: redis
-      port: 6379
-      targetPort: 6379
+    - port: 6379
