@@ -3,7 +3,6 @@ kind: Deployment
 metadata:
   name: litomi-web
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: litomi-web
@@ -16,9 +15,6 @@ spec:
         - name: web
           image: litomi-web:prod
           imagePullPolicy: Always
-          ports:
-            - name: http
-              containerPort: 3000
           env:
             - name: PORT
               value: '3000'
@@ -44,7 +40,6 @@ spec:
               path: /api/health
               port: 3000
             initialDelaySeconds: 10
-            periodSeconds: 10
             timeoutSeconds: 3
             failureThreshold: 6
           resources:
@@ -63,6 +58,4 @@ spec:
   selector:
     app: litomi-web
   ports:
-    - name: http
-      port: 3000
-      targetPort: 3000
+    - port: 3000

@@ -3,7 +3,6 @@ kind: Deployment
 metadata:
   name: litomi-backend
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: litomi-backend
@@ -16,9 +15,6 @@ spec:
         - name: backend
           image: litomi-backend:prod
           imagePullPolicy: Always
-          ports:
-            - name: http
-              containerPort: 3002
           env:
             - name: PORT
               value: '3002'
@@ -44,7 +40,6 @@ spec:
               path: /health
               port: 3002
             initialDelaySeconds: 10
-            periodSeconds: 10
             timeoutSeconds: 3
             failureThreshold: 6
           resources:
@@ -63,6 +58,4 @@ spec:
   selector:
     app: litomi-backend
   ports:
-    - name: http
-      port: 3002
-      targetPort: 3002
+    - port: 3002
