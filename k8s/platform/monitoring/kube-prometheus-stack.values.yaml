@@ -40,9 +40,9 @@ prometheus:
     externalLabels:
       cluster: litomi-k3s
 
-    # Retention: keep 30d, but also cap by size so the node disk doesn't fill up.
-    retention: 30d
-    retentionSize: 80GiB
+    # Local retention (TSDB): keep it short, and rely on Grafana Cloud for longer retention.
+    retention: 14d
+    retentionSize: 40GiB
 
     # Initial sizing (10 CPU / 16Gi RAM). Tune after observing.
     resources:
@@ -50,7 +50,7 @@ prometheus:
         cpu: 500m
         memory: 2Gi
       limits:
-        cpu: "2"
+        cpu: '2'
         memory: 4Gi
 
     # Metrics-only rollout: no in-cluster alerting yet.
@@ -59,28 +59,17 @@ prometheus:
     storageSpec:
       volumeClaimTemplate:
         spec:
-          accessModes: ["ReadWriteOnce"]
+          accessModes: ['ReadWriteOnce']
           resources:
             requests:
               storage: 100Gi
 
-    # (Optional) Grafana Cloud remote_write
-    #
-    # 1) Create Secret in `monitoring` namespace:
-    #    sudo kubectl -n monitoring create secret generic grafana-cloud-remote-write \
-    #      --from-literal=username='<Grafana Cloud instance ID>' \
-    #      --from-literal=password='<Grafana Cloud API token>' \
-    #      --dry-run=client -o yaml | sudo kubectl apply -f -
-    #
-    # 2) Uncomment below and set your Remote Write endpoint URL.
-    #    (Grafana Cloud → Prometheus/Mimir → Remote write endpoint)
-    #
-    # remoteWrite:
-    #   - url: https://<YOUR_GRAFANA_CLOUD_REMOTE_WRITE_ENDPOINT>/api/prom/push
-    #     basicAuth:
-    #       username:
-    #         name: grafana-cloud-remote-write
-    #         key: username
-    #       password:
-    #         name: grafana-cloud-remote-write
-    #         key: password
+    remoteWrite:
+      - url: https://prometheus-prod-49-prod-ap-northeast-0.grafana.net/api/prom
+        basicAuth:
+          username:
+            name: grafana-cloud-remote-write
+            key: username
+          password:
+            name: grafana-cloud-remote-write
+            key: password
