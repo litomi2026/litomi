@@ -1,0 +1,86 @@
+# kube-prometheus-stack values for a single-node k3s cluster (metrics-only first rollout)
+#
+# Goals
+# - Metrics only (Logs/Traces later)
+# - Grafana: use Grafana Cloud → disable in-cluster Grafana
+# - Prometheus: keep data in-cluster (PVC) with 30d retention + size cap
+# - Alerting: disable for now to avoid noisy first rollout (enable later when you’re ready)
+
+defaultRules:
+  # Disable the huge default rule set for the first rollout.
+  # (You can enable it later once you have Alertmanager routing in place.)
+  create: false
+
+alertmanager:
+  enabled: false
+
+grafana:
+  enabled: false
+
+# k3s: control plane components usually aren't exposed as scrapeable Services by default.
+# Disable them unless you explicitly wire endpoints/services.
+kubeControllerManager:
+  enabled: false
+
+kubeEtcd:
+  enabled: false
+
+kubeScheduler:
+  enabled: false
+
+kubeProxy:
+  enabled: false
+
+prometheus:
+  prometheusSpec:
+    # Single node → 1 replica
+    replicas: 1
+
+    # Useful when you later add another cluster (or just to make dashboards clearer).
+    externalLabels:
+      cluster: litomi-k3s
+
+    # Retention: keep 30d, but also cap by size so the node disk doesn't fill up.
+    retention: 30d
+    retentionSize: 80GiB
+
+    # Initial sizing (10 CPU / 16Gi RAM). Tune after observing.
+    resources:
+      requests:
+        cpu: 500m
+        memory: 2Gi
+      limits:
+        cpu: "2"
+        memory: 4Gi
+
+    # Metrics-only rollout: no in-cluster alerting yet.
+    disableAlerting: true
+
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 100Gi
+
+    # (Optional) Grafana Cloud remote_write
+    #
+    # 1) Create Secret in `monitoring` namespace:
+    #    sudo kubectl -n monitoring create secret generic grafana-cloud-remote-write \
+    #      --from-literal=username='<Grafana Cloud instance ID>' \
+    #      --from-literal=password='<Grafana Cloud API token>' \
+    #      --dry-run=client -o yaml | sudo kubectl apply -f -
+    #
+    # 2) Uncomment below and set your Remote Write endpoint URL.
+    #    (Grafana Cloud → Prometheus/Mimir → Remote write endpoint)
+    #
+    # remoteWrite:
+    #   - url: https://<YOUR_GRAFANA_CLOUD_REMOTE_WRITE_ENDPOINT>/api/prom/push
+    #     basicAuth:
+    #       username:
+    #         name: grafana-cloud-remote-write
+    #         key: username
+    #       password:
+    #         name: grafana-cloud-remote-write
+    #         key: password
