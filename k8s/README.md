@@ -35,14 +35,14 @@ sudo kubectl apply --server-side --force-conflicts -k k8s/bootstrap/argocd
 sudo kubectl -n argocd rollout status deploy/argocd-server --timeout=120s
 ```
 
-#### (선택) 초기 admin 비밀번호 확인
+#### Argo CD 초기 admin 비밀번호 확인
 
 ```zsh
 sudo kubectl -n argocd get secret argocd-initial-admin-secret \
   -o jsonpath='{.data.password}' | base64 -d; echo
 ```
 
-### 4) (필수) Secret 준비
+### 4) Secret 준비
 
 #### Cloudflare Tunnel 토큰 (`cloudflared-token`)
 
@@ -118,7 +118,7 @@ sudo kubectl -n argocd wait --for=jsonpath='{.status.health.status}'=Healthy app
 sudo kubectl -n argocd get applications.argoproj.io
 ```
 
-### 6) 접속 확인 (stg/prod)
+### 6) 접속 확인
 
 - **stg web**: `https://stg.litomi.in`
 - **stg api**: `https://api-stg.litomi.in/health`
@@ -196,3 +196,12 @@ sudo kubectl -n litomi-prod describe pod <PENDING_POD_NAME>
 
 - **requests/limits 조정(측정 기반으로)**
 - **노드 증설(클러스터 오토스케일러 포함)**
+
+### Monitoring 동작 확인
+
+```zsh
+sudo kubectl -n monitoring port-forward svc/kube-prometheus-stack-prometheus 9090:9090
+
+# Targets 상태 확인
+open http://127.0.0.1:9090/targets
+```
