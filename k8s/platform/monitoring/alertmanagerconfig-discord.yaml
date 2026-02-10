@@ -1,0 +1,57 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: discord
+  namespace: monitoring
+  labels:
+    alertmanagerConfig: enabled
+spec:
+  route:
+    receiver: discord-warning
+    matchers:
+      - name: severity
+        matchType: '=~'
+        value: 'warning|critical'
+    routes:
+      - receiver: discord-critical
+        matchers:
+          - name: severity
+            matchType: '='
+            value: critical
+  receivers:
+    - name: discord-warning
+      discordConfigs:
+        - apiURL:
+            name: alertmanager-discord-webhook-warning
+            key: url
+          sendResolved: true
+          username: litomi-alerts
+          title: '{{ .CommonLabels.alertname }} ({{ .Status }})'
+          message: |-
+            {{- if .CommonAnnotations.summary -}}
+            {{ .CommonAnnotations.summary }}
+            {{- else -}}
+            {{ .CommonLabels.alertname }}
+            {{- end -}}
+            {{- if .CommonAnnotations.description }}
+
+            {{ .CommonAnnotations.description }}
+            {{- end }}
+    - name: discord-critical
+      discordConfigs:
+        - apiURL:
+            name: alertmanager-discord-webhook-critical
+            key: url
+          sendResolved: true
+          username: litomi-alerts
+          title: '[CRITICAL] {{ .CommonLabels.alertname }} ({{ .Status }})'
+          message: |-
+            {{- if .CommonAnnotations.summary -}}
+            {{ .CommonAnnotations.summary }}
+            {{- else -}}
+            {{ .CommonLabels.alertname }}
+            {{- end -}}
+            {{- if .CommonAnnotations.description }}
+
+            {{ .CommonAnnotations.description }}
+            {{- end }}
