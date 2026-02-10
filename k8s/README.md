@@ -44,7 +44,7 @@ sudo kubectl -n argocd get secret argocd-initial-admin-secret \
 
 ### 4) Secret 준비
 
-#### Cloudflare Tunnel 토큰 (`cloudflared-token`)
+#### Cloudflare Tunnel 토큰
 
 ```zsh
 sudo kubectl create namespace cloudflared --dry-run=client -o yaml | sudo kubectl apply -f -
@@ -54,7 +54,7 @@ sudo kubectl -n cloudflared create secret generic cloudflared-token \
   --dry-run=client -o yaml | sudo kubectl apply -f -
 ```
 
-#### 비밀 환경변수 (`litomi-backend-secret`) - stg/prod 각각
+#### 비밀 환경변수 - stg/prod 각각
 
 **모범 사례: 여러 줄 값(인증서/키)은 `--from-file` 사용**
 
@@ -93,7 +93,7 @@ sudo kubectl -n litomi-prod get secret litomi-backend-secret \
   -o jsonpath='{.data.SUPABASE_CERTIFICATE}' | base64 -d | head -n 2
 ```
 
-#### (선택) Grafana Cloud remote_write (`grafana-cloud-remote-write`)
+#### (선택) Grafana Cloud remote_write
 
 `kube-prometheus-stack`(Prometheus Operator)로 **클러스터 내부에서 메트릭을 수집**하고,
 Grafana Cloud를 쓴다면 **remote_write로 메트릭을 Grafana Cloud로 푸시**할 수 있어요.
@@ -104,6 +104,18 @@ sudo kubectl create namespace monitoring --dry-run=client -o yaml | sudo kubectl
 sudo kubectl -n monitoring create secret generic grafana-cloud-remote-write \
   --from-literal=username='<Grafana Cloud instance ID>' \
   --from-literal=password='<Grafana Cloud API token>' \
+  --dry-run=client -o yaml | sudo kubectl apply -f -
+```
+
+#### (선택) Discord 알림 webhook
+
+```zsh
+sudo kubectl -n monitoring create secret generic alertmanager-discord-webhook-warning \
+  --from-literal=url="https://discord.com/api/webhooks/..." \
+  --dry-run=client -o yaml | sudo kubectl apply -f -
+
+sudo kubectl -n monitoring create secret generic alertmanager-discord-webhook-critical \
+  --from-literal=url="https://discord.com/api/webhooks/..." \
   --dry-run=client -o yaml | sudo kubectl apply -f -
 ```
 
@@ -138,6 +150,8 @@ sudo kubectl -n argocd get applications.argoproj.io
 - [ServiceAccount(서비스 계정)](https://kubernetes.io/ko/docs/concepts/security/service-accounts/)
 - [Argo CD Declarative Setup(공식 문서)](https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/)
 - [Argo CD AppProject(공식 문서)](https://argo-cd.readthedocs.io/en/stable/user-guide/projects/)
+- [Prometheus Operator(공식)](https://prometheus-operator.dev/)
+- [Alertmanager(공식)](https://prometheus.io/docs/alerting/latest/alertmanager/)
 
 ## 디버그
 
@@ -200,8 +214,17 @@ sudo kubectl -n litomi-prod describe pod <PENDING_POD_NAME>
 ### Monitoring 동작 확인
 
 ```zsh
+# Prometheus UI
 sudo kubectl -n monitoring port-forward svc/kube-prometheus-stack-prometheus 9090:9090
 
-# Targets 상태 확인
+# Targets / Rules / Alerts 확인
 open http://127.0.0.1:9090/targets
+open http://127.0.0.1:9090/rules
+open http://127.0.0.1:9090/alerts
+```
+
+```zsh
+# Alertmanager UI (알림 그룹핑/억제/사일런스 확인)
+sudo kubectl -n monitoring port-forward svc/kube-prometheus-stack-alertmanager 9093:9093
+open http://127.0.0.1:9093/#/alerts
 ```
