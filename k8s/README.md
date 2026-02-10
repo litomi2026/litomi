@@ -93,6 +93,20 @@ sudo kubectl -n litomi-prod get secret litomi-backend-secret \
   -o jsonpath='{.data.SUPABASE_CERTIFICATE}' | base64 -d | head -n 2
 ```
 
+#### (선택) Grafana Cloud remote_write (`grafana-cloud-remote-write`)
+
+`kube-prometheus-stack`(Prometheus Operator)로 **클러스터 내부에서 메트릭을 수집**하고,
+Grafana Cloud를 쓴다면 **remote_write로 메트릭을 Grafana Cloud로 푸시**할 수 있어요.
+
+```zsh
+sudo kubectl create namespace monitoring --dry-run=client -o yaml | sudo kubectl apply -f -
+
+sudo kubectl -n monitoring create secret generic grafana-cloud-remote-write \
+  --from-literal=username='<Grafana Cloud instance ID>' \
+  --from-literal=password='<Grafana Cloud API token>' \
+  --dry-run=client -o yaml | sudo kubectl apply -f -
+```
+
 ### 5) GitOps 시작 (root app-of-apps 적용)
 
 ```zsh

@@ -37,6 +37,8 @@ spec:
             failureThreshold: 6
           securityContext:
             allowPrivilegeEscalation: false
+            runAsUser: 999
+            runAsGroup: 999
             capabilities:
               drop:
                 - ALL
