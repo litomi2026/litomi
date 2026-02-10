@@ -18,10 +18,10 @@ cd litomi
 ```zsh
 curl -sfL https://get.k3s.io | sudo sh -
 
-sudo kubectl wait --for=condition=Ready node --all --timeout=120s
-timeout 120s bash -c 'until sudo kubectl -n kube-system wait --for=condition=available deployment/traefik --timeout=5s 2>/dev/null; do sleep 2; done'
+sudo kubectl wait --for=condition=Ready node --all --timeout=20s
+sudo kubectl -n kube-system wait --for=create deploy/traefik --timeout=20s
+sudo kubectl -n kube-system rollout status deploy/traefik --timeout=20s
 
-# (확인)
 sudo kubectl get nodes
 sudo kubectl -n kube-system get deploy traefik
 ```
@@ -32,7 +32,7 @@ CRD 크기 때문에 **server-side apply**를 권장해요.
 
 ```zsh
 sudo kubectl apply --server-side --force-conflicts -k k8s/bootstrap/argocd
-sudo kubectl -n argocd rollout status deploy/argocd-server
+sudo kubectl -n argocd rollout status deploy/argocd-server --timeout=120s
 ```
 
 #### (선택) 초기 admin 비밀번호 확인
@@ -97,6 +97,10 @@ sudo kubectl -n litomi-prod get secret litomi-backend-secret \
 
 ```zsh
 sudo kubectl apply -f k8s/bootstrap/root/root.yaml
+
+sudo kubectl -n argocd wait --for=jsonpath='{.status.sync.status}'=Synced applications.argoproj.io/root --timeout=60s
+sudo kubectl -n argocd wait --for=jsonpath='{.status.health.status}'=Healthy applications.argoproj.io/root --timeout=60s
+
 sudo kubectl -n argocd get applications.argoproj.io
 ```
 
@@ -108,7 +112,22 @@ sudo kubectl -n argocd get applications.argoproj.io
 - **prod api**: `https://api.litomi.in/health`
 - **Argo CD**: `https://argocd.litomi.in`
 
-#### (디버그) Traefik 포트포워드로 Ingress 라우팅 확인
+### 참고
+
+- [Kubernetes 프로덕션 환경 고려사항](https://kubernetes.io/ko/docs/setup/production-environment/)
+- [HPA(수평 파드 오토스케일링)](https://kubernetes.io/ko/docs/tasks/run-application/horizontal-pod-autoscale/)
+- [컨테이너 리소스 관리(requests/limits)](https://kubernetes.io/ko/docs/concepts/configuration/manage-resources-containers/)
+- [리소스 메트릭 파이프라인(metrics-server 포함)](https://kubernetes.io/docs/tasks/debug/debug-cluster/resource-metrics-pipeline/)
+- [metrics-server(공식 SIGs 프로젝트)](https://github.com/kubernetes-sigs/metrics-server)
+- [Secret(비밀값)](https://kubernetes.io/ko/docs/concepts/configuration/secret/)
+- [Security Context(권한/보안 설정)](https://kubernetes.io/ko/docs/tasks/configure-pod-container/security-context/)
+- [ServiceAccount(서비스 계정)](https://kubernetes.io/ko/docs/concepts/security/service-accounts/)
+- [Argo CD Declarative Setup(공식 문서)](https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/)
+- [Argo CD AppProject(공식 문서)](https://argo-cd.readthedocs.io/en/stable/user-guide/projects/)
+
+## 디버그
+
+### Traefik 포트포워드로 Ingress 라우팅 확인
 
 ```zsh
 sudo kubectl -n kube-system port-forward svc/traefik 8080:80
@@ -119,3 +138,47 @@ curl -I -H 'Host: litomi.in' http://127.0.0.1:8080/
 curl -I -H 'Host: api.litomi.in' http://127.0.0.1:8080/health
 curl -I -H 'Host: argocd.litomi.in' http://127.0.0.1:8080/
 ```
+
+### HPA가 왜 동작/미동작하는지
+
+HPA(CPU `averageUtilization`)는 **Pod의 CPU 사용량**을 **CPU request 대비 퍼센트**로 계산해요. 그래서 아래 2개가 없으면(또는 이상하면) 동작이 흔들릴 수 있어요.
+
+- **(필수) metrics-server / Metrics API**: `kubectl top`이 되는지 먼저 봐요.
+- **(필수) `resources.requests.cpu`**: HPA의 “기준선(baseline)”이라서, 없으면 퍼센트 계산이 불가능해요.
+
+#### 1) metrics-server가 살아있는지 확인
+
+```zsh
+# Metrics API가 등록됐는지(AVAILABLE=True)
+sudo kubectl get apiservice v1beta1.metrics.k8s.io
+
+# 실제로 메트릭이 찍히는지
+sudo kubectl top nodes
+sudo kubectl top pods -n litomi-prod
+sudo kubectl top pods -n litomi-stg
+```
+
+#### 2) HPA가 뭘 보고 스케일링 판단하는지 확인
+
+```zsh
+sudo kubectl -n litomi-prod get hpa
+sudo kubectl -n litomi-prod describe hpa litomi-web
+sudo kubectl -n litomi-prod describe hpa litomi-backend
+```
+
+아래 같은 이벤트가 보이면 원인을 바로 좁힐 수 있어요.
+
+- **`FailedGetResourceMetric`**: metrics-server 문제이거나, kubelet 접근/인증/주소 플래그 문제일 때가 많아요.
+- **`missing request for cpu`**: 해당 Deployment 컨테이너에 `resources.requests.cpu`가 없을 때예요.
+
+#### 3) “스케일링은 하는데 Pod가 늘지 않아요”인 경우(스케줄링)
+
+```zsh
+sudo kubectl -n litomi-prod get pods
+sudo kubectl -n litomi-prod describe pod <PENDING_POD_NAME>
+```
+
+`Insufficient cpu/memory` 같은 이벤트가 뜨면 **노드 자원이 부족해서** 새 Pod를 못 올리는 거예요. 이 경우는 HPA YAML만으로는 해결이 안 되고, 보통 아래 중 하나가 필요해요.
+
+- **requests/limits 조정(측정 기반으로)**
+- **노드 증설(클러스터 오토스케일러 포함)**
