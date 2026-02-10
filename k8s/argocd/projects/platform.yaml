@@ -3,9 +3,10 @@ kind: AppProject
 metadata:
   name: platform
 spec:
-  description: Cluster add-ons (metrics-server, cloudflared, argocd)
+  description: Cluster add-ons (metrics-server, cloudflared, argocd, monitoring)
   sourceRepos:
     - https://github.com/gwak2837/litomi.git
+    - https://prometheus-community.github.io/helm-charts
   destinations:
     - server: https://kubernetes.default.svc
       namespace: kube-system
@@ -13,6 +14,8 @@ spec:
       namespace: cloudflared
     - server: https://kubernetes.default.svc
       namespace: argocd
+    - server: https://kubernetes.default.svc
+      namespace: monitoring
   clusterResourceWhitelist:
     - group: '*'
       kind: '*'
