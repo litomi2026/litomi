@@ -228,3 +228,19 @@ open http://127.0.0.1:9090/alerts
 sudo kubectl -n monitoring port-forward svc/kube-prometheus-stack-alertmanager 9093:9093
 open http://127.0.0.1:9093/#/alerts
 ```
+
+### remote_write 실패 알림이 떴을 때(빠른 식별)
+
+- **Prometheus UI에서 원인 확인(가장 빠름)**: `Status → Remote Write`에 마지막 에러(HTTP 코드/메시지)가 보여요.
+
+```zsh
+# Prometheus UI 열기
+kubectl -n monitoring port-forward svc/prometheus-kube-prometheus-stack-prometheus 9090:9090
+```
+
+- **로그로 HTTP 코드 확인**
+
+```zsh
+sudo kubectl -n monitoring logs prometheus-kube-prometheus-stack-prometheus-0 -c prometheus --since=1h \
+  | egrep -i 'remote write|remote storage|429|401|403|timeout|tls|no such host|context deadline'
+```

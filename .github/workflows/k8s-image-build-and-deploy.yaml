@@ -97,7 +97,6 @@ jobs:
             ${{ steps.public_env.outputs.build_args }}
           secrets: |
             POSTGRES_URL=${{ secrets.POSTGRES_URL }}
-            REDIS_URL=${{ secrets.REDIS_URL }}
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
             SENTRY_ORG=${{ secrets.SENTRY_ORG }}
             SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT }}
@@ -121,7 +120,6 @@ jobs:
             ${{ steps.public_env.outputs.build_args }}
           secrets: |
             POSTGRES_URL=${{ secrets.POSTGRES_URL }}
-            REDIS_URL=${{ secrets.REDIS_URL }}
             SUPABASE_CERTIFICATE=${{ secrets.SUPABASE_CERTIFICATE }}
           tags: ${{ steps.meta_web.outputs.tags }}
           labels: ${{ steps.meta_web.outputs.labels }}
