@@ -10,6 +10,7 @@
     "hashicorp.terraform",
     "jock.svg",
     "ms-azuretools.vscode-docker",
+    "ms-kubernetes-tools.vscode-kubernetes-tools",
     "visualstudioexptteam.vscodeintellicode"
   ]
 }
