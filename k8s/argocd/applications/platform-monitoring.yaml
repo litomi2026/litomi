@@ -15,6 +15,9 @@ spec:
     - repoURL: https://github.com/gwak2837/litomi.git
       targetRevision: main
       ref: values
+    - repoURL: https://github.com/gwak2837/litomi.git
+      targetRevision: main
+      path: k8s/platform/monitoring
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
