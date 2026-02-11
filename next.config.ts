@@ -97,9 +97,7 @@ const nextConfig: NextConfig = {
   ...(process.env.BUILD_OUTPUT === 'standalone' && {
     output: 'standalone',
     transpilePackages: ['@t3-oss/env-nextjs', '@t3-oss/env-core'],
-  }),
-  ...(process.env.REDIS_URL && {
-    cacheHandler: require.resolve('./cache-handler.js'),
+    cacheHandler: require.resolve('./cache-handler.mjs'),
     cacheMaxMemorySize: 0,
   }),
 }
