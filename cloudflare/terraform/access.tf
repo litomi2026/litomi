@@ -5,7 +5,7 @@ resource "cloudflare_zero_trust_access_application" "argocd" {
   domain = local.selfhost_argocd_hostname
   type   = "self_hosted"
 
-  session_duration          = "18h"
+  session_duration          = "160h"
   auto_redirect_to_identity = true
 
   policies = [
