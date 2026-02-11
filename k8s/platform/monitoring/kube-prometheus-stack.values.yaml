@@ -1,24 +1,88 @@
-# kube-prometheus-stack values for a single-node k3s cluster (metrics-only first rollout)
-#
-# Goals
-# - Metrics only (Logs/Traces later)
-# - Grafana: use Grafana Cloud → disable in-cluster Grafana
-# - Prometheus: keep data in-cluster (PVC) with 30d retention + size cap
-# - Alerting: disable for now to avoid noisy first rollout (enable later when you’re ready)
+# kube-prometheus-stack values for a single-node k3s cluster (metrics + alerting)
 
 defaultRules:
-  # Disable the huge default rule set for the first rollout.
-  # (You can enable it later once you have Alertmanager routing in place.)
-  create: false
+  create: true
+  rules:
+    # k3s: control plane components usually aren't exposed as scrapeable Services by default.
+    etcd: false
+    kubeControllerManager: false
+    kubeSchedulerAlerting: false
+    kubeSchedulerRecording: false
+    kubeProxy: false
+
+    # Reduce noise/overhead: keep apiserver availability only.
+    kubeApiserverBurnrate: false
+    kubeApiserverHistogram: false
+    kubeApiserverSlos: false
+
+    # This cluster doesn't run Windows nodes.
+    windows: false
+
+  disabled:
+    # Always-firing "pipeline health" alerts. Keep them off to reduce noise.
+    # If you want “alerting pipeline is alive” verification, enable and route/silence intentionally.
+    Watchdog: true
+    InfoInhibitor: true
 
 alertmanager:
-  enabled: false
+  enabled: true
+  config:
+    global:
+      resolve_timeout: 5m
+    route:
+      receiver: 'null'
+      group_by: ['alertname', 'namespace']
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 12h
+      routes:
+        # Drop info-level alerts by default.
+        - receiver: 'null'
+          matchers:
+            - severity="info"
+    receivers:
+      - name: 'null'
+    inhibit_rules:
+      # Critical inhibits warning for the same thing.
+      - source_matchers:
+          - severity="critical"
+        target_matchers:
+          - severity="warning"
+        equal: ['alertname', 'namespace']
+      # Warning inhibits info for the same thing.
+      - source_matchers:
+          - severity="warning"
+        target_matchers:
+          - severity="info"
+        equal: ['alertname', 'namespace']
+
+  alertmanagerSpec:
+    alertmanagerConfigSelector:
+      matchLabels:
+        alertmanagerConfig: enabled
+    alertmanagerConfigMatcherStrategy:
+      type: None
+    replicas: 1
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+    # Small PVC is enough for silences/inhibitions history.
+    storage:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ['ReadWriteOnce']
+          resources:
+            requests:
+              storage: 2Gi
 
 grafana:
   enabled: false
 
 # k3s: control plane components usually aren't exposed as scrapeable Services by default.
-# Disable them unless you explicitly wire endpoints/services.
 kubeControllerManager:
   enabled: false
 
@@ -33,7 +97,6 @@ kubeProxy:
 
 prometheus:
   prometheusSpec:
-    # Single node → 1 replica
     replicas: 1
 
     # Useful when you later add another cluster (or just to make dashboards clearer).
@@ -44,7 +107,6 @@ prometheus:
     retention: 14d
     retentionSize: 40GiB
 
-    # Initial sizing (10 CPU / 16Gi RAM). Tune after observing.
     resources:
       requests:
         cpu: 500m
@@ -53,16 +115,13 @@ prometheus:
         cpu: '2'
         memory: 4Gi
 
-    # Metrics-only rollout: no in-cluster alerting yet.
-    disableAlerting: true
-
     storageSpec:
       volumeClaimTemplate:
         spec:
           accessModes: ['ReadWriteOnce']
           resources:
             requests:
-              storage: 100Gi
+              storage: 50Gi
 
     remoteWrite:
       - url: https://prometheus-prod-49-prod-ap-northeast-0.grafana.net/api/prom
