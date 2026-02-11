@@ -98,6 +98,10 @@ const nextConfig: NextConfig = {
     output: 'standalone',
     transpilePackages: ['@t3-oss/env-nextjs', '@t3-oss/env-core'],
   }),
+  ...(process.env.REDIS_URL && {
+    cacheHandler: require.resolve('./cache-handler.js'),
+    cacheMaxMemorySize: 0,
+  }),
 }
 
 const withAnalyzer = withBundleAnalyzer({
