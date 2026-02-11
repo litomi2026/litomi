@@ -14,7 +14,8 @@ spec:
       automountServiceAccountToken: false
       containers:
         - name: redis
-          image: redis:7-alpine
+          image: redis:8.6-alpine
+          command: ['redis-server', '/etc/redis/redis.conf']
           resources:
             requests:
               cpu: 50m
@@ -23,15 +24,15 @@ spec:
               cpu: 200m
               memory: 1Gi
           readinessProbe:
-            tcpSocket:
-              port: 6379
+            exec:
+              command: ['redis-cli', 'ping']
             initialDelaySeconds: 3
             periodSeconds: 5
             timeoutSeconds: 2
             failureThreshold: 6
           livenessProbe:
-            tcpSocket:
-              port: 6379
+            exec:
+              command: ['redis-cli', 'ping']
             initialDelaySeconds: 10
             timeoutSeconds: 2
             failureThreshold: 6
@@ -39,11 +40,20 @@ spec:
             allowPrivilegeEscalation: false
             runAsUser: 999
             runAsGroup: 999
+            runAsNonRoot: true
             capabilities:
               drop:
                 - ALL
             seccompProfile:
               type: RuntimeDefault
+          volumeMounts:
+            - name: redis-config
+              mountPath: /etc/redis
+              readOnly: true
+      volumes:
+        - name: redis-config
+          configMap:
+            name: redis-config
 ---
 apiVersion: v1
 kind: Service
@@ -54,3 +64,27 @@ spec:
     app: redis
   ports:
     - port: 6379
+
+---
+# Allow only litomi-web and litomi-backend pods to connect to Redis.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: redis-ingress
+spec:
+  podSelector:
+    matchLabels:
+      app: redis
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: litomi-web
+        - podSelector:
+            matchLabels:
+              app: litomi-backend
+      ports:
+        - protocol: TCP
+          port: 6379

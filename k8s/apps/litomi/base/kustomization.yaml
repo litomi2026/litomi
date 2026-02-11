@@ -7,3 +7,8 @@ resources:
   - web.yaml
   - hpa-backend.yaml
   - hpa-web.yaml
+
+configMapGenerator:
+  - name: redis-config
+    files:
+      - redis.conf
