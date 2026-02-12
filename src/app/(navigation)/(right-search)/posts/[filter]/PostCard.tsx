@@ -11,7 +11,12 @@ import { formatDistanceToNow } from '@/utils/format/date'
 const urlMatchRegex = /https?:\/\/[^\s]+/g
 const trailingPunctuationRegex = /[.,!?;:)\]}]/
 
-export default function PostCard({ post }: { post: Post }) {
+type Props = {
+  post: Post
+  showMangaCover?: boolean
+}
+
+export default function PostCard({ post, showMangaCover }: Readonly<Props>) {
   const author = post.author
   const authorNickname = author?.nickname
   const content = post.content ?? ''
@@ -19,7 +24,7 @@ export default function PostCard({ post }: { post: Post }) {
 
   return (
     <article className="w-full overflow-hidden rounded-2xl border-2 bg-zinc-900 transition hover:bg-zinc-800/70 hover:border-zinc-700/70">
-      {post.mangaId && (
+      {showMangaCover && post.mangaId && (
         <div className="border-b-2 border-zinc-800">
           <Link className="block" href={`/manga/${post.mangaId}`} prefetch={false}>
             <PostMangaCard mangaId={post.mangaId} variant="cover" />
@@ -72,8 +77,12 @@ export default function PostCard({ post }: { post: Post }) {
   )
 }
 
-export function PostSkeleton() {
-  return <div className="aspect-5/7 w-full rounded-2xl border-2 bg-zinc-900" />
+export function PostSkeleton({ showMangaCover }: { showMangaCover?: boolean }) {
+  if (showMangaCover) {
+    return <div className="aspect-5/7 w-full rounded-2xl border-2 bg-zinc-900" />
+  } else {
+    return <div className="aspect-7/5 w-full rounded-2xl border-2 bg-zinc-900 animate-pulse" />
+  }
 }
 
 function checkInternalURL(text: string): boolean {
