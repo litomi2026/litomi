@@ -4,6 +4,11 @@ kind: Kustomization
 namespace: monitoring
 
 resources:
+  - serviceaccount-eso-vault.yaml
+  - secretstore-vault.yaml
+  - externalsecret-grafana-admin.yaml
+  - externalsecret-alertmanager-discord-webhook-warning.yaml
+  - externalsecret-alertmanager-discord-webhook-critical.yaml
   - alertmanagerconfig-discord.yaml
   - ingress-grafana.yaml
   - servicemonitor-cloudflared.yaml
