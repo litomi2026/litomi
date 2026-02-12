@@ -56,7 +56,7 @@ sudo kubectl -n cloudflared create secret generic cloudflared-token \
 
 #### 비밀 환경변수 - stg/prod 각각
 
-**모범 사례: 여러 줄 값(인증서/키)은 `--from-file` 사용**
+여러 줄 값(인증서/키)은 `--from-file` 사용
 
 ```zsh
 sudo kubectl create namespace litomi-stg --dry-run=client -o yaml | sudo kubectl apply -f -
@@ -93,18 +93,18 @@ sudo kubectl -n litomi-prod get secret litomi-backend-secret \
   -o jsonpath='{.data.SUPABASE_CERTIFICATE}' | base64 -d | head -n 2
 ```
 
-#### (선택) Grafana Cloud remote_write
+#### (선택) Grafana
 
-`kube-prometheus-stack`(Prometheus Operator)로 **클러스터 내부에서 메트릭을 수집**하고,
-Grafana Cloud를 쓴다면 **remote_write로 메트릭을 Grafana Cloud로 푸시**할 수 있어요.
+초기 admin 계정/비밀번호는 Grafana chart가 만든 Secret에 들어있어요.
 
 ```zsh
-sudo kubectl create namespace monitoring --dry-run=client -o yaml | sudo kubectl apply -f -
+# 계정
+sudo kubectl -n monitoring get secret kube-prometheus-stack-grafana \
+  -o jsonpath='{.data.admin-user}' | base64 -d; echo
 
-sudo kubectl -n monitoring create secret generic grafana-cloud-remote-write \
-  --from-literal=username='<Grafana Cloud instance ID>' \
-  --from-literal=password='<Grafana Cloud API token>' \
-  --dry-run=client -o yaml | sudo kubectl apply -f -
+# 비밀번호
+sudo kubectl -n monitoring get secret kube-prometheus-stack-grafana \
+  -o jsonpath='{.data.admin-password}' | base64 -d; echo
 ```
 
 #### (선택) Discord 알림 webhook
@@ -137,6 +137,7 @@ sudo kubectl -n argocd get applications.argoproj.io
 - **prod web**: `https://litomi.in`
 - **prod api**: `https://api.litomi.in/health`
 - **Argo CD**: `https://argocd.litomi.in`
+- **Grafana**: `https://grafana.litomi.in`
 
 ### 참고
 
@@ -229,18 +230,19 @@ sudo kubectl -n monitoring port-forward svc/kube-prometheus-stack-alertmanager 9
 open http://127.0.0.1:9093/#/alerts
 ```
 
-### remote_write 실패 알림이 떴을 때(빠른 식별)
-
-- **Prometheus UI에서 원인 확인(가장 빠름)**: `Status → Remote Write`에 마지막 에러(HTTP 코드/메시지)가 보여요.
+### Grafana 접속/비밀번호 확인
 
 ```zsh
-# Prometheus UI 열기
-kubectl -n monitoring port-forward svc/prometheus-kube-prometheus-stack-prometheus 9090:9090
+# Grafana UI (로컬)
+sudo kubectl -n monitoring port-forward svc/kube-prometheus-stack-grafana 3000:80
+open http://127.0.0.1:3000
 ```
 
-- **로그로 HTTP 코드 확인**
-
 ```zsh
-sudo kubectl -n monitoring logs prometheus-kube-prometheus-stack-prometheus-0 -c prometheus --since=1h \
-  | egrep -i 'remote write|remote storage|429|401|403|timeout|tls|no such host|context deadline'
+# admin 계정/비밀번호 확인
+sudo kubectl -n monitoring get secret kube-prometheus-stack-grafana \
+  -o jsonpath='{.data.admin-user}' | base64 -d; echo
+
+sudo kubectl -n monitoring get secret kube-prometheus-stack-grafana \
+  -o jsonpath='{.data.admin-password}' | base64 -d; echo
 ```
