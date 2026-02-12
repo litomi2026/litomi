@@ -81,6 +81,10 @@ alertmanager:
 
 grafana:
   enabled: true
+  admin:
+    existingSecret: grafana-admin
+    userKey: admin-user
+    passwordKey: admin-password
 
 # k3s: control plane components usually aren't exposed as scrapeable Services by default.
 kubeControllerManager:
