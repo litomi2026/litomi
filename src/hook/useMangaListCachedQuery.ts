@@ -3,7 +3,7 @@
 import { useQueries, useQueryClient } from '@tanstack/react-query'
 import ms from 'ms'
 import pLimit from 'p-limit'
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useEffectEvent, useMemo, useRef } from 'react'
 
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
@@ -50,6 +50,23 @@ export default function useMangaListCachedQuery({
   const uniqueMangaIds = useMemo(() => Array.from(new Set(mangaIds)), [mangaIds])
   const queryClient = useQueryClient()
   const cleanupTimersRef = useRef<Array<ReturnType<typeof setTimeout>>>([])
+
+  const cleanupPendingMangaQueriesEvent = useEffectEvent(() => {
+    // NOTE: 페이지 이탈 시, 아직 완료되지 않은(pending) 작품 쿼리는 전부 제거
+    for (const id of uniqueMangaIds) {
+      const queryKey = QueryKeys.manga(id)
+      const state = queryClient.getQueryState(queryKey)
+      const cachedData = queryClient.getQueryData<Manga>(queryKey)
+
+      if (cachedData) {
+        continue
+      }
+
+      if (state?.status === 'pending') {
+        queryClient.removeQueries({ queryKey, exact: true })
+      }
+    }
+  })
 
   const queries = useQueries({
     queries: uniqueMangaIds.map((id) => ({
@@ -105,6 +122,13 @@ export default function useMangaListCachedQuery({
         clearTimeout(timer)
       }
       cleanupTimersRef.current = []
+    }
+  }, [])
+
+  // NOTE: 페이지 이탈 시, pending 작품 쿼리를 제거
+  useEffect(() => {
+    return () => {
+      cleanupPendingMangaQueriesEvent()
     }
   }, [])
 
