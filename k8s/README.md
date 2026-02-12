@@ -56,7 +56,7 @@ sudo kubectl -n cloudflared create secret generic cloudflared-token \
 
 #### 비밀 환경변수 - stg/prod 각각
 
-**모범 사례: 여러 줄 값(인증서/키)은 `--from-file` 사용**
+여러 줄 값(인증서/키)은 `--from-file` 사용
 
 ```zsh
 sudo kubectl create namespace litomi-stg --dry-run=client -o yaml | sudo kubectl apply -f -
@@ -93,18 +93,23 @@ sudo kubectl -n litomi-prod get secret litomi-backend-secret \
   -o jsonpath='{.data.SUPABASE_CERTIFICATE}' | base64 -d | head -n 2
 ```
 
-#### (선택) Grafana Cloud remote_write
+#### (선택) Grafana
 
-`kube-prometheus-stack`(Prometheus Operator)로 **클러스터 내부에서 메트릭을 수집**하고,
-Grafana Cloud를 쓴다면 **remote_write로 메트릭을 Grafana Cloud로 푸시**할 수 있어요.
+Grafana admin 계정/비밀번호는 **외부에서 만든 Secret**을 쓰는 걸 권장해요.
 
 ```zsh
-sudo kubectl create namespace monitoring --dry-run=client -o yaml | sudo kubectl apply -f -
-
-sudo kubectl -n monitoring create secret generic grafana-cloud-remote-write \
-  --from-literal=username='<Grafana Cloud instance ID>' \
-  --from-literal=password='<Grafana Cloud API token>' \
+sudo kubectl -n monitoring create secret generic grafana-admin \
+  --from-literal=admin-user=admin \
+  --from-literal=admin-password="password" \
   --dry-run=client -o yaml | sudo kubectl apply -f -
+
+# 계정 확인
+sudo kubectl -n monitoring get secret grafana-admin \
+  -o jsonpath='{.data.admin-user}' | base64 -d; echo
+
+# 비밀번호
+sudo kubectl -n monitoring get secret grafana-admin \
+  -o jsonpath='{.data.admin-password}' | base64 -d; echo
 ```
 
 #### (선택) Discord 알림 webhook
@@ -137,6 +142,7 @@ sudo kubectl -n argocd get applications.argoproj.io
 - **prod web**: `https://litomi.in`
 - **prod api**: `https://api.litomi.in/health`
 - **Argo CD**: `https://argocd.litomi.in`
+- **Grafana**: `https://grafana.litomi.in`
 
 ### 참고
 
@@ -152,6 +158,18 @@ sudo kubectl -n argocd get applications.argoproj.io
 - [Argo CD AppProject(공식 문서)](https://argo-cd.readthedocs.io/en/stable/user-guide/projects/)
 - [Prometheus Operator(공식)](https://prometheus-operator.dev/)
 - [Alertmanager(공식)](https://prometheus.io/docs/alerting/latest/alertmanager/)
+
+## 프로덕션 모범 사례(요약)
+
+로컬 k3s(단일 노드)는 “프로덕션과 최대한 비슷하게” 연습하기엔 좋아요. 다만 프로덕션은 장애/보안/업그레이드가 핵심이라서, 아래 원칙을 같이 챙기는 걸 권장해요.
+
+- **Git을 단일 진실(SSoT)로 두기**: 클러스터에서 `kubectl edit`로 고치기보단, Git에 반영해서 Argo CD가 맞추게 해요.
+- **버전 핀(pin)하기**: Helm chart / 이미지 태그는 `latest` 대신 버전 고정(지금처럼 `targetRevision` 고정)해요.
+- **AppProject로 경계 만들기**: 팀/플랫폼/앱별로 `destinations`, `sourceRepos`, (필요하면) `clusterResourceWhitelist`를 제한해요.
+- **Auto-sync는 “의도된 drift만” 허용하기**: Grafana admin Secret/`checksum/secret`, webhook `caBundle`처럼 비교 시점마다 달라질 수 있는 필드는 `ignoreDifferences`로 명시해서, 불필요한 self-heal 루프를 막아요.
+- **CRD는 업그레이드 절차를 분리하기**: CRD 변경은 영향이 커서(특히 모니터링 스택) 업그레이드 전에 릴리즈 노트/호환성 확인을 습관화해요.
+- **Secret은 Git에 넣지 않기**: External Secrets / SOPS 등으로 “Git에 암호화해서” 관리하거나, 최소한 런타임 주입으로 관리해요.
+- **Argo CD 자체도 모니터링하기**: Argo CD 리소스 사용량/에러/Sync 실패 알림을 꼭 걸어둬요.
 
 ## 디버그
 
@@ -229,18 +247,19 @@ sudo kubectl -n monitoring port-forward svc/kube-prometheus-stack-alertmanager 9
 open http://127.0.0.1:9093/#/alerts
 ```
 
-### remote_write 실패 알림이 떴을 때(빠른 식별)
-
-- **Prometheus UI에서 원인 확인(가장 빠름)**: `Status → Remote Write`에 마지막 에러(HTTP 코드/메시지)가 보여요.
+### Grafana 접속/비밀번호 확인
 
 ```zsh
-# Prometheus UI 열기
-kubectl -n monitoring port-forward svc/prometheus-kube-prometheus-stack-prometheus 9090:9090
+# Grafana UI (로컬)
+sudo kubectl -n monitoring port-forward svc/kube-prometheus-stack-grafana 3000:80
+open http://127.0.0.1:3000
 ```
 
-- **로그로 HTTP 코드 확인**
-
 ```zsh
-sudo kubectl -n monitoring logs prometheus-kube-prometheus-stack-prometheus-0 -c prometheus --since=1h \
-  | egrep -i 'remote write|remote storage|429|401|403|timeout|tls|no such host|context deadline'
+# admin 계정/비밀번호 확인
+sudo kubectl -n monitoring get secret kube-prometheus-stack-grafana \
+  -o jsonpath='{.data.admin-user}' | base64 -d; echo
+
+sudo kubectl -n monitoring get secret kube-prometheus-stack-grafana \
+  -o jsonpath='{.data.admin-password}' | base64 -d; echo
 ```
