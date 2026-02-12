@@ -5,6 +5,7 @@ namespace: litomi-stg
 
 resources:
   - ../../base
+  - namespace.yaml
   - ingress.yaml
 
 configMapGenerator:

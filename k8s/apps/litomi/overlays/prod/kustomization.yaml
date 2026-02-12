@@ -5,6 +5,7 @@ namespace: litomi-prod
 
 resources:
   - ../../base
+  - namespace.yaml
   - ingress.yaml
 
 configMapGenerator:
