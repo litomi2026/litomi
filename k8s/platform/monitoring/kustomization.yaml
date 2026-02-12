@@ -6,3 +6,5 @@ namespace: monitoring
 resources:
   - alertmanagerconfig-discord.yaml
   - ingress-grafana.yaml
+  - servicemonitor-cloudflared.yaml
+  - servicemonitor-argocd.yaml
