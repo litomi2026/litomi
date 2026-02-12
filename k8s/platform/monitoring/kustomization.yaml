@@ -5,3 +5,4 @@ namespace: monitoring
 
 resources:
   - alertmanagerconfig-discord.yaml
+  - ingress-grafana.yaml

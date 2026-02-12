@@ -12,7 +12,6 @@ import AutoHideNavigation from './AutoHideNavigation'
 import NotificationCount from './NotificationCount'
 import Profile, { ProfileSkeleton } from './Profile'
 import ProfileLink from './ProfileLink'
-import PublishButton from './PublishButton'
 import SelectableLink from './SelectableLink'
 
 export default async function Layout({ children }: LayoutProps<'/'>) {
@@ -88,7 +87,6 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
             리보
           </SelectableLink>
           <ProfileLink className="hidden sm:block" />
-          <PublishButton className="hidden mx-auto my-4 sm:block xl:mx-0" />
         </nav>
         <Suspense fallback={<ProfileSkeleton />}>
           <Profile />

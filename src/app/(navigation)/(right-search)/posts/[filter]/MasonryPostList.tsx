@@ -18,9 +18,10 @@ type Props = {
   mangaId?: number
   username?: string
   NotFound: ReactNode
+  showMangaCover?: boolean
 }
 
-export default function MasonryPostList({ filter, mangaId, username, NotFound }: Readonly<Props>) {
+export default function MasonryPostList({ filter, mangaId, username, NotFound, showMangaCover }: Props) {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, error, refetch } =
     usePostsInfiniteQuery(filter, mangaId, username)
 
@@ -28,8 +29,8 @@ export default function MasonryPostList({ filter, mangaId, username, NotFound }:
   const masonryColumnCount = useMasonryColumnCount()
 
   const masonryColumns = useMemo(
-    () => splitIntoMasonryColumns(allPosts, masonryColumnCount, estimatePostCardWeight),
-    [allPosts, masonryColumnCount],
+    () => splitIntoMasonryColumns(allPosts, masonryColumnCount, (post) => estimatePostCardWeight(post, showMangaCover)),
+    [allPosts, masonryColumnCount, showMangaCover],
   )
 
   const { ref, inView } = useInView({
@@ -48,7 +49,7 @@ export default function MasonryPostList({ filter, mangaId, username, NotFound }:
       <div className="p-2 md:p-4">
         <div className="animate-fade-in grid grid-cols-1 gap-2 md:gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
           {[...Array(6)].map((_, i) => (
-            <PostSkeleton key={i} />
+            <PostSkeleton key={i} showMangaCover={showMangaCover} />
           ))}
         </div>
       </div>
@@ -69,9 +70,9 @@ export default function MasonryPostList({ filter, mangaId, username, NotFound }:
         {masonryColumns.map((columnPosts, columnIndex) => (
           <div className="flex flex-col gap-2 md:gap-4" key={columnIndex}>
             {columnPosts.map((post) => (
-              <PostCard key={post.id} post={post} />
+              <PostCard key={post.id} post={post} showMangaCover={showMangaCover} />
             ))}
-            {isFetchingNextPage && <PostSkeleton />}
+            {isFetchingNextPage && <PostSkeleton showMangaCover={showMangaCover} />}
           </div>
         ))}
       </div>
@@ -125,7 +126,11 @@ function ErrorState({ error, retry }: { error: Error; retry: () => void }) {
   )
 }
 
-function estimatePostCardWeight(post: Post) {
+function estimatePostCardWeight(post: Post, showMangaCover?: boolean) {
+  if (!showMangaCover) {
+    return 1
+  }
+
   return post.mangaId ? 3.3 : 1
 }
 
