@@ -26,7 +26,7 @@ export default async function Page({ params }: PageProps<'/posts/[filter]'>) {
   const { filter } = validation.data
   const postFilter = filterParamsToPostFilter[filter]
 
-  return <PostList filter={postFilter} NotFound={<EmptyState filter={filter} />} />
+  return <PostList filter={postFilter} NotFound={<EmptyState filter={filter} />} showMangaCover />
 }
 
 const emptyStateConfig = {

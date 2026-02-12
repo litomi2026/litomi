@@ -15,7 +15,14 @@ export default function UserPostList({ username }: Readonly<Props>) {
   const { data: me } = useMeQuery()
   const isOwnProfile = me?.name === username
 
-  return <PostList filter={PostFilter.USER} NotFound={<EmptyState isOwnProfile={isOwnProfile} />} username={username} />
+  return (
+    <PostList
+      filter={PostFilter.USER}
+      NotFound={<EmptyState isOwnProfile={isOwnProfile} />}
+      showMangaCover
+      username={username}
+    />
+  )
 }
 
 function EmptyState({ isOwnProfile }: { isOwnProfile: boolean }) {

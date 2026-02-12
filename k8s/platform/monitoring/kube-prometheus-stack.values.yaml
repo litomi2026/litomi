@@ -80,7 +80,7 @@ alertmanager:
               storage: 2Gi
 
 grafana:
-  enabled: false
+  enabled: true
 
 # k3s: control plane components usually aren't exposed as scrapeable Services by default.
 kubeControllerManager:
@@ -95,6 +95,11 @@ kubeScheduler:
 kubeProxy:
   enabled: false
 
+prometheusOperator:
+  # Kubernetes v1.33+에서 Endpoints(v1)는 deprecated라서, kubelet 대상도 EndpointSlice로 만들어요.
+  kubeletEndpointsEnabled: false
+  kubeletEndpointSliceEnabled: true
+
 prometheus:
   prometheusSpec:
     replicas: 1
@@ -103,7 +108,9 @@ prometheus:
     externalLabels:
       cluster: litomi-k3s
 
-    # Local retention (TSDB): keep it short, and rely on Grafana Cloud for longer retention.
+    # Kubernetes v1.33+에서 Endpoints(v1)는 deprecated라서, Prometheus 서비스 디스커버리를 EndpointSlice로 전환해요.
+    serviceDiscoveryRole: EndpointSlice
+
     retention: 14d
     retentionSize: 40GiB
 
@@ -122,13 +129,3 @@ prometheus:
           resources:
             requests:
               storage: 50Gi
-
-    remoteWrite:
-      - url: https://prometheus-prod-49-prod-ap-northeast-0.grafana.net/api/prom/push
-        basicAuth:
-          username:
-            name: grafana-cloud-remote-write
-            key: username
-          password:
-            name: grafana-cloud-remote-write
-            key: password
