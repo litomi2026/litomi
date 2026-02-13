@@ -1,0 +1,85 @@
+# Velero Helm chart values (vmware-tanzu/velero)
+#
+# Backup/DR (k3s 단일 노드 포함)에서 "상태(PV 데이터)"를 오브젝트 스토리지로 빼는 구성이에요.
+# - Storage target: S3 호환 (예: in-cluster MinIO)
+# - k3s(local-path) PV는 CSI snapshot이 아니라 filesystem backup(node-agent)을 주로 써요.
+
+initContainers:
+  - name: velero-plugin-for-aws
+    image: velero/velero-plugin-for-aws:v1.13.1
+    imagePullPolicy: IfNotPresent
+    volumeMounts:
+      - mountPath: /target
+        name: plugins
+
+credentials:
+  useSecret: true
+  existingSecret: velero-cloud-credentials
+
+configuration:
+  # filesystem backup에서 Pod에 별도 annotation 없이 기본으로 볼륨을 백업해요.
+  # (원치 않는 볼륨까지 포함될 수 있으니, 실제 프로덕션에선 namespace/리소스 필터를 더 좁히는 걸 권장해요.)
+  defaultVolumesToFsBackup: true
+
+  backupStorageLocation:
+    - name: default
+      provider: aws
+      bucket: litomi-velero-backups
+      default: true
+      accessMode: ReadWrite
+      credential:
+        name: velero-cloud-credentials
+        key: cloud
+      config:
+        # MinIO는 region이 엄격하지 않아서 관용적으로 us-east-1을 써요.
+        region: us-east-1
+        s3ForcePathStyle: 'true'
+        s3Url: http://minio.minio.svc:9000
+
+  # local-path PV는 CSI snapshot을 기본으로 지원하지 않아서, VSL 생성은 꺼두는 걸 권장해요.
+  volumeSnapshotLocation: []
+
+backupsEnabled: true
+snapshotsEnabled: false
+
+# filesystem backup(node-agent) 활성화
+deployNodeAgent: true
+
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    additionalLabels:
+      release: kube-prometheus-stack
+      app.kubernetes.io/instance: kube-prometheus-stack
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
+nodeAgent:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+# Backup 스케줄은 “복구 리허설 가능”한 단순한 형태로만 시작해요.
+# - GitOps로 리소스는 복원되지만, PV 데이터(Vault/Prometheus 등)는 별도 백업이 필요해요.
+schedules:
+  daily:
+    schedule: '0 3 * * *'
+    template:
+      ttl: '720h' # 30d
+      storageLocation: default
+      includedNamespaces:
+        - vault
+        - monitoring
+        - litomi-prod
+        - litomi-stg

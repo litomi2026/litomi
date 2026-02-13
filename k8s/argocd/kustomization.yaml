@@ -12,6 +12,8 @@ resources:
   - applications/platform-metrics-server.yaml
   - applications/platform-cloudflared.yaml
   - applications/platform-monitoring.yaml
+  - applications/platform-minio.yaml
+  - applications/platform-velero.yaml
   - applications/platform-argocd.yaml
 
   - applications/litomi-stg.yaml

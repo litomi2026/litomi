@@ -1,30 +1,29 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: platform-vault
+  name: platform-velero
   annotations:
-    # Ensure Vault is created before ESO/apps that depend on it.
-    # NOTE: Sync wave orders resource apply within the parent "root" app (app-of-apps).
-    argocd.argoproj.io/sync-wave: '0'
+    # MinIO + ESO가 먼저 설치돼야 ExternalSecret/SecretStore를 적용할 수 있어요.
+    argocd.argoproj.io/sync-wave: '3'
 spec:
   project: platform
   sources:
-    - repoURL: https://helm.releases.hashicorp.com
-      chart: vault
-      targetRevision: 0.32.0
+    - repoURL: https://vmware-tanzu.github.io/helm-charts
+      chart: velero
+      targetRevision: 11.3.2
       helm:
-        releaseName: vault
+        releaseName: velero
         valueFiles:
-          - $values/k8s/platform/vault/vault.values.yaml
+          - $values/k8s/platform/velero/velero.values.yaml
     - repoURL: https://github.com/gwak2837/litomi.git
       targetRevision: main
       ref: values
     - repoURL: https://github.com/gwak2837/litomi.git
       targetRevision: main
-      path: k8s/platform/vault
+      path: k8s/platform/velero
   destination:
     server: https://kubernetes.default.svc
-    namespace: vault
+    namespace: velero
   syncPolicy:
     automated:
       prune: true

@@ -1,0 +1,35 @@
+# MinIO (S3 compatible) for in-cluster Velero backups
+#
+# - Internal-only(ClusterIP) by default.
+# - Buckets are created automatically in standalone mode via `defaultBuckets`.
+# - Credentials are loaded from an ExternalSecret (`minio-root`).
+
+auth:
+  existingSecret: minio-root
+  rootUserSecretKey: root-user
+  rootPasswordSecretKey: root-password
+
+# Must match Velero `configuration.backupStorageLocation[].bucket`
+defaultBuckets: litomi-velero-backups
+
+console:
+  enabled: false
+
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    labels:
+      release: kube-prometheus-stack
+      app.kubernetes.io/instance: kube-prometheus-stack
+
+persistence:
+  size: 20Gi
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi

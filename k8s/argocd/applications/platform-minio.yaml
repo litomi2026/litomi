@@ -1,30 +1,29 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: platform-vault
+  name: platform-minio
   annotations:
-    # Ensure Vault is created before ESO/apps that depend on it.
-    # NOTE: Sync wave orders resource apply within the parent "root" app (app-of-apps).
-    argocd.argoproj.io/sync-wave: '0'
+    # ESO가 먼저 설치돼야 ExternalSecret/SecretStore를 적용할 수 있어요.
+    argocd.argoproj.io/sync-wave: '2'
 spec:
   project: platform
   sources:
-    - repoURL: https://helm.releases.hashicorp.com
-      chart: vault
-      targetRevision: 0.32.0
+    - repoURL: https://charts.bitnami.com/bitnami
+      chart: minio
+      targetRevision: 17.0.21
       helm:
-        releaseName: vault
+        releaseName: minio
         valueFiles:
-          - $values/k8s/platform/vault/vault.values.yaml
+          - $values/k8s/platform/minio/minio.values.yaml
     - repoURL: https://github.com/gwak2837/litomi.git
       targetRevision: main
       ref: values
     - repoURL: https://github.com/gwak2837/litomi.git
       targetRevision: main
-      path: k8s/platform/vault
+      path: k8s/platform/minio
   destination:
     server: https://kubernetes.default.svc
-    namespace: vault
+    namespace: minio
   syncPolicy:
     automated:
       prune: true
