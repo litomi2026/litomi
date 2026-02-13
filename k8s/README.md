@@ -42,87 +42,12 @@ sudo kubectl -n argocd get secret argocd-initial-admin-secret \
   -o jsonpath='{.data.password}' | base64 -d; echo
 ```
 
-### 4) Secret 준비
+### 4) Vault + External Secrets(ESO) 준비
 
-#### Cloudflare Tunnel 토큰
+이 클러스터는 Vault를 SSOT로 두고 ESO가 Kubernetes Secret을 만들어요.
 
-```zsh
-sudo kubectl create namespace cloudflared --dry-run=client -o yaml | sudo kubectl apply -f -
-
-sudo kubectl -n cloudflared create secret generic cloudflared-token \
-  --from-literal=token="eyJh..." \
-  --dry-run=client -o yaml | sudo kubectl apply -f -
-```
-
-#### 비밀 환경변수 - stg/prod 각각
-
-여러 줄 값(인증서/키)은 `--from-file` 사용
-
-```zsh
-sudo kubectl create namespace litomi-stg --dry-run=client -o yaml | sudo kubectl apply -f -
-sudo kubectl create namespace litomi-prod --dry-run=client -o yaml | sudo kubectl apply -f -
-
-sudo vi /tmp/litomi-backend-secret.prod.env
-sudo vi /tmp/litomi-backend-secret.stg.env
-sudo vi /tmp/aiven.crt
-sudo vi /tmp/ga-key.pem
-sudo vi /tmp/supabase.crt
-
-sudo kubectl -n litomi-prod create secret generic litomi-backend-secret \
-  --from-env-file=/tmp/litomi-backend-secret.prod.env \
-  --dry-run=client -o yaml | sudo kubectl apply -f -
-
-sudo kubectl -n litomi-prod create secret generic litomi-backend-file \
-  --from-file=AIVEN_CERTIFICATE=/tmp/aiven.crt \
-  --from-file=GA_SERVICE_ACCOUNT_KEY=/tmp/ga-key.pem \
-  --from-file=SUPABASE_CERTIFICATE=/tmp/supabase.crt \
-  --dry-run=client -o yaml | sudo kubectl apply -f -
-
-sudo kubectl -n litomi-stg create secret generic litomi-backend-secret \
-  --from-env-file=/tmp/litomi-backend-secret.stg.env \
-  --dry-run=client -o yaml | sudo kubectl apply -f -
-
-sudo kubectl -n litomi-stg create secret generic litomi-backend-file \
-  --from-file=AIVEN_CERTIFICATE=/tmp/aiven.crt \
-  --from-file=GA_SERVICE_ACCOUNT_KEY=/tmp/ga-key.pem \
-  --from-file=SUPABASE_CERTIFICATE=/tmp/supabase.crt \
-  --dry-run=client -o yaml | sudo kubectl apply -f -
-
-# (확인) 인증서가 올바른 PEM 형식으로 저장되었는지 확인
-sudo kubectl -n litomi-prod get secret litomi-backend-secret \
-  -o jsonpath='{.data.SUPABASE_CERTIFICATE}' | base64 -d | head -n 2
-```
-
-#### (선택) Grafana
-
-Grafana admin 계정/비밀번호는 **외부에서 만든 Secret**을 쓰는 걸 권장해요.
-
-```zsh
-sudo kubectl -n monitoring create secret generic grafana-admin \
-  --from-literal=admin-user=admin \
-  --from-literal=admin-password="password" \
-  --dry-run=client -o yaml | sudo kubectl apply -f -
-
-# 계정 확인
-sudo kubectl -n monitoring get secret grafana-admin \
-  -o jsonpath='{.data.admin-user}' | base64 -d; echo
-
-# 비밀번호
-sudo kubectl -n monitoring get secret grafana-admin \
-  -o jsonpath='{.data.admin-password}' | base64 -d; echo
-```
-
-#### (선택) Discord 알림 webhook
-
-```zsh
-sudo kubectl -n monitoring create secret generic alertmanager-discord-webhook-warning \
-  --from-literal=url="https://discord.com/api/webhooks/..." \
-  --dry-run=client -o yaml | sudo kubectl apply -f -
-
-sudo kubectl -n monitoring create secret generic alertmanager-discord-webhook-critical \
-  --from-literal=url="https://discord.com/api/webhooks/..." \
-  --dry-run=client -o yaml | sudo kubectl apply -f -
-```
+- **1회 수동 작업 런북**: `k8s/RUNBOOK.vault-eso.md`
+- **(필수) k3s Secret 암호화(at-rest)**: ESO가 만든 Secret도 데이터스토어에 저장돼서, 암호화를 꼭 켜는 걸 권장해요.
 
 ### 5) GitOps 시작 (root app-of-apps 적용)
 

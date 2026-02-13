@@ -5,6 +5,11 @@ namespace: litomi-prod
 
 resources:
   - ../../base
+  - namespace.yaml
+  - serviceaccount-eso-vault.yaml
+  - secretstore-vault.yaml
+  - externalsecret-litomi-backend-secret.yaml
+  - externalsecret-litomi-backend-file.yaml
   - ingress.yaml
 
 configMapGenerator:
