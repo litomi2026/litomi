@@ -52,7 +52,11 @@ spec:
               memory: 4Gi
           securityContext:
             allowPrivilegeEscalation: false
+            # `runAsNonRoot: true` + image `USER nextjs`(string) 조합이면 kubelet이 non-root 검증을 못 해서 거부할 수 있어요.
+            # 이미지(`Dockerfile.nextjs`)의 nextjs UID/GID(1001)에 맞춰 숫자로 고정해요.
             runAsNonRoot: true
+            runAsUser: 1001
+            runAsGroup: 1001
             capabilities:
               drop:
                 - ALL
