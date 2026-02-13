@@ -1,29 +1,29 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: platform-velero
+  name: platform-minio
   annotations:
-    # MinIO + ESO가 먼저 설치돼야 ExternalSecret/SecretStore를 적용할 수 있어요.
-    argocd.argoproj.io/sync-wave: '3'
+    # ESO가 먼저 설치돼야 ExternalSecret/SecretStore를 적용할 수 있어요.
+    argocd.argoproj.io/sync-wave: '2'
 spec:
   project: platform
   sources:
-    - repoURL: https://vmware-tanzu.github.io/helm-charts
-      chart: velero
-      targetRevision: 11.3.2
+    - repoURL: https://charts.bitnami.com/bitnami
+      chart: minio
+      targetRevision: 17.0.21
       helm:
-        releaseName: velero
+        releaseName: minio
         valueFiles:
-          - $values/k8s/platform/velero/velero.values.yaml
+          - $values/k8s/platform/minio/minio.values.yaml
     - repoURL: https://github.com/gwak2837/litomi.git
       targetRevision: main
       ref: values
     - repoURL: https://github.com/gwak2837/litomi.git
       targetRevision: main
-      path: k8s/platform/velero
+      path: k8s/platform/minio
   destination:
     server: https://kubernetes.default.svc
-    namespace: velero
+    namespace: minio
   syncPolicy:
     automated:
       prune: true
