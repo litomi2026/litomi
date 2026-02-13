@@ -102,9 +102,11 @@ sudo kubectl -n vault get secret vault-tls
 - `litomi-stg`
 - `cloudflared`
 - `monitoring`
+- `velero`
+- `minio`
 
 ```zsh
-for ns in litomi-prod litomi-stg cloudflared monitoring; do
+for ns in litomi-prod litomi-stg cloudflared monitoring velero minio; do
   sudo kubectl -n "$ns" create configmap vault-ca \
     --from-file=ca.crt=/tmp/vault-tls/ca.crt \
     --dry-run=client -o yaml | sudo kubectl apply -f -
@@ -191,6 +193,18 @@ path "kv/data/monitoring/*" {
   capabilities = ["read"]
 }
 HCL
+
+vault policy write velero-read - <<'HCL'
+path "kv/data/velero/*" {
+  capabilities = ["read"]
+}
+HCL
+
+vault policy write minio-read - <<'HCL'
+path "kv/data/minio/*" {
+  capabilities = ["read"]
+}
+HCL
 ```
 
 ### 7-2) Role (ServiceAccount + Namespace 바인딩)
@@ -225,6 +239,20 @@ vault write auth/kubernetes/role/eso-monitoring \
   policies=monitoring-read \
   audience=vault \
   ttl=1h
+
+vault write auth/kubernetes/role/eso-velero \
+  bound_service_account_names=eso-vault \
+  bound_service_account_namespaces=velero \
+  policies=velero-read \
+  audience=vault \
+  ttl=1h
+
+vault write auth/kubernetes/role/eso-minio \
+  bound_service_account_names=eso-vault \
+  bound_service_account_namespaces=minio \
+  policies=minio-read \
+  audience=vault \
+  ttl=1h
 ```
 
 ## 8) Vault에 시크릿 값 넣기
@@ -232,24 +260,6 @@ vault write auth/kubernetes/role/eso-monitoring \
 로컬에서는 예전처럼 `.env` 파일로 값을 정리해두고(예: `k8s/apps/litomi/secrets/backend-secret.prod.env`), 그 값을 Vault로 옮겨도 돼요.
 
 ```zsh
-# (Vault Pod 안에서) litomi-prod secrets
-vault kv put kv/litomi-prod/litomi-backend-secret \
-  ADSTERRA_API_KEY="..." \
-  POSTGRES_URL="postgresql://..." \
-  JWT_SECRET_ACCESS_TOKEN="..." \
-  JWT_SECRET_REFRESH_TOKEN="..." \
-  JWT_SECRET_TRUSTED_DEVICE="..." \
-  JWT_SECRET_BBATON_ATTEMPT="..."
-
-# (Vault Pod 안에서) litomi-stg secrets
-vault kv put kv/litomi-stg/litomi-backend-secret \
-  ADSTERRA_API_KEY="..." \
-  POSTGRES_URL="postgresql://..." \
-  JWT_SECRET_ACCESS_TOKEN="..." \
-  JWT_SECRET_REFRESH_TOKEN="..." \
-  JWT_SECRET_TRUSTED_DEVICE="..." \
-  JWT_SECRET_BBATON_ATTEMPT="..."
-
 # file-like secrets
 #
 # 1) (k3s Ubuntu 머신에서) 파일 준비
@@ -262,23 +272,52 @@ sudo kubectl -n vault exec -i vault-0 -- sh -c 'cat > /tmp/aiven.crt' < /tmp/aiv
 sudo kubectl -n vault exec -i vault-0 -- sh -c 'cat > /tmp/ga-key.pem' < /tmp/ga-key.pem
 sudo kubectl -n vault exec -i vault-0 -- sh -c 'cat > /tmp/supabase.crt' < /tmp/supabase.crt
 
-# 3) (Vault Pod 안에서) litomi-prod file-like secrets
+# 3) litomi-prod file-like secrets
 vault kv put kv/litomi-prod/litomi-backend-file \
   AIVEN_CERTIFICATE=@/tmp/aiven.crt \
   GA_SERVICE_ACCOUNT_KEY=@/tmp/ga-key.pem \
   SUPABASE_CERTIFICATE=@/tmp/supabase.crt
 
-# 3) (Vault Pod 안에서) litomi-stg file-like secrets
+# 3) litomi-stg file-like secrets
 vault kv put kv/litomi-stg/litomi-backend-file \
   AIVEN_CERTIFICATE=@/tmp/aiven.crt \
   GA_SERVICE_ACCOUNT_KEY=@/tmp/ga-key.pem \
   SUPABASE_CERTIFICATE=@/tmp/supabase.crt
 
-# (Vault Pod 안에서) platform secrets
+# litomi-prod secrets
+vault kv put kv/litomi-prod/litomi-backend-secret \
+  ADSTERRA_API_KEY="..." \
+  POSTGRES_URL="postgresql://..." \
+  JWT_SECRET_ACCESS_TOKEN="..." \
+  JWT_SECRET_REFRESH_TOKEN="..." \
+  JWT_SECRET_TRUSTED_DEVICE="..." \
+  JWT_SECRET_BBATON_ATTEMPT="..."
+
+# litomi-stg secrets
+vault kv put kv/litomi-stg/litomi-backend-secret \
+  ADSTERRA_API_KEY="..." \
+  POSTGRES_URL="postgresql://..." \
+  JWT_SECRET_ACCESS_TOKEN="..." \
+  JWT_SECRET_REFRESH_TOKEN="..." \
+  JWT_SECRET_TRUSTED_DEVICE="..." \
+  JWT_SECRET_BBATON_ATTEMPT="..."
+
+# platform secrets
 vault kv put kv/cloudflared/cloudflared-token token="eyJh..."
 vault kv put kv/monitoring/grafana-admin admin-user="..." admin-password="..."
 vault kv put kv/monitoring/alertmanager-discord-webhook-warning url="https://discord.com/api/webhooks/..."
 vault kv put kv/monitoring/alertmanager-discord-webhook-critical url="https://discord.com/api/webhooks/..."
+
+# velero (S3/R2 credentials file)
+cat > /tmp/credentials-velero <<'EOF'
+[default]
+aws_access_key_id=...
+aws_secret_access_key=...
+EOF
+vault kv put kv/velero/velero-cloud-credentials cloud=@/tmp/credentials-velero
+
+# minio root credentials (for in-cluster S3)
+vault kv put kv/minio/minio-root root-user="..." root-password="..."
 ```
 
 작업이 끝나면 `/tmp/*.crt`, `/tmp/*.pem` 같은 **임시 파일은 지우는 걸 권장해요.** (남겨놔도 동작은 하지만, 노출 면적이 커져요)
@@ -318,4 +357,21 @@ sudo kubectl -n monitoring get secret grafana-admin
 #
 # sudo kubectl -n litomi-prod annotate externalsecret litomi-backend-secret force-sync="$(date +%s)" --overwrite
 # sudo kubectl -n litomi-stg annotate externalsecret litomi-backend-secret force-sync="$(date +%s)" --overwrite
+```
+
+## 디버깅
+
+### 로컬에서 port-forward로 Vault health/UI 확인하기
+
+Vault는 TLS(HTTPS)로 떠 있어요. 그래서 `http://127.0.0.1:8200`로 접근하면 `connection reset by peer`처럼 끊길 수 있어요.
+
+```zsh
+# 1) 포트 포워딩
+sudo kubectl -n vault port-forward svc/vault 8200:8200
+```
+
+접속
+
+```
+https://127.0.0.1:8200/ui/
 ```
