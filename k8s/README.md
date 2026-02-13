@@ -46,7 +46,7 @@ sudo kubectl -n argocd get secret argocd-initial-admin-secret \
 
 이 클러스터는 Vault를 SSOT로 두고 ESO가 Kubernetes Secret을 만들어요.
 
-- **1회 수동 작업 런북**: `k8s/RUNBOOK.vault-eso.md`
+- **1회 수동 작업 런북**: `k8s/platform/vault/RUNBOOK.vault-eso.md`
 - **(필수) k3s Secret 암호화(at-rest)**: ESO가 만든 Secret도 데이터스토어에 저장돼서, 암호화를 꼭 켜는 걸 권장해요.
 
 ### 5) GitOps 시작 (root app-of-apps 적용)
@@ -83,6 +83,11 @@ sudo kubectl -n argocd get applications.argoproj.io
 - [Argo CD AppProject(공식 문서)](https://argo-cd.readthedocs.io/en/stable/user-guide/projects/)
 - [Prometheus Operator(공식)](https://prometheus-operator.dev/)
 - [Alertmanager(공식)](https://prometheus.io/docs/alerting/latest/alertmanager/)
+- [Velero(공식)](https://velero.io/docs/)
+
+### 런북
+
+- 백업/DR: `k8s/platform/velero/RUNBOOK.backup-dr.md`
 
 ## 프로덕션 모범 사례(요약)
 
