@@ -17,6 +17,22 @@ tenant:
       servers: 1
       volumesPerServer: 1
       size: 20Gi
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        runAsNonRoot: true
+      containerSecurityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        seccompProfile:
+          type: RuntimeDefault
       resources:
         requests:
           cpu: 100m
@@ -37,4 +53,6 @@ tenant:
     port: 9000
     protocol: http
 
-  prometheusOperator: true
+  # kube-prometheus-stack의 Prometheus CR는 monitoring 네임스페이스에 있어서
+  # Tenant가 기본값으로 찾는 네임스페이스와 달라 reconcile 에러가 반복돼요.
+  prometheusOperator: false

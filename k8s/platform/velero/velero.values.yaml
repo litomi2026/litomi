@@ -12,6 +12,13 @@ initContainers:
       - mountPath: /target
         name: plugins
 
+kubectl:
+  image:
+    # velero chart 기본(bitnamilegacy/kubectl + auto tag)은 1.34 환경에서
+    # 유효하지 않은 태그를 선택할 수 있어서 hook Job이 Pending으로 멈춰요.
+    repository: docker.io/rancher/kubectl
+    tag: v1.34.3
+
 credentials:
   useSecret: true
   existingSecret: velero-cloud-credentials
