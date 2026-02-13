@@ -1,28 +1,31 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: platform-monitoring
+  name: platform-vault
   annotations:
-    argocd.argoproj.io/sync-wave: '3'
+    # Ensure Vault is created before ESO/apps that depend on it.
+    # NOTE: Sync wave orders resource apply within the parent "root" app (app-of-apps).
+    # Ref: https://argo-cd.readthedocs.io/en/stable/user-guide/sync-waves/
+    argocd.argoproj.io/sync-wave: '0'
 spec:
   project: platform
   sources:
-    - repoURL: https://prometheus-community.github.io/helm-charts
-      chart: kube-prometheus-stack
-      targetRevision: 81.6.0
+    - repoURL: https://helm.releases.hashicorp.com
+      chart: vault
+      targetRevision: 0.32.0
       helm:
-        releaseName: kube-prometheus-stack
+        releaseName: vault
         valueFiles:
-          - $values/k8s/platform/monitoring/kube-prometheus-stack.values.yaml
+          - $values/k8s/platform/vault/vault.values.yaml
     - repoURL: https://github.com/gwak2837/litomi.git
       targetRevision: main
       ref: values
     - repoURL: https://github.com/gwak2837/litomi.git
       targetRevision: main
-      path: k8s/platform/monitoring
+      path: k8s/platform/vault
   destination:
     server: https://kubernetes.default.svc
-    namespace: monitoring
+    namespace: vault
   syncPolicy:
     automated:
       prune: true

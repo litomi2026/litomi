@@ -6,6 +6,9 @@ namespace: cloudflared
 resources:
   - namespace.yaml
   - serviceaccount.yaml
+  - serviceaccount-eso-vault.yaml
+  - secretstore-vault.yaml
+  - externalsecret-cloudflared-token.yaml
   - deployment.yaml
   - service.yaml
   - pdb.yaml

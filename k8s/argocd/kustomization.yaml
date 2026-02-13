@@ -7,6 +7,8 @@ resources:
   - projects/platform.yaml
   - projects/litomi.yaml
 
+  - applications/platform-vault.yaml
+  - applications/platform-external-secrets.yaml
   - applications/platform-metrics-server.yaml
   - applications/platform-cloudflared.yaml
   - applications/platform-monitoring.yaml

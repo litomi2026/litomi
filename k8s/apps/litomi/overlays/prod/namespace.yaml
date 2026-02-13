@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: cloudflared
+  name: litomi-prod
   labels:
     # https://kubernetes.io/docs/concepts/security/pod-security-admission/
     pod-security.kubernetes.io/enforce: restricted
