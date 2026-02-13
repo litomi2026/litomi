@@ -20,6 +20,9 @@ server:
     securityContext:
       pod:
         runAsNonRoot: true
+        runAsUser: 100
+        runAsGroup: 1000
+        fsGroup: 1000
         seccompProfile:
           type: RuntimeDefault
       container:
