@@ -40,7 +40,6 @@ server:
   extraVolumes:
     - type: secret
       name: vault-tls
-      path: vault-tls
 
   resources:
     requests:
