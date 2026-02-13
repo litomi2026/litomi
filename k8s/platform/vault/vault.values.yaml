@@ -1,0 +1,72 @@
+# HashiCorp Vault OSS (Helm chart: hashicorp/vault)
+#
+# - TLS is enabled (bring-your-own `vault-tls` Secret; do NOT commit certs/keys to Git).
+# - Storage: integrated Raft (PV-backed).
+# - Auth: Kubernetes auth method is bootstrapped via the runbook (1회 수동 작업).
+#
+# Ref (chart values): https://github.com/hashicorp/vault-helm
+
+global:
+  tlsDisable: false
+
+injector:
+  enabled: false
+
+server:
+  # Single-node friendly. Scale later when you add more nodes.
+  updateStrategyType: RollingUpdate
+
+  statefulSet:
+    securityContext:
+      pod:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      container:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        seccompProfile:
+          type: RuntimeDefault
+
+  auditStorage:
+    enabled: true
+    size: 2Gi
+
+  extraVolumes:
+    - type: secret
+      name: vault-tls
+      path: vault-tls
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  ha:
+    enabled: true
+    replicas: 1
+    raft:
+      enabled: true
+      setNodeId: true
+      config: |
+        ui = true
+        disable_mlock = true
+
+        listener "tcp" {
+          tls_disable = 0
+          address = "[::]:8200"
+          cluster_address = "[::]:8201"
+          tls_cert_file = "/vault/userconfig/vault-tls/tls.crt"
+          tls_key_file  = "/vault/userconfig/vault-tls/tls.key"
+        }
+
+        storage "raft" {
+          path = "/vault/data"
+        }
+
+        service_registration "kubernetes" {}
