@@ -16,14 +16,19 @@ cd litomi
 ### 2) k3s 설치
 
 ```zsh
-curl -sfL https://get.k3s.io | sudo sh -
+curl -sfL https://get.k3s.io | sudo sh -s - server --cluster-init --secrets-encryption
 
-sudo kubectl wait --for=condition=Ready node --all --timeout=20s
-sudo kubectl -n kube-system wait --for=create deploy/traefik --timeout=20s
-sudo kubectl -n kube-system rollout status deploy/traefik --timeout=20s
+# (대기)
+sudo kubectl wait --for=condition=Ready node --all --timeout=180s
+sudo kubectl -n kube-system wait --for=condition=Available deployment --all --timeout=180s
 
-sudo kubectl get nodes
-sudo kubectl -n kube-system get deploy traefik
+# (확인)
+sudo kubectl get nodes -o wide
+sudo kubectl get --raw='/readyz?verbose'
+sudo timeout 60s sh -c 'until k3s secrets-encrypt status >/dev/null 2>&1; do sleep 2; done'
+sudo k3s secrets-encrypt status
+sudo k3s etcd-snapshot save --name bootstrap-$(date +%Y%m%d-%H%M%S)
+sudo k3s etcd-snapshot ls
 ```
 
 ### 3) Argo CD 설치
@@ -32,33 +37,37 @@ CRD 크기 때문에 **server-side apply**를 권장해요.
 
 ```zsh
 sudo kubectl apply --server-side --force-conflicts -k k8s/bootstrap/argocd
-sudo kubectl -n argocd rollout status deploy/argocd-server --timeout=120s
-```
 
-#### Argo CD 초기 admin 비밀번호 확인
+# (대기)
+sudo kubectl -n argocd wait --for=condition=Available deployment --all --timeout=300s
+sudo kubectl -n argocd rollout status statefulset/argocd-application-controller --timeout=300s
+sudo kubectl -n argocd wait --for=create secret/argocd-initial-admin-secret --timeout=180s
 
-```zsh
+# (확인)
 sudo kubectl -n argocd get secret argocd-initial-admin-secret \
   -o jsonpath='{.data.password}' | base64 -d; echo
 ```
 
-### 4) Vault + External Secrets(ESO) 준비
-
-이 클러스터는 Vault를 SSOT로 두고 ESO가 Kubernetes Secret을 만들어요.
-
-- **1회 수동 작업 런북**: `k8s/platform/vault/RUNBOOK.vault-eso.md`
-- **(필수) k3s Secret 암호화(at-rest)**: ESO가 만든 Secret도 데이터스토어에 저장돼서, 암호화를 꼭 켜는 걸 권장해요.
-
-### 5) GitOps 시작 (root app-of-apps 적용)
+### 4) GitOps 시작 (root app-of-apps 적용)
 
 ```zsh
 sudo kubectl apply -f k8s/bootstrap/root/root.yaml
 
-sudo kubectl -n argocd wait --for=jsonpath='{.status.sync.status}'=Synced applications.argoproj.io/root --timeout=60s
-sudo kubectl -n argocd wait --for=jsonpath='{.status.health.status}'=Healthy applications.argoproj.io/root --timeout=60s
+# (대기)
+sudo kubectl -n argocd wait --for=jsonpath='{.status.sync.status}'=Synced applications.argoproj.io/root --timeout=300s
+sudo kubectl -n argocd wait --for=jsonpath='{.status.health.status}'=Healthy applications.argoproj.io/root --timeout=300s
 
+# (확인)
 sudo kubectl -n argocd get applications.argoproj.io
 ```
+
+### 5) Vault + External Secrets(ESO) 준비
+
+이 클러스터는 Vault를 SSOT로 두고 ESO가 Kubernetes Secret을 만들어요.
+
+- **1회 수동 작업 런북**: `k8s/platform/vault/RUNBOOK.vault-eso.md`
+- **실행 시점**: 4번(root app-of-apps 적용) 이후에 진행해 주세요. 먼저 `vault` 네임스페이스가 생겼는지 확인해요.
+- **(필수) k3s Secret 암호화(at-rest)**: k3s 설치할 때 `--secrets-encryption`을 켜는 걸 권장해요. (이미 설치했다면 RUNBOOK 1번을 따라 켜 주세요.)
 
 ### 6) 접속 확인
 

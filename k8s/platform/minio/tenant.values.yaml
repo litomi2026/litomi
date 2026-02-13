@@ -1,0 +1,40 @@
+# MinIO 공식 Tenant Helm values (minio/tenant)
+
+tenant:
+  name: minio
+
+  image:
+    repository: quay.io/minio/minio
+    tag: RELEASE.2025-07-23T15-54-02Z
+    pullPolicy: IfNotPresent
+
+  configSecret:
+    name: minio-env-configuration
+    existingSecret: true
+
+  pools:
+    - name: pool-0
+      servers: 1
+      volumesPerServer: 1
+      size: 20Gi
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
+
+  certificate:
+    # Velero가 내부 HTTP endpoint로 접근하므로 auto TLS를 끄고 시작해요.
+    requestAutoCert: false
+
+  buckets:
+    - name: litomi-velero-backups
+
+  metrics:
+    enabled: true
+    port: 9000
+    protocol: http
+
+  prometheusOperator: true
