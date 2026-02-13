@@ -7,4 +7,4 @@ resources:
   - namespace.yaml
   - serviceaccount-eso-vault.yaml
   - secretstore-vault.yaml
-  - externalsecret-minio-root.yaml
+  - externalsecret-minio-env-configuration.yaml

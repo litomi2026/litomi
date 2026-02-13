@@ -1,0 +1,5 @@
+# MinIO 공식 Operator Helm values (minio/operator)
+
+operator:
+  # 단일 노드 k3s에서도 스케줄 가능하도록 1 replica로 고정해요.
+  replicaCount: 1

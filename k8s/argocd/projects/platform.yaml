@@ -9,7 +9,7 @@ spec:
     - https://prometheus-community.github.io/helm-charts
     - https://helm.releases.hashicorp.com
     - https://charts.external-secrets.io
-    - https://charts.bitnami.com/bitnami
+    - https://operator.min.io
     - https://vmware-tanzu.github.io/helm-charts
   destinations:
     - server: https://kubernetes.default.svc
@@ -24,6 +24,8 @@ spec:
       namespace: vault
     - server: https://kubernetes.default.svc
       namespace: external-secrets
+    - server: https://kubernetes.default.svc
+      namespace: minio-operator
     - server: https://kubernetes.default.svc
       namespace: minio
     - server: https://kubernetes.default.svc
