@@ -12,12 +12,9 @@ initContainers:
       - mountPath: /target
         name: plugins
 
-kubectl:
-  image:
-    # velero chart 기본(bitnamilegacy/kubectl + auto tag)은 1.34 환경에서
-    # 유효하지 않은 태그를 선택할 수 있어서 hook Job이 Pending으로 멈춰요.
-    repository: docker.io/rancher/kubectl
-    tag: v1.34.3
+# CRD upgrade hook Job이 이미지 태그 이슈로 동기화를 막아서 비활성화해요.
+# (CRD 변경이 필요할 때는 별도 관리 절차로 진행)
+upgradeCRDs: false
 
 credentials:
   useSecret: true
