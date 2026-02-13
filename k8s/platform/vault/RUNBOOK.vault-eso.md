@@ -3,7 +3,7 @@
 이 문서는 **Git에는 “참조 선언(SecretStore/ExternalSecret)”만 두고**, **실제 시크릿 값은 Vault에만 저장**하는 운영 방식을 기준으로 해요.  
 또한 `ExternalSecret`이 삭제되면 생성된 Kubernetes `Secret`도 같이 정리되도록(`creationPolicy: Owner`, `deletionPolicy: Delete`) 구성돼 있어요.
 
-## 0) 전제
+## 1) 전제
 
 - **SOPS는 사용하지 않아요.**
 - Vault ↔ Kubernetes 인증은 **Vault `kubernetes` auth method**를 써요.
@@ -11,43 +11,12 @@
 - Vault Policy는 **read 위주**로 두고, 불필요한 `list`는 최소화해요.
 - “처음 1번”만 사람이 부트스트랩하고, 이후에는 GitOps로 흘러가게 해요.
 
-## 1) k3s Secret 암호화(at-rest) 켜기
-
-ESO가 만든 Kubernetes `Secret`도 결국 k3s 데이터스토어(etcd/sqlite)에 저장돼요. 그래서 **k3s secret encryption을 반드시 켜는 걸 권장해요.**
-
-> k3s 설정 파일이 이미 있으면 거기에 합쳐 주세요.
-
-```zsh
-sudo mkdir -p /etc/rancher/k3s
-sudo tee /etc/rancher/k3s/config.yaml >/dev/null <<'YAML'
-secrets-encryption: true
-YAML
-
-sudo systemctl restart k3s
-```
-
-```zsh
-# 상태 확인
-sudo k3s secrets-encrypt status || true
-```
-
-## 2) (GitOps) Vault / ESO 설치 확인
-
-이 레포는 Argo CD app-of-apps로 다음 애드온을 설치해요.
-
-- `platform-vault` (namespace: `vault`)
-- `platform-external-secrets` (namespace: `external-secrets`)
-
-Argo CD에서 앱이 Sync 됐는지 확인해 주세요.
-
-## 3) Vault TLS 준비
-
-### 3-1) 인증서/키 생성 (예시: self-signed)
+## 2) Vault TLS 인증서/키 생성 (예시: self-signed)
 
 운영 환경에서는 조직/플랫폼 표준 CA를 쓰는 걸 추천해요. 여기서는 예시로 self-signed를 들어요.
 
 ```zsh
-mkdir -p /tmp/vault-tls && cd /tmp/vault-tls
+mkdir -p ~/vault-tls && cd ~/vault-tls
 
 # CA
 openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
@@ -80,19 +49,7 @@ openssl x509 -req -sha256 -days 825 \
   -out tls.crt -extensions req_ext -extfile server.cnf
 ```
 
-### 3-2) Vault namespace에 TLS Secret 생성
-
-```zsh
-sudo kubectl -n vault create secret generic vault-tls \
-  --from-file=tls.crt=/tmp/vault-tls/tls.crt \
-  --from-file=tls.key=/tmp/vault-tls/tls.key \
-  --from-file=ca.crt=/tmp/vault-tls/ca.crt \
-  --dry-run=client -o yaml | sudo kubectl apply -f -
-
-sudo kubectl -n vault get secret vault-tls
-```
-
-## 4) 각 네임스페이스에 Vault CA 배포
+## 3) Vault namespace에 TLS Secret 생성 및 Vault CA 배포
 
 `SecretStore.spec.provider.vault.caProvider`는 `vault-ca` ConfigMap을 참조해요. (키: `ca.crt`)
 
@@ -106,9 +63,17 @@ sudo kubectl -n vault get secret vault-tls
 - `minio`
 
 ```zsh
+sudo kubectl -n vault create secret generic vault-tls \
+  --from-file=tls.crt="$HOME/vault-tls/tls.crt" \
+  --from-file=tls.key="$HOME/vault-tls/tls.key" \
+  --from-file=ca.crt="$HOME/vault-tls/ca.crt" \
+  --dry-run=client -o yaml | sudo kubectl apply -f -
+
+sudo kubectl -n vault get secret vault-tls
+
 for ns in litomi-prod litomi-stg cloudflared monitoring velero minio; do
   sudo kubectl -n "$ns" create configmap vault-ca \
-    --from-file=ca.crt=/tmp/vault-tls/ca.crt \
+    --from-file=ca.crt="$HOME/vault-tls/ca.crt" \
     --dry-run=client -o yaml | sudo kubectl apply -f -
 done
 ```
@@ -318,20 +283,6 @@ vault kv put kv/velero/velero-cloud-credentials cloud=@/tmp/credentials-velero
 
 # minio root credentials (for in-cluster S3)
 vault kv put kv/minio/minio-root root-user="..." root-password="..."
-```
-
-작업이 끝나면 `/tmp/*.crt`, `/tmp/*.pem` 같은 **임시 파일은 지우는 걸 권장해요.** (남겨놔도 동작은 하지만, 노출 면적이 커져요)
-
-- **k3s(Ubuntu) 머신**:
-
-```zsh
-sudo rm -f /tmp/aiven.crt /tmp/ga-key.pem /tmp/supabase.crt
-```
-
-- **Vault Pod**:
-
-```zsh
-sudo kubectl -n vault exec vault-0 -- rm -f /tmp/aiven.crt /tmp/ga-key.pem /tmp/supabase.crt
 ```
 
 ## 9) 동작 확인

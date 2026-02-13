@@ -34,7 +34,8 @@ configuration:
         # MinIO는 region이 엄격하지 않아서 관용적으로 us-east-1을 써요.
         region: us-east-1
         s3ForcePathStyle: 'true'
-        s3Url: http://minio.minio.svc:9000
+        # MinIO Operator는 Tenant용 ClusterIP Service(`minio`)를 생성해요.
+        s3Url: http://minio.minio.svc:80
 
   # local-path PV는 CSI snapshot을 기본으로 지원하지 않아서, VSL 생성은 꺼두는 걸 권장해요.
   volumeSnapshotLocation: []

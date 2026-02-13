@@ -3,8 +3,8 @@ kind: Application
 metadata:
   name: platform-velero
   annotations:
-    # MinIO + ESO가 먼저 설치돼야 ExternalSecret/SecretStore를 적용할 수 있어요.
-    argocd.argoproj.io/sync-wave: '3'
+    # MinIO Tenant + ESO가 먼저 준비돼야 백업 스토리지 연결이 안정적이에요.
+    argocd.argoproj.io/sync-wave: '4'
 spec:
   project: platform
   sources:
