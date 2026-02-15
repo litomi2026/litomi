@@ -1,4 +1,5 @@
 import { env } from '@/env/client'
+import { createImageProxyRequestURL } from '@/utils/image-proxy'
 
 const { NEXT_PUBLIC_CORS_PROXY_URL } = env
 
@@ -13,10 +14,7 @@ export function downloadBlob(blob: Blob, filename: string) {
 
 export async function downloadImage(imageUrl: string, filename: string): Promise<void> {
   try {
-    const url =
-      NEXT_PUBLIC_CORS_PROXY_URL && !imageUrl.startsWith('blob:') && !imageUrl.startsWith('data:')
-        ? `${NEXT_PUBLIC_CORS_PROXY_URL}?url=${encodeURIComponent(imageUrl)}`
-        : imageUrl
+    const url = await getDownloadURL(imageUrl)
 
     const response = await fetch(url)
 
@@ -51,10 +49,7 @@ export async function downloadMultipleImages({
 
   const downloadImage = async ({ url, filename }: { url: string; filename: string }) => {
     try {
-      const corsUrl =
-        NEXT_PUBLIC_CORS_PROXY_URL && !url.startsWith('blob:') && !url.startsWith('data:')
-          ? `${NEXT_PUBLIC_CORS_PROXY_URL}?url=${encodeURIComponent(url)}`
-          : url
+      const corsUrl = await getDownloadURL(url)
 
       const response = await fetch(corsUrl)
 
@@ -105,4 +100,15 @@ export async function downloadMultipleImages({
 
   const zipFile = await zip.generateAsync({ type: 'blob' })
   downloadBlob(zipFile, `${filename}.zip`)
+}
+
+async function getDownloadURL(imageURL: string): Promise<string> {
+  if (!NEXT_PUBLIC_CORS_PROXY_URL || imageURL.startsWith('blob:') || imageURL.startsWith('data:')) {
+    return imageURL
+  }
+
+  return createImageProxyRequestURL({
+    proxyOrigin: NEXT_PUBLIC_CORS_PROXY_URL,
+    sourceURL: imageURL,
+  })
 }
