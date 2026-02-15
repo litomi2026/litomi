@@ -77,6 +77,15 @@ resource "cloudflare_dns_record" "api_stg_cname" {
   proxied = true
 }
 
+resource "cloudflare_dns_record" "img_cname" {
+  zone_id = var.zone_id
+  name    = "img.litomi.in"
+  type    = "CNAME"
+  content = "${cloudflare_zero_trust_tunnel_cloudflared.selfhost.id}.cfargotunnel.com"
+  ttl     = 1
+  proxied = true
+}
+
 resource "cloudflare_dns_record" "r2_cname" {
   zone_id = var.zone_id
   name    = "r2.litomi.in"
