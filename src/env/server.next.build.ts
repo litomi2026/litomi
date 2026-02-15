@@ -14,7 +14,7 @@ export const nextBuildEnv = createEnv({
     // Client-side requirements
     NEXT_PUBLIC_BACKEND_URL: z.url().default(env.NEXT_PUBLIC_BACKEND_URL),
     NEXT_PUBLIC_CANONICAL_URL: z.url().default(env.NEXT_PUBLIC_CANONICAL_URL),
-    NEXT_PUBLIC_CORS_PROXY_URL: z.url().optional(),
+    NEXT_PUBLIC_CORS_PROXY_URL: z.url().default(env.NEXT_PUBLIC_CORS_PROXY_URL),
     NEXT_PUBLIC_EXTERNAL_API_PROXY_URL: z.url().default(env.NEXT_PUBLIC_EXTERNAL_API_PROXY_URL),
     NEXT_PUBLIC_GA_ID: z.string().optional(),
     NEXT_PUBLIC_IOS_TESTFLIGHT_URL: z.url().optional(),
