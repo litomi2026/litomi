@@ -49,9 +49,8 @@ export async function downloadMultipleImages({
 
   const downloadImage = async ({ url, filename }: { url: string; filename: string }) => {
     try {
-      const corsUrl = await getDownloadURL(url)
-
-      const response = await fetch(corsUrl)
+      const corsURL = await getDownloadURL(url)
+      const response = await fetch(corsURL)
 
       if (!response.ok) {
         throw new Error(`${response.status} ${response.statusText}`)
