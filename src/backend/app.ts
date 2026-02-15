@@ -10,7 +10,7 @@ import { zProblemValidator } from '@/backend/utils/validator'
 import { db } from '@/database/supabase/drizzle'
 
 import apiRoutes from './api'
-import imageProxyRoutes from './api/image-proxy'
+import imageProxyRoutes from './i/v1/image-proxy'
 
 const appRoutes = new Hono<Env>()
 
