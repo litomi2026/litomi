@@ -28,8 +28,8 @@ type Props = {
 }
 
 export default function MangaCard({ manga, index = 0, className = '', showSearchFromNextButton }: Readonly<Props>) {
-  const { id, artists, characters, date, group, series, images, tags, title, type, languages, uploader } = manga
-  const isDownloadable = images?.[0]?.original?.url?.includes('soujpa.in')
+  const { id, artists, characters, date, group, series, images, tags, title, type, count, languages, uploader } = manga
+  const isDownloadable = images?.length === count
   const viewerLink = getViewerLink(id)
 
   return (
