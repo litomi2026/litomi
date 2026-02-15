@@ -106,9 +106,7 @@ export default function LibrarySidebar({
         />
         {(libraries.length > 0 || showLibrariesSkeleton) && <div className="h-px bg-zinc-800 my-1" />}
         {showLibrariesSkeleton ? (
-          <div className="grid gap-2 px-1">
-            <LibrarySidebarSkeleton length={6} />
-          </div>
+          <LibrarySidebarSkeleton length={6} />
         ) : (
           <>
             {ownerLibraries.map((library) => (
@@ -188,9 +186,9 @@ export default function LibrarySidebar({
 
 function LibrarySidebarSkeleton({ length = 6 }: { length?: number }) {
   return (
-    <div className="grid gap-2 px-1">
+    <div className="grid gap-2 lg:gap-3">
       {Array.from({ length }).map((_, i) => (
-        <div className="h-12 rounded-lg bg-zinc-800/40 animate-pulse" key={i} />
+        <div className="h-[50px] lg:h-[54px] rounded-lg bg-zinc-800/40 animate-pulse" key={i} />
       ))}
     </div>
   )

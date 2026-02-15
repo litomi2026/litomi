@@ -10,10 +10,12 @@ import { zProblemValidator } from '@/backend/utils/validator'
 import { db } from '@/database/supabase/drizzle'
 
 import apiRoutes from './api'
+import imageProxyRoutes from './i/v1/image-proxy'
 
 const appRoutes = new Hono<Env>()
 
 appRoutes.route('/api', apiRoutes)
+appRoutes.route('/i', imageProxyRoutes)
 
 const schema = z.object({
   name: z.string().optional(),

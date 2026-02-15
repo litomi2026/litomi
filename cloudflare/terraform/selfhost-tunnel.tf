@@ -1,6 +1,8 @@
 locals {
   selfhost_tunnel_name       = "litomi-selfhost"
   selfhost_origin_service    = "http://traefik.kube-system.svc.cluster.local:80"
+  selfhost_img_hostname      = "img.${var.domain}"
+  selfhost_stg_img_hostname  = "img-stg.${var.domain}"
   selfhost_prod_hostname     = var.domain
   selfhost_prod_api_hostname = "api.${var.domain}"
   selfhost_stg_hostname      = "stg.${var.domain}"
@@ -21,6 +23,14 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "selfhost" {
 
   config = {
     ingress = [
+      {
+        hostname = local.selfhost_img_hostname
+        service  = local.selfhost_origin_service
+      },
+      {
+        hostname = local.selfhost_stg_img_hostname
+        service  = local.selfhost_origin_service
+      },
       {
         hostname = local.selfhost_prod_hostname
         service  = local.selfhost_origin_service
