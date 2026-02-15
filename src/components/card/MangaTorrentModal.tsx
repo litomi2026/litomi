@@ -148,7 +148,8 @@ export default function MangaTorrentModal() {
         ) : (
           <>
             <p className="text-xs text-zinc-500">
-              <span className="font-medium text-zinc-300">마그넷 열기</span>를 누르면 토렌트 앱이 실행될 수 있어요.
+              <span className="font-medium text-zinc-300">열기</span>를 누르면 토렌트 앱이 자동으로 실행되는데, 실행되지
+              않으면 <span className="font-medium text-zinc-300">복사</span> 버튼으로 마그넷 주소를 복사해 주세요.
               {torrentCount >= 10 && ` (토렌트 파일 ${torrentCount}개)`}
             </p>
             <ul className="grid gap-2">
