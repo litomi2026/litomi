@@ -80,6 +80,10 @@ sudo kubectl -n argocd get applications.argoproj.io
 
 `k8s/platform/velero/RUNBOOK.backup-dr.md` 참고
 
+### 관측 확장 (로그/트레이싱/블랙박스)
+
+`k8s/platform/monitoring/RUNBOOK.logs-tracing-blackbox.md` 참고
+
 ### 공식 문서
 
 - [Kubernetes 프로덕션 환경 고려사항](https://kubernetes.io/ko/docs/setup/production-environment/)
@@ -94,6 +98,9 @@ sudo kubectl -n argocd get applications.argoproj.io
 - [Argo CD AppProject(공식 문서)](https://argo-cd.readthedocs.io/en/stable/user-guide/projects/)
 - [Prometheus Operator(공식)](https://prometheus-operator.dev/)
 - [Alertmanager(공식)](https://prometheus.io/docs/alerting/latest/alertmanager/)
+- [Blackbox exporter(공식)](https://prometheus.io/docs/guides/multi-target-exporter/)
+- [OpenTelemetry Collector(공식)](https://opentelemetry.io/docs/collector/)
+- [Grafana Loki / Tempo(공식)](https://grafana.com/docs/)
 - [Velero(공식)](https://velero.io/docs/)
 
 ## 프로덕션 모범 사례(요약)
