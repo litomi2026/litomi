@@ -6,11 +6,22 @@ loki:
   auth_enabled: false
   commonConfig:
     replication_factor: 1
+  storage:
+    type: s3
+    bucketNames:
+      chunks: litomi-loki-chunks
+      ruler: litomi-loki-ruler
+    s3:
+      endpoint: minio.minio.svc:80
+      accessKeyId: ${LOKI_S3_ACCESS_KEY}
+      secretAccessKey: ${LOKI_S3_SECRET_KEY}
+      s3ForcePathStyle: true
+      insecure: true
   schemaConfig:
     configs:
       - from: '2024-04-01'
         store: tsdb
-        object_store: filesystem
+        object_store: s3
         schema: v13
         index:
           prefix: loki_index_
@@ -36,10 +47,23 @@ singleBinary:
     limits:
       cpu: '1'
       memory: 1Gi
+  extraArgs:
+    # Secret 값을 Loki 설정으로 확장하기 위해 env expansion을 활성화해요.
+    - -config.expand-env=true
   extraEnv:
     # Go heap 상한을 cgroup limit보다 조금 낮춰 OOM 리스크를 줄여요.
     - name: GOMEMLIMIT
       value: 900MiB
+    - name: LOKI_S3_ACCESS_KEY
+      valueFrom:
+        secretKeyRef:
+          name: loki-minio
+          key: access_key
+    - name: LOKI_S3_SECRET_KEY
+      valueFrom:
+        secretKeyRef:
+          name: loki-minio
+          key: secret_key
 
 backend:
   replicas: 0

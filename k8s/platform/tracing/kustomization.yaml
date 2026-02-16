@@ -5,3 +5,9 @@ namespace: tracing
 
 resources:
   - namespace.yaml
+  - serviceaccount-eso-vault.yaml
+  - secretstore-vault.yaml
+  - externalsecret-tempo-minio.yaml
+  - externalsecret-tempo-mtls.yaml
+  - networkpolicy-collector-ingress.yaml
+  - networkpolicy-tempo-ingress.yaml
