@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: platform-logging-loki
+  annotations:
+    # monitoring 앱이 ServiceMonitor CRD를 먼저 준비한 뒤 Loki를 동기화해요.
+    argocd.argoproj.io/sync-wave: '4'
+spec:
+  project: platform
+  sources:
+    - repoURL: https://grafana.github.io/helm-charts
+      chart: loki
+      targetRevision: 6.53.0
+      helm:
+        releaseName: loki
+        valueFiles:
+          - $values/k8s/platform/logging/loki.values.yaml
+    - repoURL: https://github.com/gwak2837/litomi.git
+      targetRevision: main
+      ref: values
+    - repoURL: https://github.com/gwak2837/litomi.git
+      targetRevision: main
+      path: k8s/platform/logging
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: logging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

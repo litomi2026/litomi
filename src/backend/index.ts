@@ -1,3 +1,4 @@
+import { httpInstrumentationMiddleware } from '@hono/otel'
 import { Hono } from 'hono'
 import { getConnInfo } from 'hono/bun'
 import { compress } from 'hono/compress'
@@ -13,6 +14,7 @@ import { timing } from 'hono/timing'
 
 import appRoutes from './app'
 import { auth } from './middleware/auth'
+import { initBackendOtel } from './otel'
 import { resolveCORSOrigin } from './utils/cors-origin'
 
 export type Env = {
@@ -22,6 +24,8 @@ export type Env = {
     isAdult?: boolean
   }
 }
+
+initBackendOtel()
 
 const app = new Hono<Env>()
 
@@ -34,6 +38,7 @@ app.use(
   }),
 )
 
+app.use(httpInstrumentationMiddleware({ serviceName: 'litomi-backend' }))
 app.use('*', ipRestriction(getConnInfo, { denyList: [] }))
 app.use('*', requestId())
 app.use(compress())

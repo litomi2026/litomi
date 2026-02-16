@@ -7,6 +7,10 @@ spec:
   sourceRepos:
     - https://github.com/gwak2837/litomi.git
     - https://prometheus-community.github.io/helm-charts
+    - https://grafana.github.io/helm-charts
+    - https://grafana-community.github.io/helm-charts
+    - https://fluent.github.io/helm-charts
+    - https://open-telemetry.github.io/opentelemetry-helm-charts
     - https://helm.releases.hashicorp.com
     - https://charts.external-secrets.io
     - https://operator.min.io
@@ -20,6 +24,10 @@ spec:
       namespace: argocd
     - server: https://kubernetes.default.svc
       namespace: monitoring
+    - server: https://kubernetes.default.svc
+      namespace: logging
+    - server: https://kubernetes.default.svc
+      namespace: tracing
     - server: https://kubernetes.default.svc
       namespace: vault
     - server: https://kubernetes.default.svc

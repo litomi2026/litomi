@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: blackbox-public-endpoints
+  labels:
+    release: kube-prometheus-stack
+    app.kubernetes.io/instance: kube-prometheus-stack
+spec:
+  interval: 30s
+  module: http_2xx
+  prober:
+    url: blackbox-exporter.monitoring.svc:9115
+    path: /probe
+    scheme: http
+  targets:
+    staticConfig:
+      static:
+        - https://litomi.in
+        - https://api.litomi.in/health

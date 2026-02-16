@@ -12,6 +12,10 @@ resources:
   - applications/platform-metrics-server.yaml
   - applications/platform-cloudflared.yaml
   - applications/platform-monitoring.yaml
+  - applications/platform-logging-loki.yaml
+  - applications/platform-logging-fluent-bit.yaml
+  - applications/platform-tracing-tempo.yaml
+  - applications/platform-tracing-otel-collector.yaml
   - applications/platform-minio-operator.yaml
   - applications/platform-minio.yaml
   - applications/platform-velero.yaml

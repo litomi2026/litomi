@@ -4,6 +4,10 @@ kind: Kustomization
 namespace: monitoring
 
 resources:
+  - configmap-blackbox-exporter.yaml
+  - deployment-blackbox-exporter.yaml
+  - service-blackbox-exporter.yaml
+  - probe-blackbox-public-endpoints.yaml
   - serviceaccount-eso-vault.yaml
   - secretstore-vault.yaml
   - externalsecret-grafana-admin.yaml
@@ -13,3 +17,4 @@ resources:
   - ingress-grafana.yaml
   - servicemonitor-cloudflared.yaml
   - servicemonitor-argocd.yaml
+  - prometheusrule-observability-pipeline.yaml

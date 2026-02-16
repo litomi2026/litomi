@@ -1,4 +1,4 @@
-# kube-prometheus-stack values for a single-node k3s cluster (metrics + alerting)
+# kube-prometheus-stack values for a single-node k3s cluster
 
 defaultRules:
   create: true
@@ -85,6 +85,26 @@ grafana:
     existingSecret: grafana-admin
     userKey: admin-user
     passwordKey: admin-password
+  additionalDataSources:
+    - name: Loki
+      uid: loki
+      type: loki
+      access: proxy
+      url: http://loki.logging.svc:3100
+      isDefault: false
+    - name: Tempo
+      uid: tempo
+      type: tempo
+      access: proxy
+      url: http://tempo.tracing.svc:3200
+      isDefault: false
+      jsonData:
+        tracesToLogsV2:
+          datasourceUid: loki
+          spanStartTimeShift: -5m
+          spanEndTimeShift: 5m
+          filterByTraceID: true
+          filterBySpanID: false
 
 # k3s: control plane components usually aren't exposed as scrapeable Services by default.
 kubeControllerManager:
