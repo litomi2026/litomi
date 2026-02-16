@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: platform-tracing-tempo
+  annotations:
+    # monitoring 앱이 ServiceMonitor CRD를 먼저 준비한 뒤 Tempo를 동기화해요.
+    argocd.argoproj.io/sync-wave: '4'
+spec:
+  project: platform
+  sources:
+    - repoURL: https://grafana-community.github.io/helm-charts
+      chart: tempo
+      targetRevision: 1.26.1
+      helm:
+        releaseName: tempo
+        valueFiles:
+          - $values/k8s/platform/tracing/tempo.values.yaml
+    - repoURL: https://github.com/gwak2837/litomi.git
+      targetRevision: main
+      ref: values
+    - repoURL: https://github.com/gwak2837/litomi.git
+      targetRevision: main
+      path: k8s/platform/tracing
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: tracing
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

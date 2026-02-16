@@ -65,9 +65,7 @@ sudo kubectl -n argocd get applications.argoproj.io
 
 이 클러스터는 Vault를 SSOT로 두고 ESO가 Kubernetes Secret을 만들어요.
 
-- **1회 수동 작업 런북**: `k8s/platform/vault/RUNBOOK.vault-eso.md`
-- **실행 시점**: 4번(root app-of-apps 적용) 이후에 진행해 주세요. 먼저 `vault` 네임스페이스가 생겼는지 확인해요.
-- **(필수) k3s Secret 암호화(at-rest)**: k3s 설치할 때 `--secrets-encryption`을 켜는 걸 권장해요. (이미 설치했다면 RUNBOOK 1번을 따라 켜 주세요.)
+- **1회 수동 작업 런북**: [`k8s/platform/vault/RUNBOOK.vault-eso.md`](/k8s/platform/vault/RUNBOOK.vault-eso.md)
 
 ### 6) 접속 확인
 
@@ -78,7 +76,15 @@ sudo kubectl -n argocd get applications.argoproj.io
 - **Argo CD**: `https://argocd.litomi.in`
 - **Grafana**: `https://grafana.litomi.in`
 
-### 참고
+### 자동 백업 / 재해 복구
+
+`k8s/platform/velero/RUNBOOK.backup-dr.md` 참고
+
+### 관측 확장 (로그/트레이싱/블랙박스)
+
+`k8s/platform/monitoring/RUNBOOK.logs-tracing-blackbox.md` 참고
+
+### 공식 문서
 
 - [Kubernetes 프로덕션 환경 고려사항](https://kubernetes.io/ko/docs/setup/production-environment/)
 - [HPA(수평 파드 오토스케일링)](https://kubernetes.io/ko/docs/tasks/run-application/horizontal-pod-autoscale/)
@@ -92,11 +98,10 @@ sudo kubectl -n argocd get applications.argoproj.io
 - [Argo CD AppProject(공식 문서)](https://argo-cd.readthedocs.io/en/stable/user-guide/projects/)
 - [Prometheus Operator(공식)](https://prometheus-operator.dev/)
 - [Alertmanager(공식)](https://prometheus.io/docs/alerting/latest/alertmanager/)
+- [Blackbox exporter(공식)](https://prometheus.io/docs/guides/multi-target-exporter/)
+- [OpenTelemetry Collector(공식)](https://opentelemetry.io/docs/collector/)
+- [Grafana Loki / Tempo(공식)](https://grafana.com/docs/)
 - [Velero(공식)](https://velero.io/docs/)
-
-### 런북
-
-- 백업/DR: `k8s/platform/velero/RUNBOOK.backup-dr.md`
 
 ## 프로덕션 모범 사례(요약)
 

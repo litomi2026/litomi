@@ -222,7 +222,7 @@ vault write auth/kubernetes/role/eso-minio \
 
 ## 8) Vault에 시크릿 값 넣기
 
-로컬에서는 예전처럼 `.env` 파일로 값을 정리해두고(예: `k8s/apps/litomi/secrets/backend-secret.prod.env`), 그 값을 Vault로 옮겨도 돼요.
+로컬에서는 `.env` 파일로 값을 정리해두고(예: `k8s/apps/litomi/secrets/backend-secret.env.template`를 복사해 prod/stg용으로 작성), 그 값을 Vault로 옮겨도 돼요.
 
 ```zsh
 # file-like secrets

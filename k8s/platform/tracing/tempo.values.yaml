@@ -1,0 +1,32 @@
+# Tempo Helm chart values (grafana-community/tempo)
+
+replicas: 1
+
+tempo:
+  reportingEnabled: false
+  retention: 72h
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+  storage:
+    trace:
+      backend: local
+      local:
+        path: /var/tempo/traces
+      wal:
+        path: /var/tempo/wal
+
+persistence:
+  enabled: true
+  size: 20Gi
+
+serviceMonitor:
+  enabled: true
+  interval: 30s
+  additionalLabels:
+    release: kube-prometheus-stack
+    app.kubernetes.io/instance: kube-prometheus-stack
