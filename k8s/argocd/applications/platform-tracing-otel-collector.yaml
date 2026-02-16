@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: platform-tracing-otel-collector
+  annotations:
+    # Tempo 이후에 Collector를 붙여 trace export 경로를 안정화해요.
+    argocd.argoproj.io/sync-wave: '5'
+spec:
+  project: platform
+  sources:
+    - repoURL: https://open-telemetry.github.io/opentelemetry-helm-charts
+      chart: opentelemetry-collector
+      targetRevision: 0.145.0
+      helm:
+        releaseName: opentelemetry-collector
+        valueFiles:
+          - $values/k8s/platform/tracing/opentelemetry-collector.values.yaml
+    - repoURL: https://github.com/gwak2837/litomi.git
+      targetRevision: main
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: tracing
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
