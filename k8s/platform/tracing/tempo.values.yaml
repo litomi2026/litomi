@@ -5,6 +5,32 @@ replicas: 1
 tempo:
   reportingEnabled: false
   retention: 72h
+  extraArgs:
+    # Tempo config에서 ${ENV}를 확장해 Secret 값을 주입해요.
+    # https://grafana.com/docs/tempo/latest/configuration/
+    config.expand-env: "true"
+  extraEnv:
+    - name: TEMPO_S3_ACCESS_KEY
+      valueFrom:
+        secretKeyRef:
+          name: tempo-minio
+          key: access_key
+    - name: TEMPO_S3_SECRET_KEY
+      valueFrom:
+        secretKeyRef:
+          name: tempo-minio
+          key: secret_key
+  extraVolumeMounts:
+    - name: tempo-mtls
+      mountPath: /etc/tempo/tls
+      readOnly: true
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
   resources:
     requests:
       cpu: 100m
@@ -14,15 +40,36 @@ tempo:
       memory: 1Gi
   storage:
     trace:
-      backend: local
-      local:
-        path: /var/tempo/traces
+      backend: s3
+      s3:
+        bucket: litomi-tempo-traces
+        endpoint: minio.minio.svc:80
+        access_key: ${TEMPO_S3_ACCESS_KEY}
+        secret_key: ${TEMPO_S3_SECRET_KEY}
+        insecure: true
       wal:
         path: /var/tempo/wal
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+          tls:
+            cert_file: /etc/tempo/tls/tempo.crt
+            key_file: /etc/tempo/tls/tempo.key
+            client_ca_file: /etc/tempo/tls/ca.crt
+            client_auth_type: require_and_verify_client_cert
+        http:
+          endpoint: 0.0.0.0:4318
 
 persistence:
   enabled: true
   size: 20Gi
+
+extraVolumes:
+  - name: tempo-mtls
+    secret:
+      secretName: tempo-mtls
 
 serviceMonitor:
   enabled: true

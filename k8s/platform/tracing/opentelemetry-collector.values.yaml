@@ -3,6 +3,33 @@
 mode: deployment
 replicaCount: 1
 
+image:
+  repository: otel/opentelemetry-collector-contrib
+
+podSecurityContext:
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  runAsNonRoot: true
+  runAsUser: 10001
+  runAsGroup: 10001
+
+extraVolumes:
+  - name: tempo-mtls
+    secret:
+      secretName: tempo-mtls
+
+extraVolumeMounts:
+  - name: tempo-mtls
+    mountPath: /etc/otel/tls
+    readOnly: true
+
 presets:
   kubernetesAttributes:
     enabled: true
@@ -59,7 +86,11 @@ alternateConfig:
     otlp/tempo:
       endpoint: tempo.tracing.svc:4317
       tls:
-        insecure: true
+        insecure: false
+        ca_file: /etc/otel/tls/ca.crt
+        cert_file: /etc/otel/tls/collector.crt
+        key_file: /etc/otel/tls/collector.key
+        server_name: tempo.tracing.svc
   service:
     telemetry:
       metrics:
