@@ -5,3 +5,6 @@ namespace: logging
 
 resources:
   - namespace.yaml
+  - serviceaccount-eso-vault.yaml
+  - secretstore-vault.yaml
+  - externalsecret-loki-minio.yaml
