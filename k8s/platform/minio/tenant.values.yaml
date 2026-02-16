@@ -47,6 +47,9 @@ tenant:
 
   buckets:
     - name: litomi-velero-backups
+    - name: litomi-tempo-traces
+    - name: litomi-loki-chunks
+    - name: litomi-loki-ruler
 
   metrics:
     enabled: true
