@@ -1,0 +1,55 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: observability-pipeline
+  labels:
+    release: kube-prometheus-stack
+    app.kubernetes.io/instance: kube-prometheus-stack
+spec:
+  groups:
+    # `absent()`으로 scrape target 소실을 탐지해 "보이지 않는 장애"를 빠르게 잡아요.
+    # https://prometheus.io/docs/prometheus/latest/querying/functions/#absent
+    - name: observability.pipeline.targets
+      rules:
+        - alert: LokiTargetsMissing
+          expr: absent(up{namespace="logging", job=~".*loki.*"} == 1)
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: Loki scrape targets are missing
+            description: Prometheus cannot scrape Loki targets in namespace logging.
+        - alert: FluentBitTargetsMissing
+          expr: absent(up{namespace="logging", job=~".*fluent-bit.*"} == 1)
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: Fluent Bit scrape targets are missing
+            description: Prometheus cannot scrape Fluent Bit targets in namespace logging.
+        - alert: TempoTargetsMissing
+          expr: absent(up{namespace="tracing", job=~".*tempo.*"} == 1)
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: Tempo scrape targets are missing
+            description: Prometheus cannot scrape Tempo targets in namespace tracing.
+        - alert: OTelCollectorTargetsMissing
+          expr: absent(up{namespace="tracing", job=~".*opentelemetry-collector.*"} == 1)
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: OTel Collector scrape targets are missing
+            description: Prometheus cannot scrape OTel Collector targets in namespace tracing.
+    - name: observability.pipeline.export
+      rules:
+        - alert: OTelCollectorSpanExportFailures
+          expr: sum(rate(otelcol_exporter_send_failed_spans{namespace="tracing"}[5m])) > 0
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: OTel Collector trace export is failing
+            description: OTel Collector has failing span exports for more than 10 minutes.
