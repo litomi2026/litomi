@@ -20,16 +20,6 @@ securityContext:
   runAsUser: 10001
   runAsGroup: 10001
 
-extraVolumes:
-  - name: tempo-mtls
-    secret:
-      secretName: tempo-mtls
-
-extraVolumeMounts:
-  - name: tempo-mtls
-    mountPath: /etc/otel/tls
-    readOnly: true
-
 presets:
   kubernetesAttributes:
     enabled: true
@@ -86,11 +76,8 @@ alternateConfig:
     otlp/tempo:
       endpoint: tempo.tracing.svc:4317
       tls:
-        insecure: false
-        ca_file: /etc/otel/tls/ca.crt
-        cert_file: /etc/otel/tls/collector.crt
-        key_file: /etc/otel/tls/collector.key
-        server_name: tempo.tracing.svc
+        # Collector->Tempo mTLS를 해제하고 plaintext(gRPC)로 전송해요.
+        insecure: true
   service:
     telemetry:
       metrics:

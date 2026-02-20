@@ -172,11 +172,6 @@ path "kv/data/minio/*" {
 }
 HCL
 
-vault policy write tracing-read - <<'HCL'
-path "kv/data/tracing/*" {
-  capabilities = ["read"]
-}
-HCL
 ```
 
 ### 7-2) Role (ServiceAccount + Namespace 바인딩)
@@ -238,7 +233,7 @@ vault write auth/kubernetes/role/eso-logging \
 vault write auth/kubernetes/role/eso-tracing \
   bound_service_account_names=eso-vault \
   bound_service_account_namespaces=tracing \
-  policies=minio-read,tracing-read \
+  policies=minio-read \
   audience=vault \
   ttl=1h
 ```
@@ -307,14 +302,6 @@ vault kv put kv/velero/velero-cloud-credentials cloud=@/tmp/credentials-velero
 # minio root credentials (for in-cluster S3)
 vault kv put kv/minio/minio-root root-user="..." root-password="..."
 # (현재 Loki/Tempo object storage credential 소스로 재사용)
-
-# tempo mTLS materials (collector<->tempo)
-vault kv put kv/tracing/tempo-mtls \
-  ca_crt=@/tmp/ca.crt \
-  tempo_crt=@/tmp/tempo.crt \
-  tempo_key=@/tmp/tempo.key \
-  collector_crt=@/tmp/collector.crt \
-  collector_key=@/tmp/collector.key
 ```
 
 ## 9) 동작 확인
@@ -339,7 +326,6 @@ sudo kubectl -n logging get secret loki-minio
 
 sudo kubectl -n tracing get secretstore,externalsecret
 sudo kubectl -n tracing get secret tempo-minio
-sudo kubectl -n tracing get secret tempo-mtls
 
 # `SecretDeleted`로 나오면(=생성될 Secret이 없는 상태),
 # - Vault에 해당 key/value가 실제로 들어있는지 확인하고
