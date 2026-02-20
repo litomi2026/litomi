@@ -32,6 +32,8 @@ loki:
     retention_period: 168h
   compactor:
     retention_enabled: true
+    # Loki 3.x validates this when retention is enabled; omit하면 프로세스가 기동 직후 종료돼요.
+    delete_request_store: s3
   tracing:
     enabled: true
 
