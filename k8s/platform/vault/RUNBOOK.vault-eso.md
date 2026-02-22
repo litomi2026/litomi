@@ -3,6 +3,49 @@
 이 문서는 **Git에는 “참조 선언(SecretStore/ExternalSecret)”만 두고**, **실제 시크릿 값은 Vault에만 저장**하는 운영 방식을 기준으로 해요.  
 또한 `ExternalSecret`이 삭제되면 생성된 Kubernetes `Secret`도 같이 정리되도록(`creationPolicy: Owner`, `deletionPolicy: Delete`) 구성돼 있어요.
 
+## 0) 자동화 빠른 시작 (`k8s/platform-ops.sh`)
+
+수동 절차를 그대로 따라가도 되지만, 초기 세팅은 아래 커맨드로 대부분 자동화할 수 있어요.
+
+```zsh
+cd /Users/gwak2837/Documents/GitHub/litomi
+
+# Vault/ESO만 집중 실행(클러스터/Argo apply는 건너뜀)
+./k8s/platform-ops.sh \
+  --skip-k3s-install \
+  --skip-gitops-apply \
+  --skip-public-check \
+  --vault-init-output ~/vault-tls/vault-init.json
+```
+
+비대화형으로 키/토큰/시크릿 파일까지 한 번에 넣으려면:
+
+```zsh
+./k8s/platform-ops.sh \
+  --non-interactive \
+  --skip-k3s-install \
+  --skip-gitops-apply \
+  --skip-public-check \
+  --vault-init-output ~/vault-tls/vault-init.json \
+  --vault-unseal-keys-file ~/vault-tls/vault-init.json \
+  --vault-root-token-file ~/vault-tls/vault-init.json \
+  --vault-secrets-dir /path/to/vault-secrets
+```
+
+`--vault-secrets-dir`는 `.env` 파일을 경로 기반으로 Vault KV에 올려요.
+
+```zsh
+# 예: /path/to/vault-secrets/litomi-prod/litomi-backend-secret.env
+#   -> kv/litomi-prod/litomi-backend-secret 로 업로드
+# 값이 @로 시작하면 파일 참조로 처리해요.
+```
+
+검증만 실행:
+
+```zsh
+./k8s/platform-ops.sh --reboot-mode --check-only --skip-public-check
+```
+
 ## 1) 전제
 
 - **SOPS는 사용하지 않아요.**

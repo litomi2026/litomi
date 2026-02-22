@@ -13,61 +13,41 @@ git clone https://github.com/gwak2837/litomi.git
 cd litomi
 ```
 
-### 2) k3s 설치
+### 2) 초기 부트스트랩 자동화
 
 ```zsh
-curl -sfL https://get.k3s.io | sudo sh -s - server --cluster-init --secrets-encryption
-
-# (대기)
-sudo kubectl wait --for=condition=Ready node --all --timeout=180s
-sudo kubectl -n kube-system wait --for=condition=Available deployment --all --timeout=180s
-
-# (확인)
-sudo kubectl get nodes -o wide
-sudo kubectl get --raw='/readyz?verbose'
-sudo timeout 60s sh -c 'until k3s secrets-encrypt status >/dev/null 2>&1; do sleep 2; done'
-sudo k3s secrets-encrypt status
-sudo k3s etcd-snapshot save --name bootstrap-$(date +%Y%m%d-%H%M%S)
-sudo k3s etcd-snapshot ls
+./k8s/platform-ops.sh
 ```
 
-### 3) Argo CD 설치
+기본 실행은 아래를 순서대로 자동 처리해요.
 
-CRD 크기 때문에 **server-side apply**를 권장해요.
+- k3s 설치 + API/Node readiness 확인 + etcd snapshot
+- Argo CD bootstrap 설치 + `argocd-initial-admin-secret` 출력
+- root app-of-apps 적용 + `Synced/Healthy` 대기
+- Vault TLS/Init/Unseal/Policy/Role bootstrap(가능한 범위)
+- ESO/Argo reconcile + Velero/Observability 포함 플랫폼 점검
 
-```zsh
-sudo kubectl apply --server-side --force-conflicts -k k8s/bootstrap/argocd
-
-# (대기)
-sudo kubectl -n argocd wait --for=condition=Available deployment --all --timeout=300s
-sudo kubectl -n argocd rollout status statefulset/argocd-application-controller --timeout=300s
-sudo kubectl -n argocd wait --for=create secret/argocd-initial-admin-secret --timeout=180s
-
-# (확인)
-sudo kubectl -n argocd get secret argocd-initial-admin-secret \
-  -o jsonpath='{.data.password}' | base64 -d; echo
-```
-
-### 4) GitOps 시작 (root app-of-apps 적용)
-
-```zsh
-sudo kubectl apply -f k8s/bootstrap/root/root.yaml
-
-# (대기)
-sudo kubectl -n argocd wait --for=jsonpath='{.status.sync.status}'=Synced applications.argoproj.io/root --timeout=300s
-sudo kubectl -n argocd wait --for=jsonpath='{.status.health.status}'=Healthy applications.argoproj.io/root --timeout=300s
-
-# (확인)
-sudo kubectl -n argocd get applications.argoproj.io
-```
-
-### 5) Vault + External Secrets(ESO) 준비
+### 3) Vault + External Secrets(ESO) 준비
 
 이 클러스터는 Vault를 SSOT로 두고 ESO가 Kubernetes Secret을 만들어요.
 
 - **1회 수동 작업 런북**: [`k8s/platform/vault/RUNBOOK.vault-eso.md`](/k8s/platform/vault/RUNBOOK.vault-eso.md)
 
-### 6) 접속 확인
+Vault 관련 주요 옵션:
+
+```zsh
+# init 결과 저장 경로 지정
+./k8s/platform-ops.sh --vault-init-output ~/vault-tls/vault-init.json
+
+# 비대화형 실행 시 키/토큰/시크릿 디렉토리 전달 예시
+./k8s/platform-ops.sh \
+  --non-interactive \
+  --vault-unseal-keys-file ~/vault-tls/vault-init.json \
+  --vault-root-token-file ~/vault-tls/vault-init.json \
+  --vault-secrets-dir /path/to/vault-secrets
+```
+
+### 4) 접속 확인
 
 - **stg web**: `https://stg.litomi.in`
 - **stg api**: `https://api-stg.litomi.in/health`
@@ -76,13 +56,30 @@ sudo kubectl -n argocd get applications.argoproj.io
 - **Argo CD**: `https://argocd.litomi.in`
 - **Grafana**: `https://grafana.litomi.in`
 
+```zsh
+./k8s/platform-ops.sh --reboot-mode --check-only --skip-public-check
+```
+
 ### 자동 백업 / 재해 복구
 
 `k8s/platform/velero/RUNBOOK.backup-dr.md` 참고
 
-### 관측 확장 (로그/트레이싱/블랙박스)
+### 관측 (로그/트레이싱/블랙박스)
 
 `k8s/platform/monitoring/RUNBOOK.logs-tracing-blackbox.md` 참고
+
+### 재부팅 후 점검
+
+`k8s/RUNBOOK.post-reboot.md` 참고
+
+```zsh
+# 재부팅 직후 자동 점검/재동기화
+./k8s/platform-ops.sh --reboot-mode
+
+# 부팅 시 자동 실행 등록/상태 확인
+./k8s/platform-ops.sh --install-reboot-service
+./k8s/platform-ops.sh --show-reboot-service-status
+```
 
 ### 공식 문서
 
