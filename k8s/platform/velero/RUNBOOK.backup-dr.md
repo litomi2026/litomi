@@ -3,6 +3,23 @@
 이 레포는 GitOps(Argo CD)라서 **리소스 정의는 Git이 백업 역할**을 해요.  
 하지만 **상태(PV 데이터, k3s datastore)** 는 Git에 없어서 별도 백업/복구 절차가 필요해요.
 
+## 자동화 빠른 시작 (`k8s/platform-ops.sh`)
+
+```zsh
+cd /Users/gwak2837/Documents/GitHub/litomi
+
+# 재부팅 점검 프로필(무변경)로 Velero 포함 플랫폼 상태 점검
+./k8s/platform-ops.sh --reboot-mode --check-only --skip-public-check
+```
+
+위 커맨드는 아래를 포함해 확인해요.
+
+- Argo CD 앱 `platform-velero` Sync/Health
+- `velero` Deployment readiness
+- node-agent DaemonSet readiness
+- BackupStorageLocation phase(`Available`)
+- Schedule/Backup 개수, Velero 로그 접근 가능 여부
+
 ## 0) 목표 정하기 (RPO/RTO)
 
 - **RPO**: “최대 몇 시간/분 데이터 유실을 허용할지”
