@@ -21,6 +21,44 @@ fi
 MODE="init"
 SKIP_PUBLIC_CHECK="false"
 
+SCRIPT_START_EPOCH="$(date +%s)"
+OK_COUNT=0
+WARN_COUNT=0
+
+UI_WIDTH="${UI_WIDTH:-84}"
+UI_USE_COLOR="false"
+if [[ -t 1 ]]; then
+  if [[ -z "${NO_COLOR:-}" ]]; then
+    UI_USE_COLOR="true"
+  fi
+  if command -v tput >/dev/null 2>&1; then
+    UI_COLS="$(tput cols 2>/dev/null || true)"
+    if [[ "$UI_COLS" =~ ^[0-9]+$ ]] && (( UI_COLS >= 60 )); then
+      UI_WIDTH="$UI_COLS"
+    fi
+  fi
+fi
+
+if [[ "$UI_USE_COLOR" == "true" ]]; then
+  C_RESET=$'\033[0m'
+  C_BOLD=$'\033[1m'
+  C_DIM=$'\033[2m'
+  C_BLUE=$'\033[34m'
+  C_CYAN=$'\033[36m'
+  C_GREEN=$'\033[32m'
+  C_YELLOW=$'\033[33m'
+  C_RED=$'\033[31m'
+else
+  C_RESET=""
+  C_BOLD=""
+  C_DIM=""
+  C_BLUE=""
+  C_CYAN=""
+  C_GREEN=""
+  C_YELLOW=""
+  C_RED=""
+fi
+
 KUBECTL_CMD="${KUBECTL_CMD:-$DEFAULT_KUBECTL_CMD}"
 read -r -a KUBECTL_ARR <<< "${KUBECTL_CMD}"
 
@@ -117,25 +155,71 @@ EOF_USAGE
 }
 
 log() {
-  printf '[%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*"
+  local msg="$*"
+  if [[ "$msg" =~ ^Step[[:space:]][0-9]+/[0-9]+: ]]; then
+    printf '\n'
+    hr "="
+    printf '%s[STEP ]%s %s\n' "${C_BOLD}${C_CYAN}" "$C_RESET" "$msg"
+    hr "="
+    return
+  fi
+  printf '%s[%s]%s %s\n' "$C_DIM" "$(date '+%H:%M:%S')" "$C_RESET" "$msg"
 }
 
 ok() {
-  printf '  [OK] %s\n' "$*"
+  OK_COUNT=$((OK_COUNT + 1))
+  printf '%s[ OK  ]%s %s\n' "$C_GREEN" "$C_RESET" "$*"
 }
 
 warn() {
-  printf '  [WARN] %s\n' "$*"
+  WARN_COUNT=$((WARN_COUNT + 1))
+  printf '%s[WARN ]%s %s\n' "$C_YELLOW" "$C_RESET" "$*"
 }
 
 die() {
-  printf '  [ERROR] %s\n' "$*" >&2
+  printf '%s[FAIL ]%s %s\n' "$C_RED" "$C_RESET" "$*" >&2
+  print_summary "FAIL" "$*" >&2
   exit 1
 }
 
 run() {
-  log "+ $*"
+  printf '%s[CMD  ]%s %s\n' "$C_BLUE" "$C_RESET" "$*"
   "$@"
+}
+
+hr() {
+  local char="${1:--}"
+  printf '%*s\n' "$UI_WIDTH" '' | tr ' ' "$char"
+}
+
+elapsed_seconds() {
+  echo $(( $(date +%s) - SCRIPT_START_EPOCH ))
+}
+
+format_elapsed() {
+  local seconds="${1:-0}"
+  printf '%02dm%02ds' "$((seconds / 60))" "$((seconds % 60))"
+}
+
+print_summary() {
+  local status="$1"
+  local detail="${2:-}"
+  local color="$C_GREEN"
+  local elapsed
+
+  if [[ "$status" == "FAIL" ]]; then
+    color="$C_RED"
+  fi
+
+  elapsed="$(format_elapsed "$(elapsed_seconds)")"
+  printf '\n'
+  hr "="
+  printf '%s[RESULT]%s %s | ok=%d warn=%d | elapsed=%s\n' \
+    "${C_BOLD}${color}" "$C_RESET" "$status" "$OK_COUNT" "$WARN_COUNT" "$elapsed"
+  if [[ -n "$detail" ]]; then
+    printf '         %s\n' "$detail"
+  fi
+  hr "="
 }
 
 run_root() {
@@ -1095,7 +1179,7 @@ main() {
   install_or_update_reboot_service
   print_snapshot
 
-  log "Result: PASS"
+  print_summary "PASS" "platform bootstrap complete"
 }
 
 main "$@"
