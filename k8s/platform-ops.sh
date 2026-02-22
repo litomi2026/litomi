@@ -661,8 +661,6 @@ ensure_vault_tls_assets() {
 wait_for_vault_pod_running() {
   wait_for_resource "$VAULT_NAMESPACE" pod "$VAULT_POD"
 
-  warn "Vault first startup on OrbStack may take several minutes (image pull + volume mount)."
-
   local timeout_seconds="$VAULT_POD_WAIT_SECONDS"
   if ! [[ "$timeout_seconds" =~ ^[0-9]+$ ]] || (( timeout_seconds <= 0 )); then
     timeout_seconds="$BOOT_WAIT_SECONDS"
@@ -733,11 +731,11 @@ wait_for_vault_pod_running() {
 vault_exec() {
   if command -v timeout >/dev/null 2>&1; then
     timeout "${KUBECTL_EXEC_TIMEOUT_SECONDS}s" \
-      "${KUBECTL_ARR[@]}" -n "$VAULT_NAMESPACE" exec -i "$VAULT_POD" -- \
+      "${KUBECTL_ARR[@]}" -n "$VAULT_NAMESPACE" exec "$VAULT_POD" -- \
       env VAULT_ADDR="$VAULT_ADDR" VAULT_CACERT="$VAULT_CACERT" "$@"
     return
   fi
-  k -n "$VAULT_NAMESPACE" exec -i "$VAULT_POD" -- \
+  k -n "$VAULT_NAMESPACE" exec "$VAULT_POD" -- \
     env VAULT_ADDR="$VAULT_ADDR" VAULT_CACERT="$VAULT_CACERT" "$@"
 }
 
@@ -746,11 +744,11 @@ vault_exec_token() {
   shift
   if command -v timeout >/dev/null 2>&1; then
     timeout "${KUBECTL_EXEC_TIMEOUT_SECONDS}s" \
-      "${KUBECTL_ARR[@]}" -n "$VAULT_NAMESPACE" exec -i "$VAULT_POD" -- \
+      "${KUBECTL_ARR[@]}" -n "$VAULT_NAMESPACE" exec "$VAULT_POD" -- \
       env VAULT_ADDR="$VAULT_ADDR" VAULT_CACERT="$VAULT_CACERT" VAULT_TOKEN="$token" "$@"
     return
   fi
-  k -n "$VAULT_NAMESPACE" exec -i "$VAULT_POD" -- \
+  k -n "$VAULT_NAMESPACE" exec "$VAULT_POD" -- \
     env VAULT_ADDR="$VAULT_ADDR" VAULT_CACERT="$VAULT_CACERT" VAULT_TOKEN="$token" "$@"
 }
 
@@ -845,6 +843,7 @@ initialize_and_unseal_vault() {
 
   wait_for_vault_pod_running
 
+  log "checking vault initialization status"
   if ! vault_is_initialized; then
     if [[ "$MODE" != "init" ]]; then
       die "vault is not initialized in reboot mode"
@@ -871,6 +870,7 @@ initialize_and_unseal_vault() {
     ok "vault already initialized"
   fi
 
+  log "checking vault seal status"
   if vault_is_sealed; then
     local keys=()
     local key
@@ -1108,7 +1108,7 @@ seed_vault_secrets_from_dir() {
   [[ ${#env_files[@]} -gt 0 ]] || die "no .env files found in ${VAULT_SECRETS_DIR}"
 
   local env_file rel_path kv_path
-  # Use an array + for-loop so kubectl exec -i cannot consume loop input from stdin.
+  # Use an array + for-loop so kubectl exec cannot consume loop input from stdin.
   for env_file in "${env_files[@]}"; do
     [[ -z "$env_file" ]] && continue
     rel_path="${env_file#${VAULT_SECRETS_DIR}/}"
