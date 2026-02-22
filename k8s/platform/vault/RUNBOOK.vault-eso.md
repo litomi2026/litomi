@@ -10,26 +10,14 @@
 ```zsh
 cd /Users/gwak2837/Documents/GitHub/litomi
 
-# Vault/ESO만 집중 실행(클러스터/Argo apply는 건너뜀)
-./k8s/platform-ops.sh \
-  --skip-k3s-install \
-  --skip-gitops-apply \
-  --skip-public-check \
-  --vault-init-output ~/vault-tls/vault-init.json
+# 기본값: --mode init
+./k8s/platform-ops.sh
 ```
 
-비대화형으로 키/토큰/시크릿 파일까지 한 번에 넣으려면:
+기본 `vault-secrets-dir`는 `./k8s/vault-secrets`이고, 필요하면 경로를 바꿀 수 있어요.
 
 ```zsh
-./k8s/platform-ops.sh \
-  --non-interactive \
-  --skip-k3s-install \
-  --skip-gitops-apply \
-  --skip-public-check \
-  --vault-init-output ~/vault-tls/vault-init.json \
-  --vault-unseal-keys-file ~/vault-tls/vault-init.json \
-  --vault-root-token-file ~/vault-tls/vault-init.json \
-  --vault-secrets-dir /path/to/vault-secrets
+./k8s/platform-ops.sh --vault-secrets-dir /path/to/vault-secrets
 ```
 
 `--vault-secrets-dir`는 `.env` 파일을 경로 기반으로 Vault KV에 올려요.
@@ -37,13 +25,13 @@ cd /Users/gwak2837/Documents/GitHub/litomi
 ```zsh
 # 예: /path/to/vault-secrets/litomi-prod/litomi-backend-secret.env
 #   -> kv/litomi-prod/litomi-backend-secret 로 업로드
-# 값이 @로 시작하면 파일 참조로 처리해요.
+# 멀티라인 값은 double quote + \n escape로 넣어요.
 ```
 
-검증만 실행:
+재부팅 점검:
 
 ```zsh
-./k8s/platform-ops.sh --reboot-mode --check-only --skip-public-check
+./k8s/platform-ops.sh --mode reboot --skip-public-check
 ```
 
 ## 1) 전제
@@ -283,37 +271,16 @@ vault write auth/kubernetes/role/eso-tracing \
 
 ## 8) Vault에 시크릿 값 넣기
 
-로컬에서는 `.env` 파일로 값을 정리해두고(예: `k8s/apps/litomi/secrets/backend-secret.env.template`를 복사해 prod/stg용으로 작성), 그 값을 Vault로 옮겨도 돼요.
+로컬에서는 `.env` 파일로 값을 정리해두고(예: `k8s/vault-secrets/**/*.env.example`를 복사), 그 값을 Vault로 옮겨도 돼요.
 
 ```zsh
-# file-like secrets
-#
-# 1) (k3s Ubuntu 머신에서) 파일 준비
-# vi /tmp/aiven.crt
-# vi /tmp/ga-key.pem
-# vi /tmp/supabase.crt
-#
-# 2) (k3s Ubuntu 머신에서) Vault Pod로 파일 복사
-sudo kubectl -n vault exec -i vault-0 -- sh -c 'cat > /tmp/aiven.crt' < /tmp/aiven.crt
-sudo kubectl -n vault exec -i vault-0 -- sh -c 'cat > /tmp/ga-key.pem' < /tmp/ga-key.pem
-sudo kubectl -n vault exec -i vault-0 -- sh -c 'cat > /tmp/supabase.crt' < /tmp/supabase.crt
-
-# 3) litomi-prod file-like secrets
-vault kv put kv/litomi-prod/litomi-backend-file \
-  AIVEN_CERTIFICATE=@/tmp/aiven.crt \
-  GA_SERVICE_ACCOUNT_KEY=@/tmp/ga-key.pem \
-  SUPABASE_CERTIFICATE=@/tmp/supabase.crt
-
-# 3) litomi-stg file-like secrets
-vault kv put kv/litomi-stg/litomi-backend-file \
-  AIVEN_CERTIFICATE=@/tmp/aiven.crt \
-  GA_SERVICE_ACCOUNT_KEY=@/tmp/ga-key.pem \
-  SUPABASE_CERTIFICATE=@/tmp/supabase.crt
-
 # litomi-prod secrets
 vault kv put kv/litomi-prod/litomi-backend-secret \
   ADSTERRA_API_KEY="..." \
+  AIVEN_CERTIFICATE=$'-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----' \
+  GA_SERVICE_ACCOUNT_KEY=$'-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----' \
   POSTGRES_URL="postgresql://..." \
+  SUPABASE_CERTIFICATE=$'-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----' \
   JWT_SECRET_ACCESS_TOKEN="..." \
   JWT_SECRET_REFRESH_TOKEN="..." \
   JWT_SECRET_TRUSTED_DEVICE="..." \
@@ -322,7 +289,10 @@ vault kv put kv/litomi-prod/litomi-backend-secret \
 # litomi-stg secrets
 vault kv put kv/litomi-stg/litomi-backend-secret \
   ADSTERRA_API_KEY="..." \
+  AIVEN_CERTIFICATE=$'-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----' \
+  GA_SERVICE_ACCOUNT_KEY=$'-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----' \
   POSTGRES_URL="postgresql://..." \
+  SUPABASE_CERTIFICATE=$'-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----' \
   JWT_SECRET_ACCESS_TOKEN="..." \
   JWT_SECRET_REFRESH_TOKEN="..." \
   JWT_SECRET_TRUSTED_DEVICE="..." \
@@ -334,13 +304,9 @@ vault kv put kv/monitoring/grafana-admin admin-user="..." admin-password="..."
 vault kv put kv/monitoring/alertmanager-discord-webhook-warning url="https://discord.com/api/webhooks/..."
 vault kv put kv/monitoring/alertmanager-discord-webhook-critical url="https://discord.com/api/webhooks/..."
 
-# velero (S3/R2 credentials file)
-cat > /tmp/credentials-velero <<'EOF'
-[default]
-aws_access_key_id=...
-aws_secret_access_key=...
-EOF
-vault kv put kv/velero/velero-cloud-credentials cloud=@/tmp/credentials-velero
+# velero (S3/R2 credentials)
+vault kv put kv/velero/velero-cloud-credentials \
+  cloud=$'[default]\naws_access_key_id=...\naws_secret_access_key=...'
 
 # minio root credentials (for in-cluster S3)
 vault kv put kv/minio/minio-root root-user="..." root-password="..."
@@ -353,10 +319,10 @@ ESO가 ExternalSecret을 보고 Kubernetes Secret을 생성해요.
 
 ```zsh
 sudo kubectl -n litomi-prod get secretstore,externalsecret
-sudo kubectl -n litomi-prod get secret litomi-backend-secret litomi-backend-file
+sudo kubectl -n litomi-prod get secret litomi-backend-secret
 
 sudo kubectl -n litomi-stg get secretstore,externalsecret
-sudo kubectl -n litomi-stg get secret litomi-backend-secret litomi-backend-file
+sudo kubectl -n litomi-stg get secret litomi-backend-secret
 
 sudo kubectl -n cloudflared get externalsecret cloudflared-token
 sudo kubectl -n cloudflared get secret cloudflared-token
