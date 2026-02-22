@@ -1,65 +1,49 @@
 # k3s 재부팅 후 점검 런북
 
-이 문서는 **k3s 마스터 노드(OrbStack VM) 재부팅 직후** 전체 플랫폼 상태 점검/재동기화를 고정하기 위한 런북이에요. 아래는 Ubuntu 내부에서 직접 실행하는 절차예요.
+이 문서는 **k3s 마스터 노드 재부팅 직후** 플랫폼을 빠르게 복구/검증하는 절차예요.
 
-## 1) 실행 스크립트
-
-파일:
-
-- `k8s/platform-ops.sh` (단일 실행 스크립트)
-
-기본 실행(권장):
+## 1) 수동 점검 실행
 
 ```zsh
 cd /Users/gwak2837/Documents/GitHub/litomi
-./k8s/platform-ops.sh --reboot-mode
+
+# 재부팅 점검/재동기화
+./k8s/platform-ops.sh --mode reboot
+
+# 공개 URL 체크 제외
+./k8s/platform-ops.sh --mode reboot --skip-public-check
 ```
 
-점검만(무변경):
+## 2) reboot 모드가 수행하는 항목
 
-```zsh
-./k8s/platform-ops.sh --reboot-mode --check-only
-```
-
-공개 URL 체크 제외:
-
-```zsh
-./k8s/platform-ops.sh --reboot-mode --skip-public-check
-```
-
-## 2) 스크립트가 수행하는 항목
-
-1. Kubernetes API Ready 대기
-2. Node Ready 대기
-3. 핵심 워크로드 준비 확인
-   - `kube-system/coredns`
-   - `kube-system/traefik`
-   - `argocd/argocd-repo-server`
-   - `argocd/argocd-application-controller`
-   - `external-secrets/external-secrets`
-   - `vault/vault-0`
-4. Vault sealed 여부 확인
-5. 재동기화 액션 실행(기본 모드)
-   - 모든 `SecretStore` reconcile 트리거
-   - 모든 `ExternalSecret` reconcile 트리거
-   - 모든 Argo CD Application hard refresh
-6. 최종 상태 검증
-   - `SecretStore` Ready=True
-   - `ExternalSecret` Ready=True
+1. Kubernetes API/Node Ready 확인
+2. Argo CD 컨트롤 플레인 준비 확인
+3. Vault Pod 실행 상태 확인 + 필요 시 자동 unseal
+4. SecretStore/ExternalSecret/Argo CD reconcile 트리거
+5. 최종 상태 검증
    - Argo CD apps Synced/Healthy
-   - Velero 상태(BackupStorageLocation/Schedule/Backup)
-   - Observability 상태(blackbox/Loki/Fluent Bit/Tempo/OTel)
-   - 공개 URL 응답(기본: `https://argocd.litomi.in/`, `https://litomi.in`, `https://api.litomi.in/health`)
+   - Vault SecretStore Ready=True
+   - 필수 Kubernetes Secret 존재
+   - Vault initialized/unsealed
+   - (옵션) 공개 URL 응답
 
-## 3) Vault sealed일 때
+## 3) Vault unseal 실패 시
 
-스크립트는 sealed 여부를 감지하면 실패로 종료하고, 아래 수동 절차를 안내해요.
+`platform-ops.sh`는 기본적으로 `VAULT_INIT_OUTPUT`(기본값: `~/vault-tls/vault-init.json`)에서
+unseal key를 읽어요. 파일이 없거나 키가 맞지 않으면 실패해요.
+
+먼저 init 파일 경로를 확인하고 다시 실행하세요:
+
+```zsh
+echo "$VAULT_INIT_OUTPUT"
+./k8s/platform-ops.sh --mode reboot --skip-public-check
+```
+
+필요하면 수동 unseal:
 
 ```zsh
 sudo kubectl -n vault exec -it vault-0 -- sh
 ```
-
-이후 `vault-0` pod 내부에서
 
 ```zsh
 export VAULT_ADDR="https://vault.vault.svc:8200"
@@ -69,45 +53,24 @@ vault operator unseal <UNSEAL_KEY_2>
 vault operator unseal <UNSEAL_KEY_3>
 ```
 
-unseal 완료 후 스크립트를 다시 실행하세요.
+## 4) systemd 자동 실행
 
-## 4) systemd 자동 실행 등록
+`init` 모드(`./k8s/platform-ops.sh`)를 실행하면
+`litomi-platform-reboot.service`를 자동 설치/활성화해요.
 
-### 4-1) 설치 + enable
-
-Ubuntu 터미널에서 실행:
+상태/로그 확인:
 
 ```zsh
-cd /home/gwak2837/litomi
-./k8s/platform-ops.sh --install-reboot-service
+sudo systemctl status litomi-platform-reboot.service --no-pager
+sudo journalctl -u litomi-platform-reboot.service -n 200 --no-pager
 ```
 
-기본값 변경이 필요하면 설치 전에 환경변수를 지정할 수 있어요.
+서비스 재설치(유닛 재생성)는 init 모드를 다시 실행하면 돼요.
+
+해제가 필요하면:
 
 ```zsh
-SERVICE_KUBECTL_CMD=kubectl \
-SERVICE_BOOT_WAIT_SECONDS=900 \
-SERVICE_CHECK_INTERVAL_SECONDS=5 \
-SERVICE_TIMEOUT_START_SEC=1800 \
-./k8s/platform-ops.sh --install-reboot-service
-```
-
-### 4-2) 시작/상태 확인
-
-```zsh
-./k8s/platform-ops.sh --show-reboot-service-status
-```
-
-로그 확인:
-
-```zsh
-./k8s/platform-ops.sh --show-reboot-service-logs
-# 최근 500줄:
-./k8s/platform-ops.sh --show-reboot-service-logs --reboot-service-log-lines 500
-```
-
-### 4-3) 해제/삭제
-
-```zsh
-./k8s/platform-ops.sh --remove-reboot-service
+sudo systemctl disable --now litomi-platform-reboot.service
+sudo rm -f /etc/systemd/system/litomi-platform-reboot.service
+sudo systemctl daemon-reload
 ```

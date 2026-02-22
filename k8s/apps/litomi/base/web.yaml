@@ -26,8 +26,6 @@ spec:
                 name: litomi-common-env
             - secretRef:
                 name: litomi-backend-secret
-            - secretRef:
-                name: litomi-backend-file
           readinessProbe:
             httpGet:
               path: /api/health
