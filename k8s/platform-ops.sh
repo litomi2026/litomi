@@ -444,16 +444,49 @@ vault_exec_token() {
     env VAULT_ADDR="$VAULT_ADDR" VAULT_CACERT="$VAULT_CACERT" VAULT_TOKEN="$token" "$@"
 }
 
-vault_status_json() {
-  vault_exec vault status -format=json 2>/dev/null || true
+vault_status_output() {
+  # Try JSON first; when unavailable/failing (e.g. during restart), fall back to plain output.
+  local output
+  output="$(vault_exec vault status -format=json 2>/dev/null || true)"
+  if [[ -n "$output" ]]; then
+    printf '%s\n' "$output"
+    return
+  fi
+  vault_exec vault status 2>/dev/null || true
 }
 
 vault_is_initialized() {
-  [[ "$(vault_status_json)" == *'"initialized":true'* ]]
+  local status
+  status="$(vault_status_output)"
+  if printf '%s\n' "$status" | grep -Eq '"initialized"[[:space:]]*:[[:space:]]*true'; then
+    return 0
+  fi
+  if printf '%s\n' "$status" | grep -Eq 'Initialized[[:space:]]+true'; then
+    return 0
+  fi
+  return 1
 }
 
 vault_is_sealed() {
-  [[ "$(vault_status_json)" == *'"sealed":true'* ]]
+  local status
+  status="$(vault_status_output)"
+  if printf '%s\n' "$status" | grep -Eq '"sealed"[[:space:]]*:[[:space:]]*true'; then
+    return 0
+  fi
+  if printf '%s\n' "$status" | grep -Eq 'Sealed[[:space:]]+true'; then
+    return 0
+  fi
+  return 1
+}
+
+should_manage_vault_tls_assets() {
+  if [[ "$VAULT_TLS_FORCE_REGENERATE" == "true" ]]; then
+    return 0
+  fi
+  if resource_exists "$VAULT_NAMESPACE" secret vault-tls; then
+    return 1
+  fi
+  return 0
 }
 
 generate_vault_tls_files() {
@@ -674,8 +707,12 @@ initialize_and_configure_vault() {
   fi
 
   if [[ "$CHECK_ONLY" != "true" ]]; then
-    generate_vault_tls_files
-    apply_vault_tls_and_ca
+    if should_manage_vault_tls_assets; then
+      generate_vault_tls_files
+      apply_vault_tls_and_ca
+    else
+      pass "existing vault-tls secret detected; skip TLS regenerate/apply (set VAULT_TLS_FORCE_REGENERATE=true to override)"
+    fi
   else
     warn "skip Vault TLS apply in --check-only mode"
   fi
@@ -700,10 +737,22 @@ initialize_and_configure_vault() {
     mkdir -p "$(dirname "$VAULT_INIT_OUTPUT")"
     umask 077
     local init_json
-    init_json="$(vault_exec vault operator init -format=json)"
-    printf '%s\n' "$init_json" > "$VAULT_INIT_OUTPUT"
-    chmod 600 "$VAULT_INIT_OUTPUT"
-    pass "vault initialized and output saved: ${VAULT_INIT_OUTPUT}"
+    local init_rc
+    set +e
+    init_json="$(vault_exec vault operator init -format=json 2>&1)"
+    init_rc=$?
+    set -e
+
+    if [[ "$init_rc" -eq 0 ]]; then
+      printf '%s\n' "$init_json" > "$VAULT_INIT_OUTPUT"
+      chmod 600 "$VAULT_INIT_OUTPUT"
+      pass "vault initialized and output saved: ${VAULT_INIT_OUTPUT}"
+    elif printf '%s\n' "$init_json" | grep -qi "already initialized"; then
+      pass "vault already initialized"
+    else
+      fail "vault init failed: ${init_json}"
+      return
+    fi
   else
     pass "vault already initialized"
   fi
