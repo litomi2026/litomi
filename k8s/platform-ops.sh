@@ -199,6 +199,11 @@ run() {
   "$@"
 }
 
+run_quiet_stdout() {
+  printf '%s[CMD  ]%s %s\n' "$C_BLUE" "$C_RESET" "$*"
+  "$@" >/dev/null
+}
+
 hr() {
   local char="${1:--}"
   printf '%*s\n' "$UI_WIDTH" '' | tr ' ' "$char"
@@ -496,8 +501,8 @@ ensure_argocd_bootstrap_and_control_plane() {
   assert_file_exists "${REPO_ROOT}/k8s/bootstrap/root/root.yaml"
 
   if [[ "$MODE" == "init" ]]; then
-    run k apply --server-side --force-conflicts -k "${REPO_ROOT}/k8s/bootstrap/argocd"
-    run k apply -f "${REPO_ROOT}/k8s/bootstrap/root/root.yaml"
+    run_quiet_stdout k apply --server-side --force-conflicts -k "${REPO_ROOT}/k8s/bootstrap/argocd"
+    run_quiet_stdout k apply -f "${REPO_ROOT}/k8s/bootstrap/root/root.yaml"
     ok "Argo CD bootstrap and root app applied"
   else
     ok "reboot mode: skip bootstrap apply"
