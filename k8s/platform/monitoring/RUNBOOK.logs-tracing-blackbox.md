@@ -2,6 +2,23 @@
 
 Prometheus/Grafana/Alertmanager 다음 단계로, 로그/트레이싱/외부 사용자 관점 모니터링을 붙이는 운영 가이드예요.
 
+### 자동화 빠른 시작 (`k8s/platform-ops.sh`)
+
+```zsh
+cd /Users/gwak2837/Documents/GitHub/litomi
+
+# 재부팅 점검 프로필(무변경)로 Monitoring/Logging/Tracing 포함 상태 점검
+./k8s/platform-ops.sh --reboot-mode --check-only --skip-public-check
+```
+
+위 커맨드는 아래를 포함해 확인해요.
+
+- Argo CD 앱 상태 (`platform-monitoring`, `platform-logging-*`, `platform-tracing-*`)
+- `monitoring/blackbox-exporter` Deployment readiness
+- `Probe`/`PrometheusRule` 리소스 존재
+- `monitoring/logging/tracing`의 SecretStore/ExternalSecret Ready 상태
+- Loki/Fluent Bit/Tempo/OpenTelemetry Collector 워크로드 준비 상태
+
 ### 이 레포에서 이미 적용된 것
 
 - `Loki` (`platform-logging-loki`)
