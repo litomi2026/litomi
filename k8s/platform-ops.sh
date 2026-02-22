@@ -1103,17 +1103,18 @@ seed_vault_secrets_from_dir() {
   token="$(resolve_root_token || true)"
   [[ -n "$token" ]] || die "cannot seed vault secrets without root token"
 
-  local env_files
-  env_files="$(find "$VAULT_SECRETS_DIR" -type f -name '*.env' | sort || true)"
-  [[ -n "$env_files" ]] || die "no .env files found in ${VAULT_SECRETS_DIR}"
+  local env_files=()
+  mapfile -t env_files < <(find "$VAULT_SECRETS_DIR" -type f -name '*.env' | sort || true)
+  [[ ${#env_files[@]} -gt 0 ]] || die "no .env files found in ${VAULT_SECRETS_DIR}"
 
   local env_file rel_path kv_path
-  while IFS= read -r env_file; do
+  # Use an array + for-loop so kubectl exec -i cannot consume loop input from stdin.
+  for env_file in "${env_files[@]}"; do
     [[ -z "$env_file" ]] && continue
     rel_path="${env_file#${VAULT_SECRETS_DIR}/}"
     kv_path="${rel_path%.env}"
     put_vault_kv_from_env_file "$token" "$kv_path" "$env_file"
-  done <<< "$env_files"
+  done
 }
 
 force_reconcile_resource() {
