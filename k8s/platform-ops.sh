@@ -67,6 +67,7 @@ CHECK_INTERVAL_SECONDS="${CHECK_INTERVAL_SECONDS:-5}"
 WAIT_PROGRESS_EVERY_SECONDS="${WAIT_PROGRESS_EVERY_SECONDS:-30}"
 PUBLIC_URLS="${PUBLIC_URLS:-https://argocd.litomi.in/,https://litomi.in/,https://api.litomi.in/health}"
 KUBECTL_EXEC_TIMEOUT_SECONDS="${KUBECTL_EXEC_TIMEOUT_SECONDS:-120}"
+VAULT_POD_WAIT_SECONDS="${VAULT_POD_WAIT_SECONDS:-1800}"
 
 VAULT_NAMESPACE="${VAULT_NAMESPACE:-vault}"
 VAULT_POD="${VAULT_POD:-vault-0}"
@@ -148,7 +149,7 @@ Core options:
 Environment overrides:
   KUBECTL_CMD, BOOT_WAIT_SECONDS, CHECK_INTERVAL_SECONDS, PUBLIC_URLS,
   VAULT_ADDR, VAULT_CACERT, VAULT_TLS_DIR, VAULT_INIT_OUTPUT,
-  WAIT_PROGRESS_EVERY_SECONDS, KUBECTL_EXEC_TIMEOUT_SECONDS
+  WAIT_PROGRESS_EVERY_SECONDS, KUBECTL_EXEC_TIMEOUT_SECONDS, VAULT_POD_WAIT_SECONDS
 
 Notes:
   - init mode is idempotent and installs/updates a reboot systemd service automatically.
@@ -410,6 +411,33 @@ wait_for_resource() {
   die "resource not found within timeout: ${ns}/${kind}/${name}"
 }
 
+wait_for_root_app_synced_healthy() {
+  local waited=0
+  local sync health
+
+  while (( waited < BOOT_WAIT_SECONDS )); do
+    sync="$(k -n argocd get applications.argoproj.io/root -o jsonpath='{.status.sync.status}' 2>/dev/null || true)"
+    health="$(k -n argocd get applications.argoproj.io/root -o jsonpath='{.status.health.status}' 2>/dev/null || true)"
+
+    if [[ "$sync" == "Synced" && "$health" == "Healthy" ]]; then
+      ok "root app is Synced/Healthy"
+      return
+    fi
+
+    if should_emit_wait_log "$waited"; then
+      log "waiting for root app sync/health (sync=${sync:-<empty>}, health=${health:-<empty>}, ${waited}s/${BOOT_WAIT_SECONDS}s)"
+    fi
+
+    sleep "$CHECK_INTERVAL_SECONDS"
+    waited=$((waited + CHECK_INTERVAL_SECONDS))
+  done
+
+  k -n argocd get applications.argoproj.io/root -o yaml || true
+  k -n argocd get applications.argoproj.io \
+    -o custom-columns='NAME:.metadata.name,SYNC:.status.sync.status,HEALTH:.status.health.status' || true
+  die "root app did not become Synced/Healthy within ${BOOT_WAIT_SECONDS}s"
+}
+
 ensure_k3s_if_needed() {
   log "Step 1/9: k3s install/check"
 
@@ -468,6 +496,7 @@ ensure_argocd_bootstrap_and_control_plane() {
   ok "argocd-application-controller rollout complete"
 
   wait_for_resource argocd applications.argoproj.io root
+  wait_for_root_app_synced_healthy
 }
 
 write_secret_field_to_file() {
@@ -598,9 +627,16 @@ ensure_vault_tls_assets() {
 wait_for_vault_pod_running() {
   wait_for_resource "$VAULT_NAMESPACE" pod "$VAULT_POD"
 
+  warn "Vault first startup on OrbStack may take several minutes (image pull + volume mount)."
+
+  local timeout_seconds="$VAULT_POD_WAIT_SECONDS"
+  if ! [[ "$timeout_seconds" =~ ^[0-9]+$ ]] || (( timeout_seconds <= 0 )); then
+    timeout_seconds="$BOOT_WAIT_SECONDS"
+  fi
+
   local waited=0
-  local phase node waiting_reason restart_count
-  while (( waited < BOOT_WAIT_SECONDS )); do
+  local phase node waiting_reason waiting_message init_waiting_reason init_waiting_message restart_count last_event_line
+  while (( waited < timeout_seconds )); do
     phase="$(k -n "$VAULT_NAMESPACE" get "pod/${VAULT_POD}" -o jsonpath='{.status.phase}' 2>/dev/null || true)"
     if [[ "$phase" == "Running" ]]; then
       ok "vault pod is running: ${VAULT_NAMESPACE}/${VAULT_POD}"
@@ -613,11 +649,37 @@ wait_for_vault_pod_running() {
         k -n "$VAULT_NAMESPACE" get "pod/${VAULT_POD}" \
           -o jsonpath='{range .status.containerStatuses[*]}{.state.waiting.reason}{" "}{end}' 2>/dev/null || true
       )"
+      waiting_message="$(
+        k -n "$VAULT_NAMESPACE" get "pod/${VAULT_POD}" \
+          -o jsonpath='{range .status.containerStatuses[*]}{.state.waiting.message}{" | "}{end}' 2>/dev/null || true
+      )"
+      init_waiting_reason="$(
+        k -n "$VAULT_NAMESPACE" get "pod/${VAULT_POD}" \
+          -o jsonpath='{range .status.initContainerStatuses[*]}{.state.waiting.reason}{" "}{end}' 2>/dev/null || true
+      )"
+      init_waiting_message="$(
+        k -n "$VAULT_NAMESPACE" get "pod/${VAULT_POD}" \
+          -o jsonpath='{range .status.initContainerStatuses[*]}{.state.waiting.message}{" | "}{end}' 2>/dev/null || true
+      )"
       restart_count="$(
         k -n "$VAULT_NAMESPACE" get "pod/${VAULT_POD}" \
           -o jsonpath='{range .status.containerStatuses[*]}{.restartCount}{" "}{end}' 2>/dev/null || true
       )"
-      log "waiting for vault pod Running (phase=${phase:-<empty>}, node=${node:-<none>}, waiting=${waiting_reason:-<none>}, restarts=${restart_count:-0}, ${waited}s/${BOOT_WAIT_SECONDS}s)"
+      log "waiting for vault pod Running (phase=${phase:-<empty>}, node=${node:-<none>}, waiting=${waiting_reason:-<none>}, init-waiting=${init_waiting_reason:-<none>}, restarts=${restart_count:-0}, ${waited}s/${timeout_seconds}s)"
+      if [[ -n "${waiting_message//[$'\n\r\t ']}" ]]; then
+        log "vault container wait message: ${waiting_message}"
+      fi
+      if [[ -n "${init_waiting_message//[$'\n\r\t ']}" ]]; then
+        log "vault init-container wait message: ${init_waiting_message}"
+      fi
+      last_event_line="$(
+        k -n "$VAULT_NAMESPACE" get events \
+          --field-selector "involvedObject.kind=Pod,involvedObject.name=${VAULT_POD}" \
+          --sort-by='.metadata.creationTimestamp' 2>/dev/null | tail -n 1 || true
+      )"
+      if [[ -n "${last_event_line//[$'\n\r\t ']}" ]]; then
+        log "vault recent event: ${last_event_line}"
+      fi
     fi
 
     sleep "$CHECK_INTERVAL_SECONDS"
@@ -628,6 +690,9 @@ wait_for_vault_pod_running() {
   k -n "$VAULT_NAMESPACE" get "pod/${VAULT_POD}" -o wide || true
   k -n "$VAULT_NAMESPACE" describe "pod/${VAULT_POD}" || true
   k -n "$VAULT_NAMESPACE" logs "pod/${VAULT_POD}" --tail=200 || true
+  k -n "$VAULT_NAMESPACE" get events \
+    --field-selector "involvedObject.kind=Pod,involvedObject.name=${VAULT_POD}" \
+    --sort-by='.metadata.creationTimestamp' || true
   die "vault pod is not running: ${VAULT_NAMESPACE}/${VAULT_POD}"
 }
 
