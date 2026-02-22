@@ -739,6 +739,17 @@ vault_exec() {
     env VAULT_ADDR="$VAULT_ADDR" VAULT_CACERT="$VAULT_CACERT" "$@"
 }
 
+vault_exec_stdin() {
+  if command -v timeout >/dev/null 2>&1; then
+    timeout "${KUBECTL_EXEC_TIMEOUT_SECONDS}s" \
+      "${KUBECTL_ARR[@]}" -n "$VAULT_NAMESPACE" exec -i "$VAULT_POD" -- \
+      env VAULT_ADDR="$VAULT_ADDR" VAULT_CACERT="$VAULT_CACERT" "$@"
+    return
+  fi
+  k -n "$VAULT_NAMESPACE" exec -i "$VAULT_POD" -- \
+    env VAULT_ADDR="$VAULT_ADDR" VAULT_CACERT="$VAULT_CACERT" "$@"
+}
+
 vault_exec_token() {
   local token="$1"
   shift
@@ -749,6 +760,19 @@ vault_exec_token() {
     return
   fi
   k -n "$VAULT_NAMESPACE" exec "$VAULT_POD" -- \
+    env VAULT_ADDR="$VAULT_ADDR" VAULT_CACERT="$VAULT_CACERT" VAULT_TOKEN="$token" "$@"
+}
+
+vault_exec_token_stdin() {
+  local token="$1"
+  shift
+  if command -v timeout >/dev/null 2>&1; then
+    timeout "${KUBECTL_EXEC_TIMEOUT_SECONDS}s" \
+      "${KUBECTL_ARR[@]}" -n "$VAULT_NAMESPACE" exec -i "$VAULT_POD" -- \
+      env VAULT_ADDR="$VAULT_ADDR" VAULT_CACERT="$VAULT_CACERT" VAULT_TOKEN="$token" "$@"
+    return
+  fi
+  k -n "$VAULT_NAMESPACE" exec -i "$VAULT_POD" -- \
     env VAULT_ADDR="$VAULT_ADDR" VAULT_CACERT="$VAULT_CACERT" VAULT_TOKEN="$token" "$@"
 }
 
@@ -943,7 +967,7 @@ configure_vault_for_eso() {
   local spec policy prefix role ns role_policy
   for spec in "${VAULT_POLICY_SPECS[@]}"; do
     IFS='|' read -r policy prefix <<< "$spec"
-    cat <<EOF_POLICY | vault_exec_token "$token" vault policy write "$policy" - >/dev/null
+    cat <<EOF_POLICY | vault_exec_token_stdin "$token" vault policy write "$policy" - >/dev/null
 path "kv/data/${prefix}/*" {
   capabilities = ["read"]
 }
