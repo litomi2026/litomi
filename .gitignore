@@ -344,6 +344,11 @@ pyrightconfig.json
 .env.*
 *.env
 !.env.template
+/k8s/vault-secrets/**
+!/k8s/vault-secrets/
+!/k8s/vault-secrets/**/
+!/k8s/vault-secrets/**/*.env.example
+!/k8s/vault-secrets/README.md
 
 # Certificates
 certificates
