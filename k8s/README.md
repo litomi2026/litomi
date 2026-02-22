@@ -13,41 +13,41 @@ git clone https://github.com/gwak2837/litomi.git
 cd litomi
 ```
 
-### 2) 초기 부트스트랩 자동화
+### 2) Vault seed 파일 준비
+
+`k8s/platform-ops.sh`는 기본값으로 `./k8s/vault-secrets`를 읽어서 Vault KV를 채워요.
+초기 1회 실행(`init`) 전에 아래 경로의 파일을 모두 준비해야 해요.
+
+- `k8s/vault-secrets/README.md`
+- `k8s/vault-secrets/**/*.env.example`
+
+### 3) 초기 부트스트랩 자동화
 
 ```zsh
 ./k8s/platform-ops.sh
 ```
 
-기본 실행은 아래를 순서대로 자동 처리해요.
+기본 실행(`--mode init`)은 idempotent 하게 아래를 처리해요.
 
-- k3s 설치 + API/Node readiness 확인 + etcd snapshot
-- Argo CD bootstrap 설치 + `argocd-initial-admin-secret` 출력
-- root app-of-apps 적용 + `Synced/Healthy` 대기
-- Vault TLS/Init/Unseal/Policy/Role bootstrap(가능한 범위)
-- ESO/Argo reconcile + Velero/Observability 포함 플랫폼 점검
+- k3s 설치/검증
+- Argo CD bootstrap + root app 적용
+- Vault TLS secret/CA configmap 정렬
+- Vault init/unseal + kubernetes auth/kv/policy/role 구성
+- `k8s/vault-secrets` 기반 Vault KV 시딩
+- Argo/ESO reconcile + 필수 secret/public URL 점검
+- 재부팅용 systemd 서비스(`litomi-platform-reboot.service`) 설치/활성화
 
-### 3) Vault + External Secrets(ESO) 준비
-
-이 클러스터는 Vault를 SSOT로 두고 ESO가 Kubernetes Secret을 만들어요.
-
-- **1회 수동 작업 런북**: [`k8s/platform/vault/RUNBOOK.vault-eso.md`](/k8s/platform/vault/RUNBOOK.vault-eso.md)
-
-Vault 관련 주요 옵션:
+### 4) 재부팅 후 점검
 
 ```zsh
-# init 결과 저장 경로 지정
-./k8s/platform-ops.sh --vault-init-output ~/vault-tls/vault-init.json
+# 수동 실행
+./k8s/platform-ops.sh --mode reboot
 
-# 비대화형 실행 시 키/토큰/시크릿 디렉토리 전달 예시
-./k8s/platform-ops.sh \
-  --non-interactive \
-  --vault-unseal-keys-file ~/vault-tls/vault-init.json \
-  --vault-root-token-file ~/vault-tls/vault-init.json \
-  --vault-secrets-dir /path/to/vault-secrets
+# 자동 실행 서비스 상태 확인
+sudo systemctl status litomi-platform-reboot.service --no-pager
 ```
 
-### 4) 접속 확인
+### 5) 접속 확인
 
 - **stg web**: `https://stg.litomi.in`
 - **stg api**: `https://api-stg.litomi.in/health`
@@ -57,7 +57,7 @@ Vault 관련 주요 옵션:
 - **Grafana**: `https://grafana.litomi.in`
 
 ```zsh
-./k8s/platform-ops.sh --reboot-mode --check-only --skip-public-check
+./k8s/platform-ops.sh --mode reboot --skip-public-check
 ```
 
 ### 자동 백업 / 재해 복구
@@ -68,18 +68,9 @@ Vault 관련 주요 옵션:
 
 `k8s/platform/monitoring/RUNBOOK.logs-tracing-blackbox.md` 참고
 
-### 재부팅 후 점검
+### 추가 런북
 
 `k8s/RUNBOOK.post-reboot.md` 참고
-
-```zsh
-# 재부팅 직후 자동 점검/재동기화
-./k8s/platform-ops.sh --reboot-mode
-
-# 부팅 시 자동 실행 등록/상태 확인
-./k8s/platform-ops.sh --install-reboot-service
-./k8s/platform-ops.sh --show-reboot-service-status
-```
 
 ### 공식 문서
 
