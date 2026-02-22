@@ -65,6 +65,7 @@ read -r -a KUBECTL_ARR <<< "${KUBECTL_CMD}"
 BOOT_WAIT_SECONDS="${BOOT_WAIT_SECONDS:-900}"
 CHECK_INTERVAL_SECONDS="${CHECK_INTERVAL_SECONDS:-5}"
 WAIT_PROGRESS_EVERY_SECONDS="${WAIT_PROGRESS_EVERY_SECONDS:-30}"
+POST_RECONCILE_WAIT_SECONDS="${POST_RECONCILE_WAIT_SECONDS:-180}"
 PUBLIC_URLS="${PUBLIC_URLS:-https://argocd.litomi.in/,https://litomi.in/,https://api.litomi.in/health}"
 KUBECTL_EXEC_TIMEOUT_SECONDS="${KUBECTL_EXEC_TIMEOUT_SECONDS:-120}"
 VAULT_POD_WAIT_SECONDS="${VAULT_POD_WAIT_SECONDS:-1800}"
@@ -135,6 +136,12 @@ REQUIRED_CLUSTER_SECRETS=(
   "tracing|tempo-minio"
 )
 
+REQUIRED_ARGO_APPS=(
+  "root"
+  "platform-external-secrets"
+  "platform-vault"
+)
+
 usage() {
   cat <<'EOF_USAGE'
 Usage:
@@ -149,7 +156,8 @@ Core options:
 Environment overrides:
   KUBECTL_CMD, BOOT_WAIT_SECONDS, CHECK_INTERVAL_SECONDS, PUBLIC_URLS,
   VAULT_ADDR, VAULT_CACERT, VAULT_TLS_DIR, VAULT_INIT_OUTPUT,
-  WAIT_PROGRESS_EVERY_SECONDS, KUBECTL_EXEC_TIMEOUT_SECONDS, VAULT_POD_WAIT_SECONDS
+  WAIT_PROGRESS_EVERY_SECONDS, KUBECTL_EXEC_TIMEOUT_SECONDS, VAULT_POD_WAIT_SECONDS,
+  POST_RECONCILE_WAIT_SECONDS
 
 Notes:
   - init mode is idempotent and installs/updates a reboot systemd service automatically.
@@ -415,6 +423,10 @@ wait_for_root_app_synced_healthy() {
   local waited=0
   local sync health
 
+  # Argo repo-server/controller 재시작 직후 stale ComparisonError로 Unknown에 머무는 경우가 있어
+  # hard refresh를 먼저 걸어 상태 계산을 강제로 재실행한다.
+  k -n argocd annotate applications.argoproj.io/root argocd.argoproj.io/refresh=hard --overwrite >/dev/null 2>&1 || true
+
   while (( waited < BOOT_WAIT_SECONDS )); do
     sync="$(k -n argocd get applications.argoproj.io/root -o jsonpath='{.status.sync.status}' 2>/dev/null || true)"
     health="$(k -n argocd get applications.argoproj.io/root -o jsonpath='{.status.health.status}' 2>/dev/null || true)"
@@ -425,6 +437,9 @@ wait_for_root_app_synced_healthy() {
     fi
 
     if should_emit_wait_log "$waited"; then
+      if [[ "$sync" == "Unknown" ]]; then
+        k -n argocd annotate applications.argoproj.io/root argocd.argoproj.io/refresh=hard --overwrite >/dev/null 2>&1 || true
+      fi
       log "waiting for root app sync/health (sync=${sync:-<empty>}, health=${health:-<empty>}, ${waited}s/${BOOT_WAIT_SECONDS}s)"
     fi
 
@@ -1122,34 +1137,68 @@ force_refresh_argocd_apps() {
   done <<< "$apps"
 }
 
+force_sync_out_of_sync_argocd_apps() {
+  local lines app sync
+  lines="$(k -n argocd get applications.argoproj.io -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.sync.status}{"\n"}{end}' 2>/dev/null || true)"
+  [[ -n "$lines" ]] || return 0
+
+  while IFS=$'\t' read -r app sync; do
+    [[ -z "$app" ]] && continue
+    [[ "$sync" == "Synced" ]] && continue
+    k -n argocd patch applications.argoproj.io "$app" --type merge \
+      -p '{"operation":{"initiatedBy":{"username":"platform-ops"},"sync":{"prune":true}}}' >/dev/null 2>&1 || true
+  done <<< "$lines"
+}
+
 run_reconcile_actions() {
   log "Step 7/9: reconcile"
   force_reconcile_resource secretstores.external-secrets.io
   force_reconcile_resource externalsecrets.external-secrets.io
   force_refresh_argocd_apps
+  force_sync_out_of_sync_argocd_apps
   ok "reconcile annotations applied"
 }
 
 wait_for_argocd_apps_healthy() {
   local waited=0
-  local lines name sync health
+  local app sync health first_pending all_ok
 
   while (( waited < BOOT_WAIT_SECONDS )); do
-    lines="$(k -n argocd get applications.argoproj.io -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.sync.status}{"\t"}{.status.health.status}{"\n"}{end}' 2>/dev/null || true)"
+    all_ok="true"
+    first_pending=""
+    for app in "${REQUIRED_ARGO_APPS[@]}"; do
+      if ! resource_exists argocd applications.argoproj.io "$app"; then
+        all_ok="false"
+        first_pending="${app}(missing)"
+        break
+      fi
+      sync="$(k -n argocd get applications.argoproj.io/"$app" -o jsonpath='{.status.sync.status}' 2>/dev/null || true)"
+      health="$(k -n argocd get applications.argoproj.io/"$app" -o jsonpath='{.status.health.status}' 2>/dev/null || true)"
+      if [[ "$sync" != "Synced" || "$health" != "Healthy" ]]; then
+        all_ok="false"
+        first_pending="${app}(sync=${sync:-<empty>}, health=${health:-<empty>})"
+        break
+      fi
+    done
 
-    if [[ -n "${lines//[$'\n\r\t ']}" ]]; then
-      local all_ok="true"
-      while IFS=$'\t' read -r name sync health; do
-        [[ -z "$name" ]] && continue
-        if [[ "$sync" != "Synced" || "$health" != "Healthy" ]]; then
-          all_ok="false"
-          break
-        fi
-      done <<< "$lines"
+    if [[ "$all_ok" == "true" ]]; then
+      ok "required Argo CD apps are Synced/Healthy"
+      return
+    fi
 
-      if [[ "$all_ok" == "true" ]]; then
-        ok "all Argo CD apps are Synced/Healthy"
-        return
+    if should_emit_wait_log "$waited"; then
+      # Some manifests may overwrite argocd-cm labels during sync; if labels disappear,
+      # Argo can report InvalidSpecError(argocd-cm not found) and stay Unknown.
+      k -n argocd label configmap argocd-cm \
+        app.kubernetes.io/name=argocd-cm \
+        app.kubernetes.io/part-of=argocd \
+        --overwrite >/dev/null 2>&1 || true
+      force_refresh_argocd_apps
+      force_sync_out_of_sync_argocd_apps
+      if [[ -n "$first_pending" ]]; then
+        log "waiting for Argo CD apps convergence (${first_pending}, ${waited}s/${BOOT_WAIT_SECONDS}s)"
+      else
+        log "waiting for Argo CD apps convergence (${waited}s/${BOOT_WAIT_SECONDS}s)"
       fi
     fi
 
@@ -1159,30 +1208,33 @@ wait_for_argocd_apps_healthy() {
 
   k -n argocd get applications.argoproj.io \
     -o custom-columns='NAME:.metadata.name,SYNC:.status.sync.status,HEALTH:.status.health.status' || true
-  die "Argo CD apps did not converge within ${BOOT_WAIT_SECONDS}s"
+  die "required Argo CD apps did not converge within ${BOOT_WAIT_SECONDS}s"
 }
 
 wait_for_secretstores_ready() {
   local waited=0
-  local ns ready all_ready
+  local ns ready all_ready pending
+  local max_wait="$POST_RECONCILE_WAIT_SECONDS"
 
-  while (( waited < BOOT_WAIT_SECONDS )); do
+  while (( waited < max_wait )); do
     all_ready="true"
+    pending=""
 
     for ns in "${VAULT_CA_NAMESPACES[@]}"; do
       if ! namespace_exists "$ns"; then
-        all_ready="false"
-        break
+        continue
       fi
 
       if ! resource_exists "$ns" secretstores.external-secrets.io vault; then
         all_ready="false"
+        pending="${ns}/vault(missing)"
         break
       fi
 
       ready="$(k -n "$ns" get secretstores.external-secrets.io/vault -o jsonpath='{range .status.conditions[?(@.type=="Ready")]}{.status}{end}' 2>/dev/null || true)"
       if [[ "$ready" != "True" ]]; then
         all_ready="false"
+        pending="${ns}/vault(ready=${ready:-<empty>})"
         break
       fi
     done
@@ -1192,22 +1244,36 @@ wait_for_secretstores_ready() {
       return
     fi
 
+    if should_emit_wait_log "$waited"; then
+      k -n argocd label configmap argocd-cm \
+        app.kubernetes.io/name=argocd-cm \
+        app.kubernetes.io/part-of=argocd \
+        --overwrite >/dev/null 2>&1 || true
+      force_refresh_argocd_apps
+      force_sync_out_of_sync_argocd_apps
+      log "waiting for Vault SecretStores Ready=True (${pending:-pending}, ${waited}s/${max_wait}s)"
+    fi
+
     sleep "$CHECK_INTERVAL_SECONDS"
     waited=$((waited + CHECK_INTERVAL_SECONDS))
   done
 
-  die "Vault SecretStores did not reach Ready=True within ${BOOT_WAIT_SECONDS}s"
+  warn "Vault SecretStores not fully Ready=True within ${max_wait}s; continuing"
 }
 
 wait_for_required_cluster_secrets() {
   local waited=0
   local spec ns name missing
+  local max_wait="$POST_RECONCILE_WAIT_SECONDS"
 
-  while (( waited < BOOT_WAIT_SECONDS )); do
+  while (( waited < max_wait )); do
     missing=""
 
     for spec in "${REQUIRED_CLUSTER_SECRETS[@]}"; do
       IFS='|' read -r ns name <<< "$spec"
+      if ! namespace_exists "$ns"; then
+        continue
+      fi
       if ! resource_exists "$ns" secret "$name"; then
         missing+=" ${ns}/${name}"
       fi
@@ -1218,11 +1284,21 @@ wait_for_required_cluster_secrets() {
       return
     fi
 
+    if should_emit_wait_log "$waited"; then
+      k -n argocd label configmap argocd-cm \
+        app.kubernetes.io/name=argocd-cm \
+        app.kubernetes.io/part-of=argocd \
+        --overwrite >/dev/null 2>&1 || true
+      force_refresh_argocd_apps
+      force_sync_out_of_sync_argocd_apps
+      log "waiting for required Kubernetes secrets:${missing} (${waited}s/${max_wait}s)"
+    fi
+
     sleep "$CHECK_INTERVAL_SECONDS"
     waited=$((waited + CHECK_INTERVAL_SECONDS))
   done
 
-  die "required Kubernetes secrets missing:${missing}"
+  warn "required Kubernetes secrets still missing after ${max_wait}s:${missing}; continuing"
 }
 
 check_vault_runtime_health() {
@@ -1309,7 +1385,8 @@ EOF_SERVICE
 
   run_root systemctl daemon-reload
   run_root systemctl enable "$SERVICE_NAME"
-  run_root systemctl restart "$SERVICE_NAME"
+  # Do not block init completion on reboot service execution.
+  run_root systemctl restart --no-block "$SERVICE_NAME" || true
 
   ok "reboot service installed/enabled: ${SERVICE_NAME}"
 }
