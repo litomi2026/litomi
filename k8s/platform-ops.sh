@@ -42,6 +42,7 @@ SKIP_PUBLIC_CHECK="false"
 SKIP_K3S_INSTALL="false"
 SKIP_GITOPS_APPLY="false"
 SKIP_VAULT_BOOTSTRAP="false"
+RUN_RECONCILE="false"
 INSTALL_REBOOT_SERVICE="false"
 REMOVE_REBOOT_SERVICE="false"
 SHOW_REBOOT_SERVICE_STATUS="false"
@@ -104,7 +105,7 @@ Usage:
 Default behavior:
   Clean-install oriented full flow:
   k3s install/check -> Argo CD bootstrap -> root app apply -> Vault/ESO bootstrap ->
-  reconcile -> platform checks (Argo/ESO/Velero/Observability/public URLs)
+  optional reconcile -> platform checks (Argo/ESO/Velero/Observability/public URLs)
 
 Common options:
   --check-only                     Check-only mode (no apply/write/reconcile actions)
@@ -114,6 +115,7 @@ Common options:
   --skip-k3s-install               Skip k3s installation attempt
   --skip-gitops-apply              Skip Argo bootstrap/root apply
   --skip-vault-bootstrap           Skip Vault TLS/init/config/bootstrap actions
+  --run-reconcile                  Trigger reconcile annotations (off by default)
   --public-urls <csv>              Override PUBLIC_URLS (comma-separated)
 
 Vault inputs:
@@ -225,6 +227,10 @@ parse_args() {
         SKIP_VAULT_BOOTSTRAP="true"
         shift
         ;;
+      --run-reconcile)
+        RUN_RECONCILE="true"
+        shift
+        ;;
       --public-urls)
         PUBLIC_URLS="${2:-}"
         shift 2
@@ -289,6 +295,7 @@ parse_args() {
     SKIP_K3S_INSTALL="true"
     SKIP_GITOPS_APPLY="true"
     SKIP_VAULT_BOOTSTRAP="true"
+    RUN_RECONCILE="true"
   fi
 }
 
@@ -302,6 +309,22 @@ resource_exists() {
   local kind="$2"
   local name="$3"
   k -n "$ns" get "${kind}/${name}" >/dev/null 2>&1
+}
+
+argocd_components_present() {
+  resource_exists argocd deployment argocd-repo-server && \
+    resource_exists argocd statefulset argocd-application-controller
+}
+
+argocd_root_app_present() {
+  resource_exists argocd applications.argoproj.io root
+}
+
+has_bootstrap_snapshot_today() {
+  local today_prefix
+  today_prefix="bootstrap-$(date +%Y%m%d)-"
+  sudo k3s etcd-snapshot ls 2>/dev/null | \
+    awk -v prefix="$today_prefix" 'NR > 1 && index($1, prefix) == 1 {found=1} END {exit(found ? 0 : 1)}'
 }
 
 wait_for_api_ready() {
@@ -360,9 +383,13 @@ ensure_k3s_if_needed() {
   if [[ "$CHECK_ONLY" != "true" ]]; then
     run sudo timeout 60s sh -c 'until k3s secrets-encrypt status >/dev/null 2>&1; do sleep 2; done'
     run sudo k3s secrets-encrypt status
-    run sudo k3s etcd-snapshot save --name "bootstrap-$(date +%Y%m%d-%H%M%S)"
+    if has_bootstrap_snapshot_today; then
+      pass "etcd snapshot already exists for today; skip create"
+    else
+      run sudo k3s etcd-snapshot save --name "bootstrap-$(date +%Y%m%d-%H%M%S)"
+      pass "etcd snapshot created"
+    fi
     run sudo k3s etcd-snapshot ls
-    pass "etcd snapshot created"
   else
     warn "skip etcd snapshot in --check-only mode"
   fi
@@ -375,8 +402,17 @@ ensure_argocd_and_root() {
   assert_file_exists "${REPO_ROOT}/k8s/bootstrap/root/root.yaml"
 
   if [[ "$SKIP_GITOPS_APPLY" != "true" && "$CHECK_ONLY" != "true" ]]; then
-    run k apply --server-side --force-conflicts -k "${REPO_ROOT}/k8s/bootstrap/argocd"
-    run k apply -f "${REPO_ROOT}/k8s/bootstrap/root/root.yaml"
+    if argocd_components_present; then
+      pass "Argo CD components already present; skip bootstrap apply"
+    else
+      run k apply --server-side --force-conflicts -k "${REPO_ROOT}/k8s/bootstrap/argocd"
+    fi
+
+    if argocd_root_app_present; then
+      pass "root app already present; skip root apply"
+    else
+      run k apply -f "${REPO_ROOT}/k8s/bootstrap/root/root.yaml"
+    fi
   else
     warn "skip Argo CD/root apply (skip flag or check-only)"
   fi
@@ -442,6 +478,82 @@ vault_exec_token() {
   shift
   k -n "$VAULT_NAMESPACE" exec "$VAULT_POD" -- \
     env VAULT_ADDR="$VAULT_ADDR" VAULT_CACERT="$VAULT_CACERT" VAULT_TOKEN="$token" "$@"
+}
+
+vault_kubernetes_auth_configured() {
+  local token="$1"
+  local config
+  config="$(vault_exec_token "$token" vault read -format=json auth/kubernetes/config 2>/dev/null || true)"
+  printf '%s\n' "$config" | grep -Eq '"kubernetes_host"[[:space:]]*:[[:space:]]*"https://kubernetes.default.svc:443"'
+}
+
+vault_policy_matches_expected() {
+  local token="$1"
+  local policy="$2"
+  local prefix="$3"
+  local existing_policy
+  existing_policy="$(vault_exec_token "$token" vault policy read "$policy" 2>/dev/null || true)"
+  if [[ -z "$existing_policy" ]]; then
+    return 1
+  fi
+  if ! printf '%s\n' "$existing_policy" | grep -Fq "path \"kv/data/${prefix}/*\""; then
+    return 1
+  fi
+  if ! printf '%s\n' "$existing_policy" | grep -Fq 'capabilities = ["read"]'; then
+    return 1
+  fi
+  return 0
+}
+
+vault_role_exists() {
+  local token="$1"
+  local role="$2"
+  vault_exec_token "$token" vault read "auth/kubernetes/role/${role}" >/dev/null 2>&1
+}
+
+sha256_of_file() {
+  local file="$1"
+  openssl dgst -sha256 "$file" | awk '{print $2}'
+}
+
+sha256_of_string() {
+  local value="$1"
+  printf '%s' "$value" | openssl dgst -sha256 | awk '{print $2}'
+}
+
+vault_kv_field_sha256() {
+  local token="$1"
+  local kv_path="$2"
+  local key="$3"
+  local tmp_file rc hash
+  tmp_file="$(mktemp)"
+  set +e
+  vault_exec_token "$token" vault kv get -field="$key" "$kv_path" >"$tmp_file" 2>/dev/null
+  rc=$?
+  set -e
+  if [[ "$rc" -ne 0 ]]; then
+    rm -f "$tmp_file"
+    return 1
+  fi
+  hash="$(sha256_of_file "$tmp_file")"
+  rm -f "$tmp_file"
+  printf '%s' "$hash"
+}
+
+normalize_env_value() {
+  local value="$1"
+  local first_char last_char
+  value="${value%$'\r'}"
+  if [[ "${#value}" -ge 2 ]]; then
+    first_char="${value:0:1}"
+    last_char="${value:${#value}-1:1}"
+    if [[ "$first_char" == '"' && "$last_char" == '"' ]]; then
+      value="${value:1:${#value}-2}"
+    elif [[ "$first_char" == "'" && "$last_char" == "'" ]]; then
+      value="${value:1:${#value}-2}"
+    fi
+  fi
+  printf '%s' "$value"
 }
 
 vault_status_output() {
@@ -801,12 +913,18 @@ initialize_and_configure_vault() {
   auth_list="$(vault_exec_token "$token" vault auth list -format=json 2>/dev/null || true)"
   if [[ "$auth_list" != *'"kubernetes/"'* ]]; then
     run vault_exec_token "$token" vault auth enable kubernetes
+    run vault_exec_token "$token" vault write auth/kubernetes/config \
+      kubernetes_host="https://kubernetes.default.svc:443" \
+      kubernetes_ca_cert=@/var/run/secrets/kubernetes.io/serviceaccount/ca.crt \
+      token_reviewer_jwt=@/var/run/secrets/kubernetes.io/serviceaccount/token
+  elif vault_kubernetes_auth_configured; then
+    pass "Vault kubernetes auth config already matches expected host"
+  else
+    run vault_exec_token "$token" vault write auth/kubernetes/config \
+      kubernetes_host="https://kubernetes.default.svc:443" \
+      kubernetes_ca_cert=@/var/run/secrets/kubernetes.io/serviceaccount/ca.crt \
+      token_reviewer_jwt=@/var/run/secrets/kubernetes.io/serviceaccount/token
   fi
-
-  run vault_exec_token "$token" vault write auth/kubernetes/config \
-    kubernetes_host="https://kubernetes.default.svc:443" \
-    kubernetes_ca_cert=@/var/run/secrets/kubernetes.io/serviceaccount/ca.crt \
-    token_reviewer_jwt=@/var/run/secrets/kubernetes.io/serviceaccount/token
 
   local secrets_list
   secrets_list="$(vault_exec_token "$token" vault secrets list -format=json 2>/dev/null || true)"
@@ -823,6 +941,10 @@ initialize_and_configure_vault() {
   local spec policy prefix role ns role_policy
   for spec in "${VAULT_POLICY_SPECS[@]}"; do
     IFS='|' read -r policy prefix <<< "$spec"
+    if vault_policy_matches_expected "$token" "$policy" "$prefix"; then
+      pass "Vault policy already up-to-date: ${policy}"
+      continue
+    fi
     cat <<EOF | k -n "$VAULT_NAMESPACE" exec -i "$VAULT_POD" -- \
       env VAULT_ADDR="$VAULT_ADDR" VAULT_CACERT="$VAULT_CACERT" VAULT_TOKEN="$token" \
       vault policy write "$policy" -
@@ -835,6 +957,10 @@ EOF
 
   for spec in "${VAULT_ROLE_SPECS[@]}"; do
     IFS='|' read -r role ns role_policy <<< "$spec"
+    if vault_role_exists "$token" "$role"; then
+      pass "Vault auth role already exists; skip write: ${role}"
+      continue
+    fi
     run vault_exec_token "$token" vault write "auth/kubernetes/role/${role}" \
       bound_service_account_names=eso-vault \
       bound_service_account_namespaces="$ns" \
@@ -850,7 +976,9 @@ put_vault_kv_from_env_file() {
   local kv_path="$2"
   local env_file="$3"
   local kv_pairs=()
-  local raw line key value first_char last_char ref resolved_ref
+  local desired_literals=()
+  local desired_files=()
+  local raw line key value ref resolved_ref
 
   while IFS= read -r raw || [[ -n "$raw" ]]; do
     line="$(trim "$raw")"
@@ -866,16 +994,7 @@ put_vault_kv_from_env_file() {
     key="$(trim "${line%%=*}")"
     value="${line#*=}"
     [[ -z "$key" ]] && continue
-
-    if [[ "${#value}" -ge 2 ]]; then
-      first_char="${value:0:1}"
-      last_char="${value:${#value}-1:1}"
-      if [[ "$first_char" == '"' && "$last_char" == '"' ]]; then
-        value="${value:1:${#value}-2}"
-      elif [[ "$first_char" == "'" && "$last_char" == "'" ]]; then
-        value="${value:1:${#value}-2}"
-      fi
-    fi
+    value="$(normalize_env_value "$value")"
 
     if [[ "${value:0:1}" == "@" ]]; then
       ref="${value:1}"
@@ -886,8 +1005,10 @@ put_vault_kv_from_env_file() {
       fi
       assert_file_exists "$resolved_ref"
       kv_pairs+=("${key}=@${resolved_ref}")
+      desired_files+=("${key}"$'\t'"${resolved_ref}")
     else
       kv_pairs+=("${key}=${value}")
+      desired_literals+=("${key}"$'\t'"${value}")
     fi
   done < "$env_file"
 
@@ -896,12 +1017,54 @@ put_vault_kv_from_env_file() {
     return
   fi
 
+  local kv_path_full entry literal_key literal_value file_key file_path
+  local current_hash expected_hash field_rc all_match
   if [[ "$kv_path" == kv/* ]]; then
-    run vault_exec_token "$token" vault kv put "$kv_path" "${kv_pairs[@]}"
+    kv_path_full="$kv_path"
   else
-    run vault_exec_token "$token" vault kv put "kv/${kv_path}" "${kv_pairs[@]}"
+    kv_path_full="kv/${kv_path}"
   fi
-  pass "seeded Vault kv: ${kv_path}"
+
+  if vault_exec_token "$token" vault kv get "$kv_path_full" >/dev/null 2>&1; then
+    all_match="true"
+    for entry in "${desired_literals[@]}"; do
+      literal_key="${entry%%$'\t'*}"
+      literal_value="${entry#*$'\t'}"
+      set +e
+      current_hash="$(vault_kv_field_sha256 "$token" "$kv_path_full" "$literal_key")"
+      field_rc=$?
+      set -e
+      expected_hash="$(sha256_of_string "$literal_value")"
+      if [[ "$field_rc" -ne 0 || -z "$current_hash" || "$current_hash" != "$expected_hash" ]]; then
+        all_match="false"
+        break
+      fi
+    done
+
+    if [[ "$all_match" == "true" ]]; then
+      for entry in "${desired_files[@]}"; do
+        file_key="${entry%%$'\t'*}"
+        file_path="${entry#*$'\t'}"
+        set +e
+        current_hash="$(vault_kv_field_sha256 "$token" "$kv_path_full" "$file_key")"
+        field_rc=$?
+        set -e
+        expected_hash="$(sha256_of_file "$file_path")"
+        if [[ "$field_rc" -ne 0 || -z "$current_hash" || "$current_hash" != "$expected_hash" ]]; then
+          all_match="false"
+          break
+        fi
+      done
+    fi
+
+    if [[ "$all_match" == "true" ]]; then
+      pass "Vault kv already up-to-date: ${kv_path_full}"
+      return
+    fi
+  fi
+
+  run vault_exec_token "$token" vault kv put "$kv_path_full" "${kv_pairs[@]}"
+  pass "seeded Vault kv: ${kv_path_full}"
 }
 
 seed_vault_secrets_from_dir() {
@@ -944,8 +1107,7 @@ seed_vault_secrets_from_dir() {
 
 force_reconcile_all() {
   local resource="$1"
-  local stamp list ns name
-  stamp="$(date +%s)"
+  local list ns name current_annotation
   list="$(
     k get "$resource" -A \
       -o jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.metadata.name}{"\n"}{end}' 2>/dev/null || true
@@ -953,17 +1115,35 @@ force_reconcile_all() {
   [[ -z "$list" ]] && return
   while IFS=$'\t' read -r ns name; do
     [[ -z "$ns" || -z "$name" ]] && continue
-    k -n "$ns" annotate "$resource" "$name" "litomi.dev/platform-ops-reconcile=${stamp}" --overwrite >/dev/null 2>&1 || true
+    current_annotation="$(
+      k -n "$ns" get "$resource" "$name" \
+        -o jsonpath='{.metadata.annotations.litomi\.dev/platform-ops-reconcile}' 2>/dev/null || true
+    )"
+    if [[ "$current_annotation" == "platform-ops" ]]; then
+      pass "reconcile annotation already set: ${resource} ${ns}/${name}"
+      continue
+    fi
+    k -n "$ns" annotate "$resource" "$name" litomi.dev/platform-ops-reconcile=platform-ops --overwrite >/dev/null 2>&1 || true
+    pass "set reconcile annotation: ${resource} ${ns}/${name}"
   done <<< "$list"
 }
 
 refresh_argocd_apps() {
-  local apps app
+  local apps app current_refresh
   apps="$(k -n argocd get applications.argoproj.io -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' 2>/dev/null || true)"
   [[ -z "$apps" ]] && return
   while IFS= read -r app; do
     [[ -z "$app" ]] && continue
+    current_refresh="$(
+      k -n argocd get applications.argoproj.io "$app" \
+        -o jsonpath='{.metadata.annotations.argocd\.argoproj\.io/refresh}' 2>/dev/null || true
+    )"
+    if [[ "$current_refresh" == "hard" ]]; then
+      pass "Argo CD refresh annotation already set: ${app}"
+      continue
+    fi
     k -n argocd annotate applications.argoproj.io "$app" argocd.argoproj.io/refresh=hard --overwrite >/dev/null 2>&1 || true
+    pass "set Argo CD refresh annotation: ${app}"
   done <<< "$apps"
 }
 
@@ -973,10 +1153,14 @@ run_reconcile_actions() {
     warn "skip reconcile actions in --check-only mode"
     return
   fi
+  if [[ "$RUN_RECONCILE" != "true" ]]; then
+    warn "reconcile actions skipped by default (use --run-reconcile)"
+    return
+  fi
   force_reconcile_all secretstores.external-secrets.io
   force_reconcile_all externalsecrets.external-secrets.io
   refresh_argocd_apps
-  pass "triggered reconcile actions (SecretStore/ExternalSecret/Argo CD)"
+  pass "completed reconcile actions (SecretStore/ExternalSecret/Argo CD)"
 }
 
 check_argocd_apps() {
