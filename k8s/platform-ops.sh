@@ -64,7 +64,9 @@ read -r -a KUBECTL_ARR <<< "${KUBECTL_CMD}"
 
 BOOT_WAIT_SECONDS="${BOOT_WAIT_SECONDS:-900}"
 CHECK_INTERVAL_SECONDS="${CHECK_INTERVAL_SECONDS:-5}"
+WAIT_PROGRESS_EVERY_SECONDS="${WAIT_PROGRESS_EVERY_SECONDS:-30}"
 PUBLIC_URLS="${PUBLIC_URLS:-https://argocd.litomi.in/,https://litomi.in/,https://api.litomi.in/health}"
+KUBECTL_EXEC_TIMEOUT_SECONDS="${KUBECTL_EXEC_TIMEOUT_SECONDS:-120}"
 
 VAULT_NAMESPACE="${VAULT_NAMESPACE:-vault}"
 VAULT_POD="${VAULT_POD:-vault-0}"
@@ -145,7 +147,8 @@ Core options:
 
 Environment overrides:
   KUBECTL_CMD, BOOT_WAIT_SECONDS, CHECK_INTERVAL_SECONDS, PUBLIC_URLS,
-  VAULT_ADDR, VAULT_CACERT, VAULT_TLS_DIR, VAULT_INIT_OUTPUT
+  VAULT_ADDR, VAULT_CACERT, VAULT_TLS_DIR, VAULT_INIT_OUTPUT,
+  WAIT_PROGRESS_EVERY_SECONDS, KUBECTL_EXEC_TIMEOUT_SECONDS
 
 Notes:
   - init mode is idempotent and installs/updates a reboot systemd service automatically.
@@ -199,6 +202,15 @@ elapsed_seconds() {
 format_elapsed() {
   local seconds="${1:-0}"
   printf '%02dm%02ds' "$((seconds / 60))" "$((seconds % 60))"
+}
+
+should_emit_wait_log() {
+  local waited="${1:-0}"
+  local every="${WAIT_PROGRESS_EVERY_SECONDS:-30}"
+  if ! [[ "$every" =~ ^[0-9]+$ ]] || (( every <= 0 )); then
+    every=30
+  fi
+  (( waited % every == 0 ))
 }
 
 print_summary() {
@@ -283,7 +295,7 @@ parse_args() {
 }
 
 ensure_host_dependencies() {
-  local required=(curl openssl python3 awk sed base64 find sort)
+  local required=(curl openssl python3 awk sed base64 find sort iptables-save ip6tables-save)
   local cmd missing=()
 
   for cmd in "${required[@]}"; do
@@ -300,7 +312,7 @@ ensure_host_dependencies() {
   if command -v apt-get >/dev/null 2>&1; then
     log "Installing missing host dependencies with apt: ${missing[*]}"
     run_root apt-get update
-    run_root apt-get install -y curl openssl python3 coreutils findutils
+    run_root apt-get install -y curl openssl python3 coreutils findutils iptables
   else
     die "Missing commands (${missing[*]}), and apt-get is unavailable. Install them manually first."
   fi
@@ -309,6 +321,29 @@ ensure_host_dependencies() {
     assert_command_exists "$cmd"
   done
   ok "host dependencies installed"
+}
+
+wait_for_node_registration() {
+  local waited=0
+  local count
+
+  while (( waited < BOOT_WAIT_SECONDS )); do
+    count="$(
+      k get nodes -o jsonpath='{.items[*].metadata.name}' 2>/dev/null | awk '{print NF}' || echo 0
+    )"
+    if [[ "${count:-0}" =~ ^[0-9]+$ ]] && (( count > 0 )); then
+      ok "kubernetes node registered (${count})"
+      return
+    fi
+    if should_emit_wait_log "$waited"; then
+      log "waiting for kubernetes node registration (${waited}s/${BOOT_WAIT_SECONDS}s)"
+    fi
+    sleep "$CHECK_INTERVAL_SECONDS"
+    waited=$((waited + CHECK_INTERVAL_SECONDS))
+  done
+
+  k get nodes -o wide || true
+  die "no kubernetes node registered within ${BOOT_WAIT_SECONDS}s"
 }
 
 namespace_exists() {
@@ -330,6 +365,9 @@ wait_for_api_ready() {
       ok "kubernetes api is ready"
       return
     fi
+    if should_emit_wait_log "$waited"; then
+      log "waiting for kubernetes api readyz (${waited}s/${BOOT_WAIT_SECONDS}s)"
+    fi
     sleep "$CHECK_INTERVAL_SECONDS"
     waited=$((waited + CHECK_INTERVAL_SECONDS))
   done
@@ -343,6 +381,9 @@ wait_for_namespace() {
     if namespace_exists "$ns"; then
       ok "namespace ready: $ns"
       return
+    fi
+    if should_emit_wait_log "$waited"; then
+      log "waiting for namespace: ${ns} (${waited}s/${BOOT_WAIT_SECONDS}s)"
     fi
     sleep "$CHECK_INTERVAL_SECONDS"
     waited=$((waited + CHECK_INTERVAL_SECONDS))
@@ -359,6 +400,9 @@ wait_for_resource() {
     if resource_exists "$ns" "$kind" "$name"; then
       ok "resource ready: ${ns}/${kind}/${name}"
       return
+    fi
+    if should_emit_wait_log "$waited"; then
+      log "waiting for resource: ${ns}/${kind}/${name} (${waited}s/${BOOT_WAIT_SECONDS}s)"
     fi
     sleep "$CHECK_INTERVAL_SECONDS"
     waited=$((waited + CHECK_INTERVAL_SECONDS))
@@ -381,8 +425,10 @@ ensure_k3s_if_needed() {
   fi
 
   wait_for_api_ready
+  wait_for_node_registration
 
   if ! k wait --for=condition=Ready node --all --timeout="${BOOT_WAIT_SECONDS}s" >/dev/null 2>&1; then
+    k get nodes -o wide || true
     die "node readiness check failed"
   fi
   ok "all nodes are Ready"
@@ -405,12 +451,21 @@ ensure_argocd_bootstrap_and_control_plane() {
   wait_for_resource argocd deployment argocd-repo-server
   wait_for_resource argocd statefulset argocd-application-controller
 
+  log "waiting rollout: argocd/deployment argocd-repo-server"
   if ! k -n argocd rollout status deployment/argocd-repo-server --timeout="${BOOT_WAIT_SECONDS}s" >/dev/null 2>&1; then
+    k -n argocd get pods -o wide || true
+    k -n argocd describe deployment/argocd-repo-server || true
     die "argocd-repo-server rollout failed"
   fi
+  ok "argocd-repo-server rollout complete"
+
+  log "waiting rollout: argocd/statefulset argocd-application-controller"
   if ! k -n argocd rollout status statefulset/argocd-application-controller --timeout="${BOOT_WAIT_SECONDS}s" >/dev/null 2>&1; then
+    k -n argocd get pods -o wide || true
+    k -n argocd describe statefulset/argocd-application-controller || true
     die "argocd-application-controller rollout failed"
   fi
+  ok "argocd-application-controller rollout complete"
 
   wait_for_resource argocd applications.argoproj.io root
 }
@@ -543,14 +598,46 @@ ensure_vault_tls_assets() {
 wait_for_vault_pod_running() {
   wait_for_resource "$VAULT_NAMESPACE" pod "$VAULT_POD"
 
-  if ! k -n "$VAULT_NAMESPACE" wait --for=jsonpath='{.status.phase}'=Running "pod/${VAULT_POD}" --timeout="${BOOT_WAIT_SECONDS}s" >/dev/null 2>&1; then
-    die "vault pod is not running: ${VAULT_NAMESPACE}/${VAULT_POD}"
-  fi
+  local waited=0
+  local phase node waiting_reason restart_count
+  while (( waited < BOOT_WAIT_SECONDS )); do
+    phase="$(k -n "$VAULT_NAMESPACE" get "pod/${VAULT_POD}" -o jsonpath='{.status.phase}' 2>/dev/null || true)"
+    if [[ "$phase" == "Running" ]]; then
+      ok "vault pod is running: ${VAULT_NAMESPACE}/${VAULT_POD}"
+      return
+    fi
 
-  ok "vault pod is running: ${VAULT_NAMESPACE}/${VAULT_POD}"
+    if should_emit_wait_log "$waited"; then
+      node="$(k -n "$VAULT_NAMESPACE" get "pod/${VAULT_POD}" -o jsonpath='{.spec.nodeName}' 2>/dev/null || true)"
+      waiting_reason="$(
+        k -n "$VAULT_NAMESPACE" get "pod/${VAULT_POD}" \
+          -o jsonpath='{range .status.containerStatuses[*]}{.state.waiting.reason}{" "}{end}' 2>/dev/null || true
+      )"
+      restart_count="$(
+        k -n "$VAULT_NAMESPACE" get "pod/${VAULT_POD}" \
+          -o jsonpath='{range .status.containerStatuses[*]}{.restartCount}{" "}{end}' 2>/dev/null || true
+      )"
+      log "waiting for vault pod Running (phase=${phase:-<empty>}, node=${node:-<none>}, waiting=${waiting_reason:-<none>}, restarts=${restart_count:-0}, ${waited}s/${BOOT_WAIT_SECONDS}s)"
+    fi
+
+    sleep "$CHECK_INTERVAL_SECONDS"
+    waited=$((waited + CHECK_INTERVAL_SECONDS))
+  done
+
+  warn "vault pod diagnostic: ${VAULT_NAMESPACE}/${VAULT_POD}"
+  k -n "$VAULT_NAMESPACE" get "pod/${VAULT_POD}" -o wide || true
+  k -n "$VAULT_NAMESPACE" describe "pod/${VAULT_POD}" || true
+  k -n "$VAULT_NAMESPACE" logs "pod/${VAULT_POD}" --tail=200 || true
+  die "vault pod is not running: ${VAULT_NAMESPACE}/${VAULT_POD}"
 }
 
 vault_exec() {
+  if command -v timeout >/dev/null 2>&1; then
+    timeout "${KUBECTL_EXEC_TIMEOUT_SECONDS}s" \
+      k -n "$VAULT_NAMESPACE" exec "$VAULT_POD" -- \
+      env VAULT_ADDR="$VAULT_ADDR" VAULT_CACERT="$VAULT_CACERT" "$@"
+    return
+  fi
   k -n "$VAULT_NAMESPACE" exec "$VAULT_POD" -- \
     env VAULT_ADDR="$VAULT_ADDR" VAULT_CACERT="$VAULT_CACERT" "$@"
 }
@@ -558,6 +645,12 @@ vault_exec() {
 vault_exec_token() {
   local token="$1"
   shift
+  if command -v timeout >/dev/null 2>&1; then
+    timeout "${KUBECTL_EXEC_TIMEOUT_SECONDS}s" \
+      k -n "$VAULT_NAMESPACE" exec "$VAULT_POD" -- \
+      env VAULT_ADDR="$VAULT_ADDR" VAULT_CACERT="$VAULT_CACERT" VAULT_TOKEN="$token" "$@"
+    return
+  fi
   k -n "$VAULT_NAMESPACE" exec "$VAULT_POD" -- \
     env VAULT_ADDR="$VAULT_ADDR" VAULT_CACERT="$VAULT_CACERT" VAULT_TOKEN="$token" "$@"
 }
