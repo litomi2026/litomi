@@ -438,6 +438,18 @@ wait_for_root_app_synced_healthy() {
   die "root app did not become Synced/Healthy within ${BOOT_WAIT_SECONDS}s"
 }
 
+ensure_argocd_cm_labels() {
+  if ! resource_exists argocd configmap argocd-cm; then
+    die "missing configmap: argocd/argocd-cm"
+  fi
+
+  k -n argocd label configmap argocd-cm \
+    app.kubernetes.io/name=argocd-cm \
+    app.kubernetes.io/part-of=argocd \
+    --overwrite >/dev/null
+  ok "argocd-cm labels ensured"
+}
+
 ensure_k3s_if_needed() {
   log "Step 1/9: k3s install/check"
 
@@ -475,6 +487,8 @@ ensure_argocd_bootstrap_and_control_plane() {
   else
     ok "reboot mode: skip bootstrap apply"
   fi
+
+  ensure_argocd_cm_labels
 
   wait_for_resource argocd deployment argocd-repo-server
   wait_for_resource argocd statefulset argocd-application-controller
@@ -699,11 +713,11 @@ wait_for_vault_pod_running() {
 vault_exec() {
   if command -v timeout >/dev/null 2>&1; then
     timeout "${KUBECTL_EXEC_TIMEOUT_SECONDS}s" \
-      k -n "$VAULT_NAMESPACE" exec "$VAULT_POD" -- \
+      "${KUBECTL_ARR[@]}" -n "$VAULT_NAMESPACE" exec -i "$VAULT_POD" -- \
       env VAULT_ADDR="$VAULT_ADDR" VAULT_CACERT="$VAULT_CACERT" "$@"
     return
   fi
-  k -n "$VAULT_NAMESPACE" exec "$VAULT_POD" -- \
+  k -n "$VAULT_NAMESPACE" exec -i "$VAULT_POD" -- \
     env VAULT_ADDR="$VAULT_ADDR" VAULT_CACERT="$VAULT_CACERT" "$@"
 }
 
@@ -712,11 +726,11 @@ vault_exec_token() {
   shift
   if command -v timeout >/dev/null 2>&1; then
     timeout "${KUBECTL_EXEC_TIMEOUT_SECONDS}s" \
-      k -n "$VAULT_NAMESPACE" exec "$VAULT_POD" -- \
+      "${KUBECTL_ARR[@]}" -n "$VAULT_NAMESPACE" exec -i "$VAULT_POD" -- \
       env VAULT_ADDR="$VAULT_ADDR" VAULT_CACERT="$VAULT_CACERT" VAULT_TOKEN="$token" "$@"
     return
   fi
-  k -n "$VAULT_NAMESPACE" exec "$VAULT_POD" -- \
+  k -n "$VAULT_NAMESPACE" exec -i "$VAULT_POD" -- \
     env VAULT_ADDR="$VAULT_ADDR" VAULT_CACERT="$VAULT_CACERT" VAULT_TOKEN="$token" "$@"
 }
 
@@ -1089,7 +1103,7 @@ force_reconcile_resource() {
 
   local lines ns name
   lines="$(k get "$resource" -A -o jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.metadata.name}{"\n"}{end}' 2>/dev/null || true)"
-  [[ -n "$lines" ]] || return
+  [[ -n "$lines" ]] || return 0
 
   while IFS=$'\t' read -r ns name; do
     [[ -z "$ns" || -z "$name" ]] && continue
@@ -1100,7 +1114,7 @@ force_reconcile_resource() {
 force_refresh_argocd_apps() {
   local apps app
   apps="$(k -n argocd get applications.argoproj.io -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' 2>/dev/null || true)"
-  [[ -n "$apps" ]] || return
+  [[ -n "$apps" ]] || return 0
 
   while IFS= read -r app; do
     [[ -z "$app" ]] && continue
