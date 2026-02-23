@@ -185,3 +185,9 @@ sudo kubectl -n monitoring get secret kube-prometheus-stack-grafana \
 sudo kubectl -n argocd get secret argocd-initial-admin-secret \
   -o jsonpath='{.data.password}' | base64 -d; echo
 ```
+
+### Argo CD Application Status
+
+```zsh
+sudo kubectl -n argocd get applications.argoproj.io -o custom-columns='NAME:.metadata.name,SYNC:.status.sync.status,HEALTH:.status.health.status'
+```
