@@ -160,6 +160,9 @@ check_public_urls() {
   fi
 
   local url
+  local request_url
+  local separator
+  local timestamp
   local code
   local tmp_file
   local urls=()
@@ -170,8 +173,15 @@ check_public_urls() {
     url="$(trim "$url")"
     [[ -n "$url" ]] || continue
 
+    timestamp="$(date +%s)"
+    separator='?'
+    if [[ "$url" == *\?* ]]; then
+      separator='&'
+    fi
+    request_url="${url}${separator}_ts=${timestamp}"
+
     tmp_file="$(mktemp)"
-    code="$(curl -kfsSL --max-time 20 -o "$tmp_file" -w '%{http_code}' "$url" || true)"
+    code="$(curl -kfsSL --max-time 20 -o "$tmp_file" -w '%{http_code}' "$request_url" || true)"
 
     if [[ -z "$code" || "$code" == "000" ]]; then
       rm -f "$tmp_file"
