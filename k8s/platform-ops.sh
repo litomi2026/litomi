@@ -18,7 +18,6 @@ else
   DEFAULT_KUBECTL_CMD="sudo kubectl"
 fi
 
-MODE="init"
 SKIP_PUBLIC_CHECK="false"
 
 SCRIPT_START_EPOCH="$(date +%s)"
@@ -148,7 +147,6 @@ Usage:
   ./k8s/platform-ops.sh [options]
 
 Core options:
-  --mode <init|reboot>         Run full bootstrap (init, default) or reboot reconciliation
   --vault-secrets-dir <dir>    Directory with Vault seed .env files (default: ./k8s/vault-secrets)
   --skip-public-check          Skip public URL checks
   -h, --help                   Show help
@@ -160,8 +158,8 @@ Environment overrides:
   POST_RECONCILE_WAIT_SECONDS
 
 Notes:
-  - init mode is idempotent and installs/updates a reboot systemd service automatically.
-  - reboot mode focuses on Vault unseal/reconcile/checks and does not reinstall k3s/Argo.
+  - The script always runs the full idempotent init flow.
+  - It installs/updates a reboot systemd service automatically.
   - In .env files, use double quotes to decode escapes like \n, \r, \t, \" and \\.
 EOF_USAGE
 }
@@ -280,10 +278,6 @@ assert_command_exists() {
 parse_args() {
   while [[ $# -gt 0 ]]; do
     case "$1" in
-      --mode)
-        MODE="${2:-}"
-        shift 2
-        ;;
       --vault-secrets-dir)
         VAULT_SECRETS_DIR="${2:-}"
         shift 2
@@ -302,10 +296,6 @@ parse_args() {
         ;;
     esac
   done
-
-  if [[ "$MODE" != "init" && "$MODE" != "reboot" ]]; then
-    die "--mode must be init or reboot"
-  fi
 }
 
 ensure_host_dependencies() {
@@ -476,10 +466,6 @@ ensure_k3s_if_needed() {
   if k get nodes >/dev/null 2>&1; then
     ok "kubernetes api already reachable"
   else
-    if [[ "$MODE" != "init" ]]; then
-      die "kubernetes api unreachable in reboot mode"
-    fi
-
     run_root bash -c 'curl -sfL https://get.k3s.io | sh -s - server --cluster-init --secrets-encryption'
     ok "k3s install command completed"
   fi
@@ -500,13 +486,9 @@ ensure_argocd_bootstrap_and_control_plane() {
   assert_file_exists "${REPO_ROOT}/k8s/bootstrap/argocd/kustomization.yaml"
   assert_file_exists "${REPO_ROOT}/k8s/bootstrap/root/root.yaml"
 
-  if [[ "$MODE" == "init" ]]; then
-    run_quiet_stdout k apply --server-side --force-conflicts -k "${REPO_ROOT}/k8s/bootstrap/argocd"
-    run_quiet_stdout k apply -f "${REPO_ROOT}/k8s/bootstrap/root/root.yaml"
-    ok "Argo CD bootstrap and root app applied"
-  else
-    ok "reboot mode: skip bootstrap apply"
-  fi
+  run_quiet_stdout k apply --server-side --force-conflicts -k "${REPO_ROOT}/k8s/bootstrap/argocd"
+  run_quiet_stdout k apply -f "${REPO_ROOT}/k8s/bootstrap/root/root.yaml"
+  ok "Argo CD bootstrap and root app applied"
 
   ensure_argocd_cm_labels
 
@@ -599,25 +581,60 @@ EOF_CNF
 
 sync_vault_ca_configmaps_from_file() {
   local source_ca="$1"
+  local missing_namespace_mode="${2:-warn}"
+  local emit_sync_ok="${3:-true}"
   local ns
+
+  if [[ "$missing_namespace_mode" != "warn" && "$missing_namespace_mode" != "log" && "$missing_namespace_mode" != "silent" ]]; then
+    warn "unknown vault-ca missing-namespace mode: ${missing_namespace_mode}; using warn"
+    missing_namespace_mode="warn"
+  fi
 
   for ns in "${VAULT_CA_NAMESPACES[@]}"; do
     if ! namespace_exists "$ns"; then
-      warn "namespace missing for vault-ca sync: $ns"
+      case "$missing_namespace_mode" in
+        warn)
+          warn "namespace missing for vault-ca sync: $ns"
+          ;;
+        log)
+          log "namespace missing for vault-ca sync (will retry later): $ns"
+          ;;
+        silent)
+          ;;
+      esac
       continue
     fi
 
     k -n "$ns" create configmap vault-ca \
       --from-file=ca.crt="$source_ca" \
       --dry-run=client -o yaml | k apply -f - >/dev/null
-    ok "synced vault-ca configmap: ${ns}/vault-ca"
+    if [[ "$emit_sync_ok" == "true" ]]; then
+      ok "synced vault-ca configmap: ${ns}/vault-ca"
+    fi
   done
+}
+
+sync_vault_ca_configmaps_from_secret() {
+  local missing_namespace_mode="${1:-warn}"
+  local emit_sync_ok="${2:-true}"
+  local tmp_ca
+
+  tmp_ca="$(mktemp)"
+  if ! write_secret_field_to_file "$VAULT_NAMESPACE" vault-tls 'ca\.crt' "$tmp_ca"; then
+    rm -f "$tmp_ca"
+    return 1
+  fi
+
+  sync_vault_ca_configmaps_from_file "$tmp_ca" "$missing_namespace_mode" "$emit_sync_ok"
+  rm -f "$tmp_ca"
 }
 
 ensure_vault_tls_assets() {
   log "Step 3/9: Vault TLS assets"
 
   wait_for_namespace "$VAULT_NAMESPACE"
+
+  local missing_namespace_mode="log"
 
   local secret_exists="false"
   if resource_exists "$VAULT_NAMESPACE" secret vault-tls; then
@@ -626,10 +643,6 @@ ensure_vault_tls_assets() {
   fi
 
   if [[ "$secret_exists" == "false" ]]; then
-    if [[ "$MODE" != "init" ]]; then
-      die "missing ${VAULT_NAMESPACE}/vault-tls in reboot mode"
-    fi
-
     generate_vault_tls_files
 
     assert_file_exists "${VAULT_TLS_DIR}/ca.crt"
@@ -643,19 +656,13 @@ ensure_vault_tls_assets() {
       --dry-run=client -o yaml | k apply -f - >/dev/null
 
     ok "applied ${VAULT_NAMESPACE}/vault-tls"
-    sync_vault_ca_configmaps_from_file "${VAULT_TLS_DIR}/ca.crt"
+    sync_vault_ca_configmaps_from_file "${VAULT_TLS_DIR}/ca.crt" "$missing_namespace_mode" "true"
     return
   fi
 
-  local tmp_ca
-  tmp_ca="$(mktemp)"
-  if ! write_secret_field_to_file "$VAULT_NAMESPACE" vault-tls 'ca\.crt' "$tmp_ca"; then
-    rm -f "$tmp_ca"
+  if ! sync_vault_ca_configmaps_from_secret "$missing_namespace_mode" "true"; then
     die "failed to read ca.crt from ${VAULT_NAMESPACE}/vault-tls"
   fi
-
-  sync_vault_ca_configmaps_from_file "$tmp_ca"
-  rm -f "$tmp_ca"
 }
 
 wait_for_vault_pod_running() {
@@ -869,10 +876,6 @@ initialize_and_unseal_vault() {
 
   log "checking vault initialization status"
   if ! vault_is_initialized; then
-    if [[ "$MODE" != "init" ]]; then
-      die "vault is not initialized in reboot mode"
-    fi
-
     mkdir -p "$(dirname "$VAULT_INIT_OUTPUT")"
     umask 077
 
@@ -932,11 +935,7 @@ configure_vault_for_eso() {
   local token
   token="$(resolve_root_token || true)"
   if [[ -z "$token" ]]; then
-    if [[ "$MODE" == "init" ]]; then
-      die "cannot read Vault root token from ${VAULT_INIT_OUTPUT}"
-    fi
-    warn "root token unavailable; skipping Vault policy/role configuration"
-    return
+    die "cannot read Vault root token from ${VAULT_INIT_OUTPUT}"
   fi
 
   local auth_list
@@ -1116,11 +1115,6 @@ put_vault_kv_from_env_file() {
 seed_vault_secrets_from_dir() {
   log "Step 6/9: Vault secret seeding"
 
-  [[ "$MODE" == "init" ]] || {
-    ok "reboot mode: skip vault secret seeding"
-    return
-  }
-
   validate_seed_directory_layout
 
   local token
@@ -1246,6 +1240,9 @@ wait_for_secretstores_ready() {
   local ns ready all_ready pending
   local max_wait="$POST_RECONCILE_WAIT_SECONDS"
 
+  # Step 3 can run before all sync-wave namespaces exist; retry vault-ca sync here.
+  sync_vault_ca_configmaps_from_secret silent false >/dev/null 2>&1 || true
+
   while (( waited < max_wait )); do
     all_ready="true"
     pending=""
@@ -1275,6 +1272,7 @@ wait_for_secretstores_ready() {
     fi
 
     if should_emit_wait_log "$waited"; then
+      sync_vault_ca_configmaps_from_secret silent false >/dev/null 2>&1 || true
       k -n argocd label configmap argocd-cm \
         app.kubernetes.io/name=argocd-cm \
         app.kubernetes.io/part-of=argocd \
@@ -1378,11 +1376,6 @@ check_public_urls() {
 install_or_update_reboot_service() {
   log "Step 9/9: install reboot service"
 
-  if [[ "$MODE" != "init" ]]; then
-    ok "reboot mode: skip reboot service install"
-    return
-  fi
-
   assert_command_exists systemctl
 
   local tmp_file
@@ -1401,7 +1394,7 @@ Environment="KUBECTL_CMD=kubectl"
 Environment="VAULT_INIT_OUTPUT=${VAULT_INIT_OUTPUT}"
 Environment="VAULT_ADDR=${VAULT_ADDR}"
 Environment="VAULT_CACERT=${VAULT_CACERT}"
-ExecStart=${SCRIPT_PATH} --mode reboot --skip-public-check
+ExecStart=${SCRIPT_PATH} --skip-public-check
 TimeoutStartSec=1800
 StandardOutput=journal
 StandardError=journal
@@ -1434,11 +1427,8 @@ main() {
 
   ensure_host_dependencies
 
-  log "Mode: ${MODE}"
   log "Vault init output: ${VAULT_INIT_OUTPUT}"
-  if [[ "$MODE" == "init" ]]; then
-    log "Vault secrets dir: ${VAULT_SECRETS_DIR}"
-  fi
+  log "Vault secrets dir: ${VAULT_SECRETS_DIR}"
 
   ensure_k3s_if_needed
   ensure_argocd_bootstrap_and_control_plane

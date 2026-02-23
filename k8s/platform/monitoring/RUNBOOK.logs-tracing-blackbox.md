@@ -7,8 +7,8 @@ Prometheus/Grafana/Alertmanager 다음 단계로, 로그/트레이싱/외부 사
 ```zsh
 cd /Users/gwak2837/Documents/GitHub/litomi
 
-# 재부팅 점검 프로필로 Monitoring/Logging/Tracing 포함 상태 점검
-./k8s/platform-ops.sh --mode reboot --skip-public-check
+# Monitoring/Logging/Tracing 포함 상태 점검
+./k8s/platform-ops.sh --skip-public-check
 ```
 
 위 커맨드는 아래를 포함해 확인해요.

@@ -18,8 +18,18 @@ cd litomi
 `k8s/platform-ops.sh`는 기본값으로 `./k8s/vault-secrets`를 읽어서 Vault KV를 채워요.
 초기 1회 실행(`init`) 전에 아래 경로의 파일을 모두 준비해야 해요.
 
-- `k8s/vault-secrets/README.md`
 - `k8s/vault-secrets/**/*.env.example`
+
+```zsh
+vi ./k8s/vault-secrets/cloudflared/cloudflared-token.env
+vi ./k8s/vault-secrets/litomi-prod/litomi-backend-secret.env
+vi ./k8s/vault-secrets/litomi-stg/litomi-backend-secret.env
+vi ./k8s/vault-secrets/minio/minio-root.env
+vi ./k8s/vault-secrets/monitoring/alertmanager-discord-webhook-critical.env
+vi ./k8s/vault-secrets/monitoring/alertmanager-discord-webhook-warning.env
+vi ./k8s/vault-secrets/monitoring/grafana-admin.env
+vi ./k8s/vault-secrets/velero/velero-cloud-credentials.env
+```
 
 ### 3) 초기 부트스트랩 자동화
 
@@ -27,7 +37,7 @@ cd litomi
 ./k8s/platform-ops.sh
 ```
 
-기본 실행(`--mode init`)은 idempotent 하게 아래를 처리해요.
+기본 실행은 idempotent 하게 아래를 처리해요.
 
 - k3s 설치/검증
 - Argo CD bootstrap + root app 적용
@@ -36,16 +46,6 @@ cd litomi
 - `k8s/vault-secrets` 기반 Vault KV 시딩
 - Argo/ESO reconcile + 필수 secret/public URL 점검
 - 재부팅용 systemd 서비스(`litomi-platform-reboot.service`) 설치/활성화
-
-### 4) 재부팅 후 점검
-
-```zsh
-# 수동 실행
-./k8s/platform-ops.sh --mode reboot
-
-# 자동 실행 서비스 상태 확인
-sudo systemctl status litomi-platform-reboot.service --no-pager
-```
 
 ### 5) 접속 확인
 
@@ -57,7 +57,7 @@ sudo systemctl status litomi-platform-reboot.service --no-pager
 - **Grafana**: `https://grafana.litomi.in`
 
 ```zsh
-./k8s/platform-ops.sh --mode reboot --skip-public-check
+./k8s/platform-ops.sh --skip-public-check
 ```
 
 ### 자동 백업 / 재해 복구
@@ -67,10 +67,6 @@ sudo systemctl status litomi-platform-reboot.service --no-pager
 ### 관측 (로그/트레이싱/블랙박스)
 
 `k8s/platform/monitoring/RUNBOOK.logs-tracing-blackbox.md` 참고
-
-### 추가 런북
-
-`k8s/RUNBOOK.post-reboot.md` 참고
 
 ### 공식 문서
 
@@ -90,18 +86,6 @@ sudo systemctl status litomi-platform-reboot.service --no-pager
 - [OpenTelemetry Collector(공식)](https://opentelemetry.io/docs/collector/)
 - [Grafana Loki / Tempo(공식)](https://grafana.com/docs/)
 - [Velero(공식)](https://velero.io/docs/)
-
-## 프로덕션 모범 사례(요약)
-
-로컬 k3s(단일 노드)는 “프로덕션과 최대한 비슷하게” 연습하기엔 좋아요. 다만 프로덕션은 장애/보안/업그레이드가 핵심이라서, 아래 원칙을 같이 챙기는 걸 권장해요.
-
-- **Git을 단일 진실(SSoT)로 두기**: 클러스터에서 `kubectl edit`로 고치기보단, Git에 반영해서 Argo CD가 맞추게 해요.
-- **버전 핀(pin)하기**: Helm chart / 이미지 태그는 `latest` 대신 버전 고정(지금처럼 `targetRevision` 고정)해요.
-- **AppProject로 경계 만들기**: 팀/플랫폼/앱별로 `destinations`, `sourceRepos`, (필요하면) `clusterResourceWhitelist`를 제한해요.
-- **Auto-sync는 “의도된 drift만” 허용하기**: Grafana admin Secret/`checksum/secret`, webhook `caBundle`처럼 비교 시점마다 달라질 수 있는 필드는 `ignoreDifferences`로 명시해서, 불필요한 self-heal 루프를 막아요.
-- **CRD는 업그레이드 절차를 분리하기**: CRD 변경은 영향이 커서(특히 모니터링 스택) 업그레이드 전에 릴리즈 노트/호환성 확인을 습관화해요.
-- **Secret은 Git에 넣지 않기**: External Secrets / SOPS 등으로 “Git에 암호화해서” 관리하거나, 최소한 런타임 주입으로 관리해요.
-- **Argo CD 자체도 모니터링하기**: Argo CD 리소스 사용량/에러/Sync 실패 알림을 꼭 걸어둬요.
 
 ## 디버그
 
@@ -188,10 +172,16 @@ open http://127.0.0.1:3000
 ```
 
 ```zsh
-# admin 계정/비밀번호 확인
 sudo kubectl -n monitoring get secret kube-prometheus-stack-grafana \
   -o jsonpath='{.data.admin-user}' | base64 -d; echo
 
 sudo kubectl -n monitoring get secret kube-prometheus-stack-grafana \
   -o jsonpath='{.data.admin-password}' | base64 -d; echo
+```
+
+### Argo CD 비밀번호 확인
+
+```zsh
+sudo kubectl -n argocd get secret argocd-initial-admin-secret \
+  -o jsonpath='{.data.password}' | base64 -d; echo
 ```
