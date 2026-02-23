@@ -89,6 +89,40 @@ vi ./k8s/vault-secrets/velero/velero-cloud-credentials.env
 
 ## 디버그
 
+### Grafana 접속/비밀번호 확인
+
+```zsh
+# Grafana UI (로컬)
+sudo kubectl -n monitoring port-forward svc/kube-prometheus-stack-grafana 3000:80
+open http://127.0.0.1:3000
+```
+
+```zsh
+sudo kubectl -n monitoring get secret kube-prometheus-stack-grafana \
+  -o jsonpath='{.data.admin-user}' | base64 -d; echo
+
+sudo kubectl -n monitoring get secret kube-prometheus-stack-grafana \
+  -o jsonpath='{.data.admin-password}' | base64 -d; echo
+```
+
+### Argo CD 비밀번호 확인
+
+```zsh
+sudo kubectl -n argocd get secret argocd-initial-admin-secret \
+  -o jsonpath='{.data.password}' | base64 -d; echo
+```
+
+### Argo CD Application Status
+
+```zsh
+sudo kubectl -n argocd get applications.argoproj.io -o custom-columns='NAME:.metadata.name,SYNC:.status.sync.status,HEALTH:.status.health.status'
+```
+
+```zsh
+sudo kubectl -n cloudflared get pods,deploy,svc,secret,externalsecret,secretstore
+sudo kubectl -n argocd get ingress,svc,pods
+```
+
 ### Traefik 포트포워드로 Ingress 라우팅 확인
 
 ```zsh
@@ -161,33 +195,4 @@ open http://127.0.0.1:9090/alerts
 # Alertmanager UI (알림 그룹핑/억제/사일런스 확인)
 sudo kubectl -n monitoring port-forward svc/kube-prometheus-stack-alertmanager 9093:9093
 open http://127.0.0.1:9093/#/alerts
-```
-
-### Grafana 접속/비밀번호 확인
-
-```zsh
-# Grafana UI (로컬)
-sudo kubectl -n monitoring port-forward svc/kube-prometheus-stack-grafana 3000:80
-open http://127.0.0.1:3000
-```
-
-```zsh
-sudo kubectl -n monitoring get secret kube-prometheus-stack-grafana \
-  -o jsonpath='{.data.admin-user}' | base64 -d; echo
-
-sudo kubectl -n monitoring get secret kube-prometheus-stack-grafana \
-  -o jsonpath='{.data.admin-password}' | base64 -d; echo
-```
-
-### Argo CD 비밀번호 확인
-
-```zsh
-sudo kubectl -n argocd get secret argocd-initial-admin-secret \
-  -o jsonpath='{.data.password}' | base64 -d; echo
-```
-
-### Argo CD Application Status
-
-```zsh
-sudo kubectl -n argocd get applications.argoproj.io -o custom-columns='NAME:.metadata.name,SYNC:.status.sync.status,HEALTH:.status.health.status'
 ```
