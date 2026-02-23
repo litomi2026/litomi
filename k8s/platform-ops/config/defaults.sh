@@ -8,7 +8,7 @@ POST_RECONCILE_WAIT_SECONDS="${POST_RECONCILE_WAIT_SECONDS:-180}"
 KUBECTL_EXEC_TIMEOUT_SECONDS="${KUBECTL_EXEC_TIMEOUT_SECONDS:-120}"
 VAULT_POD_WAIT_SECONDS="${VAULT_POD_WAIT_SECONDS:-1800}"
 
-PUBLIC_URLS="${PUBLIC_URLS:-https://argocd.litomi.in/,https://litomi.in/,https://api.litomi.in/health}"
+PUBLIC_URLS="${PUBLIC_URLS:-https://stg.litomi.in/,https://api-stg.litomi.in/health,https://grafana.litomi.in/}"
 SKIP_PUBLIC_CHECK="${SKIP_PUBLIC_CHECK:-false}"
 
 VAULT_NAMESPACE="${VAULT_NAMESPACE:-vault}"
