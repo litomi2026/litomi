@@ -8,8 +8,8 @@
 ```zsh
 cd /Users/gwak2837/Documents/GitHub/litomi
 
-# 재부팅 점검 프로필로 Velero 포함 플랫폼 상태 점검
-./k8s/platform-ops.sh --mode reboot --skip-public-check
+# Velero 포함 플랫폼 상태 점검
+./k8s/platform-ops.sh --skip-public-check
 ```
 
 위 커맨드는 아래를 포함해 확인해요.

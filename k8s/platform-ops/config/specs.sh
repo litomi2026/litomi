@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# shellcheck shell=bash
+
+declare -ra VAULT_CA_NAMESPACES=(
+  "litomi-prod"
+  "litomi-stg"
+  "cloudflared"
+  "monitoring"
+  "velero"
+  "minio"
+  "logging"
+  "tracing"
+)
+
+declare -ra VAULT_POLICY_SPECS=(
+  "litomi-prod-read|litomi-prod"
+  "litomi-stg-read|litomi-stg"
+  "cloudflared-read|cloudflared"
+  "monitoring-read|monitoring"
+  "velero-read|velero"
+  "minio-read|minio"
+)
+
+declare -ra VAULT_ROLE_SPECS=(
+  "eso-litomi-prod|litomi-prod|litomi-prod-read"
+  "eso-litomi-stg|litomi-stg|litomi-stg-read"
+  "eso-cloudflared|cloudflared|cloudflared-read"
+  "eso-monitoring|monitoring|monitoring-read"
+  "eso-velero|velero|velero-read"
+  "eso-minio|minio|minio-read"
+  "eso-logging|logging|minio-read"
+  "eso-tracing|tracing|minio-read"
+)
+
+declare -ra REQUIRED_SEED_FILES=(
+  "litomi-prod/litomi-backend-secret.env"
+  "litomi-stg/litomi-backend-secret.env"
+  "cloudflared/cloudflared-token.env"
+  "monitoring/grafana-admin.env"
+  "monitoring/alertmanager-discord-webhook-warning.env"
+  "monitoring/alertmanager-discord-webhook-critical.env"
+  "velero/velero-cloud-credentials.env"
+  "minio/minio-root.env"
+)
+
+declare -ra REQUIRED_CLUSTER_SECRETS=(
+  "litomi-prod|litomi-backend-secret"
+  "litomi-stg|litomi-backend-secret"
+  "cloudflared|cloudflared-token"
+  "monitoring|grafana-admin"
+  "monitoring|alertmanager-discord-webhook-warning"
+  "monitoring|alertmanager-discord-webhook-critical"
+  "velero|velero-cloud-credentials"
+  "minio|minio-env-configuration"
+  "logging|loki-minio"
+  "tracing|tempo-minio"
+)
+
+declare -ra REQUIRED_ARGO_APPS=(
+  "root"
+  "platform-external-secrets"
+  "platform-vault"
+)
