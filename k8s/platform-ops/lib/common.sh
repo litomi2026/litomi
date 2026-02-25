@@ -23,7 +23,8 @@ init_runtime() {
 }
 
 init_ui() {
-  UI_WIDTH="${UI_WIDTH:-84}"
+  UI_WIDTH="${UI_WIDTH:-80}"
+  local ui_width_max=80
   UI_USE_COLOR="false"
 
   if [[ -t 1 ]]; then
@@ -37,6 +38,10 @@ init_ui() {
         UI_WIDTH="$cols"
       fi
     fi
+  fi
+
+  if [[ "$UI_WIDTH" =~ ^[0-9]+$ ]] && (( UI_WIDTH > ui_width_max )); then
+    UI_WIDTH="$ui_width_max"
   fi
 
   if [[ "$UI_USE_COLOR" == "true" ]]; then
