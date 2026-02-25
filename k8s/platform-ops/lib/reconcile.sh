@@ -35,13 +35,20 @@ force_sync_out_of_sync_argocd_apps() {
   local lines
   local app
   local sync
+  local _health
+  local phase
 
-  lines="$(k -n argocd get applications.argoproj.io -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.sync.status}{"\n"}{end}' 2>/dev/null || true)"
+  lines="$(k -n argocd get applications.argoproj.io -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.sync.status}{"\t"}{.status.health.status}{"\t"}{.status.operationState.phase}{"\n"}{end}' 2>/dev/null || true)"
   [[ -n "$lines" ]] || return
 
-  while IFS=$'\t' read -r app sync; do
+  while IFS=$'\t' read -r app sync _health phase; do
     [[ -z "$app" ]] && continue
-    [[ "$sync" == "Synced" ]] && continue
+    if [[ "$sync" == "Synced" && "$phase" != "Failed" ]]; then
+      continue
+    fi
+    if [[ "$phase" == "Running" ]]; then
+      continue
+    fi
     k -n argocd patch applications.argoproj.io "$app" --type merge \
       -p '{"operation":{"initiatedBy":{"username":"platform-ops"},"sync":{"prune":true}}}' >/dev/null 2>&1 || true
   done <<< "$lines"

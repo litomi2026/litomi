@@ -5,4 +5,3 @@ namespace: argocd
 
 resources:
   - ingress.yaml
-  - argocd-cm.yaml
