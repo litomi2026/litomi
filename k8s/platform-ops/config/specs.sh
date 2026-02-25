@@ -56,8 +56,3 @@ declare -ra REQUIRED_CLUSTER_SECRETS=(
   "tracing|tempo-minio"
 )
 
-declare -ra REQUIRED_ARGO_APPS=(
-  "root"
-  "platform-external-secrets"
-  "platform-vault"
-)

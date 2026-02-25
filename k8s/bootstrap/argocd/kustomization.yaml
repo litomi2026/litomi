@@ -13,6 +13,8 @@ resources:
   - https://raw.githubusercontent.com/argoproj/argo-cd/v3.3.0/manifests/install.yaml
 
 patches:
+  # Argo CD 외부 URL을 고정하고 argocd-cm를 bootstrap 레이어에서 단일 소유해 drift를 방지해요.
+  - path: patches/argocd-cm.yaml
   # Cloudflare Tunnel/Ingress 뒤에서 HTTP로 쓰기 위해 server를 insecure 모드로 둬요.
   - path: patches/argocd-cmd-params-cm.yaml
   # k3s 재시작 후 재부트스트랩 시 init container가 기존 symlink로 CrashLoop 나는 문제를 방지해요.
