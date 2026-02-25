@@ -30,6 +30,46 @@ argocd_control_plane_missing_resources() {
   printf '%s\n' "${missing[@]}"
 }
 
+ensure_argocd_bootstrap_ownership_boundary() {
+  local -a protected_specs=(
+    "ConfigMap|argocd|argocd-cm"
+    "ConfigMap|argocd|argocd-cmd-params-cm"
+    "Deployment|argocd|argocd-repo-server"
+    "StatefulSet|argocd|argocd-application-controller"
+  )
+  local -a apps=()
+  local -a conflicts=()
+  local app
+  local resources
+  local spec
+  local kind
+  local ns
+  local name
+
+  while IFS= read -r app; do
+    [[ -n "$app" ]] || continue
+    apps+=("$app")
+  done < <(k -n argocd get applications.argoproj.io -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' 2>/dev/null || true)
+
+  for app in "${apps[@]}"; do
+    resources="$(k -n argocd get applications.argoproj.io "$app" -o jsonpath='{range .status.resources[*]}{.kind}{"|"}{.namespace}{"|"}{.name}{"\n"}{end}' 2>/dev/null || true)"
+    [[ -n "$resources" ]] || continue
+
+    for spec in "${protected_specs[@]}"; do
+      if printf '%s\n' "$resources" | grep -Fxq "$spec"; then
+        IFS='|' read -r kind ns name <<< "$spec"
+        conflicts+=("${app}->${ns}/${kind}/${name}")
+      fi
+    done
+  done
+
+  if (( ${#conflicts[@]} > 0 )); then
+    die "bootstrap/app ownership boundary violated (bootstrap-owned resources tracked by Argo CD app): ${conflicts[*]}"
+  fi
+
+  ok "bootstrap/app ownership boundary verified"
+}
+
 wait_for_root_app_synced_healthy() {
   local waited=0
   local sync
@@ -113,4 +153,5 @@ ensure_argocd_bootstrap_and_control_plane() {
 
   wait_for_resource argocd applications.argoproj.io root
   wait_for_root_app_synced_healthy
+  ensure_argocd_bootstrap_ownership_boundary
 }
