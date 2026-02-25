@@ -13,6 +13,23 @@ ensure_argocd_cm_labels() {
   ok "argocd-cm labels ensured"
 }
 
+argocd_control_plane_missing_resources() {
+  local -a missing=()
+
+  if ! namespace_exists argocd; then
+    missing+=("namespace/argocd")
+  fi
+
+  if namespace_exists argocd; then
+    resource_exists argocd deployment argocd-repo-server || missing+=("deployment/argocd-repo-server")
+    resource_exists argocd statefulset argocd-application-controller || missing+=("statefulset/argocd-application-controller")
+    resource_exists argocd configmap argocd-cm || missing+=("configmap/argocd-cm")
+    resource_exists argocd configmap argocd-cmd-params-cm || missing+=("configmap/argocd-cmd-params-cm")
+  fi
+
+  printf '%s\n' "${missing[@]}"
+}
+
 wait_for_root_app_synced_healthy() {
   local waited=0
   local sync
@@ -47,9 +64,31 @@ ensure_argocd_bootstrap_and_control_plane() {
   assert_file_exists "${REPO_ROOT}/k8s/bootstrap/argocd/kustomization.yaml"
   assert_file_exists "${REPO_ROOT}/k8s/bootstrap/root/root.yaml"
 
-  k_quiet apply --server-side --force-conflicts -k "${REPO_ROOT}/k8s/bootstrap/argocd"
-  k_quiet apply -f "${REPO_ROOT}/k8s/bootstrap/root/root.yaml"
-  ok "Argo CD bootstrap and root app applied"
+  local -a missing=()
+  local entry
+
+  if [[ "${FORCE_ARGOCD_BOOTSTRAP_APPLY:-false}" == "true" ]]; then
+    log "forcing full Argo CD bootstrap reapply"
+    missing=("forced")
+  else
+    while IFS= read -r entry; do
+      [[ -n "$entry" ]] || continue
+      missing+=("$entry")
+    done < <(argocd_control_plane_missing_resources)
+  fi
+
+  if (( ${#missing[@]} > 0 )); then
+    if [[ "${FORCE_ARGOCD_BOOTSTRAP_APPLY:-false}" != "true" ]]; then
+      log "Argo CD control plane missing (${missing[*]}), applying bootstrap manifests"
+    fi
+    k_quiet apply --server-side --force-conflicts -k "${REPO_ROOT}/k8s/bootstrap/argocd"
+    ok "Argo CD control plane bootstrap applied"
+  else
+    ok "Argo CD control plane already present; bootstrap reapply skipped"
+  fi
+
+  k_quiet apply --server-side -f "${REPO_ROOT}/k8s/bootstrap/root/root.yaml"
+  ok "Argo CD root app applied"
 
   ensure_argocd_cm_labels
 
