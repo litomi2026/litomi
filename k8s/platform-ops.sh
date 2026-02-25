@@ -34,11 +34,13 @@ Usage:
 Options:
   --vault-secrets-dir <dir>  Directory with Vault seed .env files (default: ./k8s/vault-secrets)
   --skip-public-check        Skip public URL checks
+  --force-argocd-bootstrap   Force full Argo CD bootstrap reapply in Step 2
   -h, --help                 Show help
 
 Environment overrides:
   KUBECTL_CMD, BOOT_WAIT_SECONDS, CHECK_INTERVAL_SECONDS, WAIT_PROGRESS_EVERY_SECONDS,
   POST_RECONCILE_WAIT_SECONDS, KUBECTL_EXEC_TIMEOUT_SECONDS, VAULT_POD_WAIT_SECONDS,
+  FORCE_ARGOCD_BOOTSTRAP_APPLY,
   PUBLIC_URLS, VAULT_NAMESPACE, VAULT_POD, VAULT_ADDR, VAULT_CACERT, VAULT_TLS_DIR,
   VAULT_INIT_OUTPUT, VAULT_SECRETS_DIR
 EOF_USAGE
@@ -54,6 +56,10 @@ parse_args() {
         ;;
       --skip-public-check)
         SKIP_PUBLIC_CHECK="true"
+        shift
+        ;;
+      --force-argocd-bootstrap)
+        FORCE_ARGOCD_BOOTSTRAP_APPLY="true"
         shift
         ;;
       -h|--help)
@@ -99,9 +105,9 @@ main() {
   run_reconcile_actions
 
   step "Step 8/9: platform checks"
-  wait_for_argocd_apps_healthy
   wait_for_secretstores_ready
   wait_for_required_cluster_secrets
+  wait_for_argocd_apps_healthy
   check_vault_runtime_health
   check_public_urls
 
