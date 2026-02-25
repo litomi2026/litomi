@@ -17,13 +17,13 @@ ensure_host_dependencies() {
     return
   fi
 
-  if command -v apt-get >/dev/null 2>&1; then
+  if command -v apt >/dev/null 2>&1; then
     log "installing missing host dependencies: ${missing[*]}"
-    run_root_quiet apt-get -qq update
-    run_root_quiet env DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
+    run_root_quiet apt -qq update
+    run_root_quiet apt install -qq -y \
       curl openssl python3 coreutils findutils iptables
   else
-    die "missing commands (${missing[*]}), and apt-get is unavailable"
+    die "missing commands (${missing[*]}), and apt is unavailable"
   fi
 
   for cmd in "${required[@]}"; do
