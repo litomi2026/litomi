@@ -37,6 +37,18 @@ vi ./k8s/vault-secrets/velero/velero-cloud-credentials.env
 ./k8s/platform-ops.sh
 ```
 
+초기 1회는 이미지 pull/초기화 때문에 시간이 오래 걸릴 수 있어요.
+스크립트는 Argo CD 전체 Application이 `Synced/Healthy`가 될 때까지 대기하고,
+수렴하지 않으면 `FAIL`로 종료해요.
+
+Step 2에서 Argo CD control plane bootstrap은 기본적으로 "없거나 깨졌을 때만" 재적용하고,
+정상일 때는 전체 bootstrap 재적용을 건너뛰어요.
+bootstrap 변경을 강제로 반영하려면 아래 옵션을 사용해요.
+
+```zsh
+./k8s/platform-ops.sh --force-argocd-bootstrap
+```
+
 기본 실행은 idempotent 하게 아래를 처리해요.
 
 - k3s 설치/검증
@@ -44,7 +56,7 @@ vi ./k8s/vault-secrets/velero/velero-cloud-credentials.env
 - Vault TLS secret/CA configmap 정렬
 - Vault init/unseal + kubernetes auth/kv/policy/role 구성
 - `k8s/vault-secrets` 기반 Vault KV 시딩
-- Argo/ESO reconcile + 필수 secret/public URL 점검
+- Argo CD 전체 Application Synced/Healthy 수렴 + ESO/필수 secret/public URL 점검
 - 재부팅용 systemd 서비스(`litomi-platform-reboot.service`) 설치/활성화
 
 ### 5) 접속 확인
@@ -89,13 +101,39 @@ vi ./k8s/vault-secrets/velero/velero-cloud-credentials.env
 
 ## 디버그
 
-### Grafana 접속/비밀번호 확인
+### Argo CD
+
+admin 비밀번호
 
 ```zsh
-# Grafana UI (로컬)
-sudo kubectl -n monitoring port-forward svc/kube-prometheus-stack-grafana 3000:80
-open http://127.0.0.1:3000
+sudo kubectl -n argocd get secret argocd-initial-admin-secret \
+  -o jsonpath='{.data.password}' | base64 -d; echo
 ```
+
+Application 상태
+
+```zsh
+sudo kubectl -n argocd get applications.argoproj.io -o custom-columns='NAME:.metadata.name,SYNC:.status.sync.status,HEALTH:.status.health.status'
+
+sudo kubectl -n argocd get ingress,svc,pods
+```
+
+개별 Application 상태
+
+```zsh
+sudo kubectl -n cloudflared get pods,deploy,svc,secret,externalsecret,secretstore
+```
+
+### Grafana
+
+Grafana UI (로컬)
+
+```zsh
+sudo kubectl -n monitoring port-forward svc/kube-prometheus-stack-grafana 3010:80
+open http://127.0.0.1:3010
+```
+
+Grafana 계정 정보
 
 ```zsh
 sudo kubectl -n monitoring get secret kube-prometheus-stack-grafana \
@@ -105,25 +143,25 @@ sudo kubectl -n monitoring get secret kube-prometheus-stack-grafana \
   -o jsonpath='{.data.admin-password}' | base64 -d; echo
 ```
 
-### Argo CD 비밀번호 확인
+### Monitoring
 
 ```zsh
-sudo kubectl -n argocd get secret argocd-initial-admin-secret \
-  -o jsonpath='{.data.password}' | base64 -d; echo
-```
+# Prometheus UI
+sudo kubectl -n monitoring port-forward svc/kube-prometheus-stack-prometheus 9090:9090
 
-### Argo CD Application Status
+# Targets / Rules / Alerts 확인
+open http://127.0.0.1:9090/targets
+open http://127.0.0.1:9090/rules
+open http://127.0.0.1:9090/alerts
+```
 
 ```zsh
-sudo kubectl -n argocd get applications.argoproj.io -o custom-columns='NAME:.metadata.name,SYNC:.status.sync.status,HEALTH:.status.health.status'
+# Alertmanager UI (알림 그룹핑/억제/사일런스 확인)
+sudo kubectl -n monitoring port-forward svc/kube-prometheus-stack-alertmanager 9093:9093
+open http://127.0.0.1:9093/#/alerts
 ```
 
-```zsh
-sudo kubectl -n cloudflared get pods,deploy,svc,secret,externalsecret,secretstore
-sudo kubectl -n argocd get ingress,svc,pods
-```
-
-### Traefik 포트포워드로 Ingress 라우팅 확인
+### Ingress 라우팅
 
 ```zsh
 sudo kubectl -n kube-system port-forward svc/traefik 8080:80
@@ -178,21 +216,3 @@ sudo kubectl -n litomi-prod describe pod <PENDING_POD_NAME>
 
 - **requests/limits 조정(측정 기반으로)**
 - **노드 증설(클러스터 오토스케일러 포함)**
-
-### Monitoring 동작 확인
-
-```zsh
-# Prometheus UI
-sudo kubectl -n monitoring port-forward svc/kube-prometheus-stack-prometheus 9090:9090
-
-# Targets / Rules / Alerts 확인
-open http://127.0.0.1:9090/targets
-open http://127.0.0.1:9090/rules
-open http://127.0.0.1:9090/alerts
-```
-
-```zsh
-# Alertmanager UI (알림 그룹핑/억제/사일런스 확인)
-sudo kubectl -n monitoring port-forward svc/kube-prometheus-stack-alertmanager 9093:9093
-open http://127.0.0.1:9093/#/alerts
-```

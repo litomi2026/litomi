@@ -8,7 +8,7 @@ tempo:
   extraArgs:
     # Tempo config에서 ${ENV}를 확장해 Secret 값을 주입해요.
     # https://grafana.com/docs/tempo/latest/configuration/
-    config.expand-env: "true"
+    config.expand-env: 'true'
   extraEnv:
     - name: TEMPO_S3_ACCESS_KEY
       valueFrom:
@@ -33,7 +33,9 @@ tempo:
       memory: 512Mi
     limits:
       cpu: 500m
-      memory: 1Gi
+      # Keep chart default memBallastSizeMbs(1024) and reserve headroom to avoid OOM.
+      # Ref: https://github.com/grafana-community/helm-charts/tree/main/charts/tempo
+      memory: 2Gi
   storage:
     trace:
       backend: s3
