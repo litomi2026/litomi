@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+data:
+  # Keep argocd-cm single-owned by bootstrap/install layer; see declarative setup docs.
+  # Ref: https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/
+  url: https://argocd.litomi.in

@@ -1,19 +1,48 @@
 #!/usr/bin/env bash
 # shellcheck shell=bash
 
+list_expected_argocd_apps() {
+  local apps_dir
+  local app_file
+  local app_name
+
+  echo "root"
+
+  apps_dir="${REPO_ROOT}/k8s/argocd/applications"
+  if [[ ! -d "$apps_dir" ]]; then
+    return
+  fi
+
+  while IFS= read -r app_file; do
+    app_name="$(basename "${app_file%.yaml}")"
+    [[ -n "$app_name" ]] || continue
+    echo "$app_name"
+  done < <(find "$apps_dir" -maxdepth 1 -type f -name '*.yaml' | sort)
+}
+
 wait_for_argocd_apps_healthy() {
   local waited=0
   local app
   local sync
   local health
+  local phase
   local first_pending
   local all_ok
+  local max_wait
+  local -a apps=()
 
-  while (( waited < BOOT_WAIT_SECONDS )); do
+  max_wait="$(as_positive_int_or_default "$POST_RECONCILE_WAIT_SECONDS" "1800")"
+
+  while IFS= read -r app; do
+    [[ -n "$app" ]] || continue
+    apps+=("$app")
+  done < <(list_expected_argocd_apps)
+
+  while (( waited < max_wait )); do
     all_ok="true"
     first_pending=""
 
-    for app in "${REQUIRED_ARGO_APPS[@]}"; do
+    for app in "${apps[@]}"; do
       if ! resource_exists argocd applications.argoproj.io "$app"; then
         all_ok="false"
         first_pending="${app}(missing)"
@@ -22,22 +51,23 @@ wait_for_argocd_apps_healthy() {
 
       sync="$(k -n argocd get applications.argoproj.io/"$app" -o jsonpath='{.status.sync.status}' 2>/dev/null || true)"
       health="$(k -n argocd get applications.argoproj.io/"$app" -o jsonpath='{.status.health.status}' 2>/dev/null || true)"
+      phase="$(k -n argocd get applications.argoproj.io/"$app" -o jsonpath='{.status.operationState.phase}' 2>/dev/null || true)"
       if [[ "$sync" != "Synced" || "$health" != "Healthy" ]]; then
         all_ok="false"
-        first_pending="${app}(sync=${sync:-<empty>},health=${health:-<empty>})"
+        first_pending="${app}(sync=${sync:-<empty>},health=${health:-<empty>},phase=${phase:-<empty>})"
         break
       fi
     done
 
     if [[ "$all_ok" == "true" ]]; then
-      ok "required Argo CD apps are Synced/Healthy"
+      ok "all Argo CD apps are Synced/Healthy"
       return
     fi
 
     if should_emit_wait_log "$waited"; then
       force_refresh_argocd_apps
       force_sync_out_of_sync_argocd_apps
-      log "waiting for Argo CD apps convergence (${first_pending:-pending}, ${waited}s/${BOOT_WAIT_SECONDS}s)"
+      log "waiting for Argo CD apps convergence (${first_pending:-pending}, ${waited}s/${max_wait}s)"
     fi
 
     sleep "$CHECK_INTERVAL_SECONDS"
@@ -46,7 +76,7 @@ wait_for_argocd_apps_healthy() {
 
   k -n argocd get applications.argoproj.io \
     -o custom-columns='NAME:.metadata.name,SYNC:.status.sync.status,HEALTH:.status.health.status' || true
-  die "required Argo CD apps did not converge within ${BOOT_WAIT_SECONDS}s"
+  die "Argo CD apps did not converge to Synced/Healthy within ${max_wait}s"
 }
 
 wait_for_secretstores_ready() {
@@ -57,7 +87,7 @@ wait_for_secretstores_ready() {
   local pending
   local max_wait
 
-  max_wait="$(as_positive_int_or_default "$POST_RECONCILE_WAIT_SECONDS" "180")"
+  max_wait="$(as_positive_int_or_default "$POST_RECONCILE_WAIT_SECONDS" "1800")"
   sync_vault_ca_configmaps_from_secret "false" "false" >/dev/null 2>&1 || true
 
   while (( waited < max_wait )); do
@@ -99,7 +129,7 @@ wait_for_secretstores_ready() {
     waited=$((waited + CHECK_INTERVAL_SECONDS))
   done
 
-  warn "Vault SecretStores not fully Ready=True within ${max_wait}s; continuing"
+  die "Vault SecretStores did not become Ready=True within ${max_wait}s (${pending:-pending})"
 }
 
 wait_for_required_cluster_secrets() {
@@ -110,7 +140,7 @@ wait_for_required_cluster_secrets() {
   local missing
   local max_wait
 
-  max_wait="$(as_positive_int_or_default "$POST_RECONCILE_WAIT_SECONDS" "180")"
+  max_wait="$(as_positive_int_or_default "$POST_RECONCILE_WAIT_SECONDS" "1800")"
 
   while (( waited < max_wait )); do
     missing=""
@@ -140,7 +170,7 @@ wait_for_required_cluster_secrets() {
     waited=$((waited + CHECK_INTERVAL_SECONDS))
   done
 
-  warn "required Kubernetes secrets still missing after ${max_wait}s:${missing}; continuing"
+  die "required Kubernetes secrets missing after ${max_wait}s:${missing}"
 }
 
 check_vault_runtime_health() {
