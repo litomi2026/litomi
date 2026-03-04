@@ -5,3 +5,4 @@ namespace: argocd
 
 resources:
   - ingress.yaml
+  - networkpolicy-argocd-server.yaml
