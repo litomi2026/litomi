@@ -12,7 +12,5 @@ resources:
   - https://raw.githubusercontent.com/argoproj/argo-cd/v3.3.0/manifests/install.yaml
 
 patches:
-  # Argo CD 외부 URL을 고정하고 argocd-cm를 bootstrap 레이어에서 단일 소유해 drift를 방지해요.
-  - path: patches/argocd-cm.yaml
-  # k3s 재시작 후 재부트스트랩 시 init container가 기존 symlink로 CrashLoop 나는 문제를 방지해요.
+  # 재실행 시 대상이 이미 있으면 실패할 수 있어, -sf로 바꿔서 init container를 idempotent하게 만들어요.
   - path: patches/argocd-repo-server-copyutil.yaml
