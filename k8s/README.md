@@ -20,17 +20,6 @@ cd litomi
 
 - `k8s/vault-secrets/**/*.env.example`
 
-```zsh
-vi ./k8s/vault-secrets/cloudflared/cloudflared-token.env
-vi ./k8s/vault-secrets/litomi-prod/litomi-backend-secret.env
-vi ./k8s/vault-secrets/litomi-stg/litomi-backend-secret.env
-vi ./k8s/vault-secrets/minio/minio-root.env
-vi ./k8s/vault-secrets/monitoring/alertmanager-discord-webhook-critical.env
-vi ./k8s/vault-secrets/monitoring/alertmanager-discord-webhook-warning.env
-vi ./k8s/vault-secrets/monitoring/grafana-admin.env
-vi ./k8s/vault-secrets/velero/velero-cloud-credentials.env
-```
-
 ### 3) 초기 부트스트랩 자동화
 
 ```zsh

@@ -17,3 +17,5 @@ spec:
   namespaceResourceWhitelist:
     - group: '*'
       kind: '*'
+  orphanedResources:
+    warn: true
