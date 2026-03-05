@@ -1,7 +1,6 @@
 'use client'
 
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
-import MangaCardDonation from '@/components/card/MangaCardDonation'
 import { View } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
@@ -40,7 +39,6 @@ export default function RandomMangaList() {
           {mangas.map((manga, i) => (
             <MangaCard index={i} key={manga.id} manga={manga} />
           ))}
-          <MangaCardDonation />
         </ul>
       </div>
       <div className="flex justify-center items-center">

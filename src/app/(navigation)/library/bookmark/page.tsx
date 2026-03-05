@@ -2,6 +2,7 @@ import { desc, eq } from 'drizzle-orm'
 import { Metadata } from 'next'
 
 import { encodeBookmarkCursor } from '@/common/cursor'
+import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'
 import { generateOpenGraphMetadata } from '@/constants'
 import { BOOKMARKS_PER_PAGE } from '@/constants/policy'
 import { bookmarkTable } from '@/database/supabase/activity'
@@ -69,6 +70,7 @@ export default async function BookmarkPage() {
   return (
     <main className="flex-1 flex flex-col">
       <h1 className="sr-only">북마크</h1>
+      <NonAdultJuicyAdsBanner className="mx-2 mt-2" />
       <div className="flex justify-center items-center gap-x-2 flex-wrap mt-2">
         <BookmarkDownloadButton />
         <BookmarkUploadButton />
