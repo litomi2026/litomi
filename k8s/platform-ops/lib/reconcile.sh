@@ -31,12 +31,38 @@ force_refresh_argocd_apps() {
   done <<< "$apps"
 }
 
+build_argocd_sync_options_json() {
+  local app="$1"
+  local sync_options_json
+
+  sync_options_json="$(k -n argocd get applications.argoproj.io "$app" -o jsonpath='{.spec.syncPolicy.syncOptions}' 2>/dev/null || true)"
+  if [[ -z "$sync_options_json" || "$sync_options_json" == "<no value>" || "$sync_options_json" == "null" ]]; then
+    sync_options_json='[]'
+  fi
+  printf '%s' "$sync_options_json"
+}
+
+build_argocd_sync_patch_payload() {
+  local app="$1"
+  local prune
+  local sync_options_json
+
+  prune="$(k -n argocd get applications.argoproj.io "$app" -o jsonpath='{.spec.syncPolicy.automated.prune}' 2>/dev/null || true)"
+  if [[ "$prune" != "true" ]]; then
+    prune="false"
+  fi
+
+  sync_options_json="$(build_argocd_sync_options_json "$app")"
+  printf '{"operation":{"initiatedBy":{"username":"platform-ops"},"sync":{"prune":%s,"syncOptions":%s}}}' "$prune" "$sync_options_json"
+}
+
 force_sync_out_of_sync_argocd_apps() {
   local lines
   local app
   local sync
   local _health
   local phase
+  local payload
 
   lines="$(k -n argocd get applications.argoproj.io -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.sync.status}{"\t"}{.status.health.status}{"\t"}{.status.operationState.phase}{"\n"}{end}' 2>/dev/null || true)"
   [[ -n "$lines" ]] || return
@@ -49,8 +75,9 @@ force_sync_out_of_sync_argocd_apps() {
     if [[ "$phase" == "Running" ]]; then
       continue
     fi
-    k -n argocd patch applications.argoproj.io "$app" --type merge \
-      -p '{"operation":{"initiatedBy":{"username":"platform-ops"},"sync":{"prune":true}}}' >/dev/null 2>&1 || true
+
+    payload="$(build_argocd_sync_patch_payload "$app")"
+    k -n argocd patch applications.argoproj.io "$app" --type merge -p "$payload" >/dev/null 2>&1 || true
   done <<< "$lines"
 }
 
