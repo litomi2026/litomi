@@ -5,7 +5,6 @@ import { twMerge } from 'tailwind-merge'
 
 import { CookieKey } from '@/constants/storage'
 import useMeQuery from '@/query/useMeQuery'
-import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
 
 import { AD_SLOTS } from './constants'
 import JuicyAdsScript from './JuicyAdsScript'
