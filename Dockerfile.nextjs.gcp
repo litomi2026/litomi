@@ -1,0 +1,61 @@
+# Build stage
+FROM oven/bun:1.3 AS builder
+WORKDIR /app
+
+ENV BUILD_OUTPUT=standalone
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
+
+COPY package.json bun.lock ./
+RUN bun install --frozen-lockfile --no-save --silent
+
+ARG CI
+ARG COMMIT_SHA
+ARG NEXT_PUBLIC_BACKEND_URL
+ARG NEXT_PUBLIC_CANONICAL_URL
+ARG NEXT_PUBLIC_CORS_PROXY_URL
+ARG NEXT_PUBLIC_EXTERNAL_API_PROXY_URL
+ARG NEXT_PUBLIC_GA_ID
+ARG NEXT_PUBLIC_IOS_TESTFLIGHT_URL
+ARG NEXT_PUBLIC_SENTRY_DSN
+ARG NEXT_PUBLIC_TURNSTILE_SITE_KEY
+ARG NEXT_PUBLIC_VAPID_PUBLIC_KEY
+
+ENV CI=$CI
+ENV NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL
+ENV NEXT_PUBLIC_CANONICAL_URL=$NEXT_PUBLIC_CANONICAL_URL
+ENV NEXT_PUBLIC_CORS_PROXY_URL=$NEXT_PUBLIC_CORS_PROXY_URL
+ENV NEXT_PUBLIC_EXTERNAL_API_PROXY_URL=$NEXT_PUBLIC_EXTERNAL_API_PROXY_URL
+ENV NEXT_PUBLIC_GA_ID=$NEXT_PUBLIC_GA_ID
+ENV NEXT_PUBLIC_IOS_TESTFLIGHT_URL=$NEXT_PUBLIC_IOS_TESTFLIGHT_URL
+ENV NEXT_PUBLIC_SENTRY_DSN=$NEXT_PUBLIC_SENTRY_DSN
+ENV NEXT_PUBLIC_TURNSTILE_SITE_KEY=$NEXT_PUBLIC_TURNSTILE_SITE_KEY
+ENV NEXT_PUBLIC_VAPID_PUBLIC_KEY=$NEXT_PUBLIC_VAPID_PUBLIC_KEY
+
+COPY . .
+
+RUN bun run build \
+  # Strip `sourceMappingURL` references (prevents browser `*.map` requests).
+  && find .next/static -type f -name '*.js' -exec sed -i -E 's@//# sourceMappingURL=.*$@@g' {} + \
+  && find .next/static -type f -name '*.css' -exec sed -i -E 's@/\*#[[:space:]]*sourceMappingURL=.*\*/@@g' {} +
+
+# Runtime stage
+FROM oven/bun:1.3-alpine AS runner
+WORKDIR /app
+
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
+ENV HOSTNAME=0.0.0.0
+ENV VERCEL_ENV=production
+ENV VERCEL_URL=litomi
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
+
+CMD ["bun", "server.js"]
