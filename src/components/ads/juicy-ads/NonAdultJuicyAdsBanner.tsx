@@ -26,7 +26,7 @@ export default function NonAdultJuicyAdsBanner({ className }: Props) {
     return null
   }
 
-  if (canAccessAdultRestrictedAPIs(me)) {
+  if (me?.adultVerification?.status === 'adult') {
     return null
   }
 
