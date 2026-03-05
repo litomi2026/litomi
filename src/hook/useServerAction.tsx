@@ -82,10 +82,16 @@ export default function useServerAction<T extends ActionResponse, TActionArgs ex
           if (response.status === 401) {
             queryClient.setQueriesData({ queryKey: QueryKeys.me }, () => null)
             amplitude.reset()
+
             if (NEXT_PUBLIC_GA_ID) {
               sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: null })
             }
-            showLoginRequiredToast()
+
+            if (typeof response.error === 'string') {
+              toast.warning(response.error)
+            } else {
+              showLoginRequiredToast()
+            }
 
             if (onError) {
               onError(response as Extract<T, { ok: false }>)
