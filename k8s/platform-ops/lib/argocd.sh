@@ -100,6 +100,35 @@ wait_for_root_app_synced_healthy() {
   die "root app did not become Synced/Healthy within ${BOOT_WAIT_SECONDS}s"
 }
 
+wait_for_rollout_with_progress_deadline_retry() {
+  local ns="$1"
+  local resource="$2"
+  local label="$3"
+  local retries_on_progress_deadline="${4:-0}"
+  local attempt=1
+  local output
+
+  while true; do
+    if output="$(k -n "$ns" rollout status "$resource" --timeout="${BOOT_WAIT_SECONDS}s" 2>&1)"; then
+      ok "${label} rollout complete"
+      return
+    fi
+
+    printf '%s\n' "$output" >&2
+
+    if (( attempt <= retries_on_progress_deadline )) && [[ "$output" == *"exceeded its progress deadline"* ]]; then
+      warn "${label} rollout exceeded progress deadline; retrying once"
+      attempt=$((attempt + 1))
+      sleep "$CHECK_INTERVAL_SECONDS"
+      continue
+    fi
+
+    k -n "$ns" get pods -o wide || true
+    k -n "$ns" describe "$resource" || true
+    die "${label} rollout failed"
+  done
+}
+
 ensure_argocd_bootstrap_and_control_plane() {
   assert_file_exists "${REPO_ROOT}/k8s/bootstrap/argocd/kustomization.yaml"
   assert_file_exists "${REPO_ROOT}/k8s/bootstrap/root/root.yaml"
@@ -136,20 +165,10 @@ ensure_argocd_bootstrap_and_control_plane() {
   wait_for_resource argocd statefulset argocd-application-controller
 
   log "waiting rollout: argocd/deployment argocd-repo-server"
-  if ! k_quiet_or_return -n argocd rollout status deployment/argocd-repo-server --timeout="${BOOT_WAIT_SECONDS}s"; then
-    k -n argocd get pods -o wide || true
-    k -n argocd describe deployment/argocd-repo-server || true
-    die "argocd-repo-server rollout failed"
-  fi
-  ok "argocd-repo-server rollout complete"
+  wait_for_rollout_with_progress_deadline_retry argocd deployment/argocd-repo-server argocd-repo-server 1
 
   log "waiting rollout: argocd/statefulset argocd-application-controller"
-  if ! k_quiet_or_return -n argocd rollout status statefulset/argocd-application-controller --timeout="${BOOT_WAIT_SECONDS}s"; then
-    k -n argocd get pods -o wide || true
-    k -n argocd describe statefulset/argocd-application-controller || true
-    die "argocd-application-controller rollout failed"
-  fi
-  ok "argocd-application-controller rollout complete"
+  wait_for_rollout_with_progress_deadline_retry argocd statefulset/argocd-application-controller argocd-application-controller 0
 
   wait_for_resource argocd applications.argoproj.io root
   wait_for_root_app_synced_healthy
