@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import z from 'zod'
 
+import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'
 import PageNavigation from '@/components/PageNavigation'
 import { generateOpenGraphMetadata } from '@/constants'
 import { TOTAL_HIYOBI_PAGES } from '@/constants/policy'
@@ -39,6 +40,7 @@ export default async function Page({ params }: PageProps<'/new/[page]'>) {
 
   return (
     <>
+      <NonAdultJuicyAdsBanner />
       <NewMangaList page={page} />
       <PageNavigation className="py-4" currentPage={page} totalPages={TOTAL_HIYOBI_PAGES} />
     </>

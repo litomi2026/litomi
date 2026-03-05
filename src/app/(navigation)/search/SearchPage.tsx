@@ -3,6 +3,7 @@
 import { useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
 
+import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'
 import { View } from '@/utils/param'
 
 import ActiveFilters, { ClearAllFilters } from './ActiveFilters'
@@ -43,6 +44,7 @@ export default function SearchPage() {
       ) : (
         <TrendingKeywords />
       )}
+      <NonAdultJuicyAdsBanner className="mb-2" />
       <Suspense fallback={<SearchResultLoading view={view} />}>
         <SearchResult />
       </Suspense>
