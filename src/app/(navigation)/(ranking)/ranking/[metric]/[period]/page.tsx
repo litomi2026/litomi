@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import z from 'zod'
 
+import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'
 import { generateOpenGraphMetadata } from '@/constants'
 
 import { metricInfo, MetricParam, periodLabels, PeriodParam } from '../../../common'
@@ -52,5 +53,10 @@ export default async function Page({ params }: PageProps<'/ranking/[metric]/[per
     notFound()
   }
 
-  return <RankingList rankings={rankings} />
+  return (
+    <>
+      <NonAdultJuicyAdsBanner className="mt-2 mx-2" />
+      <RankingList rankings={rankings} />
+    </>
+  )
 }

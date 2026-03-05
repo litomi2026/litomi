@@ -144,6 +144,7 @@ export default function RewardedAdSection() {
           height={AD_SLOTS.REWARDED.height}
           onAdClick={handleAdClick}
           rewardEnabled={rewardEnabled}
+          showFooter
           width={AD_SLOTS.REWARDED.width}
           zoneId={AD_SLOTS.REWARDED.zoneId}
         />
@@ -152,6 +153,7 @@ export default function RewardedAdSection() {
           height={AD_SLOTS.REWARDED_2.height}
           onAdClick={handleAdClick}
           rewardEnabled={rewardEnabled}
+          showFooter
           width={AD_SLOTS.REWARDED_2.width}
           zoneId={AD_SLOTS.REWARDED_2.zoneId}
         />
@@ -160,6 +162,7 @@ export default function RewardedAdSection() {
           height={AD_SLOTS.REWARDED_BANNER_300X100.height}
           onAdClick={handleAdClick}
           rewardEnabled={rewardEnabled}
+          showFooter
           width={AD_SLOTS.REWARDED_BANNER_300X100.width}
           zoneId={AD_SLOTS.REWARDED_BANNER_300X100.zoneId}
         />
@@ -168,6 +171,7 @@ export default function RewardedAdSection() {
           height={AD_SLOTS.REWARDED_BANNER_300X100_2.height}
           onAdClick={handleAdClick}
           rewardEnabled={rewardEnabled}
+          showFooter
           width={AD_SLOTS.REWARDED_BANNER_300X100_2.width}
           zoneId={AD_SLOTS.REWARDED_BANNER_300X100_2.zoneId}
         />
