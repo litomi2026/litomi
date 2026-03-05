@@ -143,9 +143,11 @@ run_quiet_or_return() {
   if "$@" >"$output_file" 2>&1; then
     rm -f "$output_file"
     return 0
+  else
+    # Capture the wrapped command status here. Outside this if-block, $? is the
+    # exit status of the if compound command (often 0), which can mask failures.
+    rc=$?
   fi
-
-  rc=$?
   if [[ -s "$output_file" ]]; then
     cat "$output_file" >&2
   fi
