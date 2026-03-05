@@ -30,6 +30,7 @@ type Props = {
   height: number
   className?: string
   rewardEnabled?: boolean
+  showFooter?: boolean
   onAdClick?: (result: AdClickResult) => void
 }
 
@@ -40,6 +41,7 @@ export default function JuicyAdsSlot({
   height,
   className = '',
   rewardEnabled = true,
+  showFooter,
   onAdClick,
 }: Props) {
   const slotRef = useRef<HTMLDivElement>(null)
@@ -148,14 +150,16 @@ export default function JuicyAdsSlot({
           )}
         </div>
       )}
-      <RewardedAdFooter
-        apiError={apiError}
-        cooldownLabel={cooldownLabel}
-        dailyRemaining={dailyRemaining}
-        isLoading={isLoading}
-        onRetry={refresh}
-        rewardEnabled={rewardEnabled}
-      />
+      {showFooter && (
+        <RewardedAdFooter
+          apiError={apiError}
+          cooldownLabel={cooldownLabel}
+          dailyRemaining={dailyRemaining}
+          isLoading={isLoading}
+          onRetry={refresh}
+          rewardEnabled={rewardEnabled}
+        />
+      )}
     </div>
   )
 }
