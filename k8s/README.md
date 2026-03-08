@@ -10,7 +10,6 @@ sudo apt-get -qq update >/dev/null
 sudo apt-get -qq install -y git >/dev/null
 
 git clone https://github.com/gwak2837/litomi.git
-cd litomi
 ```
 
 ### 2) Vault seed 파일 준비
@@ -23,6 +22,7 @@ cd litomi
 ### 3) 초기 부트스트랩 자동화
 
 ```zsh
+cd litomi
 ./k8s/platform-ops.sh
 ```
 
