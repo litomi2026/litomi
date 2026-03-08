@@ -62,6 +62,25 @@ ensure_argocd_server_ca_secret() {
   ok "argocd server CA secret ensured"
 }
 
+ensure_argocd_server_transport_dependency() {
+  local server_transport_ref
+
+  server_transport_ref="$(k -n argocd get service argocd-server -o jsonpath='{.metadata.annotations.traefik\.ingress\.kubernetes\.io/service\.serverstransport}' 2>/dev/null || true)"
+
+  if [[ -z "$server_transport_ref" ]]; then
+    ok "argocd-server has no ServersTransport annotation; dependency check skipped"
+    return
+  fi
+
+  if [[ "$server_transport_ref" != "argocd-argocd-server-transport@kubernetescrd" ]]; then
+    die "unexpected argocd-server ServersTransport reference (${server_transport_ref}); expected argocd-argocd-server-transport@kubernetescrd"
+  fi
+
+  wait_for_resource argocd serverstransports.traefik.io argocd-server-transport
+  wait_for_resource argocd secret argocd-server-ca
+  ok "argocd Traefik ServersTransport dependency verified"
+}
+
 argocd_control_plane_missing_resources() {
   local -a missing=()
 
@@ -228,5 +247,6 @@ ensure_argocd_bootstrap_and_control_plane() {
 
   wait_for_resource argocd applications.argoproj.io root
   wait_for_root_app_synced_healthy
+  ensure_argocd_server_transport_dependency
   ensure_argocd_bootstrap_ownership_boundary
 }
