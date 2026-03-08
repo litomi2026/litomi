@@ -19,8 +19,22 @@ ensure_argocd_server_ca_secret() {
   local encoded
   local tmp_ca
   local manifest
+  local waited=0
+  local cert_wait_timeout
 
-  encoded="$(k -n argocd get secret argocd-secret -o jsonpath='{.data.tls\.crt}' 2>/dev/null || true)"
+  cert_wait_timeout="$(as_positive_int_or_default "$BOOT_WAIT_SECONDS" "900")"
+  while (( waited < cert_wait_timeout )); do
+    encoded="$(k -n argocd get secret argocd-secret -o jsonpath='{.data.tls\.crt}' 2>/dev/null || true)"
+    if [[ -n "$encoded" ]]; then
+      break
+    fi
+    if should_emit_wait_log "$waited"; then
+      log "waiting for argocd-secret tls.crt (${waited}s/${cert_wait_timeout}s)"
+    fi
+    sleep "$CHECK_INTERVAL_SECONDS"
+    waited=$((waited + CHECK_INTERVAL_SECONDS))
+  done
+
   [[ -n "$encoded" ]] || die "missing tls.crt in argocd/argocd-secret"
 
   tmp_ca="$(mktemp)"
@@ -56,6 +70,7 @@ argocd_control_plane_missing_resources() {
   fi
 
   if namespace_exists argocd; then
+    resource_exists argocd deployment argocd-server || missing+=("deployment/argocd-server")
     resource_exists argocd deployment argocd-repo-server || missing+=("deployment/argocd-repo-server")
     resource_exists argocd statefulset argocd-application-controller || missing+=("statefulset/argocd-application-controller")
     resource_exists argocd configmap argocd-cm || missing+=("configmap/argocd-cm")
@@ -195,16 +210,21 @@ ensure_argocd_bootstrap_and_control_plane() {
   ok "Argo CD root app applied"
 
   ensure_argocd_cm_labels
-  ensure_argocd_server_ca_secret
 
+  wait_for_resource argocd deployment argocd-server
   wait_for_resource argocd deployment argocd-repo-server
   wait_for_resource argocd statefulset argocd-application-controller
+
+  log "waiting rollout: argocd/deployment argocd-server"
+  wait_for_rollout_with_progress_deadline_retry argocd deployment/argocd-server argocd-server 0
 
   log "waiting rollout: argocd/deployment argocd-repo-server"
   wait_for_rollout_with_progress_deadline_retry argocd deployment/argocd-repo-server argocd-repo-server 1
 
   log "waiting rollout: argocd/statefulset argocd-application-controller"
   wait_for_rollout_with_progress_deadline_retry argocd statefulset/argocd-application-controller argocd-application-controller 0
+
+  ensure_argocd_server_ca_secret
 
   wait_for_resource argocd applications.argoproj.io root
   wait_for_root_app_synced_healthy
