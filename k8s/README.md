@@ -6,8 +6,8 @@
 ### 1) 레포 받기
 
 ```zsh
-sudo apt -qq update
-sudo apt install -qq -y git
+sudo apt-get -qq update >/dev/null
+sudo apt-get -qq install -y git >/dev/null
 
 git clone https://github.com/gwak2837/litomi.git
 cd litomi
