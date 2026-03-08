@@ -10,7 +10,6 @@ resources:
   - namespace.yaml
   # 멀티 노드 환경에선 manifests/ha/install.yaml 사용하기
   - https://raw.githubusercontent.com/argoproj/argo-cd/v3.3.0/manifests/install.yaml
-  - serverstransport-argocd-server.yaml
 
 patches:
   # 재실행 시 대상이 이미 있으면 실패할 수 있어, -sf로 바꿔서 init container를 idempotent하게 만들어요.
