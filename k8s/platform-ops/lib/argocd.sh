@@ -13,6 +13,41 @@ ensure_argocd_cm_labels() {
   ok "argocd-cm labels ensured"
 }
 
+ensure_argocd_server_ca_secret() {
+  wait_for_resource argocd secret argocd-secret
+
+  local encoded
+  local tmp_ca
+  local manifest
+
+  encoded="$(k -n argocd get secret argocd-secret -o jsonpath='{.data.tls\.crt}' 2>/dev/null || true)"
+  [[ -n "$encoded" ]] || die "missing tls.crt in argocd/argocd-secret"
+
+  tmp_ca="$(mktemp)"
+  manifest="$(mktemp)"
+
+  if ! printf '%s' "$encoded" | base64 -d >"$tmp_ca" 2>/dev/null; then
+    rm -f "$tmp_ca" "$manifest"
+    die "failed to decode argocd/argocd-secret tls.crt"
+  fi
+
+  if [[ ! -s "$tmp_ca" ]]; then
+    rm -f "$tmp_ca" "$manifest"
+    die "decoded argocd TLS certificate is empty"
+  fi
+
+  if ! k -n argocd create secret generic argocd-server-ca \
+    --from-file=ca.crt="$tmp_ca" \
+    --dry-run=client -o yaml >"$manifest"; then
+    rm -f "$tmp_ca" "$manifest"
+    die "failed to render argocd-server-ca secret manifest"
+  fi
+
+  k_quiet -n argocd apply -f "$manifest"
+  rm -f "$tmp_ca" "$manifest"
+  ok "argocd server CA secret ensured"
+}
+
 argocd_control_plane_missing_resources() {
   local -a missing=()
 
@@ -160,6 +195,7 @@ ensure_argocd_bootstrap_and_control_plane() {
   ok "Argo CD root app applied"
 
   ensure_argocd_cm_labels
+  ensure_argocd_server_ca_secret
 
   wait_for_resource argocd deployment argocd-repo-server
   wait_for_resource argocd statefulset argocd-application-controller
