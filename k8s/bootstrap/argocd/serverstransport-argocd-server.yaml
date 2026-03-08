@@ -1,0 +1,9 @@
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: argocd-server-transport
+spec:
+  # Argo CD default TLS cert SAN includes this service DNS.
+  serverName: argocd-server.argocd.svc
+  rootCAs:
+    - secret: argocd-server-ca
