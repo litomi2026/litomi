@@ -67,6 +67,10 @@ singleBinary:
           name: loki-minio
           key: secret_key
 
+# Single-node(16GiB) 환경에서는 chunks-cache 기본 request가 너무 커 스케줄링 실패가 발생해요.
+chunksCache:
+  enabled: false
+
 backend:
   replicas: 0
 read:
