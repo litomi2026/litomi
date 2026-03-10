@@ -53,7 +53,6 @@ export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
         slots={[slot]}
         subtitle="성인인증을 완료하면 이 과정이 생략돼요."
         title="작품을 보려면 광고를 클릭해주세요."
-        variant="block"
       />
     )
   }

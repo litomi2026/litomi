@@ -24,7 +24,6 @@ type Props = {
     height: number
   }[]
   onAdClick?: () => void
-  variant?: 'banner' | 'block'
 }
 
 export default function NonAdultJuicyAdsBanner({
