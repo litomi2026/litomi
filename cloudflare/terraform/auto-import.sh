@@ -85,10 +85,13 @@ import_dns_records() {
         "cloudflare_dns_record.stg_cname|stg.litomi.in|CNAME|"
         "cloudflare_dns_record.api_cname|api.litomi.in|CNAME|"
         "cloudflare_dns_record.api_stg_cname|api-stg.litomi.in|CNAME|"
+        "cloudflare_dns_record.img_cname|img.litomi.in|CNAME|"
+        "cloudflare_dns_record.img_stg_cname|img-stg.litomi.in|CNAME|"
         "cloudflare_dns_record.render_cname|render.litomi.in|CNAME|"
         "cloudflare_dns_record.render_stg_cname|render-stg.litomi.in|CNAME|"
         "cloudflare_dns_record.vercel_cname|vercel.litomi.in|CNAME|"
         "cloudflare_dns_record.vercel_stg_cname|vercel-stg.litomi.in|CNAME|"
+        "cloudflare_dns_record.netlify_cname|netlify.litomi.in|CNAME|"
 
         # Self-host tunnel DNS
         "cloudflare_dns_record.selfhost_grafana_cname|grafana.litomi.in|CNAME|"
@@ -227,6 +230,77 @@ import_managed_transforms() {
     return 1
 }
 
+# Function to import page rules
+import_page_rules() {
+    echo ""
+    echo "📄 Checking for Page Rules..."
+
+    PR_RESPONSE=$(curl -s -X GET \
+        "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/pagerules?status=active" \
+        -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+        -H "Content-Type: application/json")
+
+    declare -a pr_mappings=(
+        "cloudflare_page_rule.img_proxy_ignore_query_string|img.litomi.in/i/*"
+        "cloudflare_page_rule.img_stg_proxy_ignore_query_string|img-stg.litomi.in/i/*"
+    )
+
+    for mapping in "${pr_mappings[@]}"; do
+        IFS='|' read -r resource_name target_url <<< "$mapping"
+
+        if terraform state show "$resource_name" &>/dev/null 2>&1; then
+            echo "✓ $resource_name already imported"
+            continue
+        fi
+
+        PR_ID=$(echo "$PR_RESPONSE" | jq -r --arg target "$target_url" \
+            '.result[]? | select(.targets[0].constraint.value == $target) | .id' | head -1)
+
+        if [ -n "$PR_ID" ]; then
+            echo "✓ Found Page Rule for $target_url (ID: $PR_ID)"
+            terraform import "$resource_name" "$ZONE_ID/$PR_ID" 2>/dev/null || echo "  ⚠️  Import failed or already exists"
+        else
+            echo "⏭️  No matching Page Rule found for $resource_name"
+        fi
+    done
+}
+
+# Function to import Zero Trust Access Applications
+import_zero_trust_access_apps() {
+    echo ""
+    echo "🔒 Checking for Zero Trust Access Apps..."
+
+    if terraform state show "cloudflare_zero_trust_access_application.argocd" &>/dev/null 2>&1; then
+        echo "✓ Argo CD Access App already imported"
+        return 0
+    fi
+
+    APP_RESPONSE=$(curl -s -X GET \
+        "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT_ID/access/apps" \
+        -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+        -H "Content-Type: application/json")
+
+    APP_ID=$(echo "$APP_RESPONSE" | jq -r '(.result[]? // empty) | select(.name == "Argo CD") | .id' | head -1)
+
+    if [ -n "$APP_ID" ]; then
+        echo "✓ Found Access App: Argo CD (ID: $APP_ID)"
+        declare -a import_candidates=(
+            "$ACCOUNT_ID/$APP_ID"
+            "accounts/$ACCOUNT_ID/$APP_ID"
+            "$APP_ID"
+        )
+        for import_id in "${import_candidates[@]}"; do
+            if terraform import cloudflare_zero_trust_access_application.argocd "$import_id" >/dev/null 2>&1; then
+                echo "✓ Imported Access App (ID: $import_id)"
+                return 0
+            fi
+        done
+        echo "  ⚠️  Import failed for Argo CD Access App"
+    else
+        echo "⏭️  No matching Access App found for Argo CD"
+    fi
+}
+
 # Function to import Zero Trust tunnel (self-host)
 import_zero_trust_tunnel() {
     echo ""
@@ -305,11 +379,17 @@ import_dns_records
 # Import rulesets
 import_rulesets
 
+# Import page rules
+import_page_rules
+
 # Import managed transforms
 import_managed_transforms
 
 # Import Zero Trust tunnel (if it already exists)
 import_zero_trust_tunnel
+
+# Import Zero Trust Access Applications
+import_zero_trust_access_apps
 
 echo ""
 echo "✅ Auto-import complete!"
