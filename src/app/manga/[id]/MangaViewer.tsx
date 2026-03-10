@@ -1,8 +1,14 @@
 'use client'
 
+import Cookies from 'js-cookie'
 import dynamic from 'next/dynamic'
+import { useState } from 'react'
 
+import { AD_SLOTS } from '@/components/ads/juicy-ads/constants'
+import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'
+import { CookieKey } from '@/constants/storage'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
+import useMeQuery from '@/query/useMeQuery'
 import { type Manga } from '@/types/manga'
 
 import ImageViewer from './ImageViewer/ImageViewer'
@@ -16,14 +22,41 @@ type Props = {
 }
 
 export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
+  const [hasClickedAd, setHasClickedAd] = useState(false)
+  const { data: me, isPending: isMePending } = useMeQuery()
+  const hasAuthHint = Cookies.get(CookieKey.AUTH_HINT) === '1'
   const shouldFetch = !(initialManga?.images?.length ?? 0 > 0)
-  const { mangaMap } = useMangaListCachedQuery({ mangaIds: shouldFetch ? [id] : [] }) // TODO: 모든 작품 이미지를 R2 저장소로 자동 관리할 떄 지우기
-  const data = mangaMap.get(id) ?? (shouldFetch && !initialManga ? { id, title: '불러오는 중' } : undefined)
+
+  // 미로그인 사용자는 광고를 클릭해야만 패치하도록 합니다.
+  const isWaitingForAdClick = shouldFetch && !me && !hasClickedAd
+  const actualShouldFetch = shouldFetch && !isWaitingForAdClick
+
+  const { mangaMap } = useMangaListCachedQuery({ mangaIds: actualShouldFetch ? [id] : [] }) // TODO: 모든 작품 이미지를 R2 저장소로 자동 관리할 떄 지우기
+  const data = mangaMap.get(id) ?? (actualShouldFetch && !initialManga ? { id, title: '불러오는 중' } : undefined)
   const manga = prepareManga(data, initialManga)
   const metadata = prepareMetadata(manga)
 
   // NOTE: Vercel Fluid Active CPU 비용을 줄이기 위해
   usePageMetadata(metadata)
+
+  // NOTE: 로그인 사용자는 me 응답이 올 때까지 잠깐 숨겨서 깜빡임을 막아요.
+  if (hasAuthHint && isMePending) {
+    return null
+  }
+
+  if (isWaitingForAdClick) {
+    const slot = AD_SLOTS.REWARDED
+    return (
+      <NonAdultJuicyAdsBanner
+        className="flex flex-col gap-4 items-center justify-center py-20 px-4 min-h-[50vh]"
+        onAdClick={() => setHasClickedAd(true)}
+        slots={[slot]}
+        subtitle="성인인증을 완료하면 이 과정이 생략돼요."
+        title="작품을 보려면 광고를 클릭해주세요."
+        variant="block"
+      />
+    )
+  }
 
   if (!manga) {
     return <NotFound />
