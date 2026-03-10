@@ -30,7 +30,7 @@ describe('POST /api/v1/censorship', () => {
     expect(response.status).toBe(401)
   })
 
-  test('성인 인증이 완료되지 않은 사용자(isAdult=false)는 403 응답을 받는다', async () => {
+  test('성인인증이 완료되지 않은 사용자(isAdult=false)는 403 응답을 받는다', async () => {
     const response = await app.request(
       '/',
       { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ items: [] }) },

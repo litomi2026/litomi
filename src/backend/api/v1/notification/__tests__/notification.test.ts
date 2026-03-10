@@ -41,7 +41,7 @@ describe('GET /api/v1/notification', () => {
   })
 
   describe('성인인증', () => {
-    test('성인 인증이 완료되지 않은 사용자(isAdult=false)는 403 응답을 받는다', async () => {
+    test('성인인증이 완료되지 않은 사용자(isAdult=false)는 403 응답을 받는다', async () => {
       const response = await createRequest(undefined, { userId: 1, isAdult: false })
       expect(response.status).toBe(403)
     })
@@ -133,7 +133,7 @@ describe('GET /api/v1/notification/unread-count', () => {
   })
 
   describe('성인인증', () => {
-    test('성인 인증이 완료되지 않은 사용자(isAdult=false)는 403 응답을 받는다', async () => {
+    test('성인인증이 완료되지 않은 사용자(isAdult=false)는 403 응답을 받는다', async () => {
       const response = await app.request('/unread-count', {}, { userId: 1, isAdult: false })
       expect(response.status).toBe(403)
     })

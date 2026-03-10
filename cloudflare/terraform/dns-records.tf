@@ -1,50 +1,50 @@
-resource "cloudflare_dns_record" "root_a" {
-  for_each = toset([
-    "216.239.32.21",
-    "216.239.34.21",
-    "216.239.36.21",
-    "216.239.38.21"
-  ])
+# resource "cloudflare_dns_record" "root_a" {
+#   for_each = toset([
+#     "216.239.32.21",
+#     "216.239.34.21",
+#     "216.239.36.21",
+#     "216.239.38.21"
+#   ])
 
-  zone_id = var.zone_id
-  name    = var.domain
-  type    = "A"
-  content = each.value
-  ttl     = 1
-  proxied = true
-}
-
-resource "cloudflare_dns_record" "root_aaaa" {
-  for_each = toset([
-    "2001:4860:4802:32::15",
-    "2001:4860:4802:34::15",
-    "2001:4860:4802:36::15",
-    "2001:4860:4802:38::15"
-  ])
-
-  zone_id = var.zone_id
-  name    = var.domain
-  type    = "AAAA"
-  content = each.value
-  ttl     = 1
-  proxied = true
-}
-
-# resource "cloudflare_dns_record" "selfhost_root_cname" {
 #   zone_id = var.zone_id
 #   name    = var.domain
-#   type    = "CNAME"
-#   content = "${cloudflare_zero_trust_tunnel_cloudflared.selfhost.id}.cfargotunnel.com"
+#   type    = "A"
+#   content = each.value
 #   ttl     = 1
 #   proxied = true
 # }
+
+# resource "cloudflare_dns_record" "root_aaaa" {
+#   for_each = toset([
+#     "2001:4860:4802:32::15",
+#     "2001:4860:4802:34::15",
+#     "2001:4860:4802:36::15",
+#     "2001:4860:4802:38::15"
+#   ])
+
+#   zone_id = var.zone_id
+#   name    = var.domain
+#   type    = "AAAA"
+#   content = each.value
+#   ttl     = 1
+#   proxied = true
+# }
+
+resource "cloudflare_dns_record" "selfhost_root_cname" {
+  zone_id = var.zone_id
+  name    = var.domain
+  type    = "CNAME"
+  content = "${cloudflare_zero_trust_tunnel_cloudflared.selfhost.id}.cfargotunnel.com"
+  ttl     = 1
+  proxied = true
+}
 
 resource "cloudflare_dns_record" "www_cname" {
   zone_id = var.zone_id
   name    = "www.litomi.in"
   type    = "CNAME"
-  # content = "${cloudflare_zero_trust_tunnel_cloudflared.selfhost.id}.cfargotunnel.com"
-  content = "ghs.googlehosted.com"
+  content = "${cloudflare_zero_trust_tunnel_cloudflared.selfhost.id}.cfargotunnel.com"
+  # content = "ghs.googlehosted.com"
   ttl     = 1
   proxied = true
 }
@@ -53,8 +53,8 @@ resource "cloudflare_dns_record" "api_cname" {
   zone_id = var.zone_id
   name    = "api.litomi.in"
   type    = "CNAME"
-  # content = "${cloudflare_zero_trust_tunnel_cloudflared.selfhost.id}.cfargotunnel.com"
-  content = "ghs.googlehosted.com"
+  content = "${cloudflare_zero_trust_tunnel_cloudflared.selfhost.id}.cfargotunnel.com"
+  # content = "ghs.googlehosted.com"
   ttl     = 1
   proxied = true
 }

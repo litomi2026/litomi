@@ -44,7 +44,7 @@ export default function SearchPage() {
       ) : (
         <TrendingKeywords />
       )}
-      <NonAdultJuicyAdsBanner className="mb-2" />
+      <NonAdultJuicyAdsBanner />
       <Suspense fallback={<SearchResultLoading view={view} />}>
         <SearchResult />
       </Suspense>

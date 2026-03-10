@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 import { formatDistanceFromNow } from '@/utils/format/date'
 
@@ -40,7 +41,7 @@ export default function JuicyAdsSlot({
   width,
   height,
   className = '',
-  rewardEnabled = true,
+  rewardEnabled = false,
   showFooter,
   onAdClick,
 }: Props) {
@@ -129,7 +130,7 @@ export default function JuicyAdsSlot({
 
   return (
     <div
-      className={`flex flex-col items-center justify-center ${className}`}
+      className={twMerge('flex flex-col items-center justify-center', className)}
       style={{ width: `min(${width}px, 100%)`, minHeight: height }}
       title={`zoneId: ${zoneId}, adSlotId: ${adSlotId}`}
     >
