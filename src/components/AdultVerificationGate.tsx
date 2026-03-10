@@ -10,7 +10,7 @@ type Props = {
 export default function AdultVerificationGate({
   username,
   title = '성인인증이 필요해요',
-  description = '성인 인증을 완료하면 이 기능을 사용할 수 있어요',
+  description = '성인인증을 완료하면 이 기능을 사용할 수 있어요',
 }: Readonly<Props>) {
   const settingsHref = username ? `/@${username}/settings#adult` : null
 

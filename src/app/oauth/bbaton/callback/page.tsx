@@ -75,7 +75,7 @@ export default function BBatonCallbackPage() {
   return (
     <main className="min-h-dvh grid place-items-center p-6 bg-zinc-950 text-zinc-100">
       <div className="w-full max-w-sm rounded-2xl border border-zinc-800 bg-zinc-900/30 p-5 space-y-3">
-        <div className="text-lg font-semibold">성인 인증</div>
+        <div className="text-lg font-semibold">성인인증</div>
 
         {state.type === 'loading' && <p className="text-sm text-zinc-400">인증 결과를 확인하고 있어요…</p>}
         {state.type === 'success' && <p className="text-sm text-zinc-400">인증이 완료됐어요. 창이 자동으로 닫혀요.</p>}

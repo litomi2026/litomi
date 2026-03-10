@@ -133,7 +133,7 @@ describe('GET /api/v1/manga/:id/history', () => {
       expect(response.status).toBe(401)
     })
 
-    test('성인 인증이 완료되지 않은 사용자(isAdult=false)는 403 응답을 받는다', async () => {
+    test('성인인증이 완료되지 않은 사용자(isAdult=false)는 403 응답을 받는다', async () => {
       // Given
       currentUserId = 1
       mockReadingHistory.set('1', 5)
@@ -275,7 +275,7 @@ describe('POST /api/v1/manga/:id/history', () => {
     expect(response.status).toBe(401)
   })
 
-  test('성인 인증이 완료되지 않은 사용자(isAdult=false)는 403 응답을 받는다', async () => {
+  test('성인인증이 완료되지 않은 사용자(isAdult=false)는 403 응답을 받는다', async () => {
     const response = await app.request('/123/history', { method: 'POST' }, { userId: 1, isAdult: false })
     expect(response.status).toBe(403)
     expect(response.headers.get('content-type')).toContain('application/problem+json')
