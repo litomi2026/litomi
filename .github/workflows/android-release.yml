@@ -2,7 +2,7 @@ name: Android Release (APK)
 
 on:
   push:
-    branches: main
+    branches: [main]
     paths:
       - '.github/workflows/android-release.yml'
       - 'android/**'
