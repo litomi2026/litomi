@@ -19,7 +19,7 @@ export function adultVerificationRequiredResponse(c: Context): Response {
   return problemResponse(c, {
     status: 403,
     code: ADULT_VERIFICATION_REQUIRED_PROBLEM_CODE,
-    detail: '성인 인증이 필요해요',
+    detail: '성인인증이 필요해요',
     headers: { 'Cache-Control': privateCacheControl },
   })
 }

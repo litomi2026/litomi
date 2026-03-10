@@ -59,7 +59,7 @@ English README: [`README.en.md`](README.en.md)
   - 좋아요/리포스트/댓글/조회수
 - **계정/보안**
   - 회원가입, 로그인
-  - 성인 인증(BBaton)
+  - 성인인증(BBaton)
   - 패스키 로그인(WebAuthn)
   - 2단계 인증(TOTP)
 - **안전**
