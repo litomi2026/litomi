@@ -183,7 +183,7 @@ export default function AdultVerificationSectionClient({ initialVerification, is
     }
 
     if (initialVerification?.adultFlag) {
-      toast.success('성인 인증이 완료됐어요')
+      toast.success('성인인증이 완료됐어요')
     } else {
       toast.success('인증 결과가 저장됐어요', { description: '성인으로 확인되지 않았어요' })
     }
