@@ -4,6 +4,7 @@ import Cookies from 'js-cookie'
 import { twMerge } from 'tailwind-merge'
 
 import { CookieKey } from '@/constants/storage'
+import useMounted from '@/hook/useMounted'
 import useMeQuery from '@/query/useMeQuery'
 
 import { AD_SLOTS } from './constants'
@@ -19,6 +20,11 @@ type Props = {
 export default function NonAdultJuicyAdsBanner({ className }: Props) {
   const { data: me, isPending } = useMeQuery()
   const hasAuthHint = Cookies.get(CookieKey.AUTH_HINT) === '1'
+  const isMounted = useMounted()
+
+  if (!isMounted) {
+    return null
+  }
 
   // NOTE: 로그인 사용자는 me 응답이 올 때까지 잠깐 숨겨서 성인인증 완료 사용자에 대한 깜빡임을 막아요.
   if (hasAuthHint && isPending) {
@@ -44,7 +50,6 @@ export default function NonAdultJuicyAdsBanner({ className }: Props) {
             adSlotId={slot.id}
             height={slot.height}
             key={slot.id}
-            rewardEnabled={false}
             showFooter={false}
             width={slot.width}
             zoneId={slot.zoneId}
