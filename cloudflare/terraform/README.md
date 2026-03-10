@@ -38,6 +38,7 @@ Edit `terraform.tfvars` with your Cloudflare details:
 4. **Run the setup script**:
 
 ```bash
+cd cloudflare/terraform
 ./setup.sh
 ./auto-import.sh
 ```
