@@ -6,6 +6,9 @@ on:
     # Skip k8s-only changes to avoid rebuilding images for manifest-only commits.
     paths-ignore:
       - 'k8s/**'
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
   workflow_dispatch:
 
 permissions:
