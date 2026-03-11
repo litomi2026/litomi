@@ -3,10 +3,14 @@
 import ms from 'ms'
 import { useEffect, useState } from 'react'
 
-type ServiceStatus = 'degraded' | 'down' | 'none' | 'unknown'
+import { env } from '@/env/client'
+
+type ServiceStatus = 'critical' | 'major' | 'minor' | 'none' | 'unknown'
 
 interface StatusData {
+  api: ServiceStatus
   lastChecked: Date | null
+  litomi: ServiceStatus
   supabase: ServiceStatus
   vercel: ServiceStatus
 }
@@ -14,43 +18,45 @@ interface StatusData {
 type StatusPageResponse = {
   status?: {
     indicator?: string
+    description?: string
   }
 }
 
-function getStatusPageIndicator(data: unknown): string | undefined {
-  if (typeof data !== 'object' || data === null) return undefined
-  if (!('status' in data)) return undefined
-  const status = (data as { status?: unknown }).status
-  if (typeof status !== 'object' || status === null) return undefined
-  if (!('indicator' in status)) return undefined
-  const indicator = (status as { indicator?: unknown }).indicator
-  return typeof indicator === 'string' ? indicator : undefined
-}
-
 function toServiceStatus(indicator: string | undefined): ServiceStatus {
-  // statuspage.io style: none | minor | major | critical
-  if (indicator === 'none') return 'none'
-  if (indicator === 'minor' || indicator === 'major') return 'degraded'
-  if (indicator === 'critical') return 'down'
-  return 'unknown'
+  switch (indicator) {
+    case 'critical':
+      return 'critical'
+    case 'major':
+      return 'major'
+    case 'minor':
+      return 'minor'
+    case 'none':
+      return 'none'
+    default:
+      return 'unknown'
+  }
 }
 
 const STATUS_ENDPOINTS = {
   supabase: 'https://status.supabase.com/api/v2/status.json',
   vercel: 'https://www.vercel-status.com/api/v2/status.json',
+  api: `${env.NEXT_PUBLIC_BACKEND_URL}/health`,
+  litomi: '/api/health',
 }
 
 const STATUS_COLORS: Record<ServiceStatus, string> = {
   none: 'bg-green-500',
-  degraded: 'bg-yellow-500',
-  down: 'bg-red-500',
+  minor: 'bg-yellow-500',
+  major: 'bg-orange-500',
+  critical: 'bg-red-500',
   unknown: 'bg-zinc-500',
 }
 
 const STATUS_LABELS: Record<ServiceStatus, string> = {
   none: '정상',
-  degraded: '일부 장애',
-  down: '장애',
+  minor: '주의',
+  major: '부분 장애',
+  critical: '시스템 장애',
   unknown: '확인 중',
 }
 
@@ -60,29 +66,40 @@ interface CloudProviderStatusProps {
 
 export default function CloudProviderStatus({ onStatusUpdate }: CloudProviderStatusProps) {
   const [status, setStatus] = useState<StatusData>({
+    api: 'unknown',
+    litomi: 'unknown',
     supabase: 'unknown',
     vercel: 'unknown',
     lastChecked: null,
   })
 
   useEffect(() => {
-    const checkStatus = async () => {
+    async function checkStatus() {
       try {
-        const [supabaseRes, vercelRes] = await Promise.all([
+        const [supabaseRes, vercelRes, apiStatus, litomiStatus] = await Promise.all([
           fetch(STATUS_ENDPOINTS.supabase, { cache: 'no-store' })
             .then((res) => res.json() as Promise<StatusPageResponse>)
             .catch(() => null),
           fetch(STATUS_ENDPOINTS.vercel, { cache: 'no-store' })
             .then((res) => res.json() as Promise<StatusPageResponse>)
             .catch(() => null),
+          fetch(STATUS_ENDPOINTS.api, { cache: 'no-store' })
+            .then(async (res) => {
+              if (!res.ok) return 'critical' as ServiceStatus
+              const data = await res.json()
+              return (data.status === 'ok' ? 'none' : 'major') as ServiceStatus
+            })
+            .catch(() => 'critical' as ServiceStatus),
+          fetch(STATUS_ENDPOINTS.litomi, { cache: 'no-store' })
+            .then((res) => (res.ok ? 'none' : 'critical') as ServiceStatus)
+            .catch(() => 'critical' as ServiceStatus),
         ])
 
-        const supabaseIndicator = getStatusPageIndicator(supabaseRes)
-        const vercelIndicator = getStatusPageIndicator(vercelRes)
-
         setStatus({
-          supabase: toServiceStatus(supabaseIndicator),
-          vercel: toServiceStatus(vercelIndicator),
+          api: apiStatus,
+          litomi: litomiStatus,
+          supabase: toServiceStatus(supabaseRes?.status?.indicator),
+          vercel: toServiceStatus(vercelRes?.status?.indicator),
           lastChecked: new Date(),
         })
       } catch (error) {
@@ -96,11 +113,9 @@ export default function CloudProviderStatus({ onStatusUpdate }: CloudProviderSta
     return () => clearInterval(interval)
   }, [])
 
-  const hasIssues =
-    status.supabase === 'down' ||
-    status.vercel === 'down' ||
-    status.supabase === 'degraded' ||
-    status.vercel === 'degraded'
+  const hasIssues = [status.supabase, status.vercel, status.api, status.litomi].some(
+    (s) => s === 'minor' || s === 'major' || s === 'critical',
+  )
 
   useEffect(() => {
     if (onStatusUpdate && status.lastChecked) {
@@ -118,12 +133,16 @@ export default function CloudProviderStatus({ onStatusUpdate }: CloudProviderSta
         <span className="flex items-center gap-1">
           <StatusDot status={status.supabase} />
           <StatusDot status={status.vercel} />
+          <StatusDot status={status.api} />
+          <StatusDot status={status.litomi} />
         </span>
         <span className="underline decoration-dotted underline-offset-4">시스템 상태 {hasIssues && '확인'}</span>
       </summary>
       <div className="mt-3 p-3 rounded-lg bg-zinc-900 border border-zinc-800 text-xs space-y-2">
-        <ServiceStatusRow name="데이터베이스" status={status.supabase} />
-        <ServiceStatusRow name="서버" status={status.vercel} />
+        <ServiceStatusRow name="외부 데이터베이스 (Supabase)" status={status.supabase} />
+        <ServiceStatusRow name="외부 서버 (Vercel)" status={status.vercel} />
+        <ServiceStatusRow name="리토미 API 서버" status={status.api} />
+        <ServiceStatusRow name="리토미 웹 서버" status={status.litomi} />
         {status.lastChecked && (
           <p className="text-zinc-500 text-center pt-1">
             마지막 확인: {status.lastChecked.toLocaleTimeString('ko-KR')}
