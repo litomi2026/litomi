@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ComponentProps, useEffect, useState } from 'react'
+import { type ComponentProps, useEffect, useState } from 'react'
 
 import { SearchParamKey } from '@/constants/storage'
 
@@ -21,7 +21,7 @@ export default function LoginPageLink({ className = '', children, ...props }: Re
     <Link
       prefetch={false}
       {...props}
-      className={`font-bold text-xs ${className}`}
+      className={`font-bold text-xs p-2 -m-2 ${className}`}
       href={`/auth/login?${SearchParamKey.REDIRECT}=${encodeURIComponent(fullPath)}`}
     >
       {children}

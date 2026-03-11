@@ -4,12 +4,14 @@ import Cookies from 'js-cookie'
 import dynamic from 'next/dynamic'
 import { useState } from 'react'
 
+import type { Manga } from '@/types/manga'
+
 import { AD_SLOTS } from '@/components/ads/juicy-ads/constants'
 import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'
+import LoginPageLink from '@/components/LoginPageLink'
 import { CookieKey } from '@/constants/storage'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import useMeQuery from '@/query/useMeQuery'
-import { type Manga } from '@/types/manga'
 
 import ImageViewer from './ImageViewer/ImageViewer'
 import usePageMetadata from './usePageMetadata'
@@ -25,7 +27,7 @@ export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
   const [hasClickedAd, setHasClickedAd] = useState(false)
   const { data: me, isPending: isMePending } = useMeQuery()
   const hasAuthHint = Cookies.get(CookieKey.AUTH_HINT) === '1'
-  const shouldFetch = !(initialManga?.images?.length ?? 0 > 0)
+  const shouldFetch = !((initialManga?.images?.length ?? 0) > 0)
 
   // 미로그인 사용자는 광고를 클릭해야만 패치하도록 합니다.
   const isWaitingForAdClick = shouldFetch && !me && !hasClickedAd
@@ -45,13 +47,16 @@ export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
   }
 
   if (isWaitingForAdClick) {
-    const slot = AD_SLOTS.REWARDED
     return (
       <NonAdultJuicyAdsBanner
-        className="flex flex-col gap-4 items-center justify-center py-20 px-4 min-h-[50vh]"
+        className="h-full flex flex-col gap-4 items-center justify-center"
         onAdClick={() => setHasClickedAd(true)}
-        slots={[slot]}
-        subtitle="성인인증을 완료하면 이 과정이 생략돼요."
+        slots={[AD_SLOTS.REWARDED]}
+        subtitle={
+          <div>
+            <LoginPageLink>로그인</LoginPageLink>을 하면 광고를 보지 않고도 작품을 볼 수 있어요.
+          </div>
+        }
         title="작품을 보려면 광고를 클릭해주세요."
       />
     )
