@@ -36,6 +36,7 @@
     "ios": "bunx cap open ios",
     "ios:testflight": "bun run sync:prod && bun run ios",
     "crawl:manga:aiven": "bun --conditions=react-server cloud-run/manga-crawl/src/index.ts",
+    "db": "docker compose down -v && docker compose up -d --wait && bun db:push",
     "db:push": "bun run db:push:supabase",
     "db:push:prod": "bun run db:push:supabase:prod && bun run db:push:aiven:prod",
     "db:push:aiven": "NODE_OPTIONS='--conditions=react-server' drizzle-kit push --config=drizzle.aiven.config.ts",
@@ -45,7 +46,6 @@
     "db:push:neon:prod": "DB_ENV=production NODE_OPTIONS='--conditions=react-server' bun run db:push:neon",
     "db:push:supabase": "NODE_OPTIONS='--conditions=react-server' drizzle-kit push --config=drizzle.supabase.config.ts",
     "db:push:supabase:prod": "DB_ENV=production NODE_OPTIONS='--conditions=react-server' bun run db:push:supabase",
-    "db:up": "docker compose down -v && docker compose up -d",
     "test:watch": "bun test --watch",
     "test:coverage": "bun test --coverage",
     "notify": "bun --conditions=react-server cloud-run/crawl-and-notify/src/index.ts"
