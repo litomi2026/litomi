@@ -108,7 +108,7 @@ Default ports:
 - Postgres: `5434`
 - Serverless Redis HTTP: `8079`
 
-> Note: `bun run db:up` includes `docker compose down -v`, which **wipes DB volumes**. Use it only when you want a fresh reset.
+> Note: `bun run db` includes `docker compose down -v`, which **wipes DB volumes**. Use it only when you want a fresh reset.
 
 ### 3) Configure environment variables (`.env.development`)
 

@@ -148,6 +148,7 @@ export default async function login(formData: FormData) {
     })
   } catch (error) {
     captureException(error, { extra: { name: 'login', loginId } })
+    console.log(error)
     return internalServerError('로그인 중 오류가 발생했어요', formData)
   }
 }

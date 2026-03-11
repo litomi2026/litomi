@@ -54,7 +54,8 @@ export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
         slots={[AD_SLOTS.REWARDED]}
         subtitle={
           <div>
-            <LoginPageLink>로그인</LoginPageLink>을 하면 광고를 보지 않고도 작품을 볼 수 있어요.
+            <LoginPageLink className="text-zinc-400">로그인</LoginPageLink>을 하면 광고를 보지 않고도 작품을 볼 수
+            있어요.
           </div>
         }
         title="작품을 보려면 광고를 클릭해주세요."

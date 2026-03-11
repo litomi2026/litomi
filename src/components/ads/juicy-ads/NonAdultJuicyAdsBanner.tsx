@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { ReactNode } from 'react'
 import { twMerge } from 'tailwind-merge'
 
+import LoginPageLink from '@/components/LoginPageLink'
 import { CookieKey } from '@/constants/storage'
 import useMounted from '@/hook/useMounted'
 import useMeQuery from '@/query/useMeQuery'
@@ -57,9 +58,13 @@ export default function NonAdultJuicyAdsBanner({
         <p className="text-xs text-zinc-500">
           {subtitle || (
             <>
-              <Link className="font-bold text-zinc-400 p-2 -m-2" href={`/@${me?.name ?? ''}/settings#adult`}>
-                익명 성인인증
-              </Link>
+              {me ? (
+                <Link className="font-bold text-zinc-400 p-2 -m-2" href={`/@${me.name}/settings#adult`}>
+                  익명 성인인증
+                </Link>
+              ) : (
+                <LoginPageLink>로그인 후 성인인증</LoginPageLink>
+              )}
               을 완료하면 이 영역은 자동으로 숨겨져요.
             </>
           )}
