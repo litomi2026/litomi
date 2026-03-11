@@ -27,7 +27,7 @@ export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
   const [hasClickedAd, setHasClickedAd] = useState(false)
   const { data: me, isPending: isMePending } = useMeQuery()
   const hasAuthHint = Cookies.get(CookieKey.AUTH_HINT) === '1'
-  const shouldFetch = !((initialManga?.images?.length ?? 0) > 0)
+  const shouldFetch = (initialManga?.images?.length ?? 0) === 0
 
   // 미로그인 사용자는 광고를 클릭해야만 패치하도록 합니다.
   const isWaitingForAdClick = shouldFetch && !me && !hasClickedAd
