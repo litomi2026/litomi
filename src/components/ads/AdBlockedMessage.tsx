@@ -3,9 +3,10 @@ import { ShieldOff } from 'lucide-react'
 type Props = {
   width: number
   height: number
+  rewardEnabled: boolean
 }
 
-export default function AdBlockedMessage({ height, width }: Props) {
+export default function AdBlockedMessage({ height, width, rewardEnabled }: Props) {
   return (
     <div
       className="flex flex-col items-center justify-center gap-3 p-4 rounded-xl border text-center bg-white/4 border-white/7"
@@ -19,7 +20,7 @@ export default function AdBlockedMessage({ height, width }: Props) {
           <br />이 사이트의 광고를 허용해 주시면 큰 도움이 돼요.
         </p>
       </div>
-      <div className="text-xs text-zinc-600">광고가 보이면 클릭해서 리보를 적립할 수 있어요</div>
+      {rewardEnabled && <div className="text-xs text-zinc-600">광고가 보이면 클릭해서 리보를 적립할 수 있어요</div>}
     </div>
   )
 }

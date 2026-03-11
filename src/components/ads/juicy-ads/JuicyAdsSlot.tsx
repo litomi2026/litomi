@@ -135,7 +135,7 @@ export default function JuicyAdsSlot({
       title={`zoneId: ${zoneId}, adSlotId: ${adSlotId}`}
     >
       {isAdBlocked ? (
-        <AdBlockedMessage height={height} width={width} />
+        <AdBlockedMessage height={height} rewardEnabled={rewardEnabled} width={width} />
       ) : (
         <div
           aria-disabled={shouldDimAd}
