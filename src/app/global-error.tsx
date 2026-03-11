@@ -41,14 +41,6 @@ export default function GlobalError({ error, reset }: ErrorProps) {
             >
               Discord
             </a>{' '}
-            또는{' '}
-            <a
-              className="underline decoration-dotted underline-offset-4"
-              href="https://github.com/gwak2837/litomi/issues"
-              target="_blank"
-            >
-              GitHub
-            </a>{' '}
             에 남겨주세요
           </p>
           <button
