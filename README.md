@@ -98,7 +98,7 @@ bun install
 ### 2) Postgres/Redis 실행 (docker compose)
 
 ```bash
-docker compose up -d
+bun db
 ```
 
 기본 포트:
@@ -109,56 +109,17 @@ docker compose up -d
 - Postgres: `5434`
 - Serverless Redis HTTP: `8079`
 
-> 참고: `bun run db:up`은 `docker compose down -v`를 포함해서 **DB 볼륨이 초기화돼요**. 처음부터 다시 시작할 때만 사용해 주세요.
+> 참고: `bun db`은 `docker compose down -v`를 포함해서 **DB 볼륨이 초기화돼고 DB 스키마 반영까지 진행돼요**. 처음부터 다시 시작할 때만 사용해 주세요.
 
-### 3) 환경 변수 설정 (`.env.development`)
+### 3) 서비스 실행
 
-아래는 로컬 개발용 예시예요(필요에 따라 바꿔 주세요):
-
-```bash
-# --- Web (Next.js) ---
-NEXT_PUBLIC_BACKEND_URL="http://localhost:3002"
-NEXT_PUBLIC_CANONICAL_URL="http://localhost:3000"
-
-# Cloudflare Turnstile (원하면 실제 키로 교체해 주세요)
-NEXT_PUBLIC_TURNSTILE_SITE_KEY="dev-site-key"
-TURNSTILE_SECRET_KEY="dev-secret-key"
-
-# Web Push (원하면 실제 키로 교체해 주세요)
-NEXT_PUBLIC_VAPID_PUBLIC_KEY="dev-vapid-public-key"
-VAPID_PRIVATE_KEY="dev-vapid-private-key"
-
-# --- Backend (Hono) ---
-CORS_ORIGIN="http://localhost:3000"
-
-# Third-party (로컬에선 더미 값으로도 시작할 수 있어요)
-ADSTERRA_API_KEY="dev"
-BBATON_CLIENT_ID="dev"
-BBATON_CLIENT_SECRET="dev"
-
-# --- Database (Postgres) ---
-POSTGRES_URL="postgresql://test_user:test_password@localhost:5434/test_db"
-POSTGRES_URL_DIRECT="postgresql://test_user:test_password@localhost:5434/test_db"
-
-# Aiven DB도 로컬에선 동일 DB를 써도 돼요
-AIVEN_POSTGRES_URL="postgresql://test_user:test_password@localhost:5434/test_db"
-
-# --- Redis (Serverless Redis HTTP; docker compose로 같이 떠요) ---
-UPSTASH_KV_REST_API_URL="http://localhost:8079"
-UPSTASH_KV_REST_API_TOKEN="local_dev_token"
-
-# --- Auth / Security (로컬용 비밀키) ---
-JWT_SECRET_ACCESS_TOKEN="dev-access"
-JWT_SECRET_REFRESH_TOKEN="dev-refresh"
-JWT_SECRET_TRUSTED_DEVICE="dev-trusted-device"
-JWT_SECRET_BBATON_ATTEMPT="dev-bbaton-attempt"
-
-# 64자 hex 문자열이 필요해요
-# bun run tools/generateEncryptionKey.ts
-TOTP_ENCRYPTION_KEY="0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+```
+bun dev
 ```
 
-### 4) DB 스키마 반영 (Drizzle)
+## 기타 스크립트
+
+### 1) DB 스키마 반영 (Drizzle)
 
 ```bash
 # Supabase 스키마
@@ -168,13 +129,13 @@ bun run db:push
 bun run db:push:aiven
 ```
 
-### 5) Backend 실행
+### 2) Backend 실행
 
 ```bash
 bun run dev:backend
 ```
 
-### 6) Web 실행
+### 3) 모두 실행
 
 ```bash
 bun dev
@@ -197,39 +158,6 @@ bun dev
 - **Cloud Run (Job)**: 주기 작업(데이터 동기화/알림)을 배포할 때 사용해요.
   - [`cloud-run/manga-crawl/README.md`](cloud-run/manga-crawl/README.md)
   - [`cloud-run/crawl-and-notify/README.md`](cloud-run/crawl-and-notify/README.md)
-
-#### (옵션) macOS 잠자기/깨움 이후 자동 복구
-
-macOS에서 덮개를 닫았다가 열면 네트워크가 잠깐 끊기면서 cloudflared가 간헐적으로 재연결을 못 할 때가 있어요. 그때를 대비해서 `/ready` 가 실패하면 cloudflared 컨테이너를 자동 재시작하도록 타이머를 걸어둘 수 있어요.
-
-```bash
-sudo tee /etc/systemd/system/cloudflared-watchdog.service >/dev/null <<'EOF'
-[Unit]
-Description=cloudflared watchdog (restart if disconnected)
-After=docker.service network-online.target
-Wants=network-online.target
-
-[Service]
-Type=oneshot
-ExecStart=/bin/sh -c 'curl -fsS http://127.0.0.1:2000/ready >/dev/null || docker restart cloudflared'
-EOF
-
-sudo tee /etc/systemd/system/cloudflared-watchdog.timer >/dev/null <<'EOF'
-[Unit]
-Description=Run cloudflared watchdog periodically
-
-[Timer]
-OnBootSec=45s
-OnUnitActiveSec=30s
-Persistent=true
-
-[Install]
-WantedBy=timers.target
-EOF
-
-sudo systemctl daemon-reload
-sudo systemctl enable --now cloudflared-watchdog.timer
-```
 
 ## 기여하기
 

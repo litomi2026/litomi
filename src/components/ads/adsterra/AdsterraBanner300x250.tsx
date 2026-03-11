@@ -104,7 +104,7 @@ export default function AdsterraBanner300x250({ adSlotId, className = '', reward
       title={`adSlotId: ${adSlotId}`}
     >
       {isAdBlocked ? (
-        <AdBlockedMessage height={AD_HEIGHT} width={AD_WIDTH} />
+        <AdBlockedMessage height={AD_HEIGHT} rewardEnabled={rewardEnabled} width={AD_WIDTH} />
       ) : (
         <div
           aria-disabled={shouldDimAd}
