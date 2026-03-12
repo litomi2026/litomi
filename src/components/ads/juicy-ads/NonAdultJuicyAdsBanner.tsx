@@ -30,7 +30,7 @@ type Props = {
 export default function NonAdultJuicyAdsBanner({
   className,
   title = '광고 수익은 서비스 운영과 작가 후원에 사용돼요.',
-  slots = [AD_SLOTS.REWARDED, AD_SLOTS.REWARDED_2],
+  slots,
   subtitle,
   onAdClick,
 }: Props) {
@@ -74,17 +74,51 @@ export default function NonAdultJuicyAdsBanner({
       <JuicyAdsScript />
 
       <div className="flex flex-wrap justify-center gap-2">
-        {slots.map((slot) => (
-          <JuicyAdsSlot
-            adSlotId={slot.id}
-            height={slot.height}
-            key={slot.id}
-            onAdClick={onAdClick}
-            showFooter={false}
-            width={slot.width}
-            zoneId={slot.zoneId}
-          />
-        ))}
+        {slots ? (
+          slots.map((slot) => (
+            <JuicyAdsSlot
+              adSlotId={slot.id}
+              height={slot.height}
+              key={slot.id}
+              onAdClick={onAdClick}
+              showFooter={false}
+              width={slot.width}
+              zoneId={slot.zoneId}
+            />
+          ))
+        ) : (
+          <>
+            <JuicyAdsSlot
+              adSlotId={AD_SLOTS.BANNER_308X286.id}
+              height={AD_SLOTS.BANNER_308X286.height}
+              key={AD_SLOTS.BANNER_308X286.id}
+              onAdClick={onAdClick}
+              showFooter={false}
+              width={AD_SLOTS.BANNER_308X286.width}
+              zoneId={AD_SLOTS.BANNER_308X286.zoneId}
+            />
+            <JuicyAdsSlot
+              adSlotId={AD_SLOTS.BANNER_300X100.id}
+              className="sm:hidden"
+              height={AD_SLOTS.BANNER_300X100.height}
+              key={AD_SLOTS.BANNER_300X100.id}
+              onAdClick={onAdClick}
+              showFooter={false}
+              width={AD_SLOTS.BANNER_300X100.width}
+              zoneId={AD_SLOTS.BANNER_300X100.zoneId}
+            />
+            <JuicyAdsSlot
+              adSlotId={AD_SLOTS.BANNER_300X250.id}
+              className="hidden sm:block"
+              height={AD_SLOTS.BANNER_300X250.height}
+              key={AD_SLOTS.BANNER_300X250.id}
+              onAdClick={onAdClick}
+              showFooter={false}
+              width={AD_SLOTS.BANNER_300X250.width}
+              zoneId={AD_SLOTS.BANNER_300X250.zoneId}
+            />
+          </>
+        )}
       </div>
     </section>
   )

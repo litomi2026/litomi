@@ -51,7 +51,7 @@ export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
       <NonAdultJuicyAdsBanner
         className="h-full flex flex-col gap-4 items-center justify-center"
         onAdClick={() => setHasClickedAd(true)}
-        slots={[AD_SLOTS.REWARDED]}
+        slots={[AD_SLOTS.BANNER_308X286]}
         subtitle={
           <div>
             <LoginPageLink className="text-zinc-400">로그인</LoginPageLink>을 하면 광고를 보지 않고도 작품을 볼 수
