@@ -14,6 +14,7 @@ import ShareLibraryButton from './[id]/ShareLibraryButton'
 import { getBulkOperationPermissions } from './bulkOperationPermissions'
 import LibraryManagementMenu from './LibraryManagementMenu'
 import LibrarySidebar from './LibrarySidebar'
+import PinLibraryButton from './PinLibraryButton'
 import useCurrentLibraryMeta from './useCurrentLibraryMeta'
 
 const BulkOperationsToolbar = dynamic(() => import('./BulkOperationsToolbar'))
@@ -27,6 +28,18 @@ type Props = {
     icon: string | null
     userId: number
     isPublic: boolean
+    createdAt: number
+    itemCount: number
+  }[]
+  pinnedLibraries?: {
+    id: number
+    name: string
+    description: string | null
+    color: string | null
+    icon: string | null
+    userId: number
+    isPublic: boolean
+    createdAt: number
     itemCount: number
   }[]
   userId: number | null
@@ -46,6 +59,7 @@ type SidebarPagination = {
 
 export default function LibraryHeader({
   libraries,
+  pinnedLibraries = [],
   userId,
   bookmarkCount,
   historyCount,
@@ -177,7 +191,12 @@ export default function LibraryHeader({
           />
         )}
         <div className="flex items-center">
-          {!isSelectionMode && isPublicLibrary && <ShareLibraryButton className="p-3" library={currentLibrary} />}
+          {!isSelectionMode && isPublicLibrary && (
+            <>
+              <PinLibraryButton className="p-3" library={currentLibrary} libraryId={currentLibrary.id} />
+              <ShareLibraryButton className="p-3" library={currentLibrary} />
+            </>
+          )}
           {!isSelectionMode && isOwner && (
             <>
               <MangaImportButton libraryId={currentLibrary.id} />
@@ -223,6 +242,7 @@ export default function LibraryHeader({
               libraries={libraries}
               onClick={closeDrawer}
               pagination={sidebarPagination}
+              pinnedLibraries={pinnedLibraries}
               ratingCount={ratingCount}
               scrollContainerRef={drawerScrollContainerRef}
               userId={userId}
