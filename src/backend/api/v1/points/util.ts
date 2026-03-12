@@ -2,6 +2,7 @@ import { EXPANSION_TYPE, POINT_CONSTANTS } from '@/constants/points'
 import {
   MAX_BOOKMARKS_PER_USER,
   MAX_LIBRARIES_PER_USER,
+  MAX_PINNED_LIBRARIES_PER_USER,
   MAX_RATINGS_PER_USER,
   MAX_READING_HISTORY_PER_USER,
 } from '@/constants/policy'
@@ -12,6 +13,7 @@ type ExpansionParams =
   | { type: 'bookmark'; itemId: BookmarkItemId }
   | { type: 'history' }
   | { type: 'library' }
+  | { type: 'pinned_library' }
   | { type: 'rating' }
 
 type SpendParams = ExpansionParams | { type: 'badge' | 'theme' }
@@ -32,6 +34,15 @@ export function getExpansionConfig(params: ExpansionParams) {
       baseLimit: MAX_READING_HISTORY_PER_USER,
       maxExpansion: POINT_CONSTANTS.HISTORY_MAX_EXPANSION,
       expansionAmount: POINT_CONSTANTS.HISTORY_EXPANSION_AMOUNT,
+    }
+  }
+
+  if (params.type === 'pinned_library') {
+    return {
+      expansionType: EXPANSION_TYPE.PINNED_LIBRARY,
+      baseLimit: MAX_PINNED_LIBRARIES_PER_USER,
+      maxExpansion: POINT_CONSTANTS.PINNED_LIBRARY_MAX_EXPANSION,
+      expansionAmount: POINT_CONSTANTS.PINNED_LIBRARY_EXPANSION_AMOUNT,
     }
   }
 
@@ -77,6 +88,14 @@ export function getSpendMeta(params: SpendParams) {
       type,
       price: POINT_CONSTANTS.HISTORY_EXPANSION_PRICE,
       description: '감상 기록 확장 (+100개)',
+    }
+  }
+
+  if (type === 'pinned_library') {
+    return {
+      type,
+      price: POINT_CONSTANTS.PINNED_LIBRARY_EXPANSION_PRICE,
+      description: `고정된 서재 확장 (+${POINT_CONSTANTS.PINNED_LIBRARY_EXPANSION_AMOUNT}개)`,
     }
   }
 

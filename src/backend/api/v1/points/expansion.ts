@@ -9,6 +9,7 @@ import { EXPANSION_TYPE, POINT_CONSTANTS } from '@/constants/points'
 import {
   MAX_BOOKMARKS_PER_USER,
   MAX_LIBRARIES_PER_USER,
+  MAX_PINNED_LIBRARIES_PER_USER,
   MAX_RATINGS_PER_USER,
   MAX_READING_HISTORY_PER_USER,
 } from '@/constants/policy'
@@ -30,6 +31,7 @@ export type GETV1PointExpansionResponse = {
   history: ExpansionInfo
   rating: ExpansionInfo
   bookmark: ExpansionInfo
+  pinnedLibrary: ExpansionInfo
 }
 
 const route = new Hono<Env>()
@@ -51,10 +53,12 @@ route.get('/', requireAuth, async (c) => {
     const historyExpansion = expansions.find((e) => e.type === EXPANSION_TYPE.READING_HISTORY)
     const ratingExpansion = expansions.find((e) => e.type === EXPANSION_TYPE.RATING)
     const bookmarkExpansion = expansions.find((e) => e.type === EXPANSION_TYPE.BOOKMARK)
+    const pinnedLibraryExpansion = expansions.find((e) => e.type === EXPANSION_TYPE.PINNED_LIBRARY)
     const libraryExtra = Number(libraryExpansion?.totalAmount ?? 0)
     const historyExtra = Number(historyExpansion?.totalAmount ?? 0)
     const ratingExtra = Number(ratingExpansion?.totalAmount ?? 0)
     const bookmarkExtra = Number(bookmarkExpansion?.totalAmount ?? 0)
+    const pinnedLibraryExtra = Number(pinnedLibraryExpansion?.totalAmount ?? 0)
 
     const response = {
       library: {
@@ -92,6 +96,15 @@ route.get('/', requireAuth, async (c) => {
         canExpand: MAX_BOOKMARKS_PER_USER + bookmarkExtra < POINT_CONSTANTS.BOOKMARK_MAX_EXPANSION,
         price: POINT_CONSTANTS.BOOKMARK_EXPANSION_SMALL_PRICE,
         unit: POINT_CONSTANTS.BOOKMARK_EXPANSION_SMALL_AMOUNT,
+      },
+      pinnedLibrary: {
+        base: MAX_PINNED_LIBRARIES_PER_USER,
+        extra: pinnedLibraryExtra,
+        current: MAX_PINNED_LIBRARIES_PER_USER + pinnedLibraryExtra,
+        max: POINT_CONSTANTS.PINNED_LIBRARY_MAX_EXPANSION,
+        canExpand: MAX_PINNED_LIBRARIES_PER_USER + pinnedLibraryExtra < POINT_CONSTANTS.PINNED_LIBRARY_MAX_EXPANSION,
+        price: POINT_CONSTANTS.PINNED_LIBRARY_EXPANSION_PRICE,
+        unit: POINT_CONSTANTS.PINNED_LIBRARY_EXPANSION_AMOUNT,
       },
     }
 

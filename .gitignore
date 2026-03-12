@@ -343,7 +343,7 @@ pyrightconfig.json
 # Environment variables
 .env.*
 *.env
-!.env.template
+!.env.*.example
 /k8s/vault-secrets/**
 !/k8s/vault-secrets/
 !/k8s/vault-secrets/**/

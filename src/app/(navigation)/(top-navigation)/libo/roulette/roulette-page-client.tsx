@@ -122,7 +122,7 @@ export default function RoulettePageClient() {
             <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
               {hasRevealedResult && result ? (
                 <>
-                  <p className="text-xs text-white/60">획득</p>
+                  <p className="text-xs text-white/80">{result.landed.label}</p>
                   <p
                     className={`text-lg font-semibold tabular-nums drop-shadow-[0_8px_18px_rgba(0,0,0,0.7)] ${getSegmentTextClass(
                       result.landed.id,
@@ -131,7 +131,6 @@ export default function RoulettePageClient() {
                     {result.payout > 0 ? '+' : ''}
                     {formatNumber(result.payout)} <span className="text-sm font-medium text-white/70">리보</span>
                   </p>
-                  <p className="mt-1 text-xs text-white/70">{result.landed.label}</p>
                 </>
               ) : (
                 <>

@@ -34,10 +34,7 @@ route.post('/', requireAuth, requireAdult, zProblemValidator('json', toggleSchem
       // 1) 유저 락으로 동시성 보장
       await tx.select({ id: userTable.id }).from(userTable).where(eq(userTable.id, userId)).for('update')
 
-      // 2) 북마크 저장 한도 계산
-      const limit = await getBookmarkLimit(tx, userId)
-
-      // 3) 이미 있으면 삭제
+      // 2) 이미 있으면 삭제
       const [existing] = await tx
         .select({ createdAt: bookmarkTable.createdAt })
         .from(bookmarkTable)
@@ -47,6 +44,9 @@ route.post('/', requireAuth, requireAdult, zProblemValidator('json', toggleSchem
         await tx.delete(bookmarkTable).where(and(eq(bookmarkTable.userId, userId), eq(bookmarkTable.mangaId, mangaId)))
         return { createdAt: null }
       }
+
+      // 3) 북마크 저장 한도 계산 (추가 시에만 평가)
+      const limit = await getBookmarkLimit(tx, userId)
 
       // 4) 한도 체크 후 추가
       const [{ count: currentCount }] = await tx

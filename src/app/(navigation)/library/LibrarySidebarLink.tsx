@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useParams, usePathname } from 'next/navigation'
 import { ReactNode } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 import LinkPending from '@/components/LinkPending'
 
@@ -15,6 +16,7 @@ type LibrarySidebarLinkProps = {
   onClick?: () => void
   badge?: ReactNode
   showActiveIndicator?: boolean
+  className?: string
 }
 
 export default function LibrarySidebarLink({
@@ -26,6 +28,7 @@ export default function LibrarySidebarLink({
   onClick,
   badge,
   showActiveIndicator,
+  className,
 }: LibrarySidebarLinkProps) {
   const pathname = usePathname()
   const params = useParams()
@@ -35,8 +38,10 @@ export default function LibrarySidebarLink({
   return (
     <Link
       aria-current={isActive}
-      className="flex text-sm items-center gap-3 p-2 lg:px-3 rounded-lg border border-transparent transition hover:bg-zinc-800/50 text-zinc-400 hover:text-foreground
-      aria-current:bg-zinc-800 aria-current:text-foreground aria-current:border-zinc-700"
+      className={twMerge(
+        'flex text-sm items-center gap-3 p-2 lg:px-3 rounded-lg border border-transparent transition hover:bg-zinc-800/50 text-zinc-400 hover:text-foreground aria-current:bg-zinc-800 aria-current:text-foreground aria-current:border-zinc-700',
+        className,
+      )}
       href={href}
       onClick={onClick}
       prefetch={false}
