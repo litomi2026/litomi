@@ -29,6 +29,16 @@ type Props = {
     isPublic: boolean
     itemCount: number
   }[]
+  pinnedLibraries?: {
+    id: number
+    name: string
+    description: string | null
+    color: string | null
+    icon: string | null
+    userId: number
+    isPublic: boolean
+    itemCount: number
+  }[]
   userId: number | null
   className?: string
   onClick?: () => void
@@ -41,6 +51,7 @@ type Props = {
 
 export default function LibrarySidebar({
   libraries,
+  pinnedLibraries = [],
   userId,
   className = '',
   onClick,
@@ -135,7 +146,35 @@ export default function LibrarySidebar({
                 title={library.name}
               />
             ))}
-            {ownerLibraries.length > 0 && publicLibraries.length > 0 && <div className="h-px bg-zinc-800 my-1" />}
+            {ownerLibraries.length > 0 && pinnedLibraries.length > 0 && <div className="h-px bg-zinc-800 my-1" />}
+            {pinnedLibraries.map((library) => (
+              <LibrarySidebarLink
+                badge={
+                  !library.isPublic ? (
+                    <Lock className="size-3 text-zinc-500 shrink-0" />
+                  ) : library.userId !== userId ? (
+                    <Globe className="size-3 text-zinc-500 shrink-0" />
+                  ) : null
+                }
+                className={!library.isPublic ? 'opacity-50' : ''}
+                description={`${formatNumber(library.itemCount)}개`}
+                href={`/library/${library.id}`}
+                icon={
+                  <>
+                    <span className="text-sm sm:hidden lg:inline">{library.icon || '📚'}</span>
+                    <span className="text-sm hidden sm:inline lg:hidden text-foreground font-semibold">
+                      {library.name.slice(0, 1)}
+                    </span>
+                  </>
+                }
+                iconBackground={library.color || 'rgb(113 113 122)'}
+                key={library.id}
+                onClick={onClick}
+                showActiveIndicator
+                title={library.name}
+              />
+            ))}
+            {(ownerLibraries.length > 0 || pinnedLibraries.length > 0) && publicLibraries.length > 0 && <div className="h-px bg-zinc-800 my-1" />}
             {publicLibraries.map((library) => (
               <LibrarySidebarLink
                 badge={
