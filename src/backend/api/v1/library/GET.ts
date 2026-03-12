@@ -10,7 +10,7 @@ import { zProblemValidator } from '@/backend/utils/validator'
 import { decodeLibraryListCursor, encodeLibraryListCursor } from '@/common/cursor'
 import { LIBRARIES_PER_PAGE } from '@/constants/policy'
 import { db } from '@/database/supabase/drizzle'
-import { libraryItemTable, libraryTable } from '@/database/supabase/library'
+import { libraryItemTable, libraryTable, pinnedLibraryTable } from '@/database/supabase/library'
 import { createCacheControl } from '@/utils/cache-control'
 import { intToHexColor } from '@/utils/color'
 import { sec } from '@/utils/format/date'
@@ -18,7 +18,7 @@ import { sec } from '@/utils/format/date'
 const querySchema = z.object({
   cursor: z.string().optional(),
   limit: z.coerce.number().int().positive().max(LIBRARIES_PER_PAGE).default(LIBRARIES_PER_PAGE),
-  scope: z.enum(['all', 'me', 'public']),
+  scope: z.enum(['all', 'me', 'public', 'pinned']),
 })
 
 export type GETV1LibraryListResponse = {
@@ -44,7 +44,7 @@ libraryListRoutes.get('/', zProblemValidator('query', querySchema), async (c) =>
   const { cursor, limit, scope: listScope } = c.req.valid('query')
   const userId = c.get('userId')
 
-  if (listScope === 'me') {
+  if (listScope === 'me' || listScope === 'pinned') {
     if (!userId) {
       return problemResponse(c, { status: 401, detail: '로그인 정보가 없거나 만료됐어요' })
     }
@@ -64,6 +64,8 @@ libraryListRoutes.get('/', zProblemValidator('query', querySchema), async (c) =>
 
   if (listScope === 'me') {
     conditions.push(eq(libraryTable.userId, userId!))
+  } else if (listScope === 'pinned') {
+    conditions.push(eq(pinnedLibraryTable.userId, userId!))
   } else if (listScope === 'public') {
     conditions.push(eq(libraryTable.isPublic, true))
   } else if (userId) {
@@ -115,9 +117,13 @@ libraryListRoutes.get('/', zProblemValidator('query', querySchema), async (c) =>
       itemCount: itemCountExpr,
     })
     .from(libraryTable)
-    .where(and(...conditions))
-    .limit(limit + 1)
     .$dynamic()
+
+  if (listScope === 'pinned') {
+    query = query.innerJoin(pinnedLibraryTable, eq(pinnedLibraryTable.libraryId, libraryTable.id))
+  }
+
+  query = query.where(and(...conditions)).limit(limit + 1)
 
   if (listScope === 'all' && userId) {
     query = query.orderBy(
