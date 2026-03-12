@@ -136,40 +136,40 @@ export default function RewardedAdSection() {
       {/* 광고 영역 */}
       <div className="flex flex-wrap justify-center gap-x-4 gap-y-2">
         <JuicyAdsSlot
-          adSlotId={AD_SLOTS.REWARDED.id}
-          height={AD_SLOTS.REWARDED.height}
+          adSlotId={AD_SLOTS.BANNER_308X286.id}
+          height={AD_SLOTS.BANNER_308X286.height}
           onAdClick={handleAdClick}
           rewardEnabled={rewardEnabled}
           showFooter
-          width={AD_SLOTS.REWARDED.width}
-          zoneId={AD_SLOTS.REWARDED.zoneId}
+          width={AD_SLOTS.BANNER_308X286.width}
+          zoneId={AD_SLOTS.BANNER_308X286.zoneId}
         />
         <JuicyAdsSlot
-          adSlotId={AD_SLOTS.REWARDED_2.id}
-          height={AD_SLOTS.REWARDED_2.height}
+          adSlotId={AD_SLOTS.BANNER_300X250.id}
+          height={AD_SLOTS.BANNER_300X250.height}
           onAdClick={handleAdClick}
           rewardEnabled={rewardEnabled}
           showFooter
-          width={AD_SLOTS.REWARDED_2.width}
-          zoneId={AD_SLOTS.REWARDED_2.zoneId}
+          width={AD_SLOTS.BANNER_300X250.width}
+          zoneId={AD_SLOTS.BANNER_300X250.zoneId}
         />
         <JuicyAdsSlot
-          adSlotId={AD_SLOTS.REWARDED_BANNER_300X100.id}
-          height={AD_SLOTS.REWARDED_BANNER_300X100.height}
+          adSlotId={AD_SLOTS.BANNER_300X100.id}
+          height={AD_SLOTS.BANNER_300X100.height}
           onAdClick={handleAdClick}
           rewardEnabled={rewardEnabled}
           showFooter
-          width={AD_SLOTS.REWARDED_BANNER_300X100.width}
-          zoneId={AD_SLOTS.REWARDED_BANNER_300X100.zoneId}
+          width={AD_SLOTS.BANNER_300X100.width}
+          zoneId={AD_SLOTS.BANNER_300X100.zoneId}
         />
         <JuicyAdsSlot
-          adSlotId={AD_SLOTS.REWARDED_BANNER_300X100_2.id}
-          height={AD_SLOTS.REWARDED_BANNER_300X100_2.height}
+          adSlotId={AD_SLOTS.BANNER_300X100_2.id}
+          height={AD_SLOTS.BANNER_300X100_2.height}
           onAdClick={handleAdClick}
           rewardEnabled={rewardEnabled}
           showFooter
-          width={AD_SLOTS.REWARDED_BANNER_300X100_2.width}
-          zoneId={AD_SLOTS.REWARDED_BANNER_300X100_2.zoneId}
+          width={AD_SLOTS.BANNER_300X100_2.width}
+          zoneId={AD_SLOTS.BANNER_300X100_2.zoneId}
         />
       </div>
 
