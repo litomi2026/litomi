@@ -30,6 +30,7 @@ export type GETV1LibraryResponse = {
   color: string | null
   icon: string | null
   isPublic: boolean
+  createdAt: number
   itemCount: number
 }
 
@@ -66,6 +67,7 @@ routes.get('/', zProblemValidator('param', paramsSchema), zProblemValidator('que
         color: libraryTable.color,
         icon: libraryTable.icon,
         isPublic: libraryTable.isPublic,
+        createdAt: libraryTable.createdAt,
         itemCount: sql<number>`(SELECT COUNT(*) FROM ${libraryItemTable} WHERE ${libraryItemTable.libraryId} = ${libraryTable.id})::int`,
       })
       .from(libraryTable)
@@ -91,6 +93,7 @@ routes.get('/', zProblemValidator('param', paramsSchema), zProblemValidator('que
       color: intToHexColor(library.color),
       icon: library.icon,
       isPublic: library.isPublic,
+      createdAt: library.createdAt.getTime(),
       itemCount: library.itemCount,
     }
 
