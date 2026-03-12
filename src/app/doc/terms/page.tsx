@@ -120,10 +120,7 @@ export default async function Page() {
             <ul className="list-disc list-inside space-y-2 text-sm text-zinc-300 marker:text-zinc-600">
               <li>
                 본 서비스는 운영을 위해 광고를 게재할 수 있습니다. 광고는 제3자(광고 네트워크/광고주)가 제공할 수 있으며
-                <code className="inline-flex items-center whitespace-nowrap rounded-md bg-white/6 px-1.5 py-0.5 font-mono text-xs text-zinc-200 ring-1 ring-white/10">
-                  /libo
-                </code>{' '}
-                페이지에서만 노출합니다.
+                성인인증을 완료한 사용자에겐 노출하지 않습니다.
               </li>
               <li>
                 본 서비스는 광고 제공을 위해 Adsterra 등 제3자 광고 네트워크의 스크립트/태그를 사용할 수 있습니다. 제3자
