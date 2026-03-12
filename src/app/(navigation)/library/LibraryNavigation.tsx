@@ -10,6 +10,7 @@ import LibraryHeader from './LibraryHeader'
 import LibrarySidebar from './LibrarySidebar'
 import useLibraryListInfiniteQuery from './useLibraryListInfiniteQuery'
 import useLibrarySummaryQuery from './useLibrarySummaryQuery'
+import usePinnedLibraryListInfiniteQuery from './usePinnedLibraryListInfiniteQuery'
 
 type LibraryListItem = {
   id: number
@@ -44,6 +45,17 @@ export default function LibraryNavigation({ children }: Readonly<Props>) {
     userId,
   })
 
+  const {
+    data: pinnedData,
+    fetchNextPage: fetchNextPinnedPage,
+    hasNextPage: hasNextPinnedPage,
+    isFetchingNextPage: isFetchingNextPinnedPage,
+    isPending: isPinnedLibrariesPending,
+  } = usePinnedLibraryListInfiniteQuery({
+    enabled: !isMePending && !!userId,
+    userId,
+  })
+
   const libraries = useMemo(() => {
     const map = new Map<number, LibraryListItem>()
     data?.pages.forEach((page) => {
@@ -56,12 +68,27 @@ export default function LibraryNavigation({ children }: Readonly<Props>) {
     return Array.from(map.values())
   }, [data])
 
+  const pinnedLibraries = useMemo(() => {
+    const map = new Map<number, LibraryListItem>()
+    pinnedData?.pages.forEach((page) => {
+      page.libraries.forEach((lib) => {
+        if (!map.has(lib.id)) {
+          map.set(lib.id, lib)
+        }
+      })
+    })
+    return Array.from(map.values())
+  }, [pinnedData])
+
   const sidebarPagination = {
-    hasNextPage,
-    isFetchingNextPage,
+    hasNextPage: hasNextPage || hasNextPinnedPage,
+    isFetchingNextPage: isFetchingNextPage || isFetchingNextPinnedPage,
     isFetchNextPageError,
-    isPending: isMePending || isLibrariesPending,
-    onRetryNextPage: () => fetchNextPage(),
+    isPending: isMePending || isLibrariesPending || isPinnedLibrariesPending,
+    onRetryNextPage: () => {
+      if (hasNextPage) fetchNextPage()
+      if (hasNextPinnedPage) fetchNextPinnedPage()
+    },
   }
 
   return (
@@ -72,6 +99,7 @@ export default function LibraryNavigation({ children }: Readonly<Props>) {
         historyCount={summary?.historyCount}
         libraries={libraries}
         pagination={sidebarPagination}
+        pinnedLibraries={pinnedLibraries}
         ratingCount={summary?.ratingCount}
         userId={userId}
       />
@@ -81,6 +109,7 @@ export default function LibraryNavigation({ children }: Readonly<Props>) {
           bookmarkCount={summary?.bookmarkCount}
           historyCount={summary?.historyCount}
           libraries={libraries}
+          pinnedLibraries={pinnedLibraries}
           ratingCount={summary?.ratingCount}
           sidebarPagination={sidebarPagination}
           userId={userId}

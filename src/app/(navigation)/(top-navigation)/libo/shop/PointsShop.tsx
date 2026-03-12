@@ -1,6 +1,6 @@
 'use client'
 
-import { Bookmark, BookOpen, Check, LibraryBig, Star } from 'lucide-react'
+import { Bookmark, BookOpen, Check, LibraryBig, Pin, Star } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -20,7 +20,7 @@ type EnrichedShopItem = ShopItem & {
 
 type ShopItem = {
   id: string
-  type: 'badge' | 'bookmark' | 'history' | 'library' | 'rating' | 'theme'
+  type: 'badge' | 'bookmark' | 'history' | 'library' | 'pinned_library' | 'rating' | 'theme'
   name: string
   description: string
   price: number
@@ -73,6 +73,14 @@ export default function PointsShop() {
       description: `+${POINT_CONSTANTS.LIBRARY_EXPANSION_AMOUNT}개 (현재: ${formatCurrentMax(displayExpansion?.library.current, displayExpansion?.library.max)})`,
       price: POINT_CONSTANTS.LIBRARY_EXPANSION_PRICE,
       icon: <LibraryBig className="size-5" />,
+    },
+    {
+      id: 'pinned-library-expansion',
+      type: 'pinned_library',
+      name: '고정된 서재 확장',
+      description: `+${POINT_CONSTANTS.PINNED_LIBRARY_EXPANSION_AMOUNT}개 (현재: ${formatCurrentMax(displayExpansion?.pinnedLibrary.current, displayExpansion?.pinnedLibrary.max)})`,
+      price: POINT_CONSTANTS.PINNED_LIBRARY_EXPANSION_PRICE,
+      icon: <Pin className="size-5" />,
     },
     {
       id: 'history-expansion',
@@ -133,6 +141,10 @@ export default function PointsShop() {
       case 'library':
         unit = POINT_CONSTANTS.LIBRARY_EXPANSION_AMOUNT
         expansionInfo = displayExpansion?.library
+        break
+      case 'pinned_library':
+        unit = POINT_CONSTANTS.PINNED_LIBRARY_EXPANSION_AMOUNT
+        expansionInfo = displayExpansion?.pinnedLibrary
         break
       case 'rating':
         unit = POINT_CONSTANTS.RATING_EXPANSION_AMOUNT

@@ -1,4 +1,4 @@
-import { bigint, index, pgTable, smallint, timestamp, uniqueIndex, varchar } from 'drizzle-orm/pg-core'
+import { bigint, foreignKey, index, pgTable, smallint, timestamp, uniqueIndex, varchar } from 'drizzle-orm/pg-core'
 import 'server-only'
 
 import { userTable } from './user'
@@ -75,9 +75,7 @@ export const pointDonationRecipientTable = pgTable(
   'point_donation_recipient',
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity(),
-    pointTransactionId: bigint('point_transaction_id', { mode: 'number' })
-      .references(() => pointTransactionTable.id, { onDelete: 'cascade' })
-      .notNull(),
+    pointTransactionId: bigint('point_transaction_id', { mode: 'number' }).notNull(),
     recipientType: smallint('recipient_type').notNull(),
     recipientValue: varchar('recipient_value', { length: 200 }).notNull(),
     amount: bigint('amount', { mode: 'number' }).notNull(),
@@ -89,6 +87,11 @@ export const pointDonationRecipientTable = pgTable(
       table.recipientType,
       table.recipientValue,
     ),
+    foreignKey({
+      name: 'fk_donation_recipient_tx',
+      columns: [table.pointTransactionId],
+      foreignColumns: [pointTransactionTable.id],
+    }).onDelete('cascade'),
   ],
 ).enableRLS()
 
