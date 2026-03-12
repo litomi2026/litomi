@@ -2,7 +2,7 @@
 
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import { Download } from 'lucide-react'
-import { memo, useEffect } from 'react'
+import { useEffect } from 'react'
 import { toast } from 'sonner'
 
 import { useDownload } from '@/hook/useDownload'
@@ -21,35 +21,7 @@ type Props = {
   className?: string
 }
 
-export default memo(DownloadButton)
-
-export function DownloadButtonError({ error, reset }: Readonly<ErrorBoundaryFallbackProps>) {
-  useEffect(() => {
-    toast.error('다운로드 중 오류가 발생했어요')
-  }, [error])
-
-  return (
-    <button
-      className={`${commonButtonStyle} flex-1 border-2 border-red-800 text-red-500`}
-      onClick={reset}
-      type="button"
-    >
-      <Download className="size-4" />
-      오류
-    </button>
-  )
-}
-
-export function DownloadButtonSkeleton({ className = '' }: { className?: string }) {
-  return (
-    <button className={`${commonButtonStyle} disabled:opacity-50 ${className}`} disabled>
-      <Download className="size-4" />
-      다운로드
-    </button>
-  )
-}
-
-function DownloadButton({ manga, className = '' }: Props) {
+export default function DownloadButton({ manga, className = '' }: Props) {
   const { images = [] } = manga
   const { isDownloading, downloadedCount, downloadAllImages } = useDownload({ manga })
   const throttledCount = useThrottleValue(downloadedCount, THROTTLE_DELAY)
@@ -88,9 +60,35 @@ function DownloadButton({ manga, className = '' }: Props) {
         aria-busy={isDownloading}
         className="size-4 shrink-0 text-foreground aria-busy:animate-pulse relative z-10"
       />
-      <span aria-busy={isDownloading} className="relative z-10 text-foreground aria-busy:font-mono aria-busy:text-xs">
+      <span aria-busy={isDownloading} className="relative z-10 text-foreground aria-busy:font-mono">
         {getProgressText()}
       </span>
+    </button>
+  )
+}
+
+export function DownloadButtonError({ error, reset }: Readonly<ErrorBoundaryFallbackProps>) {
+  useEffect(() => {
+    toast.error('다운로드 중 오류가 발생했어요')
+  }, [error])
+
+  return (
+    <button
+      className={`${commonButtonStyle} flex-1 border-2 border-red-800 text-red-500`}
+      onClick={reset}
+      type="button"
+    >
+      <Download className="size-4" />
+      오류
+    </button>
+  )
+}
+
+export function DownloadButtonSkeleton({ className = '' }: { className?: string }) {
+  return (
+    <button className={`${commonButtonStyle} disabled:opacity-50 ${className}`} disabled>
+      <Download className="size-4" />
+      다운로드
     </button>
   )
 }
