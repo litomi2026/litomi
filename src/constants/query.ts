@@ -18,6 +18,7 @@ export const QueryKeys = {
   infiniteLibraryListBase: ['library', 'list', 'infinite'],
   infiniteLibraryMangasBase: ['library', 'manga', 'infinite'],
   infiniteLibraryList: (userId: number | null) => [...QueryKeys.infiniteLibraryListBase, userId ?? 'guest'],
+  infinitePinnedLibraryList: (userId: number | null) => ['library', 'list', 'infinite', 'pinned', userId ?? 'guest'],
   infiniteLibraryMangas: (userId: number | null) => [...QueryKeys.infiniteLibraryMangasBase, userId ?? 'guest'],
   librarySummary: (userId: number | null) => ['library', 'summary', userId ?? 'guest'],
   libraryMeta: (libraryId: number, userId: number | null) => ['library', 'meta', libraryId, userId ?? 'guest'],

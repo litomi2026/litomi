@@ -203,3 +203,57 @@ describe('GET /api/v1/library/:id/item', () => {
     })
   })
 })
+
+describe('GET /api/v1/library?scope=pinned', () => {
+  describe('인증', () => {
+    test('userId가 없으면 401 에러를 반환한다', async () => {
+      const response = await app.request('/?scope=pinned')
+
+      expect(response.status).toBe(401)
+    })
+  })
+})
+
+describe('POST /api/v1/library/:id/pin', () => {
+  test('userId가 없으면 401 에러를 반환한다', async () => {
+    const response = await app.request('/1/pin', { method: 'POST' })
+    expect(response.status).toBe(401)
+  })
+
+  describe('파라미터 검증', () => {
+    const authedApp = new Hono<Env>()
+    authedApp.use('*', contextStorage())
+    authedApp.use('*', async (c, next) => {
+      c.set('userId', 1)
+      return await next()
+    })
+    authedApp.route('/', libraryRoutes)
+
+    test('유효하지 않은 id를 사용하면 400 에러를 반환한다', async () => {
+      const response = await authedApp.request('/invalid/pin', { method: 'POST' })
+      expect(response.status).toBe(400)
+    })
+  })
+})
+
+describe('DELETE /api/v1/library/:id/pin', () => {
+  test('userId가 없으면 401 에러를 반환한다', async () => {
+    const response = await app.request('/1/pin', { method: 'DELETE' })
+    expect(response.status).toBe(401)
+  })
+
+  describe('파라미터 검증', () => {
+    const authedApp = new Hono<Env>()
+    authedApp.use('*', contextStorage())
+    authedApp.use('*', async (c, next) => {
+      c.set('userId', 1)
+      return await next()
+    })
+    authedApp.route('/', libraryRoutes)
+
+    test('유효하지 않은 id를 사용하면 400 에러를 반환한다', async () => {
+      const response = await authedApp.request('/invalid/pin', { method: 'DELETE' })
+      expect(response.status).toBe(400)
+    })
+  })
+})

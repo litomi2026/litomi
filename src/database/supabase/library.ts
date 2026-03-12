@@ -36,3 +36,17 @@ export const libraryItemTable = pgTable(
     index('idx_library_item_created_at').on(table.createdAt.desc()),
   ],
 ).enableRLS()
+
+export const pinnedLibraryTable = pgTable(
+  'pinned_library',
+  {
+    userId: bigint('user_id', { mode: 'number' })
+      .references(() => userTable.id, { onDelete: 'cascade' })
+      .notNull(),
+    libraryId: bigint('library_id', { mode: 'number' })
+      .references(() => libraryTable.id, { onDelete: 'cascade' })
+      .notNull(),
+    createdAt: timestamp('created_at', { precision: 3, withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.userId, table.libraryId] })],
+).enableRLS()
