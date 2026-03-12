@@ -225,6 +225,7 @@ describe('POST /api/v1/library/:id/pin', () => {
     authedApp.use('*', contextStorage())
     authedApp.use('*', async (c, next) => {
       c.set('userId', 1)
+      c.set('isAdult', true)
       return await next()
     })
     authedApp.route('/', libraryRoutes)
@@ -247,6 +248,7 @@ describe('DELETE /api/v1/library/:id/pin', () => {
     authedApp.use('*', contextStorage())
     authedApp.use('*', async (c, next) => {
       c.set('userId', 1)
+      c.set('isAdult', true)
       return await next()
     })
     authedApp.route('/', libraryRoutes)
