@@ -52,7 +52,12 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId, per
   const removeFromLibraryMutation = useMutation({
     mutationFn: bulkRemoveFromLibrary,
     onSuccess: ({ removedCount }, { libraryId }) => {
-      toast.success(`${removedCount}개 작품을 제거했어요`)
+      if (removedCount === 0) {
+        toast.warning(`이미 제거된 작품이에요`)
+      } else {
+        toast.success(`${removedCount}개 작품을 제거했어요`)
+      }
+
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraries })
       queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryListBase })
       queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryMangasBase })
