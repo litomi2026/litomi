@@ -1,9 +1,9 @@
 'use client'
 
-import { useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Book, Check, Filter, Loader2, Trash2 } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { ReactNode, useCallback, useMemo, useState } from 'react'
+import { ReactNode, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
 import { NotificationFilter } from '@/backend/api/v1/notification/types'
@@ -12,11 +12,10 @@ import IconBell from '@/components/icons/IconBell'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import { QueryKeys } from '@/constants/query'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
-import useServerAction from '@/hook/useServerAction'
 import useMeQuery from '@/query/useMeQuery'
 import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
 
-import { deleteNotifications, markAsRead } from './action'
+import { deleteNotifications, markNotificationsAsRead } from './api'
 import { SearchParams } from './common'
 import NotificationCard from './NotificationCard'
 import SwipeableWrapper from './SwipeableNotificationCard'
@@ -59,60 +58,56 @@ export default function NotificationList() {
     fetchNextPage,
   })
 
-  const [, dispatchMarkAsRead, isMarkAsReadPending] = useServerAction({
-    action: markAsRead,
+  const { mutate: requestMarkAsRead, isPending: isMarkAsReadPending } = useMutation({
+    mutationFn: markNotificationsAsRead,
     onSuccess: () => {
-      setSelectedIds(new Set())
-      setSelectionMode(false)
-      queryClient.invalidateQueries({ queryKey: QueryKeys.notifications(searchParams) })
-      queryClient.invalidateQueries({ queryKey: QueryKeys.notificationUnreadCount })
+      handleMutationSuccess()
     },
-    shouldSetResponse: false,
   })
 
-  const [, dispatchDeleteNotifications, isDeleteNotificationsPending] = useServerAction({
-    action: deleteNotifications,
-    onSuccess: (data) => {
-      toast.success(data)
-      setSelectedIds(new Set())
-      setSelectionMode(false)
-      queryClient.invalidateQueries({ queryKey: QueryKeys.notifications(searchParams) })
-      queryClient.invalidateQueries({ queryKey: QueryKeys.notificationUnreadCount })
+  const { mutate: requestDeleteNotifications, isPending: isDeleteNotificationsPending } = useMutation({
+    mutationFn: deleteNotifications,
+    onSuccess: () => {
+      toast.success('알림을 삭제했어요')
+      handleMutationSuccess()
     },
-    shouldSetResponse: false,
   })
 
-  const { addToQueue: handleMarkAsRead } = useBatcher({
+  function handleMutationSuccess() {
+    setSelectedIds(new Set())
+    setSelectionMode(false)
+    queryClient.invalidateQueries({ queryKey: QueryKeys.notifications(searchParams) })
+    queryClient.invalidateQueries({ queryKey: QueryKeys.notificationUnreadCount })
+  }
+
+  const { addToQueue: handleMarkAsRead } = useBatcher<number>({
     batchDelay: 3000,
     onBatchStart: (ids) => {
       if (ids.length > 0) {
-        dispatchMarkAsRead({ ids })
+        requestMarkAsRead({ ids })
       }
     },
   })
 
-  const handleDelete = useCallback(
-    (id: number) => {
-      dispatchDeleteNotifications({ ids: [id] })
-    },
-    [dispatchDeleteNotifications],
-  )
+  function handleDelete(id: number) {
+    requestDeleteNotifications({ ids: [id] })
+  }
 
-  const handleBatchAction = useCallback(
-    (action: 'delete' | 'read') => {
-      const ids = Array.from(selectedIds)
-      if (ids.length === 0) return
+  function handleBatchAction(action: 'delete' | 'read') {
+    const ids = Array.from(selectedIds)
 
-      if (action === 'read') {
-        dispatchMarkAsRead({ ids })
-      } else {
-        dispatchDeleteNotifications({ ids })
-      }
-    },
-    [selectedIds, dispatchMarkAsRead, dispatchDeleteNotifications],
-  )
+    if (ids.length === 0) {
+      return
+    }
 
-  const toggleSelection = useCallback((id: number) => {
+    if (action === 'read') {
+      requestMarkAsRead({ ids })
+    } else {
+      requestDeleteNotifications({ ids })
+    }
+  }
+
+  function toggleSelection(id: number) {
     setSelectedIds((prev) => {
       const newSet = new Set(prev)
       if (newSet.has(id)) {
@@ -122,7 +117,7 @@ export default function NotificationList() {
       }
       return newSet
     })
-  }, [])
+  }
 
   return (
     <>
@@ -157,7 +152,7 @@ export default function NotificationList() {
               <button
                 className="px-2.5 py-1.5 text-sm font-medium text-zinc-400 hover:text-zinc-300 transition disabled:opacity-50"
                 disabled={notifications.length === 0 || isMarkAsReadPending || isDeleteNotificationsPending}
-                onClick={() => dispatchMarkAsRead({ ids: notifications.filter((n) => !n.read).map((n) => n.id) })}
+                onClick={() => requestMarkAsRead({ ids: notifications.filter((n) => !n.read).map((n) => n.id) })}
               >
                 모두 읽음
               </button>
