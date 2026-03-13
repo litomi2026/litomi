@@ -203,7 +203,7 @@ jobs:
 
           for name in ("litomi-web", "litomi-backend"):
               pattern = rf"(- name: {re.escape(name)}\n\s+newName: [^\n]+\n\s+newTag: )\S+"
-              text, count = re.subn(pattern, rf"\1{tag}", text, count=1)
+              text, count = re.subn(pattern, lambda match: f"{match.group(1)}{tag}", text, count=1)
               if count != 1:
                   raise SystemExit(f"Failed to update newTag for {name} in {path}")
 

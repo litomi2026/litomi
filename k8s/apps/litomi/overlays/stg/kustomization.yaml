@@ -5,11 +5,17 @@ namespace: litomi-stg
 
 resources:
   - ../../base
+  - hpa-backend.yaml
+  - hpa-web.yaml
   - namespace.yaml
   - serviceaccount-eso-vault.yaml
   - secretstore-vault.yaml
   - externalsecret-litomi-backend-secret.yaml
   - ingress.yaml
+
+patches:
+  - path: patch-backend-deployment.yaml
+  - path: patch-web-deployment.yaml
 
 configMapGenerator:
   - name: litomi-public-env
