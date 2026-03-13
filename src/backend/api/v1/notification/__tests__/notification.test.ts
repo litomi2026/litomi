@@ -162,3 +162,69 @@ describe('GET /api/v1/notification/unread-count', () => {
     })
   })
 })
+
+describe('PATCH /api/v1/notification/read', () => {
+  test('userId가 없으면 401 에러를 반환한다', async () => {
+    const response = await app.request('/read', { method: 'PATCH' }, {})
+
+    expect(response.status).toBe(401)
+  })
+
+  describe('요청 검증', () => {
+    const authedApp = new Hono<Env>()
+    authedApp.use('*', contextStorage())
+    authedApp.use('*', async (c, next) => {
+      c.set('userId', 1)
+      c.set('isAdult', true)
+      return await next()
+    })
+    authedApp.route('/', notificationRoutes)
+
+    test('유효하지 않은 body를 사용하면 400 에러를 반환한다', async () => {
+      const response = await authedApp.request('/read', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      })
+
+      expect(response.status).toBe(400)
+    })
+  })
+})
+
+describe('PATCH /api/v1/notification/read-all', () => {
+  test('userId가 없으면 401 에러를 반환한다', async () => {
+    const response = await app.request('/read-all', { method: 'PATCH' }, {})
+
+    expect(response.status).toBe(401)
+  })
+})
+
+describe('DELETE /api/v1/notification', () => {
+  test('userId가 없으면 401 에러를 반환한다', async () => {
+    const response = await app.request('/', { method: 'DELETE' }, {})
+
+    expect(response.status).toBe(401)
+  })
+
+  describe('요청 검증', () => {
+    const authedApp = new Hono<Env>()
+    authedApp.use('*', contextStorage())
+    authedApp.use('*', async (c, next) => {
+      c.set('userId', 1)
+      c.set('isAdult', true)
+      return await next()
+    })
+    authedApp.route('/', notificationRoutes)
+
+    test('유효하지 않은 body를 사용하면 400 에러를 반환한다', async () => {
+      const response = await authedApp.request('/', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      })
+
+      expect(response.status).toBe(400)
+    })
+  })
+})
