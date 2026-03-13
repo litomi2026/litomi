@@ -1,19 +1,18 @@
 'use client'
 
-import { useQueryClient } from '@tanstack/react-query'
-import { Loader2, Plus, X } from 'lucide-react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { Loader2, Plus } from 'lucide-react'
 import Link from 'next/link'
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
 import { create } from 'zustand'
 
-import { addMangaToLibraries } from '@/app/(navigation)/library/action-library-item'
+import { addMangaToLibraries } from '@/app/(navigation)/library/api'
 import Dialog from '@/components/ui/Dialog'
 import DialogBody from '@/components/ui/DialogBody'
 import DialogFooter from '@/components/ui/DialogFooter'
 import DialogHeader from '@/components/ui/DialogHeader'
 import { QueryKeys } from '@/constants/query'
-import useServerAction from '@/hook/useServerAction'
 
 import useLibrariesQuery from './useLibrariesQuery'
 
@@ -43,18 +42,18 @@ export default function LibraryModal() {
     refetch: refetchLibraries,
   } = useLibrariesQuery({ enabled: isOpen })
 
-  const [, dispatchAddToLibraries, isPending] = useServerAction({
-    action: addMangaToLibraries,
-    onSuccess: (successCount, [{ libraryIds }]) => {
-      if (successCount === 0) {
+  const addToLibrariesMutation = useMutation({
+    mutationFn: addMangaToLibraries,
+    onSuccess: ({ addedCount }, { libraryIds }) => {
+      if (addedCount === 0) {
         toast.warning(`해당 서재에 이미 추가되어 있어요`)
         return
       }
 
-      if (successCount === libraryIds.length) {
-        toast.success(`${successCount}개 서재에 추가했어요`)
-      } else if (successCount > 0) {
-        toast.success(`${successCount}개 서재에 추가했어요 (중복 ${libraryIds.length - successCount}개)`)
+      if (addedCount === libraryIds.length) {
+        toast.success(`${addedCount}개 서재에 추가했어요`)
+      } else if (addedCount > 0) {
+        toast.success(`${addedCount}개 서재에 추가했어요 (중복 ${libraryIds.length - addedCount}개)`)
       }
 
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraries })
@@ -65,8 +64,12 @@ export default function LibraryModal() {
 
       requestClose()
     },
-    shouldSetResponse: false,
   })
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    handleAddToLibraries()
+  }
 
   function requestClose() {
     setIsOpen(false)
@@ -95,7 +98,7 @@ export default function LibraryModal() {
     }
 
     const libraryIds = Array.from(selectedLibraryIds)
-    dispatchAddToLibraries({ mangaId, libraryIds })
+    addToLibrariesMutation.mutate({ mangaId, libraryIds })
   }
 
   return (
@@ -106,7 +109,7 @@ export default function LibraryModal() {
       onClose={requestClose}
       open={isOpen}
     >
-      <form action={handleAddToLibraries} className="flex flex-1 flex-col min-h-0">
+      <form className="flex flex-1 flex-col min-h-0" onSubmit={handleSubmit}>
         <DialogHeader onClose={requestClose} title="서재에 추가" />
 
         <DialogBody className="flex flex-col gap-4">
@@ -151,7 +154,7 @@ export default function LibraryModal() {
                 <input
                   checked={selectedLibraryIds.has(library.id)}
                   className="size-4 rounded border-2 border-zinc-600 bg-zinc-800"
-                  disabled={isPending}
+                  disabled={addToLibrariesMutation.isPending}
                   onChange={() => handleLibraryToggle(library.id)}
                   type="checkbox"
                 />
@@ -175,10 +178,14 @@ export default function LibraryModal() {
             <button
               className="flex items-center justify-center gap-2 w-full px-4 py-3 text-background font-medium bg-brand rounded-lg transition hover:bg-brand/90
                 disabled:bg-zinc-700 disabled:text-zinc-500"
-              disabled={isPending || selectedLibraryIds.size === 0}
+              disabled={addToLibrariesMutation.isPending || selectedLibraryIds.size === 0}
               type="submit"
             >
-              {isPending ? <Loader2 className="size-5 animate-spin" /> : <Plus className="size-5" />}
+              {addToLibrariesMutation.isPending ? (
+                <Loader2 className="size-5 animate-spin" />
+              ) : (
+                <Plus className="size-5" />
+              )}
               <span>
                 {selectedLibraryIds.size > 0 ? `${selectedLibraryIds.size}개 서재에 추가` : '서재를 선택해 주세요'}
               </span>
@@ -186,7 +193,7 @@ export default function LibraryModal() {
             <button
               className="w-full px-4 py-3 text-zinc-300 font-medium bg-zinc-800 rounded-lg transition hover:bg-zinc-700
                 disabled:bg-zinc-700 disabled:text-zinc-500"
-              disabled={isPending}
+              disabled={addToLibrariesMutation.isPending}
               onClick={requestClose}
               type="button"
             >

@@ -31,9 +31,9 @@ spec:
               path: /ready
               port: 3002
             initialDelaySeconds: 3
-            periodSeconds: 5
+            periodSeconds: 10
             timeoutSeconds: 3
-            failureThreshold: 12
+            failureThreshold: 6
           livenessProbe:
             httpGet:
               path: /health

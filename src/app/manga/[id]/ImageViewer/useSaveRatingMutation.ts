@@ -39,8 +39,8 @@ export function useSaveRatingMutation() {
     },
     onSuccess: (data, { mangaId }) => {
       queryClient.setQueryData<GETV1MangaIdRatingResponse>(QueryKeys.userRating(mangaId), data)
-      queryClient.invalidateQueries({ queryKey: ['me', 'ratings'] })
-      queryClient.invalidateQueries({ queryKey: ['library', 'summary'] })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.ratingsBase })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.librarySummaryBase })
     },
   })
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { type InfiniteData, useQueryClient } from '@tanstack/react-query'
+import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Loader2, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
@@ -12,9 +12,8 @@ import DialogBody from '@/components/ui/DialogBody'
 import DialogFooter from '@/components/ui/DialogFooter'
 import DialogHeader from '@/components/ui/DialogHeader'
 import { QueryKeys } from '@/constants/query'
-import useServerAction from '@/hook/useServerAction'
 
-import { deleteLibrary } from './action-library'
+import { deleteLibrary } from './api'
 
 type Props = {
   libraryId: number
@@ -28,9 +27,9 @@ export default function LibraryDeleteModal({ libraryId, libraryName, itemCount, 
   const router = useRouter()
   const queryClient = useQueryClient()
 
-  const [_, dispatchAction, isPending] = useServerAction({
-    action: deleteLibrary,
-    onSuccess: (deletedLibraryId) => {
+  const deleteLibraryMutation = useMutation({
+    mutationFn: deleteLibrary,
+    onSuccess: ({ id: deletedLibraryId }) => {
       queryClient.setQueryData<LibraryListItem[]>(QueryKeys.libraries, (oldLibraries) => {
         if (!oldLibraries) {
           return oldLibraries
@@ -88,16 +87,16 @@ export default function LibraryDeleteModal({ libraryId, libraryName, itemCount, 
         <button
           className="flex-1 flex items-center justify-center gap-2 h-10 rounded-lg bg-red-700 text-foreground font-medium 
             hover:bg-red-700 transition disabled:opacity-50 relative"
-          disabled={isPending}
-          onClick={() => dispatchAction(libraryId)}
+          disabled={deleteLibraryMutation.isPending}
+          onClick={() => deleteLibraryMutation.mutate(libraryId)}
           type="button"
         >
-          {isPending ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />} 삭제
+          {deleteLibraryMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />} 삭제
         </button>
         <button
           className="flex-1 h-10 rounded-lg bg-zinc-800 text-zinc-300 font-medium 
             hover:bg-zinc-700 transition disabled:opacity-50"
-          disabled={isPending}
+          disabled={deleteLibraryMutation.isPending}
           onClick={() => onOpenChange(false)}
           type="button"
         >

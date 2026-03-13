@@ -1,4 +1,4 @@
-import { count, eq } from 'drizzle-orm'
+import { count, eq, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 import 'server-only'
 import { z } from 'zod'
@@ -76,11 +76,11 @@ route.post('/', requireAuth, requireAdult, zProblemValidator('json', importSchem
         .from(bookmarkTable)
         .where(eq(bookmarkTable.userId, userId))
 
-      if (Number(currentCount) >= limit) {
+      if (currentCount >= limit) {
         throw new Error('IMPORT_LIMIT_REACHED_MERGE')
       }
 
-      const availableSlots = limit - Number(currentCount)
+      const availableSlots = limit - currentCount
 
       if (newBookmarks.length > availableSlots) {
         throw new Error(`IMPORT_NOT_ENOUGH_SLOTS:${availableSlots}`)

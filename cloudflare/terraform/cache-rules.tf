@@ -18,7 +18,6 @@ locals {
   ttl_30d_path_prefixes = [
     "/_next/image",
     "/_not-found",
-    "/auth/",
     "/app.",
     "/apple-",
     "/deterrence",

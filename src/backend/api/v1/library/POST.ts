@@ -59,27 +59,26 @@ route.post('/', requireAuth, zProblemValidator('json', postBodySchema), async (c
       // 1) 유저 락으로 동시성 보장
       await tx.select({ id: userTable.id }).from(userTable).where(eq(userTable.id, userId)).for('update')
 
-      // 2) 현재 서재 개수
-      const [{ count: currentCount }] = await tx
-        .select({ count: count(libraryTable.id) })
-        .from(libraryTable)
-        .where(eq(libraryTable.userId, userId))
-
-      // 3) 확장량 조회
+      // 2) 확장량 조회
       const [expansion] = await tx
         .select({ totalAmount: sum(userExpansionTable.amount) })
         .from(userExpansionTable)
         .where(and(eq(userExpansionTable.userId, userId), eq(userExpansionTable.type, EXPANSION_TYPE.LIBRARY)))
 
-      // 4) 제한 계산 및 체크
+      // 3) 제한 계산 및 체크
       const extra = Number(expansion?.totalAmount ?? 0)
       const limit = Math.min(MAX_LIBRARIES_PER_USER + extra, POINT_CONSTANTS.LIBRARY_MAX_EXPANSION)
 
-      if (Number(currentCount) >= limit) {
+      const [{ count: currentCount }] = await tx
+        .select({ count: count(libraryTable.id) })
+        .from(libraryTable)
+        .where(eq(libraryTable.userId, userId))
+
+      if (currentCount >= limit) {
         throw new Error(ErrorCode.LIBRARY_LIMIT_REACHED)
       }
 
-      // 5) INSERT
+      // 4) INSERT
       const [inserted] = await tx
         .insert(libraryTable)
         .values({
