@@ -2,7 +2,6 @@ import dayjs from 'dayjs'
 import { Bookmark, Heart, MessageCircle, MoreHorizontal, Repeat, Upload } from 'lucide-react'
 import Link from 'next/link'
 
-import { PostFilter } from '@/backend/api/v1/post/constant'
 import PostCreationForm from '@/components/post/PostCreationForm'
 import PostImages from '@/components/post/PostImages'
 import ReferredPostCard from '@/components/post/ReferredPostCard'
@@ -105,7 +104,6 @@ export default function Post({ post }: Readonly<Props>) {
         <PostCreationForm
           buttonText="답글"
           className="flex"
-          filter={PostFilter.RECOMMAND} // TODO: 변경해야함
           isReply
           placeholder="답글 게시하기"
         />

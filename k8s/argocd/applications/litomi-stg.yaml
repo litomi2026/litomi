@@ -8,7 +8,7 @@ spec:
   project: litomi
   source:
     repoURL: https://github.com/gwak2837/litomi.git
-    targetRevision: main
+    targetRevision: stage
     path: k8s/apps/litomi/overlays/stg
   destination:
     server: https://kubernetes.default.svc
