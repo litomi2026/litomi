@@ -17,6 +17,7 @@ export type Post = {
   content?: string | null
   imageURLs?: string[] | null
   mangaId?: number | null
+  isLiked?: boolean
   author?: {
     id: number
     name: string
@@ -93,6 +94,7 @@ export default function XPostCard({ post, isThread, className = '', ...props }: 
         </div>
         <PostActionButtons
           commentCount={post.commentCount}
+          isLiked={post.isLiked}
           likeCount={post.likeCount}
           postId={post.id}
           repostCount={post.repostCount}

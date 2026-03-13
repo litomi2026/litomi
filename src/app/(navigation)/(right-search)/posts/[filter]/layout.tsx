@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
-import { PostFilter } from '@/backend/api/v1/post/constant'
 import PostCreationForm from '@/components/post/PostCreationForm'
 
 import NavigationWithMobileMenu from './NavigationWithMobileMenu'
@@ -43,7 +42,6 @@ export default async function Layout({ params, children }: LayoutProps<'/posts/[
       <PostCreationForm
         buttonText="게시하기"
         className="flex p-4 border-b-2"
-        filter={filter === PostFilterParams.RECOMMAND ? PostFilter.RECOMMAND : PostFilter.FOLLOWING}
         placeholder="무슨 일이 일어나고 있나요?"
       />
       {children}

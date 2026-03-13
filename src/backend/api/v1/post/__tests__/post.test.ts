@@ -498,3 +498,57 @@ describe('GET /api/v1/post', () => {
     })
   })
 })
+
+describe('POST /api/v1/post', () => {
+  test('인증되지 않은 사용자는 401 응답을 받는다', async () => {
+    const response = await app.request('/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: 'hello' }),
+    })
+
+    expect(response.status).toBe(401)
+  })
+
+  test('유효하지 않은 body는 400 응답을 받는다', async () => {
+    const response = await app.request(
+      '/',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: 'a' }),
+      },
+      { userId: 1 },
+    )
+
+    expect(response.status).toBe(400)
+  })
+})
+
+describe('DELETE /api/v1/post/:id', () => {
+  test('인증되지 않은 사용자는 401 응답을 받는다', async () => {
+    const response = await app.request('/1', { method: 'DELETE' })
+
+    expect(response.status).toBe(401)
+  })
+
+  test('유효하지 않은 post id는 400 응답을 받는다', async () => {
+    const response = await app.request('/invalid', { method: 'DELETE' }, { userId: 1 })
+
+    expect(response.status).toBe(400)
+  })
+})
+
+describe('POST /api/v1/post/:id/like', () => {
+  test('인증되지 않은 사용자는 401 응답을 받는다', async () => {
+    const response = await app.request('/1/like', { method: 'POST' })
+
+    expect(response.status).toBe(401)
+  })
+
+  test('유효하지 않은 post id는 400 응답을 받는다', async () => {
+    const response = await app.request('/invalid/like', { method: 'POST' }, { userId: 1 })
+
+    expect(response.status).toBe(400)
+  })
+})

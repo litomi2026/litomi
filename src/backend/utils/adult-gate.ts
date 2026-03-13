@@ -5,12 +5,6 @@ import { problemResponse } from '@/backend/utils/problem'
 
 export const ADULT_VERIFICATION_REQUIRED_PROBLEM_CODE = 'adult-verification-required' as const
 
-type AdultGateContext = {
-  country: string
-  userId: number | undefined
-  isAdult: boolean
-}
-
 type AdultGateContextSource = Pick<Context, 'req'> & {
   get(key: string): unknown
 }

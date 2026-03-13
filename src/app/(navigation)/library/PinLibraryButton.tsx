@@ -6,7 +6,9 @@ import { twMerge } from 'tailwind-merge'
 
 import type { LibraryListItem } from '@/backend/api/v1/library/GET'
 
+import { showAdultVerificationRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
+import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
 
 import usePinLibraryMutation from './usePinLibraryMutation'
 import usePinnedLibraryListInfiniteQuery from './usePinnedLibraryListInfiniteQuery'
@@ -19,24 +21,32 @@ type Props = {
 
 export default function PinLibraryButton({ className = '', libraryId, library }: Readonly<Props>) {
   const { data: me } = useMeQuery()
+  const canAccess = canAccessAdultRestrictedAPIs(me)
   const { mutate, isPending } = usePinLibraryMutation()
   const { data: pinnedData } = usePinnedLibraryListInfiniteQuery({ userId: me?.id ?? null, enabled: !!me })
   const isPinned = pinnedData?.pages.some((page) => page.libraries.some((lib) => lib.id === libraryId))
   const [isAnimating, setIsAnimating] = useState(false)
-
-  if (!me) {
-    return null
-  }
 
   function handlePinToggle() {
     if (isPending) {
       return
     }
 
+    const action = isPinned ? 'unpin' : 'pin'
+
+    if (action === 'pin' && !canAccess) {
+      showAdultVerificationRequiredToast({ username: me?.name })
+      return
+    }
+
     setIsAnimating(true)
     setTimeout(() => setIsAnimating(false), 300)
 
-    mutate({ libraryId, action: isPinned ? 'unpin' : 'pin', library })
+    mutate({ libraryId, action, library })
+  }
+
+  if (!me) {
+    return null
   }
 
   return (

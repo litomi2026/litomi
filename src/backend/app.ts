@@ -1,4 +1,3 @@
-import { sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { timeout } from 'hono/timeout'
 import { endTime, setMetric, startTime } from 'hono/timing'
@@ -7,7 +6,7 @@ import { z } from 'zod'
 
 import { Env } from '@/backend'
 import { zProblemValidator } from '@/backend/utils/validator'
-import { db } from '@/database/supabase/drizzle'
+import { checkDatabaseReadiness } from '@/database/supabase/drizzle'
 
 import apiRoutes from './api'
 import imageProxyRoutes from './i/v1/image-proxy'
@@ -45,26 +44,20 @@ appRoutes.get('/health', (c) =>
   }),
 )
 
-appRoutes.use('/ready', timeout(ms('5 seconds')))
+appRoutes.use('/ready', timeout(ms('2 seconds')))
 appRoutes.get('/ready', async (c) => {
   try {
-    const [result] = await db.execute<{ current_time: Date; version: string; connection: number }>(sql`
-      SELECT 
-        CURRENT_TIMESTAMP as current_time,
-        version() as version,
-        1 as connection
-    `)
+    const readiness = await checkDatabaseReadiness()
 
-    if (!result) {
+    if (!readiness.connected) {
       return c.json({ status: 'error', timestamp: new Date() }, 503)
     }
 
     return c.json({
       status: 'ready',
       database: {
-        connected: result.connection === 1,
-        time: result.current_time,
-        version: result.version,
+        checkedAt: readiness.checkedAt,
+        connected: true,
       },
       timestamp: new Date(),
     })

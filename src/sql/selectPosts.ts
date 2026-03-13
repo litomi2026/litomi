@@ -57,6 +57,7 @@ export default async function selectPosts({
       createdAt: postTable.createdAt,
       content: postTable.content,
       mangaId: postTable.mangaId,
+      isLiked: sql<boolean>`COALESCE(bool_or(${postLikeTable.userId} = ${currentUserId ?? -1}), false)`,
       author: {
         id: userTable.id,
         name: userTable.name,
