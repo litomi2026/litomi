@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, mock, test } from 'bun:test'
+import { beforeAll, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test'
 
 import appRoutes from '../app'
 
@@ -17,9 +17,8 @@ type ReadyOkResponse = {
   status: 'ready'
   timestamp: string
   database: {
+    checkedAt: string
     connected: boolean
-    time: string
-    version: string
   }
 }
 
@@ -31,7 +30,11 @@ type RootResponse = {
 }
 
 let shouldThrowDatabaseError = false
-let shouldReturnEmptyResult = false
+let shouldReportDatabaseDisconnected = false
+
+beforeAll(() => {
+  spyOn(console, 'error').mockImplementation(() => {})
+})
 
 mock.module('hono/timing', () => ({
   startTime: () => {},
@@ -41,31 +44,29 @@ mock.module('hono/timing', () => ({
 }))
 
 mock.module('@/database/supabase/drizzle', () => ({
-  db: {
-    execute: () => {
-      if (shouldThrowDatabaseError) {
-        return Promise.reject(new Error('Database connection failed'))
-      }
+  checkDatabaseReadiness: () => {
+    if (shouldThrowDatabaseError) {
+      return Promise.reject(new Error('Database connection failed'))
+    }
 
-      if (shouldReturnEmptyResult) {
-        return Promise.resolve([])
-      }
+    if (shouldReportDatabaseDisconnected) {
+      return Promise.resolve({
+        checkedAt: new Date('2025-10-23T10:00:00Z'),
+        connected: false,
+      })
+    }
 
-      return Promise.resolve([
-        {
-          current_time: new Date('2025-10-23T10:00:00Z'),
-          version: 'PostgreSQL 15.0',
-          connection: 1,
-        },
-      ])
-    },
+    return Promise.resolve({
+      checkedAt: new Date('2025-10-23T10:00:00Z'),
+      connected: true,
+    })
   },
 }))
 
 describe('GET /', () => {
   beforeEach(() => {
     shouldThrowDatabaseError = false
-    shouldReturnEmptyResult = false
+    shouldReportDatabaseDisconnected = false
   })
 
   describe('성공', () => {
@@ -180,7 +181,7 @@ describe('GET /health', () => {
 describe('GET /ready', () => {
   beforeEach(() => {
     shouldThrowDatabaseError = false
-    shouldReturnEmptyResult = false
+    shouldReportDatabaseDisconnected = false
   })
 
   describe('성공', () => {
@@ -193,12 +194,11 @@ describe('GET /ready', () => {
       expect(data.status).toBe('ready')
       expect(data.database).toBeDefined()
       expect(data.database.connected).toBe(true)
-      expect(data.database.time).toBeDefined()
-      expect(data.database.version).toBeDefined()
+      expect(data.database.checkedAt).toBeDefined()
       expect(data.timestamp).toBeDefined()
     })
 
-    test('데이터베이스 정보가 올바르게 반환된다', async () => {
+    test('데이터베이스 상태가 올바르게 반환된다', async () => {
       // When
       const response = await appRoutes.request('/ready')
       const data = (await response.json()) as ReadyOkResponse
@@ -206,8 +206,7 @@ describe('GET /ready', () => {
       // Then
       expect(data.status).toBe('ready')
       expect(data.database.connected).toBe(true)
-      expect(data.database.version).toContain('PostgreSQL')
-      expect(new Date(data.database.time)).toBeInstanceOf(Date)
+      expect(new Date(data.database.checkedAt)).toBeInstanceOf(Date)
     })
 
     test('여러 번 요청하는 경우 일관된 ready 상태를 반환한다', async () => {
@@ -232,8 +231,8 @@ describe('GET /ready', () => {
       expect(data.database).toBeUndefined()
     })
 
-    test('데이터베이스 쿼리 결과가 비어있는 경우 503 응답을 반환한다', async () => {
-      shouldReturnEmptyResult = true
+    test('데이터베이스 연결 상태가 false인 경우 503 응답을 반환한다', async () => {
+      shouldReportDatabaseDisconnected = true
       const response = await appRoutes.request('/ready')
       expect(response.status).toBe(503)
 
