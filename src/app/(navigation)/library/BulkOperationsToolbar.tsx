@@ -1,6 +1,6 @@
 'use client'
 
-import { useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Copy, FolderInput, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -11,11 +11,10 @@ import DialogBody from '@/components/ui/DialogBody'
 import DialogFooter from '@/components/ui/DialogFooter'
 import DialogHeader from '@/components/ui/DialogHeader'
 import { QueryKeys } from '@/constants/query'
-import useServerAction from '@/hook/useServerAction'
 
 import type { BulkOperationPermissions } from './bulkOperationPermissions'
 
-import { bulkCopyToLibrary, bulkMoveToLibrary, bulkRemoveFromLibrary } from './action-library-item'
+import { bulkCopyToLibrary, bulkMoveToLibrary, bulkRemoveFromLibrary } from './api'
 
 type Props = {
   libraries: {
@@ -50,22 +49,21 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId, per
     setShowModal(true)
   }
 
-  const [, dispatchDeletingAction, isDeleting] = useServerAction({
-    action: bulkRemoveFromLibrary,
-    onSuccess: (deletedCount, [{ libraryId }]) => {
-      toast.success(`${deletedCount}개 작품을 제거했어요`)
+  const removeFromLibraryMutation = useMutation({
+    mutationFn: bulkRemoveFromLibrary,
+    onSuccess: ({ removedCount }, { libraryId }) => {
+      toast.success(`${removedCount}개 작품을 제거했어요`)
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraries })
       queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryListBase })
       queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryMangasBase })
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItems(libraryId) })
       exitSelectionMode()
     },
-    shouldSetResponse: false,
   })
 
-  const [, dispatchCopyingAction, isCopying] = useServerAction({
-    action: bulkCopyToLibrary,
-    onSuccess: (copiedCount, [{ toLibraryId, mangaIds }]) => {
+  const copyToLibraryMutation = useMutation({
+    mutationFn: bulkCopyToLibrary,
+    onSuccess: ({ copiedCount }, { toLibraryId, mangaIds }) => {
       const alreadyExistsCount = mangaIds.length - copiedCount
       const extraMessage = alreadyExistsCount > 0 ? ` (실패: ${alreadyExistsCount}개)` : ''
       toast.success(`${copiedCount}개 작품을 복사했어요${extraMessage}`)
@@ -75,12 +73,11 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId, per
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItems(toLibraryId) })
       exitSelectionMode()
     },
-    shouldSetResponse: false,
   })
 
-  const [_, dispatchMovingAction, isMoving] = useServerAction({
-    action: bulkMoveToLibrary,
-    onSuccess: (movedCount, [{ fromLibraryId, toLibraryId, mangaIds }]) => {
+  const moveToLibraryMutation = useMutation({
+    mutationFn: bulkMoveToLibrary,
+    onSuccess: ({ movedCount }, { fromLibraryId, toLibraryId, mangaIds }) => {
       const alreadyExistsCount = mangaIds.length - movedCount
       const extraMessage = alreadyExistsCount > 0 ? ` (실패: ${alreadyExistsCount}개)` : ''
       toast.success(`${movedCount}개 작품을 이동했어요${extraMessage}`)
@@ -91,10 +88,15 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId, per
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItems(toLibraryId) })
       exitSelectionMode()
     },
-    shouldSetResponse: false,
   })
 
-  const disabledReason = getDisabledReason(isDeleting, isMoving, isCopying, selectedCount)
+  const disabledReason = getDisabledReason(
+    removeFromLibraryMutation.isPending,
+    moveToLibraryMutation.isPending,
+    copyToLibraryMutation.isPending,
+    selectedCount,
+  )
+
   const disabled = disabledReason !== ''
 
   function handleDelete() {
@@ -106,7 +108,7 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId, per
       return
     }
 
-    dispatchDeletingAction({
+    removeFromLibraryMutation.mutate({
       libraryId: currentLibraryId,
       mangaIds: Array.from(selectedItems),
     })
@@ -115,14 +117,14 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId, per
   function handleLibrarySelect(targetLibraryId: number) {
     if (operation === 'move') {
       if (currentLibraryId) {
-        dispatchMovingAction({
+        moveToLibraryMutation.mutate({
           fromLibraryId: currentLibraryId,
           toLibraryId: targetLibraryId,
           mangaIds: Array.from(selectedItems),
         })
       }
     } else if (operation === 'copy') {
-      dispatchCopyingAction({
+      copyToLibraryMutation.mutate({
         toLibraryId: targetLibraryId,
         mangaIds: Array.from(selectedItems),
       })
@@ -226,8 +228,8 @@ export default function BulkOperationsToolbar({ libraries, currentLibraryId, per
   )
 }
 
-function getDisabledReason(isDeleting: boolean, isMoving: boolean, isCopying: boolean, selectedCount: number) {
-  if (isDeleting) {
+function getDisabledReason(isRemoving: boolean, isMoving: boolean, isCopying: boolean, selectedCount: number) {
+  if (isRemoving) {
     return '삭제 중'
   }
   if (isMoving) {

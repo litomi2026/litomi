@@ -1,10 +1,11 @@
 'use client'
 
-import { type InfiniteData, useQueryClient } from '@tanstack/react-query'
+import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Check, Loader2 } from 'lucide-react'
-import { useRef } from 'react'
+import { type FormEvent, useRef } from 'react'
 import { toast } from 'sonner'
 
+import type { PATCHV1LibraryIdBody } from '@/backend/api/v1/library/[id]/PATCH'
 import type { GETV1LibraryListResponse, LibraryListItem } from '@/backend/api/v1/library/GET'
 
 import Dialog from '@/components/ui/Dialog'
@@ -14,12 +15,12 @@ import DialogHeader from '@/components/ui/DialogHeader'
 import Toggle from '@/components/ui/Toggle'
 import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
-import useServerAction, { getFieldError, getFormField } from '@/hook/useServerAction'
 import { showAdultVerificationRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
 import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
+import { ProblemDetailsError } from '@/utils/react-query-error'
 
-import { updateLibrary } from './action-library'
+import { updateLibrary } from './api'
 
 const DEFAULT_ICONS = ['📚', '❤️', '⭐', '📖', '🔖', '📌', '💾', '🗂️']
 
@@ -44,19 +45,20 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
   const { data: me } = useMeQuery()
   const canAccess = canAccessAdultRestrictedAPIs(me)
 
-  const [response, dispatchAction, isPending] = useServerAction({
-    action: updateLibrary,
-    onError: ({ error }) => {
-      if (typeof error !== 'string') {
-        toast.error(error.libraryId || error.name || error.description || error.color || error.icon)
+  const updateLibraryMutation = useMutation({
+    mutationFn: ({ body, libraryId }: { libraryId: number; body: PATCHV1LibraryIdBody }) =>
+      updateLibrary(libraryId, body),
+    onError: (error) => {
+      if (error instanceof ProblemDetailsError) {
+        toast.warning(error.message || '입력을 확인해 주세요')
       }
     },
-    onSuccess: (updatedLibraryId, [formData]) => {
-      const nextName = (formData.get('name')?.toString() ?? '').trim()
-      const nextDescription = (formData.get('description')?.toString() ?? '').trim() || null
-      const nextColor = formData.get('color')?.toString() ?? null
-      const nextIcon = formData.get('icon')?.toString() ?? null
-      const nextIsPublic = formData.get('is-public')?.toString() === 'on'
+    onSuccess: ({ id: updatedLibraryId }, { body }) => {
+      const nextName = body.name.trim()
+      const nextDescription = body.description?.trim() || null
+      const nextColor = body.color || null
+      const nextIcon = body.icon || null
+      const nextIsPublic = body.isPublic
 
       queryClient.setQueryData<LibraryListItem[]>(QueryKeys.libraries, (oldLibraries) => {
         return oldLibraries?.map((lib) =>
@@ -109,13 +111,33 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
     },
   })
 
-  const nameError = getFieldError(response, 'name')
-  const descriptionError = getFieldError(response, 'description')
-  const nameValue = getFormField(response, 'name') || library.name
-  const descriptionValue = getFormField(response, 'description') || library.description || ''
-  const colorValue = getFormField(response, 'color') || library.color || '#6366f1'
-  const iconValue = getFormField(response, 'icon') || library.icon || '📚'
-  const isPublic = getFormField(response, 'is-public') === 'on' || library.isPublic
+  const colorValue = library.color || '#6366f1'
+  const iconValue = library.icon || '📚'
+  const isPublic = library.isPublic
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+
+    if (!event.currentTarget.reportValidity()) {
+      return
+    }
+
+    const formData = new FormData(event.currentTarget)
+    const name = formData.get('name')?.toString().trim() ?? ''
+    const description = formData.get('description')?.toString() ?? null
+    const color = formData.get('color')?.toString() ?? null
+    const icon = formData.get('icon')?.toString() ?? null
+
+    const body: PATCHV1LibraryIdBody = {
+      name,
+      description: description?.trim() || null,
+      color: color || null,
+      icon: icon || null,
+      isPublic: formData.get('is-public') === 'on',
+    }
+
+    updateLibraryMutation.mutate({ body, libraryId: library.id })
+  }
 
   function handleIconClick(emoji: string) {
     if (!formRef.current) {
@@ -144,63 +166,47 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
 
   return (
     <Dialog ariaLabel="서재 수정" onClose={() => onOpenChange(false)} open={open}>
-      <form action={dispatchAction} className="flex flex-1 flex-col min-h-0" ref={formRef}>
-        <input name="library-id" type="hidden" value={library.id} />
+      <form className="flex flex-1 flex-col min-h-0" onSubmit={handleSubmit} ref={formRef}>
         <DialogHeader onClose={() => onOpenChange(false)} title="서재 수정" />
         <DialogBody className="grid gap-4">
-          {/* Name Input */}
           <div>
             <label className="block text-sm text-zinc-400 mb-1.5" htmlFor="library-name">
               이름
             </label>
             <input
-              aria-invalid={Boolean(nameError)}
-              className="w-full px-3 py-2 bg-zinc-800 border rounded-lg 
-              focus:outline-none focus:ring-2 focus:border-transparent
-              aria-invalid:border-red-500 aria-invalid:focus:ring-red-500
-              border-zinc-700 focus:ring-zinc-600"
-              defaultValue={nameValue}
-              disabled={isPending}
+              className="w-full px-3 py-2 bg-zinc-800 border rounded-lg border-zinc-700 focus:outline-none focus:ring-2 focus:border-transparent focus:ring-zinc-600"
+              defaultValue={library.name}
+              disabled={updateLibraryMutation.isPending}
               id="library-name"
               maxLength={MAX_LIBRARY_NAME_LENGTH}
+              minLength={1}
               name="name"
+              pattern=".*\S.*"
               placeholder="서재 이름"
               required
+              title="서재 이름을 입력해 주세요"
               type="text"
             />
-            <p aria-invalid={Boolean(nameError)} className="text-xs mt-1 text-zinc-500 aria-invalid:text-red-400">
-              {nameError || `서재 이름을 입력해주세요 (최대 ${MAX_LIBRARY_NAME_LENGTH}자)`}
-            </p>
+            <p className="text-xs mt-1 text-zinc-500">{`서재 이름을 입력해주세요 (최대 ${MAX_LIBRARY_NAME_LENGTH}자)`}</p>
           </div>
 
-          {/* Description Input */}
           <div>
             <label className="block text-sm text-zinc-400 mb-1.5" htmlFor="library-description">
               설명 (선택)
             </label>
             <textarea
-              aria-invalid={Boolean(descriptionError)}
-              className="w-full px-3 py-2 bg-zinc-800 border rounded-lg 
-              focus:outline-none focus:ring-2 focus:border-transparent
-              resize-none aria-invalid:border-red-500 aria-invalid:focus:ring-red-500
-              border-zinc-700 focus:ring-zinc-600"
-              defaultValue={descriptionValue}
-              disabled={isPending}
+              className="w-full px-3 py-2 bg-zinc-800 border rounded-lg border-zinc-700 focus:outline-none focus:ring-2 focus:border-transparent focus:ring-zinc-600 resize-none"
+              defaultValue={library.description || ''}
+              disabled={updateLibraryMutation.isPending}
               id="library-description"
-              maxLength={MAX_LIBRARY_DESCRIPTION_LENGTH + 1}
+              maxLength={MAX_LIBRARY_DESCRIPTION_LENGTH}
               name="description"
               placeholder="서재 설명"
               rows={3}
             />
-            <p
-              aria-invalid={Boolean(descriptionError)}
-              className="text-xs mt-1 text-zinc-500 aria-invalid:text-red-400"
-            >
-              {descriptionError || `서재에 대한 설명을 추가할 수 있어요 (최대 ${MAX_LIBRARY_DESCRIPTION_LENGTH}자)`}
-            </p>
+            <p className="text-xs mt-1 text-zinc-500">{`서재에 대한 설명을 추가할 수 있어요 (최대 ${MAX_LIBRARY_DESCRIPTION_LENGTH}자)`}</p>
           </div>
 
-          {/* Color Picker */}
           <div>
             <label className="block text-sm text-zinc-400 mb-1.5" htmlFor="library-color">
               색상
@@ -208,14 +214,13 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
             <input
               className="h-10 w-20 p-1 bg-zinc-800 border border-zinc-700 rounded cursor-pointer"
               defaultValue={colorValue}
-              disabled={isPending}
+              disabled={updateLibraryMutation.isPending}
               id="library-color"
               name="color"
               type="color"
             />
           </div>
 
-          {/* Icon Picker */}
           <div>
             <label className="block text-sm text-zinc-400 mb-1.5">아이콘</label>
             <input defaultValue={iconValue} name="icon" type="hidden" />
@@ -225,7 +230,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
                   aria-pressed={emoji === iconValue}
                   className="p-1 rounded-lg flex items-center justify-center text-lg transition aria-pressed:bg-zinc-700 aria-pressed:ring-2 aria-pressed:ring-zinc-500 bg-zinc-800 hover:bg-zinc-700"
                   data-icon={emoji}
-                  disabled={isPending}
+                  disabled={updateLibraryMutation.isPending}
                   key={emoji}
                   name="icon-button"
                   onClick={() => handleIconClick(emoji)}
@@ -237,7 +242,6 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
             </div>
           </div>
 
-          {/* Visibility Toggle */}
           <div className="flex items-center justify-between mt-2">
             <div>
               <div className="text-sm text-zinc-100">공개 설정</div>
@@ -247,7 +251,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
               aria-label="서재 공개 설정"
               className="w-12 peer-checked:bg-brand/80"
               defaultChecked={isPublic}
-              disabled={isPending}
+              disabled={updateLibraryMutation.isPending}
               name="is-public"
               onToggle={handleTogglePublic}
             />
@@ -257,7 +261,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
           <button
             className="flex-1 h-10 px-4 rounded-lg bg-zinc-800 text-zinc-300 font-medium 
               hover:bg-zinc-700 transition disabled:opacity-50"
-            disabled={isPending}
+            disabled={updateLibraryMutation.isPending}
             onClick={() => onOpenChange(false)}
             type="button"
           >
@@ -266,10 +270,10 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
           <button
             className="flex-1 h-10 px-4 rounded-lg bg-brand text-background font-semibold
               hover:bg-brand/90 transition disabled:opacity-50 flex items-center justify-center gap-2"
-            disabled={isPending}
+            disabled={updateLibraryMutation.isPending}
             type="submit"
           >
-            {isPending ? <Loader2 className="size-4 animate-spin" /> : <Check className="size-4" />}
+            {updateLibraryMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : <Check className="size-4" />}
             <span>수정하기</span>
           </button>
         </DialogFooter>
