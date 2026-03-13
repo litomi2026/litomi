@@ -139,7 +139,7 @@ export default function CloudProviderStatus({ onStatusUpdate }: CloudProviderSta
         <span className="underline decoration-dotted underline-offset-4">시스템 상태 {hasIssues && '확인'}</span>
       </summary>
       <div className="mt-3 p-3 rounded-lg bg-zinc-900 border border-zinc-800 text-xs space-y-2">
-        <ServiceStatusRow name="외부 데이터베이스 (Supabase)" status={status.supabase} />
+        <ServiceStatusRow name="외부 데이터베이스" status={status.supabase} />
         <ServiceStatusRow name="외부 서버 (Vercel)" status={status.vercel} />
         <ServiceStatusRow name="리토미 API 서버" status={status.api} />
         <ServiceStatusRow name="리토미 웹 서버" status={status.litomi} />
