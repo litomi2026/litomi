@@ -1,12 +1,24 @@
 'use client'
 
+import { useIsMutating, useMutation, useQueryClient } from '@tanstack/react-query'
 import { ChartNoAxesColumn, Heart, MessageCircle, Repeat, Share2 } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { toggleLikingPost } from '@/app/(navigation)/(right-search)/posts/action'
-import useServerAction from '@/hook/useServerAction'
+import type { POSTV1PostIdLikeResponse } from '@/backend/api/v1/post/[id]/like/POST'
+
+import { QueryKeys } from '@/constants/query'
 import { showLoginRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
+import { ProblemDetailsError } from '@/utils/react-query-error'
+
+import { togglePostLike } from './api'
+import {
+  type PostLikeSnapshot,
+  restorePostLikeInPostLists,
+  setPostLikeInPostLists,
+  snapshotPostLikeInPostLists,
+  togglePostLikeInPostLists,
+} from './cache'
 
 type Props = {
   postId: number
@@ -26,10 +38,34 @@ export default function PostActionButtons({
   isLiked = false,
 }: Props) {
   const { data: me } = useMeQuery()
+  const queryClient = useQueryClient()
+  const likeMutationKey = ['post', postId, 'like'] as const
+  const isLikePending = useIsMutating({ mutationKey: likeMutationKey }) > 0
 
-  const [_, dispatchAction, isPending] = useServerAction({
-    action: toggleLikingPost,
-    onSuccess: ({ liked }) => {
+  const { mutate } = useMutation<
+    POSTV1PostIdLikeResponse,
+    ProblemDetailsError,
+    number,
+    { snapshot: PostLikeSnapshot }
+  >({
+    mutationKey: likeMutationKey,
+    mutationFn: togglePostLike,
+    onMutate: async (mutatingPostId) => {
+      await queryClient.cancelQueries({ queryKey: QueryKeys.postsBase })
+      const snapshot = snapshotPostLikeInPostLists(queryClient, mutatingPostId)
+
+      togglePostLikeInPostLists(queryClient, mutatingPostId)
+
+      return { snapshot }
+    },
+    onError: (_error, mutatingPostId, context) => {
+      if (context?.snapshot) {
+        restorePostLikeInPostLists(queryClient, mutatingPostId, context.snapshot)
+      }
+    },
+    onSuccess: ({ liked }, mutatingPostId) => {
+      setPostLikeInPostLists(queryClient, mutatingPostId, liked)
+
       if (liked) {
         toast.success('좋아요 했어요')
       } else {
@@ -44,7 +80,7 @@ export default function PostActionButtons({
       return
     }
 
-    dispatchAction(postId)
+    mutate(postId)
   }
 
   return (
@@ -60,7 +96,7 @@ export default function PostActionButtons({
         </div>
         <button
           className="flex items-center group w-fit transition hover:text-red-500 disabled:opacity-50"
-          disabled={isPending}
+          disabled={isLikePending}
           onClick={handleLike}
         >
           <Heart

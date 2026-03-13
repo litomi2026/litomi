@@ -30,6 +30,7 @@ export type Post = {
   id: number
   createdAt: Date
   content: string | null
+  isLiked?: boolean
   author: {
     id: number
     name: string
