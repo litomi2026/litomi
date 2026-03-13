@@ -5,6 +5,7 @@ import { z } from 'zod'
 
 import { Env } from '@/backend'
 import { requireAuth } from '@/backend/middleware/require-auth'
+import { adultVerificationRequiredResponse, shouldBlockAdultGate } from '@/backend/utils/adult-gate'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/constants/policy'
@@ -44,6 +45,10 @@ route.patch('/', requireAuth, zProblemValidator('param', paramsSchema), zProblem
   const userId = c.get('userId')!
   const { id: libraryId } = c.req.valid('param')
   const { name, description, color, icon, isPublic } = c.req.valid('json')
+
+  if (isPublic === false && shouldBlockAdultGate(c)) {
+    return adultVerificationRequiredResponse(c)
+  }
 
   try {
     const [updatedLibrary] = await db
