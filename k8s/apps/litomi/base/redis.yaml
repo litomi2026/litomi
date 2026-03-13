@@ -18,11 +18,11 @@ spec:
           command: ['redis-server', '/etc/redis/redis.conf']
           resources:
             requests:
-              cpu: 50m
-              memory: 512Mi
+              cpu: 25m
+              memory: 64Mi
             limits:
-              cpu: 200m
-              memory: 1Gi
+              cpu: 100m
+              memory: 256Mi
           readinessProbe:
             exec:
               command: ['redis-cli', 'ping']
