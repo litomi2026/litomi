@@ -3,6 +3,11 @@ kind: Deployment
 metadata:
   name: litomi-backend
 spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
   selector:
     matchLabels:
       app: litomi-backend
@@ -43,11 +48,11 @@ spec:
             failureThreshold: 6
           resources:
             requests:
-              cpu: 500m
-              memory: 1Gi
+              cpu: 100m
+              memory: 768Mi
             limits:
-              cpu: 1
-              memory: 2Gi
+              cpu: 200m
+              memory: 1.5Gi
           securityContext:
             allowPrivilegeEscalation: false
             runAsNonRoot: true
