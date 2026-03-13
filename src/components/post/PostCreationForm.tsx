@@ -1,20 +1,22 @@
 'use client'
 
-import { useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
 import { useState } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
 import { toast } from 'sonner'
+import { twMerge } from 'tailwind-merge'
 
-import { createPost } from '@/app/(navigation)/(right-search)/posts/action'
-import { PostFilter } from '@/backend/api/v1/post/constant'
+import type { POSTV1PostBody, POSTV1PostResponse } from '@/backend/api/v1/post/POST'
+
 import { MAX_POST_CONTENT_LENGTH } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
-import useServerAction, { getFormField } from '@/hook/useServerAction'
 import { showLoginRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
+import { ProblemDetailsError } from '@/utils/react-query-error'
 
 import Squircle from '../ui/Squircle'
+import { createPost } from './api'
 import PostGeolocationButton from './button/PostGeolocationButton'
 
 type Props = {
@@ -22,7 +24,6 @@ type Props = {
   className?: string
   placeholder?: string
   isReply?: boolean
-  filter: PostFilter
   mangaId?: number
   parentPostId?: number
   referredPostId?: number
@@ -35,7 +36,6 @@ export default function PostCreationForm({
   buttonText = '게시하기',
   mangaId,
   parentPostId,
-  filter,
   referredPostId,
 }: Readonly<Props>) {
   const [content, setContent] = useState('')
@@ -43,40 +43,29 @@ export default function PostCreationForm({
   const { data: me } = useMeQuery()
   const queryClient = useQueryClient()
 
-  const [response, dispatchAction, isPending] = useServerAction({
-    action: createPost,
-    onError: ({ error }) => {
-      if (typeof error !== 'string') {
-        toast.error(error.content || error.mangaId || error.parentPostId || error.referredPostId)
-      }
-    },
+  const { mutate, isPending } = useMutation<POSTV1PostResponse, ProblemDetailsError, POSTV1PostBody>({
+    mutationFn: createPost,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QueryKeys.posts(filter, mangaId) })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.postsBase })
       toast.success('글을 작성했어요')
       setContent('')
     },
   })
 
-  const defaultContent = getFormField(response, 'content')
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     if (!me) {
-      e.preventDefault()
       showLoginRequiredToast()
       return
     }
 
-    if (content.length < 2) {
-      e.preventDefault()
-      toast.warning('내용을 2자 이상 입력해 주세요')
-      return
-    }
-
-    if (content.length > MAX_POST_CONTENT_LENGTH) {
-      e.preventDefault()
-      toast.warning(`내용은 ${MAX_POST_CONTENT_LENGTH}자 이하로 입력해 주세요`)
-      return
-    }
+    mutate({
+      content,
+      mangaId: mangaId ?? null,
+      parentPostId: parentPostId ?? null,
+      referredPostId: referredPostId ?? null,
+    })
   }
 
   function handleClick() {
@@ -97,10 +86,7 @@ export default function PostCreationForm({
   }
 
   return (
-    <form action={dispatchAction} className={`gap-3 ${className}`} onClick={handleClick} onSubmit={handleSubmit}>
-      {mangaId && <input name="manga-id" type="hidden" value={mangaId} />}
-      {parentPostId && <input name="parent-post-id" type="hidden" value={parentPostId} />}
-      {referredPostId && <input name="referred-post-id" type="hidden" value={referredPostId} />}
+    <form className={twMerge('gap-3', className)} onClick={handleClick} onSubmit={handleSubmit}>
       <Squircle className="w-10 shrink-0" src={me?.imageURL} textClassName="text-foreground">
         {me?.nickname.slice(0, 2)}
       </Squircle>
@@ -112,10 +98,9 @@ export default function PostCreationForm({
           </button>
         )}
         <TextareaAutosize
-          aria-disabled={!me}
-          className="h-7 max-h-screen w-full max-w-prose resize-none text-xl focus:outline-none aria-disabled:pointer-events-none"
-          defaultValue={defaultContent}
-          maxLength={160}
+          className="h-7 max-h-screen w-full max-w-prose resize-none text-xl focus:outline-none disabled:pointer-events-none"
+          disabled={!me || isPending}
+          maxLength={MAX_POST_CONTENT_LENGTH}
           maxRows={25}
           minLength={2}
           name="content"
@@ -124,6 +109,7 @@ export default function PostCreationForm({
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           required
+          value={content}
         />
         {hasFocusedBefore && (
           <div className="flex justify-between gap-2">
@@ -136,7 +122,7 @@ export default function PostCreationForm({
                 aria-busy={isPending}
                 className="whitespace-nowrap relative bg-brand text-background rounded-full px-4 py-2 font-semibold 
                 disabled:text-zinc-500 disabled:bg-zinc-800 aria-busy:text-background/0"
-                disabled={!me || isPending || content.length < 2 || content.length > 160}
+                disabled={!me || isPending}
                 type="submit"
               >
                 {buttonText}
