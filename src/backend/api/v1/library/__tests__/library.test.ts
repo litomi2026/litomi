@@ -47,6 +47,7 @@ describe('POST /api/v1/library', () => {
 
       expect(response.status).toBe(400)
     })
+
   })
 })
 
@@ -101,6 +102,240 @@ describe('GET /api/v1/library/:id', () => {
     const response = await createRequest('invalid')
 
     expect(response.status).toBe(400)
+  })
+})
+
+describe('PATCH /api/v1/library/:id', () => {
+  test('userId가 없으면 401 에러를 반환한다', async () => {
+    const response = await app.request('/1', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({}),
+    })
+
+    expect(response.status).toBe(401)
+  })
+
+  describe('파라미터/요청 검증', () => {
+    const authedApp = new Hono<Env>()
+    authedApp.use('*', contextStorage())
+    authedApp.use('*', async (c, next) => {
+      c.set('userId', 1)
+      return await next()
+    })
+    authedApp.route('/', libraryRoutes)
+
+    test('유효하지 않은 id를 사용하면 400 에러를 반환한다', async () => {
+      const response = await authedApp.request('/invalid', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: '테스트',
+          description: null,
+          color: '#ffffff',
+          icon: '📚',
+          isPublic: true,
+        }),
+      })
+
+      expect(response.status).toBe(400)
+    })
+
+    test('유효하지 않은 body를 사용하면 400 에러를 반환한다', async () => {
+      const response = await authedApp.request('/1', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      })
+
+      expect(response.status).toBe(400)
+    })
+  })
+})
+
+describe('DELETE /api/v1/library/:id', () => {
+  test('userId가 없으면 401 에러를 반환한다', async () => {
+    const response = await app.request('/1', { method: 'DELETE' })
+    expect(response.status).toBe(401)
+  })
+
+  describe('파라미터 검증', () => {
+    const authedApp = new Hono<Env>()
+    authedApp.use('*', contextStorage())
+    authedApp.use('*', async (c, next) => {
+      c.set('userId', 1)
+      return await next()
+    })
+    authedApp.route('/', libraryRoutes)
+
+    test('유효하지 않은 id를 사용하면 400 에러를 반환한다', async () => {
+      const response = await authedApp.request('/invalid', { method: 'DELETE' })
+      expect(response.status).toBe(400)
+    })
+  })
+})
+
+describe('POST /api/v1/library/item', () => {
+  test('userId가 없으면 401 에러를 반환한다', async () => {
+    const response = await app.request('/item', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({}),
+    })
+    expect(response.status).toBe(401)
+  })
+
+  describe('요청 검증', () => {
+    const authedApp = new Hono<Env>()
+    authedApp.use('*', contextStorage())
+    authedApp.use('*', async (c, next) => {
+      c.set('userId', 1)
+      return await next()
+    })
+    authedApp.route('/', libraryRoutes)
+
+    test('유효하지 않은 body를 사용하면 400 에러를 반환한다', async () => {
+      const response = await authedApp.request('/item', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      })
+
+      expect(response.status).toBe(400)
+    })
+
+    test('숫자가 아닌 JSON id를 사용하면 400 에러를 반환한다', async () => {
+      const response = await authedApp.request('/item', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mangaId: '1', libraryIds: [1] }),
+      })
+
+      expect(response.status).toBe(400)
+    })
+  })
+})
+
+describe('POST /api/v1/library/item/copy', () => {
+  test('userId가 없으면 401 에러를 반환한다', async () => {
+    const response = await app.request('/item/copy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({}),
+    })
+    expect(response.status).toBe(401)
+  })
+
+  describe('요청 검증', () => {
+    const authedApp = new Hono<Env>()
+    authedApp.use('*', contextStorage())
+    authedApp.use('*', async (c, next) => {
+      c.set('userId', 1)
+      return await next()
+    })
+    authedApp.route('/', libraryRoutes)
+
+    test('유효하지 않은 body를 사용하면 400 에러를 반환한다', async () => {
+      const response = await authedApp.request('/item/copy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      })
+
+      expect(response.status).toBe(400)
+    })
+
+    test('숫자가 아닌 JSON id를 사용하면 400 에러를 반환한다', async () => {
+      const response = await authedApp.request('/item/copy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ toLibraryId: '1', mangaIds: [1] }),
+      })
+
+      expect(response.status).toBe(400)
+    })
+  })
+})
+
+describe('POST /api/v1/library/item/move', () => {
+  test('userId가 없으면 401 에러를 반환한다', async () => {
+    const response = await app.request('/item/move', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({}),
+    })
+    expect(response.status).toBe(401)
+  })
+
+  describe('요청 검증', () => {
+    const authedApp = new Hono<Env>()
+    authedApp.use('*', contextStorage())
+    authedApp.use('*', async (c, next) => {
+      c.set('userId', 1)
+      return await next()
+    })
+    authedApp.route('/', libraryRoutes)
+
+    test('유효하지 않은 body를 사용하면 400 에러를 반환한다', async () => {
+      const response = await authedApp.request('/item/move', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      })
+
+      expect(response.status).toBe(400)
+    })
+
+    test('숫자가 아닌 JSON id를 사용하면 400 에러를 반환한다', async () => {
+      const response = await authedApp.request('/item/move', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fromLibraryId: '1', toLibraryId: 2, mangaIds: [1] }),
+      })
+
+      expect(response.status).toBe(400)
+    })
+  })
+})
+
+describe('DELETE /api/v1/library/item', () => {
+  test('userId가 없으면 401 에러를 반환한다', async () => {
+    const response = await app.request('/item', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({}),
+    })
+    expect(response.status).toBe(401)
+  })
+
+  describe('요청 검증', () => {
+    const authedApp = new Hono<Env>()
+    authedApp.use('*', contextStorage())
+    authedApp.use('*', async (c, next) => {
+      c.set('userId', 1)
+      return await next()
+    })
+    authedApp.route('/', libraryRoutes)
+
+    test('유효하지 않은 body를 사용하면 400 에러를 반환한다', async () => {
+      const response = await authedApp.request('/item', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      })
+
+      expect(response.status).toBe(400)
+    })
+
+    test('숫자가 아닌 JSON id를 사용하면 400 에러를 반환한다', async () => {
+      const response = await authedApp.request('/item', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ libraryId: '1', mangaIds: [1] }),
+      })
+
+      expect(response.status).toBe(400)
+    })
   })
 })
 

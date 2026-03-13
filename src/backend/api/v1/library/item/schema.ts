@@ -2,8 +2,8 @@ import { z } from 'zod'
 
 import { MAX_MANGA_ID } from '@/constants/policy'
 
-const positiveIntegerSchema = z.coerce.number().int().positive()
-const mangaIdSchema = z.coerce.number().int().positive().max(MAX_MANGA_ID)
+const positiveIntegerSchema = z.number().int().positive()
+const mangaIdSchema = positiveIntegerSchema.max(MAX_MANGA_ID)
 
 const mangaIdsArraySchema = z
   .array(mangaIdSchema)
