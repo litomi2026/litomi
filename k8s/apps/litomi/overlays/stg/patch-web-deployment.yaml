@@ -1,0 +1,14 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: litomi-web
+spec:
+  template:
+    spec:
+      containers:
+        - name: web
+          env:
+            - name: POSTGRES_APPLICATION_NAME
+              value: litomi-web-stg
+            - name: POSTGRES_POOL_MAX
+              value: '1'
