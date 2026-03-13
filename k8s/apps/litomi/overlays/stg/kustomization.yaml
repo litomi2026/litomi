@@ -31,6 +31,7 @@ configMapGenerator:
       - OTEL_TRACES_SAMPLER_ARG=0.3
       - OTEL_PROPAGATORS=tracecontext,baggage
       - OTEL_RESOURCE_ATTRIBUTES=service.namespace=litomi,deployment.environment=stg,k8s.cluster.name=litomi-k3s
+      - POSTGRES_HEALTHCHECK_CACHE_MS=15000
 
   - name: litomi-backend-env
     literals:
