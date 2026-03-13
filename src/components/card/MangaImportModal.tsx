@@ -1,13 +1,13 @@
 'use client'
 
-import { useQueryClient } from '@tanstack/react-query'
-import { Loader2, UploadCloud, X } from 'lucide-react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { Loader2, UploadCloud } from 'lucide-react'
 import ms from 'ms'
 import { FormEvent, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { create } from 'zustand'
 
-import { bulkCopyToLibrary } from '@/app/(navigation)/library/action-library-item'
+import { bulkCopyToLibrary } from '@/app/(navigation)/library/api'
 import Dialog from '@/components/ui/Dialog'
 import DialogBody from '@/components/ui/DialogBody'
 import DialogFooter from '@/components/ui/DialogFooter'
@@ -15,7 +15,6 @@ import DialogHeader from '@/components/ui/DialogHeader'
 import { MAX_ITEMS_PER_LIBRARY } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import useDebouncedValue from '@/hook/useDebouncedValue'
-import useServerAction from '@/hook/useServerAction'
 
 type ImportMangaModalStore = {
   libraryId: number | null
@@ -40,9 +39,9 @@ export default function MangaImportModal() {
   const { libraryId, setLibraryId } = useImportMangaModalStore()
   const queryClient = useQueryClient()
 
-  const [, dispatchBulkImport, isImporting] = useServerAction({
-    action: bulkCopyToLibrary,
-    onSuccess: (successCount, [{ mangaIds, toLibraryId }]) => {
+  const bulkImportMutation = useMutation({
+    mutationFn: bulkCopyToLibrary,
+    onSuccess: ({ copiedCount: successCount }, { mangaIds, toLibraryId }) => {
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItems(toLibraryId) })
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraries })
 
@@ -55,7 +54,6 @@ export default function MangaImportModal() {
         toast.error(`작품을 가져오는데 실패했어요`)
       }
     },
-    shouldSetResponse: false,
   })
 
   function handleClose() {
@@ -81,7 +79,7 @@ export default function MangaImportModal() {
       return
     }
 
-    dispatchBulkImport({ mangaIds, toLibraryId: libraryId })
+    bulkImportMutation.mutate({ mangaIds, toLibraryId: libraryId })
   }
 
   return (
@@ -99,11 +97,11 @@ export default function MangaImportModal() {
           <textarea
             className="w-full min-h-32 max-h-96 px-3 py-2 bg-zinc-800 border-2 border-zinc-700 rounded-lg transition font-mono
               text-zinc-100 placeholder-zinc-500 focus:border-brand focus:outline-none"
-            disabled={isImporting}
+            disabled={bulkImportMutation.isPending}
             onChange={(e) => setInputText(e.target.value)}
             onKeyDown={(e) => {
               if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                if (!isImporting) {
+                if (!bulkImportMutation.isPending) {
                   handleImport()
                 }
               }
@@ -118,10 +116,10 @@ export default function MangaImportModal() {
             className="flex items-center justify-center gap-2 w-full px-4 py-3 text-background font-medium 
               bg-brand rounded-lg transition hover:bg-brand/90
               disabled:bg-zinc-700 disabled:text-zinc-500 disabled:cursor-not-allowed"
-            disabled={isImporting || mangaIds.length === 0 || !libraryId}
+            disabled={bulkImportMutation.isPending || mangaIds.length === 0 || !libraryId}
             type="submit"
           >
-            {isImporting ? (
+            {bulkImportMutation.isPending ? (
               <>
                 <Loader2 className="size-5 animate-spin" />
                 <span>가져오는 중</span>
