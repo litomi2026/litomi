@@ -3,6 +3,7 @@ import { PostFilter } from '@/backend/api/v1/post/constant'
 
 export const QueryKeys = {
   me: ['me'],
+  ratingsBase: ['me', 'ratings'],
   bookmarks: ['me', 'bookmarks'],
   infiniteBookmarks: ['me', 'bookmarks', 'infinite'],
   infiniteReadingHistory: ['me', 'readingHistory', 'infinite'],
@@ -17,6 +18,7 @@ export const QueryKeys = {
   libraries: ['me', 'libraries'],
   infiniteLibraryListBase: ['library', 'list', 'infinite'],
   infiniteLibraryMangasBase: ['library', 'manga', 'infinite'],
+  librarySummaryBase: ['library', 'summary'],
   infiniteLibraryList: (userId: number | null) => [...QueryKeys.infiniteLibraryListBase, userId ?? 'guest'],
   infinitePinnedLibraryList: (userId?: number | null) => ['library', 'list', 'infinite', 'pinned', userId ?? 'guest'],
   infiniteLibraryMangas: (userId: number | null) => [...QueryKeys.infiniteLibraryMangasBase, userId ?? 'guest'],
@@ -37,6 +39,7 @@ export const QueryKeys = {
   search: (searchParams: URLSearchParams, locale: string) => ['search', locale, Object.fromEntries(searchParams)],
   searchSuggestions: (query: string, locale: string) => ['search', 'suggestions', locale, query],
   censorshipSuggestions: (query: string, locale: string) => ['censorship', 'suggestions', locale, query],
+  postsBase: ['posts'],
   posts: (filter: PostFilter, mangaId?: number, username?: string) => ['posts', filter, { mangaId, username }],
   realtimeAnalytics: ['realtime-analytics'],
   trendingKeywords: (locale: string) => ['trending-keywords', locale],

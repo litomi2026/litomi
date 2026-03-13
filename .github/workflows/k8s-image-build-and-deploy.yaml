@@ -6,9 +6,6 @@ on:
     # Skip k8s-only changes to avoid rebuilding images for manifest-only commits.
     paths-ignore:
       - 'k8s/**'
-  pull_request:
-    branches: [main]
-    types: [opened, synchronize, reopened]
   workflow_dispatch:
 
 permissions:
@@ -171,3 +168,60 @@ jobs:
           labels: ${{ steps.meta_backend.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  update-stg-image-tags:
+    if: ${{ github.ref_name == 'stage' && github.event_name != 'pull_request' }}
+    needs:
+      - build-push-web
+      - build-push-backend
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    env:
+      IMAGE_TAG: ${{ github.sha }}
+      OVERLAY_FILE: k8s/apps/litomi/overlays/stg/kustomization.yaml
+    steps:
+      - name: Checkout stage branch
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: stage
+
+      - name: Update stg image tags
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python3 - <<'PY'
+          import os
+          import re
+          from pathlib import Path
+
+          path = Path(os.environ["OVERLAY_FILE"])
+          tag = os.environ["IMAGE_TAG"]
+          text = path.read_text()
+
+          for name in ("litomi-web", "litomi-backend"):
+              pattern = rf"(- name: {re.escape(name)}\n\s+newName: [^\n]+\n\s+newTag: )\S+"
+              text, count = re.subn(pattern, rf"\1{tag}", text, count=1)
+              if count != 1:
+                  raise SystemExit(f"Failed to update newTag for {name} in {path}")
+
+          path.write_text(text)
+          PY
+
+      - name: Commit updated stg image tags
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if git diff --quiet -- "$OVERLAY_FILE"; then
+            echo "stg image tags are already up to date"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$OVERLAY_FILE"
+          git commit -m "chore(k8s): bump stg images to ${IMAGE_TAG}"
+          git push origin HEAD:stage
