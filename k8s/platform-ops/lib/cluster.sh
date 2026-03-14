@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 # shellcheck shell=bash
 
+K3S_TARGET_NETWORK_MODE="dual-stack"
+K3S_TARGET_CLUSTER_CIDR="10.42.0.0/16,fd42:42::/56"
+K3S_TARGET_SERVICE_CIDR="10.43.0.0/16,fd42:43::/112"
+K3S_TARGET_FLANNEL_IPV6_MASQ="true"
+
 ensure_host_dependencies() {
   local required=(curl openssl python3 awk sed base64 find sort iptables-save ip6tables-save)
   local cmd
@@ -30,6 +35,60 @@ ensure_host_dependencies() {
     assert_command_exists "$cmd"
   done
   ok "host dependencies installed"
+}
+
+validate_target_k3s_network_config() {
+  if [[ -n "$K3S_KUBELET_NODE_IP" && "$K3S_KUBELET_NODE_IP" =~ [[:space:]] ]]; then
+    die "K3S_KUBELET_NODE_IP must not contain whitespace"
+  fi
+}
+
+detect_existing_cluster_network_mode() {
+  local pod_cidrs
+
+  # Fresh bootstrap starts without a cluster, but reruns should stay idempotent.
+  # Reuse an existing cluster only when it already matches this script's fixed
+  # dual-stack baseline.
+  pod_cidrs="$(k get nodes -o jsonpath='{range .items[*]}{.spec.podCIDRs}{"\n"}{end}' 2>/dev/null || true)"
+  if [[ -z "$pod_cidrs" ]]; then
+    printf 'unknown'
+    return
+  fi
+
+  if grep -q ':' <<< "$pod_cidrs"; then
+    if grep -q '\.' <<< "$pod_cidrs"; then
+      printf 'dual-stack'
+    else
+      printf 'ipv6'
+    fi
+    return
+  fi
+
+  printf 'ipv4'
+}
+
+ensure_existing_cluster_matches_target_network_mode() {
+  local existing_mode
+
+  existing_mode="$(detect_existing_cluster_network_mode)"
+  if [[ "$existing_mode" != "$K3S_TARGET_NETWORK_MODE" ]]; then
+    die "existing cluster network mode is ${existing_mode}, but this bootstrap now assumes ${K3S_TARGET_NETWORK_MODE}; create a new cluster instead of attempting an in-place network-family conversion"
+  fi
+
+  ok "existing cluster network mode matches target mode (${K3S_TARGET_NETWORK_MODE})"
+}
+
+build_k3s_install_exec() {
+  local install_exec="server --cluster-init --secrets-encryption"
+
+  install_exec+=" --cluster-cidr=${K3S_TARGET_CLUSTER_CIDR}"
+  install_exec+=" --service-cidr=${K3S_TARGET_SERVICE_CIDR}"
+  install_exec+=" --flannel-ipv6-masq"
+  if [[ -n "$K3S_KUBELET_NODE_IP" ]]; then
+    install_exec+=" --kubelet-arg=node-ip=${K3S_KUBELET_NODE_IP}"
+  fi
+
+  printf '%s' "$install_exec"
 }
 
 namespace_exists() {
@@ -100,10 +159,24 @@ k8s_api_ready() {
 }
 
 ensure_k3s_if_needed() {
+  local install_exec
+
+  validate_target_k3s_network_config
+  log "k3s network mode: ${K3S_TARGET_NETWORK_MODE}"
+  log "k3s cluster CIDR: ${K3S_TARGET_CLUSTER_CIDR}"
+  log "k3s service CIDR: ${K3S_TARGET_SERVICE_CIDR}"
+  log "k3s flannel IPv6 masquerade: ${K3S_TARGET_FLANNEL_IPV6_MASQ}"
+  if [[ -n "$K3S_KUBELET_NODE_IP" ]]; then
+    log "k3s kubelet node-ip: ${K3S_KUBELET_NODE_IP}"
+  fi
+
   if k get nodes >/dev/null 2>&1; then
+    ensure_existing_cluster_matches_target_network_mode
     ok "kubernetes api already reachable"
   else
-    run_root_quiet bash -c 'curl -sfL https://get.k3s.io | sh -s - server --cluster-init --secrets-encryption'
+    install_exec="$(build_k3s_install_exec)"
+    log "installing k3s with: ${install_exec}"
+    run_root_quiet env INSTALL_K3S_EXEC="$install_exec" sh -c 'curl -sfL https://get.k3s.io | sh -'
     ok "k3s install command completed"
   fi
 
