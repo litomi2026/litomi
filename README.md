@@ -159,15 +159,6 @@ bun dev
   - [`cloud-run/manga-crawl/README.md`](cloud-run/manga-crawl/README.md)
   - [`cloud-run/crawl-and-notify/README.md`](cloud-run/crawl-and-notify/README.md)
 
-### 프로덕션 DB 연결 원칙
-
-- 오래 떠 있는 k8s `web`/`backend` Pod는 Supabase `direct connection`을 우선 사용해요.
-- 클러스터에서 IPv6 egress가 어려우면 Supabase `session mode`를 런타임 대안으로 사용해요.
-- `transaction mode`는 Cloud Run 같은 단명 작업에만 사용하고, 장수명 Pod에는 사용하지 않아요.
-- 앱 풀은 서비스별로 명시적으로 제한해요. 기본값은 `POSTGRES_POOL_MAX=3`, `POSTGRES_IDLE_TIMEOUT_SECONDS=20`, `POSTGRES_CONNECT_TIMEOUT_SECONDS=10`, `POSTGRES_MAX_LIFETIME_SECONDS=1800`이에요.
-- `POSTGRES_APPLICATION_NAME`을 설정해서 `pg_stat_activity`에서 `litomi-web`, `litomi-backend`를 바로 구분해요.
-- readiness 체크는 메인 풀과 분리된 1-connection health client와 짧은 캐시를 사용해 DB와 과하게 경쟁하지 않게 해요.
-
 ## 기여하기
 
 기여는 언제든 환영해요.

@@ -135,6 +135,25 @@ sudo kubectl -n monitoring get secret kube-prometheus-stack-grafana \
   -o jsonpath='{.data.admin-password}' | base64 -d; echo
 ```
 
+### Vault
+
+Vault UI (로컬)
+
+```zsh
+sudo kubectl -n vault port-forward svc/vault 8200:8200
+open http://127.0.0.1:8200
+```
+
+Secret 수동 갱신
+
+```zsh
+kubectl -n litomi-stg annotate externalsecret litomi-backend-secret \
+  litomi.dev/reconcile-ts="$(date +%s)" --overwrite
+
+kubectl -n litomi-stg get externalsecret litomi-backend-secret \
+  -o jsonpath='{.status.refreshTime}{"\n"}{.status.conditions[?(@.type=="Ready")].status}{"\n"}'
+```
+
 ### Monitoring
 
 ```zsh
