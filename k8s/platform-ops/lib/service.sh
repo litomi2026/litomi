@@ -22,6 +22,7 @@ Environment="VAULT_INIT_OUTPUT=${VAULT_INIT_OUTPUT}"
 Environment="VAULT_ADDR=${VAULT_ADDR}"
 Environment="VAULT_CACERT=${VAULT_CACERT}"
 Environment="VAULT_SECRETS_DIR=${VAULT_SECRETS_DIR}"
+Environment="K3S_KUBELET_NODE_IP=${K3S_KUBELET_NODE_IP}"
 ExecStart=${SCRIPT_PATH} --skip-public-check
 TimeoutStartSec=1800
 StandardOutput=journal
