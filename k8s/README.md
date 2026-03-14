@@ -141,7 +141,7 @@ Vault UI (로컬)
 
 ```zsh
 sudo kubectl -n vault port-forward svc/vault 8200:8200
-open http://127.0.0.1:8200
+open https://127.0.0.1:8200
 ```
 
 Secret 수동 갱신
