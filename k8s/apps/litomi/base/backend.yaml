@@ -52,7 +52,7 @@ spec:
               memory: 768Mi
             limits:
               cpu: 200m
-              memory: 1.5Gi
+              memory: 1Gi
           securityContext:
             allowPrivilegeEscalation: false
             runAsNonRoot: true
