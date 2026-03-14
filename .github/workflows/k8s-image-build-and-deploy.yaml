@@ -20,19 +20,14 @@ jobs:
   build-push-web:
     if: ${{ github.ref_name == 'main' || github.ref_name == 'stage' }}
     runs-on: ubuntu-24.04-arm
+    outputs:
+      digest: ${{ steps.resolve_web_digest.outputs.digest }}
     env:
       OVERLAY_DIR: ${{ github.ref_name == 'main' && 'k8s/apps/litomi/overlays/prod' || github.ref_name == 'stage' && 'k8s/apps/litomi/overlays/stg' || '' }}
       IMAGE_WEB: ghcr.io/${{ github.repository_owner }}/litomi-web
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Compute sha_short
-        id: sha
-        shell: bash
-        run: echo "sha_short=${GITHUB_SHA::12}" >> "$GITHUB_OUTPUT"
 
       - name: Load NEXT_PUBLIC_* build args from overlay public.env.kv
         id: public_env
@@ -71,7 +66,6 @@ jobs:
           tags: |
             type=raw,value=${{ github.sha }}
             type=ref,event=branch
-            type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -84,6 +78,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build & push web image (main)
+        id: build_web_main
         if: ${{ github.ref_name == 'main' }}
         uses: docker/build-push-action@v7
         with:
@@ -93,7 +88,7 @@ jobs:
           push: true
           build-args: |
             CI=true
-            COMMIT_SHA=${{ steps.sha.outputs.sha_short }}
+            COMMIT_SHA=${{ github.sha }}
             ${{ steps.public_env.outputs.build_args }}
           secrets: |
             POSTGRES_URL=${{ secrets.POSTGRES_URL }}
@@ -107,6 +102,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Build & push web image (stage)
+        id: build_web_stage
         if: ${{ github.ref_name == 'stage' }}
         uses: docker/build-push-action@v7
         with:
@@ -116,7 +112,7 @@ jobs:
           push: true
           build-args: |
             CI=true
-            COMMIT_SHA=${{ steps.sha.outputs.sha_short }}
+            COMMIT_SHA=${{ github.sha }}
             ${{ steps.public_env.outputs.build_args }}
           secrets: |
             POSTGRES_URL=${{ secrets.POSTGRES_URL }}
@@ -126,16 +122,33 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Resolve web image digest
+        id: resolve_web_digest
+        shell: bash
+        env:
+          DIGEST_MAIN: ${{ steps.build_web_main.outputs.digest }}
+          DIGEST_STAGE: ${{ steps.build_web_stage.outputs.digest }}
+        run: |
+          set -euo pipefail
+
+          digest="${DIGEST_MAIN:-${DIGEST_STAGE:-}}"
+          if [ -z "$digest" ]; then
+            echo "Failed to resolve web image digest" >&2
+            exit 1
+          fi
+
+          echo "digest=${digest}" >> "$GITHUB_OUTPUT"
+
   build-push-backend:
     if: ${{ github.ref_name == 'main' || github.ref_name == 'stage' }}
     runs-on: ubuntu-24.04-arm
+    outputs:
+      digest: ${{ steps.build_backend.outputs.digest }}
     env:
       IMAGE_BACKEND: ghcr.io/${{ github.repository_owner }}/litomi-backend
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
 
       - name: Docker meta (backend)
         id: meta_backend
@@ -145,7 +158,6 @@ jobs:
           tags: |
             type=raw,value=${{ github.sha }}
             type=ref,event=branch
-            type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -158,6 +170,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build & push backend image
+        id: build_backend
         uses: docker/build-push-action@v7
         with:
           context: .
@@ -169,7 +182,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  update-stg-image-tags:
+  update-stg-image-digests:
     if: ${{ github.ref_name == 'stage' && github.event_name != 'pull_request' }}
     needs:
       - build-push-web
@@ -178,8 +191,9 @@ jobs:
     permissions:
       contents: write
     env:
-      IMAGE_TAG: ${{ github.sha }}
       OVERLAY_FILE: k8s/apps/litomi/overlays/stg/kustomization.yaml
+      IMAGE_WEB_DIGEST: ${{ needs.build-push-web.outputs.digest }}
+      IMAGE_BACKEND_DIGEST: ${{ needs.build-push-backend.outputs.digest }}
     steps:
       - name: Checkout stage branch
         uses: actions/checkout@v6
@@ -187,7 +201,7 @@ jobs:
           fetch-depth: 0
           ref: stage
 
-      - name: Update stg image tags
+      - name: Update stg image digests
         shell: bash
         run: |
           set -euo pipefail
@@ -198,30 +212,107 @@ jobs:
           from pathlib import Path
 
           path = Path(os.environ["OVERLAY_FILE"])
-          tag = os.environ["IMAGE_TAG"]
           text = path.read_text()
 
-          for name in ("litomi-web", "litomi-backend"):
-              pattern = rf"(- name: {re.escape(name)}\n\s+newName: [^\n]+\n\s+newTag: )\S+"
-              text, count = re.subn(pattern, lambda match: f"{match.group(1)}{tag}", text, count=1)
+          replacements = {
+              "litomi-web": os.environ["IMAGE_WEB_DIGEST"],
+              "litomi-backend": os.environ["IMAGE_BACKEND_DIGEST"],
+          }
+
+          for name, digest in replacements.items():
+              pattern = rf"(- name: {re.escape(name)}\n\s+newName: [^\n]+\n)(?:\s+newTag: \S+\n|\s+digest: \S+\n)"
+              text, count = re.subn(pattern, lambda match: f"{match.group(1)}    digest: {digest}\n", text, count=1)
               if count != 1:
-                  raise SystemExit(f"Failed to update newTag for {name} in {path}")
+                  raise SystemExit(f"Failed to update digest for {name} in {path}")
 
           path.write_text(text)
           PY
 
-      - name: Commit updated stg image tags
+      - name: Commit updated stg image digests
         shell: bash
         run: |
           set -euo pipefail
 
           if git diff --quiet -- "$OVERLAY_FILE"; then
-            echo "stg image tags are already up to date"
+            echo "stg image digests are already up to date"
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$OVERLAY_FILE"
-          git commit -m "chore(k8s): bump stg images to ${IMAGE_TAG}"
+          git commit -m "chore(k8s): bump stg image digests"
           git push origin HEAD:stage
+
+  propose-prod-image-digests:
+    if: ${{ github.ref_name == 'main' && github.event_name != 'pull_request' }}
+    needs:
+      - build-push-web
+      - build-push-backend
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      OVERLAY_FILE: k8s/apps/litomi/overlays/prod/kustomization.yaml
+      IMAGE_WEB: ghcr.io/${{ github.repository_owner }}/litomi-web
+      IMAGE_BACKEND: ghcr.io/${{ github.repository_owner }}/litomi-backend
+      IMAGE_WEB_DIGEST: ${{ needs.build-push-web.outputs.digest }}
+      IMAGE_BACKEND_DIGEST: ${{ needs.build-push-backend.outputs.digest }}
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Update prod image digests
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python3 - <<'PY'
+          import os
+          import re
+          from pathlib import Path
+
+          path = Path(os.environ["OVERLAY_FILE"])
+          text = path.read_text()
+
+          replacements = {
+              "litomi-web": os.environ["IMAGE_WEB_DIGEST"],
+              "litomi-backend": os.environ["IMAGE_BACKEND_DIGEST"],
+          }
+
+          for name, digest in replacements.items():
+              pattern = rf"(- name: {re.escape(name)}\n\s+newName: [^\n]+\n)(?:\s+newTag: \S+\n|\s+digest: \S+\n)"
+              text, count = re.subn(pattern, lambda match: f"{match.group(1)}    digest: {digest}\n", text, count=1)
+              if count != 1:
+                  raise SystemExit(f"Failed to update digest for {name} in {path}")
+
+          path.write_text(text)
+          PY
+
+      - name: Create or update prod promotion PR
+        id: create_pr
+        uses: peter-evans/create-pull-request@v8
+        with:
+          add-paths: ${{ env.OVERLAY_FILE }}
+          branch: codex/prod-image-digests
+          delete-branch: true
+          commit-message: 'chore(k8s): propose prod image digests'
+          title: 'chore(k8s): promote prod image digests'
+          body: |
+            This PR updates the prod overlay to the latest immutable image digests built from `main`.
+
+            - Web: `${{ env.IMAGE_WEB }}@${{ env.IMAGE_WEB_DIGEST }}`
+            - Backend: `${{ env.IMAGE_BACKEND }}@${{ env.IMAGE_BACKEND_DIGEST }}`
+            - Source commit: `${{ github.sha }}`
+            - Workflow run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          base: main
+
+      - name: Report promotion PR
+        if: ${{ steps.create_pr.outputs.pull-request-url }}
+        shell: bash
+        run: |
+          echo "Created or updated prod promotion PR: ${{ steps.create_pr.outputs.pull-request-url }}"
