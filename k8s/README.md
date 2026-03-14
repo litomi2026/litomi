@@ -26,12 +26,14 @@ cd litomi
 ./k8s/platform-ops.sh
 ```
 
-초기 1회는 이미지 pull/초기화 때문에 시간이 오래 걸릴 수 있어요.
-스크립트는 Argo CD 전체 Application이 `Synced/Healthy`가 될 때까지 대기하고,
-수렴하지 않으면 `FAIL`로 종료해요.
+멀티홈 노드이거나 kubelet이 광고할 node IP를 명시해야 할 때만 `K3S_KUBELET_NODE_IP`를 설정하면 돼요.
 
-Step 2에서 Argo CD control plane bootstrap은 기본적으로 "없거나 깨졌을 때만" 재적용하고,
-정상일 때는 전체 bootstrap 재적용을 건너뛰어요.
+```zsh
+export K3S_KUBELET_NODE_IP="192.168.139.242,2001:db8::10"
+./k8s/platform-ops.sh
+```
+
+Argo CD control plane bootstrap은 기본적으로 "없거나 깨졌을 때만" 재적용하고, 정상일 때는 전체 bootstrap 재적용을 건너뛰어요.
 bootstrap 변경을 강제로 반영하려면 아래 옵션을 사용해요.
 
 ```zsh
@@ -72,6 +74,7 @@ bootstrap 변경을 강제로 반영하려면 아래 옵션을 사용해요.
 ### 공식 문서
 
 - [Kubernetes 프로덕션 환경 고려사항](https://kubernetes.io/ko/docs/setup/production-environment/)
+- [K3s 네트워크 옵션(공식 문서)](https://docs.k3s.io/networking/basic-network-options)
 - [HPA(수평 파드 오토스케일링)](https://kubernetes.io/ko/docs/tasks/run-application/horizontal-pod-autoscale/)
 - [컨테이너 리소스 관리(requests/limits)](https://kubernetes.io/ko/docs/concepts/configuration/manage-resources-containers/)
 - [리소스 메트릭 파이프라인(metrics-server 포함)](https://kubernetes.io/docs/tasks/debug/debug-cluster/resource-metrics-pipeline/)
