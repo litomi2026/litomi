@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import ms from 'ms'
 import { useEffect } from 'react'
 
-import type { GETV1ReadingHistoryResponse } from '@/backend/api/v1/library/history/GET'
+import type { GETV1ReadingHistoryResponse } from '@/backend/api/v1/library/history'
 
 import { POINT_CONSTANTS } from '@/constants/points'
 import { QueryKeys } from '@/constants/query'
