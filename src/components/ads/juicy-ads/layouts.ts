@@ -1,5 +1,4 @@
-import type { AdSlotDefinition } from './constants'
-import type { JuicyAdsLayoutNode } from './types'
+import type { AdSlotDefinition, JuicyAdsLayoutNode } from './types'
 
 import { AD_SLOTS } from './constants'
 

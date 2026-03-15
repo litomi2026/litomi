@@ -1,53 +1,42 @@
 'use client'
 
-import Cookies from 'js-cookie'
+import type { ReactNode } from 'react'
+
 import Link from 'next/link'
-import { ReactNode } from 'react'
+import { Fragment } from 'react'
 import { twMerge } from 'tailwind-merge'
 
-import LoginPageLink from '@/components/LoginPageLink'
-import { CookieKey } from '@/constants/storage'
-import useMounted from '@/hook/useMounted'
-import useMeQuery from '@/query/useMeQuery'
+import type { GETV1MeResponse } from '@/backend/api/v1/me'
 
-import { AD_SLOTS } from './constants'
+import LoginPageLink from '@/components/LoginPageLink'
+import useMounted from '@/hook/useMounted'
+
+import type { JuicyAdsLayoutNode } from './types'
+
 import JuicyAdsScript from './JuicyAdsScript'
 import JuicyAdsSlot from './JuicyAdsSlot'
+import { DEFAULT_NON_ADULT_AD_LAYOUT } from './layouts'
+import useNonAdultAdGate from './useNonAdultAdGate'
 
 type Props = {
   className?: string
   title?: ReactNode
   subtitle?: ReactNode
-  slots?: readonly {
-    id: string
-    zoneId: number
-    width: number
-    height: number
-  }[]
+  layout?: readonly JuicyAdsLayoutNode[]
   onAdClick?: () => void
 }
 
 export default function NonAdultJuicyAdsBanner({
   className,
   title = '광고 수익은 서비스 운영과 작가 후원에 사용돼요.',
-  slots,
   subtitle,
+  layout,
   onAdClick,
 }: Props) {
-  const { data: me, isPending } = useMeQuery()
-  const hasAuthHint = Cookies.get(CookieKey.AUTH_HINT) === '1'
   const isMounted = useMounted()
+  const { me, status } = useNonAdultAdGate()
 
-  if (!isMounted) {
-    return null
-  }
-
-  // NOTE: 로그인 사용자는 me 응답이 올 때까지 잠깐 숨겨서 성인인증 완료 사용자에 대한 깜빡임을 막아요.
-  if (hasAuthHint && isPending) {
-    return null
-  }
-
-  if (me?.adultVerification?.status === 'adult') {
+  if (!isMounted || status !== 'visible') {
     return null
   }
 
@@ -55,94 +44,59 @@ export default function NonAdultJuicyAdsBanner({
     <section className={twMerge('flex flex-col gap-2', className)}>
       <div className="grid gap-1 text-center">
         <p className="text-sm text-zinc-300 font-medium">{title}</p>
-        <p className="text-xs text-zinc-500">
-          {subtitle || (
-            <>
-              {me ? (
-                <Link className="font-bold text-zinc-400 p-2 -m-2" href={`/@${me.name}/settings#adult`}>
-                  익명 성인인증
-                </Link>
-              ) : (
-                <LoginPageLink className="text-zinc-400">로그인 후 익명 성인인증</LoginPageLink>
-              )}
-              을 완료하면 광고는 자동으로 숨겨져요.
-            </>
-          )}
-        </p>
+        <p className="text-xs text-zinc-500">{subtitle || <DefaultSubtitle me={me} />}</p>
       </div>
-
       <JuicyAdsScript />
-
-      <div className="flex flex-wrap justify-center gap-2">
-        {slots ? (
-          slots.map((slot) => (
-            <JuicyAdsSlot
-              adSlotId={slot.id}
-              height={slot.height}
-              key={slot.id}
-              onAdClick={onAdClick}
-              width={slot.width}
-              zoneId={slot.zoneId}
-            />
-          ))
-        ) : (
-          <>
-            <JuicyAdsSlot
-              adSlotId={AD_SLOTS.BANNER_308X286.id}
-              height={AD_SLOTS.BANNER_308X286.height}
-              key={AD_SLOTS.BANNER_308X286.id}
-              onAdClick={onAdClick}
-              width={AD_SLOTS.BANNER_308X286.width}
-              zoneId={AD_SLOTS.BANNER_308X286.zoneId}
-            />
-            <JuicyAdsSlot
-              adSlotId={AD_SLOTS.BANNER_300X100.id}
-              className="md:hidden"
-              height={AD_SLOTS.BANNER_300X100.height}
-              key={AD_SLOTS.BANNER_300X100.id}
-              onAdClick={onAdClick}
-              width={AD_SLOTS.BANNER_300X100.width}
-              zoneId={AD_SLOTS.BANNER_300X100.zoneId}
-            />
-            <JuicyAdsSlot
-              adSlotId={AD_SLOTS.BANNER_308X286_2.id}
-              className="hidden md:block"
-              height={AD_SLOTS.BANNER_308X286_2.height}
-              key={AD_SLOTS.BANNER_308X286_2.id}
-              onAdClick={onAdClick}
-              width={AD_SLOTS.BANNER_308X286_2.width}
-              zoneId={AD_SLOTS.BANNER_308X286_2.zoneId}
-            />
-            <JuicyAdsSlot
-              adSlotId={AD_SLOTS.BANNER_300X250.id}
-              className="hidden lg:block"
-              height={AD_SLOTS.BANNER_300X250.height}
-              key={AD_SLOTS.BANNER_300X250.id}
-              onAdClick={onAdClick}
-              width={AD_SLOTS.BANNER_300X250.width}
-              zoneId={AD_SLOTS.BANNER_300X250.zoneId}
-            />
-            <div className="hidden 2xl:flex flex-col gap-2">
-              <JuicyAdsSlot
-                adSlotId={AD_SLOTS.BANNER_300X100.id}
-                height={AD_SLOTS.BANNER_300X100.height}
-                key={AD_SLOTS.BANNER_300X100.id}
-                onAdClick={onAdClick}
-                width={AD_SLOTS.BANNER_300X100.width}
-                zoneId={AD_SLOTS.BANNER_300X100.zoneId}
-              />
-              <JuicyAdsSlot
-                adSlotId={AD_SLOTS.BANNER_300X100_2.id}
-                height={AD_SLOTS.BANNER_300X100_2.height}
-                key={AD_SLOTS.BANNER_300X100_2.id}
-                onAdClick={onAdClick}
-                width={AD_SLOTS.BANNER_300X100_2.width}
-                zoneId={AD_SLOTS.BANNER_300X100_2.zoneId}
-              />
-            </div>
-          </>
-        )}
+      <div className="flex flex-wrap justify-center gap-1.5">
+        {renderLayoutNodes(layout ?? DEFAULT_NON_ADULT_AD_LAYOUT, onAdClick)}
       </div>
     </section>
   )
+}
+
+function DefaultSubtitle({ me }: { me?: GETV1MeResponse }) {
+  return (
+    <>
+      {me ? (
+        <Link className="font-bold text-zinc-400 p-2 -m-2" href={`/@${me.name}/settings#adult`}>
+          익명 성인인증
+        </Link>
+      ) : (
+        <LoginPageLink className="text-zinc-400">로그인 후 익명 성인인증</LoginPageLink>
+      )}
+      을 완료하면 광고는 자동으로 숨겨져요.
+    </>
+  )
+}
+
+function renderLayoutNode(node: JuicyAdsLayoutNode, key: string, onAdClick?: () => void) {
+  if (node.type === 'slot') {
+    return (
+      <JuicyAdsSlot
+        adSlotId={node.slot.id}
+        className={node.className}
+        height={node.slot.height}
+        key={key}
+        onAdClick={onAdClick ? () => onAdClick() : undefined}
+        width={node.slot.width}
+        zoneId={node.slot.zoneId}
+      />
+    )
+  }
+
+  const children = renderLayoutNodes(node.children, onAdClick, key)
+
+  if (!node.className) {
+    return <Fragment key={key}>{children}</Fragment>
+  }
+
+  return (
+    <div className={twMerge(node.className)} key={key}>
+      {children}
+    </div>
+  )
+}
+
+function renderLayoutNodes(layout: readonly JuicyAdsLayoutNode[], onAdClick?: () => void, path = 'layout') {
+  return layout.map((node, index) => renderLayoutNode(node, `${path}-${index}`, onAdClick))
 }
