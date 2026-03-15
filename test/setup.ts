@@ -60,6 +60,8 @@ beforeAll(() => {
   global.document = window.document
   // @ts-expect-error - Adding DOM globals
   global.navigator = window.navigator
+  global.localStorage = window.localStorage
+  global.sessionStorage = window.sessionStorage
   // @ts-expect-error - Adding DOM globals
   global.HTMLElement = window.HTMLElement
   // @ts-expect-error - Adding DOM globals
