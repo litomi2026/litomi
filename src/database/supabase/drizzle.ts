@@ -35,7 +35,6 @@ type DatabaseReadiness = {
 }
 
 const baseClientOptions = {
-  prepare: false,
   idle_timeout: POSTGRES_IDLE_TIMEOUT_SECONDS,
   connect_timeout: POSTGRES_CONNECT_TIMEOUT_SECONDS,
   max_lifetime: POSTGRES_MAX_LIFETIME_SECONDS,
