@@ -38,6 +38,7 @@ export default function ReadingHistoryWarmup() {
     meta: { requiresAdult: true },
   })
 
+  // NOTE: 서버 감상 기록 warmup 결과를 로컬 인덱스에 반영해 조회를 빠르게 해요
   useEffect(() => {
     if (!data || !canWarmup) {
       return
