@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 
-import { GETV1ReadingHistoryResponse } from '@/backend/api/v1/library/history'
+import { GETV1ReadingHistoryResponse } from '@/backend/api/v1/library/history/GET'
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
