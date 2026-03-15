@@ -20,7 +20,7 @@ spec:
       containers:
         - name: backend
           image: litomi-backend:prod
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           env:
             - name: PORT
               value: '3002'
