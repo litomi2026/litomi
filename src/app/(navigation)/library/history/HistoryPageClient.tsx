@@ -1,7 +1,6 @@
 'use client'
 
-import type { GETV1ReadingHistoryResponse } from '@/backend/api/v1/library/history/GET'
-
+import { GETV1ReadingHistoryResponse } from '@/backend/api/v1/library/history'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'

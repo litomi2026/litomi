@@ -1,6 +1,6 @@
 import ms from 'ms'
 
-import type { ReadingHistoryItem } from '@/backend/api/v1/library/history/GET'
+import { ReadingHistoryItem } from '@/backend/api/v1/library/history'
 
 export type DateGroup = 'lastMonth' | 'lastWeek' | 'older' | 'thisMonth' | 'thisWeek' | 'today' | 'yesterday'
 
