@@ -11,4 +11,4 @@ spec:
             - name: POSTGRES_APPLICATION_NAME
               value: litomi-web
             - name: POSTGRES_POOL_MAX
-              value: '3'
+              value: '2'
