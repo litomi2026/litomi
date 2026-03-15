@@ -1,5 +1,4 @@
 import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Check } from 'lucide-react'
 import { toast } from 'sonner'
 
 import type { GETV1LibraryListResponse, LibraryListItem } from '@/backend/api/v1/library/GET'
@@ -81,7 +80,7 @@ export default function usePinLibraryMutation() {
     },
     onSuccess: (_data, variables) => {
       if (variables.action === 'pin') {
-        toast('서재를 고정했어요', { icon: <Check className="size-4 text-brand" /> })
+        toast.success('서재를 고정했어요')
       }
     },
   })
