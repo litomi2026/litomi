@@ -16,6 +16,7 @@ import AdsterraNativeBanner from '@/components/ads/adsterra/AdsterraNativeBanner
 import { AD_SLOTS } from '@/components/ads/juicy-ads/constants'
 import JuicyAdsSlot from '@/components/ads/juicy-ads/JuicyAdsSlot'
 import TurnstileWidget from '@/components/TurnstileWidget'
+import { POINT_CONSTANTS } from '@/constants/points'
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import { isAdultVerificationRequiredProblem } from '@/lib/react-query/QueryProvider'
@@ -145,13 +146,13 @@ export default function RewardedAdSection() {
           zoneId={AD_SLOTS.BANNER_308X286.zoneId}
         />
         <JuicyAdsSlot
-          adSlotId={AD_SLOTS.BANNER_300X250.id}
-          height={AD_SLOTS.BANNER_300X250.height}
+          adSlotId={AD_SLOTS.BANNER_308X286_2.id}
+          height={AD_SLOTS.BANNER_308X286_2.height}
           onAdClick={handleAdClick}
           rewardEnabled={rewardEnabled}
           showFooter
-          width={AD_SLOTS.BANNER_300X250.width}
-          zoneId={AD_SLOTS.BANNER_300X250.zoneId}
+          width={AD_SLOTS.BANNER_308X286_2.width}
+          zoneId={AD_SLOTS.BANNER_308X286_2.zoneId}
         />
         <JuicyAdsSlot
           adSlotId={AD_SLOTS.BANNER_300X100.id}
@@ -189,7 +190,7 @@ export default function RewardedAdSection() {
           <div className="space-y-1">
             <p className="text-zinc-400 font-medium">리보란?</p>
             <ul className="space-y-1 list-disc list-inside marker:text-zinc-600">
-              <li>광고 클릭 시 10 리보가 적립돼요</li>
+              <li>광고 클릭 시 {POINT_CONSTANTS.AD_CLICK_REWARD} 리보가 적립돼요</li>
               <li>적립된 리보로 내 공간을 확장할 수 있어요</li>
             </ul>
           </div>
@@ -198,7 +199,9 @@ export default function RewardedAdSection() {
             <ul className="space-y-1 list-disc list-inside marker:text-zinc-600">
               <li>광고 클릭 시 새 탭에서 광고 페이지가 열려요</li>
               <li>같은 광고: 1분 후 다시 클릭 가능</li>
-              <li>하루 최대 100 리보 (10회) 적립 가능</li>
+              <li>
+                하루 최대 {POINT_CONSTANTS.AD_CLICK_REWARD * POINT_CONSTANTS.DAILY_EARN_LIMIT_COUNT} 리보 적립 가능
+              </li>
             </ul>
           </div>
         </div>

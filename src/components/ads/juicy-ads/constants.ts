@@ -23,6 +23,12 @@ export const AD_SLOTS = {
     width: 300,
     height: 100,
   },
+  BANNER_308X286_2: {
+    id: 'rewarded-ad-308x286-2',
+    zoneId: 1113137,
+    width: 308,
+    height: 286,
+  },
 } as const
 
 export const JUICY_ADS_EVENT = {

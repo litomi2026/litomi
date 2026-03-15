@@ -1,4 +1,4 @@
-name: Kubernetes image build & push
+name: Kubernetes Image Delivery
 
 on:
   push:
@@ -13,24 +13,25 @@ permissions:
   packages: write
 
 concurrency:
-  group: k8s-image-build-${{ github.ref }}
+  group: kubernetes-image-delivery-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build-push-web:
+  build-and-publish-web-image:
+    name: Build and publish web image
     if: ${{ github.ref_name == 'main' || github.ref_name == 'stage' }}
     runs-on: ubuntu-24.04-arm
     outputs:
-      digest: ${{ steps.resolve_web_digest.outputs.digest }}
+      digest: ${{ steps.resolve_published_web_digest.outputs.digest }}
     env:
       OVERLAY_DIR: ${{ github.ref_name == 'main' && 'k8s/apps/litomi/overlays/prod' || github.ref_name == 'stage' && 'k8s/apps/litomi/overlays/stg' || '' }}
       IMAGE_WEB: ghcr.io/${{ github.repository_owner }}/litomi-web
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Load NEXT_PUBLIC_* build args from overlay public.env.kv
-        id: public_env
+      - name: Load public web build arguments from overlay
+        id: load_public_env
         shell: bash
         run: |
           set -euo pipefail
@@ -58,8 +59,8 @@ jobs:
           cat "$tmp" >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
 
-      - name: Docker meta (web)
-        id: meta_web
+      - name: Generate web image metadata
+        id: metadata_web
         uses: docker/metadata-action@v6
         with:
           images: ${{ env.IMAGE_WEB }}
@@ -70,15 +71,15 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
-      - name: Login to GHCR
+      - name: Authenticate to GHCR
         uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build & push web image (main)
-        id: build_web_main
+      - name: Build and publish web image for production
+        id: build_web_production
         if: ${{ github.ref_name == 'main' }}
         uses: docker/build-push-action@v7
         with:
@@ -89,20 +90,20 @@ jobs:
           build-args: |
             CI=true
             COMMIT_SHA=${{ github.sha }}
-            ${{ steps.public_env.outputs.build_args }}
+            ${{ steps.load_public_env.outputs.build_args }}
           secrets: |
             POSTGRES_URL=${{ secrets.POSTGRES_URL }}
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
             SENTRY_ORG=${{ secrets.SENTRY_ORG }}
             SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT }}
             SUPABASE_CERTIFICATE=${{ secrets.SUPABASE_CERTIFICATE }}
-          tags: ${{ steps.meta_web.outputs.tags }}
-          labels: ${{ steps.meta_web.outputs.labels }}
+          tags: ${{ steps.metadata_web.outputs.tags }}
+          labels: ${{ steps.metadata_web.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Build & push web image (stage)
-        id: build_web_stage
+      - name: Build and publish web image for staging
+        id: build_web_staging
         if: ${{ github.ref_name == 'stage' }}
         uses: docker/build-push-action@v7
         with:
@@ -113,25 +114,25 @@ jobs:
           build-args: |
             CI=true
             COMMIT_SHA=${{ github.sha }}
-            ${{ steps.public_env.outputs.build_args }}
+            ${{ steps.load_public_env.outputs.build_args }}
           secrets: |
             POSTGRES_URL=${{ secrets.POSTGRES_URL }}
             SUPABASE_CERTIFICATE=${{ secrets.SUPABASE_CERTIFICATE }}
-          tags: ${{ steps.meta_web.outputs.tags }}
-          labels: ${{ steps.meta_web.outputs.labels }}
+          tags: ${{ steps.metadata_web.outputs.tags }}
+          labels: ${{ steps.metadata_web.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Resolve web image digest
-        id: resolve_web_digest
+      - name: Resolve published web image digest
+        id: resolve_published_web_digest
         shell: bash
         env:
-          DIGEST_MAIN: ${{ steps.build_web_main.outputs.digest }}
-          DIGEST_STAGE: ${{ steps.build_web_stage.outputs.digest }}
+          PRODUCTION_DIGEST: ${{ steps.build_web_production.outputs.digest }}
+          STAGING_DIGEST: ${{ steps.build_web_staging.outputs.digest }}
         run: |
           set -euo pipefail
 
-          digest="${DIGEST_MAIN:-${DIGEST_STAGE:-}}"
+          digest="${PRODUCTION_DIGEST:-${STAGING_DIGEST:-}}"
           if [ -z "$digest" ]; then
             echo "Failed to resolve web image digest" >&2
             exit 1
@@ -139,19 +140,20 @@ jobs:
 
           echo "digest=${digest}" >> "$GITHUB_OUTPUT"
 
-  build-push-backend:
+  build-and-publish-backend-image:
+    name: Build and publish backend image
     if: ${{ github.ref_name == 'main' || github.ref_name == 'stage' }}
     runs-on: ubuntu-24.04-arm
     outputs:
-      digest: ${{ steps.build_backend.outputs.digest }}
+      digest: ${{ steps.build_backend_image.outputs.digest }}
     env:
       IMAGE_BACKEND: ghcr.io/${{ github.repository_owner }}/litomi-backend
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Docker meta (backend)
-        id: meta_backend
+      - name: Generate backend image metadata
+        id: metadata_backend
         uses: docker/metadata-action@v6
         with:
           images: ${{ env.IMAGE_BACKEND }}
@@ -162,46 +164,47 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
-      - name: Login to GHCR
+      - name: Authenticate to GHCR
         uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build & push backend image
-        id: build_backend
+      - name: Build and publish backend image
+        id: build_backend_image
         uses: docker/build-push-action@v7
         with:
           context: .
           file: Dockerfile.hono
           platforms: linux/arm64
           push: true
-          tags: ${{ steps.meta_backend.outputs.tags }}
-          labels: ${{ steps.meta_backend.outputs.labels }}
+          tags: ${{ steps.metadata_backend.outputs.tags }}
+          labels: ${{ steps.metadata_backend.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  update-stg-image-digests:
+  update-staging-image-digests:
+    name: Update staging image digests
     if: ${{ github.ref_name == 'stage' && github.event_name != 'pull_request' }}
     needs:
-      - build-push-web
-      - build-push-backend
+      - build-and-publish-web-image
+      - build-and-publish-backend-image
     runs-on: ubuntu-24.04
     permissions:
       contents: write
     env:
       OVERLAY_FILE: k8s/apps/litomi/overlays/stg/kustomization.yaml
-      IMAGE_WEB_DIGEST: ${{ needs.build-push-web.outputs.digest }}
-      IMAGE_BACKEND_DIGEST: ${{ needs.build-push-backend.outputs.digest }}
+      IMAGE_WEB_DIGEST: ${{ needs.build-and-publish-web-image.outputs.digest }}
+      IMAGE_BACKEND_DIGEST: ${{ needs.build-and-publish-backend-image.outputs.digest }}
     steps:
-      - name: Checkout stage branch
+      - name: Checkout staging branch
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
           ref: stage
 
-      - name: Update stg image digests
+      - name: Update staging image digests
         shell: bash
         run: |
           set -euo pipefail
@@ -228,27 +231,28 @@ jobs:
           path.write_text(text)
           PY
 
-      - name: Commit updated stg image digests
+      - name: Commit staging image digest updates
         shell: bash
         run: |
           set -euo pipefail
 
           if git diff --quiet -- "$OVERLAY_FILE"; then
-            echo "stg image digests are already up to date"
+            echo "Staging image digests are already up to date"
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$OVERLAY_FILE"
-          git commit -m "chore(k8s): bump stg image digests"
+          git commit -m "chore(k8s): bump staging image digests"
           git push origin HEAD:stage
 
-  propose-prod-image-digests:
+  propose-production-image-digests:
+    name: Propose production image digests
     if: ${{ github.ref_name == 'main' && github.event_name != 'pull_request' }}
     needs:
-      - build-push-web
-      - build-push-backend
+      - build-and-publish-web-image
+      - build-and-publish-backend-image
     runs-on: ubuntu-24.04
     permissions:
       contents: write
@@ -257,8 +261,8 @@ jobs:
       OVERLAY_FILE: k8s/apps/litomi/overlays/prod/kustomization.yaml
       IMAGE_WEB: ghcr.io/${{ github.repository_owner }}/litomi-web
       IMAGE_BACKEND: ghcr.io/${{ github.repository_owner }}/litomi-backend
-      IMAGE_WEB_DIGEST: ${{ needs.build-push-web.outputs.digest }}
-      IMAGE_BACKEND_DIGEST: ${{ needs.build-push-backend.outputs.digest }}
+      IMAGE_WEB_DIGEST: ${{ needs.build-and-publish-web-image.outputs.digest }}
+      IMAGE_BACKEND_DIGEST: ${{ needs.build-and-publish-backend-image.outputs.digest }}
     steps:
       - name: Checkout main branch
         uses: actions/checkout@v6
@@ -266,7 +270,7 @@ jobs:
           fetch-depth: 0
           ref: main
 
-      - name: Update prod image digests
+      - name: Update production image digests
         shell: bash
         run: |
           set -euo pipefail
@@ -293,17 +297,17 @@ jobs:
           path.write_text(text)
           PY
 
-      - name: Create or update prod promotion PR
-        id: create_pr
+      - name: Create or update production promotion PR
+        id: create_production_pr
         uses: peter-evans/create-pull-request@v8
         with:
           add-paths: ${{ env.OVERLAY_FILE }}
-          branch: codex/prod-image-digests
+          branch: codex/production-image-digests
           delete-branch: true
-          commit-message: 'chore(k8s): propose prod image digests'
-          title: 'chore(k8s): promote prod image digests'
+          commit-message: 'chore(k8s): propose production image digests'
+          title: 'chore(k8s): promote production image digests'
           body: |
-            This PR updates the prod overlay to the latest immutable image digests built from `main`.
+            This PR updates the production overlay to the latest immutable image digests built from `main`.
 
             - Web: `${{ env.IMAGE_WEB }}@${{ env.IMAGE_WEB_DIGEST }}`
             - Backend: `${{ env.IMAGE_BACKEND }}@${{ env.IMAGE_BACKEND_DIGEST }}`
@@ -311,8 +315,8 @@ jobs:
             - Workflow run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           base: main
 
-      - name: Report promotion PR
-        if: ${{ steps.create_pr.outputs.pull-request-url }}
+      - name: Report production promotion PR
+        if: ${{ steps.create_production_pr.outputs.pull-request-url }}
         shell: bash
         run: |
-          echo "Created or updated prod promotion PR: ${{ steps.create_pr.outputs.pull-request-url }}"
+          echo "Created or updated production promotion PR: ${{ steps.create_production_pr.outputs.pull-request-url }}"
