@@ -10,8 +10,10 @@ import { useRouter } from 'next/navigation'
 import { MouseEvent, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
+import { migrateReadingHistory } from '@/app/manga/[id]/actions'
 import IconLogo from '@/components/icons/LogoLitomi'
 import PasskeyLoginButton from '@/components/PasskeyLoginButton'
+import { clearMigratedHistory, getLocalReadingHistory } from '@/components/ReadingHistoryMigrator'
 import TurnstileWidget from '@/components/TurnstileWidget'
 import Toggle from '@/components/ui/Toggle'
 import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@/constants/policy'
@@ -81,6 +83,12 @@ export default function LoginForm() {
     input.focus()
   }
 
+  const [_, dispatchMigration] = useServerAction({
+    action: migrateReadingHistory,
+    shouldSetResponse: false,
+    onSuccess: clearMigratedHistory,
+  })
+
   async function handleLoginSuccess({ loginId, name, id, lastLoginAt, lastLogoutAt }: User) {
     toast.success(`${loginId} 계정으로 로그인했어요`)
     setTwoFactorData(null)
@@ -93,6 +101,12 @@ export default function LoginForm() {
         sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: id })
         sendGAEvent('event', 'login', { loginId, lastLoginAt, lastLogoutAt })
       }
+    }
+
+    const localHistory = getLocalReadingHistory()
+
+    if (localHistory.length > 0) {
+      dispatchMigration(localHistory)
     }
 
     await queryClient.invalidateQueries({ queryKey: QueryKeys.me, type: 'all' })

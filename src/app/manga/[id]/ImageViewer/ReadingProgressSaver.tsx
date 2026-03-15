@@ -6,16 +6,12 @@ import { toast } from 'sonner'
 
 import type { POSTV1MangaIdHistoryBody } from '@/backend/api/v1/manga/[id]/history/POST'
 
+import { GETV1MeResponse } from '@/backend/api/v1/me'
+import { SessionStorageKeyMap } from '@/constants/storage'
 import { env } from '@/env/client'
 import { useLatestRef } from '@/hook/useLatestRef'
 import useMeQuery from '@/query/useMeQuery'
 import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
-import {
-  getPendingReadingHistorySnapshotKey,
-  markReadingHistorySnapshotSyncedIfUnchanged,
-  readLocalReadingHistoryEntry,
-  writeLocalReadingHistoryEntry,
-} from '@/utils/local-reading-history'
 import { upsertReadingHistoryIndexEntry } from '@/utils/reading-history-index'
 
 import { useImageIndexStore } from './store/imageIndex'
@@ -28,13 +24,8 @@ type Props = {
 }
 
 type SyncContext = {
-  snapshot: {
-    mangaId: number
-    lastPage: number
-    updatedAt: number
-  }
-  snapshotKey: string
-  userId: number
+  me: GETV1MeResponse
+  page: number
 }
 
 export default function ReadingProgressSaver({ mangaId }: Props) {
@@ -43,19 +34,23 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
   const imageIndex = useImageIndexStore((state) => state.imageIndex)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isRequestPendingRef = useRef(false)
-  const lastDispatchedAtRef = useRef<number | null>(null)
-  const lastDispatchedSnapshotKeyRef = useRef<string | null>(null)
+  const latestPageRef = useRef<number | null>(null)
+  const pendingPageRef = useRef<number | null>(null)
+  const lastSyncedAtRef = useRef<number | null>(null)
+  const lastSyncedPageRef = useRef<number | null>(null)
   const hasStorageErrorToastShownRef = useRef(false)
   const scheduleSendRef = useLatestRef(scheduleSend)
   const queueSaveEvent = useEffectEvent(queueSave)
   const flushEvent = useEffectEvent(flush)
 
-  function writePendingEntry(page: number, updatedAt: number) {
-    const didWrite = writeLocalReadingHistoryEntry(mangaId, { lastPage: page, updatedAt, pending: true })
-
-    if (!didWrite && !hasStorageErrorToastShownRef.current) {
-      toast.warning('읽기 기록을 저장하지 못했어요')
-      hasStorageErrorToastShownRef.current = true
+  function writeSessionStorage(page: number) {
+    try {
+      sessionStorage.setItem(SessionStorageKeyMap.readingHistory(mangaId), String(page))
+    } catch {
+      if (!hasStorageErrorToastShownRef.current) {
+        toast.warning('읽기 기록을 저장하지 못했어요')
+        hasStorageErrorToastShownRef.current = true
+      }
     }
   }
 
@@ -71,29 +66,17 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
       return null
     }
 
-    const entry = readLocalReadingHistoryEntry(mangaId)
-
-    if (!entry?.pending) {
+    const page = pendingPageRef.current
+    if (page === null) {
       return null
     }
 
-    const snapshot = {
-      mangaId,
-      lastPage: entry.lastPage,
-      updatedAt: entry.updatedAt,
-    }
-    const snapshotKey = getPendingReadingHistorySnapshotKey([snapshot])
-
-    if (!snapshotKey) {
-      return null
-    }
-
-    if (lastDispatchedSnapshotKeyRef.current === snapshotKey) {
+    if (lastSyncedPageRef.current === page) {
       clearTimer()
       return null
     }
 
-    return { snapshot, snapshotKey, userId: me.id }
+    return { me, page }
   }
 
   function sendContext(context: SyncContext, options?: { keepalive?: boolean }) {
@@ -101,15 +84,18 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
       return
     }
 
-    lastDispatchedAtRef.current = Date.now()
-    lastDispatchedSnapshotKeyRef.current = context.snapshotKey
+    lastSyncedAtRef.current = Date.now()
+    lastSyncedPageRef.current = context.page
     clearTimer()
+
+    // NOTE: 뷰어 재진입 시 서버 호출 없이도 이어읽기가 가능하도록 최신 페이지를 인덱스에 반영해요
+    upsertReadingHistoryIndexEntry(context.me.id, mangaId, context.page)
 
     const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/manga/${mangaId}/history`
     const keepalive = options?.keepalive ?? false
 
     const body: POSTV1MangaIdHistoryBody = {
-      lastPage: context.snapshot.lastPage,
+      lastPage: context.page,
     }
 
     isRequestPendingRef.current = true
@@ -121,17 +107,6 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(body),
     })
-      .then(async (response) => {
-        if (!response.ok) {
-          throw new Error('Failed to save reading history')
-        }
-
-        const didMarkSynced = markReadingHistorySnapshotSyncedIfUnchanged([context.snapshot])
-
-        if (didMarkSynced) {
-          upsertReadingHistoryIndexEntry(context.userId, mangaId, context.snapshot.lastPage)
-        }
-      })
       .catch(() => {})
       .finally(() => {
         isRequestPendingRef.current = false
@@ -145,7 +120,7 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
     }
 
     const now = Date.now()
-    const lastAt = lastDispatchedAtRef.current
+    const lastAt = lastSyncedAtRef.current
     const nextAt = typeof lastAt === 'number' ? lastAt + SEND_INTERVAL_MS : now
     const delayMs = Math.max(0, nextAt - now)
 
@@ -165,15 +140,15 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
   }
 
   function queueSave(page: number) {
-    const updatedAt = Date.now()
-
     // NOTE: 탭 단위 이어읽기를 위해 로컬 기록은 항상 최신으로 유지
-    writePendingEntry(page, updatedAt)
+    writeSessionStorage(page)
+    latestPageRef.current = page
 
     if (!canSyncToServer) {
       return
     }
 
+    pendingPageRef.current = page
     scheduleSend()
   }
 
@@ -190,8 +165,10 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
 
   // NOTE: 작품이 바뀌면(=mangaId 변경) 감상 저장 상태를 초기화해요
   useEffect(() => {
-    lastDispatchedAtRef.current = null
-    lastDispatchedSnapshotKeyRef.current = null
+    pendingPageRef.current = null
+    latestPageRef.current = null
+    lastSyncedAtRef.current = null
+    lastSyncedPageRef.current = null
     clearTimer()
   }, [mangaId])
 
@@ -208,6 +185,12 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
       return
     }
 
+    const page = latestPageRef.current
+    if (page === null) {
+      return
+    }
+
+    pendingPageRef.current = page
     scheduleSendRef.current()
   }, [canSyncToServer, scheduleSendRef])
 
