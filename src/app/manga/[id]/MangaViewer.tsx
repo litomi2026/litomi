@@ -1,17 +1,15 @@
 'use client'
 
-import Cookies from 'js-cookie'
 import dynamic from 'next/dynamic'
 import { useState } from 'react'
 
 import type { Manga } from '@/types/manga'
 
-import { AD_SLOTS } from '@/components/ads/juicy-ads/constants'
+import { VIEWER_UNLOCK_NON_ADULT_AD_LAYOUT } from '@/components/ads/juicy-ads/layouts'
 import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'
+import useNonAdultAdGate from '@/components/ads/juicy-ads/useNonAdultAdGate'
 import LoginPageLink from '@/components/LoginPageLink'
-import { CookieKey } from '@/constants/storage'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
-import useMeQuery from '@/query/useMeQuery'
 
 import ImageViewer from './ImageViewer/ImageViewer'
 import usePageMetadata from './usePageMetadata'
@@ -25,11 +23,10 @@ type Props = {
 
 export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
   const [hasClickedAd, setHasClickedAd] = useState(false)
-  const { data: me, isPending: isMePending } = useMeQuery()
-  const hasAuthHint = Cookies.get(CookieKey.AUTH_HINT) === '1'
-  const shouldFetch = (initialManga?.images?.length ?? 0) === 0
+  const { me, status: nonAdultAdGateStatus } = useNonAdultAdGate()
 
   // 미로그인 사용자는 광고를 클릭해야만 패치하도록 합니다.
+  const shouldFetch = (initialManga?.images?.length ?? 0) === 0
   const isWaitingForAdClick = shouldFetch && !me && !hasClickedAd
   const actualShouldFetch = shouldFetch && !isWaitingForAdClick
 
@@ -42,7 +39,7 @@ export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
   usePageMetadata(metadata)
 
   // NOTE: 로그인 사용자는 me 응답이 올 때까지 잠깐 숨겨서 깜빡임을 막아요.
-  if (hasAuthHint && isMePending) {
+  if (nonAdultAdGateStatus === 'loading') {
     return null
   }
 
@@ -50,8 +47,8 @@ export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
     return (
       <NonAdultJuicyAdsBanner
         className="h-full flex flex-col gap-4 items-center justify-center"
+        layout={VIEWER_UNLOCK_NON_ADULT_AD_LAYOUT}
         onAdClick={() => setHasClickedAd(true)}
-        slots={[AD_SLOTS.BANNER_308X286]}
         subtitle={
           <div>
             <LoginPageLink className="text-zinc-400">로그인</LoginPageLink>을 하면 광고를 보지 않고도 작품을 볼 수
