@@ -81,7 +81,6 @@ export default function NonAdultJuicyAdsBanner({
               height={slot.height}
               key={slot.id}
               onAdClick={onAdClick}
-              showFooter={false}
               width={slot.width}
               zoneId={slot.zoneId}
             />
@@ -93,7 +92,6 @@ export default function NonAdultJuicyAdsBanner({
               height={AD_SLOTS.BANNER_308X286.height}
               key={AD_SLOTS.BANNER_308X286.id}
               onAdClick={onAdClick}
-              showFooter={false}
               width={AD_SLOTS.BANNER_308X286.width}
               zoneId={AD_SLOTS.BANNER_308X286.zoneId}
             />
@@ -103,27 +101,33 @@ export default function NonAdultJuicyAdsBanner({
               height={AD_SLOTS.BANNER_300X100.height}
               key={AD_SLOTS.BANNER_300X100.id}
               onAdClick={onAdClick}
-              showFooter={false}
               width={AD_SLOTS.BANNER_300X100.width}
               zoneId={AD_SLOTS.BANNER_300X100.zoneId}
             />
             <JuicyAdsSlot
-              adSlotId={AD_SLOTS.BANNER_300X250.id}
+              adSlotId={AD_SLOTS.BANNER_308X286_2.id}
               className="hidden md:block"
+              height={AD_SLOTS.BANNER_308X286_2.height}
+              key={AD_SLOTS.BANNER_308X286_2.id}
+              onAdClick={onAdClick}
+              width={AD_SLOTS.BANNER_308X286_2.width}
+              zoneId={AD_SLOTS.BANNER_308X286_2.zoneId}
+            />
+            <JuicyAdsSlot
+              adSlotId={AD_SLOTS.BANNER_300X250.id}
+              className="hidden lg:block"
               height={AD_SLOTS.BANNER_300X250.height}
               key={AD_SLOTS.BANNER_300X250.id}
               onAdClick={onAdClick}
-              showFooter={false}
               width={AD_SLOTS.BANNER_300X250.width}
               zoneId={AD_SLOTS.BANNER_300X250.zoneId}
             />
-            <div className="hidden lg:flex flex-col gap-2">
+            <div className="hidden 2xl:flex flex-col gap-2">
               <JuicyAdsSlot
                 adSlotId={AD_SLOTS.BANNER_300X100.id}
                 height={AD_SLOTS.BANNER_300X100.height}
                 key={AD_SLOTS.BANNER_300X100.id}
                 onAdClick={onAdClick}
-                showFooter={false}
                 width={AD_SLOTS.BANNER_300X100.width}
                 zoneId={AD_SLOTS.BANNER_300X100.zoneId}
               />
@@ -132,7 +136,6 @@ export default function NonAdultJuicyAdsBanner({
                 height={AD_SLOTS.BANNER_300X100_2.height}
                 key={AD_SLOTS.BANNER_300X100_2.id}
                 onAdClick={onAdClick}
-                showFooter={false}
                 width={AD_SLOTS.BANNER_300X100_2.width}
                 zoneId={AD_SLOTS.BANNER_300X100_2.zoneId}
               />
