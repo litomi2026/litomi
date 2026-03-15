@@ -4,6 +4,7 @@ import { Library } from 'lucide-react'
 import Link from 'next/link'
 import { useMemo } from 'react'
 
+import { LIBRARY_NON_ADULT_AD_LAYOUT } from '@/components/ads/juicy-ads/layouts'
 import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
@@ -86,7 +87,7 @@ export default function AllLibraryMangaView() {
 
   return (
     <>
-      <NonAdultJuicyAdsBanner className="mx-2 mt-2" />
+      <NonAdultJuicyAdsBanner className="mx-2 mt-2" layout={LIBRARY_NON_ADULT_AD_LAYOUT} />
       <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[View.CARD]} gap-2 p-2`}>
         {items.map(({ library, mangaId }, index) => {
           const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
