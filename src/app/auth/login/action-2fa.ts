@@ -185,35 +185,47 @@ export async function verifyTwoFactorLogin(formData: FormData) {
         .from(bbatonVerificationTable)
         .where(eq(bbatonVerificationTable.userId, userId))
 
-      const tokenClaims = {
-        userId,
-        adult: verification?.adultFlag === true,
-      }
-
-      const accessTokenCookie = await getAccessTokenCookieConfig(tokenClaims)
-      const authHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: accessTokenCookie.options.maxAge })
-
-      cookieStore.set(accessTokenCookie.key, accessTokenCookie.value, accessTokenCookie.options)
-      cookieStore.set(authHintCookie.key, authHintCookie.value, authHintCookie.options)
-
-      if (remember) {
-        const refreshTokenCookie = await getRefreshTokenCookieConfig(tokenClaims)
-        const longAuthHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: refreshTokenCookie.options.maxAge })
-
-        cookieStore.set(refreshTokenCookie.key, refreshTokenCookie.value, refreshTokenCookie.options)
-        cookieStore.set(longAuthHintCookie.key, longAuthHintCookie.value, longAuthHintCookie.options)
-      }
-
-      await twoFactorLimiter.reward(String(userId))
-
-      return ok({
-        ...user,
+      return {
+        user,
         isBackupCode,
         backupCodeCount,
-      })
+        verification,
+      }
     })
 
-    return result
+    if ('error' in result) {
+      return result
+    }
+
+    const { user, isBackupCode, backupCodeCount, verification } = result
+
+    const tokenClaims = {
+      userId,
+      adult: verification?.adultFlag === true,
+    }
+
+    const accessTokenCookie = await getAccessTokenCookieConfig(tokenClaims)
+    const authHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: accessTokenCookie.options.maxAge })
+    const cookieStore = await cookies()
+
+    cookieStore.set(accessTokenCookie.key, accessTokenCookie.value, accessTokenCookie.options)
+    cookieStore.set(authHintCookie.key, authHintCookie.value, authHintCookie.options)
+
+    if (remember) {
+      const refreshTokenCookie = await getRefreshTokenCookieConfig(tokenClaims)
+      const longAuthHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: refreshTokenCookie.options.maxAge })
+
+      cookieStore.set(refreshTokenCookie.key, refreshTokenCookie.value, refreshTokenCookie.options)
+      cookieStore.set(longAuthHintCookie.key, longAuthHintCookie.value, longAuthHintCookie.options)
+    }
+
+    await twoFactorLimiter.reward(String(userId))
+
+    return ok({
+      ...user,
+      isBackupCode,
+      backupCodeCount,
+    })
   } catch (error) {
     captureException(error, { extra: { name: 'verifyTwoFactorLogin', userId } })
     return internalServerError('2단계 인증 중 오류가 발생했어요', formData)
