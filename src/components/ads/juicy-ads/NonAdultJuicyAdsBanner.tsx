@@ -63,9 +63,9 @@ export default function NonAdultJuicyAdsBanner({
                   익명 성인인증
                 </Link>
               ) : (
-                <LoginPageLink>로그인 후 성인인증</LoginPageLink>
+                <LoginPageLink className="text-zinc-400">로그인 후 익명 성인인증</LoginPageLink>
               )}
-              을 완료하면 이 영역은 자동으로 숨겨져요.
+              을 완료하면 광고는 자동으로 숨겨져요.
             </>
           )}
         </p>
