@@ -68,16 +68,6 @@ export const db = drizzle({
   },
 })
 
-const healthCheckClient = postgres(POSTGRES_URL, {
-  ...baseClientOptions,
-  max: 1,
-  idle_timeout: Math.min(POSTGRES_IDLE_TIMEOUT_SECONDS, 5),
-  connect_timeout: Math.min(POSTGRES_CONNECT_TIMEOUT_SECONDS, 2),
-  connection: {
-    application_name: `${POSTGRES_APPLICATION_NAME}-health`,
-  },
-})
-
 let readinessCache: { expiresAt: number; result: DatabaseReadiness } | undefined
 let inflightReadinessCheck: Promise<DatabaseReadiness> | undefined
 
@@ -109,7 +99,7 @@ export async function checkDatabaseReadiness(): Promise<DatabaseReadiness> {
 
 async function fetchDatabaseReadiness(): Promise<DatabaseReadiness> {
   try {
-    const [result] = (await healthCheckClient`select 1 as connection`) as Array<{ connection: number }>
+    const [result] = (await supabaseClient`select 1 as connection`) as Array<{ connection: number }>
 
     return {
       checkedAt: new Date(),
