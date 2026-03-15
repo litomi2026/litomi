@@ -11,4 +11,4 @@ spec:
             - name: POSTGRES_APPLICATION_NAME
               value: litomi-backend-stg
             - name: POSTGRES_POOL_MAX
-              value: '2'
+              value: '1'
