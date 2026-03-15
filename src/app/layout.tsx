@@ -123,7 +123,6 @@ export default function RootLayout({ children }: Readonly<Props>) {
             className="pointer-events-auto"
             mobileOffset={{ top: 'max(1rem,var(--safe-area-top))' }}
             position="top-center"
-            richColors
             theme="system"
           />
         </OverlayHost>

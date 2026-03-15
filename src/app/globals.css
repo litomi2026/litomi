@@ -152,6 +152,13 @@
   --safe-area-bottom: env(safe-area-inset-bottom);
   --safe-area-left: env(safe-area-inset-left);
   --safe-area-right: env(safe-area-inset-right);
+  --toast-bg: var(--color-zinc-900);
+  --toast-border: var(--color-zinc-800);
+  --toast-description: var(--color-zinc-400);
+  --toast-success: var(--color-green-400);
+  --toast-info: var(--color-blue-400);
+  --toast-warning: #ff9f0a;
+  --toast-error: var(--color-red-400);
 }
 
 [data-theme='light'] {
@@ -209,6 +216,13 @@
   --color-purple-700: #c084fc;
   --color-purple-800: #d8b4fe;
   --color-purple-900: #e9d5ff;
+  --toast-bg: var(--color-zinc-800);
+  --toast-border: var(--color-zinc-700);
+  --toast-description: var(--color-zinc-400);
+  --toast-success: var(--color-green-500);
+  --toast-info: var(--color-blue-500);
+  --toast-warning: #ff9500;
+  --toast-error: var(--color-red-600);
 }
 
 [data-theme='dark'] {
@@ -232,6 +246,9 @@
   --color-zinc-700: #252540;
   --color-zinc-800: #18182a;
   --color-zinc-900: #0d0d1a;
+  --toast-bg: var(--color-zinc-800);
+  --toast-border: var(--color-zinc-700);
+  --toast-description: var(--color-zinc-300);
 }
 
 [data-theme='retro'] {
@@ -249,6 +266,9 @@
   --color-zinc-700: #4f3e2f;
   --color-zinc-800: #3a2b1e;
   --color-zinc-900: #2b1810;
+  --toast-bg: var(--color-zinc-800);
+  --toast-border: var(--color-zinc-700);
+  --toast-description: var(--color-zinc-300);
 }
 
 html {
@@ -258,6 +278,32 @@ html {
 body {
   color: var(--color-foreground);
   background: var(--color-background);
+}
+
+[data-sonner-toast][data-styled='true'] {
+  background: var(--toast-bg) !important;
+  border-color: var(--toast-border) !important;
+  color: var(--color-foreground) !important;
+}
+
+[data-sonner-toast][data-styled='true'] [data-description] {
+  color: var(--toast-description) !important;
+}
+
+[data-sonner-toast][data-styled='true'][data-type='success'] [data-icon] {
+  color: var(--toast-success) !important;
+}
+
+[data-sonner-toast][data-styled='true'][data-type='info'] [data-icon] {
+  color: var(--toast-info) !important;
+}
+
+[data-sonner-toast][data-styled='true'][data-type='warning'] [data-icon] {
+  color: var(--toast-warning) !important;
+}
+
+[data-sonner-toast][data-styled='true'][data-type='error'] [data-icon] {
+  color: var(--toast-error) !important;
 }
 
 button {
