@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import ms from 'ms'
 import { useEffect } from 'react'
 
-import type { GETV1ReadingHistoryResponse } from '@/backend/api/v1/library/history'
+import type { GETV1ReadingHistoryResponse } from '@/backend/api/v1/library/history/GET'
 
 import { POINT_CONSTANTS } from '@/constants/points'
 import { QueryKeys } from '@/constants/query'
@@ -38,6 +38,7 @@ export default function ReadingHistoryWarmup() {
     meta: { requiresAdult: true },
   })
 
+  // NOTE: 서버 감상 기록 warmup 결과를 로컬 인덱스에 반영해 조회를 빠르게 해요
   useEffect(() => {
     if (!data || !canWarmup) {
       return

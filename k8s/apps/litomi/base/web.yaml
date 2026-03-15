@@ -20,7 +20,7 @@ spec:
       containers:
         - name: web
           image: litomi-web:prod
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           env:
             - name: PORT
               value: '3000'
