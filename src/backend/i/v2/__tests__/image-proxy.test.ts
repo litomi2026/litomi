@@ -61,13 +61,55 @@ describe('GET /i/v2/manga/:mangaId/:variant/:page', () => {
     expect(response.headers.get('cache-control')).toContain('no-store')
   })
 
-  test('허용된 썸네일 호스트 URL은 semantic 경로와 무관하게 프록시한다', async () => {
+  test('soujpa 원본 URL이 route param과 맞으면 프록시한다', async () => {
+    const response = await app.request('/manga/123/original/5?u=https%3A%2F%2Fsoujpa.in%2Fstart%2F123%2F123_4.webp')
+
+    expect(response.status).toBe(200)
+    expect(await response.text()).toBe('image-body')
+  })
+
+  test('soujpa 원본 URL의 mangaId/page가 route param과 다르면 400을 반환한다', async () => {
+    const response = await app.request('/manga/123/original/5?u=https%3A%2F%2Fsoujpa.in%2Fstart%2F999%2F999_4.avif')
+
+    expect(response.status).toBe(400)
+    expect(response.headers.get('cache-control')).toContain('no-store')
+    expect(fetchCalls).toBe(0)
+  })
+
+  test('허용된 썸네일 호스트 URL도 thumbnail route와 맞아야 프록시한다', async () => {
     const response = await app.request(
       '/manga/123/thumbnail/1?u=https%3A%2F%2Fcdn.imagedeliveries.com%2F123%2Fthumbnails%2F1.webp',
     )
 
     expect(response.status).toBe(200)
     expect(await response.text()).toBe('image-body')
+  })
+
+  test('thumbnail route와 맞지 않는 cdn.imagedeliveries URL은 400을 반환한다', async () => {
+    const response = await app.request(
+      '/manga/123/thumbnail/1?u=https%3A%2F%2Fcdn.imagedeliveries.com%2F123%2Fthumbnails%2F3.webp',
+    )
+
+    expect(response.status).toBe(400)
+    expect(response.headers.get('cache-control')).toContain('no-store')
+    expect(fetchCalls).toBe(0)
+  })
+
+  test('cover.webp는 thumbnail 1페이지와만 매칭된다', async () => {
+    const response = await app.request(
+      '/manga/123/thumbnail/1?u=https%3A%2F%2Fcdn.imagedeliveries.com%2F123%2Fthumbnails%2Fcover.webp',
+    )
+
+    expect(response.status).toBe(200)
+    expect(await response.text()).toBe('image-body')
+  })
+
+  test('hentkor URL의 page가 route param과 다르면 400을 반환한다', async () => {
+    const response = await app.request('/manga/123/original/5?u=https%3A%2F%2Fcdn.hentkor.net%2Fpages%2F123%2F6.avif')
+
+    expect(response.status).toBe(400)
+    expect(response.headers.get('cache-control')).toContain('no-store')
+    expect(fetchCalls).toBe(0)
   })
 
   test('original variant는 k-hentai storage 원본 URL도 materialize source로 허용한다', async () => {

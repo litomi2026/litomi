@@ -1,19 +1,17 @@
 const IMAGE_PROXY_SOURCE_HOST_SUFFIXES = [
   'hentkor.net',
-  'harpi.in',
-  'hiyobi.org',
   'k-hentai.org',
   'soujpa.in',
   'cdn.imagedeliveries.com',
 ] as const
 
-export type MangaImageProxyVariant = 'original' | 'thumbnail'
-
-type MangaImageProxyParams = {
+export type MangaImageProxyParams = {
   mangaId: number
   page: number
   variant: MangaImageProxyVariant
 }
+
+export type MangaImageProxyVariant = 'original' | 'thumbnail'
 
 export function createCoverThumbnailURL(mangaId: number): string {
   return `https://cdn.imagedeliveries.com/${mangaId}/thumbnails/cover.webp`
@@ -62,6 +60,53 @@ export function createMangaImageProxyRequestURL({
   }
 
   return proxyURL.toString()
+}
+
+export function isImageProxySourceURLCompatibleWithRouteParams(
+  sourceURL: URL,
+  { mangaId, page }: MangaImageProxyParams,
+): boolean {
+  const normalizedHost = sourceURL.hostname.toLowerCase()
+
+  if (normalizedHost === 'hentkor.net') {
+    const match = /^\/pages\/(?<mangaId>\d+)\/(?<page>\d+)\.avif$/u.exec(sourceURL.pathname)
+    if (!match?.groups) {
+      return false
+    }
+
+    return match.groups.mangaId === mangaId.toString() && match.groups.page === page.toString()
+  }
+
+  if (normalizedHost === 'soujpa.in') {
+    const match = /^\/start\/(?<dirMangaId>\d+)\/(?<fileMangaId>\d+)_(?<zeroBasedPage>\d+)\.(avif|webp)$/u.exec(
+      sourceURL.pathname,
+    )
+
+    if (!match?.groups) {
+      return false
+    }
+
+    return (
+      match.groups.dirMangaId === mangaId.toString() &&
+      match.groups.fileMangaId === mangaId.toString() &&
+      match.groups.zeroBasedPage === (page - 1).toString()
+    )
+  }
+
+  if (normalizedHost === 'cdn.imagedeliveries.com') {
+    const match = /^\/(?<mangaId>\d+)\/thumbnails\/(?<page>cover|\d+)\.webp$/u.exec(sourceURL.pathname)
+    if (!match?.groups) {
+      return false
+    }
+
+    if (match.groups.mangaId !== mangaId.toString()) {
+      return false
+    }
+
+    return match.groups.page === 'cover' ? page === 1 : match.groups.page === page.toString()
+  }
+
+  return true
 }
 
 export function parseImageProxySourceURL(sourceURL: string): URL {
