@@ -152,9 +152,9 @@
   --safe-area-bottom: env(safe-area-inset-bottom);
   --safe-area-left: env(safe-area-inset-left);
   --safe-area-right: env(safe-area-inset-right);
-  --toast-bg: var(--color-zinc-900);
-  --toast-border: var(--color-zinc-800);
-  --toast-description: var(--color-zinc-400);
+  --toast-bg: var(--color-zinc-800);
+  --toast-border: var(--color-zinc-700);
+  --toast-description: var(--color-zinc-300);
   --toast-success: var(--color-green-400);
   --toast-info: var(--color-blue-400);
   --toast-warning: #ff9f0a;
