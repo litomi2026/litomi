@@ -7,17 +7,13 @@ import { z } from 'zod'
 import { Env } from '@/backend'
 import { createCacheControl } from '@/utils/cache-control'
 import { sec } from '@/utils/format/date'
-import {
-  isImageProxySourceURLCompatibleWithRouteParams,
-  parseImageProxyRoutePageParam,
-  parseImageProxySourceURL,
-} from '@/utils/image-proxy'
+import { isImageProxySourceURLCompatibleWithRouteParams, parseImageProxySourceURL } from '@/utils/image-proxy'
 
 const imageProxyRoutes = new Hono<Env>()
 
 const pathParamSchema = z.object({
   mangaId: z.coerce.number().int().positive(),
-  page: z.string().transform(parseImageProxyRoutePageParam).pipe(z.number().int().positive()),
+  page: z.coerce.number().int().positive(),
   variant: z.enum(['original', 'thumbnail']),
 })
 
