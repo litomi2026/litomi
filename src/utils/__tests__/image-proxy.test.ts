@@ -4,11 +4,12 @@ import {
   createEquivalentMangaImageSourceURLs,
   createMangaImageProxyRequestURL,
   isImageProxySourceURLCompatibleWithRouteParams,
+  parseImageProxyRoutePageParam,
   parseImageProxySourceURL,
 } from '@/utils/image-proxy'
 
 describe('manga image proxy utilities', () => {
-  test('프록시 요청 URL을 queryless /i/v2/manga/:mangaId/:variant/:page 형태로 만든다', () => {
+  test('프록시 요청 URL을 queryless /i/v2/manga/:mangaId/:variant/:page.webp 형태로 만든다', () => {
     const requestURL = createMangaImageProxyRequestURL({
       proxyOrigin: 'https://img.litomi.in',
       mangaId: 123,
@@ -18,11 +19,11 @@ describe('manga image proxy utilities', () => {
     const parsedRequestURL = new URL(requestURL)
 
     expect(parsedRequestURL.origin).toBe('https://img.litomi.in')
-    expect(parsedRequestURL.pathname).toBe('/i/v2/manga/123/original/5')
+    expect(parsedRequestURL.pathname).toBe('/i/v2/manga/123/original/5.webp')
     expect(parsedRequestURL.search).toBe('')
   })
 
-  test('프록시 materialize URL을 같은 path + ?u=<url> 형태로 만든다', () => {
+  test('프록시 materialize URL을 같은 .webp path + ?u=<url> 형태로 만든다', () => {
     const sourceURL = 'https://soujpa.in/start/123/123_4.avif'
     const requestURL = createMangaImageProxyRequestURL({
       proxyOrigin: 'https://img.litomi.in',
@@ -34,8 +35,14 @@ describe('manga image proxy utilities', () => {
     const parsedRequestURL = new URL(requestURL)
 
     expect(parsedRequestURL.origin).toBe('https://img.litomi.in')
-    expect(parsedRequestURL.pathname).toBe('/i/v2/manga/123/original/5')
+    expect(parsedRequestURL.pathname).toBe('/i/v2/manga/123/original/5.webp')
     expect(parsedRequestURL.searchParams.get('u')).toBe(sourceURL)
+  })
+
+  test('프록시 route page 파라미터는 .webp suffix를 허용한다', () => {
+    expect(parseImageProxyRoutePageParam('5.webp')).toBe(5)
+    expect(parseImageProxyRoutePageParam('5')).toBe(5)
+    expect(() => parseImageProxyRoutePageParam('5.avif')).toThrow('이미지 페이지 파라미터 형식이 올바르지 않아요')
   })
 
   test('1-based 페이지 번호로 동등 원본 fallback 소스를 만든다', () => {
