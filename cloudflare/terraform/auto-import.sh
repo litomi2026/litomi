@@ -230,41 +230,6 @@ import_managed_transforms() {
     return 1
 }
 
-# Function to import page rules
-import_page_rules() {
-    echo ""
-    echo "📄 Checking for Page Rules..."
-
-    PR_RESPONSE=$(curl -s -X GET \
-        "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/pagerules?status=active" \
-        -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
-        -H "Content-Type: application/json")
-
-    declare -a pr_mappings=(
-        "cloudflare_page_rule.img_proxy_ignore_query_string|img.litomi.in/i/*"
-        "cloudflare_page_rule.img_stg_proxy_ignore_query_string|img-stg.litomi.in/i/*"
-    )
-
-    for mapping in "${pr_mappings[@]}"; do
-        IFS='|' read -r resource_name target_url <<< "$mapping"
-
-        if terraform state show "$resource_name" &>/dev/null 2>&1; then
-            echo "✓ $resource_name already imported"
-            continue
-        fi
-
-        PR_ID=$(echo "$PR_RESPONSE" | jq -r --arg target "$target_url" \
-            '.result[]? | select(.targets[0].constraint.value == $target) | .id' | head -1)
-
-        if [ -n "$PR_ID" ]; then
-            echo "✓ Found Page Rule for $target_url (ID: $PR_ID)"
-            terraform import "$resource_name" "$ZONE_ID/$PR_ID" 2>/dev/null || echo "  ⚠️  Import failed or already exists"
-        else
-            echo "⏭️  No matching Page Rule found for $resource_name"
-        fi
-    done
-}
-
 # Function to import Zero Trust Access Applications
 import_zero_trust_access_apps() {
     echo ""
@@ -378,9 +343,6 @@ import_dns_records
 
 # Import rulesets
 import_rulesets
-
-# Import page rules
-import_page_rules
 
 # Import managed transforms
 import_managed_transforms

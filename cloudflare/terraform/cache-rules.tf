@@ -1,4 +1,9 @@
 locals {
+  img_cache_hostnames = [
+    "img.${var.domain}",
+    "img-stg.${var.domain}",
+  ]
+
   respect_origin_prefixes = [
     "/api/",
   ]
@@ -112,6 +117,11 @@ locals {
     "(http.host eq \"${hostname}\")"
   ])
 
+  img_cache_conditions = join(" or ", [
+    for hostname in local.img_cache_hostnames :
+    "((http.host eq \"${hostname}\") and starts_with(http.request.uri.path, \"/i/\"))"
+  ])
+
   ttl_30d_expression = "${local.exact_path_conditions} or ${local.prefix_path_conditions} or (http.request.uri.path.extension in {${local.exact_extension_conditions}})"
 }
 
@@ -140,6 +150,34 @@ resource "cloudflare_ruleset" "cache_rules" {
         cache_key = {
           cache_deception_armor      = true
           ignore_query_strings_order = true
+        }
+      }
+    },
+    {
+      ref         = "img_proxy_30d"
+      enabled     = true
+      description = "Respect origin cache-control while ignoring query strings"
+      expression  = local.img_cache_conditions
+      action      = "set_cache_settings"
+
+      action_parameters = {
+        cache = true
+        edge_ttl = {
+          mode = "respect_origin"
+        }
+        browser_ttl = {
+          mode = "respect_origin"
+        }
+        cache_key = {
+          cache_deception_armor      = true
+          ignore_query_strings_order = true
+          custom_key = {
+            query_string = {
+              exclude = {
+                all = true
+              }
+            }
+          }
         }
       }
     },
