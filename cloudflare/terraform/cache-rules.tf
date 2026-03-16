@@ -156,15 +156,14 @@ resource "cloudflare_ruleset" "cache_rules" {
     {
       ref         = "img_proxy_30d"
       enabled     = true
-      description = "Cache for 30 days while ignoring query strings"
+      description = "Respect origin cache-control while ignoring query strings"
       expression  = local.img_cache_conditions
       action      = "set_cache_settings"
 
       action_parameters = {
         cache = true
         edge_ttl = {
-          mode    = "override_origin"
-          default = 2592000 # 30 days
+          mode = "respect_origin"
         }
         browser_ttl = {
           mode = "respect_origin"
