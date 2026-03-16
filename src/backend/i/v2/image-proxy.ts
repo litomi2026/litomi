@@ -18,7 +18,7 @@ const pathParamSchema = z.object({
 })
 
 const querySchema = z.object({
-  u: z.string().min(1),
+  u: z.string().min(1).optional(),
 })
 
 const SUCCESS_CACHE_CONTROL = createCacheControl({
@@ -57,13 +57,17 @@ imageProxyRoutes.on(
     const { mangaId, page, variant } = c.req.valid('param')
     const { u } = c.req.valid('query')
 
+    if (!u) {
+      return createProxyErrorResponse('404 Not Found', 404, NO_STORE_CACHE_CONTROL)
+    }
+
     let sourceURL: URL
 
     try {
       sourceURL = parseImageProxySourceURL(u)
     } catch (error) {
-      const message = error instanceof Error ? error.message : '잘못된 이미지 URL이에요'
-      return createProxyErrorResponse(message, 400, NO_STORE_CACHE_CONTROL)
+      console.error('Failed to parse image URL:', error)
+      return createProxyErrorResponse('잘못된 이미지 URL이에요', 400, NO_STORE_CACHE_CONTROL)
     }
 
     if (!isAllowedMangaImageProxySource(sourceURL, { mangaId, page, variant })) {
