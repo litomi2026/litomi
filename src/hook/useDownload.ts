@@ -1,11 +1,14 @@
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
 
+import { env } from '@/env/client'
 import { ImageWithVariants } from '@/types/manga'
 import { downloadImage, downloadMultipleImages } from '@/utils/download'
+import { createEquivalentMangaImageSourceURLs, createMangaImageProxyRequestURL } from '@/utils/image-proxy'
 
 // Supported image extensions
 const VALID_IMAGE_EXTENSIONS = new Set(['avif', 'bmp', 'gif', 'jpeg', 'jpg', 'png', 'svg', 'webp'])
+const { NEXT_PUBLIC_CORS_PROXY_URL } = env
 
 type Props = {
   manga: {
@@ -28,13 +31,19 @@ export function useDownload({ manga }: Props) {
       setIsDownloading(true)
 
       try {
-        const { title, images = [] } = manga
+        const { id, title, images = [] } = manga
         const image = images[imageIndex]
         const imageURL = image?.original?.url ?? image?.thumbnail?.url ?? ''
         const extension = getImageExtension(imageURL)
         const filename = `${title} ${imageIndex + 1}${extension}`
 
-        await downloadImage(imageURL, filename)
+        const downloadCandidates = getSemanticDownloadCandidates({
+          mangaId: id,
+          imageIndex,
+          fallbackURL: imageURL,
+        })
+
+        await downloadImage(downloadCandidates, filename)
         toast.success('다운로드가 완료됐어요')
       } catch (error) {
         if (error instanceof Error && error.name === 'AbortError') {
@@ -65,8 +74,13 @@ export function useDownload({ manga }: Props) {
       const imageList = images.map(({ original, thumbnail }, index) => {
         const url = original?.url ?? thumbnail?.url ?? ''
         const extension = getImageExtension(url)
+
         return {
-          url,
+          urls: getSemanticDownloadCandidates({
+            mangaId: id,
+            imageIndex: index,
+            fallbackURL: url,
+          }),
           filename: `${index}${extension}`,
         }
       })
@@ -133,4 +147,47 @@ function getImageExtension(imageURL: string): string {
     // Fallback for invalid URLs or other errors
     return ''
   }
+}
+
+function getSemanticDownloadCandidates({
+  mangaId,
+  imageIndex,
+  fallbackURL,
+}: {
+  mangaId: number
+  imageIndex: number
+  fallbackURL: string
+}): string[] {
+  if (!NEXT_PUBLIC_CORS_PROXY_URL || mangaId <= 0) {
+    return fallbackURL ? [fallbackURL] : []
+  }
+
+  const page = imageIndex + 1
+
+  const semanticProbeURL = createMangaImageProxyRequestURL({
+    proxyOrigin: NEXT_PUBLIC_CORS_PROXY_URL,
+    mangaId,
+    page,
+    variant: 'original',
+  })
+
+  const semanticSourceURLs = createEquivalentMangaImageSourceURLs({
+    mangaId,
+    page,
+    variant: 'original',
+  })
+
+  const semanticMaterializeSourceURLs = Array.from(new Set([fallbackURL, ...semanticSourceURLs].filter(Boolean)))
+
+  const semanticMaterializeURLs = semanticMaterializeSourceURLs.map((sourceURL) =>
+    createMangaImageProxyRequestURL({
+      proxyOrigin: NEXT_PUBLIC_CORS_PROXY_URL,
+      sourceURL,
+      mangaId,
+      page,
+      variant: 'original',
+    }),
+  )
+
+  return Array.from(new Set([semanticProbeURL, ...semanticMaterializeURLs, fallbackURL].filter(Boolean)))
 }

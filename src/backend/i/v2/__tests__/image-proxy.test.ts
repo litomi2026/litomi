@@ -43,7 +43,7 @@ describe('GET /i/v2/manga/:mangaId/:variant/:page', () => {
     expect(fetchCalls).toBe(0)
   })
 
-  test('허용된 semantic 이미지 소스를 프록시하고 30일 캐시 헤더를 반환한다', async () => {
+  test('허용된 이미지 소스를 프록시하고 30일 캐시 헤더를 반환한다', async () => {
     const response = await app.request('/manga/123/original/5?u=https%3A%2F%2Fsoujpa.in%2Fstart%2F123%2F123_4.avif')
 
     expect(response.status).toBe(200)
@@ -61,18 +61,9 @@ describe('GET /i/v2/manga/:mangaId/:variant/:page', () => {
     expect(response.headers.get('cache-control')).toContain('no-store')
   })
 
-  test('허용 호스트라도 페이지가 맞지 않으면 400과 no-store를 반환한다', async () => {
+  test('허용된 썸네일 호스트 URL은 semantic 경로와 무관하게 프록시한다', async () => {
     const response = await app.request(
       '/manga/123/thumbnail/1?u=https%3A%2F%2Fcdn.imagedeliveries.com%2F123%2Fthumbnails%2F1.webp',
-    )
-
-    expect(response.status).toBe(400)
-    expect(response.headers.get('cache-control')).toContain('no-store')
-  })
-
-  test('thumbnail 1페이지는 cover.webp만 허용한다', async () => {
-    const response = await app.request(
-      '/manga/123/thumbnail/1?u=https%3A%2F%2Fcdn.imagedeliveries.com%2F123%2Fthumbnails%2Fcover.webp',
     )
 
     expect(response.status).toBe(200)

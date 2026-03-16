@@ -1,8 +1,3 @@
-import { env } from '@/env/client'
-import { createImageProxyRequestURL } from '@/utils/image-proxy'
-
-const { NEXT_PUBLIC_CORS_PROXY_URL } = env
-
 export function downloadBlob(blob: Blob, filename: string) {
   const blobURL = URL.createObjectURL(blob)
   const link = document.createElement('a')
@@ -12,16 +7,9 @@ export function downloadBlob(blob: Blob, filename: string) {
   URL.revokeObjectURL(blobURL)
 }
 
-export async function downloadImage(imageUrl: string, filename: string): Promise<void> {
+export async function downloadImage(imageUrl: string | string[], filename: string): Promise<void> {
   try {
-    const url = await getDownloadURL(imageUrl)
-
-    const response = await fetch(url)
-
-    if (!response.ok) {
-      throw new Error(`${response.status} ${response.statusText}`)
-    }
-
+    const response = await fetchDownloadResponse(imageUrl)
     const blob = await response.blob()
     downloadBlob(blob, filename)
   } catch (error) {
@@ -36,7 +24,7 @@ export async function downloadMultipleImages({
   maxConcurrent = 10,
 }: {
   filename: string
-  images: { url: string; filename: string }[]
+  images: { filename: string; url?: string; urls?: string[] }[]
   onProgress?: (completed: number) => void
   maxConcurrent?: number
 }): Promise<void> {
@@ -47,15 +35,9 @@ export async function downloadMultipleImages({
   let successCount = 0
   let currentIndex = 0
 
-  const downloadImage = async ({ url, filename }: { url: string; filename: string }) => {
+  const downloadImage = async ({ url, urls, filename }: { filename: string; url?: string; urls?: string[] }) => {
     try {
-      const corsURL = await getDownloadURL(url)
-      const response = await fetch(corsURL)
-
-      if (!response.ok) {
-        throw new Error(`${response.status} ${response.statusText}`)
-      }
-
+      const response = await fetchDownloadResponse(urls?.length ? urls : url ?? '')
       const blob = await response.blob()
       zip.file(filename, blob)
 
@@ -101,13 +83,23 @@ export async function downloadMultipleImages({
   downloadBlob(zipFile, `${filename}.zip`)
 }
 
-async function getDownloadURL(imageURL: string): Promise<string> {
-  if (!NEXT_PUBLIC_CORS_PROXY_URL || imageURL.startsWith('blob:') || imageURL.startsWith('data:')) {
-    return imageURL
+async function fetchDownloadResponse(imageURL: string | string[]): Promise<Response> {
+  const candidates = (Array.isArray(imageURL) ? imageURL : [imageURL]).filter(Boolean)
+  let lastError: Error | undefined
+
+  for (const candidate of candidates) {
+    try {
+      const response = await fetch(candidate)
+
+      if (response.ok) {
+        return response
+      }
+
+      lastError = new Error(`${response.status} ${response.statusText}`)
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error('다운로드에 실패했어요')
+    }
   }
 
-  return createImageProxyRequestURL({
-    proxyOrigin: NEXT_PUBLIC_CORS_PROXY_URL,
-    sourceURL: imageURL,
-  })
+  throw lastError ?? new Error('다운로드할 이미지 URL이 없어요')
 }
