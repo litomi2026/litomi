@@ -104,12 +104,20 @@ describe('GET /i/v2/manga/:mangaId/:variant/:page', () => {
     expect(await response.text()).toBe('image-body')
   })
 
-  test('hentkor URL의 page가 route param과 다르면 400을 반환한다', async () => {
-    const response = await app.request('/manga/123/original/5?u=https%3A%2F%2Fcdn.hentkor.net%2Fpages%2F123%2F6.avif')
+  test('hentkor 루트 호스트 URL의 page가 route param과 다르면 400을 반환한다', async () => {
+    const response = await app.request('/manga/123/original/5?u=https%3A%2F%2Fhentkor.net%2Fpages%2F123%2F6.avif')
 
     expect(response.status).toBe(400)
     expect(response.headers.get('cache-control')).toContain('no-store')
     expect(fetchCalls).toBe(0)
+  })
+
+  test('cdn.hentkor.net 서브도메인은 semantic mismatch여도 현재 프록시를 허용한다', async () => {
+    const response = await app.request('/manga/123/original/5?u=https%3A%2F%2Fcdn.hentkor.net%2Fpages%2F123%2F6.avif')
+
+    expect(response.status).toBe(200)
+    expect(await response.text()).toBe('image-body')
+    expect(fetchCalls).toBe(1)
   })
 
   test('original variant는 k-hentai storage 원본 URL도 materialize source로 허용한다', async () => {

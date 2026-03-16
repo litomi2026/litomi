@@ -88,7 +88,7 @@ describe('manga image proxy utilities', () => {
     )
   })
 
-  test('soujpa 원본 URL은 route param과 semantic하게 일치해야 한다', () => {
+  test('soujpa 원본 URL은 현재 mangaId/page 기준으로 semantic하게 일치해야 한다', () => {
     const sourceURL = parseImageProxySourceURL('https://soujpa.in/start/123/123_4.avif')
 
     expect(
@@ -111,11 +111,11 @@ describe('manga image proxy utilities', () => {
         page: 5,
         variant: 'thumbnail',
       }),
-    ).toBe(false)
+    ).toBe(true)
   })
 
-  test('hentkor 원본 URL은 mangaId/page가 맞아야 한다', () => {
-    const sourceURL = parseImageProxySourceURL('https://cdn.hentkor.net/pages/777/9.avif')
+  test('hentkor 루트 호스트 원본 URL은 mangaId/page가 맞아야 한다', () => {
+    const sourceURL = parseImageProxySourceURL('https://hentkor.net/pages/777/9.avif')
 
     expect(
       isImageProxySourceURLCompatibleWithRouteParams(sourceURL, {
@@ -131,6 +131,18 @@ describe('manga image proxy utilities', () => {
         variant: 'original',
       }),
     ).toBe(false)
+  })
+
+  test('cdn.hentkor.net 서브도메인은 아직 semantic 검증 없이 허용한다', () => {
+    const sourceURL = parseImageProxySourceURL('https://cdn.hentkor.net/pages/777/9.avif')
+
+    expect(
+      isImageProxySourceURLCompatibleWithRouteParams(sourceURL, {
+        mangaId: 777,
+        page: 10,
+        variant: 'original',
+      }),
+    ).toBe(true)
   })
 
   test('cdn.imagedeliveries 썸네일 URL은 thumbnail route와 맞아야 한다', () => {
