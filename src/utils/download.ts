@@ -1,7 +1,10 @@
-import { env } from '@/env/client'
-import { createImageProxyRequestURL } from '@/utils/image-proxy'
+const MAX_DOWNLOAD_REQUESTS_PER_SECOND = 5
+const DOWNLOAD_REQUEST_INTERVAL_MS = Math.ceil(1000 / MAX_DOWNLOAD_REQUESTS_PER_SECOND)
+const DEFAULT_429_RETRY_DELAY_MS = 1000
+const MAX_429_RETRIES = 3
 
-const { NEXT_PUBLIC_CORS_PROXY_URL } = env
+let nextDownloadRequestAt = 0
+let downloadRequestQueue: Promise<void> = Promise.resolve()
 
 export function downloadBlob(blob: Blob, filename: string) {
   const blobURL = URL.createObjectURL(blob)
@@ -12,16 +15,9 @@ export function downloadBlob(blob: Blob, filename: string) {
   URL.revokeObjectURL(blobURL)
 }
 
-export async function downloadImage(imageUrl: string, filename: string): Promise<void> {
+export async function downloadImage(imageUrl: string | string[], filename: string): Promise<void> {
   try {
-    const url = await getDownloadURL(imageUrl)
-
-    const response = await fetch(url)
-
-    if (!response.ok) {
-      throw new Error(`${response.status} ${response.statusText}`)
-    }
-
+    const response = await fetchDownloadResponse(imageUrl)
     const blob = await response.blob()
     downloadBlob(blob, filename)
   } catch (error) {
@@ -36,7 +32,7 @@ export async function downloadMultipleImages({
   maxConcurrent = 10,
 }: {
   filename: string
-  images: { url: string; filename: string }[]
+  images: { filename: string; url?: string; urls?: string[] }[]
   onProgress?: (completed: number) => void
   maxConcurrent?: number
 }): Promise<void> {
@@ -47,15 +43,9 @@ export async function downloadMultipleImages({
   let successCount = 0
   let currentIndex = 0
 
-  const downloadImage = async ({ url, filename }: { url: string; filename: string }) => {
+  const downloadImage = async ({ url, urls, filename }: { filename: string; url?: string; urls?: string[] }) => {
     try {
-      const corsURL = await getDownloadURL(url)
-      const response = await fetch(corsURL)
-
-      if (!response.ok) {
-        throw new Error(`${response.status} ${response.statusText}`)
-      }
-
+      const response = await fetchDownloadResponse(urls?.length ? urls : url ?? '')
       const blob = await response.blob()
       zip.file(filename, blob)
 
@@ -101,13 +91,91 @@ export async function downloadMultipleImages({
   downloadBlob(zipFile, `${filename}.zip`)
 }
 
-async function getDownloadURL(imageURL: string): Promise<string> {
-  if (!NEXT_PUBLIC_CORS_PROXY_URL || imageURL.startsWith('blob:') || imageURL.startsWith('data:')) {
-    return imageURL
+export function resetDownloadRequestRateLimiter() {
+  nextDownloadRequestAt = 0
+  downloadRequestQueue = Promise.resolve()
+}
+
+async function fetchDownloadResponse(imageURL: string | string[]): Promise<Response> {
+  const candidates = (Array.isArray(imageURL) ? imageURL : [imageURL]).filter(Boolean)
+  let lastError: Error | undefined
+
+  for (const candidate of candidates) {
+    try {
+      const response = await fetchWith429Retry(candidate)
+
+      if (response.ok) {
+        return response
+      }
+
+      lastError = new Error(`${response.status} ${response.statusText}`)
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error('다운로드에 실패했어요')
+    }
   }
 
-  return createImageProxyRequestURL({
-    proxyOrigin: NEXT_PUBLIC_CORS_PROXY_URL,
-    sourceURL: imageURL,
+  throw lastError ?? new Error('다운로드할 이미지 URL이 없어요')
+}
+
+async function fetchWith429Retry(url: string): Promise<Response> {
+  let attempt = 0
+
+  while (attempt <= MAX_429_RETRIES) {
+    await waitForDownloadRequestTurn()
+
+    const response = await fetch(url)
+
+    if (response.status !== 429) {
+      return response
+    }
+
+    if (attempt === MAX_429_RETRIES) {
+      return response
+    }
+
+    await sleep(getRetryAfterMs(response.headers.get('Retry-After')))
+    attempt++
+  }
+
+  throw new Error('다운로드에 실패했어요')
+}
+
+function getRetryAfterMs(retryAfterHeader: string | null): number {
+  if (!retryAfterHeader) {
+    return DEFAULT_429_RETRY_DELAY_MS
+  }
+
+  const retryAfterSeconds = Number(retryAfterHeader)
+
+  if (Number.isFinite(retryAfterSeconds)) {
+    return Math.max(0, retryAfterSeconds * 1000)
+  }
+
+  const retryAfterDate = Date.parse(retryAfterHeader)
+
+  if (Number.isNaN(retryAfterDate)) {
+    return DEFAULT_429_RETRY_DELAY_MS
+  }
+
+  return Math.max(0, retryAfterDate - Date.now())
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+async function waitForDownloadRequestTurn(): Promise<void> {
+  const scheduledRequest = downloadRequestQueue.then(async () => {
+    const now = Date.now()
+    const waitMs = Math.max(0, nextDownloadRequestAt - now)
+
+    nextDownloadRequestAt = Math.max(now, nextDownloadRequestAt) + DOWNLOAD_REQUEST_INTERVAL_MS
+
+    if (waitMs > 0) {
+      await sleep(waitMs)
+    }
   })
+
+  downloadRequestQueue = scheduledRequest.catch(() => {})
+  await scheduledRequest
 }

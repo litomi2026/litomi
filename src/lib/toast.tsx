@@ -25,15 +25,13 @@ type AdultVerificationToastOptions = {
 }
 
 export function showAdultVerificationRequiredToast({ username }: AdultVerificationToastOptions = {}) {
-  const settingsHref = username ? `/@${username}/settings#adult` : null
-
   toast.warning(
     <div className="flex flex-wrap gap-x-2 gap-y-1 items-center">
       <div>성인인증이 필요해요</div>
-      {settingsHref ? (
+      {username ? (
         <Link
           className="font-bold text-xs underline underline-offset-2"
-          href={settingsHref}
+          href={`/@${username}/settings#adult`}
           onClick={() => toast.dismiss(ADULT_VERIFICATION_REQUIRED_TOAST_ID)}
           prefetch={false}
         >

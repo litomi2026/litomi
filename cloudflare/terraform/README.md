@@ -62,7 +62,6 @@ terraform apply
 3. Use the "Custom token" template
 4. Configure permissions:
    - Zone → Cache Purge → Edit
-   - Zone → Page Rules → Edit
    - Zone → Zone Settings → Edit
    - Zone → Managed headers → Edit
    - Zone → DNS → Edit
