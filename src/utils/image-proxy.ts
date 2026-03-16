@@ -29,6 +29,39 @@ const SIGNATURE_QUERY_PARAM_NAMES = new Set([
 const SIGNATURE_QUERY_PARAM_PREFIXES = ['x-amz-', 'x-goog-', 'x-oss-', 'x-cf-'] as const
 
 const BLOCKED_HOSTNAMES = new Set(['100.100.100.200', '169.254.169.254', 'localhost', 'metadata.google.internal'])
+const ORIGINAL_MANGA_IMAGE_SOURCE_HOST_SUFFIXES = ['hentkor.net', 'harpi.in', 'hiyobi.org', 'k-hentai.org', 'soujpa.in']
+
+export type MangaImageProxyVariant = 'original' | 'thumbnail'
+
+type MangaImageProxyParams = {
+  mangaId: number
+  page: number
+  variant: MangaImageProxyVariant
+}
+
+export function createCoverThumbnailURL(mangaId: number): string {
+  return `https://cdn.imagedeliveries.com/${mangaId}/thumbnails/cover.webp`
+}
+
+export function createEquivalentMangaImageSourceURLs({ mangaId, page, variant }: MangaImageProxyParams): string[] {
+  if (variant === 'thumbnail') {
+    return [page === 1 ? createCoverThumbnailURL(mangaId) : createImageDeliveriesThumbnailURL(mangaId, page)]
+  }
+
+  return [
+    createSoujpaPageURL(mangaId, page, 'avif'),
+    createSoujpaPageURL(mangaId, page, 'webp'),
+    createHentkorPageURL(mangaId, page),
+  ]
+}
+
+export function createFirstPageOriginalFallbackURLs(mangaId: number): string[] {
+  return [
+    createSoujpaPageURL(mangaId, 1, 'avif'),
+    createSoujpaPageURL(mangaId, 1, 'webp'),
+    createHentkorPageURL(mangaId, 1),
+  ]
+}
 
 export async function createImageProxyCacheKey(sourceURL: string | URL): Promise<string> {
   const canonicalSource = createImageProxyCanonicalSource(sourceURL)
@@ -86,6 +119,46 @@ export async function createImageProxyRequestURL({
   return proxyURL.toString()
 }
 
+export function createMangaImageProxyRequestURL({
+  proxyOrigin,
+  sourceURL,
+  mangaId,
+  page,
+  variant,
+}: {
+  proxyOrigin: string
+  sourceURL?: string
+  mangaId: number
+  page: number
+  variant: MangaImageProxyVariant
+}): string {
+  const proxyURL = new URL(proxyOrigin)
+  proxyURL.pathname = `/i/v2/manga/${mangaId}/${variant}/${page}`
+  proxyURL.search = ''
+
+  if (sourceURL) {
+    const validatedSourceURL = parseImageProxySourceURL(sourceURL)
+    proxyURL.searchParams.set('u', validatedSourceURL.toString())
+  }
+
+  return proxyURL.toString()
+}
+
+export function isAllowedMangaImageProxySource(
+  sourceURL: URL,
+  { mangaId, page, variant }: MangaImageProxyParams,
+): boolean {
+  if (variant === 'original' && hasAllowedOriginalMangaImageHost(sourceURL.hostname)) {
+    return true
+  }
+
+  return createEquivalentMangaImageSourceURLs({ mangaId, page, variant }).some((allowedSourceURL) => {
+    const allowedURL = new URL(allowedSourceURL)
+
+    return sourceURL.hostname === allowedURL.hostname && sourceURL.pathname === allowedURL.pathname
+  })
+}
+
 export function parseImageProxySourceURL(sourceURL: string): URL {
   let parsedURL: URL
 
@@ -96,6 +169,26 @@ export function parseImageProxySourceURL(sourceURL: string): URL {
   }
 
   return validateImageSourceURL(parsedURL)
+}
+
+function createHentkorPageURL(mangaId: number, page: number): string {
+  return `https://cdn.hentkor.net/pages/${mangaId}/${page}.avif`
+}
+
+function createImageDeliveriesThumbnailURL(mangaId: number, page: number): string {
+  return `https://cdn.imagedeliveries.com/${mangaId}/thumbnails/${page}.webp`
+}
+
+function createSoujpaPageURL(mangaId: number, page: number, ext: 'avif' | 'webp'): string {
+  return `https://soujpa.in/start/${mangaId}/${mangaId}_${page - 1}.${ext}`
+}
+
+function hasAllowedOriginalMangaImageHost(hostname: string): boolean {
+  const normalizedHost = hostname.toLowerCase()
+
+  return ORIGINAL_MANGA_IMAGE_SOURCE_HOST_SUFFIXES.some(
+    (hostSuffix) => normalizedHost === hostSuffix || normalizedHost.endsWith(`.${hostSuffix}`),
+  )
 }
 
 function isPrivateIPv4Address(hostname: string): boolean {
