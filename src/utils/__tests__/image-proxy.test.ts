@@ -3,6 +3,7 @@ import { describe, expect, test } from 'bun:test'
 import {
   createEquivalentMangaImageSourceURLs,
   createMangaImageProxyRequestURL,
+  isImageProxySourceURLCompatibleWithRouteParams,
   parseImageProxySourceURL,
 } from '@/utils/image-proxy'
 
@@ -85,5 +86,98 @@ describe('manga image proxy utilities', () => {
     expect(() => parseImageProxySourceURL('https://evil.example.com/images/123.webp')).toThrow(
       '허용되지 않은 이미지 호스트예요',
     )
+  })
+
+  test('soujpa 원본 URL은 route param과 semantic하게 일치해야 한다', () => {
+    const sourceURL = parseImageProxySourceURL('https://soujpa.in/start/123/123_4.avif')
+
+    expect(
+      isImageProxySourceURLCompatibleWithRouteParams(sourceURL, {
+        mangaId: 123,
+        page: 5,
+        variant: 'original',
+      }),
+    ).toBe(true)
+    expect(
+      isImageProxySourceURLCompatibleWithRouteParams(sourceURL, {
+        mangaId: 124,
+        page: 5,
+        variant: 'original',
+      }),
+    ).toBe(false)
+    expect(
+      isImageProxySourceURLCompatibleWithRouteParams(sourceURL, {
+        mangaId: 123,
+        page: 5,
+        variant: 'thumbnail',
+      }),
+    ).toBe(false)
+  })
+
+  test('hentkor 원본 URL은 mangaId/page가 맞아야 한다', () => {
+    const sourceURL = parseImageProxySourceURL('https://cdn.hentkor.net/pages/777/9.avif')
+
+    expect(
+      isImageProxySourceURLCompatibleWithRouteParams(sourceURL, {
+        mangaId: 777,
+        page: 9,
+        variant: 'original',
+      }),
+    ).toBe(true)
+    expect(
+      isImageProxySourceURLCompatibleWithRouteParams(sourceURL, {
+        mangaId: 777,
+        page: 10,
+        variant: 'original',
+      }),
+    ).toBe(false)
+  })
+
+  test('cdn.imagedeliveries 썸네일 URL은 thumbnail route와 맞아야 한다', () => {
+    const numericThumbnailURL = parseImageProxySourceURL('https://cdn.imagedeliveries.com/456/thumbnails/3.webp')
+    const coverThumbnailURL = parseImageProxySourceURL('https://cdn.imagedeliveries.com/456/thumbnails/cover.webp')
+
+    expect(
+      isImageProxySourceURLCompatibleWithRouteParams(numericThumbnailURL, {
+        mangaId: 456,
+        page: 3,
+        variant: 'thumbnail',
+      }),
+    ).toBe(true)
+    expect(
+      isImageProxySourceURLCompatibleWithRouteParams(numericThumbnailURL, {
+        mangaId: 456,
+        page: 1,
+        variant: 'thumbnail',
+      }),
+    ).toBe(false)
+    expect(
+      isImageProxySourceURLCompatibleWithRouteParams(coverThumbnailURL, {
+        mangaId: 456,
+        page: 1,
+        variant: 'thumbnail',
+      }),
+    ).toBe(true)
+    expect(
+      isImageProxySourceURLCompatibleWithRouteParams(coverThumbnailURL, {
+        mangaId: 456,
+        page: 2,
+        variant: 'thumbnail',
+      }),
+    ).toBe(false)
+  })
+
+  test('아직 semantic 검증을 붙이지 않은 허용 호스트는 일단 통과시킨다', () => {
+    const sourceURL = parseImageProxySourceURL(
+      'https://storage-6-10.k-hentai.org/storage/f2/74/f2740688125f4d28e0f2bd891e721ce0b38df1be.webp',
+    )
+
+    expect(
+      isImageProxySourceURLCompatibleWithRouteParams(sourceURL, {
+        mangaId: 1,
+        page: 1,
+        variant: 'original',
+      }),
+    ).toBe(true)
   })
 })

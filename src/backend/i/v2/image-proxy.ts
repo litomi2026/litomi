@@ -7,7 +7,7 @@ import { z } from 'zod'
 import { Env } from '@/backend'
 import { createCacheControl } from '@/utils/cache-control'
 import { sec } from '@/utils/format/date'
-import { parseImageProxySourceURL } from '@/utils/image-proxy'
+import { isImageProxySourceURLCompatibleWithRouteParams, parseImageProxySourceURL } from '@/utils/image-proxy'
 
 const imageProxyRoutes = new Hono<Env>()
 
@@ -67,7 +67,11 @@ imageProxyRoutes.on(
       sourceURL = parseImageProxySourceURL(u)
     } catch (error) {
       console.error('Failed to parse image URL:', error)
-      return createProxyErrorResponse('잘못된 이미지 URL이에요', 400, NO_STORE_CACHE_CONTROL)
+      return createProxyErrorResponse('400 Bad Request', 400, NO_STORE_CACHE_CONTROL)
+    }
+
+    if (!isImageProxySourceURLCompatibleWithRouteParams(sourceURL, { mangaId, page, variant })) {
+      return createProxyErrorResponse('400 Bad Request', 400, NO_STORE_CACHE_CONTROL)
     }
 
     const upstreamHeaders = new Headers({
