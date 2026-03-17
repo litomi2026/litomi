@@ -5,12 +5,7 @@ import type { ComponentPropsWithRef, SyntheticEvent } from 'react'
 import { useEffect, useState } from 'react'
 
 import { env } from '@/env/client'
-import {
-  createCoverThumbnailURL,
-  createEquivalentMangaImageSourceURLs,
-  createFirstPageOriginalFallbackURLs,
-  createMangaImageProxyRequestURL,
-} from '@/utils/image-proxy'
+import { createEquivalentMangaImageSourceURLs, createMangaImageProxyRequestURL } from '@/utils/image-proxy'
 
 const INITIAL_DISPLAYED_IMAGE = 5
 const FALLBACK_IMAGE_URL = '/image/fallback.svg'
@@ -102,8 +97,14 @@ function resolveSources({
 
   resolvedSources.push(semanticProbeURL, ...semanticSourceURLs)
 
-  if (kind === 'thumbnail') {
-    resolvedSources.push(createCoverThumbnailURL(mangaId), ...createFirstPageOriginalFallbackURLs(mangaId))
+  if (variant === 'thumbnail') {
+    const originalFallbackSourceURLs = createEquivalentMangaImageSourceURLs({
+      mangaId,
+      page,
+      variant: 'original',
+    })
+
+    resolvedSources.push(...originalFallbackSourceURLs)
   }
 
   resolvedSources.push(FALLBACK_IMAGE_URL)
