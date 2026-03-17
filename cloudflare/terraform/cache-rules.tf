@@ -170,7 +170,6 @@ resource "cloudflare_ruleset" "cache_rules" {
         }
         cache_key = {
           cache_deception_armor      = true
-          ignore_query_strings_order = true
           custom_key = {
             query_string = {
               exclude = {
