@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import type { Manga } from '@/types/manga'
 
@@ -15,6 +15,7 @@ import ImageViewer from './ImageViewer/ImageViewer'
 import usePageMetadata from './usePageMetadata'
 
 const NotFound = dynamic(() => import('./not-found'))
+const AD_UNLOCK_DELAY_MS = 300
 
 type Props = {
   id: number
@@ -23,7 +24,19 @@ type Props = {
 
 export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
   const [hasClickedAd, setHasClickedAd] = useState(false)
+  const unlockTimeoutRef = useRef<number>(null)
   const { me, status: nonAdultAdGateStatus } = useNonAdultAdGate()
+
+  function handleAdClick() {
+    if (unlockTimeoutRef.current !== null) {
+      return
+    }
+
+    unlockTimeoutRef.current = window.setTimeout(() => {
+      unlockTimeoutRef.current = null
+      setHasClickedAd(true)
+    }, AD_UNLOCK_DELAY_MS)
+  }
 
   // 미로그인 사용자는 광고를 클릭해야만 패치하도록 합니다.
   const shouldFetch = (initialManga?.images?.length ?? 0) === 0
@@ -38,6 +51,15 @@ export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
   // NOTE: Vercel Fluid Active CPU 비용을 줄이기 위해
   usePageMetadata(metadata)
 
+  // NOTE: 컴포넌트 언마운트 시 타이머를 정리해요
+  useEffect(() => {
+    return () => {
+      if (unlockTimeoutRef.current !== null) {
+        window.clearTimeout(unlockTimeoutRef.current)
+      }
+    }
+  }, [])
+
   // NOTE: 로그인 사용자는 me 응답이 올 때까지 잠깐 숨겨서 깜빡임을 막아요.
   if (nonAdultAdGateStatus === 'loading') {
     return null
@@ -48,7 +70,7 @@ export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
       <NonAdultJuicyAdsBanner
         className="h-full flex flex-col gap-4 items-center justify-center"
         layout={VIEWER_UNLOCK_NON_ADULT_AD_LAYOUT}
-        onAdClick={() => setHasClickedAd(true)}
+        onAdClick={handleAdClick}
         subtitle={
           <div>
             <LoginPageLink className="text-zinc-400">로그인</LoginPageLink>을 하면 광고를 보지 않고도 작품을 볼 수

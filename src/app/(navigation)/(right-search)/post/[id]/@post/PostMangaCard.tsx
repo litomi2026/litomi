@@ -23,9 +23,9 @@ export default function PostMangaCard({ mangaId, variant = 'inline', imageClassN
       <MangaImage
         alt={title}
         className={twMerge('block w-full h-auto bg-zinc-900 aspect-[auto_5/7]', imageClassName)}
-        kind="thumbnail"
         mangaId={mangaId}
         src={thumbnailUrl}
+        variant="thumbnail"
       />
     )
   }
@@ -35,9 +35,9 @@ export default function PostMangaCard({ mangaId, variant = 'inline', imageClassN
       <MangaImage
         alt={title}
         className={twMerge('w-20 aspect-5/7 object-cover rounded border-2 border-zinc-700 shrink-0', imageClassName)}
-        kind="thumbnail"
         mangaId={mangaId}
         src={thumbnailUrl}
+        variant="thumbnail"
       />
       <div className="flex flex-col gap-2 min-w-0 flex-1">
         <div className="flex items-start gap-2">
