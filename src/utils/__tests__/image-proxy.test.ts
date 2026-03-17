@@ -5,6 +5,7 @@ import {
   createEquivalentMangaImageSourceURLs,
   createMangaImageProxyRequestURL,
   isImageProxySourceURLCompatibleWithRouteParams,
+  isMangaImageProxyRequestURL,
   parseImageProxySourceURL,
 } from '@/utils/image-proxy'
 
@@ -37,6 +38,17 @@ describe('manga image proxy utilities', () => {
     expect(parsedRequestURL.origin).toBe(proxyOrigin)
     expect(parsedRequestURL.pathname).toBe('/i/v2/manga/123/original/5.webp')
     expect(parsedRequestURL.searchParams.get('u')).toBe(sourceURL)
+  })
+
+  test('프록시 요청 URL만 프록시 URL로 판별한다', () => {
+    expect(isMangaImageProxyRequestURL('https://soujpa.in/start/123/123_4.avif')).toBe(false)
+    expect(isMangaImageProxyRequestURL('/image/fallback.svg')).toBe(false)
+    expect(
+      isMangaImageProxyRequestURL('https://not-proxy.example.com/i/v2/manga/123/original/5.webp?u=https%3A%2F%2Fsoujpa.in'),
+    ).toBe(false)
+    expect(
+      isMangaImageProxyRequestURL(`${proxyOrigin}/i/v2/manga/123/original/5.webp?u=https%3A%2F%2Fsoujpa.in`),
+    ).toBe(true)
   })
 
   test('1-based 페이지 번호로 동등 원본 fallback 소스를 만든다', () => {

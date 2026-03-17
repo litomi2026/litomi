@@ -111,6 +111,20 @@ export function isImageProxySourceURLCompatibleWithRouteParams(
   return true
 }
 
+export function isMangaImageProxyRequestURL(requestURL: string): boolean {
+  let parsedRequestURL: URL
+
+  try {
+    parsedRequestURL = new URL(requestURL)
+  } catch {
+    return false
+  }
+
+  const proxyURL = new URL(NEXT_PUBLIC_CORS_PROXY_URL)
+
+  return parsedRequestURL.origin === proxyURL.origin && parsedRequestURL.pathname.startsWith('/i/')
+}
+
 export function parseImageProxyRoutePageParam(pageParam: string): number {
   const matchedPage = /^(?<page>\d+)(?:\.webp)?$/u.exec(pageParam)
 
