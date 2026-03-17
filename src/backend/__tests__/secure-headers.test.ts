@@ -2,6 +2,8 @@ import { describe, expect, test } from 'bun:test'
 import { Hono } from 'hono'
 import { secureHeaders } from 'hono/secure-headers'
 
+import { sec } from '@/utils/format/date'
+
 import { getDefaultSecureHeadersOptions } from '../middleware/secure-headers'
 
 function createApp() {
@@ -27,7 +29,9 @@ describe('API secure headers', () => {
       'accelerometer=(), autoplay=(), browsing-topics=(), camera=(), fullscreen=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()',
     )
     expect(response.headers.get('referrer-policy')).toBe('no-referrer')
-    expect(response.headers.get('strict-transport-security')).toBe('max-age=63072000; includeSubDomains; preload')
+    expect(response.headers.get('strict-transport-security')).toBe(
+      `max-age=${sec('2 years')}; includeSubDomains; preload`,
+    )
     expect(response.headers.get('x-content-type-options')).toBe('nosniff')
     expect(response.headers.get('x-dns-prefetch-control')).toBe('off')
     expect(response.headers.get('x-download-options')).toBe('noopen')
