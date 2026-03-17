@@ -4,12 +4,10 @@ import type { ComponentPropsWithRef, SyntheticEvent } from 'react'
 
 import { useEffect, useState } from 'react'
 
-import { env } from '@/env/client'
 import { createEquivalentMangaImageSourceURLs, createMangaImageProxyRequestURL } from '@/utils/image-proxy'
 
 const INITIAL_DISPLAYED_IMAGE = 5
 const FALLBACK_IMAGE_URL = '/image/fallback.svg'
-const { NEXT_PUBLIC_CORS_PROXY_URL } = env
 
 interface Props extends ComponentPropsWithRef<'img'> {
   imageIndex?: number
@@ -83,7 +81,6 @@ function resolveSources({
   }
 
   const semanticProbeURL = createMangaImageProxyRequestURL({
-    proxyOrigin: NEXT_PUBLIC_CORS_PROXY_URL,
     mangaId,
     page,
     variant,

@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 
+import { env } from '@/env/client'
 import {
   createEquivalentMangaImageSourceURLs,
   createMangaImageProxyRequestURL,
@@ -7,17 +8,18 @@ import {
   parseImageProxySourceURL,
 } from '@/utils/image-proxy'
 
+const proxyOrigin = new URL(env.NEXT_PUBLIC_CORS_PROXY_URL).origin
+
 describe('manga image proxy utilities', () => {
   test('프록시 요청 URL을 queryless /i/v2/manga/:mangaId/:variant/:page 형태로 만든다', () => {
     const requestURL = createMangaImageProxyRequestURL({
-      proxyOrigin: 'https://img.litomi.in',
       mangaId: 123,
       page: 5,
       variant: 'original',
     })
     const parsedRequestURL = new URL(requestURL)
 
-    expect(parsedRequestURL.origin).toBe('https://img.litomi.in')
+    expect(parsedRequestURL.origin).toBe(proxyOrigin)
     expect(parsedRequestURL.pathname).toBe('/i/v2/manga/123/original/5')
     expect(parsedRequestURL.search).toBe('')
   })
@@ -25,7 +27,6 @@ describe('manga image proxy utilities', () => {
   test('프록시 materialize URL을 같은 path + ?u=<url> 형태로 만든다', () => {
     const sourceURL = 'https://soujpa.in/start/123/123_4.avif'
     const requestURL = createMangaImageProxyRequestURL({
-      proxyOrigin: 'https://img.litomi.in',
       sourceURL,
       mangaId: 123,
       page: 5,
@@ -33,7 +34,7 @@ describe('manga image proxy utilities', () => {
     })
     const parsedRequestURL = new URL(requestURL)
 
-    expect(parsedRequestURL.origin).toBe('https://img.litomi.in')
+    expect(parsedRequestURL.origin).toBe(proxyOrigin)
     expect(parsedRequestURL.pathname).toBe('/i/v2/manga/123/original/5')
     expect(parsedRequestURL.searchParams.get('u')).toBe(sourceURL)
   })
