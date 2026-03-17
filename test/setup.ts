@@ -52,6 +52,10 @@ const window = new Window({
   height: 768,
 })
 
+// Bun 환경에서는 happy-dom Window에 SyntaxError 생성자가 비어 있어
+// querySelectorAll()을 사용하는 Testing Library 쿼리가 모두 실패할 수 있다.
+window.SyntaxError = globalThis.SyntaxError
+
 // Set up global DOM objects
 beforeAll(() => {
   // @ts-expect-error - Adding DOM globals
