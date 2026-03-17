@@ -14,6 +14,7 @@ import { timing } from 'hono/timing'
 
 import appRoutes from './app'
 import { auth } from './middleware/auth'
+import { getDefaultSecureHeadersOptions } from './middleware/secure-headers'
 import { initBackendOtel } from './otel'
 import { resolveCORSOrigin } from './utils/cors-origin'
 
@@ -36,9 +37,9 @@ app.use(compress())
 app.use(contextStorage())
 app.use(csrf({ origin: (origin) => Boolean(resolveCORSOrigin(origin)), secFetchSite: 'same-site' }))
 app.use(logger())
-app.use(secureHeaders())
 app.use(timing())
 
+app.use('/api/*', secureHeaders(getDefaultSecureHeadersOptions()))
 app.use('/api/*', auth)
 app.use('/api/*', etag())
 
@@ -48,6 +49,14 @@ app.use(
     origin: (origin) => resolveCORSOrigin(origin),
     credentials: true,
     exposeHeaders: ['Retry-After'],
+  }),
+)
+
+app.use(
+  '/i/*',
+  secureHeaders({
+    ...getDefaultSecureHeadersOptions(),
+    crossOriginResourcePolicy: 'same-site',
   }),
 )
 
