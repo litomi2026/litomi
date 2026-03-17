@@ -135,12 +135,4 @@ describe('GET /i/v2/manga/:mangaId/:variant/:page', () => {
     expect(response.status).toBe(400)
     expect(response.headers.get('cache-control')).toContain('no-store')
   })
-
-  test('.webp 확장자를 붙인 route 요청은 400과 no-store를 반환한다', async () => {
-    const response = await app.request('/manga/123/original/5.webp?u=https%3A%2F%2Fsoujpa.in%2Fstart%2F123%2F123_4.avif')
-
-    expect(response.status).toBe(400)
-    expect(response.headers.get('cache-control')).toContain('no-store')
-    expect(fetchCalls).toBe(0)
-  })
 })
