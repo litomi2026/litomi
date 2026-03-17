@@ -62,7 +62,7 @@ imageProxyRoutes.on(
     const { u } = c.req.valid('query')
 
     if (!u) {
-      return createProxyErrorResponse('404 Not Found', 404, NO_STORE_CACHE_CONTROL)
+      return createProxyErrorResponse('400 Bad Request', 400, NO_STORE_CACHE_CONTROL)
     }
 
     let sourceURL: URL

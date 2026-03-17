@@ -38,13 +38,15 @@ describe('GET /i/v2/manga/:mangaId/:variant/:page.webp', () => {
   test('u 없는 queryless .webp 요청은 404와 no-store를 반환하고 upstream fetch를 하지 않는다', async () => {
     const response = await app.request('/manga/123/original/5.webp')
 
-    expect(response.status).toBe(404)
+    expect(response.status).toBe(400)
     expect(response.headers.get('cache-control')).toContain('no-store')
     expect(fetchCalls).toBe(0)
   })
 
   test('허용된 이미지 소스를 프록시하고 30일 캐시 헤더를 반환한다', async () => {
-    const response = await app.request('/manga/123/original/5.webp?u=https%3A%2F%2Fsoujpa.in%2Fstart%2F123%2F123_4.avif')
+    const response = await app.request(
+      '/manga/123/original/5.webp?u=https%3A%2F%2Fsoujpa.in%2Fstart%2F123%2F123_4.avif',
+    )
 
     expect(response.status).toBe(200)
     expect(response.headers.get('cache-control')).toContain('public')
@@ -62,14 +64,18 @@ describe('GET /i/v2/manga/:mangaId/:variant/:page.webp', () => {
   })
 
   test('soujpa 원본 URL이 route param과 맞으면 프록시한다', async () => {
-    const response = await app.request('/manga/123/original/5.webp?u=https%3A%2F%2Fsoujpa.in%2Fstart%2F123%2F123_4.webp')
+    const response = await app.request(
+      '/manga/123/original/5.webp?u=https%3A%2F%2Fsoujpa.in%2Fstart%2F123%2F123_4.webp',
+    )
 
     expect(response.status).toBe(200)
     expect(await response.text()).toBe('image-body')
   })
 
   test('soujpa 원본 URL의 mangaId/page가 route param과 다르면 400을 반환한다', async () => {
-    const response = await app.request('/manga/123/original/5.webp?u=https%3A%2F%2Fsoujpa.in%2Fstart%2F999%2F999_4.avif')
+    const response = await app.request(
+      '/manga/123/original/5.webp?u=https%3A%2F%2Fsoujpa.in%2Fstart%2F999%2F999_4.avif',
+    )
 
     expect(response.status).toBe(400)
     expect(response.headers.get('cache-control')).toContain('no-store')
@@ -113,7 +119,9 @@ describe('GET /i/v2/manga/:mangaId/:variant/:page.webp', () => {
   })
 
   test('cdn.hentkor.net 서브도메인은 semantic mismatch여도 현재 프록시를 허용한다', async () => {
-    const response = await app.request('/manga/123/original/5.webp?u=https%3A%2F%2Fcdn.hentkor.net%2Fpages%2F123%2F6.avif')
+    const response = await app.request(
+      '/manga/123/original/5.webp?u=https%3A%2F%2Fcdn.hentkor.net%2Fpages%2F123%2F6.avif',
+    )
 
     expect(response.status).toBe(200)
     expect(await response.text()).toBe('image-body')
