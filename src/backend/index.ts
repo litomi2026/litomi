@@ -14,6 +14,7 @@ import { timing } from 'hono/timing'
 
 import appRoutes from './app'
 import { auth } from './middleware/auth'
+import { getDefaultSecureHeadersOptions } from './middleware/secure-headers'
 import { initBackendOtel } from './otel'
 import { resolveCORSOrigin } from './utils/cors-origin'
 
@@ -29,15 +30,6 @@ initBackendOtel()
 
 const app = new Hono<Env>()
 
-app.use(
-  '*',
-  cors({
-    origin: (origin) => resolveCORSOrigin(origin),
-    credentials: true,
-    exposeHeaders: ['Retry-After'],
-  }),
-)
-
 app.use(httpInstrumentationMiddleware({ serviceName: 'litomi-backend' }))
 app.use('*', ipRestriction(getConnInfo, { denyList: [] }))
 app.use('*', requestId())
@@ -45,10 +37,36 @@ app.use(compress())
 app.use(contextStorage())
 app.use(csrf({ origin: (origin) => Boolean(resolveCORSOrigin(origin)), secFetchSite: 'same-site' }))
 app.use(logger())
-app.use(secureHeaders())
 app.use(timing())
+
+app.use('/api/*', secureHeaders(getDefaultSecureHeadersOptions()))
 app.use('/api/*', auth)
 app.use('/api/*', etag())
+
+app.use(
+  '/api/*',
+  cors({
+    origin: (origin) => resolveCORSOrigin(origin),
+    credentials: true,
+    exposeHeaders: ['Retry-After'],
+  }),
+)
+
+app.use(
+  '/i/*',
+  secureHeaders({
+    ...getDefaultSecureHeadersOptions(),
+    crossOriginResourcePolicy: 'same-site',
+  }),
+)
+
+app.use(
+  '/i/*',
+  cors({
+    origin: (origin) => resolveCORSOrigin(origin),
+    exposeHeaders: ['Retry-After'],
+  }),
+)
 
 // NOTE: 쿠키와 헤더는 Cloudflare 캐시 키가 아니기에 현재는 search param 값만 사용 가능함
 // app.use(
@@ -63,9 +81,10 @@ app.use('/api/*', etag())
 
 app.route('/', appRoutes)
 
-// eslint-disable-next-line import/no-anonymous-default-export
-export default {
+const backendApp = {
   ...app,
   port: Number(process.env.PORT ?? 3002),
   hostname: process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost',
 }
+
+export default backendApp

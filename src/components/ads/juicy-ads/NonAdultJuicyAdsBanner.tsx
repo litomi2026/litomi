@@ -47,7 +47,7 @@ export default function NonAdultJuicyAdsBanner({
         <p className="text-xs text-zinc-500">{subtitle || <DefaultSubtitle me={me} />}</p>
       </div>
       <JuicyAdsScript />
-      <div className="flex flex-wrap justify-center gap-1.5">
+      <div className="flex flex-wrap justify-center gap-1.5 self-stretch">
         {renderLayoutNodes(layout ?? DEFAULT_NON_ADULT_AD_LAYOUT, onAdClick)}
       </div>
     </section>

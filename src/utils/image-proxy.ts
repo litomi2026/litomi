@@ -1,9 +1,14 @@
+import { env } from '@/env/client'
+
+const { NEXT_PUBLIC_CORS_PROXY_URL } = env
+
 const IMAGE_PROXY_SOURCE_HOST_SUFFIXES = [
   'hentkor.net',
   'k-hentai.org',
   'soujpa.in',
   'cdn.imagedeliveries.com',
 ] as const
+const IMAGE_PROXY_ROUTE_EXTENSION = '.webp'
 
 export type MangaImageProxyParams = {
   mangaId: number
@@ -38,21 +43,18 @@ export function createFirstPageOriginalFallbackURLs(mangaId: number): string[] {
 }
 
 export function createMangaImageProxyRequestURL({
-  proxyOrigin,
   sourceURL,
   mangaId,
   page,
   variant,
 }: {
-  proxyOrigin: string
   sourceURL?: string
   mangaId: number
   page: number
   variant: MangaImageProxyVariant
 }): string {
-  const proxyURL = new URL(proxyOrigin)
-  proxyURL.pathname = `/i/v2/manga/${mangaId}/${variant}/${page}`
-  proxyURL.search = ''
+  const proxyURL = new URL(NEXT_PUBLIC_CORS_PROXY_URL)
+  proxyURL.pathname = `/i/v2/manga/${mangaId}/${variant}/${page}${IMAGE_PROXY_ROUTE_EXTENSION}`
 
   if (sourceURL) {
     const validatedSourceURL = parseImageProxySourceURL(sourceURL)
@@ -107,6 +109,30 @@ export function isImageProxySourceURLCompatibleWithRouteParams(
   }
 
   return true
+}
+
+export function isMangaImageProxyRequestURL(requestURL: string): boolean {
+  let parsedRequestURL: URL
+
+  try {
+    parsedRequestURL = new URL(requestURL)
+  } catch {
+    return false
+  }
+
+  const proxyURL = new URL(NEXT_PUBLIC_CORS_PROXY_URL)
+
+  return parsedRequestURL.origin === proxyURL.origin && parsedRequestURL.pathname.startsWith('/i/')
+}
+
+export function parseImageProxyRoutePageParam(pageParam: string): number {
+  const matchedPage = /^(?<page>\d+)(?:\.webp)?$/u.exec(pageParam)
+
+  if (!matchedPage?.groups?.page) {
+    throw new Error('이미지 페이지 파라미터 형식이 올바르지 않아요')
+  }
+
+  return Number(matchedPage.groups.page)
 }
 
 export function parseImageProxySourceURL(sourceURL: string): URL {

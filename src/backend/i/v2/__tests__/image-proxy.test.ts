@@ -35,10 +35,10 @@ afterAll(() => {
 })
 
 describe('GET /i/v2/manga/:mangaId/:variant/:page', () => {
-  test('u 없는 queryless 요청은 404와 no-store를 반환하고 upstream fetch를 하지 않는다', async () => {
+  test('u 없는 queryless 요청은 400과 no-store를 반환하고 upstream fetch를 하지 않는다', async () => {
     const response = await app.request('/manga/123/original/5')
 
-    expect(response.status).toBe(404)
+    expect(response.status).toBe(400)
     expect(response.headers.get('cache-control')).toContain('no-store')
     expect(fetchCalls).toBe(0)
   })
