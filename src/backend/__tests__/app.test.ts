@@ -24,11 +24,6 @@ type ReadyOkResponse = {
 
 type ReadyResponse = ReadyErrorResponse | ReadyOkResponse
 
-type RootResponse = {
-  name?: string
-  age?: number
-}
-
 let shouldThrowDatabaseError = false
 let shouldReportDatabaseDisconnected = false
 
@@ -69,80 +64,21 @@ describe('GET /', () => {
     shouldReportDatabaseDisconnected = false
   })
 
-  describe('성공', () => {
-    test('쿼리 파라미터 없이 요청하는 경우 기본 응답을 반환한다', async () => {
-      const response = await appRoutes.request('/')
-      expect(response.status).toBe(200)
-      expect(response.headers.get('content-type')).toContain('application/json')
-
-      const data = (await response.json()) as RootResponse
-      expect(data.name).toBeUndefined()
-      expect(data.age).toBeUndefined()
-    })
-
-    test('name 쿼리 파라미터를 포함하여 요청하는 경우 name을 반환한다', async () => {
-      const response = await appRoutes.request('/?name=홍길동')
-      expect(response.status).toBe(200)
-
-      const data = (await response.json()) as RootResponse
-      expect(data.name).toBe('홍길동')
-      expect(data.age).toBeUndefined()
-    })
-
-    test('age 쿼리 파라미터를 포함하여 요청하는 경우 숫자로 변환하여 반환한다', async () => {
-      const response = await appRoutes.request('/?age=25')
-      expect(response.status).toBe(200)
-
-      const data = (await response.json()) as RootResponse
-      expect(data.name).toBeUndefined()
-      expect(data.age).toBe(25)
-    })
-
-    test('name과 age 모두 포함하여 요청하는 경우 두 값을 반환한다', async () => {
-      const response = await appRoutes.request('/?name=김철수&age=30')
-      expect(response.status).toBe(200)
-
-      const data = (await response.json()) as RootResponse
-      expect(data.name).toBe('김철수')
-      expect(data.age).toBe(30)
-    })
+  test('쿼리 파라미터 없이 루트로 요청하면 404를 반환한다', async () => {
+    const response = await appRoutes.request('/')
+    expect(response.status).toBe(404)
   })
 
-  describe('실패', () => {
-    test('age 파라미터가 숫자로 변환될 수 없는 경우 400 응답을 반환한다', async () => {
-      const response = await appRoutes.request('/?age=invalid')
-      expect(response.status).toBe(400)
-    })
-
-    test('age 파라미터가 음수인 경우 정상적으로 처리한다', async () => {
-      const response = await appRoutes.request('/?age=-5')
-      expect(response.status).toBe(200)
-
-      const data = (await response.json()) as RootResponse
-      expect(data.age).toBe(-5)
-    })
+  test('쿼리 파라미터를 포함해도 루트로 요청하면 404를 반환한다', async () => {
+    const response = await appRoutes.request('/?name=홍길동&age=25')
+    expect(response.status).toBe(404)
   })
 
-  describe('기타', () => {
-    test('동일한 파라미터로 여러 번 요청하는 경우 일관된 응답을 반환한다', async () => {
-      // When
-      const promises = Array.from({ length: 5 }, () => appRoutes.request('/?name=테스트&age=20'))
-      const responses = await Promise.all(promises)
-      const data = (await Promise.all(responses.map((r) => r.json()))) as RootResponse[]
+  test('동일한 루트 요청을 여러 번 보내도 일관되게 404를 반환한다', async () => {
+    const promises = Array.from({ length: 5 }, () => appRoutes.request('/?name=테스트&age=20'))
+    const responses = await Promise.all(promises)
 
-      // Then
-      expect(responses.every((r) => r.status === 200)).toBe(true)
-      expect(data.every((d) => d.name === '테스트' && d.age === 20)).toBe(true)
-    })
-
-    test('특수 문자가 포함된 name을 올바르게 처리한다', async () => {
-      const response = await appRoutes.request('/?name=John%20Doe&age=25')
-      expect(response.status).toBe(200)
-
-      const data = (await response.json()) as RootResponse
-      expect(data.name).toBe('John Doe')
-      expect(data.age).toBe(25)
-    })
+    expect(responses.every((r) => r.status === 404)).toBe(true)
   })
 })
 
