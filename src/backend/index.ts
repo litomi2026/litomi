@@ -63,7 +63,7 @@ app.use(
 app.use(
   '/i/*',
   cors({
-    origin: '*',
+    origin: (origin) => resolveCORSOrigin(origin),
     exposeHeaders: ['Retry-After'],
   }),
 )

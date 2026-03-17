@@ -28,6 +28,28 @@ describe('MangaImage fallback', () => {
     expect(image.getAttribute('src')).toBe('/image/fallback.svg')
   })
 
+  test('프록시 URL을 표시할 때만 anonymous crossOrigin을 붙인다', () => {
+    const { getByAltText } = render(
+      <MangaImage imageIndex={4} mangaId={123} src="https://origin.example.com/pages/123/5.avif" />,
+    )
+    const image = getByAltText('manga-image-5')
+
+    expect(image.getAttribute('crossorigin')).toBeNull()
+
+    fireEvent.error(image)
+    fireEvent.error(image)
+    fireEvent.error(image)
+    fireEvent.error(image)
+
+    expect(image.getAttribute('src')).toBe('https://example.com/i/v2/manga/123/original/5.webp')
+    expect(image.getAttribute('crossorigin')).toBe('anonymous')
+
+    fireEvent.error(image)
+
+    expect(image.getAttribute('src')).toBe('/image/fallback.svg')
+    expect(image.getAttribute('crossorigin')).toBeNull()
+  })
+
   test('첫 번째 썸네일은 cover 썸네일 뒤에 queryless probe와 같은 페이지 원본 fallback을 순서대로 시도한다', () => {
     const { getByAltText } = render(<MangaImage imageIndex={0} mangaId={123} variant="thumbnail" />)
     const image = getByAltText('manga-image-1')

@@ -4,7 +4,11 @@ import type { ComponentPropsWithRef, SyntheticEvent } from 'react'
 
 import { useEffect, useState } from 'react'
 
-import { createEquivalentMangaImageSourceURLs, createMangaImageProxyRequestURL } from '@/utils/image-proxy'
+import {
+  createEquivalentMangaImageSourceURLs,
+  createMangaImageProxyRequestURL,
+  isMangaImageProxyRequestURL,
+} from '@/utils/image-proxy'
 
 const INITIAL_DISPLAYED_IMAGE = 5
 const FALLBACK_IMAGE_URL = '/image/fallback.svg'
@@ -24,11 +28,14 @@ export default function MangaImage({
   mangaId,
   src = '',
   variant = 'original',
+  crossOrigin,
   onError,
   ...props
 }: Props) {
   const [sourceIndex, setSourceIndex] = useState(0)
   const sources = resolveSources({ imageIndex, variant, mangaId, src })
+  const displayedSource = sources[sourceIndex]
+  const resolvedCrossOrigin = crossOrigin ?? (isMangaImageProxyRequestURL(displayedSource) ? 'anonymous' : undefined)
 
   function handleError(event: SyntheticEvent<HTMLImageElement, Event>) {
     onError?.(event)
@@ -48,10 +55,11 @@ export default function MangaImage({
   return (
     <img
       alt={`manga-image-${imageIndex + 1}`}
+      crossOrigin={resolvedCrossOrigin}
       draggable={false}
       fetchPriority={imageIndex < INITIAL_DISPLAYED_IMAGE ? 'high' : undefined}
       onError={handleError}
-      src={sources[sourceIndex]}
+      src={displayedSource}
       {...props}
     />
   )
