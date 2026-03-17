@@ -28,8 +28,8 @@ describe('MangaImage fallback', () => {
     expect(image.getAttribute('src')).toBe('/image/fallback.svg')
   })
 
-  test('첫 번째 썸네일은 queryless probe 뒤에 direct cover와 1페이지 원본 fallback을 순서대로 사용한다', () => {
-    const { getByAltText } = render(<MangaImage imageIndex={0} kind="thumbnail" mangaId={123} />)
+  test('첫 번째 썸네일은 queryless probe 뒤에 해당 썸네일과 같은 페이지 원본 fallback을 순서대로 시도한다', () => {
+    const { getByAltText } = render(<MangaImage imageIndex={0} mangaId={123} variant="thumbnail" />)
     const image = getByAltText('manga-image-1')
 
     expect(image.getAttribute('src')).toBe('https://example.com/i/v2/manga/123/thumbnail/1')
@@ -42,5 +42,21 @@ describe('MangaImage fallback', () => {
 
     fireEvent.error(image)
     expect(image.getAttribute('src')).toBe('https://soujpa.in/start/123/123_0.webp')
+  })
+
+  test('썸네일 fallback의 soujpa 원본 URL은 요청 page를 사용한다', () => {
+    const { getByAltText } = render(<MangaImage imageIndex={2} mangaId={123} variant="thumbnail" />)
+    const image = getByAltText('manga-image-3')
+
+    expect(image.getAttribute('src')).toBe('https://example.com/i/v2/manga/123/thumbnail/3')
+
+    fireEvent.error(image)
+    expect(image.getAttribute('src')).toBe('https://cdn.imagedeliveries.com/123/thumbnails/3.webp')
+
+    fireEvent.error(image)
+    expect(image.getAttribute('src')).toBe('https://soujpa.in/start/123/123_2.avif')
+
+    fireEvent.error(image)
+    expect(image.getAttribute('src')).toBe('https://soujpa.in/start/123/123_2.webp')
   })
 })
