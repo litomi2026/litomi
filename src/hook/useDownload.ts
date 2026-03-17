@@ -40,7 +40,7 @@ export function useDownload({ manga }: Props) {
         const downloadCandidates = getSemanticDownloadCandidates({
           mangaId: id,
           imageIndex,
-          fallbackURL: imageURL,
+          externalImageURL: imageURL,
         })
 
         await downloadImage(downloadCandidates, filename)
@@ -79,7 +79,7 @@ export function useDownload({ manga }: Props) {
           urls: getSemanticDownloadCandidates({
             mangaId: id,
             imageIndex: index,
-            fallbackURL: url,
+            externalImageURL: url,
           }),
           filename: `${index}${extension}`,
         }
@@ -152,34 +152,27 @@ function getImageExtension(imageURL: string): string {
 function getSemanticDownloadCandidates({
   mangaId,
   imageIndex,
-  fallbackURL,
+  externalImageURL,
 }: {
   mangaId: number
   imageIndex: number
-  fallbackURL: string
+  externalImageURL: string
 }): string[] {
-  if (!NEXT_PUBLIC_CORS_PROXY_URL || mangaId <= 0) {
-    return fallbackURL ? [fallbackURL] : []
+  if (mangaId <= 0) {
+    return externalImageURL ? [externalImageURL] : []
   }
 
   const page = imageIndex + 1
 
-  const semanticProbeURL = createMangaImageProxyRequestURL({
-    proxyOrigin: NEXT_PUBLIC_CORS_PROXY_URL,
+  const semanticExternalURLs = createEquivalentMangaImageSourceURLs({
     mangaId,
     page,
     variant: 'original',
   })
 
-  const semanticSourceURLs = createEquivalentMangaImageSourceURLs({
-    mangaId,
-    page,
-    variant: 'original',
-  })
+  const semanticMaterializeURLs = Array.from(new Set([externalImageURL, ...semanticExternalURLs].filter(Boolean)))
 
-  const semanticMaterializeSourceURLs = Array.from(new Set([fallbackURL, ...semanticSourceURLs].filter(Boolean)))
-
-  const semanticMaterializeURLs = semanticMaterializeSourceURLs.map((sourceURL) =>
+  const semanticMaterializeProxyURLs = semanticMaterializeURLs.map((sourceURL) =>
     createMangaImageProxyRequestURL({
       proxyOrigin: NEXT_PUBLIC_CORS_PROXY_URL,
       sourceURL,
@@ -189,5 +182,5 @@ function getSemanticDownloadCandidates({
     }),
   )
 
-  return Array.from(new Set([semanticProbeURL, ...semanticMaterializeURLs, fallbackURL].filter(Boolean)))
+  return Array.from(new Set([...semanticMaterializeURLs, ...semanticMaterializeProxyURLs].filter(Boolean)))
 }
