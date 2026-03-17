@@ -20,7 +20,7 @@ describe('manga image proxy utilities', () => {
     const parsedRequestURL = new URL(requestURL)
 
     expect(parsedRequestURL.origin).toBe(proxyOrigin)
-    expect(parsedRequestURL.pathname).toBe('/i/v2/manga/123/original/5')
+    expect(parsedRequestURL.pathname).toBe('/i/v2/manga/123/original/5.webp')
     expect(parsedRequestURL.search).toBe('')
   })
 
@@ -35,7 +35,7 @@ describe('manga image proxy utilities', () => {
     const parsedRequestURL = new URL(requestURL)
 
     expect(parsedRequestURL.origin).toBe(proxyOrigin)
-    expect(parsedRequestURL.pathname).toBe('/i/v2/manga/123/original/5')
+    expect(parsedRequestURL.pathname).toBe('/i/v2/manga/123/original/5.webp')
     expect(parsedRequestURL.searchParams.get('u')).toBe(sourceURL)
   })
 
