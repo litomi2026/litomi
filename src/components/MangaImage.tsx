@@ -93,17 +93,7 @@ function resolveSources({
     variant: kind,
   })
 
-  const semanticMaterializeURLs = semanticSourceURLs.map((sourceURL) =>
-    createMangaImageProxyRequestURL({
-      proxyOrigin: NEXT_PUBLIC_CORS_PROXY_URL,
-      sourceURL,
-      mangaId,
-      page,
-      variant: kind,
-    }),
-  )
-
-  resolvedSources.push(semanticProbeURL, ...semanticMaterializeURLs)
+  resolvedSources.push(semanticProbeURL, ...semanticSourceURLs)
 
   if (kind === 'thumbnail') {
     resolvedSources.push(createCoverThumbnailURL(mangaId), ...createFirstPageOriginalFallbackURLs(mangaId))
