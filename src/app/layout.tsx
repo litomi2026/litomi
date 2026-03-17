@@ -12,7 +12,6 @@ import NewYearToastNudge from '@/app/nye/NewYearToastNudge'
 import CapacitorBackButtonHandler from '@/components/CapacitorBackButtonHandler'
 import LibraryModal from '@/components/card/LibraryModal'
 import MangaTorrentModal from '@/components/card/MangaTorrentModal'
-import HiyobiPing from '@/components/HiyobiPing'
 import { MangaDetailModal } from '@/components/MangaDetailModal'
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar'
 import ThemeProvider from '@/components/ThemeProvider'
@@ -116,7 +115,7 @@ export default function RootLayout({ children }: Readonly<Props>) {
           <MangaTorrentModal />
         </QueryProvider>
         <ServiceWorkerRegistrar />
-        <HiyobiPing />
+        <img alt="CSRF" className="sr-only" src="https://api-kh.hiyobi.org/hiyobi/ping" />
         <NewYearToastNudge />
         <OverlayHost>
           <Toaster
