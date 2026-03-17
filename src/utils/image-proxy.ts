@@ -1,3 +1,7 @@
+import { env } from '@/env/client'
+
+const { NEXT_PUBLIC_CORS_PROXY_URL } = env
+
 const IMAGE_PROXY_SOURCE_HOST_SUFFIXES = [
   'hentkor.net',
   'k-hentai.org',
@@ -38,21 +42,18 @@ export function createFirstPageOriginalFallbackURLs(mangaId: number): string[] {
 }
 
 export function createMangaImageProxyRequestURL({
-  proxyOrigin,
   sourceURL,
   mangaId,
   page,
   variant,
 }: {
-  proxyOrigin: string
   sourceURL?: string
   mangaId: number
   page: number
   variant: MangaImageProxyVariant
 }): string {
-  const proxyURL = new URL(proxyOrigin)
+  const proxyURL = new URL(NEXT_PUBLIC_CORS_PROXY_URL)
   proxyURL.pathname = `/i/v2/manga/${mangaId}/${variant}/${page}`
-  proxyURL.search = ''
 
   if (sourceURL) {
     const validatedSourceURL = parseImageProxySourceURL(sourceURL)

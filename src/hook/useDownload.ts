@@ -1,14 +1,12 @@
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
 
-import { env } from '@/env/client'
 import { ImageWithVariants } from '@/types/manga'
 import { downloadImage, downloadMultipleImages } from '@/utils/download'
 import { createEquivalentMangaImageSourceURLs, createMangaImageProxyRequestURL } from '@/utils/image-proxy'
 
 // Supported image extensions
 const VALID_IMAGE_EXTENSIONS = new Set(['avif', 'bmp', 'gif', 'jpeg', 'jpg', 'png', 'svg', 'webp'])
-const { NEXT_PUBLIC_CORS_PROXY_URL } = env
 
 type Props = {
   manga: {
@@ -170,11 +168,10 @@ function getSemanticDownloadCandidates({
     variant: 'original',
   })
 
-  const semanticMaterializeURLs = Array.from(new Set([externalImageURL, ...semanticExternalURLs].filter(Boolean)))
+  const semanticMaterializeURLs = Array.from(new Set(['', externalImageURL, ...semanticExternalURLs]))
 
   const semanticMaterializeProxyURLs = semanticMaterializeURLs.map((sourceURL) =>
     createMangaImageProxyRequestURL({
-      proxyOrigin: NEXT_PUBLIC_CORS_PROXY_URL,
       sourceURL,
       mangaId,
       page,
@@ -182,5 +179,5 @@ function getSemanticDownloadCandidates({
     }),
   )
 
-  return Array.from(new Set([...semanticMaterializeProxyURLs, ...semanticMaterializeURLs].filter(Boolean)))
+  return [...semanticMaterializeURLs, ...semanticMaterializeProxyURLs].filter(Boolean)
 }
