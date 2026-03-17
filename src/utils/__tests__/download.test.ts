@@ -50,18 +50,18 @@ describe('downloadImage fallback', () => {
     await expect(
       downloadImage(
         [
-          'https://example.com/i/v2/manga/123/original/5.webp',
-          'https://example.com/i/v2/manga/123/original/5.webp?u=https%3A%2F%2Fsoujpa.in%2Fstart%2F123%2F123_4.avif',
-          'https://example.com/i/v2/manga/123/original/5.webp?u=https%3A%2F%2Fstorage-6-10.k-hentai.org%2Fstorage%2Ff2%2F74%2Ff2740688125f4d28e0f2bd891e721ce0b38df1be.webp',
+          'https://example.com/i/v2/manga/123/original/5',
+          'https://example.com/i/v2/manga/123/original/5?u=https%3A%2F%2Fsoujpa.in%2Fstart%2F123%2F123_4.avif',
+          'https://example.com/i/v2/manga/123/original/5?u=https%3A%2F%2Fstorage-6-10.k-hentai.org%2Fstorage%2Ff2%2F74%2Ff2740688125f4d28e0f2bd891e721ce0b38df1be.webp',
         ],
         'test.webp',
       ),
     ).resolves.toBeUndefined()
 
     expect(fetchCalls).toEqual([
-      'https://example.com/i/v2/manga/123/original/5.webp',
-      'https://example.com/i/v2/manga/123/original/5.webp?u=https%3A%2F%2Fsoujpa.in%2Fstart%2F123%2F123_4.avif',
-      'https://example.com/i/v2/manga/123/original/5.webp?u=https%3A%2F%2Fstorage-6-10.k-hentai.org%2Fstorage%2Ff2%2F74%2Ff2740688125f4d28e0f2bd891e721ce0b38df1be.webp',
+      'https://example.com/i/v2/manga/123/original/5',
+      'https://example.com/i/v2/manga/123/original/5?u=https%3A%2F%2Fsoujpa.in%2Fstart%2F123%2F123_4.avif',
+      'https://example.com/i/v2/manga/123/original/5?u=https%3A%2F%2Fstorage-6-10.k-hentai.org%2Fstorage%2Ff2%2F74%2Ff2740688125f4d28e0f2bd891e721ce0b38df1be.webp',
     ])
   })
 

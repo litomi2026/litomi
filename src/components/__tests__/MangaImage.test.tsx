@@ -13,7 +13,7 @@ describe('MangaImage fallback', () => {
     expect(image.getAttribute('src')).toBe('https://origin.example.com/pages/123/5.avif')
 
     fireEvent.error(image)
-    expect(image.getAttribute('src')).toBe('https://example.com/i/v2/manga/123/original/5.webp')
+    expect(image.getAttribute('src')).toBe('https://example.com/i/v2/manga/123/original/5')
 
     fireEvent.error(image)
     expect(image.getAttribute('src')).toBe('https://soujpa.in/start/123/123_4.avif')
@@ -32,7 +32,7 @@ describe('MangaImage fallback', () => {
     const { getByAltText } = render(<MangaImage imageIndex={0} mangaId={123} variant="thumbnail" />)
     const image = getByAltText('manga-image-1')
 
-    expect(image.getAttribute('src')).toBe('https://example.com/i/v2/manga/123/thumbnail/1.webp')
+    expect(image.getAttribute('src')).toBe('https://example.com/i/v2/manga/123/thumbnail/1')
 
     fireEvent.error(image)
     expect(image.getAttribute('src')).toBe('https://cdn.imagedeliveries.com/123/thumbnails/cover.webp')
@@ -48,7 +48,7 @@ describe('MangaImage fallback', () => {
     const { getByAltText } = render(<MangaImage imageIndex={2} mangaId={123} variant="thumbnail" />)
     const image = getByAltText('manga-image-3')
 
-    expect(image.getAttribute('src')).toBe('https://example.com/i/v2/manga/123/thumbnail/3.webp')
+    expect(image.getAttribute('src')).toBe('https://example.com/i/v2/manga/123/thumbnail/3')
 
     fireEvent.error(image)
     expect(image.getAttribute('src')).toBe('https://cdn.imagedeliveries.com/123/thumbnails/3.webp')
