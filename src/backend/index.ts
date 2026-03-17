@@ -29,15 +29,6 @@ initBackendOtel()
 
 const app = new Hono<Env>()
 
-app.use(
-  '*',
-  cors({
-    origin: (origin) => resolveCORSOrigin(origin),
-    credentials: true,
-    exposeHeaders: ['Retry-After'],
-  }),
-)
-
 app.use(httpInstrumentationMiddleware({ serviceName: 'litomi-backend' }))
 app.use('*', ipRestriction(getConnInfo, { denyList: [] }))
 app.use('*', requestId())
@@ -47,8 +38,26 @@ app.use(csrf({ origin: (origin) => Boolean(resolveCORSOrigin(origin)), secFetchS
 app.use(logger())
 app.use(secureHeaders())
 app.use(timing())
+
 app.use('/api/*', auth)
 app.use('/api/*', etag())
+
+app.use(
+  '/api/*',
+  cors({
+    origin: (origin) => resolveCORSOrigin(origin),
+    credentials: true,
+    exposeHeaders: ['Retry-After'],
+  }),
+)
+
+app.use(
+  '/i/*',
+  cors({
+    origin: '*',
+    exposeHeaders: ['Retry-After'],
+  }),
+)
 
 // NOTE: 쿠키와 헤더는 Cloudflare 캐시 키가 아니기에 현재는 search param 값만 사용 가능함
 // app.use(

@@ -1,11 +1,8 @@
 import { Hono } from 'hono'
 import { timeout } from 'hono/timeout'
-import { endTime, setMetric, startTime } from 'hono/timing'
 import ms from 'ms'
-import { z } from 'zod'
 
 import { Env } from '@/backend'
-import { zProblemValidator } from '@/backend/utils/validator'
 import { checkDatabaseReadiness } from '@/database/supabase/drizzle'
 
 import apiRoutes from './api'
@@ -16,36 +13,14 @@ const appRoutes = new Hono<Env>()
 appRoutes.route('/api', apiRoutes)
 appRoutes.route('/i', imageRoutes)
 
-const schema = z.object({
-  name: z.string().optional(),
-  age: z.coerce.number().optional(),
-})
-
-appRoutes.get('/', zProblemValidator('query', schema), (c) => {
-  const { name, age } = c.req.valid('query')
-
-  startTime(c, 'bar')
-  endTime(c, 'bar')
-  setMetric(c, 'foo', 1, 'hello world!')
-
-  return c.json({
-    requestId: c.get('requestId'),
-    language: c.get('language'),
-    name,
-    age,
-  })
-})
-
-appRoutes.use('/health', timeout(ms('1 seconds')))
-appRoutes.get('/health', (c) =>
+appRoutes.get('/health', timeout(ms('1 seconds')), (c) =>
   c.json({
     status: 'ok',
     timestamp: new Date(),
   }),
 )
 
-appRoutes.use('/ready', timeout(ms('2 seconds')))
-appRoutes.get('/ready', async (c) => {
+appRoutes.get('/ready', timeout(ms('2 seconds')), async (c) => {
   try {
     const readiness = await checkDatabaseReadiness()
 
