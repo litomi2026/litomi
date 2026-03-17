@@ -182,5 +182,5 @@ function getSemanticDownloadCandidates({
     }),
   )
 
-  return Array.from(new Set([...semanticMaterializeURLs, ...semanticMaterializeProxyURLs].filter(Boolean)))
+  return Array.from(new Set([...semanticMaterializeProxyURLs, ...semanticMaterializeURLs].filter(Boolean)))
 }
