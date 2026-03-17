@@ -105,9 +105,9 @@ export default function ThumbnailStrip({ images, mangaId }: Props) {
                 className="w-full h-full object-cover"
                 fetchPriority={i > imageIndex - 3 && i <= imageIndex + 3 ? undefined : 'low'}
                 imageIndex={i}
-                kind="thumbnail"
                 mangaId={mangaId}
                 src={image?.url}
+                variant="thumbnail"
               />
               <span className="absolute bottom-0 left-1/2 -translate-x-1/2 rounded-t-lg bg-background/80 text-xs text-center p-2 py-0.5">
                 {i + 1}
