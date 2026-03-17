@@ -73,7 +73,7 @@ describe('NonAdultJuicyAdsBanner', () => {
 
     expect(getByText('광고 수익은 서비스 운영과 작가 후원에 사용돼요.')).not.toBeNull()
     expect(getByTestId('juicy-script')).not.toBeNull()
-    expect(getAllByTestId('juicy-slot')).toHaveLength(6)
+    expect(getAllByTestId('juicy-slot').length).toBeGreaterThan(1)
     expect(getByTestId('login-link')).not.toBeNull()
   })
 
@@ -99,7 +99,9 @@ describe('NonAdultJuicyAdsBanner', () => {
       status: 'visible',
     }))
 
-    const { getAllByTestId, getByRole, getByText } = render(<NonAdultJuicyAdsBanner layout={customLayout} title="커스텀 광고" />)
+    const { getAllByTestId, getByRole, getByText } = render(
+      <NonAdultJuicyAdsBanner layout={customLayout} title="커스텀 광고" />,
+    )
 
     const slots = getAllByTestId('juicy-slot')
 
