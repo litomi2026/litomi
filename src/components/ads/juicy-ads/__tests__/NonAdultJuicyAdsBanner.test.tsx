@@ -130,4 +130,10 @@ describe('NonAdultJuicyAdsBanner', () => {
 
     expect(container.innerHTML).toBe('')
   })
+
+  it('stretches the ad row so slot widths stay resolvable in centered layouts', () => {
+    const { getAllByTestId } = render(<NonAdultJuicyAdsBanner className="items-center justify-center" />)
+
+    expect(getAllByTestId('juicy-slot')[0]?.parentElement?.className).toContain('self-stretch')
+  })
 })
