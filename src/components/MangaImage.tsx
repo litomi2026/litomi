@@ -92,7 +92,7 @@ function resolveSources({
     variant,
   })
 
-  resolvedSources.push(semanticProbeURL, ...semanticSourceURLs)
+  resolvedSources.push(...semanticSourceURLs, semanticProbeURL)
 
   if (variant === 'thumbnail') {
     const originalFallbackSourceURLs = createEquivalentMangaImageSourceURLs({

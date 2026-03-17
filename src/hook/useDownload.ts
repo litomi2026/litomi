@@ -168,7 +168,7 @@ function getSemanticDownloadCandidates({
     variant: 'original',
   })
 
-  const semanticMaterializeURLs = Array.from(new Set(['', externalImageURL, ...semanticExternalURLs]))
+  const semanticMaterializeURLs = Array.from(new Set([externalImageURL, ...semanticExternalURLs]))
 
   const semanticMaterializeProxyURLs = semanticMaterializeURLs.map((sourceURL) =>
     createMangaImageProxyRequestURL({
@@ -179,5 +179,5 @@ function getSemanticDownloadCandidates({
     }),
   )
 
-  return [...semanticMaterializeURLs, ...semanticMaterializeProxyURLs].filter(Boolean)
+  return semanticMaterializeProxyURLs.filter(Boolean)
 }
