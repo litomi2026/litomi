@@ -1,0 +1,119 @@
+import { beforeAll, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test'
+import { Hono } from 'hono'
+import { contextStorage } from 'hono/context-storage'
+
+import type { Env } from '@/backend'
+
+import authRoutes from '..'
+
+let shouldThrowDatabaseError = false
+let deletedCookies: string[] = []
+let currentUserId: number | undefined
+
+type LogoutResponse = {
+  loginId: string | null
+}
+
+beforeAll(() => {
+  spyOn(console, 'error').mockImplementation(() => {})
+})
+
+beforeEach(() => {
+  currentUserId = undefined
+  shouldThrowDatabaseError = false
+  deletedCookies = []
+})
+
+type TestEnv = Env & {
+  Bindings: {
+    userId?: number
+  }
+}
+
+const app = new Hono<TestEnv>()
+app.use('*', contextStorage())
+app.use('*', async (c, next) => {
+  if (c.env.userId) {
+    c.set('userId', c.env.userId)
+  }
+  await next()
+})
+app.route('/', authRoutes)
+
+mock.module('@/database/supabase/drizzle', () => ({
+  db: {
+    update: () => ({
+      set: () => ({
+        where: () => ({
+          returning: () => {
+            if (shouldThrowDatabaseError) {
+              return Promise.reject(new Error('Database connection failed'))
+            }
+
+            if (currentUserId === 1) {
+              return Promise.resolve([{ loginId: 'testuser1' }])
+            }
+            if (currentUserId === 2) {
+              return Promise.resolve([{ loginId: 'testuser2' }])
+            }
+
+            return Promise.resolve([])
+          },
+        }),
+      }),
+    }),
+  },
+}))
+
+mock.module('hono/cookie', () => ({
+  deleteCookie: (_: unknown, name: string) => {
+    deletedCookies.push(name)
+  },
+}))
+
+describe('POST /api/v1/auth/logout', () => {
+  test('인증된 사용자가 로그아웃하면 loginId를 반환하고 쿠키를 삭제한다', async () => {
+    currentUserId = 1
+
+    const response = await app.request('/logout', { method: 'POST' }, { userId: 1 })
+
+    expect(response.status).toBe(200)
+    expect(response.headers.get('content-type')).toContain('application/json')
+
+    const data = (await response.json()) as LogoutResponse
+    expect(data).toEqual({ loginId: 'testuser1' })
+    expect(deletedCookies).toEqual(['at', 'rt', 'ah'])
+  })
+
+  test('인증 정보가 없어도 로그아웃 요청은 성공하고 쿠키를 정리한다', async () => {
+    const response = await app.request('/logout', { method: 'POST' }, {})
+
+    expect(response.status).toBe(200)
+
+    const data = (await response.json()) as LogoutResponse
+    expect(data).toEqual({ loginId: null })
+    expect(deletedCookies).toEqual(['at', 'rt', 'ah'])
+  })
+
+  test('DB에 사용자가 없어도 로그아웃 요청은 성공하고 쿠키를 정리한다', async () => {
+    currentUserId = 999
+
+    const response = await app.request('/logout', { method: 'POST' }, { userId: 999 })
+
+    expect(response.status).toBe(200)
+
+    const data = (await response.json()) as LogoutResponse
+    expect(data).toEqual({ loginId: null })
+    expect(deletedCookies).toEqual(['at', 'rt', 'ah'])
+  })
+
+  test('로그아웃 중 데이터베이스 오류가 발생하면 500 응답을 반환하고 쿠키는 유지한다', async () => {
+    currentUserId = 1
+    shouldThrowDatabaseError = true
+
+    const response = await app.request('/logout', { method: 'POST' }, { userId: 1 })
+
+    expect(response.status).toBe(500)
+    expect(deletedCookies).toEqual([])
+  })
+})
