@@ -9,13 +9,13 @@ import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
-import type { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark/GET'
+import type { GETV1BookmarkIdResponse } from '@/backend/api/v1/bookmark/id'
 import type { POSTV1BookmarkToggleResponse } from '@/backend/api/v1/bookmark/toggle'
 
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import { showAdultVerificationRequiredToast, showLoginRequiredToast } from '@/lib/toast'
-import useBookmarksQuery from '@/query/useBookmarksQuery'
+import useBookmarkQuery from '@/query/useBookmarkQuery'
 import useMeQuery from '@/query/useMeQuery'
 import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
@@ -33,8 +33,8 @@ export default function BookmarkButton({ manga, className }: Props) {
   const { id: mangaId } = manga
   const { data: me } = useMeQuery()
   const canAccess = canAccessAdultRestrictedAPIs(me)
-  const { data: bookmarks } = useBookmarksQuery()
-  const bookmarkIds = useMemo(() => new Set(bookmarks?.bookmarks.map((bookmark) => bookmark.mangaId)), [bookmarks])
+  const { data: bookmarks } = useBookmarkQuery()
+  const bookmarkIds = useMemo(() => new Set(bookmarks?.mangaIds), [bookmarks])
   const isIconSelected = bookmarkIds.has(mangaId)
   const queryClient = useQueryClient()
   const { open: openLibraryModal } = useLibraryModal()
@@ -78,30 +78,25 @@ export default function BookmarkButton({ manga, className }: Props) {
         toast.success('북마크에서 삭제했어요', { id: toastId })
       }
 
-      queryClient.setQueryData<GETV1BookmarkResponse>(QueryKeys.bookmarks, (oldBookmarks) => {
+      queryClient.setQueryData<GETV1BookmarkIdResponse>(QueryKeys.bookmarks, (oldBookmarks) => {
         if (!createdAt) {
           if (!oldBookmarks) {
             return oldBookmarks
           }
 
           return {
-            bookmarks: oldBookmarks.bookmarks.filter((bookmark) => bookmark.mangaId !== mangaId),
-            nextCursor: oldBookmarks.nextCursor,
+            mangaIds: oldBookmarks.mangaIds.filter((bookmarkId) => bookmarkId !== mangaId),
           }
         }
 
-        const newBookmark = { mangaId, createdAt: new Date(createdAt).getTime() }
-
         if (!oldBookmarks) {
           return {
-            bookmarks: [newBookmark],
-            nextCursor: null,
+            mangaIds: [mangaId],
           }
         }
 
         return {
-          bookmarks: [newBookmark, ...oldBookmarks.bookmarks.filter((bookmark) => bookmark.mangaId !== mangaId)],
-          nextCursor: oldBookmarks.nextCursor,
+          mangaIds: [mangaId, ...oldBookmarks.mangaIds.filter((bookmarkId) => bookmarkId !== mangaId)],
         }
       })
 

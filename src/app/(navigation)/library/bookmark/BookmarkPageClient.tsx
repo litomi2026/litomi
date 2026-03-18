@@ -11,7 +11,7 @@ import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 import { useLibrarySelectionStore } from '../[id]/librarySelection'
 import SelectableMangaCard from '../SelectableMangaCard'
-import useBookmarkIdsInfiniteQuery from './useBookmarkIdsInfiniteQuery'
+import useBookmarkInfiniteQuery from './useBookmarkInfiniteQuery'
 
 type Props = {
   initialData?: GETV1BookmarkResponse
@@ -19,7 +19,7 @@ type Props = {
 
 export default function BookmarkPageClient({ initialData }: Props) {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError } =
-    useBookmarkIdsInfiniteQuery(initialData)
+    useBookmarkInfiniteQuery(initialData)
 
   const bookmarkIds = data.pages.flatMap((page) => page.bookmarks.map((bookmark) => bookmark.mangaId))
   const { isSelectionMode } = useLibrarySelectionStore()

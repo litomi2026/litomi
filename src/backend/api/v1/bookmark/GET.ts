@@ -10,11 +10,11 @@ import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { decodeBookmarkCursor, encodeBookmarkCursor } from '@/common/cursor'
 import { BOOKMARKS_PER_PAGE } from '@/constants/policy'
-import selectBookmarks from '@/sql/selectBookmarks'
+import { selectBookmark } from '@/sql/selectBookmark'
 
 const querySchema = z.object({
   cursor: z.string().optional(),
-  limit: z.coerce.number().int().positive().max(BOOKMARKS_PER_PAGE).optional(),
+  limit: z.coerce.number().int().positive().max(BOOKMARKS_PER_PAGE).default(BOOKMARKS_PER_PAGE),
 })
 
 export type Bookmark = {
@@ -35,28 +35,28 @@ route.get('/', requireAuth, requireAdult, zProblemValidator('query', querySchema
   try {
     const { cursor, limit } = c.req.valid('query')
 
-    let cursorId: number | undefined
+    let cursorMangaId: number | undefined
     let cursorTime: Date | undefined
 
     if (cursor) {
       const decoded = decodeBookmarkCursor(cursor)
 
       if (!decoded) {
-        return problemResponse(c, { status: 400, detail: '잘못된 커서예요' })
+        return problemResponse(c, { status: 400 })
       }
 
-      cursorId = decoded.mangaId
+      cursorMangaId = decoded.mangaId
       cursorTime = new Date(decoded.timestamp)
     }
 
-    const bookmarkRows = await selectBookmarks({
+    const bookmarkRows = await selectBookmark({
       userId,
-      limit: limit ? limit + 1 : undefined,
-      cursorId,
+      limit: limit + 1,
+      cursorMangaId,
       cursorTime,
     })
 
-    const hasNextPage = limit ? bookmarkRows.length > limit : false
+    const hasNextPage = bookmarkRows.length > limit
     const bookmarks = hasNextPage ? bookmarkRows.slice(0, limit) : bookmarkRows
     const lastBookmark = bookmarks[bookmarks.length - 1]
     const nextCursor = hasNextPage ? encodeBookmarkCursor(lastBookmark.createdAt.getTime(), lastBookmark.mangaId) : null
@@ -68,6 +68,7 @@ route.get('/', requireAuth, requireAdult, zProblemValidator('query', querySchema
       })),
       nextCursor,
     }
+
     return c.json<GETV1BookmarkResponse>(response, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)
