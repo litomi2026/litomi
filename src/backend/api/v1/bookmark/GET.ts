@@ -3,13 +3,14 @@ import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { requireAdult } from '@/backend/middleware/adult'
 import { requireAuth } from '@/backend/middleware/require-auth'
 import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
 import { decodeBookmarkCursor, encodeBookmarkCursor } from '@/common/cursor'
 import { BOOKMARKS_PER_PAGE } from '@/constants/policy'
-import { selectBookmarks } from '@/sql/selectBookmarks'
+import { selectBookmark } from '@/sql/selectBookmark'
 
 const querySchema = z.object({
   cursor: z.string().optional(),
@@ -28,7 +29,7 @@ export type GETV1BookmarkResponse = {
 
 const route = new Hono<Env>()
 
-route.get('/', requireAuth, zProblemValidator('query', querySchema), async (c) => {
+route.get('/', requireAuth, requireAdult, zProblemValidator('query', querySchema), async (c) => {
   const userId = c.get('userId')!
 
   try {
@@ -48,7 +49,7 @@ route.get('/', requireAuth, zProblemValidator('query', querySchema), async (c) =
       cursorTime = new Date(decoded.timestamp)
     }
 
-    const bookmarkRows = await selectBookmarks({
+    const bookmarkRows = await selectBookmark({
       userId,
       limit: limit ? limit + 1 : undefined,
       cursorMangaId,
