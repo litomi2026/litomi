@@ -466,8 +466,10 @@ function TouchViewerItem({ offset, manga, pageView, readingDirection }: TouchVie
   const isRTL = readingDirection === 'rtl'
   const isDoublePage = pageView === 'double' && offset === 0
   const nextImageIndex = imageIndex + 1
+  const firstImage = images[imageIndex]
+  const secondImage = images[nextImageIndex]
 
-  const firstImage = imageIndex >= 0 && (
+  const first = imageIndex >= 0 && (
     <MangaImage
       fetchPriority={offset < IMAGE_FETCH_PRIORITY_THRESHOLD ? 'high' : 'low'}
       imageIndex={imageIndex}
@@ -476,7 +478,7 @@ function TouchViewerItem({ offset, manga, pageView, readingDirection }: TouchVie
     />
   )
 
-  const secondImage = isDoublePage && nextImageIndex < images.length && (
+  const second = isDoublePage && nextImageIndex < images.length && (
     <MangaImage
       fetchPriority={offset < IMAGE_FETCH_PRIORITY_THRESHOLD ? 'high' : 'low'}
       imageIndex={nextImageIndex}
@@ -489,13 +491,13 @@ function TouchViewerItem({ offset, manga, pageView, readingDirection }: TouchVie
     <li aria-hidden={offset !== 0} style={{ filter: `brightness(${brightness}%)` }}>
       {isRTL ? (
         <>
-          {secondImage}
-          {firstImage}
+          {second}
+          {first}
         </>
       ) : (
         <>
-          {firstImage}
-          {secondImage}
+          {first}
+          {second}
         </>
       )}
     </li>
