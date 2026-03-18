@@ -46,12 +46,12 @@ mock.module('@/sql/selectBookmarks', () => ({
   default: async ({
     userId,
     limit,
-    cursorId,
+    cursorMangaId,
     cursorTime,
   }: {
     userId: number | string
     limit?: number
-    cursorId?: string
+    cursorMangaId?: string
     cursorTime?: string
   }) => {
     if (shouldThrowDatabaseError) {
@@ -66,8 +66,8 @@ mock.module('@/sql/selectBookmarks', () => ({
       const cursorDate = new Date(cursorTime)
       filtered = filtered.filter((b) => {
         if (b.createdAt < cursorDate) return true
-        if (b.createdAt.getTime() === cursorDate.getTime() && cursorId) {
-          return b.mangaId < Number(cursorId)
+        if (b.createdAt.getTime() === cursorDate.getTime() && cursorMangaId) {
+          return b.mangaId < Number(cursorMangaId)
         }
         return false
       })
