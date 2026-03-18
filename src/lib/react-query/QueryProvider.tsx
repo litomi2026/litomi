@@ -8,7 +8,6 @@ import { PropsWithChildren } from 'react'
 import { toast } from 'sonner'
 
 import MeClientSync from '@/components/MeClientSync'
-import ReadingHistoryWarmup from '@/components/ReadingHistoryWarmup'
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import amplitude from '@/lib/amplitude/browser'
@@ -175,7 +174,6 @@ export default function QueryProvider({ children }: PropsWithChildren) {
   return (
     <QueryClientProvider client={queryClient}>
       <MeClientSync />
-      <ReadingHistoryWarmup />
       {children}
       <ReactQueryDevtools />
     </QueryClientProvider>
