@@ -47,9 +47,9 @@ mock.module('@/database/supabase/drizzle', () => ({
   },
 }))
 
-const { selectBookmarks } = await import('../selectBookmarks')
+const { selectBookmark } = await import('../selectBookmark')
 
-describe('selectBookmarks', () => {
+describe('selectBookmark', () => {
   beforeEach(() => {
     nextRows = [{ mangaId: 100, createdAt: new Date('2025-01-01T00:00:00.000Z') }]
     queryState.whereClause = undefined
@@ -67,7 +67,7 @@ describe('selectBookmarks', () => {
     const cursorTime = new Date('2025-01-10T00:00:00.000Z')
     nextRows = [{ mangaId: 90, createdAt: new Date('2025-01-09T00:00:00.000Z') }]
 
-    const rows = await selectBookmarks({
+    const rows = await selectBookmark({
       userId: 1,
       limit: 3,
       cursorMangaId: 42,
@@ -90,7 +90,7 @@ describe('selectBookmarks', () => {
   })
 
   test('limit이 없으면 base query를 그대로 실행한다', async () => {
-    const rows = await selectBookmarks({ userId: 1 })
+    const rows = await selectBookmark({ userId: 1 })
 
     expect(rows).toEqual(nextRows)
     expect(limitMock).not.toHaveBeenCalled()
@@ -101,18 +101,18 @@ describe('selectBookmarks', () => {
   })
 
   test('0 이하의 limit은 즉시 거부한다', () => {
-    expect(selectBookmarks({ userId: 1, limit: 0 })).rejects.toThrow()
+    expect(selectBookmark({ userId: 1, limit: 0 })).rejects.toThrow()
     expect(selectMock).not.toHaveBeenCalled()
   })
 
   test('부분적인 커서 입력은 허용하지 않는다', () => {
-    expect(selectBookmarks({ userId: 1, cursorTime: new Date() })).rejects.toThrow()
+    expect(selectBookmark({ userId: 1, cursorTime: new Date() })).rejects.toThrow()
     expect(selectMock).not.toHaveBeenCalled()
   })
 
   test('잘못된 cursorTime은 즉시 거부한다', () => {
     expect(
-      selectBookmarks({
+      selectBookmark({
         userId: 1,
         cursorMangaId: 42,
         cursorTime: new Date('invalid'),

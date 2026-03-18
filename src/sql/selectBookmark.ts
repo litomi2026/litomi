@@ -36,20 +36,7 @@ const bookmarkSelection = {
 
 type Params = z.input<typeof paramsSchema>
 
-export async function selectBookmarkIds(params: Params) {
-  const validatedParams = paramsSchema.parse(params)
-  const { limit } = validatedParams
-  const whereClause = buildBookmarkWhereClause(validatedParams)
-  const query = db.select(bookmarkSelection.ids).from(bookmarkTable).where(whereClause)
-
-  if (limit) {
-    return query.limit(limit)
-  }
-
-  return query
-}
-
-export async function selectBookmarks(params: Params) {
+export async function selectBookmark(params: Params) {
   const validatedParams = paramsSchema.parse(params)
   const { limit } = validatedParams
   const whereClause = buildBookmarkWhereClause(validatedParams)
@@ -59,6 +46,19 @@ export async function selectBookmarks(params: Params) {
     .from(bookmarkTable)
     .where(whereClause)
     .orderBy(desc(bookmarkTable.createdAt), desc(bookmarkTable.mangaId))
+
+  if (limit) {
+    return query.limit(limit)
+  }
+
+  return query
+}
+
+export async function selectBookmarkId(params: Params) {
+  const validatedParams = paramsSchema.parse(params)
+  const { limit } = validatedParams
+  const whereClause = buildBookmarkWhereClause(validatedParams)
+  const query = db.select(bookmarkSelection.ids).from(bookmarkTable).where(whereClause)
 
   if (limit) {
     return query.limit(limit)
