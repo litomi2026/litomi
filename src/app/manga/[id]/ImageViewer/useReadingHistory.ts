@@ -3,11 +3,17 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 
+import type { GETV1MangaIdHistoryResponse } from '@/backend/api/v1/manga/[id]/history/GET'
+
 import { QueryKeys } from '@/constants/query'
 import { SessionStorageKeyMap } from '@/constants/storage'
+import { env } from '@/env/client'
 import useMeQuery from '@/query/useMeQuery'
 import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
+import { fetchWithErrorHandling } from '@/utils/react-query-error'
 import { READING_HISTORY_INDEX_UPDATED_EVENT, readReadingHistoryIndex } from '@/utils/reading-history-index'
+
+const { NEXT_PUBLIC_BACKEND_URL } = env
 
 export default function useReadingHistory(mangaId: number) {
   const { data: me, isLoading: isMeLoading } = useMeQuery()
@@ -31,7 +37,16 @@ export default function useReadingHistory(mangaId: number) {
       }
 
       const index = readReadingHistoryIndex(me.id)
-      return index.get(mangaId) ?? null
+      const indexedLastPage = index.get(mangaId)
+
+      if (indexedLastPage != null) {
+        return indexedLastPage
+      }
+
+      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/manga/${mangaId}/history`
+      const { data } = await fetchWithErrorHandling<GETV1MangaIdHistoryResponse>(url, { credentials: 'include' })
+
+      return data ?? null
     },
     enabled: Boolean(mangaId) && !isMeLoading,
     meta: { requiresAdult: true },

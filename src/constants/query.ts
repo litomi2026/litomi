@@ -7,7 +7,6 @@ export const QueryKeys = {
   bookmarks: ['me', 'bookmarks'],
   infiniteBookmarks: ['me', 'bookmarks', 'infinite'],
   infiniteReadingHistory: ['me', 'readingHistory', 'infinite'],
-  readingHistoryWarmup: (userId: number | undefined) => ['me', 'readingHistory', 'warmup', userId ?? 'guest'],
   infiniteRatings: (sort: RatingSort) => ['me', 'ratings', 'infinite', sort],
   censorship: ['me', 'censorships'],
   infiniteCensorships: ['me', 'censorships', 'infinite'],
