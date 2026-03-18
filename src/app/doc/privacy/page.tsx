@@ -155,8 +155,7 @@ export default async function Page() {
             </p>
             <ul className="list-disc list-inside space-y-2 text-sm text-zinc-300 marker:text-zinc-600">
               <li>
-                <span className="font-medium text-zinc-200">보안/인프라</span>: Cloudflare, Vercel, Supabase, Google
-                Cloud Platform
+                <span className="font-medium text-zinc-200">보안/인프라</span>: Cloudflare, Vercel, Supabase
               </li>
               <li>
                 <span className="font-medium text-zinc-200">분석</span>: Google Analytics, Amplitude
