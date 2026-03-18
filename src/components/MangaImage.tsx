@@ -52,12 +52,13 @@ export default function MangaImage({
     type,
     sizes,
     media,
+    index,
     srcSet: pictureURLs[index][pictureURLIndices[index]],
   }))
   const displayedURL = imageURLs[imageURLIndex]
 
-  const activePictureIndex = displayedPictures.findIndex(({ media }) => !media || window.matchMedia(media).matches)
-  const activeURL = activePictureIndex >= 0 ? displayedPictures[activePictureIndex].srcSet : displayedURL
+  const activePicture = displayedPictures.find(({ media }) => !media || window.matchMedia(media).matches)
+  const activeURL = activePicture ? activePicture.srcSet : displayedURL
   const resolvedCrossOrigin = crossOrigin ?? (isMangaImageProxyRequestURL(activeURL) ? 'anonymous' : undefined)
 
   function handleError(event: SyntheticEvent<HTMLImageElement, Event>) {
@@ -65,6 +66,23 @@ export default function MangaImage({
 
     if (!mangaId) {
       return
+    }
+
+    if (activePicture) {
+      const activeURL = normalizeSourceURL(activePicture.srcSet)
+      const failedURL = normalizeSourceURL(event.currentTarget.currentSrc || activeURL)
+
+      if (activeURL === failedURL) {
+        setPictureURLIndices((prev) => {
+          const next = [...prev]
+          const currentIndex = next[activePicture.index]
+          const lastIndex = pictureURLs[activePicture.index].length - 1
+
+          next[activePicture.index] = Math.min(currentIndex + 1, lastIndex)
+          return next
+        })
+        return
+      }
     }
 
     setImageURLIndex((prev) => Math.min(prev + 1, imageURLs.length - 1))
