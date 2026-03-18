@@ -14,7 +14,7 @@ import { selectBookmark } from '@/sql/selectBookmark'
 
 const querySchema = z.object({
   cursor: z.string().optional(),
-  limit: z.coerce.number().int().positive().max(BOOKMARKS_PER_PAGE).optional(),
+  limit: z.coerce.number().int().positive().max(BOOKMARKS_PER_PAGE).default(BOOKMARKS_PER_PAGE),
 })
 
 export type Bookmark = {
@@ -51,12 +51,12 @@ route.get('/', requireAuth, requireAdult, zProblemValidator('query', querySchema
 
     const bookmarkRows = await selectBookmark({
       userId,
-      limit: limit ? limit + 1 : undefined,
+      limit: limit + 1,
       cursorMangaId,
       cursorTime,
     })
 
-    const hasNextPage = limit !== undefined ? bookmarkRows.length > limit : false
+    const hasNextPage = bookmarkRows.length > limit
     const bookmarks = hasNextPage ? bookmarkRows.slice(0, limit) : bookmarkRows
     const lastBookmark = bookmarks[bookmarks.length - 1]
     const nextCursor = hasNextPage ? encodeBookmarkCursor(lastBookmark.createdAt.getTime(), lastBookmark.mangaId) : null
