@@ -1,40 +1,35 @@
 'use client'
 
 import { sendGAEvent } from '@next/third-parties/google'
-import { useQueryClient } from '@tanstack/react-query'
 import { LogOut } from 'lucide-react'
 import { toast } from 'sonner'
 
-import logout from '@/app/auth/logout/action'
-import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
-import useServerAction from '@/hook/useServerAction'
 import amplitude from '@/lib/amplitude/browser'
+import useLogoutMutation from '@/query/useLogoutMutation'
 
 const { NEXT_PUBLIC_GA_ID } = env
 
 export default function LogoutButton() {
-  const queryClient = useQueryClient()
+  const { mutate: logout, isPending } = useLogoutMutation()
 
-  const [_, dispatchAction, isPending] = useServerAction({
-    action: logout,
-    onSuccess: ({ loginId }) => {
-      toast.info(`${loginId} 계정에서 로그아웃했어요`)
-      amplitude.track('logout')
-      amplitude.reset()
-      if (NEXT_PUBLIC_GA_ID) {
-        sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: null })
-        sendGAEvent('event', 'logout')
-      }
-      queryClient.setQueryData(QueryKeys.me, null)
+  function handleLogout() {
+    logout(undefined, {
+      onSuccess: ({ loginId }) => {
+        toast.info(loginId ? `${loginId} 계정에서 로그아웃했어요` : '로그아웃했어요')
+        amplitude.track('logout')
+        amplitude.reset()
 
-      queryClient.removeQueries({
-        queryKey: QueryKeys.me,
-        predicate: (query) => query.queryKey.length > 1,
-      })
-    },
-    shouldSetResponse: false,
-  })
+        if (NEXT_PUBLIC_GA_ID) {
+          sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: null })
+          sendGAEvent('event', 'logout')
+        }
+      },
+      onError: (error) => {
+        toast.error(error.message || '로그아웃 중 오류가 발생했어요')
+      },
+    })
+  }
 
   return (
     <button
@@ -42,7 +37,7 @@ export default function LogoutButton() {
         hover:bg-red-500/20 active:scale-95 
           disabled:hover:bg-inherit disabled:active:scale-100  disabled:text-zinc-400 sm:px-3 sm:py-2"
       disabled={isPending}
-      onClick={dispatchAction}
+      onClick={handleLogout}
       type="button"
     >
       <div className="flex justify-center items-center gap-3">
