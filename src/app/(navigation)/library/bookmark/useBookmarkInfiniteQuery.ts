@@ -9,7 +9,7 @@ import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
 
-export async function fetchPaginatedBookmarks(cursor: string | null) {
+export async function fetchPaginatedBookmark(cursor: string | null) {
   const params = new URLSearchParams({ limit: BOOKMARKS_PER_PAGE.toString() })
 
   if (cursor) {
@@ -21,10 +21,10 @@ export async function fetchPaginatedBookmarks(cursor: string | null) {
   return data
 }
 
-export default function useBookmarkIdsInfiniteQuery(initialData?: GETV1BookmarkResponse) {
+export default function useBookmarkInfiniteQuery(initialData?: GETV1BookmarkResponse) {
   return useInfiniteQuery({
     queryKey: QueryKeys.infiniteBookmarks,
-    queryFn: ({ pageParam }: { pageParam: string | null }) => fetchPaginatedBookmarks(pageParam),
+    queryFn: ({ pageParam }: { pageParam: string | null }) => fetchPaginatedBookmark(pageParam),
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialData: initialData && {
       pages: [initialData],
