@@ -17,6 +17,7 @@ import { ReadingDirection } from './store/readingDirection'
 import { ScreenFit } from './store/screenFit'
 import { useVirtualScrollStore } from './store/virtualizer'
 import { useZoomStore } from './store/zoom'
+import { getResponsivePictureSources } from './util'
 
 const screenFitStyle: Record<ScreenFit, string> = {
   width:
@@ -156,28 +157,26 @@ function ScrollViewerRowItem({ index, manga, pageView, readingDirection, style }
   }, [firstImageIndex, inView, navigateToImageIndex])
 
   const first = (
-    <picture>
-      <source media={`(min-width: ${firstImage?.thumbnail?.width ?? 0}px)`} srcSet={firstImage?.original?.url} />
-      <MangaImage
-        fetchPriority="high"
-        imageIndex={firstImageIndex}
-        mangaId={manga.id}
-        ref={inViewRef}
-        src={firstImage?.thumbnail?.url ?? firstImage?.original?.url}
-      />
-    </picture>
+    <MangaImage
+      fetchPriority="high"
+      imageIndex={firstImageIndex}
+      mangaId={manga.id}
+      pictures={getResponsivePictureSources(firstImage)}
+      ref={inViewRef}
+      src={firstImage?.thumbnail?.url}
+      variant="thumbnail"
+    />
   )
 
   const second = isDoublePage && nextImageIndex < images.length && (
-    <picture>
-      <source media={`(min-width: ${nextImage?.thumbnail?.width ?? 0}px)`} srcSet={nextImage?.original?.url} />
-      <MangaImage
-        fetchPriority="high"
-        imageIndex={nextImageIndex}
-        mangaId={manga.id}
-        src={nextImage?.thumbnail?.url ?? nextImage?.original?.url}
-      />
-    </picture>
+    <MangaImage
+      fetchPriority="high"
+      imageIndex={nextImageIndex}
+      mangaId={manga.id}
+      pictures={getResponsivePictureSources(nextImage)}
+      src={nextImage?.thumbnail?.url}
+      variant="thumbnail"
+    />
   )
 
   return (
