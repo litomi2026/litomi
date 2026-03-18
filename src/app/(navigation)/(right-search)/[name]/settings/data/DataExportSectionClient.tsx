@@ -1,5 +1,6 @@
 'use client'
 
+import dayjs from 'dayjs'
 import { Bookmark, Check, Clock, Download, Library, Loader2, ShieldCheck, Star } from 'lucide-react'
 import { type ReactNode, useState, useTransition } from 'react'
 import { toast } from 'sonner'
@@ -74,7 +75,7 @@ export default function DataExportSectionClient({ counts }: Readonly<Props>) {
       }
 
       const blob = new Blob([result.data], { type: 'application/json' })
-      downloadBlob(blob, `litomi-${new Date().toISOString().split('T')[0]}.json`)
+      downloadBlob(blob, `litomi-${dayjs().format('YYYY-MM-DD')}.json`)
       toast.success('데이터를 성공적으로 내보냈어요')
     })
   }

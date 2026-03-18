@@ -29,7 +29,7 @@ export type GETV1BookmarkResponse = {
 
 const route = new Hono<Env>()
 
-route.get('/', requireAuth, requireAdult, zProblemValidator('query', querySchema), async (c) => {
+route.get('/', requireAuth, zProblemValidator('query', querySchema), async (c) => {
   const userId = c.get('userId')!
 
   try {
@@ -42,7 +42,7 @@ route.get('/', requireAuth, requireAdult, zProblemValidator('query', querySchema
       const decoded = decodeBookmarkCursor(cursor)
 
       if (!decoded) {
-        return problemResponse(c, { status: 400, detail: '잘못된 커서예요' })
+        return problemResponse(c, { status: 400 })
       }
 
       cursorId = decoded.mangaId
@@ -68,6 +68,7 @@ route.get('/', requireAuth, requireAdult, zProblemValidator('query', querySchema
       })),
       nextCursor,
     }
+
     return c.json<GETV1BookmarkResponse>(response, { headers: { 'Cache-Control': privateCacheControl } })
   } catch (error) {
     console.error(error)

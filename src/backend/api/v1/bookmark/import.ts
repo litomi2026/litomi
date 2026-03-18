@@ -1,4 +1,4 @@
-import { count, eq, sql } from 'drizzle-orm'
+import { count, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 import 'server-only'
 import { z } from 'zod'
