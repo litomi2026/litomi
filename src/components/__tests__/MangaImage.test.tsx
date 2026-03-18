@@ -87,4 +87,61 @@ describe('MangaImage fallback', () => {
     fireEvent.error(image)
     expect(image.getAttribute('src')).toBe('https://cdn.hentkor.net/pages/123/3.avif')
   })
+
+  test('picture source와 img src는 각각 실패한 URL만 다음 fallback으로 이동한다', () => {
+    const originalMatchMedia = window.matchMedia
+    window.matchMedia = ((query: string) =>
+      ({
+        matches: query === '(min-width: 1200px)',
+        media: query,
+        onchange: null,
+        addEventListener: () => {},
+        addListener: () => {},
+        dispatchEvent: () => false,
+        removeEventListener: () => {},
+        removeListener: () => {},
+      }) as MediaQueryList) satisfies Window['matchMedia']
+
+    const { container, getByAltText } = render(
+      <MangaImage
+        imageIndex={2}
+        mangaId={123}
+        pictures={[
+          {
+            media: '(min-width: 1200px)',
+            src: 'https://origin.example.com/pages/123/3.avif',
+            variant: 'original',
+          },
+        ]}
+        src="https://cdn.imagedeliveries.com/123/thumbnails/3.webp"
+        variant="thumbnail"
+      />,
+    )
+    const image = getByAltText('manga-image-3') as HTMLImageElement
+
+    expect(container.querySelector('source')?.getAttribute('srcset')).toBe(
+      'https://origin.example.com/pages/123/3.avif',
+    )
+    expect(image.getAttribute('src')).toBe('https://cdn.imagedeliveries.com/123/thumbnails/3.webp')
+
+    Object.defineProperty(image, 'currentSrc', {
+      configurable: true,
+      value: 'https://origin.example.com/pages/123/3.avif',
+    })
+
+    fireEvent.error(image)
+    expect(container.querySelector('source')?.getAttribute('srcset')).toBe('https://soujpa.in/start/123/123_2.avif')
+    expect(image.getAttribute('src')).toBe('https://cdn.imagedeliveries.com/123/thumbnails/3.webp')
+
+    Object.defineProperty(image, 'currentSrc', {
+      configurable: true,
+      value: 'https://cdn.imagedeliveries.com/123/thumbnails/3.webp',
+    })
+
+    fireEvent.error(image)
+    expect(container.querySelector('source')?.getAttribute('srcset')).toBe('https://soujpa.in/start/123/123_2.avif')
+    expect(image.getAttribute('src')).toBe('https://example.com/i/v2/manga/123/thumbnail/3.webp')
+
+    window.matchMedia = originalMatchMedia
+  })
 })

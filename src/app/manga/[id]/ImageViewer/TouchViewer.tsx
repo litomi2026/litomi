@@ -466,22 +466,32 @@ function TouchViewerItem({ offset, manga, pageView, readingDirection }: TouchVie
   const isRTL = readingDirection === 'rtl'
   const isDoublePage = pageView === 'double' && offset === 0
   const nextImageIndex = imageIndex + 1
+  const firstImage = images[imageIndex]
+  const secondImage = images[nextImageIndex]
 
-  const firstImage = imageIndex >= 0 && (
+  const first = imageIndex >= 0 && (
     <MangaImage
       fetchPriority={offset < IMAGE_FETCH_PRIORITY_THRESHOLD ? 'high' : 'low'}
       imageIndex={imageIndex}
       mangaId={manga.id}
-      src={images[imageIndex]?.original?.url}
+      src={firstImage?.original?.url}
+      // TODO: picture/source 기반으로 변경하기
+      // pictures={getResponsivePictureSources(firstImage)}
+      // src={firstImage?.thumbnail?.url}
+      // variant="thumbnail"
     />
   )
 
-  const secondImage = isDoublePage && nextImageIndex < images.length && (
+  const second = isDoublePage && nextImageIndex < images.length && (
     <MangaImage
       fetchPriority={offset < IMAGE_FETCH_PRIORITY_THRESHOLD ? 'high' : 'low'}
       imageIndex={nextImageIndex}
       mangaId={manga.id}
-      src={images[nextImageIndex]?.original?.url}
+      src={secondImage?.original?.url}
+      // TODO: picture/source 기반으로 변경하기
+      // pictures={getResponsivePictureSources(secondImage)}
+      // src={secondImage?.thumbnail?.url}
+      // variant="thumbnail"
     />
   )
 
@@ -489,13 +499,13 @@ function TouchViewerItem({ offset, manga, pageView, readingDirection }: TouchVie
     <li aria-hidden={offset !== 0} style={{ filter: `brightness(${brightness}%)` }}>
       {isRTL ? (
         <>
-          {secondImage}
-          {firstImage}
+          {second}
+          {first}
         </>
       ) : (
         <>
-          {firstImage}
-          {secondImage}
+          {first}
+          {second}
         </>
       )}
     </li>

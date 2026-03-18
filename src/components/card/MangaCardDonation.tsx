@@ -58,7 +58,7 @@ export default function MangaCardDonation() {
           <h3 className="text-lg font-semibold text-foreground">리토미를 함께 키워주세요</h3>
         </div>
         <p className="text-sm text-zinc-400 leading-relaxed">
-          매달 십 몇 만 원의 서버 비용이 발생하는데, 유해 광고 없이 서비스를 운영하기 위해 여러분의 도움이 필요해요
+          매달 10~20만 원의 서버 비용이 발생하는데, 유해 광고 없이 서비스를 운영하기 위해 여러분의 도움이 필요해요
         </p>
         <div className="flex flex-col gap-4 w-full">
           <div className="flex flex-col gap-2">
