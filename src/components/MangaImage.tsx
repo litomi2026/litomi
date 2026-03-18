@@ -67,7 +67,7 @@ export default function MangaImage({
       return
     }
 
-    setSourceIndex((prev) => Math.min(prev + 1, sources.length - 1))
+    setImageURLIndex((prev) => Math.min(prev + 1, imageURLs.length - 1))
   }
 
   // NOTE: 이미지가 바뀌면(작품/페이지/원본 URL 변경) fallback 상태를 초기화해야 정상적으로 교체돼요
