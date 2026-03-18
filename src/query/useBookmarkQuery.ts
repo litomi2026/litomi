@@ -11,20 +11,20 @@ import useMeQuery from './useMeQuery'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
 
-export async function fetchBookmarks() {
+export async function fetchBookmark() {
   const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/bookmark`
   const { data } = await fetchWithErrorHandling<GETV1BookmarkResponse>(url, { credentials: 'include' })
   return data
 }
 
-export default function useBookmarksQuery() {
+export default function useBookmarkQuery() {
   const { data: me } = useMeQuery()
   const userId = me?.id
   const canAccess = canAccessAdultRestrictedAPIs(me)
 
   return useQuery({
     queryKey: QueryKeys.bookmarks,
-    queryFn: fetchBookmarks,
+    queryFn: fetchBookmark,
     enabled: Boolean(userId) && canAccess,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,

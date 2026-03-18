@@ -15,7 +15,7 @@ import type { POSTV1BookmarkToggleResponse } from '@/backend/api/v1/bookmark/tog
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import { showAdultVerificationRequiredToast, showLoginRequiredToast } from '@/lib/toast'
-import useBookmarksQuery from '@/query/useBookmarksQuery'
+import useBookmarkQuery from '@/query/useBookmarkQuery'
 import useMeQuery from '@/query/useMeQuery'
 import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
@@ -33,7 +33,7 @@ export default function BookmarkButton({ manga, className }: Props) {
   const { id: mangaId } = manga
   const { data: me } = useMeQuery()
   const canAccess = canAccessAdultRestrictedAPIs(me)
-  const { data: bookmarks } = useBookmarksQuery()
+  const { data: bookmarks } = useBookmarkQuery()
   const bookmarkIds = useMemo(() => new Set(bookmarks?.bookmarks.map((bookmark) => bookmark.mangaId)), [bookmarks])
   const isIconSelected = bookmarkIds.has(mangaId)
   const queryClient = useQueryClient()
