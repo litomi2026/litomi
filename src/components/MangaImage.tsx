@@ -16,9 +16,9 @@ const FALLBACK_IMAGE_URL = '/image/fallback.svg'
 interface Props extends ComponentPropsWithRef<'img'> {
   imageIndex?: number
   /**
-   * @note 외부 이미지(mangaId=0)는 내부 fallback 체인을 돌리지 않아요.
+   * @note 외부 이미지(mangaId 없음)는 내부 fallback 체인을 돌리지 않아요.
    */
-  mangaId: number
+  mangaId?: number
   src?: string
   variant?: 'original' | 'thumbnail'
 }
@@ -40,7 +40,7 @@ export default function MangaImage({
   function handleError(event: SyntheticEvent<HTMLImageElement, Event>) {
     onError?.(event)
 
-    if (mangaId === 0) {
+    if (!mangaId) {
       return
     }
 
@@ -73,7 +73,7 @@ function resolveSources({
 }: {
   imageIndex: number
   variant: NonNullable<Props['variant']>
-  mangaId: number
+  mangaId?: number
   src: string
 }): string[] {
   const page = imageIndex + 1
@@ -83,7 +83,7 @@ function resolveSources({
     resolvedSources.push(src)
   }
 
-  if (mangaId === 0) {
+  if (!mangaId) {
     resolvedSources.push(FALLBACK_IMAGE_URL)
     return resolvedSources
   }
