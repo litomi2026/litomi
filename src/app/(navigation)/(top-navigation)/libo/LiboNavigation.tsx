@@ -56,23 +56,19 @@ export default function LiboNavigation({ children }: Props) {
           {!isLoggedIn && !isLoading ? (
             <p className="text-zinc-400/90">로그인하면 리보 잔액과 내역을 확인할 수 있어요</p>
           ) : (
-            <>
-              <div className="flex gap-3">
-                <span>총 적립 {isLoading ? '...' : isLoggedIn ? totalEarned.toLocaleString() : '—'} 리보</span>
-                <span>총 사용 {isLoading ? '...' : isLoggedIn ? totalSpent.toLocaleString() : '—'} 리보</span>
-              </div>
-              {isLoggedIn && (
-                <Link
-                  className="inline-flex items-center gap-1 text-zinc-300/80 hover:text-zinc-100 transition"
-                  href="/libo/stats"
-                  prefetch={false}
-                >
-                  광고 수익 통계
-                  <ChevronRight className="size-3 text-zinc-500" />
-                </Link>
-              )}
-            </>
+            <div className="flex gap-3">
+              <span>총 적립 {isLoading ? '...' : isLoggedIn ? totalEarned.toLocaleString() : '—'} 리보</span>
+              <span>총 사용 {isLoading ? '...' : isLoggedIn ? totalSpent.toLocaleString() : '—'} 리보</span>
+            </div>
           )}
+          <Link
+            className="inline-flex items-center gap-1 text-zinc-300/80 hover:text-zinc-100 transition"
+            href="/libo/stats"
+            prefetch={false}
+          >
+            광고 수익 통계
+            <ChevronRight className="size-3 text-zinc-500" />
+          </Link>
         </div>
       </div>
 

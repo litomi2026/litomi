@@ -40,7 +40,6 @@ The manga crawl job operates automatically with the following workflow:
 
 ## Prerequisites
 
-- Google Cloud Platform account with billing enabled
 - Docker installed locally
 - `gcloud` CLI installed and configured
 - PostgreSQL database (e.g., Neon)

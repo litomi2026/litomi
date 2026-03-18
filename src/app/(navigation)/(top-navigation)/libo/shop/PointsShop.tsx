@@ -77,7 +77,7 @@ export default function PointsShop() {
     {
       id: 'pinned-library-expansion',
       type: 'pinned_library',
-      name: '고정된 서재 확장',
+      name: '고정 서재 확장',
       description: `+${POINT_CONSTANTS.PINNED_LIBRARY_EXPANSION_AMOUNT}개 (현재: ${formatCurrentMax(displayExpansion?.pinnedLibrary.current, displayExpansion?.pinnedLibrary.max)})`,
       price: POINT_CONSTANTS.PINNED_LIBRARY_EXPANSION_PRICE,
       icon: <Pin className="size-5" />,
