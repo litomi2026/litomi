@@ -9,6 +9,14 @@ import bookmarkRoutes from '../bookmark'
 let shouldThrowDatabaseError = false
 const mockBookmarks: Map<number, Array<{ mangaId: number; createdAt: Date }>> = new Map()
 
+type BookmarkExportResponse = {
+  bookmarks: BookmarkItem[]
+}
+
+type BookmarkIdResponse = {
+  mangaIds: number[]
+}
+
 type BookmarkItem = {
   mangaId: number
   createdAt: number
@@ -42,8 +50,20 @@ beforeAll(() => {
   spyOn(console, 'error').mockImplementation(() => {})
 })
 
-mock.module('@/sql/selectBookmarks', () => ({
-  default: async ({
+function getSortedBookmarks(userId: number | string) {
+  const userBookmarks = [...(mockBookmarks.get(Number(userId)) || [])]
+
+  return userBookmarks.sort((a, b) => {
+    if (b.createdAt.getTime() !== a.createdAt.getTime()) {
+      return b.createdAt.getTime() - a.createdAt.getTime()
+    }
+
+    return b.mangaId - a.mangaId
+  })
+}
+
+mock.module('@/sql/selectBookmark', () => ({
+  selectBookmark: async ({
     userId,
     limit,
     cursorMangaId,
@@ -58,9 +78,7 @@ mock.module('@/sql/selectBookmarks', () => ({
       throw new Error('Database connection failed')
     }
 
-    const userBookmarks = mockBookmarks.get(Number(userId)) || []
-
-    let filtered = [...userBookmarks]
+    let filtered = getSortedBookmarks(userId)
 
     if (cursorTime) {
       const cursorDate = new Date(cursorTime)
@@ -73,18 +91,18 @@ mock.module('@/sql/selectBookmarks', () => ({
       })
     }
 
-    filtered.sort((a, b) => {
-      if (b.createdAt.getTime() !== a.createdAt.getTime()) {
-        return b.createdAt.getTime() - a.createdAt.getTime()
-      }
-      return b.mangaId - a.mangaId
-    })
-
-    if (limit) {
+    if (limit !== undefined) {
       filtered = filtered.slice(0, limit)
     }
 
     return filtered
+  },
+  selectBookmarkId: async ({ userId }: { userId: number | string }) => {
+    if (shouldThrowDatabaseError) {
+      throw new Error('Database connection failed')
+    }
+
+    return getSortedBookmarks(userId).map(({ mangaId }) => ({ mangaId }))
   },
 }))
 
@@ -359,5 +377,78 @@ describe('GET /api/v1/bookmark', () => {
       expect(data.bookmarks[0].createdAt).toBe(testDate.getTime())
       expect(typeof data.bookmarks[0].createdAt).toBe('number')
     })
+  })
+})
+
+describe('GET /api/v1/bookmark/id', () => {
+  beforeEach(() => {
+    shouldThrowDatabaseError = false
+    mockBookmarks.clear()
+  })
+
+  test('사용자 북마크 전체 ID 목록을 반환한다', async () => {
+    mockBookmarks.set(1, [
+      { mangaId: 100, createdAt: new Date('2025-01-03') },
+      { mangaId: 200, createdAt: new Date('2025-01-02') },
+      { mangaId: 300, createdAt: new Date('2025-01-01') },
+    ])
+
+    const response = await app.request('/id', {}, { userId: 1 })
+
+    expect(response.status).toBe(200)
+    const data = (await response.json()) as BookmarkIdResponse
+    expect(data.mangaIds).toEqual([100, 200, 300])
+    expect(response.headers.get('cache-control')).toContain('private')
+  })
+
+  test('인증되지 않은 사용자는 401 응답을 받는다', async () => {
+    const response = await app.request('/id', {}, {})
+
+    expect(response.status).toBe(401)
+  })
+
+  test('데이터베이스 오류 시 500 응답을 반환한다', async () => {
+    shouldThrowDatabaseError = true
+
+    const response = await app.request('/id', {}, { userId: 1 })
+
+    expect(response.status).toBe(500)
+  })
+})
+
+describe('GET /api/v1/bookmark/export', () => {
+  beforeEach(() => {
+    shouldThrowDatabaseError = false
+    mockBookmarks.clear()
+  })
+
+  test('사용자 북마크 전체 export 목록을 반환한다', async () => {
+    const testDate = new Date('2025-01-03T12:00:00Z')
+    mockBookmarks.set(1, [
+      { mangaId: 100, createdAt: testDate },
+      { mangaId: 200, createdAt: new Date('2025-01-02T12:00:00Z') },
+    ])
+
+    const response = await app.request('/export', {}, { userId: 1 })
+
+    expect(response.status).toBe(200)
+    const data = (await response.json()) as BookmarkExportResponse
+    expect(data.bookmarks).toHaveLength(2)
+    expect(data.bookmarks[0]).toEqual({ mangaId: 100, createdAt: testDate.getTime() })
+    expect(response.headers.get('cache-control')).toContain('private')
+  })
+
+  test('인증되지 않은 사용자는 401 응답을 받는다', async () => {
+    const response = await app.request('/export', {}, {})
+
+    expect(response.status).toBe(401)
+  })
+
+  test('데이터베이스 오류 시 500 응답을 반환한다', async () => {
+    shouldThrowDatabaseError = true
+
+    const response = await app.request('/export', {}, { userId: 1 })
+
+    expect(response.status).toBe(500)
   })
 })

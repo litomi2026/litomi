@@ -5,7 +5,7 @@ import dayjs from 'dayjs'
 import { Download } from 'lucide-react'
 import { toast } from 'sonner'
 
-import type { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark/GET'
+import type { GETV1BookmarkExportResponse } from '@/backend/api/v1/bookmark/export'
 
 import { env } from '@/env/client'
 import { downloadBlob } from '@/utils/download'
@@ -16,8 +16,8 @@ const { NEXT_PUBLIC_BACKEND_URL } = env
 export default function BookmarkDownloadButton() {
   const exportMutation = useMutation({
     mutationFn: async () => {
-      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/bookmark`
-      const { data } = await fetchWithErrorHandling<GETV1BookmarkResponse>(url, { credentials: 'include' })
+      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/bookmark/export`
+      const { data } = await fetchWithErrorHandling<GETV1BookmarkExportResponse>(url, { credentials: 'include' })
       return data.bookmarks
     },
     onSuccess: (bookmarks) => {
