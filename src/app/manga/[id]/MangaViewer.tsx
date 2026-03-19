@@ -7,9 +7,11 @@ import type { Manga } from '@/types/manga'
 
 import { VIEWER_UNLOCK_NON_ADULT_AD_LAYOUT } from '@/components/ads/juicy-ads/layouts'
 import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'
-import useNonAdultAdGate from '@/components/ads/juicy-ads/useNonAdultAdGate'
 import LoginPageLink from '@/components/LoginPageLink'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
+import useNonAdultGate from '@/hook/useNonAdultGate'
+import useMeQuery from '@/query/useMeQuery'
+import { AdultState } from '@/utils/adult-verification'
 
 import ImageViewer from './ImageViewer/ImageViewer'
 import usePageMetadata from './usePageMetadata'
@@ -25,7 +27,8 @@ type Props = {
 export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
   const [hasClickedAd, setHasClickedAd] = useState(false)
   const unlockTimeoutRef = useRef<number>(null)
-  const { me, status: nonAdultAdGateStatus } = useNonAdultAdGate()
+  const { data: me } = useMeQuery()
+  const status = useNonAdultGate()
 
   function handleAdClick() {
     if (unlockTimeoutRef.current !== null) {
@@ -61,7 +64,7 @@ export default function MangaViewer({ id, initialManga }: Readonly<Props>) {
   }, [])
 
   // NOTE: 로그인 사용자는 me 응답이 올 때까지 잠깐 숨겨서 깜빡임을 막아요.
-  if (nonAdultAdGateStatus === 'loading') {
+  if (status === AdultState.UNRESOLVED) {
     return null
   }
 

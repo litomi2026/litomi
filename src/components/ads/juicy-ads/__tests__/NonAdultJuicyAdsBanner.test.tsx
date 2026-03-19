@@ -10,15 +10,14 @@ import type { JuicyAdsLayoutNode } from '../types'
 import { AD_SLOTS } from '../constants'
 
 const useMountedMock = mock(() => true)
-const useNonAdultAdGateMock = mock<
+const useMeQueryMock = mock<
   () => {
-    me: GETV1MeResponse | null | undefined
-    status: 'hidden' | 'loading' | 'visible'
+    data: GETV1MeResponse | null | undefined
   }
 >(() => ({
-  me: undefined,
-  status: 'visible',
+  data: undefined,
 }))
+const useNonAdultAdGateMock = mock<() => 'hidden' | 'loading' | 'visible'>(() => 'visible')
 
 mock.module('next/link', () => ({
   default: ({ children, href, ...props }: { children: ReactNode; href: string }) => (
@@ -40,6 +39,10 @@ mock.module('@/hook/useMounted', () => ({
   default: useMountedMock,
 }))
 
+mock.module('@/query/useMeQuery', () => ({
+  default: useMeQueryMock,
+}))
+
 mock.module('../useNonAdultAdGate', () => ({
   default: useNonAdultAdGateMock,
 }))
@@ -59,12 +62,13 @@ const { default: NonAdultJuicyAdsBanner } = await import('../NonAdultJuicyAdsBan
 afterEach(() => {
   cleanup()
   useMountedMock.mockReset()
+  useMeQueryMock.mockReset()
   useNonAdultAdGateMock.mockReset()
   useMountedMock.mockImplementation(() => true)
-  useNonAdultAdGateMock.mockImplementation(() => ({
-    me: undefined,
-    status: 'visible',
+  useMeQueryMock.mockImplementation(() => ({
+    data: undefined,
   }))
+  useNonAdultAdGateMock.mockImplementation(() => 'visible')
 })
 
 describe('NonAdultJuicyAdsBanner', () => {
@@ -87,8 +91,8 @@ describe('NonAdultJuicyAdsBanner', () => {
       },
     ]
 
-    useNonAdultAdGateMock.mockImplementation(() => ({
-      me: {
+    useMeQueryMock.mockImplementation(() => ({
+      data: {
         id: 1,
         loginId: 'tester',
         name: 'alice',
@@ -96,7 +100,6 @@ describe('NonAdultJuicyAdsBanner', () => {
         imageURL: null,
         adultVerification: { required: true, status: 'unverified' },
       },
-      status: 'visible',
     }))
 
     const { getAllByTestId, getByRole, getByText } = render(
@@ -113,19 +116,13 @@ describe('NonAdultJuicyAdsBanner', () => {
   })
 
   it('returns null while hidden or before mount', () => {
-    useNonAdultAdGateMock.mockImplementation(() => ({
-      me: undefined,
-      status: 'hidden',
-    }))
+    useNonAdultAdGateMock.mockImplementation(() => 'hidden')
 
     const { rerender, container } = render(<NonAdultJuicyAdsBanner />)
 
     expect(container.innerHTML).toBe('')
 
-    useNonAdultAdGateMock.mockImplementation(() => ({
-      me: undefined,
-      status: 'visible',
-    }))
+    useNonAdultAdGateMock.mockImplementation(() => 'visible')
     useMountedMock.mockImplementation(() => false)
 
     rerender(<NonAdultJuicyAdsBanner />)
