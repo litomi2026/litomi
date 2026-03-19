@@ -8,7 +8,7 @@ import type { LibraryListItem } from '@/backend/api/v1/library/GET'
 
 import { showAdultVerificationRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
-import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
+import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 
 import usePinLibraryMutation from './usePinLibraryMutation'
 import usePinnedLibraryListInfiniteQuery from './usePinnedLibraryListInfiniteQuery'
@@ -21,7 +21,8 @@ type Props = {
 
 export default function PinLibraryButton({ className = '', libraryId, library }: Readonly<Props>) {
   const { data: me } = useMeQuery()
-  const canAccess = canAccessAdultRestrictedAPIs(me)
+  const adultState = getAdultState(me)
+  const canAccess = hasAdultAccess(adultState)
   const { mutate, isPending } = usePinLibraryMutation()
   const { data: pinnedData } = usePinnedLibraryListInfiniteQuery({ userId: me?.id ?? null, enabled: !!me })
   const isPinned = pinnedData?.pages.some((page) => page.libraries.some((lib) => lib.id === libraryId))

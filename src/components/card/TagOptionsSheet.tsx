@@ -16,7 +16,7 @@ import useClipboard from '@/hook/useClipboard'
 import { showAdultVerificationRequiredToast } from '@/lib/toast'
 import useCensorshipsMapQuery from '@/query/useCensorshipsMapQuery'
 import useMeQuery from '@/query/useMeQuery'
-import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
+import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 type Props = {
@@ -40,7 +40,8 @@ export default function TagOptionsSheet({ isOpen, onClose, category, value, labe
   const { copy } = useClipboard()
   const router = useRouter()
   const { data: me } = useMeQuery()
-  const canAccess = canAccessAdultRestrictedAPIs(me)
+  const adultState = getAdultState(me)
+  const canAccess = hasAdultAccess(adultState)
   const { data: censorshipsMap } = useCensorshipsMapQuery()
   const queryClient = useQueryClient()
 

@@ -10,7 +10,7 @@ import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import useLibraryItemsInfiniteQuery from '@/query/useLibraryItemsInfiniteQuery'
 import useMeQuery from '@/query/useMeQuery'
-import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
+import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { View } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
@@ -32,7 +32,8 @@ export default function LibraryItemsClient({ library, initialItems, isOwner }: R
   const { isSelectionMode } = useLibrarySelectionStore()
   const scope = isOwner ? 'me' : 'public'
   const { data: me } = useMeQuery()
-  const canAccess = canAccessAdultRestrictedAPIs(me)
+  const adultState = getAdultState(me)
+  const canAccess = hasAdultAccess(adultState)
   const enabled = scope === 'public' || isPublic || canAccess
   const shouldBlockPrivate = scope === 'me' && !isPublic && !canAccess
 

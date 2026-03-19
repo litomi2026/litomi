@@ -4,7 +4,7 @@ import { ArrowDownLeft, ArrowUpRight } from 'lucide-react'
 
 import AdultVerificationGate from '@/components/AdultVerificationGate'
 import useMeQuery from '@/query/useMeQuery'
-import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
+import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { formatDistanceToNow } from '@/utils/format/date'
 import { formatNumber } from '@/utils/format/number'
 import { ProblemDetailsError } from '@/utils/react-query-error'
@@ -20,7 +20,8 @@ export default function TransactionHistory() {
   const { data: me, isPending: isMePending } = useMeQuery()
   const isLoggedIn = Boolean(me)
   const isAuthReady = !isMePending
-  const canAccess = canAccessAdultRestrictedAPIs(me)
+  const adultState = getAdultState(me)
+  const canAccess = hasAdultAccess(adultState)
 
   const {
     data,
@@ -57,12 +58,7 @@ export default function TransactionHistory() {
       )}
 
       {isInitialError && (
-        <TransactionHistoryErrorBanner
-          error={error}
-          isRetrying={isFetching}
-          onRetry={() => refetch()}
-          username={me?.name}
-        />
+        <TransactionHistoryErrorBanner error={error} isRetrying={isFetching} onRetry={() => refetch()} />
       )}
 
       <div className="space-y-2">
@@ -131,7 +127,7 @@ export default function TransactionHistory() {
   )
 }
 
-function getTransactionErrorInfo(error: unknown, username?: string): TransactionErrorInfo {
+function getTransactionErrorInfo(error: unknown): TransactionErrorInfo {
   if (error instanceof ProblemDetailsError) {
     if (error.status === 401) {
       return {
@@ -156,14 +152,12 @@ function TransactionHistoryErrorBanner({
   error,
   isRetrying,
   onRetry,
-  username,
 }: {
   error: unknown
   isRetrying: boolean
   onRetry: () => void
-  username?: string
 }) {
-  const info = getTransactionErrorInfo(error, username)
+  const info = getTransactionErrorInfo(error)
   const showMessage = Boolean(info.message && info.message.trim() !== info.title.trim())
 
   return (

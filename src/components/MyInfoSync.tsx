@@ -8,19 +8,17 @@ import { env } from '@/env/client'
 import amplitude from '@/lib/amplitude/browser'
 import { showAdultVerificationRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
-import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
+import { AdultState, getAdultState, isAdultAccessBlocked } from '@/utils/adult-verification'
 
 const { NEXT_PUBLIC_GA_ID } = env
 
-export default function MeClientSync() {
+export default function MyInfoSync() {
   const queryClient = useQueryClient()
   const { data: me } = useMeQuery()
   const userId = me?.id
   const username = me?.name
-  const shouldPurgeAdultQueries = me !== undefined && !canAccessAdultRestrictedAPIs(me)
-
-  const shouldShowAdultVerificationToast =
-    me != null && me.adultVerification?.required === true && me.adultVerification.status === 'unverified'
+  const adultState = getAdultState(me)
+  const shouldPurgeAdultQueries = isAdultAccessBlocked(adultState)
 
   // NOTE: 로그인 사용자의 경우 GA, Amplitude 아이디를 설정해요
   useEffect(() => {
@@ -34,10 +32,10 @@ export default function MeClientSync() {
 
   // NOTE: 성인인증이 필요한 경우 토스트를 표시해요
   useEffect(() => {
-    if (shouldShowAdultVerificationToast && username) {
+    if (adultState === AdultState.UNVERIFIED) {
       showAdultVerificationRequiredToast({ username })
     }
-  }, [shouldShowAdultVerificationToast, username])
+  }, [adultState, username])
 
   // NOTE: 성인 관련 API 접근 불가 시 requireAdult 캐시를 제거해요
   useEffect(() => {

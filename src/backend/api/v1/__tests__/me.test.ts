@@ -18,12 +18,18 @@ type MeResponse = {
   imageURL: string | null
   adultVerification: {
     required: boolean
-    status: 'unverified' | 'verified'
+    status: 'adult' | 'not_adult' | 'unverified'
   }
 }
 
 beforeAll(() => {
   spyOn(console, 'error').mockImplementation(() => {})
+})
+
+beforeEach(() => {
+  currentUserId = undefined
+  shouldThrowDatabaseError = false
+  deletedCookies = []
 })
 
 type TestEnv = Env & {
@@ -94,12 +100,6 @@ mock.module('hono/cookie', () => ({
 }))
 
 describe('GET /api/v1/me', () => {
-  beforeEach(() => {
-    currentUserId = undefined
-    shouldThrowDatabaseError = false
-    deletedCookies = []
-  })
-
   describe('성공', () => {
     test('인증된 사용자가 자신의 프로필 정보를 성공적으로 조회한다', async () => {
       currentUserId = 1

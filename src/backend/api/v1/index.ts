@@ -4,6 +4,7 @@ import { Env } from '@/backend'
 
 import adsterraRoutes from './adsterra'
 import analyticsRoutes from './analytics'
+import authRoutes from './auth'
 import bbatonRoutes from './bbaton'
 import bookmarkRoutes from './bookmark'
 import censorshipRoutes from './censorship'
@@ -20,6 +21,7 @@ const v1Routes = new Hono<Env>()
 
 v1Routes.route('/adsterra', adsterraRoutes)
 v1Routes.route('/analytics', analyticsRoutes)
+v1Routes.route('/auth', authRoutes)
 v1Routes.route('/bbaton', bbatonRoutes)
 v1Routes.route('/bookmark', bookmarkRoutes)
 v1Routes.route('/censorship', censorshipRoutes)

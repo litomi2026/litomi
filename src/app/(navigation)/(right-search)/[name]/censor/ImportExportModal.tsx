@@ -16,7 +16,7 @@ import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import { showAdultVerificationRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
-import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
+import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { downloadBlob } from '@/utils/download'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
@@ -48,7 +48,7 @@ export default function ImportExportModal({ open, onClose, censorships }: Readon
   const [importText, setImportText] = useState('')
   const queryClient = useQueryClient()
   const { data: me } = useMeQuery()
-  const canAccess = canAccessAdultRestrictedAPIs(me)
+  const adultState = getAdultState(me)
 
   const addMutation = useMutation({
     mutationFn: async (items: { key: number; value: string; level: number }[]) => {
@@ -111,7 +111,7 @@ export default function ImportExportModal({ open, onClose, censorships }: Readon
   }
 
   function handleImport() {
-    if (!canAccess) {
+    if (!hasAdultAccess(adultState)) {
       showAdultVerificationRequiredToast({ username: me?.name })
       return
     }

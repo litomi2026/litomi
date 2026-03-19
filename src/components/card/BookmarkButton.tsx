@@ -5,7 +5,7 @@ import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Bookmark, Loader2 } from 'lucide-react'
 import ms from 'ms'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
@@ -14,10 +14,11 @@ import type { POSTV1BookmarkToggleResponse } from '@/backend/api/v1/bookmark/tog
 
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
+import useDelayedPendingIndicator from '@/hook/useDelayedPendingIndicator'
 import { showAdultVerificationRequiredToast, showLoginRequiredToast } from '@/lib/toast'
 import useBookmarkQuery from '@/query/useBookmarkQuery'
 import useMeQuery from '@/query/useMeQuery'
-import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
+import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import { useLibraryModal } from './LibraryModal'
@@ -32,13 +33,12 @@ type Props = {
 export default function BookmarkButton({ manga, className }: Props) {
   const { id: mangaId } = manga
   const { data: me } = useMeQuery()
-  const canAccess = canAccessAdultRestrictedAPIs(me)
+  const adultState = getAdultState(me)
   const { data: bookmarks } = useBookmarkQuery()
   const bookmarkIds = useMemo(() => new Set(bookmarks?.mangaIds), [bookmarks])
   const isIconSelected = bookmarkIds.has(mangaId)
   const queryClient = useQueryClient()
   const { open: openLibraryModal } = useLibraryModal()
-  const [isSpinnerVisible, setIsSpinnerVisible] = useState(false)
 
   const toggleMutation = useMutation<{ createdAt: string | null }, unknown, number>({
     mutationFn: async (mangaId) => {
@@ -104,6 +104,8 @@ export default function BookmarkButton({ manga, className }: Props) {
     },
   })
 
+  const isSpinnerVisible = useDelayedPendingIndicator(toggleMutation.isPending)
+
   function handleToggleClick(e: React.MouseEvent<HTMLButtonElement>) {
     e.stopPropagation()
 
@@ -111,7 +113,7 @@ export default function BookmarkButton({ manga, className }: Props) {
       showLoginRequiredToast()
       return
     }
-    if (!canAccess) {
+    if (!hasAdultAccess(adultState)) {
       showAdultVerificationRequiredToast({ username: me.name })
       return
     }
@@ -121,17 +123,6 @@ export default function BookmarkButton({ manga, className }: Props) {
 
     toggleMutation.mutate(mangaId)
   }
-
-  // NOTE: 빠른 응답(짧은 pending)에서는 스피너가 깜빡이지 않게 약간 지연해서 보여줘요
-  useEffect(() => {
-    if (!toggleMutation.isPending) {
-      setIsSpinnerVisible(false)
-      return
-    }
-
-    const timeoutId = window.setTimeout(() => setIsSpinnerVisible(true), ms('200ms'))
-    return () => window.clearTimeout(timeoutId)
-  }, [toggleMutation.isPending])
 
   return (
     <div className="flex-1">

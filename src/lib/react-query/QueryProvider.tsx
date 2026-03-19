@@ -7,7 +7,7 @@ import ms from 'ms'
 import { PropsWithChildren } from 'react'
 import { toast } from 'sonner'
 
-import MeClientSync from '@/components/MeClientSync'
+import MyInfoSync from '@/components/MyInfoSync'
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import amplitude from '@/lib/amplitude/browser'
@@ -173,7 +173,7 @@ const queryClient = new QueryClient({
 export default function QueryProvider({ children }: PropsWithChildren) {
   return (
     <QueryClientProvider client={queryClient}>
-      <MeClientSync />
+      <MyInfoSync />
       {children}
       <ReactQueryDevtools />
     </QueryClientProvider>
