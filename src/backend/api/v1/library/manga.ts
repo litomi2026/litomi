@@ -116,8 +116,8 @@ libraryMangaRoutes.get('/', zProblemValidator('query', querySchema), async (c) =
     const sharedCacheControl = createCacheControl({
       public: true,
       maxAge: 3,
-      sMaxAge: sec('1 day'),
-      swr: sec('1 hour'),
+      sMaxAge: sec('6 hours'),
+      swr: sec('10 minutes'),
     })
 
     const cacheControl = scope === 'public' ? sharedCacheControl : privateCacheControl

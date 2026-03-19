@@ -18,6 +18,7 @@ const CensorshipCursorSchema = z.object({
 
 const LibraryListCursorSchema = z.object({
   isOwner: z.coerce.number().int().min(0).max(1),
+  sortCount: z.coerce.number().int().nonnegative(),
   itemCount: z.coerce.number().int().nonnegative(),
   timestamp: z.coerce.number().int().positive(),
   id: z.coerce.number().int().positive(),
@@ -66,10 +67,11 @@ export function decodeLibraryIdCursor(cursor: string) {
 }
 
 export function decodeLibraryListCursor(cursor: string) {
-  const [isOwner, itemCount, timestamp, id] = cursor.split('-')
+  const [isOwner, sortCount, itemCount, timestamp, id] = cursor.split('-')
 
   const validation = LibraryListCursorSchema.safeParse({
     isOwner,
+    sortCount,
     itemCount,
     timestamp,
     id,
@@ -125,8 +127,14 @@ export function encodeLibraryIdCursor(timestamp: number, mangaId: number) {
   return `${timestamp}-${mangaId}`
 }
 
-export function encodeLibraryListCursor(isOwner: number, itemCount: number, timestamp: number, id: number) {
-  return `${isOwner}-${itemCount}-${timestamp}-${id}`
+export function encodeLibraryListCursor(
+  isOwner: number,
+  sortCount: number,
+  itemCount: number,
+  timestamp: number,
+  id: number,
+) {
+  return `${isOwner}-${sortCount}-${itemCount}-${timestamp}-${id}`
 }
 
 export function encodeRatingCursor(rating: number, timestamp: number, mangaId: number) {

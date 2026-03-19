@@ -3,6 +3,7 @@
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import Cookies from 'js-cookie'
 import { Download, Loader2 } from 'lucide-react'
+import { usePathname } from 'next/navigation'
 import { useEffect } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
@@ -34,6 +35,7 @@ type Props = {
 }
 
 export default function DownloadButton({ manga, className = '' }: Props) {
+  const pathname = usePathname()
   const { adultState, isDownloading, downloadedCount, downloadAllImages } = useDownload({ manga })
   const throttledCount = useThrottleValue(downloadedCount, THROTTLE_DELAY)
 
@@ -48,11 +50,11 @@ export default function DownloadButton({ manga, className = '' }: Props) {
 
   useEffect(() => {
     if (shouldEnablePopunder) {
-      // enableJuicyPopunder()
+      enableJuicyPopunder().catch(() => undefined)
     } else {
       disableJuicyPopunder()
     }
-  }, [shouldEnablePopunder])
+  }, [pathname, shouldEnablePopunder])
 
   return (
     <button
