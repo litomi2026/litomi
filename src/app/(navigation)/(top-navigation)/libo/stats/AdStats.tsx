@@ -138,8 +138,8 @@ export default function AdStats() {
       <header className="flex flex-col gap-1">
         <h1 className="text-lg font-semibold tracking-tight text-zinc-100">광고 수익 통계</h1>
         <p className="text-xs text-zinc-400">
-          Adsterra에서 제공하는 통계를 보여줘요. 광고 수익 통계는 참고용이고 정산 확정 전에는 실제 지급액과 다를 수
-          있어요.
+          Adsterra에서 제공하는 통계를 확인해 보세요. 해당 광고 수익은 참고용이며, 정산이 확정되기 전까지는 실제
+          지급액과 차이가 있을 수 있어요.
         </p>
       </header>
 
