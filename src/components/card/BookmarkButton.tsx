@@ -17,7 +17,7 @@ import { env } from '@/env/client'
 import { showAdultVerificationRequiredToast, showLoginRequiredToast } from '@/lib/toast'
 import useBookmarkQuery from '@/query/useBookmarkQuery'
 import useMeQuery from '@/query/useMeQuery'
-import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
+import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import { useLibraryModal } from './LibraryModal'
@@ -32,7 +32,7 @@ type Props = {
 export default function BookmarkButton({ manga, className }: Props) {
   const { id: mangaId } = manga
   const { data: me } = useMeQuery()
-  const canAccess = canAccessAdultRestrictedAPIs(me)
+  const adultState = getAdultState(me)
   const { data: bookmarks } = useBookmarkQuery()
   const bookmarkIds = useMemo(() => new Set(bookmarks?.mangaIds), [bookmarks])
   const isIconSelected = bookmarkIds.has(mangaId)
@@ -111,7 +111,7 @@ export default function BookmarkButton({ manga, className }: Props) {
       showLoginRequiredToast()
       return
     }
-    if (!canAccess) {
+    if (!hasAdultAccess(adultState)) {
       showAdultVerificationRequiredToast({ username: me.name })
       return
     }

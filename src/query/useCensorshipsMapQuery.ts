@@ -4,7 +4,7 @@ import type { CensorshipItem, GETV1CensorshipResponse } from '@/backend/api/v1/c
 
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
-import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
+import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import useMeQuery from './useMeQuery'
@@ -26,13 +26,12 @@ export async function fetchCensorshipsMap() {
 
 export default function useCensorshipsMapQuery() {
   const { data: me } = useMeQuery()
-  const userId = me?.id
-  const canAccess = canAccessAdultRestrictedAPIs(me)
+  const adultState = getAdultState(me)
 
   return useQuery({
     queryKey: QueryKeys.censorship,
     queryFn: fetchCensorshipsMap,
-    enabled: Boolean(userId) && canAccess,
+    enabled: hasAdultAccess(adultState),
     meta: { requiresAdult: true, enableGlobalErrorToastForStatuses: [403] },
   })
 }

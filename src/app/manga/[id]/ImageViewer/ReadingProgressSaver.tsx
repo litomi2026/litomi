@@ -11,7 +11,7 @@ import { SessionStorageKeyMap } from '@/constants/storage'
 import { env } from '@/env/client'
 import { useLatestRef } from '@/hook/useLatestRef'
 import useMeQuery from '@/query/useMeQuery'
-import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
+import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { upsertReadingHistoryIndexEntry } from '@/utils/reading-history-index'
 
 import { useImageIndexStore } from './store/imageIndex'
@@ -29,8 +29,9 @@ type SyncContext = {
 }
 
 export default function ReadingProgressSaver({ mangaId }: Props) {
-  const { data: me, isLoading } = useMeQuery()
-  const canSyncToServer = Boolean(me && !isLoading && canAccessAdultRestrictedAPIs(me))
+  const { data: me } = useMeQuery()
+  const adultState = getAdultState(me)
+  const canSyncReadingProgress = hasAdultAccess(adultState)
   const imageIndex = useImageIndexStore((state) => state.imageIndex)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isRequestPendingRef = useRef(false)
@@ -62,12 +63,9 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
   }
 
   function getSyncContext() {
-    if (!canSyncToServer || !me) {
-      return null
-    }
-
     const page = pendingPageRef.current
-    if (page === null) {
+
+    if (!me || !canSyncReadingProgress || page === null) {
       return null
     }
 
@@ -144,7 +142,7 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
     writeSessionStorage(page)
     latestPageRef.current = page
 
-    if (!canSyncToServer) {
+    if (!canSyncReadingProgress) {
       return
     }
 
@@ -181,7 +179,7 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
 
   // NOTE: 서버에 감상 상태를 저장할 수 있게 되는 순간(=로그인/성인인증 완료) 마지막 페이지를 큐에 넣어요
   useEffect(() => {
-    if (!canSyncToServer) {
+    if (!canSyncReadingProgress) {
       return
     }
 
@@ -192,7 +190,7 @@ export default function ReadingProgressSaver({ mangaId }: Props) {
 
     pendingPageRef.current = page
     scheduleSendRef.current()
-  }, [canSyncToServer, scheduleSendRef])
+  }, [canSyncReadingProgress, scheduleSendRef])
 
   // NOTE: 뷰어를 떠날 때 마지막 작품 감상 상태를 flush하고 타이머를 정리해요
   useEffect(() => {

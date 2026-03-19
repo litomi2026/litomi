@@ -14,7 +14,7 @@ import { CensorshipKey, CensorshipLevel } from '@/database/enum'
 import { env } from '@/env/client'
 import { showAdultVerificationRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
-import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
+import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import { TYPE_PATTERNS } from './constants'
@@ -32,7 +32,7 @@ export default function CensorshipCreationBar() {
   const suggestionsRef = useRef<HTMLDivElement>(null)
   const queryClient = useQueryClient()
   const { data: me } = useMeQuery()
-  const canAccess = canAccessAdultRestrictedAPIs(me)
+  const adultState = getAdultState(me)
 
   const addMutation = useMutation({
     mutationFn: async (items: { key: CensorshipKey; value: string; level: CensorshipLevel }[]) => {
@@ -74,7 +74,7 @@ export default function CensorshipCreationBar() {
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
 
-    if (!canAccess) {
+    if (!hasAdultAccess(adultState)) {
       showAdultVerificationRequiredToast({ username: me?.name })
       return
     }

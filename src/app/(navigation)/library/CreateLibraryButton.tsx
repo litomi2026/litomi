@@ -18,7 +18,7 @@ import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import { showAdultVerificationRequiredToast, showLoginRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
-import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
+import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { fetchWithErrorHandling, type ProblemDetailsError } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
@@ -56,7 +56,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
   const queryClient = useQueryClient()
   const { data: me } = useMeQuery()
   const nameInputRef = useRef<HTMLInputElement>(null)
-  const canAccess = canAccessAdultRestrictedAPIs(me)
+  const adultState = getAdultState(me)
 
   const createMutation = useMutation<POSTV1LibraryResponse, ProblemDetailsError, CreateLibraryPayload>({
     mutationFn: createLibraryApi,
@@ -138,7 +138,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
   }
 
   function handleTogglePublic(next: boolean) {
-    if (next === false && !canAccess) {
+    if (!next && !hasAdultAccess(adultState)) {
       showAdultVerificationRequiredToast({ username: me?.name })
       return
     }
