@@ -18,7 +18,7 @@ import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
 import { showAdultVerificationRequiredToast } from '@/lib/toast'
 import useCensorshipsInfiniteQuery from '@/query/useCensorshipInfiniteQuery'
 import useMeQuery from '@/query/useMeQuery'
-import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
+import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import CensorshipCard, { CensorshipCardSkeleton } from './CensorshipCard'
@@ -39,7 +39,8 @@ export default function Censorships() {
   const [selectedIds, setSelectedIds] = useState(new Set<number>())
   const [deletingIds, setDeletingIds] = useState(new Set<number>())
   const { data: me } = useMeQuery()
-  const canAccess = canAccessAdultRestrictedAPIs(me)
+  const adultState = getAdultState(me)
+  const canAccess = hasAdultAccess(adultState)
 
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage, isFetchNextPageError } =
     useCensorshipsInfiniteQuery()

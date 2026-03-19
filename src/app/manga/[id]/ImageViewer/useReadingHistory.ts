@@ -9,7 +9,7 @@ import { QueryKeys } from '@/constants/query'
 import { SessionStorageKeyMap } from '@/constants/storage'
 import { env } from '@/env/client'
 import useMeQuery from '@/query/useMeQuery'
-import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
+import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 import { READING_HISTORY_INDEX_UPDATED_EVENT, readReadingHistoryIndex } from '@/utils/reading-history-index'
 
@@ -19,6 +19,7 @@ export default function useReadingHistory(mangaId: number) {
   const { data: me, isLoading: isMeLoading } = useMeQuery()
   const queryClient = useQueryClient()
   const userId = me?.id
+  const adultState = getAdultState(me)
 
   const { data: lastPage } = useQuery({
     queryKey: QueryKeys.readingHistory(mangaId),
@@ -32,7 +33,7 @@ export default function useReadingHistory(mangaId: number) {
         }
       }
 
-      if (!me || !canAccessAdultRestrictedAPIs(me)) {
+      if (!me || !hasAdultAccess(adultState)) {
         return null
       }
 

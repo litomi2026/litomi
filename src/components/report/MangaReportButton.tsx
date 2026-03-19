@@ -15,7 +15,7 @@ import DialogHeader from '@/components/ui/DialogHeader'
 import { env } from '@/env/client'
 import { showAdultVerificationRequiredToast, showLoginRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
-import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
+import { getAdultState, hasAdultAccess, requiresAdultVerification } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
@@ -43,7 +43,8 @@ type ReasonButtonProps = {
 export default function MangaReportButton({ mangaId, variant = 'icon', className = '' }: Props) {
   const { data: me } = useMeQuery()
   const [open, setOpen] = useState(false)
-  const adultVerification = me?.adultVerification
+  const adultState = getAdultState(me)
+  const isVerificationRequired = requiresAdultVerification(adultState)
 
   const reportMutation = useMutation<POSTV1MangaIdReportResponse, unknown, POSTV1MangaIdReportBody>({
     mutationFn: async (body) => {
@@ -76,7 +77,7 @@ export default function MangaReportButton({ mangaId, variant = 'icon', className
       return
     }
 
-    if (!canAccessAdultRestrictedAPIs(me)) {
+    if (!hasAdultAccess(adultState)) {
       showAdultVerificationRequiredToast({ username: me.name })
       return
     }
@@ -118,7 +119,7 @@ export default function MangaReportButton({ mangaId, variant = 'icon', className
             />
           </div>
           <div className="grid gap-1 p-3 py-2 text-xs text-zinc-500">
-            {adultVerification?.required === true && (
+            {isVerificationRequired && (
               <p>
                 <Link className="underline underline-offset-2" href={`/@${me?.name}/settings#adult`} prefetch={false}>
                   비바톤 익명 인증

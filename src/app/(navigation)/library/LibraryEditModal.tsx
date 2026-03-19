@@ -17,7 +17,7 @@ import { MAX_LIBRARY_DESCRIPTION_LENGTH, MAX_LIBRARY_NAME_LENGTH } from '@/const
 import { QueryKeys } from '@/constants/query'
 import { showAdultVerificationRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
-import { canAccessAdultRestrictedAPIs } from '@/utils/adult-verification'
+import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { ProblemDetailsError } from '@/utils/react-query-error'
 
 import { updateLibrary } from './api'
@@ -43,7 +43,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
   const formRef = useRef<HTMLFormElement>(null)
   const queryClient = useQueryClient()
   const { data: me } = useMeQuery()
-  const canAccess = canAccessAdultRestrictedAPIs(me)
+  const adultState = getAdultState(me)
 
   const updateLibraryMutation = useMutation({
     mutationFn: ({ body, libraryId }: { libraryId: number; body: PATCHV1LibraryIdBody }) =>
@@ -154,7 +154,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
   }
 
   function handleTogglePublic(next: boolean) {
-    if (next === false && !canAccess) {
+    if (!next && !hasAdultAccess(adultState)) {
       showAdultVerificationRequiredToast({ username: me?.name })
       const input = formRef.current?.querySelector<HTMLInputElement>('input[name="is-public"]')
 
@@ -273,7 +273,11 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
             disabled={updateLibraryMutation.isPending}
             type="submit"
           >
-            {updateLibraryMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : <Check className="size-4" />}
+            {updateLibraryMutation.isPending ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <Check className="size-4" />
+            )}
             <span>수정하기</span>
           </button>
         </DialogFooter>
