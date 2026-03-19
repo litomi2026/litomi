@@ -1,84 +1,89 @@
 'use client'
 
 import ms from 'ms'
-import Link from 'next/link'
 import { toast } from 'sonner'
 
-import LoginPageLink from '@/components/LoginPageLink'
+import { SearchParamKey } from '@/constants/storage'
 
 type ToastOptions = {
   username?: string
 }
 
 export function showAdultVerificationRecommendedToast({ username }: ToastOptions = {}) {
-  toast.info(
-    <div className="flex flex-wrap gap-x-2 gap-y-1 items-center">
-      <div>익명으로 성인인증하면 광고 없이 이용할 수 있어요</div>
-      <AdultVerificationLink username={username} />
-    </div>,
-    { id: ADULT_VERIFICATION_RECOMMENDED_TOAST_ID, duration: ms('5 seconds') },
-  )
+  toast.info('성인인증 시 광고가 제거돼요', {
+    id: ADULT_VERIFICATION_REQUIRED_TOAST_ID,
+    duration: ms('5 seconds'),
+    action: getAdultVerificationToastAction({ username }),
+  })
 }
 
 export function showAdultVerificationRequiredToast({ username }: ToastOptions = {}) {
-  toast.warning(
-    <div className="flex flex-wrap gap-x-2 gap-y-1 items-center">
-      <div>성인인증이 필요해요</div>
-      <AdultVerificationLink username={username} />
-    </div>,
-    { id: ADULT_VERIFICATION_REQUIRED_TOAST_ID, duration: ms('5 seconds') },
-  )
+  toast.warning('성인인증이 필요해요', {
+    id: ADULT_VERIFICATION_REQUIRED_TOAST_ID,
+    duration: ms('5 seconds'),
+    action: getAdultVerificationToastAction({ username }),
+  })
 }
 
 export function showLiboExpansionRequiredToast(message?: string) {
-  toast.warning(
-    <div className="flex flex-wrap gap-x-2 gap-y-1 items-center">
-      <div>{message ?? '저장 한도에 도달했어요'}</div>
-      <Link
-        className="font-bold text-xs underline underline-offset-2"
-        href="/libo/shop"
-        onClick={() => toast.dismiss(LIBO_EXPANSION_REQUIRED_TOAST_ID)}
-        prefetch={false}
-      >
-        리보로 확장하기
-      </Link>
-    </div>,
-    { id: LIBO_EXPANSION_REQUIRED_TOAST_ID, duration: ms('5 seconds') },
-  )
+  toast.warning(message ?? '저장 한도에 도달했어요', {
+    id: LIBO_EXPANSION_REQUIRED_TOAST_ID,
+    duration: ms('5 seconds'),
+    action: {
+      label: '확장',
+      onClick: createToastClickHandler({
+        id: LIBO_EXPANSION_REQUIRED_TOAST_ID,
+        href: '/libo/shop',
+      }),
+    },
+  })
 }
 
 export function showLoginRequiredToast() {
-  toast.warning(
-    <div className="flex gap-2 items-center">
-      <div>로그인이 필요해요</div>
-      <LoginPageLink onClick={() => toast.dismiss(LOGIN_REQUIRED_TOAST_ID)}>로그인하기</LoginPageLink>
-    </div>,
-    { id: LOGIN_REQUIRED_TOAST_ID },
-  )
+  toast.warning('로그인이 필요해요', {
+    id: LOGIN_REQUIRED_TOAST_ID,
+    action: {
+      label: '로그인',
+      onClick: createToastClickHandler({
+        id: LOGIN_REQUIRED_TOAST_ID,
+        href: getLoginHref(),
+      }),
+    },
+  })
 }
 
-function AdultVerificationLink({ username }: ToastOptions) {
-  return (
-    <>
-      {username ? (
-        <Link
-          className="font-bold text-xs underline underline-offset-2"
-          href={`/@${username}/settings#adult`}
-          onClick={() => toast.dismiss(ADULT_VERIFICATION_REQUIRED_TOAST_ID)}
-          prefetch={false}
-        >
-          익명으로 성인인증하기
-        </Link>
-      ) : (
-        <LoginPageLink onClick={() => toast.dismiss(ADULT_VERIFICATION_REQUIRED_TOAST_ID)}>
-          먼저 로그인하기
-        </LoginPageLink>
-      )}
-    </>
-  )
+function createToastClickHandler({ id, href }: { id: string; href: string }) {
+  return () => {
+    toast.dismiss(id)
+    window.location.assign(href)
+  }
+}
+
+function getAdultVerificationToastAction({ username }: ToastOptions) {
+  if (username) {
+    return {
+      label: '익명 성인인증',
+      onClick: createToastClickHandler({
+        id: ADULT_VERIFICATION_REQUIRED_TOAST_ID,
+        href: `/@${username}/settings#adult`,
+      }),
+    }
+  }
+
+  return {
+    label: '로그인',
+    onClick: createToastClickHandler({
+      id: ADULT_VERIFICATION_REQUIRED_TOAST_ID,
+      href: getLoginHref(),
+    }),
+  }
+}
+
+function getLoginHref() {
+  const currentPath = `${window.location.pathname}${window.location.search}`
+  return `/auth/login?${SearchParamKey.REDIRECT}=${encodeURIComponent(currentPath)}`
 }
 
 const ADULT_VERIFICATION_REQUIRED_TOAST_ID = 'adult-verification-required'
-const ADULT_VERIFICATION_RECOMMENDED_TOAST_ID = 'adult-verification-recommended'
 const LIBO_EXPANSION_REQUIRED_TOAST_ID = 'libo-expansion-required'
 const LOGIN_REQUIRED_TOAST_ID = 'login-required'

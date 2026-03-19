@@ -158,7 +158,7 @@ function shouldEnableDownloadButtonPopunder({
   adultState: AdultState
   hasAuthHint: boolean
 }) {
-  if (adultState === AdultState.ADULT || adultState === AdultState.NOT_REQUIRED) {
+  if (adultState === AdultState.ADULT) {
     return false
   }
 
