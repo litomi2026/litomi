@@ -49,7 +49,7 @@ export default function DownloadButton({ manga, className = '' }: Props) {
   const shouldEnablePopunder = shouldEnableDownloadButtonPopunder({ adultState, hasAuthHint })
 
   useEffect(() => {
-    if (shouldEnablePopunder && pathname) {
+    if (shouldEnablePopunder) {
       enableJuicyPopunder().catch(() => undefined)
     } else {
       disableJuicyPopunder()
