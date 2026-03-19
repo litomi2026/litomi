@@ -1,6 +1,7 @@
 'use client'
 
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
+import Cookies from 'js-cookie'
 import { Download, Loader2 } from 'lucide-react'
 import { useEffect } from 'react'
 import { toast } from 'sonner'
@@ -8,8 +9,15 @@ import { twMerge } from 'tailwind-merge'
 
 import type { ImageWithVariants } from '@/types/manga'
 
+import {
+  disableJuicyPopunder,
+  enableJuicyPopunder,
+  JUICY_POPUNDER_TRIGGER_CLASS,
+} from '@/components/ads/juicy-ads/popunder'
+import { CookieKey } from '@/constants/storage'
 import { useDownload } from '@/hook/useDownload'
 import { useThrottleValue } from '@/hook/useThrottleValue'
+import { AdultState } from '@/utils/adult-verification'
 
 const commonButtonStyle =
   'relative flex justify-center items-center gap-1 overflow-hidden transition disabled:bg-zinc-800 disabled:text-zinc-500 disabled:cursor-not-allowed hover:bg-zinc-800 active:bg-zinc-900 active:border-zinc-700'
@@ -26,7 +34,7 @@ type Props = {
 }
 
 export default function DownloadButton({ manga, className = '' }: Props) {
-  const { isDownloading, downloadedCount, downloadAllImages } = useDownload({ manga })
+  const { adultState, isDownloading, downloadedCount, downloadAllImages } = useDownload({ manga })
   const throttledCount = useThrottleValue(downloadedCount, THROTTLE_DELAY)
 
   const { images = [] } = manga
@@ -35,14 +43,24 @@ export default function DownloadButton({ manga, className = '' }: Props) {
   const isDisabled = isDownloading || totalCount === 0
   const label = getProgressText({ isDownloading, progress, throttledCount, totalCount })
   const progressWidth = isDownloading ? `${Math.max(progress, 6)}%` : '0%'
+  const hasAuthHint = Cookies.get(CookieKey.AUTH_HINT) === '1'
+  const shouldEnablePopunder = shouldEnableDownloadButtonPopunder({ adultState, hasAuthHint })
+
+  useEffect(() => {
+    if (shouldEnablePopunder) {
+      enableJuicyPopunder()
+    } else {
+      disableJuicyPopunder()
+    }
+  }, [shouldEnablePopunder])
 
   return (
     <button
       aria-busy={isDownloading}
-      className={twMerge(commonButtonStyle, className)}
+      className={twMerge(commonButtonStyle, JUICY_POPUNDER_TRIGGER_CLASS, className)}
       disabled={isDisabled}
       onClick={downloadAllImages}
-      title={getAriaLabel({ isDownloading, label, totalCount })}
+      title={getButtonTitle({ isDownloading, label, totalCount })}
       type="button"
     >
       {isDownloading && (
@@ -83,7 +101,7 @@ export function DownloadButtonError({ error, reset }: Readonly<ErrorBoundaryFall
   )
 }
 
-function getAriaLabel({
+function getButtonTitle({
   isDownloading,
   label,
   totalCount,
@@ -131,4 +149,22 @@ function getProgressText({
   }
 
   return totalCount > 20 ? `${throttledCount}/${totalCount}` : `${progress}%`
+}
+
+function shouldEnableDownloadButtonPopunder({
+  adultState,
+  hasAuthHint,
+}: {
+  adultState: AdultState
+  hasAuthHint: boolean
+}) {
+  if (adultState === AdultState.ADULT) {
+    return false
+  }
+
+  if (adultState === AdultState.UNRESOLVED) {
+    return !hasAuthHint
+  }
+
+  return true
 }
