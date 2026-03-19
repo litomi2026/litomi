@@ -1,8 +1,12 @@
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
 
-import { ImageWithVariants } from '@/types/manga'
-import { downloadImage, downloadMultipleImages } from '@/utils/download'
+import type { ImageWithVariants } from '@/types/manga'
+
+import { showAdultVerificationRecommendedToast, showLoginRequiredToast } from '@/lib/toast'
+import useMeQuery from '@/query/useMeQuery'
+import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
+import { downloadMultipleImages } from '@/utils/download'
 import { createEquivalentMangaImageSourceURLs, createMangaImageProxyRequestURL } from '@/utils/image-proxy'
 
 // Supported image extensions
@@ -17,50 +21,23 @@ type Props = {
 }
 
 export function useDownload({ manga }: Props) {
+  const { data: me } = useMeQuery()
+  const adultState = getAdultState(me)
   const [isDownloading, setIsDownloading] = useState(false)
   const [downloadedCount, setDownloadedCount] = useState(0)
-
-  const downloadSingleImage = useCallback(
-    async (imageIndex: number) => {
-      if (isDownloading) {
-        return
-      }
-
-      setIsDownloading(true)
-
-      try {
-        const { id, title, images = [] } = manga
-        const image = images[imageIndex]
-        const imageURL = image?.original?.url ?? image?.thumbnail?.url ?? ''
-        const extension = getImageExtension(imageURL)
-        const filename = `${title} ${imageIndex + 1}${extension}`
-
-        const downloadCandidates = getSemanticDownloadCandidates({
-          mangaId: id,
-          imageIndex,
-          externalImageURL: imageURL,
-        })
-
-        await downloadImage(downloadCandidates, filename)
-        toast.success('다운로드가 완료됐어요')
-      } catch (error) {
-        if (error instanceof Error && error.name === 'AbortError') {
-          toast.info('다운로드가 취소됐어요')
-        } else if (navigator.onLine === false) {
-          toast.error('네트워크 연결을 확인해 주세요')
-        } else {
-          toast.error('다운로드에 실패했어요')
-        }
-      } finally {
-        setIsDownloading(false)
-      }
-    },
-    [manga, isDownloading],
-  )
 
   const downloadAllImages = useCallback(async () => {
     if (isDownloading) {
       return
+    }
+
+    if (!me) {
+      showLoginRequiredToast()
+      return
+    }
+
+    if (!hasAdultAccess(adultState)) {
+      showAdultVerificationRecommendedToast({ username: me.name })
     }
 
     setIsDownloading(true)
@@ -102,12 +79,12 @@ export function useDownload({ manga }: Props) {
       setIsDownloading(false)
       setDownloadedCount(0)
     }
-  }, [manga, isDownloading])
+  }, [adultState, isDownloading, manga, me])
 
   return {
+    adultState,
     isDownloading,
     downloadedCount,
-    downloadSingleImage,
     downloadAllImages,
   }
 }

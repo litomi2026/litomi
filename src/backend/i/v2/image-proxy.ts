@@ -5,12 +5,13 @@ import { Hono } from 'hono'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { requireAuth } from '@/backend/middleware/require-auth'
 import { createCacheControl } from '@/utils/cache-control'
 import { sec } from '@/utils/format/date'
 import {
   isImageProxySourceURLCompatibleWithRouteParams,
   parseImageProxyRoutePageParam,
-  parseImageProxySourceURL,
+  validateImageSourceURL,
 } from '@/utils/image-proxy'
 
 const imageProxyRoutes = new Hono<Env>()
@@ -22,7 +23,7 @@ const pathParamSchema = z.object({
 })
 
 const querySchema = z.object({
-  u: z.string().min(1).optional(),
+  u: z.url(),
 })
 
 const SUCCESS_CACHE_CONTROL = createCacheControl({
@@ -55,24 +56,13 @@ const ACCEPTED_IMAGE_CONTENT_TYPES = ['application/octet-stream'] as const
 imageProxyRoutes.on(
   ['GET', 'HEAD'],
   '/manga/:mangaId/:variant/:page',
+  requireAuth,
   zNoStoreValidator('param', pathParamSchema),
   zNoStoreValidator('query', querySchema),
   async (c) => {
     const { mangaId, page, variant } = c.req.valid('param')
     const { u } = c.req.valid('query')
-
-    if (!u) {
-      return createProxyErrorResponse('400 Bad Request', 400, NO_STORE_CACHE_CONTROL)
-    }
-
-    let sourceURL: URL
-
-    try {
-      sourceURL = parseImageProxySourceURL(u)
-    } catch (error) {
-      console.error('Failed to parse image URL:', error)
-      return createProxyErrorResponse('400 Bad Request', 400, NO_STORE_CACHE_CONTROL)
-    }
+    const sourceURL = validateImageSourceURL(new URL(u))
 
     if (!isImageProxySourceURLCompatibleWithRouteParams(sourceURL, { mangaId, page, variant })) {
       return createProxyErrorResponse('400 Bad Request', 400, NO_STORE_CACHE_CONTROL)

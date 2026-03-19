@@ -147,23 +147,7 @@ export function parseImageProxySourceURL(sourceURL: string): URL {
   return validateImageSourceURL(parsedURL)
 }
 
-function createHentkorPageURL(mangaId: number, page: number): string {
-  return `https://cdn.hentkor.net/pages/${mangaId}/${page}.avif`
-}
-
-function createImageDeliveriesThumbnailURL(mangaId: number, page: number): string {
-  return `https://cdn.imagedeliveries.com/${mangaId}/thumbnails/${page}.webp`
-}
-
-function createSoujpaPageURL(mangaId: number, page: number, ext: 'avif' | 'webp'): string {
-  return `https://soujpa.in/start/${mangaId}/${mangaId}_${page - 1}.${ext}`
-}
-
-function hasAllowedHostSuffix(hostname: string, hostSuffixes: readonly string[]): boolean {
-  return hostSuffixes.some((hostSuffix) => hostname === hostSuffix || hostname.endsWith(`.${hostSuffix}`))
-}
-
-function validateImageSourceURL(sourceURL: URL): URL {
+export function validateImageSourceURL(sourceURL: URL): URL {
   const normalizedHost = sourceURL.hostname.toLowerCase()
 
   if (sourceURL.protocol !== 'https:') {
@@ -186,4 +170,20 @@ function validateImageSourceURL(sourceURL: URL): URL {
   sourceURL.hash = ''
 
   return sourceURL
+}
+
+function createHentkorPageURL(mangaId: number, page: number): string {
+  return `https://cdn.hentkor.net/pages/${mangaId}/${page}.avif`
+}
+
+function createImageDeliveriesThumbnailURL(mangaId: number, page: number): string {
+  return `https://cdn.imagedeliveries.com/${mangaId}/thumbnails/${page}.webp`
+}
+
+function createSoujpaPageURL(mangaId: number, page: number, ext: 'avif' | 'webp'): string {
+  return `https://soujpa.in/start/${mangaId}/${mangaId}_${page - 1}.${ext}`
+}
+
+function hasAllowedHostSuffix(hostname: string, hostSuffixes: readonly string[]): boolean {
+  return hostSuffixes.some((hostSuffix) => hostname === hostSuffix || hostname.endsWith(`.${hostSuffix}`))
 }

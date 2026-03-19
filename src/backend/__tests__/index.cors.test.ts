@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 import { Hono } from 'hono'
+import { contextStorage } from 'hono/context-storage'
 import { cors } from 'hono/cors'
 
 import type { Env } from '@/backend'
@@ -7,7 +8,23 @@ import type { Env } from '@/backend'
 import appRoutes from '../app'
 import { resolveCORSOrigin } from '../utils/cors-origin'
 
-const app = new Hono<Env>()
+type TestEnv = Env & {
+  Bindings: {
+    userId?: number
+  }
+}
+
+const app = new Hono<TestEnv>()
+
+app.use('*', contextStorage())
+app.use('*', async (c, next) => {
+  const userId = c.env?.userId
+
+  if (userId) {
+    c.set('userId', userId)
+  }
+  await next()
+})
 
 app.use(
   '/api/*',
@@ -44,6 +61,7 @@ describe('CORS by path', () => {
     const response = await app.request(
       'http://localhost/i/v2/manga/123/original/5',
       { headers: { origin: 'https://stg.litomi.in' } },
+      { userId: 1 },
     )
 
     expect(response.status).toBe(400)
@@ -58,6 +76,7 @@ describe('CORS by path', () => {
       {
         headers: {},
       },
+      { userId: 1 },
     )
 
     expect(response.status).toBe(400)

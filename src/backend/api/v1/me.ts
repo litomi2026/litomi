@@ -1,14 +1,12 @@
 import { eq } from 'drizzle-orm'
 import { Hono } from 'hono'
-import { deleteCookie } from 'hono/cookie'
 import 'server-only'
 
 import { Env } from '@/backend'
 import { requireAuth } from '@/backend/middleware/require-auth'
+import { clearAuthCookies } from '@/backend/utils/auth'
 import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
-import { COOKIE_DOMAIN } from '@/constants'
-import { CookieKey } from '@/constants/storage'
 import { bbatonVerificationTable } from '@/database/supabase/bbaton'
 import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/user'
@@ -47,9 +45,7 @@ meRoutes.get('/', requireAuth, async (c) => {
       .where(eq(userTable.id, userId))
 
     if (!user) {
-      deleteCookie(c, CookieKey.ACCESS_TOKEN, { domain: COOKIE_DOMAIN })
-      deleteCookie(c, CookieKey.REFRESH_TOKEN, { domain: COOKIE_DOMAIN })
-      deleteCookie(c, CookieKey.AUTH_HINT, { domain: COOKIE_DOMAIN })
+      clearAuthCookies(c)
       return problemResponse(c, { status: 404, detail: '사용자 정보를 찾을 수 없어요' })
     }
 
