@@ -48,7 +48,7 @@ export default function DownloadButton({ manga, className = '' }: Props) {
 
   useEffect(() => {
     if (shouldEnablePopunder) {
-      enableJuicyPopunder()
+      // enableJuicyPopunder()
     } else {
       disableJuicyPopunder()
     }
