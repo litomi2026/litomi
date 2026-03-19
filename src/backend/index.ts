@@ -39,12 +39,8 @@ app.use(csrf({ origin: (origin) => Boolean(resolveCORSOrigin(origin)), secFetchS
 app.use(logger())
 app.use(timing())
 
-app.use('/api/*', secureHeaders(getDefaultSecureHeadersOptions()))
-app.use('/api/*', auth)
-app.use('/api/*', etag())
-
 app.use(
-  '/api/*',
+  '*',
   cors({
     origin: (origin) => resolveCORSOrigin(origin),
     credentials: true,
@@ -52,19 +48,15 @@ app.use(
   }),
 )
 
+app.use('/api/*', secureHeaders(getDefaultSecureHeadersOptions()))
+app.use('/api/*', auth)
+app.use('/api/*', etag())
+
 app.use(
   '/i/*',
   secureHeaders({
     ...getDefaultSecureHeadersOptions(),
     crossOriginResourcePolicy: 'same-site',
-  }),
-)
-
-app.use(
-  '/i/*',
-  cors({
-    origin: (origin) => resolveCORSOrigin(origin),
-    exposeHeaders: ['Retry-After'],
   }),
 )
 

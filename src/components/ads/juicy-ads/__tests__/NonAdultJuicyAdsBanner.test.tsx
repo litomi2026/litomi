@@ -5,6 +5,8 @@ import { afterEach, describe, expect, it, mock } from 'bun:test'
 
 import type { GETV1MeResponse } from '@/backend/api/v1/me'
 
+import { AdultState } from '@/utils/adult-verification'
+
 import type { JuicyAdsLayoutNode } from '../types'
 
 import { AD_SLOTS } from '../constants'
@@ -17,7 +19,7 @@ const useMeQueryMock = mock<
 >(() => ({
   data: undefined,
 }))
-const useNonAdultAdGateMock = mock<() => 'hidden' | 'loading' | 'visible'>(() => 'visible')
+const useNonAdultGateMock = mock<() => AdultState>(() => AdultState.NOT_ADULT)
 
 mock.module('next/link', () => ({
   default: ({ children, href, ...props }: { children: ReactNode; href: string }) => (
@@ -43,8 +45,8 @@ mock.module('@/query/useMeQuery', () => ({
   default: useMeQueryMock,
 }))
 
-mock.module('../useNonAdultAdGate', () => ({
-  default: useNonAdultAdGateMock,
+mock.module('../../../../hook/useNonAdultGate', () => ({
+  default: useNonAdultGateMock,
 }))
 
 mock.module('../JuicyAdsScript', () => ({
@@ -63,12 +65,12 @@ afterEach(() => {
   cleanup()
   useMountedMock.mockReset()
   useMeQueryMock.mockReset()
-  useNonAdultAdGateMock.mockReset()
+  useNonAdultGateMock.mockReset()
   useMountedMock.mockImplementation(() => true)
   useMeQueryMock.mockImplementation(() => ({
     data: undefined,
   }))
-  useNonAdultAdGateMock.mockImplementation(() => 'visible')
+  useNonAdultGateMock.mockImplementation(() => AdultState.NOT_ADULT)
 })
 
 describe('NonAdultJuicyAdsBanner', () => {
@@ -116,13 +118,13 @@ describe('NonAdultJuicyAdsBanner', () => {
   })
 
   it('returns null while hidden or before mount', () => {
-    useNonAdultAdGateMock.mockImplementation(() => 'hidden')
+    useNonAdultGateMock.mockImplementation(() => AdultState.ADULT)
 
     const { rerender, container } = render(<NonAdultJuicyAdsBanner />)
 
     expect(container.innerHTML).toBe('')
 
-    useNonAdultAdGateMock.mockImplementation(() => 'visible')
+    useNonAdultGateMock.mockImplementation(() => AdultState.NOT_ADULT)
     useMountedMock.mockImplementation(() => false)
 
     rerender(<NonAdultJuicyAdsBanner />)
