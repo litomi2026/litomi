@@ -2,32 +2,51 @@ import { afterEach, describe, expect, it, mock } from 'bun:test'
 
 import { disableJuicyPopunder, enableJuicyPopunder, JUICY_POPUNDER_TRIGGER_CLASS } from '../popunder'
 
-type JuicyPopunderStackEntry = {
-  url: string
+type JuicyPopunderAddOptions = {
+  afterOpen?: (popupWindow: Window | null, targetURL: string, options: unknown) => void
+  cookieExpires: number
+  newTab: boolean
   under: boolean
-  tab: boolean
+}
+
+type JuicyPopunderStackEntry = {
+  afterOpen?: (popupWindow: Window | null, targetURL: string, options: unknown) => void
   expires: number
-  afterOpen?: () => void
+  tab: boolean
+  under: boolean
+  url: string
 }
 
 type JuicyPopunderWindow = typeof globalThis &
   Window & {
     __juicyPopunderLoadPromise?: Promise<void>
+    __juicyPopunderPrimedPageKey?: string
     __juicyPopunderShouldEnable?: boolean
+    __juicyPopunderTemplateEntry?: JuicyPopunderStackEntry
+    __juicyPopunderTemplatePagePath?: string
     juicy_tags?: string[]
     jYWWRgFaKP?: {
+      add: (url: string, options: JuicyPopunderAddOptions) => unknown
       emptyStack: () => unknown
       getStack: () => JuicyPopunderStackEntry[]
     }
   }
 
-function createMockJuicyPopunderAPI(initialEntries: JuicyPopunderStackEntry[]) {
-  let stack = initialEntries.map((entry) => ({ ...entry }))
+function createMockJuicyPopunderAPI(initialEntry: JuicyPopunderStackEntry) {
+  let stack = [{ ...initialEntry }]
 
   const api = {
+    add: mock((url: string, options: JuicyPopunderAddOptions) => {
+      stack.push({
+        afterOpen: options.afterOpen,
+        expires: options.cookieExpires,
+        tab: options.newTab,
+        under: options.under,
+        url,
+      })
+    }),
     emptyStack: mock(() => {
       stack = []
-      return api
     }),
     getStack: mock(() => stack),
   }
@@ -47,18 +66,20 @@ function interceptJuicyPopunderScript({
 }) {
   const popunderWindow = window as JuicyPopunderWindow
   const originalAppendChild = document.body.appendChild
-  let appendedScript: HTMLScriptElement | null = null
+  const appendedScripts: HTMLScriptElement[] = []
 
-  const dispatchLoad = () => {
+  const dispatchLoad = (script: HTMLScriptElement | null = appendedScripts.at(-1) ?? null) => {
     popunderWindow.jYWWRgFaKP = api
-    appendedScript?.dispatchEvent(new window.Event('load'))
+    script?.dispatchEvent(new window.Event('load'))
   }
 
   document.body.appendChild = mock((node: Node) => {
-    appendedScript = node as HTMLScriptElement
+    const script = node as HTMLScriptElement
+
+    appendedScripts.push(script)
 
     if (!deferLoad) {
-      queueMicrotask(dispatchLoad)
+      queueMicrotask(() => dispatchLoad(script))
     }
 
     return node
@@ -66,6 +87,8 @@ function interceptJuicyPopunderScript({
 
   return {
     dispatchLoad,
+    getAppendCount: () => appendedScripts.length,
+    getLatestScript: () => appendedScripts.at(-1) ?? null,
     restore: () => {
       document.body.appendChild = originalAppendChild
     },
@@ -78,64 +101,117 @@ afterEach(() => {
   const popunderWindow = window as JuicyPopunderWindow
 
   delete popunderWindow.__juicyPopunderLoadPromise
+  delete popunderWindow.__juicyPopunderPrimedPageKey
   delete popunderWindow.__juicyPopunderShouldEnable
+  delete popunderWindow.__juicyPopunderTemplateEntry
+  delete popunderWindow.__juicyPopunderTemplatePagePath
   delete popunderWindow.juicy_tags
   delete popunderWindow.jYWWRgFaKP
 
   document.body.innerHTML = ''
+  window.history.replaceState({}, '', '/')
 })
 
-describe('Juicy popunder live stack control', () => {
-  it('loads the vendor script once and leaves the live stack untouched', async () => {
-    const initialEntries = [
-      {
-        url: 'https://xapi.juicyads.com/popunder.php?slot=1&x=example.com/title/1',
-        under: true,
-        tab: false,
-        expires: 28800,
-      },
-    ]
-    const { api, getStack } = createMockJuicyPopunderAPI(initialEntries)
-    const { restore } = interceptJuicyPopunderScript({ api })
+describe('Juicy popunder stack sync', () => {
+  it('loads the vendor script once and re-primes the stack with the current pathname', async () => {
+    setCurrentPath('/title/1')
+
+    const afterOpen = mock(() => undefined)
+    const { api, getStack } = createMockJuicyPopunderAPI({
+      afterOpen,
+      expires: 28800,
+      tab: false,
+      under: true,
+      url: 'https://xapi.juicyads.com/hash.php?juicy_code=test&u=https://landing.example&x=localhost:3000/title/1',
+    })
+    const { getAppendCount, getLatestScript, restore } = interceptJuicyPopunderScript({ api })
 
     try {
       await enableJuicyPopunder()
 
       expect((window as JuicyPopunderWindow).juicy_tags).toEqual([`.${JUICY_POPUNDER_TRIGGER_CLASS}`])
-      expect(getStack()).toEqual(initialEntries)
+      expect(getAppendCount()).toBe(1)
+      expect(getLatestScript()?.id).toBe('juicy-popunder')
+      expect(api.add).not.toHaveBeenCalled()
+      expect((window as JuicyPopunderWindow).__juicyPopunderPrimedPageKey).toBe('http://localhost:3000/title/1')
+
+      disableJuicyPopunder()
+      expect(getStack()).toEqual([])
 
       await enableJuicyPopunder()
-      expect(getStack()).toEqual(initialEntries)
+
+      expect(getAppendCount()).toBe(1)
+      expect(api.add).toHaveBeenCalledTimes(1)
+      expectStackEntry(getStack()[0], '/title/1')
+      expect(getStack()[0]?.afterOpen).toBe(afterOpen)
+
+      setCurrentPath('/title/2')
+      await enableJuicyPopunder()
+
+      expect(getAppendCount()).toBe(1)
+      expect(api.add).toHaveBeenCalledTimes(2)
+      expectStackEntry(getStack()[0], '/title/2')
+      expect(getStack()[0]?.afterOpen).toBe(afterOpen)
+      expect((window as JuicyPopunderWindow).__juicyPopunderPrimedPageKey).toBe('http://localhost:3000/title/2')
     } finally {
       restore()
     }
   })
 
-  it('empties the live stack when disabled before the script finishes loading and does not replay it later', async () => {
-    const initialEntries = [
-      {
-        url: 'https://xapi.juicyads.com/popunder.php?slot=1&x=example.com/title/2',
-        under: true,
-        tab: false,
-        expires: 28800,
-      },
-    ]
-    const { api, getStack } = createMockJuicyPopunderAPI(initialEntries)
-    const { dispatchLoad, restore } = interceptJuicyPopunderScript({ api, deferLoad: true })
+  it('captures the vendor stack before a deferred load is disabled and reuses it later', async () => {
+    setCurrentPath('/title/1')
+
+    const afterOpen = mock(() => undefined)
+    const { api, getStack } = createMockJuicyPopunderAPI({
+      afterOpen,
+      expires: 28800,
+      tab: false,
+      under: true,
+      url: 'https://xapi.juicyads.com/hash.php?juicy_code=test&u=https://landing.example&x=localhost:3000/title/1',
+    })
+    const { dispatchLoad, getAppendCount, restore } = interceptJuicyPopunderScript({ api, deferLoad: true })
 
     try {
       const enablePromise = enableJuicyPopunder()
+
+      expect(getAppendCount()).toBe(1)
 
       disableJuicyPopunder()
       dispatchLoad()
       await enablePromise
 
-      expect(getStack()).toEqual([])
+      expect(api.emptyStack).toHaveBeenCalledTimes(1)
+      expect((window as JuicyPopunderWindow).__juicyPopunderTemplateEntry?.afterOpen).toBe(afterOpen)
 
+      setCurrentPath('/title/2')
       await enableJuicyPopunder()
-      expect(getStack()).toEqual([])
+
+      expect(getAppendCount()).toBe(1)
+      expect(api.add).toHaveBeenCalledTimes(1)
+      expectStackEntry(getStack()[0], '/title/2')
     } finally {
       restore()
     }
   })
 })
+
+function expectStackEntry(entry: JuicyPopunderStackEntry | undefined, pathname: string) {
+  expect(entry).toBeDefined()
+
+  const requestURL = new URL(entry!.url)
+
+  expect(requestURL.origin).toBe('https://xapi.juicyads.com')
+  expect(requestURL.pathname).toBe('/hash.php')
+  expect(requestURL.searchParams.get('juicy_code')).toBe('test')
+  expect(requestURL.searchParams.get('u')).toBe('https://landing.example')
+  expect(requestURL.searchParams.get('x')).toBe(`localhost:3000${pathname}`)
+  expect(entry).toMatchObject({
+    expires: 28800,
+    tab: false,
+    under: true,
+  })
+}
+
+function setCurrentPath(pathname: string) {
+  window.history.replaceState({}, '', pathname)
+}
