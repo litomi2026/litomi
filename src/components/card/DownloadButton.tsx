@@ -1,15 +1,19 @@
 'use client'
 
 import { ErrorBoundaryFallbackProps } from '@suspensive/react'
-import { Download } from 'lucide-react'
+import { Download, Loader2 } from 'lucide-react'
 import { useEffect } from 'react'
 import { toast } from 'sonner'
+import { twMerge } from 'tailwind-merge'
+
+import type { ImageWithVariants } from '@/types/manga'
 
 import { useDownload } from '@/hook/useDownload'
 import { useThrottleValue } from '@/hook/useThrottleValue'
-import { ImageWithVariants } from '@/types/manga'
 
-const commonButtonStyle = 'flex justify-center items-center gap-1'
+const commonButtonStyle =
+  'relative flex justify-center items-center gap-1 overflow-hidden transition disabled:bg-zinc-800 disabled:text-zinc-500 disabled:cursor-not-allowed hover:bg-zinc-800 active:bg-zinc-900 active:border-zinc-700'
+
 const THROTTLE_DELAY = 300
 
 type Props = {
@@ -22,46 +26,41 @@ type Props = {
 }
 
 export default function DownloadButton({ manga, className = '' }: Props) {
-  const { images = [] } = manga
   const { isDownloading, downloadedCount, downloadAllImages } = useDownload({ manga })
   const throttledCount = useThrottleValue(downloadedCount, THROTTLE_DELAY)
-  const progress = Math.round((throttledCount / images.length) * 100)
+
+  const { images = [] } = manga
   const totalCount = images.length
-
-  const getProgressText = () => {
-    if (!isDownloading) return '다운로드'
-
-    if (progress === 0) return '준비 중'
-    if (progress === 100) return '압축 중'
-
-    if (totalCount > 20) {
-      return `${throttledCount}/${totalCount} (${progress}%)`
-    } else {
-      return `${progress}%`
-    }
-  }
+  const progress = totalCount > 0 ? Math.round((throttledCount / totalCount) * 100) : 0
+  const isDisabled = isDownloading || totalCount === 0
+  const label = getProgressText({ isDownloading, progress, throttledCount, totalCount })
+  const progressWidth = isDownloading ? `${Math.max(progress, 6)}%` : '0%'
 
   return (
     <button
-      className={`${commonButtonStyle} ${className} relative overflow-hidden`}
-      disabled={isDownloading}
+      aria-busy={isDownloading}
+      className={twMerge(commonButtonStyle, className)}
+      disabled={isDisabled}
       onClick={downloadAllImages}
+      title={getAriaLabel({ isDownloading, label, totalCount })}
       type="button"
     >
-      {/* Progress bar */}
       {isDownloading && (
-        <div
-          className="absolute inset-0 bg-background opacity-50 transition ease-out"
-          style={{ transform: `translateX(-${100 - progress}%)` }}
-        />
+        <div className="absolute inset-x-2 bottom-1 h-0.5 rounded-full bg-white/10">
+          <div
+            className="h-full rounded-full bg-foreground/70 transition-[width] duration-300 ease-out motion-reduce:transition-none"
+            style={{ width: progressWidth }}
+          />
+        </div>
       )}
-      {/* Content */}
-      <Download
-        aria-busy={isDownloading}
-        className="size-4 shrink-0 text-foreground aria-busy:animate-pulse relative z-10"
-      />
-      <span aria-busy={isDownloading} className="relative z-10 text-foreground aria-busy:font-mono">
-        {getProgressText()}
+
+      {isDownloading ? (
+        <Loader2 className="relative z-10 size-4 animate-spin" />
+      ) : (
+        <Download className="relative z-10 size-4" />
+      )}
+      <span aria-busy={isDownloading} className="relative z-10 truncate text-sm text-foreground aria-busy:font-mono">
+        {label}
       </span>
     </button>
   )
@@ -74,21 +73,62 @@ export function DownloadButtonError({ error, reset }: Readonly<ErrorBoundaryFall
 
   return (
     <button
-      className={`${commonButtonStyle} flex-1 border-2 border-red-800 text-red-500`}
+      className={twMerge(commonButtonStyle, 'flex-1 border-2 border-red-800 text-red-500')}
       onClick={reset}
       type="button"
     >
       <Download className="size-4" />
-      오류
+      <span>오류</span>
     </button>
   )
 }
 
-export function DownloadButtonSkeleton({ className = '' }: { className?: string }) {
-  return (
-    <button className={`${commonButtonStyle} disabled:opacity-50 ${className}`} disabled>
-      <Download className="size-4" />
-      다운로드
-    </button>
-  )
+function getAriaLabel({
+  isDownloading,
+  label,
+  totalCount,
+}: {
+  isDownloading: boolean
+  label: string
+  totalCount: number
+}) {
+  if (totalCount === 0) {
+    return '다운로드할 이미지가 없어요'
+  }
+
+  if (!isDownloading) {
+    return `이미지 ${totalCount}장 다운로드`
+  }
+
+  return `다운로드 진행 중 ${label}`
+}
+
+function getProgressText({
+  isDownloading,
+  progress,
+  throttledCount,
+  totalCount,
+}: {
+  isDownloading: boolean
+  progress: number
+  throttledCount: number
+  totalCount: number
+}) {
+  if (totalCount === 0) {
+    return '이미지 없음'
+  }
+
+  if (!isDownloading) {
+    return '다운로드'
+  }
+
+  if (progress === 0) {
+    return '준비 중'
+  }
+
+  if (progress >= 100) {
+    return '압축 중'
+  }
+
+  return totalCount > 20 ? `${throttledCount}/${totalCount}` : `${progress}%`
 }
