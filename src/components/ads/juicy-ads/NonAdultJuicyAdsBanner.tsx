@@ -10,13 +10,15 @@ import type { GETV1MeResponse } from '@/backend/api/v1/me'
 
 import LoginPageLink from '@/components/LoginPageLink'
 import useMounted from '@/hook/useMounted'
+import useMeQuery from '@/query/useMeQuery'
+import { AdultState } from '@/utils/adult-verification'
 
 import type { JuicyAdsLayoutNode } from './types'
 
+import useNonAdultGate from '../../../hook/useNonAdultGate'
 import JuicyAdsScript from './JuicyAdsScript'
 import JuicyAdsSlot from './JuicyAdsSlot'
 import { DEFAULT_NON_ADULT_AD_LAYOUT } from './layouts'
-import useNonAdultAdGate from './useNonAdultAdGate'
 
 type Props = {
   className?: string
@@ -34,9 +36,10 @@ export default function NonAdultJuicyAdsBanner({
   onAdClick,
 }: Props) {
   const isMounted = useMounted()
-  const { me, status } = useNonAdultAdGate()
+  const { data: me } = useMeQuery()
+  const status = useNonAdultGate()
 
-  if (!isMounted || status !== 'visible') {
+  if (!isMounted || status === AdultState.ADULT || status === AdultState.UNRESOLVED) {
     return null
   }
 
