@@ -6,11 +6,12 @@ import { toast } from 'sonner'
 import { SearchParamKey } from '@/constants/storage'
 
 type ToastOptions = {
+  message?: string
   username?: string
 }
 
-export function showAdultVerificationRecommendedToast({ username }: ToastOptions = {}) {
-  toast.info('성인인증 시 광고가 제거돼요', {
+export function showAdultVerificationRecommendedToast({ message, username }: ToastOptions = {}) {
+  toast.info(message ?? '성인인증 시 광고가 제거돼요', {
     id: ADULT_VERIFICATION_REQUIRED_TOAST_ID,
     duration: ms('5 seconds'),
     action: getAdultVerificationToastAction({ username }),

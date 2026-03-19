@@ -59,6 +59,15 @@ libraryListRoutes.get('/', zProblemValidator('query', querySchema), async (c) =>
   const itemCountExpr = sql<number>`
     (SELECT COUNT(*) FROM ${libraryItemTable} WHERE ${libraryItemTable.libraryId} = ${libraryTable.id})::int
   `
+  const pinnedCountExpr = sql<number>`
+    (SELECT COUNT(*) FROM ${pinnedLibraryTable} WHERE ${pinnedLibraryTable.libraryId} = ${libraryTable.id})::int
+  `
+  const sortCountExpr =
+    listScope === 'public'
+      ? pinnedCountExpr
+      : listScope === 'all' && userId
+        ? sql<number>`CASE WHEN ${libraryTable.userId} = ${userId} THEN ${itemCountExpr} ELSE ${pinnedCountExpr} END`
+        : itemCountExpr
 
   const conditions = []
 
@@ -75,13 +84,25 @@ libraryListRoutes.get('/', zProblemValidator('query', querySchema), async (c) =>
   }
 
   if (decodedCursor) {
-    const { isOwner: cursorIsOwner, itemCount: cursorItemCount, timestamp, id: cursorId } = decodedCursor
+    const {
+      isOwner: cursorIsOwner,
+      sortCount: cursorSortCount,
+      itemCount: cursorItemCount,
+      timestamp,
+      id: cursorId,
+    } = decodedCursor
     const cursorCreatedAt = new Date(timestamp)
 
     const withinGroup = or(
-      lt(itemCountExpr, cursorItemCount),
-      and(eq(itemCountExpr, cursorItemCount), lt(libraryTable.createdAt, cursorCreatedAt)),
+      lt(sortCountExpr, cursorSortCount),
+      and(eq(sortCountExpr, cursorSortCount), lt(itemCountExpr, cursorItemCount)),
       and(
+        eq(sortCountExpr, cursorSortCount),
+        eq(itemCountExpr, cursorItemCount),
+        lt(libraryTable.createdAt, cursorCreatedAt),
+      ),
+      and(
+        eq(sortCountExpr, cursorSortCount),
         eq(itemCountExpr, cursorItemCount),
         eq(libraryTable.createdAt, cursorCreatedAt),
         lt(libraryTable.id, cursorId),
@@ -115,6 +136,7 @@ libraryListRoutes.get('/', zProblemValidator('query', querySchema), async (c) =>
       isPublic: libraryTable.isPublic,
       createdAt: libraryTable.createdAt,
       itemCount: itemCountExpr,
+      sortCount: sortCountExpr,
     })
     .from(libraryTable)
     .$dynamic()
@@ -128,12 +150,13 @@ libraryListRoutes.get('/', zProblemValidator('query', querySchema), async (c) =>
   if (listScope === 'all' && userId) {
     query = query.orderBy(
       desc(eq(libraryTable.userId, userId)),
+      desc(sortCountExpr),
       desc(itemCountExpr),
       desc(libraryTable.createdAt),
       desc(libraryTable.id),
     )
   } else {
-    query = query.orderBy(desc(itemCountExpr), desc(libraryTable.createdAt), desc(libraryTable.id))
+    query = query.orderBy(desc(sortCountExpr), desc(itemCountExpr), desc(libraryTable.createdAt), desc(libraryTable.id))
   }
 
   try {
@@ -142,7 +165,7 @@ libraryListRoutes.get('/', zProblemValidator('query', querySchema), async (c) =>
     const sharedCacheControl = createCacheControl({
       public: true,
       maxAge: 3,
-      sMaxAge: sec('1 day'),
+      sMaxAge: sec('6 hours'),
       swr: sec('10 minutes'),
     })
 
@@ -173,7 +196,13 @@ libraryListRoutes.get('/', zProblemValidator('query', querySchema), async (c) =>
 
     const nextCursor =
       hasNextPage && lastRow
-        ? encodeLibraryListCursor(isOwnerFlag, lastRow.itemCount, lastRow.createdAt.getTime(), lastRow.id)
+        ? encodeLibraryListCursor(
+            isOwnerFlag,
+            lastRow.sortCount,
+            lastRow.itemCount,
+            lastRow.createdAt.getTime(),
+            lastRow.id,
+          )
         : null
 
     const result = { libraries, nextCursor }
