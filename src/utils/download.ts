@@ -45,7 +45,7 @@ export async function downloadMultipleImages({
 
   const downloadImage = async ({ url, urls, filename }: { filename: string; url?: string; urls?: string[] }) => {
     try {
-      const response = await fetchDownloadResponse(urls?.length ? urls : url ?? '')
+      const response = await fetchDownloadResponse(urls?.length ? urls : (url ?? ''))
       const blob = await response.blob()
       zip.file(filename, blob)
 
@@ -123,7 +123,7 @@ async function fetchWith429Retry(url: string): Promise<Response> {
   while (attempt <= MAX_429_RETRIES) {
     await waitForDownloadRequestTurn()
 
-    const response = await fetch(url)
+    const response = await fetch(url, { credentials: 'include' })
 
     if (response.status !== 429) {
       return response

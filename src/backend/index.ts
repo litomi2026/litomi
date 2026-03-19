@@ -30,6 +30,8 @@ initBackendOtel()
 
 const app = new Hono<Env>()
 
+// NOTE: 공통 미들웨어
+
 app.use(httpInstrumentationMiddleware({ serviceName: 'litomi-backend' }))
 app.use('*', ipRestriction(getConnInfo, { denyList: [] }))
 app.use('*', requestId())
@@ -38,6 +40,7 @@ app.use(contextStorage())
 app.use(csrf({ origin: (origin) => Boolean(resolveCORSOrigin(origin)), secFetchSite: 'same-site' }))
 app.use(logger())
 app.use(timing())
+app.use('*', auth)
 
 app.use(
   '*',
@@ -48,9 +51,12 @@ app.use(
   }),
 )
 
+// NOTE: /api 미들웨어
+
 app.use('/api/*', secureHeaders(getDefaultSecureHeadersOptions()))
-app.use('/api/*', auth)
 app.use('/api/*', etag())
+
+// NOTE: /i 미들웨어
 
 app.use(
   '/i/*',
@@ -73,10 +79,10 @@ app.use(
 
 app.route('/', appRoutes)
 
-const backendApp = {
+const honoApp = {
   ...app,
   port: Number(process.env.PORT ?? 3002),
   hostname: process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost',
 }
 
-export default backendApp
+export default honoApp
