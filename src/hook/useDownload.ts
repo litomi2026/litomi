@@ -1,7 +1,11 @@
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
 
-import { ImageWithVariants } from '@/types/manga'
+import type { ImageWithVariants } from '@/types/manga'
+
+import { showAdultVerificationRecommendedToast, showLoginRequiredToast } from '@/lib/toast'
+import useMeQuery from '@/query/useMeQuery'
+import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { downloadImage, downloadMultipleImages } from '@/utils/download'
 import { createEquivalentMangaImageSourceURLs, createMangaImageProxyRequestURL } from '@/utils/image-proxy'
 
@@ -17,6 +21,8 @@ type Props = {
 }
 
 export function useDownload({ manga }: Props) {
+  const { data: me } = useMeQuery()
+  const adultState = getAdultState(me)
   const [isDownloading, setIsDownloading] = useState(false)
   const [downloadedCount, setDownloadedCount] = useState(0)
 
@@ -24,6 +30,15 @@ export function useDownload({ manga }: Props) {
     async (imageIndex: number) => {
       if (isDownloading) {
         return
+      }
+
+      if (!me) {
+        showLoginRequiredToast()
+        return
+      }
+
+      if (!hasAdultAccess(adultState)) {
+        showAdultVerificationRecommendedToast({ username: me.name })
       }
 
       setIsDownloading(true)
@@ -55,12 +70,21 @@ export function useDownload({ manga }: Props) {
         setIsDownloading(false)
       }
     },
-    [manga, isDownloading],
+    [adultState, isDownloading, manga, me],
   )
 
   const downloadAllImages = useCallback(async () => {
     if (isDownloading) {
       return
+    }
+
+    if (!me) {
+      showLoginRequiredToast()
+      return
+    }
+
+    if (!hasAdultAccess(adultState)) {
+      showAdultVerificationRecommendedToast({ username: me.name })
     }
 
     setIsDownloading(true)
@@ -102,7 +126,7 @@ export function useDownload({ manga }: Props) {
       setIsDownloading(false)
       setDownloadedCount(0)
     }
-  }, [manga, isDownloading])
+  }, [adultState, isDownloading, manga, me])
 
   return {
     isDownloading,
