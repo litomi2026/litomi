@@ -37,7 +37,10 @@ export function useDownload({ manga }: Props) {
     }
 
     if (!hasAdultAccess(adultState)) {
-      showAdultVerificationRecommendedToast({ username: me.name })
+      showAdultVerificationRecommendedToast({
+        message: '성인인증 시 다운로드 전 광고가 제거돼요',
+        username: me.name,
+      })
     }
 
     setIsDownloading(true)
