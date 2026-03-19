@@ -1,3 +1,5 @@
+import { toast } from 'sonner'
+
 const MAX_DOWNLOAD_REQUESTS_PER_SECOND = 5
 const DOWNLOAD_REQUEST_INTERVAL_MS = Math.ceil(1000 / MAX_DOWNLOAD_REQUESTS_PER_SECOND)
 const DEFAULT_429_RETRY_DELAY_MS = 1000
@@ -13,16 +15,6 @@ export function downloadBlob(blob: Blob, filename: string) {
   link.download = filename
   link.click()
   URL.revokeObjectURL(blobURL)
-}
-
-export async function downloadImage(imageUrl: string | string[], filename: string): Promise<void> {
-  try {
-    const response = await fetchDownloadResponse(imageUrl)
-    const blob = await response.blob()
-    downloadBlob(blob, filename)
-  } catch (error) {
-    throw new Error(error instanceof Error ? error.message : '다운로드에 실패했어요')
-  }
 }
 
 export async function downloadMultipleImages({
@@ -53,7 +45,7 @@ export async function downloadMultipleImages({
       completed++
       onProgress?.(completed)
     } catch (error) {
-      console.error(`Failed to download ${filename}:`, error)
+      toast.error(`다운로드 실패: ${filename}: ${error instanceof Error ? error.message : error}`)
       completed++
       onProgress?.(completed)
     }
@@ -108,7 +100,7 @@ async function fetchDownloadResponse(imageURL: string | string[]): Promise<Respo
         return response
       }
 
-      lastError = new Error(`${response.status} ${response.statusText}`)
+      lastError = new Error([response.status, response.statusText].filter(Boolean).join(' '))
     } catch (error) {
       lastError = error instanceof Error ? error : new Error('다운로드에 실패했어요')
     }
