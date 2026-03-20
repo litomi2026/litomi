@@ -27,7 +27,7 @@ export type POSTV1PostIdLikeResponse = {
 
 const route = new Hono<Env>()
 
-route.post('/:id/like', requireAuth, zProblemValidator('param', paramsSchema, { detail: '글 ID가 올바르지 않아요' }), async (c) => {
+route.post('/:id/like', requireAuth, zProblemValidator('param', paramsSchema), async (c) => {
   const userId = c.get('userId')!
   const { id: postId } = c.req.valid('param')
 
