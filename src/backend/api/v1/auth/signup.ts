@@ -81,7 +81,7 @@ signupRoutes.post('/', zProblemValidator('json', signupRequestSchema), async (c)
 
     return problemResponse(c, {
       status: 429,
-      detail: `너무 많은 회원가입 시도가 있었어요. ${minutes}분 후에 다시 시도해 주세요.`,
+      detail: `너무 많이 시도했어요. ${minutes}분 후에 다시 시도해 주세요.`,
       headers: { 'Retry-After': String(seconds) },
     })
   }

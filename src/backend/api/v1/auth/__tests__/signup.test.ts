@@ -48,11 +48,7 @@ mock.module('@/utils/rate-limit', () => ({
 
       signupAttemptsByIdentifier.set(key, count)
 
-      return Promise.resolve(
-        count > 5
-          ? { allowed: false, retryAfter: 120 }
-          : { allowed: true, retryAfter: undefined },
-      )
+      return Promise.resolve(count > 5 ? { allowed: false, retryAfter: 120 } : { allowed: true, retryAfter: undefined })
     }
   },
   RateLimitPresets: {
@@ -67,9 +63,7 @@ mock.module('@/utils/turnstile', () => ({
   default: class MockTurnstileValidator {
     validate = ({ token }: { token: string | null }) =>
       Promise.resolve(
-        token === 'invalid'
-          ? { success: false, 'error-codes': ['invalid-input-response'] }
-          : { success: true },
+        token === 'invalid' ? { success: false, 'error-codes': ['invalid-input-response'] } : { success: true },
       )
   },
 }))
@@ -231,13 +225,16 @@ describe('POST /api/v1/auth/signup', () => {
     let response!: Response
 
     for (let attempt = 0; attempt < 6; attempt += 1) {
-      response = await requestSignup({
-        loginId: `testuser${attempt}`,
-        password: 'Password123',
-        passwordConfirm: 'Password123',
-        nickname: '',
-        turnstileToken: 'token',
-      }, ip)
+      response = await requestSignup(
+        {
+          loginId: `testuser${attempt}`,
+          password: 'Password123',
+          passwordConfirm: 'Password123',
+          nickname: '',
+          turnstileToken: 'token',
+        },
+        ip,
+      )
     }
 
     expect(response.status).toBe(429)
@@ -246,7 +243,7 @@ describe('POST /api/v1/auth/signup', () => {
     expect(Number(retryAfter)).toBeGreaterThan(0)
 
     const problem = (await response.json()) as ValidationProblemDetails
-    expect(problem.detail).toContain('너무 많은 회원가입 시도가 있었어요.')
+    expect(problem.detail).toContain('너무 많이 시도했어요.')
     expect(problem.detail).toContain('다시 시도해 주세요.')
   })
 

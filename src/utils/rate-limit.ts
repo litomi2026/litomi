@@ -1,3 +1,4 @@
+import ms from 'ms'
 import 'server-only'
 
 export interface RateLimitConfig {
@@ -152,19 +153,19 @@ export class RateLimiter {
 export const RateLimitPresets = {
   // Strict: for authentication, sensitive operations
   strict: (): RateLimitConfig => ({
-    windowMs: 15 * 60 * 1000, // 15 minutes
+    windowMs: ms('15 minutes'),
     maxAttempts: 5,
   }),
 
   // Standard: for general API endpoints
   standard: (): RateLimitConfig => ({
-    windowMs: 15 * 60 * 1000, // 15 minutes
+    windowMs: ms('15 minutes'),
     maxAttempts: 100,
   }),
 
   // Lenient: for public endpoints
   lenient: (): RateLimitConfig => ({
-    windowMs: 1 * 60 * 1000, // 1 minute
+    windowMs: ms('1 minute'),
     maxAttempts: 100,
   }),
 }
