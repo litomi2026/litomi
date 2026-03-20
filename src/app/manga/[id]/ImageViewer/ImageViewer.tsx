@@ -13,19 +13,19 @@ import DonateButton from './DonateButton'
 import FullscreenButton from './FullscreenButton'
 import ImageSlider from './ImageSlider'
 import MangaDetailButton from './MangaDetailButton'
+import PageViewer from './PageViewer'
 import ReadingProgressSaver from './ReadingProgressSaver'
 import ResumeReadingToast from './ResumeReadingToast'
 import ShareButton from './ShareButton'
 import SlideshowButton from './SlideshowButton'
 import { useImageIndexStore } from './store/imageIndex'
-import { useNavigationModeStore } from './store/navigationMode'
+import { orientations, useOrientationStore } from './store/orientation'
 import { usePageViewStore } from './store/pageView'
 import { useReadingDirectionStore } from './store/readingDirection'
 import { useScreenFitStore } from './store/screenFit'
-import { orientations, useTouchOrientationStore } from './store/touchOrientation'
+import { useViewerModeStore } from './store/viewerMode'
 import { useVirtualScrollStore } from './store/virtualizer'
 import ThumbnailStrip from './ThumbnailStrip'
-import TouchViewer from './TouchViewer'
 import useAutoHideCursor from './useAutoHideCursor'
 import ViewControlPanel from './ViewControlPanel'
 
@@ -40,9 +40,9 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
   const [showThumbnails, setShowThumbnails] = useState(false)
   const [showViewControl, setShowViewControl] = useState(false)
   const viewControlRef = useRef<HTMLDivElement>(null)
-  const { navMode, setNavMode } = useNavigationModeStore()
+  const { viewerMode, setViewerMode } = useViewerModeStore()
   const { screenFit, setScreenFit } = useScreenFitStore()
-  const { touchOrientation, setTouchOrientation } = useTouchOrientationStore()
+  const { orientation, setOrientation } = useOrientationStore()
   const { pageView, setPageView } = usePageViewStore()
   const { readingDirection, toggleReadingDirection } = useReadingDirectionStore()
   const correctImageIndex = useImageIndexStore((state) => state.correctImageIndex)
@@ -54,7 +54,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
   const imageCount = images.length
   const maxImageIndex = imageCount - 1
   const isDoublePage = pageView === 'double'
-  const isTouchMode = navMode === 'touch'
+  const isPageMode = viewerMode === 'page'
   const isWidthFit = screenFit === 'width'
 
   const topButtonClassName = 'rounded-full active:text-zinc-500 hover:bg-zinc-800 transition p-2'
@@ -143,8 +143,8 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
           </div>
         </div>
       </div>
-      {isTouchMode ? (
-        <TouchViewer
+      {isPageMode ? (
+        <PageViewer
           manga={manga}
           onClick={toggleController}
           pageView={pageView}
@@ -170,8 +170,8 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
           {showThumbnails && <ThumbnailStrip images={thumbnailImages} mangaId={manga.id} />}
           <ImageSlider maxImageIndex={imageCount} />
           <div className="font-semibold whitespace-nowrap flex-wrap justify-center text-sm flex gap-2 text-background">
-            <button className={bottomButtonClassName} onClick={() => setNavMode(isTouchMode ? 'scroll' : 'touch')}>
-              {isTouchMode ? '터치' : '스크롤'}보기
+            <button className={bottomButtonClassName} onClick={() => setViewerMode(isPageMode ? 'scroll' : 'page')}>
+              {isPageMode ? '페이지' : '스크롤'}보기
             </button>
             <button
               className={bottomButtonClassName}
@@ -197,24 +197,24 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
                 우
               </button>
             )}
-            {isTouchMode && (
+            {isPageMode && (
               <>
                 <button
                   className={bottomButtonClassName}
                   onClick={() => {
-                    const currentIndex = orientations.indexOf(touchOrientation)
+                    const currentIndex = orientations.indexOf(orientation)
                     const nextIndex = (currentIndex + 1) % orientations.length
-                    setTouchOrientation(orientations[nextIndex])
+                    setOrientation(orientations[nextIndex])
                   }}
                 >
-                  {touchOrientation === 'horizontal' && '좌우 넘기기'}
-                  {touchOrientation === 'vertical' && '상하 넘기기'}
-                  {touchOrientation === 'horizontal-reverse' && '우좌 넘기기'}
-                  {touchOrientation === 'vertical-reverse' && '하상 넘기기'}
+                  {orientation === 'horizontal' && '좌우 넘기기'}
+                  {orientation === 'vertical' && '상하 넘기기'}
+                  {orientation === 'horizontal-reverse' && '우좌 넘기기'}
+                  {orientation === 'vertical-reverse' && '하상 넘기기'}
                 </button>
               </>
             )}
-            {!isTouchMode && (
+            {!isPageMode && (
               <div className="relative" ref={viewControlRef}>
                 <button
                   className={`${bottomButtonClassName} flex items-center justify-center gap-1`}
