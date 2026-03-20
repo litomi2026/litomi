@@ -66,7 +66,7 @@ export default function LibraryModal() {
     },
   })
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
     handleAddToLibraries()
   }

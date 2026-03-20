@@ -3,7 +3,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Loader2, UploadCloud } from 'lucide-react'
 import ms from 'ms'
-import { FormEvent, useMemo, useState } from 'react'
+import { SubmitEvent, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { create } from 'zustand'
 
@@ -61,7 +61,7 @@ export default function MangaImportModal() {
     setInputText('')
   }
 
-  async function handleImport(e?: FormEvent) {
+  async function handleImport(e?: SubmitEvent<HTMLFormElement>) {
     e?.preventDefault()
 
     if (!libraryId) {

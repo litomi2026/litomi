@@ -43,13 +43,13 @@ export default function TrustedBrowsers({ trustedBrowsers }: Props) {
     },
   })
 
-  function handleRevokeDevice(e: React.FormEvent<HTMLFormElement>) {
+  function handleRevokeDevice(e: React.SubmitEvent<HTMLFormElement>) {
     if (!confirm('해당 브라우저를 신뢰 목록에서 제거할까요?')) {
       e.preventDefault()
     }
   }
 
-  function handleRevokeAll(e: React.FormEvent<HTMLFormElement>) {
+  function handleRevokeAll(e: React.SubmitEvent<HTMLFormElement>) {
     if (!confirm('모든 브라우저를 신뢰 목록에서 제거할까요? 다음 로그인 시 모든 브라우저에서 2단계 인증이 필요해요.')) {
       e.preventDefault()
     }

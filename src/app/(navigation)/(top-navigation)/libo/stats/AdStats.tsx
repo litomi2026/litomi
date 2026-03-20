@@ -93,7 +93,7 @@ export default function AdStats() {
     setAppliedRange(range)
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
 
     const submitter = (e.nativeEvent as SubmitEvent | undefined)?.submitter
