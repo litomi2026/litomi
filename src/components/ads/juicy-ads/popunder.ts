@@ -1,6 +1,11 @@
 const JUICY_POPUNDER_SCRIPT_ID = 'juicy-popunder'
-const JUICY_POPUNDER_SCRIPT_URL =
-  'https://js.juicyads.com/jp.php?c=4464w233y284u4r2p27433e424&u=https%3A%2F%2Fwww.juicyads.rocks'
+const JUICY_POPUNDER_SCRIPT_CODE = '4464w233y284u4r2p27433e424'
+const JUICY_POPUNDER_SCRIPT_TARGET_URL = 'https://www.juicyads.rocks'
+
+const JUICY_POPUNDER_SCRIPT_URL = `https://js.juicyads.com/jp.php?${new URLSearchParams({
+  c: JUICY_POPUNDER_SCRIPT_CODE,
+  u: JUICY_POPUNDER_SCRIPT_TARGET_URL,
+})}`
 
 export const JUICY_POPUNDER_TRIGGER_CLASS = 'juicy-popunder-trigger'
 
@@ -28,11 +33,11 @@ type JuicyPopunderStackEntry = {
 
 declare global {
   interface Window {
+    __juicyPopunderEnableCount?: number
     __juicyPopunderLoadPromise?: Promise<void>
     __juicyPopunderPrimedPageKey?: string
-    __juicyPopunderShouldEnable?: boolean
     __juicyPopunderTemplateEntry?: JuicyPopunderStackEntry
-    __juicyPopunderTemplatePagePath?: string
+    __juicyPopunderTemplatePageParamKeys?: string[]
     juicy_tags?: string[]
     jYWWRgFaKP?: JuicyPopunderAPI
   }
@@ -43,7 +48,12 @@ export function disableJuicyPopunder() {
     return
   }
 
-  window.__juicyPopunderShouldEnable = false
+  window.__juicyPopunderEnableCount = Math.max((window.__juicyPopunderEnableCount ?? 0) - 1, 0)
+
+  if (isJuicyPopunderEnabled()) {
+    return
+  }
+
   window.__juicyPopunderPrimedPageKey = undefined
   window.jYWWRgFaKP?.emptyStack()
 }
@@ -53,10 +63,10 @@ export async function enableJuicyPopunder() {
     return
   }
 
-  window.__juicyPopunderShouldEnable = true
+  window.__juicyPopunderEnableCount = (window.__juicyPopunderEnableCount ?? 0) + 1
   await ensureJuicyPopunderScriptLoaded()
 
-  if (!window.__juicyPopunderShouldEnable) {
+  if (!isJuicyPopunderEnabled()) {
     window.__juicyPopunderPrimedPageKey = undefined
     window.jYWWRgFaKP?.emptyStack()
     return
@@ -66,7 +76,7 @@ export async function enableJuicyPopunder() {
 }
 
 function captureJuicyPopunderTemplateOnce() {
-  if (window.__juicyPopunderTemplateEntry && window.__juicyPopunderTemplatePagePath) {
+  if (window.__juicyPopunderTemplateEntry && window.__juicyPopunderTemplatePageParamKeys) {
     return
   }
 
@@ -88,22 +98,18 @@ function captureJuicyPopunderTemplateOnce() {
     window.__juicyPopunderPrimedPageKey = getJuicyPopunderPageKey()
   }
 
-  window.__juicyPopunderTemplatePagePath = getCurrentLocationPath()
+  window.__juicyPopunderTemplatePageParamKeys = getCurrentPageParamKeys(entry.url)
 }
 
-function createCurrentPageStackURL(template: JuicyPopunderStackEntry, templatePagePath: string) {
+function createCurrentPageStackURL(template: JuicyPopunderStackEntry, templatePageParamKeys: string[]) {
   const currentLocationPath = getCurrentLocationPath()
   const requestURL = new URL(template.url)
-  let replaced = false
 
-  for (const [key, value] of requestURL.searchParams.entries()) {
-    if (value === templatePagePath) {
-      requestURL.searchParams.set(key, currentLocationPath)
-      replaced = true
-    }
+  for (const key of templatePageParamKeys) {
+    requestURL.searchParams.set(key, currentLocationPath)
   }
 
-  if (replaced) {
+  if (templatePageParamKeys.length > 0) {
     return requestURL.toString()
   }
 
@@ -152,8 +158,26 @@ function getCurrentLocationPath() {
   return `${window.location.host}${window.location.pathname}`.replace(/\/$/, '')
 }
 
+function getCurrentPageParamKeys(url: string) {
+  const currentLocationPath = getCurrentLocationPath()
+  const requestURL = new URL(url)
+  const keys: string[] = []
+
+  for (const [key, value] of requestURL.searchParams) {
+    if (value === currentLocationPath) {
+      keys.push(key)
+    }
+  }
+
+  return keys
+}
+
 function getJuicyPopunderPageKey() {
   return `${window.location.origin}${window.location.pathname}`
+}
+
+function isJuicyPopunderEnabled() {
+  return (window.__juicyPopunderEnableCount ?? 0) > 0
 }
 
 function syncJuicyPopunderStack() {
@@ -171,15 +195,15 @@ function syncJuicyPopunderStack() {
   }
 
   const template = window.__juicyPopunderTemplateEntry
-  const templatePagePath = window.__juicyPopunderTemplatePagePath
+  const templatePageParamKeys = window.__juicyPopunderTemplatePageParamKeys
 
-  if (!template || !templatePagePath) {
+  if (!template || !templatePageParamKeys) {
     return
   }
 
   api.emptyStack()
 
-  api.add(createCurrentPageStackURL(template, templatePagePath), {
+  api.add(createCurrentPageStackURL(template, templatePageParamKeys), {
     afterOpen: template.afterOpen,
     cookieExpires: template.expires,
     newTab: template.tab,
