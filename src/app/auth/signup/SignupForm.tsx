@@ -91,7 +91,7 @@ export default function SignupForm() {
                 className="w-full rounded-xl bg-white/4 border border-white/7 pl-3 pr-10 py-2.5 text-zinc-50 placeholder:text-zinc-500 transition
                   focus:outline-none focus:ring-2 focus:ring-white/12 focus:border-transparent
                   disabled:opacity-60 disabled:cursor-not-allowed
-                  invalid:border-red-600/50 invalid:focus:ring-red-600/30"
+                  user-invalid:border-red-600/50 user-invalid:focus:ring-red-600/30"
                 disabled={isPending}
                 id="login-id"
                 maxLength={32}
@@ -130,7 +130,7 @@ export default function SignupForm() {
                 className="w-full rounded-xl bg-white/4 border border-white/7 pl-3 pr-10 py-2.5 text-zinc-50 placeholder:text-zinc-500 transition
                   focus:outline-none focus:ring-2 focus:ring-white/12 focus:border-transparent
                   disabled:opacity-60 disabled:cursor-not-allowed
-                  invalid:border-red-600/50 invalid:focus:ring-red-600/30"
+                  user-invalid:border-red-600/50 user-invalid:focus:ring-red-600/30"
                 disabled={isPending}
                 id="password"
                 maxLength={64}
@@ -172,7 +172,7 @@ export default function SignupForm() {
                 className="w-full rounded-xl bg-white/4 border border-white/7 pl-3 pr-10 py-2.5 text-zinc-50 placeholder:text-zinc-500 transition
                   focus:outline-none focus:ring-2 focus:ring-white/12 focus:border-transparent
                   disabled:opacity-60 disabled:cursor-not-allowed
-                  invalid:border-red-600/50 invalid:focus:ring-red-600/30"
+                  user-invalid:border-red-600/50 user-invalid:focus:ring-red-600/30"
                 disabled={isPending}
                 id="password-confirm"
                 maxLength={64}
@@ -211,7 +211,7 @@ export default function SignupForm() {
               className="w-full rounded-xl bg-white/4 border border-white/7 px-3 py-2.5 text-zinc-50 placeholder:text-zinc-500 transition
                 focus:outline-none focus:ring-2 focus:ring-white/12 focus:border-transparent
                 disabled:opacity-60 disabled:cursor-not-allowed
-                invalid:border-red-600/50 invalid:focus:ring-red-600/30"
+                user-invalid:border-red-600/50 user-invalid:focus:ring-red-600/30"
               disabled={isPending}
               id="nickname"
               maxLength={32}
