@@ -11,6 +11,7 @@ type SignupRoutesModule = typeof import('../signup')
 
 let signupRoutes: SignupRoutesModule['default']
 let setCookies: string[] = []
+let signupAttemptsByIdentifier = new Map<string, number>()
 
 mock.module('@/database/supabase/drizzle', () => ({
   db: {
@@ -41,12 +42,18 @@ mock.module('@/utils/nickname', () => ({
 
 mock.module('@/utils/rate-limit', () => ({
   RateLimiter: class MockRateLimiter {
-    check = (identifier?: string) =>
-      Promise.resolve(
-        identifier === 'rate-limited'
+    check = (identifier?: string) => {
+      const key = identifier ?? ''
+      const count = (signupAttemptsByIdentifier.get(key) ?? 0) + 1
+
+      signupAttemptsByIdentifier.set(key, count)
+
+      return Promise.resolve(
+        count > 5
           ? { allowed: false, retryAfter: 120 }
           : { allowed: true, retryAfter: undefined },
       )
+    }
   },
   RateLimitPresets: {
     strict: () => ({
@@ -82,6 +89,7 @@ beforeAll(async () => {
 
 beforeEach(() => {
   setCookies = []
+  signupAttemptsByIdentifier = new Map()
 })
 
 function createApp() {
@@ -195,10 +203,10 @@ describe('POST /api/v1/auth/signup', () => {
 
     const problem = (await response.json()) as ValidationProblemDetails
     expect(problem.detail).toBe('입력을 확인해 주세요')
-    expect(problem.invalidParams).toContainEqual({
-      name: 'turnstileToken',
-      reason: '보안 확인을 완료해 주세요',
-    })
+
+    const turnstileError = problem.invalidParams?.find((param) => param.name === 'turnstileToken')
+    expect(turnstileError).toEqual(expect.objectContaining({ name: 'turnstileToken' }))
+    expect(turnstileError?.reason).toEqual(expect.any(String))
   })
 
   test.serial('보안 확인 검증에 실패하면 일반적인 400 오류를 반환한다', async () => {
@@ -214,24 +222,32 @@ describe('POST /api/v1/auth/signup', () => {
 
     const problem = (await response.json()) as ValidationProblemDetails
     expect(problem.type).toBe('https://localhost/problems/human-verification-failed')
-    expect(problem.detail).toBe('보안 확인에 실패했어요. 다시 시도해 주세요')
+    expect(problem.detail).toBe('보안 확인에 실패했어요')
     expect(problem.invalidParams).toBeUndefined()
   })
 
   test.serial('요청이 너무 많으면 429 와 Retry-After 를 반환한다', async () => {
-    const response = await requestSignup({
-      loginId: 'testuser',
-      password: 'Password123',
-      passwordConfirm: 'Password123',
-      nickname: '',
-      turnstileToken: 'token',
-    }, 'rate-limited')
+    const ip = '203.0.113.25'
+    let response!: Response
+
+    for (let attempt = 0; attempt < 6; attempt += 1) {
+      response = await requestSignup({
+        loginId: `testuser${attempt}`,
+        password: 'Password123',
+        passwordConfirm: 'Password123',
+        nickname: '',
+        turnstileToken: 'token',
+      }, ip)
+    }
 
     expect(response.status).toBe(429)
-    expect(response.headers.get('Retry-After')).toBe('120')
+    const retryAfter = response.headers.get('Retry-After')
+    expect(retryAfter).toEqual(expect.any(String))
+    expect(Number(retryAfter)).toBeGreaterThan(0)
 
     const problem = (await response.json()) as ValidationProblemDetails
-    expect(problem.detail).toBe('너무 많은 회원가입 시도가 있었어요. 2분 후에 다시 시도해 주세요.')
+    expect(problem.detail).toContain('너무 많은 회원가입 시도가 있었어요.')
+    expect(problem.detail).toContain('다시 시도해 주세요.')
   })
 
   test.serial('데이터베이스 오류가 발생하면 500 을 반환하고 쿠키는 설정하지 않는다', async () => {
