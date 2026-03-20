@@ -7,27 +7,27 @@ import {
   type ProblemDetails,
 } from '@/utils/problem-details'
 
-type Options = {
+export type ProblemResponseOptions = {
   code?: string
   detail?: string
+  extensions?: Record<string, unknown>
   headers?: HeadersInit
   instance?: string
   status: number
   title?: string
 }
 
-export function problemResponse(c: Context, options: Options): Response {
+export function problemResponse(c: Context, options: ProblemResponseOptions): Response {
   const url = new URL(c.req.url)
-  const instance = options.instance ?? url.pathname + url.search
-  const title = options.title ?? getStatusTitle(options.status)
   const code = options.code ?? getProblemCodeFromStatus(options.status)
 
   const problem: ProblemDetails = {
     type: createProblemTypeUrl(url.origin, code),
-    title,
+    title: options.title ?? getStatusTitle(options.status),
     status: options.status,
     detail: options.detail,
-    instance,
+    instance: options.instance ?? url.pathname + url.search,
+    ...options.extensions,
   }
 
   const headers = new Headers(options.headers)
