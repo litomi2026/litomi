@@ -2,7 +2,7 @@
 
 import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Loader2, Plus } from 'lucide-react'
-import { type FormEvent, useEffect, useRef, useState } from 'react'
+import { type SubmitEvent, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import type { GETV1LibraryListResponse, LibraryListItem } from '@/backend/api/v1/library/GET'
@@ -146,7 +146,7 @@ export default function CreateLibraryButton({ className = '' }: Readonly<Props>)
     setIsPublic(next)
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
 
     if (!event.currentTarget.reportValidity()) {

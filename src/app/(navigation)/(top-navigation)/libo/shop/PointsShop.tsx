@@ -170,7 +170,7 @@ export default function PointsShop() {
   const purchaseDisabled =
     !isDataReady || selectedItem === null || selectedItem.isMaxed || !selectedItem.canAfford || isPurchasing
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
     if (!selectedItem) {
       return

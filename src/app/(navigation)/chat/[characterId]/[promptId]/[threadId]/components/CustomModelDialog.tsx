@@ -1,4 +1,4 @@
-import { FormEvent, useRef } from 'react'
+import { SubmitEvent, useRef } from 'react'
 
 import Dialog from '@/components/ui/Dialog'
 import DialogBody from '@/components/ui/DialogBody'
@@ -14,7 +14,7 @@ interface CustomModelDialogProps {
 export function CustomModelDialog({ open, onClose, onSubmit }: CustomModelDialogProps) {
   const formRef = useRef<HTMLFormElement>(null)
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
     onSubmit(new FormData(event.currentTarget))
   }

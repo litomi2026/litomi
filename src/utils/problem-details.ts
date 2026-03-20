@@ -1,3 +1,8 @@
+export type InvalidParam = {
+  name: string
+  reason: string
+}
+
 export type ProblemDetails = {
   /**
    * A URI reference that identifies the problem type.
@@ -22,6 +27,14 @@ export type ProblemDetails = {
    * A URI reference that identifies the specific occurrence of the problem.
    */
   instance?: string
+  /**
+   * Extension members defined by RFC 9457.
+   */
+  [key: string]: unknown
+}
+
+export type ValidationProblemDetails = ProblemDetails & {
+  invalidParams?: InvalidParam[]
 }
 
 export const PROBLEM_CONTENT_TYPE = 'application/problem+json'
@@ -37,6 +50,23 @@ export function createProblemTypeUrl(origin: string, code: string): string {
   } catch {
     return `${safeOrigin}/problems/${safeCode}`
   }
+}
+
+export function getInvalidParams(problem: ProblemDetails): InvalidParam[] {
+  const { invalidParams } = problem as ValidationProblemDetails
+
+  if (!Array.isArray(invalidParams)) {
+    return []
+  }
+
+  return invalidParams.filter((param): param is InvalidParam => {
+    if (typeof param !== 'object' || param === null) {
+      return false
+    }
+
+    const record = param as Record<string, unknown>
+    return typeof record.name === 'string' && typeof record.reason === 'string'
+  })
 }
 
 export function getStatusTitle(status: number): string {

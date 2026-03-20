@@ -4,18 +4,20 @@ import { contextStorage } from 'hono/context-storage'
 
 import type { Env } from '@/backend'
 
-import authRoutes from '..'
+type LogoutRoutesModule = typeof import('../logout')
 
 let shouldThrowDatabaseError = false
 let deletedCookies: string[] = []
 let currentUserId: number | undefined
+let logoutRoutes: LogoutRoutesModule['default']
 
 type LogoutResponse = {
   loginId: string | null
 }
 
-beforeAll(() => {
+beforeAll(async () => {
   spyOn(console, 'error').mockImplementation(() => {})
+  logoutRoutes = (await import('../logout')).default
 })
 
 beforeEach(() => {
@@ -30,15 +32,20 @@ type TestEnv = Env & {
   }
 }
 
-const app = new Hono<TestEnv>()
-app.use('*', contextStorage())
-app.use('*', async (c, next) => {
-  if (c.env.userId) {
-    c.set('userId', c.env.userId)
-  }
-  await next()
-})
-app.route('/', authRoutes)
+function createApp() {
+  const app = new Hono<TestEnv>()
+
+  app.use('*', contextStorage())
+  app.use('*', async (c, next) => {
+    if (c.env.userId) {
+      c.set('userId', c.env.userId)
+    }
+    await next()
+  })
+  app.route('/', logoutRoutes)
+
+  return app
+}
 
 mock.module('@/database/supabase/drizzle', () => ({
   db: {
@@ -69,13 +76,15 @@ mock.module('hono/cookie', () => ({
   deleteCookie: (_: unknown, name: string) => {
     deletedCookies.push(name)
   },
+  getCookie: () => undefined,
+  setCookie: () => {},
 }))
 
 describe('POST /api/v1/auth/logout', () => {
   test('인증된 사용자가 로그아웃하면 loginId를 반환하고 쿠키를 삭제한다', async () => {
     currentUserId = 1
 
-    const response = await app.request('/logout', { method: 'POST' }, { userId: 1 })
+    const response = await createApp().request('/', { method: 'POST' }, { userId: 1 })
 
     expect(response.status).toBe(200)
     expect(response.headers.get('content-type')).toContain('application/json')
@@ -86,7 +95,7 @@ describe('POST /api/v1/auth/logout', () => {
   })
 
   test('인증 정보가 없어도 로그아웃 요청은 성공하고 쿠키를 정리한다', async () => {
-    const response = await app.request('/logout', { method: 'POST' }, {})
+    const response = await createApp().request('/', { method: 'POST' }, {})
 
     expect(response.status).toBe(200)
 
@@ -98,7 +107,7 @@ describe('POST /api/v1/auth/logout', () => {
   test('DB에 사용자가 없어도 로그아웃 요청은 성공하고 쿠키를 정리한다', async () => {
     currentUserId = 999
 
-    const response = await app.request('/logout', { method: 'POST' }, { userId: 999 })
+    const response = await createApp().request('/', { method: 'POST' }, { userId: 999 })
 
     expect(response.status).toBe(200)
 
@@ -111,7 +120,7 @@ describe('POST /api/v1/auth/logout', () => {
     currentUserId = 1
     shouldThrowDatabaseError = true
 
-    const response = await app.request('/logout', { method: 'POST' }, { userId: 1 })
+    const response = await createApp().request('/', { method: 'POST' }, { userId: 1 })
 
     expect(response.status).toBe(500)
     expect(deletedCookies).toEqual([])

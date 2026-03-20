@@ -2,7 +2,7 @@
 
 import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { ChangeEvent, FormEvent, useCallback, useState } from 'react'
+import { ChangeEvent, SubmitEvent, useCallback, useState } from 'react'
 import { toast } from 'sonner'
 
 import { PASSWORD_PATTERN } from '@/constants/policy'
@@ -42,7 +42,7 @@ export default function PasswordChangeForm({ userId }: Readonly<Props>) {
   const defaultNewPassword = getFormField(response, 'newPassword')
   const defaultConfirmPassword = getFormField(response, 'confirmPassword')
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
     const formElement = e.currentTarget
     const currentPassword = formElement.currentPassword.value
     const newPassword = formElement.newPassword.value

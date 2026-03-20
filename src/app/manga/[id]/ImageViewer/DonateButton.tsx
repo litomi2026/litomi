@@ -88,7 +88,7 @@ export default function DonateButton({ manga, ...props }: Props) {
     return '문제가 발생했어요'
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
     setLocalMessage(null)
 
