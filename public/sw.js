@@ -77,29 +77,46 @@ self.addEventListener('push', (event) => {
   }
 })
 
+function getSafeTargetURL(url) {
+  const fallbackURL = self.location.origin
+
+  if (!url) {
+    return fallbackURL
+  }
+
+  try {
+    const parsedURL = new URL(url, fallbackURL)
+    return parsedURL.origin === self.location.origin ? parsedURL.toString() : fallbackURL
+  } catch {
+    return fallbackURL
+  }
+}
+
+function isSameOriginClient(client) {
+  try {
+    return new URL(client.url).origin === self.location.origin
+  } catch {
+    return false
+  }
+}
+
 self.addEventListener('notificationclick', (event) => {
   event.notification.close()
 
   const notificationData = event.notification.data
-  let targetURL = 'https://litomi.in'
-
-  if (event.action === 'view' || !event.action) {
-    if (notificationData?.url) {
-      targetURL = `https://litomi.in${notificationData.url}`
-    }
-  } else if (notificationData?.url) {
-    targetURL = `https://litomi.in${notificationData.url}`
-  }
+  const targetURL = getSafeTargetURL(notificationData?.url)
 
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(async function (clientList) {
       for (const client of clientList) {
-        const isAlreadyOpen = client.url.startsWith('https://litomi.in') && 'focus' in client
+        const isAlreadyOpen = isSameOriginClient(client) && 'focus' in client
+
         if (isAlreadyOpen) {
           await client.navigate(targetURL)
           return client.focus()
         }
       }
+
       if (self.clients.openWindow) {
         return self.clients.openWindow(targetURL)
       }
