@@ -41,7 +41,7 @@ export default function DataExportSectionClient({ counts }: Readonly<Props>) {
     })
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
 
     if (selected.size === 0) {

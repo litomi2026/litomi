@@ -3,7 +3,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { ChevronDown } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { FormEvent, useRef } from 'react'
+import { SubmitEvent, useRef } from 'react'
 import { toast } from 'sonner'
 
 import type { GETV1MeResponse } from '@/backend/api/v1/me'
@@ -65,7 +65,7 @@ export default function BBatonUnlinkSection({ isTwoFactorEnabled }: Props) {
     },
   })
 
-  function handleUnlinkSubmit(e: FormEvent<HTMLFormElement>) {
+  function handleUnlinkSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
 
     const formData = new FormData(e.currentTarget)

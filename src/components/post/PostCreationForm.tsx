@@ -52,7 +52,7 @@ export default function PostCreationForm({
     },
   })
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
 
     if (!me) {

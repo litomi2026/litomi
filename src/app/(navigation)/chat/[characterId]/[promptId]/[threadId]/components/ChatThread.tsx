@@ -1,6 +1,6 @@
 'use client'
 
-import type { FormEvent, KeyboardEvent } from 'react'
+import type { KeyboardEvent, SubmitEvent } from 'react'
 
 import { ChevronRight } from 'lucide-react'
 
@@ -50,7 +50,7 @@ export function ChatThread({
   const placeholderText = getAssistantPlaceholderText({ isPreparingModel, isThinkingEnabled, modelMode })
   const showContinueButton = canContinue && !isGenerating && !chatInputDisabled && input.trim().length === 0
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
     onSubmit()
   }

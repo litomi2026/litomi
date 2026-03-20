@@ -2,7 +2,7 @@
 
 import { type InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Check, Loader2 } from 'lucide-react'
-import { type FormEvent, useRef } from 'react'
+import { type SubmitEvent, useRef } from 'react'
 import { toast } from 'sonner'
 
 import type { PATCHV1LibraryIdBody } from '@/backend/api/v1/library/[id]/PATCH'
@@ -115,7 +115,7 @@ export default function LibraryEditModal({ library, open, onOpenChange }: Readon
   const iconValue = library.icon || '📚'
   const isPublic = library.isPublic
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
 
     if (!event.currentTarget.reportValidity()) {
