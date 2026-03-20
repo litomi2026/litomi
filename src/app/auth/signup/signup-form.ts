@@ -38,8 +38,8 @@ export function applySignupProblem(form: HTMLFormElement | null, problem: Proble
     return false
   }
 
-  firstInvalidInput.reportValidity()
   firstInvalidInput.focus()
+  firstInvalidInput.reportValidity()
   return true
 }
 
@@ -141,6 +141,6 @@ function reportInputValidity(input: HTMLInputElement | null, message: string) {
   }
 
   input.setCustomValidity(message)
-  input.reportValidity()
   input.focus()
+  input.reportValidity()
 }
