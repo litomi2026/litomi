@@ -29,3 +29,7 @@ export const nicknameSchema = z
 export const imageURLSchema = z
   .url('프로필 이미지 주소가 URL 형식이 아니에요')
   .max(256, '프로필 이미지 URL은 최대 256자까지 입력할 수 있어요')
+  .refine(
+    (value) => !URL.canParse(value) || ['http:', 'https:'].includes(new URL(value).protocol),
+    { error: '프로필 이미지 URL은 http 또는 https만 사용할 수 있어요' },
+  )
