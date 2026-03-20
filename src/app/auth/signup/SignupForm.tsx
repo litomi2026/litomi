@@ -32,19 +32,21 @@ export default function SignupForm() {
     onError: (error) => {
       turnstileRef.current?.reset()
       setTurnstileToken('')
+      clearSignupValidity(formRef.current)
 
-      const form = formRef.current
-      clearSignupValidity(form)
+      window.requestAnimationFrame(() => {
+        const form = formRef.current
 
-      if (applySignupProblem(form, error.problem)) {
-        return
-      }
+        if (applySignupProblem(form, error.problem)) {
+          return
+        }
 
-      if (!SIGNUP_LOCAL_ERROR_STATUSES.includes(error.status)) {
-        return
-      }
+        if (!SIGNUP_LOCAL_ERROR_STATUSES.includes(error.status)) {
+          return
+        }
 
-      toast.warning(getSignupErrorMessage(error))
+        toast.warning(getSignupErrorMessage(error))
+      })
     },
   })
 
