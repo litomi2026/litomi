@@ -30,6 +30,7 @@ export enum SearchParamKey {
 export enum SessionStorageKey {
   // zustand
   CONTROLLER_BRIGHTNESS = 'controller/brightness',
+  CONTROLLER_LOW_DATA_MODE = 'controller/low-data-mode',
   CONTROLLER_ZOOM = 'controller/zoom',
 }
 
