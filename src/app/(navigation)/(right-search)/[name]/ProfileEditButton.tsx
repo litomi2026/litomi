@@ -5,7 +5,7 @@ import { ErrorBoundaryFallbackProps } from '@suspensive/react'
 import { useQueryClient } from '@tanstack/react-query'
 import { SquarePen } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { FormEvent, use, useEffect, useState } from 'react'
+import { SubmitEvent, use, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 import Dialog from '@/components/ui/Dialog'
@@ -64,7 +64,7 @@ export default function ProfileEditButton({ mePromise }: Readonly<Props>) {
     setShowModal(false)
   }
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
     const formData = new FormData(e.currentTarget)
     const name = formData.get('name')
     const nickname = formData.get('nickname')

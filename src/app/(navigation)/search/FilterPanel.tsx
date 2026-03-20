@@ -2,7 +2,7 @@
 
 import { Loader2 } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
-import { Dispatch, FormEvent, RefObject, SetStateAction, useCallback, useEffect, useState, useTransition } from 'react'
+import { Dispatch, RefObject, SetStateAction, SubmitEvent, useCallback, useEffect, useState, useTransition } from 'react'
 
 import CustomSelect from '@/components/ui/CustomSelect'
 import Dialog from '@/components/ui/Dialog'
@@ -40,7 +40,7 @@ export default function FilterPanel({ buttonRef, filters, onClose, setFilters, s
   )
 
   const handleSubmit = useCallback(
-    (e: FormEvent<HTMLFormElement>) => {
+    (e: SubmitEvent<HTMLFormElement>) => {
       e.preventDefault()
 
       const params = new URLSearchParams(window.location.search)

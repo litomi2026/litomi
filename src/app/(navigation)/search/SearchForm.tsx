@@ -2,7 +2,7 @@
 
 import { Clock, Loader2, X, X as XIcon } from 'lucide-react'
 import { ReadonlyURLSearchParams, usePathname, useRouter } from 'next/navigation'
-import { FormEvent, useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react'
+import { SubmitEvent, useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react'
 
 import Toggle from '@/components/ui/Toggle'
 import { MAX_SEARCH_QUERY_LENGTH } from '@/constants/policy'
@@ -171,7 +171,7 @@ export default function SearchForm({ className = '' }: Props) {
     inputRef.current?.focus()
   }
 
-  function onSubmit(e: FormEvent) {
+  function onSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
     setShowSuggestions(false)
 

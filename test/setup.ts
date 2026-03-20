@@ -67,6 +67,12 @@ beforeAll(() => {
   // @ts-expect-error - Adding DOM globals
   global.HTMLElement = window.HTMLElement
   // @ts-expect-error - Adding DOM globals
+  global.HTMLFormElement = window.HTMLFormElement
+  // @ts-expect-error - Adding DOM globals
+  global.HTMLInputElement = window.HTMLInputElement
+  // @ts-expect-error - Adding DOM globals
+  global.FormData = window.FormData
+  // @ts-expect-error - Adding DOM globals
   global.customElements = window.customElements
   // @ts-expect-error - Adding DOM globals
   global.requestAnimationFrame = (callback: FrameRequestCallback) => {

@@ -71,7 +71,7 @@ export default function CensorshipCreationBar() {
     cursorPosition,
   })
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
 
     if (!hasAdultAccess(adultState)) {

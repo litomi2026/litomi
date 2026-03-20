@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <main className={`min-h-dvh flex items-center justify-center p-4 ${styles.background}`}>
+    <main className={`min-h-dvh flex items-center justify-center p-4 sm:p-8 ${styles.background}`}>
       <h1 className="sr-only">회원가입</h1>
       <div className={`${styles.card} w-full max-w-lg rounded-2xl p-5 sm:p-6`}>
         <SignupForm />

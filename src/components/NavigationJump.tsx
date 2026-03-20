@@ -14,7 +14,7 @@ export default function NavigationJump({ totalPages, hrefPrefix = '', hrefSuffix
   const inputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
     const page = inputRef.current?.value
     if (!page) return

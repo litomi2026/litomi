@@ -28,7 +28,7 @@ export default function SlideshowButton({ className = '', maxImageIndex, offset,
   const timeoutIdRef = useRef<number | null>(null)
   const intervalInputId = useId()
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
 
     const intervalInput = e.currentTarget.elements.namedItem('interval')
