@@ -19,11 +19,11 @@ type JuicyPopunderStackEntry = {
 
 type JuicyPopunderWindow = typeof globalThis &
   Window & {
+    __juicyPopunderEnableCount?: number
     __juicyPopunderLoadPromise?: Promise<void>
     __juicyPopunderPrimedPageKey?: string
-    __juicyPopunderShouldEnable?: boolean
     __juicyPopunderTemplateEntry?: JuicyPopunderStackEntry
-    __juicyPopunderTemplatePagePath?: string
+    __juicyPopunderTemplatePageParamKeys?: string[]
     juicy_tags?: string[]
     jYWWRgFaKP?: {
       add: (url: string, options: JuicyPopunderAddOptions) => unknown
@@ -100,11 +100,11 @@ afterEach(() => {
 
   const popunderWindow = window as JuicyPopunderWindow
 
+  delete popunderWindow.__juicyPopunderEnableCount
   delete popunderWindow.__juicyPopunderLoadPromise
   delete popunderWindow.__juicyPopunderPrimedPageKey
-  delete popunderWindow.__juicyPopunderShouldEnable
   delete popunderWindow.__juicyPopunderTemplateEntry
-  delete popunderWindow.__juicyPopunderTemplatePagePath
+  delete popunderWindow.__juicyPopunderTemplatePageParamKeys
   delete popunderWindow.juicy_tags
   delete popunderWindow.jYWWRgFaKP
 
@@ -189,6 +189,38 @@ describe('Juicy popunder stack sync', () => {
       expect(getAppendCount()).toBe(1)
       expect(api.add).toHaveBeenCalledTimes(1)
       expectStackEntry(getStack()[0], '/title/2')
+    } finally {
+      restore()
+    }
+  })
+
+  it('keeps popunder active until the last trigger unregisters', async () => {
+    setCurrentPath('/title/1')
+
+    const { api, getStack } = createMockJuicyPopunderAPI({
+      expires: 28800,
+      tab: false,
+      under: true,
+      url: 'https://xapi.juicyads.com/hash.php?juicy_code=test&u=https://landing.example&x=localhost:3000/title/1',
+    })
+    const { getAppendCount, restore } = interceptJuicyPopunderScript({ api })
+
+    try {
+      await enableJuicyPopunder()
+      await enableJuicyPopunder()
+
+      expect(getAppendCount()).toBe(1)
+      expect(getStack()).toHaveLength(1)
+
+      disableJuicyPopunder()
+
+      expect(api.emptyStack).not.toHaveBeenCalled()
+      expect(getStack()).toHaveLength(1)
+
+      disableJuicyPopunder()
+
+      expect(api.emptyStack).toHaveBeenCalledTimes(1)
+      expect(getStack()).toEqual([])
     } finally {
       restore()
     }

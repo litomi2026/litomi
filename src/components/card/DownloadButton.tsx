@@ -47,19 +47,24 @@ export default function DownloadButton({ manga, className = '' }: Props) {
   const progressWidth = isDownloading ? `${Math.max(progress, 6)}%` : '0%'
   const hasAuthHint = Cookies.get(CookieKey.AUTH_HINT) === '1'
   const shouldEnablePopunder = shouldEnableDownloadButtonPopunder({ adultState, hasAuthHint })
+  const shouldAttachPopunder = shouldEnablePopunder && !isDisabled
 
   useEffect(() => {
-    if (shouldEnablePopunder) {
-      enableJuicyPopunder().catch(() => undefined)
-    } else {
+    if (!shouldAttachPopunder) {
+      return
+    }
+
+    enableJuicyPopunder().catch(() => undefined)
+
+    return () => {
       disableJuicyPopunder()
     }
-  }, [pathname, shouldEnablePopunder])
+  }, [pathname, shouldAttachPopunder])
 
   return (
     <button
       aria-busy={isDownloading}
-      className={twMerge(commonButtonStyle, JUICY_POPUNDER_TRIGGER_CLASS, className)}
+      className={twMerge(commonButtonStyle, shouldAttachPopunder && JUICY_POPUNDER_TRIGGER_CLASS, className)}
       disabled={isDisabled}
       onClick={downloadAllImages}
       title={getButtonTitle({ isDownloading, label, totalCount })}
