@@ -19,8 +19,7 @@ export type POSTV1PointTurnstileResponse = { verified: true; expiresInSeconds: n
 
 const route = new Hono<Env>()
 
-const TURNSTILE_VERIFY_TIMEOUT_MS = ms('10 seconds')
-const turnstileValidator = new TurnstileValidator(TURNSTILE_VERIFY_TIMEOUT_MS, 1)
+const turnstileValidator = new TurnstileValidator(ms('10 seconds'), 1)
 
 const requestSchema = z.object({
   token: z.string().min(1).max(2048),
@@ -41,8 +40,8 @@ route.post('/', requireAuth, zProblemValidator('json', requestSchema), async (c)
   if (!turnstile.success) {
     return problemResponse(c, {
       status: 400,
-      code: 'turnstile-validation-failed',
-      detail: '인증에 실패했어요. 다시 시도해 주세요',
+      code: 'human-verification-failed',
+      detail: '보안 확인에 실패했어요',
     })
   }
 
