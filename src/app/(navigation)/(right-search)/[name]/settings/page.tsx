@@ -12,10 +12,12 @@ import {
   ShieldCheck,
   Trash2,
 } from 'lucide-react'
+import { Metadata } from 'next'
 import { Suspense } from 'react'
 
 import IconBell from '@/components/icons/IconBell'
 import CollapsibleSection from '@/components/ui/CollapsibleSection'
+import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 import { getUserIdFromCookie } from '@/utils/cookie'
 import { getUsernameFromParam } from '@/utils/param'
 
@@ -33,6 +35,15 @@ import PrivacySettings from './privacy/PrivacySettings'
 import PushSettings from './push/PushSettings'
 import ThemeSettings from './theme/ThemeSettings'
 import TwoFactorSettings from './two-factor/TwoFactorSettings'
+
+export const metadata: Metadata = {
+  title: '설정',
+  openGraph: {
+    ...defaultOpenGraph,
+    title: `설정 - ${SHORT_NAME}`,
+    url: '/@/settings',
+  },
+}
 
 export default async function SettingsPage({ params }: PageProps<'/[name]/settings'>) {
   const userId = await getUserIdFromCookie()
