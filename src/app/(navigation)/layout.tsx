@@ -37,8 +37,13 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           <SelectableLink href="/library" icon={<LibraryBig />} selectedIconStyle="fill">
             서재
           </SelectableLink>
-          <SelectableLink className="hidden sm:block" href="/chat" icon={<Bot />} selectedIconStyle="stroke">
-            AI 채팅
+          <SelectableLink
+            className="hidden sm:block"
+            href="/library/bookmark"
+            icon={<Bookmark />}
+            selectedIconStyle="fill"
+          >
+            북마크
           </SelectableLink>
           <SelectableLink
             className="hidden sm:block"
@@ -56,14 +61,6 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           </div>
           <SelectableLink
             className="hidden sm:block"
-            href="/library/bookmark"
-            icon={<Bookmark />}
-            selectedIconStyle="fill"
-          >
-            북마크
-          </SelectableLink>
-          <SelectableLink
-            className="hidden sm:block"
             href="/posts/recommand"
             hrefMatch="/post"
             icon={<FileText />}
@@ -74,9 +71,6 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           <SelectableLink className="hidden sm:block" href="/tag" icon={<Tag />} selectedIconStyle="fill-soft">
             태그
           </SelectableLink>
-          <SelectableLink className="hidden sm:block" href="/fortune" hrefMatch="/fortune" icon={<Clover />}>
-            운세
-          </SelectableLink>
           <SelectableLink
             className="hidden sm:block"
             href="/libo"
@@ -85,6 +79,12 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
             selectedIconStyle="fill-soft"
           >
             리보
+          </SelectableLink>
+          <SelectableLink className="hidden sm:block" href="/chat" icon={<Bot />} selectedIconStyle="stroke">
+            AI 채팅
+          </SelectableLink>
+          <SelectableLink className="hidden sm:block" href="/fortune" hrefMatch="/fortune" icon={<Clover />}>
+            운세
           </SelectableLink>
           <ProfileLink className="hidden sm:block" />
         </nav>
