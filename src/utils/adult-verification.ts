@@ -42,6 +42,15 @@ export function isAdultAccessBlocked(state: AdultState): boolean {
   return state === AdultState.NOT_ADULT || state === AdultState.UNVERIFIED || state === AdultState.NOT_LOGIN
 }
 
+export function requiresAds(state: AdultState): boolean {
+  return (
+    state === AdultState.NOT_ADULT ||
+    state === AdultState.UNVERIFIED ||
+    state === AdultState.NOT_LOGIN ||
+    state === AdultState.NOT_REQUIRED
+  )
+}
+
 export function requiresAdultVerification(state: AdultState): boolean {
   return state === AdultState.ADULT || state === AdultState.UNVERIFIED || state === AdultState.NOT_ADULT
 }
