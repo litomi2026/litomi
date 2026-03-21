@@ -12,10 +12,10 @@ import LastPageActions from './LastPageActions'
 import RatingInput from './RatingInput'
 import { useBrightnessStore } from './store/brightness'
 import { useImageIndexStore } from './store/imageIndex'
+import { useOrientationStore } from './store/orientation'
 import { PageView } from './store/pageView'
 import { ReadingDirection } from './store/readingDirection'
 import { ScreenFit } from './store/screenFit'
-import { useTouchOrientationStore } from './store/touchOrientation'
 import { DEFAULT_ZOOM, useZoomStore } from './store/zoom'
 import useImageNavigation from './useImageNavigation'
 
@@ -43,7 +43,19 @@ type LastPageProps = {
   isHidden?: boolean
 }
 
+type PageViewerItemProps = {
+  isLowDataMode: boolean
+  manga: {
+    id: number
+    images?: ImageWithVariants[]
+  }
+  offset: number
+  pageView: PageView
+  readingDirection: ReadingDirection
+}
+
 type Props = {
+  isLowDataMode: boolean
   manga: Manga
   onClick: () => void
   pageView: PageView
@@ -56,19 +68,17 @@ type TouchAreaOverlayProps = {
   showController: boolean
 }
 
-type TouchViewerItemProps = {
-  manga: {
-    id: number
-    images?: ImageWithVariants[]
-  }
-  offset: number
-  pageView: PageView
-  readingDirection: ReadingDirection
-}
-
-export default function TouchViewer({ manga, onClick, screenFit, pageView, readingDirection, showController }: Props) {
+export default function PageViewer({
+  isLowDataMode,
+  manga,
+  onClick,
+  screenFit,
+  pageView,
+  readingDirection,
+  showController,
+}: Props) {
   const { images = [] } = manga
-  const getTouchOrientation = useTouchOrientationStore((state) => state.getTouchOrientation)
+  const getOrientation = useOrientationStore((state) => state.getOrientation)
   const getBrightness = useBrightnessStore((state) => state.getBrightness)
   const setBrightness = useBrightnessStore((state) => state.setBrightness)
   const setImageIndex = useImageIndexStore((state) => state.setImageIndex)
@@ -84,6 +94,10 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
   const ulRef = useRef<HTMLUListElement>(null)
   const throttleRef = useRef(false)
   const previousIndexRef = useRef(currentIndex)
+
+  const pageViewerOffsets = isLowDataMode
+    ? [0, 1]
+    : Array.from({ length: TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT }, (_, i) => i - 1)
 
   const { prevPage, nextPage } = useImageNavigation({
     maxIndex: images.length,
@@ -154,8 +168,8 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
 
     if (Math.abs(diffX) > HORIZONTAL_SWIPE_THRESHOLD) {
       swipeDetectedRef.current = true
-      const touchOrientation = getTouchOrientation()
-      const isReversed = touchOrientation === 'horizontal-reverse' || touchOrientation === 'vertical-reverse'
+      const orientation = getOrientation()
+      const isReversed = orientation === 'horizontal-reverse' || orientation === 'vertical-reverse'
 
       if (diffX > 0) {
         if (isReversed) {
@@ -194,9 +208,9 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
     }
 
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
-    const touchOrientation = getTouchOrientation()
+    const orientation = getOrientation()
 
-    if (touchOrientation === 'horizontal') {
+    if (orientation === 'horizontal') {
       const clickX = e.clientX - rect.left
       if (clickX < rect.width * EDGE_CLICK_THRESHOLD) {
         prevPage()
@@ -205,7 +219,7 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
       } else {
         onClick()
       }
-    } else if (touchOrientation === 'horizontal-reverse') {
+    } else if (orientation === 'horizontal-reverse') {
       const clickX = e.clientX - rect.left
       if (clickX < rect.width * EDGE_CLICK_THRESHOLD) {
         nextPage()
@@ -214,7 +228,7 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
       } else {
         onClick()
       }
-    } else if (touchOrientation === 'vertical') {
+    } else if (orientation === 'vertical') {
       const clickY = e.clientY - rect.top
       if (clickY < rect.height * EDGE_CLICK_THRESHOLD) {
         prevPage()
@@ -223,7 +237,7 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
       } else {
         onClick()
       }
-    } else if (touchOrientation === 'vertical-reverse') {
+    } else if (orientation === 'vertical-reverse') {
       const clickY = e.clientY - rect.top
       if (clickY < rect.height * EDGE_CLICK_THRESHOLD) {
         nextPage()
@@ -249,29 +263,29 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
     }
 
     const isNavigatingBackward = currentIndex < previousIndexRef.current
-    const touchOrientation = getTouchOrientation()
+    const orientation = getOrientation()
     previousIndexRef.current = currentIndex
 
     if (isNavigatingBackward) {
-      if (touchOrientation === 'vertical') {
+      if (orientation === 'vertical') {
         ul.scrollTo({ top: ul.scrollHeight - ul.clientHeight, left: 0, behavior: 'instant' })
-      } else if (touchOrientation === 'vertical-reverse') {
+      } else if (orientation === 'vertical-reverse') {
         ul.scrollTo({ top: 0, left: 0, behavior: 'instant' })
-      } else if (touchOrientation === 'horizontal-reverse') {
+      } else if (orientation === 'horizontal-reverse') {
         ul.scrollTo({ top: 0, left: 0, behavior: 'instant' })
       } else {
         ul.scrollTo({ top: 0, left: ul.scrollWidth - ul.clientWidth, behavior: 'instant' })
       }
     } else {
-      if (touchOrientation === 'vertical-reverse') {
+      if (orientation === 'vertical-reverse') {
         ul.scrollTo({ top: ul.scrollHeight - ul.clientHeight, left: 0, behavior: 'instant' })
-      } else if (touchOrientation === 'horizontal-reverse') {
+      } else if (orientation === 'horizontal-reverse') {
         ul.scrollTo({ top: 0, left: ul.scrollWidth - ul.clientWidth, behavior: 'instant' })
       } else {
         ul.scrollTo({ top: 0, left: 0, behavior: 'instant' })
       }
     }
-  }, [currentIndex, getTouchOrientation])
+  }, [currentIndex, getOrientation])
 
   // NOTE: page 파라미터가 있으면 초기 페이지를 변경함
   useEffect(() => {
@@ -397,11 +411,12 @@ export default function TouchViewer({ manga, onClick, screenFit, pageView, readi
             <Loader2 className="size-8 animate-spin" />
           </li>
         ) : (
-          Array.from({ length: TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT }).map((_, offset) => (
-            <TouchViewerItem
+          pageViewerOffsets.map((offset) => (
+            <PageViewerItem
+              isLowDataMode={isLowDataMode}
               key={offset}
               manga={manga}
-              offset={offset - 1}
+              offset={offset}
               pageView={pageView}
               readingDirection={readingDirection}
             />
@@ -423,33 +438,7 @@ function LastPage({ manga, isHidden = false }: LastPageProps) {
   )
 }
 
-function TouchAreaOverlay({ showController }: TouchAreaOverlayProps) {
-  const touchOrientation = useTouchOrientationStore((state) => state.touchOrientation)
-  const isHorizontal = touchOrientation === 'horizontal' || touchOrientation === 'horizontal-reverse'
-  const isReversed = touchOrientation === 'horizontal-reverse' || touchOrientation === 'vertical-reverse'
-
-  return (
-    <div
-      aria-hidden={!showController}
-      aria-orientation={isHorizontal ? 'horizontal' : 'vertical'}
-      className="fixed inset-0 z-10 pointer-events-none flex transition text-foreground text-xs font-medium aria-hidden:opacity-0 aria-[orientation=vertical]:flex-col"
-    >
-      <div className="flex-1 flex items-center justify-center">
-        <span className="px-4 py-2 rounded-full bg-background/80 border border-foreground/40">
-          {isReversed ? '다음' : '이전'}
-        </span>
-      </div>
-      {isHorizontal && <div className="flex-1" />}
-      <div className="flex-1 flex items-center justify-center">
-        <span className="px-4 py-2 rounded-full bg-background/80 border border-foreground/40">
-          {isReversed ? '이전' : '다음'}
-        </span>
-      </div>
-    </div>
-  )
-}
-
-function TouchViewerItem({ offset, manga, pageView, readingDirection }: TouchViewerItemProps) {
+function PageViewerItem({ isLowDataMode, offset, manga, pageView, readingDirection }: PageViewerItemProps) {
   const { images = [] } = manga
   const currentIndex = useImageIndexStore((state) => state.imageIndex)
   const imageIndex = currentIndex + offset
@@ -469,9 +458,17 @@ function TouchViewerItem({ offset, manga, pageView, readingDirection }: TouchVie
   const firstImage = images[imageIndex]
   const secondImage = images[nextImageIndex]
 
+  const fetchPriority = isLowDataMode
+    ? offset === 0
+      ? 'high'
+      : 'low'
+    : offset < IMAGE_FETCH_PRIORITY_THRESHOLD
+      ? 'high'
+      : 'low'
+
   const first = imageIndex >= 0 && (
     <MangaImage
-      fetchPriority={offset < IMAGE_FETCH_PRIORITY_THRESHOLD ? 'high' : 'low'}
+      fetchPriority={fetchPriority}
       imageIndex={imageIndex}
       mangaId={manga.id}
       src={firstImage?.original?.url}
@@ -484,7 +481,7 @@ function TouchViewerItem({ offset, manga, pageView, readingDirection }: TouchVie
 
   const second = isDoublePage && nextImageIndex < images.length && (
     <MangaImage
-      fetchPriority={offset < IMAGE_FETCH_PRIORITY_THRESHOLD ? 'high' : 'low'}
+      fetchPriority={fetchPriority}
       imageIndex={nextImageIndex}
       mangaId={manga.id}
       src={secondImage?.original?.url}
@@ -509,5 +506,31 @@ function TouchViewerItem({ offset, manga, pageView, readingDirection }: TouchVie
         </>
       )}
     </li>
+  )
+}
+
+function TouchAreaOverlay({ showController }: TouchAreaOverlayProps) {
+  const orientation = useOrientationStore((state) => state.orientation)
+  const isHorizontal = orientation === 'horizontal' || orientation === 'horizontal-reverse'
+  const isReversed = orientation === 'horizontal-reverse' || orientation === 'vertical-reverse'
+
+  return (
+    <div
+      aria-hidden={!showController}
+      aria-orientation={isHorizontal ? 'horizontal' : 'vertical'}
+      className="fixed inset-0 z-10 pointer-events-none flex transition text-foreground text-xs font-medium aria-hidden:opacity-0 aria-[orientation=vertical]:flex-col"
+    >
+      <div className="flex-1 flex items-center justify-center">
+        <span className="px-4 py-2 rounded-full bg-background/80 border border-foreground/40">
+          {isReversed ? '다음' : '이전'}
+        </span>
+      </div>
+      {isHorizontal && <div className="flex-1" />}
+      <div className="flex-1 flex items-center justify-center">
+        <span className="px-4 py-2 rounded-full bg-background/80 border border-foreground/40">
+          {isReversed ? '이전' : '다음'}
+        </span>
+      </div>
+    </div>
   )
 }
