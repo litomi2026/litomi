@@ -35,6 +35,7 @@ type LastPageProps = {
 }
 
 type Props = {
+  isLowDataMode: boolean
   manga: Manga
   onClick: () => void
   pageView: PageView
@@ -43,13 +44,14 @@ type Props = {
 }
 
 type RowProps = {
+  isLowDataMode: boolean
   manga: Manga
   pageView: PageView
   readingDirection: ReadingDirection
   screenFit: ScreenFit
 }
 
-export default function ScrollViewer({ manga, onClick, pageView, readingDirection, screenFit }: Props) {
+export default function ScrollViewer({ isLowDataMode, manga, onClick, pageView, readingDirection, screenFit }: Props) {
   const { images = [] } = manga
   const listRef = useListRef(null)
   const brightness = useBrightnessStore((state) => state.brightness)
@@ -59,6 +61,7 @@ export default function ScrollViewer({ manga, onClick, pageView, readingDirectio
   const scrollToRow = useVirtualScrollStore((state) => state.scrollToRow)
   const isDoublePage = pageView === 'double'
   const imagePageCount = isDoublePage ? Math.ceil(images.length / 2) : images.length
+  const overscanCount = isLowDataMode ? 1 : 2
   const totalItemCount = imagePageCount + 1 // +1 for rating page
   const rowHeight = useDynamicRowHeight({ defaultRowHeight: window.innerHeight })
 
@@ -100,11 +103,11 @@ export default function ScrollViewer({ manga, onClick, pageView, readingDirectio
       <List
         className={`overscroll-none ${screenFitStyle[screenFit]}`}
         listRef={listRef}
-        overscanCount={2}
+        overscanCount={overscanCount}
         rowComponent={ScrollViewerRow}
         rowCount={totalItemCount}
         rowHeight={rowHeight}
-        rowProps={{ manga, pageView, readingDirection, screenFit }}
+        rowProps={{ isLowDataMode, manga, pageView, readingDirection, screenFit }}
       />
     </div>
   )
@@ -135,7 +138,14 @@ function ScrollViewerRow({ index, style, manga, pageView, ...rest }: RowComponen
   return <ScrollViewerRowItem index={index} manga={manga} pageView={pageView} style={style} {...rest} />
 }
 
-function ScrollViewerRowItem({ index, manga, pageView, readingDirection, style }: RowComponentProps<RowProps>) {
+function ScrollViewerRowItem({
+  index,
+  isLowDataMode,
+  manga,
+  pageView,
+  readingDirection,
+  style,
+}: RowComponentProps<RowProps>) {
   const navigateToImageIndex = useImageIndexStore((state) => state.navigateToImageIndex)
   const { images = [] } = manga
   const isDoublePage = pageView === 'double'

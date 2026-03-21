@@ -44,6 +44,7 @@ type LastPageProps = {
 }
 
 type PageViewerItemProps = {
+  isLowDataMode: boolean
   manga: {
     id: number
     images?: ImageWithVariants[]
@@ -54,6 +55,7 @@ type PageViewerItemProps = {
 }
 
 type Props = {
+  isLowDataMode: boolean
   manga: Manga
   onClick: () => void
   pageView: PageView
@@ -66,7 +68,15 @@ type TouchAreaOverlayProps = {
   showController: boolean
 }
 
-export default function PageViewer({ manga, onClick, screenFit, pageView, readingDirection, showController }: Props) {
+export default function PageViewer({
+  isLowDataMode,
+  manga,
+  onClick,
+  screenFit,
+  pageView,
+  readingDirection,
+  showController,
+}: Props) {
   const { images = [] } = manga
   const getOrientation = useOrientationStore((state) => state.getOrientation)
   const getBrightness = useBrightnessStore((state) => state.getBrightness)
@@ -84,6 +94,10 @@ export default function PageViewer({ manga, onClick, screenFit, pageView, readin
   const ulRef = useRef<HTMLUListElement>(null)
   const throttleRef = useRef(false)
   const previousIndexRef = useRef(currentIndex)
+
+  const pageViewerOffsets = isLowDataMode
+    ? [0, 1]
+    : Array.from({ length: TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT }, (_, i) => i - 1)
 
   const { prevPage, nextPage } = useImageNavigation({
     maxIndex: images.length,
@@ -397,11 +411,12 @@ export default function PageViewer({ manga, onClick, screenFit, pageView, readin
             <Loader2 className="size-8 animate-spin" />
           </li>
         ) : (
-          Array.from({ length: TOUCH_VIEWER_IMAGE_PREFETCH_AMOUNT }).map((_, offset) => (
+          pageViewerOffsets.map((offset) => (
             <PageViewerItem
+              isLowDataMode={isLowDataMode}
               key={offset}
               manga={manga}
-              offset={offset - 1}
+              offset={offset}
               pageView={pageView}
               readingDirection={readingDirection}
             />
@@ -423,7 +438,7 @@ function LastPage({ manga, isHidden = false }: LastPageProps) {
   )
 }
 
-function PageViewerItem({ offset, manga, pageView, readingDirection }: PageViewerItemProps) {
+function PageViewerItem({ isLowDataMode, offset, manga, pageView, readingDirection }: PageViewerItemProps) {
   const { images = [] } = manga
   const currentIndex = useImageIndexStore((state) => state.imageIndex)
   const imageIndex = currentIndex + offset
