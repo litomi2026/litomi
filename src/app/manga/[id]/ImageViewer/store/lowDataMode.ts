@@ -32,18 +32,17 @@ export const useLowDataModeStore = create<Store>()(
 )
 
 export function useLowDataPreferenceHydrated() {
-  const [isLowDataPreferenceHydrated, setIsLowDataPreferenceHydrated] = useState(() =>
-    useLowDataModeStore.persist.hasHydrated(),
-  )
+  const [isLowDataPreferenceHydrated, setIsLowDataPreferenceHydrated] = useState(() => {
+    const persistApi = useLowDataModeStore.persist
+    return persistApi ? persistApi.hasHydrated() : false
+  })
 
   // NOTE: sessionStorage 기반 선호 설정이 복원된 뒤에 정책을 계산해야 첫 렌더가 일관돼요
   useEffect(() => {
-    const unsubscribeHydrate = useLowDataModeStore.persist.onHydrate(() => setIsLowDataPreferenceHydrated(false))
-    const unsubscribeFinishHydration = useLowDataModeStore.persist.onFinishHydration(() =>
-      setIsLowDataPreferenceHydrated(true),
-    )
-
-    setIsLowDataPreferenceHydrated(useLowDataModeStore.persist.hasHydrated())
+    const persistApi = useLowDataModeStore.persist
+    const unsubscribeHydrate = persistApi.onHydrate(() => setIsLowDataPreferenceHydrated(false))
+    const unsubscribeFinishHydration = persistApi.onFinishHydration(() => setIsLowDataPreferenceHydrated(true))
+    setIsLowDataPreferenceHydrated(persistApi.hasHydrated())
 
     return () => {
       unsubscribeHydrate()
