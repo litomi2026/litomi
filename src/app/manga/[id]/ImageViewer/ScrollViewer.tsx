@@ -146,6 +146,7 @@ function ScrollViewerRowItem({
   readingDirection,
   style,
 }: RowComponentProps<RowProps>) {
+  const currentImageIndex = useImageIndexStore((state) => state.imageIndex)
   const navigateToImageIndex = useImageIndexStore((state) => state.navigateToImageIndex)
   const { images = [] } = manga
   const isDoublePage = pageView === 'double'
@@ -154,6 +155,8 @@ function ScrollViewerRowItem({
   const nextImageIndex = firstImageIndex + 1
   const firstImage = images[firstImageIndex]
   const nextImage = images[nextImageIndex]
+  const isCurrentRow = index === (isDoublePage ? Math.floor(currentImageIndex / 2) : currentImageIndex)
+  const fetchPriority = !isLowDataMode || isCurrentRow ? 'high' : 'low'
 
   const { ref: inViewRef, inView } = useInView({
     threshold: 0,
@@ -168,7 +171,7 @@ function ScrollViewerRowItem({
 
   const first = (
     <MangaImage
-      fetchPriority="high"
+      fetchPriority={fetchPriority}
       imageIndex={firstImageIndex}
       mangaId={manga.id}
       pictures={getResponsivePictureSources(firstImage)}
@@ -180,7 +183,7 @@ function ScrollViewerRowItem({
 
   const second = isDoublePage && nextImageIndex < images.length && (
     <MangaImage
-      fetchPriority="high"
+      fetchPriority={fetchPriority}
       imageIndex={nextImageIndex}
       mangaId={manga.id}
       pictures={getResponsivePictureSources(nextImage)}

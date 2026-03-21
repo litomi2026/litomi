@@ -458,9 +458,17 @@ function PageViewerItem({ isLowDataMode, offset, manga, pageView, readingDirecti
   const firstImage = images[imageIndex]
   const secondImage = images[nextImageIndex]
 
+  const fetchPriority = isLowDataMode
+    ? offset === 0
+      ? 'high'
+      : 'low'
+    : offset < IMAGE_FETCH_PRIORITY_THRESHOLD
+      ? 'high'
+      : 'low'
+
   const first = imageIndex >= 0 && (
     <MangaImage
-      fetchPriority={offset < IMAGE_FETCH_PRIORITY_THRESHOLD ? 'high' : 'low'}
+      fetchPriority={fetchPriority}
       imageIndex={imageIndex}
       mangaId={manga.id}
       src={firstImage?.original?.url}
@@ -473,7 +481,7 @@ function PageViewerItem({ isLowDataMode, offset, manga, pageView, readingDirecti
 
   const second = isDoublePage && nextImageIndex < images.length && (
     <MangaImage
-      fetchPriority={offset < IMAGE_FETCH_PRIORITY_THRESHOLD ? 'high' : 'low'}
+      fetchPriority={fetchPriority}
       imageIndex={nextImageIndex}
       mangaId={manga.id}
       src={secondImage?.original?.url}
