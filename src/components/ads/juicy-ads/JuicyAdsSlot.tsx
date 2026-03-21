@@ -131,6 +131,7 @@ export default function JuicyAdsSlot({
   return (
     <div
       className={twMerge('flex flex-col items-center justify-center', className)}
+      data-non-adult-juicy-ads-slot-root=""
       style={{ width: `min(${width}px, 100%)`, minHeight: height }}
       title={`zoneId: ${zoneId}, adSlotId: ${adSlotId}`}
     >
