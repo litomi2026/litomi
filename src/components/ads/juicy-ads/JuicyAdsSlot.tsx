@@ -10,7 +10,7 @@ import type { AdClickResult } from '../types'
 import AdBlockedMessage from '../AdBlockedMessage'
 import RewardedAdFooter from '../RewardedAdFooter'
 import { useRewardedIframeAdSlot } from '../useRewardedIframeAdSlot'
-import { JUICY_ADS_EVENT } from './constants'
+import { JUICY_ADS_EVENT, JUICY_ADS_SLOT_PROPS } from './constants'
 
 declare global {
   interface Window {
@@ -131,9 +131,9 @@ export default function JuicyAdsSlot({
   return (
     <div
       className={twMerge('flex flex-col items-center justify-center', className)}
-      data-non-adult-juicy-ads-slot-root=""
       style={{ width: `min(${width}px, 100%)`, minHeight: height }}
       title={`zoneId: ${zoneId}, adSlotId: ${adSlotId}`}
+      {...JUICY_ADS_SLOT_PROPS}
     >
       {isAdBlocked ? (
         <AdBlockedMessage height={height} rewardEnabled={rewardEnabled} width={width} />

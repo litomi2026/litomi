@@ -41,3 +41,9 @@ export const JUICY_ADS_EVENT = {
   LOADED: 'juicy-ads:loaded',
   ERROR: 'juicy-ads:error',
 } as const
+
+const JUICY_ADS_SLOT_ATTRIBUTE = 'data-juicy-ads-slot'
+
+export const JUICY_ADS_BANNER_ID = 'juicy-ads-banner'
+export const JUICY_ADS_SLOT_SELECTOR = `[${JUICY_ADS_SLOT_ATTRIBUTE}]`
+export const JUICY_ADS_SLOT_PROPS = { [JUICY_ADS_SLOT_ATTRIBUTE]: '' }

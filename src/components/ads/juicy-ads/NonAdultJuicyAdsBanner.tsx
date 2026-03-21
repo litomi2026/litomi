@@ -2,20 +2,23 @@
 
 import type { ReactNode } from 'react'
 
+import ms from 'ms'
 import Link from 'next/link'
-import { Fragment } from 'react'
+import { Fragment, useEffect } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import type { GETV1MeResponse } from '@/backend/api/v1/me'
 
 import LoginPageLink from '@/components/LoginPageLink'
 import useMounted from '@/hook/useMounted'
+import useNonAdultGate from '@/hook/useNonAdultGate'
+import { showRepeatedAdultVerificationToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
-import { AdultState } from '@/utils/adult-verification'
+import { requiresAds } from '@/utils/adult-verification'
 
 import type { JuicyAdsLayoutNode } from './types'
 
-import useNonAdultGate from '../../../hook/useNonAdultGate'
+import { JUICY_ADS_BANNER_ID, JUICY_ADS_SLOT_SELECTOR } from './constants'
 import JuicyAdsScript from './JuicyAdsScript'
 import JuicyAdsSlot from './JuicyAdsSlot'
 import { DEFAULT_NON_ADULT_AD_LAYOUT } from './layouts'
@@ -38,8 +41,9 @@ export default function NonAdultJuicyAdsBanner({
   const isMounted = useMounted()
   const { data: me } = useMeQuery()
   const status = useNonAdultGate()
+  const shouldShowAds = isMounted && requiresAds(status)
 
-  if (!isMounted || status === AdultState.ADULT || status === AdultState.UNRESOLVED) {
+  if (!shouldShowAds) {
     return null
   }
 
@@ -50,7 +54,7 @@ export default function NonAdultJuicyAdsBanner({
         <p className="text-xs text-zinc-500">{subtitle || <DefaultSubtitle me={me} />}</p>
       </div>
       <JuicyAdsScript />
-      <div className="flex flex-wrap justify-center gap-1.5 self-stretch">
+      <div className="flex flex-wrap justify-center gap-1.5 self-stretch" id={JUICY_ADS_BANNER_ID}>
         {renderLayoutNodes(layout ?? DEFAULT_NON_ADULT_AD_LAYOUT, onAdClick)}
       </div>
     </section>
