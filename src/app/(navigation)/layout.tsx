@@ -53,15 +53,6 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           >
             북마크
           </SelectableLink>
-          <SelectableLink className="hidden sm:block" href="/tag" icon={<Tag />} selectedIconStyle="fill-soft">
-            태그
-          </SelectableLink>
-          <div className="relative">
-            <SelectableLink href="/notification" icon={<IconBell />} selectedIconStyle="fill">
-              알림
-            </SelectableLink>
-            <NotificationCount />
-          </div>
           <SelectableLink
             className="hidden sm:block"
             href="/posts/recommend"
@@ -71,6 +62,15 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           >
             이야기
           </SelectableLink>
+          <SelectableLink className="hidden sm:block" href="/tag" icon={<Tag />} selectedIconStyle="fill-soft">
+            태그
+          </SelectableLink>
+          <div className="relative">
+            <SelectableLink href="/notification" icon={<IconBell />} selectedIconStyle="fill">
+              알림
+            </SelectableLink>
+            <NotificationCount />
+          </div>
           <SelectableLink
             className="hidden sm:block"
             href="/libo"
