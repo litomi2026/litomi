@@ -16,7 +16,7 @@ export default async function Layout({ params, children }: LayoutProps<'/posts/[
   }
 
   const { filter } = validation.data
-  const isRecommand = filter === PostFilterParams.RECOMMAND
+  const isrecommend = filter === PostFilterParams.RECOMMEND
   const isFollowing = filter === PostFilterParams.FOLLOWING
   const barClassName = 'absolute bottom-0 left-1/2 -translate-x-1/2 h-1 rounded w-14 aria-selected:bg-zinc-300'
 
@@ -27,9 +27,9 @@ export default async function Layout({ params, children }: LayoutProps<'/posts/[
           className="grid grid-cols-2 items-center text-center text-zinc-400 [&_a]:p-4 [&_a]:transition [&_a]:relative [&_a]:aria-selected:font-bold [&_a]:aria-selected:text-foreground
            sm:[&_a]:bg-background/50 sm:[&_a]:hover:bg-foreground/10"
         >
-          <Link aria-selected={isRecommand} href="recommand" prefetch={false}>
+          <Link aria-selected={isrecommend} href="recommend" prefetch={false}>
             추천
-            <div aria-selected={isRecommand} className={barClassName} />
+            <div aria-selected={isrecommend} className={barClassName} />
           </Link>
           <Link aria-selected={isFollowing} href="following" prefetch={false}>
             팔로우 중

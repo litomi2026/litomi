@@ -68,7 +68,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: PRIORITY_LEVELS.USER_PAGES,
     },
     {
-      url: `${CANONICAL_URL}/posts/recommand`,
+      url: `${CANONICAL_URL}/posts/recommend`,
       lastModified,
       changeFrequency: 'monthly',
       priority: PRIORITY_LEVELS.POSTS,

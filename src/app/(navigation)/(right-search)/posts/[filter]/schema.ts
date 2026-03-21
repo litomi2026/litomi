@@ -3,7 +3,7 @@ import { z } from 'zod'
 
 export enum PostFilterParams {
   FOLLOWING = 'following',
-  RECOMMAND = 'recommand',
+  RECOMMEND = 'recommend',
 }
 
 export const postFilterSchema = z.object({

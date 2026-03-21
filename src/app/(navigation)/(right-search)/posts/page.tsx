@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
 
 export default async function Page() {
-  redirect('/posts/recommand')
+  redirect('/posts/recommend')
 }
