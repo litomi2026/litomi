@@ -1,10 +1,11 @@
 'use client'
 
-import { ArrowLeft, ArrowRight, MessageCircle } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Loader2, MessageCircle } from 'lucide-react'
 import ms from 'ms'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { toast } from 'sonner'
 
 import BackButton from '@/components/BackButton'
 import { type Manga } from '@/types/manga'
@@ -12,6 +13,7 @@ import { type Manga } from '@/types/manga'
 import DonateButton from './DonateButton'
 import FullscreenButton from './FullscreenButton'
 import ImageSlider from './ImageSlider'
+import { getNavigatorLowDataSnapshot, type LowDataReason, type LowDataSnapshot, resolveLowDataState } from './lowData'
 import MangaDetailButton from './MangaDetailButton'
 import PageViewer from './PageViewer'
 import ReadingProgressSaver from './ReadingProgressSaver'
@@ -19,6 +21,7 @@ import ResumeReadingToast from './ResumeReadingToast'
 import ShareButton from './ShareButton'
 import SlideshowButton from './SlideshowButton'
 import { useImageIndexStore } from './store/imageIndex'
+import { LowDataPreference, useLowDataModeStore, useLowDataPreferenceHydrated } from './store/lowDataMode'
 import { orientations, useOrientationStore } from './store/orientation'
 import { usePageViewStore } from './store/pageView'
 import { useReadingDirectionStore } from './store/readingDirection'
@@ -39,7 +42,9 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
   const [showController, setShowController] = useState(false)
   const [showThumbnails, setShowThumbnails] = useState(false)
   const [showViewControl, setShowViewControl] = useState(false)
+  const [lowDataSnapshot, setLowDataSnapshot] = useState<LowDataSnapshot | null>(null)
   const viewControlRef = useRef<HTMLDivElement>(null)
+  const { preference, cyclePreference } = useLowDataModeStore()
   const { viewerMode, setViewerMode } = useViewerModeStore()
   const { screenFit, setScreenFit } = useScreenFitStore()
   const { orientation, setOrientation } = useOrientationStore()
@@ -48,15 +53,18 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
   const correctImageIndex = useImageIndexStore((state) => state.correctImageIndex)
   const setImageIndex = useImageIndexStore((state) => state.setImageIndex)
   const scrollToRow = useVirtualScrollStore((state) => state.scrollToRow)
+  const isLowDataPreferenceHydrated = useLowDataPreferenceHydrated()
   const toggleController = useCallback(() => setShowController((prev) => !prev), [])
+
   const { images = [] } = manga
   const thumbnailImages = images.map((image) => image.thumbnail)
   const imageCount = images.length
   const maxImageIndex = imageCount - 1
   const isDoublePage = pageView === 'double'
+  const isLowDataReady = isLowDataPreferenceHydrated && lowDataSnapshot !== null
   const isPageMode = viewerMode === 'page'
   const isWidthFit = screenFit === 'width'
-
+  const { enabled: isLowDataMode } = resolveLowDataState(preference, lowDataSnapshot)
   const topButtonClassName = 'rounded-full active:text-zinc-500 hover:bg-zinc-800 transition p-2'
 
   const bottomButtonClassName =
@@ -84,6 +92,23 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
       document.body.style.overscrollBehavior = ''
     }
   }, [])
+
+  // NOTE: 뷰어 진입 시 네트워크 상태를 한 번만 읽고, 자동 모드 안내도 그때만 결정해요
+  useEffect(() => {
+    if (!isLowDataPreferenceHydrated || lowDataSnapshot) {
+      return
+    }
+
+    const snapshot = getNavigatorLowDataSnapshot()
+    const nextResolvedLowData = resolveLowDataState(preference, snapshot)
+    const message = getAutoLowDataNoticeMessage(nextResolvedLowData.reason)
+
+    setLowDataSnapshot(snapshot)
+
+    if (message) {
+      toast(message)
+    }
+  }, [isLowDataPreferenceHydrated, lowDataSnapshot, preference])
 
   // NOTE: 뷰어를 벗어나면 페이지 초기화
   useEffect(() => {
@@ -143,8 +168,13 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
           </div>
         </div>
       </div>
-      {isPageMode ? (
+      {!isLowDataReady ? (
+        <div className="flex items-center justify-center h-dvh animate-fade-in">
+          <Loader2 className="size-8 animate-spin" />
+        </div>
+      ) : isPageMode ? (
         <PageViewer
+          isLowDataMode={isLowDataMode}
           manga={manga}
           onClick={toggleController}
           pageView={pageView}
@@ -154,6 +184,7 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
         />
       ) : (
         <ScrollViewer
+          isLowDataMode={isLowDataMode}
           manga={manga}
           onClick={toggleController}
           pageView={pageView}
@@ -172,6 +203,9 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
           <div className="font-semibold whitespace-nowrap flex-wrap justify-center text-sm flex gap-2 text-background">
             <button className={bottomButtonClassName} onClick={() => setViewerMode(isPageMode ? 'scroll' : 'page')}>
               {isPageMode ? '페이지' : '스크롤'}보기
+            </button>
+            <button className={bottomButtonClassName} onClick={cyclePreference}>
+              {getLowDataPreferenceLabel(preference)}
             </button>
             <button
               className={bottomButtonClassName}
@@ -243,4 +277,28 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
       </div>
     </div>
   )
+}
+
+function getAutoLowDataNoticeMessage(reason: LowDataReason): string | null {
+  if (reason === 'auto-save-data') {
+    return '데이터 절약 모드가 켜졌어요'
+  }
+
+  if (reason === 'auto-slow-network') {
+    return '느린 네트워크가 감지됐어요'
+  }
+
+  return null
+}
+
+function getLowDataPreferenceLabel(preference: LowDataPreference): string {
+  if (preference === 'off') {
+    return '저데이터 끔'
+  }
+
+  if (preference === 'on') {
+    return '저데이터 켬'
+  }
+
+  return '저데이터 자동'
 }
