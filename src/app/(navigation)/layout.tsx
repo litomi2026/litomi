@@ -34,6 +34,14 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           <SelectableLink href="/search" icon={<Search />}>
             검색
           </SelectableLink>
+          <SelectableLink
+            className="hidden sm:block"
+            href={`/ranking/${DEFAULT_METRIC}/${DEFAULT_PERIOD}`}
+            icon={<Flame />}
+            selectedIconStyle="fill"
+          >
+            인기
+          </SelectableLink>
           <SelectableLink href="/library" icon={<LibraryBig />} selectedIconStyle="fill">
             서재
           </SelectableLink>
@@ -47,21 +55,7 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           </SelectableLink>
           <SelectableLink
             className="hidden sm:block"
-            href={`/ranking/${DEFAULT_METRIC}/${DEFAULT_PERIOD}`}
-            icon={<Flame />}
-            selectedIconStyle="fill"
-          >
-            인기
-          </SelectableLink>
-          <div className="relative">
-            <SelectableLink href="/notification" icon={<IconBell />} selectedIconStyle="fill">
-              알림
-            </SelectableLink>
-            <NotificationCount />
-          </div>
-          <SelectableLink
-            className="hidden sm:block"
-            href="/posts/recommand"
+            href="/posts/recommend"
             hrefMatch="/post"
             icon={<FileText />}
             selectedIconStyle="fill-soft"
@@ -71,6 +65,12 @@ export default async function Layout({ children }: LayoutProps<'/'>) {
           <SelectableLink className="hidden sm:block" href="/tag" icon={<Tag />} selectedIconStyle="fill-soft">
             태그
           </SelectableLink>
+          <div className="relative">
+            <SelectableLink href="/notification" icon={<IconBell />} selectedIconStyle="fill">
+              알림
+            </SelectableLink>
+            <NotificationCount />
+          </div>
           <SelectableLink
             className="hidden sm:block"
             href="/libo"

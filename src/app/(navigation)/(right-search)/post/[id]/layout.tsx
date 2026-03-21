@@ -7,7 +7,7 @@ export default function Layout({ post, comment }: LayoutProps<'/post/[id]'>) {
         <div className="flex items-center gap-8">
           <BackButton
             className="hover:bg-zinc-500/50 focus-visible:outline-zinc-500 rounded-full p-2 transition"
-            fallbackUrl="/posts/recommand"
+            fallbackUrl="/posts/recommend"
           />
           <h2 className="text-xl font-bold">게시물</h2>
         </div>
