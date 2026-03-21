@@ -53,6 +53,13 @@ export function showLoginRequiredToast() {
   })
 }
 
+export function showRepeatedAdultVerificationToast({ message, username }: ToastOptions = {}) {
+  toast.warning(message ?? '성인인증을 해주세요', {
+    duration: ms('5 seconds'),
+    action: getAdultVerificationToastAction({ username }),
+  })
+}
+
 function createToastClickHandler({ id, href }: { id: string; href: string }) {
   return () => {
     toast.dismiss(id)
