@@ -85,36 +85,12 @@ export default function MobileNavigationMenu({ onClose }: Readonly<Props>) {
             title="이야기"
           />
           <MobileMenuLink
-            href="/chat"
-            icon={<Bot />}
-            onClose={onClose}
-            pathname={pathname}
-            selectedIconStyle="stroke"
-            title="AI 채팅"
-          />
-          <MobileMenuLink
-            href="/library/history"
-            icon={<History />}
-            onClose={onClose}
-            pathname={pathname}
-            selectedIconStyle="fill-soft"
-            title="감상 기록"
-          />
-          <MobileMenuLink
             href="/library/bookmark"
             icon={<Bookmark />}
             onClose={onClose}
             pathname={pathname}
             selectedIconStyle="fill"
             title="북마크"
-          />
-          <MobileMenuLink
-            href="/library/rating"
-            icon={<Star />}
-            onClose={onClose}
-            pathname={pathname}
-            selectedIconStyle="fill"
-            title="평가"
           />
           <MobileMenuLink
             href="/tag"
@@ -126,12 +102,12 @@ export default function MobileNavigationMenu({ onClose }: Readonly<Props>) {
             title="태그"
           />
           <MobileMenuLink
-            href="/fortune"
-            hrefMatch="/fortune"
-            icon={<Clover />}
+            href="/chat"
+            icon={<Bot />}
             onClose={onClose}
             pathname={pathname}
-            title="운세"
+            selectedIconStyle="stroke"
+            title="AI 채팅"
           />
           <MobileMenuLink
             href="/libo"
@@ -141,6 +117,30 @@ export default function MobileNavigationMenu({ onClose }: Readonly<Props>) {
             pathname={pathname}
             selectedIconStyle="fill-soft"
             title="리보"
+          />
+          <MobileMenuLink
+            href="/library/history"
+            icon={<History />}
+            onClose={onClose}
+            pathname={pathname}
+            selectedIconStyle="fill-soft"
+            title="감상 기록"
+          />
+          <MobileMenuLink
+            href="/library/rating"
+            icon={<Star />}
+            onClose={onClose}
+            pathname={pathname}
+            selectedIconStyle="fill"
+            title="평가"
+          />
+          <MobileMenuLink
+            href="/fortune"
+            hrefMatch="/fortune"
+            icon={<Clover />}
+            onClose={onClose}
+            pathname={pathname}
+            title="운세"
           />
           <MobileMenuLink
             href={`/@${username}/settings`}
