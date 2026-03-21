@@ -76,7 +76,7 @@ export default function MobileNavigationMenu({ onClose }: Readonly<Props>) {
         </div>
         <div className="flex flex-col gap-1 p-3 pl-[max(0.75rem,var(--safe-area-left))] pb-safe">
           <MobileMenuLink
-            href="/posts/recommand"
+            href="/posts/recommend"
             hrefMatch="/post"
             icon={<FileText />}
             onClose={onClose}

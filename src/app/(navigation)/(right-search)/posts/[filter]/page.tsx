@@ -1,19 +1,34 @@
+import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 import { PostFilter } from '@/backend/api/v1/post/constant'
+import { defaultOpenGraph, SHORT_NAME } from '@/constants'
 
 import PostList from './MasonryPostList'
 import { PostFilterParams, postFilterSchema } from './schema'
 
 export const dynamic = 'error'
 
+export const metadata: Metadata = {
+  title: '이야기',
+  openGraph: {
+    ...defaultOpenGraph,
+    title: `이야기 - ${SHORT_NAME}`,
+    url: '/posts/recommend',
+  },
+  alternates: {
+    canonical: '/posts/recommend',
+    languages: { ko: '/posts/recommend' },
+  },
+}
+
 const filterParamsToPostFilter = {
   [PostFilterParams.FOLLOWING]: PostFilter.FOLLOWING,
-  [PostFilterParams.RECOMMAND]: PostFilter.RECOMMAND,
+  [PostFilterParams.RECOMMEND]: PostFilter.RECOMMEND,
 }
 
 export async function generateStaticParams() {
-  return [{ filter: PostFilterParams.RECOMMAND }, { filter: PostFilterParams.FOLLOWING }]
+  return [{ filter: PostFilterParams.RECOMMEND }, { filter: PostFilterParams.FOLLOWING }]
 }
 
 export default async function Page({ params }: PageProps<'/posts/[filter]'>) {
@@ -35,7 +50,7 @@ const emptyStateConfig = {
     description: '다른 사용자를 팔로우하거나 모든 글을 확인해보세요',
     icon: '👥',
   },
-  [PostFilterParams.RECOMMAND]: {
+  [PostFilterParams.RECOMMEND]: {
     title: '추천 포스트가 없어요',
     description: '잠시 후 다시 확인해 주세요',
     icon: '🎯',
