@@ -18,8 +18,8 @@ export function showAdultVerificationRecommendedToast({ message, username }: Toa
   })
 }
 
-export function showAdultVerificationRequiredToast({ username }: ToastOptions = {}) {
-  toast.warning('성인인증이 필요해요', {
+export function showAdultVerificationRequiredToast({ message, username }: ToastOptions = {}) {
+  toast.warning(message ?? '성인인증이 필요해요', {
     id: ADULT_VERIFICATION_REQUIRED_TOAST_ID,
     duration: ms('5 seconds'),
     action: getAdultVerificationToastAction({ username }),
