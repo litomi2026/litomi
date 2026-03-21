@@ -204,9 +204,6 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
             <button className={bottomButtonClassName} onClick={() => setViewerMode(isPageMode ? 'scroll' : 'page')}>
               {isPageMode ? '페이지' : '스크롤'}보기
             </button>
-            <button className={bottomButtonClassName} onClick={cyclePreference}>
-              {getLowDataPreferenceLabel(preference)}
-            </button>
             <button
               className={bottomButtonClassName}
               onClick={() => {
@@ -272,6 +269,9 @@ export default function ImageViewer({ manga }: Readonly<Props>) {
             >
               미리보기
             </button>
+            <button className={bottomButtonClassName} onClick={cyclePreference}>
+              {getLowDataPreferenceLabel(preference)}
+            </button>
           </div>
         </div>
       </div>
@@ -293,11 +293,11 @@ function getAutoLowDataNoticeMessage(reason: LowDataReason): string | null {
 
 function getLowDataPreferenceLabel(preference: LowDataPreference): string {
   if (preference === 'off') {
-    return '저데이터 끔'
+    return '저데이터 꺼짐'
   }
 
   if (preference === 'on') {
-    return '저데이터 켬'
+    return '저데이터 켜짐'
   }
 
   return '저데이터 자동'
