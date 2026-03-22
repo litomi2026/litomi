@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 
 export default async function Page() {
   return (
-    <div className="p-4 sm:p-6">
+    <div className="p-2">
       <NonAdultJuicyAdsBanner className="mb-2" />
       <div className="max-w-3xl mx-auto grid gap-4 overflow-hidden rounded-lg bg-zinc-900 border border-zinc-800">
         <table className="w-full">
