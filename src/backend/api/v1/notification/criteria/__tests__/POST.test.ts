@@ -5,7 +5,7 @@ import { contextStorage } from 'hono/context-storage'
 import type { Env } from '@/backend'
 import type { ProblemDetails, ValidationProblemDetails } from '@/utils/problem-details'
 
-import { MAX_CRITERIA_PER_USER } from '@/constants/policy'
+import { MAX_CRITERIA_PER_USER, MAX_NOTIFICATION_CRITERIA_CONDITIONS } from '@/constants/policy'
 
 type ExistingCriteriaRow = {
   conditionIsExcluded: boolean
@@ -72,7 +72,7 @@ function createApp() {
 
   app.use('*', contextStorage())
   app.use('*', async (c, next) => {
-    if (c.env.userId) {
+    if (c.env?.userId) {
       c.set('userId', c.env.userId)
       c.set('isAdult', c.env.isAdult ?? true)
     }
@@ -160,13 +160,15 @@ function createTransactionMock() {
 }
 
 function requestCreateCriteria(body: unknown, env?: { isAdult?: boolean; userId?: number }) {
-  return createApp().request('/criteria', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
+  return createApp().request(
+    '/criteria',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
     },
-    body: JSON.stringify(body),
-  }, env ?? {})
+    env ?? {},
+  )
 }
 
 describe('POST /api/v1/notification/criteria', () => {
@@ -195,11 +197,11 @@ describe('POST /api/v1/notification/criteria', () => {
     )
   })
 
-  test.serial('11개 이상 조건을 보내면 400 을 반환한다', async () => {
+  test.serial('최대 조건 수를 초과하면 400 을 반환한다', async () => {
     const response = await requestCreateCriteria(
       {
         name: 'too many',
-        conditions: Array.from({ length: 11 }, (_, index) => ({
+        conditions: Array.from({ length: MAX_NOTIFICATION_CRITERIA_CONDITIONS + 1 }, (_, index) => ({
           type: 3,
           value: `tag_${index}`,
         })),
@@ -212,7 +214,7 @@ describe('POST /api/v1/notification/criteria', () => {
     const problem = (await response.json()) as ValidationProblemDetails
     expect(problem.invalidParams).toContainEqual({
       name: 'conditions',
-      reason: '최대 10개 조건까지 추가할 수 있어요',
+      reason: `최대 ${MAX_NOTIFICATION_CRITERIA_CONDITIONS}개 조건까지 추가할 수 있어요`,
     })
   })
 
