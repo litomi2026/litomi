@@ -4,13 +4,19 @@ import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { areNotificationCriteriaConditionsEqual } from '@/backend/api/v1/notification/criteria/util'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
-import { MAX_CRITERIA_NAME_LENGTH, MAX_CRITERIA_PER_USER } from '@/constants/policy'
+import {
+  MAX_CRITERIA_NAME_LENGTH,
+  MAX_CRITERIA_PER_USER,
+  MAX_NOTIFICATION_CRITERIA_CONDITIONS,
+} from '@/constants/policy'
+import { NotificationConditionType } from '@/database/enum'
 import { db } from '@/database/supabase/drizzle'
 import { notificationConditionTable, notificationCriteriaTable } from '@/database/supabase/notification'
 import { userTable } from '@/database/supabase/user'
-import { areNotificationCriteriaConditionsEqual, notificationCriteriaConditionsSchema } from '@/notification-criteria'
+import { normalizeValue } from '@/translation/common'
 
 type ExistingCriteriaRow = {
   criteriaId: number
@@ -36,6 +42,46 @@ type TransactionResult =
   | {
       kind: 'limit'
     }
+
+const MAX_VALUE_LENGTH = 100
+
+const notificationCriteriaConditionSchema = z.object({
+  type: z
+    .number()
+    .int()
+    .min(NotificationConditionType.SERIES, '올바른 조건 타입을 선택해 주세요')
+    .max(NotificationConditionType.UPLOADER, '올바른 조건 타입을 선택해 주세요')
+    .transform((value) => value as NotificationConditionType),
+  value: z
+    .string()
+    .min(1, '조건 값을 입력해 주세요')
+    .max(MAX_VALUE_LENGTH, `조건 값은 ${MAX_VALUE_LENGTH}자 이하여야 해요`)
+    .transform((value) => normalizeValue(value)),
+  isExcluded: z.boolean().optional().default(false),
+})
+
+const notificationCriteriaConditionsSchema = z
+  .array(notificationCriteriaConditionSchema)
+  .min(1, '최소 1개 조건이 필요해요')
+  .max(MAX_NOTIFICATION_CRITERIA_CONDITIONS, `최대 ${MAX_NOTIFICATION_CRITERIA_CONDITIONS}개 조건까지 추가할 수 있어요`)
+  .superRefine((conditions, ctx) => {
+    const seen = new Set<string>()
+
+    for (const [index, condition] of conditions.entries()) {
+      const key = `${condition.type}:${condition.value}`
+
+      if (seen.has(key)) {
+        ctx.addIssue({
+          code: 'custom',
+          message: '같은 조건은 한 번만 추가할 수 있어요',
+          path: [index, 'value'],
+        })
+        continue
+      }
+
+      seen.add(key)
+    }
+  })
 
 const bodySchema = z.object({
   name: z

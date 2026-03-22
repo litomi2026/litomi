@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test'
 
 import { NotificationConditionType } from '@/database/enum'
 
-import { areConditionsEqual, type ParsedCondition, parseSearchQuery } from '../queryParser'
+import { type ParsedCondition, parseSearchQuery } from '../queryParser'
 
 describe('parseSearchQuery', () => {
   it('should parse simple tag queries', () => {
@@ -76,85 +76,5 @@ describe('parseSearchQuery', () => {
     expect(result.conditions[0].type).toBe(NotificationConditionType.TAG)
     expect(result.conditions[1].type).toBe(NotificationConditionType.ARTIST)
     expect(result.suggestedName).toBe('홍길동')
-  })
-})
-
-describe('areConditionsEqual', () => {
-  it('should return true for identical conditions', () => {
-    const conditions1: ParsedCondition[] = [
-      { type: NotificationConditionType.TAG, value: 'glasses', displayValue: 'glasses' },
-      { type: NotificationConditionType.ARTIST, value: 'john_doe', displayValue: 'john_doe' },
-    ]
-
-    const conditions2 = [
-      { type: NotificationConditionType.TAG, value: 'glasses' },
-      { type: NotificationConditionType.ARTIST, value: 'john_doe' },
-    ]
-
-    expect(areConditionsEqual(conditions1, conditions2)).toBe(true)
-  })
-
-  it('should return true regardless of order', () => {
-    const conditions1: ParsedCondition[] = [
-      { type: NotificationConditionType.ARTIST, value: 'john_doe', displayValue: 'john_doe' },
-      { type: NotificationConditionType.TAG, value: 'glasses', displayValue: 'glasses' },
-    ]
-
-    const conditions2 = [
-      { type: NotificationConditionType.TAG, value: 'glasses' },
-      { type: NotificationConditionType.ARTIST, value: 'john_doe' },
-    ]
-
-    expect(areConditionsEqual(conditions1, conditions2)).toBe(true)
-  })
-
-  it('should return false for different conditions', () => {
-    const conditions1: ParsedCondition[] = [
-      { type: NotificationConditionType.TAG, value: 'glasses', displayValue: 'glasses' },
-    ]
-
-    const conditions2 = [{ type: NotificationConditionType.TAG, value: 'big_breasts' }]
-
-    expect(areConditionsEqual(conditions1, conditions2)).toBe(false)
-  })
-
-  it('should return false for different lengths', () => {
-    const conditions1: ParsedCondition[] = [
-      { type: NotificationConditionType.TAG, value: 'glasses', displayValue: 'glasses' },
-    ]
-
-    const conditions2 = [
-      { type: NotificationConditionType.TAG, value: 'glasses' },
-      { type: NotificationConditionType.ARTIST, value: 'john_doe' },
-    ]
-
-    expect(areConditionsEqual(conditions1, conditions2)).toBe(false)
-  })
-
-  it('should handle duplicate conditions correctly', () => {
-    const conditions1: ParsedCondition[] = [
-      { type: NotificationConditionType.TAG, value: 'glasses', displayValue: 'glasses' },
-      { type: NotificationConditionType.TAG, value: 'glasses', displayValue: 'glasses' },
-      { type: NotificationConditionType.ARTIST, value: 'john_doe', displayValue: 'john_doe' },
-    ]
-
-    const conditions2 = [
-      { type: NotificationConditionType.TAG, value: 'glasses' },
-      { type: NotificationConditionType.TAG, value: 'glasses' },
-      { type: NotificationConditionType.ARTIST, value: 'john_doe' },
-    ]
-
-    expect(areConditionsEqual(conditions1, conditions2)).toBe(true)
-  })
-
-  it('should return false when duplicate counts differ', () => {
-    const conditions1: ParsedCondition[] = [
-      { type: NotificationConditionType.TAG, value: 'glasses', displayValue: 'glasses' },
-      { type: NotificationConditionType.TAG, value: 'glasses', displayValue: 'glasses' },
-    ]
-
-    const conditions2 = [{ type: NotificationConditionType.TAG, value: 'glasses' }]
-
-    expect(areConditionsEqual(conditions1, conditions2)).toBe(false)
   })
 })
