@@ -42,39 +42,6 @@ const CATEGORY_TO_TYPE_MAP: Record<string, NotificationConditionType> = {
   업로더: NotificationConditionType.UPLOADER,
 }
 
-export function areConditionsEqual(
-  conditions1: ParsedCondition[],
-  conditions2: { type: NotificationConditionType; value: string }[],
-): boolean {
-  if (conditions1.length !== conditions2.length) {
-    return false
-  }
-
-  const conditionMap = new Map<string, number>()
-
-  for (const condition of conditions1) {
-    const key = `${condition.type}-${condition.value}`
-    conditionMap.set(key, (conditionMap.get(key) || 0) + 1)
-  }
-
-  for (const condition of conditions2) {
-    const key = `${condition.type}-${condition.value}`
-    const count = conditionMap.get(key)
-
-    if (!count) {
-      return false
-    }
-
-    if (count === 1) {
-      conditionMap.delete(key)
-    } else {
-      conditionMap.set(key, count - 1)
-    }
-  }
-
-  return conditionMap.size === 0
-}
-
 // TODO: 로직 검증 필요
 /**
  * Parses a search query into notification conditions
