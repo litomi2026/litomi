@@ -58,7 +58,7 @@ export default function KeywordSubscriptionButton() {
     }
 
     if (query.conditions.length === 0) {
-      toast.warning('제외 키워드 알림은 아직 지원하지 않아요')
+      toast.warning('키워드 알림으로 등록할 수 있는 검색 조건이 없어요')
       return
     }
 
@@ -78,6 +78,7 @@ export default function KeywordSubscriptionButton() {
       conditions: query.conditions.map((condition) => ({
         type: condition.type,
         value: condition.value,
+        isExcluded: condition.isExcluded,
       })),
     })
   }
