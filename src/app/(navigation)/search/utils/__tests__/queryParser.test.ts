@@ -13,6 +13,7 @@ describe('parseSearchQuery', () => {
       type: NotificationConditionType.TAG,
       value: 'big_breasts',
       displayValue: 'big_breasts',
+      isExcluded: undefined,
     })
     expect(result.suggestedName).toBe('big_breasts')
   })
@@ -25,16 +26,19 @@ describe('parseSearchQuery', () => {
       type: NotificationConditionType.ARTIST,
       value: 'john_doe',
       displayValue: 'john_doe',
+      isExcluded: undefined,
     })
     expect(result.conditions[1]).toEqual({
       type: NotificationConditionType.TAG,
       value: 'glasses',
       displayValue: 'glasses',
+      isExcluded: undefined,
     })
     expect(result.conditions[2]).toEqual({
       type: NotificationConditionType.SERIES,
       value: 'original',
       displayValue: 'original',
+      isExcluded: undefined,
     })
     expect(result.suggestedName).toBe('john_doe, original')
   })
@@ -47,11 +51,37 @@ describe('parseSearchQuery', () => {
     expect(result.suggestedName).toBe('schoolgirl')
   })
 
-  it('should ignore minus prefixed conditions', () => {
+  it('should preserve minus prefixed conditions as excluded ones', () => {
     const result = parseSearchQuery('female:glasses -female:big_breasts artist:abc')
 
-    expect(result.conditions).toHaveLength(2)
-    expect(result.conditions.find((c) => c.value === 'big_breasts')).toBeUndefined()
+    expect(result.conditions).toHaveLength(3)
+    expect(result.conditions.find((c) => c.value === 'big_breasts')).toEqual({
+      type: NotificationConditionType.TAG,
+      value: 'big_breasts',
+      displayValue: 'big_breasts',
+      isExcluded: true,
+    })
+  })
+
+  it('should keep positive keywords for suggested names when only excluded conditions are structured', () => {
+    const result = parseSearchQuery('hello -female:big_breasts')
+
+    expect(result.conditions).toEqual([
+      {
+        type: NotificationConditionType.TAG,
+        value: 'big_breasts',
+        displayValue: 'big_breasts',
+        isExcluded: true,
+      },
+    ])
+    expect(result.plainKeywords).toEqual(['hello'])
+    expect(result.suggestedName).toBe('hello')
+  })
+
+  it('should fall back to excluded conditions for suggested names', () => {
+    const result = parseSearchQuery('-female:big_breasts -artist:abc')
+
+    expect(result.suggestedName).toBe('-big_breasts, -abc')
   })
 
   it('should normalize values', () => {
