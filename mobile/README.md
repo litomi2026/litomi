@@ -14,6 +14,7 @@
 
 ```sh
 bun install
+bun run assets:generate
 bun run sync
 bun run android
 bun run ios
