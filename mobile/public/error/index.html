@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#120d12" />
+    <title>리토미 연결 오류</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap');
+
+      :root {
+        --bg: #120d12;
+        --panel: rgba(16, 13, 18, 0.84);
+        --panel-border: rgba(255, 255, 255, 0.12);
+        --text: #f8f3ec;
+        --text-muted: #cbbeb0;
+        --accent: #ff8c61;
+        --accent-strong: #ffd27d;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top, rgba(255, 140, 97, 0.3), transparent 34%),
+          linear-gradient(180deg, #24161f 0%, #120d12 58%, #09070a 100%);
+        font: 16px/1.6 'IBM Plex Sans KR', 'Segoe UI', sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        min-height: 100%;
+      }
+
+      body {
+        margin: 0;
+      }
+
+      main {
+        min-height: 100svh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+
+      .card {
+        width: min(100%, 560px);
+        padding: 32px 28px;
+        border: 1px solid var(--panel-border);
+        border-radius: 28px;
+        background:
+          linear-gradient(145deg, rgba(255, 255, 255, 0.08), transparent 55%),
+          var(--panel);
+        box-shadow: 0 28px 80px rgba(0, 0, 0, 0.4);
+      }
+
+      .eyebrow {
+        margin: 0 0 14px;
+        color: var(--accent-strong);
+        letter-spacing: 0.16em;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0;
+        font: 700 clamp(2.2rem, 8vw, 3.6rem) / 0.98 'Fraunces', 'Times New Roman', serif;
+        letter-spacing: -0.05em;
+      }
+
+      p {
+        margin: 0;
+      }
+
+      .copy {
+        margin-top: 18px;
+        color: var(--text-muted);
+      }
+
+      .status {
+        margin-top: 18px;
+        padding: 14px 16px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--text);
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 24px;
+      }
+
+      button {
+        appearance: none;
+        border: 0;
+        border-radius: 999px;
+        min-height: 50px;
+        padding: 0 20px;
+        font: inherit;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .primary {
+        background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+        color: #171010;
+      }
+
+      .secondary {
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--text);
+      }
+
+      .hint {
+        margin-top: 20px;
+        color: var(--text-muted);
+        font-size: 0.94rem;
+      }
+
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        color: var(--accent-strong);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="card" aria-live="polite">
+        <p class="eyebrow">Litomi Remote Shell</p>
+        <h1>litomi.in에 연결하지 못했어요.</h1>
+        <p class="copy">네트워크 상태를 확인한 뒤 다시 시도해 주세요. 앱은 원격 사이트를 직접 불러오며, 이 화면은 로컬 안전망으로만 사용됩니다.</p>
+        <p class="status" id="status">연결 상태를 확인하는 중입니다.</p>
+        <div class="actions">
+          <button class="primary" id="retry" type="button">다시 시도</button>
+          <button class="secondary" id="reload" type="button">화면 새로고침</button>
+        </div>
+        <p class="hint">대상 주소: <code>https://litomi.in/</code></p>
+      </section>
+    </main>
+
+    <script>
+      const REMOTE_URL = 'https://litomi.in/'
+      const status = document.getElementById('status')
+
+      function updateStatus() {
+        if (!status) return
+
+        status.textContent = navigator.onLine
+          ? '인터넷 연결은 살아 있어 보여요. 사이트 응답이 느리거나 일시적으로 실패했을 수 있습니다.'
+          : '현재 기기가 오프라인 상태로 보입니다. 네트워크를 연결한 뒤 다시 시도해 주세요.'
+      }
+
+      document.getElementById('retry')?.addEventListener('click', () => {
+        window.location.replace(REMOTE_URL)
+      })
+
+      document.getElementById('reload')?.addEventListener('click', () => {
+        window.location.reload()
+      })
+
+      window.addEventListener('online', updateStatus)
+      window.addEventListener('offline', updateStatus)
+      updateStatus()
+    </script>
+  </body>
+</html>
