@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "doctor": "bunx cap doctor",
+    "assets:generate": "node scripts/generate-native-assets.mjs",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "sync": "bun run build && bunx cap sync",
@@ -22,6 +23,7 @@
     "@capacitor/android": "8.2.0",
     "@capacitor/cli": "8.2.0",
     "@capacitor/ios": "8.2.0",
+    "sharp": "^0.34.5",
     "typescript": "~5.9.3",
     "vite": "^8.0.1"
   },
