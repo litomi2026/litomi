@@ -1,15 +1,17 @@
 'use client'
 
+import { useMutation } from '@tanstack/react-query'
 import { BellRing, Loader2 } from 'lucide-react'
 import { ReadonlyURLSearchParams, useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 import IconBell from '@/components/icons/IconBell'
-import useServerAction from '@/hook/useServerAction'
+import { MAX_NOTIFICATION_CRITERIA_CONDITIONS } from '@/constants/policy'
 import useMeQuery from '@/query/useMeQuery'
+import { ProblemDetailsError } from '@/utils/react-query-error'
 
-import { subscribeToKeyword } from './action-keyword'
+import { createNotificationCriteria } from './api'
 import UpdateFromSearchParams from './UpdateFromSearchParams'
 import { ParsedSearchQuery, parseSearchQuery } from './utils/queryParser'
 
@@ -21,10 +23,10 @@ export default function KeywordSubscriptionButton() {
   const buttonTitle = isSubscribed ? '키워드 알림 설정을 확인해요' : '키워드 알림을 설정해요'
   const buttonLabel = isSubscribed ? '설정 보기' : '키워드 알림'
 
-  const [_, dispatchAction, isPending] = useServerAction({
-    action: subscribeToKeyword,
+  const createCriteriaMutation = useMutation({
+    mutationFn: createNotificationCriteria,
     onError: (response) => {
-      if (response.status === 409) {
+      if (response instanceof ProblemDetailsError && response.status === 409) {
         setIsSubscribed(true)
       }
     },
@@ -32,8 +34,9 @@ export default function KeywordSubscriptionButton() {
       toast.success(`키워드 알림이 설정됐어요: ${query?.suggestedName ?? ''}`)
       setIsSubscribed(true)
     },
-    shouldSetResponse: false,
   })
+
+  const isPending = createCriteriaMutation.isPending
 
   const updateQuery = useCallback((searchParams: ReadonlyURLSearchParams) => {
     setQuery(parseSearchQuery(searchParams.get('query') ?? ''))
@@ -59,8 +62,8 @@ export default function KeywordSubscriptionButton() {
       return
     }
 
-    if (query.plainKeywords.length > 20) {
-      toast.warning('최대 20개 키워드까지 설정할 수 있어요')
+    if (query.conditions.length > MAX_NOTIFICATION_CRITERIA_CONDITIONS) {
+      toast.warning(`최대 ${MAX_NOTIFICATION_CRITERIA_CONDITIONS}개 조건까지 설정할 수 있어요`)
       return
     }
 
@@ -69,7 +72,14 @@ export default function KeywordSubscriptionButton() {
       return
     }
 
-    dispatchAction(query.conditions, query.suggestedName)
+    createCriteriaMutation.mutate({
+      name: query.suggestedName,
+      isActive: true,
+      conditions: query.conditions.map((condition) => ({
+        type: condition.type,
+        value: condition.value,
+      })),
+    })
   }
 
   // NOTE: 검색어가 변경되면 구독 상태를 초기화함
