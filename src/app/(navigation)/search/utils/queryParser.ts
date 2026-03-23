@@ -6,6 +6,7 @@ export type ParsedCondition = {
   type: NotificationConditionType
   value: string
   displayValue: string
+  isExcluded?: boolean
 }
 
 export type ParsedSearchQuery = {
@@ -45,7 +46,7 @@ const CATEGORY_TO_TYPE_MAP: Record<string, NotificationConditionType> = {
 // TODO: 로직 검증 필요
 /**
  * Parses a search query into notification conditions
- * Extracts structured queries like "female:tag artist:name" into conditions
+ * Extracts structured queries like "female:tag artist:name -male:tag" into conditions
  * and plain keywords for potential tag matching
  *
  * Optimized single-pass algorithm with O(n) time complexity
@@ -95,7 +96,7 @@ export function parseSearchQuery(query: string): ParsedSearchQuery {
           i++
         }
 
-        if (i > valueStart && !isExclusion) {
+        if (i > valueStart) {
           const category = currentWord.toLowerCase()
           const conditionType = CATEGORY_TO_TYPE_MAP[category]
 
@@ -107,9 +108,12 @@ export function parseSearchQuery(query: string): ParsedSearchQuery {
               type: conditionType,
               value: normalizedValue,
               displayValue: value,
+              ...(isExclusion && { isExcluded: true }),
             })
 
-            processedParts.push(value)
+            if (!isExclusion) {
+              processedParts.push(value)
+            }
           } else {
             // Not a recognized category, treat as plain keyword
             const fullKeyword = currentWord + ':' + query.slice(valueStart, i)
@@ -156,9 +160,11 @@ const isWordChar = (char: string): boolean => {
  * Prioritizes specific tags/artists over generic keywords
  */
 function generateSuggestedName(parts: string[], conditions: ParsedCondition[]): string {
-  // If we have specific conditions, prioritize those
-  if (conditions.length > 0) {
-    const priorityConditions = conditions
+  const includedConditions = conditions.filter((condition) => !condition.isExcluded)
+
+  // If we have specific included conditions, prioritize those
+  if (includedConditions.length > 0) {
+    const priorityConditions = includedConditions
       .filter(
         (c) =>
           c.type === NotificationConditionType.ARTIST ||
@@ -173,7 +179,7 @@ function generateSuggestedName(parts: string[], conditions: ParsedCondition[]): 
     }
 
     // Fall back to first few conditions
-    return conditions
+    return includedConditions
       .slice(0, 2)
       .map((c) => c.displayValue)
       .join(', ')
@@ -182,6 +188,14 @@ function generateSuggestedName(parts: string[], conditions: ParsedCondition[]): 
   // Use plain keywords if no conditions
   if (parts.length > 0) {
     return parts.slice(0, 2).join(' ')
+  }
+
+  // Fall back to excluded conditions when the query only contains exclusions
+  if (conditions.length > 0) {
+    return conditions
+      .slice(0, 2)
+      .map((condition) => `-${condition.displayValue}`)
+      .join(', ')
   }
 
   return '검색 알림'
