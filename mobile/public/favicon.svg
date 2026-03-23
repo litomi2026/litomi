@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="litomi-gradient" x1="24" x2="104" y1="16" y2="112" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ff8c61" />
+      <stop offset="1" stop-color="#ffd27d" />
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="32" fill="#120d12" />
+  <path fill="url(#litomi-gradient)" d="M40 28h14v58h34v14H40z" />
+  <circle cx="94" cy="38" r="8" fill="#fff3d8" />
+</svg>

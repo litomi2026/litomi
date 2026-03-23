@@ -1,0 +1,31 @@
+{
+  "name": "mobile",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "doctor": "bunx cap doctor",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "sync": "bun run build && bunx cap sync",
+    "sync:android": "bun run build && bunx cap sync android",
+    "sync:ios": "bun run build && bunx cap sync ios",
+    "open:android": "bunx cap open android",
+    "open:ios": "bunx cap open ios",
+    "android": "bun run sync:android && bun run open:android",
+    "ios": "bun run sync:ios && bun run open:ios",
+    "android:debug": "bun run sync:android && cd android && ./gradlew :app:assembleDebug && cd .. && mkdir -p artifacts/android && cp android/app/build/outputs/apk/debug/app-debug.apk artifacts/android/litomi-debug.apk && shasum -a 256 artifacts/android/litomi-debug.apk > artifacts/android/litomi-debug.apk.sha256",
+    "android:release": "bun run sync:android && cd android && ./gradlew :app:assembleRelease && cd .. && mkdir -p artifacts/android && cp android/app/build/outputs/apk/release/app-release.apk artifacts/android/litomi.apk && shasum -a 256 artifacts/android/litomi.apk > artifacts/android/litomi.apk.sha256"
+  },
+  "devDependencies": {
+    "@capacitor/android": "8.2.0",
+    "@capacitor/cli": "8.2.0",
+    "@capacitor/ios": "8.2.0",
+    "typescript": "~5.9.3",
+    "vite": "^8.0.1"
+  },
+  "dependencies": {
+    "@capacitor/core": "8.2.0"
+  }
+}
