@@ -23,8 +23,7 @@ test-results
 coverage
 
 # Mobile build artifacts
-android
-ios
+mobile
 
 # Local env
 .env*
