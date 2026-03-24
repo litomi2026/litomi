@@ -3,8 +3,8 @@ defaults
 # Desktop browsers
 Chrome >= 109
 Edge >= 135
-Firefox >= 137
-Safari >= 16.1
+Firefox >= 140
+Safari >= 16.6
 
 # Mobile browsers
 ChromeAndroid >= 131
