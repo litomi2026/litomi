@@ -1,9 +1,16 @@
 resource "cloudflare_zero_trust_access_application" "argocd" {
   account_id = var.account_id
 
-  name   = "Argo CD"
-  domain = local.selfhost_argocd_hostname
-  type   = "self_hosted"
+  name = "Litomi Internal Apps"
+  type = "self_hosted"
+
+  destinations = [
+    { uri = local.selfhost_argocd_hostname },
+    { uri = local.selfhost_grafana_hostname },
+    { uri = local.selfhost_stg_hostname },
+    { uri = local.selfhost_stg_api_hostname },
+    { uri = local.selfhost_stg_img_hostname }
+  ]
 
   session_duration          = "160h"
   auto_redirect_to_identity = true
