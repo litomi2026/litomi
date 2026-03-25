@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: mobile-ios-altstore-release-${{ github.ref_name }}
@@ -23,6 +24,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -55,7 +58,7 @@ jobs:
         run: bun run ios:altstore
 
       - name: Upload Actions artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: litomi-ios-altstore-v${{ steps.version.outputs.version_name }}
           path: mobile/artifacts/ios/
@@ -79,19 +82,26 @@ jobs:
             mobile/artifacts/ios/litomi-ios-altstore-build-info.txt
             mobile/artifacts/ios/litomi-ios-altstore-build-info.txt.sha256
 
-      - name: Update stable AltStore source in repository
+      - name: Create or update AltStore source PR
+        id: create_altstore_source_pr
+        uses: peter-evans/create-pull-request@v8
+        with:
+          add-paths: mobile/altstore/source.json
+          branch: codex/mobile-altstore-source
+          delete-branch: true
+          commit-message: 'chore(mobile): propose AltStore source for v${{ steps.version.outputs.version_name }}'
+          title: 'chore(mobile): update AltStore source for v${{ steps.version.outputs.version_name }}'
+          body: |
+            This PR updates the stable AltStore source to the latest iOS release metadata built from `main`.
+
+            - Version: `${{ steps.version.outputs.version_name }}`
+            - Release tag: `mobile-ios-altstore-v${{ steps.version.outputs.version_name }}`
+            - Source commit: `${{ github.sha }}`
+            - Workflow run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          base: main
+
+      - name: Report AltStore source PR
+        if: ${{ steps.create_altstore_source_pr.outputs.pull-request-url }}
         shell: bash
         run: |
-          set -euo pipefail
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add mobile/altstore/source.json
-
-          if git diff --cached --quiet; then
-            echo "No AltStore source update to commit."
-            exit 0
-          fi
-
-          git commit -m "chore(mobile): update AltStore source for v${{ steps.version.outputs.version_name }}"
-          git push
+          echo "Created or updated AltStore source PR: ${{ steps.create_altstore_source_pr.outputs.pull-request-url }}"
