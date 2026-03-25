@@ -112,3 +112,21 @@ jobs:
           files: |
             mobile/artifacts/android/litomi.apk
             mobile/artifacts/android/litomi.apk.sha256
+
+      - name: Publish stable Android download release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Mobile Android Latest
+          tag_name: mobile-android-latest
+          target_commitish: ${{ github.sha }}
+          body: |
+            Stable download link for the latest Litomi Android APK.
+
+            - Current version: `${{ steps.version.outputs.version_name }}`
+            - Source commit: `${{ github.sha }}`
+          generate_release_notes: false
+          make_latest: false
+          overwrite_files: true
+          files: |
+            mobile/artifacts/android/litomi.apk
+            mobile/artifacts/android/litomi.apk.sha256
