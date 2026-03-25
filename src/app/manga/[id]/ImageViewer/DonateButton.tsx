@@ -2,7 +2,7 @@
 
 import { Heart } from 'lucide-react'
 import ms from 'ms'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { ComponentProps, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -38,6 +38,7 @@ export default function DonateButton({ manga, ...props }: Props) {
   const [selectedKeys, setSelectedKeys] = useState<string[]>([])
   const [localMessage, setLocalMessage] = useState<string | null>(null)
 
+  const router = useRouter()
   const { data: me } = useMeQuery()
   const { data: points, error: pointsError, isLoading: isPointsLoading } = usePointsQuery({ enabled: open })
   const donateMutation = usePointsDonateMutation()
@@ -113,20 +114,17 @@ export default function DonateButton({ manga, ...props }: Props) {
         const donationLabel = me?.name ? '내 기부 보기' : '기부 랭킹 보기'
         const toastId = `donation-success-${manga.id}-${Date.now()}`
 
-        toast.success(
-          <div className="flex items-center justify-between gap-2 w-full">
-            <span>기부가 완료됐어요</span>
-            <Link
-              className="text-xs font-semibold hover:underline"
-              href={donationHref}
-              onClick={() => toast.dismiss(toastId)}
-              prefetch={false}
-            >
-              {donationLabel}
-            </Link>
-          </div>,
-          { duration: ms('5 seconds'), id: toastId },
-        )
+        toast.success('기부가 완료됐어요', {
+          action: {
+            label: donationLabel,
+            onClick: () => {
+              toast.dismiss(toastId)
+              router.push(donationHref)
+            },
+          },
+          duration: ms('5 seconds'),
+          id: toastId,
+        })
       },
       onError: (err) => {
         setLocalMessage(getErrorMessage(err) ?? '기부에 실패했어요')
