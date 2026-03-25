@@ -4,14 +4,11 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
     "doctor": "bunx cap doctor",
     "assets:generate": "node scripts/generate-native-assets.mjs",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "sync": "bun run build && bunx cap sync",
-    "sync:android": "bun run build && bunx cap sync android",
-    "sync:ios": "bun run build && bunx cap sync ios",
+    "sync": "bunx cap sync",
+    "sync:android": "bunx cap sync android",
+    "sync:ios": "bunx cap sync ios",
     "open:android": "bunx cap open android",
     "open:ios": "bunx cap open ios",
     "android": "bun run sync:android && bun run open:android",
@@ -23,9 +20,7 @@
     "@capacitor/android": "8.2.0",
     "@capacitor/cli": "8.2.0",
     "@capacitor/ios": "8.2.0",
-    "sharp": "^0.34.5",
-    "typescript": "~5.9.3",
-    "vite": "^8.0.1"
+    "sharp": "^0.34.5"
   },
   "dependencies": {
     "@capacitor/core": "8.2.0"
