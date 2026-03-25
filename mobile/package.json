@@ -14,7 +14,8 @@
     "android": "bun run sync:android && bun run open:android",
     "ios": "bun run sync:ios && bun run open:ios",
     "android:debug": "bun run sync:android && cd android && ./gradlew :app:assembleDebug && cd .. && mkdir -p artifacts/android && cp android/app/build/outputs/apk/debug/app-debug.apk artifacts/android/litomi-debug.apk && shasum -a 256 artifacts/android/litomi-debug.apk > artifacts/android/litomi-debug.apk.sha256",
-    "android:release": "bun run sync:android && cd android && ./gradlew :app:assembleRelease && cd .. && mkdir -p artifacts/android && cp android/app/build/outputs/apk/release/app-release.apk artifacts/android/litomi.apk && shasum -a 256 artifacts/android/litomi.apk > artifacts/android/litomi.apk.sha256"
+    "android:release": "bun run sync:android && cd android && ./gradlew :app:assembleRelease && cd .. && mkdir -p artifacts/android && cp android/app/build/outputs/apk/release/app-release.apk artifacts/android/litomi.apk && shasum -a 256 artifacts/android/litomi.apk > artifacts/android/litomi.apk.sha256",
+    "ios:altstore": "node scripts/build-ios-altstore.mjs"
   },
   "devDependencies": {
     "@capacitor/android": "8.2.0",

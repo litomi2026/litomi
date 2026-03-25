@@ -1,0 +1,39 @@
+{
+  "name": "Litomi AltStore Source",
+  "subtitle": "Litomi iOS builds for AltStore Classic",
+  "description": "Self-hosted AltStore Classic source for Litomi iOS builds. Installation and refresh require AltStore Classic, AltServer, and the user's own Apple account.",
+  "iconURL": "https://litomi.in/web-app-manifest-512x512.png",
+  "website": "https://litomi.in",
+  "tintColor": "#101418",
+  "featuredApps": [
+    "in.litomi.app"
+  ],
+  "apps": [
+    {
+      "name": "리토미",
+      "bundleIdentifier": "in.litomi.app",
+      "developerName": "Litomi",
+      "subtitle": "Litomi for AltStore Classic",
+      "localizedDescription": "Capacitor-based Litomi iOS build distributed for AltStore Classic sideloading. Install with AltStore Classic and refresh through AltServer.",
+      "iconURL": "https://litomi.in/web-app-manifest-512x512.png",
+      "tintColor": "#101418",
+      "category": "utilities",
+      "versions": [
+        {
+          "version": "1.0.0",
+          "buildVersion": "1000000",
+          "date": "2026-03-25",
+          "localizedDescription": "Latest AltStore Classic build.",
+          "downloadURL": "https://github.com/gwak2837/litomi/releases/download/mobile-ios-altstore-v1.0.0/litomi-ios-altstore.ipa",
+          "size": 2461604,
+          "minOSVersion": "15.0"
+        }
+      ],
+      "appPermissions": {
+        "entitlements": [],
+        "privacy": {}
+      }
+    }
+  ],
+  "news": []
+}
