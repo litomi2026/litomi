@@ -1,128 +1,230 @@
 import type { Metadata } from 'next'
+import type { ReactNode } from 'react'
+
+import { Apple, ArrowUpRight, Bot } from 'lucide-react'
 
 import InstallPrompt from '@/components/InstallPrompt'
 import { env } from '@/env/client'
 
 export const metadata: Metadata = {
-  title: '앱 설치하기',
-  description: 'Android는 APK나 PWA로, iOS는 PWA(또는 TestFlight)로 설치해요.',
+  title: '앱으로 사용하기',
+  description: '리토미 앱 설치 방법을 환경별로 안내해요',
 }
 
-const ANDROID_APK_URL = 'https://github.com/gwak2837/litomi/releases/latest/download/litomi.apk'
-const ANDROID_APK_SHA256_URL = `${ANDROID_APK_URL}.sha256`
+const ANDROID_APK_URL = 'https://github.com/gwak2837/litomi/releases/download/mobile-android-latest/litomi.apk'
+const IOS_ALTSTORE_SOURCE_URL = 'https://raw.githubusercontent.com/gwak2837/litomi/main/mobile/altstore/source.json'
 const { NEXT_PUBLIC_IOS_TESTFLIGHT_URL } = env
+
+type ActionLinkProps = {
+  children: ReactNode
+  href: string
+  variant: 'primary' | 'secondary'
+}
+
+type GuideStepProps = {
+  children: ReactNode
+  step: string
+  title: string
+}
+
+type OptionCardProps = {
+  badge?: string
+  children: ReactNode
+  description?: string
+  title: string
+}
 
 export default function AppInstallPage() {
   return (
-    <div className="p-safe">
-      <div className="mx-auto max-w-prose p-4">
-        <header className="grid gap-2 pt-4 sm:pt-10">
-          <h1 className="text-xl font-bold tracking-tight">앱 설치하기</h1>
-          <p className="text-sm text-zinc-400">
-            Android는 APK나 PWA로 설치할 수 있고, iOS는 보통 PWA(홈 화면에 추가)로 설치하는 게 가장 간편해요.
-          </p>
-        </header>
-
-        <main className="mt-6 grid gap-3">
-          <section className="rounded-2xl border-2 border-zinc-800 bg-zinc-950/60 p-4">
-            <h2 className="text-base font-semibold">Android (APK)</h2>
-            <p className="mt-1 text-sm text-zinc-400">스토어 없이 APK로 설치할 수 있어요.</p>
-
-            <div className="mt-3 flex flex-wrap gap-2">
-              <a
-                className="inline-flex items-center justify-center rounded-xl bg-zinc-100 px-4 py-2 text-sm font-semibold text-zinc-950 transition hover:brightness-95 active:brightness-90"
-                href={ANDROID_APK_URL}
-                rel="noreferrer"
-                target="_blank"
-              >
-                APK 다운로드
-              </a>
-              <a
-                className="inline-flex items-center justify-center rounded-xl border-2 border-zinc-800 bg-transparent px-4 py-2 text-sm font-semibold text-zinc-100 transition hover:bg-zinc-900 active:bg-zinc-950"
-                href={ANDROID_APK_SHA256_URL}
-                rel="noreferrer"
-                target="_blank"
-              >
-                SHA-256
-              </a>
-            </div>
-
-            <details className="group mt-4 rounded-xl border border-zinc-800 bg-zinc-950 p-3">
-              <summary className="cursor-pointer list-none text-sm font-semibold [&::-webkit-details-marker]:hidden">
-                APK 설치가 좋은 점/아쉬운 점이 궁금해요
-              </summary>
-              <div className="mt-3 grid gap-3 text-sm text-zinc-300">
-                <div>
-                  <p className="font-semibold text-zinc-200">좋은 점</p>
-                  <ul className="mt-1 list-disc space-y-1 pl-5">
-                    <li>브라우저 제약이 적어서 기능 확장이 쉬워요.</li>
-                    <li>홈 화면/전체 화면 등 “진짜 앱” 느낌이 더 강해요.</li>
-                  </ul>
-                </div>
-                <div>
-                  <p className="font-semibold text-zinc-200">아쉬운 점</p>
-                  <ul className="mt-1 list-disc space-y-1 pl-5">
-                    <li>처음에 “알 수 없는 앱 설치” 권한을 허용해야 할 수 있어요.</li>
-                    <li>네이티브 변경이 있으면 업데이트를 위해 다시 설치해야 해요.</li>
-                  </ul>
-                </div>
-              </div>
-            </details>
-          </section>
-
-          <section className="rounded-2xl border-2 border-zinc-800 bg-zinc-950/60 p-4">
-            <h2 className="text-base font-semibold">PWA (홈 화면에 추가)</h2>
-            <p className="mt-1 text-sm text-zinc-400">
-              설치가 빠르고, 웹 업데이트가 자동으로 반영돼요. 대신 기기/브라우저에 따라 일부 기능이 제한될 수 있어요.
-            </p>
-            <div className="mt-3">
-              <InstallPrompt />
-            </div>
-
-            <details className="group mt-4 rounded-xl border border-zinc-800 bg-zinc-950 p-3">
-              <summary className="cursor-pointer list-none text-sm font-semibold [&::-webkit-details-marker]:hidden">
-                PWA 설치가 좋은 점/아쉬운 점이 궁금해요
-              </summary>
-              <div className="mt-3 grid gap-3 text-sm text-zinc-300">
-                <div>
-                  <p className="font-semibold text-zinc-200">좋은 점</p>
-                  <ul className="mt-1 list-disc space-y-1 pl-5">
-                    <li>설치가 간단하고, 웹 배포만으로 업데이트가 반영돼요.</li>
-                    <li>iOS에서도 가장 현실적인 “설치” 방식이에요.</li>
-                  </ul>
-                </div>
-                <div>
-                  <p className="font-semibold text-zinc-200">아쉬운 점</p>
-                  <ul className="mt-1 list-disc space-y-1 pl-5">
-                    <li>기기/브라우저에 따라 동작이 조금씩 다를 수 있어요.</li>
-                    <li>“진짜 앱”보다 기능/권한이 제한될 수 있어요.</li>
-                  </ul>
-                </div>
-              </div>
-            </details>
-          </section>
-
-          <section className="rounded-2xl border-2 border-zinc-800 bg-zinc-950/60 p-4" id="android-help">
-            <h2 className="text-base font-semibold">Android 설치 방법</h2>
-            <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-zinc-300">
-              <li>APK를 다운로드해요.</li>
-              <li>설치가 막히면 “알 수 없는 앱 설치” 권한을 한 번만 허용해요.</li>
-              <li>설치를 진행해요.</li>
-            </ol>
-          </section>
-
-          {NEXT_PUBLIC_IOS_TESTFLIGHT_URL && (
-            <section className="rounded-2xl border-2 border-zinc-800 bg-zinc-950/60 p-4" id="ios-help">
-              <h2 className="text-base font-semibold">iOS 설치 방법 (TestFlight 베타)</h2>
-              <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-zinc-300">
-                <li>App Store에서 TestFlight를 설치해요.</li>
-                <li>TestFlight 초대 링크를 열어요.</li>
-                <li>TestFlight에서 설치 버튼을 눌러요.</li>
-              </ol>
-            </section>
-          )}
-        </main>
+    <div className="p-safe mx-auto max-w-3xl px-4 py-6 sm:px-8 sm:py-12">
+      <div className="grid gap-3 sm:gap-4">
+        <h1 className="text-2xl font-semibold tracking-tight text-zinc-100 sm:text-3xl">앱 설치 안내</h1>
+        <p className="max-w-2xl text-sm leading-7 text-zinc-400 sm:text-base">
+          사용 중인 기기에 맞는 설치 방법을 선택해 주세요.
+        </p>
       </div>
+
+      <div className="mt-8 grid gap-10 sm:mt-12 sm:gap-12">
+        <section className="grid gap-4 sm:gap-5">
+          <h2 className="flex items-center gap-2 text-xl font-semibold tracking-tight text-zinc-100">
+            <Apple aria-hidden="true" className="size-5" /> iOS (iPhone / iPad)
+          </h2>
+          <div className="grid gap-4 sm:gap-5">
+            <OptionCard badge="추천" title="홈 화면에 추가 (PWA)">
+              <ol className="grid gap-4 p-1 text-sm text-zinc-300">
+                <li className="flex items-start gap-3.5">
+                  <span
+                    aria-hidden="true"
+                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-zinc-800 text-xs font-medium"
+                  >
+                    1
+                  </span>
+                  <span className="pt-0.5 leading-6">Safari 브라우저 하단의 공유 버튼 클릭</span>
+                </li>
+                <li className="flex items-start gap-3.5">
+                  <span
+                    aria-hidden="true"
+                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-zinc-800 text-xs font-medium"
+                  >
+                    2
+                  </span>
+                  <span className="pt-0.5 leading-6">메뉴에서 '홈 화면에 추가' 선택</span>
+                </li>
+                <li className="flex items-start gap-3.5">
+                  <span
+                    aria-hidden="true"
+                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-zinc-800 text-xs font-medium"
+                  >
+                    3
+                  </span>
+                  <span className="pt-0.5 leading-6">홈 화면에 생성된 아이콘으로 실행</span>
+                </li>
+              </ol>
+            </OptionCard>
+
+            {NEXT_PUBLIC_IOS_TESTFLIGHT_URL && (
+              <OptionCard description="TestFlight 앱을 통해 베타 버전을 설치합니다." title="TestFlight">
+                <div className="mt-5">
+                  <ActionLink href={NEXT_PUBLIC_IOS_TESTFLIGHT_URL} variant="primary">
+                    TestFlight 열기
+                  </ActionLink>
+                </div>
+              </OptionCard>
+            )}
+
+            <OptionCard title="AltStore Classic">
+              <div className="mt-2 grid w-full gap-4 overflow-hidden">
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <ActionLink href={IOS_ALTSTORE_SOURCE_URL} variant="primary">
+                    AltStore Source JSON 열기
+                  </ActionLink>
+                </div>
+
+                <ol className="grid gap-4 p-1">
+                  <GuideStep step="1" title="AltStore를 설치해요">
+                    Mac 또는 Windows에서 <span className="font-medium text-zinc-200">AltServer</span>로 iPhone/iPad에{' '}
+                    <span className="font-medium text-zinc-200">AltStore</span>를 설치하고, 설정에서{' '}
+                    <span className="font-medium text-zinc-200">신뢰</span>와{' '}
+                    <span className="font-medium text-zinc-200">개발자 모드</span>까지 마쳐 주세요.
+                  </GuideStep>
+                  <GuideStep step="2" title="AltStore에 리토미 소스를 추가해요">
+                    AltStore의 <span className="font-medium text-zinc-200">Sources</span> 탭에서{' '}
+                    <span className="font-medium text-zinc-200">Add Source</span>를 누른 뒤, 위의{' '}
+                    <span className="font-medium text-zinc-200">Source JSON</span> 주소를 붙여 넣어요.
+                  </GuideStep>
+                  <GuideStep step="3" title="소스 안에서 리토미 앱을 설치해요">
+                    추가된 리토미 소스를 열고 앱 카드의 설치 버튼을 누르면 기기에 내려받을 수 있어요.
+                  </GuideStep>
+                  <GuideStep step="4" title="만료 전에 새로 고침해요">
+                    <span className="font-medium text-zinc-200">My Apps</span> 탭의{' '}
+                    <span className="font-medium text-zinc-200">Refresh All</span>로 갱신할 수 있어요. 이때{' '}
+                    <span className="font-medium text-zinc-200">AltServer</span>가 같은 Wi-Fi에 있거나 USB로 연결되어
+                    있어야 해요.
+                  </GuideStep>
+                </ol>
+
+                <div className="rounded-[1.1rem] border border-zinc-800 bg-zinc-900/50 p-4">
+                  <p className="text-sm font-semibold text-zinc-100">자주 묻는 질문</p>
+                  <ul className="mt-3 grid gap-2 text-sm leading-6 text-zinc-400">
+                    <li className="flex items-start gap-3">
+                      <span aria-hidden="true" className="mt-2 size-1.5 shrink-0 rounded-full bg-zinc-600" />
+                      <span>무료 Apple 계정이면 앱이 7일마다 만료되기에 주기적으로 갱신해줘야 해요.</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span aria-hidden="true" className="mt-2 size-1.5 shrink-0 rounded-full bg-zinc-600" />
+                      <span>무료 계정 기준으로 AltStore에서 동시에 활성화할 수 있는 앱은 최대 3개예요.</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span aria-hidden="true" className="mt-2 size-1.5 shrink-0 rounded-full bg-zinc-600" />
+                      <span>앱 실행이 막히면 Apple ID 신뢰와 개발자 모드가 켜져 있는지 먼저 확인해 주세요.</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </OptionCard>
+          </div>
+        </section>
+
+        <section className="grid gap-4 sm:gap-5">
+          <h2 className="flex items-center gap-2 text-xl font-semibold tracking-tight text-zinc-100">
+            <Bot aria-hidden="true" className="size-5" /> Android
+          </h2>
+          <div className="grid gap-4 sm:gap-5">
+            <OptionCard badge="추천" title="웹앱 설치 (PWA)">
+              <InstallPrompt />
+            </OptionCard>
+            <OptionCard title="APK 앱 설치">
+              <div className="mt-2 grid gap-3">
+                <ActionLink href={ANDROID_APK_URL} variant="primary">
+                  최신 APK 파일 다운로드
+                </ActionLink>
+                <div className="rounded-[1.1rem] border border-zinc-800 bg-zinc-900/50 p-4 text-sm leading-6 text-zinc-400">
+                  설치가 막히면 기기 설정에서 <span className="font-medium text-zinc-200">알 수 없는 앱 설치</span>를 한
+                  번 허용해 주세요.
+                </div>
+              </div>
+            </OptionCard>
+          </div>
+        </section>
+      </div>
+    </div>
+  )
+}
+
+function ActionLink({ children, href, variant }: Readonly<ActionLinkProps>) {
+  const className =
+    variant === 'primary'
+      ? 'bg-foreground text-background hover:opacity-90'
+      : 'border border-zinc-700 bg-transparent text-foreground hover:bg-zinc-900/80'
+
+  return (
+    <a
+      className={`flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background ${className}`}
+      href={href}
+      rel="noopener noreferrer"
+      target="_blank"
+    >
+      <span>{children}</span>
+      <span className="sr-only">(새 탭에서 열림)</span>
+      <ArrowUpRight aria-hidden="true" className="size-4 shrink-0" />
+    </a>
+  )
+}
+
+function GuideStep({ children, step, title }: Readonly<GuideStepProps>) {
+  return (
+    <li className="flex items-start gap-3">
+      <span
+        aria-hidden="true"
+        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-zinc-800 text-xs font-semibold text-zinc-200"
+      >
+        {step}
+      </span>
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-semibold text-zinc-100">{title}</p>
+        <p className="mt-2 text-sm leading-6 text-zinc-400">{children}</p>
+      </div>
+    </li>
+  )
+}
+
+function OptionCard({ badge, children, description, title }: Readonly<OptionCardProps>) {
+  return (
+    <div className="flex w-full flex-col overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-950/80 p-5">
+      <div className="flex w-full items-start justify-between gap-4 sm:gap-5">
+        <div className="grid min-w-0 flex-1 gap-2.5">
+          <h3 className="flex flex-wrap items-center gap-2 text-[1.15rem] font-semibold tracking-tight text-zinc-100">
+            {badge && (
+              <span className="w-fit rounded-full border border-zinc-700 bg-zinc-900/50 px-3 py-1 text-[11px] font-medium text-zinc-300">
+                {badge}
+              </span>
+            )}
+            {title}
+          </h3>
+        </div>
+      </div>
+      {description && <p className="mt-3 text-sm leading-7 text-zinc-400 sm:mt-4">{description}</p>}
+      <div className="mt-auto pt-3 sm:pt-4">{children}</div>
     </div>
   )
 }
