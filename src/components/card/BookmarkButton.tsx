@@ -58,22 +58,17 @@ export default function BookmarkButton({ manga, className }: Props) {
       const toastId = `bookmark-toggle-${mangaId}`
 
       if (isBookmarked) {
-        toast.success(
-          <div className="flex items-center justify-between gap-2 w-full">
-            <span>북마크에 추가했어요</span>
-            <button
-              className="hover:underline text-xs font-bold"
-              onClick={() => {
-                toast.dismiss(toastId)
-                openLibraryModal(mangaId)
-              }}
-              type="button"
-            >
-              [서재에도 추가하기]
-            </button>
-          </div>,
-          { duration: ms('5 seconds'), id: toastId },
-        )
+        toast.success('북마크에 추가했어요', {
+          action: {
+            label: '서재에도 추가',
+            onClick: () => {
+              toast.dismiss(toastId)
+              openLibraryModal(mangaId)
+            },
+          },
+          duration: ms('5 seconds'),
+          id: toastId,
+        })
       } else {
         toast.success('북마크에서 삭제했어요', { id: toastId })
       }
