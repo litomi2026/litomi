@@ -3,6 +3,11 @@ import { toast } from 'sonner'
 
 import { useImageIndexStore } from './store/imageIndex'
 
+const PREV_PAGE_CODES = new Set(['ArrowLeft', 'AudioVolumeUp', 'PageUp'])
+const NEXT_PAGE_CODES = new Set(['ArrowRight', 'AudioVolumeDown', 'PageDown'])
+const PREV_PAGE_KEYS = new Set(['AudioVolumeUp', 'VolumeUp'])
+const NEXT_PAGE_KEYS = new Set(['AudioVolumeDown', 'VolumeDown'])
+
 type Params = {
   maxIndex: number
   offset: number
@@ -59,14 +64,14 @@ export default function useImageNavigation({ maxIndex, offset }: Params) {
 
   // NOTE: 키보드 이벤트 핸들러
   useEffect(() => {
-    function handleKeyDown({ code, metaKey }: KeyboardEvent) {
-      if (code === 'ArrowLeft' && !metaKey) {
+    function handleKeyDown({ code, key, metaKey }: KeyboardEvent) {
+      if (metaKey && (code === 'ArrowLeft' || code === 'ArrowRight')) {
+        return
+      }
+
+      if (PREV_PAGE_CODES.has(code) || PREV_PAGE_KEYS.has(key)) {
         prevPage()
-      } else if (code === 'ArrowRight' && !metaKey) {
-        nextPage()
-      } else if (code === 'PageUp') {
-        prevPage()
-      } else if (code === 'PageDown') {
+      } else if (NEXT_PAGE_CODES.has(code) || NEXT_PAGE_KEYS.has(key)) {
         nextPage()
       } else if (code === 'Home') {
         firstPage()

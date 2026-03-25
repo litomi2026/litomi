@@ -64,7 +64,7 @@ jobs:
           ls -lh "${BACKUP_DIR}/"
 
       - name: Upload to GitHub Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ env.BACKUP_PREFIX }}-backup-${{ steps.date.outputs.date }}
           path: ${{ env.BACKUP_DIR }}/
