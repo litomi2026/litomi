@@ -2,6 +2,7 @@
   "appId": "in.litomi.app",
   "appName": "리토미",
   "webDir": "web",
+  "appendUserAgent": "LitomiCapacitorApp",
   "server": {
     "url": "https://litomi.in",
     "cleartext": false

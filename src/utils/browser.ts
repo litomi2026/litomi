@@ -1,5 +1,11 @@
 // Client side ONLY
 
+export const CAPACITOR_APP_USER_AGENT_MARKER = 'LitomiCapacitorApp'
+
+export function checkCapacitorApp(): boolean {
+  return navigator.userAgent.includes(CAPACITOR_APP_USER_AGENT_MARKER)
+}
+
 export function checkIOSDevice(): boolean {
   return /iPad|iPhone|iPod/.test(navigator.userAgent) && !('MSStream' in window)
 }
