@@ -44,44 +44,37 @@ export default function AppInstallPage() {
         </p>
       </div>
 
-      <div className="mt-8 grid gap-10 sm:mt-12 sm:gap-12">
+      <div className="mt-4 grid gap-10 sm:mt-8 sm:gap-12">
+        <section>
+          <OptionCard badge="추천" title="웹앱 설치 (PWA)">
+            <InstallPrompt />
+          </OptionCard>
+        </section>
+
+        <section className="grid gap-4 sm:gap-5">
+          <h2 className="flex items-center gap-2 text-xl font-semibold tracking-tight text-zinc-100">
+            <Bot aria-hidden="true" className="size-5" /> Android
+          </h2>
+          <div className="grid gap-4 sm:gap-5">
+            <OptionCard title="APK 앱 설치">
+              <div className="mt-2 grid gap-4">
+                <ActionLink href={ANDROID_APK_URL} variant="primary">
+                  최신 APK 파일 다운로드
+                </ActionLink>
+                <div className="rounded-[1.1rem] border border-zinc-800 bg-zinc-900/50 p-4 text-sm leading-6 text-zinc-400">
+                  설치가 막히면 기기 설정에서 <span className="font-medium text-zinc-200">알 수 없는 앱 설치</span>를 한
+                  번 허용해 주세요.
+                </div>
+              </div>
+            </OptionCard>
+          </div>
+        </section>
+
         <section className="grid gap-4 sm:gap-5">
           <h2 className="flex items-center gap-2 text-xl font-semibold tracking-tight text-zinc-100">
             <Apple aria-hidden="true" className="size-5" /> iOS (iPhone / iPad)
           </h2>
           <div className="grid gap-4 sm:gap-5">
-            <OptionCard badge="추천" title="홈 화면에 추가 (PWA)">
-              <ol className="grid gap-4 p-1 text-sm text-zinc-300">
-                <li className="flex items-start gap-3.5">
-                  <span
-                    aria-hidden="true"
-                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-zinc-800 text-xs font-medium"
-                  >
-                    1
-                  </span>
-                  <span className="pt-0.5 leading-6">Safari 브라우저 하단의 공유 버튼 클릭</span>
-                </li>
-                <li className="flex items-start gap-3.5">
-                  <span
-                    aria-hidden="true"
-                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-zinc-800 text-xs font-medium"
-                  >
-                    2
-                  </span>
-                  <span className="pt-0.5 leading-6">메뉴에서 '홈 화면에 추가' 선택</span>
-                </li>
-                <li className="flex items-start gap-3.5">
-                  <span
-                    aria-hidden="true"
-                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-zinc-800 text-xs font-medium"
-                  >
-                    3
-                  </span>
-                  <span className="pt-0.5 leading-6">홈 화면에 생성된 아이콘으로 실행</span>
-                </li>
-              </ol>
-            </OptionCard>
-
             {NEXT_PUBLIC_IOS_TESTFLIGHT_URL && (
               <OptionCard description="TestFlight 앱을 통해 베타 버전을 설치합니다." title="TestFlight">
                 <div className="mt-5">
@@ -92,19 +85,21 @@ export default function AppInstallPage() {
               </OptionCard>
             )}
 
-            <OptionCard title="AltStore Classic">
+            <OptionCard title="IPA 앱 설치 (AltStore)">
               <div className="mt-2 grid w-full gap-4 overflow-hidden">
                 <div className="flex flex-col gap-2 sm:flex-row">
                   <ActionLink href={IOS_ALTSTORE_SOURCE_URL} variant="primary">
                     AltStore Source JSON 열기
                   </ActionLink>
                 </div>
-
                 <ol className="grid gap-4 p-1">
                   <GuideStep step="1" title="AltStore를 설치해요">
-                    Mac 또는 Windows에서 <span className="font-medium text-zinc-200">AltServer</span>로 iPhone/iPad에{' '}
-                    <span className="font-medium text-zinc-200">AltStore</span>를 설치하고, 설정에서{' '}
-                    <span className="font-medium text-zinc-200">신뢰</span>와{' '}
+                    Mac 또는 Windows에서{' '}
+                    <a className="font-medium text-zinc-200 underline" href="https://altstore.io" target="_blank">
+                      AltServer
+                    </a>
+                    를 설치하고, iPhone/iPad에 <span className="font-medium text-zinc-200">AltStore</span>를 설치한 뒤,
+                    설정에서 <span className="font-medium text-zinc-200">Apple ID 신뢰</span>와{' '}
                     <span className="font-medium text-zinc-200">개발자 모드</span>까지 마쳐 주세요.
                   </GuideStep>
                   <GuideStep step="2" title="AltStore에 리토미 소스를 추가해요">
@@ -122,7 +117,6 @@ export default function AppInstallPage() {
                     있어야 해요.
                   </GuideStep>
                 </ol>
-
                 <div className="rounded-[1.1rem] border border-zinc-800 bg-zinc-900/50 p-4">
                   <p className="text-sm font-semibold text-zinc-100">자주 묻는 질문</p>
                   <ul className="mt-3 grid gap-2 text-sm leading-6 text-zinc-400">
@@ -134,33 +128,7 @@ export default function AppInstallPage() {
                       <span aria-hidden="true" className="mt-2 size-1.5 shrink-0 rounded-full bg-zinc-600" />
                       <span>무료 계정 기준으로 AltStore에서 동시에 활성화할 수 있는 앱은 최대 3개예요.</span>
                     </li>
-                    <li className="flex items-start gap-3">
-                      <span aria-hidden="true" className="mt-2 size-1.5 shrink-0 rounded-full bg-zinc-600" />
-                      <span>앱 실행이 막히면 Apple ID 신뢰와 개발자 모드가 켜져 있는지 먼저 확인해 주세요.</span>
-                    </li>
                   </ul>
-                </div>
-              </div>
-            </OptionCard>
-          </div>
-        </section>
-
-        <section className="grid gap-4 sm:gap-5">
-          <h2 className="flex items-center gap-2 text-xl font-semibold tracking-tight text-zinc-100">
-            <Bot aria-hidden="true" className="size-5" /> Android
-          </h2>
-          <div className="grid gap-4 sm:gap-5">
-            <OptionCard badge="추천" title="웹앱 설치 (PWA)">
-              <InstallPrompt />
-            </OptionCard>
-            <OptionCard title="APK 앱 설치">
-              <div className="mt-2 grid gap-3">
-                <ActionLink href={ANDROID_APK_URL} variant="primary">
-                  최신 APK 파일 다운로드
-                </ActionLink>
-                <div className="rounded-[1.1rem] border border-zinc-800 bg-zinc-900/50 p-4 text-sm leading-6 text-zinc-400">
-                  설치가 막히면 기기 설정에서 <span className="font-medium text-zinc-200">알 수 없는 앱 설치</span>를 한
-                  번 허용해 주세요.
                 </div>
               </div>
             </OptionCard>
