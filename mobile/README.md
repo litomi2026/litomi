@@ -1,16 +1,39 @@
 # Litomi Mobile
 
-`mobile/`은 `https://litomi.in`을 직접 로드하는 얇은 Capacitor remote-shell 앱입니다.
+`mobile/`은 `https://litomi.in`을 직접 여는 최소 Capacitor 앱입니다.
 
-핵심 동작은 아래와 같습니다.
+이 디렉터리는 로컬 웹앱을 따로 구현하는 공간이 아니라, 모바일 셸과 네이티브 빌드 설정을 관리하는 용도입니다.
 
-- 앱 시작: native splash 뒤에 `https://litomi.in`을 바로 로드합니다.
-- 인앱 유지 범위: `https://litomi.in` same-origin 페이지만 WebView 안에 남깁니다.
-- 외부 링크: 시스템 브라우저로 엽니다.
-- 실패 fallback: 네트워크, TLS, HTTP 오류 또는 초기 로드 타임아웃 시 로컬 `error/index.html`을 표시합니다.
-- Android back: WebView history가 있으면 뒤로 가고, 없으면 앱을 종료합니다.
+## 현재 구조
 
-자주 쓰는 명령은 아래와 같습니다.
+- 앱 시작 시 Capacitor가 `https://litomi.in`을 직접 로드합니다.
+- 로컬 `web/` 폴더는 `webDir` 요구사항을 맞추기 위한 최소 placeholder만 가집니다.
+- Android/iOS 플랫폼 디렉터리 안에는 Capacitor가 생성한 파일이 많고, 우리가 직접 관리하는 파일은 일부 설정 파일뿐입니다.
+
+## 소스 오브 트루스
+
+주요 관리 파일은 아래 정도만 보면 됩니다.
+
+- `capacitor.config.ts`
+- `package.json`
+- `web/index.html`
+- `android/app/build.gradle`
+- `android/build.gradle`
+- `android/gradle/wrapper/gradle-wrapper.properties`
+
+## 생성물
+
+아래 경로는 다시 만들 수 있는 생성물입니다.
+
+- `node_modules/`
+- `android/app/src/main/assets/`
+- `ios/App/App/public/`
+- `ios/App/App/capacitor.config.json`
+- `ios/App/App/config.xml`
+- `android/.gradle/`
+- `android/app/build/`
+
+## 자주 쓰는 명령
 
 ```sh
 bun install
@@ -21,3 +44,8 @@ bun run ios
 bun run android:debug
 bun run android:release
 ```
+
+## 메모
+
+- 아이콘과 스플래시는 루트 `public/web-app-manifest-512x512.png`를 기준으로 생성합니다.
+- Android 빌드는 현재 저장소에 맞춘 Gradle/AGP 설정을 사용합니다.
