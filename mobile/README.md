@@ -14,7 +14,7 @@
 
 주요 관리 파일은 아래 정도만 보면 됩니다.
 
-- `capacitor.config.ts`
+- `capacitor.config.json`
 - `package.json`
 - `web/index.html`
 - `android/app/build.gradle`
