@@ -2,6 +2,7 @@ export enum CookieKey {
   ACCESS_TOKEN = 'at',
   REFRESH_TOKEN = 'rt',
   AUTH_HINT = 'ah',
+  PASSKEY_AUTHENTICATION_ATTEMPT = 'pkai',
   TRUSTED_BROWSER_TOKEN = 'tbt',
   LOCALE = 'locale',
   BBATON_ATTEMPT_ID = 'bbai',

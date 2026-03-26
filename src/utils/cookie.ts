@@ -76,6 +76,20 @@ export function getAuthHintCookieConfig({ maxAgeSeconds }: { maxAgeSeconds: numb
   } as const
 }
 
+export function getPasskeyAuthenticationAttemptCookieConfig(attemptId: string) {
+  return {
+    key: CookieKey.PASSKEY_AUTHENTICATION_ATTEMPT,
+    value: attemptId,
+    options: {
+      domain: COOKIE_DOMAIN,
+      httpOnly: true,
+      maxAge: sec('3 minutes'),
+      sameSite: 'strict',
+      secure: true,
+    },
+  } as const
+}
+
 export async function getRefreshTokenCookieConfig({ userId, adult }: AuthTokenClaims) {
   const cookieValue = await signJWT({ sub: String(userId), adult }, JWTType.REFRESH)
 
