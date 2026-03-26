@@ -154,7 +154,13 @@ export const RateLimitPresets = {
   // Strict: for authentication, sensitive operations
   strict: (): RateLimitConfig => ({
     windowMs: ms('15 minutes'),
-    maxAttempts: 5,
+    maxAttempts: 10,
+  }),
+
+  // Balanced: moderate protection without overly aggressive throttling
+  balanced: (): RateLimitConfig => ({
+    windowMs: ms('5 minutes'),
+    maxAttempts: 10,
   }),
 
   // Standard: for general API endpoints
