@@ -37,7 +37,8 @@
     "db:push:supabase:prod": "DB_ENV=production NODE_OPTIONS='--conditions=react-server' bun run db:push:supabase",
     "test:watch": "bun test --watch",
     "test:coverage": "bun test --coverage",
-    "notify": "bun --conditions=react-server cloud-run/crawl-and-notify/src/index.ts"
+    "notify": "bun --conditions=react-server cloud-run/crawl-and-notify/src/index.ts",
+    "grant:libo": "bun --conditions=react-server tools/grantLibo.ts"
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^2.36.7",
