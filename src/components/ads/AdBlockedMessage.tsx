@@ -12,7 +12,7 @@ export default function AdBlockedMessage({ height, width, rewardEnabled }: Props
       className="flex flex-col items-center justify-center gap-3 p-4 rounded-xl border text-center bg-white/4 border-white/7"
       style={{ width: `min(${width}px, 100%)`, minHeight: height }}
     >
-      <ShieldOff className="size-8 text-zinc-500" />
+      {height > 150 && <ShieldOff className="size-8 text-zinc-500" />}
       <div className="space-y-1">
         <p className="text-sm font-medium text-zinc-300">광고가 차단되고 있어요</p>
         <p className="text-xs text-zinc-500">

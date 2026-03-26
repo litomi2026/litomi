@@ -8,9 +8,9 @@ import { sec } from './format/date'
 /**
  * Get and delete a challenge atomically
  */
-export async function getAndDeleteChallenge(userId: number, type: ChallengeType): Promise<string | null> {
+export async function getAndDeleteChallenge(identifier: number | string, type: ChallengeType): Promise<string | null> {
   try {
-    const key = getChallengeKey(userId, type)
+    const key = getChallengeKey(identifier, type)
     return await redisClient.getdel<string>(key)
   } catch (error) {
     console.error('getAndDeleteChallenge:', error)
@@ -21,9 +21,13 @@ export async function getAndDeleteChallenge(userId: number, type: ChallengeType)
 /**
  * Store a challenge in Redis with 3 minutes TTL
  */
-export async function storeChallenge(userId: number, type: ChallengeType, challenge: string): Promise<void> {
+export async function storeChallenge(
+  identifier: number | string,
+  type: ChallengeType,
+  challenge: string
+): Promise<void> {
   try {
-    const key = getChallengeKey(userId, type)
+    const key = getChallengeKey(identifier, type)
     await redisClient.set(key, challenge, { ex: sec('3 minutes') })
   } catch (error) {
     console.error('storeChallenge:', error)
@@ -34,6 +38,6 @@ export async function storeChallenge(userId: number, type: ChallengeType, challe
 /**
  * Generate a Redis key for a challenge
  */
-function getChallengeKey(userId: number, type: ChallengeType): string {
-  return `challenge:${type}:${userId}`
+function getChallengeKey(identifier: number | string, type: ChallengeType): string {
+  return `challenge:${type}:${identifier}`
 }

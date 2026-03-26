@@ -12,6 +12,7 @@ type SignupRoutesModule = typeof import('../signup')
 let signupRoutes: SignupRoutesModule['default']
 let setCookies: string[] = []
 let signupAttemptsByIdentifier = new Map<string, number>()
+const SIGNUP_RATE_LIMIT_MAX_ATTEMPTS = 10
 
 mock.module('@/database/supabase/drizzle', () => ({
   db: {
@@ -42,19 +43,23 @@ mock.module('@/utils/nickname', () => ({
 
 mock.module('@/utils/rate-limit', () => ({
   RateLimiter: class MockRateLimiter {
+    constructor(private readonly config: { maxAttempts: number }) {}
+
     check = (identifier?: string) => {
       const key = identifier ?? ''
       const count = (signupAttemptsByIdentifier.get(key) ?? 0) + 1
 
       signupAttemptsByIdentifier.set(key, count)
 
-      return Promise.resolve(count > 5 ? { allowed: false, retryAfter: 120 } : { allowed: true, retryAfter: undefined })
+      return Promise.resolve(
+        count > this.config.maxAttempts ? { allowed: false, retryAfter: 120 } : { allowed: true, retryAfter: undefined },
+      )
     }
   },
   RateLimitPresets: {
     strict: () => ({
       windowMs: 15 * 60 * 1000,
-      maxAttempts: 5,
+      maxAttempts: SIGNUP_RATE_LIMIT_MAX_ATTEMPTS,
     }),
   },
 }))
@@ -224,7 +229,7 @@ describe('POST /api/v1/auth/signup', () => {
     const ip = '203.0.113.25'
     let response!: Response
 
-    for (let attempt = 0; attempt < 6; attempt += 1) {
+    for (let attempt = 0; attempt <= SIGNUP_RATE_LIMIT_MAX_ATTEMPTS; attempt += 1) {
       response = await requestSignup(
         {
           loginId: `testuser${attempt}`,

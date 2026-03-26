@@ -76,6 +76,14 @@ export default function MobileNavigationMenu({ onClose }: Readonly<Props>) {
         </div>
         <div className="flex flex-col gap-1 p-3 pl-[max(0.75rem,var(--safe-area-left))] pb-safe">
           <MobileMenuLink
+            href="/library/bookmark"
+            icon={<Bookmark />}
+            onClose={onClose}
+            pathname={pathname}
+            selectedIconStyle="fill"
+            title="북마크"
+          />
+          <MobileMenuLink
             href="/posts/recommend"
             hrefMatch="/post"
             icon={<FileText />}
@@ -83,14 +91,6 @@ export default function MobileNavigationMenu({ onClose }: Readonly<Props>) {
             pathname={pathname}
             selectedIconStyle="fill-soft"
             title="이야기"
-          />
-          <MobileMenuLink
-            href="/library/bookmark"
-            icon={<Bookmark />}
-            onClose={onClose}
-            pathname={pathname}
-            selectedIconStyle="fill"
-            title="북마크"
           />
           <MobileMenuLink
             href="/tag"
