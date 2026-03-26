@@ -39,6 +39,7 @@ export const TRANSACTION_TYPE = {
   ROULETTE_PAYOUT: 10,
   DONATION: 11,
   PINNED_LIBRARY_EXPANSION: 12,
+  ADMIN_GRANT: 13,
 } as const
 
 export const EXPANSION_TYPE = {
