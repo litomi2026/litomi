@@ -190,7 +190,7 @@ export default function LoginForm() {
                   <input
                     aria-invalid={!!loginIdError}
                     autoCapitalize="off"
-                    autoComplete="username"
+                    autoComplete="username webauthn"
                     autoFocus
                     className="w-full rounded-xl bg-white/4 border border-white/7 pl-3 pr-10 py-2.5 text-zinc-50 placeholder:text-zinc-500 transition
                       focus:outline-none focus:ring-2 focus:ring-white/12 focus:border-transparent
