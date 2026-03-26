@@ -50,7 +50,6 @@ export default function LoginForm() {
   const passwordInputRef = useRef<HTMLInputElement | null>(null)
   const turnstileRef = useRef<TurnstileInstance>(null)
   const queryClient = useQueryClient()
-  const [currentLoginId, setCurrentLoginId] = useState('')
   const [turnstileToken, setTurnstileToken] = useState('')
   const [twoFactorData, setTwoFactorData] = useState<TwoFactorData | null>(null)
   const [pkceChallenge, setPkceChallenge] = useState<PKCEChallenge | null>(null)
@@ -62,7 +61,6 @@ export default function LoginForm() {
     }
 
     loginIdInput.value = ''
-    setCurrentLoginId('')
     loginIdInput.focus()
   }
 
@@ -155,7 +153,6 @@ export default function LoginForm() {
     dispatchAction(formData)
   }
 
-  const passkeyLoginId = currentLoginId || (typeof defaultLoginId === 'string' ? defaultLoginId : '')
   const twoFactorPayload = twoFactorData && pkceChallenge ? { twoFactorData, pkceChallenge } : null
 
   return (
@@ -180,7 +177,7 @@ export default function LoginForm() {
         <>
           <div className="text-center">
             <h2 className="text-2xl font-semibold tracking-tight text-zinc-50">로그인</h2>
-            <p className="mt-2 text-sm text-zinc-400">아이디와 비밀번호로 계속해요</p>
+            <p className="mt-2 text-sm text-zinc-400">아이디/비밀번호 또는 패스키로 계속해요</p>
           </div>
 
           <form action={dispatchLoginAction} className="grid gap-5" ref={formRef}>
@@ -205,7 +202,6 @@ export default function LoginForm() {
                     maxLength={32}
                     minLength={2}
                     name="login-id"
-                    onChange={(e) => setCurrentLoginId(e.target.value)}
                     pattern={LOGIN_ID_PATTERN}
                     placeholder="아이디"
                     required
@@ -314,12 +310,7 @@ export default function LoginForm() {
               </div>
             </div>
 
-            <PasskeyLoginButton
-              disabled={isPending}
-              loginId={passkeyLoginId}
-              onSuccess={handleLoginSuccess}
-              turnstileToken={turnstileToken}
-            />
+            <PasskeyLoginButton disabled={isPending} onSuccess={handleLoginSuccess} turnstileToken={turnstileToken} />
 
             <TurnstileWidget
               onTokenChange={setTurnstileToken}

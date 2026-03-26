@@ -12,7 +12,6 @@ import useServerAction from '@/hook/useServerAction'
 
 type Props = {
   disabled?: boolean
-  loginId: string
   turnstileToken: string
   onSuccess?: (user: User) => void
 }
@@ -25,7 +24,7 @@ type User = {
   lastLogoutAt: Date | null
 }
 
-export default function PasskeyLoginButton({ loginId, disabled, onSuccess, turnstileToken }: Props) {
+export default function PasskeyLoginButton({ disabled, onSuccess, turnstileToken }: Props) {
   const [_, dispatchAction, isPending] = useServerAction({
     action: verifyAuthentication,
     onSuccess,
@@ -33,13 +32,8 @@ export default function PasskeyLoginButton({ loginId, disabled, onSuccess, turns
   })
 
   async function handlePasskeyLogin() {
-    if (!loginId) {
-      toast.warning('로그인 아이디를 입력해 주세요')
-      return
-    }
-
     try {
-      const optionsResult = await getAuthenticationOptions(loginId)
+      const optionsResult = await getAuthenticationOptions()
 
       if (!optionsResult.ok) {
         if (optionsResult.status >= 500) {
