@@ -1,7 +1,8 @@
 'use client'
 
-import { startAuthentication } from '@simplewebauthn/browser'
+import { browserSupportsWebAuthnAutofill, startAuthentication } from '@simplewebauthn/browser'
 import { Fingerprint, Loader2 } from 'lucide-react'
+import { useEffect, useEffectEvent, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import {
@@ -9,6 +10,7 @@ import {
   verifyAuthentication,
 } from '@/app/(navigation)/(right-search)/[name]/settings/passkey/action-auth'
 import useServerAction from '@/hook/useServerAction'
+import { signalUnknownPasskeyCredential } from '@/utils/passkey'
 
 type Props = {
   disabled?: boolean
@@ -25,28 +27,50 @@ type User = {
 }
 
 export default function PasskeyLoginButton({ disabled, onSuccess, turnstileToken }: Props) {
+  const [supportsAutofill, setSupportsAutofill] = useState<boolean | null>(null)
+  const initializedAutofillTokenRef = useRef<string | null>(null)
+  const lastCredentialIdRef = useRef<string | null>(null)
+
   const [_, dispatchAction, isPending] = useServerAction({
     action: verifyAuthentication,
+    onError: (response) => {
+      if (response.status === 404 && lastCredentialIdRef.current) {
+        signalUnknownPasskeyCredential(lastCredentialIdRef.current)
+      }
+    },
     onSuccess,
     shouldSetResponse: false,
   })
 
-  async function handlePasskeyLogin() {
+  async function runPasskeyLogin(mode: 'autofill' | 'button') {
+    const isAutofill = mode === 'autofill'
+
     try {
       const optionsResult = await getAuthenticationOptions()
 
       if (!optionsResult.ok) {
-        if (optionsResult.status >= 500) {
-          toast.error('패스키 인증 중 오류가 발생했어요')
-        } else {
-          toast.warning(optionsResult.error)
+        if (!isAutofill) {
+          if (optionsResult.status >= 500) {
+            toast.error('패스키 인증 중 오류가 발생했어요')
+          } else {
+            toast.warning(optionsResult.error)
+          }
         }
         return
       }
 
-      const authResponse = await startAuthentication({ optionsJSON: optionsResult.data })
+      const authResponse = await startAuthentication({
+        optionsJSON: optionsResult.data,
+        ...(isAutofill && { useBrowserAutofill: true }),
+      })
+
+      lastCredentialIdRef.current = authResponse.id
       dispatchAction(authResponse, turnstileToken)
     } catch (error) {
+      if (isAutofill) {
+        return
+      }
+
       if (error instanceof Error) {
         if (error.name === 'NotAllowedError') {
           toast.warning('패스키 인증이 취소됐어요')
@@ -59,6 +83,45 @@ export default function PasskeyLoginButton({ disabled, onSuccess, turnstileToken
     }
   }
 
+  const beginAutofillPasskeyLogin = useEffectEvent(async () => {
+    await runPasskeyLogin('autofill')
+  })
+
+  // NOTE: 브라우저 패스키 자동완성 지원 여부를 확인해요
+  useEffect(() => {
+    let active = true
+
+    browserSupportsWebAuthnAutofill()
+      .then((supported) => {
+        if (active) {
+          setSupportsAutofill(supported)
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setSupportsAutofill(false)
+        }
+      })
+
+    return () => {
+      active = false
+    }
+  }, [])
+
+  // NOTE: 패스키 자동완성 지원 여부와 턴스타일 토큰이 준비되면 자동으로 패스키 로그인을 시도해요
+  useEffect(() => {
+    if (supportsAutofill !== true || !turnstileToken || disabled) {
+      return
+    }
+
+    if (initializedAutofillTokenRef.current === turnstileToken) {
+      return
+    }
+
+    initializedAutofillTokenRef.current = turnstileToken
+    beginAutofillPasskeyLogin()
+  }, [disabled, supportsAutofill, turnstileToken])
+
   return (
     <button
       aria-disabled={disabled || isPending || !turnstileToken}
@@ -66,12 +129,12 @@ export default function PasskeyLoginButton({ disabled, onSuccess, turnstileToken
         hover:bg-white/6 hover:text-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/15
         disabled:opacity-50 disabled:pointer-events-none"
       disabled={disabled || isPending || !turnstileToken}
-      onClick={handlePasskeyLogin}
-      title="패스키로 로그인"
+      onClick={() => runPasskeyLogin('button')}
+      title={supportsAutofill ? '패스키 선택 다시 열기' : '패스키로 로그인'}
       type="button"
     >
       {isPending ? <Loader2 className="size-5 shrink-0 animate-spin" /> : <Fingerprint className="size-5 shrink-0" />}
-      <span>패스키로 로그인</span>
+      <span>{supportsAutofill ? '패스키 선택 다시 열기' : '패스키로 로그인'}</span>
     </button>
   )
 }

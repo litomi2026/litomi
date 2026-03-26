@@ -150,7 +150,7 @@ export default async function SettingsPage({ params }: PageProps<'/[name]/settin
       >
         <ErrorBoundary fallback={InternalServerError}>
           <Suspense fallback={<LoadingFallback />}>
-            <PasskeySettings userId={userId} />
+            <PasskeySettings displayName={me.nickname || me.name} loginId={me.loginId} userId={userId} />
           </Suspense>
         </ErrorBoundary>
       </CollapsibleSection>

@@ -14,7 +14,7 @@ import { bbatonVerificationTable } from '@/database/supabase/bbaton'
 import { db } from '@/database/supabase/drizzle'
 import { credentialTable } from '@/database/supabase/passkey'
 import { userTable } from '@/database/supabase/user'
-import { badRequest, forbidden, internalServerError, ok, tooManyRequests, unauthorized } from '@/utils/action-response'
+import { badRequest, internalServerError, notFound, ok, tooManyRequests } from '@/utils/action-response'
 import {
   getAccessTokenCookieConfig,
   getAuthHintCookieConfig,
@@ -123,7 +123,7 @@ export async function verifyAuthentication(body: unknown, turnstileToken: string
     })
 
     if (!authenticationAttemptId) {
-      return unauthorized('패스키를 검증할 수 없어요')
+      return badRequest('패스키를 검증할 수 없어요')
     }
 
     const result = await db.transaction(async (tx) => {
@@ -138,13 +138,13 @@ export async function verifyAuthentication(body: unknown, turnstileToken: string
         .where(eq(credentialTable.credentialId, validatedData.id))
 
       if (!credential) {
-        return unauthorized('패스키를 검증할 수 없어요')
+        return notFound('패스키를 검증할 수 없어요')
       }
 
       const challenge = await getAndDeleteChallenge(authenticationAttemptId, ChallengeType.AUTHENTICATION)
 
       if (!challenge) {
-        return unauthorized('패스키를 검증할 수 없어요')
+        return badRequest('패스키를 검증할 수 없어요')
       }
 
       const { verified, authenticationInfo } = await verifyAuthenticationResponse({
@@ -160,7 +160,7 @@ export async function verifyAuthentication(body: unknown, turnstileToken: string
       })
 
       if (!verified || !authenticationInfo) {
-        return forbidden('패스키를 검증할 수 없어요')
+        return badRequest('패스키를 검증할 수 없어요')
       }
 
       const newCounter =
