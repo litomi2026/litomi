@@ -94,6 +94,8 @@ function getTransactionDescription({ transactionType, amount }: TransactionDescr
   switch (transactionType) {
     case TRANSACTION_TYPE.AD_CLICK:
       return '광고 클릭'
+    case TRANSACTION_TYPE.ADMIN_GRANT:
+      return `운영 지급 (+${amount.toLocaleString()} 리보)`
     case TRANSACTION_TYPE.BADGE_PURCHASE:
       return '프로필 뱃지 구매'
     case TRANSACTION_TYPE.BOOKMARK_EXPANSION_LARGE:
