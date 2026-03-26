@@ -6,13 +6,16 @@ import { db } from '@/database/supabase/drizzle'
 import { credentialTable } from '@/database/supabase/passkey'
 
 import PasskeyList from './PasskeyList'
+import PasskeySignalSync from './PasskeySignalSync'
 import { getTruncatedId } from './utils'
 
 type Props = {
+  displayName: string
+  loginId: string
   userId: number
 }
 
-export default async function PasskeySettings({ userId }: Props) {
+export default async function PasskeySettings({ displayName, loginId, userId }: Props) {
   const credentials = await db
     .select({
       id: credentialTable.id,
@@ -33,5 +36,15 @@ export default async function PasskeySettings({ userId }: Props) {
     transports: credential.transports as AuthenticatorTransportFuture[],
   }))
 
-  return <PasskeyList passkeys={passkeys} />
+  return (
+    <>
+      <PasskeySignalSync
+        credentialIds={credentials.map((credential) => credential.credentialId)}
+        displayName={displayName}
+        name={loginId}
+        userId={Buffer.from(userId.toString()).toString('base64url')}
+      />
+      <PasskeyList passkeys={passkeys} />
+    </>
+  )
 }
