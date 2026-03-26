@@ -2,9 +2,8 @@
 
 import type { ReactNode } from 'react'
 
-import ms from 'ms'
 import Link from 'next/link'
-import { Fragment, useEffect } from 'react'
+import { Fragment } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 import type { GETV1MeResponse } from '@/backend/api/v1/me'
@@ -12,13 +11,12 @@ import type { GETV1MeResponse } from '@/backend/api/v1/me'
 import LoginPageLink from '@/components/LoginPageLink'
 import useMounted from '@/hook/useMounted'
 import useNonAdultGate from '@/hook/useNonAdultGate'
-import { showRepeatedAdultVerificationToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
 import { requiresAds } from '@/utils/adult-verification'
 
 import type { JuicyAdsLayoutNode } from './types'
 
-import { JUICY_ADS_BANNER_ID, JUICY_ADS_SLOT_SELECTOR } from './constants'
+import { JUICY_ADS_BANNER_ID } from './constants'
 import JuicyAdsScript from './JuicyAdsScript'
 import JuicyAdsSlot from './JuicyAdsSlot'
 import { DEFAULT_NON_ADULT_AD_LAYOUT } from './layouts'

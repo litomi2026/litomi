@@ -1,30 +1,28 @@
 'use server'
 
 import { captureException } from '@sentry/nextjs'
-import {
-  AuthenticatorTransportFuture,
-  generateAuthenticationOptions,
-  verifyAuthenticationResponse,
-} from '@simplewebauthn/server'
+import { generateAuthenticationOptions, verifyAuthenticationResponse } from '@simplewebauthn/server'
 import { eq } from 'drizzle-orm'
 import { cookies, headers } from 'next/headers'
 import { z } from 'zod'
 
 import { WEBAUTHN_ORIGIN, WEBAUTHN_RP_ID } from '@/constants'
+import { COOKIE_DOMAIN } from '@/constants'
+import { CookieKey } from '@/constants/storage'
 import { ChallengeType } from '@/database/enum'
 import { bbatonVerificationTable } from '@/database/supabase/bbaton'
 import { db } from '@/database/supabase/drizzle'
 import { credentialTable } from '@/database/supabase/passkey'
 import { userTable } from '@/database/supabase/user'
 import { badRequest, forbidden, internalServerError, ok, tooManyRequests, unauthorized } from '@/utils/action-response'
-import { getAccessTokenCookieConfig, getAuthHintCookieConfig } from '@/utils/cookie'
+import {
+  getAccessTokenCookieConfig,
+  getAuthHintCookieConfig,
+  getPasskeyAuthenticationAttemptCookieConfig,
+} from '@/utils/cookie'
 import { RateLimiter, RateLimitPresets } from '@/utils/rate-limit'
 import { getAndDeleteChallenge, storeChallenge } from '@/utils/redis-challenge'
 import TurnstileValidator from '@/utils/turnstile'
-
-import { generateFakeCredentials, hasCredentialId } from './utils'
-
-const getAuthenticationOptionsSchema = z.object({ loginId: z.string() })
 
 const verifyAuthenticationSchema = z.object({
   id: z.string(),
@@ -39,16 +37,12 @@ const verifyAuthenticationSchema = z.object({
   clientExtensionResults: z.record(z.string(), z.unknown()).optional().default({}),
 })
 
-const authenticationLimiter = new RateLimiter(RateLimitPresets.strict())
+const authenticationLimiter = new RateLimiter(RateLimitPresets.balanced())
 
-export async function getAuthenticationOptions(loginId: string) {
-  const validation = getAuthenticationOptionsSchema.safeParse({ loginId })
-
-  if (!validation.success) {
-    return badRequest('잘못된 요청이에요')
-  }
-
-  const { allowed, retryAfter } = await authenticationLimiter.check(loginId)
+export async function getAuthenticationOptions() {
+  const headersList = await headers()
+  const remoteIP = getRemoteAddress(headersList)
+  const { allowed, retryAfter } = await authenticationLimiter.check(remoteIP)
 
   if (!allowed) {
     const minutes = retryAfter ? Math.ceil(retryAfter / 60) : 1
@@ -56,43 +50,35 @@ export async function getAuthenticationOptions(loginId: string) {
   }
 
   try {
-    const userWithCredentials = await db
-      .select({
-        userId: userTable.id,
-        credentialId: credentialTable.credentialId,
-        transports: credentialTable.transports,
-      })
-      .from(userTable)
-      .leftJoin(credentialTable, eq(credentialTable.userId, userTable.id))
-      .where(eq(userTable.loginId, loginId))
-
-    // NOTE: 존재하지 않는 로그인 아이디로 요청한 경우 빈 배열이 반환됨
-    const userId = userWithCredentials[0]?.userId
-
-    const allowCredentials = userId
-      ? userWithCredentials.filter(hasCredentialId).map((credential) => ({
-          id: credential.credentialId,
-          ...(credential.transports && { transports: credential.transports as AuthenticatorTransportFuture[] }),
-        }))
-      : generateFakeCredentials(loginId)
-
     const options = await generateAuthenticationOptions({
       rpID: WEBAUTHN_RP_ID,
-      allowCredentials,
       userVerification: 'required',
     })
 
+    const authenticationAttemptId = crypto.randomUUID()
+    const cookieStore = await cookies()
+    const authAttemptCookie = getPasskeyAuthenticationAttemptCookieConfig(authenticationAttemptId)
+
     await Promise.all([
-      userId && storeChallenge(userId, ChallengeType.AUTHENTICATION, options.challenge),
-      authenticationLimiter.reward(loginId),
+      storeChallenge(authenticationAttemptId, ChallengeType.AUTHENTICATION, options.challenge),
+      cookieStore.set(authAttemptCookie.key, authAttemptCookie.value, authAttemptCookie.options),
     ])
 
     return ok(options)
   } catch (error) {
     console.error('getAuthenticationOptions:', error)
-    captureException(error, { extra: { name: 'getAuthenticationOptions', loginId } })
+    captureException(error, { extra: { name: 'getAuthenticationOptions', remoteIP } })
     return internalServerError('패스키 인증 중 오류가 발생했어요')
   }
+}
+
+function getRemoteAddress(headersList: Awaited<ReturnType<typeof headers>>) {
+  return (
+    headersList.get('CF-Connecting-IP') ||
+    headersList.get('x-real-ip') ||
+    headersList.get('x-forwarded-for') ||
+    'unknown'
+  )
 }
 
 const verifyAuthenticationLimiter = new RateLimiter(RateLimitPresets.strict())
@@ -100,12 +86,7 @@ const verifyAuthenticationLimiter = new RateLimiter(RateLimitPresets.strict())
 export async function verifyAuthentication(body: unknown, turnstileToken: string) {
   const validator = new TurnstileValidator()
   const headersList = await headers()
-
-  const remoteIP =
-    headersList.get('CF-Connecting-IP') ||
-    headersList.get('x-real-ip') ||
-    headersList.get('x-forwarded-for') ||
-    'unknown'
+  const remoteIP = getRemoteAddress(headersList)
 
   const turnstile = await validator.validate({
     token: turnstileToken,
@@ -133,6 +114,18 @@ export async function verifyAuthentication(body: unknown, turnstileToken: string
   }
 
   try {
+    const cookieStore = await cookies()
+    const authenticationAttemptId = cookieStore.get(CookieKey.PASSKEY_AUTHENTICATION_ATTEMPT)?.value
+
+    cookieStore.delete({
+      name: CookieKey.PASSKEY_AUTHENTICATION_ATTEMPT,
+      domain: COOKIE_DOMAIN,
+    })
+
+    if (!authenticationAttemptId) {
+      return unauthorized('패스키를 검증할 수 없어요')
+    }
+
     const result = await db.transaction(async (tx) => {
       const [credential] = await tx
         .select({
@@ -148,7 +141,7 @@ export async function verifyAuthentication(body: unknown, turnstileToken: string
         return unauthorized('패스키를 검증할 수 없어요')
       }
 
-      const challenge = await getAndDeleteChallenge(credential.userId, ChallengeType.AUTHENTICATION)
+      const challenge = await getAndDeleteChallenge(authenticationAttemptId, ChallengeType.AUTHENTICATION)
 
       if (!challenge) {
         return unauthorized('패스키를 검증할 수 없어요')
@@ -201,7 +194,6 @@ export async function verifyAuthentication(body: unknown, turnstileToken: string
         adult: verification[0]?.adultFlag === true,
       }
 
-      const cookieStore = await cookies()
       const accessTokenCookie = await getAccessTokenCookieConfig(tokenClaims)
       const authHintCookie = getAuthHintCookieConfig({ maxAgeSeconds: accessTokenCookie.options.maxAge })
 
@@ -214,7 +206,7 @@ export async function verifyAuthentication(body: unknown, turnstileToken: string
     return result
   } catch (error) {
     console.error('verifyAuthentication:', error)
-    captureException(error, { extra: { name: 'verifyAuthentication', userId: validatedData.id } })
+    captureException(error, { extra: { name: 'verifyAuthentication', credentialId: validatedData.id, remoteIP } })
     return internalServerError('패스키 인증 중 오류가 발생했어요')
   }
 }

@@ -137,10 +137,16 @@ describe('RateLimiter', () => {
   })
 
   describe('Presets', () => {
+    test('should create balanced rate limiter', () => {
+      const config = RateLimitPresets.balanced()
+      expect(config.windowMs).toBe(5 * 60 * 1000)
+      expect(config.maxAttempts).toBe(10)
+    })
+
     test('should create strict rate limiter', () => {
       const config = RateLimitPresets.strict()
       expect(config.windowMs).toBe(15 * 60 * 1000)
-      expect(config.maxAttempts).toBe(5)
+      expect(config.maxAttempts).toBe(10)
     })
 
     test('should create standard rate limiter', () => {
