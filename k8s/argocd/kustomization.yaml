@@ -13,10 +13,10 @@ resources:
   - applications/cloudflared.yaml
   - applications/gtm-server.yaml
   - applications/monitoring.yaml
-  - applications/logging-loki.yaml
-  - applications/logging-fluent-bit.yaml
-  - applications/tracing-tempo.yaml
-  - applications/tracing-otel-collector.yaml
+  - applications/loki.yaml
+  - applications/fluent-bit.yaml
+  - applications/tempo.yaml
+  - applications/otel-collector.yaml
   - applications/minio-operator.yaml
   - applications/minio.yaml
   - applications/velero.yaml
