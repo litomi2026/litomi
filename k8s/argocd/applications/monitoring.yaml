@@ -1,29 +1,28 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: platform-external-secrets
+  name: monitoring
   annotations:
-    # Ensure ESO (CRDs/controllers) are installed before apps apply ExternalSecret/SecretStore CRs.
-    argocd.argoproj.io/sync-wave: '1'
+    argocd.argoproj.io/sync-wave: '3'
 spec:
   project: platform
   sources:
-    - repoURL: https://charts.external-secrets.io
-      chart: external-secrets
-      targetRevision: 2.0.0
+    - repoURL: https://prometheus-community.github.io/helm-charts
+      chart: kube-prometheus-stack
+      targetRevision: 81.6.0
       helm:
-        releaseName: external-secrets
+        releaseName: kube-prometheus-stack
         valueFiles:
-          - $values/k8s/platform/external-secrets/external-secrets.values.yaml
+          - $values/k8s/platform/monitoring/kube-prometheus-stack.values.yaml
     - repoURL: https://github.com/gwak2837/litomi.git
       targetRevision: main
       ref: values
     - repoURL: https://github.com/gwak2837/litomi.git
       targetRevision: main
-      path: k8s/platform/external-secrets
+      path: k8s/platform/monitoring
   destination:
     server: https://kubernetes.default.svc
-    namespace: external-secrets
+    namespace: monitoring
   syncPolicy:
     automated:
       prune: true

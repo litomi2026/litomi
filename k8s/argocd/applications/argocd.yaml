@@ -1,22 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: platform-gtm-server
-  annotations:
-    argocd.argoproj.io/sync-wave: '2'
+  name: argocd
 spec:
   project: platform
   source:
     repoURL: https://github.com/gwak2837/litomi.git
     targetRevision: main
-    path: k8s/platform/gtm-server
+    path: k8s/platform/argocd
   destination:
     server: https://kubernetes.default.svc
-    namespace: gtm-server
+    namespace: argocd
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
-      - ServerSideApply=true

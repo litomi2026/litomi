@@ -1,29 +1,29 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: platform-logging-loki
+  name: minio
   annotations:
-    # monitoring 앱이 ServiceMonitor CRD를 먼저 준비한 뒤 Loki를 동기화해요.
-    argocd.argoproj.io/sync-wave: '4'
+    # MinIO Tenant는 Operator와 ESO(Secret 주입) 뒤에 생성해요.
+    argocd.argoproj.io/sync-wave: '3'
 spec:
   project: platform
   sources:
-    - repoURL: https://grafana.github.io/helm-charts
-      chart: loki
-      targetRevision: 6.53.0
+    - repoURL: https://operator.min.io
+      chart: tenant
+      targetRevision: 7.1.1
       helm:
-        releaseName: loki
+        releaseName: tenant
         valueFiles:
-          - $values/k8s/platform/logging/loki.values.yaml
+          - $values/k8s/platform/minio/tenant.values.yaml
     - repoURL: https://github.com/gwak2837/litomi.git
       targetRevision: main
       ref: values
     - repoURL: https://github.com/gwak2837/litomi.git
       targetRevision: main
-      path: k8s/platform/logging
+      path: k8s/platform/minio
   destination:
     server: https://kubernetes.default.svc
-    namespace: logging
+    namespace: minio
   syncPolicy:
     automated:
       prune: true

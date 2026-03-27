@@ -1,29 +1,26 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: platform-minio
+  name: minio-operator
   annotations:
-    # MinIO Tenant는 Operator와 ESO(Secret 주입) 뒤에 생성해요.
-    argocd.argoproj.io/sync-wave: '3'
+    # MinIO Operator는 Tenant보다 먼저 올라와야 해요.
+    argocd.argoproj.io/sync-wave: '2'
 spec:
   project: platform
   sources:
     - repoURL: https://operator.min.io
-      chart: tenant
+      chart: operator
       targetRevision: 7.1.1
       helm:
-        releaseName: tenant
+        releaseName: minio-operator
         valueFiles:
-          - $values/k8s/platform/minio/tenant.values.yaml
+          - $values/k8s/platform/minio/operator.values.yaml
     - repoURL: https://github.com/gwak2837/litomi.git
       targetRevision: main
       ref: values
-    - repoURL: https://github.com/gwak2837/litomi.git
-      targetRevision: main
-      path: k8s/platform/minio
   destination:
     server: https://kubernetes.default.svc
-    namespace: minio
+    namespace: minio-operator
   syncPolicy:
     automated:
       prune: true

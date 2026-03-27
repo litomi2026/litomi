@@ -1,28 +1,29 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: platform-monitoring
+  name: tracing-tempo
   annotations:
-    argocd.argoproj.io/sync-wave: '3'
+    # monitoring 앱이 ServiceMonitor CRD를 먼저 준비한 뒤 Tempo를 동기화해요.
+    argocd.argoproj.io/sync-wave: '4'
 spec:
   project: platform
   sources:
-    - repoURL: https://prometheus-community.github.io/helm-charts
-      chart: kube-prometheus-stack
-      targetRevision: 81.6.0
+    - repoURL: https://grafana-community.github.io/helm-charts
+      chart: tempo
+      targetRevision: 1.26.1
       helm:
-        releaseName: kube-prometheus-stack
+        releaseName: tempo
         valueFiles:
-          - $values/k8s/platform/monitoring/kube-prometheus-stack.values.yaml
+          - $values/k8s/platform/tracing/tempo.values.yaml
     - repoURL: https://github.com/gwak2837/litomi.git
       targetRevision: main
       ref: values
     - repoURL: https://github.com/gwak2837/litomi.git
       targetRevision: main
-      path: k8s/platform/monitoring
+      path: k8s/platform/tracing
   destination:
     server: https://kubernetes.default.svc
-    namespace: monitoring
+    namespace: tracing
   syncPolicy:
     automated:
       prune: true
