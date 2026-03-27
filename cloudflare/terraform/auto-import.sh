@@ -223,6 +223,10 @@ list_access_app_specs() {
   extract_resource_specs "cloudflare_zero_trust_access_application" name
 }
 
+list_access_policy_specs() {
+  extract_resource_specs "cloudflare_zero_trust_access_policy" name
+}
+
 extract_tunnel_address_from_expr() {
   local expr="$1"
 
@@ -474,6 +478,39 @@ import_access_apps() {
   done < <(list_access_app_specs)
 }
 
+import_access_policies() {
+  local access_policies_json
+  local address
+  local name_expr
+  local policy_name
+  local policy_id
+
+  info "Importing Access policies..."
+  access_policies_json="$(fetch_paginated_results "/accounts/${ACCOUNT_ID}/access/policies")"
+
+  while IFS=$'\t' read -r address name_expr; do
+    [ -n "$address" ] || continue
+    policy_name="$(terraform_eval_string "$name_expr")"
+
+    policy_id="$(
+      printf '%s' "$access_policies_json" | jq -r --arg name "$policy_name" '
+        ([.[] | select(.name == $name) | (.id // .uid)] | first) // empty
+      '
+    )"
+
+    if [ -z "$policy_id" ]; then
+      record_skip "No existing Access policy found for $address ($policy_name)"
+      continue
+    fi
+
+    run_import_candidates \
+      "$address" \
+      "$ACCOUNT_ID/$policy_id" \
+      "accounts/$ACCOUNT_ID/$policy_id" \
+      "$policy_id"
+  done < <(list_access_policy_specs)
+}
+
 import_dns_records() {
   local dns_records_json
   local address
@@ -637,6 +674,7 @@ main() {
 
   import_tunnels
   import_tunnel_configs
+  import_access_policies
   import_access_apps
   import_dns_records
   import_rulesets
