@@ -13,7 +13,7 @@ cd /Users/gwak2837/Documents/GitHub/litomi
 
 위 커맨드는 아래를 포함해 확인해요.
 
-- Argo CD 앱 상태 (`monitoring`, `logging-*`, `tracing-*`)
+- Argo CD 앱 상태 (`monitoring`, `loki`, `fluent-bit`, `tempo`, `otel-collector`)
 - `monitoring/blackbox-exporter` Deployment readiness
 - `Probe`/`PrometheusRule` 리소스 존재
 - `monitoring/logging/tracing`의 SecretStore/ExternalSecret Ready 상태
@@ -21,10 +21,10 @@ cd /Users/gwak2837/Documents/GitHub/litomi
 
 ### 이 레포에서 이미 적용된 것
 
-- `Loki` (`logging-loki`)
-- `Fluent Bit` (`logging-fluent-bit`)
-- `Tempo` (`tracing-tempo`)
-- `OpenTelemetry Collector` (`tracing-otel-collector`)
+- `Loki` (`loki`)
+- `Fluent Bit` (`fluent-bit`)
+- `Tempo` (`tempo`)
+- `OpenTelemetry Collector` (`otel-collector`)
 - Grafana datasource provisioning
   - `Loki` (`uid: loki`)
   - `Tempo` (`uid: tempo`, `tracesToLogsV2` 설정)

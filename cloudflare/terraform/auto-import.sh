@@ -1,377 +1,694 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-set -e
+set -Eeuo pipefail
 
-echo ""
-echo "🔄 Cloudflare Auto-Import Script"
-echo "================================="
-echo ""
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$ROOT_DIR"
 
-# Check if jq is installed
-if ! command -v jq &> /dev/null; then
-    echo "⚠️  Installing jq..."
-    brew install jq
-fi
+export TF_IN_AUTOMATION=1
+export NO_COLOR=1
 
-# Load environment variables
-if [ -f ".env" ]; then
-    export $(grep -v '^#' .env | xargs)
-else
-    echo "❌ .env file not found. Please run setup.sh first."
-    exit 1
-fi
+TF_VAR_FILE="${TF_VAR_FILE:-terraform.tfvars}"
+DRY_RUN="${DRY_RUN:-0}"
 
-# Check if CLOUDFLARE_API_TOKEN is set
-if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
-    echo "❌ CLOUDFLARE_API_TOKEN not set."
-    exit 1
-fi
+ZONE_ID=""
+ACCOUNT_ID=""
+DOMAIN=""
+STATE_ADDRESSES=""
+IMPORTED_COUNT=0
+SKIPPED_COUNT=0
+FAILED_COUNT=0
+CF_LAST_STATUS=0
 
-# Extract zone_id from terraform.tfvars
-ZONE_ID=$(grep "^zone_id" terraform.tfvars | cut -d'"' -f2)
-ACCOUNT_ID=$(grep "^account_id" terraform.tfvars | cut -d'"' -f2)
+log() {
+  printf '%s\n' "$*"
+}
 
-if [ -z "$ZONE_ID" ]; then
-    echo "❌ Could not extract zone_id from terraform.tfvars"
-    exit 1
-fi
+info() {
+  log "[INFO] $*"
+}
 
-if [ -z "$ACCOUNT_ID" ]; then
-    echo "❌ Could not extract account_id from terraform.tfvars"
-    exit 1
-fi
+warn() {
+  log "[WARN] $*" >&2
+}
 
-echo "📡 Zone ID: $ZONE_ID"
-echo "👤 Account ID: $ACCOUNT_ID"
-echo ""
+die() {
+  log "[ERROR] $*" >&2
+  exit 1
+}
 
-# Function to import DNS records with better matching
+require_command() {
+  command -v "$1" >/dev/null 2>&1 || die "Missing required command: $1"
+}
+
+load_env() {
+  [ -f ".env" ] || die ".env file not found. Please run setup.sh first."
+
+  set -a
+  # shellcheck disable=SC1091
+  . ./.env
+  set +a
+
+  [ -n "${CLOUDFLARE_API_TOKEN:-}" ] || die "CLOUDFLARE_API_TOKEN is not set."
+}
+
+ensure_terraform_init() {
+  if [ ! -d ".terraform" ]; then
+    info "Initializing Terraform..."
+    terraform init -input=false >/dev/null
+  fi
+}
+
+read_tfvar() {
+  local key="$1"
+  local value
+
+  value="$(
+    sed -n "s/^[[:space:]]*${key}[[:space:]]*=[[:space:]]*\"\\([^\"]*\\)\"[[:space:]]*$/\\1/p" "$TF_VAR_FILE" | head -n 1
+  )"
+
+  [ -n "$value" ] || die "Could not read ${key} from ${TF_VAR_FILE}"
+  printf '%s\n' "$value"
+}
+
+refresh_state_addresses() {
+  STATE_ADDRESSES="$(terraform state list 2>/dev/null || true)"
+}
+
+state_has() {
+  [ -n "$STATE_ADDRESSES" ] && printf '%s\n' "$STATE_ADDRESSES" | grep -Fxq "$1"
+}
+
+record_import() {
+  IMPORTED_COUNT=$((IMPORTED_COUNT + 1))
+  info "$1"
+}
+
+record_skip() {
+  SKIPPED_COUNT=$((SKIPPED_COUNT + 1))
+  info "$1"
+}
+
+record_failure() {
+  FAILED_COUNT=$((FAILED_COUNT + 1))
+  warn "$1"
+}
+
+terraform_eval_string() {
+  local expr="$1"
+  local raw
+
+  raw="$(
+    terraform console -var-file="$TF_VAR_FILE" 2>/dev/null <<EOF
+try(tostring(nonsensitive(${expr})), tostring(${expr}), "")
+EOF
+  )" || die "Failed to evaluate Terraform expression: $expr"
+
+  raw="$(printf '%s' "$raw" | tail -n 1 | tr -d '\r')"
+
+  case "$raw" in
+    "" | "null" | "(known after apply)" | "(sensitive value)")
+      printf '\n'
+      return 0
+      ;;
+  esac
+
+  if printf '%s' "$raw" | jq -eR 'fromjson? | type == "string"' >/dev/null 2>&1; then
+    printf '%s' "$raw" | jq -rR 'fromjson'
+  else
+    printf '%s\n' "$raw"
+  fi
+}
+
+extract_resource_specs() {
+  local resource_type="$1"
+  shift
+
+  local attr_list
+  attr_list="$(IFS=,; printf '%s' "$*")"
+
+  awk -v resource_type="$resource_type" -v attr_list="$attr_list" '
+    function trim(value) {
+      sub(/^[[:space:]]+/, "", value)
+      sub(/[[:space:]]+$/, "", value)
+      return value
+    }
+
+    BEGIN {
+      attr_count = split(attr_list, attrs, ",")
+    }
+
+    $0 ~ "^[[:space:]]*resource[[:space:]]+\"" resource_type "\"[[:space:]]+\"" {
+      label = $3
+      gsub(/"/, "", label)
+      in_block = 1
+      depth = 1
+
+      for (i = 1; i <= attr_count; i++) {
+        values[attrs[i]] = ""
+      }
+
+      next
+    }
+
+    in_block {
+      if (depth == 1) {
+        for (i = 1; i <= attr_count; i++) {
+          attr = attrs[i]
+          line = $0
+
+          if (line ~ "^[[:space:]]*" attr "[[:space:]]*=") {
+            sub(/^[^=]*=[[:space:]]*/, "", line)
+            values[attr] = trim(line)
+          }
+        }
+      }
+
+      brace_line = $0
+      open_count = gsub(/\{/, "{", brace_line)
+      close_count = gsub(/\}/, "}", brace_line)
+      depth += open_count - close_count
+
+      if (depth == 0) {
+        printf "%s.%s", resource_type, label
+        for (i = 1; i <= attr_count; i++) {
+          printf "\t%s", values[attrs[i]]
+        }
+        printf "\n"
+        in_block = 0
+      }
+    }
+  ' ./*.tf | LC_ALL=C sort
+}
+
+list_dns_specs() {
+  extract_resource_specs "cloudflare_dns_record" name type content
+}
+
+list_ruleset_specs() {
+  extract_resource_specs "cloudflare_ruleset" phase account_id zone_id |
+    while IFS=$'\t' read -r address phase_expr account_id_expr zone_id_expr; do
+      [ -n "$address" ] || continue
+
+      if [ -n "$account_id_expr" ]; then
+        printf '%s\taccount\t%s\n' "$address" "$phase_expr"
+      else
+        printf '%s\tzone\t%s\n' "$address" "$phase_expr"
+      fi
+    done
+}
+
+list_managed_transform_specs() {
+  extract_resource_specs "cloudflare_managed_transforms" account_id zone_id |
+    while IFS=$'\t' read -r address account_id_expr zone_id_expr; do
+      [ -n "$address" ] || continue
+
+      if [ -n "$account_id_expr" ]; then
+        printf '%s\taccount\n' "$address"
+      else
+        printf '%s\tzone\n' "$address"
+      fi
+    done
+}
+
+list_tunnel_specs() {
+  extract_resource_specs "cloudflare_zero_trust_tunnel_cloudflared" name
+}
+
+list_tunnel_config_specs() {
+  extract_resource_specs "cloudflare_zero_trust_tunnel_cloudflared_config" tunnel_id
+}
+
+list_access_app_specs() {
+  extract_resource_specs "cloudflare_zero_trust_access_application" name
+}
+
+list_access_policy_specs() {
+  extract_resource_specs "cloudflare_zero_trust_access_policy" name
+}
+
+extract_tunnel_address_from_expr() {
+  local expr="$1"
+
+  if [[ "$expr" =~ ^cloudflare_zero_trust_tunnel_cloudflared\.([A-Za-z0-9_]+)\.id$ ]]; then
+    printf 'cloudflare_zero_trust_tunnel_cloudflared.%s\n' "${BASH_REMATCH[1]}"
+  fi
+}
+
+cf_error_message() {
+  local response="$1"
+  local message
+
+  message="$(
+    printf '%s' "$response" | jq -r '
+      [(.errors[]?.message), (.messages[]?.message)]
+      | map(select(. != null and . != ""))
+      | join("; ")
+    ' 2>/dev/null || true
+  )"
+
+  if [ -n "$message" ] && [ "$message" != "null" ]; then
+    printf '%s\n' "$message"
+  else
+    printf '%s\n' "$response"
+  fi
+}
+
+cf_api() {
+  local path="$1"
+  local response
+  local body
+
+  response="$(
+    curl --silent --show-error --retry 3 --retry-all-errors \
+      -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+      -H "Content-Type: application/json" \
+      -w $'\n%{http_code}' \
+      "https://api.cloudflare.com/client/v4${path}"
+  )" || return 1
+
+  CF_LAST_STATUS="${response##*$'\n'}"
+  body="${response%$'\n'*}"
+
+  if [ "$CF_LAST_STATUS" -ge 400 ]; then
+    printf '%s' "$body"
+    return 1
+  fi
+
+  if ! printf '%s' "$body" | jq -e '.success == true' >/dev/null 2>&1; then
+    printf '%s' "$body"
+    return 1
+  fi
+
+  printf '%s' "$body"
+}
+
+fetch_paginated_results() {
+  local path="$1"
+  local response
+  local page=1
+  local total_pages=1
+  local query_sep="?"
+  local tmp_file
+
+  tmp_file="$(mktemp)"
+  printf '[]' >"$tmp_file"
+
+  if [[ "$path" == *\?* ]]; then
+    query_sep="&"
+  fi
+
+  while [ "$page" -le "$total_pages" ]; do
+    if ! response="$(cf_api "${path}${query_sep}page=${page}&per_page=100")"; then
+      rm -f "$tmp_file"
+      die "Cloudflare API request failed for ${path}: $(cf_error_message "$response")"
+    fi
+
+    total_pages="$(printf '%s' "$response" | jq -r '.result_info.total_pages // 1')"
+
+    jq -s '.[0] + (.[1] // [])' \
+      "$tmp_file" \
+      <(printf '%s' "$response" | jq '.result // []') >"${tmp_file}.next"
+    mv "${tmp_file}.next" "$tmp_file"
+
+    page=$((page + 1))
+  done
+
+  cat "$tmp_file"
+  rm -f "$tmp_file"
+}
+
+run_import() {
+  local address="$1"
+  local import_id="$2"
+
+  if state_has "$address"; then
+    record_skip "$address already exists in state"
+    return 0
+  fi
+
+  if [ "$DRY_RUN" = "1" ]; then
+    record_skip "[dry-run] terraform import $address $import_id"
+    return 0
+  fi
+
+  if terraform import -input=false "$address" "$import_id" >/dev/null 2>&1; then
+    if [ -n "$STATE_ADDRESSES" ]; then
+      STATE_ADDRESSES="${STATE_ADDRESSES}"$'\n'"$address"
+    else
+      STATE_ADDRESSES="$address"
+    fi
+    record_import "Imported $address"
+    return 0
+  fi
+
+  return 1
+}
+
+run_import_candidates() {
+  local address="$1"
+  shift
+
+  if state_has "$address"; then
+    record_skip "$address already exists in state"
+    return 0
+  fi
+
+  while [ "$#" -gt 0 ]; do
+    if run_import "$address" "$1"; then
+      return 0
+    fi
+    shift
+  done
+
+  record_failure "Failed to import $address"
+  return 1
+}
+
+import_tunnels() {
+  local tunnels_json
+  local address
+  local name_expr
+  local tunnel_name
+  local tunnel_id
+
+  info "Importing tunnels..."
+  tunnels_json="$(fetch_paginated_results "/accounts/${ACCOUNT_ID}/cfd_tunnel")"
+
+  while IFS=$'\t' read -r address name_expr; do
+    [ -n "$address" ] || continue
+    tunnel_name="$(terraform_eval_string "$name_expr")"
+
+    tunnel_id="$(
+      printf '%s' "$tunnels_json" | jq -r --arg name "$tunnel_name" '
+        ([.[] | select(.name == $name) | .id] | first) // empty
+      '
+    )"
+
+    if [ -z "$tunnel_id" ]; then
+      record_skip "No existing tunnel found for $address ($tunnel_name)"
+      continue
+    fi
+
+    run_import_candidates \
+      "$address" \
+      "$ACCOUNT_ID/$tunnel_id" \
+      "accounts/$ACCOUNT_ID/$tunnel_id" \
+      "$tunnel_id"
+  done < <(list_tunnel_specs)
+}
+
+import_tunnel_configs() {
+  local tunnels_json
+  local config_address
+  local tunnel_id_expr
+  local referenced_tunnel
+  local tunnel_name_expr
+  local tunnel_name
+  local tunnel_id
+
+  info "Importing tunnel configs..."
+  tunnels_json="$(fetch_paginated_results "/accounts/${ACCOUNT_ID}/cfd_tunnel")"
+
+  while IFS=$'\t' read -r config_address tunnel_id_expr; do
+    [ -n "$config_address" ] || continue
+
+    referenced_tunnel="$(extract_tunnel_address_from_expr "$tunnel_id_expr" || true)"
+    [ -n "$referenced_tunnel" ] || continue
+
+    tunnel_name_expr="$(
+      while IFS=$'\t' read -r tunnel_address name_expr; do
+        if [ "$tunnel_address" = "$referenced_tunnel" ]; then
+          printf '%s\n' "$name_expr"
+          break
+        fi
+      done < <(list_tunnel_specs)
+    )"
+    tunnel_name="$(terraform_eval_string "$tunnel_name_expr")"
+
+    tunnel_id="$(
+      printf '%s' "$tunnels_json" | jq -r --arg name "$tunnel_name" '
+        ([.[] | select(.name == $name and .config_src == "cloudflare") | .id] | first) // empty
+      '
+    )"
+
+    if [ -z "$tunnel_id" ]; then
+      record_skip "No remote-managed tunnel config found for $config_address ($tunnel_name)"
+      continue
+    fi
+
+    run_import_candidates \
+      "$config_address" \
+      "$ACCOUNT_ID/$tunnel_id" \
+      "accounts/$ACCOUNT_ID/$tunnel_id" \
+      "$tunnel_id"
+  done < <(list_tunnel_config_specs)
+}
+
+import_access_apps() {
+  local access_apps_json
+  local address
+  local name_expr
+  local app_name
+  local app_id
+
+  info "Importing Access apps..."
+  access_apps_json="$(fetch_paginated_results "/accounts/${ACCOUNT_ID}/access/apps")"
+
+  while IFS=$'\t' read -r address name_expr; do
+    [ -n "$address" ] || continue
+    app_name="$(terraform_eval_string "$name_expr")"
+
+    app_id="$(
+      printf '%s' "$access_apps_json" | jq -r --arg name "$app_name" '
+        ([.[] | select(.name == $name) | .id] | first) // empty
+      '
+    )"
+
+    if [ -z "$app_id" ]; then
+      record_skip "No existing Access app found for $address ($app_name)"
+      continue
+    fi
+
+    run_import_candidates \
+      "$address" \
+      "$ACCOUNT_ID/$app_id" \
+      "accounts/$ACCOUNT_ID/$app_id" \
+      "$app_id"
+  done < <(list_access_app_specs)
+}
+
+import_access_policies() {
+  local access_policies_json
+  local address
+  local name_expr
+  local policy_name
+  local policy_id
+
+  info "Importing Access policies..."
+  access_policies_json="$(fetch_paginated_results "/accounts/${ACCOUNT_ID}/access/policies")"
+
+  while IFS=$'\t' read -r address name_expr; do
+    [ -n "$address" ] || continue
+    policy_name="$(terraform_eval_string "$name_expr")"
+
+    policy_id="$(
+      printf '%s' "$access_policies_json" | jq -r --arg name "$policy_name" '
+        ([.[] | select(.name == $name) | (.id // .uid)] | first) // empty
+      '
+    )"
+
+    if [ -z "$policy_id" ]; then
+      record_skip "No existing Access policy found for $address ($policy_name)"
+      continue
+    fi
+
+    run_import_candidates \
+      "$address" \
+      "$ACCOUNT_ID/$policy_id" \
+      "accounts/$ACCOUNT_ID/$policy_id" \
+      "$policy_id"
+  done < <(list_access_policy_specs)
+}
+
 import_dns_records() {
-    echo "📋 Fetching DNS records from Cloudflare..."
-    
-    DNS_RESPONSE=$(curl -s -X GET \
-        "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?per_page=100" \
-        -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
-        -H "Content-Type: application/json")
-    
-    # Check if successful
-    SUCCESS=$(echo "$DNS_RESPONSE" | jq -r '.success')
-    if [ "$SUCCESS" != "true" ]; then
-        echo "❌ Failed to fetch DNS records"
-        return 1
+  local dns_records_json
+  local address
+  local name_expr
+  local type_expr
+  local content_expr
+  local record_name
+  local record_type
+  local record_content
+  local record_id
+
+  info "Importing DNS records..."
+  dns_records_json="$(fetch_paginated_results "/zones/${ZONE_ID}/dns_records")"
+
+  while IFS=$'\t' read -r address name_expr type_expr content_expr; do
+    [ -n "$address" ] || continue
+    record_name="$(terraform_eval_string "$name_expr")"
+    record_type="$(terraform_eval_string "$type_expr")"
+    record_content="$(terraform_eval_string "$content_expr")"
+    record_content="${record_content#\"}"
+    record_content="${record_content%\"}"
+
+    if [ "$record_type" = "TXT" ] && [ -n "$record_content" ]; then
+      record_id="$(
+        printf '%s' "$dns_records_json" | jq -r \
+          --arg name "$record_name" \
+          --arg type "$record_type" \
+          --arg content "$record_content" '
+            ([.[] |
+              select(
+                .name == $name and
+                .type == $type and
+                ((.content | gsub("^\\\"|\\\"$"; "")) | contains($content))
+              ) |
+              .id
+            ] | first) // empty
+          '
+      )"
+    else
+      record_id="$(
+        printf '%s' "$dns_records_json" | jq -r \
+          --arg name "$record_name" \
+          --arg type "$record_type" '
+            ([.[] |
+              select(.name == $name and .type == $type) |
+              .id
+            ] | first) // empty
+          '
+      )"
     fi
-    
-    echo ""
-    echo "📝 Importing DNS records based on terraform configuration..."
-    
-    # Define mappings: terraform_resource -> matching criteria
-    # For TXT records with same name, we need to match by content pattern
-    declare -a import_mappings=(
-        # CNAME Records
-        "cloudflare_dns_record.www_cname|www.litomi.in|CNAME|"
-        "cloudflare_dns_record.r2_cname|r2.litomi.in|CNAME|"
-        "cloudflare_dns_record.stg_cname|stg.litomi.in|CNAME|"
-        "cloudflare_dns_record.api_cname|api.litomi.in|CNAME|"
-        "cloudflare_dns_record.api_stg_cname|api-stg.litomi.in|CNAME|"
-        "cloudflare_dns_record.img_cname|img.litomi.in|CNAME|"
-        "cloudflare_dns_record.img_stg_cname|img-stg.litomi.in|CNAME|"
-        "cloudflare_dns_record.render_cname|render.litomi.in|CNAME|"
-        "cloudflare_dns_record.render_stg_cname|render-stg.litomi.in|CNAME|"
-        "cloudflare_dns_record.vercel_cname|vercel.litomi.in|CNAME|"
-        "cloudflare_dns_record.vercel_stg_cname|vercel-stg.litomi.in|CNAME|"
-        "cloudflare_dns_record.netlify_cname|netlify.litomi.in|CNAME|"
 
-        # Self-host tunnel DNS
-        "cloudflare_dns_record.selfhost_anal_cname|anal.litomi.in|CNAME|"
-        "cloudflare_dns_record.selfhost_anal_preview_cname|anal-preview.litomi.in|CNAME|"
-        "cloudflare_dns_record.selfhost_grafana_cname|grafana.litomi.in|CNAME|"
-        "cloudflare_dns_record.selfhost_argocd_cname|argocd.litomi.in|CNAME|"
+    if [ -z "$record_id" ]; then
+      record_skip "No DNS record found for $address ($record_type $record_name)"
+      continue
+    fi
 
-        # Other Records
-        "cloudflare_dns_record.caa|litomi.in|CAA|"
-        "cloudflare_dns_record.dmarc_txt|_dmarc.litomi.in|TXT|"
-        "cloudflare_dns_record.domainkey_txt|*._domainkey.litomi.in|TXT|"
-        "cloudflare_dns_record.spf_txt|litomi.in|TXT|v=spf1"
-        "cloudflare_dns_record.google_verification_txt|litomi.in|TXT|google-site-verification"
-    )
-    
-    for mapping in "${import_mappings[@]}"; do
-        IFS='|' read -r resource_name record_name record_type content_pattern <<< "$mapping"
-        
-        # Check if already in state
-        if terraform state show "$resource_name" &>/dev/null 2>&1; then
-            echo "✓ $resource_name already imported"
-            continue
-        fi
-        
-        echo ""
-        
-        # Find matching record ID based on criteria
-        if [ -n "$content_pattern" ]; then
-            # For records that need content matching (like TXT records)
-            RECORD_ID=$(echo "$DNS_RESPONSE" | jq -r --arg name "$record_name" --arg type "$record_type" --arg pattern "$content_pattern" \
-                '.result[] | select(.name == $name and .type == $type and (.content | contains($pattern))) | .id' | head -1)
-        else
-            # For records that can be uniquely identified by name and type
-            RECORD_ID=$(echo "$DNS_RESPONSE" | jq -r --arg name "$record_name" --arg type "$record_type" \
-                '.result[] | select(.name == $name and .type == $type) | .id' | head -1)
-        fi
-        
-        if [ -n "$RECORD_ID" ]; then
-            echo "✓ Found record: $record_type $record_name (ID: $RECORD_ID)"
-            terraform import "$resource_name" "$ZONE_ID/$RECORD_ID" 2>/dev/null || echo "  ⚠️  Import failed or already exists"
-        else
-            echo "⏭️  No matching record found for $resource_name"
-        fi
-    done
+    run_import "$address" "${ZONE_ID}/${record_id}"
+  done < <(list_dns_specs)
 }
 
-# Function to import rulesets
 import_rulesets() {
-    echo ""
-    echo "📡 Checking for rulesets..."
-    
-    # Check cache rules
-    if terraform state show "cloudflare_ruleset.cache_rules" &>/dev/null 2>&1; then
-        echo "✓ Cache rules already imported"
-    else
-        CACHE_RESPONSE=$(curl -s -X GET \
-            "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/rulesets/phases/http_request_cache_settings/entrypoint" \
-            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
-            -H "Content-Type: application/json")
-        
-        CACHE_ID=$(echo "$CACHE_RESPONSE" | jq -r '.result.id // empty')
-        if [ -n "$CACHE_ID" ]; then
-            echo "✓ Importing cache ruleset (ID: $CACHE_ID)"
-            terraform import cloudflare_ruleset.cache_rules "zones/$ZONE_ID/$CACHE_ID" 2>/dev/null || echo "  ⚠️  Already imported or doesn't exist"
-        else
-            echo "⏭️  No cache ruleset exists in Cloudflare"
-        fi
-    fi
-    
-    # Check rate limiting rules
-    if terraform state show "cloudflare_ruleset.rate_limiting" &>/dev/null 2>&1; then
-        echo "✓ Rate limiting rules already imported"
-    else
-        RATE_RESPONSE=$(curl -s -X GET \
-            "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/rulesets/phases/http_ratelimit/entrypoint" \
-            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
-            -H "Content-Type: application/json")
-        
-        RATE_ID=$(echo "$RATE_RESPONSE" | jq -r '.result.id // empty')
-        if [ -n "$RATE_ID" ]; then
-            echo "✓ Importing rate limiting ruleset (ID: $RATE_ID)"
-            terraform import cloudflare_ruleset.rate_limiting "zones/$ZONE_ID/$RATE_ID" 2>/dev/null || echo "  ⚠️  Already imported or doesn't exist"
-        else
-            echo "⏭️  No rate limiting ruleset exists in Cloudflare"
-        fi
+  local address
+  local scope
+  local phase_expr
+  local phase
+  local response
+  local ruleset_id
+
+  info "Importing rulesets..."
+
+  while IFS=$'\t' read -r address scope phase_expr; do
+    [ -n "$address" ] || continue
+    phase="$(terraform_eval_string "$phase_expr")"
+
+    if ! response="$(cf_api "/zones/${ZONE_ID}/rulesets/phases/${phase}/entrypoint")"; then
+      if [ "$CF_LAST_STATUS" = "404" ]; then
+        record_skip "No ruleset found for $address ($phase)"
+        continue
+      fi
+
+      record_failure "Failed to fetch ruleset for $address ($phase): $(cf_error_message "$response")"
+      continue
     fi
 
-    # Check redirect rules (e.g. www -> apex)
-    if terraform state show "cloudflare_ruleset.www_redirect" &>/dev/null 2>&1; then
-        echo "✓ Redirect rules already imported"
-    else
-        REDIRECT_RESPONSE=$(curl -s -X GET \
-            "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/rulesets/phases/http_request_dynamic_redirect/entrypoint" \
-            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
-            -H "Content-Type: application/json")
-        
-        REDIRECT_ID=$(echo "$REDIRECT_RESPONSE" | jq -r '.result.id // empty')
-        if [ -n "$REDIRECT_ID" ]; then
-            echo "✓ Importing redirect ruleset (ID: $REDIRECT_ID)"
-            terraform import cloudflare_ruleset.www_redirect "zones/$ZONE_ID/$REDIRECT_ID" 2>/dev/null || echo "  ⚠️  Already imported or doesn't exist"
-        else
-            echo "⏭️  No redirect ruleset exists in Cloudflare"
-        fi
+    ruleset_id="$(printf '%s' "$response" | jq -r '.result.id // empty')"
+
+    if [ -z "$ruleset_id" ]; then
+      record_skip "No ruleset found for $address ($phase)"
+      continue
     fi
+
+    run_import "$address" "zones/${ZONE_ID}/${ruleset_id}"
+  done < <(list_ruleset_specs)
 }
 
-# Function to import managed transforms (managed headers)
 import_managed_transforms() {
-    echo ""
-    echo "🧩 Checking for managed transforms..."
+  local address
+  local scope
 
-    if terraform state show "cloudflare_managed_transforms.managed_transforms" &>/dev/null 2>&1; then
-        echo "✓ Managed transforms already imported"
-        return 0
-    fi
+  info "Importing managed transforms..."
 
-    echo "📝 Importing managed transforms..."
-
-    # Provider import ID format can differ by resource; try a few common patterns.
-    # For managed transforms (managed_headers endpoint), the ID is typically derived from the zone.
-    declare -a import_candidates=(
-        "$ZONE_ID"
-        "zones/$ZONE_ID"
-        "$ZONE_ID/managed_headers"
-        "zones/$ZONE_ID/managed_headers"
-    )
-
-    for import_id in "${import_candidates[@]}"; do
-        if terraform import cloudflare_managed_transforms.managed_transforms "$import_id" >/dev/null 2>&1; then
-            echo "✓ Imported managed transforms (ID: $import_id)"
-            return 0
-        fi
-    done
-
-    echo "⚠️  Could not import managed transforms automatically."
-    echo "   Try manually:"
-    echo "   terraform import cloudflare_managed_transforms.managed_transforms \"$ZONE_ID\""
-    return 1
+  while IFS=$'\t' read -r address scope; do
+    [ -n "$address" ] || continue
+    run_import_candidates \
+      "$address" \
+      "$ZONE_ID" \
+      "zones/$ZONE_ID" \
+      "$ZONE_ID/managed_headers" \
+      "zones/$ZONE_ID/managed_headers"
+  done < <(list_managed_transform_specs)
 }
 
-# Function to import Zero Trust Access Applications
-import_zero_trust_access_apps() {
-    echo ""
-    echo "🔒 Checking for Zero Trust Access Apps..."
+run_plan_check() {
+  local plan_exit=0
 
-    if terraform state show "cloudflare_zero_trust_access_application.argocd" &>/dev/null 2>&1; then
-        echo "✓ Argo CD Access App already imported"
-        return 0
-    fi
+  if [ "$DRY_RUN" = "1" ]; then
+    record_skip "Skipping terraform plan because DRY_RUN=1"
+    return 0
+  fi
 
-    APP_RESPONSE=$(curl -s -X GET \
-        "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT_ID/access/apps" \
-        -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
-        -H "Content-Type: application/json")
+  set +e
+  terraform plan -detailed-exitcode -input=false >/dev/null 2>&1
+  plan_exit=$?
+  set -e
 
-    APP_ID=$(echo "$APP_RESPONSE" | jq -r '(.result[]? // empty) | select(.name == "Argo CD") | .id' | head -1)
-
-    if [ -n "$APP_ID" ]; then
-        echo "✓ Found Access App: Argo CD (ID: $APP_ID)"
-        declare -a import_candidates=(
-            "$ACCOUNT_ID/$APP_ID"
-            "accounts/$ACCOUNT_ID/$APP_ID"
-            "$APP_ID"
-        )
-        for import_id in "${import_candidates[@]}"; do
-            if terraform import cloudflare_zero_trust_access_application.argocd "$import_id" >/dev/null 2>&1; then
-                echo "✓ Imported Access App (ID: $import_id)"
-                return 0
-            fi
-        done
-        echo "  ⚠️  Import failed for Argo CD Access App"
-    else
-        echo "⏭️  No matching Access App found for Argo CD"
-    fi
+  case "$plan_exit" in
+    0)
+      info "Terraform is ready. No changes detected."
+      ;;
+    2)
+      info "Bootstrap finished. Review 'terraform plan' and then run 'terraform apply'."
+      ;;
+    *)
+      record_failure "terraform plan failed. Run 'set -a && . ./.env && set +a && terraform plan' manually."
+      ;;
+  esac
 }
 
-# Function to import Zero Trust tunnel (self-host)
-import_zero_trust_tunnel() {
-    echo ""
-    echo "🛡️  Checking for Zero Trust tunnel..."
+main() {
+  require_command curl
+  require_command jq
+  require_command terraform
+  require_command sed
+  [ -f "$TF_VAR_FILE" ] || die "$TF_VAR_FILE not found."
 
-    if terraform state show "cloudflare_zero_trust_tunnel_cloudflared.selfhost" &>/dev/null 2>&1; then
-        echo "✓ Self-host tunnel already imported"
-        return 0
-    fi
+  load_env
+  ensure_terraform_init
+  ZONE_ID="$(read_tfvar "zone_id")"
+  ACCOUNT_ID="$(read_tfvar "account_id")"
+  DOMAIN="$(read_tfvar "domain")"
+  refresh_state_addresses
 
-    # Try to read tunnel name from Terraform config (fallback to default)
-    local tunnel_name=""
-    if [ -f "selfhost-tunnel.tf" ]; then
-        tunnel_name=$(grep -E "selfhost_tunnel_name\\s*=" selfhost-tunnel.tf | head -1 | cut -d'"' -f2)
-    fi
-    if [ -z "$tunnel_name" ]; then
-        tunnel_name="litomi-selfhost"
-    fi
+  log
+  log "Cloudflare bootstrap import"
+  log "=========================="
+  info "Domain: $DOMAIN"
 
-    echo "🔎 Looking for tunnel named: $tunnel_name"
+  if [ "$DRY_RUN" = "1" ]; then
+    warn "DRY_RUN=1 enabled. No imports will be written to state."
+  fi
 
-    TUNNEL_RESPONSE=$(curl -s -X GET \
-        "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT_ID/cfd_tunnel?per_page=100" \
-        -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
-        -H "Content-Type: application/json")
+  import_tunnels
+  import_tunnel_configs
+  import_access_policies
+  import_access_apps
+  import_dns_records
+  import_rulesets
+  import_managed_transforms
+  run_plan_check
 
-    SUCCESS=$(echo "$TUNNEL_RESPONSE" | jq -r '.success')
-    if [ "$SUCCESS" != "true" ]; then
-        echo "❌ Failed to fetch tunnels"
-        return 1
-    fi
+  log
+  info "Imported: $IMPORTED_COUNT"
+  info "Skipped: $SKIPPED_COUNT"
+  info "Failed: $FAILED_COUNT"
 
-    TUNNEL_ID=$(echo "$TUNNEL_RESPONSE" | jq -r --arg name "$tunnel_name" \
-        '.result[] | select(.name == $name) | .id' | head -1)
-
-    if [ -z "$TUNNEL_ID" ]; then
-        echo "⏭️  No existing tunnel found (Terraform will create one on apply)"
-        return 0
-    fi
-
-    echo "✓ Found tunnel: $tunnel_name (ID: $TUNNEL_ID)"
-
-    # Provider import ID formats can vary; try common patterns.
-    declare -a import_candidates=(
-        "$ACCOUNT_ID/$TUNNEL_ID"
-        "accounts/$ACCOUNT_ID/$TUNNEL_ID"
-        "accounts/$ACCOUNT_ID/cfd_tunnel/$TUNNEL_ID"
-        "$TUNNEL_ID"
-    )
-
-    for import_id in "${import_candidates[@]}"; do
-        if terraform import cloudflare_zero_trust_tunnel_cloudflared.selfhost "$import_id" >/dev/null 2>&1; then
-            echo "✓ Imported self-host tunnel (ID: $import_id)"
-            return 0
-        fi
-    done
-
-    echo "⚠️  Could not import self-host tunnel automatically."
-    echo "   Please import manually using the tunnel ID from Cloudflare Zero Trust dashboard."
-    return 1
+  if [ "$FAILED_COUNT" -gt 0 ]; then
+    exit 1
+  fi
 }
 
-# Main execution
-echo "🔄 Starting auto-import process..."
-echo ""
-
-# Initialize terraform if needed
-if [ ! -d ".terraform" ]; then
-    echo "📦 Initializing Terraform..."
-    terraform init -upgrade >/dev/null 2>&1
-fi
-
-# Import DNS records
-import_dns_records
-
-# Import rulesets
-import_rulesets
-
-# Import managed transforms
-import_managed_transforms
-
-# Import Zero Trust tunnel (if it already exists)
-import_zero_trust_tunnel
-
-# Import Zero Trust Access Applications
-import_zero_trust_access_apps
-
-echo ""
-echo "✅ Auto-import complete!"
-echo ""
-
-# Apply to update sensitive field metadata in state
-echo "🔄 Syncing state metadata (marking sensitive fields)..."
-# This applies only metadata changes (sensitive field markings), no actual infrastructure changes
-terraform apply -auto-approve >/dev/null 2>&1
-echo "✓ State metadata synced"
-echo ""
-
-echo "📊 Current Terraform state summary:"
-echo "   Total resources: $(terraform state list 2>/dev/null | wc -l | tr -d ' ')"
-echo ""
-
-if [ "$(terraform state list 2>/dev/null | wc -l | tr -d ' ')" -gt 0 ]; then
-    echo "📝 Resources in state:"
-    terraform state list 2>/dev/null | sed 's/^/   - /'
-else
-    echo "⚠️  No resources in state. You may need to create them first."
-fi
-
-echo ""
-echo "🔍 Verifying configuration..."
-PLAN_OUTPUT=$(terraform plan -detailed-exitcode 2>&1 || true)
-if echo "$PLAN_OUTPUT" | grep -q "No changes"; then
-    echo "✓ No changes needed - infrastructure matches configuration!"
-else
-    echo "📝 To see what changes are needed, run:"
-    echo "   terraform plan"
-fi
-echo ""
+main "$@"

@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: logging-loki
+  name: loki
   annotations:
     # monitoring 앱이 ServiceMonitor CRD를 먼저 준비한 뒤 Loki를 동기화해요.
     argocd.argoproj.io/sync-wave: '4'

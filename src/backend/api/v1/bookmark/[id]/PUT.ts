@@ -8,72 +8,81 @@ import { requireAdult } from '@/backend/middleware/adult'
 import { requireAuth } from '@/backend/middleware/require-auth'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
+import { MAX_MANGA_ID } from '@/constants/policy'
 import { bookmarkTable } from '@/database/supabase/activity'
 import { db } from '@/database/supabase/drizzle'
 import { userTable } from '@/database/supabase/user'
 
-import { getBookmarkLimit } from './limit'
+import { getBookmarkLimit } from '../limit'
 
-export type POSTV1BookmarkToggleResponse = {
-  mangaId: number
-  createdAt: string | null
-}
+const ErrorCode = {
+  BOOKMARK_INSERT_FAILED: 'BOOKMARK_INSERT_FAILED',
+  BOOKMARK_LIMIT_REACHED: 'BOOKMARK_LIMIT_REACHED',
+} as const
 
-const toggleSchema = z.object({
-  mangaId: z.coerce.number().int().positive(),
+const paramSchema = z.object({
+  id: z.coerce.number().int().positive().max(MAX_MANGA_ID),
 })
+
+export type PUTV1BookmarkIdResponse = {
+  mangaId: number
+  createdAt: number
+}
 
 const route = new Hono<Env>()
 
-route.post('/', requireAuth, requireAdult, zProblemValidator('json', toggleSchema), async (c) => {
+route.put('/', requireAuth, requireAdult, zProblemValidator('param', paramSchema), async (c) => {
   const userId = c.get('userId')!
-  const { mangaId } = c.req.valid('json')
+  const { id: mangaId } = c.req.valid('param')
 
   try {
-    const { createdAt } = await db.transaction(async (tx) => {
-      // 1) 유저 락으로 동시성 보장
+    const result = await db.transaction(async (tx) => {
+      // Serialize bookmark writes per user so mixed PUT/DELETE requests resolve predictably.
       await tx.select({ id: userTable.id }).from(userTable).where(eq(userTable.id, userId)).for('update')
 
-      // 2) 이미 있으면 삭제
       const [existing] = await tx
         .select({ createdAt: bookmarkTable.createdAt })
         .from(bookmarkTable)
         .where(and(eq(bookmarkTable.userId, userId), eq(bookmarkTable.mangaId, mangaId)))
 
       if (existing) {
-        await tx.delete(bookmarkTable).where(and(eq(bookmarkTable.userId, userId), eq(bookmarkTable.mangaId, mangaId)))
-        return { createdAt: null }
+        return {
+          createdAt: existing.createdAt.getTime(),
+          mangaId,
+          status: 200 as const,
+        }
       }
 
-      // 3) 북마크 저장 한도 계산 (추가 시에만 평가)
       const limit = await getBookmarkLimit(tx, userId)
 
-      // 4) 한도 체크 후 추가
       const [{ count: currentCount }] = await tx
         .select({ count: count(bookmarkTable.mangaId) })
         .from(bookmarkTable)
         .where(eq(bookmarkTable.userId, userId))
 
       if (Number(currentCount) >= limit) {
-        throw new Error('BOOKMARK_LIMIT_REACHED')
+        throw new Error(ErrorCode.BOOKMARK_LIMIT_REACHED)
       }
 
-      const [{ createdAt }] = await tx
+      const [inserted] = await tx
         .insert(bookmarkTable)
         .values({ userId, mangaId })
         .returning({ createdAt: bookmarkTable.createdAt })
 
-      return { createdAt }
+      if (!inserted) {
+        throw new Error(ErrorCode.BOOKMARK_INSERT_FAILED)
+      }
+
+      return {
+        createdAt: inserted.createdAt.getTime(),
+        mangaId,
+        status: 201 as const,
+      }
     })
 
-    return c.json<POSTV1BookmarkToggleResponse>({
-      mangaId,
-      createdAt: createdAt ? createdAt.toISOString() : null,
-    })
+    return c.json<PUTV1BookmarkIdResponse>({ mangaId: result.mangaId, createdAt: result.createdAt }, result.status)
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'UNKNOWN_ERROR'
-
-    if (message === 'BOOKMARK_LIMIT_REACHED') {
+    if (error instanceof Error && error.message === ErrorCode.BOOKMARK_LIMIT_REACHED) {
       return problemResponse(c, {
         status: 403,
         code: 'libo-expansion-required',
@@ -81,8 +90,12 @@ route.post('/', requireAuth, requireAdult, zProblemValidator('json', toggleSchem
       })
     }
 
+    if (error instanceof Error && error.message === ErrorCode.BOOKMARK_INSERT_FAILED) {
+      return problemResponse(c, { status: 500, detail: '북마크 저장에 실패했어요' })
+    }
+
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '북마크 처리에 실패했어요' })
+    return problemResponse(c, { status: 500, detail: '북마크 저장에 실패했어요' })
   }
 })
 

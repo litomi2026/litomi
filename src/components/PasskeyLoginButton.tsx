@@ -142,11 +142,11 @@ export default function PasskeyLoginButton({ disabled, onSuccess, turnstile }: P
         disabled:opacity-50 disabled:pointer-events-none"
       disabled={disabled || isPending}
       onClick={() => runPasskeyLogin('button')}
-      title={supportsAutofill ? '패스키 선택 다시 열기' : '패스키로 로그인'}
+      title="패스키로 로그인"
       type="button"
     >
       {isPending ? <Loader2 className="size-5 shrink-0 animate-spin" /> : <Fingerprint className="size-5 shrink-0" />}
-      <span>{supportsAutofill ? '패스키 선택 다시 열기' : '패스키로 로그인'}</span>
+      <span>패스키로 로그인</span>
     </button>
   )
 }
