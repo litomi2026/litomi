@@ -3,11 +3,6 @@ kind: Deployment
 metadata:
   name: litomi-web
 spec:
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 0
-      maxUnavailable: 1
   selector:
     matchLabels:
       app: litomi-web

@@ -1,12 +1,12 @@
 'use client'
 
-import { sendGAEvent } from '@next/third-parties/google'
 import { ExternalLink } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 
 import type { KeywordPromotion } from '@/sponsor'
 
 import useGAViewEvent from '@/hook/useGAViewEvent'
+import { track } from '@/lib/analytics/browser'
 
 type Props = {
   promotion: KeywordPromotion
@@ -27,7 +27,7 @@ export default function MangaCardPromotion({ promotion }: Props) {
   })
 
   function handlePromotionClick() {
-    sendGAEvent('event', 'select_promotion', {
+    track('select_promotion', {
       promotion_id: `keyword_promotion_${promotion.id}`,
       promotion_name: promotion.title,
       creative_name: 'promotion_card',
