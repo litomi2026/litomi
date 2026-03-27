@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: gtm-server
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: anal.litomi.in
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: gtm-server-tagging
+                port:
+                  number: 8080
+    - host: anal-preview.litomi.in
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: gtm-server-preview
+                port:
+                  number: 8080
