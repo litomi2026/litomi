@@ -1,16 +1,16 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: platform-argocd
+  name: metrics-server
 spec:
   project: platform
   source:
     repoURL: https://github.com/gwak2837/litomi.git
     targetRevision: main
-    path: k8s/platform/argocd
+    path: k8s/platform/metrics-server
   destination:
     server: https://kubernetes.default.svc
-    namespace: argocd
+    namespace: kube-system
   syncPolicy:
     automated:
       prune: true

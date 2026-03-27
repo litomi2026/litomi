@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: velero
+  annotations:
+    # MinIO Tenant + ESO가 먼저 준비돼야 백업 스토리지 연결이 안정적이에요.
+    argocd.argoproj.io/sync-wave: '4'
+spec:
+  project: platform
+  sources:
+    - repoURL: https://vmware-tanzu.github.io/helm-charts
+      chart: velero
+      targetRevision: 11.3.2
+      helm:
+        releaseName: velero
+        valueFiles:
+          - $values/k8s/platform/velero/velero.values.yaml
+    - repoURL: https://github.com/gwak2837/litomi.git
+      targetRevision: main
+      ref: values
+    - repoURL: https://github.com/gwak2837/litomi.git
+      targetRevision: main
+      path: k8s/platform/velero
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: velero
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

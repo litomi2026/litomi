@@ -67,18 +67,6 @@ import_dns_records() {
     # Define mappings: terraform_resource -> matching criteria
     # For TXT records with same name, we need to match by content pattern
     declare -a import_mappings=(
-        # Root A Records
-        "cloudflare_dns_record.root_a[\"216.239.32.21\"]|litomi.in|A|216.239.32.21"
-        "cloudflare_dns_record.root_a[\"216.239.34.21\"]|litomi.in|A|216.239.34.21"
-        "cloudflare_dns_record.root_a[\"216.239.36.21\"]|litomi.in|A|216.239.36.21"
-        "cloudflare_dns_record.root_a[\"216.239.38.21\"]|litomi.in|A|216.239.38.21"
-        
-        # Root AAAA Records
-        "cloudflare_dns_record.root_aaaa[\"2001:4860:4802:32::15\"]|litomi.in|AAAA|2001:4860:4802:32::15"
-        "cloudflare_dns_record.root_aaaa[\"2001:4860:4802:34::15\"]|litomi.in|AAAA|2001:4860:4802:34::15"
-        "cloudflare_dns_record.root_aaaa[\"2001:4860:4802:36::15\"]|litomi.in|AAAA|2001:4860:4802:36::15"
-        "cloudflare_dns_record.root_aaaa[\"2001:4860:4802:38::15\"]|litomi.in|AAAA|2001:4860:4802:38::15"
-
         # CNAME Records
         "cloudflare_dns_record.www_cname|www.litomi.in|CNAME|"
         "cloudflare_dns_record.r2_cname|r2.litomi.in|CNAME|"
@@ -94,6 +82,8 @@ import_dns_records() {
         "cloudflare_dns_record.netlify_cname|netlify.litomi.in|CNAME|"
 
         # Self-host tunnel DNS
+        "cloudflare_dns_record.selfhost_anal_cname|anal.litomi.in|CNAME|"
+        "cloudflare_dns_record.selfhost_anal_preview_cname|anal-preview.litomi.in|CNAME|"
         "cloudflare_dns_record.selfhost_grafana_cname|grafana.litomi.in|CNAME|"
         "cloudflare_dns_record.selfhost_argocd_cname|argocd.litomi.in|CNAME|"
 
