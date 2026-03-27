@@ -1,10 +1,10 @@
 'use client'
 
-import { sendGAEvent } from '@next/third-parties/google'
 import { Heart } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 
 import useGAViewEvent from '@/hook/useGAViewEvent'
+import { track } from '@/lib/analytics/browser'
 
 import LogoDiscord from '../icons/LogoDiscord'
 import { MangaCardSkeleton } from './MangaCard'
@@ -24,7 +24,7 @@ export default function MangaCardDonation() {
   })
 
   function handleSocialClick(platform: string) {
-    sendGAEvent('event', 'select_promotion', {
+    track('select_promotion', {
       promotion_id: `litomi_social_${platform}`,
       promotion_name: '소셜 링크',
       creative_name: 'donation_card',
@@ -35,7 +35,7 @@ export default function MangaCardDonation() {
   }
 
   function handleDonationClick(platform: string) {
-    sendGAEvent('event', 'select_promotion', {
+    track('select_promotion', {
       promotion_id: `litomi_donation_${platform}`,
       promotion_name: '후원 플랫폼',
       creative_name: 'donation_card',

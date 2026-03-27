@@ -1,14 +1,11 @@
 'use client'
 
-import { sendGAEvent } from '@next/third-parties/google'
 import { LogOut } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { env } from '@/env/client'
 import amplitude from '@/lib/amplitude/browser'
+import { identify, track } from '@/lib/analytics/browser'
 import useLogoutMutation from '@/query/useLogoutMutation'
-
-const { NEXT_PUBLIC_GA_ID } = env
 
 export default function LogoutButton() {
   const { mutate: logout, isPending } = useLogoutMutation()
@@ -19,11 +16,8 @@ export default function LogoutButton() {
         toast.info(loginId ? `${loginId} 계정에서 로그아웃했어요` : '로그아웃했어요')
         amplitude.track('logout')
         amplitude.reset()
-
-        if (NEXT_PUBLIC_GA_ID) {
-          sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: null })
-          sendGAEvent('event', 'logout')
-        }
+        identify(null)
+        track('logout')
       },
       onError: (error) => {
         toast.error(error.message || '로그아웃 중 오류가 발생했어요')

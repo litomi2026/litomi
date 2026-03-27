@@ -1,16 +1,13 @@
 'use client'
 
-import { sendGAEvent } from '@next/third-parties/google'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 
-import { env } from '@/env/client'
 import amplitude from '@/lib/amplitude/browser'
+import { identify } from '@/lib/analytics/browser'
 import { showAdultVerificationRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
 import { AdultState, getAdultState, isAdultAccessBlocked } from '@/utils/adult-verification'
-
-const { NEXT_PUBLIC_GA_ID } = env
 
 export default function MyInfoSync() {
   const queryClient = useQueryClient()
@@ -24,9 +21,7 @@ export default function MyInfoSync() {
   useEffect(() => {
     if (userId) {
       amplitude.setUserId(userId)
-      if (NEXT_PUBLIC_GA_ID) {
-        sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: userId })
-      }
+      identify(userId)
     }
   }, [userId])
 
