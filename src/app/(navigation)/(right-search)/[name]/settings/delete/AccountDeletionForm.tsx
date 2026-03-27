@@ -1,6 +1,5 @@
 'use client'
 
-import { sendGAEvent } from '@next/third-parties/google'
 import { useQueryClient } from '@tanstack/react-query'
 import { AlertTriangle, Check, Loader2, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -8,13 +7,11 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 
 import { QueryKeys } from '@/constants/query'
-import { env } from '@/env/client'
 import useServerAction from '@/hook/useServerAction'
 import amplitude from '@/lib/amplitude/browser'
+import { identify } from '@/lib/analytics/browser'
 
 import { deleteAccount } from './actions'
-
-const { NEXT_PUBLIC_GA_ID } = env
 
 const CONSEQUENCES = [
   '모든 북마크가 삭제돼요',
@@ -50,9 +47,7 @@ export default function AccountDeletionForm({ loginId }: Readonly<Props>) {
     onSuccess: () => {
       toast.success('계정이 삭제됐어요. 이용해 주셔서 감사합니다!')
       amplitude.reset()
-      if (NEXT_PUBLIC_GA_ID) {
-        sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: null })
-      }
+      identify(null)
       queryClient.setQueriesData({ queryKey: QueryKeys.me }, () => null)
       router.push('/')
     },

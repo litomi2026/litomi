@@ -1,6 +1,5 @@
 'use client'
 
-import { sendGAEvent } from '@next/third-parties/google'
 import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import ms from 'ms'
@@ -9,12 +8,10 @@ import { toast } from 'sonner'
 
 import MyInfoSync from '@/components/MyInfoSync'
 import { QueryKeys } from '@/constants/query'
-import { env } from '@/env/client'
 import amplitude from '@/lib/amplitude/browser'
+import { identify } from '@/lib/analytics/browser'
 import { showAdultVerificationRequiredToast, showLiboExpansionRequiredToast, showLoginRequiredToast } from '@/lib/toast'
 import { ProblemDetailsError } from '@/utils/react-query-error'
-
-const { NEXT_PUBLIC_GA_ID } = env
 
 export function isAdultVerificationRequiredProblem(typeUrl: string): boolean {
   const suffix = '/problems/adult-verification-required'
@@ -76,9 +73,7 @@ function getCachedUsername(queryClient: QueryClient): string | undefined {
 function handleUnauthorizedError() {
   queryClient.setQueriesData({ queryKey: QueryKeys.me }, () => null)
   amplitude.reset()
-  if (NEXT_PUBLIC_GA_ID) {
-    sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: null })
-  }
+  identify(null)
 }
 
 const queryClient = new QueryClient({

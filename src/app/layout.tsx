@@ -2,7 +2,7 @@ import './globals.css'
 
 import type { Metadata, Viewport } from 'next'
 
-import { GoogleAnalytics } from '@next/third-parties/google'
+import { GoogleTagManager } from '@next/third-parties/google'
 import dynamic from 'next/dynamic'
 import localFont from 'next/font/local'
 import { ReactNode } from 'react'
@@ -28,7 +28,7 @@ import { env } from '@/env/client'
 import { env as serverEnv } from '@/env/server.next'
 import QueryProvider from '@/lib/react-query/QueryProvider'
 
-const { NEXT_PUBLIC_GA_ID } = env
+const { NEXT_PUBLIC_GTM_ID, NEXT_PUBLIC_GTM_SCRIPT_URL } = env
 const { AMPLITUDE_API_KEY } = serverEnv
 
 // NOTE: 사용하지 않을 수 있어서 dynamic import
@@ -124,7 +124,9 @@ export default function RootLayout({ children }: Readonly<Props>) {
             theme="system"
           />
         </OverlayHost>
-        {NEXT_PUBLIC_GA_ID && <GoogleAnalytics gaId={NEXT_PUBLIC_GA_ID} />}
+        {(NEXT_PUBLIC_GTM_ID || NEXT_PUBLIC_GTM_SCRIPT_URL) && (
+          <GoogleTagManager gtmId={NEXT_PUBLIC_GTM_ID} gtmScriptUrl={NEXT_PUBLIC_GTM_SCRIPT_URL} />
+        )}
         {AMPLITUDE_API_KEY && <Amplitude apiKey={AMPLITUDE_API_KEY} />}
       </body>
     </html>

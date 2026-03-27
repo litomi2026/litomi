@@ -2,7 +2,6 @@
 
 import FingerprintJS from '@fingerprintjs/fingerprintjs'
 import { TurnstileInstance } from '@marsidev/react-turnstile'
-import { sendGAEvent } from '@next/third-parties/google'
 import { useQueryClient } from '@tanstack/react-query'
 import { Eye, EyeOff, Loader2, X } from 'lucide-react'
 import Link from 'next/link'
@@ -19,17 +18,15 @@ import Toggle from '@/components/ui/Toggle'
 import { LOGIN_ID_PATTERN, PASSWORD_PATTERN } from '@/constants/policy'
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
-import { env } from '@/env/client'
 import useServerAction, { getFieldError, getFormField } from '@/hook/useServerAction'
 import amplitude from '@/lib/amplitude/browser'
+import { identify, track } from '@/lib/analytics/browser'
 import { sanitizeRedirect } from '@/utils'
 import { generatePKCEChallenge, PKCEChallenge } from '@/utils/pkce-browser'
 
 import login from './action'
 import SignupLink from './SignupLink'
 import TwoFactorVerification from './TwoFactorVerification'
-
-const { NEXT_PUBLIC_GA_ID } = env
 
 type TwoFactorData = {
   fingerprint: string
@@ -115,10 +112,8 @@ export default function LoginForm() {
     if (id) {
       amplitude.setUserId(id)
       amplitude.track('login', { loginId, lastLoginAt, lastLogoutAt })
-      if (NEXT_PUBLIC_GA_ID) {
-        sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: id })
-        sendGAEvent('event', 'login', { loginId, lastLoginAt, lastLogoutAt })
-      }
+      identify(id)
+      track('login')
     }
 
     const localHistory = getLocalReadingHistory()
