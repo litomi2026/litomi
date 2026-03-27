@@ -75,4 +75,21 @@ dependencies {
     implementation project(':capacitor-cordova-android-plugins')
 }
 
+// NOTE: Capacitor가 생성한 Java 21 기본값을 덮어써서 앱 모듈을 Java 25 toolchain/bytecode로 고정합니다.
+ext.postBuildExtras = {
+    android {
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_25
+            targetCompatibility JavaVersion.VERSION_25
+        }
+    }
+
+    tasks.withType(org.gradle.api.tasks.compile.JavaCompile).configureEach {
+        javaCompiler = javaToolchains.compilerFor {
+            languageVersion = org.gradle.jvm.toolchain.JavaLanguageVersion.of(25)
+        }
+        options.release = 25
+    }
+}
+
 apply from: 'capacitor.build.gradle'

@@ -45,7 +45,6 @@
     "@amplitude/analytics-client-common": "2.4.37",
     "@amplitude/analytics-node": "^1.5.47",
     "@capacitor/core": "8.3.0",
-    "@capacitor/privacy-screen": "2.0.1",
     "@fingerprintjs/fingerprintjs": "^5.1.0",
     "@google-analytics/data": "^5.2.1",
     "@hono/otel": "^1.1.1",

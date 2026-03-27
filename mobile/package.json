@@ -19,8 +19,7 @@
   },
   "dependencies": {
     "@capacitor/app": "8.1.0",
-    "@capacitor/core": "8.3.0",
-    "@capacitor/privacy-screen": "2.0.1"
+    "@capacitor/core": "8.3.0"
   },
   "devDependencies": {
     "@capacitor/android": "8.3.0",
