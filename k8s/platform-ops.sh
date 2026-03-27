@@ -101,7 +101,7 @@ main() {
   step "Step 6/9: Vault secret seeding"
   seed_vault_secrets_from_dir
 
-  step "Step 7/9: reconcile"
+  step "Step 7/9: Argo CD refresh"
   run_reconcile_actions
 
   step "Step 8/9: platform checks"
