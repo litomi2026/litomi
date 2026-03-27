@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gtm-server-preview
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: gtm-server-preview
+  template:
+    metadata:
+      labels:
+        app: gtm-server-preview
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: preview
+          image: gcr.io/cloud-tagging-10302018/gtm-cloud-image:stable
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: CONTAINER_CONFIG
+              valueFrom:
+                secretKeyRef:
+                  name: gtm-server-secret
+                  key: CONTAINER_CONFIG
+            - name: PORT
+              value: '8080'
+            - name: RUN_AS_PREVIEW_SERVER
+              value: 'true'
+          ports:
+            - containerPort: 8080
+              name: http
+          startupProbe:
+            httpGet:
+              path: /healthy
+              port: 8080
+            timeoutSeconds: 3
+            periodSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /healthy
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /healthy
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 6
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
