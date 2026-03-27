@@ -7,20 +7,20 @@ resources:
   - projects/platform.yaml
   - projects/litomi.yaml
 
-  - applications/platform-vault.yaml
-  - applications/platform-external-secrets.yaml
-  - applications/platform-metrics-server.yaml
-  - applications/platform-cloudflared.yaml
-  - applications/platform-gtm-server.yaml
-  - applications/platform-monitoring.yaml
-  - applications/platform-logging-loki.yaml
-  - applications/platform-logging-fluent-bit.yaml
-  - applications/platform-tracing-tempo.yaml
-  - applications/platform-tracing-otel-collector.yaml
-  - applications/platform-minio-operator.yaml
-  - applications/platform-minio.yaml
-  - applications/platform-velero.yaml
-  - applications/platform-argocd.yaml
+  - applications/vault.yaml
+  - applications/external-secrets.yaml
+  - applications/metrics-server.yaml
+  - applications/cloudflared.yaml
+  - applications/gtm-server.yaml
+  - applications/monitoring.yaml
+  - applications/logging-loki.yaml
+  - applications/logging-fluent-bit.yaml
+  - applications/tracing-tempo.yaml
+  - applications/tracing-otel-collector.yaml
+  - applications/minio-operator.yaml
+  - applications/minio.yaml
+  - applications/velero.yaml
+  - applications/argocd.yaml
 
   - applications/litomi-stg.yaml
   - applications/litomi-prod.yaml
