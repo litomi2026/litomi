@@ -88,7 +88,6 @@ ext.postBuildExtras = {
         javaCompiler = javaToolchains.compilerFor {
             languageVersion = org.gradle.jvm.toolchain.JavaLanguageVersion.of(25)
         }
-        options.release = 25
     }
 }
 
