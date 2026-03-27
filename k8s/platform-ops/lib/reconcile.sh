@@ -1,23 +1,6 @@
 #!/usr/bin/env bash
 # shellcheck shell=bash
 
-force_reconcile_resource() {
-  local resource="$1"
-  local stamp
-  local lines
-  local ns
-  local name
-
-  stamp="$(date +%s)"
-  lines="$(k get "$resource" -A -o jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.metadata.name}{"\n"}{end}' 2>/dev/null || true)"
-  [[ -n "$lines" ]] || return
-
-  while IFS=$'\t' read -r ns name; do
-    [[ -z "$ns" || -z "$name" ]] && continue
-    k -n "$ns" annotate "$resource" "$name" litomi.dev/reconcile-ts="$stamp" --overwrite >/dev/null 2>&1 || true
-  done <<< "$lines"
-}
-
 force_refresh_argocd_apps() {
   local app
   local apps
@@ -82,9 +65,9 @@ force_sync_out_of_sync_argocd_apps() {
 }
 
 run_reconcile_actions() {
-  force_reconcile_resource secretstores.external-secrets.io
-  force_reconcile_resource externalsecrets.external-secrets.io
+  # Keep Git-managed ESO resources immutable at runtime to avoid Argo CD drift.
+  # Vault changes are picked up via each ExternalSecret's periodic refresh interval.
   force_refresh_argocd_apps
   force_sync_out_of_sync_argocd_apps
-  ok "reconcile annotations applied"
+  ok "Argo CD refresh requested"
 }
