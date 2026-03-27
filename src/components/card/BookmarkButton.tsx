@@ -15,10 +15,9 @@ import type { GETV1BookmarkIdResponse } from '@/backend/api/v1/bookmark/id'
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import useDelayedPendingIndicator from '@/hook/useDelayedPendingIndicator'
-import { showAdultVerificationRequiredToast, showLoginRequiredToast } from '@/lib/toast'
+import { showLoginRequiredToast } from '@/lib/toast'
 import useBookmarkQuery from '@/query/useBookmarkQuery'
 import useMeQuery from '@/query/useMeQuery'
-import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import { useLibraryModal } from './LibraryModal'
@@ -33,7 +32,6 @@ type Props = {
 export default function BookmarkButton({ manga, className }: Props) {
   const { id: mangaId } = manga
   const { data: me } = useMeQuery()
-  const adultState = getAdultState(me)
   const { data: bookmarks } = useBookmarkQuery()
   const bookmarkIds = useMemo(() => new Set(bookmarks?.mangaIds), [bookmarks])
   const isBookmarked = bookmarkIds.has(mangaId)
@@ -109,10 +107,6 @@ export default function BookmarkButton({ manga, className }: Props) {
 
     if (!me) {
       showLoginRequiredToast()
-      return
-    }
-    if (!hasAdultAccess(adultState)) {
-      showAdultVerificationRequiredToast({ username: me.name })
       return
     }
     if (saveMutation.isPending) {

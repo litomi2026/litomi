@@ -20,7 +20,7 @@ export default async function MyPagePrivateNavigation({ username }: Readonly<Pro
 
   const privateLinks = [
     { href: `/@${username}/censor`, label: '검열' },
-    { href: `/@${username}/donations`, label: '기부' },
+    { href: `/@${username}/donations`, label: '후원' },
     { href: `/@${username}/settings`, label: '설정' },
   ]
 
