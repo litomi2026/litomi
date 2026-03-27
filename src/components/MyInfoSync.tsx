@@ -5,15 +5,13 @@ import { useEffect } from 'react'
 
 import amplitude from '@/lib/amplitude/browser'
 import { identify } from '@/lib/analytics/browser'
-import { showAdultVerificationRequiredToast } from '@/lib/toast'
 import useMeQuery from '@/query/useMeQuery'
-import { AdultState, getAdultState, isAdultAccessBlocked } from '@/utils/adult-verification'
+import { getAdultState, isAdultAccessBlocked } from '@/utils/adult-verification'
 
 export default function MyInfoSync() {
   const queryClient = useQueryClient()
   const { data: me } = useMeQuery()
   const userId = me?.id
-  const username = me?.name
   const adultState = getAdultState(me)
   const shouldPurgeAdultQueries = isAdultAccessBlocked(adultState)
 
@@ -24,13 +22,6 @@ export default function MyInfoSync() {
       identify(userId)
     }
   }, [userId])
-
-  // NOTE: 성인인증이 필요한 경우 토스트를 표시해요
-  useEffect(() => {
-    if (adultState === AdultState.UNVERIFIED) {
-      showAdultVerificationRequiredToast({ username })
-    }
-  }, [adultState, username])
 
   // NOTE: 성인 관련 API 접근 불가 시 requireAdult 캐시를 제거해요
   useEffect(() => {

@@ -144,15 +144,14 @@ sudo kubectl -n vault port-forward svc/vault 8200:8200
 open https://127.0.0.1:8200
 ```
 
-Secret 수동 갱신
+Secret 동기화 상태 확인
 
 ```zsh
-kubectl -n litomi-stg annotate externalsecret litomi-backend-secret \
-  litomi.dev/reconcile-ts="$(date +%s)" --overwrite
-
 kubectl -n litomi-stg get externalsecret litomi-backend-secret \
-  -o jsonpath='{.status.refreshTime}{"\n"}{.status.conditions[?(@.type=="Ready")].status}{"\n"}'
+  -o jsonpath='{.spec.refreshInterval}{"\n"}{.status.refreshTime}{"\n"}{.status.conditions[?(@.type=="Ready")].status}{"\n"}'
 ```
+
+Vault 값을 바꾸면 ESO가 주기적으로 반영해요. 빠른 반영이 필요한 `gtm-server`, `cloudflared`, `litomi-backend-secret`(stg/prod)는 `5m`, 나머지는 `1h` 주기예요.
 
 ### Monitoring
 
