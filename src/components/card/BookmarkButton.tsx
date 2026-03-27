@@ -9,8 +9,8 @@ import { useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
+import type { PUTV1BookmarkIdResponse } from '@/backend/api/v1/bookmark/[id]/PUT'
 import type { GETV1BookmarkIdResponse } from '@/backend/api/v1/bookmark/id'
-import type { POSTV1BookmarkToggleResponse } from '@/backend/api/v1/bookmark/toggle'
 
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
@@ -36,28 +36,31 @@ export default function BookmarkButton({ manga, className }: Props) {
   const adultState = getAdultState(me)
   const { data: bookmarks } = useBookmarkQuery()
   const bookmarkIds = useMemo(() => new Set(bookmarks?.mangaIds), [bookmarks])
-  const isIconSelected = bookmarkIds.has(mangaId)
+  const isBookmarked = bookmarkIds.has(mangaId)
   const queryClient = useQueryClient()
   const { open: openLibraryModal } = useLibraryModal()
 
-  const toggleMutation = useMutation<{ createdAt: string | null }, unknown, number>({
-    mutationFn: async (mangaId) => {
-      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/bookmark/toggle`
+  const saveMutation = useMutation<void, unknown, { mangaId: number; shouldBookmark: boolean }>({
+    mutationFn: async ({ mangaId, shouldBookmark }) => {
+      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/bookmark/${mangaId}`
 
-      const { data } = await fetchWithErrorHandling<POSTV1BookmarkToggleResponse>(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      if (!shouldBookmark) {
+        await fetchWithErrorHandling(url, {
+          method: 'DELETE',
+          credentials: 'include',
+        })
+        return
+      }
+
+      await fetchWithErrorHandling<PUTV1BookmarkIdResponse>(url, {
+        method: 'PUT',
         credentials: 'include',
-        body: JSON.stringify({ mangaId }),
       })
-
-      return { createdAt: data.createdAt }
     },
-    onSuccess: ({ createdAt }) => {
-      const isBookmarked = Boolean(createdAt)
+    onSuccess: (_, { mangaId, shouldBookmark }) => {
       const toastId = `bookmark-toggle-${mangaId}`
 
-      if (isBookmarked) {
+      if (shouldBookmark) {
         toast.success('북마크에 추가했어요', {
           action: {
             label: '서재에도 추가',
@@ -74,7 +77,7 @@ export default function BookmarkButton({ manga, className }: Props) {
       }
 
       queryClient.setQueryData<GETV1BookmarkIdResponse>(QueryKeys.bookmarks, (oldBookmarks) => {
-        if (!createdAt) {
+        if (!shouldBookmark) {
           if (!oldBookmarks) {
             return oldBookmarks
           }
@@ -99,7 +102,7 @@ export default function BookmarkButton({ manga, className }: Props) {
     },
   })
 
-  const isSpinnerVisible = useDelayedPendingIndicator(toggleMutation.isPending)
+  const isSpinnerVisible = useDelayedPendingIndicator(saveMutation.isPending)
 
   function handleToggleClick(e: React.MouseEvent<HTMLButtonElement>) {
     e.stopPropagation()
@@ -112,29 +115,29 @@ export default function BookmarkButton({ manga, className }: Props) {
       showAdultVerificationRequiredToast({ username: me.name })
       return
     }
-    if (toggleMutation.isPending) {
+    if (saveMutation.isPending) {
       return
     }
 
-    toggleMutation.mutate(mangaId)
+    saveMutation.mutate({ mangaId, shouldBookmark: !isBookmarked })
   }
 
   return (
     <div className="flex-1">
       <button
-        aria-busy={toggleMutation.isPending}
+        aria-busy={saveMutation.isPending}
         className={twMerge(
           'flex justify-center items-center gap-1 transition disabled:bg-zinc-800 disabled:text-zinc-500 disabled:cursor-not-allowed hover:bg-zinc-800 active:bg-zinc-900 active:border-zinc-700',
           className,
         )}
-        disabled={toggleMutation.isPending}
+        disabled={saveMutation.isPending}
         onClick={handleToggleClick}
         type="button"
       >
         {isSpinnerVisible ? (
           <Loader2 className="size-4 animate-spin" />
         ) : (
-          <Bookmark className="size-4" fill={isIconSelected ? 'currentColor' : 'none'} />
+          <Bookmark className="size-4" fill={isBookmarked ? 'currentColor' : 'none'} />
         )}
         <span>북마크</span>
       </button>

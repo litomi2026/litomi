@@ -3,11 +3,16 @@ import { Hono } from 'hono'
 import { contextStorage } from 'hono/context-storage'
 
 import type { Env } from '@/backend'
-
-import bookmarkRoutes from '../bookmark'
+import type { ValidationProblemDetails } from '@/utils/problem-details'
 
 let shouldThrowDatabaseError = false
+let mockBookmarkLimit = 500
+let nextCreatedAtMs = new Date('2025-01-10T00:00:00.000Z').getTime()
 const mockBookmarks: Map<number, Array<{ mangaId: number; createdAt: Date }>> = new Map()
+type BookmarkRoutesModule = typeof import('../bookmark')
+
+let bookmarkRoutes: BookmarkRoutesModule['default']
+let app: Hono<TestEnv>
 
 type BookmarkExportResponse = {
   bookmarks: BookmarkItem[]
@@ -18,6 +23,11 @@ type BookmarkIdResponse = {
 }
 
 type BookmarkItem = {
+  mangaId: number
+  createdAt: number
+}
+
+type BookmarkPutResponse = {
   mangaId: number
   createdAt: number
 }
@@ -34,21 +44,107 @@ type TestEnv = Env & {
   }
 }
 
-const app = new Hono<TestEnv>()
-app.use('*', contextStorage())
-app.use('*', async (c, next) => {
-  const userId = c.env.userId
-  if (typeof userId === 'number') {
-    c.set('userId', userId)
-    c.set('isAdult', c.env.isAdult ?? true)
-  }
-  await next()
-})
-app.route('/', bookmarkRoutes)
+function createBookmarkTx() {
+  return {
+    select: (fields: Record<string, unknown>) => ({
+      from: () => ({
+        where: (condition: unknown) => {
+          const params = extractWhereParams(condition)
+          const userId = Number(params.user_id ?? params.id)
+          const mangaId = params.manga_id
 
-beforeAll(() => {
-  spyOn(console, 'error').mockImplementation(() => {})
-})
+          if ('count' in fields) {
+            return createSelectableResult([{ count: getSortedBookmarks(userId).length }])
+          }
+
+          if ('createdAt' in fields) {
+            const existing = (mockBookmarks.get(userId) || []).find((bookmark) => bookmark.mangaId === mangaId)
+            return createSelectableResult(existing ? [{ createdAt: existing.createdAt }] : [])
+          }
+
+          return createSelectableResult([{ id: userId }])
+        },
+      }),
+    }),
+    insert: () => ({
+      values: ({ userId, mangaId }: { userId: number; mangaId: number }) => ({
+        returning: () => {
+          const createdAt = new Date(nextCreatedAtMs)
+          nextCreatedAtMs += 1000
+
+          const userBookmarks = [...(mockBookmarks.get(userId) || [])]
+          userBookmarks.push({ mangaId, createdAt })
+          mockBookmarks.set(userId, userBookmarks)
+
+          return Promise.resolve([{ createdAt }])
+        },
+      }),
+    }),
+    delete: () => ({
+      where: (condition: unknown) => {
+        const params = extractWhereParams(condition)
+        const userId = Number(params.user_id)
+        const mangaId = Number(params.manga_id)
+        const userBookmarks = [...(mockBookmarks.get(userId) || [])]
+        const nextBookmarks = userBookmarks.filter((bookmark) => bookmark.mangaId !== mangaId)
+
+        mockBookmarks.set(userId, nextBookmarks)
+
+        return Promise.resolve(
+          userBookmarks.length === nextBookmarks.length
+            ? []
+            : [
+                {
+                  mangaId,
+                },
+              ],
+        )
+      },
+    }),
+  }
+}
+
+function createSelectableResult<T>(value: T) {
+  const promise = Promise.resolve(value)
+  return Object.assign(promise, {
+    for: async () => value,
+  })
+}
+
+function extractWhereParams(condition: unknown): Record<string, number> {
+  const params: Record<string, number> = {}
+
+  function visit(node: unknown) {
+    if (!node || typeof node !== 'object') {
+      return
+    }
+
+    const sqlNode = node as { queryChunks?: unknown[] }
+
+    if (!Array.isArray(sqlNode.queryChunks)) {
+      return
+    }
+
+    for (let index = 0; index < sqlNode.queryChunks.length; index += 1) {
+      const chunk = sqlNode.queryChunks[index]
+
+      if (chunk && typeof chunk === 'object' && 'name' in chunk) {
+        const column = chunk as { name?: string }
+        const equalsChunk = sqlNode.queryChunks[index + 1] as { value?: string[] } | undefined
+        const valueChunk = sqlNode.queryChunks[index + 2] as { value?: number } | undefined
+
+        if (column.name && equalsChunk?.value?.[0] === ' = ' && typeof valueChunk?.value === 'number') {
+          params[column.name] = valueChunk.value
+        }
+      }
+
+      visit(chunk)
+    }
+  }
+
+  visit(condition)
+  return params
+}
 
 function getSortedBookmarks(userId: number | string) {
   const userBookmarks = [...(mockBookmarks.get(Number(userId)) || [])]
@@ -61,6 +157,22 @@ function getSortedBookmarks(userId: number | string) {
     return b.mangaId - a.mangaId
   })
 }
+
+mock.module('@/database/supabase/drizzle', () => ({
+  db: {
+    transaction: async (callback: (tx: ReturnType<typeof createBookmarkTx>) => Promise<unknown>) => {
+      if (shouldThrowDatabaseError) {
+        throw new Error('Database connection failed')
+      }
+
+      return callback(createBookmarkTx())
+    },
+  },
+}))
+
+mock.module('@/backend/api/v1/bookmark/limit', () => ({
+  getBookmarkLimit: async () => mockBookmarkLimit,
+}))
 
 mock.module('@/sql/selectBookmark', () => ({
   selectBookmark: async ({
@@ -105,6 +217,30 @@ mock.module('@/sql/selectBookmark', () => ({
     return getSortedBookmarks(userId).map(({ mangaId }) => ({ mangaId }))
   },
 }))
+
+beforeAll(async () => {
+  spyOn(console, 'error').mockImplementation(() => {})
+  bookmarkRoutes = (await import('../bookmark')).default
+
+  app = new Hono<TestEnv>()
+  app.use('*', contextStorage())
+  app.use('*', async (c, next) => {
+    const userId = c.env.userId
+    if (typeof userId === 'number') {
+      c.set('userId', userId)
+      c.set('isAdult', c.env.isAdult ?? true)
+    }
+    await next()
+  })
+  app.route('/', bookmarkRoutes)
+})
+
+beforeEach(() => {
+  shouldThrowDatabaseError = false
+  mockBookmarkLimit = 500
+  nextCreatedAtMs = new Date('2025-01-10T00:00:00.000Z').getTime()
+  mockBookmarks.clear()
+})
 
 describe('GET /api/v1/bookmark', () => {
   beforeEach(() => {
@@ -448,6 +584,118 @@ describe('GET /api/v1/bookmark/export', () => {
     shouldThrowDatabaseError = true
 
     const response = await app.request('/export', {}, { userId: 1 })
+
+    expect(response.status).toBe(500)
+  })
+})
+
+describe('PUT /api/v1/bookmark/:id', () => {
+  test('북마크가 없으면 생성하고 201을 반환한다', async () => {
+    const response = await app.request('/101', { method: 'PUT' }, { userId: 1 })
+
+    expect(response.status).toBe(201)
+    expect(response.headers.get('content-type')).toContain('application/json')
+
+    const data = (await response.json()) as BookmarkPutResponse
+    expect(data.mangaId).toBe(101)
+    expect(typeof data.createdAt).toBe('number')
+    expect(mockBookmarks.get(1)?.map((bookmark) => bookmark.mangaId)).toEqual([101])
+  })
+
+  test('이미 있는 북마크에 다시 요청하면 200을 반환하고 createdAt을 유지한다', async () => {
+    const existingDate = new Date('2025-01-03T00:00:00.000Z')
+    mockBookmarks.set(1, [{ mangaId: 101, createdAt: existingDate }])
+
+    const response = await app.request('/101', { method: 'PUT' }, { userId: 1 })
+
+    expect(response.status).toBe(200)
+    const data = (await response.json()) as BookmarkPutResponse
+    expect(data).toEqual({ mangaId: 101, createdAt: existingDate.getTime() })
+    expect(mockBookmarks.get(1)).toEqual([{ mangaId: 101, createdAt: existingDate }])
+  })
+
+  test('북마크 한도에 도달하면 403과 확장 필요 코드를 반환한다', async () => {
+    mockBookmarkLimit = 1
+    mockBookmarks.set(1, [{ mangaId: 100, createdAt: new Date('2025-01-01T00:00:00.000Z') }])
+
+    const response = await app.request('/101', { method: 'PUT' }, { userId: 1 })
+
+    expect(response.status).toBe(403)
+    const data = (await response.json()) as ValidationProblemDetails
+    expect(data.type).toContain('/problems/libo-expansion-required')
+    expect(mockBookmarks.get(1)?.map((bookmark) => bookmark.mangaId)).toEqual([100])
+  })
+
+  test('성인인증이 되지 않은 사용자는 403 응답을 받는다', async () => {
+    const response = await app.request('/101', { method: 'PUT' }, { userId: 1, isAdult: false })
+
+    expect(response.status).toBe(403)
+    const data = (await response.json()) as ValidationProblemDetails
+    expect(data.type).toContain('/problems/adult-verification-required')
+  })
+
+  test('인증되지 않은 사용자는 401 응답을 받는다', async () => {
+    const response = await app.request('/101', { method: 'PUT' }, {})
+
+    expect(response.status).toBe(401)
+  })
+
+  test('유효하지 않은 manga id는 400 응답을 받는다', async () => {
+    const response = await app.request('/0', { method: 'PUT' }, { userId: 1 })
+
+    expect(response.status).toBe(400)
+  })
+
+  test('데이터베이스 오류 시 500 응답을 반환한다', async () => {
+    shouldThrowDatabaseError = true
+
+    const response = await app.request('/101', { method: 'PUT' }, { userId: 1 })
+
+    expect(response.status).toBe(500)
+  })
+})
+
+describe('DELETE /api/v1/bookmark/:id', () => {
+  test('기존 북마크를 삭제하고 204를 반환한다', async () => {
+    mockBookmarks.set(1, [{ mangaId: 101, createdAt: new Date('2025-01-03T00:00:00.000Z') }])
+
+    const response = await app.request('/101', { method: 'DELETE' }, { userId: 1 })
+
+    expect(response.status).toBe(204)
+    expect(mockBookmarks.get(1)).toEqual([])
+  })
+
+  test('이미 없는 북마크를 삭제해도 204를 반환한다', async () => {
+    const response = await app.request('/101', { method: 'DELETE' }, { userId: 1 })
+
+    expect(response.status).toBe(204)
+    expect(mockBookmarks.get(1)).toEqual([])
+  })
+
+  test('성인인증이 되지 않은 사용자는 403 응답을 받는다', async () => {
+    const response = await app.request('/101', { method: 'DELETE' }, { userId: 1, isAdult: false })
+
+    expect(response.status).toBe(403)
+    const data = (await response.json()) as ValidationProblemDetails
+    expect(data.type).toContain('/problems/adult-verification-required')
+  })
+
+  test('인증되지 않은 사용자는 401 응답을 받는다', async () => {
+    const response = await app.request('/101', { method: 'DELETE' }, {})
+
+    expect(response.status).toBe(401)
+  })
+
+  test('유효하지 않은 manga id는 400 응답을 받는다', async () => {
+    const response = await app.request('/0', { method: 'DELETE' }, { userId: 1 })
+
+    expect(response.status).toBe(400)
+  })
+
+  test('데이터베이스 오류 시 500 응답을 반환한다', async () => {
+    shouldThrowDatabaseError = true
+
+    const response = await app.request('/101', { method: 'DELETE' }, { userId: 1 })
 
     expect(response.status).toBe(500)
   })
