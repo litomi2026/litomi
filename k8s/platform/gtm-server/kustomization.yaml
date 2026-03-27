@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: gtm-server
+
+resources:
+  - namespace.yaml
+  - serviceaccount-eso-vault.yaml
+  - secretstore-vault.yaml
+  - externalsecret-gtm-server-secret.yaml
+  - deployment-preview.yaml
+  - service-preview.yaml
+  - deployment-tagging.yaml
+  - service-tagging.yaml
+  - hpa-tagging.yaml
+  - ingress.yaml
