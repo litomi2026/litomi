@@ -1,26 +1,26 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: tracing-otel-collector
+  name: fluent-bit
   annotations:
-    # Tempo 이후에 Collector를 붙여 trace export 경로를 안정화해요.
+    # Loki가 먼저 뜬 뒤에 에이전트를 붙여 초기 드롭/재시도 노이즈를 줄여요.
     argocd.argoproj.io/sync-wave: '5'
 spec:
   project: platform
   sources:
-    - repoURL: https://open-telemetry.github.io/opentelemetry-helm-charts
-      chart: opentelemetry-collector
-      targetRevision: 0.145.0
+    - repoURL: https://fluent.github.io/helm-charts
+      chart: fluent-bit
+      targetRevision: 0.55.0
       helm:
-        releaseName: opentelemetry-collector
+        releaseName: fluent-bit
         valueFiles:
-          - $values/k8s/platform/tracing/opentelemetry-collector.values.yaml
+          - $values/k8s/platform/logging/fluent-bit.values.yaml
     - repoURL: https://github.com/gwak2837/litomi.git
       targetRevision: main
       ref: values
   destination:
     server: https://kubernetes.default.svc
-    namespace: tracing
+    namespace: logging
   syncPolicy:
     automated:
       prune: true
