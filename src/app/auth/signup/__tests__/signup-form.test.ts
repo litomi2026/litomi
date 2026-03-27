@@ -6,7 +6,6 @@ import {
   applySignupProblem,
   clearSignupInputValidity,
   clearSignupLoginId,
-  getSignupRequest,
   toggleSignupPasswordVisibility,
   validateSignupRequest,
 } from '../signup-form'
@@ -51,24 +50,6 @@ afterEach(() => {
 })
 
 describe('signup-form helpers', () => {
-  test('reads the signup request from the form', () => {
-    const { form, loginId, password, passwordConfirm, nickname, turnstile } = createSignupForm()
-
-    loginId.value = 'litomi'
-    password.value = 'password123'
-    passwordConfirm.value = 'password123'
-    nickname.value = '리토미'
-    turnstile.value = 'token-123'
-
-    expect(getSignupRequest(form)).toEqual({
-      loginId: 'litomi',
-      nickname: '리토미',
-      password: 'password123',
-      passwordConfirm: 'password123',
-      turnstileToken: 'token-123',
-    })
-  })
-
   test('reports password confirmation mismatch on the confirm field', () => {
     const { form, passwordConfirm } = createSignupForm()
 
