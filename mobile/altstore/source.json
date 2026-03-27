@@ -22,10 +22,10 @@
         {
           "version": "1.0.0",
           "buildVersion": "1000000",
-          "date": "2026-03-25",
+          "date": "2026-03-27",
           "localizedDescription": "Latest AltStore Classic build.",
           "downloadURL": "https://github.com/gwak2837/litomi/releases/download/mobile-ios-altstore-v1.0.0/litomi-ios-altstore.ipa",
-          "size": 2462250,
+          "size": 2483733,
           "minOSVersion": "16.6"
         }
       ],
