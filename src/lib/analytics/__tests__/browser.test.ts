@@ -6,7 +6,12 @@ mock.module('@next/third-parties/google', () => ({
   sendGTMEvent: sendGTMEventMock,
 }))
 
-process.env.NEXT_PUBLIC_GTM_ID = 'GTM-TEST'
+mock.module('@/env/client', () => ({
+  env: {
+    NEXT_PUBLIC_GTM_ID: 'GTM-TEST',
+    NEXT_PUBLIC_GTM_SCRIPT_URL: '',
+  },
+}))
 
 const { identify, track } = await import('../browser')
 
@@ -16,10 +21,10 @@ describe('analytics browser wrapper', () => {
   })
 
   afterEach(() => {
-    delete process.env.NEXT_PUBLIC_GTM_SCRIPT_URL
+    sendGTMEventMock.mockClear()
   })
 
-  test('track serializes date params and ignores undefined values', () => {
+  test('track는 Date 파라미터를 직렬화하고 undefined 값은 무시한다', () => {
     track('login', {
       method: 'password',
       happened_at: new Date('2026-03-27T00:00:00.000Z'),
@@ -33,7 +38,7 @@ describe('analytics browser wrapper', () => {
     })
   })
 
-  test('identify stringifies numeric ids and clears with null', () => {
+  test('identify는 숫자 ID를 문자열로 보내고 null이면 해제한다', () => {
     identify(42)
     identify(null)
 
