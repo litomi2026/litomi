@@ -26,6 +26,7 @@ import { sanitizeRedirect } from '@/utils'
 import { generatePKCEChallenge, PKCEChallenge } from '@/utils/pkce-browser'
 
 import login from './action'
+import SignupLink from './SignupLink'
 import TwoFactorVerification from './TwoFactorVerification'
 
 const { NEXT_PUBLIC_GA_ID } = env
@@ -50,9 +51,28 @@ export default function LoginForm() {
   const passwordInputRef = useRef<HTMLInputElement | null>(null)
   const turnstileRef = useRef<TurnstileInstance>(null)
   const queryClient = useQueryClient()
-  const [turnstileToken, setTurnstileToken] = useState('')
+  const [hasTurnstileToken, setHasTurnstileToken] = useState(false)
   const [twoFactorData, setTwoFactorData] = useState<TwoFactorData | null>(null)
   const [pkceChallenge, setPkceChallenge] = useState<PKCEChallenge | null>(null)
+
+  async function getTurnstileToken() {
+    const existingToken = turnstileRef.current?.getResponse()
+
+    if (existingToken) {
+      return existingToken
+    }
+
+    try {
+      return (await turnstileRef.current?.getResponsePromise()) ?? null
+    } catch {
+      return null
+    }
+  }
+
+  function resetTurnstile() {
+    turnstileRef.current?.reset()
+    setHasTurnstileToken(false)
+  }
 
   function resetId() {
     const loginIdInput = formRef.current?.elements.namedItem('login-id')
@@ -117,10 +137,7 @@ export default function LoginForm() {
 
   const [response, dispatchAction, isPending] = useServerAction({
     action: login,
-    onError: () => {
-      turnstileRef.current?.reset()
-      setTurnstileToken('')
-    },
+    onError: resetTurnstile,
     onSuccess: (data, [formData]) => {
       if ('authorizationCode' in data) {
         setTwoFactorData({
@@ -142,12 +159,21 @@ export default function LoginForm() {
   const defaultRemember = getFormField(response, 'remember')
 
   async function dispatchLoginAction(formData: FormData) {
+    const turnstileToken = turnstileRef.current?.getResponse()
+
+    if (!turnstileToken) {
+      resetTurnstile()
+      toast.warning('Cloudflare 보안 검증을 완료해 주세요')
+      return
+    }
+
     const [pkceChallenge, fingerprint] = await Promise.all([
       generatePKCEChallenge(),
       FingerprintJS.load().then((fp) => fp.get()),
     ])
 
     setPkceChallenge(pkceChallenge)
+    formData.set('cf-turnstile-response', turnstileToken)
     formData.append('code-challenge', pkceChallenge.codeChallenge)
     formData.append('fingerprint', fingerprint.visitorId)
     dispatchAction(formData)
@@ -166,8 +192,7 @@ export default function LoginForm() {
           onCancel={() => {
             setTwoFactorData(null)
             setPkceChallenge(null)
-            turnstileRef.current?.reset()
-            setTurnstileToken('')
+            resetTurnstile()
           }}
           onSuccess={handleLoginSuccess}
           pkceChallenge={twoFactorPayload.pkceChallenge}
@@ -289,12 +314,12 @@ export default function LoginForm() {
             </div>
 
             <button
-              aria-disabled={isPending || !turnstileToken}
+              aria-disabled={isPending || !hasTurnstileToken}
               className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/7 bg-white/5 px-4 py-3 text-sm font-medium text-white/90
                 shadow-[inset_0_-2px_0_var(--color-brand),inset_0_1px_0_rgba(255,255,255,0.06)] transition
                 hover:bg-white/7 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/15
                 aria-disabled:opacity-50 aria-disabled:pointer-events-none"
-              disabled={isPending || !turnstileToken}
+              disabled={isPending || !hasTurnstileToken}
               type="submit"
             >
               {isPending ? <Loader2 className="size-5 animate-spin" /> : null}
@@ -310,25 +335,28 @@ export default function LoginForm() {
               </div>
             </div>
 
-            <PasskeyLoginButton disabled={isPending} onSuccess={handleLoginSuccess} turnstileToken={turnstileToken} />
+            <PasskeyLoginButton
+              disabled={isPending}
+              onSuccess={handleLoginSuccess}
+              turnstile={{
+                getToken: getTurnstileToken,
+                reset: resetTurnstile,
+              }}
+            />
 
             <TurnstileWidget
-              onTokenChange={setTurnstileToken}
+              hasToken={hasTurnstileToken}
+              onTokenChange={(token) => setHasTurnstileToken(Boolean(token))}
               options={{ action: 'login' }}
-              token={turnstileToken}
               turnstileRef={turnstileRef}
             />
           </form>
 
           <p className="text-center flex flex-wrap gap-1 justify-center text-xs text-zinc-400">
             처음이신가요?
-            <Link
-              className="underline underline-offset-4 hover:text-zinc-200 transition"
-              href="/auth/signup"
-              prefetch={false}
-            >
+            <SignupLink className="underline underline-offset-4 hover:text-zinc-200 transition" prefetch={false}>
               회원가입
-            </Link>
+            </SignupLink>
           </p>
         </>
       )}

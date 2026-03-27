@@ -78,18 +78,6 @@ export function clearSignupValidity(form: HTMLFormElement | null) {
   getSignupInput(form, signupInputNames.passwordConfirm)?.setCustomValidity('')
 }
 
-export function getSignupRequest(form: HTMLFormElement): POSTV1AuthSignupRequest {
-  const formData = new FormData(form)
-
-  return {
-    loginId: String(formData.get('login-id') ?? ''),
-    nickname: String(formData.get('nickname') ?? ''),
-    password: String(formData.get('password') ?? ''),
-    passwordConfirm: String(formData.get('password-confirm') ?? ''),
-    turnstileToken: String(formData.get('cf-turnstile-response') ?? ''),
-  }
-}
-
 export function toggleSignupPasswordVisibility(
   form: HTMLFormElement | null,
   field: SignupPasswordFieldName,
