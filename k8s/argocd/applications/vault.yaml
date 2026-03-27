@@ -1,29 +1,30 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: platform-tracing-tempo
+  name: vault
   annotations:
-    # monitoring 앱이 ServiceMonitor CRD를 먼저 준비한 뒤 Tempo를 동기화해요.
-    argocd.argoproj.io/sync-wave: '4'
+    # Ensure Vault is created before ESO/apps that depend on it.
+    # NOTE: Sync wave orders resource apply within the parent "root" app (app-of-apps).
+    argocd.argoproj.io/sync-wave: '0'
 spec:
   project: platform
   sources:
-    - repoURL: https://grafana-community.github.io/helm-charts
-      chart: tempo
-      targetRevision: 1.26.1
+    - repoURL: https://helm.releases.hashicorp.com
+      chart: vault
+      targetRevision: 0.32.0
       helm:
-        releaseName: tempo
+        releaseName: vault
         valueFiles:
-          - $values/k8s/platform/tracing/tempo.values.yaml
+          - $values/k8s/platform/vault/vault.values.yaml
     - repoURL: https://github.com/gwak2837/litomi.git
       targetRevision: main
       ref: values
     - repoURL: https://github.com/gwak2837/litomi.git
       targetRevision: main
-      path: k8s/platform/tracing
+      path: k8s/platform/vault
   destination:
     server: https://kubernetes.default.svc
-    namespace: tracing
+    namespace: vault
   syncPolicy:
     automated:
       prune: true
