@@ -17,7 +17,6 @@ import {
   clearSignupInputValidity,
   clearSignupLoginId,
   clearSignupValidity,
-  getSignupRequest,
   toggleSignupPasswordVisibility,
   validateSignupRequest,
 } from './signup-form'
@@ -26,12 +25,20 @@ import useSignupMutation, { SIGNUP_LOCAL_ERROR_STATUSES } from './useSignupMutat
 export default function SignupForm() {
   const formRef = useRef<HTMLFormElement>(null)
   const turnstileRef = useRef<TurnstileInstance>(null)
-  const [turnstileToken, setTurnstileToken] = useState('')
+  const [hasTurnstileToken, setHasTurnstileToken] = useState(false)
+
+  function resetTurnstile() {
+    turnstileRef.current?.reset()
+    setHasTurnstileToken(false)
+  }
+
+  function handleTurnstileTokenChange(token: string) {
+    setHasTurnstileToken(Boolean(token))
+  }
 
   const { mutate: submitSignup, isPending } = useSignupMutation({
     onError: (error) => {
-      turnstileRef.current?.reset()
-      setTurnstileToken('')
+      resetTurnstile()
       clearSignupValidity(formRef.current)
 
       window.requestAnimationFrame(() => {
@@ -52,15 +59,31 @@ export default function SignupForm() {
 
   function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
-
     clearSignupValidity(e.currentTarget)
-    const request = getSignupRequest(e.currentTarget)
 
-    if (!validateSignupRequest(e.currentTarget, request)) {
+    const turnstileToken = turnstileRef.current?.getResponse()
+
+    if (!turnstileToken) {
+      resetTurnstile()
+      toast.warning('Cloudflare 보안 검증을 완료해 주세요')
       return
     }
 
-    submitSignup(request)
+    const formData = new FormData(e.currentTarget)
+
+    const body = {
+      loginId: String(formData.get('login-id') ?? ''),
+      nickname: String(formData.get('nickname') ?? ''),
+      password: String(formData.get('password') ?? ''),
+      passwordConfirm: String(formData.get('password-confirm') ?? ''),
+      turnstileToken,
+    }
+
+    if (!validateSignupRequest(e.currentTarget, body)) {
+      return
+    }
+
+    submitSignup(body)
   }
 
   return (
@@ -238,12 +261,12 @@ export default function SignupForm() {
         </div>
 
         <button
-          aria-disabled={isPending || !turnstileToken}
+          aria-disabled={isPending || !hasTurnstileToken}
           className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/7 bg-white/5 px-4 py-3 text-sm font-medium text-white/90
             shadow-[inset_0_-2px_0_var(--color-brand),inset_0_1px_0_rgba(255,255,255,0.06)] transition
             hover:bg-white/7 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/15
             aria-disabled:opacity-50 aria-disabled:pointer-events-none"
-          disabled={isPending || !turnstileToken}
+          disabled={isPending || !hasTurnstileToken}
           type="submit"
         >
           {isPending ? <Loader2 className="size-5 animate-spin" /> : null}
@@ -251,9 +274,9 @@ export default function SignupForm() {
         </button>
 
         <TurnstileWidget
-          onTokenChange={setTurnstileToken}
+          hasToken={hasTurnstileToken}
+          onTokenChange={handleTurnstileTokenChange}
           options={{ action: 'signup' }}
-          token={turnstileToken}
           turnstileRef={turnstileRef}
         />
       </form>

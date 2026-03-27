@@ -11,16 +11,16 @@ const { NEXT_PUBLIC_TURNSTILE_SITE_KEY } = env
 
 interface Props {
   className?: string
+  hasToken?: boolean
   onTokenChange: (token: string) => void
   options: Parameters<typeof Turnstile>[0]['options']
-  token: string
   turnstileRef: Ref<TurnstileInstance | undefined>
 }
 
-export default function TurnstileWidget({ className = '', token, onTokenChange, turnstileRef, options }: Props) {
+export default function TurnstileWidget({ className = '', hasToken, onTokenChange, turnstileRef, options }: Props) {
   return (
     <div className="h-[65px] flex items-center justify-center relative overflow-hidden">
-      {!token && (
+      {!hasToken && (
         <Loader2 className="size-6 animate-spin absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2" />
       )}
       <Turnstile
@@ -34,11 +34,10 @@ export default function TurnstileWidget({ className = '', token, onTokenChange, 
           onTokenChange('')
         }}
         onSuccess={onTokenChange}
-        options={options}
+        options={{ ...options, responseField: false }}
         ref={turnstileRef}
         siteKey={NEXT_PUBLIC_TURNSTILE_SITE_KEY}
       />
-      <input name="cf-turnstile-response" type="hidden" value={token} />
     </div>
   )
 }
