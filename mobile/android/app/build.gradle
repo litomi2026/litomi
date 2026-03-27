@@ -23,6 +23,7 @@ if (isReleaseTaskRequested && !hasReleaseSigning) {
 android {
     namespace = "in.litomi.app"
     compileSdk = rootProject.ext.compileSdkVersion
+    enableKotlin = false
     signingConfigs {
         release {
             if (hasReleaseSigning) {
