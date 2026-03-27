@@ -1,14 +1,16 @@
 locals {
-  selfhost_tunnel_name       = "litomi-selfhost"
-  selfhost_origin_service    = "http://traefik.kube-system.svc.cluster.local:80"
-  selfhost_img_hostname      = "img.${var.domain}"
-  selfhost_stg_img_hostname  = "img-stg.${var.domain}"
-  selfhost_prod_hostname     = var.domain
-  selfhost_prod_api_hostname = "api.${var.domain}"
-  selfhost_stg_hostname      = "stg.${var.domain}"
-  selfhost_stg_api_hostname  = "api-stg.${var.domain}"
-  selfhost_argocd_hostname   = "argocd.${var.domain}"
-  selfhost_grafana_hostname  = "grafana.${var.domain}"
+  selfhost_tunnel_name           = "litomi-selfhost"
+  selfhost_origin_service        = "http://traefik.kube-system.svc.cluster.local:80"
+  selfhost_anal_hostname         = "anal.${var.domain}"
+  selfhost_anal_preview_hostname = "anal-preview.${var.domain}"
+  selfhost_img_hostname          = "img.${var.domain}"
+  selfhost_stg_img_hostname      = "img-stg.${var.domain}"
+  selfhost_prod_hostname         = var.domain
+  selfhost_prod_api_hostname     = "api.${var.domain}"
+  selfhost_stg_hostname          = "stg.${var.domain}"
+  selfhost_stg_api_hostname      = "api-stg.${var.domain}"
+  selfhost_argocd_hostname       = "argocd.${var.domain}"
+  selfhost_grafana_hostname      = "grafana.${var.domain}"
 }
 
 resource "cloudflare_zero_trust_tunnel_cloudflared" "selfhost" {
@@ -23,6 +25,14 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "selfhost" {
 
   config = {
     ingress = [
+      {
+        hostname = local.selfhost_anal_hostname
+        service  = local.selfhost_origin_service
+      },
+      {
+        hostname = local.selfhost_anal_preview_hostname
+        service  = local.selfhost_origin_service
+      },
       {
         hostname = local.selfhost_img_hostname
         service  = local.selfhost_origin_service

@@ -1,30 +1,29 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: platform-vault
+  name: logging-loki
   annotations:
-    # Ensure Vault is created before ESO/apps that depend on it.
-    # NOTE: Sync wave orders resource apply within the parent "root" app (app-of-apps).
-    argocd.argoproj.io/sync-wave: '0'
+    # monitoring 앱이 ServiceMonitor CRD를 먼저 준비한 뒤 Loki를 동기화해요.
+    argocd.argoproj.io/sync-wave: '4'
 spec:
   project: platform
   sources:
-    - repoURL: https://helm.releases.hashicorp.com
-      chart: vault
-      targetRevision: 0.32.0
+    - repoURL: https://grafana.github.io/helm-charts
+      chart: loki
+      targetRevision: 6.53.0
       helm:
-        releaseName: vault
+        releaseName: loki
         valueFiles:
-          - $values/k8s/platform/vault/vault.values.yaml
+          - $values/k8s/platform/logging/loki.values.yaml
     - repoURL: https://github.com/gwak2837/litomi.git
       targetRevision: main
       ref: values
     - repoURL: https://github.com/gwak2837/litomi.git
       targetRevision: main
-      path: k8s/platform/vault
+      path: k8s/platform/logging
   destination:
     server: https://kubernetes.default.svc
-    namespace: vault
+    namespace: logging
   syncPolicy:
     automated:
       prune: true

@@ -14,7 +14,7 @@ cd /Users/gwak2837/Documents/GitHub/litomi
 
 위 커맨드는 아래를 포함해 확인해요.
 
-- Argo CD 앱 `platform-velero` Sync/Health
+- Argo CD 앱 `velero` Sync/Health
 - `velero` Deployment readiness
 - node-agent DaemonSet readiness
 - BackupStorageLocation phase(`Available`)
@@ -47,7 +47,7 @@ k3s는 embedded etcd를 쓰는 구성(보통 HA/`--cluster-init`)에서 **스냅
 이 레포는 Velero를 Argo CD로 설치하도록 구성돼 있어요.
 
 - **오브젝트 스토리지**: 클러스터 안의 MinIO(S3 호환)를 기본으로 써요. (VM이 날아가면 백업도 같이 없어져도 되는 케이스에 적합해요)
-- **Argo CD Application**: `k8s/argocd/applications/platform-velero.yaml`
+- **Argo CD Application**: `k8s/argocd/applications/velero.yaml`
 - **Helm values**: `k8s/platform/velero/velero.values.yaml`
 - **자격증명(Secret)**: Vault + ESO로 `velero-cloud-credentials`를 생성해요.
 
