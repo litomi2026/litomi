@@ -9,6 +9,7 @@ import { ReactNode } from 'react'
 import { Toaster } from 'sonner'
 
 import NewYearToastNudge from '@/app/nye/NewYearToastNudge'
+import CapacitorNativeEffects from '@/components/CapacitorNativeEffects'
 import LibraryModal from '@/components/card/LibraryModal'
 import MangaTorrentModal from '@/components/card/MangaTorrentModal'
 import HiyobiPing from '@/components/HiyobiPing'
@@ -107,6 +108,7 @@ export default function RootLayout({ children }: Readonly<Props>) {
       </head>
       <body className={`${PretendardVariable.className} antialiased h-full`}>
         <ThemeProvider />
+        <CapacitorNativeEffects />
         <QueryProvider>
           {children}
           <LibraryModal />

@@ -6,5 +6,11 @@
   "server": {
     "url": "https://litomi.in",
     "cleartext": false
+  },
+  "plugins": {
+    "SystemBars": {
+      "insetsHandling": "css",
+      "style": "DEFAULT"
+    }
   }
 }
