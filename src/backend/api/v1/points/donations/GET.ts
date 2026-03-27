@@ -59,7 +59,7 @@ route.get('/recipient', zProblemValidator('query', recipientQuerySchema), async 
     )
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '기부 정보를 불러오지 못했어요' })
+    return problemResponse(c, { status: 500, detail: '후원 정보를 불러오지 못했어요' })
   }
 })
 
@@ -182,7 +182,7 @@ route.get('/me', requireAuth, zProblemValidator('query', meQuerySchema), async (
     )
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '기부 내역을 불러오지 못했어요' })
+    return problemResponse(c, { status: 500, detail: '후원 내역을 불러오지 못했어요' })
   }
 })
 

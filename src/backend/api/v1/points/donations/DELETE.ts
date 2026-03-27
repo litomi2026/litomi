@@ -26,13 +26,13 @@ route.delete('/:id', requireAuth, zProblemValidator('param', deleteParamSchema),
       .returning({ id: pointDonationTable.id })
 
     if (deleted.length === 0) {
-      return problemResponse(c, { status: 404, detail: '기부 내역을 찾을 수 없어요' })
+      return problemResponse(c, { status: 404, detail: '후원 내역을 찾을 수 없어요' })
     }
 
     return c.body(null, 204)
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '기부 내역 삭제에 실패했어요' })
+    return problemResponse(c, { status: 500, detail: '후원 내역 삭제에 실패했어요' })
   }
 })
 
