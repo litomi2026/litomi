@@ -43,7 +43,7 @@ export const SCROLL_THRESHOLD_PX = 10
 export const REALTIME_PAGE_VIEW_MIN_THRESHOLD = 10
 
 // NOTE: 꾸준히 올려줘야 함
-export const LAST_VERIFIED_MANGA_ID = 3_700_000
+export const LAST_VERIFIED_MANGA_ID = 3_800_000
 export const MAX_MANGA_ID = LAST_VERIFIED_MANGA_ID * 2
 export const TOTAL_HIYOBI_PAGES = 7800
 
