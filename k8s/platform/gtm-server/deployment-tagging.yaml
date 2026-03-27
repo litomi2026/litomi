@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gtm-server-tagging
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: gtm-server-tagging
+  template:
+    metadata:
+      labels:
+        app: gtm-server-tagging
+    spec:
+      automountServiceAccountToken: false
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: gtm-server-tagging
+                topologyKey: kubernetes.io/hostname
+      containers:
+        - name: tagging
+          image: gcr.io/cloud-tagging-10302018/gtm-cloud-image:stable
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: CONTAINER_CONFIG
+              valueFrom:
+                secretKeyRef:
+                  name: gtm-server-secret
+                  key: CONTAINER_CONFIG
+            - name: PORT
+              value: '8080'
+            - name: PREVIEW_SERVER_URL
+              value: https://anal-preview.litomi.in
+          ports:
+            - containerPort: 8080
+              name: http
+          startupProbe:
+            httpGet:
+              path: /healthy
+              port: 8080
+            timeoutSeconds: 3
+            periodSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /healthy
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /healthy
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 6
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
