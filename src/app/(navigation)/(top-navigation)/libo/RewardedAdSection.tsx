@@ -4,7 +4,7 @@ import { TurnstileInstance } from '@marsidev/react-turnstile'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Heart, HelpCircle, MousePointerClick, ShieldCheck } from 'lucide-react'
 import ms from 'ms'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { toast } from 'sonner'
 
 import type { GETV1MeResponse } from '@/backend/api/v1/me'
@@ -34,7 +34,6 @@ export default function RewardedAdSection() {
   const pointsTurnstile = usePointsTurnstileQuery(Boolean(me))
   const verificationSectionRef = useRef<HTMLDivElement>(null)
   const turnstileRef = useRef<TurnstileInstance>(null)
-  const [turnstileToken, setTurnstileToken] = useState('')
   const isVerified = pointsTurnstile.data?.verified === true
   const rewardEnabled = Boolean(me) && isVerified
 
@@ -50,12 +49,9 @@ export default function RewardedAdSection() {
       return data
     },
     onSuccess: () => {
-      setTurnstileToken('')
       queryClient.invalidateQueries({ queryKey: QueryKeys.pointsTurnstile })
     },
     onError: (error) => {
-      setTurnstileToken('')
-
       if (error.status === 403 && isAdultVerificationRequiredProblem(error.type)) {
         return
       }
@@ -96,7 +92,6 @@ export default function RewardedAdSection() {
   }
 
   function handleTurnstileTokenChange(token: string) {
-    setTurnstileToken(token)
     if (token) {
       verifyTurnstile.mutate(token)
     }
@@ -222,7 +217,6 @@ export default function RewardedAdSection() {
           <TurnstileWidget
             onTokenChange={handleTurnstileTokenChange}
             options={{ action: 'points-earn' }}
-            token={turnstileToken}
             turnstileRef={turnstileRef}
           />
           <p className="text-xs text-center text-zinc-500">
