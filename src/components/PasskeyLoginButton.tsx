@@ -14,8 +14,13 @@ import { signalUnknownPasskeyCredential } from '@/utils/passkey'
 
 type Props = {
   disabled?: boolean
-  turnstileToken: string
   onSuccess?: (user: User) => void
+  turnstile: TurnstileController
+}
+
+type TurnstileController = {
+  getToken: () => Promise<string | null>
+  reset: () => void
 }
 
 type User = {
@@ -26,14 +31,15 @@ type User = {
   lastLogoutAt: Date | null
 }
 
-export default function PasskeyLoginButton({ disabled, onSuccess, turnstileToken }: Props) {
+export default function PasskeyLoginButton({ disabled, onSuccess, turnstile }: Props) {
   const [supportsAutofill, setSupportsAutofill] = useState<boolean | null>(null)
-  const initializedAutofillTokenRef = useRef<string | null>(null)
   const lastCredentialIdRef = useRef<string | null>(null)
 
   const [_, dispatchAction, isPending] = useServerAction({
     action: verifyAuthentication,
     onError: (response) => {
+      turnstile.reset()
+
       if (response.status === 404 && lastCredentialIdRef.current) {
         signalUnknownPasskeyCredential(lastCredentialIdRef.current)
       }
@@ -46,6 +52,17 @@ export default function PasskeyLoginButton({ disabled, onSuccess, turnstileToken
     const isAutofill = mode === 'autofill'
 
     try {
+      const turnstileToken = await turnstile.getToken()
+
+      if (!turnstileToken) {
+        turnstile.reset()
+
+        if (!isAutofill) {
+          toast.warning('Cloudflare 보안 검증을 완료해 주세요')
+        }
+        return
+      }
+
       const optionsResult = await getAuthenticationOptions()
 
       if (!optionsResult.ok) {
@@ -110,25 +127,20 @@ export default function PasskeyLoginButton({ disabled, onSuccess, turnstileToken
 
   // NOTE: 패스키 자동완성 지원 여부와 턴스타일 토큰이 준비되면 자동으로 패스키 로그인을 시도해요
   useEffect(() => {
-    if (supportsAutofill !== true || !turnstileToken || disabled) {
+    if (supportsAutofill !== true || disabled) {
       return
     }
 
-    if (initializedAutofillTokenRef.current === turnstileToken) {
-      return
-    }
-
-    initializedAutofillTokenRef.current = turnstileToken
     beginAutofillPasskeyLogin()
-  }, [disabled, supportsAutofill, turnstileToken])
+  }, [disabled, supportsAutofill])
 
   return (
     <button
-      aria-disabled={disabled || isPending || !turnstileToken}
+      aria-disabled={disabled || isPending}
       className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/7 bg-white/4 px-4 py-3 text-sm font-medium text-white/80 transition
         hover:bg-white/6 hover:text-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/15
         disabled:opacity-50 disabled:pointer-events-none"
-      disabled={disabled || isPending || !turnstileToken}
+      disabled={disabled || isPending}
       onClick={() => runPasskeyLogin('button')}
       title={supportsAutofill ? '패스키 선택 다시 열기' : '패스키로 로그인'}
       type="button"
