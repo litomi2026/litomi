@@ -1,6 +1,5 @@
 'use client'
 
-import { sendGAEvent } from '@next/third-parties/google'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
@@ -10,13 +9,11 @@ import type { ProblemDetailsError } from '@/utils/react-query-error'
 
 import { QueryKeys } from '@/constants/query'
 import { SearchParamKey } from '@/constants/storage'
-import { env } from '@/env/client'
 import amplitude from '@/lib/amplitude/browser'
+import { identify, track } from '@/lib/analytics/browser'
 import { sanitizeRedirect } from '@/utils'
 
 import { signup } from './api'
-
-const { NEXT_PUBLIC_GA_ID } = env
 export const SIGNUP_LOCAL_ERROR_STATUSES = [400, 409]
 
 interface Params {
@@ -36,11 +33,8 @@ export default function useSignupMutation({ onError }: Params = {}) {
       if (userId) {
         amplitude.setUserId(userId)
         amplitude.track('signup', { loginId, nickname })
-
-        if (NEXT_PUBLIC_GA_ID) {
-          sendGAEvent('config', NEXT_PUBLIC_GA_ID, { user_id: userId })
-          sendGAEvent('event', 'signup', { loginId, nickname })
-        }
+        identify(userId)
+        track('signup')
       }
 
       await queryClient.invalidateQueries({ queryKey: QueryKeys.me, type: 'all' })
