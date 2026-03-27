@@ -169,7 +169,7 @@ resource "cloudflare_ruleset" "cache_rules" {
           mode = "respect_origin"
         }
         cache_key = {
-          cache_deception_armor      = true
+          cache_deception_armor = true
           custom_key = {
             query_string = {
               exclude = {

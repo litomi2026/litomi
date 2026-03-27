@@ -12,6 +12,7 @@ resource "cloudflare_zero_trust_access_application" "argocd" {
 
   session_duration          = "160h"
   auto_redirect_to_identity = true
+  options_preflight_bypass  = true
 
   policies = [
     {

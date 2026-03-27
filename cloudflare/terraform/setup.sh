@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -e
 
@@ -18,7 +18,10 @@ fi
 if [ -f ".env" ]; then
     echo ""
     echo "📄 Loading environment variables from .env file..."
-    export $(grep -v '^#' .env | xargs)
+    set -a
+    # shellcheck disable=SC1091
+    . ./.env
+    set +a
 else
     echo "⚠️  .env file not found."
     echo "   Creating .env from template..."

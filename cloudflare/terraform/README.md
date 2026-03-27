@@ -9,7 +9,7 @@ This directory contains Terraform configuration for managing Cloudflare settings
 - [Terraform](https://www.terraform.io/downloads) >= 1.0
 - Cloudflare account with API access
 - Cloudflare API token with appropriate permissions
-- `jq` for JSON parsing (installed automatically if missing)
+- `jq` for JSON parsing
 
 ### Initial Setup
 
@@ -47,9 +47,9 @@ cd cloudflare/terraform
 
 ```bash
 cd cloudflare/terraform
-export $(grep -v '^#' .env | xargs)
-terraform init
-# terraform plan
+set -a
+. ./.env
+set +a
 terraform apply
 ```
 
@@ -80,36 +80,3 @@ terraform apply
 3. On the Overview page:
    - **Zone ID**: Listed in the right sidebar
    - **Account ID**: Listed below the Zone ID
-
-## 📊 Outputs
-
-After applying the configuration, Terraform provides:
-
-- `cache_ruleset_id` - The ID of the created cache ruleset
-- `cache_ruleset_name` - The name of the cache ruleset
-- `cache_rules_count` - Number of cache rules configured
-
-## 🖥️ Self-host (Cloudflare Tunnel)
-
-This repo can also manage a **self-host tunnel** for running Litomi on your own Linux server.
-
-This stack always provisions a self-host tunnel with:
-
-- `<domain>` → `http://traefik.kube-system.svc.cluster.local:80`
-- `api.<domain>` → `http://traefik.kube-system.svc.cluster.local:80`
-- `stg.<domain>` → `http://traefik.kube-system.svc.cluster.local:80`
-- `api-stg.<domain>` → `http://traefik.kube-system.svc.cluster.local:80`
-- `argocd.<domain>` → `http://traefik.kube-system.svc.cluster.local:80`
-
-## 🔐 Cloudflare Access (Zero Trust)
-
-This stack also protects **`argocd.<domain>`** with Cloudflare Access.
-
-- If `access_allowed_emails` is **empty**, it will allow **any authenticated identity** (still blocks anonymous users).
-- To restrict access, set `access_allowed_emails` in `terraform.tfvars`.
-
-View outputs with:
-
-```bash
-terraform output
-```
