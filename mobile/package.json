@@ -17,13 +17,15 @@
     "android:release": "bun run sync:android && cd android && ./gradlew :app:assembleRelease && cd .. && mkdir -p artifacts/android && cp android/app/build/outputs/apk/release/app-release.apk artifacts/android/litomi.apk && shasum -a 256 artifacts/android/litomi.apk > artifacts/android/litomi.apk.sha256",
     "ios:altstore": "node scripts/build-ios-altstore.mjs"
   },
+  "dependencies": {
+    "@capacitor/app": "8.1.0",
+    "@capacitor/core": "8.2.0",
+    "@capacitor/privacy-screen": "2.0.1"
+  },
   "devDependencies": {
     "@capacitor/android": "8.2.0",
     "@capacitor/cli": "8.2.0",
     "@capacitor/ios": "8.2.0",
     "sharp": "^0.34.5"
-  },
-  "dependencies": {
-    "@capacitor/core": "8.2.0"
   }
 }
