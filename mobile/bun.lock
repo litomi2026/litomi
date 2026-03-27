@@ -7,7 +7,6 @@
       "dependencies": {
         "@capacitor/app": "8.1.0",
         "@capacitor/core": "8.3.0",
-        "@capacitor/privacy-screen": "2.0.1",
       },
       "devDependencies": {
         "@capacitor/android": "8.3.0",
@@ -27,8 +26,6 @@
     "@capacitor/core": ["@capacitor/core@8.3.0", "", { "dependencies": { "tslib": "^2.1.0" } }, "sha512-S4ajn4G/fS3VJj8salxqH/3LO5PPWv1VxGKQ27OCajnDcLJjEg9VXwgMPnlypgkIOqCJ2fmQLtk8GT+BlI9/rw=="],
 
     "@capacitor/ios": ["@capacitor/ios@8.3.0", "", { "peerDependencies": { "@capacitor/core": "^8.3.0" } }, "sha512-5Rtwv8SITKlYTt8lAZG+khnVIdzPtqbocH3eP+JkEmX1vpSMwx4TOKtT8OBz8gpQ+pUJDRp7DBYOv3U6l/obCw=="],
-
-    "@capacitor/privacy-screen": ["@capacitor/privacy-screen@2.0.1", "", { "peerDependencies": { "@capacitor/core": ">=8.0.0" } }, "sha512-NDKXhf2tGMZu6JcVTDtwfUw0Y7BMBfcoinhxVqRhzHaBCO7HgXF7MRX2HLk0T+l4/2uzmRb3AvUKHiF4BW8drA=="],
 
     "@emnapi/runtime": ["@emnapi/runtime@1.9.1", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-VYi5+ZVLhpgK4hQ0TAjiQiZ6ol0oe4mBx7mVv7IflsiEp0OWoVsp/+f9Vc1hOhE0TtkORVrI1GvzyreqpgWtkA=="],
 
