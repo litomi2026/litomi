@@ -69,9 +69,11 @@ mock.module('@/hook/useMangaListCachedQuery', () => ({
 }))
 
 mock.module('../librarySelection', () => ({
-  useLibrarySelection: mock(() => ({
-    isSelectionMode: false,
+  useLibrarySelectionActions: mock(() => ({
     exit: exitSelectionModeMock,
+  })),
+  useLibrarySelectionState: mock(() => ({
+    isSelectionMode: false,
   })),
 }))
 
@@ -115,8 +117,8 @@ describe('RatingPageClient', () => {
   test('manga id 정렬 옵션을 렌더링한다', () => {
     const view = render(<RatingPageClient initialData={basePage} />)
 
-    expect(view.getByRole('option', { name: '작품 ID 내림차순' })).toBeTruthy()
-    expect(view.getByRole('option', { name: '작품 ID 오름차순' })).toBeTruthy()
+    expect(view.getByRole('option', { name: '작품 ID 높은순' })).toBeTruthy()
+    expect(view.getByRole('option', { name: '작품 ID 낮은순' })).toBeTruthy()
   })
 
   test('평점 정렬만 그룹 렌더링 대상으로 판단한다', () => {
