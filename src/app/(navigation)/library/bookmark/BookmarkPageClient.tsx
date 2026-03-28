@@ -21,7 +21,7 @@ export default function BookmarkPageClient({ initialData }: Props) {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError } =
     useBookmarkInfiniteQuery(initialData)
 
-  const bookmarkIds = data.pages.flatMap((page) => page.bookmarks.map((bookmark) => bookmark.mangaId))
+  const bookmarkIds = data?.pages.flatMap((page) => page.bookmarks.map((bookmark) => bookmark.mangaId)) ?? []
   const { isSelectionMode } = useLibrarySelectionStore()
   const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
 
