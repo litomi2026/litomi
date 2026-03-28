@@ -24,12 +24,9 @@ export async function fetchPaginatedBookmark(cursor: string | null) {
 export default function useBookmarkInfiniteQuery(initialData?: GETV1BookmarkResponse) {
   return useInfiniteQuery({
     queryKey: QueryKeys.infiniteBookmarks,
-    queryFn: ({ pageParam }: { pageParam: string | null }) => fetchPaginatedBookmark(pageParam),
+    queryFn: ({ pageParam }) => fetchPaginatedBookmark(pageParam),
     getNextPageParam: (lastPage) => lastPage.nextCursor,
-    initialData: initialData && {
-      pages: [initialData],
-      pageParams: [null],
-    },
-    initialPageParam: null,
+    ...(initialData && { initialData: { pages: [initialData], pageParams: [''] } }),
+    initialPageParam: '',
   })
 }

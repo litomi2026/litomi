@@ -1,7 +1,7 @@
 import { cleanup } from '@testing-library/react'
 import { afterEach, describe, expect, mock, test } from 'bun:test'
 
-import type { GETV1RatingsResponse } from '@/backend/api/v1/library/rating'
+import type { GETV1RatingsResponse } from '@/backend/api/v1/library/rating/GET'
 
 import { isGroupedRatingSort, RatingSort } from '@/backend/api/v1/library/enum'
 
@@ -23,7 +23,7 @@ const basePage: GETV1RatingsResponse = {
 }
 
 type RatingsQueryResult = {
-  data: {
+  data?: {
     pageParams: (string | null)[]
     pages: GETV1RatingsResponse[]
   }
@@ -31,6 +31,7 @@ type RatingsQueryResult = {
   hasNextPage: boolean
   isFetchingNextPage: boolean
   isFetchNextPageError: boolean
+  isLoading: boolean
 }
 
 let ratingsResult: RatingsQueryResult = {
@@ -42,6 +43,7 @@ let ratingsResult: RatingsQueryResult = {
   hasNextPage: false,
   isFetchingNextPage: false,
   isFetchNextPageError: false,
+  isLoading: false,
 }
 
 const useRatingInfiniteQueryCalls: Array<{
@@ -108,6 +110,7 @@ afterEach(() => {
     hasNextPage: false,
     isFetchingNextPage: false,
     isFetchNextPageError: false,
+    isLoading: false,
   }
   window.history.replaceState({}, '', '/library/rating')
 })
@@ -145,6 +148,25 @@ describe('RatingPageClient', () => {
     const view = render(<RatingPageClient initialData={basePage} initialSort={RatingSort.MANGA_ID_ASC} />)
 
     expect(view.queryByText('(4점)')).toBeNull()
+  })
+
+  test('정렬을 변경해 새 데이터가 아직 없어도 스켈레톤을 렌더링하며 크래시하지 않는다', () => {
+    const view = render(<RatingPageClient initialData={basePage} initialSort={RatingSort.UPDATED_DESC} />)
+
+    ratingsResult = {
+      data: undefined,
+      fetchNextPage: fetchNextPageMock,
+      hasNextPage: false,
+      isFetchingNextPage: false,
+      isFetchNextPageError: false,
+      isLoading: true,
+    }
+
+    fireEvent.change(view.getByRole('combobox'), {
+      target: { value: RatingSort.MANGA_ID_ASC },
+    })
+
+    expect(view.getByText('manga-card-skeleton')).toBeTruthy()
   })
 
   test('평점 정렬에서는 평점 그룹 헤더를 렌더링한다', () => {
