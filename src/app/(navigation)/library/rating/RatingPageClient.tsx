@@ -26,11 +26,11 @@ type Props = {
 
 const SORT_OPTIONS: { value: RatingSort; label: string }[] = [
   { value: RatingSort.UPDATED_DESC, label: '최근 수정순' },
-  { value: RatingSort.CREATED_DESC, label: '최근 추가순' },
+  { value: RatingSort.CREATED_DESC, label: '최근 평가순' },
   { value: RatingSort.RATING_DESC, label: '평점 높은순' },
   { value: RatingSort.RATING_ASC, label: '평점 낮은순' },
-  { value: RatingSort.MANGA_ID_DESC, label: '작품 ID 내림차순' },
-  { value: RatingSort.MANGA_ID_ASC, label: '작품 ID 오름차순' },
+  { value: RatingSort.MANGA_ID_DESC, label: '작품 ID 높은순' },
+  { value: RatingSort.MANGA_ID_ASC, label: '작품 ID 낮은순' },
 ]
 
 type MangaListProps = {

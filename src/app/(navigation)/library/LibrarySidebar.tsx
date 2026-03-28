@@ -77,7 +77,7 @@ export default function LibrarySidebar({
 
   return (
     <aside className={`border-r ${className}`} ref={asideRef}>
-      <div className="grid gap-2 p-2 lg:p-3 lg:gap-3">
+      <div className="grid gap-2 p-2">
         <div className="flex items-center justify-center lg:justify-between">
           <h2 className="text-sm font-medium text-zinc-400 hidden lg:block">서재</h2>
           <CreateLibraryButton />
@@ -174,7 +174,9 @@ export default function LibrarySidebar({
                 title={library.name}
               />
             ))}
-            {(ownerLibraries.length > 0 || pinnedLibraries.length > 0) && publicLibraries.length > 0 && <div className="h-px bg-zinc-800 my-1" />}
+            {(ownerLibraries.length > 0 || pinnedLibraries.length > 0) && publicLibraries.length > 0 && (
+              <div className="h-px bg-zinc-800 my-1" />
+            )}
             {publicLibraries.map((library) => (
               <LibrarySidebarLink
                 badge={
