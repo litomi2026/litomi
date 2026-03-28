@@ -10,7 +10,7 @@ const { NEXT_PUBLIC_BACKEND_URL } = env
 
 interface Options {
   enabled?: boolean
-  userId: number | null
+  userId?: number
 }
 
 export async function fetchPinnedLibraryList({ cursor }: { cursor: string | null }) {

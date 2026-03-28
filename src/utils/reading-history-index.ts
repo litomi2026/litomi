@@ -9,11 +9,6 @@ const READING_HISTORY_INDEX_STORAGE_PREFIX = 'reading-history-index-'
 type ReadingHistoryIndexStorageShape = Record<string, number>
 
 export function clearAllReadingHistoryLocalEntries(userId: number) {
-  clearAllReadingHistorySessionEntries()
-  clearReadingHistoryIndex(userId, { notify: true })
-}
-
-export function clearAllReadingHistorySessionEntries() {
   try {
     for (let i = sessionStorage.length - 1; i >= 0; i--) {
       const key = sessionStorage.key(i)
@@ -29,10 +24,8 @@ export function clearAllReadingHistorySessionEntries() {
   } catch {
     // ignore
   }
-}
 
-export function clearReadingHistoryIndex(userId: number, options?: { notify?: boolean }) {
-  writeReadingHistoryIndex(userId, [], options)
+  writeReadingHistoryIndex(userId, [], { notify: true })
 }
 
 export function readReadingHistoryIndex(userId: number): Map<number, number> {

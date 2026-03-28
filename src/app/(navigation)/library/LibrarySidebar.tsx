@@ -39,7 +39,7 @@ type Props = {
     isPublic: boolean
     itemCount: number
   }[]
-  userId: number | null
+  userId?: number
   className?: string
   onClick?: () => void
   bookmarkCount?: number

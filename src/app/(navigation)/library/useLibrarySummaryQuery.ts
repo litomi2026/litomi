@@ -11,7 +11,7 @@ import { fetchWithErrorHandling } from '@/utils/react-query-error'
 const { NEXT_PUBLIC_BACKEND_URL } = env
 
 type Options = {
-  userId: number | null
+  userId?: number
 }
 
 export async function fetchLibrarySummary() {
