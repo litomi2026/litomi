@@ -68,15 +68,11 @@ mock.module('@/hook/useMangaListCachedQuery', () => ({
   default: mock(() => ({ mangaMap: new Map() })),
 }))
 
-mock.module('../[id]/librarySelection', () => ({
-  useLibrarySelectionStore: mock((selector?: (state: { isSelectionMode: boolean; exitSelectionMode: () => void }) => unknown) => {
-    const state = {
-      isSelectionMode: false,
-      exitSelectionMode: exitSelectionModeMock,
-    }
-
-    return typeof selector === 'function' ? selector(state) : state
-  }),
+mock.module('../librarySelection', () => ({
+  useLibrarySelection: mock(() => ({
+    isSelectionMode: false,
+    exit: exitSelectionModeMock,
+  })),
 }))
 
 mock.module('../CensoredManga', () => ({
@@ -173,5 +169,23 @@ describe('RatingPageClient', () => {
     const view = render(<RatingPageClient initialData={basePage} initialSort={RatingSort.RATING_DESC} />)
 
     expect(view.getByText('(4점)')).toBeTruthy()
+  })
+
+  test('평가가 비어 있으면 empty state를 렌더링한다', () => {
+    ratingsResult = {
+      data: {
+        pages: [{ items: [], nextCursor: null }],
+        pageParams: [null],
+      },
+      fetchNextPage: fetchNextPageMock,
+      hasNextPage: false,
+      isFetchingNextPage: false,
+      isFetchNextPageError: false,
+      isLoading: false,
+    }
+
+    const view = render(<RatingPageClient initialData={{ items: [], nextCursor: null }} />)
+
+    expect(view.getByText('아직 평가한 작품이 없어요')).toBeTruthy()
   })
 })
