@@ -43,15 +43,22 @@ export default function useBulkMoveToLibraryAction({
     },
   })
 
+  function getDisabledReason() {
+    if (currentLibraryId == null) {
+      return '현재 서재 정보를 확인할 수 없어요'
+    }
+
+    if (libraries.length === 0) {
+      return '이동할 다른 내 서재가 없어요'
+    }
+
+    return undefined
+  }
+
   return {
     dialogDescription: `${selectedCount}개 작품을 이동할 서재를 선택하세요`,
     dialogTitle: '서재로 이동',
-    disabledReason:
-      currentLibraryId == null
-        ? '현재 서재 정보를 확인할 수 없어요'
-        : libraries.length === 0
-          ? '이동할 다른 내 서재가 없어요'
-          : undefined,
+    disabledReason: getDisabledReason(),
     emptyMessage: '이동할 수 있는 다른 서재가 없어요',
     icon: FolderInput,
     id: 'move',

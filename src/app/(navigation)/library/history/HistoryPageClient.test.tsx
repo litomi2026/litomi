@@ -1,9 +1,11 @@
 import { cleanup } from '@testing-library/react'
 import { afterEach, describe, expect, mock, test } from 'bun:test'
+import { type ReactElement, type ReactNode, useLayoutEffect } from 'react'
 
 import type { GETV1ReadingHistoryResponse } from '@/backend/api/v1/library/history/GET'
 
 import { render } from '../../../../../test/utils/render'
+import { LibrarySelectionProvider, useLibrarySelection } from '../librarySelection'
 
 const fetchNextPageMock = mock(() => Promise.resolve())
 
@@ -46,10 +48,6 @@ mock.module('@/hook/useMangaListCachedQuery', () => ({
   default: mock(() => ({ mangaMap: new Map() })),
 }))
 
-mock.module('../librarySelection', () => ({
-  useLibrarySelection: mock(() => ({ isSelectionMode: false })),
-}))
-
 mock.module('../CensoredManga', () => ({
   default: () => null,
 }))
@@ -63,6 +61,29 @@ mock.module('./useReadingHistoryInfiniteQuery', () => ({
 }))
 
 const { default: HistoryPageClient } = await import('./HistoryPageClient')
+
+function renderWithLibrarySelection(ui: ReactElement, selectionMode = false) {
+  return render(
+    <LibrarySelectionProvider scopeKey="history-test">
+      <SelectionModeController selectionMode={selectionMode}>{ui}</SelectionModeController>
+    </LibrarySelectionProvider>,
+  )
+}
+
+function SelectionModeController({ children, selectionMode }: { children: ReactNode; selectionMode: boolean }) {
+  const { enter, exit } = useLibrarySelection()
+
+  useLayoutEffect(() => {
+    if (selectionMode) {
+      enter()
+      return
+    }
+
+    exit()
+  }, [enter, exit, selectionMode])
+
+  return <>{children}</>
+}
 
 afterEach(() => {
   cleanup()
@@ -81,7 +102,7 @@ afterEach(() => {
 
 describe('HistoryPageClient', () => {
   test('감상 기록이 비어 있으면 empty state를 렌더링한다', () => {
-    const view = render(<HistoryPageClient initialData={{ items: [], nextCursor: null }} />)
+    const view = renderWithLibrarySelection(<HistoryPageClient initialData={{ items: [], nextCursor: null }} />)
 
     expect(view.getByText('아직 읽은 작품이 없어요')).toBeTruthy()
   })
@@ -96,7 +117,7 @@ describe('HistoryPageClient', () => {
       },
     }
 
-    const view = render(<HistoryPageClient initialData={{ items: [], nextCursor: 'next-cursor' }} />)
+    const view = renderWithLibrarySelection(<HistoryPageClient initialData={{ items: [], nextCursor: 'next-cursor' }} />)
 
     expect(view.queryByText('아직 읽은 작품이 없어요')).toBeNull()
   })
