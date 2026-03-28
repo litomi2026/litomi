@@ -9,8 +9,9 @@ import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { View } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
-import { useLibrarySelectionStore } from '../[id]/librarySelection'
+import { useLibrarySelection } from '../librarySelection'
 import SelectableMangaCard from '../SelectableMangaCard'
+import NotFound from './NotFound'
 import useBookmarkInfiniteQuery from './useBookmarkInfiniteQuery'
 
 type Props = {
@@ -22,7 +23,7 @@ export default function BookmarkPageClient({ initialData }: Props) {
     useBookmarkInfiniteQuery(initialData)
 
   const bookmarkIds = data?.pages.flatMap((page) => page.bookmarks.map((bookmark) => bookmark.mangaId)) ?? []
-  const { isSelectionMode } = useLibrarySelectionStore()
+  const { isSelectionMode } = useLibrarySelection()
   const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
 
   const infiniteScrollTriggerRef = useInfiniteScrollObserver({
@@ -32,6 +33,10 @@ export default function BookmarkPageClient({ initialData }: Props) {
   })
 
   const { mangaMap } = useMangaListCachedQuery({ mangaIds: bookmarkIds })
+
+  if (data && bookmarkIds.length === 0 && !hasNextPage && !isFetchingNextPage) {
+    return <NotFound />
+  }
 
   return (
     <>

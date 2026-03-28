@@ -14,8 +14,8 @@ import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { View } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
+import { useLibrarySelection } from '../librarySelection'
 import SelectableMangaCard from '../SelectableMangaCard'
-import { useLibrarySelectionStore } from './librarySelection'
 
 type Props = {
   library: {
@@ -29,7 +29,7 @@ type Props = {
 
 export default function LibraryItemsClient({ library, initialItems, isOwner }: Readonly<Props>) {
   const { id: libraryId, name: libraryName, isPublic } = library
-  const { isSelectionMode } = useLibrarySelectionStore()
+  const { isSelectionMode } = useLibrarySelection()
   const scope = isOwner ? 'me' : 'public'
   const { data: me } = useMeQuery()
   const adultState = getAdultState(me)
