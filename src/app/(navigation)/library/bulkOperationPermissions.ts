@@ -5,72 +5,62 @@ export type BulkOperationPermissions = {
   canDelete: boolean
 }
 
-type Params = {
-  pathname: string
-  isOwner: boolean
-  isPublicLibrary: boolean | undefined
-  userId: number | null
-  currentLibraryId?: number
+type BulkOperationPageKind = 'bookmark' | 'browse' | 'detail' | 'history' | 'rating'
+
+type CurrentLibrary = {
+  id: number
+  isPublic: boolean
+  userId: number
 }
 
-export function getBulkOperationPermissions({
-  pathname,
-  isOwner,
-  isPublicLibrary,
-  userId,
-  currentLibraryId,
-}: Params): BulkOperationPermissions {
-  if (pathname === '/library/bookmark') {
+const SIGNED_IN_COLLECTION_PERMISSIONS = {
+  canCopy: true,
+  canDelete: true,
+  canMove: false,
+  canSelectItems: true,
+} satisfies BulkOperationPermissions
+
+const UNAVAILABLE_PERMISSIONS = {
+  canCopy: false,
+  canDelete: false,
+  canMove: false,
+  canSelectItems: false,
+} satisfies BulkOperationPermissions
+
+export function getBulkOperationPermissions(
+  pageKind: BulkOperationPageKind,
+  currentLibrary: CurrentLibrary | null | undefined,
+  userId: number | null,
+): BulkOperationPermissions {
+  if (pageKind === 'bookmark' || pageKind === 'history' || pageKind === 'rating') {
+    if (userId) {
+      return SIGNED_IN_COLLECTION_PERMISSIONS
+    }
+
+    return UNAVAILABLE_PERMISSIONS
+  }
+
+  if (pageKind !== 'detail' || !currentLibrary) {
+    return UNAVAILABLE_PERMISSIONS
+  }
+
+  if (currentLibrary.userId === userId) {
     return {
-      canSelectItems: userId != null,
-      canCopy: userId != null,
-      canMove: false,
-      canDelete: userId != null,
+      canSelectItems: true,
+      canCopy: true,
+      canMove: true,
+      canDelete: true,
     }
   }
 
-  if (pathname === '/library/history') {
+  if (currentLibrary.isPublic) {
     return {
-      canSelectItems: userId != null,
-      canCopy: userId != null,
+      canSelectItems: Boolean(userId),
+      canCopy: Boolean(userId),
       canMove: false,
-      canDelete: userId != null,
+      canDelete: false,
     }
   }
 
-  if (pathname === '/library/rating') {
-    return {
-      canSelectItems: userId != null,
-      canCopy: userId != null,
-      canMove: false,
-      canDelete: userId != null,
-    }
-  }
-
-  if (currentLibraryId) {
-    if (isOwner) {
-      return {
-        canSelectItems: true,
-        canCopy: true,
-        canMove: true,
-        canDelete: true,
-      }
-    }
-
-    if (isPublicLibrary) {
-      return {
-        canSelectItems: userId != null,
-        canCopy: userId != null,
-        canMove: false,
-        canDelete: false,
-      }
-    }
-  }
-
-  return {
-    canSelectItems: false,
-    canCopy: false,
-    canMove: false,
-    canDelete: false,
-  }
+  return UNAVAILABLE_PERMISSIONS
 }
