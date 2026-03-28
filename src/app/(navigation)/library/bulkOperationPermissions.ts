@@ -30,7 +30,7 @@ const UNAVAILABLE_PERMISSIONS = {
 export function getBulkOperationPermissions(
   pageKind: BulkOperationPageKind,
   currentLibrary: CurrentLibrary | null | undefined,
-  userId: number | null,
+  userId?: number,
 ): BulkOperationPermissions {
   if (pageKind === 'bookmark' || pageKind === 'history' || pageKind === 'rating') {
     if (userId) {

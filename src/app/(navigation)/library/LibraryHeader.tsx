@@ -53,7 +53,7 @@ type Props = {
     createdAt: number
     itemCount: number
   }[]
-  userId: number | null
+  userId?: number
   bookmarkCount?: number
   historyCount?: number
   ratingCount?: number

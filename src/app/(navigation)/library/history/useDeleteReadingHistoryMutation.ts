@@ -15,7 +15,7 @@ import { clearAllReadingHistoryLocalEntries, removeReadingHistoryLocalEntries } 
 import { deleteReadingHistory } from './api'
 
 type Options = {
-  userId: number
+  userId?: number
   onSuccess?: () => void
 }
 
@@ -28,14 +28,18 @@ export default function useDeleteReadingHistoryMutation({ userId, onSuccess }: O
       const selectedIds = variables.mode === 'selected' ? [...new Set(variables.mangaIds)] : []
 
       if (variables.mode === 'all') {
-        clearAllReadingHistoryLocalEntries(userId)
+        if (userId) {
+          clearAllReadingHistoryLocalEntries(userId)
+        }
 
         queryClient.setQueriesData<number | null>(
           { predicate: (query) => isReadingHistoryDetailQuery(query.queryKey) },
           () => null,
         )
       } else {
-        removeReadingHistoryLocalEntries(userId, selectedIds)
+        if (userId) {
+          removeReadingHistoryLocalEntries(userId, selectedIds)
+        }
 
         for (const mangaId of selectedIds) {
           queryClient.setQueryData<number | null>(QueryKeys.readingHistory(mangaId), null)

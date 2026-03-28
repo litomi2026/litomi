@@ -33,7 +33,7 @@ type Props = {
 export default function LibraryNavigation({ children }: Readonly<Props>) {
   const pathname = usePathname()
   const { data: me, isPending: isMePending } = useMeQuery()
-  const userId = me?.id ?? null
+  const userId = me?.id
   const { data: summary } = useLibrarySummaryQuery({ userId })
 
   const {

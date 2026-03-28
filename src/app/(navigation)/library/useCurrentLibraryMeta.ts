@@ -18,7 +18,7 @@ type FetchLibraryMetaOptions = {
 
 type Options = {
   libraries: GETV1LibraryResponse[]
-  userId: number | null
+  userId?: number
 }
 
 export async function fetchLibraryMeta({ libraryId, scope }: FetchLibraryMetaOptions) {
