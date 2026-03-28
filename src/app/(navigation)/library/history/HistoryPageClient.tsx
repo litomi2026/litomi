@@ -11,6 +11,7 @@ import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 import { useLibrarySelectionStore } from '../[id]/librarySelection'
 import CensoredManga from '../CensoredManga'
 import SelectableMangaCard from '../SelectableMangaCard'
+import NotFound from './NotFound'
 import useReadingHistoryInfiniteQuery from './useReadingHistoryInfiniteQuery'
 import { DATE_GROUP_LABELS, groupHistoryByDate } from './utils'
 
@@ -23,7 +24,7 @@ export default function HistoryPageClient({ initialData }: Props) {
     { initialData },
   )
 
-  const historyItems = data.pages.flatMap((page) => page.items)
+  const historyItems = data?.pages.flatMap((page) => page.items) ?? []
   const { isSelectionMode } = useLibrarySelectionStore()
   const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
 
@@ -35,6 +36,10 @@ export default function HistoryPageClient({ initialData }: Props) {
 
   const { mangaMap } = useMangaListCachedQuery({ mangaIds: historyItems.map((item) => item.mangaId) })
   const groupedHistory = groupHistoryByDate(historyItems)
+
+  if (data && historyItems.length === 0 && !hasNextPage && !isFetchingNextPage) {
+    return <NotFound />
+  }
 
   return (
     <>
