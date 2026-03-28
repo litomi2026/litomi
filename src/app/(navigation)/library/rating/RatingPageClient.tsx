@@ -13,9 +13,10 @@ import { Manga } from '@/types/manga'
 import { View } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
-import { useLibrarySelectionStore } from '../[id]/librarySelection'
 import CensoredManga from '../CensoredManga'
+import { useLibrarySelection } from '../librarySelection'
 import SelectableMangaCard from '../SelectableMangaCard'
+import NotFound from './NotFound'
 import useRatingInfiniteQuery from './useRatingInfiniteQuery'
 
 type Props = {
@@ -50,8 +51,7 @@ export default function RatingPageClient({ initialData, initialSort = RatingSort
   const ratingPages = data?.pages ?? []
   const ratingItems = ratingPages.flatMap((page) => page.items)
   const ratingIndexMap = new Map(ratingItems.map((item, index) => [item.mangaId, index]))
-  const isSelectionMode = useLibrarySelectionStore((state) => state.isSelectionMode)
-  const exitSelectionMode = useLibrarySelectionStore((state) => state.exitSelectionMode)
+  const { exit, isSelectionMode } = useLibrarySelection()
   const shouldGroupByRating = isGroupedRatingSort(sort)
   const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
   const showLoadingSkeleton = isLoading && ratingItems.length === 0
@@ -82,12 +82,16 @@ export default function RatingPageClient({ initialData, initialSort = RatingSort
 
   function handleSortChange(newSort: RatingSort) {
     if (newSort !== sort) {
-      exitSelectionMode()
+      exit()
       setSort(newSort)
       const url = new URL(window.location.href)
       url.searchParams.set('sort', String(newSort))
       window.history.replaceState({}, '', url.toString())
     }
+  }
+
+  if (data && ratingItems.length === 0 && !hasNextPage && !isFetchingNextPage && !isLoading) {
+    return <NotFound />
   }
 
   return (

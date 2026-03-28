@@ -3,7 +3,7 @@
 import { Trash2 } from 'lucide-react'
 import { useState } from 'react'
 
-import HistoryDeleteDialog from './HistoryDeleteDialog'
+import BulkDeleteDialog from '../BulkDeleteDialog'
 import useDeleteReadingHistoryMutation from './useDeleteReadingHistoryMutation'
 
 type Props = {
@@ -38,7 +38,7 @@ export default function HistoryClearAllButton({ historyCount, userId }: Readonly
         <Trash2 className="size-5" />
       </button>
 
-      <HistoryDeleteDialog
+      <BulkDeleteDialog
         ariaLabel="감상 기록 전체 삭제"
         confirmLabel="전체 삭제"
         description={description}

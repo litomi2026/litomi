@@ -25,7 +25,7 @@ export function getBulkOperationPermissions({
       canSelectItems: userId != null,
       canCopy: userId != null,
       canMove: false,
-      canDelete: false,
+      canDelete: userId != null,
     }
   }
 
@@ -34,7 +34,7 @@ export function getBulkOperationPermissions({
       canSelectItems: userId != null,
       canCopy: userId != null,
       canMove: false,
-      canDelete: false,
+      canDelete: userId != null,
     }
   }
 
@@ -43,7 +43,7 @@ export function getBulkOperationPermissions({
       canSelectItems: userId != null,
       canCopy: userId != null,
       canMove: false,
-      canDelete: false,
+      canDelete: userId != null,
     }
   }
 
