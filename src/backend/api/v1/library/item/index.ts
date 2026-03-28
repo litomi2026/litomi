@@ -16,15 +16,4 @@ route.route('/', deleteRoutes)
 route.route('/copy', copyRoutes)
 route.route('/move', moveRoutes)
 
-export type {
-  DELETEV1LibraryItemBody,
-  DELETEV1LibraryItemResponse,
-  POSTV1LibraryItemAddBody,
-  POSTV1LibraryItemAddResponse,
-  POSTV1LibraryItemCopyBody,
-  POSTV1LibraryItemCopyResponse,
-  POSTV1LibraryItemMoveBody,
-  POSTV1LibraryItemMoveResponse,
-} from './schema'
-
 export default route

@@ -1,4 +1,7 @@
-import type { DELETEV1ReadingHistoryBody, DELETEV1ReadingHistoryResponse } from '@/backend/api/v1/library/history'
+import type {
+  DELETEV1ReadingHistoryBody,
+  DELETEV1ReadingHistoryResponse,
+} from '@/backend/api/v1/library/history/DELETE'
 
 import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'

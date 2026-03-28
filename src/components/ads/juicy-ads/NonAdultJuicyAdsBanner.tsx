@@ -31,7 +31,7 @@ type Props = {
 
 export default function NonAdultJuicyAdsBanner({
   className,
-  title = '광고 수익은 서비스 운영과 작가 후원에 사용돼요.',
+  title = '광고 수익은 서비스 운영에 사용돼요.',
   subtitle,
   layout,
   onAdClick,
