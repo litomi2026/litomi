@@ -43,17 +43,18 @@ type MangaListProps = {
 export default function RatingPageClient({ initialData, initialSort = RatingSort.UPDATED_DESC }: Props) {
   const [sort, setSort] = useState<RatingSort>(initialSort)
   const queryInitialData = sort === initialSort ? initialData : undefined
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError } = useRatingInfiniteQuery(
-    queryInitialData,
-    sort,
-  )
 
-  const ratingItems = data.pages.flatMap((page) => page.items)
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError, isLoading } =
+    useRatingInfiniteQuery(queryInitialData, sort)
+
+  const ratingPages = data?.pages ?? []
+  const ratingItems = ratingPages.flatMap((page) => page.items)
   const ratingIndexMap = new Map(ratingItems.map((item, index) => [item.mangaId, index]))
   const isSelectionMode = useLibrarySelectionStore((state) => state.isSelectionMode)
   const exitSelectionMode = useLibrarySelectionStore((state) => state.exitSelectionMode)
   const shouldGroupByRating = isGroupedRatingSort(sort)
   const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
+  const showLoadingSkeleton = isLoading && ratingItems.length === 0
   const { mangaMap } = useMangaListCachedQuery({ mangaIds: ratingItems.map((item) => item.mangaId) })
   const groupedRatings = new Map<number, typeof ratingItems>()
 
@@ -104,7 +105,7 @@ export default function RatingPageClient({ initialData, initialSort = RatingSort
           ))}
         </select>
       </div>
-      {shouldGroupByRating ? (
+      {shouldGroupByRating && sortedGroups.length > 0 ? (
         <div className="grid gap-4">
           {sortedGroups.map(([rating, items], i) => (
             <div key={rating}>
@@ -127,7 +128,7 @@ export default function RatingPageClient({ initialData, initialSort = RatingSort
         </div>
       ) : (
         <MangaList
-          isFetchingNextPage={isFetchingNextPage}
+          isFetchingNextPage={isFetchingNextPage || showLoadingSkeleton}
           isSelectionMode={isSelectionMode}
           items={ratingItems}
           mangaMap={mangaMap}

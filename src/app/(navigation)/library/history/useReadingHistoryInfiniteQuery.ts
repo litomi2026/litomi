@@ -25,15 +25,12 @@ export async function fetchReadingHistoryPaginated(cursor: string | null) {
 }
 
 export default function useReadingHistoryInfiniteQuery({ initialData, enabled = true }: Options = {}) {
-  return useInfiniteQuery<GETV1ReadingHistoryResponse, Error>({
+  return useInfiniteQuery({
     queryKey: QueryKeys.infiniteReadingHistory,
-    queryFn: ({ pageParam }) => fetchReadingHistoryPaginated(pageParam as string | null),
+    queryFn: ({ pageParam }) => fetchReadingHistoryPaginated(pageParam),
     getNextPageParam: (lastPage) => lastPage.nextCursor,
-    initialData: initialData && {
-      pages: [initialData],
-      pageParams: [null],
-    },
-    initialPageParam: null,
+    ...(initialData && { initialData: { pages: [initialData], pageParams: [''] } }),
+    initialPageParam: '',
     enabled,
     meta: { requiresAdult: true },
   })
