@@ -1,7 +1,7 @@
 import { cleanup } from '@testing-library/react'
 import { afterEach, describe, expect, mock, test } from 'bun:test'
 
-import type { GETV1RatingsResponse } from '@/backend/api/v1/library/rating'
+import type { GETV1RatingsResponse } from '@/backend/api/v1/library/rating/GET'
 
 import { isGroupedRatingSort, RatingSort } from '@/backend/api/v1/library/enum'
 

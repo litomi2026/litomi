@@ -4,7 +4,7 @@ import { Star } from 'lucide-react'
 import { useState } from 'react'
 
 import { isGroupedRatingSort, RatingSort } from '@/backend/api/v1/library/enum'
-import { GETV1RatingsResponse } from '@/backend/api/v1/library/rating'
+import { GETV1RatingsResponse } from '@/backend/api/v1/library/rating/GET'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
