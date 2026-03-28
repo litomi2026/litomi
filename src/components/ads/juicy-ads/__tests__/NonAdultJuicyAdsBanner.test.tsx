@@ -77,7 +77,7 @@ describe('NonAdultJuicyAdsBanner', () => {
   it('renders the default copy and layout for guests', () => {
     const { getAllByTestId, getByTestId, getByText } = render(<NonAdultJuicyAdsBanner />)
 
-    expect(getByText('광고 수익은 서비스 운영과 작가 후원에 사용돼요.')).not.toBeNull()
+    expect(getByText('광고 수익은 서비스 운영에 사용돼요.')).not.toBeNull()
     expect(getByTestId('juicy-script')).not.toBeNull()
     expect(getAllByTestId('juicy-slot').length).toBeGreaterThan(1)
     expect(getByTestId('login-link')).not.toBeNull()
