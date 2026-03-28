@@ -110,6 +110,32 @@ describe('GET /api/v1/library/summary', () => {
   })
 })
 
+describe('DELETE /api/v1/library/rating', () => {
+  test('userId가 없으면 401 에러를 반환한다', async () => {
+    const response = await app.request('/rating', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mangaIds: [1] }),
+    })
+
+    expect(response.status).toBe(401)
+  })
+
+  test('유효하지 않은 body를 사용하면 400 에러를 반환한다', async () => {
+    const response = await app.request(
+      '/rating',
+      {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mangaIds: [] }),
+      },
+      { userId: 1 },
+    )
+
+    expect(response.status).toBe(400)
+  })
+})
+
 describe('DELETE /api/v1/library/history', () => {
   test('userId가 없으면 401 에러를 반환한다', async () => {
     const response = await app.request(
