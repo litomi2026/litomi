@@ -24,7 +24,7 @@ export default function PinLibraryButton({ className = '', libraryId, library }:
   const adultState = getAdultState(me)
   const canAccess = hasAdultAccess(adultState)
   const { mutate, isPending } = usePinLibraryMutation()
-  const { data: pinnedData } = usePinnedLibraryListInfiniteQuery({ userId: me?.id ?? null, enabled: !!me })
+  const { data: pinnedData } = usePinnedLibraryListInfiniteQuery({ userId: me?.id, enabled: !!me })
   const isPinned = pinnedData?.pages.some((page) => page.libraries.some((lib) => lib.id === libraryId))
   const [isAnimating, setIsAnimating] = useState(false)
 
