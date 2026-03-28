@@ -7,8 +7,25 @@ import type { Env } from '@/backend'
 import libraryRoutes from '..'
 import { type GETLibraryItemsResponse } from '../[id]/item/GET'
 
-const app = new Hono<Env>()
+type TestEnv = Env & {
+  Bindings: {
+    userId?: number
+    isAdult?: boolean
+  }
+}
+
+const app = new Hono<TestEnv>()
 app.use('*', contextStorage())
+app.use('*', async (c, next) => {
+  const userId = c.env?.userId
+
+  if (typeof userId === 'number') {
+    c.set('userId', userId)
+    c.set('isAdult', c.env?.isAdult ?? true)
+  }
+
+  await next()
+})
 app.route('/', libraryRoutes)
 
 describe('GET /api/v1/library?scope=me', () => {
@@ -90,6 +107,50 @@ describe('GET /api/v1/library/summary', () => {
     const response = await app.request('/summary')
 
     expect(response.status).toBe(401)
+  })
+})
+
+describe('DELETE /api/v1/library/history', () => {
+  test('userId가 없으면 401 에러를 반환한다', async () => {
+    const response = await app.request(
+      '/history',
+      {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: 'all' }),
+      },
+      {},
+    )
+
+    expect(response.status).toBe(401)
+  })
+
+  test('성인인증이 완료되지 않은 사용자(isAdult=false)는 403 응답을 받는다', async () => {
+    const response = await app.request(
+      '/history',
+      {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: 'all' }),
+      },
+      { userId: 1, isAdult: false },
+    )
+
+    expect(response.status).toBe(403)
+  })
+
+  test('유효하지 않은 body를 사용하면 400 에러를 반환한다', async () => {
+    const response = await app.request(
+      '/history',
+      {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: 'selected', mangaIds: [] }),
+      },
+      { userId: 1, isAdult: true },
+    )
+
+    expect(response.status).toBe(400)
   })
 })
 

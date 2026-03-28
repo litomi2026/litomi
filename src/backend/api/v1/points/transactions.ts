@@ -103,7 +103,7 @@ function getTransactionDescription({ transactionType, amount }: TransactionDescr
     case TRANSACTION_TYPE.BOOKMARK_EXPANSION_SMALL:
       return `북마크 확장 (+${POINT_CONSTANTS.BOOKMARK_EXPANSION_SMALL_AMOUNT}개)`
     case TRANSACTION_TYPE.DONATION:
-      return '기부'
+      return '후원'
     case TRANSACTION_TYPE.HISTORY_EXPANSION:
       return `감상 기록 확장 (+${POINT_CONSTANTS.HISTORY_EXPANSION_AMOUNT}개)`
     case TRANSACTION_TYPE.LIBRARY_EXPANSION:

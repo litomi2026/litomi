@@ -12,7 +12,7 @@ export default function RankingTitle() {
 
   function renderTitle() {
     if (pathname.startsWith('/ranking/donation')) {
-      return '기부 랭킹'
+      return '후원 랭킹'
     }
     if (pathname === '/realtime') {
       return '실시간 인기'

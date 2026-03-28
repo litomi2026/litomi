@@ -48,13 +48,13 @@ route.post('/', requireAuth, zProblemValidator('json', createSchema), async (c) 
   for (const recipient of recipients) {
     const key = `${recipient.type}:${recipient.value}`
     if (recipientKeys.has(key)) {
-      return problemResponse(c, { status: 400, detail: '기부 대상이 중복돼요' })
+      return problemResponse(c, { status: 400, detail: '후원 대상이 중복돼요' })
     }
     recipientKeys.add(key)
   }
 
   if (totalAmount < recipients.length) {
-    return problemResponse(c, { status: 400, detail: '기부 금액이 너무 적어요' })
+    return problemResponse(c, { status: 400, detail: '후원 금액이 너무 적어요' })
   }
 
   const perRecipient = Math.floor(totalAmount / recipients.length)
@@ -130,7 +130,7 @@ route.post('/', requireAuth, zProblemValidator('json', createSchema), async (c) 
     })
   } catch (error) {
     console.error(error)
-    return problemResponse(c, { status: 500, detail: '기부에 실패했어요' })
+    return problemResponse(c, { status: 500, detail: '후원에 실패했어요' })
   }
 })
 
