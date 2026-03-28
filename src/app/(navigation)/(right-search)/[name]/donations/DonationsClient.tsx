@@ -28,8 +28,8 @@ export default function DonationsClient() {
   return (
     <div className="max-w-3xl w-full mx-auto grid gap-4 sm:p-6">
       <div className="p-3 pb-0 sm:p-0">
-        <h1 className="text-xl font-bold tracking-tight">내 기부</h1>
-        <p className="mt-1 text-sm text-zinc-500">기부한 기록을 모아서 볼 수 있어요</p>
+        <h1 className="text-xl font-bold tracking-tight">내 후원</h1>
+        <p className="mt-1 text-sm text-zinc-500">후원한 기록을 모아서 볼 수 있어요</p>
       </div>
 
       {isLoading && <p className="text-sm text-zinc-500">불러오는 중...</p>}
@@ -37,7 +37,7 @@ export default function DonationsClient() {
 
       {!isLoading && !errorMessage && items.length === 0 && (
         <div className="rounded-2xl border border-zinc-800/60 bg-zinc-950/40 p-6 shadow-sm">
-          <p className="text-sm text-zinc-400">아직 기부 내역이 없어요</p>
+          <p className="text-sm text-zinc-400">아직 후원 내역이 없어요</p>
         </div>
       )}
 
@@ -53,7 +53,7 @@ export default function DonationsClient() {
                 <li className="p-4 sm:p-5 transition hover:bg-zinc-900/40" key={item.id}>
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="text-sm font-semibold text-foreground">기부</p>
+                      <p className="text-sm font-semibold text-foreground">후원</p>
                       <p className="text-xs text-zinc-500" title={createdAt.toLocaleString()}>
                         {distanceLabel ? `${distanceLabel} · ${dateLabel}` : dateLabel}
                       </p>
@@ -66,10 +66,10 @@ export default function DonationsClient() {
                         <p className="text-xs text-zinc-500">대상 {item.recipients.length}곳</p>
                       </div>
                       <button
-                        aria-label="기부 내역 삭제"
+                        aria-label="후원 내역 삭제"
                         className="shrink-0 rounded-full p-2 text-zinc-500 transition hover:bg-zinc-900/60 hover:text-zinc-200"
                         onClick={() => {
-                          const ok = window.confirm('기부 내역을 삭제할까요?\n포인트는 돌아오지 않아요.')
+                          const ok = window.confirm('후원 내역을 삭제할까요?\n포인트는 돌아오지 않아요.')
                           if (!ok) return
                           deleteMutation.mutate({ donationId: item.id })
                         }}

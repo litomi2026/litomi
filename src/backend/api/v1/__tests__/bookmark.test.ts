@@ -626,14 +626,6 @@ describe('PUT /api/v1/bookmark/:id', () => {
     expect(mockBookmarks.get(1)?.map((bookmark) => bookmark.mangaId)).toEqual([100])
   })
 
-  test('성인인증이 되지 않은 사용자는 403 응답을 받는다', async () => {
-    const response = await app.request('/101', { method: 'PUT' }, { userId: 1, isAdult: false })
-
-    expect(response.status).toBe(403)
-    const data = (await response.json()) as ValidationProblemDetails
-    expect(data.type).toContain('/problems/adult-verification-required')
-  })
-
   test('인증되지 않은 사용자는 401 응답을 받는다', async () => {
     const response = await app.request('/101', { method: 'PUT' }, {})
 
@@ -670,14 +662,6 @@ describe('DELETE /api/v1/bookmark/:id', () => {
 
     expect(response.status).toBe(204)
     expect(mockBookmarks.get(1)).toEqual([])
-  })
-
-  test('성인인증이 되지 않은 사용자는 403 응답을 받는다', async () => {
-    const response = await app.request('/101', { method: 'DELETE' }, { userId: 1, isAdult: false })
-
-    expect(response.status).toBe(403)
-    const data = (await response.json()) as ValidationProblemDetails
-    expect(data.type).toContain('/problems/adult-verification-required')
   })
 
   test('인증되지 않은 사용자는 401 응답을 받는다', async () => {

@@ -10,9 +10,9 @@ import { getDonationRanking } from './query'
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: '기부 랭킹',
+  title: '후원 랭킹',
   ...generateOpenGraphMetadata({
-    title: '기부 랭킹',
+    title: '후원 랭킹',
     url: '/ranking/donation',
   }),
   alternates: {
@@ -31,7 +31,7 @@ export default async function Page() {
             <tr>
               <th className="p-4 py-3 text-left text-sm font-medium text-zinc-400">순위</th>
               <th className="py-3 text-left text-sm font-medium text-zinc-400">대상</th>
-              <th className="p-4 py-3 text-right text-sm font-medium text-zinc-400">총 기부</th>
+              <th className="p-4 py-3 text-right text-sm font-medium text-zinc-400">총 후원</th>
             </tr>
           </thead>
           <DonationRankingBody />
@@ -75,7 +75,7 @@ async function DonationRankingBody() {
       {items.length === 0 && (
         <tr>
           <td className="p-6 text-sm text-zinc-500" colSpan={3}>
-            아직 기부 데이터가 없어요
+            아직 후원 데이터가 없어요
           </td>
         </tr>
       )}

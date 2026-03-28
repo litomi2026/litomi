@@ -1,9 +1,9 @@
-import { desc, eq } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import { Metadata } from 'next'
 import { z } from 'zod'
 
 import { RatingSort } from '@/backend/api/v1/library/enum'
-import { encodeRatingCursor } from '@/common/cursor'
+import { getNextRatingCursor, getRatingOrderByClauses } from '@/backend/api/v1/library/rating-sort'
 import { generateOpenGraphMetadata } from '@/constants'
 import { RATING_PER_PAGE } from '@/constants/policy'
 import { userRatingTable } from '@/database/supabase/activity'
@@ -56,31 +56,7 @@ export default async function RatingPage({ searchParams }: PageProps<'/library/r
     .where(eq(userRatingTable.userId, userId))
     .limit(RATING_PER_PAGE + 1)
 
-  let ratings
-
-  switch (sort) {
-    case RatingSort.CREATED_DESC:
-      ratings = await baseQuery.orderBy(desc(userRatingTable.createdAt), desc(userRatingTable.mangaId))
-      break
-    case RatingSort.RATING_ASC:
-      ratings = await baseQuery.orderBy(
-        userRatingTable.rating,
-        desc(userRatingTable.updatedAt),
-        desc(userRatingTable.mangaId),
-      )
-      break
-    case RatingSort.RATING_DESC:
-      ratings = await baseQuery.orderBy(
-        desc(userRatingTable.rating),
-        desc(userRatingTable.updatedAt),
-        desc(userRatingTable.mangaId),
-      )
-      break
-    case RatingSort.UPDATED_DESC:
-    default:
-      ratings = await baseQuery.orderBy(desc(userRatingTable.updatedAt), desc(userRatingTable.mangaId))
-      break
-  }
+  const ratings = await baseQuery.orderBy(...getRatingOrderByClauses(sort))
 
   if (ratings.length === 0) {
     return <NotFound />
@@ -99,29 +75,11 @@ export default async function RatingPage({ searchParams }: PageProps<'/library/r
     updatedAt: r.updatedAt.getTime(),
   }))
 
-  let nextCursor: string | null = null
-
-  if (hasNextPage && initialRatings.length > 0) {
-    const { rating, createdAt, updatedAt, mangaId } = initialRatings[initialRatings.length - 1]
-
-    switch (sort) {
-      case RatingSort.CREATED_DESC:
-        nextCursor = encodeRatingCursor(rating, createdAt, mangaId)
-        break
-      case RatingSort.RATING_ASC:
-      case RatingSort.RATING_DESC:
-        nextCursor = encodeRatingCursor(rating, updatedAt, mangaId)
-        break
-      case RatingSort.UPDATED_DESC:
-      default:
-        nextCursor = encodeRatingCursor(rating, updatedAt, mangaId)
-        break
-    }
-  }
+  const lastRating = ratings[ratings.length - 1]
 
   const initialData = {
     items: initialRatings,
-    nextCursor,
+    nextCursor: hasNextPage && lastRating ? getNextRatingCursor(sort, lastRating) : null,
   }
 
   return (

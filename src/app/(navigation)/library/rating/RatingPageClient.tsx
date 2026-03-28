@@ -3,7 +3,7 @@
 import { Star } from 'lucide-react'
 import { useState } from 'react'
 
-import { RatingSort } from '@/backend/api/v1/library/enum'
+import { isGroupedRatingSort, RatingSort } from '@/backend/api/v1/library/enum'
 import { GETV1RatingsResponse } from '@/backend/api/v1/library/rating'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
@@ -28,47 +28,40 @@ const SORT_OPTIONS: { value: RatingSort; label: string }[] = [
   { value: RatingSort.CREATED_DESC, label: '최근 추가순' },
   { value: RatingSort.RATING_DESC, label: '평점 높은순' },
   { value: RatingSort.RATING_ASC, label: '평점 낮은순' },
+  { value: RatingSort.MANGA_ID_DESC, label: '작품 ID 내림차순' },
+  { value: RatingSort.MANGA_ID_ASC, label: '작품 ID 오름차순' },
 ]
 
 type MangaListProps = {
   items: { mangaId: number; rating: number }[]
   mangaMap: Map<number, Manga>
-  ratingItems: { mangaId: number; rating: number }[]
+  ratingIndexMap: Map<number, number>
   isSelectionMode: boolean
   isFetchingNextPage?: boolean
 }
 
 export default function RatingPageClient({ initialData, initialSort = RatingSort.UPDATED_DESC }: Props) {
   const [sort, setSort] = useState<RatingSort>(initialSort)
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError, refetch } =
-    useRatingInfiniteQuery(initialData, sort)
+  const queryInitialData = sort === initialSort ? initialData : undefined
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError } = useRatingInfiniteQuery(
+    queryInitialData,
+    sort,
+  )
 
   const ratingItems = data.pages.flatMap((page) => page.items)
+  const ratingIndexMap = new Map(ratingItems.map((item, index) => [item.mangaId, index]))
   const isSelectionMode = useLibrarySelectionStore((state) => state.isSelectionMode)
   const exitSelectionMode = useLibrarySelectionStore((state) => state.exitSelectionMode)
-  const shouldGroupByRating = sort === RatingSort.RATING_DESC || sort === RatingSort.RATING_ASC
+  const shouldGroupByRating = isGroupedRatingSort(sort)
   const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
+  const { mangaMap } = useMangaListCachedQuery({ mangaIds: ratingItems.map((item) => item.mangaId) })
+  const groupedRatings = new Map<number, typeof ratingItems>()
 
   const infiniteScrollTriggerRef = useInfiniteScrollObserver({
     hasNextPage: canAutoLoadMore,
     isFetchingNextPage,
     fetchNextPage,
   })
-
-  const { mangaMap } = useMangaListCachedQuery({ mangaIds: ratingItems.map((item) => item.mangaId) })
-
-  const handleSortChange = async (newSort: RatingSort) => {
-    if (newSort !== sort) {
-      exitSelectionMode()
-      setSort(newSort)
-      const url = new URL(window.location.href)
-      url.searchParams.set('sort', String(newSort))
-      window.history.replaceState({}, '', url.toString())
-      await refetch()
-    }
-  }
-
-  const groupedRatings = new Map<number, typeof ratingItems>()
 
   ratingItems.forEach((item) => {
     const group = groupedRatings.get(item.rating) || []
@@ -85,6 +78,16 @@ export default function RatingPageClient({ initialData, initialSort = RatingSort
     }
     return bRating - aRating
   })
+
+  function handleSortChange(newSort: RatingSort) {
+    if (newSort !== sort) {
+      exitSelectionMode()
+      setSort(newSort)
+      const url = new URL(window.location.href)
+      url.searchParams.set('sort', String(newSort))
+      window.history.replaceState({}, '', url.toString())
+    }
+  }
 
   return (
     <>
@@ -117,7 +120,7 @@ export default function RatingPageClient({ initialData, initialSort = RatingSort
                 isSelectionMode={isSelectionMode}
                 items={items}
                 mangaMap={mangaMap}
-                ratingItems={ratingItems}
+                ratingIndexMap={ratingIndexMap}
               />
             </div>
           ))}
@@ -128,7 +131,7 @@ export default function RatingPageClient({ initialData, initialSort = RatingSort
           isSelectionMode={isSelectionMode}
           items={ratingItems}
           mangaMap={mangaMap}
-          ratingItems={ratingItems}
+          ratingIndexMap={ratingIndexMap}
         />
       )}
       {canAutoLoadMore && <div className="w-full p-2" ref={infiniteScrollTriggerRef} />}
@@ -137,12 +140,12 @@ export default function RatingPageClient({ initialData, initialSort = RatingSort
   )
 }
 
-function MangaList({ items, mangaMap, ratingItems, isSelectionMode, isFetchingNextPage }: MangaListProps) {
+function MangaList({ items, mangaMap, ratingIndexMap, isSelectionMode, isFetchingNextPage }: MangaListProps) {
   return (
     <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[View.CARD]} gap-2 p-2`}>
       {items.map(({ mangaId, rating }) => {
         const manga = mangaMap.get(mangaId) ?? { id: mangaId, title: '불러오는 중', images: [] }
-        const index = ratingItems.findIndex((item) => item.mangaId === mangaId)
+        const index = ratingIndexMap.get(mangaId) ?? 0
 
         if (!isSelectionMode) {
           return (

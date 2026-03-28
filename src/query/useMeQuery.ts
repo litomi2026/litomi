@@ -17,10 +17,13 @@ export async function fetchMe() {
 }
 
 export default function useMeQuery() {
+  const hasAuthHint = Cookies.get(CookieKey.AUTH_HINT) === '1'
+
   return useQuery({
     queryKey: QueryKeys.me,
     queryFn: fetchMe,
-    enabled: Cookies.get(CookieKey.AUTH_HINT) === '1',
+    enabled: hasAuthHint,
+    initialData: hasAuthHint ? undefined : null,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchOnMount: false,

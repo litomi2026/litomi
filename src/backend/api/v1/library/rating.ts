@@ -1,4 +1,3 @@
-import { and, desc, eq, gt, lt, or, SQL } from 'drizzle-orm'
 import { Hono } from 'hono'
 import 'server-only'
 import { z } from 'zod'
@@ -8,7 +7,7 @@ import { requireAuth } from '@/backend/middleware/require-auth'
 import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
-import { decodeRatingCursor, encodeRatingCursor } from '@/common/cursor'
+import { decodeRatingCursor } from '@/common/cursor'
 import { RATING_PER_PAGE } from '@/constants/policy'
 import { userRatingTable } from '@/database/supabase/activity'
 import { db } from '@/database/supabase/drizzle'
@@ -16,6 +15,7 @@ import { createCacheControl } from '@/utils/cache-control'
 import { sec } from '@/utils/format/date'
 
 import { RatingSort } from './enum'
+import { buildRatingWhereClause, getNextRatingCursor, getRatingOrderByClauses } from './rating-sort'
 
 const querySchema = z.object({
   cursor: z.string().optional(),
@@ -47,58 +47,7 @@ libraryRatingRoutes.get('/', requireAuth, zProblemValidator('query', querySchema
     return problemResponse(c, { status: 400, detail: '잘못된 커서예요' })
   }
 
-  const conditions: (SQL | undefined)[] = [eq(userRatingTable.userId, userId)]
-
-  if (decodedCursor) {
-    const { rating, timestamp, mangaId } = decodedCursor
-
-    switch (sort) {
-      case RatingSort.CREATED_DESC:
-        conditions.push(
-          or(
-            lt(userRatingTable.createdAt, new Date(timestamp)),
-            and(eq(userRatingTable.createdAt, new Date(timestamp)), lt(userRatingTable.mangaId, mangaId)),
-          ),
-        )
-        break
-      case RatingSort.RATING_ASC:
-        conditions.push(
-          or(
-            gt(userRatingTable.rating, rating),
-            and(eq(userRatingTable.rating, rating), lt(userRatingTable.updatedAt, new Date(timestamp))),
-            and(
-              eq(userRatingTable.rating, rating),
-              eq(userRatingTable.updatedAt, new Date(timestamp)),
-              lt(userRatingTable.mangaId, mangaId),
-            ),
-          ),
-        )
-        break
-      case RatingSort.RATING_DESC:
-        conditions.push(
-          or(
-            lt(userRatingTable.rating, rating),
-            and(eq(userRatingTable.rating, rating), lt(userRatingTable.updatedAt, new Date(timestamp))),
-            and(
-              eq(userRatingTable.rating, rating),
-              eq(userRatingTable.updatedAt, new Date(timestamp)),
-              lt(userRatingTable.mangaId, mangaId),
-            ),
-          ),
-        )
-        break
-      case RatingSort.UPDATED_DESC:
-        conditions.push(
-          or(
-            lt(userRatingTable.updatedAt, new Date(timestamp)),
-            and(eq(userRatingTable.updatedAt, new Date(timestamp)), lt(userRatingTable.mangaId, mangaId)),
-          ),
-        )
-        break
-    }
-  }
-
-  let query = db
+  const query = db
     .select({
       mangaId: userRatingTable.mangaId,
       rating: userRatingTable.rating,
@@ -106,28 +55,9 @@ libraryRatingRoutes.get('/', requireAuth, zProblemValidator('query', querySchema
       updatedAt: userRatingTable.updatedAt,
     })
     .from(userRatingTable)
-    .where(and(...conditions))
+    .where(buildRatingWhereClause(userId, sort, decodedCursor ?? undefined))
     .limit(limit + 1)
-    .$dynamic()
-
-  switch (sort) {
-    case RatingSort.CREATED_DESC:
-      query = query.orderBy(desc(userRatingTable.createdAt), desc(userRatingTable.mangaId))
-      break
-    case RatingSort.RATING_ASC:
-      query = query.orderBy(userRatingTable.rating, desc(userRatingTable.updatedAt), desc(userRatingTable.mangaId))
-      break
-    case RatingSort.RATING_DESC:
-      query = query.orderBy(
-        desc(userRatingTable.rating),
-        desc(userRatingTable.updatedAt),
-        desc(userRatingTable.mangaId),
-      )
-      break
-    case RatingSort.UPDATED_DESC:
-      query = query.orderBy(desc(userRatingTable.updatedAt), desc(userRatingTable.mangaId))
-      break
-  }
+    .orderBy(...getRatingOrderByClauses(sort))
 
   try {
     const rows = await query
@@ -147,12 +77,7 @@ libraryRatingRoutes.get('/', requireAuth, zProblemValidator('query', querySchema
     const hasNextPage = rows.length > limit
     const items = hasNextPage ? rows.slice(0, limit) : rows
     const lastItem = items[items.length - 1]
-    let nextCursor: string | null = null
-
-    if (hasNextPage && lastItem) {
-      const { rating, createdAt, updatedAt, mangaId } = lastItem
-      nextCursor = getNextCursor(sort, rating, createdAt, updatedAt, mangaId)
-    }
+    const nextCursor = hasNextPage && lastItem ? getNextRatingCursor(sort, lastItem) : null
 
     const result = {
       items: items.map((row) => ({
@@ -170,18 +95,5 @@ libraryRatingRoutes.get('/', requireAuth, zProblemValidator('query', querySchema
     return problemResponse(c, { status: 500, detail: '평점 목록을 불러오지 못했어요' })
   }
 })
-
-function getNextCursor(sort: RatingSort, rating: number, createdAt: Date, updatedAt: Date, mangaId: number) {
-  switch (sort) {
-    case RatingSort.CREATED_DESC:
-      return encodeRatingCursor(rating, createdAt.getTime(), mangaId)
-    case RatingSort.RATING_ASC:
-      return encodeRatingCursor(rating, updatedAt.getTime(), mangaId)
-    case RatingSort.RATING_DESC:
-      return encodeRatingCursor(rating, updatedAt.getTime(), mangaId)
-    case RatingSort.UPDATED_DESC:
-      return encodeRatingCursor(rating, updatedAt.getTime(), mangaId)
-  }
-}
 
 export default libraryRatingRoutes

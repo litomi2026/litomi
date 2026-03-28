@@ -59,7 +59,7 @@ export default function NonAdultJuicyAdsBanner({
   )
 }
 
-function DefaultSubtitle({ me }: { me?: GETV1MeResponse }) {
+function DefaultSubtitle({ me }: { me?: GETV1MeResponse | null }) {
   return (
     <>
       {me ? (

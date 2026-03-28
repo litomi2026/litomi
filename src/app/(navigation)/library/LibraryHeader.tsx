@@ -12,6 +12,7 @@ import AutoHideNavigation from '../AutoHideNavigation'
 import { useLibrarySelectionStore } from './[id]/librarySelection'
 import ShareLibraryButton from './[id]/ShareLibraryButton'
 import { getBulkOperationPermissions } from './bulkOperationPermissions'
+import HistoryClearAllButton from './history/HistoryClearAllButton'
 import LibraryManagementMenu from './LibraryManagementMenu'
 import LibrarySidebar from './LibrarySidebar'
 import PinLibraryButton from './PinLibraryButton'
@@ -75,6 +76,7 @@ export default function LibraryHeader({
   const isEmpty = currentLibrary?.itemCount === 0
   const isPublicLibrary = currentLibrary?.isPublic
   const currentLibraryId = currentLibrary?.id
+  const isHistoryPage = pathname === '/library/history'
   const headerTitle = getHeaderTitle()
 
   const permissions = getBulkOperationPermissions({
@@ -191,6 +193,9 @@ export default function LibraryHeader({
           />
         )}
         <div className="flex items-center">
+          {!isSelectionMode && isHistoryPage && userId != null && (
+            <HistoryClearAllButton historyCount={historyCount} userId={userId} />
+          )}
           {!isSelectionMode && isPublicLibrary && (
             <>
               <PinLibraryButton className="p-3" library={currentLibrary} libraryId={currentLibrary.id} />

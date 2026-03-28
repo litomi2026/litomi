@@ -94,11 +94,11 @@ export default function DonateButton({ manga, ...props }: Props) {
     setLocalMessage(null)
 
     if (!isAmountValid) {
-      setLocalMessage('기부 금액을 확인해 주세요')
+      setLocalMessage('후원 금액을 확인해 주세요')
       return
     }
     if (selectedRecipients.length === 0) {
-      setLocalMessage('기부 대상을 선택해 주세요')
+      setLocalMessage('후원 대상을 선택해 주세요')
       return
     }
 
@@ -111,10 +111,10 @@ export default function DonateButton({ manga, ...props }: Props) {
       onSuccess: () => {
         close()
         const donationHref = me?.name ? `/@${me.name}/donations` : '/ranking/donation'
-        const donationLabel = me?.name ? '내 기부 보기' : '기부 랭킹 보기'
+        const donationLabel = me?.name ? '내 후원 보기' : '후원 랭킹 보기'
         const toastId = `donation-success-${manga.id}-${Date.now()}`
 
-        toast.success('기부가 완료됐어요', {
+        toast.success('후원이 완료됐어요', {
           action: {
             label: donationLabel,
             onClick: () => {
@@ -127,7 +127,7 @@ export default function DonateButton({ manga, ...props }: Props) {
         })
       },
       onError: (err) => {
-        setLocalMessage(getErrorMessage(err) ?? '기부에 실패했어요')
+        setLocalMessage(getErrorMessage(err) ?? '후원에 실패했어요')
       },
     })
   }
@@ -136,12 +136,12 @@ export default function DonateButton({ manga, ...props }: Props) {
 
   return (
     <>
-      <button aria-label="기부하기" onClick={() => setOpen(true)} {...props}>
+      <button aria-label="후원하기" onClick={() => setOpen(true)} {...props}>
         <Heart className="size-6" />
       </button>
-      <Dialog ariaLabel="기부하기" onClose={close} open={open}>
+      <Dialog ariaLabel="후원하기" onClose={close} open={open}>
         <form className="flex flex-1 flex-col min-h-0" onSubmit={handleSubmit}>
-          <DialogHeader onClose={close} title="기부하기" />
+          <DialogHeader onClose={close} title="후원하기" />
           <DialogBody className="flex flex-col gap-4 sm:p-6">
             <div className="rounded-xl bg-zinc-900 p-4 border border-zinc-800">
               <div className="flex items-center justify-between gap-3">
@@ -155,7 +155,7 @@ export default function DonateButton({ manga, ...props }: Props) {
                   aria-current={remainingBalance !== null && remainingBalance < 0}
                   className="mt-2 text-xs text-zinc-500 aria-current:text-red-400"
                 >
-                  기부 후 남는 리보:{' '}
+                  후원 후 남는 리보:{' '}
                   {remainingBalance === null ? '-' : `${formatNumber(Math.max(0, remainingBalance))} 리보`}
                 </p>
               )}
@@ -247,7 +247,7 @@ export default function DonateButton({ manga, ...props }: Props) {
               className="flex-1 rounded-xl bg-brand px-4 py-3 text-sm font-semibold text-background transition aria-disabled:opacity-50 aria-disabled:pointer-events-none"
               type="submit"
             >
-              {donateMutation.isPending ? '기부 중...' : '기부하기'}
+              {donateMutation.isPending ? '후원 중...' : '후원하기'}
             </button>
           </DialogFooter>
         </form>
