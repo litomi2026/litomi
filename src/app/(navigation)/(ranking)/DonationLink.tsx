@@ -21,7 +21,7 @@ export default function DonationLink() {
       <LinkPending className="size-4 text-foreground">
         <Heart className="size-4" />
       </LinkPending>
-      기부
+      후원
     </Link>
   )
 }
