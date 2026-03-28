@@ -14,7 +14,7 @@ import libraryHistoryRoutes from './history'
 import libraryItemRoutes from './item'
 import libraryMangaRoutes from './manga'
 import libraryPostRoutes from './POST'
-import libraryRatingRoutes from './rating'
+import libraryRatingRoutes from './rating/route'
 import librarySummaryRoutes from './summary'
 
 const libraryRoutes = new Hono<Env>()

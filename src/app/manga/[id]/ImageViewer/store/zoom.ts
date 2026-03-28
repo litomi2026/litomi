@@ -10,8 +10,8 @@ type Store = {
   resetZoom: () => void
 }
 
-const DEFAULT_ZOOM = 1
-const MAX_ZOOM = 10
+export const DEFAULT_ZOOM = 1
+export const MAX_ZOOM = 10
 
 export const useZoomStore = create<Store>()(
   persist(
@@ -30,5 +30,3 @@ export const useZoomStore = create<Store>()(
     },
   ),
 )
-
-export { DEFAULT_ZOOM, MAX_ZOOM }

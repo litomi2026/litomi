@@ -9,7 +9,7 @@ import type {
   POSTV1LibraryItemCopyResponse,
   POSTV1LibraryItemMoveBody,
   POSTV1LibraryItemMoveResponse,
-} from '@/backend/api/v1/library/item'
+} from '@/backend/api/v1/library/item/schema'
 
 import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'

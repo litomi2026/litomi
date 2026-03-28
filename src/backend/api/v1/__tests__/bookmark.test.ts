@@ -1,4 +1,5 @@
 import { beforeAll, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test'
+import { PgDialect } from 'drizzle-orm/pg-core'
 import { Hono } from 'hono'
 import { contextStorage } from 'hono/context-storage'
 
@@ -10,9 +11,14 @@ let mockBookmarkLimit = 500
 let nextCreatedAtMs = new Date('2025-01-10T00:00:00.000Z').getTime()
 const mockBookmarks: Map<number, Array<{ mangaId: number; createdAt: Date }>> = new Map()
 type BookmarkRoutesModule = typeof import('../bookmark')
+const dialect = new PgDialect()
 
 let bookmarkRoutes: BookmarkRoutesModule['default']
 let app: Hono<TestEnv>
+
+type BookmarkDeleteResponse = {
+  deletedCount: number
+}
 
 type BookmarkExportResponse = {
   bookmarks: BookmarkItem[]
@@ -83,22 +89,27 @@ function createBookmarkTx() {
     delete: () => ({
       where: (condition: unknown) => {
         const params = extractWhereParams(condition)
+        const listParams = extractWhereListParams(condition)
         const userId = Number(params.user_id)
-        const mangaId = Number(params.manga_id)
+        const mangaIds = listParams.manga_id ?? (Number.isFinite(params.manga_id) ? [Number(params.manga_id)] : [])
         const userBookmarks = [...(mockBookmarks.get(userId) || [])]
-        const nextBookmarks = userBookmarks.filter((bookmark) => bookmark.mangaId !== mangaId)
+        const deletedBookmarks = userBookmarks.filter((bookmark) => mangaIds.includes(bookmark.mangaId))
+        const nextBookmarks = userBookmarks.filter((bookmark) => !mangaIds.includes(bookmark.mangaId))
 
         mockBookmarks.set(userId, nextBookmarks)
 
-        return Promise.resolve(
-          userBookmarks.length === nextBookmarks.length
-            ? []
-            : [
-                {
-                  mangaId,
-                },
-              ],
-        )
+        const deletedRows = deletedBookmarks.map(({ mangaId }) => ({ mangaId }))
+        const query = Promise.resolve(deletedRows)
+
+        return Object.assign(query, {
+          returning: () =>
+            Promise.resolve(
+              deletedBookmarks.map(({ mangaId }) => ({
+                deleted: 1,
+                mangaId,
+              })),
+            ),
+        })
       },
     }),
   }
@@ -111,38 +122,37 @@ function createSelectableResult<T>(value: T) {
   })
 }
 
+function extractWhereListParams(condition: unknown): Record<string, number[]> {
+  const params: Record<string, number[]> = {}
+  const { params: queryParams, sql } = toQuery(condition)
+
+  for (const match of sql.matchAll(/"bookmark"\."([^"]+)" in \(([^)]+)\)/g)) {
+    const [, columnName, placeholders] = match
+    const values = placeholders
+      .split(', ')
+      .map((placeholder) => queryParams[Number(placeholder.replace('$', '')) - 1])
+      .filter((value): value is number => typeof value === 'number')
+
+    params[columnName] = values
+  }
+
+  return params
+}
+
 function extractWhereParams(condition: unknown): Record<string, number> {
   const params: Record<string, number> = {}
 
-  function visit(node: unknown) {
-    if (!node || typeof node !== 'object') {
-      return
-    }
+  const { params: queryParams, sql } = toQuery(condition)
 
-    const sqlNode = node as { queryChunks?: unknown[] }
+  for (const match of sql.matchAll(/"bookmark"\."([^"]+)" = \$(\d+)/g)) {
+    const [, columnName, paramIndex] = match
+    const value = queryParams[Number(paramIndex) - 1]
 
-    if (!Array.isArray(sqlNode.queryChunks)) {
-      return
-    }
-
-    for (let index = 0; index < sqlNode.queryChunks.length; index += 1) {
-      const chunk = sqlNode.queryChunks[index]
-
-      if (chunk && typeof chunk === 'object' && 'name' in chunk) {
-        const column = chunk as { name?: string }
-        const equalsChunk = sqlNode.queryChunks[index + 1] as { value?: string[] } | undefined
-        const valueChunk = sqlNode.queryChunks[index + 2] as { value?: number } | undefined
-
-        if (column.name && equalsChunk?.value?.[0] === ' = ' && typeof valueChunk?.value === 'number') {
-          params[column.name] = valueChunk.value
-        }
-      }
-
-      visit(chunk)
+    if (typeof value === 'number') {
+      params[columnName] = value
     }
   }
 
-  visit(condition)
   return params
 }
 
@@ -156,6 +166,10 @@ function getSortedBookmarks(userId: number | string) {
 
     return b.mangaId - a.mangaId
   })
+}
+
+function toQuery(condition: unknown) {
+  return dialect.sqlToQuery(condition as Parameters<typeof dialect.sqlToQuery>[0])
 }
 
 mock.module('@/database/supabase/drizzle', () => ({
@@ -682,5 +696,99 @@ describe('DELETE /api/v1/bookmark/:id', () => {
     const response = await app.request('/101', { method: 'DELETE' }, { userId: 1 })
 
     expect(response.status).toBe(500)
+  })
+})
+
+describe('DELETE /api/v1/bookmark', () => {
+  test('선택한 북마크들을 일괄 삭제하고 삭제 개수를 반환한다', async () => {
+    mockBookmarks.set(1, [
+      { mangaId: 101, createdAt: new Date('2025-01-03T00:00:00.000Z') },
+      { mangaId: 102, createdAt: new Date('2025-01-02T00:00:00.000Z') },
+      { mangaId: 103, createdAt: new Date('2025-01-01T00:00:00.000Z') },
+    ])
+
+    const response = await app.request(
+      '/',
+      {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mangaIds: [101, 103] }),
+      },
+      { userId: 1 },
+    )
+
+    const data = (await response.json()) as BookmarkDeleteResponse
+
+    expect(response.status).toBe(200)
+    expect(data.deletedCount).toBe(2)
+    expect(mockBookmarks.get(1)?.map((bookmark) => bookmark.mangaId)).toEqual([102])
+  })
+
+  test('중복된 manga id가 들어와도 한 번만 삭제한다', async () => {
+    mockBookmarks.set(1, [{ mangaId: 101, createdAt: new Date('2025-01-03T00:00:00.000Z') }])
+
+    const response = await app.request(
+      '/',
+      {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mangaIds: [101, 101, 101] }),
+      },
+      { userId: 1 },
+    )
+
+    const data = (await response.json()) as BookmarkDeleteResponse
+
+    expect(response.status).toBe(200)
+    expect(data.deletedCount).toBe(1)
+    expect(mockBookmarks.get(1)).toEqual([])
+  })
+
+  test('일부만 존재해도 존재하는 북마크만 삭제한다', async () => {
+    mockBookmarks.set(1, [{ mangaId: 101, createdAt: new Date('2025-01-03T00:00:00.000Z') }])
+
+    const response = await app.request(
+      '/',
+      {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mangaIds: [101, 999] }),
+      },
+      { userId: 1 },
+    )
+
+    const data = (await response.json()) as BookmarkDeleteResponse
+
+    expect(response.status).toBe(200)
+    expect(data.deletedCount).toBe(1)
+    expect(mockBookmarks.get(1)).toEqual([])
+  })
+
+  test('인증되지 않은 사용자는 401 응답을 받는다', async () => {
+    const response = await app.request(
+      '/',
+      {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mangaIds: [101] }),
+      },
+      {},
+    )
+
+    expect(response.status).toBe(401)
+  })
+
+  test('유효하지 않은 body는 400 응답을 반환한다', async () => {
+    const response = await app.request(
+      '/',
+      {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mangaIds: [] }),
+      },
+      { userId: 1 },
+    )
+
+    expect(response.status).toBe(400)
   })
 })
