@@ -16,7 +16,7 @@ export default function AdultVerificationHelp() {
             요구될 수 있어요. 이에 불필요하게 많은 개인정보를 받기보다는,{' '}
             <span className="text-zinc-200">성인인지 아닌지</span>를 확인하는 방식으로 접근을 제한하려고 해요.
           </p>
-          <p className="text-xs text-zinc-500">북마크/평점/서재 등 사용자 상호작용 기능은 성인인증이 필요해요.</p>
+          <p className="text-xs text-zinc-500">평점/서재 등 일부 사용자 상호작용 기능은 성인인증이 필요해요.</p>
         </div>
       </details>
 

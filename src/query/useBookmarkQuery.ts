@@ -4,7 +4,6 @@ import type { GETV1BookmarkIdResponse } from '@/backend/api/v1/bookmark/id'
 
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
-import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import useMeQuery from './useMeQuery'
@@ -19,16 +18,14 @@ export async function fetchBookmarkIds() {
 
 export default function useBookmarkQuery() {
   const { data: me } = useMeQuery()
-  const adultState = getAdultState(me)
 
   return useQuery({
     queryKey: QueryKeys.bookmarks,
     queryFn: fetchBookmarkIds,
-    enabled: hasAdultAccess(adultState),
+    enabled: me != null,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchOnMount: false,
     staleTime: Infinity,
-    meta: { requiresAdult: true },
   })
 }
