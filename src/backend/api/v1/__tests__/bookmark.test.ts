@@ -6,6 +6,11 @@ import { contextStorage } from 'hono/context-storage'
 import type { Env } from '@/backend'
 import type { ValidationProblemDetails } from '@/utils/problem-details'
 
+import {
+  CollectionItemSort,
+  DEFAULT_COLLECTION_ITEM_SORT,
+} from '@/backend/api/v1/library/item-sort'
+
 let shouldThrowDatabaseError = false
 let mockBookmarkLimit = 500
 let nextCreatedAtMs = new Date('2025-01-10T00:00:00.000Z').getTime()
@@ -156,15 +161,28 @@ function extractWhereParams(condition: unknown): Record<string, number> {
   return params
 }
 
-function getSortedBookmarks(userId: number | string) {
+function getSortedBookmarks(userId: number | string, sort: CollectionItemSort = DEFAULT_COLLECTION_ITEM_SORT) {
   const userBookmarks = [...(mockBookmarks.get(Number(userId)) || [])]
 
   return userBookmarks.sort((a, b) => {
-    if (b.createdAt.getTime() !== a.createdAt.getTime()) {
-      return b.createdAt.getTime() - a.createdAt.getTime()
-    }
+    switch (sort) {
+      case CollectionItemSort.CREATED_ASC:
+        if (a.createdAt.getTime() !== b.createdAt.getTime()) {
+          return a.createdAt.getTime() - b.createdAt.getTime()
+        }
+        return a.mangaId - b.mangaId
+      case CollectionItemSort.MANGA_ID_ASC:
+        return a.mangaId - b.mangaId
+      case CollectionItemSort.MANGA_ID_DESC:
+        return b.mangaId - a.mangaId
+      case CollectionItemSort.CREATED_DESC:
+      default:
+        if (b.createdAt.getTime() !== a.createdAt.getTime()) {
+          return b.createdAt.getTime() - a.createdAt.getTime()
+        }
 
-    return b.mangaId - a.mangaId
+        return b.mangaId - a.mangaId
+    }
   })
 }
 
@@ -189,14 +207,10 @@ mock.module('@/backend/api/v1/bookmark/limit', () => ({
 }))
 
 mock.module('@/sql/selectBookmark', () => ({
-  selectBookmark: async ({
-    userId,
-    limit,
-    cursorMangaId,
-    cursorTime,
-  }: {
+  selectBookmark: async (params: {
     userId: number | string
     limit?: number
+    sort?: CollectionItemSort
     cursorMangaId?: string
     cursorTime?: string
   }) => {
@@ -204,16 +218,40 @@ mock.module('@/sql/selectBookmark', () => ({
       throw new Error('Database connection failed')
     }
 
-    let filtered = getSortedBookmarks(userId)
+    if ('cursorMangaId' in params && params.cursorMangaId === undefined) {
+      throw new Error('cursorMangaId must be omitted when cursor is absent')
+    }
+
+    if ('cursorTime' in params && params.cursorTime === undefined) {
+      throw new Error('cursorTime must be omitted when cursor is absent')
+    }
+
+    const { userId, limit, sort, cursorMangaId, cursorTime } = params
+    const effectiveSort = sort ?? DEFAULT_COLLECTION_ITEM_SORT
+    let filtered = getSortedBookmarks(userId, effectiveSort)
 
     if (cursorTime) {
       const cursorDate = new Date(cursorTime)
       filtered = filtered.filter((b) => {
-        if (b.createdAt < cursorDate) return true
-        if (b.createdAt.getTime() === cursorDate.getTime() && cursorMangaId) {
-          return b.mangaId < Number(cursorMangaId)
+        switch (effectiveSort) {
+          case CollectionItemSort.CREATED_ASC:
+            if (b.createdAt > cursorDate) return true
+            if (b.createdAt.getTime() === cursorDate.getTime() && cursorMangaId) {
+              return b.mangaId > Number(cursorMangaId)
+            }
+            return false
+          case CollectionItemSort.MANGA_ID_ASC:
+            return cursorMangaId ? b.mangaId > Number(cursorMangaId) : false
+          case CollectionItemSort.MANGA_ID_DESC:
+            return cursorMangaId ? b.mangaId < Number(cursorMangaId) : false
+          case CollectionItemSort.CREATED_DESC:
+          default:
+            if (b.createdAt < cursorDate) return true
+            if (b.createdAt.getTime() === cursorDate.getTime() && cursorMangaId) {
+              return b.mangaId < Number(cursorMangaId)
+            }
+            return false
         }
-        return false
       })
     }
 
@@ -324,6 +362,20 @@ describe('GET /api/v1/bookmark', () => {
       expect(data.nextCursor).not.toBeNull()
     })
 
+    test('manga id 낮은순 정렬을 지원한다', async () => {
+      mockBookmarks.set(1, [
+        { mangaId: 300, createdAt: new Date('2025-01-03') },
+        { mangaId: 100, createdAt: new Date('2025-01-02') },
+        { mangaId: 200, createdAt: new Date('2025-01-01') },
+      ])
+
+      const response = await app.request(`/?sort=${CollectionItemSort.MANGA_ID_ASC}`, {}, { userId: 1 })
+      const data = (await response.json()) as BookmarkResponse
+
+      expect(response.status).toBe(200)
+      expect(data.bookmarks.map((bookmark) => bookmark.mangaId)).toEqual([100, 200, 300])
+    })
+
     test('cursor를 사용하여 페이지네이션이 동작한다', async () => {
       // 준비
       const date1 = new Date('2025-01-03')
@@ -394,6 +446,12 @@ describe('GET /api/v1/bookmark', () => {
       // 실행 - 문자열
       const stringResponse = await app.request('/?limit=abc', {}, { userId: 1 })
       expect(stringResponse.status).toBe(400)
+    })
+
+    test('유효하지 않은 sort는 400 응답을 받는다', async () => {
+      const response = await app.request('/?sort=invalid', {}, { userId: 1 })
+
+      expect(response.status).toBe(400)
     })
 
     test('데이터베이스 연결 오류 시 500 응답을 반환한다', async () => {
