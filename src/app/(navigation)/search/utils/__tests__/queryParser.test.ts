@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test'
 
 import { NotificationConditionType } from '@/database/enum'
 
-import { type ParsedCondition, parseSearchQuery } from '../queryParser'
+import { parseSearchQuery } from '../queryParser'
 
 describe('parseSearchQuery', () => {
   it('should parse simple tag queries', () => {
