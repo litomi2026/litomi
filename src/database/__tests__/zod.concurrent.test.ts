@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test'
 
 import { imageURLSchema } from '../zod'
 
-describe('database zod schemas', () => {
+describe('데이터베이스 zod 스키마', () => {
   describe('imageURLSchema', () => {
     test('http와 https URL을 허용한다', () => {
       expect(imageURLSchema.safeParse('https://example.com/profile.jpg').success).toBe(true)

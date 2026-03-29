@@ -24,7 +24,7 @@ function createSignupForm() {
 
   const form = document.querySelector('form')
   if (!(form instanceof window.HTMLFormElement)) {
-    throw new Error('signup form not created')
+    throw new Error('회원가입 폼을 만들지 못했어요')
   }
 
   const loginId = form.elements.namedItem('login-id')
@@ -40,7 +40,7 @@ function createSignupForm() {
     !(nickname instanceof window.HTMLInputElement) ||
     !(turnstile instanceof window.HTMLInputElement)
   ) {
-    throw new Error('signup inputs not created')
+    throw new Error('회원가입 입력 요소를 만들지 못했어요')
   }
 
   return { form, loginId, password, passwordConfirm, nickname, turnstile }
@@ -50,8 +50,8 @@ afterEach(() => {
   document.body.innerHTML = ''
 })
 
-describe('signup-form helpers', () => {
-  test('reports password confirmation mismatch on the confirm field', () => {
+describe('회원가입 폼 헬퍼', () => {
+  test('비밀번호 확인 불일치 오류를 확인 필드에 표시한다', () => {
     const { form, passwordConfirm } = createSignupForm()
 
     const isValid = validateSignupRequest(form, {
@@ -67,7 +67,7 @@ describe('signup-form helpers', () => {
     expect(document.activeElement).toBe(passwordConfirm)
   })
 
-  test('clears dependent custom validity when the password changes', () => {
+  test('비밀번호가 바뀌면 연관된 사용자 지정 유효성 메시지를 지운다', () => {
     const { form, password, passwordConfirm } = createSignupForm()
 
     password.setCustomValidity('아이디와 비밀번호는 같을 수 없어요')
@@ -79,7 +79,7 @@ describe('signup-form helpers', () => {
     expect(passwordConfirm.validationMessage).toBe('')
   })
 
-  test('applies invalidParams to matching signup fields', () => {
+  test('invalidParams 값을 일치하는 회원가입 필드에 적용한다', () => {
     const { form, loginId, nickname } = createSignupForm()
 
     const problem: ProblemDetails = {
@@ -98,7 +98,7 @@ describe('signup-form helpers', () => {
     expect(document.activeElement).toBe(loginId)
   })
 
-  test('clears the login id field and focuses it', () => {
+  test('loginId 필드를 비우고 포커스를 이동한다', () => {
     const { form, loginId, password } = createSignupForm()
 
     loginId.value = 'litomi'
@@ -113,7 +113,7 @@ describe('signup-form helpers', () => {
     expect(document.activeElement).toBe(loginId)
   })
 
-  test('toggles password visibility with aria-pressed state', () => {
+  test('aria-pressed 상태에 맞춰 비밀번호 표시 여부를 전환한다', () => {
     const { form, password } = createSignupForm()
     const button = document.createElement('button')
 

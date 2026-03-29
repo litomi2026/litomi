@@ -1,7 +1,7 @@
 import '@test/setup.dom'
-import { cleanup, fireEvent, render } from '@testing-library/react'
+import { renderWithTestQueryClient } from '@test/utils/query-client'
+import { cleanup, fireEvent, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, mock } from 'bun:test'
-import { act } from 'react'
 
 const browserSupportsWebAuthnAutofillMock = mock(() => Promise.resolve(false))
 const startAuthenticationMock = mock(() => Promise.resolve({ id: 'cred-1' }))
@@ -14,17 +14,6 @@ let currentErrorResponse: { ok: false; status: 400 | 404; error: string } = {
   error: '보안 검증에 실패했어요',
 }
 
-const useServerActionMock = mock(
-  ({ onError }: { onError?: (response: typeof currentErrorResponse) => void }) =>
-    [
-      undefined,
-      () => {
-        onError?.(currentErrorResponse)
-      },
-      false,
-    ] as const,
-)
-
 mock.module('@simplewebauthn/browser', () => ({
   browserSupportsWebAuthnAutofill: browserSupportsWebAuthnAutofillMock,
   startAuthentication: startAuthenticationMock,
@@ -33,10 +22,6 @@ mock.module('@simplewebauthn/browser', () => ({
 mock.module('@/app/(navigation)/(right-search)/[name]/settings/passkey/action-auth', () => ({
   getAuthenticationOptions: getAuthenticationOptionsMock,
   verifyAuthentication: mock(() => Promise.resolve(currentErrorResponse)),
-}))
-
-mock.module('@/hook/useServerAction', () => ({
-  default: useServerActionMock,
 }))
 
 mock.module('@/utils/passkey', () => ({
@@ -51,7 +36,6 @@ afterEach(() => {
   startAuthenticationMock.mockClear()
   getAuthenticationOptionsMock.mockClear()
   signalUnknownPasskeyCredentialMock.mockClear()
-  useServerActionMock.mockClear()
   currentErrorResponse = {
     ok: false,
     status: 400,
@@ -63,7 +47,7 @@ describe('PasskeyLoginButton', () => {
   it('패스키 로그인 실패 시 Turnstile을 초기화한다', async () => {
     const reset = mock(() => {})
     const getToken = mock(async () => 'token-123')
-    const { getByRole } = render(
+    const { getByRole } = renderWithTestQueryClient(
       <PasskeyLoginButton
         turnstile={{
           getToken,
@@ -72,12 +56,12 @@ describe('PasskeyLoginButton', () => {
       />,
     )
 
-    await act(async () => {
-      fireEvent.click(getByRole('button', { name: '패스키로 로그인' }))
-      await Promise.resolve()
+    fireEvent.click(getByRole('button', { name: '패스키로 로그인' }))
+
+    await waitFor(() => {
+      expect(reset).toHaveBeenCalledTimes(1)
     })
 
-    expect(reset).toHaveBeenCalledTimes(1)
     expect(signalUnknownPasskeyCredentialMock).not.toHaveBeenCalled()
   })
 
@@ -90,7 +74,7 @@ describe('PasskeyLoginButton', () => {
 
     const reset = mock(() => {})
     const getToken = mock(async () => 'token-123')
-    const { getByRole } = render(
+    const { getByRole } = renderWithTestQueryClient(
       <PasskeyLoginButton
         turnstile={{
           getToken,
@@ -99,12 +83,12 @@ describe('PasskeyLoginButton', () => {
       />,
     )
 
-    await act(async () => {
-      fireEvent.click(getByRole('button', { name: '패스키로 로그인' }))
-      await Promise.resolve()
+    fireEvent.click(getByRole('button', { name: '패스키로 로그인' }))
+
+    await waitFor(() => {
+      expect(reset).toHaveBeenCalledTimes(1)
     })
 
-    expect(reset).toHaveBeenCalledTimes(1)
     expect(signalUnknownPasskeyCredentialMock).toHaveBeenCalledWith('cred-1')
   })
 })

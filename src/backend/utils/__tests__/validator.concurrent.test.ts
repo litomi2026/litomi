@@ -29,7 +29,7 @@ function createApp() {
 }
 
 describe('zProblemValidator', () => {
-  test('검증 실패를 invalid-input problem details 로 변환한다', async () => {
+  test('검증 실패를 invalid-input 문제 세부정보로 변환한다', async () => {
     const response = await createApp().request('/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

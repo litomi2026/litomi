@@ -15,8 +15,8 @@ function createApp() {
   return app
 }
 
-describe('API secure headers', () => {
-  test('production 환경에서는 강화된 보안 헤더를 응답한다', async () => {
+describe('API 보안 헤더', () => {
+  test('프로덕션 환경에서는 강화된 보안 헤더를 응답한다', async () => {
     const response = await createApp().request('http://localhost/api/ping')
 
     expect(response.headers.get('content-security-policy')).toBe(

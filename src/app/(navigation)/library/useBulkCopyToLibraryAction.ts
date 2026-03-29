@@ -30,7 +30,7 @@ export default function useBulkCopyToLibraryAction({ libraries }: Readonly<Optio
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraries })
       queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryListBase })
       queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryMangasBase })
-      queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItems(toLibraryId) })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItemsBase(toLibraryId) })
       exit()
     },
     onError: (error) => {
