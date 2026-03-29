@@ -8,7 +8,7 @@ import {
   writeReadingHistoryIndex,
 } from '../reading-history-index'
 
-describe('reading-history-index local cleanup', () => {
+describe('reading-history-index 로컬 정리', () => {
   const userId = 7
 
   beforeEach(() => {
@@ -19,7 +19,7 @@ describe('reading-history-index local cleanup', () => {
     sessionStorage.clear()
   })
 
-  test('선택 삭제 시 지정한 작품의 session storage와 인덱스만 제거한다', () => {
+  test('선택 삭제 시 지정한 작품의 sessionStorage와 인덱스만 제거한다', () => {
     sessionStorage.setItem('reading-history-101', '12')
     sessionStorage.setItem('reading-history-202', '24')
     sessionStorage.setItem('unrelated-key', 'keep')

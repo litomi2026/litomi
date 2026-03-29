@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test'
 
 import { decodeLibraryListCursor, encodeLibraryListCursor } from '../cursor'
 
-describe('Library List Cursor', () => {
+describe('라이브러리 목록 커서', () => {
   test('정렬 기준 카운트를 인코딩하고 디코딩한다', () => {
     const cursor = encodeLibraryListCursor(1, 42, 13, 1742353200000, 7)
 

@@ -96,7 +96,7 @@ export default function BookmarkButton({ manga, className }: Props) {
         }
       })
 
-      queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteBookmarks })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteBookmarksBase })
     },
   })
 

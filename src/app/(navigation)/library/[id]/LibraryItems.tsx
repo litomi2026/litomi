@@ -1,9 +1,7 @@
-import { desc, eq } from 'drizzle-orm'
-
-import { encodeLibraryIdCursor } from '@/common/cursor'
+import { CollectionItemSort } from '@/backend/api/v1/library/item-sort'
+import { getNextCollectionItemCursor } from '@/backend/api/v1/library/item-sort.server'
 import { LIBRARY_ITEMS_PER_PAGE } from '@/constants/policy'
-import { db } from '@/database/supabase/drizzle'
-import { libraryItemTable } from '@/database/supabase/library'
+import { selectLibraryItem } from '@/sql/selectLibraryItem'
 
 import LibraryItemsClient from './LibraryItemsClient'
 
@@ -14,18 +12,15 @@ type Props = {
     isPublic: boolean
   }
   isOwner: boolean
+  initialSort: CollectionItemSort
 }
 
-export default async function LibraryItems({ library, isOwner }: Readonly<Props>) {
-  const libraryItemRows = await db
-    .select({
-      mangaId: libraryItemTable.mangaId,
-      createdAt: libraryItemTable.createdAt,
-    })
-    .from(libraryItemTable)
-    .where(eq(libraryItemTable.libraryId, library.id))
-    .orderBy(desc(libraryItemTable.createdAt), desc(libraryItemTable.mangaId))
-    .limit(LIBRARY_ITEMS_PER_PAGE + 1)
+export default async function LibraryItems({ library, isOwner, initialSort }: Props) {
+  const libraryItemRows = await selectLibraryItem({
+    libraryId: library.id,
+    sort: initialSort,
+    limit: LIBRARY_ITEMS_PER_PAGE + 1,
+  })
 
   const hasNext = libraryItemRows.length > LIBRARY_ITEMS_PER_PAGE
 
@@ -38,9 +33,14 @@ export default async function LibraryItems({ library, isOwner }: Readonly<Props>
     createdAt: item.createdAt.getTime(),
   }))
 
-  const nextCursor = hasNext
-    ? encodeLibraryIdCursor(items[items.length - 1].createdAt, items[items.length - 1].mangaId)
-    : null
+  const nextCursor = hasNext ? getNextCollectionItemCursor(libraryItemRows[libraryItemRows.length - 1]!) : null
 
-  return <LibraryItemsClient initialItems={{ items, nextCursor }} isOwner={isOwner} library={library} />
+  return (
+    <LibraryItemsClient
+      initialItems={{ items, nextCursor }}
+      initialSort={initialSort}
+      isOwner={isOwner}
+      library={library}
+    />
+  )
 }

@@ -32,8 +32,8 @@ export default function useBulkDeleteBookmarkAction(): BulkActionDescriptor {
         updateBookmarkIds(previous, deletedIds),
       )
 
-      queryClient.setQueryData<InfiniteData<GETV1BookmarkResponse, string | null>>(
-        QueryKeys.infiniteBookmarks,
+      queryClient.setQueriesData<InfiniteData<GETV1BookmarkResponse, string | null>>(
+        { queryKey: QueryKeys.infiniteBookmarksBase },
         (previous) => updateInfiniteBookmarks(previous, deletedIds),
       )
 
@@ -42,7 +42,7 @@ export default function useBulkDeleteBookmarkAction(): BulkActionDescriptor {
       )
 
       queryClient.invalidateQueries({ queryKey: QueryKeys.bookmarks })
-      queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteBookmarks })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteBookmarksBase })
       queryClient.invalidateQueries({ queryKey: QueryKeys.librarySummaryBase })
 
       if (deletedCount === 0) {

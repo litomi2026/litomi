@@ -1,17 +1,20 @@
-import { and, desc, eq, lt, or, SQL } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { Hono } from 'hono'
 import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@/backend/api/v1/library/item-sort'
+import { getNextCollectionItemCursor } from '@/backend/api/v1/library/item-sort.server'
 import { adultVerificationRequiredResponse, shouldBlockAdultGate } from '@/backend/utils/adult-gate'
 import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
-import { decodeLibraryIdCursor, encodeLibraryIdCursor } from '@/common/cursor'
+import { decodeLibraryIdCursor } from '@/common/cursor'
 import { LIBRARY_ITEMS_PER_PAGE } from '@/constants/policy'
 import { db } from '@/database/supabase/drizzle'
-import { libraryItemTable, libraryTable } from '@/database/supabase/library'
+import { libraryTable } from '@/database/supabase/library'
+import { selectLibraryItem } from '@/sql/selectLibraryItem'
 import { createCacheControl } from '@/utils/cache-control'
 import { sec } from '@/utils/format/date'
 
@@ -23,6 +26,7 @@ const querySchema = z.object({
   cursor: z.string().optional(),
   limit: z.coerce.number().int().positive().max(LIBRARY_ITEMS_PER_PAGE).default(LIBRARY_ITEMS_PER_PAGE),
   scope: z.enum(['public', 'me']),
+  sort: z.enum(CollectionItemSort).default(DEFAULT_COLLECTION_ITEM_SORT),
 })
 
 export type GETLibraryItemsResponse = {
@@ -41,9 +45,10 @@ const sharedCacheControl = createCacheControl({
 
 routes.get('/', zProblemValidator('param', paramsSchema), zProblemValidator('query', querySchema), async (c) => {
   const { id: libraryId } = c.req.valid('param')
-  const { cursor, limit, scope } = c.req.valid('query')
+  const { cursor, limit, scope, sort } = c.req.valid('query')
   const userId = c.get('userId')
   const cursorData = cursor ? decodeLibraryIdCursor(cursor) : null
+  const isPublicScope = scope === 'public'
 
   if (scope === 'me' && !userId) {
     return problemResponse(c, { status: 401, detail: '로그인 정보가 없거나 만료됐어요' })
@@ -54,10 +59,9 @@ routes.get('/', zProblemValidator('param', paramsSchema), zProblemValidator('que
   }
 
   try {
-    const libraryConditions =
-      scope === 'public'
-        ? and(eq(libraryTable.id, libraryId), eq(libraryTable.isPublic, true))
-        : and(eq(libraryTable.id, libraryId), eq(libraryTable.userId, userId!))
+    const libraryConditions = isPublicScope
+      ? and(eq(libraryTable.id, libraryId), eq(libraryTable.isPublic, true))
+      : and(eq(libraryTable.id, libraryId), eq(libraryTable.userId, userId!))
 
     const [library] = await db
       .select({ id: libraryTable.id, isPublic: libraryTable.isPublic })
@@ -76,27 +80,16 @@ routes.get('/', zProblemValidator('param', paramsSchema), zProblemValidator('que
       return adultVerificationRequiredResponse(c)
     }
 
-    const conditions: (SQL | undefined)[] = [eq(libraryItemTable.libraryId, libraryId)]
+    const fetchedItems = await selectLibraryItem({
+      libraryId,
+      limit: limit + 1,
+      sort: isPublicScope ? DEFAULT_COLLECTION_ITEM_SORT : sort,
+      ...(cursorData && {
+        cursorMangaId: cursorData.mangaId,
+        cursorTime: new Date(cursorData.timestamp),
+      }),
+    })
 
-    if (cursorData) {
-      const { timestamp: cursorTimestamp, mangaId: cursorMangaId } = cursorData
-
-      conditions.push(
-        or(
-          lt(libraryItemTable.createdAt, new Date(cursorTimestamp)),
-          and(eq(libraryItemTable.createdAt, new Date(cursorTimestamp)), lt(libraryItemTable.mangaId, cursorMangaId)),
-        ),
-      )
-    }
-
-    const query = db
-      .select({ mangaId: libraryItemTable.mangaId, createdAt: libraryItemTable.createdAt })
-      .from(libraryItemTable)
-      .where(and(...conditions))
-      .orderBy(desc(libraryItemTable.createdAt), desc(libraryItemTable.mangaId))
-      .limit(limit + 1)
-
-    const fetchedItems = await query
     const hasNextPage = fetchedItems.length > limit
     const pageItems = hasNextPage ? fetchedItems.slice(0, limit) : fetchedItems
 
@@ -106,9 +99,9 @@ routes.get('/', zProblemValidator('param', paramsSchema), zProblemValidator('que
     }))
 
     const lastItem = items[items.length - 1]
-    const nextCursor = hasNextPage && lastItem ? encodeLibraryIdCursor(lastItem.createdAt, lastItem.mangaId) : null
+    const nextCursor = hasNextPage && lastItem ? getNextCollectionItemCursor(pageItems[pageItems.length - 1]) : null
     const result = { items, nextCursor }
-    const cacheControl = scope === 'public' ? sharedCacheControl : privateCacheControl
+    const cacheControl = isPublicScope ? sharedCacheControl : privateCacheControl
 
     return c.json<GETLibraryItemsResponse>(result, { headers: { 'Cache-Control': cacheControl } })
   } catch (error) {

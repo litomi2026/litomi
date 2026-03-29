@@ -11,7 +11,7 @@ import {
 
 const proxyOrigin = new URL(env.NEXT_PUBLIC_CORS_PROXY_URL).origin
 
-describe('manga image proxy utilities', () => {
+describe('만화 이미지 프록시 유틸', () => {
   test('프록시 요청 URL을 queryless /i/v2/manga/:mangaId/:variant/:page 형태로 만든다', () => {
     const requestURL = createMangaImageProxyRequestURL({
       mangaId: 123,
@@ -25,7 +25,7 @@ describe('manga image proxy utilities', () => {
     expect(parsedRequestURL.search).toBe('')
   })
 
-  test('프록시 materialize URL을 같은 path + ?u=<url> 형태로 만든다', () => {
+  test('프록시 materialize URL을 같은 경로 + ?u=<url> 형태로 만든다', () => {
     const sourceURL = 'https://soujpa.in/start/123/123_4.avif'
     const requestURL = createMangaImageProxyRequestURL({
       sourceURL,
@@ -75,7 +75,7 @@ describe('manga image proxy utilities', () => {
     ).toEqual(['https://cdn.imagedeliveries.com/456/thumbnails/3.webp'])
   })
 
-  test('thumbnail 1페이지는 cover.webp를 canonical source로 사용한다', () => {
+  test('thumbnail 1페이지는 cover.webp를 대표 원본으로 사용한다', () => {
     expect(
       createEquivalentMangaImageSourceURLs({
         mangaId: 456,
@@ -101,7 +101,7 @@ describe('manga image proxy utilities', () => {
     )
   })
 
-  test('soujpa 원본 URL은 현재 mangaId/page 기준으로 semantic하게 일치해야 한다', () => {
+  test('soujpa 원본 URL은 현재 mangaId/page 기준으로 의미상 일치해야 한다', () => {
     const sourceURL = parseImageProxySourceURL('https://soujpa.in/start/123/123_4.avif')
 
     expect(
@@ -146,7 +146,7 @@ describe('manga image proxy utilities', () => {
     ).toBe(false)
   })
 
-  test('cdn.hentkor.net 서브도메인은 아직 semantic 검증 없이 허용한다', () => {
+  test('cdn.hentkor.net 서브도메인은 아직 의미 검증 없이 허용한다', () => {
     const sourceURL = parseImageProxySourceURL('https://cdn.hentkor.net/pages/777/9.avif')
 
     expect(
@@ -192,7 +192,7 @@ describe('manga image proxy utilities', () => {
     ).toBe(false)
   })
 
-  test('아직 semantic 검증을 붙이지 않은 허용 호스트는 일단 통과시킨다', () => {
+  test('아직 의미 검증을 붙이지 않은 허용 호스트는 일단 통과시킨다', () => {
     const sourceURL = parseImageProxySourceURL(
       'https://storage-6-10.k-hentai.org/storage/f2/74/f2740688125f4d28e0f2bd891e721ce0b38df1be.webp',
     )
