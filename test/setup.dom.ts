@@ -7,51 +7,35 @@ const window = new Window({
   height: 768,
 })
 
+const testGlobal = globalThis as Record<string, unknown>
+
 window.SyntaxError = globalThis.SyntaxError
 
 // 이 모듈을 가져오기만 하면 파일에서 DOM 전역 객체를 바로 쓸 수 있어야 한다.
-// @ts-expect-error - DOM 전역 객체를 추가한다.
-global.window = window
-// @ts-expect-error - DOM 전역 객체를 추가한다.
-global.document = window.document
-// @ts-expect-error - DOM 전역 객체를 추가한다.
-global.navigator = window.navigator
-// @ts-expect-error - DOM 전역 객체를 추가한다.
-global.HTMLElement = window.HTMLElement
-// @ts-expect-error - DOM 전역 객체를 추가한다.
-global.Element = window.Element
-// @ts-expect-error - DOM 전역 객체를 추가한다.
-global.Node = window.Node
-// @ts-expect-error - DOM 전역 객체를 추가한다.
-global.Event = window.Event
-// @ts-expect-error - DOM 전역 객체를 추가한다.
-global.CustomEvent = window.CustomEvent
-// @ts-expect-error - DOM 전역 객체를 추가한다.
-global.HTMLFormElement = window.HTMLFormElement
-// @ts-expect-error - DOM 전역 객체를 추가한다.
-global.HTMLInputElement = window.HTMLInputElement
-// @ts-expect-error - DOM 전역 객체를 추가한다.
-global.HTMLImageElement = window.HTMLImageElement
-// @ts-expect-error - DOM 전역 객체를 추가한다.
-global.HTMLSourceElement = window.HTMLSourceElement
-// @ts-expect-error - DOM 전역 객체를 추가한다.
-global.FormData = window.FormData
-// @ts-expect-error - DOM 전역 객체를 추가한다.
-global.CustomElementRegistry = window.CustomElementRegistry
-// @ts-expect-error - DOM 전역 객체를 추가한다.
-global.customElements = window.customElements
-// @ts-expect-error - DOM 전역 객체를 추가한다.
-global.MutationObserver = window.MutationObserver
-global.localStorage = window.localStorage
-global.sessionStorage = window.sessionStorage
-// @ts-expect-error - DOM 전역 객체를 추가한다.
-global.requestAnimationFrame = (callback: FrameRequestCallback) => {
-  return window.setTimeout(() => callback(Date.now()), 0)
+testGlobal.window = window
+testGlobal.document = window.document
+testGlobal.navigator = window.navigator
+testGlobal.HTMLElement = window.HTMLElement
+testGlobal.Element = window.Element
+testGlobal.Node = window.Node
+testGlobal.Event = window.Event
+testGlobal.CustomEvent = window.CustomEvent
+testGlobal.HTMLFormElement = window.HTMLFormElement
+testGlobal.HTMLInputElement = window.HTMLInputElement
+testGlobal.HTMLImageElement = window.HTMLImageElement
+testGlobal.HTMLSourceElement = window.HTMLSourceElement
+testGlobal.FormData = window.FormData
+testGlobal.CustomElementRegistry = window.CustomElementRegistry
+testGlobal.customElements = window.customElements
+testGlobal.MutationObserver = window.MutationObserver
+testGlobal.localStorage = window.localStorage
+testGlobal.sessionStorage = window.sessionStorage
+testGlobal.requestAnimationFrame = (callback: FrameRequestCallback) => {
+  return window.setTimeout(() => callback(Date.now()), 0) as unknown as number
 }
 
-global.cancelAnimationFrame = (id: number) => {
-  // @ts-expect-error - DOM 전역 객체를 추가한다.
-  return window.clearTimeout(id)
+testGlobal.cancelAnimationFrame = (id: number) => {
+  return window.clearTimeout(id as unknown as ReturnType<typeof window.setTimeout>)
 }
 
 class TestIntersectionObserver implements IntersectionObserver {
@@ -115,5 +99,4 @@ class TestIntersectionObserver implements IntersectionObserver {
   }
 }
 
-// @ts-expect-error - DOM 전역 객체를 추가한다.
-global.IntersectionObserver = TestIntersectionObserver
+testGlobal.IntersectionObserver = TestIntersectionObserver
