@@ -4,8 +4,11 @@ import { Hono } from 'hono'
 import { contextStorage } from 'hono/context-storage'
 
 import type { Env } from '@/backend'
+import type { GETV1PostLikedResponse } from '@/backend/api/v1/post/liked'
 import type { ReferredPost } from '@/components/post/ReferredPostCard'
 
+import { PostFilter } from '@/backend/api/v1/post/constant'
+import { encodePostCursor } from '@/common/cursor'
 import { PostType } from '@/database/enum'
 
 import type { Post as ApiPost, GETV1PostResponse } from '..'
@@ -45,6 +48,7 @@ let nextPostId = 1
 
 const dialect = new PgDialect()
 const mockPosts: ApiPost[] = []
+const likedPostIdsByUser = new Map<number, number[]>()
 const storedPosts: StoredPost[] = []
 
 function createGetPost(overrides: Partial<ApiPost> = {}): ApiPost {
@@ -72,6 +76,22 @@ function createPostgresForeignKeyError() {
   })
 }
 
+function extractPostLikeWhereParams(condition: unknown): Record<string, number> {
+  const params: Record<string, number> = {}
+  const { params: queryParams, sql } = dialect.sqlToQuery(condition as Parameters<typeof dialect.sqlToQuery>[0])
+
+  for (const match of sql.matchAll(/"post_like"\."([^"]+)" = \$(\d+)/g)) {
+    const [, columnName, paramIndex] = match
+    const value = queryParams[Number(paramIndex) - 1]
+
+    if (typeof value === 'number') {
+      params[columnName] = value
+    }
+  }
+
+  return params
+}
+
 function extractWhereParams(condition: unknown): Record<string, number> {
   const params: Record<string, number> = {}
   const { params: queryParams, sql } = dialect.sqlToQuery(condition as Parameters<typeof dialect.sqlToQuery>[0])
@@ -90,6 +110,19 @@ function extractWhereParams(condition: unknown): Record<string, number> {
 
 mock.module('@/database/supabase/drizzle', () => ({
   db: {
+    select: () => ({
+      from: () => ({
+        where: async (condition: unknown) => {
+          if (shouldThrowDatabaseError) {
+            throw new Error('Database connection failed')
+          }
+
+          const { user_id: userId } = extractPostLikeWhereParams(condition)
+
+          return (likedPostIdsByUser.get(userId) ?? []).map((postId) => ({ postId }))
+        },
+      }),
+    }),
     delete: () => ({
       where: (condition: unknown) => ({
         returning: async () => {
@@ -209,6 +242,7 @@ beforeEach(() => {
   shouldThrowDatabaseError = false
   nextPostId = 1
   mockPosts.length = 0
+  likedPostIdsByUser.clear()
   storedPosts.length = 0
 })
 
@@ -240,8 +274,10 @@ describe('GET /api/v1/post', () => {
     expect(response.status).toBe(200)
     const data = (await response.json()) as GETV1PostResponse
     expect(data.posts).toHaveLength(3)
+    expect(data.posts[0]).not.toHaveProperty('isLiked')
     expect(data.posts[0]?.type).toBe(PostType.TEXT)
     expect(data.nextCursor).toBeNull()
+    expect(response.headers.get('Cache-Control')).toBe('public, max-age=3, s-maxage=30, stale-while-revalidate=300')
   })
 
   test('리포스트 원글이 삭제되면 tombstone referred post를 반환한다', async () => {
@@ -269,6 +305,43 @@ describe('GET /api/v1/post', () => {
     const response = await app.request('/?cursor=invalid-cursor')
 
     expect(response.status).toBe(400)
+  })
+
+  test('cursor가 있는 비개인화 목록은 public cache-control을 반환한다', async () => {
+    mockPosts.push(createGetPost({ id: 3, createdAt: new Date('2025-01-03T00:00:00.000Z') }))
+
+    const response = await app.request(`/?filter=${PostFilter.RECOMMEND}&cursor=${encodePostCursor(Date.parse('2025-01-03T00:00:00.000Z'), 3)}`)
+
+    expect(response.status).toBe(200)
+    expect(response.headers.get('Cache-Control')).toBe(
+      'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400',
+    )
+  })
+
+  test('FOLLOWING 목록은 private cache-control을 반환한다', async () => {
+    const response = await app.request(`/?filter=${PostFilter.FOLLOWING}`, {}, { userId: 1 })
+
+    expect(response.status).toBe(200)
+    expect(response.headers.get('Cache-Control')).toBe('private, max-age=3')
+  })
+})
+
+describe('GET /api/v1/post/liked', () => {
+  test('인증된 사용자의 좋아요한 글 ID 목록을 반환한다', async () => {
+    likedPostIdsByUser.set(1, [9, 3, 1])
+
+    const response = await app.request('/liked', {}, { userId: 1 })
+
+    expect(response.status).toBe(200)
+    const data = (await response.json()) as GETV1PostLikedResponse
+    expect(data).toEqual({ postIds: [9, 3, 1] })
+    expect(response.headers.get('Cache-Control')).toBe('private, max-age=86400')
+  })
+
+  test('인증되지 않은 사용자는 401 응답을 받는다', async () => {
+    const response = await app.request('/liked')
+
+    expect(response.status).toBe(401)
   })
 })
 

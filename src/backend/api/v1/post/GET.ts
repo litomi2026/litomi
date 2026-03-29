@@ -34,7 +34,6 @@ export type Post = {
   createdAt: Date
   content: string | null
   type: PostType
-  isLiked?: boolean
   author: {
     id: number
     name: string
@@ -53,7 +52,6 @@ const route = new Hono<Env>()
 
 route.get('/', zProblemValidator('query', querySchema), async (c) => {
   const { cursor, limit, mangaId, filter, username } = c.req.valid('query')
-  const currentUserId = c.get('userId')
   const decodedCursor = cursor ? decodePostCursor(cursor) : null
 
   if (cursor && !decodedCursor) {
@@ -67,22 +65,37 @@ route.get('/', zProblemValidator('query', querySchema), async (c) => {
     mangaId,
     filter,
     username,
-    currentUserId,
   })
-
-  const cacheControl = cursor
-    ? createCacheControl({
-        private: true,
-        maxAge: sec('1 hour'),
-      })
-    : privateCacheControl
 
   const hasNextPage = postRows.length > limit
   const posts = hasNextPage ? postRows.slice(0, limit) : postRows
   const lastPost = posts[posts.length - 1]
   const nextCursor = hasNextPage && lastPost ? encodePostCursor(lastPost.createdAt.getTime(), lastPost.id) : null
+  const cacheControl = getPostListCacheControl({ cursor, filter })
 
   return c.json<GETV1PostResponse>({ posts, nextCursor }, { headers: { 'Cache-Control': cacheControl } })
 })
 
 export default route
+
+function getPostListCacheControl({ cursor, filter }: { cursor?: string; filter?: PostFilter }) {
+  if (filter === PostFilter.FOLLOWING) {
+    return privateCacheControl
+  }
+
+  if (cursor) {
+    return createCacheControl({
+      public: true,
+      maxAge: sec('5 minutes'),
+      sMaxAge: sec('1 day'),
+      swr: sec('1 hour'),
+    })
+  }
+
+  return createCacheControl({
+    public: true,
+    maxAge: 3,
+    sMaxAge: sec('5 minutes'),
+    swr: 30,
+  })
+}
