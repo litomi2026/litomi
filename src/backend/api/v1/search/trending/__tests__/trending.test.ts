@@ -9,56 +9,6 @@ import { type GETTrendingKeywordsResponse } from '../GET'
 import trendingRoutes from '../index'
 import trendingPostRoutes, { type POSTV1SearchTrendingResponse } from '../POST'
 
-mock.module('@/database/redis', () => ({
-  redisClient: {
-    multi: () => ({
-      get: mock(() => Promise.resolve(null)),
-      set: mock(() => Promise.resolve()),
-      exec: mock(() => Promise.resolve()),
-    }),
-    get: mock(() => Promise.resolve(null)),
-    set: mock(() => Promise.resolve()),
-    del: mock(() => Promise.resolve()),
-    keys: mock(() => Promise.resolve([])),
-  },
-}))
-
-mock.module('@upstash/redis', () => ({
-  Redis: class MockRedis {
-    del = mock(() => Promise.resolve(0))
-    get = mock(() => Promise.resolve(null))
-    keys = mock(() => Promise.resolve([]))
-    set = mock(() => Promise.resolve('OK'))
-    constructor() {
-      // Silent initialization
-    }
-    multi = () => ({
-      get: mock(() => this),
-      set: mock(() => this),
-      exec: mock(() => Promise.resolve([])),
-    })
-  },
-}))
-
-mock.module('@/database/supabase/drizzle', () => ({
-  db: {
-    select: mock(() => ({
-      from: mock(() => ({
-        where: mock(() => ({
-          groupBy: mock(() => ({
-            orderBy: mock(() => ({
-              limit: mock(() => Promise.resolve([])),
-            })),
-          })),
-        })),
-      })),
-    })),
-    delete: mock(() => ({
-      where: mock(() => Promise.resolve()),
-    })),
-  },
-}))
-
 const mockKeywords: TrendingKeyword[] = [
   { keyword: '-male:big_ass', score: 100 },
   { keyword: 'blue archive -male:big_ass', score: 80 },

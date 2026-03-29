@@ -4,23 +4,32 @@ type AnalyticsBrowserModule = typeof import('../browser')
 
 const sendGTMEventMock = mock(() => {})
 let importVersion = 0
+const envMock = {
+  NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:3002',
+  NEXT_PUBLIC_CANONICAL_URL: process.env.NEXT_PUBLIC_CANONICAL_URL ?? 'http://localhost:3000',
+  NEXT_PUBLIC_CORS_PROXY_URL: process.env.NEXT_PUBLIC_CORS_PROXY_URL ?? 'http://localhost:3002',
+  NEXT_PUBLIC_EXTERNAL_API_PROXY_URL: process.env.NEXT_PUBLIC_EXTERNAL_API_PROXY_URL ?? 'http://localhost:3001',
+  NEXT_PUBLIC_GTM_ID: 'GTM-TEST',
+  NEXT_PUBLIC_GTM_SCRIPT_URL: '',
+  NEXT_PUBLIC_IOS_TESTFLIGHT_URL: process.env.NEXT_PUBLIC_IOS_TESTFLIGHT_URL ?? '',
+  NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN ?? '',
+  NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? '1x00000000000000000000AA',
+  NEXT_PUBLIC_VAPID_PUBLIC_KEY: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? '123',
+} as const
 
 mock.module('@next/third-parties/google', () => ({
   sendGTMEvent: sendGTMEventMock,
 }))
 
 mock.module('@/env/client', () => ({
-  env: {
-    NEXT_PUBLIC_GTM_ID: 'GTM-TEST',
-    NEXT_PUBLIC_GTM_SCRIPT_URL: '',
-  },
+  env: envMock,
 }))
 
 async function importFreshAnalyticsBrowser(): Promise<AnalyticsBrowserModule> {
   return import(`../browser?test=${importVersion++}`) as Promise<AnalyticsBrowserModule>
 }
 
-describe('analytics browser wrapper', () => {
+describe('브라우저 분석 래퍼', () => {
   beforeEach(() => {
     sendGTMEventMock.mockClear()
   })
@@ -29,7 +38,7 @@ describe('analytics browser wrapper', () => {
     sendGTMEventMock.mockClear()
   })
 
-  test('track는 Date 파라미터를 직렬화하고 undefined 값은 무시한다', async () => {
+  test('track는 날짜 파라미터를 직렬화하고 정의되지 않은 값은 무시한다', async () => {
     const { track } = await importFreshAnalyticsBrowser()
 
     track('login', {

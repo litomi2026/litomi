@@ -1,65 +1,34 @@
+import { type FetchRoute, installMockFetch, jsonResponse } from '@test/utils/fetch'
+import { renderWithTestQueryClient } from '@test/utils/query-client'
 import { cleanup } from '@testing-library/react'
-import { afterEach, describe, expect, mock, test } from 'bun:test'
+import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
 import { type ReactElement, type ReactNode, useLayoutEffect } from 'react'
 
 import type { GETV1BookmarkResponse } from '@/backend/api/v1/bookmark/GET'
 
-import { render } from '../../../../../test/utils/render'
 import { LibrarySelectionProvider, useLibrarySelection } from '../librarySelection'
-
-const fetchNextPageMock = mock(() => Promise.resolve())
-
-type BookmarkQueryResult = {
-  data?: {
-    pageParams: (string | null)[]
-    pages: GETV1BookmarkResponse[]
-  }
-  fetchNextPage: typeof fetchNextPageMock
-  hasNextPage: boolean
-  isFetchingNextPage: boolean
-  isFetchNextPageError: boolean
-}
-
-let bookmarkResult: BookmarkQueryResult = {
-  data: {
-    pages: [{ bookmarks: [], nextCursor: null }],
-    pageParams: [null],
-  },
-  fetchNextPage: fetchNextPageMock,
-  hasNextPage: false,
-  isFetchingNextPage: false,
-  isFetchNextPageError: false,
-}
 
 mock.module('@/components/card/MangaCard', () => ({
   default: () => <div>manga-card</div>,
   MangaCardSkeleton: () => <div>manga-card-skeleton</div>,
 }))
 
-mock.module('@/components/ui/LoadMoreRetryButton', () => ({
-  default: () => <button type="button">retry</button>,
-}))
-
-mock.module('@/hook/useInfiniteScrollObserver', () => ({
-  default: mock(() => null),
-}))
-
-mock.module('@/hook/useMangaListCachedQuery', () => ({
-  default: mock(() => ({ mangaMap: new Map() })),
-}))
-
 mock.module('../SelectableMangaCard', () => ({
   default: () => <div>selectable-card</div>,
 }))
 
-mock.module('./useBookmarkInfiniteQuery', () => ({
-  default: mock(() => bookmarkResult),
-}))
+let fetchRoutes: FetchRoute[] = []
+let fetchController: ReturnType<typeof installMockFetch>
 
 const { default: BookmarkPageClient } = await import('./BookmarkPageClient')
 
+beforeEach(() => {
+  fetchRoutes = []
+  fetchController = installMockFetch(() => fetchRoutes)
+})
+
 function renderWithLibrarySelection(ui: ReactElement, selectionMode = false) {
-  return render(
+  return renderWithTestQueryClient(
     <LibrarySelectionProvider scopeKey="bookmark-test">
       <SelectionModeController selectionMode={selectionMode}>{ui}</SelectionModeController>
     </LibrarySelectionProvider>,
@@ -82,35 +51,22 @@ function SelectionModeController({ children, selectionMode }: { children: ReactN
 }
 
 afterEach(() => {
+  fetchController.restore()
   cleanup()
-  fetchNextPageMock.mockClear()
-  bookmarkResult = {
-    data: {
-      pages: [{ bookmarks: [], nextCursor: null }],
-      pageParams: [null],
-    },
-    fetchNextPage: fetchNextPageMock,
-    hasNextPage: false,
-    isFetchingNextPage: false,
-    isFetchNextPageError: false,
-  }
 })
 
 describe('BookmarkPageClient', () => {
-  test('북마크가 비어 있으면 empty state를 렌더링한다', () => {
+  test('북마크가 비어 있으면 빈 상태를 렌더링한다', () => {
     const view = renderWithLibrarySelection(<BookmarkPageClient initialData={{ bookmarks: [], nextCursor: null }} />)
 
     expect(view.getByText('북마크가 비어 있어요')).toBeTruthy()
   })
 
   test('선택 모드에서는 선택 가능한 카드 컴포넌트를 렌더링한다', () => {
-    bookmarkResult = {
-      ...bookmarkResult,
-      data: {
-        pages: [{ bookmarks: [{ mangaId: 101, createdAt: Date.now() }], nextCursor: null }],
-        pageParams: [null],
-      },
-    }
+    fetchRoutes.push({
+      matcher: ({ url }) => url.pathname === '/api/proxy/manga/101',
+      response: () => jsonResponse({ id: 101, title: 'Bookmark 101', images: [] }),
+    })
 
     const view = renderWithLibrarySelection(
       <BookmarkPageClient initialData={{ bookmarks: [{ mangaId: 101, createdAt: Date.now() }], nextCursor: null }} />,
