@@ -31,13 +31,6 @@ beforeAll(() => {
   spyOn(console, 'error').mockImplementation(() => {})
 })
 
-mock.module('hono/timing', () => ({
-  startTime: () => {},
-  endTime: () => {},
-  setMetric: () => {},
-  timing: () => {},
-}))
-
 mock.module('@/database/supabase/drizzle', () => ({
   checkDatabaseReadiness: () => {
     if (shouldThrowDatabaseError) {
@@ -121,7 +114,7 @@ describe('GET /ready', () => {
   })
 
   describe('성공', () => {
-    test('데이터베이스 연결이 정상인 경우 ready 상태를 반환한다', async () => {
+    test('데이터베이스 연결이 정상인 경우 준비 상태를 반환한다', async () => {
       const response = await appRoutes.request('/ready')
       expect(response.status).toBe(200)
       expect(response.headers.get('content-type')).toContain('application/json')
@@ -135,17 +128,17 @@ describe('GET /ready', () => {
     })
 
     test('데이터베이스 상태가 올바르게 반환된다', async () => {
-      // When
+      // 실행
       const response = await appRoutes.request('/ready')
       const data = (await response.json()) as ReadyOkResponse
 
-      // Then
+      // 검증
       expect(data.status).toBe('ready')
       expect(data.database.connected).toBe(true)
       expect(new Date(data.database.checkedAt)).toBeInstanceOf(Date)
     })
 
-    test('여러 번 요청하는 경우 일관된 ready 상태를 반환한다', async () => {
+    test('여러 번 요청하는 경우 일관된 준비 상태를 반환한다', async () => {
       const promises = Array.from({ length: 5 }, () => appRoutes.request('/ready'))
       const responses = await Promise.all(promises)
       expect(responses.every((r) => r.status === 200)).toBe(true)
@@ -181,16 +174,16 @@ describe('GET /ready', () => {
 
   describe('기타', () => {
     test('데이터베이스 오류 후 복구되는 경우 정상 상태를 반환한다', async () => {
-      // Given - 첫 번째 요청은 실패
+      // 준비 - 첫 번째 요청은 실패
       shouldThrowDatabaseError = true
       const errorResponse = await appRoutes.request('/ready')
       expect(errorResponse.status).toBe(503)
 
-      // When - 두 번째 요청은 성공
+      // 실행 - 두 번째 요청은 성공
       shouldThrowDatabaseError = false
       const successResponse = await appRoutes.request('/ready')
 
-      // Then
+      // 검증
       expect(successResponse.status).toBe(200)
 
       const data = (await successResponse.json()) as ReadyOkResponse
@@ -198,7 +191,7 @@ describe('GET /ready', () => {
       expect(data.database.connected).toBe(true)
     })
 
-    test('ready 응답에 타임스탬프가 포함되어 있다', async () => {
+    test('준비 상태 응답에 타임스탬프가 포함되어 있다', async () => {
       const response = await appRoutes.request('/ready')
       const data = (await response.json()) as ReadyResponse
       expect(data.timestamp).toBeDefined()

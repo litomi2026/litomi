@@ -2,29 +2,18 @@ import '@test/setup.dom'
 
 import type { ReactNode } from 'react'
 
-import { cleanup, render } from '@testing-library/react'
-import { afterEach, describe, expect, it, mock } from 'bun:test'
-
-import type { GETV1MeResponse } from '@/backend/api/v1/me'
-
-import { AdultState } from '@/utils/adult-verification'
+import { clearDocumentCookies, setAuthHintCookie } from '@test/utils/auth'
+import { type FetchRoute, installMockFetch, jsonResponse } from '@test/utils/fetch'
+import { renderWithTestQueryClient } from '@test/utils/query-client'
+import { cleanup, waitFor } from '@testing-library/react'
+import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 
 import type { JuicyAdsLayoutNode } from '../types'
 
 import { AD_SLOTS } from '../constants'
 
-const useMountedMock = mock(() => true)
-const useMeQueryMock = mock<
-  () => {
-    data: GETV1MeResponse | null | undefined
-  }
->(() => ({
-  data: undefined,
-}))
-const useNonAdultGateMock = mock<() => AdultState>(() => AdultState.NOT_ADULT)
-
 mock.module('next/link', () => ({
-  default: ({ children, href, ...props }: { children: ReactNode; href: string }) => (
+  default: ({ children, href, prefetch: _prefetch, ...props }: { children: ReactNode; href: string; prefetch?: boolean }) => (
     <span data-href={href} role="link" {...props}>
       {children}
     </span>
@@ -33,22 +22,10 @@ mock.module('next/link', () => ({
 
 mock.module('@/components/LoginPageLink', () => ({
   default: ({ children, className }: { children: ReactNode; className?: string }) => (
-    <span className={className} data-href="/auth/login" data-testid="login-link" role="link">
+    <span className={className} data-href="/auth/login" role="link">
       {children}
     </span>
   ),
-}))
-
-mock.module('@/hook/useMounted', () => ({
-  default: useMountedMock,
-}))
-
-mock.module('@/query/useMeQuery', () => ({
-  default: useMeQueryMock,
-}))
-
-mock.module('../../../../hook/useNonAdultGate', () => ({
-  default: useNonAdultGateMock,
 }))
 
 mock.module('../JuicyAdsScript', () => ({
@@ -61,31 +38,35 @@ mock.module('../JuicyAdsSlot', () => ({
   ),
 }))
 
+let fetchRoutes: FetchRoute[] = []
+let fetchController: ReturnType<typeof installMockFetch>
+
 const { default: NonAdultJuicyAdsBanner } = await import('../NonAdultJuicyAdsBanner')
 
+beforeEach(() => {
+  clearDocumentCookies()
+  fetchRoutes = []
+  fetchController = installMockFetch(() => fetchRoutes)
+  window.history.replaceState({}, '', '/ads')
+})
+
 afterEach(() => {
+  fetchController.restore()
   cleanup()
-  useMountedMock.mockReset()
-  useMeQueryMock.mockReset()
-  useNonAdultGateMock.mockReset()
-  useMountedMock.mockImplementation(() => true)
-  useMeQueryMock.mockImplementation(() => ({
-    data: undefined,
-  }))
-  useNonAdultGateMock.mockImplementation(() => AdultState.NOT_ADULT)
+  clearDocumentCookies()
 })
 
 describe('NonAdultJuicyAdsBanner', () => {
-  it('renders the default copy and layout for guests', () => {
-    const { getAllByTestId, getByTestId, getByText } = render(<NonAdultJuicyAdsBanner />)
+  it('게스트에게 기본 문구와 레이아웃을 렌더링한다', async () => {
+    const view = renderWithTestQueryClient(<NonAdultJuicyAdsBanner />)
 
-    expect(getByText('광고 수익은 서비스 운영에 사용돼요.')).not.toBeNull()
-    expect(getByTestId('juicy-script')).not.toBeNull()
-    expect(getAllByTestId('juicy-slot').length).toBeGreaterThan(1)
-    expect(getByTestId('login-link')).not.toBeNull()
+    expect(await view.findByText('광고 수익은 서비스 운영에 사용돼요.')).not.toBeNull()
+    expect(view.getByTestId('juicy-script')).not.toBeNull()
+    expect(view.getAllByTestId('juicy-slot').length).toBeGreaterThan(1)
+    expect(view.getByRole('link', { name: '로그인 후 익명 성인인증' }).getAttribute('data-href')).toContain('/auth/login')
   })
 
-  it('renders custom layouts with nested groups', () => {
+  it('중첩 그룹이 있는 커스텀 레이아웃을 렌더링한다', async () => {
     const customLayout: readonly JuicyAdsLayoutNode[] = [
       { type: 'slot', slot: AD_SLOTS.BANNER_300X100, className: 'custom-slot' },
       {
@@ -95,48 +76,80 @@ describe('NonAdultJuicyAdsBanner', () => {
       },
     ]
 
-    useMeQueryMock.mockImplementation(() => ({
-      data: {
-        id: 1,
-        loginId: 'tester',
-        name: 'alice',
-        nickname: 'Alice',
-        imageURL: null,
-        adultVerification: { required: true, status: 'unverified' },
-      },
-    }))
+    setAuthHintCookie()
+    fetchRoutes.push({
+      matcher: ({ url }) => url.pathname === '/api/v1/me',
+      response: () =>
+        jsonResponse({
+          id: 1,
+          loginId: 'tester',
+          name: 'alice',
+          nickname: 'Alice',
+          imageURL: null,
+          adultVerification: { required: true, status: 'unverified' },
+        }),
+    })
 
-    const { getAllByTestId, getByRole, getByText } = render(
+    const view = renderWithTestQueryClient(
       <NonAdultJuicyAdsBanner layout={customLayout} title="커스텀 광고" />,
     )
 
-    const slots = getAllByTestId('juicy-slot')
+    await view.findByText('커스텀 광고')
 
-    expect(getByText('커스텀 광고')).not.toBeNull()
+    const slots = view.getAllByTestId('juicy-slot')
+
     expect(slots).toHaveLength(2)
     expect(slots[0]?.getAttribute('data-slot-id')).toBe(AD_SLOTS.BANNER_300X100.id)
     expect(document.querySelector('.custom-group')).not.toBeNull()
-    expect(getByRole('link', { name: '익명 성인인증' }).getAttribute('data-href')).toBe('/@alice/settings#adult')
+    expect(view.getByRole('link', { name: '익명 성인인증' }).getAttribute('data-href')).toBe('/@alice/settings#adult')
   })
 
-  it('returns null while hidden or before mount', () => {
-    useNonAdultGateMock.mockImplementation(() => AdultState.ADULT)
+  it('인증 상태가 아직 정해지지 않았으면 null을 반환한다', async () => {
+    const pendingResponse = new Promise<Response>(() => {})
 
-    const { rerender, container } = render(<NonAdultJuicyAdsBanner />)
+    setAuthHintCookie()
+    fetchRoutes.push({
+      matcher: ({ url }) => url.pathname === '/api/v1/me',
+      response: () => pendingResponse,
+    })
 
-    expect(container.innerHTML).toBe('')
+    const { container } = renderWithTestQueryClient(<NonAdultJuicyAdsBanner />)
 
-    useNonAdultGateMock.mockImplementation(() => AdultState.NOT_ADULT)
-    useMountedMock.mockImplementation(() => false)
+    await waitFor(() => {
+      expect(fetchController.fetchMock).toHaveBeenCalledTimes(1)
+      expect(container.innerHTML).toBe('')
+    })
+  })
 
-    rerender(<NonAdultJuicyAdsBanner />)
+  it('성인 인증이 이미 끝났으면 null을 반환한다', async () => {
+    setAuthHintCookie()
+    fetchRoutes.push({
+      matcher: ({ url }) => url.pathname === '/api/v1/me',
+      response: () =>
+        jsonResponse({
+          id: 1,
+          loginId: 'adult',
+          name: 'adult',
+          nickname: 'Adult',
+          imageURL: null,
+          adultVerification: { required: true, status: 'adult' },
+        }),
+    })
+
+    const { container } = renderWithTestQueryClient(<NonAdultJuicyAdsBanner />)
+
+    await waitFor(() => {
+      expect(fetchController.fetchMock).toHaveBeenCalledTimes(1)
+    })
 
     expect(container.innerHTML).toBe('')
   })
 
-  it('stretches the ad row so slot widths stay resolvable in centered layouts', () => {
-    const { getAllByTestId } = render(<NonAdultJuicyAdsBanner className="items-center justify-center" />)
+  it('가운데 정렬 레이아웃에서도 슬롯 너비를 계산할 수 있도록 광고 행을 늘린다', async () => {
+    const view = renderWithTestQueryClient(<NonAdultJuicyAdsBanner className="items-center justify-center" />)
 
-    expect(getAllByTestId('juicy-slot')[0]?.parentElement?.className).toContain('self-stretch')
+    await view.findAllByTestId('juicy-slot')
+
+    expect(view.getAllByTestId('juicy-slot')[0]?.parentElement?.className).toContain('self-stretch')
   })
 })
