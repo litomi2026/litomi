@@ -2,11 +2,13 @@
 
 import type { ReactNode } from 'react'
 
+import { usePathname } from 'next/navigation'
 import { useMemo } from 'react'
 
 import useMeQuery from '@/query/useMeQuery'
 
 import LibraryHeader from './LibraryHeader'
+import { LibrarySelectionProvider } from './librarySelection'
 import LibrarySidebar from './LibrarySidebar'
 import useLibraryListInfiniteQuery from './useLibraryListInfiniteQuery'
 import useLibrarySummaryQuery from './useLibrarySummaryQuery'
@@ -29,8 +31,9 @@ type Props = {
 }
 
 export default function LibraryNavigation({ children }: Readonly<Props>) {
+  const pathname = usePathname()
   const { data: me, isPending: isMePending } = useMeQuery()
-  const userId = me?.id ?? null
+  const userId = me?.id
   const { data: summary } = useLibrarySummaryQuery({ userId })
 
   const {
@@ -105,16 +108,18 @@ export default function LibraryNavigation({ children }: Readonly<Props>) {
       />
       <div className="hidden sm:block sm:w-[67px] lg:w-52" />
       <div className="flex flex-col flex-1">
-        <LibraryHeader
-          bookmarkCount={summary?.bookmarkCount}
-          historyCount={summary?.historyCount}
-          libraries={libraries}
-          pinnedLibraries={pinnedLibraries}
-          ratingCount={summary?.ratingCount}
-          sidebarPagination={sidebarPagination}
-          userId={userId}
-        />
-        {children}
+        <LibrarySelectionProvider scopeKey={pathname}>
+          <LibraryHeader
+            bookmarkCount={summary?.bookmarkCount}
+            historyCount={summary?.historyCount}
+            libraries={libraries}
+            pinnedLibraries={pinnedLibraries}
+            ratingCount={summary?.ratingCount}
+            sidebarPagination={sidebarPagination}
+            userId={userId}
+          />
+          {children}
+        </LibrarySelectionProvider>
       </div>
     </div>
   )

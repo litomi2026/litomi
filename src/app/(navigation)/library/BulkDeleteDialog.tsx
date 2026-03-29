@@ -19,7 +19,7 @@ type Props = {
   warning: string
 }
 
-export default function HistoryDeleteDialog({
+export default function BulkDeleteDialog({
   ariaLabel,
   confirmLabel,
   description,

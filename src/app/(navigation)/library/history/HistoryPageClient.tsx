@@ -1,6 +1,7 @@
 'use client'
 
-import { GETV1ReadingHistoryResponse } from '@/backend/api/v1/library/history/GET'
+import type { GETV1ReadingHistoryResponse } from '@/backend/api/v1/library/history/GET'
+
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
@@ -8,8 +9,8 @@ import useMangaListCachedQuery from '@/hook/useMangaListCachedQuery'
 import { View } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
-import { useLibrarySelectionStore } from '../[id]/librarySelection'
 import CensoredManga from '../CensoredManga'
+import { useLibrarySelection } from '../librarySelection'
 import SelectableMangaCard from '../SelectableMangaCard'
 import NotFound from './NotFound'
 import useReadingHistoryInfiniteQuery from './useReadingHistoryInfiniteQuery'
@@ -25,7 +26,7 @@ export default function HistoryPageClient({ initialData }: Props) {
   )
 
   const historyItems = data?.pages.flatMap((page) => page.items) ?? []
-  const { isSelectionMode } = useLibrarySelectionStore()
+  const { isSelectionMode } = useLibrarySelection()
   const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
 
   const infiniteScrollTriggerRef = useInfiniteScrollObserver({

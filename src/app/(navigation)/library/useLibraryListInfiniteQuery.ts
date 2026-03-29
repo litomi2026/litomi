@@ -10,10 +10,10 @@ const { NEXT_PUBLIC_BACKEND_URL } = env
 
 interface Options {
   enabled?: boolean
-  userId: number | null
+  userId?: number
 }
 
-export async function fetchLibraryList({ cursor, userId }: { cursor: string | null; userId: number | null }) {
+export async function fetchLibraryList({ cursor, userId }: { cursor: string | null; userId?: number }) {
   const params = new URLSearchParams()
   params.set('scope', userId ? 'all' : 'public')
 

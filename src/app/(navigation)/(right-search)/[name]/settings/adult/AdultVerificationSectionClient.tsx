@@ -163,7 +163,7 @@ export default function AdultVerificationSectionClient({ initialVerification, is
 
     window.addEventListener('storage', onStorage)
     return () => window.removeEventListener('storage', onStorage)
-  }, [router, verifiedAtMs])
+  }, [queryClient, router, verifiedAtMs])
 
   // NOTE: refresh 후 서버에서 내려온 상태(성인/성인 아님)로 토스트를 결정해요
   useEffect(() => {
