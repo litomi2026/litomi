@@ -277,7 +277,7 @@ describe('GET /api/v1/post', () => {
     expect(data.posts[0]).not.toHaveProperty('isLiked')
     expect(data.posts[0]?.type).toBe(PostType.TEXT)
     expect(data.nextCursor).toBeNull()
-    expect(response.headers.get('Cache-Control')).toBe('public, max-age=3, s-maxage=30, stale-while-revalidate=300')
+    expect(response.headers.get('Cache-Control')).toBe('public, max-age=3, s-maxage=300, stale-while-revalidate=30')
   })
 
   test('리포스트 원글이 삭제되면 tombstone referred post를 반환한다', async () => {
@@ -314,7 +314,7 @@ describe('GET /api/v1/post', () => {
 
     expect(response.status).toBe(200)
     expect(response.headers.get('Cache-Control')).toBe(
-      'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400',
+      'public, max-age=300, s-maxage=86400, stale-while-revalidate=3600',
     )
   })
 
