@@ -32,7 +32,7 @@ export default function useBulkRemoveFromLibraryAction({ libraryId }: Readonly<O
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraries })
       queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryListBase })
       queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteLibraryMangasBase })
-      queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItems(variables.libraryId) })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItemsBase(variables.libraryId) })
       exit()
     },
     onError: (error) => {

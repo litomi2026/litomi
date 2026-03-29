@@ -1,13 +1,16 @@
-import { desc, eq } from 'drizzle-orm'
 import { Metadata } from 'next'
+import { z } from 'zod'
 
-import { encodeBookmarkCursor } from '@/common/cursor'
+import {
+  CollectionItemSort,
+  DEFAULT_COLLECTION_ITEM_SORT,
+} from '@/backend/api/v1/library/item-sort'
+import { getNextCollectionItemCursor } from '@/backend/api/v1/library/item-sort.server'
 import { LIBRARY_NON_ADULT_AD_LAYOUT } from '@/components/ads/juicy-ads/layouts'
 import NonAdultJuicyAdsBanner from '@/components/ads/juicy-ads/NonAdultJuicyAdsBanner'
 import { generateOpenGraphMetadata } from '@/constants'
 import { BOOKMARKS_PER_PAGE } from '@/constants/policy'
-import { bookmarkTable } from '@/database/supabase/activity'
-import { db } from '@/database/supabase/drizzle'
+import { selectBookmark } from '@/sql/selectBookmark'
 import { getUserIdFromCookie } from '@/utils/cookie'
 
 import BookmarkDownloadButton from './BookmarkDownloadButton'
@@ -29,22 +32,30 @@ export const metadata: Metadata = {
   },
 }
 
-export default async function BookmarkPage() {
+const searchParamsSchema = z.object({
+  sort: z.enum(CollectionItemSort).default(DEFAULT_COLLECTION_ITEM_SORT),
+})
+
+export default async function BookmarkPage({ searchParams }: PageProps<'/library/bookmark'>) {
   const userId = await getUserIdFromCookie()
 
   if (!userId) {
     return <Unauthorized />
   }
 
-  const bookmarks = await db
-    .select({
-      mangaId: bookmarkTable.mangaId,
-      createdAt: bookmarkTable.createdAt,
-    })
-    .from(bookmarkTable)
-    .where(eq(bookmarkTable.userId, userId))
-    .orderBy(desc(bookmarkTable.createdAt), desc(bookmarkTable.mangaId))
-    .limit(BOOKMARKS_PER_PAGE + 1)
+  const validation = searchParamsSchema.safeParse(await searchParams)
+
+  if (!validation.success) {
+    return <NotFound />
+  }
+
+  const { sort } = validation.data
+
+  const bookmarks = await selectBookmark({
+    userId,
+    sort,
+    limit: BOOKMARKS_PER_PAGE + 1,
+  })
 
   if (bookmarks.length === 0) {
     return <NotFound />
@@ -61,11 +72,11 @@ export default async function BookmarkPage() {
     createdAt: b.createdAt.getTime(),
   }))
 
-  const lastBookmark = initialBookmarks[initialBookmarks.length - 1]
+  const lastBookmark = bookmarks[bookmarks.length - 1]
 
   const initialData = {
     bookmarks: initialBookmarks,
-    nextCursor: hasNextPage ? encodeBookmarkCursor(lastBookmark.createdAt, lastBookmark.mangaId) : null,
+    nextCursor: hasNextPage ? getNextCollectionItemCursor(lastBookmark) : null,
   }
 
   return (
@@ -77,7 +88,7 @@ export default async function BookmarkPage() {
         <BookmarkUploadButton />
         <BookmarkTooltip />
       </div>
-      <BookmarkPageClient initialData={initialData} />
+      <BookmarkPageClient initialData={initialData} initialSort={sort} />
     </main>
   )
 }
