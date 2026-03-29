@@ -8,16 +8,20 @@ import type { POSTV1PostIdLikeResponse } from '@/backend/api/v1/post/[id]/like/P
 
 import { QueryKeys } from '@/constants/query'
 import { showLoginRequiredToast } from '@/lib/toast'
+import useLikedPostIdsQuery from '@/query/useLikedPostIdsQuery'
 import useMeQuery from '@/query/useMeQuery'
 import { ProblemDetailsError } from '@/utils/react-query-error'
 
 import { togglePostLike } from './api'
 import {
+  applyPostLikeCountDeltaInPostLists,
+  type LikedPostIdsSnapshot,
   type PostLikeSnapshot,
+  restoreLikedPostIds,
   restorePostLikeInPostLists,
-  setPostLikeInPostLists,
+  setPostLikedInLikedPostIds,
+  snapshotLikedPostIds,
   snapshotPostLikeInPostLists,
-  togglePostLikeInPostLists,
 } from './cache'
 
 type Props = {
@@ -38,33 +42,52 @@ export default function PostActionButtons({
   isLiked = false,
 }: Props) {
   const { data: me } = useMeQuery()
+  const { data: likedPostIds } = useLikedPostIdsQuery()
   const queryClient = useQueryClient()
   const likeMutationKey = ['post', postId, 'like'] as const
   const isLikePending = useIsMutating({ mutationKey: likeMutationKey }) > 0
+  const resolvedIsLiked = likedPostIds?.has(postId) ?? isLiked
 
   const { mutate } = useMutation<
     POSTV1PostIdLikeResponse,
     ProblemDetailsError,
     number,
-    { snapshot: PostLikeSnapshot }
+    {
+      likedPostIdsSnapshot: LikedPostIdsSnapshot
+      nextLiked: boolean
+      snapshot: PostLikeSnapshot
+    }
   >({
     mutationKey: likeMutationKey,
     mutationFn: togglePostLike,
     onMutate: async (mutatingPostId) => {
-      await queryClient.cancelQueries({ queryKey: QueryKeys.postsBase })
+      await Promise.all([
+        queryClient.cancelQueries({ queryKey: QueryKeys.postsBase }),
+        queryClient.cancelQueries({ queryKey: QueryKeys.likedPosts }),
+      ])
+
       const snapshot = snapshotPostLikeInPostLists(queryClient, mutatingPostId)
+      const likedPostIdsSnapshot = snapshotLikedPostIds(queryClient)
+      const nextLiked = !resolvedIsLiked
 
-      togglePostLikeInPostLists(queryClient, mutatingPostId)
+      applyPostLikeCountDeltaInPostLists(queryClient, mutatingPostId, nextLiked ? 1 : -1)
+      setPostLikedInLikedPostIds(queryClient, mutatingPostId, nextLiked)
 
-      return { snapshot }
+      return { snapshot, likedPostIdsSnapshot, nextLiked }
     },
     onError: (_error, mutatingPostId, context) => {
       if (context?.snapshot) {
         restorePostLikeInPostLists(queryClient, mutatingPostId, context.snapshot)
       }
+
+      restoreLikedPostIds(queryClient, context?.likedPostIdsSnapshot)
     },
-    onSuccess: ({ liked }, mutatingPostId) => {
-      setPostLikeInPostLists(queryClient, mutatingPostId, liked)
+    onSuccess: ({ liked }, mutatingPostId, context) => {
+      setPostLikedInLikedPostIds(queryClient, mutatingPostId, liked)
+
+      if (context && liked !== context.nextLiked) {
+        applyPostLikeCountDeltaInPostLists(queryClient, mutatingPostId, liked ? 2 : -2)
+      }
 
       if (liked) {
         toast.success('좋아요 했어요')
@@ -100,10 +123,13 @@ export default function PostActionButtons({
           onClick={handleLike}
         >
           <Heart
-            aria-selected={isLiked}
+            aria-selected={resolvedIsLiked}
             className="group-hover:bg-red-500/20 group-hover:text-red-500 aria-selected:text-red-500"
           />
-          <span aria-selected={isLiked} className="transition aria-selected:font-medium aria-selected:text-red-500">
+          <span
+            aria-selected={resolvedIsLiked}
+            className="transition aria-selected:font-medium aria-selected:text-red-500"
+          >
             {likeCount}
           </span>
         </button>

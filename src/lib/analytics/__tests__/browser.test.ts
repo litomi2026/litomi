@@ -1,6 +1,9 @@
 import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
 
+type AnalyticsBrowserModule = typeof import('../browser')
+
 const sendGTMEventMock = mock(() => {})
+let importVersion = 0
 
 mock.module('@next/third-parties/google', () => ({
   sendGTMEvent: sendGTMEventMock,
@@ -13,7 +16,9 @@ mock.module('@/env/client', () => ({
   },
 }))
 
-const { identify, track } = await import('../browser')
+async function importFreshAnalyticsBrowser(): Promise<AnalyticsBrowserModule> {
+  return import(`../browser?test=${importVersion++}`) as Promise<AnalyticsBrowserModule>
+}
 
 describe('analytics browser wrapper', () => {
   beforeEach(() => {
@@ -24,7 +29,9 @@ describe('analytics browser wrapper', () => {
     sendGTMEventMock.mockClear()
   })
 
-  test('track는 Date 파라미터를 직렬화하고 undefined 값은 무시한다', () => {
+  test('track는 Date 파라미터를 직렬화하고 undefined 값은 무시한다', async () => {
+    const { track } = await importFreshAnalyticsBrowser()
+
     track('login', {
       method: 'password',
       happened_at: new Date('2026-03-27T00:00:00.000Z'),
@@ -38,7 +45,9 @@ describe('analytics browser wrapper', () => {
     })
   })
 
-  test('identify는 숫자 ID를 문자열로 보내고 null이면 해제한다', () => {
+  test('identify는 숫자 ID를 문자열로 보내고 null이면 해제한다', async () => {
+    const { identify } = await importFreshAnalyticsBrowser()
+
     identify(42)
     identify(null)
 

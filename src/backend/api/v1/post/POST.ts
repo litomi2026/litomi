@@ -28,6 +28,12 @@ route.post('/', requireAuth, zProblemValidator('json', createPostSchema), async 
   const userId = c.get('userId')!
   const { content, mangaId, parentPostId, referredPostId } = c.req.valid('json')
 
+  if (parentPostId && referredPostId) {
+    return problemResponse(c, { status: 400, detail: '답글과 리포스트를 동시에 지정할 수 없어요' })
+  }
+
+  const type = parentPostId ? PostType.REPLY : referredPostId ? PostType.REPOST : PostType.TEXT
+
   try {
     const [createdPost] = await db
       .insert(postTable)
@@ -37,7 +43,7 @@ route.post('/', requireAuth, zProblemValidator('json', createPostSchema), async 
         mangaId: mangaId ?? null,
         parentPostId: parentPostId ?? null,
         referredPostId: referredPostId ?? null,
-        type: PostType.TEXT,
+        type,
       })
       .returning({ id: postTable.id })
 
