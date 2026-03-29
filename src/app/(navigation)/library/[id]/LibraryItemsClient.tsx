@@ -110,7 +110,7 @@ export default function LibraryItemsClient({
   return (
     <>
       {isOwner && (
-        <div className="px-4 py-2">
+        <div className="p-2 pb-0">
           <select
             className="bg-zinc-900 text-sm px-3 py-1.5 rounded border border-zinc-800 focus:border-zinc-600 outline-none"
             onChange={(e) => handleSortChange(e.target.value as CollectionItemSort)}
