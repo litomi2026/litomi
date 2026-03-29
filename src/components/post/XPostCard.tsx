@@ -1,18 +1,20 @@
 import dayjs from 'dayjs'
-import { MoreHorizontal } from 'lucide-react'
 import Link from 'next/link'
 import { ComponentProps } from 'react'
 
+import { PostType } from '@/database/enum'
 import { formatDistanceToNow } from '@/utils/format/date'
 
 import Squircle from '../ui/Squircle'
 import PostActionButtons from './PostActionButtons'
 import PostImages from './PostImages'
+import PostManagementMenu from './PostManagementMenu'
 import ReferredPostCard, { ReferredPost } from './ReferredPostCard'
 
 export type Post = {
   id: number
   createdAt: Date
+  type: PostType
   updatedAt?: Date
   content?: string | null
   imageURLs?: string[] | null
@@ -84,7 +86,11 @@ export default function XPostCard({ post, isThread, className = '', ...props }: 
                 </div>
               </div>
             </div>
-            <MoreHorizontal className="size-5 text-zinc-600" />
+            <PostManagementMenu
+              authorId={author?.id}
+              className="rounded-full p-1 transition hover:bg-zinc-800"
+              postId={post.id}
+            />
           </div>
           <Link className="child" href={`/post/${post.id}`} prefetch={false}>
             <p className="min-w-0 whitespace-pre-wrap break-all line-clamp-6">{post.content}</p>
