@@ -59,7 +59,7 @@ export default function LibraryModal() {
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraries })
 
       for (const id of libraryIds) {
-        queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItems(id) })
+        queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItemsBase(id) })
       }
 
       requestClose()

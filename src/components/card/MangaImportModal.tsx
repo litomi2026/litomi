@@ -42,7 +42,7 @@ export default function MangaImportModal() {
   const bulkImportMutation = useMutation({
     mutationFn: bulkCopyToLibrary,
     onSuccess: ({ copiedCount: successCount }, { mangaIds, toLibraryId }) => {
-      queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItems(toLibraryId) })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.libraryItemsBase(toLibraryId) })
       queryClient.invalidateQueries({ queryKey: QueryKeys.libraries })
 
       if (successCount > 0) {

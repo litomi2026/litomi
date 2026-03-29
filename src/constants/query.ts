@@ -1,4 +1,5 @@
 import { RatingSort } from '@/backend/api/v1/library/enum'
+import { CollectionItemSort } from '@/backend/api/v1/library/item-sort'
 import { PostFilter } from '@/backend/api/v1/post/constant'
 
 export const QueryKeys = {
@@ -6,7 +7,8 @@ export const QueryKeys = {
   ratingsBase: ['me', 'ratings'],
   bookmarks: ['me', 'bookmarks'],
   likedPosts: ['me', 'posts', 'liked'],
-  infiniteBookmarks: ['me', 'bookmarks', 'infinite'],
+  infiniteBookmarksBase: ['me', 'bookmarks', 'infinite'],
+  infiniteBookmarks: (sort: CollectionItemSort) => [...QueryKeys.infiniteBookmarksBase, sort],
   infiniteReadingHistory: ['me', 'readingHistory', 'infinite'],
   infiniteRatings: (sort: RatingSort) => ['me', 'ratings', 'infinite', sort],
   censorship: ['me', 'censorships'],
@@ -24,7 +26,12 @@ export const QueryKeys = {
   infiniteLibraryMangas: (userId?: number) => [...QueryKeys.infiniteLibraryMangasBase, userId ?? 'guest'],
   librarySummary: (userId?: number) => ['library', 'summary', userId ?? 'guest'],
   libraryMeta: (libraryId: number, userId?: number) => ['library', 'meta', libraryId, userId ?? 'guest'],
-  libraryItems: (libraryId: number) => ['me', 'library', libraryId],
+  libraryItemsBase: (libraryId: number) => ['me', 'library', libraryId, 'items'],
+  libraryItems: (libraryId: number, scope: 'me' | 'public', sort: CollectionItemSort) => [
+    ...QueryKeys.libraryItemsBase(libraryId),
+    scope,
+    sort,
+  ],
   userRating: (mangaId: number) => ['me', 'rating', mangaId],
   readingHistory: (mangaId: number) => ['me', 'readingHistory', mangaId],
   points: ['me', 'points'],
