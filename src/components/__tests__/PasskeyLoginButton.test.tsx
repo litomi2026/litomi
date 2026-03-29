@@ -1,3 +1,4 @@
+import '@test/setup.dom'
 import { cleanup, fireEvent, render } from '@testing-library/react'
 import { afterEach, describe, expect, it, mock } from 'bun:test'
 import { act } from 'react'

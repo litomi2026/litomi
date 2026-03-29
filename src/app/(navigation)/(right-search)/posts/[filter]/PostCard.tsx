@@ -91,7 +91,7 @@ export default function PostCard({ post, showMangaCover }: Readonly<Props>) {
           )}
           <PostManagementMenu
             authorId={author?.id}
-            className="rounded-full p-1 transition hover:bg-zinc-800"
+            className="rounded-full p-1 -ml-1 -mr-2 transition hover:bg-zinc-800"
             postId={post.id}
           />
         </div>

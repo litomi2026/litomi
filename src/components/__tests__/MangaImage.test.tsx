@@ -1,7 +1,12 @@
+import '@test/setup.dom'
 import { fireEvent, render } from '@testing-library/react'
-import { describe, expect, test } from 'bun:test'
+import { afterEach, describe, expect, test } from 'bun:test'
 
 import MangaImage from '../MangaImage'
+
+afterEach(() => {
+  document.body.innerHTML = ''
+})
 
 describe('MangaImage fallback', () => {
   test('원본 이미지는 direct src 이후 direct 원본 후보와 queryless probe를 거쳐 로컬 fallback으로 내려간다', () => {

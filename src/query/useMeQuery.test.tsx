@@ -1,3 +1,5 @@
+import '@test/setup.dom'
+
 import type { ReactNode } from 'react'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'

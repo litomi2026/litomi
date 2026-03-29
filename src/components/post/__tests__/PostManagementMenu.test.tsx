@@ -1,3 +1,5 @@
+import '@test/setup.dom'
+
 import type { ReactElement } from 'react'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
