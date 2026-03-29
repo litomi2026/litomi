@@ -1,7 +1,8 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 
+import type { GETV1RatingsResponse } from '@/backend/api/v1/library/rating/GET'
+
 import { RatingSort } from '@/backend/api/v1/library/enum'
-import { GETV1RatingsResponse } from '@/backend/api/v1/library/rating/GET'
 import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'

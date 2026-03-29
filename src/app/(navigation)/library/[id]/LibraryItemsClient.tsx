@@ -2,7 +2,8 @@
 
 import { useMemo } from 'react'
 
-import { GETLibraryItemsResponse } from '@/backend/api/v1/library/[id]/item/GET'
+import type { GETLibraryItemsResponse } from '@/backend/api/v1/library/[id]/item/GET'
+
 import AdultVerificationGate from '@/components/AdultVerificationGate'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
