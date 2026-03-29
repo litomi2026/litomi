@@ -30,6 +30,7 @@ export default defineConfig([
         },
       ],
 
+      'max-params': ['error', { max: 5 }],
       'perfectionist/sort-enums': 'off',
       'perfectionist/sort-object-types': 'off',
       'perfectionist/sort-objects': 'off',

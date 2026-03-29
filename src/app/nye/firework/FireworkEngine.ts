@@ -1,3 +1,4 @@
+/* eslint-disable max-params */
 import type { FireworkConfig } from './types'
 
 import { MyMath } from './MyMath'
