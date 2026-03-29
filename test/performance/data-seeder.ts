@@ -23,7 +23,7 @@ export class PerformanceDataSeeder {
   }
 
   /**
-   * Seed all tables with 10M+ rows total
+   * 전체 테이블에 합계 1천만 건 이상 데이터를 채운다.
    */
   async seedAll(opts: SeedOptions): Promise<void> {
     const startTime = Date.now()
@@ -46,7 +46,7 @@ export class PerformanceDataSeeder {
   }
 
   /**
-   * Seed bookmarks with progress tracking
+   * 진행 상황을 출력하면서 북마크 데이터를 채운다.
    */
   async seedBookmarks(opts: SeedOptions): Promise<void> {
     const totalBookmarks = opts.userCount * opts.bookmarksPerUser
@@ -58,7 +58,7 @@ export class PerformanceDataSeeder {
       const bookmarks = this.generateBookmarkBatch(userId, opts.bookmarksPerUser)
       batchData.push(...bookmarks)
 
-      // Insert when batch is full
+      // 배치가 가득 차면 바로 넣는다.
       if (batchData.length >= opts.batchSize) {
         await this.bulkInsert(bookmarkTable, batchData)
         bookmarksInserted += batchData.length
@@ -70,7 +70,7 @@ export class PerformanceDataSeeder {
       }
     }
 
-    // Insert remaining data
+    // 마지막에 남은 데이터도 넣는다.
     if (batchData.length > 0) {
       await this.bulkInsert(bookmarkTable, batchData)
       bookmarksInserted += batchData.length
@@ -80,7 +80,7 @@ export class PerformanceDataSeeder {
   }
 
   /**
-   * Seed libraries with progress tracking
+   * 진행 상황을 출력하면서 라이브러리 데이터를 채운다.
    */
   async seedLibraries(opts: SeedOptions): Promise<void> {
     const totalLibraries = opts.userCount * opts.librariesPerUser
@@ -94,7 +94,7 @@ export class PerformanceDataSeeder {
       batchData.push(...libraries)
       libraryId += opts.librariesPerUser
 
-      // Insert when batch is full
+      // 배치가 가득 차면 바로 넣는다.
       if (batchData.length >= opts.batchSize) {
         await this.bulkInsert(libraryTable, batchData)
         librariesInserted += batchData.length
@@ -106,7 +106,7 @@ export class PerformanceDataSeeder {
       }
     }
 
-    // Insert remaining data
+    // 마지막에 남은 데이터도 넣는다.
     if (batchData.length > 0) {
       await this.bulkInsert(libraryTable, batchData)
     }
@@ -115,7 +115,7 @@ export class PerformanceDataSeeder {
   }
 
   /**
-   * Seed library items with progress tracking
+   * 진행 상황을 출력하면서 라이브러리 아이템 데이터를 채운다.
    */
   async seedLibraryItems(opts: SeedOptions): Promise<void> {
     const totalLibraries = opts.userCount * opts.librariesPerUser
@@ -128,7 +128,7 @@ export class PerformanceDataSeeder {
       const items = this.generateLibraryItemBatch(libraryId, opts.itemsPerLibrary)
       batchData.push(...items)
 
-      // Insert when batch is full
+      // 배치가 가득 차면 바로 넣는다.
       if (batchData.length >= opts.batchSize) {
         await this.bulkInsert(libraryItemTable, batchData)
         itemsInserted += batchData.length
@@ -140,7 +140,7 @@ export class PerformanceDataSeeder {
       }
     }
 
-    // Insert remaining data
+    // 마지막에 남은 데이터도 넣는다.
     if (batchData.length > 0) {
       await this.bulkInsert(libraryItemTable, batchData)
       itemsInserted += batchData.length
@@ -150,7 +150,7 @@ export class PerformanceDataSeeder {
   }
 
   /**
-   * Seed users with progress tracking
+   * 진행 상황을 출력하면서 사용자 데이터를 채운다.
    */
   async seedUsers(opts: SeedOptions): Promise<void> {
     const totalBatches = Math.ceil(opts.userCount / opts.batchSize)
@@ -167,8 +167,8 @@ export class PerformanceDataSeeder {
   }
 
   /**
-   * Bulk insert using batch inserts for maximum performance
-   * Splits into chunks to avoid PostgreSQL's 65534 parameter limit
+   * 최대 성능을 위해 배치 단위로 bulk insert를 수행한다.
+   * PostgreSQL의 65534 파라미터 제한을 피하려고 청크로 나눈다.
    */
   private async bulkInsert<T extends PgTable>(table: T, data: InferInsertModel<T>[]): Promise<void> {
     if (data.length === 0) {
@@ -177,7 +177,7 @@ export class PerformanceDataSeeder {
 
     const columns = Object.keys(data[0])
 
-    // PostgreSQL has a limit of 65534 parameters
+    // PostgreSQL은 파라미터를 65534개까지만 허용한다.
     const maxParamsPerQuery = 65000
     const chunkSize = Math.floor(maxParamsPerQuery / columns.length)
 
@@ -193,7 +193,7 @@ export class PerformanceDataSeeder {
   }
 
   /**
-   * Generate a batch of bookmarks
+   * 북마크 배치를 만든다.
    */
   private generateBookmarkBatch(userId: number, count: number) {
     const bookmarks = []
@@ -218,7 +218,7 @@ export class PerformanceDataSeeder {
   }
 
   /**
-   * Generate a batch of library data
+   * 라이브러리 배치를 만든다.
    */
   private generateLibraryBatch(startId: number, count: number, userId: number) {
     const libraries = []
@@ -244,7 +244,7 @@ export class PerformanceDataSeeder {
   }
 
   /**
-   * Generate a batch of library items
+   * 라이브러리 아이템 배치를 만든다.
    */
   private generateLibraryItemBatch(libraryId: number, count: number) {
     const items = []
@@ -254,7 +254,7 @@ export class PerformanceDataSeeder {
     for (let i = 0; i < count; i++) {
       let mangaId: number
       do {
-        mangaId = Math.floor(Math.random() * 500000) + 1 // Random manga IDs 1-500000
+        mangaId = Math.floor(Math.random() * 500000) + 1 // 1~500000 범위에서 임의 작품 ID를 만든다.
       } while (usedMangaIds.has(mangaId))
       usedMangaIds.add(mangaId)
 
@@ -269,7 +269,7 @@ export class PerformanceDataSeeder {
   }
 
   /**
-   * Generate a batch of user data
+   * 사용자 배치를 만든다.
    */
   private generateUserBatch(startId: number, count: number) {
     const users = []

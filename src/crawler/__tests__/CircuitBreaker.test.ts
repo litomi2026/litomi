@@ -1,5 +1,5 @@
 /**
- * These tests verify the circuit breaker logic without requiring actual database connections
+ * 실제 데이터베이스 연결 없이 서킷 브레이커 로직을 검증하는 테스트다.
  */
 
 import { describe, expect, it, mock } from 'bun:test'
@@ -28,7 +28,7 @@ describe('CircuitBreaker', () => {
     },
   }
 
-  it('should start with circuit closed', () => {
+  it('초기 상태는 닫힘이어야 한다', () => {
     const breaker = new CircuitBreaker('TestDB', CIRCUIT_BREAKER_CONFIG)
     const state = breaker.getState()
 
@@ -41,7 +41,7 @@ describe('CircuitBreaker', () => {
     })
   })
 
-  it('should execute successful operations when closed', async () => {
+  it('닫힌 상태에서는 성공한 작업을 실행한다', async () => {
     const breaker = new CircuitBreaker('TestDB', CIRCUIT_BREAKER_CONFIG)
 
     const mockOperation = mock(() => Promise.resolve({ id: 1, title: 'Test Manga' }))
@@ -51,35 +51,35 @@ describe('CircuitBreaker', () => {
     expect(mockOperation).toHaveBeenCalledTimes(1)
 
     const state = breaker.getState()
-    expect(state.state).toBe(0) // Still CLOSED
+    expect(state.state).toBe(0) // 여전히 CLOSED 상태다.
     expect(state.failureCount).toBe(0)
   })
 
-  it('should open circuit after 5 connection failures', async () => {
+  it('연결 실패가 5번 누적되면 서킷을 연다', async () => {
     const breaker = new CircuitBreaker('TestDB', CIRCUIT_BREAKER_CONFIG)
 
     const connectionError = new Error('connect ECONNREFUSED')
     const mockOperation = mock(() => Promise.reject(connectionError))
 
-    // First 4 failures - circuit remains closed
+    // 처음 4번 실패할 때까지는 서킷이 닫혀 있어야 한다.
     for (let i = 1; i <= 4; i++) {
       expect(breaker.execute(mockOperation)).rejects.toThrow('connect ECONNREFUSED')
       const state = breaker.getState()
-      expect(state.state).toBe(0) // Still CLOSED
+      expect(state.state).toBe(0) // 여전히 CLOSED 상태다.
       expect(state.failureCount).toBe(i)
     }
 
-    // 5th failure - circuit opens
+    // 5번째 실패에서 서킷이 열린다.
     expect(breaker.execute(mockOperation)).rejects.toThrow('connect ECONNREFUSED')
     const state = breaker.getState()
-    expect(state.state).toBe(1) // OPEN
+    expect(state.state).toBe(1) // OPEN 상태다.
 
-    // Subsequent requests fail immediately with CircuitBreakerError
+    // 이후 요청은 즉시 CircuitBreakerError로 실패해야 한다.
     expect(breaker.execute(mockOperation)).rejects.toThrow(CircuitBreakerError)
-    expect(mockOperation).toHaveBeenCalledTimes(5) // No additional calls after circuit opens
+    expect(mockOperation).toHaveBeenCalledTimes(5) // 서킷이 열린 뒤에는 추가 호출이 없어야 한다.
   })
 
-  it('should count timeout errors as failures', async () => {
+  it('타임아웃 오류를 실패로 집계한다', async () => {
     const breaker = new CircuitBreaker('TestDB', CIRCUIT_BREAKER_CONFIG)
 
     const timeoutError = new Error('Query timeout exceeded')
@@ -90,10 +90,10 @@ describe('CircuitBreaker', () => {
     }
 
     const state = breaker.getState()
-    expect(state.state).toBe(1) // OPEN
+    expect(state.state).toBe(1) // OPEN 상태다.
   })
 
-  it('should count connection pool errors as failures', async () => {
+  it('커넥션 풀 오류를 실패로 집계한다', async () => {
     const breaker = new CircuitBreaker('TestDB', CIRCUIT_BREAKER_CONFIG)
 
     const poolError = new Error('connection pool timeout')
@@ -104,26 +104,26 @@ describe('CircuitBreaker', () => {
     }
 
     const state = breaker.getState()
-    expect(state.state).toBe(1) // OPEN
+    expect(state.state).toBe(1) // OPEN 상태다.
   })
 
-  it('should NOT count application errors as failures', async () => {
+  it('애플리케이션 오류는 실패로 집계하지 않는다', async () => {
     const breaker = new CircuitBreaker('TestDB', CIRCUIT_BREAKER_CONFIG)
 
     const appError = new Error('Invalid manga ID')
     const mockOperation = mock(() => Promise.reject(appError))
 
-    // Even after 10 application errors, circuit remains closed
+    // 애플리케이션 오류가 10번 나도 서킷은 닫힌 상태를 유지해야 한다.
     for (let i = 1; i <= 10; i++) {
       expect(breaker.execute(mockOperation)).rejects.toThrow('Invalid manga ID')
     }
 
     const state = breaker.getState()
-    expect(state.state).toBe(0) // Still CLOSED
-    expect(state.failureCount).toBe(0) // No failures counted
+    expect(state.state).toBe(0) // 여전히 CLOSED 상태다.
+    expect(state.failureCount).toBe(0) // 실패 횟수로 집계되지 않는다.
   })
 
-  it('should handle null/undefined results gracefully', async () => {
+  it('null/undefined 결과도 무리 없이 처리한다', async () => {
     const breaker = new CircuitBreaker('TestDB', CIRCUIT_BREAKER_CONFIG)
 
     const mockOperation = mock(() => Promise.resolve(null))
@@ -132,18 +132,18 @@ describe('CircuitBreaker', () => {
     expect(result).toBeNull()
 
     const state = breaker.getState()
-    expect(state.state).toBe(0) // CLOSED
+    expect(state.state).toBe(0) // CLOSED 상태다.
     expect(state.failureCount).toBe(0)
   })
 
-  it('should reset failure count on successful request', async () => {
+  it('성공한 요청이 오면 실패 횟수를 초기화한다', async () => {
     const breaker = new CircuitBreaker('TestDB', CIRCUIT_BREAKER_CONFIG)
 
     const connectionError = new Error('connect ECONNREFUSED')
     const failingOperation = mock(() => Promise.reject(connectionError))
     const successfulOperation = mock(() => Promise.resolve({ success: true }))
 
-    // Cause 3 failures
+    // 실패를 3번 누적시킨다.
     for (let i = 1; i <= 3; i++) {
       expect(breaker.execute(failingOperation)).rejects.toThrow()
     }
@@ -151,26 +151,26 @@ describe('CircuitBreaker', () => {
     let state = breaker.getState()
     expect(state.failureCount).toBe(3)
 
-    // One success resets the counter
+    // 성공이 한 번 오면 카운터가 초기화돼야 한다.
     await breaker.execute(successfulOperation)
 
     state = breaker.getState()
-    expect(state.state).toBe(0) // Still CLOSED
-    expect(state.failureCount).toBe(0) // Reset
+    expect(state.state).toBe(0) // 여전히 CLOSED 상태다.
+    expect(state.failureCount).toBe(0) // 카운터가 초기화된다.
   })
 
-  describe('Time-based transitions', () => {
-    it('should transition to half-open after timeout', async () => {
-      // Mock Date.now() to simulate time passing
+  describe('시간 기반 전이', () => {
+    it('타임아웃이 지나면 반열림 상태로 전이한다', async () => {
+      // 시간이 흐른 상황을 만들기 위해 Date.now()를 모의한다.
       const originalDateNow = Date.now
       let currentTime = originalDateNow()
       Date.now = () => currentTime
 
       try {
-        // Use a very short timeout for faster testing
+        // 더 빠르게 검증하려고 아주 짧은 타임아웃을 사용한다.
         const testConfig: CircuitBreakerConfig = {
           ...CIRCUIT_BREAKER_CONFIG,
-          timeout: 1000, // Minimum allowed timeout
+          timeout: 1000, // 허용 가능한 최소 타임아웃
         }
 
         const breaker = new CircuitBreaker('TestDB', testConfig)
@@ -178,51 +178,51 @@ describe('CircuitBreaker', () => {
         const failingOperation = mock(() => Promise.reject(connectionError))
         const successfulOperation = mock(() => Promise.resolve({ success: true }))
 
-        // Open the circuit
+        // 서킷을 연다.
         for (let i = 1; i <= 5; i++) {
           expect(breaker.execute(failingOperation)).rejects.toThrow()
         }
 
         let state = breaker.getState()
-        expect(state.state).toBe(1) // OPEN
+        expect(state.state).toBe(1) // OPEN 상태다.
 
-        // Request fails immediately while open
+        // 열려 있는 동안 요청은 즉시 실패해야 한다.
         expect(breaker.execute(failingOperation)).rejects.toThrow(CircuitBreakerError)
 
-        // Simulate time passing (advance by timeout + buffer)
+        // 시간이 흐른 것으로 처리한다(타임아웃 + 여유 시간).
         currentTime += 1100
 
-        // Next request should be allowed (half-open state)
-        // The circuit needs successThreshold + 1 attempts (4 total) in half-open
-        // If 3 out of 4 succeed, it closes
+        // 다음 요청부터는 반열림 상태로 허용돼야 한다.
+        // 반열림에서는 successThreshold + 1회(총 4회)를 평가한다.
+        // 4회 중 3회 이상 성공하면 다시 닫힌다.
         for (let i = 1; i <= 3; i++) {
           await breaker.execute(successfulOperation)
           state = breaker.getState()
-          expect(state.state).toBe(2) // Still HALF_OPEN until all attempts complete
+          expect(state.state).toBe(2) // 평가가 끝날 때까지 HALF_OPEN 상태를 유지한다.
         }
 
-        // 4th request completes the half-open evaluation
+        // 4번째 요청으로 반열림 평가가 끝난다.
         await breaker.execute(successfulOperation)
 
         state = breaker.getState()
-        expect(state.state).toBe(0) // CLOSED again after 4/4 successes
+        expect(state.state).toBe(0) // 4/4 성공으로 다시 CLOSED 상태가 된다.
       } finally {
-        // Restore original Date.now
+        // 원래 Date.now를 복원한다.
         Date.now = originalDateNow
       }
     })
 
-    it('should handle mixed success/failure in half-open state', async () => {
-      // Mock Date.now() to simulate time passing
+    it('반열림 상태에서 성공과 실패가 섞여도 올바르게 처리한다', async () => {
+      // 시간이 흐른 상황을 만들기 위해 Date.now()를 모의한다.
       const originalDateNow = Date.now
       let currentTime = originalDateNow()
       Date.now = () => currentTime
 
       try {
-        // Use a short timeout for testing
+        // 테스트용으로 짧은 타임아웃을 사용한다.
         const testConfig: CircuitBreakerConfig = {
           ...CIRCUIT_BREAKER_CONFIG,
-          timeout: 1000, // 1 second for testing
+          timeout: 1000, // 테스트용 1초 타임아웃
         }
 
         const breaker = new CircuitBreaker('TestDB', testConfig)
@@ -230,43 +230,43 @@ describe('CircuitBreaker', () => {
         const failingOperation = mock(() => Promise.reject(connectionError))
         const successfulOperation = mock(() => Promise.resolve({ success: true }))
 
-        // Open the circuit
+        // 서킷을 연다.
         for (let i = 1; i <= 5; i++) {
           expect(breaker.execute(failingOperation)).rejects.toThrow()
         }
 
-        // Simulate time passing to enter half-open
+        // 반열림 상태로 진입할 만큼 시간이 흐른다.
         currentTime += 1100
 
-        // In half-open: 2 successes, then 1 failure, then 1 success
-        // Total: 3 successes out of 4 attempts = meets threshold, circuit closes
+        // 반열림 상태에서 2번 성공, 1번 실패, 1번 성공이 발생한다.
+        // 총 4회 중 3회 성공이므로 임계치를 만족해 서킷은 닫혀야 한다.
         await breaker.execute(successfulOperation)
         await breaker.execute(successfulOperation)
         expect(breaker.execute(failingOperation)).rejects.toThrow('connect ECONNREFUSED')
 
-        // 4th attempt executes normally (still in half-open)
+        // 4번째 시도도 정상 실행된다(여전히 반열림 상태).
         await breaker.execute(successfulOperation)
 
-        // After 4 attempts with 3 successes (meets threshold), circuit should close
+        // 4회 중 3회 성공이면 임계치를 만족해 서킷이 닫혀야 한다.
         const state = breaker.getState()
-        expect(state.state).toBe(0) // CLOSED (3/4 successes meets the threshold of 3)
+        expect(state.state).toBe(0) // 3/4 성공으로 임계치를 만족해 CLOSED 상태가 된다.
       } finally {
-        // Restore original Date.now
+        // 원래 Date.now를 복원한다.
         Date.now = originalDateNow
       }
     })
 
-    it('should reopen circuit if half-open recovery fails', async () => {
-      // Mock Date.now() to simulate time passing
+    it('반열림 복구가 실패하면 서킷을 다시 연다', async () => {
+      // 시간이 흐른 상황을 만들기 위해 Date.now()를 모의한다.
       const originalDateNow = Date.now
       let currentTime = originalDateNow()
       Date.now = () => currentTime
 
       try {
-        // Use a short timeout for testing
+        // 테스트용으로 짧은 타임아웃을 사용한다.
         const testConfig: CircuitBreakerConfig = {
           ...CIRCUIT_BREAKER_CONFIG,
-          timeout: 1000, // 1 second for testing
+          timeout: 1000, // 테스트용 1초 타임아웃
         }
 
         const breaker = new CircuitBreaker('TestDB', testConfig)
@@ -274,63 +274,63 @@ describe('CircuitBreaker', () => {
         const failingOperation = mock(() => Promise.reject(connectionError))
         const successfulOperation = mock(() => Promise.resolve({ success: true }))
 
-        // Open the circuit
+        // 서킷을 연다.
         for (let i = 1; i <= 5; i++) {
           expect(breaker.execute(failingOperation)).rejects.toThrow()
         }
 
-        // Simulate time passing to enter half-open
+        // 반열림 상태로 진입할 만큼 시간이 흐른다.
         currentTime += 1100
 
-        // In half-open: 1 success, then 3 failures
-        // Total: 1 success out of 4 attempts = does not meet threshold, circuit reopens
+        // 반열림 상태에서 1번 성공 후 3번 실패한다.
+        // 총 4회 중 1회 성공이므로 임계치를 못 채워 서킷이 다시 열려야 한다.
         await breaker.execute(successfulOperation)
         expect(breaker.execute(failingOperation)).rejects.toThrow('connect ECONNREFUSED')
         expect(breaker.execute(failingOperation)).rejects.toThrow('connect ECONNREFUSED')
         expect(breaker.execute(failingOperation)).rejects.toThrow('connect ECONNREFUSED')
 
-        // After 4 attempts with only 1 success (below threshold), circuit should reopen
+        // 4회 중 1회 성공으로는 부족하므로 서킷이 다시 열려야 한다.
         const state = breaker.getState()
-        expect(state.state).toBe(1) // OPEN (1/4 successes does not meet threshold of 3)
+        expect(state.state).toBe(1) // 1/4 성공으로는 부족해 OPEN 상태가 된다.
 
-        // Future requests should fail immediately
+        // 이후 요청은 즉시 실패해야 한다.
         expect(breaker.execute(successfulOperation)).rejects.toThrow(CircuitBreakerError)
       } finally {
-        // Restore original Date.now
+        // 원래 Date.now를 복원한다.
         Date.now = originalDateNow
       }
     })
   })
 
-  it('should validate configuration constraints', () => {
-    // Test invalid timeout
+  it('설정 제약 조건을 검증한다', () => {
+    // 잘못된 timeout 값을 검증한다.
     expect(() => {
       new CircuitBreaker('Test', { ...CIRCUIT_BREAKER_CONFIG, timeout: 500 })
     }).toThrow('timeout >= 1000ms')
 
-    // Test invalid successThreshold
+    // 잘못된 successThreshold 값을 검증한다.
     expect(() => {
       new CircuitBreaker('Test', { ...CIRCUIT_BREAKER_CONFIG, successThreshold: 0 })
     }).toThrow('successThreshold >= 1')
 
-    // Test invalid failureThreshold
+    // 잘못된 failureThreshold 값을 검증한다.
     expect(() => {
       new CircuitBreaker('Test', { ...CIRCUIT_BREAKER_CONFIG, failureThreshold: 0 })
     }).toThrow('failureThreshold >= 1')
   })
 
-  it('should provide accurate state information', () => {
+  it('정확한 상태 정보를 제공한다', () => {
     const breaker = new CircuitBreaker('TestDB', CIRCUIT_BREAKER_CONFIG)
     const state = breaker.getState()
 
-    // Verify all state properties exist
+    // 필요한 상태 속성이 모두 있는지 확인한다.
     expect(state).toHaveProperty('state')
     expect(state).toHaveProperty('failureCount')
     expect(state).toHaveProperty('successCount')
     expect(state).toHaveProperty('halfOpenAttempts')
     expect(state).toHaveProperty('halfOpenSuccesses')
 
-    // Verify types
+    // 각 속성 타입을 확인한다.
     expect(typeof state.state).toBe('number')
     expect(typeof state.failureCount).toBe('number')
     expect(typeof state.successCount).toBe('number')

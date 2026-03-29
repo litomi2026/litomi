@@ -56,8 +56,8 @@ function hasHeaderToken(value: string | null, token: string): boolean {
     .includes(token.toLowerCase())
 }
 
-describe('CORS by path', () => {
-  test('/i/* 경로는 wildcard CORS를 반환하고 Origin 기준 vary를 추가하지 않는다', async () => {
+describe('경로별 CORS', () => {
+  test('/i/* 경로는 와일드카드 CORS를 반환하고 Origin 기준 vary를 추가하지 않는다', async () => {
     const response = await app.request(
       'http://localhost/i/v2/manga/123/original/5',
       { headers: { origin: 'https://stg.litomi.in' } },
@@ -85,7 +85,7 @@ describe('CORS by path', () => {
     expect(hasHeaderToken(response.headers.get('vary'), 'origin')).toBe(false)
   })
 
-  test('/i/* 외 경로는 기존 credential CORS 정책을 유지한다', async () => {
+  test('/i/* 외 경로는 기존 credential 기반 CORS 정책을 유지한다', async () => {
     const allowedOrigin = 'http://localhost:3000'
     const response = await app.request(
       'http://localhost/api/v1/search/suggestions?query=litomi',
