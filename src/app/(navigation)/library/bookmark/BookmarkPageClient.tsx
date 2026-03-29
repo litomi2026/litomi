@@ -18,6 +18,8 @@ import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
 import { useLibrarySelection } from '../librarySelection'
 import SelectableMangaCard from '../SelectableMangaCard'
+import BookmarkDownloadButton from './BookmarkDownloadButton'
+import BookmarkUploadButton from './BookmarkUploadButton'
 import NotFound from './NotFound'
 import useBookmarkInfiniteQuery from './useBookmarkInfiniteQuery'
 
@@ -62,7 +64,7 @@ export default function BookmarkPageClient({ initialData, initialSort = DEFAULT_
 
   return (
     <>
-      <div className="px-4 py-2">
+      <div className="flex justify-between items-center gap-x-2 flex-wrap p-2 pb-0">
         <select
           className="bg-zinc-900 text-sm px-3 py-1.5 rounded border border-zinc-800 focus:border-zinc-600 outline-none"
           onChange={(e) => handleSortChange(e.target.value as CollectionItemSort)}
@@ -74,6 +76,10 @@ export default function BookmarkPageClient({ initialData, initialSort = DEFAULT_
             </option>
           ))}
         </select>
+        <div className="flex items-center gap-x-2">
+          <BookmarkDownloadButton />
+          <BookmarkUploadButton />
+        </div>
       </div>
       <ul className={`grid ${MANGA_LIST_GRID_COLUMNS[View.CARD]} gap-2 p-2`}>
         {bookmarkIds.map((mangaId, index) => {
