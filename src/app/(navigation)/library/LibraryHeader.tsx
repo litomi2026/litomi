@@ -91,10 +91,6 @@ export default function LibraryHeader({
   const isOwner = currentLibrary?.userId === userId
   const isPublicLibrary = currentLibrary?.isPublic
   const currentLibraryId = currentLibrary?.id
-  const collectionDeleteAction = getCollectionDeleteAction()
-  const bulkActions = getBulkActions()
-  const selectionItemCount = getSelectionItemCount()
-  const isEmpty = selectionItemCount === 0
 
   const headerTitle = {
     bookmark: '북마크',
@@ -119,6 +115,10 @@ export default function LibraryHeader({
   const copyAction = useBulkCopyToLibraryAction({ libraries: ownedLibraries })
   const moveAction = useBulkMoveToLibraryAction({ currentLibraryId, libraries: ownedLibraries })
   const removeFromLibraryAction = useBulkRemoveFromLibraryAction({ libraryId: currentLibraryId })
+  const collectionDeleteAction = getCollectionDeleteAction()
+  const bulkActions = getBulkActions()
+  const selectionItemCount = getSelectionItemCount()
+  const isEmpty = selectionItemCount === 0
 
   function openDrawer() {
     setIsDrawerOpen(true)
