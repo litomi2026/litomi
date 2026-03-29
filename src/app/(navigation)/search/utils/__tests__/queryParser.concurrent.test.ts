@@ -5,7 +5,7 @@ import { NotificationConditionType } from '@/database/enum'
 import { parseSearchQuery } from '../queryParser'
 
 describe('parseSearchQuery', () => {
-  it('should parse simple tag queries', () => {
+  it('단순한 태그 쿼리를 파싱한다', () => {
     const result = parseSearchQuery('female:big_breasts')
 
     expect(result.conditions).toHaveLength(1)
@@ -18,7 +18,7 @@ describe('parseSearchQuery', () => {
     expect(result.suggestedName).toBe('big_breasts')
   })
 
-  it('should parse multiple conditions', () => {
+  it('여러 조건을 파싱한다', () => {
     const result = parseSearchQuery('artist:john_doe female:glasses series:original')
 
     expect(result.conditions).toHaveLength(3)
@@ -43,7 +43,7 @@ describe('parseSearchQuery', () => {
     expect(result.suggestedName).toBe('john_doe, original')
   })
 
-  it('should handle mixed queries with plain keywords', () => {
+  it('일반 키워드가 섞인 쿼리를 처리한다', () => {
     const result = parseSearchQuery('hello female:schoolgirl world')
 
     expect(result.conditions).toHaveLength(1)
@@ -51,7 +51,7 @@ describe('parseSearchQuery', () => {
     expect(result.suggestedName).toBe('schoolgirl')
   })
 
-  it('should preserve minus prefixed conditions as excluded ones', () => {
+  it('마이너스 접두사가 붙은 조건을 제외 조건으로 유지한다', () => {
     const result = parseSearchQuery('female:glasses -female:big_breasts artist:abc')
 
     expect(result.conditions).toHaveLength(3)
@@ -63,7 +63,7 @@ describe('parseSearchQuery', () => {
     })
   })
 
-  it('should keep positive keywords for suggested names when only excluded conditions are structured', () => {
+  it('구조화된 조건이 전부 제외 조건일 때는 일반 키워드로 추천 이름을 만든다', () => {
     const result = parseSearchQuery('hello -female:big_breasts')
 
     expect(result.conditions).toEqual([
@@ -78,20 +78,20 @@ describe('parseSearchQuery', () => {
     expect(result.suggestedName).toBe('hello')
   })
 
-  it('should fall back to excluded conditions for suggested names', () => {
+  it('추천 이름을 만들 일반 키워드가 없으면 제외 조건으로 대체한다', () => {
     const result = parseSearchQuery('-female:big_breasts -artist:abc')
 
     expect(result.suggestedName).toBe('-big_breasts, -abc')
   })
 
-  it('should normalize values', () => {
+  it('값을 정규화한다', () => {
     const result = parseSearchQuery('female:Big_Breasts')
 
     expect(result.conditions[0].value).toBe('big_breasts')
     expect(result.conditions[0].displayValue).toBe('Big_Breasts')
   })
 
-  it('should handle empty query', () => {
+  it('빈 쿼리를 처리한다', () => {
     const result = parseSearchQuery('')
 
     expect(result.conditions).toHaveLength(0)
@@ -99,7 +99,7 @@ describe('parseSearchQuery', () => {
     expect(result.suggestedName).toBe('')
   })
 
-  it('should handle Korean search', () => {
+  it('한국어 검색어를 처리한다', () => {
     const result = parseSearchQuery('여성:안경 작가:홍길동')
 
     expect(result.conditions).toHaveLength(2)

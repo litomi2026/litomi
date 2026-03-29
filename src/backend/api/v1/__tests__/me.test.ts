@@ -7,7 +7,6 @@ import type { Env } from '@/backend'
 import meRoutes from '../me'
 
 let shouldThrowDatabaseError = false
-let deletedCookies: string[] = []
 let currentUserId: number | undefined
 
 type MeResponse = {
@@ -29,7 +28,6 @@ beforeAll(() => {
 beforeEach(() => {
   currentUserId = undefined
   shouldThrowDatabaseError = false
-  deletedCookies = []
 })
 
 type TestEnv = Env & {
@@ -93,11 +91,12 @@ mock.module('@/database/supabase/drizzle', () => ({
   },
 }))
 
-mock.module('hono/cookie', () => ({
-  deleteCookie: (_: unknown, name: string) => {
-    deletedCookies.push(name)
-  },
-}))
+function getSetCookieHeader(response: Response) {
+  return Array.from(response.headers.entries())
+    .filter(([key]) => key.toLowerCase() === 'set-cookie')
+    .map(([, value]) => value)
+    .join('\n')
+}
 
 describe('GET /api/v1/me', () => {
   describe('성공', () => {
@@ -119,7 +118,7 @@ describe('GET /api/v1/me', () => {
           status: 'unverified',
         },
       })
-      expect(deletedCookies).toEqual([])
+      expect(getSetCookieHeader(response)).toBe('')
     })
 
     test('프로필 이미지가 없는 사용자의 정보를 조회한다', async () => {
@@ -139,17 +138,17 @@ describe('GET /api/v1/me', () => {
           status: 'unverified',
         },
       })
-      expect(deletedCookies).toEqual([])
+      expect(getSetCookieHeader(response)).toBe('')
     })
 
     test('응답에 Cache-Control 헤더가 포함되어 있다', async () => {
-      // Given
+      // 준비
       currentUserId = 1
 
-      // When
+      // 실행
       const response = await app.request('/', {}, { userId: 1 })
 
-      // Then
+      // 검증
       expect(response.status).toBe(200)
       expect(response.headers.get('cache-control')).toBeDefined()
       expect(response.headers.get('cache-control')).toContain('private')
@@ -159,37 +158,37 @@ describe('GET /api/v1/me', () => {
 
   describe('실패', () => {
     test('인증되지 않은 사용자(userId 없음)는 401 응답을 받는다', async () => {
-      // When
+      // 실행
       const response = await app.request('/', {}, {})
 
-      // Then
+      // 검증
       expect(response.status).toBe(401)
-      expect(deletedCookies).toEqual([])
+      expect(getSetCookieHeader(response)).toBe('')
     })
 
-    test('존재하지 않는 사용자 ID로 요청하는 경우 404 응답을 받고 쿠키가 삭제된다', async () => {
-      // Given
+    test('존재하지 않는 사용자 ID로 요청하는 경우 404 응답을 반환한다', async () => {
+      // 준비
       currentUserId = 999
 
-      // When
+      // 실행
       const response = await app.request('/', {}, { userId: 999 })
 
-      // Then
+      // 검증
       expect(response.status).toBe(404)
-      expect(deletedCookies).toEqual(['at', 'rt', 'ah'])
+      expect(getSetCookieHeader(response)).toBe('')
     })
 
     test('데이터베이스 연결 오류 시 500 응답을 반환한다', async () => {
-      // Given
+      // 준비
       currentUserId = 1
       shouldThrowDatabaseError = true
 
-      // When
+      // 실행
       const response = await app.request('/', {}, { userId: 1 })
 
-      // Then
+      // 검증
       expect(response.status).toBe(500)
-      expect(deletedCookies).toEqual([])
+      expect(getSetCookieHeader(response)).toBe('')
     })
   })
 
@@ -202,21 +201,21 @@ describe('GET /api/v1/me', () => {
 
       const data = (await Promise.all(responses.map((r) => r.json()))) as MeResponse[]
       expect(data.every((d) => d.id === 1 && d.loginId === 'testuser1')).toBe(true)
-      expect(deletedCookies).toEqual([])
+      expect(responses.every((response) => getSetCookieHeader(response) === '')).toBe(true)
     })
 
     test('다른 사용자의 정보는 각자의 userId로만 접근 가능하다', async () => {
-      // Given - 사용자 1로 조회
+      // 준비 - 사용자 1로 조회
       currentUserId = 1
       const response1 = await app.request('/', {}, { userId: 1 })
       const data1 = (await response1.json()) as MeResponse
 
-      // When - 사용자 2로 조회
+      // 실행 - 사용자 2로 조회
       currentUserId = 2
       const response2 = await app.request('/', {}, { userId: 2 })
       const data2 = (await response2.json()) as MeResponse
 
-      // Then
+      // 검증
       expect(response1.status).toBe(200)
       expect(response2.status).toBe(200)
       expect(data1.id).toBe(1)
@@ -226,13 +225,13 @@ describe('GET /api/v1/me', () => {
     })
 
     test('데이터베이스 오류 후 복구되는 경우 정상 응답을 반환한다', async () => {
-      // Given - 첫 번째 요청은 실패
+      // 준비 - 첫 번째 요청은 실패
       currentUserId = 1
       shouldThrowDatabaseError = true
       const errorResponse = await app.request('/', {}, { userId: 1 })
       expect(errorResponse.status).toBe(500)
 
-      // When - 두 번째 요청은 성공
+      // 실행 - 두 번째 요청은 성공
       shouldThrowDatabaseError = false
       const successResponse = await app.request('/', {}, { userId: 1 })
       expect(successResponse.status).toBe(200)
@@ -245,14 +244,14 @@ describe('GET /api/v1/me', () => {
 
   describe('보안', () => {
     test('응답에 민감한 정보가 노출되지 않는다', async () => {
-      // Given
+      // 준비
       currentUserId = 1
 
-      // When
+      // 실행
       const response = await app.request('/', {}, { userId: 1 })
       const data = (await response.json()) as MeResponse
 
-      // Then
+      // 검증
       expect(response.status).toBe(200)
       expect(data).not.toHaveProperty('password')
       expect(data).not.toHaveProperty('passwordHash')
@@ -265,13 +264,13 @@ describe('GET /api/v1/me', () => {
     })
 
     test('Cache-Control 헤더가 private으로 설정되어 공유 캐시에 저장되지 않는다', async () => {
-      // Given
+      // 준비
       currentUserId = 1
 
-      // When
+      // 실행
       const response = await app.request('/', {}, { userId: 1 })
 
-      // Then
+      // 검증
       expect(response.status).toBe(200)
       expect(response.headers.get('cache-control')).toContain('private')
       expect(response.headers.get('cache-control')).not.toContain('public')

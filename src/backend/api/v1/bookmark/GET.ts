@@ -3,17 +3,20 @@ import 'server-only'
 import { z } from 'zod'
 
 import { Env } from '@/backend'
+import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@/backend/api/v1/library/item-sort'
+import { getNextCollectionItemCursor } from '@/backend/api/v1/library/item-sort.server'
 import { requireAuth } from '@/backend/middleware/require-auth'
 import { privateCacheControl } from '@/backend/utils/cache-control'
 import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
-import { decodeBookmarkCursor, encodeBookmarkCursor } from '@/common/cursor'
+import { decodeBookmarkCursor } from '@/common/cursor'
 import { BOOKMARKS_PER_PAGE } from '@/constants/policy'
 import { selectBookmark } from '@/sql/selectBookmark'
 
 const querySchema = z.object({
   cursor: z.string().optional(),
   limit: z.coerce.number().int().positive().max(BOOKMARKS_PER_PAGE).default(BOOKMARKS_PER_PAGE),
+  sort: z.enum(CollectionItemSort).default(DEFAULT_COLLECTION_ITEM_SORT),
 })
 
 export type Bookmark = {
@@ -32,7 +35,7 @@ route.get('/', requireAuth, zProblemValidator('query', querySchema), async (c) =
   const userId = c.get('userId')!
 
   try {
-    const { cursor, limit } = c.req.valid('query')
+    const { cursor, limit, sort } = c.req.valid('query')
 
     let cursorMangaId: number | undefined
     let cursorTime: Date | undefined
@@ -51,14 +54,14 @@ route.get('/', requireAuth, zProblemValidator('query', querySchema), async (c) =
     const bookmarkRows = await selectBookmark({
       userId,
       limit: limit + 1,
-      cursorMangaId,
-      cursorTime,
+      sort,
+      ...(cursorTime && cursorMangaId ? { cursorMangaId, cursorTime } : {}),
     })
 
     const hasNextPage = bookmarkRows.length > limit
     const bookmarks = hasNextPage ? bookmarkRows.slice(0, limit) : bookmarkRows
     const lastBookmark = bookmarks[bookmarks.length - 1]
-    const nextCursor = hasNextPage ? encodeBookmarkCursor(lastBookmark.createdAt.getTime(), lastBookmark.mangaId) : null
+    const nextCursor = hasNextPage ? getNextCollectionItemCursor(lastBookmark) : null
 
     const response = {
       bookmarks: bookmarks.map(({ mangaId, createdAt }) => ({

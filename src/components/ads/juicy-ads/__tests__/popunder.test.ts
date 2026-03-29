@@ -113,8 +113,8 @@ afterEach(() => {
   window.history.replaceState({}, '', '/')
 })
 
-describe('Juicy popunder stack sync', () => {
-  it('loads the vendor script once and re-primes the stack with the current pathname', async () => {
+describe('Juicy 팝언더 스택 동기화', () => {
+  it('벤더 스크립트는 한 번만 불러오고 현재 경로로 스택을 다시 준비한다', async () => {
     setCurrentPath('/title/1')
 
     const afterOpen = mock(() => undefined)
@@ -159,7 +159,7 @@ describe('Juicy popunder stack sync', () => {
     }
   })
 
-  it('captures the vendor stack before a deferred load is disabled and reuses it later', async () => {
+  it('지연 로드가 비활성화되기 전에 벤더 스택을 보관하고 나중에 재사용한다', async () => {
     setCurrentPath('/title/1')
 
     const afterOpen = mock(() => undefined)
@@ -195,7 +195,7 @@ describe('Juicy popunder stack sync', () => {
     }
   })
 
-  it('keeps popunder active until the last trigger unregisters', async () => {
+  it('마지막 트리거가 해제될 때까지 팝언더를 유지한다', async () => {
     setCurrentPath('/title/1')
 
     const { api, getStack } = createMockJuicyPopunderAPI({

@@ -18,21 +18,21 @@ function createMe(status: GETV1MeResponse['adultVerification']['status'], requir
   }
 }
 
-describe('adult verification utils', () => {
+describe('성인 인증 유틸', () => {
   describe('getAdultAccessState', () => {
-    it('returns unresolved when me is undefined', () => {
+    it('me가 undefined면 미해결 상태를 반환한다', () => {
       expect(getAdultState(undefined)).toBe(AdultState.UNRESOLVED)
     })
 
-    it('returns guest when me is null', () => {
+    it('me가 null이면 게스트 상태를 반환한다', () => {
       expect(getAdultState(null)).toBe(AdultState.NOT_LOGIN)
     })
 
-    it('returns not_required when verification is not required', () => {
+    it('인증이 필요 없으면 not_required 상태를 반환한다', () => {
       expect(getAdultState(createMe('unverified', false))).toBe(AdultState.NOT_REQUIRED)
     })
 
-    it('maps required verification statuses to explicit access states', () => {
+    it('인증이 필요한 상태값을 명시적인 접근 상태로 매핑한다', () => {
       expect(getAdultState(createMe('adult'))).toBe(AdultState.ADULT)
       expect(getAdultState(createMe('unverified'))).toBe(AdultState.UNVERIFIED)
       expect(getAdultState(createMe('not_adult'))).toBe(AdultState.NOT_ADULT)
@@ -40,7 +40,7 @@ describe('adult verification utils', () => {
   })
 
   describe('hasAdultAccess', () => {
-    it('returns true only for allowed access states', () => {
+    it('접근이 허용된 상태에서만 true를 반환한다', () => {
       expect(hasAdultAccess(AdultState.UNRESOLVED)).toBe(false)
       expect(hasAdultAccess(AdultState.NOT_LOGIN)).toBe(false)
       expect(hasAdultAccess(AdultState.NOT_REQUIRED)).toBe(true)
@@ -51,7 +51,7 @@ describe('adult verification utils', () => {
   })
 
   describe('requiresAdultVerification', () => {
-    it('returns true only when adult verification is enforced for the user', () => {
+    it('사용자에게 성인 인증이 강제될 때만 true를 반환한다', () => {
       expect(requiresAdultVerification(AdultState.UNRESOLVED)).toBe(false)
       expect(requiresAdultVerification(AdultState.NOT_LOGIN)).toBe(false)
       expect(requiresAdultVerification(AdultState.NOT_REQUIRED)).toBe(false)

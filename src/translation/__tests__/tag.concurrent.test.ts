@@ -2,9 +2,9 @@ import { describe, expect, it } from 'bun:test'
 
 import { translateTag } from '../tag'
 
-describe('tag-translations', () => {
+describe('태그 번역', () => {
   describe('translateTag', () => {
-    it('should return complete translation when available in tag.json', () => {
+    it('tag.json에 완전한 번역이 있으면 그대로 반환한다', () => {
       expect(translateTag('female', 'bunny_girl', 'ko')).toEqual({
         category: 'female',
         value: 'bunny_girl',
@@ -22,7 +22,7 @@ describe('tag-translations', () => {
       })
     })
 
-    it('should fallback to English when Korean translation is not available', () => {
+    it('한국어 번역이 없으면 영어로 대체한다', () => {
       expect(translateTag('female', 'bunny_girl', 'ja')).toEqual({
         category: 'female',
         value: 'bunny_girl',
@@ -35,7 +35,7 @@ describe('tag-translations', () => {
       })
     })
 
-    it('should construct tag with translated parts when no complete translation exists', () => {
+    it('완전한 번역이 없으면 번역 가능한 조각을 조합해 태그를 만든다', () => {
       expect(translateTag('female', 'ahegao', 'ko')).toEqual({
         category: 'female',
         value: 'ahegao',
@@ -48,7 +48,7 @@ describe('tag-translations', () => {
       })
     })
 
-    it('should handle tags with no translations at all', () => {
+    it('번역이 전혀 없는 태그도 처리한다', () => {
       expect(translateTag('female', 'nonexistent_tag', 'ko')).toEqual({
         category: 'female',
         value: 'nonexistent_tag',

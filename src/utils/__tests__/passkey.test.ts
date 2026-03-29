@@ -4,7 +4,7 @@ import { signalUnknownPasskeyCredential, syncPasskeyCredentialState } from '../p
 
 const originalPublicKeyCredential = globalThis.PublicKeyCredential
 
-describe('passkey signal helpers', () => {
+describe('패스키 신호 헬퍼', () => {
   afterEach(() => {
     Object.defineProperty(globalThis, 'PublicKeyCredential', {
       configurable: true,
@@ -13,7 +13,7 @@ describe('passkey signal helpers', () => {
     })
   })
 
-  test('syncPasskeyCredentialState calls signal APIs when supported', async () => {
+  test('syncPasskeyCredentialState는 지원되는 경우 signal API를 호출한다', async () => {
     const signalAllAcceptedCredentials = mock(() => Promise.resolve())
     const signalCurrentUserDetails = mock(() => Promise.resolve())
 
@@ -47,7 +47,7 @@ describe('passkey signal helpers', () => {
     })
   })
 
-  test('syncPasskeyCredentialState is a no-op when there are no credentials', async () => {
+  test('syncPasskeyCredentialState는 credential이 없으면 아무 동작도 하지 않는다', async () => {
     const signalAllAcceptedCredentials = mock(() => Promise.resolve())
 
     Object.defineProperty(globalThis, 'PublicKeyCredential', {
@@ -69,7 +69,7 @@ describe('passkey signal helpers', () => {
     expect(signalAllAcceptedCredentials).not.toHaveBeenCalled()
   })
 
-  test('signalUnknownPasskeyCredential calls the browser signal API when supported', async () => {
+  test('signalUnknownPasskeyCredential는 지원되는 경우 브라우저 signal API를 호출한다', async () => {
     const signalUnknownCredential = mock(() => Promise.resolve())
 
     Object.defineProperty(globalThis, 'PublicKeyCredential', {

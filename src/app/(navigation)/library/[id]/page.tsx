@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { cache, Suspense } from 'react'
 import { z } from 'zod'
 
+import { CollectionItemSort, DEFAULT_COLLECTION_ITEM_SORT } from '@/backend/api/v1/library/item-sort'
 import { generateOpenGraphMetadata } from '@/constants'
 import { db } from '@/database/supabase/drizzle'
 import { libraryTable } from '@/database/supabase/library'
@@ -13,6 +14,10 @@ import LibraryItems from './LibraryItems'
 
 const schema = z.object({
   id: z.coerce.number().int().positive(),
+})
+
+const searchParamsSchema = z.object({
+  sort: z.enum(CollectionItemSort).default(DEFAULT_COLLECTION_ITEM_SORT),
 })
 
 // NOTE: 연산이 무거우면 정적 메타데이터로 바꾸기
@@ -44,10 +49,16 @@ export async function generateMetadata({ params }: PageProps<'/library/[id]'>): 
   }
 }
 
-export default async function LibraryDetailPage({ params }: PageProps<'/library/[id]'>) {
+export default async function LibraryDetailPage({ params, searchParams }: PageProps<'/library/[id]'>) {
   const validation = schema.safeParse(await params)
 
   if (!validation.success) {
+    notFound()
+  }
+
+  const searchValidation = searchParamsSchema.safeParse(await searchParams)
+
+  if (!searchValidation.success) {
     notFound()
   }
 
@@ -60,11 +71,12 @@ export default async function LibraryDetailPage({ params }: PageProps<'/library/
   }
 
   const isOwner = library.userId === userId
+  const sort = isOwner ? searchValidation.data.sort : DEFAULT_COLLECTION_ITEM_SORT
 
   return (
     <main className="flex-1 flex flex-col">
       <Suspense>
-        <LibraryItems isOwner={isOwner} library={library} />
+        <LibraryItems initialSort={sort} isOwner={isOwner} library={library} />
       </Suspense>
     </main>
   )

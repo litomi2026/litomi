@@ -38,7 +38,7 @@ export function useBookmarkImport() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QueryKeys.bookmarks })
-      queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteBookmarks })
+      queryClient.invalidateQueries({ queryKey: QueryKeys.infiniteBookmarksBase })
     },
   })
 

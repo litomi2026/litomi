@@ -10,7 +10,6 @@ import type { POSTV1AuthSignupResponse } from '../signup'
 type SignupRoutesModule = typeof import('../signup')
 
 let signupRoutes: SignupRoutesModule['default']
-let setCookies: string[] = []
 let signupAttemptsByIdentifier = new Map<string, number>()
 const SIGNUP_RATE_LIMIT_MAX_ATTEMPTS = 10
 
@@ -73,21 +72,12 @@ mock.module('@/utils/turnstile', () => ({
   },
 }))
 
-mock.module('hono/cookie', () => ({
-  deleteCookie: () => {},
-  getCookie: () => undefined,
-  setCookie: (_: unknown, name: string) => {
-    setCookies.push(name)
-  },
-}))
-
 beforeAll(async () => {
   spyOn(console, 'error').mockImplementation(() => {})
   signupRoutes = (await import('../signup')).default
 })
 
 beforeEach(() => {
-  setCookies = []
   signupAttemptsByIdentifier = new Map()
 })
 
@@ -96,6 +86,13 @@ function createApp() {
   app.use('*', contextStorage())
   app.route('/signup', signupRoutes)
   return app
+}
+
+function getSetCookieHeader(response: Response) {
+  return Array.from(response.headers.entries())
+    .filter(([key]) => key.toLowerCase() === 'set-cookie')
+    .map(([, value]) => value)
+    .join('\n')
 }
 
 function requestSignup(body: unknown, ip = '127.0.0.1') {
@@ -123,7 +120,8 @@ describe('POST /api/v1/auth/signup', () => {
 
     expect(response.status).toBe(201)
     expect(response.headers.get('content-type')).toContain('application/json')
-    expect(setCookies).toEqual(['at', 'ah'])
+    expect(getSetCookieHeader(response)).toContain('at=')
+    expect(getSetCookieHeader(response)).toContain('ah=')
 
     const data = (await response.json()) as POSTV1AuthSignupResponse
     expect(data).toEqual({
@@ -167,7 +165,7 @@ describe('POST /api/v1/auth/signup', () => {
       name: 'loginId',
       reason: '아이디는 최소 2자 이상이어야 해요',
     })
-    expect(setCookies).toEqual([])
+    expect(getSetCookieHeader(response)).toBe('')
   })
 
   test.serial('중복 아이디면 409 와 필드 오류를 반환한다', async () => {
@@ -262,6 +260,6 @@ describe('POST /api/v1/auth/signup', () => {
     })
 
     expect(response.status).toBe(500)
-    expect(setCookies).toEqual([])
+    expect(getSetCookieHeader(response)).toBe('')
   })
 })
