@@ -35,6 +35,7 @@
     "db:push:neon:prod": "DB_ENV=production NODE_OPTIONS='--conditions=react-server' bun run db:push:neon",
     "db:push:supabase": "NODE_OPTIONS='--conditions=react-server' drizzle-kit push --config=drizzle.supabase.config.ts",
     "db:push:supabase:prod": "DB_ENV=production NODE_OPTIONS='--conditions=react-server' bun run db:push:supabase",
+    "test": "bun test",
     "test:watch": "bun test --watch",
     "test:coverage": "bun test --coverage",
     "notify": "bun --conditions=react-server cloud-run/crawl-and-notify/src/index.ts",

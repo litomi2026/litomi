@@ -1,9 +1,10 @@
 import dayjs from 'dayjs'
-import { Bookmark, Heart, MessageCircle, MoreHorizontal, Repeat, Upload } from 'lucide-react'
+import { Bookmark, Heart, MessageCircle, Repeat, Upload } from 'lucide-react'
 import Link from 'next/link'
 
 import PostCreationForm from '@/components/post/PostCreationForm'
 import PostImages from '@/components/post/PostImages'
+import PostManagementMenu from '@/components/post/PostManagementMenu'
 import ReferredPostCard from '@/components/post/ReferredPostCard'
 import { type Post } from '@/components/post/XPostCard'
 import Squircle from '@/components/ui/Squircle'
@@ -18,7 +19,6 @@ type Props = {
 export default function Post({ post }: Readonly<Props>) {
   const author = post.author
   const referredPost = post.referredPost
-  const isMyPost = false // userId === author?.id
 
   return (
     <section>
@@ -37,8 +37,14 @@ export default function Post({ post }: Readonly<Props>) {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {!isMyPost && author && <FollowButton leader={author} />}
-            <MoreHorizontal className="size-5 text-zinc-500" />
+            {author && <FollowButton leader={author} />}
+            <PostManagementMenu
+              authorId={author?.id}
+              className="rounded-full p-1 transition hover:bg-zinc-800"
+              fallbackUrl="/posts/recommend"
+              postId={post.id}
+              redirectOnDelete
+            />
           </div>
         </div>
         <p className="min-w-0 whitespace-pre-wrap break-all text-lg">{post.content}</p>
@@ -105,6 +111,7 @@ export default function Post({ post }: Readonly<Props>) {
           buttonText="답글"
           className="flex"
           isReply
+          parentPostId={post.id}
           placeholder="답글 게시하기"
         />
       </div>

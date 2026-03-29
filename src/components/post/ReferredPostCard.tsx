@@ -1,5 +1,4 @@
 import dayjs from 'dayjs'
-import { MoreHorizontal } from 'lucide-react'
 import Link from 'next/link'
 
 import { formatDistanceToNow } from '@/utils/format/date'
@@ -7,7 +6,12 @@ import { formatDistanceToNow } from '@/utils/format/date'
 import Squircle from '../ui/Squircle'
 import PostImages from './PostImages'
 
-export type ReferredPost = {
+export type DeletedReferredPost = {
+  isDeleted: true
+}
+
+export type LiveReferredPost = {
+  isDeleted?: false
   id: number
   createdAt: Date
   updatedAt?: Date
@@ -21,11 +25,23 @@ export type ReferredPost = {
   } | null
 }
 
+export type ReferredPost = DeletedReferredPost | LiveReferredPost
+
 type Props = {
   referredPost: ReferredPost
 }
 
 export default function ReferredPostCard({ referredPost }: Readonly<Props>) {
+  if (referredPost.isDeleted) {
+    return (
+      <div className="grid min-w-0 overflow-hidden rounded-2xl border-2 border-zinc-700 bg-zinc-950/50">
+        <div className="grid gap-1 p-3">
+          <p className="min-w-0 whitespace-pre-wrap break-all text-zinc-500">글이 삭제됐어요</p>
+        </div>
+      </div>
+    )
+  }
+
   const { createdAt, updatedAt, imageURLs, author, content, id } = referredPost
 
   return (
@@ -59,7 +75,6 @@ export default function ReferredPostCard({ referredPost }: Readonly<Props>) {
               </div>
             </div>
           </div>
-          <MoreHorizontal className="size-5 text-zinc-600" />
         </div>
         {content ? (
           <p className="min-w-0 whitespace-pre-wrap break-all">{content}</p>

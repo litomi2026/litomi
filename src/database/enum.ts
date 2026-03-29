@@ -99,6 +99,8 @@ export enum NotificationType {
 export enum PostType {
   TEXT = 0,
   POLL = 1,
+  REPLY = 2,
+  REPOST = 3,
 }
 
 export const NotificationConditionTypeNames = {

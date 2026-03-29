@@ -4,7 +4,7 @@ import { cache } from 'react'
 import { z } from 'zod'
 
 import { generateOpenGraphMetadata } from '@/constants'
-import selectPosts from '@/sql/selectPosts'
+import selectPost from '@/sql/selectPost'
 
 import Post from './Post'
 
@@ -55,6 +55,6 @@ export default async function Page({ params }: PageProps<'/post/[id]'>) {
 }
 
 const getPost = cache(async (id: number) => {
-  const [post] = await selectPosts({ limit: 1, cursor: id + 1 })
+  const [post] = await selectPost({ postId: id })
   return post
 })
