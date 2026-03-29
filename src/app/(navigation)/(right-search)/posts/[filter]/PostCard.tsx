@@ -1,12 +1,15 @@
 import type { ReactNode } from 'react'
 
 import dayjs from 'dayjs'
+import { Heart, MessageCircle, Repeat } from 'lucide-react'
 import Link from 'next/link'
 
 import PostMangaCard from '@/app/(navigation)/(right-search)/post/[id]/@post/PostMangaCard'
+import PostManagementMenu from '@/components/post/PostManagementMenu'
 import { type Post } from '@/components/post/XPostCard'
 import Squircle from '@/components/ui/Squircle'
 import { formatDistanceToNow } from '@/utils/format/date'
+import { formatNumber } from '@/utils/format/number'
 
 const urlMatchRegex = /https?:\/\/[^\s]+/g
 const trailingPunctuationRegex = /[.,!?;:)\]}]/
@@ -21,11 +24,35 @@ export default function PostCard({ post, showMangaCover }: Readonly<Props>) {
   const authorNickname = author?.nickname
   const content = post.content ?? ''
   const hasInternalURL = checkInternalURL(content)
+  const socialStats = [
+    { Icon: MessageCircle, label: '댓글', value: post.commentCount },
+    { Icon: Repeat, label: '리포스트', value: post.repostCount },
+    { Icon: Heart, label: '좋아요', value: post.likeCount },
+  ].filter((stat) => stat.value > 0)
+
+  const hasSocialStats = socialStats.length > 0
+
+  const authorMeta = (
+    <>
+      <Squircle className="w-6 shrink-0" src={author?.imageURL} textClassName="text-[10px] text-foreground">
+        {(authorNickname ?? '탈퇴').slice(0, 2)}
+      </Squircle>
+      <div className="ml-1 min-w-0 flex-1 truncate" title={authorNickname}>
+        {authorNickname ?? <span className="text-zinc-400">탈퇴한 사용자예요</span>}
+      </div>
+      <div
+        className="shrink-0 overflow-hidden text-xs text-zinc-400"
+        title={dayjs(post.createdAt).format('YYYY-MM-DD HH:mm')}
+      >
+        {formatDistanceToNow(new Date(post.createdAt))}
+      </div>
+    </>
+  )
 
   return (
-    <article className="w-full overflow-hidden rounded-2xl border-2 bg-zinc-900 transition hover:bg-zinc-800/70 hover:border-zinc-700/70">
+    <article className="relative w-full rounded-2xl border-2 bg-zinc-900 transition hover:bg-zinc-800/70 hover:border-zinc-700/70">
       {showMangaCover && post.mangaId && (
-        <div className="border-b-2 border-zinc-800">
+        <div className="overflow-hidden rounded-t-2xl border-b-2 border-zinc-800">
           <Link className="block" href={`/manga/${post.mangaId}`} prefetch={false}>
             <PostMangaCard mangaId={post.mangaId} variant="cover" />
           </Link>
@@ -54,24 +81,30 @@ export default function PostCard({ post, showMangaCover }: Readonly<Props>) {
           </Link>
         )}
 
-        <Link
-          className="flex min-w-0 items-center gap-1 text-xs text-zinc-400 p-3 pt-0"
-          href={`/@${author?.name}`}
-          prefetch={false}
-        >
-          <Squircle className="w-6 shrink-0" src={author?.imageURL} textClassName="text-[10px] text-foreground">
-            {(authorNickname ?? '탈퇴').slice(0, 2)}
-          </Squircle>
-          <div className="min-w-0 flex-1 truncate ml-1" title={authorNickname}>
-            {authorNickname ?? <span className="text-zinc-400">탈퇴한 사용자예요</span>}
+        <div className={`flex items-center gap-2 px-3 ${hasSocialStats ? 'pb-2' : 'pb-3'} text-xs text-zinc-400`}>
+          {author ? (
+            <Link className="flex min-w-0 flex-1 items-center gap-1" href={`/@${author.name}`} prefetch={false}>
+              {authorMeta}
+            </Link>
+          ) : (
+            <div className="flex min-w-0 flex-1 items-center gap-1">{authorMeta}</div>
+          )}
+          <PostManagementMenu
+            authorId={author?.id}
+            className="rounded-full p-1 transition hover:bg-zinc-800"
+            postId={post.id}
+          />
+        </div>
+        {hasSocialStats && (
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-3 pb-3 text-[11px] text-zinc-500">
+            {socialStats.map(({ Icon, label, value }) => (
+              <div className="flex items-center gap-1" key={label} title={`${label} ${value.toLocaleString('ko-KR')}`}>
+                <Icon className="size-3.5 shrink-0" />
+                <span className="tabular-nums">{formatNumber(value, 'ko')}</span>
+              </div>
+            ))}
           </div>
-          <div
-            className="text-xs text-zinc-400 shrink-0 overflow-hidden"
-            title={dayjs(post.createdAt).format('YYYY-MM-DD HH:mm')}
-          >
-            {formatDistanceToNow(new Date(post.createdAt))}
-          </div>
-        </Link>
+        )}
       </div>
     </article>
   )
