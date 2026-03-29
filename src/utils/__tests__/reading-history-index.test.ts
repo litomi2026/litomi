@@ -1,3 +1,4 @@
+import '@test/setup.dom'
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test'
 
 import {

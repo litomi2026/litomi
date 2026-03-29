@@ -8,14 +8,15 @@ import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
 
-export default function usePostsInfiniteQuery(filter: PostFilter, mangaId?: number, username?: string) {
+export default function usePostInfiniteQuery(filter: PostFilter, mangaId?: number, username?: string) {
   return useInfiniteQuery<GETV1PostResponse>({
     queryKey: QueryKeys.posts(filter, mangaId, username),
     queryFn: async ({ pageParam }) => {
       const searchParams = new URLSearchParams({ filter })
+      const cursor = typeof pageParam === 'string' ? pageParam : ''
 
-      if (pageParam) {
-        searchParams.set('cursor', String(pageParam))
+      if (cursor) {
+        searchParams.set('cursor', cursor)
       }
       if (mangaId) {
         searchParams.set('mangaId', String(mangaId))
@@ -25,10 +26,11 @@ export default function usePostsInfiniteQuery(filter: PostFilter, mangaId?: numb
       }
 
       const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/post?${searchParams}`
-      const { data } = await fetchWithErrorHandling<GETV1PostResponse>(url, { credentials: 'include' })
+      const requestInit = filter === PostFilter.FOLLOWING ? { credentials: 'include' as const } : undefined
+      const { data } = await fetchWithErrorHandling<GETV1PostResponse>(url, requestInit)
       return data
     },
     getNextPageParam: (lastPage) => lastPage.nextCursor,
-    initialPageParam: undefined as number | undefined,
+    initialPageParam: '',
   })
 }

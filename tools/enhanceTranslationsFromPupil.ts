@@ -552,6 +552,7 @@ function parseArgs(argv: string[]): Args {
   return ArgsSchema.parse(normalized)
 }
 
+// eslint-disable-next-line max-params
 function patchLocaleValueInObjectText(
   objectText: string,
   locale: SupportedLocale,

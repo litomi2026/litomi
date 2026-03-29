@@ -24,11 +24,7 @@ route.delete('/', requireAuth, zProblemValidator('param', paramsSchema), async (
 
   try {
     const deleted = await db
-      .update(postTable)
-      .set({
-        deletedAt: new Date(),
-        content: null,
-      })
+      .delete(postTable)
       .where(and(eq(postTable.userId, userId), eq(postTable.id, postId)))
       .returning({ id: postTable.id })
 

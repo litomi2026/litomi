@@ -20,7 +20,9 @@ export default function AdBlockedMessage({ height, width, rewardEnabled }: Props
           <br />이 사이트의 광고를 허용해 주시면 큰 도움이 돼요.
         </p>
       </div>
-      {rewardEnabled && <div className="text-xs text-zinc-600">광고가 보이면 클릭해서 리보를 적립할 수 있어요</div>}
+      {height > 150 && rewardEnabled && (
+        <div className="text-xs text-zinc-600">광고가 보이면 클릭해서 리보를 적립할 수 있어요</div>
+      )}
     </div>
   )
 }

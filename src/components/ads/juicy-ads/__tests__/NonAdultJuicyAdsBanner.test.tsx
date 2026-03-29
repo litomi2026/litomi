@@ -1,3 +1,5 @@
+import '@test/setup.dom'
+
 import type { ReactNode } from 'react'
 
 import { cleanup, render } from '@testing-library/react'

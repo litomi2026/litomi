@@ -1,3 +1,4 @@
+import '@test/setup.dom'
 import { afterEach, describe, expect, test } from 'bun:test'
 
 import type { ProblemDetails } from '@/utils/problem-details'
