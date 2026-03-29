@@ -3,7 +3,7 @@
 import { Trash2 } from 'lucide-react'
 import { useState } from 'react'
 
-import HistoryDeleteDialog from './HistoryDeleteDialog'
+import BulkDeleteDialog from '../BulkDeleteDialog'
 import useDeleteReadingHistoryMutation from './useDeleteReadingHistoryMutation'
 
 type Props = {
@@ -16,9 +16,7 @@ export default function HistoryClearAllButton({ historyCount, userId }: Readonly
 
   const deleteMutation = useDeleteReadingHistoryMutation({
     userId,
-    onSuccess: () => {
-      setIsDialogOpen(false)
-    },
+    onSuccess: () => setIsDialogOpen(false),
   })
 
   const description =
@@ -38,7 +36,7 @@ export default function HistoryClearAllButton({ historyCount, userId }: Readonly
         <Trash2 className="size-5" />
       </button>
 
-      <HistoryDeleteDialog
+      <BulkDeleteDialog
         ariaLabel="감상 기록 전체 삭제"
         confirmLabel="전체 삭제"
         description={description}
@@ -47,7 +45,7 @@ export default function HistoryClearAllButton({ historyCount, userId }: Readonly
         onConfirm={() => deleteMutation.mutate({ mode: 'all' })}
         open={isDialogOpen}
         title="감상 기록 전체 삭제"
-        warning="삭제한 감상 기록은 되돌릴 수 없고, 현재 브라우저의 이어읽기 캐시도 함께 정리돼요."
+        warning="현재 브라우저에 저장된 감상 기록도 삭제되고, 삭제된 감상 기록은 되돌릴 수 없어요."
       />
     </>
   )

@@ -6,16 +6,16 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 import type { DELETEV1ReadingHistoryBody } from '@/backend/api/v1/library/history/DELETE'
+import type { GETV1ReadingHistoryResponse } from '@/backend/api/v1/library/history/GET'
 import type { GETV1LibrarySummaryResponse } from '@/backend/api/v1/library/summary'
 
-import { GETV1ReadingHistoryResponse } from '@/backend/api/v1/library/history/GET'
 import { QueryKeys } from '@/constants/query'
 import { clearAllReadingHistoryLocalEntries, removeReadingHistoryLocalEntries } from '@/utils/reading-history-index'
 
 import { deleteReadingHistory } from './api'
 
 type Options = {
-  userId: number
+  userId?: number
   onSuccess?: () => void
 }
 
@@ -28,14 +28,18 @@ export default function useDeleteReadingHistoryMutation({ userId, onSuccess }: O
       const selectedIds = variables.mode === 'selected' ? [...new Set(variables.mangaIds)] : []
 
       if (variables.mode === 'all') {
-        clearAllReadingHistoryLocalEntries(userId)
+        if (userId) {
+          clearAllReadingHistoryLocalEntries(userId)
+        }
 
         queryClient.setQueriesData<number | null>(
           { predicate: (query) => isReadingHistoryDetailQuery(query.queryKey) },
           () => null,
         )
       } else {
-        removeReadingHistoryLocalEntries(userId, selectedIds)
+        if (userId) {
+          removeReadingHistoryLocalEntries(userId, selectedIds)
+        }
 
         for (const mangaId of selectedIds) {
           queryClient.setQueryData<number | null>(QueryKeys.readingHistory(mangaId), null)

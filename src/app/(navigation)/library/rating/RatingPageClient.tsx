@@ -3,8 +3,9 @@
 import { Star } from 'lucide-react'
 import { useState } from 'react'
 
+import type { GETV1RatingsResponse } from '@/backend/api/v1/library/rating/GET'
+
 import { isGroupedRatingSort, RatingSort } from '@/backend/api/v1/library/enum'
-import { GETV1RatingsResponse } from '@/backend/api/v1/library/rating/GET'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
 import useInfiniteScrollObserver from '@/hook/useInfiniteScrollObserver'
@@ -13,9 +14,10 @@ import { Manga } from '@/types/manga'
 import { View } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
-import { useLibrarySelectionStore } from '../[id]/librarySelection'
 import CensoredManga from '../CensoredManga'
+import { useLibrarySelection } from '../librarySelection'
 import SelectableMangaCard from '../SelectableMangaCard'
+import NotFound from './NotFound'
 import useRatingInfiniteQuery from './useRatingInfiniteQuery'
 
 type Props = {
@@ -25,11 +27,11 @@ type Props = {
 
 const SORT_OPTIONS: { value: RatingSort; label: string }[] = [
   { value: RatingSort.UPDATED_DESC, label: '최근 수정순' },
-  { value: RatingSort.CREATED_DESC, label: '최근 추가순' },
+  { value: RatingSort.CREATED_DESC, label: '최근 평가순' },
   { value: RatingSort.RATING_DESC, label: '평점 높은순' },
   { value: RatingSort.RATING_ASC, label: '평점 낮은순' },
-  { value: RatingSort.MANGA_ID_DESC, label: '작품 ID 내림차순' },
-  { value: RatingSort.MANGA_ID_ASC, label: '작품 ID 오름차순' },
+  { value: RatingSort.MANGA_ID_DESC, label: '작품 ID 높은순' },
+  { value: RatingSort.MANGA_ID_ASC, label: '작품 ID 낮은순' },
 ]
 
 type MangaListProps = {
@@ -50,8 +52,7 @@ export default function RatingPageClient({ initialData, initialSort = RatingSort
   const ratingPages = data?.pages ?? []
   const ratingItems = ratingPages.flatMap((page) => page.items)
   const ratingIndexMap = new Map(ratingItems.map((item, index) => [item.mangaId, index]))
-  const isSelectionMode = useLibrarySelectionStore((state) => state.isSelectionMode)
-  const exitSelectionMode = useLibrarySelectionStore((state) => state.exitSelectionMode)
+  const { exit, isSelectionMode } = useLibrarySelection()
   const shouldGroupByRating = isGroupedRatingSort(sort)
   const canAutoLoadMore = Boolean(hasNextPage) && !isFetchNextPageError
   const showLoadingSkeleton = isLoading && ratingItems.length === 0
@@ -82,12 +83,16 @@ export default function RatingPageClient({ initialData, initialSort = RatingSort
 
   function handleSortChange(newSort: RatingSort) {
     if (newSort !== sort) {
-      exitSelectionMode()
+      exit()
       setSort(newSort)
       const url = new URL(window.location.href)
       url.searchParams.set('sort', String(newSort))
       window.history.replaceState({}, '', url.toString())
     }
+  }
+
+  if (data && ratingItems.length === 0 && !hasNextPage && !isFetchingNextPage && !isLoading) {
+    return <NotFound />
   }
 
   return (

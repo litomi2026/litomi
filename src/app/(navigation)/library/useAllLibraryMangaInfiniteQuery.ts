@@ -8,7 +8,7 @@ import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 const { NEXT_PUBLIC_BACKEND_URL } = env
 
-export async function fetchAllLibraryMangas({ cursor, userId }: { cursor: string | null; userId: number | null }) {
+export async function fetchAllLibraryMangas({ cursor, userId }: { cursor: string | null; userId?: number }) {
   const params = new URLSearchParams()
   params.set('scope', userId ? 'me' : 'public')
 
@@ -23,8 +23,8 @@ export async function fetchAllLibraryMangas({ cursor, userId }: { cursor: string
 
 export default function useAllLibraryMangaInfiniteQuery() {
   return useInfiniteQuery({
-    queryKey: QueryKeys.infiniteLibraryMangas(null),
-    queryFn: ({ pageParam }) => fetchAllLibraryMangas({ cursor: pageParam, userId: null }),
+    queryKey: QueryKeys.infiniteLibraryMangas(),
+    queryFn: ({ pageParam }) => fetchAllLibraryMangas({ cursor: pageParam }),
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialPageParam: '',
   })
