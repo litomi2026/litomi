@@ -6,9 +6,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 import type { DELETEV1ReadingHistoryBody } from '@/backend/api/v1/library/history/DELETE'
+import type { GETV1ReadingHistoryResponse } from '@/backend/api/v1/library/history/GET'
 import type { GETV1LibrarySummaryResponse } from '@/backend/api/v1/library/summary'
 
-import { GETV1ReadingHistoryResponse } from '@/backend/api/v1/library/history/GET'
 import { QueryKeys } from '@/constants/query'
 import { clearAllReadingHistoryLocalEntries, removeReadingHistoryLocalEntries } from '@/utils/reading-history-index'
 
