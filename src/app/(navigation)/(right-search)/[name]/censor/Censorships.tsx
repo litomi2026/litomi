@@ -85,7 +85,7 @@ export default function Censorships() {
     })
   }, [allCensorships, searchQuery, filterKey])
 
-  if (me != null && !canAccess) {
+  if (me && !canAccess) {
     return (
       <AdultVerificationGate
         description="검열 설정을 사용하려면 익명 성인인증이 필요해요"

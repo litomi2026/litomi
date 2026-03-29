@@ -2,7 +2,8 @@
 
 import { useMemo } from 'react'
 
-import { GETLibraryItemsResponse } from '@/backend/api/v1/library/[id]/item/GET'
+import type { GETLibraryItemsResponse } from '@/backend/api/v1/library/[id]/item/GET'
+
 import AdultVerificationGate from '@/components/AdultVerificationGate'
 import MangaCard, { MangaCardSkeleton } from '@/components/card/MangaCard'
 import LoadMoreRetryButton from '@/components/ui/LoadMoreRetryButton'
@@ -14,8 +15,8 @@ import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { View } from '@/utils/param'
 import { MANGA_LIST_GRID_COLUMNS } from '@/utils/style'
 
+import { useLibrarySelection } from '../librarySelection'
 import SelectableMangaCard from '../SelectableMangaCard'
-import { useLibrarySelectionStore } from './librarySelection'
 
 type Props = {
   library: {
@@ -29,7 +30,7 @@ type Props = {
 
 export default function LibraryItemsClient({ library, initialItems, isOwner }: Readonly<Props>) {
   const { id: libraryId, name: libraryName, isPublic } = library
-  const { isSelectionMode } = useLibrarySelectionStore()
+  const { isSelectionMode } = useLibrarySelection()
   const scope = isOwner ? 'me' : 'public'
   const { data: me } = useMeQuery()
   const adultState = getAdultState(me)
