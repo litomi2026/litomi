@@ -4,17 +4,20 @@ import { z } from 'zod'
 
 import { Env } from '@/backend'
 import { privateCacheControl } from '@/backend/utils/cache-control'
+import { problemResponse } from '@/backend/utils/problem'
 import { zProblemValidator } from '@/backend/utils/validator'
+import { decodePostCursor, encodePostCursor } from '@/common/cursor'
 import { ReferredPost } from '@/components/post/ReferredPostCard'
 import { POST_PER_PAGE } from '@/constants/policy'
-import selectPosts from '@/sql/selectPosts'
+import { PostType } from '@/database/enum'
+import selectPost from '@/sql/selectPost'
 import { createCacheControl } from '@/utils/cache-control'
 import { sec } from '@/utils/format/date'
 
 import { PostFilter } from './constant'
 
 const querySchema = z.object({
-  cursor: z.coerce.number().int().positive().optional(),
+  cursor: z.string().optional(),
   limit: z.coerce.number().int().positive().max(POST_PER_PAGE).default(POST_PER_PAGE),
   mangaId: z.coerce.number().int().positive().optional(),
   filter: z.enum(PostFilter).optional(),
@@ -23,13 +26,14 @@ const querySchema = z.object({
 
 export type GETV1PostResponse = {
   posts: Post[]
-  nextCursor: number | null
+  nextCursor: string | null
 }
 
 export type Post = {
   id: number
   createdAt: Date
   content: string | null
+  type: PostType
   isLiked?: boolean
   author: {
     id: number
@@ -50,10 +54,16 @@ const route = new Hono<Env>()
 route.get('/', zProblemValidator('query', querySchema), async (c) => {
   const { cursor, limit, mangaId, filter, username } = c.req.valid('query')
   const currentUserId = c.get('userId')
+  const decodedCursor = cursor ? decodePostCursor(cursor) : null
 
-  const postRows = await selectPosts({
+  if (cursor && !decodedCursor) {
+    return problemResponse(c, { status: 400, detail: '잘못된 커서예요' })
+  }
+
+  const postRows = await selectPost({
     limit: limit + 1,
-    cursor,
+    cursorId: decodedCursor?.id,
+    cursorCreatedAt: decodedCursor ? new Date(decodedCursor.timestamp) : undefined,
     mangaId,
     filter,
     username,
@@ -70,7 +80,7 @@ route.get('/', zProblemValidator('query', querySchema), async (c) => {
   const hasNextPage = postRows.length > limit
   const posts = hasNextPage ? postRows.slice(0, limit) : postRows
   const lastPost = posts[posts.length - 1]
-  const nextCursor = hasNextPage ? lastPost.id : null
+  const nextCursor = hasNextPage && lastPost ? encodePostCursor(lastPost.createdAt.getTime(), lastPost.id) : null
 
   return c.json<GETV1PostResponse>({ posts, nextCursor }, { headers: { 'Cache-Control': cacheControl } })
 })
