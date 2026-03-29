@@ -1,3 +1,4 @@
+import '@test/setup.dom'
 import { afterEach, describe, expect, it, mock } from 'bun:test'
 
 import { disableJuicyPopunder, enableJuicyPopunder, JUICY_POPUNDER_TRIGGER_CLASS } from '../popunder'

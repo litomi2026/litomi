@@ -1,11 +1,14 @@
 [test]
-# Preload the test setup file before running tests
-preload = ["./test/setup.ts"]
+# Preload the shared base setup for all tests
+preload = ["./test/setup.base.ts"]
 
 # Test configuration
 root = "./src"
 
 # Coverage settings
-coverage = true
 coverageReporter = ["text", "lcov"]
-coverageDirectory = "coverage" 
+coverageDir = "coverage"
+coverageSkipTestFiles = true
+
+# Opt-in concurrent execution for explicitly marked pure unit tests
+concurrentTestGlob = "**/*.concurrent.test.ts"

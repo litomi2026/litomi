@@ -1,3 +1,4 @@
+import '@test/setup.dom'
 import { RenderOptions, render as rtlRender } from '@testing-library/react'
 import { ReactElement, ReactNode } from 'react'
 
