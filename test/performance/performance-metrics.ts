@@ -31,7 +31,7 @@ export class PerformanceMetrics {
   private results: Map<string, PerformanceResult> = new Map()
 
   /**
-   * Compare two operations
+   * 두 작업의 측정 결과를 비교한다.
    */
   compare(operation1: string, operation2: string): string {
     const result1 = this.getResult(operation1)
@@ -60,7 +60,7 @@ export class PerformanceMetrics {
   }
 
   /**
-   * End measurement and record the result
+   * 측정을 끝내고 결과를 기록한다.
    */
   endMeasure(operation: string): number {
     const measurement = this.ongoingMeasurements.get(operation)
@@ -72,7 +72,7 @@ export class PerformanceMetrics {
     const endMemory = process.memoryUsage()
     const duration = endTime - measurement.startTime
 
-    // Get or create result entry
+    // 결과 저장소에서 기존 항목을 찾거나 새로 만든다.
     let result = this.results.get(operation)
     if (!result) {
       result = {
@@ -93,7 +93,7 @@ export class PerformanceMetrics {
       this.results.set(operation, result)
     }
 
-    // Add duration and update metrics
+    // 이번 측정 시간을 추가하고 집계 지표를 갱신한다.
     result.durations.push(duration)
     result.iterations++
     result.metrics = this.calculateMetrics(result.durations)
@@ -103,7 +103,7 @@ export class PerformanceMetrics {
   }
 
   /**
-   * Export results to file
+   * 결과를 파일로 내보낸다.
    */
   async exportToFile(filepath: string): Promise<void> {
     const fs = await import('fs/promises')
@@ -113,7 +113,7 @@ export class PerformanceMetrics {
   }
 
   /**
-   * Generate a performance report
+   * 성능 리포트를 만든다.
    */
   generateReport(options: { format?: 'console' | 'json' | 'markdown' } = {}): string {
     const { format = 'console' } = options
@@ -137,21 +137,21 @@ export class PerformanceMetrics {
   }
 
   /**
-   * Get all results
+   * 저장된 모든 결과를 가져온다.
    */
   getAllResults(): PerformanceResult[] {
     return Array.from(this.results.values())
   }
 
   /**
-   * Get results for a specific operation
+   * 특정 작업의 결과를 가져온다.
    */
   getResult(operation: string): PerformanceResult | undefined {
     return this.results.get(operation)
   }
 
   /**
-   * Measure an async operation
+   * 비동기 작업 하나를 측정한다.
    */
   async measure<T>(operation: string, fn: () => Promise<T>): Promise<T> {
     this.startMeasure(operation)
@@ -166,7 +166,7 @@ export class PerformanceMetrics {
   }
 
   /**
-   * Measure multiple iterations of an operation
+   * 같은 작업을 여러 번 반복 측정한다.
    */
   async measureIterations<T>(
     operation: string,
@@ -176,7 +176,7 @@ export class PerformanceMetrics {
   ): Promise<void> {
     const { warmup = 0, delayMs = 0 } = options
 
-    // Warmup runs
+    // 워밍업 실행
     if (warmup > 0) {
       console.log(`Warming up ${operation} with ${warmup} iterations...`)
       for (let i = 0; i < warmup; i++) {
@@ -184,7 +184,7 @@ export class PerformanceMetrics {
       }
     }
 
-    // Actual measurements
+    // 실제 측정
     console.log(`Measuring ${operation} with ${iterations} iterations...`)
     for (let i = 0; i < iterations; i++) {
       await this.measure(`${operation}`, fn)
@@ -193,7 +193,7 @@ export class PerformanceMetrics {
         await new Promise((resolve) => setTimeout(resolve, delayMs))
       }
 
-      // Progress logging
+      // 진행 상황 출력
       if ((i + 1) % Math.max(1, Math.floor(iterations / 10)) === 0) {
         console.log(`  Progress: ${i + 1}/${iterations} iterations`)
       }
@@ -201,7 +201,7 @@ export class PerformanceMetrics {
   }
 
   /**
-   * Reset all measurements
+   * 모든 측정 결과를 초기화한다.
    */
   reset(): void {
     this.results.clear()
@@ -209,7 +209,7 @@ export class PerformanceMetrics {
   }
 
   /**
-   * Start measuring performance for an operation
+   * 작업의 성능 측정을 시작한다.
    */
   startMeasure(operation: string): void {
     const startTime = performance.now()
@@ -219,7 +219,7 @@ export class PerformanceMetrics {
   }
 
   /**
-   * Calculate statistical metrics from durations
+   * 측정 시간 배열로 통계 지표를 계산한다.
    */
   private calculateMetrics(durations: number[]): PerformanceResult['metrics'] {
     if (durations.length === 0) {
@@ -240,7 +240,7 @@ export class PerformanceMetrics {
     const sum = sorted.reduce((acc, val) => acc + val, 0)
     const mean = sum / sorted.length
 
-    // Calculate standard deviation
+    // 표준편차를 계산한다.
     const squaredDiffs = sorted.map((val) => Math.pow(val - mean, 2))
     const avgSquaredDiff = squaredDiffs.reduce((acc, val) => acc + val, 0) / sorted.length
     const stdDev = Math.sqrt(avgSquaredDiff)
@@ -259,7 +259,7 @@ export class PerformanceMetrics {
   }
 
   /**
-   * Format duration in human-readable format
+   * 시간을 읽기 쉬운 문자열로 포맷한다.
    */
   private formatDuration(ms: number): string {
     if (ms < 1) return `${(ms * 1000).toFixed(2)}µs`
@@ -268,7 +268,7 @@ export class PerformanceMetrics {
   }
 
   /**
-   * Format memory size in human-readable format
+   * 메모리 크기를 읽기 쉬운 문자열로 포맷한다.
    */
   private formatMemory(bytes: number): string {
     const units = ['B', 'KB', 'MB', 'GB']
@@ -285,7 +285,7 @@ export class PerformanceMetrics {
   }
 
   /**
-   * Generate console-formatted report
+   * 콘솔 출력용 리포트를 만든다.
    */
   private generateConsoleReport(results: PerformanceResult[]): string {
     let report = '\n' + '='.repeat(40) + '\n'
@@ -317,7 +317,7 @@ export class PerformanceMetrics {
   }
 
   /**
-   * Generate Markdown-formatted report
+   * Markdown 리포트를 만든다.
    */
   private generateMarkdownReport(results: PerformanceResult[]): string {
     let report = '# Performance Test Results\n\n'
@@ -353,7 +353,7 @@ export class PerformanceMetrics {
   }
 
   /**
-   * Calculate percentile value
+   * 백분위 값을 계산한다.
    */
   private percentile(sorted: number[], percentile: number): number {
     const index = Math.ceil((percentile / 100) * sorted.length) - 1

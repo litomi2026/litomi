@@ -9,7 +9,7 @@ afterEach(() => {
 })
 
 describe('ReferredPostCard', () => {
-  test('삭제된 리포스트 원글은 링크 없이 tombstone으로 렌더링한다', () => {
+  test('삭제된 리포스트 원글은 링크 없는 삭제 표시 카드로 렌더링한다', () => {
     const view = render(<ReferredPostCard referredPost={{ isDeleted: true }} />)
 
     expect(view.getByText('글이 삭제됐어요')).toBeTruthy()

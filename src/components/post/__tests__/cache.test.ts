@@ -43,14 +43,14 @@ function createInfiniteData(postIds: number[]): InfiniteData<GETV1PostResponse> 
   }
 }
 
-describe('post cache helpers', () => {
+describe('게시글 캐시 헬퍼', () => {
   const queryClient = new QueryClient()
 
   afterEach(() => {
     queryClient.clear()
   })
 
-  test('목록에서 글을 optimistic 하게 제거하고 snapshot으로 복구한다', () => {
+  test('목록에서 글을 낙관적으로 제거하고 스냅샷으로 복구한다', () => {
     queryClient.setQueryData(QueryKeys.posts(PostFilter.RECOMMEND), createInfiniteData([1, 2]))
     queryClient.setQueryData(QueryKeys.posts(PostFilter.USER, undefined, 'user1'), createInfiniteData([1, 3]))
 
@@ -78,7 +78,7 @@ describe('post cache helpers', () => {
     ).toEqual([1, 2])
   })
 
-  test('좋아요 count를 optimistic 하게 변경하고 snapshot으로 복구한다', () => {
+  test('좋아요 수를 낙관적으로 변경하고 스냅샷으로 복구한다', () => {
     queryClient.setQueryData(QueryKeys.posts(PostFilter.RECOMMEND), createInfiniteData([1]))
 
     const snapshot = snapshotPostLikeInPostLists(queryClient, 1)
@@ -98,7 +98,7 @@ describe('post cache helpers', () => {
     ).toBe(0)
   })
 
-  test('좋아요한 글 ID 목록을 optimistic 하게 변경하고 snapshot으로 복구한다', () => {
+  test('좋아요한 글 ID 목록을 낙관적으로 변경하고 스냅샷으로 복구한다', () => {
     queryClient.setQueryData<GETV1PostLikedResponse>(QueryKeys.likedPosts, { postIds: [1, 3] })
 
     const snapshot = snapshotLikedPostIds(queryClient)

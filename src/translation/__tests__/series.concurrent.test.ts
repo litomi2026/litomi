@@ -3,7 +3,7 @@ import { describe, expect, test } from 'bun:test'
 import { translateSeriesList } from '../series'
 
 describe('translateSeriesList', () => {
-  test('should translate multiple series', () => {
+  test('여러 시리즈를 번역한다', () => {
     const series = ['touhou_project', 'pokemon', 'unknown_series']
     const translated = translateSeriesList(series, 'ko')
     expect(translated).toEqual([
@@ -13,13 +13,13 @@ describe('translateSeriesList', () => {
     ])
   })
 
-  test('should handle empty list', () => {
+  test('빈 목록을 처리한다', () => {
     expect(translateSeriesList([], 'ko')).toEqual([])
   })
 })
 
 describe('translateSeriesListAsLabeledValues', () => {
-  test('should translate multiple series and return as labeled values', () => {
+  test('여러 시리즈를 번역해 label/value 형태로 반환한다', () => {
     const series = ['one_piece', 'dragon_ball']
     const translated = translateSeriesList(series, 'ko')
     expect(translated).toEqual([
@@ -28,7 +28,7 @@ describe('translateSeriesListAsLabeledValues', () => {
     ])
   })
 
-  test('should handle series without translation', () => {
+  test('번역이 없는 시리즈도 처리한다', () => {
     const series = ['unknown_series', 'one_piece']
     const translated = translateSeriesList(series, 'ko')
     expect(translated).toEqual([
@@ -37,17 +37,17 @@ describe('translateSeriesListAsLabeledValues', () => {
     ])
   })
 
-  test('should handle empty list', () => {
+  test('빈 목록을 처리한다', () => {
     expect(translateSeriesList([], 'ko')).toEqual([])
   })
 
-  test('should use English fallback when locale not available', () => {
+  test('지원하지 않는 로케일이면 영어로 대체한다', () => {
     const series = ['one_piece']
     const translated = translateSeriesList(series, 'zh-TW')
     expect(translated).toEqual([{ value: 'one_piece', label: 'One Piece' }])
   })
 
-  test('should translate known series to Korean', () => {
+  test('알려진 시리즈를 한국어로 번역한다', () => {
     const series = ['touhou_project', 'fate_grand_order', 'pokemon']
     const translated = translateSeriesList(series, 'ko')
     expect(translated).toEqual([
@@ -57,7 +57,7 @@ describe('translateSeriesListAsLabeledValues', () => {
     ])
   })
 
-  test('should translate known series to Japanese', () => {
+  test('알려진 시리즈를 일본어로 번역한다', () => {
     const series = ['touhou_project', 'kantai_collection']
     const translated = translateSeriesList(series, 'ja')
     expect(translated).toEqual([
@@ -66,13 +66,13 @@ describe('translateSeriesListAsLabeledValues', () => {
     ])
   })
 
-  test('should return English translation when locale not available', () => {
+  test('지원하지 않는 로케일이면 영어 번역을 반환한다', () => {
     const series = ['touhou_project']
     const translated = translateSeriesList(series, 'zh-CN')
     expect(translated).toEqual([{ label: 'Touhou Project', value: 'touhou_project' }])
   })
 
-  test('should return original name when no translation found', () => {
+  test('번역이 없으면 원래 이름을 정규화해 반환한다', () => {
     const series = ['unknown_series', 'Some Random Series']
     const translated = translateSeriesList(series, 'ko')
     expect(translated).toEqual([

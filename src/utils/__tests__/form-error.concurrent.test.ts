@@ -3,12 +3,12 @@ import { z } from 'zod'
 
 import { flattenZodFieldErrors } from '../form-error'
 
-describe('form-error utilities', () => {
+describe('폼 오류 유틸', () => {
   describe('flattenZodFieldErrors', () => {
-    test('should flatten simple field errors', () => {
+    test('단순한 필드 오류를 평탄화한다', () => {
       const schema = z.object({
-        loginId: z.string().min(3, 'Invalid login ID'),
-        password: z.string().min(8, 'Password too weak'),
+        loginId: z.string().min(3, '잘못된 로그인 아이디예요'),
+        password: z.string().min(8, '비밀번호가 너무 약해요'),
       })
 
       const validationResult = schema.safeParse({
@@ -19,17 +19,17 @@ describe('form-error utilities', () => {
       if (!validationResult.success) {
         const result = flattenZodFieldErrors(validationResult.error)
         expect(result).toEqual({
-          loginId: 'Invalid login ID',
-          password: 'Password too weak',
+          loginId: '잘못된 로그인 아이디예요',
+          password: '비밀번호가 너무 약해요',
         })
       }
     })
 
-    test('should handle nested object field errors', () => {
+    test('중첩 객체 필드 오류를 처리한다', () => {
       const schema = z.object({
         user: z.object({
-          email: z.string().email('Invalid email format'),
-          name: z.string().min(1, 'Name is required'),
+          email: z.string().email('이메일 형식이 올바르지 않아요'),
+          name: z.string().min(1, '이름은 필수예요'),
         }),
       })
 
@@ -42,15 +42,15 @@ describe('form-error utilities', () => {
 
       if (!validationResult.success) {
         const result = flattenZodFieldErrors(validationResult.error)
-        // Zod's flattenError returns the first error for nested objects
+        // Zod의 flattenError는 중첩 객체에서 첫 번째 오류만 반환한다.
         expect(result).toHaveProperty('user')
         expect(typeof result.user).toBe('string')
       }
     })
 
-    test('should take first error when multiple errors exist for same field', () => {
+    test('같은 필드에 오류가 여러 개면 첫 번째 오류를 사용한다', () => {
       const schema = z.object({
-        password: z.string().min(6, 'Password too short').regex(/[0-9]/, 'Password must contain numbers'),
+        password: z.string().min(6, '비밀번호가 너무 짧아요').regex(/[0-9]/, '비밀번호에 숫자가 들어가야 해요'),
       })
 
       const validationResult = schema.safeParse({
@@ -60,12 +60,12 @@ describe('form-error utilities', () => {
       if (!validationResult.success) {
         const result = flattenZodFieldErrors(validationResult.error)
         expect(result).toEqual({
-          password: 'Password too short',
+          password: '비밀번호가 너무 짧아요',
         })
       }
     })
 
-    test('should handle empty errors object', () => {
+    test('빈 오류 객체를 처리한다', () => {
       const schema = z.object({
         field: z.string(),
       })
@@ -73,23 +73,23 @@ describe('form-error utilities', () => {
       const validationResult = schema.safeParse({ field: 'valid' })
 
       if (validationResult.success) {
-        // Create an empty error for testing
+        // 테스트용 빈 오류 객체를 만든다.
         const emptyError = new z.ZodError([])
         const result = flattenZodFieldErrors(emptyError)
         expect(result).toEqual({})
       }
     })
 
-    test('should handle array field errors', () => {
+    test('배열 필드 오류를 처리한다', () => {
       const schema = z.object({
         items: z
           .array(
             z.object({
-              name: z.string().min(1, 'Item name required'),
-              price: z.number().positive('Invalid price'),
+              name: z.string().min(1, '상품 이름은 필수예요'),
+              price: z.number().positive('가격이 올바르지 않아요'),
             }),
           )
-          .min(1, 'At least one item required'),
+          .min(1, '상품은 최소 1개 이상 필요해요'),
       })
 
       const validationResult = schema.safeParse({
@@ -99,19 +99,19 @@ describe('form-error utilities', () => {
       if (!validationResult.success) {
         const result = flattenZodFieldErrors(validationResult.error)
         expect(result).toEqual({
-          items: 'At least one item required',
+          items: '상품은 최소 1개 이상 필요해요',
         })
       }
     })
 
-    test('should handle refine errors', () => {
+    test('refine 오류를 처리한다', () => {
       const schema = z
         .object({
           password: z.string(),
           confirmPassword: z.string(),
         })
         .refine((data) => data.password === data.confirmPassword, {
-          message: 'Passwords do not match',
+          message: '비밀번호가 일치하지 않아요',
           path: ['confirmPassword'],
         })
 
@@ -123,14 +123,14 @@ describe('form-error utilities', () => {
       if (!validationResult.success) {
         const result = flattenZodFieldErrors(validationResult.error)
         expect(result).toEqual({
-          confirmPassword: 'Passwords do not match',
+          confirmPassword: '비밀번호가 일치하지 않아요',
         })
       }
     })
 
-    test('should handle string field with multiple validators', () => {
+    test('검증기가 여러 개인 문자열 필드를 처리한다', () => {
       const schema = z.object({
-        email: z.string().min(1, 'Email is required').email('Invalid email format'),
+        email: z.string().min(1, '이메일은 필수예요').email('이메일 형식이 올바르지 않아요'),
       })
 
       const validationResult = schema.safeParse({
@@ -140,14 +140,14 @@ describe('form-error utilities', () => {
       if (!validationResult.success) {
         const result = flattenZodFieldErrors(validationResult.error)
         expect(result).toEqual({
-          email: 'Email is required',
+          email: '이메일은 필수예요',
         })
       }
     })
 
-    test('should handle optional fields', () => {
+    test('선택 필드를 처리한다', () => {
       const schema = z.object({
-        required: z.string().min(1, 'Field is required'),
+        required: z.string().min(1, '필수 입력값이에요'),
         optional: z.string().optional(),
       })
 
@@ -158,13 +158,13 @@ describe('form-error utilities', () => {
       if (!validationResult.success) {
         const result = flattenZodFieldErrors(validationResult.error)
         expect(result).toEqual({
-          required: 'Field is required',
+          required: '필수 입력값이에요',
         })
         expect(result.optional).toBeUndefined()
       }
     })
 
-    test('should handle actual form validation like signup', () => {
+    test('회원가입처럼 실제 폼 검증 시나리오를 처리한다', () => {
       const schema = z
         .object({
           loginId: z.string().min(4, '아이디는 4자 이상이어야 해요'),

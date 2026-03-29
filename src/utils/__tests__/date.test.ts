@@ -15,19 +15,19 @@ describe('formatDistanceToNow', () => {
     Date.now = originalDateNow
   })
 
-  test('shows weeks for dates under 30 days old', () => {
+  test('30일 미만 날짜는 주 단위로 표시한다', () => {
     expect(formatDistanceToNow(new Date('2026-03-01T12:00:00+09:00'))).toBe('4주 전')
   })
 
-  test('shows months starting at 30 days', () => {
+  test('30일부터는 개월 수로 표시한다', () => {
     expect(formatDistanceToNow(new Date('2026-02-27T12:00:00+09:00'))).toBe('1개월 전')
   })
 
-  test('shows relative months up to 11 months', () => {
+  test('11개월까지는 상대 개월 수를 표시한다', () => {
     expect(formatDistanceToNow(new Date('2025-04-29T12:00:00+09:00'))).toBe('11개월 전')
   })
 
-  test('falls back to absolute date at 12 months', () => {
+  test('12개월부터는 절대 날짜 형식으로 전환한다', () => {
     const date = new Date('2025-03-29T12:00:00+09:00')
 
     expect(formatDistanceToNow(date)).toBe(dayjs(date).format('YYYY-MM-DD HH:mm'))
