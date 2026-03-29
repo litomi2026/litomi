@@ -6,6 +6,11 @@ const DefaultCursorSchema = z.object({
   mangaId: z.coerce.number().int().positive(),
 })
 
+const PostCursorSchema = z.object({
+  timestamp: z.coerce.number().int().positive(),
+  id: z.coerce.number().int().positive(),
+})
+
 const RatingCursorSchema = z.object({
   rating: z.coerce.number().int().min(1).max(5),
   timestamp: z.coerce.number().int().positive(),
@@ -84,6 +89,21 @@ export function decodeLibraryListCursor(cursor: string) {
   return validation.data
 }
 
+export function decodePostCursor(cursor: string) {
+  const [timestamp, id] = cursor.split('-')
+
+  const validation = PostCursorSchema.safeParse({
+    timestamp,
+    id,
+  })
+
+  if (!validation.success) {
+    return null
+  }
+
+  return validation.data
+}
+
 export function decodeRatingCursor(cursor: string) {
   const [rating, timestamp, mangaId] = cursor.split('-')
 
@@ -135,6 +155,10 @@ export function encodeLibraryListCursor(
   id: number,
 ) {
   return `${isOwner}-${sortCount}-${itemCount}-${timestamp}-${id}`
+}
+
+export function encodePostCursor(timestamp: number, id: number) {
+  return `${timestamp}-${id}`
 }
 
 export function encodeRatingCursor(rating: number, timestamp: number, mangaId: number) {
