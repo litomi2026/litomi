@@ -72,6 +72,12 @@ function getCachedUsername(queryClient: QueryClient): string | undefined {
 
 function handleUnauthorizedError() {
   queryClient.setQueriesData({ queryKey: QueryKeys.me }, () => null)
+
+  queryClient.removeQueries({
+    queryKey: QueryKeys.me,
+    predicate: (query) => query.queryKey.length > 1,
+  })
+
   amplitude.reset()
   identify(null)
 }

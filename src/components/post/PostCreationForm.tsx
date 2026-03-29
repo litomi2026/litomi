@@ -92,7 +92,7 @@ export default function PostCreationForm({
       </Squircle>
       <div className="grid items-center gap-3 grow py-1.5">
         {isReply && me && hasFocusedBefore && (
-          <button className="text-left">
+          <button className="text-left" type="button">
             <span className="font-semibold text-foreground">@{me.name} </span>
             에게 보내는 답글
           </button>

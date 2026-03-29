@@ -5,6 +5,7 @@ export const QueryKeys = {
   me: ['me'],
   ratingsBase: ['me', 'ratings'],
   bookmarks: ['me', 'bookmarks'],
+  likedPosts: ['me', 'posts', 'liked'],
   infiniteBookmarks: ['me', 'bookmarks', 'infinite'],
   infiniteReadingHistory: ['me', 'readingHistory', 'infinite'],
   infiniteRatings: (sort: RatingSort) => ['me', 'ratings', 'infinite', sort],

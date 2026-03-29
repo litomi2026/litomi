@@ -9,7 +9,7 @@ import { PostFilter } from '@/backend/api/v1/post/constant'
 import CloudProviderStatus from '@/components/CloudProviderStatus'
 import { type Post } from '@/components/post/XPostCard'
 import RetryGuidance from '@/components/RetryGuidance'
-import usePostsInfiniteQuery from '@/query/usePostsQuery'
+import usePostInfiniteQuery from '@/query/usePostsQuery'
 
 import PostCard, { PostSkeleton } from './PostCard'
 
@@ -23,7 +23,7 @@ type Props = {
 
 export default function MasonryPostList({ filter, mangaId, username, NotFound, showMangaCover }: Props) {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, error, refetch } =
-    usePostsInfiniteQuery(filter, mangaId, username)
+    usePostInfiniteQuery(filter, mangaId, username)
 
   const allPosts = useMemo(() => data?.pages.flatMap((page) => page.posts) ?? [], [data])
   const masonryColumnCount = useMasonryColumnCount()
