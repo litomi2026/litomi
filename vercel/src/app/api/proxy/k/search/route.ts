@@ -20,7 +20,7 @@ type POSTSearchTrendingBody = {
 
 export const runtime = 'edge'
 
-const { NEXT_PUBLIC_BACKEND_URL, NEXT_PUBLIC_CANONICAL_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN, NEXT_PUBLIC_APP_ORIGIN } = env
 
 export async function GET(request: Request) {
   const requestSignal = request.signal
@@ -34,7 +34,7 @@ export async function GET(request: Request) {
       code: 'bad-request',
       detail: '잘못된 요청이에요',
     })
-    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
+    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
     return response
   }
 
@@ -69,7 +69,7 @@ export async function GET(request: Request) {
       code: 'query-too-long',
       detail: '검색어가 너무 길어요',
     })
-    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
+    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
     return response
   }
 
@@ -98,7 +98,7 @@ export async function GET(request: Request) {
       code: 'client-closed-request',
       detail: '요청이 취소됐어요',
     })
-    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
+    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
     return response
   }
 
@@ -150,11 +150,11 @@ export async function GET(request: Request) {
     }
 
     const headers = new Headers(getCacheControlHeader(params))
-    headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
+    headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
     return Response.json(response, { headers })
   } catch (error) {
     const response = handleRouteError(error, request)
-    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
+    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
     return response
   }
 }
@@ -237,7 +237,7 @@ async function postSearchKeyword(keyword: string, signal?: AbortSignal) {
   const body: POSTSearchTrendingBody = { keywords: [keyword] }
 
   try {
-    return await fetch(`${NEXT_PUBLIC_BACKEND_URL}/api/v1/search/trending`, {
+    return await fetch(`${NEXT_PUBLIC_API_ORIGIN}/api/v1/search/trending`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),

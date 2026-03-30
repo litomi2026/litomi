@@ -7,7 +7,7 @@ import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 interface FetchLibraryItemsOptions {
   cursor: string | null
@@ -36,7 +36,7 @@ export async function fetchLibraryItems({ libraryId, cursor, scope, sort }: Fetc
     params.set('sort', sort)
   }
 
-  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/library/${libraryId}/item?${params}`
+  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/library/${libraryId}/item?${params}`
   const { data } = await fetchWithErrorHandling<GETLibraryItemsResponse>(url, { credentials: 'include' })
   return data
 }

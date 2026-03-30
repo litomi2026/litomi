@@ -5,10 +5,10 @@ import type { POSTV1PostBody, POSTV1PostResponse } from '@/backend/api/v1/post/P
 import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function createPost(body: POSTV1PostBody) {
-  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/post`
+  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/post`
 
   const { data } = await fetchWithErrorHandling<POSTV1PostResponse>(url, {
     method: 'POST',
@@ -21,7 +21,7 @@ export async function createPost(body: POSTV1PostBody) {
 }
 
 export async function deletePost(postId: number) {
-  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/post/${postId}`
+  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/post/${postId}`
 
   const { data } = await fetchWithErrorHandling<DELETEV1PostIdResponse>(url, {
     method: 'DELETE',
@@ -32,7 +32,7 @@ export async function deletePost(postId: number) {
 }
 
 export async function togglePostLike(postId: number) {
-  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/post/${postId}/like`
+  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/post/${postId}/like`
 
   const { data } = await fetchWithErrorHandling<POSTV1PostIdLikeResponse>(url, {
     method: 'POST',

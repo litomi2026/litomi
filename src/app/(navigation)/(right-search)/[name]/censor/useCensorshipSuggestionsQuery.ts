@@ -15,7 +15,7 @@ import type { CensorshipSuggestion } from './useCensorshipSuggestions'
 
 import { BLIND_TAG_SUGGESTIONS, CENSORSHIP_PREFIX_SET } from './constants'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 type Options = {
   query: string
@@ -38,7 +38,7 @@ export async function fetchCensorshipSuggestions({ query, locale }: Params) {
     params.set('locale', locale)
   }
 
-  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/search/suggestions?${params}`
+  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/search/suggestions?${params}`
   const { data } = await fetchWithErrorHandling<GETSearchSuggestionsResponse>(url)
   return data
 }

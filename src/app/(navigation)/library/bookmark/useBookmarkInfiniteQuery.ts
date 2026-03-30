@@ -11,7 +11,7 @@ import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export async function fetchPaginatedBookmark(cursor: string | null, sort: CollectionItemSort) {
   const params = new URLSearchParams({ limit: BOOKMARKS_PER_PAGE.toString() })
@@ -24,7 +24,7 @@ export async function fetchPaginatedBookmark(cursor: string | null, sort: Collec
     params.set('sort', sort)
   }
 
-  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/bookmark?${params}`
+  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/bookmark?${params}`
   const { data } = await fetchWithErrorHandling<GETV1BookmarkResponse>(url, { credentials: 'include' })
   return data
 }

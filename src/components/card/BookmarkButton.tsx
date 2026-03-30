@@ -22,7 +22,7 @@ import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import { useLibraryModal } from './LibraryModal'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 type Props = {
   manga: { id: number }
@@ -40,7 +40,7 @@ export default function BookmarkButton({ manga, className }: Props) {
 
   const saveMutation = useMutation<void, unknown, { mangaId: number; shouldBookmark: boolean }>({
     mutationFn: async ({ mangaId, shouldBookmark }) => {
-      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/bookmark/${mangaId}`
+      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/bookmark/${mangaId}`
 
       if (!shouldBookmark) {
         await fetchWithErrorHandling(url, {

@@ -3,7 +3,6 @@
 import { useState } from 'react'
 
 import { env } from '@/env/client'
-import { isServerActionVersionSkewMessage } from '@/utils/server-action-skew'
 
 type Props = Readonly<{
   digest?: string
@@ -13,13 +12,12 @@ type Props = Readonly<{
 
 export default function ErrorDiagnosticDetails({ digest, errorMessage, pathname }: Props) {
   const [capturedAt] = useState(() => new Date())
-  const isServerActionSkew = isServerActionVersionSkewMessage(errorMessage)
   const commitSHA = env.NEXT_PUBLIC_COMMIT_SHA || 'local'
   const environment = env.NEXT_PUBLIC_APP_ENV || 'development'
 
   return (
     <div className="mt-4 space-y-3">
-      {isServerActionSkew && (
+      {/Failed to find Server Action/i.test(errorMessage || '') && (
         <div className="mx-auto max-w-prose rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-left text-xs text-amber-100">
           <p className="font-medium text-amber-200">배포 버전이 바뀌는 중일 수 있어요.</p>
           <p className="mt-1 text-amber-50/90">
@@ -40,7 +38,6 @@ export default function ErrorDiagnosticDetails({ digest, errorMessage, pathname 
         <div className="mt-3 grid gap-1.5">
           <DiagnosticRow label="환경" value={environment} />
           <DiagnosticRow label="커밋" value={commitSHA} />
-          {isServerActionSkew && <DiagnosticRow label="오류 유형" value="server-action-version-skew" />}
           {pathname && <DiagnosticRow label="경로" value={pathname} />}
           {digest && <DiagnosticRow label="오류 코드" value={digest} />}
           <DiagnosticRow label="발생 시각" value={capturedAt.toLocaleString('ko-KR')} />

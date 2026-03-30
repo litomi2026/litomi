@@ -9,7 +9,7 @@ import { sec } from '@/utils/format/date'
 
 export const runtime = 'edge'
 
-const { NEXT_PUBLIC_CANONICAL_URL } = env
+const { NEXT_PUBLIC_APP_ORIGIN } = env
 
 const GETProxyHiyobiNewSchema = z.object({
   page: z.coerce.number().int().positive().max(TOTAL_HIYOBI_PAGES),
@@ -27,7 +27,7 @@ export async function GET(request: Request) {
       code: 'bad-request',
       detail: '잘못된 요청이에요',
     })
-    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
+    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
     return response
   }
 
@@ -39,7 +39,7 @@ export async function GET(request: Request) {
       code: 'client-closed-request',
       detail: '요청이 취소됐어요',
     })
-    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
+    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
     return response
   }
 
@@ -60,12 +60,12 @@ export async function GET(request: Request) {
       }),
     )
 
-    headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
+    headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
 
     return Response.json(mangas, { headers })
   } catch (error) {
     const response = handleRouteError(error, request)
-    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_CANONICAL_URL)
+    response.headers.set('Access-Control-Allow-Origin', NEXT_PUBLIC_APP_ORIGIN)
     return response
   }
 }

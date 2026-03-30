@@ -9,7 +9,7 @@ import { QueryKeys } from '@/constants/query'
 import { env } from '@/env/client'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 type Variables = {
   mangaId: number
@@ -21,7 +21,7 @@ export function useSaveRatingMutation() {
 
   return useMutation<GETV1MangaIdRatingResponse, unknown, Variables>({
     mutationFn: async ({ mangaId, rating }) => {
-      const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/manga/${mangaId}/rating`
+      const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/manga/${mangaId}/rating`
 
       if (rating === 0) {
         await fetchWithErrorHandling<void>(url, { method: 'DELETE', credentials: 'include' })

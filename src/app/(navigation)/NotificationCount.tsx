@@ -9,7 +9,7 @@ import useMeQuery from '@/query/useMeQuery'
 import { getAdultState, hasAdultAccess } from '@/utils/adult-verification'
 import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
-const { NEXT_PUBLIC_BACKEND_URL } = env
+const { NEXT_PUBLIC_API_ORIGIN } = env
 
 export default function NotificationCount() {
   const { data: unreadCount } = useNotificationUnreadCountQuery()
@@ -29,7 +29,7 @@ export default function NotificationCount() {
 }
 
 async function fetchUnreadCount() {
-  const url = `${NEXT_PUBLIC_BACKEND_URL}/api/v1/notification/unread-count`
+  const url = `${NEXT_PUBLIC_API_ORIGIN}/api/v1/notification/unread-count`
   const { data } = await fetchWithErrorHandling<GETUnreadCountResponse>(url, { credentials: 'include' })
   return data
 }

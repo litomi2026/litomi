@@ -12,7 +12,7 @@ import { fetchWithErrorHandling } from '@/utils/react-query-error'
 
 import { SEARCH_PAGE_SEARCH_PARAMS } from './constants'
 
-const { NEXT_PUBLIC_EXTERNAL_API_PROXY_URL } = env
+const { NEXT_PUBLIC_EDGE_PROXY_ORIGIN } = env
 
 type GETProxyKSearchResponse = {
   mangas: Manga[]
@@ -46,7 +46,7 @@ export function useSearchQuery() {
         searchParamsWithCursor.set('locale', locale)
       }
 
-      const url = `${NEXT_PUBLIC_EXTERNAL_API_PROXY_URL}/api/proxy/k/search?${searchParamsWithCursor}`
+      const url = `${NEXT_PUBLIC_EDGE_PROXY_ORIGIN}/api/proxy/k/search?${searchParamsWithCursor}`
       const { data } = await fetchWithErrorHandling<GETProxyKSearchResponse>(url)
       return data
     },
