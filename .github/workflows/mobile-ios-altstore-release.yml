@@ -6,7 +6,7 @@ on:
     paths:
       - '.github/workflows/mobile-ios-altstore-release.yml'
       - 'mobile/**'
-      - '!mobile/altstore/source.json'
+      - '!mobile/ios.source.json'
   workflow_dispatch:
 
 permissions:
@@ -82,17 +82,17 @@ jobs:
             mobile/artifacts/ios/litomi-ios-altstore-build-info.txt
             mobile/artifacts/ios/litomi-ios-altstore-build-info.txt.sha256
 
-      - name: Create or update AltStore source PR
+      - name: Create or update iOS source PR
         id: create_altstore_source_pr
         uses: peter-evans/create-pull-request@v8
         with:
-          add-paths: mobile/altstore/source.json
-          branch: codex/mobile-altstore-source
+          add-paths: mobile/ios.source.json
+          branch: codex/mobile-ios-source
           delete-branch: true
-          commit-message: 'chore(mobile): propose AltStore source for v${{ steps.version.outputs.version_name }}'
-          title: 'chore(mobile): update AltStore source for v${{ steps.version.outputs.version_name }}'
+          commit-message: 'chore(mobile): propose iOS source for v${{ steps.version.outputs.version_name }}'
+          title: 'chore(mobile): update iOS source for v${{ steps.version.outputs.version_name }}'
           body: |
-            This PR updates the stable AltStore source to the latest iOS release metadata built from `main`.
+            This PR updates the stable iOS source to the latest release metadata built from `main`.
 
             - Version: `${{ steps.version.outputs.version_name }}`
             - Release tag: `mobile-ios-altstore-v${{ steps.version.outputs.version_name }}`
@@ -100,15 +100,15 @@ jobs:
             - Workflow run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           base: main
 
-      - name: Enable AltStore source PR auto-merge
+      - name: Enable iOS source PR auto-merge
         if: ${{ steps.create_altstore_source_pr.outputs.pull-request-number }}
         uses: peter-evans/enable-pull-request-automerge@v3
         with:
           pull-request-number: ${{ steps.create_altstore_source_pr.outputs.pull-request-number }}
           merge-method: squash
 
-      - name: Report AltStore source PR
+      - name: Report iOS source PR
         if: ${{ steps.create_altstore_source_pr.outputs.pull-request-url }}
         shell: bash
         run: |
-          echo "Created or updated AltStore source PR and enabled auto-merge: ${{ steps.create_altstore_source_pr.outputs.pull-request-url }}"
+          echo "Created or updated iOS source PR and enabled auto-merge: ${{ steps.create_altstore_source_pr.outputs.pull-request-url }}"
