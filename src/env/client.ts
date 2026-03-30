@@ -1,4 +1,6 @@
 export const env = {
+  NEXT_PUBLIC_APP_ENV: process.env.NEXT_PUBLIC_APP_ENV ?? 'local',
+  NEXT_PUBLIC_COMMIT_SHA: process.env.NEXT_PUBLIC_COMMIT_SHA ?? '',
   NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:3002',
   NEXT_PUBLIC_CANONICAL_URL: process.env.NEXT_PUBLIC_CANONICAL_URL ?? 'http://localhost:3000',
   NEXT_PUBLIC_CORS_PROXY_URL: process.env.NEXT_PUBLIC_CORS_PROXY_URL ?? 'http://localhost:3002',
