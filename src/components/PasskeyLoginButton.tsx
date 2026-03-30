@@ -2,7 +2,7 @@
 
 import { browserSupportsWebAuthnAutofill, startAuthentication } from '@simplewebauthn/browser'
 import { Fingerprint, Loader2 } from 'lucide-react'
-import { useEffect, useEffectEvent, useRef, useState } from 'react'
+import { RefObject, useEffect, useEffectEvent, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import {
@@ -14,6 +14,7 @@ import { signalUnknownPasskeyCredential } from '@/utils/passkey'
 
 type Props = {
   disabled?: boolean
+  formRef: RefObject<HTMLFormElement | null>
   onSuccess?: (user: User) => void
   turnstile: TurnstileController
 }
@@ -31,7 +32,7 @@ type User = {
   lastLogoutAt: Date | null
 }
 
-export default function PasskeyLoginButton({ disabled, onSuccess, turnstile }: Props) {
+export default function PasskeyLoginButton({ disabled, formRef, onSuccess, turnstile }: Props) {
   const [supportsAutofill, setSupportsAutofill] = useState<boolean | null>(null)
   const lastCredentialIdRef = useRef<string | null>(null)
 
@@ -48,41 +49,66 @@ export default function PasskeyLoginButton({ disabled, onSuccess, turnstile }: P
     shouldSetResponse: false,
   })
 
+  async function getTurnstileTokenForLogin(isAutofill: boolean) {
+    const turnstileToken = await turnstile.getToken()
+
+    if (turnstileToken) {
+      return turnstileToken
+    }
+
+    turnstile.reset()
+
+    if (!isAutofill) {
+      toast.warning('Cloudflare 보안 검증을 완료해 주세요')
+    }
+  }
+
   async function runPasskeyLogin(mode: 'autofill' | 'button') {
     const isAutofill = mode === 'autofill'
 
     try {
-      const turnstileToken = await turnstile.getToken()
-
-      if (!turnstileToken) {
-        turnstile.reset()
-
-        if (!isAutofill) {
-          toast.warning('Cloudflare 보안 검증을 완료해 주세요')
-        }
-        return
-      }
-
       const optionsResult = await getAuthenticationOptions()
 
       if (!optionsResult.ok) {
-        if (!isAutofill) {
-          if (optionsResult.status >= 500) {
-            toast.error('패스키 인증 중 오류가 발생했어요')
-          } else {
-            toast.warning(optionsResult.error)
-          }
+        if (isAutofill) {
+          return
         }
+
+        if (optionsResult.status >= 500) {
+          toast.error('패스키 인증 중 오류가 발생했어요')
+        } else {
+          toast.warning(optionsResult.error)
+        }
+
+        return
+      }
+
+      const { options, turnstileRequired } = optionsResult.data
+
+      if (isAutofill && turnstileRequired) {
         return
       }
 
       const authResponse = await startAuthentication({
-        optionsJSON: optionsResult.data,
+        optionsJSON: options,
         ...(isAutofill && { useBrowserAutofill: true }),
       })
 
       lastCredentialIdRef.current = authResponse.id
-      dispatchAction(authResponse, turnstileToken)
+      const remember = isRememberEnabled(formRef)
+
+      if (!turnstileRequired) {
+        dispatchAction({ authentication: authResponse, remember })
+        return
+      }
+
+      const turnstileToken = await getTurnstileTokenForLogin(isAutofill)
+
+      if (!turnstileToken) {
+        return
+      }
+
+      dispatchAction({ authentication: authResponse, remember, turnstileToken })
     } catch (error) {
       if (isAutofill) {
         return
@@ -125,7 +151,7 @@ export default function PasskeyLoginButton({ disabled, onSuccess, turnstile }: P
     }
   }, [])
 
-  // NOTE: 패스키 자동완성 지원 여부와 턴스타일 토큰이 준비되면 자동으로 패스키 로그인을 시도해요
+  // NOTE: 패스키 자동완성은 저위험 시도에만 조용히 시도해요
   useEffect(() => {
     if (supportsAutofill !== true || disabled) {
       return
@@ -149,4 +175,9 @@ export default function PasskeyLoginButton({ disabled, onSuccess, turnstile }: P
       <span>패스키로 로그인</span>
     </button>
   )
+}
+
+function isRememberEnabled(formRef: RefObject<HTMLFormElement | null>) {
+  const rememberInput = formRef.current?.elements.namedItem('remember')
+  return rememberInput instanceof HTMLInputElement && rememberInput.checked
 }
