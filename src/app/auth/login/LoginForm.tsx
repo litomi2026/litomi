@@ -332,6 +332,7 @@ export default function LoginForm() {
 
             <PasskeyLoginButton
               disabled={isPending}
+              formRef={formRef}
               onSuccess={handleLoginSuccess}
               turnstile={{
                 getToken: getTurnstileToken,
