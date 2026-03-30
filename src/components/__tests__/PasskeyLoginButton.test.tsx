@@ -39,7 +39,7 @@ const browserSupportsWebAuthnAutofillMock = mock(() => Promise.resolve(false))
 const startAuthenticationMock = mock(() => Promise.resolve({ id: 'cred-1' }))
 const generateAuthenticationOptionsMock = mock(async () => ({ challenge: 'passkey-challenge' }))
 const rateLimitCheckMock = mock(async () => rateLimitState.result)
-const storeChallengePayloadMock = mock(async () => {})
+const storeChallengeMock = mock(async () => {})
 const signalUnknownCredentialMock = mock(() => Promise.resolve(undefined))
 const toastWarningMock = mock(() => {})
 const toastErrorMock = mock(() => {})
@@ -173,8 +173,8 @@ mock.module('@/utils/rate-limit', () => ({
 }))
 
 mock.module('@/utils/redis-challenge', () => ({
-  getAndDeleteChallengePayload: mock(async () => null),
-  storeChallengePayload: storeChallengePayloadMock,
+  getAndDeleteChallenge: mock(async () => null),
+  storeChallenge: storeChallengeMock,
 }))
 
 mock.module('@/utils/turnstile', () => ({
@@ -222,7 +222,7 @@ afterEach(() => {
   startAuthenticationMock.mockClear()
   generateAuthenticationOptionsMock.mockClear()
   rateLimitCheckMock.mockClear()
-  storeChallengePayloadMock.mockClear()
+  storeChallengeMock.mockClear()
   signalUnknownCredentialMock.mockClear()
   toastWarningMock.mockClear()
   toastErrorMock.mockClear()
